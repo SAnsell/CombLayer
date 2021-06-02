@@ -57,6 +57,7 @@
 #include "BeamDividerGenerator.h"
 #include "IonPTubeGenerator.h"
 #include "LBeamStopGenerator.h"
+#include "NBeamStopGenerator.h"
 
 #include "magnetVar.h"
 
@@ -292,7 +293,7 @@ Segment29Magnet(FuncDataBase& Control,
   setVariable::YagScreenGenerator YagScreenGen;
   setVariable::YagUnitGenerator YagUnitGen;
   setVariable::LBeamStopGenerator BSGen;
-  setVariable::LBeamStopGenerator BSGenB("new");
+  setVariable::NBeamStopGenerator BSGenB;
 
   const Geometry::Vec3D startPtA(-637.608,9073.611,0.0);
   const Geometry::Vec3D startPtB(-637.608,9073.535,-84.888);

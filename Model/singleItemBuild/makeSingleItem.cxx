@@ -128,7 +128,7 @@
 #include "IonPumpTube.h"
 #include "IonGauge.h"
 #include "TriggerTube.h"
-#include "LBeamStop.h"
+#include "NBeamStop.h"
 #include "BremTube.h"
 #include "HPJaws.h"
 #include "BoxJaws.h"
@@ -186,7 +186,7 @@ makeSingleItem::build(Simulation& System,
       "Scrapper","TWCavity","Bellow", "VacuumPipe","HalfElectronPipe",
       "MultiPipe","PipeTube","PortTube","BlankTube","ButtonBPM",
       "PrismaChamber","uVac", "UndVac","UndulatorVacuum",
-      "IonPTube","IonGauge","LBeamStop","MagTube","TriggerTube",
+      "IonPTube","IonGauge","NBeamStop","MagTube","TriggerTube",
       "BremTube","HPJaws","BoxJaws","HPCombine","ViewTube",
       "DiffPumpXIADP03","CLRTube","ExperimentalHutch",
       "ConnectorTube","LocalShield","FlangeDome","Help","help"
@@ -895,10 +895,10 @@ makeSingleItem::build(Simulation& System,
       return;
     }
 
-  if (item=="LBeamStop")
+  if (item=="NBeamStop")
     {
-      std::shared_ptr<tdcSystem::LBeamStop>
-	BS(new tdcSystem::LBeamStop("BeamStop"));
+      std::shared_ptr<tdcSystem::NBeamStop>
+	BS(new tdcSystem::NBeamStop("BeamStop"));
 
       OR.addObject(BS);
 

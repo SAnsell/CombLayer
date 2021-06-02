@@ -108,7 +108,7 @@
 #include "IonPTubeGenerator.h"
 #include "IonGaugeGenerator.h"
 #include "TriggerGenerator.h"
-#include "LBeamStopGenerator.h"
+#include "NBeamStopGenerator.h"
 #include "BremTubeGenerator.h"
 #include "HPJawsGenerator.h"
 #include "BoxJawsGenerator.h"
@@ -384,7 +384,7 @@ SingleItemVariables(FuncDataBase& Control)
   DEGen.generatePipe(Control,"M1DipoleOut",0.0);
   
   // Beam Stop
-  setVariable::LBeamStopGenerator BS;
+  setVariable::NBeamStopGenerator BS;
   BS.generateBStop(Control,"BeamStop");
 
   // corrector mag

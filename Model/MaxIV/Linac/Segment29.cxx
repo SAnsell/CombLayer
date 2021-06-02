@@ -71,6 +71,7 @@
 #include "VacuumPipe.h"
 #include "YagUnit.h"
 #include "YagScreen.h"
+#include "NBeamStop.h"
 #include "LBeamStop.h"
 
 #include "TDCsegment.h"
@@ -102,7 +103,7 @@ Segment29::Segment29(const std::string& Key) :
   yagScreenA(new tdcSystem::YagScreen(keyName+"YagScreenA")),
   yagScreenB(new tdcSystem::YagScreen(keyName+"YagScreenB")),
 
-  beamStopA(new tdcSystem::LBeamStop(keyName+"BeamStopA")),
+  beamStopA(new tdcSystem::NBeamStop(keyName+"BeamStopA")),
   beamStopB(new tdcSystem::LBeamStop(keyName+"BeamStopB"))
 
   /*!

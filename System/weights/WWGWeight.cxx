@@ -499,7 +499,6 @@ WWGWeight::scaleRange(const size_t eIndex,
 	    TData[i] = 0.0;
 	  else
 	    {
-	      ELog::EM<<"AValue == "<<TData[i]<<ELog::endDiag;
 	      if (TData[i]>maxValue)
 		maxValue=TData[i];
 	      

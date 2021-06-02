@@ -44,47 +44,31 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 
-#include "LBeamStopGenerator.h"
+#include "NBeamStopGenerator.h"
 
 namespace setVariable
 {
 
-LBeamStopGenerator::LBeamStopGenerator() :
-  length(50.0),innerVoidLen(15.0),
-  innerLength(5.0),innerRadius(4.0),
-  midVoidLen(7.5),midLength(22.5),
-  midRadius(7.0),outerRadius(20.0),
-  midNLayers(1),
-  outerNLayers(1),
-  voidMat("Void"),innerMat("Graphite"),
-  midMat("Poly"),outerMat("Stainless304L")
+NBeamStopGenerator::NBeamStopGenerator() :
+  fullLength(120.0),
+  radii({2.0, 5.0, 20.0}),
+  len({{1.0,50.0},{7.0,60.0,},{12.0}}),
+  mat({{"Void","Tungsten","Stainless304"},
+       {"Void","Poly","Stainless304"},
+       {"Void","Stainless304"}})
   /*!
     Constructor and defaults
   */
 {}
 
-LBeamStopGenerator::LBeamStopGenerator(const std::string&) :
-  length(50.0),innerVoidLen(15.0),
-  innerLength(5.0),innerRadius(4.0),
-  midVoidLen(7.5),midLength(22.5),
-  midRadius(7.0),outerRadius(20.0),
-  midNLayers(1),
-  outerNLayers(1),
-  voidMat("Void"),innerMat("Graphite"),
-  midMat("Poly"),outerMat("Stainless304L")
-  /*!
-    Constructor and defaults
-  */
-{}
-
-LBeamStopGenerator::~LBeamStopGenerator()
+NBeamStopGenerator::~NBeamStopGenerator()
  /*!
    Destructor
  */
 {}
 
 void
-LBeamStopGenerator::generateBStop(FuncDataBase& Control,
+NBeamStopGenerator::generateBStop(FuncDataBase& Control,
 				  const std::string& keyName) const
 /*!
     Primary funciton for setting the variables
@@ -92,28 +76,28 @@ LBeamStopGenerator::generateBStop(FuncDataBase& Control,
     \param keyName :: Head name for variable
   */
 {
-  ELog::RegMethod RegA("LBeamStopGenerator","generate");
+  ELog::RegMethod RegA("NBeamStopGenerator","generateBStop");
 
-
-  Control.addVariable(keyName+"Length",length);
-  Control.addVariable(keyName+"InnerVoidLen",innerVoidLen);
-  Control.addVariable(keyName+"InnerLength",innerLength);
-  Control.addVariable(keyName+"InnerRadius",innerRadius);
-  Control.addVariable(keyName+"MidVoidLen",midVoidLen);
-  Control.addVariable(keyName+"MidLength",midLength);
-  Control.addVariable(keyName+"MidRadius",midRadius);
-  Control.addVariable(keyName+"MidNLayers",midNLayers);
-  Control.addVariable(keyName+"OuterRadius",outerRadius);
-  Control.addVariable(keyName+"OuterNLayers",outerNLayers);
-
-  Control.addVariable(keyName+"VoidMat",voidMat);
-  Control.addVariable(keyName+"InnerMat",innerMat);
-  Control.addVariable(keyName+"MidMat",midMat);
-  Control.addVariable(keyName+"OuterMat",outerMat);
-
-
-  return;
-
+  if (!radii.empty())
+    {
+      Control.addVariable(keyName+"Length",fullLength);
+      Control.addVariable(keyName+"OuterRadius",radii.back());
+      Control.addVariable(keyName+"NLayers",mat.size());
+      for(size_t i=0;i<radii.size();i++)
+	{
+	  const std::string layerName(keyName+"Layer"+std::to_string(i));
+	  Control.addVariable(layerName+"Radius",radii[i]);
+	  size_t j;
+	  for(j=0;j<len[i].size();j++)
+	    {
+	      std::string UNum(std::to_string(j));
+	      Control.addVariable(layerName+"Length"+UNum,len[i][j]);
+	      Control.addVariable(layerName+"Mat"+UNum,mat[i][j]);	  
+	    }
+	  Control.addVariable(layerName+"Mat"+std::to_string(j),mat[i][j]);	  
+	}
+    }
+  return;  
 }
 
 }  // namespace setVariable
