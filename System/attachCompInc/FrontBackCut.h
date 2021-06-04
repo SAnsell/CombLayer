@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/FrontBackCut.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,6 +53,8 @@ class FrontBackCut :
   void setBack(const int);
   void setFront(const std::string&);
   void setBack(const std::string&);
+  void setFront(const HeadRule&);
+  void setBack(const HeadRule&);
   void setFront(const attachSystem::FixedComp&,const long int);
   void setBack(const attachSystem::FixedComp&,const long int);
   void setFront(const attachSystem::FixedComp&,const std::string&);

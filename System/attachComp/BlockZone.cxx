@@ -1,4 +1,4 @@
- /********************************************************************* 
+/********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
  * File:   attachComp/BlockZone.cxx
@@ -150,7 +150,6 @@ BlockZone::merge(const BlockZone& BZ)
 	  backHR=BZ.backHR;
 	  return 1;
 	}
-
       if (BZ.backHR==frontHR)
 	{
 	  frontHR=BZ.frontHR;
@@ -265,18 +264,49 @@ BlockZone::insertCell(Simulation& System,const HeadRule& HR)
 {
   ELog::RegMethod RegA("BlockZone","insertCell");
 
+  
   if (HR.hasRule())
     {
       for(const int cellN : insertCells)
 	{
 	  MonteCarlo::Object* outerObj=System.findObject(cellN);
-	  if (outerObj)
-	    outerObj->addIntersection(HR.complement());
-	  else
-	    throw ColErr::InContainerError<int>(cellN,"Cell not in Simulation");
+	  if (!outerObj)
+	    throw ColErr::InContainerError<int>
+	      (cellN,"Cell not in Simulation");
+	  
+	  if (insertHR.find(cellN)==insertHR.end())
+	    {
+	      insertHR.emplace(cellN,outerObj->getHeadRule());
+	    }
+	  outerObj->addIntersection(HR.complement());
 	}
     }
   return;
+}
+
+void
+BlockZone::rebuildInsertCells(Simulation& System)
+  /*!
+    Rebuild the cell to deal with end point
+   */
+{
+  ELog::RegMethod RegA("BlockZone","rebuildInsertCells");
+
+  HeadRule ItemHR=frontHR*backHR.complement()*surroundHR;
+  ItemHR.makeComplement();
+
+  for(const auto& [cellN,HR] : insertHR)
+    {
+      MonteCarlo::Object* outerObj=System.findObject(cellN);
+      if (!outerObj)
+	throw ColErr::InContainerError<int>
+	  (cellN,"Cell not in Simulation");
+
+      outerObj->procHeadRule(HR*ItemHR);
+      outerObj->populate();
+    }
+  return;
+  
 }
   
 void
@@ -374,7 +404,7 @@ BlockZone::createUnit(Simulation& System,
   HeadRule Volume=surroundHR * backHR * newBackFC.complement();
   makeCell("Unit",System,cellIndex++,voidMat,0.0,Volume);
   backHR=newBackFC;
-
+  
   insertCell(System,Volume);
 
   return cellIndex-1;

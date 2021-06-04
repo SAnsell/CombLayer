@@ -3,7 +3,7 @@
  
  * File:   src/SimPHITS.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -374,7 +374,8 @@ SimPHITS::writeWeights(std::ostream& OX) const
 {
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();
-  
+
+  ELog::EM<<"WRITE WEIGHT"<<ELog::endCrit;
   WM.writePHITS(OX);
   return;
 }
@@ -415,7 +416,6 @@ SimPHITS::writePhysics(std::ostream& OX) const
   
   if (WM.hasParticle("n"))
     {
-      ELog::EM<<"WEIGHT"<<ELog::endErr;
       const WeightSystem::WForm* NWForm=WM.getParticle("n");
       NWForm->writePHITSHead(OX);
     }
@@ -481,14 +481,14 @@ SimPHITS::writeImportance(std::ostream& OX) const
   std::map<int,std::map<int,double>> ImpMap;
   ImpMap.emplace(0,std::map<int,double>());
     
-  bool flag;
+  bool flag(0);
   double Imp;
   for(const int CN : cellOutOrder)
     {
       const MonteCarlo::Object* OPtr=findObject(CN);
       // flag indicates particles :
       std::tie(flag,Imp)=OPtr->getImpPair();  // returns 0 as well
-      ImpMap[0].emplace(CN,Imp);
+      ImpMap[0].emplace(CN,Imp);	    
       if (!flag)
 	{
 	  const std::set<int>& PSet=OPtr->getImportance().getParticles();
@@ -521,6 +521,7 @@ SimPHITS::writeImportance(std::ostream& OX) const
 	  StrFunc::writePHITSCellSet(OX,2,allMap);
 	}
     }
+  OX<<std::endl;
 
   return;
 }

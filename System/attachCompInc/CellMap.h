@@ -89,14 +89,14 @@ class CellMap  : public BaseMap
   /// Rename function
   int getCell(const std::string& K) const
     { return BaseMap::getItem(K); }
-  
-  /// Rename function
-  int getCell(const std::string& K,const size_t Index) const
-    { return BaseMap::getItem(K,Index); }
 
   /// Rename function
   int getLastCell(const std::string& K) const
     { return BaseMap::getLastItem(K); }
+  
+  /// Rename function
+  int getCell(const std::string& K,const size_t Index) const
+    { return BaseMap::getItem(K,Index); }
 
   /// return all cells found
   size_t getNCells(const std::string& K) const
@@ -177,7 +177,7 @@ class CellMap  : public BaseMap
 
   std::pair<int,double>
     deleteCellWithData(Simulation&,const std::string&,const size_t =0);
-  
+
 };
 
 }

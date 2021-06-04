@@ -3,7 +3,7 @@
  
  * File:   flukaTally/userYield.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,20 +47,17 @@
 namespace flukaSystem
 {
 
-userYield::userYield(const int outID) :
-  flukaTally("yiel"+std::to_string(outID),outID),
-  scoreLog(1),scoreTypeA("1"),scoreTypeB("2"),
-  particle("208"),eLogFlag(0),aLogFlag(0),fluenceFlag(0),
-  oneDirFlag(0),nE(10),energyA(0.0),energyB(1.0),nA(10),
-  angleA(0),angleB(4.0*M_PI)
+userYield::userYield(const int ID,const int outID) :
+  userYield("yiel",ID,outID)
   /*!
     Constructor
-    \param outID :: Identity number of tally [fortranOut]
+    \param ID :: Identity number of tally
+    \param outID :: Fortran tape ID [fortranOut]
   */
 {}
 
-userYield::userYield(const std::string& KN,const int outID) :
-  flukaTally(KN,outID),scoreLog(1),scoreTypeA("1"),scoreTypeB("2"),
+userYield::userYield(const std::string& KN,const int ID,const int outID) :
+  flukaTally(KN,ID,outID),scoreLog(1),scoreTypeA("1"),scoreTypeB("2"),
   particle("208"),eLogFlag(0),aLogFlag(0),fluenceFlag(0),
   oneDirFlag(0),nE(10),energyA(0.0),energyB(1.0),nA(10),
   angleA(0),angleB(4.0*M_PI)

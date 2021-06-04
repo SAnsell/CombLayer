@@ -3,7 +3,7 @@
  
  * File:   flukaTallyInc/userBin.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,6 @@ class userBin : public flukaTally
 {
  private:
 
-  bool binaryOut;                   ///< Make file binary output
   int meshType;                     ///< type / 10 / 0 for mesh
   std::string particle;             ///< particle/type
     
@@ -48,7 +47,8 @@ class userBin : public flukaTally
   
  public:
 
-  explicit userBin(const int);
+  userBin(const int,const int);
+  userBin(const std::string&,const int,const int);
   userBin(const userBin&);
   virtual userBin* clone() const; 
   userBin& operator=(const userBin&);
@@ -75,8 +75,6 @@ class userBin : public flukaTally
   /// access min/max point
   const std::array<size_t,3>& getNPt() const { return Pts; }
 
-
-  
   void writeCoordinates(std::ostream&) const;
   virtual void writeAuxScore(std::ostream&) const;
   virtual void write(std::ostream&) const;

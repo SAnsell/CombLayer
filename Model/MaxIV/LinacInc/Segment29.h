@@ -38,6 +38,7 @@ namespace tdcSystem
   class YagUnit;
   class YagScreen;
   class LBeamStop;
+  class NBeamStop;
   
 
   /*!
@@ -73,7 +74,7 @@ class Segment29 :
   std::shared_ptr<tdcSystem::YagScreen> yagScreenB;
 
   /// beam-stops
-  std::shared_ptr<tdcSystem::LBeamStop> beamStopA;
+  std::shared_ptr<tdcSystem::NBeamStop> beamStopA;
   std::shared_ptr<tdcSystem::LBeamStop> beamStopB;
 
   void buildObjects(Simulation&);

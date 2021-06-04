@@ -1108,7 +1108,8 @@ FixedComp::setConnect(const size_t Index,
 }
 
 void
-FixedComp::setLineConnect(const size_t Index,const Geometry::Vec3D& C,
+FixedComp::setLineConnect(const size_t Index,
+			  const Geometry::Vec3D& C,
 			  const Geometry::Vec3D& A)
  /*!
    Set the axis of the linked component by intersecting
@@ -1180,9 +1181,9 @@ FixedComp::setUSLinkCopy(const size_t Index,
 }
 
 void
-FixedComp::setLinkSignedCopy(const size_t Index,
-			     const FixedComp& FC,
-			     const long int sideIndex)
+FixedComp::setLinkCopy(const size_t Index,
+		       const FixedComp& FC,
+		       const std::string& sideName)
   /*!
     Copy the opposite (as if joined) link surface 
     Note that the surfaces are complemented
@@ -1191,7 +1192,25 @@ FixedComp::setLinkSignedCopy(const size_t Index,
     \param sideIndex :: signed link unit of other object
   */
 {
-  ELog::RegMethod RegA("FixedComp","setLinkSignedSurf");
+  ELog::RegMethod RegA("FixedComp","setLinkCopy("+sideName+")");
+
+  setLinkCopy(Index,FC,FC.getSideIndex(sideName));
+  return;
+}
+
+void
+FixedComp::setLinkCopy(const size_t Index,
+		       const FixedComp& FC,
+		       const long int sideIndex)
+  /*!
+    Copy the opposite (as if joined) link surface 
+    Note that the surfaces are complemented
+    \param Index :: Link number
+    \param FC :: Other Fixed component to copy object from
+    \param sideIndex :: signed link unit of other object
+  */
+{
+  ELog::RegMethod RegA("FixedComp","setLinkCopy");
 
   if (sideIndex>0)
     setUSLinkCopy(Index,FC,static_cast<size_t>(sideIndex-1));
@@ -1373,6 +1392,36 @@ FixedComp::nameSideIndex(const size_t lP,
   return;
 }
   
+std::string
+FixedComp::getSideName(const long int sideIndex) const
+  /*!
+    Find the name based on the index.
+    \param sideName :: Name with +/- at front if require to change 
+    \return name 
+  */
+{
+  ELog::RegMethod RegA("FixedComp","getSideIndex");
+
+  if (!sideIndex) return "Origin";
+
+  const size_t index=std::abs(sideIndex)-1;
+  std::map<std::string,size_t>::const_iterator mc=
+    std::find_if(keyMap.begin(),keyMap.end(),
+		[&index](const std::pair<std::string,size_t>& item)
+		{
+		  return item.second==index;
+		});
+  if (mc==keyMap.end())
+  throw ColErr::InContainerError<size_t>
+    (sideIndex,"Side index not named");
+
+
+  if (sideIndex<0)
+    return std::string("#")+mc->first;
+
+  return mc->first;
+}
+
 long int
 FixedComp::getSideIndex(const std::string& sideName) const
   /*!

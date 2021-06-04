@@ -69,10 +69,10 @@ setBeamAxis(attachSystem::FixedOffset& beamAxis,
   
   beamAxis.populate(Control);
   beamAxis.createUnitVector(GItem,0);
-  beamAxis.setLinkSignedCopy(0,GItem.getKey("Main"),1);
-  beamAxis.setLinkSignedCopy(1,GItem.getKey("Main"),2);
-  beamAxis.setLinkSignedCopy(2,GItem.getKey("Beam"),1);
-  beamAxis.setLinkSignedCopy(3,GItem.getKey("Beam"),2);
+  beamAxis.setLinkCopy(0,GItem.getKey("Main"),1);
+  beamAxis.setLinkCopy(1,GItem.getKey("Main"),2);
+  beamAxis.setLinkCopy(2,GItem.getKey("Beam"),1);
+  beamAxis.setLinkCopy(3,GItem.getKey("Beam"),2);
 
   // change to unsigned !!!
   beamAxis.linkShift(2); 

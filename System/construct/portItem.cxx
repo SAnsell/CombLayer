@@ -248,6 +248,7 @@ portItem::populate(const FuncDataBase& Control)
   flangeRadius=Control.EvalTail<double>(keyName,portBase,"FlangeRadius");
   flangeLength=Control.EvalTail<double>(keyName,portBase,"FlangeLength");
   capThick=Control.EvalDefTail<double>(keyName,portBase,"CapThick",0.0);
+
   windowThick=Control.EvalDefTail<double>(keyName,portBase,"WindowThick",0.0);
 
   windowRadius=Control.EvalDefTail<double>(keyName,portBase,"WindowRadius",0.0);
@@ -255,6 +256,11 @@ portItem::populate(const FuncDataBase& Control)
   voidMat=ModelSupport::EvalDefMat<int>
     (Control,keyName+"VoidMat",portBase+"VoidMat",0);
 
+  /// need to write a Eval<bool> version
+  int oFlag(static_cast<int>(outerFlag));
+  oFlag=Control.EvalDefTail<int>(keyName,portBase,"OuterVoid",oFlag);
+  outerFlag=static_cast<bool>(oFlag);
+	
   outerVoidMat=ModelSupport::EvalDefMat<int>
     (Control,keyName+"OuterVoidMat",portBase+"OuterVoidMat",0);
 
@@ -303,7 +309,6 @@ portItem::setCentLine(const attachSystem::FixedComp& FC,
    */
 {
   portItem::createUnitVector(FC,0);
-
   Origin+=X*Centre.X()+Y*Centre.Y()+Z*Centre.Z();
   const Geometry::Vec3D DVec=X*Axis.X()+Y*Axis.Y()+Z*Axis.Z();
 
@@ -426,6 +431,7 @@ portItem::createLinks()
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
   FixedComp::nameSideIndex(1,"OuterPlate");
+  
   if (capThick>Geometry::zeroTol)
     {
       FixedComp::setConnect(1,Origin+Y*(externalLength+capThick),Y);
@@ -483,7 +489,6 @@ portItem::constructFlange(Simulation& System,
 			 windowThick+Geometry::zeroTol <capThick &&
 			 windowRadius>Geometry::zeroTol &&
 			 windowRadius+Geometry::zeroTol < flangeRadius);
-
 
   // 
   // This builds a window cap if required:
@@ -862,35 +867,6 @@ portItem::constructTrack(Simulation& System,
 }
 
 void
-portItem::constructTrack(Simulation& System)
-  /*!
-    Construct a track system
-    \param System :: Simulation of model
-  */
-{
-  ELog::RegMethod RegA("portItem","constructTrack");
-
-
-  if (!statusFlag)
-    {
-      ELog::EM<<"Failed to set in port:"<<keyName<<ELog::endCrit;
-      return;
-    }
-  createSurfaces();
-  System.populateCells();
-  System.validateObjSurfMap();
-
-  ModelSupport::LineTrack LT(Origin,Y,-1.0);
-  LT.calculate(System);
-  size_t AIndex,BIndex;
-
-  calcBoundaryCrossing(System,LT,AIndex,BIndex);
-  constructOuterFlange(System,LT,AIndex,BIndex);
-  createLinks(LT,AIndex,BIndex);
-  return;
-}
-
-void
 portItem::constructAxis(Simulation& System,
 			const attachSystem::FixedComp& FC,
 			const long int sideIndex)
@@ -924,7 +900,7 @@ portItem::createAll(Simulation& System,
   ELog::RegMethod RegA("portItem","createAll");
 
   constructAxis(System,FC,sideIndex);
-  constructTrack(System); 
+  
   return;
 }
 

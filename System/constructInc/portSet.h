@@ -3,7 +3,7 @@
  
  * File:   constructInc/portSet.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,13 +33,20 @@ namespace constructSystem
   \author S. Ansell
   \date January 2018
   \brief portSet unit  
+
+  This stores a group of ports that are attached to some FixedComp
+  unit (FUnit). The FUnit that it is attached to is set in the constructor
+  and is unimportant
 */
 
 class portSet
 {
  private:
 
-  attachSystem::FixedComp& FUnit;  ///< Fixed referenece
+  attachSystem::FixedComp& FUnit;        ///< Fixed referenece
+  attachSystem::CellMap* cellPtr;        ///< Pointer if exists
+  bool outerVoid;                        ///< Is outer void needed
+  std::string outerVoidName;             ///< Is outer void needed
   
   std::set<int> portCells;               ///< Extra cells for the port
   std::vector<Geometry::Vec3D> PCentre;  ///< Centre points [relative to origin]
@@ -47,8 +54,6 @@ class portSet
   /// Vector of ports FixedComp
   std::vector<std::shared_ptr<portItem>> Ports;     
 
-  Geometry::Vec3D calcCylinderDistance(const size_t,
-				       const double) const;
 
   void populate(const FuncDataBase&);
   template<typename T>
@@ -76,12 +81,18 @@ class portSet
   void intersectVoidPorts(Simulation&,const size_t,const size_t) const;
   const portItem& getPort(const size_t) const;
 
-  void insertAllInCell(Simulation&,const int);
-  void insertAllInCell(Simulation&,const std::vector<int>&);
+  void insertAllInCell(MonteCarlo::Object&) const;
+  void insertAllInCell(Simulation&,const int) const;
+  void insertAllInCell(Simulation&,const std::vector<int>&) const; 
   void insertPortInCell(Simulation&,
-				const std::vector<std::set<int>>&);
+			const std::vector<std::set<int>>&) const;
 
-  void createPorts(Simulation&,const std::vector<int>&);
+  /// set outer void [expect "outerVoid"  as name]
+  void setOuterVoid(const std::string& ON)
+    { outerVoid=1; outerVoidName=ON;}
+  void createPorts(Simulation&,MonteCarlo::Object*,
+		   const HeadRule&,const HeadRule&);
+  void createPorts(Simulation&,const std::string&);
 };
 
 }

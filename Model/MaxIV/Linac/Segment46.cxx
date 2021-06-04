@@ -300,8 +300,8 @@ Segment46::createLinks()
 {
   ELog::RegMethod RegA("Segment46","createLinks");
 
-  setLinkSignedCopy(0,*pipeA,1);
-  setLinkSignedCopy(1,*bellowD,2);
+  setLinkCopy(0,*pipeA,1);
+  setLinkCopy(1,*bellowD,2);
 
   FixedComp::setConnect(2,Origin,Y);
   FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+5005));

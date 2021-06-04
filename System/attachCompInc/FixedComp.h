@@ -166,7 +166,8 @@ class FixedComp
   void addBridgeSurf(const size_t,const int);
   void addBridgeSurf(const size_t,const std::string&);
 
-  void setLinkSignedCopy(const size_t,const FixedComp&,const long int);
+  void setLinkCopy(const size_t,const FixedComp&,const std::string&);
+  void setLinkCopy(const size_t,const FixedComp&,const long int);
 
   /// Get keyname
   const std::string& getKeyName() const { return keyName; }
@@ -194,6 +195,7 @@ class FixedComp
   LinkUnit getSignedLU(const long int) const;
   bool hasSideIndex(const std::string&) const;
   long int getSideIndex(const std::string&) const;
+  std::string getSideName(const long int) const;
   
   std::vector<Geometry::Vec3D> getAllLinkPts() const;
 
@@ -257,6 +259,10 @@ class FixedComp
   std::vector<int> splitObject(Simulation&,const int,const int,
 			       const std::vector<Geometry::Vec3D>&,
 			       const std::vector<Geometry::Vec3D>&);
+
+  std::vector<int> splitObjectAbsolute
+  (Simulation&,const int,const std::string&,
+     const Geometry::Vec3D&,const Geometry::Vec3D&);
 
   std::vector<int> splitObjectAbsolute
     (Simulation&,const int,const int,

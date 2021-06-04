@@ -102,7 +102,6 @@ class VirtualTube :
   void intersectVoidPorts(Simulation&,const size_t,const size_t) const;
   const portItem& getPort(const size_t) const;
 
-  void createPorts(Simulation&);
   void createPorts(Simulation&,MonteCarlo::Object*,
 		   const HeadRule&,const HeadRule&);
 

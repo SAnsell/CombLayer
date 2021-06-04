@@ -795,16 +795,14 @@ InnerZone::constructMasterCell(Simulation& System)
 
   CellPtr->makeCell("MasterVoid",System,
 		    cellIndex++,voidMat,0.0,MCell.display());  
-  masterCell= System.findObject(cellIndex-1);
+  masterCell= System.findObjectThrow(cellIndex-1);
   MCell.makeComplement();
   
   // get and RECORD external cells:
   insertCells.clear();
   for(const int CN : insertCN)
     {
-      MonteCarlo::Object* cellObj=System.findObject(CN);
-      if (!cellObj)
-	throw ColErr::InContainerError<int>(CN,"Cell not in Simulation");
+      MonteCarlo::Object* cellObj=System.findObjectThrow(CN);
       cellObj->getHeadRule();
       insertCells.emplace(CN,cellObj->getHeadRule());
       cellObj->addIntersection(MCell);
@@ -828,10 +826,7 @@ InnerZone::removeLastMaster(Simulation& System)
 
   for(auto& [CN, HR] : insertCells)
     {
-      MonteCarlo::Object* cellObj=System.findObject(CN);
-      if (!cellObj)
-	throw ColErr::InContainerError<int>(CN,"Cell not in Simulation");
-
+      MonteCarlo::Object* cellObj=System.findObjectThrow(CN);
       HR.addIntersection(masterHR);
       cellObj->procHeadRule(HR);
     }

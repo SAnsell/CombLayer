@@ -44,7 +44,7 @@ namespace SDef
 */
 
 class FlukaSource : 
-  public attachSystem::FixedOffsetUnit,
+  public attachSystem::FixedRotateUnit,
   public SourceBase
 {
  private:

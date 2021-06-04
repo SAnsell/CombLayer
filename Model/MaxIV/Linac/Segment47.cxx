@@ -3,7 +3,7 @@
 
  * File: Linac/Segment47.cxx
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,6 +62,7 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "BlockZone.h"
+#include "WrapperCell.h"
 #include "generalConstruct.h"
 #include "VacuumPipe.h"
 #include "PrismaChamber.h"
@@ -73,6 +74,12 @@
 
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
+#include "Importance.h"
+#include "Object.h"
+
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+#include "HeadRule.h"
 #include "Importance.h"
 #include "Object.h"
 
@@ -123,7 +130,7 @@ Segment47::Segment47(const std::string& Key) :
   OR.addObject(pipeE);
   OR.addObject(shieldA);
   OR.addObject(shieldB);
-
+	
   setFirstItems(pipeA);
 }
 
@@ -245,6 +252,8 @@ Segment47::buildObjects(Simulation& System)
   obj->removeSurface(roof46);
   obj->removeSurface(back45);
 
+ 
+  // GIVE UNITS better names:
   shieldA->createAll(System,*pipeD, 2);
   HR.reset();
   HR.addIntersection(shieldA->getLinkSurf("#front"));
@@ -309,8 +318,8 @@ Segment47::createLinks()
 {
   ELog::RegMethod RegA("Segment47","createLinks");
 
-  setLinkSignedCopy(0,*pipeA,1);
-  setLinkSignedCopy(1,*pipeE,2);
+  setLinkCopy(0,*pipeA,1);
+  setLinkCopy(1,*pipeE,2);
 
   joinItems.push_back(FixedComp::getFullRule(2));
 

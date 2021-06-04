@@ -3,7 +3,7 @@
 
  * File: Linac/Segment13.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -186,8 +186,8 @@ Segment13::createLinks()
     Create a front/back link
    */
 {
-  setLinkSignedCopy(0,*pipeA,1);
-  setLinkSignedCopy(1,*pipeC,2);
+  setLinkCopy(0,*pipeA,1);
+  setLinkCopy(1,*pipeC,2);
 
   joinItems.push_back(FixedComp::getFullRule(2));
   return;

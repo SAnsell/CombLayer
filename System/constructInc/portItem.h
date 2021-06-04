@@ -120,7 +120,6 @@ class portItem :
   /// surround the object
   void setWrapVolume() { outerFlag=1; }
   
-  void constructTrack(Simulation&);
   void constructTrack(Simulation&,MonteCarlo::Object*,
 		      const HeadRule&,const HeadRule&);
   

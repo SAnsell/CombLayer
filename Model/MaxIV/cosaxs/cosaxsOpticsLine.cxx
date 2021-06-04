@@ -118,7 +118,7 @@ cosaxsOpticsLine::cosaxsOpticsLine(const std::string& Key) :
   screenPipeA(new constructSystem::PipeTube(newName+"ScreenPipeA")),
   screenPipeB(new constructSystem::PipeTube(newName+"ScreenPipeB")),
   adaptorPlateA(new constructSystem::VacuumPipe(newName+"AdaptorPlateA")),
-  diffPumpA(new constructSystem::DiffPumpXIADP03(newName+"DiffPumpA")),
+  diffPumpA(new xraySystem::DiffPumpXIADP03(newName+"DiffPumpA")),
   primeJawBox(new constructSystem::VacuumBox(newName+"PrimeJawBox")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
   gateC(new constructSystem::GateValveCube(newName+"GateC")),
@@ -625,8 +625,8 @@ cosaxsOpticsLine::createLinks()
 {
   ELog::RegMethod RControl("cosaxsOpticsLine","createLinks");
 
-  setLinkSignedCopy(0,*pipeInit,1);
-  setLinkSignedCopy(1,*lastComp,2);
+  setLinkCopy(0,*pipeInit,1);
+  setLinkCopy(1,*lastComp,2);
   return;
 }
 

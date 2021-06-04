@@ -3,7 +3,7 @@
  
  * File:   weightsInc/WWG.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,59 +44,64 @@ class WWG
 {
  private:
 
-  std::set<std::string> pType;   ///< Particle type
-  double wupn;         ///< Max weight before upsplitting
-  double wsurv;        ///< survival possiblitiy
-  int maxsp;           ///< max split
-  int mwhere;          ///< Check weight -1:col 0:all 1:surf
-  int mtime;           ///< Flag to inditace energy(0)/time(1)
-  int switchn;         ///< read from wwinp file
+  typedef std::map<std::string,WWGWeight*> MeshTYPE;
   
-  std::vector<double> EBin;      ///< Energy bins
-  Geometry::Mesh3D Grid;         ///< Mesh Grid
+  double wupn;                   ///< Max weight before upsplitting
+  double wsurv;                  ///< survival possiblitiy
+  int maxsp;                     ///< max split
+  int mwhere;                    ///< Check weight -1:col 0:all 1:surf
+  int mtime;                     ///< Flag to inditace energy(0)/time(1)
+  int switchn;                   ///< read from wwinp file
+  Geometry::Vec3D refPt;         ///< Reference point
 
-  /// linearized centre point [x,y,z order]
-  std::vector<Geometry::Vec3D> GridMidPt;
-  /// final output weight mesh
-  WWGWeight WMesh;
-    
+  std::string defUnit;           ///< Default unit
+  MeshTYPE WMeshMap;             /// Map of meshes
+  
   void writeHead(std::ostream&) const;
   
  public:
 
-  
   WWG();
   WWG(const WWG&);
   WWG& operator=(const WWG&);
-  ~WWG() {}
-  
-  /// access to grid
-  Geometry::Mesh3D& getGrid() { return Grid; }
-  /// access to grid
-  const Geometry::Mesh3D& getGrid() const { return Grid; }
-  /// get grid mid point
-  const std::vector<Geometry::Vec3D>& getMidPoints() const
-    { return GridMidPt; }
+  ~WWG();
 
-  void setParticles(const std::set<std::string>&);
-  /// Access to EBin
-  const std::vector<double>& getEBin() const { return EBin; }
-  void setEnergyBin(const std::vector<double>&,
-		    const std::vector<double>&);
+  WWGWeight& getMesh(const std::string&); 
+  const WWGWeight& getMesh(const std::string&) const;
+
+  /// accessor to default name
+  const std::string& getDefUnit() const { return defUnit; }
+  
+  WWGWeight& getCreateMesh(const std::string&);
+  WWGWeight& createMesh(const std::string&);
+  
+  void setEnergyBin(const std::string&,const std::vector<double>&);
+  void setDefValue(const std::string&,const std::vector<double>&);
+  void setRefPoint(const Geometry::Vec3D&);
+
+  void powerRange(const std::string&,const double);
+  void scaleRange(const std::string&,
+		  const size_t,const double,
+		  const double,const double);
+  void scaleMesh(const std::string&,const double);
+  void scaleMeshItem(const std::string&,
+		     const size_t,const size_t,const size_t,
+		     const size_t,const double);
+  
   void resetMesh(const std::vector<double>&);
 
 
-  void setRefPoint(const Geometry::Vec3D&);
-  void scaleMeshItem(const size_t,const size_t,const size_t,
-		     const size_t,const double);
   void calcGridMidPoints();
-  void updateWM(const WWGWeight&,const double);
-  void scaleRange(const size_t,const double,const double,const double);
-  void powerRange(const double);
+
+
+
+  void writeWWINP(const std::string&) const;
+  void writeVTK(const std::string&,const std::string&,
+		const long int =0) const;
 
   void write(std::ostream&) const;
-  void writeWWINP(const std::string&) const;
-  void writeVTK(const std::string&,const long int =0) const;
+  void writePHITS(std::ostream&) const;
+  void writeFLUKA(std::ostream&) const;
 
 
   

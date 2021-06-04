@@ -53,6 +53,7 @@ class PipeTube :
   virtual void createSurfaces();
   virtual void createObjects(Simulation&);
   virtual void createLinks();
+
   
  public:
 
@@ -60,6 +61,9 @@ class PipeTube :
   PipeTube(const PipeTube&);
   PipeTube& operator=(const PipeTube&);
   virtual ~PipeTube();
+
+  using VirtualTube::createPorts;
+  void createPorts(Simulation&);
 
   using FixedComp::createAll;
   virtual void createAll(Simulation&,

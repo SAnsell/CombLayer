@@ -192,8 +192,8 @@ splitterVariables(FuncDataBase& Control,
   const std::string gateNameB=splitKey+"PumpTubeBA";
   SimpleTubeGen.setCF<CF40>();
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,gateNameA,0.0,79.4);
-  SimpleTubeGen.generateTube(Control,gateNameB,0.0,107.5);
+  SimpleTubeGen.generateTube(Control,gateNameA,79.4);
+  SimpleTubeGen.generateTube(Control,gateNameB,107.5);
   Control.addVariable(gateNameA+"NPorts",1);   // beam ports
   Control.addVariable(gateNameB+"NPorts",1);   // beam ports
   const Geometry::Vec3D ZVec(0,0,1);
@@ -272,7 +272,7 @@ preOpticsVariables(FuncDataBase& Control,
   const std::string gateName=frontKey+"GateTubeA";
   SimpleTubeGen.setCF<CF63>();
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,gateName,0.0,30.0);
+  SimpleTubeGen.generateTube(Control,gateName,30.0);
   Control.addVariable(gateName+"NPorts",2);   // beam ports
   const Geometry::Vec3D ZVec(0,0,1);
   PItemGen.setCF<setVariable::CF40>(4.45);
@@ -312,7 +312,7 @@ m1MirrorVariables(FuncDataBase& Control,
   const std::string mName=mirrorKey+"M1Tube";
   SimpleTubeGen.setPipe(15.0,1.0,17.8,1.0);
   SimpleTubeGen.setCap(1,1);
-  SimpleTubeGen.generateTube(Control,mName,0.0,36.0);
+  SimpleTubeGen.generateTube(Control,mName,36.0);
 
   Control.addVariable(mName+"NPorts",2);   // beam ports
   const Geometry::Vec3D ZVec(0,0,1);
@@ -389,7 +389,7 @@ slitPackageVariables(FuncDataBase& Control,
   const std::string sName=slitKey+"SlitTube";
   const double tLen(50.2);
   SimpleTubeGen.setCF<CF150>();
-  SimpleTubeGen.generateTube(Control,sName,0.0,tLen);  
+  SimpleTubeGen.generateTube(Control,sName,tLen);  
 
   Control.addVariable(sName+"NPorts",4);   // beam ports (lots!!)
   PItemGen.setCF<setVariable::CF63>(CF150::outerRadius+6.1);
@@ -536,7 +536,7 @@ m3MirrorVariables(FuncDataBase& Control,
   const std::string mName=preKey+"M3Tube";
   SimpleTubeGen.setPipe(15.0,1.0,17.8,1.0);
   SimpleTubeGen.setCap(1,1);
-  SimpleTubeGen.generateTube(Control,mName,00.0,36.0);
+  SimpleTubeGen.generateTube(Control,mName,36.0);
 
   Control.addVariable(mName+"NPorts",2);   // beam ports
   const Geometry::Vec3D ZVec(0,0,1);

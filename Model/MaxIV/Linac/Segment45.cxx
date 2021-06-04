@@ -276,8 +276,8 @@ Segment45::createLinks()
 {
   ELog::RegMethod RegA("Segment45","createLinks");
 
-  setLinkSignedCopy(0,*ceramic,1);
-  setLinkSignedCopy(1,*pipeB,2);
+  setLinkCopy(0,*ceramic,1);
+  setLinkCopy(1,*pipeB,2);
   nameSideIndex(1,"buildZoneCut");
   joinItems.push_back(FixedComp::getFullRule("back"));
 

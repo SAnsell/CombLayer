@@ -29,7 +29,7 @@ namespace attachSystem
   \version 2.0
   \author S. Ansell
   \date March 2010
-  \brief Specialization of FixedComp
+  \brief [LEGACY use FixedComp] Specialization of FixedComp
 
   FixedComp is a multi attach object, but Linear reduces
   that to two attachments. 

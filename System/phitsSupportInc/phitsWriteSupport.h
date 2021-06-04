@@ -3,7 +3,7 @@
  
  * File:   phitsSupportInc/phitsWriteSupport.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,11 @@ namespace StrFunc
   
 template<typename T>
 void writePHITSItems(std::ostream& OX,const T Item)
+   /*!
+     Write out individial items in a stream set [no line break]
+     \param OX :: Output stream
+     \param Item :: Item to write
+   */
 {
   OX<<std::left<<std::setw(14)<<Item<<" ";
   return;
@@ -39,7 +44,7 @@ void writePHITSItems(std::ostream& OX,
   /*!
     Function to allow multiple items to be written as a table line
     \parma AItem :: first item
-    \param 
+    \param ListItems :: other items in the list
    */
 {
   writePHITSItems(OX,AItem);
@@ -54,7 +59,7 @@ void writePHITSTable(std::ostream& OX,const size_t depth,
     Function to allow multiple items to be written as a table line
     \param OX :: Output stream
     \param ListItems :: items to write
-   */
+*/
 {
   OX<<std::string((depth+1)*2,' ');
   writePHITSItems(OX,ListItems...);
@@ -70,6 +75,10 @@ void writePHITSTableHead(std::ostream&,const size_t,
 
 void writePHITSCellSet(std::ostream&,const size_t,
 		       const std::map<int,double>&);
+
+template<typename T>
+void writePHITSList(std::ostream&,const size_t,
+		    const std::vector<T>&);
 
 template<typename T>
 void writePHITS(std::ostream&,const size_t,

@@ -129,8 +129,8 @@ flexpesFrontEnd::createLinks()
 {
   ELog::RegMethod RegA("flexpesFrontEnd","createLinks");
 
-  setLinkSignedCopy(0,*undulatorPipe,1); 
-  setLinkSignedCopy(1,*lastComp,2);
+  setLinkCopy(0,*undulatorPipe,1); 
+  setLinkCopy(1,*lastComp,2);
   return;
 }
 

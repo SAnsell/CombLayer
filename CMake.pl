@@ -62,7 +62,7 @@ $gM->findSubSrcDir("System");
 $gM->findSubSrcDir("Model/ESSBeam");
 $gM->findSubSrcDir("Model/MaxIV");
 
-$gM->findSubSrcDir("","Aunit");
+$gM->findSubSrcDir("","Aunit");  ## Aunit to be excluded
 
 
 foreach my $mainProg (@masterProg)

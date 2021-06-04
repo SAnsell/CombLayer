@@ -74,7 +74,9 @@ ExcludedComp::ExcludedComp(const ExcludedComp& A) :
     Copy constructor
     \param A :: ExcludedComp to copy
   */
-{}
+{
+  ELog::EM<<"THIS IS LEGACY CODE" <<ELog::endCrit;
+}
 
 ExcludedComp&
 ExcludedComp::operator=(const ExcludedComp& A)

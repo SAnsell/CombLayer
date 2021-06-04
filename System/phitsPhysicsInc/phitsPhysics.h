@@ -3,7 +3,7 @@
  
  * File:   phitsPhysicsInc/phitsPhysics.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,6 +52,9 @@ class phitsPhysics
 
   std::map<std::string,double> values; ///< simple double values
 
+  std::pair<double,double> eRange;  ///< energy limit for range
+  std::pair<double,double> eTrack;  ///< energy limit for range
+
   
  public:
    
@@ -61,6 +64,8 @@ class phitsPhysics
   virtual ~phitsPhysics();
 
   void setECut(const std::string&,const double);
+  void setERange(const double,const double);
+  void setETrack(const double,const double);
   
   void writePHITS(std::ostream&) const;
 };

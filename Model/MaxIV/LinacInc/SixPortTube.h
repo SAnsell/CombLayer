@@ -50,9 +50,9 @@ class SixPortTube :
   double linkRadius;           ///< void radius on 4 cross way
   double wallThick;            ///< pipe thickness
 
-  double frontLength;            ///< full to flange length
-  double backLength;             ///< full to flange length
-  double sideLength;              ///< full to flange length
+  double frontLength;          ///< full to flange length
+  double backLength;           ///< full to flange length
+  double sideLength;           ///< full to flange length
 
   double flangeARadius;         ///< Joining Flange radius
   double flangeBRadius;         ///< Joining Flange radius

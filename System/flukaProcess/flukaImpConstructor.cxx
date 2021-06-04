@@ -3,7 +3,7 @@
  
  * File:   flukaProcess/flukaImpConstructor.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,6 @@
 
 namespace flukaSystem
 {
-
 
 void
 flukaImpConstructor::insertPair(flukaPhysics& PC,
@@ -240,8 +239,8 @@ flukaImpConstructor::processGeneral(SimFLUKA& System,
 				    const std::string& cardName) const
   /*!
     Handler for constructor of physics cards
-    \param System :: Fluke Phays
-    \param VVlist :: string array
+    \param System :: Fluka Simulation
+    \param VVlist :: string array [cell/mat/particle : V1 V2 V3]
     \param cellSize :: number of extra values from VVList
     \param materialFlag :: material/region/particle [-1/0/1] (-100 for none)
     \param cardName :: card name for flukaPhysics to write
@@ -254,6 +253,7 @@ flukaImpConstructor::processGeneral(SimFLUKA& System,
 
   if (materialFlag>=0)
     {
+      ELog::EM<<"Flag["<<cardName<<"] == "<<cellM<<ELog::endDiag;
       // gets set of cells/materials [0:cells/1 materials]
       const std::set<int> activeCell=
 	getActiveUnit(System,materialFlag,cellM);
@@ -281,7 +281,9 @@ flukaImpConstructor::processBIAS(SimFLUKA& System,
 				 const size_t setIndex)
   /*!
     Set BIAS for particles and stuff
-    Format : -wBIAS : biasName : cells : particle : value : value
+    Format : -wBIAS : biasName : cells : particle : [splitFactor] : 
+             [Imp[1.0 for off]]
+
     \param PC :: PhysicsCards
     \param IParam :: input stream
     \param setIndex :: index for the importance set
@@ -316,7 +318,8 @@ flukaImpConstructor::processBIAS(SimFLUKA& System,
   if (mc==IBias.end())
     throw ColErr::InContainerError<std::string>(type,"Bias Type");
 
-  //cells:
+
+  //cells: ??
   VVList[0]=IParam.getValueError<std::string>
     ("wBIAS",setIndex,1,"No cell for wBIAS");
   
@@ -335,6 +338,7 @@ flukaImpConstructor::processBIAS(SimFLUKA& System,
     throw ColErr::InContainerError<std::string>
       (biasParticles,"wBIAS type unknown");
   VVList[1]=std::to_string(value);
+  ELog::EM<<"Bias Particles = "<<biasParticles<<" "<<value<<ELog::endDiag;
 
   for(size_t i=1;i<3;i++)
     VVList[i+1]=IParam.getValueError<std::string>

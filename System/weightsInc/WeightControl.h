@@ -3,7 +3,7 @@
  
  * File:   weightsInc/WeightControl.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,7 @@ class WeightControl
  protected:
 
   std::set<std::string> activeParticles;    ///< active particles
-  
+
   double energyCut;              ///< Energy cut [MeV]
   double scaleFactor;            ///< Scale factor
   double weightPower;            ///< makes weight W^power
@@ -77,7 +77,6 @@ class WeightControl
   std::vector<Geometry::Plane> planePt;       ///< Plane points
   std::vector<Geometry::Vec3D> sourcePt;      ///< Source Points
 
-  void processPtString(std::string,std::string&,size_t&,bool&);
   
   void setHighEBand();
   void setMidEBand();
@@ -85,8 +84,8 @@ class WeightControl
   
   void procParticles(const mainSystem::inputParam&);
   void procEnergyType(const mainSystem::inputParam&);
-  void procSourcePoint(const mainSystem::inputParam&);
-  void procPlanePoint(const mainSystem::inputParam&);
+  void procSourcePoint(const Simulation&,const mainSystem::inputParam&);
+  void procPlanePoint(const Simulation&,const mainSystem::inputParam&);
 
   void procParam(const mainSystem::inputParam&,const std::string&,
 		const size_t,const size_t);  
@@ -105,7 +104,7 @@ class WeightControl
   WeightControl(const WeightControl&);
   WeightControl& operator=(const WeightControl&);
   virtual ~WeightControl();
-  
+
   virtual void processWeights(Simulation&,const mainSystem::inputParam&);
     
 };

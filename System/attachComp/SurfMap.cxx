@@ -125,6 +125,27 @@ SurfMap::getSurfRule(const std::string& Key,const size_t Index) const
   return Out;
 }
 
+HeadRule
+SurfMap::getLastSurfRule(const std::string& Key) const
+  /*!
+    Get the last rule based on a surface
+    \param Key :: Keyname
+    \return HeadRule
+   */
+{
+  ELog::RegMethod RegA("SurfMap","getLastSurfRule(Key)"); 
+
+  HeadRule Out;  
+  if (!Key.empty())
+    {
+      const int sn=(Key[0]=='-' || Key[0]=='#' || Key[0]=='*') ?
+	-getLastItem(Key.substr(1)) : getLastItem(Key);
+      
+      Out.addIntersection(sn);
+    }
+  return Out;
+}
+
 Geometry::Surface*
 SurfMap::getSurfPtr(const std::string& Key,
 		    const size_t Index) const

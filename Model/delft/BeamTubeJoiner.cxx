@@ -275,7 +275,7 @@ BeamTubeJoiner::createLinks(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("BeamTubeJoiner","createLinks");
 
-  FixedComp::setLinkSignedCopy(0,FC,sideIndex);
+  FixedComp::setLinkCopy(0,FC,sideIndex);
   setConnect(1,Origin+Y*length,Y);
   setLinkSurf(1,SMap.realSurf(buildIndex+2));
   return;

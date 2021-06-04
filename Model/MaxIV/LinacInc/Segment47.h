@@ -22,6 +22,10 @@
 #ifndef tdcSystem_Segment47_h
 #define tdcSystem_Segment47_h
 
+namespace attachSystem
+{
+  class WrapperCell;
+}
 namespace xraySystem
 {
   class CylGateValve;
@@ -32,6 +36,7 @@ namespace tdcSystem
 {
   class LocalShielding;
   class SPFCameraShield;
+
   /*!
     \class Segment47
     \version 1.2
@@ -48,19 +53,21 @@ class Segment47 :
   std::unique_ptr<attachSystem::BlockZone> IZThin;       ///< Extra limited zone
   const InjectionHall* IHall;      ///< Storage for injection hall if used.
 
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA; // #1
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA; ///< #1
   std::shared_ptr<tdcSystem::PrismaChamber> prismaChamberA; ///< #2 and #3
   std::shared_ptr<xraySystem::CrossWayTube> mirrorChamberA; ///< #4
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB; // #5
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB; ///< #5
   std::shared_ptr<xraySystem::CrossWayTube> mirrorChamberB; ///< #4
-  std::shared_ptr<constructSystem::VacuumPipe> pipeC; // #5
+  std::shared_ptr<constructSystem::VacuumPipe> pipeC; ///< #5
   std::shared_ptr<xraySystem::CrossWayTube> mirrorChamberC; ///< #4
-  std::shared_ptr<constructSystem::VacuumPipe> pipeD; // #6
-  std::shared_ptr<xraySystem::CylGateValve> gateA;    // #7
-  std::shared_ptr<constructSystem::Bellows> bellowA;  // #8
-  std::shared_ptr<constructSystem::VacuumPipe> pipeE; // #6
-  std::shared_ptr<tdcSystem::LocalShielding> shieldA; // local shielding perp to beam line
-  std::shared_ptr<tdcSystem::SPFCameraShield> shieldB; // Mirror camera shield
+  std::shared_ptr<constructSystem::VacuumPipe> pipeD; ///< #6
+  std::shared_ptr<xraySystem::CylGateValve> gateA;    ///< #7
+  std::shared_ptr<constructSystem::Bellows> bellowA;  ///< #8
+  std::shared_ptr<constructSystem::VacuumPipe> pipeE; ///< #6
+
+  /// local shielding perp to beam line
+  std::shared_ptr<tdcSystem::LocalShielding> shieldA; 
+  std::shared_ptr<tdcSystem::SPFCameraShield> shieldB; ///< Mirror camera shield
 
   int back45; ///< back surface of segment 45
   int roof46; ///< roof surface of segment 46

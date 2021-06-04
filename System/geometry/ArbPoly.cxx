@@ -3,7 +3,7 @@
  
  * File:   geometry/ArbPoly.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,20 +32,19 @@
 #include <stack>
 #include <string>
 #include <algorithm>
-#include <boost/bind.hpp>
-#include <boost/multi_array.hpp>
+#include <iterator>
 
 #include "Exception.h"
 #include "FileReport.h"
 #include "OutputLog.h"
 #include "NameStack.h"
 #include "RegMethod.h"
+#include "Triple.h"
 #include "support.h"
 #include "writeSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Surface.h"
@@ -267,8 +266,8 @@ ArbPoly::rotate(const Geometry::Matrix<double>& MA)
     \param MA direct rotation matrix (3x3)
   */
 {
-  for_each(CVec.begin(),CVec.end(),
-	   boost::bind(&Vec3D::rotate<double>,_1,MA));
+  for(Geometry::Vec3D& Pt : CVec)
+    Pt.rotate<double>(MA);
 
   // Calculate later
   makeSides();
@@ -284,11 +283,12 @@ ArbPoly::mirror(const Geometry::Plane& MP)
     \param MP :: Mirror point
    */
 {
-  for_each(CVec.begin(),CVec.end(),
-	   boost::bind(&Plane::mirrorPt,MP,_1));
+  for(Geometry::Vec3D& Pt : CVec)
+    MP.mirrorPt(Pt);
 
-  for_each(Sides.begin(),Sides.end(),
-	   boost::bind(&Plane::mirror,_1,MP));
+  for(Geometry::Plane& sidePlane : Sides)
+    sidePlane.mirror(MP);
+
   return;
 }
 

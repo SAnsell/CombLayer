@@ -682,8 +682,8 @@ FlightLine::createAll(Simulation& System,
 
 
   createCapSurfaces(FC,sideIndex);
-  FixedComp::setLinkSignedCopy(0,FC,sideIndex);
-  FixedComp::setLinkSignedCopy(6,FC,sideIndex);
+  FixedComp::setLinkCopy(0,FC,sideIndex);
+  FixedComp::setLinkCopy(6,FC,sideIndex);
 
   createObjects(System,FC,sideIndex);
   insertObjects(System);       
@@ -709,8 +709,8 @@ FlightLine::createAll(Simulation& System,
 
   createRotatedUnitVector(FC,orgIndex,sideIndex);
   createSurfaces();
-  FixedComp::setLinkSignedCopy(0,FC,sideIndex);
-  FixedComp::setLinkSignedCopy(6,FC,sideIndex);
+  FixedComp::setLinkCopy(0,FC,sideIndex);
+  FixedComp::setLinkCopy(6,FC,sideIndex);
   createObjects(System,FC,sideIndex);
   insertObjects(System);       
 

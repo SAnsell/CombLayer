@@ -32,20 +32,27 @@
 #include <string>
 #include <algorithm>
 
+#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
+#include "GTKreport.h"
 #include "OutputLog.h"
+#include "support.h"
+#include "MatrixBase.h"
+#include "Matrix.h"
 #include "Vec3D.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "variableSetup.h"
 #include "maxivVariables.h"
 
 #include "CFFlanges.h"
 #include "PipeGenerator.h"
 #include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
+#include "CrossGenerator.h"
 #include "GateValveGenerator.h"
 #include "JawValveGenerator.h"
 #include "PipeTubeGenerator.h"
@@ -56,11 +63,19 @@
 #include "MonoBoxGenerator.h"
 #include "FlangeMountGenerator.h"
 #include "BeamPairGenerator.h"
+#include "MirrorGenerator.h"
 #include "MonoShutterGenerator.h"
+#include "ShutterUnitGenerator.h"
 #include "CollGenerator.h"
 #include "SqrFMaskGenerator.h"
 #include "PortChicaneGenerator.h"
+#include "RingDoorGenerator.h"
+#include "LeadBoxGenerator.h"
 #include "WallLeadGenerator.h"
+#include "TriggerGenerator.h"
+#include "CylGateValveGenerator.h"
+#include "QuadUnitGenerator.h"
+#include "DipoleChamberGenerator.h"
 #include "DCMTankGenerator.h"
 #include "MonoBlockXstalsGenerator.h"
 #include "MLMonoGenerator.h"
@@ -269,6 +284,10 @@ connectVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("danmaxVariables[F]","connectVariables");
 
+  Control.addVariable(beamName+"OuterLeft",70.0);
+  Control.addVariable(beamName+"OuterRight",60.0);
+  Control.addVariable(beamName+"OuterTop",70.0);
+
   const Geometry::Vec3D OPos(0,0,0);
   const Geometry::Vec3D ZVec(0,0,-1);
   
@@ -283,7 +302,6 @@ connectVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setNoWindow();
-
     
   const std::string connectName(beamName+"ConnectShield");
   Control.addVariable(connectName+"Height",50.0);
@@ -307,7 +325,7 @@ connectVariables(FuncDataBase& Control,
   SimpleTubeGen.setMat("Stainless304");
   SimpleTubeGen.setCF<CF100>();
   // ystep/length
-  SimpleTubeGen.generateTube(Control,beamName+"IonPumpA",0.0,8.0);
+  SimpleTubeGen.generateTube(Control,beamName+"IonPumpA",8.0);
   Control.addVariable(beamName+"IonPumpANPorts",1);
   PItemGen.generatePort(Control,beamName+"IonPumpAPort0",OPos,ZVec);
 
@@ -336,18 +354,22 @@ exptHutVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("danmaxVariables[F]","exptHutVariables");
 
-  const double beamOffset(-0.6);
     
   const std::string hutName(beamName+"ExptHut");
 
-  Control.addVariable(hutName+"YStep",1850.0);
-  Control.addVariable(hutName+"Depth",120.0);
-  Control.addVariable(hutName+"Height",200.0);
+  Control.addVariable(hutName+"YStep",1845.0);
   Control.addVariable(hutName+"Length",858.4);
+  Control.addVariable(hutName+"Height",200.0);
   Control.addVariable(hutName+"OutWidth",198.50);
   Control.addVariable(hutName+"RingWidth",248.6);
   Control.addVariable(hutName+"InnerThick",0.1);
-  Control.addVariable(hutName+"PbThick",0.4);
+  Control.addVariable(hutName+"PbFrontThick",0.5);
+  Control.addVariable(hutName+"HoleRadius",4.0);
+  Control.addVariable(hutName+"HoleXStep",beamXStep);
+
+  Control.addVariable(hutName+"PbBackThick",0.5);
+  Control.addVariable(hutName+"PbRoofThick",0.6);
+  Control.addVariable(hutName+"PbWallThick",0.4);
   Control.addVariable(hutName+"OuterThick",0.1);
   Control.addVariable(hutName+"FloorThick",50.0);
   Control.addVariable(hutName+"CornerLength",720.0);
@@ -362,14 +384,14 @@ exptHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"PbMat","Lead");
   Control.addVariable(hutName+"FloorMat","Concrete");
 
-  Control.addVariable(hutName+"HoleXStep",beamXStep-beamOffset);
+  Control.addVariable(hutName+"HoleXStep",beamXStep);
   Control.addVariable(hutName+"HoleZStep",0.0);
   Control.addVariable(hutName+"HoleRadius",3.0);
   Control.addVariable(hutName+"HoleMat","Void");
 
   // lead shield on pipe
-  Control.addVariable(beamName+"PShieldXStep",beamXStep-beamOffset);
-  Control.addVariable(beamName+"PShieldYStep",0.3);
+  Control.addVariable(beamName+"PShieldXStep",beamXStep);
+  Control.addVariable(beamName+"PShieldYStep",1.0);
   Control.addVariable(beamName+"PShieldLength",1.0);
   Control.addVariable(beamName+"PShieldWidth",10.0);
   Control.addVariable(beamName+"PShieldHeight",10.0);
@@ -383,11 +405,6 @@ exptHutVariables(FuncDataBase& Control,
   PGen.setSize(4.0,40.0,30.0);
   PGen.generatePortChicane(Control,hutName+"Chicane0","Left",150.0,-5.0);
   PGen.generatePortChicane(Control,hutName+"Chicane1","Left",-270.0,-5.0);
-  /*
-  PGen.generatePortChicane(Control,hutName+"Chicane1",370.0,-25.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane2",-70.0,-25.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane3",-280.0,-25.0);
-  */
 
   return;
 }
@@ -413,12 +430,12 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey)
   SimpleTubeGen.setCF<CF100>();
   SimpleTubeGen.setCap();
   // up 15cm / 32.5cm down : Measured
-  SimpleTubeGen.generateTube(Control,pipeName,0.0,47.5);
+  SimpleTubeGen.generateTube(Control,pipeName,47.5);
 
 
   Control.addVariable(pipeName+"NPorts",3);   // beam ports (lots!!)
 
-  PItemGen.setCF<setVariable::CF40>(5.0);
+  PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+5.0);
   PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,pipeName+"Port0",
 			Geometry::Vec3D(0,8.75,0),
@@ -427,7 +444,7 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey)
 			Geometry::Vec3D(0,8.75,0),
 			Geometry::Vec3D(0,0,-1));
   PItemGen.setPlate(0.0,"Stainless304");  
-  PItemGen.setCF<setVariable::CF40>(8.0);
+  PItemGen.setCF<setVariable::CF40>(sqrt(2.0)*CF100::outerRadius+8.0);
   PItemGen.generatePort(Control,pipeName+"Port2",
 			Geometry::Vec3D(0,8.75,0),
 			Geometry::Vec3D(-1,0,-1));
@@ -502,15 +519,15 @@ viewBPackage(FuncDataBase& Control,const std::string& viewKey)
 
   Control.addVariable(pipeName+"NPorts",3);   // beam ports (lots!!)
 
-  PItemGen.setCF<setVariable::CF100>(5.0);
+  PItemGen.setCF<setVariable::CF100>(CF150::outerRadius+5.0);
   PItemGen.generatePort(Control,pipeName+"Port0",
 			Geometry::Vec3D(0,-9,0),
 			Geometry::Vec3D(0,0,1));
-  PItemGen.setCF<setVariable::CF100>(7.0);
+  PItemGen.setCF<setVariable::CF100>(CF150::outerRadius+7.0);
   PItemGen.generatePort(Control,pipeName+"Port1",
 			Geometry::Vec3D(0,9,0),
 			Geometry::Vec3D(0,0,1));
-  PItemGen.setCF<setVariable::CF40>(5.0);
+  PItemGen.setCF<setVariable::CF40>(sqrt(2.0)*CF150::outerRadius+5.0);
   PItemGen.generatePort(Control,pipeName+"Port2",
 			Geometry::Vec3D(0,4.5,0),
 			Geometry::Vec3D(-1,-1,0));
@@ -545,7 +562,7 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.setCap(1,1);
   // up 16cm / 37.5cm down : Measured +1cm up for clearance
-  SimpleTubeGen.generateTube(Control,pipeName,0.0,53.5);
+  SimpleTubeGen.generateTube(Control,pipeName,53.5);
 
   Control.addVariable(pipeName+"NPorts",2);   // beam ports (lots!!)
 
@@ -610,7 +627,7 @@ revBeamStopPackage(FuncDataBase& Control,
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.setCap(1,1);
   // up 15cm / 38.5cm down : Measured +1up clearance
-  SimpleTubeGen.generateTube(Control,pipeName,0.0,53.5);
+  SimpleTubeGen.generateTube(Control,pipeName,53.5);
   Control.addVariable(pipeName+"YAngle",180.0);  // rotate
   Control.addVariable(pipeName+"NPorts",2);   // beam ports (lots!!)
 
@@ -835,7 +852,7 @@ opticsSlitPackage(FuncDataBase& Control,
   PortTubeGen.generateTube(Control,sName,0.0,tLen);  
 
   Control.addVariable(sName+"NPorts",3);   // beam ports (lots!!)
-  PItemGen.setCF<setVariable::CF150>(6.1);
+  PItemGen.setCF<setVariable::CF150>(CF200::outerRadius+6.1);
   PItemGen.setPlate(setVariable::CF150::flangeLength,"Stainless304");
 
   // Top port 16.0: Side 20.0cm  from front :  Vacuum 1/2 way
@@ -893,6 +910,9 @@ opticsVariables(FuncDataBase& Control,
   setVariable::FlangeMountGenerator FlangeGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;  
   setVariable::PortItemGenerator PItemGen;
+  setVariable::TriggerGenerator TGen;
+  setVariable::CylGateValveGenerator GVGen;
+  setVariable::SqrFMaskGenerator FMaskGen;
 
   setVariable::GateValveGenerator GateGen;
 
@@ -901,36 +921,13 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,opticsName+"InitBellow",6.0);
 
-
   // will be rotated vertical
-  const std::string pipeName=opticsName+"TriggerPipe";
-  SimpleTubeGen.setCF<CF100>();
-  SimpleTubeGen.setCap();
-  // up 15cm / 25cm down : Measured
-  SimpleTubeGen.generateTube(Control,pipeName,0.0,40.0);
+  TGen.setCF<CF100>();
+  TGen.setVertical(15.0,25.0);
+  TGen.setSideCF<setVariable::CF40>(10.0); // add centre distance?
+  TGen.generateTube(Control,opticsName+"TriggerUnit");
 
-  Control.addVariable(pipeName+"NPorts",2);   // beam ports
-  const Geometry::Vec3D ZVec(0,0,1);
-  PItemGen.setCF<setVariable::CF40>(5.0);
-  PItemGen.setPlate(0.0,"Void");  
-  PItemGen.generatePort(Control,pipeName+"Port0",Geometry::Vec3D(0,5.0,0),ZVec);
-  PItemGen.generatePort(Control,pipeName+"Port1",Geometry::Vec3D(0,5.0,0),-ZVec);
-
-  // will be rotated vertical
-  const std::string gateName=opticsName+"GateTubeA";
-  SimpleTubeGen.setCF<CF63>();
-  SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,gateName,0.0,30.0);
-  Control.addVariable(gateName+"NPorts",2);   // beam ports
-
-  PItemGen.setCF<setVariable::CF40>(3.45);
-  PItemGen.setPlate(0.0,"Void");  
-  PItemGen.generatePort(Control,gateName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
-  PItemGen.generatePort(Control,gateName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
-
-  FlangeGen.setNoPlate();
-  FlangeGen.setBlade(4.0,5.0,0.3,0.0,"Stainless304",1);  // 22 rotation
-  FlangeGen.generateMount(Control,opticsName+"GateTubeAItem",0);  // in beam
+  GVGen.generateGate(Control,opticsName+"GateTubeA",0);  // open
   
   PipeGen.setCF<setVariable::CF40>(); 
   BellowGen.setCF<setVariable::CF40>();
@@ -939,22 +936,13 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,opticsName+"PipeA",38.3);
   BellowGen.generateBellow(Control,opticsName+"BellowB",16.0);
 
-  const std::string collName=opticsName+"CollTubeA";
-  SimpleTubeGen.setCF<CF150>();
-  SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,collName,0.0,30.0);  // 10h/20d
-  Control.addVariable(collName+"NPorts",2);   // beam ports
-
-  PItemGen.setCF<setVariable::CF40>(3.45);
-  PItemGen.setPlate(0.0,"Void");  
-  PItemGen.generatePort(Control,collName+"Port0",Geometry::Vec3D(0,5,0),ZVec);
-  PItemGen.generatePort(Control,collName+"Port1",Geometry::Vec3D(0,5,0),-ZVec);
-
-  BremGen.centre();
-  BremGen.setCube(7.5,7.5);
-  BremGen.setAperature(6.0, 0.5,0.5, 0.2,0.2, 0.5,0.5);  // WRONG [mid correct]
-  BremGen.generateBlock(Control,opticsName+"BremColl",0.0,10.0);
-  Control.addVariable(opticsName+"BremCollZStep",5.0);
+  const double FM2dist(1624.2);
+  FMaskGen.setCF<CF63>();
+  FMaskGen.setFrontGap(2.13,2.146);
+  FMaskGen.setBackGap(0.756,0.432);
+  FMaskGen.setMinAngleSize(10.0,FM2dist, 100.0,100.0 );
+  // step to +7.5 to make join with fixedComp:linkpt
+  FMaskGen.generateColl(Control,opticsName+"BremCollA",7.5,15.0);
 
   // filter pipe [add filter later]
   PipeGen.generatePipe(Control,opticsName+"FilterPipe",3.0);

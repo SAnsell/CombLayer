@@ -3,7 +3,7 @@
  
  * File:   tally/fmeshConstruct.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,12 +55,15 @@
 #include "Tally.h"
 #include "fmeshTally.h"
 
+#include "doseFactors.h"
 #include "meshConstruct.h"
 #include "fmeshConstruct.h" 
 
 namespace tallySystem
 {
 
+namespace meshC = mainSystem::meshConstruct;
+namespace doseF = mainSystem::doseFactors;
 
 void
 fmeshConstruct::processMesh(SimMCNP& System,
@@ -90,16 +93,16 @@ fmeshConstruct::processMesh(SimMCNP& System,
   std::array<size_t,3> Nxyz;
   
   if (PType=="object" || PType=="heatObject")
-    getObjectMesh(System,IParam,"tally",Index,3,APt,BPt,Nxyz);
+    meshC::getObjectMesh(System,IParam,"tally",Index,3,APt,BPt,Nxyz);
   else if (PType=="free" || PType=="heat")
-    getFreeMesh(IParam,"tally",Index,3,APt,BPt,Nxyz);
+    meshC::getFreeMesh(IParam,"tally",Index,3,APt,BPt,Nxyz);
 
   if (PType=="heatObject" || PType=="heat")
-    fmeshConstruct::rectangleMesh(System,3,"void",APt,BPt,Nxyz);
+    rectangleMesh(System,3,"void",APt,BPt,Nxyz);
 
   else if (PType=="free" || PType=="flux" ||
 	   PType=="object")
-    fmeshConstruct::rectangleMesh(System,1,doseType,APt,BPt,Nxyz);
+    rectangleMesh(System,1,doseType,APt,BPt,Nxyz);
   
   else
     throw ColErr::InContainerError<std::string>
@@ -142,13 +145,13 @@ fmeshConstruct::rectangleMesh(SimMCNP& System,const int type,
   if (KeyWords=="DOSE")
     {
       MT.setKeyWords("DOSE 1");
-      MT.setResponse(getDoseConversion());
+      MT.setResponse(doseF::getDoseConversion());
     }
   else if (KeyWords=="DOSEPHOTON")
     {
       MT.setParticles("p");
       MT.setKeyWords("DOSE 1");
-      MT.setResponse(getPhotonDoseConversion());
+      MT.setResponse(doseF::getPhotonDoseConversion());
     }
   else if (KeyWords=="void")
     {

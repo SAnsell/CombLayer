@@ -3,7 +3,7 @@
  
  * File:   attachComp/LinkSupport.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -184,12 +184,13 @@ calcBoundaryLink(attachSystem::FixedComp& FC,const size_t linkIndex,
 {
   ELog::RegMethod RegA("LinkSupport[F]","calcBoundaryLink");
 
-  double D;
-  const int SN=boundary.trackSurf(Origin,Axis,D);
+  std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
+    result=boundary.trackSurfIntersect(Origin,Axis);
+  const int SN=std::get<0>(result);
   if (SN)
     {
       FC.setLinkSurf(linkIndex,SN);
-      FC.setConnect(linkIndex,Origin+Axis*D,Axis);
+      FC.setConnect(linkIndex,std::get<2>(result),Axis);
     }
   return;
 }

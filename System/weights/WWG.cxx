@@ -3,7 +3,7 @@
  
  * File:   weights/WWG.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,8 @@
 #include "Vec3D.h"
 #include "support.h"
 #include "writeSupport.h"
-#include "Mesh3D.h"
+#include "phitsWriteSupport.h"
+#include "BasicMesh3D.h"
 #include "WWGWeight.h"
 #include "WWG.h"
 
@@ -51,9 +52,8 @@ namespace WeightSystem
 {
 
 WWG::WWG() :
-  pType({"n"}),wupn(8.0),wsurv(1.4),maxsp(5),
-  mwhere(-1),mtime(0),switchn(-2),
-  EBin({1e8}),WMesh(1,Grid)
+  wupn(8.0),wsurv(1.4),maxsp(5),
+  mwhere(-1),mtime(0),switchn(-2)
   /*!
     Constructor : 
     set mwhere[-1] - collisions only 
@@ -61,14 +61,17 @@ WWG::WWG() :
 {}
 
 WWG::WWG(const WWG& A) : 
-  pType(A.pType),wupn(A.wupn),wsurv(A.wsurv),maxsp(A.maxsp),
+  wupn(A.wupn),wsurv(A.wsurv),maxsp(A.maxsp),
   mwhere(A.mwhere),mtime(A.mtime),switchn(A.switchn),
-  EBin(A.EBin),Grid(A.Grid),WMesh(A.WMesh)
+  refPt(A.refPt),defUnit(A.defUnit)
   /*!
     Copy constructor
     \param A :: WWG to copy
   */
-{}
+{
+  for(const auto [ Name,WPtr ] : A.WMeshMap)
+    WMeshMap.emplace(Name,new WWGWeight(*WPtr));
+}
 
 WWG&
 WWG::operator=(const WWG& A)
@@ -80,76 +83,121 @@ WWG::operator=(const WWG& A)
 {
   if (this!=&A)
     {
-      pType=A.pType;
       wupn=A.wupn;
       wsurv=A.wsurv;
       maxsp=A.maxsp;
       mwhere=A.mwhere;
       mtime=A.mtime;
       switchn=A.switchn;
-      EBin=A.EBin;
-      Grid=A.Grid;
-      WMesh=A.WMesh;
+      refPt=A.refPt;
+      for(auto& [ Name,WPtr ] : WMeshMap)
+	delete WPtr;
+      WMeshMap.clear();
+      for(const auto& [ Name,WPtr ] : A.WMeshMap)
+	WMeshMap.emplace(Name,new WWGWeight(*WPtr));
     }
   return *this;
 }
 
-void
-WWG::setParticles(const std::set<std::string>& AP)
+WWG::~WWG()
   /*!
-    Set active particles
-    \param AP :: Active particle set
-   */
-{
-  pType=AP;
-  return;
-}
-
-void
-WWG::calcGridMidPoints() 
-  /*!
-    Given a grid produce a linearized Vec3D set
+    Deletion (needed for map)
   */
 {
-  ELog::RegMethod RegA("WWG","calcGridMidPoint");
-
-  GridMidPt=Grid.midPoints();
-  if (GridMidPt.empty())
-    ELog::EM<<"Failed to populate GridMidPt"<<ELog::endErr;
-  return;
+  for(auto& [ Name,WPtr ] : WMeshMap)
+    delete WPtr;
 }
   
-void
-WWG::resetMesh(const std::vector<double>&)
+
+WWGWeight&
+WWG::createMesh(const std::string& meshIndex)
   /*!
-    Resize the mesh
-    \param W :: Default Weight 
-   */
+    Create a mesh [Must be unique]
+    \param meshIndex :: name
+  */
 {
-  ELog::RegMethod RegA("WWG","resetMesh");
-  
+  MeshTYPE::const_iterator mc=WMeshMap.find(meshIndex);
+  if (mc!=WMeshMap.end())
+    throw ColErr::InContainerError<std::string>(meshIndex,"Mesh exists");
 
-  // boundaries need to be  2 or greater
-  const long int LX=static_cast<long int>(Grid.getXSize());
-  const long int LY=static_cast<long int>(Grid.getYSize());
-  const long int LZ=static_cast<long int>(Grid.getZSize());
-  const long int EBSize=static_cast<long int>(EBin.size());
+  // zero ID means dont write
+  size_t index(0);
+  StrFunc::convert(meshIndex,index);  // leave as zero if not a nuber
+  WMeshMap.emplace(meshIndex,new WWGWeight(index));
 
-  if (LX<=1 && LY<=1 && LZ<=1 && EBSize<=0)
-    {
-      const long int LPtr[]={LX,LY,LZ,EBSize};
-      const long int BPtr[]={2,2,2,1};
-      throw ColErr::DimensionError<4,long int>
-	(LPtr,BPtr,"WGrid size");
-    }
-  
-  if (!WMesh.isSized(LX,LY,LZ,EBSize))
-    WMesh.resize(LX,LY,LZ,EBSize);
-  WMesh.zeroWGrid();
-  
-  return;
+  if (defUnit.empty()) defUnit=meshIndex;
+  return getMesh(meshIndex);
 }
 
+WWGWeight&
+WWG::getCreateMesh(const std::string& meshIndex)
+  /*!
+    Get or create a mesh
+    \param meshIndex :: name
+  */
+{
+  MeshTYPE::const_iterator mc=WMeshMap.find(meshIndex);
+  if (mc!=WMeshMap.end())
+    return *(mc->second);
+
+  // zero ID means dont write
+  size_t index(0);
+  StrFunc::convert(meshIndex,index);  // leave as zero if not a nuber
+  WMeshMap.emplace(meshIndex,new WWGWeight(index));
+
+  if (defUnit.empty()) defUnit=meshIndex;
+  return getMesh(meshIndex);
+}
+
+WWGWeight&
+WWG::getMesh(const std::string& meshIndex)
+  /*!
+    Get a mesh
+    \
+  */
+{
+  MeshTYPE::const_iterator mc=WMeshMap.find(meshIndex);
+  if (mc==WMeshMap.end())
+    throw ColErr::InContainerError<std::string>
+      (meshIndex,"MeshIndex in MeshMap");
+
+  return *(mc->second);
+}
+
+const WWGWeight&
+WWG::getMesh(const std::string& meshIndex) const
+  /*!
+    Get a mesh
+    \param meshIndex :: String identifier
+  */
+{
+  MeshTYPE::const_iterator mc=WMeshMap.find(meshIndex);
+  if (mc==WMeshMap.end())
+    throw ColErr::InContainerError<std::string>
+      (meshIndex,"MeshIndex in MeshMap");
+
+  return *(mc->second);
+}
+  
+
+
+void
+WWG::setEnergyBin(const std::string& meshIndex,
+		  const std::vector<double>& EB)
+  /*!
+    Set the energy bins and resize the WMesh
+    \param meshIndex :: Index to use
+    \param EB :: Energy bins [MeV]
+  */
+{
+  ELog::RegMethod RegA("WWG","setEnergyBin");
+
+  WWGWeight& WMesh=getMesh(meshIndex);
+
+  WMesh.setEnergy(EB);
+  return;
+}
+  
 void
 WWG::setRefPoint(const Geometry::Vec3D& RP)
   /*!
@@ -157,45 +205,96 @@ WWG::setRefPoint(const Geometry::Vec3D& RP)
     \param RP :: reference point
    */
 {
-  Grid.setRefPt(RP);
-  return;
-}
-  
-void
-WWG::setEnergyBin(const std::vector<double>& EB,
-                  const std::vector<double>& DefWeight)
-  /*!
-    Set the energy bins and resize the WMesh
-    \param EB :: Energy bins [MeV]
-    \param DefWeight :: Initial weight
-  */
-{
-  ELog::RegMethod RegA("WWG","setEnergyBine");
-  EBin=EB;
-  if (EBin.empty())
-    EBin.push_back(1e5);
-  resetMesh(DefWeight);
-  return;
-}
+  refPt=RP;
 
+  return;
+}
     
 void
-WWG::updateWM(const WWGWeight& UMesh,const double scaleFactor)
+WWG::scaleMesh(const std::string& meshIndex,
+	       const double scaleFactor)
   /*!
+    \todo was called:: updateWM
     Mulitiply the wwg:master mesh by factors in WWGWeight
     It assumes that the mesh size and WWGWeight are compatable.
-    \param UMesh :: Weight window mesh to update
+    \param meshIndex :: mesh to update
     \param scaleFactor :: Scale factor for track [exp(-scale)]
    */
 {
-  ELog::RegMethod RegA("WWG","updateWM");
+  ELog::RegMethod RegA("WWG","scaleMesh");
 
-  WMesh=UMesh;
-  ELog::EM<<"Calling updateWM"<<ELog::endDiag;
+  WWGWeight& WMesh=getMesh(meshIndex);  
+
   WMesh.scaleGrid(scaleFactor);
   return;
 }
   
+
+
+void
+WWG::powerRange(const std::string& meshIndex,
+		const double pR)
+  /*!
+    After normalization calculate W^p
+    \param meshIndex :: mesh to access						
+    \param pR :: power value
+  */
+{
+  ELog::RegMethod RegA("WWG","powerRange");
+
+  WWGWeight& WMesh=getMesh(meshIndex);
+
+  WMesh.scalePower(pR);
+  return;
+}
+
+void
+WWG::scaleRange(const std::string& meshIndex,
+		const size_t eIndex,
+		const double minR,
+		const double maxR,
+		const double fullRange)
+  /*!
+    Normalize the mesh to have a max at 1.0
+    \param eIndex :: energy index + 1
+    \param minR :: Min value
+    \param maxR :: Max value
+    \param fullRange :: range between 0 - fullRange [negative]
+  */
+{
+  ELog::RegMethod RegA("WWG","scaleRange");
+
+  WWGWeight& WMesh=getMesh(meshIndex);
+
+  WMesh.scaleRange(eIndex,minR,maxR,fullRange);
+  return;
+}
+  
+  
+void
+WWG::scaleMeshItem(const std::string& meshIndex,
+		   const size_t I,const size_t J,const size_t K,
+                   const size_t EI,const double W)
+  /*!
+    Scale a given mesh index [based on second index]
+    \param I :: index for i,j,k
+    \param J :: index for i,j,k
+    \param K :: index for i,j,k
+    \param EI :: energy bin
+    \param W :: scaling vector for energy bins
+  */
+{
+  ELog::RegMethod RegA("WWG","scaleMeshItem");
+
+  WWGWeight& WMesh=getMesh(meshIndex);
+
+  WMesh.scaleMeshItem(static_cast<long int>(I),
+		      static_cast<long int>(J),
+		      static_cast<long int>(K),
+		      static_cast<long int>(EI),
+		      W);
+  return;
+}
 
   
 void 
@@ -209,6 +308,13 @@ WWG::writeHead(std::ostream& OX) const
   
   std::ostringstream cx;
 
+  // find energy :
+  const WWGWeight& WMesh=getMesh(defUnit);
+
+  const std::vector<double>& EBin=
+    WMesh.getEnergy();
+
+  const std::set<std::string>& pType=WMesh.getParticles();
   for(const std::string& P : pType)
     {
       cx.str("");  
@@ -223,68 +329,14 @@ WWG::writeHead(std::ostream& OX) const
       cx.str("");
       cx<<"wwge:"<<P<<" ";
       for(const double E : EBin)
-	cx<<E<<" ";
+	if (E>=1e-9 && E<1e5)
+	  cx<<E<<" ";
       StrFunc::writeMCNPX(cx.str(),OX);
     }
   
   return;
 }
-
-void
-WWG::powerRange(const double pR)
-  /*!
-    After normalization calculate W^p
-    \param pR :: power value
-  */
-{
-  ELog::RegMethod RegA("WWG","powerRange");
-
-  WMesh.scalePower(pR);
-  return;
-}
-
-void
-WWG::scaleRange(const size_t eIndex,
-		const double minR,
-		const double maxR,
-		const double fullRange)
-  /*!
-    Normalize the mesh to have a max at 1.0
-    \param eIndex :: energy index + 1
-    \param minR :: Min value
-    \param maxR :: Max value
-    \param fullRange :: range between 0 - fullRange [negative]
-  */
-{
-  ELog::RegMethod RegA("WWG","scaleRange");
-
-  WMesh.scaleRange(eIndex,minR,maxR,fullRange);
-  return;
-}
   
-  
-void
-WWG::scaleMeshItem(const size_t I,const size_t J,const size_t K,
-                   const size_t EI,const double W)
-  /*!
-    Scale a given mesh index [based on second index]
-    \param I :: index for i,j,k
-    \param J :: index for i,j,k
-    \param K :: index for i,j,k
-    \param EI :: energy bin
-    \param W :: scaling vector for energy bins
-  */
-{
-  ELog::RegMethod RegA("WWG","scaleMeshItem");
-
-  WMesh.scaleMeshItem(static_cast<long int>(I),
-		      static_cast<long int>(J),
-		      static_cast<long int>(K),
-		      static_cast<long int>(EI),
-		      W);
-  return;
-}
-
 void
 WWG::write(std::ostream& OX) const
   /*!
@@ -294,8 +346,8 @@ WWG::write(std::ostream& OX) const
 {
   ELog::RegMethod RegA("WWG","write");
   writeHead(OX);
-  Grid.write(OX);
-      
+  const WWGWeight& WMesh=getMesh(defUnit);
+  WMesh.writeGrid(OX);
   return;
 }
   
@@ -307,44 +359,21 @@ WWG::writeWWINP(const std::string& FName) const
   */
 {
   ELog::RegMethod RegA("WWG","writeWWINP");
+
   
-  boost::format TopFMT("%10i%10i%10i%10i%28s\n");
-  boost::format neFMT("%10i");
-  const std::string date("10/07/15 15:37:51");
-
-  const size_t nParticle(pType.size());
-  std::ofstream OX;
-  OX.open(FName.c_str());
-  
-  // IF[1] : timeIndependent : No. particleType : 10(rectangular) : date
-  OX<<(TopFMT % 1 % 1  % nParticle % 10 % date);
-
-
-  for(size_t i=0;i<nParticle;i++)
+  const WWGWeight& WMesh=getMesh(defUnit);
+  if (!FName.empty())
     {
-      OX<<(neFMT % EBin.size());
-      if ( ((i+1) % 7) == 0) OX<<std::endl;
-    }
-  if (nParticle % 7) OX<<std::endl;
-  
-  Grid.writeWWINP(OX);
-  for(size_t i=0;i<nParticle;i++)
-    {
-      size_t itemCnt=0;
-      for(const double& E : EBin)
-	StrFunc::writeLine(OX,E,itemCnt,6);
-      if (itemCnt!=0)
-	OX<<std::endl;
+      std::ofstream OX;
+      OX.open(FName.c_str());
       WMesh.writeWWINP(OX);
     }
-  
-  OX.close();
-		       
   return;
 }  
 
 void
 WWG::writeVTK(const std::string& FName,
+	      const std::string& meshName,
 	      const long int EIndex) const
   /*!
     Write out a VTK file
@@ -356,6 +385,9 @@ WWG::writeVTK(const std::string& FName,
 
   if (FName.empty()) return;
   std::ofstream OX(FName.c_str());
+
+  const WWGWeight& WMesh=getMesh(meshName);
+  const Geometry::BasicMesh3D& Grid=WMesh.getGeomGrid();
 
   const long int XSize=WMesh.getXSize();
   const long int YSize=WMesh.getYSize();
@@ -389,11 +421,52 @@ WWG::writeVTK(const std::string& FName,
 
   WMesh.writeVTK(OX,EIndex);
   
-  
   OX.close();
 
   return;
 }
 
+void
+WWG::writePHITS(std::ostream& OX) const
+  /*!
+    Write out a WWG mesh as a PHITS system
+    \param OX :: output stream
+  */
+{
+  ELog::RegMethod RegA("WWG","writePHITS");
+
+  for(const auto& [Name,WMeshPtr] : WMeshMap)
+    {
+      if (WMeshPtr->getID()>0)
+	WMeshPtr->writePHITS(OX);
+    }
+  
+  return;
+}
+
+void
+WWG::writeFLUKA(std::ostream& OX) const
+  /*!
+    Write out a WWG mesh as a FLUKA system
+    This uses the usrini table. This is a S. Ansell
+    extension to FLUKA.
+    \param OX :: output stream
+  */
+{
+  ELog::RegMethod RegA("WWG","writeFLUKA");
+
+
+  std::ostringstream cx;
+
+  for(const auto& [Name,WMeshPtr] : WMeshMap)
+    {
+      if (WMeshPtr->getID()>0)
+	{
+	  ELog::EM<<"WRITE FLUKA "<<ELog::endDiag;
+	  WMeshPtr->writeFLUKA(OX);
+	}
+    }
+  return;
+}
   
 }  // NAMESPACE WeightSystem

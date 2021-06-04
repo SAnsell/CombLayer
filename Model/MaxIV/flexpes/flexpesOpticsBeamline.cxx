@@ -733,8 +733,8 @@ flexpesOpticsBeamline::createLinks()
     Create a front/back link
    */
 {
-  setLinkSignedCopy(0,*bellowA,1);
-  setLinkSignedCopy(1,*lastComp,2);
+  setLinkCopy(0,*bellowA,1);
+  setLinkCopy(1,*lastComp,2);
   return;
 }
   

@@ -39,6 +39,7 @@ class MonoBox :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
+  public attachSystem::SurfMap,
   public attachSystem::FrontBackCut
 {
  private:
@@ -77,7 +78,6 @@ class MonoBox :
   int feMat;                  ///< Fe material layer
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
