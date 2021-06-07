@@ -210,6 +210,7 @@ WWGControl::procSourcePoint(const Simulation& System,
 	(System,IParam,wKey,setIndex,itemCnt,wKey+":Source Point");
 
       sourcePt.emplace(sourceName,sPoint);
+      ELog::EM<<"WWG:SourcePt "<<sPoint<<ELog::endDiag;
     }
   return;
 }
@@ -479,11 +480,13 @@ WWGControl::wwgNormalize(const mainSystem::inputParam& IParam)
 
       const double highRange=
 	IParam.getDefValue<double>(1.0,"wwgNorm",setIndex,3);
-      
+
       const WWGWeight& WMesh=wwg.getMesh(meshIndex);
       const size_t NE=WMesh.getESize();
       for(size_t i=0;i<NE;i++)
-	wwg.scaleRange(meshIndex,i,lowRange,highRange,weightRange);
+	{
+	  wwg.scaleRange(meshIndex,i,lowRange,highRange,weightRange);
+	}
       //      wwg.powerRange(powerWeight);
     }
   return;
@@ -507,11 +510,18 @@ WWGControl::wwgVTK(const mainSystem::inputParam& IParam)
   WWG& wwg=WM.getWWG();  
   for(size_t i=0;i<nCnt;i++)
     {
-      const std::string meshIndex=
-        IParam.getValueError<std::string>("wwgNorm",i,0,"MeshIndex not given");
       const std::string fileName=
-        IParam.getValueError<std::string>("wwgNorm",i,1,"FileName not given");
-      wwg.writeVTK(meshIndex,fileName);
+        IParam.getValueError<std::string>("wwgVTK",i,0,"FileName not given");
+      const std::string meshIndex=
+        IParam.getValueError<std::string>("wwgVTK",i,1,"MeshIndex not given");
+      const size_t eIndex=
+        IParam.getDefValue<size_t>(0,"wwgVTK",i,2);
+      const std::string logFlagName=
+        IParam.getDefValue<std::string>("Normal","wwgVTK",i,3);
+      const bool logFlag =
+	(logFlagName=="Log" || logFlagName=="log")  ? 1 : 0;
+	
+      wwg.writeVTK(fileName,logFlag,meshIndex,static_cast<long int>(eIndex));
     }
   return;
 }
@@ -559,7 +569,7 @@ WWGControl::wwgCombine(const Simulation& System,
       const double r2Power=
 	IParam.getDefValue<double>(2.0,wKey,iSet,itemCnt++);
 
-      WWGWeight& MeshGrid=wwg.getMesh(meshIndex);
+      WWGWeight& MeshGrid=wwg.getCreateMesh(meshIndex);
       const WWGWeight& sourceFlux=wwg.getMesh(SUnit);
       const WWGWeight& adjointFlux=wwg.getMesh(TUnit);
       
@@ -659,7 +669,7 @@ WWGControl::processWeights(Simulation& System,
       wwgNormalize(IParam);
 
       wwgActivate(System,IParam);
-      //      wwgVTK(IParam);	    
+      wwgVTK(IParam);	    
       for(const std::string& P : activeParticles)
 	{
 	  // don't write a wwp:particle card

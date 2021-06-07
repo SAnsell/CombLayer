@@ -318,7 +318,6 @@ flukaImpConstructor::processBIAS(SimFLUKA& System,
   if (mc==IBias.end())
     throw ColErr::InContainerError<std::string>(type,"Bias Type");
 
-
   //cells: ??
   VVList[0]=IParam.getValueError<std::string>
     ("wBIAS",setIndex,1,"No cell for wBIAS");
@@ -336,10 +335,11 @@ flukaImpConstructor::processBIAS(SimFLUKA& System,
     }
   if (value<0 || value>4)
     throw ColErr::InContainerError<std::string>
-      (biasParticles,"wBIAS type unknown");
+      (biasParticles,"wBIAS paritcle type unknown");
   VVList[1]=std::to_string(value);
   ELog::EM<<"Bias Particles = "<<biasParticles<<" "<<value<<ELog::endDiag;
 
+  // VVList[2-4]
   for(size_t i=1;i<3;i++)
     VVList[i+1]=IParam.getValueError<std::string>
       ("wBIAS",setIndex,2+i,

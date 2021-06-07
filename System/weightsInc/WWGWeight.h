@@ -149,7 +149,7 @@ class WWGWeight
   void writeWWINP(std::ostream&) const;
   void writePHITS(std::ostream&) const;
   void writeFLUKA(std::ostream&) const;
-  void writeVTK(std::ostream&,const long int) const;
+  void writeVTK(std::ostream&,const long int,const bool =0) const;
   void write(std::ostream&) const;
 };
 

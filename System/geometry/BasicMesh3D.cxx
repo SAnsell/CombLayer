@@ -34,6 +34,7 @@
 #include <algorithm>
 #include <numeric>
 #include <memory>
+#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -422,24 +423,6 @@ BasicMesh3D::write(std::ostream& OX) const
   return;
 }
 
-void
-BasicMesh3D::writeFLUKA(std::ostream& OX) const
-  /*!
-    Write out to a mesh for phits 
-    \param OX :: output stream
-  */
-{
-  ELog::RegMethod RegA("BasicMesh3D","writeFLUKA");
-
-  std::ostringstream cx;  
-  cx<<"USRICALL "<<ID<<" "<<Origin<<" - - "<<"wwgLow";
-  StrFunc::writeFLUKA(cx.str(),OX);
-
-  cx.str("");
-  cx<<"USRICALL "<<ID<<" "<<OuterPoint<<" - - "<<"wwgHigh";
-  StrFunc::writeFLUKA(cx.str(),OX);
-  return;
-}
 
 void
 BasicMesh3D::writePHITS(std::ostream& OX) const
@@ -468,6 +451,40 @@ BasicMesh3D::writePHITS(std::ostream& OX) const
   StrFunc::writePHITS(OX,1,"zmax",Origin.Z()+zSize);
   StrFunc::writePHITS(OX,1,"nz",NZ);
         
+  return;
+}
+
+void
+BasicMesh3D::writeVTK(std::ostream& OX) const
+  /*!
+    Write out to a mesh for phits 
+    \param OX :: output stream
+  */
+{
+  ELog::RegMethod RegA("BasicMesh3D","writePHITS");
+
+  
+  boost::format fFMT("%1$11.6g%|14t|");  
+  OX<<"DATASET RECTILINEAR_GRID"<<std::endl;
+
+  OX<<"DIMENSIONS "<<NX<<" "<<NY<<" "<<NZ<<std::endl;
+  OX<<"X_COORDINATES "<<NX<<" float"<<std::endl;
+  for(size_t i=0;i<static_cast<size_t>(NX);i++)
+    OX<<(fFMT % getXCoordinate(i));
+  OX<<std::endl;
+  
+  OX<<"Y_COORDINATES "<<NY<<" float"<<std::endl;
+  for(size_t i=0;i<static_cast<size_t>(NY);i++)
+    OX<<(fFMT % getYCoordinate(i));
+  OX<<std::endl;
+
+  OX<<"Z_COORDINATES "<<NZ<<" float"<<std::endl;
+  for(size_t i=0;i<static_cast<size_t>(NZ);i++)
+    OX<<(fFMT % getZCoordinate(i));
+  OX<<std::endl;
+  
+
+  
   return;
 }
 
