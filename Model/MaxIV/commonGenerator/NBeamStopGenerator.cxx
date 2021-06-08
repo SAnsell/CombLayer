@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonBeam/LBeamStopGenerator.cxx
+ * File:   commonGenerator/NBeamStopGenerator.cxx
  *
- * Copyright (c) 2004-2021 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,12 +50,19 @@ namespace setVariable
 {
 
 NBeamStopGenerator::NBeamStopGenerator() :
-  fullLength(120.0),
-  radii({2.0, 5.0, 20.0}),
-  len({{1.0,50.0},{7.0,60.0,},{12.0}}),
-  mat({{"Void","Tungsten","Stainless304"},
-       {"Void","Poly","Stainless304"},
-       {"Void","Stainless304"}})
+  fullLength(130.0),
+  radii({2.0, 6.0, 30.0,50.0}),
+  len({
+       {30.0,40.0,70.0,75.0},
+       {70.0},
+       {12.0},
+       {120.0}
+    }),
+  mat({{"Tungsten","Poly","Tungsten","Poly","Stainless304"},
+       {"Poly","Stainless304"},
+       {"Void","Stainless304"},
+       {"Void","Tungsten"}
+    })
   /*!
     Constructor and defaults
   */
@@ -81,7 +88,6 @@ NBeamStopGenerator::generateBStop(FuncDataBase& Control,
   if (!radii.empty())
     {
       Control.addVariable(keyName+"Length",fullLength);
-      Control.addVariable(keyName+"OuterRadius",radii.back());
       Control.addVariable(keyName+"NLayers",mat.size());
       for(size_t i=0;i<radii.size();i++)
 	{

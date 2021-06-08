@@ -81,7 +81,7 @@ WWGControl::WWGControl(const WWGControl& A) :
   activeParticles(A.activeParticles),
   nMarkov(A.nMarkov),
   planePt(A.planePt),sourcePt(A.sourcePt),
-  meshUnit(A.meshUnit)  
+  meshUnit(A.meshUnit),engUnit(A.engUnit)
   /*!
     Copy Constructor
     \param A :: WWGControl item to copy
@@ -112,6 +112,22 @@ WWGControl::~WWGControl()
     Destructor
    */
 {}
+
+const std::vector<double>&
+WWGControl::getEnergy(const std::string& eName) const
+  /*!
+    Simple accessor to grid unit
+    \param eName :: Name of Energy 
+    \return EBin from set
+  */
+{
+  std::map<std::string,std::vector<double>>::const_iterator mc=
+    engUnit.find(eName);
+  if (mc==engUnit.end())
+    throw ColErr::InContainerError<std::string>
+      (eName,"energyUnit does not have name");
+  return mc->second;
+}
 
 const Geometry::BasicMesh3D&
 WWGControl::getGrid(const std::string& gName) const
@@ -209,8 +225,11 @@ WWGControl::procSourcePoint(const Simulation& System,
 	mainSystem::getNamedPoint
 	(System,IParam,wKey,setIndex,itemCnt,wKey+":Source Point");
 
-      sourcePt.emplace(sourceName,sPoint);
-      ELog::EM<<"WWG:SourcePt "<<sPoint<<ELog::endDiag;
+      const Geometry::Vec3D offset=
+	IParam.getDefCntVec3D(wKey,setIndex,itemCnt,Geometry::Vec3D(0,0,0));
+      
+      sourcePt.emplace(sourceName,sPoint+offset);
+      ELog::EM<<"WWG:SourcePt "<<sPoint+offset<<ELog::endDiag;
     }
   return;
 }
@@ -240,13 +259,61 @@ WWGControl::procPlanePoint(const Simulation& System,
       const Geometry::Vec3D PPoint=
 	mainSystem::getNamedPoint
 	(System,IParam,wKey,setIndex,itemCnt,wKey+"Plane Point");
+
       const Geometry::Vec3D Norm=
 	mainSystem::getNamedAxis
 	(System,IParam,wKey,setIndex,itemCnt,wKey+"Plane:Norm");
+      
+      const Geometry::Vec3D offset=
+	IParam.getDefCntVec3D(wKey,setIndex,itemCnt,Geometry::Vec3D(0,0,0));
 
-      planePt.emplace(planeName,Geometry::Plane(0,0,PPoint,Norm));
+      planePt.emplace(planeName,Geometry::Plane(0,0,PPoint+offset,Norm));
+      ELog::EM<<"PlanePoint "<<PPoint+offset<<" :: "<<Norm<<ELog::endDiag;
     }
 
+  return;
+}
+
+void
+WWGControl::procEnergyMesh(const Simulation& System,
+			   const mainSystem::inputParam& IParam)
+  /*!
+    Process the mesh weight point
+    Input type :
+    - weightMesh meshName  
+    \param IParam :: Input param
+  */
+{
+  ELog::RegMethod RegA("WWGControl","procEnergyMesh");
+
+  const std::string wKey("wwgEnergy");
+
+  std::vector<double> EBin;
+  
+  const size_t NEnergy=IParam.setCnt(wKey);
+  for(size_t setIndex=0;setIndex<NEnergy;setIndex++)
+    {
+      const std::string energyName=
+	IParam.getValueError<std::string>
+	(wKey,setIndex,0,"energyName object/free/values");
+      if (engUnit.find(energyName)!=engUnit.end())
+	throw ColErr::InContainerError<std::string>
+	  (energyName,"repeated energy name");
+
+      const size_t nData=IParam.itemCnt(wKey,setIndex);
+      for(size_t i=1;i<nData;i++)
+	{
+	  const double E=IParam.getValue<double>(wKey,setIndex,i);
+	  if (!EBin.empty() && EBin.back()>=E)
+	    throw ColErr::OrderError<double>
+	      (EBin.back(),E,wKey+":Energy bin");
+	  EBin.push_back(E);
+	}
+      if (EBin.size()<2)
+	throw ColErr::SizeError<size_t>(EBin.size(),2,"EBin empty");
+      
+      engUnit.emplace(energyName,EBin);
+    }
   return;
 }
 
@@ -338,8 +405,8 @@ WWGControl::wwgCreate(const Simulation& System,
 	    "       meshName : Name of being begin processed\n"
 	    "       particleList : list of particles\n"
 	    "       gridName : Name of grid to use\n"
+	    "       energyName : Name of grid to use\n"
 	    "       SourceName [Plane/Point name]\n"
-	    "       Energy Cut [default: 0.0] \n"
 	    "       ScaleFactor [default: 1.0] \n"
 	    "       densityFactor [default: 1.0] \n"
 	    "       r2Length factor [default: 1.0] \n"
@@ -354,14 +421,16 @@ WWGControl::wwgCreate(const Simulation& System,
       const std::string meshGrid=
         IParam.getValueError<std::string>
 	(wKey,iSet,2,"wwgCalc without mesh grid name");
+
+      const std::string energyGrid=
+        IParam.getValueError<std::string>
+	(wKey,iSet,3,"wwgCalc without mesh energy  name");
       
       const std::string sourceName=
         IParam.getValueError<std::string>
-        (wKey,iSet,3,"wwgCalc without source/plane name");
+        (wKey,iSet,4,"wwgCalc without source/plane name");
 
-      size_t index(4);
-      const double energyCut=
-	IParam.getDefValue<double>(0.0,wKey,iSet,index++);
+      size_t index(5);
       const double density=
 	IParam.getDefValue<double>(1.0,wKey,iSet,index++);
       const double r2Length=
@@ -370,11 +439,12 @@ WWGControl::wwgCreate(const Simulation& System,
 	IParam.getDefValue<double>(2.0,wKey,iSet,index++);
 
       const Geometry::BasicMesh3D& mUnit=getGrid(meshGrid);
+      const std::vector<double>& eUnit=getEnergy(energyGrid);
       if (hasPlanePoint(sourceName))
 	{	
 	  const Geometry::Plane& planeRef=getPlanePoint(sourceName);
 	  WWGWeight& wSet=wwg.createMesh(meshName);
-	  wSet.setEnergy(EBin);  // set later [not written yet]
+	  wSet.setEnergy(eUnit);
 	  wSet.setMesh(mUnit);
 	  wSet.wTrack(System,planeRef,density,r2Length,r2Power);
 	}
@@ -382,6 +452,7 @@ WWGControl::wwgCreate(const Simulation& System,
         {
 	  const Geometry::Vec3D& sourceRef=getSourcePoint(sourceName);
 	  WWGWeight& wSet=wwg.createMesh(meshName);
+	  
 	  wSet.setEnergy(EBin);  // set later [not written yet]
 	  wSet.setMesh(mUnit);
 	  wSet.wTrack(System,sourceRef,density,r2Length,r2Power);

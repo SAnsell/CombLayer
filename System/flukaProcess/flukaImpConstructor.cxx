@@ -337,7 +337,6 @@ flukaImpConstructor::processBIAS(SimFLUKA& System,
     throw ColErr::InContainerError<std::string>
       (biasParticles,"wBIAS paritcle type unknown");
   VVList[1]=std::to_string(value);
-  ELog::EM<<"Bias Particles = "<<biasParticles<<" "<<value<<ELog::endDiag;
 
   // VVList[2-4]
   for(size_t i=1;i<3;i++)
