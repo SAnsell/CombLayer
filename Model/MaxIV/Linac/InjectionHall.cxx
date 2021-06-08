@@ -112,6 +112,9 @@ InjectionHall::populate(const FuncDataBase& Control)
   spfMazeWidthSide=Control.EvalVar<double>(keyName+"SPFMazeWidthSide");
   spfMazeWidthSPF=Control.EvalVar<double>(keyName+"SPFMazeWidthSPF");
   spfMazeLength=Control.EvalVar<double>(keyName+"SPFMazeLength");
+  spfMazeDoorThick=Control.EvalVar<double>(keyName+"SPFMazeDoorThick");
+  spfMazeDoorMat=ModelSupport::EvalMat<int>(Control,keyName+"SPFMazeDoorMat");
+
   fkgDoorWidth=Control.EvalVar<double>(keyName+"FKGDoorWidth");
   fkgDoorHeight=Control.EvalVar<double>(keyName+"FKGDoorHeight");
   fkgMazeWidth=Control.EvalVar<double>(keyName+"FKGMazeWidth");
@@ -324,6 +327,10 @@ InjectionHall::createSurfaces()
     (SMap,buildIndex+223,Origin-X*(linearWidth/2.0+spfAngleStep),X);
   ModelSupport::buildPlane
     (SMap,buildIndex+233,Origin-X*(linearWidth/2.0+spfAngleStep+wallThick),X);
+
+  // SPF maze door
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+243,buildIndex+223,X,-spfMazeDoorThick);
+  SurfMap::setSurf("SPFMazeExitDoor",SMap.realSurf(buildIndex+243));
 
   // roof / floor
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*floorDepth,Z);
@@ -889,8 +896,11 @@ InjectionHall::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 7011 -7001 7023  -233 5 -6");
   makeCell("SPFMazeSideWall",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 22 -7002 7013 -223 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 22 -7002 7013 -243 5 -6");
   makeCell("SPFMazeSPFVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 22 -7002 243 -223 5 -6");
+  makeCell("SPFMazeDoor",System,cellIndex++,spfMazeDoorMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7002 -7012 7023 -7113 5 -6");
   makeCell("SPFMazeSideWall",System,cellIndex++,wallMat,0.0,Out);

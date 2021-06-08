@@ -3345,6 +3345,8 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"SPFMazeWidthSide",160.0); // K_20-1_08G6b3
   Control.addVariable(wallKey+"SPFMazeWidthSPF",160.0); // K_20-1_08G6b3
   Control.addVariable(wallKey+"SPFMazeLength",360.0); // derived from K_20-1_08G6b3: 690.0-330.0
+  Control.addVariable(wallKey+"SPFMazeDoorThick",10.0); // SPF maze door thickness
+  Control.addVariable(wallKey+"SPFMazeDoorMat","Concrete"); // SPF maze door thickness
 
   Control.addVariable(wallKey+"FKGDoorWidth",131.0); // K_20-1_08F6c1 and K_20-2_349
   Control.addVariable(wallKey+"FKGDoorHeight",211.0); // K_20-2_349

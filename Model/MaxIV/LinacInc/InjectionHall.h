@@ -57,6 +57,8 @@ class InjectionHall :
   double spfMazeWidthSide;      ///< SPF access maze side width
   double spfMazeWidthSPF;       ///< SPF access maze width from the SPF hallway
   double spfMazeLength;         ///< SPF access maze full length (along the x-axis)
+  double spfMazeDoorThick;      ///< SPF maze door thick
+  int    spfMazeDoorMat;        ///< SPF maze door material
 
   double fkgDoorWidth;          ///< Future klystron gallery access door width
   double fkgDoorHeight;         ///< Future klystron gallery access door height
