@@ -212,6 +212,7 @@ createInputs(inputParam& IParam)
   IParam.regMulti("wwgCADIS","wwgCADIS",30,1);
   IParam.regMulti("wwgNorm","wwgNorm",30,0);
   IParam.regMulti("wwgCalc","wwgCalc",100,1);
+  IParam.regMulti("wwgEnergy","wwgEnergy",25,0);
   IParam.regMulti("wwgMarkov","wwgMarkov",100,1);
   IParam.regMulti("wwgRPtMesh","wwgRPtMesh",100,0);
   IParam.regMulti("wwgMesh","wwgMesh",25,0);

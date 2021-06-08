@@ -452,8 +452,7 @@ WWGControl::wwgCreate(const Simulation& System,
         {
 	  const Geometry::Vec3D& sourceRef=getSourcePoint(sourceName);
 	  WWGWeight& wSet=wwg.createMesh(meshName);
-	  
-	  wSet.setEnergy(EBin);  // set later [not written yet]
+	  wSet.setEnergy(eUnit);
 	  wSet.setMesh(mUnit);
 	  wSet.wTrack(System,sourceRef,density,r2Length,r2Power);
         }
@@ -733,6 +732,7 @@ WWGControl::processWeights(Simulation& System,
       procSourcePoint(System,IParam);
       procPlanePoint(System,IParam);
       procMeshPoint(System,IParam);
+      procEnergyMesh(System,IParam);
 
       wwgCreate(System,IParam);      // LOG space
       wwgMarkov(System,IParam);
