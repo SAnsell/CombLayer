@@ -216,6 +216,33 @@ BaseMap::setItems(const std::string& Key,
 }
 
 void
+BaseMap::copyAllItems(const BaseMap& A)
+  /*!
+    Simple copy of all items from A to this
+    \param A :: BaseMap to copy
+  */
+{
+  for(const auto& [name,vec] : A.Items)
+    addItems(name,vec);
+  return;
+}
+
+void
+BaseMap::copyItems(const BaseMap& A,const std::string& Key)
+  /*!
+    Simple copy of all items of name K from A to this
+    \param A :: BaseMap to copy
+    \param Key :: NAme of items to copy
+  */
+{
+  LCTYPE::const_iterator mc=A.Items.find(Key);
+  if (mc==A.Items.end())
+    throw ColErr::InContainerError<std::string>(Key,"Key not present");
+  addItems(Key,mc->second);
+  return;
+}
+  
+void
 BaseMap::addItem(const std::string& Key,const int CN)
   /*!
     Insert a cell 

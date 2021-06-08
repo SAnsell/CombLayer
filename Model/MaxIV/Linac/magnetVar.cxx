@@ -348,8 +348,28 @@ Segment29Magnet(FuncDataBase& Control,
 
   BSGenB.generateBStop(Control,lKey+"BeamStopA");
   BSGen.generateBStop(Control,lKey+"BeamStopB");
+  Control.addVariable(lKey+"BeamStopAYAngle",-90.0);
   Control.addVariable(lKey+"BeamStopAYStep",30.0);
+  Control.addVariable(lKey+"BeamStopBYAngle",-90.0);
   Control.addVariable(lKey+"BeamStopBYStep",30.0);
+
+
+  Control.addVariable(lKey+"BeamWingAYStep",100.0);
+  Control.addVariable(lKey+"BeamWingAXStep",30.0);
+  Control.addVariable(lKey+"BeamWingAPreZAngle",70.0);
+  Control.addVariable(lKey+"BeamWingAWidth",120.0);
+  Control.addVariable(lKey+"BeamWingADepth",10.0);
+  Control.addVariable(lKey+"BeamWingAHeight",200.0);
+  Control.addVariable(lKey+"BeamWingAMainMat","Poly");
+  
+  Control.addVariable(lKey+"BeamWingBYStep",100.0);
+  Control.addVariable(lKey+"BeamWingBXStep",-30.0);
+  Control.addVariable(lKey+"BeamWingBPreZAngle",-70.0);
+  Control.addVariable(lKey+"BeamWingBWidth",120.0);
+  Control.addVariable(lKey+"BeamWingBDepth",10.0);
+  Control.addVariable(lKey+"BeamWingBHeight",200.0);
+  Control.addVariable(lKey+"BeamWingBMainMat","Poly");
+
   return;
 }
 

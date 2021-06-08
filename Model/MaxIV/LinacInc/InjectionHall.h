@@ -188,6 +188,7 @@ class InjectionHall :
   int floorMat;                 ///< Floor material
   int soilMat;                  ///< Earth material
 
+  
   void createFloor(Simulation&);
   void layerProcess(Simulation&,const std::string&,
                     const int,const int,const size_t);
@@ -206,7 +207,9 @@ class InjectionHall :
   virtual ~InjectionHall();
 
   size_t getBackWallNLayers() const {return backWallNLayers; }
+  bool addPillars(Simulation&,const int) const;
 
+  
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);

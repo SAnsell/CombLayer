@@ -78,7 +78,8 @@ class Segment29 :
   std::shared_ptr<tdcSystem::NBeamStop> beamStopA;
   std::shared_ptr<tdcSystem::LBeamStop> beamStopB;
 
-  std::shared_ptr<tdcSystem::BeamWing> beamWing;
+  std::shared_ptr<tdcSystem::BeamWing> beamWingA;
+  std::shared_ptr<tdcSystem::BeamWing> beamWingB;
   
   void buildObjects(Simulation&);
   void createLinks();
@@ -91,7 +92,6 @@ class Segment29 :
   Segment29(const Segment29&);
   Segment29& operator=(const Segment29&);
   ~Segment29();
-
 
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
