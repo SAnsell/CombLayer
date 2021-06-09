@@ -355,7 +355,7 @@ Segment29Magnet(FuncDataBase& Control,
 
 
   Control.addVariable(lKey+"BeamWingAYStep",100.0);
-  Control.addVariable(lKey+"BeamWingAXStep",30.0);
+  Control.addVariable(lKey+"BeamWingAXStep",25.0);
   Control.addVariable(lKey+"BeamWingAPreZAngle",70.0);
   Control.addVariable(lKey+"BeamWingAWidth",120.0);
   Control.addVariable(lKey+"BeamWingADepth",10.0);
@@ -363,12 +363,23 @@ Segment29Magnet(FuncDataBase& Control,
   Control.addVariable(lKey+"BeamWingAMainMat","Poly");
   
   Control.addVariable(lKey+"BeamWingBYStep",100.0);
-  Control.addVariable(lKey+"BeamWingBXStep",-30.0);
+  Control.addVariable(lKey+"BeamWingBXStep",-25.0);
   Control.addVariable(lKey+"BeamWingBPreZAngle",-70.0);
   Control.addVariable(lKey+"BeamWingBWidth",120.0);
   Control.addVariable(lKey+"BeamWingBDepth",10.0);
   Control.addVariable(lKey+"BeamWingBHeight",200.0);
   Control.addVariable(lKey+"BeamWingBMainMat","Poly");
+
+    
+  Control.addVariable(lKey+"BeamBoxYStep",1.0);
+  Control.addVariable(lKey+"BeamBoxPreYAngle",-90.0);
+  Control.addVariable(lKey+"BeamBoxWidth",180.0);
+  Control.addVariable(lKey+"BeamBoxLength",135.0);
+  Control.addVariable(lKey+"BeamBoxHeight",80.0);
+  Control.addVariable(lKey+"BeamBoxWallThick",10.0);
+  Control.addVariable(lKey+"BeamBoxBackThick",2.0);
+  Control.addVariable(lKey+"BeamBoxInnerMat","Void");
+  Control.addVariable(lKey+"BeamBoxMainMat","Poly");
 
   return;
 }

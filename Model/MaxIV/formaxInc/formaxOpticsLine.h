@@ -252,7 +252,8 @@ class formaxOpticsLine :
   /// Assignment to extra for first volume
   void setPreInsert
     (const std::shared_ptr<attachSystem::ContainedGroup>& A) { preInsert=A; }
-  
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

@@ -419,20 +419,8 @@ TDC::reconstructInjectionHall(Simulation& System)
       const std::vector<int> VCells=bzPtr->getCells();
       for(const int CN : VCells)
 	{
-	  if (injectionHall->addPillars(System,CN))
-	    ELog::EM<<"Pillar in "<<CN<<ELog::endDiag;
+	  injectionHall->addPillars(System,CN);
 	}
-      /* if (pillarCheck.find(regionName)!=pillarCheck.end())
-    {
-      ELog::EM<<"Checkking pillars"<<ELog::endDiag;
-      ELog::EM<<"SURF:"<<surHR<<ELog::endDiag;
-      const HeadRule blockVol=buildZone->getVolume();
-      if (injectionHall->addPillars(blockVol,surHR))
-	buildZone->setSurround(surHR);
-      ELog::EM<<"Vol:"<<blockVol<<ELog::endDiag;
-      ELog::EM<<"NEW:"<<surHR<<ELog::endDiag;
-    }
-      */
     }
   return;
 }

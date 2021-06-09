@@ -40,6 +40,7 @@ namespace tdcSystem
   class LBeamStop;
   class NBeamStop;
   class BeamWing;
+  class BeamBox;
   
 
   /*!
@@ -80,6 +81,7 @@ class Segment29 :
 
   std::shared_ptr<tdcSystem::BeamWing> beamWingA;
   std::shared_ptr<tdcSystem::BeamWing> beamWingB;
+  std::shared_ptr<tdcSystem::BeamBox> beamBox;
   
   void buildObjects(Simulation&);
   void createLinks();

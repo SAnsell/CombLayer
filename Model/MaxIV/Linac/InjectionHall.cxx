@@ -1464,20 +1464,25 @@ InjectionHall::addPillars(Simulation& System,const int CN) const
   if (OPtr)
     {
       HeadRule HR=OPtr->getHeadRule();
+      HeadRule testHR(HR);
+      // remove +/- Z because we dont know height
+      testHR.removeMatchedPlanes(Z,0.9);   // remove roof
+      testHR.removeMatchedPlanes(-Z,0.9);   // remove base
+
+      
       // simple cheep test... not idea but works
       const std::vector<double> xOffset({0.0,-1.0,0.0,1.0,0.0});
       const std::vector<double> yOffset({0.0,0.0,-1.0,0.0,1.0});
       int SI(buildIndex+3000);
-      HeadRule pillarHR;
       for(size_t i=0;i<nPillars;i++)
 	{
 	  for(size_t j=0;j<5;j++)
 	    {
 	      const Geometry::Vec3D tPoint
 		(pXY[i]+X*(pRadii[i]*xOffset[j])+Y*(pRadii[i]*yOffset[j]));
-	      if (HR.isValid(tPoint))
+	      if (testHR.isValid(tPoint))
 		{
-		  pillarHR*=ModelSupport::getHeadRule(SMap,SI,"7");
+		  HR*=ModelSupport::getHeadRule(SMap,SI,"7");
 		  flag=true;
 		  break;		  
 		}
@@ -1486,7 +1491,7 @@ InjectionHall::addPillars(Simulation& System,const int CN) const
 	}
       if (flag)
 	{
-	  OPtr->procHeadRule(HR*pillarHR);
+	  OPtr->procHeadRule(HR);
 	  OPtr->populate();
 	}
     }

@@ -302,7 +302,7 @@ formaxOpticsLine::createSurfaces()
 {
   ELog::RegMethod RegA("formaxOpticsLine","createSurface");
 
-  if (outerLeft>Geometry::zeroTol &&  isActive("floor"))
+  if (outerLeft>Geometry::zeroTol && isActive("floor"))
     {
       ModelSupport::buildPlane
 	(SMap,buildIndex+3,Origin-X*outerLeft,X);
