@@ -72,10 +72,8 @@ class softimaxOpticsLine :
   std::shared_ptr<constructSystem::Bellows> pipeInit;
   /// vacuum trigger system
   std::shared_ptr<xraySystem::TriggerTube> triggerPipe;
-  /// Cylindrical gate valve
-  std::shared_ptr<constructSystem::PipeTube> gateTubeA;
-  /// Gate block [item]
-  std::shared_ptr<xraySystem::FlangeMount> gateTubeAItem;
+  // Gate and Ion Pump (combined)
+  std::shared_ptr<xraySystem::CylGateValve> gateTubeA;
 
   /// bellows after ion pump to filter
   std::shared_ptr<constructSystem::Bellows> bellowA;

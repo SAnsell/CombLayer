@@ -98,6 +98,7 @@
 #include "BiPortTube.h"
 #include "PipeShield.h"
 #include "TriggerTube.h"
+#include "CylGateValve.h"
 #include "softimaxOpticsLine.h"
 
 namespace xraySystem
@@ -115,9 +116,8 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   buildZone(Key+"BuildZone"),
 
   pipeInit(new constructSystem::Bellows(newName+"InitBellow")),
-  triggerPipe(new xraySystem::TriggerTube(newName+"TriggerPipe")),
-  gateTubeA(new constructSystem::PipeTube(newName+"GateTubeA")),
-  gateTubeAItem(new xraySystem::FlangeMount(newName+"GateTubeAItem")),
+  triggerPipe(new xraySystem::TriggerTube(newName+"TriggerUnit")),
+  gateTubeA(new xraySystem::CylGateValve(newName+"GateTubeA")),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
   pipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   pumpM1(new constructSystem::PipeTube(newName+"PumpM1")),
@@ -193,7 +193,6 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(pipeInit);
   OR.addObject(triggerPipe);
   OR.addObject(gateTubeA);
-  OR.addObject(gateTubeAItem);
   OR.addObject(bellowA);
   OR.addObject(pipeA);
   OR.addObject(pumpM1);
@@ -727,37 +726,21 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,*pipeInit,"back",*triggerPipe);
 
-
-  /*
-
-  // FAKE insertcell: required
-  gateTubeA->addAllInsertCell(masterCell->getName());
-  gateTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  gateTubeA->createAll(System,TPI,TPI.getSideIndex("OuterPlate"));
-
-
-  const constructSystem::portItem& GPI1=gateTubeA->getPort(1);
-  outerCell=buildZone.createOuterVoidUnit
-    (System,masterCell,GPI1,GPI1.getSideIndex("OuterPlate"));
-  gateTubeA->insertAllInCell(System,outerCell);
-
-  gateTubeAItem->addInsertCell("Body",gateTubeA->getCell("Void"));
-  gateTubeAItem->setBladeCentre(*gateTubeA,0);
-  gateTubeAItem->createAll(System,*gateTubeA,std::string("InnerBack"));
-
+  constructSystem::constructUnit
+    (System,buildZone,*triggerPipe,"back",*gateTubeA);
 
   constructSystem::constructUnit
-    (System,buildZone,masterCell,GPI1,"OuterPlate",*bellowA);
+    (System,buildZone,*gateTubeA,"back",*bellowA);
 
   constructSystem::constructUnit
-    (System,buildZone,masterCell,*bellowA,"back",*pipeA);
+    (System,buildZone,*bellowA,"back",*pipeA);
 
-  // FAKE insertcell: required
-  //  pumpM1->addAllInsertCell(masterCell->getName());
   pumpM1->setPortRotation(3,Geometry::Vec3D(1,0,0));
   pumpM1->setOuterVoid();
   pumpM1->createAll(System,*pipeA,"back");
 
+
+  
   ///////////// split for FLUKA
   //  const constructSystem::portItem& VP0=pumpM1->getPort(0);
   const constructSystem::portItem& VP1=pumpM1->getPort(1);
@@ -767,22 +750,25 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   //  const constructSystem::portItem& VP5=pumpM1->getPort(5);
   const constructSystem::portItem& VP6=pumpM1->getPort(6);
 
-  outerCell=buildZone.createOuterVoidUnit
-    (System,masterCell,VP1,VP1.getSideIndex("OuterPlate"));
+  outerCell=buildZone.createUnit(System,VP1,"OuterPlate");
+  pumpM1->insertAllInCell(System,outerCell);
+
+
+
   const Geometry::Vec3D  Axis12=pumpM1->getY()*(VP1.getY()+VP2.getY())/2.0;
   const Geometry::Vec3D  Axis26=pumpM1->getY()*(VP2.getY()+VP6.getY())/2.0;
 
   this->splitObjectAbsolute(System,1501,outerCell,
 			    (VP1.getCentre()+VP4.getCentre())/2.0,
   			    Z);
-  this->splitObjectAbsolute(System,1502,outerCell+1,
+  cellIndex++;
+  /*  this->splitObjectAbsolute(System,1502,outerCell+1,
     			    pumpM1->getCentre(),
 			    VP4.getY());
   this->splitObjectAbsolute(System,1503,outerCell,
 			    pumpM1->getCentre(),Axis12);
   this->splitObjectAbsolute(System,1504,outerCell+3,
    			    pumpM1->getCentre(),Axis26);
-
   const std::vector<int> cellUnit=this->getCells("OuterVoid");
   pumpM1->insertMainInCell(System,cellUnit);
 
@@ -790,79 +776,84 @@ softimaxOpticsLine::buildObjects(Simulation& System)
     (System,{{outerCell+4,outerCell},{outerCell,outerCell+1,outerCell+2},{outerCell+3},{outerCell},
 	     {outerCell+2},{outerCell+1},
 	     {outerCell+4}});
-
+  
   cellIndex+=5;
+  */
   /////////////////////////////////////////
-
-
-  constructSystem::constructUnit
-    (System,buildZone,masterCell,VP1,"OuterPlate",*gateA);
+  
 
   constructSystem::constructUnit
-    (System,buildZone,masterCell,*gateA,"back",*bellowB);
-
-  buildM1Mirror(System,masterCell,*bellowB,"back");
-
+    (System,buildZone,VP1,"OuterPlate",*gateA);
 
   constructSystem::constructUnit
-    (System,buildZone,masterCell,*M1TubeBack,"back",*bellowC);
+    (System,buildZone,*gateA,"back",*bellowB);
 
-  // FAKE insertcell: required
-  pumpTubeA->addAllInsertCell(masterCell->getName());
+  buildM1Mirror(System,*bellowB,"back");
+
+  
+  constructSystem::constructUnit
+    (System,buildZone,*M1TubeBack,"back",*bellowC);
+
   pumpTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   pumpTubeA->createAll(System,*bellowC,2);
 
   const constructSystem::portItem& CPI1=pumpTubeA->getPort(1);
-  outerCell=buildZone.createOuterVoidUnit
-    (System,masterCell,CPI1,CPI1.getSideIndex("OuterPlate"));
+  outerCell=buildZone.createUnit
+    (System,CPI1,CPI1.getSideIndex("OuterPlate"));
   pumpTubeA->insertAllInCell(System,outerCell);
   //  pumpTubeA->intersectPorts(System,1,2);
 
+  constructSystem::constructUnit
+    (System,buildZone,CPI1,"OuterPlate",*bremCollA);
 
   constructSystem::constructUnit
-    (System,buildZone,masterCell,CPI1,"OuterPlate",*bremCollA);
-
-
-  constructSystem::constructUnit
-    (System,buildZone,masterCell,*bremCollA,"back",*gateB);
+    (System,buildZone,*bremCollA,"back",*gateB);
 
   //  bremCollA->createExtension(System,gateB->getCell("Void")); // !!! UGLY - it does not actually intersect gateB
 
   constructSystem::constructUnit
-    (System,buildZone,masterCell,*gateB,"back",*bellowD);
+    (System,buildZone,*gateB,"back",*bellowD);
+  
+  constructSlitTube(System,*bellowD,"back");
 
-  constructSlitTube(System,masterCell,*bellowD,"back");
+  buildMono(System,*slitTube,2);
 
-  buildMono(System,masterCell,*slitTube,2);
+  
+  constructSystem::constructUnit
+    (System,buildZone,*monoVessel,"back",*gateC);
 
   constructSystem::constructUnit
-    (System,buildZone,masterCell,*monoVessel,"back",*gateC);
+    (System,buildZone,*gateC,"back",*bellowE);
 
-  constructSystem::constructUnit
-    (System,buildZone,masterCell,*gateC,"back",*bellowE);
-
-  // FAKE insertcell: required
-  pumpTubeB->addAllInsertCell(masterCell->getName());
   pumpTubeB->setPortRotation(3,Geometry::Vec3D(1,0,0));
   pumpTubeB->createAll(System,*bellowE,2);
 
   const constructSystem::portItem& pumpTubeBCPI=pumpTubeB->getPort(1);
-  outerCell=buildZone.createOuterVoidUnit
-    (System,masterCell,pumpTubeBCPI,pumpTubeBCPI.getSideIndex("OuterPlate"));
+  outerCell=buildZone.createUnit
+    (System,pumpTubeBCPI,pumpTubeBCPI.getSideIndex("OuterPlate"));
   pumpTubeB->insertAllInCell(System,outerCell);
 
+  constructSystem::constructUnit
+    (System,buildZone,pumpTubeBCPI,"OuterPlate",*gateD);
 
   constructSystem::constructUnit
-    (System,buildZone,masterCell,pumpTubeBCPI,"OuterPlate",*gateD);
+    (System,buildZone,*gateD,"back",*joinPipeA);
 
   constructSystem::constructUnit
-    (System,buildZone,masterCell,*gateD,"back",*joinPipeA);
+    (System,buildZone,*joinPipeA,"back",*bellowF);
 
   constructSystem::constructUnit
-    (System,buildZone,masterCell,*joinPipeA,"back",*bellowF);
+    (System,buildZone,*bellowF,"back",*slitsA);
 
-  constructSystem::constructUnit
-    (System,buildZone,masterCell,*bellowF,"back",*slitsA);
+  lastComp=bellowA; //gateJ;
+  return;
+
+  /*
+
+
+  // FAKE insertcell: required
+
+
 
   /////////////////// M3 Pump and baffle
   pumpTubeM3->setPortRotation(3,Geometry::Vec3D(1,0,0));

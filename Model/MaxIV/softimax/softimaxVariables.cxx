@@ -51,6 +51,8 @@
 #include "BremMonoCollGenerator.h"
 #include "LeadPipeGenerator.h"
 #include "CrossGenerator.h"
+#include "TriggerGenerator.h"
+#include "CylGateValveGenerator.h"
 #include "GateValveGenerator.h"
 #include "JawValveGenerator.h"
 #include "PipeTubeGenerator.h"
@@ -693,7 +695,9 @@ opticsVariables(FuncDataBase& Control,
   setVariable::BremMonoCollGenerator BremMonoGen;
   setVariable::DiffXIADP03Generator DiffGen;
   setVariable::JawValveGenerator JawGen;
-
+  setVariable::CylGateValveGenerator GVGen;
+  setVariable::TriggerGenerator TGen;
+  
   PipeGen.setNoWindow();   // no window
 
   BellowGen.setCF<setVariable::CF40>();
@@ -702,30 +706,12 @@ opticsVariables(FuncDataBase& Control,
   // TODO:
   // and set FlangeLength to 1.27 cm (instead of 0.5)
 
-  // will be rotated vertical
-  const std::string pipeName=preName+"TriggerPipe";
-  SimpleTubeGen.setCF<CF100>();
-  SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,pipeName,40.0);
+  TGen.setCF<CF100>();
+  TGen.setVertical(15.0,25.0);
+  TGen.setSideCF<setVariable::CF40>(10.0); // add centre distance?
+  TGen.generateTube(Control,preName+"TriggerUnit");
 
-  Control.addVariable(pipeName+"NPorts",2);   // beam ports
-  // const Geometry::Vec3D ZVec(0,0,1);
-  PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+5.0);
-  PItemGen.setPlate(0.0,"Void");
-  PItemGen.generatePort(Control,pipeName+"Port0",Geometry::Vec3D(0,5.0,0),ZVec);
-  PItemGen.generatePort(Control,pipeName+"Port1",Geometry::Vec3D(0,5.0,0),-ZVec);
-
-  // will be rotated vertical
-  const std::string gateAName=preName+"GateTubeA";
-  SimpleTubeGen.setCF<CF63>();
-  SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,gateAName,30.0);
-  Control.addVariable(gateAName+"NPorts",2);   // beam ports
-
-  PItemGen.setCF<setVariable::CF40>(CF63::outerRadius+3.45);
-  PItemGen.setPlate(0.0,"Void");
-  PItemGen.generatePort(Control,gateAName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
-  PItemGen.generatePort(Control,gateAName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
+  GVGen.generateGate(Control,preName+"GateTubeA",0);  // open
 
   FlangeGen.setNoPlate();
   FlangeGen.setBlade(4.0,5.0,0.5,0.0,"Stainless316L",1);

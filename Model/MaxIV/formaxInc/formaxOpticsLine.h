@@ -102,10 +102,9 @@ class formaxOpticsLine :
   std::shared_ptr<constructSystem::Bellows> pipeInit;
   /// vacuum trigger system
   std::shared_ptr<xraySystem::TriggerTube> triggerPipe;
-  /// first ion pump
+  /// first ion pump+gate
   std::shared_ptr<xraySystem::CylGateValve> gateTubeA;
-
-  /// Addaptor to connect from pumpint point to diffuser
+  /// Addaptor to connect from pump into point to diffuser
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;
   /// bellow to collimator
   std::shared_ptr<constructSystem::Bellows> bellowA;
