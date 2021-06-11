@@ -303,57 +303,6 @@ softimaxOpticsLine::createSurfaces()
   return;
 }
 
-int
-softimaxOpticsLine::constructDiag
-  (Simulation& System,
-   constructSystem::PortTube& diagBoxItem,
-   std::array<std::shared_ptr<constructSystem::JawFlange>,2>& jawComp,
-   const attachSystem::FixedComp& FC,const long int linkPt)
-/*!
-    Construct a diagnostic box
-    \param System :: Simulation for building
-    \param diagBoxItem :: Diagnostic box item
-    \param jawComp :: Jaw componets to build in diagnostic box
-    \param FC :: FixedComp for start point
-    \param linkPt :: side index
-    \return outerCell
-   */
-{
-  ELog::RegMethod RegA("softimaxOpticsLine","constructDiag");
-
-  int outerCell;
-
-  // fake insert
-  /*
-  diagBoxItem.addAllInsertCell((*masterCellPtr)->getName());
-  diagBoxItem.setFront(FC,linkPt);
-  diagBoxItem.createAll(System,FC,linkPt);
-  outerCell=buildZone.createOuterVoidUnit(System,*masterCellPtr,diagBoxItem,2);
-  diagBoxItem.insertAllInCell(System,outerCell);
-
-
-  for(size_t index=0;index<2;index++)
-    {
-      const constructSystem::portItem& DPI=diagBoxItem.getPort(index);
-      jawComp[index]->setFillRadius
-	(DPI,DPI.getSideIndex("InnerRadius"),DPI.getCell("Void"));
-
-      jawComp[index]->addInsertCell(diagBoxItem.getCell("Void"));
-      if (index)
-	jawComp[index]->addInsertCell(jawComp[index-1]->getCell("Void"));
-      jawComp[index]->createAll
-	(System,DPI,DPI.getSideIndex("InnerPlate"),diagBoxItem,0);
-    }
-
-  diagBoxItem.splitVoidPorts(System,"SplitOuter",2001,
-			     diagBoxItem.getCell("Void"),{0,2});
-  diagBoxItem.splitObject(System,-11,outerCell);
-  diagBoxItem.splitObject(System,12,outerCell);
-  diagBoxItem.splitObject(System,2001,outerCell);
-  cellIndex+=3;
-  */
-  return outerCell;
-}
 
 void
 softimaxOpticsLine::buildM1Mirror(Simulation& System,
@@ -552,6 +501,49 @@ softimaxOpticsLine::buildMono(Simulation& System,
 }
 
 void
+softimaxOpticsLine::createSplitZone()
+  /*!
+    Split the innerZone into two parts.
+   */
+{
+  ELog::RegMethod RegA("Segment26","createSplitInnerZone");
+
+  HeadRule HSurroundA=buildZone.getSurround();
+  HeadRule HSurroundB=buildZone.getSurround();
+
+//  const HeadRule HBack=buildZone->getBack();
+//  ELog::EM<<"BACK == "<<HBack<<ELog::endDiag;
+  /*
+  // create surfaces
+  attachSystem::FixedUnit FA("FA");
+  attachSystem::FixedUnit FB("FB");
+  FA.createPairVector(*pipeAA,2,*pipeBA,2);
+  FB.createPairVector(*pipeBA,2,*pipeCA,2);
+
+  ModelSupport::buildPlane(SMap,buildIndex+5005,FA.getCentre(),FA.getZ());
+  ModelSupport::buildPlane(SMap,buildIndex+5015,FB.getCentre(),FB.getZ());
+  SurfMap::addSurf("TopDivider",SMap.realSurf(buildIndex+5005));
+  SurfMap::addSurf("LowDivider",SMap.realSurf(buildIndex+5015));
+
+  const Geometry::Vec3D ZEffective(FA.getZ());
+
+  HSurroundA.removeMatchedPlanes(ZEffective,0.9);   // remove base
+  HSurroundB.removeMatchedPlanes(ZEffective,0.9);   // remove both
+  HSurroundB.removeMatchedPlanes(-ZEffective,0.9);
+
+  HSurroundA.addIntersection(SMap.realSurf(buildIndex+5005));
+  HSurroundB.addIntersection(-SMap.realSurf(buildIndex+5005));
+  HSurroundB.addIntersection(SMap.realSurf(buildIndex+5015));
+
+
+  IZTop.setSurround(HSurroundA);
+  IZLow.setSurround(HSurroundB);
+  */
+  return;
+}
+
+
+void
 softimaxOpticsLine::buildSplitter(Simulation& System,
 				  const attachSystem::FixedComp& initFC,
 				  const long int sideIndex)
@@ -566,21 +558,13 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
 
 {
   ELog::RegMethod RegA("softimaxOpticsBeamLine","buildSplitter");
-  /*
+
   int cellA(0),cellB(0);
 
-  // /////////  1: build splitter without creating two outer void units
-  // splitter->createAll(System,*M3STXMBack,2);
-  // cellA=buildZone.createOuterVoidUnit(System,masterCellA,*splitter,2);
-  // splitter->insertInCell("Flange",System,cellA);
-  // splitter->insertInCell("PipeA",System,cellA);
-  // splitter->insertInCell("Flange",System,cellA);
-  // splitter->insertInCell("PipeB",System,cellA);
-
-
-  //////////////////// 2: build splitter with creating two outer void units
+  /*
+  //////////////////// 1: build splitter with creating two outer void units
   ////////////////////////////////////////////////////////////////////////////////////
-  //  buildZone.constructMiddleSurface(SMap,buildIndex+10,*M3STXMBack,2);
+  buildZone.constructMiddleSurface(SMap,buildIndex+10,*M3STXMBack,2);
 
   // No need for insert -- note removal of old master cell
 
@@ -845,75 +829,72 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,*bellowF,"back",*slitsA);
 
-  lastComp=bellowA; //gateJ;
-  return;
-
-  /*
-
-
-  // FAKE insertcell: required
-
-
-
-  /////////////////// M3 Pump and baffle
   pumpTubeM3->setPortRotation(3,Geometry::Vec3D(1,0,0));
   pumpTubeM3->createAll(System,*slitsA,"back");
 
   const constructSystem::portItem& GPI=pumpTubeM3->getPort(1);
-  outerCell=buildZone.createOuterVoidUnit
-    (System,masterCell,GPI,GPI.getSideIndex("OuterPlate"));
+  outerCell=buildZone.createUnit(System,GPI,"OuterPlate");
   pumpTubeM3->insertAllInCell(System,outerCell);
 
   pumpTubeM3Baffle->addInsertCell("Body",pumpTubeM3->getCell("Void"));
   pumpTubeM3Baffle->setBladeCentre(*pumpTubeM3,0);
   pumpTubeM3Baffle->createAll(System,*pumpTubeM3,std::string("InnerBack"));
 
-  
-  
   constructSystem::constructUnit
-    (System,buildZone,masterCell,GPI,"OuterPlate",*bellowG);
+    (System,buildZone,GPI,"OuterPlate",*bellowG);
 
-  buildM3Mirror(System,masterCell,*bellowG,"back");
+  buildM3Mirror(System,*bellowG,"back");
 
   constructSystem::constructUnit
-    (System,buildZone,masterCell,*M3Back,"back",*bellowH);
+    (System,buildZone,*M3Back,"back",*bellowH);
 
   constructSystem::constructUnit
-    (System,buildZone,masterCell,*bellowH,"back",*gateE);
+    (System,buildZone,*bellowH,"back",*gateE);
 
   constructSystem::constructUnit
-    (System,buildZone,masterCell,*gateE,"back",*joinPipeB);
+    (System,buildZone,*gateE,"back",*joinPipeB);
 
-  
   //// pumpTubeC
   pumpTubeC->setPortRotation(3,Geometry::Vec3D(1,0,0));
   pumpTubeC->createAll(System,*joinPipeB,2);
 
   const constructSystem::portItem& pumpTubeCCPI=pumpTubeC->getPort(1);
-  outerCell=buildZone.createOuterVoidUnit
-    (System,masterCell,pumpTubeCCPI,pumpTubeCCPI.getSideIndex("OuterPlate"));
+  outerCell=buildZone.createUnit(System,pumpTubeCCPI,"OuterPlate");
   pumpTubeC->insertAllInCell(System,outerCell);
   ///////////////////////////////////////////////
 
   constructSystem::constructUnit
-    (System,buildZone,masterCell,pumpTubeCCPI,"back",*bellowI);
-
-  constructSystem::constructUnit
-    (System,buildZone,masterCell,*bellowI,"back",*joinPipeC);
-
-  constructSystem::constructUnit
-    (System,buildZone,masterCell,*joinPipeC,"back",*gateF);
-
-  constructSystem::constructUnit
-    (System,buildZone,masterCell,*gateF,"back",*bellowJ);
-
-  buildM3STXMMirror(System,masterCell,*bellowJ,"back");
-  
+    (System,buildZone,pumpTubeCCPI,"back",*bellowI);
 
   
+  constructSystem::constructUnit
+    (System,buildZone,*bellowI,"back",*joinPipeC);
 
-  MonteCarlo::Object* masterCellB(0);
-  buildSplitter(System,masterCell,masterCellB,*M3STXMTube,2);
+  constructSystem::constructUnit
+    (System,buildZone,*joinPipeC,"back",*gateF);
+
+  constructSystem::constructUnit
+    (System,buildZone,*gateF,"back",*bellowJ);
+
+  buildM3STXMMirror(System,*bellowJ,"back");
+   
+  //  MonteCarlo::Object* masterCellB(0);
+  //  buildSplitter(System,*M3STXMTube,2);
+
+  lastComp=bellowA; //gateJ;
+  return;
+
+  /*
+
+  // FAKE insertcell: required
+
+
+
+  /////////////////// M3 Pump and baffle
+
+  
+  
+
 
   */
   //  setCell("LastVoid",masterCell->getName());

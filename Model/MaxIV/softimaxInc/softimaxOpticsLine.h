@@ -60,6 +60,8 @@ class softimaxOpticsLine :
 
   /// construction space for main object
   attachSystem::BlockZone buildZone;
+  attachSystem::BlockZone IZTop;
+  attachSystem::BlockZone IZLow;
   int innerMat;                         ///< inner material if used
   
   /// string for pre-insertion into mastercell:0
@@ -176,7 +178,8 @@ class softimaxOpticsLine :
   double outerRight;   ///< Right width for cut rectangle
   double outerTop;     ///< Top lift for cut rectangle
 
-
+  void createSplitZone();
+  
   int constructMonoShutter
     (Simulation&,MonteCarlo::Object**,
      const attachSystem::FixedComp&,const long int);
@@ -200,8 +203,8 @@ class softimaxOpticsLine :
 			 const attachSystem::FixedComp&,const std::string&);
   void buildMono(Simulation&,
 		 const attachSystem::FixedComp&,const long int);
-  void buildSplitter(Simulation&,
-		     const attachSystem::FixedComp&,const long int);
+  void buildSplitter(Simulation&,const attachSystem::FixedComp&,
+		     const long int);
 
   void populate(const FuncDataBase&);
   void createSurfaces();
