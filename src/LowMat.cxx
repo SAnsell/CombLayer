@@ -124,14 +124,24 @@ LowMat::getID(size_t Z) const
     return {19, -2, 296};
   case 20:
     return {20, -2, 296};
+  case 22: // Ti
+    return {22, -2, 296};
   case 24:
     return {24, -2, 296};
   case 25:
     return {25, 55, 296};
   case 26:
     return {26, -2, 296};
+  case 27: // Co
+    return {27, 59, 296};
   case 28:
     return {28, -2, 296};
+  case 29: // Cu
+    return {29, -2, 296};
+  case 30: // Zn
+    return {30, -2, 296};
+  case 74: // W
+    return {74, -2, 296};
   case 82:
     return {82, -2, 296};
   }
