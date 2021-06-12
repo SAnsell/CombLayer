@@ -104,6 +104,8 @@ LowMat::getID(size_t Z) const
   case 1:
     // other alternative possible e.g. with if (mat == "") {}
     return {1, -5, 296};
+  case 5: // B
+    return {5, -2, 296};
   case 6:
     return {6, -2, 296};
   case 8:
@@ -120,6 +122,8 @@ LowMat::getID(size_t Z) const
     return {15, 31, 296};
   case 16:
     return {16, -2, 296};
+  case 17: // Cl
+    return {17, -2, 296};
   case 19:
     return {19, -2, 296};
   case 20:
