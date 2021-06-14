@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   include/SimFLUKA.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef SimFLUKA_h
@@ -52,9 +52,9 @@ class SimFLUKA : public Simulation
   /// Name : magnet
   typedef std::map<std::string,
     std::shared_ptr<magnetSystem::magnetUnit>> MagTYPE;
-  /// Name : Flag active 
+  /// Name : Flag active
   typedef std::map<std::string,std::string> FlagTYPE;
-  
+
  private:
 
   const std::string alignment;    ///< the alignemnt string
@@ -71,10 +71,10 @@ class SimFLUKA : public Simulation
 
 
   FlagTYPE FlagItem;              ///< Fluka user flag items
-  
+
   FTallyTYPE FTItem;              ///< Fluka tally map
 
-  MagTYPE MagItem;                ///< Fluka magnetic map 
+  MagTYPE MagItem;                ///< Fluka magnetic map
 
   flukaSystem::flukaPhysics* PhysPtr;   ///< Fluka physics
   flukaSystem::radDecay* RadDecayPtr;   ///< Fluka rad decay modification
@@ -96,17 +96,16 @@ class SimFLUKA : public Simulation
   void writeSource(std::ostream&) const;
   void writeVariables(std::ostream&) const;
 
-  const std::string& getLowMatName(const size_t) const;
   std::string getLowMat(const size_t,const size_t,const std::string&) const;
   void clearTally();
-  
+
  public:
-  
+
   SimFLUKA();
   SimFLUKA(const SimFLUKA&);
   SimFLUKA& operator=(const SimFLUKA&);
   virtual ~SimFLUKA();
-  
+
   /// get Physics ptr
   flukaSystem::flukaPhysics* getPhysics() { return PhysPtr; }
   /// get RadDecay ptr
@@ -114,8 +113,8 @@ class SimFLUKA : public Simulation
 
   // FLag processing
   void addUserFlags(const std::string&,const std::string&);
-    
-  // TALLY Processing 
+
+  // TALLY Processing
   void addTally(const flukaSystem::flukaTally&);
   flukaSystem::flukaTally* getTally(const int) const;
   /// Access tally items
@@ -139,16 +138,16 @@ class SimFLUKA : public Simulation
   void setBasicGeom() { basicGeom=1; }
   /// set the geomtry precision
   void setGeomPrecision(const double D) { geomPrecision=D; }
-  
+
   virtual void prepareWrite();
   /// no write variable
   void setNoVariables() { writeVariable=0; }
   /// no low energy neturon
   void setNoThermal() { lowEnergyNeutron=0; }
-  
+
   void setDefaultPhysics(const std::string&);
   void setForCinder();
-  
+
   virtual void write(const std::string&) const;
 
 };
