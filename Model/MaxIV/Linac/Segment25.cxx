@@ -178,7 +178,9 @@ void
 Segment25::constructVoid(Simulation& System,
 			 const attachSystem::FixedComp& FC) const
   /*!
-    Creates the space for the InnerZone
+    Inserts the IZ volumes into the large space "LongVoid"
+    \param System :: Simulation 
+    \param FC :: FixedComp to convert to a CellMap
   */
 {
   ELog::RegMethod RegA("Segment25","constructVoid");

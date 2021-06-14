@@ -108,9 +108,13 @@ setMagneticExternal(SimTYPE& System,
 	  
 	  // General form is ::  Type : location : Param
 	  size_t index(0);
-	  ModelSupport::getObjectAxis
-	    (System,"MagUnit",IParam,setIndex,index,AOrg,AY,AZ);
+
+	  std::tie(AOrg,AY,AZ)=
+	    mainSystem::getNamedOriginAxis
+	    (System,IParam,"MagUnit",setIndex,index,
+	     "MagUnit not found");
 	  ELog::EM<<"AOrg == "<<AOrg<<ELog::endDiag;
+
 	  const Geometry::Vec3D Extent=
 	    IParam.getCntVec3D("MagUnit",setIndex,index,"Extent");
 	  // Additional angle flag:
@@ -242,7 +246,10 @@ setMagneticPhysics(SimTYPE& System,
 
   if (IParam.flag("defMagnet"))
     setDefMagnets(System);
-  
+
+  //
+  // Choose which cells have a magnetic field present
+  //
   const size_t nSet=IParam.setCnt("MagField");
   for(size_t setIndex=0;setIndex<nSet;setIndex++)
     {

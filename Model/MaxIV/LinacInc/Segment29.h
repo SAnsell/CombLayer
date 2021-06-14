@@ -39,6 +39,8 @@ namespace tdcSystem
   class YagScreen;
   class LBeamStop;
   class NBeamStop;
+  class BeamWing;
+  class BeamBox;
   
 
   /*!
@@ -77,6 +79,10 @@ class Segment29 :
   std::shared_ptr<tdcSystem::NBeamStop> beamStopA;
   std::shared_ptr<tdcSystem::LBeamStop> beamStopB;
 
+  std::shared_ptr<tdcSystem::BeamWing> beamWingA;
+  std::shared_ptr<tdcSystem::BeamWing> beamWingB;
+  std::shared_ptr<tdcSystem::BeamBox> beamBox;
+  
   void buildObjects(Simulation&);
   void createLinks();
 
@@ -88,7 +94,6 @@ class Segment29 :
   Segment29(const Segment29&);
   Segment29& operator=(const Segment29&);
   ~Segment29();
-
 
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,

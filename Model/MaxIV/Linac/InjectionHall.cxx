@@ -593,6 +593,7 @@ InjectionHall::createSurfaces()
   SurfMap::setSurf("Front",SMap.realSurf(buildIndex+1));
   SurfMap::setSurf("Back",SMap.realSurf(buildIndex+2));
   SurfMap::setSurf("Floor",SMap.realSurf(buildIndex+5));
+  SurfMap::setSurf("Roof",SMap.realSurf(buildIndex+6));
   SurfMap::setSurf("SubFloor",SMap.realSurf(buildIndex+15));
   SurfMap::setSurf("BDRoomRoof",SMap.realSurf(buildIndex+7516));
   SurfMap::setSurf("MidWall",SMap.realSurf(buildIndex+1001));
@@ -1449,5 +1450,53 @@ InjectionHall::layerProcess(Simulation& System,
 
     return;
 }
+
+bool
+InjectionHall::addPillars(Simulation& System,const int CN) const
+  /*!
+    Checks if a pillar should be excluded from a cell
+   */
+{
+  ELog::RegMethod RegA("InjectionHall","addPillars");
+
+  bool flag(false);
+  MonteCarlo::Object* OPtr=System.findObject(CN);
+  if (OPtr)
+    {
+      HeadRule HR=OPtr->getHeadRule();
+      HeadRule testHR(HR);
+      // remove +/- Z because we dont know height
+      testHR.removeMatchedPlanes(Z,0.9);   // remove roof
+      testHR.removeMatchedPlanes(-Z,0.9);   // remove base
+
+      
+      // simple cheep test... not idea but works
+      const std::vector<double> xOffset({0.0,-1.0,0.0,1.0,0.0});
+      const std::vector<double> yOffset({0.0,0.0,-1.0,0.0,1.0});
+      int SI(buildIndex+3000);
+      for(size_t i=0;i<nPillars;i++)
+	{
+	  for(size_t j=0;j<5;j++)
+	    {
+	      const Geometry::Vec3D tPoint
+		(pXY[i]+X*(pRadii[i]*xOffset[j])+Y*(pRadii[i]*yOffset[j]));
+	      if (testHR.isValid(tPoint))
+		{
+		  HR*=ModelSupport::getHeadRule(SMap,SI,"7");
+		  flag=true;
+		  break;		  
+		}
+	    }
+	  SI+=10;
+	}
+      if (flag)
+	{
+	  OPtr->procHeadRule(HR);
+	  OPtr->populate();
+	}
+    }
+  return flag;
+}
+
 
 }  // NAMESPACE tdcSystem

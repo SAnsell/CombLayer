@@ -3672,8 +3672,8 @@ LINACvariables(FuncDataBase& Control)
 
   Control.addVariable("spfLongXStep",-622.286+linacVar::zeroX);
   Control.addVariable("spfLongYStep",4226.013+linacVar::zeroY);
-  Control.addVariable("spfLongOuterLeft",70.0);
-  Control.addVariable("spfLongOuterRight",50.0);
+  Control.addVariable("spfLongOuterLeft",250.0);
+  Control.addVariable("spfLongOuterRight",250.0);
   Control.addVariable("spfLongOuterTop",100.0);
 
 

@@ -467,6 +467,8 @@ WWGWeight::scaleRange(const size_t eIndex,
 {
   ELog::RegMethod RegA("WWGWeight","scaleRange");
 
+  ELog::EM<<"SCALE:"<<AValue<<" "<<BValue<<" "<<fullRange<<ELog::endCrit;
+
   if (fullRange<1.0 || fullRange>100.0)
     throw ColErr::RangeError<double>(fullRange,1.0,100.0,"fullRange");
 
@@ -477,14 +479,17 @@ WWGWeight::scaleRange(const size_t eIndex,
 
   double* TData=WGrid.data();
   const size_t NData=WGrid.num_elements()/WE;
-  
-  TData+=eIndex*static_cast<size_t>(WE);
 
+  TData+=eIndex*static_cast<size_t>(WE);
   if (AValue > 0)
     AValue= *std::min_element(TData,TData+NData-1);
+
   if (BValue > 0)
     BValue= *std::max_element(TData,TData+NData-1);
+  ELog::EM<<"Min / Max selected = "<<AValue<<" "<<BValue<<ELog::endDiag;
 
+  if (AValue>BValue) std::swap(AValue,BValue);
+  
   double maxValue(-100);
   double minValue(100);
   if (AValue<BValue)
@@ -624,20 +629,19 @@ WWGWeight::CADISnorm(const Simulation& System,
 {
   ELog::RegMethod RegA("WWGWeight","CADISnorm");
 
-  
-  
-  if (Source.WE!=Adjoint.WE &&
-      Source.WX!=Adjoint.WX &&
-      Source.WY!=Adjoint.WY &&
+  if (Source.WE!=Adjoint.WE ||
+      Source.WX!=Adjoint.WX ||
+      Source.WY!=Adjoint.WY ||
       Source.WZ!=Adjoint.WZ)
     throw ColErr::DimensionError<4,long int>
       ({Source.WX,Source.WY,Source.WZ,Source.WE},
        {Adjoint.WX,Adjoint.WY,Adjoint.WZ,Adjoint.WE},
        "Index values");
   
-  if (Source.WE!=WE && Source.WX!=WX &&
-      Source.WY!=WY && Source.WZ!=WZ)
+  if (Source.WE!=WE || Source.WX!=WX ||
+      Source.WY!=WY || Source.WZ!=WZ)
     {
+      Grid=Source.Grid;
       WE=Source.WE;
       WX=Source.WX;
       WY=Source.WY;
@@ -703,28 +707,48 @@ WWGWeight::CADISnorm(const Simulation& System,
   
 void
 WWGWeight::writeVTK(std::ostream& OX,
-		    const long int EIndex) const
+		    const long int EIndex,
+		    const bool logFlag) const
   /*!
     Write out the VTK format [write log format]
     \param OX :: Output stream
     \param EIndex :: energy index
+    \param logFlag :: Convert power to log space
   */
 {
   ELog::RegMethod RegA("WWGWeight","writeVTK");
-
-  boost::format fFMT("%1$11.6g%|14t|");
-
+  
   if (EIndex<0 || EIndex>=WE)
     throw ColErr::IndexError<long int>(EIndex,WE,"index in WMesh.ESize");
+
+  boost::format fFMT("%1$11.6g%|14t|");
   
+  OX<<"POINT_DATA "<<WX*WY*WZ<<std::endl;
+  OX<<"SCALARS cellID float 1.0"<<std::endl;
+  OX<<"LOOKUP_TABLE default"<<std::endl;
+
+
   for(long int K=0;K<WZ;K++)
     for(long int J=0;J<WY;J++)
       {
 	for(long int I=0;I<WX;I++)
+	  {
+	    if (!logFlag)
+	      OX<<(fFMT % std::exp(WGrid[EIndex][I][J][K]));	
+	    else
+	      OX<<(fFMT % -WGrid[EIndex][I][J][K]);
+	  }
+	OX<<std::endl;
+      }
+  /*
+  for(long int I=0;I<WX;I++)
+    for(long int J=0;J<WY;J++)
+      {
+	for(long int K=0;K<WX;J++)
 	  OX<<(fFMT % std::exp(WGrid[EIndex][I][J][K]));
 	OX<<std::endl;
       }
-  
+  */
   return;
 }
 
@@ -812,9 +836,14 @@ WWGWeight::writeFLUKA(std::ostream& OX) const
     <<Grid.getZSize()<<" - - "
     <<"wwgSize";
   StrFunc::writeFLUKA(cx.str(),OX);
-  Grid.writeFLUKA(OX);
 
+  cx.str("");
+  cx<<"USRICALL "<<ID<<" "<<Grid.getLow()<<" - - "<<"wwgLow";
+  StrFunc::writeFLUKA(cx.str(),OX);
 
+  cx.str("");
+  cx<<"USRICALL "<<ID<<" "<<Grid.getHigh()<<" - - "<<"wwgHigh";
+  StrFunc::writeFLUKA(cx.str(),OX);
   
   for(long int EI=0;EI<WE;EI++)
     for(long int I=0;I<WX;I++)

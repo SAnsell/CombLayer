@@ -410,8 +410,6 @@ BlockZone::createUnit(Simulation& System,
   return cellIndex-1;
 }
 
-
-
 void
 BlockZone::write(std::ostream& OX) const
   /*!

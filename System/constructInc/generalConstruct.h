@@ -60,7 +60,7 @@ namespace constructSystem
 {
 
   //
-  //   INNERZONE
+  //   INNERZONE [to be removed]
   // 
 int
 internalUnit(Simulation&,
@@ -102,8 +102,6 @@ int constructUnit(Simulation& System,
 
 }
 
-
-
 //  --------------------------------------------------------
 //                BLOCKZONE
 //  --------------------------------------------------------
@@ -118,6 +116,14 @@ internalUnit(Simulation&,
 	     attachSystem::ExternalCut&,
 	     attachSystem::ContainedComp&);
 int
+internalFreeUnit(Simulation&,
+		 attachSystem::BlockZone&,
+		 const attachSystem::FixedComp&,
+		 const std::string&,
+		 attachSystem::FixedComp&,
+		 attachSystem::ExternalCut&,
+		 attachSystem::ContainedComp&);
+int
 internalGroup(Simulation&,
 	      attachSystem::BlockZone&,
 	      const attachSystem::FixedComp&,
@@ -126,7 +132,16 @@ internalGroup(Simulation&,
 	      attachSystem::ExternalCut&,
 	      attachSystem::ContainedGroup&,
 	      const std::set<std::string>&);
- 
+int
+internalFreeGroup(Simulation&,
+		  attachSystem::BlockZone&,
+		  const attachSystem::FixedComp&,
+		  const std::string&,
+		  attachSystem::FixedComp&,
+		  attachSystem::ExternalCut&,
+		  attachSystem::ContainedGroup&,
+		  const std::set<std::string>&);
+  
 template<typename T>
 int constructUnit(Simulation& System,
 		  attachSystem::BlockZone& buildZone,
@@ -157,6 +172,24 @@ int constructGroup(Simulation& System,
 		       buildUnit,buildUnit,buildUnit,CGunits);
 }
 
+template<typename T>
+int constructFreeUnit(Simulation& System,
+		      attachSystem::BlockZone& buildZone,
+		      const attachSystem::FixedComp& linkUnit,
+		      const std::string& sideName,
+		      T& buildUnit)
+{
+  if constexpr (std::is_base_of<attachSystem::ContainedComp,T>::value)
+
+    return internalFreeUnit(System,buildZone,linkUnit,sideName,
+			buildUnit,buildUnit,buildUnit);
+
+  else
+    
+    return internalFreeGroup(System,buildZone,linkUnit,sideName,
+			     buildUnit,buildUnit,buildUnit,{"All"});
+
+}
   
 }  // NAMEPSACE constructSystem
 

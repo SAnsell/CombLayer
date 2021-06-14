@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   src/SimFLUKA.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell / Konstantin Batkov
@@ -16,17 +16,17 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <cmath>
-#include <complex> 
+#include <complex>
 #include <vector>
 #include <list>
-#include <map> 
+#include <map>
 #include <set>
 #include <string>
 #include <algorithm>
@@ -65,7 +65,6 @@
 #include "SourceBase.h"
 #include "sourceDataBase.h"
 #include "surfRegister.h"
-#include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
@@ -77,6 +76,7 @@
 #include "magnetUnit.h"
 #include "groupRange.h"
 #include "objectGroups.h"
+#include "LowMat.h"
 
 #include "Simulation.h"
 #include "SimFLUKA.h"
@@ -102,9 +102,9 @@ SimFLUKA::SimFLUKA(const SimFLUKA& A) :
   lowEnergyNeutron(A.lowEnergyNeutron),
   nps(A.nps),rndSeed(A.rndSeed),
   sourceExtraName(A.sourceExtraName),
-  PhysPtr(new flukaSystem::flukaPhysics(*PhysPtr)),
+  PhysPtr(new flukaSystem::flukaPhysics(*A.PhysPtr)),
   RadDecayPtr(new flukaSystem::radDecay(*A.RadDecayPtr))
- /*! 
+ /*!
    Copy constructor
    \param A :: Simulation to copy
  */
@@ -170,7 +170,7 @@ SimFLUKA::setDefaultPhysics(const std::string& dName)
       defType="";
       return;
     }
-      
+
   const std::string item=StrFunc::toUpperString(dName.substr(0,8));
   std::map<std::string,std::string>::const_iterator mc=
     validItem.find(item);
@@ -179,7 +179,7 @@ SimFLUKA::setDefaultPhysics(const std::string& dName)
   defType=mc->second;
   return;
 }
-  
+
 
 void
 SimFLUKA::clearTally()
@@ -195,14 +195,14 @@ SimFLUKA::clearTally()
 
 int
 SimFLUKA::getNextFTape() const
- /*! 
-   Horrible function to find the next availabe ftape unit 
-   note that we should start from >25 
+ /*!
+   Horrible function to find the next availabe ftape unit
+   note that we should start from >25
    \return available number
  */
 {
   ELog::RegMethod RegA("SimFLUKA","getNextFTape");
-  
+
   // max for fortran output stream 98 ??
   int nextFTape(24);
   for(const flukaSystem::flukaTally* FPtr : FTItem)
@@ -215,7 +215,7 @@ SimFLUKA::getNextFTape() const
       (98,"Tallies have exhaused available ftapes [25-98]");
   return nextFTape;
 }
-  
+
 void
 SimFLUKA::addTally(const flukaSystem::flukaTally& TI)
   /*!
@@ -255,7 +255,7 @@ SimFLUKA::getTally(const int TI) const
   for(flukaSystem::flukaTally* FPtr : FTItem)
     if (FPtr->getID()==TI)
       return FPtr;
-  
+
   throw ColErr::InContainerError<int>(TI,"Fluka Tally");
 }
 
@@ -288,7 +288,7 @@ SimFLUKA::writeTally(std::ostream& OX) const
    */
 {
   ELog::RegMethod RegA("SimFluka","writeTally");
-  
+
   OX<<"* ------------------------------------------------------"<<std::endl;
   OX<<"* ------------------- TALLY CARDS ----------------------"<<std::endl;
   OX<<"* ------------------------------------------------------"<<std::endl;
@@ -305,15 +305,15 @@ SimFLUKA::writeFlags(std::ostream& OX) const
     Writes out the flags using a look-up stack.
     Bascially an ultra primative method to get something
     into the fluka file, if nothing else fits.
-    
-    This set user weight : Allows call to FLUSCW in the 
+
+    This set user weight : Allows call to FLUSCW in the
     modified fortran code
     \param OX :: Output stream
   */
 {
   ELog::RegMethod RegA("SimFluka","writeFlags");
 
-    
+
   const static std::map<std::string,int> indexMap(
     {
       {"before",1},
@@ -323,7 +323,7 @@ SimFLUKA::writeFlags(std::ostream& OX) const
       {"afterShift",4},
       {"shiftAfter",4}
     });
-  
+
   std::ostringstream cx;
   for(const FlagTYPE::value_type& fPair : FlagItem)
     {
@@ -341,10 +341,10 @@ SimFLUKA::writeFlags(std::ostream& OX) const
 	    {
 	      index=static_cast<int>(VIndex);
 	    }
-	      
+
 	  if (index==0)
 	    ELog::EM<<"WARNING userWeight set to zero"<<ELog::endWarn;
-	  
+
 	  cx<<"USERWEIG - - "<<index<<" - -";
 	  StrFunc::writeFLUKA(cx.str(),OX);
 	}
@@ -366,7 +366,7 @@ SimFLUKA::writeMagField(std::ostream& OX) const
    */
 {
   ELog::RegMethod RegA("SimFluka","writeMagField");
-  
+
   OX<<"* ------------------------------------------------------"<<std::endl;
   OX<<"* ------------------- MAGNETIC CARDS ----------------------"<<std::endl;
   OX<<"* ------------------------------------------------------"<<std::endl;
@@ -377,7 +377,7 @@ SimFLUKA::writeMagField(std::ostream& OX) const
       // Need to set mgnfield to zero
       cx<<"MGNFIELD 15.0 0.05 0.1 - - - ";
       StrFunc::writeFLUKA(cx.str(),OX);
-      
+
       flukaSystem::cellValueSet<2> Steps("stepsize","STEPSIZE");
       for(const OTYPE::value_type& mp : OList)
 	{
@@ -391,7 +391,7 @@ SimFLUKA::writeMagField(std::ostream& OX) const
       const std::string fmtSTR("%2 %3 R0 R1 1.0 - ");
       const std::vector<int> cellInfo=this->getCellVector();
       Steps.writeFLUKA(OX,cellInfo,fmtSTR);
-      
+
       for(const MagTYPE::value_type& MI : MagItem)
 	MI.second->writeFLUKA(OX);
     }
@@ -401,7 +401,7 @@ SimFLUKA::writeMagField(std::ostream& OX) const
 void
 SimFLUKA::writeTransform(std::ostream& OX) const
   /*!
-    Write all the transforms in standard MCNPX output 
+    Write all the transforms in standard MCNPX output
     type [These should now not be used].
     \param OX :: Output stream
   */
@@ -421,7 +421,7 @@ SimFLUKA::writeTransform(std::ostream& OX) const
 void
 SimFLUKA::writeCells(std::ostream& OX) const
   /*!
-    Write all the cells in standard FLUKA output 
+    Write all the cells in standard FLUKA output
     type.
     \param OX :: Output stream
   */
@@ -439,13 +439,13 @@ SimFLUKA::writeCells(std::ostream& OX) const
 void
 SimFLUKA::writeSurfaces(std::ostream& OX) const
   /*!
-    Write all the surfaces in standard MCNPX output 
+    Write all the surfaces in standard MCNPX output
     type.
     \param OX :: Output stream
   */
 {
   ELog::RegMethod RegA("SimFLUKA","writeSurfaces");
-  
+
   OX<<"* SURFACE CARDS "<<std::endl;
 
   const ModelSupport::surfIndex::STYPE& SurMap =
@@ -455,7 +455,7 @@ SimFLUKA::writeSurfaces(std::ostream& OX) const
     sm.second->writeFLUKA(OX);
   OX<<"END"<<std::endl;
   return;
-} 
+}
 
 void
 SimFLUKA::writeElements(std::ostream& OX) const
@@ -472,7 +472,7 @@ SimFLUKA::writeElements(std::ostream& OX) const
 
   std::set<MonteCarlo::Zaid> setZA;
 
-  for(const auto& [ cellNum,objPtr]  : OList)  // 
+  for(const auto& [ cellNum,objPtr]  : OList)  //
     {
       (void) cellNum;        // avoid warning -- fixed c++20
       const MonteCarlo::Material* mPtr = objPtr->getMatPtr();
@@ -484,16 +484,18 @@ SimFLUKA::writeElements(std::ostream& OX) const
   std::ostringstream cx,lowmat;
   for (const MonteCarlo::Zaid& za : setZA)
     {
-      if (za.getZaid().empty()) continue;
-      cx<<"MATERIAL "<<za.getZ()<<". - "<<" 1."
-	<<" - - "<<za.getIso()<<". "<<za.getFlukaName()<<" ";
-      lowmat<<getLowMat(za.getZ(),za.getIso(),za.getFlukaName());
+      if (!za.getZaid().empty())
+	{
+	  cx<<"MATERIAL "<<za.getZ()<<". - "<<" 1."
+	    <<" - - "<<za.getIso()<<". "<<za.getFlukaName()<<" ";
+	  lowmat<<LowMat::getFLUKA(za.getZ(),za.getIso(),za.getFlukaName());
+	}
     }
-
+        
   StrFunc::writeFLUKA(cx.str(),OX);
   if (lowEnergyNeutron)
     StrFunc::writeFLUKA(lowmat.str(),OX);
-
+  
   OX<<alignment<<std::endl;
 
   return;
@@ -502,7 +504,7 @@ SimFLUKA::writeElements(std::ostream& OX) const
 void
 SimFLUKA::writeMaterial(std::ostream& OX) const
   /*!
-    Write all the used Materials in fixed FLUKA format 
+    Write all the used Materials in fixed FLUKA format
     \param OX :: Output stream
   */
 {
@@ -538,18 +540,18 @@ SimFLUKA::writeMaterial(std::ostream& OX) const
 void
 SimFLUKA::writeWeights(std::ostream& OX) const
   /*!
-    Write all the used Weight in standard FLUKA output 
+    Write all the used Weight in standard FLUKA output
     type.
     \param OX :: Output stream
   */
 {
   ELog::RegMethod RegA("SimFLUKA","writeWeights");
-  
+
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();
-  
+
   OX<<"* WEIGHT CARDS "<<std::endl;
-  
+
   WM.writeFLUKA(OX);
   return;
 }
@@ -562,7 +564,7 @@ SimFLUKA::prepareImportance()
 {
   ELog::RegMethod RegA("SimFLUKA","prepareImportance");
 
-  
+
   const double minFlukaImportance(1e-5);
   bool flag;
   double Imp;
@@ -581,22 +583,22 @@ SimFLUKA::prepareImportance()
     {
       if (std::abs(V-1.0)>Geometry::zeroTol &&
 	  std::abs(V) > minFlukaImportance)         // min for FLUKA
-	
+
 	PhysPtr->setTHR("bias",CN,"3.0",std::to_string(V),"3.0");
-    }	  
+    }
   return;
 }
 
 void
 SimFLUKA::writePhysics(std::ostream& OX) const
   /*!
-    Write all the used Weight in standard MCNPX output 
+    Write all the used Weight in standard MCNPX output
     type. Note that it also has to add the rdum cards
     to the physics
     \param OX :: Output stream
   */
 
-{  
+{
   ELog::RegMethod RegA("SimFLUKA","writePhysics");
   std::ostringstream cx;
 
@@ -606,7 +608,7 @@ SimFLUKA::writePhysics(std::ostream& OX) const
   cx.str("");
   cx<<"RANDOMIZE 1.0 "<<std::to_string(rndSeed % 1000000);
   StrFunc::writeFLUKA(cx.str(),OX);
-  // Remaining Physics cards           
+  // Remaining Physics cards
   PhysPtr->writeFLUKA(OX);
 
   return;
@@ -617,12 +619,12 @@ void
 SimFLUKA::writeSource(std::ostream& OX) const
   /*!
     Write the source into standard FLUKA format.
-    Most of these sources are limited. 
+    Most of these sources are limited.
     \param OX :: Output stream
   */
 {
   ELog::RegMethod RegA("SimFLUKA","writeSource");
-  
+
   SDef::sourceDataBase& SDB=
     SDef::sourceDataBase::Instance();
 
@@ -648,78 +650,6 @@ SimFLUKA::writeSource(std::ostream& OX) const
   return;
 }
 
-
-const std::string&
-SimFLUKA::getLowMatName(const size_t Z) const
-/*!
-  Return low energy FLUKA material name for the given Z
-  \param Z :: Atomic number
-  \return fluka name
-  \todo : Currently this function return the standard low material name
-    as if standard FLUKA names were used without the LOW-MAT card.
-    This is fine for most of the cases.
-    However, this name actually sometimes depends on temperature and mass
-    number - to be implemented.
- */
-{
-  ELog::RegMethod RegA("SimFLUKA","getLowMatName");
-
-  const static std::string empty(" - ");
-  const static std::vector<std::string> lm = {"z=0",
-    "HYDROGEN", "HELIUM",   "LITHIUM",  "BERYLLIU", "BORON",
-    "CARBON",   "NITROGEN", "OXYGEN",   "FLUORINE", "NEON",
-    "SODIUM",   "MAGNESIU", "ALUMINUM", "SILICON",  "PHOSPHO",
-    "SULFUR",   "CHLORINE", "ARGON",    "POTASSIU", "CALCIUM",
-    "SCANDIUM", "TITANIUM", "VANADIUM", "CHROMIUM", "MANGANES",
-    "IRON",     "COBALT",   "NICKEL",   "COPPER",   "ZINC",
-    "GALLIUM",  "GERMANIU", "ARSENIC",  "",         "BROMINE",
-    "KRYPTON",  "",         "STRONTIU", "YTTRIUM",  "ZIRCONIU",
-    "NIOBIUM",  "MOLYBDEN", "99-TC",    "",         "",
-    "PALLADIU", "SILVER",   "CADMIUM",  "INDIUM",   "TIN",     // 50
-    "ANTIMONY", "",         "IODINE",   "XENON",    "CESIUM",
-    "BARIUM",   "LANTHANU", "CERIUM",   "",         "NEODYMIU",
-    "",         "SAMARIUM", "EUROPIUM", "GADOLINI", "TERBIUM", // 65
-    "",         "",         "",         "",         "",
-    "LUTETIUM", "HAFNIUM",  "TANTALUM", "TUNGSTEN", "RHENIUM",
-    "",         "IRIDIUM",  "PLATINUM", "GOLD",     "MERCURY", // 80
-    "",         "LEAD",     "BISMUTH",  "",         "",
-    "",         "",         "",         "",         "230-TH", // 90
-    "",         "233-U",    "",         "239-PU",   "241-AM"
-  };
-
-  const static std::set<size_t> excludeLM
-    ( { 34,37,44,45,52,59,61,66,67,68,69,70,
-	76,81,84,85,86,87,88,89,91,93});
-
-  if (excludeLM.find(Z)!=excludeLM.end())
-    {
-      ELog::EM << "No low energy FLUKA material for Z="<<Z<<ELog::endCrit;
-      return empty;
-    }
-
-  if (Z>=lm.size())
-    throw ColErr::IndexError<size_t>
-      (Z,lm.size(),"No low energy FLUKA material for Z>lm.size");
-
-  return lm[Z];
-}
-
-std::string
-SimFLUKA::getLowMat(const size_t Z,const size_t,
-		    const std::string& mat) const
-  /*!
-    Return the LOW-MAT card definition for the given Element
-    \param Z :: Atomic number
-    \param A :: Mass number
-    \param mat :: Material name in the MATERIAL card
-    \return fluka ouput card [pre-write format]
-  */
-{
-  ELog::RegMethod RegA("SimFLUKA","getLowMat");
-
-  return std::string("LOW-MAT "+mat+" - - - - - "+getLowMatName(Z)+" ");  
-}
-
 void
 SimFLUKA::addMagnetObject
 (const std::shared_ptr<magnetSystem::magnetUnit>& MUnit)
@@ -738,7 +668,7 @@ SimFLUKA::addMagnetObject
 void
 SimFLUKA::prepareWrite()
   /*!
-    Stuff that should be done once before output 
+    Stuff that should be done once before output
    */
 {
   ELog::RegMethod RegA("SimFLUKA","prepareWrite");
@@ -757,7 +687,7 @@ void
 SimFLUKA::write(const std::string& Fname) const
   /*!
     Write out all the system (in FLUKA output format)
-    \param Fname :: Output file 
+    \param Fname :: Output file
   */
 {
   ELog::RegMethod RegA("SimFLUKA","write");
@@ -785,11 +715,11 @@ SimFLUKA::write(const std::string& Fname) const
   for(const std::string& cmd : SCL)
     StrFunc::writeMCNPXcomment(cmd,OX,"* ");
   StrFunc::writeMCNPXcomment("",OX,"* ");
-  
+
   if (writeVariable)
     Simulation::writeVariables(OX,'*');
 
-  
+
   StrFunc::writeFLUKA("DEFAULTS - - - - - - PRECISION",OX);
   std::ostringstream cx;
   cx<<"GEOBEGIN";

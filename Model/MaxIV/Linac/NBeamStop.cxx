@@ -313,11 +313,9 @@ NBeamStop::createLinks()
 
   FixedComp::setConnect(0,Origin,Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  FixedComp::nameSideIndex(0,"front");
 
   FixedComp::setConnect(1,Origin+Y*fullLength,Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
-  FixedComp::nameSideIndex(1,"back");
 
   return;
 }

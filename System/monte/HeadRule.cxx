@@ -2376,8 +2376,6 @@ HeadRule::trackSurfIntersect(const Geometry::Vec3D& Org,
     {
       const int NS=surfIndex[i]->getName();	    // NOT SIGNED
 
-      ELog::EM<<"HERE "<<NS<<" "<<dPts[i]<<ELog::endDiag;
-      ELog::EM<<"SU "<<*surfIndex[i]<<ELog::endDiag;  
 
       // Is point possible closer
       if ( dPts[i]>10.0*Geometry::zeroTol &&

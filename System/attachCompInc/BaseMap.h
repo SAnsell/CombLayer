@@ -66,7 +66,9 @@ class BaseMap
   void setItem(const std::string&,const size_t,const int);
   void setItems(const std::string&,const int,const int);
   void setItems(const std::string&,const std::vector<int>&);
-  
+
+  void copyAllItems(const BaseMap&);
+  void copyItems(const BaseMap&,const std::string&);
   void addItem(const std::string&,const int);
   void addItems(const std::string&,const std::vector<int>&);
 

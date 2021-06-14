@@ -264,6 +264,7 @@ WWG::scaleRange(const std::string& meshIndex,
 {
   ELog::RegMethod RegA("WWG","scaleRange");
 
+  // This is get expect to have this item
   WWGWeight& WMesh=getMesh(meshIndex);
 
   WMesh.scaleRange(eIndex,minR,maxR,fullRange);
@@ -373,16 +374,19 @@ WWG::writeWWINP(const std::string& FName) const
 
 void
 WWG::writeVTK(const std::string& FName,
+	      const bool logFlag,
 	      const std::string& meshName,
 	      const long int EIndex) const
   /*!
     Write out a VTK file
     \param FName :: filename 
+    \param meshName :: Mesh name
     \param EIndex :: energy index
   */
 {
   ELog::RegMethod RegA("WWG","writeVTK");
 
+  ELog::EM<<"WRITE VTK"<<" "<<FName<<" : "<<meshName<<" "<<EIndex<<ELog::endDiag;
   if (FName.empty()) return;
   std::ofstream OX(FName.c_str());
 
@@ -397,29 +401,8 @@ WWG::writeVTK(const std::string& FName,
   OX<<"# vtk DataFile Version 2.0"<<std::endl;
   OX<<"WWG-MESH Data"<<std::endl;
   OX<<"ASCII"<<std::endl;
-  OX<<"DATASET RECTILINEAR_GRID"<<std::endl;
-
-  OX<<"DIMENSIONS "<<XSize<<" "<<YSize<<" "<<ZSize<<std::endl;
-  OX<<"X_COORDINATES "<<XSize<<" float"<<std::endl;
-  for(long int i=0;i<XSize;i++)
-    OX<<(fFMT % Grid.getXCoordinate(static_cast<size_t>(i)));
-  OX<<std::endl;
-  
-  OX<<"Y_COORDINATES "<<YSize<<" float"<<std::endl;
-  for(long int i=0;i<YSize;i++)
-    OX<<(fFMT % Grid.getYCoordinate(static_cast<size_t>(i)));
-  OX<<std::endl;
-
-  OX<<"Z_COORDINATES "<<ZSize<<" float"<<std::endl;
-  for(long int i=0;i<ZSize;i++)
-    OX<<(fFMT % Grid.getZCoordinate(static_cast<size_t>(i)));
-  OX<<std::endl;
-  
-  OX<<"POINT_DATA "<<XSize*YSize*ZSize<<std::endl;
-  OX<<"SCALARS cellID float 1.0"<<std::endl;
-  OX<<"LOOKUP_TABLE default"<<std::endl;
-
-  WMesh.writeVTK(OX,EIndex);
+  Grid.writeVTK(OX);
+  WMesh.writeVTK(OX,EIndex,logFlag);
   
   OX.close();
 
@@ -461,10 +444,7 @@ WWG::writeFLUKA(std::ostream& OX) const
   for(const auto& [Name,WMeshPtr] : WMeshMap)
     {
       if (WMeshPtr->getID()>0)
-	{
-	  ELog::EM<<"WRITE FLUKA "<<ELog::endDiag;
-	  WMeshPtr->writeFLUKA(OX);
-	}
+	WMeshPtr->writeFLUKA(OX);
     }
   return;
 }

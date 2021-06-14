@@ -60,6 +60,11 @@ class CellMap  : public BaseMap
     \param CN :: Offset index
   */
 
+  void copyAllCells(const CellMap& A)
+    { BaseMap::copyAllItems(A);}
+  void copyCells(const CellMap& A,const std::string& K)
+    { BaseMap::copyItems(A,K);}
+  
   /// Accessor to has Item (to avoid ambiguity with SurfMap)
   bool hasCell(const std::string& K,const size_t index =0) const
     { return BaseMap::hasItem(K,index); }
@@ -109,6 +114,7 @@ class CellMap  : public BaseMap
   /// get ALL cells
   std::vector<int> getCells() const
     { return BaseMap::getItems(); }
+
 
   //@}
   
