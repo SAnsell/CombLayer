@@ -482,21 +482,20 @@ SimFLUKA::writeElements(std::ostream& OX) const
     }
 
   std::ostringstream cx,lowmat;
-
-  std::for_each(setZA.begin(), setZA.end(),
-		[&](const auto& za){
-		  if (!za.getZaid().empty())
-		    {
-		      cx<<"MATERIAL "<<za.getZ()<<". - "<<" 1."
-			<<" - - "<<za.getIso()<<". "<<za.getFlukaName()<<" ";
-		      lowmat<<getLowMat(za.getZ(),za.getIso(),za.getFlukaName());
-		    }
-		});
-
+  for (const MonteCarlo::Zaid& za : setZA)
+    {
+      if (!za.getZaid().empty())
+	{
+	  cx<<"MATERIAL "<<za.getZ()<<". - "<<" 1."
+	    <<" - - "<<za.getIso()<<". "<<za.getFlukaName()<<" ";
+	  lowmat<<LowMat::getFLUKA(za.getZ(),za.getIso(),za.getFlukaName());
+	}
+    }
+        
   StrFunc::writeFLUKA(cx.str(),OX);
   if (lowEnergyNeutron)
     StrFunc::writeFLUKA(lowmat.str(),OX);
-
+  
   OX<<alignment<<std::endl;
 
   return;
@@ -649,23 +648,6 @@ SimFLUKA::writeSource(std::ostream& OX) const
 
   OX<<"* ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
   return;
-}
-
-std::string
-SimFLUKA::getLowMat(const size_t Z,const size_t,
-		    const std::string& mat) const
-  /*!
-    Return the LOW-MAT card definition for the given Element
-    \param Z :: Atomic number
-    \param A :: Mass number
-    \param mat :: Material name in the MATERIAL card
-    \return fluka ouput card [pre-write format]
-  */
-{
-  ELog::RegMethod RegA("SimFLUKA","getLowMat");
-
-  const LowMat lowmat(mat,Z);
-  return lowmat.get();
 }
 
 void

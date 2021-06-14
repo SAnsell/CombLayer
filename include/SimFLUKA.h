@@ -96,7 +96,6 @@ class SimFLUKA : public Simulation
   void writeSource(std::ostream&) const;
   void writeVariables(std::ostream&) const;
 
-  std::string getLowMat(const size_t,const size_t,const std::string&) const;
   void clearTally();
 
  public:

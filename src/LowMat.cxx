@@ -41,11 +41,17 @@
 #include "HeadRule.h"
 #include "LowMat.h"
 
-LowMat::LowMat(const std::string& mat,size_t Z) :
-  mat(mat), Z(Z)
+
+const std::string&
+LowMat::getLowName(const size_t Z)
+  /*!
+    Return the low map name
+   */
 {
-  const static std::string empty(" - ");
-  const static std::array<std::string, 96> lm = {"z=0",
+  const static std::string empty("");
+  const static size_t lmSize(96);
+  const static std::array<std::string,lmSize> lm =
+    {"z=0",
     "HYDROGEN", "HELIUM",   "LITHIUM",  "BERYLLIU", "BORON",
     "CARBON",   "NITROGEN", "OXYGEN",   "FLUORINE", "NEON",
     "SODIUM",   "MAGNESIU", "ALUMINUM", "SILICON",  "PHOSPHO",
@@ -67,6 +73,7 @@ LowMat::LowMat(const std::string& mat,size_t Z) :
     "",         "233-U",    "",         "239-PU",   "241-AM"
   };
 
+  //  Z that do not have a low-neutron card
   const static std::set<size_t> excludeLM
     ( { 34,37,44,45,52,59,61,66,67,68,69,70,
 	76,81,84,85,86,87,88,89,91,93});
@@ -74,97 +81,94 @@ LowMat::LowMat(const std::string& mat,size_t Z) :
   if (excludeLM.find(Z)!=excludeLM.end())
     {
       ELog::EM << "No low energy FLUKA material for Z="<<Z<<ELog::endCrit;
-      name = empty;
+      return empty;
     }
 
-  const size_t lmsize = lm.size();
-
-  if (Z>=lmsize)
+  if (Z>=lmSize)
     throw ColErr::IndexError<size_t>
-      (Z,lmsize,"No low energy FLUKA material for Z=" +
-       std::to_string(Z) + ">" + std::to_string(lmsize));
+      (Z,lmSize,"No low energy FLUKA material for Z=" +
+       std::to_string(Z) + ">" + std::to_string(lmSize));
 
-  name = lm[Z];
+  return lm[Z];
 }
 
-std::array<int,3>
-LowMat::getID(size_t Z) const
+std::tuple<int,int,double>
+LowMat::getID(const size_t Z,
+	      const size_t iso)
 /*!
   Set numerical identifiers for the given Z.
   Note: There can be several sets for IDs for the given material in FLUKA,
-  but here we use a single hard-coded set of IDs. FLUKA assumes natural isotopic composition,
-  but in MCNP we can associate cross sections for individual isotopes, therefore in this method
-  we do not distinguish between different isotopes and use natural composition for all of them.
-  TODO: implement an interface to choose the
-  ID set for the given material (i.e. the mt card in MCNP slang). This can be done based on the
-  'mat' value in SimFLUKA::getLowMat (pass it through constructor)
+  but here we use a single hard-coded set of IDs. 
+  FLUKA assumes natural isotopic composition, but in MCNP we can 
+  associate cross sections for individual isotopes, therefore in this method
+  we do not distinguish between different isotopes and use 
+  natural composition for all of them.
+
+  \todo{implement an interface to choose the
+    ID set for the given material (i.e. the mt card in MCNP slang). 
+    This can be done based on the
+    'mat' value in SimFLUKA::getLowMat (pass it through constructor)}
+  \todo{Do something intellegent with iso [currently assumed natural]}
+
  */
 {
-  switch (Z) {
-  case 1:
-    // other alternative possible e.g. with if (mat == "") {}
-    return {1, -5, 296};
-  case 5: // B
-    return {5, -2, 296};
-  case 6:
-    return {6, -2, 296};
-  case 8:
-    return {8, 16, 296};
-  case 11:
-    return {11, 23, 296};
-  case 12:
-    return {12, -2, 296};
-  case 13:
-    return {13, 27, 296};
-  case 14:
-    return {14, -2, 296};
-  case 15:
-    return {15, 31, 296};
-  case 16:
-    return {16, -2, 296};
-  case 17: // Cl
-    return {17, -2, 296};
-  case 19:
-    return {19, -2, 296};
-  case 20:
-    return {20, -2, 296};
-  case 22: // Ti
-    return {22, -2, 296};
-  case 24:
-    return {24, -2, 296};
-  case 25:
-    return {25, 55, 296};
-  case 26:
-    return {26, -2, 296};
-  case 27: // Co
-    return {27, 59, 296};
-  case 28:
-    return {28, -2, 296};
-  case 29: // Cu
-    return {29, -2, 296};
-  case 30: // Zn
-    return {30, -2, 296};
-  case 74: // W
-    return {74, -2, 296};
-  case 82:
-    return {82, -2, 296};
-  }
+  typedef std::map<size_t,std::tuple<int,int,double>> mapTYPE;
 
-  return {0, 0, 0}; // default values for the WHAT[1-3] of LOW-MAT
+  static const mapTYPE mUnit({
+      { 1,{1, -5, 296.0} },
+      { 5,{5, -2, 296.0} },
+      { 6,{6, -2, 296.0} },
+      //      { 8,{8, 16, 296.0} },
+      { 11,{11, 23, 296.0} },
+      { 12,{12, -2, 296.0} },
+      { 13,{13, 27, 296.0} },
+      { 14,{14, -2, 296.0} },
+      { 15,{15, 31, 296.0} },
+      { 16,{16, -2, 296.0} },
+      { 17,{17, -2, 296.0} },
+      { 19,{19, -2, 296.0} },
+      { 20,{20, -2, 296.0} },
+      { 22,{22, -2, 296.0} },
+      { 24,{24, -2, 296.0} },
+      { 25,{25, 55, 296.0} },
+      { 26,{26, -2, 296.0} },
+      { 27,{27, 59, 296.0} },
+      { 28,{28, -2, 296.0} },
+      { 29,{29, -2, 296.0} },
+      { 30,{30, -2, 296.0} },
+      { 74,{74, -2, 296.0} },
+      { 82,{82, -2, 296.0} }
+    });
+
+  mapTYPE::const_iterator mc=mUnit.find(Z);
+  return (mc==mUnit.end()) ?
+    std::tuple<int,int,double>(0,0,0.0) : mc->second;
 }
 
-std::string LowMat::get() const
+std::string
+LowMat::getFLUKA(const size_t Z,const size_t iso,
+		 const std::string& matName) 
 /*!
-  Return the WHAT/SDUM string: id1 id2 id3 - - name
- */
+    Return the WHAT/SDUM string: id1 id2 id3 - - name
+  */
 {
-  const auto id = getID(Z);
-
-  std::string strid(" ");
-  std::for_each(id.begin(), id.end(),
-		[&strid](const auto& i){
-		  strid += std::to_string(i) + " ";
-		});
-
-  return "LOW-MAT "+mat+strid+" - - "+name+" ";
+  
+  const auto& id = getID(Z,iso);
+  const std::string& lowName=getLowName(Z);
+  
+  std::ostringstream cx;
+  if (std::get<0>(id))
+    {
+      cx<<"LOW-MAT "<<matName<<" "
+	<<std::get<0>(id)<<" "
+	<<std::get<1>(id)<<" "
+	<<std::get<2>(id)
+	<<" - - "<<lowName<<" ";
+    }
+  else
+    {
+      cx<<"LOW-MAT "<<matName<<" - - - - - "<<lowName<<" ";
+    }
+  
+  return cx.str();
 }

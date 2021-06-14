@@ -30,17 +30,18 @@
   \version 1.0
   \date June 2021
  */
+
 class LowMat
 {
  private:
-  const std::string mat;
-  const size_t Z;
-  std::string name; ///< low energy neutron material name (LOW-MAT card SDUM)
 
-  std::array<int,3 > getID(size_t) const;
- public:
-  LowMat(const std::string&, size_t);
-  std::string get() const;
+  static const std::string& getLowName(const size_t);
+  static std::tuple<int,int,double> getID(const size_t,const size_t);
+
+public:
+
+  static std::string getFLUKA(const size_t,const size_t,const std::string&);
+  
 };
 
 #endif
