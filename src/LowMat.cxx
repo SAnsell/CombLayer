@@ -93,8 +93,7 @@ LowMat::getLowName(const size_t Z)
 }
 
 std::tuple<int,int,double>
-LowMat::getID(const size_t Z,
-	      const size_t iso)
+LowMat::getID(const size_t Z,const size_t iso)
 /*!
   Set numerical identifiers for the given Z.
   Note: There can be several sets for IDs for the given material in FLUKA,
@@ -148,11 +147,10 @@ LowMat::getID(const size_t Z,
 std::string
 LowMat::getFLUKA(const size_t Z,const size_t iso,
 		 const std::string& matName) 
-/*!
+  /*!
     Return the WHAT/SDUM string: id1 id2 id3 - - name
   */
 {
-  
   const auto& id = getID(Z,iso);
   const std::string& lowName=getLowName(Z);
   

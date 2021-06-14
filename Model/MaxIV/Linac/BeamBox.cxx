@@ -102,12 +102,16 @@ BeamBox::populate(const FuncDataBase& Control)
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   length=Control.EvalVar<double>(keyName+"Length");
+  fullCut=Control.EvalDefVar<double>(keyName+"FullCut",-10.0);
+  innerCut=Control.EvalDefVar<double>(keyName+"InnerCut",-10.0);
 
   backThick=Control.EvalVar<double>(keyName+"BackThick");
+  backExtension=Control.EvalDefVar<double>(keyName+"BackExtension",-10.0);
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
-
+  
   innerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"InnerMat",0);
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
+  backMat=ModelSupport::EvalDefMat<int>(Control,keyName+"BackMat",mainMat);
 
   return;
 }
@@ -130,7 +134,7 @@ BeamBox::createSurfaces()
   else
     setSurf("Front",getRule("front").getPrimarySurface());
   
-  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);  
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
@@ -147,6 +151,19 @@ BeamBox::createSurfaces()
   ModelSupport::buildPlane
     (SMap,buildIndex+16,Origin+Z*(wallThick+height/2.0),Z);
 
+  if (fullCut>Geometry::zeroTol)
+    ModelSupport::buildPlane(SMap,buildIndex+202,Origin+Y*fullCut,Y);
+  if (innerCut>Geometry::zeroTol)
+    ModelSupport::buildPlane(SMap,buildIndex+302,Origin+Y*innerCut,Y);
+
+
+  if (backExtension>Geometry::zeroTol)
+    {
+      ModelSupport::buildPlane
+	(SMap,buildIndex+103,Origin-X*(backExtension+wallThick+width/2.0),X);
+      ModelSupport::buildPlane
+	(SMap,buildIndex+104,Origin+X*(backExtension+wallThick+width/2.0),X);
+    }
   return;
 }
 
@@ -161,15 +178,56 @@ BeamBox::createObjects(Simulation& System)
 
   const HeadRule frontHR=getRule("front");
   HeadRule HR;
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 3 -4 5 -6");
-  makeCell("Void",System,cellIndex++,innerMat,0.0,HR*frontHR);
   
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,
-			    "-12 13 -14 15 -16 (2:-3:4:-5:6)");
-  makeCell("Wall",System,cellIndex++,mainMat,0.0,HR*frontHR);
+  if (innerCut>Geometry::zeroTol)
+    {
+      
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"302 -2 3 -4 5 -6");
+      makeCell("Void",System,cellIndex++,innerMat,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-302 3 -4 5 -6");
+      makeCell("Void",System,cellIndex++,0,0.0,HR*frontHR);
+    }
+  else
+    {
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 3 -4 5 -6");
+      makeCell("Void",System,cellIndex++,innerMat,0.0,HR*frontHR);
+    }
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 13 -14 15 -16");
+  if (fullCut>Geometry::zeroTol)
+    {
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				   "202 -2 13 -14 15 -16 (-3:4:-5:6)");
+      makeCell("Wall",System,cellIndex++,mainMat,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				   "-202 13 -14 15 -16 (-3:4:-5:6)");
+      makeCell("WallCut",System,cellIndex++,0,0.0,HR*frontHR);
+    }
+  else
+    {
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				   "-2 13 -14 15 -16 (-3:4:-5:6)");
+      makeCell("Wall",System,cellIndex++,mainMat,0.0,HR*frontHR);
+    }
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 2 13 -14 15 -16");
+  makeCell("BackWall",System,cellIndex++,backMat,0.0,HR);
+
+
+  if (backExtension>Geometry::zeroTol)
+    {
+      ELog::EM<<"Back volume"<<ELog::endDiag;
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"-12 2 103 -104 15 -16 (-13:14)");
+      makeCell("BackExtension",System,cellIndex++,backMat,0.0,HR);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"-12 -2 103 -104 15 -16 (-13:14)");
+      makeCell("BackExtVoid",System,cellIndex++,0,0.0,HR*frontHR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 103 -104 15 -16");
+    }
+  else
+    {
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 13 -14 15 -16");
+    }
   addOuterSurf(HR*frontHR);
   
   return;

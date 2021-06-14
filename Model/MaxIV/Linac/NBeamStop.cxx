@@ -279,7 +279,6 @@ NBeamStop::createObjects(Simulation& System)
   for(const coreUnit& cu : units)
     {
       const std::string lName="Layer"+std::to_string(index);
-      
       rInnerHR=rOuterHR.complement();
       rOuterHR=ModelSupport::getSetHeadRule(SMap,BI,"-7");
       HeadRule aHR=frontHR;
@@ -297,6 +296,7 @@ NBeamStop::createObjects(Simulation& System)
       makeCell(lName,System,cellIndex++,
 	       cu.mat[cuI-1],0.0,aHR*backHR*rOuterHR*rInnerHR);
       BI+=100;
+      index++;
     }
 
   addOuterSurf(rOuterHR*frontHR*backHR);
@@ -323,8 +323,8 @@ NBeamStop::createLinks()
 
 void
 NBeamStop::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC,
-		       const long int sideIndex)
+		     const attachSystem::FixedComp& FC,
+		     const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item

@@ -379,8 +379,12 @@ Segment29Magnet(FuncDataBase& Control,
   Control.addVariable(lKey+"BeamBoxWallThick",10.0);
   Control.addVariable(lKey+"BeamBoxBackThick",2.0);
   Control.addVariable(lKey+"BeamBoxInnerMat","Void");
+  Control.addVariable(lKey+"BeamBoxBackMat","Copper");
   Control.addVariable(lKey+"BeamBoxMainMat","Poly");
 
+  Control.addVariable(lKey+"BeamBoxInnerCut",0.0);
+  Control.addVariable(lKey+"BeamBoxFullCut",0.0);
+  Control.addVariable(lKey+"BeamBoxBackExtension",30.0);
   return;
 }
 
