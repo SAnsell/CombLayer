@@ -112,6 +112,8 @@ InjectionHall::populate(const FuncDataBase& Control)
   spfMazeWidthSide=Control.EvalVar<double>(keyName+"SPFMazeWidthSide");
   spfMazeWidthSPF=Control.EvalVar<double>(keyName+"SPFMazeWidthSPF");
   spfMazeLength=Control.EvalVar<double>(keyName+"SPFMazeLength");
+  spfMazeLayerThick=Control.EvalVar<double>(keyName+"SPFMazeLayerThick");
+  spfMazeLayerMat=ModelSupport::EvalMat<int>(Control,keyName+"SPFMazeLayerMat");
   fkgDoorWidth=Control.EvalVar<double>(keyName+"FKGDoorWidth");
   fkgDoorHeight=Control.EvalVar<double>(keyName+"FKGDoorHeight");
   fkgMazeWidth=Control.EvalVar<double>(keyName+"FKGMazeWidth");
@@ -485,6 +487,14 @@ InjectionHall::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7011,buildIndex+7001,Y,-wallThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7002,buildIndex+22,Y,spfMazeWidthSPF);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7012,buildIndex+7002,Y,wallThick);
+
+  // SPF maze layer
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7031,buildIndex+7001,Y,spfMazeLayerThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7032,buildIndex+7002,Y,-spfMazeLayerThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7033,buildIndex+7013,X,spfMazeLayerThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7041,buildIndex+31,Y,-spfMazeLayerThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7042,buildIndex+22,Y,spfMazeLayerThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7043,buildIndex+7003,X,-spfMazeLayerThick);
 
   // SPF concrete door parking space
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7101,buildIndex+7012,Y,
@@ -875,13 +885,27 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out);
 
   // SPF hall access maze (room C080011)
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7001 -31 7013 -223 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7001 -7002 7013 -7033 5 -6");
+  makeCell("SPFMazeLayer",System,cellIndex++,spfMazeLayerMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7001 -7031 7033 -223 5 -6");
+  makeCell("SPFMazeLayer",System,cellIndex++,spfMazeLayerMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7032 -7002 7033 -223 5 -6");
+  makeCell("SPFMazeLayer",System,cellIndex++,spfMazeLayerMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7041 -7042 7043 -7003 5 -6");
+  makeCell("SPFMazeLayerSide",System,cellIndex++,spfMazeLayerMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7041 -31 7003 -223 5 -6");
+  makeCell("SPFMazeLayerTDC",System,cellIndex++,spfMazeLayerMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 22 -7042 7003 -223 5 -6"); //
+  makeCell("SPFMazeLayerSPF",System,cellIndex++,spfMazeLayerMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7031 -7041 7033 -223 5 -6");
   makeCell("SPFMazeTDCVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7001 -7002 7023 -7013 5 -6");
   makeCell("SPFMazeSideWall",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 31 -22 7013 -7003 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7041 -7042 7033 -7043 5 -6");
   makeCell("SPFMazeSideVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7011 -7012 53 -7023 5 -6");
@@ -890,7 +914,7 @@ InjectionHall::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 7011 -7001 7023  -233 5 -6");
   makeCell("SPFMazeSideWall",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 22 -7002 7013 -223 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7042 -7032 7033 -223 5 -6");
   makeCell("SPFMazeSPFVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7002 -7012 7023 -7113 5 -6");
@@ -1469,7 +1493,7 @@ InjectionHall::addPillars(Simulation& System,const int CN) const
       testHR.removeMatchedPlanes(Z,0.9);   // remove roof
       testHR.removeMatchedPlanes(-Z,0.9);   // remove base
 
-      
+
       // simple cheep test... not idea but works
       const std::vector<double> xOffset({0.0,-1.0,0.0,1.0,0.0});
       const std::vector<double> yOffset({0.0,0.0,-1.0,0.0,1.0});
@@ -1484,7 +1508,7 @@ InjectionHall::addPillars(Simulation& System,const int CN) const
 		{
 		  HR*=ModelSupport::getHeadRule(SMap,SI,"7");
 		  flag=true;
-		  break;		  
+		  break;
 		}
 	    }
 	  SI+=10;

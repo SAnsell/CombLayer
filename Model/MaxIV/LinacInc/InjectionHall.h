@@ -57,6 +57,8 @@ class InjectionHall :
   double spfMazeWidthSide;      ///< SPF access maze side width
   double spfMazeWidthSPF;       ///< SPF access maze width from the SPF hallway
   double spfMazeLength;         ///< SPF access maze full length (along the x-axis)
+  double spfMazeLayerThick;     ///< SPF maze B4C layer thick
+  int spfMazeLayerMat;          ///< SPF maze B4C layer material
 
   double fkgDoorWidth;          ///< Future klystron gallery access door width
   double fkgDoorHeight;         ///< Future klystron gallery access door height
@@ -172,14 +174,14 @@ class InjectionHall :
   std::vector<double> pRadii;   ///< Pillar radii
   std::vector<int> pMat;        ///< Pillar materials
   std::vector<Geometry::Vec3D> pXY; ///< Pillar coordinates (with respect to building origin)
-  
+
   double thzWidth;              ///< Width of THz penetration
   double thzHeight;             ///< Height of THz penetration
   double thzXStep;              ///< THz penetration X offset with respect to FMidPt
   double thzZStep;              ///< THz penetration X offset with respect to FMidPt
   double thzZAngle;             ///< THz penetration Z angle
   int thzMat;                   ///< THz penetration material
-  
+
   int voidMat;                  ///< Void material
   int wallMat;                  ///< Wall material
   int wallIronMat;              ///< Material of the iron layer before the back wall
@@ -188,7 +190,7 @@ class InjectionHall :
   int floorMat;                 ///< Floor material
   int soilMat;                  ///< Earth material
 
-  
+
   void createFloor(Simulation&);
   void layerProcess(Simulation&,const std::string&,
                     const int,const int,const size_t);
@@ -209,7 +211,7 @@ class InjectionHall :
   size_t getBackWallNLayers() const {return backWallNLayers; }
   bool addPillars(Simulation&,const int) const;
 
-  
+
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);
