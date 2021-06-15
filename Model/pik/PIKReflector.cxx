@@ -189,17 +189,21 @@ PIKReflector::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,radius-wallThick);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Z,radius);
 
+  double ConeCut = 0.1; // guaranteed cone and auxiliary plane intersection
+
   double h = radius*tan(floorPitch*M_PI/180.0);
-  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(height/2.0+h),Z); // aux plane
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*((height/2.0+h)-ConeCut),Z); // aux plane
   ModelSupport::buildCone(SMap,buildIndex+18,Origin-Z*(height/2.0+h),Z,90-floorPitch);
   h -= wallThick/cos(floorPitch*M_PI/180.0);
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0+h),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*((height/2.0+h)-ConeCut),Z);
   ModelSupport::buildCone(SMap,buildIndex+8,Origin-Z*(height/2.0+h),Z,90-floorPitch);
 
   h = radius*tan(roofPitch*M_PI/180.0);
-  ModelSupport::buildCone(SMap,buildIndex+19,Origin+Z*(height/2.0+h),Z,90-roofPitch,-1);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*((height/2.0+h)-ConeCut),Z); // aux plane 2
+  ModelSupport::buildCone(SMap,buildIndex+19,Origin+Z*(height/2.0+h),Z,90-roofPitch);
   h -= wallThick/cos(roofPitch*M_PI/180.0);
-  ModelSupport::buildCone(SMap,buildIndex+9,Origin+Z*(height/2.0+h),Z,90-roofPitch,-1);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*((height/2.0+h)-ConeCut),Z);
+  ModelSupport::buildCone(SMap,buildIndex+9,Origin+Z*(height/2.0+h),Z,90-roofPitch);
 
   // aux planes
 
@@ -222,13 +226,15 @@ PIKReflector::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 15 18 -17 ");
   makeCell("Bottom",System,cellIndex++,shieldMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," -15 -17 ")+bottom;
+  Out=ModelSupport::getComposite(SMap,buildIndex," -15 -17 ") + bottom;
   makeCell("Bottom",System,cellIndex++,shieldMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 19 -17 ") + side+top;
+  Out=ModelSupport::getComposite(SMap,buildIndex," 19 -17 -16 ");
+  makeCell("Top",System,cellIndex++,shieldMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 16 -17 ") + top;
   makeCell("Top",System,cellIndex++,shieldMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 5 -8 -9 -7 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 5 -8 -9 -7 -6 ");
   makeCell("MainCell",System,cellIndex++,mat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 5 -18 8 -7 ");
@@ -237,9 +243,13 @@ PIKReflector::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," -5 15 -18 ");
   makeCell("WallBottomLower",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -19 9 -7 ");
-  makeCell("WallTop",System,cellIndex++,wallMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -17 -19 -18 15 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -19 9 -7 -6 ");
+  makeCell("WallTopLower",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -19 6 -16 ");
+  makeCell("WallTopUpper",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -17 -19 -18 15 -16 ");
   makeCell("WallSide",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -17 ") + top + bottom;
