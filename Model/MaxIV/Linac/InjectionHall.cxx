@@ -893,11 +893,11 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("SPFMazeLayer",System,cellIndex++,spfMazeLayerMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7041 -7042 7043 -7003 5 -6");
-  makeCell("SPFMazeLayerSide",System,cellIndex++,spfMazeLayerMat,0.0,Out);
+  makeCell("SPFMazeLayer",System,cellIndex++,spfMazeLayerMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex," 7041 -31 7003 -223 5 -6");
-  makeCell("SPFMazeLayerTDC",System,cellIndex++,spfMazeLayerMat,0.0,Out);
+  makeCell("SPFMazeLayer",System,cellIndex++,spfMazeLayerMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex," 22 -7042 7003 -223 5 -6"); //
-  makeCell("SPFMazeLayerSPF",System,cellIndex++,spfMazeLayerMat,0.0,Out);
+  makeCell("SPFMazeLayer",System,cellIndex++,spfMazeLayerMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7031 -7041 7033 -223 5 -6");
   makeCell("SPFMazeTDCVoid",System,cellIndex++,voidMat,0.0,Out);
