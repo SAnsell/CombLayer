@@ -187,7 +187,7 @@ foreach my $mainProg (@masterProg)
 	$gM->addDepUnit("singleItem",
 			[@singleItem,
 			 qw( commonVar commonGenerator R1Common R3Common
-			     commonBeam Linac )]);
+			     commonBeam Linac pik )]);
       }
 
 
