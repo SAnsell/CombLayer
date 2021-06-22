@@ -70,6 +70,11 @@ class InjectionHall :
   double fkgMazeWidth;          ///< Future klystron gallery maze width
   double fkgMazeLength;         ///< Future klystron gallery maze length
   double fkgMazeWallThick;      ///< Future klystron gallery maze wall thickness
+  double fkgShieldThick;        ///< FKG additional shielding thickness
+  double fkgShieldHeight;       ///< FKG additional shielding height
+  double fkgShieldDepth;        ///< FKG additional shielding depth
+  double fkgShieldLength;       ///< FKG additional shielding length
+  int fkgShieldMat;             ///< FKG additional shielding material
 
   double btgThick;          ///< PREFAB BTG-BLOCK thick
   double btgHeight;         ///< BTG-BLOCK height

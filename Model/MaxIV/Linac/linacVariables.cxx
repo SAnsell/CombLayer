@@ -3360,6 +3360,12 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"FKGMazeLength",280.0); // derived from K_20-1_08F6c1 (110+170)
   Control.addVariable(wallKey+"FKGMazeWallThick",200.0); // K_20-1_08F6c1
 
+  Control.addVariable(wallKey+"FKGShieldThick",20.0); // my suggestion [test]
+  Control.addVariable(wallKey+"FKGShieldLength",800.0); // my suggestion [test]
+  Control.addVariable(wallKey+"FKGShieldHeight",229.0); // my suggestion [test]
+  Control.addVariable(wallKey+"FKGShieldDepth",0.0); // my suggestion [test]
+  Control.addVariable(wallKey+"FKGShieldMat","Stainless304L"); // my suggestion [test]
+
   Control.addVariable(wallKey+"BTGThick",90.0); // calculated from K_20-1_08G6b4: 2700-1800
   Control.addVariable(wallKey+"BTGHeight",200.0); // derived from K_20-6_075
   Control.addVariable(wallKey+"BTGLength",1000.0); // K_20-1_08G6b[14]: 495000-489000-1416+5416

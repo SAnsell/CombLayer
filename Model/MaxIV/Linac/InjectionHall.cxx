@@ -124,6 +124,11 @@ InjectionHall::populate(const FuncDataBase& Control)
   fkgMazeWidth=Control.EvalVar<double>(keyName+"FKGMazeWidth");
   fkgMazeLength=Control.EvalVar<double>(keyName+"FKGMazeLength");
   fkgMazeWallThick=Control.EvalVar<double>(keyName+"FKGMazeWallThick");
+  fkgShieldThick=Control.EvalVar<double>(keyName+"FKGShieldThick");
+  fkgShieldHeight=Control.EvalVar<double>(keyName+"FKGShieldHeight");
+  fkgShieldDepth=Control.EvalVar<double>(keyName+"FKGShieldDepth");
+  fkgShieldLength=Control.EvalVar<double>(keyName+"FKGShieldLength");
+  fkgShieldMat=ModelSupport::EvalMat<int>(Control,keyName+"FKGShieldMat");
   btgThick=Control.EvalVar<double>(keyName+"BTGThick");
   btgHeight=Control.EvalVar<double>(keyName+"BTGHeight");
   btgLength=Control.EvalVar<double>(keyName+"BTGLength");
@@ -609,6 +614,11 @@ InjectionHall::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+7805,Origin-Z*(midTFrontLShieldHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+7806,Origin+Z*(midTFrontLShieldHeight/2.0),Z);
 
+  // FKG additional shielding layer [inside the SPF room, near the BD room entrance]
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7901,buildIndex+31,Y,-fkgShieldLength);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7903,buildIndex+1003,X,-fkgShieldThick);
+  ModelSupport::buildPlane(SMap,buildIndex+7905,Origin-Z*(fkgShieldDepth),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+7906,Origin+Z*(fkgShieldHeight),Z);
 
   // transfer for later
   SurfMap::setSurf("Front",SMap.realSurf(buildIndex+1));
@@ -735,8 +745,21 @@ InjectionHall::createObjects(Simulation& System)
 
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-				 "211 -31 223 -1003 5 -6 97M 117M 127M 137M 147M 157M 167M ");
+				 "211 -31 223 -7903 5 -6 97M 117M 127M 137M 147M 157M 167M ");
   makeCell("LongVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,"211 -7901 7903 -1003 5 -6 ");
+  makeCell("LongVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,"7901 -31 7903 -1003 5 -7905 ");
+  makeCell("LongVoid",System,cellIndex++,voidMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,"7901 -31 7903 -1003 7905 -7906 ");
+  makeCell("FKGShield",System,cellIndex++,fkgShieldMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,"7901 -31 7903 -1003 7906 -6 ");
+  makeCell("LongVoid",System,cellIndex++,voidMat,0.0,Out);
+
+
+
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
 				 "21 -22 7003 -1003 5 -6 ");
