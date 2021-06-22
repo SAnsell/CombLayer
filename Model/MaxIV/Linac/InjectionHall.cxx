@@ -943,18 +943,12 @@ InjectionHall::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 7032 -7002 7033 -223 7036 -6");
   makeCell("SPFMazeSPFVoid",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7041 -7042 7043 -7003 5 -7036");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7041 -7042 7043 -7003 5 -6");
   makeCell("SPFMazeLayer",System,cellIndex++,spfMazeLayerMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7041 -7042 7043 -7003 7036 -6");
-  makeCell("SPFMazeSideVoid",System,cellIndex++,voidMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7041 -31 7003 -223 5 -7036");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7041 -31 7003 -223 5 -6");
   makeCell("SPFMazeLayer",System,cellIndex++,spfMazeLayerMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7041 -31 7003 -223 7036 -6");
-  makeCell("SPFMazeS1Void",System,cellIndex++,voidMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 22 -7042 7003 -223 5 -7036");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 22 -7042 7003 -223 5 -6");
   makeCell("SPFMazeLayer",System,cellIndex++,spfMazeLayerMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 22 -7042 7003 -223 7036 -6");
-  makeCell("SPFMazeSPFVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7031 -7041 7033 -223 5 -6");
   makeCell("SPFMazeS1Void",System,cellIndex++,voidMat,0.0,Out);
