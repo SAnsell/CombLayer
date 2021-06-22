@@ -385,10 +385,22 @@ global_settings {
     #declare projection = 0;
     #declare cameraAngle = 70;
   #break
-  #case(strcmp(ITEM,"SPFMaze")) // SPF access maze
-    #declare cameraLocation = <-2800, 10400, 1000>;
-    #declare cameraLookAt   = <-2000, 10000, 300>;
-    #declare cameraAngle = 60;
+  #case(strcmp(ITEM,"SPFMazeS1")) // SPF access maze viewed from the S1 area
+    #declare cameraLocation = <-1275, 9930, 0>;
+    #declare cameraLookAt   = <-1785, 9930, 0>;
+    #declare cameraAngle = 80;
+    #declare projection = 0;
+  #break
+  #case(strcmp(ITEM,"SPFMazeSide")) // SPF access maze viewed from its side segment
+    #declare cameraLocation = <-1730, 9880, 0>;
+    #declare cameraLookAt   = <-1730, 10380, 0>;
+    #declare cameraAngle = 80;
+    #declare projection = 0;
+  #break
+  #case(strcmp(ITEM,"SPFMazeSPF")) // SPF access maze viewed from its segment in the SPF hallway
+    #declare cameraLocation = <-1780, 10328, 0>;
+    #declare cameraLookAt   = <-1450, 10320, 50>;
+    #declare cameraAngle = 80;
     #declare projection = 0;
   #break
   #case(strcmp(ITEM,"Anders40")) // Picture for Anders
