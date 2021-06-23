@@ -66,6 +66,9 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
+#include "Surface.h"
+#include "Quadratic.h"
+#include "Plane.h"
 
 #include "InjectionHall.h"
 
@@ -1440,6 +1443,22 @@ InjectionHall::createLinks()
 			-X*(linearWidth/2.0+spfAngleStep),X);
   FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+223));
   FixedComp::nameSideIndex(6,"SPFMazeOut");
+
+  // BTG
+  const Geometry::Plane* p7401 = SMap.realPtr<Geometry::Plane>(buildIndex+7401);
+  const Geometry::Plane* p7402 = SMap.realPtr<Geometry::Plane>(buildIndex+7402);
+  const Geometry::Plane* p7403 = SMap.realPtr<Geometry::Plane>(buildIndex+7403);
+  const double btgdX = p7403->getDistance();
+  const double btgdY = (p7401->getDistance() + p7402->getDistance())/2.0;
+  FixedComp::setConnect(7,Origin+X*btgdX+Y*btgdY,X);
+  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+7403));
+  FixedComp::nameSideIndex(7,"BTGSide");
+
+  // FKG additional shielding
+  const Geometry::Plane* p7903 = SMap.realPtr<Geometry::Plane>(buildIndex+7903);
+  FixedComp::setConnect(8,Origin+X*p7903->getDistance()+Y*btgdY,X);
+  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+7903));
+  FixedComp::nameSideIndex(8,"FKGShieldSide");
 
   return;
 }
