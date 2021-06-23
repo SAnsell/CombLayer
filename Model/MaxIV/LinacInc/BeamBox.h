@@ -48,11 +48,15 @@ class BeamBox :
     
   double width;             ///< Full Width
   double height;            ///< Full Height
-  double length;             ///< Full Depth
+  double length;            ///< Full Depth
+  double fullCut;           ///< Full outer cut
+  double innerCut;          ///< Inner cut thickness
   double backThick;         ///< back thickness
+  double backExtension;     ///< back extentions
   double wallThick;         ///< front thickness
 
   int innerMat;              ///< Material
+  int backMat;              ///< Material for back wall
   int mainMat;              ///< Material
   
   virtual void populate(const FuncDataBase&);
