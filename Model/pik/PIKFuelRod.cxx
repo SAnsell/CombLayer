@@ -180,8 +180,10 @@ PIKFuelRod::createObjects(Simulation& System)
 
   std::string Out;
 
+  // Now we made this cell too complex.
+  // We will simplify it after we have rounded the corners.
   Out=ModelSupport::getComposite(SMap,buildIndex,
-	 " (11 -12 3 -4) : (1 -2 13 -14) 5 -6");
+				 " (11 -12 3 -4) : (1 -2 13 -14) 5 -6");
   makeCell("MainCell",System,cellIndex++,mainMat,0.0,Out);
 
   addOuterSurf(Out);
