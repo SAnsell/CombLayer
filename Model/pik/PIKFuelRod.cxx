@@ -77,7 +77,7 @@ PIKFuelRod::PIKFuelRod(const PIKFuelRod& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedRotate(A),
   attachSystem::CellMap(A),
-  length(A.length),width(A.width),height(A.height),
+  outerR(A.outerR),width(A.width),height(A.height),
   mainMat(A.mainMat)
   /*!
     Copy constructor
@@ -98,7 +98,7 @@ PIKFuelRod::operator=(const PIKFuelRod& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
-      length=A.length;
+      outerR=A.outerR;
       width=A.width;
       height=A.height;
       mainMat=A.mainMat;
@@ -133,7 +133,7 @@ PIKFuelRod::populate(const FuncDataBase& Control)
 
   FixedRotate::populate(Control);
 
-  length=Control.EvalVar<double>(keyName+"Length");
+  outerR=Control.EvalVar<double>(keyName+"OuterRadius");
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
 
@@ -150,8 +150,8 @@ PIKFuelRod::createSurfaces()
 {
   ELog::RegMethod RegA("PIKFuelRod","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(outerR/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(outerR/2.0),Y);
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
@@ -189,10 +189,11 @@ PIKFuelRod::createLinks()
 {
   ELog::RegMethod RegA("PIKFuelRod","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
+  FixedComp::setConnect(0,Origin-Y*(outerR/2.0),-Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  //  FixedComp::nameSideIndex(0,"NegativeY");
 
-  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
+  FixedComp::setConnect(1,Origin+Y*(outerR/2.0),Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
   FixedComp::setConnect(2,Origin-X*(width/2.0),-X);

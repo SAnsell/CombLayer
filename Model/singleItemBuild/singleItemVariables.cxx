@@ -250,7 +250,7 @@ SingleItemVariables(FuncDataBase& Control)
   // FMaskGen.setMinSize(10.2,0.71,0.71);
   FMaskGen.generateColl(Control,"FMask",0.0,15.0);
 
-  
+
   setVariable::EPSeparatorGenerator EPSGen;
   EPSGen.generatePipe(Control,"EPSeparator");
 
@@ -293,12 +293,12 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::GaugeGenerator GTGen;
   GTGen.generateGauge(Control,"GaugeTube",0.0,0.0);
- 
+
   setVariable::BremBlockGenerator BBGen;
   BBGen.setAperature(-1,1.0,1.0,1.0,1.0,1.0,1.0);
   BBGen.generateBlock(Control,"BremBlock",0,8.0);
- 
-  
+
+
   setVariable::CrossWayGenerator CWBlankGen;
   CWBlankGen.setCF<CF63>();
   CWBlankGen.setMainLength(2.4,13.6);
@@ -319,7 +319,7 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::ConnectorGenerator CPGen;
   CPGen.generatePipe(Control,"ConnectorTube",20.0);
-  
+
   setVariable::BoxJawsGenerator BJGen;
   BJGen.generateJaws(Control,"BoxJaws",0.3,0.3);
 
@@ -382,7 +382,7 @@ SingleItemVariables(FuncDataBase& Control)
 
   DEGen.setLength(82.0);
   DEGen.generatePipe(Control,"M1DipoleOut",0.0);
-  
+
   // Beam Stop
   setVariable::LBeamStopGenerator BS;
   BS.generateBStop(Control,"BeamStop");
@@ -440,7 +440,7 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable("YAGYAngle",-90.0);
 
   setVariable::CurveMagGenerator CMagGen;
-  CMagGen.generateMag(Control,"CMag");  
+  CMagGen.generateMag(Control,"CMag");
 
   setVariable::StriplineBPMGenerator BPMGen;
   BPMGen.generateBPM(Control,"BPM",0.0);
@@ -460,7 +460,7 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::EBeamStopGenerator EBGen;
   EBGen.generateEBeamStop(Control,"EBeam",0);
-  
+
   setVariable::ScrapperGenerator SCGen;
   SCGen.generateScrapper(Control,"Scrapper",1.0);   // z lift
 
@@ -615,7 +615,7 @@ SingleItemVariables(FuncDataBase& Control)
   FlangeDomeGenerator FDGen;
   PItemGen.setCF<setVariable::CF40>(10.0);
   PItemGen.setNoPlate();
-  SimpleTubeGen.setCF<CF350>();    
+  SimpleTubeGen.setCF<CF350>();
   SimpleTubeGen.generateTube(Control,"FlangeTube",20.0);
   Control.addVariable("FlangeTubeNPorts",0);
   FDGen.generateDome(Control,"FlangeDome");
@@ -638,7 +638,7 @@ localShieldVariables(FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("singleItemVariables[F]","localShieldVariables");
-  
+
   setVariable::LocalShieldingGenerator LSGen;
 
   LSGen.setSize(10.0,60,30.0);
@@ -674,14 +674,20 @@ localShieldVariables(FuncDataBase& Control)
   Control.addVariable("ShieldEZStep",-11); // Y
   Control.addVariable("ShieldEYAngle",-10);
 
-  
+
   Control.addVariable("CellLength",100.0);
   Control.addVariable("CellWidth",100.0);
   Control.addVariable("CellHeight",190.0);
 
+  // PIK fuel rod
+  Control.addVariable("PIKFuelRodOuterRadius",10.0);
+  Control.addVariable("PIKFuelRodWidth",5.0);
+  Control.addVariable("PIKFuelRodHeight",20.0);
+  Control.addVariable("PIKFuelRodMainMat","Uranium");
+
   return;
 }
-  
+
 void
 exptHutVariables(FuncDataBase& Control,
 		 const std::string& beamName,
@@ -696,7 +702,7 @@ exptHutVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("singleItemVariables[F]","exptHutVariables");
 
   const double beamOffset(-0.6);
-    
+
   const std::string hutName(beamName+"ExptHutch");
 
   Control.addVariable(hutName+"Height",200.0);
@@ -710,7 +716,7 @@ exptHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"OuterThick",1.1);
   Control.addVariable(hutName+"CornerLength",720.0);
   Control.addVariable(hutName+"CornerAngle",45.0);
-  
+
   Control.addVariable(hutName+"InnerOutVoid",10.0);
   Control.addVariable(hutName+"OuterOutVoid",10.0);
 
@@ -748,5 +754,5 @@ exptHutVariables(FuncDataBase& Control,
   return;
 }
 
-  
+
 }  // NAMESPACE setVariable

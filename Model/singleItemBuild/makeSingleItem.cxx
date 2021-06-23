@@ -1232,7 +1232,11 @@ makeSingleItem::build(Simulation& System,
 
     if (item == "PIKFuelRod" )
       {
-	//	std::shared_ptr<pikSystem::PIKFuelRod> pfr(new pikSystem::PIKFuelRod("PIKFuelRod"));
+	std::shared_ptr<pikSystem::PIKFuelRod> pfr =
+	  std::make_shared<pikSystem::PIKFuelRod>("PIKFuelRod");
+	OR.addObject(pfr);
+	pfr->addInsertCell(voidCell);
+	pfr->createAll(System,World::masterOrigin(),0);
       }
 
     if (item=="Help" || item=="help")

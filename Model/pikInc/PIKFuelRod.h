@@ -42,7 +42,7 @@ class PIKFuelRod : public attachSystem::ContainedComp,
 {
  private:
 
-  double length;                ///< Total length including void
+  double outerR;                ///< Outer cylinder radius
   double width;                 ///< Width
   double height;                ///< Height
 
