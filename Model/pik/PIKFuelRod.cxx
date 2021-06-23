@@ -77,7 +77,8 @@ PIKFuelRod::PIKFuelRod(const PIKFuelRod& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedRotate(A),
   attachSystem::CellMap(A),
-  outerR(A.outerR),width(A.width),height(A.height),
+  outerR(A.outerR),height(A.height),
+  radius(A.radius),
   mainMat(A.mainMat)
   /*!
     Copy constructor
@@ -99,7 +100,7 @@ PIKFuelRod::operator=(const PIKFuelRod& A)
       attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
       outerR=A.outerR;
-      width=A.width;
+      radius=A.radius;
       height=A.height;
       mainMat=A.mainMat;
     }
@@ -134,7 +135,7 @@ PIKFuelRod::populate(const FuncDataBase& Control)
   FixedRotate::populate(Control);
 
   outerR=Control.EvalVar<double>(keyName+"OuterRadius");
-  width=Control.EvalVar<double>(keyName+"Width");
+  radius=Control.EvalVar<double>(keyName+"Radius");
   height=Control.EvalVar<double>(keyName+"Height");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
@@ -150,11 +151,17 @@ PIKFuelRod::createSurfaces()
 {
   ELog::RegMethod RegA("PIKFuelRod","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(outerR/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(outerR/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(radius),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(radius),Y);
 
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(outerR-radius),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(outerR-radius),Y);
+
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(radius),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(radius),X);
+
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(outerR-radius),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(outerR-radius),X);
 
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
@@ -172,7 +179,9 @@ PIKFuelRod::createObjects(Simulation& System)
   ELog::RegMethod RegA("PIKFuelRod","createObjects");
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+	 " (11 -12 3 -4) : (1 -2 13 -14) 5 -6");
   makeCell("MainCell",System,cellIndex++,mainMat,0.0,Out);
 
   addOuterSurf(Out);
@@ -196,10 +205,10 @@ PIKFuelRod::createLinks()
   FixedComp::setConnect(1,Origin+Y*(outerR/2.0),Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
-  FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
+  FixedComp::setConnect(2,Origin-X*(radius),-X);
   FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
 
-  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
+  FixedComp::setConnect(3,Origin+X*(radius),X);
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
 
   FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
