@@ -601,6 +601,12 @@ global_settings {
     #declare cameraLookAt   = <300, 1700, 0>;
     #declare projection = 1;
   #break
+    #case(strcmp(ITEM,"FKGShield"))
+    #declare cameraLocation = <-530, 9100, 0>;
+    #declare cameraLookAt   = <-40, 9670, 100>;
+    #declare projection = 0;
+    #declare cameraAngle = 80;
+  #break
   #else // whole beamline view (like All)
     #declare cameraLocation = <-500, 5200, 1000>;
     #declare cameraLookAt   = <-600, 5100, 0>;
