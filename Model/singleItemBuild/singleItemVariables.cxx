@@ -386,7 +386,7 @@ SingleItemVariables(FuncDataBase& Control)
   
   // Beam Stop
   setVariable::NBeamStopGenerator BS;
-  BS.generateBStop(Control,"BeamStop");
+  BS.generateBStop(Control,"BeamStop",3.0);
   Control.addVariable("BeamStopYStep",3.0);
   // Beam Box
   setVariable::BeamBoxGenerator BX;

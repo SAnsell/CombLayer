@@ -348,12 +348,11 @@ Segment29Magnet(FuncDataBase& Control,
   Control.addVariable(lKey+"YagScreenBYAngle",-90.0);
 
 
-  BSGenB.generateBStop(Control,lKey+"BeamStopA");
+  BSGenB.generateBStop(Control,lKey+"BeamStopA",3.0);
   BSGen.generateBStop(Control,lKey+"BeamStopB");
   Control.addVariable(lKey+"BeamStopAYAngle",-90.0);
-  Control.addVariable(lKey+"BeamStopAYStep",30.0);
   Control.addVariable(lKey+"BeamStopBYAngle",-90.0);
-  Control.addVariable(lKey+"BeamStopBYStep",30.0);
+  Control.addVariable(lKey+"BeamStopBYStep",3.0);
   
   Control.addVariable(lKey+"BeamWingAYStep",100.0);
   Control.addVariable(lKey+"BeamWingAXStep",25.0);

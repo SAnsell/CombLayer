@@ -58,7 +58,7 @@ NBeamStopGenerator::NBeamStopGenerator() :
        {12.0},
        {120.0}
     }),
-  mat({{"Tungsten","Tungsten","Tungsten","Tungsten","Stainless304"},
+  mat({{"Tungsten","HighDensPoly","Tungsten","HighDensPoly","Stainless304"},
        {"HighDensPoly","Stainless304"},
        {"Void","Stainless304"},
        {"Copper","HighDensPoly"}
@@ -76,11 +76,13 @@ NBeamStopGenerator::~NBeamStopGenerator()
 
 void
 NBeamStopGenerator::generateBStop(FuncDataBase& Control,
-				  const std::string& keyName) const
+				  const std::string& keyName,
+				  const double yStep) const
 /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables
     \param keyName :: Head name for variable
+    \param yStep :: Step 
   */
 {
   ELog::RegMethod RegA("NBeamStopGenerator","generateBStop");

@@ -51,7 +51,8 @@ class NBeamStopGenerator
   NBeamStopGenerator& operator=(const NBeamStopGenerator&);
   virtual ~NBeamStopGenerator();
 
-  virtual void generateBStop(FuncDataBase&,const std::string&) const;
+  virtual void generateBStop(FuncDataBase&,const std::string&,
+			     const double) const;
 
 };
 
