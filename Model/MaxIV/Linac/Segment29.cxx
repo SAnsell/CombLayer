@@ -256,7 +256,6 @@ Segment29::buildObjects(Simulation& System)
     (System,*IZTop,*yagUnitA,"back",*beamBox);
   outerCellB = constructSystem::constructFreeUnit
     (System,*IZMid,*yagUnitB,"back",*beamStopB);
-  //  beamBox->insertInCell(System,outerCellB);
   
   beamStopA->addInsertCell(beamBox->getCells("Void"));
   beamStopA->createAll(System,*yagUnitA,"back");

@@ -129,6 +129,7 @@
 #include "IonGauge.h"
 #include "TriggerTube.h"
 #include "NBeamStop.h"
+#include "BeamBox.h"
 #include "BremTube.h"
 #include "HPJaws.h"
 #include "BoxJaws.h"
@@ -899,12 +900,18 @@ makeSingleItem::build(Simulation& System,
     {
       std::shared_ptr<tdcSystem::NBeamStop>
 	BS(new tdcSystem::NBeamStop("BeamStop"));
+      std::shared_ptr<tdcSystem::BeamBox>
+	BX(new tdcSystem::BeamBox("BeamBox"));
 
       OR.addObject(BS);
+      OR.addObject(BX);
 
-      BS->addInsertCell(voidCell);
+      BX->addInsertCell(voidCell);
+      BX->createAll(System,World::masterOrigin(),0);
+
+      BS->addInsertCell(BX->getCells("Void"));
       BS->createAll(System,World::masterOrigin(),0);
-
+      
       return;
     }
 
