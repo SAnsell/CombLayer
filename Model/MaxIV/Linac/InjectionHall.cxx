@@ -343,12 +343,12 @@ InjectionHall::createSurfaces()
   // roof / floor
   SurfMap::makePlane("Floor",SMap,buildIndex+5,Origin-Z*floorDepth,Z);
   SurfMap::makePlane("Roof",SMap,buildIndex+6,Origin+Z*roofHeight,Z);
-  
+
   SurfMap::makePlane("SubFloor",SMap,buildIndex+15,
 		     Origin-Z*(floorDepth+floorThick),Z);
   SurfMap::makePlane("OutRoof",SMap,buildIndex+16,
 		     Origin+Z*(roofHeight+roofThick),Z);
-  
+
   // MID T [1000]:
   const Geometry::Vec3D MidPt(Origin+X*midTXStep+Y*midTYStep);
   SurfMap::makePlane("MidWall",SMap,buildIndex+1001,MidPt-Y*midTThick,Y);
@@ -379,7 +379,7 @@ InjectionHall::createSurfaces()
 			   BMidPtA+Z,
 			   Y);
   SurfMap::setSurf("TAngleWall",SMap.realSurf(buildIndex+1112));
-  
+
   // End divider
   ModelSupport::buildPlane(SMap,buildIndex+1153,
 			   FMidPtA,
@@ -389,7 +389,7 @@ InjectionHall::createSurfaces()
 
   SurfMap::setSurf("TMidFront",SMap.realSurf(buildIndex+1111));
   SurfMap::setSurf("MidAngleWall",-SMap.realSurf(buildIndex+1111));
-  
+
   SurfMap::setSurf("TMidBack",SMap.realSurf(buildIndex+1112));
 
 
@@ -468,7 +468,7 @@ InjectionHall::createSurfaces()
 		     Origin+Y*(backWallYStep+backWallThick),Y);
 
   SurfMap::makePlane("BackWallFront",SMap,buildIndex+31,
-		     Origin+Y*(backWallYStep-backWallIronThick),Y);  
+		     Origin+Y*(backWallYStep-backWallIronThick),Y);
 
   // Wall between SPF hallway and FemtoMAX beamline area
   ModelSupport::buildShiftedPlane(SMap,buildIndex+6003,buildIndex+223,X,femtoMAXWallOffset);
@@ -553,7 +553,7 @@ InjectionHall::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7402,buildIndex+21,Y,btgYOffset);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7401,buildIndex+7402,Y,-btgLength);
   SurfMap::makeShiftedPlane("KGOuterBlock",SMap,buildIndex+7403,buildIndex+1004,X,btgThick);
-  
+
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7406,buildIndex+5,X,btgHeight);
 
   // Under-the-floor - main beam dump room
@@ -623,12 +623,12 @@ InjectionHall::createSurfaces()
     }
 
   // MidT front wall local shielding
-  
+
   // SurfMap::buildShiftedPlane
   //   (SMap,buildIndex+7801,buildIndex+1001,Y,-midTFrontLShieldThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7801,buildIndex+1001,Y,-midTFrontLShieldThick);
   SurfMap::addSurf("MidAngleWall",-SMap.realSurf(buildIndex+1001));
-  
+
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7803,buildIndex+1104,X,-midTFrontLShieldWidth);
   ModelSupport::buildPlane(SMap,buildIndex+7805,Origin-Z*(midTFrontLShieldHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+7806,Origin+Z*(midTFrontLShieldHeight/2.0),Z);
@@ -738,7 +738,7 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("KlystronVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7401 -7402 7403 -104 5 -6");
-  makeCell("KlystronVoid",System,cellIndex++,voidMat,0.0,Out);
+  makeCell("KlystronVoidBTG",System,cellIndex++,voidMat,0.0,Out);
 
   // Future klystron gallery maze
   Out=ModelSupport::getComposite(SMap,buildIndex,
@@ -1317,7 +1317,7 @@ InjectionHall::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 53 -54 7505 -16 ");
   addOuterSurf(Out);
 
-  for (size_t i=0; i<6; ++i)
+  for (size_t i=0; i<7; ++i)
     {
       layerProcess(System,"MidT"+std::to_string(i),
 		   SMap.realSurf(buildIndex+1003),
@@ -1414,6 +1414,11 @@ InjectionHall::createObjects(Simulation& System)
   	       -SMap.realSurf(buildIndex+223),
   	       SMap.realSurf(buildIndex+233),
   	       btgNLayers);
+  layerProcess(System,"FKGShield",
+	       SMap.realSurf(buildIndex+7903),
+	       -SMap.realSurf(buildIndex+1003),
+	       btgNLayers);
+
 
   return;
 }
