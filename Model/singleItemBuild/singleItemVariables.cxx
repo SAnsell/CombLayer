@@ -119,6 +119,7 @@
 #include "ConnectorGenerator.h"
 #include "LocalShieldingGenerator.h"
 #include "FlangeDomeGenerator.h"
+#include "BeamBoxGenerator.h"
 
 namespace setVariable
 {
@@ -385,8 +386,12 @@ SingleItemVariables(FuncDataBase& Control)
   
   // Beam Stop
   setVariable::NBeamStopGenerator BS;
-  BS.generateBStop(Control,"BeamStop");
-
+  BS.generateBStop(Control,"BeamStop",3.0);
+  Control.addVariable("BeamStopYStep",3.0);
+  // Beam Box
+  setVariable::BeamBoxGenerator BX;
+  BX.generateBox(Control,"BeamBox",3.0);
+  
   // corrector mag
   setVariable::CorrectorMagGenerator CMGen;
   // last argument is vertical/horizontal switch

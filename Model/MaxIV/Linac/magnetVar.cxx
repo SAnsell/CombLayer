@@ -58,6 +58,7 @@
 #include "IonPTubeGenerator.h"
 #include "LBeamStopGenerator.h"
 #include "NBeamStopGenerator.h"
+#include "BeamBoxGenerator.h"
 
 #include "magnetVar.h"
 
@@ -294,6 +295,7 @@ Segment29Magnet(FuncDataBase& Control,
   setVariable::YagUnitGenerator YagUnitGen;
   setVariable::LBeamStopGenerator BSGen;
   setVariable::NBeamStopGenerator BSGenB;
+  setVariable::BeamBoxGenerator BXGen;
 
   const Geometry::Vec3D startPtA(-637.608,9073.611,0.0);
   const Geometry::Vec3D startPtB(-637.608,9073.535,-84.888);
@@ -346,14 +348,12 @@ Segment29Magnet(FuncDataBase& Control,
   Control.addVariable(lKey+"YagScreenBYAngle",-90.0);
 
 
-  BSGenB.generateBStop(Control,lKey+"BeamStopA");
+  BSGenB.generateBStop(Control,lKey+"BeamStopA",3.0);
   BSGen.generateBStop(Control,lKey+"BeamStopB");
   Control.addVariable(lKey+"BeamStopAYAngle",-90.0);
-  Control.addVariable(lKey+"BeamStopAYStep",30.0);
   Control.addVariable(lKey+"BeamStopBYAngle",-90.0);
-  Control.addVariable(lKey+"BeamStopBYStep",30.0);
-
-
+  Control.addVariable(lKey+"BeamStopBYStep",3.0);
+  
   Control.addVariable(lKey+"BeamWingAYStep",100.0);
   Control.addVariable(lKey+"BeamWingAXStep",25.0);
   Control.addVariable(lKey+"BeamWingAPreZAngle",70.0);
@@ -371,20 +371,9 @@ Segment29Magnet(FuncDataBase& Control,
   Control.addVariable(lKey+"BeamWingBMainMat","Poly");
 
     
-  Control.addVariable(lKey+"BeamBoxYStep",1.0);
+  BXGen.generateBox(Control,lKey+"BeamBox",3.0);
   Control.addVariable(lKey+"BeamBoxPreYAngle",-90.0);
-  Control.addVariable(lKey+"BeamBoxWidth",180.0);
-  Control.addVariable(lKey+"BeamBoxLength",135.0);
-  Control.addVariable(lKey+"BeamBoxHeight",80.0);
-  Control.addVariable(lKey+"BeamBoxWallThick",10.0);
-  Control.addVariable(lKey+"BeamBoxBackThick",2.0);
-  Control.addVariable(lKey+"BeamBoxInnerMat","Void");
-  Control.addVariable(lKey+"BeamBoxBackMat","Copper");
-  Control.addVariable(lKey+"BeamBoxMainMat","Poly");
 
-  Control.addVariable(lKey+"BeamBoxInnerCut",0.0);
-  Control.addVariable(lKey+"BeamBoxFullCut",0.0);
-  Control.addVariable(lKey+"BeamBoxBackExtension",30.0);
   return;
 }
 

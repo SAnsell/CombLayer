@@ -52,11 +52,13 @@ class BeamBox :
   double fullCut;           ///< Full outer cut
   double innerCut;          ///< Inner cut thickness
   double backThick;         ///< back thickness
+  double b4cThick;          ///< extra b4c layer thickness
   double backExtension;     ///< back extentions
   double wallThick;         ///< front thickness
 
-  int innerMat;              ///< Material
+  int innerMat;             ///< Material
   int backMat;              ///< Material for back wall
+  int b4cMat;               ///< Material for back wall
   int mainMat;              ///< Material
   
   virtual void populate(const FuncDataBase&);

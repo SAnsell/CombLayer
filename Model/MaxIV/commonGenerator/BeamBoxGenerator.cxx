@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonGenerator/NBeamStopGenerator.cxx
+ * File:   commonGenerator/BeamBoxGenerator.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -44,67 +44,58 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 
-#include "NBeamStopGenerator.h"
+#include "BeamBoxGenerator.h"
 
 namespace setVariable
 {
 
-NBeamStopGenerator::NBeamStopGenerator() :
-  fullLength(130.0),
-  radii({2.0, 6.0, 30.0,38.0}),
-  len({
-       {30.0,40.0,60.0,75.0},
-       {70.0},
-       {12.0},
-       {120.0}
-    }),
-  mat({{"Tungsten","HighDensPoly","Tungsten","HighDensPoly","Stainless304"},
-       {"HighDensPoly","Stainless304"},
-       {"Void","Stainless304"},
-       {"Copper","HighDensPoly"}
-    })
+BeamBoxGenerator::BeamBoxGenerator() :
+  width(180.0),height(80.0),length(130.0),
+  fullCut(40.0),innerCut(80.0),
+  backThick(8.0),b4cThick(0.5),
+  backExtension(80.0),wallThick(11.0),
+  innerMat("Copper"),backMat("HighDensPoly"),
+  mainMat("HighDensPoly"),b4cMat("B4C")
   /*!
     Constructor and defaults
   */
 {}
 
-NBeamStopGenerator::~NBeamStopGenerator()
+BeamBoxGenerator::~BeamBoxGenerator()
  /*!
    Destructor
  */
 {}
 
 void
-NBeamStopGenerator::generateBStop(FuncDataBase& Control,
-				  const std::string& keyName,
-				  const double yStep) const
-/*!
+BeamBoxGenerator::generateBox(FuncDataBase& Control,
+			      const std::string& keyName,
+			      const double yStep) const
+  /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables
     \param keyName :: Head name for variable
-    \param yStep :: Step 
   */
 {
-  ELog::RegMethod RegA("NBeamStopGenerator","generateBStop");
+  ELog::RegMethod RegA("BeamBoxGenerator","generateBox");
 
-  if (!radii.empty())
-    {
-      Control.addVariable(keyName+"Length",fullLength);
-      Control.addVariable(keyName+"NLayers",mat.size());
-      for(size_t i=0;i<radii.size();i++)
-	{
-	  const std::string layerName(keyName+"Layer"+std::to_string(i));
-	  Control.addVariable(layerName+"Radius",radii[i]);
-	  size_t j;
-	  for(j=0;j<len[i].size();j++)
-	    {
-	      std::string UNum(std::to_string(j));
-	      Control.addVariable(layerName+"Length"+UNum,len[i][j]);
-	      Control.addVariable(layerName+"Mat"+UNum,mat[i][j]);	  
-	    }
-	  Control.addVariable(layerName+"Mat"+std::to_string(j),mat[i][j]);
-	}
-    }
+  Control.addVariable(keyName+"YStep",yStep);
+  
+  Control.addVariable(keyName+"Width",width);
+  Control.addVariable(keyName+"Height",height);
+  Control.addVariable(keyName+"Length",length);
+  Control.addVariable(keyName+"FullCut",fullCut);
+  Control.addVariable(keyName+"InnerCut",innerCut);
+  Control.addVariable(keyName+"BackThick",backThick);
+  Control.addVariable(keyName+"B4CThick",b4cThick);
+  Control.addVariable(keyName+"BackExtension",backExtension);
+  Control.addVariable(keyName+"WallThick",wallThick);
+
+  Control.addVariable(keyName+"InnerMat",innerMat);
+  Control.addVariable(keyName+"BackMat",backMat);
+  Control.addVariable(keyName+"MainMat",mainMat);
+  Control.addVariable(keyName+"B4CMat",b4cMat);
+  
   return;  
 }
 

@@ -106,12 +106,14 @@ BeamBox::populate(const FuncDataBase& Control)
   innerCut=Control.EvalDefVar<double>(keyName+"InnerCut",-10.0);
 
   backThick=Control.EvalVar<double>(keyName+"BackThick");
+  b4cThick=Control.EvalVar<double>(keyName+"B4CThick");
   backExtension=Control.EvalDefVar<double>(keyName+"BackExtension",-10.0);
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   
   innerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"InnerMat",0);
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   backMat=ModelSupport::EvalDefMat<int>(Control,keyName+"BackMat",mainMat);
+  b4cMat=ModelSupport::EvalDefMat<int>(Control,keyName+"B4CMat",backMat);
 
   return;
 }
@@ -142,6 +144,8 @@ BeamBox::createSurfaces()
 
   ModelSupport::buildPlane
     (SMap,buildIndex+12,Origin+Y*(length+backThick),Y);  
+  ModelSupport::buildPlane
+    (SMap,buildIndex+1012,Origin+Y*(length+backThick-b4cThick),Y);  
   ModelSupport::buildPlane
     (SMap,buildIndex+13,Origin-X*(wallThick+width/2.0),X);
   ModelSupport::buildPlane
@@ -209,16 +213,22 @@ BeamBox::createObjects(Simulation& System)
       makeCell("Wall",System,cellIndex++,mainMat,0.0,HR*frontHR);
     }
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 2 13 -14 15 -16");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1012 2 13 -14 15 -16");
   makeCell("BackWall",System,cellIndex++,backMat,0.0,HR);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 1012 13 -14 15 -16");
+  makeCell("BackB4C",System,cellIndex++,b4cMat,0.0,HR);
 
   if (backExtension>Geometry::zeroTol)
     {
       ELog::EM<<"Back volume"<<ELog::endDiag;
       HR=ModelSupport::getHeadRule
-	(SMap,buildIndex,"-12 2 103 -104 15 -16 (-13:14)");
+	(SMap,buildIndex,"-1012 2 103 -104 15 -16 (-13:14)");
       makeCell("BackExtension",System,cellIndex++,backMat,0.0,HR);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"1012 -12 103 -104 15 -16 (-13:14)");
+      makeCell("BackExtension",System,cellIndex++,b4cMat,0.0,HR);
+      
       HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,"-12 -2 103 -104 15 -16 (-13:14)");
       makeCell("BackExtVoid",System,cellIndex++,0,0.0,HR*frontHR);

@@ -285,12 +285,12 @@ InjectionHall::createSurfaces()
 {
   ELog::RegMethod RegA("InjectionHall","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*mainLength,Y);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+12,buildIndex+2,Y,-wallThick);
+  SurfMap::makePlane("Front",SMap,buildIndex+1,Origin,Y);
+  SurfMap::makePlane("Back",SMap,buildIndex+2,Origin+Y*mainLength,Y);
+  SurfMap::makePlane("InnerBack",SMap,buildIndex+12,Origin+Y*(mainLength-wallThick),Y);
 
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(linearWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(linearWidth/2.0),X);
+  SurfMap::makePlane("InnerLeft",SMap,buildIndex+3,Origin-X*(linearWidth/2.0),X);
+  SurfMap::makePlane("InnerRight",SMap,buildIndex+4,Origin+X*(linearWidth/2.0),X);
 
   ModelSupport::buildPlane(SMap,buildIndex+13,
 			   Origin-X*(linearWidth/2.0+wallThick),X);
@@ -341,16 +341,17 @@ InjectionHall::createSurfaces()
     (SMap,buildIndex+233,Origin-X*(linearWidth/2.0+spfAngleStep+wallThick),X);
 
   // roof / floor
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*floorDepth,Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*roofHeight,Z);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+15,Origin-Z*(floorDepth+floorThick),Z);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+16,Origin+Z*(roofHeight+roofThick),Z);
-
+  SurfMap::makePlane("Floor",SMap,buildIndex+5,Origin-Z*floorDepth,Z);
+  SurfMap::makePlane("Roof",SMap,buildIndex+6,Origin+Z*roofHeight,Z);
+  
+  SurfMap::makePlane("SubFloor",SMap,buildIndex+15,
+		     Origin-Z*(floorDepth+floorThick),Z);
+  SurfMap::makePlane("OutRoof",SMap,buildIndex+16,
+		     Origin+Z*(roofHeight+roofThick),Z);
+  
   // MID T [1000]:
   const Geometry::Vec3D MidPt(Origin+X*midTXStep+Y*midTYStep);
-  ModelSupport::buildPlane(SMap,buildIndex+1001,MidPt-Y*midTThick,Y);
+  SurfMap::makePlane("MidWall",SMap,buildIndex+1001,MidPt-Y*midTThick,Y);
 
   ModelSupport::buildPlane(SMap,buildIndex+1011,MidPt,Y);
   ModelSupport::buildPlane(SMap,buildIndex+1003,MidPt-X*(midTThickX/2.0),X);
@@ -377,6 +378,8 @@ InjectionHall::createSurfaces()
 			   BMidPtA,
 			   BMidPtA+Z,
 			   Y);
+  SurfMap::setSurf("TAngleWall",SMap.realSurf(buildIndex+1112));
+  
   // End divider
   ModelSupport::buildPlane(SMap,buildIndex+1153,
 			   FMidPtA,
@@ -385,6 +388,8 @@ InjectionHall::createSurfaces()
 			   X);
 
   SurfMap::setSurf("TMidFront",SMap.realSurf(buildIndex+1111));
+  SurfMap::setSurf("MidAngleWall",-SMap.realSurf(buildIndex+1111));
+  
   SurfMap::setSurf("TMidBack",SMap.realSurf(buildIndex+1112));
 
 
@@ -447,19 +452,23 @@ InjectionHall::createSurfaces()
         Geometry::Quaternion::calcQRotDeg(thzZAngle,Z);
   const Geometry::Vec3D THzX(QTHz.makeRotate(X));
 
-  ModelSupport::buildPlane(SMap,buildIndex+5003,FMidPt-X*(thzWidth/2.0-thzXStep),THzX);
-  ModelSupport::buildPlane(SMap,buildIndex+5004,FMidPt+X*(thzWidth/2.0+thzXStep),THzX);
-  ModelSupport::buildPlane(SMap,buildIndex+5005,FMidPt-Z*(thzHeight/2.0-thzZStep),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+5006,FMidPt+Z*(thzHeight/2.0+thzZStep),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5003,
+			   FMidPt-X*(thzWidth/2.0-thzXStep),THzX);
+  ModelSupport::buildPlane(SMap,buildIndex+5004,
+			   FMidPt+X*(thzWidth/2.0+thzXStep),THzX);
+  ModelSupport::buildPlane(SMap,buildIndex+5005,
+			   FMidPt-Z*(thzHeight/2.0-thzZStep),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5006,
+			   FMidPt+Z*(thzHeight/2.0+thzZStep),Z);
 
   // Back wall
-  ModelSupport::buildPlane(SMap,buildIndex+21,Origin+Y*backWallYStep,Y);
+  SurfMap::makePlane("BackWall",SMap,buildIndex+21,Origin+Y*backWallYStep,Y);
 
-  ModelSupport::buildPlane(SMap,buildIndex+22,Origin+Y*(backWallYStep+backWallThick),Y);
-  SurfMap::setSurf("BackWallBack",SMap.realSurf(buildIndex+22));
+  SurfMap::makePlane("BackWallBack",SMap,buildIndex+22,
+		     Origin+Y*(backWallYStep+backWallThick),Y);
 
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+31,buildIndex+21,Y,-backWallIronThick);
-  SurfMap::setSurf("BackWallFront",SMap.realSurf(buildIndex+31));
+  SurfMap::makePlane("BackWallFront",SMap,buildIndex+31,
+		     Origin+Y*(backWallYStep-backWallIronThick),Y);  
 
   // Wall between SPF hallway and FemtoMAX beamline area
   ModelSupport::buildShiftedPlane(SMap,buildIndex+6003,buildIndex+223,X,femtoMAXWallOffset);
@@ -474,16 +483,18 @@ InjectionHall::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+6114,buildIndex+6104,X,bspMazeWidth);
 
   // maze in the end of FemtoMAX/BSP01 areas
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+6101,buildIndex+22,Y,bsp01WallLength);
-  SurfMap::setSurf("FemtoMAXBack",SMap.realSurf(buildIndex+2));
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+6102,buildIndex+6101,Y,bspFrontMazeThick);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+6111,buildIndex+6102,Y,bspMazeWidth);
+  const Geometry::Vec3D bspOrg(Origin+Y*(backWallYStep+backWallThick));
+  SurfMap::makePlane("FemtoMAXBack",SMap,buildIndex+6101,bspOrg+Y*bsp01WallLength,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+6102,bspOrg+Y*(bsp01WallLength+bspFrontMazeThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+6111,
+			   bspOrg+Y*(bsp01WallLength+bspFrontMazeThick+bspMazeWidth),Y);
+  //  ModelSupport::buildShiftedPlane(SMap,buildIndex+6111,buildIndex+6102,Y,bspMazeWidth);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+6112,buildIndex+6111,Y,bspMidMazeThick);
 
   ModelSupport::buildShiftedPlane(SMap,buildIndex+6121,buildIndex+6112,Y,bspMazeWidth);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+6122,buildIndex+6121,Y,bspBackMazeThick);
 
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+6106,buildIndex+5,Y,bspMidMazeDoorHeight);
+  SurfMap::makePlane("MazeDoorZ",SMap,buildIndex+6106,Origin-Z*(floorDepth-bspMidMazeDoorHeight),Z);
 
   // iron layers
   ModelSupport::buildShiftedPlane(SMap,buildIndex+6201,buildIndex+6101,Y,-bspFrontMazeIronThick);
@@ -534,15 +545,15 @@ InjectionHall::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7301,buildIndex+1011,Y,fkgMazeWidth);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7302,buildIndex+7301,Y,fkgMazeWallThick);
 
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+7303,buildIndex+4,X,-fkgDoorWidth);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+7304,buildIndex+1004,X,fkgMazeWidth);
-
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+7305,buildIndex+5,Z,fkgDoorHeight);
+  ModelSupport::buildPlane(SMap,buildIndex+7303,Origin+X*(linearWidth/2.0-fkgDoorWidth),X);
+  ModelSupport::buildPlane(SMap,buildIndex+7304,MidPt+X*(fkgMazeWidth+midTThickX/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+7305,Origin-Z*(floorDepth-fkgDoorHeight),Z);
 
   // PREFAB BTG-BLOCK
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7402,buildIndex+21,Y,btgYOffset);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7401,buildIndex+7402,Y,-btgLength);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+7403,buildIndex+1004,X,btgThick);
+  SurfMap::makeShiftedPlane("KGOuterBlock",SMap,buildIndex+7403,buildIndex+1004,X,btgThick);
+  
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7406,buildIndex+5,X,btgHeight);
 
   // Under-the-floor - main beam dump room
@@ -612,7 +623,12 @@ InjectionHall::createSurfaces()
     }
 
   // MidT front wall local shielding
+  
+  // SurfMap::buildShiftedPlane
+  //   (SMap,buildIndex+7801,buildIndex+1001,Y,-midTFrontLShieldThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7801,buildIndex+1001,Y,-midTFrontLShieldThick);
+  SurfMap::addSurf("MidAngleWall",-SMap.realSurf(buildIndex+1001));
+  
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7803,buildIndex+1104,X,-midTFrontLShieldWidth);
   ModelSupport::buildPlane(SMap,buildIndex+7805,Origin-Z*(midTFrontLShieldHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+7806,Origin+Z*(midTFrontLShieldHeight/2.0),Z);
@@ -624,18 +640,12 @@ InjectionHall::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+7906,Origin+Z*(fkgShieldHeight),Z);
 
   // transfer for later
-  SurfMap::setSurf("Front",SMap.realSurf(buildIndex+1));
-  SurfMap::setSurf("Back",SMap.realSurf(buildIndex+2));
-  SurfMap::setSurf("Floor",SMap.realSurf(buildIndex+5));
-  SurfMap::setSurf("Roof",SMap.realSurf(buildIndex+6));
-  SurfMap::setSurf("SubFloor",SMap.realSurf(buildIndex+15));
   SurfMap::setSurf("BDRoomRoof",SMap.realSurf(buildIndex+7516));
-  SurfMap::setSurf("MidWall",SMap.realSurf(buildIndex+1001));
-  SurfMap::setSurf("MidAngleWall",-SMap.realSurf(buildIndex+1111));
+
   SurfMap::addSurf("MidAngleWall",-SMap.realSurf(buildIndex+1001));
   SurfMap::addSurf("MidAngleWall",SMap.realSurf(buildIndex+2007));
 
-  SurfMap::setSurf("TAngleWall",SMap.realSurf(buildIndex+1112));
+
   SurfMap::setSurf("DoorEndWall",SMap.realSurf(buildIndex+1522));
   SurfMap::setSurf("KlystronWall",SMap.realSurf(buildIndex+3002));
   SurfMap::setSurf("KlystronCorner",SMap.realSurf(buildIndex+3002));
