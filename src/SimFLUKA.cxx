@@ -206,8 +206,8 @@ SimFLUKA::getNextFTape() const
   // max for fortran output stream 98 ??
   int nextFTape(24);
   for(const flukaSystem::flukaTally* FPtr : FTItem)
-    if (FPtr->getOutUnit()>nextFTape)
-      nextFTape=FPtr->getOutUnit();
+    if (std::abs(FPtr->getOutUnit())>nextFTape)
+      nextFTape=std::abs(FPtr->getOutUnit());
 
   nextFTape++;
   if (nextFTape>98)

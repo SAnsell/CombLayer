@@ -127,7 +127,7 @@ userTrackConstruct::processTrack(SimFLUKA& System,
   for(const int cellA : cellList)
     {
       const int nextId=System.getNextFTape();
-      userTrackConstruct::createTally(System,particleType,nextId,
+      userTrackConstruct::createTally(System,particleType,-nextId,
 				    cellA,1,EA,EB,NE);
       
     }  

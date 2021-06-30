@@ -216,7 +216,8 @@ userBin::write(std::ostream& OX) const
    */
 {
   std::ostringstream cx;
-  
+
+  const int outputUnit(getOutUnit());
   cx<<"USRBIN "<<meshType<<" "<<particle<<" "
     <<outputUnit<<" "<<maxCoord;  
   cx<<" mesh"<<std::to_string(std::abs(outputUnit));

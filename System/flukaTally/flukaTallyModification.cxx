@@ -126,7 +126,6 @@ setBinaryOutput(SimFLUKA& Sim,const std::string& tName)
 {
   ELog::RegMethod RegA("flukaTallyModificaiton[F]","setBinaryOutput");
 
-  ELog::EM<<"TNAME == "<<tName<<ELog::endDiag;
   const std::set<flukaTally*> ATallySet=
     getActiveTally(Sim,tName);
   
@@ -135,7 +134,27 @@ setBinaryOutput(SimFLUKA& Sim,const std::string& tName)
 
   return 1;
 }
+
+int
+setAsciiOutput(SimFLUKA& Sim,const std::string& tName) 
+  /*!
+    Set the ascii file
+    \param Sim :: System to access tally tables
+    \param tNumber :: Tally number [0 for all]
+    \return tally number [0 on fail]
+  */
+{
+  ELog::RegMethod RegA("flukaTallyModificaiton[F]","setBinaryOutput");
+
+  const std::set<flukaTally*> ATallySet=
+    getActiveTally(Sim,tName);
   
+  for(flukaTally* mc: ATallySet)
+    mc->setAscii();
+
+  return 1;
+}
+
 
   
 int

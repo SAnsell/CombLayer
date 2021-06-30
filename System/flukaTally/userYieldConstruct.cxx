@@ -182,7 +182,7 @@ userYieldConstruct::processYield(SimFLUKA& System,
   
   userYieldConstruct::createTally(System,particleType,
 				  logFlag,yieldTypeA,yieldTypeB,
-				  nextId,
+				  -nextId,
 				  cellA,cellB,
 				  1,EA,EB,NE,
 				  0,AA,AB,NA);
