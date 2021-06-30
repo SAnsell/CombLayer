@@ -115,18 +115,19 @@ void
 WWGWeight::setEnergy(const std::vector<double>& EVal)
   /*!
     Set the energy table
+    \param EVal :: list of values
    */
 {
   EBin.clear();
-  EBin.push_back(0.0); // must have a zero:
   for(const double E : EVal)
     {
-      if (E-1e-6 > EBin.back())   // meV set min:
+      if (E>0.0 &&
+	  (EBin.empty() || E-1e-6 > EBin.back()))   // meV set min:
 	EBin.push_back(E);
     }
-  if (EBin.back()<1e3)
-    EBin.push_back(1e3);
-
+  if (EBin.size()<2)
+    EBin=std::vector<double>{0.0,1e3};
+      
   WE=static_cast<long int>(EBin.size())-1;
   resize();
   return;
