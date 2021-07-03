@@ -114,10 +114,28 @@ WWGControl::~WWGControl()
 {}
 
 const std::vector<double>&
+WWGControl::getEnergy(std::string eName,size_t& eIndex) const
+  /*!
+    Simple accessor to grid unit
+    \param eName :: Name of Energy bin with optional [index]  
+  
+    \return EBin from set
+  */
+{
+  ELog::RegMethod RegA("WWGControl","getEnergy");
+
+  eIndex=0;
+  if (StrFunc::convertNameWithIndex(eName,eIndex))
+    eIndex++;
+
+  return getEnergy(eName);
+}
+
+const std::vector<double>&
 WWGControl::getEnergy(const std::string& eName) const
   /*!
     Simple accessor to grid unit
-    \param eName :: Name of Energy 
+    \param eName :: Name of Energy bin without optional index
     \return EBin from set
   */
 {
@@ -402,10 +420,11 @@ WWGControl::wwgCreate(const Simulation& System,
       if (meshName=="help" || meshName=="Help")
 	{
 	  ELog::EM<<"wwgCalc ==> \n"
-	    "       meshName : Name of being begin processed\n"
+	    "       meshName : Name of being begin created\n"
+	    "         -- Add [index] to reference a single energy bin\n"
 	    "       particleList : list of particles\n"
 	    "       gridName : Name of grid to use\n"
-	    "       energyName : Name of grid to use\n"
+	    "       energy : Energy for calculation [Inex"
 	    "       SourceName [Plane/Point name]\n"
 	    "       ScaleFactor [default: 1.0] \n"
 	    "       densityFactor [default: 1.0] \n"
@@ -439,14 +458,18 @@ WWGControl::wwgCreate(const Simulation& System,
 	IParam.getDefValue<double>(2.0,wKey,iSet,index++);
 
       const Geometry::BasicMesh3D& mUnit=getGrid(meshGrid);
-      const std::vector<double>& eUnit=getEnergy(energyGrid);
+
+      size_t eIndex; // value to get a [index+1] into: 0 means no [] 
+      const std::vector<double>& eUnit=
+	getEnergy(energyGrid,eIndex);
+      
       if (hasPlanePoint(sourceName))
 	{	
 	  const Geometry::Plane& planeRef=getPlanePoint(sourceName);
 	  WWGWeight& wSet=wwg.createMesh(meshName);
 	  wSet.setEnergy(eUnit);
 	  wSet.setMesh(mUnit);
-	  wSet.wTrack(System,planeRef,density,r2Length,r2Power);
+	  wSet.wTrack(System,planeRef,eIndex,density,r2Length,r2Power);
 	}
       else if (hasSourcePoint(sourceName))
         {
@@ -454,7 +477,7 @@ WWGControl::wwgCreate(const Simulation& System,
 	  WWGWeight& wSet=wwg.createMesh(meshName);
 	  wSet.setEnergy(eUnit);
 	  wSet.setMesh(mUnit);
-	  wSet.wTrack(System,sourceRef,density,r2Length,r2Power);
+	  wSet.wTrack(System,sourceRef,eIndex,density,r2Length,r2Power);
         }
       else 
 	throw ColErr::InContainerError<std::string>
@@ -527,7 +550,7 @@ WWGControl::wwgNormalize(const mainSystem::inputParam& IParam)
   const size_t NNorm=IParam.setCnt("wwgNorm");
   for(size_t setIndex=0;setIndex<NNorm;setIndex++)
     {
-      const std::string meshIndex=
+      std::string meshUnit=
 	IParam.getValueError<std::string>
 	("wwgNorm",setIndex,0,"Mesh Index");
       
@@ -551,11 +574,16 @@ WWGControl::wwgNormalize(const mainSystem::inputParam& IParam)
       const double highRange=
 	IParam.getDefValue<double>(1.0,"wwgNorm",setIndex,3);
 
-      const WWGWeight& WMesh=wwg.getMesh(meshIndex);
+      size_t eIndex;
+      if (StrFunc::convertNameWithIndex(meshUnit,eIndex))
+	eIndex++;
+      
+      const WWGWeight& WMesh=wwg.getMesh(meshUnit);
       const size_t NE=WMesh.getESize();
       for(size_t i=0;i<NE;i++)
 	{
-	  wwg.scaleRange(meshIndex,i,lowRange,highRange,weightRange);
+	  if (!eIndex || i+1==eIndex)
+	    wwg.scaleRange(meshIndex,i,lowRange,highRange,weightRange);
 	}
       //      wwg.powerRange(powerWeight);
     }

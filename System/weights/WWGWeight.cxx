@@ -530,6 +530,7 @@ template<typename T>
 void
 WWGWeight::wTrack(const Simulation& System,
 		  const T& initPt,
+		  const size_t eIndex,
 		  const double densityFactor,
 		  const double r2Length,
 		  const double r2Power)
@@ -556,12 +557,16 @@ WWGWeight::wTrack(const Simulation& System,
 	  const Geometry::Vec3D Pt=Grid.point(i,j,k);
 	  for(long int index=0;index<WE;index++)
 	    {
-	      const size_t eIndex(static_cast<size_t>(index));
-	      const double EVal=(EBin[eIndex]+EBin[eIndex])/2.0;
-	      const double DT=
-		distTrack(System,initPt,EVal,Pt,densityFactor,r2Length,r2Power);
-	      // energy
-	      addLogPoint(cN,index,DT);
+	      if (!eIndex || static_cast<size_t>(index+1)==eIndex)
+		{
+		  const size_t sIndex(static_cast<size_t>(index));
+		  const double EVal=(EBin[sIndex]+EBin[sIndex+1])/2.0;
+		  const double DT=
+		    distTrack(System,initPt,EVal,Pt,
+			      densityFactor,r2Length,r2Power);
+		  // energy
+		  addLogPoint(cN,index,DT);
+		}
 	    }
 	  cN++;
 	}
@@ -954,12 +959,12 @@ double WWGWeight::distTrack(const Simulation&,const Geometry::Vec3D&,
 
 template
 void WWGWeight::wTrack(const Simulation&,const Geometry::Vec3D&,
-		       const double,const double,
+		       const size_t,const double,const double,
 		       const double);
 
 template
 void WWGWeight::wTrack(const Simulation&,const Geometry::Plane&,
-		       const double,const double,
+		       const size_t,const double,const double,
 		       const double);
 
 template 

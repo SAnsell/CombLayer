@@ -94,7 +94,6 @@ getActiveTally(const SimFLUKA& Sim,const std::string& tName)
   std::set<flukaTally*> Out;
   const SimFLUKA::FTallyTYPE& tmap=Sim.getTallySet();
 
-
   for(flukaSystem::flukaTally* fPtr : tmap)
     {
       std::string KN=fPtr->getKeyName();

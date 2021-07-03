@@ -133,7 +133,7 @@ class WWGWeight
 		   const double) const;
 
   template<typename T>
-  void wTrack(const Simulation&,const T&,
+  void wTrack(const Simulation&,const T&,const size_t,
 	      const double,const double,const double);
 
   template<typename T,typename U>

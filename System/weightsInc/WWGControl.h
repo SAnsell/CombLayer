@@ -77,8 +77,10 @@ class WWGControl
   void processPtString(std::string ptStr,std::string& pType,
 		       size_t&,bool&) const;
 
+  const std::vector<double>& getEnergy(std::string,size_t&) const;
   const std::vector<double>& getEnergy(const std::string&) const;
   const Geometry::BasicMesh3D& getGrid(const std::string&) const;
+  
   bool hasSourcePoint(const std::string&) const;
   bool hasPlanePoint(const std::string&) const;
   const Geometry::Vec3D& getSourcePoint(const std::string&) const;
