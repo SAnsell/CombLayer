@@ -1096,8 +1096,9 @@ convert(const char* A,T& out)
   return convert(Cx,out);
 }
 
+template<typename T>
 bool
-convertNameWithIndex(std::string& Unit,size_t& Index)
+convertNameWithIndex(std::string& Unit,T& Index)
   /*!
     If Unit has a [ ] index : then the value is placed into
     index+1 else Index==0 
@@ -1385,6 +1386,9 @@ template size_t convPartNum(const std::string&,double&);
 template size_t convPartNum(const std::string&,int&);
 template size_t convPartNum(const std::string&,size_t&);
 template size_t convPartNum(const std::string&,std::string&);
+
+template bool convertNameWithIndex(std::string&,size_t&);
+template bool convertNameWithIndex(std::string&,long int&);
 
 template int setValues(const std::string&,const std::vector<int>&,
 		      std::vector<double>&);

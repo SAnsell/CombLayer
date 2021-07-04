@@ -293,8 +293,7 @@ WWGControl::procPlanePoint(const Simulation& System,
 }
 
 void
-WWGControl::procEnergyMesh(const Simulation& System,
-			   const mainSystem::inputParam& IParam)
+WWGControl::procEnergyMesh(const mainSystem::inputParam& IParam)
   /*!
     Process the mesh weight point
     Input type :
@@ -554,7 +553,7 @@ WWGControl::wwgNormalize(const mainSystem::inputParam& IParam)
 	IParam.getValueError<std::string>
 	("wwgNorm",setIndex,0,"Mesh Index");
       
-      if (meshIndex=="help" || meshIndex=="Help")
+      if (meshUnit=="help" || meshUnit=="Help")
 	{
 	  ELog::EM<<"wwgNorm ==> \n"
 	    "       meshIndex :: Name of mesh to process \n"
@@ -583,7 +582,7 @@ WWGControl::wwgNormalize(const mainSystem::inputParam& IParam)
       for(size_t i=0;i<NE;i++)
 	{
 	  if (!eIndex || i+1==eIndex)
-	    wwg.scaleRange(meshIndex,i,lowRange,highRange,weightRange);
+	    wwg.scaleRange(meshUnit,i,lowRange,highRange,weightRange);
 	}
       //      wwg.powerRange(powerWeight);
     }
@@ -595,6 +594,10 @@ void
 WWGControl::wwgVTK(const mainSystem::inputParam& IParam)
   /*!
     Write out an vkt file
+    Process is wwgVTK fileName meshName[eIndex] log
+    - fileName : Required
+    - meshName : rerquired [optional [def 0]
+    - log : Optional (default no-log)
     \param IParam :: Data for point
   */
 {
@@ -610,16 +613,17 @@ WWGControl::wwgVTK(const mainSystem::inputParam& IParam)
     {
       const std::string fileName=
         IParam.getValueError<std::string>("wwgVTK",i,0,"FileName not given");
-      const std::string meshIndex=
-        IParam.getValueError<std::string>("wwgVTK",i,1,"MeshIndex not given");
-      const size_t eIndex=
-        IParam.getDefValue<size_t>(0,"wwgVTK",i,2);
+      std::string meshUnit=
+        IParam.getValueError<std::string>("wwgVTK",i,1,"MeshUnit not given");
+      
+      long int eIndex(0);
+      StrFunc::convertNameWithIndex(meshUnit,eIndex); // no need to check
       const std::string logFlagName=
-        IParam.getDefValue<std::string>("Normal","wwgVTK",i,3);
+        IParam.getDefValue<std::string>("Normal","wwgVTK",i,2);
       const bool logFlag =
 	(logFlagName=="Log" || logFlagName=="log")  ? 1 : 0;
 	
-      wwg.writeVTK(fileName,logFlag,meshIndex,static_cast<long int>(eIndex));
+      wwg.writeVTK(fileName,logFlag,meshUnit,eIndex);
     }
   return;
 }
@@ -760,7 +764,7 @@ WWGControl::processWeights(Simulation& System,
       procSourcePoint(System,IParam);
       procPlanePoint(System,IParam);
       procMeshPoint(System,IParam);
-      procEnergyMesh(System,IParam);
+      procEnergyMesh(IParam);
 
       wwgCreate(System,IParam);      // LOG space
       wwgMarkov(System,IParam);

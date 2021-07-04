@@ -61,7 +61,7 @@ class WWGControl
   
   void procMarkov(const mainSystem::inputParam&,const std::string&,
 		  const size_t);
-  void procEnergyMesh(const Simulation&,const mainSystem::inputParam&);
+  void procEnergyMesh(const mainSystem::inputParam&);
   void procSourcePoint(const Simulation&,const mainSystem::inputParam&);
   void procPlanePoint(const Simulation&,const mainSystem::inputParam&);
   void procMeshPoint(const Simulation&,const mainSystem::inputParam&);
