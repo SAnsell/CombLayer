@@ -130,23 +130,41 @@ WWG::createMesh(const std::string& meshIndex)
 }
 
 WWGWeight&
-WWG::getCreateMesh(const std::string& meshIndex)
+WWG::copyMesh(const std::string& newUnit,
+	      const std::string& oldUnit)
   /*!
-    Get or create a mesh
+    Create a mesh [Must be unique]
+    \param newUnit :: new name of mesh
+    \param oldUnit :: old name name of mesh
+  */
+{
+  MeshTYPE::const_iterator mc=WMeshMap.find(newUnit);
+  if (mc!=WMeshMap.end())
+    throw ColErr::InContainerError<std::string>
+      (newUnit,"new mesh already exists");
+
+  mc=WMeshMap.find(oldUnit);
+  if (mc==WMeshMap.end())
+    throw ColErr::InContainerError<std::string>(oldUnit,"oldUnit");
+
+  size_t index(0);
+  StrFunc::convert(newUnit,index);  // leave as zero if not a number
+  WMeshMap.emplace(newUnit,new WWGWeight(index,*(mc->second)));
+
+  if (defUnit.empty()) defUnit=newUnit;
+  
+  return getMesh(newUnit);
+}
+
+bool
+WWG::hasMesh(const std::string& meshIndex) const 
+  /*!
+    Has a mesh
     \param meshIndex :: name
   */
 {
   MeshTYPE::const_iterator mc=WMeshMap.find(meshIndex);
-  if (mc!=WMeshMap.end())
-    return *(mc->second);
-
-  // zero ID means dont write
-  size_t index(0);
-  StrFunc::convert(meshIndex,index);  // leave as zero if not a nuber
-  WMeshMap.emplace(meshIndex,new WWGWeight(index));
-
-  if (defUnit.empty()) defUnit=meshIndex;
-  return getMesh(meshIndex);
+  return (mc!=WMeshMap.end()) ? 1 : 0;
 }
 
 WWGWeight&
@@ -245,29 +263,6 @@ WWG::powerRange(const std::string& meshIndex,
   WWGWeight& WMesh=getMesh(meshIndex);
 
   WMesh.scalePower(pR);
-  return;
-}
-
-void
-WWG::scaleRange(const std::string& meshIndex,
-		const size_t eIndex,
-		const double minR,
-		const double maxR,
-		const double fullRange)
-  /*!
-    Normalize the mesh to have a max at 1.0
-    \param eIndex :: energy index + 1
-    \param minR :: Min value
-    \param maxR :: Max value
-    \param fullRange :: range between 0 - fullRange [negative]
-  */
-{
-  ELog::RegMethod RegA("WWG","scaleRange");
-
-  // This is get expect to have this item
-  WWGWeight& WMesh=getMesh(meshIndex);
-
-  WMesh.scaleRange(eIndex,minR,maxR,fullRange);
   return;
 }
   
@@ -393,9 +388,9 @@ WWG::writeVTK(const std::string& FName,
   const WWGWeight& WMesh=getMesh(meshName);
   const Geometry::BasicMesh3D& Grid=WMesh.getGeomGrid();
 
-  const long int XSize=WMesh.getXSize();
-  const long int YSize=WMesh.getYSize();
-  const long int ZSize=WMesh.getZSize();
+  // const long int XSize=WMesh.getXSize();
+  // const long int YSize=WMesh.getYSize();
+  // const long int ZSize=WMesh.getZSize();
   
   boost::format fFMT("%1$11.6g%|14t|");  
   OX<<"# vtk DataFile Version 2.0"<<std::endl;

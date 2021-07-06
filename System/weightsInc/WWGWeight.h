@@ -61,6 +61,7 @@ class WWGWeight
   explicit WWGWeight(const size_t);
   WWGWeight(const size_t,const std::vector<double>&);
   WWGWeight(const WWGWeight&);
+  WWGWeight(const size_t,const WWGWeight&);
   WWGWeight& operator=(const WWGWeight&);    
   ~WWGWeight() {}          ///< Destructor
 

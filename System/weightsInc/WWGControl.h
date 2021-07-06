@@ -68,7 +68,7 @@ class WWGControl
 
   void wwgVTK(const mainSystem::inputParam&);
   void wwgCreate(const Simulation&,const mainSystem::inputParam&);
-  void wwgCombine(const Simulation&,const mainSystem::inputParam&);
+  void wwgCADIS(const Simulation&,const mainSystem::inputParam&);
   
   void wwgMarkov(const Simulation&,const mainSystem::inputParam&);
   void wwgNormalize(const mainSystem::inputParam&);

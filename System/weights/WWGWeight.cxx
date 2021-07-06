@@ -73,6 +73,19 @@ WWGWeight::WWGWeight(const size_t index) :
 {}
 
 
+WWGWeight::WWGWeight(const size_t index,
+		       const WWGWeight& A) : 
+  ID(index),
+  WE(A.WE),WX(A.WX),WY(A.WY),WZ(A.WZ),
+  particles(A.particles),EBin(A.EBin),Grid(A.Grid),
+  WGrid(A.WGrid)
+  /*!
+    Copy constructor with pre-set index
+    \param index :: new ID number
+    \param A :: WWGWeight to copy
+  */
+{}
+
 WWGWeight::WWGWeight(const WWGWeight& A) : 
   ID(A.ID),
   WE(A.WE),WX(A.WX),WY(A.WY),WZ(A.WZ),
@@ -456,37 +469,40 @@ void
 WWGWeight::scaleRange(const size_t eIndex,
 		      double AValue,double BValue,
 		      const double fullRange)
-  /*!
+/*!
     Convert a set of value [EXP not taken]
     into  a source. 
     - 0 is full beam 
-    \param eIndex :: Energy index 
+    \param eIndex :: Offset energy Index [offset by +1] / 0 for full range
     \param AValue :: [log] Min Value [assumed to be fullRange] (+ve use min)
     \param BValue :: [log] Max value [above assumed to be 1.0] (+ve to use max)
     \param fullRange :: Range of data output [+ve]
   */
 {
-  ELog::RegMethod RegA("WWGWeight","scaleRange");
-
-  ELog::EM<<"SCALE:"<<AValue<<" "<<BValue<<" "<<fullRange<<ELog::endCrit;
+  ELog::RegMethod RegA("WWGWeight","scaleRange(full)");
 
   if (fullRange<1.0 || fullRange>100.0)
     throw ColErr::RangeError<double>(fullRange,1.0,100.0,"fullRange");
 
-  if (eIndex>=static_cast<size_t>(WE))
-    throw ColErr::IndexError<size_t>
-	       (eIndex,static_cast<size_t>(WE),"Energy index");
-  
-
   double* TData=WGrid.data();
-  const size_t NData=WGrid.num_elements()/WE;
+  size_t NData=WGrid.num_elements();
+  ELog::EM<<"NDATA == "<<NData<<ELog::endDiag;
 
-  TData+=eIndex*static_cast<size_t>(WE);
+  if (eIndex>0)
+    {
+      if (static_cast<long int>(eIndex)>WE)
+	throw ColErr::IndexError<size_t>
+	       (static_cast<long int>(eIndex),WE,"Energy out of range");
+      NData/=static_cast<size_t>(WE);
+      TData+= NData*(eIndex-1);
+    }
+      
   if (AValue > 0)
     AValue= *std::min_element(TData,TData+NData-1);
-
+  
   if (BValue > 0)
     BValue= *std::max_element(TData,TData+NData-1);
+  
   ELog::EM<<"Min / Max selected = "<<AValue<<" "<<BValue<<ELog::endDiag;
 
   if (AValue>BValue) std::swap(AValue,BValue);
@@ -522,9 +538,9 @@ WWGWeight::scaleRange(const size_t eIndex,
 	  <<"Scaled from ["<<minValue<<"]"<<exp(minValue)<<" ["
 	  <<maxValue<<"] "<<exp(maxValue)<<ELog::endDiag;
   
-  
   return;
 }
+
 
 template<typename T>
 void
@@ -733,7 +749,7 @@ WWGWeight::writeVTK(std::ostream& OX,
   OX<<"SCALARS cellID float 1.0"<<std::endl;
   OX<<"LOOKUP_TABLE default"<<std::endl;
 
-
+  double wMin(1e80),wMax(-1e80);
   for(long int K=0;K<WZ;K++)
     for(long int J=0;J<WY;J++)
       {
@@ -743,9 +759,16 @@ WWGWeight::writeVTK(std::ostream& OX,
 	      OX<<(fFMT % std::exp(WGrid[EIndex][I][J][K]));	
 	    else
 	      OX<<(fFMT % -WGrid[EIndex][I][J][K]);
+	    if (WGrid[EIndex][I][J][K]<wMin)
+	      wMin=WGrid[EIndex][I][J][K];
+	    if (WGrid[EIndex][I][J][K]>wMax)
+	      wMax=WGrid[EIndex][I][J][K];
 	  }
 	OX<<std::endl;
       }
+
+  ELog::EM<<"WWG["<<ID<<"]["<<EIndex<<"] "<<wMin<<" "<<wMax<<ELog::endDiag;  
+
   /*
   for(long int I=0;I<WX;I++)
     for(long int J=0;J<WY;J++)

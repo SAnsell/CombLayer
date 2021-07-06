@@ -66,23 +66,23 @@ class WWG
   WWG& operator=(const WWG&);
   ~WWG();
 
+  bool hasMesh(const std::string&) const;
+  
   WWGWeight& getMesh(const std::string&); 
   const WWGWeight& getMesh(const std::string&) const;
 
   /// accessor to default name
   const std::string& getDefUnit() const { return defUnit; }
   
-  WWGWeight& getCreateMesh(const std::string&);
+
   WWGWeight& createMesh(const std::string&);
+  WWGWeight& copyMesh(const std::string&,const std::string&);
   
   void setEnergyBin(const std::string&,const std::vector<double>&);
   void setDefValue(const std::string&,const std::vector<double>&);
   void setRefPoint(const Geometry::Vec3D&);
 
   void powerRange(const std::string&,const double);
-  void scaleRange(const std::string&,
-		  const size_t,const double,
-		  const double,const double);
   void scaleMesh(const std::string&,const double);
   void scaleMeshItem(const std::string&,
 		     const size_t,const size_t,const size_t,
