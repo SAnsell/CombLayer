@@ -142,6 +142,9 @@ class FixedComp
   void setBasicExtent(const double,const double,const double);
 
 
+  template<typename T>
+  void setNamedLinkSurf(const size_t,const std::string&,const T&);
+
   void setLinkSurf(const size_t,const int);
   void setLinkSurf(const size_t,const std::string&);
   void setLinkSurf(const size_t,const HeadRule&);

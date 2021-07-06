@@ -293,8 +293,7 @@ Segment29Magnet(FuncDataBase& Control,
 
   setVariable::YagScreenGenerator YagScreenGen;
   setVariable::YagUnitGenerator YagUnitGen;
-  setVariable::LBeamStopGenerator BSGen;
-  setVariable::NBeamStopGenerator BSGenB;
+  setVariable::NBeamStopGenerator BSGen;
   setVariable::BeamBoxGenerator BXGen;
 
   const Geometry::Vec3D startPtA(-637.608,9073.611,0.0);
@@ -347,12 +346,12 @@ Segment29Magnet(FuncDataBase& Control,
   YagScreenGen.generateScreen(Control,lKey+"YagScreenB",0);   // closed
   Control.addVariable(lKey+"YagScreenBYAngle",-90.0);
 
-
-  BSGenB.generateBStop(Control,lKey+"BeamStopA",3.0);
-  BSGen.generateBStop(Control,lKey+"BeamStopB");
+  BSGen.setFullLen(125.0);
+  BSGen.generateBStop(Control,lKey+"BeamStopA",3.0);
+  BSGen.setFullLen(122.0);
+  BSGen.generateBStop(Control,lKey+"BeamStopB",3.0);
   Control.addVariable(lKey+"BeamStopAYAngle",-90.0);
   Control.addVariable(lKey+"BeamStopBYAngle",-90.0);
-  Control.addVariable(lKey+"BeamStopBYStep",3.0);
   
   Control.addVariable(lKey+"BeamWingAYStep",100.0);
   Control.addVariable(lKey+"BeamWingAXStep",25.0);
@@ -371,8 +370,15 @@ Segment29Magnet(FuncDataBase& Control,
   Control.addVariable(lKey+"BeamWingBMainMat","Poly");
 
     
-  BXGen.generateBox(Control,lKey+"BeamBox",3.0);
-  Control.addVariable(lKey+"BeamBoxPreYAngle",-90.0);
+  BXGen.generateBox(Control,lKey+"BeamBoxA",3.0);
+  Control.addVariable(lKey+"BeamBoxAPreYAngle",-90.0);
+
+  BXGen.generateBox(Control,lKey+"BeamBoxB",3.0);
+  Control.addVariable(lKey+"BeamBoxBPreYAngle",-90.0);
+  Control.addVariable(lKey+"BeamBoxBZStep",-100.0);
+
+  // end void
+  Control.addVariable(lKey+"EndVoidLength",3.0);
 
   return;
 }

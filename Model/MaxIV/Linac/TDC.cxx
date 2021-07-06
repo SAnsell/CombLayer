@@ -290,6 +290,7 @@ TDC::buildInnerZone(Simulation& System,
     \param System :: Simulation
     \param segmentName :: Name of Segment e.g segment28
     \param regionName :: zone name of region for BlockZone
+    \return full blockzone with surround/front/back
   */
 {
   ELog::RegMethod RegA("TDC","buildInnerZone");
@@ -548,6 +549,9 @@ TDC::createAll(Simulation& System,
 	  std::shared_ptr<attachSystem::BlockZone> buildZone=
 	    buildInnerZone(System,BL,bzName);
 
+	  segPtr->setCutSurf("Floor",injectionHall->getSurfRule("Floor"));
+	  segPtr->setCutSurf("BackWallFront",
+			     injectionHall->getSurfRule("BackWallFront"));
 	  segPtr->setInnerZone(buildZone.get());
 	  segPtr->registerPrevSeg(prevSegPtr,prevIndex);
 
@@ -636,9 +640,9 @@ TDC::createAll(Simulation& System,
 	    }
 	}
     }
-
   reconstructInjectionHall(System);
 
+  
   return;
 }
 

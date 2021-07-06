@@ -87,6 +87,7 @@ NBeamStopGenerator::generateBStop(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("NBeamStopGenerator","generateBStop");
 
+  Control.addVariable(keyName+"YStep",yStep);
   if (!radii.empty())
     {
       Control.addVariable(keyName+"Length",fullLength);

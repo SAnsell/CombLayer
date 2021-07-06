@@ -109,7 +109,6 @@ class ExternalCut
   Geometry::Vec3D interPoint(const std::string&,
 			     const Geometry::Vec3D&,
 			     const Geometry::Vec3D&) const;
-
   
   void makeShiftedSurf(ModelSupport::surfRegister&,
 		       const std::string&,

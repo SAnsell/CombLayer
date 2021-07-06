@@ -135,7 +135,9 @@ BeamBox::createSurfaces()
     }
   else
     setSurf("Front",getRule("front").getPrimarySurface());
+
   
+
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
@@ -260,12 +262,11 @@ BeamBox::createLinks()
   FixedComp::setConnect(4,Origin-Z*(wallThick+height/2.0),-Z);
   FixedComp::setConnect(5,Origin+Z*(wallThick+height/2.0),Z);
 
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+12));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+13));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+14));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
-
+  FixedComp::setNamedLinkSurf(1,"back",SMap.realSurf(buildIndex+12));
+  FixedComp::setNamedLinkSurf(2,"left",-SMap.realSurf(buildIndex+13));
+  FixedComp::setNamedLinkSurf(3,"right",SMap.realSurf(buildIndex+14));
+  FixedComp::setNamedLinkSurf(4,"base",-SMap.realSurf(buildIndex+15));
+  FixedComp::setNamedLinkSurf(5,"top",SMap.realSurf(buildIndex+16));
 
   return;
 }

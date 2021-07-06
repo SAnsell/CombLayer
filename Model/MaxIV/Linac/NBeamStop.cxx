@@ -272,7 +272,9 @@ NBeamStop::createObjects(Simulation& System)
 
   const HeadRule& frontHR=ExternalCut::getRule("front");
   const HeadRule& backHR=ExternalCut::getRule("back");
-
+  const HeadRule& baseHR=ExternalCut::getRule("base");
+  ELog::EM<<"FLL ="<<baseHR<<ELog::endDiag;
+  
   HeadRule rInnerHR,rOuterHR;
   int BI(buildIndex+100);
   int index(0);
@@ -288,13 +290,13 @@ NBeamStop::createObjects(Simulation& System)
 	{
 	  const HeadRule bHR=ModelSupport::getHeadRule(SMap,PI,"-1");
 	  makeCell(lName,System,cellIndex++,
-		   cu.mat[cuI-1],0.0,aHR*bHR*rOuterHR*rInnerHR);
+		   cu.mat[cuI-1],0.0,aHR*bHR*rOuterHR*rInnerHR*baseHR);
 	  aHR=bHR.complement();
 	  PI+=10;
 	}
       // last cell:
       makeCell(lName,System,cellIndex++,
-	       cu.mat[cuI-1],0.0,aHR*backHR*rOuterHR*rInnerHR);
+	       cu.mat[cuI-1],0.0,aHR*backHR*rOuterHR*rInnerHR*baseHR);
       BI+=100;
       index++;
     }

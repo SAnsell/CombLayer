@@ -94,8 +94,10 @@ class BlockZone  :
   const HeadRule& getSurround() const { return surroundHR; }
   /// access front
   const HeadRule& getFront() const { return frontHR; }
-  /// access front
+  /// access current back
   const HeadRule& getBack() const { return backHR; }
+  /// access max outer surf
+  const HeadRule& getMaxExtent() const { return maxExtentHR; }
 
   HeadRule getVolume() const;
   
