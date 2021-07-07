@@ -54,7 +54,7 @@ BeamBoxGenerator::BeamBoxGenerator() :
   fullCut(40.0),innerCut(80.0),
   backThick(8.0),b4cThick(0.5),
   backExtension(80.0),wallThick(11.0),
-  innerMat("Copper"),backMat("HighDensPoly"),
+  innerMat("Void"),backMat("HighDensPoly"),
   mainMat("HighDensPoly"),b4cMat("B4C")
   /*!
     Constructor and defaults
