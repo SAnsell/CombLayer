@@ -138,9 +138,9 @@ class WWGWeight
 	      const double,const double,const double);
 
   template<typename T,typename U>
-  void CADISnorm(const Simulation&,
-		 const WWGWeight&,
-		 const WWGWeight&,
+  void CADISnorm(const Simulation&,const long int,
+		 const WWGWeight&,const long int,
+		 const WWGWeight&,const long int,
 		 const T&,const U&,
 		 const double,const double,const double);
   

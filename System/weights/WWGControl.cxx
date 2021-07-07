@@ -651,13 +651,13 @@ WWGControl::wwgCADIS(const Simulation& System,
   for(size_t iSet=0;iSet<cadisCNT;iSet++)
     {
       size_t itemCnt(0);
-      const std::string meshUnit=IParam.getValueError<std::string>
+      std::string meshUnit=IParam.getValueError<std::string>
 	(wKey,iSet,itemCnt++,"CADIS MeshUnit");
       
-      const std::string SUnit=IParam.getValueError<std::string>
+      std::string SUnit=IParam.getValueError<std::string>
 	(wKey,iSet,itemCnt++,"CADIS SUnit");
       
-      const std::string TUnit=IParam.getValueError<std::string>
+      std::string TUnit=IParam.getValueError<std::string>
 	(wKey,iSet,itemCnt++,"CADIS TUnit");
       
       const std::string SPt=IParam.getValueError<std::string>
@@ -673,38 +673,40 @@ WWGControl::wwgCADIS(const Simulation& System,
       const double r2Power=
 	IParam.getDefValue<double>(2.0,wKey,iSet,itemCnt++);
 
+
+      long int mIndex(0),sIndex(0),aIndex(0);
+      StrFunc::convertNameWithIndex(meshUnit,mIndex);
+      StrFunc::convertNameWithIndex(SUnit,sIndex);
+      StrFunc::convertNameWithIndex(TUnit,aIndex);
+      // drop sIndex/tIndex for now
+
       // create for output if necessary
       if (!wwg.hasMesh(meshUnit))
-	{
-	  wwg.copyMesh(meshUnit,SUnit);
-
-	}
+	wwg.copyMesh(meshUnit,SUnit);
 
       WWGWeight& MeshGrid=wwg.getMesh(meshUnit);
       
       const WWGWeight& sourceFlux=wwg.getMesh(SUnit);
       const WWGWeight& adjointFlux=wwg.getMesh(TUnit);
-      
+
+
       if (hasPlanePoint(SPt) && hasPlanePoint(TPt))
 	{
 	  const Geometry::Plane& SPlane=getPlanePoint(SPt);
 	  const Geometry::Plane& TPlane=getPlanePoint(TPt);
-	  MeshGrid.CADISnorm(System,
-			     sourceFlux,
-			     adjointFlux,
-			     SPlane,TPlane,
-			     density,r2Length,r2Power);
+	  MeshGrid.CADISnorm(System,mIndex,
+			     sourceFlux,sIndex,
+			     adjointFlux,aIndex,
+			     SPlane,TPlane,density,r2Length,r2Power);      
 	}
       else if (hasSourcePoint(SPt) && hasSourcePoint(TPt))
 	{
-	  ELog::EM<<"Mehs -- "<<MeshGrid.getESize()<<ELog::endDiag;
 	  const Geometry::Vec3D& SVec=getSourcePoint(SPt);
 	  const Geometry::Vec3D& TVec=getSourcePoint(TPt);
-	  MeshGrid.CADISnorm(System,
-			     sourceFlux,
-			     adjointFlux,
-			     SVec,TVec,
-			     density,r2Length,r2Power);      
+	  MeshGrid.CADISnorm(System,mIndex,
+			     sourceFlux,sIndex,
+			     adjointFlux,aIndex,
+			     SVec,TVec,density,r2Length,r2Power);      
 	}
       else
 	{

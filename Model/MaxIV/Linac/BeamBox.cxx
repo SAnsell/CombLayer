@@ -223,7 +223,6 @@ BeamBox::createObjects(Simulation& System)
 
   if (backExtension>Geometry::zeroTol)
     {
-      ELog::EM<<"Back volume"<<ELog::endDiag;
       HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,"-1012 2 103 -104 15 -16 (-13:14)");
       makeCell("BackExtension",System,cellIndex++,backMat,0.0,HR);

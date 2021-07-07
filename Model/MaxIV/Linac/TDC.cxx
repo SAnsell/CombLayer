@@ -418,6 +418,7 @@ TDC::reconstructInjectionHall(Simulation& System)
   for(const auto& [name,bzPtr] : bZone)
     {
       const std::vector<int> VCells=bzPtr->getCells();
+
       for(const int CN : VCells)
 	{
 	  injectionHall->addPillars(System,CN);

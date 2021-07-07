@@ -273,7 +273,6 @@ NBeamStop::createObjects(Simulation& System)
   const HeadRule& frontHR=ExternalCut::getRule("front");
   const HeadRule& backHR=ExternalCut::getRule("back");
   const HeadRule& baseHR=ExternalCut::getRule("base");
-  ELog::EM<<"FLL ="<<baseHR<<ELog::endDiag;
   
   HeadRule rInnerHR,rOuterHR;
   int BI(buildIndex+100);

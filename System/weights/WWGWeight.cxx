@@ -631,8 +631,11 @@ WWGWeight::distTrack(const Simulation& System,
 template<typename T,typename U>
 void
 WWGWeight::CADISnorm(const Simulation& System,
+		     const long int mIndex,
 		     const WWGWeight& Source,
+		     const long int sIndex,
 		     const WWGWeight& Adjoint,
+		     const long int aIndex,
 		     const T& sourcePt,
                      const U& tallyPt,
 		     const double densityFactor,
@@ -643,8 +646,11 @@ WWGWeight::CADISnorm(const Simulation& System,
     the cadis formalism [M. Munk et al : Nucl Sci Eng (2017)]
     Sets the sourceFlux to to R/adjoint[i] flux
     \param System :: Simulation for tracking
+    \param mIndex :: energy index for this
     \param Source :: Sourrce WWGWeight
+    \param sIndex :: energy index for source
     \param Adjoint :: Adjoint WWGWeight
+    \param aIndex :: energy index for adjoint
     \param sourcePt :: Source point [point/plane]
     \param tallyPt :: tally point   [point/plane]
   */
@@ -670,59 +676,55 @@ WWGWeight::CADISnorm(const Simulation& System,
       WZ=Source.WZ;
       WGrid.resize(boost::extents[WE][WX][WY][WZ]);      
     }
+
+  if (mIndex<0 || mIndex>WE)
+    throw ColErr::IndexError<long int>(WE,mIndex,"Mesh E-Index");
+  if (sIndex<0 || sIndex>WE)
+    throw ColErr::IndexError<long int>(WE,sIndex,"Source E-Index");
+  if (aIndex<0 || aIndex>WE)
+    throw ColErr::IndexError<long int>(WE,aIndex,"Adjoint E-Index");
   
-  std::vector<double> sumR(static_cast<size_t>(WE));
-  std::vector<double> sumRA(static_cast<size_t>(WE));
-  for(long int e=0;e<WE;e++)
-    {
-      sumR[e]=minLOG;
-      sumRA[e]=minLOG;
-    }
+
   
-  ELog::EM<<"Source Point == "<<sourcePt<<ELog::endDiag;
+  double sumR=minLOG;
+  double sumRA=minLOG;
+  const double EVal=(EBin[mIndex]+EBin[mIndex])/2.0;  
   // STILL in log space
   for(long int i=0;i<WX;i++)
     for(long int j=0;j<WY;j++)
       for(long int k=0;k<WZ;k++)
 	{
 	  const Geometry::Vec3D gridPt=Grid.point(i,j,k);
-	  for(long int e=0;e<WE;e++)
-	    {
-	      const double EVal=(EBin[e]+EBin[e+1])/2.0;
-	      const double W=
-		distTrack(System,sourcePt,EVal,gridPt,
-			  densityFactor,r2Length,r2Power);
+
+	  const double W=
+	    distTrack(System,sourcePt,EVal,gridPt,
+		      densityFactor,r2Length,r2Power);
 	      
-	      sumR[e]=(i*j*k != 0) ?
-		mathFunc::logAdd(sumR[e],Source.WGrid[e][i][j][k]+W) :
-		Source.WGrid[e][i][j][k]+W;
-	      sumRA[e]=(i*j*k != 0) ?
-		mathFunc::logAdd(sumRA[e],Adjoint.WGrid[e][i][j][k]+W) :
-		Adjoint.WGrid[e][i][j][k]+W;
+	  sumR=(i*j*k != 0) ?
+	    mathFunc::logAdd(sumR,Source.WGrid[sIndex][i][j][k]+W) :
+	    Source.WGrid[sIndex][i][j][k]+W;
+	  sumRA=(i*j*k != 0) ?
+	    mathFunc::logAdd(sumRA,Adjoint.WGrid[aIndex][i][j][k]+W) :
+	    Adjoint.WGrid[aIndex][i][j][k]+W;
 	      
-	    }
 	}
   
-  for(size_t e=0;e<static_cast<size_t>(WE);e++)
-    {
-      const double EVal=(EBin[e]+EBin[e+1])/2.0;
-      ELog::EM<<"sumR["<<EVal<<"]  == "<<sumR[e]<<" "
-	      <<exp(sumR[e])<<ELog::endDiag;
-      ELog::EM<<"sumRA["<<EVal<<"]  == "<<sumRA[e]<<" "
-	      <<exp(sumRA[e])<<ELog::endDiag;
-    }
+  ELog::EM<<"sumR["<<EVal<<"]  == "<<sumR<<" "
+	  <<exp(sumR)<<ELog::endDiag;
+  ELog::EM<<"sumRA["<<EVal<<"]  == "<<sumRA<<" "
+	  <<exp(sumRA)<<ELog::endDiag;
+
   
   // SETS THIS
-  for(long int e=0;e<WE;e++)
-    for(long int i=0;i<WX;i++)
-      for(long int j=0;j<WY;j++)
-	for(long int k=0;k<WZ;k++)
-	  {
-	    WGrid[e][i][j][k]=
-	      Source.WGrid[e][i][j][k]
-	      +sumR[static_cast<size_t>(e)]
-	      -Adjoint.WGrid[e][i][j][k];
-	  }
+  for(long int i=0;i<WX;i++)
+    for(long int j=0;j<WY;j++)
+      for(long int k=0;k<WZ;k++)
+	{
+	  WGrid[mIndex][i][j][k]=
+	    Source.WGrid[sIndex][i][j][k]
+	    +sumR
+	    -Adjoint.WGrid[aIndex][i][j][k];
+	}
   
   return;
 }
@@ -881,10 +883,13 @@ WWGWeight::writeFLUKA(std::ostream& OX) const
 	  {
 	    cx.str("");
 	    cx<<"USRICALL "<<ID<<" "<<EI+1<<" "<<I+1<<" "<<J+1<<" "<<K+1;
+	    const double logV(WGrid[EI][I][J][K]>0.0 ? 0.0 :
+			      WGrid[EI][I][J][K]);
+			   
 	    if (logFlag)
-	      cx<<" "<<WGrid[EI][I][J][K];
+	      cx<<" "<<logV;
 	    else
-	      cx<<" "<<std::exp(WGrid[EI][I][J][K]);
+	      cx<<" "<<std::exp(logV);
 	    cx<<" wwg";
 	    StrFunc::writeFLUKA(cx.str(),OX);
 	  }
@@ -991,14 +996,16 @@ void WWGWeight::wTrack(const Simulation&,const Geometry::Plane&,
 		       const double);
 
 template 
-void WWGWeight::CADISnorm(const Simulation&,const WWGWeight&,
-			  const WWGWeight&,
+void WWGWeight::CADISnorm(const Simulation&,const long int,
+			  const WWGWeight&,const long int,
+			  const WWGWeight&,const long int,
                           const Geometry::Vec3D&,const Geometry::Vec3D&,
 			  const double,const double,const double);
 
 template 
-void WWGWeight::CADISnorm(const Simulation&,const WWGWeight&,
-			  const WWGWeight&,
+void WWGWeight::CADISnorm(const Simulation&,const long int,
+			  const WWGWeight&,const long int,
+			  const WWGWeight&,const long int,
                           const Geometry::Plane&,const Geometry::Plane&,
 			  const double,const double,const double);
 
