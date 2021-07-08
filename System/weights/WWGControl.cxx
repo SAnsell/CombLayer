@@ -565,27 +565,33 @@ WWGControl::wwgNormalize(const mainSystem::inputParam& IParam)
 	  ELog::EM<<"wwgNorm ==> \n"
 	    "       meshIndex :: Name of mesh to process \n"
 	    "       log(weightRange) [Manditory] (typical 20) \n"
-	    "       lowRange (+ve takes data range) [default 1.0]\n"
-	    "       highRange (+ve takes data range) [default 1.0]\n"
+	    "       logMax (default 0) \n"
+	    "       lowRange (+ve takes data range) [default 0]\n"
+	    "       highRange (+ve takes data range) [default 0]\n"
+	    "       outPut (+ve takes data range) [default 0]\n"
+	    "       highRange (+ve takes data range) [default 0]\n"
 		  <<ELog::endCrit;
 	  return;
 	}
       const double weightRange=
 	IParam.getValueError<double>("wwgNorm",setIndex,1,"weightRange");
 
+      const double weightMax=
+	IParam.getDefValue<double>(0.0,"wwgNorm",setIndex,2);
+
       // +ve means default
       const double lowRange=
-	IParam.getDefValue<double>(1.0,"wwgNorm",setIndex,2);
+	IParam.getDefValue<double>(1.0,"wwgNorm",setIndex,3);
 
       const double highRange=
-	IParam.getDefValue<double>(1.0,"wwgNorm",setIndex,3);
+	IParam.getDefValue<double>(1.0,"wwgNorm",setIndex,4);
 
       size_t eIndex(0);
       if (StrFunc::convertNameWithIndex(meshUnit,eIndex))
 	eIndex++;
 
       WWGWeight& WMesh=wwg.getMesh(meshUnit);
-      WMesh.scaleRange(eIndex,lowRange,highRange,weightRange);
+      WMesh.scaleRange(eIndex,lowRange,highRange,weightRange,weightMax);
       //      wwg.powerRange(powerWeight);
     }
   return;

@@ -468,15 +468,16 @@ WWGWeight::scaleMeshItem(const long int I,const long int J,
 void
 WWGWeight::scaleRange(const size_t eIndex,
 		      double AValue,double BValue,
-		      const double fullRange)
-/*!
-    Convert a set of value [EXP not taken]
-    into  a source. 
-    - 0 is full beam 
+		      const double fullRange,
+		      const double weightMax)
+  /*!
+    Scale the mesh so all values fall in a range given by fullRange
+    and groin from weightMax-fullRange : weightMax.
     \param eIndex :: Offset energy Index [offset by +1] / 0 for full range
     \param AValue :: [log] Min Value [assumed to be fullRange] (+ve use min)
     \param BValue :: [log] Max value [above assumed to be 1.0] (+ve to use max)
     \param fullRange :: Range of data output [+ve]
+    \param weightMax :: Maximum value (so we get weightMax-fullRange : weightMax
   */
 {
   ELog::RegMethod RegA("WWGWeight","scaleRange(full)");
@@ -484,9 +485,11 @@ WWGWeight::scaleRange(const size_t eIndex,
   if (fullRange<1.0 || fullRange>100.0)
     throw ColErr::RangeError<double>(fullRange,1.0,100.0,"fullRange");
 
+  if (weightMax<-100.0 || weightMax>0.0)
+    throw ColErr::RangeError<double>(weightMax,-100.0,0.0,"weightMax");
+
   double* TData=WGrid.data();
   size_t NData=WGrid.num_elements();
-  ELog::EM<<"NDATA == "<<NData<<ELog::endDiag;
 
   if (eIndex>0)
     {
@@ -503,7 +506,6 @@ WWGWeight::scaleRange(const size_t eIndex,
   if (BValue > 0)
     BValue= *std::max_element(TData,TData+NData-1);
   
-  ELog::EM<<"Min / Max selected = "<<AValue<<" "<<BValue<<ELog::endDiag;
 
   if (AValue>BValue) std::swap(AValue,BValue);
   
@@ -516,9 +518,9 @@ WWGWeight::scaleRange(const size_t eIndex,
       for(size_t i=0;i<NData;i++)
 	{
 	  if (TData[i]<=AValue)
-	    TData[i] = -fullRange;
+	    TData[i] = weightMax-fullRange;
 	  else if (TData[i]>=BValue)
-	    TData[i] = 0.0;
+	    TData[i] = weightMax;
 	  else
 	    {
 	      if (TData[i]>maxValue)
@@ -528,12 +530,13 @@ WWGWeight::scaleRange(const size_t eIndex,
 		minValue=TData[i];
 	      // F is +ve
 	      const double F=(TData[i]-AValue)/ABRange;
-	      TData[i]= -(1.0-F)*fullRange;
+	      TData[i]= weightMax-(1.0-F)*fullRange;
 	    }
 	}
     }
   
-  ELog::EM<<"Full range == "<<fullRange<<" "<<AValue<<" "<<BValue
+  ELog::EM<<"Full range == "<<weightMax-fullRange<<":"<<weightMax
+	  <<" Using basis:"<<AValue<<" "<<BValue
 	  <<"\n"
 	  <<"Scaled from ["<<minValue<<"]"<<exp(minValue)<<" ["
 	  <<maxValue<<"] "<<exp(maxValue)<<ELog::endDiag;
