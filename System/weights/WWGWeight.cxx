@@ -852,9 +852,10 @@ WWGWeight::writeFLUKA(std::ostream& OX) const
 
   std::ostringstream cx;
 
+  // convert energy to GeV
   cx<<"USRICALL "<<ID;
   for(const double E : EBin)
-    cx<<" "<<E;
+    cx<<" "<<E*1e-3; 
   for (size_t i=EBin.size();i<5;i++)
     cx<<" -";
   cx<<" wwgEng";

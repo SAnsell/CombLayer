@@ -510,6 +510,7 @@ WCells::writeFLUKA(std::ostream& OX) const
 {
   ELog::RegMethod RegA("WCells","writeFLUKA");
 
+  return;
   flukaSystem::cellValueSet<2> wwFactor("wwfactor","WW-FACTO");
   std::vector<int> cellVec;
     

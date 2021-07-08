@@ -268,8 +268,18 @@ maxiv -w -wWWG \
 \item[--weightSource] defines a (source or adjoint) {\em single point} in space. It's possible to define as many as necessary, and not all of them should be used.
   Here we defined two point sources. One at an absolute point and one relative to a FixedComp linkPoint.
 \item[--wwgEnergy] defines a mesh. Format: EnergyName [energy boundaries]
-\item[--wwgMesh] defines a mesh. Format: GridName minPoint maxPoint bins.
-\item[--wwgVTK] optionally you can output the mesh file into a VTK file for plotting.
+  \begin{description}
+    \item E1 E2 E3 .... these are the energy bin boundaries. The minimum is 2.
+  \end{description}
+\item[--wwgMesh] defines a mesh.
+  \begin{description}
+    \item Vec3D(LowPoint) Low point of the box
+    \item Vec3D(HighPoint) High point of the box
+    \item NX NY NZ : Number of bins in each orthogonal axis
+  \end{description}
+  Note that each Vec3D point can be a generalized FixedComp linkPonit, or
+  a PointMap value.
+  
 \item[--wwgCreate] Fill a energy/grid mesh  from a source point
   Syntax:
 \begin{description}
@@ -317,35 +327,32 @@ maxiv -w -wWWG \
   \item {\bf -20} All values below exp(-20) in the un-normalized mesh are treaded as exp(-20).
 \end{description}
 
+\item[--wwgVTK] Write out the mesh to a VTK file.
+\begin{description}
+  \item {\bf testA.vtk} Filename for the output
+  \item {\bf SSX[1]} The mesh and energy bin to be written.
+  \item {\bf Log} The file is either W (typically a small value) or
+    the -log(W). So the numbers are positive and run from 0 to a value.
 \end{description}
 
-Every 100 points during integration it writes you the ratios of
-contribution of flux to a given point and the source to the given
-point.  So, it finds that you get about
-\num[retain-unity-mantissa=false]{1e9} (0.693147) \todo{1e9 does not
-  correspond to the output} contributions from the source at the start
-of the wall, but once you get through the wall you get
-\num[retain-unity-mantissa=false]{1e46} (-46.0517) contribution.  You
-end up with the minimum weight (which is in fact the maximal weight
-\alert{???}), which is the normalisation factor. \\ sumR are
-normalisation terms and its value (-7.37277) says we are out of
-normalisation a bit (therefore we can maybe do something with it).
+\end{description}
 
-% 29:12 - ParaView
-The weight window is saved in the {\tt wwinp} file and optionally can be exported in a {\tt VTK} file by using the {\tt --wwgVTK} command line argument
-as shown in the listing on page \pageref{bash:vr:cadis:mesh:run}.
-This {\tt VTK} file can be visualised by an external program like {\tt VisIt} or {\tt ParaView}.
-
-In the input deck, the weight-window parameters are defined as
+In MCNP, the input deck, the weight-window parameters are defined as
 \begin{deck}
  wwp:n 8 1.4 5 -1 -2 0
 \end{deck}
-where {\tt switchn=-2}. In the non-modified \mcnp this value indicates that ``the lower weight-window bounds should be read from an external {\tt wwinp} file
-containing either cell- or mesh-based lower weight window bounds''.
-SA modifies \mcnp, and this value means {\em both} cell and weight.
-It's possible to use {\tt switchn=-2} for non-modified \mcnp versions, and the rule is that when you've got outside of the mesh boundary, you score
-importance only. In your input file you have a list of the cells and cell weights, and with regular \mcnp you will get a warning saying that the cell weights being ignored.
-\mcnp will happily run, and if a particle drops outside of the boundary and has a scatter, you will be warned that importances are being sampled instead of {\tt wwinp} \todo{Show the exact message}
+where {\tt switchn=-2}.  In the non-modified \mcnp this value
+indicates that ``the lower weight-window bounds should be read from an
+external {\tt wwinp} file containing either cell- or mesh-based lower
+weight window bounds''.  SA modifies \mcnp, and this value means {\em
+  both} cell and weight.  It's possible to use {\tt switchn=-2} for
+non-modified \mcnp versions, and the rule is that when you've got
+outside of the mesh boundary, you score importance only. In your input
+file you have a list of the cells and cell weights, and with regular
+\mcnp you will get a warning saying that the cell weights being
+ignored.  \mcnp will happily run, and if a particle drops outside of
+the boundary and has a scatter, you will be warned that importances
+are being sampled instead of {\tt wwinp} \todo{Show the exact message}
 and you will get the default importance which in this case is 1.
 
 \paragraph{Modification of MCNP}
@@ -358,6 +365,12 @@ so you can have exactly the same behaviour as you currently have, but you can al
 that two meshes do not need to be orthogonal, they can follow bending in a curving beam line, which is useful\footnote{Especially for LOKI, which has two \SI{\sim 5}{\degree} bends.}.
 Or you can have a fixed mesh around the moderator, which does not have to respect whichever direction of beam line we are taking away.
 And SA can have that mesh isolated and separate.
+
+\paragraph{Modifications to FLUKA}
+
+Fluka provides a user set of functions, and for importance provides usibms.f,
+whichi is called if BIASING is set with SDUM=USER. This select which particles
+and which cells will call the user defined user-im
 
 \subsubsection{Old way: cell-based biasing}
 \label{sec:vr:cadis:cell}
