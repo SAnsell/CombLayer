@@ -3,7 +3,7 @@
  
  * File:   micromaxInc/MICROMAX.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,9 +47,11 @@ namespace constructSystem
 namespace xraySystem
 {
   class BeamMount;
-  class bladerOpticsHutch;
+  class OpticsHutch;
   class ExperimentalHutch;
   class ExptBeamline;
+  class micromaxDetectorTube;
+  class micromaxExptLine;
   class micromaxOpticsLine;
   class R3FrontEndCave;
   class ConnectZone;
@@ -69,22 +71,36 @@ class MICROMAX : public R3Beamline
 {
  private:
 
-
   /// the components in the front end
   std::shared_ptr<micromaxFrontEnd> frontBeam;
 
   /// lead in beam wall
-  std::shared_ptr<WallLead> wallLead;
+  std::shared_ptr<WallLead> wallLead;       
   
   /// Pipe joining frontend to optics hut
   std::shared_ptr<constructSystem::VacuumPipe> joinPipe;
 
   /// Optics hutch
-  std::shared_ptr<balderOpticsHutch> opticsHut;
+  std::shared_ptr<OpticsHutch> opticsHut;
   
   /// Beamline
   std::shared_ptr<micromaxOpticsLine> opticsBeam;
-  
+
+  /// Optics hutch
+  std::shared_ptr<ExperimentalHutch> exptHut;
+
+  /// Pipe joining frontend to Expt hutch
+  std::shared_ptr<constructSystem::VacuumPipe> joinPipeB;
+
+  /// Shield at exit of optics hutch
+  std::shared_ptr<xraySystem::PipeShield> pShield;
+
+  /// Beamline expt
+  std::shared_ptr<micromaxExptLine> exptBeam;
+
+  /// Detector
+  std::shared_ptr<micromaxDetectorTube> detectorTube;
+
  public:
   
   MICROMAX(const std::string&);
@@ -94,7 +110,7 @@ class MICROMAX : public R3Beamline
 
 
   virtual void build(Simulation&,const attachSystem::FixedComp&,
-		     const long int);
+	     const long int);
 
 };
 

@@ -461,7 +461,8 @@ R3RingVariables(FuncDataBase& Control)
   ELog::RegMethod RegA("R3RingVariables[F]","R3RingVariables");
 
   const std::string preName("R3Ring");
-  
+
+  ELog::EM<<"Out Radius = "<<preName<<" "<<ELog::endDiag;
   Control.addVariable(preName+"FullOuterRadius",14000.0);
   Control.addVariable(preName+"IcosagonRadius",7865.0);       // U
   Control.addVariable(preName+"BeamRadius",8409.0);       // 528m circum.

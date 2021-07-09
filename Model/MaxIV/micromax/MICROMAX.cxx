@@ -3,7 +3,7 @@
  
  * File: micromax/MICROMAX.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,18 +54,18 @@
 #include "CopiedComp.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
 #include "BlockZone.h"
 
 #include "VacuumPipe.h"
-
-#include "balderOpticsHutch.h"
+#include "PipeShield.h"
+#include "OpticsHutch.h"
+#include "ExperimentalHutch.h"
 #include "WallLead.h"
+#include "R3Ring.h"
 #include "R3FrontEnd.h"
 #include "micromaxFrontEnd.h"
 #include "micromaxOpticsLine.h"
 
-#include "R3Ring.h"
 #include "R3Beamline.h"
 #include "MICROMAX.h"
 
@@ -73,12 +73,12 @@ namespace xraySystem
 {
 
 MICROMAX::MICROMAX(const std::string& KN) :
-  R3Beamline("Micromax",KN),
+  R3Beamline("Balder",KN),
   frontBeam(new micromaxFrontEnd(newName+"FrontBeam")),
   wallLead(new WallLead(newName+"WallLead")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
-  opticsHut(new balderOpticsHutch(newName+"OpticsHut")),
-  opticsBeam(new micromaxOpticsLine(newName+"OpticsLine"))
+  opticsHut(new OpticsHutch(newName+"OpticsHut")),
+  opticsBeam(new micromaxOpticsLine(newName+"OpticsLine"))  
   /*!
     Constructor
     \param KN :: Keyname
@@ -115,19 +115,22 @@ MICROMAX::build(Simulation& System,
   ELog::RegMethod RControl("MICROMAX","build");
 
   const size_t NS=r3Ring->getNInnerSurf();
+
   const size_t PIndex=static_cast<size_t>(std::abs(sideIndex)-1);
   const size_t SIndex=(PIndex+1) % NS;
   const size_t prevIndex=(NS+PIndex-1) % NS;
 
   const std::string exitLink="ExitCentre"+std::to_string(PIndex);
-  
+
   frontBeam->setStopPoint(stopPoint);
+  frontBeam->setCutSurf("REWall",-r3Ring->getSurf("BeamInner",PIndex));
+  frontBeam->deactivateFM3();
   frontBeam->addInsertCell(r3Ring->getCell("InnerVoid",SIndex));
 
   frontBeam->setBack(-r3Ring->getSurf("BeamInner",PIndex));
   frontBeam->createAll(System,FCOrigin,sideIndex);
 
-    wallLead->addInsertCell(r3Ring->getCell("FrontWall",PIndex));
+  wallLead->addInsertCell(r3Ring->getCell("FrontWall",PIndex));
   wallLead->setFront(r3Ring->getSurf("BeamInner",PIndex));
   wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));    
   wallLead->createAll(System,FCOrigin,sideIndex);
@@ -140,8 +143,9 @@ MICROMAX::build(Simulation& System,
   opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
   opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
 
-  opticsHut->setCutSurf("SideWall",r3Ring->getSurf("FlatOuter",PIndex));
   opticsHut->setCutSurf("InnerSideWall",r3Ring->getSurf("FlatInner",PIndex));
+  opticsHut->setCutSurf("SideWall",r3Ring->getSurf("FlatOuter",PIndex));
+
   opticsHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
 
   // Ugly HACK to get the two objects to merge
@@ -149,25 +153,24 @@ MICROMAX::build(Simulation& System,
     (System,"OuterFlat",SIndex,
      *opticsHut,opticsHut->getSideIndex("frontCut"));
 
-  // Inner space
 
   if (stopPoint=="opticsHut") return;
-  
+
   joinPipe->addAllInsertCell(frontBeam->getCell("MasterVoid"));
   joinPipe->addInsertCell("Main",wallLead->getCell("Void"));
-  joinPipe->addAllInsertCell(opticsHut->getCell("Inlet"));
   joinPipe->createAll(System,*frontBeam,2);
-
   // new
+
+  opticsBeam->setInnerMat(opticsHut->getCellMat(System,"Void"));
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
   opticsBeam->setCutSurf("front",*opticsHut,
 			 opticsHut->getSideIndex("innerFront"));
-  
   opticsBeam->setCutSurf("back",*opticsHut,
 			 opticsHut->getSideIndex("innerBack"));
   opticsBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
+  opticsBeam->setPreInsert(joinPipe);
   opticsBeam->createAll(System,*joinPipe,2);
-
+  
   return;
 }
 
