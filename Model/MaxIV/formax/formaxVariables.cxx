@@ -515,9 +515,9 @@ opticsHutVariables(FuncDataBase& Control,
 
   Control.addVariable(hutName+"NChicane",2);
   PortChicaneGenerator PGen;
-  PGen.setSize(4.0,40.0,30.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane0",270.0,-25.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane1",370.0,-25.0);
+  PGen.setSize(4.0,60.0,40.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane0",170.0,-25.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane1",270.0,-25.0);
   
   return;
 }
@@ -576,11 +576,19 @@ exptHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"PShieldWallMat","Stainless304");
   Control.addVariable(hutName+"PShieldMat","Lead");
 
-  Control.addVariable(hutName+"NChicane",2);
+  Control.addVariable(hutName+"NChicane",6);
   PortChicaneGenerator PGen;
-  PGen.setSize(4.0,40.0,30.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane0","Left",150.0,-5.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane1","Left",-270.0,-5.0);
+  PGen.setSize(4.0,60.0,40.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane0","Left",-600.0,-5.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane1","Left",-520.0,-5.0);
+  PGen.setSize(4.0,30.0,40.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane2","Left",-440.0,-5.0);
+  PGen.setSize(4.0,60.0,40.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane3","Right",-600.0,-5.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane4","Right",-520.0,-5.0);
+  PGen.setSize(4.0,30.0,40.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane5","Right",-460.0,-5.0);
+
   /*
   PGen.generatePortChicane(Control,hutName+"Chicane1",370.0,-25.0);
   PGen.generatePortChicane(Control,hutName+"Chicane2",-70.0,-25.0);
@@ -955,7 +963,7 @@ detectorTubePackage(FuncDataBase& Control,
   SimpleTubeGen.setCF<CF350>();
   
   const std::string tubeName(beamName+"DetectorTube");
-  Control.addVariable(tubeName+"YStep", 800.748); // dummy
+  Control.addVariable(tubeName+"YStep", 709.748); // dummy
   Control.addVariable(tubeName+"OuterRadius",60.0);
   Control.addVariable(tubeName+"OuterMat","Void"); 
   // MAIN PIPE:
@@ -1072,13 +1080,13 @@ exptVariables(FuncDataBase& Control,
   CGateGen.setCylCF<CF40>();
   CGateGen.generateValve(Control,preName+"CylGateA",0.0,0);
 
-  PipeGen.generatePipe(Control,preName+"PipeB",118.0);
+  PipeGen.generatePipe(Control,preName+"PipeB",118.0-15);
 
   BellowGen.generateBellow(Control,preName+"BellowD",15.0);
   
   SixGen.generateSixPort(Control,preName+"SixPortB");
 
-  PipeGen.generatePipe(Control,preName+"PipeC",118.0);
+  PipeGen.generatePipe(Control,preName+"PipeC",118.0-15);
 
   CGateGen.generateValve(Control,preName+"CylGateB",0.0,0);
 
@@ -1098,7 +1106,7 @@ exptVariables(FuncDataBase& Control,
 
   CrossGen.generateSixPort(Control,preName+"CrossB");
 
-  PipeGen.generatePipe(Control,preName+"AdjustPipe",73.0);
+  PipeGen.generatePipe(Control,preName+"AdjustPipe",33.0);
 
   PipeGen.generatePipe(Control,preName+"PipeE",7.5);
 
@@ -1111,7 +1119,7 @@ exptVariables(FuncDataBase& Control,
   PipeGen.setCF<CF16>();
   PipeGen.setAFlangeCF<CF40>();
   PipeGen.setBFlange(1.1,0.1);
-  PipeGen.generatePipe(Control,preName+"EndPipe",61.0);
+  PipeGen.generatePipe(Control,preName+"EndPipe",41.0);
 
   Control.addVariable(preName+"SampleYStep", 25.0); // [2]
   Control.addVariable(preName+"SampleRadius", 5.0); // [2]

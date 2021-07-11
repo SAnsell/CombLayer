@@ -452,9 +452,9 @@ ExperimentalHutch::createChicane(Simulation& System)
 	}
       else if (wallName=="Right")
 	{
-	  PItem->addInsertCell("Inner",getCell("InnerRightWall"));
-	  PItem->addInsertCell("Inner",getCell("LeadRightWall"));
-	  PItem->addInsertCell("Inner",getCell("OuterRightWall"));
+	  PItem->addInsertCell("Inner",getCell("InnerRingWall"));
+	  PItem->addInsertCell("Inner",getCell("LeadRingWall"));
+	  PItem->addInsertCell("Inner",getCell("OuterRingWall"));
 	  PItem->addInsertCell("Main",getCell("RightWallVoid"));
 	  PItem->setCutSurf("innerWall",*this,"innerRightWall");
 	  PItem->setCutSurf("outerWall",*this,"rightWall");      
