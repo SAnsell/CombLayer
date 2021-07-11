@@ -355,7 +355,7 @@ SurfMap::makePlane(const std::string& Key,
   /*!
     Simple constructor to build a surface [type plane] and add to 
     SurfMap.
-    \param Key :: KeyName
+    \param Key :: KeyName or #KeyName for -ve surf
     \param SMap :: Surface Map
     \param N :: Surface number
     \param O :: Origin
@@ -365,7 +365,14 @@ SurfMap::makePlane(const std::string& Key,
   ELog::RegMethod RegA("SurfMap","makePlane");
 
   ModelSupport::buildPlane(SMap,N,O,D);
-  setSurf(Key,SMap.realSurf(N));
+  if (!Key.empty())
+    {
+      if (Key[0]!='#' && Key[0]!='-')
+	addSurf(Key,SMap.realSurf(N));
+      else
+	addSurf(Key.substr(1),-SMap.realSurf(N));
+    }
+
   return;
 }
 

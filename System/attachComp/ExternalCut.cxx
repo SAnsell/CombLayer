@@ -395,7 +395,7 @@ HeadRule
 ExternalCut::getValidRule(const std::string& extName,
 			  const Geometry::Vec3D& Pt) const
   /*!
-    Accessor to main rule
+    Get a rule and make it true relative to the test point0
     \param extName :: external-cut name
     \param Pt :: point to test
     \return frontRule on a valid direction to pt

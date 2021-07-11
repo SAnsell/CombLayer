@@ -445,9 +445,8 @@ monoShutterVariables(FuncDataBase& Control,
   BellowGen.setAFlangeCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowL",10.0);    
 
-
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,preName+"PipeF",85.0);  
+  PipeGen.generatePipe(Control,preName+"PipeF",70.0);  
   return;
 }
   
@@ -483,10 +482,9 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"Depth",100.0);
   Control.addVariable(hutName+"Height",200.0);
   Control.addVariable(hutName+"Length",1256.0);
-  Control.addVariable(hutName+"OutWidth",202.0);
+  Control.addVariable(hutName+"OutWidth",260.0);
   Control.addVariable(hutName+"RingExtra",20.0);
   Control.addVariable(hutName+"RingFlat",70.0);
-
   
   Control.addVariable(hutName+"InnerThick",0.3);
   
@@ -544,8 +542,8 @@ exptHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"YStep",0.0);
   Control.addVariable(hutName+"Height",200.0);
   Control.addVariable(hutName+"Length",1719.4);
-  Control.addVariable(hutName+"OutWidth",198.50);
-  Control.addVariable(hutName+"RingWidth",248.6);
+  Control.addVariable(hutName+"OutWidth",260);
+  Control.addVariable(hutName+"RingWidth",200);
   Control.addVariable(hutName+"InnerThick",0.1);
   Control.addVariable(hutName+"PbBackThick",0.6);
   Control.addVariable(hutName+"PbRoofThick",0.4);
@@ -1147,7 +1145,7 @@ FORMAXvariables(FuncDataBase& Control)
 
   formaxVar::undulatorVariables(Control,frontKey);
   // exit pipe
-  setVariable::R3FrontEndVariables(Control,"FormaxFrontBeam",25.0);
+  setVariable::R3FrontEndVariables(Control,"FormaxFrontBeam",24.0);
   formaxVar::frontMaskVariables(Control,"FormaxFrontBeam");
     
   formaxVar::wallVariables(Control,"FormaxWallLead");

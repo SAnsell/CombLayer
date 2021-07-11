@@ -156,14 +156,10 @@ FORMAX::build(Simulation& System,
 
   opticsHut->setCutSurf("InnerSideWall",r3Ring->getSurf("FlatInner",PIndex));
   opticsHut->setCutSurf("SideWall",r3Ring->getSurf("FlatOuter",PIndex));
-
+  const HeadRule cutHR=r3Ring->getSurfRule("FlatOuter",PIndex)+
+    r3Ring->getSurfRule("FlatOuterCut",PIndex);
+  opticsHut->setCutSurf("SideWallCut",cutHR);
   opticsHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
-
-  // Ugly HACK to get the two objects to merge
-  r3Ring->insertComponent
-    (System,"OuterFlat",SIndex,
-     *opticsHut,opticsHut->getSideIndex("frontCut"));
-
 
   if (stopPoint=="opticsHut") return;
 

@@ -50,7 +50,6 @@ class OpticsHutch :
   double height;                ///< void height
   double length;                ///< void out side width
 
-  double ringExtra;             ///< Extra thickness of ring wall
   double ringFlat;              ///< Distance to ring flat
   double outWidth;              ///< out side width
   // walls
@@ -64,7 +63,6 @@ class OpticsHutch :
   double innerOutVoid;          ///< Extension for inner left void space
   double outerOutVoid;          ///< Extension for outer left void space
   double extension;             ///< Extension for void behind back wall
-
   
   double inletXStep;            ///< Inlet XStep
   double inletZStep;            ///< Inlet ZStep

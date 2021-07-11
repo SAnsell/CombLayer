@@ -381,8 +381,9 @@ R3FrontEndVariables(FuncDataBase& Control,
   setVariable::EPSeparatorGenerator ESGen;
   setVariable::R3ChokeChamberGenerator CCGen;
 
-  // Master off set from division -- 
-  Control.addVariable(frontKey+"YStep",524.4);  
+  // Master off set from division --
+  Control.addVariable(frontKey+"YStep",524.4);
+  Control.addVariable(frontKey+"XStep",0.0);  
   Control.addVariable(frontKey+"OuterRadius",60.0);
 
   // BuildZone offset
@@ -462,14 +463,14 @@ R3RingVariables(FuncDataBase& Control)
 
   const std::string preName("R3Ring");
 
-  ELog::EM<<"Out Radius = "<<preName<<" "<<ELog::endDiag;
   Control.addVariable(preName+"FullOuterRadius",14000.0);
   Control.addVariable(preName+"IcosagonRadius",7865.0);       // U
-  Control.addVariable(preName+"BeamRadius",8409.0);       // 528m circum.
+  Control.addVariable(preName+"BeamRadius",8409.0-48.0);       // 528m circum.
   Control.addVariable(preName+"IcosagonWallThick",90.0);
   Control.addVariable(preName+"OffsetCornerX",716.0);
   Control.addVariable(preName+"OffsetCornerY",558.0);
-  Control.addVariable(preName+"OuterWall",100.0);
+  Control.addVariable(preName+"OuterWall",110.0);
+  Control.addVariable(preName+"OuterWallCut",-40.0);
   Control.addVariable(preName+"RatchetWall",120.0);
   
   Control.addVariable(preName+"Height",160.0);
