@@ -294,8 +294,8 @@ R3FrontEnd::insertFlanges(Simulation& System,
 
 void
 R3FrontEnd::buildHeatTable(Simulation& System,
-			       const attachSystem::FixedComp& preFC,
-			       const long int preSideIndex)
+			   const attachSystem::FixedComp& preFC,
+			   const long int preSideIndex)
 
   /*!
     Build the heatDump table
@@ -309,24 +309,31 @@ R3FrontEnd::buildHeatTable(Simulation& System,
 
   int outerCell;
 
-  heatBox->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  heatBox->createAll(System,preFC,preSideIndex);
 
-  const constructSystem::portItem& PIA=heatBox->getPort(1);
-  outerCell=buildZone.createUnit
-    (System,PIA,PIA.getSideIndex("OuterPlate"));
-  heatBox->insertAllInCell(System,outerCell);
-  
+  heatBox->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  heatBox->createAll(System,*this,0);
+  //  heatBox->createAll(System,preFC,preSideIndex);
+    
+  const constructSystem::portItem& PIA=heatBox->getPort(0);
+  const constructSystem::portItem& PIB=heatBox->getPort(1);
+
   // cant use heatbox here because of port rotation  
   heatDump->addInsertCell("Inner",heatBox->getCell("Void"));
-  heatDump->addInsertCell("Outer",outerCell);
-  heatDump->createAll(System,PIA,0,*heatBox,2);
+  heatDump->createAll(System,PIB,0,*heatBox,2);
+  
+  // Built after heatDump
+  collExitPipe->setBack(PIA,"OuterPlate");
+  collExitPipe->createAll(System,*collB,2);
+  outerCell=buildZone.createUnit(System,*collExitPipe,2);
+  collExitPipe->insertAllInCell(System,outerCell);
 
-
-  bellowD->createAll(System,PIA,PIA.getSideIndex("OuterPlate"));
+  outerCell=buildZone.createUnit(System,PIB,"OuterPlate");
+  heatBox->insertAllInCell(System,outerCell);
+  heatDump->insertInCell("Outer",System,outerCell);
+  
+  bellowD->createAll(System,PIB,"OuterPlate");
   outerCell=buildZone.createUnit(System,*bellowD,2);
   bellowD->insertInCell(System,outerCell);
-
 
   gateTubeA->createAll(System,*bellowD,2);  
   outerCell=buildZone.createUnit(System,*gateTubeA,2);
@@ -631,11 +638,9 @@ R3FrontEnd::buildObjects(Simulation& System)
     }
 
   collExitPipe->setFront(*linkFC,2);
-  collExitPipe->createAll(System,*linkFC,2);
-  outerCell=buildZone.createUnit(System,*collExitPipe,2);
-  collExitPipe->insertAllInCell(System,outerCell);
   
   buildHeatTable(System,*collExitPipe,2);
+
   buildApertureTable(System,*pipeB,2);
   buildShutterTable(System,*pipeC,2);
   

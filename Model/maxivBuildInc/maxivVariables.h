@@ -55,8 +55,7 @@ namespace setVariable
   void FORMAXvariables(FuncDataBase&);
   void MICROMAXvariables(FuncDataBase&);
 
-  void R3FrontEndVariables(FuncDataBase&,const std::string&,
-			   const double);
+  void R3FrontEndVariables(FuncDataBase&,const std::string&);
   void R1FrontEndVariables(FuncDataBase&,const std::string&,
 			   const double);
 

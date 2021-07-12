@@ -89,7 +89,7 @@ class formaxOpticsLine :
 {
  private:
 
-  /// string for pre-insertion into mastercell:0
+  /// Items pre-insertion into mastercell:0
   std::shared_ptr<attachSystem::ContainedGroup> preInsert;
   /// construction space for main object
   attachSystem::BlockZone buildZone;

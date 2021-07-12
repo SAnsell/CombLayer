@@ -60,6 +60,9 @@
 #include "CellMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+#include "Surface.h"
 
 #include "WallLead.h"
 

@@ -114,22 +114,6 @@ wigglerVariables(FuncDataBase& Control,
   return;
 }
 
-void
-wallVariables(FuncDataBase& Control,
-	      const std::string& wallKey)
- /*!
-    Set the variables for the frontend lead wall
-    \param Control :: DataBase to use
-    \param wallKey :: name before part names
-  */
-{
-  ELog::RegMethod RegA("balderVariables[F]","wallVariables");
- 
-  WallLeadGenerator LGen;
-  LGen.setWidth(70.0,140.0);
-  LGen.generateWall(Control,wallKey,3.0);
-  return;
-}
 
 
 void
@@ -784,10 +768,8 @@ BALDERvariables(FuncDataBase& Control)
 
   balderVar::wigglerVariables(Control,"BalderFrontBeam");
   // ystep [0] / dipole pipe / exit pipe
-  setVariable::R3FrontEndVariables(Control,"BalderFrontBeam",25.0);
-  
+  setVariable::R3FrontEndVariables(Control,"Balder");  
   balderVar::frontMaskVariables(Control,"BalderFrontBeam");  
-  balderVar::wallVariables(Control,"BalderWallLead");
   
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); 

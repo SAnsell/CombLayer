@@ -460,8 +460,7 @@ makeSingleItem::build(Simulation& System,
       for(size_t index=0;index<2;index++)
 	{
 	  const constructSystem::portItem& DPI=diagBox->getPort(index);
-	  jawComp[index]->setFillRadius
-	    (DPI,DPI.getSideIndex("InnerRadius"),DPI.getCell("Void"));
+	  jawComp[index]->setFillRadius(DPI,"InnerRadius",DPI.getCell("Void"));
 
 	  jawComp[index]->addInsertCell(diagBox->getCell("Void"));
 	  if (index)

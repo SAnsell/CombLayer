@@ -80,7 +80,6 @@ namespace softimaxVar
 {
   void undulatorVariables(FuncDataBase&,const std::string&);
   void frontMaskVariables(FuncDataBase&,const std::string&);
-  void wallVariables(FuncDataBase&,const std::string&);
   void monoVariables(FuncDataBase&,const std::string&);
   void shieldVariables(FuncDataBase&,const std::string&);
 
@@ -167,24 +166,6 @@ frontMaskVariables(FuncDataBase& Control,
 
   // move water pipes from centre because otherwise clip with aperature cone
   Control.addVariable(preName+"CollBPipeXWidth",5.0);
-
-  return;
-}
-
-void
-wallVariables(FuncDataBase& Control,
-	      const std::string& wallKey)
-/*!
-    Set the variables for the frontEnd wall
-    \param Control :: DataBase to use
-    \param wallKey :: name before part names
-  */
-{
-  ELog::RegMethod RegA("softimaxVariables[F]","wallVariables");
-
-  WallLeadGenerator LGen;
-  LGen.setWidth(95,140.0);
-  LGen.generateWall(Control,wallKey,2.1);
 
   return;
 }
@@ -981,16 +962,12 @@ SOFTIMAXvariables(FuncDataBase& Control)
   setVariable::LeadPipeGenerator LeadPipeGen;
   setVariable::PipeShieldGenerator ShieldGen;
 
-  PipeGen.setWindow(-2.0,0.0);   // no window
+  PipeGen.setNoWindow();
 
   softimaxVar::undulatorVariables(Control,"SoftiMAXFrontBeam");
 
-  /// Parameters of R3FrontEndVariables:
-  // 25 =exitLeng :: last exit pipe length
-  setVariable::R3FrontEndVariables(Control,"SoftiMAXFrontBeam",25.0);
+  setVariable::R3FrontEndVariables(Control,"SoftiMAX");
   softimaxVar::frontMaskVariables(Control,"SoftiMAXFrontBeam");
-
-  softimaxVar::wallVariables(Control,"SoftiMAXWallLead");
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); // CF40 was 2cm (why?)

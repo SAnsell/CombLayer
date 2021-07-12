@@ -40,6 +40,7 @@ namespace xraySystem
   class MonoCrystals;
   class MonoShutter;
   class DiffPumpXIADP03;
+  class TriggerTube;
   /*!
     \class cosaxsOpticsLine
     \version 1.0
@@ -57,18 +58,22 @@ class cosaxsOpticsLine :
 {
  private:
 
-  /// construction space for main object
-  attachSystem::InnerZone buildZone;
+  /// Items pre-insertion into mastercell:0
+  std::shared_ptr<attachSystem::ContainedGroup> preInsert;
 
+  /// construction space for main object
+  attachSystem::BlockZone buildZone;
+  int innerMat;                         ///< inner material if used
+  
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
 
   /// Inital bellow
   std::shared_ptr<constructSystem::Bellows> pipeInit;
   /// vauucm trigger system
-  std::shared_ptr<constructSystem::CrossPipe> triggerPipe;
+  std::shared_ptr<xraySystem::TriggerTube> triggerPipe;
   /// first ion pump
-  std::shared_ptr<constructSystem::CrossPipe> gaugeA;
+  std::shared_ptr<xraySystem::CylGateValve> gateTubeA;
   /// bellows after ion pump to filter
   std::shared_ptr<constructSystem::Bellows> bellowA;
   /// First gate valve
@@ -172,16 +177,14 @@ class cosaxsOpticsLine :
 
 
   int constructMonoShutter
-    (Simulation&,MonteCarlo::Object**,
-     const attachSystem::FixedComp&,const long int);
+  (Simulation&,const attachSystem::FixedComp&,const std::string&);
 
   int constructDiag
     (Simulation&,
-     MonteCarlo::Object**,
      constructSystem::PortTube&,
      std::array<std::shared_ptr<constructSystem::JawFlange>,2>&,
      const attachSystem::FixedComp&,
-     const long int);
+     const std::string&);
 
   void populate(const FuncDataBase&);
   void createSurfaces();
@@ -195,6 +198,13 @@ class cosaxsOpticsLine :
   cosaxsOpticsLine& operator=(const cosaxsOpticsLine&);
   ~cosaxsOpticsLine();
 
+  /// Assignment to inner void
+  void setInnerMat(const int M) {  innerMat=M; }
+  /// Assignment to extra for first volume
+  void setPreInsert
+  (const std::shared_ptr<attachSystem::ContainedGroup>& A) { preInsert=A; }
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

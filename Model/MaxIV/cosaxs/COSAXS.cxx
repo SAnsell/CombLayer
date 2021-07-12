@@ -3,7 +3,7 @@
  
  * File: cosaxs/COSAXS.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -119,6 +119,7 @@ COSAXS::~COSAXS()
    */
 {}
 
+  
 void 
 COSAXS::build(Simulation& System,
 	      const attachSystem::FixedComp& FCOrigin,
@@ -141,6 +142,8 @@ COSAXS::build(Simulation& System,
   const std::string exitLink="ExitCentre"+std::to_string(PIndex);
   
   frontBeam->setStopPoint(stopPoint);
+  frontBeam->setCutSurf("REWall",-r3Ring->getSurf("BeamInner",PIndex));
+  //  frontBeam->deactivateFM3();  ACTIVE on COSAXS
   frontBeam->addInsertCell(r3Ring->getCell("InnerVoid",SIndex));
 
   frontBeam->setBack(-r3Ring->getSurf("BeamInner",PIndex));
@@ -153,43 +156,28 @@ COSAXS::build(Simulation& System,
   
   if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
 
-  opticsHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
-  opticsHut->setCutSurf("RingWall",r3Ring->getSurf("BeamOuter",PIndex));
-
-  opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
-  opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
-
-  opticsHut->setCutSurf("SideWall",r3Ring->getSurf("FlatOuter",PIndex));
-  opticsHut->setCutSurf("InnerSideWall",r3Ring->getSurf("FlatInner",PIndex));
-  opticsHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
-
-  // Ugly HACK to get the two objects to merge
-  r3Ring->insertComponent
-    (System,"OuterFlat",SIndex,
-     *opticsHut,opticsHut->getSideIndex("frontCut"));
-
-
-  // Inner space
+  buildOpticsHutch(System,opticsHut,PIndex,exitLink);
 
   if (stopPoint=="opticsHut") return;
 
 
   joinPipe->addAllInsertCell(frontBeam->getCell("MasterVoid"));
   joinPipe->addInsertCell("Main",wallLead->getCell("Void"));
-  joinPipe->addAllInsertCell(opticsHut->getCell("Inlet"));
   joinPipe->createAll(System,*frontBeam,2);
 
+
   // new
+  opticsBeam->setInnerMat(opticsHut->getCellMat(System,"Void"));
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
   opticsBeam->setCutSurf("front",*opticsHut,
 			 opticsHut->getSideIndex("innerFront"));
-  
   opticsBeam->setCutSurf("back",*opticsHut,
 			 opticsHut->getSideIndex("innerBack"));
   opticsBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
+  opticsBeam->setPreInsert(joinPipe);
   opticsBeam->createAll(System,*joinPipe,2);
-  
-  joinPipe->insertAllInCell(System,opticsBeam->getCell("OuterVoid",0));
+
+
 
   joinPipeB->addAllInsertCell(opticsBeam->getCell("LastVoid"));
   joinPipeB->addInsertCell("Main",opticsHut->getCell("ExitHole"));
@@ -197,15 +185,15 @@ COSAXS::build(Simulation& System,
   joinPipeB->setFront(*opticsBeam,2);
   joinPipeB->createAll(System,*opticsBeam,2);
 
-  
+
   screenA->setCutSurf("inner",joinPipeB->getSurfRule("OuterRadius"));
   screenA->addAllInsertCell(opticsBeam->getCell("LastVoid"));
   screenA->createAll(System,*opticsBeam,2);
-  
-  
-  exptHut->setCutSurf("frontWall",opticsHut->getSurf("outerWall"));
+
+  exptHut->setCutSurf("frontWall",*opticsHut,"back");
   exptHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
+  exptHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
   exptHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
 
   if (stopPoint=="exptHut")
@@ -215,23 +203,34 @@ COSAXS::build(Simulation& System,
     }
 
   exptBeam->setStopPoint(stopPoint);
-  exptBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
-  exptBeam->setCutSurf("front",opticsHut->getSurf("outerWall"));
-  //  exptBeam->setCutSurf("back",exptHut->getSurf("innerBack"));
- 
   exptBeam->addInsertCell(exptHut->getCell("Void"));
+  exptBeam->setCutSurf("front",*exptHut,
+			 exptHut->getSideIndex("innerFront"));
+  exptBeam->setCutSurf("back",*exptHut,
+			 exptHut->getSideIndex("innerBack"));
+  exptBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
+  exptBeam->setPreInsert(joinPipeB);
+
   exptBeam->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
   exptBeam->createAll(System,*joinPipeB,2);
 
+  /*
+
+
+  exptBeam->createAll(System,*joinPipeB,2);
+
+  */
   // Intersection of the exptHut back wall with tube and exptBeam:
-  const std::string tubeName(exptBeam->getKeyName()+"Tube");
+  const std::string tubeName(exptBeam->getKeyName()+"DetTube");
   const std::string seg3name(tubeName+"Segment3");
 
   const attachSystem::CellMap* tube =
-    System.getObjectThrow<attachSystem::CellMap>(tubeName,"Tube CellMap");
+    System.getObjectThrow<attachSystem::CellMap>(tubeName,"CellMap");
   const attachSystem::SurfMap* seg3Surf =
     System.getObjectThrow<attachSystem::SurfMap>(seg3name,"Surf of Segment3");
 
+  //joinPipeB->insertAllInCell(System,exptBeam->getCell("OuterVoid",0));
+  return;
   HeadRule wallCut;
   wallCut.addUnion(exptHut->getSurf("innerBack"));
   wallCut.addUnion(exptHut->getSurf("outerBack"));

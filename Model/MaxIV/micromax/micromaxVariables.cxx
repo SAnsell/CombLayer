@@ -91,7 +91,6 @@ namespace micromaxVar
 {
 
 void undulatorVariables(FuncDataBase&,const std::string&);
-void wallVariables(FuncDataBase&,const std::string&);
 void mirrorMonoPackage(FuncDataBase&,const std::string&);
 void hdcmPackage(FuncDataBase&,const std::string&);
 void diag2Package(FuncDataBase&,const std::string&);
@@ -450,24 +449,6 @@ monoShutterVariables(FuncDataBase& Control,
   return;
 }
   
-void
-wallVariables(FuncDataBase& Control,
-	      const std::string& wallKey)
-/*!
-    Set the variables for the frontend wall
-    \param Control :: DataBase to use
-    \param wallKey :: name before part names
-  */
-{
-  ELog::RegMethod RegA("micromaxVariables[F]","wallVariables");
-
-  WallLeadGenerator LGen;
-  LGen.setWidth(140.0,70.0);
-  LGen.generateWall(Control,wallKey,3.0);
-
-  return;
-}
-
 void
 opticsHutVariables(FuncDataBase& Control,
 		   const std::string& hutName)
@@ -1145,11 +1126,9 @@ MICROMAXvariables(FuncDataBase& Control)
   const std::string frontKey("MicromaxFrontBeam");
 
   micromaxVar::undulatorVariables(Control,frontKey);
-  // exit pipe
-  setVariable::R3FrontEndVariables(Control,"MicromaxFrontBeam",25.0);
+  setVariable::R3FrontEndVariables(Control,"Micromax");
   micromaxVar::frontMaskVariables(Control,"MicromaxFrontBeam");
     
-  micromaxVar::wallVariables(Control,"MicromaxWallLead");
   
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); 

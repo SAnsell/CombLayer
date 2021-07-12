@@ -3,7 +3,7 @@
  
  * File:   R3CommonInc/R3Beamline.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@ namespace xraySystem
 {
 
   class R3Ring;
+  class OpticsHutch;
   /*!
     \class R3Beamline
     \version 1.0
@@ -58,6 +59,10 @@ class R3Beamline :
   /// Accessor to stop point
   void setStopPoint(const std::string& SP)  { stopPoint=SP; }
 
+  virtual void buildOpticsHutch(Simulation&,
+			  const std::shared_ptr<xraySystem::OpticsHutch>&,
+			  const size_t,
+			  const std::string&);
   virtual void build(Simulation&,const attachSystem::FixedComp&,
 		     const long int) =0;
 

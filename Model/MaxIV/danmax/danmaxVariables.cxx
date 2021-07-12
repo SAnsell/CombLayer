@@ -89,7 +89,6 @@ namespace danmaxVar
 
 void undulatorVariables(FuncDataBase&,const std::string&);
 void frontMaskVariables(FuncDataBase&,const std::string&);
-void wallVariables(FuncDataBase&,const std::string&,const double);
 void monoShutterVariables(FuncDataBase&,const std::string&);
 void connectVariables(FuncDataBase&,const std::string&);
 void opticsHutVariables(FuncDataBase&,const std::string&,const double);
@@ -142,27 +141,6 @@ undulatorVariables(FuncDataBase& Control,
   Control.addVariable(frontKey+"UndulatorVoidMat",0);
   Control.addVariable(frontKey+"UndulatorBlockMat","NbFeB");
     
-  return;
-}
-
-void
-wallVariables(FuncDataBase& Control,
-	      const std::string& wallKey,
-	      const double wallXOffset)
- /*!
-    Set the variables for the frontend lead wall
-    \param Control :: DataBase to use
-    \param wallKey :: name before part names
-    \param wallXOffset :: XOffset
-  */
-{
-  ELog::RegMethod RegA("danmaxVariables[F]","wallVariables");
- 
-  WallLeadGenerator LGen;
-  LGen.setWidth(70.0,140.0);
-  LGen.setXOffset(wallXOffset);
-  LGen.generateWall(Control,wallKey,3.0);
-  
   return;
 }
 
@@ -1020,18 +998,16 @@ DANMAXvariables(FuncDataBase& Control)
   setVariable::PipeGenerator PipeGen;
   //  setVariable::LeadPipeGenerator LeadPipeGen;
 
-  PipeGen.setNoWindow();   // no window
+  PipeGen.setNoWindow();
 
 
-  // join pipe length
-  setVariable::R3FrontEndVariables(Control,"DanmaxFrontBeam",25.0);
   danmaxVar::undulatorVariables(Control,"DanmaxFrontBeam");
-  // ystep / dipole pipe / exit pipe
-  Control.addVariable("DanmaxFrontBeamXStep",beamXStep);
-  danmaxVar::frontMaskVariables(Control,"DanmaxFrontBeam");
-    
-  danmaxVar::wallVariables(Control,"DanmaxWallLead",beamXStep);
-  
+  setVariable::R3FrontEndVariables(Control,"Danmax");
+
+
+  //  Control.addVariable("DanmaxFrontBeamXStep",beamXStep);
+  danmaxVar::frontMaskVariables(Control,"Danmax");    
+
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); 
   PipeGen.generatePipe(Control,"DanmaxJoinPipe",150.0);

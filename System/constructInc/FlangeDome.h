@@ -72,6 +72,8 @@ class FlangeDome :
 
   virtual void insertInCell(MonteCarlo::Object&) const;
   virtual void insertInCell(Simulation&,const int) const;
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

@@ -509,8 +509,6 @@ formaxOpticsLine::constructMonoShutter(Simulation& System,
 }
 
 
-  
-
 void
 formaxOpticsLine::buildObjects(Simulation& System)
   /*!

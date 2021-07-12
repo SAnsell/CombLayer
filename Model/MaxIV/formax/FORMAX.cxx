@@ -126,7 +126,6 @@ FORMAX::build(Simulation& System,
   ELog::RegMethod RControl("FORMAX","build");
 
   const size_t NS=r3Ring->getNInnerSurf();
-
   const size_t PIndex=static_cast<size_t>(std::abs(sideIndex)-1);
   const size_t SIndex=(PIndex+1) % NS;
   const size_t prevIndex=(NS+PIndex-1) % NS;
@@ -147,19 +146,8 @@ FORMAX::build(Simulation& System,
   wallLead->createAll(System,FCOrigin,sideIndex);
 
   if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
-  
-  opticsHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
-  opticsHut->setCutSurf("RingWall",r3Ring->getSurf("BeamOuter",PIndex));
 
-  opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
-  opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
-
-  opticsHut->setCutSurf("InnerSideWall",r3Ring->getSurf("FlatInner",PIndex));
-  opticsHut->setCutSurf("SideWall",r3Ring->getSurf("FlatOuter",PIndex));
-  const HeadRule cutHR=r3Ring->getSurfRule("FlatOuter",PIndex)+
-    r3Ring->getSurfRule("FlatOuterCut",PIndex);
-  opticsHut->setCutSurf("SideWallCut",cutHR);
-  opticsHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
+  buildOpticsHutch(System,opticsHut,PIndex,exitLink);
 
   if (stopPoint=="opticsHut") return;
 

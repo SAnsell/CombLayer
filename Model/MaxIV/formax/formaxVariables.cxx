@@ -66,7 +66,6 @@
 #include "PortChicaneGenerator.h"
 #include "JawFlangeGenerator.h"
 #include "BremCollGenerator.h"
-#include "WallLeadGenerator.h"
 #include "CLRTubeGenerator.h"
 #include "TriggerGenerator.h"
 #include "CylGateValveGenerator.h"
@@ -83,6 +82,7 @@
 #include "ConnectorGenerator.h"
 #include "FlangeDomeGenerator.h"
 #include "AreaDetectorGenerator.h"
+#include "OpticsHutGenerator.h"
 
 
 namespace setVariable
@@ -92,7 +92,6 @@ namespace formaxVar
 {
 
 void undulatorVariables(FuncDataBase&,const std::string&);
-void wallVariables(FuncDataBase&,const std::string&);
 void mirrorMonoPackage(FuncDataBase&,const std::string&);
 void hdcmPackage(FuncDataBase&,const std::string&);
 void diag2Package(FuncDataBase&,const std::string&);
@@ -450,23 +449,6 @@ monoShutterVariables(FuncDataBase& Control,
   return;
 }
   
-void
-wallVariables(FuncDataBase& Control,
-	      const std::string& wallKey)
-/*!
-    Set the variables for the frontend wall
-    \param Control :: DataBase to use
-    \param wallKey :: name before part names
-  */
-{
-  ELog::RegMethod RegA("formaxVariables[F]","wallVariables");
-
-  WallLeadGenerator LGen;
-  LGen.setWidth(140.0,70.0);
-  LGen.generateWall(Control,wallKey,3.0);
-
-  return;
-}
 
 void
 opticsHutVariables(FuncDataBase& Control,
@@ -478,40 +460,10 @@ opticsHutVariables(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("formaxVariables","opticsHutVariables");
-  
-  Control.addVariable(hutName+"Depth",100.0);
-  Control.addVariable(hutName+"Height",200.0);
-  Control.addVariable(hutName+"Length",1256.0);
-  Control.addVariable(hutName+"OutWidth",260.0);
-  Control.addVariable(hutName+"RingExtra",20.0);
-  Control.addVariable(hutName+"RingFlat",70.0);
-  
-  Control.addVariable(hutName+"InnerThick",0.3);
-  
-  Control.addVariable(hutName+"PbWallThick",1.6);
-  Control.addVariable(hutName+"PbRoofThick",1.6);
-  Control.addVariable(hutName+"PbFrontThick",1.2);
-  Control.addVariable(hutName+"PbBackThick",9.0);
 
-  Control.addVariable(hutName+"OuterThick",0.3);
+  OpticsHutGenerator OGen; 
 
-  Control.addVariable(hutName+"FloorThick",50.0);
-  Control.addVariable(hutName+"InnerOutVoid",10.0);
-  Control.addVariable(hutName+"OuterOutVoid",10.0);
-
-  Control.addVariable(hutName+"SkinMat","Stainless304");
-  Control.addVariable(hutName+"ConcreteMat","Concrete");
-  Control.addVariable(hutName+"PbMat","Lead");
-  Control.addVariable(hutName+"FloorMat","Concrete");
-  Control.addVariable(hutName+"VoidMat","Void");
-
-  Control.addVariable(hutName+"HoleXStep",0.0);
-  Control.addVariable(hutName+"HoleZStep",0.0);
-  Control.addVariable(hutName+"HoleRadius",3.5);
-
-  Control.addVariable(hutName+"InletXStep",0.0);
-  Control.addVariable(hutName+"InletZStep",0.0);
-  Control.addVariable(hutName+"InletRadius",5.0);
+  OGen.generateHut(Control,hutName,1256.0);
 
   Control.addVariable(hutName+"NChicane",2);
   PortChicaneGenerator PGen;
@@ -530,7 +482,7 @@ exptHutVariables(FuncDataBase& Control,
     Optics hut variables
     \param Control :: DataBase to add
     \param beamName :: Beamline name
-    \param bremXStep :: Offset of beam from main centre line
+    \param beamXStep :: Offset of beam from main centre line
   */
 {
   ELog::RegMethod RegA("formaxVariables[F]","exptHutVariables");
@@ -1153,11 +1105,9 @@ FORMAXvariables(FuncDataBase& Control)
 
   formaxVar::undulatorVariables(Control,frontKey);
   // exit pipe
-  setVariable::R3FrontEndVariables(Control,"FormaxFrontBeam",24.0);
+  setVariable::R3FrontEndVariables(Control,"Formax");
   formaxVar::frontMaskVariables(Control,"FormaxFrontBeam");
     
-  formaxVar::wallVariables(Control,"FormaxWallLead");
-  
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); 
   PipeGen.generatePipe(Control,"FormaxJoinPipe",150.0);

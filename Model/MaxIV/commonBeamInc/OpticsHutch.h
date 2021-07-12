@@ -49,24 +49,17 @@ class OpticsHutch :
 
   double height;                ///< void height
   double length;                ///< void out side width
-
-  double ringFlat;              ///< Distance to ring flat
-  double outWidth;              ///< out side width
+  double outWidth;              ///< Width from beamline centre to outside
+  
   // walls
   double innerThick;            ///< Inner wall/roof skin
   double pbWallThick;           ///< Thickness of lead in walls
-  double pbFrontThick;          ///< Thickness of lead in front plate
   double pbBackThick;           ///< Thickness of lead in back plate
   double pbRoofThick;           ///< Thickness of lead in Roof
   double outerThick;            ///< Outer wall/roof skin
 
   double innerOutVoid;          ///< Extension for inner left void space
   double outerOutVoid;          ///< Extension for outer left void space
-  double extension;             ///< Extension for void behind back wall
-  
-  double inletXStep;            ///< Inlet XStep
-  double inletZStep;            ///< Inlet ZStep
-  double inletRadius;           ///< Inlet radius
 
   double holeXStep;            ///< Hole XStep
   double holeZStep;            ///< Hole ZStep
@@ -76,8 +69,6 @@ class OpticsHutch :
   int pbMat;                  ///< pb layer material for walls
   int concreteMat;            ///< side wall (concrete filler)
   int voidMat;                ///< Void material
-
-  double beamTubeRadius;      ///< Void to construct components in
 
   /// Chicanes
   std::vector<std::shared_ptr<PortChicane>> PChicane;
@@ -95,6 +86,7 @@ class OpticsHutch :
   OpticsHutch& operator=(const OpticsHutch&);
   virtual ~OpticsHutch();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);

@@ -80,11 +80,7 @@ OpticsHutch::OpticsHutch(const std::string& Key) :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{
-  nameSideIndex(15,"floorCut");
-  nameSideIndex(16,"roofCut");
-  nameSideIndex(17,"frontCut");
-}
+{}
 
 
 OpticsHutch::~OpticsHutch()
@@ -107,19 +103,14 @@ OpticsHutch::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   outWidth=Control.EvalVar<double>(keyName+"OutWidth");
 
-  // ring flat should be INSIDE wall 
-  ringFlat=Control.EvalVar<double>(keyName+"RingFlat");
-  
   innerThick=Control.EvalVar<double>(keyName+"InnerThick");
   pbWallThick=Control.EvalVar<double>(keyName+"PbWallThick");
-  pbFrontThick=Control.EvalVar<double>(keyName+"PbFrontThick");
   pbBackThick=Control.EvalVar<double>(keyName+"PbBackThick");
   pbRoofThick=Control.EvalVar<double>(keyName+"PbRoofThick");
   outerThick=Control.EvalVar<double>(keyName+"OuterThick");
 
   innerOutVoid=Control.EvalDefVar<double>(keyName+"InnerOutVoid",0.0);
   outerOutVoid=Control.EvalDefVar<double>(keyName+"OuterOutVoid",0.0);
-  extension=Control.EvalDefVar<double>(keyName+"Extension",0.0);
 
   holeXStep=Control.EvalVar<double>(keyName+"HoleXStep");
   holeZStep=Control.EvalVar<double>(keyName+"HoleZStep");
@@ -129,7 +120,6 @@ OpticsHutch::populate(const FuncDataBase& Control)
 
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
   pbMat=ModelSupport::EvalMat<int>(Control,keyName+"PbMat");
-  concreteMat=ModelSupport::EvalMat<int>(Control,keyName+"ConcreteMat");
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   
   return;
@@ -148,7 +138,6 @@ OpticsHutch::createSurfaces()
   // Inner void
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
   SurfMap::makePlane("innerWall",SMap,buildIndex+3,Origin-X*outWidth,X);
-  SurfMap::makePlane("ringCut",SMap,buildIndex+4,Origin+X*ringFlat,X);
   
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
 
@@ -216,7 +205,7 @@ OpticsHutch::createObjects(Simulation& System)
   const HeadRule floor=ExternalCut::getValidRule("Floor",Origin);
   const HeadRule frontWall=
     ExternalCut::getValidRule("RingWall",Origin+Y*length);
-  ELog::EM<<"Side == "<<sideCut<<ELog::endDiag;
+
   HeadRule HR;
   if (innerOutVoid>Geometry::zeroTol)
     {  
@@ -255,11 +244,7 @@ OpticsHutch::createObjects(Simulation& System)
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-32 33  26 -36");
   makeCell("RoofOuterWall",System,cellIndex++,skinMat,0.0,HR*frontWall*sideCut);
 
-  
-  // HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-32 -36 ");
-  // makeCell("ConcreteSide",System,cellIndex++,concreteMat,0.0,
-  //  	   HR*frontWall*sideCut.complement()*floor);
-  
+   
   // Outer void for pipe
 
   if (holeRadius>Geometry::zeroTol)

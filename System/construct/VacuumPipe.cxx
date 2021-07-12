@@ -292,7 +292,6 @@ VacuumPipe::createUnitVector(const attachSystem::FixedComp& FC,
 
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
-  // after rotation
   applyActiveFrontBack();
 
   return;
@@ -333,7 +332,6 @@ VacuumPipe::applyActiveFrontBack()
   return;
 }
 
-
 void
 VacuumPipe::createSurfaces()
   /*!
@@ -352,6 +350,7 @@ VacuumPipe::createSurfaces()
       ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
       ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
     }
+  
 
   // Front Inner void
   getShiftedFront(SMap,buildIndex+101,Y,flangeALength);
