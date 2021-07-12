@@ -182,7 +182,6 @@ cosaxsTube::createSurfaces()
 
   buildZone.setSurround(HR);
   buildZone.setFront(getRule("front"));
-  //  buildZone.setMaxExtent(getRule("back"));
   buildZone.setInnerMat(outerMat);
 
   return;
@@ -208,7 +207,6 @@ cosaxsTube::createObjects(Simulation& System)
 
   constructSystem::constructUnit
     (System,buildZone,*noseCone,"back",*gateA);
-
     
   constructSystem::constructUnit
     (System,buildZone,*gateA,"back",*startPlate);
@@ -216,7 +214,7 @@ cosaxsTube::createObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,*startPlate,"back",*seg[0]);
   seg[0]->deleteCell(System,"Void");
-      
+
   for (size_t i=1; i<seg.size(); i++)
     {
       constructSystem::constructUnit
@@ -229,27 +227,24 @@ cosaxsTube::createObjects(Simulation& System)
   const constructSystem::portItem& BPI=backPlate->getPort(1);
   outerCell=buildZone.createUnit(System,BPI,"OuterPlate");
   backPlate->insertInCell(System,outerCell);
+  
+
+  std::vector<int> cellVec;
+  cellVec=seg[5]->splitObject
+    (System,3001,buildZone.getCell("Unit",7),
+     Geometry::Vec3D(0,0,0),Geometry::Vec3D(-1,0,0.5));
+
+  cellVec=seg[5]->splitObject
+    (System,3002,buildZone.getCell("Unit",7),
+     Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0.5));
 
   
-  /*
-  std::vector<int> cellVec;
-  cellVec=seg[i]->splitObject
-    (System,3001,getCell("OuterVoid",i+2),
-     Geometry::Vec3D(0,0,0),Geometry::Vec3D(-1,0,0.5));
-  this->addCell("OuterVoid",CellVec.back());
-
-	  CellVec=seg[i]->splitObject
-	    (System,3002,getCell("OuterVoid",i+2),
-	     Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0.5));
-	  this->addCell("OuterVoid",CellVec.back());
-
-	  CellVec=seg[i]->splitObject
-	    (System,3003,getCell("OuterVoid",i+4),
-	     Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0.5));
-	  this->addCell("OuterVoid",CellVec.back());
-
-	  cellIndex+=4;
-  */
+  // cellVec=seg[5]->splitObject
+  //   (System,3003,buildZone.getCell("Unit",7),
+  //    Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0.5));
+  // //  this->addCell("OuterVoid",CellVec.back());
+  
+  cellIndex+=2;
   
 
   return;
@@ -267,8 +262,7 @@ cosaxsTube::createInnerObjects(Simulation& System)
   // No Insert need because it completely replaces the main cells
   tubeZone.setSurround(seg.back()->getFullRule("InnerSide"));
   tubeZone.setFront(seg[0]->getFullRule("InnerFront"));
-  tubeZone.setMaxExtent(seg.back()->getFullRule("InnerBack"));
-
+  tubeZone.setMaxExtent(seg.back()->getFullRule("#back"));
   beamDump->createAll(System,*seg[0],"#front");
   outerCell=tubeZone.createUnit(System,*beamDump,2);
   beamDump->insertInCell(System,outerCell);
@@ -296,20 +290,7 @@ cosaxsTube::createLinks()
 
   FrontBackCut::createLinks(*this,Origin,Y);
 
-  return;
-}
-
-void
-cosaxsTube::createPorts(Simulation& System)
-  /*!
-    Generic function to create the ports
-    \param System :: Simulation item
-  */
-{
-  ELog::RegMethod RegA("cosaxsTube","createPorts");
-
-  for (size_t i=0; i<8; i++)
-    seg[i]->createPorts(System);
+  setCells("tubeVoid",buildZone.getCells("Unit"));
   return;
 }
 

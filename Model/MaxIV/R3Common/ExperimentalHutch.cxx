@@ -109,10 +109,15 @@ ExperimentalHutch::populate(const FuncDataBase& Control)
   cornerAngle=Control.EvalDefVar<double>(keyName+"CornerAngle",45.0);
 
   pbFrontThick=Control.EvalDefVar<double>(keyName+"PbFrontThick",-1.0);
+
   holeRadius=Control.EvalDefVar<double>(keyName+"HoleRadius",1.0);
   holeXStep=Control.EvalDefVar<double>(keyName+"HoleXStep",0.0);
   holeZStep=Control.EvalDefVar<double>(keyName+"HoleZStep",0.0);
-  
+
+  exitRadius=Control.EvalDefVar<double>(keyName+"ExitRadius",-1.0);
+  exitXStep=Control.EvalDefVar<double>(keyName+"ExitXStep",0.0);
+  exitZStep=Control.EvalDefVar<double>(keyName+"ExitZStep",0.0);
+
   innerThick=Control.EvalVar<double>(keyName+"InnerThick");
   pbWallThick=Control.EvalVar<double>(keyName+"PbWallThick");
   pbBackThick=Control.EvalVar<double>(keyName+"PbBackThick");
@@ -145,13 +150,13 @@ ExperimentalHutch::createSurfaces()
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
       ExternalCut::setCutSurf("frontWall",SMap.realSurf(buildIndex+1));
     }
-
 	
   if (!isActive("floor"))
     {
       ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height,Z);
       ExternalCut::setCutSurf("floor",SMap.realSurf(buildIndex+5));
     }
+
   if (pbFrontThick>Geometry::zeroTol)
     {
       const Geometry::Vec3D holeOrg(Origin+X*holeXStep+Z*holeZStep);
@@ -162,11 +167,12 @@ ExperimentalHutch::createSurfaces()
 		      buildIndex+21,Y,pbFrontThick+innerThick);    
       makeShiftedSurf(SMap,"frontWall",
 		      buildIndex+31,Y,outerThick+pbFrontThick+innerThick);
-      makeCylinder("frontHole",SMap,buildIndex+7,holeOrg,Y,holeRadius);
+      if (holeRadius>Geometry::zeroTol)
+	makeCylinder("frontHole",SMap,buildIndex+7,holeOrg,Y,holeRadius);
     }
   
   // Inner void
-  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
+  SurfMap::makePlane("innerBack",SMap,buildIndex+2,Origin+Y*length,Y);
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*outWidth,X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*ringWidth,X);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
@@ -237,6 +243,12 @@ ExperimentalHutch::createSurfaces()
 	ModelSupport::buildPlane(SMap,buildIndex+1333,cornerPt,-CX);
     }
 
+  if (exitRadius>Geometry::zeroTol)
+    {
+      const Geometry::Vec3D exitOrg(Origin+X*exitXStep+Z*exitZStep);
+      makeCylinder("exitHole",SMap,buildIndex+1007,exitOrg,Y,exitRadius);
+    }
+
   // extra for chicanes
   if (outerOutVoid>Geometry::zeroTol)
     {
@@ -303,7 +315,8 @@ ExperimentalHutch::createObjects(Simulation& System)
   makeCell("InnerRingWall",System,cellIndex++,skinMat,0.0,HR*floor*innerWall);
 
   // alt
-  HR=ModelSupport::getAltHeadRule(SMap,buildIndex,"2 -12 -313A 13B -14 -6");
+  HR=ModelSupport::getAltHeadRule
+    (SMap,buildIndex,"1007 2 -12 -313A 13B -14 -6");
   makeCell("InnerBackWall",System,cellIndex++,skinMat,0.0,HR*floor*innerWall);
 
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-32 33 -333 -34 6 -16");
@@ -316,7 +329,8 @@ ExperimentalHutch::createObjects(Simulation& System)
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-12 14 -24 -6");
   makeCell("LeadRingWall",System,cellIndex++,pbMat,0.0,HR*floor*innerWall);
   
-  HR=ModelSupport::getAltHeadRule(SMap,buildIndex,"12 -22 -24 -323A 23B -6");
+  HR=ModelSupport::getAltHeadRule
+    (SMap,buildIndex,"1007 12 -22 -24 -323A 23B -6");
   makeCell("LeadBackWall",System,cellIndex++,pbMat,0.0,HR*floor*innerWall);
 
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-32 33 -333 -34 16 -26");
@@ -329,7 +343,8 @@ ExperimentalHutch::createObjects(Simulation& System)
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-22 24 -34 -6");
   makeCell("OuterRingWall",System,cellIndex++,skinMat,0.0,HR*floor*innerWall);
   
-  HR=ModelSupport::getAltHeadRule(SMap,buildIndex,"22 -32 -34 -333A 33B -6");
+  HR=ModelSupport::getAltHeadRule
+    (SMap,buildIndex,"1007 22 -32 -34 -333A 33B -6");
   makeCell("OuterBackWall",System,cellIndex++,skinMat,0.0,HR*floor*innerWall);
 
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-32 33 -333 -34 26 -36");

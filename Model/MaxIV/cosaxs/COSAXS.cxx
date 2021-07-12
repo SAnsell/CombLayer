@@ -191,17 +191,17 @@ COSAXS::build(Simulation& System,
   screenA->createAll(System,*opticsBeam,2);
 
   exptHut->setCutSurf("frontWall",*opticsHut,"back");
-  exptHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
+  exptHut->setCutSurf("floor",r3Ring->getSurf("Floor"));
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
-  exptHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
+  exptHut->createAll(System,*opticsHut,"exitHole");
 
   if (stopPoint=="exptHut")
     {
       joinPipeB->insertAllInCell(System,exptHut->getCell("Void"));
       return;
     }
-
+  
   exptBeam->setStopPoint(stopPoint);
   exptBeam->addInsertCell(exptHut->getCell("Void"));
   exptBeam->setCutSurf("front",*exptHut,
@@ -214,38 +214,22 @@ COSAXS::build(Simulation& System,
   exptBeam->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
   exptBeam->createAll(System,*joinPipeB,2);
 
-  /*
-
-
-  exptBeam->createAll(System,*joinPipeB,2);
-
-  */
   // Intersection of the exptHut back wall with tube and exptBeam:
   const std::string tubeName(exptBeam->getKeyName()+"DetTube");
-  const std::string seg3name(tubeName+"Segment3");
 
   const attachSystem::CellMap* tube =
     System.getObjectThrow<attachSystem::CellMap>(tubeName,"CellMap");
-  const attachSystem::SurfMap* seg3Surf =
-    System.getObjectThrow<attachSystem::SurfMap>(seg3name,"Surf of Segment3");
 
-  //joinPipeB->insertAllInCell(System,exptBeam->getCell("OuterVoid",0));
-  return;
-  HeadRule wallCut;
-  wallCut.addUnion(exptHut->getSurf("innerBack"));
-  wallCut.addUnion(exptHut->getSurf("outerBack"));
 
-  tube->insertComponent(System,"OuterVoid",5,wallCut);
-  exptBeam->insertComponent(System,"SurroundVoid",wallCut);
-
-  const int cylN=seg3Surf->getSurf("OuterCyl");
-  exptHut->insertComponent(System,"InnerBackWall",HeadRule(cylN));
-  exptHut->insertComponent(System,"LeadBackWall",HeadRule(cylN));
-  exptHut->insertComponent(System,"OuterBackWall",HeadRule(cylN));
-
-  joinPipeB->insertAllInCell(System,exptBeam->getCell("OuterVoid",0));
+  HeadRule wallCut=
+    exptHut->getSurfRule("innerBack")*
+    exptHut->getSurfRule("#outerBack")*
+    exptHut->getSurfRule("exitHole");
+  wallCut.makeComplement();
+  tube->insertComponent(System,"tubeVoid",9,wallCut);
 
   return;
+
 }
 
 

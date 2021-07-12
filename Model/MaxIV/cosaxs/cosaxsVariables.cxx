@@ -269,9 +269,12 @@ exptHutVariables(FuncDataBase& Control,
 
   Control.addVariable(hutName+"HoleXStep",-beamOffset);
   Control.addVariable(hutName+"HoleZStep",0.0);
-  Control.addVariable(hutName+"HoleRadius",3.0);
-  Control.addVariable(hutName+"HoleMat","Void");
-    
+  Control.addVariable(hutName+"HoleRadius",0.0);
+  
+  Control.addVariable(hutName+"ExitXStep",-beamOffset);
+  Control.addVariable(hutName+"ExitZStep",0.0);
+  Control.addVariable(hutName+"ExitRadius",53.0);
+
   Control.addVariable(hutName+"InnerOutVoid",10.0);
   Control.addVariable(hutName+"OuterOutVoid",10.0);
 
@@ -883,6 +886,7 @@ exptVariables(FuncDataBase& Control,
 
   setVariable::PipeTubeGenerator SimpleTubeGen;
   const double outerRadius(50.2+0.6);
+  const double flangeRadius(57.8);
   SimpleTubeGen.setPipe(50.2,0.6,57.8,4.3);  // Rad,thick,Flange (Rad,len)
 
 				
@@ -965,7 +969,7 @@ exptVariables(FuncDataBase& Control,
   segName=tubeName+"Segment8";
   SimpleTubeGen.setAFlange(57.8,4.0);
   SimpleTubeGen.setBFlange(57.8,4.0);
-  SimpleTubeGen.setFlangeCap(0.0,2.7);
+  //  SimpleTubeGen.setFlangeCap(0.0,2.7);
     
   SimpleTubeGen.generateTube(Control,segName,264);
   //  SimpleTubeGen.setFlange(4.)
@@ -973,15 +977,22 @@ exptVariables(FuncDataBase& Control,
   PItemGen.generatePort(Control,segName+"Port0",C2,PX);
   PItemGen.generatePort(Control,segName+"Port1",C3,-PX);
 
+  FDGen.setSphere(outerRadius,flangeRadius,2.0);
   FDGen.generateDome(Control,tubeName+"BackDome");
+  
   Control.addVariable(tubeName+"BackDomeNPorts",2);
+  PItemGen.setCF<setVariable::CF63>(10.0);
+  PItemGen.setWindowPlate(CF63::flangeLength,0.8*CF63::flangeLength,
+			  CF63::innerRadius*1.1,"Stainless304","SiO2");
+
   PItemGen.generatePort(Control,tubeName+"BackDomePort0",
-			Geometry::Vec3D(-34.8, 0.0, 0.0),
+			Geometry::Vec3D(-14.8, 0.0, 0.0),
 			Geometry::Vec3D(0,1,0));
   PItemGen.generatePort(Control,tubeName+"BackDomePort1",
-			Geometry::Vec3D(34.8, 0.0, 0.0),
+			Geometry::Vec3D(14.8, 0.0, 0.0),
 			Geometry::Vec3D(0,1,0));
 
+    
   // PItemGen.setPort(264.0/2.0+6.6,4,1.0);  // len/rad/wall
   // PItemGen.setFlange(8.3,2.0);  // rad/len
   // PItemGen.setPlate(0.7,"Stainless304");
