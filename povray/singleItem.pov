@@ -87,6 +87,11 @@
     #declare cameraLookAt   = <0.0, 30.0, -10.0>;
     #declare cameraAngle = 40;
   #break
+  #case (strcmp(ITEM,"PIKFuelElement"))
+    #declare cameraLocation = <-1, -1.0, 30>;
+    #declare cameraLookAt   = <0.0, 0.0, 24>;
+    #declare cameraAngle = 20;
+  #break
 #else
     #declare cameraLocation = <100, 100, 100>;
     #declare cameraLookAt   = <0, 0, 0>;
