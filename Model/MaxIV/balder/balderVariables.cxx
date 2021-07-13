@@ -60,6 +60,9 @@
 #include "LeadBoxGenerator.h"
 #include "PipeShieldGenerator.h"
 #include "WallLeadGenerator.h"
+#include "OpticsHutGenerator.h"
+#include "TriggerGenerator.h"
+#include "CylGateValveGenerator.h"
 
 namespace setVariable
 {
@@ -165,38 +168,10 @@ opticsHutVariables(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("balderVariables","opticsHutVariables");
-  
-  Control.addVariable(hutName+"Height",200.0);
-  Control.addVariable(hutName+"Length",1034.6);
-  Control.addVariable(hutName+"OutWidth",200.0);
-  Control.addVariable(hutName+"RingWidth",110.0);
-  Control.addVariable(hutName+"RingWallLen",105.0);
-  Control.addVariable(hutName+"RingWallAngle",18.50);
-  Control.addVariable(hutName+"RingConcThick",100.0);
-  
-  Control.addVariable(hutName+"InnerThick",0.2);
-  
-  Control.addVariable(hutName+"PbWallThick",2.0);
-  Control.addVariable(hutName+"PbRoofThick",2.0);
-  Control.addVariable(hutName+"PbFrontThick",2.0);
-  Control.addVariable(hutName+"PbBackThick",10.0);
 
-  Control.addVariable(hutName+"OuterThick",0.3);
+  OpticsHutGenerator OGen; 
 
-  Control.addVariable(hutName+"InnerOutVoid",10.0);
-  Control.addVariable(hutName+"OuterOutVoid",10.0);
-
-  Control.addVariable(hutName+"SkinMat","Stainless304");
-  Control.addVariable(hutName+"RingMat","Concrete");
-  Control.addVariable(hutName+"PbMat","Lead");
-
-  Control.addVariable(hutName+"HoleXStep",0.0);
-  Control.addVariable(hutName+"HoleZStep",4.0);
-  Control.addVariable(hutName+"HoleRadius",3.5);
-
-  Control.addVariable(hutName+"InletXStep",0.0);
-  Control.addVariable(hutName+"InletZStep",0.0);
-  Control.addVariable(hutName+"InletRadius",5.0);
+  OGen.generateHut(Control,hutName,1034.0);
 
 
   Control.addVariable(hutName+"NChicane",4);
@@ -426,7 +401,9 @@ opticsVariables(FuncDataBase& Control,
   setVariable::FlangeMountGenerator FlangeGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::MirrorGenerator MirrGen;
-
+  setVariable::TriggerGenerator TGen;
+  setVariable::CylGateValveGenerator GVGen;
+  
   PipeGen.setNoWindow();
 
   // addaptor flange at beginning: [check]
@@ -434,35 +411,13 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.setAFlangeCF<CF63>(); 
   PipeGen.generatePipe(Control,opticsName+"InitPipe",10.0);
   
-  // flange if possible
-  CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
-  CrossGen.setPorts(5.75,5.75);     // len of ports (after main)
-  CrossGen.setMat("Stainless304");
+    // will be rotated vertical
+  TGen.setCF<CF100>();
+  TGen.setVertical(15.0,25.0);
+  TGen.setSideCF<setVariable::CF40>(10.0); // add centre distance?
+  TGen.generateTube(Control,opticsName+"TriggerUnit");
 
-  CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF63>
-    (Control,opticsName+"IonPA",0.0,10.0,26.5);
-
-  // flange if possible
-  CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
-  CrossGen.setPorts(5.75,5.75);     // len of ports (after main)
-  CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF63>
-    (Control,opticsName+"TriggerPipe",0.0,15.0,10.0);  // ystep/height/depth
-
-  // will be rotated vertical
-  const std::string gateName=opticsName+"GateTubeA";
-  SimpleTubeGen.setCF<CF63>();
-  SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,gateName,30.0);
-  Control.addVariable(gateName+"NPorts",2);   // beam ports
-  const Geometry::Vec3D ZVec(0,0,1);
-  PItemGen.setCF<setVariable::CF40>(3.45);
-  PItemGen.setPlate(0.0,"Void");  
-  PItemGen.generatePort(Control,gateName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
-  PItemGen.generatePort(Control,gateName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
-
-  FlangeGen.setNoPlate();
-  FlangeGen.setBlade(4.0,5.0,0.3,0.0,"Stainless304",1);  // 22 rotation
-  FlangeGen.generateMount(Control,opticsName+"GateAItem",0);  // in beam
+  GVGen.generateGate(Control,opticsName+"GateTubeA",0);  // open
   
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setBFlangeCF<setVariable::CF63>();
@@ -484,6 +439,7 @@ opticsVariables(FuncDataBase& Control,
   // width 
   FlangeGen.setBlade(0.3,5.0,0.5,22.0,"Graphite",1);  // 22 rotation
 
+  const Geometry::Vec3D ZVec(0,0,1);
   // centre of mid point
   Geometry::Vec3D CPos(0,-1.5*11.0,0);
   for(size_t i=0;i<4;i++)
@@ -594,7 +550,7 @@ opticsVariables(FuncDataBase& Control,
   // bellows on shield block
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF100>();
-  BellowGen.generateBellow(Control,opticsName+"B-ellowD",10.0);    
+  BellowGen.generateBellow(Control,opticsName+"BellowD",10.0);    
 
   // joined and open
   GateGen.setCubeCF<setVariable::CF40>();
@@ -616,6 +572,7 @@ opticsVariables(FuncDataBase& Control,
   JawGen.setSlits(3.0,2.0,0.2,"Tantalum");
   JawGen.generateSlits(Control,opticsName+"SlitsB",0.0,0.8,0.8);
 
+  const double viewOuterRad(9.5);
   PTubeGen.setPipe(9.0,0.5);
   PTubeGen.setPortCF<CF100>();
   PTubeGen.setPortLength(2.3,2.3);
@@ -629,11 +586,12 @@ opticsVariables(FuncDataBase& Control,
   const Geometry::Vec3D YAxis(0,1,0);
   const Geometry::Vec3D ZAxis(0,0,1);
 
-  PItemGen.setCF<setVariable::CF40>(5.0);
+  PItemGen.setCF<setVariable::CF40>(viewOuterRad+5.0);
   PItemGen.generatePort(Control,nameView+"0",YAxis*14.0,XAxis);
   PItemGen.generatePort(Control,nameView+"1",YAxis*10.0,-XAxis);
-  PItemGen.setCF<setVariable::CF63>(10.0);
+  PItemGen.setCF<setVariable::CF63>(viewOuterRad+10.0);
   PItemGen.generatePort(Control,nameView+"2",-YAxis*2.0,ZAxis);
+  PItemGen.setCF<setVariable::CF63>(viewOuterRad/cos(M_PI/4)+10.0);
   PItemGen.generatePort(Control,nameView+"3",-YAxis*2.0,
 			Geometry::Vec3D(1,-1,0));
 

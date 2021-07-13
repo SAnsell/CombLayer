@@ -3,7 +3,7 @@
  
  * File:   balderInc/BALDER.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ namespace xraySystem
   class BeamMount;
   class OpticsHutch;
   class ExperimentalHutch;
-  class balderExptBeamline;
+  class balderExptLine;
   class R3FrontEndCave;
   class R3FrontEnd;
   class ConnectZone;
@@ -49,7 +49,7 @@ namespace xraySystem
   class PipeShield;
   class WallLead;
 
-  class balderOpticsBeamline;
+  class balderOpticsLine;
   class balderFrontEnd;
   class balderOpticsHutch;
   /*!
@@ -74,10 +74,10 @@ class BALDER : public R3Beamline
   std::shared_ptr<constructSystem::VacuumPipe> joinPipe;
 
   /// Optics hutch
-  std::shared_ptr<balderOpticsHutch> opticsHut;
+  std::shared_ptr<OpticsHutch> opticsHut;
   
   /// Beamline
-  std::shared_ptr<balderOpticsBeamline> opticsBeam;
+  std::shared_ptr<balderOpticsLine> opticsBeam;
 
   /// Pipe joining optics hut to outer 
   std::shared_ptr<constructSystem::LeadPipe> joinPipeB;
@@ -102,7 +102,7 @@ class BALDER : public R3Beamline
   std::shared_ptr<xraySystem::ExperimentalHutch> exptHut;
 
   /// Beamline for experimental hutch
-  std::shared_ptr<balderExptBeamline> exptBeam;
+  std::shared_ptr<balderExptLine> exptBeam;
 
   
  public:

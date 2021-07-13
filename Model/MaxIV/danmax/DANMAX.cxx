@@ -69,7 +69,7 @@
 #include "danmaxOpticsLine.h"
 #include "danmaxConnectLine.h"
 #include "PipeShield.h"
-#include "balderExptBeamline.h"
+#include "balderExptLine.h"
 
 #include "R3Ring.h"
 #include "R3Beamline.h"
@@ -90,7 +90,7 @@ DANMAX::DANMAX(const std::string& KN) :
   joinPipeC(new constructSystem::VacuumPipe(newName+"JoinPipeC")),
   exptHut(new xraySystem::ExperimentalHutch(newName+"ExptHut")),
   pShield(new xraySystem::PipeShield(newName+"PShield")),
-  exptBeam(new balderExptBeamline(newName+"ExptLine"))
+  exptBeam(new balderExptLine(newName+"ExptLine"))
   /*!
     Constructor
     \param KN :: Keyname

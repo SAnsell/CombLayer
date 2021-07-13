@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balderInc/balderExptBeamline.h
+ * File:   balderInc/balderExptLine.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_balderExptBeamline_h
-#define xraySystem_balderExptBeamline_h
+#ifndef xraySystem_balderExptLine_h
+#define xraySystem_balderExptLine_h
 
 namespace insertSystem
 {
@@ -58,14 +58,14 @@ namespace xraySystem
   class PipeShield;
     
   /*!
-    \class balderExptBeamline
+    \class balderExptLine
     \version 1.0
     \author S. Ansell
     \date January 2018
     \brief General constructor for the xray system
   */
 
-class balderExptBeamline :
+class balderExptLine :
   public attachSystem::CopiedComp,
   public attachSystem::ContainedComp,
   public attachSystem::FixedOffset,
@@ -91,10 +91,10 @@ class balderExptBeamline :
   
  public:
   
-  balderExptBeamline(const std::string&);
-  balderExptBeamline(const balderExptBeamline&);
-  balderExptBeamline& operator=(const balderExptBeamline&);
-  ~balderExptBeamline();
+  balderExptLine(const std::string&);
+  balderExptLine(const balderExptLine&);
+  balderExptLine& operator=(const balderExptLine&);
+  ~balderExptLine();
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

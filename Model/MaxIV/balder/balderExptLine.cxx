@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File: balder/balderExptBeamline.cxx
+ * File: balder/balderExptLine.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -60,14 +60,14 @@
 #include "generateSurf.h"
 
 
-#include "balderExptBeamline.h"
+#include "balderExptLine.h"
 
 namespace xraySystem
 {
 
 // Note currently uncopied:
 
-balderExptBeamline::balderExptBeamline(const std::string& Key) :
+balderExptLine::balderExptLine(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(newName,2),
@@ -79,20 +79,20 @@ balderExptBeamline::balderExptBeamline(const std::string& Key) :
   */
 {}
 
-balderExptBeamline::~balderExptBeamline()
+balderExptLine::~balderExptLine()
   /*!
     Destructor
    */
 {}
 
 void
-balderExptBeamline::populate(const FuncDataBase& Control)
+balderExptLine::populate(const FuncDataBase& Control)
   /*!
     Populate the intial values [movement]
     \param Control :: Database of variables
   */
 {
-  ELog::RegMethod RegA("balderExptBeamline","populate");
+  ELog::RegMethod RegA("balderExptLine","populate");
   FixedOffset::populate(Control);
 
   sampleRadius=Control.EvalDefVar<double>(keyName+"SampleRadius",0.0);
@@ -109,12 +109,12 @@ balderExptBeamline::populate(const FuncDataBase& Control)
 }
 
 void
-balderExptBeamline::createSurfaces()
+balderExptLine::createSurfaces()
   /*!
     Build all the surfaces
   */
 {
-  ELog::RegMethod RegA("balderExptBeamline","createSurfaces");
+  ELog::RegMethod RegA("balderExptLine","createSurfaces");
 
   if (sampleRadius>Geometry::zeroTol)
     ModelSupport::buildSphere
@@ -132,33 +132,33 @@ balderExptBeamline::createSurfaces()
 
 
 void
-balderExptBeamline::buildObjects(Simulation& System)
+balderExptLine::buildObjects(Simulation& System)
   /*!
     Build all the objects
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("balderExptBeamline","buildObjects");
+  ELog::RegMethod RegA("balderExptLine","buildObjects");
 
-  std::string Out;
+  HeadRule HR;
 
   if (sampleRadius>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
-      CellMap::makeCell("Sample",System,cellIndex++,sampleMat,0.0,Out);
-      addOuterSurf(Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," -7 ");
+      CellMap::makeCell("Sample",System,cellIndex++,sampleMat,0.0,HR);
+      addOuterSurf(HR);
     }
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 -107 ");
-  CellMap::makeCell("BeamStop",System,cellIndex++,beamStopMat,0.0,Out);
-  addOuterUnionSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 101 -102 -107 ");
+  CellMap::makeCell("BeamStop",System,cellIndex++,beamStopMat,0.0,HR);
+  addOuterUnionSurf(HR);
 
 
   return;
 }
 
 void
-balderExptBeamline::createLinks()
+balderExptLine::createLinks()
   /*!
     Create a front/back link
    */
@@ -167,7 +167,7 @@ balderExptBeamline::createLinks()
 }
 
 void
-balderExptBeamline::createAll(Simulation& System,
+balderExptLine::createAll(Simulation& System,
 			  const attachSystem::FixedComp& FC,
 			  const long int sideIndex)
   /*!
@@ -178,7 +178,7 @@ balderExptBeamline::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("balderExptBeamline","build");
+  ELog::RegMethod RControl("balderExptLine","createAll");
 
   populate(System.getDataBase());
 

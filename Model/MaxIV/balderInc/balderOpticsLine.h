@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balderInc/balderOpticsBeamline.h
+ * File:   balderInc/balderOpticsLine.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_balderOpticsBeamline_h
-#define xraySystem_balderOpticsBeamline_h
+#ifndef xraySystem_balderOpticsLine_h
+#define xraySystem_balderOpticsLine_h
 
 namespace insertSystem
 {
@@ -50,45 +50,41 @@ namespace xraySystem
   class MonoShutter;
   class PipeShield;
   class ShutterUnit;
+  class TriggerTube;
     
   /*!
-    \class balderOpticsBeamline
+    \class balderOpticsLine
     \version 1.0
     \author S. Ansell
     \date January 2018
     \brief General constructor for the xray system
   */
 
-class balderOpticsBeamline :
+class balderOpticsLine :
   public attachSystem::CopiedComp,
   public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap
 {
  private:
-  
-  attachSystem::InnerZone buildZone;  
+
+  /// Items pre-insertion into mastercell:0
+  std::shared_ptr<attachSystem::ContainedGroup> preInsert;
+  /// construction space for main object
+  attachSystem::BlockZone buildZone;  
+  int innerMat;                         ///< inner material if used
   
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
-
   /// Real Ion pump (KF40) 10cm vertioal
   std::shared_ptr<constructSystem::VacuumPipe> pipeInit;
-
-  /// Real Ion pump (KF40) 10cm vertioal
-  std::shared_ptr<constructSystem::CrossPipe> ionPA;
-
-  /// Gate block
-  std::shared_ptr<constructSystem::PipeTube> gateTubeA;
-  /// Gate block [item]
-  std::shared_ptr<xraySystem::FlangeMount> gateAItem;
-
-  /// Trigger Unit (pipe):
-  std::shared_ptr<constructSystem::CrossPipe> triggerPipe;
-
+  /// vacuum trigger system
+  std::shared_ptr<xraySystem::TriggerTube> triggerPipe;
+  /// first ion pump+gate
+  std::shared_ptr<xraySystem::CylGateValve> gateTubeA;
   /// Joining Bellows (pipe):
-  std::shared_ptr<constructSystem::Bellows> pipeA;
+  std::shared_ptr<constructSystem::Bellows> bellowA;
 
   /// Filter box
   std::shared_ptr<constructSystem::PortTube> filterBox;
@@ -98,7 +94,7 @@ class balderOpticsBeamline :
   std::array<std::shared_ptr<xraySystem::FlangeMount>,4> filters;
 
   /// Joining Bellows (pipe):
-  std::shared_ptr<constructSystem::Bellows> pipeB;
+  std::shared_ptr<constructSystem::Bellows> bellowB;
 
   /// CF40 gate valve
   std::shared_ptr<constructSystem::GateValveCube> gateA;
@@ -113,7 +109,7 @@ class balderOpticsBeamline :
   std::shared_ptr<constructSystem::GateValveCube> gateB;
 
   /// Joining Bellows from mirror box
-  std::shared_ptr<constructSystem:: Bellows> pipeC;
+  std::shared_ptr<constructSystem:: Bellows> bellowC;
 
   /// Large drift chamber
   std::shared_ptr<constructSystem::VacuumPipe> driftA;
@@ -147,7 +143,7 @@ class balderOpticsBeamline :
   std::shared_ptr<constructSystem::PortTube> shieldPipe;
 
   /// Joining Bellows (pipe large):
-  std::shared_ptr<constructSystem::Bellows> pipeD;
+  std::shared_ptr<constructSystem::Bellows> bellowD;
 
   /// Gate valve after mono [small]
   std::shared_ptr<constructSystem::GateValveCube> gateD;
@@ -159,7 +155,7 @@ class balderOpticsBeamline :
   std::shared_ptr<xraySystem::Mirror> mirrorB;
 
   /// Joining Bellows (pipe large):
-  std::shared_ptr<constructSystem::Bellows> pipeE;
+  std::shared_ptr<constructSystem::Bellows> bellowE;
 
   /// Slits [first pair]
   std::shared_ptr<constructSystem::JawValveCube> slitsB;
@@ -171,13 +167,13 @@ class balderOpticsBeamline :
   std::array<std::shared_ptr<xraySystem::FlangeMount>,1> viewMount;
 
   /// Joining Bellows (pipe large):
-  std::shared_ptr<constructSystem::Bellows> pipeF;
+  std::shared_ptr<constructSystem::Bellows> bellowF;
 
   /// Shutter pipe
   std::shared_ptr<xraySystem::MonoShutter> monoShutter;
     
   /// Joining Bellows (pipe large):
-  std::shared_ptr<constructSystem::Bellows> pipeG;
+  std::shared_ptr<constructSystem::Bellows> bellowG;
 
   /// Last gate valve:
   std::shared_ptr<constructSystem::GateValveCube> gateE;
@@ -187,8 +183,7 @@ class balderOpticsBeamline :
 
   double outerLeft;    /// Left  for cut rectangle
   double outerRight;   /// Right for cut rectangle
-  double outerTop;     /// Top for cut rectangle
-  
+  double outerTop;     /// Top for cut rectangle  
 
   void populate(const FuncDataBase&);
   void createSurfaces();
@@ -197,11 +192,16 @@ class balderOpticsBeamline :
   
  public:
 
+  balderOpticsLine(const std::string&);
+  balderOpticsLine(const balderOpticsLine&);
+  balderOpticsLine& operator=(const balderOpticsLine&);
+  ~balderOpticsLine();
 
-  balderOpticsBeamline(const std::string&);
-  balderOpticsBeamline(const balderOpticsBeamline&);
-  balderOpticsBeamline& operator=(const balderOpticsBeamline&);
-  ~balderOpticsBeamline();
+  /// Assignment to inner void
+  void setInnerMat(const int M) {  innerMat=M; }
+  /// Assignment to extra for first volume
+  void setPreInsert
+    (const std::shared_ptr<attachSystem::ContainedGroup>& A) { preInsert=A; }
 
   using FixedComp::createAll;  // for (Sim,FixedComp,string)
   void createAll(Simulation&,const attachSystem::FixedComp&,
