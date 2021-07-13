@@ -45,7 +45,7 @@ class OpticsHutch :
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {
- private:
+ protected:
 
   double height;                ///< void height
   double length;                ///< void out side width
@@ -73,9 +73,9 @@ class OpticsHutch :
   /// Chicanes
   std::vector<std::shared_ptr<PortChicane>> PChicane;
 
-  void populate(const FuncDataBase&);
-  void createSurfaces();
-  void createObjects(Simulation&);
+  virtual void populate(const FuncDataBase&);
+  virtual void createSurfaces();
+  virtual void createObjects(Simulation&);
   void createLinks();
   void createChicane(Simulation&);
 
@@ -87,9 +87,9 @@ class OpticsHutch :
   virtual ~OpticsHutch();
 
   using FixedComp::createAll;
-  void createAll(Simulation&,
-		 const attachSystem::FixedComp&,
-		 const long int);
+  virtual void createAll(Simulation&,
+			 const attachSystem::FixedComp&,
+			 const long int);
 
 };
 

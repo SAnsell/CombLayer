@@ -108,14 +108,15 @@ OpticsHutch::populate(const FuncDataBase& Control)
   pbBackThick=Control.EvalVar<double>(keyName+"PbBackThick");
   pbRoofThick=Control.EvalVar<double>(keyName+"PbRoofThick");
   outerThick=Control.EvalVar<double>(keyName+"OuterThick");
-
+  
   innerOutVoid=Control.EvalDefVar<double>(keyName+"InnerOutVoid",0.0);
   outerOutVoid=Control.EvalDefVar<double>(keyName+"OuterOutVoid",0.0);
-
+  
   holeXStep=Control.EvalVar<double>(keyName+"HoleXStep");
   holeZStep=Control.EvalVar<double>(keyName+"HoleZStep");
   holeRadius=Control.EvalVar<double>(keyName+"HoleRadius");
 
+  
   //  beamTubeRadius=Control.EvalVar<double>(keyName+"BeamTubeRadius");
 
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
@@ -221,27 +222,27 @@ OpticsHutch::createObjects(Simulation& System)
 
   // walls:
   
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-2 -3 13 -6");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 -3 13 -6");
   makeCell("InnerWall",System,cellIndex++,skinMat,0.0,HR*floor*frontWall);
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-2 -13 23 -6");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 -13 23 -16");
   makeCell("LeadWall",System,cellIndex++,pbMat,0.0,HR*floor*frontWall);
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-2 -23 33 -6");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-22 -23 33 -26");
   makeCell("OuterWall",System,cellIndex++,skinMat,0.0,HR*floor*frontWall);
 
   
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"2 -12 33  -6 107");
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"2 -12 13 -6 107");
   makeCell("BackIWall",System,cellIndex++,skinMat,0.0,HR*floor*sideWall);
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"12 -22 33 -6 107");
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"12 -22 23 -6 107");
   makeCell("BackPbWall",System,cellIndex++,pbMat,0.0,HR*floor*sideWall);
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"22 -32 33 -6 107");
   makeCell("BackOuterWall",System,cellIndex++,skinMat,0.0,HR*floor*sideWall);
 
 
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-32 33 6 -16");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 13 6 -16");
   makeCell("RoofIWall",System,cellIndex++,skinMat,0.0,HR*frontWall*sideCut);
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-32 33 16 -26");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-22 23 16 -26");
   makeCell("RoofPbWall",System,cellIndex++,pbMat,0.0,HR*frontWall*sideCut);
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-32 33  26 -36");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-32 33  26 -36");
   makeCell("RoofOuterWall",System,cellIndex++,skinMat,0.0,HR*frontWall*sideCut);
 
    

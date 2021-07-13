@@ -3,7 +3,7 @@
  
  * File:   danmaxInc/DANMAX.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@ namespace xraySystem
 {
   class BeamMount;
   class OpticsHutch;
+  class danmaxOpticsHutch;
   class ExperimentalHutch;
   class balderExptBeamline;
   class R3FrontEndCave;
@@ -52,7 +53,6 @@ namespace xraySystem
   class danmaxConnectLine;
   class danmaxOpticsLine;
   class danmaxFrontEnd;
-  class danmaxOpticsHutch;
   class bladerExptBeamline;
   /*!
     \class DANMAX

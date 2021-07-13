@@ -38,59 +38,17 @@ namespace xraySystem
 */
 
 class danmaxOpticsHutch :
-  public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
-  public attachSystem::ExternalCut,
-  public attachSystem::CellMap,
-  public attachSystem::SurfMap
+    public OpticsHutch
 {
  private:
   
-  double height;                ///< void height
-  double length;                ///< void out side width
-  double ringWidth;             ///< void flat part to ring
-  double ringWallLen;           ///< void flat length [before angle]
-  double ringWallAngle;         ///< angle on ring side wall
-  double ringWallFlat;          ///< Flat end distance in
-  double ringWallBack;          ///< Flat end distance from back wall
-
-  double ringConcThick;         ///< Thickness of concreate on ring side
+  double ringStepLength;          ///< Distance down hutch to step
+  double ringStepWidth;           ///< Width of step from centre line
   
-  double outWidth;              ///< out side width
-  double innerThick;            ///< Inner wall/roof skin
-  double pbWallThick;           ///< Thickness of lead in walls
-  double pbFrontThick;          ///< Thickness of lead in front plate
-  double pbBackThick;           ///< Thickness of lead in back plate
-  double pbRoofThick;           ///< Thickness of lead in Roof
-  double outerThick;            ///< Outer wall/roof skin
-
-  double innerOutVoid;          ///< Extension for inner left void space
-  double outerOutVoid;          ///< Extension for outer left void space 
-  
-  double inletXStep;            ///< Inlet XStep
-  double inletZStep;            ///< Inlet ZStep  
-  double inletRadius;           ///< Inlet radius
-
-  double holeXStep;            ///< Hole XStep
-  double holeZStep;            ///< Hole ZStep  
-  double holeRadius;           ///< Hole radius
-  
-  int skinMat;                ///< Fe layer material for walls
-  int ringMat;                ///< Conc layer material for ring walls
-  int pbMat;                  ///< pb layer material for walls
-  int voidMat;                ///< void material for inner air
-
-  double beamTubeRadius;      ///< Void to construct components in
-  
-  /// Chicanes 
-  std::vector<std::shared_ptr<PortChicane>> PChicane;  
-  
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
-  void createSurfaces();
-  void createObjects(Simulation&);
-  void createLinks();
-  void createChicane(Simulation&);
+  virtual void populate(const FuncDataBase&);
+  virtual void createSurfaces();
+  virtual void createObjects(Simulation&);
+  virtual void createLinks();
 
  public:
 
@@ -98,10 +56,6 @@ class danmaxOpticsHutch :
   danmaxOpticsHutch(const danmaxOpticsHutch&);
   danmaxOpticsHutch& operator=(const danmaxOpticsHutch&);
   virtual ~danmaxOpticsHutch();
-
-  void createAll(Simulation&,
-		 const attachSystem::FixedComp&,
-		 const long int);
 
 };
 
