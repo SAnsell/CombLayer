@@ -168,6 +168,12 @@ PIKFuelRod::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin-Y*(outerR-radius),Z,radius);
+  ModelSupport::buildCylinder(SMap,buildIndex+8,Origin+Y*(outerR-radius),Z,radius);
+  ModelSupport::buildCylinder(SMap,buildIndex+9,Origin-X*(outerR-radius),Z,radius);
+  ModelSupport::buildCylinder(SMap,buildIndex+10,Origin+X*(outerR-radius),Z,radius);
+
+
   return;
 }
 
@@ -196,17 +202,31 @@ PIKFuelRod::createObjects(Simulation& System)
 
 
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1007 -11 3 -4 5 -6");
-  makeCell("VoidE",System,cellIndex++,0,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1007 12 3 -4 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1007 7 3 -4 -11 5 -6");
   makeCell("VoidW",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1007 -13 1 -2 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -7 -11 5 -6");
+  makeCell("TipW",System,cellIndex++,mainMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1007 8 3 -4 12 5 -6");
+  makeCell("VoidE",System,cellIndex++,0,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -8 12 5 -6");
+  makeCell("TipE",System,cellIndex++,mainMat,0.0,Out);
+
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1007 9 1 -2 -13 5 -6");
   makeCell("VoidS",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1007 14 1 -2 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -9 -13 5 -6");
+  makeCell("TipS",System,cellIndex++,mainMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1007 10 1 -2 14 5 -6");
   makeCell("VoidN",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -10 14 5 -6");
+  makeCell("TipN",System,cellIndex++,mainMat,0.0,Out);
+
+
 
 
 
@@ -221,7 +241,6 @@ PIKFuelRod::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -1007 2 -3 5 -6");
   makeCell("VoidSE",System,cellIndex++,0,0.0,Out);
-
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -1007 5 -6");
   addOuterSurf(Out);
