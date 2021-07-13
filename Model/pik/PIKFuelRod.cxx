@@ -151,6 +151,8 @@ PIKFuelRod::createSurfaces()
 {
   ELog::RegMethod RegA("PIKFuelRod","createSurfaces");
 
+  ModelSupport::buildCylinder(SMap,buildIndex+1007,Origin,Z,outerR);
+
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(radius),Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(radius),Y);
 
@@ -182,10 +184,46 @@ PIKFuelRod::createObjects(Simulation& System)
 
   // Now we made this cell too complex.
   // We will simplify it after we have rounded the corners.
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " (11 -12 3 -4) : (1 -2 13 -14) 5 -6");
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 3 -4 5 -6");
   makeCell("MainCell",System,cellIndex++,mainMat,0.0,Out);
 
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 13 -3 5 -6");
+  makeCell("MainCell",System,cellIndex++,mainMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 4 -14 5 -6");
+  makeCell("MainCell",System,cellIndex++,mainMat,0.0,Out);
+
+
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1007 -11 3 -4 5 -6");
+  makeCell("VoidE",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1007 12 3 -4 5 -6");
+  makeCell("VoidW",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1007 -13 1 -2 5 -6");
+  makeCell("VoidS",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1007 14 1 -2 5 -6");
+  makeCell("VoidN",System,cellIndex++,0,0.0,Out);
+
+
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1007 -1 -3 5 -6");
+  makeCell("VoidSW",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1007 -1 4 5 -6");
+  makeCell("VoidNW",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1007 2 4 5 -6");
+  makeCell("VoidNE",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1007 2 -3 5 -6");
+  makeCell("VoidSE",System,cellIndex++,0,0.0,Out);
+
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1007 5 -6");
   addOuterSurf(Out);
 
   return;
