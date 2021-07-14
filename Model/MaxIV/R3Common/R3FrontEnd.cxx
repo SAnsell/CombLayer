@@ -309,7 +309,6 @@ R3FrontEnd::buildHeatTable(Simulation& System,
 
   int outerCell;
 
-
   heatBox->setPortRotation(3,Geometry::Vec3D(1,0,0));
   heatBox->createAll(System,*this,0);
   //  heatBox->createAll(System,preFC,preSideIndex);

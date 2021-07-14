@@ -296,7 +296,6 @@ balderOpticsLine::buildObjects(Simulation& System)
   outerCell=constructSystem::constructUnit
     (System,buildZone,*bellowA,"back",*filterBox);
 
-
   // split on both inner void 
   filterBox->splitVoidPorts(System,"SplitVoid",1001,
 			    filterBox->getCell("Void"),
@@ -313,13 +312,16 @@ balderOpticsLine::buildObjects(Simulation& System)
   for(size_t i=0;i<filters.size();i++)
     {
       const constructSystem::portItem& PI=filterBox->getPort(i);
-      filters[i]->addInsertCell("Flange",filterBox->getCell("SplitOuter",i));
+      filters[i]->addInsertCell("Body",PI.getCell("Plate"));
       filters[i]->addInsertCell("Body",PI.getCell("Void"));
+      filters[i]->addInsertCell("Blade",PI.getCell("Void"));
       filters[i]->addInsertCell("Body",filterBox->getCell("SplitVoid",i));
+      filters[i]->addInsertCell("Blade",filterBox->getCell("SplitVoid",i));
       filters[i]->setBladeCentre(PI,0);
       filters[i]->createAll(System,PI,2);
     }
-
+  ELog::EM<<"ASDFSAFSD"<<ELog::endDiag;
+  
   constructSystem::constructUnit
     (System,buildZone,*filterBox,"back",*bellowB);
 
@@ -437,43 +439,41 @@ balderOpticsLine::buildObjects(Simulation& System)
   for(size_t i=0;i<viewMount.size();i++)
     {
       const constructSystem::portItem& PI=viewPipe->getPort(i);
+
+      viewMount[i]->addInsertCell("Body",PI.getCell("Plate"));
       viewMount[i]->addInsertCell("Body",PI.getCell("Void"));
+      viewMount[i]->addInsertCell("Blade",PI.getCell("Void"));
+      viewMount[i]->addInsertCell("Blade",viewPipe->getCell("Void"));
       viewMount[i]->addInsertCell("Body",viewPipe->getCell("Void"));
+
       viewMount[i]->setBladeCentre(PI,0);
       viewMount[i]->createAll(System,PI,2);
     }
 
-  /*
+  constructSystem::constructUnit
+    (System,buildZone,*viewPipe,"back",*bellowF);
 
- 
-  
-  // split the object into four
-
-
-  pipeF->setFront(*viewPipe,2);
-  pipeF->createAll(System,*viewPipe,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeF,2);
-  pipeF->insertInCell(System,outerCell);
-
-  // FAKE build
-
-  monoShutter->addAllInsertCell(masterCell->getName());
-  monoShutter->setCutSurf("front",*pipeF,2);
-  monoShutter->createAll(System,*pipeF,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*monoShutter,2);
-
+  outerCell=constructSystem::constructUnit
+    (System,buildZone,*bellowF,"back",*monoShutter);
   monoShutter->addCell("OuterVoid",outerCell);
-  monoShutter->insertAllInCell(System,outerCell);
-  
   monoShutter->splitObject(System,"PortACut",outerCell);
 
-  const Geometry::Vec3D midPoint(monoShutter->getLinkPt(3));
+    const Geometry::Vec3D midPoint(monoShutter->getLinkPt(3));
   const Geometry::Vec3D midAxis(monoShutter->getLinkAxis(-3));
   monoShutter->splitObjectAbsolute(System,2001,
 				   monoShutter->getCell("OuterVoid",1),
 				   midPoint,midAxis);
   monoShutter->splitObject(System,"PortBCut",
 			   monoShutter->getCell("OuterVoid",1));
+
+  /*
+
+
+
+  monoShutter->insertAllInCell(System,outerCell);
+  
+  monoShutter->splitObject(System,"PortACut",outerCell);
+
 
   pipeG->setFront(*monoShutter,2);
   pipeG->createAll(System,*monoShutter,2);

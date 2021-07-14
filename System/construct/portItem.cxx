@@ -546,7 +546,7 @@ portItem::constructFlange(Simulation& System,
       else // just a cap
 	{
 	  Out=ModelSupport::getComposite(SMap,buildIndex," -27 2 -202 ");
-	  makeCell("AbovePlate",System,cellIndex++,capMat,0.0,Out);
+	  makeCell("Plate",System,cellIndex++,capMat,0.0,Out);
 	}
     }
 
@@ -683,7 +683,7 @@ portItem::constructOuterFlange(Simulation& System,
       else // just a cap
 	{
 	  Out=ModelSupport::getComposite(SMap,buildIndex," -27 2 -202 ");
-	  makeCell("AbovePlate",System,cellIndex++,capMat,0.0,Out);
+	  makeCell("Plate",System,cellIndex++,capMat,0.0,Out);
 	}
     }
 

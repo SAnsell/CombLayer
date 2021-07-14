@@ -112,7 +112,7 @@ class ContainedGroup
   void addInsertCell(const std::string&,const int);
   void addInsertCell(const std::string&,const std::vector<int>&);
   void addInsertCell(const std::string&,const ContainedComp&);
-  
+
   void setInsertCell(const std::string&,const int);
   void setAllInsertCell(const int);
 
@@ -121,10 +121,11 @@ class ContainedGroup
 
   virtual void insertAllInCell(Simulation&,const int);
   virtual void insertAllInCell(Simulation&,const std::vector<int>&);
-  
+
   void insertInCell(const std::string&,Simulation&,const int);
   void insertInCell(const std::string&,Simulation&,const std::vector<int>&);
   void insertInCell(const std::string&,MonteCarlo::Object&);
+
 
   /// Size accessor
   size_t nGroups() const { return CMap.size(); } 

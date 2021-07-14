@@ -400,8 +400,9 @@ cosaxsOpticsLine::buildObjects(Simulation& System)
   
   const constructSystem::portItem& PI=filterBoxA->getPort(3);
   filterStick->addInsertCell("Body",PI.getCell("Void"));
+  filterStick->addInsertCell("Blade",PI.getCell("Void"));
   filterStick->addInsertCell("Body",filterBoxA->getCell("Void"));
-    filterStick->addInsertCell("Body",filterBoxA->getCell("Void"));
+  filterStick->addInsertCell("Blade",filterBoxA->getCell("Void"));
   filterStick->setBladeCentre(PI,0);
   filterStick->createAll(System,PI,PI.getSideIndex("-InnerPlate"));
 

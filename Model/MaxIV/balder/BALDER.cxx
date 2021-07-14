@@ -175,9 +175,10 @@ BALDER::build(Simulation& System,
   opticsBeam->setCutSurf("back",*opticsHut,
 			 opticsHut->getSideIndex("innerBack"));
   opticsBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
+  opticsBeam->setPreInsert(joinPipe);
   opticsBeam->createAll(System,*joinPipe,2);
   return;
-  joinPipe->insertAllInCell(System,opticsBeam->getCell("OuterVoid",0));
+
 
   if (stopPoint=="opticsBeam") return;
   

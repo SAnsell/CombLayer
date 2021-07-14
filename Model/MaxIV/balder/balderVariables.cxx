@@ -434,9 +434,10 @@ opticsVariables(FuncDataBase& Control,
   Control.addVariable(opticsName+"FilterBoxNPorts",4);
 
   PItemGen.setCF<setVariable::CF50>(20.0);
-  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.setPlate(CF50::flangeLength,"Stainless304");  
+
   FlangeGen.setCF<setVariable::CF50>();
-  // width 
+  FlangeGen.setNoPlate();    
   FlangeGen.setBlade(0.3,5.0,0.5,22.0,"Graphite",1);  // 22 rotation
 
   const Geometry::Vec3D ZVec(0,0,1);
@@ -586,7 +587,10 @@ opticsVariables(FuncDataBase& Control,
   const Geometry::Vec3D YAxis(0,1,0);
   const Geometry::Vec3D ZAxis(0,0,1);
 
+ 
   PItemGen.setCF<setVariable::CF40>(viewOuterRad+5.0);
+  PItemGen.setPlate(CF40::flangeLength,"Copper");
+
   PItemGen.generatePort(Control,nameView+"0",YAxis*14.0,XAxis);
   PItemGen.generatePort(Control,nameView+"1",YAxis*10.0,-XAxis);
   PItemGen.setCF<setVariable::CF63>(viewOuterRad+10.0);

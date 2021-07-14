@@ -323,6 +323,8 @@ danmaxOpticsLine::constructViewScreen(Simulation& System,
 
   viewTubeScreen->addInsertCell("Body",viewTube->getCell("Void"));
   viewTubeScreen->addInsertCell("Body",VPC.getCell("Void"));
+  viewTubeScreen->addInsertCell("Blade",viewTube->getCell("Void"));
+  viewTubeScreen->addInsertCell("Blade",VPC.getCell("Void"));
   viewTubeScreen->setBladeCentre(*viewTube,0);
   viewTubeScreen->createAll(System,VPC,"-InnerPlate");
 
@@ -363,6 +365,8 @@ danmaxOpticsLine::constructViewScreenB(Simulation& System,
   const constructSystem::portItem& VPI=viewTubeB->getPort(1);
   viewTubeBScreen->addInsertCell("Body",VPI.getCell("Void"));
   viewTubeBScreen->addInsertCell("Body",viewTubeB->getCell("SplitVoid",2));
+  viewTubeBScreen->addInsertCell("Blade",VPI.getCell("Void"));
+  viewTubeBScreen->addInsertCell("Blade",viewTubeB->getCell("SplitVoid",2));
   viewTubeBScreen->setBladeCentre(*viewTubeB,0);
   viewTubeBScreen->createAll(System,VPI,"-InnerPlate");
 
@@ -559,7 +563,7 @@ danmaxOpticsLine::constructMonoShutter(Simulation& System,
   constructSystem::constructUnit
     (System,buildZone,FC,linkName,*monoAdaptorA);
 
-  int outerCell=constructSystem::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,*monoAdaptorA,"back",*monoShutter);
 
   /*
@@ -667,7 +671,6 @@ danmaxOpticsLine::buildObjects(Simulation& System)
     (System,buildZone,*bellowI,"back",*lensBox);
 
   // adds a portset to an object:
-  const int CN = buildZone.getLastCell("Unit");
   /*
   constructSystem::portSet lensBoxPort(*lensBox);
   lensBoxPort.createPorts(System,"MainWall",lensBox->getInsertCells());

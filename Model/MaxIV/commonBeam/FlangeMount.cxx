@@ -54,7 +54,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -69,8 +69,8 @@ namespace xraySystem
 {
 
 FlangeMount::FlangeMount(const std::string& Key) :
-  attachSystem::FixedOffset(Key,7),
-  attachSystem::ContainedGroup("Flange","Body"),
+  attachSystem::FixedRotate(Key,7),
+  attachSystem::ContainedGroup("Flange","Body","Blade"),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut(),
   inBeam(1),bladeActive(1),bladeCentreActive(0)
@@ -83,7 +83,7 @@ FlangeMount::FlangeMount(const std::string& Key) :
 }
 
 FlangeMount::FlangeMount(const FlangeMount& A) :
-  attachSystem::FixedOffset(A),
+  attachSystem::FixedRotate(A),
   attachSystem::ContainedGroup(A),attachSystem::CellMap(A),
   attachSystem::SurfMap(A),attachSystem::FrontBackCut(A),
   plateThick(A.plateThick),plateRadius(A.plateRadius),
@@ -113,7 +113,7 @@ FlangeMount::operator=(const FlangeMount& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedGroup::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
@@ -156,7 +156,7 @@ FlangeMount::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("FlangeMount","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   // Void + Fe special:
   plateThick=Control.EvalVar<double>(keyName+"PlateThick");
@@ -302,9 +302,10 @@ FlangeMount::createObjects(Simulation& System)
 
       HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,"101 -102 103 -104 105 -106");
+      addOuterSurf("Blade",HR);      
     }
 
-  HR+=threadHR;
+  HR=threadHR;
   HR*=frontCompHR;
 
   addOuterSurf("Body",HR);

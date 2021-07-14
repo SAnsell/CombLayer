@@ -86,7 +86,6 @@ FORMAX::FORMAX(const std::string& KN) :
   pShield(new xraySystem::PipeShield(newName+"PShield")),
   exptBeam(new formaxExptLine(newName+"ExptLine")),
   detectorTube(new xraySystem::formaxDetectorTube(newName+"DetectorTube"))
-  
   /*!
     Constructor
     \param KN :: Keyname
