@@ -106,7 +106,7 @@ balderOpticsLine::balderOpticsLine(const std::string& Key) :
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
 
-  buildZone(Key+"BuildZone"),
+  buildZone(newName+"BuildZone"),
   
   pipeInit(new constructSystem::VacuumPipe(newName+"InitPipe")),
   triggerPipe(new xraySystem::TriggerTube(newName+"TriggerUnit")),
@@ -320,7 +320,6 @@ balderOpticsLine::buildObjects(Simulation& System)
       filters[i]->setBladeCentre(PI,0);
       filters[i]->createAll(System,PI,2);
     }
-  ELog::EM<<"ASDFSAFSD"<<ELog::endDiag;
   
   constructSystem::constructUnit
     (System,buildZone,*filterBox,"back",*bellowB);
@@ -330,7 +329,8 @@ balderOpticsLine::buildObjects(Simulation& System)
 
   outerCell=constructSystem::constructUnit
     (System,buildZone,*gateA,"back",*mirrorBox);
-
+  mirrorBox->setCell("OuterVoid",outerCell);
+  
   mirrorBox->splitObject(System,-11,outerCell);
   mirrorBox->splitObject(System,12,outerCell);
   cellIndex+=2;
@@ -456,52 +456,36 @@ balderOpticsLine::buildObjects(Simulation& System)
   outerCell=constructSystem::constructUnit
     (System,buildZone,*bellowF,"back",*monoShutter);
   monoShutter->addCell("OuterVoid",outerCell);
-  monoShutter->splitObject(System,"PortACut",outerCell);
 
-    const Geometry::Vec3D midPoint(monoShutter->getLinkPt(3));
+  monoShutter->splitObject(System,"PortACut",outerCell);
+  const Geometry::Vec3D midPoint(monoShutter->getLinkPt(3));
   const Geometry::Vec3D midAxis(monoShutter->getLinkAxis(-3));
   monoShutter->splitObjectAbsolute(System,2001,
 				   monoShutter->getCell("OuterVoid",1),
 				   midPoint,midAxis);
   monoShutter->splitObject(System,"PortBCut",
 			   monoShutter->getCell("OuterVoid",1));
-
-  /*
-
-
-
-  monoShutter->insertAllInCell(System,outerCell);
   
-  monoShutter->splitObject(System,"PortACut",outerCell);
+  constructSystem::constructUnit
+    (System,buildZone,*monoShutter,"back",*bellowG);
 
+  constructSystem::constructUnit
+    (System,buildZone,*bellowG,"back",*gateE);  
 
-  pipeG->setFront(*monoShutter,2);
-  pipeG->createAll(System,*monoShutter,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeG,2);
-  pipeG->insertInCell(System,outerCell);
-
-  gateE->setFront(*pipeG,2);
-  gateE->createAll(System,*pipeG,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,
-				*gateE,2);
-  gateE->insertInCell(System,outerCell);
-
-  
   neutShield[0]->addAllInsertCell(mirrorBox->getCell("FFlangeVoid"));
   neutShield[0]->addAllInsertCell(mirrorBox->getCell("OuterVoid",1));
   neutShield[0]->setCutSurf("inner",*mirrorBox,"frontPortWall");
-  neutShield[0]->createAll(System,*mirrorBox,-1);
+  neutShield[0]->createAll(System,*mirrorBox,"#front");
 
   neutShield[1]->addAllInsertCell(driftB->getCell("OuterVoid"));
   neutShield[1]->setCutSurf("inner",*driftB,"pipeOuterTop");
   neutShield[1]->createAll(System,*driftB,-1);
-
   
   neutShield[2]->addAllInsertCell(mirrorBoxB->getCell("BFlangeVoid"));
   neutShield[2]->addAllInsertCell(mirrorBoxB->getCell("OuterVoid",2));
   neutShield[2]->setCutSurf("inner",*mirrorBoxB,"backPortWall");
-  neutShield[2]->createAll(System,*mirrorBoxB,-2);
-  */
+  neutShield[2]->createAll(System,*mirrorBoxB,"#back");
+  
 
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);

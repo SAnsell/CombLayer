@@ -142,6 +142,19 @@ PipeTubeGenerator::setCF()
   return;
 }
 
+void
+PipeTubeGenerator::setFlangeLength(const double LA,const double LB)
+  /*!
+    Setter for flange A/B length
+    \param LA :: Length of flange A
+    \param LB :: Length of flange B
+   */
+{
+  flangeALen=LA;
+  flangeBLen=LB;
+  return;
+}
+
 template<typename CF>
 void
 PipeTubeGenerator::setAFlangeCF()

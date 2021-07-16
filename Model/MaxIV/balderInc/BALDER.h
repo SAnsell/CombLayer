@@ -44,14 +44,14 @@ namespace xraySystem
   class balderExptLine;
   class R3FrontEndCave;
   class R3FrontEnd;
-  class ConnectZone;
-  class balderFrontEnd;
   class PipeShield;
   class WallLead;
 
-  class balderOpticsLine;
   class balderFrontEnd;
   class balderOpticsHutch;
+  class balderOpticsLine;
+  class balderConnectZone;  
+
   /*!
     \class BALDER
     \version 1.0
@@ -93,7 +93,7 @@ class BALDER : public R3Beamline
   std::shared_ptr<xraySystem::PipeShield> outerShield;
   
   /// Connection between hutches
-  std::shared_ptr<xraySystem::ConnectZone> connectZone;
+  std::shared_ptr<xraySystem::balderConnectZone> connectZone;
 
   /// Pipe joining optics hut to outer 
   std::shared_ptr<constructSystem::LeadPipe> joinPipeC;

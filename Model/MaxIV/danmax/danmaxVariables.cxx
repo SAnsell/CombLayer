@@ -317,29 +317,24 @@ exptHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"InnerThick",0.1);
   Control.addVariable(hutName+"PbFrontThick",0.5);
 
-  Control.addVariable(hutName+"HoleRadius",4.0);
-  Control.addVariable(hutName+"HoleXStep",beamMirrorShift);
 
   Control.addVariable(hutName+"PbBackThick",0.5);
   Control.addVariable(hutName+"PbRoofThick",0.6);
   Control.addVariable(hutName+"PbWallThick",0.4);
   Control.addVariable(hutName+"OuterThick",0.1);
-  Control.addVariable(hutName+"FloorThick",50.0);
   Control.addVariable(hutName+"CornerLength",720.0);
   Control.addVariable(hutName+"CornerAngle",45.0);
   
-  Control.addVariable(hutName+"Depth",120.0);
   Control.addVariable(hutName+"InnerOutVoid",10.0);
   Control.addVariable(hutName+"OuterOutVoid",10.0);
 
   Control.addVariable(hutName+"VoidMat","Void");
   Control.addVariable(hutName+"SkinMat","Stainless304");
   Control.addVariable(hutName+"PbMat","Lead");
-  Control.addVariable(hutName+"FloorMat","Concrete");
 
   Control.addVariable(hutName+"HoleXStep",beamMirrorShift);
   Control.addVariable(hutName+"HoleZStep",0.0);
-  Control.addVariable(hutName+"HoleRadius",3.0);
+  Control.addVariable(hutName+"HoleRadius",4.0);
   Control.addVariable(hutName+"HoleMat","Void");
 
   // lead shield on pipe

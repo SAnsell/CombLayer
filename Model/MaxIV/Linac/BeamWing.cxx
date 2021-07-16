@@ -119,18 +119,16 @@ BeamWing::createSurfaces()
 
   if (!isActive("front"))
     {
-      makePlane("Front",SMap,buildIndex+1,Origin-Y*(depth/2.0),Y);
+      SurfMap::makePlane("Front",SMap,buildIndex+1,Origin-Y*(depth/2.0),Y);
       ExternalCut::setCutSurf("front",SMap.realSurf(buildIndex+1));
-      setSurf("Front",buildIndex+1);
     }
   else
     setSurf("Front",getRule("front").getPrimarySurface());
   
   if (!isActive("back"))
     {
-      makePlane("Back",SMap,buildIndex+2,Origin+Y*(depth/2.0),Y);
+      SurfMap::makePlane("Back",SMap,buildIndex+2,Origin+Y*(depth/2.0),Y);
       ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
-      setSurf("Back",SMap.realSurf(buildIndex+2));
     }
   else
     setSurf("Back",getRule("back").getPrimarySurface());
@@ -144,6 +142,25 @@ BeamWing::createSurfaces()
   setSurf("Right",SMap.realSurf(buildIndex+4));
   setSurf("Base",SMap.realSurf(buildIndex+5));
   setSurf("Top",SMap.realSurf(buildIndex+6));
+  return;
+}
+
+void
+BeamWing::createObjects(Simulation& System)
+  /*!
+    Create the main volume
+    \param System :: Simulation to create objects in
+  */
+{
+  ELog::RegMethod RegA("BeamWing","createObjects");
+  
+  HeadRule HR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
+  HR*=getRule("front");
+  HR*=getRule("back");
+  makeCell("Main",System,cellIndex++,mainMat,0.0,HR);
+
+  addOuterSurf(HR);
   return;
 }
 
@@ -169,25 +186,6 @@ BeamWing::createLinks()
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
 
-  return;
-}
-
-void
-BeamWing::createObjects(Simulation& System)
-  /*!
-    Create the main volume
-    \param System :: Simulation to create objects in
-  */
-{
-  ELog::RegMethod RegA("BeamWing","createObjects");
-  
-  HeadRule HR=
-    ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
-  HR*=getRule("front");
-  HR*=getRule("back");
-  makeCell("Main",System,cellIndex++,mainMat,0.0,HR);
-
-  addOuterSurf(HR);
   return;
 }
 

@@ -141,6 +141,15 @@ PipeTube::createSurfaces()
 			       Origin+Y*backLength,Y);
       setBack(-SMap.realSurf(buildIndex+2));
     }
+  ExternalCut::makeShiftedSurf(SMap,"front",buildIndex+101,Y,
+			       flangeALength+flangeACapThick);
+  ExternalCut::makeShiftedSurf(SMap,"back",buildIndex+102,Y,
+			       -(flangeBLength+flangeBCapThick));
+
+  ExternalCut::makeShiftedSurf(SMap,"front",buildIndex+201,Y,
+			       flangeACapThick);
+  ExternalCut::makeShiftedSurf(SMap,"back",buildIndex+202,Y,
+			       -(flangeBCapThick));
   
   // void space:
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
@@ -149,17 +158,6 @@ PipeTube::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+wallThick);
   SurfMap::addSurf("OuterCyl",SMap.realSurf(buildIndex+17));
 
-  ModelSupport::buildPlane
-    (SMap,buildIndex+101,
-     Origin-Y*(frontLength-(flangeALength+flangeACapThick)),Y);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+102,
-     Origin+Y*(backLength-(flangeBLength+flangeBCapThick)),Y);
-
-  ModelSupport::buildPlane(SMap,buildIndex+201,
-			   Origin-Y*(frontLength-flangeACapThick),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+202,
-			   Origin+Y*(backLength-flangeBCapThick),Y);
 
   // flange:
   ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeARadius);
