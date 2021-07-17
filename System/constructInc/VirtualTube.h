@@ -105,13 +105,13 @@ class VirtualTube :
   void createPorts(Simulation&,MonteCarlo::Object*,
 		   const HeadRule&,const HeadRule&);
 
-  virtual void insertAllInCell(Simulation&,const int);
-  virtual void insertAllInCell(Simulation&,const std::vector<int>&);
-  virtual void insertMainInCell(Simulation&,const int);
-  virtual void insertMainInCell(Simulation&,const std::vector<int>&);
-  virtual void insertPortInCell(Simulation&,const int);
+  virtual void insertAllInCell(Simulation&,const int) const;
+  virtual void insertAllInCell(Simulation&,const std::vector<int>&) const;
+  virtual void insertMainInCell(Simulation&,const int) const;
+  virtual void insertMainInCell(Simulation&,const std::vector<int>&) const;
+  virtual void insertPortInCell(Simulation&,const int) const;
   virtual void insertPortInCell(Simulation&,
-				const std::vector<std::set<int>>&);
+				const std::vector<std::set<int>>&) const;
 
   using FixedComp::createAll;
   virtual void createAll(Simulation&,

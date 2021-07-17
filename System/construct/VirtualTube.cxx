@@ -558,7 +558,7 @@ VirtualTube::splitVoidPorts(Simulation& System,
 }
 
 void
-VirtualTube::insertAllInCell(Simulation& System,const int cellN)
+VirtualTube::insertAllInCell(Simulation& System,const int cellN) const
   /*!
     Overload of containdGroup so that the ports can also
     be inserted if needed
@@ -577,7 +577,7 @@ VirtualTube::insertAllInCell(Simulation& System,const int cellN)
 
 void
 VirtualTube::insertAllInCell(Simulation& System,
-			  const std::vector<int>& cellVec)
+			  const std::vector<int>& cellVec) const
   /*!
     Overload of containdGroup so that the ports can also
     be inserted if needed
@@ -586,6 +586,7 @@ VirtualTube::insertAllInCell(Simulation& System,
   */
 {
   ContainedGroup::insertAllInCell(System,cellVec);
+  ELog::EM<<"DKey "<<keyName<<" "<<delayPortBuild<<ELog::endDiag;
   if (!delayPortBuild)
     {
       for(const std::shared_ptr<portItem>& PC : Ports)
@@ -595,7 +596,7 @@ VirtualTube::insertAllInCell(Simulation& System,
 }
 
 void
-VirtualTube::insertMainInCell(Simulation& System,const int cellN)
+VirtualTube::insertMainInCell(Simulation& System,const int cellN) const
   /*!
     Fix of insertInAllCells to only do main body without ports
     \param System :: Simulation to use
@@ -608,7 +609,7 @@ VirtualTube::insertMainInCell(Simulation& System,const int cellN)
 
 void
 VirtualTube::insertMainInCell(Simulation& System,
-			   const std::vector<int>& cellVec)
+			   const std::vector<int>& cellVec) const
   /*!
     Fix of insertInAllCells to only do main body without ports
     \param System :: Simulation to use
@@ -620,7 +621,7 @@ VirtualTube::insertMainInCell(Simulation& System,
 }
 
 void
-VirtualTube::insertPortInCell(Simulation& System,const int cellN)
+VirtualTube::insertPortInCell(Simulation& System,const int cellN) const
   /*!
     Allow ports to be intersected into arbitary cell list
     \param System :: Simulation to use
@@ -637,7 +638,7 @@ VirtualTube::insertPortInCell(Simulation& System,const int cellN)
 
 void
 VirtualTube::insertPortInCell(Simulation& System,
-			   const std::vector<std::set<int>>& cellVec)
+			   const std::vector<std::set<int>>& cellVec) const
   /*!
     Allow ports to be intersected into arbitary cell list
     \param System :: Simulation to use

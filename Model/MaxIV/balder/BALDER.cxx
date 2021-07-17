@@ -202,15 +202,23 @@ BALDER::build(Simulation& System,
   connectZone->setCutSurf("back",*exptHut,1);
   connectZone->createAll(System,*joinPipeB,2);
 
-  return;
-  
-  joinPipeB->insertAllInCell(System,connectZone->getCell("OuterVoid",0));
 
+    
+  joinPipeC->insertAllInCell(System,exptHut->getCell("Void"));
+  //  joinPipeC->insertInCell(System,exptHut->getCell("EntranceHole"));
+
+  exptBeam->addInsertCell(exptHut->getCell("Void"));
+  exptBeam->createAll(System,*joinPipeC,2);
+
+  /*
   // pipe shield goes around joinPipeB:
   pShield->addAllInsertCell(opticsBeam->getCell("LastVoid"));
-  pShield->setCutSurf("inner",*joinPipeB,"outerPipe");
+  pShield->setCutSurf("inner",*joinPipeB,"outer");
   pShield->setCutSurf("front",*opticsHut,"innerBack");
   pShield->createAll(System,*opticsHut,opticsHut->getSideIndex("exitHole"));
+
+  ELog::EM<<"Pshied == "> 
+
 
   // pipe shield goes around joinPipeB:
   nShield->addAllInsertCell(opticsBeam->getCell("LastVoid"));
@@ -224,13 +232,7 @@ BALDER::build(Simulation& System,
   outerShield->setCutSurf("front",*opticsHut,"back");
   outerShield->createAll(System,*opticsHut,
 			 opticsHut->getSideIndex("-exitHole"));
-  
-  joinPipeC->insertAllInCell(System,exptHut->getCell("Void"));
-  //  joinPipeC->insertInCell(System,exptHut->getCell("EntranceHole"));
-
-  exptBeam->addInsertCell(exptHut->getCell("Void"));
-  exptBeam->createAll(System,*joinPipeC,2);
-
+  */
   return;
 }
 

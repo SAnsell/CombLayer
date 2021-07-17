@@ -296,7 +296,8 @@ balderOpticsLine::buildObjects(Simulation& System)
   outerCell=constructSystem::constructUnit
     (System,buildZone,*bellowA,"back",*filterBox);
 
-  // split on both inner void 
+  // split on both inner void
+
   filterBox->splitVoidPorts(System,"SplitVoid",1001,
 			    filterBox->getCell("Void"),
 			    Geometry::Vec3D(0,1,0));
@@ -431,7 +432,6 @@ balderOpticsLine::buildObjects(Simulation& System)
   viewPipe->splitObject(System,12,outerCell);
   viewPipe->splitObject(System,1001,outerCell,
 			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0));
-
   const constructSystem::portItem& CPI=viewPipe->getPort(3);
   CPI.insertInCell(System,slitsB->getCell("OuterVoid"));
 
@@ -449,6 +449,7 @@ balderOpticsLine::buildObjects(Simulation& System)
       viewMount[i]->setBladeCentre(PI,0);
       viewMount[i]->createAll(System,PI,2);
     }
+
 
   constructSystem::constructUnit
     (System,buildZone,*viewPipe,"back",*bellowF);

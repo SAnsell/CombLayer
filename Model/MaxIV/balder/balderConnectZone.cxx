@@ -226,17 +226,15 @@ balderConnectZone::makeBox(Simulation& System,
     {
       // Bellow goes immediately in next unit
       bellowUnit.addInsertCell(boxUnit.getCell("Void",2));
-      bellowUnit.setFront(pipeAUnit,"back");  
-      bellowUnit.setBack(pipeBUnit,"front");
-      bellowUnit.createAll(System,pipeAUnit,"back");
     }
   else
     {
       bellowUnit.addAllInsertCell(boxUnit.getCell("Void",2));
-      bellowUnit.setFront(pipeAUnit,"back");  
-      bellowUnit.setBack(pipeBUnit,"front");
-      bellowUnit.createAll(System,pipeAUnit,"back");
     }
+  bellowUnit.setFront(pipeAUnit,"back");  
+  bellowUnit.setBack(pipeBUnit,"front");
+  bellowUnit.createAll(System,pipeAUnit,"back");
+
   return;
 }
 			   
@@ -283,47 +281,15 @@ balderConnectZone::buildObjects(Simulation& System,
   JPipe->createAll(System,*pipeD,"back");
 
   makeBox(System,*pipeD,2,*boxC,*bellowC,*JPipe);
-  
-  return;
-  /*
 
-  ionPumpB->createAll(System,*pipeC,2);
-  // ionPumpB->createPorts(System);
 
-  // SKIP :: Join PipeC skips bellows
-  JPipe->createAll(System,*pipeD,2);
+  buildZone.createUnit(System);
+  buildZone.rebuildInsertCells(System);
+  setCells("InnerVoid",buildZone.getCells("Unit"));
+  setCell("LastVoid",buildZone.getCells("Unit").back());
 
-  // Now build lead box
-  boxC->addInsertCell("FrontWall",pipeD->getCell("BackSpaceVoid"));
-  boxC->addInsertCell("BackWall",JPipe->getCell("FrontSpaceVoid"));
-  boxC->setCutSurf("portCutA",*pipeD,"pipeWall");
-  boxC->setCutSurf("portCutB",*JPipe,"pipeWall");
-  boxC->setCutSurf("leadRadiusA",*pipeD,"outerPipe");
-  boxC->setCutSurf("leadRadiusB",*JPipe,"outerPipe");
+  JPipe->insertInCell("Main",System,getCell("LastVoid"));
 
-  boxC->createAll(System,*pipeD,2);
-  boxC->splitObjectAbsolute(System,1001,
-			    boxC->getCell("Void"),
-			    {{pipeD->getLinkPt(2),JPipe->getLinkPt(1)}},
-			    {{pipeD->getLinkAxis(2),JPipe->getLinkAxis(-1)}});
-
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*boxC,-1);
-  pipeD->insertInCell(System,outerCell);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*boxC,2);
-  boxC->insertInCell("Main",System,outerCell);
-
-  pipeD->insertInCell(System,boxC->getCell("Void",0));
-  JPipe->insertInCell(System,boxC->getCell("Void",2));
-  
-
-  // Bellow goes immediately in next unit
-  bellowC->addInsertCell(boxC->getCell("Void",1));
-  bellowC->setFront(*pipeD,2);  
-  bellowC->setBack(*JPipe,1);
-  bellowC->createAll(System,*pipeD,2);
-
-  JPipe->insertInCell(System,masterCell->getName());
-  */
   return;
 }
 

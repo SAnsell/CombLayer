@@ -760,7 +760,7 @@ BALDERvariables(FuncDataBase& Control)
 
   const std::string exptName="BalderExptLine";
   
-  Control.addVariable(exptName+"BeamStopYStep",806.0);
+  Control.addVariable(exptName+"BeamStopYStep",777.0);
   Control.addVariable(exptName+"BeamStopRadius",10.0);
   Control.addVariable(exptName+"BeamStopThick",5.0);
   Control.addVariable(exptName+"BeamStopMat","Stainless304");
