@@ -286,6 +286,7 @@ balderConnectZone::buildObjects(Simulation& System,
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);
   setCells("InnerVoid",buildZone.getCells("Unit"));
+  setCell("FirstVoid",buildZone.getCell("Unit",0));
   setCell("LastVoid",buildZone.getCells("Unit").back());
 
   JPipe->insertInCell("Main",System,getCell("LastVoid"));

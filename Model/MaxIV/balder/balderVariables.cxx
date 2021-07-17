@@ -279,6 +279,7 @@ shieldVariables(FuncDataBase& Control)
 
   const std::string preName("Balder");
   
+  Control.addVariable(preName+"PShieldYStep",10.1);
   Control.addVariable(preName+"PShieldLength",10.0);
   Control.addVariable(preName+"PShieldWidth",80.0);
   Control.addVariable(preName+"PShieldHeight",80.0);
@@ -287,7 +288,7 @@ shieldVariables(FuncDataBase& Control)
   Control.addVariable(preName+"PShieldWallMat","Stainless304");
   Control.addVariable(preName+"PShieldMat","Lead");
    
-  Control.addVariable(preName+"NShieldYStep",10.2);
+  Control.addVariable(preName+"NShieldYStep",0.2);
   Control.addVariable(preName+"NShieldLength",7.0);
   Control.addVariable(preName+"NShieldWidth",80.0);
   Control.addVariable(preName+"NShieldHeight",80.0);
