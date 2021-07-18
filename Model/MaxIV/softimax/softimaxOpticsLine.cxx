@@ -493,7 +493,9 @@ softimaxOpticsLine::buildMono(Simulation& System,
   grating->copyCutSurf("innerCylinder",*monoVessel,"innerRadius");
   grating->createAll(System,*monoVessel,0);
 
+  ELog::EM<<"monoVessel == "<<monoVessel->getCell("Void")<<ELog::endDiag;
   zeroOrderBlock->addInsertCell("Body", monoVessel->getCell("Void"));
+  zeroOrderBlock->addInsertCell("Blade", monoVessel->getCell("Void"));
   zeroOrderBlock->setFront(*monoVessel,3);
   zeroOrderBlock->createAll(System,*monoVessel,3);
 

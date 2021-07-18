@@ -59,9 +59,9 @@
 #include "BlockZone.h"
 
 #include "VacuumPipe.h"
-#include "balderOpticsHutch.h"
 #include "JawFlange.h"
 #include "R3FrontEnd.h"
+#include "OpticsHutch.h"
 #include "softimaxFrontEnd.h"
 #include "softimaxOpticsLine.h"
 #include "WallLead.h"
@@ -76,7 +76,7 @@ SOFTIMAX::SOFTIMAX(const std::string& KN) :
   R3Beamline("Balder",KN),
   frontBeam(new softimaxFrontEnd(newName+"FrontBeam")),
   wallLead(new WallLead(newName+"WallLead")),
-  opticsHut(new balderOpticsHutch(newName+"OpticsHut")),
+  opticsHut(new OpticsHutch(newName+"OpticsHut")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
   opticsBeam(new softimaxOpticsLine(newName+"OpticsLine"))
   /*!
@@ -112,7 +112,6 @@ SOFTIMAX::build(Simulation& System,
     \param sideIndex :: link point for origin
   */
 {
-  // For output stream
   ELog::RegMethod RControl("SOFTIMAX","build");
 
   const size_t NS=r3Ring->getNInnerSurf();
@@ -139,21 +138,7 @@ SOFTIMAX::build(Simulation& System,
       || stopPoint=="FM1" || stopPoint=="FM2")
     return;
 
-  opticsHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
-  opticsHut->setCutSurf("RingWall",r3Ring->getSurf("BeamOuter",PIndex));
-
-  opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
-  opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
-
-  opticsHut->setCutSurf("SideWall",r3Ring->getSurf("FlatOuter",PIndex));
-  opticsHut->setCutSurf("InnerSideWall",r3Ring->getSurf("FlatInner",PIndex));
-  opticsHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
-
-
-  // Ugly HACK to get the two objects to merge
-  r3Ring->insertComponent
-    (System,"OuterFlat",SIndex,
-     *opticsHut,opticsHut->getSideIndex("frontCut"));
+  buildOpticsHutch(System,opticsHut,PIndex,exitLink);
 
   // Inner space
 
@@ -161,7 +146,6 @@ SOFTIMAX::build(Simulation& System,
 
   joinPipe->addAllInsertCell(frontBeam->getCell("MasterVoid"));
   joinPipe->addInsertCell("Main",wallLead->getCell("Void"));
-  joinPipe->addAllInsertCell(opticsHut->getCell("Inlet"));
   joinPipe->createAll(System,*frontBeam,2);
 
 
@@ -176,8 +160,9 @@ SOFTIMAX::build(Simulation& System,
   opticsBeam->createAll(System,*joinPipe,2);
 
 
-  std::vector<int> cells(opticsHut->getCells("BackWall"));
-  cells.emplace_back(opticsHut->getCell("Extension"));
+  return;
+    std::vector<int> cells(opticsHut->getCells("BackWall"));
+   cells.emplace_back(opticsHut->getCell("Extension"));
 
   return;
   opticsBeam->buildOutGoingPipes(System,opticsBeam->getCell("LeftVoid"),

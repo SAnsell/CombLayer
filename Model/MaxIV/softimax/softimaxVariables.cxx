@@ -72,6 +72,7 @@
 #include "WallLeadGenerator.h"
 #include "TwinPipeGenerator.h"
 #include "DiffXIADP03Generator.h"
+#include "OpticsHutGenerator.h"
 
 namespace setVariable
 {
@@ -246,36 +247,9 @@ opticsHutVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("softimaxVariables[F]","opticsCaveVariables");
 
   const std::string hutName(preName+"OpticsHut");
+  OpticsHutGenerator OGen; 
 
-  Control.addVariable(hutName+"Height",250.0);
-  Control.addVariable(hutName+"Length",1070); // outer length, measured by KB - check
-  Control.addVariable(hutName+"OutWidth",200.0);
-  Control.addVariable(hutName+"RingWidth",75.0);
-  Control.addVariable(hutName+"RingWallLen",80.0);
-  Control.addVariable(hutName+"RingWallAngle",18.50);
-  Control.addVariable(hutName+"RingConcThick",100.0);
-
-  Control.addVariable(hutName+"InnerThick",0.3);
-  Control.addVariable(hutName+"Extension",100.0);
-
-  // Lead thicknesses are from 06643-03-000\ folio\ 1-2\ IND\ G.PDF
-  Control.addVariable(hutName+"PbWallThick",1.6);
-  Control.addVariable(hutName+"PbRoofThick",1.6);
-  Control.addVariable(hutName+"PbBackThick",9);
-  Control.addVariable(hutName+"PbFrontThick",2.0); // guess
-
-  Control.addVariable(hutName+"OuterThick",0.3);
-
-  Control.addVariable(hutName+"InnerOutVoid",10.0);  // side wall for chicane
-  Control.addVariable(hutName+"OuterOutVoid",10.0);
-
-  Control.addVariable(hutName+"SkinMat","Stainless304");
-  Control.addVariable(hutName+"RingMat","Concrete");
-  Control.addVariable(hutName+"PbMat","Lead");
-
-  Control.addVariable(hutName+"InletXStep",0.0);
-  Control.addVariable(hutName+"InletZStep",0.0);
-  Control.addVariable(hutName+"InletRadius",5.0);
+  OGen.generateHut(Control,hutName,1070.0);
 
   // chicane dimensions: http://localhost:8080/maxiv/work-log/softimax/drawings/06643-03-000-folio-1-2-ind-g.pdf/view
   Control.addVariable(hutName+"NChicane",4);
