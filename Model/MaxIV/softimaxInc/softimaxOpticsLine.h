@@ -54,14 +54,15 @@ class softimaxOpticsLine :
   public attachSystem::ContainedComp,
   public attachSystem::FixedOffset,
   public attachSystem::ExternalCut,
-  public attachSystem::CellMap
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
  private:
 
   /// construction space for main object
   attachSystem::BlockZone buildZone;
-  attachSystem::BlockZone IZTop;
-  attachSystem::BlockZone IZLow;
+  attachSystem::BlockZone IZLeft;
+  attachSystem::BlockZone IZRight;
   int innerMat;                         ///< inner material if used
   
   /// string for pre-insertion into mastercell:0
