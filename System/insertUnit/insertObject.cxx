@@ -240,9 +240,10 @@ insertObject::findObjects(Simulation& System)
   System.populateCells();
   System.validateObjSurfMap();
 
+
   MTYPE OMap;
   attachSystem::lineIntersect(System,*this,OMap);
-
+  
   // Add exclude string
   MTYPE::const_iterator ac;
   for(ac=OMap.begin();ac!=OMap.end();ac++)

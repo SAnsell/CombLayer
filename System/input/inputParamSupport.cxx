@@ -159,7 +159,7 @@ getNamedAxis(const Simulation& System,
 	     const std::string& keyItem,
 	     const size_t setIndex,
 	     size_t& index,
-	       const std::string& errStr)
+	     const std::string& errStr)
 /*!
   Generate a named Axis : One of:
   - Vec3D(x,y,z).norm()
@@ -267,7 +267,7 @@ getNamedOriginAxis(const Simulation& System,
 /*!
     Generate a set of point + axis directions based on
     free point or FixedComp or PointMap
-    \return Point : X axis : Z axis
+    \return Point : Y axis : Z axis
   */
 {
   ELog::RegMethod RegA("inputParamSupport[F]","getNamedOrginAxis");  

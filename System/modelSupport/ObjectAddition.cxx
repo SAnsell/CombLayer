@@ -205,8 +205,10 @@ objectAddition(Simulation& System,
             IParam.getDefValue<std::string>("Void","OAdd",index,ptI+3);
 	  
 	  if (PType=="object")
-	    constructSystem::addInsertPlateCell
-	      (System,PName,FName,LName,VPos,XW,YT,ZH,mat);
+	    {
+	      constructSystem::addInsertPlateCell
+		(System,PName,FName,LName,VPos,XW,YT,ZH,mat);
+	    }
 	  else
 	    constructSystem::addInsertPlateCell
 	      (System,PName,VPos,YAxis,ZAxis,XW,YT,ZH,mat);

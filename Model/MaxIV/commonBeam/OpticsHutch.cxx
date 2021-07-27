@@ -232,9 +232,9 @@ OpticsHutch::createObjects(Simulation& System)
   
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"2 -12 13 -6 107");
   makeCell("BackIWall",System,cellIndex++,skinMat,0.0,HR*floor*sideWall);
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"12 -22 23 -6 107");
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"12 -22 23 -16 107");
   makeCell("BackPbWall",System,cellIndex++,pbMat,0.0,HR*floor*sideWall);
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"22 -32 33 -6 107");
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"22 -32 33 -26 107");
   makeCell("BackOuterWall",System,cellIndex++,skinMat,0.0,HR*floor*sideWall);
 
 
