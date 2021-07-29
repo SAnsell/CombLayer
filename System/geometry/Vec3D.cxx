@@ -684,6 +684,20 @@ Vec3D::boundaryCube(const Vec3D& LP,const Vec3D& HP)
 }
 
 
+Vec3D
+Vec3D::getInBasis(const Vec3D& A,const Vec3D& B,const Vec3D& C) const
+  /*! 
+     Calculate this Vec3D assuming it expresses a vector
+     in the basis set A,B,C
+     \param A :: Unit vector in basis
+     \param B :: Unit vector in basis
+     \param C :: Unit vector in basis
+     \return Vector in current base
+  */
+{
+  return A*x+B*y+C*z;
+}
+
 int
 Vec3D::reBase(const Vec3D& A,const Vec3D& B,const Vec3D& C) 
   /*! 

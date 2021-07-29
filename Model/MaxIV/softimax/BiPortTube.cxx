@@ -405,7 +405,8 @@ BiPortTube::createPorts(Simulation& System)
 	Ports[i]->addOuterCell(CN);
 
       Ports[i]->setCentLine(*this,PCentre[i],PAxis[i]);
-      ELog::EM<<"CAlL to PORTS construct :: OLD METHOD"<<ELog::endWarn;
+      ELog::EM<<"CAlL to PORTS construct :: OLD METHOD["
+	      <<keyName<<"]"<<ELog::endWarn;
       //      Ports[i]->constructTrack(System);
     }
   return;

@@ -66,12 +66,10 @@ class VirtualTube :
   std::vector<std::shared_ptr<portItem>> Ports;     
 
   virtual void applyPortRotation();
-  Geometry::Vec3D calcCylinderDistance(const size_t) const;
 
   std::string makeOuterVoid(Simulation&);
   
   virtual void populate(const FuncDataBase&);
-  virtual void createUnitVector(const attachSystem::FixedComp&,const long int);
   virtual void createSurfaces() =0;
   virtual void createObjects(Simulation&) =0;
   virtual void createLinks() =0;
@@ -102,8 +100,9 @@ class VirtualTube :
   void intersectVoidPorts(Simulation&,const size_t,const size_t) const;
   const portItem& getPort(const size_t) const;
 
-  void createPorts(Simulation&,MonteCarlo::Object*,
+  virtual void createPorts(Simulation&,MonteCarlo::Object*,
 		   const HeadRule&,const HeadRule&);
+  virtual void createPorts(Simulation&) =0;
 
   virtual void insertAllInCell(Simulation&,const int) const;
   virtual void insertAllInCell(Simulation&,const std::vector<int>&) const;

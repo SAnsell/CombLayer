@@ -175,7 +175,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   splitter(new xraySystem::TwinPipe(newName+"Splitter")),
   bellowAA(new constructSystem::Bellows(newName+"BellowAA")),
   bellowBA(new constructSystem::Bellows(newName+"BellowBA")),
-  M3Pump(new constructSystem::BiPortTube(newName+"M3Pump")),
+  M3Pump(new constructSystem::PipeTube(newName+"M3Pump")),
   bellowAB(new constructSystem::Bellows(newName+"BellowAB")),
   joinPipeAA(new constructSystem::VacuumPipe(newName+"JoinPipeAA")),
   bremCollAA(new xraySystem::BremOpticsColl(newName+"BremCollAA")),

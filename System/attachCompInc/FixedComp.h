@@ -217,6 +217,7 @@ class FixedComp
   Geometry::Vec3D getLinkZAxis(const long int) const;
   
   virtual std::string getLinkString(const long int) const;
+  double getLinkDistance(const std::string&,const std::string&) const;
   double getLinkDistance(const long int,const long int) const;
   double getLinkDistance(const long int,const FixedComp&,
 			 const long int) const;

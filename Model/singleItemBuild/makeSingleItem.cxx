@@ -1069,13 +1069,38 @@ makeSingleItem::build(Simulation& System,
 
     if (item == "PipeTube" )
       {
+	std::shared_ptr<constructSystem::Bellows>
+	  bellowTube(new constructSystem::Bellows("BellowTube"));
+	
 	std::shared_ptr<constructSystem::PipeTube>
 	  pipeTube(new constructSystem::PipeTube("PipeTube"));
 	
+	OR.addObject(bellowTube);
 	OR.addObject(pipeTube);
-	
+
+	bellowTube->addInsertCell(voidCell);
+	bellowTube->createAll(System,World::masterOrigin(),0);
+
+	pipeTube->setPortRotation(3,Geometry::Vec3D(0,0,1));
 	pipeTube->addAllInsertCell(voidCell);
-	pipeTube->createAll(System,World::masterOrigin(),0);
+	pipeTube->createAll(System,*bellowTube,"back");
+
+	ELog::EM<<"pipeTube == "<<pipeTube->getCentre()<<ELog::endDiag;
+	ELog::EM<<"pipeTube[Y] == "<<pipeTube->getY()<<ELog::endDiag;
+	ELog::EM<<"pipeTube[Z] == "<<pipeTube->getZ()<<ELog::endDiag;
+	/*
+	const constructSystem::portItem& PI=
+	  pipeTube->getPort(0);
+
+	ELog::EM<<"PORT == "<<PI.getCentre()<<ELog::endDiag;
+	ELog::EM<<"PORT[Y] == "<<PI.getY()<<ELog::endDiag;
+	*/
+	// const constructSystem::portItem& PIB=
+	//   pipeTube->getPort(1);
+
+	// ELog::EM<<"PORTB == "<<PIB.getCentre()<<ELog::endDiag;
+	// ELog::EM<<"PORT[Y] == "<<PIB.getY()<<ELog::endDiag;
+
 
 	return;
       }

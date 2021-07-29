@@ -306,12 +306,11 @@ R3FrontEnd::buildHeatTable(Simulation& System,
 {
   ELog::RegMethod RegA("R3FrontEnd","buildHeatTable");
 
-
   int outerCell;
 
   heatBox->setPortRotation(3,Geometry::Vec3D(1,0,0));
   heatBox->createAll(System,*this,0);
-  //  heatBox->createAll(System,preFC,preSideIndex);
+  //    heatBox->createAll(System,preFC,preSideIndex);
     
   const constructSystem::portItem& PIA=heatBox->getPort(0);
   const constructSystem::portItem& PIB=heatBox->getPort(1);
@@ -431,7 +430,6 @@ R3FrontEnd::buildApertureTable(Simulation& System,
   return;
 }
 
-  
 void
 R3FrontEnd::buildShutterTable(Simulation& System,
 				   const attachSystem::FixedComp& preFC,

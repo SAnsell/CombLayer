@@ -63,12 +63,8 @@ class PipeTube :
   virtual ~PipeTube();
 
   using VirtualTube::createPorts;
-  void createPorts(Simulation&);
-
-  using FixedComp::createAll;
-  virtual void createAll(Simulation&,
-			 const attachSystem::FixedComp&,
-			 const long int);
+  virtual void createPorts(Simulation&);
+  
 };
 
 }

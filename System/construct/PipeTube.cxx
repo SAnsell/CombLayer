@@ -337,7 +337,8 @@ PipeTube::createLinks()
 void
 PipeTube::createPorts(Simulation& System)
   /*!
-    create the ports [for outside ports]
+    Create the ports [for outside ports]
+    \param System :: Simulation for model
    */
 {
   ELog::RegMethod RegA("PipeTube","createPorts");
@@ -355,32 +356,7 @@ PipeTube::createPorts(Simulation& System)
     }
   else
     createPorts(System,OPtr,innerSurf,outerSurf);
-  insertObjects(System);
 }
-
-void
-PipeTube::createAll(Simulation& System,
-		    const attachSystem::FixedComp& FC,
-		    const long int FIndex)
-  /*!
-    Generic function to create everything
-    \param System :: Simulation item
-    \param FC :: FixedComp
-    \param FIndex :: Fixed Index
-  */
-{
-  ELog::RegMethod RegA("PipeTube","createAll(FC)");
-
-  populate(System.getDataBase());
-  createUnitVector(FC,FIndex);
-  createSurfaces();
-  createObjects(System);
-  createLinks();
-  createPorts(System);
-    
-  return;
-}
-  
 
   
   

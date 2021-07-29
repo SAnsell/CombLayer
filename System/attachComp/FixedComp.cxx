@@ -1532,6 +1532,21 @@ FixedComp::getAllLinkPts() const
 }
 
 double
+FixedComp::getLinkDistance(const std::string& AName,
+                           const std::string& BName) const
+  /*!
+    Accessor to the distance between link points
+    \param AName :: Link name 
+    \param BName :: link name
+    \return Distance between points
+  */
+{
+  ELog::RegMethod RegA("FixedComp","getLinkDistance(s,s):"+keyName);
+
+  return getLinkDistance(getSideIndex(AName),getSideIndex(BName));
+}
+
+double
 FixedComp::getLinkDistance(const long int AIndex,
                            const long int BIndex) const
   /*!
