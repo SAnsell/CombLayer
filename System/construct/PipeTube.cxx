@@ -169,7 +169,7 @@ PipeTube::createSurfaces()
   return;
 }
 
-std::string
+HeadRule
 PipeTube::makeOuterVoid(Simulation& System)
   /*!
     Build outer void and return the outer volume
@@ -179,9 +179,9 @@ PipeTube::makeOuterVoid(Simulation& System)
 {
   ELog::RegMethod RegA("PipeTube","makeOuterVoid");
   
-  std::string Out;
-  const std::string frontSurf(frontRule());
-  const std::string backSurf(backRule());
+  HeadRule HR;
+  const HeadRule frontHR(frontRule());
+  const HeadRule backHR(backRule());
 
   if (flangeARadius>flangeBRadius+Geometry::zeroTol)
     {
@@ -193,12 +193,12 @@ PipeTube::makeOuterVoid(Simulation& System)
     }
   else
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 17 -107 101 -102 ");
-      makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
-      Out=ModelSupport::getComposite(SMap,buildIndex,"  -107 ")+
-	frontSurf+backSurf;
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"17 -107 101 -102");
+      makeCell("OuterVoid",System,cellIndex++,0,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-107")*
+	frontHR*backHR;
     }
-  return Out;
+  return HR;
 }
 
 void
@@ -210,60 +210,60 @@ PipeTube::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("PipeTube","createObjects");
 
-  const std::string frontSurf(frontRule());
-  const std::string backSurf(backRule());
+  const HeadRule frontHR=getFrontRule();
+  const HeadRule backHR=getBackRule();
 
-  const std::string frontVoidSurf=
-    (flangeACapThick<Geometry::zeroTol) ? frontSurf :
-    ModelSupport::getComposite(SMap,buildIndex," 201 ");
-  const std::string backVoidSurf=
-    (flangeBCapThick<Geometry::zeroTol) ? backSurf :
-    ModelSupport::getComposite(SMap,buildIndex," -202 ");
+  const HeadRule frontVoidHR=
+    (flangeACapThick<Geometry::zeroTol) ? frontHR :
+    ModelSupport::getHeadRule(SMap,buildIndex,"201");
+  const HeadRule backVoidHR=
+    (flangeBCapThick<Geometry::zeroTol) ? backHR :
+    ModelSupport::getHeadRule(SMap,buildIndex,"-202");
   
   
-  std::string Out;
-  
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+
-	   frontVoidSurf+backVoidSurf);
+  HeadRule HR;
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -7 ");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,
+	   HR*frontVoidHR*backVoidHR);
   // main walls
-  Out=ModelSupport::getComposite(SMap,buildIndex," -17 7 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -17 7 ");
   makeCell("MainTube",System,cellIndex++,wallMat,0.0,
-	   Out+frontVoidSurf+backVoidSurf);
+	   HR*frontVoidHR*backVoidHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 17 -107 -101 ");
-  makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,Out+frontVoidSurf);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 17 -107 -101 ");
+  makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,HR*frontVoidHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 17 -207 102 ");
-  makeCell("BackFlange",System,cellIndex++,wallMat,0.0,Out+backVoidSurf);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 17 -207 102 ");
+  makeCell("BackFlange",System,cellIndex++,wallMat,0.0,HR*backVoidHR);
 
   if (flangeACapThick>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," -201 -107 ");
-      makeCell("FrontCap",System,cellIndex++,capMat,0.0,Out+frontSurf);	    
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," -201 -107 ");
+      makeCell("FrontCap",System,cellIndex++,capMat,0.0,HR*frontHR);	    
     }
   
   if (flangeBCapThick>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 202 -207 ");
-      makeCell("BackCap",System,cellIndex++,capMat,0.0,Out+backSurf);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"202 -207");
+      makeCell("BackCap",System,cellIndex++,capMat,0.0,HR*backHR);
     }
 
   if (outerVoid)
     {
-      Out=makeOuterVoid(System);
-      addOuterSurf("Main",Out);
+      HR=makeOuterVoid(System);
+      addOuterSurf("Main",HR);
     }
   else
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 -17 ");
-      addOuterSurf("Main",Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 -17");
+      addOuterSurf("Main",HR);
       
-      Out=ModelSupport::getComposite(SMap,buildIndex," -107 -101 ");
-      addOuterSurf("FlangeA",Out+frontSurf);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-107 -101");
+      addOuterSurf("FlangeA",HR*frontHR);
       
-      Out=ModelSupport::getComposite(SMap,buildIndex," -207 102 ");
-      addOuterSurf("FlangeB",Out+backSurf);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-207 102");
+      addOuterSurf("FlangeB",HR*backHR);
     }
   return;
 }

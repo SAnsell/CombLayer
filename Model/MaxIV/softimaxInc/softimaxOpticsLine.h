@@ -24,12 +24,12 @@
 
 namespace constructSystem
 {
-  class BiPortTube;
   class JawValveTube;
 }
 
 namespace xraySystem
 {
+  class BiPortTube;
   class BlockStand;
   class Mirror;
   class BeamPair;
@@ -149,7 +149,7 @@ class softimaxOpticsLine :
   std::shared_ptr<xraySystem::TwinPipe> splitter;
   std::shared_ptr<constructSystem::Bellows> bellowAA;
   std::shared_ptr<constructSystem::Bellows> bellowBA;
-  std::shared_ptr<constructSystem::PipeTube> M3Pump;
+  std::shared_ptr<xraySystem::BiPortTube> M3Pump;
 
   // Left branch STXM
   std::shared_ptr<constructSystem::Bellows> bellowAB;

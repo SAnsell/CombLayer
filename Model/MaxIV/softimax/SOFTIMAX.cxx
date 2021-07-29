@@ -148,7 +148,6 @@ SOFTIMAX::build(Simulation& System,
   joinPipe->addInsertCell("Main",wallLead->getCell("Void"));
   joinPipe->createAll(System,*frontBeam,2);
 
-
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
   opticsBeam->setCutSurf("front",*opticsHut,
 			 opticsHut->getSideIndex("innerFront"));
@@ -161,9 +160,9 @@ SOFTIMAX::build(Simulation& System,
 
 
   return;
-    std::vector<int> cells(opticsHut->getCells("BackWall"));
-   cells.emplace_back(opticsHut->getCell("Extension"));
-
+  std::vector<int> cells(opticsHut->getCells("BackWall"));
+  cells.emplace_back(opticsHut->getCell("Extension"));
+  
   return;
   opticsBeam->buildOutGoingPipes(System,opticsBeam->getCell("LeftVoid"),
 				 opticsBeam->getCell("RightVoid"),

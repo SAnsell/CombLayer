@@ -455,7 +455,14 @@ SurfMap::makeCylinder(const std::string& Key,
   ELog::RegMethod RegA("SurfMap","makeCylinder");
 
   ModelSupport::buildCylinder(SMap,N,O,A,R);
-  setSurf(Key,SMap.realSurf(N));
+
+  if (!Key.empty())
+    {
+      if (Key[0]!='#' && Key[0]!='-')
+	addSurf(Key,SMap.realSurf(N));
+      else
+	addSurf(Key.substr(1),-SMap.realSurf(N));
+    }
   return;
 }
 

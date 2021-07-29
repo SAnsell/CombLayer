@@ -46,6 +46,7 @@
 #include "PipeGenerator.h"
 #include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
+#include "BiPortGenerator.h"
 #include "BremCollGenerator.h"
 #include "BremOpticsCollGenerator.h"
 #include "BremMonoCollGenerator.h"
@@ -104,9 +105,8 @@ undulatorVariables(FuncDataBase& Control,
   PipeGen.setMat("Aluminium");
   PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF63>();
-  PipeGen.generatePipe(Control,undKey+"UPipe",
-		       undulatorPipeLen);
-  Control.addVariable("UPipeYStep",-undulatorPipeLen/2.0);
+  PipeGen.generatePipe(Control,undKey+"UPipe",undulatorPipeLen);
+  Control.addVariable(undKey+"UPipeYStep",-undulatorPipeLen/2.0);
 
   Control.addVariable(undKey+"UPipeWidth",6.0);
   Control.addVariable(undKey+"UPipeHeight",0.6);
@@ -128,6 +128,7 @@ undulatorVariables(FuncDataBase& Control,
   Control.addVariable(undKey+"UndulatorSupportMat","Copper");
   Control.addVariable(undKey+"UndulatorStandMat","Aluminium");
 
+  Control.addVariable(undKey+"UndulatorFlipX",1); 
   return;
 }
 
@@ -379,6 +380,7 @@ splitterVariables(FuncDataBase& Control,
   setVariable::PipeShieldGenerator ShieldGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::CollGenerator CollGen;
+  setVariable::BiPortGenerator BPGen;
 
 
   constexpr double splitAngle(2.0);
@@ -405,32 +407,11 @@ splitterVariables(FuncDataBase& Control,
 
 
   const std::string m3PumpName=splitKey+"M3Pump";
+  
   ELog::EM << "M3Pump: Close the caps" << ELog::endWarn;
-  SimpleTubeGen.setCF<CF200>();
-  SimpleTubeGen.setPipe(7.7, 0.3, 10.0, 2.0);
-  SimpleTubeGen.generateTube(Control,m3PumpName,36.0);  // centre 13.5cm
-  //  Control.addVariable(mName+"XStep",centreOffset);
-  Control.addVariable(m3PumpName+"NPorts",4);   // beam ports
 
-  const Geometry::Vec3D ZVec(0,0,1);
-  constexpr double port0Length(5.95);
-  PItemGen.setCF<setVariable::CF50>(CF200::outerRadius+port0Length);
-  PItemGen.setPlate(0.0,"Void");
-  PItemGen.generatePort(Control,m3PumpName+"Port0",Geometry::Vec3D(-5.02,0,0),ZVec);
-
-  const Geometry::Vec3D ZVec2(-sin(splitAngle*2*M_PI/180),0,cos(splitAngle*2*M_PI/180));
-  PItemGen.setCF<setVariable::CF50>
-    (CF200::outerRadius+port0Length*cos(splitAngle*4*M_PI/180)+0.03);
-  PItemGen.setPlate(0.0,"Void");
-  PItemGen.generatePort(Control,m3PumpName+"Port1",Geometry::Vec3D(5.02,0,0),ZVec2);
-
-  PItemGen.setCF<setVariable::CF40>(CF200::outerRadius+4.95);
-  PItemGen.setPlate(0.0,"Void");
-  PItemGen.generatePort(Control,m3PumpName+"Port2",Geometry::Vec3D(-4,0,0),-ZVec);
-
-  PItemGen.setCF<setVariable::CF40>(CF200::outerRadius+4.95);
-  PItemGen.setPlate(0.0,"Void");
-  PItemGen.generatePort(Control,m3PumpName+"Port3",Geometry::Vec3D(4,0,0),-ZVec2);
+  BPGen.setCF<CF200>(36.0);
+  BPGen.generateBPort(Control,m3PumpName,36.0);  // centre 13.5cm
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,splitKey+"BellowAB",15.5);
