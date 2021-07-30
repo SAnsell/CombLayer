@@ -144,7 +144,11 @@ FORMAX::build(Simulation& System,
   wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));    
   wallLead->createAll(System,FCOrigin,sideIndex);
 
-  if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
+  
+  if (stopPoint=="frontEnd" || stopPoint=="Dipole"
+      || stopPoint=="FM1" || stopPoint=="FM2")
+    return;
+  
 
   buildOpticsHutch(System,opticsHut,PIndex,exitLink);
 

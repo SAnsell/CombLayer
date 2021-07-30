@@ -394,7 +394,7 @@ Simulation::removeDeadSurfaces()
   
   // Create elimination list:
   std::vector<int> Dead;
-        
+
   std::map<int,Geometry::Surface*>::const_iterator sc;
   for(sc=SurMap.begin();sc!=SurMap.end();sc++)
     {

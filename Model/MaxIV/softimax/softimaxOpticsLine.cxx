@@ -603,7 +603,6 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
   splitter->insertAllInCell(System,outerCell);
   bellowBA->insertInCell(System,outerCell);
 
-
   M3Pump->setLeftPort(*bellowAA,"back");
   M3Pump->setRightPort(*bellowBA,"back");
   M3Pump->createAll(System,initFC,sideIndex);

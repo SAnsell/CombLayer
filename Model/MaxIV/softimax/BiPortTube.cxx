@@ -106,9 +106,10 @@ BiPortTube::setLeftPort(const attachSystem::FixedComp& FC,
 			const long int sideIndex)
   /*!
     Simple copy
+    \param FC :: Fixed Comp to get left port from
    */
 {
-  /// Side MUST be defined:
+  // Side MUST be defined:
   setLinkCopy(2,FC,sideIndex);
   return;
 }
@@ -262,6 +263,10 @@ BiPortTube::createSurfaces()
     (SMap,buildIndex+3017,beamAPt,beamAAxis,outPortRadius+outWallThick);
   ModelSupport::buildCylinder
     (SMap,buildIndex+4017,beamBPt,beamBAxis,outPortRadius+outWallThick);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+3027,beamAPt,beamAAxis,outFlangeRadius);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+4027,beamBPt,beamBAxis,outFlangeRadius);
 
   // calculate exit point:
 
@@ -302,10 +307,12 @@ BiPortTube::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -7");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 7 -17");
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"5 -6 7 -17 (100:(1007 2007)) (-100:(3007 4007))");
   makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"105 -106 17 -27");
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"105 -106 17 -27 (100:(1017 2017)) (-100:(3017 4017))");
   makeCell("OuterWall",System,cellIndex++,0,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-105 5 -27 17");
@@ -315,7 +322,7 @@ BiPortTube::createObjects(Simulation& System)
   makeCell("TopFlange",System,cellIndex++,wallMat,0.0,HR);
 
   // Front Ports
-  return;
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 7 -1007");
   makeCell("AVoid",System,cellIndex++,voidMat,0.0,HR*aHR);
 
@@ -332,13 +339,44 @@ BiPortTube::createObjects(Simulation& System)
   makeCell("AFlange",System,cellIndex++,wallMat,0.0,HR*aHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2027 2017 -2011");
-  makeCell("AFlange",System,cellIndex++,wallMat,0.0,HR*bHR);
+  makeCell("BFlange",System,cellIndex++,wallMat,0.0,HR*bHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 17 -1027 1017 1011");
-  makeCell("AOuter",System,cellIndex++,wallMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 27 -1027 1017 1011");
+  makeCell("AOuter",System,cellIndex++,0,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 17 -2027 2017 2011");
-  makeCell("BOuter",System,cellIndex++,wallMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 27 -2027 2017 2011");
+  makeCell("BOuter",System,cellIndex++,0,0.0,HR);
+
+  
+  //   Back Ports
+  // --------------
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 7 -3007 -3002");
+  makeCell("CVoid",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 7 -4007 -4002");
+  makeCell("DVoid",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 17 -3017 3007 -3002");
+  makeCell("CWall",System,cellIndex++,wallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 17 -4017 4007 -4002");
+  makeCell("DWall",System,cellIndex++,wallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-3027 3017 3012 -3002");
+  makeCell("CFlange",System,cellIndex++,wallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-4027 4017 4012 -4002");
+  makeCell("DFlange",System,cellIndex++,wallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 27 -3027 3017 -3012");
+  makeCell("COuter",System,cellIndex++,0,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 27 -4027 4017 -4012");
+  makeCell("DOuter",System,cellIndex++,0,0.0,HR);
+
+
+  // EXTERIOR
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 -1027");
   addOuterSurf("Left",HR*aHR);
@@ -360,8 +398,23 @@ BiPortTube::createLinks()
   */
 {
   ELog::RegMethod RegA("BiPortTube","createLinks");
-  
 
+  // front back set to mid point:
+  const Geometry::Vec3D beamAPt(getLinkPt("FrontA"));
+  const Geometry::Vec3D beamBPt(getLinkPt("FrontB"));
+  const Geometry::Vec3D beamAAxis(getLinkAxis("FrontA"));  
+  const Geometry::Vec3D beamBAxis(getLinkAxis("FrontB"));
+
+  FixedComp::setConnect(0,(beamAPt+beamBPt)/2.0,(beamAAxis+beamBAxis)/2.0);
+
+  const Geometry::Vec3D beamCPt=
+    SurInter::getLinePoint(beamAPt,beamAAxis,buildIndex+3002,Origin+Y*radius);
+  const Geometry::Vec3D beamDPt=
+    SurInter::getLinePoint(beamBPt,beamBAxis,buildIndex+3002,Origin+Y*radius);
+
+  //  FixedComp::setConnect(1,(beamAPt+beamBPt)/2.0,-(beamAAxis+beamBAxis)/2.0);
+  
+  
 
   return;
 }
@@ -379,7 +432,7 @@ BiPortTube::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("BiPortTube","createAll(FC)");
-  return;
+
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);
   createSurfaces();
