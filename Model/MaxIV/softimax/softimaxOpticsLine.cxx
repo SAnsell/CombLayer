@@ -606,7 +606,10 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
   M3Pump->setLeftPort(*bellowAA,"back");
   M3Pump->setRightPort(*bellowBA,"back");
   M3Pump->createAll(System,initFC,sideIndex);
-
+  outerCell=IZLeft.createUnit(System,*M3Pump,"outA");
+  M3Pump->insertInCell("Left",System,outerCell);
+  outerCell=IZRight.createUnit(System,*M3Pump,"outB");
+  M3Pump->insertInCell("Right",System,outerCell);
   
   return;
 

@@ -58,7 +58,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -72,7 +72,7 @@ namespace constructSystem
 
 boltRing::boltRing(const std::string& BKey,
 		   const std::string& PKey) :
-  attachSystem::FixedOffset(BKey+PKey,6),
+  attachSystem::FixedRotate(BKey+PKey,6),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   attachSystem::FrontBackCut(),
@@ -87,7 +87,7 @@ boltRing::boltRing(const std::string& BKey,
 {}
 
 boltRing::boltRing(const boltRing& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedRotate(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
   baseName(A.baseName),
@@ -113,7 +113,7 @@ boltRing::operator=(const boltRing& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
@@ -207,7 +207,7 @@ boltRing::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("boltRing","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   if (!(populated & 1))
     {
       const size_t NB=
@@ -252,25 +252,6 @@ boltRing::populate(const FuncDataBase& Control)
   return;
 }
 
-  
-void
-boltRing::createUnitVector(const attachSystem::FixedComp& FC,
-                              const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("boltRing","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
-  return;
-}
-
-
 void
 boltRing::createSurfaces()
   /*!
@@ -287,7 +268,6 @@ boltRing::createSurfaces()
   addSurf("outerRing",SMap.realSurf(buildIndex+17));
   if (!frontActive())
     {
-      ELog::EM<<"F == "<<ELog::endDiag;
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(thick/2.0),Y);
       setFront(SMap.realSurf(buildIndex+1));
     }
@@ -328,7 +308,6 @@ boltRing::createSurfaces()
           boltIndex+=10;
         }
     }
-
 	  
   if (sealRadius>innerRadius && sealRadius>Geometry::zeroTol)
     {
@@ -341,8 +320,10 @@ boltRing::createSurfaces()
       ModelSupport::buildCylinder(SMap,buildIndex+1007,Origin,Y,sealRadius);
       ModelSupport::buildCylinder(SMap,buildIndex+1017,Origin,Y,
 				  sealRadius+sealThick);      
-      ModelSupport::buildPlane(SMap,buildIndex+1001,MidPt-MidAxis*sealDepth,MidAxis);
-      ModelSupport::buildPlane(SMap,buildIndex+1002,MidPt+MidAxis*sealDepth,MidAxis);
+      ModelSupport::buildPlane(SMap,buildIndex+1001,
+			       MidPt-MidAxis*sealDepth,MidAxis);
+      ModelSupport::buildPlane(SMap,buildIndex+1002,
+			       MidPt+MidAxis*sealDepth,MidAxis);
     }
     
   
@@ -358,44 +339,37 @@ boltRing::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("boltRing","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
   const bool sealFlag(sealRadius>innerRadius);
-  std::string sealUnit,sealUnitComp;
+
+  HeadRule sealUnit;
   if (sealFlag)
-    {
-      sealUnit=ModelSupport::getComposite(SMap,buildIndex,
-					  " 1001 -1002 1007 -1017 ");
-      const HeadRule SComp(sealUnit);
-      sealUnitComp=SComp.complement().display();
-    }
+    sealUnit=ModelSupport::getHeadRule
+      (SMap,buildIndex,"1001 -1002 1007 -1017");
   
   int boltIndex(buildIndex+100);
   int prevBoltIndex(boltIndex+static_cast<int>(10*NBolts)-10);
-  const std::string EdgeStr=
-    ModelSupport::getComposite(SMap,buildIndex," 7 -17 ");
-  const std::string FBStr=frontRule()+backRule();
+  const HeadRule EdgeHR=
+    ModelSupport::getHeadRule(SMap,buildIndex," 7 -17 ");
+  const HeadRule frontBackHR=getFrontRule()*getBackRule();
 
   for(size_t i=0;i<NBolts;i++)
     {
-      Out=ModelSupport::getComposite(SMap,boltIndex," -7 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,boltMat,0.0,Out+FBStr));
-      addCell("Bolts",cellIndex-1);
+      HR=ModelSupport::getHeadRule(SMap,boltIndex,"-7");
+      makeCell("Bolts",System,cellIndex++,boltMat,0.0,HR*frontBackHR);
       
-      Out=ModelSupport::getComposite
+      HR=ModelSupport::getHeadRule
 	(SMap,prevBoltIndex,boltIndex," 3 -3M 7M ");
           
-      System.addCell(MonteCarlo::Object(cellIndex++,mainMat,0.0,
-				       Out+FBStr+EdgeStr+sealUnitComp));
-      addCell("Ring",cellIndex-1);
+      makeCell("Ring",System,cellIndex++,mainMat,0.0,
+	       HR*frontBackHR+EdgeHR*sealUnit.complement());
       
       if (sealFlag)
 	{
-	  Out=ModelSupport::getComposite
-	    (SMap,prevBoltIndex,boltIndex," 3 -3M ");
-	  System.addCell(MonteCarlo::Object
-			 (cellIndex++,sealMat,0.0,Out+sealUnit));
-	  addCell("Seal",cellIndex-1);
+	  HR=ModelSupport::getHeadRule
+	    (SMap,prevBoltIndex,boltIndex,"3 -3M");
+	  makeCell("Seal",System,cellIndex++,sealMat,0.0,HR*sealUnit);
 	}
       prevBoltIndex=boltIndex;
       boltIndex+=10;
@@ -403,23 +377,19 @@ boltRing::createObjects(Simulation& System)
 
   if (!NBolts)
     {
-      System.addCell(MonteCarlo::Object
-		     (cellIndex++,mainMat,0.0,FBStr+EdgeStr+sealUnitComp));
-      addCell("Ring",cellIndex-1);
+      makeCell("Ring",System,cellIndex++,mainMat,0.0,
+	       frontBackHR*EdgeHR*sealUnit.complement());
       if (sealFlag)
-	{
-	  System.addCell(MonteCarlo::Object(cellIndex++,sealMat,0.0,sealUnit));
-	  addCell("Seal",cellIndex-1);
-	}
+	makeCell("Seal",System,cellIndex++,sealMat,0.0,sealUnit);
     }
 
   if (innerExclude)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," -17 ");      
-      addOuterSurf(Out+FBStr);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," -17 ");      
+      addOuterSurf(HR*frontBackHR);
     }
   else
-    addOuterSurf(EdgeStr+FBStr);
+    addOuterSurf(EdgeHR*frontBackHR);
   
   return;
 }

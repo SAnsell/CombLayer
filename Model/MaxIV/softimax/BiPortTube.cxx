@@ -105,8 +105,9 @@ void
 BiPortTube::setLeftPort(const attachSystem::FixedComp& FC,
 			const long int sideIndex)
   /*!
-    Simple copy
+    Simple copy for left inlet port
     \param FC :: Fixed Comp to get left port from
+    \param sideIndex :: Link point set set
    */
 {
   // Side MUST be defined:
@@ -118,7 +119,9 @@ void
 BiPortTube::setRightPort(const attachSystem::FixedComp& FC,
 			const long int sideIndex)
   /*!
-    Simple copy
+    Simple copy for right inlet port 
+    \param FC :: Fixed Comp to get left port from
+    \param sideIndex :: Link point set 
   */
 {
   setLinkCopy(3,FC,sideIndex);
@@ -129,7 +132,9 @@ void
 BiPortTube::setLeftPort(const attachSystem::FixedComp& FC,
 			const std::string& sideName)
   /*!
-    Simple copy
+    Simple copy for left inlet port 
+    \param FC :: Fixed Comp to get left port from
+    \param sideName :: Link point set 
    */
 {
   setLinkCopy(2,FC,sideName);
@@ -140,7 +145,9 @@ void
 BiPortTube::setRightPort(const attachSystem::FixedComp& FC,
 			 const std::string& sideName)
   /*!
-    Simple copy
+    Simple copy for left inlet port 
+    \param FC :: Fixed Comp to get left port from
+    \param sideName :: Link point set 
    */
 {
   setLinkCopy(3,FC,sideName);
@@ -384,6 +391,12 @@ BiPortTube::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 -2027");
   addOuterSurf("Right",HR*bHR);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 -3027 -3002");
+  addOuterUnionSurf("Left",HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 -4027 -4002");
+  addOuterUnionSurf("Right",HR);
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27  5 -6");
   addOuterUnionSurf("Left",HR);
   addOuterUnionSurf("Right",HR);
@@ -394,7 +407,7 @@ BiPortTube::createObjects(Simulation& System)
 void
 BiPortTube::createLinks()
   /*!
-
+    Create the linkes
   */
 {
   ELog::RegMethod RegA("BiPortTube","createLinks");
@@ -406,12 +419,31 @@ BiPortTube::createLinks()
   const Geometry::Vec3D beamBAxis(getLinkAxis("FrontB"));
 
   FixedComp::setConnect(0,(beamAPt+beamBPt)/2.0,(beamAAxis+beamBAxis)/2.0);
-
+  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+17));
+  
+  
   const Geometry::Vec3D beamCPt=
     SurInter::getLinePoint(beamAPt,beamAAxis,buildIndex+3002,Origin+Y*radius);
   const Geometry::Vec3D beamDPt=
-    SurInter::getLinePoint(beamBPt,beamBAxis,buildIndex+3002,Origin+Y*radius);
+    SurInter::getLinePoint(beamBPt,beamBAxis,buildIndex+4002,Origin+Y*radius);
 
+  FixedComp::setConnect(1,(beamCPt+beamDPt)/2.0,-(beamAAxis+beamBAxis)/2.0);
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+17));  
+
+  // set link points to front/back begin/exit ports
+
+  ExternalCut::createLink("frontA",*this,2,beamAPt,beamAAxis);
+  ExternalCut::createLink("frontB",*this,3,beamBPt,beamBAxis);
+
+  FixedComp::setConnect(4,beamCPt,beamAAxis);
+  FixedComp::setNamedLinkSurf(4,"outA",SMap.realSurf(buildIndex+3002));  
+
+
+  FixedComp::setConnect(5,beamDPt,beamBAxis);
+  FixedComp::setNamedLinkSurf(5,"outB",SMap.realSurf(buildIndex+4002));  
+  
+
+  
   //  FixedComp::setConnect(1,(beamAPt+beamBPt)/2.0,-(beamAAxis+beamBAxis)/2.0);
   
   

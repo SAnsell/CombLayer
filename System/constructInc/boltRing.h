@@ -3,7 +3,7 @@
  
  * File:   constructInc/boltRing.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ namespace constructSystem
 */
 
 class boltRing :
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
   public attachSystem::SurfMap,
@@ -70,7 +70,6 @@ class boltRing :
   int sealMat;                  ///< Seal material
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -85,9 +84,11 @@ class boltRing :
   void setDimensions(const size_t,const double,const double,
 		     const double,const double,const double);
   void setMaterials(const std::string&,const std::string&);
-  /// set Void
+
+  /// allow unfilled inner region
   void setInnerExclude() { innerExclude=1; }
-  
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
