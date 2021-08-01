@@ -573,9 +573,7 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
   
   IZLeft=buildZone;
   IZRight=buildZone;
-  IZLeft.setFront(buildZone.getBack());
-  IZRight.setFront(buildZone.getBack());
-
+  
   // build mid plane
 
   const Geometry::Vec3D DPoint(initFC.getLinkPt(sideIndex));
@@ -586,23 +584,29 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
 
   HeadRule HSurroundA=buildZone.getSurround();
   HeadRule HSurroundB=buildZone.getSurround();
-
+  ELog::EM<<"HR == "<<HSurroundB<<ELog::endDiag;
   HSurroundA.removeMatchedPlanes(-X,0.9);   // remove left/right
   HSurroundB.removeMatchedPlanes(X,0.9);
 
   HSurroundA.addIntersection(-SMap.realSurf(buildIndex+5003));
   HSurroundB.addIntersection(SMap.realSurf(buildIndex+5003));
 
+  
   IZLeft.setSurround(HSurroundA);
   IZRight.setSurround(HSurroundB);
-
+  IZLeft.setFront(initFC.getFullRule(sideIndex));
+  IZRight.setFront(initFC.getFullRule(sideIndex));
+  IZLeft.clearInsertCells();
+  IZRight.clearInsertCells();
+  
   outerCell=IZLeft.createUnit(System,*bellowAA,"back");
   splitter->insertAllInCell(System,outerCell);
   bellowAA->insertInCell(System,outerCell);
   outerCell=IZRight.createUnit(System,*bellowBA,"back");
+
   splitter->insertAllInCell(System,outerCell);
   bellowBA->insertInCell(System,outerCell);
-
+  
   M3Pump->setLeftPort(*bellowAA,"back");
   M3Pump->setRightPort(*bellowBA,"back");
   M3Pump->createAll(System,initFC,sideIndex);
@@ -610,77 +614,44 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
   M3Pump->insertInCell("Left",System,outerCell);
   outerCell=IZRight.createUnit(System,*M3Pump,"outB");
   M3Pump->insertInCell("Right",System,outerCell);
-  
-  return;
-
-  /*
-  const constructSystem::portItem& CPI2=M3Pump->getPort(2);
-  cellA=leftZone.createOuterVoidUnit
-    (System,masterCellA,CPI2,CPI2.getSideIndex("OuterPlate"));
-  const constructSystem::portItem& CPI3=M3Pump->getPort(3);
-  cellB=rightZone.createOuterVoidUnit
-    (System,masterCellB,CPI3,CPI3.getSideIndex("OuterPlate"));
-  M3Pump->insertAllInCell(System,cellA);
-  M3Pump->insertAllInCell(System,cellB);
 
 
-    
-  // now build left/ right
   // LEFT
   constructSystem::constructUnit
-    (System,leftZone,masterCellA,CPI2,"OuterPlate",*bellowAB);
-  constructSystem::constructUnit
-    (System,leftZone,masterCellA,*bellowAB,"back",*joinPipeAA);
+    (System,IZLeft,*M3Pump,"outA",*bellowAB);
 
   constructSystem::constructUnit
-    (System,leftZone,masterCellA,*joinPipeAA,"back",*bremCollAA);
+    (System,IZLeft,*bellowAB,"back",*joinPipeAA);
 
-  // constructSystem::constructUnit
-  //   (System,leftZone,masterCellA,*bremCollAA,"back",*joinPipeAB);
+  constructSystem::constructUnit
+    (System,IZLeft,*joinPipeAA,"back",*bremCollAA);
+
+  outerCell=IZLeft.createUnit(System);
+  
+  joinPipeAB->createAll(System,*bremCollAA,"back");
+  joinPipeAB->insertAllInCell(System,outerCell);
+
 
   // RIGHT
   constructSystem::constructUnit
-    (System,rightZone,masterCellB,CPI3,"OuterPlate",*bellowBB);
+    (System,IZRight,*M3Pump,"outB",*bellowBB);
 
   constructSystem::constructUnit
-    (System,rightZone,masterCellB,*bellowBB,"back",*joinPipeBA);
+    (System,IZRight,*bellowBB,"back",*joinPipeBA);
 
   constructSystem::constructUnit
-    (System,rightZone,masterCellB,*joinPipeBA,"back",*bremCollBA);
-
-  // constructSystem::constructUnit
-  //   (System,rightZone,masterCellB,*bremCollBA,"back",*joinPipeBB);
+    (System,IZRight,*joinPipeBA,"back",*bremCollBA);
 
 
-  // gateAA->createAll(System,*bellowAB,2);
-  // cellA=leftZone.createOuterVoidUnit(System,masterCellA,*gateAA,2);
-  // gateAA->insertInCell(System,cellA);
-
-  // // make build necessary
-  // pumpTubeAA->addAllInsertCell(masterCellA->getName());
-  // pumpTubeAA->createAll(System,*gateAA,2);
-  // cellA=leftZone.createOuterVoidUnit(System,masterCellA,*pumpTubeAA,2);
-  // pumpTubeAA->insertAllInCell(System,cellA);
+  outerCell=IZRight.createUnit(System);
+  
+  joinPipeBB->createAll(System,*bremCollBA,"back");
+  joinPipeBB->insertAllInCell(System,outerCell);
 
 
-  // // RIGHT
-  // bellowBB->createAll(System,*splitter,3);
-  // cellB=rightZone.createOuterVoidUnit(System,masterCellB,*bellowBB,2);
-  // bellowBB->insertInCell(System,cellB);
+  setCell("LeftVoid",IZLeft.getLastCell("Unit"));
+  setCell("RightVoid",IZRight.getLastCell("Unit"));
 
-  // gateBA->createAll(System,*bellowBB,2);
-  // cellB=rightZone.createOuterVoidUnit(System,masterCellB,*gateBA,2);
-  // gateBA->insertInCell(System,cellB);
-
-  // pumpTubeBA->addAllInsertCell(masterCellB->getName());
-  // pumpTubeBA->createAll(System,*gateBA,2);
-  // cellB=rightZone.createOuterVoidUnit(System,masterCellB,*pumpTubeBA,2);
-  // pumpTubeBA->insertAllInCell(System,cellB);
-
-  // Get last two cells
-  setCell("LeftVoid",masterCellA->getName());
-  setCell("RightVoid",masterCellB->getName());
-*/
   return;
 }
 
@@ -735,9 +706,7 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   //  const constructSystem::portItem& VP5=pumpM1->getPort(5);
   const constructSystem::portItem& VP6=pumpM1->getPort(6);
 
-  ELog::EM<<"Point == "<<VP1.getLinkPt("OuterPlate")<<ELog::endDiag;
   outerCell=buildZone.createUnit(System,VP1,"OuterPlate");
-  ELog::EM<<"Oyter Cell == "<<outerCell<<ELog::endDiag;
   pumpM1->insertAllInCell(System,outerCell);
 
   /*
@@ -883,12 +852,14 @@ softimaxOpticsLine::buildObjects(Simulation& System)
 
   buildM3STXMMirror(System,*bellowJ,"back");
    
-  //  MonteCarlo::Object* masterCellB(0);
+
+  buildZone.createUnit(System);  // build to end
+  buildZone.rebuildInsertCells(System);
+
   buildSplitter(System,*M3STXMTube,2);
+  System.removeCell(buildZone.getLastCell("Unit"));
 
-
-  //  setCell("LastVoid",masterCell->getName());
-  lastComp=bellowA; //gateJ;
+  lastComp=bellowJ;
   return;
 }
 

@@ -56,7 +56,7 @@ BiPortGenerator::BiPortGenerator() :
   length(36.0),
   flangeRadius(CF200::flangeRadius),
   flangeLength(CF200::flangeLength),
-  outLength(CF200::outerRadius+5.0),
+  outLength(5.0),
 
   inPortRadius(CF50::innerRadius),
   inWallThick(CF50::wallThick),

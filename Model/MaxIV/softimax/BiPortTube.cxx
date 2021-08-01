@@ -432,8 +432,8 @@ BiPortTube::createLinks()
 
   // set link points to front/back begin/exit ports
 
-  ExternalCut::createLink("frontA",*this,2,beamAPt,beamAAxis);
-  ExternalCut::createLink("frontB",*this,3,beamBPt,beamBAxis);
+  ExternalCut::createLink("frontA",*this,2,beamAPt,-beamAAxis);
+  ExternalCut::createLink("frontB",*this,3,beamBPt,-beamBAxis);
 
   FixedComp::setConnect(4,beamCPt,beamAAxis);
   FixedComp::setNamedLinkSurf(4,"outA",SMap.realSurf(buildIndex+3002));  

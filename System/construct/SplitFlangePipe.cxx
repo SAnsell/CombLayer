@@ -210,7 +210,6 @@ SplitFlangePipe::createUnitVector(const attachSystem::FixedComp& FC,
   applyOffset();
   // after rotation
   applyActiveFrontBack();
-
   return;
 }
 

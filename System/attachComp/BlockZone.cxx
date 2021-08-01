@@ -81,7 +81,7 @@ operator<<(std::ostream& OX,const BlockZone& A)
 BlockZone::BlockZone() :
   attachSystem::FixedComp(0,"BZtemp"),
   attachSystem::CellMap(),
-  voidMat(0),fakeCell(0)
+  voidMat(0)
   /*!
     Simple constructor
   */
@@ -90,7 +90,7 @@ BlockZone::BlockZone() :
 BlockZone::BlockZone(const std::string& key) :
   attachSystem::FixedComp(key,6),
   attachSystem::CellMap(),
-  voidMat(0),fakeCell(0)
+  voidMat(0)
   /*!
     Simple constructor
   */
@@ -101,7 +101,7 @@ BlockZone::BlockZone(const BlockZone& A) :
   attachSystem::FixedComp(A),attachSystem::CellMap(A),
   surroundHR(A.surroundHR),frontHR(A.frontHR),backHR(A.backHR),
   maxExtentHR(A.maxExtentHR),voidMat(A.voidMat),
-  fakeCell(A.fakeCell),insertCells(A.insertCells)
+  insertCells(A.insertCells)
   /*!
     Copy constructor
     \param A :: BlockZone to copy
@@ -125,7 +125,6 @@ BlockZone::operator=(const BlockZone& A)
       backHR=A.backHR;
       maxExtentHR=A.maxExtentHR;
       voidMat=A.voidMat;
-      fakeCell=A.fakeCell;
       insertCells=A.insertCells;
     }
   return *this;
@@ -309,41 +308,6 @@ BlockZone::rebuildInsertCells(Simulation& System)
   
 }
   
-void
-BlockZone::removeFakeCell(Simulation& System)
-  /*!
-    Removes the fakecell 
-    \param System :: Simulation
-   */
-{
-  ELog::RegMethod RegA("BlockZone","removeFakeCell");
-
-  
-  System.removeCell(fakeCell);
-  fakeCell=0;
-  return;
-}
-  
-int
-BlockZone::createFakeCell(Simulation& System)
-
-  /*!
-    Construct the cell from current back out to the max-Extent.
-    The cell is for rotation calc units [that should all be removed]
-    but needs a valid  tempory cell. The cell is delete as soon as
-    createUnit is called. [Essential that it is called as the emplacement
-    cell cant exists for long or after reinsertion.
-    \param System :: Simulation
-    \return cell nubmer
-  */
-{
-  ELog::RegMethod RegA("BlockZone","createFakeCell");
-
-  const HeadRule Volume=surroundHR * backHR * maxExtentHR;
-  makeCell("Fake",System,cellIndex+1001,voidMat,0.0,Volume);
-  fakeCell=cellIndex+1001;
-  return fakeCell;
-}
 
 int
 BlockZone::createUnit(Simulation& System)
@@ -355,15 +319,14 @@ BlockZone::createUnit(Simulation& System)
 {
   ELog::RegMethod RegA("BlockZone","createUnit(System)");
 
-  if (fakeCell) removeFakeCell(System);
   // alway outgoing [so use complement]
 
   // maxEXTENT is INWARDS FACING
   const HeadRule newBackFC=maxExtentHR;
   HeadRule Volume=surroundHR * backHR * newBackFC;
   makeCell("Unit",System,cellIndex++,voidMat,0.0,Volume);
-  backHR=newBackFC.complement();
 
+  backHR=newBackFC.complement();
   insertCell(System,Volume);
 
   return cellIndex-1;
@@ -398,7 +361,6 @@ BlockZone::createUnit(Simulation& System,
 {
   ELog::RegMethod RegA("BlockZone","createUnit");
 
-  if (fakeCell) removeFakeCell(System);
   // alway outgoing [so use complement]
   const HeadRule newBackFC=FC.getFullRule(sideIndex);
   HeadRule Volume=surroundHR * backHR * newBackFC.complement();

@@ -411,7 +411,7 @@ splitterVariables(FuncDataBase& Control,
   ELog::EM << "M3Pump: Close the caps" << ELog::endWarn;
 
   BPGen.setCF<CF200>(36.0);
-  BPGen.generateBPort(Control,m3PumpName,36.0);  // centre 13.5cm
+  BPGen.generateBPort(Control,m3PumpName,27.5);  // centre 13.5cm
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,splitKey+"BellowAB",15.5);
@@ -927,7 +927,8 @@ SOFTIMAXvariables(FuncDataBase& Control)
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); // CF40 was 2cm (why?)
   PipeGen.setBFlange(3.5,0.3);
-  PipeGen.generatePipe(Control,"SoftiMAXJoinPipe",158.95); // length adjusted to place M1 at 2400 from undulator centre
+  // length adjusted to place M1 at 2400 from undulator centre
+  PipeGen.generatePipe(Control,"SoftiMAXJoinPipe",123.95); 
 
   softimaxVar::opticsHutVariables(Control,"SoftiMAX");
   Control.addVariable("SoftiMAXOpticsHutVoidMat", "Void");

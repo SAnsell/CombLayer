@@ -81,7 +81,7 @@ internalUnit(Simulation& System,
   ELog::RegMethod RegA("generalConstruct[F]","internalUnit");
 
   ECut.setCutSurf("front",linkUnit,sideName);
-  FC.createAll(System,linkUnit,"back");
+  FC.createAll(System,linkUnit,sideName);
 
   const int outerCell=
     buildZone.createOuterVoidUnit(System,masterCell,FC,2);
@@ -111,9 +111,8 @@ internalGroup(Simulation& System,
   */
 {
   ELog::RegMethod RegA("generalConstruct[F]","internalGroup");
-
   ECut.setCutSurf("front",linkUnit,sideName);
-  FC.createAll(System,linkUnit,"back");
+  FC.createAll(System,linkUnit,sideName);
   const int outerCell=
     buildZone.createOuterVoidUnit(System,masterCell,FC,2);
 
@@ -158,7 +157,8 @@ internalFreeUnit(Simulation& System,
   ELog::RegMethod RegA("generalConstruct[F]","internalFreeUnit");
 
   //  ECut.setCutSurf("front",linkUnit,sideName);
-  FC.createAll(System,linkUnit,"back");
+  FC.createAll(System,linkUnit,sideName);
+
   const int outerCell=buildZone.createUnit(System,FC,2);
 
   CC.insertInCell(System,outerCell);
@@ -214,7 +214,7 @@ internalGroup(Simulation& System,
   ELog::RegMethod RegA("generalConstruct[F]","internalGroup");
 
   ECut.setCutSurf("front",linkUnit,sideName);
-  FC.createAll(System,linkUnit,"back");
+  FC.createAll(System,linkUnit,sideName);
   const int outerCell=
     buildZone.createUnit(System,FC,2);
 
@@ -249,7 +249,7 @@ internalFreeGroup(Simulation& System,
 {
   ELog::RegMethod RegA("generalConstruct[F]","internalFreeGroup");
 
-  FC.createAll(System,linkUnit,"back");
+  FC.createAll(System,linkUnit,sideName);
   const int outerCell=
     buildZone.createUnit(System,FC,2);
 
