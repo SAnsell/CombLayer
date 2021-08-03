@@ -211,7 +211,7 @@ opticsHutVariables(FuncDataBase& Control,
 
   OGen.setSkin(0.2);
   OGen.setWallPbThick(2.0,2.0,10.0);
-  OGen.setExitPoint(Geometry::Vec3D(beamMirrorShift,0,0),3.5);
+  OGen.addHole(Geometry::Vec3D(beamMirrorShift,0,0),3.5);
   OGen.generateHut(Control,hutName,999.6);
 
   Control.addVariable(hutName+"RingStepLength",840.0);

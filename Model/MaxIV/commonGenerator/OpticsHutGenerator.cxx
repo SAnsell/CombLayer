@@ -56,8 +56,7 @@ OpticsHutGenerator::OpticsHutGenerator() :
   innerThick(0.3),pbWallThick(1.6),
   pbBackThick(9.0),pbRoofThick(1.6),
   outerThick(0.3),
-  innerOutVoid(10.0),outerOutVoid(10.0),  
-  holeXStep(0.0),holeZStep(0.0),holeRadius(3.5),
+  innerOutVoid(10.0),outerOutVoid(10.0),backVoid(0.0),
   skinMat("Stainless304"),pbMat("Lead"),
   voidMat("Void")
   /*!
@@ -65,6 +64,24 @@ OpticsHutGenerator::OpticsHutGenerator() :
   */
 {}
 
+void
+OpticsHutGenerator::addHole(const Geometry::Vec3D& HO,
+			    const double R)
+  /*!
+    Add an additional hole to the back wall
+    \param HO :: Offset relative to electron beam
+    \param R :: Radius [inner]
+   */
+{
+  if (R>Geometry::zeroTol)
+    {
+      holeOffset.push_back(HO);
+      holeRadius.push_back(R);
+    }
+  return;
+}
+  
+  
 void
 OpticsHutGenerator::setWallPbThick(const double mainT,
 				 const double roofT,
@@ -82,20 +99,6 @@ OpticsHutGenerator::setWallPbThick(const double mainT,
   return;
 }
   
-void
-OpticsHutGenerator::setExitPoint(const Geometry::Vec3D& exitPt,
-				 const double HR)
-  /*!
-    Simple setter
-    \param exitPoint :: Point for offset
-    \param HR :: hole radius
-   */
-{
-  holeXStep=exitPt.X();
-  holeZStep=exitPt.Z();
-  holeRadius=HR;
-  return;
-}
   
 void
 OpticsHutGenerator::generateHut(FuncDataBase& Control,
@@ -121,10 +124,15 @@ OpticsHutGenerator::generateHut(FuncDataBase& Control,
   Control.addVariable(keyName+"OuterThick",outerThick);
   Control.addVariable(keyName+"InnerOutVoid",innerOutVoid);
   Control.addVariable(keyName+"OuterOutVoid",outerOutVoid);
+  Control.addVariable(keyName+"BackVoid",backVoid);
 
-  Control.addVariable(keyName+"HoleXStep",holeXStep);
-  Control.addVariable(keyName+"HoleZStep",holeZStep);
-  Control.addVariable(keyName+"HoleRadius",holeRadius);
+  for(size_t i=0;i<holeRadius.size();i++)
+    {
+      const std::string iStr("Hole"+std::to_string(i)); 
+      Control.addVariable(keyName+iStr+"XStep",holeOffset[i].X());
+      Control.addVariable(keyName+iStr+"ZStep",holeOffset[i].Z());
+      Control.addVariable(keyName+iStr+"Radius",holeRadius[i]);
+    }
 
   Control.addVariable(keyName+"SkinMat",skinMat);
   Control.addVariable(keyName+"PbMat",pbMat);

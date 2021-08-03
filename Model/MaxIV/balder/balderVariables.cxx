@@ -171,7 +171,7 @@ opticsHutVariables(FuncDataBase& Control,
 
   OpticsHutGenerator OGen; 
 
-  OGen.setExitPoint(Geometry::Vec3D(0,0,4.0),3.5);
+  OGen.addHole(Geometry::Vec3D(0,0,4.0),3.5);
   OGen.generateHut(Control,hutName,1034.0);
 
 

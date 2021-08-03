@@ -111,13 +111,27 @@ OpticsHutch::populate(const FuncDataBase& Control)
   
   innerOutVoid=Control.EvalDefVar<double>(keyName+"InnerOutVoid",0.0);
   outerOutVoid=Control.EvalDefVar<double>(keyName+"OuterOutVoid",0.0);
-  
-  holeXStep=Control.EvalVar<double>(keyName+"HoleXStep");
-  holeZStep=Control.EvalVar<double>(keyName+"HoleZStep");
-  holeRadius=Control.EvalVar<double>(keyName+"HoleRadius");
+  backVoid=Control.EvalDefVar<double>(keyName+"BackVoid",0.0);
 
-  
-  //  beamTubeRadius=Control.EvalVar<double>(keyName+"BeamTubeRadius");
+  double holeRad(0.0);
+  size_t holeIndex(0);
+  do
+    {
+      const std::string iStr("Hole"+std::to_string(holeIndex));
+      const double holeXStep=
+	Control.EvalDefVar<double>(keyName+iStr+"XStep",0.0);
+      const double holeZStep=
+	Control.EvalDefVar<double>(keyName+iStr+"ZStep",0.0);
+      holeRad=
+	Control.EvalDefVar<double>(keyName+iStr+"Radius",-1.0);
+
+      if (holeRad>Geometry::zeroTol)
+	{
+	  holeOffset.push_back(Geometry::Vec3D(holeXStep,0.0,holeZStep));
+	  holeRadius.push_back(holeRad);
+	  holeIndex++;
+	}
+    } while(holeRad>Geometry::zeroTol);
 
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
   pbMat=ModelSupport::EvalMat<int>(Control,keyName+"PbMat");
@@ -175,9 +189,17 @@ OpticsHutch::createSurfaces()
   SurfMap::makePlane("roof",SMap,buildIndex+36,
 		     Origin+Z*(height+steelThick+pbRoofThick),Z);
 
-  if (holeRadius>Geometry::zeroTol)
-    ModelSupport::buildCylinder
-      (SMap,buildIndex+107,Origin+X*holeXStep+Z*holeZStep,Y,holeRadius);
+  if (backVoid>Geometry::zeroTol)
+    SurfMap::makePlane("backVoid",SMap,buildIndex+42,
+		       Origin+Y*(length+steelThick+pbBackThick+backVoid),Y);
+
+  int BI(buildIndex);
+  for(size_t i=0;i<holeRadius.size();i++)
+    {
+      const Geometry::Vec3D HPt(holeOffset[i].getInBasis(X,Y,Z));
+      ModelSupport::buildCylinder(SMap,BI+107,Origin+HPt,Y,holeRadius[i]);
+      BI+=100;
+    }
 
   // extra for chicanes
   if (outerOutVoid>Geometry::zeroTol)
@@ -207,6 +229,14 @@ OpticsHutch::createObjects(Simulation& System)
   const HeadRule frontWall=
     ExternalCut::getValidRule("RingWall",Origin+Y*length);
 
+  HeadRule holeCut;
+  int BI(buildIndex);
+  for(size_t i=0;i<holeRadius.size();i++)
+    {
+      holeCut*=ModelSupport::getHeadRule(SMap,BI,"107");
+      BI+=100;
+    }
+  
   HeadRule HR;
   if (innerOutVoid>Geometry::zeroTol)
     {  
@@ -230,13 +260,21 @@ OpticsHutch::createObjects(Simulation& System)
   makeCell("OuterWall",System,cellIndex++,skinMat,0.0,HR*floor*frontWall);
 
   
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"2 -12 13 -6 107");
-  makeCell("BackIWall",System,cellIndex++,skinMat,0.0,HR*floor*sideWall);
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"12 -22 23 -16 107");
-  makeCell("BackPbWall",System,cellIndex++,pbMat,0.0,HR*floor*sideWall);
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"22 -32 33 -26 107");
-  makeCell("BackOuterWall",System,cellIndex++,skinMat,0.0,HR*floor*sideWall);
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"2 -12 13 -6");
+  makeCell("BackIWall",System,cellIndex++,skinMat,0.0,
+	   HR*floor*sideWall*holeCut);
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"12 -22 23 -16");
+  makeCell("BackPbWall",System,cellIndex++,pbMat,0.0,
+	   HR*floor*sideWall*holeCut);
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"22 -32 33 -26");
+  makeCell("BackOuterWall",System,cellIndex++,skinMat,0.0,
+	   HR*floor*sideWall*holeCut);
 
+  if (backVoid>Geometry::zeroTol)
+    {
+      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"32 -42 33 -26 ");
+      makeCell("BackVoid",System,cellIndex++,0,0.0,HR*floor*sideWall);
+    }
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 13 6 -16");
   makeCell("RoofIWall",System,cellIndex++,skinMat,0.0,HR*frontWall*sideCut);
@@ -246,20 +284,21 @@ OpticsHutch::createObjects(Simulation& System)
   makeCell("RoofOuterWall",System,cellIndex++,skinMat,0.0,HR*frontWall*sideCut);
 
    
-  // Outer void for pipe
-
-  if (holeRadius>Geometry::zeroTol)
+  // Outer void for pipe(s)
+  BI=buildIndex;
+  for(size_t i=0;i<holeRadius.size();i++)
     {
-      HR=ModelSupport::getSetHeadRule(SMap,buildIndex," 2 -32 -107");
+      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,BI," 2 -32 -107M");
       makeCell("ExitHole",System,cellIndex++,voidMat,0.0,HR);
+      BI+=100;
     }
 
   // EXCLUDE:
   if (outerOutVoid>Geometry::zeroTol)
     {
-      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-32 1033 -33 -36");
+      HR=ModelSupport::getAltHeadRule(SMap,buildIndex,"-42A -32B 1033 -33 -36");
       makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR*floor*frontWall);
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-32 1033 -36");
+      HR=ModelSupport::getAltHeadRule(SMap,buildIndex,"-42A -32B 1033 -36");
     }
   else
     HR=ModelSupport::getHeadRule(SMap,buildIndex,"-32 33 -36");
@@ -293,12 +332,17 @@ OpticsHutch::createLinks()
   setLinkSurf(3,-SMap.realSurf(buildIndex+33));
   nameSideIndex(3,"outerWall");
 
-  setConnect(7,Origin+X*holeXStep+Z*holeZStep+Y*(length+wallThick),Y);
-  setLinkSurf(7,SMap.realSurf(buildIndex+32));
+  for(size_t i=0;i<holeRadius.size();i++)
+    {
+      const Geometry::Vec3D HO(holeOffset[i].getInBasis(X,Y,Z));
+      setConnect(7+2*i,Origin+HO+Y*(length+wallThick),Y);
+      setLinkSurf(7+2*i,SMap.realSurf(buildIndex+32));
+      setConnect(8+i*2,Origin+HO+Z*holeRadius[i]+Y*(length+wallThick),Z);
+      setLinkSurf(8+2*i,SMap.realSurf(buildIndex+117));
+      nameSideIndex(7+2*i,"exitHole"+std::to_string(i));
+      nameSideIndex(8+2*i,"exitHole"+std::to_string(i)+"Radius");
+    }
 
-  setConnect(8,Origin+X*holeXStep+Z*(holeRadius+holeZStep)+
-	     Y*(length+wallThick),Z);
-  setLinkSurf(8,SMap.realSurf(buildIndex+117));
 
 
   setConnect(11,Origin,Y);
@@ -311,8 +355,6 @@ OpticsHutch::createLinks()
   setLinkSurf(13,SMap.realSurf(buildIndex+3));
   nameSideIndex(13,"innerLeftWall");
 
-  nameSideIndex(7,"exitHole");
-  nameSideIndex(8,"exitHoleRadius");
   nameSideIndex(11,"innerFront");
   nameSideIndex(12,"innerBack");
 

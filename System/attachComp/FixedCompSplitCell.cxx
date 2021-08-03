@@ -159,7 +159,6 @@ FixedComp::splitObjectAbsolute(Simulation& System,
   if (CMapPtr)
     {
       const std::string Unit=CMapPtr->findCell(cellN);
-      ELog::EM<<"Adding = "<<cellN<<" ++ "<<Unit<<ELog::endDiag;
       CMapPtr->registerExtra(cellN,cellExtra);
     }
 

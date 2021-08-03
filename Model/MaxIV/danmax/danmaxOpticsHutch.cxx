@@ -3,7 +3,7 @@
  
  * File:   danmax/danmaxOpticsHutch.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -148,6 +148,14 @@ danmaxOpticsHutch::createObjects(Simulation& System)
   const HeadRule frontWall=
     ExternalCut::getValidRule("RingWall",Origin+Y*length);
 
+  HeadRule holeCut;
+  int BI(buildIndex);
+  for(size_t i=0;i<holeRadius.size();i++)
+    {
+      holeCut*=ModelSupport::getHeadRule(SMap,BI,"107");
+      BI+=100;
+    }
+
   HeadRule HR;
   if (innerOutVoid>Geometry::zeroTol)
     {  
@@ -174,12 +182,12 @@ danmaxOpticsHutch::createObjects(Simulation& System)
   makeCell("OuterWall",System,cellIndex++,skinMat,0.0,HR*floor*frontWall);
 
   
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"2 -12 13 -6 107 -204");
-  makeCell("BackIWall",System,cellIndex++,skinMat,0.0,HR*floor);
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"12 -22 23 -16 107 -214");
-  makeCell("BackPbWall",System,cellIndex++,pbMat,0.0,HR*floor);
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"22 -32 33 -26 107 -224");
-  makeCell("BackOuterWall",System,cellIndex++,skinMat,0.0,HR*floor);
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"2 -12 13 -6 -204");
+  makeCell("BackIWall",System,cellIndex++,skinMat,0.0,HR*floor*holeCut);
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"12 -22 23 -16 -214");
+  makeCell("BackPbWall",System,cellIndex++,pbMat,0.0,HR*floor*holeCut);
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"22 -32 33 -26 -224");
+  makeCell("BackOuterWall",System,cellIndex++,skinMat,0.0,HR*floor*holeCut);
 
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 13 6 -16 (-204:-202)");
@@ -209,12 +217,14 @@ danmaxOpticsHutch::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"222 -232 234 234 -36");
   makeCell("flatOWall",System,cellIndex++,skinMat,0.0,HR*floor*sideWall);
 
-  // Outer void for pipe
 
-  if (holeRadius>Geometry::zeroTol)
+  // Outer void for pipe(s)
+  BI=buildIndex;
+  for(size_t i=0;i<holeRadius.size();i++)
     {
-      HR=ModelSupport::getSetHeadRule(SMap,buildIndex," 2 -32 -107");
+      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,BI," 2 -32 -107");
       makeCell("ExitHole",System,cellIndex++,voidMat,0.0,HR);
+      BI+=100;
     }
 
   // EXCLUDE:

@@ -60,10 +60,10 @@ class OpticsHutch :
 
   double innerOutVoid;          ///< Extension for inner left void space
   double outerOutVoid;          ///< Extension for outer left void space
+  double backVoid;              ///< Extension for outer back void space
 
-  double holeXStep;            ///< Hole XStep
-  double holeZStep;            ///< Hole ZStep
-  double holeRadius;           ///< Hole radius
+  std::vector<Geometry::Vec3D> holeOffset;  ///< hole offsets [y ignored]
+  std::vector<double> holeRadius;           ///< hole radii
 
   int skinMat;                ///< Fe layer material for walls
   int pbMat;                  ///< pb layer material for walls

@@ -108,8 +108,9 @@ class VirtualTube :
   virtual void insertAllInCell(Simulation&,const std::vector<int>&) const;
   virtual void insertMainInCell(Simulation&,const int) const;
   virtual void insertMainInCell(Simulation&,const std::vector<int>&) const;
-  virtual void insertPortInCell(Simulation&,const int) const;
-  virtual void insertPortInCell(Simulation&,
+  virtual void insertPortInCell(Simulation&,const size_t,const int) const;
+  virtual void insertPortsInCell(Simulation&,const int) const;
+  virtual void insertPortsInCell(Simulation&,
 				const std::vector<std::set<int>>&) const;
 
   using FixedComp::createAll;

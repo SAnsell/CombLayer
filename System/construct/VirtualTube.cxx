@@ -291,15 +291,15 @@ VirtualTube::applyPortRotation()
 {
   ELog::RegMethod RegA("VirtualTube","applyPortRotation");
 
+  // create extra link:
+  nameSideIndex(7,"OrgOrigin");
+  FixedComp::setConnect(7,Origin,Y);
 
   if (!portConnectIndex) return;
   if (portConnectIndex>Ports.size()+3)
     throw ColErr::IndexError<size_t>
       (portConnectIndex,Ports.size()+3,"PI exceeds number of Ports+3");
 
-    // create extra link:
-  // nameSideIndex(7,"OrgOrigin");
-  // FixedComp::setConnect(7,Origin,Y);
 
   if (portConnectIndex<3)
     {
@@ -563,7 +563,26 @@ VirtualTube::insertMainInCell(Simulation& System,
 }
 
 void
-VirtualTube::insertPortInCell(Simulation& System,const int cellN) const
+VirtualTube::insertPortInCell(Simulation& System,const size_t index,
+			      const int cellN) const
+  /*!
+    Allow ports to be intersected into arbitary cell list
+    \param System :: Simulation to use
+    \param cellN :: Cell for insert
+  */
+{
+  ELog::RegMethod RegA("VirtualTube","insertPortInCell(cellN)");
+
+  if (index>=Ports.size())
+    throw ColErr::IndexError<size_t>(index,Ports.size(),"Port index");
+
+  Ports[index]->insertInCell(System,cellN);
+
+  return;
+}
+
+void
+VirtualTube::insertPortsInCell(Simulation& System,const int cellN) const
   /*!
     Allow ports to be intersected into arbitary cell list
     \param System :: Simulation to use
@@ -579,7 +598,7 @@ VirtualTube::insertPortInCell(Simulation& System,const int cellN) const
 }
 
 void
-VirtualTube::insertPortInCell(Simulation& System,
+VirtualTube::insertPortsInCell(Simulation& System,
 			   const std::vector<std::set<int>>& cellVec) const
   /*!
     Allow ports to be intersected into arbitary cell list

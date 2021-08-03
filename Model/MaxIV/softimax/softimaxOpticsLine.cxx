@@ -276,6 +276,8 @@ softimaxOpticsLine::populate(const FuncDataBase& Control)
 
   outerLeft=Control.EvalDefVar<double>(keyName+"OuterLeft",0.0);
   outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",outerLeft);
+  outerRightFull=Control.EvalDefVar<double>
+    (keyName+"OuterRightFull",outerRight);
   outerTop=Control.EvalDefVar<double>(keyName+"OuterTop",outerLeft);
 
   return;
@@ -294,8 +296,11 @@ softimaxOpticsLine::createSurfaces()
     {
       ModelSupport::buildPlane
 	(SMap,buildIndex+3,Origin-X*outerLeft,X);
-      ModelSupport::buildPlane
-	(SMap,buildIndex+4,Origin+X*outerRight,X);
+      ModelSupport::buildPlane(SMap,buildIndex+4,
+			       Origin+X*outerRight,
+			       Origin+X*outerRightFull+Y*1000.0,
+       			       Origin+X*outerRight+Z,
+			       X);
       ModelSupport::buildPlane
 	(SMap,buildIndex+6,Origin+Z*outerTop,Z);      
       const HeadRule HR=
@@ -441,7 +446,7 @@ softimaxOpticsLine::constructSlitTube(Simulation& System,
   slitTube->insertInCell("FlangeA",System,newCellA);
   slitTube->insertInCell("FlangeB",System,newCellB);
   slitTube->insertInCell("Main",System,outerCell);
-  slitTube->insertPortInCell(System,outerCell);
+  slitTube->insertPortsInCell(System,outerCell);
 
   slitTube->splitVoidPorts(System,"SplitVoid",1001,
 			   slitTube->getCell("Void"),
@@ -452,7 +457,7 @@ softimaxOpticsLine::constructSlitTube(Simulation& System,
 			  Geometry::Vec3D(0,0,0),
 			  Geometry::Vec3D(0,0,1));
   this->addCell("OuterVoid",cellItems[1]);
-
+  
   // Note need cell number later
   cellIndex++;  // remember creates an extra cell in  primary
 
@@ -506,50 +511,6 @@ softimaxOpticsLine::buildMono(Simulation& System,
 
   return;
 }
-
-void
-softimaxOpticsLine::createSplitZone()
-  /*!
-    Split the innerZone into two parts.
-   */
-{
-  ELog::RegMethod RegA("Segment26","createSplitInnerZone");
-
-
-  
-
-  
-//  const HeadRule HBack=buildZone->getBack();
-//  ELog::EM<<"BACK == "<<HBack<<ELog::endDiag;
-  /*
-  // create surfaces
-  attachSystem::FixedUnit FA("FA");
-  attachSystem::FixedUnit FB("FB");
-  FA.createPairVector(*pipeAA,2,*pipeBA,2);
-  FB.createPairVector(*pipeBA,2,*pipeCA,2);
-
-  ModelSupport::buildPlane(SMap,buildIndex+5005,FA.getCentre(),FA.getZ());
-  ModelSupport::buildPlane(SMap,buildIndex+5015,FB.getCentre(),FB.getZ());
-  SurfMap::addSurf("TopDivider",SMap.realSurf(buildIndex+5005));
-  SurfMap::addSurf("LowDivider",SMap.realSurf(buildIndex+5015));
-
-  const Geometry::Vec3D ZEffective(FA.getZ());
-
-  HSurroundA.removeMatchedPlanes(ZEffective,0.9);   // remove base
-  HSurroundB.removeMatchedPlanes(ZEffective,0.9);   // remove both
-  HSurroundB.removeMatchedPlanes(-ZEffective,0.9);
-
-  HSurroundA.addIntersection(SMap.realSurf(buildIndex+5005));
-  HSurroundB.addIntersection(-SMap.realSurf(buildIndex+5005));
-  HSurroundB.addIntersection(SMap.realSurf(buildIndex+5015));
-
-
-  IZTop.setSurround(HSurroundA);
-  IZLow.setSurround(HSurroundB);
-  */
-  return;
-}
-
 
 void
 softimaxOpticsLine::buildSplitter(Simulation& System,
@@ -707,9 +668,8 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   const constructSystem::portItem& VP6=pumpM1->getPort(6);
 
   outerCell=buildZone.createUnit(System,VP1,"OuterPlate");
-  pumpM1->insertAllInCell(System,outerCell);
+  this->setCell("OuterVoid",outerCell);
 
-  /*
   const Geometry::Vec3D  Axis12=pumpM1->getY()*(VP1.getY()+VP2.getY())/2.0;
   const Geometry::Vec3D  Axis26=pumpM1->getY()*(VP2.getY()+VP6.getY())/2.0;
 
@@ -717,17 +677,28 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   this->splitObjectAbsolute(System,1501,outerCell,
 			    (VP1.getCentre()+VP4.getCentre())/2.0,
   			    Z);
-  cellIndex++;
-
-
-  /*  this->splitObjectAbsolute(System,1502,outerCell+1,
+  this->splitObjectAbsolute(System,1502,getCell("OuterVoid",1),
     			    pumpM1->getCentre(),
 			    VP4.getY());
+
   this->splitObjectAbsolute(System,1503,outerCell,
 			    pumpM1->getCentre(),Axis12);
-  this->splitObjectAbsolute(System,1504,outerCell+3,
+
+  this->splitObjectAbsolute(System,1504,getCell("OuterVoid",3),
    			    pumpM1->getCentre(),Axis26);
-  const std::vector<int> cellUnit=this->getCells("OuterVoid");
+
+
+  for(const int CN : getCells("OuterVoid"))
+	ELog::EM<<"Cell ="<<CN<<ELog::endDiag;
+      
+  ELog::EM<<"PORT ="<<getCell("OuterVoid",4)<<ELog::endDiag;
+  pumpM1->insertMainInCell(System,getCells("OuterVoid"));
+  pumpM1->insertPortInCell(System,3,getCell("OuterVoid",0));
+  pumpM1->insertPortInCell(System,6,getCell("OuterVoid",4));
+  pumpM1->insertPortInCell(System,2,getCell("OuterVoid",3));
+  pumpM1->insertPortInCell(System,0,getCell("OuterVoid",0));
+
+  /* st std::vector<int> cellUnit=this->getCells("OuterVoid");
   pumpM1->insertMainInCell(System,cellUnit);
 
   pumpM1->insertPortInCell
@@ -863,48 +834,37 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   return;
 }
 
+
 void
-softimaxOpticsLine::buildOutGoingPipes(Simulation& System,
-				       const int leftCell,
-				       const int rightCell,
-				       const std::vector<int>& hutCells)
+softimaxOpticsLine::buildExtras(Simulation& System,
+				const attachSystem::CellMap& hut)
   /*!
-    Construct outgoing tracks
+    Essential bulder to put pipes and shields into softimax
     \param System :: Simulation
-    \param leftCell :: additional left cell for insertion
-    \param rightCell :: additional right cell for insertion
-    \param hutCell :: Cells for construction in hut [common to both pipes]
-  */
+    \param hut :: optics hut
+   */
 {
-  ELog::RegMethod RegA("softimaxOpticsLine","buildOutgoingPipes");
-  /*
-  joinPipeAB->addAllInsertCell(hutCells);
-  joinPipeAB->addAllInsertCell(leftCell);
-  joinPipeAB->createAll(System,*bremCollAA,2);
+  ELog::RegMethod RegA("softiMaxOpticsLine","buildExtras");
 
-  joinPipeBB->addAllInsertCell(hutCells);
-  joinPipeBB->addAllInsertCell(rightCell);
-  joinPipeBB->createAll(System,*bremCollBA,2);
+  joinPipeAB->insertInCell("Main",System,hut.getCell("ExitHole",0));
+  joinPipeBB->insertInCell("Main",System,hut.getCell("ExitHole",1));
 
-  screenA->addAllInsertCell(rightCell);
-  screenA->addAllInsertCell(leftCell);
+  joinPipeAB->insertInCell("Main",System,hut.getCell("BackVoid"));
+  joinPipeBB->insertInCell("Main",System,hut.getCell("BackVoid"));
+  joinPipeAB->insertInCell("FlangeB",System,hut.getCell("BackVoid"));
+  joinPipeBB->insertInCell("FlangeB",System,hut.getCell("BackVoid"));
+
+  screenA->addAllInsertCell(getCell("RightVoid"));
+  screenA->addAllInsertCell(getCell("LeftVoid"));
   screenA->setCutSurf("inner",*joinPipeAB,"pipeOuterTop");
   screenA->setCutSurf("innerTwo",*joinPipeBA,"pipeOuterTop");
   screenA->createAll(System,*bremCollAA,2);
 
-  // lineScreen->setNoInsert();
-  // lineScreen->addInsertCell(ContainedComp::getInsertCells());
-  // lineScreen->createAll(System,*gateA,"back");
-
-  // innerScreen->setNoInsert();
-  // for(size_t index=12;index<=20;index++)
-  //   innerScreen->addInsertCell(this->getCell("OuterVoid",index));
-
-  innerScreen->addInsertCell(this->getCell("OuterVoid",23));
   innerScreen->createAll(System,*gateA,"back");
-  */
+
   return;
 }
+
 
 
 void

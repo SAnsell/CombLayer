@@ -51,10 +51,11 @@ class OpticsHutGenerator
 
   double innerOutVoid;          ///< Extension for inner left void space
   double outerOutVoid;          ///< Extension for outer left void space
-  
-  double holeXStep;            ///< exit Hole XStep
-  double holeZStep;            ///< exit Hole ZStep
-  double holeRadius;           ///< exit Hole radius
+  double backVoid;              ///< Extension for outer back void space
+
+
+  std::vector<Geometry::Vec3D> holeOffset;  ///< hole offsets [y ignored]
+  std::vector<double> holeRadius;           ///< hole radii
   
   std::string skinMat;         ///< Fe layer material for walls
   std::string pbMat;           ///< pb layer material for walls
@@ -69,7 +70,10 @@ class OpticsHutGenerator
 
   void setSkin(const double T) { outerThick=T; innerThick=T;}
   void setWallPbThick(const double,const double,const double);
-  void setExitPoint(const Geometry::Vec3D&,const double);
+  void setBackExt(const double T) { backVoid=T; }
+
+  void addHole(const Geometry::Vec3D&,const double);
+  
   void generateHut(FuncDataBase&,const std::string&,
 		   const double) const;
 

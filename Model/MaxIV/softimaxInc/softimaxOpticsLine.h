@@ -175,22 +175,14 @@ class softimaxOpticsLine :
   std::shared_ptr<insertSystem::insertPlate> innerScreen;
 
 
-  double outerLeft;    ///< Left Width for cut rectangle
-  double outerRight;   ///< Right width for cut rectangle
-  double outerTop;     ///< Top lift for cut rectangle
+  double outerLeft;        ///< Left Width for cut rectangle
+  double outerRight;       ///< Right width for cut rectangle
+  double outerRightFull;   ///< Right width for cut rectangle
+  double outerTop;         ///< Top lift for cut rectangle
 
-  void createSplitZone();
-  
   int constructMonoShutter
     (Simulation&,MonteCarlo::Object**,
      const attachSystem::FixedComp&,const long int);
-
-  int constructDiag
-    (Simulation&,
-     constructSystem::PortTube&,
-     std::array<std::shared_ptr<constructSystem::JawFlange>,2>&,
-     const attachSystem::FixedComp&,
-     const long int);
 
   void buildM1Mirror(Simulation&,const attachSystem::FixedComp&,
 		     const std::string&);
@@ -219,9 +211,9 @@ class softimaxOpticsLine :
   softimaxOpticsLine& operator=(const softimaxOpticsLine&);
   ~softimaxOpticsLine();
 
+  void buildExtras(Simulation&,const attachSystem::CellMap&);
   void buildOutGoingPipes(Simulation&,const int,const int,
 			  const std::vector<int>&);
-
 
   /// Assignment to inner void
   void setInnerMat(const int M) {  innerMat=M; }

@@ -25,7 +25,7 @@
 #include <sstream>
 #include <cmath>
 #include <complex>
- #include <list>
+#include <list>
 #include <vector>
 #include <set>
 #include <map>
@@ -158,6 +158,7 @@ SOFTIMAX::build(Simulation& System,
   opticsBeam->setPreInsert(joinPipe);
   opticsBeam->createAll(System,*joinPipe,2);
 
+  opticsBeam->buildExtras(System,*opticsHut);
 
   return;
   std::vector<int> cells(opticsHut->getCells("BackWall"));

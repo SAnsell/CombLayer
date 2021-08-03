@@ -250,6 +250,9 @@ opticsHutVariables(FuncDataBase& Control,
   const std::string hutName(preName+"OpticsHut");
   OpticsHutGenerator OGen; 
 
+  OGen.setBackExt(40.0);
+  OGen.addHole(Geometry::Vec3D(20,0,0),5.0);
+  OGen.addHole(Geometry::Vec3D(43,0,0),5.0);
   OGen.generateHut(Control,hutName,1070.0);
 
   // chicane dimensions: http://localhost:8080/maxiv/work-log/softimax/drawings/06643-03-000-folio-1-2-ind-g.pdf/view
@@ -615,7 +618,8 @@ opticsVariables(FuncDataBase& Control,
   std::string Name;
 
   Control.addVariable(preName+"OuterLeft",74.0);
-  Control.addVariable(preName+"OuterRight",74.0);
+  Control.addVariable(preName+"OuterRight",50.0);
+  Control.addVariable(preName+"OuterRightFull",125.0);
   Control.addVariable(preName+"OuterTop",70.0);
 
   setVariable::PipeGenerator PipeGen;
