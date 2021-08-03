@@ -441,7 +441,7 @@ softimaxOpticsLine::constructSlitTube(Simulation& System,
   const int newCellA=
     slitTube->splitObject(System,"-PortACut",outerCell).back();
   this->addCell("OuterVoid",newCellA);
-  cellIndex+=2;  // remember creates an extra cell in  primary
+
 
   slitTube->insertInCell("FlangeA",System,newCellA);
   slitTube->insertInCell("FlangeB",System,newCellB);
@@ -458,9 +458,6 @@ softimaxOpticsLine::constructSlitTube(Simulation& System,
 			  Geometry::Vec3D(0,0,1));
   this->addCell("OuterVoid",cellItems[1]);
   
-  // Note need cell number later
-  cellIndex++;  // remember creates an extra cell in  primary
-
   for(size_t i=0;i<jaws.size();i++)
     {
       const constructSystem::portItem& PI=slitTube->getPort(i);
@@ -545,7 +542,6 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
 
   HeadRule HSurroundA=buildZone.getSurround();
   HeadRule HSurroundB=buildZone.getSurround();
-  ELog::EM<<"HR == "<<HSurroundB<<ELog::endDiag;
   HSurroundA.removeMatchedPlanes(-X,0.9);   // remove left/right
   HSurroundB.removeMatchedPlanes(X,0.9);
 
@@ -675,7 +671,7 @@ softimaxOpticsLine::buildObjects(Simulation& System)
 
   
   this->splitObjectAbsolute(System,1501,outerCell,
-			    (VP1.getCentre()+VP4.getCentre())/2.0,
+			    (VP1.getCentre()+VP4.getCentre()*2.0)/3.0,
   			    Z);
   this->splitObjectAbsolute(System,1502,getCell("OuterVoid",1),
     			    pumpM1->getCentre(),
@@ -688,15 +684,16 @@ softimaxOpticsLine::buildObjects(Simulation& System)
    			    pumpM1->getCentre(),Axis26);
 
 
-  for(const int CN : getCells("OuterVoid"))
-	ELog::EM<<"Cell ="<<CN<<ELog::endDiag;
-      
-  ELog::EM<<"PORT ="<<getCell("OuterVoid",4)<<ELog::endDiag;
   pumpM1->insertMainInCell(System,getCells("OuterVoid"));
-  pumpM1->insertPortInCell(System,3,getCell("OuterVoid",0));
-  pumpM1->insertPortInCell(System,6,getCell("OuterVoid",4));
+  pumpM1->insertPortInCell(System,0,getCell("OuterVoid",4));
+  pumpM1->insertPortInCell(System,1,getCell("OuterVoid",0));
   pumpM1->insertPortInCell(System,2,getCell("OuterVoid",3));
-  pumpM1->insertPortInCell(System,0,getCell("OuterVoid",0));
+  pumpM1->insertPortInCell(System,3,getCell("OuterVoid",0));
+  pumpM1->insertPortInCell(System,4,getCell("OuterVoid",2));
+  pumpM1->insertPortInCell(System,5,getCell("OuterVoid",1));
+  pumpM1->insertPortInCell(System,6,getCell("OuterVoid",4));
+
+
 
   /* st std::vector<int> cellUnit=this->getCells("OuterVoid");
   pumpM1->insertMainInCell(System,cellUnit);

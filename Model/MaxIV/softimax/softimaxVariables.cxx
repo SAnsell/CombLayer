@@ -414,7 +414,7 @@ splitterVariables(FuncDataBase& Control,
   ELog::EM << "M3Pump: Close the caps" << ELog::endWarn;
 
   BPGen.setCF<CF200>(36.0);
-  BPGen.generateBPort(Control,m3PumpName,27.5);  // centre 13.5cm
+  BPGen.generateBPort(Control,m3PumpName,32.0);  // centre 13.5cm
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,splitKey+"BellowAB",15.5);
@@ -889,7 +889,7 @@ shieldVariables(FuncDataBase& Control,
   //ShieldGen.setMaterial("Void","Void","Void");
 
   ShieldGen.generateShield(Control,shieldKey+"ScreenA",
-  			   Geometry::Vec3D(10.0,32.4,0.0),0.0);
+  			   Geometry::Vec3D(10.0,42.4,0.0),0.0);
 
   // Extra shielding plate near M1
   Control.addVariable(shieldKey+"InnerScreenXYAngle",80.0);
