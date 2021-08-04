@@ -3,7 +3,7 @@
  
  * File: flexpes/flexpesFrontEnd.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,6 +55,7 @@
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
 #include "InnerZone.h"
+#include "BlockZone.h"
 
 #include "UTubePipe.h"
 #include "Undulator.h"
@@ -91,7 +92,6 @@ flexpesFrontEnd::~flexpesFrontEnd()
 
 const attachSystem::FixedComp&
 flexpesFrontEnd::buildUndulator(Simulation& System,
-				MonteCarlo::Object* masterCell,
 				const attachSystem::FixedComp& preFC,
 				const long int preSideIndex)
   /*!
@@ -104,7 +104,7 @@ flexpesFrontEnd::buildUndulator(Simulation& System,
   */
 {
   ELog::RegMethod RegA("flexpesFrontEnd","buildUndulator");
-
+  /*
   int outerCell;
   undulatorPipe->createAll(System,preFC,preSideIndex);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*undulatorPipe,2);
@@ -117,7 +117,7 @@ flexpesFrontEnd::buildUndulator(Simulation& System,
   undulator->addInsertCell(outerCell);
   undulator->createAll(System,*undulatorPipe,0);
   undulatorPipe->insertInCell("Pipe",System,undulator->getCell("Void"));
-
+  */
   return *undulatorPipe;
 }
 

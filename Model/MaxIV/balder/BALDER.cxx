@@ -220,7 +220,7 @@ BALDER::build(Simulation& System,
   ELog::EM<<"Cell = "<<connectZone->getCell("FirstVoid")<<ELog::endDiag;
   nShield->addAllInsertCell(connectZone->getCell("FirstVoid"));
   nShield->setCutSurf("inner",*joinPipeB,"outer");
-  nShield->createAll(System,*opticsHut,opticsHut->getSideIndex("exitHole"));
+  nShield->createAll(System,*opticsHut,"exitHole");
   ELog::EM<<"NShield == "<<nShield->getLinkPt(0)<<ELog::endDiag;
   // outer pipe shield goes around joinPipeB:
   /*

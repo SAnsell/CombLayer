@@ -106,7 +106,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
 
-  buildZone("R3FrontEnd"),
+  buildZone(Key+"R3FrontEnd"),
 
   transPipe(new constructSystem::VacuumPipe(newName+"TransPipe")),
   magBlockM1(new xraySystem::MagnetM1(newName+"M1Block")),
@@ -431,26 +431,28 @@ R3FrontEnd::buildApertureTable(Simulation& System,
 
 void
 R3FrontEnd::buildShutterTable(Simulation& System,
-				   const attachSystem::FixedComp& preFC,
-				   const long int preSideIndex)
+			      const attachSystem::FixedComp& preFC,
+			      const std::string& preSide)
   /*!
     Build the shutter block table
     \param System :: Simulation to use
     \param preFC :: initial Fixedcomp 
-    \param preSideIndex :: link point on initial FC
+    \param preSide :: link point on initial FC
   */
 {
   ELog::RegMethod RegA("R3FrontEnd","buildShutterTable");
   int outerCell;
   
-  gateA->createAll(System,preFC,preSideIndex);
-  outerCell=buildZone.createUnit(System,*gateA,2);
-  gateA->insertInCell(System,outerCell);
+  constructSystem::constructUnit
+    (System,buildZone,preFC,preSide,*gateA);
 
-  // bellows 
-  bellowI->createAll(System,*gateA,2);
-  outerCell=buildZone.createUnit(System,*bellowI,2);
-  bellowI->insertInCell(System,outerCell);
+  // gateA->createAll(System,preFC,preSideIndex);
+  // outerCell=buildZone.createUnit(System,*gateA,2);
+  // gateA->insertInCell(System,outerCell);
+
+  // bellows
+  constructSystem::constructUnit
+    (System,buildZone,*gateA,"back",*bellowI);
 
   florTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   florTubeA->createAll(System,*bellowI,2);
@@ -469,18 +471,15 @@ R3FrontEnd::buildShutterTable(Simulation& System,
 
   constructSystem::constructUnit
     (System,buildZone,*bellowJ,"back",*gateTubeB);
-  
-  
-  offPipeA->createAll(System,*gateTubeB,"back");
-  outerCell=buildZone.createUnit(System,*offPipeA,2);
-  offPipeA->insertInCell(System,outerCell);
+
+  constructSystem::constructUnit
+    (System,buildZone,*gateTubeB,"back",*offPipeA);
 
   //  insertFlanges(System,*gateTubeB);
 
-  shutterBox->createAll(System,*offPipeA,
-			offPipeA->getSideIndex("FlangeBCentre"));
-  outerCell=buildZone.createUnit(System,*shutterBox,2);
-  shutterBox->insertAllInCell(System,outerCell);
+  shutterBox->createAll(System,*offPipeA,"FlangeBCentre");
+  outerCell=buildZone.createUnit(System,*shutterBox,"back");
+
   
   cellIndex=shutterBox->splitVoidPorts
     (System,"SplitVoid",1001,shutterBox->getCell("Void"),{0,1});
@@ -532,10 +531,6 @@ R3FrontEnd::buildObjects(Simulation& System)
   const attachSystem::FixedComp& undulatorFC=
     buildUndulator(System,*this,0);
 					      
-  //  constructSystem::constructUnit
-  //    (System,buildZone,undulatorFC,"back",*transPipe);
-
-
   outerCell=buildZone.createUnit(System,undulatorFC,"back");
 
   
@@ -637,7 +632,7 @@ R3FrontEnd::buildObjects(Simulation& System)
 
   buildHeatTable(System,*collExitPipe,2);  
   buildApertureTable(System,*pipeB,2);
-  buildShutterTable(System,*pipeC,2);
+  buildShutterTable(System,*pipeC,"back");
   
   exitPipe->createAll(System,*bellowK,2);
   outerCell=buildZone.createUnit(System,*exitPipe,2);

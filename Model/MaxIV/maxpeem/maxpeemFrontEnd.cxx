@@ -3,7 +3,7 @@
  
  * File: maxpeem/maxpeemFrontEnd.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,6 +55,7 @@
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
 #include "InnerZone.h"
+#include "BlockZone.h"
 
 #include "UTubePipe.h"
 #include "Undulator.h"
@@ -91,7 +92,6 @@ maxpeemFrontEnd::~maxpeemFrontEnd()
 
 const attachSystem::FixedComp&
 maxpeemFrontEnd::buildUndulator(Simulation& System,
-				MonteCarlo::Object* masterCell,
 				const attachSystem::FixedComp& preFC,
 				const long int preSideIndex)
   /*!
@@ -106,28 +106,15 @@ maxpeemFrontEnd::buildUndulator(Simulation& System,
   ELog::RegMethod RegA("maxpeemFrontEnd","buildUndulator");
 
   int outerCell;
+
   undulatorPipe->createAll(System,preFC,preSideIndex);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*undulatorPipe,2);
+  outerCell=buildZone.createUnit(System,*undulatorPipe,2);
 
   CellMap::addCell("UndulatorOuter",outerCell);
 
+  undulator->addInsertCell(outerCell);
   undulator->setCutSurf("front",*undulatorPipe,"-front");
   undulator->setCutSurf("back",*undulatorPipe,"-back");
-  undulator->addInsertCell(outerCell);
-  undulator->createAll(System,*undulatorPipe,0);
-  
-  undulatorPipe->insertInCell("Pipe",System,undulator->getCell("Void"));
-  undulatorPipe->insertInCell("FFlange",System,undulator->getCell("FrontVoid"));
-  undulatorPipe->insertInCell("Pipe",System,undulator->getCell("FrontVoid"));
-  undulatorPipe->insertInCell("BFlange",System,undulator->getCell("BackVoid"));
-  undulatorPipe->insertInCell("Pipe",System,undulator->getCell("BackVoid"));
-
-  ELog::EM<<"Undulater Centre - "<<undulatorPipe->getCentre()<<ELog::endDiag;
-  return *undulatorPipe;
-
-  undulator->setCutSurf("front",*undulatorPipe,"-front");
-  undulator->setCutSurf("back",*undulatorPipe,"-back");
-  undulator->addInsertCell(outerCell);
   undulator->createAll(System,*undulatorPipe,0);
   
   undulatorPipe->insertInCell("Pipe",System,undulator->getCell("Void"));
@@ -147,7 +134,7 @@ maxpeemFrontEnd::createLinks()
   */
 {
   setLinkCopy(0,*undulatorPipe,1);
-  setLinkCopy(1,*lastComp,2);
+  if (lastComp) setLinkCopy(1,*lastComp,2);
   return;
 }
 

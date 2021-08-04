@@ -463,6 +463,7 @@ opticsHutVariables(FuncDataBase& Control,
 
   OpticsHutGenerator OGen; 
 
+  OGen.addHole(Geometry::Vec3D(0,0,0),3.5);
   OGen.generateHut(Control,hutName,1256.0);
 
   Control.addVariable(hutName+"NChicane",2);

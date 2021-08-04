@@ -3,7 +3,7 @@
  
  * File: flexpes/FLEXPES.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,6 +55,7 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "InnerZone.h"
+#include "BlockZone.h"
 #include "CopiedComp.h"
 
 #include "VacuumPipe.h"
@@ -120,10 +121,13 @@ FLEXPES::build(Simulation& System,
 
   frontBeam->setStopPoint(stopPoint);
   frontBeam->setCutSurf("Floor",r1Ring->getSurf("Floor"));
+  frontBeam->setCutSurf("Roof",-r1Ring->getSurf("Roof"));
+  frontBeam->setCutSurf("back",r1Ring->getSurf("BeamInner",SIndex));
+
   frontBeam->addInsertCell(r1Ring->getCell("Void"));
   frontBeam->addInsertCell(r1Ring->getCell("VoidTriangle",PIndex));
   
-  frontBeam->setBack(r1Ring->getSurf("BeamInner",SIndex));
+
   frontBeam->createAll(System,FCOrigin,sideIndex);
 
   wallLead->addInsertCell(r1Ring->getCell("FrontWall",SIndex));

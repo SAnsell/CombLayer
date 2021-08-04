@@ -415,6 +415,7 @@ VirtualTube::splitVoidPorts(Simulation& System,
     \param offsetCN :: output offset number
     \param CN :: Cell number to split
     \param inobjAxis :: axis to split pot on
+    \return last cell
    */
 {
   ELog::RegMethod RegA("VirtualTube","splitVoidPorts");
@@ -451,7 +452,7 @@ VirtualTube::splitVoidPorts(Simulation& System,
       CellMap::addCell(splitName,CN);
 
 
-  return (cells.empty()) ? CN : cells.back()+1;
+  return (cells.empty()) ? 0 : cells.back();
 }
 
 int

@@ -55,6 +55,7 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "InnerZone.h"
+#include "BlockZone.h"
 #include "CopiedComp.h"
 
 #include "VacuumPipe.h"
@@ -120,12 +121,13 @@ SPECIES::build(Simulation& System,
 
   frontBeam->setStopPoint(stopPoint);
   frontBeam->setCutSurf("Floor",r1Ring->getSurf("Floor"));
+  frontBeam->setCutSurf("Roof",-r1Ring->getSurf("Roof"));
+  frontBeam->setCutSurf("back",r1Ring->getSurf("BeamInner",SIndex));
   frontBeam->addInsertCell(r1Ring->getCell("Void",9));
   frontBeam->addInsertCell(r1Ring->getCell("Void",0));
   frontBeam->addInsertMagnetCell(r1Ring->getCell("Void",0));
   frontBeam->addInsertCell(r1Ring->getCell("VoidTriangle",PIndex));
 
-  frontBeam->setBack(r1Ring->getSurf("BeamInner",SIndex));
   frontBeam->createAll(System,FCOrigin,sideIndex);
 
 

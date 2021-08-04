@@ -245,7 +245,7 @@ opticsHutVariables(FuncDataBase& Control,
     \param preName :: Beamline name
   */
 {
-  ELog::RegMethod RegA("softimaxVariables[F]","opticsCaveVariables");
+  ELog::RegMethod RegA("softimaxVariables[F]","opticsHutVariables");
 
   const std::string hutName(preName+"OpticsHut");
   OpticsHutGenerator OGen; 

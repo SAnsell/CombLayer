@@ -222,7 +222,7 @@ opticsHutVariables(FuncDataBase& Control,
   /*!
     Variable for the main optics hutch walls
     \param Control :: Database
-    \param htName :: Optics hut name
+    \param hutName :: Optics hut name
   */
 {
   ELog::RegMethod RegA("cosaxsVariables[F]","opticsHutVariables");

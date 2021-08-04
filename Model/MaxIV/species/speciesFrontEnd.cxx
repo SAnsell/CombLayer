@@ -55,6 +55,7 @@
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
 #include "InnerZone.h"
+#include "BlockZone.h"
 
 #include "UTubePipe.h"
 #include "Undulator.h"
@@ -90,7 +91,6 @@ speciesFrontEnd::~speciesFrontEnd()
 
 const attachSystem::FixedComp&
 speciesFrontEnd::buildUndulator(Simulation& System,
-				MonteCarlo::Object* masterCell,
 				const attachSystem::FixedComp& preFC,
 				const long int preSideIndex)
   /*!
@@ -106,6 +106,7 @@ speciesFrontEnd::buildUndulator(Simulation& System,
   ELog::RegMethod RegA("speciesFrontEnd","buildObjects");
 
   int outerCell;
+  /*
   undulatorPipe->createAll(System,preFC,preSideIndex);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*undulatorPipe,2);
 
@@ -117,7 +118,7 @@ speciesFrontEnd::buildUndulator(Simulation& System,
   undulator->addInsertCell(outerCell);
   undulator->createAll(System,*undulatorPipe,0);
   undulatorPipe->insertInCell("Pipe",System,undulator->getCell("Void"));
-
+  */
   return *undulatorPipe;
 }
 
