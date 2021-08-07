@@ -480,14 +480,17 @@ R3FrontEnd::buildShutterTable(Simulation& System,
   shutterBox->createAll(System,*offPipeA,"FlangeBCentre");
   outerCell=buildZone.createUnit(System,*shutterBox,"back");
 
-  
-  cellIndex=shutterBox->splitVoidPorts
+  shutterBox->splitVoidPorts
     (System,"SplitVoid",1001,shutterBox->getCell("Void"),{0,1});
 
-  cellIndex=
-    shutterBox->splitVoidPorts(System,"SplitOuter",2001,
+
+  shutterBox->splitVoidPorts(System,"SplitOuter",2001,
 			       outerCell,{0,1});
-  shutterBox->addAllInsertCell(outerCell);
+  shutterBox->insertMainInCell(System,shutterBox->getCells("SplitOuter"));
+  shutterBox->insertPortInCell(System,0,shutterBox->getCell("SplitOuter",0));
+  shutterBox->insertPortInCell(System,1,shutterBox->getCell("SplitOuter",1));
+
+
 
   for(size_t i=0;i<shutters.size();i++)
     {
@@ -495,12 +498,13 @@ R3FrontEnd::buildShutterTable(Simulation& System,
       shutters[i]->addInsertCell("Support",PI.getCell("Void"));
       shutters[i]->addInsertCell("Support",shutterBox->getCell("SplitVoid",i));
       shutters[i]->addInsertCell("Block",shutterBox->getCell("SplitVoid",i));
-
+      
       shutters[i]->createAll(System,*offPipeA,
 			     offPipeA->getSideIndex("FlangeACentre"),
 			     PI,PI.getSideIndex("InnerPlate"));
     }
 
+  
   offPipeB->createAll(System,*shutterBox,2);
   outerCell=buildZone.createUnit(System,*offPipeB,2);
   offPipeB->insertInCell(System,outerCell);

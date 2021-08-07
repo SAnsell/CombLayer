@@ -36,7 +36,7 @@ namespace xraySystem
 */
 
 class UTubePipe :
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedGroup,
   public attachSystem::CellMap,
   public attachSystem::SurfMap,
@@ -44,14 +44,6 @@ class UTubePipe :
 {
  private:
   
-  bool frontJoin;               ///< Flag for front join to calc midpoint
-  Geometry::Vec3D FPt;          ///< Front point
-  Geometry::Vec3D FAxis;        ///< Front axis
-
-  bool backJoin;                ///< Flag for back join to calc midpoint
-  Geometry::Vec3D BPt;          ///< Back point for join
-  Geometry::Vec3D BAxis;        ///< Back axis for join
-
   double width;                 ///< void width [inner]
   double height;                ///< void height [inner]
   double length;                ///< void length [total]
@@ -66,12 +58,8 @@ class UTubePipe :
     
   int voidMat;                  ///< Void material
   int feMat;                    ///< Pipe material
-
-  Geometry::Vec3D flangeAYAxis;        ///< front axis for flange
-  Geometry::Vec3D flangeBYAxis;        ///< Back axis for flange
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -86,9 +74,7 @@ class UTubePipe :
   UTubePipe& operator=(const UTubePipe&);
   virtual ~UTubePipe();
 
-  void setFront(const attachSystem::FixedComp&,const long int,const bool =0);
-  void setBack(const attachSystem::FixedComp&,const long int,const bool =0);
-  
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

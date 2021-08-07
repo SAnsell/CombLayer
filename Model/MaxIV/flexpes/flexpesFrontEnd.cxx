@@ -93,7 +93,7 @@ flexpesFrontEnd::~flexpesFrontEnd()
 const attachSystem::FixedComp&
 flexpesFrontEnd::buildUndulator(Simulation& System,
 				const attachSystem::FixedComp& preFC,
-				const long int preSideIndex)
+				const std::string& preSide)
   /*!
     Build all the objects relative to the main FC
     point.
@@ -106,7 +106,7 @@ flexpesFrontEnd::buildUndulator(Simulation& System,
   ELog::RegMethod RegA("flexpesFrontEnd","buildUndulator");
   /*
   int outerCell;
-  undulatorPipe->createAll(System,preFC,preSideIndex);
+  undulatorPipe->createAll(System,preFC,preSide);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*undulatorPipe,2);
 
   CellMap::addCell("UndulatorOuter",outerCell);

@@ -82,7 +82,8 @@ class speciesFrontEnd :  public R1FrontEnd
 
   virtual const attachSystem::FixedComp&
     buildUndulator(Simulation&,
-		   const attachSystem::FixedComp&,const long int);
+		   const attachSystem::FixedComp&,
+		   const std::string&);
 			      
   virtual void createLinks();
   

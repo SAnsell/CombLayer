@@ -124,17 +124,17 @@ MAXPEEM::build(Simulation& System,
   
   frontBeam->addInsertCell(r1Ring->getCell("Void",8));
   frontBeam->addInsertCell(r1Ring->getCell("Void",9));
+  frontBeam->addInsertMagnetCell(r1Ring->getCell("Void",8));
   frontBeam->addInsertMagnetCell(r1Ring->getCell("Void",9));
   frontBeam->addInsertCell(r1Ring->getCell("VoidTriangle",PIndex));
   
   frontBeam->createAll(System,FCOrigin,sideIndex);
-  ELog::EM<<"R "<<ELog::endDiag;
-  return;
   
   wallLead->addInsertCell(r1Ring->getCell("FrontWall",SIndex));
   wallLead->setFront(-r1Ring->getSurf("BeamInner",SIndex));
   wallLead->setBack(r1Ring->getSurf("BeamOuter",SIndex));
   wallLead->createAll(System,FCOrigin,sideIndex);
+
 
   if (!stopPoint.empty())
     ELog::EM<<"Stop Point == "<<stopPoint<<ELog::endDiag;
@@ -147,18 +147,24 @@ MAXPEEM::build(Simulation& System,
   opticsHut->addInsertCell(r1Ring->getCell("OuterSegment",OIndex));
   opticsHut->createAll(System,*wallLead,2);
 
+
   joinPipe->addAllInsertCell(frontBeam->getCell("MasterVoid"));
   joinPipe->addInsertCell("Main",wallLead->getCell("Void"));
   joinPipe->addAllInsertCell(opticsHut->getCell("InletHole"));
   joinPipe->createAll(System,*frontBeam,2);
+
 
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
   opticsBeam->setCutSurf("front",*opticsHut,
 			 opticsHut->getSideIndex("innerFront"));
   opticsBeam->setCutSurf("back",*opticsHut,
 			 opticsHut->getSideIndex("innerBack"));
-  opticsBeam->setCutSurf("floor",r1Ring->getSurf("Floor"));
+  opticsBeam->setCutSurf("floor",r1Ring->getSurfRule("Floor"));
+  opticsBeam->setCutSurf("roof",r1Ring->getSurfRule("#Roof"));
   opticsBeam->createAll(System,*joinPipe,2);
+
+    ELog::EM<<"EARLY RETURN "<<ELog::endDiag;
+  return;
 
   joinPipe->insertAllInCell(System,opticsBeam->getCell("OuterVoid",0));
 

@@ -71,6 +71,7 @@ class balderOpticsLine :
 
   /// Items pre-insertion into mastercell:0
   std::shared_ptr<attachSystem::ContainedGroup> preInsert;
+
   /// construction space for main object
   attachSystem::BlockZone buildZone;  
   int innerMat;                         ///< inner material if used

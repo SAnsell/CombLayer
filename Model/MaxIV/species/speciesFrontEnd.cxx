@@ -92,7 +92,7 @@ speciesFrontEnd::~speciesFrontEnd()
 const attachSystem::FixedComp&
 speciesFrontEnd::buildUndulator(Simulation& System,
 				const attachSystem::FixedComp& preFC,
-				const long int preSideIndex)
+				const std::string& preSide)
   /*!
     Build all the objects relative to the main FC
     point.

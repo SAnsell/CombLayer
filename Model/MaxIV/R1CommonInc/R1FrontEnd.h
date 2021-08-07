@@ -172,12 +172,12 @@ class R1FrontEnd :
 
   double outerLeft;     ///< left size of tube for divisions
   double outerRight;    ///< right of tube for divisions
-    
-  void insertFlanges(Simulation&,const constructSystem::PipeTube&);
-
+  double outerFront;    ///< front side offset if needed
+  
   virtual const attachSystem::FixedComp&
-    buildUndulator(Simulation&,
-		   const attachSystem::FixedComp&,const long int) =0;
+  buildUndulator(Simulation&,
+		   const attachSystem::FixedComp&,
+		   const std::string&) =0;
   
   void buildHeatTable(Simulation&,
 		      const attachSystem::FixedComp&,
@@ -189,6 +189,9 @@ class R1FrontEnd :
 			 const attachSystem::FixedComp&,
 			 const std::string&);
 
+  void processEnd(Simulation&,
+		  std::shared_ptr<attachSystem::FixedComp>);
+  
   virtual void populate(const FuncDataBase&);
   virtual void createSurfaces();
   virtual void buildObjects(Simulation&);

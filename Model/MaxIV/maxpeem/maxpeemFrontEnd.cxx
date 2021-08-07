@@ -93,7 +93,7 @@ maxpeemFrontEnd::~maxpeemFrontEnd()
 const attachSystem::FixedComp&
 maxpeemFrontEnd::buildUndulator(Simulation& System,
 				const attachSystem::FixedComp& preFC,
-				const long int preSideIndex)
+				const std::string& preSide)
   /*!
     Build all the objects relative to the main FC
     point.
@@ -107,7 +107,7 @@ maxpeemFrontEnd::buildUndulator(Simulation& System,
 
   int outerCell;
 
-  undulatorPipe->createAll(System,preFC,preSideIndex);
+  undulatorPipe->createAll(System,preFC,preSide);
   outerCell=buildZone.createUnit(System,*undulatorPipe,2);
 
   CellMap::addCell("UndulatorOuter",outerCell);

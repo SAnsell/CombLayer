@@ -214,13 +214,13 @@ BALDER::build(Simulation& System,
   // pipe shield goes around joinPipeB:
   pShield->addAllInsertCell(opticsBeam->getCell("LastVoid"));
   pShield->setCutSurf("inner",*joinPipeB,"outer");
-  pShield->createAll(System,*opticsHut,"#exitHole");
+  pShield->createAll(System,*opticsHut,"#exitHole0");
 
   // pipe shield goes around joinPipeB:
   ELog::EM<<"Cell = "<<connectZone->getCell("FirstVoid")<<ELog::endDiag;
   nShield->addAllInsertCell(connectZone->getCell("FirstVoid"));
   nShield->setCutSurf("inner",*joinPipeB,"outer");
-  nShield->createAll(System,*opticsHut,"exitHole");
+  nShield->createAll(System,*opticsHut,"exitHole0");
   ELog::EM<<"NShield == "<<nShield->getLinkPt(0)<<ELog::endDiag;
   // outer pipe shield goes around joinPipeB:
   /*

@@ -209,6 +209,7 @@ R1FrontEnd::populate(const FuncDataBase& Control)
 
   outerLeft=Control.EvalDefVar<double>(keyName+"OuterLeft",0.0);
   outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",outerLeft);
+  outerFront=Control.EvalDefVar<double>(keyName+"OuterFront",0.0);
 
   return;
 }
@@ -234,9 +235,12 @@ R1FrontEnd::createSurfaces()
 
   if (!isActive("front"))
     {
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*150.0,Y);
+      ELog::EM<<"Building Front "<<outerFront<<ELog::endDiag;
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*outerFront,Y);
       setCutSurf("front",SMap.realSurf(buildIndex+1));
     }
+  else
+    ELog::EM<<"Front == "<<getRule("front")<<ELog::endDiag;
   
   buildZone.setFront(getRule("front"));
   
@@ -411,22 +415,19 @@ R1FrontEnd::buildShutterTable(Simulation& System,
   constructSystem::constructUnit
     (System,buildZone,*gateTubeB,"back",*offPipeA);
 
-  return;
+ 
   shutterBox->createAll(System,*offPipeA,"FlangeBCentre");
   outerCell=buildZone.createUnit(System,*shutterBox,"back");
-  ELog::EM<<"shuttBox -"<<offPipeA->getLinkSurf("FlangeBCentre")<<ELog::endDiag;;
-  cellIndex=shutterBox->splitVoidPorts
+
+  shutterBox->splitVoidPorts
     (System,"SplitVoid",1001,shutterBox->getCell("Void"),{0,1});
   
   
-    shutterBox->splitVoidPorts(System,"SplitOuter",2001,
+  shutterBox->splitVoidPorts(System,"SplitOuter",2001,
 			       outerCell,{0,1});
-  for(const int CN : shutterBox->getCells("SplitOuter"))
-    {
-      ELog::EM<<"CN == "<<CN<<ELog::endDiag;
-    }
-  //  shutterBox->insertMainInCell
-  //    (System,shutterBox->getCells("SplitOuter"));
+  shutterBox->insertMainInCell(System,shutterBox->getCells("SplitOuter"));
+  shutterBox->insertPortInCell(System,0,shutterBox->getCell("SplitOuter",0));
+  shutterBox->insertPortInCell(System,1,shutterBox->getCell("SplitOuter",1));
 
 
 
@@ -442,49 +443,17 @@ R1FrontEnd::buildShutterTable(Simulation& System,
 			     PI,PI.getSideIndex("InnerPlate"));
     }
 
-
-  return;
-  /*
-  offPipeB->createAll(System,*shutterBox,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*offPipeB,2);
-  offPipeB->insertInCell(System,outerCell);
-
+  constructSystem::constructUnit
+    (System,buildZone,*shutterBox,"back",*offPipeB);
+  
   bremBlock->addInsertCell(offPipeB->getCell("Void"));
   bremBlock->setFront(*offPipeB,-1);
   bremBlock->setBack(*offPipeB,-2);
   bremBlock->createAll(System,*offPipeB,0);
-    
-  // bellows 
-  bellowK->createAll(System,*offPipeB,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowK,2);
-  bellowK->insertInCell(System,outerCell);
-  */
-  return;
-}
 
-void
-R1FrontEnd::insertFlanges(Simulation& System,
-			  const constructSystem::PipeTube& PT)
-  /*!
-    Boilerplate function to insert the flanges from pipetubes
-    that extend past the linkzone in to ther neighbouring regions.
-    \param System :: Simulation to use
-    \param PT :: PipeTube
-   */
-{
-  ELog::RegMethod RegA("R1FrontEnd","insertFlanges");
-  /*
-  const size_t voidN=this->getNItems("OuterVoid")-3;
+  constructSystem::constructUnit
+    (System,buildZone,*offPipeB,"back",*bellowK);
 
-  this->insertComponent(System,"OuterVoid",voidN,
-			PT.getFullRule("FlangeA"));
-  this->insertComponent(System,"OuterVoid",voidN,
-			PT.getFullRule("FlangeB"));
-  this->insertComponent(System,"OuterVoid",voidN+2,
-			PT.getFullRule("FlangeA"));
-  this->insertComponent(System,"OuterVoid",voidN+2,
-			PT.getFullRule("FlangeB"));
-  */
   return;
 }
   
@@ -503,7 +472,7 @@ R1FrontEnd::buildObjects(Simulation& System)
   buildZone.addInsertCells(this->getInsertCells());
 
   const attachSystem::FixedComp& undulatorFC=
-    buildUndulator(System,*this,0);
+    buildUndulator(System,*this,"Origin");
 
   constructSystem::constructUnit
     (System,buildZone,undulatorFC,"back",*elecGateA);
@@ -511,9 +480,6 @@ R1FrontEnd::buildObjects(Simulation& System)
   magnetBlock->setStopPoint(stopPoint);
   magnetBlock->createAll(System,*elecGateA,2);
   
-  // UGLY insert into main ring
-  for(const int CN : magnetCells)
-    magnetBlock->insertInCell("Magnet",System,CN);
   outerCell=buildZone.createUnit(System,*magnetBlock,2);
 
   magnetBlock->insertInCell("Magnet",System,outerCell);
@@ -521,8 +487,7 @@ R1FrontEnd::buildObjects(Simulation& System)
 
   if (stopPoint=="Quadrupole")
     {
-      setCell("MasterVoid",buildZone.getLastCell("Unit"));
-      lastComp=magnetBlock;
+      processEnd(System,magnetBlock);
       return;
     }
   
@@ -533,8 +498,7 @@ R1FrontEnd::buildObjects(Simulation& System)
   
   if (stopPoint=="Dipole")
     {
-      setCell("MasterVoid",buildZone.getLastCell("Unit"));
-      lastComp=magnetBlock;
+      processEnd(System,magnetBlock);
       return;
     }
 
@@ -573,26 +537,40 @@ R1FrontEnd::buildObjects(Simulation& System)
 
   if (stopPoint=="Heat")
     {
-      lastComp=heatPipe;
+      processEnd(System,heatPipe);
       return;
     }
 
   buildHeatTable(System,*heatPipe,"back");  
   buildApertureTable(System,*pipeB,"back");
   buildShutterTable(System,*pipeC,"back");  
-  return;
-  /*
 
 
+  processEnd(System,bellowK);
 
-
-
-  setCell("MasterVoid",masterCell->getName());
-  lastComp=bellowK;
-  */
   return;
 }
-  
+
+void
+R1FrontEnd::processEnd(Simulation& System,
+                       std::shared_ptr<attachSystem::FixedComp> lUnit)
+  /*!
+    Process the end point
+    \param System :: Simulation to use
+    \param lUnit :: last unit
+  */
+{
+  ELog::RegMethod RegA("R1FrontEnd","processEnd");
+
+  buildZone.rebuildInsertCells(System);
+
+  for(const int CN : magnetCells)
+    magnetBlock->insertInCell("Magnet",System,CN);
+  setCell("MasterVoid",buildZone.getLastCell("Unit"));
+  lastComp=lUnit;
+  return;
+}
+
 void 
 R1FrontEnd::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,

@@ -52,6 +52,8 @@
 #include "JawValveGenerator.h"
 #include "WallLeadGenerator.h"
 #include "CrossWayGenerator.h"
+#include "TriggerGenerator.h"
+#include "CylGateValveGenerator.h"
 
 #include "MirrorGenerator.h"
 #include "PipeGenerator.h"
@@ -524,8 +526,11 @@ opticsBeamVariables(FuncDataBase& Control,
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::PipeShieldGenerator ShieldGen;
+  setVariable::TriggerGenerator TGen;
+  setVariable::CylGateValveGenerator GVGen;
 
-  Control.addVariable(opticKey+"OuterRadius",80.0);
+  Control.addVariable(opticKey+"OuterLeft",80.0);
+  Control.addVariable(opticKey+"OuterRight",80.0);
   
   PipeGen.setNoWindow();   // no window
   PipeGen.setMat("Stainless304");
@@ -533,21 +538,18 @@ opticsBeamVariables(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,opticKey+"BellowA",16.0);
 
-    // flange if possible
-  CrossGen.setPlates(0.5,2.0,2.0);       // wall/Top/base
-  CrossGen.setTotalPorts(10.0,10.0);     // len of ports (after main)
-  CrossGen.setMat("Stainless304");
-  // height/depth
-  CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF100>
-    (Control,opticKey+"IonPA",0.0,24.4,36.6);
+  // will be rotated vertical
+  TGen.setCF<CF100>();
+  TGen.setVertical(15.0,25.0);
+  TGen.setSideCF<setVariable::CF40>(10.0); // add centre distance?
+  TGen.generateTube(Control,opticKey+"TriggerPipe");
 
   // joined and open
   GateGen.setLength(3.5);
   GateGen.setCubeCF<setVariable::CF40>();
   GateGen.generateValve(Control,opticKey+"GateRing",0.0,0);
 
-  setVariable::CrossWayGenerator MSPGen;
-  MSPGen.generateCrossWay(Control,opticKey+"GateTubeA");
+  GVGen.generateGate(Control,opticKey+"GateTubeA",0);
 
   BellowGen.generateBellow(Control,opticKey+"BellowB",16.0);
 
