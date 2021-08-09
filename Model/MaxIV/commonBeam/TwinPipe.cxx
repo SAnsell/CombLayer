@@ -3,7 +3,7 @@
  
  * File:   commonBeam/TwinPipe.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
@@ -68,7 +68,7 @@ namespace xraySystem
 {
 
 TwinPipe::TwinPipe(const std::string& Key) :
-  attachSystem::FixedOffset(Key,12),
+  attachSystem::FixedRotate(Key,12),
   attachSystem::ContainedGroup("Flange","PipeA","PipeB"),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -94,7 +94,7 @@ TwinPipe::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("TwinPipe","populate");
   
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   pipeARadius=Control.EvalVar<double>(keyName+"PipeARadius");
   pipeALength=Control.EvalVar<double>(keyName+"PipeALength");

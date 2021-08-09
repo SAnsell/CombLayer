@@ -562,6 +562,12 @@ R1FrontEnd::processEnd(Simulation& System,
 {
   ELog::RegMethod RegA("R1FrontEnd","processEnd");
 
+  if (ExternalCut::isActive("REWall"))
+    {
+      buildZone.setMaxExtent(getRule("REWall"));
+      buildZone.createUnit(System);
+    }
+
   buildZone.rebuildInsertCells(System);
 
   for(const int CN : magnetCells)

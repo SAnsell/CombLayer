@@ -120,7 +120,8 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   
   IZLeft(Key+"IZLeft"),
   IZRight(Key+"IZRight"),
-
+  innerMat(0),
+  
   pipeInit(new constructSystem::Bellows(newName+"InitBellow")),
   triggerPipe(new xraySystem::TriggerTube(newName+"TriggerUnit")),
   gateTubeA(new xraySystem::CylGateValve(newName+"GateTubeA")),
@@ -524,7 +525,6 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
 
   int outerCell;
 
-
   splitter->createAll(System,initFC,sideIndex);
   bellowAA->createAll(System,*splitter,2);
   bellowBA->createAll(System,*splitter,3);
@@ -547,7 +547,6 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
 
   HSurroundA.addIntersection(-SMap.realSurf(buildIndex+5003));
   HSurroundB.addIntersection(SMap.realSurf(buildIndex+5003));
-
   
   IZLeft.setSurround(HSurroundA);
   IZRight.setSurround(HSurroundB);
@@ -571,7 +570,6 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
   M3Pump->insertInCell("Left",System,outerCell);
   outerCell=IZRight.createUnit(System,*M3Pump,"outB");
   M3Pump->insertInCell("Right",System,outerCell);
-
 
   // LEFT
   constructSystem::constructUnit

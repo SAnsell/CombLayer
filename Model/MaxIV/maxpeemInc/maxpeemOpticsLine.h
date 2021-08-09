@@ -78,7 +78,8 @@ class maxpeemOpticsLine :
   public attachSystem::ContainedComp,
   public attachSystem::FixedRotate,
   public attachSystem::ExternalCut,
-  public attachSystem::CellMap
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
  private:
 
@@ -87,6 +88,8 @@ class maxpeemOpticsLine :
 
   /// System for building a divided inner
   attachSystem::BlockZone buildZone;
+  attachSystem::BlockZone IZLeft;
+  attachSystem::BlockZone IZRight;
   int innerMat;                         ///< inner material if used
   
   /// Shared point to use for last component:
@@ -195,16 +198,6 @@ class maxpeemOpticsLine :
   double outerRight;           ///< Radius for inner void
   
 
-  int constructDivideCell(Simulation&,const bool,
-			   const attachSystem::FixedComp&,
-			   const long int,
-			   const attachSystem::FixedComp&,
-			   const long int);
-
-  int createDoubleVoidUnit(Simulation&,
-			   HeadRule&,
-			   const attachSystem::FixedComp&,
-			   const long int);
   
   void insertFlanges(Simulation&,const constructSystem::PipeTube&);
   
@@ -218,7 +211,7 @@ class maxpeemOpticsLine :
   void buildSlitPackage
   (Simulation&,const attachSystem::FixedComp&,const std::string&);
   void buildSplitter
-  (Simulation&,const attachSystem::FixedComp&,const long int);
+  (Simulation&,const attachSystem::FixedComp&,const std::string&);
   
   void populate(const FuncDataBase&);
   void createSurfaces();
@@ -241,6 +234,8 @@ class maxpeemOpticsLine :
   void setPreInsert
     (const std::shared_ptr<attachSystem::ContainedGroup>& A) { preInsert=A; }
 
+  void buildExtras(Simulation&,const attachSystem::CellMap&);
+  
   using attachSystem::FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

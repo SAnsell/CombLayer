@@ -120,7 +120,7 @@ MAXPEEM::build(Simulation& System,
   frontBeam->setStopPoint(stopPoint);
   frontBeam->setCutSurf("Floor",r1Ring->getSurf("Floor"));
   frontBeam->setCutSurf("Roof",-r1Ring->getSurf("Roof"));
-  frontBeam->setCutSurf("back",r1Ring->getSurf("BeamInner",SIndex));
+  frontBeam->setCutSurf("REWall",r1Ring->getSurf("BeamInner",SIndex));
   
   frontBeam->addInsertCell(r1Ring->getCell("Void",8));
   frontBeam->addInsertCell(r1Ring->getCell("Void",9));
@@ -161,18 +161,16 @@ MAXPEEM::build(Simulation& System,
 			 opticsHut->getSideIndex("innerBack"));
   opticsBeam->setCutSurf("floor",r1Ring->getSurfRule("Floor"));
   opticsBeam->setCutSurf("roof",r1Ring->getSurfRule("#Roof"));
+  opticsBeam->setPreInsert(joinPipe);
   opticsBeam->createAll(System,*joinPipe,2);
 
-    ELog::EM<<"EARLY RETURN "<<ELog::endDiag;
+  opticsBeam->buildExtras(System,*opticsHut);
+
+  ELog::EM<<"Early RETURN"<<ELog::endDiag;
   return;
 
   joinPipe->insertAllInCell(System,opticsBeam->getCell("OuterVoid",0));
 
-  std::vector<int> cells(opticsHut->getCells("Back"));
-  cells.emplace_back(opticsHut->getCell("Extension"));
-  opticsBeam->buildOutGoingPipes(System,opticsBeam->getCell("LeftVoid"),
-  				 opticsBeam->getCell("RightVoid"),
-  				 cells);
 
   return;
 }

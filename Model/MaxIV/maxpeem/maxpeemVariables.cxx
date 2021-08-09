@@ -267,7 +267,6 @@ m3MirrorVariables(FuncDataBase& Control,
   // will be rotated vertical
   const std::string pumpName=mirrorKey+"PumpTubeB";
   SimpleTubeGen.setCF<CF150>();
-  SimpleTubeGen.setCap();
   SimpleTubeGen.generateTube(Control,pumpName,40.0);
   Control.addVariable(pumpName+"NPorts",3);   // beam ports
 
@@ -652,6 +651,14 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"InletRadius",5.0);
 
 
+  Control.addVariable(hutName+"Hole0Offset",Geometry::Vec3D(30.0,0,4));
+  Control.addVariable(hutName+"Hole0ZStep",1.0);
+  Control.addVariable(hutName+"Hole0Radius",5.0);
+
+  Control.addVariable(hutName+"Hole1Offset",Geometry::Vec3D(53.0,0,4));
+  Control.addVariable(hutName+"Hole1Radius",5.0);
+
+  
   Control.addVariable(hutName+"InnerFarVoid",15.0);
   Control.addVariable(hutName+"OuterFarVoid",15.0);
   Control.addVariable(hutName+"NChicane",1);
