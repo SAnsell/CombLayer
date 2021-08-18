@@ -57,6 +57,8 @@ class VirtualTube :
   bool delayPortBuild;        ///< Delay port to manual construct
   size_t portConnectIndex;    ///< Port to connect for new-origin
   Geometry::Vec3D rotAxis;    ///< Rotation axis for port rotate
+  bool zNorm;                 ///< Apply Z tracking
+  Geometry::Vec3D postZAxis;  ///< Alignment axis for Z after tracking
   double postYRotation;       ///< Post Y rotation if Y aligned to port.
   
   std::set<int> portCells;               ///< Extra cells for the port
@@ -94,6 +96,8 @@ class VirtualTube :
 
   void setPortRotation(const size_t,const Geometry::Vec3D&,
 		       const double =0.0);
+  void setPortRotation(const size_t,const Geometry::Vec3D&,
+		       const Geometry::Vec3D&);
 
   void addInsertPortCells(const int);
   void intersectPorts(Simulation&,const size_t,const size_t) const;

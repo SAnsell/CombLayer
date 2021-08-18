@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File: maxpeem/maxpeemOpticsBeamline.cxx
+ * File: maxpeem/maxpeemOpticsLine.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -111,8 +111,8 @@ maxpeemOpticsLine::maxpeemOpticsLine(const std::string& Key) :
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   buildZone(newName+"BuildZone"),
-  IZLeft(Key+"IZLeft"),
-  IZRight(Key+"IZRight"),
+  IZLeft(newName+"IZLeft"),
+  IZRight(newName+"IZRight"),
   innerMat(0),
   
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
@@ -518,7 +518,7 @@ maxpeemOpticsLine::buildSlitPackage(Simulation& System,
       jaws[i]->createAll(System,*slitTube,"Origin",PI,"InnerPlate");
     }
 
-  outerCell=constructSystem::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,*slitTube,"back",*pipeE);
 
   constructSystem::constructUnit

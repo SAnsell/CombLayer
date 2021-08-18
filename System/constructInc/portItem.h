@@ -111,6 +111,7 @@ class portItem :
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void setCentLine(const attachSystem::FixedComp&,
 		   const Geometry::Vec3D&,const Geometry::Vec3D&);
+  void reNormZ(const Geometry::Vec3D&);
 
   void addOuterCell(const int);
   void setMain(const double,const double,const double);

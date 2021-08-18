@@ -140,7 +140,6 @@ TwinPipe::createSurfaces()
   */
 {
   ELog::RegMethod RegA("TwinPipe","createSurfaces");
-  
 
   // Get A Pipe Vector:
   const Geometry::Quaternion QAxy=
@@ -155,6 +154,7 @@ TwinPipe::createSurfaces()
   AYAxis=Y;
   BYAxis=Y;
   QAz.rotate(AYAxis);
+
   QAxy.rotate(AYAxis);
 
   QBz.rotate(BYAxis);

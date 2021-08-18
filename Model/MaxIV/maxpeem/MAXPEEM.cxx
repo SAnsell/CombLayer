@@ -135,7 +135,6 @@ MAXPEEM::build(Simulation& System,
   wallLead->setBack(r1Ring->getSurf("BeamOuter",SIndex));
   wallLead->createAll(System,FCOrigin,sideIndex);
 
-
   if (!stopPoint.empty())
     ELog::EM<<"Stop Point == "<<stopPoint<<ELog::endDiag;
   if (stopPoint=="frontEnd" ||
@@ -162,14 +161,10 @@ MAXPEEM::build(Simulation& System,
   opticsBeam->setCutSurf("floor",r1Ring->getSurfRule("Floor"));
   opticsBeam->setCutSurf("roof",r1Ring->getSurfRule("#Roof"));
   opticsBeam->setPreInsert(joinPipe);
-  opticsBeam->createAll(System,*joinPipe,2);
+  opticsBeam->createAll(System,*joinPipe,"back");
 
   opticsBeam->buildExtras(System,*opticsHut);
 
-  ELog::EM<<"Early RETURN"<<ELog::endDiag;
-  return;
-
-  joinPipe->insertAllInCell(System,opticsBeam->getCell("OuterVoid",0));
 
 
   return;

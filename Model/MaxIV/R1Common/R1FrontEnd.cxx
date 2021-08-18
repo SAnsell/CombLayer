@@ -471,6 +471,7 @@ R1FrontEnd::buildObjects(Simulation& System)
 
   buildZone.addInsertCells(this->getInsertCells());
 
+
   const attachSystem::FixedComp& undulatorFC=
     buildUndulator(System,*this,"Origin");
 

@@ -84,7 +84,8 @@ VirtualTube::VirtualTube(const std::string& Key) :
   attachSystem::FrontBackCut(),
 
   outerVoid(0),delayPortBuild(0),portConnectIndex(1),
-  rotAxis(0,1,0),postYRotation(0.0)
+  rotAxis(0,1,0),zNorm(0),postZAxis(0,0,1),
+  postYRotation(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -166,9 +167,13 @@ VirtualTube::createPorts(Simulation& System,
 
       for(const int CN : portCells)
 	Ports[i]->addInsertCell(CN);
-
+	
       Ports[i]->setCentLine(*this,PCentre[i],PAxis[i]);
       Ports[i]->constructTrack(System,insertObj,innerSurf,outerSurf);
+
+      if (zNorm)
+	Ports[i]->reNormZ(postZAxis);
+  
       if (outerVoid && CellMap::hasCell("OuterVoid"))
        	Ports[i]->addPortCut(CellMap::getCellObject(System,"OuterVoid"));
       Ports[i]->insertObjects(System);
@@ -270,6 +275,7 @@ VirtualTube::setPortRotation(const size_t index,
         - 1,2 : main ports
         - 3-N+2 : Extra Ports
     \param RAxis :: Rotation axis expresses in local X,Y,Z
+    \param postAngle :: Rotation on Y to correct fractional turn
   */
 {
   ELog::RegMethod RegA("VirtualTube","setPortRotation");
@@ -279,6 +285,31 @@ VirtualTube::setPortRotation(const size_t index,
     rotAxis=RAxis.unit();
 
   postYRotation=postAngle;
+  return;
+}
+
+void
+VirtualTube::setPortRotation(const size_t index,
+			     const Geometry::Vec3D& RAxis,
+			     const Geometry::Vec3D& postZVec)
+  /*!
+    Set Port rotation
+    \param index
+        -0 : No rotation / no shift
+        - 1,2 : main ports
+        - 3-N+2 : Extra Ports
+    \param RAxis :: Rotation axis expresses in local X,Y,Z
+    \param postAngle :: Rotation on Y to correct fractional turn
+  */
+{
+  ELog::RegMethod RegA("VirtualTube","setPortRotation");
+
+  portConnectIndex=index;
+  if (portConnectIndex>1)
+    rotAxis=RAxis.unit();
+
+  zNorm=1;
+  postZAxis=postZVec;
   return;
 }
 
@@ -310,7 +341,10 @@ VirtualTube::applyPortRotation()
 	}
       return;
     }
-
+  
+  rotAxis=rotAxis.getInBasis(X,Y,Z);
+  postZAxis=postZAxis.getInBasis(X,Y,Z);
+  
   // ALL of these point are NOT in the FixedComp referecne basis
   // They are to be multiplied by X,Y,Z and shifed by Origin.
   const size_t pIndex=portConnectIndex-3;
@@ -330,7 +364,7 @@ VirtualTube::applyPortRotation()
       QVpost.rotate(Z);
     }
 
-  // retrack y to the port axis 
+  // retrack y to the port axis
   const Geometry::Quaternion QV=
     Geometry::Quaternion::calcQVRot(Geometry::Vec3D(0,1,0),portAxis,rotAxis);
 
@@ -342,14 +376,14 @@ VirtualTube::applyPortRotation()
   const Geometry::Quaternion QVmain(QV[0],QAxis);
   QVmain.rotateBasis(X,Y,Z);
 
-
   const Geometry::Vec3D portOriginB=
     portCentre.getInBasis(X,Y,Z)+
     portAxis.getInBasis(X,Y,Z)*pLen;
 
   const Geometry::Vec3D diffB=frontShift-portOriginB;
   Origin+=diffB;
-  
+
+
   return;
 }
 
@@ -529,7 +563,7 @@ VirtualTube::insertAllInCell(Simulation& System,
   */
 {
   ContainedGroup::insertAllInCell(System,cellVec);
-  ELog::EM<<"DKey "<<keyName<<" "<<delayPortBuild<<ELog::endDiag;
+
   if (!delayPortBuild)
     {
       for(const std::shared_ptr<portItem>& PC : Ports)
@@ -564,7 +598,8 @@ VirtualTube::insertMainInCell(Simulation& System,
 }
 
 void
-VirtualTube::insertPortInCell(Simulation& System,const size_t index,
+VirtualTube::insertPortInCell(Simulation& System,
+			      const size_t index,
 			      const int cellN) const
   /*!
     Allow ports to be intersected into arbitary cell list
@@ -639,8 +674,8 @@ VirtualTube::createAll(Simulation& System,
   applyPortRotation();
   createSurfaces();
   createObjects(System);
-  createLinks();
 
+  createLinks();
   createPorts(System);
   insertObjects(System);
     

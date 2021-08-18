@@ -54,7 +54,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -68,7 +68,7 @@ namespace xraySystem
 {
 
 TankMonoVessel::TankMonoVessel(const std::string& Key) :
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -96,7 +96,7 @@ TankMonoVessel::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("TankMonoVessel","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   // Void + Fe special:
   voidRadius=Control.EvalVar<double>(keyName+"VoidRadius");
@@ -432,7 +432,7 @@ TankMonoVessel::createPorts(Simulation& System)
 
       MonteCarlo::Object* OPtr=
 	CellMap::getCellObject(System,"Wall");
-      if (PAxis[i].dotProd(X)>0.0)
+      if (PAxis[i].dotProd(X)<0.0)
 	Ports[i].addInsertCell(CellMap::getCell("OuterLeftVoid"));
       else
 	Ports[i].addInsertCell(CellMap::getCell("OuterRightVoid"));
@@ -443,6 +443,27 @@ TankMonoVessel::createPorts(Simulation& System)
   return;
 }
 
+
+void
+TankMonoVessel::insertPortInCell(Simulation& System,
+				 const size_t pIndex,
+				 const int cellN) const
+  /*!
+    Insert a given port in a cell
+    \param pIndex :: port index
+    \param System :: Simulation to use 
+    \param cellN :: cell number
+   */
+{
+  ELog::RegMethod RegA("TankMonoVessel","insertPort");
+
+  if (Ports.size()>=pIndex)
+    throw ColErr::SizeError<size_t>(pIndex,Ports.size(),"Ports index");
+  
+  Ports[pIndex].insertInCell(System,cellN);
+
+  return;
+}
 
 void
 TankMonoVessel::createAll(Simulation& System,

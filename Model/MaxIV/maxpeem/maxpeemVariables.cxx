@@ -543,10 +543,6 @@ opticsBeamVariables(FuncDataBase& Control,
   TGen.setSideCF<setVariable::CF40>(10.0); // add centre distance?
   TGen.generateTube(Control,opticKey+"TriggerPipe");
 
-  // joined and open
-  GateGen.setLength(3.5);
-  GateGen.setCubeCF<setVariable::CF40>();
-  GateGen.generateValve(Control,opticKey+"GateRing",0.0,0);
 
   GVGen.generateGate(Control,opticKey+"GateTubeA",0);
 

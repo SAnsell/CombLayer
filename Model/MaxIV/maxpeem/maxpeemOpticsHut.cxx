@@ -147,25 +147,6 @@ maxpeemOpticsHut::populate(const FuncDataBase& Control)
   
   return;
 }
-
-void
-maxpeemOpticsHut::createUnitVector(const attachSystem::FixedComp& FC,
-				     const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("maxpeemOpticsHut","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
-  // shift forward for back wall
-  Origin+=Y*(outerSkin+innerSkin+pbFrontThick);
-  return;
-}
  
 void
 maxpeemOpticsHut::createSurfaces()
@@ -486,7 +467,7 @@ maxpeemOpticsHut::createAll(Simulation& System,
   ELog::RegMethod RegA("maxpeemOpticsHut","createAll(FC)");
 
   populate(System.getDataBase());
-  createUnitVector(FC,FIndex);
+  createCentredUnitVector(FC,FIndex,outerSkin+innerSkin+pbFrontThick);
   
   createSurfaces();    
   createObjects(System);

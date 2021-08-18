@@ -420,7 +420,7 @@ sub writeExcutables
   foreach my $item (@{$self->{masterProg}})
     {
       print $DX "add_executable(",$item," \${PROJECT_SOURCE_DIR}/Main/",
-	  $item,")\n";
+	  $item,".cxx)\n";
 
       ## Special first and last item
       my $firstUnit=undef;
