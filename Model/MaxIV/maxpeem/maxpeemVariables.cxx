@@ -46,7 +46,6 @@
 
 #include "BeamMountGenerator.h"
 #include "CollGenerator.h"
-#include "CrossGenerator.h"
 #include "GateValveGenerator.h"
 #include "GratingMonoGenerator.h"
 #include "JawValveGenerator.h"
@@ -300,7 +299,8 @@ m3MirrorVariables(FuncDataBase& Control,
   // mirror in M3Tube 
   MirrGen.setPlate(28.0,1.0,9.0);  //guess
   // x/y/z/theta/phi/radius
-  MirrGen.generateMirror(Control,mirrorKey+"M3Mirror",0.0,0.0, 0.0, 2.0, 0.0,0.0);
+  MirrGen.generateMirror(Control,mirrorKey+"M3Mirror",
+			 0.0,0.0, 0.0, 2.0, 0.0,0.0);
   Control.addVariable(mirrorKey+"M3MirrorYAngle",90.0);
 
   PipeGen.setCF<setVariable::CF100>();
@@ -521,7 +521,6 @@ opticsBeamVariables(FuncDataBase& Control,
   setVariable::BellowGenerator BellowGen;
   setVariable::GateValveGenerator GateGen;
   setVariable::PipeGenerator PipeGen;
-  setVariable::CrossGenerator CrossGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::PipeShieldGenerator ShieldGen;
@@ -542,7 +541,6 @@ opticsBeamVariables(FuncDataBase& Control,
   TGen.setVertical(15.0,25.0);
   TGen.setSideCF<setVariable::CF40>(10.0); // add centre distance?
   TGen.generateTube(Control,opticKey+"TriggerPipe");
-
 
   GVGen.generateGate(Control,opticKey+"GateTubeA",0);
 

@@ -214,11 +214,12 @@ maxpeemOpticsLine::maxpeemOpticsLine(const std::string& Key) :
   OR.addObject(M3Mirror);
   OR.addObject(offPipeD);
   OR.addObject(splitter);
+  OR.addObject(screenB);
   OR.addObject(bellowAA);
-  OR.addObject(bellowBA);
   OR.addObject(gateAA);
-  OR.addObject(gateBA);
   OR.addObject(pumpTubeAA);
+  OR.addObject(bellowBA);
+  OR.addObject(gateBA);  
   OR.addObject(pumpTubeBA);
   OR.addObject(outPipeA);
   OR.addObject(outPipeB);
@@ -273,30 +274,6 @@ maxpeemOpticsLine::createSurfaces()
       buildZone.setMaxExtent(getRule("back"));
       buildZone.setInnerMat(innerMat);
     }
-  return;
-}
-
-
-
-void
-maxpeemOpticsLine::insertFlanges(Simulation& System,
-				 const constructSystem::PipeTube& PT)
-  /*!
-    Boilerplate function to insert the flanges from pipetubes
-    that extend past the linkzone in to ther neighbouring regions.
-    \param System :: Simulation to use
-    \param PT :: PipeTube
-   */
-{
-  ELog::RegMethod RegA("maxpeemOpticsLine","insertFlanges");
-  
-  const size_t voidN=this->CellMap::getNItems("OuterVoid")-3;
-
-  // inserting into the outerVoid +1 / -1 
-  this->insertComponent(System,"OuterVoid",voidN,PT.getCC("FlangeA"));
-  this->insertComponent(System,"OuterVoid",voidN,PT.getCC("FlangeB"));
-  this->insertComponent(System,"OuterVoid",voidN+2,PT.getCC("FlangeA"));
-  this->insertComponent(System,"OuterVoid",voidN+2,PT.getCC("FlangeB"));
   return;
 }
 
@@ -608,6 +585,8 @@ maxpeemOpticsLine::buildExtras(Simulation& System,
   outPipeA->insertInCell("FlangeB",System,hut.getCell("BackVoid"));
   outPipeB->insertInCell("FlangeB",System,hut.getCell("BackVoid"));
 
+  ELog::EM<<"SCREN == "<<screenB->getKeyName()<<ELog::endDiag;
+
   return;
 }
 
@@ -652,11 +631,8 @@ maxpeemOpticsLine::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,FPI,"OuterPlate",*bellowC);
 
-  //  insertFlanges(System,*florTubeA);
-
   outerCell=constructSystem::constructUnit
     (System,buildZone,*bellowC,"back",*pipeB);
-
 
   screenExtra->addAllInsertCell(outerCell);
   screenExtra->setCutSurf("inner",*pipeB,"pipeOuterTop");

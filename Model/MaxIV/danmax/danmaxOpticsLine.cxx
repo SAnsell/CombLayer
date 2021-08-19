@@ -64,7 +64,6 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
-#include "InnerZone.h"
 #include "BlockZone.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"

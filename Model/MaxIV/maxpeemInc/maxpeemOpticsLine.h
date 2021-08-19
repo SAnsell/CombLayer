@@ -225,10 +225,7 @@ class maxpeemOpticsLine :
   maxpeemOpticsLine& operator=(const maxpeemOpticsLine&);
   ~maxpeemOpticsLine();
 
-  void buildOutGoingPipes(Simulation&,const int,const int,
-			  const std::vector<int>&);
-
-    /// Assignment to inner void
+  /// Assignment to inner void
   void setInnerMat(const int M) {  innerMat=M; }
   /// Assignment to extra for first volume
   void setPreInsert

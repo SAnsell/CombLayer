@@ -54,7 +54,6 @@
 #include "PointMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
 #include "BlockZone.h"
 #include "CopiedComp.h"
 

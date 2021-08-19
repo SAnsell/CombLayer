@@ -62,7 +62,6 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
-#include "InnerZone.h"
 #include "BlockZone.h"
 
 #include "VacuumPipe.h"
