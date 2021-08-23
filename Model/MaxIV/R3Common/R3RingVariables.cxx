@@ -410,7 +410,7 @@ R3FrontEndVariables(FuncDataBase& Control,
   Control.addVariable(frontKey+"OuterRadius",60.0);
 
   // BuildZone offset
-  Control.addVariable(frontKey+"FrontOffset",-250.0);  
+  Control.addVariable(frontKey+"FrontOffset",-400.0);  
 
   PipeGen.setNoWindow();
   PipeGen.setMat("Copper");

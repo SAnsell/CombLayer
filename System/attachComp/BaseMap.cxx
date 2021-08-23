@@ -236,8 +236,7 @@ BaseMap::copyItems(const BaseMap& A,const std::string& Key)
   */
 {
   LCTYPE::const_iterator mc=A.Items.find(Key);
-  if (mc==A.Items.end())
-    throw ColErr::InContainerError<std::string>(Key,"Key not present");
+  if (mc==A.Items.end()) return;
   addItems(Key,mc->second);
   return;
 }

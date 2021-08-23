@@ -323,7 +323,8 @@ Segment29::createLinks()
   joinItems.push_back(FixedComp::getFullRule("backFlat"));
 
   buildZone->setBack(ExternalCut::getRule("BackWallFront"));
-  
+
+  buildZone->copyCells(*this,"FrontSpace");
   buildZone->copyAllCells(*IZTop);
   buildZone->copyAllCells(*IZMid);
   return;

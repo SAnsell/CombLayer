@@ -105,7 +105,7 @@ const attachSystem::FixedComp&
 formaxFrontEnd::buildUndulator(Simulation& System,
 			       const attachSystem::FixedComp& preFC,
 			       const long int preSideIndex)
-/*!
+  /*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use

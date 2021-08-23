@@ -126,7 +126,7 @@ undulatorVariables(FuncDataBase& Control,
   PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.generatePipe(Control,undKey+"UPipe",undulatorLen);
-  Control.addVariable(undKey+"UPipeYStep",-undulatorLen/2.0);
+  //  Control.addVariable(undKey+"UPipeYStep",-undulatorLen/2.0);
 
   Control.addVariable(undKey+"UPipeWidth",6.0);
   Control.addVariable(undKey+"UPipeHeight",0.6);

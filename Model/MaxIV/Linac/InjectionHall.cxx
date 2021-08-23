@@ -1465,6 +1465,7 @@ bool
 InjectionHall::addPillars(Simulation& System,const int CN) const
   /*!
     Checks if a pillar should be excluded from a cell
+    \param CN :: Cell number
    */
 {
   ELog::RegMethod RegA("InjectionHall","addPillars");
@@ -1476,25 +1477,32 @@ InjectionHall::addPillars(Simulation& System,const int CN) const
       HeadRule HR=OPtr->getHeadRule();
       HeadRule testHR(HR);
       // remove +/- Z because we dont know height
-      testHR.removeMatchedPlanes(Z,0.9);   // remove roof
-      testHR.removeMatchedPlanes(-Z,0.9);   // remove base
 
-      
+      testHR.removeMatchedPlanes(Z,0.7);   // remove roof
+      testHR.removeMatchedPlanes(-Z,0.7);   // remove base
+
       // simple cheep test... not idea but works
       const std::vector<double> xOffset({0.0,-1.0,0.0,1.0,0.0});
       const std::vector<double> yOffset({0.0,0.0,-1.0,0.0,1.0});
+      const std::vector<double> zOffset({-140,0.0,140});
       int SI(buildIndex+3000);
       for(size_t i=0;i<nPillars;i++)
 	{
 	  for(size_t j=0;j<5;j++)
 	    {
-	      const Geometry::Vec3D tPoint
-		(pXY[i]+X*(pRadii[i]*xOffset[j])+Y*(pRadii[i]*yOffset[j]));
-	      if (testHR.isValid(tPoint))
+	      for(size_t k=0;k<3;k++)
 		{
-		  HR*=ModelSupport::getHeadRule(SMap,SI,"7");
-		  flag=true;
-		  break;		  
+		  const Geometry::Vec3D tPoint
+		    (pXY[i]+X*(pRadii[i]*xOffset[j])+
+		     Y*(pRadii[i]*yOffset[j])+
+		     Z*zOffset[k]);
+
+		  if (testHR.isValid(tPoint))
+		    {
+		      HR*=ModelSupport::getHeadRule(SMap,SI,"7");
+		      flag=true;
+		      break;		  
+		    }
 		}
 	    }
 	  SI+=10;

@@ -265,6 +265,7 @@ Segment28::createLinks()
 
   buildZone->setBack(FixedComp::getFullRule("backMid"));
 
+  buildZone->copyCells(*this,"FrontSpace");
   buildZone->copyAllCells(*IZTop);
   buildZone->copyAllCells(*IZFlat);
 

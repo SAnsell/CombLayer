@@ -370,6 +370,12 @@ Segment27::createLinks()
   joinItems.push_back(FixedComp::getFullRule("backLower"));
 
   buildZone->setBack(FixedComp::getFullRule("backLower"));
+
+  buildZone->copyCells(*this,"FrontSpace");
+  buildZone->copyAllCells(*IZTop);
+  buildZone->copyAllCells(*IZFlat);
+  buildZone->copyAllCells(*IZLower);
+
   return;
 }
 

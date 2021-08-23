@@ -80,9 +80,6 @@ namespace tdcSystem
 
 Segment25::Segment25(const std::string& Key) :
   TDCsegment(Key,6),
-  IZTop(new attachSystem::BlockZone(keyName+"IZTop")),
-  IZMid(new attachSystem::BlockZone(keyName+"IZMid")),
-  IZLower(new attachSystem::BlockZone(keyName+"IZLower")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   triPipeA(new tdcSystem::TriPipe(keyName+"TriPipeA")),
   dipoleA(new tdcSystem::DipoleDIBMag(keyName+"DipoleA")),
@@ -174,29 +171,6 @@ Segment25::buildObjects(Simulation& System)
   return;
 }
 
-void
-Segment25::constructVoid(Simulation& System,
-			 const attachSystem::FixedComp& FC) const
-  /*!
-    Inserts the IZ volumes into the large space "LongVoid"
-    \param System :: Simulation 
-    \param FC :: FixedComp to convert to a CellMap
-  */
-{
-  ELog::RegMethod RegA("Segment25","constructVoid");
-
-  const attachSystem::CellMap* CPtr=
-    dynamic_cast<const attachSystem::CellMap*>(&FC);
-  if (CPtr)
-    {
-      const HeadRule volHR=IZTop->getVolume();
-
-      CPtr->insertComponent(System,"LongVoid",IZTop->getVolume());
-      CPtr->insertComponent(System,"LongVoid",IZMid->getVolume());
-      CPtr->insertComponent(System,"LongVoid",IZLower->getVolume());
-    }
-  return;
-}
 
 void
 Segment25::createLinks()
@@ -216,6 +190,8 @@ Segment25::createLinks()
   joinItems.push_back(FixedComp::getFullRule("backFlat"));
   joinItems.push_back(FixedComp::getFullRule("backMid"));
   joinItems.push_back(FixedComp::getFullRule("backLower"));
+  
+  buildZone->setBack(FixedComp::getFullRule("backFlat"));
 
   return;
 }
@@ -238,7 +214,7 @@ Segment25::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   buildObjects(System);
   createLinks();
-  //  constructVoid(System,FC);
+
   return;
 }
 
