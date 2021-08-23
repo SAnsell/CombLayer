@@ -2310,6 +2310,7 @@ HeadRule::trackPoint(const Geometry::Vec3D& Org,
   MonteCarlo::LineIntersectVisit LI(Org,VUnit);
   const std::vector<Geometry::Vec3D>& Pts=LI.getPoints(*this);
 
+
   if (Pts.size()!=1)
     throw ColErr::MisMatch<size_t>
       (Pts.size(),1,"Non-signular point intersect");

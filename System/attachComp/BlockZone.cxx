@@ -79,7 +79,7 @@ operator<<(std::ostream& OX,const BlockZone& A)
 }
 
 BlockZone::BlockZone() :
-  attachSystem::FixedComp(0,"BZtemp"),
+  attachSystem::FixedComp(2,"BZtemp"),
   attachSystem::CellMap(),
   voidMat(0)
   /*!
@@ -370,6 +370,31 @@ BlockZone::createUnit(Simulation& System,
   insertCell(System,Volume);
 
   return cellIndex-1;
+}
+
+void
+BlockZone::createLinks(const attachSystem::FixedComp& FC,
+		       const long int sideIndex)
+  /*!
+    construct front/back points
+   */
+{
+  ELog::RegMethod RegA("Segment27","createLinks");
+
+  createUnitVector(FC,sideIndex);
+  frontHR.populateSurf();
+  backHR.populateSurf();
+
+  const Geometry::Vec3D APt=frontHR.trackPoint(Origin,Y);
+  const Geometry::Vec3D BPt=backHR.trackPoint(Origin,Y);
+
+  FixedComp::setLinkSurf(0,frontHR.complement());
+  FixedComp::setLinkSurf(1,backHR.complement());
+
+  FixedComp::setConnect(0,APt,-Y);
+  FixedComp::setConnect(1,BPt,Y);
+
+  return;
 }
 
 void

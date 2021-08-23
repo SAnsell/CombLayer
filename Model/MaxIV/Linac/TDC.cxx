@@ -379,6 +379,12 @@ TDC::reconstructInjectionHall(Simulation& System)
   attachSystem::BlockZone BZvol;
   for(const int CN : CInsert)
     {
+      std::map<int,HeadRule>::iterator mc=
+	originalSpaces.find(CN);
+      if (mc==originalSpaces.end())
+	throw ColErr::InContainerError<int>(CN,"BZone insertcell");
+      MonteCarlo::Object* OPtr=System.findObject(CN);
+      
       HeadRule OuterVolume;
       bool initFlag(1);
       for(const auto& [name,bzPtr] : bZone)
@@ -393,23 +399,15 @@ TDC::reconstructInjectionHall(Simulation& System)
 		}
 	      else if (!BZvol.merge(*bzPtr))
 		{
-		  OuterVolume.addIntersection(BZvol.getVolume().complement());
+		  OuterVolume.addUnion(BZvol.getVolume());
 		  BZvol= *bzPtr;
 		}
-	    }
+	    }		  
 	}
-      	
-      std::map<int,HeadRule>::iterator mc=
-	originalSpaces.find(CN);
-
-      if (mc==originalSpaces.end())
-	throw ColErr::InContainerError<int>(CN,"BZone insertcell");
-
       HeadRule HROut=mc->second;
-      HROut.addIntersection(BZvol.getVolume().complement());
-      HROut.addIntersection(OuterVolume);
-
-      MonteCarlo::Object* OPtr=System.findObject(CN);
+      
+      OuterVolume+=BZvol.getVolume();
+      HROut.addIntersection(OuterVolume.complement());
       OPtr->procHeadRule(HROut);
     }
 

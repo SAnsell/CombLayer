@@ -212,6 +212,12 @@ Segment26::createSplitInnerZone()
       IZMid->setFront(pipeBA->getFullRule(-1));
       IZLower->setFront(pipeCA->getFullRule(-1));
     }
+  else
+    {
+      IZTop->setFront(pipeAA->getFullRule(-1));
+      IZMid->setFront(pipeAA->getFullRule(-1));
+      IZLower->setFront(pipeAA->getFullRule(-1));
+    }
 
   IZTop->setSurround(HSurroundA);
   IZMid->setSurround(HSurroundB);

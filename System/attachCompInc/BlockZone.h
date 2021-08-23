@@ -119,6 +119,8 @@ class BlockZone  :
 		 const attachSystem::FixedComp&,
 		 const std::string&);
 
+  void createLinks(const attachSystem::FixedComp&,const long int);
+  
   using FixedComp::createAll;  
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,

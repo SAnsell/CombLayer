@@ -192,6 +192,7 @@ Segment25::createLinks()
   joinItems.push_back(FixedComp::getFullRule("backLower"));
   
   buildZone->setBack(FixedComp::getFullRule("backFlat"));
+  buildZone->createLinks(*this,0);
 
   return;
 }
