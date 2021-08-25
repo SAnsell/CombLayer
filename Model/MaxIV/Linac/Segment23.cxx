@@ -66,7 +66,7 @@
 #include "VacuumPipe.h"
 #include "LQuadF.h"
 #include "LQuadH.h"
-#include "LObjectSupportB.h"
+#include "LObjectSupport.h"
 #include "CorrectorMag.h"
 #include "YagUnit.h"
 #include "NameStack.h"

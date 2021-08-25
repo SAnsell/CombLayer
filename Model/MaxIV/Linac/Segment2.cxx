@@ -76,7 +76,7 @@
 #include "YagScreen.h"
 #include "LocalShielding.h"
 
-#include "LObjectSupportB.h"
+#include "LObjectSupport.h"
 #include "TDCsegment.h"
 #include "Segment2.h"
 

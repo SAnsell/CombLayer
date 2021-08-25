@@ -74,7 +74,7 @@
 #include "JawFlange.h"
 #include "CrossWayTube.h"
 #include "LocalShielding.h"
-#include "LObjectSupportB.h"
+#include "LObjectSupport.h"
 
 #include "TDCsegment.h"
 #include "Segment48.h"

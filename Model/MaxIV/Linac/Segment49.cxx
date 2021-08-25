@@ -68,7 +68,7 @@
 
 #include "CylGateValve.h"
 #include "VacuumPipe.h"
-#include "LObjectSupportB.h"
+#include "LObjectSupport.h"
 #include "InjectionHall.h"
 #include "LocalShielding.h"
 
