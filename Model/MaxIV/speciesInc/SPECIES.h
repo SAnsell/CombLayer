@@ -3,7 +3,7 @@
  
  * File:   speciesInc/SPECIES.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,7 +51,7 @@ namespace xraySystem
   class R1Ring;
   class speciesFrontEnd;
   class speciesOpticsHut;
-  class speciesOpticsBeamline;
+  class speciesOpticsLine;
   class ExperimentalHutch;
   class ExptBeamline;
   class OpticsBeamline;
@@ -78,7 +78,7 @@ class SPECIES :
   /// Pipe joining frontend to optics hut
   std::shared_ptr<constructSystem::VacuumPipe> joinPipe;
   /// Main optics hutch components
-  std::shared_ptr<speciesOpticsBeamline> opticsBeam;
+  std::shared_ptr<speciesOpticsLine> opticsBeam;
 
  public:
   

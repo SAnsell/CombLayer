@@ -66,7 +66,6 @@
 #include "PortChicaneGenerator.h"
 #include "JawFlangeGenerator.h"
 #include "BremCollGenerator.h"
-#include "WallLeadGenerator.h"
 #include "CLRTubeGenerator.h"
 #include "TriggerGenerator.h"
 #include "CylGateValveGenerator.h"
@@ -83,6 +82,7 @@
 #include "ConnectorGenerator.h"
 #include "FlangeDomeGenerator.h"
 #include "AreaDetectorGenerator.h"
+#include "OpticsHutGenerator.h"
 
 
 namespace setVariable
@@ -92,7 +92,6 @@ namespace formaxVar
 {
 
 void undulatorVariables(FuncDataBase&,const std::string&);
-void wallVariables(FuncDataBase&,const std::string&);
 void mirrorMonoPackage(FuncDataBase&,const std::string&);
 void hdcmPackage(FuncDataBase&,const std::string&);
 void diag2Package(FuncDataBase&,const std::string&);
@@ -127,7 +126,7 @@ undulatorVariables(FuncDataBase& Control,
   PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.generatePipe(Control,undKey+"UPipe",undulatorLen);
-  Control.addVariable(undKey+"UPipeYStep",-undulatorLen/2.0);
+  //  Control.addVariable(undKey+"UPipeYStep",-undulatorLen/2.0);
 
   Control.addVariable(undKey+"UPipeWidth",6.0);
   Control.addVariable(undKey+"UPipeHeight",0.6);
@@ -445,29 +444,11 @@ monoShutterVariables(FuncDataBase& Control,
   BellowGen.setAFlangeCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowL",10.0);    
 
-
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,preName+"PipeF",85.0);  
+  PipeGen.generatePipe(Control,preName+"PipeF",70.0);  
   return;
 }
   
-void
-wallVariables(FuncDataBase& Control,
-	      const std::string& wallKey)
-/*!
-    Set the variables for the frontend wall
-    \param Control :: DataBase to use
-    \param wallKey :: name before part names
-  */
-{
-  ELog::RegMethod RegA("formaxVariables[F]","wallVariables");
-
-  WallLeadGenerator LGen;
-  LGen.setWidth(140.0,70.0);
-  LGen.generateWall(Control,wallKey,3.0);
-
-  return;
-}
 
 void
 opticsHutVariables(FuncDataBase& Control,
@@ -479,47 +460,17 @@ opticsHutVariables(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("formaxVariables","opticsHutVariables");
-  
-  Control.addVariable(hutName+"Depth",100.0);
-  Control.addVariable(hutName+"Height",200.0);
-  Control.addVariable(hutName+"Length",1256.0);
-  Control.addVariable(hutName+"OutWidth",202.0);
-  Control.addVariable(hutName+"RingExtra",20.0);
-  Control.addVariable(hutName+"RingFlat",70.0);
 
-  
-  Control.addVariable(hutName+"InnerThick",0.3);
-  
-  Control.addVariable(hutName+"PbWallThick",1.6);
-  Control.addVariable(hutName+"PbRoofThick",1.6);
-  Control.addVariable(hutName+"PbFrontThick",1.2);
-  Control.addVariable(hutName+"PbBackThick",9.0);
+  OpticsHutGenerator OGen; 
 
-  Control.addVariable(hutName+"OuterThick",0.3);
-
-  Control.addVariable(hutName+"FloorThick",50.0);
-  Control.addVariable(hutName+"InnerOutVoid",10.0);
-  Control.addVariable(hutName+"OuterOutVoid",10.0);
-
-  Control.addVariable(hutName+"SkinMat","Stainless304");
-  Control.addVariable(hutName+"ConcreteMat","Concrete");
-  Control.addVariable(hutName+"PbMat","Lead");
-  Control.addVariable(hutName+"FloorMat","Concrete");
-  Control.addVariable(hutName+"VoidMat","Void");
-
-  Control.addVariable(hutName+"HoleXStep",0.0);
-  Control.addVariable(hutName+"HoleZStep",0.0);
-  Control.addVariable(hutName+"HoleRadius",3.5);
-
-  Control.addVariable(hutName+"InletXStep",0.0);
-  Control.addVariable(hutName+"InletZStep",0.0);
-  Control.addVariable(hutName+"InletRadius",5.0);
+  OGen.addHole(Geometry::Vec3D(0,0,0),3.5);
+  OGen.generateHut(Control,hutName,1256.0);
 
   Control.addVariable(hutName+"NChicane",2);
   PortChicaneGenerator PGen;
-  PGen.setSize(4.0,40.0,30.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane0",270.0,-25.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane1",370.0,-25.0);
+  PGen.setSize(4.0,60.0,40.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane0",170.0,-25.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane1",270.0,-25.0);
   
   return;
 }
@@ -532,7 +483,7 @@ exptHutVariables(FuncDataBase& Control,
     Optics hut variables
     \param Control :: DataBase to add
     \param beamName :: Beamline name
-    \param bremXStep :: Offset of beam from main centre line
+    \param beamXStep :: Offset of beam from main centre line
   */
 {
   ELog::RegMethod RegA("formaxVariables[F]","exptHutVariables");
@@ -544,8 +495,8 @@ exptHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"YStep",0.0);
   Control.addVariable(hutName+"Height",200.0);
   Control.addVariable(hutName+"Length",1719.4);
-  Control.addVariable(hutName+"OutWidth",198.50);
-  Control.addVariable(hutName+"RingWidth",248.6);
+  Control.addVariable(hutName+"OutWidth",260);
+  Control.addVariable(hutName+"RingWidth",200);
   Control.addVariable(hutName+"InnerThick",0.1);
   Control.addVariable(hutName+"PbBackThick",0.6);
   Control.addVariable(hutName+"PbRoofThick",0.4);
@@ -578,11 +529,19 @@ exptHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"PShieldWallMat","Stainless304");
   Control.addVariable(hutName+"PShieldMat","Lead");
 
-  Control.addVariable(hutName+"NChicane",2);
+  Control.addVariable(hutName+"NChicane",6);
   PortChicaneGenerator PGen;
-  PGen.setSize(4.0,40.0,30.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane0","Left",150.0,-5.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane1","Left",-270.0,-5.0);
+  PGen.setSize(4.0,60.0,40.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane0","Left",-600.0,-5.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane1","Left",-520.0,-5.0);
+  PGen.setSize(4.0,30.0,40.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane2","Left",-440.0,-5.0);
+  PGen.setSize(4.0,60.0,40.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane3","Right",-600.0,-5.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane4","Right",-520.0,-5.0);
+  PGen.setSize(4.0,30.0,40.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane5","Right",-460.0,-5.0);
+
   /*
   PGen.generatePortChicane(Control,hutName+"Chicane1",370.0,-25.0);
   PGen.generatePortChicane(Control,hutName+"Chicane2",-70.0,-25.0);
@@ -957,7 +916,7 @@ detectorTubePackage(FuncDataBase& Control,
   SimpleTubeGen.setCF<CF350>();
   
   const std::string tubeName(beamName+"DetectorTube");
-  Control.addVariable(tubeName+"YStep", 800.748); // dummy
+  Control.addVariable(tubeName+"YStep", 709.748); // dummy
   Control.addVariable(tubeName+"OuterRadius",60.0);
   Control.addVariable(tubeName+"OuterMat","Void"); 
   // MAIN PIPE:
@@ -1074,13 +1033,13 @@ exptVariables(FuncDataBase& Control,
   CGateGen.setCylCF<CF40>();
   CGateGen.generateValve(Control,preName+"CylGateA",0.0,0);
 
-  PipeGen.generatePipe(Control,preName+"PipeB",118.0);
+  PipeGen.generatePipe(Control,preName+"PipeB",118.0-15);
 
   BellowGen.generateBellow(Control,preName+"BellowD",15.0);
   
   SixGen.generateSixPort(Control,preName+"SixPortB");
 
-  PipeGen.generatePipe(Control,preName+"PipeC",118.0);
+  PipeGen.generatePipe(Control,preName+"PipeC",118.0-15);
 
   CGateGen.generateValve(Control,preName+"CylGateB",0.0,0);
 
@@ -1100,7 +1059,7 @@ exptVariables(FuncDataBase& Control,
 
   CrossGen.generateSixPort(Control,preName+"CrossB");
 
-  PipeGen.generatePipe(Control,preName+"AdjustPipe",73.0);
+  PipeGen.generatePipe(Control,preName+"AdjustPipe",33.0);
 
   PipeGen.generatePipe(Control,preName+"PipeE",7.5);
 
@@ -1113,7 +1072,7 @@ exptVariables(FuncDataBase& Control,
   PipeGen.setCF<CF16>();
   PipeGen.setAFlangeCF<CF40>();
   PipeGen.setBFlange(1.1,0.1);
-  PipeGen.generatePipe(Control,preName+"EndPipe",61.0);
+  PipeGen.generatePipe(Control,preName+"EndPipe",41.0);
 
   Control.addVariable(preName+"SampleYStep", 25.0); // [2]
   Control.addVariable(preName+"SampleRadius", 5.0); // [2]
@@ -1147,11 +1106,9 @@ FORMAXvariables(FuncDataBase& Control)
 
   formaxVar::undulatorVariables(Control,frontKey);
   // exit pipe
-  setVariable::R3FrontEndVariables(Control,"FormaxFrontBeam",25.0);
+  setVariable::R3FrontEndVariables(Control,"Formax");
   formaxVar::frontMaskVariables(Control,"FormaxFrontBeam");
     
-  formaxVar::wallVariables(Control,"FormaxWallLead");
-  
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); 
   PipeGen.generatePipe(Control,"FormaxJoinPipe",150.0);
@@ -1161,7 +1118,7 @@ FORMAXvariables(FuncDataBase& Control)
   formaxVar::opticsVariables(Control,"Formax");
 
   PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,"FormaxJoinPipeB",20.0);
+  PipeGen.generatePipe(Control,"FormaxJoinPipeB",21.0);
 
   formaxVar::shieldVariables(Control,"Formax");
   

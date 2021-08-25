@@ -3,7 +3,7 @@
  
  * File:   geomInc/Vec3D.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -112,8 +112,10 @@ class Vec3D
   double abs() const;    
   template<typename T> void rotate(const Matrix<T>&); 
 
-  Vec3D& boundaryCube(const Vec3D&,const Vec3D&); 
+  Vec3D& boundaryCube(const Vec3D&,const Vec3D&);
+
   int forwardBase(const Vec3D&,const Vec3D&,const Vec3D&);
+  Vec3D getInBasis(const Vec3D&,const Vec3D&,const Vec3D&) const;
   int reBase(const Vec3D&,const Vec3D&,const Vec3D&);   
   int masterDir(const double= Geometry::zeroTol) const;
   size_t principleDir() const;

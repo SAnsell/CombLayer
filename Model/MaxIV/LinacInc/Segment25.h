@@ -52,10 +52,6 @@ class Segment25 :
 {
  private:
 
-  std::unique_ptr<attachSystem::BlockZone> IZTop;        ///< Flat inner zone
-  std::unique_ptr<attachSystem::BlockZone> IZMid;        ///< Mid inner zone
-  std::unique_ptr<attachSystem::BlockZone> IZLower;      ///< Lower inner zone
-
   /// first pipe
   std::shared_ptr<constructSystem::Bellows> bellowA;
   /// first pipe

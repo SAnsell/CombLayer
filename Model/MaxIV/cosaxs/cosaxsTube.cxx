@@ -49,6 +49,7 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -59,8 +60,15 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "FrontBackCut.h"
+#include "generalConstruct.h"
+#include "ContainedGroup.h"
+#include "VirtualTube.h"
+#include "PipeTube.h"
+#include "portItem.h"
+#include "portSet.h"
+#include "FlangeDome.h"
 
 #include "GateValveCylinder.h"
 #include "cosaxsTubeNoseCone.h"
@@ -70,9 +78,6 @@
 #include "cosaxsTubeAirBox.h"
 #include "cosaxsTubeCable.h"
 
-#include "ContainedGroup.h"
-#include "VirtualTube.h"
-#include "PipeTube.h"
 
 #include "cosaxsTube.h"
 
@@ -81,16 +86,22 @@ namespace xraySystem
 
 cosaxsTube::cosaxsTube(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::FrontBackCut(),
+
+  outerMat(0),
   delayPortFlag(0),
-  buildZone(*this,cellIndex),
-  buildZoneTube(*this,cellIndex),
+
+  buildZone(Key+"BlockZone"),
+  tubeZone(Key+"TubeZone"),
+
   noseCone(new xraySystem::cosaxsTubeNoseCone(keyName+"NoseCone")),
   gateA(new constructSystem::GateValveCylinder(keyName+"GateA")),
   startPlate(new xraySystem::cosaxsTubeStartPlate(keyName+"StartPlate")),
+  backPlate(new constructSystem::FlangeDome(keyName+"BackDome")),
+  
   beamDump(new xraySystem::MonoBeamStop(keyName+"BeamDump")),
   waxs(new xraySystem::cosaxsTubeWAXSDetector(keyName+"WAXS")),
   airBox(new xraySystem::cosaxsTubeAirBox(keyName+"AirBox")),
@@ -107,7 +118,7 @@ cosaxsTube::cosaxsTube(const std::string& Key)  :
   OR.addObject(gateA);
   OR.addObject(startPlate);
 
-  for(size_t i=0;i<8;i++)
+  for(size_t i=0;i<seg.size();i++)
     {
       seg[i] = std::make_shared<constructSystem::PipeTube>
 	(keyName+"Segment"+std::to_string(i+1));
@@ -118,71 +129,6 @@ cosaxsTube::cosaxsTube(const std::string& Key)  :
   OR.addObject(waxs);
   OR.addObject(airBox);
   OR.addObject(cable);
-}
-
-cosaxsTube::cosaxsTube(const cosaxsTube& A) :
-  attachSystem::ContainedComp(A),
-  attachSystem::FixedOffset(A),
-  attachSystem::CellMap(A),
-  attachSystem::SurfMap(A),
-  attachSystem::FrontBackCut(A),
-  delayPortFlag(A.delayPortFlag),
-  outerRadius(A.outerRadius),
-  outerLength(A.outerLength),
-  buildZone(A.buildZone),
-  buildZoneTube(A.buildZoneTube),
-  noseCone(A.noseCone),
-  gateA(A.gateA),
-  startPlate(A.startPlate),
-  seg(A.seg),
-  beamDump(A.beamDump),
-  waxs(A.waxs),
-  airBox(A.airBox),
-  cable(A.cable)
-  /*!
-    Copy constructor
-    \param A :: cosaxsTube to copy
-  */
-{}
-
-cosaxsTube&
-cosaxsTube::operator=(const cosaxsTube& A)
-  /*!
-    Assignment operator
-    \param A :: cosaxsTube to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
-      attachSystem::CellMap::operator=(A);
-      attachSystem::SurfMap::operator=(A);
-      attachSystem::FrontBackCut::operator=(A);
-      delayPortFlag=A.delayPortFlag;
-      outerRadius=A.outerRadius;
-      outerLength=A.outerLength;
-      noseCone=A.noseCone;
-      gateA=A.gateA;
-      startPlate=A.startPlate;
-      seg=A.seg;
-      beamDump=A.beamDump;
-      waxs=A.waxs;
-      airBox=A.airBox;
-      cable=A.cable;
-    }
-  return *this;
-}
-
-cosaxsTube*
-cosaxsTube::clone() const
-/*!
-  Clone self
-  \return new (this)
- */
-{
-    return new cosaxsTube(*this);
 }
 
 cosaxsTube::~cosaxsTube()
@@ -200,28 +146,11 @@ cosaxsTube::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("cosaxsTube","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
   outerLength=Control.EvalVar<double>(keyName+"OuterLength");
-
-  return;
-}
-
-void
-cosaxsTube::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: object for origin
-    \param sideIndex :: link point for origin
-  */
-{
-  ELog::RegMethod RegA("cosaxsTube","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
+  outerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"OuterMat",outerMat);
   return;
 }
 
@@ -247,38 +176,13 @@ cosaxsTube::createSurfaces()
 
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outerRadius);
 
-  // // cable
-  // ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(cableWidth/2.0),X);
-  // ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(cableWidth/2.0),X);
-  // ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(cableHeight/2.0-cableZStep),Z);
-  // ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(cableHeight/2.0+cableZStep),Z);
-  // ModelSupport::buildShiftedPlane(SMap,buildIndex+115,
-  // 				  SMap.realPtr<Geometry::Plane>(buildIndex+105),
-  // 				  -cableHeight);
 
-  // const double cableTailLength(3*M_PI/4*cableTailRadius);
-  // const double cableBottomLength(detYStep/2.0);
-  // const double cableUpLength(cableLength-cableTailLength-cableBottomLength-detYStep);
+  const HeadRule HR=
+    ModelSupport::getHeadRule(SMap,buildIndex," -7 ");
 
-  // ModelSupport::buildPlane(SMap,buildIndex+101,Origin+Y*(detYStep),Y);
-  // // centre of cylinders
-  // const double yTail(detYStep+detYStep+cableUpLength+cableTailRadius);
-  // ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*yTail,Y);
-  // ModelSupport::buildShiftedPlane(SMap,buildIndex+111,
-  // 				  SMap.realPtr<Geometry::Plane>(buildIndex+102),
-  // 				  -cableBottomLength);
-
-  // ModelSupport::buildCylinder(SMap,buildIndex+107,
-  // 			      Origin+Y*yTail+Z*cableZStep,X,
-  // 			      cableTailRadius);
-  // ModelSupport::buildCylinder(SMap,buildIndex+117,
-  // 			      Origin+Y*yTail+Z*cableZStep,X,
-  // 			      cableTailRadius+cableHeight);
-
-
-  const std::string Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
-  const HeadRule HR(Out);
   buildZone.setSurround(HR);
+  buildZone.setFront(getRule("front"));
+  buildZone.setInnerMat(outerMat);
 
   return;
 }
@@ -292,103 +196,90 @@ cosaxsTube::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("cosaxsTube","createObjects");
 
-  std::string Out;
-  const std::string frontStr(frontRule());
-  const std::string backStr(backRule());
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
-  addOuterSurf(Out+frontStr+backStr);
 
   int outerCell;
-  buildZone.setFront(getRule("front"));//HeadRule(SMap.realSurf(buildIndex+1)));
-  buildZone.setBack(getRule("back"));//HeadRule(-SMap.realSurf(buildIndex+2)));
-  buildZone.setInsertCells(this->getInsertCells());
-  MonteCarlo::Object* masterCell=buildZone.constructMasterCell(System);
 
+  buildZone.addInsertCells(this->getInsertCells());
+  
   noseCone->createAll(System, *this, 0);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*noseCone,2);
+  outerCell=buildZone.createUnit(System,*noseCone,2);
   noseCone->insertInCell(System,outerCell);
 
-  gateA->setFront(*noseCone,2);
-  gateA->createAll(System,*noseCone,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateA,2);
-  gateA->insertInCell(System,outerCell);
+  constructSystem::constructUnit
+    (System,buildZone,*noseCone,"back",*gateA);
+    
+  constructSystem::constructUnit
+    (System,buildZone,*gateA,"back",*startPlate);
 
-  startPlate->setFront(*gateA,2);
-  startPlate->createAll(System,*gateA,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*startPlate,2);
-  startPlate->insertInCell(System,outerCell);
+  constructSystem::constructUnit
+    (System,buildZone,*startPlate,"back",*seg[0]);
+  seg[0]->deleteCell(System,"Void");
 
-  // tube segments
-  attachSystem::FixedComp *last = startPlate.get();
-
-  for (size_t i=0; i<8; i++)
+  for (size_t i=1; i<seg.size(); i++)
     {
-      seg[i]->setFront(*last,2);
-      if (delayPortFlag) seg[i]->delayPorts();
-      seg[i]->createAll(System,*last,2);
-
-      outerCell=buildZone.createOuterVoidUnit(System,masterCell,*seg[i],2);
-      seg[i]->insertAllInCell(System,outerCell);
-
-      // delete the individual inner void cells in order to create
-      // a common InnerVoid after this loop
+      constructSystem::constructUnit
+	(System,buildZone,*seg[i-1],"back",*seg[i]);
       seg[i]->deleteCell(System,"Void");
-      if (i==5)
-	{
-	  // paired cellVec:
-	  std::vector<int> CellVec;
-	  CellVec=seg[i]->splitObject
-	    (System,3001,getCell("OuterVoid",i+2),
-	     Geometry::Vec3D(0,0,0),Geometry::Vec3D(-1,0,0.5));
-	  this->addCell("OuterVoid",CellVec.back());
-
-	  CellVec=seg[i]->splitObject
-	    (System,3002,getCell("OuterVoid",i+2),
-	     Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0.5));
-	  this->addCell("OuterVoid",CellVec.back());
-
-	  CellVec=seg[i]->splitObject
-	    (System,3003,getCell("OuterVoid",i+4),
-	     Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0.5));
-	  this->addCell("OuterVoid",CellVec.back());
-
-	  cellIndex+=4;
-	}
-
-      last = seg[i].get();
     }
 
-  buildZoneTube.setSurround(last->getFullRule("InnerSide"));
-  buildZoneTube.setFront(seg[0]->getFullRule("InnerFront"));
-  buildZoneTube.setBack(last->getFullRule("InnerBack"));
-//   masterCell=buildZoneTube.constructMasterCell(System,*this);
-  buildZone.setInsertCells(this->getInsertCells());
+  backPlate->setCutSurf("plate",*seg[7],"back");
+  backPlate->createAll(System,*seg[7],"back");
+  const constructSystem::portItem& BPI=backPlate->getPort(1);
+  outerCell=buildZone.createUnit(System,BPI,"OuterPlate");
+  backPlate->insertInCell(System,outerCell);
+  
 
-  masterCell=buildZoneTube.constructMasterCell(System);
+  std::vector<int> cellVec;
+  cellVec=seg[5]->splitObject
+    (System,3001,buildZone.getCell("Unit",7),
+     Geometry::Vec3D(0,0,0),Geometry::Vec3D(-1,0,0.5));
 
-  beamDump->createAll(System,*seg[0],-1);
-  outerCell=buildZoneTube.createOuterVoidUnit(System,masterCell,*beamDump,2);
-  beamDump->insertInCell(System,outerCell);
+  cellVec=seg[5]->splitObject
+    (System,3002,buildZone.getCell("Unit",7),
+     Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0.5));
 
-  waxs->setFront(*beamDump,2);
-  waxs->createAll(System,*beamDump,2);
-  outerCell=buildZoneTube.createOuterVoidUnit(System,masterCell,*waxs,2);
-  waxs->insertInCell(System,outerCell);
-
-  airBox->setFront(*waxs,2);
-  airBox->createAll(System,*waxs,2);
-  outerCell=buildZoneTube.createOuterVoidUnit(System,masterCell,*airBox,2);
-  airBox->insertInCell(System,outerCell);
-
-  cable->setFront(*airBox,2);
-  cable->createAll(System,*airBox,2);
-  outerCell=buildZoneTube.createOuterVoidUnit(System,masterCell,*cable,2);
-  cable->insertInCell(System,outerCell);
+  
+  // cellVec=seg[5]->splitObject
+  //   (System,3003,buildZone.getCell("Unit",7),
+  //    Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0.5));
+  // //  this->addCell("OuterVoid",CellVec.back());
+  
+  cellIndex+=2;
+  
 
   return;
 }
 
+void
+cosaxsTube::createInnerObjects(Simulation& System)
+  /*!
+    Build the inner objects
+  */
+{
+  ELog::RegMethod RegA("cosaxsTube","createInnerObjects");
+
+  int outerCell;
+  // No Insert need because it completely replaces the main cells
+  tubeZone.setSurround(seg.back()->getFullRule("InnerSide"));
+  tubeZone.setFront(seg[0]->getFullRule("InnerFront"));
+  tubeZone.setMaxExtent(seg.back()->getFullRule("#back"));
+  beamDump->createAll(System,*seg[0],"#front");
+  outerCell=tubeZone.createUnit(System,*beamDump,2);
+  beamDump->insertInCell(System,outerCell);
+
+  constructSystem::constructUnit
+    (System,tubeZone,*beamDump,"back",*waxs);
+
+  constructSystem::constructUnit
+    (System,tubeZone,*waxs,"back",*airBox);
+
+  constructSystem::constructUnit
+    (System,tubeZone,*airBox,"back",*cable);
+
+  tubeZone.createUnit(System);
+  return;
+}
+  
 void
 cosaxsTube::createLinks()
   /*!
@@ -399,20 +290,7 @@ cosaxsTube::createLinks()
 
   FrontBackCut::createLinks(*this,Origin,Y);
 
-  return;
-}
-
-void
-cosaxsTube::createPorts(Simulation& System)
-  /*!
-    Generic function to create the ports
-    \param System :: Simulation item
-  */
-{
-  ELog::RegMethod RegA("cosaxsTube","createPorts");
-
-  for (size_t i=0; i<8; i++)
-    seg[i]->createPorts(System);
+  setCells("tubeVoid",buildZone.getCells("Unit"));
   return;
 }
 
@@ -433,6 +311,7 @@ cosaxsTube::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
+  createInnerObjects(System);
   createLinks();
   insertObjects(System);
 

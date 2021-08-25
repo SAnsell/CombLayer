@@ -3,7 +3,7 @@
 
  * File:   LinacInc/Segment29.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,8 +24,9 @@
 
 namespace constructSystem
 {
- class Bellows;
- class VacuumPipe;
+  class Bellows;
+  class VacuumPipe;
+  class VoidUnit;
 }
 
 namespace tdcSystem
@@ -40,6 +41,8 @@ namespace tdcSystem
   class LBeamStop;
   class NBeamStop;
   class BeamWing;
+  class LowBeamBox;
+  class BeamBox;
   
 
   /*!
@@ -74,11 +77,20 @@ class Segment29 :
   std::shared_ptr<tdcSystem::YagScreen> yagScreenA;
   std::shared_ptr<tdcSystem::YagScreen> yagScreenB;
 
+  // End void for nice flat terminator 
+  std::shared_ptr<constructSystem::VoidUnit> endVoid;
+  
   /// beam-stops
   std::shared_ptr<tdcSystem::NBeamStop> beamStopA;
-  std::shared_ptr<tdcSystem::LBeamStop> beamStopB;
+  std::shared_ptr<tdcSystem::NBeamStop> beamStopB;
 
-  std::shared_ptr<tdcSystem::BeamWing> beamWing;
+  /// Extra wings [if required]
+  std::shared_ptr<tdcSystem::BeamWing> beamWingA;
+  std::shared_ptr<tdcSystem::BeamWing> beamWingB;
+
+  /// Boxes round beamstops
+  std::shared_ptr<tdcSystem::BeamBox> beamBoxA;
+  std::shared_ptr<tdcSystem::LowBeamBox> beamBoxB;
   
   void buildObjects(Simulation&);
   void createLinks();
@@ -91,7 +103,6 @@ class Segment29 :
   Segment29(const Segment29&);
   Segment29& operator=(const Segment29&);
   ~Segment29();
-
 
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,

@@ -3,7 +3,7 @@
  
  * File: balder/BALDER.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,22 +54,21 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
-#include "InnerZone.h"
 #include "BlockZone.h"
 
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "LeadPipe.h"
 
-#include "balderOpticsHutch.h"
+#include "OpticsHutch.h"
 #include "ExperimentalHutch.h"
 #include "WallLead.h"
 #include "R3FrontEnd.h"
 #include "balderFrontEnd.h"
-#include "balderOpticsBeamline.h"
-#include "ConnectZone.h"
+#include "balderOpticsLine.h"
+#include "balderConnectZone.h"
 #include "PipeShield.h"
-#include "balderExptBeamline.h"
+#include "balderExptLine.h"
 
 #include "R3Ring.h"
 #include "R3Beamline.h"
@@ -83,16 +82,16 @@ BALDER::BALDER(const std::string& KN) :
   frontBeam(new balderFrontEnd(newName+"FrontBeam")),
   wallLead(new WallLead(newName+"WallLead")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
-  opticsHut(new balderOpticsHutch(newName+"OpticsHut")),
-  opticsBeam(new balderOpticsBeamline(newName+"OpticsLine")),
+  opticsHut(new OpticsHutch(newName+"OpticsHut")),
+  opticsBeam(new balderOpticsLine(newName+"OpticsLine")),
   joinPipeB(new constructSystem::LeadPipe(newName+"JoinPipeB")),
   pShield(new xraySystem::PipeShield(newName+"PShield")),
   nShield(new xraySystem::PipeShield(newName+"NShield")),
   outerShield(new xraySystem::PipeShield(newName+"OuterShield")),
-  connectZone(new ConnectZone(newName+"Connect")),
+  connectZone(new balderConnectZone(newName+"Connect")),
   joinPipeC(new constructSystem::LeadPipe(newName+"JoinPipeC")),
-  exptHut(new ExperimentalHutch(newName+"Expt")),
-  exptBeam(new balderExptBeamline(newName+"ExptLine"))
+  exptHut(new ExperimentalHutch(newName+"ExptHut")),
+  exptBeam(new balderExptLine(newName+"ExptLine"))
   /*!
     Constructor
     \param KN :: Keyname
@@ -141,10 +140,12 @@ BALDER::build(Simulation& System,
   const size_t prevIndex=(NS+PIndex-1) % NS;
   
   const std::string exitLink="ExitCentre"+std::to_string(PIndex);
- 
+
   frontBeam->setStopPoint(stopPoint);
+  frontBeam->setCutSurf("REWall",-r3Ring->getSurf("BeamInner",PIndex));
+  frontBeam->deactivateFM3();
   frontBeam->addInsertCell(r3Ring->getCell("InnerVoid",SIndex));
-  frontBeam->setCutSurf("Floor",r3Ring->getSurf("Floor"));
+
   frontBeam->setBack(-r3Ring->getSurf("BeamInner",PIndex));
   frontBeam->createAll(System,FCOrigin,sideIndex);
 
@@ -152,32 +153,17 @@ BALDER::build(Simulation& System,
   wallLead->setFront(r3Ring->getSurf("BeamInner",PIndex));
   wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));    
   wallLead->createAll(System,FCOrigin,sideIndex);
-
   
   if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
-  
-  opticsHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
-  opticsHut->setCutSurf("RingWall",r3Ring->getSurf("BeamOuter",PIndex));
 
-  opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
-  opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
-
-  opticsHut->setCutSurf("SideWall",r3Ring->getSurf("FlatOuter",PIndex));
-  opticsHut->setCutSurf("InnerSideWall",r3Ring->getSurf("FlatInner",PIndex));
-  opticsHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
-
-  // Ugly HACK to get the two objects to merge
-  r3Ring->insertComponent
-    (System,"OuterFlat",SIndex,
-     *opticsHut,opticsHut->getSideIndex("frontCut"));
+  buildOpticsHutch(System,opticsHut,PIndex,exitLink);
 
   // Inner space
 
   if (stopPoint=="opticsHut") return;
-  
+
   joinPipe->addAllInsertCell(frontBeam->getCell("MasterVoid"));
   joinPipe->addInsertCell("Main",wallLead->getCell("Void"));
-  joinPipe->addAllInsertCell(opticsHut->getCell("Inlet"));
   joinPipe->createAll(System,*frontBeam,2);
 
     // new
@@ -188,61 +174,61 @@ BALDER::build(Simulation& System,
   opticsBeam->setCutSurf("back",*opticsHut,
 			 opticsHut->getSideIndex("innerBack"));
   opticsBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
+  opticsBeam->setPreInsert(joinPipe);
   opticsBeam->createAll(System,*joinPipe,2);
 
-  joinPipe->insertAllInCell(System,opticsBeam->getCell("OuterVoid",0));
-
   if (stopPoint=="opticsBeam") return;
-  
-  joinPipeB->addInsertCell(opticsBeam->getCell("LastVoid"));
-  joinPipeB->addInsertCell(opticsHut->getCell("ExitHole"));
-  joinPipeB->setFront(*opticsBeam,2);
+
+  joinPipeB->addInsertCell("FlangeA",opticsBeam->getCell("LastVoid"));
+  joinPipeB->addInsertCell("Main",opticsBeam->getCell("LastVoid"));
+  joinPipeB->addInsertCell("Main",opticsHut->getCell("ExitHole"));
+  joinPipeB->setCutSurf("front",*opticsBeam,"back");
   joinPipeB->createAll(System,*opticsBeam,2);
 
 
   //  exptHut->addInsertCell(voidCell);
-  //  exptHut->addInsertCell(voidCell);
 
-  exptHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
+  exptHut->setCutSurf("floor",r3Ring->getSurf("Floor"));
 
-  exptHut->setCutSurf("InnerSideWall",r3Ring->getSurf("FlatInner",PIndex));
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
   exptHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
-  
+
+
   connectZone->registerJoinPipe(joinPipeC);
   connectZone->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
   connectZone->setCutSurf("front",*opticsHut,2);
   connectZone->setCutSurf("back",*exptHut,1);
   connectZone->createAll(System,*joinPipeB,2);
 
-  joinPipeB->insertInCell(System,connectZone->getCell("OuterVoid",0));
+
+    
+  joinPipeC->insertAllInCell(System,exptHut->getCell("Void"));
+  //  joinPipeC->insertInCell(System,exptHut->getCell("EntranceHole"));
+
+  exptBeam->addInsertCell(exptHut->getCell("Void"));
+  exptBeam->createAll(System,*joinPipeC,2);
+
 
   // pipe shield goes around joinPipeB:
   pShield->addAllInsertCell(opticsBeam->getCell("LastVoid"));
-  pShield->setCutSurf("inner",*joinPipeB,"outerPipe");
-  pShield->setCutSurf("front",*opticsHut,"innerBack");
-  pShield->createAll(System,*opticsHut,opticsHut->getSideIndex("exitHole"));
+  pShield->setCutSurf("inner",*joinPipeB,"outer");
+  pShield->createAll(System,*opticsHut,"#exitHole0");
 
   // pipe shield goes around joinPipeB:
-  nShield->addAllInsertCell(opticsBeam->getCell("LastVoid"));
-  nShield->setCutSurf("inner",*joinPipeB,"outerPipe");
-  nShield->createAll(System,*opticsHut,opticsHut->getSideIndex("exitHole"));
-
+  ELog::EM<<"Cell = "<<connectZone->getCell("FirstVoid")<<ELog::endDiag;
+  nShield->addAllInsertCell(connectZone->getCell("FirstVoid"));
+  nShield->setCutSurf("inner",*joinPipeB,"outer");
+  nShield->createAll(System,*opticsHut,"exitHole0");
+  ELog::EM<<"NShield == "<<nShield->getLinkPt(0)<<ELog::endDiag;
   // outer pipe shield goes around joinPipeB:
-
+  /*
   outerShield->addAllInsertCell(connectZone->getCell("OuterVoid"));
   outerShield->setCutSurf("inner",*joinPipeB,"outerPipe");
   outerShield->setCutSurf("front",*opticsHut,"back");
   outerShield->createAll(System,*opticsHut,
 			 opticsHut->getSideIndex("-exitHole"));
-  
-  joinPipeC->insertInCell(System,exptHut->getCell("Void"));
-  joinPipeC->insertInCell(System,exptHut->getCell("EntranceHole"));
-
-  exptBeam->addInsertCell(exptHut->getCell("Void"));
-  exptBeam->createAll(System,*joinPipeC,2);
-
+  */
   return;
 }
 

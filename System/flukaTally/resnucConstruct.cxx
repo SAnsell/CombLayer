@@ -154,7 +154,8 @@ resnucConstruct::processResNuc(SimFLUKA& System,
   for(const int CN : cellVec)
     {
       ID++;    // fresh id number [or 100+fortranTape]
-      resnucConstruct::createTally(System,ID,fortranTape,CN);
+      // default binary (-ID)
+      resnucConstruct::createTally(System,-ID,fortranTape,CN);
     }
   
   return;      

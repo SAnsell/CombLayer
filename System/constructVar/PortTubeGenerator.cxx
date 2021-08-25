@@ -224,6 +224,19 @@ PortTubeGenerator::setBPortOffset(const double XS,const double ZS)
 }
 
 void
+PortTubeGenerator::setFlangeLength(const double LA,const double LB)
+  /*!
+    Set all the flange length values
+    \param LA :: length of A flange
+    \param LB :: length of B flange
+   */
+{
+  flangeALen=LA;
+  flangeBLen=LB;
+  return;
+}
+
+void
 PortTubeGenerator::setAFlange(const double R,const double L)
   /*!
     Set all the flange values

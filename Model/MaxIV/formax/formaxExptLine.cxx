@@ -101,6 +101,7 @@ formaxExptLine::formaxExptLine(const std::string& Key) :
   attachSystem::CellMap(),
 
   buildZone(Key+"BuildZone"),
+  outerMat(0),
   
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
   filterBoxA(new xraySystem::MonoBox(newName+"FilterBoxA")),
@@ -189,7 +190,7 @@ formaxExptLine::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("formaxExptLine","populate");
   
-  FixedRotate::populate(Control);
+  attachSystem::FixedRotate::populate(Control);
 
   outerLeft=Control.EvalDefVar<double>(keyName+"OuterLeft",0.0);
   outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",outerLeft);

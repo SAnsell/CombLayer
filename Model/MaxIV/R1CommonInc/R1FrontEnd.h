@@ -74,9 +74,10 @@ namespace xraySystem
 class R1FrontEnd :
   public attachSystem::CopiedComp,
   public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
-  public attachSystem::FrontBackCut,
-  public attachSystem::CellMap  
+  public attachSystem::FixedRotate,
+  public attachSystem::ExternalCut,
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap  
 {
  protected:   
 
@@ -86,7 +87,7 @@ class R1FrontEnd :
   /// point to stop [normal none]
   std::string stopPoint;          
   /// Inner buildzone
-  attachSystem::InnerZone buildZone;
+  attachSystem::BlockZone buildZone;
   
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
@@ -171,21 +172,26 @@ class R1FrontEnd :
 
   double outerLeft;     ///< left size of tube for divisions
   double outerRight;    ///< right of tube for divisions
-  double outerTop;      ///< up/donw of tube for divisions
-    
-  void insertFlanges(Simulation&,const constructSystem::PipeTube&);
-
-  virtual const attachSystem::FixedComp&
-    buildUndulator(Simulation&,MonteCarlo::Object*,
-		   const attachSystem::FixedComp&,const long int) =0;
+  double outerFront;    ///< front side offset if needed
   
-  void buildHeatTable(Simulation&,MonteCarlo::Object*,
-		      const attachSystem::FixedComp&,const long int);
-  void buildApertureTable(Simulation&,MonteCarlo::Object*,
-			  const attachSystem::FixedComp&,const long int);
-  void buildShutterTable(Simulation&,MonteCarlo::Object*,
-			 const attachSystem::FixedComp&,const long int);
+  virtual const attachSystem::FixedComp&
+  buildUndulator(Simulation&,
+		   const attachSystem::FixedComp&,
+		   const std::string&) =0;
+  
+  void buildHeatTable(Simulation&,
+		      const attachSystem::FixedComp&,
+		      const std::string&);
+  void buildApertureTable(Simulation&,
+			  const attachSystem::FixedComp&,
+			  const std::string&);
+  void buildShutterTable(Simulation&,
+			 const attachSystem::FixedComp&,
+			 const std::string&);
 
+  void processEnd(Simulation&,
+		  std::shared_ptr<attachSystem::FixedComp>);
+  
   virtual void populate(const FuncDataBase&);
   virtual void createSurfaces();
   virtual void buildObjects(Simulation&);

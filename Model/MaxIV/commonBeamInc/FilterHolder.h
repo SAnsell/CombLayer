@@ -77,6 +77,7 @@ class FilterHolder : public attachSystem::ContainedComp,
   virtual FilterHolder* clone() const;
   virtual ~FilterHolder();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
 };

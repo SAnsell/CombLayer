@@ -880,6 +880,25 @@ FixedComp::addLinkComp(const size_t Index,const HeadRule& HR)
   return;
 }
 
+template<typename T>
+void
+FixedComp::setNamedLinkSurf(const size_t Index,
+			    const std::string& linkName,
+			    const T& SUnit) 
+  /*!
+    Set a surface to output and set the link name
+    \param Index :: Link number
+    \param linkName :: Link name to set(use)
+    \param SUnit :: String/HeadRule/int to process
+  */
+{
+  ELog::RegMethod RegA("FixedComp","setLinkSurf(string,string)");
+
+  setLinkSurf(Index,SUnit);
+  nameSideIndex(Index,linkName);
+  return;
+}
+
 void
 FixedComp::setLinkSurf(const size_t Index,const int SN) 
   /*!
@@ -1510,6 +1529,21 @@ FixedComp::getAllLinkPts() const
     LPout.push_back(lunit.getConnectPt());
 
   return LPout;
+}
+
+double
+FixedComp::getLinkDistance(const std::string& AName,
+                           const std::string& BName) const
+  /*!
+    Accessor to the distance between link points
+    \param AName :: Link name 
+    \param BName :: link name
+    \return Distance between points
+  */
+{
+  ELog::RegMethod RegA("FixedComp","getLinkDistance(s,s):"+keyName);
+
+  return getLinkDistance(getSideIndex(AName),getSideIndex(BName));
 }
 
 double
@@ -2193,6 +2227,18 @@ FixedComp::createAll(Simulation& System,const FixedComp& FC,
   this->createAll(System,FC,FC.getSideIndex(linkName));
   return;
 }
-  
+
+///\cond  TEMPLATE
+
+template void FixedComp::setNamedLinkSurf
+(const size_t,const std::string&,const std::string&);
+
+template void FixedComp::setNamedLinkSurf
+(const size_t,const std::string&,const int&);
+
+template void FixedComp::setNamedLinkSurf
+(const size_t,const std::string&,const HeadRule&);
+
+///\endcond  TEMPLATE
 
 }  // NAMESPACE attachSystem

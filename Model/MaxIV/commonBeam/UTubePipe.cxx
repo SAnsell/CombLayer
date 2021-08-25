@@ -54,7 +54,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -69,11 +69,10 @@ namespace xraySystem
 {
 
 UTubePipe::UTubePipe(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedGroup("Pipe","FFlange","BFlange"),
   attachSystem::CellMap(),
-  attachSystem::SurfMap(),attachSystem::FrontBackCut(),
-  frontJoin(0),backJoin(0)
+  attachSystem::SurfMap(),attachSystem::FrontBackCut()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -96,7 +95,7 @@ UTubePipe::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("UTubePipe","populate");
   
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   // Void + Fe special:
   width=Control.EvalVar<double>(keyName+"Width");  
@@ -119,56 +118,6 @@ UTubePipe::populate(const FuncDataBase& Control)
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
 
-  return;
-}
-
-void
-UTubePipe::createUnitVector(const attachSystem::FixedComp& FC,
-			    const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("UTubePipe","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  applyActiveFrontBack();
-  return;
-}
-
-void
-UTubePipe::applyActiveFrontBack()
-  /*!
-    Apply the active front/back point to re-calcuate Origin
-    It applies the rotation of Y to Y' to both X/Z to preserve
-    orthogonality.
-   */
-{
-  ELog::RegMethod RegA("UTubePipe","applyActiveFrontBack");
-
-  const Geometry::Vec3D curFP=(frontJoin) ? FPt : Origin;
-  const Geometry::Vec3D curBP=(backJoin) ? BPt : Origin+Y*length;
-
-  Origin=(curFP+curBP)/2.0;
-  const Geometry::Vec3D YAxis=(curBP-curFP).unit();
-  Geometry::Vec3D RotAxis=(YAxis*Y).unit();   // need unit for numerical acc.
-  if (!RotAxis.nullVector())
-    {
-      const Geometry::Quaternion QR=
-	Geometry::Quaternion::calcQVRot(Y,YAxis,RotAxis);
-      Y=YAxis;
-      QR.rotate(X);
-      QR.rotate(Z);
-    }
-  else if (Y.dotProd(YAxis) < -0.5) // (reversed
-    {
-      Y=YAxis;
-      X*=-1.0;
-      Z*=-1.0;
-    }
   return;
 }
   
@@ -312,52 +261,6 @@ UTubePipe::createLinks()
   return;
 }
   
-void
-UTubePipe::setFront(const attachSystem::FixedComp& FC,
-			   const long int sideIndex,
-			   const bool joinFlag)
-  /*!
-    Set front surface
-    \param FC :: FixedComponent 
-    \param sideIndex ::  Direction to link
-    \param joinFlag :: joint front to link object 
-   */
-{
-  ELog::RegMethod RegA("UTubePipe","setFront");
-  
-  FrontBackCut::setFront(FC,sideIndex);
-  if (joinFlag)
-    {
-      frontJoin=1;
-      FPt=FC.getLinkPt(sideIndex);
-      FAxis=FC.getLinkAxis(sideIndex);
-    }
-    
-  return;
-}
-  
-void
-UTubePipe::setBack(const attachSystem::FixedComp& FC,
-		   const long int sideIndex,
-		   const bool joinFlag)
-  /*!
-    Set Back surface
-    \param FC :: FixedComponent 
-    \param sideIndex ::  Direction to link
-    \param joinFlag :: joint front to link object 
-   */
-{
-  ELog::RegMethod RegA("UTubePipe","setBack");
-  
-  FrontBackCut::setBack(FC,sideIndex);
-  if (joinFlag)
-    {
-      backJoin=1;
-      BPt=FC.getLinkPt(sideIndex);
-      BAxis=FC.getLinkAxis(sideIndex);
-    }
-  return;
-}
   
 void
 UTubePipe::createAll(Simulation& System,

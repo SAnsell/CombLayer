@@ -525,6 +525,73 @@ Quaternion::rMatrix() const
   return Out;
 }
 
+
+void
+Quaternion::rotateBasis(Vec3D& A,Vec3D& B,Vec3D& C) const
+  /*!
+    Rotate a basis group in order
+    \param A :: Vector to be rotated 
+    \param B :: Vector to be rotated 
+    \param C :: Vector to be rotated 
+
+    The quaternion is assumed to be normalized
+    then \f$ q.v.q^{-1} \f$ is the rotated value.
+  */
+{
+   Quaternion QI(*this);
+   Quaternion RA(0.0,A);
+   Quaternion RB(0.0,B);
+   Quaternion RC(0.0,C);
+
+   QI.inverse();
+   RA*=QI;
+   RB*=QI;
+   RC*=QI;
+
+   RA=(*this)*RA;
+   RB=(*this)*RB;
+   RC=(*this)*RC;
+
+   A=RA.getVec();
+   B=RB.getVec();
+   C=RC.getVec();
+
+   return;
+ }
+
+void
+Quaternion::invRotateBasis(Vec3D& A,Vec3D& B,Vec3D& C) const
+  /*!
+    Rotate a basis group in order in opposite direction
+    \param A :: Vector to be rotated 
+    \param B :: Vector to be rotated 
+    \param C :: Vector to be rotated 
+
+    The quaternion is assumed to be normalized
+    then \f$ q.v.q^{-1} \f$ is the rotated value.
+  */
+{
+   Quaternion QI(*this);
+
+   Quaternion RA(0.0,A);
+   Quaternion RB(0.0,B);
+   Quaternion RC(0.0,C);
+   
+   RA*=QI;
+   RB*=QI;
+   RC*=QI;
+
+   QI.inverse();
+   RA=QI*RA;
+   RB=QI*RB;
+   RC=QI*RC;
+   
+   A=RA.getVec();
+   B=RB.getVec();
+   C=RC.getVec();
+   return;
+ }
+
 Geometry::Vec3D&
 Quaternion::rotate(Vec3D& V) const
   /*!

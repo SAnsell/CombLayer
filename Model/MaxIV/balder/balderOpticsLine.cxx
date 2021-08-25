@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File: balder/balderOpticsBeamline.cxx
+ * File: balder/balderOpticsLine.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -64,9 +64,10 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "generateSurf.h"
 #include "ModelSupport.h"
+#include "generalConstruct.h"
 
 #include "insertObject.h"
 #include "insertPlate.h"
@@ -74,13 +75,14 @@
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "VacuumBox.h"
+#include "CylGateValve.h"
 #include "portItem.h"
 #include "VirtualTube.h"
 #include "PipeTube.h"
 #include "PortTube.h"
 #include "PipeShield.h"
 
-#include "CrossPipe.h"
+#include "TriggerTube.h"
 #include "MonoVessel.h"
 #include "MonoCrystals.h"
 #include "GateValveCube.h"
@@ -90,27 +92,26 @@
 #include "FlangeMount.h"
 #include "Mirror.h"
 #include "MonoShutter.h"
-#include "balderOpticsBeamline.h"
+#include "balderOpticsLine.h"
 
 namespace xraySystem
 {
 
 // Note currently uncopied:
   
-balderOpticsBeamline::balderOpticsBeamline(const std::string& Key) :
+balderOpticsLine::balderOpticsLine(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(newName,2),
+  attachSystem::FixedRotate(newName,2),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
-  buildZone(*this,cellIndex),
+
+  buildZone(newName+"BuildZone"),
   
   pipeInit(new constructSystem::VacuumPipe(newName+"InitPipe")),
-  ionPA(new constructSystem::CrossPipe(newName+"IonPA")),
-  gateTubeA(new constructSystem::PipeTube(newName+"GateTubeA")),
-  gateAItem(new xraySystem::FlangeMount(newName+"GateAItem")),
-  triggerPipe(new constructSystem::CrossPipe(newName+"TriggerPipe")),
-  pipeA(new constructSystem::Bellows(newName+"BellowA")),
+  triggerPipe(new xraySystem::TriggerTube(newName+"TriggerUnit")),
+  gateTubeA(new xraySystem::CylGateValve(newName+"GateTubeA")),
+  bellowA(new constructSystem::Bellows(newName+"BellowA")),
   filterBox(new constructSystem::PortTube(newName+"FilterBox")),
   filters({
 	std::make_shared<xraySystem::FlangeMount>(newName+"Filter0"),
@@ -118,12 +119,12 @@ balderOpticsBeamline::balderOpticsBeamline(const std::string& Key) :
         std::make_shared<xraySystem::FlangeMount>(newName+"Filter2"),
         std::make_shared<xraySystem::FlangeMount>(newName+"Filter3")}),
 
-  pipeB(new constructSystem::Bellows(newName+"BellowB")),
+  bellowB(new constructSystem::Bellows(newName+"BellowB")),
   gateA(new constructSystem::GateValveCube(newName+"GateA")),
   mirrorBox(new constructSystem::VacuumBox(newName+"MirrorBox")),
   mirror(new xraySystem::Mirror(newName+"Mirror")),
   gateB(new constructSystem::GateValveCube(newName+"GateB")),
-  pipeC(new constructSystem::Bellows(newName+"BellowC")),
+  bellowC(new constructSystem::Bellows(newName+"BellowC")),
   driftA(new constructSystem::VacuumPipe(newName+"DriftA")),  
   driftB(new constructSystem::VacuumPipe(newName+"DriftB")),
   monoV(new xraySystem::MonoVessel(newName+"MonoVac")),
@@ -135,20 +136,20 @@ balderOpticsBeamline::balderOpticsBeamline(const std::string& Key) :
   beamStop(new insertSystem::insertPlate(newName+"BeamStop")),
   slitsA(new constructSystem::JawValveCube(newName+"SlitsA")),
   shieldPipe(new constructSystem::PortTube(newName+"ShieldPipe")),
-  pipeD(new constructSystem::Bellows(newName+"BellowD")),
+  bellowD(new constructSystem::Bellows(newName+"BellowD")),
   gateD(new constructSystem::GateValveCube(newName+"GateD")),
   mirrorBoxB(new constructSystem::VacuumBox(newName+"MirrorBoxB")),
   mirrorB(new xraySystem::Mirror(newName+"MirrorB")),
-  pipeE(new constructSystem::Bellows(newName+"BellowE")),
+  bellowE(new constructSystem::Bellows(newName+"BellowE")),
   slitsB(new constructSystem::JawValveCube(newName+"SlitsB")),
   viewPipe(new constructSystem::PortTube(newName+"ViewTube")),
   viewMount({
       std::make_shared<xraySystem::FlangeMount>(newName+"ViewMount0")
 	}),
-  pipeF(new constructSystem::Bellows(newName+"BellowF")),
+  bellowF(new constructSystem::Bellows(newName+"BellowF")),
   monoShutter(new xraySystem::MonoShutter(newName+"MonoShutter")),
   
-  pipeG(new constructSystem::Bellows(newName+"BellowG")),
+  bellowG(new constructSystem::Bellows(newName+"BellowG")),
   gateE(new constructSystem::GateValveCube(newName+"GateE")),
   neutShield({
       std::make_shared<xraySystem::PipeShield>(newName+"NShield0"),
@@ -174,18 +175,16 @@ balderOpticsBeamline::balderOpticsBeamline(const std::string& Key) :
     OR.addObject(FM);
   
   OR.addObject(pipeInit);
-  OR.addObject(ionPA);
-  OR.addObject(gateTubeA);
-  OR.addObject(gateAItem);
   OR.addObject(triggerPipe);
-  OR.addObject(pipeA);
+  OR.addObject(gateTubeA);
+  OR.addObject(bellowA);
   OR.addObject(filterBox);
-  OR.addObject(pipeB);
+  OR.addObject(bellowB);
   OR.addObject(gateA);
   OR.addObject(mirrorBox);
   OR.addObject(mirror);
   OR.addObject(gateB);
-  OR.addObject(pipeC);
+  OR.addObject(bellowC);
   OR.addObject(driftA);
   OR.addObject(driftB);
   OR.addObject(monoV);
@@ -197,35 +196,35 @@ balderOpticsBeamline::balderOpticsBeamline(const std::string& Key) :
   OR.addObject(beamStop);
   OR.addObject(slitsA);
   OR.addObject(shieldPipe);
-  OR.addObject(pipeD);
+  OR.addObject(bellowD);
   OR.addObject(gateD);
   OR.addObject(mirrorBoxB);
   OR.addObject(mirrorB);
-  OR.addObject(pipeE);
+  OR.addObject(bellowE);
   OR.addObject(slitsB);
   OR.addObject(viewPipe);
-  OR.addObject(pipeF);
+  OR.addObject(bellowF);
   OR.addObject(monoShutter);
 
-  OR.addObject(pipeG);
+  OR.addObject(bellowG);
   OR.addObject(gateE);
 }
   
-balderOpticsBeamline::~balderOpticsBeamline()
+balderOpticsLine::~balderOpticsLine()
   /*!
     Destructor
    */
 {}
 
 void
-balderOpticsBeamline::populate(const FuncDataBase& Control)
+balderOpticsLine::populate(const FuncDataBase& Control)
   /*!
     Populate the intial values [movement]
     \param Control :: Database of variables
   */
 {
-  ELog::RegMethod RegA("balderOpticsBeamline","populate");
-  FixedOffset::populate(Control);
+  ELog::RegMethod RegA("balderOpticsLine","populate");
+  FixedRotate::populate(Control);
 
   outerLeft=Control.EvalDefVar<double>(keyName+"OuterLeft",0.0);
   outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",outerLeft);
@@ -236,141 +235,102 @@ balderOpticsBeamline::populate(const FuncDataBase& Control)
 
 
 void
-balderOpticsBeamline::createSurfaces()
+balderOpticsLine::createSurfaces()
   /*!
     Create surfaces for outer void
    */
 {
-  ELog::RegMethod RegA("OpticsBeamLine","createSurface");
-  
-  if (outerLeft>Geometry::zeroTol &&  isActive("floor"))
+  ELog::RegMethod RegA("balderOpticsLine","createSurface");
+
+  if (outerLeft>Geometry::zeroTol && isActive("floor"))
     {
-      std::string Out;
       ModelSupport::buildPlane
 	(SMap,buildIndex+3,Origin-X*outerLeft,X);
       ModelSupport::buildPlane
 	(SMap,buildIndex+4,Origin+X*outerRight,X);
       ModelSupport::buildPlane
 	(SMap,buildIndex+6,Origin+Z*outerTop,Z);
-      Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -6");
-      const HeadRule HR(Out+getRuleStr("floor"));
-      buildZone.setSurround(HR);
+      const HeadRule HR=
+	ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 -6");
+
+     buildZone.setSurround(HR*getRule("floor"));
+     buildZone.setFront(getRule("front"));
+     buildZone.setMaxExtent(getRule("back"));
+     buildZone.setInnerMat(innerMat);
     }
   return;
 }
 
 void
-balderOpticsBeamline::buildObjects(Simulation& System)
+balderOpticsLine::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC point.
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("balderOpticsBeamline","buildObjects");
+  ELog::RegMethod RegA("balderOpticsLine","buildObjects");
 
   
   int outerCell;
-  buildZone.setFront(getRule("front"));
-  buildZone.setBack(getRule("back"));
-  buildZone.setInsertCells(this->getInsertCells());
-  MonteCarlo::Object* masterCell=buildZone.constructMasterCell(System);
 
+  buildZone.addInsertCells(this->getInsertCells());
+  
   // dummy space for first item
   // This is a mess but want to preserve insert items already
   // in the hut beam port
   pipeInit->createAll(System,*this,0);
-  // dump cell for joinPipe
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeInit,-1);
-  // real cell for initPipe
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeInit,2);
+  outerCell=buildZone.createUnit(System,*pipeInit,2);
   pipeInit->insertAllInCell(System,outerCell);
+  if (preInsert)
+    preInsert->insertAllInCell(System,outerCell);
 
-    
-  ionPA->setFront(*pipeInit,2);
-  ionPA->createAll(System,*pipeInit,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*ionPA,2);
-  ionPA->insertInCell(System,outerCell);
+  constructSystem::constructUnit
+    (System,buildZone,*pipeInit,"back",*triggerPipe);
 
-    // FAKE insertcell: required
-  gateTubeA->addAllInsertCell(masterCell->getName());
-  gateTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  gateTubeA->createAll(System,*ionPA,2);  
-  
-  const constructSystem::portItem& GPI=gateTubeA->getPort(1);
-  outerCell=buildZone.createOuterVoidUnit
-    (System,masterCell,GPI,GPI.getSideIndex("OuterPlate"));
-  gateTubeA->insertAllInCell(System,outerCell);
+  constructSystem::constructUnit
+    (System,buildZone,*triggerPipe,"back",*gateTubeA);
 
-  gateAItem->addInsertCell("Body",gateTubeA->getCell("Void"));
-  gateAItem->setBladeCentre(*gateTubeA,0);
-  gateAItem->createAll(System,*gateTubeA,std::string("InnerBack"));
+  constructSystem::constructUnit
+    (System,buildZone,*gateTubeA,"back",*bellowA);
 
+  outerCell=constructSystem::constructUnit
+    (System,buildZone,*bellowA,"back",*filterBox);
 
-  //  triggerPipe->setFront(*ionPA,2);
-  //  triggerPipe->createAll(System,*ionPA,2);
-  //  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*triggerPipe,2);
-  //  triggerPipe->insertInCell(System,outerCell);
+  // split on both inner void
 
-  // pipeA->setFront(*triggerPipe,2);
-  // pipeA->createAll(System,*triggerPipe,2);
-  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeA,2);
-  // pipeA->insertInCell(System,outerCell);
-
-  pipeA->setFront(GPI,GPI.getSideIndex("OuterPlate"));
-  pipeA->createAll(System,GPI,GPI.getSideIndex("OuterPlate"));
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeA,2);
-  pipeA->insertInCell(System,outerCell);
-
-  
-  // fake inser for ports
-  filterBox->addAllInsertCell(masterCell->getName());
-  filterBox->setFront(*pipeA,2);
-  filterBox->createAll(System,*pipeA,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*filterBox,2);
-  filterBox->insertAllInCell(System,outerCell);
-
-  // split on both inner void 
   filterBox->splitVoidPorts(System,"SplitVoid",1001,
 			    filterBox->getCell("Void"),
 			    Geometry::Vec3D(0,1,0));
-  // split on outer  boid
-  //  filterBox->getBuildCell(),
-			      
+
   filterBox->splitVoidPorts(System,"SplitOuter",2001,
 			    outerCell,
    			    Geometry::Vec3D(0,1,0));
+
   filterBox->splitObject(System,-11,filterBox->getCell("SplitOuter",0));
   filterBox->splitObject(System,12,filterBox->getCell("SplitOuter",3));
-  // increase cellIndex because 4 ports + two outer -1
   cellIndex+=5;
 
   for(size_t i=0;i<filters.size();i++)
     {
       const constructSystem::portItem& PI=filterBox->getPort(i);
-      filters[i]->addInsertCell("Flange",filterBox->getCell("SplitOuter",i));
+      filters[i]->addInsertCell("Body",PI.getCell("Plate"));
       filters[i]->addInsertCell("Body",PI.getCell("Void"));
+      filters[i]->addInsertCell("Blade",PI.getCell("Void"));
       filters[i]->addInsertCell("Body",filterBox->getCell("SplitVoid",i));
+      filters[i]->addInsertCell("Blade",filterBox->getCell("SplitVoid",i));
       filters[i]->setBladeCentre(PI,0);
       filters[i]->createAll(System,PI,2);
     }
   
-  
-  pipeB->setFront(*filterBox,2);
-  pipeB->createAll(System,*filterBox,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeB,2);
-  pipeB->insertInCell(System,outerCell);  
+  constructSystem::constructUnit
+    (System,buildZone,*filterBox,"back",*bellowB);
 
-  gateA->setFront(*pipeB,2);
-  gateA->createAll(System,*pipeB,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateA,2);
-  gateA->insertInCell(System,outerCell);
+  constructSystem::constructUnit
+    (System,buildZone,*bellowB,"back",*gateA);
 
-  mirrorBox->setFront(*gateA,2);
-  mirrorBox->createAll(System,*gateA,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*mirrorBox,2);
-  mirrorBox->insertInCell(System,outerCell);
+  outerCell=constructSystem::constructUnit
+    (System,buildZone,*gateA,"back",*mirrorBox);
   mirrorBox->setCell("OuterVoid",outerCell);
-
   
   mirrorBox->splitObject(System,-11,outerCell);
   mirrorBox->splitObject(System,12,outerCell);
@@ -379,29 +339,19 @@ balderOpticsBeamline::buildObjects(Simulation& System)
   mirror->addInsertCell(mirrorBox->getCell("Void"));
   mirror->createAll(System,*mirrorBox,0);
 
+  constructSystem::constructUnit
+    (System,buildZone,*mirrorBox,"back",*gateB);
 
-  gateB->setFront(*mirrorBox,2);
-  gateB->createAll(System,*mirrorBox,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateB,2);
-  gateB->insertInCell(System,outerCell);
-    
-  pipeC->setFront(*gateB,2);
-  pipeC->createAll(System,*gateB,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeC,2);
-  pipeC->insertInCell(System,outerCell);
+  constructSystem::constructUnit
+    (System,buildZone,*gateB,"back",*bellowC);
 
-  driftA->setFront(*pipeC,2);
-  driftA->createAll(System,*pipeC,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*driftA,2);
-  driftA->insertAllInCell(System,outerCell);
-  
+  constructSystem::constructUnit
+    (System,buildZone,*bellowC,"back",*driftA);
+
+
   driftB->createAll(System,*driftA,2);
   monoV->createAll(System,*driftA,2);
-  
-  monoXtal->addInsertCell(monoV->getCell("Void"));
-  monoXtal->createAll(System,*monoV,0);
 
-  // Note : join flag so can rotate on front/back
   monoBellowA->setJoinFront(*driftA,2);
   monoBellowA->setJoinBack(*monoV,1);
   monoBellowA->createAll(System,*driftA,2);
@@ -411,155 +361,104 @@ balderOpticsBeamline::buildObjects(Simulation& System)
   monoBellowB->setJoinBack(*driftB,1);
   monoBellowB->createAll(System,*driftB,-1);
 
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*monoBellowA,2);
+  monoXtal->addInsertCell(monoV->getCell("Void"));
+  monoXtal->createAll(System,*monoV,0);
+
+  outerCell=buildZone.createUnit(System,*monoBellowA,2);
   monoBellowA->insertInCell(System,outerCell);
 
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*monoV,2);
+  outerCell=buildZone.createUnit(System,*monoV,2);
   monoV->insertInCell(System,outerCell);
 
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*monoBellowB,2);
+  outerCell=buildZone.createUnit(System,*monoBellowB,2);
   monoBellowB->insertInCell(System,outerCell);
 
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*driftB,2);
+  outerCell=buildZone.createUnit(System,*driftB,2);
   driftB->insertAllInCell(System,outerCell);
   driftB->setCell("OuterVoid",outerCell);
 
   monoV->constructPorts(System);
 
-  
-  gateC->setFront(*driftB,2);
-  gateC->createAll(System,*driftB,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateC,2);
-  gateC->insertInCell(System,outerCell);
 
-  driftC->setFront(*gateC,2);
-  driftC->createAll(System,*gateC,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*driftC,2);
-  driftC->insertAllInCell(System,outerCell);
+  constructSystem::constructUnit
+    (System,buildZone,*driftB,"back",*gateC);
+
+  constructSystem::constructUnit
+    (System,buildZone,*gateC,"back",*driftC);
 
   beamStop->addInsertCell(driftC->getCell("Void"));
   beamStop->createAll(System,*driftC,0);
-  
-  slitsA->setFront(*driftC,2);
-  slitsA->createAll(System,*driftC,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*slitsA,2);
-  slitsA->insertInCell(System,outerCell);
-  
-  // fake inser for ports
-  shieldPipe->addAllInsertCell(masterCell->getName());
-  shieldPipe->setFront(*slitsA,2);
-  shieldPipe->createAll(System,*slitsA,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*shieldPipe,2);
-  shieldPipe->insertAllInCell(System,outerCell);
 
+  outerCell=constructSystem::constructUnit
+    (System,buildZone,*driftC,"back",*slitsA);
+  
+  //  shieldPipe->addAllInsertCell(masterCell->getName());
+
+  outerCell=constructSystem::constructUnit
+    (System,buildZone,*slitsA,"back",*shieldPipe);
+  
   shieldPipe->splitObject(System,1001,outerCell,
 			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0));
   cellIndex++;
 
+  constructSystem::constructUnit
+    (System,buildZone,*shieldPipe,"back",*bellowD);
 
-  pipeD->setFront(*shieldPipe,2);
-  pipeD->createAll(System,*shieldPipe,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeD,2);
-  pipeD->insertInCell(System,outerCell);
+  constructSystem::constructUnit
+    (System,buildZone,*bellowD,"back",*gateD);
 
-
-  gateD->setFront(*pipeD,2);
-  gateD->createAll(System,*pipeD,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateD,2);
-  gateD->insertInCell(System,outerCell);
-
-
-  mirrorBoxB->setFront(*gateD,2);
-  mirrorBoxB->createAll(System,*gateD,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,
-				*mirrorBoxB,2);
-  mirrorBoxB->insertInCell(System,outerCell);
+  outerCell=constructSystem::constructUnit
+    (System,buildZone,*gateD,"back",*mirrorBoxB);
   mirrorBoxB->setCell("OuterVoid",outerCell);
-
-
+  
   mirrorB->addInsertCell(mirrorBoxB->getCell("Void"));
   mirrorB->createAll(System,*mirrorBoxB,0);
 
   mirrorBoxB->splitObject(System,-11,outerCell);
   mirrorBoxB->splitObject(System,12,outerCell);
   cellIndex+=2;
-  
-  pipeE->setFront(*mirrorBoxB,2);
-  pipeE->createAll(System,*mirrorBoxB,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,
-				*pipeE,2);
-  pipeE->insertInCell(System,outerCell);
-  
 
-  slitsB->setFront(*pipeE,2);
-  slitsB->createAll(System,*pipeE,2);
-  outerCell=
-    buildZone.createOuterVoidUnit(System,masterCell,*slitsB,2);
+  constructSystem::constructUnit
+    (System,buildZone,*mirrorBoxB,"back",*bellowE);
+
+  outerCell=constructSystem::constructUnit
+    (System,buildZone,*bellowE,"back",*slitsB);
   slitsB->setCell("OuterVoid",outerCell);
-  slitsB->insertInCell(System,outerCell);
 
- 
-  // ERROR HERE :
-  // fake insert for ports
-  viewPipe->addAllInsertCell(masterCell->getName());
-  viewPipe->setFront(*slitsB,2);
-  viewPipe->createAll(System,*slitsB,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*viewPipe,2);
-
+  outerCell=constructSystem::constructUnit
+    (System,buildZone,*slitsB,"back",*viewPipe);
   viewPipe->addCell("OuterVoid",outerCell);
   viewPipe->splitObject(System,-11,outerCell);
   viewPipe->splitObject(System,12,outerCell);
   viewPipe->splitObject(System,1001,outerCell,
 			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0));
-
-  viewPipe->insertInCell("FlangeA",System,viewPipe->getCell("OuterVoid",1));
-  viewPipe->insertInCell("FlangeB",System,viewPipe->getCell("OuterVoid",2));
-  viewPipe->insertInCell("Main",System,viewPipe->getCell("OuterVoid",0));
-  viewPipe->insertInCell("Main",System,viewPipe->getCell("OuterVoid",3));
-
-  const constructSystem::portItem& CPA=viewPipe->getPort(0);
-  CPA.insertInCell(System,viewPipe->getCell("OuterVoid",3));
-
-  const constructSystem::portItem& CPB=viewPipe->getPort(1);
-  CPB.insertInCell(System,viewPipe->getCell("OuterVoid",0));
-  const constructSystem::portItem& CPC=viewPipe->getPort(2);
-  CPC.insertInCell(System,viewPipe->getCell("OuterVoid",0));
-  CPC.insertInCell(System,viewPipe->getCell("OuterVoid",3));
-
   const constructSystem::portItem& CPI=viewPipe->getPort(3);
-  CPI.insertInCell(System,viewPipe->getCell("OuterVoid",1));
-  CPI.insertInCell(System,viewPipe->getCell("OuterVoid",3));
   CPI.insertInCell(System,slitsB->getCell("OuterVoid"));
 
-  
-  // split the object into four
-
+  // inner viewing item
   for(size_t i=0;i<viewMount.size();i++)
     {
       const constructSystem::portItem& PI=viewPipe->getPort(i);
+
+      viewMount[i]->addInsertCell("Body",PI.getCell("Plate"));
       viewMount[i]->addInsertCell("Body",PI.getCell("Void"));
+      viewMount[i]->addInsertCell("Blade",PI.getCell("Void"));
+      viewMount[i]->addInsertCell("Blade",viewPipe->getCell("Void"));
       viewMount[i]->addInsertCell("Body",viewPipe->getCell("Void"));
+
       viewMount[i]->setBladeCentre(PI,0);
       viewMount[i]->createAll(System,PI,2);
     }
 
-  pipeF->setFront(*viewPipe,2);
-  pipeF->createAll(System,*viewPipe,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeF,2);
-  pipeF->insertInCell(System,outerCell);
 
-  // FAKE build
+  constructSystem::constructUnit
+    (System,buildZone,*viewPipe,"back",*bellowF);
 
-  monoShutter->addAllInsertCell(masterCell->getName());
-  monoShutter->setCutSurf("front",*pipeF,2);
-  monoShutter->createAll(System,*pipeF,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*monoShutter,2);
-
+  outerCell=constructSystem::constructUnit
+    (System,buildZone,*bellowF,"back",*monoShutter);
   monoShutter->addCell("OuterVoid",outerCell);
-  monoShutter->insertAllInCell(System,outerCell);
-  
-  monoShutter->splitObject(System,"PortACut",outerCell);
 
+  monoShutter->splitObject(System,"PortACut",outerCell);
   const Geometry::Vec3D midPoint(monoShutter->getLinkPt(3));
   const Geometry::Vec3D midAxis(monoShutter->getLinkAxis(-3));
   monoShutter->splitObjectAbsolute(System,2001,
@@ -567,42 +466,40 @@ balderOpticsBeamline::buildObjects(Simulation& System)
 				   midPoint,midAxis);
   monoShutter->splitObject(System,"PortBCut",
 			   monoShutter->getCell("OuterVoid",1));
-
-  pipeG->setFront(*monoShutter,2);
-  pipeG->createAll(System,*monoShutter,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeG,2);
-  pipeG->insertInCell(System,outerCell);
-
-  gateE->setFront(*pipeG,2);
-  gateE->createAll(System,*pipeG,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,
-				*gateE,2);
-  gateE->insertInCell(System,outerCell);
-
   
+  constructSystem::constructUnit
+    (System,buildZone,*monoShutter,"back",*bellowG);
+
+  constructSystem::constructUnit
+    (System,buildZone,*bellowG,"back",*gateE);  
+
   neutShield[0]->addAllInsertCell(mirrorBox->getCell("FFlangeVoid"));
   neutShield[0]->addAllInsertCell(mirrorBox->getCell("OuterVoid",1));
   neutShield[0]->setCutSurf("inner",*mirrorBox,"frontPortWall");
-  neutShield[0]->createAll(System,*mirrorBox,-1);
+  neutShield[0]->createAll(System,*mirrorBox,"#front");
 
   neutShield[1]->addAllInsertCell(driftB->getCell("OuterVoid"));
   neutShield[1]->setCutSurf("inner",*driftB,"pipeOuterTop");
   neutShield[1]->createAll(System,*driftB,-1);
-
   
   neutShield[2]->addAllInsertCell(mirrorBoxB->getCell("BFlangeVoid"));
   neutShield[2]->addAllInsertCell(mirrorBoxB->getCell("OuterVoid",2));
   neutShield[2]->setCutSurf("inner",*mirrorBoxB,"backPortWall");
-  neutShield[2]->createAll(System,*mirrorBoxB,-2);
+  neutShield[2]->createAll(System,*mirrorBoxB,"#back");
+  
 
-  setCell("LastVoid",masterCell->getName());
-  lastComp=gateE;  
+  buildZone.createUnit(System);
+  buildZone.rebuildInsertCells(System);
+
+  setCells("InnerVoid",buildZone.getCells("Unit"));
+  setCell("LastVoid",buildZone.getCells("Unit").back());
+  lastComp=gateE;
 
   return;
 }
 
 void
-balderOpticsBeamline::createLinks()
+balderOpticsLine::createLinks()
   /*!
     Create a front/back link
    */
@@ -614,9 +511,9 @@ balderOpticsBeamline::createLinks()
   
   
 void 
-balderOpticsBeamline::createAll(Simulation& System,
-				const attachSystem::FixedComp& FC,
-				const long int sideIndex)
+balderOpticsLine::createAll(Simulation& System,
+			    const attachSystem::FixedComp& FC,
+			    const long int sideIndex)
   /*!
     Carry out the full build
     \param System :: Simulation system
@@ -625,7 +522,7 @@ balderOpticsBeamline::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("balderOpticsBeamline","createAll");
+  ELog::RegMethod RControl("balderOpticsLine","createAll");
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

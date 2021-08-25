@@ -66,6 +66,9 @@ class ExperimentalHutch :
   double holeXStep;             ///< X step offset
   double holeZStep;             ///< Z step offset
   
+  double exitRadius;            ///< Radius of front hole (if used)
+  double exitXStep;             ///< X step offset
+  double exitZStep;             ///< Z step offset
   
   double innerOutVoid;          ///< Extension for inner void space
   double outerOutVoid;          ///< Extension for outer void space 

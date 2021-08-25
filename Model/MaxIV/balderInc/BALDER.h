@@ -3,7 +3,7 @@
  
  * File:   balderInc/BALDER.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,17 +41,17 @@ namespace xraySystem
   class BeamMount;
   class OpticsHutch;
   class ExperimentalHutch;
-  class balderExptBeamline;
+  class balderExptLine;
   class R3FrontEndCave;
   class R3FrontEnd;
-  class ConnectZone;
-  class balderFrontEnd;
   class PipeShield;
   class WallLead;
 
-  class balderOpticsBeamline;
   class balderFrontEnd;
   class balderOpticsHutch;
+  class balderOpticsLine;
+  class balderConnectZone;  
+
   /*!
     \class BALDER
     \version 1.0
@@ -74,10 +74,10 @@ class BALDER : public R3Beamline
   std::shared_ptr<constructSystem::VacuumPipe> joinPipe;
 
   /// Optics hutch
-  std::shared_ptr<balderOpticsHutch> opticsHut;
+  std::shared_ptr<OpticsHutch> opticsHut;
   
   /// Beamline
-  std::shared_ptr<balderOpticsBeamline> opticsBeam;
+  std::shared_ptr<balderOpticsLine> opticsBeam;
 
   /// Pipe joining optics hut to outer 
   std::shared_ptr<constructSystem::LeadPipe> joinPipeB;
@@ -93,7 +93,7 @@ class BALDER : public R3Beamline
   std::shared_ptr<xraySystem::PipeShield> outerShield;
   
   /// Connection between hutches
-  std::shared_ptr<xraySystem::ConnectZone> connectZone;
+  std::shared_ptr<xraySystem::balderConnectZone> connectZone;
 
   /// Pipe joining optics hut to outer 
   std::shared_ptr<constructSystem::LeadPipe> joinPipeC;
@@ -102,7 +102,7 @@ class BALDER : public R3Beamline
   std::shared_ptr<xraySystem::ExperimentalHutch> exptHut;
 
   /// Beamline for experimental hutch
-  std::shared_ptr<balderExptBeamline> exptBeam;
+  std::shared_ptr<balderExptLine> exptBeam;
 
   
  public:

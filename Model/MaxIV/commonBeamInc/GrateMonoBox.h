@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxpeemInc/GrateMonoBox.h
+ * File:   commonBeamInc/GrateMonoBox.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -96,6 +96,9 @@ class GrateMonoBox :
   GrateMonoBox(const GrateMonoBox&);
   GrateMonoBox& operator=(const GrateMonoBox&);
   virtual ~GrateMonoBox();
+
+  void insertAllPorts(Simulation&,const int) const;
+  void insertPorts(const size_t,Simulation&,const int) const;
 
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 			 const long int);

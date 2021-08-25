@@ -64,7 +64,6 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
-#include "InnerZone.h"
 #include "BlockZone.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
@@ -303,26 +302,34 @@ danmaxOpticsLine::constructViewScreen(Simulation& System,
 
   int outerCell=buildZone.createUnit
     (System,VPB,VPB.getSideIndex("OuterPlate"));
-  //  viewTube->insertAllInCell(System,outerCell);
+  this->addCell("OuterVoid",outerCell);
+
+  std::vector<int> cellUnit;
+  cellUnit.push_back(outerCell);
+
   const Geometry::Vec3D Axis=viewTube->getY()*(VPB.getY()+VPC.getY())/2.0;
+
   buildZone.splitObjectAbsolute(System,1501,"Unit",
 			      viewTube->getCentre(),VPB.getY());
+  cellUnit.push_back(buildZone.getLastCell("Unit"));
   buildZone.splitObjectAbsolute(System,1502,"Unit",
 			      viewTube->getCentre(),Axis);
-
-  ELog::EM<<"CAUTION THIS IS INSANE INSERT"<<ELog::endCrit;
-  const std::vector<int> cellUnit=buildZone.getCells("Unit");
+  cellUnit.push_back(buildZone.getLastCell("Unit"));
+  
   viewTube->insertMainInCell(System,cellUnit);
 
-
   VPA.insertInCell(System,buildZone.getLastCell("Unit"));
+  viewTube->insertPortInCell(System,0,cellUnit[0]);
+  viewTube->insertPortInCell(System,1,cellUnit[1]);
+  viewTube->insertPortInCell(System,2,cellUnit[2]);
   
-  viewTube->insertPortInCell
-    (System,{{outerCell},{outerCell+1},{outerCell+2}});
-  cellIndex+=2;
+  cellIndex+=3;
+
 
   viewTubeScreen->addInsertCell("Body",viewTube->getCell("Void"));
   viewTubeScreen->addInsertCell("Body",VPC.getCell("Void"));
+  viewTubeScreen->addInsertCell("Blade",viewTube->getCell("Void"));
+  viewTubeScreen->addInsertCell("Blade",VPC.getCell("Void"));
   viewTubeScreen->setBladeCentre(*viewTube,0);
   viewTubeScreen->createAll(System,VPC,"-InnerPlate");
 
@@ -363,6 +370,8 @@ danmaxOpticsLine::constructViewScreenB(Simulation& System,
   const constructSystem::portItem& VPI=viewTubeB->getPort(1);
   viewTubeBScreen->addInsertCell("Body",VPI.getCell("Void"));
   viewTubeBScreen->addInsertCell("Body",viewTubeB->getCell("SplitVoid",2));
+  viewTubeBScreen->addInsertCell("Blade",VPI.getCell("Void"));
+  viewTubeBScreen->addInsertCell("Blade",viewTubeB->getCell("SplitVoid",2));
   viewTubeBScreen->setBladeCentre(*viewTubeB,0);
   viewTubeBScreen->createAll(System,VPI,"-InnerPlate");
 
@@ -559,7 +568,7 @@ danmaxOpticsLine::constructMonoShutter(Simulation& System,
   constructSystem::constructUnit
     (System,buildZone,FC,linkName,*monoAdaptorA);
 
-  int outerCell=constructSystem::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,*monoAdaptorA,"back",*monoShutter);
 
   /*
@@ -667,7 +676,6 @@ danmaxOpticsLine::buildObjects(Simulation& System)
     (System,buildZone,*bellowI,"back",*lensBox);
 
   // adds a portset to an object:
-  const int CN = buildZone.getLastCell("Unit");
   /*
   constructSystem::portSet lensBoxPort(*lensBox);
   lensBoxPort.createPorts(System,"MainWall",lensBox->getInsertCells());

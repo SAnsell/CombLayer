@@ -119,6 +119,7 @@
 #include "ConnectorGenerator.h"
 #include "LocalShieldingGenerator.h"
 #include "FlangeDomeGenerator.h"
+#include "BeamBoxGenerator.h"
 
 namespace setVariable
 {
@@ -385,8 +386,12 @@ SingleItemVariables(FuncDataBase& Control)
   
   // Beam Stop
   setVariable::NBeamStopGenerator BS;
-  BS.generateBStop(Control,"BeamStop");
-
+  BS.generateBStop(Control,"BeamStop",3.0);
+  Control.addVariable("BeamStopYStep",3.0);
+  // Beam Box
+  setVariable::BeamBoxGenerator BX;
+  BX.generateBox(Control,"BeamBox",3.0);
+  
   // corrector mag
   setVariable::CorrectorMagGenerator CMGen;
   // last argument is vertical/horizontal switch
@@ -496,21 +501,27 @@ SingleItemVariables(FuncDataBase& Control)
   BellowGen.generateBellow(Control,"Bellow",7.5);
 
   // PipeTube
+
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,"BellowTube",7.5);
+  //  Control.addVariable("BellowTubeZAngle",30.0);
+
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   SimpleTubeGen.setCF<CF63>();
   SimpleTubeGen.generateTube(Control,"PipeTube",20.0);
 
-  Control.addVariable("PipeTubeNPorts",2);
-  PItemGen.setCF<setVariable::CF40>(12.0);
-  PItemGen.generatePort(Control,"PipeTubePort0",
-			Geometry::Vec3D(0.0, 3.0, 0.0),
-			Geometry::Vec3D(0.5, -0.5, 0.866));
-  PItemGen.setNoPlate();
+  Control.addVariable("PipeTubeNPorts",1);
   PItemGen.setCF<setVariable::CF40>(10.0);
-  PItemGen.generatePort(Control,"PipeTubePort1",
+  PItemGen.setNoPlate();
+  PItemGen.generatePort(Control,"PipeTubePort0",
 			Geometry::Vec3D(0.0, -3.0, 0.0),
 			Geometry::Vec3D(-1.0, 0.0, 0.0));
+
+  PItemGen.setCF<setVariable::CF40>(12.0);
+  PItemGen.generatePort(Control,"PipeTubePort1",
+			Geometry::Vec3D(0.0, 3.0, 0.0),
+			Geometry::Vec3D(0.5, -0.5, 0.866));
 
   // PortTube
   setVariable::PortTubeGenerator PortTubeGen;

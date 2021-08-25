@@ -272,14 +272,14 @@ NBeamStop::createObjects(Simulation& System)
 
   const HeadRule& frontHR=ExternalCut::getRule("front");
   const HeadRule& backHR=ExternalCut::getRule("back");
-
+  const HeadRule& baseHR=ExternalCut::getRule("base");
+  
   HeadRule rInnerHR,rOuterHR;
   int BI(buildIndex+100);
   int index(0);
   for(const coreUnit& cu : units)
     {
       const std::string lName="Layer"+std::to_string(index);
-      
       rInnerHR=rOuterHR.complement();
       rOuterHR=ModelSupport::getSetHeadRule(SMap,BI,"-7");
       HeadRule aHR=frontHR;
@@ -289,14 +289,15 @@ NBeamStop::createObjects(Simulation& System)
 	{
 	  const HeadRule bHR=ModelSupport::getHeadRule(SMap,PI,"-1");
 	  makeCell(lName,System,cellIndex++,
-		   cu.mat[cuI-1],0.0,aHR*bHR*rOuterHR*rInnerHR);
+		   cu.mat[cuI-1],0.0,aHR*bHR*rOuterHR*rInnerHR*baseHR);
 	  aHR=bHR.complement();
 	  PI+=10;
 	}
       // last cell:
       makeCell(lName,System,cellIndex++,
-	       cu.mat[cuI-1],0.0,aHR*backHR*rOuterHR*rInnerHR);
+	       cu.mat[cuI-1],0.0,aHR*backHR*rOuterHR*rInnerHR*baseHR);
       BI+=100;
+      index++;
     }
 
   addOuterSurf(rOuterHR*frontHR*backHR);
@@ -313,11 +314,9 @@ NBeamStop::createLinks()
 
   FixedComp::setConnect(0,Origin,Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  FixedComp::nameSideIndex(0,"front");
 
   FixedComp::setConnect(1,Origin+Y*fullLength,Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
-  FixedComp::nameSideIndex(1,"back");
 
   return;
 }
@@ -325,8 +324,8 @@ NBeamStop::createLinks()
 
 void
 NBeamStop::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC,
-		       const long int sideIndex)
+		     const attachSystem::FixedComp& FC,
+		     const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item

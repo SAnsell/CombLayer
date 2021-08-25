@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   speciesInc/speciesOpticsBeamline.h
+ * File:   speciesInc/speciesOpticsLine.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_speciesOpticsBeamline_h
-#define xraySystem_speciesOpticsBeamline_h
+#ifndef xraySystem_speciesOpticsLine_h
+#define xraySystem_speciesOpticsLine_h
 
 namespace insertSystem
 {
@@ -53,6 +53,7 @@ namespace constructSystem
 namespace xraySystem
 {
   class OpticsHutch;
+  class CylGateValve;
   class GrateMonoBox;
   class GratingMono;
   class GratingUnit;
@@ -61,39 +62,45 @@ namespace xraySystem
   class PipeShield;
   class JawValveCube;
   class TankMonoVessel;
+  class TriggerTube;
   class TwinPipe;
     
   /*!
-    \class speciesOpticsBeamline
+    \class speciesOpticsLine
     \version 1.0
     \author S. Ansell
     \date January 2018
     \brief General constructor for the xray system
   */
 
-class speciesOpticsBeamline :
+class speciesOpticsLine :
   public attachSystem::CopiedComp,
   public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::ExternalCut,
-  public attachSystem::CellMap
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
  private:
 
+  /// Items pre-insertion into mastercell:0
+  std::shared_ptr<attachSystem::ContainedGroup> preInsert;
+
   /// System for building a divided inner
-  attachSystem::InnerZone buildZone;
-  
+  attachSystem::BlockZone buildZone;
+  attachSystem::BlockZone IZLeft;
+  attachSystem::BlockZone IZRight;
+  int innerMat;                         ///< inner material if used
+
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
 
   /// Bellows to ionPump
   std::shared_ptr<constructSystem::Bellows> bellowA;
-  /// Real Ion pump (KF40) 24.4cm vertical
-  std::shared_ptr<constructSystem::CrossPipe> ionPA;
-  /// Gate block
-  std::shared_ptr<constructSystem::GateValveCube> gateRing;
-  /// Gate block
-  std::shared_ptr<constructSystem::PipeTube> gateTubeA;
+  /// vacuum trigger system
+  std::shared_ptr<xraySystem::TriggerTube> triggerPipe;
+  /// first ion pump+gate
+  std::shared_ptr<xraySystem::CylGateValve> gateTubeA;
   /// Bellow to first connect line
   std::shared_ptr<constructSystem::Bellows> bellowB;
   /// Front port of mirror box
@@ -184,39 +191,21 @@ class speciesOpticsBeamline :
 
   double outerLeft;            ///< Left dist for inner void
   double outerRight;           ///< Right for inner void
-  double outerTop;             ///< top for inner void
   
 
-  int constructDivideCell(Simulation&,const bool,
-			   const attachSystem::FixedComp&,
-			   const long int,
-			   const attachSystem::FixedComp&,
-			   const long int);
+  void buildFrontTable(Simulation&,
+		       const attachSystem::FixedComp&,const std::string&);
+  void buildM1Mirror(Simulation&,
+		     const attachSystem::FixedComp&,const std::string&);
+  void buildM3Mirror(Simulation&,
+		     const attachSystem::FixedComp&,const std::string&);
+  void buildMono(Simulation&,
+		 const attachSystem::FixedComp&,const std::string&);
+  void buildSlitPackage(Simulation&,
+		       const attachSystem::FixedComp&,const std::string&);
+  void buildSplitter(Simulation&,
+		     const attachSystem::FixedComp&,const std::string&);
 
-  int createDoubleVoidUnit(Simulation&,
-			   HeadRule&,
-			   const attachSystem::FixedComp&,
-			   const long int);
-  
-  void insertFlanges(Simulation&,const constructSystem::PipeTube&);
-  
-
-  void buildFrontTable(Simulation&,MonteCarlo::Object*,
-		       const attachSystem::FixedComp&,const long int);
-  void buildM1Mirror(Simulation&,MonteCarlo::Object*,
-		     const attachSystem::FixedComp&,const long int);
-  void buildM3Mirror(Simulation&,MonteCarlo::Object*,
-		     const attachSystem::FixedComp&,const long int);
-  void buildMono(Simulation&,MonteCarlo::Object*,
-		 const attachSystem::FixedComp&,const long int);
-  void buildSlitPackage(Simulation&,MonteCarlo::Object*,
-		       const attachSystem::FixedComp&,const long int);
-  std::pair<MonteCarlo::Object*,MonteCarlo::Object*>
-    buildSplitter(Simulation&,MonteCarlo::Object*,
-		  const attachSystem::FixedComp&,const long int);
-
-  void addLeadBrick(Simulation&);
-  
   void populate(const FuncDataBase&);
   void createSurfaces();
   void buildObjects(Simulation&);
@@ -224,14 +213,20 @@ class speciesOpticsBeamline :
   
  public:
   
-  speciesOpticsBeamline(const std::string&);
-  speciesOpticsBeamline(const speciesOpticsBeamline&);
-  speciesOpticsBeamline& operator=(const speciesOpticsBeamline&);
-  ~speciesOpticsBeamline();
+  speciesOpticsLine(const std::string&);
+  speciesOpticsLine(const speciesOpticsLine&);
+  speciesOpticsLine& operator=(const speciesOpticsLine&);
+  ~speciesOpticsLine();
 
-  void buildOutGoingPipes(Simulation&,const int,const int,
-			  const std::vector<int>&);
+  /// Assignment to inner void
+  void setInnerMat(const int M) {  innerMat=M; }
+  /// Assignment to extra for first volume
+  void setPreInsert
+    (const std::shared_ptr<attachSystem::ContainedGroup>& A) { preInsert=A; }
+
+  void buildExtras(Simulation&,const attachSystem::CellMap&);
   
+  using attachSystem::FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

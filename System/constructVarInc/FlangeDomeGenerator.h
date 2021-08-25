@@ -57,6 +57,8 @@ class FlangeDomeGenerator
   /// set main dome sphere:
   void setSphere(const double R,const double S)
   { curveRadius=R; curveStep=S; }
+  void setSphere(const double R,const double F,const double S)
+  { curveRadius=R; flangeRadius=F,curveStep=S; }
   
   template<typename CF> void setFlangeCF();
 

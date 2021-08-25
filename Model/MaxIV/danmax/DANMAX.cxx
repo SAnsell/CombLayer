@@ -55,20 +55,20 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
-#include "InnerZone.h"
 #include "BlockZone.h"
 
 #include "VacuumPipe.h"
 
-#include "danmaxOpticsHutch.h"
+#include "OpticsHutch.h"
 #include "ExperimentalHutch.h"
 #include "WallLead.h"
 #include "R3FrontEnd.h"
 #include "danmaxFrontEnd.h"
+#include "danmaxOpticsHutch.h"
 #include "danmaxOpticsLine.h"
 #include "danmaxConnectLine.h"
 #include "PipeShield.h"
-#include "balderExptBeamline.h"
+#include "balderExptLine.h"
 
 #include "R3Ring.h"
 #include "R3Beamline.h"
@@ -89,7 +89,7 @@ DANMAX::DANMAX(const std::string& KN) :
   joinPipeC(new constructSystem::VacuumPipe(newName+"JoinPipeC")),
   exptHut(new xraySystem::ExperimentalHutch(newName+"ExptHut")),
   pShield(new xraySystem::PipeShield(newName+"PShield")),
-  exptBeam(new balderExptBeamline(newName+"ExptLine"))
+  exptBeam(new balderExptLine(newName+"ExptLine"))
   /*!
     Constructor
     \param KN :: Keyname
@@ -139,43 +139,29 @@ DANMAX::build(Simulation& System,
   const std::string exitLink="ExitCentre"+std::to_string(PIndex);
 
   frontBeam->setStopPoint(stopPoint);
+  frontBeam->setCutSurf("REWall",-r3Ring->getSurf("BeamInner",PIndex));
   frontBeam->deactivateFM3();
   frontBeam->addInsertCell(r3Ring->getCell("InnerVoid",SIndex));
 
   frontBeam->setBack(-r3Ring->getSurf("BeamInner",PIndex));
   frontBeam->createAll(System,FCOrigin,sideIndex);
 
-
   wallLead->addInsertCell(r3Ring->getCell("FrontWall",PIndex));
   wallLead->setFront(r3Ring->getSurf("BeamInner",PIndex));
   wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));    
   wallLead->createAll(System,FCOrigin,sideIndex);
 
+
   if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
 
-  opticsHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
-  opticsHut->setCutSurf("RingWall",r3Ring->getSurf("BeamOuter",PIndex));
-
-  opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
-  opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
-
-  opticsHut->setCutSurf("SideWall",r3Ring->getSurf("FlatOuter",PIndex));
-  opticsHut->setCutSurf("InnerSideWall",r3Ring->getSurf("FlatInner",PIndex));
-  opticsHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
-
-
-  // Ugly HACK to get the two objects to merge
-  r3Ring->insertComponent
-    (System,"OuterFlat",SIndex,
-     *opticsHut,opticsHut->getSideIndex("frontCut"));
-
+  buildOpticsHutch(System,opticsHut,PIndex,exitLink);
+  
   // Inner space
 
   if (stopPoint=="opticsHut") return;
 
   joinPipe->addAllInsertCell(frontBeam->getCell("MasterVoid"));
   joinPipe->addInsertCell("Main",wallLead->getCell("Void"));
-  joinPipe->addAllInsertCell(opticsHut->getCell("Inlet"));
   joinPipe->createAll(System,*frontBeam,2);
 
     // new
@@ -189,13 +175,13 @@ DANMAX::build(Simulation& System,
   opticsBeam->setPreInsert(joinPipe);
   opticsBeam->createAll(System,*joinPipe,2);
 
-  joinPipe->insertAllInCell(System,opticsBeam->getCell("LastVoid"));
-
+ 
   joinPipeB->addAllInsertCell(opticsBeam->getCell("LastVoid"));
   joinPipeB->addInsertCell("Main",opticsHut->getCell("ExitHole"));
   joinPipeB->setFront(*opticsBeam,2);
   joinPipeB->createAll(System,*opticsBeam,2);
-  
+
+
   exptHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
   exptHut->setCutSurf("InnerSideWall",r3Ring->getSurf("FlatInner",PIndex));
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
@@ -208,11 +194,12 @@ DANMAX::build(Simulation& System,
   connectUnit->setBack(*exptHut,1);
   connectUnit->createAll(System,*joinPipeB,"back");
 
+
   joinPipeB->insertAllInCell(System,connectUnit->getCell("FirstVoid"));
   
   joinPipeC->insertAllInCell(System,exptHut->getCell("Void"));
   joinPipeC->insertInCell("Main",System,exptHut->getCell("EntranceHole"));
-  
+
   // pipe shield goes around joinPipeC:
   pShield->addAllInsertCell(exptHut->getCell("Void"));
   pShield->setCutSurf("inner",*joinPipeC,"outerPipe");

@@ -61,6 +61,7 @@ class WWGWeight
   explicit WWGWeight(const size_t);
   WWGWeight(const size_t,const std::vector<double>&);
   WWGWeight(const WWGWeight&);
+  WWGWeight(const size_t,const WWGWeight&);
   WWGWeight& operator=(const WWGWeight&);    
   ~WWGWeight() {}          ///< Destructor
 
@@ -121,7 +122,8 @@ class WWGWeight
 		     const long int, const double);
   void scaleGrid(const double);
   void scalePower(const double);
-  void scaleRange(const size_t eIndex,const double,const double,const double);
+  void scaleRange(const size_t eIndex,const double,const double,
+		  const double,const double);
   void setMinValue(const double);
 
 
@@ -133,13 +135,13 @@ class WWGWeight
 		   const double) const;
 
   template<typename T>
-  void wTrack(const Simulation&,const T&,
+  void wTrack(const Simulation&,const T&,const size_t,
 	      const double,const double,const double);
 
   template<typename T,typename U>
-  void CADISnorm(const Simulation&,
-		 const WWGWeight&,
-		 const WWGWeight&,
+  void CADISnorm(const Simulation&,const long int,
+		 const WWGWeight&,const long int,
+		 const WWGWeight&,const long int,
 		 const T&,const U&,
 		 const double,const double,const double);
   

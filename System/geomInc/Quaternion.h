@@ -3,7 +3,7 @@
  
  * File:   geomInc/Quaternion.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -100,6 +100,9 @@ class Quaternion
 
   Vec3D makeRotate(const Vec3D&) const;
   Vec3D makeInvRotate(const Vec3D&) const;
+
+  void rotateBasis(Vec3D&,Vec3D&,Vec3D&) const;
+  void invRotateBasis(Vec3D&,Vec3D&,Vec3D&) const;
   
   bool zeroAngle(const double&) const;
   

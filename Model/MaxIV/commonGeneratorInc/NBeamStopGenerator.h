@@ -51,7 +51,9 @@ class NBeamStopGenerator
   NBeamStopGenerator& operator=(const NBeamStopGenerator&);
   virtual ~NBeamStopGenerator();
 
-  virtual void generateBStop(FuncDataBase&,const std::string&) const;
+  void setFullLen(const double L) { fullLength=L;}
+  virtual void generateBStop(FuncDataBase&,const std::string&,
+			     const double) const;
 
 };
 

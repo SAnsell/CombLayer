@@ -229,36 +229,22 @@ TDC::buildSurround(const FuncDataBase& Control,
     {
       const double outerLeft=Control.EvalVar<double>(regionName+"OuterLeft");
       const double outerRight=Control.EvalVar<double>(regionName+"OuterRight");
-      const double outerTop=Control.EvalVar<double>(regionName+"OuterTop");
-      const double outerFloor=
-	Control.EvalDefVar<double>(regionName+"OuterFloor",-5e10); // large-neg
 
       const attachSystem::FixedOffsetUnit injFC
 	(Control,regionName,*injectionHall,injectionPt);
       // rotation if needed in a bit
       const Geometry::Vec3D& Org=injFC.getCentre();
       const Geometry::Vec3D& InjectX=injFC.getX();
-      const Geometry::Vec3D& InjectZ=injFC.getZ();
 
-      std::string Out;
+      HeadRule HR;
 
       ModelSupport::buildPlane(SMap,BI+3,Org-X*outerLeft,InjectX);
       ModelSupport::buildPlane(SMap,BI+4,Org+X*outerRight,InjectX);
-      ModelSupport::buildPlane(SMap,BI+6,Org+Z*outerTop,InjectZ);
-      if (outerFloor < -4e10)
-	{
-	  Out=ModelSupport::getComposite(SMap,BI," 3 -4 -6");
-	  BI+=10;
-	  return HeadRule(Out+injectionHall->getSurfString("Floor"));
-	}
-
-      ModelSupport::buildPlane(SMap,BI+5,Org-Z*outerFloor,InjectZ);
-      Out=ModelSupport::getComposite(SMap,BI," 3 -4 5 -6");
+      HR=ModelSupport::getHeadRule(SMap,BI,"3 -4");
       BI+=10;
-
-      HeadRule OutHR(Out);
-      surroundMap.emplace(regionName,OutHR);
-      return OutHR;
+      HR*=injectionHall->getSurfRule("Floor")*
+	injectionHall->getSurfRule("#Roof");
+      return HR;
     }
 
   return mc->second;
@@ -302,7 +288,9 @@ TDC::buildInnerZone(Simulation& System,
   /*!
     Set the regional buildzone
     \param System :: Simulation
-    \param regionName :: Zone name
+    \param segmentName :: Name of Segment e.g segment28
+    \param regionName :: zone name of region for BlockZone
+    \return full blockzone with surround/front/back
   */
 {
   ELog::RegMethod RegA("TDC","buildInnerZone");
@@ -391,6 +379,12 @@ TDC::reconstructInjectionHall(Simulation& System)
   attachSystem::BlockZone BZvol;
   for(const int CN : CInsert)
     {
+      std::map<int,HeadRule>::iterator mc=
+	originalSpaces.find(CN);
+      if (mc==originalSpaces.end())
+	throw ColErr::InContainerError<int>(CN,"BZone insertcell");
+      MonteCarlo::Object* OPtr=System.findObject(CN);
+      
       HeadRule OuterVolume;
       bool initFlag(1);
       for(const auto& [name,bzPtr] : bZone)
@@ -405,24 +399,28 @@ TDC::reconstructInjectionHall(Simulation& System)
 		}
 	      else if (!BZvol.merge(*bzPtr))
 		{
-		  OuterVolume.addIntersection(BZvol.getVolume().complement());
+		  OuterVolume.addUnion(BZvol.getVolume());
 		  BZvol= *bzPtr;
 		}
-	    }
+	    }		  
 	}
-      	
-      std::map<int,HeadRule>::iterator mc=
-	originalSpaces.find(CN);
-
-      if (mc==originalSpaces.end())
-	throw ColErr::InContainerError<int>(CN,"BZone insertcell");
-
       HeadRule HROut=mc->second;
-      HROut.addIntersection(BZvol.getVolume().complement());
-      HROut.addIntersection(OuterVolume);
-
-      MonteCarlo::Object* OPtr=System.findObject(CN);
+      
+      OuterVolume+=BZvol.getVolume();
+      HROut.addIntersection(OuterVolume.complement());
       OPtr->procHeadRule(HROut);
+    }
+
+  // loop over block zone and addpillars:
+  
+  for(const auto& [name,bzPtr] : bZone)
+    {
+      const std::vector<int> VCells=bzPtr->getCells();
+
+      for(const int CN : VCells)
+	{
+	  injectionHall->addPillars(System,CN);
+	}
     }
   return;
 }
@@ -550,6 +548,9 @@ TDC::createAll(Simulation& System,
 	  std::shared_ptr<attachSystem::BlockZone> buildZone=
 	    buildInnerZone(System,BL,bzName);
 
+	  segPtr->setCutSurf("Floor",injectionHall->getSurfRule("Floor"));
+	  segPtr->setCutSurf("BackWallFront",
+			     injectionHall->getSurfRule("BackWallFront"));
 	  segPtr->setInnerZone(buildZone.get());
 	  segPtr->registerPrevSeg(prevSegPtr,prevIndex);
 
@@ -611,7 +612,6 @@ TDC::createAll(Simulation& System,
 	  segPtr->createAll
 	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
 	  segPtr->insertPrevSegment(System,prevSegPtr);
-
 	  segPtr->createBeamLink(System.getDataBase());
 	  if (!noCheck)
 	    segPtr->totalPathCheck(System.getDataBase(),0.1);
@@ -639,9 +639,9 @@ TDC::createAll(Simulation& System,
 	    }
 	}
     }
-
   reconstructInjectionHall(System);
 
+  
   return;
 }
 

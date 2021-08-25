@@ -3,7 +3,7 @@
  
  * File:   insertUnit/insertPlate.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -384,6 +384,7 @@ insertPlate::mainAll(Simulation& System)
 
   if (!delayInsert)
     findObjects(System);
+    
   createObjects(System);
 
   insertObjects(System);
@@ -425,6 +426,7 @@ insertPlate::createAll(Simulation& System,
   if (!populated) 
     populate(System.getDataBase());  
   createUnitVector(FC,lIndex);
+
   mainAll(System);
   return;
 }
@@ -443,6 +445,7 @@ insertPlate::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("insertPlate","createAll");
+  
   if (!populated) 
     populate(System.getDataBase());  
   createUnitVector(Orig,YA,ZA);

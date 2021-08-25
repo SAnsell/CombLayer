@@ -183,8 +183,7 @@ Segment48::buildObjects(Simulation& System)
   for(size_t index=0;index<2;index++)
     {
       const constructSystem::portItem& DPI=slitTube->getPort(index);
-      jaws[index]->setFillRadius
-  	(DPI,DPI.getSideIndex("InnerRadius"),DPI.getCell("Void"));
+      jaws[index]->setFillRadius(DPI,"InnerRadius",DPI.getCell("Void"));
 
       jaws[index]->addInsertCell(slitTube->getCell("Void"));
       if (index)

@@ -251,21 +251,6 @@ formaxDetectorTube::createLinks()
 }
 
 void
-formaxDetectorTube::createPorts(Simulation& System)
-  /*!
-    Generic function to create the ports
-    \param System :: Simulation item
-  */
-{
-  ELog::RegMethod RegA("formaxDetectorTube","createPorts");
-
-  //  for (size_t i=0; i<8; i++)
-    //    mainTube[i]->createPorts(System);
-
-  return;
-}
-
-void
 formaxDetectorTube::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int sideIndex)

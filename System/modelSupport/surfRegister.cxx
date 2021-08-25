@@ -308,6 +308,7 @@ surfRegister::setKeep(const int SN,const int status) const
 }
 
 ///\cond TEMPLATE
+template Geometry::Surface* surfRegister::realPtr(const int) const;
 template Geometry::Plane* surfRegister::realPtr(const int) const;
 template Geometry::Cone* surfRegister::realPtr(const int) const;
 template Geometry::Cylinder* surfRegister::realPtr(const int) const;

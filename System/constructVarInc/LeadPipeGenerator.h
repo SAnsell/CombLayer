@@ -3,7 +3,7 @@
  
  * File:   constructVarInc/LeadPipeGenerator.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,11 +40,24 @@ class LeadPipeGenerator :
 {
  private:
 
-  double cladStep;              ///< clad step from flange
-  double cladThick;             ///< clad thickness.
-  
-  std::string cladMat;        ///< Primary bellow material
     
+  double radius;               ///< void radius [inner]
+  double thick;                ///< pipe thickness
+  
+  double claddingThick;        ///< cladding thickness
+  double claddingStep;         ///< distance from front/back to cladding start    
+  double flangeARadius;        ///< Joining FlangeA radius 
+  double flangeBRadius;        ///< Joining FlangeB radius 
+
+  double flangeALength;        ///< Joining Flange length
+  double flangeBLength;        ///< Joining Flange length
+
+
+  std::string voidMat;                 ///< Void material
+  std::string pipeMat;                 ///< Pipe material
+  std::string claddingMat;             ///< Pipe cladding material
+  std::string flangeMat;               ///< Flange material
+      
  public:
 
   LeadPipeGenerator();
@@ -53,15 +66,19 @@ class LeadPipeGenerator :
   ~LeadPipeGenerator();
 
   template<typename CF> void setCF();
+  template<typename CF> void setFlangeCF();
+  template<typename CF> void setAFlangeCF();
+  template<typename CF> void setBFlangeCF();
   
   void setPipe(const double,const double,const double,const double);
+  void setFlangeLength(const double,const double);
   void setCladding(const double,const double);
-  void setCladdingThick(const double T) { cladThick=T; }
+  void setCladdingThick(const double T) { claddingThick=T; }
   void setMat(const std::string&,const std::string&);
 
   
-  void generateCladPipe(FuncDataBase&,const std::string&,
-			const double) const;
+  void generatePipe(FuncDataBase&,const std::string&,
+		    const double) const;
 
 };
 

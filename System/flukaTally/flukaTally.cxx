@@ -79,7 +79,9 @@ flukaTally::idForm(const std::string& baseName,const int A)
 flukaTally::flukaTally(const std::string& MK,
 		       const int indexID,
 		       const int outID)  :
-  keyName(idForm(MK,indexID)),ID(indexID),outputUnit(outID)
+  keyName(idForm(MK,std::abs(indexID))),
+  ID(std::abs(indexID)),
+  outputUnit(outID)
   /*!
     Constructor 
     \param MK :: Keyname
@@ -176,6 +178,18 @@ flukaTally::setAuxParticles(const std::string& P)
   */
 {
   auxParticle=P;
+  return;
+}
+
+void
+flukaTally::setAscii()
+  /*!
+    Set the tally to binary
+  */
+{
+  ELog::RegMethod RegA("flukaTally","setAscii");
+
+  outputUnit=std::abs(outputUnit);
   return;
 }
 

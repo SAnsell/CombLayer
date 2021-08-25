@@ -36,7 +36,7 @@ namespace xraySystem
 */
 
 class TankMonoVessel :
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
   public attachSystem::SurfMap,
@@ -105,6 +105,9 @@ class TankMonoVessel :
   /// Set a port delay
   void delayPorts() { delayPortBuild=1; }
   void createPorts(Simulation&);
+
+  void insertPortInCell(Simulation&,const size_t,const int) const;
+
 
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,

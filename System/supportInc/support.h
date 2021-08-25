@@ -94,7 +94,9 @@ template<typename T> int sectionMCNPX(std::string&,T&);
 template<typename T> int sectionCINDER(std::string&,T&);
 template<typename T> int itemize(std::string&,std::string&,T&);
 
-
+template<typename T>
+bool convertNameWithIndex(std::string&,T&);
+  
 // Write file in standard MCNPX input form
 void writeControl(const std::string&,std::ostream&,
 		  const size_t,const int);

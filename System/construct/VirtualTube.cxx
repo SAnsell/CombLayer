@@ -84,7 +84,8 @@ VirtualTube::VirtualTube(const std::string& Key) :
   attachSystem::FrontBackCut(),
 
   outerVoid(0),delayPortBuild(0),portConnectIndex(1),
-  rotAxis(0,1,0),postYRotation(0.0)
+  rotAxis(0,1,0),zNorm(0),postZAxis(0,0,1),
+  postYRotation(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -144,24 +145,6 @@ VirtualTube::populate(const FuncDataBase& Control)
 }
 
 void
-VirtualTube::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("VirtualTube","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  applyPortRotation();
-
-  return;
-}
-
-void
 VirtualTube::createPorts(Simulation& System,
 			 MonteCarlo::Object* insertObj,
 			 const HeadRule& innerSurf,
@@ -184,9 +167,13 @@ VirtualTube::createPorts(Simulation& System,
 
       for(const int CN : portCells)
 	Ports[i]->addInsertCell(CN);
-
+	
       Ports[i]->setCentLine(*this,PCentre[i],PAxis[i]);
       Ports[i]->constructTrack(System,insertObj,innerSurf,outerSurf);
+
+      if (zNorm)
+	Ports[i]->reNormZ(postZAxis);
+  
       if (outerVoid && CellMap::hasCell("OuterVoid"))
        	Ports[i]->addPortCut(CellMap::getCellObject(System,"OuterVoid"));
       Ports[i]->insertObjects(System);
@@ -194,8 +181,6 @@ VirtualTube::createPorts(Simulation& System,
 
   return;
 }
-
-
 
 const portItem&
 VirtualTube::getPort(const size_t index) const
@@ -290,6 +275,7 @@ VirtualTube::setPortRotation(const size_t index,
         - 1,2 : main ports
         - 3-N+2 : Extra Ports
     \param RAxis :: Rotation axis expresses in local X,Y,Z
+    \param postAngle :: Rotation on Y to correct fractional turn
   */
 {
   ELog::RegMethod RegA("VirtualTube","setPortRotation");
@@ -303,6 +289,31 @@ VirtualTube::setPortRotation(const size_t index,
 }
 
 void
+VirtualTube::setPortRotation(const size_t index,
+			     const Geometry::Vec3D& RAxis,
+			     const Geometry::Vec3D& postZVec)
+  /*!
+    Set Port rotation
+    \param index
+        -0 : No rotation / no shift
+        - 1,2 : main ports
+        - 3-N+2 : Extra Ports
+    \param RAxis :: Rotation axis expresses in local X,Y,Z
+    \param postAngle :: Rotation on Y to correct fractional turn
+  */
+{
+  ELog::RegMethod RegA("VirtualTube","setPortRotation");
+
+  portConnectIndex=index;
+  if (portConnectIndex>1)
+    rotAxis=RAxis.unit();
+
+  zNorm=1;
+  postZAxis=postZVec;
+  return;
+}
+
+void
 VirtualTube::applyPortRotation()
   /*!
     Apply a rotation to all the PCentre and the
@@ -311,105 +322,70 @@ VirtualTube::applyPortRotation()
 {
   ELog::RegMethod RegA("VirtualTube","applyPortRotation");
 
-  if (keyName=="MaxPeemFrontBeamHeatBox")
-    ELog::EM<<"Keyname == "<<keyName<<" "<<portConnectIndex<<ELog::endDiag;
+  // create extra link:
+  nameSideIndex(7,"OrgOrigin");
+  FixedComp::setConnect(7,Origin,Y);
+
   if (!portConnectIndex) return;
   if (portConnectIndex>Ports.size()+3)
     throw ColErr::IndexError<size_t>
       (portConnectIndex,Ports.size()+3,"PI exceeds number of Ports+3");
 
-  // create extra link:
-  nameSideIndex(7,"OrgOrigin");
-  const Geometry::Vec3D YOriginal=Y;
 
-
-  Geometry::Vec3D YPrime(0,-1,0);
   if (portConnectIndex<3)
     {
-      Origin+=Y*(length/2.0);
       if (portConnectIndex==2)
 	{
-	  Y*=1;
+	  Y*=-1;
 	  X*=-1;
 	}
-      FixedComp::setConnect(7,Origin,YOriginal);
-
       return;
     }
-  else
+  
+  rotAxis=rotAxis.getInBasis(X,Y,Z);
+  postZAxis=postZAxis.getInBasis(X,Y,Z);
+  
+  // ALL of these point are NOT in the FixedComp referecne basis
+  // They are to be multiplied by X,Y,Z and shifed by Origin.
+  const size_t pIndex=portConnectIndex-3;
+  const portItem& PI=getPort(pIndex);
+  const Geometry::Vec3D portAxis=PAxis[pIndex].unit();
+  const Geometry::Vec3D portCentre=PCentre[pIndex];
+  const double pLen=PI.getExternalLength();
+
+  // old Y basis unit
+  const Geometry::Vec3D frontShift=-Y*(length/2.0);
+
+  if (std::abs(postYRotation)>Geometry::zeroTol)
     {
-      if (std::abs(postYRotation)>Geometry::zeroTol)
-	{
-	  const Geometry::Quaternion QVpost=
-	    Geometry::Quaternion::calcQRotDeg(postYRotation,Y);
-	  QVpost.rotate(X);
-	  QVpost.rotate(Z);
-	}
-      const size_t pIndex=portConnectIndex-3;
-      YPrime=PAxis[pIndex].unit();
-      const Geometry::Quaternion QV=
-	Geometry::Quaternion::calcQVRot(Geometry::Vec3D(0,1,0),YPrime,rotAxis);
-      // Now move QV into the main basis set origin:
-      const Geometry::Vec3D& QVvec=QV.getVec();
-      const Geometry::Vec3D QAxis=X*QVvec.X()+
-	Y*QVvec.Y()+Z*QVvec.Z();
-
-      const Geometry::Quaternion QVmain(QV[0],QAxis);
-      QVmain.rotate(X);
-      QVmain.rotate(Y);
-      QVmain.rotate(Z);
-
-      // This moves in the new Y direction
-      const Geometry::Vec3D offset=calcCylinderDistance(pIndex);
-      Origin+=offset;
-      FixedComp::setConnect(7,Origin,YOriginal);
-
+      const Geometry::Quaternion QVpost=
+	Geometry::Quaternion::calcQRotDeg(postYRotation,Y);
+      QVpost.rotate(X);
+      QVpost.rotate(Z);
     }
+
+  // retrack y to the port axis
+  const Geometry::Quaternion QV=
+    Geometry::Quaternion::calcQVRot(Geometry::Vec3D(0,1,0),portAxis,rotAxis);
+
+  // Now move QV into the main basis set origin,X,Y,Z:
+  const Geometry::Vec3D& QVvec=QV.getVec();
+  const Geometry::Vec3D QAxis=QVvec.getInBasis(X,Y,Z);
+
+  // Move X,Y,Z to the main rotation direction:
+  const Geometry::Quaternion QVmain(QV[0],QAxis);
+  QVmain.rotateBasis(X,Y,Z);
+
+  const Geometry::Vec3D portOriginB=
+    portCentre.getInBasis(X,Y,Z)+
+    portAxis.getInBasis(X,Y,Z)*pLen;
+
+  const Geometry::Vec3D diffB=frontShift-portOriginB;
+  Origin+=diffB;
+
 
   return;
 }
-
-Geometry::Vec3D
-VirtualTube::calcCylinderDistance(const size_t pIndex) const
-  /*!
-    Calculate the shift vector
-    \param pIndex :: Port index [0-NPorts]
-    \return the directional vector from the port origin
-    to the pipetube surface
-   */
-{
-  ELog::RegMethod RegA("VirtualTube","calcCylinderDistance");
-
-  if (pIndex>Ports.size())
-    throw ColErr::IndexError<size_t>
-      (pIndex,Ports.size(),"PI exceeds number of Ports");
-
-  // No Y point so no displacement
-  const Geometry::Vec3D PC=
-    X*PCentre[pIndex].X()+Y*PCentre[pIndex].Y()+Z*PCentre[pIndex].Z();
-  const Geometry::Vec3D PA=
-    X*PAxis[pIndex].X()+Y*PAxis[pIndex].Y()+Z*PAxis[pIndex].Z();
-
-  const Geometry::Line CylLine(Geometry::Vec3D(0,0,0),Y);
-  const Geometry::Line PortLine(PC,PA);
-
-  Geometry::Vec3D CPoint;
-  std::tie(CPoint,std::ignore)=CylLine.closestPoints(PortLine);
-  // calc external impact point:
-
-  // Length R Now zero
-  const double R=0.0;
-  const double ELen=Ports[pIndex]->getExternalLength();
-  //  const double CapLen=Ports[pIndex]->getCapLength();
-
-  const Geometry::Cylinder mainC(0,Geometry::Vec3D(0,0,0),Y,R);
-
-  const Geometry::Vec3D RPoint=
-    SurInter::getLinePoint(PC,PA,&mainC,CPoint-PA*ELen);
-
-  return RPoint-PA*ELen - PC*2.0;
-}
-
 
 int
 VirtualTube::splitVoidPorts(Simulation& System,
@@ -473,6 +449,7 @@ VirtualTube::splitVoidPorts(Simulation& System,
     \param offsetCN :: output offset number
     \param CN :: Cell number to split
     \param inobjAxis :: axis to split pot on
+    \return last cell
    */
 {
   ELog::RegMethod RegA("VirtualTube","splitVoidPorts");
@@ -509,7 +486,7 @@ VirtualTube::splitVoidPorts(Simulation& System,
       CellMap::addCell(splitName,CN);
 
 
-  return (cells.empty()) ? CN : cells.back()+1;
+  return (cells.empty()) ? 0 : cells.back();
 }
 
 int
@@ -558,7 +535,7 @@ VirtualTube::splitVoidPorts(Simulation& System,
 }
 
 void
-VirtualTube::insertAllInCell(Simulation& System,const int cellN)
+VirtualTube::insertAllInCell(Simulation& System,const int cellN) const
   /*!
     Overload of containdGroup so that the ports can also
     be inserted if needed
@@ -577,7 +554,7 @@ VirtualTube::insertAllInCell(Simulation& System,const int cellN)
 
 void
 VirtualTube::insertAllInCell(Simulation& System,
-			  const std::vector<int>& cellVec)
+			  const std::vector<int>& cellVec) const
   /*!
     Overload of containdGroup so that the ports can also
     be inserted if needed
@@ -586,6 +563,7 @@ VirtualTube::insertAllInCell(Simulation& System,
   */
 {
   ContainedGroup::insertAllInCell(System,cellVec);
+
   if (!delayPortBuild)
     {
       for(const std::shared_ptr<portItem>& PC : Ports)
@@ -595,7 +573,7 @@ VirtualTube::insertAllInCell(Simulation& System,
 }
 
 void
-VirtualTube::insertMainInCell(Simulation& System,const int cellN)
+VirtualTube::insertMainInCell(Simulation& System,const int cellN) const
   /*!
     Fix of insertInAllCells to only do main body without ports
     \param System :: Simulation to use
@@ -608,7 +586,7 @@ VirtualTube::insertMainInCell(Simulation& System,const int cellN)
 
 void
 VirtualTube::insertMainInCell(Simulation& System,
-			   const std::vector<int>& cellVec)
+			   const std::vector<int>& cellVec) const
   /*!
     Fix of insertInAllCells to only do main body without ports
     \param System :: Simulation to use
@@ -620,7 +598,27 @@ VirtualTube::insertMainInCell(Simulation& System,
 }
 
 void
-VirtualTube::insertPortInCell(Simulation& System,const int cellN)
+VirtualTube::insertPortInCell(Simulation& System,
+			      const size_t index,
+			      const int cellN) const
+  /*!
+    Allow ports to be intersected into arbitary cell list
+    \param System :: Simulation to use
+    \param cellN :: Cell for insert
+  */
+{
+  ELog::RegMethod RegA("VirtualTube","insertPortInCell(cellN)");
+
+  if (index>=Ports.size())
+    throw ColErr::IndexError<size_t>(index,Ports.size(),"Port index");
+
+  Ports[index]->insertInCell(System,cellN);
+
+  return;
+}
+
+void
+VirtualTube::insertPortsInCell(Simulation& System,const int cellN) const
   /*!
     Allow ports to be intersected into arbitary cell list
     \param System :: Simulation to use
@@ -636,8 +634,8 @@ VirtualTube::insertPortInCell(Simulation& System,const int cellN)
 }
 
 void
-VirtualTube::insertPortInCell(Simulation& System,
-			   const std::vector<std::set<int>>& cellVec)
+VirtualTube::insertPortsInCell(Simulation& System,
+			   const std::vector<std::set<int>>& cellVec) const
   /*!
     Allow ports to be intersected into arbitary cell list
     \param System :: Simulation to use
@@ -670,12 +668,15 @@ VirtualTube::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("VirtualTube","createAll(FC)");
 
+  
   populate(System.getDataBase());
-  createUnitVector(FC,FIndex);
+  createCentredUnitVector(FC,FIndex,length/2.0);
+  applyPortRotation();
   createSurfaces();
   createObjects(System);
-  createLinks();
 
+  createLinks();
+  createPorts(System);
   insertObjects(System);
     
   return;

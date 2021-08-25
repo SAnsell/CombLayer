@@ -88,7 +88,8 @@ buildRotatedPlane(surfRegister& SMap,const int N,
 }
 
 Geometry::Plane*
-buildSignedShiftedPlane(surfRegister& SMap,const int signValue,
+buildSignedShiftedPlane(surfRegister& SMap,
+			const int signValue,
 			const int N,const int refPN,
 			const double Dist)
   /*!
@@ -103,13 +104,12 @@ buildSignedShiftedPlane(surfRegister& SMap,const int signValue,
 {
   ELog::RegMethod("generateSurf","buildSignedShiftedPlane");
 
-  Geometry::Plane* PX=
+  const Geometry::Plane* PX=
     SMap.realPtr<Geometry::Plane>(refPN);
   return (signValue>=0) ?
     buildShiftedPlane(SMap,N,PX,Dist) :
     buildShiftedPlaneReversed(SMap,N,PX,Dist);  
 }
-
 
 Geometry::Plane*
 buildShiftedPlane(surfRegister& SMap,

@@ -241,10 +241,11 @@ addInsertPlateCell(Simulation& System,const std::string& objName,
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
+
   const attachSystem::FixedComp* mainFCPtr=
     System.getObjectThrow<attachSystem::FixedComp>(FCname,"FixedComp");
   const long int linkIndex=mainFCPtr->getSideIndex(linkName);
- 
+   
   System.populateCells();
   System.validateObjSurfMap();
 
@@ -255,7 +256,7 @@ addInsertPlateCell(Simulation& System,const std::string& objName,
   TPlate->setStep(XYZStep);
   TPlate->setValues(xSize,ySize,zSize,mat);
   TPlate->createAll(System,*mainFCPtr,linkIndex);
-
+   
   return;
 }
 

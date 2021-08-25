@@ -3,7 +3,7 @@
  
  * File: micromax/micromaxFrontEnd.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,6 @@
 #include "CopiedComp.h"
 #include "BlockZone.h"
 
-#include "VacuumPipe.h"
 #include "UTubePipe.h"
 #include "Undulator.h"
 #include "R3FrontEnd.h"
@@ -91,16 +90,25 @@ micromaxFrontEnd::~micromaxFrontEnd()
    */
 {}
 
+void
+micromaxFrontEnd::createLinks()
+  /*!
+    Create a front/back link
+   */
+{
+  setLinkCopy(0,*undulator,1);
+  setLinkCopy(1,*lastComp,2);
+  return;
+}
 
 const attachSystem::FixedComp&
 micromaxFrontEnd::buildUndulator(Simulation& System,
-				const attachSystem::FixedComp& preFC,
-				const long int preSideIndex)
-  /*!
+			       const attachSystem::FixedComp& preFC,
+			       const long int preSideIndex)
+/*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
-    \param masterCell :: Main cell with all components in
     \param preFC :: Initial cell
     \param preSideIndex :: Initial side index
     \return link object 
@@ -121,24 +129,10 @@ micromaxFrontEnd::buildUndulator(Simulation& System,
   undulator->createAll(System,*undulatorPipe,0);
   undulatorPipe->insertInCell("Pipe",System,undulator->getCell("Void"));
 
-  dipolePipe->setFront(*undulatorPipe,2);
-  dipolePipe->createAll(System,*undulatorPipe,2);
-  outerCell=buildZone.createUnit(System,*dipolePipe,2);
-  dipolePipe->insertAllInCell(System,outerCell);
 
-  return *dipolePipe;
+  return *undulatorPipe;
 }
 
-void
-micromaxFrontEnd::createLinks()
-  /*!
-    Create a front/back link
-   */
-{
-  setLinkCopy(0,*undulator,1);
-  setLinkCopy(1,*lastComp,2);
-  return;
-}
   
 }   // NAMESPACE xraySystem
 

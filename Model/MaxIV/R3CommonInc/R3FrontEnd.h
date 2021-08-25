@@ -209,7 +209,8 @@ class R3FrontEnd :
   void buildApertureTable(Simulation&,
 			  const attachSystem::FixedComp&,const long int);
   void buildShutterTable(Simulation&,
-			 const attachSystem::FixedComp&,const long int);  
+			 const attachSystem::FixedComp&,
+			 const std::string&);  
 
   
   void populate(const FuncDataBase&);

@@ -592,6 +592,7 @@ Object::isOnSurface(const Geometry::Vec3D& Pt) const
   return 0;
 }
 
+
 int
 Object::isOnSide(const Geometry::Vec3D& Pt) const
   /*!
@@ -1189,10 +1190,12 @@ Object::trackCell(const MonteCarlo::particle& N,double& D,
 {
   ELog::RegMethod RegA("Object","trackCell[D,dir]");
 
+
   MonteCarlo::LineIntersectVisit LI(N);
   for(const Geometry::Surface* isptr : SurList)
     isptr->acceptVisitor(LI);
 
+  
   const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
   const std::vector<double>& dPts(LI.getDistance());
   const std::vector<const Geometry::Surface*>& surfIndex(LI.getSurfIndex());
@@ -1201,17 +1204,15 @@ Object::trackCell(const MonteCarlo::particle& N,double& D,
   const int signSN(startSurf>0 ? 1 : -1);   // pAB/mAB is 1 / 0 
   D=1e38;
   surfPtr=0;
-  int touchUnit(0);
   // NOTE: we only check for and exiting surface by going
   // along the line.
   int bestPairValid(0);
-  size_t bestIndex(-1);
+
   for(size_t i=0;i<dPts.size();i++)
     {
-
       // Is point possible closer
       if ( dPts[i]>10.0*Geometry::zeroTol &&
-	   dPts[i]>0.0 && dPts[i]<D )
+	   dPts[i]>Geometry::zeroTol && dPts[i]<D )
 	{
 	  const int NS=surfIndex[i]->getName();	    // NOT SIGNED
 	  const int pAB=isDirectionValid(IPts[i],NS);
@@ -1221,34 +1222,27 @@ Object::trackCell(const MonteCarlo::particle& N,double& D,
 	      const int normD=surfIndex[i]->sideDirection(IPts[i],N.uVec);
 	      if (NS!=absSN || (normD!=signSN))  // discard current surface
 		{
-		  bestIndex=i;
 		  bestPairValid=normD;
-		  if (dPts[i]>Geometry::zeroTol)
-		    D=dPts[i];
-		  else
-		    touchUnit=1;
+		  D=dPts[i];
 		  surfPtr=surfIndex[i];
 		}
 	    }
 	}
     }
-  if (touchUnit && D>1e37)
+  if (!surfPtr) return 0;
+  if (D<Geometry::zeroTol)
     D=Geometry::zeroTol;
 
   const int NSsurf=surfPtr->getName();
   const bool pSurfFound(SurSet.find(NSsurf)!=SurSet.end());
   const bool mSurfFound(SurSet.find(-NSsurf)!=SurSet.end());
   
-  const int pAB=isDirectionValid(IPts[bestIndex],NSsurf);
-  const int mAB=isDirectionValid(IPts[bestIndex],-NSsurf);
-
   int retNum;
   if (pSurfFound && mSurfFound)
     retNum=bestPairValid*NSsurf;
   else
     retNum=(pSurfFound) ? -NSsurf : NSsurf;
-  // Exit surface is OUTGOING sense
-  const int normD=surfIndex[bestIndex]->sideDirection(IPts[bestIndex],N.uVec);
+
   return retNum;
 }
 

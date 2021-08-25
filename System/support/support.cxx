@@ -3,7 +3,7 @@
  
  * File:   support/support.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1096,6 +1096,30 @@ convert(const char* A,T& out)
   return convert(Cx,out);
 }
 
+template<typename T>
+bool
+convertNameWithIndex(std::string& Unit,T& Index)
+  /*!
+    If Unit has a [ ] index : then the value is placed into
+    index+1 else Index==0 
+    \param Unit :: string of type Name[index] / Name on output
+    \param Index :: value of index
+    \retval true if convertable / false if not
+   */
+{
+  const std::string::size_type bPosA=Unit.find('[');
+  const std::string::size_type bPosB=Unit.find(']');
+
+  if (bPosA!=std::string::npos &&
+      bPosB!=std::string::npos &&
+      convert(Unit.substr(bPosA+1,bPosB-bPosA-1),Index))
+    {
+      Unit.erase(bPosA);
+      return 1;
+    }
+  return 0;
+}
+
 template<typename T> 
 int
 setValues(const std::string& Line,const std::vector<int>& Index,
@@ -1362,6 +1386,9 @@ template size_t convPartNum(const std::string&,double&);
 template size_t convPartNum(const std::string&,int&);
 template size_t convPartNum(const std::string&,size_t&);
 template size_t convPartNum(const std::string&,std::string&);
+
+template bool convertNameWithIndex(std::string&,size_t&);
+template bool convertNameWithIndex(std::string&,long int&);
 
 template int setValues(const std::string&,const std::vector<int>&,
 		      std::vector<double>&);

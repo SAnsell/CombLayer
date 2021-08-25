@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/ContainedGroup.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -112,19 +112,21 @@ class ContainedGroup
   void addInsertCell(const std::string&,const int);
   void addInsertCell(const std::string&,const std::vector<int>&);
   void addInsertCell(const std::string&,const ContainedComp&);
-  
+
   void setInsertCell(const std::string&,const int);
   void setAllInsertCell(const int);
 
 
   void insertObjects(Simulation&);
 
-  virtual void insertAllInCell(Simulation&,const int);
-  virtual void insertAllInCell(Simulation&,const std::vector<int>&);
-  
-  void insertInCell(const std::string&,Simulation&,const int);
-  void insertInCell(const std::string&,Simulation&,const std::vector<int>&);
-  void insertInCell(const std::string&,MonteCarlo::Object&);
+  virtual void insertAllInCell(Simulation&,const int) const;
+  virtual void insertAllInCell(Simulation&,const std::vector<int>&) const;
+
+  void insertInCell(const std::string&,Simulation&,const int) const;
+  void insertInCell(const std::string&,Simulation&,
+		    const std::vector<int>&) const;
+  void insertInCell(const std::string&,MonteCarlo::Object&) const;
+
 
   /// Size accessor
   size_t nGroups() const { return CMap.size(); } 

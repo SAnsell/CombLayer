@@ -3,7 +3,7 @@
  
  * File:   commonBeam/BremBlock.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -149,7 +149,9 @@ BremBlock::createSurfaces()
   const Geometry::Vec3D holeBack=
     Origin+X*holeXStep+Z*holeZStep+Y*length;
 
-  if (holeMidDist>Geometry::zeroTol)
+	 
+  if (holeMidDist>Geometry::zeroTol &&
+      length-holeMidDist>Geometry::zeroTol)
     {
        ModelSupport::buildPlane(SMap,buildIndex+1001,holeMid,Y);
        ModelSupport::buildPlane(SMap,buildIndex+1003,
@@ -172,7 +174,7 @@ BremBlock::createSurfaces()
 				holeMid+Z*(holeMidHeight/2.0),
 				holeMid+Z*(holeMidHeight/2.0)+X,
 				Z);
-       
+
        ModelSupport::buildPlane(SMap,buildIndex+2003,
 				holeMid-X*(holeMidWidth/2.0),
 				holeBack-X*(holeBWidth/2.0),
@@ -246,7 +248,8 @@ BremBlock::createObjects(Simulation& System)
 
   std::string Out;
 
-  if (holeMidDist>Geometry::zeroTol)
+  if (holeMidDist>Geometry::zeroTol &&
+      length-holeMidDist>Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite
 	(SMap,buildIndex," -1001 1003 -1004 1005 -1006 ");

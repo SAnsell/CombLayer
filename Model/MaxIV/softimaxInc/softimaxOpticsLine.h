@@ -24,12 +24,12 @@
 
 namespace constructSystem
 {
-  class BiPortTube;
   class JawValveTube;
 }
 
 namespace xraySystem
 {
+  class BiPortTube;
   class BlockStand;
   class Mirror;
   class BeamPair;
@@ -39,6 +39,7 @@ namespace xraySystem
   class TwinPipe;
   class BremOpticsColl;
   class PipeShield;
+  class TriggerTube;
 
   /*!
     \class softimaxOpticsLine
@@ -53,13 +54,17 @@ class softimaxOpticsLine :
   public attachSystem::ContainedComp,
   public attachSystem::FixedOffset,
   public attachSystem::ExternalCut,
-  public attachSystem::CellMap
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
  private:
 
   /// construction space for main object
-  attachSystem::InnerZone buildZone;
-
+  attachSystem::BlockZone buildZone;
+  attachSystem::BlockZone IZLeft;
+  attachSystem::BlockZone IZRight;
+  int innerMat;                         ///< inner material if used
+  
   /// string for pre-insertion into mastercell:0
   std::shared_ptr<attachSystem::ContainedGroup> preInsert;
   /// Shared point to use for last component:
@@ -68,12 +73,10 @@ class softimaxOpticsLine :
   ////// Trigger unit
   /// Inital bellow
   std::shared_ptr<constructSystem::Bellows> pipeInit;
-  /// vauucm trigger system
-  std::shared_ptr<constructSystem::PipeTube> triggerPipe;
-  /// Cylindrical gate valve
-  std::shared_ptr<constructSystem::PipeTube> gateTubeA;
-  /// Gate block [item]
-  std::shared_ptr<xraySystem::FlangeMount> gateTubeAItem;
+  /// vacuum trigger system
+  std::shared_ptr<xraySystem::TriggerTube> triggerPipe;
+  // Gate and Ion Pump (combined)
+  std::shared_ptr<xraySystem::CylGateValve> gateTubeA;
 
   /// bellows after ion pump to filter
   std::shared_ptr<constructSystem::Bellows> bellowA;
@@ -146,7 +149,7 @@ class softimaxOpticsLine :
   std::shared_ptr<xraySystem::TwinPipe> splitter;
   std::shared_ptr<constructSystem::Bellows> bellowAA;
   std::shared_ptr<constructSystem::Bellows> bellowBA;
-  std::shared_ptr<constructSystem::BiPortTube> M3Pump;
+  std::shared_ptr<xraySystem::BiPortTube> M3Pump;
 
   // Left branch STXM
   std::shared_ptr<constructSystem::Bellows> bellowAB;
@@ -172,35 +175,29 @@ class softimaxOpticsLine :
   std::shared_ptr<insertSystem::insertPlate> innerScreen;
 
 
-  double outerLeft;    ///< Left Width for cut rectangle
-  double outerRight;   ///< Right width for cut rectangle
-  double outerTop;     ///< Top lift for cut rectangle
-
+  double outerLeft;        ///< Left Width for cut rectangle
+  double outerRight;       ///< Right width for cut rectangle
+  double outerRightFull;   ///< Right width for cut rectangle
+  double outerTop;         ///< Top lift for cut rectangle
 
   int constructMonoShutter
     (Simulation&,MonteCarlo::Object**,
      const attachSystem::FixedComp&,const long int);
 
-  int constructDiag
-    (Simulation&,
-     MonteCarlo::Object**,
-     constructSystem::PortTube&,
-     std::array<std::shared_ptr<constructSystem::JawFlange>,2>&,
-     const attachSystem::FixedComp&,
-     const long int);
-
-  void buildM1Mirror(Simulation&,MonteCarlo::Object*,
-		     const attachSystem::FixedComp&,const std::string&);
-  void buildM3Mirror(Simulation&,MonteCarlo::Object*,
-		     const attachSystem::FixedComp&,const std::string&);
-  void buildM3STXMMirror(Simulation&,MonteCarlo::Object*,
+  void buildM1Mirror(Simulation&,const attachSystem::FixedComp&,
+		     const std::string&);
+  
+  void buildM3Mirror(Simulation&,const attachSystem::FixedComp&,
+		     const std::string&);
+  
+  void buildM3STXMMirror(Simulation&,
 			 const attachSystem::FixedComp&,const std::string&);
-  void constructSlitTube(Simulation&,MonteCarlo::Object*,
+  void constructSlitTube(Simulation&,
 			 const attachSystem::FixedComp&,const std::string&);
-  void buildMono(Simulation&,MonteCarlo::Object*,
+  void buildMono(Simulation&,
 		 const attachSystem::FixedComp&,const long int);
-  void buildSplitter(Simulation&,MonteCarlo::Object*,MonteCarlo::Object*,
-		     const attachSystem::FixedComp&,const long int);
+  void buildSplitter(Simulation&,const attachSystem::FixedComp&,
+		     const long int);
 
   void populate(const FuncDataBase&);
   void createSurfaces();
@@ -214,13 +211,18 @@ class softimaxOpticsLine :
   softimaxOpticsLine& operator=(const softimaxOpticsLine&);
   ~softimaxOpticsLine();
 
+  void buildExtras(Simulation&,const attachSystem::CellMap&);
   void buildOutGoingPipes(Simulation&,const int,const int,
 			  const std::vector<int>&);
 
+  /// Assignment to inner void
+  void setInnerMat(const int M) {  innerMat=M; }
 
   /// Set the initial zone for splitting
   void setPreInsert
   (const std::shared_ptr<attachSystem::ContainedGroup>& A) { preInsert=A; }
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

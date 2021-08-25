@@ -83,6 +83,7 @@ tallyModification(SimFLUKA& System,
 	{
 	  ELog::EM<<"TMod Help "
 	    "  -- userName :: tallyName/Number ExternalaName \n"
+	    "  -- ascii :: tallyName/Number \n"
 	    "  -- binary :: tallyName/Number \n"
 	    "  -- particle ::tallyName/Number particle \n"
 	    "  -- auxParticle tallyName/Number particle \n"
@@ -94,7 +95,13 @@ tallyModification(SimFLUKA& System,
           return;
 	}
       
-      if(key=="binary")
+      if(key=="ascii")
+        {
+	  const std::string tName=IParam.getValueError<std::string>
+	    ("TMod",i,1,"No tally name for doseType");
+	  flukaSystem::setAsciiOutput(System,tName);
+        }
+      else if(key=="binary")
         {
 	  const std::string tName=IParam.getValueError<std::string>
 	    ("TMod",i,1,"No tally name for doseType");

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxivBuild/R1Ring.cxx
+ * File:   R1Common/R1Ring.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -231,15 +231,13 @@ R1Ring::createSurfaces()
       surfN+=10;
     }
   
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*depth,Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
+  SurfMap::makePlane("Floor",SMap,buildIndex+5,Origin-Z*depth,Z);
+  SurfMap::makePlane("Roof",SMap,buildIndex+6,Origin+Z*height,Z);
 
   ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(depth+floorThick),Z);
   ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height+roofThick),Z);
   ModelSupport::buildPlane(SMap,buildIndex+26,
 			   Origin+Z*(height+roofThick+roofExtra),Z);
-  // transfer for later
-  SurfMap::setSurf("Floor",SMap.realSurf(buildIndex+5));
     
   surfN=buildIndex+1000;
   for(size_t i=0;i<NPoints;i++)

@@ -3,7 +3,7 @@
  
  * File:   maxpeemInc/maxpeemOpticsHutch.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,12 +70,12 @@ class maxpeemOpticsHut :
   double inletZStep;            ///< Inlet ZStep  
   double inletRadius;           ///< Inlet radius
 
-  double holeXStep;            ///< Hole XStep
-  double holeZStep;            ///< Hole ZStep  
-  double holeRadius;           ///< Hole radius
+  std::vector<Geometry::Vec3D> holeOffset;   ///< Offset for holes (backwall)
+  std::vector<double> holeRadius;            ///< Radii for holes
 
+  int voidMat;                 ///< Inner air (or void)
   int innerMat;                ///< Fe layer material for walls
-  int pbMat;                  ///< pb layer material for walls 
+  int pbMat;                   ///< Pb layer material for walls 
   int outerMat;                ///< Conc layer material for ring walls
 
 
@@ -83,7 +83,6 @@ class maxpeemOpticsHut :
   std::vector<std::shared_ptr<SimpleChicane>> PChicane;  
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();

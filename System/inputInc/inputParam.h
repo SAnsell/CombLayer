@@ -42,11 +42,17 @@ Geometry::Vec3D
 getNamedPoint(const Simulation&,const inputParam&,
 	      const std::string&,const size_t,
 	      size_t&,const std::string&);
+
 Geometry::Vec3D
 getNamedAxis(const Simulation&,const inputParam&,
 	      const std::string&,const size_t,
 	      size_t&,const std::string&);
 
+std::tuple<Geometry::Vec3D,Geometry::Vec3D,Geometry::Vec3D>
+getNamedOriginAxis(const Simulation&,const inputParam&,
+		   const std::string&,const size_t,
+		   size_t&,const std::string&);
+  
 Geometry::Vec3D
 getDefNamedPoint(const Simulation&,const inputParam&,
 	      const std::string&,const size_t,

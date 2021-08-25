@@ -59,12 +59,13 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
-
+#include "generalConstruct.h"
 
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
@@ -90,11 +91,14 @@ namespace xraySystem
 cosaxsExptLine::cosaxsExptLine(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(newName,2),
+  attachSystem::FixedRotate(newName,2),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
-  buildZone(*this,cellIndex),
-  pipeInit(new constructSystem::Bellows(newName+"InitBellow")),
+  
+  buildZone(Key+"BuildZone"),
+  outerMat(0),
+  
+  bellowA(new constructSystem::Bellows(newName+"BellowA")),
   gateA(new constructSystem::GateValveCube(newName+"GateA")),
   doubleSlitA(new constructSystem::JawValveCylinder(newName+"DoubleSlitA")),
   doubleSlitB(new constructSystem::JawValveCylinder(newName+"DoubleSlitB")),
@@ -103,7 +107,7 @@ cosaxsExptLine::cosaxsExptLine(const std::string& Key) :
   diffPump(new xraySystem::DiffPumpXIADP03(newName+"DiffPump")),
   telescopicSystem(new constructSystem::VacuumPipe(newName+"TelescopicSystem")),
   sampleArea(new xraySystem::cosaxsSampleArea(newName+"SampleArea")),
-  tube(new xraySystem::cosaxsTube(newName+"Tube"))
+  tube(new xraySystem::cosaxsTube(newName+"DetTube"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -112,7 +116,7 @@ cosaxsExptLine::cosaxsExptLine(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(pipeInit);
+  OR.addObject(bellowA);
   OR.addObject(gateA);
   OR.addObject(doubleSlitA);
   OR.addObject(doubleSlitB);
@@ -138,14 +142,13 @@ cosaxsExptLine::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("cosaxsExptLine","populate");
 
-  FixedOffset::populate(Control);
-
-  outerLength=Control.EvalVar<double>(keyName+"OuterLength");
+  FixedRotate::populate(Control);
 
   outerLeft=Control.EvalDefVar<double>(keyName+"OuterLeft",0.0);
   outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",outerLeft);
   outerTop=Control.EvalDefVar<double>(keyName+"OuterTop",outerLeft);
 
+  outerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"OuterMat",outerMat);
   nFilterHolders=Control.EvalDefVar<size_t>(keyName+"NFilterHolders",3);
 
   return;
@@ -162,21 +165,47 @@ cosaxsExptLine::createSurfaces()
 
   if (outerLeft>Geometry::zeroTol &&  isActive("floor"))
     {
-      std::string Out;
       ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*outerLeft,X);
       ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*outerRight,X);
       ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*outerTop,Z);
-      Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -6");
-      const HeadRule HR(Out+getRuleStr("floor"));
-      buildZone.setSurround(HR);
-    }
+      
+      const HeadRule HR=
+	ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 -6");
 
-  if (!isActive("back"))
+      buildZone.setSurround(HR*getRule("floor"));
+      buildZone.setFront(getRule("front"));
+      buildZone.setMaxExtent(getRule("back"));
+      buildZone.setInnerMat(outerMat);
+    }
+  return;
+}
+
+
+void
+cosaxsExptLine::buildFilters(Simulation& System)
+  /*!
+    Add filters to diagnostic unit
+   */
+{
+  ELog::RegMethod RegA("cosaxsExptLine","buildFilter");
+
+  ModelSupport::objectRegister& OR=ModelSupport::objectRegister::Instance();
+
+  const std::string FUnit(newName+"DiagnosticUnitFilterHolder");
+  std::shared_ptr<attachSystem::FixedComp> prevItem=diagUnit;
+  std::string prevName("#back");
+  for (size_t i=0; i<nFilterHolders; i++)
     {
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*outerLength,Y);
-      setCutSurf("back",-SMap.realSurf(buildIndex+2));
+      std::shared_ptr<xraySystem::FilterHolder> FH
+	(
+	 new xraySystem::FilterHolder(FUnit+std::to_string(i+1))
+	 );
+      OR.addObject(FH);
+      FH->addInsertCell(diagUnit->getCell("Void"));
+      FH->createAll(System,*prevItem,prevName);
+      prevItem=FH;
+      prevName="back";
     }
-
   return;
 }
 
@@ -189,82 +218,53 @@ cosaxsExptLine::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("cosaxsExptLine","buildObjects");
-
-  int outerCell;
-
-  buildZone.setFront(getRule("front"));
-  buildZone.setBack(getRule("back"));
-  buildZone.setInsertCells(this->getInsertCells());
   
-  MonteCarlo::Object* masterCell=
-    buildZone.constructMasterCell(System);
+  int outerCell;
+  
+  buildZone.addInsertCells(this->getInsertCells());
 
-  pipeInit->createAll(System,*this,0);
+  bellowA->createAll(System,*this,0);
+  outerCell=buildZone.createUnit(System,*bellowA,2);
+  bellowA->insertInCell(System,outerCell);
 
-  // front surface of the build zone - must have it
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeInit,-1);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeInit,2);
-  pipeInit->insertInCell(System,outerCell);
+  if (preInsert)
+    preInsert->insertAllInCell(System,outerCell);
 
-  gateA->setFront(*pipeInit,2);
-  gateA->createAll(System,*pipeInit,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateA,2);
-  gateA->insertInCell(System,outerCell);
+  constructSystem::constructUnit
+    (System,buildZone,*bellowA,"back",*gateA);
 
-  doubleSlitA->setFront(*gateA,2);
-  doubleSlitA->createAll(System,*gateA,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*doubleSlitA,2);
-  doubleSlitA->insertInCell(System,outerCell);
+  constructSystem::constructUnit
+    (System,buildZone,*gateA,"back",*doubleSlitA);
 
-  doubleSlitB->setFront(*doubleSlitA,2);
-  doubleSlitB->createAll(System,*doubleSlitA,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*doubleSlitB,2);
-  doubleSlitB->insertInCell(System,outerCell);
+  constructSystem::constructUnit
+    (System,buildZone,*doubleSlitA,"back",*doubleSlitB);
 
-  diagUnit->setFront(*doubleSlitB,2);
-  diagUnit->createAll(System,*doubleSlitB,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*diagUnit,2);
-  diagUnit->insertInCell(System,outerCell);
+  constructSystem::constructUnit
+    (System,buildZone,*doubleSlitB,"back",*diagUnit);
 
-  // filter holders
-  ModelSupport::objectRegister& OR=ModelSupport::objectRegister::Instance();
-  for (size_t i=0; i<nFilterHolders; i++)
-    {
-      std::shared_ptr<xraySystem::FilterHolder>
-	fh(new xraySystem::FilterHolder(newName+"DiagnosticUnitFilterHolder"+
-					std::to_string(i+1)));
-      OR.addObject(fh);
-      fh->addInsertCell(diagUnit->getCell("Void"));
-      if (i==0)
-	fh->createAll(System,*diagUnit,-2);
-      else
-	fh->createAll(System,*filterHolder[i-1],2);
-      filterHolder.push_back(fh);
-    }
+  buildFilters(System);
 
-  gateB->setFront(*diagUnit,2);
-  gateB->createAll(System,*diagUnit,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateB,2);
-  gateB->insertInCell(System,outerCell);
+  constructSystem::constructUnit
+    (System,buildZone,*diagUnit,"back",*gateB);
 
-  //diffPump->setCutSurf("front",*gateB,2);
-  diffPump->createAll(System,*gateB,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*diffPump,2);
-  diffPump->insertInCell(System,outerCell);
+  constructSystem::constructUnit
+    (System,buildZone,*gateB,"back",*diffPump);
 
-  telescopicSystem->setFront(*diffPump,-7);
-  telescopicSystem->createAll(System,*diffPump,-7);
-  outerCell=buildZone.createOuterVoidUnit
-    (System,masterCell,*telescopicSystem,2);
-  telescopicSystem->insertAllInCell(System,outerCell);
-  telescopicSystem->insertAllInCell(System,diffPump->getCell("FlangeFrontVoid"));
-
+  constructSystem::constructUnit
+    (System,buildZone,*diffPump,"#innerBack",*telescopicSystem);
+  telescopicSystem->insertAllInCell
+    (System,diffPump->getCell("FlangeFrontVoid"));
 
   // GOOD ABOVE this point:
   
-  tube->delayPorts();
-  tube->createAll(System,*this,0);
+  //  tube->delayPorts();
+  buildZone.rebuildInsertCells(System);
 
+  tube->addInsertCell(this->getInsertCells());
+  for(const int CN : this->getInsertCells())
+    ELog::EM<<"Cn = "<<CN<<ELog::endDiag;
+  tube->createAll(System,*this,0);
+  /*
 
   sampleArea->setFront(*telescopicSystem,2);
   sampleArea->setBack(*tube,1);
@@ -282,6 +282,15 @@ cosaxsExptLine::buildObjects(Simulation& System)
   setCell("SurroundVoid",outerCell);
   lastComp=tube;
 
+  //  buildZone.createUnit(System);
+  buildZone.rebuildInsertCells(System);
+  */
+
+
+  
+  setCell("LastVoid",buildZone.getLastCell("Unit"));
+  lastComp=tube;
+
   return;
 }
 
@@ -293,7 +302,7 @@ cosaxsExptLine::createLinks()
 {
   ELog::RegMethod RControl("cosaxsExptLine","createLinks");
 
-  setLinkCopy(0,*pipeInit,1);
+  setLinkCopy(0,*bellowA,1);
   setLinkCopy(1,*lastComp,2);
   return;
 }

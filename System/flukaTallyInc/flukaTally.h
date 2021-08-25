@@ -41,7 +41,7 @@ class flukaTally
  private:
 
   static std::string idForm(const std::string&,const int);  
-  
+
  protected:
 
 
@@ -50,7 +50,6 @@ class flukaTally
   int ID;                           ///< ID number
   int outputUnit;                   ///< Fortran output number
   std::string comments;             ///< comment line
-
   std::string auxParticle;          ///< Auxillary particles
   std::string doseType;             ///< Auxillary dose type if used
 
@@ -72,6 +71,7 @@ class flukaTally
   void setUserName(const std::string& A)
     { userName=A;}
 
+  void setAscii();
   void setBinary();
   void setComment(const std::string&);
   void setAuxParticles(const std::string&);

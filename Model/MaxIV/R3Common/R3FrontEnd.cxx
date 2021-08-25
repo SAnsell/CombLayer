@@ -106,7 +106,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
 
-  buildZone("R3FrontEnd"),
+  buildZone(Key+"R3FrontEnd"),
 
   transPipe(new constructSystem::VacuumPipe(newName+"TransPipe")),
   magBlockM1(new xraySystem::MagnetM1(newName+"M1Block")),
@@ -252,6 +252,7 @@ R3FrontEnd::createSurfaces()
 
   if (!frontActive())
     {
+      ELog::EM<<"FRont off set == "<<frontOffset<<" "<<Origin<<" :: "<<Y<<ELog::endDiag;
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*frontOffset,Y);
       buildZone.initFront(HeadRule(SMap.realSurf(buildIndex+1)));
       setFront(-SMap.realSurf(buildIndex+1));
@@ -294,8 +295,8 @@ R3FrontEnd::insertFlanges(Simulation& System,
 
 void
 R3FrontEnd::buildHeatTable(Simulation& System,
-			       const attachSystem::FixedComp& preFC,
-			       const long int preSideIndex)
+			   const attachSystem::FixedComp& preFC,
+			   const long int preSideIndex)
 
   /*!
     Build the heatDump table
@@ -306,27 +307,31 @@ R3FrontEnd::buildHeatTable(Simulation& System,
 {
   ELog::RegMethod RegA("R3FrontEnd","buildHeatTable");
 
-
   int outerCell;
 
   heatBox->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  heatBox->createAll(System,preFC,preSideIndex);
+  heatBox->createAll(System,*this,0);
 
-  const constructSystem::portItem& PIA=heatBox->getPort(1);
-  outerCell=buildZone.createUnit
-    (System,PIA,PIA.getSideIndex("OuterPlate"));
-  heatBox->insertAllInCell(System,outerCell);
+  const constructSystem::portItem& PIA=heatBox->getPort(0);
+  const constructSystem::portItem& PIB=heatBox->getPort(1);
   
   // cant use heatbox here because of port rotation  
   heatDump->addInsertCell("Inner",heatBox->getCell("Void"));
-  heatDump->addInsertCell("Outer",outerCell);
-  heatDump->createAll(System,PIA,0,*heatBox,2);
+  heatDump->createAll(System,PIB,0,*heatBox,2);
 
+  // Built after heatDump
+  collExitPipe->setBack(PIA,"OuterPlate");
+  collExitPipe->createAll(System,*collB,2);
+  outerCell=buildZone.createUnit(System,*collExitPipe,2);
+  collExitPipe->insertAllInCell(System,outerCell);
 
-  bellowD->createAll(System,PIA,PIA.getSideIndex("OuterPlate"));
+  outerCell=buildZone.createUnit(System,PIB,"OuterPlate");
+  heatBox->insertAllInCell(System,outerCell);
+  heatDump->insertInCell("Outer",System,outerCell);
+  
+  bellowD->createAll(System,PIB,"OuterPlate");
   outerCell=buildZone.createUnit(System,*bellowD,2);
   bellowD->insertInCell(System,outerCell);
-
 
   gateTubeA->createAll(System,*bellowD,2);  
   outerCell=buildZone.createUnit(System,*gateTubeA,2);
@@ -425,29 +430,30 @@ R3FrontEnd::buildApertureTable(Simulation& System,
   return;
 }
 
-  
 void
 R3FrontEnd::buildShutterTable(Simulation& System,
-				   const attachSystem::FixedComp& preFC,
-				   const long int preSideIndex)
+			      const attachSystem::FixedComp& preFC,
+			      const std::string& preSide)
   /*!
     Build the shutter block table
     \param System :: Simulation to use
     \param preFC :: initial Fixedcomp 
-    \param preSideIndex :: link point on initial FC
+    \param preSide :: link point on initial FC
   */
 {
   ELog::RegMethod RegA("R3FrontEnd","buildShutterTable");
   int outerCell;
   
-  gateA->createAll(System,preFC,preSideIndex);
-  outerCell=buildZone.createUnit(System,*gateA,2);
-  gateA->insertInCell(System,outerCell);
+  constructSystem::constructUnit
+    (System,buildZone,preFC,preSide,*gateA);
 
-  // bellows 
-  bellowI->createAll(System,*gateA,2);
-  outerCell=buildZone.createUnit(System,*bellowI,2);
-  bellowI->insertInCell(System,outerCell);
+  // gateA->createAll(System,preFC,preSideIndex);
+  // outerCell=buildZone.createUnit(System,*gateA,2);
+  // gateA->insertInCell(System,outerCell);
+
+  // bellows
+  constructSystem::constructUnit
+    (System,buildZone,*gateA,"back",*bellowI);
 
   florTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   florTubeA->createAll(System,*bellowI,2);
@@ -466,26 +472,26 @@ R3FrontEnd::buildShutterTable(Simulation& System,
 
   constructSystem::constructUnit
     (System,buildZone,*bellowJ,"back",*gateTubeB);
-  
-  
-  offPipeA->createAll(System,*gateTubeB,"back");
-  outerCell=buildZone.createUnit(System,*offPipeA,2);
-  offPipeA->insertInCell(System,outerCell);
+
+  constructSystem::constructUnit
+    (System,buildZone,*gateTubeB,"back",*offPipeA);
 
   //  insertFlanges(System,*gateTubeB);
 
-  shutterBox->createAll(System,*offPipeA,
-			offPipeA->getSideIndex("FlangeBCentre"));
-  outerCell=buildZone.createUnit(System,*shutterBox,2);
-  shutterBox->insertAllInCell(System,outerCell);
-  
-  cellIndex=shutterBox->splitVoidPorts
+  shutterBox->createAll(System,*offPipeA,"FlangeBCentre");
+  outerCell=buildZone.createUnit(System,*shutterBox,"back");
+
+  shutterBox->splitVoidPorts
     (System,"SplitVoid",1001,shutterBox->getCell("Void"),{0,1});
 
-  cellIndex=
-    shutterBox->splitVoidPorts(System,"SplitOuter",2001,
+
+  shutterBox->splitVoidPorts(System,"SplitOuter",2001,
 			       outerCell,{0,1});
-  shutterBox->addAllInsertCell(outerCell);
+  shutterBox->insertMainInCell(System,shutterBox->getCells("SplitOuter"));
+  shutterBox->insertPortInCell(System,0,shutterBox->getCell("SplitOuter",0));
+  shutterBox->insertPortInCell(System,1,shutterBox->getCell("SplitOuter",1));
+
+
 
   for(size_t i=0;i<shutters.size();i++)
     {
@@ -493,12 +499,13 @@ R3FrontEnd::buildShutterTable(Simulation& System,
       shutters[i]->addInsertCell("Support",PI.getCell("Void"));
       shutters[i]->addInsertCell("Support",shutterBox->getCell("SplitVoid",i));
       shutters[i]->addInsertCell("Block",shutterBox->getCell("SplitVoid",i));
-
+      
       shutters[i]->createAll(System,*offPipeA,
 			     offPipeA->getSideIndex("FlangeACentre"),
 			     PI,PI.getSideIndex("InnerPlate"));
     }
 
+  
   offPipeB->createAll(System,*shutterBox,2);
   outerCell=buildZone.createUnit(System,*offPipeB,2);
   offPipeB->insertInCell(System,outerCell);
@@ -529,10 +536,6 @@ R3FrontEnd::buildObjects(Simulation& System)
   const attachSystem::FixedComp& undulatorFC=
     buildUndulator(System,*this,0);
 					      
-  //  constructSystem::constructUnit
-  //    (System,buildZone,undulatorFC,"back",*transPipe);
-
-
   outerCell=buildZone.createUnit(System,undulatorFC,"back");
 
   
@@ -631,13 +634,10 @@ R3FrontEnd::buildObjects(Simulation& System)
     }
 
   collExitPipe->setFront(*linkFC,2);
-  collExitPipe->createAll(System,*linkFC,2);
-  outerCell=buildZone.createUnit(System,*collExitPipe,2);
-  collExitPipe->insertAllInCell(System,outerCell);
-  
-  buildHeatTable(System,*collExitPipe,2);
+
+  buildHeatTable(System,*collExitPipe,2);  
   buildApertureTable(System,*pipeB,2);
-  buildShutterTable(System,*pipeC,2);
+  buildShutterTable(System,*pipeC,"back");
   
   exitPipe->createAll(System,*bellowK,2);
   outerCell=buildZone.createUnit(System,*exitPipe,2);

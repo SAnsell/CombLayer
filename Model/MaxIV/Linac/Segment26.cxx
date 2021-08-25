@@ -212,14 +212,16 @@ Segment26::createSplitInnerZone()
       IZMid->setFront(pipeBA->getFullRule(-1));
       IZLower->setFront(pipeCA->getFullRule(-1));
     }
+  else
+    {
+      IZTop->setFront(pipeAA->getFullRule(-1));
+      IZMid->setFront(pipeAA->getFullRule(-1));
+      IZLower->setFront(pipeAA->getFullRule(-1));
+    }
 
   IZTop->setSurround(HSurroundA);
   IZMid->setSurround(HSurroundB);
   IZLower->setSurround(HSurroundC);
-
-  // IZTop->setMaxExtent(HBack);
-  // IZMid->setMaxExtent(HBack);
-  // IZLower->setMaxExtent(HBack);
 
   return;
 }
@@ -261,7 +263,8 @@ Segment26::buildObjects(Simulation& System)
   // IZTop
   outerCellA = IZTop->createUnit(System, *shieldA, -1);
 
-  attachSystem::ContainedGroup *CGPtr = dynamic_cast<attachSystem::ContainedGroup*>(pipeAA.get());
+  attachSystem::ContainedGroup *CGPtr =
+    dynamic_cast<attachSystem::ContainedGroup*>(pipeAA.get());
   CGPtr->insertAllInCell(System,outerCellA);
 
   outerCellA=IZTop->createUnit(System,*shieldA,2);
@@ -330,16 +333,6 @@ Segment26::buildObjects(Simulation& System)
     (System,*IZLower,*bellowCA,"back",*pipeCB);
 
 
-  // outerCellA=IZTop->createUnit(System,*pipeBB,"back");
-  // CellMap::addCell("SpaceFiller",outerCellA);
-
-  // outerCellC=IZLower->createUnit(System,*pipeBB,"back");
-  // CellMap::addCell("SpaceFiller",outerCellC);
-
-  //  IZTop->rebuildInsertCells(System);
-  //  IZMid->rebuildInsertCells(System);
-  //  IZLower->rebuildInsertCells(System);
-
   return;
 }
 
@@ -374,6 +367,11 @@ Segment26::createLinks()
   joinItems.push_back(FixedComp::getFullRule("backLower"));
 
   buildZone->setBack(FixedComp::getFullRule("backMid"));
+
+  buildZone->copyAllCells(*IZTop);
+  buildZone->copyAllCells(*IZMid);
+  buildZone->copyAllCells(*IZLower);
+
   return;
 }
 
@@ -392,9 +390,6 @@ Segment26::buildFrontSpacer(Simulation& System)
       volume*=IZTop->getFront().complement();
       volume*=IZTop->getSurround();
       volume.addIntersection(SMap.realSurf(buildIndex+5015));
-      ELog::EM<<"Front == "<<volume<<ELog::endDiag;
-      ELog::EM<<"BACKL == "<<IZTop->getFront().complement()<<ELog::endDiag;
-      ELog::EM<<"SURF == "<<IZTop->getSurround()<<ELog::endDiag;
       makeCell("FrontSpace",System,cellIndex++,0,0.0,volume);
       volume=buildZone->getFront();
       volume*=IZMid->getFront().complement();

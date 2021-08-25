@@ -3,7 +3,7 @@
  
  * File:   construct/Motor.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -72,7 +72,7 @@ namespace constructSystem
 {
 
 Motor::Motor(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,4),
+  attachSystem::FixedRotate(Key,4),
   attachSystem::ContainedGroup("Axle","Plate","Outer"),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   frontInner(0),backInner(0),revFlag(0),
@@ -93,7 +93,7 @@ Motor::Motor(const std::string& Key) :
 }
 
 Motor::Motor(const Motor& A) : 
-  attachSystem::FixedOffset(A),
+  attachSystem::FixedRotate(A),
   attachSystem::ContainedGroup(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   frontInner(A.frontInner),backInner(A.backInner),
@@ -122,7 +122,7 @@ Motor::operator=(const Motor& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedGroup::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
@@ -165,7 +165,7 @@ Motor::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("Motor","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   //  + Fe special:
   bodyLength=Control.EvalVar<double>(keyName+"BodyLength");
   plateThick=Control.EvalVar<double>(keyName+"PlateThick");
@@ -185,23 +185,6 @@ Motor::populate(const FuncDataBase& Control)
   
   return;
 }
-
-void
-Motor::createUnitVector(const attachSystem::FixedComp& FC,
-                              const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("Motor","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  return;
-}
-
 
 void
 Motor::createSurfaces()
@@ -237,10 +220,9 @@ Motor::createPlates(Simulation& System)
 {
   ELog::RegMethod RegA("Motor","createPlates");
 
-  const std::string axle=
-    ModelSupport::getComposite(SMap,buildIndex," 7 ");
+  const HeadRule axle=ModelSupport::getHeadRule(SMap,buildIndex,"7");
 
-  std::string Out;
+  HeadRule HR;
   
   frontPlate->setFront(SMap.realSurf(buildIndex+1));
   frontPlate->setBack(-frontInner);
@@ -250,29 +232,25 @@ Motor::createPlates(Simulation& System)
   backPlate->setBack(-SMap.realSurf(buildIndex+2));
   backPlate->createAll(System,*this,0);
 
-  const std::string FPlate=
-    frontPlate->frontRule()+frontPlate->backRule();
-  const std::string BPlate=
-    backPlate->frontRule()+backPlate->backRule();
+  const HeadRule FPlate=
+    frontPlate->getFrontRule()*frontPlate->getBackRule();
+  const HeadRule BPlate=
+    backPlate->getFrontRule()*backPlate->getBackRule();
   
-  Out=frontPlate->getSurfComplement("innerRing");
-  System.addCell(MonteCarlo::Object(cellIndex++,plateMat,0.0,
-				   Out+FPlate+axle));
-  addCell("MotorFrontPlate",cellIndex-1);
+  HR=frontPlate->getSurfRules("#innerRing");
+  makeCell("MotorFrontPlate",System,cellIndex++,plateMat,0.0,HR*FPlate*axle);
 
-  Out=backPlate->getSurfComplement("innerRing");
-  System.addCell(MonteCarlo::Object(cellIndex++,plateMat,0.0,
-				   Out+BPlate+axle));
-  addCell("MotorBackPlate",cellIndex-1);
+  HR=backPlate->getSurfRules("#innerRing");
+  makeCell("MotorBackPlate",System,cellIndex++,plateMat,0.0,HR*BPlate*axle);
 
   // Note plates can be different sizes:
-  Out=frontPlate->getSurfComplement("outerRing");
-  addOuterSurf("Outer",Out+FPlate);
-  addOuterSurf("Plate",Out+FPlate);
+  HR=frontPlate->getSurfRules("#outerRing");
+  addOuterSurf("Outer",HR*FPlate);
+  addOuterSurf("Plate",HR*FPlate);
   
-  Out=backPlate->getSurfComplement("outerRing");
-  addOuterUnionSurf("Plate",Out+BPlate);
-  addOuterUnionSurf("Outer",Out+BPlate);
+  HR=backPlate->getSurfRules("#outerRing");
+  addOuterUnionSurf("Plate",HR*BPlate);
+  addOuterUnionSurf("Outer",HR*BPlate);
 
   return;
 }
@@ -286,25 +264,24 @@ Motor::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Motor","createObjects");
   
-  std::string Out;
+  HeadRule HR;
 
   // Axle
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -7 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,axleMat,0.0,Out));
-  addCell("Axle",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -7");
+  makeCell("Axle",System,cellIndex++,axleMat,0.0,HR);
+
     
   // Main motor
   if (!revFlag)
-    Out=ModelSupport::getComposite(SMap,buildIndex," 11 -1 -107 ");
+    HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -1 -107");
   else
-    Out=ModelSupport::getComposite(SMap,buildIndex," -12 2 -107 ");
+    HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 2 -107");
       
-  System.addCell(MonteCarlo::Object(cellIndex++,bodyMat,0.0,Out));
-  addCell("MotorBody",cellIndex-1);
+  makeCell("MotorBody",System,cellIndex++,bodyMat,0.0,HR);
 
-  addOuterUnionSurf("Outer",Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
-  addOuterSurf("Axle",Out);
+  addOuterUnionSurf("Outer",HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7");
+  addOuterSurf("Axle",HR);
   
   return;
 }
