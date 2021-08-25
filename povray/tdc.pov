@@ -607,6 +607,12 @@ global_settings {
     #declare projection = 0;
     #declare cameraAngle = 80;
   #break
+    #case(strcmp(ITEM,"TDCBeamDump"))
+    #declare cameraLocation = <-150, 9600, 150>;
+    #declare cameraLookAt   = <-350, 10000, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 50;
+  #break
   #else // whole beamline view (like All)
     #declare cameraLocation = <-500, 5200, 1000>;
     #declare cameraLookAt   = <-600, 5100, 0>;
