@@ -3346,14 +3346,25 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"SPFMazeWidthSPF",160.0); // K_20-1_08G6b3
   Control.addVariable(wallKey+"SPFMazeLength",360.0); // derived from K_20-1_08G6b3: 690.0-330.0
 
-  Control.addVariable(wallKey+"SPFMazeLayerThick",10.0);
+  Control.addVariable(wallKey+"SPFMazeLayerThick",2.0);
   Control.addVariable(wallKey+"SPFMazeLayerMat","B4C");
+  Control.addVariable(wallKey+"SPFMazeLayerHeight",256.0); // HQ, 2021-06-21
+  Control.addVariable(wallKey+"SPFMazeLayerPipesWidth",150.0); // guess based on email HQ, 2021-06-21
+  Control.addVariable(wallKey+"SPFMazeLayerPipesHeight",145.0); // HQ, 2021-06-21
+  Control.addVariable(wallKey+"SPFMazeLayerPLCWidth",50.0); // HQ, 2021-06-21
+  Control.addVariable(wallKey+"SPFMazeLayerPLCHeight",165.0); // HQ, 2021-06-21
 
   Control.addVariable(wallKey+"FKGDoorWidth",131.0); // K_20-1_08F6c1 and K_20-2_349
   Control.addVariable(wallKey+"FKGDoorHeight",211.0); // K_20-2_349
   Control.addVariable(wallKey+"FKGMazeWidth",100.0); // K_20-1_08F6c1
   Control.addVariable(wallKey+"FKGMazeLength",280.0); // derived from K_20-1_08F6c1 (110+170)
   Control.addVariable(wallKey+"FKGMazeWallThick",200.0); // K_20-1_08F6c1
+
+  Control.addVariable(wallKey+"FKGShieldThick",20.0); // my suggestion [test]
+  Control.addVariable(wallKey+"FKGShieldLength",800.0); // my suggestion [test]
+  Control.addVariable(wallKey+"FKGShieldHeight",229.0); // my suggestion [test]
+  Control.addVariable(wallKey+"FKGShieldDepth",0.0); // my suggestion [test]
+  Control.addVariable(wallKey+"FKGShieldMat","Stainless304L"); // my suggestion [test]
 
   Control.addVariable(wallKey+"BTGThick",90.0); // calculated from K_20-1_08G6b4: 2700-1800
   Control.addVariable(wallKey+"BTGHeight",200.0); // derived from K_20-6_075
