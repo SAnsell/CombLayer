@@ -48,86 +48,11 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ExternalCut.h"
-#include "InnerZone.h"
 #include "BlockZone.h"
 
 namespace constructSystem
 {
-  //-----------------------------------------------------
-  //                 INNER ZONE
-  //-----------------------------------------------------
-
-int
-internalUnit(Simulation& System,
-	     attachSystem::InnerZone& buildZone,
-	     MonteCarlo::Object* masterCell,
-	     const attachSystem::FixedComp& linkUnit,
-	     const std::string& sideName,
-	     attachSystem::FixedComp& FC,
-	     attachSystem::ExternalCut& ECut,
-	     attachSystem::ContainedComp& CC)
-
-  /*!
-    Construct a unit in a simgle component
-    \param System :: Simulation to use
-    \param masterCell :: main master cell
-    \param linkUnit :: Previous link unit to use
-    \param sideName :: Link point to use
-    \param FC :: FixedComponent to build
-    \param ECut :: Object to set the front unit to
-    \param CC :: Contained component to insert object
-  */
-{
-  ELog::RegMethod RegA("generalConstruct[F]","internalUnit");
-
-  ECut.setCutSurf("front",linkUnit,sideName);
-  FC.createAll(System,linkUnit,sideName);
-
-  const int outerCell=
-    buildZone.createOuterVoidUnit(System,masterCell,FC,2);
-
-  CC.insertInCell(System,outerCell);
-  return  outerCell;
-}
-
-int
-internalGroup(Simulation& System,
-	     attachSystem::InnerZone& buildZone,
-	     MonteCarlo::Object* masterCell,
-	     const attachSystem::FixedComp& linkUnit,
-	     const std::string& sideName,
-	     attachSystem::FixedComp& FC,
-	     attachSystem::ExternalCut& ECut,
-	     attachSystem::ContainedGroup& CG,
-	     const std::set<std::string>& CGunits)
-
-  /*!
-    Construct a unit in a simgle component
-    \param System :: Simulation to use
-    \param masterCell :: main master cell
-    \param linkUnit :: Previous link unit to use
-    \param sideName :: Link point to use
-    \param buildUnit :: New unit to construct
-  */
-{
-  ELog::RegMethod RegA("generalConstruct[F]","internalGroup");
-  ECut.setCutSurf("front",linkUnit,sideName);
-  FC.createAll(System,linkUnit,sideName);
-  const int outerCell=
-    buildZone.createOuterVoidUnit(System,masterCell,FC,2);
-
-  if (CGunits.empty() || CGunits.find("All")!=CGunits.end())
-    CG.insertAllInCell(System,outerCell);
-  else 
-    {
-      for(const std::string& Item : CGunits)
-	CG.insertInCell(Item,System,outerCell);
-    }
-  return  outerCell;
-}
-
-
-
+  
 //-----------------------------------------------------
 //                 BLOCK ZONE
 //-----------------------------------------------------
@@ -139,7 +64,6 @@ internalFreeUnit(Simulation& System,
 		 const attachSystem::FixedComp& linkUnit,
 		 const std::string& sideName,
 		 attachSystem::FixedComp& FC,
-		 attachSystem::ExternalCut& ECut,
 		 attachSystem::ContainedComp& CC)
   
   /*!
@@ -189,7 +113,7 @@ internalUnit(Simulation& System,
   ELog::RegMethod RegA("generalConstruct[F]","internalUnit");
 
   ECut.setCutSurf("front",linkUnit,sideName);
-  return internalFreeUnit(System,buildZone,linkUnit,sideName,FC,ECut,CC);
+  return internalFreeUnit(System,buildZone,linkUnit,sideName,FC,CC);
 }
   
 int
@@ -234,7 +158,6 @@ internalFreeGroup(Simulation& System,
 		  const attachSystem::FixedComp& linkUnit,
 		  const std::string& sideName,
 		  attachSystem::FixedComp& FC,
-		  attachSystem::ExternalCut& ECut,
 		  attachSystem::ContainedGroup& CG,
 		  const std::set<std::string>& CGunits)
   

@@ -60,7 +60,6 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
-#include "InnerZone.h"
 #include "World.h"
 #include "insertObject.h"
 #include "insertSphere.h"
