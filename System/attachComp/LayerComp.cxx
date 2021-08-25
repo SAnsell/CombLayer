@@ -97,14 +97,12 @@ LayerComp::intersectDist(const size_t layerIndex,
 {
   ELog::RegMethod RegA("LayerComp","intersectDist");
   
-  // HEAD RULE doesn't compute surface intersection !!!!!!
   HeadRule A;
   if (!A.procString(this->getLayerString(layerIndex,sideIndex)))
     return -std::numeric_limits<double>::max();
 
-  double D;
   A.populateSurf();
-  const int SN=A.trackSurf(Origin,Unit,D);
+  const auto [SN,D] =A.trackSurfDistance(Origin,Unit);
   
   return (SN) ? D : -std::numeric_limits<double>::max();
 }

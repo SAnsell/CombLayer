@@ -3,7 +3,7 @@
  
  * File:   include/SimFLUKA.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,8 +47,8 @@ class SimFLUKA : public Simulation
 {
  public:
 
-  /// Tally fortranIO : tally
-  typedef std::map<int,flukaSystem::flukaTally*> FTallyTYPE;
+  /// tally
+  typedef std::set<flukaSystem::flukaTally*> FTallyTYPE;
   /// Name : magnet
   typedef std::map<std::string,
     std::shared_ptr<magnetSystem::magnetUnit>> MagTYPE;
@@ -119,11 +119,11 @@ class SimFLUKA : public Simulation
   void addTally(const flukaSystem::flukaTally&);
   flukaSystem::flukaTally* getTally(const int) const;
   /// Access tally items
-  FTallyTYPE& getTallyMap() { return FTItem; }
+  FTallyTYPE& getTallySet() { return FTItem; }
 
   void addMagnetObject(const MagTYPE::mapped_type&);
   /// Access constant
-  const FTallyTYPE& getTallyMap() const { return FTItem; }
+  const FTallyTYPE& getTallySet() const { return FTItem; }
   int getNextFTape() const;
 
   virtual void setExtraSourceName(const std::string&);

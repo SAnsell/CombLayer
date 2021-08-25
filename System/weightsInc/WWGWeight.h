@@ -3,7 +3,7 @@
  
  * File:   weightInc/WWGWeight.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,19 +39,27 @@ class WWGWeight
 {
  private:
 
-  int zeroFlag;            ///<  set value [0] / zero Value [1]
-  
+  size_t ID;               ///< Index
+
+  long int WE;             ///< Energy size
   long int WX;             ///< Weight XIndex size
   long int WY;             ///< Weight YIndex size
   long int WZ;             ///< Weight ZIndex size
-  long int WE;             ///< Energy size
-  
-  /// local storage for data [i,j,k,Energy]
+
+  std::set<std::string> particles;    ///< Particles
+  std::vector<double> EBin;           ///< Energy bins
+  Geometry::BasicMesh3D Grid;         ///< Mesh Grid 
+
+  bool logFlag;                       ///< Write output as log
+  /// local storage for data [Energy,i,j,k]  in logspace [-ve to zero]
   boost::multi_array<double,4> WGrid; 
+
+  void resize();
   
  public:
 
-  WWGWeight(const size_t,const Geometry::Mesh3D&);
+  explicit WWGWeight(const size_t);
+  WWGWeight(const size_t,const std::vector<double>&);
   WWGWeight(const WWGWeight&);
   WWGWeight& operator=(const WWGWeight&);    
   ~WWGWeight() {}          ///< Destructor
@@ -61,30 +69,48 @@ class WWGWeight
     Accessors				       
     \return named value
   */  
-  
+
+  size_t getID() const { return ID; }
+  long int getESize() const { return WE; }
   long int getXSize() const { return WX; }
   long int getYSize() const { return WY; }
   long int getZSize() const { return WZ; }
-  long int getESize() const { return WE; }
 
   /// set log state
   //  void assignLogState(const bool L) { logFlag=L; }
   /// return log state
   //  bool getLogState() const { return logFlag; }
 
+  /// accessor to energy
+  const std::vector<double>& getEnergy() const { return EBin; }
+
+  const std::set<std::string>& getParticles() const { return particles; }
+  /// access to geometry
+  const Geometry::BasicMesh3D& getGeomGrid() const { return Grid; }
   /// accessor to Cells
   const boost::multi_array<double,4>& getGrid() const
     { return WGrid; }
 
   //@}
+
+  /// setter for ID
+  void setID(const size_t A) { ID=A; }
+  void setOutLog() { logFlag=1; }
+  void setEnergy(const std::vector<double>&);
+  void setDefault(const std::vector<double>&);
+  void setMesh(const Geometry::Vec3D&,const Geometry::Vec3D&,
+	       const long int,const long int,const long int);
+  void setMesh(const Geometry::Vec3D&,const Geometry::Vec3D&,
+	       const std::array<size_t,3>&);
+  void setMesh(const Geometry::BasicMesh3D&);
+  void setParticles(const std::set<std::string>& P) {particles=P;}
   
   bool isSized(const long int,const long int,const long int,
 	       const long int) const;
-  void resize(const long int,const long int,
-	      const long int,const long int);  
 
   
   void zeroWGrid();
+  
   double calcMaxAttn(const long int) const;
   double calcMaxAttn() const;
 
@@ -95,8 +121,8 @@ class WWGWeight
 		     const long int, const double);
   void scaleGrid(const double);
   void scalePower(const double);
-  void scaleRange(const size_t,const double,const double,const double);
-  void setMinSourceValue(const double);
+  void scaleRange(const size_t eIndex,const double,const double,const double);
+  void setMinValue(const double);
 
 
   template<typename T>
@@ -108,20 +134,22 @@ class WWGWeight
 
   template<typename T>
   void wTrack(const Simulation&,const T&,
-	      const std::vector<double>&,
-	      const std::vector<Geometry::Vec3D>&,
 	      const double,const double,const double);
 
   template<typename T,typename U>
-  void CADISnorm(const Simulation&,const WWGWeight&,
-		 const std::vector<double>&,
-		 const std::vector<Geometry::Vec3D>&,
-		 const T&,const U&);
+  void CADISnorm(const Simulation&,
+		 const WWGWeight&,
+		 const WWGWeight&,
+		 const T&,const U&,
+		 const double,const double,const double);
   
   void writeCHECK(const size_t) const;
-  
+
+  void writeGrid(std::ostream&) const;
   void writeWWINP(std::ostream&) const;
-  void writeVTK(std::ostream&,const long int) const;
+  void writePHITS(std::ostream&) const;
+  void writeFLUKA(std::ostream&) const;
+  void writeVTK(std::ostream&,const long int,const bool =0) const;
   void write(std::ostream&) const;
 };
 

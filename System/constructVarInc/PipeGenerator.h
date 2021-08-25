@@ -88,7 +88,7 @@ class PipeGenerator
   void setWindowMat(const std::string&,const std::string&);
   void setCladding(const double,const std::string&);
 
-  inline void setOuterVoid(int val=1) { outerVoid = val; }
+  void setOuterVoid(const int val =1) { outerVoid = val; }
 
   void generatePipe(FuncDataBase&,const std::string&,
 		    const double) const;

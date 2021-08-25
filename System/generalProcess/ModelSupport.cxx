@@ -922,4 +922,78 @@ getSetHeadRule(const surfRegister& SMap,const int offset,
   return HeadRule(getSetComposite(SMap,offset,baseString));
 }
 
+HeadRule
+getAltHeadRule(const surfRegister& SMap,const int Offset,
+	       const int MinorOffset,const int SecondOffset,
+	       const std::string& BaseString)
+/*!
+    Given a base string add an offset to the numbers
+    If surfaces A,B,C exist. then choose surface A
+    is A exists , if B then choose B  ...
+    
+    If there are multiple DIFFERENT surf with appendix A, B etc
+    then ALL A,B,C need to be correct for it to take presidence
+    
+    If a cell does not exist ignore [no error]
+    If a number is preceeded by T then it is a true number.
+    Use T-4000 etc.
+    \param SMap :: Surf register 
+    \param Offset :: Offset nubmer to add
+    \param minorOffset :: minor Offset nubmer to add [M]
+    \param secondOffset :: second minor Offset nubmer to add [N]
+    \param BaseString :: BaseString number
+    \return HeadRuel components
+   */
+{
+  return HeadRule(getAltHeadRule(SMap,Offset,MinorOffset,
+				 SecondOffset,BaseString));
+}
+
+HeadRule
+getAltHeadRule(const surfRegister& SMap,const int Offset,
+	       const int MinorOffset,const std::string& BaseString)
+/*!
+    Given a base string add an offset to the numbers
+    If surfaces A,B,C exist. then choose surface A
+    is A exists , if B then choose B  ...
+    
+    If there are multiple DIFFERENT surf with appendix A, B etc
+    then ALL A,B,C need to be correct for it to take presidence
+    
+    If a cell does not exist ignore [no error]
+    If a number is preceeded by T then it is a true number.
+    Use T-4000 etc.
+    \param SMap :: Surf register 
+    \param Offset :: Offset nubmer to add
+    \param minorOffset :: minor Offset nubmer to add [M]
+    \param BaseString :: BaseString number
+    \return HeadRuel components
+   */
+{
+  return HeadRule(getAltHeadRule(SMap,Offset,MinorOffset,BaseString));
+}
+
+HeadRule
+getAltHeadRule(const surfRegister& SMap,const int Offset,
+	       const std::string& BaseString)
+/*!
+    Given a base string add an offset to the numbers
+    If surfaces A,B,C exist. then choose surface A
+    is A exists , if B then choose B  ...
+    
+    If there are multiple DIFFERENT surf with appendix A, B etc
+    then ALL A,B,C need to be correct for it to take presidence
+    
+    If a cell does not exist ignore [no error]
+    If a number is preceeded by T then it is a true number.
+    Use T-4000 etc.
+    \param SMap :: Surf register 
+    \param Offset :: Offset nubmer to add
+    \param BaseString :: BaseString number
+    \return HeadRuel components
+   */
+{
+  return HeadRule(getAltHeadRule(SMap,Offset,BaseString));
+}
+
 }  // NAMESPACE ModelSupport

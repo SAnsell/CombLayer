@@ -3,7 +3,7 @@
  
  * File:   support/phitsWriteSupport.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -148,10 +148,17 @@ writePHITSCellSet(std::ostream& OX,
 		    const size_t depth,
 		    const std::map<int,double>& cellValues)
 /*!
+  Write out a group of cells (with value) using 
+  the PHITS system of grouping. This means
+  that cells with identical value are grouped as
+  - ( [x-y] ) value 
+  were x-y are inclusive cell numbers and value
+  is the value to assign.
+
   \param OX :: ostream to write to
   \param depth :: step depth
   \param unit :: unit name
-  \param cellValues :: 
+  \param cellValues :: ordered map of cell/indexes and values
  */
 {
   // ugly double loop
@@ -164,9 +171,8 @@ writePHITSCellSet(std::ostream& OX,
   int BI(mc->first);
   double AVal(mc->second);
 
-
   std::ostringstream cx;
-  for( ;mc!=cellValues.end();mc++)
+  for(mc++ ;mc!=cellValues.end();mc++)
     {
       const int& iVal=mc->first;
       const double& cVal=mc->second;
@@ -176,12 +182,14 @@ writePHITSCellSet(std::ostream& OX,
 	{
 
 	  if (BI == AI )  // single point
-	      StrFunc::writePHITSItems(OX,depth,AI,AVal);
+	    {
+	      StrFunc::writePHITSTable(OX,depth,AI,AVal);
+	    }
 	  else
 	    {
 	      cx.str("");
-	      cx<<"( "<<AI<<" - "<<BI<<" )"<<AVal;
-	      StrFunc::writePHITSOpen(OX,depth,cx.str());
+	      cx<<"( {"<<AI<<" - "<<BI<<"} )";
+	      StrFunc::writePHITSTable(OX,depth,cx.str(),AVal);
 	    }
 	  AI=iVal;
 	  BI=iVal;
@@ -199,13 +207,48 @@ writePHITSCellSet(std::ostream& OX,
   else 
     {
       cx.str("");
-      cx<<"( "<<AI<<" - "<<BI<<" )"<<AVal;
-      StrFunc::writePHITSOpen(OX,depth,cx.str());
+      cx<<"( {"<<AI<<" - "<<BI<<"} )";
+      StrFunc::writePHITSTable(OX,depth,cx.str(),AVal);
     }
   return;
 }
 
+template<>
+void
+writePHITSList(std::ostream& OX,const size_t depth,
+	       const std::vector<Geometry::Vec3D>& values)
+ /*!
+   Write out the line neatly for PHITS
+   \param OX :: ostream to write to
+   \param depth :: step depth
+   \param values :: values  
+ */
+{
+  OX<<std::string((depth+1)*2,' ');
+  for(const Geometry::Vec3D& V : values)
+    OX<<"Vec3D("<<V<<") ";
+  OX<<std::endl;
+  return;
+}
 
+template<typename T>
+void
+writePHITSList(std::ostream& OX,const size_t depth,
+	       const std::vector<T>& values)
+ /*!
+   Write out the line neatly for PHITS
+   \param OX :: ostream to write to
+   \param depth :: step depth
+   \param values :: values
+ */
+{
+  OX<<std::string((depth+1)*2,' ');
+  for(const T& V : values)
+    writePHITSItems(OX,V);
+  OX<<std::endl;
+  
+  return;
+}
   
 void
 writePHITSOpen(std::ostream& OX,
@@ -213,10 +256,10 @@ writePHITSOpen(std::ostream& OX,
 	       const std::string& unit)
  /*!
    Write out an open line as <spces>unit = 
-  \param OX :: ostream to write to
-  \param depth :: step depth
-  \param unit :: unit name
-*/
+   \param OX :: ostream to write to
+   \param depth :: step depth
+   \param unit :: unit name
+  */
 {
   constexpr size_t equalPt(20);     // distance to name
   const std::string spc((depth+1)*2,' ');
@@ -247,9 +290,8 @@ writePHITSTableHead(std::ostream& OX,
   OX<<spc;
   
   for(const std::string& item : units)
-    {
-      OX<<std::left<<std::setw(equalPt)<<item;
-    }
+    OX<<std::left<<std::setw(equalPt)<<item;
+
   OX<<std::endl;
   return;
 }
@@ -277,7 +319,6 @@ template void
 writePHITS(std::ostream&,const size_t,const std::string&,
 	   const std::string,const std::string&);
 
-
 template void
 writePHITSCont(std::ostream&,const size_t,const size_t,const double&);
 template void
@@ -286,6 +327,10 @@ template void
 writePHITSCont(std::ostream&,const size_t,const size_t,const int&);
 template void
 writePHITSCont(std::ostream&,const size_t,const size_t,const size_t&);
+
+template void
+writePHITSList(std::ostream&,const size_t,
+	       const std::vector<double>&);
 
 
 }  // NAMESPACE StrFunc

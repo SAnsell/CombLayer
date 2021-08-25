@@ -3,7 +3,7 @@
 
  * File:   constructVar/PipeGenerator.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -395,15 +395,18 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
   template void PipeGenerator::setCF<CF100>();
   template void PipeGenerator::setCF<CF120>();
   template void PipeGenerator::setCF<CF150>();
+  template void PipeGenerator::setCF<CF350>();
   template void PipeGenerator::setAFlangeCF<CF25>();
   template void PipeGenerator::setAFlangeCF<CF34_TDC>();
   template void PipeGenerator::setAFlangeCF<CF37_TDC>();
   template void PipeGenerator::setAFlangeCF<CF40_22>();
+  template void PipeGenerator::setAFlangeCF<CF40>();
   template void PipeGenerator::setAFlangeCF<CF63>();
   template void PipeGenerator::setAFlangeCF<CF66_TDC>();
   template void PipeGenerator::setAFlangeCF<CF100>();
   template void PipeGenerator::setAFlangeCF<CF120>();
   template void PipeGenerator::setAFlangeCF<CF150>();
+  template void PipeGenerator::setAFlangeCF<CF350>();
   template void PipeGenerator::setBFlangeCF<CF25>();
   template void PipeGenerator::setBFlangeCF<CF34_TDC>();
   template void PipeGenerator::setBFlangeCF<CF37_TDC>();
@@ -414,6 +417,7 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
   template void PipeGenerator::setBFlangeCF<CF100>();
   template void PipeGenerator::setBFlangeCF<CF120>();
   template void PipeGenerator::setBFlangeCF<CF150>();
+  template void PipeGenerator::setBFlangeCF<CF350>();
 
 ///\endcond TEMPLATE
 

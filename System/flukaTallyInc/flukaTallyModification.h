@@ -3,7 +3,7 @@
  
  * File:   flukaTallyInc/flukaTallyModification.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,11 @@ class SimFLUKA;
 
 namespace flukaSystem
 {
+  class resnuclei;
+
+  
+  template<typename T>
+  std::set<T*> getTallyType(const SimFLUKA&);
 
   std::set<flukaTally*>
     getActiveTally(const SimFLUKA&,const std::string&);

@@ -3,7 +3,7 @@
  
  * File:   inputInc/inputParam.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,15 +38,33 @@ namespace mainSystem
   class IItem;
   class inputParam;
   
+Geometry::Vec3D
+getNamedPoint(const Simulation&,const inputParam&,
+	      const std::string&,const size_t,
+	      size_t&,const std::string&);
+Geometry::Vec3D
+getNamedAxis(const Simulation&,const inputParam&,
+	      const std::string&,const size_t,
+	      size_t&,const std::string&);
+
+Geometry::Vec3D
+getDefNamedPoint(const Simulation&,const inputParam&,
+	      const std::string&,const size_t,
+	      size_t&,const Geometry::Vec3D&);
+Geometry::Vec3D
+getDefNamedAxis(const Simulation&,const inputParam&,
+		const std::string&,const size_t,
+		size_t&,const Geometry::Vec3D&);
+  
 std::vector<int>
-  getNamedCells(const Simulation&,const inputParam&,
+getNamedCells(const Simulation&,const inputParam&,
+		const std::string&,const long int,
+	      const long int,const std::string&);
+
+std::set<MonteCarlo::Object*>
+getNamedObjects(const Simulation&,const inputParam&,
 		const std::string&,const long int,
 		const long int,const std::string&);
-
- std::set<MonteCarlo::Object*>
-  getNamedObjects(const Simulation&,const inputParam&,
-		 const std::string&,const long int,
-		 const long int,const std::string&);
 /*!
   \class inputParam
   \version 1.0
@@ -138,6 +156,9 @@ class inputParam
   const std::vector<std::string>&
     getObjectItems(const std::string&,const size_t) const;
 
+  Geometry::Vec3D getDefCntVec3D(const std::string&,
+				 const size_t,size_t&,
+				 const Geometry::Vec3D&) const;
   Geometry::Vec3D getCntVec3D(const std::string&,
 			      const size_t,size_t&) const;
   Geometry::Vec3D getCntVec3D(const std::string&,

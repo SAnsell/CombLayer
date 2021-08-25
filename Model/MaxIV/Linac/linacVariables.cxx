@@ -3,7 +3,7 @@
 
  * File:   linac/linacVariables.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2021 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -236,7 +236,7 @@ setIonPump3OffsetPort(FuncDataBase& Control,const std::string& name)
 
   SimpleTubeGen.setCapMat("Stainless304L");
   SimpleTubeGen.setCap(1,1);
-  SimpleTubeGen.generateTube(Control,name,0.0,fullLen);
+  SimpleTubeGen.generateTube(Control,name,fullLen);
 
   Control.addVariable(name+"NPorts",3);
   Control.addVariable(name+"YAngle",180.0);
@@ -287,7 +287,7 @@ setPrismaChamber(FuncDataBase& Control,
 
   setVariable::PipeTubeGenerator SimpleTubeGen;
   SimpleTubeGen.setMat("Stainless304L");
-  SimpleTubeGen.generateBlank(Control,name,0.0,33.2); // measured
+  SimpleTubeGen.generateBlank(Control,name,33.2); // measured
   Control.addVariable(name+"Radius",15.0); // measured
   Control.addVariable(name+"WallThick",0.2); // measured
   Control.addVariable(name+"BlankThick",0.8);  // measured
@@ -1974,6 +1974,7 @@ Segment26(FuncDataBase& Control,
   const Geometry::Vec3D endPtB(-637.608,8180.263,-37.887);
   const Geometry::Vec3D endPtC(-637.608,8169.632,-73.976);
 
+  Control.addVariable(lKey+"Offset",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetA",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetB",startPtB+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetC",startPtC+linacVar::zeroOffset);
@@ -1998,9 +1999,8 @@ Segment26(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeBA",322.098);
   PGen.generatePipe(Control,lKey+"PipeCA",326.897);
 
-  Control.addVariable(lKey+"PipeAAOffset",startPtA+linacVar::zeroOffset);
-  Control.addVariable(lKey+"PipeBAOffset",startPtB+linacVar::zeroOffset);
-  Control.addVariable(lKey+"PipeCAOffset",startPtC+linacVar::zeroOffset);
+  Control.addVariable(lKey+"PipeBAOffset",startPtB-startPtA);
+  Control.addVariable(lKey+"PipeCAOffset",startPtC-startPtA);
 
   Control.addVariable(lKey+"PipeAAXAngle",
 		      std::asin((endPtA-startPtA).unit()[2])*180.0/M_PI);
@@ -2072,6 +2072,7 @@ Segment27(FuncDataBase& Control,
   const Geometry::Vec3D endPtB(-637.608,8458.379,-52.649);
   const Geometry::Vec3D endPtC(-637.608,8442.393,-101.956);
 
+  Control.addVariable(lKey+"Offset",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetA",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetB",startPtB+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetC",startPtC+linacVar::zeroOffset);
@@ -2097,9 +2098,9 @@ Segment27(FuncDataBase& Control,
   setBellow37(Control,lKey+"BellowBA",16.0);
   setBellow37(Control,lKey+"BellowCA",16.0);
 
-  Control.addVariable(lKey+"BellowAAOffset",startPtA+linacVar::zeroOffset);
-  Control.addVariable(lKey+"BellowBAOffset",startPtB+linacVar::zeroOffset);
-  Control.addVariable(lKey+"BellowCAOffset",startPtC+linacVar::zeroOffset);
+  Control.addVariable(lKey+"BellowAAOffset");
+  Control.addVariable(lKey+"BellowBAOffset",startPtB-startPtA);
+  Control.addVariable(lKey+"BellowCAOffset",startPtC-startPtA);
 
   Control.addVariable(lKey+"BellowAAXAngle",
 		      std::asin((endPtA-startPtA).unit()[2])*180.0/M_PI);
@@ -2161,10 +2162,10 @@ Segment28(FuncDataBase& Control,
   const Geometry::Vec3D startPtA(-637.608,8458.411,0.0);
   const Geometry::Vec3D startPtB(-637.608,8458.379,-52.649);
 
-
   const Geometry::Vec3D endPtA(-637.608,9073.611,0.0);
   const Geometry::Vec3D endPtB(-637.608,9073.535,-84.888);
 
+  Control.addVariable(lKey+"Offset",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetA",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetB",startPtB+linacVar::zeroOffset);
 
@@ -2185,8 +2186,7 @@ Segment28(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeAA",291.6);
   PGen.generatePipe(Control,lKey+"PipeBA",292.0);
 
-  Control.addVariable(lKey+"PipeAAOffset",startPtA+linacVar::zeroOffset);
-  Control.addVariable(lKey+"PipeBAOffset",startPtB+linacVar::zeroOffset);
+  Control.addVariable(lKey+"PipeBAOffset",startPtB-startPtA);
 
   Control.addVariable(lKey+"PipeAAXAngle",
 		      std::atan((endPtA-startPtA).unit()[2])*180.0/M_PI);

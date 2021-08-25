@@ -1,9 +1,9 @@
-/*********************************************************************
+/********************************************************************* 
   CombLayer : MCNP(X) Input builder
-
+ 
  * File:   input/IItem.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
 #include <fstream>
@@ -60,7 +60,7 @@ operator<<(std::ostream& OX,const IItem& A)
   return OX;
 }
 
-IItem::IItem(const std::string& K) :
+IItem::IItem(const std::string& K) : 
   Key(K),active(0),activeSet(0),activeItem(0),
   maxSets(0),maxItems(0),reqItems(0)
   /*!
@@ -73,13 +73,13 @@ IItem::IItem(const std::string& K,const std::string& L) :
   Key(K),Long(L),active(0),activeSet(0),activeItem(0),
   maxSets(0),maxItems(0),reqItems(0)
   /*!
-    Full Constructor
+    Full Constructor 
     \param K :: Key Name
     \param L :: Long name
   */
 {}
 
-IItem::IItem(const IItem& A) :
+IItem::IItem(const IItem& A) : 
   Key(A.Key),Long(A.Long),Desc(A.Desc),active(A.active),
   activeSet(A.activeSet),activeItem(A.activeItem),
   maxSets(A.maxSets),maxItems(A.maxItems),
@@ -91,7 +91,7 @@ IItem::IItem(const IItem& A) :
 {}
 
 IItem&
-IItem::operator=(const IItem& A)
+IItem::operator=(const IItem& A) 
   /*!
     Assignment operator
     \param A :: Object to copy
@@ -146,7 +146,7 @@ IItem::checkIndex(const size_t setIndex,const size_t itemIndex) const
 
   return;
 }
-
+  
 size_t
 IItem::getNSets() const
   /*!
@@ -161,7 +161,7 @@ size_t
 IItem::getNItems(const size_t setIndex) const
   /*!
     Number of items
-    \param setIndex :: Index value
+    \param setIndex :: Index value 
     \return Number of items in a given set
   */
 {
@@ -182,12 +182,12 @@ IItem::isValid(const size_t setIndex) const
    */
 {
   ELog::RegMethod RegA("IItem","isValid");
-
+  
   if (setIndex>=DItems.size())
     return 0;
 
   return (DItems[setIndex].size()<reqItems) ? 0 : 1;
-
+      
 }
 
 template<>
@@ -195,12 +195,12 @@ void
 IItem::setObjItem(const size_t setIndex,const size_t itemIndex,
 		  const std::string& V)
   /*!
-    Set the object based on the setIndex and the itemIndex
-    Allows a +1 basis but not more:
+    Set the object based on the setIndex and the itemIndex 
+    Allows a +1 basis but not more:	
     \param setIndex :: Set number
-    \param itemIndex :: Item index
+    \param itemIndex :: Item index 
     \param V :: Convertable item
-    \return
+    \return 
   */
 {
   ELog::RegMethod RegA("IItem","setObjItem<string>");
@@ -213,10 +213,10 @@ void
 IItem::setObjItem(const size_t setIndex,const size_t itemIndex,
 		     const T& V)
   /*!
-    Set the object based on the setIndex and the itemIndex
-    Allows a +1 basis but not more:
+    Set the object based on the setIndex and the itemIndex 
+    Allows a +1 basis but not more:	
     \param setIndex :: Set number
-    \param itemIndex :: Item index
+    \param itemIndex :: Item index 
     \param V :: Convertable item
   */
 {
@@ -230,8 +230,8 @@ void
 IItem::setObj(const size_t setIndex,const size_t itemIndex,
 	      const std::string& V)
   /*!
-    Set the object based on the setIndex and the itemIndex
-    Allows a +1 basis but not more:
+    Set the object based on the setIndex and the itemIndex 
+    Allows a +1 basis but not more:	
     \param setIndex :: group set number
     \param itemIndex :: Item number
     \param V :: String to be converted
@@ -265,8 +265,8 @@ IItem::setObj(const size_t setIndex,const size_t itemIndex,
 void
 IItem::setObj(const size_t itemIndex,const std::string& V)
   /*!
-    Set the object based on the setIndex and the itemIndex
-    Allows a +1 basis but not more:
+    Set the object based on the setIndex and the itemIndex 
+    Allows a +1 basis but not more:	
     \param itemIndex :: Item number
     \param V :: Value to set
   */
@@ -292,9 +292,9 @@ IItem::getObjectItems(const size_t setIndex) const
   /*!
     Get Object [assuming setIndex/itemIndex ==0]
     \param setIndex :: set value
-    \return vector of strings
+    \return vector of strings 
   */
-{
+{ 
   ELog::RegMethod RegA("IItem","getObjectItems");
 
   if (setIndex >= DItems.size())
@@ -303,7 +303,7 @@ IItem::getObjectItems(const size_t setIndex) const
   return DItems[setIndex];
 }
 
-
+  
 template<typename T>
 T
 IItem::getObj() const
@@ -311,7 +311,7 @@ IItem::getObj() const
     Get Object [assuming setIndex/itemIndex ==0]
     \return Object
   */
-{
+{ 
   ELog::RegMethod RegA("IItem","getObj(int)");
   return getObj<T>(0,0);
 }
@@ -324,7 +324,7 @@ IItem::getObj(const size_t itemIndex) const
     \param itemIndex :: item count
     \return Object
   */
-{
+{ 
   ELog::RegMethod RegA("IItem","getObj(int)");
 
   return getObj<T>(0,itemIndex);
@@ -339,7 +339,7 @@ IItem::getObj(const size_t setIndex,const size_t itemIndex) const
     \param itemIndex :: item count
     \return Object
   */
-{
+{ 
   ELog::RegMethod RegA("IItem","getObj");
 
   if (setIndex >= DItems.size())
@@ -366,11 +366,11 @@ IItem::getObj(const size_t setIndex,const size_t itemIndex) const
     \param itemIndex :: item count
     \return Vec3D object
   */
-{
+{ 
   ELog::RegMethod RegA("IItem","getObj");
 
   checkIndex(setIndex,itemIndex);
-
+  
   Geometry::Vec3D Value;
   if (StrFunc::convert(DItems[setIndex][itemIndex],Value))
     return Value;
@@ -380,12 +380,12 @@ IItem::getObj(const size_t setIndex,const size_t itemIndex) const
       !StrFunc::convert(DItems[setIndex][itemIndex+1],Value[1]) ||
       !StrFunc::convert(DItems[setIndex][itemIndex+2],Value[2]) )
     throw ColErr::TypeMatch(DItems[setIndex][itemIndex],
-				  "Geometry::Vec3D",Key+":convert error");
+				  "Geomtery::Vec3D",Key+":convert error");
 
   return Value;
 }
 
-
+  
 template<>
 std::string
 IItem::getObj(const size_t setIndex,const size_t itemIndex) const
@@ -395,7 +395,7 @@ IItem::getObj(const size_t setIndex,const size_t itemIndex) const
     \param itemIndex :: item count
     \return string value [as stored]
   */
-{
+{ 
   ELog::RegMethod RegA("IItem","getObj<string>");
 
   checkIndex(setIndex,itemIndex);
@@ -409,9 +409,9 @@ IItem::getCntVec3D(const size_t setIndex,size_t& itemIndex) const
     Get a simple Vec3D [cannot be a link component]
     \param setIndex :: Index
     \param itemIndex :: item count
-    \return Vec3D if valid
+    \return Vec3D if valid 
   */
-{
+{ 
   ELog::RegMethod RegA("IItem","getCntVec3D");
 
   if (setIndex >= DItems.size())
@@ -434,12 +434,50 @@ IItem::getCntVec3D(const size_t setIndex,size_t& itemIndex) const
       !StrFunc::convert(DItems[setIndex][itemIndex+1],Value[1]) ||
       !StrFunc::convert(DItems[setIndex][itemIndex+2],Value[2]) )
     throw ColErr::TypeMatch(DItems[setIndex][itemIndex],
-				  "Geometry::Vec3D",Key+":convert error");
+				  "Geomtery::Vec3D",Key+":convert error");
 
   itemIndex+=3;
   return Value;
 }
 
+Geometry::Vec3D
+IItem::getDefCntVec3D(const size_t setIndex,size_t& itemIndex,
+		      const Geometry::Vec3D& defVec) const
+  /*!
+    Get a simple Vec3D [cannot be a link component]
+    \param setIndex :: Index
+    \param itemIndex :: item count
+    \param defVec :: default value
+    \return Vec3D if valid 
+  */
+{ 
+  ELog::RegMethod RegA("IItem","getDefCntVec3D");
+
+  if (setIndex >= DItems.size())
+    return defVec;
+
+
+  const size_t NItems=DItems[setIndex].size();
+  if (itemIndex>=NItems)
+    return defVec;
+
+  Geometry::Vec3D Value;
+  if (StrFunc::convert(DItems[setIndex][itemIndex],Value))
+    {
+      itemIndex++;
+      return Value;
+    }
+
+  if (itemIndex+3>NItems ||
+      !StrFunc::convert(DItems[setIndex][itemIndex],Value[0]) ||
+      !StrFunc::convert(DItems[setIndex][itemIndex+1],Value[1]) ||
+      !StrFunc::convert(DItems[setIndex][itemIndex+2],Value[2]) )
+    return defVec;
+
+  itemIndex+=3;
+  return Value;
+}
+  
 size_t
 IItem::addSet()
   /*!
@@ -448,7 +486,7 @@ IItem::addSet()
   */
 {
   ELog::RegMethod RegA("IItem","addSet");
-
+  
   if (!active && maxSets)
     activeSet=0;
   else
@@ -460,7 +498,7 @@ IItem::addSet()
 
   if (activeSet>=maxSets)
     return 0;
-
+  
   if (DItems.size()<=activeSet)
     DItems.push_back(std::vector<std::string>());
   return activeSet+1;
@@ -502,7 +540,7 @@ IItem::writeSet(std::ostream& OX,const size_t setIndex) const
   if (setIndex>=DItems.size())
     throw ColErr::IndexError<size_t>(setIndex,DItems.size(),
 				     " ["+Key+"] setIndex");
-
+  
   for(const std::string& Item : DItems[setIndex])
     OX<<Item<<" ";
 
@@ -561,5 +599,7 @@ IItem::setObjItem(const size_t,const size_t,const Geometry::Vec3D&);
 
 
 ///\endcond TEMPLATE
-
+ 
 }  // NAMESPACE mainSystem
+
+

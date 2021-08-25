@@ -91,8 +91,26 @@ setModelPhysics(SimPHITS& System,
 	    ("energyCut",i,index++,"cutoff value");
 	  PC->setECut(particle,V);
 	}
-	  
     }
+
+  // This is PHITS cards for energy range of charged particles
+  if (IParam.flag("eRange"))
+    {
+      const double eLow=IParam.getValueError<double>
+	("eRange",0,0,"eRange needs lower value (-ve for default)");
+      const double eHigh=IParam.getDefValue<double>(-1.0,"eRange",0,1);
+      PC->setERange(eLow,eHigh);
+    }
+
+  // This is PHITS cards for energy range of electron track
+  if (IParam.flag("eTrack"))
+    {
+      const double eLow=IParam.getValueError<double>
+	("eTrack",0,0,"eTrack needs lower value (-ve for default)");
+      const double eHigh=IParam.getDefValue<double>(-1.0,"eTrack",0,1);
+      PC->setETrack(eLow,eHigh);
+    }
+  
   // This is FLUKA cards but will use if useful
   // Card of type -wEMF prodCut  / -wCUT partthr
   nSet=IParam.setCnt("wEMF"); 

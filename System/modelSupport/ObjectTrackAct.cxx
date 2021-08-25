@@ -3,7 +3,7 @@
  
  * File:   process/ObjectTrackAct.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -141,9 +141,10 @@ ObjectTrackAct::getMatSum(const long int objN) const
 }
   
 double
-ObjectTrackAct::getAttnSum(const long int objN,const double Epsilon) const
+ObjectTrackAct::getAttnSum(const long int objN,
+			   const double energy) const
   /*!
-    Calculate the sum in the material
+    Calculate the attenuatio of a beam traveling in teh object
     \param objN :: Cell number to use
     \return sum of distance in non-void
   */
@@ -175,6 +176,7 @@ ObjectTrackAct::getAttnSum(const long int objN,const double Epsilon) const
   // currently no use for epsilon
   return sum;
 }
+
 
 
 double

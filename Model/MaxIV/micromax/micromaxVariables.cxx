@@ -166,7 +166,7 @@ shutterTable(FuncDataBase& Control,
   
   SimpleTubeGen.setCF<CF100>();
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,frontKey+"FlorTubeA",0.0,16.0);
+  SimpleTubeGen.generateTube(Control,frontKey+"FlorTubeA",16.0);
 
   // beam ports
   const std::string florName(frontKey+"FlorTubeA");
@@ -188,7 +188,7 @@ shutterTable(FuncDataBase& Control,
   const std::string gateName=frontKey+"GateTubeB";
   SimpleTubeGen.setCF<CF63>();
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,frontKey+"GateTubeB",0.0,20.0);
+  SimpleTubeGen.generateTube(Control,frontKey+"GateTubeB",20.0);
   // beam ports
   Control.addVariable(gateName+"NPorts",2);
   PItemGen.setCF<setVariable::CF40>(0.45);
@@ -207,7 +207,7 @@ shutterTable(FuncDataBase& Control,
   const std::string shutterName=frontKey+"ShutterBox";
   const double sBoxLen(51.0);
   SimpleTubeGen.setCF<CF150>();
-  SimpleTubeGen.generateTube(Control,shutterName,0.0,sBoxLen);
+  SimpleTubeGen.generateTube(Control,shutterName,sBoxLen);
   Control.addVariable(frontKey+"ShutterBoxNPorts",2);
   
   // 20cm above port tube
@@ -369,7 +369,7 @@ heatDumpTable(FuncDataBase& Control,
   const std::string gateName=frontKey+"GateTubeA";
   SimpleTubeGen.setCF<CF63>();
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,frontKey+"GateTubeA",0.0,20.0);
+  SimpleTubeGen.generateTube(Control,frontKey+"GateTubeA",20.0);
 
   // beam ports
   Control.addVariable(gateName+"NPorts",2);
@@ -406,7 +406,7 @@ heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
   SimpleTubeGen.setMat("Stainless304");
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.setCap(1,0);
-  SimpleTubeGen.generateTube(Control,frontKey+"HeatBox",0.0,20.0);
+  SimpleTubeGen.generateTube(Control,frontKey+"HeatBox",20.0);
   Control.addVariable(frontKey+"HeatBoxNPorts",2);
 
   // beam ports
@@ -524,7 +524,7 @@ frontEndVariables(FuncDataBase& Control,
 
   SimpleTubeGen.setMat("Stainless304");
   SimpleTubeGen.setCF<CF100>();
-  SimpleTubeGen.generateTube(Control,frontKey+"CollimatorTubeA",0.0,36.0);
+  SimpleTubeGen.generateTube(Control,frontKey+"CollimatorTubeA",36.0);
   Control.addVariable(frontKey+"CollimatorTubeANPorts",0);
   // collimator block
 
@@ -552,7 +552,7 @@ frontEndVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,frontKey+"BellowC",16.0);
 
   SimpleTubeGen.setCF<CF100>();
-  SimpleTubeGen.generateTube(Control,frontKey+"CollimatorTubeB",0.0,36.0);
+  SimpleTubeGen.generateTube(Control,frontKey+"CollimatorTubeB",36.0);
   Control.addVariable(frontKey+"CollimatorTubeBNPorts",0);
 
   CollGen.setFrontGap(2.13,2.146);
@@ -563,7 +563,7 @@ frontEndVariables(FuncDataBase& Control,
   // linked pipe tube
   SimpleTubeGen.setCF<CF40>();
   SimpleTubeGen.setAFlangeCF<CF100>();
-  SimpleTubeGen.generateTube(Control,frontKey+"CollimatorTubeC",0.0,22.0);
+  SimpleTubeGen.generateTube(Control,frontKey+"CollimatorTubeC",22.0);
   Control.addVariable(frontKey+"CollimatorTubeCNPorts",0);
 
   CollGen.setMain(1.20,"Copper","Void");
@@ -942,7 +942,7 @@ opticsVariables(FuncDataBase& Control,
 
   SimpleTubeGen.setCF<CF40>();
   SimpleTubeGen.setBFlangeCF<CF63>();
-  SimpleTubeGen.generateTube(Control,preName+"ScreenPipeA",0.0,12.5);
+  SimpleTubeGen.generateTube(Control,preName+"ScreenPipeA",12.5);
   Control.addVariable(preName+"ScreenPipeANPorts",1);
   PItemGen.setCF<setVariable::CF40>(4.0);
   PItemGen.generatePort(Control,preName+"ScreenPipeAPort0",
@@ -950,7 +950,7 @@ opticsVariables(FuncDataBase& Control,
 
   
   SimpleTubeGen.setCF<CF63>();
-  SimpleTubeGen.generateTube(Control,preName+"ScreenPipeB",0.0,14.0);
+  SimpleTubeGen.generateTube(Control,preName+"ScreenPipeB",14.0);
   Control.addVariable(preName+"ScreenPipeBNPorts",2);
   PItemGen.setCF<setVariable::CF63>(4.0);
   PItemGen.setOuterVoid(0);

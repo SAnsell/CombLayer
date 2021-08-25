@@ -58,6 +58,7 @@
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 
@@ -69,7 +70,9 @@ namespace xraySystem
 MonoBox::MonoBox(const std::string& Key,
 		       const bool flag) : 
   attachSystem::FixedOffset(Key,6),
-  attachSystem::ContainedComp(),attachSystem::CellMap(),
+  attachSystem::ContainedComp(),
+  attachSystem::CellMap(),
+  attachSystem::SurfMap(),
   attachSystem::FrontBackCut(),
   centreOrigin(flag)
   /*!
@@ -150,31 +153,6 @@ MonoBox::populate(const FuncDataBase& Control)
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
 
-  return;
-}
-
-void
-MonoBox::createUnitVector(const attachSystem::FixedComp& FC,
-			  const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("MonoBox","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
-  // after rotation
-  if (!centreOrigin)
-    {
-      Origin+=
-	Y*(portATubeLength+wallThick+voidLength/2.0)-
-	X*portAXStep-
-	Z*portAZStep;
-    }
   return;
 }
 
@@ -361,7 +339,8 @@ MonoBox::createLinks()
   
   FrontBackCut::createFrontLinks(*this,ACentre,Y); 
   FrontBackCut::createBackLinks(*this,BCentre,Y);  
-  // FixedComp::setConnect(2,Origin-X*((width+voidWidth)/2.0),-X);
+
+  // Main boxes
   // FixedComp::setConnect(3,Origin+X*((feWidth+voidWidth)/2.0),X);
   // FixedComp::setConnect(4,Origin-Z*(feDepth+voidDepth),-Z);
   // FixedComp::setConnect(5,Origin+Z*(feHeight+voidHeight),Z);  
@@ -388,7 +367,11 @@ MonoBox::createAll(Simulation& System,
   ELog::RegMethod RegA("MonoBox","createAll(FC)");
 
   populate(System.getDataBase());
-  createUnitVector(FC,FIndex);
+  if (!centreOrigin)
+    FixedOffset::createCentredUnitVector
+      (FC,FIndex,portATubeLength+wallThick+voidLength/2.0);
+  else
+    FixedOffset::createUnitVector(FC,FIndex);
   createSurfaces();    
   createObjects(System);
   

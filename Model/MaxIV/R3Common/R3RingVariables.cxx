@@ -3,7 +3,7 @@
  
  * File:   R3Common/R3RingVariables.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,7 +59,6 @@
 #include "EPSeparatorGenerator.h"
 #include "R3ChokeChamberGenerator.h"
 #include "MagnetM1Generator.h"
-
 
 namespace setVariable
 {  
@@ -175,6 +174,7 @@ shutterTable(FuncDataBase& Control,
   setVariable::PortItemGenerator PItemGen;
   setVariable::PipeGenerator PipeGen;
   setVariable::BeamMountGenerator BeamMGen;
+  setVariable::CylGateValveGenerator GVGen;
     
   // joined and open
   GateGen.setLength(3.5);
@@ -186,7 +186,7 @@ shutterTable(FuncDataBase& Control,
   
   SimpleTubeGen.setCF<CF100>();
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,frontKey+"FlorTubeA",0.0,16.0);
+  SimpleTubeGen.generateTube(Control,frontKey+"FlorTubeA",16.0);
 
   // beam ports
   const std::string florName(frontKey+"FlorTubeA");
@@ -194,7 +194,7 @@ shutterTable(FuncDataBase& Control,
   const Geometry::Vec3D XVec(1,0,0);
   const Geometry::Vec3D ZVec(0,0,1);
 
-  PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+1.0);
+  PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+2.0);
   PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,florName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
   PItemGen.generatePort(Control,florName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
@@ -204,17 +204,7 @@ shutterTable(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowJ",10.0);
 
-  // will be rotated vertical
-  const std::string gateName=frontKey+"GateTubeB";
-  SimpleTubeGen.setCF<CF63>();
-  SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,frontKey+"GateTubeB",0.0,20.0);
-  // beam ports
-  Control.addVariable(gateName+"NPorts",2);
-  PItemGen.setCF<setVariable::CF40>(4.35);
-  PItemGen.setPlate(0.0,"Void");  
-  PItemGen.generatePort(Control,gateName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
-  PItemGen.generatePort(Control,gateName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
+  GVGen.generateGate(Control,frontKey+"GateTubeB",0);
   
   PipeGen.setMat("Stainless304");
   PipeGen.setWindow(-2.0,0.0);   // no window
@@ -227,7 +217,8 @@ shutterTable(FuncDataBase& Control,
   const std::string shutterName=frontKey+"ShutterBox";
   const double sBoxLen(51.0);
   SimpleTubeGen.setCF<CF150>();
-  SimpleTubeGen.generateTube(Control,shutterName,0.0,sBoxLen);
+  SimpleTubeGen.setCap(0,0);
+  SimpleTubeGen.generateTube(Control,shutterName,sBoxLen);
   Control.addVariable(frontKey+"ShutterBoxNPorts",2);
   
   // 20cm above port tube
@@ -328,7 +319,7 @@ heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
   SimpleTubeGen.setMat("Stainless304");
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.setCap(1,0);
-  SimpleTubeGen.generateTube(Control,frontKey+"HeatBox",0.0,20.0);
+  SimpleTubeGen.generateTube(Control,frontKey+"HeatBox",20.0);
   Control.addVariable(frontKey+"HeatBoxNPorts",2);
 
   // beam ports

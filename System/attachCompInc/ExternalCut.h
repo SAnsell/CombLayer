@@ -75,7 +75,7 @@ class ExternalCut
   const cutUnit* findUnit(const std::string&) const;
   
   void copyCutSurf(const std::string&,const ExternalCut&,const std::string&);
-  
+
   void setCutSurf(const std::string&,const int);
   void setCutSurf(const std::string&,const std::string&);
   void setCutSurf(const std::string&,const HeadRule&);

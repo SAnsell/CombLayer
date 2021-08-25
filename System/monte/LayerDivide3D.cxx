@@ -3,7 +3,7 @@
  
  * File:   process/LayerDivide3D.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -464,9 +464,8 @@ LayerDivide3D::setDividerByExclude(const Simulation& System,const int cellN)
   */
 {
   ELog::RegMethod RegA("LayerDivide3D","setDividerByExclude");
-  const MonteCarlo::Object* CPtr=System.findObject(cellN);
-  if (!CPtr)
-    throw ColErr::InContainerError<int>(cellN,"cellN");
+
+  const MonteCarlo::Object* CPtr=System.findObjectThrow(cellN);
 
   HeadRule CellRule= CPtr->getHeadRule();
 
@@ -495,11 +494,6 @@ LayerDivide3D::divideCell(Simulation& System,const int cellN)
 
   checkDivide();
   
-  const MonteCarlo::Object* CPtr=System.findObject(cellN);
-  if (!CPtr)
-    throw ColErr::InContainerError<int>(cellN,"cellN");
-
-
   ALen=processSurface(0,AWall,AFrac);
   BLen=processSurface(1,BWall,BFrac);
   CLen=processSurface(2,CWall,CFrac);

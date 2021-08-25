@@ -3,7 +3,7 @@
  
  * File:   R3CommonInc/PreDipole.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,8 +79,6 @@ class PreDipole : public attachSystem::FixedOffset,
   attachSystem::InnerZone exitZone;
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
-  
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -91,9 +89,12 @@ class PreDipole : public attachSystem::FixedOffset,
   PreDipole(const PreDipole&);
   PreDipole& operator=(const PreDipole&);
   virtual ~PreDipole();
-  
-  void createAll(Simulation&,const attachSystem::FixedComp&,
+
+  using FixedComp::createAll;
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
+
+  // This is junk and should be removed
   attachSystem::InnerZone& getBuildZone() { return buildZone; }
   attachSystem::InnerZone& getBendZone() { return bendZone; }
   attachSystem::InnerZone& getExitZone() { return exitZone; }

@@ -251,8 +251,8 @@ MonoShutter::createLinks()
 {
   ELog::RegMethod RControl("MonoShutter","createLinks");
   
-  setLinkSignedCopy(0,*shutterPipe,1);
-  setLinkSignedCopy(1,*shutterPipe,2);
+  setLinkCopy(0,*shutterPipe,1);
+  setLinkCopy(1,*shutterPipe,2);
   const constructSystem::portItem& PIA=shutterPipe->getPort(0);
   const constructSystem::portItem& PIB=shutterPipe->getPort(1);
   const Geometry::Vec3D CP=(PIA.getCentre()+PIB.getCentre())/2.0;

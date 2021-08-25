@@ -53,8 +53,8 @@ class objectGroups
 
  private:
 
-  const int cellZone;              ///< Range for each segment
-  int cellNumber;                  ///< Current new cell number
+  const int cellZone;              ///< Range size for each segment
+  int cellNumber;                  ///< Current next new cell number
 
   MTYPE regionMap;                 ///< Index of object numbers [name:grp]
   RTYPE rangeMap;                  ///< Range of objects [index : name]
@@ -127,13 +127,14 @@ class objectGroups
   std::vector<int> getObjectRange(const std::string&) const;
 
   const groupRange& getGroup(const std::string&) const;
+  groupRange getZoneGroup(const std::string&) const;
   
   std::set<std::string> getAllObjectNames() const;
   void rotateMaster();
 
   void removeObject(const std::string&);
   
-  void write(const std::string&,const bool =0) const;
+  void write(const std::string&,const int =0) const;
 
   std::ostream& writeRange(std::ostream&,const std::string&) const;
   

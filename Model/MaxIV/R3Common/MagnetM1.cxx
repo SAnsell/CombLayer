@@ -3,7 +3,7 @@
  
  * File:   R3Common/MagnetM1.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,13 +60,14 @@
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
-#include "ExternalCut.h" 
+#include "ExternalCut.h"
+#include "FrontBackCut.h" 
 #include "BaseMap.h"
 #include "SurfMap.h"
 #include "CellMap.h"
-#include "InnerZone.h" 
 
-#include "PreDipole.h"
+#include "EntryPipe.h"
+#include "HalfElectronPipe.h"
 #include "EPCombine.h"
 #include "Dipole.h"
 #include "Quadrupole.h"
@@ -81,9 +82,11 @@ MagnetM1::MagnetM1(const std::string& Key) :
   attachSystem::ContainedGroup("Main","FPipe","BPipe"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
-  buildZone(*this,cellIndex),
-  preDipole(new xraySystem::PreDipole(keyName+"PreDipole")),
+
+  entryPipe(new xraySystem::EntryPipe(keyName+"EntryPipe")),
+  halfPipe(new xraySystem::HalfElectronPipe(keyName+"HalfElectron")),
   epCombine(new xraySystem::EPCombine(keyName+"EPCombine")),
+  
   Oxx(new xraySystem::Octupole(keyName+"OXX")),
   QFend(new xraySystem::Quadrupole(keyName+"QFend")),
   Oxy(new xraySystem::Octupole(keyName+"OXY")),
@@ -102,8 +105,9 @@ MagnetM1::MagnetM1(const std::string& Key) :
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  
-  OR.addObject(preDipole);
+
+  OR.addObject(entryPipe);
+  OR.addObject(halfPipe);
   OR.addObject(epCombine);
   OR.addObject(Oxx);
   OR.addObject(QFend);
@@ -181,28 +185,118 @@ MagnetM1::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("MagnetM1","createObjects");
 
-  std::string Out;
-  // Construct the inner zone a a innerZone
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6  ");
+  
+  HeadRule HR,frontHR,backHR;
 
-  buildZone.setSurround(HeadRule(Out));
-  buildZone.setFront(HeadRule(SMap.realSurf(buildIndex+1)));
-  buildZone.setBack(HeadRule(-SMap.realSurf(buildIndex+2)));
-  buildZone.setInnerMat(voidMat);
-  buildZone.constructMasterCell(System);
-
-  CellMap::setCell("Void",buildZone.getMaster()->getName());
-  // Out=ModelSupport::getComposite
-  //   (SMap,buildIndex,"1 -2 3 -4 5 -6 ");
-  // makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
-
-  Out=ModelSupport::getComposite
+  // Outer Metal
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex," 1 -2 13 -14 15 -16 (-3:4:-5:6) ");
-  makeCell("Outer",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("Outer",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1 -2 13 -14 15 -16 ");
-  addOuterSurf("Main",Out);
+
+  frontHR=entryPipe->getFullRule(-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -1 13 -14 15 -16");
+  makeCell("FrontVoid",System,cellIndex++,0,0.0,HR*frontHR);
+  entryPipe->insertInCell("Main",System,getCell("FrontVoid"));
+  entryPipe->insertInCell("Flange",System,getCell("FrontVoid"));
+  
+  // First zone:
+  backHR=Oxx->getFullRule(1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 3 -4 5 -6");
+  makeCell("Seg1",System,cellIndex++,0,0.0,HR*backHR);
+  entryPipe->insertInCell("Main",System,getCell("Seg1"));
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
+
+  // Main segments:
+  // Oxx magnet:
+  frontHR=backHR.complement();
+  backHR=Oxx->getFullRule(-2);
+  makeCell("SegOxx",System,cellIndex++,0,0.0,HR*frontHR*backHR);
+  Oxx->insertInCell(System,getCell("SegOxx"));
+
+  // Oxx -> QFend
+  frontHR=backHR.complement();
+  backHR=QFend->getFullRule(1);
+  makeCell("Seg2",System,cellIndex++,0,0.0,HR*frontHR*backHR);
+  entryPipe->insertInCell("Main",System,getCell("Seg2"));  
+
+  // QFend
+  frontHR=backHR.complement();
+  backHR=QFend->getFullRule(-2);
+  //  makeCell("SegQF",System,cellIndex++,0,0.0,HR*frontHR*backHR);
+  //  QFend->insertInCell(System,getCell("SegQF"));
+
+  // QFend -> Oxy
+  frontHR=backHR.complement();
+  backHR=Oxy->getFullRule(1);
+  makeCell("Seg3",System,cellIndex++,0,0.0,HR*frontHR*backHR);
+  entryPipe->insertInCell("Main",System,getCell("Seg3"));
+
+  // Oxy magnet:
+  frontHR=backHR.complement();
+  backHR=Oxy->getFullRule(-2);
+  makeCell("SegOxy",System,cellIndex++,0,0.0,HR*frontHR*backHR);
+  Oxy->insertInCell(System,getCell("SegOxy"));
+
+  // Oxy -> QDend 
+  frontHR=backHR.complement();
+  backHR=QDend->getFullRule(1);
+  makeCell("Seg4",System,cellIndex++,0,0.0,HR*frontHR*backHR);
+  entryPipe->insertInCell("Main",System,getCell("Seg4"));
+
+  // QDend
+  frontHR=backHR.complement();
+  backHR=QDend->getFullRule(-2);
+  //  makeCell("SegQD",System,cellIndex++,0,0.0,HR*frontHR*backHR);
+  //  QDend->insertInCell(System,getCell("SegQD"));
+
+  // QDend -> end
+  frontHR=backHR.complement();
+  backHR=entryPipe->getFullRule(-2);
+  makeCell("Seg5",System,cellIndex++,0,0.0,HR*frontHR*backHR);
+  entryPipe->insertInCell("Main",System,getCell("Seg5"));
+
+  // HALF PIPE
+  
+  frontHR=entryPipe->getFullRule(2);
+  backHR=halfPipe->getFullRule("#midPlane");
+  makeCell("Seg7",System,cellIndex++,0,0.0,HR*frontHR*backHR);
+  halfPipe->insertInCell("Half",System,getCell("Seg7"));
+
+  frontHR=halfPipe->getFullRule("midPlane");
+  backHR=halfPipe->getFullRule(-3);
+  makeCell("Seg8",System,cellIndex++,0,0.0,HR*frontHR*backHR);
+  halfPipe->insertInCell("Full",System,getCell("Seg8"));
+
+  frontHR=halfPipe->getFullRule(3);
+  backHR=epCombine->getFullRule(-2);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6 -2 ");
+  makeCell("Seg9",System,cellIndex++,0,0.0,HR*frontHR);
+  epCombine->insertInCell(System,getCell("Seg9"));
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 13 -14 15 -16");
+  makeCell("Seg10",System,cellIndex++,0,0.0,HR*backHR);
+  epCombine->insertInCell(System,getCell("Seg10"));
+
+  DIPm->insertInCell(System,getCell("Seg7"));
+  DIPm->insertInCell(System,getCell("Seg8"));
+  
+  //
+  // MAIN OUTER VOID:
+  //
+
+  frontHR=entryPipe->getFullRule(-1);
+  backHR=epCombine->getFullRule(-2);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 13 -14 15 -16 ");
+  addOuterSurf("Main",HR*frontHR*backHR);
+
+  
+  // Construct the inner zone a a innerZone
+  // HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6  ");
+  // makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
+
+
 
   return;
 }
@@ -216,10 +310,11 @@ MagnetM1::createLinks()
   ELog::RegMethod RegA("MagnetM1","createLinks");
 
   // link 0 / 1 from PreDipole / EPCombine
-  setLinkSignedCopy(0,*preDipole,1);
-  setLinkSignedCopy(1,*epCombine,epCombine->getSideIndex("Flange"));
-  setLinkSignedCopy(2,*epCombine,epCombine->getSideIndex("Photon"));
-  setLinkSignedCopy(3,*epCombine,epCombine->getSideIndex("Electron"));
+  setLinkCopy(0,*entryPipe,1);
+
+  setLinkCopy(1,*epCombine,epCombine->getSideIndex("Flange"));
+  setLinkCopy(2,*epCombine,epCombine->getSideIndex("Photon"));
+  setLinkCopy(3,*epCombine,epCombine->getSideIndex("Electron"));
   
   setConnect(4,Origin+Y*blockYStep,-Y);
   setLinkSurf(4,-SMap.realSurf(buildIndex+1));
@@ -231,23 +326,28 @@ MagnetM1::createLinks()
 }
 
 void
-MagnetM1::createEndPieces()
+MagnetM1::createEndPieces(Simulation& System)
   /*!
     Create the end piece cutting system for ContainedGroup
   */
 {
   ELog::RegMethod RegA("MagnetM1","createEndPieces");
   
-  std::string Out;
+  HeadRule HR;
+  const HeadRule frontHR=entryPipe->getFullRule(-1);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1 ");
-  Out+=preDipole->getSurfString("frontFlangeTube");  
-  addOuterSurf("FPipe",Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -1 13 -14 15 -16");
+  makeCell("Front",System,cellIndex++,0,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 ");
-  Out+=epCombine->getSurfString("voidCyl");  
-  addOuterSurf("BPipe",Out);
- 	       
+  entryPipe->insertInCell("Main",System,getCell("Front"));
+  entryPipe->insertInCell("Flange",System,getCell("Front"));
+  
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-2 13 -14 15 -16 ");
+
+  addOuterSurf("Main",HR*frontHR);
+
+
   return;
 }
 
@@ -265,128 +365,45 @@ MagnetM1::createAll(Simulation& System,
   ELog::RegMethod RegA("MagnetM1","createAll");
 
   int outerCell;
-  
   populate(System.getDataBase());
 
   createUnitVector(FC,sideIndex);
   createSurfaces();
-  createObjects(System);
 
-
-  MonteCarlo::Object* masterCell=buildZone.getMaster();
   // puts in 74123 etc.
   //  preDipole->addInsertCell("FlangeA",this->getInsertCells());
   //  epCombine->addInsertCell(this->getInsertCells());
-  insertObjects(System);
+ 
+  //  entryPipe->addInsertCell("Main",getCell("Void"));
+  entryPipe->createAll(System,FC,sideIndex);
 
-  if (isActive("front"))
-    preDipole->copyCutSurf("front",*this,"front");
-  
-  preDipole->createAll(System,*this,0);
+  halfPipe->setCutSurf("front",*entryPipe,"back");
+  halfPipe->createAll(System,*entryPipe,"back");
 
-  epCombine->addInsertCell(getCells("Void"));  // needed ????
-  epCombine->setEPOriginPair(*preDipole,"Photon","Electron");
-  epCombine->createAll(System,*preDipole,2);
+  epCombine->setEPOriginPair(*halfPipe,"Photon","Electron"); 
+  epCombine->setCutSurf("front",*halfPipe,"back");
+  epCombine->createAll(System,*halfPipe,"back");
 
-  attachSystem::InnerZone& IZ=preDipole->getBuildZone();
-  MonteCarlo::Object* pipeCell=IZ.getMaster();
-
-  attachSystem::InnerZone& BZ=preDipole->getBendZone();
-  MonteCarlo::Object* bendCell=BZ.getMaster();
-
-  attachSystem::InnerZone& EZ=preDipole->getExitZone();
-  MonteCarlo::Object* exitCell=EZ.getMaster();
-    
-  Oxx->setCutSurf("Inner",preDipole->getFullRule(5));
+  Oxx->setCutSurf("Inner",entryPipe->getSurfRule("OuterRadius"));
   Oxx->createAll(System,*this,0);
-  IZ.cutVoidUnit(System,pipeCell,Oxx->getMainRule(-1), Oxx->getMainRule(-2));
-  outerCell=buildZone.triVoidUnit(System,masterCell,
-				  Oxx->getMainRule(-1), Oxx->getMainRule(-2));
-  //  Oxx->insertInCell(System,getCell("Void"));
-
-  Oxx->insertInCell(System,outerCell);
-  preDipole->insertInCell("Tube",System,outerCell-1);
-
   
-  QFend->setInnerTube(preDipole->getFullRule(5));
+  QFend->setCutSurf("Inner",entryPipe->getSurfRule("OuterRadius"));
   QFend->createAll(System,*this,0);
-  IZ.cutVoidUnit(System,pipeCell,QFend->getMainRule(-1),QFend->getMainRule(-2));
-  outerCell=buildZone.cutVoidUnit
-    (System,masterCell,QFend->getMainRule(-1),QFend->getMainRule(-2));
-  preDipole->insertInCell("Tube",System,outerCell);
 
-
-  Oxy->setCutSurf("Inner",preDipole->getFullRule(5));
+  Oxy->setCutSurf("Inner",entryPipe->getSurfRule("OuterRadius"));
   Oxy->createAll(System,*this,0);
-  IZ.cutVoidUnit(System,pipeCell,Oxy->getMainRule(-1), Oxy->getMainRule(-2));
-  outerCell=buildZone.triVoidUnit
-    (System,masterCell,Oxy->getMainRule(-1), Oxy->getMainRule(-2));
 
-  Oxy->insertInCell(System,outerCell);
-  preDipole->insertInCell("Tube",System,outerCell-1);
-
-    
-  QDend->setInnerTube(preDipole->getFullRule(5));
+  QDend->setCutSurf("Inner",entryPipe->getSurfRule("OuterRadius"));
   QDend->createAll(System,*this,0);
-  IZ.cutVoidUnit(System,pipeCell,QDend->getMainRule(-1),QDend->getMainRule(-2));
 
-    
-  outerCell=buildZone.cutVoidUnit
-    (System,masterCell,QDend->getMainRule(-1),QDend->getMainRule(-2));
-  preDipole->insertInCell("Tube",System,outerCell);
-  // move to next bend object
-  DIPm->setCutSurf("MidSplit",preDipole->getSurf("electronCut"));
-  DIPm->setCutSurf("InnerA",preDipole->getFullRule(6));
-  DIPm->setCutSurf("InnerB",preDipole->getFullRule(7));
+  // 102
+  DIPm->setCutSurf("MidSplit",halfPipe->getSurf("electronCut")); //102
+  DIPm->copyCutSurf("InnerA",*halfPipe,"HalfElectron");
+  DIPm->copyCutSurf("InnerB",*halfPipe,"FullElectron");
   DIPm->createAll(System,*this,0);
-  outerCell=
-    BZ.cutVoidUnit(System,bendCell,DIPm->getMainRule(-1),
-		   DIPm->getMainRule(-2));
-  // DIPm extends into exit cell:
-  outerCell=
-    EZ.singleVoidUnit(System,exitCell,DIPm->getMainRule(2));
-  System.removeCell(outerCell);
-  outerCell=buildZone.triVoidUnit
-    (System,masterCell,DIPm->getMainRule(-1),DIPm->getMainRule(-2));
-  DIPm->insertInCell(System,outerCell);
 
-  
-  preDipole->insertInCell("Tube",System,outerCell-1);
-  
-  // Insert OYY
-  Oyy->setCutSurf("Inner",preDipole->getFullRule(7));
-  Oyy->createAll(System,*this,0);
-  EZ.cutVoidUnit(System,exitCell,Oyy->getMainRule(-1), Oyy->getMainRule(-2));
-  outerCell=buildZone.triVoidUnit
-    (System,masterCell,Oyy->getMainRule(-1), Oyy->getMainRule(-2));
-
-  Oyy->insertInCell(System,outerCell);
-  preDipole->insertInCell("Tube",System,outerCell-1);
-
-  createEndPieces();
-  // end insert  
-
-
-  outerCell=buildZone.singleVoidUnit(System,masterCell,
-				     preDipole->getSurfRule("endFlange"));
-  preDipole->insertInCell("Tube",System,outerCell);
-  preDipole->insertInCell("Tube",System,masterCell->getName());
-  EZ.singleVoidUnit(System,exitCell,preDipole->getSurfRule("endFlange"));
-  preDipole->insertInCell("Tube",*bendCell);
-
-  // flange of EC:
-
-  outerCell=buildZone.singleVoidUnit
-    (System,masterCell,epCombine->getMainRule(-1));
-  preDipole->insertInCell("Tube",System,outerCell);
-  System.minimizeObject(preDipole->getKeyName());  
-    
-  epCombine->insertInCell(*masterCell);
-  //  EZ.singleVoidUnit(System,exitCell, preDipole->getSurfRule("endFlange"));
-  //  exitZone
-
-  
-  // creation of links 
+  createObjects(System);
+  insertObjects(System);
   createLinks();
   return;
 }

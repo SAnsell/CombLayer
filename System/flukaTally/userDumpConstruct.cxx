@@ -3,7 +3,7 @@
  
  * File:   flukaTally/userDumpConstruct.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,7 +53,6 @@
 #include "userDump.h"
 #include "userDumpConstruct.h" 
 
-
 namespace flukaSystem
 {
 
@@ -72,7 +71,7 @@ userDumpConstruct::createTally(SimFLUKA& System,
 {
   ELog::RegMethod RegA("userDumpConstruct","createTally");
 
-  userDump UD(fortranTape);
+  userDump UD(fortranTape,fortranTape);
   UD.setDumpType(dType);
   UD.setOutName(outFile);
   System.addTally(UD);

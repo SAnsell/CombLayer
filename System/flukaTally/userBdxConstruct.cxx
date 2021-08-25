@@ -3,7 +3,7 @@
  
  * File:   flukaTally/userBdxConstruct.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,8 @@ namespace flukaSystem
 
 void 
 userBdxConstruct::createTally(SimFLUKA& System,
-			      const std::string& PType,const int fortranTape,
+			      const std::string& PType,
+			      const int fortranTape,
 			      const int cellA,const int cellB,
 			      const bool eLog,const double Emin,
 			      const double Emax,const size_t nE,
@@ -91,7 +92,7 @@ userBdxConstruct::createTally(SimFLUKA& System,
 
   const flukaGenParticle& FG=flukaGenParticle::Instance();
     
-  userBdx UD(fortranTape);
+  userBdx UD("surf",fortranTape,fortranTape);
   UD.setParticle(FG.nameToFLUKA(PType));
 
   UD.setCell(cellA,cellB);

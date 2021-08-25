@@ -69,7 +69,7 @@
 #include "PortChicaneGenerator.h"
 #include "WallLeadGenerator.h"
 #include "TwinPipeGenerator.h"
-#include "DiffPumpGenerator.h"
+#include "DiffXIADP03Generator.h"
 
 namespace setVariable
 {
@@ -359,7 +359,7 @@ m1MirrorVariables(FuncDataBase& Control,
 
   const std::string mName=mirrorKey+"M1Tube";
   SimpleTubeGen.setCF<CF150>();
-  SimpleTubeGen.generateTube(Control,mName,0.0,tubeLength);
+  SimpleTubeGen.generateTube(Control,mName,tubeLength);
   Control.addVariable(mName+"WallMat","Titanium");
   Control.addVariable(mName+"NPorts",0);   // beam ports
 
@@ -451,7 +451,7 @@ splitterVariables(FuncDataBase& Control,
   ELog::EM << "M3Pump: Close the caps" << ELog::endWarn;
   SimpleTubeGen.setCF<CF200>();
   SimpleTubeGen.setPipe(7.7, 0.3, 10.0, 2.0);
-  SimpleTubeGen.generateTube(Control,m3PumpName,0.0,36.0);  // centre 13.5cm
+  SimpleTubeGen.generateTube(Control,m3PumpName,36.0);  // centre 13.5cm
   //  Control.addVariable(mName+"XStep",centreOffset);
   Control.addVariable(m3PumpName+"NPorts",4);   // beam ports
 
@@ -548,7 +548,7 @@ m3MirrorVariables(FuncDataBase& Control,
 
   const std::string mName=mirrorKey+"M3Tube";
   SimpleTubeGen.setCF<CF150>();
-  SimpleTubeGen.generateTube(Control,mName,0.0,36.0);
+  SimpleTubeGen.generateTube(Control,mName,36.0);
   Control.addVariable(mName+"NPorts",0);
   Control.addVariable(mName+"WallThick",0.25); // measured STEP
 
@@ -588,7 +588,7 @@ m3MirrorVariables(FuncDataBase& Control,
 
   const std::string stxmName=mirrorKey+"M3STXMTube";
   SimpleTubeGen.setCF<CF150>();
-  SimpleTubeGen.generateTube(Control,stxmName,0.0,36.0);
+  SimpleTubeGen.generateTube(Control,stxmName,36.0);
   Control.addVariable(stxmName+"XStep",0.0);
   Control.addVariable(stxmName+"NPorts",0);
 
@@ -691,7 +691,7 @@ opticsVariables(FuncDataBase& Control,
   setVariable::FlangeMountGenerator FlangeGen;
   setVariable::BremCollGenerator BremGen;
   setVariable::BremMonoCollGenerator BremMonoGen;
-  setVariable::DiffPumpGenerator DiffGen;
+  setVariable::DiffXIADP03Generator DiffGen;
   setVariable::JawValveGenerator JawGen;
 
   PipeGen.setNoWindow();   // no window
@@ -706,7 +706,7 @@ opticsVariables(FuncDataBase& Control,
   const std::string pipeName=preName+"TriggerPipe";
   SimpleTubeGen.setCF<CF100>();
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,pipeName,0.0,40.0);
+  SimpleTubeGen.generateTube(Control,pipeName,40.0);
 
   Control.addVariable(pipeName+"NPorts",2);   // beam ports
   // const Geometry::Vec3D ZVec(0,0,1);
@@ -719,7 +719,7 @@ opticsVariables(FuncDataBase& Control,
   const std::string gateAName=preName+"GateTubeA";
   SimpleTubeGen.setCF<CF63>();
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,gateAName,0.0,30.0);
+  SimpleTubeGen.generateTube(Control,gateAName,30.0);
   Control.addVariable(gateAName+"NPorts",2);   // beam ports
 
   PItemGen.setCF<setVariable::CF40>(CF63::outerRadius+3.45);
@@ -744,7 +744,7 @@ opticsVariables(FuncDataBase& Control,
   const std::string pumpName=preName+"PumpM1";
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,pumpName,0.0,39.2); // full length (+caps)
+  SimpleTubeGen.generateTube(Control,pumpName,39.2); // full length (+caps)
   Control.addVariable(pumpName+"NPorts",7);
 
   PItemGen.setCF<setVariable::CF40>(CF150::outerRadius+5.3); // port length
@@ -800,7 +800,7 @@ opticsVariables(FuncDataBase& Control,
   const std::string collName=preName+"PumpTubeA";
   SimpleTubeGen.setCF<CF100>(); // counted 16 bolts
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,collName,0.0,30.8);
+  SimpleTubeGen.generateTube(Control,collName,30.8);
   Control.addVariable(collName+"NPorts",2);   // beam ports
 
   PItemGen.setCF<setVariable::CF63>(CF100::outerRadius+4.15);
@@ -840,7 +840,7 @@ opticsVariables(FuncDataBase& Control,
   const std::string pumpTubeBname=preName+"PumpTubeB";
   SimpleTubeGen.setCF<CF100>(); // counted 16 bolts
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,pumpTubeBname,0.0,31.2);
+  SimpleTubeGen.generateTube(Control,pumpTubeBname,31.2);
   Control.addVariable(pumpTubeBname+"NPorts",2);   // beam ports
 
   PItemGen.setCF<setVariable::CF63>(CF100::outerRadius+4.45);
@@ -877,7 +877,7 @@ opticsVariables(FuncDataBase& Control,
   const std::string gateName=preName+"PumpTubeM3";
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,gateName,0.0,40.0);
+  SimpleTubeGen.generateTube(Control,gateName,40.0);
   Control.addVariable(gateName+"NPorts",2);   // beam ports
 
   PItemGen.setCF<setVariable::CF100>(CF150::outerRadius+6.0);
@@ -913,7 +913,7 @@ opticsVariables(FuncDataBase& Control,
   const std::string pumpTubeCname=preName+"PumpTubeC";
   SimpleTubeGen.setCF<CF100>(); // counted 16 bolts
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,pumpTubeCname,0.0,31.2);
+  SimpleTubeGen.generateTube(Control,pumpTubeCname,31.2);
   Control.addVariable(pumpTubeCname+"NPorts",2);   // beam ports
 
   PItemGen.setCF<setVariable::CF100>(CF100::outerRadius+7.95);

@@ -52,7 +52,7 @@ class resnucConstruct
   /// Private constructor
   resnucConstruct() {}
 
-  static void createTally(SimFLUKA&,const int,const int);
+  static void createTally(SimFLUKA&,const int,const int,const int);
   
  public:
 

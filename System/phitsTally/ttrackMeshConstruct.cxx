@@ -3,7 +3,7 @@
  
  * File:   phitsTally/ttrackMeshConstruct.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -121,11 +121,11 @@ ttrackMeshConstruct::processMesh(SimPHITS& System,
   std::array<size_t,3> Nxyz;
   
   if (PType=="object")
-    tallySystem::meshConstruct::getObjectMesh
+    mainSystem::meshConstruct::getObjectMesh
       (System,IParam,"tally",Index,3,APt,BPt,Nxyz);
 
   else if (PType=="free")
-    tallySystem::meshConstruct::getFreeMesh
+    mainSystem::meshConstruct::getFreeMesh
       (IParam,"tally",Index,3,APt,BPt,Nxyz);
 
   ttrackMeshConstruct::createTally(System,tallyParticle,nextID,APt,BPt,Nxyz);
@@ -148,7 +148,7 @@ ttrackMeshConstruct::writeHelp()
     "  Option B : \n"
     "      object objectName LinkPt  Vec3D Vec3D Nx Ny Nz \n"
     "  -- Object-link point is used to construct basis set \n"
-    "     Then the Vec3D are used as the offset points \n\n";
+    "     Then the Vec3D are used as the offset points \n\n"
     "  Energy is set by TMod (otherwize single group)";
 }
 

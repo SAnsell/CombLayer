@@ -3,7 +3,7 @@
  
  * File:   geometry/SurInter.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -96,7 +96,7 @@ getLinePoint(const Geometry::Vec3D& Origin,const Geometry::Vec3D& N,
     out=Pts;
   
   if (out.size()!=1)
-    throw ColErr::SizeError<size_t>(out.size(),1,"Out points not singular");
+    throw ColErr::MisMatch<size_t>(out.size(),1,"Out points not singular");
 
   return out.front();
 }

@@ -337,25 +337,13 @@ PipeTube::createLinks()
 }
 
 void
-PipeTube::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC,
-		       const long int FIndex)
+PipeTube::createPorts(Simulation& System)
   /*!
-    Generic function to create everything
-    \param System :: Simulation item
-    \param FC :: FixedComp
-    \param FIndex :: Fixed Index
-  */
+    create the ports [for outside ports]
+   */
 {
-  ELog::RegMethod RegA("PipeTube","createAll(FC)");
-
-  populate(System.getDataBase());
-  createUnitVector(FC,FIndex);
-  createSurfaces();
-  createObjects(System);
-  createLinks();
-
-  // both OUTWARD
+  ELog::RegMethod RegA("PipeTube","createPorts");
+    // both OUTWARD
   MonteCarlo::Object* OPtr=
     CellMap::getCellObject(System,"MainTube");
 
@@ -370,6 +358,27 @@ PipeTube::createAll(Simulation& System,
   else
     createPorts(System,OPtr,innerSurf,outerSurf);
   insertObjects(System);
+}
+
+void
+PipeTube::createAll(Simulation& System,
+		    const attachSystem::FixedComp& FC,
+		    const long int FIndex)
+  /*!
+    Generic function to create everything
+    \param System :: Simulation item
+    \param FC :: FixedComp
+    \param FIndex :: Fixed Index
+  */
+{
+  ELog::RegMethod RegA("PipeTube","createAll(FC)");
+
+  populate(System.getDataBase());
+  createUnitVector(FC,FIndex);
+  createSurfaces();
+  createObjects(System);
+  createLinks();
+  createPorts(System);
     
   return;
 }

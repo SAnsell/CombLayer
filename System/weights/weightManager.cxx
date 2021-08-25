@@ -3,7 +3,7 @@
  
  * File:   weights/weightManager.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@
 #include "WForm.h"
 #include "WItem.h"
 #include "WCells.h"
-#include "Mesh3D.h"
+#include "BasicMesh3D.h"
 #include "WWGWeight.h"
 #include "WWG.h"
 #include "weightManager.h"
@@ -218,6 +218,10 @@ weightManager::writeFLUKA(std::ostream& OX) const
 
   const flukaGenParticle& PConv=flukaGenParticle::Instance();
 
+  if (WWGPtr)
+    {
+      WWGPtr->writeFLUKA(OX);
+    }
   bool firstCell(1);
   if (!WMap.empty())
     {
@@ -256,7 +260,13 @@ weightManager::writePHITS(std::ostream& OX) const
   ELog::RegMethod RegA("weightManager","writePHITS");
 
   const particleConv& PConv=particleConv::Instance();
-  if (!WMap.empty())
+
+  if (WWGPtr)
+    {
+      OX<<"[weight window]\n";
+      WWGPtr->writePHITS(OX);
+    }
+  else if (!WMap.empty())
     {
       OX<<"[weight window]\n";
       for(const CtrlTYPE::value_type& wf : WMap)

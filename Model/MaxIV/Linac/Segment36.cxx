@@ -187,8 +187,8 @@ Segment36::createLinks()
     Create a front/back link
    */
 {
-  setLinkSignedCopy(0,*gauge,1);
-  setLinkSignedCopy(1,*pipeE,2);
+  setLinkCopy(0,*gauge,1);
+  setLinkCopy(1,*pipeE,2);
 
   joinItems.push_back(FixedComp::getFullRule(2));
   return;

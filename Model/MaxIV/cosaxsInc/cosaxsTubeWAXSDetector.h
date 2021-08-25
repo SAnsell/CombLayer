@@ -53,9 +53,6 @@ class cosaxsTubeWAXSDetector :
   int wallMat;                  ///< Wall material
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -65,9 +62,9 @@ class cosaxsTubeWAXSDetector :
   cosaxsTubeWAXSDetector(const std::string&);
   cosaxsTubeWAXSDetector(const cosaxsTubeWAXSDetector&);
   cosaxsTubeWAXSDetector& operator=(const cosaxsTubeWAXSDetector&);
-  virtual cosaxsTubeWAXSDetector* clone() const;
   virtual ~cosaxsTubeWAXSDetector();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
 };

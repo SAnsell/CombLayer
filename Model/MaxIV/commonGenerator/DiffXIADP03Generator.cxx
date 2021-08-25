@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructVar/DiffPumpGenerator.cxx
+ * File:   constructVar/DiffXIADP03Generator.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,12 +45,13 @@
 #include "FuncDataBase.h"
 
 #include "CFFlanges.h"
-#include "DiffPumpGenerator.h"
+#include "DiffXIADP03Generator.h"
 
 namespace setVariable
 {
 
-DiffPumpGenerator::DiffPumpGenerator() :
+
+DiffXIADP03Generator::DiffXIADP03Generator() :
   width(15.28),height(6.52),
   apertureWidth(0.7),apertureHeight(0.7),
   flangeRadius(CF150::flangeRadius),
@@ -66,7 +67,26 @@ DiffPumpGenerator::DiffPumpGenerator() :
   */
 {}
 
-DiffPumpGenerator::DiffPumpGenerator(const DiffPumpGenerator& A) : 
+
+DiffXIADP03Generator::DiffXIADP03Generator(const CF40&) :
+  width(6.4),height(6.4),
+  apertureWidth(0.7),apertureHeight(0.7),
+  flangeRadius(CF40::flangeRadius),
+  flangeThick(CF40::flangeLength),
+  flangeVoidWidth(5.0),flangeVoidHeight(5.0),
+  flangeVoidThick(CF40::flangeLength+1.2),magnetWidth(4.7),
+  magnetLength(10.0),magnetThick(1.54),
+  magnetGap(0.17),
+  mat("Stainless304"),magnetMat("Fe2O3"),
+  flangeMat("Stainless304")
+  /*!
+    Constructor and defaults
+  */
+{
+
+}
+
+DiffXIADP03Generator::DiffXIADP03Generator(const DiffXIADP03Generator& A) : 
   width(A.width),height(A.height),apertureWidth(A.apertureWidth),
   apertureHeight(A.apertureHeight),flangeRadius(A.flangeRadius),
   flangeThick(A.flangeThick),flangeVoidWidth(A.flangeVoidWidth),
@@ -76,15 +96,15 @@ DiffPumpGenerator::DiffPumpGenerator(const DiffPumpGenerator& A) :
   mat(A.mat),magnetMat(A.magnetMat),flangeMat(A.flangeMat)
   /*!
     Copy constructor
-    \param A :: DiffPumpGenerator to copy
+    \param A :: DiffXIADP03Generator to copy
   */
 {}
 
-DiffPumpGenerator&
-DiffPumpGenerator::operator=(const DiffPumpGenerator& A)
+DiffXIADP03Generator&
+DiffXIADP03Generator::operator=(const DiffXIADP03Generator& A)
   /*!
     Assignment operator
-    \param A :: DiffPumpGenerator to copy
+    \param A :: DiffXIADP03Generator to copy
     \return *this
   */
 {
@@ -111,7 +131,7 @@ DiffPumpGenerator::operator=(const DiffPumpGenerator& A)
 }
 
 
-DiffPumpGenerator::~DiffPumpGenerator() 
+DiffXIADP03Generator::~DiffXIADP03Generator() 
  /*!
    Destructor
  */
@@ -119,7 +139,7 @@ DiffPumpGenerator::~DiffPumpGenerator()
 
 template<typename CF>
 void
-DiffPumpGenerator::setCF()
+DiffXIADP03Generator::setCF()
   /*!
     Set pipe/flange to CF format
   */
@@ -133,7 +153,7 @@ DiffPumpGenerator::setCF()
 
 
 void
-DiffPumpGenerator::generatePump(FuncDataBase& Control,
+DiffXIADP03Generator::generatePump(FuncDataBase& Control,
 				const std::string& keyName,
 				const double length) const
   /*!
@@ -143,7 +163,7 @@ DiffPumpGenerator::generatePump(FuncDataBase& Control,
     \param length :: length
   */
 {
-  ELog::RegMethod RegA("DiffPumpGenerator","generatorValve");
+  ELog::RegMethod RegA("DiffXIADP03Generator","generatorValve");
   
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"Width",width);
@@ -172,8 +192,9 @@ DiffPumpGenerator::generatePump(FuncDataBase& Control,
 
 ///\cond TEMPLATE
 
-template void DiffPumpGenerator::setCF<CF100>();
-template void DiffPumpGenerator::setCF<CF150>();
+template void DiffXIADP03Generator::setCF<CF40>();
+template void DiffXIADP03Generator::setCF<CF100>();
+template void DiffXIADP03Generator::setCF<CF150>();
 
 ///\endcond TEMPLATE
 

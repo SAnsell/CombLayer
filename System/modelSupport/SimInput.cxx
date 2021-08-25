@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/SimInput.cxx
+ * File:   modelSupport/SimInput.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,8 +62,6 @@
 #include "Material.h"
 #include "DBMaterial.h"
 #include "SimInput.h"
-
-
 
 namespace SimProcess
 {
@@ -169,7 +167,8 @@ processExitChecks(Simulation& System,
       ModelSupport::LineTrack LT(C,D,10000.0);
       ModelSupport::LineTrack LTR(C,-D,10000.0);
       LT.calculate(System);
-      LTR.calculate(System);
+      //      LTR.calculate(System);
+      ELog::EM<<std::setprecision(12)<<"Line == "<<LT<<ELog::endDiag;
     }
   
   if (IParam.flag("cinder")) System.writeCinder();

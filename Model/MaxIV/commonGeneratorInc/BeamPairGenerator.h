@@ -44,7 +44,10 @@ class BeamPairGenerator
   double gapA;             ///< Gap from centre point (top +ve up)
   double gapB;             ///< Gap from centre point (base +ve down)
   
-  double supportRadius;    ///< Radius of support  
+  double supportRadius;    ///< Radius of support
+  double waterRadius;    ///< Radius of support  
+ 
+  std::string waterMat;    ///< water material
   std::string supportMat;  ///< support material
 
   double xStepA;           ///< xstep of unit A

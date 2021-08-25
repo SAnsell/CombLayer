@@ -3,7 +3,7 @@
 
  * File:   linac/magVariables.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2021 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,6 +57,7 @@
 #include "BeamDividerGenerator.h"
 #include "IonPTubeGenerator.h"
 #include "LBeamStopGenerator.h"
+#include "NBeamStopGenerator.h"
 
 #include "magnetVar.h"
 
@@ -292,6 +293,7 @@ Segment29Magnet(FuncDataBase& Control,
   setVariable::YagScreenGenerator YagScreenGen;
   setVariable::YagUnitGenerator YagUnitGen;
   setVariable::LBeamStopGenerator BSGen;
+  setVariable::NBeamStopGenerator BSGenB;
 
   const Geometry::Vec3D startPtA(-637.608,9073.611,0.0);
   const Geometry::Vec3D startPtB(-637.608,9073.535,-84.888);
@@ -299,6 +301,8 @@ Segment29Magnet(FuncDataBase& Control,
   const Geometry::Vec3D endPtA(-637.608,9401.161,0.0);
   const Geometry::Vec3D endPtB(-637.608,9401.151,-102.058);
 
+  // to allow main object to have an offset
+  Control.addVariable(lKey+"Offset",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetA",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetB",startPtB+linacVar::zeroOffset);
 
@@ -319,8 +323,7 @@ Segment29Magnet(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeAA",291.6);
   PGen.generatePipe(Control,lKey+"PipeBA",292.0);
 
-  Control.addVariable(lKey+"PipeAAOffset",startPtA+linacVar::zeroOffset);
-  Control.addVariable(lKey+"PipeBAOffset",startPtB+linacVar::zeroOffset);
+  Control.addVariable(lKey+"PipeBAOffset",startPtB-startPtA);
 
   Control.addVariable(lKey+"PipeAAXAngle",
 		      std::atan((endPtA-startPtA).unit()[2])*180.0/M_PI);
@@ -343,7 +346,7 @@ Segment29Magnet(FuncDataBase& Control,
   Control.addVariable(lKey+"YagScreenBYAngle",-90.0);
 
 
-  BSGen.generateBStop(Control,lKey+"BeamStopA");
+  BSGenB.generateBStop(Control,lKey+"BeamStopA");
   BSGen.generateBStop(Control,lKey+"BeamStopB");
   Control.addVariable(lKey+"BeamStopAYStep",30.0);
   Control.addVariable(lKey+"BeamStopBYStep",30.0);

@@ -32,7 +32,7 @@ namespace xraySystem
   \author S. Ansell
   \version 1.0
   \date January 2018
-  \brief Focasable mirror in mount
+  \brief Pair of slits with support + water cooling
 */
 
 class BeamPair :
@@ -60,10 +60,12 @@ class BeamPair :
   double blockXYAngle;     ///< Rotation angle about Z
   double height;           ///< height total 
   double width;            ///< width accross beam
-  double length;           ///< Thickness in normal direction to reflection  
+  double length;           ///< Thickness in normal direction to reflection
 
+  double waterRadius;      ///< inner water pipe radius
 
-  int blockMat;            ///< block material    
+  int blockMat;            ///< block material
+  int waterMat;            ///< block material    
   int supportMat;          ///< support material
 
   // Functions:

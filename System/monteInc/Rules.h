@@ -111,7 +111,10 @@ class Rule
   /// Abstract Validity based on surface true/false map
   virtual bool isValid(const std::map<int,int>&) const =0; 
   /// Abstract Validity based on signed surface true/false map
-  virtual bool isDirectionValid(const Geometry::Vec3D&,const int) const =0; 
+  virtual bool isDirectionValid(const Geometry::Vec3D&,const int) const =0;
+  virtual bool isDirectionValid(const Geometry::Vec3D&,
+				const std::set<int>&,const int) const =0;
+  
   /// Abstract: Can the rule be simplified 
   virtual int simplify() =0;
   /// Not complementary
@@ -184,6 +187,8 @@ class Intersection : public Rule
   
   virtual bool isValid(const Geometry::Vec3D&) const;
   virtual bool isDirectionValid(const Geometry::Vec3D&,const int) const;
+  virtual bool isDirectionValid(const Geometry::Vec3D&,
+				  const std::set<int>&,const int) const;
   virtual bool isValid(const Geometry::Vec3D&,const int) const;
   virtual bool isValid(const Geometry::Vec3D&,
 		       const std::set<int>&) const;      
@@ -245,6 +250,8 @@ class Union : public Rule
   
   virtual bool isValid(const Geometry::Vec3D&) const;
   virtual bool isDirectionValid(const Geometry::Vec3D&,const int) const;
+  virtual bool isDirectionValid(const Geometry::Vec3D&,
+				const std::set<int>&,const int) const;
   virtual bool isValid(const Geometry::Vec3D&,const int) const;
   virtual bool isValid(const std::map<int,int>&) const;    
   virtual bool isValid(const Geometry::Vec3D&,
@@ -306,6 +313,8 @@ class SurfPoint : public Rule
   
   virtual int pairValid(const int,const Geometry::Vec3D&) const;
   virtual bool isDirectionValid(const Geometry::Vec3D&,const int) const;
+  virtual bool isDirectionValid(const Geometry::Vec3D&,
+				const std::set<int>&,const int) const;
   virtual bool isValid(const Geometry::Vec3D&) const;
   virtual bool isValid(const Geometry::Vec3D&,const int) const;
   virtual bool isValid(const std::map<int,int>&) const;    
@@ -375,6 +384,8 @@ class CompObj : public Rule
   
   virtual bool isValid(const Geometry::Vec3D&) const;
   virtual bool isDirectionValid(const Geometry::Vec3D&,const int) const;
+  virtual bool isDirectionValid(const Geometry::Vec3D&,
+				const std::set<int>&,const int) const;  
   virtual bool isValid(const Geometry::Vec3D&,const int) const;
   virtual bool isValid(const std::map<int,int>&) const;    
   virtual bool isValid(const Geometry::Vec3D&,
@@ -441,6 +452,8 @@ class CompGrp : public Rule
   
   virtual bool isValid(const Geometry::Vec3D&) const;
   virtual bool isDirectionValid(const Geometry::Vec3D&,const int) const;
+  virtual bool isDirectionValid(const Geometry::Vec3D&,
+				const std::set<int>&,const int) const;  
   virtual bool isValid(const Geometry::Vec3D&,const int) const;
   virtual bool isValid(const std::map<int,int>&) const;    
   virtual bool isValid(const Geometry::Vec3D&,
@@ -499,6 +512,9 @@ class BoolValue : public Rule
   
   virtual bool isValid(const Geometry::Vec3D&) const;
   virtual bool isDirectionValid(const Geometry::Vec3D&,const int) const;
+  virtual bool isDirectionValid(const Geometry::Vec3D&,
+				const std::set<int>&,const int) const;  
+
   virtual bool isValid(const Geometry::Vec3D&,const int) const;
   virtual bool isValid(const std::map<int,int>&) const;
   virtual bool isValid(const Geometry::Vec3D&,
@@ -515,129 +531,5 @@ class BoolValue : public Rule
   virtual std::string displayPOVRay() const;
     
 };
-
-/*!
-  \class ContGrp
-  \brief Contained Group 
-  \author S.Ansell
-  \version 1.0 
-  \date March 2009
-
-  This class holds a container object  of a single object group.
-  Care must be taken to avoid a cyclic loop
-*/
-
-class ContGrp : public Rule
-{
- private:
-
-  Rule* A;     ///< Rule to take complement of 
-  
- public:
-  
-  ContGrp();
-  explicit ContGrp(Rule*,Rule*);  
-  ContGrp(const ContGrp&);
-  ContGrp* clone() const;                        
-  ContGrp& operator=(const ContGrp&);
-  virtual ~ContGrp();
-
-  Rule* leaf(const int) const { return A; }   ///< selects leaf component
-  void setLeaves(Rule*,Rule*);
-  void setLeaf(Rule*,const int =0);
-  int findLeaf(const Rule*) const;
-  Rule* findKey(const int);
-
-  /// This is not a branched object
-  int type() const { return 0; }   
-  /// Complementary status is true
-  int isComplementary() const { return 1; }  
-
-  /// is empty 
-  virtual bool isEmpty() const { return (A && !A->isEmpty()) ? 0 : 1; }
-  
-  virtual int pairValid(const int,const Geometry::Vec3D&) const;
-  virtual bool isValid(const Geometry::Vec3D&) const;
-  virtual bool isDirectionValid(const Geometry::Vec3D&,const int) const;
-  virtual bool isValid(const Geometry::Vec3D&,const int) const;
-  virtual bool isValid(const std::map<int,int>&) const;    
-  virtual bool isValid(const Geometry::Vec3D&,
-		       const std::set<int>&) const;      
-
-  int simplify();
-
-  virtual std::string display() const;      
-  virtual std::string display(const Geometry::Vec3D&) const;
-  virtual std::string displayAddress() const;  
-  virtual void displayVec(std::vector<Token>&) const;
-  virtual std::string displayFluka() const;
-  virtual std::string displayPOVRay() const;
-    
-};
-
-/*!
-  \class ContObj
-  \brief Virtual Surround Object
-  \author S.Ansell
-  \version 1.0 
-  \date February 2009
-
-  This class holds a container object 
-  of a single object group.
-  Care must be taken to avoid a cyclic loop
-*/
-
-class ContObj : public Rule
-{
- private:
-
-  int objN;                               ///< Object number
-  MonteCarlo::Object* key;                ///< Object Pointer
-  
- public:
-  
-  ContObj();
-  ContObj(const ContObj&);
-  ContObj* clone() const;                        
-  ContObj& operator=(const ContObj&);
-  virtual ~ContObj();
-
-  void setLeaves(Rule*,Rule*);
-  void setLeaf(Rule*,const int =0);
-  int findLeaf(const Rule*) const;
-  Rule* findKey(const int);
-
-  /// Is it a branched object
-  int type() const { return 0; }   
-  /// Complement is true
-  int isComplementary() const { return 1; }
-
-  void setObjN(const int);             ///< set object Number
-  void setObj(MonteCarlo::Object*);               ///< Set a Object state
-  int pairValid(const int,const Geometry::Vec3D&) const;
-
-  virtual bool isEmpty() const;
-  
-  virtual bool isValid(const Geometry::Vec3D&) const;
-  virtual bool isDirectionValid(const Geometry::Vec3D&,const int) const;
-  virtual bool isValid(const Geometry::Vec3D&,const int) const;
-  virtual bool isValid(const std::map<int,int>&) const;    
-  virtual bool isValid(const Geometry::Vec3D&,
-		       const std::set<int>&) const;      
-
-  /// Get object number of component
-  int getObjN() const { return objN; } 
-  int simplify();
-
-  MonteCarlo::Object* getObj() const { return key; }   ///< Get Object Ptr
-  virtual std::string display() const;      
-  virtual std::string display(const Geometry::Vec3D&) const;
-  virtual std::string displayAddress() const;  
-  void displayVec(std::vector<Token>&) const;
-  virtual std::string displayFluka() const;
-  virtual std::string displayPOVRay() const;
-    
-};
-
 
 #endif

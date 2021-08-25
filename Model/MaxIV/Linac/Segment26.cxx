@@ -3,7 +3,7 @@
 
  * File: Linac/Segment26.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -176,13 +176,12 @@ Segment26::createSplitInnerZone()
 {
   ELog::RegMethod RegA("Segment26","createSplitInnerZone");
 
-  *IZTop=*buildZone;
-  *IZMid=*buildZone;
-  *IZLower=*buildZone;
-
   HeadRule HSurroundA=buildZone->getSurround();
   HeadRule HSurroundB=buildZone->getSurround();
   HeadRule HSurroundC=buildZone->getSurround();
+
+//  const HeadRule HBack=buildZone->getBack();
+//  ELog::EM<<"BACK == "<<HBack<<ELog::endDiag;
 
   // create surfaces
   attachSystem::FixedUnit FA("FA");
@@ -217,6 +216,10 @@ Segment26::createSplitInnerZone()
   IZTop->setSurround(HSurroundA);
   IZMid->setSurround(HSurroundB);
   IZLower->setSurround(HSurroundC);
+
+  // IZTop->setMaxExtent(HBack);
+  // IZMid->setMaxExtent(HBack);
+  // IZLower->setMaxExtent(HBack);
 
   return;
 }
@@ -326,11 +329,16 @@ Segment26::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*IZLower,*bellowCA,"back",*pipeCB);
 
-  outerCellA=IZTop->createUnit(System,*pipeBB,"back");
-  CellMap::addCell("SpaceFiller",outerCellA);
 
-  outerCellC=IZLower->createUnit(System,*pipeBB,"back");
-  CellMap::addCell("SpaceFiller",outerCellC);
+  // outerCellA=IZTop->createUnit(System,*pipeBB,"back");
+  // CellMap::addCell("SpaceFiller",outerCellA);
+
+  // outerCellC=IZLower->createUnit(System,*pipeBB,"back");
+  // CellMap::addCell("SpaceFiller",outerCellC);
+
+  //  IZTop->rebuildInsertCells(System);
+  //  IZMid->rebuildInsertCells(System);
+  //  IZLower->rebuildInsertCells(System);
 
   return;
 }
@@ -344,14 +352,14 @@ Segment26::createLinks()
 {
   ELog::RegMethod RegA("Segment26","createLinks");
 
-  setLinkSignedCopy(0,*pipeAA,1);
-  setLinkSignedCopy(1,*pipeAB,2);
+  setLinkCopy(0,*pipeAA,1);
+  setLinkCopy(1,*pipeAB,2);
 
-  setLinkSignedCopy(2,*pipeBA,1);
-  setLinkSignedCopy(3,*pipeBB,2);
+  setLinkCopy(2,*pipeBA,1);
+  setLinkCopy(3,*pipeBB,2);
 
-  setLinkSignedCopy(4,*pipeCA,1);
-  setLinkSignedCopy(5,*pipeCB,2);
+  setLinkCopy(4,*pipeCA,1);
+  setLinkCopy(5,*pipeCB,2);
 
   FixedComp::nameSideIndex(0,"frontFlat");
   FixedComp::nameSideIndex(1,"backFlat");
@@ -373,9 +381,10 @@ void
 Segment26::buildFrontSpacer(Simulation& System)
   /*!
     Build the front spacer if needed
+    \param System :: simulation for consructuion
    */
 {
-  ELog::RegMethod RegA("Segment27","buildFrontSpacer");
+  ELog::RegMethod RegA("Segment26","buildFrontSpacer");
 
   if (!prevSegPtr || !prevSegPtr->isBuilt())
     {
@@ -383,6 +392,9 @@ Segment26::buildFrontSpacer(Simulation& System)
       volume*=IZTop->getFront().complement();
       volume*=IZTop->getSurround();
       volume.addIntersection(SMap.realSurf(buildIndex+5015));
+      ELog::EM<<"Front == "<<volume<<ELog::endDiag;
+      ELog::EM<<"BACKL == "<<IZTop->getFront().complement()<<ELog::endDiag;
+      ELog::EM<<"SURF == "<<IZTop->getSurround()<<ELog::endDiag;
       makeCell("FrontSpace",System,cellIndex++,0,0.0,volume);
       volume=buildZone->getFront();
       volume*=IZMid->getFront().complement();
@@ -393,7 +405,7 @@ Segment26::buildFrontSpacer(Simulation& System)
       volume*=IZLower->getSurround();
       makeCell("FrontSpace",System,cellIndex++,0,0.0,volume);
     }
-    return;
+  return;
 }
 
 void

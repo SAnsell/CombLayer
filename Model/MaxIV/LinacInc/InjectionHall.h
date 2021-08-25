@@ -172,14 +172,14 @@ class InjectionHall :
   std::vector<double> pRadii;   ///< Pillar radii
   std::vector<int> pMat;        ///< Pillar materials
   std::vector<Geometry::Vec3D> pXY; ///< Pillar coordinates (with respect to building origin)
-
+  
   double thzWidth;              ///< Width of THz penetration
   double thzHeight;             ///< Height of THz penetration
   double thzXStep;              ///< THz penetration X offset with respect to FMidPt
   double thzZStep;              ///< THz penetration X offset with respect to FMidPt
   double thzZAngle;             ///< THz penetration Z angle
   int thzMat;                   ///< THz penetration material
-
+  
   int voidMat;                  ///< Void material
   int wallMat;                  ///< Wall material
   int wallIronMat;              ///< Material of the iron layer before the back wall
@@ -191,7 +191,6 @@ class InjectionHall :
   void createFloor(Simulation&);
   void layerProcess(Simulation&,const std::string&,
                     const int,const int,const size_t);
-
 
 
   void populate(const FuncDataBase&);

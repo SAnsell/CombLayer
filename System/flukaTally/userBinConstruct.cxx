@@ -3,7 +3,7 @@
  
  * File:   flukaTally/userBinConstruct.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,7 +81,7 @@ userBinConstruct::createTally(SimFLUKA& System,
 {
   ELog::RegMethod RegA("userBinConstruct","createTally");
 
-  userBin UB(fortranTape);
+  userBin UB(fortranTape,fortranTape);
   UB.setParticle(PType);
   UB.setCoordinates(APt,BPt);
   UB.setIndex(MPts);
@@ -142,10 +142,10 @@ userBinConstruct::processMesh(SimFLUKA& System,
   std::array<size_t,3> Nxyz;
   
   if (PType=="object")
-    tallySystem::meshConstruct::getObjectMesh
+    mainSystem::meshConstruct::getObjectMesh
       (System,IParam,"tally",Index,3,APt,BPt,Nxyz);
   else if (PType=="free")
-    tallySystem::meshConstruct::getFreeMesh(IParam,"tally",Index,3,APt,BPt,Nxyz);
+    mainSystem::meshConstruct::getFreeMesh(IParam,"tally",Index,3,APt,BPt,Nxyz);
 
   userBinConstruct::createTally(System,tallyParticle,nextId,APt,BPt,Nxyz);
   

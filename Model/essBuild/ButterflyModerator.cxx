@@ -298,8 +298,8 @@ ButterflyModerator::createLinks()
 
   // copy surface top/bottom from H2Wing and Origin from center
   
-  FixedComp::setLinkSignedCopy(4,*LeftUnit,5);
-  FixedComp::setLinkSignedCopy(5,*LeftUnit,6);
+  FixedComp::setLinkCopy(4,*LeftUnit,5);
+  FixedComp::setLinkCopy(5,*LeftUnit,6);
   const double LowV= LU[4].getConnectPt().Z();
   const double HighV= LU[5].getConnectPt().Z();
   const Geometry::Vec3D LowPt(Origin.X(),Origin.Y(),LowV);
@@ -307,7 +307,7 @@ ButterflyModerator::createLinks()
   FixedComp::setConnect(4,LowPt,-Z);
   FixedComp::setConnect(5,HighPt,Z);
 
-  FixedComp::setLinkSignedCopy(6,*MidWater,13);  
+  FixedComp::setLinkCopy(6,*MidWater,13);  
   
   return;
 }

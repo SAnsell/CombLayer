@@ -230,6 +230,26 @@ CompObj::isDirectionValid(const Geometry::Vec3D& Pt,
 }
 
 bool
+CompObj::isDirectionValid(const Geometry::Vec3D& Pt,
+			  const std::set<int>& surfSet,
+			  const int ExSN) const
+  /*! 
+    Determines if a point  is valid.  
+    Checks to see if the point is valid in the object
+    and returns ture if it is not valid.
+    \param  Pt :: Point to test
+    \param surfSet :: surface set
+    \param  ExSN :: Excluded points
+    \retval not valid in the object 
+    \retval true is no object is set
+  */
+{
+  if (key)
+    return (key->isDirectionValid(Pt,surfSet,ExSN)) ? 0 : 1;
+  return 1;
+}
+
+bool
 CompObj::isValid(const Geometry::Vec3D& Pt,
 		 const std::set<int>& ExSN) const
   /*! 
@@ -485,6 +505,19 @@ BoolValue::isValid(const Geometry::Vec3D&,const int) const
 
 bool
 BoolValue::isDirectionValid(const Geometry::Vec3D&,const int) const
+  /*! 
+    Determines if a point  is valid.  
+    \param  :: Point to test
+    \returns status
+  */
+{
+  return status;
+}
+
+bool
+BoolValue::isDirectionValid(const Geometry::Vec3D&,
+			    const std::set<int>&,
+			    const int) const
   /*! 
     Determines if a point  is valid.  
     \param  :: Point to test
@@ -826,6 +859,28 @@ CompGrp::isDirectionValid(const Geometry::Vec3D& Pt,
 }
 
 bool
+CompGrp::isDirectionValid(const Geometry::Vec3D& Pt,
+			  const std::set<int>& surfSet,
+			  const int ExSN) const
+  /*! 
+    Determines if a point  is valid.  
+    Checks to see if the point is valid in the object
+    and returns ture if it is not valid.
+    Note the complementary reverse in the test.
+    \param  Pt :: Point to test
+    \param surfSet :: Excluded surfaces
+    \param ExSN :: Excluded surface
+    \retval not valid in the object 
+    \retval true is no object is set
+  */
+{
+  // Note:: if isValid is true then return 0:
+  if (A)
+    return (A->isDirectionValid(Pt,surfSet,ExSN)) ? 0 : 1;
+  return 1;
+}
+
+bool
 CompGrp::isValid(const Geometry::Vec3D& Pt,
 		 const std::set<int>& ExSN) const
   /*! 
@@ -977,632 +1032,3 @@ CompGrp::displayPOVRay() const
   throw ColErr::AbsObjMethod("CompGrp::displayPOVRay");
 }
 
-//----------------------------------------
-//       CONTGRP
-//----------------------------------------
-
-ContGrp::ContGrp() : 
-  Rule(),A(0)
-  /*!
-    Constructor
-  */
-{}
-
-ContGrp::ContGrp(Rule* Parent,Rule* Cx) :
-  Rule(Parent),A(Cx)
-  /*!
-    Constructor to build parent and container tree
-    \param Parent :: Rule that is the parent to this
-    \param Cx :: Container object below
-  */
-{
-  if (Cx)
-    Cx->setParent(this);
-}
-
-ContGrp::ContGrp(const ContGrp& Cother) : 
-  Rule(Cother),A(0)
-  /*!
-    Standard copy constructor
-    \param Cother :: ContGrp to copy
-   */
-{
-  if (Cother.A)
-    {
-      A=Cother.A->clone();
-      A->setParent(this);
-    }
-}
-
-ContGrp&
-ContGrp::operator=(const ContGrp& Cother)
-  /*!
-    Standard assignment operator
-    \param Cother :: ContGrp to copy
-    \return *this
-   */
-{
-  if (this!=&Cother)
-    {
-      Rule::operator=(Cother);
-      if (Cother.A)
-        {
-	  Rule* Xa=Cother.A->clone();
-	  delete A;
-	  A=Xa;
-	  A->setParent(this);
-	}
-    }
-  return *this;
-}
-
-ContGrp::~ContGrp()
-  /*!
-    Destructor
-  */
-{
-  delete A;
-}
-
-
-ContGrp*
-ContGrp::clone() const
-  /*!
-    Clone of this
-    \return new copy of this
-  */
-{
-  return new ContGrp(*this);
-}
-
-void
-ContGrp::setLeaf(Rule* aR,const int)
-  /*!
-    Replaces a leaf with a rule.
-    No deletion is carried out
-    \param aR :: new rule
-    \param  :: [placeholder] side to use 
-  */
-{
-  A=aR;
-  if (A)
-    A->setParent(this);
-  return;
-}
-
-void
-ContGrp::setLeaves(Rule* aR,Rule*)
-  /*!
-    Replaces a leaf with a rule.
-    No deletion is carried out but sets the parents.
-    \param aR :: new rule
-    \param :: Null other rule
-  */
-{
-  A=aR;
-  if (A)
-    A->setParent(this);
-  return;
-}
-
-Rule*
-ContGrp::findKey(const int)
-  /*!
-    This is a container object and we dont
-    search into ContGrps. If that is needed
-    then the ContGrp should be removed first
-    \param  :: [placeholder] Null index key
-    \return 0
-  */
-{
-  return 0;
-}
-
-int
-ContGrp::findLeaf(const Rule* R) const
-  /*!
-    Check to see if this is a copy of a given Rule
-    \param R :: Rule Ptr to find
-    \retval 0 on success -ve on failuire
-  */
-{
-  return (A==R) ? 0 : -1;
-}
-
-bool
-ContGrp::isValid(const Geometry::Vec3D& Pt) const
-  /*! 
-    Determines if a point is valid.  
-    Checks to see if the point is valid in the object
-    and returns ture if it is not valid.
-    \param Pt :: Point to test
-    \retval Valid in the object 
-    \retval False is no object is set
-  */
-{
-  // Note:: if isValid is true then return 0:
-  if (A)
-    return (A->isValid(Pt)) ? 1 : 0;
-  return 0;
-}
-
-
-bool
-ContGrp::isValid(const Geometry::Vec3D& Pt,const int ExSN) const
-  /*! 
-    Determines if a point is valid.  
-    Checks to see if the point is valid in the object
-    and returns ture if it is not valid.
-    \param Pt :: Point to test
-    \param ExSN :: Excluded surface
-    \retval Valid in the object 
-    \retval False is no object is set
-  */
-{
-  // Note:: if isValid is true then return 0:
-  if (A)
-    return (A->isValid(Pt,ExSN)) ? 1 : 0;
-  return 0;
-}
-
-bool
-ContGrp::isDirectionValid(const Geometry::Vec3D& Pt,
-			  const int ExSN) const
-  /*! 
-    Determines if a point is valid.  
-    Checks to see if the point is valid in the object
-    and returns ture if it is not valid.
-    \param Pt :: Point to test
-    \param ExSN :: Excluded surface
-    \retval Valid in the object 
-    \retval False is no object is set
-  */
-{
-  // Note:: if isValid is true then return 0:
-  if (A)
-    return (A->isDirectionValid(Pt,ExSN)) ? 1 : 0;
-  return 0;
-}
-
-bool
-ContGrp::isValid(const Geometry::Vec3D& Pt,
-		 const std::set<int>& ExSN) const
-  /*! 
-    Determines if a point is valid.  
-    Checks to see if the point is valid in the object
-    and returns ture if it is not valid.
-    \param Pt :: Point to test
-    \param ExSN :: Excluded surfaces
-    \retval Valid in the object 
-    \retval False is no object is set
-  */
-{
-  // Note:: if isValid is true then return 0:
-  if (A)
-    return (A->isValid(Pt,ExSN)) ? 1 : 0;
-  return 0;
-}
-
-int
-ContGrp::pairValid(const int SN,const Geometry::Vec3D& Pt) const
-  /*! 
-    Determines if a point  is valid.  with the surface
-    SN false/true
-    \param SN :: Surface number
-    \param Pt :: Point to test
-    \return valid(SN->false) : valid(SN->true);
-  */
-{
-  // Note:: if isValid is true then return 0:
-  return (A) ? A->pairValid(SN,Pt) : 0;
-}
-
-bool
-ContGrp::isValid(const std::map<int,int>& SMap) const
-  /*! 
-    Determines if a point  is valid.  
-    \param  SMap :: map of surface number and true values
-    \returns :: status
-  */
-{
-  // Note:: if isValid is true then return 1:
-  if (A)
-    return (A->isValid(SMap)) ? 1 : 0;
-  return 1;
-}
-
-int
-ContGrp::simplify() 
-  /*!
-    Impossible to simplify a simple 
-    rule leaf. Therefore returns 0
-    \returns 0
-  */
-{
-  return 0;
-}
-
-void
-ContGrp::displayVec(std::vector<Token>& TVec) const
-  /*!
-    Tokenizes the rule
-    \param TVec :: Token to copy
-  */
-{
-  if (A)
-    A->displayVec(TVec);
-  return;
-}
-
-std::string
-ContGrp::display() const
-  /*!
-    Displays the object as \#number
-    \returns string component
-  */
-{
-  return (A) ? A->display() : "";
-}
-
-std::string
-ContGrp::display(const Geometry::Vec3D& Pt) const
-  /*!
-    Displays the object as \#number
-    \param Pt :: Test point to show true/false
-    \returns string component
-  */
-{
-  return (A) ? A->display(Pt) : "";
-}
-
-std::string
-ContGrp::displayAddress() const
-  /*!
-    Returns the memory address as 
-    a string.
-    \returns memory address as string
-  */
-{
-  std::stringstream cx;
-  cx<<"%( ["<<reinterpret_cast<long int>(this) <<"] ";
-  if (A)
-    cx<<A->displayAddress();
-  else
-    cx<<"0x0";
-  cx<<" ) ";
-  return cx.str();
-}
-
-
-std::string
-ContGrp::displayFluka() const
-  /*!
-    Display the union in the form
-    |N M| where N,M are the downward rules
-    \returns bracket string 
-  */
-{
-  ELog::RegMethod RegA("","");
-  throw ColErr::AbsObjMethod("ContGrp::displayFluka");
-}
-
-std::string
-ContGrp::displayPOVRay() const
-  /*!
-    Display the union in the POV-Ray form
-    union {N M} where N,M are the downward rules
-    \returns bracket string 
-  */
-{
-  ELog::RegMethod RegA("","");
-  throw ColErr::AbsObjMethod("ContGrp::displayPOVRay");
-}
-
-//----------------------------------------
-//       CONTOBJ
-//----------------------------------------
-
-ContObj::ContObj() : Rule(),
-  objN(0),key(0)
-  /*!
-    Constructor
-  */
-{}
-
-ContObj::ContObj(const ContObj& A) : 
-  Rule(A),
-  objN(A.objN),key(A.key)
-  /*!
-    Standard copy constructor
-    \param A :: ContObj to copy
-   */
-{}
-
-ContObj&
-ContObj::operator=(const ContObj& A)
-  /*!
-    Standard assignment operator
-    \param A :: ContObj to copy
-    \return *this
-   */
-{
-  if (this!=&A)
-    {
-      Rule::operator=(A);
-      objN=A.objN;
-      key=A.key;
-    }
-  return *this;
-}
-
-ContObj::~ContObj()
-  /*!
-    Destructor
-  */
-{}
-
-
-ContObj*
-ContObj::clone() const
-  /*!
-    Clone of this
-    \return new copy of this
-  */
-{
-  return new ContObj(*this);
-}
-
-void
-ContObj::setObjN(const int Ky)
-  /*!
-    Sets the object Number
-    \param Ky :: key value 
-  */
-{
-  objN= Ky;
-  return;
-}
-
-void
-ContObj::setLeaf(Rule* aR,const int)
-  /*!
-    Replaces a leaf with a rule.
-    This REQUIRES that aR is of type SurfPoint
-    \param aR :: new rule
-    \param :: Null side point
-  */
-{
-  ContObj* newX = dynamic_cast<ContObj*>(aR);
-  // Make a copy
-  if (newX)
-    *this = *newX;
-  return;
-}
-
-void
-ContObj::setLeaves(Rule* aR,Rule*)
-  /*!
-    Replaces a leaf with a rule.
-    This REQUIRES that aR is of type ContObj
-    \param aR :: new rule
-    \param :: Null other rule
-  */
-{
-  ContObj* newX = dynamic_cast<ContObj*>(aR);
-  if (newX)
-    *this = *newX;
-  return;
-}
-
-Rule*
-ContObj::findKey(const int)
-  /*!
-    This is a complementary object and we dont
-    search into ContObjs. If that is needed
-    then the ContObj should be removed first
-    \param  :: Null index key
-    \return 0
-  */
-{
-  return 0;
-}
-
-int
-ContObj::findLeaf(const Rule* A) const
-  /*!
-    Check to see if this is a copy of a given Rule
-    \param A :: Rule Ptr to find
-    \retval 0 on success -ve on failuire
-  */
-{
-  return (this==A) ? 0 : -1;
-}
-
-int
-ContObj::pairValid(const int SN,const Geometry::Vec3D& Pt) const
-  /*! 
-    Determines if a point is valid.  
-    Checks to see if the point is valid in the object
-    and returns ture if it is not valid.
-    \param  SN :: Surface number to iterater over
-    \param  Pt :: Point to test
-    \retval not valid in the object 
-    \retval false if no object is set
-  */
-{
-  return (key) ? key->pairValid(SN,Pt) : 0;
-}
-
-bool
-ContObj::isEmpty() const
-  /*!
-    Group always empty [no surfaces]
-   */
-{
-  return 1;
-}
-
-bool
-ContObj::isValid(const Geometry::Vec3D& Pt) const
-  /*! 
-    Determines if a point is valid.  
-    Checks to see if the point is valid in the object
-    and returns ture if it is not valid.
-    \param  Pt :: Point to test
-    \retval not valid in the object 
-    \retval false if no object is set
-  */
-{
-  if (key)
-    return (key->isValid(Pt)) ? 1 : 0;
-  return 0;
-}
-
-bool
-ContObj::isValid(const Geometry::Vec3D& Pt,const int ExSN) const
-  /*! 
-    Determines if a point is valid.  
-    Checks to see if the point is valid in the object
-    and returns ture if it is not valid.
-    \param Pt :: Point to test
-    \param ExSN :: Excluded surface
-    \retval not valid in the object 
-    \retval false if no object is set
-  */
-{
-  if (key)
-    return (key->isValid(Pt,ExSN)) ? 1 : 0;
-  return 0;
-}
-
-bool
-ContObj::isDirectionValid(const Geometry::Vec3D& Pt,
-			  const int ExSN) const
-  /*! 
-    Determines if a point is valid.  
-    Checks to see if the point is valid in the object
-    and returns ture if it is not valid.
-    \param Pt :: Point to test
-    \param ExSN :: Excluded surface
-    \retval not valid in the object 
-    \retval false if no object is set
-  */
-{
-  if (key)
-    return (key->isDirectionValid(Pt,ExSN)) ? 1 : 0;
-  return 0;
-}
-
-bool
-ContObj::isValid(const Geometry::Vec3D& Pt,
-		 const std::set<int>& ExSN) const
-  /*! 
-    Determines if a point is valid.  
-    Checks to see if the point is valid in the object
-    and returns ture if it is not valid.
-    \param Pt :: Point to test
-    \param ExSN :: Excluded surface
-    \retval not valid in the object 
-    \retval false if no object is set
-  */
-{
-  if (key)
-    return (key->isValid(Pt,ExSN)) ? 1 : 0;
-  return 0;
-}
-
-bool
-ContObj::isValid(const std::map<int,int>& SMap) const
-  /*! 
-    Determines if a point  is valid.  
-    \param  SMap :: map of surface number and true values
-    \returns :: status
-  */
-{
-  return (key) ? (key->isValid(SMap)) : 0;
-}
-
-int
-ContObj::simplify() 
-  /*!
-    Impossible to simplify a simple 
-    rule leaf. Therefore returns 0
-    \returns 0
-  */
-{
-  return 0;
-}
-
-void
-ContObj::displayVec(std::vector<Token>&) const
-  /*!
-    Tokenizes the rule
-    \param  :: Token to copy
-  */
-{
-  ELog::RegMethod RegA("ContObj","displayVec");
-  ELog::EM<<"Calling uncompleted code"<<ELog::endErr;
-  return;
-}
-
-std::string
-ContObj::display() const
-  /*!
-    Displays the object as \%number
-    \returns string component
-  */
-{
-  std::stringstream cx;
-  cx<<"%"<<objN;
-  return cx.str();
-}
-
-std::string
-ContObj::display(const Geometry::Vec3D& Pt) const
-  /*!
-    Displays the object as \%number
-    \param Pt :: Test point to show true/false
-    \returns string component
-  */
-{
-  std::stringstream cx;
-  cx<<"%"<<objN<<"["<<key->isValid(Pt)<<"]";
-  return cx.str();
-}
-
-std::string
-ContObj::displayAddress() const
-  /*!
-    Returns the memory address as 
-    a string.
-    \returns memory address as string
-  */
-{
-  std::stringstream cx;
-  cx<<reinterpret_cast<unsigned long int>(this);
-  return cx.str();
-}
-
-std::string
-ContObj::displayFluka() const
-  /*!
-    Display the union in the form
-    |N M| where N,M are the downward rules
-    \returns bracket string 
-  */
-{
-  ELog::RegMethod RegA("","");
-  throw ColErr::AbsObjMethod("ContObj::displayFluka");
-}
-
-std::string
-ContObj::displayPOVRay() const
-  /*!
-    Display the union in the POV-Ray form
-    union{N M} where N,M are the downward rules
-    \returns bracket string 
-  */
-{
-  ELog::RegMethod RegA("","");
-  throw ColErr::AbsObjMethod("ContObj::displayPOVRay");
-}

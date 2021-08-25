@@ -3,7 +3,7 @@
  
  * File:   src/Simulation.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -814,6 +814,22 @@ Simulation::findObject(const int CellN)
   return (mp==OList.end()) ? nullptr : mp->second;
 }
 
+MonteCarlo::Object*
+Simulation::findObjectThrow(const int CellN)
+  /*!
+    Helper function to determine the hull object 
+    given a particular cell number
+    \param CellN : Number of the Object to find
+    \returns Object pointer to the object
+  */
+{
+  ELog::RegMethod RegA("Simulation","findObject");
+  OTYPE::iterator mp=OList.find(CellN);
+  if (mp==OList.end())
+    throw ColErr::InContainerError<int>(CellN,"Cell Number in Simulation");
+  return mp->second;
+}
+
 const MonteCarlo::Object*
 Simulation::findObject(const int CellN) const
   /*! 
@@ -826,7 +842,24 @@ Simulation::findObject(const int CellN) const
   ELog::RegMethod RegA("Simulation","findObject const");
 
   OTYPE::const_iterator mp=OList.find(CellN);
-  return (mp==OList.end()) ? 0 : mp->second;
+  return (mp==OList.end()) ? nullptr : mp->second;
+}
+
+const MonteCarlo::Object*
+Simulation::findObjectThrow(const int CellN) const
+  /*! 
+    Helper function to determine the hull object 
+    given a particulat cell number (const varient)
+    \param CellN :: Cell number 
+    \return Object pointer 
+  */
+{
+  ELog::RegMethod RegA("Simulation","findObject const");
+
+  OTYPE::const_iterator mp=OList.find(CellN);
+  if (mp==OList.end())
+    throw ColErr::InContainerError<int>(CellN,"Cell Number in Simulation");
+  return mp->second;
 }
 
 
@@ -1176,10 +1209,9 @@ Simulation::findCell(const Geometry::Vec3D& Pt,
   */
 {
   ELog::RegMethod RegA("Simulation","findCell");
+
   ModelSupport::SimTrack& ST(ModelSupport::SimTrack::Instance());
-
-
-  // First test users guess:
+      
   if (testCell && testCell->isValid(Pt))
     {
       ST.setCell(this,testCell);
@@ -1448,7 +1480,6 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
 
   const std::map<int,int> RMap=
     calcCellRenumber(cOffset,cRange);
-
   
   OTYPE newMap;           // New map with correct numbering
   for(const std::map<int,int>::value_type& RMItem : RMap)
@@ -1466,8 +1497,16 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
 	  ELog::RN<<"Cell Changed :"<<cNum<<" "<<nNum
 		  <<" Object:"<<oPtr->getFCUnit()<<ELog::endBasic;
 	}
-
-    }    
+    }
+  // cellOrder:
+  for(int& CN : cellOutOrder)
+    {
+      std::map<int,int>::const_iterator mc=
+	RMap.find(CN);
+      if (mc!=RMap.end())
+	CN=mc->second;
+    }
+  
   OList=newMap;
   return RMap;
 }

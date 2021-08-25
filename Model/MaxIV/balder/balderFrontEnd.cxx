@@ -97,8 +97,8 @@ balderFrontEnd::createLinks()
 {
   ELog::RegMethod RegA("balderFrontEnd","createLinks");
   
-  setLinkSignedCopy(0,*wigglerBox,1);
-  setLinkSignedCopy(1,*lastComp,2);
+  setLinkCopy(0,*wigglerBox,1);
+  setLinkCopy(1,*lastComp,2);
   return;
 }
   

@@ -240,9 +240,9 @@ EmptyCyl::createLinks(const attachSystem::FixedComp&FC,
 {
   ELog::RegMethod RegA("EmptyCyl","createLinks");
 
-  FixedComp::setLinkSignedCopy(0,FC,floor); // ??? how to invert surf sign?
-  FixedComp::setLinkSignedCopy(1,FC,side);
-  FixedComp::setLinkSignedCopy(2,FC,side+1);
+  FixedComp::setLinkCopy(0,FC,floor); // ??? how to invert surf sign?
+  FixedComp::setLinkCopy(1,FC,side);
+  FixedComp::setLinkCopy(2,FC,side+1);
   
   FixedComp::setConnect(3,Origin+Y*(height),Y);
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+6));

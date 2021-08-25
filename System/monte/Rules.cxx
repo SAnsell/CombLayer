@@ -3,7 +3,7 @@
  
  * File:   monte/Rules.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -153,7 +153,7 @@ Rule::removeComplementary(Rule*& TopRule)
   ELog::RegMethod RegA("Rule","removeComplementary");
   // Search down the rule until we get to common
   // group. Once we have found a common type
-  // apply simple
+  // apply simplify
  
   if (!TopRule || TopRule->type()==0)     // One element tree (just return)
     return 0; 
@@ -178,7 +178,8 @@ Rule::removeComplementary(Rule*& TopRule)
 	  // get first rule off tree
 	  tmpA=TreeComp.third;
 
-	  if (!tmpA->commonType())          // Not a common type, then we must get branches 
+	  // Not a common type, then we must get branches 
+	  if (!tmpA->commonType())    
 	    {
 	      tmpB=tmpA->leaf(0);        // get leaves (two of) 
 	      tmpC=tmpA->leaf(1);
@@ -1113,13 +1114,6 @@ Rule::procString(const std::string& Line)
 	      TmpO=new CompObj();
 	      TmpO->setObjN(SN);
 	      RuleList[Ridx]=TmpO;
-	      hold=' ';
-	    }
-	  else if (hold=='%')          // container rule
-	    {
-	      ContObj* TmpC=new ContObj();
-	      TmpC->setObjN(SN);
-	      RuleList[Ridx]=TmpC;
 	      hold=' ';
 	    }
 	  else       // Normal rule

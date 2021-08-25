@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   tallyInc/meshConstruct.h
+ * File:   generalProcessInc/meshConstruct.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ namespace mainSystem
 class objectGroups;
 class Simulation;
 
-namespace tallySystem
+namespace mainSystem
 {
 
 /*!
@@ -43,27 +43,19 @@ namespace tallySystem
   \version 1.0
   \author S. Ansell
   \date July 2012
-  \brief Constructs a mesh tally from inputParam
+  \brief Constructs a mesh from inputParam
 */
 
-class meshConstruct 
+namespace meshConstruct 
 {
- protected:
-  
-  /// Private constructor
-  meshConstruct() {}
 
-  static const std::string& getDoseConversion();
-  static const std::string& getPhotonDoseConversion();
-  static void calcXYZ(const objectGroups&,
+   const std::string& getDoseConversion();
+   const std::string& getPhotonDoseConversion();
+   void calcXYZ(const objectGroups&,
 		      const std::string&,const std::string&,
 		      Geometry::Vec3D&,Geometry::Vec3D&) ;
 
-
-
- public:
-
-  static void getObjectMesh(const objectGroups&,
+   void getObjectMesh(const objectGroups&,
 			    const mainSystem::inputParam&,
 			    const std::string&,
 			    const size_t,const size_t,
@@ -71,7 +63,7 @@ class meshConstruct
 			    Geometry::Vec3D&,
 			    std::array<size_t,3>&);
 
-  static void getFreeMesh(const mainSystem::inputParam&,
+   void getFreeMesh(const mainSystem::inputParam&,
 			  const std::string&,
 			  const size_t,const size_t,
 			  Geometry::Vec3D&,
@@ -79,7 +71,7 @@ class meshConstruct
 			  std::array<size_t,3>&);
 
   
-  static void writeHelp(std::ostream&);
+   void writeHelp(std::ostream&);
 };
 
 }

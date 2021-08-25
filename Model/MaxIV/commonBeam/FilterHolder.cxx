@@ -228,7 +228,8 @@ FilterHolder::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+45,Origin-Z*(wDepth),Z);
   ModelSupport::buildPlane(SMap,buildIndex+46,Origin+Z*(wHeight),Z);
 
-  const double dividerWidth((width-wWidth*nWindows)/(nWindows+1));
+  const double dividerWidth((width-wWidth*nWindows)/
+			    static_cast<double>(nWindows+1));
   double dx(0.0);
   int SI = buildIndex+40;
   SMap.addMatch(SI-10+4,SMap.realSurf(buildIndex+3));

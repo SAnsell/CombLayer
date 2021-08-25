@@ -3,7 +3,7 @@
  
  * File:   monteInc/LineIntersectVisit.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,8 @@ class LineIntersectVisit : public Global::BaseVisit
     Geometry::Line ATrack;                             ///< Line 
     std::vector<Geometry::Vec3D> PtVec;                ///< Output point 
     std::vector<double> distVec;                       ///< Output distances
-    std::vector<const Geometry::Surface*> surfVec;     ///< SurfNames
+    std::vector<int> surfNumber;                       ///< SurfIndexes [signed]
+    std::vector<const Geometry::Surface*> surfVec;     ///< Surfaces
     long int neutIndex;                                ///< Particle number
 
     void procTrack(const Geometry::Surface*);

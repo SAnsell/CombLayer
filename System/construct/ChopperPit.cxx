@@ -359,9 +359,9 @@ ChopperPit::createFrontLinks(const attachSystem::FixedComp& FC,
   attachSystem::FixedComp& midFC=FixedGroup::getKey("Mid");
   attachSystem::FixedComp& outerFC=FixedGroup::getKey("Outer");
 
-  innerFC.setLinkSignedCopy(0,FC,sideIndex);
-  midFC.setLinkSignedCopy(0,FC,sideIndex);
-  outerFC.setLinkSignedCopy(0,FC,sideIndex);
+  innerFC.setLinkCopy(0,FC,sideIndex);
+  midFC.setLinkCopy(0,FC,sideIndex);
+  outerFC.setLinkCopy(0,FC,sideIndex);
 
   return;
 }

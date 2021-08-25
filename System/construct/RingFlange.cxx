@@ -3,7 +3,7 @@
  
  * File:   construct/RingFlange.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -163,10 +163,7 @@ RingFlange::insertBolt(Simulation& System,
   if (!NSection)
     {
       const int CN=getCell("Ring",0);
-      MonteCarlo::Object* segComp=System.findObject(CN);
-      if (!segComp)
-	throw ColErr::InContainerError<int>
-	  (CN,"RingCell not found in object"+keyName);
+      MonteCarlo::Object* segComp=System.findObjectThrow(CN);
       segComp->addSurfString(exclude);
       return;
     }
@@ -195,10 +192,7 @@ RingFlange::insertBolt(Simulation& System,
 
   for(const int CN : cellN)
     {
-      MonteCarlo::Object* segComp=System.findObject(CN);
-      if (!segComp) 
-	throw ColErr::InContainerError<int>
-	  (CN,"RingCell not found in object"+keyName);
+      MonteCarlo::Object* segComp=System.findObjectThrow(CN);
       segComp->addSurfString(exclude);
     }  
   return;

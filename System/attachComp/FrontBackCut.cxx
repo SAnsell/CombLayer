@@ -3,7 +3,7 @@
  
  * File:   attachComp/FrontBackCut.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -109,6 +109,32 @@ FrontBackCut::setBack(const ExternalCut& BSurf)
   ELog::RegMethod RegA("FrontBackCut","setBack(FrontBackCut)");
 
   ExternalCut::copyCutSurf("back",BSurf,"back");
+  return;
+}
+
+void
+FrontBackCut::setFront(const HeadRule& FSurf)
+  /*!
+    Set a front wall
+    \param FSurf :: Front object
+  */
+{
+  ELog::RegMethod RegA("FrontBackCut","setFront(HeadRule)");
+
+  ExternalCut::setCutSurf("front",FSurf);
+  return;
+}
+
+void
+FrontBackCut::setBack(const HeadRule& BSurf)
+  /*!
+    Set a back wall
+    \param BSurf :: Front object
+  */
+{
+  ELog::RegMethod RegA("FrontBackCut","setBack(HeadRule)");
+
+  ExternalCut::setCutSurf("back",BSurf);
   return;
 }
 

@@ -315,6 +315,40 @@ objectGroups::inRange(const int Index) const
   return std::string("");
 }
 
+
+groupRange
+objectGroups::getZoneGroup(const std::string& gName)  const
+  /*!
+    Determine in the cells that match the initial
+    part of gName, e.g. gName=="fred" will match
+    "fredBig" and "fredSmall". It makes a combined
+    groupRange.
+
+    This can throw if no object matches
+
+    \param gName :: Group name [first letters]
+    \return groupRange 
+   */
+{
+  ELog::RegMethod RegA("objectGroups","getZoneGroup[const]");
+
+  groupRange OutGR;
+
+  const size_t gSize=gName.size();
+  for(const auto& [fullName,GR] : regionMap)
+    {
+      if (fullName.substr(0,gSize)==gName)
+	OutGR.combine(GR);
+    }
+  if (OutGR.empty())
+    throw ColErr::InContainerError<std::string>
+      (gName,"gName[front] not in groupRange");
+
+  return OutGR;
+}
+
+
+
 std::string
 objectGroups::addActiveCell(const int cellN)
   /*!
@@ -649,7 +683,7 @@ objectGroups::getObject(const std::string& Name)
 template<typename T>
 const T*
 objectGroups::getObjectThrow(const std::string& Name,
-                               const std::string& Err) const
+			     const std::string& Err) const
   /*!
     Find a FixedComp [if it exists] 
     Throws InContainerError if not 
@@ -760,7 +794,12 @@ objectGroups::getObjectRange(const std::string& objName) const
   /*!
     Calculate the object cells range based on the name
     Processes down to cellMap items if objName is of the 
-    form objecName:cellMapName
+    form ::
+
+    - objecName:cellMapName  :: cells in cellmap object
+    - objectName             :: cells in FixedComp
+    - frontName:ZONE        :: Cells matching front part of the object name  
+
     \param objName :: Object name
     \return vector of items
   */
@@ -781,6 +820,13 @@ objectGroups::getObjectRange(const std::string& objName) const
       const attachSystem::CellMap* CPtr=
 	getObject<attachSystem::CellMap>(itemName);
 
+      // SPECIAL:
+      if (cellName=="ZONE")
+	{
+	  const groupRange zoneGroup=getZoneGroup(itemName);
+	  return zoneGroup.getAllCells();
+	}
+
       if (CPtr)
 	{
 	  if (Units.size()==3)   // CellMap : Name : Index
@@ -791,16 +837,20 @@ objectGroups::getObjectRange(const std::string& objName) const
 		  (objName,"CellMap:cellName:Index");
 	      return std::vector<int>({CPtr->getCell(cellName,cellIndex)});
 	    }
+
 	  // case 2: CellMap : Name
 	  const std::vector<int> Out=CPtr->getCells(cellName);
 	  if (!Out.empty())
 	    return Out;
 	}
 
+      
+    ELog::EM<<"DDDDDD == "<<cellName<<ELog::endCrit;
+
+      
       // FIXED COMP [index :: cell index offset]
       if (Units.size()==2) 
 	{
-	  const std::string& itemName=Units[0];
 	  size_t index;
 	  if (StrFunc::convert(Units[1],index) &&
 	      hasObject(itemName))
@@ -886,11 +936,13 @@ objectGroups::writeRange(std::ostream& OX,
   
 void
 objectGroups::write(const std::string& OFile,
-		    const bool fullFlag) const
+		    const int fullFlag) const
   /*!
     Write out to a file 
     \param OFile :: output file
-    \param fullFlag :: write out all the info					  */
+    \param fullFlag :: [1] : write out all the info
+                       [2] : write out all the cell info
+  */
 {
   ELog::RegMethod RegA("objectGroups","write");
   if (!OFile.empty())
@@ -916,11 +968,27 @@ objectGroups::write(const std::string& OFile,
 	    OX<<(FMTVec % "X:" % FPTR->getX())
 	      <<(FMTVec % "Y:" % FPTR->getY())
 	      <<(FMTVec % "Z:" % FPTR->getZ());
-
-
 	  OX<<" :: "<<mc->second;
-	  
 	  OX<<std::endl;
+	  
+	  if (fullFlag && FPTR)
+	    {
+	      const attachSystem::CellMap* CPtr=
+		dynamic_cast<const attachSystem::CellMap*>(FPTR);
+	      if (CPtr)
+		{
+		  OX<<"Cell Map["<<FPTR->getKeyName()<<"] == ";
+		  const std::vector<std::string> names=CPtr->getNames();
+		  for(const std::string& N : names)
+		    {
+		      const std::vector<int> Items=CPtr->getCells(N);
+		      for(const int I : Items)
+			OX<<" "<<I;
+		    }
+		  OX<<std::endl;
+		}
+	    }
+
 	}
     }
   return;

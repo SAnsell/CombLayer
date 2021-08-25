@@ -190,12 +190,12 @@ Segment1::createLinks()
     Create a front/back link
    */
 {
-  setLinkSignedCopy(0,*pipeA,1);
-  setLinkSignedCopy(1,*pumpA,2);
+  setLinkCopy(0,*pipeA,1);
+  setLinkCopy(1,*pumpA,2);
 
     //  const constructSystem::portItem& VPB=pumpA->getPort(1);
 
-  // setLinkSignedCopy(1,VPB,VPB.getSideIndex("OuterPlate"));
+  // setLinkCopy(1,VPB,VPB.getSideIndex("OuterPlate"));
 
   joinItems.push_back(FixedComp::getFullRule(2));
   return;

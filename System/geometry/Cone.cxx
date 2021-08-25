@@ -393,7 +393,7 @@ Cone::side(const Geometry::Vec3D& Pt) const
     Calculate if the point R is within the cone 
     \param Pt :: Point to determine if in/out of cone
     \retval -1  :: within the cone
-    \retval 0 :: on teh cone
+    \retval 0 :: on the cone
     \retval 1 :: outside the cone
   */
 {

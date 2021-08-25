@@ -337,8 +337,8 @@ BasicFlightLine::createObjects(Simulation& System,
   const std::string innerCut=innerFC.getLinkString(innerIndex);
   const std::string outerCut=outerFC.getLinkString(outerIndex);
   
-  setLinkSignedCopy(0,innerFC,innerIndex);
-  setLinkSignedCopy(1,outerFC,outerIndex);
+  setLinkCopy(0,innerFC,innerIndex);
+  setLinkCopy(1,outerFC,outerIndex);
   
   const int layerIndex=buildIndex+static_cast<int>(nLayer)*10;  
   std::string Out;

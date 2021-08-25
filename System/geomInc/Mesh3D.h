@@ -68,6 +68,7 @@ class Mesh3D
   
  public:
 
+  
   Mesh3D();
   Mesh3D(const Mesh3D&);
   Mesh3D& operator=(const Mesh3D&);
@@ -83,11 +84,14 @@ class Mesh3D
   double getYCoordinate(const size_t) const;
   double getZCoordinate(const size_t) const;
 
-  
-  void setMeshType(const GeomENUM&);
   void setMesh(const std::vector<double>&,const std::vector<size_t>&,
-	       const std::vector<double>&,const std::vector<size_t>&,
-	       const std::vector<double>&,const std::vector<size_t>&);
+   	       const std::vector<double>&,const std::vector<size_t>&,
+   	       const std::vector<double>&,const std::vector<size_t>&);
+  void setMesh(const Geometry::Vec3D&,const Geometry::Vec3D&,
+	       const std::array<size_t,3>&); 
+    
+	       
+  void setMeshType(const GeomENUM&);
   std::vector<Geometry::Vec3D> midPoints() const;
   /// Set reference point 
   void setRefPt(const Geometry::Vec3D&);  

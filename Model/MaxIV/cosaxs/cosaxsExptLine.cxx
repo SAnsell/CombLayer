@@ -100,7 +100,7 @@ cosaxsExptLine::cosaxsExptLine(const std::string& Key) :
   doubleSlitB(new constructSystem::JawValveCylinder(newName+"DoubleSlitB")),
   diagUnit(new xraySystem::MonoBox(newName+"DiagnosticUnit")),
   gateB(new constructSystem::GateValveCube(newName+"GateB")),
-  diffPump(new constructSystem::DiffPumpXIADP03(newName+"DiffPump")),
+  diffPump(new xraySystem::DiffPumpXIADP03(newName+"DiffPump")),
   telescopicSystem(new constructSystem::VacuumPipe(newName+"TelescopicSystem")),
   sampleArea(new xraySystem::cosaxsSampleArea(newName+"SampleArea")),
   tube(new xraySystem::cosaxsTube(newName+"Tube"))
@@ -293,8 +293,8 @@ cosaxsExptLine::createLinks()
 {
   ELog::RegMethod RControl("cosaxsExptLine","createLinks");
 
-  setLinkSignedCopy(0,*pipeInit,1);
-  setLinkSignedCopy(1,*lastComp,2);
+  setLinkCopy(0,*pipeInit,1);
+  setLinkCopy(1,*lastComp,2);
   return;
 }
 

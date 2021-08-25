@@ -3,7 +3,7 @@
 
  * File: Linac/Segment29.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,10 +71,14 @@
 #include "VacuumPipe.h"
 #include "YagUnit.h"
 #include "YagScreen.h"
+#include "NBeamStop.h"
 #include "LBeamStop.h"
 
 #include "TDCsegment.h"
 #include "Segment29.h"
+
+#include "Importance.h"
+#include "Object.h"
 
 namespace tdcSystem
 {
@@ -99,7 +103,7 @@ Segment29::Segment29(const std::string& Key) :
   yagScreenA(new tdcSystem::YagScreen(keyName+"YagScreenA")),
   yagScreenB(new tdcSystem::YagScreen(keyName+"YagScreenB")),
 
-  beamStopA(new tdcSystem::LBeamStop(keyName+"BeamStopA")),
+  beamStopA(new tdcSystem::NBeamStop(keyName+"BeamStopA")),
   beamStopB(new tdcSystem::LBeamStop(keyName+"BeamStopB"))
 
   /*!
@@ -246,9 +250,13 @@ Segment29::buildObjects(Simulation& System)
     (System,*IZMid,*yagUnitB,"back",*beamStopB);
 
   // end space filler
-  outerCellA=IZTop->createUnit(System,*beamStopB,"back");
-  CellMap::addCell("SpaceFiller",outerCellA);
+  //  outerCellA=IZTop->createUnit(System,*beamStopB,"back");
+  //  CellMap::addCell("SpaceFiller",outerCellA);
 
+  // end space filler [lower unit / top surface]
+  outerCellB=IZMid->createUnit(System,*beamStopA,"back");
+  CellMap::addCell("SpaceFiller",outerCellB);
+  
   // inital cell if needed
   if (!prevSegPtr || !prevSegPtr->isBuilt())
     {
@@ -271,10 +279,10 @@ Segment29::createLinks()
     Create a front/back link
    */
 {
-  setLinkSignedCopy(0,*pipeAA,1);
-  setLinkSignedCopy(1,*beamStopA,2);
-  setLinkSignedCopy(2,*pipeBA,1);
-  setLinkSignedCopy(3,*beamStopB,2);
+  setLinkCopy(0,*pipeAA,1);
+  setLinkCopy(1,*beamStopA,2);
+  setLinkCopy(2,*pipeBA,1);
+  setLinkCopy(3,*beamStopB,2);
 
 
   FixedComp::nameSideIndex(0,"frontFlat");
@@ -282,11 +290,11 @@ Segment29::createLinks()
   FixedComp::nameSideIndex(2,"frontMid");
   FixedComp::nameSideIndex(3,"backMid");
 
-  //    setLinkSignedCopy(1,*triPipeA,2);
+  //    setLinkCopy(1,*triPipeA,2);
   joinItems.push_back(FixedComp::getFullRule("backFlat"));
   joinItems.push_back(FixedComp::getFullRule("backMid"));
 
-  buildZone->setBack(FixedComp::getFullRule("backMid"));
+  buildZone->setBack(FixedComp::getFullRule("backFlat"));
   
   return;
 }
@@ -307,6 +315,7 @@ Segment29::createAll(Simulation& System,
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
+
   buildObjects(System);
   createLinks();
   return;

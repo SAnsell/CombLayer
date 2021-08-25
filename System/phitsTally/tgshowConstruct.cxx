@@ -3,7 +3,7 @@
  
  * File:   phitsTally/tgshowConstruct.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -111,10 +111,10 @@ tgshowConstruct::processMesh(SimPHITS& System,
   std::array<size_t,3> Nxyz;
   
   if (PType=="object")
-    tallySystem::meshConstruct::getObjectMesh
+    mainSystem::meshConstruct::getObjectMesh
       (System,IParam,"tally",Index,2,APt,BPt,Nxyz);
   else if (PType=="free")
-    tallySystem::meshConstruct::getFreeMesh
+    mainSystem::meshConstruct::getFreeMesh
       (IParam,"tally",Index,2,APt,BPt,Nxyz);
   else if (PType=="help")
     {

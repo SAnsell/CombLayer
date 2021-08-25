@@ -138,8 +138,8 @@ Segment17::createLinks()
 {
   ELog::RegMethod RegA("Segment17","createLinks");
 
-  setLinkSignedCopy(0,*pipeA,1);
-  setLinkSignedCopy(1,*pipeB,2);
+  setLinkCopy(0,*pipeA,1);
+  setLinkCopy(1,*pipeB,2);
 
   joinItems.push_back(FixedComp::getFullRule(2));
   return;

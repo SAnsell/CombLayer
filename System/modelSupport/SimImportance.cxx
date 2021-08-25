@@ -3,7 +3,7 @@
  
  * File:   process/SimImportance.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,6 +52,7 @@
 #include "flukaDefPhysics.h"
 #include "phitsDefPhysics.h"
 #include "SetMagnets.h"
+#include "BasicMesh3D.h"
 #include "ImportControl.h"
 #include "WeightControl.h"
 #include "WCellControl.h"
@@ -101,8 +102,10 @@ importanceSim(SimPHITS& System,
   System.createObjSurfMap();
 
   WeightSystem::WCellControl WCell;
+  WeightSystem::WWGControl WWGC;
   WCell.processWeights(System,IParam);
-
+  WWGC.processWeights(System,IParam);
+  ELog::EM<<"Pass Process"<<ELog::endDiag;
   phitsSystem::setModelPhysics(System,IParam);
   magnetSystem::setMagneticPhysics(System,IParam);
 

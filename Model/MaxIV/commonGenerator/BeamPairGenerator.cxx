@@ -52,7 +52,8 @@ namespace setVariable
 BeamPairGenerator::BeamPairGenerator() :
   outLiftA(7.0),outLiftB(5.0),
   gapA(0.3),gapB(0.3),supportRadius(0.5),
-  supportMat("Nickel"),
+  waterRadius(0.3),
+  waterMat("H2O"),supportMat("Nickel"),
   xStepA(0.4),yStepA(-0.8),
   xStepB(-0.4),yStepB(0.8),
   xyAngle(0.0),height(2.0),width(4.0),
@@ -170,6 +171,9 @@ BeamPairGenerator::generateMount(FuncDataBase& Control,
   Control.addVariable(keyName+"OutLiftB",outLiftB);
   Control.addVariable(keyName+"GapA",gapA);
   Control.addVariable(keyName+"GapB",gapB);
+
+  Control.addVariable(keyName+"WaterRadius",waterRadius);
+  Control.addVariable(keyName+"WaterMat",waterMat);
 
   Control.addVariable(keyName+"SupportRadius",supportRadius);
   Control.addVariable(keyName+"SupportMat",supportMat);

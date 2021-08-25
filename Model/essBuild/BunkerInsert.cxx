@@ -256,8 +256,8 @@ BunkerInsert::createLinks()
 {
   ELog::RegMethod RegA("BunkerInsert","createLinks");
 
-  FixedComp::setLinkSignedCopy(0,*bunkerObj,1);
-  FixedComp::setLinkSignedCopy(1,*bunkerObj,2);
+  FixedComp::setLinkCopy(0,*bunkerObj,1);
+  FixedComp::setLinkCopy(1,*bunkerObj,2);
 
 
   // Calc bunker edge intersectoin
