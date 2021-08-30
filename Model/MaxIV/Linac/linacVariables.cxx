@@ -2045,6 +2045,14 @@ Segment26(FuncDataBase& Control,
   Control.addVariable(lKey+"ShieldAZStep",5.0); // approx
   Control.addVariable(lKey+"ShieldAXAngle",-pipeBAXAngle);
 
+  // from top to bottom:
+  Control.addVariable(lKey+"ShieldAMidHoleShieldHeight6",4.2);
+  Control.addVariable(lKey+"ShieldAMidHoleShieldHeight5",4.7);
+  Control.addVariable(lKey+"ShieldAMidHoleShieldHeight4",5.0);
+  Control.addVariable(lKey+"ShieldAMidHoleShieldHeight3",3.8);
+  Control.addVariable(lKey+"ShieldAMidHoleShieldHeight2",5.7);
+  Control.addVariable(lKey+"ShieldAMidHoleShieldHeight1",2.5);
+
   return;
 }
 

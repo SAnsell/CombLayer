@@ -72,6 +72,7 @@
 #include "YagUnit.h"
 #include "YagScreen.h"
 #include "LocalShielding.h"
+#include "LocalShielding3.h"
 
 #include "TDCsegment.h"
 #include "Segment26.h"
@@ -92,7 +93,7 @@ Segment26::Segment26(const std::string& Key) :
   pipeBA(new constructSystem::VacuumPipe(keyName+"PipeBA")),
   pipeCA(new constructSystem::VacuumPipe(keyName+"PipeCA")),
 
-  shieldA(new tdcSystem::LocalShielding(keyName+"ShieldA")),
+  shieldA(new tdcSystem::LocalShielding3(keyName+"ShieldA")),
 
   bellowAA(new constructSystem::Bellows(keyName+"BellowAA")),
   bellowBA(new constructSystem::Bellows(keyName+"BellowBA")),
@@ -252,11 +253,9 @@ Segment26::buildObjects(Simulation& System)
   createSplitInnerZone();
 
   // Local shielding wall
-
-  shieldA->setCutSurf("Inner",
-		      pipeAA->getFullRule("outerPipe") *
-		      pipeBA->getFullRule("outerPipe") *
-		      pipeCA->getFullRule("outerPipe"));
+  shieldA->setCutSurf("Inner3",pipeAA->getFullRule("outerPipe"));
+  shieldA->setCutSurf("Inner2",pipeBA->getFullRule("outerPipe"));
+  shieldA->setCutSurf("Inner1",pipeCA->getFullRule("outerPipe"));
   shieldA->createAll(System, *pipeBA, "#front");
 
 
