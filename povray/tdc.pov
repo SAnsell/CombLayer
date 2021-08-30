@@ -518,8 +518,8 @@ global_settings {
     #declare cameraAngle = 60;
   #break
     #case(strcmp(ITEM,"TDC26ShieldA"))
-    #declare cameraLocation = <-243, 7850, 20>;
-    #declare cameraLookAt   = <-352, 8115, 0>;
+    #declare cameraLocation = <-220, 7800, 20>;
+    #declare cameraLookAt   = <-352, 8200, 0>;
     #declare projection = 0;
     #declare cameraAngle = 40;
   #break
@@ -592,7 +592,7 @@ global_settings {
   #break
     #case(strcmp(ITEM,"SpectrometerDipole"))
     #declare cameraLocation = <200, 7100, 100>;
-    #declare cameraLookAt   = <-300, 8150, 0>;
+    #declare cameraLookAt   = <-300, 8340, 0>;
     #declare projection = 0;
     #declare cameraAngle = 30;
   #break
