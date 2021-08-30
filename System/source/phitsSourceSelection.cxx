@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   source/flukaSourceSelector.cxx
+ * File:   source/phitsSourceSelector.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -58,13 +58,13 @@
 #include "SourceBase.h"
 #include "World.h"
 #include "sourceDataBase.h"
-#include "flukaSourceSelector.h"
+#include "phitsSourceSelector.h"
 
 namespace SDef
 {
   
 void 
-flukaSourceSelection(Simulation& System,
+phitsSourceSelection(Simulation& System,
 		     const mainSystem::inputParam& IParam)
   /*!
     Build the source based on the input parameter table
@@ -73,7 +73,7 @@ flukaSourceSelection(Simulation& System,
     \param IParam :: Input parameter
   */
 {
-  ELog::RegMethod RegA("flukaSourceSelector[F]","flukaSourceSelection");
+  ELog::RegMethod RegA("phitsSourceSelector[F]","phitsSourceSelection");
   
   const mainSystem::MITYPE inputMap=IParam.getMapItems("sdefMod");
 
@@ -81,17 +81,13 @@ flukaSourceSelection(Simulation& System,
   const bool axisFlag(IParam.flag("sdefVec"));
   if (axisFlag)
     {
-      size_t itemCnt(0);
-      const Geometry::Vec3D Org=
-	mainSystem::getDefNamedPoint(System,IParam,"sdefVec",
-				     0,itemCnt,Geometry::Vec3D(0,0,0));
       
+      const Geometry::Vec3D Org=
+	IParam.getDefValue<Geometry::Vec3D>(Geometry::Vec3D(0,0,0),"sdefVec",0);
       const Geometry::Vec3D Axis=
-	mainSystem::getDefNamedAxis(System,IParam,"sdefVec",
-				     1,itemCnt,Geometry::Vec3D(0,1,0));
+	IParam.getDefValue<Geometry::Vec3D>(Geometry::Vec3D(0,1,0),"sdefVec",1);
       const Geometry::Vec3D ZAxis=
-	mainSystem::getDefNamedAxis(System,IParam,"sdefVec",
-				    2,itemCnt,Geometry::Vec3D(0,0,1));
+	IParam.getDefValue<Geometry::Vec3D>(Geometry::Vec3D(0,0,1),"sdefVec",2);
       beamAxis.createUnitVector(Org,Axis,ZAxis);
     }
   
@@ -123,16 +119,19 @@ flukaSourceSelection(Simulation& System,
 
       ELog::EM<<"SDEF TYPE ["<<sdefIndex<<"] == "<<sdefType<<ELog::endDiag;
       
-      if (sdefType=="Wiggler")                       // blader wiggler
-	sName=SDef::createWigglerSource(inputMap,FC,linkIndex);
-      
+      if (sdefType=="Spectrum")                       // Spectrum beam
+	{
+	  const std::string fileName=IParam.getValue<std::string>
+	    ("sdefType",sdefIndex,1);
+	  //	  sName=SDef::createWeightedSource(inputMap,FC,linkIndex,fileName);
+	}
       else if (sdefType=="Beam" || sdefType=="beam")
 	sName=SDef::createBeamSource(inputMap,"beamSource",FC,linkIndex);
 
       
-      else if (sdefType=="external" || sdefType=="External" ||
-	       sdefType=="source" || sdefType=="Source")
-	eName=SDef::createFlukaSource(inputMap,"flukaSource",FC,linkIndex);
+      // else if (sdefType=="external" || sdefType=="External" ||
+      // 	       sdefType=="source" || sdefType=="Source")
+      // 	eName=SDef::createFlukaSource(inputMap,"phitsSource",FC,linkIndex);
 	 
       else
 	{
@@ -145,7 +144,6 @@ flukaSourceSelection(Simulation& System,
     }
   
   ELog::EM<<"Source name(s) == "<<sName<<" "<<eName<<ELog::endDiag;
-  processPolarization(inputMap,sName);
   
   if (!IParam.flag("sdefVoid") && !sName.empty())
     System.setSourceName(sName);
@@ -161,40 +159,6 @@ flukaSourceSelection(Simulation& System,
   return;
 }
 
-void
-processPolarization(const mainSystem::MITYPE& inputMap,
-		    const std::string& sourceName)
-  /*!
-    Process the polarization vector
-    \param inputMap :: IParam input stream
-  */
-{
-  ELog::RegMethod RegA("SourceSelector[F]","processPolarization");
-
-  sourceDataBase& SDB=sourceDataBase::Instance();
-
-  SDef::SourceBase* SPtr=SDB.getSource<SDef::SourceBase>(sourceName);
-  if (SPtr)
-    {
-      mainSystem::MITYPE::const_iterator mc=inputMap.find("polarization");
-      if (mc!=inputMap.end())
-	{
-	  ELog::EM<<"POLAR"<<ELog::endDiag;
-	  Geometry::Vec3D PVec;
-
-	  const std::vector<std::string>& IVec=mc->second;
-	  if (!IVec.empty() && StrFunc::convert(IVec.front(),PVec))
-	    {
-	      double Pfrac(1.0);
-	      if (IVec.size()>1)
-		StrFunc::convert(IVec[1],Pfrac);
-
-	      SPtr->setPolarization(PVec,Pfrac);		  
-	    }
-	}
-    }
-  return;
-}
   
 
   

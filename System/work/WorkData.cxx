@@ -3,7 +3,7 @@
  
  * File:   work/WorkData.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -734,6 +734,62 @@ WorkData::rebin(const WorkData& A)
   return rebin(A.XCoord);
 }
 
+
+WorkData&
+WorkData::rebin(const double xMin,const double xMax)
+  /*!
+    Generate a new rebining base on user defined steps
+    \param XOut :: Required Bin steps
+    \return rebined(this)
+  */
+{
+  ELog::RegMethod RegA("WorkData","rebin(eMin,eMax)");
+  if (XCoord.size()<2)
+    throw ColErr::IndexError<size_t>(XCoord.size(),2,"XOut size");
+
+  if (xMax <= xMin)
+    throw ColErr::OrderError<double>(xMin,xMax,"xMin/xMax");
+
+  if (xMin>XCoord.back())
+    {
+      XCoord.clear();
+      Yvec.clear();
+      weight=-1.0;
+    }
+  
+  if (xMin>XCoord.front())
+    {
+      size_t i;
+      for(i=0;i<Yvec.size() && XCoord[i]<xMin;i++) ;
+      if (i>1)
+	{
+	  i--;
+	  Yvec.erase(Yvec.begin(),Yvec.begin()+i);
+	  XCoord.erase(XCoord.begin(),XCoord.begin()+i);
+	}
+      const double frac=(XCoord[1]-xMin)/(XCoord[1]-XCoord[0]);
+      XCoord[0]=xMin;
+      Yvec[0]*=frac;
+    }
+
+  if (xMax<XCoord.back())
+    {
+      size_t XSize(XCoord.size()-1);
+      size_t i;
+      for(i=XSize;i>0 && xMax<XCoord[i];i--) ;
+      i++;
+      if (i<XSize)
+	{
+	  Yvec.erase(Yvec.begin()+i+1,Yvec.end());
+	  XCoord.erase(XCoord.begin()+i+1,XCoord.end());
+	}
+
+      const double frac=(xMax-XCoord[i-1])/(XCoord[i]-XCoord[i-1]);
+      XCoord[i]=xMax;
+      Yvec[i-1]*=frac;
+    }
+  return *this;
+}
 
 WorkData&
 WorkData::rebin(const std::vector<double>& XOut)

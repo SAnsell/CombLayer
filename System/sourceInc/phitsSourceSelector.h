@@ -1,8 +1,8 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   testInclude/testWorkData.h
-*
+ * File:   sourceInc/phitsSourceSelector.h
+ *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,39 +19,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef testWorkData_h
-#define testWorkData_h 
+#ifndef SDef_phitsSourceSelector_h
+#define SDef_phitsSourceSelector_h
 
-class WorkData;
+class Simulation;
 
-/*!
-  \class testWorkData
-  \brief Tests the class Cylinder class
-  \author S. Ansell
-  \date Nov. 2005
-  \version 1.0
-
-  Test the distance of a point to the cone
-*/
-
-class testWorkData 
+namespace SDef
 {
-private:
-
-  void populate(WorkData&,const int,const double,
-		const double,const double,const double);
-
-  //Tests
-  int testIntegral();
-  int testRebin();
-  int testSum();
- 
-public:
-
-  testWorkData();
-  ~testWorkData();
-
-  int applyTest(const int);     
-};
+  void phitsSourceSelection(Simulation&,const mainSystem::inputParam&);
+}
 
 #endif
+ 

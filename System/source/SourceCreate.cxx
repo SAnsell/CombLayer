@@ -174,6 +174,43 @@ createESSSource(const mainSystem::MITYPE& inputMap,
 
 
 std::string
+createBeamSource(const mainSystem::MITYPE& inputMap,
+		 const std::string& keyName,
+		 const attachSystem::FixedComp& FC,
+		 const long int sideIndex,
+		 const std::string& energyFile)
+  /*!
+    Creates a spectrum from a position with a given energy 
+    file spectrum [only for MCNP/PHITS.
+    \param inputMap :: inputMap system
+    \param FC :: Link point
+    \param sideIndex :: Link point [signed] 
+    \param energyFile  :: Energy file
+    \return keyName of source
+   */
+{
+  ELog::RegMethod RegA("SourceCreate","createBeamSource(energyFile)");
+
+  const particleConv& PC=particleConv::Instance();  
+  
+  sourceDataBase& SDB=sourceDataBase::Instance();
+
+  const double Emin=
+    mainSystem::getDefInput<double>(inputMap,"energyMin",0,1e-3); // 1keV
+  const double Emax=
+    mainSystem::getDefInput<double>(inputMap,"energyMax",0,1e-6); // 1MeV
+
+  BeamSource GX(keyName);
+
+  GX.setEnergyFile(energyFile,0,1,Emin,Emax);
+  GX.setParticle(PC.mcnpITYP("photon"));
+  GX.createAll(inputMap,FC,sideIndex);
+
+  SDB.registerSource(GX.getKeyName(),GX);  
+  return GX.getKeyName();      
+}
+
+std::string
 createWigglerSource(const mainSystem::MITYPE& inputMap,
 		    const attachSystem::FixedComp& FC,
 		    const long int sideIndex)
@@ -505,7 +542,7 @@ createRectSource(const mainSystem::MITYPE& inputMap,
     \return keyName of source
    */
 {
-  ELog::RegMethod RegA("SourceCreate","createBeamSource");
+  ELog::RegMethod RegA("SourceCreate","createRectSource");
 
   sourceDataBase& SDB=sourceDataBase::Instance();
   RectangleSource GX(keyName);
