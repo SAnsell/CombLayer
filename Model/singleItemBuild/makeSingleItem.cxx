@@ -226,7 +226,7 @@ makeSingleItem::build(Simulation& System,
 
       OR.addObject(TubeA);
       OR.addObject(TubeB);
-      
+
       TubeA->addInsertCell(voidCell);
       TubeA->createAll(System,World::masterOrigin(),0);
 
@@ -437,7 +437,7 @@ makeSingleItem::build(Simulation& System,
       return;
     }
 
-  
+
   if (item == "Jaws")
     {
       // diagnostic box
@@ -509,14 +509,14 @@ makeSingleItem::build(Simulation& System,
       ls->addUnit(sc);
       ls->addUnit(sd);
       ls->addUnit(se);
-      
+
       ls->setSurfaces({
     	    {"front",{"ShieldE","#back"}},      // -1050002
 	    {"back",{"ShieldB","#back"}},       // -1020002
 	    {"left",{"ShieldC","left"}},        // 1030003
 	    {"right",{"ShieldB","#right"}},     // -102004
-	    {"base",{"ShieldE","base"}},        // 1050005 
-	    {"top",{"ShieldB","#top"}}          // -1020006 
+	    {"base",{"ShieldE","base"}},        // 1050005
+	    {"top",{"ShieldB","#top"}}          // -1020006
 	});
 
       ls->setConnections
@@ -526,7 +526,7 @@ makeSingleItem::build(Simulation& System,
 	  {"ShieldD",{"ShieldB","front"}},
 	  {"ShieldE",{"ShieldB","front"}}
 	});
-      
+
       ls->addInsertCell(voidCell);
       ls->createAll(System,World::masterOrigin(),0);
 
@@ -910,7 +910,7 @@ makeSingleItem::build(Simulation& System,
 
       BS->addInsertCell(BX->getCells("Void"));
       BS->createAll(System,World::masterOrigin(),0);
-      
+
       return;
     }
 
@@ -922,7 +922,7 @@ makeSingleItem::build(Simulation& System,
 
       cp->addInsertCell(voidCell);
       cp->createAll(System,World::masterOrigin(),0);
-      
+
       return;
     }
 
@@ -1001,7 +1001,7 @@ makeSingleItem::build(Simulation& System,
   if (item=="DipoleDIBMag")
     {
       std::shared_ptr<constructSystem::VacuumPipe>
-	VC(new constructSystem::VacuumPipe("VC"));
+	VC(new constructSystem::VacuumPipe("DipolePipe"));
       std::shared_ptr<tdcSystem::DipoleDIBMag>
 	DIB(new tdcSystem::DipoleDIBMag("DIB"));
 
@@ -1071,10 +1071,10 @@ makeSingleItem::build(Simulation& System,
       {
 	std::shared_ptr<constructSystem::Bellows>
 	  bellowTube(new constructSystem::Bellows("BellowTube"));
-	
+
 	std::shared_ptr<constructSystem::PipeTube>
 	  pipeTube(new constructSystem::PipeTube("PipeTube"));
-	
+
 	OR.addObject(bellowTube);
 	OR.addObject(pipeTube);
 
@@ -1108,12 +1108,12 @@ makeSingleItem::build(Simulation& System,
       {
 	std::shared_ptr<constructSystem::PortTube>
 	  pipeTube(new constructSystem::PortTube("PortTube"));
-	
+
 	OR.addObject(pipeTube);
-	
+
 	pipeTube->addAllInsertCell(voidCell);
 	pipeTube->createAll(System,World::masterOrigin(),0);
-	
+
 	return;
       }
 
@@ -1121,73 +1121,73 @@ makeSingleItem::build(Simulation& System,
       {
 	std::shared_ptr<constructSystem::BlankTube>
 	  blankTube(new constructSystem::BlankTube("BlankTube"));
-	
+
 	OR.addObject(blankTube);
-	
+
 	blankTube->addAllInsertCell(voidCell);
 	blankTube->createAll(System,World::masterOrigin(),0);
-	
+
 	return;
       }
-    
+
     if (item == "ButtonBPM" )
       {
 	std::shared_ptr<tdcSystem::ButtonBPM>
 	  buttonBPM(new tdcSystem::ButtonBPM("ButtonBPM"));
-	
+
 	OR.addObject(buttonBPM);
-	
+
 	buttonBPM->addInsertCell(voidCell);
 	buttonBPM->createAll(System,World::masterOrigin(),0);
-	
+
 	return;
       }
     if (item == "BremTube" )
       {
 	std::shared_ptr<xraySystem::BremTube>
 	  bremTube(new xraySystem::BremTube("BremTube"));
-	
+
 	OR.addObject(bremTube);
-	
+
 	bremTube->addInsertCell(voidCell);
 	bremTube->createAll(System,World::masterOrigin(),0);
-	
+
 	return;
       }
     if (item == "HPJaws" )
       {
 	std::shared_ptr<xraySystem::HPJaws>
 	  hp(new xraySystem::HPJaws("HPJaws"));
-	
+
 	OR.addObject(hp);
-	
+
 	hp->addInsertCell(voidCell);
 	hp->createAll(System,World::masterOrigin(),0);
-	
+
 	return;
       }
     if (item == "BoxJaws")
       {
 	std::shared_ptr<xraySystem::BoxJaws>
 	  bj(new xraySystem::BoxJaws("BoxJaws"));
-	
+
 	OR.addObject(bj);
-	
+
 	bj->addInsertCell(voidCell);
 	bj->createAll(System,World::masterOrigin(),0);
-	
+
 	return;
       }
     if (item == "DiffPumpXIADP03")
       {
 	std::shared_ptr<xraySystem::DiffPumpXIADP03>
 	  dp(new xraySystem::DiffPumpXIADP03("DiffXIA"));
-	
+
 	OR.addObject(dp);
-	
+
 	dp->addInsertCell(voidCell);
 	dp->createAll(System,World::masterOrigin(),0);
-	
+
 	return;
       }
 
@@ -1195,12 +1195,12 @@ makeSingleItem::build(Simulation& System,
       {
 	std::shared_ptr<xraySystem::CLRTube>
 	  clr(new xraySystem::CLRTube("CLRTube"));
-	
+
 	OR.addObject(clr);
-	
+
 	clr->addAllInsertCell(voidCell);
 	clr->createAll(System,World::masterOrigin(),0);
-	
+
 	return;
       }
     if (item == "HPCombine")
@@ -1209,18 +1209,18 @@ makeSingleItem::build(Simulation& System,
 	  bremTube(new xraySystem::BremTube("BremTube"));
 	std::shared_ptr<xraySystem::HPJaws>
 	  hp(new xraySystem::HPJaws("HPJaws"));
-	
+
 	OR.addObject(bremTube);
 	OR.addObject(hp);
-	
+
 	bremTube->addInsertCell(voidCell);
 	bremTube->createAll(System,World::masterOrigin(),0);
-	
+
 	hp->addInsertCell(voidCell);
 	hp->setFront(*bremTube,2);
 	hp->setFlangeJoin();
 	hp->createAll(System,*bremTube,"back");
-	
+
 	return;
       }
     if (item == "ViewTube" )
@@ -1231,7 +1231,7 @@ makeSingleItem::build(Simulation& System,
 	  yagScreen(new tdcSystem::YagScreen("YAG"));
 
 	OR.addObject(vt);
-	
+
 	vt->addInsertCell(voidCell);
 	vt->createAll(System,World::masterOrigin(),0);
 
@@ -1241,34 +1241,34 @@ makeSingleItem::build(Simulation& System,
 	yagScreen->insertInCell("Connect",System,vt->getCell("Plate"));
 	yagScreen->insertInCell("Connect",System,vt->getCell("Void"));
 	yagScreen->insertInCell("Payload",System,vt->getCell("Void"));
-	
+
 	return;
       }
-    
+
     if (item == "ExperimentalHutch")
       {
 	std::shared_ptr<xraySystem::ExperimentalHutch>
 	  eh(new xraySystem::ExperimentalHutch("ExptHutch"));
-	
+
 	OR.addObject(eh);
-	
+
 	eh->addInsertCell(voidCell);
 	eh->createAll(System,World::masterOrigin(),0);
-	
+
 	return;
       }
-    
+
     if (item=="Help" || item=="help")
       {
-	
+
 	ELog::EM<<"Valid items for single selection:\n"<<ELog::endDiag;
-	
+
 	for(const std::string& Name : validItems)
 	  ELog::EM<<"Item : "<<Name<<"\n";
-	
+
 	ELog::EM<<"-----------"<<ELog::endDiag;
       }
-    
+
   return;
 }
 
