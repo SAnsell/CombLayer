@@ -27,6 +27,11 @@
 // so one can set quick=0 and play with -q0
 
 #switch (0)
+  #case (strcmp(ITEM,"DipoleDIBMag"))
+    #declare cameraLocation = <-50, -100.0, 20.0>;
+    #declare cameraLookAt   = <0.0, -10.0, 0.0>;
+    #declare cameraAngle = 30;
+  #break
   #case (strcmp(ITEM,"ButtonBPM"))
     #declare cameraLocation = <-10, -10.0, 10.0>;
     #declare cameraLookAt   = <0.0, 0.0, 0.0>;
