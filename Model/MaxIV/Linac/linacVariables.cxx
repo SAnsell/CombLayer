@@ -3373,10 +3373,10 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"FKGShieldLength",800.0); // my suggestion [test]
   Control.addVariable(wallKey+"FKGShieldHeight",229.0); // my suggestion [test]
   Control.addVariable(wallKey+"FKGShieldDepth",0.0); // my suggestion [test]
-  Control.addVariable(wallKey+"FKGShieldMat","Stainless304L"); // my suggestion [test]
+  Control.addVariable(wallKey+"FKGShieldMat","Void"); // void but increased height of the BTG blocks (+exclusion zone in FKG)
 
   Control.addVariable(wallKey+"BTGThick",90.0); // calculated from K_20-1_08G6b4: 2700-1800
-  Control.addVariable(wallKey+"BTGHeight",200.0); // derived from K_20-6_075
+  Control.addVariable(wallKey+"BTGHeight",280.0); // original value derived from K_20-6_075: 200, added 80 to reduce dose rate in FKG
   Control.addVariable(wallKey+"BTGLength",1000.0); // K_20-1_08G6b[14]: 495000-489000-1416+5416
   Control.addVariable(wallKey+"BTGYOffset",180.0); // calculated from K_20-1_08G6b4: 5416-3616
   Control.addVariable(wallKey+"BTGMat","Concrete"); // AR 2020-11-17
