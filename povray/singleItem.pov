@@ -92,6 +92,16 @@
     #declare cameraLookAt   = <0.0, 30.0, -10.0>;
     #declare cameraAngle = 40;
   #break
+  #case (strcmp(ITEM,"NBeamStop"))
+    #declare cameraLocation = <100, -200.0, 120.0>;
+    #declare cameraLookAt   = <40.0, 50.0, 10.0>;
+    #declare cameraAngle = 60;
+  #break
+  #case (strcmp(ITEM,"NBeamStopBack"))
+    #declare cameraLocation = <100, 500.0, 420.0>;
+    #declare cameraLookAt   = <0.0, 100.0, 0.0>;
+    #declare cameraAngle = 40;
+  #break
 #else
     #declare cameraLocation = <100, 100, 100>;
     #declare cameraLookAt   = <0, 0, 0>;
