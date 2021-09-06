@@ -74,7 +74,6 @@
 #include "VoidUnit.h"
 #include "NBeamStop.h"
 #include "LBeamStop.h"
-#include "BeamWing.h"
 #include "BeamBox.h"
 #include "LowBeamBox.h"
 
@@ -105,15 +104,13 @@ Segment29::Segment29(const std::string& Key) :
   yagScreenB(new tdcSystem::YagScreen(keyName+"YagScreenB")),
 
   endVoid(new constructSystem::VoidUnit(keyName+"EndVoid")),
-  
+
   beamStopA(new tdcSystem::NBeamStop(keyName+"BeamStopA")),
   beamStopB(new tdcSystem::NBeamStop(keyName+"BeamStopB")),
 
-  beamWingA(new tdcSystem::BeamWing(keyName+"BeamWingA")),
-  beamWingB(new tdcSystem::BeamWing(keyName+"BeamWingB")),
   beamBoxA(new tdcSystem::BeamBox(keyName+"BeamBoxA")),
   beamBoxB(new tdcSystem::LowBeamBox(keyName+"BeamBoxB"))
-  
+
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -137,11 +134,9 @@ Segment29::Segment29(const std::string& Key) :
   OR.addObject(beamStopA);
   OR.addObject(beamStopB);
 
-  OR.addObject(beamWingA);
-  OR.addObject(beamWingB);
   OR.addObject(beamBoxA);
   OR.addObject(beamBoxB);
-  
+
   setFirstItems(pipeAA);
   setFirstItems(pipeBA);
 }
@@ -210,18 +205,18 @@ Segment29::buildObjects(Simulation& System)
 
   if (isActive("front"))
     pipeAA->copyCutSurf("front",*this,"front");
-  
+
   if (firstItemVec.size()>=2)
     {
       if (prevSegPtr && prevSegPtr->hasLinkSurf("backMid"))
 	pipeBA->setFront(*prevSegPtr,"backMid");
     }
-  
+
   pipeAA->createAll(System,*this,0);
   pipeBA->createAll(System,*this,0);
 
   createSplitInnerZone();
-  
+
   outerCellA=IZTop->createUnit(System,*pipeAA,2);
   outerCellB=IZMid->createUnit(System,*pipeBA,2);
 
@@ -255,9 +250,9 @@ Segment29::buildObjects(Simulation& System)
 
   outerCellA = constructSystem::constructUnit
     (System,*IZTop,*yagUnitA,"back",*endVoid);
-  
+
   outerCellB =IZMid->createUnit(System,*endVoid,"back");
-  
+
   // Create Final object:
   const HeadRule& frontHR=IZTop->getBack();
   const HeadRule& backHR=ExternalCut::getRule("BackWallFront");
@@ -266,8 +261,8 @@ Segment29::buildObjects(Simulation& System)
   makeCell("EndVoid",System,cellIndex++,0,0.0,
 	   frontHR*backHR.complement()*surHR);
   const int outerVoid=CellMap::getCell("EndVoid");
-  
-  
+
+
   // inital cell if needed
   if (!prevSegPtr || !prevSegPtr->isBuilt())
     {
@@ -290,7 +285,7 @@ Segment29::buildObjects(Simulation& System)
 
   beamBoxB->addInsertCell(outerVoid);
   beamBoxB->createAll(System,*yagUnitA,"back");
-  
+
   beamStopA->addInsertCell(beamBoxA->getCells("Void"));
   beamStopA->createAll(System,*yagUnitA,"back");
 
@@ -348,7 +343,7 @@ Segment29::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   buildObjects(System);
 
-	  
+
   createLinks();
   return;
 }

@@ -40,10 +40,9 @@ namespace tdcSystem
   class YagScreen;
   class LBeamStop;
   class NBeamStop;
-  class BeamWing;
   class LowBeamBox;
   class BeamBox;
-  
+
 
   /*!
     \class Segment29
@@ -61,7 +60,7 @@ class Segment29 :
   std::unique_ptr<attachSystem::BlockZone> IZTop;        ///< Upper inner zone
   std::unique_ptr<attachSystem::BlockZone> IZMid;        ///< Flat inner zone
 
-  /// Join pipe 
+  /// Join pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeAA;
   std::shared_ptr<constructSystem::VacuumPipe> pipeBA;
 
@@ -69,7 +68,7 @@ class Segment29 :
   std::shared_ptr<constructSystem::Bellows> bellowAA;
   std::shared_ptr<constructSystem::Bellows> bellowBA;
 
-  /// Join pipe 
+  /// Join pipe
   std::shared_ptr<tdcSystem::YagUnit> yagUnitA;
   std::shared_ptr<tdcSystem::YagUnit> yagUnitB;
 
@@ -77,26 +76,22 @@ class Segment29 :
   std::shared_ptr<tdcSystem::YagScreen> yagScreenA;
   std::shared_ptr<tdcSystem::YagScreen> yagScreenB;
 
-  // End void for nice flat terminator 
+  // End void for nice flat terminator
   std::shared_ptr<constructSystem::VoidUnit> endVoid;
-  
+
   /// beam-stops
   std::shared_ptr<tdcSystem::NBeamStop> beamStopA;
   std::shared_ptr<tdcSystem::NBeamStop> beamStopB;
 
-  /// Extra wings [if required]
-  std::shared_ptr<tdcSystem::BeamWing> beamWingA;
-  std::shared_ptr<tdcSystem::BeamWing> beamWingB;
-
   /// Boxes round beamstops
   std::shared_ptr<tdcSystem::BeamBox> beamBoxA;
   std::shared_ptr<tdcSystem::LowBeamBox> beamBoxB;
-  
+
   void buildObjects(Simulation&);
   void createLinks();
 
   void createSplitInnerZone();
-  
+
  public:
 
   Segment29(const std::string&);
