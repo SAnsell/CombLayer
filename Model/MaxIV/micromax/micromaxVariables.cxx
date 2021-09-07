@@ -660,54 +660,28 @@ diagUnit(FuncDataBase& Control,const std::string& Name)
 
 
   const double DLength(65.0);         // diag length [checked]
-  setVariable::PortTubeGenerator PTubeGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::JawValveGenerator JawGen;
   setVariable::BeamPairGenerator BeamMGen;
-    
-  PTubeGen.setMat("Stainless304");
 
-  // ports offset by 24.5mm in x direction
-  // length 425+ 75 (a) 50 b
-  PTubeGen.setPipe(9.0,0.5);
-  PTubeGen.setPortCF<CF40>();
-  PTubeGen.setPortLength(-3.0,-3.0);
-  
-  // ystep/radius length
-  PTubeGen.generateTube(Control,Name,0.0,DLength);
-  Control.addVariable(Name+"NPorts",5);
+  const std::string bremName(Name+"BremBlockTube");
+  SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.setCap(1,1);
+  SimpleTubeGen.setBFlangeCF<CF150>();
+  SimpleTubeGen.generateTube(Control,bremName,25.0);
+  Control.addVariable(bremName+"NPorts",2);   // beam ports
 
-  const std::string portName=Name+"Port";
-  const Geometry::Vec3D MidPt(0,0,0);
-  const Geometry::Vec3D XVec(1,0,0);
-  const Geometry::Vec3D ZVec(0,0,1);
-  const Geometry::Vec3D PPosA(0.0,-DLength/3.2,0);
-  const Geometry::Vec3D PPosB(0.0,-DLength/4.0,0);
-  const Geometry::Vec3D PPosC(0.0,DLength/8.0,0);
-  const Geometry::Vec3D PPosD(0.0,DLength/3.0,0);
-  const Geometry::Vec3D PPosE(0.0,DLength/3.0,0);
+  PItemGen.setCF<setVariable::CF100>(CF150::outerRadius+5.0);
+  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.setOuterVoid(0);
+  PItemGen.generatePort(Control,bremName+"Port0",
+			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,1));
 
-  
-  PItemGen.setOuterVoid(1);
-  PItemGen.setCF<setVariable::CF150>(24.3);
-  PItemGen.generatePort(Control,portName+"0",PPosA,ZVec);
-  PItemGen.generatePort(Control,portName+"1",PPosB,-XVec);
-  PItemGen.setCF<setVariable::CF40>(14.0);
-  PItemGen.generatePort(Control,portName+"2",PPosC,-XVec);
-  PItemGen.setCF<setVariable::CF63>(12.0);
-  PItemGen.generatePort(Control,portName+"3",PPosD,-XVec);
-  PItemGen.setCF<setVariable::CF100>(18.0);
-  PItemGen.generatePort(Control,portName+"4",PPosE,ZVec);
-
-  //  
-  
-  const std::string jawKey[]={"JawX","JawZ"};
-  for(size_t i=0;i<2;i++)
-    {
-      const std::string fname=Name+jawKey[i];
-      if (i) BeamMGen.setXYStep(-1.2,-2.5,1.2,2.5);
-      BeamMGen.generateMount(Control,fname,1);  // out of beam
-    }
+  PItemGen.setCF<setVariable::CF150>(CF150::outerRadius+10.0);
+  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.generatePort(Control,bremName+"Port1",
+			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,-1));
 
   return;
 }
@@ -832,8 +806,12 @@ opticsVariables(FuncDataBase& Control,
 
   PipeGen.generatePipe(Control,preName+"BremPipeA",5.0);
 
-  diagUnit(Control,preName+"DiagBoxA");
-  
+  diagUnit(Control,preName);
+
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,preName+"BellowC",7.50);
+
+  /*
   PipeGen.setCF<CF40>();  
   PipeGen.generatePipe(Control,preName+"PipeB",7.5);
   GVGen.generateGate(Control,preName+"GateTubeB",0);  // open
@@ -852,6 +830,7 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,preName+"PipeD",12.5);  
   GVGen.generateGate(Control,preName+"GateTubeD",0);  // open
 
+  
   micromaxVar::diag2Package(Control,preName);
 
   micromaxVar::mirrorBox(Control,preName,"A","Horrizontal",-0.2,0.0);
@@ -861,7 +840,7 @@ opticsVariables(FuncDataBase& Control,
   micromaxVar::diag4Package(Control,preName);
   
   micromaxVar::monoShutterVariables(Control,preName);
-
+  */
   return;
 }
 
@@ -1114,7 +1093,7 @@ MICROMAXvariables(FuncDataBase& Control)
     \param Control :: Function data base to add constants too
   */
 {
-  ELog::RegMethod RegA("micromaxVariables[F]","micromaxVariables");
+  ELog::RegMethod RegA("micromaxVariables[F]","MICROMAXvariables");
 
   Control.addVariable("sdefType","Wiggler");
   
@@ -1123,29 +1102,29 @@ MICROMAXvariables(FuncDataBase& Control)
   PipeGen.setNoWindow();
   PipeGen.setMat("Aluminium");
 
-  const std::string frontKey("MicromaxFrontBeam");
+  const std::string frontKey("MicroMaxFrontBeam");
 
   micromaxVar::undulatorVariables(Control,frontKey);
-  setVariable::R3FrontEndVariables(Control,"Micromax");
-  micromaxVar::frontMaskVariables(Control,"MicromaxFrontBeam");
+  setVariable::R3FrontEndVariables(Control,"MicroMax");
+  micromaxVar::frontMaskVariables(Control,"MicroMaxFrontBeam");
     
   
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,"MicromaxJoinPipe",150.0);
-  Control.addVariable("MicromaxJoinPipeFlipX",1);
+  PipeGen.generatePipe(Control,"MicroMaxJoinPipe",150.0);
+  Control.addVariable("MicroMaxJoinPipeFlipX",1);
     
-  micromaxVar::opticsHutVariables(Control,"MicromaxOpticsHut");
-  micromaxVar::opticsVariables(Control,"Micromax");
+  micromaxVar::opticsHutVariables(Control,"MicroMaxOpticsHut");
+  micromaxVar::opticsVariables(Control,"MicroMax");
 
   PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,"MicromaxJoinPipeB",20.0);
+  PipeGen.generatePipe(Control,"MicroMaxJoinPipeB",20.0);
 
-  micromaxVar::shieldVariables(Control,"Micromax");
+  micromaxVar::shieldVariables(Control,"MicroMax");
   
-  micromaxVar::exptHutVariables(Control,"Micromax",0.0);
-  micromaxVar::exptVariables(Control,"Micromax");
-  micromaxVar::detectorTubePackage(Control,"Micromax");
+  micromaxVar::exptHutVariables(Control,"MicroMax",0.0);
+  micromaxVar::exptVariables(Control,"MicroMax");
+  micromaxVar::detectorTubePackage(Control,"MicroMax");
 
 
 

@@ -422,8 +422,7 @@ formaxOpticsLine::constructDiag3(Simulation& System,
   bremTubeB->createAll(System,*viewTube,"back");
 
   const constructSystem::portItem& VPB=bremTubeB->getPort(1);
-  int outerCell=buildZone.createUnit
-    (System,VPB,VPB.getSideIndex("OuterPlate"));
+  int outerCell=buildZone.createUnit(System,VPB,"OuterPlate");
   bremTubeB->insertAllInCell(System,outerCell);
 
   bremCollC->addInsertCell(bremTubeB->getCell("Void"));

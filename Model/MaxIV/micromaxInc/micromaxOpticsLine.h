@@ -110,129 +110,18 @@ class micromaxOpticsLine :
   std::shared_ptr<constructSystem::Bellows> bellowA;
   /// Brem for collimator
   std::shared_ptr<xraySystem::SquareFMask> bremCollA;
-  /// Ion Gauge
-  std::shared_ptr<xraySystem::IonGauge> ionGaugeA;
   /// bellow to collimator
   std::shared_ptr<constructSystem::Bellows> bellowB;
-  /// mini-Brem Collimator
-  std::shared_ptr<constructSystem::VacuumPipe> bremPipeB;
-
-  /// Diagnostic unit 3:
-  std::shared_ptr<constructSystem::PortTube> diagBoxA;
-  /// Jaws for the slit tube (x/z pair)
-  std::array<std::shared_ptr<xraySystem::BeamPair>,2> jaws;
-
-  /// mini pipe out of diag box
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;
-  /// gate valve
-  std::shared_ptr<xraySystem::CylGateValve> gateTubeB;
-  /// bellow to to mono
+  /// Brem block tube
+  std::shared_ptr<constructSystem::PipeTube> bremBlockTube;
+  /// Bellow exit
   std::shared_ptr<constructSystem::Bellows> bellowC;
 
-  // PART 4: [MML]
-  /// MirrorMonoBox 
-  std::shared_ptr<constructSystem::VacuumBox> MLMVessel;
-  /// Mirror-Mono system
-  std::shared_ptr<xraySystem::MLMono> MLM;
 
-  // PART 5: [connection pipe]
-
-  /// bellow from MLM
-  std::shared_ptr<constructSystem::Bellows> bellowD;
-
-  std::shared_ptr<constructSystem::VacuumPipe> pipeC;
-  /// gate valve
-  std::shared_ptr<xraySystem::CylGateValve> gateTubeC;
-  /// bellow to DCM
-  std::shared_ptr<constructSystem::Bellows> bellowE;
-
-  /// H-res mono vessel
-  std::shared_ptr<xraySystem::DCMTank> monoVessel;
-  /// Crystal pair
-  std::shared_ptr<xraySystem::MonoBlockXstals> mbXstals;
-
-    /// bellow to diag
-  std::shared_ptr<constructSystem::Bellows> bellowF;
-  /// pipe to gate valve
-  std::shared_ptr<constructSystem::VacuumPipe> pipeD;
-  /// gate valve
-  std::shared_ptr<xraySystem::CylGateValve> gateTubeD;
-
-  /// Diag unit two contains Brem block
-  std::shared_ptr<xraySystem::BremTube> bremTubeA;
-  /// Brem collimator
-  std::shared_ptr<xraySystem::BremBlock> bremCollB;
-  /// Jaws
-  std::shared_ptr<xraySystem::HPJaws> hpJawsA;
-
-  /// Mirror box
-  std::shared_ptr<constructSystem::VacuumBox> mirrorBoxA;
-  /// Mirror front
-  std::shared_ptr<xraySystem::Mirror> mirrorFrontA;
-  /// Mirror back
-  std::shared_ptr<xraySystem::Mirror> mirrorBackA;
-
-  /// bellow from Mirror to Diag3
-  std::shared_ptr<constructSystem::Bellows> bellowG;
-  /// gate valve infront of diag3
-  std::shared_ptr<xraySystem::CylGateValve> gateTubeE;
-  /// view screen
-  std::shared_ptr<xraySystem::ViewScreenTube> viewTube;
-  /// yag screen in view screen tube
-  std::shared_ptr<tdcSystem::YagScreen> yagScreen;
-
-  /// Diag unit two contains Brem block
-  std::shared_ptr<constructSystem::PipeTube> bremTubeB; 
-  /// Brem collimator
-  std::shared_ptr<xraySystem::BremBlock> bremCollC;
- /// Jaws
-  std::shared_ptr<xraySystem::HPJaws> hpJawsB;
-
-  /// bellow out of diag 3 [close]
-  std::shared_ptr<constructSystem::Bellows> bellowH;
-  /// pipe to exit bellow of diag 3
-  std::shared_ptr<constructSystem::VacuumPipe> pipeE;
-  /// bellow out of diag 3 [long/final]
-  std::shared_ptr<constructSystem::Bellows> bellowI;
-
-  /// gate valve infront of diag3
-  std::shared_ptr<xraySystem::CylGateValve> gateTubeF;
-  /// view screen
-  std::shared_ptr<xraySystem::ViewScreenTube> viewTubeB;
-  /// bellow out of diag 3 [long/final]
-  std::shared_ptr<constructSystem::Bellows> bellowJ;
-  /// adaptor plate from CF63->CF40
-  std::shared_ptr<constructSystem::VacuumPipe> monoAdaptorA;
-  /// The main mono shutter
-  std::shared_ptr<xraySystem::MonoShutter> monoShutter;
-  /// adaptor plate from CF63->CF40
-  std::shared_ptr<constructSystem::VacuumPipe> monoAdaptorB;
-  /// Last gate valve:
-  std::shared_ptr<xraySystem::CylGateValve> gateTubeG;
-  /// last pipe
-  std::shared_ptr<constructSystem::VacuumPipe> pipeF;
-  
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
   double outerTop;     ///< Top lift for cut rectangle
 
-  void constructMirrorMono(Simulation&,const attachSystem::FixedComp&,
-			   const std::string&);
-  
-  void constructHDCM(Simulation&,const attachSystem::FixedComp&,
-		     const std::string&);
-
-  void constructDiag2(Simulation&,const attachSystem::FixedComp&,
-		      const std::string&);
-
-  void constructDiag3(Simulation&,const attachSystem::FixedComp&,
-		      const std::string&);
-
-  void constructDiag4(Simulation&,const attachSystem::FixedComp&,
-		      const std::string&);
-
-  void constructMonoShutter
-  (Simulation&,const attachSystem::FixedComp&,const std::string&);
  
   void populate(const FuncDataBase&);
   void createSurfaces();
