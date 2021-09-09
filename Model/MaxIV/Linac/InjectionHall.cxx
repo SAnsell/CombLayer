@@ -467,6 +467,9 @@ InjectionHall::createSurfaces()
   SurfMap::makePlane("BackWallBack",SMap,buildIndex+22,
 		     Origin+Y*(backWallYStep+backWallThick),Y);
 
+  SurfMap::makePlane("BackWallBack",SMap,buildIndex+1022, // figure-of-merit
+		     Origin+Y*(backWallYStep+backWallThick+100),Y);
+
   SurfMap::makePlane("BackWallFront",SMap,buildIndex+31,
 		     Origin+Y*(backWallYStep-backWallIronThick),Y);
 
@@ -796,8 +799,13 @@ InjectionHall::createObjects(Simulation& System)
   // FemtoMAX (BSP02) beamline area
   // C080016 is official room name
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "22 -6201 6004 -6103 5 -6 ");
+  				 "22 -1022 6004 -6103 5 -6 ");
+  makeCell("C080016fom",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
+  				 "1022 -6201 6004 -6103 5 -6 ");
   makeCell("C080016",System,cellIndex++,voidMat,0.0,Out);
+
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6201 -6102 6004 -6014 5 -6 ");
@@ -866,7 +874,11 @@ InjectionHall::createObjects(Simulation& System)
 
   // BSP01 beamline area
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "22 -6201 6104 -1003 5 -6 ");
+  				 "22 -1022 6104 -1003 5 -6 ");
+  makeCell("C080017fom",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
+  				 "1022 -6201 6104 -1003 5 -6 ");
   makeCell("C080017",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
