@@ -40,9 +40,6 @@ namespace tdcSystem
   class YagScreen;
   class LBeamStop;
   class NBeamStop;
-  class LowBeamBox;
-  class BeamBox;
-
 
   /*!
     \class Segment29
@@ -82,10 +79,6 @@ class Segment29 :
   /// beam-stops
   std::shared_ptr<tdcSystem::NBeamStop> beamStopA;
   std::shared_ptr<tdcSystem::NBeamStop> beamStopB;
-
-  /// Boxes round beamstops
-  std::shared_ptr<tdcSystem::BeamBox> beamBoxA;
-  std::shared_ptr<tdcSystem::LowBeamBox> beamBoxB;
 
   void buildObjects(Simulation&);
   void createLinks();

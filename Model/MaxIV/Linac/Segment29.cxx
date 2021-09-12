@@ -74,8 +74,6 @@
 #include "VoidUnit.h"
 #include "NBeamStop.h"
 #include "LBeamStop.h"
-#include "BeamBox.h"
-#include "LowBeamBox.h"
 
 #include "TDCsegment.h"
 #include "Segment29.h"
@@ -106,10 +104,7 @@ Segment29::Segment29(const std::string& Key) :
   endVoid(new constructSystem::VoidUnit(keyName+"EndVoid")),
 
   beamStopA(new tdcSystem::NBeamStop(keyName+"BeamStopA")),
-  beamStopB(new tdcSystem::NBeamStop(keyName+"BeamStopB")),
-
-  beamBoxA(new tdcSystem::BeamBox(keyName+"BeamBoxA")),
-  beamBoxB(new tdcSystem::LowBeamBox(keyName+"BeamBoxB"))
+  beamStopB(new tdcSystem::NBeamStop(keyName+"BeamStopB"))
 
   /*!
     Constructor
@@ -133,9 +128,6 @@ Segment29::Segment29(const std::string& Key) :
 
   OR.addObject(beamStopA);
   OR.addObject(beamStopB);
-
-  OR.addObject(beamBoxA);
-  OR.addObject(beamBoxB);
 
   setFirstItems(pipeAA);
   setFirstItems(pipeBA);
@@ -276,22 +268,12 @@ Segment29::buildObjects(Simulation& System)
       makeCell("FrontSpace",System,cellIndex++,0,0.0,volume);
       buildZone->copyCells(*this,"FrontSpace");
     }
-  // beamboxes
-  beamBoxA->addInsertCell(outerVoid);
-  beamBoxA->createAll(System,*yagUnitA,"back");
-
-  beamBoxB->setCutSurf("top",*beamBoxA,"base");
-  beamBoxB->setCutSurf("base",getRule("Floor"));
-
-  beamBoxB->addInsertCell(outerVoid);
-  beamBoxB->createAll(System,*yagUnitA,"back");
-
-  beamStopA->addInsertCell(beamBoxA->getCells("Void"));
+  beamStopA->addInsertCell(outerVoid);
   beamStopA->createAll(System,*yagUnitA,"back");
 
   beamStopB->setCutSurf("front",frontHR);
   beamStopB->setCutSurf("base",ExternalCut::getRule("Floor"));
-  beamStopB->addInsertCell(beamBoxB->getCells("Void"));
+  beamStopB->addInsertCell(outerVoid);
   beamStopB->createAll(System,*yagUnitB,"back");
 
   return;
