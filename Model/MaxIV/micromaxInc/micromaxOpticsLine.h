@@ -116,6 +116,12 @@ class micromaxOpticsLine :
   std::shared_ptr<constructSystem::PipeTube> bremBlockTube;
   /// Bellow exit
   std::shared_ptr<constructSystem::Bellows> bellowC;
+  /// View Tube 
+  std::shared_ptr<constructSystem::PipeTube> viewTube;
+  /// Bellow exit
+  std::shared_ptr<constructSystem::Bellows> bellowD;
+  /// Attn Tube 
+  std::shared_ptr<constructSystem::PortTube> attnTube;
 
 
   double outerLeft;    ///< Left Width for cut rectangle

@@ -144,7 +144,10 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   bremCollA(new xraySystem::SquareFMask(newName+"BremCollA")),
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
   bremBlockTube(new constructSystem::PipeTube(newName+"BremBlockTube")),
-  bellowC(new constructSystem::Bellows(newName+"BellowC"))
+  bellowC(new constructSystem::Bellows(newName+"BellowC")),
+  viewTube(new constructSystem::PipeTube(newName+"ViewTube")),
+  bellowD(new constructSystem::Bellows(newName+"BellowD")),
+  attnTube(new constructSystem::PortTube(newName+"AttnTube"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -162,7 +165,11 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   OR.addObject(bremCollA);
   OR.addObject(bellowB);
   OR.addObject(bremBlockTube);
-  OR.addObject(bellowC);  
+  OR.addObject(bellowC);
+  OR.addObject(viewTube);
+  OR.addObject(bellowD);
+  OR.addObject(attnTube);
+    
 }
   
 micromaxOpticsLine::~micromaxOpticsLine()
@@ -270,6 +277,21 @@ micromaxOpticsLine::buildObjects(Simulation& System)
 
   constructSystem::constructUnit
     (System,buildZone,VPB,"OuterPlate",*bellowC);
+
+  viewTube->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  viewTube->setOuterVoid();
+  viewTube->createAll(System,*bellowC,"back");
+
+  const constructSystem::portItem& VPC=viewTube->getPort(1);
+  outerCell=buildZone.createUnit
+    (System,VPC,VPC.getSideIndex("OuterPlate"));
+  viewTube->insertAllInCell(System,outerCell);
+
+  constructSystem::constructUnit
+    (System,buildZone,VPC,"OuterPlate",*bellowD);
+
+  constructSystem::constructUnit
+    (System,buildZone,*bellowD,"back",*attnTube);
 
 
   buildZone.createUnit(System);

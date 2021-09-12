@@ -1375,6 +1375,10 @@ template size_t FuncDataBase::EvalDefTail
 (const std::string&,const std::string&,
  const std::string&, const size_t&) const;
 
+template std::string FuncDataBase::EvalDefTail
+(const std::string&,const std::string&,
+ const std::string&,const std::string&) const;
+
 template Geometry::Vec3D FuncDataBase::EvalDefTail
 (const std::string&,const std::string&,
  const std::string&, const Geometry::Vec3D&) const;
@@ -1429,6 +1433,8 @@ template std::vector<size_t>
 FuncDataBase::EvalDefVector(const std::string&) const;
 template std::vector<std::string>
 FuncDataBase::EvalDefVector(const std::string&) const;
+
+
 
 /// \endcond TEMPLATE
  

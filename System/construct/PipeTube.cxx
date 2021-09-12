@@ -60,6 +60,7 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
+#include "portItem.h"
 
 #include "VirtualTube.h"
 #include "PipeTube.h"
@@ -195,8 +196,11 @@ PipeTube::makeOuterVoid(Simulation& System)
     {
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"17 -107 101 -102");
       makeCell("OuterVoid",System,cellIndex++,0,0.0,HR);
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-107")*
-	frontHR*backHR;
+
+      SurfMap::addSurf("OuterRadius",SMap.realSurf(buildIndex+107));
+      
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-107")*frontHR*backHR;
+
     }
   return HR;
 }
@@ -342,7 +346,7 @@ PipeTube::createPorts(Simulation& System)
    */
 {
   ELog::RegMethod RegA("PipeTube","createPorts");
-    // both OUTWARD
+  // both OUTWARD
   MonteCarlo::Object* OPtr=
     CellMap::getCellObject(System,"MainTube");
 
@@ -353,6 +357,15 @@ PipeTube::createPorts(Simulation& System)
     {
       const HeadRule flangeSurf(SurfMap::getSurfRules("FlangeACyl"));
       createPorts(System,OPtr,innerSurf,flangeSurf);
+      HeadRule OVoidHR=SurfMap::getSurfRule("#OuterRadius");
+      OVoidHR.populateSurf();
+      for(size_t i=0;i<Ports.size();i++)
+	{
+	  const Geometry::Vec3D Pt = Ports[i]->getLinkPt("FlangePlate");
+	  if (OVoidHR.isValid(Pt))
+	    Ports[i]->addFlangeCut(CellMap::getCellObject(System,"OuterVoid"));
+
+	}
     }
   else
     createPorts(System,OPtr,innerSurf,outerSurf);

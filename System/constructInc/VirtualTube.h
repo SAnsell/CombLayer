@@ -27,14 +27,16 @@ class Simulation;
 namespace constructSystem
 {
   class portItem;  
-/*!
-  \class VirtualTube
-  \version 1.0
-  \author S. Ansell
+
+  /*!
+    \class VirtualTube
+    \version 1.0
+    \author S. Ansell
   \date January 2018
   \brief VirtualTube unit  
-*/
+  */
 
+  
 class VirtualTube :
   public attachSystem::FixedRotate,
   public attachSystem::ContainedGroup,

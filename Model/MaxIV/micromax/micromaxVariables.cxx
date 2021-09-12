@@ -660,7 +660,9 @@ diagUnit(FuncDataBase& Control,const std::string& Name)
 
 
   const double DLength(65.0);         // diag length [checked]
+  setVariable::BellowGenerator BellowGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::PortTubeGenerator PTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::JawValveGenerator JawGen;
   setVariable::BeamPairGenerator BeamMGen;
@@ -668,20 +670,60 @@ diagUnit(FuncDataBase& Control,const std::string& Name)
   const std::string bremName(Name+"BremBlockTube");
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.setCap(1,1);
-  SimpleTubeGen.setBFlangeCF<CF150>();
   SimpleTubeGen.generateTube(Control,bremName,25.0);
   Control.addVariable(bremName+"NPorts",2);   // beam ports
 
-  PItemGen.setCF<setVariable::CF100>(CF150::outerRadius+5.0);
+  PItemGen.setCF<setVariable::CF40>(CF150::outerRadius+2.2);
   PItemGen.setPlate(0.0,"Void");  
   PItemGen.setOuterVoid(0);
   PItemGen.generatePort(Control,bremName+"Port0",
 			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,1));
 
-  PItemGen.setCF<setVariable::CF150>(CF150::outerRadius+10.0);
+  PItemGen.setCF<setVariable::CF40>(CF150::outerRadius+2.2);
   PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,bremName+"Port1",
 			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,-1));
+
+
+  // View tube
+  const std::string viewName(Name+"ViewTube");
+  
+  SimpleTubeGen.setCF<CF100>();
+  SimpleTubeGen.setCap(1,1);
+  SimpleTubeGen.generateTube(Control,viewName,44.0);
+  Control.addVariable(viewName+"NPorts",2);   // beam ports
+
+  PItemGen.setCF<setVariable::CF40>(12.5);  // include outerRadius
+  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.generatePort(Control,viewName+"Port0",
+			Geometry::Vec3D(0,-6,0),Geometry::Vec3D(0,0,-1));
+  PItemGen.generatePort(Control,viewName+"Port1",
+			Geometry::Vec3D(0,-6,0),Geometry::Vec3D(0,0,1));
+
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,Name+"BellowD",7.50);
+  
+  const std::string attnTubeName(Name+"AttnTube");
+  PTubeGen.setPipe(9.0,0.5);
+  PTubeGen.setPortCF<CF40>();
+  PTubeGen.setPortLength(-3.0,-3.0);
+  PTubeGen.generateTube(Control,attnTubeName,0.0,30.0);
+  Control.addVariable(attnTubeName+"NPorts",3);   // beam ports
+
+  PItemGen.setCF<setVariable::CF150>(CF150::outerRadius+12.5);
+  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.generatePort(Control,attnTubeName+"Port0",
+			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,-1));
+  PItemGen.generatePort(Control,attnTubeName+"Port1",
+			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,1));
+  PItemGen.setCF<setVariable::CF40>(CF150::outerRadius+6.5);
+
+  PItemGen.setOuterVoid(1);
+  PItemGen.generateAnglePort(Control,attnTubeName+"Port2",
+			     Geometry::Vec3D(0,0,0),
+			     Geometry::Vec3D(1,0,0),
+			     Geometry::Vec3D(0,0,1),
+			     10.0);
 
   return;
 }
@@ -756,7 +798,6 @@ opticsVariables(FuncDataBase& Control,
 
   setVariable::PipeGenerator PipeGen;
   setVariable::BellowGenerator BellowGen;
-  setVariable::PortTubeGenerator PTubeGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::GateValveGenerator GateGen;

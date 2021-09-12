@@ -70,7 +70,9 @@
 #include "FrontBackCut.h"
 
 #include "portItem.h"
+#include "anglePortItem.h"
 #include "doublePortItem.h"
+#include "portBuilder.h"
 #include "VirtualTube.h"
 
 namespace constructSystem
@@ -132,14 +134,15 @@ VirtualTube::populate(const FuncDataBase& Control)
       const Geometry::Vec3D Axis=
 	Control.EvalTail<Geometry::Vec3D>(portName,portBase,"Axis");
 
-      std::shared_ptr<portItem> windowPort;
-      windowPort=std::make_shared<portItem>(portBase,portName);
-      windowPort->populate(Control);
+      std::shared_ptr<portItem> portUnit
+	(makePortItem(Control,portBase,portName));
+
+      portUnit->populate(Control);
 
       PCentre.push_back(Centre);
       PAxis.push_back(Axis);
-      Ports.push_back(windowPort);
-      OR.addObject(windowPort);
+      Ports.push_back(portUnit);
+      OR.addObject(portUnit);
     }
   return;
 }
