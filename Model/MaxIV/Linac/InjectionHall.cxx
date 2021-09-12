@@ -144,6 +144,10 @@ InjectionHall::populate(const FuncDataBase& Control)
   spfExitLength=Control.EvalVar<double>(keyName+"SPFExitLength");
   spfExitDoorLength=Control.EvalVar<double>(keyName+"SPFExitDoorLength");
   spfExitDoorHeight=Control.EvalVar<double>(keyName+"SPFExitDoorHeight");
+  storageShieldThick=Control.EvalVar<double>(keyName+"StorageShieldThick");
+  storageShieldMat=ModelSupport::EvalMat<int>(Control,keyName+"StorageShieldMat");
+  femtoMAXShieldThick=Control.EvalVar<double>(keyName+"FemtoMAXShieldThick");
+  femtoMAXShieldMat=ModelSupport::EvalMat<int>(Control,keyName+"FemtoMAXShieldMat");
 
   femtoMAXWallThick=Control.EvalVar<double>(keyName+"FemtoMAXWallThick");
   femtoMAXWallOffset=Control.EvalVar<double>(keyName+"FemtoMAXWallOffset");
@@ -469,6 +473,11 @@ InjectionHall::createSurfaces()
 
   SurfMap::makePlane("BackWallBack",SMap,buildIndex+1022, // figure-of-merit
 		     Origin+Y*(backWallYStep+backWallThick+100),Y);
+
+  SurfMap::makePlane("BackWallBack",SMap,buildIndex+1031,
+		     Origin+Y*(backWallYStep+backWallThick+femtoMAXShieldThick),Y);
+  SurfMap::makePlane("BackWallBack",SMap,buildIndex+1041,
+		     Origin+Y*(backWallYStep+backWallThick+storageShieldThick),Y);
 
   SurfMap::makePlane("BackWallFront",SMap,buildIndex+31,
 		     Origin+Y*(backWallYStep-backWallIronThick),Y);
@@ -799,7 +808,10 @@ InjectionHall::createObjects(Simulation& System)
   // FemtoMAX (BSP02) beamline area
   // C080016 is official room name
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "22 -1022 6004 -6103 5 -6 ");
+  				 "22 -1041 6004 -6103 5 -6 ");
+  makeCell("C080016shield",System,cellIndex++,femtoMAXShieldMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
+  				 "1041 -1022 6004 -6103 5 -6 ");
   makeCell("C080016fom",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
@@ -874,7 +886,10 @@ InjectionHall::createObjects(Simulation& System)
 
   // BSP01 beamline area
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "22 -1022 6104 -1003 5 -6 ");
+  				 "22 -1031 6104 -1003 5 -6 ");
+  makeCell("C080017shield",System,cellIndex++,storageShieldMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
+  				 "1031 -1022 6104 -1003 5 -6 ");
   makeCell("C080017fom",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,

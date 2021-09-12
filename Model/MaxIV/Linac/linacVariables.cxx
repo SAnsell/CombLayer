@@ -3389,6 +3389,11 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"SPFExitDoorLength",101.0); // K_20-2_353
   Control.addVariable(wallKey+"SPFExitDoorHeight",211.0); // K_20-2_353
 
+  Control.addVariable(wallKey+"StorageShieldThick",5.0); // own design
+  Control.addVariable(wallKey+"StorageShieldMat","B4C"); // own design
+  Control.addVariable(wallKey+"FemtoMAXShieldThick",5.0); // own design
+  Control.addVariable(wallKey+"FemtoMAXShieldMat","B4C"); // own design
+
   Control.addVariable(wallKey+"FemtoMAXWallThick",105.0); // K_01-0_010 IV1.13
   Control.addVariable(wallKey+"FemtoMAXWallOffset",405.0); // derived from K_20-1_08G6b[34]
   Control.addVariable(wallKey+"FemtoMAXWallIronThick",20.0); // K_20-1_08G6b4 + email from AR 2020-11-17
