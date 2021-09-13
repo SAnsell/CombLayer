@@ -3,7 +3,7 @@
 
  * File:   commonGenerator/BremOpticsCollGenerator.cxx
  *
- * Copyright (c) 2004-2019 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,21 +19,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-// #include <fstream>
-// #include <iomanip>
-// #include <iostream>
-// #include <sstream>
-// #include <cmath>
-// #include <complex>
-// #include <list>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
 #include <vector>
-// #include <stack>
-// #include <set>
 #include <map>
-// #include <string>
-// #include <algorithm>
-// #include <numeric>
-// #include <memory>
+#include <string>
 
 #include "NameStack.h"
 #include "RegMethod.h"
@@ -50,13 +42,15 @@ namespace setVariable
 
 BremOpticsCollGenerator::BremOpticsCollGenerator() :
   extWidth(13.0),extHeight(10.0),wallThick(0.5),
-  flangeAInnerRadius(setVariable::CF40::innerRadius),flangeBInnerRadius(setVariable::CF40::innerRadius),
+  flangeAInnerRadius(setVariable::CF40::innerRadius),
+  flangeAInnerLength(setVariable::CF40::flangeLength),
+  flangeBInnerRadius(setVariable::CF40::innerRadius),
+  flangeBInnerLength(setVariable::CF40::flangeLength),
   holeXStep(0.0),holeZStep(0.0),
   holeWidth(1.0),holeHeight(1.2),
-  colLength(8.4),
-  colYStep(0.0),extActive(1),
-  extXStep(0.0),extZStep(0.0),
-  extLength(5.0),extRadius(2.5),colRadius(2.0),
+  colYStep(0.0),colLength(8.4),colRadius(2.0),
+  extActive(1),extXStep(0.0),extZStep(0.0),
+  extLength(5.0),extRadius(2.5),
   voidMat("Void"),colMat("Tungsten"),
   wallMat("Stainless304")
   /*!
