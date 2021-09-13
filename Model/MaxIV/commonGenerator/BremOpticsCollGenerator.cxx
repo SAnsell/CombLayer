@@ -42,10 +42,10 @@ namespace setVariable
 
 BremOpticsCollGenerator::BremOpticsCollGenerator() :
   extWidth(13.0),extHeight(10.0),wallThick(0.5),
-  flangeAInnerRadius(setVariable::CF40::innerRadius),
-  flangeAInnerLength(setVariable::CF40::flangeLength),
-  flangeBInnerRadius(setVariable::CF40::innerRadius),
-  flangeBInnerLength(setVariable::CF40::flangeLength),
+  flangeAInnerRadius(setVariable::CF40::flangeRadius),
+  flangeALength(setVariable::CF40::flangeLength),
+  flangeBInnerRadius(setVariable::CF40::flangeRadius),
+  flangeBLength(setVariable::CF40::flangeLength),
   holeXStep(0.0),holeZStep(0.0),
   holeWidth(1.0),holeHeight(1.2),
   colYStep(0.0),colLength(8.4),colRadius(2.0),
