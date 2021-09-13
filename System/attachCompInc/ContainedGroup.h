@@ -53,6 +53,16 @@ class ContainedGroup
   /// Named Container
   CTYPE CMap;
 
+public:
+
+  // To be removed:
+  void addBoundarySurf(const std::string&,const int);
+  void addBoundarySurf(const std::string&,const std::string&);
+  void addBoundaryUnionSurf(const std::string&,const int);
+  void addBoundaryUnionSurf(const std::string&,const std::string&);
+
+  bool hasBoundary(const std::string&) const;
+  
  public:
 
   ContainedGroup();
@@ -75,6 +85,7 @@ class ContainedGroup
   virtual std::string getAllExclude() const;
   
   virtual const HeadRule& getOuterSurf(const std::string&) const;
+  virtual const HeadRule& getBoundary(const std::string&) const;
 
   virtual std::string getExclude(const std::string&) const;
   virtual std::string getContainer(const std::string&) const;
@@ -85,7 +96,7 @@ class ContainedGroup
   void clearRule(const std::string&);
   /// Test if has rule
   bool hasOuterSurf(const std::string&) const;
-  bool hasBoundary(const std::string&) const;
+
   
   void addOuterSurf(const std::string&,const int);
   void addOuterSurf(const std::string&,const std::string&);
@@ -96,10 +107,6 @@ class ContainedGroup
   void addOuterUnionSurf(const std::string&,const HeadRule&);
   void addOuterUnionSurf(const std::string&,const ContainedComp&);
 
-  void addBoundarySurf(const std::string&,const int);
-  void addBoundarySurf(const std::string&,const std::string&);
-  void addBoundaryUnionSurf(const std::string&,const int);
-  void addBoundaryUnionSurf(const std::string&,const std::string&);
 
   // Determine the surface that the line intersect first 
   // and its sign.

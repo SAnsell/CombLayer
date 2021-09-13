@@ -61,6 +61,14 @@ class ContainedComp
 			       const Geometry::Surface*,
 			       const Geometry::Surface*);
 
+public:
+
+  // to be removed:
+  void addBoundarySurf(const int);
+  void addBoundarySurf(const std::string&);
+  void addBoundaryUnionSurf(const int);
+  void addBoundaryUnionSurf(const std::string&);
+
  public:
 
   ContainedComp();
@@ -69,6 +77,8 @@ class ContainedComp
   virtual ~ContainedComp();
 
   virtual const HeadRule& getOuterSurf() const;
+  virtual const HeadRule& getBoundary() const;
+  
   virtual std::string getExclude() const;
   virtual std::string getCompExclude() const;
   virtual std::string getContainer() const;
@@ -105,10 +115,6 @@ class ContainedComp
   void addOuterUnionSurf(const ContainedComp&);
   void addOuterUnionSurf(const HeadRule&);
   
-  void addBoundarySurf(const int);
-  void addBoundarySurf(const std::string&);
-  void addBoundaryUnionSurf(const int);
-  void addBoundaryUnionSurf(const std::string&);
 
   // Determine the surface that the line intersect first 
   // and its sign.

@@ -67,7 +67,6 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -119,6 +118,7 @@
 #include "HPJaws.h"
 #include "ViewScreenTube.h"
 #include "YagScreen.h"
+#include "Table.h"
 
 #include "micromaxOpticsLine.h"
 
@@ -147,7 +147,8 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
   viewTube(new constructSystem::PipeTube(newName+"ViewTube")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
-  attnTube(new constructSystem::PortTube(newName+"AttnTube"))
+  attnTube(new constructSystem::PortTube(newName+"AttnTube")),
+  tableA(new xraySystem::Table(newName+"TableA"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -169,12 +170,12 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   OR.addObject(viewTube);
   OR.addObject(bellowD);
   OR.addObject(attnTube);
+  OR.addObject(tableA);
     
 }
   
 micromaxOpticsLine::~micromaxOpticsLine()
   /*!
-+
     Destructor
    */
 {}
@@ -293,7 +294,10 @@ micromaxOpticsLine::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,*bellowD,"back",*attnTube);
 
-
+  
+  tableA->createAll(System,*bellowD,0);
+  tableA->insertInCells(System,buildZone.getCells());
+  
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);
 

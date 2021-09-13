@@ -3,7 +3,7 @@
  
  * File:   lensModel/layers.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,6 +64,9 @@
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "surfDIter.h"
+#include "ExternalCut.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "ProtonFlight.h"
 #include "FlightLine.h"
 #include "FlightCluster.h"
@@ -162,20 +165,6 @@ layers::operator=(const layers& A)
   return *this;
 }
 
-void
-layers::createUnitVector(const attachSystem::FixedComp& FC)
-/*!
-  Create the unit vectors
-  - Y towards the normal of the target
-  - X across the moderator
-  - Z up / down (gravity)
-  \param FC :: A Contained FixedComp to use as basis set
-*/
-{
-  ELog::RegMethod RegA("layers","createUnitVector");
-  FixedComp::createUnitVector(FC);  
-  return;
-}
   
 void
 layers::populate(const FuncDataBase& Control)
@@ -469,7 +458,7 @@ layers::build(Simulation& System,const candleStick& CS)
   ELog::RegMethod RegA("layers","createAll");
   
   populate(System.getDataBase());
-  createUnitVector(CS);
+  createUnitVector(CS,0);
   createSurfaces();
   createObjects(System,CS);
   createLinks(CS);

@@ -1131,7 +1131,8 @@ std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
 Object::trackSurfIntersect(const Geometry::Vec3D& Org,
 			   const Geometry::Vec3D& unitAxis) const
   /*!
-    Transfer function to move Object into headrule
+    Track a line into an object. It effectively converts the
+    object into a HeadRule, then tracks the line into the object.
     \param Org :: Origin of line
     \param unitAxis :: track of line
     \return Tuple of SurfNumber[signed]/surfacePointer/ImpactPoint/distance
@@ -1151,6 +1152,40 @@ Object::trackSurf(const Geometry::Vec3D& Org,
   */
 {
   return HRule.trackSurf(Org,unitAxis);
+}
+
+Geometry::Vec3D
+Object::trackPoint(const Geometry::Vec3D& Org,
+		   const Geometry::Vec3D& unitAxis) const
+  /*!
+    Transfer function to move Object into HeadRule
+    This calculates the line and return the first point
+    that the line intersects
+    \param Org :: Origin of line
+    \param unitAxis :: track of line
+    \return Signed surf number
+  */
+{
+  ELog::RegMethod RegA("Object","trackPoint");
+  
+  return HRule.trackPoint(Org,unitAxis);
+}
+
+Geometry::Vec3D
+Object::trackClosestPoint(const Geometry::Vec3D& Org,
+			  const Geometry::Vec3D& unitAxis,
+			  const Geometry::Vec3D& aimPt) const
+  /*!
+    Transfer function to move Object into HeadRule
+    This calculates the line and return the first point
+    that the line intersects
+    \param Org :: Origin of line
+    \param unitAxis :: track of line
+    \return Signed surf number
+  */
+{
+  ELog::RegMethod RegA("Object","trackClosetPoint");
+  return HRule.trackClosestPoint(Org,unitAxis,aimPt);
 }
 
 

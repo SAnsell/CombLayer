@@ -380,6 +380,17 @@ ContainedComp::getOuterSurf() const
 {
   return outerSurf;
 }
+
+const HeadRule&
+ContainedComp::getBoundary() const
+  /*!
+    Care here because this can return a referenece
+    due to ContainedGroup not having a complete outer surf
+    \return Outer headRule
+  */
+{
+  return boundary;
+}
   
 std::string
 ContainedComp::getCompExclude() const

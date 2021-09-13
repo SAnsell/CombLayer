@@ -1,8 +1,8 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/Mirror.h
- *
+ * File:   commonBeamInc/Table.h
+*
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_Mirror_h
-#define xraySystem_Mirror_h
+#ifndef xraySystem_Table_h
+#define xraySystem_Table_h
 
 class Simulation;
 
@@ -28,14 +28,14 @@ namespace xraySystem
 {
 
 /*!
-  \class Mirror
+  \class Table
   \author S. Ansell
   \version 1.0
-  \date January 2018
-  \brief Focusable mirror in mount
+  \date September 2021
+  \brief Table system for placing in a blockZone
 */
 
-class Mirror :
+class Table :
   public attachSystem::ContainedComp,
   public attachSystem::FixedRotate,
   public attachSystem::CellMap,
@@ -43,21 +43,15 @@ class Mirror :
 {
  private:
 
-  double theta;            ///< Theta angle
-  double phi;              ///< phi angle
+  double width;           ///< Width
+  double length;          ///< Length
+  double thick;           ///< Thickness
 
-  double radius;           ///< Radius of surface cylinder
-  double width;            ///< width accross beam
-  double thick;            ///< Thickness in normal direction to reflection
-  double length;           ///< length along beam
-  
-  double baseTop;          ///< Base distance above mirror
-  double baseDepth;        ///< Base distance below mirror 
-  double baseOutWidth;     ///< Extra width of base 
-  double baseGap;          ///< Base under gap below mirror
+  double legSize;           ///< Square leg size
 
-  int mirrMat;             ///< XStal material
-  int baseMat;             ///< Base material
+  int voidMat;              ///< Void material
+  int plateMat;             ///< Top plate material
+  int legMat;               ///< Base material
 
   // Functions:
 
@@ -68,10 +62,12 @@ class Mirror :
 
  public:
 
-  Mirror(const std::string&);
-  Mirror(const Mirror&);
-  Mirror& operator=(const Mirror&);
-  virtual ~Mirror();
+  Table(const std::string&);
+  Table(const Table&);
+  Table& operator=(const Table&);
+  virtual ~Table();
+
+  virtual void insertInCells(Simulation&,const std::vector<int>&);
 
   using FixedComp::createAll;
   void createAll(Simulation&,

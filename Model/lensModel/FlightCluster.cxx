@@ -3,7 +3,7 @@
  
  * File:   lensModel/FlightCluster.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,6 +52,9 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "ExternalCut.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "FlightLine.h"
 #include "FlightCluster.h"
 

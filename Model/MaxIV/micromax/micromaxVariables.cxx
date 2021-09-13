@@ -82,6 +82,7 @@
 #include "PipeShieldGenerator.h"
 #include "ConnectorGenerator.h"
 #include "FlangeDomeGenerator.h"
+#include "TableGenerator.h"
 #include "AreaDetectorGenerator.h"
 
 namespace setVariable
@@ -666,6 +667,7 @@ diagUnit(FuncDataBase& Control,const std::string& Name)
   setVariable::PortItemGenerator PItemGen;
   setVariable::JawValveGenerator JawGen;
   setVariable::BeamPairGenerator BeamMGen;
+  setVariable::TableGenerator TableGen;
 
   const std::string bremName(Name+"BremBlockTube");
   SimpleTubeGen.setCF<CF150>();
@@ -725,6 +727,7 @@ diagUnit(FuncDataBase& Control,const std::string& Name)
 			     Geometry::Vec3D(0,0,1),
 			     10.0);
 
+  TableGen.generateTable(Control,Name+"TableA",-15.0,90.0);
   return;
 }
 

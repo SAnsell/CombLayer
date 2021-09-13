@@ -70,6 +70,7 @@ namespace xraySystem
   class ViewScreenTube;
   class MonoShutter;
   class PipeShield;
+  class Table;
   
     
   /*!
@@ -122,6 +123,8 @@ class micromaxOpticsLine :
   std::shared_ptr<constructSystem::Bellows> bellowD;
   /// Attn Tube 
   std::shared_ptr<constructSystem::PortTube> attnTube;
+  /// Table for diag table 
+  std::shared_ptr<xraySystem::Table> tableA;
 
 
   double outerLeft;    ///< Left Width for cut rectangle

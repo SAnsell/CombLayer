@@ -218,8 +218,14 @@ class Object
   std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
   trackSurfIntersect(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
 
-  int trackSurf(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
+  Geometry::Vec3D trackPoint(const Geometry::Vec3D&,
+			     const Geometry::Vec3D&) const;
+  
+  Geometry::Vec3D trackClosestPoint(const Geometry::Vec3D&,
+				    const Geometry::Vec3D&,
+				    const Geometry::Vec3D&) const;
 
+  int trackSurf(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
   
   int trackCell(const MonteCarlo::particle&,double&,
 		const Geometry::Surface*&,
