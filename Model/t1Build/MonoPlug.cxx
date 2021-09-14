@@ -3,7 +3,7 @@
  
  * File:   t1Build/MonoPlug.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -303,10 +303,6 @@ MonoPlug::createAll(Simulation& System,
   ELog::RegMethod RegA("MonoPlug","createAll");
   populate(System.getDataBase());
   createUnitVector(VoidFC,sideIndex);
-
-  ELog::EM<<"B["<<keyName<<"] X== "<<X<<ELog::endDiag;
-  ELog::EM<<"B["<<keyName<<"] Y== "<<Y<<ELog::endDiag;
-  ELog::EM<<"B["<<keyName<<"] Z== "<<Z<<ELog::endDiag;
 
   createSurfaces();
   createObjects(System);

@@ -672,26 +672,54 @@ Object::checkSurfaceValid(const Geometry::Vec3D& C,
   return status/2;
 }
 
+const Geometry::Surface*
+Object::getSurf(const int SN) const
+  /*!
+    Get a surface from the object. It is unsigned.
+    \param SN :: Surface number
+    \return Surface Ptr
+   */
+{
+  if (SurSet.find(SN)!=SurSet.end() ||
+      SurSet.find(SN)!=SurSet.end())
+    {
+      const int ASN=std::abs(SN);
+      for(const Geometry::Surface* SPtr : SurList)
+	if (SPtr->getName()==ASN)
+	  return SPtr;
+    }
+  return 0;
+}
+
 int
-Object::trackDirection(const Geometry::Vec3D& C,
-		       const Geometry::Vec3D& Nm) const
+Object::trackDirection(const Geometry::Vec3D& Pt,
+		       const Geometry::Vec3D& Norm) const
 			  
   /*!
     Determine if a point is valid by checking both
     directions of the normal away from the line
     A good point will have one valid and one invalid.
-    \param C :: Point on a basic surface to check 
-    \param Nm :: Direction +/- to be checked
+    \param Pt :: Point on a basic surface to check 
+    \param Norm :: Direction +/- to be checked
     \retval +1 ::  Entering the Object
     \retval 0 :: No-change
     \retval -1 ::  Exiting the object
   */
 {
-  Geometry::Vec3D tmp=C+Nm*(Geometry::shiftTol*5.0);
-  const int inStatus=isValid(tmp);    
-  tmp-= Nm*(Geometry::shiftTol*10.0);
-  const int outStatus=isValid(tmp);   
-  return inStatus-outStatus;
+  ELog::RegMethod RegA("Object","trackDirection");
+  
+  // first determine if on surface :
+  const int SN = isOnSide(Pt);
+  if (!SN) return 0;
+
+  const int pAB=isDirectionValid(Pt,SN);
+  const int mAB=isDirectionValid(Pt,-SN);
+  if (pAB==mAB)  return 0;  // not extiting [internal]
+
+  const Geometry::Surface* SPtr=getSurf(SN);
+  if (!SPtr) return 0;
+  const int normD=SPtr->sideDirection(Pt,Norm);
+  return (normD > pAB) ? 1 : -1;
 }  
 
 int
@@ -1218,7 +1246,7 @@ Object::trackCell(const MonteCarlo::particle& N,double& D,
     Track to a particle into/out of a cell. 
     \param N :: Particle 
     \param D :: Distance traveled to the cell [get added too]
-    \param surfPtr :: Surface at exit
+    \param surfPtr :: Surface at exit [output]
     \param startSurf :: Start surface [to be ignored]
     \return surface number of intercept
    */
@@ -1230,7 +1258,6 @@ Object::trackCell(const MonteCarlo::particle& N,double& D,
   for(const Geometry::Surface* isptr : SurList)
     isptr->acceptVisitor(LI);
 
-  
   const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
   const std::vector<double>& dPts(LI.getDistance());
   const std::vector<const Geometry::Surface*>& surfIndex(LI.getSurfIndex());

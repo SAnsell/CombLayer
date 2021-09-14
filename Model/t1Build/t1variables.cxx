@@ -3,7 +3,7 @@
  
  * File:   t1Build/t1variables.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -540,12 +540,12 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("WaterPipeSteelRadius",2.8);           
 
   // PIPEWORK water WaterIN
-  Control.addVariable("WaterPipeInXStep",3.8); 
+  Control.addVariable("WaterPipeInXStep",2.8); 
   Control.addVariable("WaterPipeInYStep",0.0);             
   Control.addVariable("WaterPipeInFullLen",31.25);        
   
   // PIPEWORK water WaterOUT
-  Control.addVariable("WaterPipeOutXStep",-3.8);        
+  Control.addVariable("WaterPipeOutXStep",-2.8);        
   Control.addVariable("WaterPipeOutYStep",0.0);        
   Control.addVariable("WaterPipeOutFullLen",31.25);        
   Control.addVariable("WaterPipeOutOuterRadius",1.7);           

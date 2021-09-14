@@ -163,23 +163,26 @@ LineTrack::calculate(const Simulation& ASim)
     ColErr::InContainerError<Geometry::Vec3D>
       (InitPt,"Initial point not in model");
 
-  //  const std::set<int> surfSet=OPtr->surfValid(InitPt);
-  
-  // ELog::EM<<"Initial cell == "<<*OPtr<<ELog::endDiag;
-  // ELog::EM<<"Point == "<<InitPt<<ELog::endDiag;
+  int SN=std::abs(OPtr->isOnSide(InitPt));
+  if (OPtr->trackDirection(InitPt,nOut.uVec)<0)
+    {
+      ELog::EM<<"NEG point == "<<InitPt<<ELog::endDiag;
+	      
+      OPtr = OSMPtr->findNextObject(SN,nOut.Pos,OPtr->getName());
+    }
+  else if (OPtr->trackDirection(InitPt,nOut.uVec)>0)
+    {
+      ELog::EM<<"PLUS Point = ="<<InitPt<<ELog::endDiag;
+    }
 
-  // ELog::EM<<"Initial test point == "<<
-  //   OPtr->pointStr(InitPt)<<ELog::endDiag;
 
-  int SN=-OPtr->isOnSide(InitPt);
   // problem is that SN will be on TWO objects
   // so which one is it? [it doesn't matter much]
-  
   while(OPtr)
     {
       // Note: Need OPPOSITE Sign on exiting surface
       SN= OPtr->trackCell(nOut,aDist,SPtr,SN);
-          // Update Track : returns 1 on excess of distance
+      // Update Track : returns 1 on excess of distance
       if (SN && updateDistance(OPtr,SPtr,SN,aDist))
 	{
 	  nOut.moveForward(aDist);

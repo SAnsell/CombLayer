@@ -3,7 +3,7 @@
  
  * File:   source/ParabolicSource.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -354,7 +354,7 @@ ParabolicSource::writePHITS(std::ostream& OX) const
   ELog::RegMethod RegA("ParabolicSource","writePHITS");
 
   ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
-    const long int nStep(20);
+  const long int nStep(20);
   
   return;
 }

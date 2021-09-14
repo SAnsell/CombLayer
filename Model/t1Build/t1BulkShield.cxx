@@ -340,7 +340,6 @@ t1BulkShield::createObjects(Simulation& System)
   const std::string innerComp=ExternalCut::getComplementStr("FullInner");
   std::string Out;
 
-  ELog::EM<<"Inner == "<<innerComp<<ELog::endDiag;
   Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -17 7 ");
   makeCell("shutterCell",System,cellIndex++,ironMat,0.0,Out+innerComp);
 
@@ -446,11 +445,8 @@ t1BulkShield::createAll(Simulation& System,
   createObjects(System); 
   processVoid(System);
   createShutters(System);
-  ELog::EM<<"ASDFASF "<<ELog::endDiag;
   createBulkInserts(System);
-  ELog::EM<<"ASDFASF "<<ELog::endDiag;
   createLinks();
-  ELog::EM<<"ASDFASF "<<ELog::endDiag;
 
   return;
 }

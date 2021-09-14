@@ -3,7 +3,7 @@
  
  * File:   build/GeneralShutter.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -83,9 +83,7 @@ GeneralShutter::GeneralShutter(const size_t ID,const std::string& Key) :
     \param ID :: Shutter number
     \param Key :: Variable keyword 
   */
-{
-  ELog::EM<<"GS["<<keyName<<"] == "<<cellIndex<<ELog::endDiag;
-}
+{}
 
 GeneralShutter::GeneralShutter(const GeneralShutter& A) : 
   attachSystem::FixedGroup(A),attachSystem::ContainedComp(A),
@@ -679,7 +677,6 @@ GeneralShutter::createStopBlocks(Simulation& System,const size_t BN)
 		       10*static_cast<int>(BN));
 
   // Front/Back (Y AXIS)
-  ELog::EM<<"Front PTX == "<<frontPt<<ELog::endDiag;
   ModelSupport::buildPlane(SMap,surfOffset+3,
 			   frontPt+Y*(SB.centY-SB.length/2.0),Y);
   LCube[0]=TCube[0]=SMap.realSurf(surfOffset+3);

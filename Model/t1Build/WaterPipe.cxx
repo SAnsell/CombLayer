@@ -3,7 +3,7 @@
  
  * File:   t1Build/WaterPipe.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -197,7 +197,10 @@ WaterPipe::insertPipes(Simulation& System)
   Outlet.addRadius(outRadius,outMat,0.0);
   Outlet.addRadius(voidRadius,0,0.0);
   Outlet.addRadius(steelRadius,steelMat,0.0);
- 
+
+  Inlet.setActive(0,3);
+  Outlet.setActive(0,3);
+
   Inlet.build(System);
   Outlet.build(System);
   return;

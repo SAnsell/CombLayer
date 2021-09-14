@@ -3,7 +3,7 @@
  
  * File:   process/pipeUnit.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -432,6 +432,7 @@ pipeUnit::insertObjects(Simulation& System)
   typedef std::map<int,MonteCarlo::Object*> MTYPE;
   MTYPE OMap;         // Set on index
 
+  // calculate 3 orthonormal vectors including the primary axis
   Geometry::Vec3D Axis(BPt-APt);
   Axis.makeUnit();
   const Geometry::Vec3D AX(Axis.crossNormal());
@@ -443,7 +444,9 @@ pipeUnit::insertObjects(Simulation& System)
   const double angleStep(2*M_PI/static_cast<double>(nAngle));
   double angle(0.0);
   Geometry::Vec3D addVec(0,0,0);
-
+  //  addVec+=Axis*0.001;
+  System.populateCells();
+  ELog::EM<<"ANGLE:"<<nAngle <<ELog::endDiag;
   for(size_t i=0;i<=nAngle;angle+=angleStep,i++)
     {
       // Calculate central track

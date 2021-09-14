@@ -3,7 +3,7 @@
  
  * File:   t1Build/Cannelloni.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -94,7 +94,7 @@ Cannelloni::Cannelloni(const Cannelloni& A) :
   HexHA(A.HexHA),HexHB(A.HexHB),HexHC(A.HexHC),HVec(A.HVec),
   wMat(A.wMat),taMat(A.taMat),waterMat(A.waterMat),
   targetTemp(A.targetTemp),waterTemp(A.waterTemp),
-  externTemp(A.externTemp),mainCell(A.mainCell)
+  externTemp(A.externTemp)
   /*!
     Copy constructor
     \param A :: Cannelloni to copy
@@ -132,7 +132,6 @@ Cannelloni::operator=(const Cannelloni& A)
       targetTemp=A.targetTemp;
       waterTemp=A.waterTemp;
       externTemp=A.externTemp;
-      mainCell=A.mainCell;
     }
   return *this;
 }
@@ -258,26 +257,26 @@ Cannelloni::createObjects(Simulation& System)
   
   // Tungsten inner core
 
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-7 1 -2");
-  System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
-  mainCell=cellIndex-1;
+  HeadRule HR;
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 1 -2");
+  makeCell("MainCell",System,cellIndex++,wMat,0.0,HR);
 
   // Cladding [with front water divider]
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-17 11 -12 (7:-1:2) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
-
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 11 -12 (7:-1:2) ");
+  makeCell("Caldding",System,cellIndex++,taMat,0.0,HR);
+  
   // W material
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-27 21 -22 (17:-11:12) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 21 -22 (17:-11:12) ");
+  makeCell("Tungsten",System,cellIndex++,wMat,0.0,HR);
 
   // void 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-37 31 -32 (27:-21:22) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-37 31 -32 (27:-21:22) ");
+  makeCell("OuterVoid",System,cellIndex++,0,0.0,HR);
   
   // Set EXCLUDE:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-37 31 -32");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-37 31 -32");
+  addOuterSurf(HR);
 
   addBoundarySurf(buildIndex+7);
 
@@ -370,7 +369,8 @@ Cannelloni::createInnerObjects(Simulation& System)
   ELog::RegMethod RegA("Cannelloni","createInnerObject");
 
   int cylIndex(12000+buildIndex);
-  System.removeCell(mainCell);
+  CellMap::deleteCell(System,"MainCell");
+  
   const std::string endCap=
     ModelSupport::getComposite(SMap,buildIndex," 1 -2 ");
 

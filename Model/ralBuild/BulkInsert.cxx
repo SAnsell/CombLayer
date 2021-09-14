@@ -3,7 +3,7 @@
  
  * File:   build/BulkInsert.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -268,8 +268,8 @@ BulkInsert::createObjects(Simulation& System)
   if (!shutterObj)
     throw ColErr::InContainerError<int>(innerCell,"shutterObj");
 
-  ELog::EM<<"WARN == ZERO IMP SETTING CARE UPGRATE METHOD"<<ELog::endWarn;  
-  if (impZero) shutterObj->setImp(0);
+  // ELog::EM<<"WARN == ZERO IMP SETTING CARE UPGRATE METHOD"<<ELog::endWarn;  
+  // if (impZero) shutterObj->setImp(0);
   
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 -5 6 ");
 
@@ -282,8 +282,8 @@ BulkInsert::createObjects(Simulation& System)
   if (!shutterObj)
     throw ColErr::InContainerError<int>(outerCell,"shutterObj");
 
-  ELog::EM<<"WARN == ZERO IMP SETTING CARE UPGRATE METHOD"<<ELog::endWarn;
-  if (impZero) shutterObj->setImp(0);
+  // ELog::EM<<"WARN == ZERO IMP SETTING CARE UPGRATE METHOD"<<ELog::endWarn;
+  // if (impZero) shutterObj->setImp(0);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 -15 16 ");
   HR*=dSurf;

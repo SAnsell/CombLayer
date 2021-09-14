@@ -78,8 +78,8 @@ class Object
   std::vector<const Geometry::Surface*> SurList;  
   std::set<int> SurSet;              ///< set of surfaces in cell [signed]
 
-  int trackDirection(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
-
+  const Geometry::Surface* getSurf(const int) const;
+  
  public:
 
   Object();
@@ -230,6 +230,9 @@ class Object
   int trackCell(const MonteCarlo::particle&,double&,
 		const Geometry::Surface*&,
 		const int) const;
+
+  int trackDirection(const Geometry::Vec3D&,
+		     const Geometry::Vec3D&) const;
 
 
   /// acessor to forward 
