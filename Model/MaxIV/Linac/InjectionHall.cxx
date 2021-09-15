@@ -1501,11 +1501,19 @@ InjectionHall::createLinks()
   FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+7403));
   FixedComp::nameSideIndex(7,"BTGSide");
 
+  FixedComp::setConnect(8,getLinkPt("BTGSide")
+			-X*(btgThick-btgAboveShieldThick)
+			+Z*(btgHeight-floorDepth+roofHeight)/2.0
+			,X);
+  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+7913));
+  FixedComp::nameSideIndex(8,"BTGAboveVoidSide");
+
   // FKG additional shielding
   const Geometry::Plane* p7903 = SMap.realPtr<Geometry::Plane>(buildIndex+7903);
-  FixedComp::setConnect(8,Origin+X*p7903->getDistance()+Y*btgdY,X);
-  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+7903));
-  FixedComp::nameSideIndex(8,"FKGShieldSide");
+  FixedComp::setConnect(9,Origin+X*p7903->getDistance()+Y*btgdY
+			+Z*(fkgShieldHeight-fkgShieldDepth)/2.0,X);
+  FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+7903));
+  FixedComp::nameSideIndex(9,"FKGShieldSide");
 
   return;
 }
