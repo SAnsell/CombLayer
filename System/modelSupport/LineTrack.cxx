@@ -102,7 +102,8 @@ LineTrack::LineTrack(const Geometry::Vec3D& IP,
 
 LineTrack::LineTrack(const LineTrack& A) : 
   InitPt(A.InitPt),EndPt(A.EndPt),aimDist(A.aimDist),TDist(A.TDist),
-  Cells(A.Cells),ObjVec(A.ObjVec),segmentLen(A.segmentLen)
+  Cells(A.Cells),ObjVec(A.ObjVec),
+  SurfVec(A.SurfVec),SurfIndex(A.SurfIndex),segmentLen(A.segmentLen)
   /*!
     Copy constructor
     \param A :: LineTrack to copy
@@ -122,6 +123,8 @@ LineTrack::operator=(const LineTrack& A)
       TDist=A.TDist;
       Cells=A.Cells;
       ObjVec=A.ObjVec;
+      SurfVec=A.SurfVec;
+      SurfIndex=A.SurfIndex;
       segmentLen=A.segmentLen;
     }
   return *this;
@@ -163,19 +166,19 @@ LineTrack::calculate(const Simulation& ASim)
     ColErr::InContainerError<Geometry::Vec3D>
       (InitPt,"Initial point not in model");
 
-  int SN=std::abs(OPtr->isOnSide(InitPt));
+  int SN=OPtr->isOnSide(InitPt);
   if (OPtr->trackDirection(InitPt,nOut.uVec)<0)
     {
-      ELog::EM<<"NEG point == "<<InitPt<<ELog::endDiag;
-	      
-      OPtr = OSMPtr->findNextObject(SN,nOut.Pos,OPtr->getName());
+      ELog::EM<<"NEG point == "<<InitPt
+	      <<":"<<EndPt<<ELog::endDiag;
+      ELog::EM<<"Cell == "<<*OPtr<<ELog::endDiag;
+      OPtr = OSMPtr->findNextObject(-SN,nOut.Pos,OPtr->getName());
+      ELog::EM<<"NExt Cell == "<<*OPtr<<ELog::endDiag;
     }
   else if (OPtr->trackDirection(InitPt,nOut.uVec)>0)
     {
       ELog::EM<<"PLUS Point = ="<<InitPt<<ELog::endDiag;
     }
-
-
   // problem is that SN will be on TWO objects
   // so which one is it? [it doesn't matter much]
   while(OPtr)

@@ -447,13 +447,14 @@ pipeUnit::insertObjects(Simulation& System)
   //  addVec+=Axis*0.001;
   System.populateCells();
   ELog::EM<<"ANGLE:"<<nAngle <<ELog::endDiag;
-  for(size_t i=0;i<=nAngle;angle+=angleStep,i++)
+  for(size_t i=0;i<1 && i<=nAngle;angle+=angleStep,i++)
     {
       // Calculate central track
       LineTrack LT(APt+addVec,BPt+addVec);
       LT.calculate(System);
 
       const std::vector<MonteCarlo::Object*>& OVec=LT.getObjVec();
+      ELog::EM<<"SIZE:"<<OVec.size()d <<ELog::endDiag;
       for(MonteCarlo::Object* oc : OVec)
 	{	  
 	  const int ONum=oc->getName();
