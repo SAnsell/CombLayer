@@ -1367,54 +1367,54 @@ InjectionHall::createObjects(Simulation& System)
 	       -SMap.realSurf(buildIndex+7403),
 	       btgNLayers);
 
-  layerProcess(System,"C080016BackWall",
-	       SMap.realSurf(buildIndex+6101),
-	       -SMap.realSurf(buildIndex+6102),
-	       btgNLayers);
-  layerProcess(System,"C080016BackWallIron",
-	       SMap.realSurf(buildIndex+6201),
-	       -SMap.realSurf(buildIndex+6101),
-	       btgNLayers);
+  // layerProcess(System,"C080016BackWall",
+  // 	       SMap.realSurf(buildIndex+6101),
+  // 	       -SMap.realSurf(buildIndex+6102),
+  // 	       btgNLayers);
+  // layerProcess(System,"C080016BackWallIron",
+  // 	       SMap.realSurf(buildIndex+6201),
+  // 	       -SMap.realSurf(buildIndex+6101),
+  // 	       btgNLayers);
 
-  layerProcess(System,"C080016Maze",
-  	       SMap.realSurf(buildIndex+6211),
-  	       -SMap.realSurf(buildIndex+6112),
-  	       btgNLayers);
-  layerProcess(System,"C080016MazeIron",
-  	       SMap.realSurf(buildIndex+6111),
-  	       -SMap.realSurf(buildIndex+6211),
-  	       btgNLayers);
-  layerProcess(System,"C080016MazeBack",
-  	       SMap.realSurf(buildIndex+6212),
-  	       -SMap.realSurf(buildIndex+6112),
-  	       btgNLayers);
+  // layerProcess(System,"C080016Maze",
+  // 	       SMap.realSurf(buildIndex+6211),
+  // 	       -SMap.realSurf(buildIndex+6112),
+  // 	       btgNLayers);
+  // layerProcess(System,"C080016MazeIron",
+  // 	       SMap.realSurf(buildIndex+6111),
+  // 	       -SMap.realSurf(buildIndex+6211),
+  // 	       btgNLayers);
+  // layerProcess(System,"C080016MazeBack",
+  // 	       SMap.realSurf(buildIndex+6212),
+  // 	       -SMap.realSurf(buildIndex+6112),
+  // 	       btgNLayers);
 
-  layerProcess(System,"C080017BackWall",
-	       SMap.realSurf(buildIndex+6101),
-	       -SMap.realSurf(buildIndex+6102),
-	       btgNLayers);
-  layerProcess(System,"C080017BackWallIron",
-	       SMap.realSurf(buildIndex+6201),
-	       -SMap.realSurf(buildIndex+6101),
-	       btgNLayers);
+  // layerProcess(System,"C080017BackWall",
+  // 	       SMap.realSurf(buildIndex+6101),
+  // 	       -SMap.realSurf(buildIndex+6102),
+  // 	       btgNLayers);
+  // layerProcess(System,"C080017BackWallIron",
+  // 	       SMap.realSurf(buildIndex+6201),
+  // 	       -SMap.realSurf(buildIndex+6101),
+  // 	       btgNLayers);
 
-  layerProcess(System,"C080017Maze",
-  	       SMap.realSurf(buildIndex+6211),
-  	       -SMap.realSurf(buildIndex+6112),
-  	       btgNLayers);
-  layerProcess(System,"C080017MazeIron",
-  	       SMap.realSurf(buildIndex+6111),
-  	       -SMap.realSurf(buildIndex+6211),
-  	       btgNLayers);
-  layerProcess(System,"C080017MazeBack",
-  	       SMap.realSurf(buildIndex+6212),
-  	       -SMap.realSurf(buildIndex+6112),
-  	       btgNLayers);
+  // layerProcess(System,"C080017Maze",
+  // 	       SMap.realSurf(buildIndex+6211),
+  // 	       -SMap.realSurf(buildIndex+6112),
+  // 	       btgNLayers);
+  // layerProcess(System,"C080017MazeIron",
+  // 	       SMap.realSurf(buildIndex+6111),
+  // 	       -SMap.realSurf(buildIndex+6211),
+  // 	       btgNLayers);
+  // layerProcess(System,"C080017MazeBack",
+  // 	       SMap.realSurf(buildIndex+6212),
+  // 	       -SMap.realSurf(buildIndex+6112),
+  // 	       btgNLayers);
 
-  layerProcess(System,"C08MazeBackWall",
-  	       SMap.realSurf(buildIndex+6121),
-  	       -SMap.realSurf(buildIndex+6122),
-  	       btgNLayers);
+  // layerProcess(System,"C08MazeBackWall",
+  // 	       SMap.realSurf(buildIndex+6121),
+  // 	       -SMap.realSurf(buildIndex+6122),
+  // 	       btgNLayers);
 
   // Future Klystron Gallery
   layerProcess(System,"FKGMazeFrontWall",
