@@ -3392,7 +3392,10 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"StorageShieldThick",5.0); // own design
   Control.addVariable(wallKey+"StorageShieldMat","B4C"); // own design
   Control.addVariable(wallKey+"FemtoMAXShieldThick",5.0); // own design
-  Control.addVariable(wallKey+"FemtoMAXShieldMat","B4C"); // own design
+  Control.addVariable(wallKey+"FemtoMAXShieldMat","Void"); // own design
+
+  Control.addVariable(wallKey+"BTGAboveShieldThick",5.0); // own design
+  Control.addVariable(wallKey+"BTGAboveShieldMat","Void"); // own design
 
   Control.addVariable(wallKey+"FemtoMAXWallThick",105.0); // K_01-0_010 IV1.13
   Control.addVariable(wallKey+"FemtoMAXWallOffset",405.0); // derived from K_20-1_08G6b[34]

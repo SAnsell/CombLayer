@@ -138,6 +138,8 @@ InjectionHall::populate(const FuncDataBase& Control)
   btgYOffset=Control.EvalVar<double>(keyName+"BTGYOffset");
   btgMat=ModelSupport::EvalMat<int>(Control,keyName+"BTGMat");
   btgNLayers=Control.EvalDefVar<size_t>(keyName+"BTGNLayers", 1);
+  btgAboveShieldThick=Control.EvalVar<double>(keyName+"BTGAboveShieldThick");
+  btgAboveShieldMat=ModelSupport::EvalMat<int>(Control,keyName+"BTGAboveShieldMat");
   spfParkingFrontWallLength=Control.EvalVar<double>(keyName+"SPFParkingFrontWallLength");
   spfParkingLength=Control.EvalVar<double>(keyName+"SPFParkingLength");
   spfParkingWidth=Control.EvalVar<double>(keyName+"SPFParkingWidth");
@@ -648,6 +650,7 @@ InjectionHall::createSurfaces()
   // FKG additional shielding layer [inside the SPF room, near the BD room entrance]
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7901,buildIndex+31,Y,-fkgShieldLength);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7903,buildIndex+1003,X,-fkgShieldThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7913,buildIndex+1004,X,btgAboveShieldThick);
   ModelSupport::buildPlane(SMap,buildIndex+7905,Origin-Z*(fkgShieldDepth),Z);
   ModelSupport::buildPlane(SMap,buildIndex+7906,Origin+Z*(fkgShieldHeight),Z);
 
@@ -743,8 +746,10 @@ InjectionHall::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 7401 -7402 1004 -7403 5 -7406");
   makeCell("BTG",System,cellIndex++,btgMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7401 -7402 1004 -7403 7406 -6");
-  makeCell("BTGAbove",System,cellIndex++,voidMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7401 -7402 1004 -7913 7406 -6");
+  makeCell("BTGAboveShield",System,cellIndex++,btgAboveShieldMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7401 -7402 7913 -7403 7406 -6");
+  makeCell("BTGAboveVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7402 -12 1004 -104 5 -6");
   makeCell("KlystronVoid",System,cellIndex++,voidMat,0.0,Out);
