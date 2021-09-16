@@ -496,7 +496,7 @@ FlightLine::createObjects(Simulation& System,
   addOuterSurf("outer",HR);
   addOuterSurf("inner",HR);
 
-  const HeadRule attachRuleHR=baseSurf*CC.getOuterSurf();
+  const HeadRule attachRuleHR=baseSurf*CC.getOuterSurf().complement();
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 5 -6 ");
   HR*=attachRule;         // forward boundary of object
   HR*=ContainedGroup::getBoundary("outer");      // Be outer surface
@@ -537,9 +537,9 @@ FlightLine::processIntersectMajor(Simulation& System,
       MonteCarlo::Object* Obj=System.findObject(metalCell++);
       if (!Obj)
 	throw ColErr::InContainerError<int>
-	  (metalCell-1,"Cell no found at layer"+std::to_string(i+1));
+	  (metalCell-1,"Cell not found at layer"+std::to_string(i+1));
       const HeadRule HR=Obj->getHeadRule().complement()*
-	CC.getOuterSurf(iKey);
+	CC.getOuterSurf(iKey).complement();
       Obj->procHeadRule(HR);
     }
 
@@ -550,7 +550,7 @@ FlightLine::processIntersectMajor(Simulation& System,
   HR*=attachRule;
   HR*=ContainedGroup::getBoundary("outer");      // Be outer surface
   HR*=ModelSupport::getHeadRule(SMap,buildIndex,"(-3:4:-5:6)");  
-  HR*=CC.getOuterSurf(iKey).complement();
+  HR*=CC.getOuterSurf(iKey);
   makeCell("Inner",System,cellIndex++,0,0.0,HR);
 
   return;

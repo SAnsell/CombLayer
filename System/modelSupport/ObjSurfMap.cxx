@@ -277,6 +277,32 @@ ObjSurfMap::addSurface(const int SurfN,MonteCarlo::Object* OPtr)
 }
 
 MonteCarlo::Object*
+ObjSurfMap::findNextObjectDebug(const int SN,
+			   const Geometry::Vec3D& Pos,
+			   const int objExclude) const
+  /*!
+    Calculate the next object 
+    \param SN :: Surface number
+    \param Pos :: position
+    \param ObjExclude :: Excluded object
+    \return Next Object Ptr / 0 on point not valid
+  */
+{
+  ELog::RegMethod RegA("ObjSurfMap","findNextObject");
+
+  const STYPE& MVec=getObjects(SN);
+  //  ELog::EM<<"DEBUG"<<ELog::endErr;
+  for(MonteCarlo::Object* MPtr : MVec)
+    {
+      ELog::EM<<"Object == "<<MPtr->getName()<<ELog::endDiag;
+      if (MPtr->getName()!=objExclude && 
+	  MPtr->isDirectionValid(Pos,SN))
+	return MPtr;
+    }
+  return 0;
+}
+
+MonteCarlo::Object*
 ObjSurfMap::findNextObject(const int SN,
 			   const Geometry::Vec3D& Pos,
 			   const int objExclude) const
@@ -321,7 +347,7 @@ ObjSurfMap::findNextObject(const int SN,
     }
     
   for(const MonteCarlo::Object* MPtr : MVec)
-    ELog::EM<<"Common surf Cell  == "<<MPtr->getName()<<ELog::endDiag;
+    ELog::EM<<"Common surf Cell  == "<<MPtr->getName()<<ELog::endErr;
 
   return 0;
 }

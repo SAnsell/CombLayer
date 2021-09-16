@@ -3,7 +3,7 @@
  
  * File:   process/boxUnit.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,6 +61,8 @@
 #include "FixedComp.h"
 #include "FixedUnit.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "LineTrack.h"
 #include "boxValues.h"
 #include "boxUnit.h"
@@ -72,6 +74,7 @@ namespace ModelSupport
 boxUnit::boxUnit(const std::string& Key,const size_t index) : 
   attachSystem::FixedUnit(6,Key+std::to_string(index)),
   attachSystem::ContainedComp(),
+  attachSystem::CellMap(),
   prev(0),next(0),maxExtent(0.0),
   activeFlag(0),nSides(0)
  /*!
@@ -84,6 +87,7 @@ boxUnit::boxUnit(const std::string& Key,const size_t index) :
 boxUnit::boxUnit(const boxUnit& A) : 
   attachSystem::FixedUnit(A),
   attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
   prev(A.prev),
   next(A.next),APt(A.APt),BPt(A.BPt),Axis(A.Axis),
   ANorm(A.ANorm),BNorm(A.BNorm),XUnit(A.XUnit),ZUnit(A.ZUnit),
@@ -107,6 +111,7 @@ boxUnit::operator=(const boxUnit& A)
     {
       attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
       APt=A.APt;
       BPt=A.BPt;
       Axis=A.Axis;
@@ -611,7 +616,7 @@ boxUnit::insertObjects(Simulation& System)
 	}
     }
 
-  addExcludeStrings(OMap);
+  addExcludeStrings(System,OMap);
   return;
 }
 
@@ -658,7 +663,8 @@ boxUnit::getBExtra() const
 }
 
 void
-boxUnit::addExcludeStrings(const std::map<int,MonteCarlo::Object*>& OMap) const
+boxUnit::addExcludeStrings(Simulation& System,
+			   const std::map<int,MonteCarlo::Object*>& OMap) const
   /*!
     Adds the exclude strings to the objects
     \param OMap :: Object Map to add
@@ -667,17 +673,15 @@ boxUnit::addExcludeStrings(const std::map<int,MonteCarlo::Object*>& OMap) const
   ELog::RegMethod RegA("boxUnit","addExcludeString");
 
   // Add exclude string
-  typedef std::map<int,MonteCarlo::Object*> MTYPE;
-  MTYPE::const_iterator ac;
-  for(ac=OMap.begin();ac!=OMap.end();ac++)
+  for(const auto& [CN , OPtr] : OMap)
     {
-      if (ac->first!=cellIndex-1)
+      if (CN!=cellIndex-1)
 	{
-	  ac->second->addSurfString(getExclude());
-	  ac->second->populate();
-	  ac->second->createSurfaceList();
+	  OPtr->addIntersection(getOuterSurf().complement());
+	  System.minimizeObject(CN);
 	}
     }
+
   return;
 }
 

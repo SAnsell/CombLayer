@@ -493,7 +493,7 @@ exptHutVariables(FuncDataBase& Control,
   const std::string hutName(beamName+"ExptHut");
   
   Control.addVariable(hutName+"YStep",0.0);
-  Control.addVariable(hutName+"Height",200.0);
+  Control.addVariable(hutName+"Height",280.0);
   Control.addVariable(hutName+"Length",1719.4);
   Control.addVariable(hutName+"OutWidth",260);
   Control.addVariable(hutName+"RingWidth",200);

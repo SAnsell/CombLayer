@@ -3,7 +3,7 @@
  
  * File:   t1Build/PressVessel.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,6 @@
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "stringCombine.h"
 #include "Vec3D.h"
 #include "Surface.h"
 #include "surfRegister.h"
@@ -63,6 +62,8 @@
 #include "FixedUnit.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "channel.h"
 #include "boxValues.h"
 #include "boxUnit.h"
@@ -659,7 +660,7 @@ PressVessel::buildFeedThrough(Simulation& System)
   for(size_t i=0;i<nBwch;i++)
     {
       ModelSupport::BoxLine 
-	EndWaterChannel(StrFunc::makeString("endWaterChannel",i+1));   
+	EndWaterChannel("endWaterChannel"+std::to_string(i+1));   
 
 //      const double sX((i % 2) ? -1 : 1);
 //      const double sZ((i / 2) ? -1 : 1);

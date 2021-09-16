@@ -79,6 +79,17 @@
 #include "MonoPlug.h"
 #include "World.h"
 
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+#include "HeadRule.h"
+#include "Importance.h"
+#include "Object.h"
+#include "varList.h"
+#include "Code.h"
+#include "FuncDataBase.h"
+#include "groupRange.h"
+#include "objectGroups.h"
+#include "Simulation.h"
 #include "makeT1Real.h"
 
 namespace ts1System
@@ -443,9 +454,11 @@ makeT1Real::build(Simulation& System,
 
   //  MPipeObj->createAll(System,*MerlinMod,12);
 
+
+
   H2PipeObj->createAll(System,*Lh2ModObj,5);   // long int sideIndex
-
-
+  const MonteCarlo::Object* OPtrA=System.findObject(1020002);
+  
   //  CH4PipeObj->createAll(System,*CH4ModObj,5);  // long int sideIndex
 
   if (IParam.flag("BeRods"))

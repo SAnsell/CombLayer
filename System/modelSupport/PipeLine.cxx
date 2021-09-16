@@ -46,6 +46,8 @@
 #include "FixedComp.h"
 #include "FixedUnit.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "pipeUnit.h"
 #include "PipeLine.h"
 

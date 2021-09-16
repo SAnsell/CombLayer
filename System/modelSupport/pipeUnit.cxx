@@ -60,6 +60,8 @@
 #include "FixedComp.h"
 #include "FixedUnit.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "LineTrack.h"
 #include "pipeUnit.h"
 
@@ -69,6 +71,7 @@ namespace ModelSupport
 pipeUnit::pipeUnit(const std::string& Key,const size_t Index) : 
   attachSystem::FixedUnit(3,Key+std::to_string(Index)),
   attachSystem::ContainedComp(),
+  attachSystem::CellMap(),
   nAngle(6),prev(0),next(0),
   activeFlag(511)
  /*!
@@ -80,6 +83,7 @@ pipeUnit::pipeUnit(const std::string& Key,const size_t Index) :
 
 pipeUnit::pipeUnit(const pipeUnit& A) : 
   attachSystem::FixedUnit(A),attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
   nAngle(A.nAngle),
   prev(A.prev),next(A.next),APt(A.APt),BPt(A.BPt),Axis(A.Axis),
   ANorm(A.ANorm),BNorm(A.BNorm),ASurf(A.ASurf),BSurf(A.BSurf),
@@ -102,6 +106,7 @@ pipeUnit::operator=(const pipeUnit& A)
     {
       attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
       nAngle=A.nAngle;
       APt=A.APt;
       BPt=A.BPt;
@@ -319,16 +324,16 @@ pipeUnit::createSurfaces()
   return;
 }
 
-std::string
+HeadRule
 pipeUnit::createCaps() const
   /*!
     Creates the caps with the appropiate surfaces
     \return caps string [inward pointing]
   */
 {
-  ELog::RegMethod RegA("pipeUnit","createCap");
+  ELog::RegMethod RegA("pipeUnit","createCaps");
 
-  return ASurf.display()+" "+BSurf.display(); 
+  return ASurf*BSurf;
 }
   
 
@@ -356,9 +361,9 @@ pipeUnit::createOuterObject()
   const size_t outerIndex=getOuterIndex();
 
   const int SI(buildIndex+static_cast<int>(outerIndex)*10);
-  std::string Out=createCaps();
-  Out+=ModelSupport::getComposite(SMap,SI," -7 ");
-  addOuterSurf(Out);
+  HeadRule HR=createCaps();
+  HR*=ModelSupport::getHeadRule(SMap,SI,"-7");
+  addOuterSurf(HR);
   return;
 }
 
@@ -371,26 +376,30 @@ pipeUnit::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("pipeUnit","createObjects");
-  
-  std::string Out;
+
+  HeadRule HR;
+
   int SI(buildIndex);
   int SIprev(0);
-  const std::string Cap=createCaps();
+  const HeadRule Cap=createCaps();
   size_t bitIndex(1);
   for(size_t i=0;i<cylVar.size();i++)
     {
       if (!activeFlag || (activeFlag & bitIndex))
 	{
-	  Out=Cap+ModelSupport::getComposite(SMap,SI," -7 ");
+	  const std::string lName="Layer"+std::to_string(i);
+	  HR=Cap*ModelSupport::getHeadRule(SMap,SI,"-7");
 	  if (SIprev)
-	    Out+=ModelSupport::getComposite(SMap,SIprev," 7 ");
-	  System.addCell(MonteCarlo::Object(cellIndex++,cylVar[i].MatN,
-					   cylVar[i].Temp,Out));
+	    HR*=ModelSupport::getHeadRule(SMap,SIprev,"7");
+	  makeCell(lName,System,cellIndex++,
+		   cylVar[i].MatN,cylVar[i].Temp,HR);
 	  SIprev=SI;
 	}      
       bitIndex<<=1;
       SI+=10;
-    }            
+    }
+  
+
   return;
 }
 
@@ -446,16 +455,15 @@ pipeUnit::insertObjects(Simulation& System)
   Geometry::Vec3D addVec(0,0,0);
   //  addVec+=Axis*0.001;
   System.populateCells();
-  ELog::EM<<"ANGLE:"<<nAngle <<ELog::endDiag;
   for(size_t i=0;i<=nAngle;angle+=angleStep,i++)
     {
       // Calculate central track
       LineTrack LT(APt+addVec,BPt+addVec);
       LT.calculate(System);
-
       const std::vector<MonteCarlo::Object*>& OVec=LT.getObjVec();
+
       for(MonteCarlo::Object* oc : OVec)
-	{	  
+	{
 	  const int ONum=oc->getName();
 	  if (OMap.find(ONum)==OMap.end())
 	    OMap.emplace(ONum,oc);
@@ -475,14 +483,12 @@ pipeUnit::insertObjects(Simulation& System)
 	}
     }     
   // Add exclude string
-  MTYPE::const_iterator ac;
-  for(ac=OMap.begin();ac!=OMap.end();ac++)
+  for(const auto& [CN , OPtr] : OMap)
     {
-      ac->second->addSurfString(getExclude());
-      ac->second->populate();
-      ac->second->createSurfaceList();
+      OPtr->addIntersection(getOuterSurf().complement());
+      System.minimizeObject(CN);
     }
-
+  
   return;
 }
 
@@ -498,7 +504,7 @@ pipeUnit::buildUnit(Simulation& System,
     \param CV :: Values for each layer
    */
 {
-  ELog::RegMethod RegA("pipeUnit","createUnit");
+  ELog::RegMethod RegA("pipeUnit","buildUnit");
 
   populate(AF,CV);
   createSurfaces();

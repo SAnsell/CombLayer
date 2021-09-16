@@ -27,6 +27,7 @@ class Token;
 namespace MonteCarlo
 {
   class particle;
+  class Material;
 
 /*!
   \class Object

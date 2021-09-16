@@ -37,8 +37,8 @@ class surfRegister;
 
 class boxUnit :
     public attachSystem::FixedUnit,
-    public attachSystem::ContainedComp
-
+    public attachSystem::ContainedComp,
+    public attachSystem::CellMap
 {
  private:
 
@@ -73,7 +73,8 @@ class boxUnit :
   void calcLineTrack(Simulation&,const Geometry::Vec3D&,
 		     const Geometry::Vec3D&,
 		     std::map<int,MonteCarlo::Object*>&) const;
-  void addExcludeStrings(const std::map<int,MonteCarlo::Object*>&) const;
+  void addExcludeStrings(Simulation&,
+			 const std::map<int,MonteCarlo::Object*>&) const;
   size_t getOuterIndex() const;
 
 

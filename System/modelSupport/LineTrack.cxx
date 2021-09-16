@@ -142,7 +142,108 @@ LineTrack::clearAll()
   return;
 }
 
+void
+LineTrack::specialCalculate(Simulation& ASim)
+
+  /*!
+    Calculate the track
+    \param ASim :: Simulation to use						
+  */
+{
+  ELog::RegMethod RegA("LineTrack","specialCalculate");
+
+  double aDist(0);                         // Length of track
+  const Geometry::Surface* SPtr(0);           // Surface
+  const ModelSupport::ObjSurfMap* OSMPtr =ASim.getOSM();
   
+  MonteCarlo::eTrack nOut(InitPt,EndPt-InitPt);
+  // Find Initial cell [no default]
+  MonteCarlo::Object* OPtr=ASim.findCell(InitPt,0);
+  if (!OPtr)
+    ColErr::InContainerError<Geometry::Vec3D>
+      (InitPt,"Initial point not in model");
+
+  const MonteCarlo::Object* OPtrA=ASim.findObject(1020002);
+  if (OPtrA)
+    {
+      const std::set<int> surfVec=
+	OPtrA->getHeadRule().getSignedSurfaceNumbers();
+      
+      if (surfVec.find(-1020005)==surfVec.end())
+	ELog::EM<<"Failed to find :"<<*OPtrA<<ELog::endDiag;
+      else
+	ELog::EM<<"FIND to find "<<*OPtrA<<ELog::endDiag;
+    }
+  
+  int SN=OPtr->isOnSide(InitPt);
+  if (OPtr->trackDirection(InitPt,nOut.uVec)<0)
+    {
+      ELog::EM<<"NEG Point = ="<<InitPt<<ELog::endCrit;
+       if (SN==1020005)
+	{
+	  ELog::EM<<"OPtr = "<<*OPtrA<<ELog::endDiag;
+	  const MonteCarlo::Object* OPtrA=ASim.findObject(1020002);
+	  ELog::EM<<"XNEG point == "<<SN<<"::"<<InitPt<<ELog::endDiag;
+	}
+      ELog::EM<<*OPtr<<ELog::endDiag;
+      ASim.minimizeObject(OPtr->getName());
+        
+      ELog::EM<<*OPtr<<ELog::endDiag;
+      
+      if (SN==1020005)
+	OPtr = OSMPtr->findNextObjectDebug(-SN,nOut.Pos,OPtr->getName());
+      else
+	OPtr = OSMPtr->findNextObject(SN,nOut.Pos,OPtr->getName());
+      ELog::EM<<"ASDFAFDS"<<ELog::endErr;
+    }
+  else if (OPtr->trackDirection(InitPt,nOut.uVec)>0)
+    {
+      ELog::EM<<"PLUS Point = ="<<InitPt<<ELog::endDiag;
+    }
+  else
+    {
+      ELog::EM<<"NOT ON SIDE "<<OPtr->getName()<<" :: "<<InitPt<<ELog::endDiag;
+      ELog::EM<<*OPtr<<ELog::endDiag;
+    }      
+
+
+  // problem is that SN will be on TWO objects
+  // so which one is it? [it doesn't matter much]
+  while(OPtr)
+    {
+      // Note: Need OPPOSITE Sign on exiting surface
+      SN= OPtr->trackCell(nOut,aDist,SPtr,SN);
+      // Update Track : returns 1 on excess of distance
+      if (SN && updateDistance(OPtr,SPtr,SN,aDist))
+	{
+	  nOut.moveForward(aDist);
+	  OPtr=OSMPtr->findNextObject(SN,nOut.Pos,OPtr->getName());
+	  if (!OPtr)
+	    {
+	      ELog::EM<<"INIT POINT[error] == "<<InitPt<<ELog::endCrit;
+	      calculateError(ASim);
+	    }
+	  if (!OPtr || aDist<Geometry::zeroTol)
+	    OPtr=ASim.findCell(nOut.Pos,0);
+	}
+      else
+	OPtr=0;	
+    }
+  //
+  // remove last object if point does not reach it:
+  //
+  OPtr=(ObjVec.empty()) ? 0 : ObjVec.back();
+  if (OPtr)
+    {
+      if (OPtr->trackDirection(EndPt,nOut.uVec)==-1)
+	{
+	  ObjVec.pop_back();
+	  Cells.pop_back();
+	}
+    }
+  return;
+}
+
 void
 LineTrack::calculate(const Simulation& ASim)
   /*!
@@ -162,20 +263,12 @@ LineTrack::calculate(const Simulation& ASim)
   if (!OPtr)
     ColErr::InContainerError<Geometry::Vec3D>
       (InitPt,"Initial point not in model");
-
-  int SN=std::abs(OPtr->isOnSide(InitPt));
+  
+  int SN=OPtr->isOnSide(InitPt);
   if (OPtr->trackDirection(InitPt,nOut.uVec)<0)
     {
-      ELog::EM<<"NEG point == "<<InitPt<<ELog::endDiag;
-	      
       OPtr = OSMPtr->findNextObject(SN,nOut.Pos,OPtr->getName());
     }
-  else if (OPtr->trackDirection(InitPt,nOut.uVec)>0)
-    {
-      ELog::EM<<"PLUS Point = ="<<InitPt<<ELog::endDiag;
-    }
-
-
   // problem is that SN will be on TWO objects
   // so which one is it? [it doesn't matter much]
   while(OPtr)
@@ -189,7 +282,7 @@ LineTrack::calculate(const Simulation& ASim)
 	  OPtr=OSMPtr->findNextObject(SN,nOut.Pos,OPtr->getName());
 	  if (!OPtr)
 	    {
-	      ELog::EM<<"INIT POINT[error] == "<<InitPt<<ELog::endErr;
+	      ELog::EM<<"INIT POINT[error] == "<<InitPt<<ELog::endCrit;
 	      calculateError(ASim);
 	    }
 	  if (!OPtr || aDist<Geometry::zeroTol)
@@ -197,6 +290,18 @@ LineTrack::calculate(const Simulation& ASim)
 	}
       else
 	OPtr=0;	
+    }
+  //
+  // remove last object if point does not reach it:
+  //
+  OPtr=(ObjVec.empty()) ? 0 : ObjVec.back();
+  if (OPtr)
+    {
+      if (OPtr->trackDirection(EndPt,nOut.uVec)==-1)
+	{
+	  ObjVec.pop_back();
+	  Cells.pop_back();
+	}
     }
   return;
 }

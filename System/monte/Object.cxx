@@ -712,14 +712,14 @@ Object::trackDirection(const Geometry::Vec3D& Pt,
   const int SN = isOnSide(Pt);
   if (!SN) return 0;
 
-  const int pAB=isDirectionValid(Pt,SN);
-  const int mAB=isDirectionValid(Pt,-SN);
+  const int pAB=isDirectionValid(Pt,std::abs(SN));   // true/false [1/0]
+  const int mAB=isDirectionValid(Pt,-std::abs(SN));
   if (pAB==mAB)  return 0;  // not extiting [internal]
 
   const Geometry::Surface* SPtr=getSurf(SN);
-  if (!SPtr) return 0;
+
   const int normD=SPtr->sideDirection(Pt,Norm);
-  return (normD > pAB) ? 1 : -1;
+  return (normD == pAB || normD == -mAB ) ? 1 : -1;
 }  
 
 int

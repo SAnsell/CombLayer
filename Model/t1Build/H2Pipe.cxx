@@ -54,6 +54,8 @@
 #include "FixedUnit.h"
 #include "LayerComp.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "pipeUnit.h"
 #include "PipeLine.h"
 #include "H2Pipe.h"

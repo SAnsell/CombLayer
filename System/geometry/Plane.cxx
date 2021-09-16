@@ -494,6 +494,18 @@ Plane::distance(const Geometry::Vec3D& A) const
   return A.dotProd(NormV)-Dist;
 }
 
+
+Geometry::Vec3D
+Plane::surfaceNormal(const Geometry::Vec3D&) const
+ /*!
+   Assumption that point is on surface and
+   provide normla
+   \return normal
+ */
+{
+  return NormV;
+}
+  
 Geometry::Vec3D
 Plane::closestPt(const Geometry::Vec3D& A) const
   /*!
