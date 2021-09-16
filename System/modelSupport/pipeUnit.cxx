@@ -423,7 +423,38 @@ pipeUnit::clearInsertSet()
   cellCut.clear();
   return;
 }
+
+void
+pipeUnit::calcLineTrack(Simulation& System,
+			const Geometry::Vec3D& XP,
+			const Geometry::Vec3D& YP,
+			std::map<int,MonteCarlo::Object*>& OMap) const
+/*!
+    From a line determine thos points that the system
+    intersect
+    \param System :: Simuation to use
+    \param XP :: A-Point of line
+    \param YP :: B-Point of line
+    \param OMap :: Object Map
+  */
+{
+  ELog::RegMethod RegA("boxUnit","calcLineTrack");
   
+  typedef std::map<int,MonteCarlo::Object*> MTYPE;
+  
+  LineTrack LT(XP,YP);
+  LT.calculate(System);
+  const std::vector<MonteCarlo::Object*>& OVec=LT.getObjVec();
+  std::vector<MonteCarlo::Object*>::const_iterator oc;
+  for(oc=OVec.begin();oc!=OVec.end();oc++)
+    {
+      const int ONum=(*oc)->getName();
+      if (OMap.find(ONum)==OMap.end())
+	OMap.insert(MTYPE::value_type(ONum,(*oc)));
+    }
+  return;
+}
+
 void
 pipeUnit::insertObjects(Simulation& System) 
   /*!
@@ -457,21 +488,13 @@ pipeUnit::insertObjects(Simulation& System)
   System.populateCells();
   for(size_t i=0;i<=nAngle;angle+=angleStep,i++)
     {
-      // Calculate central track
-      LineTrack LT(APt+addVec,BPt+addVec);
-      LT.calculate(System);
-      const std::vector<MonteCarlo::Object*>& OVec=LT.getObjVec();
-
-      for(MonteCarlo::Object* oc : OVec)
-	{
-	  const int ONum=oc->getName();
-	  if (OMap.find(ONum)==OMap.end())
-	    OMap.emplace(ONum,oc);
-	}
+      calcLineTrack(System,APt+addVec,BPt+addVec,OMap);
       // set for next angle
       addVec=AX*(cos(angle)*radius)+AY*(sin(angle)*radius);
     }
 
+  // update 
+  
   // add extra cells from insert forced list [cellCut]
   for(const int forceCellN : cellCut)
     {
@@ -481,14 +504,33 @@ pipeUnit::insertObjects(Simulation& System)
 	  if (SObj)
 	    OMap.insert(MTYPE::value_type(forceCellN,SObj));
 	}
-    }     
+    }
+  
+  excludeUnit(System,OMap);
+  
+  return;
+}
+
+void
+pipeUnit::excludeUnit(Simulation& System,
+		      const std::map<int,MonteCarlo::Object*>& OMap) const
+  /*!
+    Adds the exclude strings to the objects
+    \param OMap :: Object Map to add
+   */
+{
+  ELog::RegMethod RegA("pipeUnit","excludeUnit");
+
   // Add exclude string
   for(const auto& [CN , OPtr] : OMap)
     {
-      OPtr->addIntersection(getOuterSurf().complement());
-      System.minimizeObject(CN);
+      if (CN!=cellIndex-1)
+	{
+	  OPtr->addIntersection(getOuterSurf().complement());
+	  System.minimizeObject(CN);
+	}
     }
-  
+
   return;
 }
 

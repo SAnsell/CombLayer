@@ -616,7 +616,7 @@ boxUnit::insertObjects(Simulation& System)
 	}
     }
 
-  addExcludeStrings(System,OMap);
+  excludeUnit(System,OMap);
   return;
 }
 
@@ -663,14 +663,14 @@ boxUnit::getBExtra() const
 }
 
 void
-boxUnit::addExcludeStrings(Simulation& System,
-			   const std::map<int,MonteCarlo::Object*>& OMap) const
+boxUnit::excludeUnit(Simulation& System,
+		     const std::map<int,MonteCarlo::Object*>& OMap) const
   /*!
     Adds the exclude strings to the objects
     \param OMap :: Object Map to add
    */
 {
-  ELog::RegMethod RegA("boxUnit","addExcludeString");
+  ELog::RegMethod RegA("boxUnit","excludeUnit");
 
   // Add exclude string
   for(const auto& [CN , OPtr] : OMap)
