@@ -136,21 +136,21 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
       Control.addVariable(KItem+"BunkerRoofMat7","Poly");
 
 
-      Control.addVariable(KItem+"BunkerWallMat0","MagnadenseHC");
-      Control.addVariable(KItem+"BunkerWallMat1","MagnadenseHC");
-      Control.addVariable(KItem+"BunkerWallMat2","MagnadenseHC");
-      Control.addVariable(KItem+"BunkerWallMat3","MagnadenseHC");
-      Control.addVariable(KItem+"BunkerWallMat4","MagnadenseHC");
-      Control.addVariable(KItem+"BunkerWallMat5","MagnadenseHC");
-      Control.addVariable(KItem+"BunkerWallMat6","MagnadenseHC");
-      Control.addVariable(KItem+"BunkerWallMat7","MagnadenseHC");
-      Control.addVariable(KItem+"BunkerWallMat8","MagnadenseHC");
-      Control.addVariable(KItem+"BunkerWallMat9","MagnadenseHC");
-      Control.addVariable(KItem+"BunkerWallMat10","MagnadenseHC");
-      Control.addVariable(KItem+"BunkerWallMat11","MagnadenseHC");
-      Control.addVariable(KItem+"BunkerWallMat12","MagnadenseHC");
-      Control.addVariable(KItem+"BunkerWallMat13","MagnadenseHC");
-      Control.addVariable(KItem+"BunkerWallMat14","MagnadenseHC");
+      Control.addVariable(KItem+"BunkerWallMat0","Poly");
+      Control.addVariable(KItem+"BunkerWallMat1","ChipIRSteel");
+      Control.addVariable(KItem+"BunkerWallMat2","Poly");
+      Control.addVariable(KItem+"BunkerWallMat3","ChipIRSteel");
+      Control.addVariable(KItem+"BunkerWallMat4","Poly");
+      Control.addVariable(KItem+"BunkerWallMat5","ChipIRSteel");
+      Control.addVariable(KItem+"BunkerWallMat6","Poly");
+      Control.addVariable(KItem+"BunkerWallMat7","ChipIRSteel");
+      Control.addVariable(KItem+"BunkerWallMat8","Poly");
+      Control.addVariable(KItem+"BunkerWallMat9","ChipIRSteel");
+      Control.addVariable(KItem+"BunkerWallMat10","Poly");
+      Control.addVariable(KItem+"BunkerWallMat11","ChipIRSteel");
+      Control.addVariable(KItem+"BunkerWallMat12","Poly");
+      Control.addVariable(KItem+"BunkerWallMat13","ChipIRSteel");
+      Control.addVariable(KItem+"BunkerWallMat14","Poly");
       
       Control.addVariable(KItem+"BunkerWallLen1",45.0);   // p
       Control.addVariable(KItem+"BunkerWallLen2",15.0);   // s 1

@@ -74,6 +74,11 @@ EssPipeVariables(FuncDataBase& Control)
   const std::vector<std::string> matAl
     ({"HPARA","Aluminium20K","Void","Aluminium"});
 
+
+/*!  const std::vector<std::string> matAl
+    ({"HPARA","Aluminium20K","Void","PHITSAluminium"});
+*/
+
   const std::vector<double> temp({20.0,20.0,300.0,300.0});
 
   double signV(1.0);
@@ -84,7 +89,8 @@ EssPipeVariables(FuncDataBase& Control)
     {
       Control.addVariable(MItem+"AlNSegIn",4);
       Control.addVariable(MItem+"AlPPt0",Geometry::Vec3D(signV*1.9,0,0));
-      Control.addVariable(MItem+"AlPPt1",Geometry::Vec3D(signV*1.9,2.0,0));
+      Control.addVariable(MItem+"AlPPt1",Geometry::Vec3D(signV*1.9,2.0,0));  
+      Control.addVariable("LowAFlightLinerMat3","Aluminium");      // Liner
       Control.addVariable(MItem+"AlPPt2",Geometry::Vec3D(signV*AlPPt3X,3.0,0));
       Control.addVariable(MItem+"AlPPt3",Geometry::Vec3D(signV*AlPPt3X,AlPPt3Y,0));
       Control.addVariable(MItem+"AlPPt4",Geometry::Vec3D(signV*AlPPt3X,AlPPt3Y,40));

@@ -43,6 +43,7 @@
 #include "objectRegister.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
+#include "AttachSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -227,14 +228,61 @@ ButterflyModerator::createObjects(Simulation& System)
 
   const std::string Exclude=ContainedComp::getExclude();
 
-  std::string Out;
+  std::string Out, OutX;
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+Exclude));
-  addCell("MainVoid",cellIndex-1);
+  // System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+Exclude));
+  // addCell("MainVoid",cellIndex-1);
+  
+  //instead of single cell with exclude create several simpler cells
 
+  int LSL3 = LeftUnit->getLinkSurf(3);
+  int LSL2 = LeftUnit->getLinkSurf(2);
+  int LSL1 = LeftUnit->getLinkSurf(1);
+  
+  int LSR3 = RightUnit->getLinkSurf(3);
+  int LSR2 = RightUnit->getLinkSurf(2);
+  int LSR1 = RightUnit->getLinkSurf(1);
+
+     OutX=Out+" "+std::to_string(LSL3)+ " " +std::to_string(LSR1);
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,OutX));
+  addCell("MainVoid",cellIndex-1);
+  attachSystem::addToInsertSurfCtrl(System,cellIndex-1,*MidWater);
+
+  OutX=Out+" "+std::to_string(LSR3)+ " " +std::to_string(LSL1) ;
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,OutX));
+  addCell("MainVoid",cellIndex-1);
+  attachSystem::addToInsertSurfCtrl(System,cellIndex-1,*MidWater);
+
+
+  OutX=Out+" "+std::to_string(-LSR3)+ " " +std::to_string(-LSR1) +
+    " " +std::to_string(-LSR2) +  RightUnit->getLinkString(-7);
+  //Negative sign in getLinkString is to make complement
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,OutX));
+  addCell("MainVoid",cellIndex-1);
+  attachSystem::addToInsertSurfCtrl(System,cellIndex-1,*RightUnit);
+
+  OutX=Out+" "+std::to_string(-LSR3)+ " " +std::to_string(-LSR1) +
+    " " +std::to_string(LSR2);
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,OutX));
+  addCell("MainVoid",cellIndex-1);
+  attachSystem::addToInsertSurfCtrl(System,cellIndex-1,*RightWater);
+
+  
+  OutX=Out+" "+std::to_string(-LSL3)+ " " +std::to_string(-LSL1)+
+    " " +std::to_string(-LSL2) +LeftUnit->getLinkString(-7);
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,OutX));
+  addCell("MainVoid",cellIndex-1);
+  attachSystem::addToInsertSurfCtrl(System,cellIndex-1,*LeftUnit);
+
+  OutX=Out+" "+std::to_string(-LSL3)+ " " +std::to_string(-LSL1)+
+    " " +std::to_string(LSL2);
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,OutX));
+  addCell("MainVoid",cellIndex-1);
+  attachSystem::addToInsertSurfCtrl(System,cellIndex-1,*LeftWater);
+ 
   clearRules();
   addOuterSurf(Out);
-
+  
   return;
 }
 
@@ -477,7 +525,7 @@ ButterflyModerator::createAll(Simulation& System,
   RightWater->createAll(System,*RightUnit,2,Exclude);
 
   Origin=MidWater->getCentre();
-  createExternal();  // makes intermediate
+  //  createExternal();  // makes intermediate
 
   createObjects(System);
   createLinks();

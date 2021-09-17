@@ -293,8 +293,9 @@ BasicFlightLine::createSurfaces()
 
   FixedComp::setLinkSurf(2,-SMap.realSurf(sNum+3));
   FixedComp::setLinkSurf(3,SMap.realSurf(sNum+4));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(sNum+5));
-  FixedComp::setLinkSurf(5,-SMap.realSurf(sNum+6));
+  //FixedComp::setLinkSurf(4,-SMap.realSurf(sNum+5));
+
+  //FixedComp::setLinkSurf(5,-SMap.realSurf(sNum+6));
 
   FixedComp::setConnect(2,Origin-X*(width/2.0)-xDircA*layT,-xDircA);
   FixedComp::setConnect(3,Origin+X*(width/2.0)+xDircB*layT,xDircB);
@@ -311,18 +312,31 @@ BasicFlightLine::createSurfaces()
 
   FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+3));
   FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+4));
-  FixedComp::setLinkSurf(10,-SMap.realSurf(buildIndex+5));
-  FixedComp::setLinkSurf(11,-SMap.realSurf(buildIndex+6));
+
+  //FixedComp::setLinkSurf(10,-SMap.realSurf(buildIndex+5));
+
+  //FixedComp::setLinkSurf(11,-SMap.realSurf(buildIndex+6));
   if (tapFlag & 1)
-    {
-      FixedComp::addLinkSurf(4,-SMap.realSurf(buildIndex+505));
+    { // Cone and plane to cut half-cone
+      //      std::cout << -SMap.realSurf(buildIndex+5) << " "
+      //		<<-SMap.realSurf(buildIndex+505) << std::endl;
+      FixedComp::addLinkSurf(4,-SMap.realSurf(sNum+5)); //505 -> 5
       FixedComp::addLinkSurf(10,-SMap.realSurf(buildIndex+505));
+    } else {
+    FixedComp::setLinkSurf(4,-SMap.realSurf(sNum+5));
+    FixedComp::setLinkSurf(10,-SMap.realSurf(buildIndex+5));
     }
   if (tapFlag & 2)
     {
-      FixedComp::addLinkSurf(5,SMap.realSurf(buildIndex+506));
+      // std::cout << -SMap.realSurf(buildIndex+5) << " "
+      //		<<-SMap.realSurf(buildIndex+505) << std::endl;
+      FixedComp::addLinkSurf(5,-SMap.realSurf(sNum+6)); //506 -> 6
       FixedComp::addLinkSurf(11,SMap.realSurf(buildIndex+506));
+    } else {
+    FixedComp::setLinkSurf(5,-SMap.realSurf(sNum+6));
+    FixedComp::setLinkSurf(11,-SMap.realSurf(buildIndex+6));
     }
+
   
   return;
 }

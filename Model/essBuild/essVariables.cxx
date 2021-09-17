@@ -134,7 +134,8 @@ EssVariables(mainSystem::inputParam& IParam,FuncDataBase& Control)
   Control.addVariable("BulkZStep",0.0);
   Control.addVariable("BulkXYAngle",0.0);
   Control.addVariable("BulkZAngle",0.0);
-  Control.addVariable("BulkNLayer",3);
+  //  Control.addVariable("BulkNLayer",3);
+    Control.addVariable("BulkNLayer",4);
 
   Control.addParse<double>("BulkRadius1","BeRefRadius+BeRefWallThick+0.2");
   Control.addVariable("BulkHeight1", 38);
@@ -142,15 +143,20 @@ EssVariables(mainSystem::inputParam& IParam,FuncDataBase& Control)
   Control.addVariable("BulkMat1","Void");
 
   Control.addVariable("BulkRadius2",65.0);
-  Control.addVariable("BulkHeight2",75.0);
+  Control.addVariable("BulkHeight2",65.0);
   Control.addVariable("BulkDepth2",75.0);
   Control.addVariable("BulkMat2","SS316L_10H2O");        // SA: using hand-made mixture because CL can't generate volume fractions
 
-  // Bulk steel layer [No individual guides]
-  Control.addVariable("BulkRadius3",200.0);
-  Control.addVariable("BulkHeight3",200.0);
-  Control.addVariable("BulkDepth3",200.0);
+  Control.addVariable("BulkRadius3",85.0);
+  Control.addVariable("BulkHeight3",85.0);
+  Control.addVariable("BulkDepth3",95.0);
   Control.addVariable("BulkMat3","SS316L_10H2O");        // SA: using hand-made mixture because CL can't generate volume fractions
+
+  // Bulk steel layer [No individual guides] -- outer dimensions
+  Control.addVariable("BulkRadius4",200.0);
+  Control.addVariable("BulkHeight4",200.0);
+  Control.addVariable("BulkDepth4",200.0);
+  Control.addVariable("BulkMat4","SS316L_10H2O");        // SA: using hand-made mixture because CL can't generate volume fractions
 
   // BULK FLIGHT VOID
   Control.addVariable("BulkLAFlightSideIndex",-2);   // Index
@@ -577,6 +583,8 @@ EssFlightLineVariables(mainSystem::inputParam& IParam,FuncDataBase& Control)
   Control.addVariable("LowAFlightLinerMat2","H2O");      // Liner
   Control.addVariable("LowAFlightLinerThick3",0.2);      // Liner
   Control.addVariable("LowAFlightLinerMat3","Aluminium");      // Liner
+  Control.addVariable("LowAFlightLinerMat3","PHITSAluminium");      // Liner
+
   Control.addVariable("LowAFlightLinerThick4",0.3);      // Liner
   Control.addVariable("LowAFlightLinerMat4","Void");      // Liner
 
@@ -613,7 +621,7 @@ EssInstrumentVariables(const std::set<std::string>& BL,
      {"BEER",        &BEERvariables},
      {"BIFROST",     &BIFROSTvariables},
      {"CSPEC",       &CSPECvariables},
-     {"DREAM",       &DREAMvariables},     
+     {"DREAM",       &DREAMvariables},
      {"ESTIA",       &ESTIAvariables},   
      {"FREIA",       &FREIAvariables},
      {"HEIMDAL",     &HEIMDALvariables},

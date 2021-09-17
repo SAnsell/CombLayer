@@ -231,19 +231,21 @@ BulkModule::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("BulkModule","createObjects");
 
-  std::string Out,OutX;
+  std::string Out,OutX,cellName;
   int RI(buildIndex);
   for(size_t i=0;i<nLayer;i++)
     {
-      Out=ModelSupport::getComposite(SMap,RI,"5 -6 -7 ");
+        Out=ModelSupport::getComposite(SMap,RI,"5 -6 -7 ");
       if (i)
+	{
 	OutX=ModelSupport::getComposite(SMap,RI-10,"(-5:6:7)");
+	}
       else
 	{
 	  OutX=CC.getExclude();
 	  setCell("Inner", cellIndex);
 	}
-      System.addCell(MonteCarlo::Object(cellIndex++,Mat[i],0.0,Out+OutX));
+       System.addCell(MonteCarlo::Object(cellIndex++,Mat[i],0.0,Out+OutX));
 
       RI+=10;
     }

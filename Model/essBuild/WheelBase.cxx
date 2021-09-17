@@ -78,7 +78,7 @@ namespace essSystem
 {
 
 WheelBase::WheelBase(const std::string& Key) :
-  attachSystem::ContainedGroup("Wheel","Shaft"),
+  attachSystem::ContainedGroup("Wheel","Shaft","ShaftConnection"),
   attachSystem::FixedOffset(Key,13),
   attachSystem::CellMap()
   /*!

@@ -126,12 +126,13 @@ setESSFull(defaultConfig& A)
       {"DREAM","G2BLineTop19"}, // S3
       // {"CSPEC","G4BLine3"},
        {"VESPA","G2BLineTop7"},
+       {"ANNI","G2BLineTop5"}, // E5       
       {"FREIA","G1BLineTop17"},     // N5
       {"ODIN","G1BLineTop20"}        // was low / now high
     };
   
   const std::set<std::string> beamFilled=
-    {"NMX","CSPEC","DREAM","FREIA","SHORTDREAM","SHORTDREAM2",
+    {"NMX","CSPEC","DREAM","ANNI","FREIA","SHORTDREAM","SHORTDREAM2",
      "SHORTNMX","LOKI",
      "MAGIC","VESPA","VOR"};
 
@@ -250,6 +251,7 @@ setESSSingle(defaultConfig& A,
      
      {"VOR","G2BLineTop11"},       // S10/S11  [CHANGED TO FIT]
      {"VESPA","G2BLineTop7"},      // E7
+     {"ANNI","G2BLineTop5"}, // E5
 
 
      {"ESTIA","G2BLineTop2"},     // E2
@@ -263,7 +265,7 @@ setESSSingle(defaultConfig& A,
 
     };     
   const std::set<std::string> beamFilled=
-    {"BEER","BIFROST","CSPEC","DREAM","FREIA","HEIMDAL","LOKI",
+    {"BEER","BIFROST","CSPEC","DREAM", "ANNI", "FREIA","HEIMDAL","LOKI",
      "MAGIC","MIRACLES","NMX","NNBAR","ODIN","TESTBEAM",
      "TREX","VESPA","VOR","SHORTNMX","SHORTDREAM","SKADI","ESTIA"};
 
@@ -334,10 +336,11 @@ setESS(defaultConfig& A)
       {"CSPEC","G1BLineTop3"},
       {"VOR","G1BLinetop7"},   // also 17  
       {"LOKI","G1BLineTop15"},
-      {"ODIN","G2BLineTop20"}
+      {"ODIN","G2BLineTop20"},
+      {"ANNI","G2BLineTop5"}
     };     
   const std::set<std::string> beamFilled=
-    {"NMX","CSPEC","DREAM","VOR","LOKI"};
+    {"NMX","CSPEC","DREAM","VOR","LOKI", "ANNI"};
 
   size_t index(0);
   std::map<std::string,std::string>::const_iterator mc;

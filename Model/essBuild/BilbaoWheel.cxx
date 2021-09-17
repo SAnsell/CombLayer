@@ -85,6 +85,7 @@ namespace essSystem
 {
 
 BilbaoWheel::BilbaoWheel(const std::string& Key) :
+  //  attachSystem::ContainedGroup("Main","FlangeA","FlangeB"),
   WheelBase(Key)
   /*!
     Constructor
@@ -93,6 +94,7 @@ BilbaoWheel::BilbaoWheel(const std::string& Key) :
 {}
 
 BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
+  //  attachSystem::ContainedGroup(A),
   WheelBase(A),
   engActive(A.engActive),
   targetHeight(A.targetHeight),
@@ -164,6 +166,7 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
   if (this!=&A)
     {
       WheelBase::operator=(A);
+      //      attachSystem::ContainedGroup::operator=(A);
       engActive=A.engActive;
       targetHeight=A.targetHeight;
       targetInnerHeight=A.targetInnerHeight;
@@ -689,14 +692,14 @@ BilbaoWheel::createShaftObjects(Simulation& System)
   System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
 
   // notch: big conical cell
-    Out=ModelSupport::getComposite(SMap,buildIndex, " -2238 2227 2225 -2115 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex, " -2238 2227 2225 -2115 ");
   if (engActive)
     buildStiffeners(System,Out,buildIndex+3000,nSectors/2,steelMat);
   else
     System.addCell(MonteCarlo::Object(cellIndex++,shaftLowerBigStiffHomoMat,mainTemp,Out));
-  
 
-  // shaft layers
+  // Attempting to create a separate component in the Contained Group
+  // shaft layers, connection
   int SI(buildIndex);
   const std::string roof(ModelSupport::getComposite(SMap,buildIndex," -2006 "));
   std::string floor;
@@ -729,18 +732,78 @@ BilbaoWheel::createShaftObjects(Simulation& System)
       SI += 10;
     }
 
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI-10,
+	 " (-2007M -2006 2125)  "); // Schaft connection
+   addOuterSurf("ShaftConnection",Out);
   
-Out=ModelSupport::getComposite(SMap,buildIndex,SI-10,
-			        " (-2007M -2006 2125) : " // connection
-			       	 " (2126 -2149 -2146) : " // upper stiffeners
-			       " (2126 -2186 -2157)  : "  // above upper stiffeners
-			     " (-2118 2125 -2126) : " // 2nd step
-			     " ((-2239:-2247) 2205 -2125) "); // base
-  
+  Out=ModelSupport::getComposite(SMap,buildIndex,//SI-10,
+	 " (2126 -2149 -2146) : " // upper stiffeners
+         " (2126 -2186 -2157) : "  // above upper stiffeners
+				 " (-2118 2125 -2126) : " // 2nd step
+				 " ((-2239:-2247) 2205 -2125) "); // base
   addOuterSurf("Shaft",Out);
 
   return;
 }
+
+
+
+void
+BilbaoWheel::createShaftConnection(Simulation& System)
+  /*!
+    Construct the objects
+    \param System :: Simulation object
+   */
+{
+  ELog::RegMethod RegA("BilbaoWheel","createShaftConnection");
+  std::string Out;
+
+  // shaft layers, connection
+  int SI(buildIndex);
+  const std::string roof(ModelSupport::getComposite(SMap,buildIndex," -2006 "));
+  std::string floor;
+  for (size_t i=0; i<nShaftLayers; i++)
+    {
+      const std::string outer(ModelSupport::getComposite(SMap,SI," -2007 "));
+      const std::string inner(i==0?"":ModelSupport::getComposite(SMap,SI-10,
+								 " 2007 "));
+
+      if (i<3)
+	floor = " 5 ";
+      else if (i==nShaftLayers-1)
+	floor = " 2186 ";
+      else
+	floor = " 2136 ";
+
+      floor = ModelSupport::getComposite(SMap,buildIndex,floor);
+
+      if (i==2)
+	{
+	  buildHoles(System,inner+outer,floor,roof,
+		     shaftMat[i],shaftHoleSize,shaftHoleXYangle,shaftHoleHeight,
+		     0.0, 1000);
+	  SI += 10;
+	  continue;
+	}
+
+      System.addCell(MonteCarlo::Object(cellIndex++,shaftMat[i],mainTemp,
+				       inner+outer+floor+roof));
+      SI += 10;
+    }
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI-10,
+	 " (-2007M -2006 2125)  "); // Schaft connection
+  // std::cout << "Shaft Connection" << std::endl;
+  //  addOuterSurf("ShaftConnection",Out);
+
+
+return;
+}
+
+
+
+
+
 
 std::string
 BilbaoWheel::getSQSurface(const double R, const double e)
@@ -1428,6 +1491,7 @@ BilbaoWheel::createAll(Simulation& System,
 
   createObjects(System);
   createShaftObjects(System);
+  //  createShaftConnection(System);
 
   createLinks();
   if (engActive)

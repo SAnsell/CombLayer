@@ -61,7 +61,8 @@ namespace essSystem
   class CylPreMod;
   class PreModWing;
   class IradCylinder;
-  class BulkModule;
+  //  class BulkModule;
+    class LayeredBulkModule;
   class TwisterModule;
   class ShutterBay;
   class ProtonTube;
@@ -132,7 +133,8 @@ class makeESS
   std::unique_ptr<ESSPipes> ModPipes;       ///< Moderator pipes
 
 
-  std::shared_ptr<BulkModule> Bulk;      ///< Main bulk module
+  //  std::shared_ptr<BulkModule> Bulk;      ///< Main bulk module
+  std::shared_ptr<LayeredBulkModule> Bulk;      ///< Main bulk module
   std::shared_ptr<TwisterModule> Twister; ///< Moderator twister module
 
   /// Shutterbay objects
