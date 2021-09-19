@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/boxUnit.cxx
+ * File:   modelSupport/boxUnit.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -64,6 +64,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "LineTrack.h"
+#include "pipeSupport.h"
 #include "boxValues.h"
 #include "boxUnit.h"
 
@@ -485,36 +486,6 @@ boxUnit::createObjects(Simulation& System)
 }
 
 
-void
-boxUnit::calcLineTrack(Simulation& System,
-		       const Geometry::Vec3D& XP,
-		       const Geometry::Vec3D& YP,
-		       std::map<int,MonteCarlo::Object*>& OMap) const
-  /*!
-    From a line determine thos points that the system
-    intersect
-    \param System :: Simuation to use
-    \param XP :: A-Point of line
-    \param YP :: B-Point of line
-    \param OMap :: Object Map
-  */
-{
-  ELog::RegMethod RegA("boxUnit","calcLineTrack");
-  
-  typedef std::map<int,MonteCarlo::Object*> MTYPE;
-  
-  LineTrack LT(XP,YP);
-  LT.calculate(System);
-  const std::vector<MonteCarlo::Object*>& OVec=LT.getObjVec();
-  std::vector<MonteCarlo::Object*>::const_iterator oc;
-  for(oc=OVec.begin();oc!=OVec.end();oc++)
-    {
-      const int ONum=(*oc)->getName();
-      if (OMap.find(ONum)==OMap.end())
-	OMap.insert(MTYPE::value_type(ONum,(*oc)));
-    }
-  return;
-}
 
 void
 boxUnit::addInsertSet(const std::set<int>& S)

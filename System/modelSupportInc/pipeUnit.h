@@ -84,9 +84,6 @@ class pipeUnit :
 		const Geometry::Vec3D&);
   void checkForward();
   HeadRule createCaps() const;
-  void calcLineTrack(Simulation&,const Geometry::Vec3D&,
-		     const Geometry::Vec3D&,
-		     std::map<int,MonteCarlo::Object*>&) const;
   void excludeUnit(Simulation&,
 		   const std::map<int,MonteCarlo::Object*>&) const;
 

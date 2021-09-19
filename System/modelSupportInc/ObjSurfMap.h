@@ -79,8 +79,6 @@ class ObjSurfMap
   const STYPE& getObjects(const int) const;
   MonteCarlo::Object* findNextObject(const int,
 				     const Geometry::Vec3D&,const int) const;
-  MonteCarlo::Object* findNextObjectDebug(const int,
-					  const Geometry::Vec3D&,const int) const;
 
   bool isConnected(const int,const int) const;
   const std::set<int>& connectedObjects(const int) const;

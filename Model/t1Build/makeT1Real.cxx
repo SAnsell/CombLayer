@@ -450,16 +450,14 @@ makeT1Real::build(Simulation& System,
 
   RefObj->createBoxes(System,TarExcludeName);
 
-  //  WaterPipeObj->createAll(System,*WaterModObj,12);
-
-  //  MPipeObj->createAll(System,*MerlinMod,12);
-
-
-
   H2PipeObj->createAll(System,*Lh2ModObj,5);   // long int sideIndex
-  const MonteCarlo::Object* OPtrA=System.findObject(1020002);
-  
-  //  CH4PipeObj->createAll(System,*CH4ModObj,5);  // long int sideIndex
+
+  WaterPipeObj->createAll(System,*WaterModObj,12);
+
+  MPipeObj->createAll(System,*MerlinMod,12);
+
+
+  CH4PipeObj->createAll(System,*CH4ModObj,5);  // long int sideIndex
 
   if (IParam.flag("BeRods"))
     RefObj->createRods(System);  

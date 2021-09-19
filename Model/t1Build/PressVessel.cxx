@@ -455,6 +455,7 @@ PressVessel::createObjects(Simulation& System)
   
   std::string Out;
 
+  HeadRule HR;
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 -8 -9 ");
   addOuterSurf(Out);
 

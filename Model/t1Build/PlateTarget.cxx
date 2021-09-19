@@ -59,6 +59,7 @@
 #include "FixedComp.h"
 #include "FixedUnit.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "boxValues.h"
@@ -70,8 +71,10 @@ namespace ts1System
 {
 
 PlateTarget::PlateTarget(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
-  populated(0)
+  attachSystem::FixedComp(Key,6),
+  attachSystem::ContainedComp(),
+  attachSystem::ExternalCut(),
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -79,8 +82,9 @@ PlateTarget::PlateTarget(const std::string& Key)  :
 {}
 
 PlateTarget::PlateTarget(const PlateTarget& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  populated(A.populated),
+  attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
   height(A.height),width(A.width),nBlock(A.nBlock),
   tBlock(A.tBlock),taThick(A.taThick),
   waterThick(A.waterThick),waterHeight(A.waterHeight),
@@ -102,9 +106,9 @@ PlateTarget::operator=(const PlateTarget& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      populated=A.populated;
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
       height=A.height;
       width=A.width;
       nBlock=A.nBlock;
@@ -181,7 +185,6 @@ PlateTarget::populate(const FuncDataBase& Control)
   wMat=ModelSupport::EvalMat<int>(Control,keyName+"WMat");
   waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
 
-  populated |= 1;
   return;
 }
   
@@ -277,67 +280,68 @@ PlateTarget::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("PlateTarget","createObjects");
-  
-  std::string Out;
-  const std::string WEdge=
-    ModelSupport::getComposite(SMap,buildIndex,"23 -24 25 -26");
-  const std::string H2OEdge=
-    ModelSupport::getComposite(SMap,buildIndex,"3 -4 15 -16");
-  const std::string TaEdge=
-    ModelSupport::getComposite(SMap,buildIndex,"3 -4 5 -6");
+
+  HeadRule HR;
+
+  const HeadRule WEdge=
+    ModelSupport::getHeadRule(SMap,buildIndex,"23 -24 25 -26");
+  const HeadRule H2OEdge=
+    ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 15 -16");
+  const HeadRule TaEdge=
+    ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
 
   int surfNum;
+  HeadRule prevWater=ModelSupport::getHeadRule(SMap,buildIndex,buildIndex,"1004");
   // Make plates:
   for(size_t i=0;i<nBlock;i++)
     {
       surfNum=buildIndex+1000+10*static_cast<int>(i);
+      const std::string numStr(std::to_string(i));
       if (blockType[i])
 	{
 	  // W CELL Full:
-	  Out=ModelSupport::getComposite(SMap,surfNum,"12 -13 ");
-	  System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out+WEdge));
-	  
+	  HR=ModelSupport::getHeadRule(SMap,surfNum,"12 -13");
+	  makeCell("WCell"+numStr,System,cellIndex++,wMat,0.0,HR*WEdge);
+
+	  HR=ModelSupport::getHeadRule(SMap,surfNum,buildIndex,
+				       "11 -14 (-12:13:-23M:24M:-25M:26M)");
+	  makeCell("TaCell"+numStr,System,cellIndex++,taMat,0.0,
+		   HR*TaEdge);
+
 	  // WATER CELL
-	  Out=ModelSupport::getComposite(SMap,surfNum,"4 -11 ");
-	  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,
-					   0.0,Out+H2OEdge));
-	  std::ostringstream cx;
-	  // TA CELL Full:
-	  Out=ModelSupport::getComposite(SMap,surfNum,"4 -14 ");
-	  cx<<" #"<<cellIndex-2<<" #"<<cellIndex-1<<" ";
-	  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,
-					   Out+cx.str()+TaEdge));
+	  HR=ModelSupport::getHeadRule(SMap,surfNum,"-11");
+	  makeCell("WaterChannel"+numStr,System,
+	   	   cellIndex++,waterMat,0.0,HR*TaEdge*prevWater);
+	  prevWater=ModelSupport::getHeadRule(SMap,surfNum,"14");
 	}
       else   // VOID BLOCK
 	{
-	  Out=ModelSupport::getComposite(SMap,surfNum,"4 -14 ");
-	  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+TaEdge));
+	  HR=ModelSupport::getHeadRule(SMap,surfNum,"4 -14");
+	  makeCell("VoidBlock",System,cellIndex++,0,0.0,HR*TaEdge);
 	}
     }
   // Add backplate
   surfNum=buildIndex+1000+10*static_cast<int>(nBlock);
-  // WATER CELL
-  Out=ModelSupport::getComposite(SMap,surfNum,"4 -11 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out+H2OEdge));
+
   // TA BackPlate Full:
   std::ostringstream cx;
-  Out=ModelSupport::getComposite(SMap,surfNum,"4 ");
-  Out+=ModelSupport::getComposite(SMap,buildIndex," (-51:-53:54) (-51:-63:64) -52 (-51:57)");
-  cx<<" #"<<cellIndex-1<<" ";
-  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out+cx.str()+TaEdge));
-  
-  // Void:
-  Out=ModelSupport::getComposite(SMap,buildIndex," 51 -52  53 -54 5 -6");
-  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0, Out));
-  
-  Out=ModelSupport::getComposite(SMap,buildIndex," 51 -52  63 -64 5 -6");
-  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0, Out));
-  // Steel pin
-  Out=ModelSupport::getComposite(SMap,buildIndex," 51 -52 -57");
-  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,surfNum,"4");
+  HR*=ModelSupport::getHeadRule(SMap,buildIndex,
+				"(-51:-53:54) (-51:-63:64) -52 (-51:57)");
+  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,HR*TaEdge));
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1004 3 -4 5 -6 -52");
-  addOuterSurf(Out);
+  // Void:
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 51 -52  53 -54 5 -6");
+  makeCell("WaterMain",System,cellIndex++,waterMat,0.0,HR);
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 51 -52  63 -64 5 -6");
+  makeCell("WaterMain",System,cellIndex++,waterMat,0.0,HR);
+  // Steel pin
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 51 -52 -57");
+  makeCell("SteelPin",System,cellIndex++,feMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1004 3 -4 5 -6 -52");
+  addOuterSurf(HR);
 
 
   return;
@@ -406,7 +410,7 @@ PlateTarget::buildFeedThrough(Simulation& System)
    */
 {
   ELog::RegMethod RegA("PlateTarget","buildFeedThrough");
-
+  return;
   for(int i=0;i<4;i++)
     {
       ModelSupport::BoxLine 

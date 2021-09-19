@@ -79,7 +79,6 @@ class LineTrack
   /// Determine if track is complete 
   bool isCompelete() const { return (aimDist-TDist) < -Geometry::zeroTol; }
 
-  void specialCalculate(Simulation&);
   void calculate(const Simulation&);
   void calculateError(const Simulation&);
   /// Access Cells

@@ -277,32 +277,6 @@ ObjSurfMap::addSurface(const int SurfN,MonteCarlo::Object* OPtr)
 }
 
 MonteCarlo::Object*
-ObjSurfMap::findNextObjectDebug(const int SN,
-			   const Geometry::Vec3D& Pos,
-			   const int objExclude) const
-  /*!
-    Calculate the next object 
-    \param SN :: Surface number
-    \param Pos :: position
-    \param ObjExclude :: Excluded object
-    \return Next Object Ptr / 0 on point not valid
-  */
-{
-  ELog::RegMethod RegA("ObjSurfMap","findNextObject");
-
-  const STYPE& MVec=getObjects(SN);
-  //  ELog::EM<<"DEBUG"<<ELog::endErr;
-  for(MonteCarlo::Object* MPtr : MVec)
-    {
-      ELog::EM<<"Object == "<<MPtr->getName()<<ELog::endDiag;
-      if (MPtr->getName()!=objExclude && 
-	  MPtr->isDirectionValid(Pos,SN))
-	return MPtr;
-    }
-  return 0;
-}
-
-MonteCarlo::Object*
 ObjSurfMap::findNextObject(const int SN,
 			   const Geometry::Vec3D& Pos,
 			   const int objExclude) const
@@ -324,31 +298,6 @@ ObjSurfMap::findNextObject(const int SN,
 	  MPtr->isDirectionValid(Pos,SN))
 	return MPtr;
     }
-  
-  // DEBUG CODE FOR FAILURE:
-  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
-
-  ELog::EM<<"Failure to find surface on "<<SN<<" :: "
-	  <<Pos<<ELog::endCrit;
-
-  ELog::EM<<"EXCLUDE  "<<objExclude<<" "
-	  <<Pos<<" :: "<<SN<<ELog::endDiag;
-  if (SurI.getSurf(abs(SN)))
-    {
-      Geometry::Surface* SPtr=SurI.getSurf(abs(SN));
-      ELog::EM<<"Surface == "<<*SPtr<<ELog::endWarn;
-      ELog::EM<<"Distance [should be 0 ]== "<<SPtr->distance(Pos)<<ELog::endDiag;
-      const Geometry::Vec3D N = SPtr->surfaceNormal(Pos);
-      ELog::EM<<"SurfaceNormal == "<<N<<ELog::endDiag;
-    }
-  else
-    {
-      ELog::EM<<"Failed to get == "<<SN<<ELog::endErr;
-    }
-    
-  for(const MonteCarlo::Object* MPtr : MVec)
-    ELog::EM<<"Common surf Cell  == "<<MPtr->getName()<<ELog::endErr;
-
   return 0;
 }
 

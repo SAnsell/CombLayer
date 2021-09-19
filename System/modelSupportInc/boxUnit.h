@@ -70,9 +70,6 @@ class boxUnit :
   void calcXZ(const Geometry::Vec3D&,const Geometry::Vec3D&);
 
   void checkForward();
-  void calcLineTrack(Simulation&,const Geometry::Vec3D&,
-		     const Geometry::Vec3D&,
-		     std::map<int,MonteCarlo::Object*>&) const;
   void excludeUnit(Simulation&,
 		   const std::map<int,MonteCarlo::Object*>&) const;
   size_t getOuterIndex() const;
