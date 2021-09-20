@@ -52,6 +52,7 @@ namespace setVariable
 
 TableGenerator::TableGenerator() :
   thick(1.0),width(70.0),legSize(10.0),
+  clearance(5.0),
   plateMat("Stainless304"),legMat("Stainless304"),
   voidMat("Void")
   /*!
@@ -85,7 +86,8 @@ TableGenerator::generateTable(FuncDataBase& Control,
   Control.addVariable(keyName+"Thick",thick);
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"Width",width);
-  Control.addVariable(keyName+"LegSize",width);
+  Control.addVariable(keyName+"LegSize",legSize);
+  Control.addVariable(keyName+"Clearance",clearance);
   
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"PlateMat",plateMat);

@@ -160,8 +160,10 @@ LineTrack::calculate(const Simulation& ASim)
   // Find Initial cell [no default]
   MonteCarlo::Object* OPtr=ASim.findCell(InitPt,0);
   if (!OPtr)
-    ColErr::InContainerError<Geometry::Vec3D>
+    throw ColErr::InContainerError<Geometry::Vec3D>
       (InitPt,"Initial point not in model");
+  
+
   int SN=OPtr->isOnSide(InitPt);
   if (SN && OPtr->trackDirection(InitPt,nOut.uVec)<0)
     {
@@ -191,6 +193,7 @@ LineTrack::calculate(const Simulation& ASim)
       else
 	OPtr=0;	
     }
+  ELog::EM<<"OPTR == "<<OPtr<<ELog::endDiag;
   //
   // remove last object if point does not reach it:
   //

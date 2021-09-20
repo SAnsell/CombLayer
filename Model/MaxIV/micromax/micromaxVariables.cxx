@@ -727,7 +727,7 @@ diagUnit(FuncDataBase& Control,const std::string& Name)
 			     Geometry::Vec3D(0,0,1),
 			     10.0);
 
-  TableGen.generateTable(Control,Name+"TableA",-15.0,90.0);
+  TableGen.generateTable(Control,Name+"TableA",-15.1,90.0);
   return;
 }
 

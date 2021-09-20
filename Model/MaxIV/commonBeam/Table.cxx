@@ -58,7 +58,16 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ContainedComp.h"
+#include "pipeSupport.h"
 #include "Table.h"
+
+// DEBUG
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+
+#include "HeadRule.h"
+#include "Importance.h"
+#include "Object.h"
 
 
 namespace xraySystem
@@ -97,6 +106,11 @@ Table::populate(const FuncDataBase& Control)
   width=Control.EvalVar<double>(keyName+"Width");
   thick=Control.EvalVar<double>(keyName+"Thick");
   length=Control.EvalVar<double>(keyName+"Length");
+
+  legSize=Control.EvalVar<double>(keyName+"LegSize");
+
+  clearance=Control.EvalDefVar<double>(keyName+"Clearance",5.0);
+    
   
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   plateMat=ModelSupport::EvalMat<int>(Control,keyName+"PlateMat");
@@ -124,6 +138,44 @@ Table::createSurfaces()
 }
 
 void
+Table::addHole(const attachSystem::FixedComp& FC,
+	       const std::string& sideName,
+	       const double R)
+  /*!
+    Add a specific hole
+    \param FC :: FixedComp
+    \param sideIndex :: side point
+    \param R :: Radius
+   */
+{
+  
+  ELog::RegMethod RegA("Table","addHole(string)");
+  addHole(FC,sideName,sideName,R);  
+  return;
+}
+
+void
+Table::addHole(const attachSystem::FixedComp& FC,
+	       const std::string& centName,
+	       const std::string& outerName,
+	       const double R)
+  /*!
+    Add a specific hole
+    \param FC :: FixedComp
+    \param centName :: side point
+    \param R :: Radius
+   */
+{
+  ELog::RegMethod RegA("Table","addHole(string,string)");
+
+  holeCentre.push_back(FC.getLinkPt(centName));
+  holeRadius.push_back(R*clearance);
+  holeExclude.push_back(FC.getFullRule(outerName));
+  
+  return;
+}
+  
+void
 Table::createObjects(Simulation& System)
   /*!
     Create the vaned moderator
@@ -133,9 +185,18 @@ Table::createObjects(Simulation& System)
   ELog::RegMethod RegA("Table","createObjects");
 
   HeadRule HR;
+  HeadRule Holes;
+
+  for(size_t i=0;i<holeCentre.size();i++)
+    {
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -7");
+      HR*=holeExclude[i];
+      makeCell("Hole"+std::to_string(i),System,cellIndex++,0,0.0,HR);
+      Holes*=ModelSupport::getHeadRule(SMap,buildIndex,"7");
+    }
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2  3 -4 5 -6");
-  makeCell("Table",System,cellIndex++,plateMat,0.0,HR);
+  makeCell("Table",System,cellIndex++,plateMat,0.0,HR*Holes);
   
   addOuterSurf(HR);
 
@@ -153,10 +214,17 @@ Table::insertInCells(Simulation& System,
 {
   ELog::RegMethod RegA("Table","insertInCell");
 
-  const HeadRule volume;
+  System.populateCells();
+  System.createObjSurfMap();
+
+  const Geometry::Vec3D APt(Origin-Y*(length/2.0));
+  const Geometry::Vec3D BPt(Origin+Y*(length/2.0));
+  std::map<int,MonteCarlo::Object*> OMap;
+  ModelSupport::calcLineTrack(System,APt,BPt,OMap);
   for(const int CN : cellN)
     {
-
+      if (OMap.find(CN)!=OMap.end())
+	ContainedComp::insertInCell(System,CN);
     }
   return;
 }

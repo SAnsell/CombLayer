@@ -294,8 +294,10 @@ micromaxOpticsLine::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,*bellowD,"back",*attnTube);
 
-  
+
+  tableA->addHole(*viewTube,0,viewTube->getOuterRadius());
   tableA->createAll(System,*bellowD,0);
+
   tableA->insertInCells(System,buildZone.getCells());
   
   buildZone.createUnit(System);

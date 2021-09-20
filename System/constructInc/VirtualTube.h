@@ -119,6 +119,9 @@ class VirtualTube :
   virtual void insertPortsInCell(Simulation&,
 				const std::vector<std::set<int>>&) const;
 
+  /// accessor to outer main radius
+  double getOuterRadius() const { return radius+wallThick; }
+
   using FixedComp::createAll;
   virtual void createAll(Simulation&,
 			 const attachSystem::FixedComp&,

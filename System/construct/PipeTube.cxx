@@ -291,13 +291,15 @@ PipeTube::createLinks()
   FixedComp::setConnect(3,FixedComp::getLinkPt(2),Y);
 
   // make a composite flange
-  std::string Out;
-  const std::string frontSurf(frontRule());
-  const std::string backSurf(backRule());
-  Out=ModelSupport::getComposite(SMap,buildIndex," -101 -107 ");
-  FixedComp::setLinkComp(2,Out+frontSurf);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 102 -207 ");
-  FixedComp::setLinkComp(3,Out+backSurf);
+  HeadRule HR;
+
+
+  const HeadRule frontSurf(getFrontRule());
+  const HeadRule backSurf(getBackRule());
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 -107");
+  FixedComp::setLinkComp(2,HR*frontSurf);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -207");
+  FixedComp::setLinkComp(3,HR*backSurf);
 
   // inner links
   int innerFrontSurf, innerBackSurf;

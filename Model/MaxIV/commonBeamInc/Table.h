@@ -48,11 +48,17 @@ class Table :
   double thick;           ///< Thickness
 
   double legSize;           ///< Square leg size
+  double clearance;         ///< Hole clearace [%]
+  
 
   int voidMat;              ///< Void material
   int plateMat;             ///< Top plate material
   int legMat;               ///< Base material
 
+  std::vector<Geometry::Vec3D> holeCentre;   ///< hole centre
+  std::vector<double> holeRadius;                ///< hole radius
+  std::vector<HeadRule> holeExclude;         ///< hole exclude
+  
   // Functions:
 
   void populate(const FuncDataBase&);
@@ -69,6 +75,12 @@ class Table :
 
   virtual void insertInCells(Simulation&,const std::vector<int>&);
 
+  void addHole(const attachSystem::FixedComp&,
+	       const std::string&,const double);
+  void addHole(const attachSystem::FixedComp&,
+	       const std::string&,const std::string&,const double);
+
+  
   using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,

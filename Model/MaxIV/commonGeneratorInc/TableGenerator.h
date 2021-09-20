@@ -44,6 +44,8 @@ class TableGenerator
   double width;            ///< Width of table [full]
   double legSize;          ///< Size of square leg
 
+  double clearance;        ///< Clearance
+
 
   std::string plateMat;         ///< plate Material
   std::string legMat;           ///< leg Material

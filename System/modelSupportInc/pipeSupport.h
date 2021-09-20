@@ -22,7 +22,7 @@
 #ifndef ModelSupport_pipeSupport_h
 #define ModelSupport_pipeSupport_h
 
-///\file System/processInc/pipeSupport.h
+///\file System/modelSupportInc/pipeSupport.h
 
 namespace ModelSupport
 {
