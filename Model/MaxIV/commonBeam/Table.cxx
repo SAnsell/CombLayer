@@ -109,8 +109,8 @@ Table::populate(const FuncDataBase& Control)
 
   legSize=Control.EvalVar<double>(keyName+"LegSize");
 
-  clearance=Control.EvalDefVar<double>(keyName+"Clearance",5.0);
-    
+  const double C=Control.EvalDefVar<double>(keyName+"Clearance",5.0);
+  clearance=1.0+(C/100.0);
   
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   plateMat=ModelSupport::EvalMat<int>(Control,keyName+"PlateMat");
@@ -134,6 +134,13 @@ Table::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(thick/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(thick/2.0),Z);
 
+  int HI(buildIndex);
+  for(size_t i=0;i<holeCentre.size();i++)
+    {
+      ModelSupport::buildCylinder(SMap,HI+7,holeCentre[i],Z,
+				  holeRadius[i]*clearance);
+      HI+=10;
+    }
   return;
 }
 
@@ -148,29 +155,34 @@ Table::addHole(const attachSystem::FixedComp& FC,
     \param R :: Radius
    */
 {
-  
   ELog::RegMethod RegA("Table","addHole(string)");
-  addHole(FC,sideName,sideName,R);  
+
+  holeCentre.push_back(FC.getLinkPt(sideName));
+  holeRadius.push_back(R);
+  holeExclude.push_back(FC.getFullRule(sideName));   
+
   return;
 }
 
 void
 Table::addHole(const attachSystem::FixedComp& FC,
 	       const std::string& centName,
-	       const std::string& outerName,
-	       const double R)
+	       const std::string& outerName)
   /*!
     Add a specific hole
     \param FC :: FixedComp
     \param centName :: side point
-    \param R :: Radius
+    \param outerName :: side point
    */
 {
   ELog::RegMethod RegA("Table","addHole(string,string)");
 
+  const double R=FC.getLinkDistance(centName,outerName);
   holeCentre.push_back(FC.getLinkPt(centName));
-  holeRadius.push_back(R*clearance);
-  holeExclude.push_back(FC.getFullRule(outerName));
+  holeRadius.push_back(R);
+  ELog::EM<<"Hole = "<<FC.getKeyName()<<" ::: "<<
+    FC.getFullRule(outerName)<<ELog::endDiag;
+  holeExclude.push_back(FC.getFullRule(outerName));   
   
   return;
 }
@@ -187,12 +199,14 @@ Table::createObjects(Simulation& System)
   HeadRule HR;
   HeadRule Holes;
 
+  int HI(buildIndex);
   for(size_t i=0;i<holeCentre.size();i++)
     {
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -7");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,HI,"5 -6 -7M");
       HR*=holeExclude[i];
       makeCell("Hole"+std::to_string(i),System,cellIndex++,0,0.0,HR);
-      Holes*=ModelSupport::getHeadRule(SMap,buildIndex,"7");
+      Holes*=ModelSupport::getHeadRule(SMap,HI,"7");
+      HI+=10;
     }
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2  3 -4 5 -6");

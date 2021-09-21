@@ -56,7 +56,7 @@ class Table :
   int legMat;               ///< Base material
 
   std::vector<Geometry::Vec3D> holeCentre;   ///< hole centre
-  std::vector<double> holeRadius;                ///< hole radius
+  std::vector<double> holeRadius;            ///< hole radius
   std::vector<HeadRule> holeExclude;         ///< hole exclude
   
   // Functions:
@@ -78,7 +78,7 @@ class Table :
   void addHole(const attachSystem::FixedComp&,
 	       const std::string&,const double);
   void addHole(const attachSystem::FixedComp&,
-	       const std::string&,const std::string&,const double);
+	       const std::string&,const std::string&);
 
   
   using FixedComp::createAll;

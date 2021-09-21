@@ -295,9 +295,9 @@ micromaxOpticsLine::buildObjects(Simulation& System)
     (System,buildZone,*bellowD,"back",*attnTube);
 
 
-  tableA->addHole(*viewTube,0,viewTube->getOuterRadius());
+  tableA->addHole(*viewTube,"Origin","OuterRadius");
+  tableA->addHole(attnTube->getPort(1),"Origin","OuterRadius");
   tableA->createAll(System,*bellowD,0);
-
   tableA->insertInCells(System,buildZone.getCells());
   
   buildZone.createUnit(System);
@@ -322,8 +322,7 @@ micromaxOpticsLine::createLinks()
   setLinkCopy(1,*lastComp,2);
   return;
 }
-  
-  
+   
 void 
 micromaxOpticsLine::createAll(Simulation& System,
 			  const attachSystem::FixedComp& FC,

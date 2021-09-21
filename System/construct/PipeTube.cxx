@@ -336,6 +336,18 @@ PipeTube::createLinks()
   FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+7));
   nameSideIndex(6,"InnerSide");
 
+  if (!outerVoid)
+    {
+      FixedComp::setConnect(7,Origin+Z*(radius+wallThick),Z);
+      FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+17));
+    }
+  else
+    {
+      FixedComp::setConnect(7,Origin+Z*flangeBRadius,Z);
+      FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+107));
+    }
+  nameSideIndex(7,"OuterRadius");
+
   
   return;
 }

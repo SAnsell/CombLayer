@@ -337,6 +337,18 @@ PortTube::createLinks()
 
   FixedComp::setConnect(12,Origin,Y);
 
+  if (!outerVoid)
+    {
+      FixedComp::setConnect(13,Origin+Z*(radius+wallThick),Z);
+      FixedComp::setLinkSurf(13,SMap.realSurf(buildIndex+17));
+    }
+  else
+    {
+      FixedComp::setConnect(13,Origin+Z*flangeBRadius,Z);
+      FixedComp::setLinkSurf(13,SMap.realSurf(buildIndex+107));
+    }
+  nameSideIndex(7,"OuterRadius");
+
   
   return;
 }

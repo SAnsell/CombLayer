@@ -70,7 +70,7 @@ namespace constructSystem
 
 portItem::portItem(const std::string& baseKey,
 		   const std::string& Key) :
-  attachSystem::FixedComp(Key,7),
+  attachSystem::FixedComp(Key,8),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   portBase(baseKey),
@@ -274,8 +274,6 @@ portItem::populate(const FuncDataBase& Control)
     (Control,keyName+"WindowMat",portBase+"WindowMat",windowMat);
   if (windowMat<0) windowMat=capMat;
 
-  outerFlag=
-    static_cast<bool>(Control.EvalDefVar<int>(keyName+"OuterVoid",outerFlag));
   return;
 }
 
@@ -432,7 +430,7 @@ portItem::createLinks()
   FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+7));
   FixedComp::setBridgeSurf(2,SMap.realSurf(buildIndex+1));
 
-  FixedComp::nameSideIndex(3,"OuterRadius");
+  FixedComp::nameSideIndex(3,"WallRadius");
   FixedComp::setConnect(3,Origin+Y*(externalLength/2.0)+X*(wall+radius),X);
   FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+17));
   FixedComp::setBridgeSurf(3,SMap.realSurf(buildIndex+1));
@@ -453,6 +451,19 @@ portItem::createLinks()
   FixedComp::setConnect(6,flangePoint,Y);
   FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+102));
 
+  
+  FixedComp::nameSideIndex(7,"OuterRadius");
+  if (outerFlag)
+    {
+      FixedComp::setConnect(7,Origin+X*flangeRadius,X);
+      FixedComp::setBridgeSurf(7,SMap.realSurf(buildIndex+27));
+    }
+  else
+    {
+      FixedComp::setConnect(7,Origin+X*(wall+radius),X);
+      FixedComp::setBridgeSurf(7,SMap.realSurf(buildIndex+17));
+    }
+
   return;
 }
 
@@ -462,7 +473,9 @@ portItem::constructObject(Simulation& System,
 			  const HeadRule& outerSurf)
 /*!
     Construct a flange from the centre point
-    \parma System :: Simulation to use
+    \param System :: Simulation to use
+    \param inner Surface of main cell to cut (into the void typically)
+    \param wall Surface of main cell to cut 
   */
 {
   ELog::RegMethod RegA("portItem","constructObject");
