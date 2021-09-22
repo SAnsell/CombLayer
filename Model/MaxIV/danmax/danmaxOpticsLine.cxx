@@ -409,7 +409,8 @@ danmaxOpticsLine::constructRevBeamStopTube
   revBeamStopTube->insertAllInCell(System,outerCell);
 
   revBeamStop->addInsertCell(revBeamStopTube->getCell("Void"));
-  revBeamStop->createAll(System,*revBeamStopTube,"OrgOrigin");
+  ELog::EM<<"Orig -- "<<revBeamStopTube->getLinkPt("OrgOrigin")<<ELog::endDiag;
+  revBeamStop->createAll(System,*revBeamStopTube,"Origin");
 
   constructSystem::constructUnit
     (System,buildZone,VPB,"OuterPlate",*bellowK);
@@ -539,7 +540,7 @@ danmaxOpticsLine::constructBeamStopTube
   beamStopTube->insertAllInCell(System,outerCell);
   
   beamStop->addInsertCell(beamStopTube->getCell("Void"));
-  beamStop->createAll(System,*beamStopTube,"OrgOrigin");
+  beamStop->createAll(System,*beamStopTube,"Origin");
 
   constructSystem::constructUnit
     (System,buildZone,VPB,"OuterPlate",*slitsA);
@@ -606,6 +607,7 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   outerCell=buildZone.createUnit(System,*pipeInit,-1);
   if (preInsert)
     preInsert->insertAllInCell(System,outerCell);
+  outerCell=buildZone.createUnit(System,*pipeInit,2);
 
   constructSystem::constructUnit
     (System,buildZone,*pipeInit,"back",*triggerPipe);

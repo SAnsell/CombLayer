@@ -123,15 +123,26 @@ class micromaxOpticsLine :
   std::shared_ptr<constructSystem::Bellows> bellowD;
   /// Attn Tube 
   std::shared_ptr<constructSystem::PortTube> attnTube;
+  /// Bellow exit
+  std::shared_ptr<constructSystem::Bellows> bellowE;
   /// Table for diag table 
   std::shared_ptr<xraySystem::Table> tableA;
-
+  /// H-res mono vessel
+  std::shared_ptr<xraySystem::DCMTank> monoVessel;
+  /// Crystal pair
+  std::shared_ptr<xraySystem::MonoBlockXstals> mbXstals;
+  /// BremTubeB
+  std::shared_ptr<xraySystem::BremTube> monoBremTube;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
   double outerTop;     ///< Top lift for cut rectangle
 
- 
+  void constructHDCM(Simulation&,const attachSystem::FixedComp&, 
+		     const std::string&);
+  void constructDiag2(Simulation&,const attachSystem::FixedComp&, 
+		      const std::string&);
+
   void populate(const FuncDataBase&);
   void createSurfaces();
   void buildObjects(Simulation&);

@@ -51,7 +51,7 @@ namespace setVariable
 {
 
 TableGenerator::TableGenerator() :
-  thick(1.0),width(70.0),legSize(10.0),
+  thick(1.5),width(48.0),legSize(5.0),
   clearance(5.0),
   plateMat("Stainless304"),legMat("Stainless304"),
   voidMat("Void")

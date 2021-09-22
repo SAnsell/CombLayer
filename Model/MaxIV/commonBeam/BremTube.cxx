@@ -209,84 +209,83 @@ BremTube::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("BremTube","createObjects");
 
-  std::string Out;
   
-  const std::string frontStr=getRuleStr("front");
-  const std::string backStr=getRuleStr("back");
-
+  const HeadRule frontHR=getRule("front");
+  const HeadRule backHR=getRule("back");
+  HeadRule HR;
   // Front
-  Out=ModelSupport::getComposite(SMap,buildIndex," -107 -212");
-  makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-107 -212");
+  makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 107 -117 -202");
-  makeCell("FrontTube",System,cellIndex++,wallMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"107 -117 -202");
+  makeCell("FrontTube",System,cellIndex++,wallMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 117 -127 -101");
-  makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,Out+frontStr);
-
-  // Note : using 427
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-427 127 -101");
-  makeCell("FrontFlangeVoid",System,cellIndex++,0,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"117 -127 -101");
+  makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,HR*frontHR);
 
   // Note : using 427
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-202 -427 117 101");
-  makeCell("FrontOuterVoid",System,cellIndex++,0,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 107 -212 202 -217");
-  makeCell("MidPlate",System,cellIndex++,wallMat,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," -200 307 -207 212");
-  makeCell("MidVoid",System,cellIndex++,0,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," -200 317 -217 207 212");
-  makeCell("MidWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-427 127 -101");
+  makeCell("FrontFlangeVoid",System,cellIndex++,0,0.0,HR*frontHR);
 
   // Note : using 427
-  Out=ModelSupport::getComposite(SMap,buildIndex," -427 -200 317 217 202");
-  makeCell("MidOuterVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-202 -427 117 101");
+  makeCell("FrontOuterVoid",System,cellIndex++,0,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"107 -212 202 -217");
+  makeCell("MidPlate",System,cellIndex++,wallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-200 307 -207 212");
+  makeCell("MidVoid",System,cellIndex++,0,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-200 317 -217 207 212");
+  makeCell("MidWall",System,cellIndex++,wallMat,0.0,HR);
+
+  // Note : using 427
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -427 -200 317 217 202");
+  makeCell("MidOuterVoid",System,cellIndex++,0,0.0,HR);
 
   // main tube
-  Out=ModelSupport::getComposite(SMap,buildIndex,"305 -306 -307");
-  makeCell("Void",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"305 -306 -307");
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"305 -306 307 -317 (207:200) (407:-200)");
-  makeCell("TubeWall",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("TubeWall",System,cellIndex++,wallMat,0.0,HR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-315 305 317 -327");
-  makeCell("TubeBaseFlange",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-315 305 317 -327");
+  makeCell("TubeBaseFlange",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"316 -306 317 -327");
-  makeCell("TubeTopFlange",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"316 -306 317 -327");
+  makeCell("TubeTopFlange",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"325 -305 -327");
-  makeCell("TubeBaseCap",System,cellIndex++,plateMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"325 -305 -327");
+  makeCell("TubeBaseCap",System,cellIndex++,plateMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-326 306 -327");
-  makeCell("TubeTopCap",System,cellIndex++,plateMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-326 306 -327");
+  makeCell("TubeTopCap",System,cellIndex++,plateMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"315 -316 -327 317 427");
-  makeCell("TubeOuterVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"315 -316 -327 317 427");
+  makeCell("TubeOuterVoid",System,cellIndex++,0,0.0,HR);
 
   // Extention
-  Out=ModelSupport::getComposite(SMap,buildIndex,"200 307 -407 ");
-  makeCell("BackVoid",System,cellIndex++,0,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"200 307 -407 ");
+  makeCell("BackVoid",System,cellIndex++,0,0.0,HR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"200 317 407 -417");
-  makeCell("BackWall",System,cellIndex++,wallMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"200 317 407 -417");
+  makeCell("BackWall",System,cellIndex++,wallMat,0.0,HR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"417 -427 412 ");
-  makeCell("BackFlange",System,cellIndex++,wallMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"417 -427 412 ");
+  makeCell("BackFlange",System,cellIndex++,wallMat,0.0,HR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-427 417 -412 200 317");
-  makeCell("BackOuterVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-427 417 -412 200 317");
+  makeCell("BackOuterVoid",System,cellIndex++,0,0.0,HR);
 
   // outer void box:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-427 ");
-  addOuterSurf(Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-427 ");
+  addOuterSurf(HR*frontHR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-327 325 -326");
-  addOuterUnionSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-327 325 -326");
+  addOuterUnionSurf(HR);
 
   return;
 }
@@ -319,8 +318,8 @@ BremTube::createLinks()
 
 void
 BremTube::createAll(Simulation& System,
-	       const attachSystem::FixedComp& FC,
-	       const long int sideIndex)
+		    const attachSystem::FixedComp& FC,
+		    const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item

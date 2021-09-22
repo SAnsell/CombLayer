@@ -258,8 +258,8 @@ Table::createLinks()
 
 void
 Table::createAll(Simulation& System,
-		  const attachSystem::FixedComp& FC,
-		  const long int sideIndex)
+		 const attachSystem::FixedComp& FC,
+		 const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation
@@ -270,7 +270,7 @@ Table::createAll(Simulation& System,
   ELog::RegMethod RegA("Table","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(FC,sideIndex);
+  createCentredUnitVector(FC,sideIndex,length/2.0);
   createSurfaces();
   createObjects(System);
   createLinks();

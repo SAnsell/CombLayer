@@ -148,7 +148,12 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   viewTube(new constructSystem::PipeTube(newName+"ViewTube")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
   attnTube(new constructSystem::PortTube(newName+"AttnTube")),
-  tableA(new xraySystem::Table(newName+"TableA"))
+  bellowE(new constructSystem::Bellows(newName+"BellowE")),
+  tableA(new xraySystem::Table(newName+"TableA")),
+  monoVessel(new xraySystem::DCMTank(newName+"MonoVessel")),
+  mbXstals(new xraySystem::MonoBlockXstals(newName+"MBXstals")),
+  monoBremTube(new xraySystem::BremTube(newName+"MonoBremTube"))
+
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -170,7 +175,12 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   OR.addObject(viewTube);
   OR.addObject(bellowD);
   OR.addObject(attnTube);
+  OR.addObject(bellowE);
   OR.addObject(tableA);
+  OR.addObject(monoVessel);
+  OR.addObject(mbXstals);
+  OR.addObject(monoBremTube);
+  
     
 }
   
@@ -223,6 +233,47 @@ micromaxOpticsLine::createSurfaces()
      buildZone.setMaxExtent(getRule("back"));
      buildZone.setInnerMat(innerMat);
     }
+  return;
+}
+
+void
+micromaxOpticsLine::constructHDCM(Simulation& System,
+				  const attachSystem::FixedComp& initFC, 
+				  const std::string& sideName)
+/*!
+    Sub build of the mono package
+    \param System :: Simulation to use
+    \param initFC :: Start point
+    \param sideName :: start link point
+  */
+{
+  ELog::RegMethod RegA("micromaxOpticsLine","constructHDCM");
+
+  constructSystem::constructUnit
+    (System,buildZone,initFC,sideName,*monoVessel);
+  
+  mbXstals->addInsertCell(monoVessel->getCell("Void"));
+  mbXstals->createAll(System,*monoVessel,0);
+
+  return;
+}
+
+void
+micromaxOpticsLine::constructDiag2(Simulation& System,
+				   const attachSystem::FixedComp& initFC, 
+				   const std::string& sideName)
+/*!
+    Sub build of the post first mono system.
+    \param System :: Simulation to use
+    \param initFC :: Start point
+    \param sideName :: start link point
+  */
+{
+  ELog::RegMethod RegA("micromaxOpticsLine","constructDiag2");
+
+  constructSystem::constructUnit
+    (System,buildZone,initFC,sideName,*monoBremTube);
+
   return;
 }
 
@@ -294,11 +345,17 @@ micromaxOpticsLine::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,*bellowD,"back",*attnTube);
 
+  constructSystem::constructUnit
+    (System,buildZone,*attnTube,"back",*bellowE);
 
   tableA->addHole(*viewTube,"Origin","OuterRadius");
   tableA->addHole(attnTube->getPort(1),"Origin","OuterRadius");
-  tableA->createAll(System,*bellowD,0);
+  tableA->createAll(System,*bellowA,0);
   tableA->insertInCells(System,buildZone.getCells());
+
+  constructHDCM(System,*bellowE,"back");
+
+  constructDiag2(System,*monoVessel,"back");
   
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);

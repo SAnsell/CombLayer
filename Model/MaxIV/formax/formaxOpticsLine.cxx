@@ -196,7 +196,8 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
   monoAdaptorA(new constructSystem::VacuumPipe(newName+"MonoAdaptorA")),
   monoShutter(new xraySystem::MonoShutter(newName+"MonoShutter")),
   monoAdaptorB(new constructSystem::VacuumPipe(newName+"MonoAdaptorB")),
-  pipeF(new constructSystem::VacuumPipe(newName+"PipeF"))  
+  pipeF(new constructSystem::VacuumPipe(newName+"PipeF"))
+  
   /*!
     Constructor
     \param Key :: Name of construction key

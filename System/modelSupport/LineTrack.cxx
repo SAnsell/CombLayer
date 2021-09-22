@@ -193,7 +193,6 @@ LineTrack::calculate(const Simulation& ASim)
       else
 	OPtr=0;	
     }
-  ELog::EM<<"OPTR == "<<OPtr<<ELog::endDiag;
   //
   // remove last object if point does not reach it:
   //

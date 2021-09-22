@@ -338,15 +338,15 @@ PipeTube::createLinks()
 
   if (!outerVoid)
     {
-      FixedComp::setConnect(7,Origin+Z*(radius+wallThick),Z);
-      FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+17));
+      FixedComp::setConnect(8,Origin+Z*(radius+wallThick),Z);
+      FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+17));
     }
   else
     {
-      FixedComp::setConnect(7,Origin+Z*flangeBRadius,Z);
-      FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+107));
+      FixedComp::setConnect(8,Origin+Z*flangeBRadius,Z);
+      FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+107));
     }
-  nameSideIndex(7,"OuterRadius");
+  nameSideIndex(8,"OuterRadius");
 
   
   return;

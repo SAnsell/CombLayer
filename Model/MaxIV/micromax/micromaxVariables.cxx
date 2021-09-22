@@ -648,6 +648,22 @@ mirrorBox(FuncDataBase& Control,
 			 0.0,centreDist/2.0,heightDelta,theta,phi,0.0);
   return;
 }
+void
+diagUnit2(FuncDataBase& Control,const std::string& Name)
+  /*!
+    Construct variables for the diagnostic units
+    \param Control :: Database
+    \param Name :: component name
+  */
+{
+  ELog::RegMethod RegA("micromaxVariables[F]","diagUnit2");
+
+  setVariable::BremTubeGenerator BTGen;
+
+  BTGen.generateTube(Control,Name+"MonoBremTube");
+
+  return;
+}
 
 void
 diagUnit(FuncDataBase& Control,const std::string& Name)
@@ -669,7 +685,11 @@ diagUnit(FuncDataBase& Control,const std::string& Name)
   setVariable::BeamPairGenerator BeamMGen;
   setVariable::TableGenerator TableGen;
 
-  const std::string bremName(Name+"BremBlockTube");
+    
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,Name+"BellowC",7.50);
+  
+   const std::string bremName(Name+"BremBlockTube");
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.setCap(1,1);
   SimpleTubeGen.generateTube(Control,bremName,25.0);
@@ -712,10 +732,11 @@ diagUnit(FuncDataBase& Control,const std::string& Name)
   PTubeGen.generateTube(Control,attnTubeName,0.0,30.0);
   Control.addVariable(attnTubeName+"NPorts",3);   // beam ports
 
-  PItemGen.setCF<setVariable::CF150>(CF150::outerRadius+12.5);
+  PItemGen.setCF<setVariable::CF150>(CF150::outerRadius+22.5);
   PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,attnTubeName+"Port0",
 			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,-1));
+  PItemGen.setCF<setVariable::CF150>(CF150::outerRadius+12.5);
   PItemGen.generatePort(Control,attnTubeName+"Port1",
 			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,1));
   PItemGen.setCF<setVariable::CF40>(CF150::outerRadius+6.5);
@@ -727,7 +748,10 @@ diagUnit(FuncDataBase& Control,const std::string& Name)
 			     Geometry::Vec3D(0,0,1),
 			     10.0);
 
-  TableGen.generateTable(Control,Name+"TableA",-16,90.0);
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,Name+"BellowE",7.50);
+
+  TableGen.generateTable(Control,Name+"TableA",-20,120.0);
   return;
 }
 
@@ -852,9 +876,9 @@ opticsVariables(FuncDataBase& Control,
 
   diagUnit(Control,preName);
 
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,preName+"BellowC",7.50);
+  micromaxVar::hdcmPackage(Control,preName);
 
+  diagUnit2(Control,preName);
   /*
   PipeGen.setCF<CF40>();  
   PipeGen.generatePipe(Control,preName+"PipeB",7.5);
@@ -868,7 +892,7 @@ opticsVariables(FuncDataBase& Control,
   GVGen.generateGate(Control,preName+"GateTubeC",0);  // open
   BellowGen.generateBellow(Control,preName+"BellowE",15.0);
 
-  micromaxVar::hdcmPackage(Control,preName);  
+
   
   BellowGen.generateBellow(Control,preName+"BellowF",15.0);
   PipeGen.generatePipe(Control,preName+"PipeD",12.5);  
