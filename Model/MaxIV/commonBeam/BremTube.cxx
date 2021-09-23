@@ -138,13 +138,28 @@ BremTube::createFrontPorts(Simulation& System)
   ELog::RegMethod RegA("BremTube","createFrontPorts");
 
   // both OUTWARD
-  MonteCarlo::Object* OPtr=
-    CellMap::getCellObject(System,"MainTube");
+  MonteCarlo::Object* insertObj=
+    CellMap::getCellObject(System,"FrontTube");
 
-  const HeadRule innerSurf(SurfMap::getSurfRules("#VoidCyl"));
-  const HeadRule outerSurf(SurfMap::getSurfRules("OuterCyl"));
+  const HeadRule innerSurf(SurfMap::getSurfRules("#midVoid"));
+  const HeadRule outerSurf(SurfMap::getSurfRules("midRadius"));
   
+  
+  for(size_t i=0;i<FPorts.size();i++)
+    {
+      //      const attachSystem::ContainedComp& CC=getCC("Main");
+      for(const int CN : this->getInsertCells())
+	FPorts[i]->addInsertCell(CN);
 
+      FPorts[i]->setCentLine(*this,FCentre[i],FAxis[i]);
+      FPorts[i]->constructTrack(System,insertObj,innerSurf,outerSurf);
+  
+      // if (outerVoid && CellMap::hasCell("OuterVoid"))
+      //  	Ports[i]->addPortCut(CellMap::getCellObject(System,"OuterVoid"));
+      FPorts[i]->insertObjects(System);
+    }
+
+  
   return;
 }
   
@@ -175,11 +190,9 @@ BremTube::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+300,Origin,Z);
 
   // front/back pipe and thickness
-  ModelSupport::buildCylinder(SMap,buildIndex+107,
-			      Origin,Y,frontRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+117,
+  makeCylinder("frontVoid",SMap,buildIndex+107,Origin,Y,frontRadius);
+  makeCylinder("frontRadius",SMap,buildIndex+117,
 			      Origin,Y,frontRadius+wallThick);
-  SurfMap::addSurf("frontRadius",SMap.realSurf(buildIndex+117));
   
   ModelSupport::buildCylinder(SMap,buildIndex+127,
 			      Origin,Y,frontFlangeRadius);
@@ -192,10 +205,8 @@ BremTube::createSurfaces()
   ModelSupport::buildPlane
     (SMap,buildIndex+212,Origin-Y*(midLength-wallThick),Y);
 
-  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,midRadius);
-  ModelSupport::buildCylinder
-    (SMap,buildIndex+217,Origin,Y,midRadius+wallThick);
-  SurfMap::addSurf("midRadius",SMap.realSurf(buildIndex+217));
+  makeCylinder("midVoid",SMap,buildIndex+207,Origin,Y,midRadius);
+  makeCylinder("midRadius",SMap,buildIndex+217,Origin,Y,midRadius+wallThick);
 
   // Main (VERTICAL) tube
   ModelSupport::buildPlane(SMap,buildIndex+305,Origin-Z*tubeDepth,Z);
@@ -362,7 +373,7 @@ BremTube::createAll(Simulation& System,
   createObjects(System);
   createLinks();
   insertObjects(System);   
-  
+  createFrontPorts(System);
   return;
 }
   

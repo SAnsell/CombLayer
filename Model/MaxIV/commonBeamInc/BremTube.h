@@ -89,6 +89,9 @@ class BremTube :
   int voidMat;                  ///< void material
   int wallMat;                  ///< main material
   int plateMat;                 ///< plate material
+
+  void createFrontPorts(Simulation&);
+  void createBasePorts(Simulation&);
   
   void populate(const FuncDataBase&);  
   void createSurfaces();

@@ -263,14 +263,12 @@ hdcmPackage(FuncDataBase& Control,
   // radius : Height / depth  [need heigh = 0]
   MBoxGen.generateBox(Control,monoKey+"MonoVessel",30.0,0.0,16.0);
 
-  //  Control.addVariable(monoKey+"MonoVesselPortAZStep",-7);   //
-  //  Control.addVariable(monoKey+"MonoVesselFlangeAZStep",-7);     //
-  //  Control.addVariable(monoKey+"MonoVesselFlangeBZStep",-7);     //
   Control.addVariable(monoKey+"MonoVesselPortBXStep",-0.6);      // from primary
 
   const double outerRadius(30.5);
   const std::string portName=monoKey+"MonoVessel";
-  Control.addVariable(monoKey+"MonoVesselNPorts",1);   // beam ports (lots!!)
+  Control.addVariable(portName+"NPorts",1);   // beam ports (lots!!)
+  
   PItemGen.setCF<setVariable::CF63>(outerRadius+5.0);
   PItemGen.setWindowPlate(2.5,2.0,-0.8,"Stainless304","LeadGlass");
   PItemGen.generatePort(Control,portName+"Port0",
@@ -629,7 +627,7 @@ diag2Package(FuncDataBase& Control,const std::string& Name)
     \param Name :: component name
   */
 {
-  ELog::RegMethod RegA("micromaxVariables[F]","diagPackage");
+  ELog::RegMethod RegA("micromaxVariables[F]","diag2Package");
 
   setVariable::PortItemGenerator PItemGen;
   setVariable::BremTubeGenerator BTGen;
@@ -643,10 +641,12 @@ diag2Package(FuncDataBase& Control,const std::string& Name)
 
   HPGen.generateJaws(Control,Name+"HPJawsA",0.3,0.3);
 
-  Control.addVariable(diagKey+"FrontNPorts",1);   // beam ports (lots!!)
+  const std::string portName=Name+"MonoBremTube";
+
+  Control.addVariable(portName+"FrontNPorts",1);   // beam ports 
   PItemGen.setCF<setVariable::CF63>(CF63::outerRadius+9.1);
   PItemGen.setPlate(2.0,"Stainless304");  
-  PItemGen.generatePort(Control,portName+"Port0",
+  PItemGen.generatePort(Control,portName+"FrontPort0",
 			Geometry::Vec3D(0,3.0,0),
 			Geometry::Vec3D(-1,0,0));
   
