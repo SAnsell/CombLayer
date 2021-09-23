@@ -121,29 +121,7 @@ VirtualTube::populate(const FuncDataBase& Control)
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   capMat=ModelSupport::EvalDefMat<int>(Control,keyName+"FlangeCapMat",wallMat);
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  const size_t NPorts=Control.EvalVar<size_t>(keyName+"NPorts");
-  const std::string portBase=keyName+"Port";
-  for(size_t i=0;i<NPorts;i++)
-    {
-      const std::string portName=portBase+std::to_string(i);
-      const Geometry::Vec3D Centre=
-	Control.EvalVar<Geometry::Vec3D>(portName+"Centre");
-      const Geometry::Vec3D Axis=
-	Control.EvalTail<Geometry::Vec3D>(portName,portBase,"Axis");
-
-      std::shared_ptr<portItem> portUnit
-	(makePortItem(Control,portBase,portName));
-
-      portUnit->populate(Control);
-
-      PCentre.push_back(Centre);
-      PAxis.push_back(Axis);
-      Ports.push_back(portUnit);
-      OR.addObject(portUnit);
-    }
+  populatePort(Control,keyName,PCentre,PAxis,Ports);
   return;
 }
 

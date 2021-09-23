@@ -94,6 +94,7 @@ namespace micromaxVar
 void undulatorVariables(FuncDataBase&,const std::string&);
 void mirrorMonoPackage(FuncDataBase&,const std::string&);
 void hdcmPackage(FuncDataBase&,const std::string&);
+void diagPackage(FuncDataBase&,const std::string&);
 void diag2Package(FuncDataBase&,const std::string&);
 void diag3Package(FuncDataBase&,const std::string&);
 void diag4Package(FuncDataBase&,const std::string&);
@@ -280,35 +281,6 @@ hdcmPackage(FuncDataBase& Control,
   MXtalGen.generateXstal(Control,monoKey+"MBXstals",0.0,3.0);
   
 
-  return;
-}
-
-void
-diag2Package(FuncDataBase& Control,
-	     const std::string& diagKey)
-  /*!
-    Builds the variables for the second diagnostice/slit packge
-    \param Control :: Database
-    \param diagKey :: prename
-  */
-{
-  ELog::RegMethod RegA("micromaxVariables[F]","diag2Package");
-
-  setVariable::PortItemGenerator PItemGen;
-  setVariable::BremTubeGenerator BTGen;
-  setVariable::HPJawsGenerator HPGen;
-
-  setVariable::BremBlockGenerator MaskGen;
-
-
- 
-  BTGen.generateTube(Control,diagKey+"BremTubeA");
-
-  MaskGen.setAperature(-1,1.0,1.0,1.0,1.0,1.0,1.0);
-  MaskGen.generateBlock(Control,diagKey+"BremCollB",-4.0,8.0);
-  
-  HPGen.generateJaws(Control,diagKey+"HPJawsA",0.3,0.3);
- 
   return;
 }
 
@@ -648,32 +620,50 @@ mirrorBox(FuncDataBase& Control,
 			 0.0,centreDist/2.0,heightDelta,theta,phi,0.0);
   return;
 }
+
 void
-diagUnit2(FuncDataBase& Control,const std::string& Name)
+diag2Package(FuncDataBase& Control,const std::string& Name)
   /*!
     Construct variables for the diagnostic units
     \param Control :: Database
     \param Name :: component name
   */
 {
-  ELog::RegMethod RegA("micromaxVariables[F]","diagUnit2");
+  ELog::RegMethod RegA("micromaxVariables[F]","diagPackage");
 
+  setVariable::PortItemGenerator PItemGen;
   setVariable::BremTubeGenerator BTGen;
+  setVariable::HPJawsGenerator HPGen;
+  setVariable::BremBlockGenerator MaskGen;
 
   BTGen.generateTube(Control,Name+"MonoBremTube");
 
+  MaskGen.setAperature(-1,1.0,1.0,1.0,1.0,1.0,1.0);
+  MaskGen.generateBlock(Control,Name+"BremCollB",-4.0,8.0);
+
+  HPGen.generateJaws(Control,Name+"HPJawsA",0.3,0.3);
+
+  Control.addVariable(diagKey+"FrontNPorts",1);   // beam ports (lots!!)
+  PItemGen.setCF<setVariable::CF63>(CF63::outerRadius+9.1);
+  PItemGen.setPlate(2.0,"Stainless304");  
+  PItemGen.generatePort(Control,portName+"Port0",
+			Geometry::Vec3D(0,3.0,0),
+			Geometry::Vec3D(-1,0,0));
+  
+
+  
   return;
 }
 
 void
-diagUnit(FuncDataBase& Control,const std::string& Name)
+diagPackage(FuncDataBase& Control,const std::string& Name)
   /*!
     Construct variables for the diagnostic units
     \param Control :: Database
     \param Name :: component name
   */
 {
-  ELog::RegMethod RegA("micromaxVariables[F]","diagUnit");
+  ELog::RegMethod RegA("micromaxVariables[F]","diagPackage");
 
 
   const double DLength(65.0);         // diag length [checked]
@@ -689,7 +679,7 @@ diagUnit(FuncDataBase& Control,const std::string& Name)
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,Name+"BellowC",7.50);
   
-   const std::string bremName(Name+"BremBlockTube");
+  const std::string bremName(Name+"BremBlockTube");
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.setCap(1,1);
   SimpleTubeGen.generateTube(Control,bremName,25.0);
@@ -874,11 +864,11 @@ opticsVariables(FuncDataBase& Control,
 
   PipeGen.generatePipe(Control,preName+"BremPipeA",5.0);
 
-  diagUnit(Control,preName);
+  micromaxVar::diagPackage(Control,preName);
 
   micromaxVar::hdcmPackage(Control,preName);
 
-  diagUnit2(Control,preName);
+  micromaxVar::diag2Package(Control,preName);
   /*
   PipeGen.setCF<CF40>();  
   PipeGen.generatePipe(Control,preName+"PipeB",7.5);

@@ -133,6 +133,8 @@ BremTubeGenerator::generateTube(FuncDataBase& Control,
   Control.addVariable(keyName+"WallMat",wallMat);
   Control.addVariable(keyName+"PlateMat",plateMat);
 
+  Control.addVariable(keyName+"FrontNPorts",0);
+  Control.addVariable(keyName+"MainNPorts",0);
   return;
 
 }

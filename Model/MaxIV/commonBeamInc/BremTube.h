@@ -24,6 +24,10 @@
 
 class Simulation;
 
+namespace constructSystem
+{
+  class portItem;  
+}
 
 namespace xraySystem
 {
@@ -70,10 +74,22 @@ class BremTube :
   double wallThick;             ///< pipe thickness  
   double plateThick;            ///< Joining Flange radius
 
+  // Front ports
+  std::vector<Geometry::Vec3D> FCentre;  ///< Centre points [relative to origin]
+  std::vector<Geometry::Vec3D> FAxis;    ///< Port centre Axis
+  /// Vector of ports FixedComp
+  std::vector<std::shared_ptr<constructSystem::portItem>> FPorts;     
+
+  // Main ports
+  std::vector<Geometry::Vec3D> MCentre;  ///< Centre points [relative to origin]
+  std::vector<Geometry::Vec3D> MAxis;    ///< Port centre Axis
+  /// Vector of ports FixedComp
+  std::vector<std::shared_ptr<constructSystem::portItem>> MPorts;     
+
   int voidMat;                  ///< void material
   int wallMat;                  ///< main material
   int plateMat;                 ///< plate material
- 
+  
   void populate(const FuncDataBase&);  
   void createSurfaces();
   void createObjects(Simulation&);

@@ -152,7 +152,9 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   tableA(new xraySystem::Table(newName+"TableA")),
   monoVessel(new xraySystem::DCMTank(newName+"MonoVessel")),
   mbXstals(new xraySystem::MonoBlockXstals(newName+"MBXstals")),
-  monoBremTube(new xraySystem::BremTube(newName+"MonoBremTube"))
+  monoBremTube(new xraySystem::BremTube(newName+"MonoBremTube")),
+  bremCollB(new xraySystem::BremBlock(newName+"BremCollB")),
+  hpJawsA(new xraySystem::HPJaws(newName+"HPJawsA"))
 
   /*!
     Constructor
@@ -180,6 +182,8 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   OR.addObject(monoVessel);
   OR.addObject(mbXstals);
   OR.addObject(monoBremTube);
+  OR.addObject(bremCollB);
+  OR.addObject(hpJawsA);
   
     
 }
@@ -273,6 +277,13 @@ micromaxOpticsLine::constructDiag2(Simulation& System,
 
   constructSystem::constructUnit
     (System,buildZone,initFC,sideName,*monoBremTube);
+
+  bremCollB->addInsertCell(monoBremTube->getCell("Void"));
+  bremCollB->createAll(System,*monoBremTube,0);
+
+  hpJawsA->setFlangeJoin();
+  constructSystem::constructUnit
+    (System,buildZone,*monoBremTube,"back",*hpJawsA);
 
   return;
 }

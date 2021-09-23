@@ -42,7 +42,14 @@ makePortItem(const FuncDataBase&,
 portItem*
 makePortItem(const FuncDataBase&,const std::string&);
 
+ 
 
+void
+populatePort(const FuncDataBase&,const std::string&,
+	     std::vector<Geometry::Vec3D>&,
+	     std::vector<Geometry::Vec3D>&,
+	     std::vector<std::shared_ptr<portItem>>&);
+ 
 }
 
 #endif

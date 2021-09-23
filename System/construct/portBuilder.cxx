@@ -68,7 +68,6 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 
-
 #include "portItem.h"
 #include "doublePortItem.h"
 #include "anglePortItem.h"
@@ -130,4 +129,48 @@ makePortItem(const FuncDataBase& Control,
 
 }
 
+
+void
+populatePort(const FuncDataBase& Control,
+	     const std::string& portBase,
+	     std::vector<Geometry::Vec3D>& PCentre,
+	     std::vector<Geometry::Vec3D>& PAxis,
+	     std::vector<std::shared_ptr<portItem>>& Ports) 
+  /*!
+    Builds port for whichever front/main system is needed
+    \param Control :: DataBase
+    \param Centre :: Centre line
+    \param Axis :: Main axis
+    \param Ports :: Final portitem output
+  */
+{
+  ELog::RegMethod RegA("portBuilder[F]","populatePort");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  const size_t NPorts=Control.EvalVar<size_t>(portBase+"NPorts");
+  for(size_t i=0;i<NPorts;i++)
+    {
+      const std::string portName=portBase+"Port"+std::to_string(i);
+      const Geometry::Vec3D Centre=
+	Control.EvalVar<Geometry::Vec3D>(portName+"Centre");
+      const Geometry::Vec3D Axis=
+	Control.EvalTail<Geometry::Vec3D>(portName,portBase,"Axis");
+
+      std::shared_ptr<portItem> portUnit
+	(makePortItem(Control,portBase,portName));
+
+      portUnit->populate(Control);
+
+      PCentre.push_back(Centre);
+      PAxis.push_back(Axis);
+      Ports.push_back(portUnit);
+      OR.addObject(portUnit);
+    }
+  return;
+}
+  
+
+  
 }  // NAMESPACE constructSystem

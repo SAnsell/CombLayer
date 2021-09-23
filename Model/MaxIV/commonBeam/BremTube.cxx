@@ -58,7 +58,9 @@
 #include "FrontBackCut.h" 
 #include "BaseMap.h"
 #include "SurfMap.h"
-#include "CellMap.h" 
+#include "CellMap.h"
+#include "portItem.h"
+#include "portBuilder.h"
 
 #include "BremTube.h"
 
@@ -84,6 +86,7 @@ BremTube::~BremTube()
   */
 {}
 
+  
 void
 BremTube::populate(const FuncDataBase& Control)
   /*!
@@ -120,10 +123,31 @@ BremTube::populate(const FuncDataBase& Control)
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   plateMat=ModelSupport::EvalMat<int>(Control,keyName+"PlateMat");
 
+  constructSystem::populatePort(Control,keyName+"Front",FCentre,FAxis,FPorts);
+  constructSystem::populatePort(Control,keyName+"Main",MCentre,MAxis,MPorts);
+
   return;
 }
 
+void
+BremTube::createFrontPorts(Simulation& System)
+  /*!
+    Create the front port(s)
+   */
+{
+  ELog::RegMethod RegA("BremTube","createFrontPorts");
 
+  // both OUTWARD
+  MonteCarlo::Object* OPtr=
+    CellMap::getCellObject(System,"MainTube");
+
+  const HeadRule innerSurf(SurfMap::getSurfRules("#VoidCyl"));
+  const HeadRule outerSurf(SurfMap::getSurfRules("OuterCyl"));
+  
+
+  return;
+}
+  
 void
 BremTube::createSurfaces()
   /*!
@@ -155,6 +179,8 @@ BremTube::createSurfaces()
 			      Origin,Y,frontRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+117,
 			      Origin,Y,frontRadius+wallThick);
+  SurfMap::addSurf("frontRadius",SMap.realSurf(buildIndex+117));
+  
   ModelSupport::buildCylinder(SMap,buildIndex+127,
 			      Origin,Y,frontFlangeRadius);
 
@@ -169,6 +195,7 @@ BremTube::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,midRadius);
   ModelSupport::buildCylinder
     (SMap,buildIndex+217,Origin,Y,midRadius+wallThick);
+  SurfMap::addSurf("midRadius",SMap.realSurf(buildIndex+217));
 
   // Main (VERTICAL) tube
   ModelSupport::buildPlane(SMap,buildIndex+305,Origin-Z*tubeDepth,Z);
