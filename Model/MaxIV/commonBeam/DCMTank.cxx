@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   danmax/DCMTank.cxx
+ * File:   commonBeam/DCMTank.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -54,7 +54,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -68,7 +68,7 @@ namespace xraySystem
 {
 
 DCMTank::DCMTank(const std::string& Key) :
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -96,7 +96,7 @@ DCMTank::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("DCMTank","populate");
   
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   // Void + Fe special:
   voidRadius=Control.EvalVar<double>(keyName+"VoidRadius");
@@ -181,23 +181,6 @@ DCMTank::populate(const FuncDataBase& Control)
 
   outerSize=Control.EvalDefVar<double>(keyName+"OuterSize",voidRadius+20.0);
 
-  return;
-}
-
-void
-DCMTank::createUnitVector(const attachSystem::FixedComp& FC,
-			    const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("DCMTank","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  Origin+=Y*(portATubeLength+wallThick+voidRadius);
   return;
 }
 
@@ -406,7 +389,6 @@ DCMTank::createLinks()
   ExternalCut::createLink("front",*this,0,ACentre,-Y);
   ExternalCut::createLink("back",*this,1,BCentre,Y);
 
-  
   return;
 }
 
@@ -451,8 +433,9 @@ DCMTank::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("DCMTank","createAll(FC)");
 
+  
   populate(System.getDataBase());
-  createUnitVector(FC,FIndex);
+  createCentredUnitVector(FC,FIndex,portATubeLength+wallThick+voidRadius);
   createSurfaces();    
   createObjects(System);
   

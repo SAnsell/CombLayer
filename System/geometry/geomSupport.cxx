@@ -3,7 +3,7 @@
  
  * File:   geometry/geomSupport.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@
 #include "BaseModVisit.h"
 #include "Surface.h"
 #include "Quadratic.h"
+#include "Quaternion.h"
 #include "Plane.h"
 #include "HeadRule.h"
 #include "SurInter.h"
@@ -49,6 +50,37 @@
 namespace Geometry
 {
 
+Geometry::Vec3D
+calcRotatedVec(const double xAngle,const double yAngle,const double zAngle,
+	       const Geometry::Vec3D& X,const Geometry::Vec3D& Y,
+	       const Geometry::Vec3D& Z,const Geometry::Vec3D& Axis)
+  /*!
+    Apply a rotation from the basis X,Y,Z with angles xA,yA,zA to Axis.
+    \param xAngle :: X-rotation angle
+    \param yAngle :: Y-rotation angle
+    \param zAngle :: Z-rotation angle [first]
+    \param X :: X basis vector
+    \param Y :: Y basis vector
+    \param z :: Z basis vector
+    \param Axis :: Axis to rotat
+
+  */
+{
+  const Geometry::Quaternion Qz=
+    Geometry::Quaternion::calcQRotDeg(zAngle,Z);
+  const Geometry::Quaternion Qy=
+    Geometry::Quaternion::calcQRotDeg(yAngle,Y);
+  const Geometry::Quaternion Qx=
+    Geometry::Quaternion::calcQRotDeg(xAngle,X);
+  Geometry::Vec3D Out(Axis);
+  Qz.rotate(Out);
+  Qy.rotate(Out);
+  Qx.rotate(Out);
+  return Out;
+}
+
+
+  
 std::tuple<Vec3D,Vec3D,Vec3D>
 findCornerCircle(const HeadRule& zoneRule,
 		 const Geometry::Plane& APln,

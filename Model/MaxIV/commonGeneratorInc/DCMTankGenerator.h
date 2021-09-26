@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxpeemInc/DCMTankGenerator.h
+ * File:   danmaxInc/DCMTankGenerator.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *

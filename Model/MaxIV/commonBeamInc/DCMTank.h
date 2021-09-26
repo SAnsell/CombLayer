@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   danmaxInc/DCMTank.h
+ * File:   commonBeamInc/DCMTank.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ namespace xraySystem
 */
 
 class DCMTank :
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
   public attachSystem::SurfMap,
@@ -94,7 +94,6 @@ class DCMTank :
   bool delayPortBuild;        ///< Delay port to manual construct
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();

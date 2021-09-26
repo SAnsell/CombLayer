@@ -297,7 +297,7 @@ SingleItemVariables(FuncDataBase& Control)
  
   setVariable::BremBlockGenerator BBGen;
   BBGen.setAperature(-1,1.0,1.0,1.0,1.0,1.0,1.0);
-  BBGen.generateBlock(Control,"BremBlock",0,8.0);
+  BBGen.generateBlock(Control,"BremBlock",0.0);
  
   
   setVariable::CrossWayGenerator CWBlankGen;

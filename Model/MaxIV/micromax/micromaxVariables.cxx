@@ -336,7 +336,7 @@ diag3Package(FuncDataBase& Control,
 			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,-1));
 
   MaskGen.setAperature(-1,1.0,1.0,1.0,1.0,1.0,1.0);
-  MaskGen.generateBlock(Control,diagKey+"BremCollC",-4.0,8.0);
+  MaskGen.generateBlock(Control,diagKey+"BremCollC",-4.0);
   Control.addVariable(diagKey+"BremCollCPreXAngle",90);
   HPGen.generateJaws(Control,diagKey+"HPJawsB",0.3,0.3); 
 
@@ -637,7 +637,7 @@ diag2Package(FuncDataBase& Control,const std::string& Name)
   BTGen.generateTube(Control,Name+"MonoBremTube");
 
   MaskGen.setAperature(-1,1.0,1.0,1.0,1.0,1.0,1.0);
-  MaskGen.generateBlock(Control,Name+"BremCollB",-4.0,8.0);
+  MaskGen.generateBlock(Control,Name+"BremCollB",-4.0);
 
   HPGen.generateJaws(Control,Name+"HPJawsA",0.3,0.3);
 
@@ -647,7 +647,7 @@ diag2Package(FuncDataBase& Control,const std::string& Name)
   PItemGen.setCF<setVariable::CF63>(CF63::outerRadius+9.1);
   PItemGen.setPlate(2.0,"Stainless304");  
   PItemGen.generatePort(Control,portName+"FrontPort0",
-			Geometry::Vec3D(0,3.0,0),
+			Geometry::Vec3D(0,-10.0,0),
 			Geometry::Vec3D(-1,0,0));
   
 

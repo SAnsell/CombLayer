@@ -139,7 +139,7 @@ VirtualTube::createPorts(Simulation& System,
    */
 {
   ELog::RegMethod RegA("VirtualTube","createPorts(Obj,HR,HR)");
-	
+
   for(size_t i=0;i<Ports.size();i++)
     {
       const attachSystem::ContainedComp& CC=getCC("Main");

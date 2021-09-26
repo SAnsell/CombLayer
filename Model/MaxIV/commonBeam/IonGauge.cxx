@@ -247,8 +247,8 @@ IonGauge::createObjects(Simulation& System)
   const HeadRule backHR=getRule("back");
 
   // inner void
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -7 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -7 407");
+  makeCell("PipeVoid",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 7 -17 407 ");
   makeCell("MainTube",System,cellIndex++,wallMat,0.0,HR*frontHR*backHR);
@@ -259,8 +259,8 @@ IonGauge::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 202 17 -107 ");
   makeCell("FlangeB",System,cellIndex++,wallMat,0.0,HR*backHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-407 405 -406 7");
-  makeCell("MainVoid",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-407 405 -406");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"(507:100) -417 407 405 -406 17 (607:-100)");

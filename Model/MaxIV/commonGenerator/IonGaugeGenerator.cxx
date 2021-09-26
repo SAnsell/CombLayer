@@ -57,14 +57,14 @@ IonGaugeGenerator::IonGaugeGenerator() :
   yRadius(CF40::innerRadius),
   wallThick(CF40::wallThick),
   height(15.0),depth(35.0),
-  frontLength(20.0),backLength(8.0),
+  frontLength(10.0),backLength(3.0),
   flangeXRadius(CF40::flangeRadius),
   flangeYRadius(CF40::flangeRadius),
   flangeZRadius(CF100::flangeRadius),
   flangeXLength(CF40::flangeLength),
   flangeYLength(CF40::flangeLength),
   flangeZLength(CF100::flangeLength),
-  sideZOffset(0.0),sideLength(10.0),
+  sideZOffset(0.0),sideLength(5.0),
   gaugeZOffset(-5.0),gaugeRadius(CF40::innerRadius),
   gaugeLength(14.0),gaugeHeight(10.0),
   gaugeFlangeRadius(CF40::flangeRadius),
@@ -156,8 +156,8 @@ IonGaugeGenerator::generateTube(FuncDataBase& Control,
 
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"Depth",depth);
-  Control.addVariable(keyName+"FrontLength",frontLength);
-  Control.addVariable(keyName+"BackLength",backLength);
+  Control.addVariable(keyName+"FrontLength",frontLength+radius);
+  Control.addVariable(keyName+"BackLength",backLength+radius);
 
   Control.addVariable(keyName+"FlangeXRadius",flangeYRadius);
   Control.addVariable(keyName+"FlangeYRadius",flangeYRadius);
@@ -168,7 +168,7 @@ IonGaugeGenerator::generateTube(FuncDataBase& Control,
   Control.addVariable(keyName+"FlangeZLength",flangeZLength);
 
   Control.addVariable(keyName+"SideZOffset",sideZOffset);
-  Control.addVariable(keyName+"SideLength",sideLength);
+  Control.addVariable(keyName+"SideLength",sideLength+radius);
 
   Control.addVariable(keyName+"GaugeZOffset",gaugeZOffset);
   Control.addVariable(keyName+"GaugeRadius",gaugeRadius);
@@ -190,6 +190,7 @@ IonGaugeGenerator::generateTube(FuncDataBase& Control,
 ///\cond TEMPLATE
 
 template void IonGaugeGenerator::setCF<CF100>();
+template void IonGaugeGenerator::setCF<CF150>();
 
 template void IonGaugeGenerator::setSideCF<CF40>(const double);
 

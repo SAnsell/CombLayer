@@ -96,9 +96,8 @@ BremBlock::populate(const FuncDataBase& Control)
 
   // Void + Fe special:
   centreFlag=Control.EvalDefVar<int>(keyName+"CentreFlag",0);
-  radius=Control.EvalDefVar<double>(keyName+"Radius",-1.0);
-  width=Control.EvalDefVar<double>(keyName+"Width",-1.0);
-  height=Control.EvalDefVar<double>(keyName+"Height",-1.0);
+  width=Control.EvalVar<double>(keyName+"Width");
+  height=Control.EvalVar<double>(keyName+"Height");
 
   length=Control.EvalVar<double>(keyName+"Length");  
 
@@ -114,10 +113,6 @@ BremBlock::populate(const FuncDataBase& Control)
   
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
-
-  if (radius<Geometry::zeroTol &&
-      (width<Geometry::zeroTol || height<Geometry::zeroTol))
-    throw ColErr::SizeError<double>(radius,0.0,"Radius and W/H beloww zero");
 
   return;
 }
@@ -222,15 +217,10 @@ BremBlock::createSurfaces()
   
 
 
-  if (radius>Geometry::zeroTol)
-    ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
-  else
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
-      ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
-      ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
-      ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
-    }
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
   return;
 }
 

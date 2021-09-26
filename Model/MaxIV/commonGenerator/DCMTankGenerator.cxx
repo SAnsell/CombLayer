@@ -70,9 +70,10 @@ DCMTankGenerator::~DCMTankGenerator()
   
 void
 DCMTankGenerator::generateBox(FuncDataBase& Control,
-				     const std::string& keyName,
-				     const double radius,
-				     const double height,const double depth)
+			      const std::string& keyName,
+			      const double radius,
+			      const double height,
+			      const double depth)
   const
   /*!
     Primary funciton for setting the variables

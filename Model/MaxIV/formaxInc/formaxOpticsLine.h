@@ -109,9 +109,11 @@ class formaxOpticsLine :
   /// bellow to collimator
   std::shared_ptr<constructSystem::Bellows> bellowA;
   /// Brem for collimator
-  std::shared_ptr<xraySystem::SquareFMask> bremCollA;
+  std::shared_ptr<xraySystem::SquareFMask> whiteCollA;
   /// Ion Gauge
-  std::shared_ptr<xraySystem::IonGauge> ionGaugeA;
+  std::shared_ptr<xraySystem::IonGauge> bremHolderA;
+  /// Brem collimator
+  std::shared_ptr<xraySystem::BremBlock> bremCollA;
   /// bellow to collimator
   std::shared_ptr<constructSystem::Bellows> bellowB;
   /// mini-Brem Collimator

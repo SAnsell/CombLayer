@@ -141,9 +141,10 @@ BremTube::createFrontPorts(Simulation& System)
   MonteCarlo::Object* insertObj=
     CellMap::getCellObject(System,"FrontTube");
 
-  const HeadRule innerSurf(SurfMap::getSurfRules("#midVoid"));
+  const HeadRule innerSurf(SurfMap::getSurfRules("midVoid"));
   const HeadRule outerSurf(SurfMap::getSurfRules("midRadius"));
-  
+  ELog::EM<<"Inner Surf == "<<innerSurf<<ELog::endDiag;
+  ELog::EM<<"Outer Surf == "<<outerSurf<<ELog::endDiag;
   
   for(size_t i=0;i<FPorts.size();i++)
     {

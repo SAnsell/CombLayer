@@ -64,6 +64,8 @@ class VacuumBox :
 
   double portBXStep;          ///< XStep of port
   double portBZStep;          ///< ZStep of port
+  double portBXAngle;          ///< XAngle of port
+  double portBZAngle;          ///< ZAngle of port
   double portBWallThick;      ///< Flange wall thickness
   double portBTubeLength;     ///< Port tube
   double portBTubeRadius;     ///< Port tube length

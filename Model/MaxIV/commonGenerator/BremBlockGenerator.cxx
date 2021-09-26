@@ -50,10 +50,10 @@ namespace setVariable
 {
 
 BremBlockGenerator::BremBlockGenerator() :
-  centFlag(0),radius(0.0),width(7.2),height(7.2),
+  centFlag(0),length(8.0),width(7.2),height(7.2),
   holeXStep(0.0),holeZStep(0.0),
   holeAWidth(3.0),holeAHeight(1.5),
-  holeMidDist(-0.6),holeMidWidth(0.7),holeMidHeight(0.7),
+  holeMidDist(4.8),holeMidWidth(0.7),holeMidHeight(0.7),
   holeBWidth(1.0),holeBHeight(1.0),
   
   voidMat("Void"),mainMat("Tungsten")
@@ -86,15 +86,13 @@ BremBlockGenerator::setMaterial(const std::string& MMat,
 }
 
 void
-BremBlockGenerator::setRadius(const double R)
+BremBlockGenerator::setLength(const double L)
   /*!
-    Make block cylinder
-    \param R :: Radius
+    Main block length
+    \param L :: length
    */
 {
-  radius=R;
-  width=-1.0;
-  height=-1.0;
+  length=L;
   return;
 }
 
@@ -106,7 +104,6 @@ BremBlockGenerator::setCube(const double W,const double H)
     \param H :: Height
    */
 {
-  radius=-1.0;
   width=W;
   height=H;
   return;
@@ -130,7 +127,7 @@ BremBlockGenerator::setAperature(const double MLength,
 				 const double frontW,const double frontH,
 				 const double midW,const double midH,
 				 const double backW,const double backH)
-/*!
+/*
     Set the widths
     \param MLength :: Aperature length
     \param frontW :: Front width
@@ -141,7 +138,7 @@ BremBlockGenerator::setAperature(const double MLength,
     \param backH :: back height
   */
 {
-  holeMidDist=MLength;
+  holeMidDist=(MLength<0.0) ? -length*MLength : MLength;
   holeAWidth=frontW;
   holeAHeight=frontH;
   holeMidWidth=midW;
@@ -151,18 +148,44 @@ BremBlockGenerator::setAperature(const double MLength,
   return;
 }
 
+void
+BremBlockGenerator::setAperatureAngle
+  (const double MLength,
+   const double midW,const double midH,
+   const double frontAngle,const double backAngle)
+  
+/*!
+    Set the widths
+    \param MLength :: Aperature length
+    \param midW :: min width
+    \param midH :: min height
+    \param frontAngle :: angle to front [deg]
+    \param backAngle :: angle to back [deg]
+  */
+{
+  holeMidDist = (MLength<0.0) ? -length*MLength : length;
+  holeMidWidth=midW;
+  holeMidHeight=midH;
+  holeAWidth=midW+holeMidDist*std::tan(M_PI*frontAngle/180.0);
+  holeAHeight=midH+holeMidDist*std::tan(M_PI*frontAngle/180.0);
+
+  holeBWidth=midW+(length-holeMidDist)*std::tan(M_PI*backAngle/180.0);
+  holeBHeight=midH+(length-holeMidDist)*std::tan(M_PI*backAngle/180.0);
+
+  return;
+}
+
 				  
 void
 BremBlockGenerator::generateBlock(FuncDataBase& Control,
 				  const std::string& keyName,
-				  const double yStep,
-				  const double length) const
+				  const double yStep) const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
     \param yStep :: Forward step
-    \param length :: length of W block
+    \param L :: length of W block
   */
 {
   ELog::RegMethod RegA("BremBlockGenerator","generatorColl");
@@ -170,22 +193,15 @@ BremBlockGenerator::generateBlock(FuncDataBase& Control,
   Control.addVariable(keyName+"YStep",yStep);
   Control.addVariable(keyName+"CentreFlag",static_cast<int>(centFlag));
   
-  if (radius<Geometry::zeroTol)
-    {
-      Control.addVariable(keyName+"Width",width);
-      Control.addVariable(keyName+"Height",height);
-    }
-  else
-    Control.addVariable(keyName+"Radius",radius);
-  
-  Control.addVariable(keyName+"Length",length);
+  Control.addVariable(keyName+"Width",width);
+  Control.addVariable(keyName+"Height",height);
 
-  const double HD(holeMidDist<0.0 ? -length*holeMidDist : holeMidDist);
+  Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"HoleXStep",holeXStep);
   Control.addVariable(keyName+"HoleZStep",holeZStep);
   Control.addVariable(keyName+"HoleAWidth",holeAWidth);
   Control.addVariable(keyName+"HoleAHeight",holeAHeight);
-  Control.addVariable(keyName+"HoleMidDist",HD);
+  Control.addVariable(keyName+"HoleMidDist",holeMidDist);
   Control.addVariable(keyName+"HoleMidWidth",holeMidWidth);
   Control.addVariable(keyName+"HoleMidHeight",holeMidHeight);
   Control.addVariable(keyName+"HoleBWidth",holeBWidth);
