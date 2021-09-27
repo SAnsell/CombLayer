@@ -648,7 +648,7 @@ diag2Package(FuncDataBase& Control,const std::string& Name)
   PItemGen.setPlate(2.0,"Stainless304");  
   PItemGen.setOuterVoid(0);
   PItemGen.generatePort(Control,portName+"FrontPort0",
-			Geometry::Vec3D(0,-10.0,0),
+			Geometry::Vec3D(0,-11.5,0),
 			Geometry::Vec3D(-1,0,0));
   
 

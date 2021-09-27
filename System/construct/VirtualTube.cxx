@@ -139,9 +139,6 @@ VirtualTube::createPorts(Simulation& System,
    */
 {
   ELog::RegMethod RegA("VirtualTube","createPorts(Obj,HR,HR)");
-
-  ELog::EM<<"Key["<<keyName<<"] == "<<innerSurf<<
-    " +++ "<<outerSurf<<ELog::endDiag;
   
   for(size_t i=0;i<Ports.size();i++)
     {

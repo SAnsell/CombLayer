@@ -142,13 +142,10 @@ BremTube::createFrontPorts(Simulation& System)
 
   // both OUTWARD
   MonteCarlo::Object* insertObj=
-    CellMap::getCellObject(System,"FrontTube");
+    CellMap::getCellObject(System,"MidTube");
 
   const HeadRule innerSurf(SurfMap::getSurfRules("midVoid"));
   const HeadRule outerSurf(SurfMap::getSurfRules("midRadius"));
-  ELog::EM<<"Key["<<keyName<<"] == "<<innerSurf<<
-    " +++ "<<outerSurf<<ELog::endDiag;
-
   
   for(size_t i=0;i<FPorts.size();i++)
     {
@@ -160,9 +157,7 @@ BremTube::createFrontPorts(Simulation& System)
       FPorts[i]->constructTrack(System,insertObj,innerSurf,outerSurf);
   
       FPorts[i]->addPortCut(CellMap::getCellObject(System,"MidOuterVoid"));
-      ELog::EM<<"FP ="<<FPorts[i]->getInsertCells().size()<<ELog::endDiag;
       FPorts[i]->insertObjects(System);
-      ELog::EM<<"Main == "<<*insertObj<<ELog::endDiag;
     }
 
   
@@ -282,7 +277,7 @@ BremTube::createObjects(Simulation& System)
   makeCell("MidVoid",System,cellIndex++,0,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-200 317 -217 207 212");
-  makeCell("MidWall",System,cellIndex++,wallMat,0.0,HR);
+  makeCell("MidTube",System,cellIndex++,wallMat,0.0,HR);
 
   // Note : using 427
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -427 -200 317 217 202");
@@ -357,6 +352,61 @@ BremTube::createLinks()
   FixedComp::setConnect(5,Origin+Z*(tubeHeight+plateThick),Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+426));
   
+  return;
+}
+
+void
+BremTube::insertInCell(Simulation& System,const int cellN) const
+  /*!
+    Overload of ContainedComp so that the ports can also
+    be inserted if needed
+    \param System :: Simulation to use
+    \param cellN :: Cell for insert
+  */
+{
+  ELog::RegMethod RegA("BremTube","insertInCell(int)");
+  
+  ContainedComp::insertInCell(System,cellN);
+  for(const std::shared_ptr<constructSystem::portItem>& PC : FPorts)
+    PC->insertInCell(System,cellN);
+
+  return;
+}
+
+void
+BremTube::insertInCell(MonteCarlo::Object& obj) const
+  /*!
+    Overload of ContainedComp so that the ports can also
+    be inserted if needed
+    \param System :: Simulation to use
+    \param obj :: Cell for insert
+  */
+{
+  ELog::RegMethod RegA("BremTube","insertInCell(obj)");
+  
+  ContainedComp::insertInCell(obj);
+  for(const std::shared_ptr<constructSystem::portItem>& PC : FPorts)
+    PC->insertInCell(obj);
+
+  return;
+}
+
+void
+BremTube::insertInCell(Simulation& System,
+		       const std::vector<int>& cellVec) const
+  /*!
+    Overload of ContainedComp so that the ports can also
+    be inserted if needed
+    \param System :: Simulation to use
+    \param cellVec :: Cells for insert
+  */
+{
+  ELog::RegMethod RegA("BremTube","insertInCell(vec)");
+  
+  ContainedComp::insertInCell(System,cellVec);
+  for(const std::shared_ptr<constructSystem::portItem>& PC : FPorts)
+    PC->insertInCell(System,cellVec);
+
   return;
 }
 

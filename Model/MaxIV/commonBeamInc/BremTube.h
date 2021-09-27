@@ -106,6 +106,10 @@ class BremTube :
   BremTube& operator=(const BremTube&);
   virtual ~BremTube();
 
+  virtual void insertInCell(Simulation&,const int) const;
+  virtual void insertInCell(Simulation&,const std::vector<int>&) const;
+  virtual void insertInCell(MonteCarlo::Object&) const;
+
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

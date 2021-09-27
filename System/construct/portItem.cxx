@@ -551,7 +551,6 @@ portItem::addPortCut(MonteCarlo::Object* mainTube) const
   // Mid port exclude
   const HeadRule HR=
     ModelSupport::getHeadRule(SMap,buildIndex,"( 17 : -1 )");
-  ELog::EM<<"Main == "<<*mainTube<<ELog::endDiag;
   mainTube->addIntersection(HR);
   return;
 }
