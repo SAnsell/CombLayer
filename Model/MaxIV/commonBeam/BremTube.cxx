@@ -62,6 +62,9 @@
 #include "portItem.h"
 #include "portBuilder.h"
 
+#include "BaseModVisit.h"
+#include "Importance.h"
+#include "Object.h"
 #include "BremTube.h"
 
 namespace xraySystem
@@ -143,8 +146,9 @@ BremTube::createFrontPorts(Simulation& System)
 
   const HeadRule innerSurf(SurfMap::getSurfRules("midVoid"));
   const HeadRule outerSurf(SurfMap::getSurfRules("midRadius"));
-  ELog::EM<<"Inner Surf == "<<innerSurf<<ELog::endDiag;
-  ELog::EM<<"Outer Surf == "<<outerSurf<<ELog::endDiag;
+  ELog::EM<<"Key["<<keyName<<"] == "<<innerSurf<<
+    " +++ "<<outerSurf<<ELog::endDiag;
+
   
   for(size_t i=0;i<FPorts.size();i++)
     {
@@ -155,9 +159,10 @@ BremTube::createFrontPorts(Simulation& System)
       FPorts[i]->setCentLine(*this,FCentre[i],FAxis[i]);
       FPorts[i]->constructTrack(System,insertObj,innerSurf,outerSurf);
   
-      // if (outerVoid && CellMap::hasCell("OuterVoid"))
-      //  	Ports[i]->addPortCut(CellMap::getCellObject(System,"OuterVoid"));
+      FPorts[i]->addPortCut(CellMap::getCellObject(System,"MidOuterVoid"));
+      ELog::EM<<"FP ="<<FPorts[i]->getInsertCells().size()<<ELog::endDiag;
       FPorts[i]->insertObjects(System);
+      ELog::EM<<"Main == "<<*insertObj<<ELog::endDiag;
     }
 
   

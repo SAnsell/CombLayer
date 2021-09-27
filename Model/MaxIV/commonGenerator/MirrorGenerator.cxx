@@ -171,8 +171,8 @@ MirrorGenerator::setMaterial(const std::string& MMat,
 
 void
 MirrorGenerator::setPrimaryAngle(const double XA,
-				  const double YA,
-				  const double ZA)
+				 const double YA,
+				 const double ZA)
   /*!
     Set the primary rotation angles
     \param XA :: X axis angle

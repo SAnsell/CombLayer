@@ -549,9 +549,9 @@ portItem::addPortCut(MonteCarlo::Object* mainTube) const
   */
 {
   // Mid port exclude
-  const HeadRule HR
-    (ModelSupport::getComposite(SMap,buildIndex," ( 17 : -1 )"));
-
+  const HeadRule HR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"( 17 : -1 )");
+  ELog::EM<<"Main == "<<*mainTube<<ELog::endDiag;
   mainTube->addIntersection(HR);
   return;
 }
@@ -646,6 +646,7 @@ portItem::constructTrack(Simulation& System,
   createSurfaces();
 
   constructObject(System,innerSurf,outerSurf);
+  
   addPortCut(insertObj);
   
   createLinks();

@@ -444,7 +444,7 @@ monoShutterVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,preName+"BellowL",10.0);    
 
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,preName+"PipeF",70.0);  
+  PipeGen.generatePipe(Control,preName+"PipeF",66.0);  
   return;
 }
   
@@ -462,7 +462,7 @@ opticsHutVariables(FuncDataBase& Control,
 
   OpticsHutGenerator OGen; 
 
-  OGen.addHole(Geometry::Vec3D(0,0,0),3.5);
+  OGen.addHole(Geometry::Vec3D(3.3,0,3.3),3.5);
   OGen.generateHut(Control,hutName,1256.0);
 
   Control.addVariable(hutName+"NChicane",2);

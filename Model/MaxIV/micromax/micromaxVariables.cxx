@@ -646,6 +646,7 @@ diag2Package(FuncDataBase& Control,const std::string& Name)
   Control.addVariable(portName+"FrontNPorts",1);   // beam ports 
   PItemGen.setCF<setVariable::CF63>(CF63::outerRadius+9.1);
   PItemGen.setPlate(2.0,"Stainless304");  
+  PItemGen.setOuterVoid(0);
   PItemGen.generatePort(Control,portName+"FrontPort0",
 			Geometry::Vec3D(0,-10.0,0),
 			Geometry::Vec3D(-1,0,0));

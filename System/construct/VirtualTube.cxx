@@ -140,6 +140,9 @@ VirtualTube::createPorts(Simulation& System,
 {
   ELog::RegMethod RegA("VirtualTube","createPorts(Obj,HR,HR)");
 
+  ELog::EM<<"Key["<<keyName<<"] == "<<innerSurf<<
+    " +++ "<<outerSurf<<ELog::endDiag;
+  
   for(size_t i=0;i<Ports.size();i++)
     {
       const attachSystem::ContainedComp& CC=getCC("Main");
@@ -148,7 +151,7 @@ VirtualTube::createPorts(Simulation& System,
 
       for(const int CN : portCells)
 	Ports[i]->addInsertCell(CN);
-	
+
       Ports[i]->setCentLine(*this,PCentre[i],PAxis[i]);
       Ports[i]->constructTrack(System,insertObj,innerSurf,outerSurf);
 
