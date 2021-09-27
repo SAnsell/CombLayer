@@ -84,6 +84,7 @@
 #include "FlangeDomeGenerator.h"
 #include "TableGenerator.h"
 #include "AreaDetectorGenerator.h"
+#include "OpticsHutGenerator.h"
 
 namespace setVariable
 {
@@ -431,46 +432,14 @@ opticsHutVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("micromaxVariables","opticsHutVariables");
   
-  Control.addVariable(hutName+"Depth",100.0);
-  Control.addVariable(hutName+"Height",200.0);
-  Control.addVariable(hutName+"Length",1256.0);
-  Control.addVariable(hutName+"OutWidth",202.0);
-  Control.addVariable(hutName+"RingExtra",20.0);
-  Control.addVariable(hutName+"RingFlat",70.0);
-
-  
-  Control.addVariable(hutName+"InnerThick",0.3);
-  
-  Control.addVariable(hutName+"PbWallThick",1.6);
-  Control.addVariable(hutName+"PbRoofThick",1.6);
-  Control.addVariable(hutName+"PbFrontThick",1.2);
-  Control.addVariable(hutName+"PbBackThick",9.0);
-
-  Control.addVariable(hutName+"OuterThick",0.3);
-
-  Control.addVariable(hutName+"FloorThick",50.0);
-  Control.addVariable(hutName+"InnerOutVoid",10.0);
-  Control.addVariable(hutName+"OuterOutVoid",10.0);
-
-  Control.addVariable(hutName+"SkinMat","Stainless304");
-  Control.addVariable(hutName+"ConcreteMat","Concrete");
-  Control.addVariable(hutName+"PbMat","Lead");
-  Control.addVariable(hutName+"FloorMat","Concrete");
-  Control.addVariable(hutName+"VoidMat","Void");
-
-  Control.addVariable(hutName+"HoleXStep",0.0);
-  Control.addVariable(hutName+"HoleZStep",0.0);
-  Control.addVariable(hutName+"HoleRadius",3.5);
-
-  Control.addVariable(hutName+"InletXStep",0.0);
-  Control.addVariable(hutName+"InletZStep",0.0);
-  Control.addVariable(hutName+"InletRadius",5.0);
+  OpticsHutGenerator OGen; 
+  OGen.generateHut(Control,hutName,1256.0);
 
   Control.addVariable(hutName+"NChicane",2);
   PortChicaneGenerator PGen;
-  PGen.setSize(4.0,40.0,30.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane0",270.0,-25.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane1",370.0,-25.0);
+  PGen.setSize(4.0,60.0,40.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane0",170.0,-25.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane1",270.0,-25.0);
   
   return;
 }

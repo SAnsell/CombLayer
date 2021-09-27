@@ -174,7 +174,8 @@ FORMAX::build(Simulation& System,
   exptHut->setCutSurf("frontWall",*opticsHut,"back");
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
-  exptHut->createAll(System,*opticsHut,"exitHole0");
+  ELog::EM<<"Z -- "<<opticsHut->getLinkPt("exitHole0")<<ELog::endDiag;
+  exptHut->createAll(System,*opticsHut,"back");
 
   joinPipeB->addAllInsertCell(opticsBeam->getCell("LastVoid"));  
   joinPipeB->addInsertCell("Main",opticsHut->getCell("ExitHole"));

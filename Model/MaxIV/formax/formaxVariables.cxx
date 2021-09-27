@@ -373,7 +373,7 @@ diag3Package(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,diagKey+"BellowH",15.0);
 
-  PipeGen.generatePipe(Control,diagKey+"PipeE",185.0);
+  PipeGen.generatePipe(Control,diagKey+"PipeE",205.0);
 
 
   BellowGen.setCF<setVariable::CF40>();
@@ -444,7 +444,7 @@ monoShutterVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,preName+"BellowL",10.0);    
 
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,preName+"PipeF",66.0);  
+  PipeGen.generatePipe(Control,preName+"PipeF",46.0);  
   return;
 }
   
@@ -492,7 +492,7 @@ exptHutVariables(FuncDataBase& Control,
   const std::string hutName(beamName+"ExptHut");
   
   Control.addVariable(hutName+"YStep",0.0);
-  Control.addVariable(hutName+"Height",280.0);
+  Control.addVariable(hutName+"Height",277.0);
   Control.addVariable(hutName+"Length",1719.4);
   Control.addVariable(hutName+"OutWidth",260);
   Control.addVariable(hutName+"RingWidth",200);
@@ -540,12 +540,6 @@ exptHutVariables(FuncDataBase& Control,
   PGen.generatePortChicane(Control,hutName+"Chicane4","Right",-520.0,-5.0);
   PGen.setSize(4.0,30.0,40.0);
   PGen.generatePortChicane(Control,hutName+"Chicane5","Right",-460.0,-5.0);
-
-  /*
-  PGen.generatePortChicane(Control,hutName+"Chicane1",370.0,-25.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane2",-70.0,-25.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane3",-280.0,-25.0);
-  */
 
   return;
 }
