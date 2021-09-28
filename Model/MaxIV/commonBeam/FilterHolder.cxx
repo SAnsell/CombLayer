@@ -52,7 +52,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -63,7 +63,7 @@ namespace xraySystem
 
 FilterHolder::FilterHolder(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap()
  /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -73,7 +73,7 @@ FilterHolder::FilterHolder(const std::string& Key)  :
 
 FilterHolder::FilterHolder(const FilterHolder& A) :
   attachSystem::ContainedComp(A),
-  attachSystem::FixedOffset(A),
+  attachSystem::FixedRotate(A),
   attachSystem::CellMap(A),
   thick(A.thick),width(A.width),height(A.height),
   depth(A.depth),
@@ -105,7 +105,7 @@ FilterHolder::operator=(const FilterHolder& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
       thick=A.thick;
       width=A.width;
@@ -126,16 +126,6 @@ FilterHolder::operator=(const FilterHolder& A)
   return *this;
 }
 
-FilterHolder*
-FilterHolder::clone() const
-/*!
-  Clone self
-  \return new (this)
- */
-{
-    return new FilterHolder(*this);
-}
-
 FilterHolder::~FilterHolder()
   /*!
     Destructor
@@ -151,7 +141,7 @@ FilterHolder::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("FilterHolder","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   thick=Control.EvalVar<double>(keyName+"Thick");
   width=Control.EvalVar<double>(keyName+"Width");
@@ -169,23 +159,6 @@ FilterHolder::populate(const FuncDataBase& Control)
   wDepth=Control.EvalVar<double>(keyName+"WindowDepth");
 
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
-
-  return;
-}
-
-void
-FilterHolder::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: object for origin
-    \param sideIndex :: link point for origin
-  */
-{
-  ELog::RegMethod RegA("FilterHolder","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
 
   return;
 }
@@ -228,7 +201,7 @@ FilterHolder::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+45,Origin-Z*(wDepth),Z);
   ModelSupport::buildPlane(SMap,buildIndex+46,Origin+Z*(wHeight),Z);
 
-  const double dividerWidth((width-wWidth*nWindows)/
+  const double dividerWidth((width-wWidth*static_cast<double>(nWindows))/
 			    static_cast<double>(nWindows+1));
   double dx(0.0);
   int SI = buildIndex+40;
@@ -259,63 +232,63 @@ FilterHolder::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("FilterHolder","createObjects");
 
-  std::string Out, side;
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -45 ");
-  makeCell("MainLow",System,cellIndex++,mat,0.0,Out);
+  HeadRule HR;
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -45");
+  makeCell("MainLow",System,cellIndex++,mat,0.0,HR);
 
   // windows
-  side=ModelSupport::getComposite(SMap,buildIndex," 1 -2 45 -46 ");
+  const HeadRule sideHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 45 -46");
   int SI(buildIndex+40);
   for (size_t i=0; i<=nWindows; i++)
     {
-      Out=ModelSupport::getComposite(SMap,SI-10,SI," 4 -3M ");
-      System.addCell(cellIndex++,mat,0,Out+side);
+      HR=ModelSupport::getHeadRule(SMap,SI-10,SI,"4 -3M");
+      System.addCell(cellIndex++,mat,0,HR*sideHR);
       
       if (i!=nWindows)
 	{
-	  Out=ModelSupport::getComposite(SMap,SI," 3 -4 ");
-	  System.addCell(cellIndex++,0,0,Out+side);
+	  HR=ModelSupport::getHeadRule(SMap,SI,"3 -4");
+	  System.addCell(cellIndex++,0,0,HR*sideHR);
 	}
-      
       SI += 10;
     }
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 46 -6 ");
-  makeCell("MainUp",System,cellIndex++,mat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 46 -6");
+  makeCell("MainUp",System,cellIndex++,mat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 23 -3 5 -6 ");
-  makeCell("MainVoid1",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 23 -3 5 -6");
+  makeCell("MainVoid1",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 4 -24 5 -6 ");
-  makeCell("MainVoid2",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 4 -24 5 -6");
+  makeCell("MainVoid2",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 13 -14 26 -5 ");
-  makeCell("Leg",System,cellIndex++,mat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -14 26 -5");
+  makeCell("Leg",System,cellIndex++,mat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 23 -13 26 -5 ");
-  makeCell("LegVoid1",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 23 -13 26 -5");
+  makeCell("LegVoid1",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 14 -24 26 -5 ");
-  makeCell("LegVoid2",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 14 -24 26 -5");
+  makeCell("LegVoid2",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 23 -24 25 -26 ");
-  makeCell("Base",System,cellIndex++,mat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 23 -24 25 -26");
+  makeCell("Base",System,cellIndex++,mat,0.0,HR);
 
   // filter
-  Out=ModelSupport::getComposite(SMap,buildIndex," 31 -1 3 -4 5 -6 ");
-  makeCell("Filter",System,cellIndex++,foilMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"31 -1 3 -4 5 -6");
+  makeCell("Filter",System,cellIndex++,foilMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 31 -1 23 -3 5 -6 ");
-  makeCell("FilterVoid1",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"31 -1 23 -3 5 -6");
+  makeCell("FilterVoid1",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 31 -1 4 -24 5 -6 ");
-  makeCell("FilterVoid2",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"31 -1 4 -24 5 -6");
+  makeCell("FilterVoid2",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 31 -1 23 -24 25 -5 ");
-  makeCell("FilterVoid2",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"31 -1 23 -24 25 -5");
+  makeCell("FilterVoid2",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 31 -2 23 -24 25 -6 ");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"31 -2 23 -24 25 -6");
+  addOuterSurf(HR);
 
   return;
 }

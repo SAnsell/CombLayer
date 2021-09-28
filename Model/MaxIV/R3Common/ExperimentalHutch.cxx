@@ -144,7 +144,6 @@ ExperimentalHutch::createSurfaces()
     // ROTATION for Corner
 
   // Inner void
-  ELog::EM<<"Active front wall"<<getRule("frontWall")<<ELog::endDiag;
   if (!isActive("frontWall"))
     {
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);

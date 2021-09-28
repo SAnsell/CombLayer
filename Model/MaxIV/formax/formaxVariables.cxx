@@ -799,9 +799,10 @@ opticsVariables(FuncDataBase& Control,
   FMaskGen.setCF<CF63>();
   FMaskGen.setFrontGap(2.13,2.146);
   FMaskGen.setBackGap(0.756,0.432);
-  FMaskGen.setMinAngleSize(10.0,FM2dist, 100.0,100.0 );
+  //  FMaskGen.setMinAngleSize(6.6,FM2dist, 100.0,100.0 );
+  FMaskGen.setMinSize(6.6,0.1,0.1);
   // step to +7.5 to make join with fixedComp:linkpt
-  FMaskGen.generateColl(Control,preName+"WhiteCollA",7.5,15.0);
+  FMaskGen.generateColl(Control,preName+"WhiteCollA",7.5,10.0);
 
   IGGen.setCF<CF150>();
   IGGen.setMainLength(8.0,8.0);

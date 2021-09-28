@@ -250,7 +250,6 @@ R3FrontEnd::createSurfaces()
 
   if (!frontActive())
     {
-      ELog::EM<<"FRont off set == "<<frontOffset<<" "<<Origin<<" :: "<<Y<<ELog::endDiag;
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*frontOffset,Y);
       buildZone.initFront(HeadRule(SMap.realSurf(buildIndex+1)));
       setFront(-SMap.realSurf(buildIndex+1));

@@ -52,7 +52,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -64,7 +64,7 @@ namespace xraySystem
 {
 
 SqrCollimator::SqrCollimator(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
+  attachSystem::ContainedComp(),attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap(),attachSystem::SurfMap()
   /*!
     Default constructor
@@ -73,8 +73,10 @@ SqrCollimator::SqrCollimator(const std::string& Key) :
 {}
   
 SqrCollimator::SqrCollimator(const SqrCollimator& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  attachSystem::CellMap(A),attachSystem::SurfMap(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::CellMap(A),
+  attachSystem::SurfMap(A),
   radius(A.radius),length(A.length),innerAWidth(A.innerAWidth),
   innerAHeight(A.innerAHeight),minLength(A.minLength),
   innerMinWidth(A.innerMinWidth),innerMinHeight(A.innerMinHeight),
@@ -97,7 +99,7 @@ SqrCollimator::operator=(const SqrCollimator& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       radius=A.radius;
@@ -124,7 +126,7 @@ SqrCollimator::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("SqrCollimator","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   
   radius=Control.EvalVar<double>(keyName+"Radius");
   length=Control.EvalVar<double>(keyName+"Length");
@@ -214,26 +216,26 @@ SqrCollimator::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("SqrCollimator","createObjects");
-  std::string Out;
+  HeadRule HR;
 
   // inner voids
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -101 103 -104 105 -106");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -101 103 -104 105 -106");
 
-  CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -2 203 -204 205 -206");
-  CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
+  CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -2 203 -204 205 -206");
+  CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
   // metal
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1 -101 -7 (-103:104:-105:106) ");
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1 -101 -7 (-103:104:-105:106)");
   
-  CellMap::makeCell("FrontColl",System,cellIndex++,mat,0.0,Out);
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 101 -2 -7 (-203:204:-205:206) ");
-  CellMap::makeCell("BackColl",System,cellIndex++,mat,0.0,Out);
+  CellMap::makeCell("FrontColl",System,cellIndex++,mat,0.0,HR);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"101 -2 -7 (-203:204:-205:206)");
+  CellMap::makeCell("BackColl",System,cellIndex++,mat,0.0,HR);
 
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -7");
+  addOuterSurf(HR);
   return;
 }
 
