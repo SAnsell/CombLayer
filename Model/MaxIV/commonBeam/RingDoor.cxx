@@ -3,7 +3,7 @@
  
  * File:   commonBeam/RingDoor.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -167,26 +167,34 @@ RingDoor::createSurfaces()
   
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(innerWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(innerWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(innerHeight/2.0),Z);
+  //  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(innerHeight/2.0),Z);
+  ExternalCut::makeShiftedSurf(SMap,"floor",buildIndex+6,Z,innerHeight);
 
   ModelSupport::buildPlane(SMap,buildIndex+13,
 			   Origin-X*(gapSpace+innerWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+14,
 			   Origin+X*(gapSpace+innerWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+16,
-			   Origin+Z*(innerTopGap+innerHeight/2.0),Z);
+  // ModelSupport::buildPlane(SMap,buildIndex+16,
+  // 			   Origin+Z*(innerTopGap+innerHeight/2.0),Z);
+  ExternalCut::makeShiftedSurf(SMap,"floor",buildIndex+16,Z,
+			       innerTopGap+innerHeight);
+
   
   ModelSupport::buildPlane(SMap,buildIndex+23,Origin-X*(outerWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+24,Origin+X*(outerWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+26,Origin+Z*(outerHeight/2.0),Z);
+  //  ModelSupport::buildPlane(SMap,buildIndex+26,Origin+Z*(outerHeight/2.0),Z);
 
+  ExternalCut::makeShiftedSurf(SMap,"floor",buildIndex+26,Z,outerHeight);
+  
   ModelSupport::buildPlane(SMap,buildIndex+33,
 			   Origin-X*(gapSpace+outerWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+34,
 			   Origin+X*(gapSpace+outerWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+36,
-			   Origin+Z*(outerTopGap+outerHeight/2.0),Z);
-
+  // ModelSupport::buildPlane(SMap,buildIndex+36,
+  // 			   Origin+Z*(outerTopGap+outerHeight/2.0),Z);
+  ExternalCut::makeShiftedSurf(SMap,"floor",buildIndex+36,Z,
+			       outerTopGap+outerHeight);
+  
   // Y Points out of ring:
   ExternalCut::makeShiftedSurf
     (SMap,"innerWall",buildIndex+200,Y,innerThick);
@@ -196,6 +204,7 @@ RingDoor::createSurfaces()
   // lift step
   ExternalCut::makeShiftedSurf
     (SMap,"floor",buildIndex+1005,Z,underStepHeight);
+
   ModelSupport::buildPlane
     (SMap,buildIndex+1003,Origin-X*(underStepWidth+underStepXSep/2.0),X);
   ModelSupport::buildPlane
