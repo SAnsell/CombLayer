@@ -120,6 +120,7 @@
 #include "LocalShieldingGenerator.h"
 #include "FlangeDomeGenerator.h"
 #include "BeamBoxGenerator.h"
+#include "RoundShutterGenerator.h"
 
 namespace setVariable
 {
@@ -287,6 +288,8 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::SixPortGenerator SPGen;
   SPGen.generateSixPort(Control,"SixPort");
+  SPGen.setCF<CF40>();
+  SPGen.setSideCF<CF150>(70.0);
   SPGen.generateSixPort(Control,"FourPort");
 
   setVariable::CrossWayGenerator MSPGen;
@@ -329,6 +332,9 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::CLRTubeGenerator DPGen;
   DPGen.generatePump(Control,"CLRTube",1);
+
+  setVariable::RoundShutterGenerator RMSGen;
+  RMSGen.generateShutter(Control,"RMS",1,1);
 
   setVariable::ViewScreenGenerator VTGen;
   VTGen.generateView(Control,"ViewTube");

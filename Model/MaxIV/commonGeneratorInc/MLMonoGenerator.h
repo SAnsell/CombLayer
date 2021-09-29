@@ -3,7 +3,7 @@
  
  * File:   danmaxInc/MLMonoGenerator.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,40 +37,39 @@ class MLMonoGenerator
 {
  private:
 
-  double gap;               ///< Gap thickness
-  double phiA;               ///< Mono Pitch
-  double phiB;               ///< Mono Pitch
+  double gap;                  ///< Gap thickness
+  double phiA;                 ///< Mono Pitch
+  double phiB;                 ///< Mono Pitch
       
-
-  double widthA;            ///< Width of block across beam
-  double heightA;           ///< Depth into beam
-  double lengthA;           ///< Length along beam
+  double widthA;               ///< Width of block across beam
+  double heightA;              ///< Depth into beam
+  double lengthA;              ///< Length along beam
   
-  double widthB;            ///< Width of block across beam
-  double heightB;           ///< Depth into beam
-  double lengthB;           ///< Length along beam
+  double widthB;               ///< Width of block across beam
+  double heightB;              ///< Depth into beam
+  double lengthB;              ///< Length along beam
 
-  double supportAGap;         ///< Gap after mirror (before back)
-  double supportAExtra;       ///< Base/Top extra length
-  double supportABackThick;   ///< Back thickness
+  double supportAGap;          ///< Gap after mirror (before back)
+  double supportAExtra;        ///< Base/Top extra length
+  double supportABackThick;    ///< Back thickness
   double supportABackLength;   ///< Back lenght (in part)
   double supportABase;         ///< Base/Top thickness
-  double supportAPillar;      ///< Side unit radius
-  double supportAPillarStep;  ///< Side unit step
+  double supportAPillar;       ///< Side unit radius
+  double supportAPillarStep;   ///< Side unit step
 
-  double supportBGap;         ///< Gap after mirror (before back)
-  double supportBExtra;       ///< Base/Top extra length
-  double supportBBackThick;   ///< Back thickness
+  double supportBGap;          ///< Gap after mirror (before back)
+  double supportBExtra;        ///< Base/Top extra length
+  double supportBBackThick;    ///< Back thickness
   double supportBBackLength;   ///< Back lenght (in part)
   double supportBBase;         ///< Base/Top thickness
-  double supportBPillar;      ///< Side unit radius
-  double supportBPillarStep;  ///< Side unit step
+  double supportBPillar;       ///< Side unit radius
+  double supportBPillarStep;   ///< Side unit step
   
 
   std::string mirrorAMat;             ///< XStal material
   std::string mirrorBMat;             ///< XStal material
   std::string baseAMat;               ///< Base material
-  std::string baseBMat;              ///< Base material
+  std::string baseBMat;               ///< Base material
 
  public:
 
@@ -79,7 +78,8 @@ class MLMonoGenerator
   MLMonoGenerator& operator=(const MLMonoGenerator&);
   virtual ~MLMonoGenerator();
 
-
+  /// accessor to gap
+  void setGap(const double G) { gap=G; }
   void generateMono(FuncDataBase&,const std::string&,
 		    const double,const double,const double) const;
 

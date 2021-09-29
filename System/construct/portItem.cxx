@@ -86,7 +86,7 @@ portItem::portItem(const std::string& baseKey,
 {}
 
 portItem::portItem(const std::string& Key) :
-  attachSystem::FixedComp(Key,7),
+  attachSystem::FixedComp(Key,8),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   portBase(keyName),
   statusFlag(0),outerFlag(0),

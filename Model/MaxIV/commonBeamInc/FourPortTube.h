@@ -49,10 +49,12 @@ class FourPortTube :
   double radius;               ///< void radius
   double linkRadius;           ///< void radius on 4 cross way
   double wallThick;            ///< pipe thickness
-
+  double linkWallThick;        ///< wall thickness of side
+  
   double frontLength;           ///< full to flange length
   double backLength;            ///< full to flange length
-  double sideLength;            ///< full to flange length
+  double sideALength;            ///< full to flange length
+  double sideBLength;            ///< full to flange length
 
   double flangeARadius;         ///< Joining Flange radius
   double flangeBRadius;         ///< Joining Flange radius
@@ -68,7 +70,9 @@ class FourPortTube :
   int mainMat;                 ///< main material
   int flangeMat;               ///< flange material
   int plateMat;                ///< plate material
- 
+
+  bool sideVoidFlag;          ///< Make the side inner void complete
+  
   void populate(const FuncDataBase&);  
   void createSurfaces();
   void createObjects(Simulation&);
@@ -82,6 +86,9 @@ class FourPortTube :
   FourPortTube& operator=(const FourPortTube&);
   virtual ~FourPortTube();
 
+  /// set to have the side void as the main void
+  void setSideVoid() { sideVoidFlag=1; }
+  
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

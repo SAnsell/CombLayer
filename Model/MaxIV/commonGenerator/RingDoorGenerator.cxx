@@ -73,7 +73,7 @@ RingDoorGenerator::RingDoorGenerator() :
   underStepHeight(7.0),underStepWidth(48.0),
   underStepXSep(96.0),
   underAMat("Void"),underBMat("Void"),
-  tubeMat("Void"),doorMat("Stainless304")
+  tubeMat("Void"),doorMat("Concrete")
   /*!
     Constructor and defaults
   */

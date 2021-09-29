@@ -69,6 +69,7 @@ namespace xraySystem
   class BremTube;
   class ViewScreenTube;
   class MonoShutter;
+  class RoundMonoShutter;
   class PipeShield;
   
     

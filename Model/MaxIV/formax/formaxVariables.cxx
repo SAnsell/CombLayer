@@ -56,6 +56,7 @@
 #include "VacBoxGenerator.h"
 #include "MonoBoxGenerator.h"
 #include "MonoShutterGenerator.h"
+#include "RoundShutterGenerator.h"
 #include "BremMonoCollGenerator.h"
 #include "BremTubeGenerator.h"
 #include "HPJawsGenerator.h"
@@ -162,7 +163,7 @@ frontMaskVariables(FuncDataBase& Control,
     \param preName :: Beamline name
   */
 {
-  ELog::RegMethod RegA("danmaxVariables[F]","frontMaskVariables");
+  ELog::RegMethod RegA("formaxVariables[F]","frontMaskVariables");
 
   setVariable::SqrFMaskGenerator FMaskGen;
 
@@ -207,7 +208,7 @@ mirrorMonoPackage(FuncDataBase& Control,
     \param monoKey :: prename
   */
 {
-  ELog::RegMethod RegA("danmaxVariables[F]","mirrorMonoPackage");
+  ELog::RegMethod RegA("formaxVariables[F]","mirrorMonoPackage");
 
   setVariable::PortItemGenerator PItemGen;
   setVariable::VacBoxGenerator MBoxGen;
@@ -233,9 +234,10 @@ mirrorMonoPackage(FuncDataBase& Control,
 			Geometry::Vec3D(0,5.0,-10.0),
 			Geometry::Vec3D(1,0,0));
 
-  // crystals gap 4mm
-  MXtalGen.generateMono(Control,monoKey+"MLM",-10.0,0.3,0.3);
-  
+  // crystals gap 10mm
+  MXtalGen.setGap(1.0);
+  MXtalGen.generateMono(Control,monoKey+"MLM",-20.0,0.6,0.6);
+  Control.addVariable(monoKey+"MLMYAngle",0.0);   
   return;
 }
 
@@ -245,7 +247,7 @@ hdcmPackage(FuncDataBase& Control,
   /*!
     Builds the variables for the hdcm packge
     \param Control :: Database
-    \param slitKey :: prename
+    \param monoKey :: prename
   */
 {
   ELog::RegMethod RegA("formaxVariables[F]","hdcmPackage");
@@ -261,7 +263,7 @@ hdcmPackage(FuncDataBase& Control,
   MBoxGen.setBPortOffset(1.0,0.0);    // note -1mm from crystal offset
   // radius : Height / depth  [need height = 0]
   MBoxGen.generateBox(Control,monoKey+"MonoVessel",30.0,0.0,16.0);
-
+  
   //  Control.addVariable(monoKey+"MonoVesselPortAZStep",-7);   //
   //  Control.addVariable(monoKey+"MonoVesselFlangeAZStep",-7);     //
   //  Control.addVariable(monoKey+"MonoVesselFlangeBZStep",-7);     //
@@ -275,9 +277,10 @@ hdcmPackage(FuncDataBase& Control,
   			Geometry::Vec3D(0,5.0,-10.0),
   			Geometry::Vec3D(1,0,0));
 
-  // crystals gap 7mm
+
+  MXtalGen.setGap(1.0);
   MXtalGen.generateXstal(Control,monoKey+"MBXstals",0.0,3.0);
-  
+  Control.addVariable(monoKey+"MBXstalsYAngle",180.0);
 
   return;
 }
@@ -303,7 +306,7 @@ diag2Package(FuncDataBase& Control,
  
   BTGen.generateTube(Control,diagKey+"BremTubeA");
 
-  MaskGen.setAperature(-1,1.0,1.0,1.0,1.0,1.0,1.0);
+  MaskGen.setAperature(-1,0.5,0.5,0.5,0.5,0.5,0.5);
   MaskGen.generateBlock(Control,diagKey+"BremCollB",-4.0);
   
   HPGen.generateJaws(Control,diagKey+"HPJawsA",0.3,0.3);
@@ -364,7 +367,7 @@ diag3Package(FuncDataBase& Control,
   PItemGen.generatePort(Control,viewName+"Port1",
 			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,-1));
 
-  MaskGen.setAperature(-1,1.0,1.0,1.0,1.0,1.0,1.0);
+  MaskGen.setAperature(-1,0.5,0.5,0.5,0.5,0.5,0.5);
   MaskGen.generateBlock(Control,diagKey+"BremCollC",-4.0);
   Control.addVariable(diagKey+"BremCollCPreXAngle",90);
   HPGen.generateJaws(Control,diagKey+"HPJawsB",0.3,0.3); 
@@ -373,7 +376,7 @@ diag3Package(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,diagKey+"BellowH",15.0);
 
-  PipeGen.generatePipe(Control,diagKey+"PipeE",205.0);
+  PipeGen.generatePipe(Control,diagKey+"PipeE",225.0);
 
 
   BellowGen.setCF<setVariable::CF40>();
@@ -423,11 +426,13 @@ monoShutterVariables(FuncDataBase& Control,
   setVariable::GateValveGenerator GateGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::MonoShutterGenerator MShutterGen;
+  setVariable::RoundShutterGenerator RShutterGen;
   setVariable::CylGateValveGenerator GVGen;
   setVariable::PipeGenerator PipeGen;
 
     // up / up (true)
-  MShutterGen.generateShutter(Control,preName+"MonoShutter",1,1);  
+  MShutterGen.generateShutter(Control,preName+"MonoShutter",1,1);
+  RShutterGen.generateShutter(Control,preName+"MonoShutter",1,1);  
 
   PipeGen.setMat("Stainless304");
   PipeGen.setNoWindow();
@@ -444,7 +449,7 @@ monoShutterVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,preName+"BellowL",10.0);    
 
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,preName+"PipeF",46.0);  
+  PipeGen.generatePipe(Control,preName+"PipeF",32.0);  
   return;
 }
   
@@ -793,7 +798,7 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,preName+"PipeA",20.0);
 
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,preName+"BellowA",17.6);
+  BellowGen.generateBellow(Control,preName+"BellowA",12.6);
 
   const double FM2dist(1624.2);
   FMaskGen.setCF<CF63>();
@@ -805,7 +810,7 @@ opticsVariables(FuncDataBase& Control,
   FMaskGen.generateColl(Control,preName+"WhiteCollA",7.5,10.0);
 
   IGGen.setCF<CF150>();
-  IGGen.setMainLength(8.0,8.0);
+  IGGen.setMainLength(12.0,8.0);
   IGGen.generateTube(Control,preName+"BremHolderA");
 
   MaskGen.setAperatureAngle(7.0,0.2,0.2,5.0,5.0);

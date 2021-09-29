@@ -163,7 +163,7 @@ BremBlockGenerator::setAperatureAngle
     \param backAngle :: angle to back [deg]
   */
 {
-  holeMidDist = (MLength<0.0) ? -length*MLength : length;
+  holeMidDist = (MLength<0.0) ? -length*MLength : MLength;
   holeMidWidth=midW;
   holeMidHeight=midH;
   holeAWidth=midW+holeMidDist*std::tan(M_PI*frontAngle/180.0);

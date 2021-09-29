@@ -79,7 +79,8 @@ class MonoBlockXstalsGenerator
   MonoBlockXstalsGenerator& operator=(const MonoBlockXstalsGenerator&);
   ~MonoBlockXstalsGenerator();
 
-
+  /// accessor to the gap
+  void setGap(const double G) { gap=G; }
   void generateXstal(FuncDataBase&,const std::string&,
 		     const double,const double) const;
 

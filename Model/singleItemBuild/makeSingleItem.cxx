@@ -140,6 +140,7 @@
 #include "LocalShielding.h"
 #include "WrapperCell.h"
 #include "FlangeDome.h"
+#include "RoundMonoShutter.h"
 
 #include "makeSingleItem.h"
 
@@ -189,7 +190,9 @@ makeSingleItem::build(Simulation& System,
       "IonPTube","IonGauge","NBeamStop","MagTube","TriggerTube",
       "BremTube","HPJaws","BoxJaws","HPCombine","ViewTube",
       "DiffPumpXIADP03","CLRTube","ExperimentalHutch",
-      "ConnectorTube","LocalShield","FlangeDome","Help","help"
+      "ConnectorTube","LocalShield","FlangeDome",
+      "RoundMonoShutter",
+      "Help","help"
     });
 
   ModelSupport::objectRegister& OR=
@@ -803,7 +806,7 @@ makeSingleItem::build(Simulation& System,
 	FP(new xraySystem::FourPortTube("FourPort"));
 
       OR.addObject(FP);
-
+      FP->setSideVoid();
       FP->addInsertCell(voidCell);
       FP->createAll(System,World::masterOrigin(),0);
 
@@ -1240,6 +1243,19 @@ makeSingleItem::build(Simulation& System,
 	yagScreen->insertInCell("Connect",System,vt->getCell("Plate"));
 	yagScreen->insertInCell("Connect",System,vt->getCell("Void"));
 	yagScreen->insertInCell("Payload",System,vt->getCell("Void"));
+	
+	return;
+      }
+
+    if (item == "RoundMonoShutter" )
+      {
+	std::shared_ptr<xraySystem::RoundMonoShutter>
+	  rs(new xraySystem::RoundMonoShutter("RMS"));
+
+	OR.addObject(rs);
+	
+	rs->addAllInsertCell(voidCell);
+	rs->createAll(System,World::masterOrigin(),0);
 	
 	return;
       }

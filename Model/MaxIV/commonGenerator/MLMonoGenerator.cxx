@@ -3,7 +3,7 @@
  
  * File:   danmax/MLMonoGenerator.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,9 +72,10 @@ MLMonoGenerator::~MLMonoGenerator()
   
 void
 MLMonoGenerator::generateMono(FuncDataBase& Control,
-			     const std::string& keyName,
-			     const double yStep,const double thetaA,
-			     const double thetaB) const
+			      const std::string& keyName,
+			      const double yStep,
+			      const double thetaA,
+			      const double thetaB) const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 

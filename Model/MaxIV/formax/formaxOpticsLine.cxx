@@ -67,7 +67,6 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -107,6 +106,7 @@
 #include "Mirror.h"
 #include "MonoBox.h"
 #include "MonoShutter.h"
+#include "RoundMonoShutter.h"
 #include "TriggerTube.h"
 #include "CylGateValve.h"
 #include "SquareFMask.h"
@@ -495,7 +495,7 @@ formaxOpticsLine::constructMonoShutter(Simulation& System,
 
   int outerCell=constructSystem::constructUnit
     (System,buildZone,*monoAdaptorA,"back",*monoShutter);
-
+  
   monoShutter->splitObject(System,"-PortACut",outerCell);
   const Geometry::Vec3D midPoint(monoShutter->getLinkPt(3));
   const Geometry::Vec3D midAxis(monoShutter->getLinkAxis(-3));
