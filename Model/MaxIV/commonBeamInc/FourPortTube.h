@@ -51,10 +51,10 @@ class FourPortTube :
   double wallThick;            ///< pipe thickness
   double linkWallThick;        ///< wall thickness of side
   
-  double frontLength;           ///< full to flange length
-  double backLength;            ///< full to flange length
-  double sideALength;            ///< full to flange length
-  double sideBLength;            ///< full to flange length
+  double frontLength;           ///< length -Y
+  double backLength;            ///< length +Y
+  double sideALength;           ///< length -X
+  double sideBLength;           ///< length +X
 
   double flangeARadius;         ///< Joining Flange radius
   double flangeBRadius;         ///< Joining Flange radius

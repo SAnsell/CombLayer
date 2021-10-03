@@ -367,9 +367,6 @@ formaxOpticsLine::constructHDCM(Simulation& System,
   mbXstals->addInsertCell(monoVessel->getCell("Void"));
   mbXstals->createAll(System,*monoVessel,0);
 
-  ELog::EM<<"A-- "<<monoVessel->getLinkPt(1)<<ELog::endDiag;
-  ELog::EM<<"B-- "<<monoVessel->getLinkPt(2)<<ELog::endDiag;
-
   return;
 }
 
@@ -647,10 +644,6 @@ formaxOpticsLine::buildObjects(Simulation& System)
   mirrorBackA->addInsertCell(mirrorBoxA->getCell("Void",1));
   mirrorBackA->createAll(System,*mirrorBoxA,0);
 
-  ELog::EM<<"Mirror Point == "<<mirrorBoxA->getLinkPt("front")<<":"
-	  <<mirrorBoxA->getLinkAxis("front")<<ELog::endDiag;
-  ELog::EM<<"Mirror Point == "<<mirrorBoxA->getLinkPt("back")<<":"
-	  <<mirrorBoxA->getLinkAxis("back")<<ELog::endDiag;
   constructDiag3(System,*mirrorBoxA,"back");
 
 

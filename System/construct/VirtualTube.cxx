@@ -134,12 +134,12 @@ VirtualTube::createPorts(Simulation& System,
     Simple function to create ports
     \param System :: Simulation to use
     \param insertObj :: Object to insert port cut into
-    \param innerSurf :: HeadRule to inner surf
-    \param outerSurf :: HeadRule to outer surf
+    \param innerSurf :: HeadRule to inner surf [outward]
+    \param outerSurf :: HeadRule to outer surf [outward]
    */
 {
   ELog::RegMethod RegA("VirtualTube","createPorts(Obj,HR,HR)");
-  
+
   for(size_t i=0;i<Ports.size();i++)
     {
       const attachSystem::ContainedComp& CC=getCC("Main");

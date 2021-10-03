@@ -56,6 +56,7 @@
 #include "FixedComp.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedGroup.h"
@@ -68,7 +69,7 @@ namespace xraySystem
 
 ShutterUnit::ShutterUnit(const std::string& Key) :
   attachSystem::ContainedGroup("Inner","Outer"),
-  attachSystem::FixedOffsetGroup(Key,"Main",6,"Beam",2),
+  attachSystem::FixedRotateGroup(Key,"Main",6,"Beam",2),
   attachSystem::ExternalCut(),
   attachSystem::CellMap()
   /*!
@@ -93,8 +94,8 @@ ShutterUnit::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("ShutterUnit","populate");
 
-  FixedOffsetGroup::populate(Control);
-  
+  FixedRotateGroup::populate(Control);
+
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   thick=Control.EvalVar<double>(keyName+"Thick");
@@ -148,24 +149,24 @@ ShutterUnit::createUnitVector(const attachSystem::FixedComp& centreFC,
 
   beamFC.createUnitVector(centreFC,cIndex);
   mainFC.createUnitVector(flangeFC,fIndex);
-
   applyOffset();
   setDefault("Main","Beam");
-  
+
   // Now construct new centre point:
-  const Geometry::Line beamL(bOrigin,bY);
-  const Geometry::Line mainL(Origin,Y);
-  const std::pair<Geometry::Vec3D,Geometry::Vec3D> CP=
-    beamL.closestPoints(mainL);
-  
-  beamFC.setCentre(CP.second);
-  
+  // Beam controls all axis points EXCEPT Flange:Y
+  //
+
+  Geometry::Vec3D bOrg(bOrigin);
+  bOrg+=bY*(Origin.dotProd(bY)-bOrigin.dotProd(bY));
+
   if (upFlag)
-    beamFC.applyShift(0,0,lift);  // only beam offset
+    bOrg+=Y*lift;
   else
-    beamFC.applyShift(0,0,baseLift);  // only beam offset
-  
-  setDefault("Main","Beam");
+    bOrg+=Y*baseLift;
+  beamFC.setCentre(bOrg);
+
+
+  setDefault("Main","Beam"); 
   return;
 }
 
@@ -177,8 +178,6 @@ ShutterUnit::createSurfaces()
 {
   ELog::RegMethod RegA("ShutterUnit","createSurfaces");
 
-
-
   ModelSupport::buildPlane(SMap,buildIndex+1,bOrigin-bY*(thick/2.0),bY);
   ModelSupport::buildPlane(SMap,buildIndex+2,bOrigin+bY*(thick/2.0),bY);
   ModelSupport::buildPlane(SMap,buildIndex+3,bOrigin-bX*(width/2.0),bX);
@@ -189,7 +188,6 @@ ShutterUnit::createSurfaces()
   // bellow outer 
   ModelSupport::buildCylinder(SMap,buildIndex+7,bOrigin,Y,liftScrewRadius);
   ModelSupport::buildPlane(SMap,buildIndex+16,bOrigin+Y*threadLength,Y);
-
   // construct surround [Y is upwards]
   if (!isActive("mountSurf"))
     {
@@ -257,8 +255,6 @@ ShutterUnit::createObjects(Simulation& System)
   if (topFlangeRadius+Geometry::zeroTol<outRadius)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,"201 -202 -117 207");
-      ELog::EM<<"Top Void == "<<Out<<ELog::endDiag;
-	      
       makeCell("TopVoid",System,cellIndex++,0,0.0,Out);
     }
 

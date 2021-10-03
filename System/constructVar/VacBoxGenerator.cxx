@@ -365,7 +365,6 @@ VacBoxGenerator::generateBox(FuncDataBase& Control,const std::string& keyName,
   Control.addVariable(keyName+"PortATubeRadius",portATubeRadius);
   Control.addVariable(keyName+"PortATubeLength",portATubeLength);
 
-  ELog::EM<<"Name == "<<keyName<<" "<<portBXStep<<ELog::endDiag;
   Control.addVariable(keyName+"PortBXStep",portBXStep);
   Control.addVariable(keyName+"PortBZStep",portBZStep);
   Control.addVariable(keyName+"PortBXAngle",portBXAngle);

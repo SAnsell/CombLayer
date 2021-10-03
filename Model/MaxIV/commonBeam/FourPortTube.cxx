@@ -103,8 +103,8 @@ FourPortTube::populate(const FuncDataBase& Control)
 
   frontLength=Control.EvalVar<double>(keyName+"FrontLength");
   backLength=Control.EvalVar<double>(keyName+"BackLength");
-  sideALength=Control.EvalTail<double>(keyName,"SideALength","SideLength");
-  sideBLength=Control.EvalTail<double>(keyName,"SideBLength","SideLength");
+  sideALength=Control.EvalHead<double>(keyName,"SideXALength","SideLength");
+  sideBLength=Control.EvalHead<double>(keyName,"SideXBLength","SideLength");
 
   flangeARadius=Control.EvalVar<double>(keyName+"FlangeARadius");
   flangeBRadius=Control.EvalVar<double>(keyName+"FlangeBRadius");
@@ -302,7 +302,7 @@ FourPortTube::createLinks()
 
   FixedComp::setConnect(3,Origin+X*(sideBLength+plateThick),X);
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+343));
-  
+
   return;
 }
 

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   LinacInc/SixPortTube.h
+ * File:   commonBeamInc/SixPortTube.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -49,10 +49,14 @@ class SixPortTube :
   double radius;               ///< void radius
   double linkRadius;           ///< void radius on 4 cross way
   double wallThick;            ///< pipe thickness
-
+  double linkWallThick;        ///< extra pipe thicknesses
+  
   double frontLength;          ///< full to flange length
   double backLength;           ///< full to flange length
-  double sideLength;           ///< full to flange length
+  double sideXALength;           ///< full to flange length
+  double sideXBLength;           ///< full to flange length
+  double sideZALength;           ///< full to flange length
+  double sideZBLength;           ///< full to flange length
 
   double flangeARadius;         ///< Joining Flange radius
   double flangeBRadius;         ///< Joining Flange radius

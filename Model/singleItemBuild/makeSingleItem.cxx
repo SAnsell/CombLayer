@@ -140,6 +140,7 @@
 #include "LocalShielding.h"
 #include "WrapperCell.h"
 #include "FlangeDome.h"
+#include "MonoShutter.h"
 #include "RoundMonoShutter.h"
 
 #include "makeSingleItem.h"
@@ -191,7 +192,7 @@ makeSingleItem::build(Simulation& System,
       "BremTube","HPJaws","BoxJaws","HPCombine","ViewTube",
       "DiffPumpXIADP03","CLRTube","ExperimentalHutch",
       "ConnectorTube","LocalShield","FlangeDome",
-      "RoundMonoShutter",
+      "MonoShutter","RoundMonoShutter",
       "Help","help"
     });
 
@@ -1247,6 +1248,17 @@ makeSingleItem::build(Simulation& System,
 	return;
       }
 
+    if (item == "MonoShutter" )
+      {
+	std::shared_ptr<xraySystem::MonoShutter>
+	  ms(new xraySystem::MonoShutter("MS"));
+
+	OR.addObject(ms);
+	
+	ms->createAll(System,World::masterOrigin(),0);
+	ms->insertAllInCell(System,voidCell);	
+	return;
+      }
     if (item == "RoundMonoShutter" )
       {
 	std::shared_ptr<xraySystem::RoundMonoShutter>
@@ -1254,8 +1266,8 @@ makeSingleItem::build(Simulation& System,
 
 	OR.addObject(rs);
 	
-	rs->addAllInsertCell(voidCell);
 	rs->createAll(System,World::masterOrigin(),0);
+	rs->insertAllInCell(System,voidCell);
 	
 	return;
       }

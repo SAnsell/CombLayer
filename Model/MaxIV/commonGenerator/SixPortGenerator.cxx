@@ -56,7 +56,8 @@ SixPortGenerator::SixPortGenerator() :
   wallThick(CF100::wallThick),
   linkWallThick(CF100::wallThick),
   frontLength(22.0),backLength(22.0),
-  sideLength(22.0),
+  sideXALength(22.0),sideXBLength(22.0),
+  sideZALength(22.0),sideZBLength(22.0),
   flangeARadius(CF100::flangeRadius),
   flangeBRadius(CF100::flangeRadius),
   flangeSRadius(CF100::flangeRadius),
@@ -96,12 +97,12 @@ SixPortGenerator::setCF()
 
 template<typename CF>
 void
-SixPortGenerator::setSideCF(const double SL)
+SixPortGenerator::setSideCF()
   /*!
     Setter for side dimensions
-   */
+    \param SL :: side length [same for all]
+  */
 {
-  sideLength=SL;
   linkRadius=CF::innerRadius;
   linkWallThick=CF::wallThick;
   flangeSRadius=CF::flangeRadius;
@@ -109,6 +110,46 @@ SixPortGenerator::setSideCF(const double SL)
   return;
 }
 
+void
+SixPortGenerator::setSideLength(const double SLA)
+  /*!
+    Setter for side dimensions
+    \param SLA :: side length all same
+  */
+{
+  sideXALength=SLA;
+  sideXBLength=SLA;
+  sideZALength=SLA;
+  sideZBLength=SLA;
+  return;
+}
+
+void
+SixPortGenerator::setXSideLength(const double SLA,const double SLB)
+  /*!
+    Setter for side dimensions
+    \param SLA :: side length (left side)
+    \param SLB :: side length (right side)
+  */
+{
+  sideXALength=SLA;
+  sideXBLength=SLB;
+  return;
+}
+
+void
+SixPortGenerator::setZSideLength(const double SLA,const double SLB)
+  /*!
+    Setter for side dimensions
+    \param SLA :: side length (left side)
+    \param SLB :: side length (right side)
+  */
+{
+  sideZALength=SLA;
+  sideZBLength=SLB;
+  return;
+}
+  
 template<typename CF>
 void
 SixPortGenerator::setFlangeCF()
@@ -142,7 +183,11 @@ SixPortGenerator::generateSixPort(FuncDataBase& Control,
   Control.addVariable(keyName+"LinkWallThick",linkWallThick);
   Control.addVariable(keyName+"FrontLength",frontLength);
   Control.addVariable(keyName+"BackLength",backLength);
-  Control.addVariable(keyName+"SideLength",sideLength);
+
+  Control.addVariable(keyName+"SideXALength",sideXALength);
+  Control.addVariable(keyName+"SideXBLength",sideXBLength);
+  Control.addVariable(keyName+"SideZALength",sideZALength);
+  Control.addVariable(keyName+"SideZBLength",sideZBLength);
 
   Control.addVariable(keyName+"FlangeARadius",flangeARadius);
   Control.addVariable(keyName+"FlangeBRadius",flangeBRadius);
@@ -163,6 +208,7 @@ SixPortGenerator::generateSixPort(FuncDataBase& Control,
 
 }
 
+  
 ///\cond TEMPLATE
 
 template void SixPortGenerator::setCF<CF40>();
@@ -171,10 +217,11 @@ template void SixPortGenerator::setCF<CF120>();
 template void SixPortGenerator::setCF<CF150>();
 template void SixPortGenerator::setCF<CF200>();
 
-template void SixPortGenerator::setSideCF<CF100>(const double);
-template void SixPortGenerator::setSideCF<CF150>(const double);
-template void SixPortGenerator::setSideCF<CF200>(const double);
-
+template void SixPortGenerator::setSideCF<CF40>();
+template void SixPortGenerator::setSideCF<CF100>();
+template void SixPortGenerator::setSideCF<CF150>();
+template void SixPortGenerator::setSideCF<CF200>();
+  
 template void SixPortGenerator::setFlangeCF<CF40>();
 template void SixPortGenerator::setFlangeCF<CF100>();
 template void SixPortGenerator::setFlangeCF<CF120>();

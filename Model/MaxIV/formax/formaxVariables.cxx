@@ -432,7 +432,7 @@ monoShutterVariables(FuncDataBase& Control,
 
     // up / up (true)
   MShutterGen.generateShutter(Control,preName+"MonoShutter",1,1);
-  RShutterGen.generateShutter(Control,preName+"MonoShutter",1,1);  
+  //  RShutterGen.generateShutter(Control,preName+"MonoShutter",1,1);  
 
   PipeGen.setMat("Stainless304");
   PipeGen.setNoWindow();
@@ -1017,7 +1017,9 @@ exptVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,preName+"BellowB",7.5);
 
   CrossGen.setCF<setVariable::CF40>();
-  CrossGen.setLength(7.0,7.0,6.5);
+  CrossGen.setLength(7.0,7.0);
+  CrossGen.setXSideLength(6.5,6.5);
+  CrossGen.setZSideLength(6.5,6.5);
   CrossGen.generateSixPort(Control,preName+"CrossA");
 
   BellowGen.generateBellow(Control,preName+"BellowC",7.5);
@@ -1033,7 +1035,9 @@ exptVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,preName+"PipeA",12.5);
 
   SixGen.setCF<CF40>();
-  SixGen.setLength(6.0,6.0,5.0);
+  SixGen.setLength(6.0,6.0);
+  SixGen.setXSideLength(5.0,5.0);
+  SixGen.setZSideLength(5.0,5.0);
   SixGen.generateSixPort(Control,preName+"SixPortA");
 
   

@@ -276,6 +276,8 @@ FixedRotateGroup::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("FixedRotateGroup","populate");
 
+
+    
   for(FTYPE::value_type& FCmc : FMap)
     {
       rotate GO;

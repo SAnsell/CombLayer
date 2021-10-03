@@ -311,7 +311,6 @@ portItem::setCentLine(const attachSystem::FixedComp& FC,
   const Geometry::Vec3D DVec=Axis.getInBasis(X,Y,Z);
 
   FixedComp::reOrientate(1,DVec.unit());
-
   return;
 }
 
