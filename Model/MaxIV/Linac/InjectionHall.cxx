@@ -1276,34 +1276,34 @@ InjectionHall::createObjects(Simulation& System)
   // makeCell("BDHatch",System,cellIndex++,0,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -21 7503 -7543 -5 7516 ");
-  makeCell("BDRoof",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("BDRoof",System,cellIndex++,floorMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"7512 -21 7543 -7544 -5 7516 ");
   makeCell("BDRoof",System,cellIndex++,bdRoofIronMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -7512 7543 -7544 -5 7516 ");
-  makeCell("HatchNew",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("HatchNew",System,cellIndex++,floorMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -21 7544 -7553 -5 7516 ");
-  makeCell("BDRoof",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("BDRoof",System,cellIndex++,floorMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"7512 -21 7553 -7554 -5 7516 ");
   makeCell("BDRoofSPF",System,cellIndex++,bdRoofIronMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -7512 7553 -7554 -5 7516 ");
-  makeCell("HatchSPF",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("HatchSPF",System,cellIndex++,floorMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -21 7554 -7563 -5 7516 ");
-  makeCell("BDRoof",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("BDRoof",System,cellIndex++,floorMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"7512 -21 7563 -7564 -5 7516 ");
   makeCell("BDRoof",System,cellIndex++,bdRoofIronMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -7512 7563 -7564 -5 7516 ");
-  makeCell("HatchTDC",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("HatchTDC",System,cellIndex++,floorMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"7512 -21 7564 -7504 -5 7516 ");
-  makeCell("BDRoof",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("BDRoof",System,cellIndex++,floorMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -7512 7564 -7504 -5 7516 ");
   makeCell("BDEntrance",System,cellIndex++,0,0.0,Out);
