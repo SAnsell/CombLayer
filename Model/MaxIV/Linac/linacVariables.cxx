@@ -3394,10 +3394,7 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"StorageShieldThick",5.0); // own design
   Control.addVariable(wallKey+"StorageShieldMat","B4C"); // own design
   Control.addVariable(wallKey+"FemtoMAXShieldThick",5.0); // own design
-  Control.addVariable(wallKey+"FemtoMAXShieldMat","Void"); // own design
-
-  Control.addVariable(wallKey+"BTGAboveShieldThick",5.0); // own design
-  Control.addVariable(wallKey+"BTGAboveShieldMat","Void"); // own design
+  Control.addVariable(wallKey+"FemtoMAXShieldMat","B4C"); // own design
 
   Control.addVariable(wallKey+"BTGTopLayerLength1",100.0); // must end at 30 cm before 1st duct centre
   Control.addVariable(wallKey+"BTGTopLayerLength2",110.0); // agreed with AR

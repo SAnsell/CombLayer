@@ -84,8 +84,6 @@ class InjectionHall :
   double btgYOffset; ///< BTG-BLOCK Y+ offset (relative to the back wall front concrete surface 21)
   int btgMat;                   ///< BTG-BLOCK material
   size_t btgNLayers;               ///< BTG-BLOCK number of imp layers
-  double btgAboveShieldThick;   ///< Shield thickness above the BTG layers
-  int btgAboveShieldMat;        ///< Shield material above the BTG layers
   double btgTopLayerLength1;    ///< BTG top layer first segment length
   double btgTopLayerLength2;    ///< BTG top layer second segment length
 
