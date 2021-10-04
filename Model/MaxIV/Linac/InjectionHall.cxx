@@ -134,12 +134,16 @@ InjectionHall::populate(const FuncDataBase& Control)
   fkgShieldMat=ModelSupport::EvalMat<int>(Control,keyName+"FKGShieldMat");
   btgThick=Control.EvalVar<double>(keyName+"BTGThick");
   btgHeight=Control.EvalVar<double>(keyName+"BTGHeight");
+  btgTopLayerHeight1=Control.EvalVar<double>(keyName+"BTGTopLayerHeight1");
+  btgTopLayerHeight2=Control.EvalVar<double>(keyName+"BTGTopLayerHeight2");
   btgLength=Control.EvalVar<double>(keyName+"BTGLength");
   btgYOffset=Control.EvalVar<double>(keyName+"BTGYOffset");
   btgMat=ModelSupport::EvalMat<int>(Control,keyName+"BTGMat");
   btgNLayers=Control.EvalDefVar<size_t>(keyName+"BTGNLayers", 1);
   btgAboveShieldThick=Control.EvalVar<double>(keyName+"BTGAboveShieldThick");
   btgAboveShieldMat=ModelSupport::EvalMat<int>(Control,keyName+"BTGAboveShieldMat");
+  btgTopLayerLength1=Control.EvalVar<double>(keyName+"BTGTopLayerLength1");
+  btgTopLayerLength2=Control.EvalVar<double>(keyName+"BTGTopLayerLength2");
   spfParkingFrontWallLength=Control.EvalVar<double>(keyName+"SPFParkingFrontWallLength");
   spfParkingLength=Control.EvalVar<double>(keyName+"SPFParkingLength");
   spfParkingWidth=Control.EvalVar<double>(keyName+"SPFParkingWidth");
@@ -567,8 +571,15 @@ InjectionHall::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7402,buildIndex+21,Y,btgYOffset);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7401,buildIndex+7402,Y,-btgLength);
   SurfMap::makeShiftedPlane("KGOuterBlock",SMap,buildIndex+7403,buildIndex+1004,X,btgThick);
-
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7406,buildIndex+5,X,btgHeight);
+  //      BTG top layer
+  SurfMap::makeShiftedPlane("BTGTopLayerHeight1",
+			    SMap,buildIndex+7416,buildIndex+7406,Z,btgTopLayerHeight1);
+  SurfMap::makeShiftedPlane("BTGTopLayerHeight2",
+			    SMap,buildIndex+7426,buildIndex+7406,Z,btgTopLayerHeight2);
+  SurfMap::makeShiftedPlane("BTGTopLayer1",SMap,buildIndex+7411,buildIndex+7401,X,btgTopLayerLength1);
+  SurfMap::makeShiftedPlane("BTGTopLayer2",SMap,buildIndex+7412,buildIndex+7402,X,-btgTopLayerLength2);
+
 
   // Under-the-floor - main beam dump room
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7501,buildIndex+21,Y,
