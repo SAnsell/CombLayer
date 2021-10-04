@@ -3396,7 +3396,7 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"FemtoMAXShieldThick",5.0); // own design
   Control.addVariable(wallKey+"FemtoMAXShieldMat","B4C"); // own design
 
-  Control.addVariable(wallKey+"BTGTopLayerLength1",100.0); // must end at 30 cm before 1st duct centre
+  Control.addVariable(wallKey+"BTGTopLayerLength1",525.035); // end at 30 cm before 1st duct centre [agreed with AR 211004]
   Control.addVariable(wallKey+"BTGTopLayerLength2",110.0); // agreed with AR
 
   Control.addVariable(wallKey+"FemtoMAXWallThick",105.0); // K_01-0_010 IV1.13

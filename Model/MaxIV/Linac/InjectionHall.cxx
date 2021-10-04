@@ -754,8 +754,18 @@ InjectionHall::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 7401 -7402 1004 -7403 5 -7406");
   makeCell("BTG",System,cellIndex++,btgMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7401 -7402 1004 -7403 7406 -6");
-  makeCell("BTGAbove",System,cellIndex++,voidMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7401 -7411 1004 -7403 7406 -7416");
+  makeCell("BTGTopLayer1",System,cellIndex++,btgMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7401 -7411 1004 -7403 7416 -6");
+  makeCell("BTGTopLayer1Void",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7411 -7412 1004 -7403 7406 -6");
+  makeCell("BTGTopMiddle",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7412 -7402 1004 -7403 7406 -7426");
+  makeCell("BTGTopLayer2",System,cellIndex++,btgMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7412 -7402 1004 -7403 7426 -6");
+  makeCell("BTGTopLayer2Void",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7402 -12 1004 -104 5 -6");
   makeCell("KlystronVoid",System,cellIndex++,voidMat,0.0,Out);
