@@ -1516,14 +1516,15 @@ InjectionHall::createLinks()
   FixedComp::setConnect(7,Origin+X*btgdX+Y*btgdY,X);
   FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+7403));
   FixedComp::nameSideIndex(7,"BTGSide");
+  //  ELog::EM << "BTGSide: " << getLinkPt("BTGSide") << ELog::endWarn;
 
   FixedComp::setConnect(8,getLinkPt("BTGSide")
 			-X*(btgThick)
+			+Y*(btgTopLayerLength1/2-btgTopLayerLength2/2)
 			+Z*(btgHeight-floorDepth+roofHeight)/2.0
 			,X);
   FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+7913));
-  FixedComp::nameSideIndex(8,"BTGAboveVoidSide");
-  ELog::EM << "check link point 8" << ELog::endWarn;
+  FixedComp::nameSideIndex(8, "BTGTopMiddleSide");
 
   // FKG additional shielding
   const Geometry::Plane* p7903 = SMap.realPtr<Geometry::Plane>(buildIndex+7903);
