@@ -3370,10 +3370,10 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"FKGMazeWallThick",200.0); // K_20-1_08F6c1
 
   Control.addVariable(wallKey+"FKGShieldThick",20.0); // my suggestion [test]
-  Control.addVariable(wallKey+"FKGShieldLength",800.0); // my suggestion [test]
-  Control.addVariable(wallKey+"FKGShieldHeight",229.0); // my suggestion [test]
-  Control.addVariable(wallKey+"FKGShieldDepth",0.0); // my suggestion [test]
-  Control.addVariable(wallKey+"FKGShieldMat","Void"); // void but increased height of the BTG blocks (+exclusion zone in FKG)
+  Control.addVariable(wallKey+"FKGShieldLength",270.0); // to covert BTGTopMiddle
+  Control.addVariable(wallKey+"FKGShieldHeight",229.0); // until the ceiling
+  Control.addVariable(wallKey+"FKGShieldDepth",-10.0); // to cover TDClineB
+  Control.addVariable(wallKey+"FKGShieldMat","Stainless304L"); // suggestion [test]
 
   Control.addVariable(wallKey+"BTGThick",90.0); // calculated from K_20-1_08G6b4: 2700-1800
   Control.addVariable(wallKey+"BTGHeight",200.0); // original value derived from K_20-6_075: 200
