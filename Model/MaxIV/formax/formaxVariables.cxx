@@ -376,7 +376,7 @@ diag3Package(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,diagKey+"BellowH",15.0);
 
-  PipeGen.generatePipe(Control,diagKey+"PipeE",225.0);
+  PipeGen.generatePipe(Control,diagKey+"PipeE",208.0);
 
 
   BellowGen.setCF<setVariable::CF40>();
@@ -432,8 +432,8 @@ monoShutterVariables(FuncDataBase& Control,
 
     // up / up (true)
   MShutterGen.generateShutter(Control,preName+"MonoShutter",1,1);
-  //  RShutterGen.generateShutter(Control,preName+"MonoShutter",1,1);  
-
+  RShutterGen.generateShutter(Control,preName+"RMonoShutter",1,1);  
+  Control.addVariable(preName+"RMonoShutterYAngle",-90);
   PipeGen.setMat("Stainless304");
   PipeGen.setNoWindow();
   PipeGen.setCF<setVariable::CF40>();

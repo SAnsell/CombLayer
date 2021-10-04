@@ -207,7 +207,7 @@ class formaxOpticsLine :
   /// adaptor plate from CF63->CF40
   std::shared_ptr<constructSystem::VacuumPipe> monoAdaptorA;
   /// The main mono shutter
-  std::shared_ptr<xraySystem::MonoShutter> monoShutter;
+  std::shared_ptr<xraySystem::RoundMonoShutter> monoShutter;
   /// adaptor plate from CF63->CF40
   std::shared_ptr<constructSystem::VacuumPipe> monoAdaptorB;
   /// Last gate valve:

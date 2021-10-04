@@ -195,7 +195,7 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
 
   bellowJ(new constructSystem::Bellows(newName+"BellowJ")),
   monoAdaptorA(new constructSystem::VacuumPipe(newName+"MonoAdaptorA")),
-  monoShutter(new xraySystem::MonoShutter(newName+"MonoShutter")),
+  monoShutter(new xraySystem::RoundMonoShutter(newName+"RMonoShutter")),
   monoAdaptorB(new constructSystem::VacuumPipe(newName+"MonoAdaptorB")),
   pipeF(new constructSystem::VacuumPipe(newName+"PipeF"))
   
@@ -492,14 +492,11 @@ formaxOpticsLine::constructMonoShutter(Simulation& System,
 
   int outerCell=constructSystem::constructUnit
     (System,buildZone,*monoAdaptorA,"back",*monoShutter);
-  
-  monoShutter->splitObject(System,"-PortACut",outerCell);
-  const Geometry::Vec3D midPoint(monoShutter->getLinkPt(3));
-  const Geometry::Vec3D midAxis(monoShutter->getLinkAxis(-3));
-  monoShutter->splitObjectAbsolute(System,2001,outerCell,midPoint,midAxis);
-  monoShutter->splitObject(System,"PortBCut",outerCell);
-  cellIndex+=3;
-  
+
+  monoShutter->splitObject(System,"-TopPlate",outerCell);
+
+  monoShutter->splitObject(System,"MidCutB",outerCell);
+
   constructSystem::constructUnit
     (System,buildZone,*monoShutter,"back",*monoAdaptorB);
 
