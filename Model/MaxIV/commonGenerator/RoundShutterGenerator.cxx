@@ -116,13 +116,15 @@ RoundShutterGenerator::generateShutter(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("RoundShutterGenerator","generateShutter");
-  const double flangeHeight(34.0);  // beam centre to flange top
-  
+
+  const double flangeHeight(14.0);  // beam centre to flange top (10+4cm)
+
+  ITubeGen->setXSideLength(34,10);
   ITubeGen->generateSixPort(Control,keyName+"Pipe");
 
 
-  SUnitGen->setThreadLength(flangeHeight+6.0);
-  SUnitGen->setLift(0.0,8.0);
+  SUnitGen->setThreadLength(flangeHeight+8.0);
+  SUnitGen->setLift(0.0,4.0);
   SUnitGen->generateShutter(Control,keyName+"UnitA",upFlagA);
   SUnitGen->generateShutter(Control,keyName+"UnitB",upFlagB);
   Control.addVariable(keyName+"UnitABeamYAngle",90.0);

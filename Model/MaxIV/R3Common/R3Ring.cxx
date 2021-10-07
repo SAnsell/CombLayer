@@ -170,6 +170,9 @@ R3Ring::createSurfaces()
 
   ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(depth+floorThick),Z);
   ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height+roofThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(height+insulationDepth),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+107,
+			   Origin+Z*(height+insulationDepth+insulation),Z);
 
   // Inner coordinate points are all offset from the inner points
 
@@ -250,11 +253,15 @@ R3Ring::createObjects(Simulation& System)
   ELog::RegMethod RegA("R3Ring","createObjects");
 
   const HeadRule fullLayerHR=
-    ModelSupport::getHeadRule(SMap,buildIndex," 5 -16 ");
-  const HeadRule roofLayerHR=
-    ModelSupport::getHeadRule(SMap,buildIndex," 6 -16 ");
+    ModelSupport::getHeadRule(SMap,buildIndex,"5 -16");
+  const HeadRule roofBaseHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"6 -106");
+  const HeadRule roofInsulationHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"106 -107");
+  const HeadRule roofTopHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"107 -16");
   const HeadRule innerLayerHR=
-    ModelSupport::getHeadRule(SMap,buildIndex," 5 -6 ");
+    ModelSupport::getHeadRule(SMap,buildIndex,"5 -6");
 
   // horrible code to build a list of 20 values
   std::ostringstream cx;
@@ -296,7 +303,9 @@ R3Ring::createObjects(Simulation& System)
       HR*=ModelSupport::getHeadRule(SMap,IPrev,INext,"(3:3M)");
 
       makeCell("InnerVoid",System,cellIndex++,0,0.0,HR*innerLayerHR);
-      makeCell("Roof",System,cellIndex++,roofMat,0.0,HR*roofLayerHR);
+      makeCell("Roof",System,cellIndex++,roofMat,0.0,HR*roofBaseHR);
+      makeCell("Roof",System,cellIndex++,0,0.0,HR*roofInsulationHR);
+      makeCell("Roof",System,cellIndex++,roofMat,0.0,HR*roofTopHR);
       
       HR=ModelSupport::getHeadRule(SMap,BNext,BPrev,
 				   "1001M 3M -1008M -1002 -1503M");
