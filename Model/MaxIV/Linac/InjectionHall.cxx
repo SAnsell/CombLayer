@@ -1072,18 +1072,26 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 101 -2 114 -54  5 -26");
+    (SMap,buildIndex," 101 -2 114 -54  15 -26");
   makeCell("RightCut",System,cellIndex++,soilMat,0.0,Out);
 
   // ROOF/FLOOR
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -7511 53 -54 -5 15 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -7511 53 -233 -5 15 ");
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -7511 233 -114 -5 15 ");
   makeCell("Floor",System,cellIndex++,floorMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -21 53 -7503 -5 15 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -21 53 -7023 -5 15 ");
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -21 7023 -7503 -5 15 ");
   makeCell("Floor",System,cellIndex++,floorMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -21 7504 -54 -5 15 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -21 7504 -114 -5 15 ");
   makeCell("Floor",System,cellIndex++,floorMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"21 -2 53 -54 -5 15 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"21 -2 53 -7113 -5 15 ");
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"21 -2 7113 -114 -5 15 ");
   makeCell("Floor",System,cellIndex++,floorMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -101 114 -54 -5 15 ");
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -201 13 -14 6 -26 ");
   makeCell("Roof",System,cellIndex++,roofMat,0.0,Out);
