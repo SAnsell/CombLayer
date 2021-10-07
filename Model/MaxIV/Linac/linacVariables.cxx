@@ -3417,6 +3417,7 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"FloorThick",60.0); // K_20-6_050
   Control.addVariable(wallKey+"RoofThick", 170.0); // K_20-6_075
   Control.addVariable(wallKey+"FKGRoofThick", 60.0); // K_20-6_053
+  Control.addVariable(wallKey+"FKGRoofYStep", 10660.0); // approx. as of lower plot A2_40-2_G6-Y.pdf
 
   // Extra for boundary
   // 400 is enough, but we add more to allocate for soil

@@ -165,6 +165,7 @@ InjectionHall::populate(const FuncDataBase& Control)
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   roofThick=Control.EvalVar<double>(keyName+"RoofThick");
   fkgRoofThick=Control.EvalVar<double>(keyName+"FKGRoofThick");
+  fkgRoofYStep=Control.EvalVar<double>(keyName+"FKGRoofYStep");
   floorThick=Control.EvalVar<double>(keyName+"FloorThick");
 
   floorDepth=Control.EvalVar<double>(keyName+"FloorDepth");
@@ -324,6 +325,8 @@ InjectionHall::createSurfaces()
   ModelSupport::buildPlane
     (SMap,buildIndex+221,
      Origin+Y*(spfLongLength+linearLTurnLength+spfAngleLength),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+231,Origin+Y*(fkgRoofYStep-fkgRoofThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+232,Origin+Y*(fkgRoofYStep),Y);
   // Mid Short : not used but useful for InnerZone division
   ModelSupport::buildPlane
     (SMap,buildIndex+251,
@@ -349,6 +352,8 @@ InjectionHall::createSurfaces()
 		     Origin-Z*(floorDepth+floorThick),Z);
   SurfMap::makePlane("FKGRoof",SMap,buildIndex+16,
 		     Origin+Z*(roofHeight+fkgRoofThick),Z);
+  SurfMap::makePlane("FKGRoofAfterStep",SMap,buildIndex+25,
+		     Origin+Z*(roofHeight+roofThick-fkgRoofThick),Z);
   SurfMap::makePlane("OutRoof",SMap,buildIndex+26,
 		     Origin+Z*(roofHeight+roofThick),Z);
 
@@ -861,6 +866,9 @@ InjectionHall::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "12 -2 223 -104 5 -6 ");
   makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
+  				 "12 -2 1004 -114 6 -25 ");
+  makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out);
 
   // FemtoMAX/BSP01 wall
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
@@ -1102,10 +1110,19 @@ InjectionHall::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"211 -2 233 -1004 6 -26 ");
   makeCell("Roof",System,cellIndex++,roofMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"211 -2 1004 -114 6 -16 ");
+  // FKGRoof: A2_40-2_G6-Y.pdf
+  Out=ModelSupport::getComposite(SMap,buildIndex,"211 -232 1004 -114 6 -16 ");
   makeCell("FKGRoof",System,cellIndex++,roofMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"211 -2 1004 -114 16 -26 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"232 -2 1004 -114 25 -26 ");
+  makeCell("FKGRoof",System,cellIndex++,roofMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"211 -231 1004 -114 16 -26 ");
   makeCell("FKGRoofVoid",System,cellIndex++,0,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"231 -232 1004 -114 16 -26 ");
+  makeCell("FKGRoof",System,cellIndex++,roofMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"232 -12 1004 -104 6 -25 ");
+  makeCell("FKGRoofVoid",System,cellIndex++,0,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"232 -12 104 -114 6 -25 ");
+  makeCell("FKGRoofVoid",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"101 -211 14 -114 6 -26 ");
   makeCell("Roof",System,cellIndex++,roofMat,0.0,Out);

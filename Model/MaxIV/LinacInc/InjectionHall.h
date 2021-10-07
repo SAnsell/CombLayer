@@ -116,6 +116,7 @@ class InjectionHall :
   double wallThick;             ///< Wall thickness
   double roofThick;             ///< SPF hall roof thickness
   double fkgRoofThick;          ///< FKG roof thickness
+  double fkgRoofYStep;          ///< Y-step offset of the FKG roof (below our office area)
   double floorThick;            ///< floor thickness
 
   double midTXStep;             ///< Step to centre of T
