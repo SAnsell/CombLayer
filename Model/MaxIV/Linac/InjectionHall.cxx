@@ -1387,6 +1387,14 @@ InjectionHall::createObjects(Simulation& System)
 	       SMap.realSurf(buildIndex+1004),
 	       -SMap.realSurf(buildIndex+7403),
 	       btgNLayers);
+  layerProcess(System,"BTGTopLayer1",
+	       SMap.realSurf(buildIndex+1004),
+	       -SMap.realSurf(buildIndex+7403),
+	       btgNLayers);
+  layerProcess(System,"BTGTopLayer2",
+	       SMap.realSurf(buildIndex+1004),
+	       -SMap.realSurf(buildIndex+7403),
+	       btgNLayers);
 
   // layerProcess(System,"C080016BackWall",
   // 	       SMap.realSurf(buildIndex+6101),
@@ -1462,10 +1470,10 @@ InjectionHall::createObjects(Simulation& System)
   	       -SMap.realSurf(buildIndex+223),
   	       SMap.realSurf(buildIndex+233),
   	       btgNLayers);
-  layerProcess(System,"FKGShield",
-	       SMap.realSurf(buildIndex+7903),
-	       -SMap.realSurf(buildIndex+1003),
-	       btgNLayers);
+  // layerProcess(System,"FKGShield",
+  // 	       SMap.realSurf(buildIndex+7903),
+  // 	       -SMap.realSurf(buildIndex+1003),
+  // 	       btgNLayers);
 
 
   return;
