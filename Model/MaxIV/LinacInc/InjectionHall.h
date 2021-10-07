@@ -110,11 +110,12 @@ class InjectionHall :
 
   double linearWidth;            ///< Wall - Wall width
 
-  double floorDepth;             ///< Depth (floor to under roof)
-  double roofHeight;             ///< Height (floor to under roof)
+  double floorDepth;             ///< Depth
+  double roofHeight;             ///< Height
 
   double wallThick;             ///< Wall thickness
-  double roofThick;             ///< roof thickness
+  double roofThick;             ///< SPF hall roof thickness
+  double fkgRoofThick;          ///< FKG roof thickness
   double floorThick;            ///< floor thickness
 
   double midTXStep;             ///< Step to centre of T

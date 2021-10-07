@@ -164,6 +164,7 @@ InjectionHall::populate(const FuncDataBase& Control)
   linearWidth=Control.EvalVar<double>(keyName+"LinearWidth");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   roofThick=Control.EvalVar<double>(keyName+"RoofThick");
+  fkgRoofThick=Control.EvalVar<double>(keyName+"FKGRoofThick");
   floorThick=Control.EvalVar<double>(keyName+"FloorThick");
 
   floorDepth=Control.EvalVar<double>(keyName+"FloorDepth");
@@ -342,11 +343,13 @@ InjectionHall::createSurfaces()
 
   // roof / floor
   SurfMap::makePlane("Floor",SMap,buildIndex+5,Origin-Z*floorDepth,Z);
-  SurfMap::makePlane("Roof",SMap,buildIndex+6,Origin+Z*roofHeight,Z);
+  SurfMap::makePlane("Ceiling",SMap,buildIndex+6,Origin+Z*roofHeight,Z);
 
   SurfMap::makePlane("SubFloor",SMap,buildIndex+15,
 		     Origin-Z*(floorDepth+floorThick),Z);
-  SurfMap::makePlane("OutRoof",SMap,buildIndex+16,
+  SurfMap::makePlane("FKGRoof",SMap,buildIndex+16,
+		     Origin+Z*(roofHeight+fkgRoofThick),Z);
+  SurfMap::makePlane("OutRoof",SMap,buildIndex+26,
 		     Origin+Z*(roofHeight+roofThick),Z);
 
   // MID T [1000]:
@@ -984,10 +987,10 @@ InjectionHall::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 7002 -7012 7023 -7113 5 -6");
   makeCell("SPFMazeSideWall",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7011 -7012 7023 -233 6 -16 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7011 -7012 7023 -233 6 -26 ");
   makeCell("Roof",System,cellIndex++,roofMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7011 -7012 53 -7023 6 -16 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7011 -7012 53 -7023 6 -26 ");
   makeCell("SPFMazeRoofVoid",System,cellIndex++,voidMat,0.0,Out);
 
   // SPF concrete door parking space (room C080012)
@@ -1022,10 +1025,10 @@ InjectionHall::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 7202 -7211 7113 -223 5 -6");
   makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7012 -7211 7113 -233 6 -16 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7012 -7211 7113 -233 6 -26 ");
   makeCell("Roof",System,cellIndex++,roofMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7012 -7211 53 -7113 6 -16 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7012 -7211 53 -7113 6 -26 ");
   makeCell("SPFEmergencyExitRoofVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7211 -2   233 -223 5 -6");
@@ -1051,26 +1054,26 @@ InjectionHall::createObjects(Simulation& System)
   // OUTER VOIDS:
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1 -211 53 -13 -213 5 -16");
+    (SMap,buildIndex," 1 -211 53 -13 -213 5 -26");
   makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 211 -7011 53 -233 5 -16");
+    (SMap,buildIndex," 211 -7011 53 -233 5 -26");
   makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 7211 -2 53 -233 5 -16");
+    (SMap,buildIndex," 7211 -2 53 -233 5 -26");
   makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
 
 
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1 -101 -54 14  5 -16 ");
+    (SMap,buildIndex," 1 -101 -54 14  5 -26 ");
   makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 101 -2 -54 114  5 -16");
-  makeCell("RightCut",System,cellIndex++,voidMat,0.0,Out);
+    (SMap,buildIndex," 101 -2 114 -54  5 -26");
+  makeCell("RightCut",System,cellIndex++,soilMat,0.0,Out);
 
   // ROOF/FLOOR
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -7511 53 -54 -5 15 ");
@@ -1082,16 +1085,21 @@ InjectionHall::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"21 -2 53 -54 -5 15 ");
   makeCell("Floor",System,cellIndex++,floorMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -201 13 -14 6 -16 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -201 13 -14 6 -26 ");
   makeCell("Roof",System,cellIndex++,roofMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"201 -211 213 -14 6 -16 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"201 -211 213 -14 6 -26 ");
   makeCell("Roof",System,cellIndex++,roofMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"211 -2 233 -14 6 -16 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"211 -2 233 -1004 6 -26 ");
   makeCell("Roof",System,cellIndex++,roofMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -2 14 -114 6 -16 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"211 -2 1004 -114 6 -16 ");
+  makeCell("FKGRoof",System,cellIndex++,roofMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"211 -2 1004 -114 16 -26 ");
+  makeCell("FKGRoofVoid",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -211 14 -114 6 -26 ");
   makeCell("Roof",System,cellIndex++,roofMat,0.0,Out);
 
   // MidT wall ducts
@@ -1314,7 +1322,7 @@ InjectionHall::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 7611 -7612 7604 -7614 5 -6 ");
   makeCell("WasteRoomWall",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 53 -54 7505 -16 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 53 -54 7505 -26 ");
   addOuterSurf(Out);
 
   for (size_t i=0; i<7; ++i)
