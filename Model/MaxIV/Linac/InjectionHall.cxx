@@ -983,7 +983,7 @@ InjectionHall::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 7041 -7042 7033 -7043 5 -6");
   makeCell("SPFMazeSideVoid",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7011 -7012 53 -7023 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7011 -7012 53 -7023 5 -26");
   makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7011 -7001 7023  -233 5 -6");
@@ -998,14 +998,11 @@ InjectionHall::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 7011 -7012 7023 -233 6 -26 ");
   makeCell("Roof",System,cellIndex++,roofMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7011 -7012 53 -7023 6 -26 ");
-  makeCell("SPFMazeRoofVoid",System,cellIndex++,voidMat,0.0,Out);
-
   // SPF concrete door parking space (room C080012)
   Out=ModelSupport::getComposite(SMap,buildIndex," 7002 -7101 7113 -223 5 -6");
   makeCell("SPFMazeSideWall",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7012 -7211 53 -7113  -233 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7012 -7211 53 -7113  -233 5 -26");
   makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7101 -7202 -7103 7113 5 -6");
@@ -1035,9 +1032,6 @@ InjectionHall::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7012 -7211 7113 -233 6 -26 ");
   makeCell("Roof",System,cellIndex++,roofMat,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7012 -7211 53 -7113 6 -26 ");
-  makeCell("SPFEmergencyExitRoofVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7211 -2   233 -223 5 -6");
   makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out);
@@ -1272,9 +1266,6 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("BDSideWall",System,cellIndex++,wallMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex," 7511 -21 7513 -7503 7506 -15 ");
   makeCell("BDSideWall",System,cellIndex++,wallMat,0.0,Out);
-
-  // Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -7512 7503 -7504 -5 7516 ");
-  // makeCell("BDHatch",System,cellIndex++,0,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -21 7503 -7543 -5 7516 ");
   makeCell("BDRoof",System,cellIndex++,wallMat,0.0,Out);
