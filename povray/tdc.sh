@@ -44,6 +44,9 @@ elif [ $ITEM == "L2SPF2YagScreen" ]; then
     void+="-v L2SPF2ShieldAMainMat Void -v L2SPF2YagUnitMainMat Void "
 fi
 
+if [ $ITEM == "BTG" ]; then
+    void+=" -v InjectionHallBTGMat H2O "
+fi
 
  echo $ITEM
  echo ${segments}

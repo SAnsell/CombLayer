@@ -428,9 +428,9 @@ global_settings {
     #declare projection = 0;
   #break
   #case(strcmp(ITEM,"BTG")) // BTG wall
-    #declare cameraLocation = <430, 10429, 100>;
-    #declare cameraLookAt   = <240, 10100, 150>;
-    #declare cameraAngle = 60;
+    #declare cameraLocation = <630, 10400, 100>;
+    #declare cameraLookAt   = <240, 10000, 80>;
+    #declare cameraAngle = 70;
     #declare projection = 0;
   #break
   #case(strcmp(ITEM,"BDRoom")) // Main beam dump room (view from SPF hall)
@@ -602,8 +602,8 @@ global_settings {
     #declare projection = 1;
   #break
     #case(strcmp(ITEM,"FKGShield"))
-    #declare cameraLocation = <-530, 9100, 0>;
-    #declare cameraLookAt   = <-40, 9670, 100>;
+    #declare cameraLocation = <-730, 9600, 50>;
+    #declare cameraLookAt   = <-40, 9760, 100>;
     #declare projection = 0;
     #declare cameraAngle = 80;
   #break
