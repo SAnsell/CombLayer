@@ -92,7 +92,7 @@ NNBARvariables(FuncDataBase& Control)
   FGen.setLayer(1,0.5,"Copper");
   FGen.setLayer(2,0.5,"Void");
   FGen.setYOffset(2.0);
-  FGen.generateTaper(Control,"nnbarFA",350.0, 30.0,50.0, 30.0,50.0);
+  FGen.generateTaper(Control,"nnbarFA",350.0, 70.0,146.0, 105.0,112.0);
 
   PipeGen.setPipe(35.0,1.0);
   PipeGen.setWindow(-4.0,1.0);
@@ -171,16 +171,158 @@ NNBARvariables(FuncDataBase& Control)
   Control.addVariable("nnbarCaveCutShape","Circle");
   Control.addVariable("nnbarCaveCutRadius",100.0);
 
-  Control.addVariable("G1BLineTop11Width1",50.0);
-  Control.addVariable("G1BLineTop11Width2",65.0);
 
-  Control.addVariable("G1BLineTop11Depth1",40.0);
-  Control.addVariable("G1BLineTop11Depth2",45.0);
+  //Overriding default values for monolith variables
+  //Bulk flight variable settings
   
-  Control.addVariable("G1BLineTop11Height1",40.0);
-  Control.addVariable("G1BLineTop11Height2",44.0);
-  Control.addVariable("GuideBayInnerHeight",60.0);
-  Control.addVariable("GuideBayHeight",70.0);
+  //1. Flight path modifications in monolith bulk
+  Control.addVariable("TopNNBARFlightTapSurf", "cone");
+  Control.addVariable("TopNNBARFlightXStep",
+	       8.9);// Step from centre due to 270XY rotation goes along X 
+  Control.addVariable("TopNNBARFlightYStep", 0);// ESS-1210581.2
+  Control.addVariable("TopNNBARFlightZStep", 13.7);// Step from centre
+
+  Control.addVariable("TopNNBARFlightAngleXY1",4.0);  // Angle out
+  Control.addVariable("TopNNBARFlightAngleXY2",4.0);  // Angle out
+  Control.addVariable("TopNNBARFlightXYAngle",
+		      270.0);//creating wrt master origin
+  Control.addVariable("TopNNBARFlightZAngle",0.0);
+  // Step down angle !!! 1.455 is too much -
+  Control.addVariable("TopNNBARFlightAngleZTop",4.0);       // fight line cuts the Bilbao target wheel ESS-0032315.3
+  Control.addVariable("TopNNBARFlightAngleZBase",4.0);   // Step up angle ESS-0032315.3 
+
+  // Full height = TopFlyTotalHeight
+  Control.addVariable("TopNNBARFlightHeight", 3.0);     //  ESS-1210581.2
+  Control.addVariable("TopNNBARFlightWidth", 30.6);     //  ESS-1210581.2
+  Control.addVariable("TopNNBARFlightNLiner",0); // TSV32IS
+  //  Control.addVariable("TopNNBARFlightLinerThick1",0.3);      
+  //  Control.addVariable("TopNNBARFlightLinerMat1","Aluminium");      
+
+
+
+
+  //2. Flight path modifications in Twister top Butterfly
+  //specs unknown, taken similar to flight in the bulk
+  Control.addVariable("TopTwisterNNBARFlightTapSurf", "cone");
+  Control.addVariable("TopTwisterNNBARFlightXStep",
+	       8.9);// Step from centre due to 270XY rotation goes along X 
+  Control.addVariable("TopTwisterNNBARFlightYStep", 0);// ESS-1210581.2
+  Control.addVariable("TopTwisterNNBARFlightZStep", 13.7);// Step from centre
+
+  Control.addVariable("TopTwisterNNBARFlightAngleXY1",4.0);  // Angle out
+  Control.addVariable("TopTwisterNNBARFlightAngleXY2",4.0);  // Angle out
+  Control.addVariable("TopTwisterNNBARFlightXYAngle",
+		      270.0);//creating wrt master origin
+  Control.addVariable("TopTwisterNNBARFlightZAngle",0.0);
+  // Step down angle !!! 1.455 is too much -
+  Control.addVariable("TopTwisterNNBARFlightAngleZTop",3.0);
+  // fight line cuts the Bilbao target wheel ESS-0032315.3
+  Control.addVariable("TopTwisterNNBARFlightAngleZBase",3.0);
+   // Step up angle, 4.0 degrees for flight in bulk, ESS-0032315.3,
+   // making 2 degrees for twister
+
+  // Full height = TopFlyTotalHeight
+  Control.addVariable("TopTwisterNNBARFlightHeight", 3.0);     //  ESS-1210581.2
+  Control.addVariable("TopTwisterNNBARFlightWidth", 30.6);     //  ESS-1210581.2
+  Control.addVariable("TopTwisterNNBARFlightNLiner",0); // TSV32IS
+  //  Control.addVariable("TopTwisterNNBARFlightLinerThick1",0.3);      
+  //  Control.addVariable("TopTwisterNNBARFlightLinerMat1","Aluminium");      
+
+
+
+  
+  // Flight NNBAR from lower moderator, bulk 
+  
+  Control.addVariable("LowNNBARFlightTapSurf", "cone");
+  Control.addParse<double>("LowNNBARFlightXStep",
+                           "TopNNBARFlightXStep");
+// Step from centre. due to 270XY rotation done from X
+  Control.addVariable("LowNNBARFlightYStep", 0.0);// ESS-1210581.2
+  Control.addVariable("LowNNBARFlightZStep",
+	       -15.2); // Step from TCS center ESS-1210581.2
+
+ Control.addParse<double>("LowNNBARFlightAngleXY1",
+			  "TopNNBARFlightAngleXY1");  // Angle out
+ Control.addParse<double>("LowNNBARFlightAngleXY2",
+			  "TopNNBARFlightAngleXY2");  // Angle out
+ Control.addParse<double> ("LowNNBARFlightXYAngle",
+			   "TopNNBARFlightXYAngle");
+  Control.addVariable("LowNNBARFlightZAngle",0.0);
+  // Step down angle !!! 1.455 is too much -
+  Control.addVariable("LowNNBARFlightAngleZTop",4.0);    // fight line cu
+  Control.addVariable("LowNNBARFlightAngleZLow",4.0);    // fight line cuts the Bilbao target wheel ESS-0032315.3
+  Control.addVariable("LowNNBARFlightAngleZBase",4.0);   // Step up angle ESS-0032315.3 
+
+  // Full height = LowFlyTotalHeight
+  Control.addVariable("LowNNBARFlightHeight", 6.0);     //  ESS-1210581.2
+  Control.addVariable("LowNNBARFlightWidth", 30.6);     //  ESS-1210581.2
+  Control.addVariable("LowNNBARFlightNLiner",0); // TSV32IS
+  //  Control.addVariable("LowNNBARFlightLinerThick1",0.3);      
+  //  Control.addVariable("LowNNBARFlightLinerMat1","Aluminium");      
+
+
+  // Flight NNBAR from lower moderator, bulk 
+  
+  Control.addVariable("LowTwisterNNBARFlightTapSurf", "cone");
+  Control.addParse<double>("LowTwisterNNBARFlightXStep",
+                           "TopNNBARFlightXStep");
+// Step from centre. due to 270XY rotation done from X
+  Control.addVariable("LowTwisterNNBARFlightYStep", 0.0);// ESS-1210581.2
+  Control.addVariable("LowTwisterNNBARFlightZStep",
+	       -15.2-9); // Step from TCS center ESS-1210581.2
+
+ Control.addParse<double>("LowTwisterNNBARFlightAngleXY1",
+			  "TopTwisterNNBARFlightAngleXY1");  // Angle out
+ Control.addParse<double>("LowTwisterNNBARFlightAngleXY2",
+			  "TopTwisterNNBARFlightAngleXY2");  // Angle out
+ Control.addParse<double> ("LowTwisterNNBARFlightXYAngle",
+			   "TopTwisterNNBARFlightXYAngle");
+  Control.addVariable("LowTwisterNNBARFlightZAngle",0.0);
+  // Step down angle !!! 1.455 is too much -
+  Control.addVariable("LowTwisterNNBARFlightAngleZTop",0.0);
+  // Made flat fight line cu
+  Control.addVariable("LowTwisterNNBARFlightAngleZLow",4.0);    // fight line cuts the Bilbao target wheel ESS-0032315.3
+  Control.addVariable("LowTwisterNNBARFlightAngleZBase",2.0);
+  // Make less than in drawings
+
+  // Full height = LowFlyTotalHeight
+  Control.addVariable("LowTwisterNNBARFlightHeight", 6.0 + 18.0);
+  // make to moderator height  
+  Control.addVariable("LowTwisterNNBARFlightWidth", 40.6);
+  //  Ballpark guess, make wider then ESS-1210581.2
+  Control.addVariable("LowTwisterNNBARFlightNLiner",0); // TSV32IS
+  //  Control.addVariable("LowTwisterNNBARFlightLinerThick1",0.3);      
+  //  Control.addVariable("LowTwisterNNBARFlightLinerMat1","Aluminium");      
+
+
+
+  
+  
+  //Guide bay variable settings
+  //Narrow down and shift BLineLow10 to avoid clash with NNBAR beamline
+  Control.addVariable("G1BLineLow10Width1",1.0);
+  Control.addVariable("G1BLineLow10BeamXStep",-10.0);
+  
+  Control.addVariable("G1BLineLow11Width1",100.0);
+  Control.addVariable("G1BLineLow11Width2",115.0);
+  Control.addVariable("G1BLineLow11Width3",155.0);
+
+  Control.addVariable("G1BLineLow11Depth1",40.0+10+7.5);
+  Control.addVariable("G1BLineLow11Depth2",45.0+10+7.5);
+  Control.addVariable("G1BLineLow11Depth3",48.0+10+7.5);
+  
+  Control.addVariable("G1BLineLow11Height1",40.0+30-7.5);
+  Control.addVariable("G1BLineLow11Height2",44.0+30-7.5);
+  Control.addVariable("G1BLineLow11Height3",48.0+30-7.5);
+
+  Control.addVariable("G1BLineLow11BeamZStep",7.5);
+  Control.addVariable("G1BLineLow11BeamXStep",-2.0);
+  // BeamZStep -- applies double shift. Bug in GuideItem.cxx?
+
+  Control.addVariable("GuideBayInnerHeight",70.0);
+  Control.addVariable("GuideBayInnerDepth",70.0);
+  Control.addVariable("GuideBayHeight",80.0);
+  Control.addVariable("GuideBayDepth",80.0);
 
   return;
 }

@@ -297,8 +297,165 @@ EssButterflyModerator(mainSystem::inputParam& IParam,FuncDataBase& Control)
   Control.copyVarSet("TopBoxLeft", "TopBoxRight");
 
   Control.addVariable("TopBoxMidH2FlowGuideType", "None");
+  ///////////////////////////////////////////////////
+
+
+  Control.addVariable("LowBoxXYAngle",90.0);
+  Control.addVariable("LowBoxWallMat","Aluminium");
+
+  Control.addVariable("LowBoxMidH2NLayers",4);
+
+  Control.addVariable("LowBoxMidH2Length0",10.0);
+  Control.addVariable("LowBoxMidH2Width0",10.0);
+  Control.addVariable("LowBoxMidH2Height0",1.5);
+  Control.addParse<double>("LowBoxMidH2Depth0", "LowBoxMidH2Height0");
+  Control.addVariable("LowBoxMidH2Mat0","HPARA");
+  Control.addVariable("LowBoxMidH2Temp0",20.0);
+
+  Control.addVariable("LowBoxMidH2Length1",0.3);
+  Control.addParse<double>("LowBoxMidH2Width1", "LowBoxMidH2Length1");
+  Control.addParse<double>("LowBoxMidH2Height1","LowBoxMidH2Length1");
+  Control.addParse<double>("LowBoxMidH2Depth1", "LowBoxMidH2Height1");
+  Control.addVariable("LowBoxMidH2Mat1","Aluminium20K");
+  Control.addVariable("LowBoxMidH2Temp1",20.0);
+
+  Control.addVariable("LowBoxMidH2Length2",0.5);
+  Control.addParse<double>("LowBoxMidH2Width2", "LowBoxMidH2Length2");
+  Control.addParse<double>("LowBoxMidH2Height2","LowBoxMidH2Length2");
+  Control.addParse<double>("LowBoxMidH2Depth2", "LowBoxMidH2Height2");
+  Control.addVariable("LowBoxMidH2Mat2","Void");
+
+  Control.addVariable("LowBoxMidH2Length3",0.3);
+  Control.addParse<double>("LowBoxMidH2Width3", "LowBoxMidH2Length3");
+  Control.addParse<double>("LowBoxMidH2Height3","LowBoxMidH2Length3");
+  Control.addParse<double>("LowBoxMidH2Depth3", "LowBoxMidH2Height3");
+  Control.addVariable("LowBoxMidH2Mat3","Aluminium");
+
+  Control.addParse<double>("LowBoxTotalHeight",
+			   "LowBoxMidH2Height0+LowBoxMidH2Depth0+LowBoxMidH2Height1+LowBoxMidH2Depth1+LowBoxMidH2Height2+LowBoxMidH2Depth2+LowBoxMidH2Height3+LowBoxMidH2Depth3");
+  Control.addParse<double>("LowBoxMidH2ZStep", "-LowBoxTotalHeight/2.0");
+
+  Control.addVariable("LowBoxLeftWaterWidth",30);  
+  Control.addVariable("LowBoxLeftWaterWallThick",0.347);
+  Control.addVariable("LowBoxLeftWaterCutAngle",30.0);
+  Control.addVariable("LowBoxLeftWaterCutWidth",6);
+  Control.addVariable("LowBoxLeftWaterModMat","Be5H2O");
+  Control.addVariable("LowBoxLeftWaterWallMat","Aluminium");
+  Control.addVariable("LowBoxLeftWaterModTemp",300.0);
+  Control.addVariable("LowBoxLeftWaterMidWallThick",0.0);
+  Control.addVariable("LowBoxLeftWaterPreThick",3);
+  Control.addVariable("LowBoxLeftWaterPreMat","H2O");
+  Control.addVariable("LowBoxLeftWaterPreTemp",300.0);
+  Control.copyVarSet("LowBoxLeft", "LowBoxRight");
+
+  Control.addVariable("LowBoxMidH2FlowGuideType", "None");
+
+
+
+
+
   ////////////////////////////////////////////////////////////////////////
+  ///////////////// Low box with D2 //////////////////////////////////////
+    // Box moderator
+  // Front and back of the LD2 box look towards instrument halls, not beam
+  Control.addVariable("LowD2BoxXYAngle",90.0);
+  // Low moderator is constructed with respect to target wheel
+  // thus bottom of low moderator looks upwards towards the wheel
+  Control.addVariable("LowD2BoxZAngle",180.0);
+  Control.addVariable("LowD2BoxWallMat","Aluminium");
+
+  Control.addVariable("LowD2BoxMidD2NLayers",4);
+
+  Control.addVariable("LowD2BoxMidD2Length0",45.0);
+  Control.addVariable("LowD2BoxMidD2Width0",47.0);
+  Control.addVariable("LowD2BoxMidD2Height0",12.0); // from Alan's model
+  Control.addParse<double>("LowD2BoxMidD2Depth0", "LowD2BoxMidD2Height0");
+  Control.addVariable("LowD2BoxMidD2Mat0","LiquidD2");
+  Control.addVariable("LowD2BoxMidD2Temp0",20.0);
+
+
+
+  Control.addVariable("LowD2BoxMidBeOtherNLayers",1);
+
+  Control.addVariable("LowD2BoxMidBeOtherLength0",11.0);
+  Control.addVariable("LowD2BoxMidBeOtherWidth0",15.0);
+  Control.addVariable("LowD2BoxMidBeOtherHeight0",7.5);
+  Control.addParse<double>("LowD2BoxMidBeOtherDepth0",
+			   "LowD2BoxMidBeOtherHeight0");
+  Control.addVariable("LowD2BoxMidBeOtherMat0","Be20K");
+  Control.addVariable("LowD2BoxMidBeOtherTemp0",20.0);
+
   
+  Control.addVariable("LowD2BoxMidD2Length1",0.3);
+  Control.addParse<double>("LowD2BoxMidD2Width1", "LowD2BoxMidD2Length1");
+  Control.addParse<double>("LowD2BoxMidD2Height1","LowD2BoxMidD2Length1");
+  Control.addParse<double>("LowD2BoxMidD2Depth1", "LowD2BoxMidD2Height1");
+  Control.addVariable("LowD2BoxMidD2Mat1","Aluminium20K");
+  Control.addVariable("LowD2BoxMidD2Temp1",20.0);
+
+  Control.addVariable("LowD2BoxMidD2Length2",0.5);
+  Control.addParse<double>("LowD2BoxMidD2Width2", "LowD2BoxMidD2Length2");
+  Control.addParse<double>("LowD2BoxMidD2Height2","LowD2BoxMidD2Length2");
+  Control.addParse<double>("LowD2BoxMidD2Depth2", "LowD2BoxMidD2Height2");
+  Control.addVariable("LowD2BoxMidD2Mat2","Void");
+
+  Control.addVariable("LowD2BoxMidD2Length3",0.3);
+  Control.addParse<double>("LowD2BoxMidD2Width3", "LowD2BoxMidD2Length3");
+  Control.addParse<double>("LowD2BoxMidD2Height3","LowD2BoxMidD2Length3");
+  Control.addParse<double>("LowD2BoxMidD2Depth3", "LowD2BoxMidD2Height3");
+  Control.addVariable("LowD2BoxMidD2Mat3","Aluminium");
+
+  Control.addVariable("LowD2BoxOuterMat","Be300K");
+  //  Control.addVariable("LowD2BoxTotalHeight",30);
+  Control.addParse<double>("LowD2BoxTotalHeight",
+			   "LowD2BoxMidD2Height0+LowD2BoxMidD2Depth0+LowD2BoxMidD2Height1+LowD2BoxMidD2Depth1+LowD2BoxMidD2Height2+LowD2BoxMidD2Depth2+LowD2BoxMidD2Height3+LowD2BoxMidD2Depth3");
+  
+  Control.addParse<double>("LowD2BoxMidD2ZStep", "-LowD2BoxTotalHeight/2.0");
+
+  //Be insertions at 20K
+  
+  Control.addVariable("LowD2BoxMidBeNNBARNLayers",1);
+
+  Control.addVariable("LowD2BoxMidBeNNBARLength0",11.0);
+  Control.addVariable("LowD2BoxMidBeNNBARWidth0",40.0);
+  Control.addVariable("LowD2BoxMidBeNNBARHeight0",12);
+  Control.addParse<double>("LowD2BoxMidBeNNBARDepth0",
+			   "LowD2BoxMidBeNNBARHeight0");
+  Control.addParse<double>("LowD2BoxMidBeNNBARZStep",
+			   "-LowD2BoxMidBeNNBARHeight0");
+    Control.addParse<double>("LowD2BoxMidBeNNBARYStep",
+			   "-LowD2BoxMidBeNNBARLength0/2.0 -LowD2BoxMidD2Length1 -LowD2BoxMidD2Length2 -LowD2BoxMidD2Length3");
+  
+  
+ Control.addVariable("LowD2BoxMidBeNNBARMat0","Be20K");
+  Control.addVariable("LowD2BoxMidBeNNBARTemp0",20.0);
+
+    Control.addParse<double>("LowD2BoxMidBeOtherYStep",
+			   "-LowD2BoxMidBeOtherLength0/2.0 -LowD2BoxMidD2Length1 -LowD2BoxMidD2Length2 -LowD2BoxMidD2Length3");
+
+  Control.addParse<double>("LowD2BoxMidBeOtherZStep",
+			   "-LowD2BoxMidBeOtherHeight0");
+
+  // end for the box part
+
+  Control.addVariable("LowD2BoxLeftWaterWidth",30);  
+  Control.addVariable("LowD2BoxLeftWaterWallThick",0.347);
+  Control.addVariable("LowD2BoxLeftWaterCutAngle",30.0);
+  Control.addVariable("LowD2BoxLeftWaterCutWidth",6);
+  Control.addVariable("LowD2BoxLeftWaterModMat","Be5H2O");
+  Control.addVariable("LowD2BoxLeftWaterWallMat","Aluminium");
+  Control.addVariable("LowD2BoxLeftWaterModTemp",300.0);
+  Control.addVariable("LowD2BoxLeftWaterMidWallThick",0.0);
+  Control.addVariable("LowD2BoxLeftWaterPreThick",3);
+  Control.addVariable("LowD2BoxLeftWaterPreMat","H2O");
+  Control.addVariable("LowD2BoxLeftWaterPreTemp",300.0);
+  Control.copyVarSet("LowD2BoxLeft", "LowD2BoxRight");
+  Control.addVariable("LowD2BoxMidD2FlowGuideType", "None");
+
+
+
+
+  ////////////////////////////////////////////////////////////////////////
   Control.addVariable("TopPreModNLayers",2);
   
   Control.addVariable("TopPreModThick0",0.3);
@@ -390,7 +547,7 @@ EssButterflyModerator(mainSystem::inputParam& IParam,FuncDataBase& Control)
   const std::string topMod=IParam.getValue<std::string>("topMod");
 
   std::set<std::string> allowedTopModTypes={"BF1","BF2","Pancake","Box","None"};
-  std::set<std::string> allowedLowModTypes={"BF1","BF2","None"};
+  std::set<std::string> allowedLowModTypes={"BF1","BF2","D2Box","Box","None"};
   std::ostringstream streamTop, streamLow;
   
   std::copy(allowedTopModTypes.begin(), allowedTopModTypes.end(),

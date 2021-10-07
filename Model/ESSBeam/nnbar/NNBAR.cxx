@@ -88,6 +88,14 @@
 #include "BunkerInsert.h"
 #include "LineShield.h"
 #include "DetectorChamber.h"
+#include "LayeredBulkModule.h"
+#include "BasicFlightLine.h"
+#include "FlightLine.h"
+#include "WedgeFlightLine.h"
+#include "BeRef.h"
+#include "LayerComp.h"
+#include "ModBase.h"
+#include "EssModBase.h"
 
 #include "NNBAR.h"
 
@@ -98,6 +106,8 @@ NNBAR::NNBAR(const std::string& keyName) :
   attachSystem::CopiedComp("nnbar",keyName),
   startPoint(0),stopPoint(0),
   nnbarAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
+  //  BulkFlightTop(new essSystem::WedgeFlightLine("TopNNBARFlight")),
+  // BulkFlightLow(new essSystem::WedgeFlightLine("LowNNBARFlight")),
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   FocusB(new beamlineSystem::GuideLine(newName+"FB")),
@@ -124,6 +134,9 @@ NNBAR::NNBAR(const std::string& keyName) :
   // This is necessary as not directly constructed:
   // OR.cell(newName+"Axis");
   OR.addObject(nnbarAxis);
+
+  //  OR.addObject(BulkFlightLow);
+  //  OR.addObject(BulkFlightTop);
 
   OR.addObject(FocusA);
 
@@ -300,7 +313,28 @@ NNBAR::build(Simulation& System,
   ELog::RegMethod RegA("NNBAR","build");
 
   ELog::EM<<"\nBuilding NNBAR on : "<<GItem.getKeyName()<<ELog::endDiag;
+  /*
+  const attachSystem::FixedComp* BulkFCPtr=
+    System.getObject<attachSystem::FixedComp>("Bulk");
+  const LayeredBulkModule* Bulk=dynamic_cast<const LayeredBulkModule*>
+    (BulkFCPtr);
 
+
+    const attachSystem::FixedComp* RefFCPtr=
+    System.getObject<attachSystem::FixedComp>("BeRef");
+  const BeRef* Reflector=dynamic_cast<const BeRef*>
+    (RefFCPtr);
+
+
+    const attachSystem::FixedComp* modFCPtr=
+    System.getObject<attachSystem::FixedComp>("Bulk");
+  const EssModBase* LowMod=dynamic_cast<const EssModBase*>
+    (modFCPtr);
+
+  
+  BulkFlightLow->createAll(System,*LowMod,0,*Reflector,4,*Bulk,-3);
+*/
+  
   const FuncDataBase& Control=System.getDataBase();
   CopiedComp::process(System.getDataBase());
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);

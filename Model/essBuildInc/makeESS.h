@@ -26,6 +26,7 @@
 namespace beamlineSystem
 {
   class beamlineConstructor;
+  class GuideLine;
 }
 
 namespace constructSystem
@@ -116,6 +117,13 @@ class makeESS
 
   std::shared_ptr<essSystem::WedgeFlightLine> LowAFL;  ///< Lower Mode FL
   std::shared_ptr<essSystem::WedgeFlightLine> LowBFL;  ///< Lower Mode FL
+std::shared_ptr<essSystem::WedgeFlightLine> LowNNBARFL; ///< Lower Mode FL
+std::shared_ptr<essSystem::WedgeFlightLine> TopNNBARFL; ///< Lower Mode FL
+
+std::shared_ptr<essSystem::WedgeFlightLine>
+                      LowTwisterNNBARFL; ///< Lower Mode FL
+std::shared_ptr<essSystem::WedgeFlightLine>
+                      TopTwisterNNBARFL; ///< Lower Mode FL
 
   // Butterly
   std::shared_ptr<EssModBase> TopMod;   ///< Primary Upper Mod
@@ -136,6 +144,12 @@ class makeESS
   //  std::shared_ptr<BulkModule> Bulk;      ///< Main bulk module
   std::shared_ptr<LayeredBulkModule> Bulk;      ///< Main bulk module
   std::shared_ptr<TwisterModule> Twister; ///< Moderator twister module
+  std::shared_ptr<beamlineSystem::GuideLine>
+                      TwisterFlightNNBAR; ///< Moderator twister module
+  std::shared_ptr<beamlineSystem::GuideLine>
+                      TwisterFlightOther; ///< Moderator twister module
+  std::shared_ptr<beamlineSystem::GuideLine>
+                      NoseFlightNNBAR; ///< Moderator twister module
 
   /// Shutterbay objects
   std::shared_ptr<ShutterBay> ShutterBayObj;
@@ -171,6 +185,7 @@ class makeESS
   void buildIradComponent(Simulation&,const mainSystem::inputParam&);
 
   void buildLowBox(Simulation&);
+  void buildLowD2Box(Simulation&);
   void buildTopBox(Simulation&);
 
   void buildLowPancake(Simulation&);
@@ -195,12 +210,18 @@ class makeESS
 			const mainSystem::inputParam&);
   void buildPreWings(Simulation&);
   void buildTwister(Simulation&);
+  void buildTwisterFlight(Simulation&);
 
+  void buildNNBARFlights(Simulation&);
+
+  
   void buildF5Collimator(Simulation&, size_t); // when -nF5 is used
   void buildF5Collimator(Simulation&, const mainSystem::inputParam&); // when -f5-collimators is used
 
   void optionSummary(Simulation&);
-
+  //helper function
+  void addSurfaceToHRule( Simulation&, std::vector<int>, int);
+  void addSurfaceToHRule( Simulation&, std::vector<int>, std::string);
  public:
 
   makeESS();

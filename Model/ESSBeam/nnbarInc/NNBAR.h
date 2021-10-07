@@ -33,6 +33,10 @@ namespace instrumentSystem
 {
   class CylSample;
 }
+namespace moderatorSystem
+{
+  class FlightLine;
+}
 
 namespace constructSystem
 {  
@@ -56,7 +60,8 @@ namespace essSystem
   class GuideItem;
   class DetectorChamber;
   class DetectorTank;
-
+  class WedgeFlightLine;
+  class LayeredBulkModule;
   /*!
     \class NNBAR
     \version 1.0
@@ -76,6 +81,9 @@ class NNBAR : public attachSystem::CopiedComp
 
   /// Main Beam Axis [for construction]
   std::shared_ptr<attachSystem::FixedOffset> nnbarAxis;
+  //Flight paths for NNBAR beamline
+  std::shared_ptr<essSystem::WedgeFlightLine> BulkFlightTop;
+  std::shared_ptr<essSystem::WedgeFlightLine> BulkFlightLow;
 
   /// Elliptic focus in bulkshield [m5]
   std::shared_ptr<beamlineSystem::GuideLine> FocusA;

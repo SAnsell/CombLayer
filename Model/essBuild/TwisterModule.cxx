@@ -282,9 +282,11 @@ TwisterModule::createObjects(Simulation& System)
   // shaft
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 25 -16 ");
   System.addCell(MonteCarlo::Object(cellIndex++,shaftMat,0.0,Out));
+  addCell("Shaft",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -17 7 25 -16 ");
   System.addCell(MonteCarlo::Object(cellIndex++,shaftWallMat,0.0,Out));
+  addCell("Shaft",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -17 5 -16 ");
   addOuterSurf("Shaft", Out);
@@ -293,22 +295,37 @@ TwisterModule::createObjects(Simulation& System)
   //  inside sector
   Out=ModelSupport::getComposite(SMap,buildIndex," -37 25 -26 17 2 -1 11");
   System.addCell(MonteCarlo::Object(cellIndex++,plugFrameMat,0.0,Out));
+  addCell("PlugVolume",cellIndex-1);
 
   //  inside sector wall x+
   Out=ModelSupport::getComposite(SMap,buildIndex," -37 25 -26 17 2 -21 1");
   System.addCell(MonteCarlo::Object(cellIndex++,plugFrameWallMat,0.0,Out));
+ addCell("PlugFramePlus",cellIndex-1);
 
-  //  inside sector wall x-
+ //  inside sector wall x-
   Out=ModelSupport::getComposite(SMap,buildIndex," -37 25 -26 17 2 31 -11");
   System.addCell(MonteCarlo::Object(cellIndex++,plugFrameWallMat,0.0,Out));
+ addCell("PlugFrameMinus",cellIndex-1);
 
   // outer wall inside sector
-  Out=ModelSupport::getComposite(SMap,buildIndex," -27 5 -6 (37:-25:26) 17 2 -21 31 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -37 5 -25 17 2 -21 31 ");
   System.addCell(MonteCarlo::Object(cellIndex++,plugFrameWallMat,0.0,Out));
+ addCell("PlugFrameLow",cellIndex-1);
 
+  // outer wall inside sector, top
+ Out=ModelSupport::getComposite(SMap,buildIndex," -37  -6 26 17 2 -21 31 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,plugFrameWallMat,0.0,Out));
+ addCell("PlugFrameTop",cellIndex-1);
+
+  // outer wall inside sector, frame side wall
+ Out=ModelSupport::getComposite(SMap,buildIndex," -27 5 -6 37 17 2 -21 31 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,plugFrameWallMat,0.0,Out));
+ addCell("PlugFrameOuter",cellIndex-1);
+ 
   // bottom wall of the shaft
   Out=ModelSupport::getComposite(SMap,buildIndex," -17 47 5 -25 ");
   System.addCell(MonteCarlo::Object(cellIndex++,shaftWallMat,0.0,Out));
+ addCell("PlugFrameLow",cellIndex-1);
 
   // Next line is DNF of " 5 -6  ((-17 31 -21) : (-27 31 -21 2))"
   Out=ModelSupport::getComposite(SMap,buildIndex,
@@ -318,9 +335,11 @@ TwisterModule::createObjects(Simulation& System)
   // shaft bearing
   Out=ModelSupport::getComposite(SMap,buildIndex, " -47 35 -25 ");
   System.addCell(MonteCarlo::Object(cellIndex++,shaftMat,0.0,Out));
+ addCell("ShaftBearing",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex, " -57 47 35 -5 ");
   System.addCell(MonteCarlo::Object(cellIndex++,shaftWallMat,0.0,Out));
+ addCell("ShaftBearing",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex, " -57 35 -5 ");
   addOuterSurf("ShaftBearing", Out);

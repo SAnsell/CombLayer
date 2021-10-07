@@ -269,7 +269,8 @@ EmptyCyl::createLinks(const attachSystem::FixedComp&FC,
   FixedComp::setLinkSignedCopy(2,FC,side+1);
   
   FixedComp::setConnect(3,Origin+Y*(height),Y);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+6));
+  //  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+6));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+5)); // fix link surface
 
   // for (int i=0; i<4; i++)
   //   ELog::EM << getLinkPt(i+1) << ":\t" << getLinkString(i+1) << ELog::endDiag;

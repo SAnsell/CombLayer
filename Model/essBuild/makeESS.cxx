@@ -107,6 +107,7 @@
 #include "ButterflyModerator.h"
 #include "PancakeModerator.h"
 #include "BoxModerator.h"
+#include "BoxD2Moderator.h"
 #include "BlockAddition.h"
 #include "CylPreMod.h"
 #include "PreModWing.h"
@@ -118,6 +119,7 @@
 #include "GuideBay.h"
 #include "FixedOffsetGroup.h"
 #include "GuideItem.h"
+#include "GuideLine.h"
 #include "DiskLayerMod.h"
 #include "Bunker.h"
 #include "pillarInfo.h"
@@ -161,6 +163,8 @@ makeESS::makeESS() :
   TopBFL(new essSystem::WedgeFlightLine("TopBFlight")),
   ModPipes(new ESSPipes()),
 
+
+  
   Bulk(new LayeredBulkModule("Bulk")),
   ShutterBayObj(new ShutterBay("ShutterBay")),
 
@@ -195,6 +199,7 @@ makeESS::makeESS() :
 
   OR.addObject(LowAFL);
   OR.addObject(LowBFL);
+
 
   OR.addObject(TopPreMod);
   OR.addObject(TopCapMod);
@@ -276,10 +281,18 @@ makeESS::makeTargetClearance(Simulation& System, const int engActive)
     \param engActive :: Engineering active flag
    */
 
+
+  const FuncDataBase& Control=System.getDataBase();
+  const int engTwisterActive=std::max(engActive, Control.EvalDefVar<int>
+				      ("TwisterEngineeringActive",0));
+
+  
   TargetTopClearance = std::shared_ptr<EmptyCyl>(new EmptyCyl("TargetTopClearance"));
   TargetLowClearance = std::shared_ptr<EmptyCyl>(new EmptyCyl("TargetLowClearance"));
 
-  if (engActive)
+
+  
+  if (engTwisterActive)
     {
       buildTwister(System);
       TargetTopClearance->createAll(System,*Target,6,3,13,*Twister,-16,
@@ -288,6 +301,7 @@ makeESS::makeTargetClearance(Simulation& System, const int engActive)
       TargetLowClearance->createAll(System,*Target,5,3,13,*Twister,-16,
 				    *GBArray[0],4,
 				    *GBArray[1],3);
+
     }
   else
     {
@@ -322,14 +336,18 @@ makeESS::makeTargetClearance(Simulation& System, const int engActive)
   OR.addObject(TargetTopClearance);
   OR.addObject(TargetLowClearance);
   //Will be replaced by insertions to other 
-  //  attachSystem::addToInsertSurfCtrl(System,*Bulk,*TargetTopClearance);
   attachSystem::addToInsertSurfCtrl(System,*TopAFL,*TargetTopClearance);
   attachSystem::addToInsertSurfCtrl(System,*TopBFL,*TargetTopClearance);
 
-  //  attachSystem::addToInsertSurfCtrl(System,*Bulk,*TargetLowClearance);
   attachSystem::addToInsertSurfCtrl(System,*LowAFL,*TargetLowClearance);
   attachSystem::addToInsertSurfCtrl(System,*LowBFL,*TargetLowClearance);
 
+  attachSystem::addToInsertSurfCtrl(System,*LowBFL,Target->getCC("Wheel"));
+  attachSystem::addToInsertSurfCtrl(System,*LowAFL,Target->getCC("Wheel"));
+  attachSystem::addToInsertSurfCtrl(System,*TopBFL,Target->getCC("Wheel"));
+  attachSystem::addToInsertSurfCtrl(System,*TopAFL,Target->getCC("Wheel"));
+
+    
   return;
 }
 
@@ -542,7 +560,35 @@ makeESS::buildLowBox(Simulation& System)
   return;
 }
 
+
+void
+makeESS::buildLowD2Box(Simulation& System)
+  /*!
+    Build the lower box moderator
+    \param System :: Stardard simulation
+  */
+{
+  ELog::RegMethod RegA("makeESS","buildLowBox");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  std::shared_ptr<BoxD2Moderator> BM
+    (new essSystem::BoxD2Moderator("LowD2Box"));
+
   
+  BM->setRadiusX(Reflector->getRadius());
+  LowMod=std::shared_ptr<EssModBase>(BM);
+  OR.addObject(LowMod);
+  LowMod->createAll(System,*LowPreMod,6,*Reflector,0);
+
+  return;
+}
+
+
+
+
+
 void
 makeESS::buildTopBox(Simulation& System)
   /*!
@@ -982,11 +1028,15 @@ makeESS::makeBeamLine(Simulation& System,
 	  // FIND BUNKER HERE:::
 	  makeESSBL BLfactory(BL,Btype);
 	  std::pair<int,int> BLNum=makeESSBL::getBeamNum(BL);
-          ELog::EM<<"BLNum == "<<BLNum.first<<" "<<BLNum.second<<ELog::endDiag;
+  ELog::EM<<"BLNum == "<<BLNum.first<<" "<<BLNum.second<<ELog::endDiag;
+	  // Here do insertions of the flight paths for NNBAR beamline
+	  if((Btype=="NNBAR")&&(BLNum.first==1)&&(BLNum.second==11))
+	   buildNNBARFlights(System);
 	  
-	  if (BLNum.first==1 && BLNum.second<=11)
+	  
+	  if (BLNum.first==1 && BLNum.second<=9) // <=11)
 	    BLfactory.build(System,*ABunker);
-	  else if (BLNum.first==1 && BLNum.second>11)
+	  else if (BLNum.first==1 && BLNum.second>9)  //>11)
 	    BLfactory.build(System,*BBunker);
 	  else if (BLNum.first==2 && BLNum.second<=11)
 	    BLfactory.build(System,*DBunker);
@@ -995,8 +1045,227 @@ makeESS::makeBeamLine(Simulation& System,
 	}
     }
 
-  return;
+   return;
 }
+
+
+void
+makeESS::buildTwisterFlight(Simulation& System)
+  /*!
+    Flight paths in twister for NNBAR beamline
+    \param System :: Simulation
+   */
+{
+  ELog::RegMethod RegA("makeESS","buildTwisterFlight");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  
+  TwisterFlightNNBAR =
+    std::shared_ptr<beamlineSystem::GuideLine>
+    (new beamlineSystem::GuideLine("TwisterFlightNNBAR"));
+  OR.addObject(TwisterFlightNNBAR);
+
+  TwisterFlightOther =
+    std::shared_ptr<beamlineSystem::GuideLine>
+    (new beamlineSystem::GuideLine("TwisterFlightOther"));
+  OR.addObject(TwisterFlightOther);
+
+  
+  TwisterFlightNNBAR->
+    setFront(LowMod->getComponent("MidD2").getLinkSurf(2));
+
+  //First split twister cells
+  // Low part
+  std::vector<int> iCellTLow=Twister->getCells("PlugVolumeLow");
+  std::vector<int> iCellTNNBAR;
+  std::vector<int> iCellTOther;
+
+     for (size_t i = 0; i<iCellTLow.size(); i++){
+    try{
+      iCellTNNBAR.push_back(
+       System.splitObject(iCellTLow[i],
+			  LowMod->getComponent("MidD2").getLinkSurf(2)));
+    }catch(...)
+      {};
+
+    try{
+      iCellTOther.push_back(
+       System.splitObject(iCellTLow[i],
+			  LowMod->getComponent("MidD2").getLinkSurf(1)));
+    }catch(...)
+      {};
+      TwisterFlightOther->addInsertCell(iCellTOther[i]);
+    }
+     //Also top part, to avoid problems with the moderator
+     for (size_t i=0; i<iCellTNNBAR.size(); i++)
+         for (size_t i=0; i<iCellTOther.size(); i++)
+       Twister->addCells("PlugVolumeLowOther",iCellTOther);
+   Twister->addCells("PlugVolumeLowNNBAR",iCellTNNBAR);
+   
+    
+  TwisterFlightNNBAR->addInsertCell(LowMod->getCell("MainVolume"));
+
+  TwisterFlightNNBAR->createAll(System,
+				*LowMod,2,*LowMod,2);
+
+  addSurfaceToHRule(System,
+		    TwisterFlightNNBAR->getCells(),
+		    -Reflector->getLinkSurf(2));
+  
+  TwisterFlightOther->
+    setFront(LowMod->getComponent("MidD2").getLinkSurf(1));
+
+  TwisterFlightOther->addInsertCell(Twister->
+				    getCells("PlugFrameMinusLow"));
+  TwisterFlightOther->addInsertCell(Twister->
+				    getCells("PlugFrameOuterLow"));
+
+  TwisterFlightOther->addInsertCell(LowMod->getCell("MainVolume"));
+
+  TwisterFlightOther->createAll(System,
+				*LowMod,1,*LowMod,1);
+
+  addSurfaceToHRule(System,
+		    TwisterFlightOther->getCells(),
+		    Twister->getLinkString(16));
+
+  
+  return;
+  				
+}
+
+
+
+void
+makeESS::buildNNBARFlights(Simulation& System)
+//			   const attachSystem::FixedComp& Bulk,
+//			   const attachSystem::FixedComp& Reflector)
+
+{
+  ELog::RegMethod RegA("makeESS","buildNNBARFlights");
+  ModelSupport::objectRegister& OR=
+         ModelSupport::objectRegister::Instance();
+
+     LowNNBARFL = std::shared_ptr<WedgeFlightLine>
+       (new WedgeFlightLine("LowNNBARFlight"));
+ 
+     TopNNBARFL = std::shared_ptr<WedgeFlightLine>
+       (new WedgeFlightLine("TopNNBARFlight"));
+
+     LowTwisterNNBARFL = std::shared_ptr<WedgeFlightLine>
+       (new WedgeFlightLine("LowTwisterNNBARFlight"));
+ 
+     TopTwisterNNBARFL = std::shared_ptr<WedgeFlightLine>
+       (new WedgeFlightLine("TopTwisterNNBARFlight"));
+     // Low NNBAR flight originates not from low moderator center
+     // Arranging its position according to ESS-1210581.2 w.r.t. origin
+
+
+    
+  OR.addObject(TopNNBARFL);
+  OR.addObject(LowNNBARFL);
+  OR.addObject(LowTwisterNNBARFL);
+  OR.addObject(TopTwisterNNBARFL);
+   
+      
+      //To create top flight with respect to top moderator link 0:
+      //TopNNBARFL->createAll(System,*TopMod,0,*Reflector,4,*Bulk,-3);
+      //Creating with respect to master Origin
+     TopNNBARFL->
+      	createAll(System,World::masterOrigin(),0,
+		  *Reflector, 4,
+		  *Bulk,-3);
+
+      attachSystem::addToInsertSurfCtrl(System,Bulk->getCells("WingATop"),
+					TopNNBARFL->getCC("outer"));
+      attachSystem::addToInsertSurfCtrl(System,*TopAFL,
+					TopNNBARFL->getCC("outer"));
+      attachSystem::addToInsertSurfCtrl(System,
+				      *TopNNBARFL,
+				      *TargetTopClearance);
+      attachSystem::addToInsertSurfCtrl(System,*LowNNBARFL,
+				      *TargetLowClearance);
+      attachSystem::addToInsertSurfCtrl(System,
+				      *TopNNBARFL,
+					Target->getCC("Wheel"));
+    //Limiting flight line to bulk only
+
+     attachSystem::addToInsertSurfCtrl(System,
+				 TopNNBARFL->getCells(),
+				      Twister->getCC("PlugFrame"));
+
+     TopTwisterNNBARFL->createAll(System,World::masterOrigin(),0,
+		  *Reflector, 4,*Bulk,-3);
+     
+         attachSystem::addToInsertForced(System,
+     		     Twister->getCells("PlugVolumeTopA"),
+     				     TopTwisterNNBARFL->getCC("outer"));
+         attachSystem::addToInsertForced(System,
+     		     Twister->getCells("PlugFramePlusTop"),
+     				     TopTwisterNNBARFL->getCC("outer"));
+         attachSystem::addToInsertForced(System,
+     		     Twister->getCells("PlugFrameOuterTop"),
+     				     TopTwisterNNBARFL->getCC("outer"));
+     addSurfaceToHRule(System,TopTwisterNNBARFL->getCells(),
+		       Twister->getLinkString(16));           
+
+
+   
+  LowNNBARFL->
+       createAll(System,World::masterOrigin(),0,
+		 //LowMod->getComponent("MidD2"),2,
+		 *Reflector, 4, *Bulk,-3);
+     //Do this insertion just in case LowAFlight is not large enough:
+     attachSystem::addToInsertSurfCtrl(System,Bulk->getCells("WingALow"),
+					LowNNBARFL->getCC("outer"));
+     attachSystem::addToInsertSurfCtrl(System,*LowAFL,
+				LowNNBARFL->getCC("outer"));
+
+    attachSystem::addToInsertSurfCtrl(System,
+				 LowNNBARFL->getCells(),
+					Twister->getCC("PlugFrame"));
+
+  LowTwisterNNBARFL->
+         createAll(System,World::masterOrigin(),0,
+		 *Reflector, 4, *Bulk,-3);
+
+    attachSystem::addToInsertForced(System,
+				 Twister->getCells("PlugVolumeLowNNBAR"),
+				  LowTwisterNNBARFL->getCC("outer"));  
+
+    attachSystem::addToInsertForced(System,
+				 Twister->getCells("PlugFramePlusLow"),
+				  LowTwisterNNBARFL->getCC("outer"));  
+    attachSystem::addToInsertForced(System,
+				 Twister->getCells("PlugFrameOuterLow"),
+				  LowTwisterNNBARFL->getCC("outer"));  
+         
+    
+    addSurfaceToHRule(System, LowTwisterNNBARFL->getCells(),
+		      Twister->getLinkString(16));
+
+    addSurfaceToHRule(System, LowNNBARFL->getCells(),
+		      "("+std::to_string(Target->getLinkSurf(3))
+      + " : "+std::to_string(TargetLowClearance->getLinkSurf(4))+")");
+      
+     
+      std::vector<int>   iCells = Bulk->getCells("WingAMid");
+  for (size_t i =0; i< iCells.size(); i++){
+    iCells[i]=System.splitObject(iCells[i],TopNNBARFL->getLinkSurf(-3));
+    iCells[i]=System.splitObject(iCells[i],TopNNBARFL->getLinkSurf(-4));
+  }
+    addSurfaceToHRule(System,iCells,
+		      std::to_string(LowNNBARFL->getLinkSurf(6))+" "+
+		      std::to_string(TopNNBARFL->getLinkSurf(5)));
+
+    addSurfaceToHRule(System,TopNNBARFL->getCells(),
+		      LowNNBARFL->getLinkSurf(6));
+    
+
+}
+
+
 
 void
 makeESS::makeBunker(Simulation& System,
@@ -1114,6 +1383,9 @@ makeESS::buildPreWings(Simulation& System)
   return;
 }
 
+
+
+
 void
 makeESS::buildTwister(Simulation& System)
   /*!
@@ -1131,28 +1403,216 @@ makeESS::buildTwister(Simulation& System)
 
   Twister->createAll(System,*Bulk,0);
 
+   //     attachSystem::addToInsertSurfCtrl(System,*Bulk,
+   //				    Twister->getCC("PlugFrame"));
+  System.removeCell(Bulk->getCell("Inner"));
+   
+   
   ELog::EM<<"CALLING addInsertForce [INEFFICIENT] "<<ELog::endWarn;
-  attachSystem::addToInsertForced(System,*Bulk,Twister->getCC("PlugFrame"));
+  attachSystem::addToInsertForced(System,*ShutterBayObj,
+				  Twister->getCC("Shaft"));
 
-  attachSystem::addToInsertSurfCtrl(System,*Bulk,Twister->getCC("Shaft"));
-  attachSystem::addToInsertSurfCtrl(System,*Bulk,Twister->getCC("ShaftBearing"));
 
-  ELog::EM<<"CALLING addInsertForce [INEFFICIENT] "<<ELog::endWarn;
-  attachSystem::addToInsertForced(System,*ShutterBayObj,Twister->getCC("Shaft"));
   attachSystem::addToInsertControl(System, *Twister, *Reflector);
+  Twister->addCell("PlugVolumeAbove",
+	    System.splitObject(Twister->getCell("PlugVolume"),
+			       Reflector->getLinkSurf(6)));
 
+  Twister->addCell("PlugVolumeBelow",
+  	    System.splitObject(Twister->getCell("PlugVolume"),
+  			       Reflector->getLinkSurf(5)));
+  
+  // addSurfaceToHRule(System,Twister->getCells("PlugVolume"),
+  //		     Reflector->getLinkString(4));
+ // Twister->addCell("PlugVolumeTB",newcell);
+ 
   // split Twister by components
+  std::vector<int> iCellT=Twister->getCells("PlugVolume");
+  std::vector<int> iCellTLow;
+  std::vector<int> iCellTTop;
+       
+  for (size_t i = 0; i<iCellT.size(); i++){
+    try{
+	iCellTTop.push_back(System.splitObject(iCellT[i],
+					  Target->getLinkSurf(6)));
+        iCellTLow.push_back(System.splitObject(iCellT[i],
+				    Target->getLinkSurf(5)));
+    }catch(...) {ELog::EM<<
+  "Attempt to split a cell in Twister by non-suitable surface [WARNING] "
+   <<ELog::endWarn;};  }
+   Twister->addCells("PlugVolumeLow",iCellTLow);
+   Twister->addCells("PlugVolumeTop",iCellTTop);
+
+
+  iCellT=Twister->getCells("PlugFrameMinus");       
+  for (size_t i = 0; i<iCellT.size(); i++){
+    try{
+      Twister->addCell("PlugFrameMinusTop",System.splitObject(iCellT[i],
+			      Target->getLinkSurf(6)));
+      Twister->addCell("PlugFrameMinusLow",System.splitObject(iCellT[i],
+				    Target->getLinkSurf(5)));
+    }catch(...){ELog::EM<<
+  "Attempt to split a cell in Twister by non-suitable surface [WARNING] "
+   <<ELog::endWarn;};}
+
+    iCellT=Twister->getCells("PlugFramePlus");       
+  for (size_t i = 0; i<iCellT.size(); i++){
+    try{
+      Twister->addCell("PlugFramePlusTop",System.splitObject(iCellT[i],
+			      Target->getLinkSurf(6)));
+      Twister->addCell("PlugFramePlusLow",System.splitObject(iCellT[i],
+			      Target->getLinkSurf(5)));
+    }catch(...){ELog::EM<<
+  "Attempt to split a cell in Twister by non-suitable surface [WARNING] "
+   <<ELog::endWarn; };}
+
+    iCellT=Twister->getCells("PlugFrameOuter");       
+  for (size_t i = 0; i<iCellT.size(); i++){
+    try{
+      Twister->addCell("PlugFrameOuterTop",System.splitObject(iCellT[i],
+			      Target->getLinkSurf(6)));
+      Twister->addCell("PlugFrameOuterLow",System.splitObject(iCellT[i],
+			      Target->getLinkSurf(5)));
+    }catch(...){ELog::EM<<
+  "Attempt to split a cell in Twister by non-suitable surface [WARNING] "
+   <<ELog::endWarn; };}
+
+
+  attachSystem::addToInsertSurfCtrl(System,
+                                    Twister->getCells("PlugVolume"),
+				    Target->getCC("Wheel"));
+
+  attachSystem::addToInsertSurfCtrl(System,
+                                    Twister->getCells("PlugFrameOuter"),
+				    Target->getCC("Wheel"));
+
+  attachSystem::addToInsertSurfCtrl(System,
+                                    Twister->getCells("PlugFramePlus"),
+				    Target->getCC("Wheel"));
+
+  attachSystem::addToInsertSurfCtrl(System,
+                                    Twister->getCells("PlugFrameMinus"),
+				    Target->getCC("Wheel"));
+
   // for (const ContainedComp & CC : Twister->getCC()) ...
   // use LineControl for intersections with flight lines
 
-  attachSystem::addToInsertSurfCtrl(System,*Twister,TopAFL->getCC("outer"));
-  attachSystem::addToInsertSurfCtrl(System,*Twister,TopBFL->getCC("outer"));
+  //Due to further insertions in TopAFL/BFL their outer surface acquires
+  //complicated shapes. In the twister volume will subtract 
+  //a much simpler expression.
 
-  attachSystem::addToInsertSurfCtrl(System,*Twister,LowAFL->getCC("outer"));
-  attachSystem::addToInsertSurfCtrl(System,*Twister,LowBFL->getCC("outer"));
+  std::string SN5AT = std::to_string( TopAFL->getLinkSurf(5)) +
+    " " + std::to_string( TopAFL->getLinkSurf(11));
+  std::string SN6AT = std::to_string( TopAFL->getLinkSurf(6)) +
+    " " + std::to_string( TopAFL->getLinkSurf(12));
 
-  attachSystem::addToInsertSurfCtrl(System,*Twister,
-				    Target->getCC("Wheel"));
+  std::string SN5BT = std::to_string( TopBFL->getLinkSurf(5))+
+    " " + std::to_string( TopBFL->getLinkSurf(11));
+  std::string SN6BT = std::to_string( TopBFL->getLinkSurf(6))+
+    " " + std::to_string( TopBFL->getLinkSurf(12));
+
+  int iSN3A = (TopAFL->getLinkSurf(3));
+  int iSN4B = (TopBFL->getLinkSurf(4));
+  int iSN4A = (TopAFL->getLinkSurf(4));
+  int iSN3B = (TopBFL->getLinkSurf(3));
+
+
+  std::string SN3A = std::to_string(TopAFL->getLinkSurf(3));
+  std::string SN4B = std::to_string(TopBFL->getLinkSurf(4));
+  std::string SN4A = std::to_string(TopAFL->getLinkSurf(4));
+  std::string SN3B = std::to_string(TopBFL->getLinkSurf(3));
+
+ {
+  // code from Simulation::splitObject
+  int CA = Twister->getCell("PlugVolumeTop");
+  //  Bulk->setCell("Wheel", CA); 
+  MonteCarlo::Object* CPtr = System.findObject(CA);
+  if (!CPtr)
+    throw ColErr::InContainerError<int>(CA,"Cell not found");
+  CPtr->populate();
+  
+  // headrules +/- surface
+  HeadRule CHead=CPtr->getHeadRule();
+  HeadRule DHead(CHead);
+  HeadRule EHead(CHead);
+  HeadRule FHead(CHead);
+  
+  CHead.addIntersection(SN3A);
+  CHead.addIntersection(SN4B);
+
+  Twister->addCell("PlugVolumeTopBack",CA);
+  CPtr->procHeadRule(CHead);
+  CPtr->populate();
+  CPtr->createSurfaceList();
+  const std::string rulestring3A4A=
+    std::to_string(-iSN3A)+" "+std::to_string(-iSN4A);
+  DHead.addIntersection(rulestring3A4A);
+  const std::string rulestring4A3B=
+    std::to_string(iSN4A)+" "+std::to_string(iSN3B);
+  EHead.addIntersection(rulestring4A3B);
+  const std::string rulestring3B4B=
+    std::to_string(-iSN4B)+" "+std::to_string(-iSN3B);
+  FHead.addIntersection(rulestring3B4B);
+
+  const int CB=System.getNextCell(CA);
+  Twister->makeCell("PlugVolumeTopA",System,CB,CPtr->getMat(),
+		 CPtr->getTemp(),DHead.display()+" "+SN5AT);
+  const int CBB=System.getNextCell(CB);
+  Twister->makeCell("PlugVolumeTopA",System,CBB,CPtr->getMat(),
+		 CPtr->getTemp(),DHead.display()+" "+SN6AT);
+ 
+  MonteCarlo::Object* DPtr = System.findObject(CB);  
+  DPtr->populate();
+  DPtr->createSurfaceList();  
+ 
+  MonteCarlo::Object* DDPtr = System.findObject(CBB);  
+  DDPtr->populate();
+  DDPtr->createSurfaceList();  
+  
+  const int CE=System.getNextCell(CBB);
+
+  Twister->makeCell("PlugVolumeTopBeam",System,CE,CPtr->getMat(),
+		 CPtr->getTemp(),EHead.display());  
+  MonteCarlo::Object* EPtr = System.findObject(CE);  
+  EPtr->populate();
+  EPtr->createSurfaceList();
+
+  const int CF=System.getNextCell(CE);
+  Twister->makeCell("PlugVolumeTopB",System,CF,CPtr->getMat(),
+		    CPtr->getTemp(),FHead.display()+" "+SN5BT);
+  MonteCarlo::Object* FPtr = System.findObject(CF);  
+  FPtr->populate();
+  FPtr->createSurfaceList();
+
+  const int CFF=System.getNextCell(CF);
+  Twister->makeCell("PlugVolumeTopB",System,CFF,CPtr->getMat(),
+		    CPtr->getTemp(),FHead.display()+" "+SN6BT);
+  MonteCarlo::Object* FFPtr = System.findObject(CFF);  
+  FFPtr->populate();
+  FFPtr->createSurfaceList();
+
+ }
+
+ addSurfaceToHRule(System,Twister->getCells("PlugFramePlusTop"),
+		   "( "+SN3A+" : "+SN4A+" : "+SN5AT+" : "+SN6AT+" )");
+
+ addSurfaceToHRule(System,Twister->getCells("PlugFrameMinusTop"),
+ "( "+SN3B+" : "+SN4B+" : "+SN5BT+" : "+SN6BT+" )");
+
+ addSurfaceToHRule(System,Twister->getCells("PlugFrameOuterTop"),
+ "("+SN3A+" : "+SN4A+" : "+SN5AT+" : "+SN6AT+" )"+
+ "("+SN3B+" : "+SN4B+" : "+SN5BT+" : "+SN6BT+" )");
+
+
+ attachSystem::addToInsertForced(System,
+ 		Twister->getCells("Shaft"),TopBFL->getCC("outer"));
+
+
+attachSystem::addToInsertSurfCtrl(System,*LowAFL,
+				  Twister->getCC("PlugFrame"));
+attachSystem::addToInsertSurfCtrl(System,LowBFL->getCells(),
+				Twister->getCC("PlugFrame"));
+
 
   return;
 }
@@ -1186,6 +1646,10 @@ makeESS::build(Simulation& System,
   const int engActive=Control.EvalPair<int>
     ("BulkEngineeringActive","EngineeringActive");
 
+  const int engTwisterActive=engActive>0? engActive: Control.EvalDefVar<int>
+    ("TwisterEngineeringActive",0);
+
+  
   // OR better set it to the flag value?
   //  const int engActive=IParam.flag("eng");
   
@@ -1202,7 +1666,7 @@ makeESS::build(Simulation& System,
 
   // lower moderator
   if (lowModType != "None")
-  LowPreMod->createAll(System,World::masterOrigin(),0,true,
+    LowPreMod->createAll(System,World::masterOrigin(),0,true,
 			 Target->wheelHeight()/2.0,
 			 Reflector->getRadius());
 
@@ -1210,21 +1674,28 @@ makeESS::build(Simulation& System,
 		       Target->wheelHeight()/2.0,
 		       Reflector->getRadius());
 
-  if (lowModType == "Butterfly")
-    buildLowButterfly(System);
-  else if (lowModType == "Pancake")
-    buildLowPancake(System);
-  else if (lowModType == "Box")
-    buildLowBox(System);
-  else if (lowModType != "None")
-    throw ColErr::InContainerError<std::string>(lowModType,"Low Mod Type");
 
+  ELog::EM << "Constructing " << topModType << " for top moderator"
+	   << ELog::endDiag;
   if (topModType == "Butterfly")
     buildTopButterfly(System);
   else if (topModType == "Pancake")
     buildTopPancake(System);
   else if (topModType == "Box")
     buildTopBox(System);
+
+  ELog::EM << "Constructing " << lowModType << " for low moderator"
+	   << ELog::endDiag;
+  if (lowModType == "Butterfly")
+    buildLowButterfly(System);
+  else if (lowModType == "Pancake")
+    buildLowPancake(System);
+  else if (lowModType == "Box")
+    buildLowBox(System);
+  else if (lowModType == "D2Box")
+    buildLowD2Box(System);
+  else if (lowModType != "None")
+    throw ColErr::InContainerError<std::string>(lowModType,"Low Mod Type");
 
   const double LMHeight=(lowModType == "None") ? 0.0 : LowMod->getLinkDistance(5,6);
 
@@ -1241,12 +1712,12 @@ makeESS::build(Simulation& System,
 
   buildPreWings(System);
 
-  if (lowModType != "None")
+  if (lowModType != "None"){
     Reflector->createAll(System,World::masterOrigin(),
 	 Target->wheelHeight(),
 	 LowPreMod->getHeight()+LMHeight+LowCapMod->getHeight(),
 	 TopPreMod->getHeight()+TMHeight+TopCapMod->getHeight());
-  else
+    }  else
     Reflector->createAll(System,World::masterOrigin(),
 	 Target->wheelHeight(),
 	 0.0,
@@ -1259,7 +1730,8 @@ makeESS::build(Simulation& System,
   Bulk->createAll(System,*Reflector,*Reflector);
 
   // Build flightlines after bulk
-  if(engActive) {TopAFL->createAll(System,*TopMod,0,*Reflector,4,*Bulk,-3);
+  if((engActive)||(engTwisterActive))
+    {TopAFL->createAll(System,*TopMod,0,*Reflector,4,*Bulk,-3);
     TopBFL->createAll(System,*TopMod,0,*Reflector,3,*Bulk,-3);
   }else{
   TopAFL->createAll(System,*TopMod,0,*Bulk,-9,*Bulk,-3);
@@ -1268,7 +1740,7 @@ makeESS::build(Simulation& System,
   
   if (lowModType != "None")
     {
-      if(engActive) {
+      if((engActive)||(engTwisterActive)) {
       LowAFL->createAll(System,*LowMod,0,*Reflector,4,*Bulk,-3);
       LowBFL->createAll(System,*LowMod,0,*Reflector,3,*Bulk,-3);
       }else{
@@ -1282,7 +1754,7 @@ makeESS::build(Simulation& System,
       // but with respect to TopMod. In this case their ZStep and XYAngle
       // are adjusted in moderatorVariables.cxx in order to place them
       // in the original position with LowMod.
-      if(engActive){
+      if((engActive)||(engTwisterActive)){
    LowAFL->createAll(System,World::masterOrigin(),0,*Reflector,4,*Bulk,-3);
    LowBFL->createAll(System,World::masterOrigin(),0,*Reflector,3,*Bulk,-3);
       }else{
@@ -1297,19 +1769,7 @@ makeESS::build(Simulation& System,
 
 
 
-  //  attachSystem::addToInsertSurfCtrl(System,*Bulk,Target->getCC("Wheel"));
-//  ELog::EM << "Forced" << ELog::endDiag;
-  //  attachSystem::addToInsertForced(System,*Bulk,Target->getCC("Shaft"));
 
-  // attachSystem::addToInsertSurfCtrl(System,*Bulk,  				   Target->getCC("ShaftConnection"));
-
-
-  /* attachSystem::addToInsertForced(System,*Bulk,LowAFL->getCC("outer"));
-  attachSystem::addToInsertForced(System,*Bulk,LowBFL->getCC("outer"));
-
-  attachSystem::addToInsertForced(System,*Bulk,TopAFL->getCC("outer"));
-  attachSystem::addToInsertForced(System,*Bulk,TopBFL->getCC("outer"));
-  */
 
   buildIradComponent(System,IParam);
   // Full surround object
@@ -1324,10 +1784,14 @@ makeESS::build(Simulation& System,
   				  Target->getCC("ShaftConnection"));
  
   createGuides(System);
+  // build target clearance and Twister:
 
   makeTargetClearance(System,engActive);
 
-
+  if((engTwisterActive)&&(lowModType=="D2Box")) {
+    buildTwisterFlight(System);
+  }
+	
   // Now doing insertions into bulk in a way to avoid
   // complicated cell description
   
@@ -1346,6 +1810,7 @@ makeESS::build(Simulation& System,
  int SN3B = TopBFL->getLinkSurf(3);
 
  for (size_t i=0; i< iBSize; i++) {
+   
    // code from Simulation::splitObject
    int CA = iBulkCells[i];
 
@@ -1364,17 +1829,11 @@ makeESS::build(Simulation& System,
 
   CHead.addIntersection(SN3A);
   CHead.addIntersection(SN4B);
-  
-  // get next cell
-  //  CPtr->procHeadRule(CHead);
-  System.removeCell(CA);
-  Bulk->makeCell("Wheel",System,CA,CPtr->getMat(),
-		 CPtr->getTemp(),CHead.display());
- 
 
+  Bulk->addCell("Wheel",CA);
+  CPtr->procHeadRule(CHead);
   CPtr->populate();
   CPtr->createSurfaceList();
-
 
 
   const std::string rulestring3A4A=
@@ -1394,11 +1853,13 @@ makeESS::build(Simulation& System,
   Bulk->makeCell("WingA",System,CB,CPtr->getMat(),
 		 CPtr->getTemp(),DHead.display());
 
+  //  Bulk->addCell("WingA",CB);
   
   MonteCarlo::Object* DPtr = System.findObject(CB);  
 
   DPtr->populate();
   DPtr->createSurfaceList();
+
   
   const int CE=System.getNextCell(CB);
 
@@ -1410,6 +1871,7 @@ makeESS::build(Simulation& System,
 
   EPtr->populate();
   EPtr->createSurfaceList();
+  // Bulk->addCell("PBeam",CE);
 
 
   const int CF=System.getNextCell(CE);
@@ -1422,16 +1884,44 @@ makeESS::build(Simulation& System,
 
   FPtr->populate();
   FPtr->createSurfaceList();
-
-  
+  //Bulk->addCell("WingB",CE);
   
  }
  ELog::EM << "Split bunker into Wings Front and Back" << ELog::endDiag;
 
+ //Inserting Twister Plug Frame if relevant into PBeam and Wings
 
+ if((engTwisterActive)||(engActive)){
+ attachSystem::addToInsertSurfCtrl(System,Bulk->getCells("WingA"),
+  				   Twister->getCC("PlugFrame"));
+ attachSystem::addToInsertSurfCtrl(System,Bulk->getCells("WingB"),
+  				   Twister->getCC("PlugFrame"));
+ attachSystem::addToInsertSurfCtrl(System,Bulk->getCells("WingB"),
+  				   Twister->getCC("Shaft"));
+ attachSystem::addToInsertSurfCtrl(System,Bulk->getCells("WingB"),
+  				   Twister->getCC("ShaftBearing"));
+ attachSystem::addToInsertSurfCtrl(System,Bulk->getCells("Inner"),
+  				   Twister->getCC("PlugFrame"));
+ attachSystem::addToInsertSurfCtrl(System,Bulk->getCells("PBeam"),
+  				   Twister->getCC("PlugFrame"));
+ attachSystem::addToInsertSurfCtrl(System,Bulk->getCells("Top"),
+  				   Twister->getCC("PlugFrame"));
+ attachSystem::addToInsertSurfCtrl(System,Bulk->getCells("Lower"),
+  				   Twister->getCC("PlugFrame"));
+ attachSystem::addToInsertSurfCtrl(System,Bulk->getCells("Wheel"),
+  				   Twister->getCC("PlugFrame"));
+ attachSystem::addToInsertSurfCtrl(System,Bulk->getCells("PBeam"),
+				   Twister->getCC("Shaft"));
+ attachSystem::addToInsertForced(System,Bulk->getCells("Top"),
+				   Twister->getCC("Shaft"));
+ attachSystem::addToInsertForced(System,Bulk->getCells("Lower"),
+				     Twister->getCC("ShaftBearing"));
+ attachSystem::addToInsertForced(System,Bulk->getCells("PBeam"),
+				     Twister->getCC("ShaftBearing"));
+
+    } 
 
  // Further cuttings in the wings
-
  // Cutting out Low fligth path sector A
  // Leaving parts of wing below and above flight path 
  std::vector<int> iWingACells = Bulk->getCells("WingA");
@@ -1440,7 +1930,8 @@ makeESS::build(Simulation& System,
  int SN11AL = LowAFL->getLinkSurf(11);
  int SN6AL = LowAFL->getLinkSurf(6);
  int SN12AL = LowAFL->getLinkSurf(12);
- if ((lowModType == "Butterfly"))
+ // if ((lowModType == "Butterfly"))
+  if ((lowModType != "None"))
     {
       SN5AL = LowAFL->getLinkSurf(6);
       SN11AL = LowAFL->getLinkSurf(12);
@@ -1468,17 +1959,15 @@ makeESS::build(Simulation& System,
   HeadRule CHead=CPtr->getHeadRule();
   HeadRule DHead(CHead);
   HeadRule EHead(CHead);
+
   const std::string rulestring5A11AL
     = std::to_string(SN5AL) + " "+std::to_string(SN11AL);
   CHead.addIntersection(rulestring5A11AL);
-  // std::cout << "Cut lower part, cell "<< CA
-  // 	    << " by rule "  << rulestring5A11AL << std::endl;
-  System.removeCell(CA);
-  Bulk->makeCell("WingALow",System,CA,CPtr->getMat(),
-		 CPtr->getTemp(),CHead.display());
+  Bulk->addCell("WingALow",CA); // rename cell CA
+  CPtr->procHeadRule(CHead);
   CPtr->populate();
   CPtr->createSurfaceList();
-
+  
   
   const std::string rulestring6A12AL
     = std::to_string(SN6AL) + " "+std::to_string(SN12AL);
@@ -1486,11 +1975,9 @@ makeESS::build(Simulation& System,
     = std::to_string(SN5AT) + " "+std::to_string(SN11AT);
   DHead.addIntersection(rulestring6A12AL+" "+rulestring5A11AT);
   const int CB=System.getNextCell(CA);
-  Bulk->makeCell("WingA",System,CB,CPtr->getMat(),
-		 CPtr->getTemp(),DHead.display());
 
-  // std::cout << "Cut mid, cell "<<CB <<" by rule"
-  //	    << rulestring5A11AT<< " " <<rulestring6A12AL << std::endl;
+  Bulk->makeCell("WingAMid",System,CB,CPtr->getMat(),
+		 CPtr->getTemp(),DHead.display());
 
   
   MonteCarlo::Object* DPtr = System.findObject(CB);  
@@ -1507,9 +1994,7 @@ makeESS::build(Simulation& System,
    
   const int CE=System.getNextCell(CB);
   // Wings above top flight
-  // std::cout <<"Cut top, cell "<< CE <<" by rule "
-  //	     << rulestring6A12AT << std::endl;
-
+  
   Bulk->makeCell("WingATop",System,CE,CPtr->getMat(),
 		 CPtr->getTemp(),EHead.display());
   
@@ -1528,12 +2013,13 @@ makeESS::build(Simulation& System,
  // Better write a function, but yet ... 
  // Leaving parts of wing below and above flight path 
  std::vector<int> iWingBCells = Bulk->getCells("WingB");
- size_t iWBSize = iWingACells.size();
+ size_t iWBSize = iWingBCells.size();
  int SN5BL = LowBFL->getLinkSurf(5);
  int SN11BL = LowBFL->getLinkSurf(11);
  int SN6BL = LowBFL->getLinkSurf(6);
  int SN12BL = LowBFL->getLinkSurf(12);
- if ((lowModType == "Butterfly")){
+ //if ((lowModType == "Butterfly")){
+ if ((lowModType != "None")){
  SN5BL = LowBFL->getLinkSurf(6);
  SN11BL = LowBFL->getLinkSurf(12);
  SN6BL = LowBFL->getLinkSurf(5);
@@ -1563,13 +2049,13 @@ makeESS::build(Simulation& System,
   const std::string rulestring5B11BL
     = std::to_string(SN5BL) + " "+std::to_string(SN11BL);
   CHead.addIntersection(rulestring5B11BL);
-   
-  System.removeCell(CA);
-  Bulk->makeCell("WingBLow",System,CA,CPtr->getMat(),
-		 CPtr->getTemp(),CHead.display());
+  Bulk->addCell("WingBLow",CA) ;
+  CPtr->procHeadRule(CHead);
+
   CPtr->populate();
   CPtr->createSurfaceList();
 
+  
   
   const std::string rulestring6B12BL
     = std::to_string(SN6BL) + " "+std::to_string(SN12BL);
@@ -1577,9 +2063,8 @@ makeESS::build(Simulation& System,
     = std::to_string(SN5BT) + " "+std::to_string(SN11BT);
   DHead.addIntersection(rulestring6B12BL+" "+rulestring5B11BT);
   const int CB=System.getNextCell(CA);
-  Bulk->makeCell("WingA",System,CB,CPtr->getMat(),
+  Bulk->makeCell("WingBMid",System,CB,CPtr->getMat(),
 		 CPtr->getTemp(),DHead.display());
-
   
   MonteCarlo::Object* DPtr = System.findObject(CB);  
 
@@ -1598,27 +2083,29 @@ makeESS::build(Simulation& System,
 		 CPtr->getTemp(),EHead.display());
   
   MonteCarlo::Object* EPtr = System.findObject(CE);  
-
   EPtr->populate();
   EPtr->createSurfaceList();
     
  }
 
- // ELog::EM << "Split Wing B" << ELog::endDiag;
+ ELog::EM << "Cut wheel and target clearance cylinders cut from Bulk wings" << ELog::endDiag;
+
+ ELog::EM << "NB! Need to arrange a function out of that code" << ELog::endDiag;
 
 
+ addSurfaceToHRule(System,
+		   Bulk->getCells("WingAMid"),Target->getLinkSurf(3)); 
+ addSurfaceToHRule(System,
+		   Bulk->getCells("WingBMid"),Target->getLinkSurf(3)); 
  
- attachSystem::addToInsertSurfCtrl(System,Bulk->getCells("WingA"),
-				  Target->getCC("Wheel"));
- attachSystem::addToInsertSurfCtrl(System,Bulk->getCells("WingB"),
-				  Target->getCC("Wheel"));
+ 
+
  attachSystem::addToInsertSurfCtrl(System,Bulk->getCells("Inner"),
 				  Target->getCC("Wheel"));
- // std::cout << Bulk->getCell("Wheel") << std::endl;
  attachSystem::addToInsertForced(System,Bulk->getCells("Wheel"),
 				  Target->getCC("Wheel"));
 
-  ELog::EM << "Insertions of Wheel to bulk" << ELog::endDiag;
+  ELog::EM << "Insertions of Wheel to bulk -- Forced " << ELog::endDiag;
 
   attachSystem::addToInsertForced(System,Bulk->getCells("Wheel"),
 				  Target->getCC("Shaft"));
@@ -1630,26 +2117,18 @@ makeESS::build(Simulation& System,
 				  Target->getCC("ShaftConnection"));
   ELog::EM << "Insertions of Wheel Shaft to Bulk" << ELog::endDiag;
 
-  /* attachSystem::addToInsertForced(System,Bulk->getCells("WingB"),
-				    LowBFL->getCC("outer"));
- 
- attachSystem::addToInsertForced(System,Bulk->getCells("WingB"),
-				    TopBFL->getCC("outer"));
- */
-     attachSystem::addToInsertSurfCtrl(System,Bulk->getCells("Wheel"),
+
+    attachSystem::addToInsertSurfCtrl(System,Bulk->getCells("Wheel"),
 				    *TargetLowClearance);
     attachSystem::addToInsertSurfCtrl(System,Bulk->getCells("Wheel"),
 				    *TargetTopClearance);
 
-    attachSystem::addToInsertSurfCtrl(System,Bulk->getCells("WingA"),
-				    *TargetLowClearance);
-    attachSystem::addToInsertSurfCtrl(System,Bulk->getCells("WingA"),
-				    *TargetTopClearance);
-				    				    
+			    
     /////   Done with insertions into bulk
 
 
 
+    
 
   makeBunker(System,IParam);
 
@@ -1698,9 +2177,14 @@ makeESS::build(Simulation& System,
   attachSystem::addToInsertSurfCtrl(System,*TSMainBuildingObj,
   				    PBeam->getCC("Sector3"));
   */
-  if (Twister)
-    attachSystem::addToInsertSurfCtrl(System,*Twister,pbip->getCC("after"));
-
+  if (Twister){
+    attachSystem::addToInsertSurfCtrl(System,
+	     Twister->getCells("Shaft"),pbip->getCC("after"));
+    attachSystem::addToInsertSurfCtrl(System,
+	     Twister->getCells("PlugVolume"),pbip->getCC("after"));
+    attachSystem::addToInsertSurfCtrl(System,
+    	     Twister->getCells("PlugFramePlus"),pbip->getCC("after"));
+  }
   makeBeamLine(System,IParam);
   buildF5Collimator(System, IParam);
 
@@ -1739,6 +2223,53 @@ makeESS::build(Simulation& System,
 
   return;
 }
+
+void makeESS::addSurfaceToHRule(Simulation& System,
+				std::vector<int> iCells, int SN)
+  {
+    ELog::RegMethod RegA("makeESS","addSurfaceToHRule");
+
+  size_t iBSize = iCells.size();
+  for (size_t i=0; i< iBSize; i++) {   
+   // code from Simulation::splitObject
+   int CA = iCells[i];
+  MonteCarlo::Object* CPtr = System.findObject(CA);
+  if (!CPtr)
+    throw ColErr::InContainerError<int>(CA,"Cell not found");
+  CPtr->populate();
+  HeadRule CHead=CPtr->getHeadRule();
+  CHead.addIntersection(SN);
+
+  CPtr->procHeadRule(CHead);
+  CPtr->populate();
+  CPtr->createSurfaceList();
+   }
+  return;
+  }
+
+
+void makeESS::addSurfaceToHRule(Simulation& System,
+				std::vector<int> iCells, std::string SN)
+  {
+    ELog::RegMethod RegA("makeESS","addSurfaceToHRule");
+
+  size_t iBSize = iCells.size();
+  for (size_t i=0; i< iBSize; i++) {   
+   // code from Simulation::splitObject
+   int CA = iCells[i];
+  MonteCarlo::Object* CPtr = System.findObject(CA);
+  if (!CPtr)
+    throw ColErr::InContainerError<int>(CA,"Cell not found");
+  CPtr->populate();
+  HeadRule CHead=CPtr->getHeadRule();
+  CHead.addIntersection(SN);
+
+  CPtr->procHeadRule(CHead);
+  CPtr->populate();
+  CPtr->createSurfaceList();
+   }
+  return;
+  }
 
 
 }   // NAMESPACE essSystem

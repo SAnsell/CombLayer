@@ -51,6 +51,8 @@
 #include "variableSetup.h"
 #include "Exception.h"
 #include "essVariables.h"
+#include "FocusGenerator.h"
+
 
 namespace setVariable
 {
@@ -91,7 +93,8 @@ EssVariables(mainSystem::inputParam& IParam,FuncDataBase& Control)
   Control.addVariable("BeRefZangle",0.0);
   Control.addVariable("BeRefRadius",35);
   Control.addVariable("BeRefHeight",37.3); // 74.6/2.0
-  Control.addVariable("BeRefDepth",37.3); // 74.6/2.0
+  // Control.addVariable("BeRefDepth",37.3); // 74.6/2.0
+  Control.addVariable("BeRefDepth",57); // Alan's model
   Control.addVariable("BeRefWallThick",0.3); // Mark said
   Control.addVariable("BeRefWallThickLow",0.0);
   Control.addVariable("BeRefTargetSepThick",13.0);
@@ -152,7 +155,7 @@ EssVariables(mainSystem::inputParam& IParam,FuncDataBase& Control)
   Control.addVariable("BulkDepth3",95.0);
   Control.addVariable("BulkMat3","SS316L_10H2O");        // SA: using hand-made mixture because CL can't generate volume fractions
 
-  // Bulk steel layer [No individual guides] -- outer dimensions
+// Bulk steel layer [No individual guides] -- outer dimensions
   Control.addVariable("BulkRadius4",200.0);
   Control.addVariable("BulkHeight4",200.0);
   Control.addVariable("BulkDepth4",200.0);
@@ -199,7 +202,8 @@ EssVariables(mainSystem::inputParam& IParam,FuncDataBase& Control)
   Control.addVariable("GuideBayInnerDepth",49.0);
   Control.addVariable("GuideBayMidRadius",104.7); // -G1BLineTopSideGap
   Control.addVariable("GuideBayHeight",50.0);
-  Control.addVariable("GuideBayDepth",50.0);
+  //  Control.addVariable("GuideBayDepth",50.0);
+    Control.addVariable("GuideBayDepth",55.0);
   Control.addVariable("GuideBayMat","CastIron");
   Control.addVariable("GuideBay1XYAngle",270.0); 
   Control.addVariable("GuideBay2XYAngle",90.0); 
@@ -207,10 +211,17 @@ EssVariables(mainSystem::inputParam& IParam,FuncDataBase& Control)
   Control.addVariable("GuideBay2NItems",21);  
 
   // Twister
+  /* //Original model -- mirrored
   Control.addVariable("TwisterXStep",11.0); // TSV32IS
   Control.addVariable("TwisterYStep",-62.0); // TSV32IS
   Control.addVariable("TwisterZStep",0.0);
   Control.addVariable("TwisterXYAngle",17.0); // TSV32IS
+  */
+  Control.addVariable("TwisterXStep",-11.0); // TSV32IS
+  Control.addVariable("TwisterYStep",-62.0); // TSV32IS
+  Control.addVariable("TwisterZStep",0.0);
+  Control.addVariable("TwisterXYAngle",-17.0); // TSV32IS
+  //
   Control.addVariable("TwisterZangle",0.0);
   Control.addVariable("TwisterShaftRadius",18.5);
   Control.addVariable("TwisterShaftHeight",120.0+222.4);
@@ -290,6 +301,7 @@ EssBeamLinesVariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("essVariables[F]","EssBeamLinesVariables");
   const std::string TB[2]={"Top","Low"};
+
   for(size_t i=0;i<4;i++)
     {
       const std::string baseKey=
@@ -349,9 +361,8 @@ EssBeamLinesVariables(FuncDataBase& Control)
       Control.addVariable(baseKey+"21XYAngle",-90.0+30.0);  // W1
       Control.addVariable(baseKey+"Filled",0);
       Control.addVariable(baseKey+"Active",0);
-
-
-    }
+    }  
+  
   return;
 }
 
@@ -363,6 +374,7 @@ EssFlightLineVariables(mainSystem::inputParam& IParam,FuncDataBase& Control)
    */
 {
   ELog::RegMethod RegA("essVariables[F]","EssFlightLineVariables");
+  setVariable::FocusGenerator FGen;
 
   // upper flight lines
   
@@ -396,6 +408,7 @@ EssFlightLineVariables(mainSystem::inputParam& IParam,FuncDataBase& Control)
   Control.addVariable("TopBFlightZAngle", 0.0);
   Control.addParse<double>("TopBFlightAngleZTop","TopAFlightAngleZTop");
   Control.addParse<double>("TopBFlightAngleZBase","TopAFlightAngleZBase");
+ 
   Control.addParse<double>("TopBFlightHeight","TopAFlightHeight");
   Control.addParse<double>("TopBFlightWidth","TopAFlightWidth");
   Control.addParse<double>("TopBFlightNLiner","TopAFlightNLiner");
@@ -549,7 +562,78 @@ EssFlightLineVariables(mainSystem::inputParam& IParam,FuncDataBase& Control)
       Control.addVariable("LowBFlightTapSurf", "plane");
       Control.addParse<double>("LowBFlightAngleZBase", "LowAFlightAngleZBase");
       Control.addParse<double>("LowBFlightAngleZTop", "LowAFlightAngleZTop");
-    }
+     }
+  else if(lowMod=="D2Box") {
+  
+      Control.addVariable("LowAFlightXYAngle",0.0);
+      Control.addVariable("LowBFlightXYAngle",180.0);
+
+      Control.addVariable("LowAFlightZStep",0);
+
+      Control.addVariable("LowAFlightHeight", 26.8);
+
+      Control.addVariable("LowAFlightTapSurf", "cone");
+
+      Control.addVariable("LowAFlightAngleZBase", 0.0);
+      Control.addVariable("LowAFlightAngleZTop",  1.33);
+
+
+      Control.addParse<double>("LowBFlightZStep","LowAFlightZStep");
+      Control.addParse<double>("LowBFlightHeight", "LowAFlightHeight");
+      Control.addVariable("LowBFlightTapSurf", "cone");
+      Control.addParse<double>("LowBFlightAngleZBase",
+			       "LowAFlightAngleZBase");
+
+ // STP sent by Valentina
+      Control.addVariable("LowBFlightAngleZTop", 1.39);
+    
+ //From STP drawings sent by Valentina:
+   Control.addVariable("TopBFlightAngleZTop",1.35);
+   Control.addVariable("TopBFlightAngleZBase",1.35);
+
+   //Flight in Twister:
+      FGen.generateTaper(Control,"TwisterFlightNNBAR",
+			    100, 38,50,
+  			    25,25);
+
+      FGen.generateTaper(Control,"TwisterFlightOther",
+			    50, 15,25,
+  			    15,25);
+
+
+      //length=199-29=170,
+      //4 degree from top and bottom
+      //53cm width at exit
+      /*    FGen.generateTaperGeneral(Control,"NoseFlightNNBAR",170,
+			    15,27,
+  			    15,27,
+  			    7,0.1,
+  			    7,0.1);
+      */
+      FGen.generateTaper(Control,"NoseFlightNNBAR",170,
+			    30,54,
+  			    23.6,0.1);
+	   //	   Control.addVariable("NoseFlightNNBARBeamZStep",-24.2);
+	   //   Control.addVariable("NoseFlightNNBARZStep",-24.2);
+	   Control.addVariable("NoseFlightNNBARLength",170);
+	   Control.addVariable("NoseFlightNNBARBeamYStep",0);
+	   Control.addVariable("NoseFlightNNBARYStep",0);
+           Control.addVariable("NoseFlightNNBARBeamXYAngle",-90);
+           Control.addVariable("NoseFlightNNBARXYAngle",-90);
+      /* For Taper General:
+    \param length :: total length
+    \param HSL :: Distance LEFTWALL-CENTERLINE at start
+    \param HEL :: Distance LEFTWALL-CENTERLINE at end
+    \param HSR :: Distance RIGHTWALL-CENTERLINE at start
+    \param HER :: Distance RIGHTWALL-CENTERLINE at end
+    \param VSB :: Distance BOTTOMWALL-CENERLINE at start
+    \param VEB :: Distance BOTTOMWALL-CENERLINE at end
+    \param VST :: Distance TOPWALL-CENERLINE at start
+    \param VET :: Distance TOPWALL-CENERLINE at end
+    */
+      
+
+  }
   else
     {
       Control.addVariable("LowAFlightXYAngle",0.0);

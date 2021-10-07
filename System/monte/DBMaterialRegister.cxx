@@ -1501,7 +1501,18 @@ DBMaterial::initMaterial()
   MObj.setDensity(-3.5); 
   setMaterial(MObj);
  
+  MObj.setMaterial(1002,"LiquidD2",
+		   "1002.70c 0.33333333 01005.70c      0.666666667",
+		   "PD-J33.20T  OD-J33.20T",MLib);
+    MObj.setDensity(-1.63E-01); // 1.63g/cm3
+    //   MObj.setDensity(0.050869); //E-24, atom density
+  setMaterial(MObj);
 
+  // Material #401: Beryllium solid at 20K
+  // Total atom density 0.1187475
+  MObj.setMaterial(401,"Be20K","4009.70c 0.1234855","BE-MET.20T",MLib);
+  setMaterial(MObj);
+  
   
   return;
 }
