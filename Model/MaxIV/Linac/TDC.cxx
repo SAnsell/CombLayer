@@ -243,7 +243,7 @@ TDC::buildSurround(const FuncDataBase& Control,
       HR=ModelSupport::getHeadRule(SMap,BI,"3 -4");
       BI+=10;
       HR*=injectionHall->getSurfRule("Floor")*
-	injectionHall->getSurfRule("#Roof");
+	injectionHall->getSurfRule("#Ceiling");
       return HR;
     }
 
@@ -366,7 +366,7 @@ TDC::reconstructInjectionHall(Simulation& System)
   */
 {
   ELog::RegMethod RegA("TDC","reconstructInjectionHall");
-      
+
   // Make list of unique insert cells:
   std::set<int> CInsert;
   for(const auto& [name,bzPtr] : bZone)
@@ -384,7 +384,7 @@ TDC::reconstructInjectionHall(Simulation& System)
       if (mc==originalSpaces.end())
 	throw ColErr::InContainerError<int>(CN,"BZone insertcell");
       MonteCarlo::Object* OPtr=System.findObject(CN);
-      
+
       HeadRule OuterVolume;
       bool initFlag(1);
       for(const auto& [name,bzPtr] : bZone)
@@ -402,17 +402,17 @@ TDC::reconstructInjectionHall(Simulation& System)
 		  OuterVolume.addUnion(BZvol.getVolume());
 		  BZvol= *bzPtr;
 		}
-	    }		  
+	    }
 	}
       HeadRule HROut=mc->second;
-      
+
       OuterVolume+=BZvol.getVolume();
       HROut.addIntersection(OuterVolume.complement());
       OPtr->procHeadRule(HROut);
     }
 
   // loop over block zone and addpillars:
-  
+
   for(const auto& [name,bzPtr] : bZone)
     {
       const std::vector<int> VCells=bzPtr->getCells();
@@ -641,7 +641,7 @@ TDC::createAll(Simulation& System,
     }
   reconstructInjectionHall(System);
 
-  
+
   return;
 }
 
