@@ -70,10 +70,9 @@
 #include "VacuumPipe.h"
 
 #include "Line.h"
-#include "ContainedGroup.h"
 #include "YagScreen.h"
 #include "YagUnit.h"
-#include "LBeamStop.h"
+#include "NBeamStop.h"
 
 #include "TDCsegment.h"
 #include "Segment27.h"
@@ -113,7 +112,7 @@ Segment27::Segment27(const std::string& Key) :
   bellowAC(new constructSystem::Bellows(keyName+"BellowAC")),
   bellowBC(new constructSystem::Bellows(keyName+"BellowBC")),
 
-  beamStopC(new tdcSystem::LBeamStop(keyName+"BeamStopC"))
+  beamStopC(new tdcSystem::NBeamStop(keyName+"BeamStopC"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -300,14 +299,17 @@ Segment27::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*IZFlat,*yagUnitB,"back",*bellowBC);
 
-  constructSystem::constructUnit
-  (System,*IZLower,*yagUnitC,"back",*beamStopC);
+  beamStopC->setCutSurf("base",ExternalCut::getRule("Floor"));
+  beamStopC->createAll(System,*yagUnitC,"back");
 
-  outerCellA=IZTop->createUnit(System,*beamStopC,"back");
-  CellMap::addCell("SpaceFiller",outerCellA);
+  const int outerCell = IZLower->createUnit(System,*beamStopC,2);
+  // for segment28:
+  ExternalCut::setCutSurf("BeamStopZone",beamStopC->getOuterSurf());
 
-  outerCellB=IZFlat->createUnit(System,*beamStopC,"back");
-  CellMap::addCell("SpaceFiller",outerCellB);
+  IZFlat->insertComponent(System,"Unit",4,getRule("BeamStopZone").complement());
+
+  beamStopC->insertInCell(System,outerCell);
+  beamStopC->setCutSurf("base",ExternalCut::getRule("Floor"));
 
   return;
 }
