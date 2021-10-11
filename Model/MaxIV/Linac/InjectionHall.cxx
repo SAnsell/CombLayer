@@ -483,12 +483,12 @@ InjectionHall::createSurfaces()
   SurfMap::makePlane("BackWallBack",SMap,buildIndex+22,
 		     Origin+Y*(backWallYStep+backWallThick),Y);
 
-  SurfMap::makePlane("BackWallBack",SMap,buildIndex+1022, // figure-of-merit
+  SurfMap::makePlane("BackWallBackFOM",SMap,buildIndex+1022, // figure-of-merit
 		     Origin+Y*(backWallYStep+backWallThick+100),Y);
 
-  SurfMap::makePlane("BackWallBack",SMap,buildIndex+1031,
+  SurfMap::makePlane("BackWallBackFemtoMAX",SMap,buildIndex+1031,
 		     Origin+Y*(backWallYStep+backWallThick+femtoMAXShieldThick),Y);
-  SurfMap::makePlane("BackWallBack",SMap,buildIndex+1041,
+  SurfMap::makePlane("BackWallBackStorage",SMap,buildIndex+1041,
 		     Origin+Y*(backWallYStep+backWallThick+storageShieldThick),Y);
 
   SurfMap::makePlane("BackWallFront",SMap,buildIndex+31,
