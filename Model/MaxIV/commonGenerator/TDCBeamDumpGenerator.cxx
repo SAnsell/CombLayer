@@ -51,7 +51,7 @@ namespace setVariable
 
 TDCBeamDumpGenerator::TDCBeamDumpGenerator() :
   length(115.0),width(5.0),height(15.0),
-  mainMat("Tungsten")
+  coreMat("Tungsten")
   /*!
     Constructor and defaults
   */
@@ -77,7 +77,7 @@ TDCBeamDumpGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"Height",height);
-  Control.addVariable(keyName+"MainMat",mainMat);
+  Control.addVariable(keyName+"CoreMat",coreMat);
 
   return;
 

@@ -43,7 +43,7 @@ class TDCBeamDumpGenerator
   double width;                 ///< Width
   double height;                ///< Height
 
-  std::string mainMat;                  ///< Main material
+  std::string coreMat;                  ///< Main material
 
  public:
 

@@ -83,7 +83,7 @@ TDCBeamDump::TDCBeamDump(const TDCBeamDump& A) :
   attachSystem::SurfMap(A),
   attachSystem::ExternalCut(A),
   length(A.length),width(A.width),height(A.height),
-  mainMat(A.mainMat)
+  coreMat(A.coreMat)
   /*!
     Copy constructor
     \param A :: TDCBeamDump to copy
@@ -106,7 +106,7 @@ TDCBeamDump::operator=(const TDCBeamDump& A)
       length=A.length;
       width=A.width;
       height=A.height;
-      mainMat=A.mainMat;
+      coreMat=A.coreMat;
     }
   return *this;
 }
@@ -142,7 +142,7 @@ TDCBeamDump::populate(const FuncDataBase& Control)
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
 
-  mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
+  coreMat=ModelSupport::EvalMat<int>(Control,keyName+"CoreMat");
 
   return;
 }
@@ -178,7 +178,7 @@ TDCBeamDump::createObjects(Simulation& System)
 
   HeadRule Out;
   Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  makeCell("MainCell",System,cellIndex++,mainMat,0.0,Out);
+  makeCell("Core",System,cellIndex++,coreMat,0.0,Out);
 
   addOuterSurf(Out);
 

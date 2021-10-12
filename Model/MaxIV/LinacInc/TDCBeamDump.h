@@ -47,7 +47,7 @@ class TDCBeamDump : public attachSystem::ContainedComp,
   double width;                 ///< Width
   double height;                ///< Height
 
-  int mainMat;                   ///< Main material
+  int coreMat;                   ///< Core material
 
   void populate(const FuncDataBase&);
   void createSurfaces();
