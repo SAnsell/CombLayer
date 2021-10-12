@@ -50,12 +50,12 @@ namespace setVariable
 {
 
 TDCBeamDumpGenerator::TDCBeamDumpGenerator() :
-  length(115.0),bulkWidthLeft(35.0),bulkWidthRight(100.0),
+  length(115.0),bulkWidthLeft(35.0),bulkWidthRight(55.0), // 35+20
   bulkHeight(40.0),bulkDepth(35), bulkThickBack(40.0),
   coreRadius(2.0),coreLength(40),preCoreLength(20),
   skinThick(5.0),
   coreMat("Lead"),
-  bulkMat("BoronSteel"),
+  bulkMat("Stainless304"),
   skinMat("Poly")
   /*!
     Constructor and defaults
