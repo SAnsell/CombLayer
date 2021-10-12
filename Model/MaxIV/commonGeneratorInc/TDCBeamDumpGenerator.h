@@ -48,9 +48,11 @@ class TDCBeamDumpGenerator
   double coreRadius;            ///< Core radius
   double coreLength;            ///< Core length
   double preCoreLength;         ///< Length of void before core
+  double skinThick;             ///< Skin thickness
 
-  std::string coreMat;                  ///< Main material
+  std::string coreMat;          ///< Core material
   std::string bulkMat;          ///< Bulk material
+  std::string skinMat;          ///< Skin material
 
  public:
 

@@ -52,9 +52,11 @@ class TDCBeamDump : public attachSystem::ContainedComp,
   double coreRadius;            ///< Core radius
   double coreLength;            ///< Core length
   double preCoreLength;         ///< Length of void before core
+  double skinThick;             ///< Skin thickness
 
   int coreMat;                   ///< Core material
   int bulkMat;                  ///< Bulk material
+  int skinMat;                  ///< Skin material
 
   void populate(const FuncDataBase&);
   void createSurfaces();

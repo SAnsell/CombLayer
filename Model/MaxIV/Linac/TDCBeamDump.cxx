@@ -91,8 +91,10 @@ TDCBeamDump::TDCBeamDump(const TDCBeamDump& A) :
   coreRadius(A.coreRadius),
   coreLength(A.coreLength),
   preCoreLength(A.preCoreLength),
+  skinThick(A.skinThick),
   coreMat(A.coreMat),
-  bulkMat(A.bulkMat)
+  bulkMat(A.bulkMat),
+  skinMat(A.skinMat)
   /*!
     Copy constructor
     \param A :: TDCBeamDump to copy
@@ -121,8 +123,10 @@ TDCBeamDump::operator=(const TDCBeamDump& A)
       coreRadius=A.coreRadius;
       coreLength=A.coreLength;
       preCoreLength=A.preCoreLength;
+      skinThick=A.skinThick;
       coreMat=A.coreMat;
       bulkMat=A.bulkMat;
+      skinMat=A.skinMat;
     }
   return *this;
 }
@@ -163,9 +167,11 @@ TDCBeamDump::populate(const FuncDataBase& Control)
   coreRadius=Control.EvalVar<double>(keyName+"CoreRadius");
   coreLength=Control.EvalVar<double>(keyName+"CoreLength");
   preCoreLength=Control.EvalVar<double>(keyName+"PreCoreLength");
+  skinThick=Control.EvalVar<double>(keyName+"SkinThick");
 
   coreMat=ModelSupport::EvalMat<int>(Control,keyName+"CoreMat");
   bulkMat=ModelSupport::EvalMat<int>(Control,keyName+"BulkMat");
+  skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
 
   return;
 }
@@ -182,12 +188,18 @@ TDCBeamDump::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(preCoreLength),Y);
   ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(preCoreLength+coreLength),Y);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+22,buildIndex+12,Y,bulkThickBack);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+32,buildIndex+22,Y,skinThick);
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(bulkWidthLeft),X);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+13,buildIndex+3,X,-skinThick);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(bulkWidthRight),X);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+14,buildIndex+4,X,skinThick);
 
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(bulkDepth),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(bulkHeight),Z);
+
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+15,buildIndex+5,Z,-skinThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+16,buildIndex+6,Z,skinThick);
 
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,coreRadius);
 
@@ -219,7 +231,10 @@ TDCBeamDump::createObjects(Simulation& System)
   Out=ModelSupport::getHeadRule(SMap,buildIndex,"12 -22 3 -4 5 -6 ");
   makeCell("Bulk",System,cellIndex++,bulkMat,0.0,Out*baseHR);
 
-  Out=ModelSupport::getHeadRule(SMap,buildIndex,"1 -22 3 -4 5 -6");
+  Out=ModelSupport::getHeadRule(SMap,buildIndex,"1 -32 13 -14 15 -16 (22:-3:4:-5:6) ");
+  makeCell("Skin",System,cellIndex++,skinMat,0.0,Out*baseHR);
+
+  Out=ModelSupport::getHeadRule(SMap,buildIndex,"1 -32 13 -14 15 -16");
   addOuterSurf(Out);
 
   return;
@@ -234,13 +249,13 @@ TDCBeamDump::createLinks()
 {
   ELog::RegMethod RegA("TDCBeamDump","createLinks");
 
-  const double totalLength = preCoreLength + coreLength;
+  const double totalLength = preCoreLength + coreLength + bulkThickBack + skinThick;
 
   FixedComp::setConnect(0,Origin,-Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
   FixedComp::setConnect(1,Origin+Y*(totalLength),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+12));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+32));
 
   FixedComp::setConnect(2,Origin-X*(bulkWidthLeft/2.0),-X);
   FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
