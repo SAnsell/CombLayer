@@ -1334,6 +1334,40 @@ DBMaterial::initMaterial()
   MObj.setDensity(0.0292587);
   setMaterial(MObj);
 
+  // Stainless steel with 1% (weight) boron content
+  // Reference: Compendium of Material Composition Data for Radiation Trans
+  //            PNNL-15870Rev1, page 280
+  //            plone:doc/misc/pnnl-15870rev1.pdf/view
+  MObj.setMaterial(151,"BoronSteel",
+		   " 05010.70c 0.009716 "
+		   " 05011.70c 0.039110 "
+		   " 06000.70c 0.001741 "
+		   " 14028.70c 0.008580 "
+		   " 14029.70c 0.000436 "
+		   " 14030.70c 0.000288 "
+		   " 15031.70c 0.000389 "
+		   " 16032.70c 0.000233 "
+		   " 16033.70c 0.000002 "
+		   " 16034.70c 0.000010 "
+		   " 24050.70c 0.008297 "
+		   " 24052.70c 0.160003 "
+		   " 24053.70c 0.018143 "
+		   " 24054.70c 0.004516 "
+		   " 25055.70c 0.009512 "
+		   " 26054.70c 0.038382 "
+		   " 26056.70c 0.602516 "
+		   " 26057.70c 0.013915 "
+		   " 26058.70c 0.001852 "
+		   " 28058.70c 0.056068 "
+		   " 28060.70c 0.021597 "
+		   " 28061.70c 0.000939 "
+		   " 28062.70c 0.002993 "
+		   " 28064.70c 0.000762 ","fe56.12t",MLib);
+  MObj.setMXitem(6000, 70, 'c', "h", "06012");
+  MObj.setDensity(-7.87);
+  setMaterial(MObj);
+
+
   return;
 }
 
