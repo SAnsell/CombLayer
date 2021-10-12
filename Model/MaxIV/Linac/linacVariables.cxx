@@ -3499,8 +3499,12 @@ wallVariables(FuncDataBase& Control,
   // Lower tier - AR: 210119: I would
   // assume there is also a concrete plug in each duct, but for now
   // start with void.
-  const double dx = 60; // artificial offset based on img_5374
-  const double BTGductY = 9839.035 - dx; // K_20-2_355
+
+  // distance from b495 to BackWallConcrete: 361.6 [K_20-1_08G6b3]
+  // distance from b495 to first lower duct: 136.6 [K_20-2_355]
+  // therefore distance between first lower duct and BackWallConcrete is 225 cm
+  // BTGductY is adjusted to have this 225 cm distance
+  const double BTGductY = 9819.035;
   for (size_t i=0; i<=5; ++i)
     {
       const std::string name = wallKey+"MidTDuct" + std::to_string(i+10);
@@ -3510,7 +3514,12 @@ wallVariables(FuncDataBase& Control,
     }
   // Upper tier: G1-G5
   // Electric cables, but now we put void to be conservative
-  const double BTGductYup = BTGductY + 105.0 - dx; // K_20-2_355: 105 = 241.6-136.6
+
+  // In the drawings [K_20-2_355] there are only 4 ducts,
+  // but in reality there are 5
+  // (see http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/img_5374.jpg/view)
+  // therefore substract 60 cm to allocate space for this additional duct
+  const double BTGductYup = BTGductY + 105.0 - 60; // K_20-2_355: 105 = 241.6-136.6
   for (size_t i=0; i<=5; ++i)
     {
       const std::string name = wallKey+"MidTDuct" + std::to_string(i+16);
