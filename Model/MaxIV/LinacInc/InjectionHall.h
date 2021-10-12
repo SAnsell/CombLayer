@@ -71,9 +71,10 @@ class InjectionHall :
   double fkgMazeLength;         ///< Future klystron gallery maze length
   double fkgMazeWallThick;      ///< Future klystron gallery maze wall thickness
   double fkgShieldThick;        ///< FKG additional shielding thickness
-  double fkgShieldHeight;       ///< FKG additional shielding height
+  std::vector<double> fkgShieldHeight;       ///< FKG additional shielding height(s)
   double fkgShieldDepth;        ///< FKG additional shielding depth
   double fkgShieldLength;       ///< FKG additional shielding length
+  double fkgShieldTHzWidth;     ///< THz box gap width in the FKG shield layer
   int fkgShieldMat;             ///< FKG additional shielding material
 
   double btgThick;          ///< PREFAB BTG-BLOCK thick

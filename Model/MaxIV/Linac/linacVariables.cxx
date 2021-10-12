@@ -3371,9 +3371,14 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"FKGMazeLength",280.0); // derived from K_20-1_08F6c1 (110+170)
   Control.addVariable(wallKey+"FKGMazeWallThick",200.0); // K_20-1_08F6c1
 
-  Control.addVariable(wallKey+"FKGShieldThick",20.0); // my suggestion [test]
+  Control.addVariable(wallKey+"FKGShieldThick",20.0); // my suggestion (20 cm is max thick before the pipes bend)
   Control.addVariable(wallKey+"FKGShieldLength",270.0); // to covert BTGTopMiddle
-  Control.addVariable(wallKey+"FKGShieldHeight",229.0); // until the ceiling
+  Control.addVariable(wallKey+"FKGShieldHeight1",76.0); //
+  Control.addVariable(wallKey+"FKGShieldHeight2",96.0); // gap for the ducts
+  Control.addVariable(wallKey+"FKGShieldHeight3",148.0);
+  Control.addVariable(wallKey+"FKGShieldHeight4",168.0); // gap for the ducts
+  Control.addVariable(wallKey+"FKGShieldHeight5",210); // 20 cm until the ceiling
+  Control.addVariable(wallKey+"FKGShieldTHzWidth",20.0); // guess
   Control.addVariable(wallKey+"FKGShieldDepth",-10.0); // to cover TDClineB
   Control.addVariable(wallKey+"FKGShieldMat","Stainless304L"); // suggestion [test]
 
