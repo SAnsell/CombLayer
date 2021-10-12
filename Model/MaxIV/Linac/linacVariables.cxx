@@ -2152,6 +2152,7 @@ Segment27(FuncDataBase& Control,
   setBellow37(Control,lKey+"BellowBC");
 
   BSGen.generate(Control,lKey+"BeamStopC");
+  Control.addVariable(lKey+"BeamStopCYAngle",-90.0);
 
   return;
 }

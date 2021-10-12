@@ -50,8 +50,14 @@ namespace setVariable
 {
 
 TDCBeamDumpGenerator::TDCBeamDumpGenerator() :
-  length(115.0),width(5.0),height(15.0),
-  coreMat("Tungsten")
+  length(115.0),bulkWidthLeft(5.0),bulkWidthRight(35),
+  bulkHeight(15.0),
+  bulkDepth(35),
+  bulkThickBack(40.0),
+  coreRadius(2.0),
+  coreLength(40),preCoreLength(20),
+  coreMat("Tungsten"),
+  bulkMat("BoronSteel")
   /*!
     Constructor and defaults
   */
@@ -75,9 +81,16 @@ TDCBeamDumpGenerator::generate(FuncDataBase& Control,
   ELog::RegMethod RegA("TDCBeamDumpGenerator","generate");
 
   Control.addVariable(keyName+"Length",length);
-  Control.addVariable(keyName+"Width",width);
-  Control.addVariable(keyName+"Height",height);
+  Control.addVariable(keyName+"BulkWidthLeft",bulkWidthLeft);
+  Control.addVariable(keyName+"BulkWidthRight",bulkWidthRight);
+  Control.addVariable(keyName+"BulkHeight",bulkHeight);
+  Control.addVariable(keyName+"BulkDepth",bulkDepth);
+  Control.addVariable(keyName+"BulkThickBack",bulkThickBack);
+  Control.addVariable(keyName+"CoreRadius",coreRadius);
+  Control.addVariable(keyName+"CoreLength",coreLength);
+  Control.addVariable(keyName+"PreCoreLength",preCoreLength);
   Control.addVariable(keyName+"CoreMat",coreMat);
+  Control.addVariable(keyName+"BulkMat",bulkMat);
 
   return;
 

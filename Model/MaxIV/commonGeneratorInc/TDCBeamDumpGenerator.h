@@ -40,10 +40,17 @@ class TDCBeamDumpGenerator
  private:
 
   double length;                ///< Total length including void
-  double width;                 ///< Width
-  double height;                ///< Height
+  double bulkWidthLeft;         ///< Left-side bulk width
+  double bulkWidthRight;        ///< Right-side bulk width
+  double bulkHeight;            ///< Bulk height
+  double bulkDepth;             ///< Bulk depth
+  double bulkThickBack;         ///< Bulk thickness behind the core
+  double coreRadius;            ///< Core radius
+  double coreLength;            ///< Core length
+  double preCoreLength;         ///< Length of void before core
 
   std::string coreMat;                  ///< Main material
+  std::string bulkMat;          ///< Bulk material
 
  public:
 
