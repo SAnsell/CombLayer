@@ -72,7 +72,7 @@
 #include "Line.h"
 #include "YagScreen.h"
 #include "YagUnit.h"
-#include "NBeamStop.h"
+#include "TDCBeamDump.h"
 
 #include "TDCsegment.h"
 #include "Segment27.h"
@@ -112,7 +112,7 @@ Segment27::Segment27(const std::string& Key) :
   bellowAC(new constructSystem::Bellows(keyName+"BellowAC")),
   bellowBC(new constructSystem::Bellows(keyName+"BellowBC")),
 
-  beamStopC(new tdcSystem::NBeamStop(keyName+"BeamStopC"))
+  beamStopC(new tdcSystem::TDCBeamDump(keyName+"BeamStopC"))
   /*!
     Constructor
     \param Key :: Name of construction key

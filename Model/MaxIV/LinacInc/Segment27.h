@@ -37,7 +37,7 @@ namespace tdcSystem
   class DipoleDIBMag;
   class YagUnit;
   class YagScreen;
-  class NBeamStop;
+  class TDCBeamDump;
 
 
   /*!
@@ -85,7 +85,7 @@ class Segment27 :
   std::shared_ptr<constructSystem::Bellows> bellowAC;
   std::shared_ptr<constructSystem::Bellows> bellowBC;
 
-  std::shared_ptr<tdcSystem::NBeamStop> beamStopC;
+  std::shared_ptr<tdcSystem::TDCBeamDump> beamStopC;
 
   void buildObjects(Simulation&);
   void buildFrontSpacer(Simulation&);

@@ -73,7 +73,7 @@
 #include "SixPortGenerator.h"
 #include "CeramicGapGenerator.h"
 #include "EBeamStopGenerator.h"
-#include "NBeamStopGenerator.h"
+#include "TDCBeamDumpGenerator.h"
 #include "TWCavityGenerator.h"
 #include "UndVacGenerator.h"
 #include "FMUndulatorGenerator.h"
@@ -2072,7 +2072,7 @@ Segment27(FuncDataBase& Control,
 
   setVariable::YagScreenGenerator YagScreenGen;
   setVariable::YagUnitGenerator YagUnitGen;
-  setVariable::NBeamStopGenerator BSGen;
+  setVariable::TDCBeamDumpGenerator BSGen;
 
   const Geometry::Vec3D startPtA(-637.608,8173.261,0.0);
   const Geometry::Vec3D startPtB(-637.608,8180.263,-37.887);
@@ -2151,9 +2151,7 @@ Segment27(FuncDataBase& Control,
   setBellow37(Control,lKey+"BellowAC");
   setBellow37(Control,lKey+"BellowBC");
 
-  BSGen.setFullLen(115.0);
-  BSGen.generateBStop(Control,lKey+"BeamStopC", 3.0);
-  //  Control.addVariable(lKey+"BeamStopCYStep",25.0);
+  BSGen.generate(Control,lKey+"BeamStopC");
 
   return;
 }
