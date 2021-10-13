@@ -184,7 +184,9 @@ TDCBeamDump::createSurfaces()
 {
   ELog::RegMethod RegA("TDCBeamDump","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*skinThick,Y);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+11,buildIndex+1,Y,-skinThick);
+
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(preCoreLength),Y);
   ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(preCoreLength+coreLength),Y);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+22,buildIndex+12,Y,bulkThickBack);
@@ -220,7 +222,7 @@ TDCBeamDump::createObjects(Simulation& System)
   const HeadRule& baseHR=ExternalCut::getRule("base");
 
   HeadRule Out;
-  Out=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -7 ");
+  Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -2 -7 ");
   makeCell("PreCore",System,cellIndex++,0,0.0,Out);
   Out=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 -7 ");
   makeCell("Core",System,cellIndex++,coreMat,0.0,Out);
@@ -231,10 +233,25 @@ TDCBeamDump::createObjects(Simulation& System)
   Out=ModelSupport::getHeadRule(SMap,buildIndex,"12 -22 3 -4 5 -6 ");
   makeCell("Bulk",System,cellIndex++,bulkMat,0.0,Out*baseHR);
 
-  Out=ModelSupport::getHeadRule(SMap,buildIndex,"1 -32 13 -14 15 -16 (22:-3:4:-5:6) ");
-  makeCell("Skin",System,cellIndex++,skinMat,0.0,Out*baseHR);
+  Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -1 3 -4 5 -6 7 ");
+  makeCell("SkinFont",System,cellIndex++,skinMat,0.0,Out*baseHR);
 
-  Out=ModelSupport::getHeadRule(SMap,buildIndex,"1 -32 13 -14 15 -16");
+  Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -32 13 -14 6 -16 ");
+  makeCell("SkinTop",System,cellIndex++,skinMat,0.0,Out*baseHR);
+
+  Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -32 13 -14 15 -5 ");
+  makeCell("SkinBottom",System,cellIndex++,skinMat,0.0,Out*baseHR);
+
+  Out=ModelSupport::getHeadRule(SMap,buildIndex,"22 -32 3 -4 5 -6 ");
+  makeCell("SkinBack",System,cellIndex++,skinMat,0.0,Out*baseHR);
+
+  Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -32 13 -3 5 -6 ");
+  makeCell("SkinLeft",System,cellIndex++,skinMat,0.0,Out*baseHR);
+
+  Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -32 4 -14 5 -6 ");
+  makeCell("SkinRight",System,cellIndex++,skinMat,0.0,Out*baseHR);
+
+  Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -32 13 -14 15 -16");
   addOuterSurf(Out);
 
   return;
@@ -252,22 +269,22 @@ TDCBeamDump::createLinks()
   const double totalLength = preCoreLength + coreLength + bulkThickBack + skinThick;
 
   FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+11));
 
   FixedComp::setConnect(1,Origin+Y*(totalLength),Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+32));
 
-  FixedComp::setConnect(2,Origin-X*(bulkWidthLeft/2.0),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+  FixedComp::setConnect(2,Origin-X*(bulkWidthLeft+skinThick),-X);
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+13));
 
-  FixedComp::setConnect(3,Origin+X*(bulkWidthLeft/2.0),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  FixedComp::setConnect(3,Origin+X*(bulkWidthRight+skinThick),X);
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+14));
 
-  FixedComp::setConnect(4,Origin-Z*(bulkHeight/2.0),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  FixedComp::setConnect(4,Origin-Z*(bulkDepth+skinThick),-Z);
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
 
-  FixedComp::setConnect(5,Origin+Z*(bulkHeight/2.0),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+  FixedComp::setConnect(5,Origin+Z*(bulkHeight+skinThick),Z);
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
 
   return;
 }
