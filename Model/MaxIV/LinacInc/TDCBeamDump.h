@@ -53,10 +53,12 @@ class TDCBeamDump : public attachSystem::ContainedComp,
   double coreLength;            ///< Core length
   double preCoreLength;         ///< Length of void before core
   double skinThick;             ///< Skin thickness
+  double frontPlateThick;       ///< Front plate thickness
 
   int coreMat;                   ///< Core material
   int bulkMat;                  ///< Bulk material
   int skinMat;                  ///< Skin material
+  int frontPlateMat;            ///< Front plate material (to reduce activation dose rate)
 
   void populate(const FuncDataBase&);
   void createSurfaces();
