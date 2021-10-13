@@ -3,7 +3,7 @@
 
  * File:   LinacInc/Segment27.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,9 +43,9 @@ namespace tdcSystem
   /*!
     \class Segment27
     \version 1.0
-    \author S. Ansell
-    \date June 2020
-    \brief Dividing segment in the TDC from the linac
+    \author S. Ansell / K. Batkov
+    \date Oct 2021
+    \brief TDC line branch C final segment
   */
 
 class Segment27 :

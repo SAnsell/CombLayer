@@ -56,9 +56,8 @@
 #include "FlatPipeGenerator.h"
 #include "BeamDividerGenerator.h"
 #include "IonPTubeGenerator.h"
-#include "LBeamStopGenerator.h"
 #include "NBeamStopGenerator.h"
-#include "BeamBoxGenerator.h"
+#include "TDCBeamDumpGenerator.h"
 
 #include "magnetVar.h"
 
@@ -294,7 +293,7 @@ Segment29Magnet(FuncDataBase& Control,
   setVariable::YagScreenGenerator YagScreenGen;
   setVariable::YagUnitGenerator YagUnitGen;
   setVariable::NBeamStopGenerator BSGen;
-  setVariable::BeamBoxGenerator BXGen;
+  setVariable::TDCBeamDumpGenerator TDCBDGen;
 
   const Geometry::Vec3D startPtA(-637.608,9073.611,0.0);
   const Geometry::Vec3D startPtB(-637.608,9073.535,-84.888);
@@ -346,10 +345,16 @@ Segment29Magnet(FuncDataBase& Control,
   YagScreenGen.generateScreen(Control,lKey+"YagScreenB",0);   // closed
   Control.addVariable(lKey+"YagScreenBYAngle",-90.0);
 
-  BSGen.setFullLen(115.0);
-  BSGen.generateBStop(Control,lKey+"BeamStopA",3.0);
-  BSGen.generateBStop(Control,lKey+"BeamStopB",3.0);
+  TDCBDGen.generate(Control,lKey+"BeamStopA");
   Control.addVariable(lKey+"BeamStopAYAngle",-90.0);
+  Control.addVariable(lKey+"BeamStopAYStep",3.0);
+  Control.addVariable(lKey+"BeamStopABulkHeight",30.0);
+  Control.addVariable(lKey+"BeamStopABulkDepth",30.0);
+  Control.addVariable(lKey+"BeamStopAPreCoreLength",25.0);
+  Control.addVariable(lKey+"BeamStopACoreMat","Tungsten");
+
+  BSGen.setFullLen(115.0);
+  BSGen.generateBStop(Control,lKey+"BeamStopB",3.0);
   Control.addVariable(lKey+"BeamStopBYAngle",-90.0);
 
   // end void

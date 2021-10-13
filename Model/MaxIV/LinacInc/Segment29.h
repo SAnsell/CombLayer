@@ -40,13 +40,14 @@ namespace tdcSystem
   class YagScreen;
   class LBeamStop;
   class NBeamStop;
+  class TDCBeamDump;
 
   /*!
     \class Segment29
     \version 1.0
     \author S. Ansell
-    \date June 2020
-    \brief Dividing segment in the TDC from the linac
+    \date Oct 2021
+    \brief Final TDC beam line segment (branches A and B)
   */
 
 class Segment29 :
@@ -77,7 +78,7 @@ class Segment29 :
   std::shared_ptr<constructSystem::VoidUnit> endVoid;
 
   /// beam-stops
-  std::shared_ptr<tdcSystem::NBeamStop> beamStopA;
+  std::shared_ptr<tdcSystem::TDCBeamDump> beamStopA;
   std::shared_ptr<tdcSystem::NBeamStop> beamStopB;
 
   void buildObjects(Simulation&);

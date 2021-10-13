@@ -73,7 +73,7 @@
 #include "YagScreen.h"
 #include "VoidUnit.h"
 #include "NBeamStop.h"
-#include "LBeamStop.h"
+#include "TDCBeamDump.h"
 
 #include "TDCsegment.h"
 #include "Segment29.h"
@@ -103,7 +103,7 @@ Segment29::Segment29(const std::string& Key) :
 
   endVoid(new constructSystem::VoidUnit(keyName+"EndVoid")),
 
-  beamStopA(new tdcSystem::NBeamStop(keyName+"BeamStopA")),
+  beamStopA(new tdcSystem::TDCBeamDump(keyName+"BeamStopA")),
   beamStopB(new tdcSystem::NBeamStop(keyName+"BeamStopB"))
 
   /*!
