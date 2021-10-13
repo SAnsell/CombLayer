@@ -117,9 +117,9 @@ VirtualTube::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-  capMat=ModelSupport::EvalDefMat<int>(Control,keyName+"FlangeCapMat",wallMat);
+  capMat=ModelSupport::EvalDefMat(Control,keyName+"FlangeCapMat",wallMat);
 
   populatePort(Control,keyName,PCentre,PAxis,Ports);
   return;

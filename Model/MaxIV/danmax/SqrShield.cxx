@@ -106,7 +106,7 @@ SqrShield::populate(const FuncDataBase& Control)
 
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
 
   return;
 }

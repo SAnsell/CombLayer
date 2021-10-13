@@ -162,12 +162,12 @@ BulkInsert::populate(const FuncDataBase& Control)
   if (Control.hasVariable(keyName+"InnerMat"))
     innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");
   else
-    innerMat=ModelSupport::EvalDefMat<int>(Control,baseName+"InnerMat",0);
+    innerMat=ModelSupport::EvalDefMat(Control,baseName+"InnerMat",0);
 
   if (Control.hasVariable(keyName+"OuterMat"))    
     outerMat=ModelSupport::EvalMat<int>(Control,keyName+"OuterMat");
   else
-    outerMat=ModelSupport::EvalDefMat<int>(Control,baseName+"OuterMat",0);
+    outerMat=ModelSupport::EvalDefMat(Control,baseName+"OuterMat",0);
   
   return;
 }

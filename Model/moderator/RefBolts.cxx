@@ -148,7 +148,7 @@ RefBolts::createBoltGrp(Simulation& System,const std::string& subKey)
       if (Control.hasVariable(boltName+"Track0"))
 	{
 	  //  Get Default/base radii
-	  matN=ModelSupport::EvalDefMat<int>(Control,boltName+"Mat",matN); 
+	  matN=ModelSupport::EvalDefMat(Control,boltName+"Mat",matN); 
 
 	  size_t index(0);
 	  while(Control.hasVariable(boltName+"Radius"+std::to_string(index)))

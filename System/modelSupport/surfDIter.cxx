@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/surfDIter.cxx
+ * File:   modelSupport/surfDIter.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -137,7 +137,7 @@ populateDivide(const FuncDataBase& Control,const size_t N,
   int defV=defValue;
   for(size_t i=0;i<N;i++)
     {
-      defV=ModelSupport::EvalDefMat<int>
+      defV=ModelSupport::EvalDefMat
 	(Control,Name+std::to_string(i),defV);
       Vec.push_back(defV);
     }
@@ -438,7 +438,7 @@ populateVecDivide(const FuncDataBase& Control,
 
   for(size_t i=0;i<VecDef.size();i++)
     {
-      const int defV=ModelSupport::EvalDefMat<int>
+      const int defV=ModelSupport::EvalDefMat
 	(Control,Name+std::to_string(i),VecDef[i]);
       
       VecOut.push_back(defV);

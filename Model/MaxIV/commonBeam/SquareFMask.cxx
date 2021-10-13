@@ -121,7 +121,7 @@ SquareFMask::populate(const FuncDataBase& Control)
     }
   
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   flangeMat=ModelSupport::EvalMat<int>(Control,keyName+"FlangeMat");
 
   

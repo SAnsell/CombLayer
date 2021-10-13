@@ -116,7 +116,7 @@ HPJaws::populate(const FuncDataBase& Control)
   jawXGap=Control.EvalVar<double>(keyName+"JawXGap");
   jawZGap=Control.EvalVar<double>(keyName+"JawZGap");
 
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   jawMat=ModelSupport::EvalMat<int>(Control,keyName+"JawMat");
   

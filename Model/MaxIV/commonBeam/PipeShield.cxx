@@ -151,7 +151,7 @@ PipeShield::populate(const FuncDataBase& Control)
 
   wingThick=Control.EvalDefVar<double>(keyName+"WingThick",0.0);
   wingLength=Control.EvalDefVar<double>(keyName+"WingLength",0.0);
-  wingMat=ModelSupport::EvalDefMat<int>(Control,keyName+"WingMat",-1);
+  wingMat=ModelSupport::EvalDefMat(Control,keyName+"WingMat",-1);
 
   if (wingThick<Geometry::zeroTol || wingLength<Geometry::zeroTol)
     wingMat=-1;

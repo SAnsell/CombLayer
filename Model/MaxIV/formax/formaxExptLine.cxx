@@ -196,7 +196,7 @@ formaxExptLine::populate(const FuncDataBase& Control)
   outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",outerLeft);
   outerTop=Control.EvalDefVar<double>(keyName+"OuterTop",outerLeft);
 
-  outerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"OuterMat",0);
+  outerMat=ModelSupport::EvalDefMat(Control,keyName+"OuterMat",0);
   
   return;
 }

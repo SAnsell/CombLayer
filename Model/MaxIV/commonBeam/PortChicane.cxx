@@ -113,9 +113,9 @@ PortChicane::populate(const FuncDataBase& Control)
   backRemove=Control.EvalDefVar<int>(keyName+"BackRemove",0);
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-  skinMat=ModelSupport::EvalDefMat<int>
+  skinMat=ModelSupport::EvalDefMat
     (Control,keyName+"SkinMat",wallMat);
-  plateMat=ModelSupport::EvalDefMat<int>
+  plateMat=ModelSupport::EvalDefMat
     (Control,keyName+"PlateMat",wallMat);
 
   return;

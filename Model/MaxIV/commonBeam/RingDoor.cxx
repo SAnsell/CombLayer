@@ -110,8 +110,8 @@ RingDoor::populate(const FuncDataBase& Control)
   underStepWidth=Control.EvalVar<double>(keyName+"UnderStepWidth");
   underStepXSep=Control.EvalVar<double>(keyName+"UnderStepXSep");
 
-  underAMat=ModelSupport::EvalDefMat<int>(Control,keyName+"UnderAMat",0);
-  underBMat=ModelSupport::EvalDefMat<int>(Control,keyName+"UnderBMat",0);
+  underAMat=ModelSupport::EvalDefMat(Control,keyName+"UnderAMat",0);
+  underBMat=ModelSupport::EvalDefMat(Control,keyName+"UnderBMat",0);
   tubeMat=ModelSupport::EvalMat<int>(Control,keyName+"TubeMat");
   doorMat=ModelSupport::EvalMat<int>(Control,keyName+"DoorMat");
   

@@ -178,7 +178,7 @@ InjectionHall::populate(const FuncDataBase& Control)
       const double R=Control.EvalVar<double>(keyName+"MidTDuct"+stri+"Radius");
       const double y=Control.EvalVar<double>(keyName+"MidTDuct"+stri+"YStep");
       const double z=Control.EvalVar<double>(keyName+"MidTDuct"+stri+"ZStep");
-      const int mat=ModelSupport::EvalDefMat<int>(Control,keyName+"MidTDuct"+stri+"Mat",0);
+      const int mat=ModelSupport::EvalDefMat(Control,keyName+"MidTDuct"+stri+"Mat",0);
       midTDuctRadius.push_back(R);
       midTDuctYStep.push_back(y);
       midTDuctZStep.push_back(z);

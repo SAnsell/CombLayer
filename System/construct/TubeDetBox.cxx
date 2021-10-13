@@ -161,10 +161,10 @@ TubeDetBox::populate(const FuncDataBase& Control)
   if (Control.hasVariable(keyName+"OuterMat"))
     outerMat=ModelSupport::EvalMat<int>(Control,keyName+"OuterMat");
   else
-    outerMat=ModelSupport::EvalDefMat<int>(Control,baseName+"OuterMat",-1);
+    outerMat=ModelSupport::EvalDefMat(Control,baseName+"OuterMat",-1);
 
-  filterMat=ModelSupport::EvalDefMat<int>(Control,baseName+"FilterMat",0);
-  filterMat=ModelSupport::EvalDefMat<int>(Control,keyName+"FilterMat",filterMat);
+  filterMat=ModelSupport::EvalDefMat(Control,baseName+"FilterMat",0);
+  filterMat=ModelSupport::EvalDefMat(Control,keyName+"FilterMat",filterMat);
   return;
 }
 

@@ -187,7 +187,7 @@ BremColl::populate(const FuncDataBase& Control)
   pipeWidth=Control.EvalVar<double>(keyName+"PipeWidth");
   pipeMidGap=Control.EvalVar<double>(keyName+"PipeMidGap");
 
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 

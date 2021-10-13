@@ -123,7 +123,7 @@ TwinBase::populate(const FuncDataBase& Control)
   outerLineNBolt=Control.EvalVar<size_t>(keyName+"OuterLineNBolt");  
   outerBoltStep=Control.EvalVar<double>(keyName+"OuterBoltStep");
   outerBoltRadius=Control.EvalVar<double>(keyName+"OuterBoltRadius");
-  outerBoltMat=ModelSupport::EvalDefMat<int>(Control,keyName+"OuterBoltMat",0);
+  outerBoltMat=ModelSupport::EvalDefMat(Control,keyName+"OuterBoltMat",0);
   
   boltMat=ModelSupport::EvalMat<int>(Control,keyName+"BoltMat");
 

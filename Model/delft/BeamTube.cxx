@@ -197,7 +197,7 @@ BeamTube::populatePortals(const FuncDataBase& Control)
   do
     {
       const std::string PKey=keyName+"Portal"+std::to_string(index);
-      pM=ModelSupport::EvalDefMat<int>(Control,PKey+"Mat",-1);
+      pM=ModelSupport::EvalDefMat(Control,PKey+"Mat",-1);
       pD=Control.EvalDefVar<double>(PKey+"Dist",0.0);
       if (pM>=0)
 	{

@@ -118,7 +118,7 @@ JawValveTube::populate(const FuncDataBase& Control)
 
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
 
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   // set values to zero:

@@ -3,7 +3,7 @@
  
  * File:   essBuild/BeRef.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -197,22 +197,6 @@ BeRef::globalPopulate(const FuncDataBase& Control)
   depth=Control.EvalVar<double>(keyName+"Depth");   
   wallThick=Control.EvalVar<double>(keyName+"WallThick");   
   wallThickLow=Control.EvalVar<double>(keyName+"WallThickLow");   
-  
-  return;
-}
-
-void
-BeRef::createUnitVector(const attachSystem::FixedComp& FC,
-                        const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed Component
-    \param sideIndex :: link point for origin
-  */
-{
-  ELog::RegMethod RegA("BeRef","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
   
   return;
 }

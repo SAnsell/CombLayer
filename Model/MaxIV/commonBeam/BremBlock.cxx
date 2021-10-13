@@ -111,7 +111,7 @@ BremBlock::populate(const FuncDataBase& Control)
   holeBHeight=Control.EvalDefVar<double>(keyName+"HoleBHeight",holeAHeight);
   holeBWidth=Control.EvalDefVar<double>(keyName+"HoleBWidth",holeAWidth);
   
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
 
   return;

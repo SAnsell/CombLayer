@@ -185,12 +185,12 @@ SplitFlangePipe::populate(const FuncDataBase& Control)
 					 keyName+"FlangeLength");
 
 
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
   if (!innerLayer)
-    bellowMat=ModelSupport::EvalDefMat<int>(Control,keyName+"BellowMat",feMat);
+    bellowMat=ModelSupport::EvalDefMat(Control,keyName+"BellowMat",feMat);
   else
-    bellowMat=ModelSupport::EvalDefMat<int>(Control,keyName+"CladMat",feMat);
+    bellowMat=ModelSupport::EvalDefMat(Control,keyName+"CladMat",feMat);
 
   return;
 }

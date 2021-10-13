@@ -253,7 +253,7 @@ portItem::populate(const FuncDataBase& Control)
 
   windowRadius=Control.EvalDefTail<double>(keyName,portBase,"WindowRadius",0.0);
   
-  voidMat=ModelSupport::EvalDefMat<int>
+  voidMat=ModelSupport::EvalDefMat
     (Control,keyName+"VoidMat",portBase+"VoidMat",0);
 
   /// need to write a Eval<bool> version
@@ -261,16 +261,16 @@ portItem::populate(const FuncDataBase& Control)
   oFlag=Control.EvalDefTail<int>(keyName,portBase,"OuterVoid",oFlag);
   outerFlag=static_cast<bool>(oFlag);
 	
-  outerVoidMat=ModelSupport::EvalDefMat<int>
+  outerVoidMat=ModelSupport::EvalDefMat
     (Control,keyName+"OuterVoidMat",portBase+"OuterVoidMat",0);
 
   wallMat=ModelSupport::EvalMat<int>
     (Control,keyName+"WallMat",portBase+"WallMat");
-  capMat=ModelSupport::EvalDefMat<int>
+  capMat=ModelSupport::EvalDefMat
     (Control,keyName+"CapMat",portBase+"CapMat",capMat);
   if (capMat<0) capMat=wallMat;
 
-  windowMat=ModelSupport::EvalDefMat<int>
+  windowMat=ModelSupport::EvalDefMat
     (Control,keyName+"WindowMat",portBase+"WindowMat",windowMat);
   if (windowMat<0) windowMat=capMat;
 

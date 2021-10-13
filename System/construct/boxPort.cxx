@@ -186,12 +186,12 @@ boxPort::populate(const FuncDataBase& Control)
     }
   if (!(populated & 2))
     {
-      boltMat=ModelSupport::EvalDefMat<int>(Control,keyName+"BoltMat",
+      boltMat=ModelSupport::EvalDefMat(Control,keyName+"BoltMat",
 					    baseName+"BoltMat",0);
       mainMat=ModelSupport::EvalMat<int>(Control,
 					 keyName+"MainMat",
 					 baseName+"MainMat");
-      voidMat=ModelSupport::EvalDefMat<int>
+      voidMat=ModelSupport::EvalDefMat
 	(Control,keyName+"VoidMat",baseName+"VoidMat",0);
 
       populated |= 2;
@@ -202,7 +202,7 @@ boxPort::populate(const FuncDataBase& Control)
 	(keyName,baseName,"SealRadius",0.0);
       sealThick=Control.EvalDefTail<double>
 	(keyName,baseName,"SealThick",0.2);
-      sealMat=ModelSupport::EvalDefMat<int>
+      sealMat=ModelSupport::EvalDefMat
 	(Control,keyName+"SealMat",baseName+"SealMat",0);
       populated |= 4;
     }

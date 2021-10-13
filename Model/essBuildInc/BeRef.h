@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BeRef.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,9 +36,10 @@ namespace essSystem
   \brief Reflector object 
 */
 
-class BeRef : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffsetUnit,
-  public attachSystem::CellMap
+class BeRef :
+    public attachSystem::ContainedComp,
+    public attachSystem::FixedOffsetUnit,
+    public attachSystem::CellMap
 {
  private:
 
@@ -75,9 +76,6 @@ class BeRef : public attachSystem::ContainedComp,
 
   void populateWithDef(const FuncDataBase&,const double,const double,
 		       const double);
-  
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();

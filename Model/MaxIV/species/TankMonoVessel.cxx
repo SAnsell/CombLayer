@@ -160,7 +160,7 @@ TankMonoVessel::populate(const FuncDataBase& Control)
       (flangeBRadius,portBWallThick+portBTubeRadius,
        "Flange to small for "+keyName+" port B");
 
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
 

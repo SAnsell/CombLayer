@@ -240,7 +240,7 @@ danmaxOpticsLine::populate(const FuncDataBase& Control)
   outerLeft=Control.EvalDefVar<double>(keyName+"OuterLeft",0.0);
   outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",outerLeft);
   outerTop=Control.EvalDefVar<double>(keyName+"OuterTop",outerLeft);
-  innerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"InnerMat",innerMat);
+  innerMat=ModelSupport::EvalDefMat(Control,keyName+"InnerMat",innerMat);
     
   return;
 }

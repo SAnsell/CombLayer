@@ -191,7 +191,7 @@ balderOpticsHutch::populate(const FuncDataBase& Control)
 
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
   pbMat=ModelSupport::EvalMat<int>(Control,keyName+"PbMat");
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat", 0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat", 0);
   ringMat=ModelSupport::EvalMat<int>(Control,keyName+"RingMat");
 
 

@@ -109,7 +109,7 @@ LeadBox::populate(const FuncDataBase& Control)
   plateHeight=Control.EvalDefVar<double>(keyName+"PlateHeight",0.0);
   plateThick=Control.EvalDefVar<double>(keyName+"PlateThick",0.0);
 
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   return;

@@ -109,7 +109,7 @@ JawFlange::populate(const FuncDataBase& Control)
   jHeight=Control.EvalVar<double>(keyName+"JHeight");
   jWidth=Control.EvalVar<double>(keyName+"JWidth");
 
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   jawMat=ModelSupport::EvalMat<int>(Control,keyName+"JawMat");
   
   return;

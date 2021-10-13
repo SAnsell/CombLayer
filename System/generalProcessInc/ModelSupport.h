@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   processInc/ModelSupport.h
+ * File:   generalProcessInc/ModelSupport.h
 *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -21,6 +21,9 @@
  ****************************************************************************/
 #ifndef ModelSupport_h
 #define ModelSupport_h
+
+class HeadRule;
+
 
 /*!
   \namespace ModelSupport

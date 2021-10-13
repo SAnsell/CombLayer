@@ -198,7 +198,7 @@ OffsetFlangePipe::populate(const FuncDataBase& Control)
   flangeBZAngle=Control.EvalDefVar<double>
     (keyName+"FlangeBackZAngle",0.0);
 
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
 
   return;

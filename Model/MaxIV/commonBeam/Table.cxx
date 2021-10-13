@@ -112,7 +112,7 @@ Table::populate(const FuncDataBase& Control)
   const double C=Control.EvalDefVar<double>(keyName+"Clearance",5.0);
   clearance=1.0+(C/100.0);
   
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   plateMat=ModelSupport::EvalMat<int>(Control,keyName+"PlateMat");
   legMat=ModelSupport::EvalMat<int>(Control,keyName+"LegMat");
 

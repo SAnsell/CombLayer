@@ -150,7 +150,7 @@ cosaxsTube::populate(const FuncDataBase& Control)
 
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
   outerLength=Control.EvalVar<double>(keyName+"OuterLength");
-  outerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"OuterMat",outerMat);
+  outerMat=ModelSupport::EvalDefMat(Control,keyName+"OuterMat",outerMat);
   return;
 }
 
