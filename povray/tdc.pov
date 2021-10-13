@@ -523,6 +523,12 @@ global_settings {
     #declare projection = 0;
     #declare cameraAngle = 40;
   #break
+    #case(strcmp(ITEM,"TDC27BeamStopC"))
+    #declare cameraLocation = <-140, 8795, 20>;
+    #declare cameraLookAt   = <-352, 8950, -90>;
+    #declare projection = 0;
+    #declare cameraAngle = 40;
+  #break
     #case(strcmp(ITEM,"L2SPF2YagScreenInBeam"))
     #declare cameraLocation = <230, 1370, 70>;
     #declare cameraLookAt   = <280, 1345, 0>;
