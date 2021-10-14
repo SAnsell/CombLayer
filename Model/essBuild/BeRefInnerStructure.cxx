@@ -1,29 +1,28 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
- 
-  * File:   essBuild/BeRefInnerStructure.cxx
-  *
-  * Copyright (c) 2004-2019 by Stuart Ansell
-  *
-  * This program is free software: you can redistribute it and/or modify
-  * it under the terms of the GNU General Public License as published by
-  * the Free Software Foundation, either version 3 of the License, or
-  * (at your option) any later version.
-  *
-  * This program is distributed in the hope that it will be useful,
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  * GNU General Public License for more details.
-  *
-  * You should have received a copy of the GNU General Public License
-  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
-  *
-  ****************************************************************************/
+
+ * File:   essBuild/BeRefInnerStructure.cxx
+ *
+ * Copyright (c) 2004-2021 by Stuart Ansell / Konstantin Batkov
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ *
+ ****************************************************************************/
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
-#include <cmath>
 #include <complex>
 #include <list>
 #include <vector>
@@ -35,13 +34,22 @@
 
 #include "Exception.h"
 #include "FileReport.h"
+#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "surfRegister.h"
+#include "objectRegister.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
+#include "MatrixBase.h"
+#include "Matrix.h"
 #include "Vec3D.h"
+#include "Quaternion.h"
+#include "Surface.h"
+#include "surfIndex.h"
+#include "Quadratic.h"
+#include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -54,35 +62,50 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
+#include "support.h"
+#include "SurInter.h"
+#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "ExternalCut.h"
+#include "surfDIter.h"
+#include "surfDivide.h"
+#include "surfDBase.h"
+#include "mergeTemplate.h"
 #include "BeRefInnerStructure.h"
+
 
 namespace essSystem
 {
 
 BeRefInnerStructure::BeRefInnerStructure(const std::string& Key) :
-  attachSystem::ContainedComp(),
-  attachSystem::FixedComp(Key,6)
+  attachSystem::FixedComp(Key,0),
+  attachSystem::ExternalCut(),
+  attachSystem::CellMap()
   /*!
     Constructor
     \param Key :: Name of construction key
   */
 {}
+
+
+
+BeRefInnerStructure::~BeRefInnerStructure()
+/*!
+   Destructor
+ */
+{}
   
 BeRefInnerStructure::BeRefInnerStructure(const BeRefInnerStructure& A) : 
-  attachSystem::ContainedComp(A),
   attachSystem::FixedComp(A),
-  waterDiscThick(A.waterDiscThick),
-  waterDiscMat(A.waterDiscMat),
-  waterDiscWallMat(A.waterDiscWallMat),
-  BeRadius(A.BeRadius),
-  BeMat(A.BeMat),
-  BeWallThick(A.BeWallThick),
-  BeWallMat(A.BeWallMat)
+  attachSystem::ExternalCut(A),
+  attachSystem::CellMap(A),
+  
+  nLayers(A.nLayers),baseFrac(A.baseFrac),mat(A.mat),
+  active(A.active)
   /*!
     Copy constructor
     \param A :: BeRefInnerStructure to copy
@@ -99,36 +122,16 @@ BeRefInnerStructure::operator=(const BeRefInnerStructure& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      waterDiscThick=A.waterDiscThick;
-      waterDiscMat=A.waterDiscMat;
-      waterDiscWallThick=A.waterDiscWallThick;
-      waterDiscWallMat=A.waterDiscWallMat;
-      BeRadius=A.BeRadius;
-      BeMat=A.BeMat;
-      BeWallThick=A.BeWallThick;
-      BeWallMat=A.BeWallMat;
+      attachSystem::ExternalCut::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      nLayers=A.nLayers;
+      baseFrac=A.baseFrac;
+      mat=A.mat;
+      active=A.active;
     }
   return *this;
 }
-
-BeRefInnerStructure*
-BeRefInnerStructure::clone() const
-  /*!
-    Clone self 
-    \return new (this)
-  */
-{
-  return new BeRefInnerStructure(*this);
-}
-
-BeRefInnerStructure::~BeRefInnerStructure()
-  /*!
-    Destructor
-  */
-{}
-  
 
 void
 BeRefInnerStructure::populate(const FuncDataBase& Control)
@@ -138,179 +141,87 @@ BeRefInnerStructure::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("BeRefInnerStructure","populate");
-
-  waterDiscThick=Control.EvalVar<double>(keyName+"WaterDiscThick");
-  waterDiscMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterDiscMat");
-    
-  waterDiscWallThick=Control.EvalVar<double>(keyName+"WaterDiscWallThick");
-  waterDiscWallMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterDiscWallMat");
-
-  BeRadius=Control.EvalVar<double>(keyName+"BeRadius");
-  BeMat=ModelSupport::EvalMat<int>(Control,keyName+"BeMat");
-
-  BeWallThick=Control.EvalVar<double>(keyName+"BeWallThick");
-  BeWallMat=ModelSupport::EvalMat<int>(Control,keyName+"BeWallMat");
-
+  
+  nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
+  ModelSupport::populateDivideLen(Control,nLayers,
+				  keyName+"BaseLen", 1.0, baseFrac);
+  ModelSupport::populateDivide(Control,nLayers,keyName+"Mat", 0, mat);
+  
+  active=Control.EvalDefVar<int>(keyName+"Active", 1);
+  
   return;
 }
-
-
+  
 void
-BeRefInnerStructure::createSurfaces(const attachSystem::FixedComp& Reflector)
+BeRefInnerStructure::layerProcess(Simulation& System)
   /*!
-    Create planes for the inner structure iside BeRef
-    \param Reflector :: Reflector object
+    Processes the splitting of the surfaces into a multilayer system
+    Requires: 
+       ExternalCut: RefBase / RefTop to be single surface (planes)
+       CellMap: ReflectorUnit to be cell to divide
+    \param System :: Simulation to work on
   */
 {
-  ELog::RegMethod RegA("BeRefInnerStructure","createSurfaces");
+  ELog::RegMethod RegA("BeRefInnerStructure","layerProcess");
 
-  // This is EVIL !!!
-  const double BeRefZBottom = Reflector.getLinkPt(7)[2];
-  const double BeRefZTop = Reflector.getLinkPt(8)[2];
-  
-  ModelSupport::buildPlane(SMap,buildIndex+5,
-                           Origin+Z*(BeRefZBottom+waterDiscThick),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,
-                           Origin+Z*(BeRefZTop-waterDiscThick),Z);
-  
-  ModelSupport::buildPlane(SMap,buildIndex+15,
-            Origin+Z*(BeRefZBottom+waterDiscThick+waterDiscWallThick),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+16,
-            Origin+Z*(BeRefZTop-waterDiscThick-waterDiscWallThick),Z);
-
-  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,BeRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Z,BeRadius+BeWallThick);
-  
-  return; 
-}
-
-void
-BeRefInnerStructure::createObjects(Simulation& System,
-                                   const attachSystem::FixedComp& Reflector)
-  /*!
-    Create the objects
-    \param System :: Simulation to add results
-    \param Reflector :: Reflector object where the inner structure is to be added
-  */
-{
-  ELog::RegMethod RegA("BeRefInnerStructure","createObjects");
-  
-  const attachSystem::CellMap* CM =
-    dynamic_cast<const attachSystem::CellMap*>(&Reflector);
-  MonteCarlo::Object* LowBeObj(0);
-  MonteCarlo::Object* TopBeObj(0);
-  int lowBeCell(0);
-  int topBeCell(0);
-  
-  if (CM)
+  if (nLayers>1 && isActive("RefBase") && isActive("RefTop"))
     {
-      lowBeCell=CM->getCell("lowBe");
-      LowBeObj=System.findObject(lowBeCell);
+      const int pS =ExternalCut::getRule("RefBase").getPrimarySurface();
+      const int sS =ExternalCut::getRule("RefTop").getPrimarySurface();
+
+      // this throws:
+      MonteCarlo::Object* beObj=
+	CellMap::getCellObject(System,"ReflectorUnit");
       
-      topBeCell=CM->getCell("topBe");
-      TopBeObj=System.findObject(topBeCell);
+      ModelSupport::surfDivide DA;
+      for(size_t i=1;i<nLayers;i++)
+	{
+	  DA.addFrac(baseFrac[i-1]);
+	  DA.addMaterial(mat[i-1]);
+	}
+      DA.addMaterial(mat.back());
+      
+      DA.setCellN(beObj->getName());
+      DA.setOutNum(cellIndex, buildIndex+10000);
+      
+      ModelSupport::mergeTemplate<Geometry::Plane,
+				  Geometry::Plane> surroundRule;
+      
+      surroundRule.setSurfPair(SMap.realSurf(pS),
+			       SMap.realSurf(sS));
+      
+      const HeadRule HRA =ExternalCut::getRule("RefBase");
+      const HeadRule HRB =ExternalCut::getRule("RefTop");
+
+      surroundRule.setInnerRule(HRA);
+      surroundRule.setOuterRule(HRB);
+      
+      DA.addRule(&surroundRule);
+      DA.activeDivideTemplate(System);
+      
+      cellIndex=DA.getCellNum();
     }
-  if (!LowBeObj)
-    throw ColErr::InContainerError<int>(topBeCell,"Reflector lowBe cell not found");
-  if (!TopBeObj)
-    throw ColErr::InContainerError<int>(topBeCell,"Reflector topBe cell not found");
-  
-  std::string Out;
-  const std::string lowBeStr = Reflector.getLinkString(7);
-  const std::string topBeStr = Reflector.getLinkString(8);
-  const std::string sideBeStr = Reflector.getLinkString(9);
-  HeadRule HR, LowBeExclude, TopBeExclude;
-  
-  // Bottom Be cell
-  Out = ModelSupport::getComposite(SMap, buildIndex, " -5 ");
-  HR.procString(lowBeStr);
-  HR.makeComplement();
-  System.addCell(MonteCarlo::Object(cellIndex++,waterDiscMat,0,
-                                   Out+sideBeStr+HR.display()));
-  
-  Out = ModelSupport::getComposite(SMap, buildIndex, " 5 -15 ");
-  System.addCell(MonteCarlo::Object(cellIndex++, waterDiscWallMat, 0,
-                                   Out+sideBeStr));
-
-  Out = ModelSupport::getComposite(SMap, buildIndex, " -7 15");
-  System.addCell(MonteCarlo::Object(cellIndex++, BeMat, 0,
-                                   Out+Reflector.getLinkString(10)));
-  
-  Out = ModelSupport::getComposite(SMap,buildIndex," -17 7 15 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,BeWallMat,0,
-                                   Out+Reflector.getLinkString(10)));
-  
-  Out = ModelSupport::getComposite(SMap,buildIndex," -17 15 ");
-  LowBeExclude.procString(Out);
-  
-  Out = ModelSupport::getComposite(SMap,buildIndex," -15 ");
-  LowBeExclude.addUnion(Out);
-  LowBeExclude.makeComplement();
-  LowBeObj->addSurfString(LowBeExclude.display());
-  
-  // Top Be cell
-  Out = ModelSupport::getComposite(SMap,buildIndex," 6 ");
-  HR.procString(topBeStr);
-  HR.makeComplement();
-  System.addCell(MonteCarlo::Object(cellIndex++,waterDiscMat,0,
-                                   Out+sideBeStr+HR.display()));
-  
-  Out = ModelSupport::getComposite(SMap,buildIndex," 16 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,waterDiscWallMat,
-                                   0,Out+sideBeStr));
-  
-  Out = ModelSupport::getComposite(SMap,buildIndex," -7 -16");
-  System.addCell(MonteCarlo::Object(cellIndex++, BeMat,0,
-                                   Out+Reflector.getLinkString(11)));
-  
-  Out = ModelSupport::getComposite(SMap, buildIndex, " -17 7 -16 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,BeWallMat,0,
-                                   Out+Reflector.getLinkString(11)));
-  
-  Out = ModelSupport::getComposite(SMap,buildIndex," -17 -16 ");
-  TopBeExclude.procString(Out);
-  
-  Out = ModelSupport::getComposite(SMap,buildIndex," 16 ");
-  TopBeExclude.addUnion(Out);
-  TopBeExclude.makeComplement();
-  TopBeObj->addSurfString(TopBeExclude.display());
-  
-  return; 
 }
 
-void
-BeRefInnerStructure::createLinks()
-  /*!
-    Creates a full attachment set
-  */
-{  
-  ELog::RegMethod RegA("BeRefInnerStructure","createLinks");
-  
-  
-  return;
-}
-  
 void
 BeRefInnerStructure::createAll(Simulation& System,
-                               const attachSystem::FixedComp& FC,
-			       const long int sideIndex)
+			       const attachSystem::FixedComp&,
+			       const long int)
+
   /*!
     Extrenal build everything
     \param System :: Simulation
-    \param FC :: Attachment point	      
-    \param sideIndex :: lin point
-*/
+    \param FC :: Attachment point	       
+    \param sideIndex :: link point
+  */
 {
   ELog::RegMethod RegA("BeRefInnerStructure","createAll");
-
+  
   populate(System.getDataBase());
-  createUnitVector(FC,sideIndex);
-
-  createSurfaces(FC);
-  createObjects(System, FC);
-  createLinks();
-
-  insertObjects(System);       
+  
+  if (active)
+    layerProcess(System);
+  
   return;
 }
 

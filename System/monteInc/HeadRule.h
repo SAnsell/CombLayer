@@ -66,6 +66,7 @@ class HeadRule
   HeadRule(const Rule*);
   HeadRule& operator=(const HeadRule&);
   ~HeadRule();
+  
   bool operator==(const HeadRule&) const;
   bool operator!=(const HeadRule&) const;
   HeadRule& operator+=(const HeadRule&);

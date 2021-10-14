@@ -1093,7 +1093,7 @@ HeadRule::getPrimarySurface() const
     The master surface is when the surface is the ONLY surface
     at the master level. Throw if that is not the case
 
-    \return single surface number / 0 if not a single primary
+    \return single surface number / 0 if not a single primary [signed]
   */
 {
   const std::vector<int> TSet=getTopSurfaces();
@@ -1107,7 +1107,7 @@ std::vector<int>
 HeadRule::getTopSurfaces() const
   /*!
     Calculate the surfaces that are within the top level
-    \return Set of surface
+    \return Set of surface [signed]
   */
 {
   ELog::RegMethod RegA("HeadRule","getOppositeSurfaces");
