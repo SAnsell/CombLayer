@@ -598,6 +598,8 @@ diag2Package(FuncDataBase& Control,const std::string& Name)
 {
   ELog::RegMethod RegA("micromaxVariables[F]","diag2Package");
 
+  setVariable::ViewScreenGenerator VTGen;
+  setVariable::BellowGenerator BellowGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::BremTubeGenerator BTGen;
   setVariable::HPJawsGenerator HPGen;
@@ -619,8 +621,16 @@ diag2Package(FuncDataBase& Control,const std::string& Name)
   PItemGen.generatePort(Control,portName+"FrontPort0",
 			Geometry::Vec3D(0,-11.5,0),
 			Geometry::Vec3D(-1,0,0));
-  
 
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,Name+"BellowF",7.50);
+
+  VTGen.setPortBCF<setVariable::CF40>();
+  VTGen.setPortBLen(3.0);
+  VTGen.generateView(Control,Name+"ViewTubeB");
+
+  
+  
   
   return;
 }

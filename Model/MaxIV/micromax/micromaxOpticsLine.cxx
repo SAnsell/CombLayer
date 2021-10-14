@@ -154,7 +154,10 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   mbXstals(new xraySystem::MonoBlockXstals(newName+"MBXstals")),
   monoBremTube(new xraySystem::BremTube(newName+"MonoBremTube")),
   bremCollB(new xraySystem::BremBlock(newName+"BremCollB")),
-  hpJawsA(new xraySystem::HPJaws(newName+"HPJawsA"))
+  hpJawsA(new xraySystem::HPJaws(newName+"HPJawsA")),
+  bellowF(new constructSystem::Bellows(newName+"BellowF")),
+  viewTubeB(new xraySystem::ViewScreenTube(newName+"ViewTubeB")),
+  yagScreenB(new tdcSystem::YagScreen("yagScreenB"))
 
   /*!
     Constructor
@@ -184,6 +187,9 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   OR.addObject(monoBremTube);
   OR.addObject(bremCollB);
   OR.addObject(hpJawsA);
+  OR.addObject(bellowF);
+  OR.addObject(viewTubeB);
+  OR.addObject(yagScreenB);
   
     
 }
@@ -285,6 +291,13 @@ micromaxOpticsLine::constructDiag2(Simulation& System,
   constructSystem::constructUnit
     (System,buildZone,*monoBremTube,"back",*hpJawsA);
 
+  constructSystem::constructUnit
+    (System,buildZone,*hpJawsA,"back",*bellowF);
+
+  constructSystem::constructUnit
+    (System,buildZone,*bellowF,"back",*viewTubeB);
+
+  
   return;
 }
 

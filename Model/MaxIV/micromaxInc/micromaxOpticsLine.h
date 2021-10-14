@@ -137,6 +137,13 @@ class micromaxOpticsLine :
   std::shared_ptr<xraySystem::BremBlock> bremCollB;
   /// jaws
   std::shared_ptr<xraySystem::HPJaws> hpJawsA;
+  /// Bellow exit
+  std::shared_ptr<constructSystem::Bellows> bellowF;
+  /// view screen tube
+  std::shared_ptr<xraySystem::ViewScreenTube> viewTubeB;
+  /// yag view screen
+  std::shared_ptr<tdcSystem::YagScreen> yagScreenB;
+
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle

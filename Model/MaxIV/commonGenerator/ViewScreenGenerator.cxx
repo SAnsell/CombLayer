@@ -83,6 +83,18 @@ ViewScreenGenerator::~ViewScreenGenerator()
  */
 {}
 
+  
+void
+ViewScreenGenerator::setPortBLen(const double L)
+  /*!
+    Set length
+  */
+{
+  portBLength=radius+wallThick+L;
+  return;
+}
+  
+  
 template<typename CF>
 void
 ViewScreenGenerator::setCF()
