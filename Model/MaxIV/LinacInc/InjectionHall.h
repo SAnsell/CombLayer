@@ -70,23 +70,13 @@ class InjectionHall :
   double fkgMazeWidth;          ///< Future klystron gallery maze width
   double fkgMazeLength;         ///< Future klystron gallery maze length
   double fkgMazeWallThick;      ///< Future klystron gallery maze wall thickness
-  double fkgShieldThick;        ///< FKG additional shielding thickness
-  std::vector<double> fkgShieldHeight;       ///< FKG additional shielding height(s)
-  double fkgShieldDepth;        ///< FKG additional shielding depth
-  double fkgShieldLength;       ///< FKG additional shielding length
-  double fkgShieldTHzWidth;     ///< THz box gap width in the FKG shield layer
-  int fkgShieldMat;             ///< FKG additional shielding material
 
   double btgThick;          ///< PREFAB BTG-BLOCK thick
   double btgHeight;         ///< BTG-BLOCK height
-  double btgTopLayerHeight1;    ///< BTG top layer first segment height
-  double btgTopLayerHeight2;    ///< BTG top layer second segment height
   double btgLength;         ///< BTG-BLOCK length
   double btgYOffset; ///< BTG-BLOCK Y+ offset (relative to the back wall front concrete surface 21)
   int btgMat;                   ///< BTG-BLOCK material
   size_t btgNLayers;               ///< BTG-BLOCK number of imp layers
-  double btgTopLayerLength1;    ///< BTG top layer first segment length
-  double btgTopLayerLength2;    ///< BTG top layer second segment length
 
   double spfParkingFrontWallLength; ///< Wall thickness between C080011 and C080012
   double spfParkingLength;      ///< Length of SPF concrete door parking space (C080012)

@@ -33,7 +33,6 @@
 #include <algorithm>
 #include <memory>
 #include <array>
-#include <numeric>
 
 #include "FileReport.h"
 #include "OutputLog.h"
@@ -128,37 +127,12 @@ InjectionHall::populate(const FuncDataBase& Control)
   fkgMazeWidth=Control.EvalVar<double>(keyName+"FKGMazeWidth");
   fkgMazeLength=Control.EvalVar<double>(keyName+"FKGMazeLength");
   fkgMazeWallThick=Control.EvalVar<double>(keyName+"FKGMazeWallThick");
-  fkgShieldThick=Control.EvalVar<double>(keyName+"FKGShieldThick");
-
-  for (int i=1;; ++i)  {
-    double h = 0.0;
-    try {
-      h = Control.EvalVar<double>(keyName+"FKGShieldHeight"+std::to_string(i));
-    } catch (ColErr::InContainerError<std::string>& EX) {
-      break;
-    }
-
-    if ((i>1) && (h<fkgShieldHeight.back()))
-	throw ColErr::SizeError<double>
-	(h,fkgShieldHeight.back(),keyName+"FKGShieldHeight"+std::to_string(i) + " is too low:");
-
-    fkgShieldHeight.push_back(h);
-  }
-
-  fkgShieldDepth=Control.EvalVar<double>(keyName+"FKGShieldDepth");
-  fkgShieldLength=Control.EvalVar<double>(keyName+"FKGShieldLength");
-  fkgShieldTHzWidth=Control.EvalVar<double>(keyName+"FKGShieldTHzWidth");
-  fkgShieldMat=ModelSupport::EvalMat<int>(Control,keyName+"FKGShieldMat");
   btgThick=Control.EvalVar<double>(keyName+"BTGThick");
   btgHeight=Control.EvalVar<double>(keyName+"BTGHeight");
-  btgTopLayerHeight1=Control.EvalVar<double>(keyName+"BTGTopLayerHeight1");
-  btgTopLayerHeight2=Control.EvalVar<double>(keyName+"BTGTopLayerHeight2");
   btgLength=Control.EvalVar<double>(keyName+"BTGLength");
   btgYOffset=Control.EvalVar<double>(keyName+"BTGYOffset");
   btgMat=ModelSupport::EvalMat<int>(Control,keyName+"BTGMat");
   btgNLayers=Control.EvalDefVar<size_t>(keyName+"BTGNLayers", 1);
-  btgTopLayerLength1=Control.EvalVar<double>(keyName+"BTGTopLayerLength1");
-  btgTopLayerLength2=Control.EvalVar<double>(keyName+"BTGTopLayerLength2");
   spfParkingFrontWallLength=Control.EvalVar<double>(keyName+"SPFParkingFrontWallLength");
   spfParkingLength=Control.EvalVar<double>(keyName+"SPFParkingLength");
   spfParkingWidth=Control.EvalVar<double>(keyName+"SPFParkingWidth");
@@ -594,15 +568,8 @@ InjectionHall::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7402,buildIndex+21,Y,btgYOffset);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7401,buildIndex+7402,Y,-btgLength);
   SurfMap::makeShiftedPlane("KGOuterBlock",SMap,buildIndex+7403,buildIndex+1004,X,btgThick);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+7406,buildIndex+5,X,btgHeight);
-  //      BTG top layer
-  SurfMap::makeShiftedPlane("BTGTopLayerHeight1",
-			    SMap,buildIndex+7416,buildIndex+7406,Z,btgTopLayerHeight1);
-  SurfMap::makeShiftedPlane("BTGTopLayerHeight2",
-			    SMap,buildIndex+7426,buildIndex+7406,Z,btgTopLayerHeight2);
-  SurfMap::makeShiftedPlane("BTGTopLayer1",SMap,buildIndex+7411,buildIndex+7401,X,btgTopLayerLength1);
-  SurfMap::makeShiftedPlane("BTGTopLayer2",SMap,buildIndex+7412,buildIndex+7402,X,-btgTopLayerLength2);
 
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7406,buildIndex+5,X,btgHeight);
 
   // Under-the-floor - main beam dump room
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7501,buildIndex+21,Y,
@@ -681,18 +648,6 @@ InjectionHall::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+7805,Origin-Z*(midTFrontLShieldHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+7806,Origin+Z*(midTFrontLShieldHeight/2.0),Z);
 
-  // FKG additional shielding layer [inside the SPF room, near the BD room entrance]
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+7901,buildIndex+31,Y,-fkgShieldLength);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+7903,buildIndex+1003,X,-fkgShieldThick);
-  ModelSupport::buildPlane(SMap,buildIndex+7905,Origin-Z*(fkgShieldDepth),Z);
-  const size_t n = fkgShieldHeight.size();
-  int SK = buildIndex+7900;
-  for (size_t i=0; i<n; ++i)
-    {
-      ModelSupport::buildPlane(SMap,SK+6,Origin+Z*(fkgShieldHeight[i]),Z);
-      SK += 10;
-    }
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+7902,buildIndex+31,Y,-fkgShieldTHzWidth);
 
   // transfer for later
   SurfMap::setSurf("BDRoomRoof",SMap.realSurf(buildIndex+7516));
@@ -786,18 +741,8 @@ InjectionHall::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 7401 -7402 1004 -7403 5 -7406");
   makeCell("BTG",System,cellIndex++,btgMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7401 -7411 1004 -7403 7406 -7416");
-  makeCell("BTGTopLayer1",System,cellIndex++,btgMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7401 -7411 1004 -7403 7416 -6");
-  makeCell("BTGTopLayer1Void",System,cellIndex++,voidMat,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7411 -7412 1004 -7403 7406 -6");
-  makeCell("BTGTopMiddle",System,cellIndex++,voidMat,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7412 -7402 1004 -7403 7406 -7426");
-  makeCell("BTGTopLayer2",System,cellIndex++,btgMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7412 -7402 1004 -7403 7426 -6");
-  makeCell("BTGTopLayer2Void",System,cellIndex++,voidMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7401 -7402 1004 -7403 7406 -6");
+  makeCell("BTGAbove",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7402 -12 1004 -104 5 -6");
   makeCell("KlystronVoid",System,cellIndex++,voidMat,0.0,Out);
@@ -823,198 +768,171 @@ InjectionHall::createObjects(Simulation& System)
 
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-				 "211 -31 223 -7903 5 -6 97M 117M 127M 137M 147M 157M 167M ");
+				 "211 -31 223 -1003 5 -6 97M 117M 127M 137M 147M 157M 167M ");
   makeCell("LongVoid",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"211 -7901 7903 -1003 5 -6 ");
-  makeCell("LongVoid",System,cellIndex++,voidMat,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,"7901 -31 7903 -1003 5 -7905 ");
-  makeCell("LongVoid",System,cellIndex++,voidMat,0.0,Out);
-
-  const size_t n = fkgShieldHeight.size();
-  int SK = buildIndex+7900;
-  for (size_t i=0; i<n; ++i)
-    {
-      if (i==0)
-	Out=ModelSupport::getComposite(SMap,buildIndex,SK,"7901 -31 7903 -1003 7905 -6M ");
-      else if (i==2) {
-	Out=ModelSupport::getComposite(SMap,buildIndex,SK,SK-10,"7902 -31 7903 -1003 6N -6M ");
-	makeCell("FKGShieldTHzVoid",System,cellIndex++,voidMat,0.0,Out);
-	Out=ModelSupport::getComposite(SMap,buildIndex,SK,SK-10,"7901 -7902 7903 -1003 6N -6M ");
-      }
-      else
-	Out=ModelSupport::getComposite(SMap,buildIndex,SK,SK-10,"7901 -31 7903 -1003 6N -6M ");
-
-      makeCell("FKGShield",System,cellIndex++,i%2 ? voidMat : fkgShieldMat,0.0,Out);
-      SK += 10;
-    }
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,SK-10,"7901 -31 7903 -1003 6M -6 ");
-  makeCell("LongVoid",System,cellIndex++,voidMat,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
 				 "21 -22 7003 -1003 5 -6 ");
   makeCell("BackWallConcrete",System,cellIndex++,backWallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
 				 "31 -21 7003 -1003 5 -6 ");
   makeCell("BackWallIron",System,cellIndex++,wallIronMat,0.0,Out);
 
   // SPF hallway
   // C080012 is official room name
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
 				 "22 -6122 223 -6003 5 -6 ");
   makeCell("C080012",System,cellIndex++,voidMat,0.0,Out);
 
   // SPF/FemtoMAX wall
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
 				 "22 -6112 6003 -6004 5 -6 ");
   makeCell("FemtoMAXWall",System,cellIndex++,wallMat,0.0,Out);
 
   // FemtoMAX (BSP02) beamline area
   // C080016 is official room name
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "22 -1041 6004 -6103 5 -6 ");
   makeCell("C080016shield",System,cellIndex++,femtoMAXShieldMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "1041 -1022 6004 -6103 5 -6 ");
   makeCell("C080016fom",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "1022 -6201 6004 -6103 5 -6 ");
   makeCell("C080016",System,cellIndex++,voidMat,0.0,Out);
 
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6201 -6102 6004 -6014 5 -6 ");
   makeCell("C080016BackWallVoid",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6101 -6102 6014 -6103 5 -6 ");
   makeCell("C080016BackWall",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6201 -6101 6014 -6103 5 -6 ");
   makeCell("C080016BackWallIron",System,cellIndex++,wallIronMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6102 -6111 6004 -6103 5 -6 ");
   makeCell("C080016MazeVoid",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6111 -6211 6004 -6013 5 -6 ");
   makeCell("C080016MazeIron",System,cellIndex++,wallIronMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6211  -6212 6004 -6014 5 -6 ");
   makeCell("C080016MazeIronBack",System,cellIndex++,wallIronMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6212 -6112 6004 -6014 5 -6 ");
   makeCell("C080016MazeBack",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6211  -6112 6014 -6013 5 -6 ");
   makeCell("C080016Maze",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6111 -6112 6013 -6103 5 -6106 ");
   makeCell("C080016MazeWallVoid",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6111 -6112 6013 -6103 6106 -6 ");
   makeCell("C080016MazeWall",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6112 -6121 6003 -6103 5 -6 ");
   makeCell("C080016Maze",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6121 -6122 6003 -6014 5 -6 ");
   makeCell("C080016MazeBackWallVoid",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6121 -6122 6014 -6113 5 -6 ");
   makeCell("C08MazeBackWall",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6122 -12 223 -1004 5 -6 ");
   makeCell("VoidBehindBSP01Maze",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "12 -2 223 -104 5 -6 ");
   makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "12 -2 1004 -114 6 -25 ");
   makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out);
 
   // FemtoMAX/BSP01 wall
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "22 -6121 6103 -6104 5 -6 ");
   makeCell("BSP01Wall",System,cellIndex++,wallMat,0.0,Out);
 
   // BSP01 beamline area
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "22 -1031 6104 -1003 5 -6 ");
   makeCell("C080017shield",System,cellIndex++,storageShieldMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "1031 -1022 6104 -1003 5 -6 ");
   makeCell("C080017fom",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "1022 -6201 6104 -1003 5 -6 ");
   makeCell("C080017",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6201 -6101 6104 -6113 5 -6 ");
   makeCell("C080017BackWallIron",System,cellIndex++,wallIronMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6101 -6102 6104 -6113 5 -6 ");
   makeCell("C080017BackWall",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6201 -6102 6113 -1003 5 -6 ");
   makeCell("C080017BackWallVoid",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6102 -6111 6104 -1003 5 -6 ");
   makeCell("C080017MazeVoid",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6111 -6112 6104 -6114 5 -6106 ");
   makeCell("C080017MazeVoid",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6111 -6112 6104 -6114 6106 -6 ");
   makeCell("C080017MazeWall",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6111 -6211 6114 -1003 5 -6 ");
   makeCell("C080017MazeIron",System,cellIndex++,wallIronMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6211 -6212 6113 -1003 5 -6 ");
   makeCell("C080017MazeIronBack",System,cellIndex++,wallIronMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6212 -6112 6113 -1003 5 -6 ");
   makeCell("C080017MazeBack",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6211 -6112 6114 -6113 5 -6 ");
   makeCell("C080017Maze",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6112 -6121 6104 -1004 5 -6 ");
   makeCell("C080017MazeVoid",System,cellIndex++,voidMat,0.0,Out);
 
-  // Out=ModelSupport::getComposite(SMap,buildIndex,
+  // Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   // 				 "6121 -6122 6104 -6113 5 -6 ");
   // makeCell("C080017MazeBackWall",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6121 -6122 6113 -1004 5 -6 ");
   makeCell("C080017MazeBackWallVoid",System,cellIndex++,voidMat,0.0,Out);
 
@@ -1408,6 +1326,9 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("BDTDC",System,cellIndex++,0,0.0,Out);
 
 
+
+
+
   // Radioactive waste room
   Out=ModelSupport::getComposite(SMap,buildIndex," 7601 -7602 1004 -7604 5 -6 ");
   makeCell("WasteRoom",System,cellIndex++,0,0.0,Out);
@@ -1443,14 +1364,6 @@ InjectionHall::createObjects(Simulation& System)
 	       backWallNLayers);
 
   layerProcess(System,"BTG",
-	       SMap.realSurf(buildIndex+1004),
-	       -SMap.realSurf(buildIndex+7403),
-	       btgNLayers);
-  layerProcess(System,"BTGTopLayer1",
-	       SMap.realSurf(buildIndex+1004),
-	       -SMap.realSurf(buildIndex+7403),
-	       btgNLayers);
-  layerProcess(System,"BTGTopLayer2",
 	       SMap.realSurf(buildIndex+1004),
 	       -SMap.realSurf(buildIndex+7403),
 	       btgNLayers);
@@ -1529,11 +1442,6 @@ InjectionHall::createObjects(Simulation& System)
   	       -SMap.realSurf(buildIndex+223),
   	       SMap.realSurf(buildIndex+233),
   	       btgNLayers);
-  // layerProcess(System,"FKGShield",
-  // 	       SMap.realSurf(buildIndex+7903),
-  // 	       -SMap.realSurf(buildIndex+1003),
-  // 	       btgNLayers);
-
 
   return;
 }
@@ -1587,19 +1495,10 @@ InjectionHall::createLinks()
 
   FixedComp::setConnect(8,getLinkPt("BTGSide")
 			-X*(btgThick)
-			+Y*(btgTopLayerLength1/2-btgTopLayerLength2/2)
 			+Z*(btgHeight-floorDepth+roofHeight)/2.0
 			,X);
   FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+7913));
   FixedComp::nameSideIndex(8, "BTGTopMiddleSide");
-
-  // FKG additional shielding
-  const Geometry::Plane* p7903 = SMap.realPtr<Geometry::Plane>(buildIndex+7903);
-  const double fkgShieldHeightTotal = std::accumulate(fkgShieldHeight.begin(),fkgShieldHeight.end(),0.0);
-  FixedComp::setConnect(9,Origin+X*p7903->getDistance()+Y*btgdY
-			+Z*(fkgShieldHeightTotal-fkgShieldDepth)/2.0,X);
-  FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+7903));
-  FixedComp::nameSideIndex(9,"FKGShieldSide");
 
   return;
 }

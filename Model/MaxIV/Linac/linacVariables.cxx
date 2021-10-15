@@ -3370,21 +3370,8 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"FKGMazeLength",280.0); // derived from K_20-1_08F6c1 (110+170)
   Control.addVariable(wallKey+"FKGMazeWallThick",200.0); // K_20-1_08F6c1
 
-  Control.addVariable(wallKey+"FKGShieldThick",20.0); // my suggestion (20 cm is max thick before the pipes bend)
-  Control.addVariable(wallKey+"FKGShieldLength",270.0); // to covert BTGTopMiddle
-  Control.addVariable(wallKey+"FKGShieldHeight1",76.0); //
-  Control.addVariable(wallKey+"FKGShieldHeight2",96.0); // gap for the ducts
-  Control.addVariable(wallKey+"FKGShieldHeight3",148.0);
-  Control.addVariable(wallKey+"FKGShieldHeight4",168.0); // gap for the ducts
-  Control.addVariable(wallKey+"FKGShieldHeight5",210); // 20 cm until the ceiling
-  Control.addVariable(wallKey+"FKGShieldTHzWidth",20.0); // guess
-  Control.addVariable(wallKey+"FKGShieldDepth",-10.0); // to cover TDClineB
-  Control.addVariable(wallKey+"FKGShieldMat","Stainless304L"); // suggestion [test]
-
   Control.addVariable(wallKey+"BTGThick",90.0); // calculated from K_20-1_08G6b4: 2700-1800
-  Control.addVariable(wallKey+"BTGHeight",200.0); // original value derived from K_20-6_075: 200
-  Control.addVariable(wallKey+"BTGTopLayerHeight1",80.0); // agreed with AR 211004
-  Control.addVariable(wallKey+"BTGTopLayerHeight2",80.0); // agreed with AR 211004
+  Control.addVariable(wallKey+"BTGHeight",280.0); // original value derived from K_20-6_075: 200, added 80 to reduce dose rate in FKG
   Control.addVariable(wallKey+"BTGLength",1000.0); // K_20-1_08G6b[14]: 495000-489000-1416+5416
   Control.addVariable(wallKey+"BTGYOffset",180.0); // calculated from K_20-1_08G6b4: 5416-3616
   Control.addVariable(wallKey+"BTGMat","Concrete"); // AR 2020-11-17
@@ -3401,9 +3388,6 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"StorageShieldMat","B4C"); // own design
   Control.addVariable(wallKey+"FemtoMAXShieldThick",5.0); // own design
   Control.addVariable(wallKey+"FemtoMAXShieldMat","B4C"); // own design
-
-  Control.addVariable(wallKey+"BTGTopLayerLength1",525.035); // end at 30 cm before 1st duct centre [agreed with AR 211004]
-  Control.addVariable(wallKey+"BTGTopLayerLength2",110.0); // agreed with AR
 
   Control.addVariable(wallKey+"FemtoMAXWallThick",105.0); // K_01-0_010 IV1.13
   Control.addVariable(wallKey+"FemtoMAXWallOffset",405.0); // derived from K_20-1_08G6b[34]
