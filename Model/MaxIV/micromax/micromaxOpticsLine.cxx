@@ -150,14 +150,25 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   attnTube(new constructSystem::PortTube(newName+"AttnTube")),
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
   tableA(new xraySystem::Table(newName+"TableA")),
-  monoVessel(new xraySystem::DCMTank(newName+"MonoVessel")),
+
+  dmmVessel(new xraySystem::DCMTank(newName+"DMMVessel")),
+  bellowF(new constructSystem::Bellows(newName+"BellowF")),
+  gateTubeB(new xraySystem::CylGateValve(newName+"GateTubeB")),
+  bellowG(new constructSystem::Bellows(newName+"BellowG")),
+  
+  dcmVessel(new xraySystem::DCMTank(newName+"DCMVessel")),
   mbXstals(new xraySystem::MonoBlockXstals(newName+"MBXstals")),
+
+  bellowH(new constructSystem::Bellows(newName+"BellowH")),
+  pipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
+  gateTubeC(new xraySystem::CylGateValve(newName+"GateTubeC")),
+  
   monoBremTube(new xraySystem::BremTube(newName+"MonoBremTube")),
   bremCollB(new xraySystem::BremBlock(newName+"BremCollB")),
   hpJawsA(new xraySystem::HPJaws(newName+"HPJawsA")),
-  bellowF(new constructSystem::Bellows(newName+"BellowF")),
+  bellowI(new constructSystem::Bellows(newName+"BellowI")),
   viewTubeB(new xraySystem::ViewScreenTube(newName+"ViewTubeB")),
-  yagScreenB(new tdcSystem::YagScreen("yagScreenB"))
+  yagScreenB(new tdcSystem::YagScreen("YagScreenB"))
 
   /*!
     Constructor
@@ -182,12 +193,19 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   OR.addObject(attnTube);
   OR.addObject(bellowE);
   OR.addObject(tableA);
-  OR.addObject(monoVessel);
+  OR.addObject(dmmVessel);
+  OR.addObject(bellowF);
+  OR.addObject(gateTubeB);
+  OR.addObject(bellowG);
+  OR.addObject(dcmVessel);
   OR.addObject(mbXstals);
+  OR.addObject(bellowH);
+  OR.addObject(pipeB);
+  OR.addObject(gateTubeC);
   OR.addObject(monoBremTube);
   OR.addObject(bremCollB);
   OR.addObject(hpJawsA);
-  OR.addObject(bellowF);
+  OR.addObject(bellowI);
   OR.addObject(viewTubeB);
   OR.addObject(yagScreenB);
   
@@ -247,6 +265,28 @@ micromaxOpticsLine::createSurfaces()
 }
 
 void
+micromaxOpticsLine::constructHDMM(Simulation& System,
+				  const attachSystem::FixedComp& initFC, 
+				  const std::string& sideName)
+/*!
+    Sub build of the Diffraction Mirror Mono package
+    \param System :: Simulation to use
+    \param initFC :: Start point
+    \param sideName :: start link point
+  */
+{
+  ELog::RegMethod RegA("micromaxOpticsLine","constructHDMM");
+
+  constructSystem::constructUnit
+    (System,buildZone,initFC,sideName,*dmmVessel);
+  
+  //  mbXstals->addInsertCell(dmmVessel->getCell("Void"));
+  //  mbXstals->createAll(System,*dcmVessel,0);
+
+  return;
+}
+
+void
 micromaxOpticsLine::constructHDCM(Simulation& System,
 				  const attachSystem::FixedComp& initFC, 
 				  const std::string& sideName)
@@ -260,10 +300,10 @@ micromaxOpticsLine::constructHDCM(Simulation& System,
   ELog::RegMethod RegA("micromaxOpticsLine","constructHDCM");
 
   constructSystem::constructUnit
-    (System,buildZone,initFC,sideName,*monoVessel);
+    (System,buildZone,initFC,sideName,*dcmVessel);
   
-  mbXstals->addInsertCell(monoVessel->getCell("Void"));
-  mbXstals->createAll(System,*monoVessel,0);
+  mbXstals->addInsertCell(dcmVessel->getCell("Void"));
+  mbXstals->createAll(System,*dcmVessel,0);
 
   return;
 }
@@ -292,11 +332,18 @@ micromaxOpticsLine::constructDiag2(Simulation& System,
     (System,buildZone,*monoBremTube,"back",*hpJawsA);
 
   constructSystem::constructUnit
-    (System,buildZone,*hpJawsA,"back",*bellowF);
+    (System,buildZone,*hpJawsA,"back",*bellowI);
 
-  constructSystem::constructUnit
-    (System,buildZone,*bellowF,"back",*viewTubeB);
+  int outerCell=constructSystem::constructUnit
+    (System,buildZone,*bellowI,"back",*viewTubeB);
 
+  yagScreenB->setBeamAxis(*viewTubeB,1);
+  yagScreenB->createAll(System,*viewTubeB,4);
+  yagScreenB->insertInCell("Outer",System,outerCell);
+  yagScreenB->insertInCell("Connect",System,viewTubeB->getCell("Plate"));
+  yagScreenB->insertInCell("Connect",System,viewTubeB->getCell("Void"));
+  yagScreenB->insertInCell("Payload",System,viewTubeB->getCell("Void"));
+  
   
   return;
 }
@@ -377,16 +424,34 @@ micromaxOpticsLine::buildObjects(Simulation& System)
   tableA->createAll(System,*bellowA,0);
   tableA->insertInCells(System,buildZone.getCells());
 
-  constructHDCM(System,*bellowE,"back");
+  constructHDMM(System,*bellowE,"back");
 
-  constructDiag2(System,*monoVessel,"back");
+  constructSystem::constructUnit
+    (System,buildZone,*dmmVessel,"back",*bellowF);
+
+  constructSystem::constructUnit
+    (System,buildZone,*bellowF,"back",*gateTubeB);
+
+  constructSystem::constructUnit
+    (System,buildZone,*gateTubeB,"back",*bellowG);
+
+  constructHDCM(System,*bellowG,"back");
+
+  constructSystem::constructUnit
+    (System,buildZone,*dcmVessel,"back",*bellowH);
+  constructSystem::constructUnit
+    (System,buildZone,*bellowH,"back",*pipeB);
+  constructSystem::constructUnit
+    (System,buildZone,*pipeB,"back",*gateTubeC);
+  
+  constructDiag2(System,*gateTubeC,"back");
   
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);
 
   setCells("InnerVoid",buildZone.getCells("Unit"));
   setCell("LastVoid",buildZone.getCells("Unit").back());
-  lastComp=bellowC;
+  lastComp=bellowI;
 
   return;
 }

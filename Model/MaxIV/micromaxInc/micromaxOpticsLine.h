@@ -127,10 +127,31 @@ class micromaxOpticsLine :
   std::shared_ptr<constructSystem::Bellows> bellowE;
   /// Table for diag table 
   std::shared_ptr<xraySystem::Table> tableA;
-  /// H-res mono vessel
-  std::shared_ptr<xraySystem::DCMTank> monoVessel;
+
+  /// H-res DMM mono vessel
+  std::shared_ptr<xraySystem::DCMTank> dmmVessel;
+
+  /// Bellow exit
+  std::shared_ptr<constructSystem::Bellows> bellowF;
+  /// Gate valve between monos
+  std::shared_ptr<xraySystem::CylGateValve> gateTubeB;
+  /// Bellow exit
+  std::shared_ptr<constructSystem::Bellows> bellowG;
+
+
+  /// H-res DCM mono vessel
+  std::shared_ptr<xraySystem::DCMTank> dcmVessel;
   /// Crystal pair
   std::shared_ptr<xraySystem::MonoBlockXstals> mbXstals;
+
+  /// Bellow exit
+  std::shared_ptr<constructSystem::Bellows> bellowH;
+  /// Brem block tube
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;
+  /// Gate valve between mono/diag2
+  std::shared_ptr<xraySystem::CylGateValve> gateTubeC;
+
+
   /// BremTube (with heat trapping)
   std::shared_ptr<xraySystem::BremTube> monoBremTube;
   /// BremBlock
@@ -138,7 +159,7 @@ class micromaxOpticsLine :
   /// jaws
   std::shared_ptr<xraySystem::HPJaws> hpJawsA;
   /// Bellow exit
-  std::shared_ptr<constructSystem::Bellows> bellowF;
+  std::shared_ptr<constructSystem::Bellows> bellowI;
   /// view screen tube
   std::shared_ptr<xraySystem::ViewScreenTube> viewTubeB;
   /// yag view screen
@@ -149,6 +170,8 @@ class micromaxOpticsLine :
   double outerRight;   ///< Right width for cut rectangle
   double outerTop;     ///< Top lift for cut rectangle
 
+  void constructHDMM(Simulation&,const attachSystem::FixedComp&, 
+		     const std::string&);
   void constructHDCM(Simulation&,const attachSystem::FixedComp&, 
 		     const std::string&);
   void constructDiag2(Simulation&,const attachSystem::FixedComp&, 

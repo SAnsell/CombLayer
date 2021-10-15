@@ -94,6 +94,7 @@ namespace micromaxVar
 
 void undulatorVariables(FuncDataBase&,const std::string&);
 void mirrorMonoPackage(FuncDataBase&,const std::string&);
+void hdmmPackage(FuncDataBase&,const std::string&);
 void hdcmPackage(FuncDataBase&,const std::string&);
 void diagPackage(FuncDataBase&,const std::string&);
 void diag2Package(FuncDataBase&,const std::string&);
@@ -242,6 +243,43 @@ mirrorMonoPackage(FuncDataBase& Control,
 }
 
 void
+hdmmPackage(FuncDataBase& Control,const std::string& monoKey)
+  /*!
+    Builds the variables for the hdmm (diffraction/mirror) packge
+    \param Control :: Database
+    \param monoKey :: prename
+  */
+{
+  ELog::RegMethod RegA("micromaxVariables[F]","hdmmPackage");
+
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::DCMTankGenerator MBoxGen;
+  
+  // ystep/width/height/depth/length
+  // 
+  MBoxGen.setCF<CF40>();   // set ports
+  MBoxGen.setPortLength(7.5,7.5); // La/Lb
+  MBoxGen.setBPortOffset(-0.6,0.0);    // note -1mm from crystal offset
+  // radius : Height / depth  [need heigh = 0]
+  MBoxGen.generateBox(Control,monoKey+"DMMVessel",30.0,0.0,16.0);
+
+  Control.addVariable(monoKey+"DMMVesselPortBXStep",-0.6);      // from primary
+
+  const double outerRadius(30.5);
+  const std::string portName=monoKey+"DMMVessel";
+  Control.addVariable(portName+"NPorts",1);   // beam ports (lots!!)
+  
+  PItemGen.setCF<setVariable::CF63>(outerRadius+5.0);
+  PItemGen.setWindowPlate(2.5,2.0,-0.8,"Stainless304","LeadGlass");
+  PItemGen.generatePort(Control,portName+"Port0",
+  			Geometry::Vec3D(0,5.0,-10.0),
+  			Geometry::Vec3D(1,0,0));
+  
+
+  return;
+}
+
+void
 hdcmPackage(FuncDataBase& Control,
 	    const std::string& monoKey)
   /*!
@@ -262,12 +300,12 @@ hdcmPackage(FuncDataBase& Control,
   MBoxGen.setPortLength(7.5,7.5); // La/Lb
   MBoxGen.setBPortOffset(-0.6,0.0);    // note -1mm from crystal offset
   // radius : Height / depth  [need heigh = 0]
-  MBoxGen.generateBox(Control,monoKey+"MonoVessel",30.0,0.0,16.0);
+  MBoxGen.generateBox(Control,monoKey+"DCMVessel",30.0,0.0,16.0);
 
-  Control.addVariable(monoKey+"MonoVesselPortBXStep",-0.6);      // from primary
+  Control.addVariable(monoKey+"DCMVesselPortBXStep",-0.6);      // from primary
 
   const double outerRadius(30.5);
-  const std::string portName=monoKey+"MonoVessel";
+  const std::string portName=monoKey+"DCMVessel";
   Control.addVariable(portName+"NPorts",1);   // beam ports (lots!!)
   
   PItemGen.setCF<setVariable::CF63>(outerRadius+5.0);
@@ -305,51 +343,6 @@ diag3Package(FuncDataBase& Control,
   setVariable::PipeGenerator PipeGen;
   setVariable::BremBlockGenerator MaskGen;
   
-  PipeGen.setNoWindow();   // no window
-  PipeGen.setCF<setVariable::CF40>();
-
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,diagKey+"BellowG",15.0);
-
-  GVGen.generateGate(Control,diagKey+"GateTubeE",0);  // open
-
-  VSGen.generateView(Control,diagKey+"ViewTube");
-  YagGen.generateScreen(Control,diagKey+"YagScreen",1);  // in beam
-  Control.addVariable(diagKey+"YagScreenYAngle",-45.0);
-
-   // will be rotated vertical
-  const std::string viewName=diagKey+"BremTubeB";
-  SimpleTubeGen.setCF<CF150>();
-  SimpleTubeGen.setCap(1,1);
-  SimpleTubeGen.setBFlangeCF<CF150>();
-  SimpleTubeGen.generateTube(Control,viewName,25.0);
-  Control.addVariable(viewName+"NPorts",2);   // beam ports
-
-  PItemGen.setCF<setVariable::CF100>(CF150::outerRadius+5.0);
-  PItemGen.setPlate(0.0,"Void");  
-  PItemGen.setOuterVoid(0);
-  PItemGen.generatePort(Control,viewName+"Port0",
-			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,1));
-
-  PItemGen.setCF<setVariable::CF150>(CF150::outerRadius+10.0);
-  PItemGen.setPlate(0.0,"Void");  
-  PItemGen.generatePort(Control,viewName+"Port1",
-			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,-1));
-
-  MaskGen.setAperature(-1,1.0,1.0,1.0,1.0,1.0,1.0);
-  MaskGen.generateBlock(Control,diagKey+"BremCollC",-4.0);
-  Control.addVariable(diagKey+"BremCollCPreXAngle",90);
-  HPGen.generateJaws(Control,diagKey+"HPJawsB",0.3,0.3); 
-
-
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,diagKey+"BellowH",15.0);
-
-  PipeGen.generatePipe(Control,diagKey+"PipeE",185.0);
-
-
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,diagKey+"BellowI",15.0);
 
   return;
 }
@@ -369,14 +362,6 @@ diag4Package(FuncDataBase& Control,
   setVariable::CylGateValveGenerator GVGen;
   setVariable::ViewScreenGenerator VSGen;
   setVariable::BellowGenerator BellowGen;
-  
-  GVGen.generateGate(Control,diagKey+"GateTubeF",0);
-
-  VSGen.setPortBCF<CF40>();
-  VSGen.generateView(Control,diagKey+"ViewTubeB");
-
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,diagKey+"BellowJ",10.0);    
   
   return;
 }
@@ -623,13 +608,16 @@ diag2Package(FuncDataBase& Control,const std::string& Name)
 			Geometry::Vec3D(-1,0,0));
 
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,Name+"BellowF",7.50);
+  BellowGen.generateBellow(Control,Name+"BellowI",7.50);
 
   VTGen.setPortBCF<setVariable::CF40>();
   VTGen.setPortBLen(3.0);
   VTGen.generateView(Control,Name+"ViewTubeB");
-
   
+  setVariable::YagScreenGenerator YagGen;
+  YagGen.generateScreen(Control,"YagScreenB",1);  // in beam
+  Control.addVariable("YagScreenBYAngle",-90.0);
+
   
   
   return;
@@ -846,9 +834,21 @@ opticsVariables(FuncDataBase& Control,
 
   micromaxVar::diagPackage(Control,preName);
 
+  micromaxVar::hdmmPackage(Control,preName);
+
+  BellowGen.generateBellow(Control,preName+"BellowF",7.5);
+  GVGen.generateGate(Control,preName+"GateTubeB",0);  // open
+  BellowGen.generateBellow(Control,preName+"BellowG",7.5);
+    
   micromaxVar::hdcmPackage(Control,preName);
 
+  BellowGen.generateBellow(Control,preName+"BellowH",7.5);
+  ELog::EM<<"PipeGen "<<preName<<ELog::endDiag;
+  PipeGen.generatePipe(Control,preName+"PipeB",7.5);
+  GVGen.generateGate(Control,preName+"GateTubeC",0);  // open
+  
   micromaxVar::diag2Package(Control,preName);
+
   /*
   PipeGen.setCF<CF40>();  
   PipeGen.generatePipe(Control,preName+"PipeB",7.5);
@@ -1118,7 +1118,6 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(preName+"SampleYStep", 25.0); // [2]
   Control.addVariable(preName+"SampleRadius", 5.0); // [2]
   Control.addVariable(preName+"SampleDefMat", "Stainless304");
-
   
   return;
 }
