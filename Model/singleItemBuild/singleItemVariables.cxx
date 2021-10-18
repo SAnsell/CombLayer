@@ -90,6 +90,8 @@
 #include "TriGroupGenerator.h"
 #include "subPipeUnit.h"
 #include "MultiPipeGenerator.h"
+#include "ScreenGenerator.h"
+#include "CooledScreenGenerator.h"
 #include "YagScreenGenerator.h"
 #include "YagUnitGenerator.h"
 #include "YagUnitBigGenerator.h"

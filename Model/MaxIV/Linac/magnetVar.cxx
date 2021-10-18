@@ -51,6 +51,7 @@
 #include "PortItemGenerator.h"
 #include "StriplineBPMGenerator.h"
 #include "DipoleDIBMagGenerator.h"
+#include "ScreenGenerator.h"
 #include "YagScreenGenerator.h"
 #include "YagUnitGenerator.h"
 #include "FlatPipeGenerator.h"

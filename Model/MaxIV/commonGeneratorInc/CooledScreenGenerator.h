@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Model/MaxIV/LinacInc/YagScreenGenerator.h
+ * File:   Model/MaxIV/commonGeneratorInc/CooledScreenGenerator.h
  *
- * Copyright (c) 2004-2021 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef setVariable_YagScreenGenerator_h
-#define setVariable_YagScreenGenerator_h
+#ifndef setVariable_CooledScreenGenerator_h
+#define setVariable_CooledScreenGenerator_h
 
 class FuncDataBase;
 
@@ -28,14 +28,14 @@ namespace setVariable
 {
 
 /*!
-  \class YagScreenGenerator
+  \class CooledScreenGenerator
   \version 1.0
   \author Konstantin Batkov
   \date May 2020
-  \brief YagScreenGenerator for variables
+  \brief CooledScreenGenerator for variables
 */
 
-class YagScreenGenerator :
+class CooledScreenGenerator :
     public ScreenGenerator
 {
  private:
@@ -59,18 +59,15 @@ class YagScreenGenerator :
   double screenHolderRadius;     ///< screen holder thickness
   double screenHolderThick;     ///< screen holder thickness
 
-
-  std::string holderMat;             ///< mirror holder material
+  std::string copperMat;             ///< mirror  material
   std::string screenMat;             ///< mirror holder material
-  std::string screenHolderMat;       ///< mirror holder material
-  std::string mirrorMat;             ///< mirror  material
 
  public:
 
-  YagScreenGenerator();
-  YagScreenGenerator(const YagScreenGenerator&);
-  YagScreenGenerator& operator=(const YagScreenGenerator&);
-  virtual ~YagScreenGenerator();
+  CooledScreenGenerator();
+  CooledScreenGenerator(const CooledScreenGenerator&);
+  CooledScreenGenerator& operator=(const CooledScreenGenerator&);
+  virtual ~CooledScreenGenerator();
 
 
   virtual void generateScreen(FuncDataBase&,const std::string&,

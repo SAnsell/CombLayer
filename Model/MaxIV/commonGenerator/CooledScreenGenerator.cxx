@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonGenerator/YagScreenGenerator.cxx
+ * File:   commonGenerator/CooledScreenGenerator.cxx
  *
- * Copyright (c) 2004-2021 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,12 +46,12 @@
 #include "CFFlanges.h"
 
 #include "ScreenGenerator.h"
-#include "YagScreenGenerator.h"
+#include "CooledScreenGenerator.h"
 
 namespace setVariable
 {
 
-YagScreenGenerator::YagScreenGenerator() :
+CooledScreenGenerator::CooledScreenGenerator() :
   ScreenGenerator(),
 
   holderWidth(4.50),holderDepth(3.25),
@@ -65,16 +65,15 @@ YagScreenGenerator::YagScreenGenerator() :
  
   screenHolderRadius(1.3), screenHolderThick(0.3), // measured,
   
-  holderMat("Stainless304L"),
-  mirrorMat("SiO2"),
-  screenMat("SiO2"),
-  screenHolderMat("Aluminium")
+  copperMat("Stainless304L"),
+  screenMat("SiO2")
+  
   /*!
     Constructor and defaults
   */
 {}
 
-YagScreenGenerator::~YagScreenGenerator()
+CooledScreenGenerator::~CooledScreenGenerator()
  /*!
    Destructor
  */
@@ -82,7 +81,7 @@ YagScreenGenerator::~YagScreenGenerator()
 
 
 void
-YagScreenGenerator::generateScreen(FuncDataBase& Control,
+CooledScreenGenerator::generateScreen(FuncDataBase& Control,
 				   const std::string& keyName,
 				   const bool inBeam) const
 /*!
@@ -92,7 +91,7 @@ YagScreenGenerator::generateScreen(FuncDataBase& Control,
     \param inBeam :: is item in beam
   */
 {
-  ELog::RegMethod RegA("YagScreenGenerator","generate");
+  ELog::RegMethod RegA("CooledScreenGenerator","generate");
 
   ScreenGenerator::generateScreen(Control,keyName,inBeam);
   
@@ -112,11 +111,9 @@ YagScreenGenerator::generateScreen(FuncDataBase& Control,
   Control.addVariable(keyName+"ScreenHolderRadius",screenHolderRadius);
   Control.addVariable(keyName+"ScreenHolderThick",screenHolderThick);
   
-  Control.addVariable(keyName+"HolderMat",holderMat);
-  Control.addVariable(keyName+"MirrorMat",mirrorMat);
+  Control.addVariable(keyName+"CopperMat",copperMat);
   Control.addVariable(keyName+"ScreenMat",screenMat);
-  Control.addVariable(keyName+"ScreenHolderMat",screenHolderMat);
-     
+ 
  return;
 
 }

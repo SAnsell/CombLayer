@@ -76,6 +76,7 @@
 #include "MonoBlockXstalsGenerator.h"
 #include "MLMonoGenerator.h"
 #include "ViewScreenGenerator.h"
+#include "ScreenGenerator.h"
 #include "YagScreenGenerator.h"
 #include "SixPortGenerator.h"
 #include "BoxJawsGenerator.h"
