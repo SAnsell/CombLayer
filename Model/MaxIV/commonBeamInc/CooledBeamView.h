@@ -30,9 +30,9 @@ namespace xraySystem
 /*!
   \class CooledBeamView
   \version 2.0
-  \author Konstantin Batkov
-  \date May 2020
-  \brief Yag screen
+  \author Stuart Ansell
+  \date October 2021
+  \brief Cooled Beam Viewer screen
 */
 
 class CooledBeamView :

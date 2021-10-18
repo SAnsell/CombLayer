@@ -103,6 +103,7 @@
 #include "TriGroup.h"
 #include "CurveMagnet.h"
 #include "MultiPipe.h"
+#include "CooledBeamView.h"
 #include "YagScreen.h"
 #include "YagUnit.h"
 #include "YagUnitBig.h"
@@ -183,8 +184,8 @@ makeSingleItem::build(Simulation& System,
       "DipoleChamber","DipoleExtract","DipoleSndBend",
       "EPSeparator","Quadrupole","TargetShield","FourPort",
       "FlatPipe","TriPipe","TriGroup","SixPort","CrossWay","CrossBlank",
-      "GaugeTube","BremBlock","DipoleDIBMag","EArrivalMon","YagScreen","YAG",
-      "YagUnit","YagUnitBig","StriplineBPM","BeamDivider",
+      "GaugeTube","BremBlock","DipoleDIBMag","EArrivalMon","YagScreen",
+      "YAG","YagUnit","YagUnitBig","CooledScreen","StriplineBPM","BeamDivider",
       "Scrapper","TWCavity","Bellow", "VacuumPipe","HalfElectronPipe",
       "MultiPipe","PipeTube","PortTube","BlankTube","ButtonBPM",
       "PrismaChamber","uVac", "UndVac","UndulatorVacuum",
@@ -266,6 +267,20 @@ makeSingleItem::build(Simulation& System,
     {
       std::shared_ptr<tdcSystem::YagScreen>
 	YAG(new tdcSystem::YagScreen("YAG"));
+      OR.addObject(YAG);
+
+      YAG->addAllInsertCell(voidCell);
+      YAG->setBeamAxis(Geometry::Vec3D(0,-10,0),
+		       Geometry::Vec3D(1,0,0));
+      YAG->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
+  if (item == "CooledScreen")
+    {
+      std::shared_ptr<xraySystem::CooledBeamView>
+	YAG(new xraySystem::CooledBeamView("YAG"));
       OR.addObject(YAG);
 
       YAG->addAllInsertCell(voidCell);
