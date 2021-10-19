@@ -39,6 +39,7 @@
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "Vec3D.h"
+#include "Exception.h"
 #include "surfRegister.h"
 #include "varList.h"
 #include "Code.h"
@@ -89,7 +90,6 @@ BremTube::~BremTube()
   */
 {}
 
-  
 void
 BremTube::populate(const FuncDataBase& Control)
   /*!
@@ -408,6 +408,38 @@ BremTube::insertInCell(Simulation& System,
     PC->insertInCell(System,cellVec);
 
   return;
+}
+
+const constructSystem::portItem&
+BremTube::getFrontPort(const size_t index) const
+  /*!
+    Accessor to frontports
+    \param index :: index point
+    \return port item
+  */
+{
+  ELog::RegMethod RegA("BremTube","getFrontPort");
+
+  if (index>=FPorts.size())
+    throw ColErr::IndexError<size_t>(index,FPorts.size(),"index/FPorts size");
+
+  return *(FPorts[index]);
+}
+
+const constructSystem::portItem&
+BremTube::getMainPort(const size_t index) const
+  /*!
+    Accessor to main ports
+    \param index :: index point
+    \return port item
+  */
+{
+  ELog::RegMethod RegA("BremTube","getMainPort");
+
+  if (index>=MPorts.size())
+    throw ColErr::IndexError<size_t>(index,MPorts.size(),"index/MPorts size");
+
+  return *(MPorts[index]);
 }
 
 void

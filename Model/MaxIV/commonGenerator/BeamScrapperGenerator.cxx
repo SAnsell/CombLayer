@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonGenerator/CooledScreenGenerator.cxx
+ * File:   commonGenerator/BeamScrapperGenerator.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -46,28 +46,28 @@
 #include "CFFlanges.h"
 
 #include "ScreenGenerator.h"
-#include "CooledScreenGenerator.h"
+#include "BeamScrapperGenerator.h"
 
 namespace setVariable
 {
 
-CooledScreenGenerator::CooledScreenGenerator() :
-  ScreenGenerator(),
+BeamScrapperGenerator::BeamScrapperGenerator() :
 
-  screenAngle(45.0),copperWidth(3.0),
-  copperHeight(4.0),copperThick(0.8),
+  tubeRadius(0.5),tubeOffset(1.0),
+  tubeWall(0.3),plateOffset(4.0),
+  plateLength(5.0),plateHeight(2.0),
+  plateThick(1.0),tubeWidth(4.0),
+  tubeHeight(4.0),
 
-  innerRadius(1.0),screenThick(0.8),
-
-  copperMat("Stainless304L"),
-  screenMat("SiO2")
-  
+  voidMat("Void"),
+  waterMat("H2O"),
+  copperMat("Copper")  
   /*!
     Constructor and defaults
   */
 {}
 
-CooledScreenGenerator::~CooledScreenGenerator()
+BeamScrapperGenerator::~BeamScrapperGenerator()
  /*!
    Destructor
  */
@@ -75,30 +75,33 @@ CooledScreenGenerator::~CooledScreenGenerator()
 
 
 void
-CooledScreenGenerator::generateScreen(FuncDataBase& Control,
-				   const std::string& keyName,
-				   const bool inBeam) const
-/*!
+BeamScrapperGenerator::generateScreen(FuncDataBase& Control,
+				      const std::string& keyName) const
+  /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables
     \param keyName :: Head name for variable
-    \param inBeam :: is item in beam
   */
 {
-  ELog::RegMethod RegA("CooledScreenGenerator","generate");
+  ELog::RegMethod RegA("BeamScrapperGenerator","generate");
 
-  ScreenGenerator::generateScreen(Control,keyName,inBeam);
-  
-  Control.addVariable(keyName+"ScreenAngle",screenAngle);
-  Control.addVariable(keyName+"CopperWidth",copperWidth);
-  Control.addVariable(keyName+"CopperHeight",copperHeight);
-  Control.addVariable(keyName+"CopperThick",copperThick);
+  Control.addVariable(keyName+"TubeRadius",tubeRadius);
+  Control.addVariable(keyName+"TubeOffset",tubeOffset);
+  Control.addVariable(keyName+"TubeWall",tubeWall);
 
-  Control.addVariable(keyName+"InnerRadius",innerRadius);
-  Control.addVariable(keyName+"ScreenThick",screenThick);
+  Control.addVariable(keyName+"PlateOffset",plateOffset);
+  Control.addVariable(keyName+"PlateAngle",plateAngle);
+  Control.addVariable(keyName+"PlateLength",plateLength);
+  Control.addVariable(keyName+"PlateHeight",plateHeight);
+  Control.addVariable(keyName+"PlateThick",plateThick);
 
+  Control.addVariable(keyName+"TubeWidth",tubeWidth);
+  Control.addVariable(keyName+"TubeHeight",tubeHeight);
+
+  Control.addVariable(keyName+"VoidMat",voidMat);
+  Control.addVariable(keyName+"WaterMat",waterMat);
   Control.addVariable(keyName+"CopperMat",copperMat);
-  Control.addVariable(keyName+"ScreenMat",screenMat);
+  
  
  return;
 

@@ -40,7 +40,7 @@ namespace xraySystem
 
   \brief BremTube for Max-IV
   
-  Fundermentally it is a 
+  Fundermentally it is a Tube with a side tube
 */
 
 class BremTube :
@@ -110,6 +110,9 @@ class BremTube :
   virtual void insertInCell(Simulation&,const std::vector<int>&) const;
   virtual void insertInCell(MonteCarlo::Object&) const;
 
+  const constructSystem::portItem& getFrontPort(const size_t) const;
+  const constructSystem::portItem& getMainPort(const size_t) const;
+  
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

@@ -117,6 +117,8 @@
 #include "BremTube.h"
 #include "HPJaws.h"
 #include "ViewScreenTube.h"
+
+#include "CooledScreen.h"
 #include "YagScreen.h"
 #include "Table.h"
 
@@ -168,7 +170,7 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   hpJawsA(new xraySystem::HPJaws(newName+"HPJawsA")),
   bellowI(new constructSystem::Bellows(newName+"BellowI")),
   viewTubeB(new xraySystem::ViewScreenTube(newName+"ViewTubeB")),
-  yagScreenB(new tdcSystem::YagScreen("YagScreenB"))
+  cooledScreenB(new xraySystem::CooledScreen("CooledScreenB"))
 
   /*!
     Constructor
@@ -207,7 +209,7 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   OR.addObject(hpJawsA);
   OR.addObject(bellowI);
   OR.addObject(viewTubeB);
-  OR.addObject(yagScreenB);
+  OR.addObject(cooledScreenB);
   
     
 }
@@ -323,10 +325,10 @@ micromaxOpticsLine::constructDiag2(Simulation& System,
 
   constructSystem::constructUnit
     (System,buildZone,initFC,sideName,*monoBremTube);
-
+  
   bremCollB->addInsertCell(monoBremTube->getCell("Void"));
   bremCollB->createAll(System,*monoBremTube,0);
-
+  
   hpJawsA->setFlangeJoin();
   constructSystem::constructUnit
     (System,buildZone,*monoBremTube,"back",*hpJawsA);
@@ -337,12 +339,12 @@ micromaxOpticsLine::constructDiag2(Simulation& System,
   int outerCell=constructSystem::constructUnit
     (System,buildZone,*bellowI,"back",*viewTubeB);
 
-  yagScreenB->setBeamAxis(*viewTubeB,1);
-  yagScreenB->createAll(System,*viewTubeB,4);
-  yagScreenB->insertInCell("Outer",System,outerCell);
-  yagScreenB->insertInCell("Connect",System,viewTubeB->getCell("Plate"));
-  yagScreenB->insertInCell("Connect",System,viewTubeB->getCell("Void"));
-  yagScreenB->insertInCell("Payload",System,viewTubeB->getCell("Void"));
+  cooledScreenB->setBeamAxis(*viewTubeB,1);
+  cooledScreenB->createAll(System,*viewTubeB,4);
+  cooledScreenB->insertInCell("Outer",System,outerCell);
+  cooledScreenB->insertInCell("Connect",System,viewTubeB->getCell("Plate"));
+  cooledScreenB->insertInCell("Connect",System,viewTubeB->getCell("Void"));
+  cooledScreenB->insertInCell("Payload",System,viewTubeB->getCell("Void"));
   
   
   return;

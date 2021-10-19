@@ -42,22 +42,14 @@ class CooledScreenGenerator :
 
   // volume containing Yag screen + mirror
 
-  double holderWidth;           ///< Flat across holder
-  double holderDepth;           ///< In beamaxis
-  double holderShortLen;        ///< short length of trapizium
-  double holderLongLen;         ///< long length
-
-  double mirrorAngle;           ///< Flat (mirror) angle
-  double mirrorRadius;          ///< quartz mirror radius
-  double mirrorThick;           ///< quartz mirror thickness
 
   double screenAngle;           ///< screen inclination angle [deg]
-  double screenVOffset;         ///< Start of screen join above mirror cut
-  double screenRadius;          ///< Radius of screen
-  double screenThick;           ///< Thickness of screen
+  double copperWidth;           ///< in-beam copper block width
+  double copperHeight;          ///< in-beam copper block height 
+  double copperThick;           ///< Thickness of in-beam cooper
 
-  double screenHolderRadius;     ///< screen holder thickness
-  double screenHolderThick;     ///< screen holder thickness
+  double innerRadius;           ///< circle radius of beam
+  double screenThick;           ///< screen thickness
 
   std::string copperMat;             ///< mirror  material
   std::string screenMat;             ///< mirror holder material

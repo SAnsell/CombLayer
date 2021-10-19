@@ -77,6 +77,7 @@
 #include "MLMonoGenerator.h"
 #include "ViewScreenGenerator.h"
 #include "ScreenGenerator.h"
+#include "CooledScreenGenerator.h"
 #include "YagScreenGenerator.h"
 #include "SixPortGenerator.h"
 #include "BoxJawsGenerator.h"
@@ -338,7 +339,7 @@ diag3Package(FuncDataBase& Control,
   setVariable::CylGateValveGenerator GVGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::ViewScreenGenerator VSGen;
-  setVariable::YagScreenGenerator YagGen;
+  setVariable::CooledScreenGenerator CooledGen;
   setVariable::BremTubeGenerator BTGen;
   setVariable::HPJawsGenerator HPGen;
   setVariable::PipeGenerator PipeGen;
@@ -615,9 +616,9 @@ diag2Package(FuncDataBase& Control,const std::string& Name)
   VTGen.setPortBLen(3.0);
   VTGen.generateView(Control,Name+"ViewTubeB");
   
-  setVariable::YagScreenGenerator YagGen;
-  YagGen.generateScreen(Control,"YagScreenB",1);  // in beam
-  Control.addVariable("YagScreenBYAngle",-90.0);
+  setVariable::CooledScreenGenerator CoolGen;
+  CoolGen.generateScreen(Control,"CooledScreenB",1);  // in beam
+  Control.addVariable("CooledScreenBYAngle",-90.0);
 
   
   

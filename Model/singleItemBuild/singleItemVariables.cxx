@@ -93,6 +93,7 @@
 #include "ScreenGenerator.h"
 #include "CooledScreenGenerator.h"
 #include "YagScreenGenerator.h"
+#include "BeamScrapperGenerator.h"
 #include "YagUnitGenerator.h"
 #include "YagUnitBigGenerator.h"
 #include "TWCavityGenerator.h"
@@ -452,6 +453,13 @@ SingleItemVariables(FuncDataBase& Control)
   PGen.setCF<setVariable::CF40_22>();
   PGen.generatePipe(Control,"VC",80.0);
   Control.addVariable("VC",-40.0);
+
+  setVariable::CooledScreenGenerator CoolGen;
+  CoolGen.generateScreen(Control,"Cool",1);  // in beam
+  Control.addVariable("CoolYAngle",-90.0);
+
+  setVariable::BeamScrapperGenerator BeamSGen;
+  BeamSGen.generateScreen(Control,"BeamScrapper");  
 
   setVariable::YagScreenGenerator YagGen;
   YagGen.generateScreen(Control,"YAG",1);  // in beam

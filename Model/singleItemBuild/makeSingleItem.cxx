@@ -103,10 +103,11 @@
 #include "TriGroup.h"
 #include "CurveMagnet.h"
 #include "MultiPipe.h"
-#include "CooledBeamView.h"
+#include "CooledScreen.h"
 #include "YagScreen.h"
 #include "YagUnit.h"
 #include "YagUnitBig.h"
+#include "BeamScrapper.h"
 #include "TWCavity.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
@@ -185,7 +186,8 @@ makeSingleItem::build(Simulation& System,
       "EPSeparator","Quadrupole","TargetShield","FourPort",
       "FlatPipe","TriPipe","TriGroup","SixPort","CrossWay","CrossBlank",
       "GaugeTube","BremBlock","DipoleDIBMag","EArrivalMon","YagScreen",
-      "YAG","YagUnit","YagUnitBig","CooledScreen","StriplineBPM","BeamDivider",
+      "YAG","YagUnit","YagUnitBig","CooledScreen","CooledUnit",
+      "StriplineBPM","BeamDivider","BeamScrapper",
       "Scrapper","TWCavity","Bellow", "VacuumPipe","HalfElectronPipe",
       "MultiPipe","PipeTube","PortTube","BlankTube","ButtonBPM",
       "PrismaChamber","uVac", "UndVac","UndulatorVacuum",
@@ -263,6 +265,22 @@ makeSingleItem::build(Simulation& System,
       return;
     }
 
+  // This is similar to yagscreen/cooledscreen and
+  // can attach to flange.
+  if (item == "BeamScrapper")
+    {
+      std::shared_ptr<xraySystem::BeamScrapper>
+	BS(new xraySystem::BeamScrapper("BeamScrapper"));
+      OR.addObject(BS);
+
+      BS->addAllInsertCell(voidCell);
+      BS->setBeamAxis(Geometry::Vec3D(0,-10,0),
+		       Geometry::Vec3D(1,0,0));
+      BS->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
   if (item == "YAG" || item=="YagScreen")
     {
       std::shared_ptr<tdcSystem::YagScreen>
@@ -279,14 +297,14 @@ makeSingleItem::build(Simulation& System,
 
   if (item == "CooledScreen")
     {
-      std::shared_ptr<xraySystem::CooledBeamView>
-	YAG(new xraySystem::CooledBeamView("YAG"));
-      OR.addObject(YAG);
+      std::shared_ptr<xraySystem::CooledScreen>
+	Cool(new xraySystem::CooledScreen("Cool"));
+      OR.addObject(Cool);
 
-      YAG->addAllInsertCell(voidCell);
-      YAG->setBeamAxis(Geometry::Vec3D(0,-10,0),
+      Cool->addAllInsertCell(voidCell);
+      Cool->setBeamAxis(Geometry::Vec3D(0,-10,0),
 		       Geometry::Vec3D(1,0,0));
-      YAG->createAll(System,World::masterOrigin(),0);
+      Cool->createAll(System,World::masterOrigin(),0);
 
       return;
     }
@@ -311,6 +329,30 @@ makeSingleItem::build(Simulation& System,
       yagScreen->insertInCell("Connect",System,yagUnit->getCell("PlateB"));
       yagScreen->insertInCell("Connect",System,yagUnit->getCell("Void"));
       yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
+
+      return;
+    }
+
+  if (item == "CooledUnit")
+    {
+      std::shared_ptr<tdcSystem::YagUnit>
+	yagUnit(new tdcSystem::YagUnit("YU"));
+
+      std::shared_ptr<xraySystem::CooledScreen>
+	coolScreen(new xraySystem::CooledScreen("Cool"));
+
+      OR.addObject(yagUnit);
+      OR.addObject(coolScreen);
+
+      yagUnit->addInsertCell(voidCell);
+      yagUnit->createAll(System,World::masterOrigin(),0);
+
+      coolScreen->setBeamAxis(*yagUnit,1);
+      coolScreen->createAll(System,*yagUnit,4);
+      coolScreen->insertInCell("Outer",System,voidCell);
+      coolScreen->insertInCell("Connect",System,yagUnit->getCell("PlateB"));
+      coolScreen->insertInCell("Connect",System,yagUnit->getCell("Void"));
+      coolScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
 
       return;
     }

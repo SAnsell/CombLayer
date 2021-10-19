@@ -55,6 +55,7 @@ namespace xraySystem
   class BremBlock;
   class BeamPair;
   class BremMonoColl;
+  class CooledScreen;
   class DCMTank;
   class FlangeMount;
   class GaugeTube;
@@ -162,8 +163,8 @@ class micromaxOpticsLine :
   std::shared_ptr<constructSystem::Bellows> bellowI;
   /// view screen tube
   std::shared_ptr<xraySystem::ViewScreenTube> viewTubeB;
-  /// yag view screen
-  std::shared_ptr<tdcSystem::YagScreen> yagScreenB;
+  /// view screen
+  std::shared_ptr<xraySystem::CooledScreen> cooledScreenB;
 
 
   double outerLeft;    ///< Left Width for cut rectangle

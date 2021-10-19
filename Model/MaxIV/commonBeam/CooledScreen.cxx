@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Model/MaxIV/commonBeam/CooledBeamView.cxx
+ * File:   Model/MaxIV/commonBeam/CooledScreen.cxx
  *
  * Copyright (c) 2004-2021 Stuart Ansell
  *
@@ -62,12 +62,12 @@
 #include "CellMap.h"
 #include "Quaternion.h"
 
-#include "CooledBeamView.h"
+#include "CooledScreen.h"
 
 namespace xraySystem
 {
 
-CooledBeamView::CooledBeamView(const std::string& Key)  :
+CooledScreen::CooledScreen(const std::string& Key)  :
   attachSystem::ContainedGroup("Payload","Connect","Outer"),
   attachSystem::FixedRotate(Key,6),
   attachSystem::ExternalCut(),
@@ -80,14 +80,14 @@ CooledBeamView::CooledBeamView(const std::string& Key)  :
 {}
 
 
-CooledBeamView::~CooledBeamView()
+CooledScreen::~CooledScreen()
   /*!
     Destructor
   */
 {}
 
 void
-CooledBeamView::calcImpactVector()
+CooledScreen::calcImpactVector()
   /*!
     Calculate the impact points of the main beam  on the screen surface:
     We have the beamAxis this must intersect the screen and mirror closest to 
@@ -96,7 +96,7 @@ CooledBeamView::calcImpactVector()
     [-ve Y from flange  to beam centre]
   */
 {
-  ELog::RegMethod RegA("CooledBeamView","calcImpactVector");
+  ELog::RegMethod RegA("CooledScreen","calcImpactVector");
 
   // defined points:
 
@@ -107,19 +107,19 @@ CooledBeamView::calcImpactVector()
 
   // Thread point
   //  threadEnd=screenCentre+Y*(holderLongLen-LHalf);
-
+  threadEnd=screenCentre+Y*(copperHeight/2.0);
   return;
 }
 
 
 void
-CooledBeamView::populate(const FuncDataBase& Control)
+CooledScreen::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: Variable data base
   */
 {
-  ELog::RegMethod RegA("CooledBeamView","populate");
+  ELog::RegMethod RegA("CooledScreen","populate");
 
   FixedRotate::populate(Control);
 
@@ -137,17 +137,20 @@ CooledBeamView::populate(const FuncDataBase& Control)
   threadLift=Control.EvalVar<double>(keyName+"ThreadLift");
   threadRadius=Control.EvalVar<double>(keyName+"ThreadRadius");
 
+  screenAngle=Control.EvalVar<double>(keyName+"ScreenAngle");
   copperWidth=Control.EvalVar<double>(keyName+"CopperWidth");
   copperHeight=Control.EvalVar<double>(keyName+"CopperHeight");
   copperThick=Control.EvalVar<double>(keyName+"CopperThick");
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
   screenThick=Control.EvalVar<double>(keyName+"ScreenThick");
+  
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   juncBoxMat=ModelSupport::EvalMat<int>(Control,keyName+"JuncBoxMat");
   juncBoxWallMat=ModelSupport::EvalMat<int>(Control,keyName+"JuncBoxWallMat");
   threadMat=ModelSupport::EvalMat<int>(Control,keyName+"ThreadMat");
-  copperMat=ModelSupport::EvalMat<int>(Control,keyName+"HolderMat");
+
+  copperMat=ModelSupport::EvalMat<int>(Control,keyName+"CopperMat");
   screenMat=ModelSupport::EvalMat<int>(Control,keyName+"ScreenMat");
 
   feedWallMat=ModelSupport::EvalMat<int>(Control,keyName+"FeedWallMat");
@@ -157,12 +160,12 @@ CooledBeamView::populate(const FuncDataBase& Control)
 }
 
 void
-CooledBeamView::createSurfaces()
+CooledScreen::createSurfaces()
   /*!
     Create All the surfaces
   */
 {
-  ELog::RegMethod RegA("CooledBeamView","createSurfaces");
+  ELog::RegMethod RegA("CooledScreen","createSurfaces");
 
   calcImpactVector();
 
@@ -215,6 +218,7 @@ CooledBeamView::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,threadRadius);
 
   // copper screen
+
   const Geometry::Quaternion QW =
       Geometry::Quaternion::calcQRotDeg(-screenAngle,Y);
   
@@ -224,14 +228,15 @@ CooledBeamView::createSurfaces()
   const Geometry::Vec3D SY=QW.makeRotate(Z);
   const Geometry::Vec3D SZ=Y;
 
+  
   ModelSupport::buildPlane
     (SMap,buildIndex+2001,screenCentre-SY*(copperThick/2.0),SY);
   ModelSupport::buildPlane
     (SMap,buildIndex+2002,screenCentre+SY*(copperThick/2.0),SY);
   ModelSupport::buildPlane
-    (SMap,buildIndex+2003,screenCentre-SY*(copperWidth/2.0),SX);
+    (SMap,buildIndex+2003,screenCentre-SX*(copperWidth/2.0),SX);
   ModelSupport::buildPlane
-    (SMap,buildIndex+2004,screenCentre+SY*(copperWidth/2.0),SX);
+    (SMap,buildIndex+2004,screenCentre+SX*(copperWidth/2.0),SX);
   ModelSupport::buildPlane
     (SMap,buildIndex+2005,screenCentre-SZ*(copperHeight/2.0),SZ);
   ModelSupport::buildPlane
@@ -241,13 +246,13 @@ CooledBeamView::createSurfaces()
 }
 
 void
-CooledBeamView::createObjects(Simulation& System)
+CooledScreen::createObjects(Simulation& System)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("CooledBeamView","createObjects");
+  ELog::RegMethod RegA("CooledScreen","createObjects");
 
   HeadRule HR;
 
@@ -313,10 +318,10 @@ CooledBeamView::createObjects(Simulation& System)
       // yag screen
 
       // HR=ModelSupport::getHeadRule(SMap,buildIndex,"2001 -2002 -2007");
-      // makeCell("CooledBeamView",System,cellIndex++,screenMat,0.0,HR);
+      // makeCell("CooledScreen",System,cellIndex++,screenMat,0.0,HR);
 
       HR=ModelSupport::getHeadRule
-	(SMap,buildIndex,"2001 -2002 2003 2004 2005 2006");
+	(SMap,buildIndex,"2001 -2002 2003 -2004 2005 -2006");
 	makeCell("YagHolder",System,cellIndex++,copperMat,0.0,HR);
 
       addOuterSurf("Payload",HR);      
@@ -328,18 +333,18 @@ CooledBeamView::createObjects(Simulation& System)
 
 
 void
-CooledBeamView::createLinks()
+CooledScreen::createLinks()
   /*!
     Create all the linkes [need front/back to join/use InnerZone]
   */
 {
-  ELog::RegMethod RegA("CooledBeamView","createLinks");
+  ELog::RegMethod RegA("CooledScreen","createLinks");
 
   return;
 }
 
 void
-CooledBeamView::setBeamAxis(const attachSystem::FixedComp& FC,
+CooledScreen::setBeamAxis(const attachSystem::FixedComp& FC,
 			    const long int sIndex)
   /*!
     Set the screen centre
@@ -347,7 +352,7 @@ CooledBeamView::setBeamAxis(const attachSystem::FixedComp& FC,
     \param sIndex :: Link point index
   */
 {
-  ELog::RegMethod RegA("CooledBeamView","setBeamAxis(FC)");
+  ELog::RegMethod RegA("CooledScreen","setBeamAxis(FC)");
 
   beamAxis=Geometry::Line(FC.getLinkPt(sIndex),
 			  FC.getLinkAxis(sIndex));
@@ -357,7 +362,7 @@ CooledBeamView::setBeamAxis(const attachSystem::FixedComp& FC,
 }
 
 void
-CooledBeamView::setBeamAxis(const Geometry::Vec3D& Org,
+CooledScreen::setBeamAxis(const Geometry::Vec3D& Org,
 		       const Geometry::Vec3D& Axis)
   /*!
     Set the screen centre
@@ -365,14 +370,14 @@ CooledBeamView::setBeamAxis(const Geometry::Vec3D& Org,
     \param Axis :: Axis of line
   */
 {
-  ELog::RegMethod RegA("CooledBeamView","setBeamAxis(Vec3D)");
+  ELog::RegMethod RegA("CooledScreen","setBeamAxis(Vec3D)");
 
   beamAxis=Geometry::Line(Org,Axis);
   return;
 }
 
 void
-CooledBeamView::createAll(Simulation& System,
+CooledScreen::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FC,
 		     const long int sideIndex)
   /*!
@@ -382,7 +387,7 @@ CooledBeamView::createAll(Simulation& System,
     \param sideIndex :: link point for origin
   */
 {
-  ELog::RegMethod RegA("CooledBeamView","createAll");
+  ELog::RegMethod RegA("CooledScreen","createAll");
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Model/MaxIV/commonBeamInc/CooledBeamView.h
+ * File:   Model/MaxIV/commonBeamInc/CooledScreen.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef xraySystem_CooledBeamView_h
-#define xraySystem_CooledBeamView_h
+#ifndef xraySystem_CooledScreen_h
+#define xraySystem_CooledScreen_h
 
 class Simulation;
 
@@ -28,14 +28,14 @@ namespace xraySystem
 {
 
 /*!
-  \class CooledBeamView
+  \class CooledScreen
   \version 2.0
   \author Stuart Ansell
   \date October 2021
   \brief Cooled Beam Viewer screen
 */
 
-class CooledBeamView :
+class CooledScreen :
     public attachSystem::ContainedGroup,
     public attachSystem::FixedRotate,
     public attachSystem::ExternalCut,
@@ -96,10 +96,10 @@ class CooledBeamView :
 
  public:
 
-  CooledBeamView(const std::string&);
-  CooledBeamView(const CooledBeamView&);
-  CooledBeamView& operator=(const CooledBeamView&);
-  virtual ~CooledBeamView();
+  CooledScreen(const std::string&);
+  CooledScreen(const CooledScreen&);
+  CooledScreen& operator=(const CooledScreen&);
+  virtual ~CooledScreen();
 
   void setBeamAxis(const attachSystem::FixedComp&,const long int);
   void setBeamAxis(const Geometry::Vec3D&,const Geometry::Vec3D&);
