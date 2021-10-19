@@ -348,10 +348,6 @@ Segment29Magnet(FuncDataBase& Control,
   TDCBDGen.generate(Control,lKey+"BeamStopA");
   Control.addVariable(lKey+"BeamStopAYAngle",-90.0);
   Control.addVariable(lKey+"BeamStopAYStep",3.0);
-  Control.addVariable(lKey+"BeamStopABulkHeight",30.0);
-  Control.addVariable(lKey+"BeamStopABulkDepth",30.0);
-  Control.addVariable(lKey+"BeamStopAPreCoreLength",25.0);
-  Control.addVariable(lKey+"BeamStopACoreMat","Tungsten");
 
   BSGen.setFullLen(115.0);
   BSGen.generateBStop(Control,lKey+"BeamStopB",3.0);

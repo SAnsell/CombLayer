@@ -3371,7 +3371,7 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"FKGMazeWallThick",200.0); // K_20-1_08F6c1
 
   Control.addVariable(wallKey+"BTGThick",90.0); // calculated from K_20-1_08G6b4: 2700-1800
-  Control.addVariable(wallKey+"BTGHeight",280.0); // original value derived from K_20-6_075: 200, added 80 to reduce dose rate in FKG
+  Control.addVariable(wallKey+"BTGHeight",200.0); // derived from K_20-6_075: 200
   Control.addVariable(wallKey+"BTGLength",1000.0); // K_20-1_08G6b[14]: 495000-489000-1416+5416
   Control.addVariable(wallKey+"BTGYOffset",180.0); // calculated from K_20-1_08G6b4: 5416-3616
   Control.addVariable(wallKey+"BTGMat","Concrete"); // AR 2020-11-17
@@ -3385,9 +3385,9 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"SPFExitDoorHeight",211.0); // K_20-2_353
 
   Control.addVariable(wallKey+"StorageShieldThick",5.0); // own design
-  Control.addVariable(wallKey+"StorageShieldMat","B4C"); // own design
+  Control.addVariable(wallKey+"StorageShieldMat","Void"); // own design
   Control.addVariable(wallKey+"FemtoMAXShieldThick",5.0); // own design
-  Control.addVariable(wallKey+"FemtoMAXShieldMat","B4C"); // own design
+  Control.addVariable(wallKey+"FemtoMAXShieldMat","Void"); // own design
 
   Control.addVariable(wallKey+"FemtoMAXWallThick",105.0); // K_01-0_010 IV1.13
   Control.addVariable(wallKey+"FemtoMAXWallOffset",405.0); // derived from K_20-1_08G6b[34]
