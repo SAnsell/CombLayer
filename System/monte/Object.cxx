@@ -955,6 +955,7 @@ Object::createSurfaceList()
   ELog::RegMethod RegA("Object","createSurfaceList");
   
   populate();  // checked in populate
+
   std::ostringstream debugCX;
 
   SurList.clear();
@@ -962,6 +963,7 @@ Object::createSurfaceList()
 
   std::stack<const Rule*> TreeLine;
   TreeLine.push(HRule.getTopRule());
+
   while(!TreeLine.empty())
     {
       const Rule* tmpA=TreeLine.top();
@@ -990,15 +992,18 @@ Object::createSurfaceList()
 	    }
 	}
     }
+
   sort(SurList.begin(),SurList.end());
-  
+
   std::vector<const Geometry::Surface*>::iterator sc=
     unique(SurList.begin(),SurList.end());
   if (sc!=SurList.end())
     SurList.erase(sc,SurList.end());
 
-  // sorted list will have zeros at front
-  if (*SurList.begin()==0)
+  
+  // sorted list will have zeros at front if there is a problem
+  // (e.g not populated)
+  if (SurList.empty() || (*SurList.begin()==0))
     {
       ELog::EM<<"SurList Failure "<<ELog::endCrit;
       ELog::EM<<"CX == "<<debugCX.str()<<ELog::endCrit;

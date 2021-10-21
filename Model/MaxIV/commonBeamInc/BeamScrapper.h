@@ -55,12 +55,16 @@ class BeamScrapper :
   
   double tubeWidth;         ///< in-beam copper block width
   double tubeHeight;        ///< in-beam copper block height 
+
+  double inletZOffset;      ///< Variable for Z displacement of pipe inlet
   
   int voidMat;              ///< void material
 
   int waterMat;             ///< water material
   int copperMat;            ///< pipe outer material
 
+  
+  
   // Geometry points for object / surface building :
   
   Geometry::Vec3D beamCentre;        ///< central axis with beam point

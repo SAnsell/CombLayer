@@ -94,6 +94,7 @@
 #include "PortTube.h"
 
 #include "CrossPipe.h"
+#include "BeamScrapper.h"
 #include "BremColl.h"
 #include "BremMonoColl.h"
 #include "BremBlock.h"
@@ -166,6 +167,7 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   gateTubeC(new xraySystem::CylGateValve(newName+"GateTubeC")),
   
   monoBremTube(new xraySystem::BremTube(newName+"MonoBremTube")),
+  bremScrapper(new xraySystem::BeamScrapper(newName+"BremScrapper")),
   bremCollB(new xraySystem::BremBlock(newName+"BremCollB")),
   hpJawsA(new xraySystem::HPJaws(newName+"HPJawsA")),
   bellowI(new constructSystem::Bellows(newName+"BellowI")),
@@ -205,6 +207,7 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   OR.addObject(pipeB);
   OR.addObject(gateTubeC);
   OR.addObject(monoBremTube);
+  OR.addObject(bremScrapper);
   OR.addObject(bremCollB);
   OR.addObject(hpJawsA);
   OR.addObject(bellowI);
@@ -325,9 +328,19 @@ micromaxOpticsLine::constructDiag2(Simulation& System,
 
   constructSystem::constructUnit
     (System,buildZone,initFC,sideName,*monoBremTube);
+
+
+  // This is broken:
+  bremScrapper->addAllInsertCell(monoBremTube->getCell("Void"));
+  bremScrapper->setBeamAxis(Geometry::Vec3D(0,10,0),
+		       Geometry::Vec3D(1,0,0));
+  bremScrapper->createAll(System,*monoBremTube,0);
+  // end of broken section
   
   bremCollB->addInsertCell(monoBremTube->getCell("Void"));
   bremCollB->createAll(System,*monoBremTube,0);
+
+
   
   hpJawsA->setFlangeJoin();
   constructSystem::constructUnit

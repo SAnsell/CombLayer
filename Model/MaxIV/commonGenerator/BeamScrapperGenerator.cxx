@@ -55,9 +55,10 @@ BeamScrapperGenerator::BeamScrapperGenerator() :
 
   tubeRadius(0.5),tubeOffset(1.0),
   tubeWall(0.3),plateOffset(4.0),
-  plateLength(5.0),plateHeight(2.0),
-  plateThick(1.0),tubeWidth(4.0),
-  tubeHeight(4.0),
+  plateAngle(35.0),plateLength(8.0),
+  plateHeight(2.0),
+  plateThick(2.0),tubeWidth(4.0),
+  tubeHeight(4.0),inletZOffset(-1.0),
 
   voidMat("Void"),
   waterMat("H2O"),
@@ -97,6 +98,8 @@ BeamScrapperGenerator::generateScreen(FuncDataBase& Control,
 
   Control.addVariable(keyName+"TubeWidth",tubeWidth);
   Control.addVariable(keyName+"TubeHeight",tubeHeight);
+
+  Control.addVariable(keyName+"InletZOffset",inletZOffset);
 
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"WaterMat",waterMat);

@@ -47,6 +47,7 @@
 #include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
 #include "BremBlockGenerator.h"
+#include "BeamScrapperGenerator.h"
 #include "LeadPipeGenerator.h"
 #include "GateValveGenerator.h"
 #include "JawValveGenerator.h"
@@ -591,9 +592,12 @@ diag2Package(FuncDataBase& Control,const std::string& Name)
   setVariable::BremTubeGenerator BTGen;
   setVariable::HPJawsGenerator HPGen;
   setVariable::BremBlockGenerator MaskGen;
+  setVariable::BeamScrapperGenerator ScrapperGen;
 
   BTGen.generateTube(Control,Name+"MonoBremTube");
 
+  ScrapperGen.generateScreen(Control,Name+"BremScrapper");
+  
   MaskGen.setAperature(-1,1.0,1.0,1.0,1.0,1.0,1.0);
   MaskGen.generateBlock(Control,Name+"BremCollB",-4.0);
 

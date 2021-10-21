@@ -51,6 +51,7 @@ namespace constructSystem
 namespace xraySystem
 {
   class CylGateValve;
+  class BeamScrapper;
   class BremColl;
   class BremBlock;
   class BeamPair;
@@ -155,6 +156,8 @@ class micromaxOpticsLine :
 
   /// BremTube (with heat trapping)
   std::shared_ptr<xraySystem::BremTube> monoBremTube;
+  /// Pre-brem scrapper
+  std::shared_ptr<xraySystem::BeamScrapper> bremScrapper;
   /// BremBlock
   std::shared_ptr<xraySystem::BremBlock> bremCollB;
   /// jaws

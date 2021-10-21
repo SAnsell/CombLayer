@@ -35,8 +35,7 @@ namespace setVariable
   \brief BeamScrapperGenerator for variables
 */
 
-class BeamScrapperGenerator :
-    public ScreenGenerator
+class BeamScrapperGenerator 
 {
  private:
 
@@ -50,9 +49,11 @@ class BeamScrapperGenerator :
   double plateHeight;       ///< Height of plate
   double plateThick;        ///< Thickness of plate
 
-  double tubeWidth;          ///< horrizontal exten of final cooling loop
-  double tubeHeight;         ///< vertical exten of final cooling loop
+  double tubeWidth;         ///< horrizontal exten of final cooling loop
+  double tubeHeight;        ///< vertical exten of final cooling loop
 
+  double inletZOffset;      ///< Variable for Z displacement of pipe inlet
+  
   std::string voidMat;      ///< void material
   std::string waterMat;     ///< coolant material
   std::string copperMat;    ///< pipe outer  material

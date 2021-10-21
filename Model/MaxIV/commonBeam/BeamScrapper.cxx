@@ -62,6 +62,8 @@
 #include "CellMap.h"
 #include "Quaternion.h"
 
+#include "Surface.h"
+
 #include "BeamScrapper.h"
 
 namespace xraySystem
@@ -106,6 +108,7 @@ BeamScrapper::calcImpactVector()
 
   // Thread point
   plateCentre=beamCentre-Y*plateOffset;
+
   return;
 }
 
@@ -124,6 +127,7 @@ BeamScrapper::populate(const FuncDataBase& Control)
   tubeRadius=Control.EvalVar<double>(keyName+"TubeRadius");
   tubeOffset=Control.EvalVar<double>(keyName+"TubeOffset");
   tubeWall=Control.EvalVar<double>(keyName+"TubeWall");
+
   plateOffset=Control.EvalVar<double>(keyName+"PlateOffset");
   plateAngle=Control.EvalVar<double>(keyName+"PlateAngle");
   plateLength=Control.EvalVar<double>(keyName+"PlateLength");
@@ -132,6 +136,8 @@ BeamScrapper::populate(const FuncDataBase& Control)
 
   tubeWidth=Control.EvalVar<double>(keyName+"TubeWidth");
   tubeHeight=Control.EvalVar<double>(keyName+"TubeHeight");
+
+  inletZOffset=Control.EvalVar<double>(keyName+"InletZOffset");
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
@@ -150,24 +156,84 @@ BeamScrapper::createSurfaces()
 
   calcImpactVector();
 
+  // Ring box outer [note extra for tubewall clearance]:
+  const double ringThick(tubeRadius+1.02*tubeWall);
+
+  const Geometry::Quaternion QP=
+    Geometry::Quaternion::calcQRotDeg(plateAngle,Z);
+  const Geometry::Vec3D PX=QP.makeRotate(X);
+  const Geometry::Vec3D PY=QP.makeRotate(Y);
+  const Geometry::Vec3D PZ=QP.makeRotate(Z);
+  
   if (!isActive("FlangePlate"))
     {
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
       ExternalCut::setCutSurf("FlangePlate",SMap.realSurf(buildIndex+1));
     }
+
+  const Geometry::Vec3D inletCentre=beamCentre+Z*inletZOffset;
   
   ModelSupport::buildCylinder
-    (SMap,buildIndex+7,beamCentre-X*tubeOffset,Y,tubeRadius);
+    (SMap,buildIndex+7,inletCentre-X*tubeOffset,Y,tubeRadius);
   ModelSupport::buildCylinder
-    (SMap,buildIndex+8,beamCentre+X*tubeOffset,Y,tubeRadius);
+    (SMap,buildIndex+8,inletCentre+X*tubeOffset,Y,tubeRadius);
 
   ModelSupport::buildCylinder
-    (SMap,buildIndex+17,beamCentre-X*tubeOffset,Y,tubeRadius+tubeWall);
+    (SMap,buildIndex+17,inletCentre-X*tubeOffset,Y,tubeRadius+tubeWall);
   ModelSupport::buildCylinder
-    (SMap,buildIndex+18,beamCentre+X*tubeOffset,Y,tubeRadius+tubeWall);
+    (SMap,buildIndex+18,inletCentre+X*tubeOffset,Y,tubeRadius+tubeWall);
+
+  // container cylinder
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+107,inletCentre,Y,tubeOffset+ringThick);
+
   
   // screen+mirror thread
-  ModelSupport::buildPlane(SMap,buildIndex+201,plateCentre,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+201,plateCentre,PY);
+
+  // grid of water:
+  const Geometry::Vec3D vxA(plateCentre-PX*(tubeWidth/2.0)-PZ*(tubeHeight/2.0));
+  const Geometry::Vec3D vxB(plateCentre+PX*(tubeWidth/2.0)-PZ*(tubeHeight/2.0));
+  const Geometry::Vec3D vzA(plateCentre-PX*(tubeWidth/2.0)+PZ*(tubeHeight/2.0));
+  const Geometry::Vec3D vzB(plateCentre+PX*(tubeWidth/2.0)+PZ*(tubeHeight/2.0));
+
+  const Geometry::Vec3D axisA((vzB-vxA).unit());
+  const Geometry::Vec3D axisB((vxB-vzA).unit());
+
+  ModelSupport::buildCylinder(SMap,buildIndex+1107,vxA,PX,tubeRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+1117,vxA,PX,tubeRadius+tubeWall);
+
+  ModelSupport::buildCylinder(SMap,buildIndex+1108,vzA,PX,tubeRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+1118,vzA,PX,tubeRadius+tubeWall);
+
+  ModelSupport::buildCylinder(SMap,buildIndex+1207,vxA,PZ,tubeRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+1217,vxA,PZ,tubeRadius+tubeWall);
+  
+  ModelSupport::buildCylinder(SMap,buildIndex+1208,vzB,PZ,tubeRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+1218,vzB,PZ,tubeRadius+tubeWall);
+
+  // dividers:
+  // +ve X then +ve z
+  ModelSupport::buildPlane(SMap,buildIndex+1101,vxA,axisB);
+  ModelSupport::buildPlane(SMap,buildIndex+1102,vxB,axisA);
+
+  const double maxX(std::max(tubeWidth/2.0+ringThick,plateLength/2.0));
+  const double maxZ(std::max(tubeHeight/2.0+ringThick,plateLength/2.0));
+  ModelSupport::buildPlane(SMap,buildIndex+1111,plateCentre-PY*ringThick,PY);
+  ModelSupport::buildPlane(SMap,buildIndex+1112,plateCentre+PY*ringThick,PY);
+  ModelSupport::buildPlane(SMap,buildIndex+1113,plateCentre-PX*maxX,PX);
+  ModelSupport::buildPlane(SMap,buildIndex+1114,plateCentre+PX*maxX,PX);
+  ModelSupport::buildPlane(SMap,buildIndex+1115,plateCentre-PZ*maxZ,PZ);
+  ModelSupport::buildPlane(SMap,buildIndex+1116,plateCentre+PZ*maxZ,PZ);  
+
+  // main plate
+  const Geometry::Vec3D mainC=plateCentre+PY*(ringThick+plateThick/2.0);
+  
+  ModelSupport::buildPlane(SMap,buildIndex+2002,mainC+PY*(plateThick/2.0),PY);
+  ModelSupport::buildPlane(SMap,buildIndex+2003,mainC-PX*(plateLength/2.0),PX);
+  ModelSupport::buildPlane(SMap,buildIndex+2004,mainC+PX*(plateLength/2.0),PX);
+  ModelSupport::buildPlane(SMap,buildIndex+2005,mainC-PZ*(plateHeight/2.0),PZ);
+  ModelSupport::buildPlane(SMap,buildIndex+2006,mainC+PZ*(plateHeight/2.0),PZ);
 
   return;
 }
@@ -182,19 +248,84 @@ BeamScrapper::createObjects(Simulation& System)
   ELog::RegMethod RegA("BeamScrapper","createObjects");
 
   const HeadRule plateHR=getRule("FlangePlate");
-  HeadRule HR;
 
-  // linear pneumatics feedthrough
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 -201");
-  makeCell("water",System,cellIndex++,waterMat,0.0,HR*plateHR);
-  addOuterSurf("Payload",HR);
+  HeadRule HR,HRbox;
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-8 -201");
-  makeCell("water",System,cellIndex++,waterMat,0.0,HR*plateHR);
+  HRbox=
+    ModelSupport::getHeadRule(SMap,buildIndex,"-1111 -107");
+  addOuterUnionSurf("Payload",HRbox*plateHR);  
+
+  // remove pipes
+  HRbox*=
+    ModelSupport::getHeadRule(SMap,buildIndex,"18 17");
+  makeCell("supplyBox",System,cellIndex++,voidMat,0.0,HRbox*plateHR);
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 -201 1217 1117");
+  makeCell("supplyWater",System,cellIndex++,waterMat,0.0,HR*plateHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-8 -201 1218 1117");
+  makeCell("supplyWater",System,cellIndex++,waterMat,0.0,HR*plateHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7 -17 -201 1217 1117");
+  makeCell("supplyPipe",System,cellIndex++,copperMat,0.0,HR*plateHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"8 -18 -201 1218 1117");
+  makeCell("supplyPipe",System,cellIndex++,copperMat,0.0,HR*plateHR);
+  
+  // Note the odd order of this: I need to remove the ring
+  // pipes from the Box. So the HR for the box is created
+  // and then the each pipe is remove, and then the Box-cell is
+  // createed
+
+  // ring pipes:
+  HRbox=ModelSupport::getHeadRule(SMap,buildIndex,
+				  "1111 -1112 1113 -1114 1115 -1116");
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1101 -1102 -1107");
+  makeCell("ringWater",System,cellIndex++,waterMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1101 -1102 -1117 1107");
+  makeCell("ringPipe",System,cellIndex++,copperMat,0.0,HR);
+  HRbox*=ModelSupport::getHeadRule(SMap,buildIndex,"-1101:1102:1117");
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1101 -1102 -1207");
+  makeCell("ringWater",System,cellIndex++,waterMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1101 -1102 -1217 1207");
+  makeCell("ringPipe",System,cellIndex++,copperMat,0.0,HR);
+  HRbox*=ModelSupport::getHeadRule(SMap,buildIndex,"1101:1102:1217");
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1102 -1101 -1108");
+  makeCell("ringWater",System,cellIndex++,waterMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1102 -1101 -1118 1108");
+  makeCell("ringPipe",System,cellIndex++,copperMat,0.0,HR);
+  HRbox*=ModelSupport::getHeadRule(SMap,buildIndex,"1101:-1102:1118");
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1101 1102 -1208");
+  makeCell("ringWater",System,cellIndex++,waterMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1101 1102 -1218 1208");
+  makeCell("ringPipe",System,cellIndex++,copperMat,0.0,HR);
+  HRbox*=ModelSupport::getHeadRule(SMap,buildIndex,"-1101:-1102:1218");
+
+  // Final box-cell containter:
+  // main pipes
+  HRbox*=ModelSupport::getHeadRule(SMap,buildIndex,"(201:(18 17))");
+  makeCell("ringBox",System,cellIndex++,0,0.0,HRbox);
+
+  HRbox=ModelSupport::getHeadRule(SMap,buildIndex,
+				  "1111 -2002 1113 -1114 1115 -1116");
+  addOuterUnionSurf("Payload",HRbox);
 
 
-  addOuterUnionSurf("Payload",HR);      
-      
+  // main deflector plate:
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+			       "1112 -2002 2003 -2004 2005 -2006");
+  makeCell("deflectorPlate",System,cellIndex++,copperMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1112 -2002 1113 -1114 1115 -1116 "
+     "(-2003:2004:-2005:2006)");
+  makeCell("deflectorPlate",System,cellIndex++,voidMat,0.0,HR);
+
+  
   return;
 }
 

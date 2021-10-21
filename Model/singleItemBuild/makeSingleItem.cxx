@@ -274,7 +274,7 @@ makeSingleItem::build(Simulation& System,
       OR.addObject(BS);
 
       BS->addAllInsertCell(voidCell);
-      BS->setBeamAxis(Geometry::Vec3D(0,-10,0),
+      BS->setBeamAxis(Geometry::Vec3D(0,10,0),
 		       Geometry::Vec3D(1,0,0));
       BS->createAll(System,World::masterOrigin(),0);
 

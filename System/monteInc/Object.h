@@ -44,24 +44,24 @@ class Object
 {
  private:
 
-  std::string FCUnit; ///< FixedComp name
+  std::string FCUnit;      ///< FixedComp name
   
   int ObjName;             ///< Number for the object
   int listNum;             ///< Creation number
   double Tmp;              ///< Starting temperature (if given)
   const Material* matPtr;  ///< Material Number 
-  int trcl;          ///< transform number
-  Importance imp;           ///< importance / 0 
+  int trcl;                ///< transform number [deprecated]
+  Importance imp;          ///< importance / 0 
 
-  int populated;     ///< Full population
+  int populated;           ///< Full population
 
-  bool activeMag;         ///< Magnetic field active
-  double magMinStep;      ///< min step for mag field [fluka]
-  double magMaxStep;      ///< max step for mag field [fluka]
+  bool activeMag;          ///< Magnetic field active
+  double magMinStep;       ///< min step for mag field [fluka]
+  double magMaxStep;       ///< max step for mag field [fluka]
   
-  HeadRule HRule;    ///< Top rule
+  HeadRule HRule;           ///< Top rule
 
-  Geometry::Vec3D COM;       ///< Centre of mass 
+  Geometry::Vec3D COM;      ///< Centre of mass 
   
   /// Set of surfaces that are logically opposite in the rule.
   std::set<const Geometry::Surface*> logicOppSurf;

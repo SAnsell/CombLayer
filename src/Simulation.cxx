@@ -282,7 +282,6 @@ Simulation::addCell(const int cellNumber,const MonteCarlo::Object& A)
       ELog::EM<<"Cell==:"<<QHptr->hasComplement()<<ELog::endCrit;
     }
 
-
   QHptr->setFCUnit(objectGroups::addActiveCell(cellNumber));
   
   return 1;
@@ -347,7 +346,7 @@ Simulation::addCell(const int Index,const int matNum,
   MonteCarlo::Object TX;
   TX.setName(Index);
   TX.setMaterial(matNum);
-  TX.setTemp(matTemp);  
+  TX.setTemp(matTemp);
   TX.procHeadRule(RuleItem);
 
   return addCell(Index,TX);
