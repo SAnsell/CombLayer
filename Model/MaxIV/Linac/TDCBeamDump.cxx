@@ -246,7 +246,7 @@ TDCBeamDump::createObjects(Simulation& System)
   makeCell("Bulk",System,cellIndex++,bulkMat,0.0,Out*baseHR);
 
   Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -1 3 -4 5 -6 7 ");
-  makeCell("SkinFont",System,cellIndex++,skinMat,0.0,Out*baseHR);
+  makeCell("SkinFront",System,cellIndex++,skinMat,0.0,Out*baseHR);
 
   Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -32 13 -14 6 -16 ");
   makeCell("SkinTop",System,cellIndex++,skinMat,0.0,Out);
