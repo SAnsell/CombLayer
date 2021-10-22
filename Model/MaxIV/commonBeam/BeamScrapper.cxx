@@ -186,7 +186,6 @@ BeamScrapper::createSurfaces()
   // container cylinder
   ModelSupport::buildCylinder
     (SMap,buildIndex+107,inletCentre,Y,tubeOffset+ringThick);
-
   
   // screen+mirror thread
   ModelSupport::buildPlane(SMap,buildIndex+201,plateCentre,PY);
@@ -253,7 +252,7 @@ BeamScrapper::createObjects(Simulation& System)
 
   HRbox=
     ModelSupport::getHeadRule(SMap,buildIndex,"-1111 -107");
-  addOuterUnionSurf("Payload",HRbox*plateHR);  
+  addOuterSurf("Connect",HRbox*plateHR);  
 
   // remove pipes
   HRbox*=
@@ -312,7 +311,7 @@ BeamScrapper::createObjects(Simulation& System)
 
   HRbox=ModelSupport::getHeadRule(SMap,buildIndex,
 				  "1111 -2002 1113 -1114 1115 -1116");
-  addOuterUnionSurf("Payload",HRbox);
+  addOuterSurf("Payload",HRbox);
 
 
   // main deflector plate:

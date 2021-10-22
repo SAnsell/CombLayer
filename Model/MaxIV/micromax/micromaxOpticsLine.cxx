@@ -331,10 +331,17 @@ micromaxOpticsLine::constructDiag2(Simulation& System,
 
 
   // This is broken:
-  bremScrapper->addAllInsertCell(monoBremTube->getCell("Void"));
-  bremScrapper->setBeamAxis(Geometry::Vec3D(0,10,0),
-		       Geometry::Vec3D(1,0,0));
-  bremScrapper->createAll(System,*monoBremTube,0);
+  const constructSystem::portItem& PI=
+    monoBremTube->getFrontPort(0);
+  bremScrapper->setBeamAxis(*monoBremTube,1);
+  ELog::EM<<"Cell == "<<PI.getCell("Void")<<ELog::endDiag;
+  bremScrapper->createAll(System,PI,"InnerPlate");
+  bremScrapper->insertInCell("Connect",System,PI.getCell("Void"));
+  bremScrapper->insertInCell
+    ("Connect",System,monoBremTube->getCell("MidVoid"));
+  bremScrapper->insertInCell
+    ("Payload",System,monoBremTube->getCell("MidVoid"));
+  
   // end of broken section
   
   bremCollB->addInsertCell(monoBremTube->getCell("Void"));
