@@ -135,7 +135,7 @@
 #include "HPJaws.h"
 #include "BoxJaws.h"
 #include "DiffPumpXIADP03.h"
-#include "CLRTube.h"
+#include "CRLTube.h"
 #include "ViewScreenTube.h"
 #include "ExperimentalHutch.h"
 #include "ConnectorTube.h"
@@ -193,7 +193,7 @@ makeSingleItem::build(Simulation& System,
       "PrismaChamber","uVac", "UndVac","UndulatorVacuum",
       "IonPTube","IonGauge","NBeamStop","MagTube","TriggerTube",
       "BremTube","HPJaws","BoxJaws","HPCombine","ViewTube",
-      "DiffPumpXIADP03","CLRTube","ExperimentalHutch",
+      "DiffPumpXIADP03","CRLTube","ExperimentalHutch",
       "ConnectorTube","LocalShield","FlangeDome",
       "MonoShutter","RoundMonoShutter",
       "Help","help"
@@ -1251,10 +1251,10 @@ makeSingleItem::build(Simulation& System,
 	return;
       }
 
-    if (item == "CLRTube")
+    if (item == "CRLTube")
       {
-	std::shared_ptr<xraySystem::CLRTube>
-	  clr(new xraySystem::CLRTube("CLRTube"));
+	std::shared_ptr<xraySystem::CRLTube>
+	  clr(new xraySystem::CRLTube("CRLTube"));
 	
 	OR.addObject(clr);
 	

@@ -47,7 +47,8 @@ class BeamScrapper :
   double tubeOffset;        ///< +/- beam offset of each pipe
   double tubeWall;          ///< wall thickness of pipe
 
-  double plateOffset;       ///< Scren plate offset
+  double plateOffset;       ///< Screen plate offset
+  double plateYStep;         ///< Step in Y around pipe centre
   double plateAngle;        ///< Z rotation of screen (y is tube dir)
   double plateLength;       ///< Length along beam (angled)
   double plateHeight;       ///< Height of plate

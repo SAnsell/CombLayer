@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonGeneratorInc/CLRTubeGenerator.h
+ * File:   commonGeneratorInc/CRLTubeGenerator.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef setVariable_CLRTubeGenerator_h
-#define setVariable_CLRTubeGenerator_h
+#ifndef setVariable_CRLTubeGenerator_h
+#define setVariable_CRLTubeGenerator_h
 
 class FuncDataBase;
 
@@ -28,14 +28,14 @@ namespace setVariable
 {
 
 /*!
-  \class CLRTubeGenerator 
+  \class CRLTubeGenerator 
   \version 1.0
   \author S. Ansell
   \date March 2021
   \brief Compound refractive lens variable generator
 */
 
-class CLRTubeGenerator 
+class CRLTubeGenerator 
 {
  private:
 
@@ -76,7 +76,6 @@ class CLRTubeGenerator
   double flangeRadius;           ///< Flange radius
   double flangeLength;           ///< Flange thickness
 
-
   std::string voidMat;               ///< Void Material
   std::string lensMat;               ///< Lens material
   std::string lensOuterMat;          ///< Outer support lens Material
@@ -87,15 +86,17 @@ class CLRTubeGenerator
 
  public:
 
-  CLRTubeGenerator();
-  CLRTubeGenerator(const CLRTubeGenerator&);
-  CLRTubeGenerator& operator=(const CLRTubeGenerator&);
-  virtual ~CLRTubeGenerator();
+  CRLTubeGenerator();
+  CRLTubeGenerator(const CRLTubeGenerator&);
+  CRLTubeGenerator& operator=(const CRLTubeGenerator&);
+  virtual ~CRLTubeGenerator();
 
   template<typename T> void setCF();
   template<typename T> void setPortCF(const double);
+
+  void setLens(const size_t,const double,const double);
   
-  void generatePump(FuncDataBase&,const std::string&,
+  void generateLens(FuncDataBase&,const std::string&,
 		    const bool) const;
 
 

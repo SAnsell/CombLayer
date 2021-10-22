@@ -50,13 +50,14 @@ namespace constructSystem
 
 namespace xraySystem
 {
-  class CylGateValve;
   class BeamScrapper;
   class BremColl;
   class BremBlock;
   class BeamPair;
   class BremMonoColl;
   class CooledScreen;
+  class CRLTube;
+  class CylGateValve;
   class DCMTank;
   class FlangeMount;
   class GaugeTube;
@@ -168,6 +169,18 @@ class micromaxOpticsLine :
   std::shared_ptr<xraySystem::ViewScreenTube> viewTubeB;
   /// view screen
   std::shared_ptr<xraySystem::CooledScreen> cooledScreenB;
+  /// Gate valve between diag2/CRL
+  std::shared_ptr<xraySystem::CylGateValve> gateTubeD;
+  /// Addaptor to CRL tube
+  std::shared_ptr<constructSystem::VacuumPipe> crlPipeA;
+  /// First CRL System  
+  std::shared_ptr<xraySystem::CRLTube> crlTubeA;
+  /// Mid  CRL pipe
+  std::shared_ptr<constructSystem::VacuumPipe> crlPipeB;
+  /// Second CRL System  
+  std::shared_ptr<xraySystem::CRLTube> crlTubeB;
+  /// End  CRL pipe
+  std::shared_ptr<constructSystem::VacuumPipe> crlPipeC;
 
 
   double outerLeft;    ///< Left Width for cut rectangle
@@ -179,6 +192,8 @@ class micromaxOpticsLine :
   void constructHDCM(Simulation&,const attachSystem::FixedComp&, 
 		     const std::string&);
   void constructDiag2(Simulation&,const attachSystem::FixedComp&, 
+		      const std::string&);
+  void constructCRL(Simulation&,const attachSystem::FixedComp&, 
 		      const std::string&);
 
   void populate(const FuncDataBase&);

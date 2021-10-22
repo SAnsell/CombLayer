@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonGenerator/CLRTubeGenerator.cxx
+ * File:   commonGenerator/CRLTubeGenerator.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -52,13 +52,13 @@
 #include "FuncDataBase.h"
 #include "CFFlanges.h"
 
-#include "CLRTubeGenerator.h"
+#include "CRLTubeGenerator.h"
 
 namespace setVariable
 {
 
 
-CLRTubeGenerator::CLRTubeGenerator() :
+CRLTubeGenerator::CRLTubeGenerator() :
   zLift(-1.3),length(20.0),width(10.0),height(10.0),
   innerLength(19.0),
   captureWidth(2.0),captureHeight(2.0),captureDepth(1.0),
@@ -86,7 +86,7 @@ CLRTubeGenerator::CLRTubeGenerator() :
   */
 {} 
 
-CLRTubeGenerator::~CLRTubeGenerator()
+CRLTubeGenerator::~CRLTubeGenerator()
  /*!
    Destructor
  */
@@ -94,7 +94,7 @@ CLRTubeGenerator::~CLRTubeGenerator()
 
 template<typename CF>
 void
-CLRTubeGenerator::setCF()
+CRLTubeGenerator::setCF()
   /*!
     Setter for flange beam direction flanges
   */
@@ -107,7 +107,7 @@ CLRTubeGenerator::setCF()
 
 template<typename CF>
 void
-CLRTubeGenerator::setPortCF(const double L)
+CRLTubeGenerator::setPortCF(const double L)
   /*!
     Setter for flange/port beam direction flanges
     \param L :: length
@@ -122,9 +122,25 @@ CLRTubeGenerator::setPortCF(const double L)
 }
 
 void
-CLRTubeGenerator::generatePump(FuncDataBase& Control,
-				const std::string& keyName,
-				const bool inBeam) const
+CRLTubeGenerator::setLens(const size_t N,const double T,const double G)
+  /*!
+    Set the number/ length / gap between lens
+    \parma N :: Number of lenses
+    \param L :: Thickness of length
+    \param G :: Gap between lenses
+  */
+{
+  lensNSize=N;
+  lensLength=T;
+  lensMidGap=G;
+  return;
+}
+  
+
+void
+CRLTubeGenerator::generateLens(FuncDataBase& Control,
+			       const std::string& keyName,
+			       const bool inBeam) const
   /*!
     Primary function for setting the variables
     \param Control :: Database to add variables
@@ -132,7 +148,7 @@ CLRTubeGenerator::generatePump(FuncDataBase& Control,
     \param inBeam :: in beam
   */
 {
-  ELog::RegMethod RegA("CLRTubeGenerator","generatePump");
+  ELog::RegMethod RegA("CRLTubeGenerator","generatePump");
 
   Control.addVariable(keyName+"InBeam",static_cast<int>(inBeam));
   Control.addVariable(keyName+"ZLift",zLift);
@@ -186,7 +202,7 @@ CLRTubeGenerator::generatePump(FuncDataBase& Control,
 
 ///\cond TEMPLATE
 
-template void CLRTubeGenerator::setPortCF<CF40>(const double);
+template void CRLTubeGenerator::setPortCF<CF40>(const double);
 
 
 

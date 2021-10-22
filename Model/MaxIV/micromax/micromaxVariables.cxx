@@ -68,7 +68,7 @@
 #include "JawFlangeGenerator.h"
 #include "BremCollGenerator.h"
 #include "WallLeadGenerator.h"
-#include "CLRTubeGenerator.h"
+#include "CRLTubeGenerator.h"
 #include "TriggerGenerator.h"
 #include "CylGateValveGenerator.h"
 #include "BeamPairGenerator.h"
@@ -101,6 +101,8 @@ void hdmmPackage(FuncDataBase&,const std::string&);
 void hdcmPackage(FuncDataBase&,const std::string&);
 void diagPackage(FuncDataBase&,const std::string&);
 void diag2Package(FuncDataBase&,const std::string&);
+void crlPackage(FuncDataBase&,const std::string&);
+  
 void diag3Package(FuncDataBase&,const std::string&);
 void diag4Package(FuncDataBase&,const std::string&);
 void mirrorBox(FuncDataBase&,const std::string&,const std::string&,
@@ -593,7 +595,8 @@ diag2Package(FuncDataBase& Control,const std::string& Name)
   setVariable::HPJawsGenerator HPGen;
   setVariable::BremBlockGenerator MaskGen;
   setVariable::BeamScrapperGenerator ScrapperGen;
-
+  setVariable::CylGateValveGenerator GVGen;
+  
   BTGen.generateTube(Control,Name+"MonoBremTube");
 
   ScrapperGen.generateScreen(Control,Name+"BremScrapper");
@@ -621,11 +624,43 @@ diag2Package(FuncDataBase& Control,const std::string& Name)
   VTGen.generateView(Control,Name+"ViewTubeB");
   
   setVariable::CooledScreenGenerator CoolGen;
-  CoolGen.generateScreen(Control,"CooledScreenB",1);  // in beam
-  Control.addVariable("CooledScreenBYAngle",-90.0);
+  CoolGen.generateScreen(Control,Name+"CooledScreenB",1);  // in beam
+  Control.addVariable(Name+"CooledScreenBYAngle",-90.0);
 
+  GVGen.generateGate(Control,Name+"GateTubeD",0);  // open
   
   
+  return;
+}
+
+void
+crlPackage(FuncDataBase& Control,const std::string& Name)
+  /*!
+    Construct variables for the compount refractive lens 
+    (CRL) package.
+    \param Control :: Database
+    \param Name :: component name
+  */
+{
+  ELog::RegMethod RegA("micromaxVariables[F]","crlPackage");
+  setVariable::BellowGenerator BellowGen;
+  setVariable::PipeGenerator PipeGen;
+  setVariable::CRLTubeGenerator DPGen;
+  
+  PipeGen.setNoWindow();   // no window
+  PipeGen.setCF<setVariable::CF40>();
+
+  DPGen.setLens(10,1.5,0.2);
+  PipeGen.generatePipe(Control,Name+"CRLPipeA",12.5);
+
+  DPGen.generateLens(Control,Name+"CRLTubeA",1);  // in beam
+
+  PipeGen.generatePipe(Control,Name+"CRLPipeB",12.5);
+
+  DPGen.generateLens(Control,Name+"CRLTubeB",1);  // in beam
+
+  PipeGen.generatePipe(Control,Name+"CRLPipeC",12.5);
+    
   return;
 }
 
@@ -797,7 +832,7 @@ opticsVariables(FuncDataBase& Control,
   setVariable::BremCollGenerator BremGen;
   setVariable::BremMonoCollGenerator BremMonoGen;
   setVariable::JawFlangeGenerator JawFlangeGen;
-  setVariable::CLRTubeGenerator DiffGen;
+  setVariable::CRLTubeGenerator DiffGen;
   setVariable::TriggerGenerator TGen;
   setVariable::CylGateValveGenerator GVGen;
   setVariable::SqrFMaskGenerator FMaskGen;
@@ -855,30 +890,9 @@ opticsVariables(FuncDataBase& Control,
   
   micromaxVar::diag2Package(Control,preName);
 
+  micromaxVar::crlPackage(Control,preName);
+  
   /*
-  PipeGen.setCF<CF40>();  
-  PipeGen.generatePipe(Control,preName+"PipeB",7.5);
-  GVGen.generateGate(Control,preName+"GateTubeB",0);  // open
-  BellowGen.generateBellow(Control,preName+"BellowC",15.0);
-
-  micromaxVar::mirrorMonoPackage(Control,preName);
-  
-  BellowGen.generateBellow(Control,preName+"BellowD",15.0);
-  PipeGen.generatePipe(Control,preName+"PipeC",50.0);  
-  GVGen.generateGate(Control,preName+"GateTubeC",0);  // open
-  BellowGen.generateBellow(Control,preName+"BellowE",15.0);
-
-
-  
-  BellowGen.generateBellow(Control,preName+"BellowF",15.0);
-  PipeGen.generatePipe(Control,preName+"PipeD",12.5);  
-  GVGen.generateGate(Control,preName+"GateTubeD",0);  // open
-
-  
-  micromaxVar::diag2Package(Control,preName);
-
-  micromaxVar::mirrorBox(Control,preName,"A","Horrizontal",-0.2,0.0);
-
   micromaxVar::diag3Package(Control,preName);
 
   micromaxVar::diag4Package(Control,preName);
@@ -1022,7 +1036,7 @@ exptVariables(FuncDataBase& Control,
   setVariable::MonoBoxGenerator VBoxGen;
   setVariable::BoxJawsGenerator BJGen;
   setVariable::ConnectorGenerator CTGen;
-  setVariable::CLRTubeGenerator DPGen;
+  setVariable::CRLTubeGenerator DPGen;
   setVariable::PipeGenerator PipeGen;
   setVariable::SixPortGenerator SixGen;
 
@@ -1060,7 +1074,7 @@ exptVariables(FuncDataBase& Control,
 
   CTGen.generatePipe(Control,preName+"ConnectA",20.0);
 
-  DPGen.generatePump(Control,preName+"CLRTubeA",1);
+  DPGen.generateLens(Control,preName+"CRLTubeA",1);
 
   CTGen.generatePipe(Control,preName+"ConnectB",20.0);
 
@@ -1096,7 +1110,7 @@ exptVariables(FuncDataBase& Control,
 
   CTGen.generatePipe(Control,preName+"ConnectC",20.0);
 
-  DPGen.generatePump(Control,preName+"CLRTubeB",1);
+  DPGen.generateLens(Control,preName+"CRLTubeB",1);
 
   CTGen.generatePipe(Control,preName+"ConnectD",20.0);
 

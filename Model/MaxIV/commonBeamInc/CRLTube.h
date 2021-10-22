@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonBeamInc/CLRTube.h
+ * File:   commonBeamInc/CRLTube.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef xraySystem_CLRTube_h
-#define xraySystem_CLRTube_h
+#ifndef xraySystem_CRLTube_h
+#define xraySystem_CRLTube_h
 
 class Simulation;
 
@@ -28,14 +28,14 @@ namespace xraySystem
 {
 
 /*!
-  \class CLRTube
+  \class CRLTube
   \version 1.0
   \author Stuart Ansell
   \date February 2021
   \brief Compound Refractive Lens system
 */
 
-class CLRTube :
+class CRLTube :
   public attachSystem::ContainedGroup,
   public attachSystem::FixedRotate,
   public attachSystem::CellMap,
@@ -97,10 +97,10 @@ class CLRTube :
 
  public:
 
-  CLRTube(const std::string&);
-  CLRTube(const CLRTube&);
-  CLRTube& operator=(const CLRTube&);
-  virtual ~CLRTube();
+  CRLTube(const std::string&);
+  CRLTube(const CRLTube&);
+  CRLTube& operator=(const CRLTube&);
+  virtual ~CRLTube();
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

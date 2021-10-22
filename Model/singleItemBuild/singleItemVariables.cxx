@@ -116,7 +116,7 @@
 #include "HPJawsGenerator.h"
 #include "BoxJawsGenerator.h"
 #include "DiffXIADP03Generator.h"
-#include "CLRTubeGenerator.h"
+#include "CRLTubeGenerator.h"
 #include "ViewScreenGenerator.h"
 #include "PortChicaneGenerator.h"
 #include "ConnectorGenerator.h"
@@ -335,8 +335,8 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::DiffXIADP03Generator DPXGen;
   DPXGen.generatePump(Control,"DiffXIA",54.4);
 
-  setVariable::CLRTubeGenerator DPGen;
-  DPGen.generatePump(Control,"CLRTube",1);
+  setVariable::CRLTubeGenerator DPGen;
+  DPGen.generateLens(Control,"CRLTube",1);
 
   setVariable::MonoShutterGenerator MSGen;
   MSGen.generateShutter(Control,"MS",1,1);

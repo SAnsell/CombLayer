@@ -98,6 +98,7 @@
 #include "BremColl.h"
 #include "BremMonoColl.h"
 #include "BremBlock.h"
+#include "CRLTube.h"
 #include "MonoVessel.h"
 #include "MonoCrystals.h"
 #include "GateValveCube.h"
@@ -172,8 +173,13 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   hpJawsA(new xraySystem::HPJaws(newName+"HPJawsA")),
   bellowI(new constructSystem::Bellows(newName+"BellowI")),
   viewTubeB(new xraySystem::ViewScreenTube(newName+"ViewTubeB")),
-  cooledScreenB(new xraySystem::CooledScreen("CooledScreenB"))
-
+  cooledScreenB(new xraySystem::CooledScreen(newName+"CooledScreenB")),
+  gateTubeD(new xraySystem::CylGateValve(newName+"GateTubeD")),
+  crlPipeA(new constructSystem::VacuumPipe(newName+"CRLPipeA")),
+  crlTubeA(new xraySystem::CRLTube(newName+"CRLTubeA")),
+  crlPipeB(new constructSystem::VacuumPipe(newName+"CRLPipeB")),
+  crlTubeB(new xraySystem::CRLTube(newName+"CRLTubeB")),
+  crlPipeC(new constructSystem::VacuumPipe(newName+"CRLPipeC"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -213,8 +219,12 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   OR.addObject(bellowI);
   OR.addObject(viewTubeB);
   OR.addObject(cooledScreenB);
-  
-    
+  OR.addObject(gateTubeD);
+  OR.addObject(crlPipeA);
+  OR.addObject(crlTubeA);
+  OR.addObject(crlPipeB);
+  OR.addObject(crlTubeB);
+  OR.addObject(crlPipeC);
 }
   
 micromaxOpticsLine::~micromaxOpticsLine()
@@ -329,12 +339,9 @@ micromaxOpticsLine::constructDiag2(Simulation& System,
   constructSystem::constructUnit
     (System,buildZone,initFC,sideName,*monoBremTube);
 
-
-  // This is broken:
   const constructSystem::portItem& PI=
     monoBremTube->getFrontPort(0);
   bremScrapper->setBeamAxis(*monoBremTube,1);
-  ELog::EM<<"Cell == "<<PI.getCell("Void")<<ELog::endDiag;
   bremScrapper->createAll(System,PI,"InnerPlate");
   bremScrapper->insertInCell("Connect",System,PI.getCell("Void"));
   bremScrapper->insertInCell
@@ -342,11 +349,9 @@ micromaxOpticsLine::constructDiag2(Simulation& System,
   bremScrapper->insertInCell
     ("Payload",System,monoBremTube->getCell("MidVoid"));
   
-  // end of broken section
   
   bremCollB->addInsertCell(monoBremTube->getCell("Void"));
   bremCollB->createAll(System,*monoBremTube,0);
-
 
   
   hpJawsA->setFlangeJoin();
@@ -366,7 +371,32 @@ micromaxOpticsLine::constructDiag2(Simulation& System,
   cooledScreenB->insertInCell("Connect",System,viewTubeB->getCell("Void"));
   cooledScreenB->insertInCell("Payload",System,viewTubeB->getCell("Void"));
   
-  
+  constructSystem::constructUnit
+    (System,buildZone,*viewTubeB,"back",*gateTubeD);
+
+
+  return;
+}
+
+
+void
+micromaxOpticsLine::constructCRL(Simulation& System,
+				   const attachSystem::FixedComp& initFC, 
+				   const std::string& sideName)
+/*!
+    Sub build of the post first mono system.
+    \param System :: Simulation to use
+    \param initFC :: Start point
+    \param sideName :: start link point
+  */
+{
+  ELog::RegMethod RegA("micromaxOpticsLine","constructCRL");
+
+  constructSystem::constructUnit
+    (System,buildZone,initFC,sideName,*crlPipeA);
+
+  constructSystem::constructUnit
+    (System,buildZone,*crlPipeA,"back",*crlTubeA);
   return;
 }
 
@@ -467,6 +497,8 @@ micromaxOpticsLine::buildObjects(Simulation& System)
     (System,buildZone,*pipeB,"back",*gateTubeC);
   
   constructDiag2(System,*gateTubeC,"back");
+
+  constructCRL(System,*gateTubeD,"back");
   
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);

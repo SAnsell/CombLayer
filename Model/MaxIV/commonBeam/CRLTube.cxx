@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonBeam/CLRTube.cxx
+ * File:   commonBeam/CRLTube.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -79,12 +79,12 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 
-#include "CLRTube.h"
+#include "CRLTube.h"
 
 namespace xraySystem
 {
 
-CLRTube::CLRTube(const std::string& Key) :
+CRLTube::CRLTube(const std::string& Key) :
   attachSystem::ContainedGroup("Main","PortA","PortB"),
   attachSystem::FixedRotate(Key,8),
   attachSystem::CellMap(),
@@ -96,20 +96,20 @@ CLRTube::CLRTube(const std::string& Key) :
   */
 {}
 
-CLRTube::~CLRTube()
+CRLTube::~CRLTube()
   /*!
     Destructor
   */
 {}
 
 void
-CLRTube::populate(const FuncDataBase& Control)
+CRLTube::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: Variable data base
   */
 {
-  ELog::RegMethod RegA("CLRTube","populate");
+  ELog::RegMethod RegA("CRLTube","populate");
 
   FixedRotate::populate(Control);
 
@@ -162,12 +162,12 @@ CLRTube::populate(const FuncDataBase& Control)
 }
 
 void
-CLRTube::createSurfaces()
+CRLTube::createSurfaces()
   /*!
     Create All the surfaces
   */
 {
-  ELog::RegMethod RegA("CLRTube","createSurfaces");
+  ELog::RegMethod RegA("CRLTube","createSurfaces");
 
   if (!isActive("front"))
     {
@@ -288,13 +288,13 @@ CLRTube::createSurfaces()
 }
 
 void
-CLRTube::createObjects(Simulation& System)
+CRLTube::createObjects(Simulation& System)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("CLRTube","createObjects");
+  ELog::RegMethod RegA("CRLTube","createObjects");
 
   HeadRule HR;
   const HeadRule frontHR(getRule("front"));
@@ -424,12 +424,12 @@ CLRTube::createObjects(Simulation& System)
 
 
 void
-CLRTube::createLinks()
+CRLTube::createLinks()
   /*!
     Create all the linkes
   */
 {
-  ELog::RegMethod RegA("CLRTube","createLinks");
+  ELog::RegMethod RegA("CRLTube","createLinks");
 
   ExternalCut::createLink("front",*this,0,Origin,Y);
   ExternalCut::createLink("back",*this,1,Origin,Y);
@@ -438,7 +438,7 @@ CLRTube::createLinks()
 }
 
 void
-CLRTube::createAll(Simulation& System,
+CRLTube::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int sideIndex)
   /*!
@@ -448,7 +448,7 @@ CLRTube::createAll(Simulation& System,
     \param sideIndex :: link point for origin
   */
 {
-  ELog::RegMethod RegA("CLRTube","createAll");
+  ELog::RegMethod RegA("CRLTube","createAll");
 
   populate(System.getDataBase());
   createCentredUnitVector(FC,sideIndex,length/2.0+portLength);

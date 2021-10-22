@@ -80,7 +80,7 @@
 #include "MonoBox.h"
 #include "BoxJaws.h"
 #include "ConnectorTube.h"
-#include "CLRTube.h"
+#include "CRLTube.h"
 #include "FourPortTube.h"
 #include "SixPortTube.h"
 
@@ -110,7 +110,7 @@ formaxExptLine::formaxExptLine(const std::string& Key) :
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
   jawBox(new xraySystem::BoxJaws(newName+"JawBox")),
   connectA(new xraySystem::ConnectorTube(newName+"ConnectA")),
-  clrTubeA(new xraySystem::CLRTube(newName+"CLRTubeA")),
+  clrTubeA(new xraySystem::CRLTube(newName+"CRLTubeA")),
   connectB(new xraySystem::ConnectorTube(newName+"ConnectB")),
   pipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   sixPortA(new tdcSystem::SixPortTube(newName+"SixPortA")),
@@ -123,7 +123,7 @@ formaxExptLine::formaxExptLine(const std::string& Key) :
   sixPortC(new tdcSystem::SixPortTube(newName+"SixPortC")),
   pipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   connectC(new xraySystem::ConnectorTube(newName+"ConnectC")),
-  clrTubeB(new xraySystem::CLRTube(newName+"CLRTubeB")),
+  clrTubeB(new xraySystem::CRLTube(newName+"CRLTubeB")),
   connectD(new xraySystem::ConnectorTube(newName+"ConnectD")),
   viewTube(new constructSystem::PipeTube(newName+"ViewTube")),
   bellowE(new constructSystem::Bellows(newName+"BellowE")),

@@ -67,7 +67,7 @@
 #include "PortChicaneGenerator.h"
 #include "JawFlangeGenerator.h"
 #include "BremCollGenerator.h"
-#include "CLRTubeGenerator.h"
+#include "CRLTubeGenerator.h"
 #include "TriggerGenerator.h"
 #include "CylGateValveGenerator.h"
 #include "BeamPairGenerator.h"
@@ -774,7 +774,7 @@ opticsVariables(FuncDataBase& Control,
   setVariable::BremCollGenerator BremGen;
   setVariable::BremMonoCollGenerator BremMonoGen;
   setVariable::JawFlangeGenerator JawFlangeGen;
-  setVariable::CLRTubeGenerator DiffGen;
+  setVariable::CRLTubeGenerator DiffGen;
   setVariable::TriggerGenerator TGen;
   setVariable::CylGateValveGenerator GVGen;
   setVariable::SqrFMaskGenerator FMaskGen;
@@ -990,7 +990,7 @@ exptVariables(FuncDataBase& Control,
   setVariable::MonoBoxGenerator VBoxGen;
   setVariable::BoxJawsGenerator BJGen;
   setVariable::ConnectorGenerator CTGen;
-  setVariable::CLRTubeGenerator DPGen;
+  setVariable::CRLTubeGenerator DPGen;
   setVariable::PipeGenerator PipeGen;
   setVariable::SixPortGenerator SixGen;
 
@@ -1029,7 +1029,7 @@ exptVariables(FuncDataBase& Control,
 
   CTGen.generatePipe(Control,preName+"ConnectA",20.0);
 
-  DPGen.generatePump(Control,preName+"CLRTubeA",1);
+  DPGen.generateLens(Control,preName+"CRLTubeA",1);
 
   CTGen.generatePipe(Control,preName+"ConnectB",20.0);
 
@@ -1065,7 +1065,7 @@ exptVariables(FuncDataBase& Control,
 
   CTGen.generatePipe(Control,preName+"ConnectC",20.0);
 
-  DPGen.generatePump(Control,preName+"CLRTubeB",1);
+  DPGen.generateLens(Control,preName+"CRLTubeB",1);
 
   CTGen.generatePipe(Control,preName+"ConnectD",20.0);
 
