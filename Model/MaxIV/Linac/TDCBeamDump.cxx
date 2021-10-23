@@ -93,10 +93,12 @@ TDCBeamDump::TDCBeamDump(const TDCBeamDump& A) :
   preCoreLength(A.preCoreLength),
   skinThick(A.skinThick),
   frontPlateThick(A.frontPlateThick),
+  carbonThick(A.carbonThick),
   coreMat(A.coreMat),
   bulkMat(A.bulkMat),
   skinMat(A.skinMat),
-  frontPlateMat(A.frontPlateMat)
+  frontPlateMat(A.frontPlateMat),
+  carbonMat(A.carbonMat)
   /*!
     Copy constructor
     \param A :: TDCBeamDump to copy
@@ -127,10 +129,12 @@ TDCBeamDump::operator=(const TDCBeamDump& A)
       preCoreLength=A.preCoreLength;
       skinThick=A.skinThick;
       frontPlateThick=A.frontPlateThick;
+      carbonThick=A.carbonThick;
       coreMat=A.coreMat;
       bulkMat=A.bulkMat;
       skinMat=A.skinMat;
       frontPlateMat=A.frontPlateMat;
+      carbonMat=A.carbonMat;
     }
   return *this;
 }
@@ -173,11 +177,13 @@ TDCBeamDump::populate(const FuncDataBase& Control)
   preCoreLength=Control.EvalVar<double>(keyName+"PreCoreLength");
   skinThick=Control.EvalVar<double>(keyName+"SkinThick");
   frontPlateThick=Control.EvalVar<double>(keyName+"FrontPlateThick");
+  carbonThick=Control.EvalVar<double>(keyName+"CarbonThick");
 
   coreMat=ModelSupport::EvalMat<int>(Control,keyName+"CoreMat");
   bulkMat=ModelSupport::EvalMat<int>(Control,keyName+"BulkMat");
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
   frontPlateMat=ModelSupport::EvalMat<int>(Control,keyName+"FrontPlateMat");
+  carbonMat=ModelSupport::EvalMat<int>(Control,keyName+"CarbonMat");
 
   return;
 }
@@ -211,6 +217,7 @@ TDCBeamDump::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+16,buildIndex+6,Z,skinThick);
 
   ModelSupport::buildShiftedPlane(SMap,buildIndex+41,buildIndex+1,Y,frontPlateThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+42,buildIndex+2,Y,-carbonThick);
 
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,coreRadius);
 
@@ -231,8 +238,10 @@ TDCBeamDump::createObjects(Simulation& System)
   const HeadRule& baseHR=ExternalCut::getRule("base");
 
   HeadRule Out;
-  Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -2 -7 ");
+  Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -42 -7 ");
   makeCell("PreCore",System,cellIndex++,0,0.0,Out);
+  Out=ModelSupport::getHeadRule(SMap,buildIndex,"42 -2 -7 ");
+  makeCell("Carbon",System,cellIndex++,carbonMat,0.0,Out);
   Out=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 -7 ");
   makeCell("Core",System,cellIndex++,coreMat,0.0,Out);
 

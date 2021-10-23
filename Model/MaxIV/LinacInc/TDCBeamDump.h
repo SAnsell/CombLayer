@@ -54,11 +54,13 @@ class TDCBeamDump : public attachSystem::ContainedComp,
   double preCoreLength;         ///< Length of void before core
   double skinThick;             ///< Skin thickness
   double frontPlateThick;       ///< Front plate thickness
+  double carbonThick;           ///< Carbon plate thickness (to contain evaporated Lead)
 
   int coreMat;                   ///< Core material
   int bulkMat;                  ///< Bulk material
   int skinMat;                  ///< Skin material
   int frontPlateMat;            ///< Front plate material (to reduce activation dose rate)
+  int carbonMat;                ///< Carbon plate material
 
   void populate(const FuncDataBase&);
   void createSurfaces();

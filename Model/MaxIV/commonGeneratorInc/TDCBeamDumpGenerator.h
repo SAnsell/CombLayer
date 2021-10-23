@@ -50,11 +50,13 @@ class TDCBeamDumpGenerator
   double preCoreLength;         ///< Length of void before core
   double skinThick;             ///< Skin thickness
   double frontPlateThick;       ///< Front plate thickness
+  double carbonThick;           ///< Carbon plate thickness
 
   std::string coreMat;          ///< Core material
   std::string bulkMat;          ///< Bulk material
   std::string skinMat;          ///< Skin material
   std::string frontPlateMat;    ///< Front plate material (to reduce activation dose rate)
+  std::string carbonMat;        ///< Carbon plate material
 
  public:
 
