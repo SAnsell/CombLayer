@@ -91,6 +91,7 @@ TDCBeamDump::TDCBeamDump(const TDCBeamDump& A) :
   coreRadius(A.coreRadius),
   coreLength(A.coreLength),
   preCoreLength(A.preCoreLength),
+  preCoreRadius(A.preCoreRadius),
   skinThick(A.skinThick),
   frontPlateThick(A.frontPlateThick),
   carbonThick(A.carbonThick),
@@ -127,6 +128,7 @@ TDCBeamDump::operator=(const TDCBeamDump& A)
       coreRadius=A.coreRadius;
       coreLength=A.coreLength;
       preCoreLength=A.preCoreLength;
+      preCoreRadius=A.preCoreRadius;
       skinThick=A.skinThick;
       frontPlateThick=A.frontPlateThick;
       carbonThick=A.carbonThick;
@@ -175,6 +177,7 @@ TDCBeamDump::populate(const FuncDataBase& Control)
   coreRadius=Control.EvalVar<double>(keyName+"CoreRadius");
   coreLength=Control.EvalVar<double>(keyName+"CoreLength");
   preCoreLength=Control.EvalVar<double>(keyName+"PreCoreLength");
+  preCoreRadius=Control.EvalVar<double>(keyName+"PreCoreRadius");
   skinThick=Control.EvalVar<double>(keyName+"SkinThick");
   frontPlateThick=Control.EvalVar<double>(keyName+"FrontPlateThick");
   carbonThick=Control.EvalVar<double>(keyName+"CarbonThick");
@@ -219,7 +222,8 @@ TDCBeamDump::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+41,buildIndex+1,Y,frontPlateThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+42,buildIndex+2,Y,-carbonThick);
 
-  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,coreRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,preCoreRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,coreRadius);
 
   return;
 }
@@ -242,13 +246,16 @@ TDCBeamDump::createObjects(Simulation& System)
   makeCell("PreCore",System,cellIndex++,0,0.0,Out);
   Out=ModelSupport::getHeadRule(SMap,buildIndex,"42 -2 -7 ");
   makeCell("Carbon",System,cellIndex++,carbonMat,0.0,Out);
-  Out=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 -7 ");
+  Out=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 -17 ");
   makeCell("Core",System,cellIndex++,coreMat,0.0,Out);
 
   Out=ModelSupport::getHeadRule(SMap,buildIndex,"1 -41 3 -4 5 -6 7 ");
   makeCell("FrontPlate",System,cellIndex++,frontPlateMat,0.0,Out*baseHR);
 
-  Out=ModelSupport::getHeadRule(SMap,buildIndex,"41 -12 3 -4 5 -6 7 ");
+  Out=ModelSupport::getHeadRule(SMap,buildIndex,"41 -2 3 -4 5 -6 7 ");
+  makeCell("Bulk",System,cellIndex++,bulkMat,0.0,Out*baseHR);
+
+  Out=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 3 -4 5 -6 17 ");
   makeCell("Bulk",System,cellIndex++,bulkMat,0.0,Out*baseHR);
 
   Out=ModelSupport::getHeadRule(SMap,buildIndex,"12 -22 3 -4 5 -6 ");

@@ -52,7 +52,8 @@ namespace setVariable
 TDCBeamDumpGenerator::TDCBeamDumpGenerator() :
   length(115.0),bulkWidthLeft(25.0),bulkWidthRight(55.0), // 35+20
   bulkHeight(30.0),bulkDepth(30), bulkThickBack(75.0),
-  coreRadius(2.0),coreLength(5.0),preCoreLength(25.0),
+  coreRadius(5.0),coreLength(5.0),preCoreLength(25.0),
+  preCoreRadius(1.7),
   skinThick(5.0),
   frontPlateThick(5.0),
   carbonThick(0.5),
@@ -92,6 +93,7 @@ TDCBeamDumpGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"CoreRadius",coreRadius);
   Control.addVariable(keyName+"CoreLength",coreLength);
   Control.addVariable(keyName+"PreCoreLength",preCoreLength);
+  Control.addVariable(keyName+"PreCoreRadius",preCoreRadius);
   Control.addVariable(keyName+"SkinThick",skinThick);
   Control.addVariable(keyName+"FrontPlateThick",frontPlateThick);
   Control.addVariable(keyName+"CarbonThick",carbonThick);

@@ -48,6 +48,7 @@ class TDCBeamDumpGenerator
   double coreRadius;            ///< Core radius
   double coreLength;            ///< Core length
   double preCoreLength;         ///< Length of void before core
+  double preCoreRadius;         ///< Radius of void before core
   double skinThick;             ///< Skin thickness
   double frontPlateThick;       ///< Front plate thickness
   double carbonThick;           ///< Carbon plate thickness
