@@ -102,8 +102,8 @@ void hdcmPackage(FuncDataBase&,const std::string&);
 void diagPackage(FuncDataBase&,const std::string&);
 void diag2Package(FuncDataBase&,const std::string&);
 void crlPackage(FuncDataBase&,const std::string&);
-  
 void diag3Package(FuncDataBase&,const std::string&);
+  
 void diag4Package(FuncDataBase&,const std::string&);
 void mirrorBox(FuncDataBase&,const std::string&,const std::string&,
 	       const double,const double);
@@ -327,6 +327,62 @@ hdcmPackage(FuncDataBase& Control,
 }
 
 void
+diag2Package(FuncDataBase& Control,const std::string& Name)
+  /*!
+    Construct variables for the diagnostic units
+    \param Control :: Database
+    \param Name :: component name
+  */
+{
+  ELog::RegMethod RegA("micromaxVariables[F]","diag2Package");
+
+  setVariable::ViewScreenGenerator VTGen;
+  setVariable::BellowGenerator BellowGen;
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::BremTubeGenerator BTGen;
+  setVariable::HPJawsGenerator HPGen;
+  setVariable::BremBlockGenerator MaskGen;
+  setVariable::BeamScrapperGenerator ScrapperGen;
+  setVariable::CylGateValveGenerator GVGen;
+  setVariable::CooledScreenGenerator CoolGen;
+  
+  BTGen.generateTube(Control,Name+"MonoBremTube");
+
+  ScrapperGen.generateScreen(Control,Name+"BremScrapper");
+  
+  MaskGen.setAperature(-1,1.0,1.0,1.0,1.0,1.0,1.0);
+  MaskGen.generateBlock(Control,Name+"BremCollB",-4.0);
+
+  HPGen.generateJaws(Control,Name+"HPJawsA",0.3,0.3);
+
+  const std::string portName=Name+"MonoBremTube";
+
+  Control.addVariable(portName+"FrontNPorts",1);   // beam ports 
+  PItemGen.setCF<setVariable::CF63>(CF63::outerRadius+9.1);
+  PItemGen.setPlate(2.0,"Stainless304");  
+  PItemGen.setOuterVoid(0);
+  PItemGen.generatePort(Control,portName+"FrontPort0",
+			Geometry::Vec3D(0,-11.5,0),
+			Geometry::Vec3D(-1,0,0));
+
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,Name+"BellowI",7.50);
+
+  VTGen.setPortBCF<setVariable::CF40>();
+  VTGen.setPortBLen(3.0);
+  VTGen.generateView(Control,Name+"ViewTubeB");
+  
+  CoolGen.generateScreen(Control,Name+"CooledScreenB",1);  // in beam
+  Control.addVariable(Name+"CooledScreenBYAngle",-90.0);
+
+  
+  GVGen.generateGate(Control,Name+"GateTubeD",0);  // open
+  
+  
+  return;
+}
+
+void
 diag3Package(FuncDataBase& Control,
 	     const std::string& diagKey)
   /*!
@@ -337,16 +393,32 @@ diag3Package(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("micromaxVariables[F]","diag3Package");
 
-  setVariable::PortItemGenerator PItemGen;
-  setVariable::PipeTubeGenerator SimpleTubeGen;
-  setVariable::CylGateValveGenerator GVGen;
   setVariable::BellowGenerator BellowGen;
-  setVariable::ViewScreenGenerator VSGen;
-  setVariable::CooledScreenGenerator CooledGen;
-  setVariable::BremTubeGenerator BTGen;
-  setVariable::HPJawsGenerator HPGen;
   setVariable::PipeGenerator PipeGen;
-  setVariable::BremBlockGenerator MaskGen;
+  setVariable::CooledScreenGenerator CoolGen;  
+  setVariable::CylGateValveGenerator GVGen;
+  setVariable::ViewScreenGenerator VTGen;
+  
+  PipeGen.setNoWindow();   // no window
+  PipeGen.setCF<setVariable::CF40>();
+  PipeGen.generatePipe(Control,diagKey+"LongPipe",160.3);  //drawing
+
+  GVGen.generateGate(Control,diagKey+"GateTubeE",0);  // open
+
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,diagKey+"BellowJ",7.5);    
+  
+  VTGen.setPortBCF<setVariable::CF40>();
+  VTGen.setPortBLen(3.0);
+  VTGen.generateView(Control,diagKey+"ViewTubeC");
+
+  CoolGen.generateScreen(Control,diagKey+"CooledScreenC",1);  // in beam
+  Control.addVariable(diagKey+"CooledScreenCYAngle",-90.0);
+
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,diagKey+"BellowK",7.5);    
+
+
   
 
   return;
@@ -363,10 +435,14 @@ diag4Package(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("micromaxVariables[F]","diag4Package");
 
+  
   setVariable::PortItemGenerator PItemGen;
   setVariable::CylGateValveGenerator GVGen;
   setVariable::ViewScreenGenerator VSGen;
   setVariable::BellowGenerator BellowGen;
+
+  
+  
   
   return;
 }
@@ -578,60 +654,6 @@ mirrorBox(FuncDataBase& Control,
   return;
 }
 
-void
-diag2Package(FuncDataBase& Control,const std::string& Name)
-  /*!
-    Construct variables for the diagnostic units
-    \param Control :: Database
-    \param Name :: component name
-  */
-{
-  ELog::RegMethod RegA("micromaxVariables[F]","diag2Package");
-
-  setVariable::ViewScreenGenerator VTGen;
-  setVariable::BellowGenerator BellowGen;
-  setVariable::PortItemGenerator PItemGen;
-  setVariable::BremTubeGenerator BTGen;
-  setVariable::HPJawsGenerator HPGen;
-  setVariable::BremBlockGenerator MaskGen;
-  setVariable::BeamScrapperGenerator ScrapperGen;
-  setVariable::CylGateValveGenerator GVGen;
-  
-  BTGen.generateTube(Control,Name+"MonoBremTube");
-
-  ScrapperGen.generateScreen(Control,Name+"BremScrapper");
-  
-  MaskGen.setAperature(-1,1.0,1.0,1.0,1.0,1.0,1.0);
-  MaskGen.generateBlock(Control,Name+"BremCollB",-4.0);
-
-  HPGen.generateJaws(Control,Name+"HPJawsA",0.3,0.3);
-
-  const std::string portName=Name+"MonoBremTube";
-
-  Control.addVariable(portName+"FrontNPorts",1);   // beam ports 
-  PItemGen.setCF<setVariable::CF63>(CF63::outerRadius+9.1);
-  PItemGen.setPlate(2.0,"Stainless304");  
-  PItemGen.setOuterVoid(0);
-  PItemGen.generatePort(Control,portName+"FrontPort0",
-			Geometry::Vec3D(0,-11.5,0),
-			Geometry::Vec3D(-1,0,0));
-
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,Name+"BellowI",7.50);
-
-  VTGen.setPortBCF<setVariable::CF40>();
-  VTGen.setPortBLen(3.0);
-  VTGen.generateView(Control,Name+"ViewTubeB");
-  
-  setVariable::CooledScreenGenerator CoolGen;
-  CoolGen.generateScreen(Control,Name+"CooledScreenB",1);  // in beam
-  Control.addVariable(Name+"CooledScreenBYAngle",-90.0);
-
-  GVGen.generateGate(Control,Name+"GateTubeD",0);  // open
-  
-  
-  return;
-}
 
 void
 crlPackage(FuncDataBase& Control,const std::string& Name)
@@ -891,6 +913,8 @@ opticsVariables(FuncDataBase& Control,
   micromaxVar::diag2Package(Control,preName);
 
   micromaxVar::crlPackage(Control,preName);
+
+  micromaxVar::diag3Package(Control,preName);
   
   /*
   micromaxVar::diag3Package(Control,preName);

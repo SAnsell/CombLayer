@@ -179,7 +179,10 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   crlTubeA(new xraySystem::CRLTube(newName+"CRLTubeA")),
   crlPipeB(new constructSystem::VacuumPipe(newName+"CRLPipeB")),
   crlTubeB(new xraySystem::CRLTube(newName+"CRLTubeB")),
-  crlPipeC(new constructSystem::VacuumPipe(newName+"CRLPipeC"))
+  crlPipeC(new constructSystem::VacuumPipe(newName+"CRLPipeC")),
+  longPipe(new constructSystem::VacuumPipe(newName+"LongPipe")),
+  gateTubeE(new xraySystem::CylGateValve(newName+"GateTubeE")),
+  bellowJ(new constructSystem::Bellows(newName+"BellowJ"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -225,6 +228,9 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   OR.addObject(crlPipeB);
   OR.addObject(crlTubeB);
   OR.addObject(crlPipeC);
+  OR.addObject(longPipe);
+  OR.addObject(gateTubeE);
+  OR.addObject(bellowJ);
 }
   
 micromaxOpticsLine::~micromaxOpticsLine()
@@ -397,6 +403,41 @@ micromaxOpticsLine::constructCRL(Simulation& System,
 
   constructSystem::constructUnit
     (System,buildZone,*crlPipeA,"back",*crlTubeA);
+
+  constructSystem::constructUnit
+    (System,buildZone,*crlTubeA,"back",*crlPipeB);
+
+  constructSystem::constructUnit
+    (System,buildZone,*crlPipeB,"back",*crlTubeB);
+
+  constructSystem::constructUnit
+    (System,buildZone,*crlTubeB,"back",*crlPipeC);
+
+  return;
+}
+
+void
+micromaxOpticsLine::constructDiag3(Simulation& System,
+				   const attachSystem::FixedComp& initFC, 
+				   const std::string& sideName)
+/*!
+    Sub build of the post first mono system.
+    \param System :: Simulation to use
+    \param initFC :: Start point
+    \param sideName :: start link point
+  */
+{
+  ELog::RegMethod RegA("micromaxOpticsLine","constructDiag3");
+
+  constructSystem::constructUnit
+    (System,buildZone,initFC,sideName,*longPipe);
+
+  constructSystem::constructUnit
+    (System,buildZone,*longPipe,"back",*gateTubeE);
+
+  constructSystem::constructUnit
+    (System,buildZone,*gateTubeE,"back",*bellowJ);
+
   return;
 }
 
@@ -499,6 +540,8 @@ micromaxOpticsLine::buildObjects(Simulation& System)
   constructDiag2(System,*gateTubeC,"back");
 
   constructCRL(System,*gateTubeD,"back");
+
+  constructDiag3(System,*gateTubeC,"back");
   
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);

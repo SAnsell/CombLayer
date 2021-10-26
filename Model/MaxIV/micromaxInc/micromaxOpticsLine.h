@@ -181,7 +181,17 @@ class micromaxOpticsLine :
   std::shared_ptr<xraySystem::CRLTube> crlTubeB;
   /// End  CRL pipe
   std::shared_ptr<constructSystem::VacuumPipe> crlPipeC;
-
+  /// Really long pipe
+  std::shared_ptr<constructSystem::VacuumPipe> longPipe;
+  /// Gate valve at end of really long pipe
+  std::shared_ptr<xraySystem::CylGateValve> gateTubeE;
+  /// Bellow exit
+  std::shared_ptr<constructSystem::Bellows> bellowJ;
+  /// view screen tube
+  std::shared_ptr<xraySystem::ViewScreenTube> viewTubeC;
+  /// view screen
+  std::shared_ptr<xraySystem::CooledScreen> cooledScreenC;
+  
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
@@ -194,6 +204,8 @@ class micromaxOpticsLine :
   void constructDiag2(Simulation&,const attachSystem::FixedComp&, 
 		      const std::string&);
   void constructCRL(Simulation&,const attachSystem::FixedComp&, 
+		      const std::string&);
+  void constructDiag3(Simulation&,const attachSystem::FixedComp&, 
 		      const std::string&);
 
   void populate(const FuncDataBase&);
