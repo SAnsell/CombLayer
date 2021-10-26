@@ -237,13 +237,14 @@ TDCBeamDump::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("TDCBeamDump","createObjects");
 
-  // const HeadRule& frontHR=ExternalCut::getRule("front");
+  const HeadRule& frontHR=ExternalCut::getRule("front");
   // const HeadRule& backHR=ExternalCut::getRule("back");
   const HeadRule& baseHR=ExternalCut::getRule("base");
+  //  const HeadRule& topHR=ExternalCut::getRule("top");
 
   HeadRule Out;
   Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -42 -7 ");
-  makeCell("PreCore",System,cellIndex++,0,0.0,Out);
+  makeCell("PreCore",System,cellIndex++,0,0.0,Out*frontHR);
   Out=ModelSupport::getHeadRule(SMap,buildIndex,"42 -2 -7 ");
   makeCell("Carbon",System,cellIndex++,carbonMat,0.0,Out);
   Out=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 -17 ");
@@ -262,7 +263,7 @@ TDCBeamDump::createObjects(Simulation& System)
   makeCell("Bulk",System,cellIndex++,bulkMat,0.0,Out*baseHR);
 
   Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -1 3 -4 5 -6 7 ");
-  makeCell("SkinFront",System,cellIndex++,skinMat,0.0,Out*baseHR);
+  makeCell("SkinFront",System,cellIndex++,skinMat,0.0,Out*baseHR*frontHR);
 
   Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -32 13 -14 6 -16 ");
   makeCell("SkinTop",System,cellIndex++,skinMat,0.0,Out);
@@ -274,10 +275,10 @@ TDCBeamDump::createObjects(Simulation& System)
   makeCell("SkinBack",System,cellIndex++,skinMat,0.0,Out*baseHR);
 
   Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -32 13 -3 5 -6 ");
-  makeCell("SkinLeft",System,cellIndex++,skinMat,0.0,Out*baseHR);
+  makeCell("SkinLeft",System,cellIndex++,skinMat,0.0,Out*baseHR*frontHR);
 
   Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -32 4 -14 5 -6 ");
-  makeCell("SkinRight",System,cellIndex++,skinMat,0.0,Out*baseHR);
+  makeCell("SkinRight",System,cellIndex++,skinMat,0.0,Out*baseHR*frontHR);
 
   Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -32 13 -14 15 -16");
   addOuterSurf(Out);
