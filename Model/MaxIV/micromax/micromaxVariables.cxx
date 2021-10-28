@@ -394,11 +394,16 @@ diag3Package(FuncDataBase& Control,
   ELog::RegMethod RegA("micromaxVariables[F]","diag3Package");
 
   setVariable::BellowGenerator BellowGen;
+  setVariable::BremTubeGenerator BTGen;
+  setVariable::BremBlockGenerator MaskGen;
   setVariable::PipeGenerator PipeGen;
   setVariable::CooledScreenGenerator CoolGen;  
   setVariable::CylGateValveGenerator GVGen;
   setVariable::ViewScreenGenerator VTGen;
+  setVariable::HPJawsGenerator HPGen;
+  setVariable::SixPortGenerator CrossGen;
   
+    
   PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.generatePipe(Control,diagKey+"LongPipe",160.3);  //drawing
@@ -409,7 +414,7 @@ diag3Package(FuncDataBase& Control,
   BellowGen.generateBellow(Control,diagKey+"BellowJ",7.5);    
   
   VTGen.setPortBCF<setVariable::CF40>();
-  VTGen.setPortBLen(3.0);
+  VTGen.setPortBLen(22.5);
   VTGen.generateView(Control,diagKey+"ViewTubeC");
 
   CoolGen.generateScreen(Control,diagKey+"CooledScreenC",1);  // in beam
@@ -418,9 +423,19 @@ diag3Package(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,diagKey+"BellowK",7.5);    
 
+  HPGen.generateJaws(Control,diagKey+"HPJawsB",0.3,0.3);
+  BellowGen.generateBellow(Control,diagKey+"BellowL",7.5);    
+ 
+  //  BTGen.generateTube(Control,diagKey+"CRLBremTube");
+  CrossGen.setCF<setVariable::CF120>();
+  CrossGen.setSideCF<setVariable::CF40>();
+  CrossGen.setLength(7.0,13.0);
+  CrossGen.setSideLength(6.5);
+  CrossGen.generateSixPort(Control,diagKey+"CRLBremTube");
 
+  MaskGen.setAperature(-1,1.0,1.0,1.0,1.0,1.0,1.0);
+  MaskGen.generateBlock(Control,diagKey+"BremCollC",-4.0);
   
-
   return;
 }
 

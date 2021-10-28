@@ -99,6 +99,7 @@
 #include "BremMonoColl.h"
 #include "BremBlock.h"
 #include "CRLTube.h"
+#include "FourPortTube.h"
 #include "MonoVessel.h"
 #include "MonoCrystals.h"
 #include "GateValveCube.h"
@@ -119,6 +120,7 @@
 #include "BremTube.h"
 #include "HPJaws.h"
 #include "ViewScreenTube.h"
+
 
 #include "CooledScreen.h"
 #include "YagScreen.h"
@@ -170,19 +172,28 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   monoBremTube(new xraySystem::BremTube(newName+"MonoBremTube")),
   bremScrapper(new xraySystem::BeamScrapper(newName+"BremScrapper")),
   bremCollB(new xraySystem::BremBlock(newName+"BremCollB")),
+
   hpJawsA(new xraySystem::HPJaws(newName+"HPJawsA")),
   bellowI(new constructSystem::Bellows(newName+"BellowI")),
   viewTubeB(new xraySystem::ViewScreenTube(newName+"ViewTubeB")),
   cooledScreenB(new xraySystem::CooledScreen(newName+"CooledScreenB")),
   gateTubeD(new xraySystem::CylGateValve(newName+"GateTubeD")),
+
   crlPipeA(new constructSystem::VacuumPipe(newName+"CRLPipeA")),
   crlTubeA(new xraySystem::CRLTube(newName+"CRLTubeA")),
   crlPipeB(new constructSystem::VacuumPipe(newName+"CRLPipeB")),
   crlTubeB(new xraySystem::CRLTube(newName+"CRLTubeB")),
   crlPipeC(new constructSystem::VacuumPipe(newName+"CRLPipeC")),
+
   longPipe(new constructSystem::VacuumPipe(newName+"LongPipe")),
   gateTubeE(new xraySystem::CylGateValve(newName+"GateTubeE")),
-  bellowJ(new constructSystem::Bellows(newName+"BellowJ"))
+  bellowJ(new constructSystem::Bellows(newName+"BellowJ")),  
+  viewTubeC(new xraySystem::ViewScreenTube(newName+"ViewTubeC")),
+  cooledScreenC(new xraySystem::CooledScreen(newName+"CooledScreenC")),
+  bellowK(new constructSystem::Bellows(newName+"BellowK")),
+  hpJawsB(new xraySystem::HPJaws(newName+"HPJawsB")),
+  crlBremTube(new xraySystem::FourPortTube(newName+"CRLBremTube")),  
+  bremCollC(new xraySystem::BremBlock(newName+"BremCollC"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -231,6 +242,12 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   OR.addObject(longPipe);
   OR.addObject(gateTubeE);
   OR.addObject(bellowJ);
+  OR.addObject(viewTubeC);
+  OR.addObject(cooledScreenC);
+  OR.addObject(bellowK);
+  OR.addObject(hpJawsB);
+  OR.addObject(crlBremTube);
+  OR.addObject(bremCollC);
 }
   
 micromaxOpticsLine::~micromaxOpticsLine()
@@ -438,6 +455,28 @@ micromaxOpticsLine::constructDiag3(Simulation& System,
   constructSystem::constructUnit
     (System,buildZone,*gateTubeE,"back",*bellowJ);
 
+  int outerCell=constructSystem::constructUnit
+    (System,buildZone,*bellowJ,"back",*viewTubeC);
+
+  cooledScreenC->setBeamAxis(*viewTubeC,1);
+  cooledScreenC->createAll(System,*viewTubeC,4);
+  cooledScreenC->insertInCell("Outer",System,outerCell);
+  cooledScreenC->insertInCell("Connect",System,viewTubeC->getCell("Plate"));
+  cooledScreenC->insertInCell("Connect",System,viewTubeC->getCell("Void"));
+  cooledScreenC->insertInCell("Payload",System,viewTubeC->getCell("Void"));
+
+  constructSystem::constructUnit
+    (System,buildZone,*viewTubeC,"back",*bellowK);
+
+  constructSystem::constructUnit
+    (System,buildZone,*bellowK,"back",*hpJawsB);
+
+  constructSystem::constructUnit
+    (System,buildZone,*hpJawsB,"back",*crlBremTube);
+
+  bremCollC->addInsertCell(crlBremTube->getCell("Void"));
+  bremCollC->createAll(System,*crlBremTube,0);
+
   return;
 }
 
@@ -541,7 +580,7 @@ micromaxOpticsLine::buildObjects(Simulation& System)
 
   constructCRL(System,*gateTubeD,"back");
 
-  constructDiag3(System,*gateTubeC,"back");
+  constructDiag3(System,*crlPipeC,"back");
   
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);

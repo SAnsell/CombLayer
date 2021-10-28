@@ -24,6 +24,10 @@
 
 class Simulation;
 
+namespace constructSystem
+{
+  class portSet;
+}
 
 namespace xraySystem
 {
@@ -72,12 +76,17 @@ class FourPortTube :
   int plateMat;                ///< plate material
 
   bool sideVoidFlag;          ///< Make the side inner void complete
+
+  // extra ports to add:
+  std::unique_ptr<constructSystem::portSet> PSet;
   
   void populate(const FuncDataBase&);  
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
 
+  void createPorts(Simulation&);
+  
  public:
 
   FourPortTube(const std::string&);

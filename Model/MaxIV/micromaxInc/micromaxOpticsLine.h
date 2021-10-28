@@ -59,6 +59,7 @@ namespace xraySystem
   class CRLTube;
   class CylGateValve;
   class DCMTank;
+  class FourPortTube;
   class FlangeMount;
   class GaugeTube;
   class Mirror;
@@ -191,6 +192,14 @@ class micromaxOpticsLine :
   std::shared_ptr<xraySystem::ViewScreenTube> viewTubeC;
   /// view screen
   std::shared_ptr<xraySystem::CooledScreen> cooledScreenC;
+  /// Bellow exit
+  std::shared_ptr<constructSystem::Bellows> bellowK;
+  /// jaws
+  std::shared_ptr<xraySystem::HPJaws> hpJawsB;
+  /// BremTube (with heat trapping)
+  std::shared_ptr<xraySystem::FourPortTube> crlBremTube;
+  /// BremBlock
+  std::shared_ptr<xraySystem::BremBlock> bremCollC;
   
 
   double outerLeft;    ///< Left Width for cut rectangle

@@ -91,8 +91,8 @@ cosaxsTube::cosaxsTube(const std::string& Key)  :
   attachSystem::SurfMap(),
   attachSystem::FrontBackCut(),
 
-  outerMat(0),
   delayPortFlag(0),
+  outerMat(0),
 
   buildZone(Key+"BlockZone"),
   tubeZone(Key+"TubeZone"),

@@ -58,7 +58,8 @@
 #include "FrontBackCut.h" 
 #include "BaseMap.h"
 #include "SurfMap.h"
-#include "CellMap.h" 
+#include "CellMap.h"
+#include "portSet.h" 
 
 #include "FourPortTube.h"
 
@@ -71,7 +72,8 @@ FourPortTube::FourPortTube(const std::string& Key) :
   attachSystem::FrontBackCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
-  sideVoidFlag(0)
+  sideVoidFlag(0),
+  PSet(new constructSystem::portSet(*this))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -306,6 +308,33 @@ FourPortTube::createLinks()
   return;
 }
 
+
+void
+FourPortTube::createPorts(Simulation& System) 
+  /*!
+    Construct ports
+    \param System :: simulatoin 
+  */
+{
+  ELog::RegMethod RegA("FourPortTube","createPorts");
+  
+  if (!PSet->empty())
+    {
+      MonteCarlo::Object* insertObj= 
+	this->getCellObject(System,"Dome");
+      
+      const HeadRule innerHR=getSurfRules("FlightCyl");
+      const HeadRule outerHR=getSurfRules("FlightWall");
+      
+      for(const auto CN : insertCells)
+	PSet->addInsertPortCells(CN);
+      
+      PSet->createPorts(System,insertObj,innerHR,outerHR);
+    }
+
+  return;
+}
+  
 void
 FourPortTube::createAll(Simulation& System,
 			const attachSystem::FixedComp& FC,
@@ -324,6 +353,7 @@ FourPortTube::createAll(Simulation& System,
   createSurfaces();
   createObjects(System);
   createLinks();
+  createPorts(System);
   insertObjects(System);   
   
   return;
