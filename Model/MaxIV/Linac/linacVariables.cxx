@@ -2154,7 +2154,7 @@ Segment27(FuncDataBase& Control,
   BSGen.generate(Control,lKey+"BeamStopC");
   Control.addVariable(lKey+"BeamStopCYAngle",-90.0);
   Control.addVariable(lKey+"BeamStopCBulkThickBack",40.0);
-  Control.addVariable(lKey+"BeamStopCBulkWidthLeft",25.0);
+  Control.addVariable(lKey+"BeamStopCBulkWidthLeft",35.0);
 
   return;
 }
