@@ -268,8 +268,11 @@ TDCBeamDump::createObjects(Simulation& System)
   Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -32 13 -14 6 -16 ");
   makeCell("SkinTop",System,cellIndex++,skinMat,0.0,Out);
 
-  Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -32 13 -14 15 -5 ");
-  makeCell("SkinBottom",System,cellIndex++,skinMat,0.0,Out*baseHR);
+  if (baseHR.isEmpty())
+    {
+      Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -32 13 -14 15 -5 ");
+      makeCell("SkinBottom",System,cellIndex++,skinMat,0.0,Out*baseHR);
+    }
 
   Out=ModelSupport::getHeadRule(SMap,buildIndex,"22 -32 3 -4 5 -6 ");
   makeCell("SkinBack",System,cellIndex++,skinMat,0.0,Out*baseHR);
