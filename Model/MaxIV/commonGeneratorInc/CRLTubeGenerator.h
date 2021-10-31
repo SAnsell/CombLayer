@@ -94,6 +94,7 @@ class CRLTubeGenerator
   template<typename T> void setCF();
   template<typename T> void setPortCF(const double);
 
+  void setMain(const double,const double,const double);
   void setLens(const size_t,const double,const double);
   
   void generateLens(FuncDataBase&,const std::string&,

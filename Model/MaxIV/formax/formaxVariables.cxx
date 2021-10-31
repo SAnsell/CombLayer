@@ -426,13 +426,11 @@ monoShutterVariables(FuncDataBase& Control,
 
   setVariable::GateValveGenerator GateGen;
   setVariable::BellowGenerator BellowGen;
-  setVariable::MonoShutterGenerator MShutterGen;
   setVariable::RoundShutterGenerator RShutterGen;
   setVariable::CylGateValveGenerator GVGen;
   setVariable::PipeGenerator PipeGen;
 
     // up / up (true)
-  MShutterGen.generateShutter(Control,preName+"MonoShutter",1,1);
   RShutterGen.generateShutter(Control,preName+"RMonoShutter",1,1);  
   Control.addVariable(preName+"RMonoShutterYAngle",-90);
   PipeGen.setMat("Stainless304");

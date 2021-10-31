@@ -105,7 +105,6 @@
 #include "FlangeMount.h"
 #include "Mirror.h"
 #include "MonoBox.h"
-#include "MonoShutter.h"
 #include "RoundMonoShutter.h"
 #include "TriggerTube.h"
 #include "CylGateValve.h"

@@ -219,6 +219,7 @@ template void SixPortGenerator::setCF<CF200>();
 
 template void SixPortGenerator::setSideCF<CF40>();
 template void SixPortGenerator::setSideCF<CF100>();
+template void SixPortGenerator::setSideCF<CF120>();
 template void SixPortGenerator::setSideCF<CF150>();
 template void SixPortGenerator::setSideCF<CF200>();
   

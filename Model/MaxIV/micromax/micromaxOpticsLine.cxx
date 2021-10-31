@@ -107,8 +107,7 @@
 #include "JawFlange.h"
 #include "FlangeMount.h"
 #include "Mirror.h"
-#include "MonoBox.h"
-#include "MonoShutter.h"
+#include "RoundMonoShutter.h"
 #include "TriggerTube.h"
 #include "CylGateValve.h"
 #include "SquareFMask.h"
@@ -120,7 +119,6 @@
 #include "BremTube.h"
 #include "HPJaws.h"
 #include "ViewScreenTube.h"
-
 
 #include "CooledScreen.h"
 #include "YagScreen.h"
@@ -182,10 +180,12 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   crlPipeA(new constructSystem::VacuumPipe(newName+"CRLPipeA")),
   crlTubeA(new xraySystem::CRLTube(newName+"CRLTubeA")),
   crlPipeB(new constructSystem::VacuumPipe(newName+"CRLPipeB")),
-  crlTubeB(new xraySystem::CRLTube(newName+"CRLTubeB")),
   crlPipeC(new constructSystem::VacuumPipe(newName+"CRLPipeC")),
+  crlTubeB(new xraySystem::CRLTube(newName+"CRLTubeB")),
+  crlPipeD(new constructSystem::VacuumPipe(newName+"CRLPipeD")),
 
-  longPipe(new constructSystem::VacuumPipe(newName+"LongPipe")),
+  longPipeA(new constructSystem::VacuumPipe(newName+"LongPipeA")),
+  longPipeB(new constructSystem::VacuumPipe(newName+"LongPipeB")),
   gateTubeE(new xraySystem::CylGateValve(newName+"GateTubeE")),
   bellowJ(new constructSystem::Bellows(newName+"BellowJ")),  
   viewTubeC(new xraySystem::ViewScreenTube(newName+"ViewTubeC")),
@@ -193,7 +193,9 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   bellowK(new constructSystem::Bellows(newName+"BellowK")),
   hpJawsB(new xraySystem::HPJaws(newName+"HPJawsB")),
   crlBremTube(new xraySystem::FourPortTube(newName+"CRLBremTube")),  
-  bremCollC(new xraySystem::BremBlock(newName+"BremCollC"))
+  bremCollC(new xraySystem::BremBlock(newName+"BremCollC")),
+  bellowL(new constructSystem::Bellows(newName+"BellowL")),
+  monoShutter(new xraySystem::RoundMonoShutter(newName+"RMonoShutter"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -237,9 +239,11 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   OR.addObject(crlPipeA);
   OR.addObject(crlTubeA);
   OR.addObject(crlPipeB);
-  OR.addObject(crlTubeB);
   OR.addObject(crlPipeC);
-  OR.addObject(longPipe);
+  OR.addObject(crlTubeB);
+  OR.addObject(crlPipeD);
+  OR.addObject(longPipeA);
+  OR.addObject(longPipeB);
   OR.addObject(gateTubeE);
   OR.addObject(bellowJ);
   OR.addObject(viewTubeC);
@@ -248,6 +252,8 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   OR.addObject(hpJawsB);
   OR.addObject(crlBremTube);
   OR.addObject(bremCollC);
+  OR.addObject(bellowL);
+  OR.addObject(monoShutter);
 }
   
 micromaxOpticsLine::~micromaxOpticsLine()
@@ -425,10 +431,13 @@ micromaxOpticsLine::constructCRL(Simulation& System,
     (System,buildZone,*crlTubeA,"back",*crlPipeB);
 
   constructSystem::constructUnit
-    (System,buildZone,*crlPipeB,"back",*crlTubeB);
+    (System,buildZone,*crlPipeB,"back",*crlPipeC);
 
   constructSystem::constructUnit
-    (System,buildZone,*crlTubeB,"back",*crlPipeC);
+    (System,buildZone,*crlPipeC,"back",*crlTubeB);
+
+  constructSystem::constructUnit
+    (System,buildZone,*crlTubeB,"back",*crlPipeD);
 
   return;
 }
@@ -447,10 +456,12 @@ micromaxOpticsLine::constructDiag3(Simulation& System,
   ELog::RegMethod RegA("micromaxOpticsLine","constructDiag3");
 
   constructSystem::constructUnit
-    (System,buildZone,initFC,sideName,*longPipe);
+    (System,buildZone,initFC,sideName,*longPipeA);
+  constructSystem::constructUnit
+    (System,buildZone,*longPipeA,"back",*longPipeB);
 
   constructSystem::constructUnit
-    (System,buildZone,*longPipe,"back",*gateTubeE);
+    (System,buildZone,*longPipeB,"back",*gateTubeE);
 
   constructSystem::constructUnit
     (System,buildZone,*gateTubeE,"back",*bellowJ);
@@ -471,12 +482,40 @@ micromaxOpticsLine::constructDiag3(Simulation& System,
   constructSystem::constructUnit
     (System,buildZone,*bellowK,"back",*hpJawsB);
 
+  crlBremTube->setSideVoid();
   constructSystem::constructUnit
     (System,buildZone,*hpJawsB,"back",*crlBremTube);
 
   bremCollC->addInsertCell(crlBremTube->getCell("Void"));
   bremCollC->createAll(System,*crlBremTube,0);
 
+  return;
+}
+
+
+void
+micromaxOpticsLine::constructMonoShutter(Simulation& System,
+					 const attachSystem::FixedComp& FC,
+					 const std::string& linkName)
+/*!
+  Construct a monoshutter system
+    \param System :: Simulation for building
+    \param FC :: FixedComp for start point
+    \param linkName :: side index
+    \return outerCell
+*/
+{
+  ELog::RegMethod RegA("micromaxOpticsLine","constructMonoShutter");
+
+  constructSystem::constructUnit
+    (System,buildZone,FC,linkName,*bellowL);
+
+  int outerCell=constructSystem::constructUnit
+    (System,buildZone,*bellowL,"back",*monoShutter);
+
+  monoShutter->splitObject(System,"-TopPlate",outerCell);
+  monoShutter->splitObject(System,"MidCutB",outerCell);
+  
   return;
 }
 
@@ -580,7 +619,9 @@ micromaxOpticsLine::buildObjects(Simulation& System)
 
   constructCRL(System,*gateTubeD,"back");
 
-  constructDiag3(System,*crlPipeC,"back");
+  constructDiag3(System,*crlPipeD,"back");
+
+  constructMonoShutter(System,*crlBremTube,"back");
   
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);

@@ -57,6 +57,7 @@
 #include "VacBoxGenerator.h"
 #include "MonoBoxGenerator.h"
 #include "MonoShutterGenerator.h"
+#include "RoundShutterGenerator.h"
 #include "BremMonoCollGenerator.h"
 #include "BremTubeGenerator.h"
 #include "HPJawsGenerator.h"
@@ -104,7 +105,7 @@ void diag2Package(FuncDataBase&,const std::string&);
 void crlPackage(FuncDataBase&,const std::string&);
 void diag3Package(FuncDataBase&,const std::string&);
   
-void diag4Package(FuncDataBase&,const std::string&);
+void monoShutterVariables(FuncDataBase&,const std::string&);
 void mirrorBox(FuncDataBase&,const std::string&,const std::string&,
 	       const double,const double);
 void viewPackage(FuncDataBase&,const std::string&);
@@ -353,6 +354,7 @@ diag2Package(FuncDataBase& Control,const std::string& Name)
   MaskGen.setAperature(-1,1.0,1.0,1.0,1.0,1.0,1.0);
   MaskGen.generateBlock(Control,Name+"BremCollB",-4.0);
 
+  HPGen.setMain(24.0);
   HPGen.generateJaws(Control,Name+"HPJawsA",0.3,0.3);
 
   const std::string portName=Name+"MonoBremTube";
@@ -406,7 +408,8 @@ diag3Package(FuncDataBase& Control,
     
   PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,diagKey+"LongPipe",160.3);  //drawing
+  PipeGen.generatePipe(Control,diagKey+"LongPipeA",160.3);  //drawing
+  PipeGen.generatePipe(Control,diagKey+"LongPipeB",200.0);  //drawing
 
   GVGen.generateGate(Control,diagKey+"GateTubeE",0);  // open
 
@@ -423,41 +426,20 @@ diag3Package(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,diagKey+"BellowK",7.5);    
 
+  HPGen.setMain(24.0);
   HPGen.generateJaws(Control,diagKey+"HPJawsB",0.3,0.3);
   BellowGen.generateBellow(Control,diagKey+"BellowL",7.5);    
  
   //  BTGen.generateTube(Control,diagKey+"CRLBremTube");
-  CrossGen.setCF<setVariable::CF120>();
-  CrossGen.setSideCF<setVariable::CF40>();
-  CrossGen.setLength(7.0,13.0);
-  CrossGen.setSideLength(6.5);
+  CrossGen.setCF<setVariable::CF40>();
+  CrossGen.setSideCF<setVariable::CF120>();
+  CrossGen.setLength(12.0,15.0);
+  CrossGen.setSideLength(16.5);
   CrossGen.generateSixPort(Control,diagKey+"CRLBremTube");
-
+  Control.addVariable(diagKey+"CRLBremTubeYAngle",90.0);
+  
   MaskGen.setAperature(-1,1.0,1.0,1.0,1.0,1.0,1.0);
   MaskGen.generateBlock(Control,diagKey+"BremCollC",-4.0);
-  
-  return;
-}
-
-void
-diag4Package(FuncDataBase& Control,
-	     const std::string& diagKey)
-  /*!
-    Builds the variables for the second diagnostice/slit packge
-    \param Control :: Database
-    \param diagKey :: prename
-  */
-{
-  ELog::RegMethod RegA("micromaxVariables[F]","diag4Package");
-
-  
-  setVariable::PortItemGenerator PItemGen;
-  setVariable::CylGateValveGenerator GVGen;
-  setVariable::ViewScreenGenerator VSGen;
-  setVariable::BellowGenerator BellowGen;
-
-  
-  
   
   return;
 }
@@ -473,32 +455,17 @@ monoShutterVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("micromaxVariables","monoShutterVariables");
 
-  setVariable::GateValveGenerator GateGen;
   setVariable::BellowGenerator BellowGen;
-  setVariable::MonoShutterGenerator MShutterGen;
-  setVariable::CylGateValveGenerator GVGen;
+  setVariable::RoundShutterGenerator RShutterGen;
   setVariable::PipeGenerator PipeGen;
-
-    // up / up (true)
-  MShutterGen.generateShutter(Control,preName+"MonoShutter",1,1);  
-
-  PipeGen.setMat("Stainless304");
-  PipeGen.setNoWindow();
-  PipeGen.setCF<setVariable::CF40>();
-  PipeGen.setBFlangeCF<setVariable::CF63>(); 
-  PipeGen.generatePipe(Control,preName+"MonoAdaptorA",7.5);
-  PipeGen.setAFlangeCF<setVariable::CF63>();
-  PipeGen.setBFlangeCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,preName+"MonoAdaptorB",7.5);
-
-  // bellows on shield block
+  
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.setAFlangeCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowL",10.0);    
+  BellowGen.generateBellow(Control,preName+"BellowL",7.5);    
 
+  // up / up (true)
+  RShutterGen.generateShutter(Control,preName+"RMonoShutter",1,1);  
+  Control.addVariable(preName+"RMonoShutterYAngle",180);
 
-  PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,preName+"PipeF",85.0);  
   return;
 }
   
@@ -687,16 +654,18 @@ crlPackage(FuncDataBase& Control,const std::string& Name)
   PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF40>();
 
-  DPGen.setLens(10,1.5,0.2);
   PipeGen.generatePipe(Control,Name+"CRLPipeA",12.5);
 
+  DPGen.setMain(65,34.0,25.0);  // len/width/height
+  DPGen.setLens(10,1.5,0.2);
   DPGen.generateLens(Control,Name+"CRLTubeA",1);  // in beam
-
-  PipeGen.generatePipe(Control,Name+"CRLPipeB",12.5);
+  
+  PipeGen.generatePipe(Control,Name+"CRLPipeB",16.0);
+  PipeGen.generatePipe(Control,Name+"CRLPipeC",25.0);
 
   DPGen.generateLens(Control,Name+"CRLTubeB",1);  // in beam
 
-  PipeGen.generatePipe(Control,Name+"CRLPipeC",12.5);
+  PipeGen.generatePipe(Control,Name+"CRLPipeD",12.5);
     
   return;
 }
@@ -930,14 +899,9 @@ opticsVariables(FuncDataBase& Control,
   micromaxVar::crlPackage(Control,preName);
 
   micromaxVar::diag3Package(Control,preName);
-  
-  /*
-  micromaxVar::diag3Package(Control,preName);
 
-  micromaxVar::diag4Package(Control,preName);
-  
   micromaxVar::monoShutterVariables(Control,preName);
-  */
+
   return;
 }
 
@@ -1210,14 +1174,14 @@ MICROMAXvariables(FuncDataBase& Control)
   
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,"MicroMaxJoinPipe",150.0);
+  PipeGen.generatePipe(Control,"MicroMaxJoinPipe",130.0);
   Control.addVariable("MicroMaxJoinPipeFlipX",1);
     
   micromaxVar::opticsHutVariables(Control,"MicroMaxOpticsHut");
   micromaxVar::opticsVariables(Control,"MicroMax");
 
   PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,"MicroMaxJoinPipeB",20.0);
+  PipeGen.generatePipe(Control,"MicroMaxJoinPipeB",70.0);
 
   micromaxVar::shieldVariables(Control,"MicroMax");
   

@@ -65,6 +65,7 @@ namespace xraySystem
   class Mirror;
   class MLMono;
   class MonoBlockXstals;
+  class RoundMonoShutter;
   class ShutterUnit;
   class SquareFMask;
   class IonGauge;
@@ -72,7 +73,6 @@ namespace xraySystem
   class HPJaws;
   class BremTube;
   class ViewScreenTube;
-  class MonoShutter;
   class PipeShield;
   class Table;
   
@@ -178,12 +178,16 @@ class micromaxOpticsLine :
   std::shared_ptr<xraySystem::CRLTube> crlTubeA;
   /// Mid  CRL pipe
   std::shared_ptr<constructSystem::VacuumPipe> crlPipeB;
+  /// Mid  CRL pipe
+  std::shared_ptr<constructSystem::VacuumPipe> crlPipeC;
   /// Second CRL System  
   std::shared_ptr<xraySystem::CRLTube> crlTubeB;
   /// End  CRL pipe
-  std::shared_ptr<constructSystem::VacuumPipe> crlPipeC;
+  std::shared_ptr<constructSystem::VacuumPipe> crlPipeD;
   /// Really long pipe
-  std::shared_ptr<constructSystem::VacuumPipe> longPipe;
+  std::shared_ptr<constructSystem::VacuumPipe> longPipeA;
+  /// Really long pipe
+  std::shared_ptr<constructSystem::VacuumPipe> longPipeB;
   /// Gate valve at end of really long pipe
   std::shared_ptr<xraySystem::CylGateValve> gateTubeE;
   /// Bellow exit
@@ -200,7 +204,10 @@ class micromaxOpticsLine :
   std::shared_ptr<xraySystem::FourPortTube> crlBremTube;
   /// BremBlock
   std::shared_ptr<xraySystem::BremBlock> bremCollC;
-  
+  /// BremBlock
+  std::shared_ptr<constructSystem::Bellows> bellowL;  
+  /// The main mono shutter
+  std::shared_ptr<xraySystem::RoundMonoShutter> monoShutter;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
@@ -216,6 +223,8 @@ class micromaxOpticsLine :
 		      const std::string&);
   void constructDiag3(Simulation&,const attachSystem::FixedComp&, 
 		      const std::string&);
+  void constructMonoShutter(Simulation&,const attachSystem::FixedComp&, 
+			    const std::string&);
 
   void populate(const FuncDataBase&);
   void createSurfaces();

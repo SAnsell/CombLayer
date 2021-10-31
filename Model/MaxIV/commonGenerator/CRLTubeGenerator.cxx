@@ -122,6 +122,22 @@ CRLTubeGenerator::setPortCF(const double L)
 }
 
 void
+CRLTubeGenerator::setMain(const double L,const double W,const double H)
+  /*!
+    Set the outer box
+    \param L :: Length fo box
+    \param W :: Width of box
+    \param H :: Height of box
+  */
+{
+  length=L;
+  height=H;
+  width=W;
+  innerLength=0.95*length;
+  return;
+}
+
+void
 CRLTubeGenerator::setLens(const size_t N,const double T,const double G)
   /*!
     Set the number/ length / gap between lens
