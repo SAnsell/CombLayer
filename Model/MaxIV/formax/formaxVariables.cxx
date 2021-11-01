@@ -474,7 +474,16 @@ opticsHutVariables(FuncDataBase& Control,
   PGen.setSize(4.0,60.0,40.0);
   PGen.generatePortChicane(Control,hutName+"Chicane0",170.0,-25.0);
   PGen.generatePortChicane(Control,hutName+"Chicane1",270.0,-25.0);
-  
+
+  // Forklift truck holes
+  Control.addVariable(hutName+"NForkHoles",0);
+  Control.addVariable(hutName+"ForkXStep",280.0);
+  Control.addVariable(hutName+"ForkLength",60.0);
+  Control.addVariable(hutName+"ForkHeight",10.0);
+  Control.addVariable(hutName+"ForkZStep0",-115.0);
+  Control.addVariable(hutName+"ForkZStep1",0.0);
+  Control.addVariable(hutName+"ForkZStep2",80.0);
+
   return;
 }
 
@@ -545,6 +554,16 @@ exptHutVariables(FuncDataBase& Control,
   PGen.setSize(4.0,30.0,40.0);
   PGen.generatePortChicane(Control,hutName+"Chicane5","Right",-460.0,-5.0);
 
+  // Forklift truck holes
+
+  Control.addVariable(hutName+"NForkHoles",0);
+  Control.addVariable(hutName+"ForkYStep",80.0);
+  Control.addVariable(hutName+"ForkLength",60.0);
+  Control.addVariable(hutName+"ForkHeight",10.0);
+  Control.addVariable(hutName+"ForkZStep0",-115.0);
+  Control.addVariable(hutName+"ForkZStep1",0.0);
+  Control.addVariable(hutName+"ForkZStep2",80.0);
+  
   return;
 }
 

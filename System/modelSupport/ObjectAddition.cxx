@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/ObjectAddition.cxx
+ * File:   modelSupport/ObjectAddition.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -95,7 +95,8 @@ getObjectAxis(const Simulation& System,
   const std::string PType=IParam.getValueError<std::string>
     (KName,setIndex,ID++,"object/free");
 
-  if (PType=="free" || PType=="Free")
+  if (PType=="free" || PType=="Free" ||
+      PType=="AbsFree" || PType=="absFree")
     {
       Org=IParam.getCntVec3D(KName,setIndex,ID,eMess+"Origin");
       AY=IParam.getCntVec3D(KName,setIndex,ID,eMess+"YAxis");

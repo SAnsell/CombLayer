@@ -133,6 +133,19 @@ OpticsHutch::populate(const FuncDataBase& Control)
 	}
     } while(holeRad>Geometry::zeroTol);
 
+  // Fork holes
+  const size_t N=Control.EvalDefVar<size_t>(keyName+"NForkHoles",0);
+  if (N)
+    {
+      forkXStep=Control.EvalVar<double>(keyName+"ForkXStep");
+      forkLength=Control.EvalDefVar<double>(keyName+"ForkLength",60.0);
+      forkHeight=Control.EvalDefVar<double>(keyName+"ForkHeight",10.0);
+      for(size_t i=0;i<N;i++)
+	fZStep.push_back(Control.EvalVar<double>
+			 (keyName+"ForkZStep"+std::to_string(i)));
+    }
+
+  
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
   pbMat=ModelSupport::EvalMat<int>(Control,keyName+"PbMat");
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
@@ -207,6 +220,23 @@ OpticsHutch::createSurfaces()
       (SMap,buildIndex+1033,
        Origin-X*(outWidth+steelThick+pbWallThick+outerOutVoid),X);
   
+  if(!fZStep.empty())
+    {
+      ModelSupport::buildPlane
+	(SMap,buildIndex+3003,Origin+X*(forkXStep-forkLength/2),X);
+      ModelSupport::buildPlane
+	(SMap,buildIndex+3004,Origin+X*(forkXStep+forkLength/2),X);
+      int BI(buildIndex+3000);
+      for(size_t i=0;i<fZStep.size();i++)
+	{
+	  ModelSupport::buildPlane
+	    (SMap,BI+5,Origin+Z*(fZStep[i]-forkHeight/2.0),Z);
+	  ModelSupport::buildPlane
+	    (SMap,BI+6,Origin+Z*(fZStep[i]+forkHeight/2.0),Z);
+	  BI+=10;
+	}
+    }
+
   return;
 }
 
@@ -236,6 +266,10 @@ OpticsHutch::createObjects(Simulation& System)
       holeCut*=ModelSupport::getHeadRule(SMap,BI,"107");
       BI+=100;
     }
+  HeadRule forkWall;
+  if(!fZStep.empty())
+    forkWall=ModelSupport::getHeadRule(SMap,buildIndex,"(-3003:3004)");
+
   
   HeadRule HR;
   if (innerOutVoid>Geometry::zeroTol)
@@ -262,13 +296,13 @@ OpticsHutch::createObjects(Simulation& System)
   
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"2 -12 13 -6");
   makeCell("BackIWall",System,cellIndex++,skinMat,0.0,
-	   HR*floor*sideWall*holeCut);
+	   HR*floor*sideWall*holeCut*forkWall);
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"12 -22 23 -16");
   makeCell("BackPbWall",System,cellIndex++,pbMat,0.0,
-	   HR*floor*sideWall*holeCut);
+	   HR*floor*sideWall*holeCut*forkWall);
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"22 -32 33 -26");
   makeCell("BackOuterWall",System,cellIndex++,skinMat,0.0,
-	   HR*floor*sideWall*holeCut);
+	   HR*floor*sideWall*holeCut*forkWall);
 
   if (backVoid>Geometry::zeroTol)
     {
@@ -303,8 +337,30 @@ OpticsHutch::createObjects(Simulation& System)
   else
     HR=ModelSupport::getHeadRule(SMap,buildIndex,"-32 33 -36");
 
-
   addOuterSurf(HR*frontWall*sideCut);
+
+  if(!fZStep.empty())
+    {
+      HeadRule cutHR;
+      int BI(buildIndex+3000);
+      for(size_t i=0;i<fZStep.size();i++)
+	{
+	  HR=ModelSupport::getHeadRule
+	    (SMap,buildIndex,BI,"3003 -3004 5M -6M 2 -32");
+	  makeCell("ForkHole",System,cellIndex++,voidMat,0.0,HR);
+	  cutHR*=ModelSupport::getHeadRule(SMap,BI,"(-5:6)");	  
+	  BI+=10;
+	}
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"3003 -3004 -6 2 -12");
+      makeCell("ForkInner",System,cellIndex++,skinMat,0.0,HR*floor*cutHR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"3003 -3004 -16 12 -22");
+      makeCell("ForkLead",System,cellIndex++,pbMat,0.0,HR*floor*cutHR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"3003 -3004 -26 22 -32");
+      makeCell("ForkOuter",System,cellIndex++,skinMat,0.0,HR*floor*cutHR);
+
+    }
+
+
 
   return;
 }
