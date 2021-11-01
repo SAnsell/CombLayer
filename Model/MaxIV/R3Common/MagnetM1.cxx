@@ -143,6 +143,7 @@ MagnetM1::populate(const FuncDataBase& Control)
   topVoid=Control.EvalVar<double>(keyName+"TopVoid");
   baseVoid=Control.EvalVar<double>(keyName+"BaseVoid");
   baseThick=Control.EvalVar<double>(keyName+"BaseThick");
+  sideShift=Control.EvalVar<double>(keyName+"SideShift");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -167,8 +168,10 @@ MagnetM1::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*baseVoid,Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*topVoid,Z);
 
-  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(outerVoid+wallThick),X);
-  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(ringVoid+wallThick),X);
+  ModelSupport::buildPlane(SMap,buildIndex+13,
+			   Origin-X*(-sideShift+outerVoid+wallThick),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,
+			   Origin+X*(sideShift+ringVoid+wallThick),X);
   ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(baseVoid+baseThick),Z);
   ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(topVoid+baseThick),Z);
 
@@ -203,7 +206,7 @@ MagnetM1::createObjects(Simulation& System)
   // First zone:
   backHR=Oxx->getFullRule(1);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 3 -4 5 -6");
-  makeCell("Seg1",System,cellIndex++,0,0.0,HR*backHR);
+  makeCell("Seg1",System,cellIndex++,wallMat,0.0,HR*backHR);
   entryPipe->insertInCell("Main",System,getCell("Seg1"));
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
@@ -212,7 +215,7 @@ MagnetM1::createObjects(Simulation& System)
   // Oxx magnet:
   frontHR=backHR.complement();
   backHR=Oxx->getFullRule(-2);
-  makeCell("SegOxx",System,cellIndex++,wallMat,0.0,HR*frontHR*backHR);
+  makeCell("SegOxx",System,cellIndex++,0,0.0,HR*frontHR*backHR);
   Oxx->insertInCell(System,getCell("SegOxx"));
 
   // Oxx -> QFend
@@ -236,13 +239,13 @@ MagnetM1::createObjects(Simulation& System)
   // Oxy magnet:
   frontHR=backHR.complement();
   backHR=Oxy->getFullRule(-2);
-  makeCell("SegOxy",System,cellIndex++,wallMat,0.0,HR*frontHR*backHR);
+  makeCell("SegOxy",System,cellIndex++,0,0.0,HR*frontHR*backHR);
   Oxy->insertInCell(System,getCell("SegOxy"));
 
   // Oxy -> QDend 
   frontHR=backHR.complement();
   backHR=QDend->getFullRule(1);
-  makeCell("Seg4",System,cellIndex++,0,0.0,HR*frontHR*backHR);
+  makeCell("Seg4",System,cellIndex++,wallMat,0.0,HR*frontHR*backHR);
   entryPipe->insertInCell("Main",System,getCell("Seg4"));
 
   // QDend
@@ -254,29 +257,29 @@ MagnetM1::createObjects(Simulation& System)
   // QDend -> end
   frontHR=backHR.complement();
   backHR=entryPipe->getFullRule(-2);
-  makeCell("Seg5",System,cellIndex++,0,0.0,HR*frontHR*backHR);
+  makeCell("Seg5",System,cellIndex++,wallMat,0.0,HR*frontHR*backHR);
   entryPipe->insertInCell("Main",System,getCell("Seg5"));
 
   // HALF PIPE
   
   frontHR=entryPipe->getFullRule(2);
   backHR=halfPipe->getFullRule("#midPlane");
-  makeCell("Seg7",System,cellIndex++,0,0.0,HR*frontHR*backHR);
+  makeCell("Seg7",System,cellIndex++,wallMat,0.0,HR*frontHR*backHR);
   halfPipe->insertInCell("Half",System,getCell("Seg7"));
 
   frontHR=halfPipe->getFullRule("midPlane");
   backHR=halfPipe->getFullRule(-3);
-  makeCell("Seg8",System,cellIndex++,0,0.0,HR*frontHR*backHR);
+  makeCell("Seg8",System,cellIndex++,wallMat,0.0,HR*frontHR*backHR);
   halfPipe->insertInCell("Full",System,getCell("Seg8"));
 
   frontHR=halfPipe->getFullRule(3);
   backHR=epCombine->getFullRule(-2);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6 -2 ");
-  makeCell("Seg9",System,cellIndex++,0,0.0,HR*frontHR);
+  makeCell("Seg9",System,cellIndex++,wallMat,0.0,HR*frontHR);
   epCombine->insertInCell(System,getCell("Seg9"));
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 13 -14 15 -16");
-  makeCell("Seg10",System,cellIndex++,0,0.0,HR*backHR);
+  makeCell("Seg10",System,cellIndex++,wallMat,0.0,HR*backHR);
   epCombine->insertInCell(System,getCell("Seg10"));
 
   DIPm->insertInCell(System,getCell("Seg7"));
