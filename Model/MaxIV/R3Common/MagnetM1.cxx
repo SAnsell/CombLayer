@@ -212,13 +212,13 @@ MagnetM1::createObjects(Simulation& System)
   // Oxx magnet:
   frontHR=backHR.complement();
   backHR=Oxx->getFullRule(-2);
-  makeCell("SegOxx",System,cellIndex++,0,0.0,HR*frontHR*backHR);
+  makeCell("SegOxx",System,cellIndex++,wallMat,0.0,HR*frontHR*backHR);
   Oxx->insertInCell(System,getCell("SegOxx"));
 
   // Oxx -> QFend
   frontHR=backHR.complement();
   backHR=QFend->getFullRule(1);
-  makeCell("Seg2",System,cellIndex++,0,0.0,HR*frontHR*backHR);
+  makeCell("Seg2",System,cellIndex++,wallMat,0.0,HR*frontHR*backHR);
   entryPipe->insertInCell("Main",System,getCell("Seg2"));  
 
   // QFend
@@ -230,13 +230,13 @@ MagnetM1::createObjects(Simulation& System)
   // QFend -> Oxy
   frontHR=backHR.complement();
   backHR=Oxy->getFullRule(1);
-  makeCell("Seg3",System,cellIndex++,0,0.0,HR*frontHR*backHR);
+  makeCell("Seg3",System,cellIndex++,wallMat,0.0,HR*frontHR*backHR);
   entryPipe->insertInCell("Main",System,getCell("Seg3"));
 
   // Oxy magnet:
   frontHR=backHR.complement();
   backHR=Oxy->getFullRule(-2);
-  makeCell("SegOxy",System,cellIndex++,0,0.0,HR*frontHR*backHR);
+  makeCell("SegOxy",System,cellIndex++,wallMat,0.0,HR*frontHR*backHR);
   Oxy->insertInCell(System,getCell("SegOxy"));
 
   // Oxy -> QDend 
@@ -290,13 +290,6 @@ MagnetM1::createObjects(Simulation& System)
   backHR=epCombine->getFullRule(-2);
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 13 -14 15 -16 ");
   addOuterSurf("Main",HR*frontHR*backHR);
-
-  
-  // Construct the inner zone a a innerZone
-  // HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6  ");
-  // makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
-
-
 
   return;
 }

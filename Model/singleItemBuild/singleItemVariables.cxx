@@ -66,6 +66,7 @@
 #include "DipoleSndBendGenerator.h"
 #include "R3ChokeChamberGenerator.h"
 #include "MagnetM1Generator.h"
+#include "MagnetU1Generator.h"
 #include "MagnetBlockGenerator.h"
 #include "CorrectorMagGenerator.h"
 #include "QuadUnitGenerator.h"
@@ -274,6 +275,9 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::MagnetM1Generator M1Gen;
   M1Gen.generateBlock(Control,"M1Block");
+
+  setVariable::MagnetU1Generator U1Gen;
+  U1Gen.generateBlock(Control,"U1Block");
 
   setVariable::EPCombineGenerator EPCGen;
   EPCGen.generatePipe(Control,"EPCombine");

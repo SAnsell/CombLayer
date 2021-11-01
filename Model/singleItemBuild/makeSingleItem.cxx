@@ -81,6 +81,7 @@
 #include "R3ChokeChamber.h"
 #include "HalfElectronPipe.h"
 #include "MagnetM1.h"
+#include "MagnetU1.h"
 #include "MagnetBlock.h"
 #include "CylGateValve.h"
 #include "GateValveCube.h"
@@ -180,7 +181,8 @@ makeSingleItem::build(Simulation& System,
       "default",
       "CylGateValve","GateValveCube","GateValveCylinder","CleaningMagnet",
       "CorrectorMag","Jaws","LQuadF","LQuadH","LSexupole",
-      "MagnetBlock","Sexupole","MagnetM1","Octupole","CeramicGap",
+      "MagnetBlock","Sexupole","MagnetM1","MagnetU1",
+      "Octupole","CeramicGap",
       "EBeamStop","EPSeparator","FMask","R3ChokeChamber","QuadUnit",
       "DipoleChamber","DipoleExtract","DipoleSndBend",
       "EPSeparator","Quadrupole","TargetShield","FourPort",
@@ -630,7 +632,6 @@ makeSingleItem::build(Simulation& System,
       QH->addInsertCell(voidCell);
       QH->createAll(System,World::masterOrigin(),0);
 
-
       return;
     }
 
@@ -684,6 +685,19 @@ makeSingleItem::build(Simulation& System,
     {
       std::shared_ptr<xraySystem::MagnetM1>
 	MagBlock(new xraySystem::MagnetM1("M1Block"));
+
+      OR.addObject(MagBlock);
+
+      MagBlock->addAllInsertCell(voidCell);
+      MagBlock->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
+  if (item=="MagnetU1")
+    {
+      std::shared_ptr<xraySystem::MagnetU1>
+	MagBlock(new xraySystem::MagnetU1("U1Block"));
 
       OR.addObject(MagBlock);
 

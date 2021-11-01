@@ -3,7 +3,7 @@
  
  * File:   R3Common/MagnetU1.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,7 +77,7 @@ MagnetU1::MagnetU1(const std::string& Key) :
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   QFm1(new xraySystem::Quadrupole(keyName+"QFm1")),
-  SFm(new xraySystem::Sexupole(keyName+"QFm1")),
+  SFm(new xraySystem::Sexupole(keyName+"SFm")),
   QFm2(new xraySystem::Quadrupole(keyName+"QFm2")),
   cMagVA(new xraySystem::CorrectorMag(keyName+"cMagVA")),
   cMagHA(new xraySystem::CorrectorMag(keyName+"cMagJA")),
@@ -124,6 +124,15 @@ MagnetU1::populate(const FuncDataBase& Control)
 
   FixedRotate::populate(Control);
 
+  blockYStep=Control.EvalVar<double>(keyName+"BlockYStep");
+  length=Control.EvalVar<double>(keyName+"Length");
+
+  outerVoid=Control.EvalVar<double>(keyName+"OuterVoid");
+  ringVoid=Control.EvalVar<double>(keyName+"RingVoid");
+  topVoid=Control.EvalVar<double>(keyName+"TopVoid");
+  baseVoid=Control.EvalVar<double>(keyName+"BaseVoid");
+  baseThick=Control.EvalVar<double>(keyName+"BaseThick");
+  wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -139,28 +148,20 @@ MagnetU1::createSurfaces()
 {
   ELog::RegMethod RegA("MagnetU1","createSurface");
 
-  // outer surfaces
 
-  // block is off axis - relative to the primary axis (incoming electrons)
+  // Do outer surfaces (vacuum ports)
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*blockYStep,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length+blockYStep),Y);
 
-  attachSystem::FixedRotateUnit blockFC(0,"blockFC");
-  blockFC.setOffset(blockXStep,blockYStep,0);
-  blockFC.setRotation(0,0,blockXYAngle);
-  blockFC.createUnitVector(Origin,Y,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*outerVoid,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*ringVoid,X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*baseVoid,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*topVoid,Z);
 
-  const Geometry::Vec3D& bOrg=blockFC.getCentre();
-  const Geometry::Vec3D& bX=blockFC.getX();
-  const Geometry::Vec3D& bY=blockFC.getY();
-  const Geometry::Vec3D& bZ=blockFC.getZ();
-    
-  ModelSupport::buildPlane(SMap,buildIndex+1,bOrg,bY);
-  ModelSupport::buildPlane(SMap,buildIndex+2,bOrg+bY*blockLength,bY);
-
-  ModelSupport::buildPlane(SMap,buildIndex+3,bOrg-bX*(blockWidth/2.0),bX);
-  ModelSupport::buildPlane(SMap,buildIndex+4,bOrg+bX*(blockWidth/2.0),bX);
-
-  ModelSupport::buildPlane(SMap,buildIndex+5,bOrg-bZ*(blockHeight/2.0),bZ);
-  ModelSupport::buildPlane(SMap,buildIndex+6,bOrg+bZ*(blockHeight/2.0),bZ);
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(outerVoid+wallThick),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(ringVoid+wallThick),X);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(baseVoid+baseThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(topVoid+baseThick),Z);
 
   return;
 }
@@ -174,9 +175,16 @@ MagnetU1::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("MagnetU1","createObjects");
 
-  std::string Out;
-  // Construct the inner zone a a innerZone
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6  ");
+  HeadRule HR,frontHR,backHR;
+
+  // Outer Metal
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex," 1 -2 13 -14 15 -16 (-3:4:-5:6) ");
+  makeCell("Outer",System,cellIndex++,wallMat,0.0,HR);
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -14 15 -16 ");
+  //  addOuterSurf("Main",HR*frontHR*backHR);
+  addOuterSurf("Main",HR*frontHR*backHR);
 
   return;
 }

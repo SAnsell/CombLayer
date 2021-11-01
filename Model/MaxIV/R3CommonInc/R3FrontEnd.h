@@ -61,6 +61,7 @@ namespace xraySystem
   class BeamMount;
   class PreDipole;
   class MagnetM1;
+  class MagnetU1;
 
   class PreBendPipe;
   class EPSeparator;

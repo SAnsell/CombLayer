@@ -58,7 +58,8 @@ class Dipole :
   double coilGap;                ///< Separation of coils
   double coilLength;             ///< Length of coil
   double coilWidth;              ///< Width of coil
-  
+  double coilEndRadius;          ///< Radius at end of coil 
+ 
   int poleMat;                     ///< pole piece of magnet
   int coilMat;                     ///< coil material
   
