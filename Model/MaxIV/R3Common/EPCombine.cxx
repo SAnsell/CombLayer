@@ -246,7 +246,6 @@ EPCombine::createSurfaces()
   ModelSupport::buildPlane
     (SMap,buildIndex+116,elecOrg-mXZ*(electronRadius+skinThick),mXZ);
 
-  
   // photon inner :
   ModelSupport::buildCylinder(SMap,buildIndex+207,photOrg,Y,photonRadius);
   ModelSupport::buildPlane(SMap,buildIndex+203,photOrg,X);

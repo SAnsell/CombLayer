@@ -466,6 +466,36 @@ SurfMap::makeCylinder(const std::string& Key,
   return;
 }
 
+void
+SurfMap::makeCone(const std::string& Key,
+		  ModelSupport::surfRegister& SMap,const int N,
+		  const Geometry::Vec3D& O,const Geometry::Vec3D& A,
+		  const double angleDeg) 
+  /*!
+    Simple constructor to build a surface [type plane] and add to 
+    SurfMap.
+    \param Key :: KeyName
+    \param SMap :: Surface Map
+    \param N :: Surface number
+    \param O :: Origin
+    \param A :: Axis
+    \param angleDeg :: Angle of cone [deg]
+   */
+{
+  ELog::RegMethod RegA("SurfMap","makeCone");
+
+  ModelSupport::buildCone(SMap,N,O,A,angleDeg);
+
+  if (!Key.empty())
+    {
+      if (Key[0]!='#' && Key[0]!='-')
+	addSurf(Key,SMap.realSurf(N));
+      else
+	addSurf(Key.substr(1),-SMap.realSurf(N));
+    }
+  return;
+}
+
 ///\cond template
 template Geometry::Plane*
 SurfMap::realPtr(const std::string&,const size_t) const;

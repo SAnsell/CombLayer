@@ -557,7 +557,7 @@ exptHutVariables(FuncDataBase& Control,
   // Forklift truck holes
 
   Control.addVariable(hutName+"NForkHoles",0);
-  Control.addVariable(hutName+"ForkYStep",80.0);
+  Control.addVariable(hutName+"ForkYStep",280.0);
   Control.addVariable(hutName+"ForkLength",60.0);
   Control.addVariable(hutName+"ForkHeight",10.0);
   Control.addVariable(hutName+"ForkZStep0",-115.0);

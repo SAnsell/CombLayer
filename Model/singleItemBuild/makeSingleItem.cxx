@@ -74,6 +74,8 @@
 #include "LSexupole.h"
 #include "CorrectorMag.h"
 #include "EPSeparator.h"
+#include "EPCombine.h"
+#include "EPContinue.h"
 #include "QuadUnit.h"
 #include "DipoleChamber.h"
 #include "DipoleExtract.h"
@@ -183,9 +185,9 @@ makeSingleItem::build(Simulation& System,
       "CorrectorMag","Jaws","LQuadF","LQuadH","LSexupole",
       "MagnetBlock","Sexupole","MagnetM1","MagnetU1",
       "Octupole","CeramicGap",
-      "EBeamStop","EPSeparator","FMask","R3ChokeChamber","QuadUnit",
+      "EBeamStop","FMask","R3ChokeChamber","QuadUnit",
       "DipoleChamber","DipoleExtract","DipoleSndBend",
-      "EPSeparator","Quadrupole","TargetShield","FourPort",
+      "EPSeparator","EPCombine","Quadrupole","TargetShield","FourPort",
       "FlatPipe","TriPipe","TriGroup","SixPort","CrossWay","CrossBlank",
       "GaugeTube","BremBlock","DipoleDIBMag","EArrivalMon","YagScreen",
       "YAG","YagUnit","YagUnitBig","CooledScreen","CooledUnit",
@@ -726,6 +728,18 @@ makeSingleItem::build(Simulation& System,
 
       EPsep->addInsertCell(voidCell);
       EPsep->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
+  if (item=="EPCombine")
+    {
+      std::shared_ptr<xraySystem::EPCombine>
+	EPcom(new xraySystem::EPCombine("EPCombine"));
+      OR.addObject(EPcom);
+
+      EPcom->addInsertCell(voidCell);
+      EPcom->createAll(System,World::masterOrigin(),0);
 
       return;
     }

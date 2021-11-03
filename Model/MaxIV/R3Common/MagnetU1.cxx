@@ -183,8 +183,9 @@ MagnetU1::createObjects(Simulation& System)
   makeCell("Outer",System,cellIndex++,wallMat,0.0,HR);
   
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -14 15 -16 ");
-  //  addOuterSurf("Main",HR*frontHR*backHR);
-  addOuterSurf("Main",HR*frontHR*backHR);
+
+  ELog::EM<<"HERE "<<HR<<ELog::endDiag;
+  addOuterSurf("Main",HR);
 
   return;
 }
@@ -221,7 +222,7 @@ MagnetU1::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
-
+  insertObjects(System);
   // creation of links 
   createLinks();
   return;
