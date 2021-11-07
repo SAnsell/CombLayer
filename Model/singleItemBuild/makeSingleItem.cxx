@@ -60,6 +60,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "PointMap.h"
 #include "World.h"
 #include "insertObject.h"
 #include "insertSphere.h"
@@ -187,7 +188,8 @@ makeSingleItem::build(Simulation& System,
       "Octupole","CeramicGap",
       "EBeamStop","FMask","R3ChokeChamber","QuadUnit",
       "DipoleChamber","DipoleExtract","DipoleSndBend",
-      "EPSeparator","EPCombine","Quadrupole","TargetShield","FourPort",
+      "EPSeparator","EPCombine","EPContinue",
+      "Quadrupole","TargetShield","FourPort",
       "FlatPipe","TriPipe","TriGroup","SixPort","CrossWay","CrossBlank",
       "GaugeTube","BremBlock","DipoleDIBMag","EArrivalMon","YagScreen",
       "YAG","YagUnit","YagUnitBig","CooledScreen","CooledUnit",
@@ -732,15 +734,30 @@ makeSingleItem::build(Simulation& System,
       return;
     }
 
-  if (item=="EPCombine")
+  if (item=="EPCombine" || item=="EPContinue") 
     {
+      const double angle(1.5*M_PI/180.0);
+      const Geometry::Vec3D photOrg(0,0,0);
+      const Geometry::Vec3D elecOrg(1.84502,0,0);
+      const Geometry::Vec3D elecAxis(sin(angle),cos(angle),0);
+
       std::shared_ptr<xraySystem::EPCombine>
 	EPcom(new xraySystem::EPCombine("EPCombine"));
       OR.addObject(EPcom);
-
+      EPcom->setEPOriginPair(photOrg,elecOrg,elecAxis);
       EPcom->addInsertCell(voidCell);
       EPcom->createAll(System,World::masterOrigin(),0);
 
+      if (item=="EPContinue")
+	{
+
+	  std::shared_ptr<xraySystem::EPContinue>
+	    EPcont(new xraySystem::EPContinue("EPContinue"));
+	  OR.addObject(EPcont);
+	  EPcont->setEPOriginPair(*EPcom);
+	  EPcont->addInsertCell(voidCell);
+	  EPcont->createAll(System,*EPcom,2);
+	}
       return;
     }
 

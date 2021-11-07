@@ -44,6 +44,7 @@ class EPContinue :
     public attachSystem::ContainedComp,
     public attachSystem::ExternalCut,
     public attachSystem::CellMap,
+    public attachSystem::PointMap,
     public attachSystem::SurfMap
 {
  private:
@@ -64,8 +65,8 @@ class EPContinue :
   int voidMat;                    ///< void material
   int wallMat;                    ///< wall material
 
-  Geometry::Vec3D photOffset;     ///< Photon origin [offset]
-  Geometry::Vec3D elecOffset;     ///< Electron origin [offset]
+  Geometry::Vec3D photonOrg;     ///< Photon origin [offset]
+  Geometry::Vec3D elecOrg;     ///< Electron origin [offset]
   Geometry::Vec3D elecXAxis;      ///< Electron X-axis
   Geometry::Vec3D elecYAxis;      ///< Electron beam axis
   

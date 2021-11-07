@@ -76,8 +76,10 @@
 #include "ExternalCut.h" 
 #include "BaseMap.h"
 #include "SurfMap.h"
-#include "CellMap.h" 
+#include "CellMap.h"
+#include "PointMap.h" 
 
+#include "EPCombine.h"
 #include "EPContinue.h"
 
 namespace xraySystem
@@ -88,6 +90,7 @@ EPContinue::EPContinue(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
+  attachSystem::PointMap(),
   attachSystem::SurfMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -143,17 +146,20 @@ EPContinue::createSurfaces()
 {
   ELog::RegMethod RegA("EPContinue","createSurface");
 
-  const Geometry::Vec3D elecOrg=Origin+elecOffset.getInBasis(X,Y,Z);
-  const Geometry::Vec3D photonOrg=Origin+photOffset.getInBasis(X,Y,Z);
+  ELog::EM<<"OR == "<<Origin<<ELog::endDiag;
   // Do outer surfaces (vacuum ports)
   if (!isActive("front"))
     {
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
       setCutSurf("front",SMap.realSurf(buildIndex+1));
     }
-	
-  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);      
 
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
+  
   // Main outer cylinder
   SurfMap::makeCylinder("voidCyl",SMap,buildIndex+7,Origin,Y,outerRadius);
 
@@ -183,9 +189,21 @@ EPContinue::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("EPContinue","createObjects");
+
+  HeadRule HR;
+
+
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
+  makeCell("void",System,cellIndex++,wallMat,0.0,HR);
   
 
+  
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  addOuterSurf(HR);
+
+  
   return;
 }
 
@@ -203,13 +221,31 @@ EPContinue::createLinks()
   setConnect(1,Origin+Y*length,Y);
   setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
-  setConnect(2,photOrg-X*photonXStep+Y*length,Y);  
+  setConnect(2,photonOrg-X*photonXStep+Y*length,Y);  
   setLinkSurf(2,SMap.realSurf(buildIndex+2));
   
   // electron surface is intersect from 102 normal into surface 2
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+2));
   FixedComp::setLineConnect(3,elecOrg,elecYAxis);
   */
+  return;
+}
+
+void
+EPContinue::setEPOriginPair(const EPCombine& EP)
+  /*!
+    Set the electron/Photon origins exactly
+    \param EP :: EPCombined channel system is joined to
+
+   */
+{
+  ELog::RegMethod RegA("EPContinue","setEPOriginPair(string)");
+
+  setEPOriginPair(EP,"Photon","Electron");
+
+  setCutSurf("PhotonSide",EP,"PhotonEdge");
+  setPoint("ElecSide",EP.getLinkPt("ElectonEdge"));
+  
   return;
 }
 
@@ -245,9 +281,8 @@ EPContinue::setEPOriginPair(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("EPContinue","setEPOriginPair");
 
-  photOffset=FC.getLinkPt(photonIndex);
-  elecOffset=FC.getLinkPt(electronIndex);
-
+  photonOrg=FC.getLinkPt(photonIndex);
+  elecOrg=FC.getLinkPt(electronIndex);
 
   elecYAxis=FC.getLinkAxis(electronIndex);
   epPairSet=1;

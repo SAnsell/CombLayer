@@ -95,6 +95,9 @@ class EPCombine :
   EPCombine& operator=(const EPCombine&);
   virtual ~EPCombine();
 
+  void setEPOriginPair(const Geometry::Vec3D&,
+		       const Geometry::Vec3D&,
+		       const Geometry::Vec3D&);
   void setEPOriginPair(const attachSystem::FixedComp&,
 		       const long int,const long int);
   void setEPOriginPair(const attachSystem::FixedComp&,

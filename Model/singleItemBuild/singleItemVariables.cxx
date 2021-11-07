@@ -61,6 +61,7 @@
 #include "OctupoleGenerator.h"
 #include "EPSeparatorGenerator.h"
 #include "EPCombineGenerator.h"
+#include "EPContinueGenerator.h"
 #include "PreDipoleGenerator.h"
 #include "DipoleChamberGenerator.h"
 #include "DipoleSndBendGenerator.h"
@@ -281,6 +282,9 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::EPCombineGenerator EPCGen;
   EPCGen.generatePipe(Control,"EPCombine");
+
+  setVariable::EPContinueGenerator EPCCGen;
+  EPCCGen.generatePipe(Control,"EPContinue");
 
   setVariable::QuadrupoleGenerator QGen;
   QGen.generateQuad(Control,"QFend",20.0,25.0);
