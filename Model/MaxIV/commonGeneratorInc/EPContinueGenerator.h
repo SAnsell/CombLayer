@@ -40,6 +40,7 @@ class EPContinueGenerator
  private:
 
   double length;                  ///< frame length
+  double lengthB;                 ///< second frame length
 
   double electronRadius;          ///< Electron radius
   

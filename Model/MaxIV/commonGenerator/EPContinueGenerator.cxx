@@ -51,10 +51,10 @@ namespace setVariable
 {
 
 EPContinueGenerator::EPContinueGenerator() :
-  length(30.0),electronRadius(1.1),
-  photonAGap(1.1),photonBGap(2.5),
-  photonStep(0.5),
-  photonWidth(1.0),height(2.65),
+  length(60.0),lengthB(115.0),
+  electronRadius(1.1),
+  photonAGap(0.5),photonBGap(1.4),
+  photonStep(0.5),photonWidth(1.0),height(2.65),
 
   voidMat("Void"),wallMat("Copper")
   /*!
@@ -80,6 +80,7 @@ EPContinueGenerator::generatePipe(FuncDataBase& Control,
   ELog::RegMethod RegA("EPContinueGenerator","generateColl");
   
   Control.addVariable(keyName+"Length",length);
+  Control.addVariable(keyName+"LengthB",lengthB);
 
   Control.addVariable(keyName+"ElectronRadius",electronRadius);
 

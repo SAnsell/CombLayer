@@ -121,6 +121,7 @@ EPContinue::populate(const FuncDataBase& Control)
   FixedRotate::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
+  lengthB=Control.EvalVar<double>(keyName+"LengthB");
 
   electronRadius=Control.EvalVar<double>(keyName+"ElectronRadius");
 
@@ -184,6 +185,7 @@ EPContinue::createSurfaces()
 
   // mid divider
   ModelSupport::buildPlane(SMap,buildIndex+200,photonOrg,X);
+
   // outer cone
   const double backStep=(length*photonAGap)/(photonBGap-photonAGap);
   const Geometry::Vec3D axisPoint(photonOrg-Y*backStep);
@@ -197,6 +199,19 @@ EPContinue::createSurfaces()
   SurfMap::makeCone("photonConeB",SMap,buildIndex+209,
 		    axisPoint+X*photonStep,Y,angle*180.0/M_PI);
 
+
+  // SECOND FRAME
+  // Mid line
+  
+  ModelSupport::buildPlane(SMap,buildIndex+1002,Origin+Y*(length+lengthB),Y);
+  // Main photonCylinder
+  SurfMap::makeCylinder("photonCyl",SMap,buildIndex+1208,Origin,Y,photonBGap);
+  // Closing photonCylinder
+  const Geometry::Vec3D PAxis(Y*lengthB-X*photonStep);
+  SurfMap::makeCylinder("photonConeB",SMap,buildIndex+1209,
+			photonOrg+Y*length+X*photonStep,PAxis,photonBGap);
+  
+  
   return;
 }
 
@@ -215,13 +230,21 @@ EPContinue::createObjects(Simulation& System)
     (SMap,buildIndex,"1 -2 3 -4 5 -6 107 208 (-200:209)");
   makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -107");
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"2 -1002 3 -4 5 -6 107 1208 1209");
+  makeCell("WallB",System,cellIndex++,wallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -1002 -107");
   makeCell("electronVoid",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 (-208:(200 -209))");
   makeCell("photonVoid",System,cellIndex++,voidMat,0.0,HR);
-  
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+			       "2 -1002 (-1208 : -1209)");
+  makeCell("photonVoid",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -1002 3 -4 5 -6");
   addOuterSurf(HR);
 
   

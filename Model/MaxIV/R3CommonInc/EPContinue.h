@@ -51,6 +51,7 @@ class EPContinue :
 
   bool epPairSet;                 ///< Assignment of e-p position
   double length;                  ///< frame length
+  double lengthB;                 ///< second length
 
   double electronRadius;          ///< Electron radius
   
