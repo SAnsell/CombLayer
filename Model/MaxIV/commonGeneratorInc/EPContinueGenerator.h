@@ -45,8 +45,9 @@ class EPContinueGenerator
   
   double photonAGap;              ///< Photon radius at start [5mm]
   double photonBGap;              ///< Photon radius at end [14mm]
-
-  double width;                   ///< Main width
+  double photonStep;              ///< Step at exit of photon path [10mm]
+  
+  double photonWidth;             ///< Extension from photon side
   double height;                  ///< Main height
 
   double outerRadius;             ///< outer

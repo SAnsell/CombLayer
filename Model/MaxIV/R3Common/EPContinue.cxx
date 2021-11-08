@@ -124,11 +124,12 @@ EPContinue::populate(const FuncDataBase& Control)
 
   electronRadius=Control.EvalVar<double>(keyName+"ElectronRadius");
 
-  photonAGap=Control.EvalVar<double>(keyName+"PhotonAGap");
-  photonBGap=Control.EvalVar<double>(keyName+"PhotonBGap");
+  photonAGap=Control.EvalVar<double>(keyName+"PhotonAGap")/2.0;
+  photonBGap=Control.EvalVar<double>(keyName+"PhotonBGap")/2.0;
+  photonStep=Control.EvalVar<double>(keyName+"PhotonStep");
 
-  width=Control.EvalVar<double>(keyName+"Width");
-  height=Control.EvalVar<double>(keyName+"Width");
+  photonWidth=Control.EvalVar<double>(keyName+"PhotonWidth");
+  height=Control.EvalVar<double>(keyName+"Height");
 
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
 
@@ -146,17 +147,27 @@ EPContinue::createSurfaces()
 {
   ELog::RegMethod RegA("EPContinue","createSurface");
 
-  ELog::EM<<"OR == "<<Origin<<ELog::endDiag;
+  // calc XAxis since depends on Z:
+  elecXAxis=elecYAxis*Z;
+
   // Do outer surfaces (vacuum ports)
   if (!isActive("front"))
     {
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
       setCutSurf("front",SMap.realSurf(buildIndex+1));
     }
-
+  if (!hasPoint("PhotonSide"))
+    setPoint("PhotonSide",Origin-X*photonWidth);
+  
+  if (!hasPoint("ElectronSide"))
+    setPoint("ElectronSide",Origin+X*photonWidth);
+  
+  const Geometry::Vec3D eSidePt=getPoint("ElectronSide");
+  const Geometry::Vec3D pSidePt=getPoint("PhotonSide");
+  
+  ModelSupport::buildPlane(SMap,buildIndex+3,pSidePt-X*photonWidth,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,eSidePt,elecXAxis);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
   
@@ -170,13 +181,21 @@ EPContinue::createSurfaces()
   // PHOTON
   // photon is a cone expanding from photonAGap -> photonBGap (effective radii)
   // back step  (photonAxis == Y):
+
+  // mid divider
+  ModelSupport::buildPlane(SMap,buildIndex+200,photonOrg,X);
+  // outer cone
   const double backStep=(length*photonAGap)/(photonBGap-photonAGap);
   const Geometry::Vec3D axisPoint(photonOrg-Y*backStep);
-  // use back point in case AGap==0
   const double angle=std::atan(photonBGap/(backStep+length));
-  
   SurfMap::makeCone("photonCone",SMap,buildIndex+208,
 		    axisPoint,Y,angle*180.0/M_PI);
+  // inner cone
+  // const double backStepB=(length*photonAGap)/(photonBGap+photonStep-photonAGap);
+  // const Geometry::Vec3D axisPointB(photonOrg-Y*backStepB);
+  // const double angleB=std::atan((photonBGap+photonStep)/(backStepB+length));
+  SurfMap::makeCone("photonConeB",SMap,buildIndex+209,
+		    axisPoint+X*photonStep,Y,angle*180.0/M_PI);
 
   return;
 }
@@ -191,15 +210,17 @@ EPContinue::createObjects(Simulation& System)
   ELog::RegMethod RegA("EPContinue","createObjects");
 
   HeadRule HR;
-
-
   
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
-  makeCell("void",System,cellIndex++,wallMat,0.0,HR);
-  
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1 -2 3 -4 5 -6 107 208 (-200:209)");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
 
-  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -107");
+  makeCell("electronVoid",System,cellIndex++,voidMat,0.0,HR);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 (-208:(200 -209))");
+  makeCell("photonVoid",System,cellIndex++,voidMat,0.0,HR);
+  
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
   addOuterSurf(HR);
 
@@ -243,8 +264,8 @@ EPContinue::setEPOriginPair(const EPCombine& EP)
 
   setEPOriginPair(EP,"Photon","Electron");
 
-  setCutSurf("PhotonSide",EP,"PhotonEdge");
-  setPoint("ElecSide",EP.getLinkPt("ElectonEdge"));
+  setPoint("PhotonSide",EP.getLinkPt("PhotonEdge"));
+  setPoint("ElectronSide",EP.getLinkPt("ElectronEdge"));
   
   return;
 }

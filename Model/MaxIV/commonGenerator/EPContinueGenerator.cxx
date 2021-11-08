@@ -52,8 +52,9 @@ namespace setVariable
 
 EPContinueGenerator::EPContinueGenerator() :
   length(30.0),electronRadius(1.1),
-  photonAGap(0.25),photonBGap(0.25),
-  width(5.0),height(2.65),
+  photonAGap(1.1),photonBGap(2.5),
+  photonStep(0.5),
+  photonWidth(1.0),height(2.65),
 
   voidMat("Void"),wallMat("Copper")
   /*!
@@ -84,8 +85,9 @@ EPContinueGenerator::generatePipe(FuncDataBase& Control,
 
   Control.addVariable(keyName+"PhotonAGap",photonAGap);
   Control.addVariable(keyName+"PhotonBGap",photonBGap);
+  Control.addVariable(keyName+"PhotonStep",photonStep);
 
-  Control.addVariable(keyName+"Width",width);
+  Control.addVariable(keyName+"PhotonWidth",photonWidth);
   Control.addVariable(keyName+"Height",height);
 
   Control.addVariable(keyName+"OuterRadius",outerRadius);
