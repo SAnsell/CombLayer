@@ -59,6 +59,7 @@
 #include "VacuumPipe.h"
 #include "PipeShield.h"
 #include "OpticsHutch.h"
+#include "OpticsStepHutch.h"
 #include "ExperimentalHutch.h"
 #include "WallLead.h"
 #include "R3Ring.h"
@@ -77,8 +78,12 @@ MICROMAX::MICROMAX(const std::string& KN) :
   frontBeam(new micromaxFrontEnd(newName+"FrontBeam")),
   wallLead(new WallLead(newName+"WallLead")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
-  opticsHut(new OpticsHutch(newName+"OpticsHut")),
-  opticsBeam(new micromaxOpticsLine(newName+"OpticsLine"))  
+  opticsHut(new OpticsStepHutch(newName+"OpticsHut")),
+  opticsBeam(new micromaxOpticsLine(newName+"OpticsLine")),
+  exptHut(new ExperimentalHutch(newName+"ExptHut")),
+  joinPipeB(new constructSystem::VacuumPipe(newName+"JoinPipeB")),
+  pShield(new xraySystem::PipeShield(newName+"PShield")),
+  exptHutB(new ExperimentalHutch(newName+"ExptHutB"))
   /*!
     Constructor
     \param KN :: Keyname
@@ -93,6 +98,9 @@ MICROMAX::MICROMAX(const std::string& KN) :
   
   OR.addObject(opticsHut);
   OR.addObject(opticsBeam);
+  OR.addObject(joinPipeB);
+  OR.addObject(exptHut);
+  OR.addObject(exptHutB);
 }
 
 MICROMAX::~MICROMAX()
@@ -156,6 +164,34 @@ MICROMAX::build(Simulation& System,
   opticsBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
   opticsBeam->setPreInsert(joinPipe);
   opticsBeam->createAll(System,*joinPipe,2);
+
+  exptHut->setCutSurf("floor",r3Ring->getSurf("Floor"));
+  exptHut->setCutSurf("frontWall",*opticsHut,"back");
+  exptHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
+  exptHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
+  exptHut->createAll(System,*opticsHut,"back");
+
+
+  joinPipeB->addAllInsertCell(opticsBeam->getCell("LastVoid"));  
+  joinPipeB->addInsertCell("Main",opticsHut->getCell("ExitHole"));
+  joinPipeB->setFront(*opticsBeam,2);
+  joinPipeB->createAll(System,*opticsBeam,2);
+
+  // pipe shield goes around joinPipeB:
+
+
+  pShield->addAllInsertCell(opticsBeam->getCell("LastVoid"));
+  pShield->setCutSurf("inner",*joinPipeB,"outerPipe");
+  pShield->createAll(System,*opticsHut,"innerBack");
+
+  if (stopPoint=="exptHut") return;
+
+
+  exptHutB->setCutSurf("floor",r3Ring->getSurf("Floor"));
+  exptHutB->setCutSurf("frontWall",*exptHut,"back");
+  exptHutB->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
+  exptHutB->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
+  exptHutB->createAll(System,*exptHut,"back");
   
   return;
 }

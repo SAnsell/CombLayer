@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   danmaxInc/danmaxOpticsHutch.h
+ * File:   R3CommonInc/OpticsStepHutch.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_danmaxOpticsHutch_h
-#define xraySystem_danmaxOpticsHutch_h
+#ifndef xraySystem_OpticsStepHutch_h
+#define xraySystem_OpticsStepHutch_h
 
 class Simulation;
 
@@ -28,16 +28,16 @@ namespace xraySystem
 {
   class PortChicane;
 /*!
-  \class danmaxOpticsHutch
+  \class OpticsStepHutch
   \version 1.0
   \author S. Ansell
   \date January 2018
-  \brief danmaxOpticsHutch unit  
+  \brief OpticsStepHutch unit  
 
   Built around the central beam axis
 */
 
-class danmaxOpticsHutch :
+class OpticsStepHutch :
     public OpticsHutch
 {
  private:
@@ -52,10 +52,10 @@ class danmaxOpticsHutch :
 
  public:
 
-  danmaxOpticsHutch(const std::string&);
-  danmaxOpticsHutch(const danmaxOpticsHutch&);
-  danmaxOpticsHutch& operator=(const danmaxOpticsHutch&);
-  virtual ~danmaxOpticsHutch();
+  OpticsStepHutch(const std::string&);
+  OpticsStepHutch(const OpticsStepHutch&);
+  OpticsStepHutch& operator=(const OpticsStepHutch&);
+  virtual ~OpticsStepHutch();
 
 };
 

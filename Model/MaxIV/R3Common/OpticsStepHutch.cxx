@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   danmax/danmaxOpticsHutch.cxx
+ * File:   R3common/OpticsStepHutch.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -64,12 +64,12 @@
 #include "PortChicane.h"
 #include "OpticsHutch.h"
 
-#include "danmaxOpticsHutch.h"
+#include "OpticsStepHutch.h"
 
 namespace xraySystem
 {
 
-danmaxOpticsHutch::danmaxOpticsHutch(const std::string& Key) : 
+OpticsStepHutch::OpticsStepHutch(const std::string& Key) : 
   OpticsHutch(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -77,20 +77,20 @@ danmaxOpticsHutch::danmaxOpticsHutch(const std::string& Key) :
   */
 {}
 
-danmaxOpticsHutch::~danmaxOpticsHutch() 
+OpticsStepHutch::~OpticsStepHutch() 
   /*!
     Destructor
   */
 {}
 
 void
-danmaxOpticsHutch::populate(const FuncDataBase& Control)
+OpticsStepHutch::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase of variables
   */
 {
-  ELog::RegMethod RegA("danmaxOpticsHutch","populate");
+  ELog::RegMethod RegA("OpticsStepHutch","populate");
   
   OpticsHutch::populate(Control);
 
@@ -101,12 +101,12 @@ danmaxOpticsHutch::populate(const FuncDataBase& Control)
 }
 
 void
-danmaxOpticsHutch::createSurfaces()
+OpticsStepHutch::createSurfaces()
   /*!
     Create the surfaces
   */
 {
-  ELog::RegMethod RegA("danmaxOpticsHutch","createSurfaces");
+  ELog::RegMethod RegA("OpticsStepHutch","createSurfaces");
 
   OpticsHutch::createSurfaces();
 
@@ -132,13 +132,13 @@ danmaxOpticsHutch::createSurfaces()
 }
 
 void
-danmaxOpticsHutch::createObjects(Simulation& System)
+OpticsStepHutch::createObjects(Simulation& System)
   /*!
     Adds the main objects
     \param System :: Simulation to create objects in
    */
 {
-  ELog::RegMethod RegA("danmaxOpticsHutch","createObjects");
+  ELog::RegMethod RegA("OpticsStepHutch","createObjects");
 
   // ring wall
   const HeadRule sideWall=ExternalCut::getValidRule("SideWall",Origin);
@@ -244,13 +244,13 @@ danmaxOpticsHutch::createObjects(Simulation& System)
 }
 
 void
-danmaxOpticsHutch::createLinks()
+OpticsStepHutch::createLinks()
   /*!
     Determines the link point on the outgoing plane.
     It must follow the beamline, but exit at the plane
   */
 {
-  ELog::RegMethod RegA("danmaxOpticsHutch","createLinks");
+  ELog::RegMethod RegA("OpticsStepHutch","createLinks");
 
   
   //  const double extraBack(innerThick+outerThick+pbBackThick);

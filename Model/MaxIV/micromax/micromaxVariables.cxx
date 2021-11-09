@@ -113,6 +113,7 @@ void detectorTubePackage(FuncDataBase&,const std::string&);
 
 void opticsHutVariables(FuncDataBase&,const std::string&);
 void exptHutVariables(FuncDataBase&,const std::string&,const double);
+void exptHutBVariables(FuncDataBase&,const std::string&,const double);
 void opticsVariables(FuncDataBase&,const std::string&);
 void exptVariables(FuncDataBase&,const std::string&);
 void shieldVariables(FuncDataBase&,const std::string&);
@@ -479,16 +480,31 @@ opticsHutVariables(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("micromaxVariables","opticsHutVariables");
+
+  const double beamMirrorShift(-1.0);
   
-  OpticsHutGenerator OGen; 
+  OpticsHutGenerator OGen;
+  PortChicaneGenerator PGen;
+    
+  OGen.setSkin(0.2);
+  OGen.setWallPbThick(2.0,2.0,10.0);
+
+  OGen.generateHut(Control,hutName,1256.0);
+  
+  OGen.addHole(Geometry::Vec3D(beamMirrorShift,0,0),3.5);
   OGen.generateHut(Control,hutName,1256.0);
 
-  Control.addVariable(hutName+"NChicane",2);
-  PortChicaneGenerator PGen;
+  Control.addVariable(hutName+"RingStepLength",840.0);
+  Control.addVariable(hutName+"RingStepWidth",200.0);
+
+  Control.addVariable(hutName+"NChicane",3);
+
   PGen.setSize(4.0,60.0,40.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane0",170.0,-25.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane1",270.0,-25.0);
-  
+  PGen.generatePortChicane(Control,hutName+"Chicane0","Right",-450.0,-5.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane1","Right",-300.0,-5.0);
+
+  PGen.setSize(4.0,30.0,40.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane2","Right",-375.0,-5.0);
   return;
 }
 
@@ -505,23 +521,85 @@ exptHutVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("micromaxVariables[F]","exptHutVariables");
 
-  const double beamOffset(-0.6);
-    
+  const double beamOffset(-1.0);
   const std::string hutName(beamName+"ExptHut");
   
   Control.addVariable(hutName+"YStep",0.0);
-  Control.addVariable(hutName+"Height",200.0);
-  Control.addVariable(hutName+"Length",1719.4);
-  Control.addVariable(hutName+"OutWidth",198.50);
-  Control.addVariable(hutName+"RingWidth",248.6);
+  Control.addVariable(hutName+"Height",277.0);
+  Control.addVariable(hutName+"Length",901.0);
+  Control.addVariable(hutName+"OutWidth",260.0);
+  Control.addVariable(hutName+"RingWidth",200.0);
   Control.addVariable(hutName+"InnerThick",0.1);
   Control.addVariable(hutName+"PbBackThick",0.6);
   Control.addVariable(hutName+"PbRoofThick",0.4);
   Control.addVariable(hutName+"PbWallThick",0.4);
   Control.addVariable(hutName+"OuterThick",0.1);
+  
+  Control.addVariable(hutName+"InnerOutVoid",10.0);
+  Control.addVariable(hutName+"OuterOutVoid",10.0);
 
-  Control.addVariable(hutName+"CornerLength",1719.4-120.0);  //
-  Control.addVariable(hutName+"CornerAngle",45.0);
+  Control.addVariable(hutName+"VoidMat","Void");
+  Control.addVariable(hutName+"SkinMat","Stainless304");
+  Control.addVariable(hutName+"PbMat","Lead");
+
+  Control.addVariable(hutName+"HoleXStep",beamXStep-beamOffset);
+  Control.addVariable(hutName+"HoleZStep",0.0);
+  Control.addVariable(hutName+"HoleRadius",3.0);
+  Control.addVariable(hutName+"HoleMat","Void");
+
+  // lead shield on pipe
+  Control.addVariable(hutName+"PShieldXStep",beamXStep-beamOffset);
+  Control.addVariable(hutName+"PShieldYStep",0.3);
+  Control.addVariable(hutName+"PShieldLength",1.0);
+  Control.addVariable(hutName+"PShieldWidth",10.0);
+  Control.addVariable(hutName+"PShieldHeight",10.0);
+  Control.addVariable(hutName+"PShieldWallThick",0.2);
+  Control.addVariable(hutName+"PShieldClearGap",0.3);
+  Control.addVariable(hutName+"PShieldWallMat","Stainless304");
+  Control.addVariable(hutName+"PShieldMat","Lead");
+
+  Control.addVariable(hutName+"NChicane",4);
+  PortChicaneGenerator PGen;
+  PGen.setSize(4.0,60.0,40.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane0","Left",-350,-5.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane1","Left",-250.0,-5.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane2","Left",-150.0,-5.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane3","Left",-50.0,-5.0);
+  /*
+  PGen.generatePortChicane(Control,hutName+"Chicane1",370.0,-25.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane2",-70.0,-25.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane3",-280.0,-25.0);
+  */
+
+  return;
+}
+
+void
+exptHutBVariables(FuncDataBase& Control,
+		  const std::string& beamName,
+		  const double beamXStep)
+  /*!
+    Optics hut variables
+    \param Control :: DataBase to add
+    \param beamName :: Beamline name
+    \param bremXStep :: Offset of beam from main centre line
+  */
+{
+  ELog::RegMethod RegA("micromaxVariables[F]","exptHutBVariables");
+
+  const double beamOffset(-1.0);
+  const std::string hutName(beamName+"ExptHutB");
+  
+  Control.addVariable(hutName+"YStep",0.0);
+  Control.addVariable(hutName+"Height",277.0);
+  Control.addVariable(hutName+"Length",478.0);
+  Control.addVariable(hutName+"OutWidth",260.0);
+  Control.addVariable(hutName+"RingWidth",200.0);
+  Control.addVariable(hutName+"InnerThick",0.1);
+  Control.addVariable(hutName+"PbBackThick",0.6);
+  Control.addVariable(hutName+"PbRoofThick",0.4);
+  Control.addVariable(hutName+"PbWallThick",0.4);
+  Control.addVariable(hutName+"OuterThick",0.1);
   
   Control.addVariable(hutName+"InnerOutVoid",10.0);
   Control.addVariable(hutName+"OuterOutVoid",10.0);
@@ -1035,14 +1113,13 @@ exptVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("micromaxVariables[F]","exptVariables");
 
   setVariable::BellowGenerator BellowGen;
-  setVariable::SixPortGenerator CrossGen;
-  setVariable::MonoBoxGenerator VBoxGen;
-  setVariable::BoxJawsGenerator BJGen;
   setVariable::ConnectorGenerator CTGen;
   setVariable::CRLTubeGenerator DPGen;
   setVariable::PipeGenerator PipeGen;
   setVariable::SixPortGenerator SixGen;
-
+  setVariable::ViewScreenGenerator VTGen;
+  setVariable::CooledScreenGenerator CoolGen;
+  
   PipeGen.setNoWindow();
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF40>();
@@ -1055,89 +1132,15 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(preName+"OuterMat","Void");
 
   BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,preName+"BellowA",7.5);
 
-  BellowGen.generateBellow(Control,preName+"BellowA",15.0);
+  VTGen.setPortBCF<setVariable::CF40>();
+  VTGen.setPortBLen(22.5);
+  VTGen.generateView(Control,preName+"ViewTube");
 
-  VBoxGen.setMat("Stainless304");
-  VBoxGen.setCF<CF40>();
-  VBoxGen.setPortLength(3.5,3.5); // La/Lb
-  VBoxGen.setLids(3.5,1.5,1.5); // over/base/roof - all values are measured
-  VBoxGen.generateBox(Control,preName+"FilterBoxA",5.8,4.5,4.5,20.0);
-
-  BellowGen.generateBellow(Control,preName+"BellowB",7.5);
-
-  CrossGen.setCF<setVariable::CF40>();
-  CrossGen.setLength(7.0,7.0);
-  CrossGen.setSideLength(6.5);
-  CrossGen.generateSixPort(Control,preName+"CrossA");
-
-  BellowGen.generateBellow(Control,preName+"BellowC",7.5);
-
-  BJGen.generateJaws(Control,preName+"JawBox",0.8,0.8);
-
-  CTGen.generatePipe(Control,preName+"ConnectA",20.0);
-
-  DPGen.generateLens(Control,preName+"CRLTubeA",1);
-
-  CTGen.generatePipe(Control,preName+"ConnectB",20.0);
-
-  PipeGen.generatePipe(Control,preName+"PipeA",12.5);
-
-  SixGen.setCF<CF40>();
-  SixGen.setLength(6.0,6.0);
-  SixGen.setSideLength(5.0);
+  CoolGen.generateScreen(Control,preName+"CooledScreen",1);  // in beam
+  Control.addVariable(preName+"CooledScreenYAngle",-90.0);
   
-  SixGen.generateSixPort(Control,preName+"SixPortA");
-
-  
-  setVariable::GateValveGenerator CGateGen;
-  CGateGen.setBladeMat("Aluminium");
-  CGateGen.setBladeThick(0.8);
-  CGateGen.setLength(1.2);
-  CGateGen.setCylCF<CF40>();
-  CGateGen.generateValve(Control,preName+"CylGateA",0.0,0);
-
-  PipeGen.generatePipe(Control,preName+"PipeB",118.0);
-
-  BellowGen.generateBellow(Control,preName+"BellowD",15.0);
-  
-  SixGen.generateSixPort(Control,preName+"SixPortB");
-
-  PipeGen.generatePipe(Control,preName+"PipeC",118.0);
-
-  CGateGen.generateValve(Control,preName+"CylGateB",0.0,0);
-
-  SixGen.generateSixPort(Control,preName+"SixPortC");
-  
-  PipeGen.generatePipe(Control,preName+"PipeD",12.5);
-
-  CTGen.generatePipe(Control,preName+"ConnectC",20.0);
-
-  DPGen.generateLens(Control,preName+"CRLTubeB",1);
-
-  CTGen.generatePipe(Control,preName+"ConnectD",20.0);
-
-  viewPackage(Control,preName);
-
-  BellowGen.generateBellow(Control,preName+"BellowE",15.0);
-
-  CrossGen.generateSixPort(Control,preName+"CrossB");
-
-  PipeGen.generatePipe(Control,preName+"AdjustPipe",73.0);
-
-  PipeGen.generatePipe(Control,preName+"PipeE",7.5);
-
-  BJGen.generateJaws(Control,preName+"JawBoxB",0.8,0.8);
-
-  CTGen.setOuter(2.5,0.5);
-  CTGen.setPort(CF40::flangeRadius,0.5*CF40::flangeLength);
-  CTGen.generatePipe(Control,preName+"ConnectE",5.0);
-
-  PipeGen.setCF<CF16>();
-  PipeGen.setAFlangeCF<CF40>();
-  PipeGen.setBFlange(1.1,0.1);
-  PipeGen.generatePipe(Control,preName+"EndPipe",61.0);
-
   Control.addVariable(preName+"SampleYStep", 25.0); // [2]
   Control.addVariable(preName+"SampleRadius", 5.0); // [2]
   Control.addVariable(preName+"SampleDefMat", "Stainless304");
@@ -1186,6 +1189,7 @@ MICROMAXvariables(FuncDataBase& Control)
   micromaxVar::shieldVariables(Control,"MicroMax");
   
   micromaxVar::exptHutVariables(Control,"MicroMax",0.0);
+  micromaxVar::exptHutBVariables(Control,"MicroMax",0.0);
   micromaxVar::exptVariables(Control,"MicroMax");
   micromaxVar::detectorTubePackage(Control,"MicroMax");
 

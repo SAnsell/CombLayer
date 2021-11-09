@@ -628,7 +628,7 @@ micromaxOpticsLine::buildObjects(Simulation& System)
 
   setCells("InnerVoid",buildZone.getCells("Unit"));
   setCell("LastVoid",buildZone.getCells("Unit").back());
-  lastComp=bellowI;
+  lastComp=monoShutter;
 
   return;
 }
