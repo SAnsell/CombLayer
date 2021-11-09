@@ -60,6 +60,7 @@
 #include "FixedRotateGroup.h"
 #include "CellMap.h"
 #include "ExternalCut.h"
+#include "AttachSupport.h"
 
 #include "TDCBeamDump.h"
 
@@ -71,7 +72,10 @@ TDCBeamDump::TDCBeamDump(const std::string& Key)  :
   attachSystem::FixedRotateGroup(Key,"Main",6,"Beam",4),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
-  attachSystem::ExternalCut()
+  attachSystem::ExternalCut(),
+  mainFC1(nullptr),
+  mainFCSide(0)
+
  /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -101,7 +105,9 @@ TDCBeamDump::TDCBeamDump(const TDCBeamDump& A) :
   bulkMat(A.bulkMat),
   skinMat(A.skinMat),
   frontPlateMat(A.frontPlateMat),
-  carbonMat(A.carbonMat)
+  carbonMat(A.carbonMat),
+  mainFC1(A.mainFC1),
+  mainFCSide(A.mainFCSide)
   /*!
     Copy constructor
     \param A :: TDCBeamDump to copy
@@ -139,6 +145,8 @@ TDCBeamDump::operator=(const TDCBeamDump& A)
       skinMat=A.skinMat;
       frontPlateMat=A.frontPlateMat;
       carbonMat=A.carbonMat;
+      mainFC1=A.mainFC1;
+      mainFCSide=A.mainFCSide;
     }
   return *this;
 }
@@ -214,13 +222,14 @@ TDCBeamDump::createUnitVector(const attachSystem::FixedComp& centreFC,
   attachSystem::FixedComp& mainFC=getKey("Main");
   attachSystem::FixedComp& beamFC=getKey("Beam");
 
-  beamFC.createUnitVector(centreFC,cIndex);
-  mainFC.createUnitVector(pipeFC,pIndex);
+  mainFC.createUnitVector(centreFC,cIndex);
+  beamFC.createUnitVector(pipeFC,pIndex);
 
   applyOffset();
   // if (upFlag)
   //   beamFC.applyShift(0,0,lift);  // only beam offset
-  setDefault("Main","Beam");
+  setDefault("Beam");
+  setSecondary("Main");
   return;
 }
 
@@ -233,29 +242,37 @@ TDCBeamDump::createSurfaces()
 {
   ELog::RegMethod RegA("TDCBeamDump","createSurfaces");
 
-  setDefault("Main","Beam");
+  //  setDefault("Beam", "Main");
 
-  ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*skinThick,Y);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+11,buildIndex+1,Y,-skinThick);
+  // if (!mainFC1)
+  //   bZ = mainFC1->getZ();
+  // else
+  bY = Geometry::Vec3D(0,1,0);
+  bZ = Geometry::Vec3D(0,0,1);
+
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin+bY*skinThick,bY);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+11,buildIndex+1,bY,-skinThick);
 
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(preCoreLength),Y);
   ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(preCoreLength+coreLength),Y);
 
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+22,buildIndex+12,Y,bulkThickBack);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+32,buildIndex+22,Y,skinThick);
+  ModelSupport::buildPlane(SMap,buildIndex+22,Origin+bY*(preCoreLength+coreLength+bulkThickBack),bY);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+32,buildIndex+22,bY,skinThick);
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(bulkWidthLeft),X);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+13,buildIndex+3,X,-skinThick);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(bulkWidthRight),X);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+14,buildIndex+4,X,skinThick);
 
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(bulkDepth),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(bulkHeight),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-bZ*(bulkDepth),bZ);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+bZ*(bulkHeight),bZ);
 
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+15,buildIndex+5,Z,-skinThick);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+16,buildIndex+6,Z,skinThick);
+  ELog::EM << keyName << " createSurfaces: Z: " << Z << " bZ: " << bZ << ELog::endDiag;
 
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+41,buildIndex+1,Y,frontPlateThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+15,buildIndex+5,bZ,-skinThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+16,buildIndex+6,bZ,skinThick);
+
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+41,buildIndex+1,bY,frontPlateThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+42,buildIndex+2,Y,-carbonThick);
 
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,preCoreRadius);
@@ -339,11 +356,8 @@ TDCBeamDump::createLinks()
   attachSystem::FixedComp& mainFC=getKey("Main");
   attachSystem::FixedComp& beamFC=getKey("Beam");
 
-  ELog::EM << "here1 " << ELog::endDiag;
-
   mainFC.setConnect(0,Origin,-Y);
   mainFC.setLinkSurf(0,-SMap.realSurf(buildIndex+11));
-  ELog::EM << "here2 " << ELog::endDiag;
 
   mainFC.setConnect(1,Origin+Y*(totalLength),Y);
   mainFC.setLinkSurf(1,SMap.realSurf(buildIndex+32));
@@ -364,20 +378,43 @@ TDCBeamDump::createLinks()
 }
 
 void
+TDCBeamDump::setMainAxis(const attachSystem::FixedComp& FC,
+			 const long int sideIndex)
+/*!
+  Main axis setter
+  \param FC :: Main axis fixed component (origin)
+  \param sideIndex :: link point for origin
+ */
+{
+  mainFC1 = const_cast<attachSystem::FixedComp*>(&FC);
+  mainFCSide = sideIndex;//attachSystem::getLinkNumber(sideName);
+}
+
+void
 TDCBeamDump::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
-    \param FC :: Central origin
+    \param FC :: Central origin (pipe)
     \param sideIndex :: link point for origin
   */
 {
   ELog::RegMethod RegA("TDCBeamDump","createAll");
 
+  if (!mainFC1)
+    {
+      mainFC1 = const_cast<attachSystem::FixedComp*>(&FC);
+      mainFCSide = sideIndex;
+    }
+
   populate(System.getDataBase());
-  createUnitVector(FC,sideIndex,FC,sideIndex);
+  // ELog::EM << keyName << " createAll: mainFC1: " << mainFC1->getZ() << ELog::endDiag;
+  // ELog::EM << keyName << " createAll: beam: " << getKey("Beam").getZ() << ELog::endDiag;
+  createUnitVector(*mainFC1,mainFCSide, FC,sideIndex);
+  // ELog::EM << keyName << " createAll: mainFC1: " << mainFC1->getZ() << ELog::endDiag;
+  // ELog::EM << keyName << " createAll: beam: " << getKey("Beam").getZ() << ELog::endDiag;
   createSurfaces();
   createObjects(System);
   createLinks();

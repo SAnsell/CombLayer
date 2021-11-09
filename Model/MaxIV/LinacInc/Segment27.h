@@ -56,6 +56,7 @@ class Segment27 :
   std::unique_ptr<attachSystem::BlockZone> IZTop;        ///< Upper inner zone
   std::unique_ptr<attachSystem::BlockZone> IZFlat;       ///< Flat inner zone
   std::unique_ptr<attachSystem::BlockZone> IZLower;      ///< Lower inner zone
+  const InjectionHall* IHall;      ///< Storage for injection hall if used.
 
   /// init bellows
   std::shared_ptr<constructSystem::Bellows> bellowAA;

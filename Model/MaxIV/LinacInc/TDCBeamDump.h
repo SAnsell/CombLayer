@@ -63,7 +63,7 @@ class TDCBeamDump : public attachSystem::ContainedComp,
   int frontPlateMat;            ///< Front plate material (to reduce activation dose rate)
   int carbonMat;                ///< Carbon plate material
 
-  attachSystem::FixedComp* mainFC;
+  attachSystem::FixedComp* mainFC1;
   long int mainFCSide;
 
   void populate(const FuncDataBase&);
@@ -81,7 +81,7 @@ class TDCBeamDump : public attachSystem::ContainedComp,
   virtual TDCBeamDump* clone() const;
   virtual ~TDCBeamDump();
 
-  //  void setMainAxis(const attachSystem::FixedComp&, const long int side);
+  void setMainAxis(const attachSystem::FixedComp&, const long int); //std::string&);
 
   using attachSystem::FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);

@@ -75,6 +75,8 @@
 #include "YagScreen.h"
 #include "YagUnit.h"
 #include "TDCBeamDump.h"
+#include "FixedOffset.h"
+#include "InjectionHall.h"
 
 #include "TDCsegment.h"
 #include "Segment27.h"
@@ -90,6 +92,7 @@ Segment27::Segment27(const std::string& Key) :
   IZTop(new attachSystem::BlockZone(keyName+"IZTop")),
   IZFlat(new attachSystem::BlockZone(keyName+"IZFlat")),
   IZLower(new attachSystem::BlockZone(keyName+"IZLower")),
+  IHall(nullptr),
 
   bellowAA(new constructSystem::Bellows(keyName+"BellowAA")),
   bellowBA(new constructSystem::Bellows(keyName+"BellowBA")),
@@ -302,7 +305,7 @@ Segment27::buildObjects(Simulation& System)
     (System,*IZFlat,*yagUnitB,"back",*bellowBC);
 
   beamStopC->setCutSurf("base",ExternalCut::getRule("Floor"));
-  //  beamStopC->setMainAxis(*yagUnitC, 2);
+  beamStopC->setMainAxis(*IHall, 0);
   beamStopC->createAll(System,*yagUnitC,"back");
 
   const int outerCell = IZLower->createUnit(System,beamStopC->getKey("Main"),2);
@@ -398,6 +401,7 @@ Segment27::createAll(Simulation& System,
 {
   // For output stream
   ELog::RegMethod RControl("Segment27","build");
+  IHall=dynamic_cast<const InjectionHall*>(&FC);
 
   FixedRotate::populate(System.getDataBase());
 
