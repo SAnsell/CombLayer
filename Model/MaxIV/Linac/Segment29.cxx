@@ -65,6 +65,9 @@
 #include "BlockZone.h"
 #include "generalConstruct.h"
 #include "generateSurf.h"
+#include "FixedGroup.h"
+#include "FixedRotateGroup.h"
+
 
 #include "SplitFlangePipe.h"
 #include "Bellows.h"

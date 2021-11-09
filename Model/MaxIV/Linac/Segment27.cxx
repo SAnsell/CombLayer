@@ -68,6 +68,8 @@
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "VacuumPipe.h"
+#include "FixedGroup.h"
+#include "FixedRotateGroup.h"
 
 #include "Line.h"
 #include "YagScreen.h"
@@ -300,9 +302,11 @@ Segment27::buildObjects(Simulation& System)
     (System,*IZFlat,*yagUnitB,"back",*bellowBC);
 
   beamStopC->setCutSurf("base",ExternalCut::getRule("Floor"));
+  //  beamStopC->setMainAxis(*yagUnitC, 2);
   beamStopC->createAll(System,*yagUnitC,"back");
 
-  const int outerCell = IZLower->createUnit(System,*beamStopC,2);
+  const int outerCell = IZLower->createUnit(System,beamStopC->getKey("Main"),2);
+
   // for segment28:
   ExternalCut::setCutSurf("BeamStopZone",beamStopC->getOuterSurf());
 
@@ -357,7 +361,7 @@ Segment27::createLinks()
   setLinkCopy(3,*bellowBC,2);
 
   setLinkCopy(4,*bellowCA,1);
-  setLinkCopy(5,*beamStopC,2);
+  setLinkCopy(5,beamStopC->getKey("Main"),2);
 
   FixedComp::nameSideIndex(0,"frontFlat");
   FixedComp::nameSideIndex(1,"backFlat");

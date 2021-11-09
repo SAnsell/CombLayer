@@ -34,16 +34,20 @@
 #include <memory>
 
 #include "FileReport.h"
+#include "OutputLog.h"
+#include "Vec3D.h"
+#include "HeadRule.h"
+#include "ContainedComp.h"
+#include "BaseMap.h"
+#include "SurfMap.h"
+
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "OutputLog.h"
-#include "BaseVisit.h"
-#include "Vec3D.h"
 #include "surfRegister.h"
+#include "BaseVisit.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
-#include "HeadRule.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -52,11 +56,9 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedRotate.h"
-#include "ContainedComp.h"
-#include "BaseMap.h"
+#include "FixedGroup.h"
+#include "FixedRotateGroup.h"
 #include "CellMap.h"
-#include "SurfMap.h"
 #include "ExternalCut.h"
 
 #include "TDCBeamDump.h"
@@ -66,7 +68,7 @@ namespace tdcSystem
 
 TDCBeamDump::TDCBeamDump(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotateGroup(Key,"Main",6,"Beam",4),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::ExternalCut()
@@ -78,7 +80,7 @@ TDCBeamDump::TDCBeamDump(const std::string& Key)  :
 
 TDCBeamDump::TDCBeamDump(const TDCBeamDump& A) :
   attachSystem::ContainedComp(A),
-  attachSystem::FixedRotate(A),
+  attachSystem::FixedRotateGroup(A),
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::ExternalCut(A),
@@ -117,7 +119,7 @@ TDCBeamDump::operator=(const TDCBeamDump& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedRotate::operator=(A);
+      attachSystem::FixedRotateGroup::operator=(A);
       attachSystem::CellMap::operator=(A);
       length=A.length;
       bulkWidthLeft=A.bulkWidthLeft;
@@ -166,7 +168,7 @@ TDCBeamDump::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("TDCBeamDump","populate");
 
-  FixedRotate::populate(Control);
+  FixedRotateGroup::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
   bulkWidthLeft=Control.EvalVar<double>(keyName+"BulkWidthLeft");
@@ -192,12 +194,46 @@ TDCBeamDump::populate(const FuncDataBase& Control)
 }
 
 void
+TDCBeamDump::createUnitVector(const attachSystem::FixedComp& centreFC,
+			   const long int cIndex,
+			   const attachSystem::FixedComp& pipeFC,
+			   const long int pIndex)
+  /*!
+    Create the unit vectors.
+    The first beamFC is to set the X,Y,Z relative to the beam
+    and the origin at the beam centre position.
+
+    \param centreFC :: FixedComp for origin
+    \param cIndex :: link point of centre [and axis]
+    \param pipeFC :: link point of pipe centre
+    \param pIndex :: direction for links
+  */
+{
+  ELog::RegMethod RegA("TDCBeamDump","createUnitVector");
+
+  attachSystem::FixedComp& mainFC=getKey("Main");
+  attachSystem::FixedComp& beamFC=getKey("Beam");
+
+  beamFC.createUnitVector(centreFC,cIndex);
+  mainFC.createUnitVector(pipeFC,pIndex);
+
+  applyOffset();
+  // if (upFlag)
+  //   beamFC.applyShift(0,0,lift);  // only beam offset
+  setDefault("Main","Beam");
+  return;
+}
+
+
+void
 TDCBeamDump::createSurfaces()
   /*!
     Create All the surfaces
   */
 {
   ELog::RegMethod RegA("TDCBeamDump","createSurfaces");
+
+  setDefault("Main","Beam");
 
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*skinThick,Y);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+11,buildIndex+1,Y,-skinThick);
@@ -300,23 +336,29 @@ TDCBeamDump::createLinks()
 
   const double totalLength = preCoreLength + coreLength + bulkThickBack + skinThick;
 
-  FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+11));
+  attachSystem::FixedComp& mainFC=getKey("Main");
+  attachSystem::FixedComp& beamFC=getKey("Beam");
 
-  FixedComp::setConnect(1,Origin+Y*(totalLength),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+32));
+  ELog::EM << "here1 " << ELog::endDiag;
 
-  FixedComp::setConnect(2,Origin-X*(bulkWidthLeft+skinThick),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+13));
+  mainFC.setConnect(0,Origin,-Y);
+  mainFC.setLinkSurf(0,-SMap.realSurf(buildIndex+11));
+  ELog::EM << "here2 " << ELog::endDiag;
 
-  FixedComp::setConnect(3,Origin+X*(bulkWidthRight+skinThick),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+14));
+  mainFC.setConnect(1,Origin+Y*(totalLength),Y);
+  mainFC.setLinkSurf(1,SMap.realSurf(buildIndex+32));
 
-  FixedComp::setConnect(4,Origin-Z*(bulkDepth+skinThick),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
+  mainFC.setConnect(2,Origin-X*(bulkWidthLeft+skinThick),-X);
+  mainFC.setLinkSurf(2,-SMap.realSurf(buildIndex+13));
 
-  FixedComp::setConnect(5,Origin+Z*(bulkHeight+skinThick),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
+  mainFC.setConnect(3,Origin+X*(bulkWidthRight+skinThick),X);
+  mainFC.setLinkSurf(3,SMap.realSurf(buildIndex+14));
+
+  mainFC.setConnect(4,Origin-Z*(bulkDepth+skinThick),-Z);
+  mainFC.setLinkSurf(4,-SMap.realSurf(buildIndex+15));
+
+  mainFC.setConnect(5,Origin+Z*(bulkHeight+skinThick),Z);
+  mainFC.setLinkSurf(5,SMap.realSurf(buildIndex+16));
 
   return;
 }
@@ -335,7 +377,7 @@ TDCBeamDump::createAll(Simulation& System,
   ELog::RegMethod RegA("TDCBeamDump","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC,sideIndex);
+  createUnitVector(FC,sideIndex,FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

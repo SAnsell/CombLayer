@@ -36,7 +36,7 @@ namespace tdcSystem
 */
 
 class TDCBeamDump : public attachSystem::ContainedComp,
-                    public attachSystem::FixedRotate,
+		    public attachSystem::FixedRotateGroup,
                     public attachSystem::CellMap,
                     public attachSystem::SurfMap,
                     public attachSystem::ExternalCut
@@ -63,7 +63,12 @@ class TDCBeamDump : public attachSystem::ContainedComp,
   int frontPlateMat;            ///< Front plate material (to reduce activation dose rate)
   int carbonMat;                ///< Carbon plate material
 
+  attachSystem::FixedComp* mainFC;
+  long int mainFCSide;
+
   void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,const long int,
+			const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -75,6 +80,8 @@ class TDCBeamDump : public attachSystem::ContainedComp,
   TDCBeamDump& operator=(const TDCBeamDump&);
   virtual TDCBeamDump* clone() const;
   virtual ~TDCBeamDump();
+
+  //  void setMainAxis(const attachSystem::FixedComp&, const long int side);
 
   using attachSystem::FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
