@@ -46,6 +46,7 @@ class CRLTubeGenerator
   double height;                 ///< Main box height
   
   double innerLength;            ///< inner Length
+  double secondary;              ///< secondary
   
   double captureWidth;           ///< void in capture space
   double captureHeight;          ///< void in capture space
@@ -76,13 +77,13 @@ class CRLTubeGenerator
   double flangeRadius;           ///< Flange radius
   double flangeLength;           ///< Flange thickness
 
-  std::string voidMat;               ///< Void Material
-  std::string lensMat;               ///< Lens material
-  std::string lensOuterMat;          ///< Outer support lens Material
-  std::string pipeMat;               ///< Pipe Material
-  std::string mainMat;               ///< Support Material
-  std::string magnetMat;             ///< Magnet material
-  std::string flangeMat;             ///< Flange material
+  std::string voidMat;           ///< Void Material
+  std::string lensMat;           ///< Lens material
+  std::string lensOuterMat;      ///< Outer support lens Material
+  std::string pipeMat;           ///< Pipe Material
+  std::string mainMat;           ///< Support Material
+  std::string magnetMat;         ///< Magnet material
+  std::string flangeMat;         ///< Flange material
 
  public:
 
@@ -96,6 +97,7 @@ class CRLTubeGenerator
 
   void setMain(const double,const double,const double);
   void setLens(const size_t,const double,const double);
+  void setSecondary(const double S) { secondary=S; } 
   
   void generateLens(FuncDataBase&,const std::string&,
 		    const bool) const;

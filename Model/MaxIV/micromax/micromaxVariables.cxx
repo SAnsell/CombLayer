@@ -97,7 +97,6 @@ namespace micromaxVar
 {
 
 void undulatorVariables(FuncDataBase&,const std::string&);
-void mirrorMonoPackage(FuncDataBase&,const std::string&);
 void hdmmPackage(FuncDataBase&,const std::string&);
 void hdcmPackage(FuncDataBase&,const std::string&);
 void diagPackage(FuncDataBase&,const std::string&);
@@ -207,48 +206,6 @@ frontMaskVariables(FuncDataBase& Control,
   return;
 }
 
-  
-void
-mirrorMonoPackage(FuncDataBase& Control,
-		  const std::string& monoKey)
-  /*!
-    Builds the variables for the mirror mono package (MLM)
-    \param Control :: Database
-    \param monoKey :: prename
-  */
-{
-  ELog::RegMethod RegA("danmaxVariables[F]","mirrorMonoPackage");
-
-  setVariable::PortItemGenerator PItemGen;
-  setVariable::VacBoxGenerator MBoxGen;
-  setVariable::MLMonoGenerator MXtalGen;
-  
-  // ystep/width/height/depth/length
-  //
-  MBoxGen.setCF<CF40>();   // set ports
-  MBoxGen.setAllThick(1.5,2.5,1.0,1.0,1.0); // Roof/Base/Width/Front/Back
-  MBoxGen.setPortLength(7.5,7.5); // La/Lb
-  MBoxGen.setBPortOffset(-0.4,0.0);    // note -1mm from crystal offset
-  // width / heigh / depth / length
-  MBoxGen.generateBox
-    (Control,monoKey+"MLMVessel",57.0,12.5,31.0,94.0);
-
-  Control.addVariable(monoKey+"MLMVesselPortBXStep",0.0);   // from primary
-
-  const std::string portName=monoKey+"MLMVessel";
-  Control.addVariable(monoKey+"MLMVesselNPorts",0);   // beam ports (lots!!)
-  PItemGen.setCF<setVariable::CF63>(5.0);
-  PItemGen.setPlate(4.0,"LeadGlass");  
-  PItemGen.generatePort(Control,portName+"Port0",
-			Geometry::Vec3D(0,5.0,-10.0),
-			Geometry::Vec3D(1,0,0));
-
-  // crystals gap 4mm
-  MXtalGen.generateMono(Control,monoKey+"MLM",-10.0,0.3,0.3);
-  
-  return;
-}
-
 void
 hdmmPackage(FuncDataBase& Control,const std::string& monoKey)
   /*!
@@ -261,16 +218,19 @@ hdmmPackage(FuncDataBase& Control,const std::string& monoKey)
 
   setVariable::PortItemGenerator PItemGen;
   setVariable::DCMTankGenerator MBoxGen;
-  
+  setVariable::MLMonoGenerator MXtalGen;
+ 
+  // crystals gap 10mm [ystep,thetaA,thetaB]
+  MXtalGen.setGap(1.0);
+  MXtalGen.generateMono(Control,monoKey+"MLM",-10.0,1.3,1.3);
+
   // ystep/width/height/depth/length
   // 
   MBoxGen.setCF<CF40>();   // set ports
   MBoxGen.setPortLength(7.5,7.5); // La/Lb
-  MBoxGen.setBPortOffset(-0.6,0.0);    // note -1mm from crystal offset
+  MBoxGen.setBPortOffset(0.0,0.0);    // note -1mm from crystal offset
   // radius : Height / depth  [need heigh = 0]
   MBoxGen.generateBox(Control,monoKey+"DMMVessel",30.0,0.0,16.0);
-
-  Control.addVariable(monoKey+"DMMVesselPortBXStep",-0.6);      // from primary
 
   const double outerRadius(30.5);
   const std::string portName=monoKey+"DMMVessel";
@@ -305,11 +265,9 @@ hdcmPackage(FuncDataBase& Control,
   // 
   MBoxGen.setCF<CF40>();   // set ports
   MBoxGen.setPortLength(7.5,7.5); // La/Lb
-  MBoxGen.setBPortOffset(-0.6,0.0);    // note -1mm from crystal offset
+  MBoxGen.setBPortOffset(-1.0,0.0);    
   // radius : Height / depth  [need heigh = 0]
   MBoxGen.generateBox(Control,monoKey+"DCMVessel",30.0,0.0,16.0);
-
-  Control.addVariable(monoKey+"DCMVesselPortBXStep",-0.6);      // from primary
 
   const double outerRadius(30.5);
   const std::string portName=monoKey+"DCMVessel";
@@ -321,9 +279,9 @@ hdcmPackage(FuncDataBase& Control,
   			Geometry::Vec3D(0,5.0,-10.0),
   			Geometry::Vec3D(1,0,0));
 
-  // crystals gap 7mm
+  // crystals gap 10mm
+  MXtalGen.setGap(1.0);
   MXtalGen.generateXstal(Control,monoKey+"MBXstals",0.0,3.0);
-  
 
   return;
 }
@@ -732,15 +690,21 @@ crlPackage(FuncDataBase& Control,const std::string& Name)
   PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF40>();
 
+  PipeGen.setCF<CF40>();
+  PipeGen.setBFlangeCF<CF63>();
   PipeGen.generatePipe(Control,Name+"CRLPipeA",12.5);
 
-  DPGen.setMain(65,34.0,25.0);  // len/width/height
+  DPGen.setMain(65,34.0,25.0);  // length/width/height
+  DPGen.setPortCF<CF63>(5.0); 
   DPGen.setLens(10,1.5,0.2);
+  DPGen.setSecondary(0.8);
   DPGen.generateLens(Control,Name+"CRLTubeA",1);  // in beam
-  
+
+  PipeGen.setCF<CF63>();  
   PipeGen.generatePipe(Control,Name+"CRLPipeB",16.0);
   PipeGen.generatePipe(Control,Name+"CRLPipeC",25.0);
 
+  PipeGen.setBFlangeCF<CF40>();
   DPGen.generateLens(Control,Name+"CRLTubeB",1);  // in beam
 
   PipeGen.generatePipe(Control,Name+"CRLPipeD",12.5);

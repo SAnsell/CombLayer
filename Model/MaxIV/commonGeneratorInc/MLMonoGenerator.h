@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   danmaxInc/MLMonoGenerator.h
+ * File:   commonGeneratorInc/MLMonoGenerator.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *

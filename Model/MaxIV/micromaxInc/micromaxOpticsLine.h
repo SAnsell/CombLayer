@@ -134,7 +134,9 @@ class micromaxOpticsLine :
 
   /// H-res DMM mono vessel
   std::shared_ptr<xraySystem::DCMTank> dmmVessel;
-
+  /// Mirror mono
+  std::shared_ptr<xraySystem::MLMono> mlm;
+  
   /// Bellow exit
   std::shared_ptr<constructSystem::Bellows> bellowF;
   /// Gate valve between monos

@@ -156,6 +156,7 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   tableA(new xraySystem::Table(newName+"TableA")),
 
   dmmVessel(new xraySystem::DCMTank(newName+"DMMVessel")),
+  mlm(new xraySystem::MLMono(newName+"MLM")),
   bellowF(new constructSystem::Bellows(newName+"BellowF")),
   gateTubeB(new xraySystem::CylGateValve(newName+"GateTubeB")),
   bellowG(new constructSystem::Bellows(newName+"BellowG")),
@@ -323,9 +324,10 @@ micromaxOpticsLine::constructHDMM(Simulation& System,
 
   constructSystem::constructUnit
     (System,buildZone,initFC,sideName,*dmmVessel);
-  
-  //  mbXstals->addInsertCell(dmmVessel->getCell("Void"));
-  //  mbXstals->createAll(System,*dcmVessel,0);
+
+  mlm->addInsertCell(dmmVessel->getCell("Void"));
+  //  MLM->copyCutSurf("innerCylinder",*MLMVessel,"innerRadius");
+  mlm->createAll(System,*dmmVessel,0);
 
   return;
 }

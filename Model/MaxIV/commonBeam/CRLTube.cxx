@@ -118,6 +118,7 @@ CRLTube::populate(const FuncDataBase& Control)
   height=Control.EvalVar<double>(keyName+"Height");
 
   innerLength=Control.EvalVar<double>(keyName+"InnerLength");
+  secondary=Control.EvalDefVar<double>(keyName+"Secondary",-1.0);
 
   zLift=Control.EvalDefVar<double>(keyName+"ZLift",0.0);
   inBeam=Control.EvalDefVar<int>(keyName+"InBeam",1);
@@ -206,6 +207,28 @@ CRLTube::createSurfaces()
     (SMap,buildIndex+107,Origin,Y,innerRadius);
 
 
+  // Secondary inner void (if requested)
+  if (secondary>Geometry::zeroTol)
+    {
+      ModelSupport::buildPlane
+	(SMap,buildIndex+1103,Origin-X*(width/2.0-secondary),X);
+      ModelSupport::buildPlane
+	(SMap,buildIndex+1104,Origin+X*(width/2.0-secondary),X);
+      ModelSupport::buildPlane
+	(SMap,buildIndex+1105,Origin-Z*(height/2.0-secondary),Z);
+      ModelSupport::buildPlane
+	(SMap,buildIndex+1106,Origin+Z*(height/2.0-secondary),Z);
+      
+      ModelSupport::buildPlane
+	(SMap,buildIndex+1203,Origin-X*(supportWidth/2.0+secondary),X);
+      ModelSupport::buildPlane
+	(SMap,buildIndex+1204,Origin+X*(supportWidth/2.0+secondary),X);
+      ModelSupport::buildPlane
+	(SMap,buildIndex+1205,Origin-Z*(supportDepth+secondary),Z);
+      ModelSupport::buildPlane
+	(SMap,buildIndex+1206,Origin+Z*(supportHeight+secondary),Z);
+    }
+
   // Support space (outer)
   ModelSupport::buildPlane
     (SMap,buildIndex+203,Origin-X*(supportWidth/2.0),X);
@@ -264,10 +287,10 @@ CRLTube::createSurfaces()
 
   // LENS:
 
-  makeCylinder("LensOuter",SMap,buildIndex+1007,beamOrg,Y,lensOuterRadius);
-  makeCylinder("LensSupport",SMap,buildIndex+1017,beamOrg,Y,lensSupportRadius);
+  makeCylinder("LensOuter",SMap,buildIndex+2007,beamOrg,Y,lensOuterRadius);
+  makeCylinder("LensSupport",SMap,buildIndex+2017,beamOrg,Y,lensSupportRadius);
 
-  int SIndex(buildIndex+1000);
+  int SIndex(buildIndex+2000);
 
   const double lStep(lensLength*static_cast<double>(lensNSize)/2.0);
   Geometry::Vec3D lensOrg(beamOrg-Y*lStep);
@@ -305,7 +328,7 @@ CRLTube::createObjects(Simulation& System)
   if (lensNSize)
     {
       HR=ModelSupport::getHeadRule
-	(SMap,buildIndex,lSize,"301 -302 -7 (-1001:1001M:1017)");
+	(SMap,buildIndex,lSize,"301 -302 -7 (-2001:2001M:2017)");
     }
   else
     {
@@ -329,10 +352,27 @@ CRLTube::createObjects(Simulation& System)
     (SMap,buildIndex,"301 -302 203 -204 205 -206 (-303:304:-305:306)");
   makeCell("Support",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"101 -102 103 -104 105 -106 (-203:204:-205:206)");
-  makeCell("Outer",System,cellIndex++,mainMat,0.0,HR);
+  if (secondary>Geometry::zeroTol)
+    {
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"101 -102 1203 -1204 1205 -1206 (-203:204:-205:206)");
+      makeCell("Secondary",System,cellIndex++,mainMat,0.0,HR);
 
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,
+	 "101 -102 1103 -1104 1105 -1106 (-1203:1204:-1205:1206)");
+      makeCell("Secondary",System,cellIndex++,voidMat,0.0,HR);
+
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,
+	 "101 -102 103 -104 105 -106 (-1103:1104:-1105:1106)");
+      makeCell("Outer",System,cellIndex++,mainMat,0.0,HR);
+    }
+  else
+    {
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"101 -102 103 -104 105 -106 (-203:204:-205:206)");
+      makeCell("Outer",System,cellIndex++,mainMat,0.0,HR);
+    }
+      
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"203 -204 205 -206 101 -301");
   makeCell("EndVoid",System,cellIndex++,voidMat,0.0,HR);
 
@@ -390,20 +430,20 @@ CRLTube::createObjects(Simulation& System)
     {
       // support
       HR=ModelSupport::getHeadRule
-	(SMap,buildIndex,lSize,"1001 -1001M -1017 1007");
+	(SMap,buildIndex,lSize,"2001 -2001M -2017 2007");
       makeCell("LensSupport",System,cellIndex++,lensOuterMat,0.0,HR);
 
-      int SIndex(buildIndex+1000);
+      int SIndex(buildIndex+2000);
       
       
       for(size_t i=0;i<lensNSize;i++)
 	{
-	  HR=ModelSupport::getHeadRule(SMap,buildIndex,SIndex,"1M -8M -1007");
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,SIndex,"1M -8M -2007");
 	  makeCell("LensVoid",System,cellIndex++,voidMat,0.0,HR);
-	  HR=ModelSupport::getHeadRule(SMap,buildIndex,SIndex,"-11M -9M -1007");
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,SIndex,"-11M -9M -2007");
 	  makeCell("LensVoid",System,cellIndex++,voidMat,0.0,HR);
 	  HR=ModelSupport::getHeadRule
-	    (SMap,buildIndex,SIndex,"1M -11M 8M 9M -1007");
+	    (SMap,buildIndex,SIndex,"1M -11M 8M 9M -2007");
 	  makeCell("Lens",System,cellIndex++,lensMat,0.0,HR);
 	  SIndex+=10;
 	}    

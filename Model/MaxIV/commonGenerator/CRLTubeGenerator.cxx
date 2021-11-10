@@ -60,7 +60,7 @@ namespace setVariable
 
 CRLTubeGenerator::CRLTubeGenerator() :
   zLift(-1.3),length(20.0),width(10.0),height(10.0),
-  innerLength(19.0),
+  innerLength(19.0),secondary(-1),
   captureWidth(2.0),captureHeight(2.0),captureDepth(1.0),
   supportWidth(5.5),supportHeight(3.0),supportDepth(3.0),
   magWidth(5.0),magHeight(2.5),magDepth(1.5),
@@ -142,7 +142,7 @@ CRLTubeGenerator::setLens(const size_t N,const double T,const double G)
   /*!
     Set the number/ length / gap between lens
     \parma N :: Number of lenses
-    \param L :: Thickness of length
+    \param T :: Thickness of len
     \param G :: Gap between lenses
   */
 {
@@ -173,6 +173,7 @@ CRLTubeGenerator::generateLens(FuncDataBase& Control,
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"InnerLength",innerLength);
+  Control.addVariable(keyName+"Secondary",secondary);
 
   Control.addVariable(keyName+"CaptureWidth",captureWidth);
   Control.addVariable(keyName+"CaptureHeight",captureHeight);
@@ -185,7 +186,6 @@ CRLTubeGenerator::generateLens(FuncDataBase& Control,
   Control.addVariable(keyName+"MagWidth",magWidth);
   Control.addVariable(keyName+"MagHeight",magHeight);
   Control.addVariable(keyName+"MagDepth",magDepth);
-
 
   Control.addVariable(keyName+"LensNSize",lensNSize);
   Control.addVariable(keyName+"LensLength",lensLength);
@@ -219,6 +219,7 @@ CRLTubeGenerator::generateLens(FuncDataBase& Control,
 ///\cond TEMPLATE
 
 template void CRLTubeGenerator::setPortCF<CF40>(const double);
+template void CRLTubeGenerator::setPortCF<CF63>(const double);
 
 
 

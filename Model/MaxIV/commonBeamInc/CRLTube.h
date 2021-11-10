@@ -52,6 +52,7 @@ class CRLTube :
   double height;                 ///< Main box height
 
   double innerLength;            ///< Main box width
+  double secondary;              ///< construct inner frame secondary
   
   double captureWidth;           ///< Void around main tube
   double captureHeight;          ///< Void around main tube
