@@ -66,6 +66,7 @@
 #include "R3FrontEnd.h"
 #include "micromaxFrontEnd.h"
 #include "micromaxOpticsLine.h"
+#include "micromaxExptLine.h"
 
 #include "R3Beamline.h"
 #include "MICROMAX.h"
@@ -83,6 +84,7 @@ MICROMAX::MICROMAX(const std::string& KN) :
   exptHut(new ExperimentalHutch(newName+"ExptHut")),
   joinPipeB(new constructSystem::VacuumPipe(newName+"JoinPipeB")),
   pShield(new xraySystem::PipeShield(newName+"PShield")),
+  exptBeam(new micromaxExptLine(newName+"ExptLine")),
   exptHutB(new ExperimentalHutch(newName+"ExptHutB"))
   /*!
     Constructor
@@ -100,6 +102,7 @@ MICROMAX::MICROMAX(const std::string& KN) :
   OR.addObject(opticsBeam);
   OR.addObject(joinPipeB);
   OR.addObject(exptHut);
+  OR.addObject(exptBeam);
   OR.addObject(exptHutB);
 }
 
@@ -171,7 +174,6 @@ MICROMAX::build(Simulation& System,
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
   exptHut->createAll(System,*opticsHut,"back");
 
-
   joinPipeB->addAllInsertCell(opticsBeam->getCell("LastVoid"));  
   joinPipeB->addInsertCell("Main",opticsHut->getCell("ExitHole"));
   joinPipeB->setFront(*opticsBeam,2);
@@ -179,12 +181,20 @@ MICROMAX::build(Simulation& System,
 
   // pipe shield goes around joinPipeB:
 
-
   pShield->addAllInsertCell(opticsBeam->getCell("LastVoid"));
   pShield->setCutSurf("inner",*joinPipeB,"outerPipe");
   pShield->createAll(System,*opticsHut,"innerBack");
 
   if (stopPoint=="exptHut") return;
+
+  exptBeam->addInsertCell(exptHut->getCell("Void"));
+  exptBeam->setCutSurf("front",*exptHut,
+			 exptHut->getSideIndex("innerFront"));
+  exptBeam->setCutSurf("back",*exptHut,
+			 exptHut->getSideIndex("innerBack"));
+  exptBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
+  exptBeam->setPreInsert(joinPipeB);
+  exptBeam->createAll(System,*joinPipeB,2);
 
 
   exptHutB->setCutSurf("floor",r3Ring->getSurf("Floor"));

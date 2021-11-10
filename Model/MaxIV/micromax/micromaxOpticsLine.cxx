@@ -584,16 +584,23 @@ micromaxOpticsLine::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,VPC,"OuterPlate",*bellowD);
 
-  constructSystem::constructUnit
+  outerCell=constructSystem::constructUnit
     (System,buildZone,*bellowD,"back",*attnTube);
 
+  attnTube->splitObject(System,"-PortACut",outerCell);
+  attnTube->splitObject(System,"PortBCut",outerCell);
+  
+  
   constructSystem::constructUnit
     (System,buildZone,*attnTube,"back",*bellowE);
+
+  
 
   tableA->addHole(*viewTube,"Origin","OuterRadius");
   tableA->addHole(attnTube->getPort(1),"Origin","OuterRadius");
   tableA->createAll(System,*bellowA,0);
   tableA->insertInCells(System,buildZone.getCells());
+
 
   constructHDMM(System,*bellowE,"back");
 
@@ -614,6 +621,7 @@ micromaxOpticsLine::buildObjects(Simulation& System)
     (System,buildZone,*bellowH,"back",*pipeB);
   constructSystem::constructUnit
     (System,buildZone,*pipeB,"back",*gateTubeC);
+
   
   constructDiag2(System,*gateTubeC,"back");
 
@@ -622,7 +630,7 @@ micromaxOpticsLine::buildObjects(Simulation& System)
   constructDiag3(System,*crlPipeD,"back");
 
   constructMonoShutter(System,*crlBremTube,"back");
-  
+
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);
 

@@ -164,12 +164,12 @@ PortChicane::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+15,
 			   Origin-Z*(baseThick+height/2.0),Z);
 
-  ModelSupport::buildPlane(SMap,buildIndex+23,
-			   Origin-X*(wallThick+overHang+width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+24,
-			   Origin+X*(wallThick+overHang+width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+25,
-			   Origin-Z*(baseThick+overHang+height/2.0),Z);
+  SurfMap::makePlane("LeftEdge",SMap,buildIndex+23,
+		     Origin-X*(wallThick+overHang+width/2.0),X);
+  SurfMap::makePlane("RightEdge",SMap,buildIndex+24,
+		     Origin+X*(wallThick+overHang+width/2.0),X);
+  SurfMap::makePlane("BaseEdge",SMap,buildIndex+25,
+		     Origin-Z*(baseThick+overHang+height/2.0),Z);
 
   return;
 }

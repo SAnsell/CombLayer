@@ -91,10 +91,26 @@ class micromaxExptLine :
   std::shared_ptr<xraySystem::ViewScreenTube> viewTube;
   /// view screen
   std::shared_ptr<xraySystem::CooledScreen> cooledScreen;
-  /// bellow to collimator
-  std::shared_ptr<constructSystem::Bellows> bellowB;
+  /// connector to collimator
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;
   /// jaws
   std::shared_ptr<xraySystem::HPJaws> hpJaws;
+  /// connector from collimator
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;
+  /// second gate valve
+  std::shared_ptr<xraySystem::CylGateValve> gateTubeB;
+  /// connector to CRL
+  std::shared_ptr<constructSystem::VacuumPipe> pipeC;  
+  /// Addaptor to CRL tube
+  std::shared_ptr<constructSystem::VacuumPipe> crlPipeA;
+  /// First CRL System  
+  std::shared_ptr<xraySystem::CRLTube> crlTubeA;
+  /// Mid  CRL pipe
+  std::shared_ptr<constructSystem::VacuumPipe> crlPipeB;
+  /// Second CRL System  
+  std::shared_ptr<xraySystem::CRLTube> crlTubeB;
+  /// End  CRL pipe [note skip C as not in expt design]
+  std::shared_ptr<constructSystem::VacuumPipe> crlPipeD;
 
   /// Narrow end pipe
   std::shared_ptr<constructSystem::VacuumPipe> endPipe;
@@ -106,9 +122,9 @@ class micromaxExptLine :
   double outerRight;   ///< Right width for cut rectangle
   double outerTop;     ///< Top lift for cut rectangle
 
-  void constructViewScreen(Simulation&,
-			   const attachSystem::FixedComp&,
-			   const std::string&); 
+  void constructCRL(Simulation&,
+		    const attachSystem::FixedComp&,
+		    const std::string&); 
   
   void populate(const FuncDataBase&);
   void createSurfaces();
