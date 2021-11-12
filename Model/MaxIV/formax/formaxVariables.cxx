@@ -303,7 +303,6 @@ diag2Package(FuncDataBase& Control,
 
   setVariable::BremBlockGenerator MaskGen;
 
-
  
   BTGen.generateTube(Control,diagKey+"BremTubeA");
 

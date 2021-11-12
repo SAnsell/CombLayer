@@ -462,6 +462,7 @@ BaseMap::registerExtra(const int prevCN,const int extraCN)
   ELog::RegMethod RegA("BaseMap","registerExtra");
 
   const std::string Unit=findCell(prevCN);
+  
   if (Unit.empty()) return 0;
   BaseMap::addItem(Unit,extraCN);
   return 1;

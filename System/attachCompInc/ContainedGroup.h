@@ -96,7 +96,6 @@ public:
   void clearRule(const std::string&);
   /// Test if has rule
   bool hasOuterSurf(const std::string&) const;
-
   
   void addOuterSurf(const std::string&,const int);
   void addOuterSurf(const std::string&,const std::string&);

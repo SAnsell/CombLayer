@@ -114,11 +114,13 @@ class micromaxOpticsLine :
   /// bellow to collimator
   std::shared_ptr<constructSystem::Bellows> bellowA;
   /// Brem for collimator
-  std::shared_ptr<xraySystem::SquareFMask> bremCollA;
+  std::shared_ptr<xraySystem::SquareFMask> whiteCollA;
   /// bellow to collimator
   std::shared_ptr<constructSystem::Bellows> bellowB;
   /// Brem block tube
-  std::shared_ptr<constructSystem::PipeTube> bremBlockTube;
+  std::shared_ptr<xraySystem::IonGauge> bremHolderA;
+  /// first BremCollimator
+  std::shared_ptr<xraySystem::BremBlock> bremCollA;
   /// Bellow exit
   std::shared_ptr<constructSystem::Bellows> bellowC;
   /// View Tube 

@@ -134,7 +134,8 @@ MICROMAX::build(Simulation& System,
 
   frontBeam->setStopPoint(stopPoint);
   frontBeam->setCutSurf("REWall",-r3Ring->getSurf("BeamInner",PIndex));
-  frontBeam->deactivateFM3();
+  // believed active on Micromax
+  //  frontBeam->deactivateFM3();
   frontBeam->addInsertCell(r3Ring->getCell("InnerVoid",SIndex));
 
   frontBeam->setBack(-r3Ring->getSurf("BeamInner",PIndex));
@@ -146,7 +147,7 @@ MICROMAX::build(Simulation& System,
   wallLead->createAll(System,FCOrigin,sideIndex);
 
   if (stopPoint=="frontEnd" || stopPoint=="Dipole"
-      || stopPoint=="FM1" || stopPoint=="FM2")
+      || stopPoint=="FM1" || stopPoint=="FM2" || stopPoint=="FM3")
     return;
 
   buildOpticsHutch(System,opticsHut,PIndex,exitLink);

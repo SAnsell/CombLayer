@@ -59,7 +59,7 @@ class TableGenerator
   ~TableGenerator();
 
   void generateTable(FuncDataBase&,const std::string&,
-		     const double,const double) const;
+		     const double,const double,const double) const;
 
 };
 

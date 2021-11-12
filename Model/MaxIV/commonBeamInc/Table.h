@@ -36,10 +36,10 @@ namespace xraySystem
 */
 
 class Table :
-  public attachSystem::ContainedComp,
-  public attachSystem::FixedRotate,
-  public attachSystem::CellMap,
-  public attachSystem::SurfMap
+    public attachSystem::ContainedGroup,
+    public attachSystem::FixedRotate,
+    public attachSystem::CellMap,
+    public attachSystem::SurfMap
 {
  private:
 
@@ -73,7 +73,7 @@ class Table :
   Table& operator=(const Table&);
   virtual ~Table();
 
-  virtual void insertInCells(Simulation&,const std::vector<int>&);
+  virtual void insertAllInCells(Simulation&,const std::vector<int>&);
 
   void addHole(const attachSystem::FixedComp&,
 	       const std::string&,const double);

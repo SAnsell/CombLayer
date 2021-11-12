@@ -175,25 +175,34 @@ frontMaskVariables(FuncDataBase& Control,
 
   setVariable::SqrFMaskGenerator FMaskGen;
 
+  const double FM1Length(15.0);
+  const double FM2Length(34.2);
+  const double FM3Length(17.0);
+
   const double FM1dist(1172.60);
   const double FM2dist(1624.2);
-  
-    // collimator block
-  FMaskGen.setCF<CF100>();
-  FMaskGen.setFrontGap(3.99,1.97);  // 1033.8
-  //  FMaskGen.setBackGap(0.71,0.71);
-  // Approximated to get 1mrad x 1mrad
-  FMaskGen.setMinAngleSize(10.0,FM1dist,1000.0,1000.0); 
-  FMaskGen.setBackAngleSize(FM1dist, 1200.0,1100.0);     // Approximated to get 1mrad x 1mrad  
-  FMaskGen.generateColl(Control,preName+"CollA",FM1dist,15.0);
+  const double FM3dist(1624.2+FM2Length);  
 
-  FMaskGen.setFrontGap(2.13,2.146);
-  FMaskGen.setBackGap(0.756,0.432);
-  // Approximated to get 100urad x 100urad @16m
-  FMaskGen.setMinAngleSize(32.0,FM2dist, 100.0,100.0 );
-  // Approximated to get 150urad x 150urad @16m
-  FMaskGen.setBackAngleSize(FM2dist, 150.0,150.0 );   
-  FMaskGen.generateColl(Control,preName+"CollB",FM2dist,40.0);
+  FMaskGen.setCF<CF100>();
+  // Approximated to get 1mrad x 1mrad  
+  FMaskGen.setFrontAngleSize(FM1dist,1300.0,1300.0); 
+  FMaskGen.setMinAngleSize(10.0,FM1dist,1000.0,1000.0); 
+  FMaskGen.setBackAngleSize(FM1dist, 1200.0,1100.0); 
+  FMaskGen.generateColl(Control,preName+"CollA",FM1dist,FM1Length);
+
+
+  // approx for 200uRad x 200uRad
+  FMaskGen.setFrontAngleSize(FM2dist,300.0,300.0); 
+  FMaskGen.setMinAngleSize(32.0,FM2dist, 200.0, 200.0 );
+  FMaskGen.setBackAngleSize(FM2dist, 250.0,250.0 );   
+  FMaskGen.generateColl(Control,preName+"CollB",FM2dist,FM2Length);
+  
+  // approx for 100uRad x 100uRad
+  FMaskGen.setFrontAngleSize(FM3dist,150.0,150.0);  
+  FMaskGen.setMinAngleSize(12.0,FM3dist, 100.0, 100.0 );
+  FMaskGen.setBackAngleSize(FM3dist, 160.0,160.0 );   
+  FMaskGen.generateColl(Control,preName+"CollC",FM3Length/2.0,FM3Length);
+
 
   // NOT PRESENT ::: 
   // FMaskGen.setFrontGap(0.84,0.582);
@@ -202,6 +211,11 @@ frontMaskVariables(FuncDataBase& Control,
   // FMaskGen.setMinAngleSize(12.0,1600.0, 100.0, 100.0);
   // FMaskGen.generateColl(Control,preName+"CollC",17/2.0,17.0);
 
+  // approx for 100uRad x 100uRad
+  FMaskGen.setFrontAngleSize(FM2dist,150.0,150.0);  
+  FMaskGen.setMinAngleSize(12.0,FM2dist, 100.0, 100.0 );
+  FMaskGen.setBackAngleSize(FM2dist, 160.0,160.0 );   
+  FMaskGen.generateColl(Control,preName+"CollC",17.0/2.0,17.0);
 
   return;
 }
@@ -731,29 +745,21 @@ diagPackage(FuncDataBase& Control,const std::string& Name)
   setVariable::JawValveGenerator JawGen;
   setVariable::BeamPairGenerator BeamMGen;
   setVariable::TableGenerator TableGen;
-
-    
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,Name+"BellowC",7.50);
+  setVariable::BremBlockGenerator MaskGen;
+  setVariable::IonGaugeGenerator IGGen;
   
-  const std::string bremName(Name+"BremBlockTube");
-  SimpleTubeGen.setCF<CF150>();
-  SimpleTubeGen.setCap(1,1);
-  SimpleTubeGen.generateTube(Control,bremName,25.0);
-  Control.addVariable(bremName+"NPorts",2);   // beam ports
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,Name+"BellowB",7.50);
+  
+  IGGen.setCF<CF150>();
+  IGGen.setMainLength(12.0,8.0);
+  IGGen.generateTube(Control,Name+"BremHolderA");
 
-  PItemGen.setCF<setVariable::CF40>(CF150::outerRadius+2.2);
-  PItemGen.setPlate(0.0,"Void");  
-  PItemGen.setOuterVoid(0);
-  PItemGen.generatePort(Control,bremName+"Port0",
-			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,1));
+  MaskGen.setAperatureAngle(7.0,0.2,0.2,5.0,5.0);
+  MaskGen.generateBlock(Control,Name+"BremCollA",-4.0);
 
-  PItemGen.setCF<setVariable::CF40>(CF150::outerRadius+2.2);
-  PItemGen.setPlate(0.0,"Void");  
-  PItemGen.generatePort(Control,bremName+"Port1",
-			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,-1));
-
-
+  BellowGen.generateBellow(Control,Name+"BellowC",7.50);
+ 
   // View tube
   const std::string viewName(Name+"ViewTube");
   
@@ -798,7 +804,8 @@ diagPackage(FuncDataBase& Control,const std::string& Name)
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,Name+"BellowE",7.50);
 
-  TableGen.generateTable(Control,Name+"TableA",-20,120.0);
+  // ystep zstep , length
+  TableGen.generateTable(Control,Name+"TableA",14.0,-20,120.0);
   return;
 }
 
@@ -906,21 +913,16 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,preName+"BellowA",17.6);
 
-  const double FM2dist(1624.2);
+  const double collDist(2400);
   FMaskGen.setCF<CF63>();
   FMaskGen.setFrontGap(2.13,2.146);
   FMaskGen.setBackGap(0.756,0.432);
-  FMaskGen.setMinAngleSize(10.0,FM2dist, 100.0,100.0 );
+  FMaskGen.setMinAngleSize(10.0,collDist,40.0,40.0);
   // step to +7.5 to make join with fixedComp:linkpt
-  FMaskGen.generateColl(Control,preName+"BremCollA",7.5,15.0);
+  FMaskGen.generateColl(Control,preName+"WhiteCollA",7.5,15.0);
 
   IGGen.generateTube(Control,preName+"IonGaugeA");
  
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,preName+"BellowB",7.50);
-
-  PipeGen.generatePipe(Control,preName+"BremPipeA",5.0);
-
   micromaxVar::diagPackage(Control,preName);
 
   micromaxVar::hdmmPackage(Control,preName);

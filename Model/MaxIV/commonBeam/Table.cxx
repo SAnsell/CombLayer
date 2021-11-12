@@ -54,10 +54,12 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
+#include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
-#include "ContainedComp.h"
+
 #include "pipeSupport.h"
 #include "Table.h"
 
@@ -74,7 +76,7 @@ namespace xraySystem
 {
 
 Table::Table(const std::string& Key) :
-  attachSystem::ContainedComp(),
+  attachSystem::ContainedGroup("Main"),
   attachSystem::FixedRotate(Key,8),
   attachSystem::CellMap(),
   attachSystem::SurfMap()
@@ -160,7 +162,7 @@ Table::addHole(const attachSystem::FixedComp& FC,
   holeCentre.push_back(FC.getLinkPt(sideName));
   holeRadius.push_back(R);
   holeExclude.push_back(FC.getFullRule(sideName));   
-
+  
   return;
 }
 
@@ -180,12 +182,11 @@ Table::addHole(const attachSystem::FixedComp& FC,
   const double R=FC.getLinkDistance(centName,outerName);
   holeCentre.push_back(FC.getLinkPt(centName));
   holeRadius.push_back(R);
-  ELog::EM<<"Hole = "<<FC.getKeyName()<<" ::: "<<
-    FC.getFullRule(outerName)<<ELog::endDiag;
   holeExclude.push_back(FC.getFullRule(outerName));   
   
   return;
 }
+
   
 void
 Table::createObjects(Simulation& System)
@@ -202,24 +203,37 @@ Table::createObjects(Simulation& System)
   int HI(buildIndex);
   for(size_t i=0;i<holeCentre.size();i++)
     {
+      const std::string HName("Hole"+std::to_string(i));
       HR=ModelSupport::getHeadRule(SMap,buildIndex,HI,"5 -6 -7M");
+
       HR*=holeExclude[i];
-      makeCell("Hole"+std::to_string(i),System,cellIndex++,0,0.0,HR);
+      makeCell(HName,System,cellIndex++,0,0.0,HR);
       Holes*=ModelSupport::getHeadRule(SMap,HI,"7");
+
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,HI,"5 -6 -7M");
+      if (!ContainedGroup::hasKey(HName)) addCC(HName);
+      addOuterSurf(HName,HR);
+
       HI+=10;
     }
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2  3 -4 5 -6");
   makeCell("Table",System,cellIndex++,plateMat,0.0,HR*Holes);
+
   
-  addOuterSurf(HR);
+  addOuterSurf("Main",HR);
+
+  if (!ContainedGroup::hasKey("Plate")) addCC("Plate");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6");
+  addOuterSurf("Plate",HR);
+
 
   return;
 } 
 
 void
-Table::insertInCells(Simulation& System,
-		     const std::vector<int>& cellN)
+Table::insertAllInCells(Simulation& System,
+			const std::vector<int>& cellN)
   /*!
     Insert the object into the cell: But it is tested
     \param System :: Simluation
@@ -234,11 +248,21 @@ Table::insertInCells(Simulation& System,
   const Geometry::Vec3D APt(Origin-Y*(length/2.0));
   const Geometry::Vec3D BPt(Origin+Y*(length/2.0));
   std::map<int,MonteCarlo::Object*> OMap;
-  ModelSupport::calcLineTrack(System,APt,BPt,OMap);
+
+  const std::vector<Geometry::Vec3D> LStep
+    ({
+      Geometry::Vec3D(0,0,0),
+      -X*(width/2.0),
+      X*(width/2.0)
+    });
+
+  for(const Geometry::Vec3D shiftPt : LStep)
+    ModelSupport::calcLineTrack(System,APt+shiftPt,BPt+shiftPt,OMap);
+  
   for(const int CN : cellN)
     {
       if (OMap.find(CN)!=OMap.end())
-	ContainedComp::insertInCell(System,CN);
+	ContainedGroup::insertInCell("Main",System,CN);
     }
   return;
 }

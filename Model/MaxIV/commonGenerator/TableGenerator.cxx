@@ -69,6 +69,7 @@ TableGenerator::~TableGenerator()
 void
 TableGenerator::generateTable(FuncDataBase& Control,
 			      const std::string& keyName,
+			      const double yStep,
 			      const double zStep,
 			      const double length) const
   /*!
@@ -76,11 +77,12 @@ TableGenerator::generateTable(FuncDataBase& Control,
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
     \param zStep :: Vertical lift down from beam centre line
-    \param length :: length of tabel 
+    \param length :: length of table 
   */
 {
   ELog::RegMethod RegA("TableGenerator","generatorMount");
 
+  Control.addVariable(keyName+"YStep",yStep);
   Control.addVariable(keyName+"ZStep",zStep);
 
   Control.addVariable(keyName+"Thick",thick);

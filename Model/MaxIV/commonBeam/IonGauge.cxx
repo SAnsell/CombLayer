@@ -188,7 +188,7 @@ IonGauge::createSurfaces()
   
   ModelSupport::buildCylinder(SMap,buildIndex+407,Origin,Z,radius);
   ModelSupport::buildCylinder(SMap,buildIndex+417,Origin,Z,radius+wallThick);
-  ModelSupport::buildCylinder(SMap,buildIndex+427,Origin,Z,flangeZRadius);
+  SurfMap::makeCylinder("OuterFlange",SMap,buildIndex+427,Origin,Z,flangeZRadius);
 
   // Side Tubes 
   const Geometry::Vec3D sideOrg(Origin+Z*sideZOffset);
@@ -379,6 +379,8 @@ IonGauge::createLinks()
 {
   ELog::RegMethod RegA("IonGauge","createLinks");
 
+  nameSideIndex(2,"OuterRadius");
+  
   ExternalCut::createLink("front",*this,0,Origin,Y);  //front and back
   ExternalCut::createLink("back",*this,1,Origin,Y);  //front and back
 

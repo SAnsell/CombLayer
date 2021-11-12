@@ -145,9 +145,10 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   gateTubeA(new xraySystem::CylGateValve(newName+"GateTubeA")),
   pipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
-  bremCollA(new xraySystem::SquareFMask(newName+"BremCollA")),
+  whiteCollA(new xraySystem::SquareFMask(newName+"WhiteCollA")),
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
-  bremBlockTube(new constructSystem::PipeTube(newName+"BremBlockTube")),
+  bremHolderA(new xraySystem::IonGauge(newName+"BremHolderA")),
+  bremCollA(new xraySystem::BremBlock(newName+"BremCollA")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
   viewTube(new constructSystem::PipeTube(newName+"ViewTube")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
@@ -211,9 +212,10 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   OR.addObject(gateTubeA);
   OR.addObject(pipeA);
   OR.addObject(bellowA);
-  OR.addObject(bremCollA);
+  OR.addObject(whiteCollA);
   OR.addObject(bellowB);
-  OR.addObject(bremBlockTube);
+  OR.addObject(bremHolderA);
+  OR.addObject(bremCollA);
   OR.addObject(bellowC);
   OR.addObject(viewTube);
   OR.addObject(bellowD);
@@ -557,22 +559,19 @@ micromaxOpticsLine::buildObjects(Simulation& System)
     (System,buildZone,*pipeA,"back",*bellowA);
   
   constructSystem::constructUnit
-    (System,buildZone,*bellowA,"back",*bremCollA);
+    (System,buildZone,*bellowA,"back",*whiteCollA);
 
   constructSystem::constructUnit
-    (System,buildZone,*bremCollA,"back",*bellowB);
-
-  bremBlockTube->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  bremBlockTube->setOuterVoid();
-  bremBlockTube->createAll(System,*bellowB,"back");
-
-  const constructSystem::portItem& VPB=bremBlockTube->getPort(1);
-  outerCell=buildZone.createUnit
-    (System,VPB,VPB.getSideIndex("OuterPlate"));
-  bremBlockTube->insertAllInCell(System,outerCell);
+    (System,buildZone,*whiteCollA,"back",*bellowB);
 
   constructSystem::constructUnit
-    (System,buildZone,VPB,"OuterPlate",*bellowC);
+    (System,buildZone,*bellowB,"back",*bremHolderA);
+
+  bremCollA->addInsertCell(bremHolderA->getCell("Void"));
+  bremCollA->createAll(System,*bremHolderA,0);
+
+  constructSystem::constructUnit
+    (System,buildZone,*bremHolderA,"back",*bellowC);
 
   viewTube->setPortRotation(3,Geometry::Vec3D(1,0,0));
   viewTube->setOuterVoid();
@@ -589,6 +588,7 @@ micromaxOpticsLine::buildObjects(Simulation& System)
   outerCell=constructSystem::constructUnit
     (System,buildZone,*bellowD,"back",*attnTube);
 
+  attnTube->addCell("OuterVoid",outerCell);
   attnTube->splitObject(System,"-PortACut",outerCell);
   attnTube->splitObject(System,"PortBCut",outerCell);
   
@@ -596,12 +596,15 @@ micromaxOpticsLine::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,*attnTube,"back",*bellowE);
 
-  
-
   tableA->addHole(*viewTube,"Origin","OuterRadius");
   tableA->addHole(attnTube->getPort(1),"Origin","OuterRadius");
+  tableA->addHole(*bremHolderA,"Origin","OuterRadius");
   tableA->createAll(System,*bellowA,0);
-  tableA->insertInCells(System,buildZone.getCells());
+  tableA->insertAllInCells(System,buildZone.getCells());
+  tableA->insertInCell("Plate",System,bremHolderA->getCell("VertOuter"));
+  tableA->insertInCell("Plate",System,bremHolderA->getCell("MainOuter"));
+  tableA->insertInCell("Main",System,attnTube->getCell("OuterVoid",1));
+  tableA->insertInCell("Hole1",System,attnTube->getCell("OuterVoid",0));
 
 
   constructHDMM(System,*bellowE,"back");
