@@ -173,7 +173,6 @@ anglePortItem::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+1017,midPt,bY,radius+wall);
   ModelSupport::buildCylinder(SMap,buildIndex+1027,midPt,bY,flangeRadius);
 
-  
   // Final outer
   ModelSupport::buildPlane(SMap,buildIndex+1002,midPt+bY*lengthB,bY);
 
@@ -229,8 +228,6 @@ anglePortItem::constructObject(Simulation& System,
   const bool windowFlag(windowThick>Geometry::zeroTol);
 
   HeadRule HR;
-
-
   
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -7 -1000");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*innerSurf);

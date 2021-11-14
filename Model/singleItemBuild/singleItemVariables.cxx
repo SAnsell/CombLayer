@@ -112,6 +112,7 @@
 #include "CleaningMagnetGenerator.h"
 #include "IonPTubeGenerator.h"
 #include "IonGaugeGenerator.h"
+#include "CollTubeGenerator.h"
 #include "TriggerGenerator.h"
 #include "NBeamStopGenerator.h"
 #include "BremTubeGenerator.h"
@@ -357,6 +358,9 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::IonGaugeGenerator IonGGen;
   IonGGen.generateTube(Control,"IonGauge");
+
+  setVariable::CollTubeGenerator CTGen;
+  CTGen.generateTube(Control,"CollTube",25.0);
 
   setVariable::TriggerGenerator TrigGen;
   TrigGen.generateTube(Control,"TriggerTube");

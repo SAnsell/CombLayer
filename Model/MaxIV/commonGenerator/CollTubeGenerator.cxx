@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonGenerator/IonGaugeGenerator.cxx
+ * File:   commonGenerator/CollTubeGenerator.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -45,16 +45,17 @@
 #include "FuncDataBase.h"
 #include "CFFlanges.h"
 
-#include "IonGaugeGenerator.h"
+#include "CollTubeGenerator.h"
 
 namespace setVariable
 {
 
 
-IonGaugeGenerator::IonGaugeGenerator() :
-  radius(CF100::innerRadius),
+CollTubeGenerator::CollTubeGenerator() :
+  mainRadius(CF120::innerRadius),
   xRadius(CF40::innerRadius),
   yRadius(CF40::innerRadius),
+  zRadius(CF100::innerRadius),
   wallThick(CF40::wallThick),
   height(15.0),depth(35.0),
   frontLength(10.0),backLength(3.0),
@@ -65,7 +66,7 @@ IonGaugeGenerator::IonGaugeGenerator() :
   flangeYLength(CF40::flangeLength),
   flangeZLength(CF100::flangeLength),
   sideZOffset(0.0),sideLength(5.0),
-  gaugeZOffset(-5.0),gaugeRadius(CF40::innerRadius),
+  gaugeZOffset(0.0),gaugeRadius(CF40::innerRadius),
   gaugeLength(14.0),gaugeHeight(10.0),
   gaugeFlangeRadius(CF40::flangeRadius),
   gaugeFlangeLength(CF40::flangeLength),
@@ -77,7 +78,7 @@ IonGaugeGenerator::IonGaugeGenerator() :
   */
 {} 
 
-IonGaugeGenerator::~IonGaugeGenerator()
+CollTubeGenerator::~CollTubeGenerator()
  /*!
    Destructor
  */
@@ -85,22 +86,19 @@ IonGaugeGenerator::~IonGaugeGenerator()
 
 template<typename CF>
 void
-IonGaugeGenerator::setCF()
+CollTubeGenerator::setCF()
   /*!
     Setter for flange A
    */
 {
-  radius=CF::innerRadius;
-  flangeZRadius=CF::flangeRadius;
-  flangeZLength=CF::flangeLength;
+  mainRadius=CF::innerRadius;
   wallThick=CF::wallThick;
-
   return;
 }
 
 template<typename CF>
 void
-IonGaugeGenerator::setPortCF()
+CollTubeGenerator::setPortCF()
   /*!
     Setter for flange beam direction flanges
   */
@@ -113,20 +111,20 @@ IonGaugeGenerator::setPortCF()
 
 template<typename CF>
 void
-IonGaugeGenerator::setSideCF(const double L)
+CollTubeGenerator::setSideCF(const double L)
   /*!
     Setter for flange beam direction flanges
   */
 {
   yRadius=CF::innerRadius;
   sideLength=L;
-  flangeYRadius=CF::flangeRadius;
-  flangeYLength=CF::flangeLength;
+  flangeXRadius=CF::flangeRadius;
+  flangeXLength=CF::flangeLength;
   return;
 }
 
 void
-IonGaugeGenerator::setMainLength(const double F,const double B)
+CollTubeGenerator::setMainPort(const double F,const double B)
   /*!
     Setter for front / back port length
     \param F :: Front length
@@ -139,25 +137,28 @@ IonGaugeGenerator::setMainLength(const double F,const double B)
 }
 
 void
-IonGaugeGenerator::generateTube(FuncDataBase& Control,
-				  const std::string& keyName) const
+CollTubeGenerator::generateTube(FuncDataBase& Control,
+				const std::string& keyName,
+				const double length) const
   /*!
     Primary function for setting the variables
     \param Control :: Database to add variables
     \param keyName :: head name for variable
   */
 {
-  ELog::RegMethod RegA("IonGaugeGenerator","generateIonGauge");
+  ELog::RegMethod RegA("CollTubeGenerator","generateCollTube");
 
-  Control.addVariable(keyName+"Radius",radius);
+  Control.addVariable(keyName+"MainRadius",mainRadius);
   Control.addVariable(keyName+"XRadius",xRadius);
   Control.addVariable(keyName+"YRadius",yRadius);
+  Control.addVariable(keyName+"ZRadius",zRadius);
   Control.addVariable(keyName+"WallThick",wallThick);
 
+  Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"Depth",depth);
-  Control.addVariable(keyName+"FrontLength",frontLength+radius);
-  Control.addVariable(keyName+"BackLength",backLength+radius);
+  Control.addVariable(keyName+"FrontLength",frontLength+length+wallThick);
+  Control.addVariable(keyName+"BackLength",backLength+length+wallThick);
 
   Control.addVariable(keyName+"FlangeXRadius",flangeXRadius);
   Control.addVariable(keyName+"FlangeYRadius",flangeYRadius);
@@ -168,7 +169,7 @@ IonGaugeGenerator::generateTube(FuncDataBase& Control,
   Control.addVariable(keyName+"FlangeZLength",flangeZLength);
 
   Control.addVariable(keyName+"SideZOffset",sideZOffset);
-  Control.addVariable(keyName+"SideLength",sideLength+radius);
+  Control.addVariable(keyName+"SideLength",sideLength+zRadius);
 
   Control.addVariable(keyName+"GaugeZOffset",gaugeZOffset);
   Control.addVariable(keyName+"GaugeRadius",gaugeRadius);
@@ -189,14 +190,14 @@ IonGaugeGenerator::generateTube(FuncDataBase& Control,
 
 ///\cond TEMPLATE
 
-template void IonGaugeGenerator::setCF<CF100>();
-template void IonGaugeGenerator::setCF<CF150>();
+template void CollTubeGenerator::setCF<CF100>();
+template void CollTubeGenerator::setCF<CF150>();
 
-template void IonGaugeGenerator::setSideCF<CF40>(const double);
+template void CollTubeGenerator::setSideCF<CF40>(const double);
 
-template void IonGaugeGenerator::setPortCF<CF40>();
+template void CollTubeGenerator::setPortCF<CF40>();
 
 
-///\endcond TEPLATE
+///\endcond TEMPLATE
 
 }  // NAMESPACE setVariable

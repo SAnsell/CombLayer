@@ -150,7 +150,9 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   bremHolderA(new xraySystem::IonGauge(newName+"BremHolderA")),
   bremCollA(new xraySystem::BremBlock(newName+"BremCollA")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
-  viewTube(new constructSystem::PipeTube(newName+"ViewTube")),
+  viewTubeA(new xraySystem::ViewScreenTube(newName+"ViewTubeA")),
+  cooledScreenA(new xraySystem::CooledScreen(newName+"CooledScreenA")),
+  
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
   attnTube(new constructSystem::PortTube(newName+"AttnTube")),
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
@@ -217,7 +219,8 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   OR.addObject(bremHolderA);
   OR.addObject(bremCollA);
   OR.addObject(bellowC);
-  OR.addObject(viewTube);
+  OR.addObject(viewTubeA);
+  OR.addObject(cooledScreenA);
   OR.addObject(bellowD);
   OR.addObject(attnTube);
   OR.addObject(bellowE);
@@ -573,37 +576,38 @@ micromaxOpticsLine::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,*bremHolderA,"back",*bellowC);
 
-  viewTube->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  viewTube->setOuterVoid();
-  viewTube->createAll(System,*bellowC,"back");
+  outerCell=constructSystem::constructUnit
+    (System,buildZone,*bellowC,"back",*viewTubeA);
 
-  const constructSystem::portItem& VPC=viewTube->getPort(1);
-  outerCell=buildZone.createUnit
-    (System,VPC,VPC.getSideIndex("OuterPlate"));
-  viewTube->insertAllInCell(System,outerCell);
+  cooledScreenA->setBeamAxis(*viewTubeA,1);
+  cooledScreenA->createAll(System,*viewTubeA,4);
+  cooledScreenA->insertInCell("Outer",System,outerCell);
+  cooledScreenA->insertInCell("Connect",System,viewTubeA->getCell("Plate"));
+  cooledScreenA->insertInCell("Connect",System,viewTubeA->getCell("Void"));
+  cooledScreenA->insertInCell("Payload",System,viewTubeA->getCell("Void"));
 
   constructSystem::constructUnit
-    (System,buildZone,VPC,"OuterPlate",*bellowD);
+    (System,buildZone,*viewTubeA,"back",*bellowD);
 
   outerCell=constructSystem::constructUnit
     (System,buildZone,*bellowD,"back",*attnTube);
 
   attnTube->addCell("OuterVoid",outerCell);
-  attnTube->splitObject(System,"-PortACut",outerCell);
-  attnTube->splitObject(System,"PortBCut",outerCell);
+  //  attnTube->splitObject(System,"-PortACut",outerCell);
+  //  attnTube->splitObject(System,"PortBCut",outerCell);
   
   
   constructSystem::constructUnit
     (System,buildZone,*attnTube,"back",*bellowE);
 
-  tableA->addHole(*viewTube,"Origin","OuterRadius");
+  tableA->addHole(*viewTubeA,"Origin","OuterRadius");
   tableA->addHole(attnTube->getPort(1),"Origin","OuterRadius");
   tableA->addHole(*bremHolderA,"Origin","OuterRadius");
   tableA->createAll(System,*bellowA,0);
   tableA->insertAllInCells(System,buildZone.getCells());
   tableA->insertInCell("Plate",System,bremHolderA->getCell("VertOuter"));
   tableA->insertInCell("Plate",System,bremHolderA->getCell("MainOuter"));
-  tableA->insertInCell("Main",System,attnTube->getCell("OuterVoid",1));
+  //  tableA->insertInCell("Main",System,attnTube->getCell("OuterVoid",1));
   tableA->insertInCell("Hole1",System,attnTube->getCell("OuterVoid",0));
 
 

@@ -130,7 +130,7 @@ undulatorVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("micromaxVariables[F]","undulatorVariables");
   setVariable::PipeGenerator PipeGen;
 
-  const double undulatorLen(400.0);
+  const double undulatorLen(300.0);
   PipeGen.setMat("Aluminium");
   PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF63>();
@@ -143,7 +143,7 @@ undulatorVariables(FuncDataBase& Control,
 
   // undulator  
   Control.addVariable(undKey+"UndulatorVGap",1.1);  // mininum 11mm
-  Control.addVariable(undKey+"UndulatorLength",370.0);   // 46.2mm*30*2
+  Control.addVariable(undKey+"UndulatorLength",270.0);   // 46.2mm*30*2
   Control.addVariable(undKey+"UndulatorMagnetWidth",6.0);
   Control.addVariable(undKey+"UndulatorMagnetDepth",3.0);
   Control.addVariable(undKey+"UndulatorSupportWidth",12.0);
@@ -346,7 +346,7 @@ diag2Package(FuncDataBase& Control,const std::string& Name)
   VTGen.setPortBCF<setVariable::CF40>();
   VTGen.setPortBLen(3.0);
   VTGen.generateView(Control,Name+"ViewTubeB");
-  
+
   CoolGen.generateScreen(Control,Name+"CooledScreenB",1);  // in beam
   Control.addVariable(Name+"CooledScreenBYAngle",-90.0);
 
@@ -747,6 +747,8 @@ diagPackage(FuncDataBase& Control,const std::string& Name)
   setVariable::TableGenerator TableGen;
   setVariable::BremBlockGenerator MaskGen;
   setVariable::IonGaugeGenerator IGGen;
+  setVariable::ViewScreenGenerator VTGen;
+  setVariable::CooledScreenGenerator CoolGen;
   
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,Name+"BellowB",7.50);
@@ -761,19 +763,13 @@ diagPackage(FuncDataBase& Control,const std::string& Name)
   BellowGen.generateBellow(Control,Name+"BellowC",7.50);
  
   // View tube
-  const std::string viewName(Name+"ViewTube");
   
-  SimpleTubeGen.setCF<CF100>();
-  SimpleTubeGen.setCap(1,1);
-  SimpleTubeGen.generateTube(Control,viewName,44.0);
-  Control.addVariable(viewName+"NPorts",2);   // beam ports
+  VTGen.setPortBCF<setVariable::CF40>();
+  VTGen.setPortBLen(3.0);
+  VTGen.generateView(Control,Name+"ViewTubeA");
 
-  PItemGen.setCF<setVariable::CF40>(12.5);  // include outerRadius
-  PItemGen.setPlate(0.0,"Void");  
-  PItemGen.generatePort(Control,viewName+"Port0",
-			Geometry::Vec3D(0,-6,0),Geometry::Vec3D(0,0,-1));
-  PItemGen.generatePort(Control,viewName+"Port1",
-			Geometry::Vec3D(0,-6,0),Geometry::Vec3D(0,0,1));
+  CoolGen.generateScreen(Control,Name+"CooledScreenA",1);  // in beam
+  Control.addVariable(Name+"CooledScreenAYAngle",-90.0);
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,Name+"BellowD",7.50);

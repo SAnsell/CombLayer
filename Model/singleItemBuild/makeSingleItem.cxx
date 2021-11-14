@@ -74,6 +74,7 @@
 #include "LQuadH.h"
 #include "LSexupole.h"
 #include "CorrectorMag.h"
+#include "CollTube.h"
 #include "EPSeparator.h"
 #include "EPCombine.h"
 #include "EPContinue.h"
@@ -197,7 +198,8 @@ makeSingleItem::build(Simulation& System,
       "Scrapper","TWCavity","Bellow", "VacuumPipe","HalfElectronPipe",
       "MultiPipe","PipeTube","PortTube","BlankTube","ButtonBPM",
       "PrismaChamber","uVac", "UndVac","UndulatorVacuum",
-      "IonPTube","IonGauge","NBeamStop","MagTube","TriggerTube",
+      "IonPTube","IonGauge","CollTube",
+      "NBeamStop","MagTube","TriggerTube",
       "BremTube","HPJaws","BoxJaws","HPCombine","ViewTube",
       "DiffPumpXIADP03","CRLTube","ExperimentalHutch",
       "ConnectorTube","LocalShield","FlangeDome",
@@ -984,6 +986,18 @@ makeSingleItem::build(Simulation& System,
 
       IG->addInsertCell(voidCell);
       IG->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item=="CollTube")
+    {
+      std::shared_ptr<xraySystem::CollTube>
+	CT(new xraySystem::CollTube("CollTube"));
+
+      OR.addObject(CT);
+
+      CT->addInsertCell(voidCell);
+      CT->createAll(System,World::masterOrigin(),0);
 
       return;
     }

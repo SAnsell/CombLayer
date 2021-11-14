@@ -124,7 +124,9 @@ class micromaxOpticsLine :
   /// Bellow exit
   std::shared_ptr<constructSystem::Bellows> bellowC;
   /// View Tube 
-  std::shared_ptr<constructSystem::PipeTube> viewTube;
+  std::shared_ptr<xraySystem::ViewScreenTube> viewTubeA;
+  /// view screen
+  std::shared_ptr<xraySystem::CooledScreen> cooledScreenA;
   /// Bellow exit
   std::shared_ptr<constructSystem::Bellows> bellowD;
   /// Attn Tube 
