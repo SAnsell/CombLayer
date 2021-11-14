@@ -119,6 +119,7 @@
 #include "BremTube.h"
 #include "HPJaws.h"
 #include "ViewScreenTube.h"
+#include "CollTube.h"
 
 #include "CooledScreen.h"
 #include "YagScreen.h"
@@ -154,7 +155,7 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   cooledScreenA(new xraySystem::CooledScreen(newName+"CooledScreenA")),
   
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
-  attnTube(new constructSystem::PortTube(newName+"AttnTube")),
+  attnTube(new xraySystem::CollTube(newName+"AttnTube")),
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
   tableA(new xraySystem::Table(newName+"TableA")),
 
@@ -593,22 +594,19 @@ micromaxOpticsLine::buildObjects(Simulation& System)
     (System,buildZone,*bellowD,"back",*attnTube);
 
   attnTube->addCell("OuterVoid",outerCell);
-  //  attnTube->splitObject(System,"-PortACut",outerCell);
-  //  attnTube->splitObject(System,"PortBCut",outerCell);
-  
-  
+    
   constructSystem::constructUnit
     (System,buildZone,*attnTube,"back",*bellowE);
 
-  tableA->addHole(*viewTubeA,"Origin","OuterRadius");
-  tableA->addHole(attnTube->getPort(1),"Origin","OuterRadius");
+  //  tableA->addHole(*viewTubeA,"Origin","OuterRadius");
+  tableA->addHole(*attnTube,"VertCentre","VertOuterWall");
   tableA->addHole(*bremHolderA,"Origin","OuterRadius");
   tableA->createAll(System,*bellowA,0);
   tableA->insertAllInCells(System,buildZone.getCells());
   tableA->insertInCell("Plate",System,bremHolderA->getCell("VertOuter"));
   tableA->insertInCell("Plate",System,bremHolderA->getCell("MainOuter"));
-  //  tableA->insertInCell("Main",System,attnTube->getCell("OuterVoid",1));
-  tableA->insertInCell("Hole1",System,attnTube->getCell("OuterVoid",0));
+  tableA->insertInCell("Plate",System,attnTube->getCell("BlockVoid"));
+  tableA->insertInCell("Plate",System,attnTube->getCell("VerticalVoid"));
 
 
   constructHDMM(System,*bellowE,"back");

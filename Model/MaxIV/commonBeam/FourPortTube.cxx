@@ -105,6 +105,7 @@ FourPortTube::populate(const FuncDataBase& Control)
 
   frontLength=Control.EvalVar<double>(keyName+"FrontLength");
   backLength=Control.EvalVar<double>(keyName+"BackLength");
+  ELog::EM<<"Front["<<keyName<<"] == "<<frontLength<<" "<<backLength<<ELog::endDiag;
   sideALength=Control.EvalHead<double>(keyName,"SideXALength","SideLength");
   sideBLength=Control.EvalHead<double>(keyName,"SideXBLength","SideLength");
 

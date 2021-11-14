@@ -86,6 +86,7 @@
 #include "PipeShieldGenerator.h"
 #include "ConnectorGenerator.h"
 #include "FlangeDomeGenerator.h"
+#include "CollTubeGenerator.h"
 #include "TableGenerator.h"
 #include "AreaDetectorGenerator.h"
 #include "OpticsHutGenerator.h"
@@ -749,6 +750,7 @@ diagPackage(FuncDataBase& Control,const std::string& Name)
   setVariable::IonGaugeGenerator IGGen;
   setVariable::ViewScreenGenerator VTGen;
   setVariable::CooledScreenGenerator CoolGen;
+  setVariable::CollTubeGenerator CTGen;
   
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,Name+"BellowB",7.50);
@@ -775,36 +777,24 @@ diagPackage(FuncDataBase& Control,const std::string& Name)
   BellowGen.generateBellow(Control,Name+"BellowD",7.50);
   
   const std::string attnTubeName(Name+"AttnTube");
+  CTGen.setMainPort(3.0,3.0);
+  CTGen.generateTube(Control,attnTubeName,24.0);
+  
+  
   PTubeGen.setPipe(9.0,0.5);
   PTubeGen.setPortCF<CF40>();
   PTubeGen.setPortLength(-3.0,-3.0);
   PTubeGen.generateTube(Control,attnTubeName,0.0,30.0);
-  Control.addVariable(attnTubeName+"NPorts",3);   // beam ports
-
-  PItemGen.setCF<setVariable::CF150>(CF150::outerRadius+22.5);
-  PItemGen.setPlate(0.0,"Void");  
-  PItemGen.generatePort(Control,attnTubeName+"Port0",
-			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,-1));
-  PItemGen.setCF<setVariable::CF150>(CF150::outerRadius+12.5);
-  PItemGen.generatePort(Control,attnTubeName+"Port1",
-			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,1));
-  PItemGen.setCF<setVariable::CF40>(CF150::outerRadius+6.5);
-
-  PItemGen.setOuterVoid(1);
-  PItemGen.generateAnglePort(Control,attnTubeName+"Port2",
-			     Geometry::Vec3D(0,0,0),
-			     Geometry::Vec3D(1,0,0),
-			     Geometry::Vec3D(0,0,1),
-			     10.0);
+  Control.addVariable(attnTubeName+"NPorts",0);   // beam ports
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,Name+"BellowE",7.50);
 
   // ystep zstep , length
-  TableGen.generateTable(Control,Name+"TableA",14.0,-20,120.0);
+  TableGen.generateTable(Control,Name+"TableA",24.0,-20,140.0);
   return;
 }
-
+ 
 
 void
 monoVariables(FuncDataBase& Control,

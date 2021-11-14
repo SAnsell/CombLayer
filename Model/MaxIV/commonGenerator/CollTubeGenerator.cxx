@@ -157,8 +157,8 @@ CollTubeGenerator::generateTube(FuncDataBase& Control,
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"Depth",depth);
-  Control.addVariable(keyName+"FrontLength",frontLength+length+wallThick);
-  Control.addVariable(keyName+"BackLength",backLength+length+wallThick);
+  Control.addVariable(keyName+"FrontLength",frontLength+length/2.0+wallThick);
+  Control.addVariable(keyName+"BackLength",backLength+length/2.0+wallThick);
 
   Control.addVariable(keyName+"FlangeXRadius",flangeXRadius);
   Control.addVariable(keyName+"FlangeYRadius",flangeYRadius);

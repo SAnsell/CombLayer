@@ -55,6 +55,7 @@ namespace xraySystem
   class BremBlock;
   class BeamPair;
   class BremMonoColl;
+  class CollTube;
   class CooledScreen;
   class CRLTube;
   class CylGateValve;
@@ -130,7 +131,7 @@ class micromaxOpticsLine :
   /// Bellow exit
   std::shared_ptr<constructSystem::Bellows> bellowD;
   /// Attn Tube 
-  std::shared_ptr<constructSystem::PortTube> attnTube;
+  std::shared_ptr<xraySystem::CollTube> attnTube;
   /// Bellow exit
   std::shared_ptr<constructSystem::Bellows> bellowE;
   /// Table for diag table 

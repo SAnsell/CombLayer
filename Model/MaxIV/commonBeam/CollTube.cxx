@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/IonGauge.cxx
+ * File:   commonBeam/CollTube.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -67,7 +67,7 @@ namespace xraySystem
 {
 
 CollTube::CollTube(const std::string& Key) :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key,10),
   attachSystem::ContainedComp(),
   attachSystem::FrontBackCut(),
   attachSystem::CellMap(),
@@ -363,98 +363,6 @@ CollTube::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"21 -22 693 -524 425 -426");
   addOuterUnionSurf(HR);
-
-  /*
-  // inner void
-
-  // BASE part
-  
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 417 -427 405 -415 ");
-  makeCell("LowFlange",System,cellIndex++,wallMat,0.0,HR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -427 425 -405");
-  makeCell("LowPlate",System,cellIndex++,plateMat,0.0,HR);
-
-  // TOP part
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 417 -427 -406 416 ");
-  makeCell("TopFlange",System,cellIndex++,wallMat,0.0,HR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -427 -426 406");
-  makeCell("TopPlate",System,cellIndex++,plateMat,0.0,HR);
-
-  // vert void
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex," (517:100) -427 415 -416 17 417  (617:-100) ");
-
-  if (flangeZRadius-Geometry::zeroTol > frontLength-flangeYLength)
-    {
-      if (flangeZRadius-Geometry::zeroTol > backLength-flangeYLength)
-	HR*=ModelSupport::getHeadRule(SMap,buildIndex," ((101 -202) : 107) ");
-      else
-	HR*=ModelSupport::getHeadRule(SMap,buildIndex," (101:107) ");
-    }
-  else if (flangeZRadius-Geometry::zeroTol > backLength-flangeYLength)
-    {
-      HR*=ModelSupport::getHeadRule(SMap,buildIndex," (-202:107) ");
-    }
-
-  makeCell("VertOuter",System,cellIndex++,0,0.0,HR);
-  
-  // front void
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-200 427 17 -107 101");
-  makeCell("FrontOuter",System,cellIndex++,0,0.0,HR);
-
-  // back void
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"200 427 17 -107 -202 ");
-  makeCell("BackOuter",System,cellIndex++,0,0.0,HR);
-
-  // Side objects
-  // left side
-
-
-
-  // // Right side
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 407 -607 -600 ");
-  makeCell("RightVoid",System,cellIndex++,0,0.0,HR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 417 -617 607 -600 ");
-  makeCell("RightWall",System,cellIndex++,wallMat,0.0,HR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-606 -657 600 ");
-  makeCell("RVertVoid",System,cellIndex++,0,0.0,HR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-606 -667 657 600 ");
-  makeCell("RVertWall",System,cellIndex++,wallMat,0.0,HR);
-  
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"667 -677 -606 616");
-  makeCell("RVertFlange",System,cellIndex++,wallMat,0.0,HR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-677 606 -626");
-  makeCell("RVert",System,cellIndex++,plateMat,0.0,HR);
-
-
-  // Outer boxes:
-
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"523 -694 425 -426 427 (527:100) 107 -694 ");
-  const HeadRule HRX=
-    ModelSupport::getHeadRule(SMap,buildIndex,"(677:626:-616)");
-  const HeadRule HRY=
-    ModelSupport::getHeadRule(SMap,buildIndex,"(617:-100:600");
-  const HeadRule HRZ=
-    ModelSupport::getHeadRule(SMap,buildIndex,"(667:626:-600)");
-
-  HR*=HRX;
-  HR*=HRY;
-  HR*=HRZ;
-
-  makeCell("MainOuter",System,cellIndex++,0,0.0,HR*frontHR*backHR);
-
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"523 -694 425 -426  ");
-  addOuterSurf(HR*frontHR*backHR);
-*/
   return;
 }
 
@@ -482,7 +390,24 @@ CollTube::createLinks()
 
   FixedComp::setConnect(5,Origin+Z*(height+plateThick),Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+426));
-  
+
+  // point on vertical cylinder [-ve]
+  FixedComp::setConnect(6,Origin+Y*(zRadius+wallThick)-
+			Z*((mainRadius+depth)/2.0),Z);
+  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+417));
+
+  // point on vertical cylinder [+ve]
+  FixedComp::setConnect(7,Origin+Y*(zRadius+wallThick)+
+			Z*((mainRadius+height)/2.0),Z);
+  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+417));
+
+
+  // point on vertical cylinder [+ve]
+  FixedComp::setConnect(8,Origin-Z*((mainRadius+depth)/2.0),Z);
+
+  FixedComp::nameSideIndex(6,"VertOuterWall");
+  FixedComp::nameSideIndex(8,"VertCentre");
+
   return;
 }
 

@@ -65,6 +65,7 @@ RoundShutterGenerator::RoundShutterGenerator() :
   ITubeGen->setCF<CF40>();
   ITubeGen->setSideCF<CF200>();
   ITubeGen->setSideLength(30.0);
+  ITubeGen->setLength(15.0,15.0);
   
   SUnitGen->setCF<CF40>();
   SUnitGen->setTopCF<CF40>();
@@ -119,7 +120,8 @@ RoundShutterGenerator::generateShutter(FuncDataBase& Control,
 
   const double flangeHeight(14.0);  // beam centre to flange top (10+4cm)
 
-  ITubeGen->setXSideLength(34,10);
+  ITubeGen->setXSideLength(34.0,10.0);
+  ITubeGen->setXSideLength(34.0,10.0);
   ITubeGen->generateSixPort(Control,keyName+"Pipe");
 
 
