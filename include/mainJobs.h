@@ -27,7 +27,5 @@ class SimFLUKA;
 
 int createVTK(const mainSystem::inputParam&,
 	      const Simulation*,const std::string&);
-int createPLOTGEOM(const mainSystem::inputParam&,
-		   const SimFLUKA*);
 
 #endif 

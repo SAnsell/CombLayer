@@ -46,9 +46,12 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
+#include "SimFLUKA.h"
 #include "Process.h"
+#include "inputParam.h"
 
 #include "flukaGenParticle.h"
+#include "plotGeom.h"
 #include "flukaProcess.h"
 
 namespace flukaSystem
@@ -95,6 +98,40 @@ getActiveParticle(const std::string& particle)
   std::set<int> activeOut;
   activeOut.emplace(GP.flukaITYP(particle));
   return activeOut;
+}
+
+void
+createPLOTGEOM(SimFLUKA& System,
+	       const mainSystem::inputParam& IParam)
+  /*!
+    Process the plot geom box
+    \param System :: Simulation (fluka)
+    \param IParam :: Inpup parameters
+  */
+{
+  ELog::RegMethod RegA("mainJobs[F]","createPLOTGEOM");
+
+  if (IParam.flag("plotgeom"))
+    {
+      Geometry::Vec3D MeshA;
+      Geometry::Vec3D MeshB;
+      
+      size_t itemIndex(0);
+      MeshA=mainSystem::getNamedPoint
+	(System,IParam,"plotgeom",0,itemIndex,
+	 "MeshA Point");
+      MeshB=mainSystem::getNamedPoint
+	(System,IParam,"plotgeom",0,itemIndex,
+	 "MeshB Point");
+      const std::string title=
+	IParam.getDefValue<std::string>("","plotgeom",0,itemIndex);
+      plotGeom& PG=
+	System.getPlotGeom();
+      PG.setBox(MeshA,MeshB);
+      PG.setTitle(title);
+    }
+
+  return ;
 }
 
 } // NAMESPACE flukaSystem

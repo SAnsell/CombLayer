@@ -211,7 +211,7 @@ createPLOTGEOM(const mainSystem::inputParam& IParam,
 {
   ELog::RegMethod RegA("mainJobs[F]","createPLOTGEOM");
 
-  ELog::EM<<"EADSF SA"<<ELog::endDiag;
+
   if (IParam.flag("plotgeom"))
     {
       std::array<size_t,3> MPts;

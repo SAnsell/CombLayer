@@ -50,6 +50,33 @@ plotGeom::plotGeom() :
   */
 {}
 
+plotGeom::plotGeom(const plotGeom& A) : 
+  title(A.title),APoint(A.APoint),BPoint(A.BPoint),
+  xUnit(A.xUnit),yUnit(A.yUnit)
+  /*!
+    Copy constructor
+    \param A :: plotGeom to copy
+  */
+{}
+
+plotGeom&
+plotGeom::operator=(const plotGeom& A)
+  /*!
+    Assignment operator
+    \param A :: plotGeom to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      title=A.title;
+      APoint=A.APoint;
+      BPoint=A.BPoint;
+      xUnit=A.xUnit;
+      yUnit=A.yUnit;
+    }
+  return *this;
+}
 
 plotGeom::~plotGeom()
   /*!
@@ -114,7 +141,8 @@ plotGeom::write(std::ostream& OX) const
   std::ostringstream cx;
 
   StrFunc::writeFLUKA("PLOTGEOM 0.0 1.0 0.0 0.0 79.0 0.0",OX);
-
+  OX<<" "<<title.substr(0,78)<<"\n";
+  
   cx<<APoint<<" "<<BPoint;
   StrFunc::writeFLUKA(cx.str(),OX);
   cx.str("");

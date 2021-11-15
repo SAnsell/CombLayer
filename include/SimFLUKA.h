@@ -71,6 +71,7 @@ class SimFLUKA : public Simulation
   std::string sourceExtraName;    ///< Extra name if using combined sources
 
 
+
   FlagTYPE FlagItem;              ///< Fluka user flag items
 
   FTallyTYPE FTItem;              ///< Fluka tally map
@@ -79,7 +80,8 @@ class SimFLUKA : public Simulation
 
   flukaSystem::flukaPhysics* PhysPtr;   ///< Fluka physics
   flukaSystem::radDecay* RadDecayPtr;   ///< Fluka rad decay modification
-
+  flukaSystem::plotGeom* PGeomPtr;      ///< Fluka plotgeom card
+  
   void prepareImportance();
   // ALL THE sub-write stuff
   void writeCells(std::ostream&) const;
@@ -111,6 +113,8 @@ class SimFLUKA : public Simulation
   /// get RadDecay ptr
   flukaSystem::radDecay* getRadDecay() { return RadDecayPtr; }
 
+  flukaSystem::plotGeom& getPlotGeom();
+  
   // FLag processing
   void addUserFlags(const std::string&,const std::string&);
 
