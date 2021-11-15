@@ -54,6 +54,7 @@ class TDCBeamDump : public attachSystem::ContainedComp,
   double preCoreLength;         ///< Length of void before core
   double preCoreRadius;         ///< Radius of void before core
   double skinThick;             ///< Skin thickness
+  double backSkinThick;         ///< Skin thickness at the back
   double frontPlateThick;       ///< Front plate thickness
   double carbonThick;           ///< Carbon plate thickness (to contain evaporated Lead)
 
