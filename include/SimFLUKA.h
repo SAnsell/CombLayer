@@ -32,6 +32,7 @@ namespace flukaSystem
   class flukaTally;
   class flukaPhysics;
   class magnetUnit;
+  class plotGeom;
   class radDecay;
 }
 

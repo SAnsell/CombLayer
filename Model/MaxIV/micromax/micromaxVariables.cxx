@@ -791,7 +791,7 @@ diagPackage(FuncDataBase& Control,const std::string& Name)
   BellowGen.generateBellow(Control,Name+"BellowE",7.50);
 
   // ystep zstep , length
-  TableGen.generateTable(Control,Name+"TableA",24.0,-20,140.0);
+  TableGen.generateTable(Control,Name+"TableA",14.0,-20,125.0);
   return;
 }
  

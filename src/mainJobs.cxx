@@ -3,7 +3,7 @@
  
  * File:   src/mainJobs.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,6 +48,7 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
+#include "SimFLUKA.h"
 #include "NList.h"
 #include "NRange.h"
 #include "pairRange.h"
@@ -116,7 +117,7 @@ createVTK(const mainSystem::inputParam& IParam,
     \retval 0 : No action
   */
 {
-  ELog::RegMethod RegA("createVTK","createVTK");
+  ELog::RegMethod RegA("mainJobs[F]","createVTK");
 
   const SimMCNP* SimMCPtr=dynamic_cast<const SimMCNP*>(SimPtr);
   if (IParam.flag("vtk"))
@@ -130,19 +131,20 @@ createVTK(const mainSystem::inputParam& IParam,
       
       if (IParam.flag("vtkMesh"))
 	{
-	  const std::string PType=
-	    IParam.getValueError<std::string>("vtkMesh",0,0,"object/free");
-	  if (PType=="object")
-	    mainSystem::meshConstruct::getObjectMesh
-		(*SimMCPtr,IParam,"vtkMesh",0,1,MeshA,MeshB,MPts);
-	  else if (PType=="free")
-	      mainSystem::meshConstruct::getFreeMesh
-		(IParam,"vtkMesh",0,1,MeshA,MeshB,MPts);
-	  else
-	    {
-	      mainSystem::meshConstruct::getFreeMesh
-		(IParam,"vtkMesh",0,0,MeshA,MeshB,MPts);
-	    }
+	  size_t itemIndex(0);
+	  MeshA=mainSystem::getNamedPoint
+	    (*SimPtr,IParam,"vtkMesh",0,itemIndex,
+	     "MeshA Point");
+	  MeshB=mainSystem::getNamedPoint
+	    (*SimPtr,IParam,"vtkMesh",0,itemIndex,
+	     "MeshB Point");
+	  
+	  MPts[0]=IParam.getValueError<size_t>
+	    ("vtkMesh",0,itemIndex++,"NXpts");
+	  MPts[1]=IParam.getValueError<size_t>
+	    ("vtkMesh",0,itemIndex++,"NYpts");
+	  MPts[2]=IParam.getValueError<size_t>
+	    ("vtkMesh",0,itemIndex++,"NZpts");
 	}
       else if (!getTallyMesh(SimPtr,MeshA,MeshB,MPts))
 	{
@@ -189,6 +191,51 @@ createVTK(const mainSystem::inputParam& IParam,
 	VTK.writeIntegerVTK(Oname);
       else
 	VTK.writeVTK(Oname);
+      return 2;
+    }
+
+  return 0;
+}
+
+int
+createPLOTGEOM(const mainSystem::inputParam& IParam,
+	       const SimFLUKA* SimFLUKAPtr)
+  /*!
+    Process the plot geom box
+    \param IParam :: Inpup parameters
+    \param SimPtr :: Simulation (fluka)
+    \retval +ve : successfull completion 
+    \retval -ve : Error of attempted completion
+    \retval 0 : No action
+  */
+{
+  ELog::RegMethod RegA("mainJobs[F]","createPLOTGEOM");
+
+  ELog::EM<<"EADSF SA"<<ELog::endDiag;
+  if (IParam.flag("plotgeom"))
+    {
+      std::array<size_t,3> MPts;
+      Geometry::Vec3D MeshA;
+      Geometry::Vec3D MeshB;
+      
+      if (IParam.flag("plotgeom"))
+	{
+	  size_t itemIndex(0);
+	  MeshA=mainSystem::getNamedPoint
+	    (*SimFLUKAPtr,IParam,"plotgeom",0,itemIndex,
+	     "MeshA Point");
+	  MeshB=mainSystem::getNamedPoint
+	    (*SimFLUKAPtr,IParam,"plotgeom",0,itemIndex,
+	     "MeshB Point");
+	  
+	  MPts[0]=IParam.getValueError<size_t>
+	    ("plotgeom",0,itemIndex++,"NXpts");
+	  MPts[1]=IParam.getValueError<size_t>
+	    ("plotgeom",0,itemIndex++,"NYpts");
+	  MPts[2]=IParam.getValueError<size_t>
+	    ("plotgeom",0,itemIndex++,"NZpts");
+	  ELog::EM<<"Points == "<<MeshA<<" "<<MeshB<<ELog::endDiag;
+	}
       return 2;
     }
 

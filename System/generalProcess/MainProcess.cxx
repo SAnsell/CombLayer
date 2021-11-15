@@ -517,6 +517,9 @@ buildFullSimFLUKA(SimFLUKA* SimFLUKAPtr,
   if (IParam.flag("noVariables"))
     SimFLUKAPtr->setNoVariables();
 
+  // Extra for plotGEOM
+  createPLOTGEOM(IParam,SimFLUKAPtr);
+
   flukaSystem::setDefaultPhysics(*SimFLUKAPtr,IParam);
 
   flukaSystem::tallySelection(*SimFLUKAPtr,IParam);

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   include/mainJobs.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,12 @@
 #ifndef MainJobs_h
 #define MainJobs_h
 
+class Simulation;
+class SimFLUKA;
+
 int createVTK(const mainSystem::inputParam&,
 	      const Simulation*,const std::string&);
+int createPLOTGEOM(const mainSystem::inputParam&,
+		   const SimFLUKA*);
 
 #endif 
