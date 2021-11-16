@@ -58,11 +58,15 @@ TDCBeamDumpGenerator::TDCBeamDumpGenerator() :
   backSkinThick(5.0),
   frontPlateThick(5.0),
   carbonThick(0.5),
+  cuRadius(10.0),
+  cuLengthBack(10.0),
+  cuLengthFront(15.0),
   coreMat("Lead"),
   bulkMat("Stainless304"),
   skinMat("B-Poly"),
   frontPlateMat("Stainless304"),
-  carbonMat("Graphite")
+  carbonMat("Graphite"),
+  cuMat("Copper")
   /*!
     Constructor and defaults
   */
@@ -99,11 +103,15 @@ TDCBeamDumpGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"BackSkinThick",backSkinThick);
   Control.addVariable(keyName+"FrontPlateThick",frontPlateThick);
   Control.addVariable(keyName+"CarbonThick",carbonThick);
+  Control.addVariable(keyName+"CuRadius",cuRadius);
+  Control.addVariable(keyName+"CuLengthBack",cuLengthBack);
+  Control.addVariable(keyName+"CuLengthFront",cuLengthFront);
   Control.addVariable(keyName+"CoreMat",coreMat);
   Control.addVariable(keyName+"BulkMat",bulkMat);
   Control.addVariable(keyName+"SkinMat",skinMat);
   Control.addVariable(keyName+"FrontPlateMat",frontPlateMat);
   Control.addVariable(keyName+"CarbonMat",carbonMat);
+  Control.addVariable(keyName+"CuMat",cuMat);
 
   return;
 
