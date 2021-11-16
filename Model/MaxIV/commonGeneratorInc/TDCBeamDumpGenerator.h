@@ -53,16 +53,12 @@ class TDCBeamDumpGenerator
   double backSkinThick;         ///< Back layer skin thickness
   double frontPlateThick;       ///< Front plate thickness
   double carbonThick;           ///< Carbon plate thickness
-  double cuRadius;              ///< Copper radius
-  double cuLengthBack;          ///< Copper back length
-  double cuLengthFront;         ///< Copper front length
 
   std::string coreMat;          ///< Core material
   std::string bulkMat;          ///< Bulk material
   std::string skinMat;          ///< Skin material
   std::string frontPlateMat;    ///< Front plate material (to reduce activation dose rate)
   std::string carbonMat;        ///< Carbon plate material
-  std::string cuMat;            ///< Copper material
 
  public:
 

@@ -57,16 +57,12 @@ class TDCBeamDump : public attachSystem::ContainedComp,
   double backSkinThick;         ///< Skin thickness at the back
   double frontPlateThick;       ///< Front plate thickness
   double carbonThick;           ///< Carbon plate thickness (to contain evaporated Lead)
-  double cuRadius;              ///< Copper radius
-  double cuLengthBack;          ///< Copper back length
-  double cuLengthFront;         ///< Copper front length
 
   int coreMat;                   ///< Core material
   int bulkMat;                  ///< Bulk material
   int skinMat;                  ///< Skin material
   int frontPlateMat;            ///< Front plate material (to reduce activation dose rate)
   int carbonMat;                ///< Carbon plate material
-  int cuMat;                    ///< Copper material
 
   attachSystem::FixedComp* mainFC1;
   long int mainFCSide;

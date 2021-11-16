@@ -102,15 +102,11 @@ TDCBeamDump::TDCBeamDump(const TDCBeamDump& A) :
   backSkinThick(A.backSkinThick),
   frontPlateThick(A.frontPlateThick),
   carbonThick(A.carbonThick),
-  cuRadius(A.cuRadius),
-  cuLengthBack(A.cuLengthBack),
-  cuLengthFront(A.cuLengthFront),
   coreMat(A.coreMat),
   bulkMat(A.bulkMat),
   skinMat(A.skinMat),
   frontPlateMat(A.frontPlateMat),
   carbonMat(A.carbonMat),
-  cuMat(A.cuMat),
   mainFC1(A.mainFC1),
   mainFCSide(A.mainFCSide)
   /*!
@@ -146,15 +142,11 @@ TDCBeamDump::operator=(const TDCBeamDump& A)
       backSkinThick=A.backSkinThick;
       frontPlateThick=A.frontPlateThick;
       carbonThick=A.carbonThick;
-      cuRadius=A.cuRadius;
-      cuLengthBack=A.cuLengthBack;
-      cuLengthFront=A.cuLengthFront;
       coreMat=A.coreMat;
       bulkMat=A.bulkMat;
       skinMat=A.skinMat;
       frontPlateMat=A.frontPlateMat;
       carbonMat=A.carbonMat;
-      cuMat=A.cuMat;
       mainFC1=A.mainFC1;
       mainFCSide=A.mainFCSide;
     }
@@ -202,16 +194,12 @@ TDCBeamDump::populate(const FuncDataBase& Control)
   backSkinThick=Control.EvalVar<double>(keyName+"BackSkinThick");
   frontPlateThick=Control.EvalVar<double>(keyName+"FrontPlateThick");
   carbonThick=Control.EvalVar<double>(keyName+"CarbonThick");
-  cuRadius=Control.EvalVar<double>(keyName+"CuRadius");
-  cuLengthBack=Control.EvalVar<double>(keyName+"CuLengthBack");
-  cuLengthFront=Control.EvalVar<double>(keyName+"CuLengthFront");
 
   coreMat=ModelSupport::EvalMat<int>(Control,keyName+"CoreMat");
   bulkMat=ModelSupport::EvalMat<int>(Control,keyName+"BulkMat");
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
   frontPlateMat=ModelSupport::EvalMat<int>(Control,keyName+"FrontPlateMat");
   carbonMat=ModelSupport::EvalMat<int>(Control,keyName+"CarbonMat");
-  cuMat=ModelSupport::EvalMat<int>(Control,keyName+"CuMat");
 
   return;
 }
@@ -282,6 +270,8 @@ TDCBeamDump::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-bZ*(bulkDepth),bZ);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+bZ*(bulkHeight),bZ);
 
+  //  ELog::EM << keyName << " createSurfaces: Z: " << Z << " bZ: " << bZ << ELog::endDiag;
+
   ModelSupport::buildShiftedPlane(SMap,buildIndex+15,buildIndex+5,bZ,-skinThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+16,buildIndex+6,bZ,skinThick);
 
@@ -290,11 +280,6 @@ TDCBeamDump::createSurfaces()
 
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,preCoreRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,coreRadius);
-
-  // copper gasket
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+101,buildIndex+2,bY,-cuLengthBack);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+102,buildIndex+12,bY,cuLengthFront);
-  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,cuRadius);
 
   return;
 }
@@ -324,39 +309,14 @@ TDCBeamDump::createObjects(Simulation& System)
   Out=ModelSupport::getHeadRule(SMap,buildIndex,"1 -41 3 -4 5 -6 7 ");
   makeCell("FrontPlate",System,cellIndex++,frontPlateMat,0.0,Out*baseHR);
 
-  if (cuLengthBack>Geometry::zeroTol)
-    {
-      Out=ModelSupport::getHeadRule(SMap,buildIndex,"41 -101 3 -4 5 -6 7 ");
-      makeCell("Bulk",System,cellIndex++,bulkMat,0.0,Out*baseHR);
-    }
-  else
-    {
-      Out=ModelSupport::getHeadRule(SMap,buildIndex,"41 -2 3 -4 5 -6 7 ");
-      makeCell("Bulk",System,cellIndex++,bulkMat,0.0,Out*baseHR);
-    }
-
-  if (cuRadius>coreRadius+Geometry::zeroTol)
-    {
-      Out=ModelSupport::getHeadRule(SMap,buildIndex,"101 -12 17 -107");
-      makeCell("Copper",System,cellIndex++,cuMat,0.0,Out);
-    }
-
-  Out=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 3 -4 5 -6 107 ");
+  Out=ModelSupport::getHeadRule(SMap,buildIndex,"41 -2 3 -4 5 -6 7 ");
   makeCell("Bulk",System,cellIndex++,bulkMat,0.0,Out*baseHR);
 
-  if (cuLengthFront>Geometry::zeroTol)
-    {
-      Out=ModelSupport::getHeadRule(SMap,buildIndex,"12 -102 -107 ");
-      makeCell("Bulk",System,cellIndex++,cuMat,0.0,Out);
+  Out=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 3 -4 5 -6 17 ");
+  makeCell("Bulk",System,cellIndex++,bulkMat,0.0,Out*baseHR);
 
-      Out=ModelSupport::getHeadRule(SMap,buildIndex,"102 -22 3 -4 5 -6 ");
-      makeCell("Bulk",System,cellIndex++,bulkMat,0.0,Out*baseHR);
-    }
-  else
-    {
-      Out=ModelSupport::getHeadRule(SMap,buildIndex,"12 -22 3 -4 5 -6 ");
-      makeCell("Bulk",System,cellIndex++,bulkMat,0.0,Out*baseHR);
-    }
+  Out=ModelSupport::getHeadRule(SMap,buildIndex,"12 -22 3 -4 5 -6 ");
+  makeCell("Bulk",System,cellIndex++,bulkMat,0.0,Out*baseHR);
 
   Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -1 3 -4 5 -6 7 ");
   makeCell("SkinFront",System,cellIndex++,skinMat,0.0,Out*baseHR*frontHR);
