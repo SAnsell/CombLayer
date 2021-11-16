@@ -408,7 +408,7 @@ CollTube::createLinks()
   FixedComp::setLinkSurf(9,-SMap.realSurf(buildIndex+405));
 
   FixedComp::setConnect(10,Origin+Z*height,Z);
-  FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+406));
+  FixedComp::setLinkSurf(10,-SMap.realSurf(buildIndex+406));
 
 
 

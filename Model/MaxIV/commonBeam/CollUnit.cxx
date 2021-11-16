@@ -163,6 +163,8 @@ CollUnit::createSurfaces()
   const Geometry::Vec3D TCent(Origin+Y*tubeYStep);
   ModelSupport::buildPlane(SMap,buildIndex+1002,
 			   TCent+Y*(tubeRadius+2.0*tubeWall),Y);
+  // mid divider
+  ModelSupport::buildPlane(SMap,buildIndex+1000,TCent,X);
   
   const double xzStep(tubeMainGap-tubeTopGap);  
   const std::vector<Geometry::Vec3D> chain
@@ -230,13 +232,16 @@ CollUnit::createObjects(Simulation& System)
   makeCell("Plate",System,cellIndex++,plateMat,0.0,HR);
   // void above
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 6");  
-  makeCell("PlateVoid",System,cellIndex++,plateMat,0.0,HR*flangeHR);
+  makeCell("PlateVoid",System,cellIndex++,0,0.0,HR*flangeHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2011 -2007");
   makeCell("supplyWater",System,cellIndex++,waterMat,0.0,HR*flangeHR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2011 -2008 2007");
   makeCell("supportPipe",System,cellIndex++,pipeMat,0.0,HR*flangeHR);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -1002 -2011 3 -1000 2008");
+  makeCell("tubeVoid",System,cellIndex++,voidMat,0.0,HR*flangeHR);  
+  
   std::vector<HeadRule> pipes;
   BI=buildIndex+2010;
   for(size_t i=0;i<7;i++)
@@ -245,30 +250,36 @@ CollUnit::createObjects(Simulation& System)
       makeCell("supplyWater",System,cellIndex++,waterMat,0.0,HR);
       HR=ModelSupport::getHeadRule(SMap,BI,"1 -11 7 -8");
       makeCell("supplyPipe",System,cellIndex++,pipeMat,0.0,HR);
-      HR=ModelSupport::getHeadRule(SMap,BI,"1 -11 -8");
-      pipes.push_back(HR.complement());
+      HR=ModelSupport::getHeadRule(SMap,BI,"1 -11 8");
+      pipes.push_back(HR);
       BI+=10;
     }
+
+  const HeadRule HRleftTop=ModelSupport::getHeadRule(SMap,buildIndex,"2 -1002 3 -1000");
+  const HeadRule HRleftBase=ModelSupport::getHeadRule(SMap,buildIndex,"2 -1002 3 -1000 5");
+  const HeadRule HRrightBase=ModelSupport::getHeadRule(SMap,buildIndex,"2 -1002 -4 1000 5");
+  const HeadRule HRrightTop=ModelSupport::getHeadRule(SMap,buildIndex,"2 -1002 -4 1000");
+  const HeadRule HRleftExtra=ModelSupport::getHeadRule(SMap,buildIndex,"2031");
+  const HeadRule HRrightExtra=ModelSupport::getHeadRule(SMap,buildIndex,"-2061");
+
+  makeCell("tubeVoid",System,cellIndex++,voidMat,0.0,HRleftTop*pipes[0]);
+  makeCell("tubeVoid",System,cellIndex++,voidMat,0.0,HRleftTop*pipes[1]);
+  makeCell("tubeVoid",System,cellIndex++,voidMat,0.0,HRleftBase*pipes[2]);
+  makeCell("tubeVoid",System,cellIndex++,voidMat,0.0,HRleftBase*pipes[3]*HRleftExtra); // 28
+  makeCell("tubeVoid",System,cellIndex++,voidMat,0.0,HRrightBase*pipes[3]*HRrightExtra);
+  makeCell("tubeVoid",System,cellIndex++,voidMat,0.0,HRrightBase*pipes[4]);
+  makeCell("tubeVoid",System,cellIndex++,voidMat,0.0,HRrightTop*pipes[5]);
+  makeCell("tubeVoid",System,cellIndex++,voidMat,0.0,HRrightTop*pipes[6]);
 
   HR=ModelSupport::getHeadRule(SMap,BI,"1 -7");
   makeCell("supplyWater",System,cellIndex++,waterMat,0.0,HR*flangeHR);
   HR=ModelSupport::getHeadRule(SMap,BI,"1 -8 7");
   makeCell("supportPipe",System,cellIndex++,pipeMat,0.0,HR*flangeHR);
-
-
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"2 -1002 3 -4 5 -6");
-
-  // maybe need to divide this:
-  for(const HeadRule& pHR : pipes)
-    HR*=pHR;
-  makeCell("tubeVoid",System,cellIndex++,voidMat,0.0,HR);
-
-
-
+  HR=ModelSupport::getHeadRule(SMap,BI,"1 8");
+  makeCell("tubeVoid",System,cellIndex++,voidMat,0.0,HRrightTop*HR*flangeHR);  
+  
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -1002 3 -4 5");  
-  addOuterSurf(HR*flangeHR);
-  ELog::EM<<"F == "<<flangeHR<<ELog::endDiag;
+  addOuterSurf(HR);
   
   return;
 }

@@ -1004,8 +1004,8 @@ makeSingleItem::build(Simulation& System,
       CT->addInsertCell(voidCell);
       CT->createAll(System,World::masterOrigin(),0);
       CU->addInsertCell(CT->getCell("Void"));
-      CU->addInsertCell(CT->getCell("VerticalVoid"));
-      CU->setCutSurf("flange",*CT,"TopFlange");
+      CU->addInsertCell(CT->getCell("PipeVoid"));
+      CU->setCutSurf("Flange",*CT,"TopFlange");
       CU->createAll(System,*CT,"Origin");
 
       return;
