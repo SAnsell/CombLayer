@@ -75,6 +75,7 @@
 #include "LSexupole.h"
 #include "CorrectorMag.h"
 #include "CollTube.h"
+#include "CollUnit.h"
 #include "EPSeparator.h"
 #include "EPCombine.h"
 #include "EPContinue.h"
@@ -993,11 +994,19 @@ makeSingleItem::build(Simulation& System,
     {
       std::shared_ptr<xraySystem::CollTube>
 	CT(new xraySystem::CollTube("CollTube"));
+      std::shared_ptr<xraySystem::CollUnit>
+	CU(new xraySystem::CollUnit("CollUnit"));
 
       OR.addObject(CT);
+      OR.addObject(CU);
+
 
       CT->addInsertCell(voidCell);
       CT->createAll(System,World::masterOrigin(),0);
+      CU->addInsertCell(CT->getCell("Void"));
+      CU->addInsertCell(CT->getCell("VerticalVoid"));
+      CU->setCutSurf("flange",*CT,"TopFlange");
+      CU->createAll(System,*CT,"Origin");
 
       return;
     }

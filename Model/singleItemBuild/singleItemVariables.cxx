@@ -113,6 +113,7 @@
 #include "IonPTubeGenerator.h"
 #include "IonGaugeGenerator.h"
 #include "CollTubeGenerator.h"
+#include "CollUnitGenerator.h"
 #include "TriggerGenerator.h"
 #include "NBeamStopGenerator.h"
 #include "BremTubeGenerator.h"
@@ -361,6 +362,9 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::CollTubeGenerator CTGen;
   CTGen.generateTube(Control,"CollTube",25.0);
+
+  setVariable::CollUnitGenerator CUGen;
+  CUGen.generateScreen(Control,"CollUnit");
 
   setVariable::TriggerGenerator TrigGen;
   TrigGen.generateTube(Control,"TriggerTube");

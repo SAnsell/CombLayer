@@ -67,7 +67,7 @@ namespace xraySystem
 {
 
 CollTube::CollTube(const std::string& Key) :
-  attachSystem::FixedRotate(Key,10),
+  attachSystem::FixedRotate(Key,12),
   attachSystem::ContainedComp(),
   attachSystem::FrontBackCut(),
   attachSystem::CellMap(),
@@ -401,13 +401,24 @@ CollTube::createLinks()
 			Z*((mainRadius+height)/2.0),Z);
   FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+417));
 
-
   // point on vertical cylinder [+ve]
   FixedComp::setConnect(8,Origin-Z*((mainRadius+depth)/2.0),Z);
+  
+  FixedComp::setConnect(9,Origin-Z*depth,-Z);
+  FixedComp::setLinkSurf(9,-SMap.realSurf(buildIndex+405));
+
+  FixedComp::setConnect(10,Origin+Z*height,Z);
+  FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+406));
+
+
 
   FixedComp::nameSideIndex(6,"VertOuterWall");
   FixedComp::nameSideIndex(8,"VertCentre");
+  FixedComp::nameSideIndex(9,"BaseFlange");
+  FixedComp::nameSideIndex(10,"TopFlange");
 
+
+  
   return;
 }
 

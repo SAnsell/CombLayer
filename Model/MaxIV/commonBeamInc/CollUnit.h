@@ -31,7 +31,7 @@ namespace xraySystem
   \class CollUnit
   \version 2.0
   \author Stuart Ansell
-  \date October 2021
+  \date November 2021
   \brief Cooled Beam Viewer screen
 */
 
@@ -44,9 +44,13 @@ class CollUnit :
  private:
 
   double tubeRadius;            ///< radius of tubing
-  double tubeWidth;             ///< x-Cross tube-tube gap
-  double tubeYStep;             ///< y-forward step
   double tubeWall;              ///< wall thickness of tubing
+  
+  double tubeYStep;             ///< y-forward step
+  double tubeTopGap;            ///< Gap at the top (free area)
+  double tubeMainGap;           ///< Gap in the plate area
+  double tubeTopLength;         ///< Length up from the centre point
+  double tubeDownLength;        ///< Length down from the centre point
 
   double plateThick;            ///< thickness of plate
   double plateLength;           ///< Length of plate
@@ -58,7 +62,7 @@ class CollUnit :
     
   int voidMat;                  ///< void material
                             
-  int screenMat;                ///< screen holder material
+  int plateMat;                ///< screen holder material
   int pipeMat;                  ///< pipe material
   int waterMat;                 ///< water material
 
