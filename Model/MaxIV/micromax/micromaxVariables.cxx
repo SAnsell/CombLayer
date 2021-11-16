@@ -87,6 +87,7 @@
 #include "ConnectorGenerator.h"
 #include "FlangeDomeGenerator.h"
 #include "CollTubeGenerator.h"
+#include "CollUnitGenerator.h"
 #include "TableGenerator.h"
 #include "AreaDetectorGenerator.h"
 #include "OpticsHutGenerator.h"
@@ -751,6 +752,7 @@ diagPackage(FuncDataBase& Control,const std::string& Name)
   setVariable::ViewScreenGenerator VTGen;
   setVariable::CooledScreenGenerator CoolGen;
   setVariable::CollTubeGenerator CTGen;
+  setVariable::CollUnitGenerator CUGen;
   
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,Name+"BellowB",7.50);
@@ -779,6 +781,7 @@ diagPackage(FuncDataBase& Control,const std::string& Name)
   const std::string attnTubeName(Name+"AttnTube");
   CTGen.setMainPort(3.0,3.0);
   CTGen.generateTube(Control,attnTubeName,24.0);
+  CUGen.generateScreen(Control,Name+"AttnUnit");
   
   
   PTubeGen.setPipe(9.0,0.5);

@@ -120,6 +120,7 @@
 #include "HPJaws.h"
 #include "ViewScreenTube.h"
 #include "CollTube.h"
+#include "CollUnit.h"
 
 #include "CooledScreen.h"
 #include "YagScreen.h"
@@ -156,6 +157,7 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
   attnTube(new xraySystem::CollTube(newName+"AttnTube")),
+  attnUnit(new xraySystem::CollUnit(newName+"AttnUnit")),
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
   tableA(new xraySystem::Table(newName+"TableA")),
 
@@ -224,6 +226,7 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   OR.addObject(cooledScreenA);
   OR.addObject(bellowD);
   OR.addObject(attnTube);
+  OR.addObject(attnUnit);
   OR.addObject(bellowE);
   OR.addObject(tableA);
   OR.addObject(dmmVessel);
@@ -592,6 +595,10 @@ micromaxOpticsLine::buildObjects(Simulation& System)
 
   outerCell=constructSystem::constructUnit
     (System,buildZone,*bellowD,"back",*attnTube);
+  attnUnit->addInsertCell(attnTube->getCell("Void"));
+  attnUnit->addInsertCell(attnTube->getCell("PipeVoid"));
+  attnUnit->setCutSurf("Flange",*attnTube,"TopFlange");
+  attnUnit->createAll(System,*attnTube,"Origin");
 
   attnTube->addCell("OuterVoid",outerCell);
     
