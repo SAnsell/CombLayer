@@ -78,6 +78,8 @@
 #include "portItem.h"
 
 #include "VacuumPipe.h"
+#include "VacuumBox.h"
+#include "Mirror.h"
 #include "CRLTube.h"
 #include "CylGateValve.h"
 #include "CRLTube.h"
@@ -119,9 +121,13 @@ micromaxExptLine::micromaxExptLine(const std::string& Key) :
   crlPipeB(new constructSystem::VacuumPipe(newName+"CRLPipeB")),
   crlTubeB(new xraySystem::CRLTube(newName+"CRLTubeB")),
   crlPipeD(new constructSystem::VacuumPipe(newName+"CRLPipeD")),
-
+ 
   
   endPipe(new constructSystem::VacuumPipe(newName+"EndPipe")),
+  mirrorBoxA(new constructSystem::VacuumBox(newName+"MirrorBoxA")),
+  mirrorFrontA(new xraySystem::Mirror(newName+"MirrorFrontA")),
+  mirrorBackA(new xraySystem::Mirror(newName+"MirrorBackA")),
+  
   sample(new insertSystem::insertSphere(newName+"Sample"))
   /*!
     Constructor
@@ -148,6 +154,9 @@ micromaxExptLine::micromaxExptLine(const std::string& Key) :
   OR.addObject(crlPipeD);
   
   OR.addObject(endPipe);
+  OR.addObject(mirrorBoxA);
+  OR.addObject(mirrorFrontA);
+  OR.addObject(mirrorBackA);
   OR.addObject(sample);
 }
   
@@ -288,6 +297,22 @@ micromaxExptLine::buildObjects(Simulation& System)
     (System,buildZone,*gateTubeB,"back",*pipeC);
 
   constructCRL(System,*pipeC,"back");
+
+  constructSystem::constructUnit
+    (System,buildZone,*crlPipeD,"back",*endPipe);
+
+  constructSystem::constructUnit
+    (System,buildZone,*endPipe,"back",*mirrorBoxA);
+
+  mirrorBoxA->splitObject(System,3001,mirrorBoxA->getCell("Void"),
+			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
+  
+  mirrorFrontA->addInsertCell(mirrorBoxA->getCell("Void",0));
+  mirrorFrontA->createAll(System,*mirrorBoxA,0);
+
+  mirrorBackA->addInsertCell(mirrorBoxA->getCell("Void",1));
+  mirrorBackA->createAll(System,*mirrorBoxA,0);
+
   
   //  buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);

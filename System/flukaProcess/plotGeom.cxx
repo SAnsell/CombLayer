@@ -113,7 +113,9 @@ plotGeom::setBox(const Geometry::Vec3D& APt,
 
   yUnit=Geometry::Vec3D(0,0,0);
   yUnit[((index!=2) ? 2 : 1)] =1.0;
-      
+
+  APoint[index]=(APoint[index]+BPoint[index])/2.0;
+  BPoint[index]=APoint[index];
   return;
 }
 

@@ -115,6 +115,13 @@ class micromaxExptLine :
   /// Narrow end pipe
   std::shared_ptr<constructSystem::VacuumPipe> endPipe;
 
+  /// Mirror box
+  std::shared_ptr<constructSystem::VacuumBox> mirrorBoxA;
+  /// Mirror front
+  std::shared_ptr<xraySystem::Mirror> mirrorFrontA;
+  /// Mirror back
+  std::shared_ptr<xraySystem::Mirror> mirrorBackA;
+
   /// Narrow end pipe
   std::shared_ptr<insertSystem::insertSphere> sample;
 

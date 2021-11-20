@@ -135,16 +135,23 @@ OpticsHutch::populate(const FuncDataBase& Control)
 
   // Fork holes
   const size_t N=Control.EvalDefVar<size_t>(keyName+"NForkHoles",0);
+  forkWall="None";
   if (N)
     {
-      forkXStep=Control.EvalVar<double>(keyName+"ForkXStep");
+      forkWall=Control.EvalDefVar<std::string>
+	(keyName+"ForkWall","Back");
+      if (forkWall!="Back" && forkWall!="Outer")
+	ELog::EM<<"ForkWall : "<<forkWall<<ELog::endErr;
+      
+      forkXStep=Control.EvalDefVar<double>(keyName+"ForkXStep",0.0);
+      forkYStep=Control.EvalDefVar<double>(keyName+"ForkYStep",0.0);
       forkLength=Control.EvalDefVar<double>(keyName+"ForkLength",60.0);
       forkHeight=Control.EvalDefVar<double>(keyName+"ForkHeight",10.0);
       for(size_t i=0;i<N;i++)
 	fZStep.push_back(Control.EvalVar<double>
 			 (keyName+"ForkZStep"+std::to_string(i)));
     }
-
+  
   
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
   pbMat=ModelSupport::EvalMat<int>(Control,keyName+"PbMat");
@@ -219,24 +226,9 @@ OpticsHutch::createSurfaces()
     ModelSupport::buildPlane
       (SMap,buildIndex+1033,
        Origin-X*(outWidth+steelThick+pbWallThick+outerOutVoid),X);
-  
-  if(!fZStep.empty())
-    {
-      ModelSupport::buildPlane
-	(SMap,buildIndex+3003,Origin+X*(forkXStep-forkLength/2),X);
-      ModelSupport::buildPlane
-	(SMap,buildIndex+3004,Origin+X*(forkXStep+forkLength/2),X);
-      int BI(buildIndex+3000);
-      for(size_t i=0;i<fZStep.size();i++)
-	{
-	  ModelSupport::buildPlane
-	    (SMap,BI+5,Origin+Z*(fZStep[i]-forkHeight/2.0),Z);
-	  ModelSupport::buildPlane
-	    (SMap,BI+6,Origin+Z*(fZStep[i]+forkHeight/2.0),Z);
-	  BI+=10;
-	}
-    }
 
+  createForkSurfaces();
+  
   return;
 }
 
@@ -266,12 +258,14 @@ OpticsHutch::createObjects(Simulation& System)
       holeCut*=ModelSupport::getHeadRule(SMap,BI,"107");
       BI+=100;
     }
-  HeadRule forkWall;
-  if(!fZStep.empty())
-    forkWall=ModelSupport::getHeadRule(SMap,buildIndex,"(-3003:3004)");
 
-  
+  HeadRule forkWallOuter,forkWallBack;
   HeadRule HR;
+  if (forkWall=="Back")
+    forkWallBack=ModelSupport::getHeadRule(SMap,buildIndex,"(-3003:3004)");
+  else if (forkWall=="Outer")
+    forkWallOuter=ModelSupport::getHeadRule(SMap,buildIndex,"(-3001:3002)");
+
   if (innerOutVoid>Geometry::zeroTol)
     {  
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 3 -1003 -6");
@@ -285,24 +279,27 @@ OpticsHutch::createObjects(Simulation& System)
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*floor*frontWall*sideCut);
 
   // walls:
-  
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 -3 13 -6");
-  makeCell("InnerWall",System,cellIndex++,skinMat,0.0,HR*floor*frontWall);
+  makeCell("InnerWall",System,cellIndex++,skinMat,0.0,
+	   HR*floor*frontWall*forkWallOuter);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 -13 23 -16");
-  makeCell("LeadWall",System,cellIndex++,pbMat,0.0,HR*floor*frontWall);
+  makeCell("LeadWall",System,cellIndex++,pbMat,0.0,
+	   HR*floor*frontWall*forkWallOuter);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-22 -23 33 -26");
-  makeCell("OuterWall",System,cellIndex++,skinMat,0.0,HR*floor*frontWall);
+  makeCell("OuterWall",System,cellIndex++,skinMat,0.0,
+	   HR*floor*frontWall*forkWallOuter);
 
   
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"2 -12 13 -6");
   makeCell("BackIWall",System,cellIndex++,skinMat,0.0,
-	   HR*floor*sideWall*holeCut*forkWall);
+	   HR*floor*sideWall*holeCut*forkWallBack);
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"12 -22 23 -16");
   makeCell("BackPbWall",System,cellIndex++,pbMat,0.0,
-	   HR*floor*sideWall*holeCut*forkWall);
+	   HR*floor*sideWall*holeCut*forkWallBack);
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"22 -32 33 -26");
   makeCell("BackOuterWall",System,cellIndex++,skinMat,0.0,
-	   HR*floor*sideWall*holeCut*forkWall);
+	   HR*floor*sideWall*holeCut*forkWallBack);
 
   if (backVoid>Geometry::zeroTol)
     {
@@ -316,7 +313,6 @@ OpticsHutch::createObjects(Simulation& System)
   makeCell("RoofPbWall",System,cellIndex++,pbMat,0.0,HR*frontWall*sideCut);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-32 33  26 -36");
   makeCell("RoofOuterWall",System,cellIndex++,skinMat,0.0,HR*frontWall*sideCut);
-
    
   // Outer void for pipe(s)
   BI=buildIndex;
@@ -339,29 +335,100 @@ OpticsHutch::createObjects(Simulation& System)
 
   addOuterSurf(HR*frontWall*sideCut);
 
+
+
+
+  return;
+}
+
+void
+OpticsHutch::createForkSurfaces()
+  /*!
+    Create fork surfaces if needed
+  */
+{
+  ELog::EM<<"HERER "<<fZStep.size()<<ELog::endDiag;
   if(!fZStep.empty())
     {
-      HeadRule cutHR;
+      if (forkWall=="Back")
+	{
+	  ModelSupport::buildPlane
+	    (SMap,buildIndex+3003,Origin+X*(forkXStep-forkLength/2),X);
+	  ModelSupport::buildPlane
+	    (SMap,buildIndex+3004,Origin+X*(forkXStep+forkLength/2),X);
+	}
+      else if (forkWall=="Outer")
+	{
+	  ELog::EM<<"HERER "<<ELog::endDiag;
+	  ModelSupport::buildPlane
+	    (SMap,buildIndex+3001,Origin+Y*(forkYStep-forkLength/2),Y);
+	  ModelSupport::buildPlane
+	    (SMap,buildIndex+3002,Origin+Y*(forkYStep+forkLength/2),Y);	  
+	}
+	
       int BI(buildIndex+3000);
       for(size_t i=0;i<fZStep.size();i++)
 	{
-	  HR=ModelSupport::getHeadRule
-	    (SMap,buildIndex,BI,"3003 -3004 5M -6M 2 -32");
-	  makeCell("ForkHole",System,cellIndex++,voidMat,0.0,HR);
-	  cutHR*=ModelSupport::getHeadRule(SMap,BI,"(-5:6)");	  
+	  ModelSupport::buildPlane
+	    (SMap,BI+5,Origin+Z*(fZStep[i]-forkHeight/2.0),Z);
+	  ModelSupport::buildPlane
+	    (SMap,BI+6,Origin+Z*(fZStep[i]+forkHeight/2.0),Z);
 	  BI+=10;
 	}
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"3003 -3004 -6 2 -12");
-      makeCell("ForkInner",System,cellIndex++,skinMat,0.0,HR*floor*cutHR);
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"3003 -3004 -16 12 -22");
-      makeCell("ForkLead",System,cellIndex++,pbMat,0.0,HR*floor*cutHR);
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"3003 -3004 -26 22 -32");
-      makeCell("ForkOuter",System,cellIndex++,skinMat,0.0,HR*floor*cutHR);
-
     }
+  return;
+}
 
+void
+OpticsHutch::createForkCut(Simulation& System)
+  /*!
+    Construct the forkcut if present
+    \param System :: Simulation to build into
+  */
+{
+  ELog::RegMethod RegA("OpticsHutch","buildForkCut");
+  ELog::EM<<"Create fork"<<ELog::endDiag;
+  if(!fZStep.empty())
+    {
+      const HeadRule floor=ExternalCut::getValidRule("Floor",Origin);
+      HeadRule HR,cutHR;
+      int BI(buildIndex+3000);	  
+      if (forkWall=="Back")
+	{
+	  for(size_t i=0;i<fZStep.size();i++)
+	    {
+	      HR=ModelSupport::getHeadRule
+		(SMap,buildIndex,BI,"3003 -3004 5M -6M 2 -32");
+	      makeCell("ForkHole",System,cellIndex++,voidMat,0.0,HR);
+	      cutHR*=ModelSupport::getHeadRule(SMap,BI,"(-5:6)");	  
+	      BI+=10;
+	    }
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3003 -3004 -6 2 -12");
+	  makeCell("ForkInner",System,cellIndex++,skinMat,0.0,HR*floor*cutHR);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3003 -3004 -16 12 -22");
+	  makeCell("ForkLead",System,cellIndex++,pbMat,0.0,HR*floor*cutHR);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3003 -3004 -26 22 -32");
+	  makeCell("ForkOuter",System,cellIndex++,skinMat,0.0,HR*floor*cutHR);
+	}
+      else if (forkWall=="Outer")
+	{
+	  for(size_t i=0;i<fZStep.size();i++)
+	    {
+	      HR=ModelSupport::getHeadRule
+		(SMap,buildIndex,BI,"3001 -3002 5M -6M -3 33");
+	      makeCell("ForkHole",System,cellIndex++,voidMat,0.0,HR);
+	      cutHR*=ModelSupport::getHeadRule(SMap,BI,"(-5:6)");	  
+	      BI+=10;
+	    }
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3001 -3002 -6 -3 13");
+	  makeCell("ForkInner",System,cellIndex++,skinMat,0.0,HR*floor*cutHR);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3001 -3002 -16 -13 23");
+	  makeCell("ForkLead",System,cellIndex++,pbMat,0.0,HR*floor*cutHR);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3001 -3002 -26 -23 33");
+	  makeCell("ForkOuter",System,cellIndex++,skinMat,0.0,HR*floor*cutHR);
 
-
+	}
+    }
   return;
 }
 

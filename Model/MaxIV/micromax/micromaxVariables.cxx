@@ -479,6 +479,17 @@ opticsHutVariables(FuncDataBase& Control,
 
   PGen.setSize(4.0,30.0,40.0);
   PGen.generatePortChicane(Control,hutName+"Chicane2","Right",-375.0,-5.0);
+  
+  // Forklift truck holes
+  Control.addVariable(hutName+"NForkHoles",0);
+  Control.addVariable(hutName+"ForkWall","Outer");
+  Control.addVariable(hutName+"ForkYStep",80.0);
+  Control.addVariable(hutName+"ForkLength",60.0);
+  Control.addVariable(hutName+"ForkHeight",10.0);
+  Control.addVariable(hutName+"ForkZStep0",-115.0);
+  Control.addVariable(hutName+"ForkZStep1",0.0);
+  Control.addVariable(hutName+"ForkZStep2",80.0);
+
   return;
 }
 
@@ -633,38 +644,40 @@ shieldVariables(FuncDataBase& Control,
   return;
 }
   
-
 void
 mirrorBox(FuncDataBase& Control,
 	  const std::string& Name,
 	  const std::string& Index,
-	  const std::string& vertFlag,
 	  const double theta,const double phi)
   /*!
     Construct variables for the diagnostic units
     \param Control :: Database
     \param Name :: component name
     \param Index :: Index designator for mirror box (A/B etc)
-    \param theta :: theta angle [beam angle in deg]
-    \param phi :: phi angle [rotation angle in deg]
+    \param theta :: theta angle [horrizontal rotation in deg]
+    \param phi :: phi angle [vertical rotation in deg]
   */
 {
-  ELog::RegMethod RegA("micromaxVariables[F]","mirrorBox");
+  ELog::RegMethod RegA("formaxVariables[F]","mirrorBox");
   
   setVariable::MonoBoxGenerator VBoxGen;
   setVariable::MirrorGenerator MirrGen;
 
-  const double normialAngle=0.2; 
-  const double vAngle=(vertFlag[0]=='H') ? 90 : 0.0;
+  const double mainLength(108.0);
+  const double mainMirrorAngleA(0.0);
+  const double mainMirrorAngleB(90.0);
   const double centreDist(55.0);
-  const double heightNormDelta=sin(2.0*normialAngle*M_PI/180.0)*centreDist;
-  const double heightDelta=sin(2.0*theta*M_PI/180.0)*centreDist;
+  const double aMirrorDist((mainLength+centreDist)/2.0);
+  const double bMirrorDist((mainLength-centreDist)/2.0);
 
-  if (vAngle>45)
-    VBoxGen.setBPortOffset(heightNormDelta,0.0);
-  else
-    VBoxGen.setBPortOffset(0.0,heightNormDelta);
-  
+  const double heightDelta=tan(2.0*std::abs(phi)*M_PI/180.0)*aMirrorDist;
+  const double mirrorDelta=tan(2.0*std::abs(phi)*M_PI/180.0)*centreDist;
+  const double widthDelta=tan(2.0*std::abs(theta)*M_PI/180.0)*bMirrorDist;
+
+  VBoxGen.setBPortOffset(widthDelta,heightDelta);
+  // if rotated through 90 then theta/phi reversed
+  VBoxGen.setBPortAngle(2.0*phi,2.0*theta);
+
   VBoxGen.setMat("Stainless304");
   VBoxGen.setWallThick(1.0);
   VBoxGen.setCF<CF63>();
@@ -673,21 +686,23 @@ mirrorBox(FuncDataBase& Control,
 
   // width/height/depth/length
   VBoxGen.generateBox(Control,Name+"MirrorBox"+Index,
-		      53.1,23.6,29.5,168.0);
+		      53.1,23.6,29.5,mainLength);
 
   // length thick width
   MirrGen.setPlate(50.0,1.0,9.0);  //guess  
-  MirrGen.setPrimaryAngle(0,vAngle,0);  
-  // ystep : zstep : theta : phi : radius
+  MirrGen.setPrimaryAngle(0,mainMirrorAngleA,0);  
+  // xstep : ystep : zstep : theta : phi : radius
   MirrGen.generateMirror(Control,Name+"MirrorFront"+Index,
-			 0.0,-centreDist/2.0,0.0,theta,phi,0.0);   // hits beam center
-  MirrGen.setPrimaryAngle(0,vAngle+180.0,0.0);
+			 0.0,-centreDist/2.0,0.0,
+			 -phi,0.0,0.0);   // hits beam center
+  
+  MirrGen.setPrimaryAngle(0,mainMirrorAngleB,0.0);
   // x/y/z/theta/phi/
   MirrGen.generateMirror(Control,Name+"MirrorBack"+Index,
-			 0.0,centreDist/2.0,heightDelta,theta,phi,0.0);
+			 0,centreDist/2.0,0,
+			 theta,0.0,0.0);
   return;
 }
-
 
 void
 crlPackage(FuncDataBase& Control,const std::string& Name)
@@ -1110,7 +1125,9 @@ exptLineVariables(FuncDataBase& Control,
   
   crlPackage(Control,preName);
 
-  
+  PipeGen.generatePipe(Control,preName+"EndPipe",15.0);
+  micromaxVar::mirrorBox(Control,preName,"A",-0.146,0.146);
+    
   Control.addVariable(preName+"SampleYStep", 25.0); // [2]
   Control.addVariable(preName+"SampleRadius", 5.0); // [2]
   Control.addVariable(preName+"SampleDefMat", "Stainless304");

@@ -73,7 +73,9 @@ class OpticsHutch :
   /// Chicanes
   std::vector<std::shared_ptr<PortChicane>> PChicane;
 
+  std::string forkWall;         ///< Wall for forklift
   double forkXStep;             ///< Step across beamline for forklift hole
+  double forkYStep;             ///< Step down beamline for forklift hole
   double forkLength;            ///< length of units
   double forkHeight;            ///< height of unit
   std::vector<double> fZStep;   ///< step of units
@@ -83,6 +85,8 @@ class OpticsHutch :
   virtual void createObjects(Simulation&);
   void createLinks();
   void createChicane(Simulation&);
+  void createForkSurfaces();
+  void createForkCut(Simulation&);
 
 
  public:

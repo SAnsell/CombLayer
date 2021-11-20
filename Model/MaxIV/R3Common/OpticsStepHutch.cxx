@@ -156,7 +156,13 @@ OpticsStepHutch::createObjects(Simulation& System)
       BI+=100;
     }
 
+  HeadRule forkWallOuter,forkWallBack;
   HeadRule HR;
+  if (forkWall=="Back")
+    forkWallBack=ModelSupport::getHeadRule(SMap,buildIndex,"(-3003:3004)");
+  else if (forkWall=="Outer")
+    forkWallOuter=ModelSupport::getHeadRule(SMap,buildIndex,"(-3001:3002)");
+
   if (innerOutVoid>Geometry::zeroTol)
     {  
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 3 -1003 -6 ");
@@ -173,21 +179,26 @@ OpticsStepHutch::createObjects(Simulation& System)
   makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*floor*sideWall);
 
   // walls:
-  
+  ELog::EM<<"Fork == "<<forkWallOuter<<ELog::endDiag;
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 -3 13 -6");
-  makeCell("InnerWall",System,cellIndex++,skinMat,0.0,HR*floor*frontWall);
+  makeCell("InnerWall",System,cellIndex++,skinMat,0.0,
+	   HR*floor*frontWall*forkWallOuter);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 -13 23 -16");
-  makeCell("LeadWall",System,cellIndex++,pbMat,0.0,HR*floor*frontWall);
+  makeCell("LeadWall",System,cellIndex++,pbMat,0.0,
+	   HR*floor*frontWall*forkWallOuter);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-22 -23 33 -26");
-  makeCell("OuterWall",System,cellIndex++,skinMat,0.0,HR*floor*frontWall);
+  makeCell("OuterWall",System,cellIndex++,skinMat,0.0,
+	   HR*floor*frontWall*forkWallOuter);
 
-  
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"2 -12 13 -6 -204");
-  makeCell("BackIWall",System,cellIndex++,skinMat,0.0,HR*floor*holeCut);
+  makeCell("BackIWall",System,cellIndex++,skinMat,0.0,
+	   HR*floor*holeCut*forkWallBack);
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"12 -22 23 -16 -214");
-  makeCell("BackPbWall",System,cellIndex++,pbMat,0.0,HR*floor*holeCut);
+  makeCell("BackPbWall",System,cellIndex++,pbMat,0.0,
+	   HR*floor*holeCut*forkWallBack);
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"22 -32 33 -26 -224");
-  makeCell("BackOuterWall",System,cellIndex++,skinMat,0.0,HR*floor*holeCut);
+  makeCell("BackOuterWall",System,cellIndex++,skinMat,0.0,
+	   HR*floor*holeCut*forkWallBack);
 
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 13 6 -16 (-204:-202)");
@@ -217,7 +228,6 @@ OpticsStepHutch::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"222 -232 234 234 -36");
   makeCell("flatOWall",System,cellIndex++,skinMat,0.0,HR*floor*sideWall);
 
-
   // Outer void for pipe(s)
   BI=buildIndex;
   for(size_t i=0;i<holeRadius.size();i++)
@@ -227,6 +237,8 @@ OpticsStepHutch::createObjects(Simulation& System)
       BI+=100;
     }
 
+  OpticsHutch::createForkCut(System);
+  
   // EXCLUDE:
   if (outerOutVoid>Geometry::zeroTol)
     {
@@ -237,7 +249,7 @@ OpticsStepHutch::createObjects(Simulation& System)
   else
     HR=ModelSupport::getHeadRule(SMap,buildIndex,"-32 33 -36");
 
-
+  
   addOuterSurf(HR*frontWall*sideCut);
 
   return;

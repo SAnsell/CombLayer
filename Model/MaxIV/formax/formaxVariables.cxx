@@ -476,6 +476,7 @@ opticsHutVariables(FuncDataBase& Control,
 
   // Forklift truck holes
   Control.addVariable(hutName+"NForkHoles",0);
+  Control.addVariable(hutName+"ForkWallSide","Back");
   Control.addVariable(hutName+"ForkXStep",280.0);
   Control.addVariable(hutName+"ForkLength",60.0);
   Control.addVariable(hutName+"ForkHeight",10.0);
