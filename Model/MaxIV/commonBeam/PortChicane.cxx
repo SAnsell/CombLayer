@@ -3,7 +3,7 @@
 
  * File:   commonBeam/PortChicane.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -113,30 +113,14 @@ PortChicane::populate(const FuncDataBase& Control)
   backRemove=Control.EvalDefVar<int>(keyName+"BackRemove",0);
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-  skinMat=ModelSupport::EvalDefMat<int>
+  skinMat=ModelSupport::EvalDefMat
     (Control,keyName+"SkinMat",wallMat);
-  plateMat=ModelSupport::EvalDefMat<int>
+  plateMat=ModelSupport::EvalDefMat
     (Control,keyName+"PlateMat",wallMat);
 
   return;
 }
 
-void
-PortChicane::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
-  /*!
-    Create the unit vectors: Note only to construct front/back surf
-    \param FC :: Centre point
-    \param sideIndex :: Side index
-  */
-{
-  ELog::RegMethod RegA("PortChicane","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
-  return;
-}
 
 void
 PortChicane::createSurfaces()
@@ -180,12 +164,12 @@ PortChicane::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+15,
 			   Origin-Z*(baseThick+height/2.0),Z);
 
-  ModelSupport::buildPlane(SMap,buildIndex+23,
-			   Origin-X*(wallThick+overHang+width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+24,
-			   Origin+X*(wallThick+overHang+width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+25,
-			   Origin-Z*(baseThick+overHang+height/2.0),Z);
+  SurfMap::makePlane("LeftEdge",SMap,buildIndex+23,
+		     Origin-X*(wallThick+overHang+width/2.0),X);
+  SurfMap::makePlane("RightEdge",SMap,buildIndex+24,
+		     Origin+X*(wallThick+overHang+width/2.0),X);
+  SurfMap::makePlane("BaseEdge",SMap,buildIndex+25,
+		     Origin-Z*(baseThick+overHang+height/2.0),Z);
 
   return;
 }
@@ -199,15 +183,13 @@ PortChicane::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("PortChicane","createObjects");
 
-  std::string Out;
-  const std::string outerStr=getRuleStr("outerWall");
-  const std::string innerStr=getRuleStr("innerWall");
-
-
+  const HeadRule outerHR=getRule("outerWall");
+  const HeadRule innerHR=getRule("innerWall");
+  HeadRule HR;
 
   // inner clearance gap
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 3 -4 5 -106 ");
-  makeCell("Void",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 3 -4 5 -106");
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
 
   const int FSkinMat((frontRemove) ? 0 : skinMat);
   const int BSkinMat((backRemove) ? 0 : skinMat);
@@ -217,89 +199,89 @@ PortChicane::createObjects(Simulation& System)
 
   if (wallMat!=plateMat)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,"-11 21 23 -24 25 -6 ");
-      makeCell("InnerSkinA",System,cellIndex++,FSkinMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 21 23 -24 25 -6");
+      makeCell("InnerSkinA",System,cellIndex++,FSkinMat,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,"-21 31 23 -24 25 -6 ");
-      makeCell("InnerPlate",System,cellIndex++,FPMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-21 31 23 -24 25 -6");
+      makeCell("InnerPlate",System,cellIndex++,FPMat,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,"-31 41 23 -24 25 -6 ");
-      makeCell("InnerSkinB",System,cellIndex++,FSkinMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-31 41 23 -24 25 -6");
+      makeCell("InnerSkinB",System,cellIndex++,FSkinMat,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,"12 -22 23 -24 25 -6 ");
-      makeCell("OuterSkinA",System,cellIndex++,BSkinMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -22 23 -24 25 -6");
+      makeCell("OuterSkinA",System,cellIndex++,BSkinMat,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,"22 -32 23 -24 25 -6 ");
-      makeCell("OuterPlate",System,cellIndex++,BPMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"22 -32 23 -24 25 -6");
+      makeCell("OuterPlate",System,cellIndex++,BPMat,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,"32 -42 23 -24 25 -6 ");
-      makeCell("OuterSkinB",System,cellIndex++,BSkinMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"32 -42 23 -24 25 -6");
+      makeCell("OuterSkinB",System,cellIndex++,BSkinMat,0.0,HR);
     }
   else
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,"-11 41 23 -24 25 -6 ");
-      makeCell("InnerPlate",System,cellIndex++,FPMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 41 23 -24 25 -6");
+      makeCell("InnerPlate",System,cellIndex++,FPMat,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,"22 -32 23 -24 25 -6 ");
-      makeCell("OuterPlate",System,cellIndex++,BPMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"22 -32 23 -24 25 -6");
+      makeCell("OuterPlate",System,cellIndex++,BPMat,0.0,HR);
     }
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -3 5 -106 ");
-  makeCell("LeftSide",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -3 5 -106");
+  makeCell("LeftSide",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 -14 4 5 -106 ");
-  makeCell("RightSide",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 -14 4 5 -106");
+  makeCell("RightSide",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 -5 15 ");
-  makeCell("Base",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14 -5 15");
+  makeCell("Base",System,cellIndex++,wallMat,0.0,HR);
 
   if (overHang>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," -12 23 -13 15 -6 ");
-      makeCell("InnerLeftOver",System,cellIndex++,0,0.0,Out+outerStr);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," -12 23 -13 15 -6");
+      makeCell("InnerLeftOver",System,cellIndex++,0,0.0,HR*outerHR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,"-12 -24 14 15 -6 ");
-      makeCell("InnerRightOver",System,cellIndex++,0,0.0,Out+outerStr);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 -24 14 15 -6");
+      makeCell("InnerRightOver",System,cellIndex++,0,0.0,HR*outerHR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,"-12 23 -24 25 -15 ");
-      makeCell("InnerBaseOver",System,cellIndex++,0,0.0,Out+outerStr);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 23 -24 25 -15");
+      makeCell("InnerBaseOver",System,cellIndex++,0,0.0,HR*outerHR);
  
-      Out=ModelSupport::getComposite(SMap,buildIndex,"11 23 -13 15 -6 ");
-      makeCell("OuterLeftOver",System,cellIndex++,0,0.0,Out+innerStr);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 23 -13 15 -6");
+      makeCell("OuterLeftOver",System,cellIndex++,0,0.0,HR*innerHR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,"11 -24 14 15 -6 ");
-      makeCell("OuterRightOver",System,cellIndex++,0,0.0,Out+innerStr);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -24 14 15 -6");
+      makeCell("OuterRightOver",System,cellIndex++,0,0.0,HR*innerHR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,"11 23 -24 25 -15 ");
-      makeCell("OuterBaseOver",System,cellIndex++,0,0.0,Out+innerStr);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 23 -24 25 -15");
+      makeCell("OuterBaseOver",System,cellIndex++,0,0.0,HR*innerHR);
     }
 
-  // Out=ModelSupport::getComposite(SMap,buildIndex," 41 ");
+  // HR=ModelSupport::getHeadRule(SMap,buildIndex," 41");
   // outerStr+=Out;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-12 3 -4 106 -6");
-  makeCell("InnerTopGap",System,cellIndex++,0,0.0,Out+outerStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 3 -4 106 -6");
+  makeCell("InnerTopGap",System,cellIndex++,0,0.0,HR*outerHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-12 13 -3 106 -6");
-  makeCell("InnerTopGapLeftWall",System,cellIndex++,wallMat,0.0,Out+outerStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 13 -3 106 -6");
+  makeCell("InnerTopGapLeftWall",System,cellIndex++,wallMat,0.0,HR*outerHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-12 4 -14 106 -6");
-  makeCell("InnerTopGapRightWall",System,cellIndex++,wallMat,0.0,Out+outerStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 4 -14 106 -6");
+  makeCell("InnerTopGapRightWall",System,cellIndex++,wallMat,0.0,HR*outerHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 3 -4 106 -6");
-  makeCell("OuterTopGap",System,cellIndex++,0,0.0,Out+innerStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 3 -4 106 -6");
+  makeCell("OuterTopGap",System,cellIndex++,0,0.0,HR*innerHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 13 -3 106 -6");
-  makeCell("OuterTopGapLeftWall",System,cellIndex++,wallMat,0.0,Out+innerStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 13 -3 106 -6");
+  makeCell("OuterTopGapLeftWall",System,cellIndex++,wallMat,0.0,HR*innerHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 4 -14 106 -6");
-  makeCell("OuterTopGapRightWall",System,cellIndex++,wallMat,0.0,Out+innerStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 4 -14 106 -6");
+  makeCell("OuterTopGapRightWall",System,cellIndex++,wallMat,0.0,HR*innerHR);
 
   // needs to be group
-  Out=ModelSupport::getComposite(SMap,buildIndex,"41 -42 23 -24 25 -6 ");
-  addOuterSurf("Main",Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"13 -14 15 -106 ");
-  addOuterSurf("Inner",Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"41 -42 23 -24 25 -6");
+  addOuterSurf("Main",HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 15 -106");
+  addOuterSurf("Inner",HR);
   return;
 }
 

@@ -155,7 +155,7 @@ BasicFlightLine::populate(const FuncDataBase& Control)
   height=Control.EvalVar<double>(keyName+"Height");
   width=Control.EvalVar<double>(keyName+"Width");
 
-  innerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"InnerMat",0);
+  innerMat=ModelSupport::EvalDefMat(Control,keyName+"InnerMat",0);
 
   nLayer=Control.EvalDefVar<size_t>(keyName+"NLiner",0);
   lThick.clear();

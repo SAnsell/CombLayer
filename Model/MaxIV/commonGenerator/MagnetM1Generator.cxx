@@ -59,6 +59,7 @@ MagnetM1Generator::MagnetM1Generator() :
   yOffset(234.6),blockYStep(10.5),length(220.0),
   outerVoid(12.0),ringVoid(12.0),topVoid(12.0),
   baseVoid(12.0),baseThick(8.0),wallThick(6.0),
+  sideShift(-5.0),
   
   // entry pipe
   entryLength(109.5),
@@ -145,6 +146,7 @@ MagnetM1Generator::generateBlock(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("MagnetM1Generator","generateBlock");
 
+
   Control.addVariable(keyName+"YStep",yOffset-blockYStep);    
   Control.addVariable(keyName+"BlockYStep",blockYStep);
   Control.addVariable(keyName+"Length",length);
@@ -156,6 +158,7 @@ MagnetM1Generator::generateBlock(FuncDataBase& Control,
 
   Control.addVariable(keyName+"BaseThick",baseThick);
   Control.addVariable(keyName+"WallThick",wallThick);
+  Control.addVariable(keyName+"SideShift",sideShift);
   
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"WallMat",wallMat);

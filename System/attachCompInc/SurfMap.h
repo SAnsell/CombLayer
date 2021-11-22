@@ -121,6 +121,9 @@ class SurfMap : public BaseMap
   void makeCylinder(const std::string&,ModelSupport::surfRegister&,
 		    const int,const Geometry::Vec3D&,
 		    const Geometry::Vec3D&,const double);
+  void makeCone(const std::string&,ModelSupport::surfRegister&,
+		    const int,const Geometry::Vec3D&,
+		    const Geometry::Vec3D&,const double);
   
   void createLink(const std::string&,attachSystem::FixedComp&,
 		  const size_t,const Geometry::Vec3D&,

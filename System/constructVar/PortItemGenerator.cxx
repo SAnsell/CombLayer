@@ -221,8 +221,10 @@ PortItemGenerator::generatePort(FuncDataBase& Control,
     \param A :: axis
   */
 {
-  ELog::RegMethod RegA("PortItemGenerator","generatorPort");
+  ELog::RegMethod RegA("PortItemGenerator","generatePort");
 
+  Control.addVariable(keyName+"PortType","Standard");
+  
   const double WThick((windowThick < -Geometry::zeroTol) ?
 		      -windowThick*capThick : windowThick);
 
@@ -248,9 +250,37 @@ PortItemGenerator::generatePort(FuncDataBase& Control,
   Control.addVariable(keyName+"WindowMat",windowMat);
   Control.addVariable(keyName+"OuterVoidMat",outerVoidMat);
 
-
   return;
 
+}
+
+void
+PortItemGenerator::generateAnglePort(FuncDataBase& Control,
+				     const std::string& keyName,
+				     const Geometry::Vec3D& C,
+				     const Geometry::Vec3D& AAxis,
+				     const Geometry::Vec3D& BAxis,
+				     const double bLength) const
+/*!
+    Primary funciton for setting the variables
+    \param Control :: Database to add variables
+    \param keyName :: head name for variable
+    \param C :: centre
+    \param AAxis :: axis of first section
+    \param BAxis :: axis after turn
+    \param bLength :: length of second section
+  */
+{
+  ELog::RegMethod RegA("PortItemGenerator","generateAnglePort");
+
+  generatePort(Control,keyName,C,AAxis);
+  Control.addVariable(keyName+"PortType","Angle");
+  
+  Control.addVariable(keyName+"BAxis",BAxis.unit());
+  Control.addVariable(keyName+"LengthB",length);
+  Control.addVariable(keyName+"LengthB",bLength);
+
+  return;
 }
 
 

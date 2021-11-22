@@ -3,7 +3,7 @@
  
  * File:   commonBeamInc/ShutterUnit.h
 *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ namespace xraySystem
 
 class ShutterUnit :
   public attachSystem::ContainedGroup,
-  public attachSystem::FixedOffsetGroup,
+  public attachSystem::FixedRotateGroup,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap
 {
@@ -69,7 +69,7 @@ class ShutterUnit :
   int threadMat;            ///<  water material
   // Functions:
 
-  void populate(const FuncDataBase&);
+  virtual void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int,
 			const attachSystem::FixedComp&,const long int);
 

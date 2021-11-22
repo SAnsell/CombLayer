@@ -3,7 +3,7 @@
  
  * File:   moderator/RefBolts.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,6 +54,8 @@
 #include "FixedComp.h"
 #include "FixedUnit.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "pipeUnit.h"
 #include "PipeLine.h"
 #include "RefBolts.h"
@@ -146,7 +148,7 @@ RefBolts::createBoltGrp(Simulation& System,const std::string& subKey)
       if (Control.hasVariable(boltName+"Track0"))
 	{
 	  //  Get Default/base radii
-	  matN=ModelSupport::EvalDefMat<int>(Control,boltName+"Mat",matN); 
+	  matN=ModelSupport::EvalDefMat(Control,boltName+"Mat",matN); 
 
 	  size_t index(0);
 	  while(Control.hasVariable(boltName+"Radius"+std::to_string(index)))

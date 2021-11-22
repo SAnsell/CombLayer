@@ -78,6 +78,8 @@ class ViewScreenGenerator
   template<typename T> void setCF();
   template<typename T> void setPortBCF();
 
+  void setPortBLen(const double);
+  
   void generateView(FuncDataBase&,
 		    const std::string&) const;
 

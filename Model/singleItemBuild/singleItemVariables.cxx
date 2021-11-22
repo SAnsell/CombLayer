@@ -61,11 +61,13 @@
 #include "OctupoleGenerator.h"
 #include "EPSeparatorGenerator.h"
 #include "EPCombineGenerator.h"
+#include "EPContinueGenerator.h"
 #include "PreDipoleGenerator.h"
 #include "DipoleChamberGenerator.h"
 #include "DipoleSndBendGenerator.h"
 #include "R3ChokeChamberGenerator.h"
 #include "MagnetM1Generator.h"
+#include "MagnetU1Generator.h"
 #include "MagnetBlockGenerator.h"
 #include "CorrectorMagGenerator.h"
 #include "QuadUnitGenerator.h"
@@ -90,7 +92,10 @@
 #include "TriGroupGenerator.h"
 #include "subPipeUnit.h"
 #include "MultiPipeGenerator.h"
+#include "ScreenGenerator.h"
+#include "CooledScreenGenerator.h"
 #include "YagScreenGenerator.h"
+#include "BeamScrapperGenerator.h"
 #include "YagUnitGenerator.h"
 #include "YagUnitBigGenerator.h"
 #include "TWCavityGenerator.h"
@@ -107,19 +112,23 @@
 #include "CleaningMagnetGenerator.h"
 #include "IonPTubeGenerator.h"
 #include "IonGaugeGenerator.h"
+#include "CollTubeGenerator.h"
+#include "CollUnitGenerator.h"
 #include "TriggerGenerator.h"
 #include "NBeamStopGenerator.h"
 #include "BremTubeGenerator.h"
 #include "HPJawsGenerator.h"
 #include "BoxJawsGenerator.h"
 #include "DiffXIADP03Generator.h"
-#include "CLRTubeGenerator.h"
+#include "CRLTubeGenerator.h"
 #include "ViewScreenGenerator.h"
 #include "PortChicaneGenerator.h"
 #include "ConnectorGenerator.h"
 #include "LocalShieldingGenerator.h"
 #include "FlangeDomeGenerator.h"
 #include "BeamBoxGenerator.h"
+#include "MonoShutterGenerator.h"
+#include "RoundShutterGenerator.h"
 
 namespace setVariable
 {
@@ -270,8 +279,14 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::MagnetM1Generator M1Gen;
   M1Gen.generateBlock(Control,"M1Block");
 
+  setVariable::MagnetU1Generator U1Gen;
+  U1Gen.generateBlock(Control,"U1Block");
+
   setVariable::EPCombineGenerator EPCGen;
   EPCGen.generatePipe(Control,"EPCombine");
+
+  setVariable::EPContinueGenerator EPCCGen;
+  EPCCGen.generatePipe(Control,"EPContinue");
 
   setVariable::QuadrupoleGenerator QGen;
   QGen.generateQuad(Control,"QFend",20.0,25.0);
@@ -287,6 +302,9 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::SixPortGenerator SPGen;
   SPGen.generateSixPort(Control,"SixPort");
+  SPGen.setCF<CF40>();
+  SPGen.setSideCF<CF150>();
+  SPGen.setXSideLength(70.0,70.0);
   SPGen.generateSixPort(Control,"FourPort");
 
   setVariable::CrossWayGenerator MSPGen;
@@ -297,8 +315,7 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::BremBlockGenerator BBGen;
   BBGen.setAperature(-1,1.0,1.0,1.0,1.0,1.0,1.0);
-  BBGen.generateBlock(Control,"BremBlock",0,8.0);
-
+  BBGen.generateBlock(Control,"BremBlock",0.0);
 
   setVariable::CrossWayGenerator CWBlankGen;
   CWBlankGen.setCF<CF63>();
@@ -327,14 +344,26 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::DiffXIADP03Generator DPXGen;
   DPXGen.generatePump(Control,"DiffXIA",54.4);
 
-  setVariable::CLRTubeGenerator DPGen;
-  DPGen.generatePump(Control,"CLRTube",1);
+  setVariable::CRLTubeGenerator DPGen;
+  DPGen.generateLens(Control,"CRLTube",1);
+
+  setVariable::MonoShutterGenerator MSGen;
+  MSGen.generateShutter(Control,"MS",1,1);
+
+  setVariable::RoundShutterGenerator RMSGen;
+  RMSGen.generateShutter(Control,"RMS",1,1);
 
   setVariable::ViewScreenGenerator VTGen;
   VTGen.generateView(Control,"ViewTube");
 
   setVariable::IonGaugeGenerator IonGGen;
   IonGGen.generateTube(Control,"IonGauge");
+
+  setVariable::CollTubeGenerator CTGen;
+  CTGen.generateTube(Control,"CollTube",25.0);
+
+  setVariable::CollUnitGenerator CUGen;
+  CUGen.generateScreen(Control,"CollUnit");
 
   setVariable::TriggerGenerator TrigGen;
   TrigGen.generateTube(Control,"TriggerTube");
@@ -440,9 +469,18 @@ SingleItemVariables(FuncDataBase& Control)
   PGen.generatePipe(Control,"VC",80.0);
   Control.addVariable("VC",-40.0);
 
+<<<<<<< HEAD
   PGen.setCF<setVariable::CF40_22>();
   PGen.generatePipe(Control,"DipolePipe",80.0);
   Control.addVariable("DipolePipeYStep",-40.0);
+=======
+  setVariable::CooledScreenGenerator CoolGen;
+  CoolGen.generateScreen(Control,"Cool",1);  // in beam
+  Control.addVariable("CoolYAngle",-90.0);
+
+  setVariable::BeamScrapperGenerator BeamSGen;
+  BeamSGen.generateScreen(Control,"BeamScrapper");
+>>>>>>> origin/master
 
   setVariable::YagScreenGenerator YagGen;
   YagGen.generateScreen(Control,"YAG",1);  // in beam

@@ -62,6 +62,7 @@
 #include "GateValveGenerator.h"
 #include "DipoleDIBMagGenerator.h"
 #include "EArrivalMonGenerator.h"
+#include "ScreenGenerator.h"
 #include "YagScreenGenerator.h"
 #include "YagUnitGenerator.h"
 #include "YagUnitBigGenerator.h"
@@ -3458,7 +3459,9 @@ wallVariables(FuncDataBase& Control,
     {
       const std::string name = wallKey+"MidTDuct" + std::to_string(i+2);
       Control.addVariable(name+"Radius",5.0); // K_20-2_354
-      Control.addVariable(name+"YStep",D1YStep+30*i); // K_20-2_354
+
+      // K_20-2_354
+      Control.addVariable(name+"YStep",D1YStep+30*static_cast<double>(i));
       Control.addVariable(name+"ZStep",D1ZStep); // K_20-2_354
     }
 
@@ -3471,8 +3474,8 @@ wallVariables(FuncDataBase& Control,
   for (size_t i=0; i<=4; ++i)
     {
       const std::string name = wallKey+"MidTDuct" + std::to_string(i+6);
-      Control.addVariable(name+"Radius",5.0); // dummy
-      Control.addVariable(name+"YStep",floorDuctY+35*i); // dummy
+      Control.addVariable(name+"Radius",5.0); // dummy      
+      Control.addVariable(name+"YStep",floorDuctY+35*static_cast<double>(i));
       Control.addVariable(name+"ZStep",-115); // dummy
     }
 
@@ -3510,7 +3513,9 @@ wallVariables(FuncDataBase& Control,
     {
       const std::string name = wallKey+"MidTDuct" + std::to_string(i+16);
       Control.addVariable(name+"Radius",5.0); // K_20-2_355
-      Control.addVariable(name+"YStep",BTGductYup+30*i); // distance: K_20-2_355
+      // distance: K_20-2_355
+      Control.addVariable
+	(name+"YStep",BTGductYup+30.0*static_cast<double>(i));
       Control.addVariable(name+"ZStep",158.0); // measured in K_20-2_355
     }
   ///////////////////////////////////////////////

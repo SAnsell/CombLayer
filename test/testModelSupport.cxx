@@ -38,7 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "support.h"
 #include "Vec3D.h"
 #include "surfRegister.h"

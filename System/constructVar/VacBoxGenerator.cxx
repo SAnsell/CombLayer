@@ -55,7 +55,7 @@ VacBoxGenerator::VacBoxGenerator() :
   feWidth(0.5),feFront(0.5),feBack(0.5),
   portAXStep(0.0),portAZStep(0.0),
   portAWallThick(0.5),portATubeLength(5.0),portATubeRadius(4.0),
-  portBXStep(0.0),portBZStep(0.0),
+  portBXStep(0.0),portBZStep(0.0),portBXAngle(0.0),portBZAngle(0.0),
   portBWallThick(0.5),portBTubeLength(5.0),portBTubeRadius(4.0),
   flangeALen(1.0),flangeARadius(6.0),flangeBLen(1.0),flangeBRadius(6.0),
   voidMat("Void"),wallMat("Stainless304")
@@ -251,6 +251,19 @@ VacBoxGenerator::setBPortOffset(const double XS,const double ZS)
   portBZStep=ZS;
   return;
 }
+
+void
+VacBoxGenerator::setBPortAngle(const double XA,const double ZA)
+  /*!
+    Set the port offset relative to the origin line
+    \param XA :: X Angle [deg]
+    \param ZA :: Z Angle [deg]
+   */
+{
+  portBXAngle=XA;
+  portBZAngle=ZA;
+  return;
+}
   
 void
 VacBoxGenerator::setFlange(const double R,const double L)
@@ -354,6 +367,8 @@ VacBoxGenerator::generateBox(FuncDataBase& Control,const std::string& keyName,
 
   Control.addVariable(keyName+"PortBXStep",portBXStep);
   Control.addVariable(keyName+"PortBZStep",portBZStep);
+  Control.addVariable(keyName+"PortBXAngle",portBXAngle);
+  Control.addVariable(keyName+"PortBZAngle",portBZAngle);
   Control.addVariable(keyName+"PortBWallThick",portBWallThick);
   Control.addVariable(keyName+"PortBTubeRadius",portBTubeRadius);
   Control.addVariable(keyName+"PortBTubeLength",portBTubeLength);

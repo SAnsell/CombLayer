@@ -3,7 +3,7 @@
  
  * File:   workInc/WorkData.h
 *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,6 +77,7 @@ class WorkData
   WorkData operator/(const WorkData&) const;
 
   WorkData& rebin(const std::vector<double>&);
+  WorkData& rebin(const double,const double);
   WorkData& rebin(const WorkData&);
   WorkData& sort();
   WorkData& binDivide(const double);

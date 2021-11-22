@@ -39,6 +39,10 @@ namespace SDef
 			       const attachSystem::FixedComp&,const long int);
 
   std::string createBeamSource(const mainSystem::MITYPE&,const std::string&,
+			       const attachSystem::FixedComp&,const long int,
+			       const std::string&);
+
+  std::string createBeamSource(const mainSystem::MITYPE&,const std::string&,
 			       const Geometry::Vec3D&,const Geometry::Vec3D&,
 			       const Geometry::Vec3D&);
   

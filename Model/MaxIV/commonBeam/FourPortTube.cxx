@@ -58,7 +58,8 @@
 #include "FrontBackCut.h" 
 #include "BaseMap.h"
 #include "SurfMap.h"
-#include "CellMap.h" 
+#include "CellMap.h"
+#include "portSet.h" 
 
 #include "FourPortTube.h"
 
@@ -70,7 +71,9 @@ FourPortTube::FourPortTube(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::FrontBackCut(),
   attachSystem::CellMap(),
-  attachSystem::SurfMap()
+  attachSystem::SurfMap(),
+  sideVoidFlag(0),
+  PSet(new constructSystem::portSet(*this))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -98,10 +101,13 @@ FourPortTube::populate(const FuncDataBase& Control)
   radius=Control.EvalVar<double>(keyName+"Radius");
   linkRadius=Control.EvalVar<double>(keyName+"LinkRadius");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  linkWallThick=Control.EvalVar<double>(keyName+"LinkWallThick");
 
   frontLength=Control.EvalVar<double>(keyName+"FrontLength");
   backLength=Control.EvalVar<double>(keyName+"BackLength");
-  sideLength=Control.EvalVar<double>(keyName+"SideLength");
+  ELog::EM<<"Front["<<keyName<<"] == "<<frontLength<<" "<<backLength<<ELog::endDiag;
+  sideALength=Control.EvalHead<double>(keyName,"SideXALength","SideLength");
+  sideBLength=Control.EvalHead<double>(keyName,"SideXBLength","SideLength");
 
   flangeARadius=Control.EvalVar<double>(keyName+"FlangeARadius");
   flangeBRadius=Control.EvalVar<double>(keyName+"FlangeBRadius");
@@ -146,8 +152,8 @@ FourPortTube::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+300,Origin,Z);
 
   // main pipe and thicness
-  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
-  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+wallThick);
+  makeCylinder("FlightCyl",SMap,buildIndex+7,Origin,Y,radius);
+  makeCylinder("FlightWall",SMap,buildIndex+17,Origin,Y,radius+wallThick);
 
   ModelSupport::buildPlane
     (SMap,buildIndex+101,Origin-Y*(frontLength-flangeALength),Y);
@@ -160,22 +166,25 @@ FourPortTube::createSurfaces()
 
   // horizontal tube
 
-  ModelSupport::buildPlane(SMap,buildIndex+303,Origin-X*sideLength,X);
+  makePlane("InnerA",SMap,buildIndex+303,Origin-X*sideALength,X);
   ModelSupport::buildPlane
-    (SMap,buildIndex+313,Origin-X*(sideLength-flangeSLength),X);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+323,Origin-X*(sideLength+plateThick),X);
+    (SMap,buildIndex+313,Origin-X*(sideALength-flangeSLength),X);
+  makePlane("OuterA",SMap,buildIndex+323,Origin-X*(sideALength+plateThick),X);
 
-  ModelSupport::buildPlane(SMap,buildIndex+304,Origin+X*sideLength,X);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+314,Origin+X*(sideLength-flangeSLength),X);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+324,Origin+X*(sideLength+plateThick),X);
-
-  ModelSupport::buildCylinder(SMap,buildIndex+307,Origin,X,radius);
-  ModelSupport::buildCylinder(SMap,buildIndex+317,Origin,X,radius+wallThick);
-  ModelSupport::buildCylinder(SMap,buildIndex+327,Origin,X,flangeSRadius);
   
+  makePlane("InnerB",SMap,buildIndex+304,Origin+X*sideBLength,X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+314,Origin+X*(sideBLength-flangeSLength),X);
+  makePlane("OuterB",SMap,buildIndex+324,Origin+X*(sideBLength+plateThick),X);
+
+
+  
+  makeCylinder("SideCyl",SMap,buildIndex+307,Origin,X,linkRadius);
+  makeCylinder("SideWall",SMap,buildIndex+317,Origin,X,
+	       linkRadius+linkWallThick);
+
+  ModelSupport::buildCylinder(SMap,buildIndex+327,Origin,X,flangeSRadius);
+
   return;
 }
 
@@ -193,9 +202,30 @@ FourPortTube::createObjects(Simulation& System)
   const HeadRule frontHR=getRule("front");
   const HeadRule backHR=getRule("back");
 
-  // inner void
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -7 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
+  // VOIDS:
+  if (!sideVoidFlag)
+    {
+
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," -7 ");
+      makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
+      
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," 100 -307 -304 7");
+      makeCell("RightVoid",System,cellIndex++,voidMat,0.0,HR);
+
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," -100 -307 303 7");
+      makeCell("LeftVoid",System,cellIndex++,voidMat,0.0,HR);
+    }
+  else
+    {
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-307 303 -304");
+      makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
+
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," 307 -200 -7 ");
+      makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
+
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," 307 200 -7 ");
+      makeCell("BackVoid",System,cellIndex++,voidMat,0.0,HR*backHR);
+    }
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 7 -17 307");
   makeCell("MainTube",System,cellIndex++,mainMat,0.0,HR*frontHR*backHR);
@@ -206,8 +236,6 @@ FourPortTube::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 202 17 -107");
   makeCell("FlangeB",System,cellIndex++,mainMat,0.0,HR*backHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -100 -307 303 7");
-  makeCell("LeftVoid",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -100 -317 307 303 17");
   makeCell("LeftWall",System,cellIndex++,mainMat,0.0,HR);
@@ -219,9 +247,6 @@ FourPortTube::createObjects(Simulation& System)
   makeCell("LeftPlate",System,cellIndex++,plateMat,0.0,HR);
 
   // Right
-  
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 100 -307 -304 7");
-  makeCell("RightVoid",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 100 -317 307 -304 17");
   makeCell("RightWall",System,cellIndex++,mainMat,0.0,HR);
@@ -275,15 +300,42 @@ FourPortTube::createLinks()
   ExternalCut::createLink("front",*this,0,Origin,Y);  //front and back
   ExternalCut::createLink("back",*this,1,Origin,Y);  //front and back
 
-  FixedComp::setConnect(2,Origin-X*(sideLength+plateThick),-X);
+  FixedComp::setConnect(2,Origin-X*(sideALength+plateThick),-X);
   FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+323));
 
-  FixedComp::setConnect(3,Origin+X*(sideLength+plateThick),X);
+  FixedComp::setConnect(3,Origin+X*(sideBLength+plateThick),X);
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+343));
-  
+
   return;
 }
 
+
+void
+FourPortTube::createPorts(Simulation& System) 
+  /*!
+    Construct ports
+    \param System :: simulatoin 
+  */
+{
+  ELog::RegMethod RegA("FourPortTube","createPorts");
+  
+  if (!PSet->empty())
+    {
+      MonteCarlo::Object* insertObj= 
+	this->getCellObject(System,"Dome");
+      
+      const HeadRule innerHR=getSurfRules("FlightCyl");
+      const HeadRule outerHR=getSurfRules("FlightWall");
+      
+      for(const auto CN : insertCells)
+	PSet->addInsertPortCells(CN);
+      
+      PSet->createPorts(System,insertObj,innerHR,outerHR);
+    }
+
+  return;
+}
+  
 void
 FourPortTube::createAll(Simulation& System,
 			const attachSystem::FixedComp& FC,
@@ -302,6 +354,7 @@ FourPortTube::createAll(Simulation& System,
   createSurfaces();
   createObjects(System);
   createLinks();
+  createPorts(System);
   insertObjects(System);   
   
   return;

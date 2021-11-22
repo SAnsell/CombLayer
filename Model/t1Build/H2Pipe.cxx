@@ -3,7 +3,7 @@
  
  * File:   t1Build/H2Pipe.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,6 +54,8 @@
 #include "FixedUnit.h"
 #include "LayerComp.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "pipeUnit.h"
 #include "PipeLine.h"
 #include "H2Pipe.h"
@@ -221,6 +223,7 @@ H2Pipe::insertOuter(Simulation& System,const attachSystem::FixedComp& FC,
   Central.setActive(3,63);
   Central.setActive(4,63);
   Central.setActive(5,127);
+  Central.setActive(6,511);
 
   // Smallest to largest radius.
   Central.addRadius(h2InnerRadius,h2Mat,h2Temp);

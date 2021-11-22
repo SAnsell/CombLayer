@@ -147,7 +147,7 @@ WallCut::populate(const FuncDataBase& Control)
   length=Control.EvalTail<double>(keyName,baseName,"Length");
 
 
-  mat=ModelSupport::EvalDefMat<int>(Control,keyName+"Mat",
+  mat=ModelSupport::EvalDefMat(Control,keyName+"Mat",
 				    baseName+"Mat",0);
   matTemp=Control.EvalDefTail<double>
     (keyName,baseName,"MatTemp",0.0);

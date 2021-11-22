@@ -142,7 +142,7 @@ LineTrack::clearAll()
   return;
 }
 
-  
+
 void
 LineTrack::calculate(const Simulation& ASim)
   /*!
@@ -160,33 +160,31 @@ LineTrack::calculate(const Simulation& ASim)
   // Find Initial cell [no default]
   MonteCarlo::Object* OPtr=ASim.findCell(InitPt,0);
   if (!OPtr)
-    ColErr::InContainerError<Geometry::Vec3D>
+    throw ColErr::InContainerError<Geometry::Vec3D>
       (InitPt,"Initial point not in model");
-
-  //  const std::set<int> surfSet=OPtr->surfValid(InitPt);
   
-  // ELog::EM<<"Initial cell == "<<*OPtr<<ELog::endDiag;
-  // ELog::EM<<"Point == "<<InitPt<<ELog::endDiag;
 
-  // ELog::EM<<"Initial test point == "<<
-  //   OPtr->pointStr(InitPt)<<ELog::endDiag;
+  int SN=OPtr->isOnSide(InitPt);
+  if (SN && OPtr->trackDirection(InitPt,nOut.uVec)<0)
+    {
+      MonteCarlo::Object* prevOPtr(OPtr);
+      OPtr = OSMPtr->findNextObject(-SN,nOut.Pos,OPtr->getName());
+    }
 
-  int SN=-OPtr->isOnSide(InitPt);
   // problem is that SN will be on TWO objects
   // so which one is it? [it doesn't matter much]
-  
   while(OPtr)
     {
       // Note: Need OPPOSITE Sign on exiting surface
       SN= OPtr->trackCell(nOut,aDist,SPtr,SN);
-          // Update Track : returns 1 on excess of distance
+      // Update Track : returns 1 on excess of distance
       if (SN && updateDistance(OPtr,SPtr,SN,aDist))
 	{
 	  nOut.moveForward(aDist);
 	  OPtr=OSMPtr->findNextObject(SN,nOut.Pos,OPtr->getName());
 	  if (!OPtr)
 	    {
-	      ELog::EM<<"INIT POINT[error] == "<<InitPt<<ELog::endErr;
+	      ELog::EM<<"INIT POINT[error] == "<<InitPt<<ELog::endCrit;
 	      calculateError(ASim);
 	    }
 	  if (!OPtr || aDist<Geometry::zeroTol)
@@ -194,6 +192,18 @@ LineTrack::calculate(const Simulation& ASim)
 	}
       else
 	OPtr=0;	
+    }
+  //
+  // remove last object if point does not reach it:
+  //
+  OPtr=(ObjVec.empty()) ? 0 : ObjVec.back();
+  if (OPtr)
+    {
+      if (OPtr->trackDirection(EndPt,nOut.uVec)==-1)
+	{
+	  ObjVec.pop_back();
+	  Cells.pop_back();
+	}
     }
   return;
 }

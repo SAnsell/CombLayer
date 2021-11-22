@@ -3,7 +3,7 @@
  
  * File:   process/PipeLine.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,6 +46,8 @@
 #include "FixedComp.h"
 #include "FixedUnit.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "pipeUnit.h"
 #include "PipeLine.h"
 
@@ -363,6 +365,7 @@ PipeLine::createUnits(Simulation& System)
       HeadRule ARule(startSurf);
       PUnits[0]->setASurf(ARule);
     }
+
   for(size_t i=0;i<PUnits.size();i++)
     {
       forcedInsertCells(i);

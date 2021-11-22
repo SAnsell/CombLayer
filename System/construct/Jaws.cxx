@@ -171,7 +171,7 @@ Jaws::populate(const FuncDataBase& Control)
   zJawMat=ModelSupport::EvalMat<int>(Control,keyName+"zJawMat");
   xJawMat=ModelSupport::EvalMat<int>(Control,keyName+"xJawMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-  linerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"LinerMat",0);
+  linerMat=ModelSupport::EvalDefMat(Control,keyName+"LinerMat",0);
 
   nLayers=Control.EvalDefVar<size_t>(keyName+"NLayers",0);
   if (nLayers)

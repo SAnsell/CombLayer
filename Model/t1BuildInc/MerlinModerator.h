@@ -36,7 +36,8 @@ namespace ts1System
   \brief TS1 t1MerlinModerator [insert object]
 */
 
-class MerlinModerator : public attachSystem::ContainedComp,
+class MerlinModerator :
+    public attachSystem::ContainedComp,
     public attachSystem::FixedOffset
 {
  private:

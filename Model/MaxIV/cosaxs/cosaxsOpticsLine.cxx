@@ -119,7 +119,7 @@ cosaxsOpticsLine::cosaxsOpticsLine(const std::string& Key) :
   filterStick(new xraySystem::FlangeMount(newName+"FilterStick")),
   gateB(new constructSystem::GateValveCube(newName+"GateB")),
   screenPipeA(new constructSystem::PipeTube(newName+"ScreenPipeA")),
-  screenPipeB(new constructSystem::PipeTube(newName+"ScreenPipeB")),
+  screenPipeB(new constructSystem::PipeTube(newName+"ScreenPipeB")), 
   adaptorPlateA(new constructSystem::VacuumPipe(newName+"AdaptorPlateA")),
   diffPumpA(new xraySystem::DiffPumpXIADP03(newName+"DiffPumpA")),
   primeJawBox(new constructSystem::VacuumBox(newName+"PrimeJawBox")),

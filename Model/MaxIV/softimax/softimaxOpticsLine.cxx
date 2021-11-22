@@ -777,6 +777,7 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   pumpTubeM3->insertAllInCell(System,outerCell);
 
   pumpTubeM3Baffle->addInsertCell("Body",pumpTubeM3->getCell("Void"));
+  pumpTubeM3Baffle->addInsertCell("Blade",pumpTubeM3->getCell("Void"));
   pumpTubeM3Baffle->setBladeCentre(*pumpTubeM3,0);
   pumpTubeM3Baffle->createAll(System,*pumpTubeM3,std::string("InnerBack"));
 

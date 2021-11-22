@@ -437,6 +437,21 @@ ContainedGroup::getOuterSurf(const std::string& Key) const
   
   return getCC(Key).getOuterSurf();
 }
+
+const HeadRule&
+ContainedGroup::getBoundary(const std::string& Key) const
+  /*!
+    Calculate the write out the excluded surface.
+    This allows the object to be inserted in a larger
+    object.
+    \param Key :: Key name for rule
+    \return outer surf
+  */
+{
+  ELog::RegMethod RegA("ContainedGroup","getBoundayr");
+  
+  return getCC(Key).getBoundary();
+}
   
 std::string
 ContainedGroup::getAllExclude() const

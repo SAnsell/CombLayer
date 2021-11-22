@@ -228,7 +228,7 @@ boltRing::populate(const FuncDataBase& Control)
     }
   if (!(populated & 2))
     {
-      boltMat=ModelSupport::EvalDefMat<int>(Control,keyName+"BoltMat",
+      boltMat=ModelSupport::EvalDefMat(Control,keyName+"BoltMat",
 					    baseName+"BoltMat",0);
       mainMat=ModelSupport::EvalMat<int>(Control,
 					 keyName+"MainMat",
@@ -243,7 +243,7 @@ boltRing::populate(const FuncDataBase& Control)
 	(keyName,baseName,"SealThick",0.2);
       sealDepth=Control.EvalDefTail<double>
 	(keyName,baseName,"SealDepth",sealThick);
-      sealMat=ModelSupport::EvalDefMat<int>(Control,
+      sealMat=ModelSupport::EvalDefMat(Control,
 					    keyName+"SealMat",
 					    baseName+"SealMat",0);
       populated |= 4;

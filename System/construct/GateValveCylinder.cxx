@@ -175,7 +175,7 @@ GateValveCylinder::populate(const FuncDataBase& Control)
   bladeRadius=Control.EvalVar<double>(keyName+"BladeRadius");
 
 
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   bladeMat=ModelSupport::EvalMat<int>(Control,keyName+"BladeMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 

@@ -50,6 +50,7 @@ class MagnetM1Generator
 
   double baseThick;              ///< base thickness
   double wallThick;              ///< side wall thickness
+  double sideShift;              ///< side shift
 
   // entry pipe
   double entryLength;

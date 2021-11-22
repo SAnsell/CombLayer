@@ -3,7 +3,7 @@
  
  * File:   constructVarInc/RingDoorGenerator.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ namespace setVariable
   \class RingDoorGenerator
   \version 1.0
   \author S. Ansell
-  \date May 2016
+  \date May 2018
   \brief RingDoorGenerator for variables
 */
 

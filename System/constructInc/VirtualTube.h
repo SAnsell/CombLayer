@@ -27,14 +27,16 @@ class Simulation;
 namespace constructSystem
 {
   class portItem;  
-/*!
-  \class VirtualTube
-  \version 1.0
-  \author S. Ansell
+
+  /*!
+    \class VirtualTube
+    \version 1.0
+    \author S. Ansell
   \date January 2018
   \brief VirtualTube unit  
-*/
+  */
 
+  
 class VirtualTube :
   public attachSystem::FixedRotate,
   public attachSystem::ContainedGroup,
@@ -116,6 +118,9 @@ class VirtualTube :
   virtual void insertPortsInCell(Simulation&,const int) const;
   virtual void insertPortsInCell(Simulation&,
 				const std::vector<std::set<int>>&) const;
+
+  /// accessor to outer main radius
+  double getOuterRadius() const { return radius+wallThick; }
 
   using FixedComp::createAll;
   virtual void createAll(Simulation&,

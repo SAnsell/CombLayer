@@ -102,9 +102,10 @@ SourceBase::operator=(const SourceBase& A)
   
   
 int
-SourceBase::populateEFile(const std::string& FName,
-			   const int colE,const int colP)
-  /*!
+SourceBase::setEnergyFile(const std::string& FName,
+			  const int colE,const int colP,
+			  const double energyMin,const double energyMax)
+/*!
     Load a distribution table
     - Care is taken to add an extra energy with zero 
     - Scale weight  onto sum 1.0 in the table 
@@ -114,13 +115,11 @@ SourceBase::populateEFile(const std::string& FName,
     \return 0 on failure / 1 on success
   */
 {
-  ELog::RegMethod RegA("SourceBase","populateEFile");
+  ELog::RegMethod RegA("SourceBase","setEnergyFile");
 
-  const int eCol(colE);
-  const int iCol(colP);
     
   WorkData A;
-  if (FName.empty() || A.load(FName,eCol,iCol,0))
+  if (FName.empty() || A.load(FName,colE,colP,0))
     return 0;
 
 
@@ -149,7 +148,7 @@ SourceBase::populateEFile(const std::string& FName,
 }
 
 int
-SourceBase::populateEnergy(std::string EPts,std::string EProb)
+SourceBase::setEnergy(std::string EPts,std::string EProb)
   /*!
     Read two strings that are the Energy points and the 
     \param EPts :: Energy Points string 
@@ -157,7 +156,7 @@ SourceBase::populateEnergy(std::string EPts,std::string EProb)
     \return 1 on success success
    */
 {
-  ELog::RegMethod RegA("SourceBase","populateEnergy");
+  ELog::RegMethod RegA("SourceBase","setEnergy");
 
   if (!StrFunc::isEmpty(EPts) || !StrFunc::isEmpty(EProb))
     {
@@ -170,8 +169,9 @@ SourceBase::populateEnergy(std::string EPts,std::string EProb)
 	    StrFunc::section(EProb,eP))
 	{
 	  if (!Energy.empty() && eB<=Energy.back())
-	    throw ColErr::IndexError<double>(eB,Energy.back(),
-					     "Energy point not in sequence");
+	    throw ColErr::IndexError<double>
+	      (eB,Energy.back(),"Energy point not in sequence");
+	  
 	  if (eP<0.0)
 	    throw ColErr::IndexError<double>(eP,0.0,"Probablity eP negative");
 	  Energy.push_back(eB);
@@ -228,8 +228,9 @@ SourceBase::populate(const mainSystem::MITYPE& inputMap)
   std::string EFile;
   if (mainSystem::findInput(inputMap,"energyFile",0,EFile) ||
       mainSystem::findInput(inputMap,"EFile",0,EFile) )
-    eFlag=populateEFile(EFile,1,11);
-
+    {
+      eFlag=setEnergyFile(EFile,1,11,0.0,2e9);
+    }
   
   if ( ((mc=inputMap.find("energyProb"))!=inputMap.end() ||
 	(mc=inputMap.find("EProb"))!=inputMap.end()) &&
@@ -238,7 +239,7 @@ SourceBase::populate(const mainSystem::MITYPE& inputMap)
     {
       const std::string EProb=mc->second.front();
       const std::string EList=mcB->second.front();
-      eFlag=populateEnergy(EList,EProb);
+      eFlag=setEnergy(EList,EProb);
     }
 
   if ( !eFlag && mainSystem::hasInput(inputMap,"energyRange"))

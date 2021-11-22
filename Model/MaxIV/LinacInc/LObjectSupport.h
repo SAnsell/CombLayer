@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   LinacInc/LObjectSupport.h
+ * File:   LinacInc/LObjectSupportB.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef tdcSystem_LObjectSupport_h
-#define tdcSystem_LObjectSupport_h
+#ifndef tdcSystem_LObjectSupportB_h
+#define tdcSystem_LObjectSupportB_h
 
 
 namespace constructSystem
@@ -39,31 +39,27 @@ namespace constructSystem
   class JawFlange;
 
 }
+namespace xraySystem
+{
+    class CorrectorMag;
+}
 
 namespace tdcSystem
 {
-  class CorrectorMag;
-  class YagUnit;
-  class YagScreen;
-
-void
-constructYagScreen(Simulation&,const tdcSystem::YagUnit&,
-		   tdcSystem::YagScreen&,const int);
-
   
 int
 pipeTerminate(Simulation&,
-	      attachSystem::InnerZone&,
+	      attachSystem::BlockZone&,
 	      const std::shared_ptr<attachSystem::FixedComp>&);
 int
 pipeTerminateGroup(Simulation&,
-		   attachSystem::InnerZone&,
+		   attachSystem::BlockZone&,
 		   const std::shared_ptr<attachSystem::FixedComp>&,
 		   const std::set<std::string>&);
 
 int
 pipeTerminateGroup(Simulation&,
-		   attachSystem::InnerZone&,
+		   attachSystem::BlockZone&,
 		   const std::shared_ptr<attachSystem::FixedComp>&,
 		   const std::string&,
 		   const std::set<std::string>&);
@@ -72,7 +68,7 @@ pipeTerminateGroup(Simulation&,
 
 int
 correctorMagnetPair(Simulation&,
-		    attachSystem::InnerZone&,
+		    attachSystem::BlockZone&,
 		    const std::shared_ptr<attachSystem::FixedComp>&,
 		    const std::shared_ptr<xraySystem::CorrectorMag>&,
 		    const std::shared_ptr<xraySystem::CorrectorMag>&);
@@ -80,7 +76,7 @@ correctorMagnetPair(Simulation&,
 template<typename magTYPE>
 int
 pipeMagUnit(Simulation&,
-	    attachSystem::InnerZone&,
+	    attachSystem::BlockZone&,
 	    const std::shared_ptr<attachSystem::FixedComp>&,
 	    const std::string&,
 	    const std::string&,
@@ -89,7 +85,7 @@ pipeMagUnit(Simulation&,
 template<typename magTYPE>
 int
 pipeMagGroup(Simulation&,
-	     attachSystem::InnerZone&,
+	     attachSystem::BlockZone&,
 	     const std::shared_ptr<attachSystem::FixedComp>&,
 	     const std::set<std::string>&,
 	     const std::string&,

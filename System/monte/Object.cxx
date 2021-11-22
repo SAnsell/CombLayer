@@ -672,26 +672,54 @@ Object::checkSurfaceValid(const Geometry::Vec3D& C,
   return status/2;
 }
 
+const Geometry::Surface*
+Object::getSurf(const int SN) const
+  /*!
+    Get a surface from the object. It is unsigned.
+    \param SN :: Surface number
+    \return Surface Ptr
+   */
+{
+  if (SurSet.find(SN)!=SurSet.end() ||
+      SurSet.find(SN)!=SurSet.end())
+    {
+      const int ASN=std::abs(SN);
+      for(const Geometry::Surface* SPtr : SurList)
+	if (SPtr->getName()==ASN)
+	  return SPtr;
+    }
+  return 0;
+}
+
 int
-Object::trackDirection(const Geometry::Vec3D& C,
-		       const Geometry::Vec3D& Nm) const
+Object::trackDirection(const Geometry::Vec3D& Pt,
+		       const Geometry::Vec3D& Norm) const
 			  
   /*!
     Determine if a point is valid by checking both
     directions of the normal away from the line
     A good point will have one valid and one invalid.
-    \param C :: Point on a basic surface to check 
-    \param Nm :: Direction +/- to be checked
+    \param Pt :: Point on a basic surface to check 
+    \param Norm :: Direction +/- to be checked
     \retval +1 ::  Entering the Object
     \retval 0 :: No-change
     \retval -1 ::  Exiting the object
   */
 {
-  Geometry::Vec3D tmp=C+Nm*(Geometry::shiftTol*5.0);
-  const int inStatus=isValid(tmp);    
-  tmp-= Nm*(Geometry::shiftTol*10.0);
-  const int outStatus=isValid(tmp);   
-  return inStatus-outStatus;
+  ELog::RegMethod RegA("Object","trackDirection");
+  
+  // first determine if on surface :
+  const int SN = isOnSide(Pt);
+  if (!SN) return 0;
+
+  const int pAB=isDirectionValid(Pt,std::abs(SN));   // true/false [1/0]
+  const int mAB=isDirectionValid(Pt,-std::abs(SN));
+  if (pAB==mAB)  return 0;  // not extiting [internal]
+
+  const Geometry::Surface* SPtr=getSurf(SN);
+
+  const int normD=SPtr->sideDirection(Pt,Norm);
+  return (normD == pAB || normD == -mAB ) ? 1 : -1;
 }  
 
 int
@@ -927,6 +955,7 @@ Object::createSurfaceList()
   ELog::RegMethod RegA("Object","createSurfaceList");
   
   populate();  // checked in populate
+
   std::ostringstream debugCX;
 
   SurList.clear();
@@ -934,6 +963,7 @@ Object::createSurfaceList()
 
   std::stack<const Rule*> TreeLine;
   TreeLine.push(HRule.getTopRule());
+
   while(!TreeLine.empty())
     {
       const Rule* tmpA=TreeLine.top();
@@ -962,15 +992,18 @@ Object::createSurfaceList()
 	    }
 	}
     }
+
   sort(SurList.begin(),SurList.end());
-  
+
   std::vector<const Geometry::Surface*>::iterator sc=
     unique(SurList.begin(),SurList.end());
   if (sc!=SurList.end())
     SurList.erase(sc,SurList.end());
 
-  // sorted list will have zeros at front
-  if (*SurList.begin()==0)
+  
+  // sorted list will have zeros at front if there is a problem
+  // (e.g not populated)
+  if (SurList.empty() || (*SurList.begin()==0))
     {
       ELog::EM<<"SurList Failure "<<ELog::endCrit;
       ELog::EM<<"CX == "<<debugCX.str()<<ELog::endCrit;
@@ -1131,7 +1164,8 @@ std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
 Object::trackSurfIntersect(const Geometry::Vec3D& Org,
 			   const Geometry::Vec3D& unitAxis) const
   /*!
-    Transfer function to move Object into headrule
+    Track a line into an object. It effectively converts the
+    object into a HeadRule, then tracks the line into the object.
     \param Org :: Origin of line
     \param unitAxis :: track of line
     \return Tuple of SurfNumber[signed]/surfacePointer/ImpactPoint/distance
@@ -1151,6 +1185,40 @@ Object::trackSurf(const Geometry::Vec3D& Org,
   */
 {
   return HRule.trackSurf(Org,unitAxis);
+}
+
+Geometry::Vec3D
+Object::trackPoint(const Geometry::Vec3D& Org,
+		   const Geometry::Vec3D& unitAxis) const
+  /*!
+    Transfer function to move Object into HeadRule
+    This calculates the line and return the first point
+    that the line intersects
+    \param Org :: Origin of line
+    \param unitAxis :: track of line
+    \return Signed surf number
+  */
+{
+  ELog::RegMethod RegA("Object","trackPoint");
+  
+  return HRule.trackPoint(Org,unitAxis);
+}
+
+Geometry::Vec3D
+Object::trackClosestPoint(const Geometry::Vec3D& Org,
+			  const Geometry::Vec3D& unitAxis,
+			  const Geometry::Vec3D& aimPt) const
+  /*!
+    Transfer function to move Object into HeadRule
+    This calculates the line and return the first point
+    that the line intersects
+    \param Org :: Origin of line
+    \param unitAxis :: track of line
+    \return Signed surf number
+  */
+{
+  ELog::RegMethod RegA("Object","trackClosetPoint");
+  return HRule.trackClosestPoint(Org,unitAxis,aimPt);
 }
 
 
@@ -1183,7 +1251,7 @@ Object::trackCell(const MonteCarlo::particle& N,double& D,
     Track to a particle into/out of a cell. 
     \param N :: Particle 
     \param D :: Distance traveled to the cell [get added too]
-    \param surfPtr :: Surface at exit
+    \param surfPtr :: Surface at exit [output]
     \param startSurf :: Start surface [to be ignored]
     \return surface number of intercept
    */
@@ -1195,7 +1263,6 @@ Object::trackCell(const MonteCarlo::particle& N,double& D,
   for(const Geometry::Surface* isptr : SurList)
     isptr->acceptVisitor(LI);
 
-  
   const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
   const std::vector<double>& dPts(LI.getDistance());
   const std::vector<const Geometry::Surface*>& surfIndex(LI.getSurfIndex());

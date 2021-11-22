@@ -113,9 +113,9 @@ EntryPipe::populate(const FuncDataBase& Control)
   flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
 
 
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-  flangeMat=ModelSupport::EvalDefMat<int>(Control,keyName+"FlangeMat",wallMat);
+  flangeMat=ModelSupport::EvalDefMat(Control,keyName+"FlangeMat",wallMat);
 
   return;
 }

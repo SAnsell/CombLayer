@@ -148,7 +148,7 @@ cosaxsExptLine::populate(const FuncDataBase& Control)
   outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",outerLeft);
   outerTop=Control.EvalDefVar<double>(keyName+"OuterTop",outerLeft);
 
-  outerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"OuterMat",outerMat);
+  outerMat=ModelSupport::EvalDefMat(Control,keyName+"OuterMat",outerMat);
   nFilterHolders=Control.EvalDefVar<size_t>(keyName+"NFilterHolders",3);
 
   return;

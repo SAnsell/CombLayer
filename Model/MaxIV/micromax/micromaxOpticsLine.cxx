@@ -67,7 +67,6 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -95,9 +94,12 @@
 #include "PortTube.h"
 
 #include "CrossPipe.h"
+#include "BeamScrapper.h"
 #include "BremColl.h"
 #include "BremMonoColl.h"
 #include "BremBlock.h"
+#include "CRLTube.h"
+#include "FourPortTube.h"
 #include "MonoVessel.h"
 #include "MonoCrystals.h"
 #include "GateValveCube.h"
@@ -105,8 +107,7 @@
 #include "JawFlange.h"
 #include "FlangeMount.h"
 #include "Mirror.h"
-#include "MonoBox.h"
-#include "MonoShutter.h"
+#include "RoundMonoShutter.h"
 #include "TriggerTube.h"
 #include "CylGateValve.h"
 #include "SquareFMask.h"
@@ -118,7 +119,12 @@
 #include "BremTube.h"
 #include "HPJaws.h"
 #include "ViewScreenTube.h"
+#include "CollTube.h"
+#include "CollUnit.h"
+
+#include "CooledScreen.h"
 #include "YagScreen.h"
+#include "Table.h"
 
 #include "micromaxOpticsLine.h"
 
@@ -141,62 +147,62 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   gateTubeA(new xraySystem::CylGateValve(newName+"GateTubeA")),
   pipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
-  bremCollA(new xraySystem::SquareFMask(newName+"BremCollA")),
-  ionGaugeA(new xraySystem::IonGauge(newName+"IonGaugeA")),
+  whiteCollA(new xraySystem::SquareFMask(newName+"WhiteCollA")),
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
-  bremPipeB(new constructSystem::VacuumPipe(newName+"BremPipeB")),
-  diagBoxA(new constructSystem::PortTube(newName+"DiagBoxA")),
-  jaws({
-      std::make_shared<xraySystem::BeamPair>(newName+"DiagBoxAJawX"),
-      std::make_shared<xraySystem::BeamPair>(newName+"DiagBoxAJawZ")
-    }),
-  pipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
-  gateTubeB(new xraySystem::CylGateValve(newName+"GateTubeB")),
+  bremHolderA(new xraySystem::IonGauge(newName+"BremHolderA")),
+  bremCollA(new xraySystem::BremBlock(newName+"BremCollA")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
-  MLMVessel(new constructSystem::VacuumBox(newName+"MLMVessel")),
-  MLM(new xraySystem::MLMono(newName+"MLM")),
+  viewTubeA(new xraySystem::ViewScreenTube(newName+"ViewTubeA")),
+  cooledScreenA(new xraySystem::CooledScreen(newName+"CooledScreenA")),
   
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
-  pipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
-  gateTubeC(new xraySystem::CylGateValve(newName+"GateTubeC")),
+  attnTube(new xraySystem::CollTube(newName+"AttnTube")),
+  attnUnit(new xraySystem::CollUnit(newName+"AttnUnit")),
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
+  tableA(new xraySystem::Table(newName+"TableA")),
 
-  monoVessel(new xraySystem::DCMTank(newName+"MonoVessel")),
+  dmmVessel(new xraySystem::DCMTank(newName+"DMMVessel")),
+  mlm(new xraySystem::MLMono(newName+"MLM")),
+  bellowF(new constructSystem::Bellows(newName+"BellowF")),
+  gateTubeB(new xraySystem::CylGateValve(newName+"GateTubeB")),
+  bellowG(new constructSystem::Bellows(newName+"BellowG")),
+  
+  dcmVessel(new xraySystem::DCMTank(newName+"DCMVessel")),
   mbXstals(new xraySystem::MonoBlockXstals(newName+"MBXstals")),
 
-  bellowF(new constructSystem::Bellows(newName+"BellowF")),
-  pipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
+  bellowH(new constructSystem::Bellows(newName+"BellowH")),
+  pipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
+  gateTubeC(new xraySystem::CylGateValve(newName+"GateTubeC")),
+  
+  monoBremTube(new xraySystem::BremTube(newName+"MonoBremTube")),
+  bremScrapper(new xraySystem::BeamScrapper(newName+"BremScrapper")),
+  bremCollB(new xraySystem::BremBlock(newName+"BremCollB")),
+
+  hpJawsA(new xraySystem::HPJaws(newName+"HPJawsA")),
+  bellowI(new constructSystem::Bellows(newName+"BellowI")),
+  viewTubeB(new xraySystem::ViewScreenTube(newName+"ViewTubeB")),
+  cooledScreenB(new xraySystem::CooledScreen(newName+"CooledScreenB")),
   gateTubeD(new xraySystem::CylGateValve(newName+"GateTubeD")),
 
-  bremTubeA(new xraySystem::BremTube(newName+"BremTubeA")),
-  bremCollB(new xraySystem::BremBlock(newName+"BremCollB")),
-  hpJawsA(new xraySystem::HPJaws(newName+"HPJawsA")),
+  crlPipeA(new constructSystem::VacuumPipe(newName+"CRLPipeA")),
+  crlTubeA(new xraySystem::CRLTube(newName+"CRLTubeA")),
+  crlPipeB(new constructSystem::VacuumPipe(newName+"CRLPipeB")),
+  crlPipeC(new constructSystem::VacuumPipe(newName+"CRLPipeC")),
+  crlTubeB(new xraySystem::CRLTube(newName+"CRLTubeB")),
+  crlPipeD(new constructSystem::VacuumPipe(newName+"CRLPipeD")),
 
-  mirrorBoxA(new constructSystem::VacuumBox(newName+"MirrorBoxA")),
-  mirrorFrontA(new xraySystem::Mirror(newName+"MirrorFrontA")),
-  mirrorBackA(new xraySystem::Mirror(newName+"MirrorBackA")),
-
-  bellowG(new constructSystem::Bellows(newName+"BellowG")),
+  longPipeA(new constructSystem::VacuumPipe(newName+"LongPipeA")),
+  longPipeB(new constructSystem::VacuumPipe(newName+"LongPipeB")),
   gateTubeE(new xraySystem::CylGateValve(newName+"GateTubeE")),
-  viewTube(new xraySystem::ViewScreenTube(newName+"ViewTube")),
-  yagScreen(new tdcSystem::YagScreen(newName+"YagScreen")),
-
-  bremTubeB(new constructSystem::PipeTube(newName+"BremTubeB")),
-  bremCollC(new xraySystem::BremBlock(newName+"BremCollC")),  
+  bellowJ(new constructSystem::Bellows(newName+"BellowJ")),  
+  viewTubeC(new xraySystem::ViewScreenTube(newName+"ViewTubeC")),
+  cooledScreenC(new xraySystem::CooledScreen(newName+"CooledScreenC")),
+  bellowK(new constructSystem::Bellows(newName+"BellowK")),
   hpJawsB(new xraySystem::HPJaws(newName+"HPJawsB")),
-  
-  bellowH(new constructSystem::Bellows(newName+"BellowH")),
-  pipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
-  bellowI(new constructSystem::Bellows(newName+"BellowI")),
-
-  gateTubeF(new xraySystem::CylGateValve(newName+"GateTubeF")),
-  viewTubeB(new xraySystem::ViewScreenTube(newName+"ViewTubeB")),
-
-  bellowJ(new constructSystem::Bellows(newName+"BellowJ")),
-  monoAdaptorA(new constructSystem::VacuumPipe(newName+"MonoAdaptorA")),
-  monoShutter(new xraySystem::MonoShutter(newName+"MonoShutter")),
-  monoAdaptorB(new constructSystem::VacuumPipe(newName+"MonoAdaptorB")),
-  pipeF(new constructSystem::VacuumPipe(newName+"PipeF"))  
+  crlBremTube(new xraySystem::FourPortTube(newName+"CRLBremTube")),  
+  bremCollC(new xraySystem::BremBlock(newName+"BremCollC")),
+  bellowL(new constructSystem::Bellows(newName+"BellowL")),
+  monoShutter(new xraySystem::RoundMonoShutter(newName+"RMonoShutter"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -211,61 +217,53 @@ micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   OR.addObject(gateTubeA);
   OR.addObject(pipeA);
   OR.addObject(bellowA);
-  OR.addObject(bremCollA);
+  OR.addObject(whiteCollA);
   OR.addObject(bellowB);
-  OR.addObject(ionGaugeA);
-  OR.addObject(bremPipeB);
-  OR.addObject(diagBoxA);
-  OR.addObject(jaws[0]);
-  OR.addObject(jaws[1]);
-
-  OR.addObject(gateTubeB);
-  OR.addObject(pipeB);
+  OR.addObject(bremHolderA);
+  OR.addObject(bremCollA);
   OR.addObject(bellowC);
-  OR.addObject(MLMVessel);
-  OR.addObject(MLM);
-
+  OR.addObject(viewTubeA);
+  OR.addObject(cooledScreenA);
   OR.addObject(bellowD);
-  OR.addObject(pipeC);
-  OR.addObject(gateTubeC);
+  OR.addObject(attnTube);
+  OR.addObject(attnUnit);
   OR.addObject(bellowE);
-
-  OR.addObject(monoVessel);
-  OR.addObject(mbXstals);
-
+  OR.addObject(tableA);
+  OR.addObject(dmmVessel);
   OR.addObject(bellowF);
-  OR.addObject(pipeD);
-  OR.addObject(gateTubeD);
-
-  OR.addObject(bremTubeA);
+  OR.addObject(gateTubeB);
+  OR.addObject(bellowG);
+  OR.addObject(dcmVessel);
+  OR.addObject(mbXstals);
+  OR.addObject(bellowH);
+  OR.addObject(pipeB);
+  OR.addObject(gateTubeC);
+  OR.addObject(monoBremTube);
+  OR.addObject(bremScrapper);
   OR.addObject(bremCollB);
   OR.addObject(hpJawsA);
-
-  OR.addObject(mirrorBoxA);
-  OR.addObject(mirrorFrontA);
-  OR.addObject(mirrorBackA);
-
-  OR.addObject(bellowG);
-  OR.addObject(gateTubeE);
-  OR.addObject(viewTube);
-  OR.addObject(yagScreen);
-  OR.addObject(bremTubeB);
-  OR.addObject(bremCollC);
-  OR.addObject(hpJawsB);
-  
-  OR.addObject(bellowH);
-  OR.addObject(pipeE);
   OR.addObject(bellowI);
-
-  OR.addObject(gateTubeF);
   OR.addObject(viewTubeB);
-
+  OR.addObject(cooledScreenB);
+  OR.addObject(gateTubeD);
+  OR.addObject(crlPipeA);
+  OR.addObject(crlTubeA);
+  OR.addObject(crlPipeB);
+  OR.addObject(crlPipeC);
+  OR.addObject(crlTubeB);
+  OR.addObject(crlPipeD);
+  OR.addObject(longPipeA);
+  OR.addObject(longPipeB);
+  OR.addObject(gateTubeE);
   OR.addObject(bellowJ);
-  OR.addObject(monoAdaptorA);
+  OR.addObject(viewTubeC);
+  OR.addObject(cooledScreenC);
+  OR.addObject(bellowK);
+  OR.addObject(hpJawsB);
+  OR.addObject(crlBremTube);
+  OR.addObject(bremCollC);
+  OR.addObject(bellowL);
   OR.addObject(monoShutter);
-  OR.addObject(monoAdaptorB);
-  OR.addObject(pipeF);
-  
 }
   
 micromaxOpticsLine::~micromaxOpticsLine()
@@ -321,36 +319,34 @@ micromaxOpticsLine::createSurfaces()
 }
 
 void
-micromaxOpticsLine::constructMirrorMono(Simulation& System,
-				      const attachSystem::FixedComp& initFC, 
-				      const std::string& sideName)
+micromaxOpticsLine::constructHDMM(Simulation& System,
+				  const attachSystem::FixedComp& initFC, 
+				  const std::string& sideName)
 /*!
-    Sub build of the slit package unit
+    Sub build of the Diffraction Mirror Mono package
     \param System :: Simulation to use
     \param initFC :: Start point
     \param sideName :: start link point
   */
 {
-  ELog::RegMethod RegA("micromaxOpticsLine","constructMirrorMono");
+  ELog::RegMethod RegA("micromaxOpticsLine","constructHDMM");
 
-  int outerCell;
+  constructSystem::constructUnit
+    (System,buildZone,initFC,sideName,*dmmVessel);
 
-  MLMVessel->createAll(System,initFC,sideName);
-  outerCell=buildZone.createUnit(System,*MLMVessel,2);
-  MLMVessel->insertInCell(System,outerCell);
-  
-  MLM->addInsertCell(MLMVessel->getCell("Void"));
-  MLM->createAll(System,*MLMVessel,0);
+  mlm->addInsertCell(dmmVessel->getCell("Void"));
+  //  MLM->copyCutSurf("innerCylinder",*MLMVessel,"innerRadius");
+  mlm->createAll(System,*dmmVessel,0);
 
   return;
 }
 
 void
 micromaxOpticsLine::constructHDCM(Simulation& System,
-				const attachSystem::FixedComp& initFC, 
-				const std::string& sideName)
+				  const attachSystem::FixedComp& initFC, 
+				  const std::string& sideName)
 /*!
-    Sub build of the slit package unit
+    Sub build of the mono package
     \param System :: Simulation to use
     \param initFC :: Start point
     \param sideName :: start link point
@@ -359,20 +355,20 @@ micromaxOpticsLine::constructHDCM(Simulation& System,
   ELog::RegMethod RegA("micromaxOpticsLine","constructHDCM");
 
   constructSystem::constructUnit
-    (System,buildZone,initFC,sideName,*monoVessel);
+    (System,buildZone,initFC,sideName,*dcmVessel);
   
-  mbXstals->addInsertCell(monoVessel->getCell("Void"));
-  mbXstals->createAll(System,*monoVessel,0);
+  mbXstals->addInsertCell(dcmVessel->getCell("Void"));
+  mbXstals->createAll(System,*dcmVessel,0);
 
   return;
 }
 
 void
 micromaxOpticsLine::constructDiag2(Simulation& System,
-				 const attachSystem::FixedComp& initFC, 
-				 const std::string& sideName)
-  /*!
-    Sub build of the slit package unit
+				   const attachSystem::FixedComp& initFC, 
+				   const std::string& sideName)
+/*!
+    Sub build of the post first mono system.
     \param System :: Simulation to use
     \param initFC :: Start point
     \param sideName :: start link point
@@ -380,26 +376,89 @@ micromaxOpticsLine::constructDiag2(Simulation& System,
 {
   ELog::RegMethod RegA("micromaxOpticsLine","constructDiag2");
 
-
   constructSystem::constructUnit
-    (System,buildZone,initFC,sideName,*bremTubeA);
+    (System,buildZone,initFC,sideName,*monoBremTube);
 
-  bremCollB->addInsertCell(bremTubeA->getCell("Void"));
-  bremCollB->createAll(System,*bremTubeA,0);
+  const constructSystem::portItem& PI=
+    monoBremTube->getFrontPort(0);
+  bremScrapper->setBeamAxis(*monoBremTube,1);
+  bremScrapper->createAll(System,PI,"InnerPlate");
+  bremScrapper->insertInCell("Connect",System,PI.getCell("Void"));
+  bremScrapper->insertInCell
+    ("Connect",System,monoBremTube->getCell("MidVoid"));
+  bremScrapper->insertInCell
+    ("Payload",System,monoBremTube->getCell("MidVoid"));
+  
+  
+  bremCollB->addInsertCell(monoBremTube->getCell("Void"));
+  bremCollB->createAll(System,*monoBremTube,0);
 
+  
   hpJawsA->setFlangeJoin();
   constructSystem::constructUnit
-    (System,buildZone,*bremTubeA,"back",*hpJawsA);
+    (System,buildZone,*monoBremTube,"back",*hpJawsA);
+
+  constructSystem::constructUnit
+    (System,buildZone,*hpJawsA,"back",*bellowI);
+
+  int outerCell=constructSystem::constructUnit
+    (System,buildZone,*bellowI,"back",*viewTubeB);
+
+  cooledScreenB->setBeamAxis(*viewTubeB,1);
+  cooledScreenB->createAll(System,*viewTubeB,4);
+  cooledScreenB->insertInCell("Outer",System,outerCell);
+  cooledScreenB->insertInCell("Connect",System,viewTubeB->getCell("Plate"));
+  cooledScreenB->insertInCell("Connect",System,viewTubeB->getCell("Void"));
+  cooledScreenB->insertInCell("Payload",System,viewTubeB->getCell("Void"));
+  
+  constructSystem::constructUnit
+    (System,buildZone,*viewTubeB,"back",*gateTubeD);
+
+
+  return;
+}
+
+
+void
+micromaxOpticsLine::constructCRL(Simulation& System,
+				   const attachSystem::FixedComp& initFC, 
+				   const std::string& sideName)
+/*!
+    Sub build of the post first mono system.
+    \param System :: Simulation to use
+    \param initFC :: Start point
+    \param sideName :: start link point
+  */
+{
+  ELog::RegMethod RegA("micromaxOpticsLine","constructCRL");
+
+  constructSystem::constructUnit
+    (System,buildZone,initFC,sideName,*crlPipeA);
+
+  constructSystem::constructUnit
+    (System,buildZone,*crlPipeA,"back",*crlTubeA);
+
+  constructSystem::constructUnit
+    (System,buildZone,*crlTubeA,"back",*crlPipeB);
+
+  constructSystem::constructUnit
+    (System,buildZone,*crlPipeB,"back",*crlPipeC);
+
+  constructSystem::constructUnit
+    (System,buildZone,*crlPipeC,"back",*crlTubeB);
+
+  constructSystem::constructUnit
+    (System,buildZone,*crlTubeB,"back",*crlPipeD);
 
   return;
 }
 
 void
 micromaxOpticsLine::constructDiag3(Simulation& System,
-				 const attachSystem::FixedComp& initFC, 
-				 const std::string& sideName)
-  /*!
-    Sub build of the slit package unit
+				   const attachSystem::FixedComp& initFC, 
+				   const std::string& sideName)
+/*!
+    Sub build of the post first mono system.
     \param System :: Simulation to use
     \param initFC :: Start point
     \param sideName :: start link point
@@ -407,108 +466,69 @@ micromaxOpticsLine::constructDiag3(Simulation& System,
 {
   ELog::RegMethod RegA("micromaxOpticsLine","constructDiag3");
 
+  constructSystem::constructUnit
+    (System,buildZone,initFC,sideName,*longPipeA);
+  constructSystem::constructUnit
+    (System,buildZone,*longPipeA,"back",*longPipeB);
 
   constructSystem::constructUnit
-    (System,buildZone,initFC,sideName,*bellowG);
+    (System,buildZone,*longPipeB,"back",*gateTubeE);
 
   constructSystem::constructUnit
-    (System,buildZone,*bellowG,"back",*gateTubeE);
+    (System,buildZone,*gateTubeE,"back",*bellowJ);
+
+  int outerCell=constructSystem::constructUnit
+    (System,buildZone,*bellowJ,"back",*viewTubeC);
+
+  cooledScreenC->setBeamAxis(*viewTubeC,1);
+  cooledScreenC->createAll(System,*viewTubeC,4);
+  cooledScreenC->insertInCell("Outer",System,outerCell);
+  cooledScreenC->insertInCell("Connect",System,viewTubeC->getCell("Plate"));
+  cooledScreenC->insertInCell("Connect",System,viewTubeC->getCell("Void"));
+  cooledScreenC->insertInCell("Payload",System,viewTubeC->getCell("Void"));
 
   constructSystem::constructUnit
-    (System,buildZone,*gateTubeE,"back",*viewTube);
-
-  bremTubeB->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  bremTubeB->setOuterVoid();
-  bremTubeB->createAll(System,*viewTube,"back");
-
-  const constructSystem::portItem& VPB=bremTubeB->getPort(1);
-  int outerCell=buildZone.createUnit
-    (System,VPB,VPB.getSideIndex("OuterPlate"));
-  bremTubeB->insertAllInCell(System,outerCell);
-
-  bremCollC->addInsertCell(bremTubeB->getCell("Void"));
-  bremCollC->createAll(System,*bremTubeB,0);
-
-  hpJawsB->setFlangeJoin();
-  constructSystem::constructUnit
-    (System,buildZone,VPB,"OuterPlate",*hpJawsB);
+    (System,buildZone,*viewTubeC,"back",*bellowK);
 
   constructSystem::constructUnit
-    (System,buildZone,*hpJawsB,"back",*bellowH);
+    (System,buildZone,*bellowK,"back",*hpJawsB);
 
+  crlBremTube->setSideVoid();
   constructSystem::constructUnit
-    (System,buildZone,*bellowH,"back",*pipeE);
+    (System,buildZone,*hpJawsB,"back",*crlBremTube);
 
-  constructSystem::constructUnit
-    (System,buildZone,*pipeE,"back",*bellowI);
+  bremCollC->addInsertCell(crlBremTube->getCell("Void"));
+  bremCollC->createAll(System,*crlBremTube,0);
 
   return;
 }
 
-void
-micromaxOpticsLine::constructDiag4(Simulation& System,
-				 const attachSystem::FixedComp& initFC, 
-				 const std::string& sideName)
-  /*!
-    Sub build of the slit package unit
-    \param System :: Simulation to use
-    \param initFC :: Start point
-    \param sideName :: start link point
-  */
-{
-  ELog::RegMethod RegA("micromaxOpticsLine","constructDiag4");
-
-
-  constructSystem::constructUnit
-    (System,buildZone,initFC,sideName,*gateTubeF);
-
-  constructSystem::constructUnit
-    (System,buildZone,*gateTubeF,"back",*viewTubeB);
-  
-}
 
 void
 micromaxOpticsLine::constructMonoShutter(Simulation& System,
-				       const attachSystem::FixedComp& FC,
-				       const std::string& linkName)
-  /*!
-    Construct a monoshutter system
+					 const attachSystem::FixedComp& FC,
+					 const std::string& linkName)
+/*!
+  Construct a monoshutter system
     \param System :: Simulation for building
     \param FC :: FixedComp for start point
     \param linkName :: side index
     \return outerCell
-   */
+*/
 {
   ELog::RegMethod RegA("micromaxOpticsLine","constructMonoShutter");
 
-
   constructSystem::constructUnit
-    (System,buildZone,FC,linkName,*bellowJ);
-
-  constructSystem::constructUnit
-    (System,buildZone,*bellowJ,"back",*monoAdaptorA);
+    (System,buildZone,FC,linkName,*bellowL);
 
   int outerCell=constructSystem::constructUnit
-    (System,buildZone,*monoAdaptorA,"back",*monoShutter);
+    (System,buildZone,*bellowL,"back",*monoShutter);
 
-  monoShutter->splitObject(System,"-PortACut",outerCell);
-  const Geometry::Vec3D midPoint(monoShutter->getLinkPt(3));
-  const Geometry::Vec3D midAxis(monoShutter->getLinkAxis(-3));
-  monoShutter->splitObjectAbsolute(System,2001,outerCell,midPoint,midAxis);
-  monoShutter->splitObject(System,"PortBCut",outerCell);
-  cellIndex+=3;
-  
-  constructSystem::constructUnit
-    (System,buildZone,*monoShutter,"back",*monoAdaptorB);
-
-  constructSystem::constructUnit
-    (System,buildZone,*monoAdaptorB,"back",*pipeF);
+  monoShutter->splitObject(System,"-TopPlate",outerCell);
+  monoShutter->splitObject(System,"MidCutB",outerCell);
   
   return;
 }
-
-
-  
 
 void
 micromaxOpticsLine::buildObjects(Simulation& System)
@@ -546,116 +566,91 @@ micromaxOpticsLine::buildObjects(Simulation& System)
     (System,buildZone,*pipeA,"back",*bellowA);
   
   constructSystem::constructUnit
-    (System,buildZone,*bellowA,"back",*bremCollA);
+    (System,buildZone,*bellowA,"back",*whiteCollA);
 
   constructSystem::constructUnit
-    (System,buildZone,*bremCollA,"back",*ionGaugeA);
+    (System,buildZone,*whiteCollA,"back",*bellowB);
 
   constructSystem::constructUnit
-    (System,buildZone,*ionGaugeA,"back",*bellowB);
+    (System,buildZone,*bellowB,"back",*bremHolderA);
 
-  // split later:
+  bremCollA->addInsertCell(bremHolderA->getCell("Void"));
+  bremCollA->createAll(System,*bremHolderA,0);
+
+  constructSystem::constructUnit
+    (System,buildZone,*bremHolderA,"back",*bellowC);
+
   outerCell=constructSystem::constructUnit
-    (System,buildZone,*bellowB,"back",*diagBoxA);
-  diagBoxA->intersectPorts(System,0,1);
-  diagBoxA->intersectPorts(System,4,3);
+    (System,buildZone,*bellowC,"back",*viewTubeA);
+
+  cooledScreenA->setBeamAxis(*viewTubeA,1);
+  cooledScreenA->createAll(System,*viewTubeA,4);
+  cooledScreenA->insertInCell("Outer",System,outerCell);
+  cooledScreenA->insertInCell("Connect",System,viewTubeA->getCell("Plate"));
+  cooledScreenA->insertInCell("Connect",System,viewTubeA->getCell("Void"));
+  cooledScreenA->insertInCell("Payload",System,viewTubeA->getCell("Void"));
+
+  constructSystem::constructUnit
+    (System,buildZone,*viewTubeA,"back",*bellowD);
+
+  outerCell=constructSystem::constructUnit
+    (System,buildZone,*bellowD,"back",*attnTube);
+  attnUnit->addInsertCell(attnTube->getCell("Void"));
+  attnUnit->addInsertCell(attnTube->getCell("PipeVoid"));
+  attnUnit->setCutSurf("Flange",*attnTube,"TopFlange");
+  attnUnit->createAll(System,*attnTube,"Origin");
+
+  attnTube->addCell("OuterVoid",outerCell);
+    
+  constructSystem::constructUnit
+    (System,buildZone,*attnTube,"back",*bellowE);
+
+  //  tableA->addHole(*viewTubeA,"Origin","OuterRadius");
+  tableA->addHole(*attnTube,"VertCentre","VertOuterWall");
+  tableA->addHole(*bremHolderA,"Origin","OuterRadius");
+  tableA->createAll(System,*bellowA,0);
+  tableA->insertAllInCells(System,buildZone.getCells());
+  tableA->insertInCell("Plate",System,bremHolderA->getCell("VertOuter"));
+  tableA->insertInCell("Plate",System,bremHolderA->getCell("MainOuter"));
+  tableA->insertInCell("Plate",System,attnTube->getCell("BlockVoid"));
+  tableA->insertInCell("Plate",System,attnTube->getCell("VerticalVoid"));
 
 
-  for(size_t i=0;i<jaws.size();i++)
-    {
-      const constructSystem::portItem& PI=diagBoxA->getPort(i);
-      jaws[i]->createAll(System,*diagBoxA,0,
-			 PI,PI.getSideIndex("InnerPlate"));
+  constructHDMM(System,*bellowE,"back");
 
-      const int surfNum(1501+10*static_cast<int>(i));
-      diagBoxA->splitObjectAbsolute(System,surfNum,
-				    diagBoxA->getCell("Void",i),
-				    jaws[i]->getCentre(),
-				    diagBoxA->getY());
-      jaws[i]->insertInCell("SupportA",System,PI.getCell("Void"));
-      jaws[i]->insertInCell("SupportB",System,PI.getCell("Void"));
-      cellIndex++;
-    }
+  constructSystem::constructUnit
+    (System,buildZone,*dmmVessel,"back",*bellowF);
+
+  constructSystem::constructUnit
+    (System,buildZone,*bellowF,"back",*gateTubeB);
+
+  constructSystem::constructUnit
+    (System,buildZone,*gateTubeB,"back",*bellowG);
+
+  constructHDCM(System,*bellowG,"back");
+
+  constructSystem::constructUnit
+    (System,buildZone,*dcmVessel,"back",*bellowH);
+  constructSystem::constructUnit
+    (System,buildZone,*bellowH,"back",*pipeB);
+  constructSystem::constructUnit
+    (System,buildZone,*pipeB,"back",*gateTubeC);
+
   
-  jaws[0]->insertInCell("SupportB",System,diagBoxA->getCell("Void",0));
-  jaws[0]->insertInCell("SupportA",System,diagBoxA->getCell("Void",1));
-  jaws[0]->insertInCell("BlockB",System,diagBoxA->getCell("Void",0));
-  jaws[0]->insertInCell("BlockA",System,diagBoxA->getCell("Void",1));
+  constructDiag2(System,*gateTubeC,"back");
 
-  jaws[1]->insertInCell("SupportA",System,diagBoxA->getCell("Void",2));
-  jaws[1]->insertInCell("SupportB",System,diagBoxA->getCell("Void",1));
-  jaws[1]->insertInCell("BlockA",System,diagBoxA->getCell("Void",2));
-  jaws[1]->insertInCell("BlockB",System,diagBoxA->getCell("Void",1));
+  constructCRL(System,*gateTubeD,"back");
 
-  // split on port:
+  constructDiag3(System,*crlPipeD,"back");
 
-  diagBoxA->splitVoidPorts(System,"OuterSplit",2501,outerCell,
-			  {1,2});
-  outerCell=diagBoxA->getCell("OuterSplit",1);
-  diagBoxA->splitVoidPorts(System,"OuterSplit",2601,outerCell,
-			  {2,3});
-
-  // exit:
-
-  constructSystem::constructUnit
-    (System,buildZone,*diagBoxA,"back",*pipeB);
-  constructSystem::constructUnit
-    (System,buildZone,*pipeB,"back",*gateTubeB);
-  constructSystem::constructUnit
-    (System,buildZone,*gateTubeB,"back",*bellowC);
-
-  constructMirrorMono(System,*bellowC,"back");
-
-
-  constructSystem::constructUnit
-    (System,buildZone,*MLMVessel,"back",*bellowD);
-  constructSystem::constructUnit
-    (System,buildZone,*bellowD,"back",*pipeC);
-  constructSystem::constructUnit
-    (System,buildZone,*pipeC,"back",*gateTubeC);
-  constructSystem::constructUnit
-    (System,buildZone,*gateTubeC,"back",*bellowE);
-
-  constructHDCM(System,*bellowE,"back");
-
-  constructSystem::constructUnit
-    (System,buildZone,*monoVessel,"back",*bellowF);
-  constructSystem::constructUnit
-    (System,buildZone,*bellowF,"back",*pipeD);
-  constructSystem::constructUnit
-    (System,buildZone,*pipeD,"back",*gateTubeD);
-  
-
-  constructDiag2(System,*gateTubeD,"back");
-
-
-  constructSystem::constructUnit
-    (System,buildZone,*hpJawsA,"back",*mirrorBoxA);
-
-
-  mirrorBoxA->splitObject(System,3001,mirrorBoxA->getCell("Void"),
-			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
-  
-  mirrorFrontA->addInsertCell(mirrorBoxA->getCell("Void",0));
-  mirrorFrontA->createAll(System,*mirrorBoxA,0);
-
-  mirrorBackA->addInsertCell(mirrorBoxA->getCell("Void",1));
-  mirrorBackA->createAll(System,*mirrorBoxA,0);
-
-  constructDiag3(System,*mirrorBoxA,"back");
-
-  constructDiag4(System,*bellowI,"back");
-
-
-  constructMonoShutter(System,*viewTubeB,"back");
-
+  constructMonoShutter(System,*crlBremTube,"back");
 
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);
 
   setCells("InnerVoid",buildZone.getCells("Unit"));
   setCell("LastVoid",buildZone.getCells("Unit").back());
-  lastComp=pipeF;
+  lastComp=monoShutter;
 
   return;
 }
@@ -672,8 +667,7 @@ micromaxOpticsLine::createLinks()
   setLinkCopy(1,*lastComp,2);
   return;
 }
-  
-  
+   
 void 
 micromaxOpticsLine::createAll(Simulation& System,
 			  const attachSystem::FixedComp& FC,

@@ -3,7 +3,7 @@
  
  * File:   processInc/boxUnit.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,8 +37,8 @@ class surfRegister;
 
 class boxUnit :
     public attachSystem::FixedUnit,
-    public attachSystem::ContainedComp
-
+    public attachSystem::ContainedComp,
+    public attachSystem::CellMap
 {
  private:
 
@@ -70,10 +70,8 @@ class boxUnit :
   void calcXZ(const Geometry::Vec3D&,const Geometry::Vec3D&);
 
   void checkForward();
-  void calcLineTrack(Simulation&,const Geometry::Vec3D&,
-		     const Geometry::Vec3D&,
-		     std::map<int,MonteCarlo::Object*>&) const;
-  void addExcludeStrings(const std::map<int,MonteCarlo::Object*>&) const;
+  void excludeUnit(Simulation&,
+		   const std::map<int,MonteCarlo::Object*>&) const;
   size_t getOuterIndex() const;
 
 

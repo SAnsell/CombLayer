@@ -115,7 +115,7 @@ UTubePipe::populate(const FuncDataBase& Control)
 					 keyName+"FlangeLength");
 
 
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
 
   return;

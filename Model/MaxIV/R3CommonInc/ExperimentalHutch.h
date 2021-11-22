@@ -72,11 +72,15 @@ class ExperimentalHutch :
   
   double innerOutVoid;          ///< Extension for inner void space
   double outerOutVoid;          ///< Extension for outer void space 
-  double extension;
+
+  double forkYStep;             ///< Step down beamline for forklift hole
+  double forkLength;            ///< length of units
+  double forkHeight;            ///< height of unit
+  std::vector<double> fZStep;   ///< step of units
   
-  int voidMat;                ///< Void material [air]
-  int skinMat;                ///< Fe layer material for walls
-  int pbMat;                  ///< pb layer material for walls
+  int voidMat;                  ///< Void material [air]
+  int skinMat;                  ///< Fe layer material for walls
+  int pbMat;                    ///< pb layer material for walls
 
   /// Chicanes 
   std::vector<std::shared_ptr<PortChicane>> PChicane;  

@@ -193,7 +193,7 @@ COSAXS::build(Simulation& System,
   exptHut->setCutSurf("floor",r3Ring->getSurf("Floor"));
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
-  exptHut->createAll(System,*opticsHut,"exitHole");
+  exptHut->createAll(System,*opticsHut,"back");
 
   if (stopPoint=="exptHut")
     {

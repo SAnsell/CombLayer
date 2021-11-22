@@ -129,6 +129,7 @@ createInputs(inputParam& IParam)
   IParam.regMulti("offset","offset",10000,1,8);
   IParam.regDefItem<double>("photon","photon",1,0.001);  // 1keV
   IParam.regDefItem<double>("photonModel","photonModel",1,100.0);
+  IParam.regItem("plotgeom","plotgeom",2);
   IParam.regMulti("postOffset","postOffset",10000,1,8);
   IParam.regDefItem<std::string>("print","printTable",1,
 				 "10 20 40 50 110 120");  
@@ -283,6 +284,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("noThermal","No thermal cross-section in materials def");
   IParam.setDesc("offset","Displace to component [name]");
   IParam.setDesc("ObjAdd","Add a component (cell)");
+  IParam.setDesc("plotgeom","Write out PLOTGEOM for FLUKA");
   IParam.setDesc("photon","Photon Cut energy");
   IParam.setDesc("photonModel","Photon Model Energy [min]");
   IParam.setDesc("r","Renubmer cells");

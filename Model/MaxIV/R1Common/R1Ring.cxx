@@ -130,8 +130,8 @@ R1Ring::populate(const FuncDataBase& Control)
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   floorMat=ModelSupport::EvalMat<int>(Control,keyName+"FloorMat");
   roofMat=ModelSupport::EvalMat<int>(Control,keyName+"RoofMat");
-  innerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"InnerMat",0);
-  outerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"OuterMat",0);
+  innerMat=ModelSupport::EvalDefMat(Control,keyName+"InnerMat",0);
+  outerMat=ModelSupport::EvalDefMat(Control,keyName+"OuterMat",0);
 
   NPoints=Control.EvalVar<size_t>(keyName+"NPoints");
   for(size_t i=0;i<NPoints;i++)

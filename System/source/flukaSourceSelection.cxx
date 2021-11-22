@@ -81,9 +81,17 @@ flukaSourceSelection(Simulation& System,
   const bool axisFlag(IParam.flag("sdefVec"));
   if (axisFlag)
     {
-      const Geometry::Vec3D Org=IParam.getDefValue<Geometry::Vec3D>(Geometry::Vec3D(0,0,0),"sdefVec",0);
-      const Geometry::Vec3D Axis=IParam.getDefValue<Geometry::Vec3D>(Geometry::Vec3D(0,1,0),"sdefVec",1);
-      const Geometry::Vec3D ZAxis=IParam.getDefValue<Geometry::Vec3D>(Geometry::Vec3D(0,0,1),"sdefVec",2);
+      size_t itemCnt(0);
+      const Geometry::Vec3D Org=
+	mainSystem::getDefNamedPoint(System,IParam,"sdefVec",
+				     0,itemCnt,Geometry::Vec3D(0,0,0));
+      
+      const Geometry::Vec3D Axis=
+	mainSystem::getDefNamedAxis(System,IParam,"sdefVec",
+				     1,itemCnt,Geometry::Vec3D(0,1,0));
+      const Geometry::Vec3D ZAxis=
+	mainSystem::getDefNamedAxis(System,IParam,"sdefVec",
+				    2,itemCnt,Geometry::Vec3D(0,0,1));
       beamAxis.createUnitVector(Org,Axis,ZAxis);
     }
   

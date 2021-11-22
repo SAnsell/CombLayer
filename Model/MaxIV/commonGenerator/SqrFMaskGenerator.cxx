@@ -58,7 +58,7 @@ SqrFMaskGenerator::SqrFMaskGenerator() :
   bFOutRadius(6.0),bFLength(1.0),
   pipeRadius(0.3),pipeXWidth(4.0),
   pipeZDepth(1.8),
-  pipeYStart(2.5),pipeYStep(3.0),
+  pipeYStart(2.5/15.0),pipeYStep(3.0/15.0),
   flangeMat("Stainless304"),
   waterMat("H2O")
   /*!
@@ -116,18 +116,18 @@ void
 SqrFMaskGenerator::generateColl(FuncDataBase& Control,
 				const std::string& keyName,
 				const double yStep,
-				const double len) const
+				const double length) const
 /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
     \param yStep :: Step along beam centre
-    \param len :: length 
+    \param length :: length of copper
   */
 {
   ELog::RegMethod RegA("SqrFMaskGenerator","generateColl");
 
-  CollGenerator::generateColl(Control,keyName,yStep,len);
+  CollGenerator::generateColl(Control,keyName,yStep,length);
 
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"Height",height);
@@ -144,10 +144,16 @@ SqrFMaskGenerator::generateColl(FuncDataBase& Control,
   Control.addVariable(keyName+"PipeRadius",pipeRadius);
   Control.addVariable(keyName+"PipeXWidth",pipeXWidth);
   Control.addVariable(keyName+"PipeZDepth",pipeZDepth);
-  Control.addVariable(keyName+"PipeYStep0",pipeYStart);
-  Control.addVariable(keyName+"PipeYStep1",pipeYStart+pipeYStep);
-  Control.addVariable(keyName+"PipeYStep2",pipeYStart+2*pipeYStep);
-  Control.addVariable(keyName+"PipeYStep3",pipeYStart+3*pipeYStep);
+
+  const double L=pipeYStart*length;
+  if (L>pipeRadius+aFLength)
+    Control.addVariable(keyName+"PipeYStep0",pipeYStart*length);
+  else
+    Control.addVariable(keyName+"PipeYStep0",aFLength+pipeRadius*1.01);
+  
+  Control.addVariable(keyName+"PipeYStep1",(pipeYStart+pipeYStep)*length);
+  Control.addVariable(keyName+"PipeYStep2",(pipeYStart+2*pipeYStep)*length);
+  Control.addVariable(keyName+"PipeYStep3",(pipeYStart+3*pipeYStep)*length);
   Control.addVariable(keyName+"WaterMat",waterMat);
   
   return;

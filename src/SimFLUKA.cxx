@@ -77,6 +77,7 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "LowMat.h"
+#include "plotGeom.h"
 
 #include "Simulation.h"
 #include "SimFLUKA.h"
@@ -88,7 +89,8 @@ SimFLUKA::SimFLUKA() :
   writeVariable(1),lowEnergyNeutron(1),
   nps(1000),rndSeed(2374891),
   PhysPtr(new flukaSystem::flukaPhysics()),
-  RadDecayPtr(new flukaSystem::radDecay())
+  RadDecayPtr(new flukaSystem::radDecay()),
+  PGeomPtr(0)
   /*!
     Constructor
   */
@@ -103,7 +105,8 @@ SimFLUKA::SimFLUKA(const SimFLUKA& A) :
   nps(A.nps),rndSeed(A.rndSeed),
   sourceExtraName(A.sourceExtraName),
   PhysPtr(new flukaSystem::flukaPhysics(*A.PhysPtr)),
-  RadDecayPtr(new flukaSystem::radDecay(*A.RadDecayPtr))
+  RadDecayPtr(new flukaSystem::radDecay(*A.RadDecayPtr)),
+  PGeomPtr((A.PGeomPtr) ? new flukaSystem::plotGeom(*A.PGeomPtr) : 0)
  /*!
    Copy constructor
    \param A :: Simulation to copy
@@ -133,6 +136,8 @@ SimFLUKA::operator=(const SimFLUKA& A)
 	FTItem.emplace(TM->clone());
       *PhysPtr= *A.PhysPtr;
       *RadDecayPtr = *A.RadDecayPtr;
+      if (PGeomPtr) delete PGeomPtr;
+      PGeomPtr=(A.PGeomPtr) ? new flukaSystem::plotGeom(*A.PGeomPtr) : 0;
     }
   return *this;
 }
@@ -145,7 +150,20 @@ SimFLUKA::~SimFLUKA()
   clearTally();
   delete PhysPtr;
   delete RadDecayPtr;
+  delete PGeomPtr;
 }
+
+flukaSystem::plotGeom&
+SimFLUKA::getPlotGeom()
+  /*!
+    Simple accessor to plotGeom
+   */
+{
+  if (!PGeomPtr)
+    PGeomPtr=new flukaSystem::plotGeom;
+  return *PGeomPtr;
+}
+
 
 void
 SimFLUKA::setDefaultPhysics(const std::string& dName)
@@ -733,10 +751,18 @@ SimFLUKA::write(const std::string& Fname) const
   OX<<"GEOEND"<<std::endl;
   writeWeights(OX);
   writeMaterial(OX);
-  RadDecayPtr->write(*this,OX);
-  writeTally(OX);
-  writeSource(OX);
-  writePhysics(OX);
+
+  if (PGeomPtr)
+    {
+      PGeomPtr->write(OX);
+    }
+  else
+    {
+      RadDecayPtr->write(*this,OX);
+      writeTally(OX);
+      writeSource(OX);
+      writePhysics(OX);
+    }
   OX<<"STOP"<<std::endl;
   OX.close();
   return;

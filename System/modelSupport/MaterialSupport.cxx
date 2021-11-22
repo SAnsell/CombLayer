@@ -132,11 +132,10 @@ EvalMat(const FuncDataBase& Control,
     EvalMat<T>(Control,KeyA) : EvalMat<T>(Control,KeyB);
 }
 
-template<typename T>
-T
+int  
 EvalDefMat(const FuncDataBase& Control,
 	   const std::string& KeyA,
-	   const T& defVal)
+	   const int defVal)
   /*!
     Determine the material name based either on the string
     value or the material number
@@ -148,15 +147,32 @@ EvalDefMat(const FuncDataBase& Control,
 {
   ELog::RegMethod RegA("MaterialSupport[F]","EvalDefMat");
   return (Control.hasVariable(KeyA)) ? 
-    EvalMat<T>(Control,KeyA) : defVal;
+    EvalMat<int>(Control,KeyA) : defVal;
 }
 
-template<typename T>
-T
+int  
+EvalDefMat(const FuncDataBase& Control,
+	   const std::string& KeyA,
+	   const std::string& defVal)
+  /*!
+    Determine the material name based either on the string
+    value or the material number
+    \param Control :: Database of variables
+    \param KeyA :: String to search    
+    \param defVal :: Default value
+    \return MatNumber
+  */
+{
+  ELog::RegMethod RegA("MaterialSupport[F]","EvalDefMat");
+  return (Control.hasVariable(KeyA)) ? 
+    EvalMat<int>(Control,KeyA) : EvalMatName(defVal);
+}
+
+int
 EvalDefMat(const FuncDataBase& Control,
            const std::string& KeyA,
            const std::string& KeyB,
-           const T& defVal)
+           const std::string& defVal)
   /*!
     Determine the material name based either on the string
     value or the material number
@@ -169,10 +185,33 @@ EvalDefMat(const FuncDataBase& Control,
 {
   ELog::RegMethod RegA("MaterialSupport[F]","EvalDefMat");
   if(Control.hasVariable(KeyA))
-    return EvalMat<T>(Control,KeyA);
+    return EvalMat<int>(Control,KeyA);
 
   return (Control.hasVariable(KeyB)) ? 
-    EvalMat<T>(Control,KeyB) : defVal;
+    EvalMat<int>(Control,KeyB) : EvalMatName(defVal);
+}
+
+int
+EvalDefMat(const FuncDataBase& Control,
+           const std::string& KeyA,
+           const std::string& KeyB,
+           const int defVal)
+  /*!
+    Determine the material name based either on the string
+    value or the material number
+    \param Control :: Database of variables
+    \param KeyA :: First string to search    
+    \param KeyB :: Second string to search    
+    \param defVal :: Default value
+    \return MatNumber
+  */
+{
+  ELog::RegMethod RegA("MaterialSupport[F]","EvalDefMat");
+  if(Control.hasVariable(KeyA))
+    return EvalMat<int>(Control,KeyA);
+
+  return (Control.hasVariable(KeyB)) ? 
+    EvalMat<int>(Control,KeyB) : defVal;
 }
 
 
@@ -230,17 +269,6 @@ template std::string
 EvalMat(const FuncDataBase&,const std::string&,
 	 const std::string&);
 
-template int 
-EvalDefMat(const FuncDataBase&,const std::string&,
-	   const int&);
-
-template int 
-EvalDefMat(const FuncDataBase&,const std::string&,
-           const std::string&,const int&);
-
-template std::string
-EvalDefMat(const FuncDataBase&,const std::string&,
-           const std::string&,const std::string&);
 
 /// \endcond TEMPLATE
 

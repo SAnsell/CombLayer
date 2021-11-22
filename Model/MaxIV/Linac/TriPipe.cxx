@@ -125,7 +125,7 @@ TriPipe::populate(const FuncDataBase& Control)
 					 keyName+"FlangeLength");
 
 
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   flangeMat=ModelSupport::EvalMat<int>(Control,keyName+"FlangeMat");
 

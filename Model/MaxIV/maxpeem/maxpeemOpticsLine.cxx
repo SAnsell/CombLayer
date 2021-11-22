@@ -243,7 +243,7 @@ maxpeemOpticsLine::populate(const FuncDataBase& Control)
 
   outerLeft=Control.EvalDefVar<double>(keyName+"OuterLeft",0.0);
   outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",outerLeft);
-  const int voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  const int voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   buildZone.setInnerMat(voidMat);
 
   return;

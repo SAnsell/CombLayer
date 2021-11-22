@@ -150,7 +150,7 @@ cosaxsSampleArea::populate(const FuncDataBase& Control)
   sampleRadius=Control.EvalDefVar<double>(keyName+"SampleRadius",0.0);
 
   airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat");
-  sampleMat=ModelSupport::EvalDefMat<int>
+  sampleMat=ModelSupport::EvalDefMat
     (Control,keyName+"SampleMat",airMat);
 
   return;

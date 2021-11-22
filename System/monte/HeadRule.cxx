@@ -798,6 +798,7 @@ HeadRule::isDirectionValid(const Geometry::Vec3D& Pt,
     assuming PT is ont surfaces ExSN.
     \param Pt :: Point to test
     \param ExSN :: Excluded surfaces
+    \param surfNum :: singed directional surface 
    */
 {
   return (HeadNode) ? HeadNode->isDirectionValid(Pt,ExSN,surfNum) : 0;
@@ -1001,6 +1002,48 @@ HeadRule::getSurfaces() const
   return Out;
 }
 
+std::set<int>
+HeadRule::getSignedSurfaceNumbers() const
+  /*!
+    Calculate the surfaces that are within the object
+    \return Set of surface
+  */
+{
+  ELog::RegMethod RegA("HeadRule","getSignedSurfaceNumbers");
+
+  std::set<int> surfSet;
+  const SurfPoint* SP;
+  if (!HeadNode) return surfSet;
+
+  const Rule *headPtr,*leafA,*leafB;       
+  // Parent : left/right : Child
+
+  // Tree stack of rules
+  std::stack<const Rule*> TreeLine;   
+  TreeLine.push(HeadNode);
+  while (!TreeLine.empty())        // need to exit on active
+    {
+      headPtr=TreeLine.top();
+      TreeLine.pop();	  
+      if (headPtr->type())             // MUST BE INTERSECTION/Union
+	{
+	  leafA=headPtr->leaf(0);        // get leaves (two of) 
+	  leafB=headPtr->leaf(1);
+	  if (leafA)
+	    TreeLine.push(leafA);
+	  if (leafB)
+	    TreeLine.push(leafB);
+	}
+      else if (headPtr->type()==0)        // MIGHT BE SURF
+	{
+	  SP=dynamic_cast<const SurfPoint*>(headPtr);
+	  if (SP)
+	    surfSet.emplace(SP->getSignKeyN());
+	}
+    }
+  return surfSet;
+}
+
 std::vector<int>
 HeadRule::getSurfaceNumbers() const
   /*!
@@ -1050,7 +1093,7 @@ HeadRule::getPrimarySurface() const
     The master surface is when the surface is the ONLY surface
     at the master level. Throw if that is not the case
 
-    \return single surface number / 0 if not a single primary
+    \return single surface number / 0 if not a single primary [signed]
   */
 {
   const std::vector<int> TSet=getTopSurfaces();
@@ -1064,7 +1107,7 @@ std::vector<int>
 HeadRule::getTopSurfaces() const
   /*!
     Calculate the surfaces that are within the top level
-    \return Set of surface
+    \return Set of surface [signed]
   */
 {
   ELog::RegMethod RegA("HeadRule","getOppositeSurfaces");

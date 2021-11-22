@@ -102,7 +102,7 @@ balderExptLine::populate(const FuncDataBase& Control)
   beamStopThick=Control.EvalVar<double>(keyName+"BeamStopThick");
   beamStopRadius=Control.EvalVar<double>(keyName+"BeamStopRadius");
 
-  sampleMat=ModelSupport::EvalDefMat<int>(Control,keyName+"SampleMat",0);
+  sampleMat=ModelSupport::EvalDefMat(Control,keyName+"SampleMat",0);
   beamStopMat=ModelSupport::EvalMat<int>(Control,keyName+"BeamStopMat");
 
   return;

@@ -45,7 +45,6 @@ class BremBlock :
 
   bool centreFlag;            ///< centre origin
 
-  double radius;              ///< Main radius [-ve to use square]
   double width;               ///< Optional width
   double height;              ///< Optional height
   double length;              ///< Main length  

@@ -134,7 +134,7 @@ BeamMonitor::populate(const FuncDataBase& Control)
 	(keyName+"BoxRadius"+std::to_string(i+1),-1.0);   
       TW=Control.EvalDefVar<double>
 	(keyName+"BoxThick"+std::to_string(i+1),-1.0);     
-      MW=ModelSupport::EvalDefMat<int>
+      MW=ModelSupport::EvalDefMat
 	(Control,keyName+"BoxMat"+std::to_string(i+1),0);   
       if (RW<0.0 || TW<0.0)
 	{

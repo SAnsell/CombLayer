@@ -3,7 +3,7 @@
  
  * File:   delft/SphereModerator.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +58,8 @@
 #include "FixedUnit.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "pipeUnit.h"
 #include "PipeLine.h"
 #include "virtualMod.h"
@@ -161,25 +163,7 @@ SphereModerator::populate(const FuncDataBase& Control)
 
   return;
 }
-  
-
-void
-SphereModerator::createUnitVector(const attachSystem::FixedComp& CUnit,
-				  const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param CUnit :: Fixed unit that it is connected to 
-    \param sideIndex :: Link point
-  */
-{
-  ELog::RegMethod RegA("SphereModerator","createUnitVector");
-
-  FixedComp::createUnitVector(CUnit,sideIndex);
-  applyOffset();
-
-  return;
-}
-  
+    
 void
 SphereModerator::createSurfaces()
   /*!

@@ -202,7 +202,7 @@ SurfPoint::isDirectionValid(const Geometry::Vec3D& Pt,
 			    const int ExSN) const
   /*! 
     Determines if a point  is valid. IF ExSN is +ve then 
-    it is assumed that we are on the +ve side of the surf
+    it is assumed that the surface is true (+ve) 
     \param Pt :: Point to test
     \param ExSN :: Exclude surf number [signed]
     \retval 1 :: Pt is the +ve side of the 
@@ -213,6 +213,7 @@ SurfPoint::isDirectionValid(const Geometry::Vec3D& Pt,
   if (!key) return 0;
   if (abs(ExSN)==keyN)
       return ((sign*ExSN>0) ? 1 : 0);
+
   return (key->side(Pt)*sign)>=0 ? 1 : 0;
 }
 

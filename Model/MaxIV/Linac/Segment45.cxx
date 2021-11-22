@@ -80,7 +80,7 @@
 #include "Object.h"
 
 #include "AttachSupport.h"
-#include "LObjectSupportB.h"
+#include "LObjectSupport.h"
 #include "TDCsegment.h"
 #include "InjectionHall.h"
 #include "Segment45.h"
