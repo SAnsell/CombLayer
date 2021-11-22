@@ -2145,7 +2145,7 @@ Segment27(FuncDataBase& Control,
   Control.addVariable(lKey+"YagUnitCYAngle",90.0);
   Control.addVariable(lKey+"YagUnitCFrontLength",12.993); // No_27_00
 
-  YagScreenGen.generateScreen(Control,lKey+"YagScreenC",0);
+  YagScreenGen.generateScreen(Control,lKey+"YagScreenC",1);
   Control.addVariable(lKey+"YagScreenCYAngle",-90.0);
 
   setBellow37(Control,lKey+"BellowAC");

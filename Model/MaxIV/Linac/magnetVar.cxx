@@ -340,9 +340,9 @@ Segment29Magnet(FuncDataBase& Control,
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnitB",true);
   Control.addVariable(lKey+"YagUnitBYAngle",90.0);
 
-  YagScreenGen.generateScreen(Control,lKey+"YagScreenA",0);   // closed
+  YagScreenGen.generateScreen(Control,lKey+"YagScreenA",1);   // closed
   Control.addVariable(lKey+"YagScreenAYAngle",-90.0);
-  YagScreenGen.generateScreen(Control,lKey+"YagScreenB",0);   // closed
+  YagScreenGen.generateScreen(Control,lKey+"YagScreenB",1);   // closed
   Control.addVariable(lKey+"YagScreenBYAngle",-90.0);
 
   TDCBDGen.generate(Control,lKey+"BeamStopA");
