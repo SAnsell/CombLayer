@@ -55,7 +55,9 @@
 #include "RuleCheck.h"
 #include "Line.h"
 #include "LineIntersectVisit.h"
+#include "surfRegister.h"
 #include "HeadRule.h"
+
 
 #include "SurInter.h"
 
@@ -99,11 +101,35 @@ HeadRule::HeadRule(const int surfNum) :
     \param surfNum :: rule as surface number
   */
 {
-  ELog::RegMethod RegA("HeadRule","HeadRule(string)");
+  ELog::RegMethod RegA("HeadRule","HeadRule(int)");
 
-  if (!surfNum || !procString(std::to_string(surfNum)))
+  if (!surfNum || !procSurfNum(surfNum))
     throw ColErr::InvalidLine(std::to_string(surfNum),"surfNum",0);
 }
+
+
+HeadRule::HeadRule(const ModelSupport::surfRegister& SMap,
+		   const int surfNum) :
+  HeadRule(SMap.realSurf(surfNum))
+  /*!
+    Creates a new rule
+    \param SMap :: Surface register
+    \param surfNum :: surface index
+  */
+{}
+
+HeadRule::HeadRule(const ModelSupport::surfRegister& SMap,
+		   const int offsetIndex,
+		   const int surfNum) :
+  HeadRule(SMap,(surfNum>0) ? offsetIndex+surfNum :
+	   surfNum-offsetIndex)
+  /*!
+    Creates a new rule
+    \param SMap :: Surface register
+    \param offsetIndex :: main offset index
+    \param surfNum :: signed surface index
+  */
+{}
 
 HeadRule::HeadRule(const Rule* RPtr) :
   HeadNode((RPtr) ? RPtr->clone() : nullptr)

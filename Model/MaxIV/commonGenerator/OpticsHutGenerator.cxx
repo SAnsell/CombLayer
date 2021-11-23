@@ -52,7 +52,7 @@ namespace setVariable
 
 
 OpticsHutGenerator::OpticsHutGenerator() :
-  height(277.0),outWidth(260.0),
+  height(277.0),outWidth(259.6),
   innerThick(0.3),pbWallThick(1.6),
   pbBackThick(9.0),pbRoofThick(1.6),
   outerThick(0.3),

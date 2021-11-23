@@ -85,7 +85,8 @@ MICROMAX::MICROMAX(const std::string& KN) :
   joinPipeB(new constructSystem::VacuumPipe(newName+"JoinPipeB")),
   pShield(new xraySystem::PipeShield(newName+"PShield")),
   exptBeam(new micromaxExptLine(newName+"ExptLine")),
-  exptHutB(new ExperimentalHutch(newName+"ExptHutB"))
+  exptHutB(new ExperimentalHutch(newName+"ExptHutB")),
+  joinPipeC(new constructSystem::VacuumPipe(newName+"JoinPipeC"))
   /*!
     Constructor
     \param KN :: Keyname
@@ -104,6 +105,7 @@ MICROMAX::MICROMAX(const std::string& KN) :
   OR.addObject(exptHut);
   OR.addObject(exptBeam);
   OR.addObject(exptHutB);
+  OR.addObject(joinPipeC);
 }
 
 MICROMAX::~MICROMAX()
@@ -174,6 +176,7 @@ MICROMAX::build(Simulation& System,
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
   exptHut->createAll(System,*opticsHut,"back");
+  exptHut->splitChicane(System,1,2);
 
   joinPipeB->addAllInsertCell(opticsBeam->getCell("LastVoid"));  
   joinPipeB->addInsertCell("Main",opticsHut->getCell("ExitHole"));
@@ -203,7 +206,12 @@ MICROMAX::build(Simulation& System,
   exptHutB->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
   exptHutB->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
   exptHutB->createAll(System,*exptHut,"back");
-  
+
+  joinPipeC->addAllInsertCell(exptBeam->getCell("LastVoid"));  
+  joinPipeC->addInsertCell("Main",exptHut->getCell("ExitHole"));
+  joinPipeC->setFront(*exptBeam,2);
+  joinPipeC->createAll(System,*exptBeam,2);
+
   return;
 }
 

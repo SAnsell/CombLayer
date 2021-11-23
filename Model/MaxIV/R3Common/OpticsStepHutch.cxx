@@ -200,7 +200,6 @@ OpticsStepHutch::createObjects(Simulation& System)
   makeCell("BackOuterWall",System,cellIndex++,skinMat,0.0,
 	   HR*floor*holeCut*forkWallBack);
 
-
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 13 6 -16 (-204:-202)");
   makeCell("RoofIWall",System,cellIndex++,skinMat,0.0,HR*frontWall*sideCut);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-22 23 16 -26 (-214:-212)");

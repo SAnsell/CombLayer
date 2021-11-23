@@ -85,6 +85,7 @@
 #include "FlangeDomeGenerator.h"
 #include "AreaDetectorGenerator.h"
 #include "OpticsHutGenerator.h"
+#include "ExptHutGenerator.h"
 
 
 namespace setVariable
@@ -500,36 +501,15 @@ exptHutVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("formaxVariables[F]","exptHutVariables");
 
+  setVariable::ExptHutGenerator EGen;
+  
   const double beamOffset(-0.6);
-    
   const std::string hutName(beamName+"ExptHut");
+
+  EGen.setFrontHole(beamXStep-beamOffset,0.0,3.0);
+  EGen.setCorner(45.0,120.0);   // step-y back 
+  EGen.generateHut(Control,hutName,0.0,1719.0);
   
-  Control.addVariable(hutName+"YStep",0.0);
-  Control.addVariable(hutName+"Height",277.0);
-  Control.addVariable(hutName+"Length",1719.4);
-  Control.addVariable(hutName+"OutWidth",260);
-  Control.addVariable(hutName+"RingWidth",200);
-  Control.addVariable(hutName+"InnerThick",0.1);
-  Control.addVariable(hutName+"PbBackThick",0.6);
-  Control.addVariable(hutName+"PbRoofThick",0.4);
-  Control.addVariable(hutName+"PbWallThick",0.4);
-  Control.addVariable(hutName+"OuterThick",0.1);
-
-  Control.addVariable(hutName+"CornerLength",1719.4-120.0);  //
-  Control.addVariable(hutName+"CornerAngle",45.0);
-  
-  Control.addVariable(hutName+"InnerOutVoid",10.0);
-  Control.addVariable(hutName+"OuterOutVoid",10.0);
-
-  Control.addVariable(hutName+"VoidMat","Void");
-  Control.addVariable(hutName+"SkinMat","Stainless304");
-  Control.addVariable(hutName+"PbMat","Lead");
-
-  Control.addVariable(hutName+"HoleXStep",beamXStep-beamOffset);
-  Control.addVariable(hutName+"HoleZStep",0.0);
-  Control.addVariable(hutName+"HoleRadius",3.0);
-  Control.addVariable(hutName+"HoleMat","Void");
-
   // lead shield on pipe
   Control.addVariable(hutName+"PShieldXStep",beamXStep-beamOffset);
   Control.addVariable(hutName+"PShieldYStep",0.3);

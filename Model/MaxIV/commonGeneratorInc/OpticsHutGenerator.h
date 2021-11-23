@@ -37,7 +37,7 @@ namespace setVariable
 
 class OpticsHutGenerator 
 {
- private:
+ protected:
 
   double height;                ///< void height
   double outWidth;              ///< Width from beamline centre to outside

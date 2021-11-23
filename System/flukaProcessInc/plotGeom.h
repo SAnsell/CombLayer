@@ -49,6 +49,8 @@ class plotGeom
   Geometry::Vec3D BPoint;        ///< Top unitxs
   Geometry::Vec3D xUnit;         ///< X-unit
   Geometry::Vec3D yUnit;         ///< Y-unit
+
+  int matRegion;                   ///< region flag
   
  public:
 
@@ -61,6 +63,8 @@ class plotGeom
   /// make an average over the line from beginning to end
   void setBox(const Geometry::Vec3D&,const Geometry::Vec3D&);
 
+  /// set flag to write regions and not materials
+  void setRegion() { matRegion=0; }
   void write(std::ostream&) const;
 };
 

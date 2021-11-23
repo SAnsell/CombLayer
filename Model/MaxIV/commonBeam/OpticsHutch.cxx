@@ -152,7 +152,6 @@ OpticsHutch::populate(const FuncDataBase& Control)
 			 (keyName+"ForkZStep"+std::to_string(i)));
     }
   
-  
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
   pbMat=ModelSupport::EvalMat<int>(Control,keyName+"PbMat");
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
@@ -217,7 +216,7 @@ OpticsHutch::createSurfaces()
   for(size_t i=0;i<holeRadius.size();i++)
     {
       const Geometry::Vec3D HPt(holeOffset[i].getInBasis(X,Y,Z));
-      ModelSupport::buildCylinder(SMap,BI+107,Origin+HPt,Y,holeRadius[i]);
+      makeCylinder("exitHole",SMap,BI+107,Origin+HPt,Y,holeRadius[i]);
       BI+=100;
     }
 
@@ -255,6 +254,7 @@ OpticsHutch::createObjects(Simulation& System)
   int BI(buildIndex);
   for(size_t i=0;i<holeRadius.size();i++)
     {
+      holeCut*=HeadRule(SMap,BI,107);
       holeCut*=ModelSupport::getHeadRule(SMap,BI,"107");
       BI+=100;
     }
@@ -347,7 +347,6 @@ OpticsHutch::createForkSurfaces()
     Create fork surfaces if needed
   */
 {
-  ELog::EM<<"HERER "<<fZStep.size()<<ELog::endDiag;
   if(!fZStep.empty())
     {
       if (forkWall=="Back")
@@ -359,7 +358,6 @@ OpticsHutch::createForkSurfaces()
 	}
       else if (forkWall=="Outer")
 	{
-	  ELog::EM<<"HERER "<<ELog::endDiag;
 	  ModelSupport::buildPlane
 	    (SMap,buildIndex+3001,Origin+Y*(forkYStep-forkLength/2),Y);
 	  ModelSupport::buildPlane
@@ -484,6 +482,7 @@ OpticsHutch::createLinks()
   return;
 }
 
+  
 void
 OpticsHutch::createChicane(Simulation& System)
   /*!
@@ -517,13 +516,7 @@ OpticsHutch::createChicane(Simulation& System)
       PItem->setCutSurf("innerWall",this->getSurfRule("innerWall"));
       PItem->setCutSurf("outerWall",this->getSurfRule("#outerWall"));
       PItem->createAll(System,*this,getSideIndex("outerWall"));
-
-
-      PItem->insertObjects(System);
       PChicane.push_back(PItem);
-      ELog::EM<<"PChicange == "<<PItem->getCentre()<<ELog::endDiag;
-      //      PItem->splitObject(System,23,getCell("WallVoid"));
-      //      PItem->splitObject(System,24,getCell("SplitVoid"));
     }
 
   return;

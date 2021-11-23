@@ -62,13 +62,12 @@ class ExperimentalHutch :
   double pbRoofThick;           ///< Thickness of lead in Roof
   double outerThick;            ///< Outer wall/roof skin
 
-  double holeRadius;            ///< Radius of front hole (if used)
-  double holeXStep;             ///< X step offset
-  double holeZStep;             ///< Z step offset
-  
-  double exitRadius;            ///< Radius of front hole (if used)
-  double exitXStep;             ///< X step offset
-  double exitZStep;             ///< Z step offset
+  double fHoleRadius;            ///< Radius of front hole (if used)
+  double fHoleXStep;             ///< X step offset
+  double fHoleZStep;             ///< Z step offset
+
+  std::vector<Geometry::Vec3D> holeOffset;  ///< hole offsets [y ignored]
+  std::vector<double> holeRadius;           ///< hole radii
   
   double innerOutVoid;          ///< Extension for inner void space
   double outerOutVoid;          ///< Extension for outer void space 
@@ -99,6 +98,7 @@ class ExperimentalHutch :
   ExperimentalHutch& operator=(const ExperimentalHutch&);
   virtual ~ExperimentalHutch();
 
+  void splitChicane(Simulation& System,const size_t,const size_t);
   using FixedComp::createAll;
   virtual void createAll(Simulation&,
 			 const attachSystem::FixedComp&,

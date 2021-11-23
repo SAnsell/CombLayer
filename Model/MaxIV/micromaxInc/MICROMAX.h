@@ -102,6 +102,9 @@ class MICROMAX : public R3Beamline
   /// Expt hutch B
   std::shared_ptr<ExperimentalHutch> exptHutB;
 
+  /// Pipe joining Expt Hutch to Expt Hutch B
+  std::shared_ptr<constructSystem::VacuumPipe> joinPipeC;
+
  public:
   
   MICROMAX(const std::string&);

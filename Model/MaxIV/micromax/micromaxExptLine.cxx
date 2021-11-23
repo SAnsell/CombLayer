@@ -88,6 +88,7 @@
 #include "SixPortTube.h"
 #include "ViewScreenTube.h"
 #include "CooledScreen.h"
+#include "RoundMonoShutter.h"
 
 #include "micromaxExptLine.h"
 
@@ -104,7 +105,7 @@ micromaxExptLine::micromaxExptLine(const std::string& Key) :
   attachSystem::CellMap(),
 
   buildZone(Key+"BuildZone"),
-  outerMat(0),
+  outerMat(0),exptType("Sample"),
 
   gateTubeA(new xraySystem::CylGateValve(newName+"GateTubeA")),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
@@ -127,7 +128,12 @@ micromaxExptLine::micromaxExptLine(const std::string& Key) :
   mirrorBoxA(new constructSystem::VacuumBox(newName+"MirrorBoxA")),
   mirrorFrontA(new xraySystem::Mirror(newName+"MirrorFrontA")),
   mirrorBackA(new xraySystem::Mirror(newName+"MirrorBackA")),
-  
+
+  monoShutterB(new xraySystem::RoundMonoShutter(newName+"RMonoShutterB")),
+
+  diffractTube(new constructSystem::VacuumPipe(newName+"DiffractTube")),  
+
+  sampleTube(new constructSystem::VacuumPipe(newName+"SampleTube")),  
   sample(new insertSystem::insertSphere(newName+"Sample"))
   /*!
     Constructor
@@ -158,6 +164,8 @@ micromaxExptLine::micromaxExptLine(const std::string& Key) :
   OR.addObject(mirrorFrontA);
   OR.addObject(mirrorBackA);
   OR.addObject(sample);
+
+  OR.addObject(monoShutterB); 
 }
   
 micromaxExptLine::~micromaxExptLine()
@@ -217,7 +225,7 @@ void
 micromaxExptLine::constructCRL(Simulation& System,
 			       const attachSystem::FixedComp& initFC, 
 			       const std::string& sideName)
-/*!
+ /*!
     Sub build of the post first mono system.
     \param System :: Simulation to use
     \param initFC :: Start point
@@ -241,6 +249,36 @@ micromaxExptLine::constructCRL(Simulation& System,
   constructSystem::constructUnit
     (System,buildZone,*crlTubeB,"back",*crlPipeD);
 
+  return;
+}
+
+void
+micromaxExptLine::constructSampleStage(Simulation& System,
+					const attachSystem::FixedComp& initFC, 
+					const std::string& sideName)
+ /*!
+    Sub build of the sample in direct line geometry
+    \param System :: Simulation to use
+    \param initFC :: Start point
+    \param sideName :: start link point
+  */
+{
+  ELog::RegMethod RegA("micromaxExptLine","constructSampleStage");
+
+  int outerCell;
+
+  // both build absolute
+  sample->setNoInsert();
+  sample->createAll(System,initFC,sideName);
+  monoShutterB->createAll(System,initFC,sideName);
+
+  outerCell=buildZone.createUnit(System,*monoShutterB,"#front");
+  sample->insertInCell(System,outerCell);
+  outerCell=buildZone.createUnit(System,*monoShutterB,"back");
+  monoShutterB->insertAllInCell(System,outerCell);
+  monoShutterB->splitObject(System,"-TopPlate",outerCell);
+  monoShutterB->splitObject(System,"MidCutB",outerCell);
+  
   return;
 }
 
@@ -313,12 +351,15 @@ micromaxExptLine::buildObjects(Simulation& System)
   mirrorBackA->addInsertCell(mirrorBoxA->getCell("Void",1));
   mirrorBackA->createAll(System,*mirrorBoxA,0);
 
-  
+  // main exits built
+
+  if (exptType=="Sample")
+    constructSampleStage(System,*endPipe,"back");
+      
+
   //  buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);
 
-  // sample->setNoInsert();
-  // sample->createAll(System,*endPipe,"back");
   
   setCell("LastVoid",buildZone.getLastCell("Unit"));
   lastComp=hpJaws;

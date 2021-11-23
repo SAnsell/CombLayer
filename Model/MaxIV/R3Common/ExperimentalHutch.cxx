@@ -110,13 +110,9 @@ ExperimentalHutch::populate(const FuncDataBase& Control)
 
   pbFrontThick=Control.EvalDefVar<double>(keyName+"PbFrontThick",-1.0);
 
-  holeRadius=Control.EvalDefVar<double>(keyName+"HoleRadius",1.0);
-  holeXStep=Control.EvalDefVar<double>(keyName+"HoleXStep",0.0);
-  holeZStep=Control.EvalDefVar<double>(keyName+"HoleZStep",0.0);
-
-  exitRadius=Control.EvalDefVar<double>(keyName+"ExitRadius",-1.0);
-  exitXStep=Control.EvalDefVar<double>(keyName+"ExitXStep",0.0);
-  exitZStep=Control.EvalDefVar<double>(keyName+"ExitZStep",0.0);
+  fHoleRadius=Control.EvalDefVar<double>(keyName+"FHoleRadius",1.0);
+  fHoleXStep=Control.EvalDefVar<double>(keyName+"FHoleXStep",0.0);
+  fHoleZStep=Control.EvalDefVar<double>(keyName+"FHoleZStep",0.0);
 
   innerThick=Control.EvalVar<double>(keyName+"InnerThick");
   pbWallThick=Control.EvalVar<double>(keyName+"PbWallThick");
@@ -126,6 +122,27 @@ ExperimentalHutch::populate(const FuncDataBase& Control)
 
   innerOutVoid=Control.EvalDefVar<double>(keyName+"InnerOutVoid",0.0);
   outerOutVoid=Control.EvalDefVar<double>(keyName+"OuterOutVoid",0.0);
+
+  // exit hole radii
+  double holeRad(0.0);
+  size_t holeIndex(0);
+  do
+    {
+      const std::string iStr("Hole"+std::to_string(holeIndex));
+      const double holeXStep=
+	Control.EvalDefVar<double>(keyName+iStr+"XStep",0.0);
+      const double holeZStep=
+	Control.EvalDefVar<double>(keyName+iStr+"ZStep",0.0);
+      holeRad=
+	Control.EvalDefVar<double>(keyName+iStr+"Radius",-1.0);
+
+      if (holeRad>Geometry::zeroTol)
+	{
+	  holeOffset.push_back(Geometry::Vec3D(holeXStep,0.0,holeZStep));
+	  holeRadius.push_back(holeRad);
+	  holeIndex++;
+	}
+    } while(holeRad>Geometry::zeroTol);
 
   const size_t N=Control.EvalDefVar<size_t>(keyName+"NForkHoles",0);
   if (N)
@@ -169,7 +186,7 @@ ExperimentalHutch::createSurfaces()
 
   if (pbFrontThick>Geometry::zeroTol)
     {
-      const Geometry::Vec3D holeOrg(Origin+X*holeXStep+Z*holeZStep);
+      const Geometry::Vec3D holeOrg(Origin+X*fHoleXStep+Z*fHoleZStep);
 	
       makeShiftedSurf(SMap,"frontWall",
 		      buildIndex+11,Y,innerThick);
@@ -177,8 +194,8 @@ ExperimentalHutch::createSurfaces()
 		      buildIndex+21,Y,pbFrontThick+innerThick);    
       makeShiftedSurf(SMap,"frontWall",
 		      buildIndex+31,Y,outerThick+pbFrontThick+innerThick);
-      if (holeRadius>Geometry::zeroTol)
-	makeCylinder("frontHole",SMap,buildIndex+7,holeOrg,Y,holeRadius);
+      if (fHoleRadius>Geometry::zeroTol)
+	makeCylinder("frontHole",SMap,buildIndex+7,holeOrg,Y,fHoleRadius);
     }
   
   // Inner void
@@ -252,11 +269,13 @@ ExperimentalHutch::createSurfaces()
       if (outerOutVoid>Geometry::zeroTol)
 	ModelSupport::buildPlane(SMap,buildIndex+1333,cornerPt,-CX);
     }
-
-  if (exitRadius>Geometry::zeroTol)
+  
+  int BI(buildIndex+1000);
+  for(size_t i=0;i<holeRadius.size();i++)
     {
-      const Geometry::Vec3D exitOrg(Origin+X*exitXStep+Z*exitZStep);
-      makeCylinder("exitHole",SMap,buildIndex+1007,exitOrg,Y,exitRadius);
+      const Geometry::Vec3D HPt(holeOffset[i].getInBasis(X,Y,Z));
+      makeCylinder("exitHole",SMap,BI+7,Origin+HPt,Y,holeRadius[i]);
+      BI+=100;
     }
 
   // extra for chicanes
@@ -310,6 +329,14 @@ ExperimentalHutch::createObjects(Simulation& System)
     (pbFrontThick>Geometry::zeroTol) ?
     ModelSupport::getHeadRule(SMap,buildIndex,"31") :
     ExternalCut::getRule("frontWall");
+
+  HeadRule holeCut;
+  int BI(buildIndex+1000);
+  for(size_t i=0;i<holeRadius.size();i++)
+    {
+      holeCut*=ModelSupport::getHeadRule(SMap,BI,"7");
+      BI+=100;
+    }
 
   HeadRule forkWall;
   if(!fZStep.empty())
@@ -517,14 +544,15 @@ ExperimentalHutch::createChicane(Simulation& System)
       // set surfaces:
       if (wallName=="Left")
 	{
+		  
 	  PItem->addInsertCell("Inner",getCell("InnerLeftWall"));
 	  PItem->addInsertCell("Inner",getCell("LeadLeftWall"));
 	  PItem->addInsertCell("Inner",getCell("OuterLeftWall"));
 	  PItem->addInsertCell("Main",getCell("LeftWallVoid"));
+	  PItem->addInsertCell("Main",getCell("OuterLeftVoid",0));
 	  PItem->setCutSurf("innerWall",*this,"innerLeftWall");
 	  PItem->setCutSurf("outerWall",*this,"leftWall");      
-	  PItem->createAll(System,*this,getSideIndex("leftWall"));
-	  PItem->addInsertCell("Main",getCell("OuterLeftVoid",0));
+	  PItem->createAll(System,*this,getSideIndex("leftWall"));	    
 	}
       else if (wallName=="Right")
 	{
@@ -532,14 +560,11 @@ ExperimentalHutch::createChicane(Simulation& System)
 	  PItem->addInsertCell("Inner",getCell("LeadRingWall"));
 	  PItem->addInsertCell("Inner",getCell("OuterRingWall"));
 	  PItem->addInsertCell("Main",getCell("RightWallVoid"));
-	  PItem->setCutSurf("innerWall",*this,"innerRightWall");
-	  PItem->setCutSurf("outerWall",*this,"rightWall");      
-	  PItem->createAll(System,*this,getSideIndex("rightWall"));
 	  PItem->addInsertCell("Main",getCell("OuterRightVoid",0));
+	  PItem->setCutSurf("innerWall",*this,"innerRightWall");
+	  PItem->setCutSurf("outerWall",*this,"rightWall");
+	  PItem->createAll(System,*this,getSideIndex("rightWall"));
 	}
-
-
-      PItem->insertObjects(System);
       PChicane.push_back(PItem);
       //      PItem->splitObject(System,23,getCell("WallVoid"));
       //      PItem->splitObject(System,24,getCell("SplitVoid"));      
@@ -547,6 +572,61 @@ ExperimentalHutch::createChicane(Simulation& System)
   return;
 }
 
+void
+ExperimentalHutch::splitChicane(Simulation& System,const size_t indexA,
+				const size_t indexB)
+  /*!
+    Split chicane
+    \param System :: simulation
+    \param indexA of chicane
+    \param indexB of chicane
+   */
+{
+  ELog::RegMethod RegA("ExperimentalHutch","splitChicane");
+
+  if (indexA<indexB &&
+      indexA<PChicane.size() &&
+      indexB<PChicane.size())
+    {
+      const FuncDataBase& Control=System.getDataBase();
+      const std::string NStr(std::to_string(indexA));
+      const std::string unitName(keyName+"Chicane"+NStr);
+      const std::string wallName=
+	Control.EvalDefVar<std::string>(unitName+"Wall","Left");
+      
+      if (wallName=="Left")
+	{
+	  const Geometry::Vec3D APt=PChicane[indexA]->getLinkPt(4);
+	  const Geometry::Vec3D BPt=PChicane[indexB]->getLinkPt(3);
+	  const Geometry::Vec3D Axis=PChicane[indexA]->getLinkAxis(4);
+	  const Geometry::Vec3D midPt=(APt+BPt)/2.0;
+	  
+	  this->splitObjectAbsolute(System,5001,getCell("LeftWallVoid"),
+				    midPt,Axis);
+	  for(const std::string& cellName : {
+	      "InnerLeftWall","LeadLeftWall","OuterLeftWall","OuterLeftVoid" })
+	    {
+	      this->splitObject(System,buildIndex+5001,getCell(cellName));
+	    }
+	}
+      else if (wallName=="Right")
+	{
+	  const Geometry::Vec3D APt=PChicane[indexA]->getLinkPt(4);
+	  const Geometry::Vec3D BPt=PChicane[indexB]->getLinkPt(3);
+	  const Geometry::Vec3D Axis=PChicane[indexA]->getLinkAxis(4);
+	  const Geometry::Vec3D midPt=(APt+BPt)/2.0;
+	  
+	  this->splitObjectAbsolute(System,5001,getCell("RightWallVoid"),
+				    midPt,Axis);
+	  for(const std::string& cellName : {
+	      "InnerRingWall","LeadRingWall","OuterRingWall","OuterRightVoid" })
+	    {
+	      this->splitObject(System,buildIndex+5001,getCell(cellName));
+	    }
+	}
+    }
+  return;
+}
 
 void
 ExperimentalHutch::createAll(Simulation& System,
@@ -569,6 +649,7 @@ ExperimentalHutch::createAll(Simulation& System,
   
   createLinks();
   createChicane(System);
+
   insertObjects(System);   
   
   return;
