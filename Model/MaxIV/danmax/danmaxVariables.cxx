@@ -210,7 +210,9 @@ opticsHutVariables(FuncDataBase& Control,
   OpticsHutGenerator OGen;
 
   OGen.setSkin(0.2);
-  OGen.setWallPbThick(2.0,2.0,10.0);
+  OGen.setBackLead(10.0);
+  OGen.setWallLead(2.0);
+  OGen.setRoofLead(2.0);
   OGen.addHole(Geometry::Vec3D(beamMirrorShift,0,0),3.5);
   OGen.generateHut(Control,hutName,999.6);
 
@@ -313,7 +315,8 @@ exptHutVariables(FuncDataBase& Control,
 
   EGen.setFrontHole(beamMirrorShift,0.0,4.0);
   EGen.setCorner(45.0,138.0);
-  EGen.setFBLead(0.5,0.5);
+  EGen.setFrontLead(0.5);
+  EGen.setBackLead(0.5);
   EGen.setRoofLead(0.6);
   EGen.setWallLead(0.4);
 

@@ -219,13 +219,12 @@ COSAXS::build(Simulation& System,
   const attachSystem::CellMap* tube =
     System.getObjectThrow<attachSystem::CellMap>(tubeName,"CellMap");
 
-
-  HeadRule wallCut=
+  const HeadRule wallCut=
     exptHut->getSurfRule("innerBack")*
     exptHut->getSurfRule("#outerBack")*
     exptHut->getSurfRule("exitHole");
-  wallCut.makeComplement();
-  tube->insertComponent(System,"tubeVoid",9,wallCut);
+
+  tube->insertComponent(System,"tubeVoid",9,wallCut.complement());
 
   return;
 

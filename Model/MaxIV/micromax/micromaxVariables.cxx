@@ -464,7 +464,7 @@ monoShutterBVariables(FuncDataBase& Control,
   
   // up / up (true)
   RShutterGen.generateShutter(Control,preName+"RMonoShutterB",1,1);  
-  Control.addVariable(preName+"RMonoShutterBYAngle",90);
+  Control.addVariable(preName+"RMonoShutterBYAngle",270);
   Control.addVariable(preName+"RMonoShutterBYStep",495);
 
   return;
@@ -487,7 +487,9 @@ opticsHutVariables(FuncDataBase& Control,
   PortChicaneGenerator PGen;
     
   OGen.setSkin(0.2);
-  OGen.setWallPbThick(2.0,2.0,10.0);
+  OGen.setBackLead(10.0);
+  OGen.setWallLead(2.0);
+  OGen.setRoofLead(2.0);
 
   OGen.generateHut(Control,hutName,1256.0);
   
@@ -538,6 +540,7 @@ exptHutVariables(FuncDataBase& Control,
   const std::string hutName(beamName+"ExptHut");
 
   EGen.setFrontHole(beamXStep-beamOffset,0.0,3.0);
+  EGen.addHole(Geometry::Vec3D(beamOffset,0,0),3.5);
   EGen.generateHut(Control,hutName,0.0,901.0);
 
   // lead shield on pipe

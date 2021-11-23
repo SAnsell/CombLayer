@@ -59,10 +59,7 @@ class ExptHutGenerator  :
 
   void setCorner(const double,const double);
 
-  void setFBLead(const double,const double);
-  void setRoofLead(const double);
-  void setWallLead(const double);
-  
+  void setFrontLead(const double T) { pbFrontThick=T; }
   void setFrontHole(const double,const double,const double);
   void generateHut(FuncDataBase&,const std::string&,
 		   const double,const double) const;

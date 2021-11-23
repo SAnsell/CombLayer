@@ -334,7 +334,7 @@ ExperimentalHutch::createObjects(Simulation& System)
   int BI(buildIndex+1000);
   for(size_t i=0;i<holeRadius.size();i++)
     {
-      holeCut*=ModelSupport::getHeadRule(SMap,BI,"7");
+      holeCut*=HeadRule(SMap,BI,7);
       BI+=100;
     }
 
@@ -372,8 +372,9 @@ ExperimentalHutch::createObjects(Simulation& System)
 
   // alt
   HR=ModelSupport::getAltHeadRule
-    (SMap,buildIndex,"1007 2 -12 -313A 13B -14 -6");
-  makeCell("InnerBackWall",System,cellIndex++,skinMat,0.0,HR*floor*innerWall);
+    (SMap,buildIndex,"2 -12 -313A 13B -14 -6");
+  makeCell("InnerBackWall",System,cellIndex++,skinMat,0.0,
+	   HR*floor*innerWall*holeCut);
 
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-32 33 -333 -34 6 -16");
   makeCell("InnerRoof",System,cellIndex++,skinMat,0.0,HR*innerWall);
@@ -387,8 +388,9 @@ ExperimentalHutch::createObjects(Simulation& System)
 	   HR*floor*innerWall*forkWall);
   
   HR=ModelSupport::getAltHeadRule
-    (SMap,buildIndex,"1007 12 -22 -24 -323A 23B -6");
-  makeCell("LeadBackWall",System,cellIndex++,pbMat,0.0,HR*floor*innerWall);
+    (SMap,buildIndex,"12 -22 -24 -323A 23B -6");
+  makeCell("LeadBackWall",System,cellIndex++,pbMat,0.0,
+	   HR*floor*innerWall*holeCut);
 
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-32 33 -333 -34 16 -26");
   makeCell("LeadRoof",System,cellIndex++,pbMat,0.0,HR*innerWall);
@@ -402,8 +404,9 @@ ExperimentalHutch::createObjects(Simulation& System)
 	   HR*floor*innerWall*forkWall);
   
   HR=ModelSupport::getAltHeadRule
-    (SMap,buildIndex,"1007 22 -32 -34 -333A 33B -6");
-  makeCell("OuterBackWall",System,cellIndex++,skinMat,0.0,HR*floor*innerWall);
+    (SMap,buildIndex,"22 -32 -34 -333A 33B -6");
+  makeCell("OuterBackWall",System,cellIndex++,skinMat,0.0,
+	   HR*floor*innerWall*holeCut);
 
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-32 33 -333 -34 26 -36");
   makeCell("OuterRoof",System,cellIndex++,skinMat,0.0,HR*innerWall);
@@ -422,6 +425,16 @@ ExperimentalHutch::createObjects(Simulation& System)
       makeCell("EntranceHole",System,cellIndex++,voidMat,0.0,HR*frontWall);
     }
 
+    // Outer void for pipe(s)
+  BI=buildIndex+1000;
+  for(size_t i=0;i<holeRadius.size();i++)
+    {
+      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,BI,"2 -32 -7M");
+      makeCell("ExitHole",System,cellIndex++,voidMat,0.0,HR);
+      BI+=100;
+    }
+  
+  //EXCLUDE
   if (outerOutVoid>Geometry::zeroTol)
     {
       HR=ModelSupport::getSetHeadRule

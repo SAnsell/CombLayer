@@ -82,22 +82,6 @@ OpticsHutGenerator::addHole(const Geometry::Vec3D& HO,
 }
   
   
-void
-OpticsHutGenerator::setWallPbThick(const double mainT,
-				 const double roofT,
-				 const double backT)
-  /*!
-    Simple setter
-    \param mainT :: Set main wal thicknes
-    \param roofT :: Set roof thickness
-    \param backT :: Set back thickness
-   */
-{
-  pbWallThick=mainT;
-  pbRoofThick=roofT;
-  pbBackThick=backT;
-  return;
-}
   
   
 void

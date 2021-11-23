@@ -68,33 +68,6 @@ ExptHutGenerator::ExptHutGenerator() :
   outerThick=0.1;
 }
 
-void
-ExptHutGenerator::setFBLead(const double FL,const double BL)
-  /*!
-    Set front / back lead thickness
-   */
-{
-  pbFrontThick=FL;
-  pbBackThick=BL;
-  return;
-}
-
-void
-ExptHutGenerator::setRoofLead(const double RL)
-  /*!
-    Set roof thickness
-  */
-{
-  pbRoofThick=RL;
-  return;
-}
-
-void
-ExptHutGenerator::setWallLead(const double WL)
-{
-  pbWallThick=WL;
-  return;
-}
   
 void
 ExptHutGenerator::setCorner(const double CA,const double CL)
