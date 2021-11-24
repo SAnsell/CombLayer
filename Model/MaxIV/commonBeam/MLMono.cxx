@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   danmax/MLMono.cxx
+ * File:   commonBeam/MLMono.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -212,7 +212,6 @@ MLMono::createSurfaces()
 
   // main xstal CENTRE AT Shifted position [
 
-  ELog::EM<<"Theta == "<<thetaA<<ELog::endDiag;
   const double yDist=gap/tan(2.0*thetaA*M_PI/180.0);
   const Geometry::Quaternion QXB
     (Geometry::Quaternion::calcQRotDeg(-thetaB,X));

@@ -39,6 +39,7 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
+#include "Exception.h"
 #include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Line.h"
@@ -123,15 +124,17 @@ micromaxExptLine::micromaxExptLine(const std::string& Key) :
   crlTubeB(new xraySystem::CRLTube(newName+"CRLTubeB")),
   crlPipeD(new constructSystem::VacuumPipe(newName+"CRLPipeD")),
  
-  
   endPipe(new constructSystem::VacuumPipe(newName+"EndPipe")),
+
   mirrorBoxA(new constructSystem::VacuumBox(newName+"MirrorBoxA")),
   mirrorFrontA(new xraySystem::Mirror(newName+"MirrorFrontA")),
   mirrorBackA(new xraySystem::Mirror(newName+"MirrorBackA")),
 
   monoShutterB(new xraySystem::RoundMonoShutter(newName+"RMonoShutterB")),
 
-  diffractTube(new constructSystem::VacuumPipe(newName+"DiffractTube")),  
+  diffractTube(new constructSystem::VacuumPipe(newName+"DiffractTube")),
+
+  byPassTube(new constructSystem::VacuumPipe(newName+"ByPassTube")),  
 
   sampleTube(new constructSystem::VacuumPipe(newName+"SampleTube")),  
   sample(new insertSystem::insertSphere(newName+"Sample"))
@@ -165,6 +168,8 @@ micromaxExptLine::micromaxExptLine(const std::string& Key) :
   OR.addObject(mirrorBackA);
   OR.addObject(sample);
 
+  OR.addObject(diffractTube);
+
   OR.addObject(monoShutterB); 
 }
   
@@ -190,6 +195,8 @@ micromaxExptLine::populate(const FuncDataBase& Control)
   outerTop=Control.EvalDefVar<double>(keyName+"OuterTop",outerLeft);
 
   outerMat=ModelSupport::EvalDefMat(Control,keyName+"OuterMat",0);
+
+  exptType=Control.EvalDefVar<std::string>(keyName+"ExptType","Sample");
   
   return;
 }
@@ -254,8 +261,8 @@ micromaxExptLine::constructCRL(Simulation& System,
 
 void
 micromaxExptLine::constructSampleStage(Simulation& System,
-					const attachSystem::FixedComp& initFC, 
-					const std::string& sideName)
+				       const attachSystem::FixedComp& initFC, 
+				       const std::string& sideName)
  /*!
     Sub build of the sample in direct line geometry
     \param System :: Simulation to use
@@ -270,11 +277,83 @@ micromaxExptLine::constructSampleStage(Simulation& System,
   // both build absolute
   sample->setNoInsert();
   sample->createAll(System,initFC,sideName);
-  monoShutterB->createAll(System,initFC,sideName);
+
+  monoShutterB->createAll(System,*endPipe,"back");
 
   outerCell=buildZone.createUnit(System,*monoShutterB,"#front");
   sample->insertInCell(System,outerCell);
   outerCell=buildZone.createUnit(System,*monoShutterB,"back");
+
+  monoShutterB->insertAllInCell(System,outerCell);
+  monoShutterB->splitObject(System,"-TopPlate",outerCell);
+  monoShutterB->splitObject(System,"MidCutB",outerCell);
+  
+  return;
+}
+
+void
+micromaxExptLine::constructByPassStage(Simulation& System)
+  /*!
+    Sub build of the bypass geometry (beam to expthut-2)
+    \param System :: Simulation to use
+  */
+{
+  ELog::RegMethod RegA("micromaxExptLine","constructByPassStage");
+
+  int outerCell,outerCellA;
+  // First place mirrors into beam
+
+  monoShutterB->createAll(System,*endPipe,"back");
+  outerCellA=buildZone.createUnit(System,*monoShutterB,"#front");
+  sample->insertInCell(System,outerCellA);
+  outerCell=buildZone.createUnit(System,*monoShutterB,"back");
+ 
+  monoShutterB->insertAllInCell(System,outerCell);
+  monoShutterB->splitObject(System,"-TopPlate",outerCell);
+  monoShutterB->splitObject(System,"MidCutB",outerCell);
+
+  byPassTube->setFront(*mirrorBoxA,"back");
+  byPassTube->setBack(*monoShutterB,"front");
+  byPassTube->createAll(System,*endPipe,"back");
+  byPassTube->insertAllInCell(System,outerCellA);
+
+  return;
+}
+
+void
+micromaxExptLine::constructDiffractionStage
+    (Simulation& System,
+     const attachSystem::FixedComp& initFC, 
+     const std::string& sideName)
+ /*!
+    Sub build of the diffractoin in out-line line geometry
+    \param System :: Simulation to use
+    \param initFC :: Start point
+    \param sideName :: start link point
+  */
+{
+  ELog::RegMethod RegA("micromaxExptLine","constructSampleStage");
+
+  int outerCell;
+  // First place mirrors into beam
+  mirrorFrontA->addInsertCell(mirrorBoxA->getCell("Void",0));
+  mirrorFrontA->createAll(System,*mirrorBoxA,0);
+
+  mirrorBackA->addInsertCell(mirrorBoxA->getCell("Void",1));
+  mirrorBackA->createAll(System,*mirrorBoxA,0);
+
+  constructSystem::constructUnit
+    (System,buildZone,initFC,sideName,*diffractTube);
+
+  // both build absolute
+  sample->setNoInsert();
+  sample->createAll(System,initFC,sideName);
+
+  monoShutterB->createAll(System,*endPipe,"back");
+  outerCell=buildZone.createUnit(System,*monoShutterB,"#front");
+  sample->insertInCell(System,outerCell);
+  outerCell=buildZone.createUnit(System,*monoShutterB,"back");
+
   monoShutterB->insertAllInCell(System,outerCell);
   monoShutterB->splitObject(System,"-TopPlate",outerCell);
   monoShutterB->splitObject(System,"MidCutB",outerCell);
@@ -345,24 +424,22 @@ micromaxExptLine::buildObjects(Simulation& System)
   mirrorBoxA->splitObject(System,3001,mirrorBoxA->getCell("Void"),
 			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
   
-  mirrorFrontA->addInsertCell(mirrorBoxA->getCell("Void",0));
-  mirrorFrontA->createAll(System,*mirrorBoxA,0);
-
-  mirrorBackA->addInsertCell(mirrorBoxA->getCell("Void",1));
-  mirrorBackA->createAll(System,*mirrorBoxA,0);
 
   // main exits built
 
   if (exptType=="Sample")
     constructSampleStage(System,*endPipe,"back");
-      
+  else if (exptType=="Diffraction")
+    constructDiffractionStage(System,*mirrorBoxA,"back");
+  else if (exptType=="ByPass")
+    constructByPassStage(System);
+  else
+    throw ColErr::InContainerError<std::string>(exptType,"exptType");
 
-  //  buildZone.createUnit(System);
-  buildZone.rebuildInsertCells(System);
-
-  
+  buildZone.createUnit(System);
+  buildZone.rebuildInsertCells(System);  
   setCell("LastVoid",buildZone.getLastCell("Unit"));
-  lastComp=hpJaws;
+  lastComp=monoShutterB;
 
   return;
 }

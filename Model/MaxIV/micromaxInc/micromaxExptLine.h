@@ -28,12 +28,6 @@ namespace insertSystem
   class insertSphere;
 }
 
-namespace tdcSystem
-{
-  class SixPortTube;
-  class YagScreen;
-}
-
 namespace constructSystem
 {
   class VacuumPipe;
@@ -48,7 +42,6 @@ namespace xraySystem
 {
   class CylGateValve;
   class MonoBox;
-  class FourPortTube;
   class BoxJaws;
   class ViewScreenTube;
   class CRLTube;
@@ -130,6 +123,10 @@ class micromaxExptLine :
   /// Tube to diffraction
   std::shared_ptr<constructSystem::VacuumPipe> diffractTube;
 
+  //BYPASS:
+  /// Tube to diffraction
+  std::shared_ptr<constructSystem::VacuumPipe> byPassTube;
+
   /// SAMPLE
   /// Tube 
   std::shared_ptr<constructSystem::VacuumPipe> sampleTube;
@@ -148,7 +145,11 @@ class micromaxExptLine :
   void constructSampleStage(Simulation&,
 			    const attachSystem::FixedComp&,
 			    const std::string&); 
-
+  void constructDiffractionStage(Simulation&,
+				 const attachSystem::FixedComp&,
+				 const std::string&); 
+  void constructByPassStage(Simulation&);
+  
 
   void populate(const FuncDataBase&);
   void createSurfaces();

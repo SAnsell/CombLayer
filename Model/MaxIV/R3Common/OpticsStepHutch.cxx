@@ -179,7 +179,7 @@ OpticsStepHutch::createObjects(Simulation& System)
   makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*floor*sideWall);
 
   // walls:
-  ELog::EM<<"Fork == "<<forkWallOuter<<ELog::endDiag;
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 -3 13 -6");
   makeCell("InnerWall",System,cellIndex++,skinMat,0.0,
 	   HR*floor*frontWall*forkWallOuter);

@@ -259,7 +259,6 @@ DCMTank::createSurfaces()
 
 
   // BACK PORT
-  ELog::EM<<"portBX["<<keyName<<"] = "<<portBXStep<<ELog::endDiag;
   const Geometry::Vec3D BCentre(Origin+X*portBXStep+Z*portBZStep);
   ModelSupport::buildCylinder(SMap,buildIndex+607,BCentre,Y,portBTubeRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+617,BCentre,Y,

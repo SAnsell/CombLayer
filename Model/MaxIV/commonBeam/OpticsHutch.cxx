@@ -384,7 +384,7 @@ OpticsHutch::createForkCut(Simulation& System)
   */
 {
   ELog::RegMethod RegA("OpticsHutch","buildForkCut");
-  ELog::EM<<"Create fork"<<ELog::endDiag;
+
   if(!fZStep.empty())
     {
       const HeadRule floor=ExternalCut::getValidRule("Floor",Origin);

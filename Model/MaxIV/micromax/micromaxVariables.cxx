@@ -118,6 +118,7 @@ void exptHutVariables(FuncDataBase&,const std::string&,const double);
 void exptHutBVariables(FuncDataBase&,const std::string&,const double);
 void opticsVariables(FuncDataBase&,const std::string&);
 void exptLineVariables(FuncDataBase&,const std::string&);
+void exptLineBVariables(FuncDataBase&,const std::string&);
 void shieldVariables(FuncDataBase&,const std::string&);
 void monoShutterVariables(FuncDataBase&,const std::string&);
 void monoShutterBVariables(FuncDataBase&,const std::string&);
@@ -664,7 +665,6 @@ mirrorBox(FuncDataBase& Control,
   const double bMirrorDist((mainLength-centreDist)/2.0);
 
   const double heightDelta=tan(2.0*std::abs(phi)*M_PI/180.0)*aMirrorDist;
-  const double mirrorDelta=tan(2.0*std::abs(phi)*M_PI/180.0)*centreDist;
   const double widthDelta=tan(2.0*std::abs(theta)*M_PI/180.0)*bMirrorDist;
 
   VBoxGen.setBPortOffset(widthDelta,heightDelta);
@@ -746,8 +746,6 @@ diagPackage(FuncDataBase& Control,const std::string& Name)
 {
   ELog::RegMethod RegA("micromaxVariables[F]","diagPackage");
 
-
-  const double DLength(65.0);         // diag length [checked]
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortTubeGenerator PTubeGen;
@@ -931,7 +929,7 @@ opticsVariables(FuncDataBase& Control,
   micromaxVar::hdcmPackage(Control,preName);
 
   BellowGen.generateBellow(Control,preName+"BellowH",7.5);
-  ELog::EM<<"PipeGen "<<preName<<ELog::endDiag;
+
   PipeGen.generatePipe(Control,preName+"PipeB",7.5);
   GVGen.generateGate(Control,preName+"GateTubeC",0);  // open
   
@@ -1068,7 +1066,7 @@ void
 exptLineVariables(FuncDataBase& Control,
 	      const std::string& beamName)
   /*
-    Vacuum expt components in the optics hutch
+    Components in the first experimental hutch
     \param Control :: Function data base
     \param beamName :: Name of beamline
   */
@@ -1078,7 +1076,6 @@ exptLineVariables(FuncDataBase& Control,
   setVariable::PipeGenerator PipeGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::CRLTubeGenerator DPGen;
-  setVariable::SixPortGenerator SixGen;
   setVariable::ViewScreenGenerator VTGen;
   setVariable::CooledScreenGenerator CoolGen;
   setVariable::CylGateValveGenerator GVGen;
@@ -1091,7 +1088,9 @@ exptLineVariables(FuncDataBase& Control,
   const std::string preName(beamName+"ExptLine");
 
   GVGen.generateGate(Control,preName+"GateTubeA",0);  // open
-    
+
+  Control.addVariable(preName+"ExptType","Diffraction");
+  Control.addVariable(preName+"ExptType","ByPass");
   Control.addVariable(preName+"OuterLeft",50.0);
   Control.addVariable(preName+"OuterRight",50.0);
   Control.addVariable(preName+"OuterTop",60.0);
@@ -1127,7 +1126,67 @@ exptLineVariables(FuncDataBase& Control,
 
   monoShutterBVariables(Control,preName);
   PipeGen.generatePipe(Control,preName+"ExitPipe",35.0);  
+
+
+  // Diffraciton stage
+  PipeGen.generatePipe(Control,preName+"DiffractTube",35.0);
+  // bypass stage
+  PipeGen.setAFlangeCF<CF63>();
+  PipeGen.generatePipe(Control,preName+"ByPassTube",435.0);
+  return;
+}
+
+void
+exptLineBVariables(FuncDataBase& Control,
+		   const std::string& beamName)
+  /*
+    Components in the second experimental hutch
+    \param Control :: Function data base
+    \param beamName :: Name of beamline
+  */
+{
+  ELog::RegMethod RegA("micromaxVariables[F]","exptVariables");
+
+  setVariable::PipeGenerator PipeGen;
+  setVariable::BellowGenerator BellowGen;
+  setVariable::ViewScreenGenerator VTGen;
+  setVariable::CooledScreenGenerator CoolGen;
+  setVariable::CylGateValveGenerator GVGen;
+  setVariable::HPJawsGenerator HPGen;
   
+  PipeGen.setNoWindow();
+  PipeGen.setMat("Stainless304");
+  PipeGen.setCF<CF40>();
+  
+  const std::string preName(beamName+"ExptLineB");
+  Control.addVariable(preName+"OuterLeft",50.0);
+  Control.addVariable(preName+"OuterRight",50.0);
+  Control.addVariable(preName+"OuterTop",60.0);
+  Control.addVariable(preName+"OuterMat","Void");
+
+  GVGen.generateGate(Control,preName+"GateTubeA",0);  // open
+    
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,preName+"BellowA",7.5);
+
+  VTGen.setPortBCF<setVariable::CF40>();
+  VTGen.setPortBLen(22.5);
+  VTGen.generateView(Control,preName+"ViewTube");
+
+  CoolGen.generateScreen(Control,preName+"CooledScreen",1);  // in beam
+  Control.addVariable(preName+"CooledScreenYAngle",-90.0);
+
+  PipeGen.generatePipe(Control,preName+"PipeA",7.5);  
+
+  HPGen.setMain(24.0);
+  HPGen.generateJaws(Control,preName+"HPJaws",0.3,0.3);
+
+  PipeGen.generatePipe(Control,preName+"PipeB",7.5);
+
+  Control.addVariable(preName+"SampleYStep", 185.0); // [2]
+  Control.addVariable(preName+"SampleRadius", 5.0); // [2]
+  Control.addVariable(preName+"SampleDefMat", "Stainless304");
+
   return;
 }
 
@@ -1174,6 +1233,7 @@ MICROMAXvariables(FuncDataBase& Control)
   micromaxVar::exptHutVariables(Control,"MicroMax",0.0);
   micromaxVar::exptHutBVariables(Control,"MicroMax",0.0);
   micromaxVar::exptLineVariables(Control,"MicroMax");
+  micromaxVar::exptLineBVariables(Control,"MicroMax");
   //  micromaxVar::detectorTubePackage(Control,"MicroMax");
 
   PipeGen.setCF<setVariable::CF40>(); 
