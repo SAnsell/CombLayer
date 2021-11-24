@@ -1089,7 +1089,6 @@ exptLineVariables(FuncDataBase& Control,
 
   GVGen.generateGate(Control,preName+"GateTubeA",0);  // open
 
-  Control.addVariable(preName+"ExptType","Diffraction");
   Control.addVariable(preName+"ExptType","ByPass");
   Control.addVariable(preName+"OuterLeft",50.0);
   Control.addVariable(preName+"OuterRight",50.0);
@@ -1129,9 +1128,10 @@ exptLineVariables(FuncDataBase& Control,
 
 
   // Diffraciton stage
-  PipeGen.generatePipe(Control,preName+"DiffractTube",35.0);
-  // bypass stage
   PipeGen.setAFlangeCF<CF63>();
+  PipeGen.generatePipe(Control,preName+"DiffractTube",125.0);
+  // bypass stage
+
   PipeGen.generatePipe(Control,preName+"ByPassTube",435.0);
   return;
 }
@@ -1237,7 +1237,7 @@ MICROMAXvariables(FuncDataBase& Control)
   //  micromaxVar::detectorTubePackage(Control,"MicroMax");
 
   PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,"MicroMaxJoinPipeC",70.0);
+  PipeGen.generatePipe(Control,"MicroMaxJoinPipeC",20.0);
 
 
   return;
