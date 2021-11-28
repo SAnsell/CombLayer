@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   src/SimPHITS.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,17 +16,17 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <cmath>
-#include <complex> 
+#include <complex>
 #include <vector>
 #include <list>
-#include <map> 
+#include <map>
 #include <set>
 #include <string>
 #include <algorithm>
@@ -93,7 +93,7 @@ SimPHITS::SimPHITS(const SimPHITS& A) :
   Simulation(A),nps(A.nps),rndSeed(A.rndSeed),
   PTItem(A.PTItem),MagItem(A.MagItem),
   PhysPtr(new phitsSystem::phitsPhysics(*PhysPtr))
- /*! 
+ /*!
    Copy constructor
    \param A :: Simulation to copy
  */
@@ -143,7 +143,7 @@ SimPHITS::setICNTL(const std::string& ICName)
       icntl=7;
       return;
     }
-    
+
   throw ColErr::InContainerError<std::string>(ICName,"ICName");
   return;
 }
@@ -158,7 +158,7 @@ SimPHITS::addTally(const phitsSystem::phitsTally& TRef)
   */
 {
   ELog::RegMethod RegA("SimPHITS","addTally");
-  
+
   const std::string keyNum=TRef.getKeyName();
   if (PTItem.find(keyNum)!=PTItem.end())
     throw ColErr::InContainerError<std::string>(keyNum,"Tally Present");
@@ -190,7 +190,7 @@ SimPHITS::getNextTallyID() const
 void
 SimPHITS::writeSource(std::ostream& OX) const
   /*!
-    Writes out the sources 
+    Writes out the sources
     construction.
     \param OX :: Output stream
   */
@@ -198,7 +198,7 @@ SimPHITS::writeSource(std::ostream& OX) const
   ELog::RegMethod RegA("SimPHITS","writeSource");
 
   SDef::sourceDataBase& SDB=SDef::sourceDataBase::Instance();
-  
+
   OX<<"[Source]"<<std::endl;
 
   const SDef::SourceBase* SBPtr=
@@ -211,7 +211,7 @@ SimPHITS::writeSource(std::ostream& OX) const
 void
 SimPHITS::writeTally(std::ostream& OX) const
   /*!
-    Writes out the tallies 
+    Writes out the tallies
     construction.
     \param OX :: Output stream
    */
@@ -234,7 +234,7 @@ SimPHITS::addMagnetObject
    */
 {
   ELog::RegMethod RegA("SimPHITS","addMagnetObject");
-  
+
   addObject(MUnit);
   MUnit->setIndex(MagItem.size());
   MagItem.emplace(MUnit->getKeyName(),MUnit);
@@ -271,7 +271,7 @@ SimPHITS::renumberCells(const std::vector<int>& cOffset,
 void
 SimPHITS::writeTransform(std::ostream& OX) const
   /*!
-    Write all the transforms in standard MCNPX output 
+    Write all the transforms in standard MCNPX output
     type [These should now not be used].
     \param OX :: Output stream
   */
@@ -291,7 +291,7 @@ SimPHITS::writeTransform(std::ostream& OX) const
 void
 SimPHITS::writeCells(std::ostream& OX) const
   /*!
-    Write all the cells in standard MCNPX output 
+    Write all the cells in standard MCNPX output
     type.
     \param OX :: Output stream
   */
@@ -314,14 +314,14 @@ SimPHITS::writeCells(std::ostream& OX) const
 	}
     }
   OX<<std::endl;
-  
+
   return;
 }
 
 void
 SimPHITS::writeSurfaces(std::ostream& OX) const
   /*!
-    Write all the surfaces in standard MCNPX output 
+    Write all the surfaces in standard MCNPX output
     type.
     \param OX :: Output stream
   */
@@ -337,12 +337,12 @@ SimPHITS::writeSurfaces(std::ostream& OX) const
     mp.second->write(OX);
 
   return;
-} 
+}
 
 void
 SimPHITS::writeMaterial(std::ostream& OX) const
   /*!
-    Write all the used Materials in standard MCNPX output 
+    Write all the used Materials in standard MCNPX output
     type.
     \param OX :: Output stream
   */
@@ -355,7 +355,7 @@ SimPHITS::writeMaterial(std::ostream& OX) const
 
   for(const auto& [matID,matPtr] : orderedMat)
     {
-      (void) matID; 
+      (void) matID;
       matPtr->writePHITS(OX);
     }
 
@@ -366,7 +366,7 @@ SimPHITS::writeMaterial(std::ostream& OX) const
 void
 SimPHITS::writeWeights(std::ostream& OX) const
   /*!
-    Write all the used Weight in standard MCNPX output 
+    Write all the used Weight in standard MCNPX output
     type.
     \param OX :: Output stream
   */
@@ -384,12 +384,12 @@ SimPHITS::writeWeights(std::ostream& OX) const
 void
 SimPHITS::writePhysics(std::ostream& OX) const
   /*!
-    Write all the used Weight in standard MCNPX output 
+    Write all the used Weight in standard MCNPX output
     type. Note that it also has to add the rdum cards
     to the physics
     \param OX :: Output stream
   */
-{  
+{
   ELog::RegMethod RegA("SimPHITS","writePhysics");
   // Processing for point tallies
 
@@ -401,19 +401,18 @@ SimPHITS::writePhysics(std::ostream& OX) const
   StrFunc::writePHITS(OX,1,"icntl",icntl);
   StrFunc::writePHITS(OX,1,"maxcas",nps/10);
   StrFunc::writePHITS(OX,1,"maxbch",10);
-  StrFunc::writePHITS(OX,1,"file(1)","/home/ansell/phits");
+  // StrFunc::writePHITS(OX,1,"file(1)","/home/ansell/phits");
   StrFunc::writePHITS(OX,1,"file(6)","phits.out");
-  StrFunc::writePHITS(OX,1,"file(7)","/home/ansell/mcnpxNew/xsdir_short");
   StrFunc::writePHITS(OX,1,"rseed",rndSeed);
-  
+
   if (!MagItem.empty())
     {
       StrFunc::writePHITS(OX,1,"imagnf",1,"Turn on magnetic fields");
       StrFunc::writePHITS(OX,1,"ielctf",0,"Turn on electromag fields");
     }
-    
+
   PhysPtr->writePHITS(OX);
-  
+
   if (WM.hasParticle("n"))
     {
       const WeightSystem::WForm* NWForm=WM.getParticle("n");
@@ -421,14 +420,14 @@ SimPHITS::writePhysics(std::ostream& OX) const
     }
   OX<<"$ ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
 
-  
+
   OX<<std::endl;
   return;
 }
 
 void
 SimPHITS::writeMagnet(std::ostream& OX) const
-  /*! 
+  /*!
     Write all the magnet units to standard phits
     Note that wes use type 103 to get to usrmgf3.f
     \param OX :: Output stream
@@ -450,7 +449,7 @@ SimPHITS::writeMagnet(std::ostream& OX) const
 	    // 10.0 :  1/Stepsize : unused
 	    // 10.0 : t to kG [field is provided in tesla:unused]
 	    // 0 : transform (trcl)
-	    StrFunc::writePHITSTable(OX,1,name,-5,10.0,10.0,0); 
+	    StrFunc::writePHITSTable(OX,1,name,-5,10.0,10.0,0);
 	}
 
       OX<<"[Magnetic Units]"<<std::endl;
@@ -470,7 +469,7 @@ SimPHITS::writeImportance(std::ostream& OX) const
   ELog::RegMethod RegA("SimMCNP","writeImportance");
 
   const particleConv& pConv=particleConv::Instance();
-  
+
   std::ostringstream cx;
 
   // make set of particle:
@@ -480,7 +479,7 @@ SimPHITS::writeImportance(std::ostream& OX) const
   // zero for all:
   std::map<int,std::map<int,double>> ImpMap;
   ImpMap.emplace(0,std::map<int,double>());
-    
+
   bool flag(0);
   double Imp;
   for(const int CN : cellOutOrder)
@@ -488,7 +487,7 @@ SimPHITS::writeImportance(std::ostream& OX) const
       const MonteCarlo::Object* OPtr=findObject(CN);
       // flag indicates particles :
       std::tie(flag,Imp)=OPtr->getImpPair();  // returns 0 as well
-      ImpMap[0].emplace(CN,Imp);	    
+      ImpMap[0].emplace(CN,Imp);
       if (!flag)
 	{
 	  const std::set<int>& PSet=OPtr->getImportance().getParticles();
@@ -516,7 +515,7 @@ SimPHITS::writeImportance(std::ostream& OX) const
 	    OX<<"  part = all"<<std::endl;
 	  else
 	    OX<<"  part = "<<pConv.mcplToPHITS(particleNumber)<<std::endl;
-			      
+
 	  StrFunc::writePHITSTableHead(OX,1,{"reg","imp"});
 	  StrFunc::writePHITSCellSet(OX,2,allMap);
 	}
@@ -530,7 +529,7 @@ void
 SimPHITS::write(const std::string& Fname) const
   /*!
     Write out all the system (in PHITS output format)
-    \param Fname :: Output file 
+    \param Fname :: Output file
   */
 {
   std::ofstream OX(Fname.c_str());
@@ -538,7 +537,7 @@ SimPHITS::write(const std::string& Fname) const
   writePhysics(OX);
   //  Simulation::writeVariables(OX);
   OX<<std::endl;
-  
+
   writeCells(OX);
   writeSurfaces(OX);
   writeMaterial(OX);
@@ -549,7 +548,7 @@ SimPHITS::write(const std::string& Fname) const
   writeImportance(OX);
   writeMagnet(OX);
 
-  OX<<"[end]"<<std::endl; 
+  OX<<"[end]"<<std::endl;
   OX.close();
   return;
 }

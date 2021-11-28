@@ -57,9 +57,8 @@
 #include "FlatPipeGenerator.h"
 #include "BeamDividerGenerator.h"
 #include "IonPTubeGenerator.h"
-#include "LBeamStopGenerator.h"
 #include "NBeamStopGenerator.h"
-#include "BeamBoxGenerator.h"
+#include "TDCBeamDumpGenerator.h"
 
 #include "magnetVar.h"
 
@@ -295,7 +294,7 @@ Segment29Magnet(FuncDataBase& Control,
   setVariable::YagScreenGenerator YagScreenGen;
   setVariable::YagUnitGenerator YagUnitGen;
   setVariable::NBeamStopGenerator BSGen;
-  setVariable::BeamBoxGenerator BXGen;
+  setVariable::TDCBeamDumpGenerator TDCBDGen;
 
   const Geometry::Vec3D startPtA(-637.608,9073.611,0.0);
   const Geometry::Vec3D startPtB(-637.608,9073.535,-84.888);
@@ -342,41 +341,22 @@ Segment29Magnet(FuncDataBase& Control,
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnitB",true);
   Control.addVariable(lKey+"YagUnitBYAngle",90.0);
 
-  YagScreenGen.generateScreen(Control,lKey+"YagScreenA",0);   // closed
+  YagScreenGen.generateScreen(Control,lKey+"YagScreenA",1);   // closed
   Control.addVariable(lKey+"YagScreenAYAngle",-90.0);
-  YagScreenGen.generateScreen(Control,lKey+"YagScreenB",0);   // closed
+  YagScreenGen.generateScreen(Control,lKey+"YagScreenB",1);   // closed
   Control.addVariable(lKey+"YagScreenBYAngle",-90.0);
 
-  BSGen.setFullLen(125.0);
-  BSGen.generateBStop(Control,lKey+"BeamStopA",3.0);
-  BSGen.setFullLen(122.0);
-  BSGen.generateBStop(Control,lKey+"BeamStopB",3.0);
+  TDCBDGen.generate(Control,lKey+"BeamStopA");
   Control.addVariable(lKey+"BeamStopAYAngle",-90.0);
+  Control.addVariable(lKey+"BeamStopAYStep",4.0);
+  Control.addVariable(lKey+"BeamStopABackSkinThick",0.0);
+  Control.addVariable(lKey+"BeamStopAPreCoreLength",47.0);
+
+  TDCBDGen.generate(Control,lKey+"BeamStopB");
   Control.addVariable(lKey+"BeamStopBYAngle",-90.0);
-  
-  Control.addVariable(lKey+"BeamWingAYStep",100.0);
-  Control.addVariable(lKey+"BeamWingAXStep",25.0);
-  Control.addVariable(lKey+"BeamWingAPreZAngle",70.0);
-  Control.addVariable(lKey+"BeamWingAWidth",120.0);
-  Control.addVariable(lKey+"BeamWingADepth",10.0);
-  Control.addVariable(lKey+"BeamWingAHeight",200.0);
-  Control.addVariable(lKey+"BeamWingAMainMat","Poly");
-  
-  Control.addVariable(lKey+"BeamWingBYStep",100.0);
-  Control.addVariable(lKey+"BeamWingBXStep",-25.0);
-  Control.addVariable(lKey+"BeamWingBPreZAngle",-70.0);
-  Control.addVariable(lKey+"BeamWingBWidth",120.0);
-  Control.addVariable(lKey+"BeamWingBDepth",10.0);
-  Control.addVariable(lKey+"BeamWingBHeight",200.0);
-  Control.addVariable(lKey+"BeamWingBMainMat","Poly");
-
-    
-  BXGen.generateBox(Control,lKey+"BeamBoxA",3.0);
-  Control.addVariable(lKey+"BeamBoxAPreYAngle",-90.0);
-
-  BXGen.generateBox(Control,lKey+"BeamBoxB",3.0);
-  Control.addVariable(lKey+"BeamBoxBPreYAngle",-90.0);
-  Control.addVariable(lKey+"BeamBoxBZStep",-100.0);
+  Control.addVariable(lKey+"BeamStopBYStep",4.0);
+  Control.addVariable(lKey+"BeamStopBBackSkinThick",0.0);
+  Control.addVariable(lKey+"BeamStopBPreCoreLength",47.0);
 
   // end void
   Control.addVariable(lKey+"EndVoidLength",3.0);

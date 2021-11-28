@@ -97,14 +97,17 @@ LowMat::getID(const size_t Z,const size_t iso)
 /*!
   Set numerical identifiers for the given Z.
   Note: There can be several sets for IDs for the given material in FLUKA,
-  but here we use a single hard-coded set of IDs. 
-  FLUKA assumes natural isotopic composition, but in MCNP we can 
+  but here we use a single hard-coded set of IDs.
+  FLUKA assumes natural isotopic composition, but in MCNP we can
   associate cross sections for individual isotopes, therefore in this method
-  we do not distinguish between different isotopes and use 
+  we do not distinguish between different isotopes and use
   natural composition for all of them.
 
+  \param Z :: atomic number
+  \param iso :: mass number
+
   \todo{implement an interface to choose the
-    ID set for the given material (i.e. the mt card in MCNP slang). 
+    ID set for the given material (i.e. the mt card in MCNP slang).
     This can be done based on the
     'mat' value in SimFLUKA::getLowMat (pass it through constructor)}
   \todo{Do something intellegent with iso [currently assumed natural]}
@@ -117,7 +120,7 @@ LowMat::getID(const size_t Z,const size_t iso)
       { 1,{1, -5, 296.0} },
       { 5,{5, -2, 296.0} },
       { 6,{6, -2, 296.0} },
-      //      { 8,{8, 16, 296.0} },
+      { 8,{8, 16, 296.0} },
       { 11,{11, 23, 296.0} },
       { 12,{12, -2, 296.0} },
       { 13,{13, 27, 296.0} },
@@ -135,6 +138,9 @@ LowMat::getID(const size_t Z,const size_t iso)
       { 28,{28, -2, 296.0} },
       { 29,{29, -2, 296.0} },
       { 30,{30, -2, 296.0} },
+      { 42,{42, -2, 296.0} },
+      { 60,{60, -2, 296.0} },
+      { 73,{73, 181, 296.0} },
       { 74,{74, -2, 296.0} },
       { 82,{82, -2, 296.0} }
     });
@@ -146,14 +152,14 @@ LowMat::getID(const size_t Z,const size_t iso)
 
 std::string
 LowMat::getFLUKA(const size_t Z,const size_t iso,
-		 const std::string& matName) 
+		 const std::string& matName)
   /*!
     Return the WHAT/SDUM string: id1 id2 id3 - - name
   */
 {
   const auto& id = getID(Z,iso);
   const std::string& lowName=getLowName(Z);
-  
+
   std::ostringstream cx;
   if (std::get<0>(id))
     {
@@ -167,6 +173,6 @@ LowMat::getFLUKA(const size_t Z,const size_t iso,
     {
       cx<<"LOW-MAT "<<matName<<" - - - - - "<<lowName<<" ";
     }
-  
+
   return cx.str();
 }

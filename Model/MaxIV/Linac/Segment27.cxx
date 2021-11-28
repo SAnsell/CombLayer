@@ -3,7 +3,7 @@
 
  * File: Linac/Segment27.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,12 +68,15 @@
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "VacuumPipe.h"
+#include "FixedGroup.h"
+#include "FixedRotateGroup.h"
 
 #include "Line.h"
-#include "ContainedGroup.h"
 #include "YagScreen.h"
 #include "YagUnit.h"
-#include "LBeamStop.h"
+#include "TDCBeamDump.h"
+#include "FixedOffset.h"
+#include "InjectionHall.h"
 
 #include "TDCsegment.h"
 #include "Segment27.h"
@@ -89,6 +92,7 @@ Segment27::Segment27(const std::string& Key) :
   IZTop(new attachSystem::BlockZone(keyName+"IZTop")),
   IZFlat(new attachSystem::BlockZone(keyName+"IZFlat")),
   IZLower(new attachSystem::BlockZone(keyName+"IZLower")),
+  IHall(nullptr),
 
   bellowAA(new constructSystem::Bellows(keyName+"BellowAA")),
   bellowBA(new constructSystem::Bellows(keyName+"BellowBA")),
@@ -113,7 +117,7 @@ Segment27::Segment27(const std::string& Key) :
   bellowAC(new constructSystem::Bellows(keyName+"BellowAC")),
   bellowBC(new constructSystem::Bellows(keyName+"BellowBC")),
 
-  beamStopC(new tdcSystem::LBeamStop(keyName+"BeamStopC"))
+  beamStopC(new tdcSystem::TDCBeamDump(keyName+"BeamStopC"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -300,14 +304,19 @@ Segment27::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*IZFlat,*yagUnitB,"back",*bellowBC);
 
-  constructSystem::constructUnit
-  (System,*IZLower,*yagUnitC,"back",*beamStopC);
+  beamStopC->setCutSurf("base",ExternalCut::getRule("Floor"));
+  beamStopC->setMainAxis(*IHall, 0);
+  beamStopC->createAll(System,*yagUnitC,"back");
 
-  outerCellA=IZTop->createUnit(System,*beamStopC,"back");
-  CellMap::addCell("SpaceFiller",outerCellA);
+  const int outerCell = IZLower->createUnit(System,beamStopC->getKey("Main"),2);
 
-  outerCellB=IZFlat->createUnit(System,*beamStopC,"back");
-  CellMap::addCell("SpaceFiller",outerCellB);
+  // for segment28:
+  ExternalCut::setCutSurf("BeamStopZone",beamStopC->getOuterSurf());
+
+  IZFlat->insertComponent(System,"Unit",4,getRule("BeamStopZone").complement());
+
+  beamStopC->insertInCell(System,outerCell);
+  beamStopC->setCutSurf("base",ExternalCut::getRule("Floor"));
 
   return;
 }
@@ -355,7 +364,7 @@ Segment27::createLinks()
   setLinkCopy(3,*bellowBC,2);
 
   setLinkCopy(4,*bellowCA,1);
-  setLinkCopy(5,*beamStopC,2);
+  setLinkCopy(5,beamStopC->getKey("Main"),2);
 
   FixedComp::nameSideIndex(0,"frontFlat");
   FixedComp::nameSideIndex(1,"backFlat");
@@ -392,6 +401,7 @@ Segment27::createAll(Simulation& System,
 {
   // For output stream
   ELog::RegMethod RControl("Segment27","build");
+  IHall=dynamic_cast<const InjectionHall*>(&FC);
 
   FixedRotate::populate(System.getDataBase());
 

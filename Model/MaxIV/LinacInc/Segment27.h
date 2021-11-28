@@ -3,7 +3,7 @@
 
  * File:   LinacInc/Segment27.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,15 +37,15 @@ namespace tdcSystem
   class DipoleDIBMag;
   class YagUnit;
   class YagScreen;
-  class LBeamStop;
+  class TDCBeamDump;
 
 
   /*!
     \class Segment27
     \version 1.0
-    \author S. Ansell
-    \date June 2020
-    \brief Dividing segment in the TDC from the linac
+    \author S. Ansell / K. Batkov
+    \date Oct 2021
+    \brief TDC line branch C final segment
   */
 
 class Segment27 :
@@ -56,6 +56,7 @@ class Segment27 :
   std::unique_ptr<attachSystem::BlockZone> IZTop;        ///< Upper inner zone
   std::unique_ptr<attachSystem::BlockZone> IZFlat;       ///< Flat inner zone
   std::unique_ptr<attachSystem::BlockZone> IZLower;      ///< Lower inner zone
+  const InjectionHall* IHall;      ///< Storage for injection hall if used.
 
   /// init bellows
   std::shared_ptr<constructSystem::Bellows> bellowAA;
@@ -85,7 +86,7 @@ class Segment27 :
   std::shared_ptr<constructSystem::Bellows> bellowAC;
   std::shared_ptr<constructSystem::Bellows> bellowBC;
 
-  std::shared_ptr<tdcSystem::LBeamStop> beamStopC;
+  std::shared_ptr<tdcSystem::TDCBeamDump> beamStopC;
 
   void buildObjects(Simulation&);
   void buildFrontSpacer(Simulation&);

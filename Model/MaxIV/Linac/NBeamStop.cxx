@@ -113,7 +113,7 @@ coreUnit::addMat(const int M)
   mat.push_back(M);
   return;
 }
-  
+
 NBeamStop::NBeamStop(const std::string& Key)  :
   attachSystem::FixedRotate(Key,7),
   attachSystem::ContainedComp(),
@@ -181,7 +181,7 @@ NBeamStop::populate(const FuncDataBase& Control)
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
   fullLength=Control.EvalVar<double>(keyName+"Length");
   outerRadius=0.0;
-  
+
   for(size_t i=0;i<nLayers;i++)
     {
       const std::string layerName(keyName+"Layer"+std::to_string(i));
@@ -190,7 +190,7 @@ NBeamStop::populate(const FuncDataBase& Control)
       if (R<outerRadius)
 	throw ColErr::SizeError<double>
 	  (R,outerRadius,"Radius too small/out of order");
-      
+
       size_t index(0);
       double totalLength(0.0);
       double L;
@@ -211,11 +211,11 @@ NBeamStop::populate(const FuncDataBase& Control)
 	    {
 	      cu.addUnit(L,M);
 	    }
-	  
+
 	  index++;
 	  UNum=std::to_string(index);
 	}
-      
+
       if (totalLength>fullLength-Geometry::zeroTol)
 	throw ColErr::SizeError<double>
 	  (totalLength,L,"Length of unit:"+layerName);
@@ -273,7 +273,7 @@ NBeamStop::createObjects(Simulation& System)
   const HeadRule& frontHR=ExternalCut::getRule("front");
   const HeadRule& backHR=ExternalCut::getRule("back");
   const HeadRule& baseHR=ExternalCut::getRule("base");
-  
+
   HeadRule rInnerHR,rOuterHR;
   int BI(buildIndex+100);
   int index(0);
@@ -288,13 +288,13 @@ NBeamStop::createObjects(Simulation& System)
       for(cuI=1;cuI<cu.mat.size();cuI++)
 	{
 	  const HeadRule bHR=ModelSupport::getHeadRule(SMap,PI,"-1");
-	  makeCell(lName,System,cellIndex++,
+	  makeCell(lName+std::to_string(cuI-1),System,cellIndex++,
 		   cu.mat[cuI-1],0.0,aHR*bHR*rOuterHR*rInnerHR*baseHR);
 	  aHR=bHR.complement();
 	  PI+=10;
 	}
       // last cell:
-      makeCell(lName,System,cellIndex++,
+      makeCell(lName+std::to_string(cuI-1),System,cellIndex++,
 	       cu.mat[cuI-1],0.0,aHR*backHR*rOuterHR*rInnerHR*baseHR);
       BI+=100;
       index++;

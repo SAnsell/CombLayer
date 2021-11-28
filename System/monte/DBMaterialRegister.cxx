@@ -591,38 +591,38 @@ DBMaterial::initMaterial()
 		   "",MLib);
   setMaterial(MObj);
 
-  // Material: #78
-  // Be alloy:  Berilio 1.847810 g/cc
-  MObj.setMaterial(78,"Berilio",
-		   "4009.80c  -1.8205E+00 8016.70c -1.7737E-02 "
-		   "13027.70c -1.8476E-03 6012.70c -2.7714E-03 "
-		   "26054.70c -1.4040E-04 26056.70c -2.2024E-03 "
-		   "26057.70c -5.0902E-05 26058.70c -6.7734E-06 "
-		   "12024.70c -1.1675E-03 12025.70c -1.4781E-04 "
-		   "12026.70c -1.6274E-04 14028.70c -1.0225E-03 "
-		   "14029.70c -5.1771E-05 14030.70c -3.4366E-05 ","",MLib);
-  setMaterial(MObj);
+  // // Material: #78
+  // // Be alloy:  Berilio 1.847810 g/cc
+  // MObj.setMaterial(78,"Berilio",
+  // 		   "4009.80c  -1.8205E+00 8016.70c -1.7737E-02 "
+  // 		   "13027.70c -1.8476E-03 6012.70c -2.7714E-03 "
+  // 		   "26054.70c -1.4040E-04 26056.70c -2.2024E-03 "
+  // 		   "26057.70c -5.0902E-05 26058.70c -6.7734E-06 "
+  // 		   "12024.70c -1.1675E-03 12025.70c -1.4781E-04 "
+  // 		   "12026.70c -1.6274E-04 14028.70c -1.0225E-03 "
+  // 		   "14029.70c -5.1771E-05 14030.70c -3.4366E-05 ","",MLib);
+  // setMaterial(MObj);
 
-  //Material: #79
-  // Aluminio 6061
-  // -2.698400 g/cc
-  MObj.setMaterial(79,"Aluminium6061",
-		   "13027.70c -2.6258E+00 24050.70c -2.2864E-04 "
-		   "24052.70c -4.4092E-03 24053.70c -5.0001E-04 "
-		   "24054.70c -1.2445E-04 29070.70c -5.1728E-03 "
-		   "29065.70c -2.2877E-03 26054.70c -5.5209E-04 "
-		   "26056.70c -8.6619E-03 26057.70c -2.0014E-04 "
-		   "26058.70c -2.6633E-05 12024.70c -2.1315E-02 "
-		   "12025.70c -2.6984E-03 12026.70c -2.9709E-03 "
-		   "25055.70c -2.0238E-03 14028.70c -1.4933E-02 "
-		   "14029.70c -7.5609E-04 14030.70c -5.0190E-04 "
-		   "22046.70c -1.6698E-04 22047.70c -1.5057E-04 "
-		   "22048.70c -1.4919E-03 22049.70c -1.0950E-04 "
-		   "22050.70c -1.0483E-04 30064.70c -1.6404E-03 "
-		   "30066.70c -9.4120E-04 30067.70c -1.3829E-04 "
-		   "30068.70c -6.3250E-04 30070.70c -2.0913E-05 ",
-		   "al.20t",MLib);
-  setMaterial(MObj);
+  // //Material: #79
+  // // Aluminio 6061
+  // // -2.698400 g/cc
+  // MObj.setMaterial(79,"Aluminium6061",
+  // 		   "13027.70c -2.6258E+00 24050.70c -2.2864E-04 "
+  // 		   "24052.70c -4.4092E-03 24053.70c -5.0001E-04 "
+  // 		   "24054.70c -1.2445E-04 29070.70c -5.1728E-03 "
+  // 		   "29065.70c -2.2877E-03 26054.70c -5.5209E-04 "
+  // 		   "26056.70c -8.6619E-03 26057.70c -2.0014E-04 "
+  // 		   "26058.70c -2.6633E-05 12024.70c -2.1315E-02 "
+  // 		   "12025.70c -2.6984E-03 12026.70c -2.9709E-03 "
+  // 		   "25055.70c -2.0238E-03 14028.70c -1.4933E-02 "
+  // 		   "14029.70c -7.5609E-04 14030.70c -5.0190E-04 "
+  // 		   "22046.70c -1.6698E-04 22047.70c -1.5057E-04 "
+  // 		   "22048.70c -1.4919E-03 22049.70c -1.0950E-04 "
+  // 		   "22050.70c -1.0483E-04 30064.70c -1.6404E-03 "
+  // 		   "30066.70c -9.4120E-04 30067.70c -1.3829E-04 "
+  // 		   "30068.70c -6.3250E-04 30070.70c -2.0913E-05 ",
+  // 		   "al.20t",MLib);
+  // setMaterial(MObj);
 
   // Material #81 Silicon with no-bragg (20K)
   MObj.setMaterial(81,"Silicon20K","14028.70c 0.0460848 "
@@ -1028,7 +1028,7 @@ DBMaterial::initMaterial()
   MObj.setDensity(-1.06);
   setMaterial(MObj);
 
-  // Material #127 Invar [from K.B]
+  // Material #127 Invar at room temperature [from K.B]
   MObj.setMaterial(127, "Invar36",
 		   " 6000.70c  0.001000000 "
 		   " 14028.70c 0.003227805 "
@@ -1054,7 +1054,8 @@ DBMaterial::initMaterial()
 		   " 26054.70c 0.035654500 "
 		   " 26056.70c 0.559699400 "
 		   " 26057.70c 0.012925900 "
-		   " 26058.70c  0.001720200 ", "", MLib);
+		   " 26058.70c  0.001720200 ", "fe56.12t", MLib);
+  MObj.setMXitem(6000, 70, 'c', "h", "06012");
   MObj.setDensity(-8.11);
   setMaterial(MObj);
 
@@ -1337,7 +1338,7 @@ DBMaterial::initMaterial()
   //Limestone concrete as given by Phil
   // Density = 2.33 g/cm3
   //Number atom fractions
-  MObj.setMaterial(151,"LimestoneConcrete",  
+  MObj.setMaterial(151,"LimestoneConcrete",
 		   " 01000.70c 0.00723 "
 		   " 08000.70c 0.039825 "
 		   " 13000.70c 0.000337 "
@@ -1358,7 +1359,7 @@ DBMaterial::initMaterial()
 		   " 40000.70c 1.15e-6 "
 		   " 82000.70c 4.35e-8 "
 		   " 41000.70c 9.68e-8 ", "lwtr.10t", MLib);
-    
+
   MObj.setDensity(-2.33);
   setMaterial(MObj);
 
@@ -1408,7 +1409,7 @@ DBMaterial::initMaterial()
 		   " 22000.70c 0.000619549 " //Ti
 		   " 20000.70c 0.000876436 " //Ca
                    , "lwtr.10t", MLib);
-    
+
   MObj.setDensity(-2.4914); //According to R. Boffy thesis on guide substrates
   setMaterial(MObj);
 
@@ -1429,12 +1430,12 @@ DBMaterial::initMaterial()
 		   " 26057.70c      4.4565e-06"//Fe57
 		   " 26058.70c      5.886e-07"//Fe58
                    , "lwtr.10t", MLib);
-    
+
   MObj.setDensity(-2.19783); //From Tsito
   setMaterial(MObj);
 
 
-  MObj.setMaterial(155,"PVC", //(C2H3Cl)n 
+  MObj.setMaterial(155,"PVC", //(C2H3Cl)n
 		   " 01000.70c      3 " //H
 		   " 06000.70c      2 "//C12
 		   " 17000.70c       1 "//Cl
@@ -1449,7 +1450,7 @@ DBMaterial::initMaterial()
 		   " 06000.70c       0.07246"//C
 		   " 08000.70c       0.003125"//O
                    , "lwtr.10t", MLib);
-    
+
   MObj.setDensity(-1.36); //From Tsito
   setMaterial(MObj);
 
@@ -1498,7 +1499,7 @@ DBMaterial::initMaterial()
 		"         42098.70c      0.000013947121"
 		"         42100.70c      0.000005575389 "
                 , "lwtr.10t", MLib);
-    
+
   MObj.setDensity(-7.8); //From Valentina & bunker project
   setMaterial(MObj);
 
@@ -1515,7 +1516,7 @@ DBMaterial::initMaterial()
 		   " 28000.70c 3.40774E-05 "//Ni
 		   " 26000.70c 3.58102E-05 "//Fe
 		   , "lwtr.10t", MLib);
-    
+
   MObj.setDensity(-11.2);
   setMaterial(MObj);
 
@@ -1531,8 +1532,8 @@ DBMaterial::initMaterial()
 		"  28000.70c 1.224020443  "//Ni
 		  "  27000.70c 0.000169 " //Co, 0.01 wt%
 		  , "lwtr.10t", MLib);
-    
-  MObj.setDensity(-8.37); 
+
+  MObj.setDensity(-8.37);
   setMaterial(MObj);
 
 
@@ -1550,11 +1551,11 @@ DBMaterial::initMaterial()
 		 "  16000.70c 0.00046875 "//S
 		   "  27000.70c 0.000169 " //Co, 0.01 wt%
 		   , "lwtr.10t", MLib);
-    
-  MObj.setDensity(-7.8); 
+
+  MObj.setDensity(-7.8);
   setMaterial(MObj);
 
-    
+
 
   MObj.setMaterial(161,"CuCr1Zr",
 		   "  14000.70c 0.003571429 " //Si
@@ -1564,8 +1565,8 @@ DBMaterial::initMaterial()
 		   "  26000.70c 0.001428571 " //Fe
 		   "  27000.70c 0.000169 " //Co, 0.01 wt%
 		     , "lwtr.10t", MLib);
-    
-  MObj.setDensity(-8.91); 
+
+  MObj.setDensity(-8.91);
   setMaterial(MObj);
 
   MObj.setMaterial(162,"W-MT185",
@@ -1574,18 +1575,18 @@ DBMaterial::initMaterial()
 		   " 26000.70c 0.016114593 " //Fe
 		   "  27000.70c 0.000169 " //Co, 0.01 wt%
      , "lwtr.10t", MLib);
-    
-  MObj.setDensity(-18.5); 
+
+  MObj.setDensity(-18.5);
   setMaterial(MObj);
-    
+
 
   MObj.setMaterial(163,"Nd2NiO4",
 		   " 60000.70c 0.017 " //Nd
 		   " 28000.70c 0.0085 " //Ni
 		   " 08000.70c 0.0034 " //O
     , "lwtr.10t", MLib);
-    
-  MObj.setDensity(-3.5); 
+
+  MObj.setDensity(-3.5);
   setMaterial(MObj);
 
   // was 1002 but not a good idea to use numbers
@@ -1599,6 +1600,39 @@ DBMaterial::initMaterial()
   // Material #401: Beryllium solid at 20K
   // Total atom density 0.1187475
   MObj.setMaterial(165,"Be20K","4009.70c 0.1234855","BE-MET.20T",MLib);
+  setMaterial(MObj);
+
+    // Stainless steel with 1% (weight) boron content
+  // Reference: Compendium of Material Composition Data for Radiation Trans
+  //            PNNL-15870Rev1, page 280
+  //            plone:doc/misc/pnnl-15870rev1.pdf/view
+  MObj.setMaterial(166,"BoronSteel",
+		   " 05010.70c 0.009716 "
+		   " 05011.70c 0.039110 "
+		   " 06000.70c 0.001741 "
+		   " 14028.70c 0.008580 "
+		   " 14029.70c 0.000436 "
+		   " 14030.70c 0.000288 "
+		   " 15031.70c 0.000389 "
+		   " 16032.70c 0.000233 "
+		   " 16033.70c 0.000002 "
+		   " 16034.70c 0.000010 "
+		   " 24050.70c 0.008297 "
+		   " 24052.70c 0.160003 "
+		   " 24053.70c 0.018143 "
+		   " 24054.70c 0.004516 "
+		   " 25055.70c 0.009512 "
+		   " 26054.70c 0.038382 "
+		   " 26056.70c 0.602516 "
+		   " 26057.70c 0.013915 "
+		   " 26058.70c 0.001852 "
+		   " 28058.70c 0.056068 "
+		   " 28060.70c 0.021597 "
+		   " 28061.70c 0.000939 "
+		   " 28062.70c 0.002993 "
+		   " 28064.70c 0.000762 ","fe56.12t",MLib);
+  MObj.setMXitem(6000, 70, 'c', "h", "06012");
+  MObj.setDensity(-7.87);
   setMaterial(MObj);
 
   return;

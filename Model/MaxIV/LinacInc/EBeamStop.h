@@ -118,6 +118,7 @@ class EBeamStop :
   double shieldOuterSideThick;  ///< Outer layer side thickness
   double shieldOuterRoofThick;  ///< Outer layer roof thickness
   double shieldRoofPlateThick;  ///< Thickness of the plate above the beam stop
+  int shieldBackHoleActive;     ///< Flag to build back penetration
 
   void populate(const FuncDataBase&);
   void createSurfaces();

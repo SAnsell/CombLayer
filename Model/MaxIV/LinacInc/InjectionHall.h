@@ -57,6 +57,13 @@ class InjectionHall :
   double spfMazeWidthSide;      ///< SPF access maze side width
   double spfMazeWidthSPF;       ///< SPF access maze width from the SPF hallway
   double spfMazeLength;         ///< SPF access maze full length (along the x-axis)
+  double spfMazeLayerThick;     ///< SPF maze B4C layer thick
+  double spfMazeLayerHeight;    ///< SPF maze B4C layer height
+  double spfMazeLayerPipesWidth; ///< Width of the area occupied by pipes on the wall to the concrete door parking room
+  double spfMazeLayerPipesHeight; ///< Height of the area occupied by pipes on the wall to the concrete door parking room
+  double spfMazeLayerPLCWidth;  ///< Width of the area occupied by PLC equipment on the wall to the concrete door parking room
+  double spfMazeLayerPLCHeight; ///< Height of the area occupied by PLC equipment on the wall to the concrete door parking room
+  int spfMazeLayerMat;          ///< SPF maze B4C layer material
 
   double fkgDoorWidth;          ///< Future klystron gallery access door width
   double fkgDoorHeight;         ///< Future klystron gallery access door height
@@ -78,6 +85,10 @@ class InjectionHall :
   double spfExitLength;         ///< Length of the SPF emergency exit room
   double spfExitDoorLength;     ///< Length of the SPF emergency exit door
   double spfExitDoorHeight;     ///< Height of the SPF emergency exit door
+  double storageShieldThick;    ///< Storage room shield thickness
+  int storageShieldMat;         ///< Storage room shield material
+  double femtoMAXShieldThick;   ///< FemtoMAX room shield thickness
+  int femtoMAXShieldMat;        ///< FemtoMAX room shield material
 
   double femtoMAXWallThick;      ///< SPF/FemtoMAX wall thickness
   double femtoMAXWallOffset;      ///< X-offset of the SPF/FemtoMAX wall
@@ -98,11 +109,13 @@ class InjectionHall :
 
   double linearWidth;            ///< Wall - Wall width
 
-  double floorDepth;             ///< Depth (floor to under roof)
-  double roofHeight;             ///< Height (floor to under roof)
+  double floorDepth;             ///< Depth
+  double roofHeight;             ///< Height
 
   double wallThick;             ///< Wall thickness
-  double roofThick;             ///< roof thickness
+  double roofThick;             ///< SPF hall roof thickness
+  double fkgRoofThick;          ///< FKG roof thickness
+  double fkgRoofYStep;          ///< Y-step offset of the FKG roof (below our office area)
   double floorThick;            ///< floor thickness
 
   double midTXStep;             ///< Step to centre of T
@@ -172,14 +185,14 @@ class InjectionHall :
   std::vector<double> pRadii;   ///< Pillar radii
   std::vector<int> pMat;        ///< Pillar materials
   std::vector<Geometry::Vec3D> pXY; ///< Pillar coordinates (with respect to building origin)
-  
+
   double thzWidth;              ///< Width of THz penetration
   double thzHeight;             ///< Height of THz penetration
   double thzXStep;              ///< THz penetration X offset with respect to FMidPt
   double thzZStep;              ///< THz penetration X offset with respect to FMidPt
   double thzZAngle;             ///< THz penetration Z angle
   int thzMat;                   ///< THz penetration material
-  
+
   int voidMat;                  ///< Void material
   int wallMat;                  ///< Wall material
   int wallIronMat;              ///< Material of the iron layer before the back wall
@@ -188,7 +201,7 @@ class InjectionHall :
   int floorMat;                 ///< Floor material
   int soilMat;                  ///< Earth material
 
-  
+
   void createFloor(Simulation&);
   void layerProcess(Simulation&,const std::string&,
                     const int,const int,const size_t);
@@ -209,7 +222,7 @@ class InjectionHall :
   size_t getBackWallNLayers() const {return backWallNLayers; }
   bool addPillars(Simulation&,const int) const;
 
-  
+
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);

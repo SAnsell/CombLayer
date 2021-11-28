@@ -50,23 +50,24 @@ namespace setVariable
 {
 
 NBeamStopGenerator::NBeamStopGenerator() :
-  fullLength(130.0),
-  radii({2.0, 6.0, 30.0,38.0}),
+  fullLength(115.0),
+  radii({2.0, 30.0, 40.0, 45.0}),
   len({
-       {30.0,40.0,60.0,75.0},
-       {70.0},
-       {12.0},
-       {120.0}
+       {20.0,60.0,100.0,110.0},
+       {100.0,110.0,115.0},
+       {110.0,115.0},
+       {115.0}
     }),
-  mat({{"Tungsten","HighDensPoly","Tungsten","HighDensPoly","Stainless304"},
-       {"HighDensPoly","Stainless304"},
-       {"Void","Stainless304"},
-       {"Copper","HighDensPoly"}
+  mat({{"Void","Tungsten","Stainless304","Poly","B4C"},
+       {"Stainless304","Poly","B4C","Void"},
+       {"Poly","B4C","Void"},
+       {"B4C","Void"}
     })
   /*!
     Constructor and defaults
   */
-{}
+{
+}
 
 NBeamStopGenerator::~NBeamStopGenerator()
  /*!
@@ -82,7 +83,7 @@ NBeamStopGenerator::generateBStop(FuncDataBase& Control,
     Primary funciton for setting the variables
     \param Control :: Database to add variables
     \param keyName :: Head name for variable
-    \param yStep :: Step 
+    \param yStep :: Step
   */
 {
   ELog::RegMethod RegA("NBeamStopGenerator","generateBStop");
@@ -101,12 +102,12 @@ NBeamStopGenerator::generateBStop(FuncDataBase& Control,
 	    {
 	      std::string UNum(std::to_string(j));
 	      Control.addVariable(layerName+"Length"+UNum,len[i][j]);
-	      Control.addVariable(layerName+"Mat"+UNum,mat[i][j]);	  
+	      Control.addVariable(layerName+"Mat"+UNum,mat[i][j]);
 	    }
 	  Control.addVariable(layerName+"Mat"+std::to_string(j),mat[i][j]);
 	}
     }
-  return;  
+  return;
 }
 
 }  // namespace setVariable

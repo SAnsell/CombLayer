@@ -38,6 +38,7 @@ namespace tdcSystem
   class YagUnit;
   class YagScreen;
   class LocalShielding;
+  class LocalShielding3;
 
   /*!
     \class Segment26
@@ -61,7 +62,7 @@ class Segment26 :
   std::shared_ptr<constructSystem::VacuumPipe> pipeBA;
   std::shared_ptr<constructSystem::VacuumPipe> pipeCA;
 
-  std::shared_ptr<tdcSystem::LocalShielding> shieldA; // local shielding
+  std::shared_ptr<tdcSystem::LocalShielding3> shieldA; // local shielding
 
   /// Connect bellows
   std::shared_ptr<constructSystem::Bellows> bellowAA;

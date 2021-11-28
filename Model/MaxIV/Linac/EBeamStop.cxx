@@ -178,6 +178,7 @@ EBeamStop::populate(const FuncDataBase& Control)
       shieldOuterSideThick=Control.EvalVar<double>(keyName+"ShieldOuterSideThick");
       shieldOuterRoofThick=Control.EvalVar<double>(keyName+"ShieldOuterRoofThick");
       shieldRoofPlateThick=Control.EvalVar<double>(keyName+"ShieldRoofPlateThick");
+      shieldBackHoleActive=Control.EvalVar<int>(keyName+"ShieldBackHoleActive");
 
       if (std::abs(shieldHeight+shieldDepth-57.5)>Geometry::zeroTol)
 	throw ColErr::NumericalAbort("Wrong outer shielding height+depth in " + keyName);
@@ -556,8 +557,9 @@ EBeamStop::createObjects(Simulation& System)
 				     " 1001 -1011 1013 -1014 1015 -1006 (-1103:1104:-1105:1106) ");
       makeCell("ShieldOuterSideFront",System,cellIndex++,shieldOuterMat,0.0,Out);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     " 1012 -1002 1013 -1014 1015 -1006 (-1103:1104:-1105:1106)");
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1012 -1002 1013 -1014 1015 -1006 ");
+      if (shieldBackHoleActive)
+	Out+=ModelSupport::getComposite(SMap,buildIndex," (-1103:1104:-1105:1106) ");
       makeCell("ShieldOuterSideBack",System,cellIndex++,shieldOuterMat,0.0,Out);
 
       HeadRule HR;
@@ -571,8 +573,11 @@ EBeamStop::createObjects(Simulation& System)
       HR.procString(ModelSupport::getComposite(SMap,buildIndex, " -227 ") + backStr);
       HR.makeComplement();
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     " 122 -1002 1103 -1104 1105 -1106 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," 122 1103 -1104 1105 -1106 ");
+      if (shieldBackHoleActive)
+	Out+=ModelSupport::getComposite(SMap,buildIndex," -1002 ");
+      else
+	Out+=ModelSupport::getComposite(SMap,buildIndex," -1022 ");
       makeCell("ShieldSideBackHole",System,cellIndex++,0,0.0,Out + HR.display() + back);
 
       // inner layer
@@ -592,8 +597,9 @@ EBeamStop::createObjects(Simulation& System)
 				     " 1011 -1021 1013 -1014 1025 -1036 (-1103:1104:-1105:1106) ");
       makeCell("ShieldInnerSide",System,cellIndex++,shieldInnerMat,0.0,Out);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     " 1022 -1012 1023 -1024 1025 -1036 (-1103:1104:-1105:1106) ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1022 -1012 1023 -1024 1025 -1036 ");
+      if (shieldBackHoleActive)
+	Out+=ModelSupport::getComposite(SMap,buildIndex,"(-1103:1104:-1105:1106) ");
       makeCell("ShieldInnerSide",System,cellIndex++,shieldInnerMat,0.0,Out);
 
       Out=ModelSupport::getComposite(SMap,buildIndex," 1011 -1012 1013 -1014 1026 -1016 ");
