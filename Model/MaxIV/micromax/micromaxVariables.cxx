@@ -62,6 +62,7 @@
 #include "BremTubeGenerator.h"
 #include "HPJawsGenerator.h"
 #include "FlangeMountGenerator.h"
+#include "FlangePlateGenerator.h"
 #include "MirrorGenerator.h"
 #include "CollGenerator.h"
 #include "SqrFMaskGenerator.h"
@@ -996,72 +997,7 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey)
   return;
 }
 
-void
-detectorTubePackage(FuncDataBase& Control,
-		    const std::string& beamName)
-  /*!
-    Builds the variables for the main detector tube.
-    \param Control :: Database
-    \param viewKey :: prename including view
-  */
-{
-  ELog::RegMethod RegA("micromaxVariables[F]","detectorTubePackage");  
-
-
-  setVariable::PipeTubeGenerator SimpleTubeGen;
-  setVariable::PortItemGenerator PItemGen;
-  setVariable::FlangeDomeGenerator FDGen;
-  setVariable::AreaDetectorGenerator WAXSGen;
-  
-  SimpleTubeGen.setCF<CF350>();
-  
-  const std::string tubeName(beamName+"DetectorTube");
-  Control.addVariable(tubeName+"YStep", 800.748); // dummy
-  Control.addVariable(tubeName+"OuterRadius",60.0);
-  Control.addVariable(tubeName+"OuterMat","Void"); 
-  // MAIN PIPE:
-
-  for(size_t i=0;i<8;i++)
-    {
-      const std::string segName=tubeName+"Segment"+std::to_string(i);
-      SimpleTubeGen.generateTube(Control,segName,111.0);
-      Control.addVariable(segName+"NPorts",0);   // beam ports
-    }
-
-
-  PItemGen.setCF<setVariable::CF63>(10.0);
-  PItemGen.setNoPlate();
-  FDGen.generateDome(Control,tubeName+"FrontDome");
-  Control.addVariable(tubeName+"FrontDomeNPorts",1);
-  PItemGen.generatePort(Control,tubeName+"FrontDomePort0",
-			Geometry::Vec3D(0.0, 0.0, 0.0),
-			Geometry::Vec3D(0,1,0));
-
-  PItemGen.setCF<setVariable::CF63>(10.0);
-  PItemGen.setWindowPlate(CF63::flangeLength,0.8*CF63::flangeLength,
-			  CF63::innerRadius*1.1,"Stainless304","SiO2");
-  
-  FDGen.generateDome(Control,tubeName+"BackDome");
-  Control.addVariable(tubeName+"BackDomeNPorts",2);
-  PItemGen.generatePort(Control,tubeName+"BackDomePort0",
-			Geometry::Vec3D(-8.0, 0.0, 0.0),
-			Geometry::Vec3D(0,1,0));
-  PItemGen.generatePort(Control,tubeName+"BackDomePort1",
-			Geometry::Vec3D(8.0, 0.0, 0.0),
-			Geometry::Vec3D(0,1,0));
-
-  Control.addVariable(tubeName+"BeamStopYStep", 500.0); // [2]
-  Control.addVariable(tubeName+"BeamStop", 0.6); // [2]
-  Control.addVariable(tubeName+"BeamStopLength", 0.6); // [2]
-  Control.addVariable(tubeName+"BeamStopRadius", 0.15); // [2]
-  Control.addVariable(tubeName+"BeamStopMat", "Tantalum");
-
-  WAXSGen.generateDetector(Control,tubeName+"WAXS",600.0);
-  
-  return;
-}
-  
-
+ 
 void
 exptLineVariables(FuncDataBase& Control,
 	      const std::string& beamName)
@@ -1080,7 +1016,8 @@ exptLineVariables(FuncDataBase& Control,
   setVariable::CooledScreenGenerator CoolGen;
   setVariable::CylGateValveGenerator GVGen;
   setVariable::HPJawsGenerator HPGen;
-  
+  setVariable::FlangePlateGenerator FPGen;
+    
   PipeGen.setNoWindow();
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF40>();
@@ -1089,11 +1026,11 @@ exptLineVariables(FuncDataBase& Control,
 
   GVGen.generateGate(Control,preName+"GateTubeA",0);  // open
 
+  // ByPass / Sample / Diffraction [options]
   Control.addVariable(preName+"ExptType","ByPass");
   Control.addVariable(preName+"OuterLeft",50.0);
   Control.addVariable(preName+"OuterRight",50.0);
   Control.addVariable(preName+"OuterTop",60.0);
-  Control.addVariable(preName+"OuterMat","Void");
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,preName+"BellowA",7.5);
@@ -1118,6 +1055,10 @@ exptLineVariables(FuncDataBase& Control,
 
   PipeGen.generatePipe(Control,preName+"EndPipe",15.0);
   micromaxVar::mirrorBox(Control,preName,"A",-0.146,0.146);
+
+  FPGen.setCF<setVariable::CF63>(1.0);
+  FPGen.setWindow(2.0,0.3,"Diamond");
+  FPGen.generateFlangePlate(Control,preName+"EndWindow");
     
   Control.addVariable(preName+"SampleYStep", 185.0); // [2]
   Control.addVariable(preName+"SampleRadius", 5.0); // [2]
@@ -1145,7 +1086,7 @@ exptLineBVariables(FuncDataBase& Control,
     \param beamName :: Name of beamline
   */
 {
-  ELog::RegMethod RegA("micromaxVariables[F]","exptVariables");
+  ELog::RegMethod RegA("micromaxVariables[F]","exptLineBVariables");
 
   setVariable::PipeGenerator PipeGen;
   setVariable::BellowGenerator BellowGen;
@@ -1158,34 +1099,38 @@ exptLineBVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF40>();
   
-  const std::string preName(beamName+"ExptLineB");
-  Control.addVariable(preName+"OuterLeft",50.0);
-  Control.addVariable(preName+"OuterRight",50.0);
-  Control.addVariable(preName+"OuterTop",60.0);
-  Control.addVariable(preName+"OuterMat","Void");
+  const std::string exptName(beamName+"ExptLineB");
+  Control.addVariable(exptName+"OuterLeft",50.0);
+  Control.addVariable(exptName+"OuterRight",50.0);
+  Control.addVariable(exptName+"OuterTop",60.0);
 
-  GVGen.generateGate(Control,preName+"GateTubeA",0);  // open
+  GVGen.generateGate(Control,exptName+"GateTubeA",0);  // open
     
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,preName+"BellowA",7.5);
+  BellowGen.generateBellow(Control,exptName+"BellowA",7.5);
 
   VTGen.setPortBCF<setVariable::CF40>();
   VTGen.setPortBLen(22.5);
-  VTGen.generateView(Control,preName+"ViewTube");
+  VTGen.generateView(Control,exptName+"ViewTube");
 
-  CoolGen.generateScreen(Control,preName+"CooledScreen",1);  // in beam
-  Control.addVariable(preName+"CooledScreenYAngle",-90.0);
+  CoolGen.generateScreen(Control,exptName+"CooledScreen",1);  // in beam
+  Control.addVariable(exptName+"CooledScreenYAngle",-90.0);
 
-  PipeGen.generatePipe(Control,preName+"PipeA",7.5);  
+  PipeGen.generatePipe(Control,exptName+"PipeA",7.5);  
 
   HPGen.setMain(24.0);
-  HPGen.generateJaws(Control,preName+"HPJaws",0.3,0.3);
+  HPGen.generateJaws(Control,exptName+"HPJaws",0.3,0.3);
 
-  PipeGen.generatePipe(Control,preName+"PipeB",7.5);
+  PipeGen.generatePipe(Control,exptName+"PipeB",7.5);
 
-  Control.addVariable(preName+"SampleYStep", 185.0); // [2]
-  Control.addVariable(preName+"SampleRadius", 5.0); // [2]
-  Control.addVariable(preName+"SampleDefMat", "Stainless304");
+  Control.addVariable(exptName+"SampleYStep", 185.0); // [2]
+  Control.addVariable(exptName+"SampleRadius", 5.0); // [2]
+  Control.addVariable(exptName+"SampleDefMat", "Stainless304");
+  
+  Control.addVariable(exptName+"BeamStopYStep",478.0-12.5);
+  Control.addVariable(exptName+"BeamStopRadius",10.0);
+  Control.addVariable(exptName+"BeamStopThick",3.0);
+  Control.addVariable(exptName+"BeamStopMat","Stainless304");
 
   return;
 }

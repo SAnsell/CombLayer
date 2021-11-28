@@ -3,7 +3,7 @@
  
  * File:   constructInc/FlangePlate.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,11 +44,13 @@ class FlangePlate :
 {
  private:
 
-  double innerRadius;           ///< Inner window (void) if present
+  double innerRadius;           ///< Inner window (or void) if present
+  double innerThick;            ///< Inner thickness if present
   double flangeRadius;          ///< void radius [inner] 
   double flangeLength;          ///< Flange thickness
 
-  int innerMat;                 ///< inner (Void) material
+  int voidMat;                  ///< Void materia;
+  int windowMat;                 ///< inner (Void) materia;
   int flangeMat;                ///< Main material  
   
   void populate(const FuncDataBase&);
@@ -62,7 +64,8 @@ class FlangePlate :
   FlangePlate(const FlangePlate&);
   FlangePlate& operator=(const FlangePlate&);
   virtual ~FlangePlate();
-  
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

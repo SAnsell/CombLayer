@@ -77,6 +77,7 @@
 #include "VirtualTube.h"
 #include "PipeTube.h"
 #include "portItem.h"
+#include "FlangePlate.h"
 
 #include "VacuumPipe.h"
 #include "VacuumBox.h"
@@ -90,6 +91,7 @@
 #include "ViewScreenTube.h"
 #include "CooledScreen.h"
 #include "RoundMonoShutter.h"
+
 
 #include "micromaxExptLine.h"
 
@@ -129,13 +131,14 @@ micromaxExptLine::micromaxExptLine(const std::string& Key) :
   mirrorBoxA(new constructSystem::VacuumBox(newName+"MirrorBoxA")),
   mirrorFrontA(new xraySystem::Mirror(newName+"MirrorFrontA")),
   mirrorBackA(new xraySystem::Mirror(newName+"MirrorBackA")),
-
+  
   monoShutterB(new xraySystem::RoundMonoShutter(newName+"RMonoShutterB")),
 
   diffractTube(new constructSystem::VacuumPipe(newName+"DiffractTube")),
 
   byPassTube(new constructSystem::VacuumPipe(newName+"ByPassTube")),  
 
+  endWindow(new constructSystem::FlangePlate(newName+"EndWindow")),
   sampleTube(new constructSystem::VacuumPipe(newName+"SampleTube")),  
   sample(new insertSystem::insertSphere(newName+"Sample"))
   /*!
@@ -167,7 +170,8 @@ micromaxExptLine::micromaxExptLine(const std::string& Key) :
   OR.addObject(mirrorFrontA);
   OR.addObject(mirrorBackA);
   OR.addObject(sample);
-
+  OR.addObject(endWindow);
+  
   OR.addObject(diffractTube);
 
   OR.addObject(monoShutterB); 
@@ -194,8 +198,7 @@ micromaxExptLine::populate(const FuncDataBase& Control)
   outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",outerLeft);
   outerTop=Control.EvalDefVar<double>(keyName+"OuterTop",outerLeft);
 
-  outerMat=ModelSupport::EvalDefMat(Control,keyName+"OuterMat",0);
-
+  outerMat=ModelSupport::EvalDefMat(Control,keyName+"OuterMat",outerMat);
   exptType=Control.EvalDefVar<std::string>(keyName+"ExptType","Sample");
   
   return;
@@ -274,6 +277,10 @@ micromaxExptLine::constructSampleStage(Simulation& System,
 
   int outerCell;
 
+  ELog::EM<<"Point == "<<initFC.getLinkPt(sideName)<<ELog::endDiag;
+  // constructSystem::constructUnit
+  //   (System,buildZone,initFC,sideName,*endWindow);
+
   // both build absolute
   sample->setNoInsert();
   sample->createAll(System,initFC,sideName);
@@ -332,7 +339,7 @@ micromaxExptLine::constructDiffractionStage
     \param sideName :: start link point
   */
 {
-  ELog::RegMethod RegA("micromaxExptLine","constructSampleStage");
+  ELog::RegMethod RegA("micromaxExptLine","constructDiffractionStage");
 
   int outerCell;
   // First place mirrors into beam
@@ -428,7 +435,7 @@ micromaxExptLine::buildObjects(Simulation& System)
   // main exits built
 
   if (exptType=="Sample")
-    constructSampleStage(System,*endPipe,"back");
+    constructSampleStage(System,*mirrorBoxA,"back");
   else if (exptType=="Diffraction")
     constructDiffractionStage(System,*mirrorBoxA,"back");
   else if (exptType=="ByPass")

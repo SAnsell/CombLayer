@@ -98,6 +98,9 @@ class ExperimentalHutch :
   ExperimentalHutch& operator=(const ExperimentalHutch&);
   virtual ~ExperimentalHutch();
 
+  /// accessor to void mat
+  int getInnerMat() const { return voidMat; }
+  
   void splitChicane(Simulation& System,const size_t,const size_t);
   using FixedComp::createAll;
   virtual void createAll(Simulation&,

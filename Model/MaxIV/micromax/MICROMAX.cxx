@@ -195,6 +195,7 @@ MICROMAX::build(Simulation& System,
   if (stopPoint=="exptHut") return;
 
   exptBeam->addInsertCell(exptHut->getCell("Void"));
+  exptBeam->setOuterMat(exptHut->getInnerMat());
   exptBeam->setCutSurf("front",*exptHut,
 			 exptHut->getSideIndex("innerFront"));
   exptBeam->setCutSurf("back",*exptHut,
@@ -215,6 +216,7 @@ MICROMAX::build(Simulation& System,
   joinPipeC->createAll(System,*exptBeam,2);
 
   exptBeamB->addInsertCell(exptHutB->getCell("Void"));
+  exptBeamB->setOuterMat(exptHutB->getInnerMat());
   exptBeamB->setCutSurf("front",*exptHutB,
 			 exptHutB->getSideIndex("innerFront"));
   exptBeamB->setCutSurf("back",*exptHutB,

@@ -40,10 +40,11 @@ class FlangePlateGenerator
  private:
 
   double innerRadius;           ///< Inner window (void) if present
+  double innerThick;            ///< Inner window thickness (<flangeLenght) 
   double flangeRadius;          ///< void radius [inner]
   double flangeLength;          ///< Flange thickness
 
-  std::string innerMat;         ///< inner (Void) material
+  std::string windowMat;         ///< inner (Void) material
   std::string flangeMat;        ///< Main material
 
  public:
@@ -56,12 +57,13 @@ class FlangePlateGenerator
   void setFlange(const double,const double);
   void setFlangeLen(const double);
 
+  void setWindow(const double,const double,const std::string&);
   template<typename CF> void setCF(const double);
   template<typename CF> void setFlangeCF();
 
   /// setter for material name
   void setMat(const std::string& M, const std::string& IM="Void")
-  { flangeMat = M; innerMat = IM;  }
+  { flangeMat = M; windowMat = IM;  }
 
   void generateFlangePlate(FuncDataBase&,const std::string&) const;
 

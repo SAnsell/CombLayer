@@ -36,6 +36,7 @@ namespace constructSystem
   class PortTube;
   class PipeTube;
   class GateValveCylinder;
+  class FlangePlate;
 }
 
 namespace xraySystem
@@ -128,6 +129,8 @@ class micromaxExptLine :
   std::shared_ptr<constructSystem::VacuumPipe> byPassTube;
 
   /// SAMPLE
+  /// End point on mirror box
+  std::shared_ptr<constructSystem::FlangePlate> endWindow;
   /// Tube 
   std::shared_ptr<constructSystem::VacuumPipe> sampleTube;
   /// Narrow end pipe

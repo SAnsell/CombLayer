@@ -75,7 +75,7 @@ CRLTubeGenerator::CRLTubeGenerator() :
   flangeRadius(CF40::flangeRadius),
   flangeLength(CF40::flangeLength),
   voidMat("Void"),
-  lensMat("Diamond"),
+  lensMat("Be300K"),
   lensOuterMat("Copper"),
   pipeMat("Stainless304L"),
   mainMat("Stainless304L"),
