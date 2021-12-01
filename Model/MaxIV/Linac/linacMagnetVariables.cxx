@@ -268,7 +268,7 @@ LINACmagnetVariables(FuncDataBase& Control,
   else
     {
       // SEGMENT 12 [TDC]
-      MUdipole.generateDipole(Control,12,"DipoleA",90.0,0.78);
+      MUdipole.generateDipole(Control,12,"DipoleA",90.0,0.68);
       MUdipole.setOffset(Geometry::Vec3D(0,-10.0,0));
       MUdipole.generateDipole(Control,12,"DipoleB",-90.0,0.945);
 
@@ -279,10 +279,10 @@ LINACmagnetVariables(FuncDataBase& Control,
       MUdipole.generateQuad(Control,13,"QuadB",0.0,0.0);
       MUdipole.generateCorMag(Control,13,"CMagVA",0.0);
 
-      // SEGMENT 14
+      // SEGMENT 14 [y=4800]
       MUdipole.setPreName("TDC");
-      MUdipole.generateDipole(Control,14,"DipoleA",90.0,0.855);
-      MUdipole.generateDipole(Control,14,"DipoleB",90.0,0.855);
+      MUdipole.generateDipole(Control,14,"DipoleA",90.0,0.865);  //855
+      MUdipole.generateDipole(Control,14,"DipoleB",90.0,0.720);  //715
 
       // SEGMENT 15
 
