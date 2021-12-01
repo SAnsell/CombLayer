@@ -3,7 +3,7 @@
 
  * File: Linac/Segment49.cxx
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -212,16 +212,21 @@ Segment49::buildObjects(Simulation& System)
   outerCell=buildZone->createUnit(System);
   pipeB->insertAllInCell(System,outerCell);
 
-  if (!nextZone)
-    ELog::EM<<"Failed to get nextZone"<<ELog::endDiag;
+  if (nextZone)
+    {
 
   // this creates spfBehindBackWall zone
-  outerCell=nextZone->createUnit(System,*pipeB,2);
-  pipeB->insertAllInCell(System,outerCell);
-  pipeTerminate(System,*nextZone,pipeB);
-
-  constructSystem::constructUnit
-    (System,*nextZone,*pipeB,"back",*gateB);
+      outerCell=nextZone->createUnit(System,*pipeB,2);
+      pipeB->insertAllInCell(System,outerCell);
+      pipeTerminate(System,*nextZone,pipeB);
+      
+      constructSystem::constructUnit
+	(System,*nextZone,*pipeB,"back",*gateB);
+      nextZone->createUnit(System);
+      nextZone->rebuildInsertCells(System);
+    }
+  else
+    ELog::EM<<"Failed to get nextZone"<<ELog::endDiag;
 
   return;
 }

@@ -680,458 +680,457 @@ InjectionHall::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("InjectionHall","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   int SI(buildIndex+3000);
 
   // INNER VOIDS:
   // up to bend anngle
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1 -3002  3004 -4 5 -6 ");
-  makeCell("LinearVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1 -3002  3004 -4 5 -6");
+  makeCell("LinearVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,SI," 3002 -1001 -1511 3 -4 5 -6 7M 17M 27M 37M ");
-  makeCell("LWideVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,SI,"3002 -1001 -1511 3 -4 5 -6 7M 17M 27M 37M");
+  makeCell("LWideVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1511 -1001 -1111 1503 -7803 5 -6 2007 ");
-  makeCell("LTVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1511 -1001 -1111 1503 -7803 5 -6 2007");
+  makeCell("LTVoid",System,cellIndex++,voidMat,0.0,HR);
 
   ///////////////////////         MidTFront local shielding wall
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1511 -7801 7803 -1104 5 -6 ");
-  makeCell("MidTFrontLShieldVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1511 -7801 7803 -1104 5 -6");
+  makeCell("MidTFrontLShieldVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 7801 -1001 7803 -1104 5 -7805 ");
-  makeCell("MidTFrontLShieldVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"7801 -1001 7803 -1104 5 -7805");
+  makeCell("MidTFrontLShieldVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 7801 -1001 7803 -1104 7806 -6 ");
-  makeCell("MidTFrontLShieldVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"7801 -1001 7803 -1104 7806 -6");
+  makeCell("MidTFrontLShieldVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 7801 -1001 7803 -1104 7805 -7806 ");
-  makeCell("MidTFrontLShield",System,cellIndex++,midTFrontLShieldMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"7801 -1001 7803 -1104 7805 -7806");
+  makeCell("MidTFrontLShield",System,cellIndex++,midTFrontLShieldMat,0.0,HR);
 
   ///////////////////////
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1112 -1003 5 -6 -1522  1503 ");
-  makeCell("TVoidA",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1112 -1003 5 -6 -1522  1503");
+  makeCell("TVoidA",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1522  -201  3 -1003 5 -6 ");
-  makeCell("TVoidB",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1522  -201  3 -1003 5 -6");
+  makeCell("TVoidB",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-				 " 201 -211 203 -1003 5 -6 47M 57M 67M 77M 87M 97M 107M ");
-  makeCell("SPFVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+				"201 -211 203 -1003 5 -6 47M 57M 67M 77M 87M 97M 107M");
+  makeCell("SPFVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 111 -7611 1004 -104 5 -6");
-  makeCell("KlystronVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"111 -7611 1004 -104 5 -6");
+  makeCell("KlystronVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7611 -7612 7614 -104 5 -6");
-  makeCell("KlystronVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7611 -7612 7614 -104 5 -6");
+  makeCell("KlystronVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7612 -7401 1004 -104 5 -6");
-  makeCell("KlystronVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7612 -7401 1004 -104 5 -6");
+  makeCell("KlystronVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7401 -7402 1004 -7403 5 -7406");
-  makeCell("BTG",System,cellIndex++,btgMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7401 -7402 1004 -7403 5 -7406");
+  makeCell("BTG",System,cellIndex++,btgMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7401 -7402 1004 -7403 7406 -6");
-  makeCell("BTGAbove",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7401 -7402 1004 -7403 7406 -6");
+  makeCell("BTGAbove",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7402 -12 1004 -104 5 -6");
-  makeCell("KlystronVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7402 -12 1004 -104 5 -6");
+  makeCell("KlystronVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7401 -7402 7403 -104 5 -6");
-  makeCell("KlystronVoidBTG",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7401 -7402 7403 -104 5 -6");
+  makeCell("KlystronVoidBTG",System,cellIndex++,voidMat,0.0,HR);
 
   // Future klystron gallery maze
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 1011 -7301 1004 -4 5 -6");
-  makeCell("FKGMazeEntrance",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				"1011 -7301 1004 -4 5 -6");
+  makeCell("FKGMazeEntrance",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 7301 -7302 1004 -7304 5 -6");
-  makeCell("FKGMazeSideVoid",System,cellIndex++,voidMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 7301 -7302 7304 -4 5 -6");
-  makeCell("FKGMazeMidWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				"7301 -7302 1004 -7304 5 -6");
+  makeCell("FKGMazeSideVoid",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				"7301 -7302 7304 -4 5 -6");
+  makeCell("FKGMazeMidWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 7302 -2111 1004 -4 5 -6");
-  makeCell("FKGMazeExit",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				"7302 -2111 1004 -4 5 -6");
+  makeCell("FKGMazeExit",System,cellIndex++,voidMat,0.0,HR);
 
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-				 "211 -31 223 -1003 5 -6 97M 117M 127M 137M 147M 157M 167M ");
-  makeCell("LongVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+				"211 -31 223 -1003 5 -6 97M 117M 127M 137M 147M 157M 167M");
+  makeCell("LongVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-				 "21 -22 7003 -1003 5 -6 ");
-  makeCell("BackWallConcrete",System,cellIndex++,backWallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+				"21 -22 7003 -1003 5 -6");
+  makeCell("BackWallConcrete",System,cellIndex++,backWallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-				 "31 -21 7003 -1003 5 -6 ");
-  makeCell("BackWallIron",System,cellIndex++,wallIronMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+				"31 -21 7003 -1003 5 -6");
+  makeCell("BackWallIron",System,cellIndex++,wallIronMat,0.0,HR);
 
   // SPF hallway
   // C080012 is official room name
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-				 "22 -6122 223 -6003 5 -6 ");
-  makeCell("C080012",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+				"22 -6122 223 -6003 5 -6");
+  makeCell("C080012",System,cellIndex++,voidMat,0.0,HR);
 
   // SPF/FemtoMAX wall
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-				 "22 -6112 6003 -6004 5 -6 ");
-  makeCell("FemtoMAXWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+				"22 -6112 6003 -6004 5 -6");
+  makeCell("FemtoMAXWall",System,cellIndex++,wallMat,0.0,HR);
 
   // FemtoMAX (BSP02) beamline area
   // C080016 is official room name
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "22 -1041 6004 -6103 5 -6 ");
-  makeCell("C080016shield",System,cellIndex++,femtoMAXShieldMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "1041 -1022 6004 -6103 5 -6 ");
-  makeCell("C080016fom",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  				"22 -1041 6004 -6103 5 -6");
+  makeCell("C080016shield",System,cellIndex++,femtoMAXShieldMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  				"1041 -1022 6004 -6103 5 -6");
+  makeCell("C080016fom",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  				"1022 -6201 6004 -6103 5 -6");
+  makeCell("C080016",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "1022 -6201 6004 -6103 5 -6 ");
-  makeCell("C080016",System,cellIndex++,voidMat,0.0,Out);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  				"6201 -6102 6004 -6014 5 -6");
+  makeCell("C080016BackWallVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6201 -6102 6004 -6014 5 -6 ");
-  makeCell("C080016BackWallVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  				"6101 -6102 6014 -6103 5 -6");
+  makeCell("C080016BackWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6101 -6102 6014 -6103 5 -6 ");
-  makeCell("C080016BackWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  				"6201 -6101 6014 -6103 5 -6");
+  makeCell("C080016BackWallIron",System,cellIndex++,wallIronMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6201 -6101 6014 -6103 5 -6 ");
-  makeCell("C080016BackWallIron",System,cellIndex++,wallIronMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  				"6102 -6111 6004 -6103 5 -6");
+  makeCell("C080016MazeVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6102 -6111 6004 -6103 5 -6 ");
-  makeCell("C080016MazeVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  				"6111 -6211 6004 -6013 5 -6");
+  makeCell("C080016MazeIron",System,cellIndex++,wallIronMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6111 -6211 6004 -6013 5 -6 ");
-  makeCell("C080016MazeIron",System,cellIndex++,wallIronMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  				"6211  -6212 6004 -6014 5 -6");
+  makeCell("C080016MazeIronBack",System,cellIndex++,wallIronMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6211  -6212 6004 -6014 5 -6 ");
-  makeCell("C080016MazeIronBack",System,cellIndex++,wallIronMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  				"6212 -6112 6004 -6014 5 -6");
+  makeCell("C080016MazeBack",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6212 -6112 6004 -6014 5 -6 ");
-  makeCell("C080016MazeBack",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  				"6211  -6112 6014 -6013 5 -6");
+  makeCell("C080016Maze",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6211  -6112 6014 -6013 5 -6 ");
-  makeCell("C080016Maze",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  				"6111 -6112 6013 -6103 5 -6106");
+  makeCell("C080016MazeWallVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6111 -6112 6013 -6103 5 -6106 ");
-  makeCell("C080016MazeWallVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  				"6111 -6112 6013 -6103 6106 -6");
+  makeCell("C080016MazeWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6111 -6112 6013 -6103 6106 -6 ");
-  makeCell("C080016MazeWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  				"6112 -6121 6003 -6103 5 -6");
+  makeCell("C080016Maze",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6112 -6121 6003 -6103 5 -6 ");
-  makeCell("C080016Maze",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  				"6121 -6122 6003 -6014 5 -6");
+  makeCell("C080016MazeBackWallVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6121 -6122 6003 -6014 5 -6 ");
-  makeCell("C080016MazeBackWallVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  				"6121 -6122 6014 -6113 5 -6");
+  makeCell("C08MazeBackWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6121 -6122 6014 -6113 5 -6 ");
-  makeCell("C08MazeBackWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  				"6122 -12 223 -1004 5 -6");
+  makeCell("VoidBehindBSP01Maze",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6122 -12 223 -1004 5 -6 ");
-  makeCell("VoidBehindBSP01Maze",System,cellIndex++,voidMat,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "12 -2 223 -104 5 -6 ");
-  makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "12 -2 1004 -114 6 -25 ");
-  makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  				"12 -2 223 -104 5 -6");
+  makeCell("SideWall",System,cellIndex++,wallMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  				"12 -2 1004 -114 6 -25");
+  makeCell("SideWall",System,cellIndex++,wallMat,0.0,HR);
 
   // FemtoMAX/BSP01 wall
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "22 -6121 6103 -6104 5 -6 ");
-  makeCell("BSP01Wall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  				"22 -6121 6103 -6104 5 -6");
+  makeCell("BSP01Wall",System,cellIndex++,wallMat,0.0,HR);
 
   // BSP01 beamline area
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "22 -1031 6104 -1003 5 -6 ");
-  makeCell("C080017shield",System,cellIndex++,storageShieldMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "1031 -1022 6104 -1003 5 -6 ");
-  makeCell("C080017fom",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  				"22 -1031 6104 -1003 5 -6");
+  makeCell("C080017shield",System,cellIndex++,storageShieldMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  				"1031 -1022 6104 -1003 5 -6");
+  makeCell("C080017fom",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "1022 -6201 6104 -1003 5 -6 ");
-  makeCell("C080017",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  				"1022 -6201 6104 -1003 5 -6");
+  makeCell("C080017",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6201 -6101 6104 -6113 5 -6 ");
-  makeCell("C080017BackWallIron",System,cellIndex++,wallIronMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  				"6201 -6101 6104 -6113 5 -6");
+  makeCell("C080017BackWallIron",System,cellIndex++,wallIronMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6101 -6102 6104 -6113 5 -6 ");
-  makeCell("C080017BackWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  				"6101 -6102 6104 -6113 5 -6");
+  makeCell("C080017BackWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6201 -6102 6113 -1003 5 -6 ");
-  makeCell("C080017BackWallVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  				"6201 -6102 6113 -1003 5 -6");
+  makeCell("C080017BackWallVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6102 -6111 6104 -1003 5 -6 ");
-  makeCell("C080017MazeVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  				"6102 -6111 6104 -1003 5 -6");
+  makeCell("C080017MazeVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6111 -6112 6104 -6114 5 -6106 ");
-  makeCell("C080017MazeVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  				"6111 -6112 6104 -6114 5 -6106");
+  makeCell("C080017MazeVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6111 -6112 6104 -6114 6106 -6 ");
-  makeCell("C080017MazeWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  				"6111 -6112 6104 -6114 6106 -6");
+  makeCell("C080017MazeWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6111 -6211 6114 -1003 5 -6 ");
-  makeCell("C080017MazeIron",System,cellIndex++,wallIronMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  				"6111 -6211 6114 -1003 5 -6");
+  makeCell("C080017MazeIron",System,cellIndex++,wallIronMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6211 -6212 6113 -1003 5 -6 ");
-  makeCell("C080017MazeIronBack",System,cellIndex++,wallIronMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  				"6211 -6212 6113 -1003 5 -6");
+  makeCell("C080017MazeIronBack",System,cellIndex++,wallIronMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6212 -6112 6113 -1003 5 -6 ");
-  makeCell("C080017MazeBack",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  				"6212 -6112 6113 -1003 5 -6");
+  makeCell("C080017MazeBack",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6211 -6112 6114 -6113 5 -6 ");
-  makeCell("C080017Maze",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  				"6211 -6112 6114 -6113 5 -6");
+  makeCell("C080017Maze",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6112 -6121 6104 -1004 5 -6 ");
-  makeCell("C080017MazeVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  				"6112 -6121 6104 -1004 5 -6");
+  makeCell("C080017MazeVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  // Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  // 				 "6121 -6122 6104 -6113 5 -6 ");
-  // makeCell("C080017MazeBackWall",System,cellIndex++,wallMat,0.0,Out);
+  // HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  // 				"6121 -6122 6104 -6113 5 -6");
+  // makeCell("C080017MazeBackWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6121 -6122 6113 -1004 5 -6 ");
-  makeCell("C080017MazeBackWallVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+  				"6121 -6122 6113 -1004 5 -6");
+  makeCell("C080017MazeBackWallVoid",System,cellIndex++,voidMat,0.0,HR);
 
   //OUTER WALLS:
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -201 -3 13 5 -6");
-  makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -201 -3 13 5 -6");
+  makeCell("SideWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -211 -203 213 5 -6");
-  makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -211 -203 213 5 -6");
+  makeCell("SideWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 211 -7001 233 -223 5 -6");
-  makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"211 -7001 233 -223 5 -6");
+  makeCell("SideWall",System,cellIndex++,wallMat,0.0,HR);
 
   // SPF hall access maze (room C080011)
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7001 -7002 7013 -7033 5 -7036");
-  makeCell("SPFMazeLayer",System,cellIndex++,spfMazeLayerMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7001 -7002 7013 -7033 7036 -6");
-  makeCell("SPFMazeSideVoid",System,cellIndex++,voidMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7001 -7031 7033 -223 5 -7036");
-  makeCell("SPFMazeLayer",System,cellIndex++,spfMazeLayerMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7001 -7031 7033 -223 7036 -6");
-  makeCell("SPFMazeS1Void",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7001 -7002 7013 -7033 5 -7036");
+  makeCell("SPFMazeLayer",System,cellIndex++,spfMazeLayerMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7001 -7002 7013 -7033 7036 -6");
+  makeCell("SPFMazeSideVoid",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7001 -7031 7033 -223 5 -7036");
+  makeCell("SPFMazeLayer",System,cellIndex++,spfMazeLayerMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7001 -7031 7033 -223 7036 -6");
+  makeCell("SPFMazeS1Void",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7032 -7002 7033 -7063 5 -7065");
-  makeCell("SPFMazeLayer",System,cellIndex++,spfMazeLayerMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7032 -7002 7033 -7063 7065 -7036");
-  makeCell("SPFMazeSPFVoid",System,cellIndex++,voidMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7032 -7002 7063 -7053 5 -7036");
-  makeCell("SPFMazeLayer",System,cellIndex++,spfMazeLayerMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7032 -7002 7033 -7063 5 -7065");
+  makeCell("SPFMazeLayer",System,cellIndex++,spfMazeLayerMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7032 -7002 7033 -7063 7065 -7036");
+  makeCell("SPFMazeSPFVoid",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7032 -7002 7063 -7053 5 -7036");
+  makeCell("SPFMazeLayer",System,cellIndex++,spfMazeLayerMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7032 -7002 7053 -223 5 -7055");
-  makeCell("SPFMazeLayer",System,cellIndex++,spfMazeLayerMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7032 -7002 7053 -223 7055 -7036");
-  makeCell("SPFMazeSPFVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7032 -7002 7053 -223 5 -7055");
+  makeCell("SPFMazeLayer",System,cellIndex++,spfMazeLayerMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7032 -7002 7053 -223 7055 -7036");
+  makeCell("SPFMazeSPFVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7032 -7002 7033 -223 7036 -6");
-  makeCell("SPFMazeSPFVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7032 -7002 7033 -223 7036 -6");
+  makeCell("SPFMazeSPFVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7041 -7042 7043 -7003 5 -6");
-  makeCell("SPFMazeLayer",System,cellIndex++,spfMazeLayerMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7041 -31 7003 -223 5 -6");
-  makeCell("SPFMazeLayer",System,cellIndex++,spfMazeLayerMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 22 -7042 7003 -223 5 -6");
-  makeCell("SPFMazeLayer",System,cellIndex++,spfMazeLayerMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7041 -7042 7043 -7003 5 -6");
+  makeCell("SPFMazeLayer",System,cellIndex++,spfMazeLayerMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7041 -31 7003 -223 5 -6");
+  makeCell("SPFMazeLayer",System,cellIndex++,spfMazeLayerMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"22 -7042 7003 -223 5 -6");
+  makeCell("SPFMazeLayer",System,cellIndex++,spfMazeLayerMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7031 -7041 7033 -223 5 -6");
-  makeCell("SPFMazeS1Void",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7031 -7041 7033 -223 5 -6");
+  makeCell("SPFMazeS1Void",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7001 -7002 7023 -7013 5 -6");
-  makeCell("SPFMazeSideWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7001 -7002 7023 -7013 5 -6");
+  makeCell("SPFMazeSideWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7041 -7042 7033 -7043 5 -6");
-  makeCell("SPFMazeSideVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7041 -7042 7033 -7043 5 -6");
+  makeCell("SPFMazeSideVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7011 -7012 53 -7023 5 -26");
-  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7011 -7012 53 -7023 5 -26");
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7011 -7001 7023  -233 5 -6");
-  makeCell("SPFMazeSideWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7011 -7001 7023  -233 5 -6");
+  makeCell("SPFMazeSideWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7042 -7032 7033 -223 5 -6");
-  makeCell("SPFMazeSPFVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7042 -7032 7033 -223 5 -6");
+  makeCell("SPFMazeSPFVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7002 -7012 7023 -7113 5 -6");
-  makeCell("SPFMazeSideWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7002 -7012 7023 -7113 5 -6");
+  makeCell("SPFMazeSideWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7011 -7012 7023 -233 6 -26 ");
-  makeCell("Roof",System,cellIndex++,roofMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7011 -7012 7023 -233 6 -26");
+  makeCell("Roof",System,cellIndex++,roofMat,0.0,HR);
 
   // SPF concrete door parking space (room C080012)
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7002 -7101 7113 -223 5 -6");
-  makeCell("SPFMazeSideWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7002 -7101 7113 -223 5 -6");
+  makeCell("SPFMazeSideWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7012 -7211 53 -7113  -233 5 -26");
-  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7012 -7211 53 -7113  -233 5 -26");
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7101 -7202 -7103 7113 5 -6");
-  makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7101 -7202 -7103 7113 5 -6");
+  makeCell("SideWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7101 -7102 -223 7103 5 -6");
-  makeCell("C080012",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7101 -7102 -223 7103 5 -6");
+  makeCell("C080012",System,cellIndex++,voidMat,0.0,HR);
 
   // SPF emergency exit
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7102 -7201 7103 -223 5 -6");
-  makeCell("ParkingExitWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7102 -7201 7103 -223 5 -6");
+  makeCell("ParkingExitWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7201 -7202 7103 -233 5 -6");
-  makeCell("SPFEmergencyExitVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7201 -7202 7103 -233 5 -6");
+  makeCell("SPFEmergencyExitVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7201 -7212 233 -223 5 -6");
-  makeCell("SPFEmergencyExitDoorWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7201 -7212 233 -223 5 -6");
+  makeCell("SPFEmergencyExitDoorWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7212 -7202 233 -223 5 -7305");
-  makeCell("SPFEmergencyExitDoorVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7212 -7202 233 -223 5 -7305");
+  makeCell("SPFEmergencyExitDoorVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7212 -7202 233 -223 7305 -6");
-  makeCell("SPFEmergencyExitDoorRoof",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7212 -7202 233 -223 7305 -6");
+  makeCell("SPFEmergencyExitDoorRoof",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7202 -7211 7113 -223 5 -6");
-  makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7202 -7211 7113 -223 5 -6");
+  makeCell("SideWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7012 -7211 7113 -233 6 -26 ");
-  makeCell("Roof",System,cellIndex++,roofMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7012 -7211 7113 -233 6 -26");
+  makeCell("Roof",System,cellIndex++,roofMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7211 -2   233 -223 5 -6");
-  makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7211 -2   233 -223 5 -6");
+  makeCell("SideWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -111 4 -14 5 -6");
-  makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -111 4 -14 5 -6");
+  makeCell("SideWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -111 14 -114 5 -6");
-  makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -111 14 -114 5 -6");
+  makeCell("SideWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 111 -2 104 -114 5 -6");
-  makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"111 -2 104 -114 5 -6");
+  makeCell("SideWall",System,cellIndex++,wallMat,0.0,HR);
 
   // Klystrong divivde
-  Out=ModelSupport::getComposite(SMap,buildIndex,"2111 -111 7303 -4 5 -7305");
-  makeCell("FKGMazeBackDoorVoid",System,cellIndex++,voidMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"2111 -111 7303 -4 7305 -6");
-  makeCell("FKGMazeBackDoorWall",System,cellIndex++,wallMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"2111 -111 1004 -7303 5 -6");
-  makeCell("FKGMazeBackWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2111 -111 7303 -4 5 -7305");
+  makeCell("FKGMazeBackDoorVoid",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2111 -111 7303 -4 7305 -6");
+  makeCell("FKGMazeBackDoorWall",System,cellIndex++,wallMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2111 -111 1004 -7303 5 -6");
+  makeCell("FKGMazeBackWall",System,cellIndex++,wallMat,0.0,HR);
 
   // OUTER VOIDS:
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1 -211 53 -13 -213 5 -26");
-  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1 -211 53 -13 -213 5 -26");
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 211 -7011 53 -233 5 -26");
-  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"211 -7011 53 -233 5 -26");
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 7211 -2 53 -233 5 -26");
-  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"7211 -2 53 -233 5 -26");
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,HR);
 
 
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1 -101 -54 14  5 -26 ");
-  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1 -101 -54 14  5 -26");
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 101 -2 114 -54  15 -26");
-  makeCell("RightCut",System,cellIndex++,soilMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"101 -2 114 -54  15 -26");
+  makeCell("RightCut",System,cellIndex++,soilMat,0.0,HR);
 
   // ROOF/FLOOR
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -7511 53 -233 -5 15 ");
-  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -7511 233 -114 -5 15 ");
-  makeCell("Floor",System,cellIndex++,floorMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -21 53 -7023 -5 15 ");
-  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -21 7023 -7503 -5 15 ");
-  makeCell("Floor",System,cellIndex++,floorMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -21 7504 -114 -5 15 ");
-  makeCell("Floor",System,cellIndex++,floorMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"21 -2 53 -7113 -5 15 ");
-  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"21 -2 7113 -114 -5 15 ");
-  makeCell("Floor",System,cellIndex++,floorMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -101 114 -54 -5 15 ");
-  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -7511 53 -233 -5 15");
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -7511 233 -114 -5 15");
+  makeCell("Floor",System,cellIndex++,floorMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -21 53 -7023 -5 15");
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -21 7023 -7503 -5 15");
+  makeCell("Floor",System,cellIndex++,floorMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -21 7504 -114 -5 15");
+  makeCell("Floor",System,cellIndex++,floorMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -2 53 -7113 -5 15");
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -2 7113 -114 -5 15");
+  makeCell("Floor",System,cellIndex++,floorMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -101 114 -54 -5 15");
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -201 13 -14 6 -26 ");
-  makeCell("Roof",System,cellIndex++,roofMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -201 13 -14 6 -26");
+  makeCell("Roof",System,cellIndex++,roofMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"201 -211 213 -14 6 -26 ");
-  makeCell("Roof",System,cellIndex++,roofMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -211 213 -14 6 -26");
+  makeCell("Roof",System,cellIndex++,roofMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"211 -2 233 -1004 6 -26 ");
-  makeCell("Roof",System,cellIndex++,roofMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"211 -2 233 -1004 6 -26");
+  makeCell("Roof",System,cellIndex++,roofMat,0.0,HR);
 
   // FKGRoof: A2_40-2_G6-Y.pdf
-  Out=ModelSupport::getComposite(SMap,buildIndex,"211 -232 1004 -114 6 -16 ");
-  makeCell("FKGRoof",System,cellIndex++,roofMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"232 -2 1004 -114 25 -26 ");
-  makeCell("FKGRoof",System,cellIndex++,roofMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"211 -231 1004 -114 16 -26 ");
-  makeCell("FKGRoofVoid",System,cellIndex++,0,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"231 -232 1004 -114 16 -26 ");
-  makeCell("FKGRoof",System,cellIndex++,roofMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"232 -12 1004 -104 6 -25 ");
-  makeCell("FKGRoofVoid",System,cellIndex++,0,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"232 -12 104 -114 6 -25 ");
-  makeCell("FKGRoofVoid",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"211 -232 1004 -114 6 -16");
+  makeCell("FKGRoof",System,cellIndex++,roofMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"232 -2 1004 -114 25 -26");
+  makeCell("FKGRoof",System,cellIndex++,roofMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"211 -231 1004 -114 16 -26");
+  makeCell("FKGRoofVoid",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"231 -232 1004 -114 16 -26");
+  makeCell("FKGRoof",System,cellIndex++,roofMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"232 -12 1004 -104 6 -25");
+  makeCell("FKGRoofVoid",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"232 -12 104 -114 6 -25");
+  makeCell("FKGRoofVoid",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -211 14 -114 6 -26 ");
-  makeCell("Roof",System,cellIndex++,roofMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -211 14 -114 6 -26");
+  makeCell("Roof",System,cellIndex++,roofMat,0.0,HR);
 
   // MidT wall ducts
   int SJ = buildIndex+7700;
 
   // middle wall (part with THz penetration)
-  Out=ModelSupport::getComposite(SMap,buildIndex,SJ,
-				 "1011 -1M 1003 -1004 5 -6 (-5003:5004:-5005:5006) ");
-  makeCell("MidT0",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SJ,
+				"1011 -1M 1003 -1004 5 -6 (-5003:5004:-5005:5006)");
+  makeCell("MidT0",System,cellIndex++,wallMat,0.0,HR);
 
   HeadRule MidTDucts1; // TDC modulator klystron duct and D1-D4
   HeadRule MidTDucts2; // 4 ducts near floor level
@@ -1139,8 +1138,8 @@ InjectionHall::createObjects(Simulation& System)
 
   for (size_t i=0; i<midTNDucts; ++i)
     {
-      Out = ModelSupport::getComposite(SMap,buildIndex,SJ, " 1003 -1004 -7M ");
-      makeCell("MidTDuct",System,cellIndex++,midTDuctMat[i],0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,SJ,"1003 -1004 -7M");
+      makeCell("MidTDuct",System,cellIndex++,midTDuctMat[i],0.0,HR);
       if (i<=4)
 	MidTDucts1.addIntersection(SJ+7);
       else if (i<=8)
@@ -1152,198 +1151,198 @@ InjectionHall::createObjects(Simulation& System)
     }
 
   // MID T
-  Out=ModelSupport::getComposite(SMap,buildIndex, buildIndex+7700,
-				 "1M -2M 1003 -1004 5 -6 ");
-  Out += MidTDucts1.display();
-  makeCell("MidT1",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex, buildIndex+7700,
+				"1M -2M 1003 -1004 5 -6");
+  makeCell("MidT1",System,cellIndex++,wallMat,0.0,HR*MidTDucts1);
 
   // between ducts
-  Out=ModelSupport::getComposite(SMap,buildIndex, buildIndex+7700,
-				 "2M -11M 1003 -1004 5 -6 ");
-  makeCell("MidT2",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex, buildIndex+7700,
+				"2M -11M 1003 -1004 5 -6");
+  makeCell("MidT2",System,cellIndex++,wallMat,0.0,HR);
 
   // floor ducts
-  Out=ModelSupport::getComposite(SMap,buildIndex, buildIndex+7700,
-				 "11M -12M 1003 -1004 5 -6 ");
-  Out += MidTDucts2.display();
-  makeCell("MidT3",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,buildIndex+7700,
+				"11M -12M 1003 -1004 5 -6");
+  makeCell("MidT3",System,cellIndex++,wallMat,0.0,HR*MidTDucts2);
 
   // between ducts
-  Out=ModelSupport::getComposite(SMap,buildIndex, buildIndex+7700,
-				 "12M -21M 1003 -1004 5 -6 ");
-  makeCell("MidT4",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex, buildIndex+7700,
+				"12M -21M 1003 -1004 5 -6");
+  makeCell("MidT4",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex, buildIndex+7700,
-				 "21M -22M 1003 -1004 5 -6 ");
-  Out += MidTDucts3.display();
-  makeCell("MidT5",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex, buildIndex+7700,
+				"21M -22M 1003 -1004 5 -6");
+  makeCell("MidT5",System,cellIndex++,wallMat,0.0,HR*MidTDucts3);
 
   // after ducts
-  Out=ModelSupport::getComposite(SMap,buildIndex, buildIndex+7700,
-  				 "22M -6112 1003 -1004 5 -6 ");
-  makeCell("MidT6",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex, buildIndex+7700,
+  				"22M -6112 1003 -1004 5 -6");
+  makeCell("MidT6",System,cellIndex++,wallMat,0.0,HR);
 
 
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "1001 -1011 1003 -1004 5 -6 2007 (-5003:5004:-5005:5006)");
-  makeCell("MidTFrontWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1001 -1011 1003 -1004 5 -6 2007 (-5003:5004:-5005:5006)");
+  makeCell("MidTFrontWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "1001 -1011 1004 -1104 5 -6 ");
-  makeCell("FKGMazeFrontWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				"1001 -1011 1004 -1104 5 -6");
+  makeCell("FKGMazeFrontWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1511 -1011 1104 -4 5 -6 ");
-  makeCell("MidTVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1511 -1011 1104 -4 5 -6");
+  makeCell("MidTVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1111 -1112 -1003 1153 5 -6 2007 ");
-  makeCell("MidTAngle",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1111 -1112 -1003 1153 5 -6 2007");
+  makeCell("MidTAngle",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1201 -1202 1103 -1153 5 -6 ");
-  makeCell("MidTAngleTip",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1201 -1202 1103 -1153 5 -6");
+  makeCell("MidTAngleTip",System,cellIndex++,wallMat,0.0,HR);
 
   // Auxiliary cyliner to cure geometric problems in corners
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 5 -6 -2007 ");
-  makeCell("MidTAuxCyl",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -2007");
+  makeCell("MidTAuxCyl",System,cellIndex++,wallMat,0.0,HR);
 
   // Maze between the Linac and SPF halls
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1511 -1512 3 -1503 5 -6  ");
-  makeCell("GateA",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1511 -1512 3 -1503 5 -6");
+  makeCell("GateA",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1521 -1522 3 -1503 5 -6  ");
-  makeCell("GateB",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1521 -1522 3 -1503 5 -6");
+  makeCell("GateB",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1512 -1201 3 -1503 5 -6");
-  makeCell("GateVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1512 -1201 3 -1503 5 -6");
+  makeCell("GateVoid",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1201 -1111 -1503 5 -6");
-  makeCell("GateVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1201 -1111 -1503 5 -6");
+  makeCell("GateVoid",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1201 -1202 3 -1103 5 -6 ");
-  makeCell("GateVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1201 -1202 3 -1103 5 -6");
+  makeCell("GateVoid",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1202 -1521 3 -1503 1112 5 -6 ");
-  makeCell("GateVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1202 -1521 3 -1503 1112 5 -6");
+  makeCell("GateVoid",System,cellIndex++,0,0.0,HR);
 
   // KLYSTRONG WALLS
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -3001 -3014 3 5 -6");
-  makeCell("KlystronVoid",System,cellIndex++,voidMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -3001 3014 -3004 5 -6");
-  makeCell("KlystronWall",System,cellIndex++,wallMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3001 -3002 3 -3004 5 -6");
-  makeCell("KlystronWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -3001 -3014 3 5 -6");
+  makeCell("KlystronVoid",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -3001 3014 -3004 5 -6");
+  makeCell("KlystronWall",System,cellIndex++,wallMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3001 -3002 3 -3004 5 -6");
+  makeCell("KlystronWall",System,cellIndex++,wallMat,0.0,HR);
 
   // Pillars
   for (size_t i=0; i<nPillars; ++i)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,SI," 5 -6 -7M ");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,"5 -6 -7M");
       makeCell("Pillar"+std::to_string(i),
-	       System,cellIndex++,pMat[i],0.0,Out);
+	       System,cellIndex++,pMat[i],0.0,HR);
       SI += 10;
     }
 
   // THz penetration
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1001 1003 5003 -5004 5005 -5006 ");
-  makeCell("THz",System,cellIndex++,thzMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1001 1003 5003 -5004 5005 -5006");
+  makeCell("THz",System,cellIndex++,thzMat,0.0,HR);
 
   // Under-the-floor beam dump and its room
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -7501 53 -54 7505 -15 ");
-  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 22 -2 53 -54 7505 -15 ");
-  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7501 -22 7514 -54 7505 -15 ");
-  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7501 -22 53 -7513 7505 -15 ");
-  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -7501 53 -54 7505 -15");
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"22 -2 53 -54 7505 -15");
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7501 -22 7514 -54 7505 -15");
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7501 -22 53 -7513 7505 -15");
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7501 -7511 7513 -7514 7505 -15 ");
-  makeCell("BDFrontWall",System,cellIndex++,wallMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -22 7513 -7514 7505 -15 ");
-  makeCell("BDBackWall",System,cellIndex++,wallMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7511 -21 7513 -7514 7505 -7506 ");
-  makeCell("BDFloor",System,cellIndex++,wallMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7522 -21 7503 -7504 7506 -7516 ");
-  makeCell("BDBackWallSteel",System,cellIndex++,wallIronMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7501 -7511 7513 -7514 7505 -15");
+  makeCell("BDFrontWall",System,cellIndex++,wallMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -22 7513 -7514 7505 -15");
+  makeCell("BDBackWall",System,cellIndex++,wallMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -21 7513 -7514 7505 -7506");
+  makeCell("BDFloor",System,cellIndex++,wallMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7522 -21 7503 -7504 7506 -7516");
+  makeCell("BDBackWallSteel",System,cellIndex++,wallIronMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7511 -21 7504 -7514 7506 -15 ");
-  makeCell("BDSideWall",System,cellIndex++,wallMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7511 -21 7513 -7503 7506 -15 ");
-  makeCell("BDSideWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -21 7504 -7514 7506 -15");
+  makeCell("BDSideWall",System,cellIndex++,wallMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -21 7513 -7503 7506 -15");
+  makeCell("BDSideWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -21 7503 -7543 -5 7516 ");
-  makeCell("BDRoof",System,cellIndex++,floorMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -21 7503 -7543 -5 7516");
+  makeCell("BDRoof",System,cellIndex++,floorMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"7512 -21 7543 -7544 -5 7516 ");
-  makeCell("BDRoof",System,cellIndex++,bdRoofIronMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7512 -21 7543 -7544 -5 7516");
+  makeCell("BDRoof",System,cellIndex++,bdRoofIronMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -7512 7543 -7544 -5 7516 ");
-  makeCell("HatchNew",System,cellIndex++,floorMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7543 -7544 -5 7516");
+  makeCell("HatchNew",System,cellIndex++,floorMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -21 7544 -7553 -5 7516 ");
-  makeCell("BDRoof",System,cellIndex++,floorMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -21 7544 -7553 -5 7516");
+  makeCell("BDRoof",System,cellIndex++,floorMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"7512 -21 7553 -7554 -5 7516 ");
-  makeCell("BDRoofSPF",System,cellIndex++,bdRoofIronMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7512 -21 7553 -7554 -5 7516");
+  makeCell("BDRoofSPF",System,cellIndex++,bdRoofIronMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -7512 7553 -7554 -5 7516 ");
-  makeCell("HatchSPF",System,cellIndex++,floorMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7553 -7554 -5 7516");
+  makeCell("HatchSPF",System,cellIndex++,floorMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -21 7554 -7563 -5 7516 ");
-  makeCell("BDRoof",System,cellIndex++,floorMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -21 7554 -7563 -5 7516");
+  makeCell("BDRoof",System,cellIndex++,floorMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"7512 -21 7563 -7564 -5 7516 ");
-  makeCell("BDRoof",System,cellIndex++,bdRoofIronMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7512 -21 7563 -7564 -5 7516");
+  makeCell("BDRoof",System,cellIndex++,bdRoofIronMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -7512 7563 -7564 -5 7516 ");
-  makeCell("HatchTDC",System,cellIndex++,floorMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7563 -7564 -5 7516");
+  makeCell("HatchTDC",System,cellIndex++,floorMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"7512 -21 7564 -7504 -5 7516 ");
-  makeCell("BDRoof",System,cellIndex++,floorMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7512 -21 7564 -7504 -5 7516");
+  makeCell("BDRoof",System,cellIndex++,floorMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -7512 7564 -7504 -5 7516 ");
-  makeCell("BDEntrance",System,cellIndex++,0,0.0,Out);
-
-
-
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7511 -7521 7503 -7504 7506 -7516 ");
-  makeCell("BD",System,cellIndex++,0,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7521 -7522 7503 -7534 7506 -7516 ");
-  makeCell("BDNew",System,cellIndex++,0,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7521 -7522 7534 -7524 7506 -7516 ");
-  makeCell("BDInnerWall",System,cellIndex++,wallMat,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7521 -7522 7524 -7525 7506 -7516 ");
-  makeCell("BDSPF",System,cellIndex++,0,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7521 -7522 7525 -7535 7506 -7516 ");
-  makeCell("BDInnerWall",System,cellIndex++,wallMat,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7521 -7522 7535 -7504 7506 -7516 ");
-  makeCell("BDTDC",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7564 -7504 -5 7516");
+  makeCell("BDEntrance",System,cellIndex++,0,0.0,HR);
 
 
 
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"7511 -7521 7503 -7504 7506 -7516");
+  makeCell("BD",System,cellIndex++,0,0.0,HR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"7521 -7522 7503 -7534 7506 -7516");
+  makeCell("BDNew",System,cellIndex++,0,0.0,HR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"7521 -7522 7534 -7524 7506 -7516");
+  makeCell("BDInnerWall",System,cellIndex++,wallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"7521 -7522 7524 -7525 7506 -7516");
+  makeCell("BDSPF",System,cellIndex++,0,0.0,HR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"7521 -7522 7525 -7535 7506 -7516");
+  makeCell("BDInnerWall",System,cellIndex++,wallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"7521 -7522 7535 -7504 7506 -7516");
+  makeCell("BDTDC",System,cellIndex++,0,0.0,HR);
 
 
   // Radioactive waste room
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7601 -7602 1004 -7604 5 -6 ");
-  makeCell("WasteRoom",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7601 -7602 1004 -7604 5 -6");
+  makeCell("WasteRoom",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7611 -7601 1004 -7604 5 -6 ");
-  makeCell("WasteRoomWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7611 -7601 1004 -7604 5 -6");
+  makeCell("WasteRoomWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7602 -7612 1004 -7604 5 -6 ");
-  makeCell("WasteRoomWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7602 -7612 1004 -7604 5 -6");
+  makeCell("WasteRoomWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7611 -7612 7604 -7614 5 -6 ");
-  makeCell("WasteRoomWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7611 -7612 7604 -7614 5 -6");
+  makeCell("WasteRoomWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 53 -54 7505 -26 ");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 53 -54 7505 -26");
+  addOuterSurf(HR);
 
   for (size_t i=0; i<7; ++i)
     {
@@ -1491,7 +1490,6 @@ InjectionHall::createLinks()
   FixedComp::setConnect(7,Origin+X*btgdX+Y*btgdY,X);
   FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+7403));
   FixedComp::nameSideIndex(7,"BTGSide");
-  //  ELog::EM << "BTGSide: " << getLinkPt("BTGSide") << ELog::endWarn;
 
   FixedComp::setConnect(8,getLinkPt("BTGSide")
 			-X*(btgThick)

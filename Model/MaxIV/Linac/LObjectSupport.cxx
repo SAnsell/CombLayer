@@ -213,7 +213,7 @@ pipeTerminate(Simulation& System,
 	      attachSystem::BlockZone& buildZone,
 	      const std::shared_ptr<attachSystem::FixedComp>& pipe)
   /*!
-    Teminate a pipe in the inde of a Inner zone
+    Teminate a pipe in the end of an Inner zone
     \param System :: Simulation to use
     \param buildZone :: Inner zoner to be split -
             currently at start of pipe

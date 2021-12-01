@@ -277,9 +277,8 @@ micromaxExptLine::constructSampleStage(Simulation& System,
 
   int outerCell;
 
-  ELog::EM<<"Point == "<<initFC.getLinkPt(sideName)<<ELog::endDiag;
-  // constructSystem::constructUnit
-  //   (System,buildZone,initFC,sideName,*endWindow);
+  constructSystem::constructUnit
+    (System,buildZone,initFC,sideName,*endWindow);
 
   // both build absolute
   sample->setNoInsert();
