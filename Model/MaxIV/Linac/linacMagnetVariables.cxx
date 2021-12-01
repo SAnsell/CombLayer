@@ -219,11 +219,11 @@ LINACmagnetVariables(FuncDataBase& Control,
   MUdipole.generateCorMag(Control,2,"QuadD",0.0);
   MUdipole.generateCorMag(Control,2,"QuadE",0.0);
 
-  // SEGMENT 3
-  MUdipole.generateDipole(Control,3,"DipoleA",-90.0,0.8575);  // 0.86
+  // SEGMENT 3 : +/- 0.01 is half the distance across the beam stop at 2300
+  MUdipole.generateDipole(Control,3,"DipoleA",-90.0,0.8075);  // 0.8575
   MUdipole.generateCorMag(Control,3,"CMagHA",90.0);
   MUdipole.generateCorMag(Control,3,"CMagVA",0.0);
-  MUdipole.generateDipole(Control,3,"DipoleB",-90.0,0.8625);   // 0.865
+  MUdipole.generateDipole(Control,3,"DipoleB",-90.0,0.7825);   // 0.8625
 
   // SEGMENT 4
   MUdipole.generateQuad(Control,4,"QuadA",0.0,0.0);
@@ -234,9 +234,9 @@ LINACmagnetVariables(FuncDataBase& Control,
 
   // SEGMENT 5
   MUdipole.setSize(65.0,15.0,3.0);
-  MUdipole.setField(0.859,0,0,0);
+  MUdipole.setField(0.761,0,0,0);  //
   MUdipole.generate(Control,"Seg5DipoleA","L2SPF5DipoleA","0",-90.0);
-  MUdipole.setField(0.859,0,0,0);  // 0.66 : 0.8
+  MUdipole.setField(0.789,0,0,0);  // 0.66 : 0.8
   MUdipole.generate(Control,"Seg5DipoleB","L2SPF5DipoleB","0",-90.0);
 
   // SEGMENT 6
@@ -343,8 +343,8 @@ LINACmagnetVariables(FuncDataBase& Control,
       MUdipole.generateCorMag(Control,31,"CMagHA",90.0);
 
       // SEGMENT 32
-      MUdipole.generateDipole(Control,32,"DipoleA",90.0,0.860);
-      MUdipole.generateDipole(Control,32,"DipoleB",90.0,0.860);
+      MUdipole.generateDipole(Control,32,"DipoleA",90.0,0.77);
+      MUdipole.generateDipole(Control,32,"DipoleB",90.0,0.77);
 
       // SEGMENT 33
       MUdipole.generateCorMag(Control,33,"CMagHA",90.0);
@@ -355,8 +355,8 @@ LINACmagnetVariables(FuncDataBase& Control,
 
 
       // SEGMENT 34
-      MUdipole.generateDipole(Control,34,"DipoleA",90.0,0.858);
-      MUdipole.generateDipole(Control,34,"DipoleB",90.0,0.858);
+      MUdipole.generateDipole(Control,34,"DipoleA",90.0,0.828);
+      MUdipole.generateDipole(Control,34,"DipoleB",90.0,0.828);
 
       // SEGMENT 35
       MUdipole.generateQuad(Control,35,"QuadA",0.0,0.0);
