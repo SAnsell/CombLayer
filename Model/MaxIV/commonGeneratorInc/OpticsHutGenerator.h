@@ -37,7 +37,7 @@ namespace setVariable
 
 class OpticsHutGenerator 
 {
- private:
+ protected:
 
   double height;                ///< void height
   double outWidth;              ///< Width from beamline centre to outside
@@ -68,8 +68,12 @@ class OpticsHutGenerator
   OpticsHutGenerator& operator=(const OpticsHutGenerator&) =default;
   ~OpticsHutGenerator() =default;
 
+  // set skinthickness
   void setSkin(const double T) { outerThick=T; innerThick=T;}
-  void setWallPbThick(const double,const double,const double);
+
+  void setBackLead(const double T) { pbBackThick=T; }
+  void setRoofLead(const double T) { pbRoofThick=T; }
+  void setWallLead(const double T) { pbWallThick=T; }
   void setBackExt(const double T) { backVoid=T; }
 
   void addHole(const Geometry::Vec3D&,const double);

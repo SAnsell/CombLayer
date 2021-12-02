@@ -469,18 +469,17 @@ SingleItemVariables(FuncDataBase& Control)
   PGen.generatePipe(Control,"VC",80.0);
   Control.addVariable("VC",-40.0);
 
-<<<<<<< HEAD
+
   PGen.setCF<setVariable::CF40_22>();
   PGen.generatePipe(Control,"DipolePipe",80.0);
   Control.addVariable("DipolePipeYStep",-40.0);
-=======
+
   setVariable::CooledScreenGenerator CoolGen;
   CoolGen.generateScreen(Control,"Cool",1);  // in beam
   Control.addVariable("CoolYAngle",-90.0);
 
   setVariable::BeamScrapperGenerator BeamSGen;
   BeamSGen.generateScreen(Control,"BeamScrapper");
->>>>>>> origin/master
 
   setVariable::YagScreenGenerator YagGen;
   YagGen.generateScreen(Control,"YAG",1);  // in beam

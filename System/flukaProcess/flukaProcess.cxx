@@ -105,18 +105,35 @@ createPLOTGEOM(SimFLUKA& System,
 	       const mainSystem::inputParam& IParam)
   /*!
     Process the plot geom box
+    Note using the option either 
+     --plotgeom LowPoint HighPoint title
+     --plotgeom Region  
+    Option (a) defined the point region
+    Option (b) creates the plot geometry to build on region not material
     \param System :: Simulation (fluka)
     \param IParam :: Inpup parameters
   */
 {
   ELog::RegMethod RegA("mainJobs[F]","createPLOTGEOM");
 
+  bool region(0); // use region plotting;
+
   if (IParam.flag("plotgeom"))
     {
+      size_t itemIndex(0);
+      const std::string option=
+	IParam.getDefValue<std::string>("","plotgeom",0,0);
+      if (option=="region" || option=="Region")
+	{
+	  region=1;
+	  itemIndex++;
+	}
+      if (option=="material" || option=="Material")
+	itemIndex++;
+
       Geometry::Vec3D MeshA;
       Geometry::Vec3D MeshB;
-      
-      size_t itemIndex(0);
+
       MeshA=mainSystem::getNamedPoint
 	(System,IParam,"plotgeom",0,itemIndex,
 	 "MeshA Point");
@@ -128,10 +145,11 @@ createPLOTGEOM(SimFLUKA& System,
       plotGeom& PG=
 	System.getPlotGeom();
       PG.setBox(MeshA,MeshB);
+      if (region) PG.setRegion();
       PG.setTitle(title);
     }
 
-  return ;
+  return;
 }
 
 } // NAMESPACE flukaSystem

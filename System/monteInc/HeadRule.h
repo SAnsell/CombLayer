@@ -32,6 +32,11 @@ namespace Geometry
   class Surface;
 }
 
+namespace ModelSupport
+{
+  class surfRegister;
+}
+
 /*!
   \class HeadRule
   \brief Holds the topRule pointer
@@ -60,6 +65,8 @@ class HeadRule
 
   HeadRule();
   explicit HeadRule(const int);
+  explicit HeadRule(const ModelSupport::surfRegister&,const int);
+  explicit HeadRule(const ModelSupport::surfRegister&,const int,const int);
   explicit HeadRule(const std::string&);
   HeadRule(const HeadRule&);
   HeadRule(HeadRule&&);

@@ -58,9 +58,9 @@ class CRLTube :
   double captureHeight;          ///< Void around main tube
   double captureDepth;           ///< void in capture space
   
-  double supportWidth;           ///< support Width
-  double supportHeight;          ///< support Height
-  double supportDepth;          ///< support Height
+  double supportWidth;           ///< support width
+  double supportHeight;          ///< support height (+Z)
+  double supportDepth;           ///< support depth  (-)
 
   double magWidth;               ///< Magnet Width
   double magHeight;              ///< Magnet Height
@@ -75,7 +75,9 @@ class CRLTube :
 
   double innerRadius;            ///< inner pipe radius
   double innerThick;             ///< inner pipe thickness
-
+  
+  double viewRadius;             ///< cut in main box
+  
   double portLength;             ///< Port length
   double portRadius;             ///< port Radius 
   double portThick;              ///< thickness of pipe

@@ -69,6 +69,7 @@
 #include "WallLeadGenerator.h"
 #include "MonoShutterGenerator.h"
 #include "OpticsHutGenerator.h"
+#include "ExptHutGenerator.h"
 #include "FlangeDomeGenerator.h"
 
 #include "DiffXIADP03Generator.h"
@@ -251,36 +252,15 @@ exptHutVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("cosaxsVariables[F]","exptHutVariables");
 
   const std::string hutName(preName+"ExptHut");
+  const double beamOffset(0.4);
 
-  
-  const double beamOffset(-0.4);
-
-  Control.addVariable(hutName+"YStep",1000.0);  
-  Control.addVariable(hutName+"Height",200.0);
-  Control.addVariable(hutName+"Length",858.4);
-  Control.addVariable(hutName+"OutWidth",260.0);
-  Control.addVariable(hutName+"RingWidth",200.0);
-  Control.addVariable(hutName+"InnerThick",0.2);
-  Control.addVariable(hutName+"PbWallThick",0.4);
-  Control.addVariable(hutName+"PbBackThick",0.4);
-  Control.addVariable(hutName+"PbRoofThick",0.4);
-  Control.addVariable(hutName+"PbThick",0.4);
-  Control.addVariable(hutName+"OuterThick",0.2);
-
-  Control.addVariable(hutName+"HoleXStep",-beamOffset);
-  Control.addVariable(hutName+"HoleZStep",0.0);
-  Control.addVariable(hutName+"HoleRadius",0.0);
-  
-  Control.addVariable(hutName+"ExitXStep",-beamOffset);
-  Control.addVariable(hutName+"ExitZStep",0.0);
-  Control.addVariable(hutName+"ExitRadius",53.0);
-
-  Control.addVariable(hutName+"InnerOutVoid",10.0);
-  Control.addVariable(hutName+"OuterOutVoid",10.0);
-
-  Control.addVariable(hutName+"VoidMat","Void");
-  Control.addVariable(hutName+"SkinMat","Stainless304");
-  Control.addVariable(hutName+"PbMat","Lead");
+  setVariable::ExptHutGenerator EGen;
+  EGen.setBackLead(0.4);
+  EGen.setRoofLead(0.4);
+  EGen.setWallLead(0.4);
+  EGen.addHole(Geometry::Vec3D(-beamOffset,0,0),53.0);
+  EGen.generateHut(Control,hutName,0.0,1858.4);
+  // inner/outer where 0.2 mm
 
   return;
 }
@@ -1023,7 +1003,6 @@ exptVariables(FuncDataBase& Control,
 
   Control.addVariable(tubeName+"DetYStep", 0.0);
 
-  ELog::EM<<"BDUMP increase by 10cm"<<ELog::endCrit;
   Control.addVariable(tubeName+"BeamDumpLength", 10.6); // [2]
   Control.addVariable(tubeName+"BeamDumpRadius", 10.15); // [2]
   Control.addVariable(tubeName+"BeamDumpMat", "Tantalum");

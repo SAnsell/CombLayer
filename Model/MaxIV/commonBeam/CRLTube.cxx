@@ -89,7 +89,8 @@ CRLTube::CRLTube(const std::string& Key) :
   attachSystem::FixedRotate(Key,8),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
-  attachSystem::ExternalCut()
+  attachSystem::ExternalCut(),
+  inBeam(1)
  /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -142,6 +143,7 @@ CRLTube::populate(const FuncDataBase& Control)
   lensSupportRadius=Control.EvalVar<double>(keyName+"LensSupportRadius");
 
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
+  viewRadius=Control.EvalDefVar<double>(keyName+"ViewRadius",innerRadius);
   innerThick=Control.EvalVar<double>(keyName+"InnerThick");
 
   portLength=Control.EvalVar<double>(keyName+"PortLength");
@@ -204,7 +206,7 @@ CRLTube::createSurfaces()
   ModelSupport::buildPlane
     (SMap,buildIndex+106,Origin+Z*(height/2.0),Z);
   ModelSupport::buildCylinder
-    (SMap,buildIndex+107,Origin,Y,innerRadius);
+    (SMap,buildIndex+107,Origin,Y,viewRadius);
 
 
   // Secondary inner void (if requested)
@@ -387,17 +389,17 @@ CRLTube::createObjects(Simulation& System)
   
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"17 103 -104 105 -106  501 -101");
+    (SMap,buildIndex,"107 103 -104 105 -106  501 -101");
   makeCell("PortPlate",System,cellIndex++,pipeMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 501 -101");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-107 501 -101");
   makeCell("PortVoid",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"17 103 -104 105 -106  -502 102");
+    (SMap,buildIndex,"107 103 -104 105 -106  -502 102");
   makeCell("PortPlate",System,cellIndex++,pipeMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 -502 102");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-107 -502 102");
   makeCell("PortVoid",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule

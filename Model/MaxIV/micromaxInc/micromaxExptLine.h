@@ -28,12 +28,6 @@ namespace insertSystem
   class insertSphere;
 }
 
-namespace tdcSystem
-{
-  class SixPortTube;
-  class YagScreen;
-}
-
 namespace constructSystem
 {
   class VacuumPipe;
@@ -42,18 +36,19 @@ namespace constructSystem
   class PortTube;
   class PipeTube;
   class GateValveCylinder;
+  class FlangePlate;
 }
 
 namespace xraySystem
 {
   class CylGateValve;
   class MonoBox;
-  class FourPortTube;
   class BoxJaws;
   class ViewScreenTube;
   class CRLTube;
   class ConnectorTube;
-  class micromaxDetectorTube;
+  class RoundMonoShutter;
+
 
   
     
@@ -80,6 +75,8 @@ class micromaxExptLine :
   attachSystem::BlockZone buildZone;
   int outerMat;                         ///< outermaterial if used
 
+  std::string exptType;        ///< experiment type [bypass/diffract/sample]
+  
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
 
@@ -111,10 +108,8 @@ class micromaxExptLine :
   std::shared_ptr<xraySystem::CRLTube> crlTubeB;
   /// End  CRL pipe [note skip C as not in expt design]
   std::shared_ptr<constructSystem::VacuumPipe> crlPipeD;
-
   /// Narrow end pipe
   std::shared_ptr<constructSystem::VacuumPipe> endPipe;
-
   /// Mirror box
   std::shared_ptr<constructSystem::VacuumBox> mirrorBoxA;
   /// Mirror front
@@ -122,8 +117,26 @@ class micromaxExptLine :
   /// Mirror back
   std::shared_ptr<xraySystem::Mirror> mirrorBackA;
 
+  /// The main mono shutter
+  std::shared_ptr<xraySystem::RoundMonoShutter> monoShutterB;
+  
+  //DIFFRACT:
+  /// Tube to diffraction
+  std::shared_ptr<constructSystem::VacuumPipe> diffractTube;
+
+  //BYPASS:
+  /// Tube to diffraction
+  std::shared_ptr<constructSystem::VacuumPipe> byPassTube;
+
+  /// SAMPLE
+  /// End point on mirror box
+  std::shared_ptr<constructSystem::FlangePlate> endWindow;
+  /// Tube 
+  std::shared_ptr<constructSystem::VacuumPipe> sampleTube;
   /// Narrow end pipe
   std::shared_ptr<insertSystem::insertSphere> sample;
+
+
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
@@ -132,7 +145,15 @@ class micromaxExptLine :
   void constructCRL(Simulation&,
 		    const attachSystem::FixedComp&,
 		    const std::string&); 
+  void constructSampleStage(Simulation&,
+			    const attachSystem::FixedComp&,
+			    const std::string&); 
+  void constructDiffractionStage(Simulation&,
+				 const attachSystem::FixedComp&,
+				 const std::string&); 
+  void constructByPassStage(Simulation&);
   
+
   void populate(const FuncDataBase&);
   void createSurfaces();
   void buildObjects(Simulation&);

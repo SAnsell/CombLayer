@@ -81,6 +81,7 @@
 #include "MLMonoGenerator.h"
 #include "BremBlockGenerator.h"
 #include "OpticsHutGenerator.h"
+#include "ExptHutGenerator.h"
 
 namespace setVariable
 {
@@ -209,7 +210,9 @@ opticsHutVariables(FuncDataBase& Control,
   OpticsHutGenerator OGen;
 
   OGen.setSkin(0.2);
-  OGen.setWallPbThick(2.0,2.0,10.0);
+  OGen.setBackLead(10.0);
+  OGen.setWallLead(2.0);
+  OGen.setRoofLead(2.0);
   OGen.addHole(Geometry::Vec3D(beamMirrorShift,0,0),3.5);
   OGen.generateHut(Control,hutName,999.6);
 
@@ -304,37 +307,23 @@ exptHutVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("danmaxVariables[F]","exptHutVariables");
 
-  const double beamMirrorShift(0.6);
+  setVariable::ExptHutGenerator EGen;
     
+    
+  const double beamMirrorShift(0.6);
   const std::string hutName(beamName+"ExptHut");
 
-  Control.addVariable(hutName+"YStep",1845.0);
-  Control.addVariable(hutName+"Length",858.4);
-  Control.addVariable(hutName+"Height",200.0);
-  Control.addVariable(hutName+"OutWidth",198.50);
+  EGen.setFrontHole(beamMirrorShift,0.0,4.0);
+  EGen.setCorner(45.0,138.0);
+  EGen.setFrontLead(0.5);
+  EGen.setBackLead(0.5);
+  EGen.setRoofLead(0.6);
+  EGen.setWallLead(0.4);
+
+
+  EGen.generateHut(Control,hutName,1845.0,858.4);
   Control.addVariable(hutName+"RingWidth",248.6);
-  Control.addVariable(hutName+"InnerThick",0.1);
-  Control.addVariable(hutName+"PbFrontThick",0.5);
 
-
-  Control.addVariable(hutName+"PbBackThick",0.5);
-  Control.addVariable(hutName+"PbRoofThick",0.6);
-  Control.addVariable(hutName+"PbWallThick",0.4);
-  Control.addVariable(hutName+"OuterThick",0.1);
-  Control.addVariable(hutName+"CornerLength",720.0);
-  Control.addVariable(hutName+"CornerAngle",45.0);
-  
-  Control.addVariable(hutName+"InnerOutVoid",10.0);
-  Control.addVariable(hutName+"OuterOutVoid",10.0);
-
-  Control.addVariable(hutName+"VoidMat","Void");
-  Control.addVariable(hutName+"SkinMat","Stainless304");
-  Control.addVariable(hutName+"PbMat","Lead");
-
-  Control.addVariable(hutName+"HoleXStep",beamMirrorShift);
-  Control.addVariable(hutName+"HoleZStep",0.0);
-  Control.addVariable(hutName+"HoleRadius",4.0);
-  Control.addVariable(hutName+"HoleMat","Void");
 
   // lead shield on pipe
   Control.addVariable(beamName+"PShieldXStep",beamMirrorShift);

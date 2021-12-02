@@ -180,19 +180,19 @@ DBMaterial::initMaterial()
   setMaterial(MObj);
 
   // Material #26 is solid methane (90v/o) and Aluminum (10v/o) 22K
-  MObj.setMaterial(26,"CH4+Al22K","6012.60c -0.3439 "
+  MObj.setMaterial(26,"CH4+Al22K","6012.70c -0.3439 "
 		   "1001.70c -0.1145 13027.70c -0.2698",
 		   "smeth.22t al.20t",MLib);
   setMaterial(MObj);
 
   //Material #27 is solid methane (90v/o) and Aluminum (10v/o) 30K
-  MObj.setMaterial(27,"CH4+Al30K","6012.60c -0.3439 1001.70c -0.1145 "
+  MObj.setMaterial(27,"CH4+Al30K","6012.70c -0.3439 1001.70c -0.1145 "
 		   "13027.70c -0.2698","smeth.30t al.20t",MLib);
   setMaterial(MObj);
 
   // Material #28 is solid methane (90v/o) and Aluminum (10v/o) 26K
   MObj.setMaterial(28,"CH4+Al26K",
-		   "6012.60c  -0.3439 1001.70c -0.1145 13027.70c -0.2698",
+		   "6012.70c  -0.3439 1001.70c -0.1145 13027.70c -0.2698",
 		   "smeth.01t al.20t",MLib);
   setMaterial(MObj);
 
@@ -1455,8 +1455,8 @@ DBMaterial::initMaterial()
   setMaterial(MObj);
 
   MObj.setMaterial(157,"SteelS355", //S355 steeel from Valentina
-                "  06012.30c      0.008201260271"
-		"   06013.30c      0.000088702603 "
+                "  6012.70c      0.008201260271"
+		"   6013.30c      0.000088702603 "
 		"         13027.70c      0.000615039421"
 		"         14028.70c      0.004359299697"
 		"         14029.70c      0.000221455809"

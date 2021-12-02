@@ -61,6 +61,7 @@
 #include "PipeShieldGenerator.h"
 #include "WallLeadGenerator.h"
 #include "OpticsHutGenerator.h"
+#include "ExptHutGenerator.h"
 #include "TriggerGenerator.h"
 #include "CylGateValveGenerator.h"
 
@@ -200,32 +201,15 @@ exptHutVariables(FuncDataBase& Control,
   const double beamOffset(4.0);
 
   const std::string hutName(beamName+"ExptHut");
+
+  setVariable::ExptHutGenerator EGen;
   
-  Control.addVariable(hutName+"YStep",1850.0);
-
-  Control.addVariable(hutName+"Height",200.0);
-  Control.addVariable(hutName+"Length",858.4);
-  Control.addVariable(hutName+"OutWidth",260);
-  Control.addVariable(hutName+"RingWidth",200);
-  Control.addVariable(hutName+"InnerThick",0.3);
-  Control.addVariable(hutName+"PbFrontThick",0.5);
-  Control.addVariable(hutName+"PbBackThick",0.5);
-  Control.addVariable(hutName+"PbRoofThick",0.5);
-  Control.addVariable(hutName+"PbWallThick",0.5);
-  Control.addVariable(hutName+"OuterThick",0.3);
-
-  Control.addVariable(hutName+"InnerOutVoid",10.0);
-  Control.addVariable(hutName+"OuterOutVoid",10.0);
-
-  Control.addVariable(hutName+"VoidMat","Void");
-  Control.addVariable(hutName+"SkinMat","Stainless304");
-  Control.addVariable(hutName+"PbMat","Lead");
-  
-  Control.addVariable(hutName+"HoleXStep",0.0);
-  Control.addVariable(hutName+"HoleZStep",beamOffset);
-  Control.addVariable(hutName+"HoleRadius",7.0);
-  Control.addVariable(hutName+"HoleMat","Lead");
-
+  EGen.setFrontHole(0.0,beamOffset,7.0);
+  EGen.setBackLead(0.5);
+  EGen.setRoofLead(0.5);
+  EGen.setWallLead(0.5);   
+  EGen.generateHut(Control,hutName,1850.0,858.0);
+  // inner/outer where 0.3 mm
 
   Control.addVariable(hutName+"NChicane",4);
   PortChicaneGenerator PGen;
@@ -692,25 +676,25 @@ connectingVariables(FuncDataBase& Control)
   LeadPipeGen.generatePipe(Control,baseName+"PipeB",188.0);
   Control.addVariable(baseName+"PipeBYStep",10.0);
   
-  BellowGen.generateBellow(Control,baseName+"BellowB",10.0);
-  LBGen.generateBox(Control,baseName+"LeadB",4.5,12.0);
+  BellowGen.generateBellow(Control,baseName+"BellowB",11.0);
+  LBGen.generateBox(Control,baseName+"LeadB",4.9,12.0);
   
   LeadPipeGen.generatePipe(Control,baseName+"PipeC",188.0);
-  Control.addVariable(baseName+"PipeCYStep",9.0);
+  Control.addVariable(baseName+"PipeCYStep",10.0);
   
   // ystep/width/height/depth/length
   SimpleTubeGen.generateTube(Control,baseName+"IonPumpB",2.8);
-  LBGen.generateBox(Control,baseName+"PumpBoxB",4.5,12.0);
+  LBGen.generateBox(Control,baseName+"PumpBoxB",4.9,12.0);
   
   Control.addVariable(baseName+"IonPumpBNPorts",1);
   PItemGen.generatePort(Control,baseName+"IonPumpBPort0",OPos,ZVec);
   
   LeadPipeGen.generatePipe(Control,baseName+"PipeD",172.0);
-  Control.addVariable(baseName+"PipeDYStep",9.0);
+  Control.addVariable(baseName+"PipeDYStep",10.0);
   // PTubeGen.getTotalLength(0.5));
 
   BellowGen.generateBellow(Control,baseName+"BellowC",8.0);
-  LBGen.generateBox(Control,baseName+"LeadC",4.5,12.0);
+  LBGen.generateBox(Control,baseName+"LeadC",4.9,12.0);
   
   return;
 }
@@ -755,7 +739,7 @@ BALDERvariables(FuncDataBase& Control)
 
   // note bellow skip
   LeadPipeGen.generatePipe(Control,"BalderJoinPipeC",81.0);
-  Control.addVariable("BalderJoinPipeCYStep",9.0);
+  Control.addVariable("BalderJoinPipeCYStep",9.3);
 
   balderVar::exptHutVariables(Control,"Balder");
 

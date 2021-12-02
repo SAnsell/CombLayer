@@ -182,7 +182,7 @@ DANMAX::build(Simulation& System,
   joinPipeB->createAll(System,*opticsBeam,2);
 
 
-  exptHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
+  exptHut->setCutSurf("floor",r3Ring->getSurf("Floor"));
   exptHut->setCutSurf("InnerSideWall",r3Ring->getSurf("FlatInner",PIndex));
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));

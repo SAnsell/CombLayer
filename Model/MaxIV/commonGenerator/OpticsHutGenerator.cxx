@@ -52,7 +52,7 @@ namespace setVariable
 
 
 OpticsHutGenerator::OpticsHutGenerator() :
-  height(277.0),outWidth(260.0),
+  height(277.0),outWidth(259.6),
   innerThick(0.3),pbWallThick(1.6),
   pbBackThick(9.0),pbRoofThick(1.6),
   outerThick(0.3),
@@ -82,22 +82,6 @@ OpticsHutGenerator::addHole(const Geometry::Vec3D& HO,
 }
   
   
-void
-OpticsHutGenerator::setWallPbThick(const double mainT,
-				 const double roofT,
-				 const double backT)
-  /*!
-    Simple setter
-    \param mainT :: Set main wal thicknes
-    \param roofT :: Set roof thickness
-    \param backT :: Set back thickness
-   */
-{
-  pbWallThick=mainT;
-  pbRoofThick=roofT;
-  pbBackThick=backT;
-  return;
-}
   
   
 void

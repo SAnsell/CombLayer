@@ -44,7 +44,7 @@ namespace flukaSystem
 {
   
 plotGeom::plotGeom() :
-  title("Basic plot")
+  title("Basic plot"),matRegion(1)
   /*!
     Constructor
   */
@@ -52,7 +52,7 @@ plotGeom::plotGeom() :
 
 plotGeom::plotGeom(const plotGeom& A) : 
   title(A.title),APoint(A.APoint),BPoint(A.BPoint),
-  xUnit(A.xUnit),yUnit(A.yUnit)
+  xUnit(A.xUnit),yUnit(A.yUnit),matRegion(A.matRegion)
   /*!
     Copy constructor
     \param A :: plotGeom to copy
@@ -74,6 +74,7 @@ plotGeom::operator=(const plotGeom& A)
       BPoint=A.BPoint;
       xUnit=A.xUnit;
       yUnit=A.yUnit;
+      matRegion=A.matRegion;
     }
   return *this;
 }
@@ -142,9 +143,11 @@ plotGeom::write(std::ostream& OX) const
 {
   std::ostringstream cx;
 
-  StrFunc::writeFLUKA("PLOTGEOM 0.0 1.0 0.0 0.0 79.0 0.0",OX);
+  cx<<"PLOTGEOM 0.0 "<<matRegion<<" 0.0 0.0 79.0 0.0";
+  StrFunc::writeFLUKA(cx.str(),OX);
   OX<<" "<<title.substr(0,78)<<"\n";
-  
+
+  cx.str("");
   cx<<APoint<<" "<<BPoint;
   StrFunc::writeFLUKA(cx.str(),OX);
   cx.str("");

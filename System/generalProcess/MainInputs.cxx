@@ -129,7 +129,7 @@ createInputs(inputParam& IParam)
   IParam.regMulti("offset","offset",10000,1,8);
   IParam.regDefItem<double>("photon","photon",1,0.001);  // 1keV
   IParam.regDefItem<double>("photonModel","photonModel",1,100.0);
-  IParam.regItem("plotgeom","plotgeom",2);
+  IParam.regMulti("plotgeom","plotgeom",2,1);
   IParam.regMulti("postOffset","postOffset",10000,1,8);
   IParam.regDefItem<std::string>("print","printTable",1,
 				 "10 20 40 50 110 120");  
