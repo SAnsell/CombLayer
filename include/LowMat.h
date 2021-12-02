@@ -35,8 +35,8 @@ class LowMat
 {
  private:
 
-  static std::tuple<int,int,double,std::string>
-  getID(const size_t,const size_t);
+  static const std::string& getLowName(const size_t);
+  static std::tuple<int,int,double> getID(const size_t,const size_t);
 
 public:
 
