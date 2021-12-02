@@ -3,7 +3,7 @@
  
  * File:   ralBuild/TargetBase.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,6 +61,7 @@ TargetBase::TargetBase(const std::string& Key,const size_t NLink)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key,NLink),
   attachSystem::ExternalCut(),
+  attachSystem::CellMap(),
   PLine(new ts1System::ProtonVoid("ProtonVoid"))
   /*!
     Constructor
@@ -78,6 +79,7 @@ TargetBase::TargetBase(const TargetBase& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
   attachSystem::ExternalCut(A),
+  attachSystem::CellMap(A),
   BWPtr((A.BWPtr) ? new ts1System::BeamWindow(*A.BWPtr) : 0),
   PLine(new ts1System::ProtonVoid(*A.PLine))
   /*!
@@ -100,6 +102,8 @@ TargetBase::operator=(const TargetBase& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::ExternalCut::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      
       if (A.BWPtr)
 	*BWPtr = *A.BWPtr;
       else

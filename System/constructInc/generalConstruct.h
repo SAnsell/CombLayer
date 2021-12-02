@@ -26,7 +26,6 @@ namespace attachSystem
 {
   class ContainerComp;
   class ContainedGroup;
-  class InnerZone;
   class BlockZone;
 }
 
@@ -58,50 +57,6 @@ namespace xraySystem
 
 namespace constructSystem
 {
-
-  //
-  //   INNERZONE [to be removed]
-  // 
-int
-internalUnit(Simulation&,
-	     attachSystem::InnerZone&,
-	     MonteCarlo::Object*,
-	     const attachSystem::FixedComp&,
-	     const std::string&,
-	     attachSystem::FixedComp&,
-	     attachSystem::ExternalCut&,
-	     attachSystem::ContainedComp&);
-int
-internalGroup(Simulation&,
-	      attachSystem::InnerZone&,
-	      MonteCarlo::Object*,
-	      const attachSystem::FixedComp&,
-	      const std::string&,
-	      attachSystem::FixedComp&,
-	      attachSystem::ExternalCut&,
-	      attachSystem::ContainedGroup&,
-	      const std::set<std::string>&);
- 
-template<typename T>
-int constructUnit(Simulation& System,
-		  attachSystem::InnerZone& buildZone,
-		  MonteCarlo::Object* masterCell,
-		  const attachSystem::FixedComp& linkUnit,
-		  const std::string& sideName,
-		  T& buildUnit)
-{
-  if constexpr (std::is_base_of<attachSystem::ContainedComp,T>::value)
-
-    return internalUnit(System,buildZone,masterCell,linkUnit,sideName,
-			buildUnit,buildUnit,buildUnit);
-
-  else
-    
-    return internalGroup(System,buildZone,masterCell,linkUnit,sideName,
-			 buildUnit,buildUnit,buildUnit,{"All"});
-
-}
-
 //  --------------------------------------------------------
 //                BLOCKZONE
 //  --------------------------------------------------------
@@ -121,7 +76,6 @@ internalFreeUnit(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const std::string&,
 		 attachSystem::FixedComp&,
-		 attachSystem::ExternalCut&,
 		 attachSystem::ContainedComp&);
 int
 internalGroup(Simulation&,
@@ -138,7 +92,6 @@ internalFreeGroup(Simulation&,
 		  const attachSystem::FixedComp&,
 		  const std::string&,
 		  attachSystem::FixedComp&,
-		  attachSystem::ExternalCut&,
 		  attachSystem::ContainedGroup&,
 		  const std::set<std::string>&);
   
@@ -182,12 +135,12 @@ int constructFreeUnit(Simulation& System,
   if constexpr (std::is_base_of<attachSystem::ContainedComp,T>::value)
 
     return internalFreeUnit(System,buildZone,linkUnit,sideName,
-			buildUnit,buildUnit,buildUnit);
+			buildUnit,buildUnit);
 
   else
     
     return internalFreeGroup(System,buildZone,linkUnit,sideName,
-			     buildUnit,buildUnit,buildUnit,{"All"});
+			     buildUnit,buildUnit,{"All"});
 
 }
   

@@ -186,6 +186,7 @@ testObject::applyTest(const int extra)
       &testObject::testSetObject,
       &testObject::testSetObjectExtra,
       &testObject::testTrackCell,
+      &testObject::testTrackDirection,
       &testObject::testWriteFluka
     };
   const std::string TestName[]=
@@ -199,6 +200,7 @@ testObject::applyTest(const int extra)
       "SetObject",
       "SetObjectExtra",
       "TrackCell",
+      "TrackDirection",
       "WriteFluka"
     };
   
@@ -441,6 +443,10 @@ testObject::testIsValid()
   std::vector<TTYPE> Tests;
   
   Tests.push_back(TTYPE("4 10 0.05524655  1 -2 3 -4 5 -6",
+			2,Geometry::Vec3D(1,0,0),0));
+  Tests.push_back(TTYPE("4 10 0.05524655  1 -2 3 -4 5 -6",
+			-2,Geometry::Vec3D(1,0,0),1));
+  Tests.push_back(TTYPE("4 10 0.05524655  1 -2 3 -4 5 -6",
 			0,Geometry::Vec3D(0,0,0),1));
   Tests.push_back(TTYPE("4 10 0.05524655  1 -2 3 -4 5 -6",
 			0,Geometry::Vec3D(0,0,1),1));
@@ -475,6 +481,7 @@ testObject::testIsValid()
 	{
 	  ELog::EM<<"Failed on test "<<cnt<<ELog::endDebug;
 	  ELog::EM<<"Result= "<<res<<" ["<<std::get<3>(tc)<<"]"<<ELog::endDebug;
+	  ELog::EM<<"Surf= "<<SN<<ELog::endDebug;
 	  ELog::EM<<"Point= "<<std::get<2>(tc)<<ELog::endDebug;
 
 	  const Rule* TR=A.topRule();
@@ -541,6 +548,9 @@ testObject::testIsOnSide()
 
   return 0;
 }
+
+
+
 
 int
 testObject::testTrackCell() 
@@ -612,6 +622,65 @@ testObject::testTrackCell()
 	}
       cnt++;
     }
+  return 0;
+}
+
+int
+testObject::testTrackDirection() 
+  /*!
+    Test the object being valid both on and off surface
+    \retval -1 :: Unable to process line
+    \retval 0 :: success
+  */
+{
+  ELog::RegMethod RegA("testObject","testDirection");
+
+  createSurfaces();
+  Object A;
+
+  // Object : Point : SN : Result
+  typedef std::tuple<std::string,Geometry::Vec3D,Geometry::Vec3D,int> TTYPE;
+  const std::vector<TTYPE> Tests
+    ({
+      TTYPE("4 5 0.05 1 -2 3 -4 5 -6",
+	    Geometry::Vec3D(0,0,0),
+	    Geometry::Vec3D(0,0,1),0),
+	
+      TTYPE("4 5 0.05 1 -2 3 -4 5 -6",
+	    Geometry::Vec3D(-1,0,0),
+	    Geometry::Vec3D(1,0,0),1), 
+
+      TTYPE("4 5 0.05 1 -2 3 -4 5 -6",
+	    Geometry::Vec3D(-1,0,0),
+	    Geometry::Vec3D(-0.4,0.4,0),-1), 
+
+      TTYPE("4 5 0.05 1 -2 3 -4 5 -6",
+	    Geometry::Vec3D(1,0,0),
+	    Geometry::Vec3D(-1,0,0),1), 
+
+      TTYPE("4 5 0.05 1 -2 3 -4 5 -6",
+	    Geometry::Vec3D(1,0,0),
+	    Geometry::Vec3D(1,0,0),-1), 
+    });
+  
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
+    {
+      A.setObject(std::get<0>(tc));		  
+      A.createSurfaceList();
+      const Geometry::Vec3D Pt=std::get<1>(tc);
+      const Geometry::Vec3D unit=std::get<2>(tc);
+      const int res=A.trackDirection(Pt,unit);
+      if (res!=std::get<3>(tc))
+	{
+	  ELog::EM<<"Failed on test "<<cnt<<ELog::endDiag;
+	  ELog::EM<<"Result= "<<res<<" ["<<std::get<3>(tc)<<"]"<<ELog::endDiag;
+	  ELog::EM<<"Point= "<<std::get<1>(tc)<<ELog::endDiag;
+	  return -1;
+	}
+      cnt++;
+    }
+
   return 0;
 }
 

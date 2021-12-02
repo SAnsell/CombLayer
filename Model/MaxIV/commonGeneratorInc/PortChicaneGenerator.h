@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructVarInc/PortChicaneGenerator.h
+ * File:   commonGeneratorInc/PortChicaneGenerator.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ class PortChicaneGenerator
   double width;            ///< Full width
   double height;           ///< Full height
   double clearGap;         ///< Clearance gap for pipes [+midwall]
-  double downStep;         ///< Clearance gap for vertical
+  double downGap;          ///< Clearance gap for vertical
   double overHang;         ///< over hang cover of walls
 
   double skinThick;        ///< Skin thickness

@@ -69,6 +69,7 @@ class HPJawsGenerator
   HPJawsGenerator& operator=(const HPJawsGenerator&);
   virtual ~HPJawsGenerator();
 
+  void setMain(const double L) { length=L; }
   template<typename T> void setPortCF();
   
   void generateJaws(FuncDataBase&,const std::string&,

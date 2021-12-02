@@ -109,10 +109,10 @@ LowBeamBox::populate(const FuncDataBase& Control)
   backExtension=Control.EvalDefVar<double>(keyName+"BackExtension",-10.0);
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   
-  innerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"InnerMat",0);
+  innerMat=ModelSupport::EvalDefMat(Control,keyName+"InnerMat",0);
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
-  backMat=ModelSupport::EvalDefMat<int>(Control,keyName+"BackMat",mainMat);
-  b4cMat=ModelSupport::EvalDefMat<int>(Control,keyName+"B4CMat",backMat);
+  backMat=ModelSupport::EvalDefMat(Control,keyName+"BackMat",mainMat);
+  b4cMat=ModelSupport::EvalDefMat(Control,keyName+"B4CMat",backMat);
 
   return;
 }

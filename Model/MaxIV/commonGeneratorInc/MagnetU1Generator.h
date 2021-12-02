@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/MagnetU1Generator.h
+ * File:   commonGeneratorInc/MagnetU1Generator.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,12 +39,17 @@ class MagnetU1Generator
 {
  private:
 
-  double blockXStep;            ///< X Centre offset
-  double blockXYAngle;          ///< XY angle of block
-  double blockYStep;            ///< Step forward
-  double blockLength;           ///< block length
-  double blockWidth;           ///< block length
-  double blockHeight;           ///< block length
+  double yOffset;                ///< Offset from straight centre
+  double blockYStep;             ///< Step forward
+  double length;                 ///< frame length
+
+  double outerVoid;              ///< Size of outer void gap
+  double ringVoid;               ///< Size of outer void gap
+  double topVoid;                ///< Size of outer void gap
+  double baseVoid;               ///< Size of outer void gap
+
+  double baseThick;              ///< base thickness
+  double wallThick;              ///< side wall thickness
   
   std::string voidMat;           ///< void material
   std::string wallMat;           ///< wall material

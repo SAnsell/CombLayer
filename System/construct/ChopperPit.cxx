@@ -179,7 +179,7 @@ ChopperPit::populate(const FuncDataBase& Control)
   colletDepth=Control.EvalDefVar<double>(keyName+"ColletDepth",0.0);
   colletHeight=Control.EvalDefVar<double>(keyName+"ColletHeight",0.0);
   colletWidth=Control.EvalDefVar<double>(keyName+"ColletWidth",0.0);
-  colletMat=ModelSupport::EvalDefMat<int>(Control,keyName+"ColletMat",-1);
+  colletMat=ModelSupport::EvalDefMat(Control,keyName+"ColletMat",-1);
 
   if (colletDepth*colletHeight*colletWidth<Geometry::zeroTol)
     colletMat=-1;

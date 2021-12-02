@@ -24,6 +24,10 @@
 
 class Simulation;
 
+namespace constructSystem
+{
+  class portSet;
+}
 
 namespace xraySystem
 {
@@ -49,10 +53,12 @@ class FourPortTube :
   double radius;               ///< void radius
   double linkRadius;           ///< void radius on 4 cross way
   double wallThick;            ///< pipe thickness
-
-  double frontLength;           ///< full to flange length
-  double backLength;            ///< full to flange length
-  double sideLength;            ///< full to flange length
+  double linkWallThick;        ///< wall thickness of side
+  
+  double frontLength;           ///< length -Y
+  double backLength;            ///< length +Y
+  double sideALength;           ///< length -X
+  double sideBLength;           ///< length +X
 
   double flangeARadius;         ///< Joining Flange radius
   double flangeBRadius;         ///< Joining Flange radius
@@ -68,12 +74,19 @@ class FourPortTube :
   int mainMat;                 ///< main material
   int flangeMat;               ///< flange material
   int plateMat;                ///< plate material
- 
+
+  bool sideVoidFlag;          ///< Make the side inner void complete
+
+  // extra ports to add:
+  std::unique_ptr<constructSystem::portSet> PSet;
+  
   void populate(const FuncDataBase&);  
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
 
+  void createPorts(Simulation&);
+  
  public:
 
   FourPortTube(const std::string&);
@@ -82,6 +95,9 @@ class FourPortTube :
   FourPortTube& operator=(const FourPortTube&);
   virtual ~FourPortTube();
 
+  /// set to have the side void as the main void
+  void setSideVoid() { sideVoidFlag=1; }
+  
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Model/MaxIV/commonBeamInc/FilterHolder.h
+ * File:   commonBeamInc/FilterHolder.h
  *
- * Copyright (c) 2019 by Konstantin Batkov
+ * Copyright (c) 2019-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,36 +35,34 @@ namespace xraySystem
   \brief Filter holder
 */
 
-class FilterHolder : public attachSystem::ContainedComp,
-		    public attachSystem::FixedOffset,
-		    public attachSystem::CellMap
+class FilterHolder :
+    public attachSystem::ContainedComp,
+    public attachSystem::FixedRotate,
+    public attachSystem::CellMap
 {
  private:
 
   double thick;                ///< Thickness
-  double width;                 ///< Width
-  double height;                ///< Height
-  double depth; ///< Depth
+  double width;                ///< Width
+  double height;               ///< Height
+  double depth;                ///< Depth
 
-  double legWidth; ///< Leg width
-  double legHeight; ///< Leg height
-  double baseWidth; ///< Base width
-  double baseHeight; ///< Base height
+  double legWidth;             ///< Leg width
+  double legHeight;            ///< Leg height
+  double baseWidth;            ///< Base width
+  double baseHeight;           ///< Base height
 
-  double foilThick; ///< Foil thickness
-  int foilMat; ///< Foil material
+  double foilThick;            ///< Foil thickness
+  int foilMat;                 ///< Foil material
 
-  size_t nWindows; ///< Number of windows
-  double wWidth; ///< Window width
-  double wHeight; ///< Window height
-  double wDepth; ///< Window depth
+  size_t nWindows;             ///< Number of windows
+  double wWidth;               ///< Window width
+  double wHeight;              ///< Window height
+  double wDepth;               ///< Window depth
 
-  int mat;                   ///< Main material
+  int mat;                      ///< Main material
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -74,10 +72,9 @@ class FilterHolder : public attachSystem::ContainedComp,
   FilterHolder(const std::string&);
   FilterHolder(const FilterHolder&);
   FilterHolder& operator=(const FilterHolder&);
-  virtual FilterHolder* clone() const;
   virtual ~FilterHolder();
 
-  using FixedComp::createAll;
+  using attachSystem::FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
 };

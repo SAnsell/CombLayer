@@ -61,6 +61,7 @@ namespace xraySystem
   class BeamMount;
   class PreDipole;
   class MagnetM1;
+  class MagnetU1;
 
   class PreBendPipe;
   class EPSeparator;
@@ -204,8 +205,7 @@ class R3FrontEnd :
 		   const long int) =0;
 
 
-  void buildHeatTable(Simulation&,
-		      const attachSystem::FixedComp&,const long int);
+  void buildHeatTable(Simulation&);
   void buildApertureTable(Simulation&,
 			  const attachSystem::FixedComp&,const long int);
   void buildShutterTable(Simulation&,

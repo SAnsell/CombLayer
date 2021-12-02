@@ -57,6 +57,9 @@ class R3Ring :
 
   double outerWall;                ///< Default outer wall thick
   double outerWallCut;             ///< Cut on outer wall for hutches
+  double insulation;               ///< Insulation thickness
+  double insulationCut;            ///< Insulation missing from near REW
+  double insulationDepth;          ///< Insulation depth from inner wall  
   double ratchetWall;              ///< Default ratchet wall thick
   
   double height;                  ///< Main height

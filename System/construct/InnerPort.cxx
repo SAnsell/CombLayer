@@ -150,11 +150,11 @@ InnerPort::populate(const FuncDataBase& Control)
   nBolt=Control.EvalDefVar<size_t>(keyName+"NBolt",0);
   boltStep=Control.EvalDefVar<double>(keyName+"BoltStep",0.0);
   boltRadius=Control.EvalDefVar<double>(keyName+"BoltRadius",0.0);
-  boltMat=ModelSupport::EvalDefMat<int>(Control,keyName+"BoltMat",0);
+  boltMat=ModelSupport::EvalDefMat(Control,keyName+"BoltMat",0);
   
   sealStep=Control.EvalDefVar<double>(keyName+"SealStep",0.0);
   sealThick=Control.EvalDefVar<double>(keyName+"SealThick",0.0);
-  sealMat=ModelSupport::EvalDefMat<int>(Control,keyName+"SealMat",0);
+  sealMat=ModelSupport::EvalDefMat(Control,keyName+"SealMat",0);
     
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 

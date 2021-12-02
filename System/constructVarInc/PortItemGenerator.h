@@ -84,6 +84,12 @@ class PortItemGenerator
 		    const Geometry::Vec3D&,
 		    const Geometry::Vec3D&) const;
 
+  void generateAnglePort(FuncDataBase&,const std::string&,
+			 const Geometry::Vec3D&,
+			 const Geometry::Vec3D&,
+			 const Geometry::Vec3D&,
+			 const double) const;
+  
 };
 
 }

@@ -24,6 +24,10 @@
 
 class Simulation;
 
+namespace constructSystem
+{
+  class portItem;  
+}
 
 namespace xraySystem
 {
@@ -36,7 +40,7 @@ namespace xraySystem
 
   \brief BremTube for Max-IV
   
-  Fundermentally it is a 
+  Fundermentally it is a Tube with a side tube
 */
 
 class BremTube :
@@ -70,10 +74,25 @@ class BremTube :
   double wallThick;             ///< pipe thickness  
   double plateThick;            ///< Joining Flange radius
 
+  // Front ports
+  std::vector<Geometry::Vec3D> FCentre;  ///< Centre points [relative to origin]
+  std::vector<Geometry::Vec3D> FAxis;    ///< Port centre Axis
+  /// Vector of ports FixedComp
+  std::vector<std::shared_ptr<constructSystem::portItem>> FPorts;     
+
+  // Main ports
+  std::vector<Geometry::Vec3D> MCentre;  ///< Centre points [relative to origin]
+  std::vector<Geometry::Vec3D> MAxis;    ///< Port centre Axis
+  /// Vector of ports FixedComp
+  std::vector<std::shared_ptr<constructSystem::portItem>> MPorts;     
+
   int voidMat;                  ///< void material
   int wallMat;                  ///< main material
   int plateMat;                 ///< plate material
- 
+
+  void createFrontPorts(Simulation&);
+  void createBasePorts(Simulation&);
+  
   void populate(const FuncDataBase&);  
   void createSurfaces();
   void createObjects(Simulation&);
@@ -87,6 +106,13 @@ class BremTube :
   BremTube& operator=(const BremTube&);
   virtual ~BremTube();
 
+  virtual void insertInCell(Simulation&,const int) const;
+  virtual void insertInCell(Simulation&,const std::vector<int>&) const;
+  virtual void insertInCell(MonteCarlo::Object&) const;
+
+  const constructSystem::portItem& getFrontPort(const size_t) const;
+  const constructSystem::portItem& getMainPort(const size_t) const;
+  
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

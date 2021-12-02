@@ -76,6 +76,7 @@
 #include "mcnpDefPhysics.h"
 #include "flukaDefPhysics.h"
 #include "flukaSourceSelector.h"
+#include "flukaProcess.h"
 #include "phitsDefPhysics.h"
 #include "ObjectAddition.h"
 
@@ -516,6 +517,9 @@ buildFullSimFLUKA(SimFLUKA* SimFLUKAPtr,
   const int multi=IParam.getValue<int>("multi");
   if (IParam.flag("noVariables"))
     SimFLUKAPtr->setNoVariables();
+
+  // Extra for plotGEOM
+  flukaSystem::createPLOTGEOM(*SimFLUKAPtr,IParam);
 
   flukaSystem::setDefaultPhysics(*SimFLUKAPtr,IParam);
 

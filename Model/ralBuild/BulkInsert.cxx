@@ -3,7 +3,7 @@
  
  * File:   build/BulkInsert.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -162,12 +162,12 @@ BulkInsert::populate(const FuncDataBase& Control)
   if (Control.hasVariable(keyName+"InnerMat"))
     innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");
   else
-    innerMat=ModelSupport::EvalDefMat<int>(Control,baseName+"InnerMat",0);
+    innerMat=ModelSupport::EvalDefMat(Control,baseName+"InnerMat",0);
 
   if (Control.hasVariable(keyName+"OuterMat"))    
     outerMat=ModelSupport::EvalMat<int>(Control,keyName+"OuterMat");
   else
-    outerMat=ModelSupport::EvalDefMat<int>(Control,baseName+"OuterMat",0);
+    outerMat=ModelSupport::EvalDefMat(Control,baseName+"OuterMat",0);
   
   return;
 }
@@ -268,8 +268,8 @@ BulkInsert::createObjects(Simulation& System)
   if (!shutterObj)
     throw ColErr::InContainerError<int>(innerCell,"shutterObj");
 
-  ELog::EM<<"WARN == ZERO IMP SETTING CARE UPGRATE METHOD"<<ELog::endWarn;  
-  if (impZero) shutterObj->setImp(0);
+  // ELog::EM<<"WARN == ZERO IMP SETTING CARE UPGRATE METHOD"<<ELog::endWarn;  
+  // if (impZero) shutterObj->setImp(0);
   
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 -5 6 ");
 
@@ -282,8 +282,8 @@ BulkInsert::createObjects(Simulation& System)
   if (!shutterObj)
     throw ColErr::InContainerError<int>(outerCell,"shutterObj");
 
-  ELog::EM<<"WARN == ZERO IMP SETTING CARE UPGRATE METHOD"<<ELog::endWarn;
-  if (impZero) shutterObj->setImp(0);
+  // ELog::EM<<"WARN == ZERO IMP SETTING CARE UPGRATE METHOD"<<ELog::endWarn;
+  // if (impZero) shutterObj->setImp(0);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 -15 16 ");
   HR*=dSurf;

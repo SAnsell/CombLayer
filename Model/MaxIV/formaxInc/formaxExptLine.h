@@ -51,7 +51,7 @@ namespace xraySystem
   class FourPortTube;
   class BoxJaws;
   class ViewScreenTube;
-  class CLRTube;
+  class CRLTube;
   class ConnectorTube;
   class formaxDetectorTube;
 
@@ -98,7 +98,7 @@ class formaxExptLine :
   /// Pipe from jaws
   std::shared_ptr<xraySystem::ConnectorTube> connectA;
   // diff pump
-  std::shared_ptr<xraySystem::CLRTube> clrTubeA;
+  std::shared_ptr<xraySystem::CRLTube> clrTubeA;
   /// Pipe from diff
   std::shared_ptr<xraySystem::ConnectorTube> connectB;
   /// Pipe to gauge system [segment 12]
@@ -124,8 +124,8 @@ class formaxExptLine :
   // Segment 13 :
   /// Pipe from gate value 
   std::shared_ptr<xraySystem::ConnectorTube> connectC;
-  // second CLR tube
-  std::shared_ptr<xraySystem::CLRTube> clrTubeB;
+  // second CRL tube
+  std::shared_ptr<xraySystem::CRLTube> clrTubeB;
   /// Pipe from diff
   std::shared_ptr<xraySystem::ConnectorTube> connectD;
   /// view screen

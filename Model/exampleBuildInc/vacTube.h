@@ -55,12 +55,11 @@ class vacTube :
 {
  private:
 
-  attachSystem::InnerZone buildZone;  
+  attachSystem::BlockZone buildZone;  
 
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;          ///< vac-tube
   std::shared_ptr<constructSystem::GateValveCylinder> gateA;   ///< gate valve
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;          ///< vac-tube
-
   
   double boxWidth;    ///< Size of build zone
 

@@ -40,7 +40,7 @@ namespace xraySystem
 {
   class BeamMount;
   class OpticsHutch;
-  class danmaxOpticsHutch;
+  class OpticsStepHutch;
   class ExperimentalHutch;
   class balderExptLine;
   class R3FrontEndCave;
@@ -76,7 +76,7 @@ class DANMAX : public R3Beamline
   std::shared_ptr<constructSystem::VacuumPipe> joinPipe;
 
   /// Optics hutch
-  std::shared_ptr<danmaxOpticsHutch> opticsHut;
+  std::shared_ptr<OpticsStepHutch> opticsHut;
   
   /// Beamline
   std::shared_ptr<danmaxOpticsLine> opticsBeam;

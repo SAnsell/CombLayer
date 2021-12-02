@@ -69,6 +69,7 @@ namespace xraySystem
   class BremTube;
   class ViewScreenTube;
   class MonoShutter;
+  class RoundMonoShutter;
   class PipeShield;
   
     
@@ -109,9 +110,11 @@ class formaxOpticsLine :
   /// bellow to collimator
   std::shared_ptr<constructSystem::Bellows> bellowA;
   /// Brem for collimator
-  std::shared_ptr<xraySystem::SquareFMask> bremCollA;
+  std::shared_ptr<xraySystem::SquareFMask> whiteCollA;
   /// Ion Gauge
-  std::shared_ptr<xraySystem::IonGauge> ionGaugeA;
+  std::shared_ptr<xraySystem::IonGauge> bremHolderA;
+  /// Brem collimator
+  std::shared_ptr<xraySystem::BremBlock> bremCollA;
   /// bellow to collimator
   std::shared_ptr<constructSystem::Bellows> bellowB;
   /// mini-Brem Collimator
@@ -204,7 +207,7 @@ class formaxOpticsLine :
   /// adaptor plate from CF63->CF40
   std::shared_ptr<constructSystem::VacuumPipe> monoAdaptorA;
   /// The main mono shutter
-  std::shared_ptr<xraySystem::MonoShutter> monoShutter;
+  std::shared_ptr<xraySystem::RoundMonoShutter> monoShutter;
   /// adaptor plate from CF63->CF40
   std::shared_ptr<constructSystem::VacuumPipe> monoAdaptorB;
   /// Last gate valve:

@@ -70,7 +70,9 @@
 #include "FrontBackCut.h"
 
 #include "portItem.h"
+#include "anglePortItem.h"
 #include "doublePortItem.h"
+#include "portBuilder.h"
 #include "VirtualTube.h"
 
 namespace constructSystem
@@ -115,32 +117,11 @@ VirtualTube::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-  capMat=ModelSupport::EvalDefMat<int>(Control,keyName+"FlangeCapMat",wallMat);
+  capMat=ModelSupport::EvalDefMat(Control,keyName+"FlangeCapMat",wallMat);
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  const size_t NPorts=Control.EvalVar<size_t>(keyName+"NPorts");
-  const std::string portBase=keyName+"Port";
-  for(size_t i=0;i<NPorts;i++)
-    {
-      const std::string portName=portBase+std::to_string(i);
-      const Geometry::Vec3D Centre=
-	Control.EvalVar<Geometry::Vec3D>(portName+"Centre");
-      const Geometry::Vec3D Axis=
-	Control.EvalTail<Geometry::Vec3D>(portName,portBase,"Axis");
-
-      std::shared_ptr<portItem> windowPort;
-      windowPort=std::make_shared<portItem>(portBase,portName);
-      windowPort->populate(Control);
-
-      PCentre.push_back(Centre);
-      PAxis.push_back(Axis);
-      Ports.push_back(windowPort);
-      OR.addObject(windowPort);
-    }
+  populatePort(Control,keyName,PCentre,PAxis,Ports);
   return;
 }
 
@@ -153,12 +134,12 @@ VirtualTube::createPorts(Simulation& System,
     Simple function to create ports
     \param System :: Simulation to use
     \param insertObj :: Object to insert port cut into
-    \param innerSurf :: HeadRule to inner surf
-    \param outerSurf :: HeadRule to outer surf
+    \param innerSurf :: HeadRule to inner surf [outward]
+    \param outerSurf :: HeadRule to outer surf [outward]
    */
 {
   ELog::RegMethod RegA("VirtualTube","createPorts(Obj,HR,HR)");
-	
+
   for(size_t i=0;i<Ports.size();i++)
     {
       const attachSystem::ContainedComp& CC=getCC("Main");
@@ -167,7 +148,7 @@ VirtualTube::createPorts(Simulation& System,
 
       for(const int CN : portCells)
 	Ports[i]->addInsertCell(CN);
-	
+
       Ports[i]->setCentLine(*this,PCentre[i],PAxis[i]);
       Ports[i]->constructTrack(System,insertObj,innerSurf,outerSurf);
 

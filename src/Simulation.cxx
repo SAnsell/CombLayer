@@ -282,7 +282,6 @@ Simulation::addCell(const int cellNumber,const MonteCarlo::Object& A)
       ELog::EM<<"Cell==:"<<QHptr->hasComplement()<<ELog::endCrit;
     }
 
-
   QHptr->setFCUnit(objectGroups::addActiveCell(cellNumber));
   
   return 1;
@@ -347,7 +346,7 @@ Simulation::addCell(const int Index,const int matNum,
   MonteCarlo::Object TX;
   TX.setName(Index);
   TX.setMaterial(matNum);
-  TX.setTemp(matTemp);  
+  TX.setTemp(matTemp);
   TX.procHeadRule(RuleItem);
 
   return addCell(Index,TX);
@@ -1673,6 +1672,59 @@ Simulation::minimizeObject(const std::string& keyName)
 }
 
 int
+Simulation::minimizeObject(MonteCarlo::Object* OPtr)
+  /*
+    Carry out minimization of a cell to remove 
+    literals which can be removed due to implicates [e.g. a->b etc]
+    due to parallel surfaces
+    \param CN :: Cell to minimize
+    \retval 1 :: if an object changed
+    \retval 0 :: if an object unchanged
+    \retval -1 :: if an object deleted
+  */
+{
+  ELog::RegMethod RegA("Simulation","minimizeObject(Object)");
+
+  OPtr->populate();
+  OPtr->createSurfaceList();
+  
+  std::vector<std::pair<int,int>>
+    IP=OPtr->getImplicatePairs();
+  
+  OPtr->createLogicOpp();
+  const std::set<int> SPair=OPtr->getSelfPairs();
+  
+  bool activeFlag(0);
+  MonteCarlo::Algebra AX;
+  AX.setFunctionObjStr(OPtr->cellCompStr());
+  AX.addImplicates(IP);
+    
+  for(const int SN : SPair)
+    activeFlag |= AX.constructShannonDivision(SN);
+
+  activeFlag |= AX.constructShannonExpansion();
+
+
+  if (activeFlag)
+    {
+      if (AX.isEmpty())
+	return -1;
+
+      if (!OPtr->procString(AX.writeMCNPX()))
+	throw ColErr::InvalidLine(AX.writeMCNPX(),
+				  "Algebra Export");
+
+      OPtr->populate();
+      OPtr->createSurfaceList();
+      OSMPtr->updateObject(OPtr);
+
+      return 1;
+    }
+
+  return 0;	  
+}
+
+int
 Simulation::minimizeObject(const int CN)
   /*
     Carry out minimization of a cell to remove 
@@ -1689,47 +1741,10 @@ Simulation::minimizeObject(const int CN)
   MonteCarlo::Object* CPtr = findObject(CN);
   if (!CPtr)
     throw ColErr::InContainerError<int>(CN,"Cell not found");
-  CPtr->populate();
-  CPtr->createSurfaceList();
-  std::vector<std::pair<int,int>>
-    IP=CPtr->getImplicatePairs();
-  
-  CPtr->createLogicOpp();
-  const std::set<int> SPair=CPtr->getSelfPairs();
-  
-  bool activeFlag(0);
-  bool activeSD(0);
-  MonteCarlo::Algebra AX;
-  AX.setFunctionObjStr(CPtr->cellCompStr());
-  AX.addImplicates(IP);
-    
-  for(const int SN : SPair)
-    activeFlag |= AX.constructShannonDivision(SN);
-
-  activeFlag |= AX.constructShannonExpansion();
-
-
-  if (activeFlag)
-    {
-      if (AX.isEmpty())
-	{
-	  Simulation::removeCell(CN);
-	  return -1;
-	}
-
-      if (!CPtr->procString(AX.writeMCNPX()))
-	throw ColErr::InvalidLine(AX.writeMCNPX(),
-				  "Algebra Export");
-
-      CPtr->populate();
-      CPtr->createSurfaceList();
-      OSMPtr->updateObject(CPtr);
-
-
-      return 1;
-    }
-
-  return 0;	
+  const int flag=minimizeObject(CPtr);
+  if (flag<0)
+    Simulation::removeCell(CN);
+  return flag;
 }
   
 void

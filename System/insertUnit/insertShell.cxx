@@ -130,7 +130,7 @@ insertShell::populate(const FuncDataBase& Control)
       insertObject::populate(Control);
       innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
       outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
-      innerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"InnerMat",-1);
+      innerMat=ModelSupport::EvalDefMat(Control,keyName+"InnerMat",-1);
     }
   return;
 }

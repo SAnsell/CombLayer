@@ -107,7 +107,7 @@ FlangeDome::populate(const FuncDataBase& Control)
   plateThick=Control.EvalVar<double>(keyName+"PlateThick");
   flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
 
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
 

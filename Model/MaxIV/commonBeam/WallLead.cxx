@@ -121,10 +121,10 @@ WallLead::populate(const FuncDataBase& Control)
   // Void 
   voidRadius=Control.EvalVar<double>(keyName+"VoidRadius");
 
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   steelMat=ModelSupport::EvalMat<int>(Control,keyName+"SteelMat");
-  midMat=ModelSupport::EvalDefMat<int>(Control,keyName+"MidMat",wallMat);
+  midMat=ModelSupport::EvalDefMat(Control,keyName+"MidMat",wallMat);
 
   return;
 }

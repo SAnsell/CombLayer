@@ -60,6 +60,7 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
+#include "portItem.h"
 
 #include "VirtualTube.h"
 #include "PipeTube.h"
@@ -195,8 +196,11 @@ PipeTube::makeOuterVoid(Simulation& System)
     {
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"17 -107 101 -102");
       makeCell("OuterVoid",System,cellIndex++,0,0.0,HR);
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-107")*
-	frontHR*backHR;
+
+      SurfMap::addSurf("OuterRadius",SMap.realSurf(buildIndex+107));
+      
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-107")*frontHR*backHR;
+
     }
   return HR;
 }
@@ -287,13 +291,15 @@ PipeTube::createLinks()
   FixedComp::setConnect(3,FixedComp::getLinkPt(2),Y);
 
   // make a composite flange
-  std::string Out;
-  const std::string frontSurf(frontRule());
-  const std::string backSurf(backRule());
-  Out=ModelSupport::getComposite(SMap,buildIndex," -101 -107 ");
-  FixedComp::setLinkComp(2,Out+frontSurf);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 102 -207 ");
-  FixedComp::setLinkComp(3,Out+backSurf);
+  HeadRule HR;
+
+
+  const HeadRule frontSurf(getFrontRule());
+  const HeadRule backSurf(getBackRule());
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 -107");
+  FixedComp::setLinkComp(2,HR*frontSurf);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -207");
+  FixedComp::setLinkComp(3,HR*backSurf);
 
   // inner links
   int innerFrontSurf, innerBackSurf;
@@ -330,6 +336,18 @@ PipeTube::createLinks()
   FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+7));
   nameSideIndex(6,"InnerSide");
 
+  if (!outerVoid)
+    {
+      FixedComp::setConnect(8,Origin+Z*(radius+wallThick),Z);
+      FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+17));
+    }
+  else
+    {
+      FixedComp::setConnect(8,Origin+Z*flangeBRadius,Z);
+      FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+107));
+    }
+  nameSideIndex(8,"OuterRadius");
+
   
   return;
 }
@@ -342,7 +360,7 @@ PipeTube::createPorts(Simulation& System)
    */
 {
   ELog::RegMethod RegA("PipeTube","createPorts");
-    // both OUTWARD
+  // both OUTWARD
   MonteCarlo::Object* OPtr=
     CellMap::getCellObject(System,"MainTube");
 
@@ -353,6 +371,15 @@ PipeTube::createPorts(Simulation& System)
     {
       const HeadRule flangeSurf(SurfMap::getSurfRules("FlangeACyl"));
       createPorts(System,OPtr,innerSurf,flangeSurf);
+      HeadRule OVoidHR=SurfMap::getSurfRule("#OuterRadius");
+      OVoidHR.populateSurf();
+      for(size_t i=0;i<Ports.size();i++)
+	{
+	  const Geometry::Vec3D Pt = Ports[i]->getLinkPt("FlangePlate");
+	  if (OVoidHR.isValid(Pt))
+	    Ports[i]->addFlangeCut(CellMap::getCellObject(System,"OuterVoid"));
+
+	}
     }
   else
     createPorts(System,OPtr,innerSurf,outerSurf);

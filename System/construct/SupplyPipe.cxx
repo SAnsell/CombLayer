@@ -3,7 +3,7 @@
  
  * File:   construct/SupplyPipe.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "stringCombine.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -53,6 +52,8 @@
 #include "FixedComp.h"
 #include "FixedUnit.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "LayerComp.h"
 #include "pipeUnit.h"
 #include "PipeLine.h"
@@ -129,24 +130,24 @@ SupplyPipe::populate(const FuncDataBase& Control)
   NSegIn=Control.EvalPair<size_t>(optName+"NSegIn",keyName+"NSegIn");
   for(size_t i=0;i<=NSegIn;i++)
     {
-      numStr=StrFunc::makeString(i);
+      numStr=std::to_string(i);
       PPts.push_back(Control.EvalPair<Geometry::Vec3D>
 		     (optName+"PPt"+numStr,keyName+"PPt"+numStr));
     }
 
   size_t aN(0);
-  numStr=StrFunc::makeString(aN);
+  numStr="0";
   while(Control.hasVariable(keyName+"Active"+numStr))
     {
       ActiveFlag.push_back
 	(Control.EvalVar<size_t>(keyName+"Active"+numStr)); 
-      numStr=StrFunc::makeString(++aN);
+      numStr=std::to_string(++aN);
     }
 
   const size_t NRadii=Control.EvalVar<size_t>(keyName+"NRadii"); 
   for(size_t i=0;i<NRadii;i++)
     {
-      const std::string numStr=StrFunc::makeString(i);
+      const std::string numStr=std::to_string(i);
       Radii.push_back(Control.EvalVar<double>(keyName+"Radius"+numStr)); 
       Mat.push_back
 	(ModelSupport::EvalMat<int>(Control,keyName+"Mat"+numStr)); 
@@ -231,7 +232,7 @@ SupplyPipe::insertInlet(const attachSystem::FixedComp& FC,
   PtZ+=layerOffset;
   const int commonSurf=LC->getCommonSurf(lSideIndex);
   const std::string commonStr=(commonSurf) ? 		       
-    StrFunc::makeString(commonSurf) : "";
+    std::to_string(commonSurf) : "";
   if (PtZ!=Pt)
     Coaxial.addPoint(Pt);
   
@@ -275,7 +276,7 @@ SupplyPipe::addExtraLayer(const attachSystem::LayerComp& LC,
   if (NL)
     {
       const std::string commonStr=(commonSurf) ? 		       
-	StrFunc::makeString(commonSurf) : "";
+	std::to_string(commonSurf) : "";
       const Geometry::Vec3D PtZ=
 	LC.getSurfacePoint(NL-1,lSideIndex)+
 	layerOffset;

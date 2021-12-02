@@ -67,7 +67,6 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -106,7 +105,7 @@
 #include "FlangeMount.h"
 #include "Mirror.h"
 #include "MonoBox.h"
-#include "MonoShutter.h"
+#include "RoundMonoShutter.h"
 #include "TriggerTube.h"
 #include "CylGateValve.h"
 #include "SquareFMask.h"
@@ -141,8 +140,9 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
   gateTubeA(new xraySystem::CylGateValve(newName+"GateTubeA")),
   pipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
-  bremCollA(new xraySystem::SquareFMask(newName+"BremCollA")),
-  ionGaugeA(new xraySystem::IonGauge(newName+"IonGaugeA")),
+  whiteCollA(new xraySystem::SquareFMask(newName+"WhiteCollA")),
+  bremHolderA(new xraySystem::IonGauge(newName+"BremHolderA")),
+  bremCollA(new xraySystem::BremBlock(newName+"BremCollA")),
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
   bremPipeB(new constructSystem::VacuumPipe(newName+"BremPipeB")),
   diagBoxA(new constructSystem::PortTube(newName+"DiagBoxA")),
@@ -194,9 +194,10 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
 
   bellowJ(new constructSystem::Bellows(newName+"BellowJ")),
   monoAdaptorA(new constructSystem::VacuumPipe(newName+"MonoAdaptorA")),
-  monoShutter(new xraySystem::MonoShutter(newName+"MonoShutter")),
+  monoShutter(new xraySystem::RoundMonoShutter(newName+"RMonoShutter")),
   monoAdaptorB(new constructSystem::VacuumPipe(newName+"MonoAdaptorB")),
-  pipeF(new constructSystem::VacuumPipe(newName+"PipeF"))  
+  pipeF(new constructSystem::VacuumPipe(newName+"PipeF"))
+  
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -211,9 +212,10 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
   OR.addObject(gateTubeA);
   OR.addObject(pipeA);
   OR.addObject(bellowA);
-  OR.addObject(bremCollA);
+  OR.addObject(whiteCollA);
   OR.addObject(bellowB);
-  OR.addObject(ionGaugeA);
+  OR.addObject(bremHolderA);
+  OR.addObject(bremCollA);
   OR.addObject(bremPipeB);
   OR.addObject(diagBoxA);
   OR.addObject(jaws[0]);
@@ -422,8 +424,7 @@ formaxOpticsLine::constructDiag3(Simulation& System,
   bremTubeB->createAll(System,*viewTube,"back");
 
   const constructSystem::portItem& VPB=bremTubeB->getPort(1);
-  int outerCell=buildZone.createUnit
-    (System,VPB,VPB.getSideIndex("OuterPlate"));
+  int outerCell=buildZone.createUnit(System,VPB,"OuterPlate");
   bremTubeB->insertAllInCell(System,outerCell);
 
   bremCollC->addInsertCell(bremTubeB->getCell("Void"));
@@ -491,13 +492,10 @@ formaxOpticsLine::constructMonoShutter(Simulation& System,
   int outerCell=constructSystem::constructUnit
     (System,buildZone,*monoAdaptorA,"back",*monoShutter);
 
-  monoShutter->splitObject(System,"-PortACut",outerCell);
-  const Geometry::Vec3D midPoint(monoShutter->getLinkPt(3));
-  const Geometry::Vec3D midAxis(monoShutter->getLinkAxis(-3));
-  monoShutter->splitObjectAbsolute(System,2001,outerCell,midPoint,midAxis);
-  monoShutter->splitObject(System,"PortBCut",outerCell);
-  cellIndex+=3;
-  
+  monoShutter->splitObject(System,"-TopPlate",outerCell);
+
+  monoShutter->splitObject(System,"MidCutB",outerCell);
+
   constructSystem::constructUnit
     (System,buildZone,*monoShutter,"back",*monoAdaptorB);
 
@@ -544,13 +542,16 @@ formaxOpticsLine::buildObjects(Simulation& System)
     (System,buildZone,*pipeA,"back",*bellowA);
   
   constructSystem::constructUnit
-    (System,buildZone,*bellowA,"back",*bremCollA);
+    (System,buildZone,*bellowA,"back",*whiteCollA);
 
   constructSystem::constructUnit
-    (System,buildZone,*bremCollA,"back",*ionGaugeA);
+    (System,buildZone,*whiteCollA,"back",*bremHolderA);
+
+  bremCollA->addInsertCell(bremHolderA->getCell("Void"));
+  bremCollA->createAll(System,*bremHolderA,0);
 
   constructSystem::constructUnit
-    (System,buildZone,*ionGaugeA,"back",*bellowB);
+    (System,buildZone,*bremHolderA,"back",*bellowB);
 
   // split later:
   outerCell=constructSystem::constructUnit
@@ -630,7 +631,6 @@ formaxOpticsLine::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,*hpJawsA,"back",*mirrorBoxA);
 
-
   mirrorBoxA->splitObject(System,3001,mirrorBoxA->getCell("Void"),
 			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
   
@@ -642,8 +642,8 @@ formaxOpticsLine::buildObjects(Simulation& System)
 
   constructDiag3(System,*mirrorBoxA,"back");
 
-  constructDiag4(System,*bellowI,"back");
 
+  constructDiag4(System,*bellowI,"back");
 
   constructMonoShutter(System,*viewTubeB,"back");
 

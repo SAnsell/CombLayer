@@ -3,7 +3,7 @@
  
  * File:   processInc/pipeUnit.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,8 +54,10 @@ struct cylValues
   \brief A single unit of a pipe
 */
 
-class pipeUnit : public attachSystem::FixedUnit,
-  public attachSystem::ContainedComp
+class pipeUnit :
+    public attachSystem::FixedUnit,
+    public attachSystem::ContainedComp,
+    public attachSystem::CellMap
 {
  private:
 
@@ -81,8 +83,11 @@ class pipeUnit : public attachSystem::FixedUnit,
   void calcNorm(const int,const Geometry::Vec3D&,
 		const Geometry::Vec3D&);
   void checkForward();
-  std::string createCaps() const;
+  HeadRule createCaps() const;
+  void excludeUnit(Simulation&,
+		   const std::map<int,MonteCarlo::Object*>&) const;
 
+  
   void populate(const size_t,const std::vector<cylValues>&);
   void createSurfaces();
   void createOuterObject();

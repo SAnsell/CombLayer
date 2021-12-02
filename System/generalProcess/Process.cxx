@@ -88,13 +88,11 @@ setWImp(Simulation& System,const mainSystem::inputParam& IParam)
   std::string pType,cellName;
   for(size_t setIndex=0;setIndex<nIMP;setIndex++)
     {
-      const size_t nItem=IParam.itemCnt("wIMP",setIndex);
       double impValue(1.0);
 
       pType=IParam.getValueError<std::string>
 	("wIMP",setIndex,0,"No cell/object for wIMP ");
 
-      size_t index(2);
       if (pConv.hasName(pType))
 	{
 	  cellName=IParam.getValueError<std::string>

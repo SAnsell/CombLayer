@@ -91,8 +91,8 @@ cosaxsTube::cosaxsTube(const std::string& Key)  :
   attachSystem::SurfMap(),
   attachSystem::FrontBackCut(),
 
-  outerMat(0),
   delayPortFlag(0),
+  outerMat(0),
 
   buildZone(Key+"BlockZone"),
   tubeZone(Key+"TubeZone"),
@@ -150,7 +150,7 @@ cosaxsTube::populate(const FuncDataBase& Control)
 
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
   outerLength=Control.EvalVar<double>(keyName+"OuterLength");
-  outerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"OuterMat",outerMat);
+  outerMat=ModelSupport::EvalDefMat(Control,keyName+"OuterMat",outerMat);
   return;
 }
 

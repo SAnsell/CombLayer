@@ -64,7 +64,6 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
-#include "InnerZone.h"
 #include "BlockZone.h"
 #include "generateSurf.h"
 #include "generalConstruct.h"
@@ -88,7 +87,6 @@
 #include "EPSeparator.h"
 #include "R3ChokeChamber.h"
 #include "R3ChokeInsert.h"
-#include "PreDipole.h"
 #include "MagnetM1.h"
 
 #include "R3FrontEnd.h"
@@ -252,7 +250,6 @@ R3FrontEnd::createSurfaces()
 
   if (!frontActive())
     {
-      ELog::EM<<"FRont off set == "<<frontOffset<<" "<<Origin<<" :: "<<Y<<ELog::endDiag;
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*frontOffset,Y);
       buildZone.initFront(HeadRule(SMap.realSurf(buildIndex+1)));
       setFront(-SMap.realSurf(buildIndex+1));
@@ -294,15 +291,10 @@ R3FrontEnd::insertFlanges(Simulation& System,
 }
 
 void
-R3FrontEnd::buildHeatTable(Simulation& System,
-			   const attachSystem::FixedComp& preFC,
-			   const long int preSideIndex)
-
+R3FrontEnd::buildHeatTable(Simulation& System)
   /*!
     Build the heatDump table
     \param System :: Simulation to use
-    \param preFC :: initial Fixedcomp 
-    \param preSideIndex :: link point on initial FC
   */
 {
   ELog::RegMethod RegA("R3FrontEnd","buildHeatTable");
@@ -635,7 +627,7 @@ R3FrontEnd::buildObjects(Simulation& System)
 
   collExitPipe->setFront(*linkFC,2);
 
-  buildHeatTable(System,*collExitPipe,2);  
+  buildHeatTable(System);  
   buildApertureTable(System,*pipeB,2);
   buildShutterTable(System,*pipeC,"back");
   

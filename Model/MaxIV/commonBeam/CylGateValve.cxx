@@ -121,7 +121,7 @@ CylGateValve::populate(const FuncDataBase& Control)
   bladeThick=Control.EvalVar<double>(keyName+"BladeThick");
   bladeRadius=Control.EvalVar<double>(keyName+"BladeRadius");
 
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   bladeMat=ModelSupport::EvalMat<int>(Control,keyName+"BladeMat");
   driveMat=ModelSupport::EvalMat<int>(Control,keyName+"DriveMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");

@@ -3,7 +3,7 @@
  
  * File:   test/testWorkData.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,13 +70,16 @@ testWorkData::applyTest(const int extra)
   testPtr TPtr[]=
     {
       &testWorkData::testIntegral,
+      &testWorkData::testRebin,
       &testWorkData::testSum
     };
   const std::string TestName[]=
     {
       "Integral",
+      "Rebin",
       "Sum"
     };
+  
   const int TSize(sizeof(TPtr)/sizeof(testPtr));
   if (!extra)
     {
@@ -178,7 +181,63 @@ testWorkData::testIntegral()
 }
  
 int
+testWorkData::testRebin()
+{
+  ELog::RegMethod RegA("testWorkData","testRebin");
+
+  WorkData A;
+
+  // xmin,xmax,Y[0],Y[N],NPts
+  typedef std::tuple<double,double,double,double,size_t> TTYPE;
+  const std::vector<TTYPE> Tests=
+    {
+     TTYPE(-100.0,100.0, 1.0,10.0,10),
+     TTYPE(0.4, 100.0, 0.6,10.0,10),
+     TTYPE(1.4, 100.0, 1.2,10.0,9),
+     TTYPE(-100, 9.4, 1.0,4.0,10)
+    };
+  size_t testIndex(1);
+  for(const TTYPE& tc : Tests)
+    {
+      const double xMin(std::get<0>(tc));
+      const double xMax(std::get<1>(tc));
+			
+      // 10pts: 0 to 10.0 : 0.0+x
+      populate(A,10,0.0,10.0,0.0,1.0);
+      A.rebin(xMin,xMax);
+
+      const size_t N=A.getSize();
+      const double YA=A.getYdata()[0];
+      const double YB=A.getYdata()[N-1];
+
+      const size_t ansN=std::get<4>(tc);
+      const double ansYA=std::get<2>(tc);
+      const double ansYB=std::get<3>(tc);
+      
+      if (N!=ansN ||
+	  std::abs(YA-ansYA)>1e-3 ||
+	  std::abs(YB-ansYB)>1e-3)
+	{
+	  ELog::EM<<"Failed on test "<<testIndex<<ELog::endDiag;
+	  ELog::EM<<"N : "<<N<<" == "<<ansN<<ELog::endDiag;
+	  ELog::EM<<"YA: "<<YA<<" == "<<ansYA<<ELog::endDiag;
+	  ELog::EM<<"YB: "<<YB<<" == "<<ansYB<<ELog::endDiag;
+	  for(size_t i=0;i<N;i++)
+	    ELog::EM<<A.getXdata()[i]<<" : "
+		    <<A.getYdata()[i]<<" : "
+		    <<A.getXdata()[i+1]<<ELog::endDiag;
+	  return -1;
+	}
+      testIndex++;
+    }
+  return 0;
+}
+
+int
 testWorkData::testSum()
+  /*!
+    Sum two workspacs together
+   */
 {
   ELog::RegMethod RegA("testWorkData","testSum");
 

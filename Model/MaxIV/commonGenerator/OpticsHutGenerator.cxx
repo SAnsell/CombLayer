@@ -52,7 +52,7 @@ namespace setVariable
 
 
 OpticsHutGenerator::OpticsHutGenerator() :
-  height(200.0),outWidth(260.0),
+  height(277.0),outWidth(260.0),
   innerThick(0.3),pbWallThick(1.6),
   pbBackThick(9.0),pbRoofThick(1.6),
   outerThick(0.3),
@@ -102,8 +102,8 @@ OpticsHutGenerator::setWallPbThick(const double mainT,
   
 void
 OpticsHutGenerator::generateHut(FuncDataBase& Control,
-					const std::string& keyName,
-					const double length) const
+				const std::string& keyName,
+				const double length) const
   /*!
     Primary function for setting the variables
     \param Control :: Database to add variables

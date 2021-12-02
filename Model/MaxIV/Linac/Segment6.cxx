@@ -68,7 +68,7 @@
 #include "EBeamStop.h"
 #include "LocalShielding.h"
 
-#include "LObjectSupportB.h"
+#include "LObjectSupport.h"
 #include "TDCsegment.h"
 #include "Segment6.h"
 

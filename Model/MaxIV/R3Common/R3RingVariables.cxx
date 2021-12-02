@@ -496,8 +496,13 @@ R3RingVariables(FuncDataBase& Control)
   Control.addVariable(preName+"OuterWall",110.0);
   Control.addVariable(preName+"OuterWallCut",-40.0);
   Control.addVariable(preName+"RatchetWall",120.0);
+
+  Control.addVariable(preName+"Insulation",10.0);
+  Control.addVariable(preName+"InsulationCut",400.0);
+  Control.addVariable(preName+"InsulationDepth",80.0);
+
   
-  Control.addVariable(preName+"Height",160.0);
+  Control.addVariable(preName+"Height",180.0);
   Control.addVariable(preName+"Depth",130.0);
   Control.addVariable(preName+"RoofThick",100.0);
   Control.addVariable(preName+"FloorThick",100.0);

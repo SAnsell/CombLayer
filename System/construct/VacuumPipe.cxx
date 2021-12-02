@@ -220,7 +220,7 @@ VacuumPipe::populate(const FuncDataBase& Control)
     (keyName+"WindowFrontHeight",keyName+"WindowHeight",-1.0);
   windowFront.width=Control.EvalDefPair<double>
     (keyName+"WindowFrontWidth",keyName+"WindowWidth",-1.0);
-  windowFront.mat=ModelSupport::EvalDefMat<int>
+  windowFront.mat=ModelSupport::EvalDefMat
     (Control,keyName+"WindowFrontMat",keyName+"WindowMat",0);
 
 
@@ -232,7 +232,7 @@ VacuumPipe::populate(const FuncDataBase& Control)
     (keyName+"WindowBackHeight",keyName+"WindowHeight",-1.0);
   windowBack.width=Control.EvalDefPair<double>
     (keyName+"WindowBackWidth",keyName+"WindowWidth",-1.0);
-  windowBack.mat=ModelSupport::EvalDefMat<int>
+  windowBack.mat=ModelSupport::EvalDefMat
     (Control,keyName+"WindowBackMat",keyName+"WindowMat",0);
 
   if ((activeWindow & 1) && windowFront.thick<Geometry::zeroTol)
@@ -269,10 +269,10 @@ VacuumPipe::populate(const FuncDataBase& Control)
     }
 
 
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
-  claddingMat=ModelSupport::EvalDefMat<int>(Control,keyName+"CladdingMat",0);
-  flangeMat=ModelSupport::EvalDefMat<int>(Control,keyName+"FlangeMat",feMat);
+  claddingMat=ModelSupport::EvalDefMat(Control,keyName+"CladdingMat",0);
+  flangeMat=ModelSupport::EvalDefMat(Control,keyName+"FlangeMat",feMat);
 
   outerVoid = Control.EvalDefVar<int>(keyName+"OuterVoid",0);
 

@@ -300,8 +300,6 @@ ViewScreenTube::createObjects(Simulation& System)
   HR+=ModelSupport::getHeadRule(SMap,buildIndex,"-227 200")*backHR;
   HR+=ModelSupport::getHeadRule(SMap,buildIndex,"-321 -327 -100");
 
-  // HR=ModelSupport::getHeadRule
-  //   (SMap,buildIndex," (-227:-200) (200:-127) 15 -26 -27");
   addOuterSurf(HR);
   
   return;
@@ -324,6 +322,10 @@ ViewScreenTube::createLinks()
   FixedComp::setConnect(3,Origin+Z*(height+plateThick),Z);
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+26));
 
+  FixedComp::setConnect(4,Origin+X*(radius+wallThick),X);
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+17));
+
+  nameSideIndex(4,"OuterRadius");
   return;
 }
 

@@ -3,7 +3,7 @@
  
  * File:   essBuild/BeRef.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,6 +60,7 @@
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "ExternalCut.h"
 #include "BeRefInnerStructure.h"
 #include "BeRef.h"
 
@@ -87,8 +88,10 @@ BeRef::BeRef(const BeRef& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffsetUnit(A),
   attachSystem::CellMap(A),
-  engActive(A.engActive),InnerCompTop(A.InnerCompTop->clone()),
-  InnerCompLow(A.InnerCompLow->clone()),
+  
+  engActive(A.engActive),
+  InnerCompTop(new BeRefInnerStructure(*A.InnerCompTop)),
+  InnerCompLow(new BeRefInnerStructure(*A.InnerCompLow)),
   radius(A.radius),height(A.height),depth(A.depth),
   wallThick(A.wallThick),wallThickLow(A.wallThickLow),
   lowVoidThick(A.lowVoidThick),
@@ -137,7 +140,7 @@ BeRef::operator=(const BeRef& A)
     }
   return *this;
 }
-  
+
 BeRef::~BeRef()
   /*!
     Destructor
@@ -197,22 +200,6 @@ BeRef::globalPopulate(const FuncDataBase& Control)
   depth=Control.EvalVar<double>(keyName+"Depth");   
   wallThick=Control.EvalVar<double>(keyName+"WallThick");   
   wallThickLow=Control.EvalVar<double>(keyName+"WallThickLow");   
-  
-  return;
-}
-
-void
-BeRef::createUnitVector(const attachSystem::FixedComp& FC,
-                        const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed Component
-    \param sideIndex :: link point for origin
-  */
-{
-  ELog::RegMethod RegA("BeRef","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
   
   return;
 }
@@ -430,8 +417,18 @@ BeRef::createAll(Simulation& System,
   insertObjects(System);       
   if (engActive)
     {
-      //      InnerCompTop->createAll(System, *this, "topBe", 11, 8);
-      //      InnerCompLow->createAll(System, *this, "lowBe",  10, 7);
+      InnerCompTop->setCutSurf("RefBase",*this,11);
+      InnerCompTop->setCutSurf("RefTop",*this,8);
+      
+      InnerCompLow->setCutSurf("RefBase",*this,10);
+      InnerCompLow->setCutSurf("RefTop",*this,7);
+
+      InnerCompTop->setCell("ReflectorUnit",this->getCell("topBe"));
+      InnerCompLow->setCell("ReflectorUnit",this->getCell("topBe"));
+      
+      
+      InnerCompTop->createAll(System,*this,0);
+      InnerCompLow->createAll(System,*this,0);
     }
 
   return;

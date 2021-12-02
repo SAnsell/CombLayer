@@ -99,7 +99,7 @@ AreaDetector::populate(const FuncDataBase& Control)
   screenDepth=Control.EvalVar<double>(keyName+"ScreenDepth");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   detMat=ModelSupport::EvalMat<int>(Control,keyName+"DetMat");
   screenMat=ModelSupport::EvalMat<int>(Control,keyName+"ScreenMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");

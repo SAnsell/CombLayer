@@ -3,7 +3,7 @@
  
  * File:   t1Build/makeT1Real.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,6 +79,17 @@
 #include "MonoPlug.h"
 #include "World.h"
 
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+#include "HeadRule.h"
+#include "Importance.h"
+#include "Object.h"
+#include "varList.h"
+#include "Code.h"
+#include "FuncDataBase.h"
+#include "groupRange.h"
+#include "objectGroups.h"
+#include "Simulation.h"
 #include "makeT1Real.h"
 
 namespace ts1System
@@ -439,15 +450,18 @@ makeT1Real::build(Simulation& System,
 
   RefObj->createBoxes(System,TarExcludeName);
 
-  WaterPipeObj->createAll(System,*WaterModObj,6);
-  MPipeObj->createAll(System,*MerlinMod,6);
-
   H2PipeObj->createAll(System,*Lh2ModObj,5);   // long int sideIndex
+
+  WaterPipeObj->createAll(System,*WaterModObj,12);
+
+  MPipeObj->createAll(System,*MerlinMod,12);
+
+
   CH4PipeObj->createAll(System,*CH4ModObj,5);  // long int sideIndex
 
   if (IParam.flag("BeRods"))
     RefObj->createRods(System);  
-  
+
 
   return;
 }

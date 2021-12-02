@@ -96,7 +96,7 @@ LCollimator::populate(const FuncDataBase& Control)
   innerBHeight=Control.EvalVar<double>(keyName+"InnerBHeight");
   
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   
   return;
 }

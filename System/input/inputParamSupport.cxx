@@ -83,10 +83,19 @@ getNamedPoint(const Simulation& System,
 {
   ELog::RegMethod RegA("inputParamSupport[F]","getNamedPoint");  
 
-  const std::string objName=
+  std::string objName=
     IParam.getValueError<std::string>
     (keyItem,setIndex,index,errStr+"[Object Name/Point]");
-
+  // remove leading free/object
+  if (objName=="free" || objName=="object")
+    {
+      index++;
+      objName=
+	IParam.getValueError<std::string>
+	(keyItem,setIndex,index,errStr+"[Object Name/Point]");
+    }
+      
+  
   index++;
   Geometry::Vec3D point;
   if (StrFunc::convert(objName,point))

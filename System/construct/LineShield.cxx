@@ -197,7 +197,7 @@ LineShield::populate(const FuncDataBase& Control)
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
   
-  defMat=ModelSupport::EvalDefMat<int>(Control,keyName+"DefMat",0);
+  defMat=ModelSupport::EvalDefMat(Control,keyName+"DefMat",0);
 
   nSeg=Control.EvalDefVar<size_t>(keyName+"NSeg",1);
   nWallLayers=Control.EvalVar<size_t>(keyName+"NWallLayers");

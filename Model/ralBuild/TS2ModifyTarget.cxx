@@ -3,7 +3,7 @@
  
  * File:   ralBuild/TS2ModifyTarget.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,6 +62,8 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "TargetBase.h"
 #include "TS2ModifyTarget.h"
 
@@ -425,6 +427,7 @@ TS2ModifyTarget::calcConeIntersect(const std::vector<HeadRule>& ConeUnits,
   const Geometry::Vec3D Pt=Origin+Item.centre;
   const Geometry::Vec3D AxisX(Item.axis.crossNormal());
   // Construct Simple line:
+
   MonteCarlo::LineIntersectVisit LI(Pt,AxisX);
   for(size_t cIndex=0;cIndex<ConeUnits.size();cIndex++)
     {

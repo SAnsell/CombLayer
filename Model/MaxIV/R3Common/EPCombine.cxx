@@ -97,6 +97,8 @@ EPCombine::EPCombine(const std::string& Key) :
   nameSideIndex(1,"Flange");
   nameSideIndex(2,"Photon");
   nameSideIndex(3,"Electron");
+  nameSideIndex(4,"PhotonEdge");
+  nameSideIndex(5,"ElectronEdge");
 }
 
 
@@ -246,7 +248,6 @@ EPCombine::createSurfaces()
   ModelSupport::buildPlane
     (SMap,buildIndex+116,elecOrg-mXZ*(electronRadius+skinThick),mXZ);
 
-  
   // photon inner :
   ModelSupport::buildCylinder(SMap,buildIndex+207,photOrg,Y,photonRadius);
   ModelSupport::buildPlane(SMap,buildIndex+203,photOrg,X);
@@ -363,6 +364,35 @@ EPCombine::createLinks()
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+2));
   FixedComp::setLineConnect(3,elecOrg,elecYAxis);
 
+  const Geometry::Vec3D WOrigin(Origin+X*wallXStep);
+  FixedComp::setConnect(4,WOrigin-X*(wallWidth/2.0),X);
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+3));
+
+  FixedComp::setConnect(5,WOrigin+X*(wallWidth/2.0),X);
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+4));
+  
+  return;
+}
+
+void
+EPCombine::setEPOriginPair(const Geometry::Vec3D& pOrg,
+			   const Geometry::Vec3D& eOrg,
+			   const Geometry::Vec3D& eAxis)
+  /*!
+    Set the electron/Photon origins exactly
+    \param FC :: FixedPoint
+    \param photonIndex :: link point for photon
+    \param electornIndex :: link point for electron
+   */
+{
+  ELog::RegMethod RegA("EPCombine","setEPOriginPair(string)");
+
+  
+  photOrg=pOrg;
+  elecOrg=eOrg;
+  elecYAxis=eAxis.unit();
+  epPairSet=1;
+
   return;
 }
 
@@ -401,10 +431,9 @@ EPCombine::setEPOriginPair(const attachSystem::FixedComp& FC,
   photOrg=FC.getLinkPt(photonIndex);
   elecOrg=FC.getLinkPt(electronIndex);
 
-
   elecYAxis=FC.getLinkAxis(electronIndex);
   epPairSet=1;
-  
+
   return;
 }
 

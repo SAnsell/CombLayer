@@ -146,7 +146,7 @@ MultiChannel::populate(const FuncDataBase& Control)
 
   
   bladeMat=ModelSupport::EvalMat<int>(Control,keyName+"BladeMat");
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   
   return;
 }

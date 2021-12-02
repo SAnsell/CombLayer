@@ -281,7 +281,6 @@ FixedComp::splitObject(Simulation& System,
   
   const int cellExtra=System.splitObject(cellN,cellIndex++,trueSN);
 
-  
   CellMap* CMapPtr=dynamic_cast<attachSystem::CellMap*>(this);
   if (CMapPtr)
     CMapPtr->registerExtra(cellN,cellExtra);

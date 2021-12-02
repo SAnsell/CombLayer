@@ -126,7 +126,7 @@ CorrectorMag::populate(const FuncDataBase& Control)
 
   frameHeight=Control.EvalVar<double>(keyName+"FrameHeight");
 
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   coilMat=ModelSupport::EvalMat<int>(Control,keyName+"CoilMat");
   clampMat=ModelSupport::EvalMat<int>(Control,keyName+"ClampMat");
   frameMat=ModelSupport::EvalMat<int>(Control,keyName+"FrameMat");

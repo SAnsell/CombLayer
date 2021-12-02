@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BeRefInnerStructure.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,42 +28,37 @@ namespace essSystem
 {
 /*!
   \class BeRefInnerStructure
-  \author K. Batkov
-  \version 1.0
-  \date Aug 2015
+  \author Konstantin Batkov
+  \version 2.0
+  \date Jan 2016
   \brief Inner structure of Be reflector (engineering details)
 */
 
-class BeRefInnerStructure : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+class BeRefInnerStructure :
+    public attachSystem::FixedComp,
+    public attachSystem::ExternalCut,
+    public attachSystem::CellMap
 {
  private:
-
-  double waterDiscThick;          ///< Water disc thickness
-  int    waterDiscMat;            ///< Water disc material
-  double waterDiscWallThick;      ///< Water disc wall thickness
-  int    waterDiscWallMat;        ///< Water disc wall material
-
-  double BeRadius;                ///< Inner Be radius
-  int    BeMat;                   ///< Inner Be material
-  double BeWallThick;             ///< Inner Be wall thickness
-  int    BeWallMat;               ///< Inner Be wall material
+  
+  size_t nLayers;
+  std::vector<double> baseFrac;   ///< Fractions
+  std::vector<int> mat;           ///< Materials
+  int active;                     ///< Activate inner structure
 
   void populate(const FuncDataBase&);
-  void createSurfaces(const attachSystem::FixedComp&);
-  void createObjects(Simulation&, const attachSystem::FixedComp&);
-  void createLinks();
+
+  void layerProcess(Simulation&);
 
  public:
 
   BeRefInnerStructure(const std::string&);
   BeRefInnerStructure(const BeRefInnerStructure&);
   BeRefInnerStructure& operator=(const BeRefInnerStructure&);
-  virtual BeRefInnerStructure* clone() const;
   virtual ~BeRefInnerStructure();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  using FixedComp::createAll;
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
 };
 

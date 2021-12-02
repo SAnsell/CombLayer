@@ -50,6 +50,7 @@ class portItem :
   public attachSystem::ContainedComp,
   public attachSystem::CellMap
 {
+
  protected:
 
   const std::string portBase;  ///< Base key name
@@ -79,19 +80,12 @@ class portItem :
   Geometry::Vec3D exitPoint; ///< exit point of object
  
   virtual void createSurfaces();
-  void createLinks(const ModelSupport::LineTrack&,
-		   const size_t,const size_t);
   void createLinks();
 
-  void constructFlange(Simulation&,const HeadRule&,
-		       const HeadRule&);
-
-  virtual void constructOuterFlange(Simulation&,
-				    const ModelSupport::LineTrack&,
-				    const size_t,const size_t);
-  void calcBoundaryCrossing(const objectGroups&,
-			    const ModelSupport::LineTrack&,
-			    size_t&,size_t&) const;
+  virtual void constructObject(Simulation&,
+			       const HeadRule&,
+			       const HeadRule&);
+  
   
  public:
 
@@ -133,6 +127,7 @@ class portItem :
 		     const long int);
 
   void addPortCut(MonteCarlo::Object*) const;
+  void addFlangeCut(MonteCarlo::Object*) const;
   
   using FixedComp::createAll;
   virtual void createAll(Simulation&,

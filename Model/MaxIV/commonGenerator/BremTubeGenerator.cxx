@@ -53,11 +53,11 @@ namespace setVariable
 
 BremTubeGenerator::BremTubeGenerator() :
   frontRadius(CF40::innerRadius),
-  frontLength(5.0),
+  frontLength(4.0),
   frontFlangeRadius(CF40::flangeRadius),
   frontFlangeLength(CF40::flangeLength), 
   midRadius(CF63::innerRadius),
-  midLength(13.6),
+  midLength(8.0+CF150::outerRadius),
   tubeRadius(CF150::innerRadius),
   tubeHeight(15.0),tubeDepth(35.0),
   tubeFlangeRadius(CF150::flangeRadius),
@@ -133,6 +133,8 @@ BremTubeGenerator::generateTube(FuncDataBase& Control,
   Control.addVariable(keyName+"WallMat",wallMat);
   Control.addVariable(keyName+"PlateMat",plateMat);
 
+  Control.addVariable(keyName+"FrontNPorts",0);
+  Control.addVariable(keyName+"MainNPorts",0);
   return;
 
 }

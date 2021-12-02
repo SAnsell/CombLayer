@@ -68,8 +68,10 @@ namespace essSystem
 {
 
 BulkModule::BulkModule(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,9),
-  attachSystem::SurfMap(),attachSystem::ExternalCut()
+  attachSystem::ContainedComp(),
+  attachSystem::FixedOffset(Key,9),
+  attachSystem::SurfMap(),
+  attachSystem::ExternalCut()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -77,8 +79,10 @@ BulkModule::BulkModule(const std::string& Key)  :
 {}
 
 BulkModule::BulkModule(const BulkModule& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  attachSystem::SurfMap(A),attachSystem::ExternalCut(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::FixedOffset(A),
+  attachSystem::SurfMap(A),
+  attachSystem::ExternalCut(A),
   nLayer(A.nLayer),radius(A.radius),height(A.height),depth(A.depth),
   COffset(A.COffset),Mat(A.Mat)
   /*!

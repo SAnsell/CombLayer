@@ -182,77 +182,77 @@ IonPumpTube::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("IonPumpTube","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   
-  const std::string frontStr=getRuleStr("front");
-  const std::string backStr=getRuleStr("back");
+  const HeadRule frontHR=getRule("front");
+  const HeadRule backHR=getRule("back");
 
   // inner void
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -7 ");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -17 407 ");
-  makeCell("MainTube",System,cellIndex++,wallMat,0.0,Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 7 -17 407 ");
+  makeCell("MainTube",System,cellIndex++,wallMat,0.0,HR*frontHR*backHR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-101 17 -107 ");
-  makeCell("FlangeA",System,cellIndex++,wallMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 17 -107 ");
+  makeCell("FlangeA",System,cellIndex++,wallMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 202 17 -107 ");
-  makeCell("FlangeB",System,cellIndex++,wallMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 202 17 -107 ");
+  makeCell("FlangeB",System,cellIndex++,wallMat,0.0,HR*backHR);
 
   // base part
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -300 -407 405 7 ");
-  makeCell("LowVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-300 -407 405 7");
+  makeCell("LowVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -300 -417 407 405 17 ");
-  makeCell("LowWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-300 -417 407 405 17");
+  makeCell("LowWall",System,cellIndex++,wallMat,0.0,HR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," 417 -427 405 -415 ");
-  makeCell("LowFlange",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"417 -427 405 -415");
+  makeCell("LowFlange",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -427 425 -405");
-  makeCell("LowPlate",System,cellIndex++,plateMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-427 425 -405");
+  makeCell("LowPlate",System,cellIndex++,plateMat,0.0,HR);
 
   // TOP
-  Out=ModelSupport::getComposite(SMap,buildIndex," 300 -407 -406 7  ");
-  makeCell("TopVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"300 -407 -406 7");
+  makeCell("TopVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 300 -417 407 -406 17 ");
-  makeCell("TopWall",System,cellIndex++,wallMat,0.0,Out);  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"300 -417 407 -406 17");
+  makeCell("TopWall",System,cellIndex++,wallMat,0.0,HR);  
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -417 -416 406 ");
-  makeCell("TopBlank",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-417 -416 406");
+  makeCell("TopBlank",System,cellIndex++,wallMat,0.0,HR);
 
 
   // vert void
-  Out=ModelSupport::getComposite(SMap,buildIndex," -427 415 -416 17 417  ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-427 415 -416 17 417");
   if (flangeZRadius-Geometry::zeroTol > frontLength-flangeYLength)
     {
       if (flangeZRadius-Geometry::zeroTol > backLength-flangeYLength)
-	Out+=ModelSupport::getComposite(SMap,buildIndex," ((101 -202):107) ");
+	HR*=ModelSupport::getHeadRule(SMap,buildIndex,"((101 -202):107)");
       else
-	Out+=ModelSupport::getComposite(SMap,buildIndex," (101:107) ");
+	HR*=ModelSupport::getHeadRule(SMap,buildIndex,"(101:107)");
     }
   else if (flangeZRadius-Geometry::zeroTol > backLength-flangeYLength)
-    Out+=ModelSupport::getComposite(SMap,buildIndex," (-202:107) ");
+    HR*=ModelSupport::getHeadRule(SMap,buildIndex,"(-202:107)");
 
-  makeCell("VertOuter",System,cellIndex++,0,0.0,Out);
+  makeCell("VertOuter",System,cellIndex++,0,0.0,HR);
   
   // front void
-  Out=ModelSupport::getComposite(SMap,buildIndex," -200 17  427 -107 101");
-  makeCell("FrontOuter",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -200 17  427 -107 101");
+  makeCell("FrontOuter",System,cellIndex++,0,0.0,HR);
 
   // back void
-  Out=ModelSupport::getComposite(SMap,buildIndex," 200 17  427 -207 -202 ");
-  makeCell("BackOuter",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 200 17  427 -207 -202 ");
+  makeCell("BackOuter",System,cellIndex++,0,0.0,HR);
 
   // outer void box:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-107 ");
-  addOuterSurf(Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-107");
+  addOuterSurf(HR*frontHR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"(425 -416 -427)");
-  addOuterUnionSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(425 -416 -427)");
+  addOuterUnionSurf(HR);
 
   return;
 }

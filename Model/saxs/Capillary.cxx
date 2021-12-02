@@ -104,7 +104,7 @@ Capillary::populate(const FuncDataBase& Control)
   
 
   innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");
-  wallMat=ModelSupport::EvalDefMat<int>(Control,keyName+"WallMat",0);
+  wallMat=ModelSupport::EvalDefMat(Control,keyName+"WallMat",0);
 
   return;
 }

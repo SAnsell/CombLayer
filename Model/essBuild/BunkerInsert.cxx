@@ -143,7 +143,7 @@ BunkerInsert::populate(const FuncDataBase& Control)
   rightWall=Control.EvalVar<double>(keyName+"RightWall");
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   
   return;
 }

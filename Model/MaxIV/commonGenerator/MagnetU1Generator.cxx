@@ -3,7 +3,7 @@
  
  * File:   commonGenerator/MagnetU1Generator.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,15 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
+#include "Vec3D.h"
+#include "varList.h"
+#include "Code.h"
+#include "FuncDataBase.h"
+#include "CFFlanges.h"
 
+#include "DipoleGenerator.h"
+#include "QuadrupoleGenerator.h"
+#include "OctupoleGenerator.h"
 
 #include "MagnetU1Generator.h"
 
@@ -47,9 +55,9 @@ namespace setVariable
 {
 
 MagnetU1Generator::MagnetU1Generator() :
-  blockXStep(10.5),blockXYAngle(1.5),
-  blockYStep(5.0),blockLength(241.5),
-  blockWidth(33.8),blockHeight(26.0),
+  yOffset(234.6),blockYStep(10.5),length(220.0),
+  outerVoid(12.0),ringVoid(12.0),topVoid(12.0),
+  baseVoid(12.0),baseThick(8.0),wallThick(6.0),
   voidMat("Void"),wallMat("Stainless304")
   /*!
     Constructor and defaults
@@ -72,6 +80,22 @@ MagnetU1Generator::generateBlock(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("MagnetU1Generator","generateBlock");
+
+  Control.addVariable(keyName+"YStep",yOffset-blockYStep);    
+  Control.addVariable(keyName+"BlockYStep",blockYStep);
+  Control.addVariable(keyName+"Length",length);
+
+  Control.addVariable(keyName+"OuterVoid",outerVoid);
+  Control.addVariable(keyName+"RingVoid",ringVoid);
+  Control.addVariable(keyName+"TopVoid",topVoid);
+  Control.addVariable(keyName+"BaseVoid",baseVoid);
+
+  Control.addVariable(keyName+"BaseThick",baseThick);
+  Control.addVariable(keyName+"WallThick",wallThick);
+  
+  Control.addVariable(keyName+"VoidMat",voidMat);
+  Control.addVariable(keyName+"WallMat",wallMat);
+
   return;
 }
 

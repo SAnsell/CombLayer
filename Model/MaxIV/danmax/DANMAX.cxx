@@ -61,10 +61,10 @@
 
 #include "OpticsHutch.h"
 #include "ExperimentalHutch.h"
+#include "OpticsStepHutch.h"
 #include "WallLead.h"
 #include "R3FrontEnd.h"
 #include "danmaxFrontEnd.h"
-#include "danmaxOpticsHutch.h"
 #include "danmaxOpticsLine.h"
 #include "danmaxConnectLine.h"
 #include "PipeShield.h"
@@ -82,7 +82,7 @@ DANMAX::DANMAX(const std::string& KN) :
   frontBeam(new danmaxFrontEnd(newName+"FrontBeam")),
   wallLead(new WallLead(newName+"WallLead")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
-  opticsHut(new danmaxOpticsHutch(newName+"OpticsHut")),
+  opticsHut(new OpticsStepHutch(newName+"OpticsHut")),
   opticsBeam(new danmaxOpticsLine(newName+"OpticsLine")),
   joinPipeB(new constructSystem::VacuumPipe(newName+"JoinPipeB")),
   connectUnit(new danmaxConnectLine(newName+"ConnectUnit")),

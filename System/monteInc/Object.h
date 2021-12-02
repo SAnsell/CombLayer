@@ -27,6 +27,7 @@ class Token;
 namespace MonteCarlo
 {
   class particle;
+  class Material;
 
 /*!
   \class Object
@@ -43,24 +44,24 @@ class Object
 {
  private:
 
-  std::string FCUnit; ///< FixedComp name
+  std::string FCUnit;      ///< FixedComp name
   
   int ObjName;             ///< Number for the object
   int listNum;             ///< Creation number
   double Tmp;              ///< Starting temperature (if given)
   const Material* matPtr;  ///< Material Number 
-  int trcl;          ///< transform number
-  Importance imp;           ///< importance / 0 
+  int trcl;                ///< transform number [deprecated]
+  Importance imp;          ///< importance / 0 
 
-  int populated;     ///< Full population
+  int populated;           ///< Full population
 
-  bool activeMag;         ///< Magnetic field active
-  double magMinStep;      ///< min step for mag field [fluka]
-  double magMaxStep;      ///< max step for mag field [fluka]
+  bool activeMag;          ///< Magnetic field active
+  double magMinStep;       ///< min step for mag field [fluka]
+  double magMaxStep;       ///< max step for mag field [fluka]
   
-  HeadRule HRule;    ///< Top rule
+  HeadRule HRule;           ///< Top rule
 
-  Geometry::Vec3D COM;       ///< Centre of mass 
+  Geometry::Vec3D COM;      ///< Centre of mass 
   
   /// Set of surfaces that are logically opposite in the rule.
   std::set<const Geometry::Surface*> logicOppSurf;
@@ -78,8 +79,8 @@ class Object
   std::vector<const Geometry::Surface*> SurList;  
   std::set<int> SurSet;              ///< set of surfaces in cell [signed]
 
-  int trackDirection(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
-
+  const Geometry::Surface* getSurf(const int) const;
+  
  public:
 
   Object();
@@ -218,12 +219,21 @@ class Object
   std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
   trackSurfIntersect(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
 
-  int trackSurf(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
+  Geometry::Vec3D trackPoint(const Geometry::Vec3D&,
+			     const Geometry::Vec3D&) const;
+  
+  Geometry::Vec3D trackClosestPoint(const Geometry::Vec3D&,
+				    const Geometry::Vec3D&,
+				    const Geometry::Vec3D&) const;
 
+  int trackSurf(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
   
   int trackCell(const MonteCarlo::particle&,double&,
 		const Geometry::Surface*&,
 		const int) const;
+
+  int trackDirection(const Geometry::Vec3D&,
+		     const Geometry::Vec3D&) const;
 
 
   /// acessor to forward 

@@ -74,7 +74,7 @@ class Plane : public Quadratic
   double getDistance() const { return Dist; }  
   /// Normal to plane (+ve surface)
   const Geometry::Vec3D& getNormal() const { return NormV; } 
-
+  
 
   int setSurface(const std::string&);
   
@@ -92,6 +92,7 @@ class Plane : public Quadratic
   double dotProd(const Plane&) const;   
   Geometry::Vec3D crossProd(const Plane&) const;      
   double distance(const Geometry::Vec3D&) const;
+  Geometry::Vec3D surfaceNormal(const Geometry::Vec3D&) const;
   Geometry::Vec3D closestPt(const Geometry::Vec3D&) const;
   
   int isEqual(const Plane&) const;

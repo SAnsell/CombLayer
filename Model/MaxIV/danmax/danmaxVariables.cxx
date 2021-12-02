@@ -161,7 +161,6 @@ frontMaskVariables(FuncDataBase& Control,
   const double FM1dist(1172.60);
   const double FM2dist(1624.2);
 
-  ELog::EM<<"HERER "<<preName<<ELog::endDiag;
     // collimator block
   FMaskGen.setCF<CF100>();
   FMaskGen.setMat("Copper");
@@ -532,8 +531,8 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   BremGen.centre();
   BremGen.setCube(10.0,10.0);
   BremGen.setAperature(5.0, 0.4,0.4, 0.4,0.4, 0.4,0.4);  // WRONG
-  BremGen.generateBlock(Control,viewKey+"BeamStop",0.0,8.0);
-  Control.addVariable(viewKey+"BeamStopZStep",10.750);
+  BremGen.generateBlock(Control,viewKey+"BeamStop",10.75);
+  Control.addVariable(viewKey+"BeamStopXAngle",90);
 
    // Single slit pair
   JawGen.setRadius(8.0);
@@ -597,8 +596,8 @@ revBeamStopPackage(FuncDataBase& Control,
   BremGen.centre();
   BremGen.setCube(10.0,10.0);
   BremGen.setAperature(5.0, 0.4,0.4, 0.4,0.4, 0.4,0.4);  // WRONG
-  BremGen.generateBlock(Control,viewKey+"RevBeamStop",0.0,8.0);
-  Control.addVariable(viewKey+"RevBeamStopZStep",10.750);
+  BremGen.generateBlock(Control,viewKey+"RevBeamStop",10.75);
+  Control.addVariable(viewKey+"RevBeamStopXAngle",90);
 
    // Single slit pair
   JawGen.setRadius(8.0);
