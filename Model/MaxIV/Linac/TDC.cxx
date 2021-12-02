@@ -328,7 +328,7 @@ TDC::buildInnerZone(Simulation& System,
       {"spfAngle"  ,{"DoorEndWall","#TDCMid"}},
       {"spf"  ,{"TDCCorner","#TDCMid"}},
       {"spfFar"  ,{"TDCMid","#BackWallFront"}}, // last cell with columns
-      {"spfBehindBackWall"  ,{"BackWallBack","#FemtoMAXBack"}} // cell behind back wall
+      {"spfBehindBackWall"  ,{"BackWallBack","#FemtoMAXFront"}} // cell behind back wall
     });
   //Extra surfaces to add to the main surround
   const static ExtraSurfMAP extraSUR

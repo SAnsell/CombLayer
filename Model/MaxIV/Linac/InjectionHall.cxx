@@ -499,36 +499,52 @@ InjectionHall::createSurfaces()
 
   // maze in the end of FemtoMAX/BSP01 areas
   const Geometry::Vec3D bspOrg(Origin+Y*(backWallYStep+backWallThick));
-  SurfMap::makePlane("FemtoMAXBack",SMap,buildIndex+6101,bspOrg+Y*bsp01WallLength,Y);
-  ModelSupport::buildPlane(SMap,buildIndex+6102,bspOrg+Y*(bsp01WallLength+bspFrontMazeThick),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+6111,
-			   bspOrg+Y*(bsp01WallLength+bspFrontMazeThick+bspMazeWidth),Y);
-  //  ModelSupport::buildShiftedPlane(SMap,buildIndex+6111,buildIndex+6102,Y,bspMazeWidth);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+6112,buildIndex+6111,Y,bspMidMazeThick);
+  SurfMap::makePlane
+    ("FemtoMAXBack",SMap,buildIndex+6101,bspOrg+Y*bsp01WallLength,Y);
+  
+  ModelSupport::buildPlane
+    (SMap,buildIndex+6102,bspOrg+Y*(bsp01WallLength+bspFrontMazeThick),Y);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+6111,bspOrg+Y*(bsp01WallLength+bspFrontMazeThick+bspMazeWidth),Y);
+  ModelSupport::buildShiftedPlane
+    (SMap,buildIndex+6112,buildIndex+6111,Y,bspMidMazeThick);
 
   ModelSupport::buildShiftedPlane(SMap,buildIndex+6121,buildIndex+6112,Y,bspMazeWidth);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+6122,buildIndex+6121,Y,bspBackMazeThick);
 
-  SurfMap::makePlane("MazeDoorZ",SMap,buildIndex+6106,Origin-Z*(floorDepth-bspMidMazeDoorHeight),Z);
+  SurfMap::makePlane("MazeDoorZ",SMap,buildIndex+6106,
+		     Origin-Z*(floorDepth-bspMidMazeDoorHeight),Z);
 
   // iron layers
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+6201,buildIndex+6101,Y,-bspFrontMazeIronThick);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+6211,buildIndex+6111,Y,bspMidMazeIronThick1);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+6212,buildIndex+6111,Y,bspMidMazeIronThick2);
+  SurfMap::makeShiftedPlane("FemtoMAXFront",SMap,buildIndex+6201,
+			    buildIndex+6101,Y,-bspFrontMazeIronThick);
+
+  ModelSupport::buildShiftedPlane
+    (SMap,buildIndex+6211,buildIndex+6111,Y,bspMidMazeIronThick1);
+  ModelSupport::buildShiftedPlane
+    (SMap,buildIndex+6212,buildIndex+6111,Y,bspMidMazeIronThick2);
 
   // SPF hall access maze
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+7013,buildIndex+223,X,-spfMazeLength);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+7023,buildIndex+7013,X,-wallThick);
+  ModelSupport::buildShiftedPlane
+    (SMap,buildIndex+7013,buildIndex+223,X,-spfMazeLength);
+  ModelSupport::buildShiftedPlane
+    (SMap,buildIndex+7023,buildIndex+7013,X,-wallThick);
 
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+7003,buildIndex+7013,X,spfMazeWidthSide);
+  ModelSupport::buildShiftedPlane
+    (SMap,buildIndex+7003,buildIndex+7013,X,spfMazeWidthSide);
 
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+7001,buildIndex+21,Y,-spfMazeWidthTDC);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+7011,buildIndex+7001,Y,-wallThick);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+7002,buildIndex+22,Y,spfMazeWidthSPF);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+7012,buildIndex+7002,Y,wallThick);
+  ModelSupport::buildShiftedPlane
+    (SMap,buildIndex+7001,buildIndex+21,Y,-spfMazeWidthTDC);
+  ModelSupport::buildShiftedPlane
+    (SMap,buildIndex+7011,buildIndex+7001,Y,-wallThick);
+  ModelSupport::buildShiftedPlane
+    (SMap,buildIndex+7002,buildIndex+22,Y,spfMazeWidthSPF);
+  ModelSupport::buildShiftedPlane
+    (SMap,buildIndex+7012,buildIndex+7002,Y,wallThick);
 
   // SPF maze layer
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+7031,buildIndex+7001,Y,spfMazeLayerThick);
+  ModelSupport::buildShiftedPlane
+    (SMap,buildIndex+7031,buildIndex+7001,Y,spfMazeLayerThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7032,buildIndex+7002,Y,-spfMazeLayerThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7033,buildIndex+7013,X,spfMazeLayerThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7036,buildIndex+5,Z,spfMazeLayerHeight);
