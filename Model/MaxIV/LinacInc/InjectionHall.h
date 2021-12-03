@@ -85,10 +85,6 @@ class InjectionHall :
   double spfExitLength;         ///< Length of the SPF emergency exit room
   double spfExitDoorLength;     ///< Length of the SPF emergency exit door
   double spfExitDoorHeight;     ///< Height of the SPF emergency exit door
-  double storageShieldThick;    ///< Storage room shield thickness
-  int storageShieldMat;         ///< Storage room shield material
-  double femtoMAXShieldThick;   ///< FemtoMAX room shield thickness
-  int femtoMAXShieldMat;        ///< FemtoMAX room shield material
 
   double femtoMAXWallThick;      ///< SPF/FemtoMAX wall thickness
   double femtoMAXWallOffset;      ///< X-offset of the SPF/FemtoMAX wall
