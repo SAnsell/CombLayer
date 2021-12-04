@@ -39,7 +39,7 @@ namespace xraySystem
 */
 
 class ExperimentalHutch :
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap,
@@ -72,6 +72,8 @@ class ExperimentalHutch :
   double innerOutVoid;          ///< Extension for inner void space
   double outerOutVoid;          ///< Extension for outer void space 
 
+  std::string forkWall;         ///< Wall for forklift [only one allowed]
+  double forkXStep;             ///< Step across beamline for forklift hole
   double forkYStep;             ///< Step down beamline for forklift hole
   double forkLength;            ///< length of units
   double forkHeight;            ///< height of unit
@@ -83,6 +85,8 @@ class ExperimentalHutch :
 
   /// Chicanes 
   std::vector<std::shared_ptr<PortChicane>> PChicane;  
+
+  forkHoles forks;              ///< Forklift holes if made
   
   void populate(const FuncDataBase&);
   void createSurfaces();
@@ -90,7 +94,8 @@ class ExperimentalHutch :
   void createLinks();
 
   void createChicane(Simulation&);
-
+  void createForkCut(Simulation&);
+  
  public:
 
   ExperimentalHutch(const std::string&);

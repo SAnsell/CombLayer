@@ -58,6 +58,7 @@
 
 #include "VacuumPipe.h"
 #include "PipeShield.h"
+#include "forkHoles.h"
 #include "OpticsHutch.h"
 #include "OpticsStepHutch.h"
 #include "ExperimentalHutch.h"

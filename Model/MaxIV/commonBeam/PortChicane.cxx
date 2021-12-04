@@ -52,7 +52,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
 #include "ContainedGroup.h"
@@ -68,8 +68,9 @@ namespace xraySystem
 
 PortChicane::PortChicane(const std::string& Key) :
   attachSystem::ContainedGroup("Main","Inner","Sides"),
-  attachSystem::FixedOffset(Key,12),
-  attachSystem::CellMap(),attachSystem::SurfMap(),
+  attachSystem::FixedRotate(Key,12),
+  attachSystem::CellMap(),
+  attachSystem::SurfMap(),
   attachSystem::ExternalCut()
   /*!
     Default constructor
@@ -92,7 +93,7 @@ PortChicane::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("PortChicane","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   height=Control.EvalVar<double>(keyName+"Height");
   width=Control.EvalVar<double>(keyName+"Width");

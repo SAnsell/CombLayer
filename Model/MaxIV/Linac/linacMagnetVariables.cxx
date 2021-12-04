@@ -118,15 +118,14 @@ LINACmagnetVariables(FuncDataBase& Control,
   if (magField=="TDCline" ||
       magField=="TDClineA" ||
       magField=="TDClineB" ||
-      magField=="TDClineC"
-      )
+      magField=="TDClineC")
     {
       const std::vector<std::string> TDCname
 	({
 	  "Seg13CMagHA L2SPF13PipeA:Void",
-	  "Seg13QuadA L2SPF13PipeB:Void",
-	  "Seg13SexuA L2SPF13PipeB:Void",
-	  "Seg13QuadB L2SPF13PipeB:Void",
+	  "Seg13QuadA  L2SPF13PipeB:Void",
+	  "Seg13SexuA  L2SPF13PipeB:Void",
+	  "Seg13QuadB  L2SPF13PipeB:Void",
 	  "Seg13CMagVA L2SPF13PipeC:Void",
 
 	  "Seg14DipoleA TDC14FlatA:Void",

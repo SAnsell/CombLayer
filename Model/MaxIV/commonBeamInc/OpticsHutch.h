@@ -39,7 +39,7 @@ namespace xraySystem
 */
 
 class OpticsHutch :
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap,
@@ -73,12 +73,7 @@ class OpticsHutch :
   /// Chicanes
   std::vector<std::shared_ptr<PortChicane>> PChicane;
 
-  std::string forkWall;         ///< Wall for forklift
-  double forkXStep;             ///< Step across beamline for forklift hole
-  double forkYStep;             ///< Step down beamline for forklift hole
-  double forkLength;            ///< length of units
-  double forkHeight;            ///< height of unit
-  std::vector<double> fZStep;   ///< step of units
+  forkHoles forks;              ///< Forklift holes if made 
 
   virtual void populate(const FuncDataBase&);
   virtual void createSurfaces();

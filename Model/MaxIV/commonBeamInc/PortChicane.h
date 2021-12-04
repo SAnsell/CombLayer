@@ -36,7 +36,7 @@ namespace xraySystem
   
 class PortChicane :
     public attachSystem::ContainedGroup,
-    public attachSystem::FixedOffset,
+    public attachSystem::FixedRotate,
     public attachSystem::CellMap,
     public attachSystem::SurfMap,
     public attachSystem::ExternalCut

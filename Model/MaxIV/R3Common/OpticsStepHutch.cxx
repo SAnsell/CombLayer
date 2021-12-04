@@ -54,7 +54,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -62,6 +62,7 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "PortChicane.h"
+#include "forkHoles.h"
 #include "OpticsHutch.h"
 
 #include "OpticsStepHutch.h"
@@ -156,12 +157,11 @@ OpticsStepHutch::createObjects(Simulation& System)
       BI+=100;
     }
 
-  HeadRule forkWallOuter,forkWallBack;
+  const HeadRule forkWallRing=forks.getRingCut();
+  const HeadRule forkWallOuter=forks.getOuterCut();
+  const HeadRule forkWallBack=forks.getBackCut();
+
   HeadRule HR;
-  if (forkWall=="Back")
-    forkWallBack=ModelSupport::getHeadRule(SMap,buildIndex,"(-3003:3004)");
-  else if (forkWall=="Outer")
-    forkWallOuter=ModelSupport::getHeadRule(SMap,buildIndex,"(-3001:3002)");
 
   if (innerOutVoid>Geometry::zeroTol)
     {  

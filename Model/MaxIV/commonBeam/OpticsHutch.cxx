@@ -54,7 +54,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -62,8 +62,8 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 
-
 #include "PortChicane.h"
+#include "forkHoles.h"
 #include "OpticsHutch.h"
 
 
@@ -71,11 +71,12 @@ namespace xraySystem
 {
 
 OpticsHutch::OpticsHutch(const std::string& Key) :
-  attachSystem::FixedOffset(Key,18),
+  attachSystem::FixedRotate(Key,18),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
-  attachSystem::SurfMap()
+  attachSystem::SurfMap(),
+  forks(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -98,7 +99,7 @@ OpticsHutch::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("OpticsHutch","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   height=Control.EvalVar<double>(keyName+"Height");
   length=Control.EvalVar<double>(keyName+"Length");
   outWidth=Control.EvalVar<double>(keyName+"OutWidth");
@@ -133,24 +134,7 @@ OpticsHutch::populate(const FuncDataBase& Control)
 	}
     } while(holeRad>Geometry::zeroTol);
 
-  // Fork holes
-  const size_t N=Control.EvalDefVar<size_t>(keyName+"NForkHoles",0);
-  forkWall="None";
-  if (N)
-    {
-      forkWall=Control.EvalDefVar<std::string>
-	(keyName+"ForkWall","Back");
-      if (forkWall!="Back" && forkWall!="Outer")
-	ELog::EM<<"ForkWall : "<<forkWall<<ELog::endErr;
-      
-      forkXStep=Control.EvalDefVar<double>(keyName+"ForkXStep",0.0);
-      forkYStep=Control.EvalDefVar<double>(keyName+"ForkYStep",0.0);
-      forkLength=Control.EvalDefVar<double>(keyName+"ForkLength",60.0);
-      forkHeight=Control.EvalDefVar<double>(keyName+"ForkHeight",10.0);
-      for(size_t i=0;i<N;i++)
-	fZStep.push_back(Control.EvalVar<double>
-			 (keyName+"ForkZStep"+std::to_string(i)));
-    }
+  forks.populate(Control);
   
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
   pbMat=ModelSupport::EvalMat<int>(Control,keyName+"PbMat");
@@ -226,7 +210,7 @@ OpticsHutch::createSurfaces()
       (SMap,buildIndex+1033,
        Origin-X*(outWidth+steelThick+pbWallThick+outerOutVoid),X);
 
-  createForkSurfaces();
+  forks.createSurfaces(SMap,*this,buildIndex+3000);
   
   return;
 }
@@ -258,12 +242,9 @@ OpticsHutch::createObjects(Simulation& System)
       BI+=100;
     }
 
-  HeadRule forkWallOuter,forkWallBack;
+  const HeadRule forkWallOuter=forks.getOuterCut();
+  const HeadRule forkWallBack=forks.getBackCut();
   HeadRule HR;
-  if (forkWall=="Back")
-    forkWallBack=ModelSupport::getHeadRule(SMap,buildIndex,"(-3003:3004)");
-  else if (forkWall=="Outer")
-    forkWallOuter=ModelSupport::getHeadRule(SMap,buildIndex,"(-3001:3002)");
 
   if (innerOutVoid>Geometry::zeroTol)
     {  
@@ -278,7 +259,6 @@ OpticsHutch::createObjects(Simulation& System)
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*floor*frontWall*sideCut);
 
   // walls:
-
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 -3 13 -6");
   makeCell("InnerWall",System,cellIndex++,skinMat,0.0,
 	   HR*floor*frontWall*forkWallOuter);
@@ -333,48 +313,9 @@ OpticsHutch::createObjects(Simulation& System)
     HR=ModelSupport::getHeadRule(SMap,buildIndex,"-32 33 -36");
 
   addOuterSurf(HR*frontWall*sideCut);
-
-
-
-
   return;
 }
 
-void
-OpticsHutch::createForkSurfaces()
-  /*!
-    Create fork surfaces if needed
-  */
-{
-  if(!fZStep.empty())
-    {
-      if (forkWall=="Back")
-	{
-	  ModelSupport::buildPlane
-	    (SMap,buildIndex+3003,Origin+X*(forkXStep-forkLength/2),X);
-	  ModelSupport::buildPlane
-	    (SMap,buildIndex+3004,Origin+X*(forkXStep+forkLength/2),X);
-	}
-      else if (forkWall=="Outer")
-	{
-	  ModelSupport::buildPlane
-	    (SMap,buildIndex+3001,Origin+Y*(forkYStep-forkLength/2),Y);
-	  ModelSupport::buildPlane
-	    (SMap,buildIndex+3002,Origin+Y*(forkYStep+forkLength/2),Y);	  
-	}
-	
-      int BI(buildIndex+3000);
-      for(size_t i=0;i<fZStep.size();i++)
-	{
-	  ModelSupport::buildPlane
-	    (SMap,BI+5,Origin+Z*(fZStep[i]-forkHeight/2.0),Z);
-	  ModelSupport::buildPlane
-	    (SMap,BI+6,Origin+Z*(fZStep[i]+forkHeight/2.0),Z);
-	  BI+=10;
-	}
-    }
-  return;
-}
 
 void
 OpticsHutch::createForkCut(Simulation& System)
@@ -385,14 +326,15 @@ OpticsHutch::createForkCut(Simulation& System)
 {
   ELog::RegMethod RegA("OpticsHutch","buildForkCut");
 
-  if(!fZStep.empty())
+  const size_t NForks=forks.getSize();
+  if(NForks)
     {
       const HeadRule floor=ExternalCut::getValidRule("Floor",Origin);
       HeadRule HR,cutHR;
-      int BI(buildIndex+3000);	  
-      if (forkWall=="Back")
+      int BI(buildIndex+3000);
+      if (forks.isActive("Back"))
 	{
-	  for(size_t i=0;i<fZStep.size();i++)
+	  for(size_t i=0;i<NForks;i++)
 	    {
 	      HR=ModelSupport::getHeadRule
 		(SMap,buildIndex,BI,"3003 -3004 5M -6M 2 -32");
@@ -407,9 +349,9 @@ OpticsHutch::createForkCut(Simulation& System)
 	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3003 -3004 -26 22 -32");
 	  makeCell("ForkOuter",System,cellIndex++,skinMat,0.0,HR*floor*cutHR);
 	}
-      else if (forkWall=="Outer")
+      else if (forks.isActive("Outer"))
 	{
-	  for(size_t i=0;i<fZStep.size();i++)
+	  for(size_t i=0;i<NForks;i++)
 	    {
 	      HR=ModelSupport::getHeadRule
 		(SMap,buildIndex,BI,"3001 -3002 5M -6M -3 33");
@@ -423,7 +365,6 @@ OpticsHutch::createForkCut(Simulation& System)
 	  makeCell("ForkLead",System,cellIndex++,pbMat,0.0,HR*floor*cutHR);
 	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3001 -3002 -26 -23 33");
 	  makeCell("ForkOuter",System,cellIndex++,skinMat,0.0,HR*floor*cutHR);
-
 	}
     }
   return;
@@ -462,8 +403,6 @@ OpticsHutch::createLinks()
       nameSideIndex(7+2*i,"exitHole"+std::to_string(i));
       nameSideIndex(8+2*i,"exitHole"+std::to_string(i)+"Radius");
     }
-
-
 
   setConnect(11,Origin,Y);
   setLinkSurf(11,ExternalCut::getValidRule("RingWall",Origin+Y*length));

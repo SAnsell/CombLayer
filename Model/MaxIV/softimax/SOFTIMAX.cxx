@@ -61,6 +61,7 @@
 #include "VacuumPipe.h"
 #include "JawFlange.h"
 #include "R3FrontEnd.h"
+#include "forkHoles.h"
 #include "OpticsHutch.h"
 #include "softimaxFrontEnd.h"
 #include "softimaxOpticsLine.h"
