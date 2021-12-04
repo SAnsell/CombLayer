@@ -92,7 +92,8 @@ forkHoles::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("forkHoles","populate");
   // Fork holes
-  nForks=Control.EvalDefVar<size_t>(masterName+"NForkHoles",0);
+  nForks=Control.EvalDefVar<size_t>(masterName+"NHoles",0);
+
   forkWall="None";
   if (nForks)
     {
@@ -100,7 +101,8 @@ forkHoles::populate(const FuncDataBase& Control)
 	(masterName+"ForkWall","Back");
       if (forkWall!="Back" && forkWall!="Outer" && forkWall!="Ring")
 	ELog::EM<<"ForkWall : "<<forkWall<<ELog::endErr;
-      
+
+      ELog::EM<<"Found "<<forkWall<<ELog::endDiag;
       forkXStep=Control.EvalDefVar<double>(masterName+"XStep",0.0);
       forkYStep=Control.EvalDefVar<double>(masterName+"YStep",0.0);
       forkLength=Control.EvalDefVar<double>(masterName+"Length",60.0);

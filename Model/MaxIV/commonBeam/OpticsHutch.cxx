@@ -76,7 +76,7 @@ OpticsHutch::OpticsHutch(const std::string& Key) :
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
-  forks(Key)
+  forks(keyName+"Fork")
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName

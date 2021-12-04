@@ -511,7 +511,7 @@ opticsHutVariables(FuncDataBase& Control,
   PGen.generatePortChicane(Control,hutName+"Chicane2","Right",-375.0,-5.0);
   
   // Forklift truck holes
-  Control.addVariable(hutName+"NForkHoles",0);
+  Control.addVariable(hutName+"ForkNHoles",0);
   Control.addVariable(hutName+"ForkWall","Outer");
   Control.addVariable(hutName+"ForkYStep",80.0);
   Control.addVariable(hutName+"ForkLength",60.0);
