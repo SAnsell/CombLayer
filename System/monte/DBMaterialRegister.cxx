@@ -1368,7 +1368,7 @@ DBMaterial::initMaterial()
   setMaterial(MObj);
 
   // Steel S235JR
-  // Reference: Email from Anders Bjermo 2021-12-08, 0936_001_High-Ni-value.pdf (measured)
+  // Reference: Email from AB 2021-12-08, 0936_001_High-Ni-value.pdf (measured)
   //            The steel sample with the hightest Nickel value used
   //            (to get conservative Cobalt content for residual activation,
   //            see S235JR_Co).
@@ -1418,6 +1418,57 @@ DBMaterial::initMaterial()
   MObj.setDensity(-7.85);
   setMaterial(MObj);
 
+  // Steel S235JR with ~0.5% weight Cobalt content based on its Nickel content
+  // See also S235JR and S234JR_Co.inp
+
+  MObj.setMaterial(152, "S235JR_Co",
+		   " 06000.70c 0.000604 "
+		   " 25055.70c 0.014903 "
+		   " 14028.70c 0.001667 "
+		   " 14029.70c 0.000085 "
+		   " 14030.70c 0.000056 "
+		   " 15031.70c 0.000070 "
+		   " 16032.70c 0.000020 "
+		   " 16033.70c 0.000000 "
+		   " 16034.70c 0.000001 "
+		   " 16036.70c 0.000000 "
+		   " 24050.70c 0.000001 "
+		   " 24052.70c 0.000014 "
+		   " 24053.70c 0.000002 "
+		   " 24054.70c 0.000000 "
+		   " 29063.70c 0.000134 "
+		   " 29065.70c 0.000060 "
+		   " 28058.70c 0.001785 "
+		   " 28060.70c 0.000688 "
+		   " 28061.70c 0.000030 "
+		   " 28062.70c 0.000095 "
+		   " 28064.70c 0.000024 "
+		   " 42092.70c 0.000002 "
+		   " 42094.70c 0.000001 "
+		   " 42095.70c 0.000002 "
+		   " 42096.70c 0.000002 "
+		   " 42097.70c 0.000001 "
+		   " 42098.70c 0.000003 "
+		   " 42100.70c 0.000001 "
+		   " 13027.70c 0.000434 "
+		   " 41093.70c 0.000258 "
+		   " 23050.70c 0.000000 "
+		   " 23051.70c 0.000020 "
+		   " 22046.70c 0.000015 "
+		   " 22047.70c 0.000014 "
+		   " 22048.70c 0.000137 "
+		   " 22049.70c 0.000010 "
+		   " 22050.70c 0.000010 "
+		   " 07014.70c 0.000044 "
+		   " 07015.70c 0.000000 "
+		   " 26054.70c 0.056916 "
+		   " 26056.70c 0.893455 "
+		   " 26057.70c 0.020634 "
+		   " 26058.70c 0.002746 "
+		   " 27059.70c 0.005060 ", "fe56.12t",MLib);
+  MObj.setMXitem(6000, 70, 'c', "h", "06012");
+  MObj.setDensity(-7.85);
+  setMaterial(MObj);
 
 
   return;
