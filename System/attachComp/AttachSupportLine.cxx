@@ -217,7 +217,7 @@ addToInsertLineCtrl(Simulation& System,
 {
   ELog::RegMethod RegA("AttachSupport[F]","addtoInsectLineCtrl(FC,FC)");
 
-  const std::vector<int> CNum=
+  const std::set<int> CNum=
     System.getObjectRange(OuterFC.getKeyName());
   for(const int CN : CNum)
     addToInsertLineCtrl(System,InsertFC,CC,CN);
@@ -246,7 +246,7 @@ addToInsertLineCtrl(Simulation& System,
 {
   ELog::RegMethod RegA("AttachSupport[F]","addtoInsectLineCtrl(FC,FC)");
 
-  const std::vector<int>& cellVec=
+  const std::set<int>& cellVec=
     System.getObjectRange(InsertFC.getKeyName());
   System.populateCells(cellVec);
   MonteCarlo::Object* CRPtr=System.findObject(cellN);

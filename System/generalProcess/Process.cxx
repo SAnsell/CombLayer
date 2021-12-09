@@ -172,8 +172,7 @@ getActiveCell(const objectGroups& OGrp,
 {
   ELog::RegMethod RegA("Process[F]","getActiveCell");
 
-  const std::vector<int> Cells=OGrp.getObjectRange(cell);
-  std::set<int> activeCell(Cells.begin(),Cells.end());
+  std::set<int> activeCell=OGrp.getObjectRange(cell);
 
   activeCell.erase(1);
   return activeCell;

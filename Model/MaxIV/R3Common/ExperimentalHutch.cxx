@@ -77,7 +77,7 @@ ExperimentalHutch::ExperimentalHutch(const std::string& Key) :
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
-  forks(Key)
+  forks(Key+"Fork")
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -306,6 +306,7 @@ ExperimentalHutch::createObjects(Simulation& System)
 
   const HeadRule sideWall=ExternalCut::getValidRule("SideWall",Origin);
   const HeadRule floor=ExternalCut::getRule("floor");
+
   const HeadRule frontWall=ExternalCut::getRule("frontWall");
   const HeadRule innerWall=
     (pbFrontThick>Geometry::zeroTol) ?
@@ -450,7 +451,7 @@ ExperimentalHutch::createForkCut(Simulation& System)
   const size_t NForks=forks.getSize();
   if(NForks)
     {
-      const HeadRule floor=ExternalCut::getValidRule("Floor",Origin);
+      const HeadRule floor=ExternalCut::getValidRule("floor",Origin);
       HeadRule HR,cutHR;
       int BI(buildIndex+3000);
       if (forks.isActive("Back"))
@@ -465,9 +466,9 @@ ExperimentalHutch::createForkCut(Simulation& System)
 	    }
 	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3003 -3004 -6 2 -12");
 	  makeCell("ForkInner",System,cellIndex++,skinMat,0.0,HR*floor*cutHR);
-	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3003 -3004 -16 12 -22");
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3003 -3004 -6 12 -22");
 	  makeCell("ForkLead",System,cellIndex++,pbMat,0.0,HR*floor*cutHR);
-	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3003 -3004 -26 22 -32");
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3003 -3004 -6 22 -32");
 	  makeCell("ForkOuter",System,cellIndex++,skinMat,0.0,HR*floor*cutHR);
 	}
       else if (forks.isActive("Outer"))
@@ -482,9 +483,9 @@ ExperimentalHutch::createForkCut(Simulation& System)
 	    }
 	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3001 -3002 -6 -3 13");
 	  makeCell("ForkInner",System,cellIndex++,skinMat,0.0,HR*floor*cutHR);
-	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3001 -3002 -16 -13 23");
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3001 -3002 -6 -13 23");
 	  makeCell("ForkLead",System,cellIndex++,pbMat,0.0,HR*floor*cutHR);
-	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3001 -3002 -26 -23 33");
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3001 -3002 -6 -23 33");
 	  makeCell("ForkOuter",System,cellIndex++,skinMat,0.0,HR*floor*cutHR);
 	}
       else if (forks.isActive("Ring"))
@@ -497,11 +498,12 @@ ExperimentalHutch::createForkCut(Simulation& System)
 	      cutHR*=ModelSupport::getHeadRule(SMap,BI,"(-5:6)");	  
 	      BI+=10;
 	    }
+	  ELog::EM<<"Floo["<<keyName<<"] == "<<floor<<ELog::endDiag;
 	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3001 -3002 -6 4 -14");
 	  makeCell("ForkInner",System,cellIndex++,skinMat,0.0,HR*floor*cutHR);
-	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3001 -3002 -16 14 -24");
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3001 -3002 -6 14 -24");
 	  makeCell("ForkLead",System,cellIndex++,pbMat,0.0,HR*floor*cutHR);
-	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3001 -3002 -26 24 -34");
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3001 -3002 -6 24 -34");
 	  makeCell("ForkOuter",System,cellIndex++,skinMat,0.0,HR*floor*cutHR);
 	}
     }

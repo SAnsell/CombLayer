@@ -62,7 +62,12 @@
 #include "Cone.h"
 #include "Cylinder.h"
 #include "Plane.h"
-
+#include "Importance.h"
+#include "Object.h"
+#include "MXcards.h"
+#include "Zaid.h"
+#include "Material.h"
+#include "DBMaterial.h"
 
 namespace mainSystem
 {
@@ -348,7 +353,7 @@ getNamedOriginAxis(const Simulation& System,
 }
 
 
-std::vector<int>
+std::set<int>
 getNamedCells(const Simulation& System,
 	      const inputParam& IParam,
 	      const std::string& keyItem,
@@ -371,12 +376,82 @@ getNamedCells(const Simulation& System,
     IParam.getValueError<std::string>
     (keyItem,setIndex,index,errStr+"[Object Name]");
 
-  const std::vector<int> Cells=System.getObjectRange(objName);
+  const std::set<int> Cells=System.getObjectRange(objName);
   if (Cells.empty())
     throw ColErr::InContainerError<std::string>
       (objName,errStr+" [Empty cell]");
 
   return Cells;
+}
+
+std::set<int>
+getNamedCellsWithMat(const Simulation& System,
+		     const inputParam& IParam,
+		     const std::string& keyItem,
+		     const long int setIndex,
+		     const long int index,
+		     const std::string& matName,
+		     const std::string& errStr)
+  /*!
+    Calculate the objects based on a name e.g. a FixedComp.
+    \param System :: Main simulation
+    \param IParam :: Input parameters
+    \param keyItem :: key Item to search fore
+    \param setIndex :: input set index
+    \param index :: item index 
+    \param matName :: Material name [all/nonVoid/Void/Zaid/matName]
+    \param errStr :: base of error string
+  */  
+{
+  ELog::RegMethod RegA("inputParamSupport[F]","getNamedCellsWithMat");
+
+  const std::string objName=
+    IParam.getValueError<std::string>
+    (keyItem,setIndex,index,errStr+"[Object Name]");
+
+  const std::set<int> Cells=
+    System.getObjectRangeWithMat(objName,matName);
+  
+  if (Cells.empty())
+    throw ColErr::InContainerError<std::string>
+      (objName,errStr+" [Empty cell]");
+
+  return Cells;
+}
+
+std::set<const MonteCarlo::Object*>
+getNamedObjectsWithMat(const Simulation& System,
+		       const inputParam& IParam,
+		       const std::string& keyItem,
+		       const long int setIndex,
+		       const long int index,
+		       const std::string& matName,
+		       const std::string& errStr)
+  /*!
+    Calculate the objects based on a name e.g. a FixedComp.
+    \param System :: Main simulation
+    \param IParam :: Input parameters
+    \param keyItem :: key Item to search fore
+    \param setIndex :: input set index
+    \param index :: item index 
+    \param matName :: Material name [all/nonVoid/Void/Zaid/matName]
+    \param errStr :: base of error string
+  */  
+{
+  ELog::RegMethod RegA("inputParamSupport[F]","getNamedObjectsWithMat");
+
+  const std::set<int> cellNumbers=
+    mainSystem::getNamedCellsWithMat(System,IParam,keyItem,
+				     setIndex,index,matName,errStr);
+
+  std::set<const MonteCarlo::Object*> objCells;
+  for(const int CN : cellNumbers)
+    {
+      const MonteCarlo::Object* OPtr=System.findObject(CN);
+      objCells.emplace(OPtr);
+    }
+
+  return objCells;
 }
 
 std::set<MonteCarlo::Object*>
@@ -398,11 +473,10 @@ getNamedObjects(const Simulation& System,
 {
   ELog::RegMethod RegA("inputParamSupport[F]","getNamedObjects");
 
-  const std::vector<int> Cells=
+  const std::set<int> Cells=
     getNamedCells(System,IParam,keyItem,setIndex,index,errStr);
 
   std::set<MonteCarlo::Object*> outObjects;
-    
 
   const Simulation::OTYPE& CellObjects=System.getCells();
   // Special to set cells in OBJECT  [REMOVE]
@@ -412,8 +486,7 @@ getNamedObjects(const Simulation& System,
 	CellObjects.find(CN);
       if (mc!=CellObjects.end())
 	outObjects.emplace(mc->second);
-    }
-  
+    }  
   
   return outObjects;
 }

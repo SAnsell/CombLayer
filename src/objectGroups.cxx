@@ -788,9 +788,9 @@ objectGroups::getLastCell(const std::string& objName) const
   return (mc==regionMap.end()) ? 0 : mc->second.getLast();
 }
 
-
-std::vector<int>
-objectGroups::getObjectRange(const std::string& objName) const
+bool
+objectGroups::addObjectRange(std::set<int>& cellSet,
+			     const std::string& objName) const
   /*!
     Calculate the object cells range based on the name
     Processes down to cellMap items if objName is of the 
@@ -800,11 +800,12 @@ objectGroups::getObjectRange(const std::string& objName) const
     - objectName             :: cells in FixedComp
     - frontName:ZONE        :: Cells matching front part of the object name  
 
+    \param cellVec :: vector to add additional cells to
     \param objName :: Object name
-    \return vector of items
+    \return true if at least one cell was added (0 on error)
   */
 {
-  ELog::RegMethod RegA("objectGroups","getObjectRange");
+  ELog::RegMethod RegA("objectGroups","addObjectRange");
 
   const std::vector<std::string> Units=
     StrFunc::StrSeparate(objName,":");
@@ -824,9 +825,12 @@ objectGroups::getObjectRange(const std::string& objName) const
       if (cellName=="ZONE")
 	{
 	  const groupRange zoneGroup=getZoneGroup(itemName);
-	  return zoneGroup.getAllCells();
+	  const std::vector<int> allCells=zoneGroup.getAllCells();
+	  std::copy(allCells.begin(),allCells.end(),
+		    std::inserter(cellSet,cellSet.begin()));
+	  
+	  return 1; 
 	}
-
       if (CPtr)
 	{
 	  if (Units.size()==3)   // CellMap : Name : Index
@@ -835,18 +839,22 @@ objectGroups::getObjectRange(const std::string& objName) const
 	      if(!StrFunc::convert(Units[2],cellIndex))
 		throw ColErr::InContainerError<std::string>
 		  (objName,"CellMap:cellName:Index");
-	      return std::vector<int>({CPtr->getCell(cellName,cellIndex)});
+	      const std::vector<int> allCells
+		({CPtr->getCell(cellName,cellIndex)});
+	      std::copy(allCells.begin(),allCells.end(),
+			std::inserter(cellSet,cellSet.begin()));
+	      return 1; 
 	    }
 
 	  // case 2: CellMap : Name
 	  const std::vector<int> Out=CPtr->getCells(cellName);
 	  if (!Out.empty())
-	    return Out;
+	    {
+	      std::copy(Out.begin(),Out.end(),
+			std::inserter(cellSet,cellSet.begin()));
+	      return 1;
+	    }
 	}
-
-      
-    ELog::EM<<"DDDDDD == "<<cellName<<ELog::endCrit;
-
       
       // FIXED COMP [index :: cell index offset]
       if (Units.size()==2) 
@@ -856,7 +864,10 @@ objectGroups::getObjectRange(const std::string& objName) const
 	      hasObject(itemName))
 	    {
 	      const groupRange& fcGroup=getGroup(itemName);
-	      return std::vector<int>({ fcGroup.getCellIndex(index) });
+	      const std::vector<int> allCells({ fcGroup.getCellIndex(index) });
+	      std::copy(allCells.begin(),allCells.end(),
+			std::inserter(cellSet,cellSet.begin()));
+	      return 1;	      
 	    }
 	}
     }
@@ -870,22 +881,27 @@ objectGroups::getObjectRange(const std::string& objName) const
       const std::string BName=objName.substr(pos+1);
       if (!StrFunc::convert(AName,ANum) ||
           !StrFunc::convert(BName,BNum) )
-        throw ColErr::InContainerError<std::string>
-          (objName,"objectName does not convert to numbers");
-      
+	return -1;
+      //throw ColErr::InContainerError<std::string>
+      //  (objName,"objectName does not convert to numbers");
+
+            
       if (ANum>BNum)
         std::swap(ANum,BNum);
       std::vector<int> Out;
       for(int index=ANum;index<BNum;index++)
 	if (isActive(index))
-	  Out.push_back(index);
-
-      return Out;
+	  cellSet.insert(index);
+	    
+      return 1;
     }
-
   // SPECIALS:
   if (objName=="All" || objName=="all")
-    return std::vector<int>(activeCells.begin(),activeCells.end());
+    {
+      std::copy(activeCells.begin(),activeCells.end(),
+		std::inserter(cellSet,cellSet.begin()));
+      return 1;
+    }
 
   // FixedComp  -- All
   if (Units.size()==1)
@@ -893,9 +909,36 @@ objectGroups::getObjectRange(const std::string& objName) const
       if (hasObject(objName))
 	{
 	  const groupRange& fcGroup=getGroup(objName);
-	  return fcGroup.getAllCells();
+	  const std::vector<int> allCells=fcGroup.getAllCells();
+	  std::copy(allCells.begin(),allCells.end(),
+		    std::inserter(cellSet,cellSet.begin()));
+	  return  1;
 	}
     }
+
+  return 0;  
+}
+  
+std::set<int>
+objectGroups::getObjectRange(const std::string& objName) const
+  /*!
+    Calculate the object cells range based on the name
+    Processes down to cellMap items if objName is of the 
+    form ::
+
+    - objecName:cellMapName  :: cells in cellmap object
+    - objectName             :: cells in FixedComp
+    - frontName:ZONE        :: Cells matching front part of the object name  
+
+    \param objName :: Object name
+    \return set of items
+  */
+{
+  ELog::RegMethod RegA("objectGroups","getObjectRange");
+
+  std::set<int> cellSet;
+  if (addObjectRange(cellSet,objName))
+    return cellSet;
 
   throw ColErr::InContainerError<std::string>
     (objName,"objectName does not convert to cells");  

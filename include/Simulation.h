@@ -161,7 +161,8 @@ class Simulation : public objectGroups
   int removeComplements(); 
 
   int populateCells();  
-  int populateCells(const std::vector<int>&);  
+  template<typename T> int populateCells(const T&);
+  
 
   int calcVertex(const int); 
   void calcAllVertex();
@@ -192,6 +193,9 @@ class Simulation : public objectGroups
   std::map<int,const MonteCarlo::Material*>
     getOrderedMaterial() const;
 
+  std::set<int> getObjectRangeWithMat(const std::string&,
+				      const std::string&) const;
+  
   int removeDeadSurfaces(); 
  
   virtual void removeCell(const int);

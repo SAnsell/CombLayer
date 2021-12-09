@@ -124,7 +124,8 @@ class objectGroups
 
   int getFirstCell(const std::string&) const;
   int getLastCell(const std::string&) const;
-  std::vector<int> getObjectRange(const std::string&) const;
+  bool addObjectRange(std::set<int>&,const std::string&) const;
+  std::set<int> getObjectRange(const std::string&) const;
 
   const groupRange& getGroup(const std::string&) const;
   groupRange getZoneGroup(const std::string&) const;

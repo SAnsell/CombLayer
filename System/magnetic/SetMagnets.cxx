@@ -207,7 +207,7 @@ setDefMagnets(SimTYPE& System)
 		{
 		  if (System.builtFCName(Item))
 		    {
-		      const std::vector<int> CellNumbers=
+		      const std::set<int> CellNumbers=
 			System.getObjectRange(Item);
 		      for(const int CN : CellNumbers)
 			{

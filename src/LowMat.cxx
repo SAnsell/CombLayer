@@ -77,7 +77,7 @@ LowMat::getID(const size_t Z,const size_t iso)
 	 { 5010, {5, 10, 296.0, "BORON-10"} },
 	 { 5011, {5, 11, 296.0, "BORON-11"} },
 	 {    5, {5, -2, 296.0, "BORON"} }, 
-	 { 6012, {6, 12, 296.0, "CARBON"} },
+	 { 6012, {6, -2, 296.0, "CARBON"} },
 	 {    6, {6, -2, 296.0, "CARBON"} },   // this may not work
 	 {    7, {7, -2, 296.0, "NITROGEN"} },
 	 { 8016, {8, 16, 296.0, "OXYGE-16"} },

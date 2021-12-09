@@ -3,7 +3,7 @@
  
  * File:   test/testTally.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 #include <cmath>
 #include <vector>
 #include <list>
+#include <set>
 #include <map>
 #include <stack>
 #include <string>

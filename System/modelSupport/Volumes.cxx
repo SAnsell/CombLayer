@@ -3,7 +3,7 @@
  
  * File:   process/Volumes.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -116,7 +116,7 @@ populateCells(const Simulation& System,
 	  std::vector<int> CNumbers;
 	  for(size_t j=1;j<NItems;j++)
 	    {
-	      const std::vector<int> CNumPlus=
+	      const std::set<int> CNumPlus=
 		System.getObjectRange(CStr[j]);
 	      if (CNumPlus.empty())
 		throw ColErr::InContainerError<std::string>

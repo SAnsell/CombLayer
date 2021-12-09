@@ -115,8 +115,8 @@ resnucConstruct::processResNuc(SimFLUKA& System,
   /*!
     Add TRACK tally (s) as needed
     - Input:
-    -- FixedComp/CellMap name 
-    -- cellA  
+    -- FixedComp/CellMap name {mat}
+    -- cellNumber ... cellNumber
     \param System :: SimFLUKA to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
@@ -126,12 +126,17 @@ resnucConstruct::processResNuc(SimFLUKA& System,
 
   const std::string objectName=
     IParam.getValueError<std::string>("tally",Index,1,"tally:objectName");
-
+  const std::string matName=
+    (IParam.itemCnt("tally",Index)>2) ? 
+    IParam.getValue<std::string>("tally",Index,2) :
+    "All";
+  
   if (objectName=="help" ||  objectName=="Help")
     return writeHelp(ELog::EM.Estream());
-  
-  const std::vector<int> cellVec=
-    System.getObjectRange(objectName);
+
+  ELog::EM<<"Mat == "<<matName<<ELog::endDiag;
+  const std::set<int> cellVec=
+    System.getObjectRangeWithMat(objectName,matName);
   
   // This junk gets a good ID + fortranTape number
   int fortranTape(0),ID(0);

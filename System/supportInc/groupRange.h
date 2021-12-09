@@ -3,7 +3,7 @@
  
  * File:   supportInc/groupRange.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,6 +46,7 @@ public:
   groupRange();
   explicit groupRange(const int);
   explicit groupRange(const std::vector<int>&);
+  explicit groupRange(const std::set<int>&);
   groupRange(const int,const int);
   groupRange(const groupRange&);
   groupRange& operator=(const groupRange&);
@@ -65,6 +66,7 @@ public:
   void addItem(const int);
   void addItem(const int,const int);
   void addItem(const std::vector<int>&);
+  void addItem(const std::set<int>&);
   
   void removeItem(const int); 
   void move(const int,const int);

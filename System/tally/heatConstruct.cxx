@@ -3,7 +3,7 @@
  
  * File:   tally/heatConstruct.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,35 +86,22 @@ heatConstruct::processHeat(SimMCNP& System,
 				     "Insufficient items for tally");
   // PARTICLE TYPE
   const std::string PType(IParam.getValue<std::string>("tally",Index,1)); 
-  const std::string MType(IParam.getValue<std::string>("tally",Index,2));
+  const std::string matType(IParam.getValue<std::string>("tally",Index,2));
   const std::string cellKey(IParam.getValue<std::string>("tally",Index,3)); 
 
-  // Get Material number:
-  int matN(0);
-  if (!StrFunc::convert(MType,matN))
-    {
-      if (MType=="All" || MType=="all")
-	matN=-1;
-      else if (MType=="AllVoid" || MType=="allVoid")
-	matN=-2;
-      else
-	matN=ModelSupport::DBMaterial::Instance().getIndex(MType);
-    }
-
-  const std::vector<int> cells=
-    objectSupport::getCellSelection(System,matN,cellKey);
-  if (cells.empty())
-    throw ColErr::InContainerError<std::string>
-      (cellKey+":"+StrFunc::makeString(MType),"cell/mat not present in model");
-
+  const std::set<int> cells=
+    getNamedCellsWithMat(System,IParam,"tally",
+			Index,3,matType,
+			"cellKey+"+matType+"cell/mat not present in model");
 
   const int nTally=System.nextTallyNum(6);
+
   tallySystem::addF6Tally(System,nTally,PType,cells);
   tallySystem::Tally* TX=System.getTally(nTally); 
   TX->setPrintField("e f");
   const std::string Comment=
-    "tally: "+StrFunc::makeString(nTally)+
-    " mat : "+StrFunc::makeString(matN)+":"+
+    "tally: "+std::to_string(nTally)+
+    " mat : "+matType+":"+
     cellKey;
   TX->setComment(Comment);
 

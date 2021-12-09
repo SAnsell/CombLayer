@@ -98,7 +98,7 @@ forkHoles::populate(const FuncDataBase& Control)
   if (nForks)
     {
       forkWall=Control.EvalDefVar<std::string>
-	(masterName+"ForkWall","Back");
+	(masterName+"Wall","Back");
       if (forkWall!="Back" && forkWall!="Outer" && forkWall!="Ring")
 	ELog::EM<<"ForkWall : "<<forkWall<<ELog::endErr;
 
@@ -133,7 +133,7 @@ forkHoles::createSurfaces(ModelSupport::surfRegister& SMap,
       const Geometry::Vec3D X=FC.getX();
       const Geometry::Vec3D Y=FC.getY();
       const Geometry::Vec3D Z=FC.getZ();
-      
+
       if (forkWall=="Back")
 	{
 	  ModelSupport::buildPlane
@@ -146,9 +146,9 @@ forkHoles::createSurfaces(ModelSupport::surfRegister& SMap,
       else if (forkWall=="Outer" || forkWall=="Ring")
 	{
 	  ModelSupport::buildPlane
-	    (SMap,buildIndex+3001,Origin+Y*(forkYStep-forkLength/2),Y);
+	    (SMap,buildIndex+1,Origin+Y*(forkYStep-forkLength/2),Y);
 	  ModelSupport::buildPlane
-	    (SMap,buildIndex+3002,Origin+Y*(forkYStep+forkLength/2),Y);
+	    (SMap,buildIndex+2,Origin+Y*(forkYStep+forkLength/2),Y);
 	  const HeadRule HR=ModelSupport::getHeadRule
 	       (SMap,buildIndex,"(-1:2)");
 	  if (forkWall=="Outer")

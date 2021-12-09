@@ -47,6 +47,17 @@ groupRange::groupRange(const std::vector<int>& AVec)
   return;
 }
 
+groupRange::groupRange(const std::set<int>& AVec) 
+  /*!
+    Constructor
+    \param AVec :: Vect to set
+  */
+{
+  for(const int I : AVec)
+    addItem(I);
+  return;
+}
+
 groupRange::groupRange(const int LV,const int HV) :
   LowUnit({std::min(LV,HV)}),HighUnit({std::max(LV,HV)})
   /*!
@@ -313,6 +324,18 @@ groupRange::setItems(const std::vector<int>& AVec)
 
 void
 groupRange::addItem(const std::vector<int>& AVec)
+  /*!
+    Add an item if required [uses merge for efficiency]
+    \param AVec :: Item to add
+  */
+{
+  groupRange A(AVec);
+  this->combine(A);
+  return;
+}
+
+void
+groupRange::addItem(const std::set<int>& AVec)
   /*!
     Add an item if required [uses merge for efficiency]
     \param AVec :: Item to add

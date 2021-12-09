@@ -634,7 +634,7 @@ ReactorGrid::getFuelCells(const Simulation& System,
     {
       for(long int j=0;j<static_cast<long int>(NY);j++)
 	{
-	  const std::vector<int> cellVec=
+	  const std::set<int> cellVec=
 	    System.getObjectRange(Grid[i][j]->getItemKeyName());
 	  for(const int index : cellVec)
 	    {
@@ -667,7 +667,7 @@ ReactorGrid::getAllCells(const Simulation& System) const
     {
       for(long int j=0;j<static_cast<long int>(NY);j++)
 	{
-	  const std::vector<int> cellVec=
+	  const std::set<int> cellVec=
 	    System.getObjectRange(Grid[i][j]->getItemKeyName());
 	  for(const int index : cellVec)
 	    {

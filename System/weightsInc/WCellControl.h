@@ -99,11 +99,11 @@ class WCellControl : public WeightControl
 	      WWGWeight&) const;
 		  
   void calcCellTrack(const Simulation&,const Geometry::Vec3D&,
-		     const std::vector<int>&,CellWeight&);
+		     const std::set<int>&,CellWeight&);
   void calcCellTrack(const Simulation&,const Geometry::Plane&,
-		     const std::vector<int>&,CellWeight&);
+		     const std::set<int>&,CellWeight&);
   void calcCellTrack(const Simulation&,const Geometry::Cone&,
-		     const std::vector<int>&,CellWeight&);
+		     const std::set<int>&,CellWeight&);
 
 
  public:

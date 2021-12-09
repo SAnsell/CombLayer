@@ -44,6 +44,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "mathSupport.h"
+#include "support.h"
 #include "version.h"
 #include "Zaid.h"
 #include "MXcards.h"
@@ -417,7 +418,7 @@ Simulation::removeCell(const attachSystem::FixedComp& FC)
   */
 {
   ELog::RegMethod RegItem("Simulation","removeCell(FC)");
-  const std::vector<int> ACells=getObjectRange(FC.getKeyName());
+  const std::set<int> ACells=getObjectRange(FC.getKeyName());
   for(const int CN : ACells)
     {
       removeCell(CN);
@@ -552,6 +553,75 @@ Simulation::getActiveMaterial() const
   return activeMat;
 }
 
+std::set<int>
+Simulation::getObjectRangeWithMat(const std::string& objName,
+				  const std::string& matName) const
+  /*!
+    An extension to getObjectRange from objectGroups 
+    \param objName :: fully reference object name
+      - PartName:ZONE   - all FC that match PartName (start) e.g
+         OpticsBeamLine will match OpticsBeamLineCollA
+	 - FixedComp:Index - fixedComp cellIndex offset cell
+	 - CellMap:Name (:index)
+      - Cellnubmer(s) : Spaced either by , or ranged (M-N)
+     \param matName :: Material Name 
+       - Zaid number
+       - All 
+       - Material name
+   */
+{
+  ELog::RegMethod RegA("Simulation","getObjectRangeWithMat");
+  
+  std::set<int> Cells=this->getObjectRange(objName);
+  if (Cells.empty())
+    return Cells;
+
+  if (matName=="All" || matName=="all")
+    return Cells;
+
+  std::set<int> remove;
+  int zaidNum(-100);
+  if (StrFunc::convert(matName,zaidNum) && zaidNum>0)
+    {
+      std::map<int,int> matZaidCache;  // cell : 0 / 1
+      std::map<int,int>::const_iterator mz;
+      for(const int CN : Cells)
+	{
+	  const MonteCarlo::Object* objPtr=findObject(CN);
+	  const int matID=objPtr->getMatID();
+	  bool hasZaid(0);
+	  mz=matZaidCache.find(matID);
+	  
+	  if (mz==matZaidCache.end())
+	    {
+	      hasZaid=objPtr->getMatPtr()->hasZaid(zaidNum,0,0);
+	      matZaidCache.emplace(matID,hasZaid);
+	    }
+	  else 
+	    hasZaid=mz->second;
+
+	  if (!hasZaid)
+	    remove.emplace(CN);
+	}
+      // MAT NAME
+    } 
+  const int matNum((zaidNum != -100) ? zaidNum :
+    ModelSupport::DBMaterial::Instance().getIndex(matName));
+
+  for(const int CN : Cells)
+    {
+      const MonteCarlo::Object* objPtr=this->findObject(CN);
+      const int matID=objPtr->getMatID();
+      if (matID!=matNum)
+	remove.emplace(CN);
+    }
+
+  // REMOVE DEAD CELLS:
+  for(const int CN : remove)
+    Cells.erase(CN);
+
+  return Cells;
+}
 
 std::map<int,const MonteCarlo::Material*>
 Simulation::getOrderedMaterial() const
@@ -702,8 +772,9 @@ Simulation::populateCells()
   return -retVal;
 }
 
+template<typename T>
 int 
-Simulation::populateCells(const std::vector<int>& cellVec)
+Simulation::populateCells(const T& cellVec)
   /*!
     Place a surface* with each keyN in the cell list 
     Generate the Object map.
@@ -1337,7 +1408,7 @@ Simulation::getCellWithZaid(const size_t zaidNum) const
   */
 {
   ELog::RegMethod RegA("Simulation","getCellWithZaid");
-
+  ELog::EM<<"TO BE DELETED"<<ELog::endErr;
   std::vector<int> cellOrder;
   std::map<int,int> matZaidCache;  // cell : 0 / 1
 
@@ -1567,7 +1638,7 @@ Simulation::setObjectVoid(const std::string& ObjName)
   //   (c) All
   //   (d) Object
   
-  const std::vector<int> cellRange=getObjectRange(ObjName);
+  const std::set<int> cellRange=getObjectRange(ObjName);
   for(const int cellN : cellRange)
     {
       MonteCarlo::Object* QH=findObject(cellN);
@@ -1662,7 +1733,8 @@ Simulation::minimizeObject(const std::string& keyName)
   ELog::RegMethod RegA("Simulation","minimizeObject(keyname)");
 
   int retFlag(0);
-  const std::vector<int> cVec=objectGroups::getObjectRange(keyName);
+  const std::set<int> cVec=objectGroups::getObjectRange(keyName);
+
   for(const int CN : cVec)
     {
       if (minimizeObject(CN))
@@ -1901,3 +1973,13 @@ Simulation::writeVariables(std::ostream& OX,
     }  
   return;
 }
+
+///\cond TEMPLATE
+
+template
+int Simulation::populateCells(const std::vector<int>&);
+
+template
+int Simulation::populateCells(const std::set<int>&);
+
+///\endcond TEMPLATE

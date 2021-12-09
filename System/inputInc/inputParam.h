@@ -62,15 +62,25 @@ getDefNamedAxis(const Simulation&,const inputParam&,
 		const std::string&,const size_t,
 		size_t&,const Geometry::Vec3D&);
   
-std::vector<int>
+std::set<int>
 getNamedCells(const Simulation&,const inputParam&,
 		const std::string&,const long int,
 	      const long int,const std::string&);
 
+std::set<int>
+getNamedCellsWithMat(const Simulation&,const inputParam&,
+		     const std::string&,const long int,const long int,
+		     const std::string&,const std::string&);
+  
 std::set<MonteCarlo::Object*>
 getNamedObjects(const Simulation&,const inputParam&,
 		const std::string&,const long int,
 		const long int,const std::string&);
+
+std::set<const MonteCarlo::Object*>
+getNamedObjectsWithMat(const Simulation&,const inputParam&,
+		       const std::string&,const long int,const long int,
+		       const std::string&,const std::string&);
 /*!
   \class inputParam
   \version 1.0

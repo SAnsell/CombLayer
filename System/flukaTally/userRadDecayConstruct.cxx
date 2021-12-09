@@ -138,8 +138,6 @@ userRadDecayConstruct::processRadDecay(SimFLUKA& System,
 	IParam.getValueError<std::string>("tally",Index,3,"tally:tally-name");
       
       RadPtr->addDetectors(tallyName,timeIndex);
-      ELog::EM<<"Adding " <<tallyName<<ELog::endCrit;
-
     }
   else
     throw ColErr::InContainerError<std::string>(keyName," RadDecy type");
