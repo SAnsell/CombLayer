@@ -279,8 +279,9 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::MagnetM1Generator M1Gen;
   M1Gen.generateBlock(Control,"M1Block");
 
-  setVariable::MagnetU1Generator U1Gen;
+  setVariable::MagnetU1Generator U1Gen;  
   U1Gen.generateBlock(Control,"U1Block");
+
 
   setVariable::EPCombineGenerator EPCGen;
   EPCGen.generatePipe(Control,"EPCombine");

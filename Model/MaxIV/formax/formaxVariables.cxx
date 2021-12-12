@@ -466,6 +466,13 @@ opticsHutVariables(FuncDataBase& Control,
 
   OpticsHutGenerator OGen; 
 
+  OGen.setSkin(0.2);
+  
+  OGen.setBackPlateSize(200.0,200.0,5.0);
+  OGen.setBackLead(9.0);
+  OGen.setWallLead(1.6);
+  OGen.setRoofLead(1.6);
+
   OGen.addHole(Geometry::Vec3D(3.3,0,3.3),3.5);
   OGen.generateHut(Control,hutName,1256.0);
 
@@ -1131,7 +1138,7 @@ FORMAXvariables(FuncDataBase& Control)
   formaxVar::opticsVariables(Control,"Formax");
 
   PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,"FormaxJoinPipeB",21.0);
+  PipeGen.generatePipe(Control,"FormaxJoinPipeB",32.0);
 
   formaxVar::shieldVariables(Control,"Formax");
   

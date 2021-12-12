@@ -45,8 +45,10 @@
 #include "FuncDataBase.h"
 #include "CFFlanges.h"
 
+#include "CorrectorMagGenerator.h"
 #include "DipoleGenerator.h"
 #include "QuadrupoleGenerator.h"
+#include "SexupoleGenerator.h"
 #include "OctupoleGenerator.h"
 
 #include "MagnetU1Generator.h"
@@ -70,6 +72,31 @@ MagnetU1Generator::~MagnetU1Generator()
  */
 {}
 
+void
+MagnetU1Generator::generateComponents(FuncDataBase& Control,
+				      const std::string& keyName) const
+{
+  setVariable::QuadrupoleGenerator QGen;
+  setVariable::SexupoleGenerator SGen;
+  setVariable::CorrectorMagGenerator CMGen;
+  setVariable::DipoleGenerator DGen;
+  
+
+  QGen.generateQuad(Control,keyName+"QFm1",30.0,25.0);
+  SGen.generateHex(Control,keyName+"SFm",50.0,7.5);
+  QGen.generateQuad(Control,keyName+"QFm2",68.0,25.0);
+
+  CMGen.setMagLength(8.0);
+  CMGen.generateMag(Control,keyName+"cMagVA",86.5,1);
+  CMGen.generateMag(Control,keyName+"cMagHA",96.5,1);
+
+  SGen.generateHex(Control,keyName+"SD1",106.5,7.5);
+  DGen.generateDipole(Control,keyName+"DIPm",118.50,60.0);
+  SGen.generateHex(Control,keyName+"SD2",180.0,7.5);
+  return;
+}
+
+  
 void
 MagnetU1Generator::generateBlock(FuncDataBase& Control,
 				 const std::string& keyName) const
@@ -96,8 +123,10 @@ MagnetU1Generator::generateBlock(FuncDataBase& Control,
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"WallMat",wallMat);
 
+  generateComponents(Control,keyName);
   return;
 }
 
+ 
   
 }  // NAMESPACE setVariable

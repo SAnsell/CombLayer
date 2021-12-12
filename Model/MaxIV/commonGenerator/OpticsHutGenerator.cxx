@@ -54,8 +54,9 @@ namespace setVariable
 OpticsHutGenerator::OpticsHutGenerator() :
   height(277.0),outWidth(259.6),
   innerThick(0.3),pbWallThick(1.6),
-  pbBackThick(9.0),pbRoofThick(1.6),
-  outerThick(0.3),
+  pbBackThick(7.0),pbRoofThick(1.6),
+  outerThick(0.3),backPlateThick(5.0),
+  backPlateWidth(120.0),backPlateHeight(120.0),
   innerOutVoid(10.0),outerOutVoid(10.0),backVoid(0.0),
   skinMat("Stainless304"),pbMat("Lead"),
   voidMat("Void")
@@ -110,6 +111,10 @@ OpticsHutGenerator::generateHut(FuncDataBase& Control,
   Control.addVariable(keyName+"OuterOutVoid",outerOutVoid);
   Control.addVariable(keyName+"BackVoid",backVoid);
 
+  Control.addVariable(keyName+"BackPlateThick",backPlateThick);
+  Control.addVariable(keyName+"BackPlateWidth",backPlateWidth);
+  Control.addVariable(keyName+"BackPlateHeight",backPlateHeight);
+    
   for(size_t i=0;i<holeRadius.size();i++)
     {
       const std::string iStr("Hole"+std::to_string(i)); 

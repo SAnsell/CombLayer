@@ -53,7 +53,7 @@ class MagnetU1 :
 {
  private:
 
-    double blockYStep;            ///< Step forward
+  double blockYStep;            ///< Step forward
   double length;                ///< frame length
 
   double outerVoid;             ///< Size of outer void gap
@@ -85,10 +85,15 @@ class MagnetU1 :
   std::shared_ptr<xraySystem::Dipole> DIPm;
   /// Sextupole [small]
   std::shared_ptr<xraySystem::Sexupole> SD2;
+
+  void createUnit(Simulation&,size_t&,
+		  const attachSystem::FixedComp&,
+		  const attachSystem::FixedComp&);
   
   void populate(const FuncDataBase&);
   void createSurfaces();
   void createObjects(Simulation&);
+
   void createLinks();
   void createEndPieces();
 

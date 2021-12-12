@@ -58,6 +58,10 @@ class OpticsHutch :
   double pbRoofThick;           ///< Thickness of lead in Roof
   double outerThick;            ///< Outer wall/roof skin
 
+  double backPlateThick;        ///< Back plate thick
+  double backPlateWidth;        ///< Back plate width
+  double backPlateHeight;       ///< back plate Height
+
   double innerOutVoid;          ///< Extension for inner left void space
   double outerOutVoid;          ///< Extension for outer left void space
   double backVoid;              ///< Extension for outer back void space

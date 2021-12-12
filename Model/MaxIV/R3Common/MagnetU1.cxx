@@ -80,7 +80,7 @@ MagnetU1::MagnetU1(const std::string& Key) :
   SFm(new xraySystem::Sexupole(keyName+"SFm")),
   QFm2(new xraySystem::Quadrupole(keyName+"QFm2")),
   cMagVA(new xraySystem::CorrectorMag(keyName+"cMagVA")),
-  cMagHA(new xraySystem::CorrectorMag(keyName+"cMagJA")),
+  cMagHA(new xraySystem::CorrectorMag(keyName+"cMagHA")),
   SD1(new xraySystem::Sexupole(keyName+"SD1")),
   DIPm(new xraySystem::Dipole(keyName+"DIPm")),
   SD2(new xraySystem::Sexupole(keyName+"SD2"))
@@ -167,6 +167,39 @@ MagnetU1::createSurfaces()
 }
 
 void
+MagnetU1::createUnit(Simulation& System,
+		     size_t& index,
+		     const attachSystem::FixedComp& preUnit,
+		     const attachSystem::FixedComp& mainUnit)
+/*!
+    Create a magnet-magnet units with the intermediate segment
+    (metal etc) between the two components. Both pre and main
+    are expected to have been created.
+    \param System :: Simulation to create objects in
+    \param preUnit :: Pre-uint
+  */
+{
+  ELog::RegMethod RegA("MagnetU1","createUnit");
+
+  HeadRule frontHR,backHR;
+
+  const HeadRule HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
+
+  frontHR=preUnit.getFullRule("back");
+  backHR=mainUnit.getFullRule("front");  
+  makeCell("Seg"+std::to_string(index++),
+	   System,cellIndex++,wallMat,0.0,HR*frontHR*backHR);
+
+  frontHR=mainUnit.getFullRule("#front");
+  backHR=mainUnit.getFullRule("#back");
+  makeCell("Seg"+std::to_string(index++),
+	   System,cellIndex++,wallMat,0.0,HR*frontHR*backHR);
+
+  return;
+}
+  
+
+void
 MagnetU1::createObjects(Simulation& System)
   /*!
     Builds all the objects
@@ -183,9 +216,37 @@ MagnetU1::createObjects(Simulation& System)
   makeCell("Outer",System,cellIndex++,wallMat,0.0,HR);
   
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -14 15 -16 ");
-
-  ELog::EM<<"HERE "<<HR<<ELog::endDiag;
   addOuterSurf("Main",HR);
+  
+  QFm1->createAll(System,*this,0);
+  SFm->createAll(System,*this,0);
+  QFm2->createAll(System,*this,0);
+  cMagVA->createAll(System,*this,0);
+  cMagHA->createAll(System,*this,0);
+  
+  backHR=QFm1->getFullRule(1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1  3 -4 5 -6");
+  makeCell("Seg1",System,cellIndex++,wallMat,0.0,HR*backHR);  
+
+  frontHR=backHR.complement();
+  backHR=QFm1->getFullRule(-2);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
+  makeCell("Seg2",System,cellIndex++,wallMat,0.0,HR*frontHR*backHR);
+  QFm1->insertInCell(System,getCell("Seg2"));
+
+  size_t segIndex(3);
+  createUnit(System,segIndex,*QFm1,*SFm);
+  SFm->insertInCell(System,getCell("Seg4"));
+
+  createUnit(System,segIndex,*SFm,*QFm2);
+  QFm2->insertInCell(System,getCell("Seg6"));
+
+  createUnit(System,segIndex,*QFm2,*cMagVA);
+  cMagVA->insertInCell(System,getCell("Seg8"));
+  createUnit(System,segIndex,*cMagVA,*cMagHA);
+  cMagHA->insertInCell(System,getCell("Seg10"));
+
+
 
   return;
 }

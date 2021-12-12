@@ -128,6 +128,7 @@ OpticsStepHutch::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+224,SPoint,X);
   SPoint+=X*outerThick;
   ModelSupport::buildPlane(SMap,buildIndex+234,SPoint,X);
+
   
   return;
 }
@@ -165,13 +166,13 @@ OpticsStepHutch::createObjects(Simulation& System)
 
   if (innerOutVoid>Geometry::zeroTol)
     {  
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 3 -1003 -6 ");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-112 3 -1003 -6 ");
       makeCell("WallVoid",System,cellIndex++,voidMat,0.0,HR*floor*frontWall);
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 1003 -6 (-204:-202)");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-112 1003 -6 (-204:-202)");
     }
   else
     {
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 3 -6 (-204:-202)");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-112 3 -6 (-204:-202)");
     }
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*floor*frontWall*sideCut);
 
@@ -189,8 +190,9 @@ OpticsStepHutch::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-22 -23 33 -26");
   makeCell("OuterWall",System,cellIndex++,skinMat,0.0,
 	   HR*floor*frontWall*forkWallOuter);
-
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"2 -12 13 -6 -204");
+  
+  HR=ModelSupport::getSetHeadRule
+    (SMap,buildIndex,"2 -12 13 -204 -6 (-103:104:-105:106)");
   makeCell("BackIWall",System,cellIndex++,skinMat,0.0,
 	   HR*floor*holeCut*forkWallBack);
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"12 -22 23 -16 -214");
@@ -227,11 +229,23 @@ OpticsStepHutch::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"222 -232 234 234 -36");
   makeCell("flatOWall",System,cellIndex++,skinMat,0.0,HR*floor*sideWall);
 
+  // Back plate:
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"102 -12 103 -104 105 -106");
+  makeCell("BackPlate",System,cellIndex++,pbMat,0.0,HR*holeCut);
+
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"112 -102 103 -104 105 -106");
+  makeCell("BackPlateSkin",System,cellIndex++,skinMat,0.0,HR*holeCut);
+  
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,
+				  "112 -2 3 -204 (-103:104:-105:106)");
+  makeCell("BackPlateVoid",System,cellIndex++,voidMat,0.0,HR*floor);
+
+  
   // Outer void for pipe(s)
   BI=buildIndex;
   for(size_t i=0;i<holeRadius.size();i++)
     {
-      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,BI," 2 -32 -107");
+      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,BI," 112 -32 -107");
       makeCell("ExitHole",System,cellIndex++,voidMat,0.0,HR);
       BI+=100;
     }

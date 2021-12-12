@@ -48,6 +48,10 @@ class OpticsHutGenerator
   double pbBackThick;           ///< Thickness of lead in back plate
   double pbRoofThick;           ///< Thickness of lead in Roof
   double outerThick;            ///< Outer wall/roof skin
+  
+  double backPlateThick;        ///< Back plate thick
+  double backPlateWidth;        ///< Back plate width
+  double backPlateHeight;       ///< back plate height
 
   double innerOutVoid;          ///< Extension for inner left void space
   double outerOutVoid;          ///< Extension for outer left void space
@@ -75,6 +79,10 @@ class OpticsHutGenerator
   void setRoofLead(const double T) { pbRoofThick=T; }
   void setWallLead(const double T) { pbWallThick=T; }
   void setBackExt(const double T) { backVoid=T; }
+
+  /// Set back plate [must be smaller than back wall]
+  void setBackPlateSize(const double W,const double H,const double T)
+  { backPlateWidth=W;backPlateHeight=H;backPlateThick=T; }
 
   void addHole(const Geometry::Vec3D&,const double);
   

@@ -109,7 +109,11 @@ OpticsHutch::populate(const FuncDataBase& Control)
   pbBackThick=Control.EvalVar<double>(keyName+"PbBackThick");
   pbRoofThick=Control.EvalVar<double>(keyName+"PbRoofThick");
   outerThick=Control.EvalVar<double>(keyName+"OuterThick");
-  
+
+  backPlateThick=Control.EvalVar<double>(keyName+"BackPlateThick");
+  backPlateWidth=Control.EvalVar<double>(keyName+"BackPlateWidth");
+  backPlateHeight=Control.EvalVar<double>(keyName+"BackPlateHeight");
+    
   innerOutVoid=Control.EvalDefVar<double>(keyName+"InnerOutVoid",0.0);
   outerOutVoid=Control.EvalDefVar<double>(keyName+"OuterOutVoid",0.0);
   backVoid=Control.EvalDefVar<double>(keyName+"BackVoid",0.0);
@@ -196,6 +200,16 @@ OpticsHutch::createSurfaces()
     SurfMap::makePlane("backVoid",SMap,buildIndex+42,
 		       Origin+Y*(length+steelThick+pbBackThick+backVoid),Y);
 
+
+  ModelSupport::buildPlane(SMap,buildIndex+102,
+		      Origin+Y*(length+innerThick-backPlateThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+112,
+		      Origin+Y*(length-backPlateThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(backPlateWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(backPlateWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(backPlateHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(backPlateWidth/2.0),Z);
+  
   int BI(buildIndex);
   for(size_t i=0;i<holeRadius.size();i++)
     {
@@ -248,13 +262,13 @@ OpticsHutch::createObjects(Simulation& System)
 
   if (innerOutVoid>Geometry::zeroTol)
     {  
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 3 -1003 -6");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-112 3 -1003 -6");
       makeCell("WallVoid",System,cellIndex++,voidMat,0.0,HR*floor*frontWall);
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 1003 -6");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-112 1003 -6");
     }
   else
     {
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 3 -6");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-112 3 -6");
     }
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*floor*frontWall*sideCut);
 
@@ -270,7 +284,8 @@ OpticsHutch::createObjects(Simulation& System)
 	   HR*floor*frontWall*forkWallOuter);
 
   
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"2 -12 13 -6");
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,
+				  "2 -12 13 -6 (-103:104:-105:106)");
   makeCell("BackIWall",System,cellIndex++,skinMat,0.0,
 	   HR*floor*sideWall*holeCut*forkWallBack);
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"12 -22 23 -16");
@@ -282,7 +297,7 @@ OpticsHutch::createObjects(Simulation& System)
 
   if (backVoid>Geometry::zeroTol)
     {
-      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"32 -42 33 -26 ");
+      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"3 32 -42 33 -26 ");
       makeCell("BackVoid",System,cellIndex++,0,0.0,HR*floor*sideWall);
     }
 
@@ -292,12 +307,26 @@ OpticsHutch::createObjects(Simulation& System)
   makeCell("RoofPbWall",System,cellIndex++,pbMat,0.0,HR*frontWall*sideCut);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-32 33  26 -36");
   makeCell("RoofOuterWall",System,cellIndex++,skinMat,0.0,HR*frontWall*sideCut);
-   
+
+
+  // Back plate:
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"102 -12 103 -104 105 -106");
+  makeCell("BackPlate",System,cellIndex++,pbMat,0.0,HR*holeCut);
+
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"112 -102 103 -104 105 -106");
+  makeCell("BackPlateSkin",System,cellIndex++,skinMat,0.0,HR*holeCut);
+  
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,
+				  "112 -2 3 (-103:104:-105:106)");
+  makeCell("BackPlateVoid",System,cellIndex++,voidMat,0.0,
+	   HR*floor*sideWall);
+  
+  
   // Outer void for pipe(s)
   BI=buildIndex;
   for(size_t i=0;i<holeRadius.size();i++)
     {
-      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,BI,"2 -32 -107M");
+      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,BI,"112 -32 -107M");
       makeCell("ExitHole",System,cellIndex++,voidMat,0.0,HR);
       BI+=100;
     }
@@ -407,8 +436,9 @@ OpticsHutch::createLinks()
   setConnect(11,Origin,Y);
   setLinkSurf(11,ExternalCut::getValidRule("RingWall",Origin+Y*length));
 
-  setConnect(12,Origin+Y*length,-Y);
-  setLinkSurf(12,-SMap.realSurf(buildIndex+2));
+  // use
+  setConnect(12,Origin+Y*(length-pbBackThick),-Y);
+  setLinkSurf(12,-SMap.realSurf(buildIndex+112));
 
   setConnect(13,Origin-X*outWidth+Y*(length/2.0),X);
   setLinkSurf(13,SMap.realSurf(buildIndex+3));

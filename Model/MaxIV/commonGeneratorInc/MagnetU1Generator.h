@@ -50,7 +50,7 @@ class MagnetU1Generator
 
   double baseThick;              ///< base thickness
   double wallThick;              ///< side wall thickness
-  
+
   std::string voidMat;           ///< void material
   std::string wallMat;           ///< wall material
 
@@ -61,6 +61,7 @@ class MagnetU1Generator
   MagnetU1Generator& operator=(const MagnetU1Generator&);
   virtual ~MagnetU1Generator();
   
+  void generateComponents(FuncDataBase&,const std::string&) const;
   
   virtual void generateBlock(FuncDataBase&,const std::string&) const;
 

@@ -489,7 +489,7 @@ opticsHutVariables(FuncDataBase& Control,
   PortChicaneGenerator PGen;
     
   OGen.setSkin(0.2);
-  OGen.setBackLead(10.0);
+  OGen.setBackLead(7.0);
   OGen.setWallLead(2.0);
   OGen.setRoofLead(2.0);
 
