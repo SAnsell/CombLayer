@@ -250,7 +250,7 @@ opticsHutVariables(FuncDataBase& Control,
   const std::string hutName(preName+"OpticsHut");
   OpticsHutGenerator OGen; 
 
-  OGen.setBackExt(40.0);
+  OGen.setOuterBackExt(40.0);
   OGen.addHole(Geometry::Vec3D(20,0,0),5.0);
   OGen.addHole(Geometry::Vec3D(43,0,0),5.0);
   OGen.generateHut(Control,hutName,1070.0);

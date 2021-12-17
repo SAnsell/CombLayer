@@ -215,14 +215,15 @@ MagnetU1::createObjects(Simulation& System)
     (SMap,buildIndex," 1 -2 13 -14 15 -16 (-3:4:-5:6) ");
   makeCell("Outer",System,cellIndex++,wallMat,0.0,HR);
   
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -14 15 -16 ");
-  addOuterSurf("Main",HR);
   
   QFm1->createAll(System,*this,0);
   SFm->createAll(System,*this,0);
   QFm2->createAll(System,*this,0);
   cMagVA->createAll(System,*this,0);
   cMagHA->createAll(System,*this,0);
+  SD1->createAll(System,*this,0);
+  DIPm->createAll(System,*this,0);
+  SD2->createAll(System,*this,0);
   
   backHR=QFm1->getFullRule(1);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1  3 -4 5 -6");
@@ -243,11 +244,26 @@ MagnetU1::createObjects(Simulation& System)
 
   createUnit(System,segIndex,*QFm2,*cMagVA);
   cMagVA->insertInCell(System,getCell("Seg8"));
+
   createUnit(System,segIndex,*cMagVA,*cMagHA);
   cMagHA->insertInCell(System,getCell("Seg10"));
 
+  createUnit(System,segIndex,*cMagHA,*SD1);
+  SD1->insertInCell(System,getCell("Seg12"));
 
+  createUnit(System,segIndex,*SD1,*DIPm);
+  DIPm->insertInCell(System,getCell("Seg14"));
 
+  createUnit(System,segIndex,*DIPm,*SD2);
+  SD2->insertInCell(System,getCell("Seg16"));
+
+  backHR=SD2->getFullRule(2);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 3 -4 5 -6");
+  makeCell("Seg17",System,cellIndex++,wallMat,0.0,HR*backHR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -14 15 -16 ");
+  addOuterSurf("Main",HR);
+  
   return;
 }
 

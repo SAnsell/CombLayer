@@ -64,7 +64,8 @@ class OpticsHutch :
 
   double innerOutVoid;          ///< Extension for inner left void space
   double outerOutVoid;          ///< Extension for outer left void space
-  double backVoid;              ///< Extension for outer back void space
+  double backVoid;              ///< Extension for inner back void space
+  double outerBackVoid;         ///< Extension for outer back void space
 
   std::vector<Geometry::Vec3D> holeOffset;  ///< hole offsets [y ignored]
   std::vector<double> holeRadius;           ///< hole radii

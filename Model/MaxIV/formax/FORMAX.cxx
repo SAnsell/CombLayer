@@ -133,6 +133,7 @@ FORMAX::build(Simulation& System,
   const std::string exitLink="ExitCentre"+std::to_string(PIndex);
 
   frontBeam->setStopPoint(stopPoint);
+  frontBeam->setCutSurf("Floor",r3Ring->getSurf("Floor"));
   frontBeam->setCutSurf("REWall",-r3Ring->getSurf("BeamInner",PIndex));
   frontBeam->deactivateFM3();
   frontBeam->addInsertCell(r3Ring->getCell("InnerVoid",SIndex));

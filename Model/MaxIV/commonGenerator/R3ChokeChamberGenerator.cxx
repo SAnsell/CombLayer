@@ -68,8 +68,8 @@ R3ChokeChamberGenerator::R3ChokeChamberGenerator() :
   photonXStep(0),
   photonRadius(1.0),photonLength(17.0),
   photonThick(CF40::wallThick),
-  flangePhotonRadius(CF40::flangeRadius),
-  flangePhotonLength(CF40::flangeLength),
+  flangePhotonRadius(CF25::flangeRadius),
+  flangePhotonLength(CF25::flangeLength),
 
   sideRadius(CF63::innerRadius),sideLength(11.5),
   sideThick(CF63::wallThick),

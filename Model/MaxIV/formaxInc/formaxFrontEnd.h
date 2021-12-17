@@ -58,6 +58,7 @@ namespace xraySystem
   class SquareFMask;
   class UTubePipe;
   class Undulator;
+  class ElectrometerBox;
 
     
   /*!
@@ -77,11 +78,16 @@ class formaxFrontEnd :
   std::shared_ptr<xraySystem::UTubePipe> undulatorPipe;
   /// Undulator in vacuum box
   std::shared_ptr<xraySystem::Undulator> undulator;
+  /// Electrometers
+  std::shared_ptr<xraySystem::ElectrometerBox> eBoxA;
+  /// Electrometers
+  std::shared_ptr<xraySystem::ElectrometerBox> eBoxB;
 
   virtual const attachSystem::FixedComp&
     buildUndulator(Simulation&,
 		   const attachSystem::FixedComp&,const long int);
-			      
+
+  virtual void buildExtras(Simulation&);
   virtual void createLinks();
   
  public:

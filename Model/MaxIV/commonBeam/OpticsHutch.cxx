@@ -116,7 +116,7 @@ OpticsHutch::populate(const FuncDataBase& Control)
     
   innerOutVoid=Control.EvalDefVar<double>(keyName+"InnerOutVoid",0.0);
   outerOutVoid=Control.EvalDefVar<double>(keyName+"OuterOutVoid",0.0);
-  backVoid=Control.EvalDefVar<double>(keyName+"BackVoid",0.0);
+  outerBackVoid=Control.EvalDefVar<double>(keyName+"OuterBackVoid",0.0);
 
   double holeRad(0.0);
   size_t holeIndex(0);
@@ -196,9 +196,9 @@ OpticsHutch::createSurfaces()
   SurfMap::makePlane("roof",SMap,buildIndex+36,
 		     Origin+Z*(height+steelThick+pbRoofThick),Z);
 
-  if (backVoid>Geometry::zeroTol)
-    SurfMap::makePlane("backVoid",SMap,buildIndex+42,
-		       Origin+Y*(length+steelThick+pbBackThick+backVoid),Y);
+  if (outerBackVoid>Geometry::zeroTol)
+    SurfMap::makePlane("outerBackVoid",SMap,buildIndex+52,
+		       Origin+Y*(length+steelThick+pbBackThick+outerBackVoid),Y);
 
 
   ModelSupport::buildPlane(SMap,buildIndex+102,
@@ -295,10 +295,10 @@ OpticsHutch::createObjects(Simulation& System)
   makeCell("BackOuterWall",System,cellIndex++,skinMat,0.0,
 	   HR*floor*sideWall*holeCut*forkWallBack);
 
-  if (backVoid>Geometry::zeroTol)
+  if (outerBackVoid>Geometry::zeroTol)
     {
-      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"3 32 -42 33 -26 ");
-      makeCell("BackVoid",System,cellIndex++,0,0.0,HR*floor*sideWall);
+      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"3 32 -52 33 -26 ");
+      makeCell("OuterBackVoid",System,cellIndex++,0,0.0,HR*floor*sideWall);
     }
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 13 6 -16");
@@ -334,9 +334,9 @@ OpticsHutch::createObjects(Simulation& System)
   // EXCLUDE:
   if (outerOutVoid>Geometry::zeroTol)
     {
-      HR=ModelSupport::getAltHeadRule(SMap,buildIndex,"-42A -32B 1033 -33 -36");
+      HR=ModelSupport::getAltHeadRule(SMap,buildIndex,"-52A -32B 1033 -33 -36");
       makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR*floor*frontWall);
-      HR=ModelSupport::getAltHeadRule(SMap,buildIndex,"-42A -32B 1033 -36");
+      HR=ModelSupport::getAltHeadRule(SMap,buildIndex,"-52A -32B 1033 -36");
     }
   else
     HR=ModelSupport::getHeadRule(SMap,buildIndex,"-32 33 -36");

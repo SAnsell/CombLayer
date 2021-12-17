@@ -69,9 +69,12 @@ class ExperimentalHutch :
   std::vector<Geometry::Vec3D> holeOffset;  ///< hole offsets [y ignored]
   std::vector<double> holeRadius;           ///< hole radii
   
-  double innerOutVoid;          ///< Extension for inner void space
-  double outerOutVoid;          ///< Extension for outer void space 
-
+  double innerOutVoid;          ///< Extension for inner void space (side)
+  double outerOutVoid;          ///< Extension for outer void space (side)
+  double frontVoid;             ///< Extension for inner front void space
+  double backVoid;              ///< Extension for inner back void space
+  double outerBackVoid;         ///< Extension for outer back void space
+  
   std::string forkWall;         ///< Wall for forklift [only one allowed]
   double forkXStep;             ///< Step across beamline for forklift hole
   double forkYStep;             ///< Step down beamline for forklift hole
@@ -105,6 +108,8 @@ class ExperimentalHutch :
 
   /// accessor to void mat
   int getInnerMat() const { return voidMat; }
+
+  const PortChicane* getPortItem(const size_t) const;
   
   void splitChicane(Simulation& System,const size_t,const size_t);
   using FixedComp::createAll;

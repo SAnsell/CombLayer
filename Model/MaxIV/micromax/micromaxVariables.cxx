@@ -498,17 +498,14 @@ opticsHutVariables(FuncDataBase& Control,
   OGen.addHole(Geometry::Vec3D(beamMirrorShift,0,0),3.5);
   OGen.generateHut(Control,hutName,1256.0);
 
-  Control.addVariable(hutName+"RingStepLength",840.0);
+  Control.addVariable(hutName+"RingStepLength",992.0);
   Control.addVariable(hutName+"RingStepWidth",200.0);
 
-  Control.addVariable(hutName+"NChicane",3);
+  Control.addVariable(hutName+"NChicane",2);
 
   PGen.setSize(4.0,60.0,40.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane0","Right",-450.0,-5.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane1","Right",-300.0,-5.0);
-
-  PGen.setSize(4.0,30.0,40.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane2","Right",-375.0,-5.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane0","Right",-230.0,-15.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane1","Right",500.0,-15.0);
   
   // Forklift truck holesa
   Control.addVariable(hutName+"ForkNHoles",0);
@@ -543,8 +540,10 @@ exptHutVariables(FuncDataBase& Control,
 
   EGen.setFrontHole(beamXStep-beamOffset,0.0,3.0);
   EGen.addHole(Geometry::Vec3D(beamOffset,0,0),3.5);
+  EGen.setBackExt(10.0);
+  EGen.setFrontExt(10.0);
   EGen.generateHut(Control,hutName,0.0,901.0);
-
+  
   // lead shield on pipe
   Control.addVariable(hutName+"PShieldXStep",beamXStep-beamOffset);
   Control.addVariable(hutName+"PShieldYStep",0.3);
@@ -556,18 +555,25 @@ exptHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"PShieldWallMat","Stainless304");
   Control.addVariable(hutName+"PShieldMat","Lead");
 
-  Control.addVariable(hutName+"NChicane",4);
+  Control.addVariable(hutName+"NChicane",7);
   PortChicaneGenerator PGen;
   PGen.setSize(4.0,60.0,40.0);
   PGen.generatePortChicane(Control,hutName+"Chicane0","Left",-350,-5.0);
   PGen.generatePortChicane(Control,hutName+"Chicane1","Left",-250.0,-5.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane2","Left",-150.0,-5.0);
+  //  PGen.generatePortChicane(Control,hutName+"Chicane2","Left",-150.0,-5.0);
   PGen.generatePortChicane(Control,hutName+"Chicane3","Left",-50.0,-5.0);
+  
+  PGen.generatePortChicane(Control,hutName+"Chicane5","Right",-70.0,-5.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane6","Right",70.0,-5.0);
 
-  // Forklift truck holesa
+  PGen.setSize(4.0,40.0,40.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane2","Left",-150.0,-5.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane4","Back",-180,-5.0);
+
+  // Forklift truck holes
   Control.addVariable(hutName+"ForkNHoles",0);
   Control.addVariable(hutName+"ForkWall","Ring");
-  Control.addVariable(hutName+"ForkYStep",280.0);
+  Control.addVariable(hutName+"ForkYStep",680.0);
   Control.addVariable(hutName+"ForkLength",60.0);
   Control.addVariable(hutName+"ForkHeight",10.0);
   Control.addVariable(hutName+"ForkZStep0",-115.0);
@@ -595,8 +601,12 @@ exptHutBVariables(FuncDataBase& Control,
   const std::string hutName(beamName+"ExptHutB");
 
   EGen.setFrontHole(beamXStep-beamOffset,0.0,3.0);
+  EGen.setFrontExt(10.0);
+  EGen.setOuterBackExt(10.0);
+  EGen.setBackExt(10.0);
   EGen.generateHut(Control,hutName,0.0,478.0);
 
+  
   // lead shield on pipe
   Control.addVariable(hutName+"PShieldXStep",beamXStep-beamOffset);
   Control.addVariable(hutName+"PShieldYStep",0.3);
@@ -608,16 +618,25 @@ exptHutBVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"PShieldWallMat","Stainless304");
   Control.addVariable(hutName+"PShieldMat","Lead");
 
-  Control.addVariable(hutName+"NChicane",2);
+  Control.addVariable(hutName+"NChicane",4);
   PortChicaneGenerator PGen;
-  PGen.setSize(4.0,40.0,30.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane0","Left",150.0,-5.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane1","Left",-170.0,-5.0);
-  /*
-  PGen.generatePortChicane(Control,hutName+"Chicane1",370.0,-25.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane2",-70.0,-25.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane3",-280.0,-25.0);
-  */
+  PGen.setSize(4.0,60.0,30.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane0","Right",-40.0,-5.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane2","Right",80.0,-5.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane3","Back",-120.0,-5.0);
+
+  PGen.setSize(4.0,30.0,30.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane1","Right",20.0,-5.0);
+
+  // Forklift truck holesa
+  Control.addVariable(hutName+"ForkNHoles",3);
+  Control.addVariable(hutName+"ForkWall","Back");
+  Control.addVariable(hutName+"ForkXStep",-223.0);
+  Control.addVariable(hutName+"ForkLength",60.0);
+  Control.addVariable(hutName+"ForkHeight",10.0);
+  Control.addVariable(hutName+"ForkZStep0",-115.0);
+  Control.addVariable(hutName+"ForkZStep1",0.0);
+  Control.addVariable(hutName+"ForkZStep2",80.0);
 
   return;
 }
@@ -1131,7 +1150,7 @@ exptLineBVariables(FuncDataBase& Control,
   Control.addVariable(exptName+"SampleRadius", 5.0); // [2]
   Control.addVariable(exptName+"SampleDefMat", "Stainless304");
   
-  Control.addVariable(exptName+"BeamStopYStep",478.0-12.5);
+  Control.addVariable(exptName+"BeamStopYStep",475.7-12.5);
   Control.addVariable(exptName+"BeamStopRadius",10.0);
   Control.addVariable(exptName+"BeamStopThick",3.0);
   Control.addVariable(exptName+"BeamStopMat","Stainless304");

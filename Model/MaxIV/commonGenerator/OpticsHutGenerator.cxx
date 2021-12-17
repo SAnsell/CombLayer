@@ -57,7 +57,9 @@ OpticsHutGenerator::OpticsHutGenerator() :
   pbBackThick(7.0),pbRoofThick(1.6),
   outerThick(0.3),backPlateThick(5.0),
   backPlateWidth(120.0),backPlateHeight(120.0),
-  innerOutVoid(10.0),outerOutVoid(10.0),backVoid(0.0),
+  innerOutVoid(10.0),outerOutVoid(10.0),
+  frontVoid(0.0),backVoid(0.0),
+  outerBackVoid(0.0),
   skinMat("Stainless304"),pbMat("Lead"),
   voidMat("Void")
   /*!
@@ -81,9 +83,6 @@ OpticsHutGenerator::addHole(const Geometry::Vec3D& HO,
     }
   return;
 }
-  
-  
-  
   
 void
 OpticsHutGenerator::generateHut(FuncDataBase& Control,
@@ -109,7 +108,9 @@ OpticsHutGenerator::generateHut(FuncDataBase& Control,
   Control.addVariable(keyName+"OuterThick",outerThick);
   Control.addVariable(keyName+"InnerOutVoid",innerOutVoid);
   Control.addVariable(keyName+"OuterOutVoid",outerOutVoid);
+  Control.addVariable(keyName+"FrontVoid",frontVoid);
   Control.addVariable(keyName+"BackVoid",backVoid);
+  Control.addVariable(keyName+"OuterBackVoid",outerBackVoid);
 
   Control.addVariable(keyName+"BackPlateThick",backPlateThick);
   Control.addVariable(keyName+"BackPlateWidth",backPlateWidth);

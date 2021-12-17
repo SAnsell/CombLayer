@@ -55,8 +55,9 @@ class OpticsHutGenerator
 
   double innerOutVoid;          ///< Extension for inner left void space
   double outerOutVoid;          ///< Extension for outer left void space
-  double backVoid;              ///< Extension for outer back void space
-
+  double frontVoid;             ///< Extension for inner front void space
+  double backVoid;              ///< Extension for inner back void space
+  double outerBackVoid;         ///< Extension for outer back void space
 
   std::vector<Geometry::Vec3D> holeOffset;  ///< hole offsets [y ignored]
   std::vector<double> holeRadius;           ///< hole radii
@@ -78,7 +79,9 @@ class OpticsHutGenerator
   void setBackLead(const double T) { pbBackThick=T; }
   void setRoofLead(const double T) { pbRoofThick=T; }
   void setWallLead(const double T) { pbWallThick=T; }
+  void setFrontExt(const double T) { frontVoid=T; }
   void setBackExt(const double T) { backVoid=T; }
+  void setOuterBackExt(const double T) { outerBackVoid=T; }
 
   /// Set back plate [must be smaller than back wall]
   void setBackPlateSize(const double W,const double H,const double T)

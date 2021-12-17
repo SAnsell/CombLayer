@@ -69,6 +69,7 @@
 #include "micromaxOpticsLine.h"
 #include "micromaxExptLine.h"
 #include "micromaxExptLineB.h"
+#include "PortChicane.h"
 
 #include "R3Beamline.h"
 #include "MICROMAX.h"
@@ -195,7 +196,7 @@ MICROMAX::build(Simulation& System,
 
   if (stopPoint=="exptHut") return;
 
-  exptBeam->addInsertCell(exptHut->getCell("Void"));
+  exptBeam->setInsertCell(exptHut->getCells("Void"));
   exptBeam->setOuterMat(exptHut->getInnerMat());
   exptBeam->setCutSurf("front",*exptHut,
 			 exptHut->getSideIndex("innerFront"));
@@ -210,13 +211,18 @@ MICROMAX::build(Simulation& System,
   exptHutB->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
   exptHutB->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
   exptHutB->createAll(System,*exptHut,"back");
-
+  // special for portItem transfer
+  const PortChicane* PCPtr=exptHut->getPortItem(4);
+  if (PCPtr)
+    PCPtr->insertInCell
+      ("Main",System,exptHutB->getCell("FrontVoid"));
+  
   joinPipeC->addAllInsertCell(exptBeam->getCell("LastVoid"));  
   joinPipeC->addInsertCell("Main",exptHut->getCell("ExitHole"));
   joinPipeC->setFront(*exptBeam,2);
   joinPipeC->createAll(System,*exptBeam,2);
 
-  exptBeamB->addInsertCell(exptHutB->getCell("Void"));
+  exptBeamB->setInsertCell(exptHutB->getCells("Void"));
   exptBeamB->setOuterMat(exptHutB->getInnerMat());
   exptBeamB->setCutSurf("front",*exptHutB,
 			 exptHutB->getSideIndex("innerFront"));

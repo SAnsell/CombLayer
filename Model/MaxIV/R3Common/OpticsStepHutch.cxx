@@ -237,7 +237,7 @@ OpticsStepHutch::createObjects(Simulation& System)
   makeCell("BackPlateSkin",System,cellIndex++,skinMat,0.0,HR*holeCut);
   
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,
-				  "112 -2 3 -204 (-103:104:-105:106)");
+				  "112 -2 3 -204 -6 (-103:104:-105:106)");
   makeCell("BackPlateVoid",System,cellIndex++,voidMat,0.0,HR*floor);
 
   

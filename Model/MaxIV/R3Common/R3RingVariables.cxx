@@ -60,6 +60,7 @@
 #include "EPSeparatorGenerator.h"
 #include "R3ChokeChamberGenerator.h"
 #include "MagnetM1Generator.h"
+#include "MagnetU1Generator.h"
 
 namespace setVariable
 {  
@@ -419,6 +420,9 @@ R3FrontEndVariables(FuncDataBase& Control,
   
   setVariable::MagnetM1Generator M1Gen;
   M1Gen.generateBlock(Control,frontKey+"M1Block");
+
+  setVariable::MagnetU1Generator U1Gen;
+  U1Gen.generateBlock(Control,frontKey+"U1Block");
 
   ESGen.generatePipe(Control,frontKey+"EPSeparator");
   

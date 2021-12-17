@@ -58,6 +58,7 @@
 
 #include "UTubePipe.h"
 #include "Undulator.h"
+#include "ElectrometerBox.h"
 #include "R3FrontEnd.h"
 
 #include "formaxFrontEnd.h"
@@ -70,7 +71,9 @@ namespace xraySystem
 formaxFrontEnd::formaxFrontEnd(const std::string& Key) :
   R3FrontEnd(Key),
   undulatorPipe(new xraySystem::UTubePipe(newName+"UPipe")),
-  undulator(new xraySystem::Undulator(newName+"Undulator"))   
+  undulator(new xraySystem::Undulator(newName+"Undulator")),
+  eBoxA(new xraySystem::ElectrometerBox(newName+"EBoxA")),
+  eBoxB(new xraySystem::ElectrometerBox(newName+"EBoxB"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -82,6 +85,8 @@ formaxFrontEnd::formaxFrontEnd(const std::string& Key) :
 
   OR.addObject(undulatorPipe);
   OR.addObject(undulator);
+  OR.addObject(eBoxA);
+  OR.addObject(eBoxB);
 }
   
 formaxFrontEnd::~formaxFrontEnd()
@@ -96,11 +101,29 @@ formaxFrontEnd::createLinks()
     Create a front/back link
    */
 {
+  ELog::RegMethod RegA("formaxFrontEnd","createLinks");
+  
   setLinkCopy(0,*undulator,1);
   setLinkCopy(1,*lastComp,2);
   return;
 }
 
+void
+formaxFrontEnd::buildExtras(Simulation& System)
+{
+  ELog::RegMethod RegA("formaxFrontEnd","buildExtra");
+
+  eBoxA->setInsertCell(this->getInsertCells());
+  eBoxA->copyCutSurf("Floor",*this,"Floor");
+  eBoxA->createAll(System,*this,0);
+
+  eBoxB->setInsertCell(this->getInsertCells());
+  eBoxB->copyCutSurf("Floor",*this,"Floor");
+  eBoxB->createAll(System,*this,0);
+
+  return;
+}
+  
 const attachSystem::FixedComp&
 formaxFrontEnd::buildUndulator(Simulation& System,
 			       const attachSystem::FixedComp& preFC,

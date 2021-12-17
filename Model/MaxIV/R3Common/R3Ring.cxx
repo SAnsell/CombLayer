@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   5fR3Common/R3Ring.cxx
+ * File:   R3Common/R3Ring.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -209,7 +209,8 @@ R3Ring::createSurfaces()
 
       // outer wall
       SurfMap::makePlane("BeamOuter",SMap,surfN+1001,APt+XX*ratchetWall,XX);
-      SurfMap::makePlane("FlatOuter",SMap,surfN+1003,APt+YY*outerWall,YY);
+      SurfMap::makePlane
+	("FlatOuter",SMap,surfN+1003,APt+YY*outerWall,YY);
       SurfMap::makePlane("FlatOuterCut",SMap,surfN+1503,
 			 APt-flatYY*outerWallCut,flatYY);
       SurfMap::makePlane("InsulationOuterCut",SMap,surfN+1508,
@@ -220,8 +221,8 @@ R3Ring::createSurfaces()
       SurfMap::makePlane
 	("FlatInsulation",SMap,surfN+1008,APt+YY*insulationDepth,YY);
       SurfMap::makePlane
-	("FlatInsulation",SMap,surfN+1009,APt+YY*(insulationDepth+insulation),
-	 YY);
+	("FlatInsulation",SMap,surfN+1009,
+	 APt+YY*(insulationDepth+insulation),YY);
       surfN+=10;
     }
   
@@ -236,10 +237,10 @@ R3Ring::createFloor(Simulation& System)
    */
 {
   ELog::RegMethod RegA("R3Ring","createFloor");
-  std::string Out;
+  HeadRule HR;
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-9007 -5 15 ");
-  makeCell("Floor",System,cellIndex++,floorMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-9007 -5 15");
+  makeCell("Floor",System,cellIndex++,floorMat,0.0,HR);
   return;
 }
 

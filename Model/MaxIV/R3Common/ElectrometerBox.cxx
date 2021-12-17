@@ -173,7 +173,7 @@ ElectrometerBox::createObjects(Simulation& System)
   const HeadRule floorHR=getRule("Floor");
 
   HeadRule HR;
-
+  ELog::EM<<"Box == "<<keyName<<ELog::endDiag;
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 -6");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*floorHR);
 
@@ -189,7 +189,7 @@ ElectrometerBox::createObjects(Simulation& System)
   makeCell("Shield",System,cellIndex++,skinMat,0.0,HR*floorHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"31 -32 33 -34 -6");
-  addOuterSurf(HR);
+  addOuterSurf(HR*floorHR);
   return;
 }
 

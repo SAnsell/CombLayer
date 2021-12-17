@@ -146,15 +146,14 @@ MLMono::createSurfaces()
 
   // main xstal CENTRE AT ORIGIN 
   const Geometry::Quaternion QXA
-    (Geometry::Quaternion::calcQRotDeg(-thetaA,X));
-
+    (Geometry::Quaternion::calcQRotDeg(-thetaA,Z));
   Geometry::Vec3D PX(X);
   Geometry::Vec3D PY(Y);
   Geometry::Vec3D PZ(Z);
 
+  QXA.rotate(PX);
   QXA.rotate(PY);
-  QXA.rotate(PZ);
-
+  
   const Geometry::Quaternion QYA
     (Geometry::Quaternion::calcQRotDeg(phiA,PY));
 
@@ -214,14 +213,14 @@ MLMono::createSurfaces()
 
   const double yDist=gap/tan(2.0*thetaA*M_PI/180.0);
   const Geometry::Quaternion QXB
-    (Geometry::Quaternion::calcQRotDeg(-thetaB,X));
+    (Geometry::Quaternion::calcQRotDeg(-thetaB,Z));
 
   Geometry::Vec3D QX(-X);
   Geometry::Vec3D QY(Y);
   Geometry::Vec3D QZ(-Z);
 
+  QXB.rotate(QX);
   QXB.rotate(QY);
-  QXB.rotate(QZ);
 
   const Geometry::Quaternion QYB
     (Geometry::Quaternion::calcQRotDeg(phiB,QY));

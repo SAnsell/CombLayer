@@ -79,6 +79,7 @@
 #include "ScreenGenerator.h"
 #include "YagScreenGenerator.h"
 #include "SixPortGenerator.h"
+#include "ElectroBoxGenerator.h"
 #include "BoxJawsGenerator.h"
 #include "PipeShieldGenerator.h"
 #include "ConnectorGenerator.h"
@@ -95,6 +96,7 @@ namespace formaxVar
 {
 
 void undulatorVariables(FuncDataBase&,const std::string&);
+void extraVariables(FuncDataBase&,const std::string&);
 void mirrorMonoPackage(FuncDataBase&,const std::string&);
 void hdcmPackage(FuncDataBase&,const std::string&);
 void diag2Package(FuncDataBase&,const std::string&);
@@ -110,6 +112,25 @@ void exptHutVariables(FuncDataBase&,const std::string&,const double);
 void opticsVariables(FuncDataBase&,const std::string&);
 void exptVariables(FuncDataBase&,const std::string&);
 void shieldVariables(FuncDataBase&,const std::string&);
+  
+
+void
+extraVariables(FuncDataBase& Control,
+	       const std::string& extraKey)
+  /*!
+    Builds the variables for the collimator
+    \param Control :: Database
+    \param extraKey :: prename
+  */
+{
+  ELog::RegMethod RegA("formaxVariables[F]","extraVariables");
+  setVariable::ElectroBoxGenerator EGen;
+
+  
+  EGen.generateBox(Control,extraKey+"EBoxA",-30.0,1240.0);
+  EGen.generateBox(Control,extraKey+"EBoxB",-30.0,1520.0);
+  return;
+}
   
 
 void
@@ -1128,7 +1149,8 @@ FORMAXvariables(FuncDataBase& Control)
   // exit pipe
   setVariable::R3FrontEndVariables(Control,"Formax");
   formaxVar::frontMaskVariables(Control,"FormaxFrontBeam");
-    
+  formaxVar::extraVariables(Control,frontKey);
+  
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); 
   PipeGen.generatePipe(Control,"FormaxJoinPipe",150.0);

@@ -86,13 +86,13 @@ MagnetU1Generator::generateComponents(FuncDataBase& Control,
   SGen.generateHex(Control,keyName+"SFm",50.0,7.5);
   QGen.generateQuad(Control,keyName+"QFm2",68.0,25.0);
 
-  CMGen.setMagLength(8.0);
-  CMGen.generateMag(Control,keyName+"cMagVA",86.5,1);
-  CMGen.generateMag(Control,keyName+"cMagHA",96.5,1);
+  CMGen.setMagLength(10.0);
+  CMGen.generateMag(Control,keyName+"cMagVA",88.5,1);
+  CMGen.generateMag(Control,keyName+"cMagHA",100.5,1);
 
-  SGen.generateHex(Control,keyName+"SD1",106.5,7.5);
-  DGen.generateDipole(Control,keyName+"DIPm",118.50,60.0);
-  SGen.generateHex(Control,keyName+"SD2",180.0,7.5);
+  SGen.generateHex(Control,keyName+"SD1",110.5,7.5);
+  DGen.generateDipole(Control,keyName+"DIPm",122.50,80.0);
+  SGen.generateHex(Control,keyName+"SD2",224.0,7.5);
   return;
 }
 

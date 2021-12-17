@@ -845,10 +845,10 @@ softimaxOpticsLine::buildExtras(Simulation& System,
   joinPipeAB->insertInCell("Main",System,hut.getCell("ExitHole",0));
   joinPipeBB->insertInCell("Main",System,hut.getCell("ExitHole",1));
 
-  joinPipeAB->insertInCell("Main",System,hut.getCell("BackVoid"));
-  joinPipeBB->insertInCell("Main",System,hut.getCell("BackVoid"));
-  joinPipeAB->insertInCell("FlangeB",System,hut.getCell("BackVoid"));
-  joinPipeBB->insertInCell("FlangeB",System,hut.getCell("BackVoid"));
+  joinPipeAB->insertInCell("Main",System,hut.getCell("OuterBackVoid"));
+  joinPipeBB->insertInCell("Main",System,hut.getCell("OuterBackVoid"));
+  joinPipeAB->insertInCell("FlangeB",System,hut.getCell("OuterBackVoid"));
+  joinPipeBB->insertInCell("FlangeB",System,hut.getCell("OuterBackVoid"));
 
   screenA->addAllInsertCell(getCell("RightVoid"));
   screenA->addAllInsertCell(getCell("LeftVoid"));

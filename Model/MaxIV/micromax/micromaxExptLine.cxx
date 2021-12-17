@@ -378,7 +378,7 @@ micromaxExptLine::buildObjects(Simulation& System)
   ELog::RegMethod RegA("micromaxExptLine","buildObjects");
 
   int outerCell;
-  
+
   buildZone.addInsertCells(this->getInsertCells());
   
   // dummy space for first item

@@ -102,6 +102,9 @@ class R3FrontEnd :
   /// First magnetic block out of undulator
   std::shared_ptr<xraySystem::MagnetM1> magBlockM1;
 
+  /// Second magnetic block out of undulator
+  std::shared_ptr<xraySystem::MagnetU1> magBlockU1;
+
   
   std::shared_ptr<xraySystem::EPSeparator> epSeparator;
   
@@ -204,6 +207,8 @@ class R3FrontEnd :
 		   const attachSystem::FixedComp&,
 		   const long int) =0;
 
+  /// Null op for extra components after build
+  virtual void buildExtras(Simulation&) {}
 
   void buildHeatTable(Simulation&);
   void buildApertureTable(Simulation&,

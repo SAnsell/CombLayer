@@ -88,6 +88,7 @@
 #include "R3ChokeChamber.h"
 #include "R3ChokeInsert.h"
 #include "MagnetM1.h"
+#include "MagnetU1.h"
 
 #include "R3FrontEnd.h"
 
@@ -108,6 +109,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
 
   transPipe(new constructSystem::VacuumPipe(newName+"TransPipe")),
   magBlockM1(new xraySystem::MagnetM1(newName+"M1Block")),
+  magBlockU1(new xraySystem::MagnetU1(newName+"U1Block")),
   epSeparator(new xraySystem::EPSeparator(newName+"EPSeparator")),
   chokeChamber(new xraySystem::R3ChokeChamber(newName+"ChokeChamber")),
   chokeInsert(new xraySystem::R3ChokeInsert(newName+"ChokeInsert")),
@@ -169,6 +171,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
 
   OR.addObject(transPipe);
   OR.addObject(magBlockM1);
+  OR.addObject(magBlockU1);
   OR.addObject(epSeparator);
   OR.addObject(chokeChamber);
   OR.addObject(chokeInsert);
@@ -530,9 +533,7 @@ R3FrontEnd::buildObjects(Simulation& System)
 					      
   outerCell=buildZone.createUnit(System,undulatorFC,"back");
 
-  
   magBlockM1->createAll(System,*this,0);
-
   
   transPipe->setCutSurf("front",undulatorFC,2);
   transPipe->setCutSurf("back",*magBlockM1,1);
@@ -635,6 +636,7 @@ R3FrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createUnit(System,*exitPipe,2);
   exitPipe->insertAllInCell(System,outerCell);
 
+
   if (ExternalCut::isActive("REWall"))
     {
       buildZone.setMaxExtent(getRule("REWall"));
@@ -642,6 +644,8 @@ R3FrontEnd::buildObjects(Simulation& System)
     }
 
   buildZone.rebuildInsertCells(System);
+
+  buildExtras(System);
   setCell("MasterVoid",outerCell);  
   lastComp=exitPipe;
   

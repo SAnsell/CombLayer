@@ -110,7 +110,6 @@ userTrackConstruct::processTrack(SimFLUKA& System,
   const std::string particleType=
     IParam.getValueError<std::string>("tally",Index,1,"tally:ParticleType");
 
-  
   const std::string FCname=
     IParam.getValueError<std::string>("tally",Index,2,"tally:Object/Cell");
 
