@@ -560,7 +560,6 @@ exptHutVariables(FuncDataBase& Control,
   PGen.setSize(4.0,60.0,40.0);
   PGen.generatePortChicane(Control,hutName+"Chicane0","Left",-350,-5.0);
   PGen.generatePortChicane(Control,hutName+"Chicane1","Left",-250.0,-5.0);
-  //  PGen.generatePortChicane(Control,hutName+"Chicane2","Left",-150.0,-5.0);
   PGen.generatePortChicane(Control,hutName+"Chicane3","Left",-50.0,-5.0);
   
   PGen.generatePortChicane(Control,hutName+"Chicane5","Right",-70.0,-5.0);
@@ -629,7 +628,7 @@ exptHutBVariables(FuncDataBase& Control,
   PGen.generatePortChicane(Control,hutName+"Chicane1","Right",20.0,-5.0);
 
   // Forklift truck holesa
-  Control.addVariable(hutName+"ForkNHoles",3);
+  Control.addVariable(hutName+"ForkNHoles",0);
   Control.addVariable(hutName+"ForkWall","Back");
   Control.addVariable(hutName+"ForkXStep",-223.0);
   Control.addVariable(hutName+"ForkLength",60.0);
@@ -1080,7 +1079,7 @@ exptLineVariables(FuncDataBase& Control,
   micromaxVar::mirrorBox(Control,preName,"A",-0.146,0.146);
 
   FPGen.setCF<setVariable::CF63>(1.0);
-  FPGen.setWindow(2.0,0.3,"Diamond");
+  FPGen.setWindow(2.0,0.05,"Diamond");
   FPGen.generateFlangePlate(Control,preName+"EndWindow");
     
   Control.addVariable(preName+"SampleYStep", 185.0); // [2]

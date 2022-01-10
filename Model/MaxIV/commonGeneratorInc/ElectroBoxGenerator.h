@@ -39,9 +39,11 @@ class ElectroBoxGenerator
 {
  private:
 
-  double voidWidth;             ///< full width
-  double voidLength;            ///< full length
-  double voidHeight;            ///< full height
+  
+  double elecWidth;             ///< full width
+  double elecLength;            ///< full length
+  double elecHeight;            ///< full height
+  double voidSpace;             ///< drop of electromenter in box
 
   double frontThick;        ///< front lead thickness
   double backThick;         ///< side lead thickness
@@ -49,7 +51,8 @@ class ElectroBoxGenerator
   
   double skinThick;         ///< skin thickness x 2
 
-  std::string voidMat;              ///< void material
+  std::string voidMat;             ///< void material
+  std::string elecMat;             ///< electrometer material
   std::string skinMat;             ///< skin material material
   std::string wallMat;             ///< wall material
 

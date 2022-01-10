@@ -43,9 +43,10 @@ class ElectrometerBox :
 {
  private:
 
-  double voidWidth;             ///< full width
-  double voidLength;            ///< full length
-  double voidHeight;            ///< full height
+  double elecWidth;             ///< full width
+  double elecLength;            ///< full length
+  double elecHeight;            ///< full height
+  double voidSpace;             ///< drop of electromenter in box
 
   double frontThick;        ///< front lead thickness
   double backThick;         ///< side lead thickness
@@ -54,6 +55,7 @@ class ElectrometerBox :
   double skinThick;         ///< skin thickness x 2
 
   int voidMat;              ///< void material
+  int elecMat;              ///< electrometer material
   int skinMat;             ///< skin material material
   int wallMat;             ///< wall material
 

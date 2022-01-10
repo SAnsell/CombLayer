@@ -403,7 +403,10 @@ SimFLUKA::writeMagField(std::ostream& OX) const
 	    {
 	      const std::pair<double,double> magStep=
 		mp.second->getMagStep();
-	      Steps.setValues(mp.second->getName(),magStep.first,magStep.second);
+	      Steps.setValues
+		(mp.second->getName(),magStep.first,magStep.second);
+	      ELog::EM<<"STEP["<<mp.second->getName()<<"] == "
+		      <<Steps<<" :: "<<magStep.second<<ELog::endDiag;
 	    }
 	}
       const std::string fmtSTR("%2 %3 R0 R1 1.0 - ");

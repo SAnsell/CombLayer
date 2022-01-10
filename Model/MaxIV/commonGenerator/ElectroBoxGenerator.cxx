@@ -52,10 +52,11 @@ namespace setVariable
 
 
 ElectroBoxGenerator::ElectroBoxGenerator() :
-  voidWidth(17.0),voidLength(36.0),voidHeight(48.4),
+  elecWidth(17.0),elecLength(36.0),elecHeight(48.4),
+  voidSpace(10.0),
   frontThick(4.0),backThick(4.0),sideThick(4.0),
-  skinThick(0.2),voidMat("Poly"),skinMat("Stainless304"),
-  wallMat("Lead")
+  skinThick(0.2),voidMat("Void"),elecMat("Poly"),
+  skinMat("Stainless304"),wallMat("Lead")
   /*!
     Constructor and defaults
   */
@@ -79,9 +80,10 @@ ElectroBoxGenerator::generateBox(FuncDataBase& Control,
   Control.addVariable(boxName+"XStep",xStep);
   Control.addVariable(boxName+"YStep",yStep);
   
-  Control.addVariable(boxName+"VoidWidth",voidWidth);
-  Control.addVariable(boxName+"VoidLength",voidLength);
-  Control.addVariable(boxName+"VoidHeight",voidHeight);
+  Control.addVariable(boxName+"ElecWidth",elecWidth);
+  Control.addVariable(boxName+"ElecLength",elecLength);
+  Control.addVariable(boxName+"ElecHeight",elecHeight);
+  Control.addVariable(boxName+"VoidSpace",voidSpace);
 
   Control.addVariable(boxName+"FrontThick",frontThick);
   Control.addVariable(boxName+"BackThick",backThick);
@@ -89,6 +91,7 @@ ElectroBoxGenerator::generateBox(FuncDataBase& Control,
   Control.addVariable(boxName+"SkinThick",skinThick);
 
   Control.addVariable(boxName+"VoidMat",voidMat);
+  Control.addVariable(boxName+"ElecMat",elecMat);
   Control.addVariable(boxName+"SkinMat",skinMat);
   Control.addVariable(boxName+"WallMat",wallMat);
  

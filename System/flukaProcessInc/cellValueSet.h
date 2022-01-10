@@ -24,7 +24,7 @@
 
 namespace flukaSystem
 {
-  
+
 /*!
   \class cellValueSet
   \version 1.0
@@ -50,8 +50,8 @@ class cellValueSet
   std::array<double,N> scaleVec;           ///< Scaling for values
   dataTYPE dataMap;                        ///< Values for cell
 
-  std::map<int,std::string> strRegister;   ///< string register
-  std::map<std::string,int> intRegister;   ///< string to int regier
+  std::map<int,std::string> strRegister;   ///< index of strings in datamap
+  std::map<std::string,int> intRegister;   ///< 
   
   bool simpleSplit(std::vector<std::tuple<int,int>>&,
 		   std::vector<valTYPE>&) const;
@@ -93,11 +93,16 @@ class cellValueSet
   void setValues(const std::string&,const std::string&,const std::string&,
 		 const std::string&);
 
+  std::string getFLUKAstring(const int,const std::string&) const;
   void writeFLUKA(std::ostream&,const std::string&) const;
   void writeFLUKA(std::ostream&,const std::vector<int>&,
 		  const std::string&) const;
 
 };
+
+template<size_t N>
+std::ostream&
+operator<<(std::ostream&,const cellValueSet<N>&);
 
 }
 

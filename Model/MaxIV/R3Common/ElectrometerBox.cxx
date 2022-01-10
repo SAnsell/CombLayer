@@ -94,9 +94,11 @@ ElectrometerBox::populate(const FuncDataBase& Control)
 
   FixedRotate::populate(Control);
 
-  voidWidth=Control.EvalVar<double>(keyName+"VoidWidth");
-  voidLength=Control.EvalVar<double>(keyName+"VoidLength");
-  voidHeight=Control.EvalVar<double>(keyName+"VoidHeight");
+  elecWidth=Control.EvalVar<double>(keyName+"ElecWidth");
+  elecLength=Control.EvalVar<double>(keyName+"ElecLength");
+  elecHeight=Control.EvalVar<double>(keyName+"ElecHeight");
+
+  voidSpace=Control.EvalVar<double>(keyName+"VoidSpace");
 
   frontThick=Control.EvalVar<double>(keyName+"FrontThick");
   backThick=Control.EvalVar<double>(keyName+"BackThick");
@@ -104,6 +106,7 @@ ElectrometerBox::populate(const FuncDataBase& Control)
   skinThick=Control.EvalVar<double>(keyName+"SkinThick");
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
+  elecMat=ModelSupport::EvalMat<int>(Control,keyName+"ElecMat");
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
@@ -121,42 +124,45 @@ ElectrometerBox::createSurfaces()
 
   if (!isActive("Floor"))
     {
-      ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(voidHeight/2.0),Z);
+      ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(elecHeight/2.0),Z);
       ExternalCut::setCutSurf("Floor",SMap.realSurf(buildIndex+5));
     }
-  ExternalCut::makeShiftedSurf(SMap,"Floor",buildIndex+6,Z,voidHeight);
+  ExternalCut::makeShiftedSurf(SMap,"Floor",buildIndex+6,Z,elecHeight);
+  if (voidSpace)
+    ExternalCut::makeShiftedSurf(SMap,"Floor",buildIndex+16,Z,
+				 elecHeight-voidSpace);
   
-  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(voidLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(voidLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(voidWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(elecLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(elecLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(elecWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(elecWidth/2.0),X);
 
   ModelSupport::buildPlane
-    (SMap,buildIndex+11,Origin-Y*(skinThick+voidLength/2.0),Y);
+    (SMap,buildIndex+11,Origin-Y*(skinThick+elecLength/2.0),Y);
   ModelSupport::buildPlane
-    (SMap,buildIndex+12,Origin+Y*(skinThick+voidLength/2.0),Y);
+    (SMap,buildIndex+12,Origin+Y*(skinThick+elecLength/2.0),Y);
   ModelSupport::buildPlane
-    (SMap,buildIndex+13,Origin-X*(skinThick+voidWidth/2.0),X);
+    (SMap,buildIndex+13,Origin-X*(skinThick+elecWidth/2.0),X);
   ModelSupport::buildPlane
-    (SMap,buildIndex+14,Origin+X*(skinThick+voidWidth/2.0),X);
+    (SMap,buildIndex+14,Origin+X*(skinThick+elecWidth/2.0),X);
   
   ModelSupport::buildPlane
-    (SMap,buildIndex+21,Origin-Y*(frontThick+skinThick+voidLength/2.0),Y);
+    (SMap,buildIndex+21,Origin-Y*(frontThick+skinThick+elecLength/2.0),Y);
   ModelSupport::buildPlane
-    (SMap,buildIndex+22,Origin+Y*(backThick+skinThick+voidLength/2.0),Y);
+    (SMap,buildIndex+22,Origin+Y*(backThick+skinThick+elecLength/2.0),Y);
   ModelSupport::buildPlane
-    (SMap,buildIndex+23,Origin-X*(sideThick+skinThick+voidWidth/2.0),X);
+    (SMap,buildIndex+23,Origin-X*(sideThick+skinThick+elecWidth/2.0),X);
   ModelSupport::buildPlane
-    (SMap,buildIndex+24,Origin+X*(sideThick+skinThick+voidWidth/2.0),X);
+    (SMap,buildIndex+24,Origin+X*(sideThick+skinThick+elecWidth/2.0),X);
 
   ModelSupport::buildPlane
-    (SMap,buildIndex+31,Origin-Y*(frontThick+2*skinThick+voidLength/2.0),Y);
+    (SMap,buildIndex+31,Origin-Y*(frontThick+2*skinThick+elecLength/2.0),Y);
   ModelSupport::buildPlane
-    (SMap,buildIndex+32,Origin+Y*(backThick+2*skinThick+voidLength/2.0),Y);
+    (SMap,buildIndex+32,Origin+Y*(backThick+2*skinThick+elecLength/2.0),Y);
   ModelSupport::buildPlane
-    (SMap,buildIndex+33,Origin-X*(sideThick+2*skinThick+voidWidth/2.0),X);
+    (SMap,buildIndex+33,Origin-X*(sideThick+2*skinThick+elecWidth/2.0),X);
   ModelSupport::buildPlane
-    (SMap,buildIndex+34,Origin+X*(sideThick+2*skinThick+voidWidth/2.0),X);
+    (SMap,buildIndex+34,Origin+X*(sideThick+2*skinThick+elecWidth/2.0),X);
 
   return;
 }
@@ -173,10 +179,17 @@ ElectrometerBox::createObjects(Simulation& System)
   const HeadRule floorHR=getRule("Floor");
 
   HeadRule HR;
-  ELog::EM<<"Box == "<<keyName<<ELog::endDiag;
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 -6");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*floorHR);
 
+  HR=ModelSupport::getAltHeadRule(SMap,buildIndex,"1 -2 3 -4 -16A -6B");
+  makeCell("Electrometer",System,cellIndex++,elecMat,0.0,HR*floorHR);
+
+  if (voidSpace>Geometry::zeroTol)
+    {
+      HR=ModelSupport::getAltHeadRule(SMap,buildIndex,"1 -2 3 -4 16 -6");
+      makeCell("VoidSpace",System,cellIndex++,voidMat,0.0,HR);
+    }
+  
+  
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14 (-1:2:-3:4) -6");
   makeCell("InnerWall",System,cellIndex++,skinMat,0.0,HR*floorHR);
 
