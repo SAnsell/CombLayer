@@ -624,6 +624,8 @@ SingleItemVariables(FuncDataBase& Control)
 			Geometry::Vec3D(0.0, 0.0, 0.0),
 			Geometry::Vec3D(0,1,0));
 
+
+
   // expt hutch
   exptHutVariables(Control,"",0.0);
   localShieldVariables(Control);
@@ -678,6 +680,12 @@ localShieldVariables(FuncDataBase& Control)
   Control.addVariable("CellLength",100.0);
   Control.addVariable("CellWidth",100.0);
   Control.addVariable("CellHeight",190.0);
+  
+  // PIK fuel rod
+  Control.addVariable("PIKFuelRodLength",10.0);
+  Control.addVariable("PIKFuelRodWidth",5.0);
+  Control.addVariable("PIKFuelRodHeight",20.0);
+  Control.addVariable("PIKFuelRodMainMat","Uranium");
 
   return;
 }

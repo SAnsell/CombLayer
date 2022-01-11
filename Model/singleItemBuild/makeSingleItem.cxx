@@ -140,6 +140,7 @@
 #include "LocalShielding.h"
 #include "WrapperCell.h"
 #include "FlangeDome.h"
+#include "PIKFuelRod.h"
 
 #include "makeSingleItem.h"
 
@@ -189,7 +190,9 @@ makeSingleItem::build(Simulation& System,
       "IonPTube","IonGauge","LBeamStop","MagTube","TriggerTube",
       "BremTube","HPJaws","BoxJaws","HPCombine","ViewTube",
       "DiffPumpXIADP03","CLRTube","ExperimentalHutch",
-      "ConnectorTube","LocalShield","FlangeDome","Help","help"
+      "ConnectorTube","LocalShield","FlangeDome",
+      "PIKFuelRod",
+      "Help","help"
     });
 
   ModelSupport::objectRegister& OR=
@@ -1223,6 +1226,26 @@ makeSingleItem::build(Simulation& System,
 	
 	eh->addInsertCell(voidCell);
 	eh->createAll(System,World::masterOrigin(),0);
+	
+	return;
+      }
+    
+    if (item == "PIKFuelRod")
+      {
+	std::shared_ptr<pikSystem::PIKFuelRod> pfr =
+	  std::make_shared<pikSystem::PIKFuelRod>("PIKFuelRod");
+	
+	// Adds to Object Registry (OR)
+	OR.addObject(pfr);
+	
+	// Inserts into the geometry of Sphere (voidCell number is fixed = 74123)
+	pfr->addInsertCell(voidCell);
+	
+	// Creates the our object  where `World::masterOrigin()` is center of origin of coordinates
+	// and the last argument is a link points. Default is 0 - links to the world coordinates
+	// and Y axis corresponds to the "link points" of our component.
+	// It's non zero if creates the our object respect to the other.
+	pfr->createAll(System,World::masterOrigin(),0);
 	
 	return;
       }
