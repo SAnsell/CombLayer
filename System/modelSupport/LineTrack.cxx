@@ -167,7 +167,6 @@ LineTrack::calculate(const Simulation& ASim)
   int SN=OPtr->isOnSide(InitPt);
   if (SN && OPtr->trackDirection(InitPt,nOut.uVec)<0)
     {
-      MonteCarlo::Object* prevOPtr(OPtr);
       OPtr = OSMPtr->findNextObject(-SN,nOut.Pos,OPtr->getName());
     }
 

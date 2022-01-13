@@ -39,7 +39,7 @@ class objectGroups
 {
  public:
  
-  /// Storage type : name : activeUnits
+  /// Storage type : name : activeUnits (cell numbers)
   typedef std::map<std::string,groupRange> MTYPE;
 
   /// Storage type : cell/cellZone  : name

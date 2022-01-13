@@ -3,7 +3,7 @@
  
  * File:   geometry/SurInter.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -698,7 +698,7 @@ getPoint(const Geometry::Surface* A,
 
   const std::vector<Geometry::Vec3D> Out=
     processPoint(A,B,C);
-  for(const Geometry::Vec3D Pt : Out)
+  for(const Geometry::Vec3D& Pt : Out)
     if (Control->side(Pt)*signV>0) return Pt;
 
   throw ColErr::MisMatch<size_t>(Out.size(),1,"No matching points in Out");

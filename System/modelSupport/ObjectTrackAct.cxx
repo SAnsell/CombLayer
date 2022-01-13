@@ -142,10 +142,11 @@ ObjectTrackAct::getMatSum(const long int objN) const
   
 double
 ObjectTrackAct::getAttnSum(const long int objN,
-			   const double energy) const
+			   const double) const
   /*!
     Calculate the attenuatio of a beam traveling in teh object
     \param objN :: Cell number to use
+    \param energy :: energy of particle
     \return sum of distance in non-void
   */
 {

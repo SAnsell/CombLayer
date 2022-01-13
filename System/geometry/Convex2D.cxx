@@ -3,7 +3,7 @@
  
  * File:   geometry/Convex2D.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
 #include <iostream>
@@ -31,7 +31,6 @@
 #include <algorithm>
 #include <iterator>
 #include <functional>
-#include <boost/bind.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -218,13 +217,18 @@ Convex2D::calcMaxIndex()
   */
 {
   ELog::RegMethod RegItem("Convex2D","calcMaxIndex");
-  
-  std::vector<Vec3D>::iterator vc=
-    max_element(Pts.begin(),Pts.end(),
-		boost::bind(std::greater<double>(),
-			    boost::bind(&Vec3D::Distance,_2,centroid),
-			    boost::bind(&Vec3D::Distance,_1,centroid) ));
-  distIndex=static_cast<size_t>(distance(Pts.begin(),vc));
+
+  size_t distIndex(0);
+  double maxDist(0.0);
+  for(size_t i=0;i<Pts.size();i++)
+    {
+      const double D= centroid.Distance(Pts[i]);
+      if (D>maxDist)
+	{
+	  maxDist=D;
+	  distIndex=i;
+	}
+    }
   return distIndex;
 }
 
@@ -254,10 +258,11 @@ Convex2D::createVertex()
 	}
     }
 
-  sort(VList.begin(),VList.end(),
-       boost::bind(std::less<double>(),
-		   boost::bind(&Vert2D::getAngle,_1),
-		   boost::bind(&Vert2D::getAngle,_2)));
+  std::sort(VList.begin(),VList.end(),
+	    [](const Vert2D& A,const Vert2D& B)
+	    { return (A.getAngle() < B.getAngle()); }
+	    );
+  
   // Add first two points
   std::list<Vert2D> cList;
   std::list<Vert2D>::const_iterator lc;
@@ -343,7 +348,9 @@ Convex2D::getSequence() const
 {
   std::vector<Geometry::Vec3D> Out(VList.size());
   transform(VList.begin(),VList.end(),Out.begin(),
-	    boost::bind(&Vert2D::getV,_1));
+	    [](const Geometry::Vert2D& A)
+	    { return A.getV(); });
+
   return Out;
 }
 
