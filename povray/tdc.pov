@@ -518,7 +518,7 @@ global_settings {
     #declare cameraAngle = 60;
   #break
     #case(strcmp(ITEM,"TDC26ShieldA"))
-    #declare cameraLocation = <-220, 7800, 20>;
+    #declare cameraLocation = <-217, 7800, 30>;
     #declare cameraLookAt   = <-352, 8200, 0>;
     #declare projection = 0;
     #declare cameraAngle = 40;

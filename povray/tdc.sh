@@ -21,13 +21,14 @@ else # last argument is not a segment name but the ITEM, so remove
 fi
 
 void=""
-if [ $ITEM == "SpectrometerDipole" -o $ITEM == "TDC26ShieldA" ]; then # we build the beam line, therefore remove the InjectionHall walls
+if [ $ITEM == "SpectrometerDipole" -o $ITEM == "TDC26ShieldA" -o $ITEM == "TDC1" -o $ITEM == "TDC2" ]; then # we build the beam line, therefore remove the InjectionHall walls
     void=" -v InjectionHallFloorMat Void -v InjectionHallRoofMat Void -v InjectionHallWallMat Void "
     void+=" -v InjectionHallPillarMat Void -v InjectionHallBTGMat Void -v InjectionHallSoilMat Void "
     void+=" -v InjectionHallBackWallMat Void -v InjectionHallWallIronMat Void "
     void+=" -v InjectionHallTHzMat Void -v InjectionHallMidTFrontLShieldMat Void "
     void+=" -v InjectionHallSPFMazeLayerMat Void "
     void+=" -v InjectionHallBDRoofIronMat Void "
+    void+=" -v TDC26ShieldAMainMat Lead "
 fi
 
 if [ "$segments" == "All" -a $ITEM == "SPF32DipoleA" ]; then
