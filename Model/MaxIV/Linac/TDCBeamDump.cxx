@@ -316,7 +316,7 @@ TDCBeamDump::createObjects(Simulation& System)
   makeCell("Bulk",System,cellIndex++,bulkMat,0.0,Out*baseHR);
 
   Out=ModelSupport::getHeadRule(SMap,buildIndex,"12 -22 3 -4 5 -6 ");
-  makeCell("Bulk",System,cellIndex++,bulkMat,0.0,Out*baseHR);
+  makeCell("BulkBack",System,cellIndex++,bulkMat,0.0,Out*baseHR);
 
   Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -1 3 -4 5 -6 7 ");
   makeCell("SkinFront",System,cellIndex++,skinMat,0.0,Out*baseHR*frontHR);
