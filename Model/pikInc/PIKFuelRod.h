@@ -42,9 +42,10 @@ class PIKFuelRod : public attachSystem::ContainedComp,
 {
  private:
 
-  double length;                ///< Total length including void
-  double width;                 ///< Width
   double height;                ///< Height
+  double outerR;                ///< Outer cylinder radius
+  double radius;                ///< tip radius
+  double thickenR;              ///< thicken tadius
 
   int mainMat;                   ///< Main material
 
