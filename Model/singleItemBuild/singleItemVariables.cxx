@@ -683,11 +683,11 @@ localShieldVariables(FuncDataBase& Control)
   
   // PIK fuel rod
   // The values are from "PIK description MCNP model.doc"
-  Control.addVariable("PIKFuelRodRadius",0.0518536);
+  Control.addVariable("PIKFuelRodRadius",0.0518536-0.0168536); // 0.035 [cm]
   Control.addVariable("PIKFuelRodWallThick",0.0168536); // [cm]
-  Control.addVariable("PIKFuelRodOuterRadius",0.2424999); // 0.518707/2.0 - 0.0168536 [cm]
+  Control.addVariable("PIKFuelRodOuterRadius",0.518707/2-0.0168536); // 0.2424999 [cm]
   Control.addVariable("PIKFuelRodHeight",50.0); // 50 [cm]
-  Control.addVariable("PIKFuelRodThickenRadius",0.1); // 0.1 [cm]
+  Control.addVariable("PIKFuelRodThickenRadius",0.1+0.0168536); // 0.1168536 [cm]
   Control.addVariable("PIKFuelRodMainMat","Uranium");
 
   return;
