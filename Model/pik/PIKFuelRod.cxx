@@ -243,16 +243,17 @@ PIKFuelRod::createObjects(Simulation& System)
   makeCell("TipN",System,cellIndex++,mainMat,0.0,Out);
 
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1007 -1 -3 5 -6");
+  //Out=ModelSupport::getComposite(SMap,buildIndex," -1007 -1 -3 -31 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex," (-101:-103:-31) -3 -1 -1007 5 -6");
   makeCell("VoidSW",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1007 -1 4 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex," (-101:104:-41) 4 -1 -1007 5 -6");
   makeCell("VoidNW",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1007 2 4 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex," (102:104:-42) 2 4 -1007 5 -6");
   makeCell("VoidNE",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1007 2 -3 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex," (102:-103:-32) -3 2 -1007 5 -6");
   makeCell("VoidSE",System,cellIndex++,0,0.0,Out);
 
   
@@ -267,6 +268,7 @@ PIKFuelRod::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 2 -3 32 -102 103 5 -6");
   makeCell("MainCellSE",System,cellIndex++,mainMat,0.0,Out);
+
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -1007 5 -6");
   
