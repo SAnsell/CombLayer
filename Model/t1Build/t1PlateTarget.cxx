@@ -3,7 +3,7 @@
  
  * File:   t1Build/t1PlateTarget.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -135,9 +135,7 @@ t1PlateTarget::~t1PlateTarget()
   
 
 void
-t1PlateTarget::addProtonLine(Simulation& System,
-			     const attachSystem::FixedComp& refFC,
-			     const long int index)
+t1PlateTarget::addProtonLine(Simulation& System)
   /*!
     Add a proton void cell
     \param System :: Simualation
@@ -147,7 +145,7 @@ t1PlateTarget::addProtonLine(Simulation& System,
 {
   ELog::RegMethod RegA("t1PlateTarget","addProtonLine");
 
-  PLine->setCutSurf("RefBoundary",refFC.getLinkString(index));
+  PLine->copyCutSurf("RefBoundary",*this,"RefBoundary");
   PLine->createAll(System,*PressVObj,-7);
   createBeamWindow(System,7);
   

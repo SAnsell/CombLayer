@@ -65,12 +65,11 @@ class SimFLUKA : public Simulation
   double geomPrecision;           ///< Precision (*1e-6) to use [def 0.0001]
   bool writeVariable;             ///< Prevent the writing of variables
   bool lowEnergyNeutron;          ///< Low energy neutron assigned
+  bool cernFluka;                 ///< True for cern fluka output
   size_t nps;                     ///< Number of particles
   long int rndSeed;               ///< Random number seed
 
   std::string sourceExtraName;    ///< Extra name if using combined sources
-
-
 
   FlagTYPE FlagItem;              ///< Fluka user flag items
 
@@ -148,6 +147,8 @@ class SimFLUKA : public Simulation
   void setNoVariables() { writeVariable=0; }
   /// no low energy neturon
   void setNoThermal() { lowEnergyNeutron=0; }
+  /// set output to CERN (for low-mat)
+  void setCERNfluka() { cernFluka=1; }
 
   void setDefaultPhysics(const std::string&);
   void setForCinder();

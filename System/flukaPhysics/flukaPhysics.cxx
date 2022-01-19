@@ -3,7 +3,7 @@
 
  * File:   flukaPhysics/flukaPhysics.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -520,10 +520,6 @@ flukaPhysics::writeFLUKA(std::ostream& OX) const
       const int materialFlag(std::get<0>(mc->second));
       const std::string& fmtSTR(std::get<1>(mc->second));
 
-      if (empV.first=="stepsize")
-	{
-	  ELog::EM<<"D: "<<materialFlag<<":"<<fmtSTR<<ELog::endDiag;
-	}
       if (!materialFlag)  // cell
 	empV.second.writeFLUKA(OX,cellVec,fmtSTR);
       else if (materialFlag>0)       // mat

@@ -108,8 +108,7 @@ class Cannelloni :
   void setRefPlates(const int A,const int B) 
     { frontPlate=A; backPlate=B; }
 
-  void addProtonLine(Simulation&,const attachSystem::FixedComp&,
-		     const long int);
+  void addProtonLine(Simulation&);
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
   

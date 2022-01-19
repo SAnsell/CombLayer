@@ -396,7 +396,13 @@ createSimulation(inputParam& IParam,
     {
       masterWrite::Instance().setSigFig(12);
       masterWrite::Instance().setZero(1e-14);
-      SimPtr=new SimFLUKA;
+      const std::string cernFlag=
+	IParam.getDefValue<std::string>("","FLUKA");
+
+      SimFLUKA* SimFPtr=new SimFLUKA;
+      if (cernFlag=="CERN" || cernFlag=="cern")
+	SimFPtr->setCERNfluka();
+      SimPtr=SimFPtr;
     }
   else if (IParam.flag("POVRAY"))
     SimPtr=new SimPOVRay;

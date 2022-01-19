@@ -36,11 +36,17 @@ class LowMat
  private:
 
   static std::tuple<int,int,double,std::string>
-  getID(const size_t,const size_t);
+    getIDcern(const size_t,const size_t);
+  static std::tuple<int,int,double,std::string>
+    getIDinfn(const size_t,const size_t);
+  static std::tuple<int,int,double,std::string>
+    getID(const size_t,const size_t);
 
+  
 public:
 
-  static std::string getFLUKA(const size_t,const size_t,const std::string&);
+  static std::string getFLUKAinfn(const size_t,const size_t,const std::string&);
+  static std::string getFLUKAcern(const size_t,const size_t,const std::string&);
   
 };
 

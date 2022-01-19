@@ -3,7 +3,7 @@
  
  * File:   t1Build/PressVessel.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -550,7 +550,7 @@ PressVessel::addProtonLine(Simulation& System,
      \return proton cell nubmer
    */
 {
-  ELog::RegMethod RegA("PressVessel","addProtonLine");
+  ELog::RegMethod RegA("PressVessel","addProtonLine(string)");
   // Proton flight line:
   std::string Out=ModelSupport::getComposite(SMap,buildIndex, "-21 -27 ");
   Out+=RefSurfBoundary;

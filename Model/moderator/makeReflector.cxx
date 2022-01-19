@@ -258,7 +258,7 @@ makeReflector::createInternalObjects(Simulation& System,
   TarObj->createAll(System,*RefObj,"CornerCentre");
 
   TarObj->addProtonLineInsertCell(RefObj->getCell("Reflector"));
-  TarObj->addProtonLine(System,*RefObj,-7);
+  TarObj->addProtonLine(System);
 
   return;
   

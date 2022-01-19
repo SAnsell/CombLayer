@@ -3,7 +3,7 @@
  
  * File:   monte/Material.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,9 +86,10 @@ Material::Material(const int mcnpNum,const std::string N,
 {} 
 
 Material::Material(const Material& A) :
-  matID(A.matID),Name(A.Name),zaidVec(A.zaidVec),
-  mxCards(A.mxCards),Libs(A.Libs),SQW(A.SQW),
-  atomDensity(A.atomDensity)
+  matID(A.matID),Name(A.Name),
+  atomDensity(A.atomDensity),zaidVec(A.zaidVec),
+  mxCards(A.mxCards),Libs(A.Libs),SQW(A.SQW)
+
   /*!
     Default Copy constructor
     \param A :: Material to copy
@@ -190,7 +191,7 @@ Material::operator+=(const Material& A)
 	}
     }
   // Now add All cards in A, that don't exist in *this.
-  for(const MXTYPE::value_type AMX : A.mxCards)
+  for(const MXTYPE::value_type& AMX : A.mxCards)
     {
       MXTYPE::const_iterator mc=mxCards.find(AMX.first);
       if (mc==mxCards.end())

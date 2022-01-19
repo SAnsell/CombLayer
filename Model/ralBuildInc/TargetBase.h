@@ -62,8 +62,7 @@ class TargetBase :
   virtual ~TargetBase() {}   ///< Destructor
   virtual TargetBase* clone() const =0;
 
-  virtual void addProtonLine(Simulation&,const attachSystem::FixedComp&,
-		     const long int) =0;
+  virtual void addProtonLine(Simulation&) =0;
   virtual void addProtonLineInsertCell(const int);
   virtual void addProtonLineInsertCell(const std::vector<int>&);
 

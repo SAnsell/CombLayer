@@ -43,6 +43,60 @@
 
 
 std::tuple<int,int,double,std::string>
+LowMat::getIDcern(const size_t Z,const size_t iso)
+/*!
+  Set numerical identifiers for the given Z for cern : set getID for
+  system description.
+  \param Z :: atomic number
+  \param iso :: mass number
+  \return lowMat Z,A,name
+ */
+{
+  // List of unique items to INFN data base
+  typedef std::map<size_t,std::tuple<int,int,double,std::string>> mapTYPE;
+  
+  static const mapTYPE mUnit
+	({
+	 {    8, {8, 16, 296.0, "OXYGEN"} }
+	});
+
+  const size_t zaid=Z*1000+iso;
+  mapTYPE::const_iterator mc=mUnit.find(zaid);
+  if (mc==mUnit.end()) mc=mUnit.find(Z);
+  
+  return (mc==mUnit.end()) ? getID(Z,iso) : mc->second;
+}
+
+
+std::tuple<int,int,double,std::string>
+LowMat::getIDinfn(const size_t Z,const size_t iso)
+/*!
+  Set numerical identifiers for the given Z for INFN : set getID for
+  system description.
+  \param Z :: atomic number
+  \param iso :: mass number
+  \return lowMat Z,A,name
+ */
+{
+  // List of unique items to INFN data base
+  typedef std::map<size_t,std::tuple<int,int,double,std::string>> mapTYPE;
+  
+  static const mapTYPE mUnit
+	({
+   	 { 8016, {8, 16, 296.0, "OXYGE-16"} },
+	 {    8, {8, -2, 296.0, "OXYGEN"} },
+  	 {14028, {14, 28, 296.0,"SILIC-28"} },
+ 	  {26056, {26, 56, 296.0,"56-FE"} }
+	});
+
+  const size_t zaid=Z*1000+iso;
+  mapTYPE::const_iterator mc=mUnit.find(zaid);
+  if (mc==mUnit.end()) mc=mUnit.find(Z);
+  
+  return (mc==mUnit.end()) ? getID(Z,iso) : mc->second;
+}
+
+std::tuple<int,int,double,std::string>
 LowMat::getID(const size_t Z,const size_t iso)
 /*!
   Set numerical identifiers for the given Z.
@@ -68,6 +122,8 @@ LowMat::getID(const size_t Z,const size_t iso)
 
   static const mapTYPE mUnit
 	({
+	 { 1002, {1,  2, 296.0, "DEUTERIU"} },
+	 { 1003, {1,  4, 296.0, "TRITIUM"} },
 	 {  1,   {1, -5, 296.0, "HYDROGEN"} },
 	 { 2003, {2,  3, 296.0, "HELIUM-3"} },
 	 { 2004, {2,  3, 296.0, "HELIUM-4"} },
@@ -80,8 +136,6 @@ LowMat::getID(const size_t Z,const size_t iso)
 	 { 6012, {6, -2, 296.0, "CARBON"} },
 	 {    6, {6, -2, 296.0, "CARBON"} },   // this may not work
 	 {    7, {7, -2, 296.0, "NITROGEN"} },
-	 { 8016, {8, 16, 296.0, "OXYGE-16"} },
-	 {    8, {8, -2, 296.0, "OXYGEN"} },
 	 {    9, {9,-2,  296.0, "FLUORINE"} },
 	 {   10, {10,-2, 296.0, "NEON"} },
 	 {   11, {11, 23, 296.0,"SODIUM"} },
@@ -100,7 +154,6 @@ LowMat::getID(const size_t Z,const size_t iso)
 	 {   23, {23, -2, 296.0,"VANADIUM"} },
 	 {   24, {24, -2, 296.0,"CHROMIUM"} },
          {   25, {25, 55, 296.0,"MANGANES"} },
-	 {26056, {26, 56, 296.0,"56-FE"} },
 	 {   26, {26, -2, 296.0,"IRON"} },
 	 {   27, {27, 59, 296.0,"COBALT"} },
 	 {   28, {28, -2, 296.0,"NICKEL"} },
@@ -176,14 +229,46 @@ LowMat::getID(const size_t Z,const size_t iso)
 }
 
 std::string
-LowMat::getFLUKA(const size_t Z,
-		 const size_t iso,
-		 const std::string& matName)
+LowMat::getFLUKAinfn(const size_t Z,
+		     const size_t iso,
+		     const std::string& matName)
   /*!
     Return the WHAT/SDUM string: id1 id2 id3 - - name
+    base on the INFN required iostopes
+    \param Z :: atomic number
+    \param iso :: isotope number
+    \param material name for output
   */
 {
-  const auto& id = getID(Z,iso);
+  const auto& id = getIDinfn(Z,iso);
+
+  std::ostringstream cx;
+  if (std::get<0>(id))
+    {
+      cx<<"LOW-MAT "<<matName<<" "
+	<<std::get<0>(id)<<" "
+	<<std::get<1>(id)<<" "
+	<<std::get<2>(id)
+	<<" - - "<<std::get<3>(id)<<" ";
+    }
+
+  return cx.str();
+}
+
+
+std::string
+LowMat::getFLUKAcern(const size_t Z,
+		     const size_t iso,
+		     const std::string& matName)
+  /*!
+    Return the WHAT/SDUM string: id1 id2 id3 - - name
+    base on the INFN required iostopes
+    \param Z :: atomic number
+    \param iso :: isotope number
+    \param material name for output
+  */
+{
+  const auto& id = getIDcern(Z,iso);
 
   std::ostringstream cx;
   if (std::get<0>(id))

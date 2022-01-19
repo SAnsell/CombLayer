@@ -289,6 +289,7 @@ makeT1Real::buildTarget(Simulation& System,
     {
       TarObj=std::shared_ptr<TMRSystem::TargetBase>
 	(new t1PlateTarget("T1PlateTarget"));
+      TarObj->setCutSurf("RefBoundary",RefObj->getLinkString(-1));
       OR.addObject(TarObj);
       TarObj->addInsertCell(voidCell);
       RefObj->addToInsertChain(*TarObj);
@@ -432,7 +433,7 @@ makeT1Real::build(Simulation& System,
     return;
 
   // Add target flight line
-  TarObj->addProtonLine(System,*RefObj,-1);
+  TarObj->addProtonLine(System); // *RefObj,-1
 
   RefObj->addToInsertChain(*Lh2ModObj);
   Lh2ModObj->createAll(System,*VoidObj,0);

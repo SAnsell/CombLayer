@@ -439,7 +439,7 @@ TS2ModifyTarget::calcConeIntersect(const std::vector<HeadRule>& ConeUnits,
 	  const std::vector<Geometry::Vec3D> Out=
 	    LI.getPoints(SPtr);
 
-	  for(const Geometry::Vec3D ImpactPt : Out)
+	  for(const Geometry::Vec3D& ImpactPt : Out)
 	    {
 	      if (CItem.isValid(ImpactPt,SPtr->getName()))
 		return 1+cIndex;

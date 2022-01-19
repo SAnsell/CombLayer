@@ -3,7 +3,7 @@
  
  * File: snsBuild/targetOuter.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -492,9 +492,7 @@ targetOuter::createLinks()
 
 
 void
-targetOuter::addProtonLine(Simulation& System,
-			   const attachSystem::FixedComp& refFC,
-			   const long int index)
+targetOuter::addProtonLine(Simulation& System)
   /*!
     Add a proton void cell
     \param System :: Simualation
@@ -504,7 +502,7 @@ targetOuter::addProtonLine(Simulation& System,
 {
   ELog::RegMethod RegA("SNStarget","addProtonLine");
 
-  PLine->setCutSurf("RefBoundary",refFC.getLinkString(index));
+  PLine->copyCutSurf("RefBoundary",*this,"RefBoundary");
   PLine->createAll(System,*this,2);
   createBeamWindow(System,1);
 

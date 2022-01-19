@@ -488,14 +488,10 @@ Cannelloni::createInnerCells(Simulation& System)
 }
 
 void
-Cannelloni::addProtonLine(Simulation& System,
-			 const attachSystem::FixedComp& refFC,
-			 const long int index)
+Cannelloni::addProtonLine(Simulation& System)
   /*!
     Add a proton void cell
     \param System :: Simualation
-    \param refFC :: reflector edge
-    \param index :: Index of the proton cutting surface [6 typically (-7)]
    */
 {
   ELog::RegMethod RegA("Cannelloni","addProtonLine");

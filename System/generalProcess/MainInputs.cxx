@@ -120,7 +120,7 @@ createInputs(inputParam& IParam)
   IParam.regDefItem<int>("n","nps",1,10000);
   IParam.regItem("noVariables","noVariables");
   IParam.regFlag("phits","PHITS");
-  IParam.regFlag("fluka","FLUKA");
+  IParam.regItem("fluka","FLUKA");
   IParam.regItem("povray","POVRAY");
   IParam.regDefItem<int>("mcnp","MCNP",1,6);
   IParam.regFlag("Monte","Monte");

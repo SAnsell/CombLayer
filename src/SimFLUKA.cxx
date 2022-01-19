@@ -86,7 +86,7 @@ SimFLUKA::SimFLUKA() :
   Simulation(),
   alignment("*...+.WHAT....+....1....+....2....+....3....+....4....+....5....+....6....+.SDUM"),
   defType("PRECISION"),basicGeom(0),geomPrecision(0.0001),
-  writeVariable(1),lowEnergyNeutron(1),
+  writeVariable(1),lowEnergyNeutron(1),cernFluka(0),
   nps(1000),rndSeed(2374891),
   PhysPtr(new flukaSystem::flukaPhysics()),
   RadDecayPtr(new flukaSystem::radDecay()),
@@ -405,8 +405,6 @@ SimFLUKA::writeMagField(std::ostream& OX) const
 		mp.second->getMagStep();
 	      Steps.setValues
 		(mp.second->getName(),magStep.first,magStep.second);
-	      ELog::EM<<"STEP["<<mp.second->getName()<<"] == "
-		      <<Steps<<" :: "<<magStep.second<<ELog::endDiag;
 	    }
 	}
       const std::string fmtSTR("%2 %3 R0 R1 1.0 - ");
@@ -502,6 +500,11 @@ SimFLUKA::writeElements(std::ostream& OX) const
 	setZA.insert(ZC);
     }
 
+  std::function<std::string(const size_t,const size_t,const std::string&)>
+    lowMatFunc = (cernFluka) ?
+  		  &LowMat::getFLUKAcern :
+  		  &LowMat::getFLUKAinfn;
+
   std::ostringstream cx,lowmat;
   for (const MonteCarlo::Zaid& za : setZA)
     {
@@ -509,7 +512,7 @@ SimFLUKA::writeElements(std::ostream& OX) const
 	{
 	  cx<<"MATERIAL "<<za.getZ()<<". - "<<" 1."
 	    <<" - - "<<za.getIso()<<". "<<za.getFlukaName()<<" ";
-	  lowmat<<LowMat::getFLUKA(za.getZ(),za.getIso(),za.getFlukaName());
+	  lowmat<<lowMatFunc(za.getZ(),za.getIso(),za.getFlukaName());
 	}
     }
 
@@ -545,7 +548,6 @@ SimFLUKA::writeMaterial(std::ostream& OX) const
       if (mp.second->hasMagField())
 	magField=1;
     }
-
   writeElements(OX);
 
   // set ordered otherwize output random [which is annoying]

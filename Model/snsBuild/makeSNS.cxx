@@ -107,6 +107,7 @@ makeSNS::build(Simulation* SimPtr,
 
   attachSystem::addToInsertSurfCtrl(*SimPtr,*refObj,*tarOuterObj);
 
+  tarOuterObj->setCutSurf("RefBoundary",*refObj,-1);
   // LineVoid->createAll(*SimPtr,World::masterOrigin());
   // attachSystem::addToInsertSurfCtrl(*SimPtr,*Hall,*LineVoid);
 

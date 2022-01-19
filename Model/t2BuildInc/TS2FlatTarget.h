@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   buildInc/TS2FlatTarget.h
+ * File:   t2BuildInc/TS2FlatTarget.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -111,9 +111,7 @@ class TS2FlatTarget : public TMRSystem::TargetBase
   void setRefPlates(const int A,const int B) 
     { frontPlate=A; backPlate=B; }
 
-  void addProtonLine(Simulation&,	 
-		     const attachSystem::FixedComp& refFC,
-		     const long int index);
+  void addProtonLine(Simulation&);
   void layerProcess(Simulation&);
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
   
