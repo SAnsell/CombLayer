@@ -405,7 +405,21 @@ createSimulation(inputParam& IParam,
       SimPtr=SimFPtr;
     }
   else if (IParam.flag("POVRAY"))
-    SimPtr=new SimPOVRay;
+    {
+      SimPOVRay* SimPovPtr=new SimPOVRay;
+      const size_t nMat= IParam.setCnt("transmitMat");
+      const std::string matError("Material not given for transmission");
+      const std::string dblError("Value not given for transmission"); 
+      for(size_t i=0;i<nMat;i++)
+	{
+	  const std::string transMat=
+	    IParam.getValueError<std::string>("transmitMat",i,0,matError);
+	  const double V=
+	    IParam.getValueError<double>("transmitMat",i,1,dblError);
+	  SimPovPtr->addTransmission(transMat,V);
+	} 
+      SimPtr=SimPovPtr;
+    }
   else if (IParam.flag("Monte"))
     SimPtr=new SimMonte; 
   else

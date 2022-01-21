@@ -3,7 +3,7 @@
  
  * File:   process/MainInputs.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -122,6 +122,7 @@ createInputs(inputParam& IParam)
   IParam.regFlag("phits","PHITS");
   IParam.regItem("fluka","FLUKA");
   IParam.regItem("povray","POVRAY");
+  IParam.regMulti("transmitMat","transmitMat");
   IParam.regDefItem<int>("mcnp","MCNP",1,6);
   IParam.regFlag("Monte","Monte");
   IParam.regFlag("noThermal","noThermal");
@@ -275,6 +276,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("MCNP","MCNP version");
   IParam.setDesc("FLUKA","FLUKA output");
   IParam.setDesc("POVRAY","PovRay output");
+  IParam.setDesc("transmitMat","Transmission value for povray");
   IParam.setDesc("PHITS","PHITS output");
   IParam.setDesc("Monte","MonteCarlo capable simulation");
   IParam.setDesc("MagStep","Set the min/max step size for magnetics");

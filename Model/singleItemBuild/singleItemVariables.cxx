@@ -448,7 +448,7 @@ SingleItemVariables(FuncDataBase& Control)
 
   // CylGateValve
   setVariable::CylGateValveGenerator GVGen;
-  GVGen.generateGate(Control,"GV",1);
+  GVGen.generateGate(Control,"GV",0);
 
   // CylGateValve
   setVariable::GateValveGenerator CGateGen;

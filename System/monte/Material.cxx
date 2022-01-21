@@ -3,7 +3,7 @@
  
  * File:   monte/Material.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -903,11 +903,13 @@ Material::writeFLUKA(std::ostream& OX) const
 } 
 
 void 
-Material::writePOVRay(std::ostream& OX) const
+Material::writePOVRay(std::ostream& OX,
+		      const double V) const
   /*!
     Write out the information about the material
     in the POV-Ray form
     \param OX :: Output stream
+    \param V :: transmision value
   */
 {
   ELog::RegMethod RegA("Material","writePOVRay");
@@ -919,10 +921,20 @@ Material::writePOVRay(std::ostream& OX) const
   Geometry::Vec3D rgbCol(rgb/0xFFFF,(rgb % 0xFFFF)/0xFF,rgb % 0xFF);
   rgbCol.makeUnit();
 
-  OX<<"#declare mat"<<MW.NameNoDot(Name)<<" = texture {"
-    << " pigment{color rgb<"
-    <<   MW.NumComma(rgbCol)
-    <<"> } };"<<std::endl;
+  if (V>0.0 && V<1.0)
+    {
+      OX<<"#declare mat"<<MW.NameNoDot(Name)<<" = texture {"
+	<< " pigment{color rgb<"
+	<<   MW.NumComma(rgbCol)
+	<<"> transmit "<<V<<"} };"<<std::endl;
+    }
+  else
+   {
+     OX<<"#declare mat"<<MW.NameNoDot(Name)<<" = texture {"
+       << " pigment{color rgb<"
+       <<   MW.NumComma(rgbCol)
+       <<"> } };"<<std::endl;
+   }
   return;
 } 
 
