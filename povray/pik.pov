@@ -1,3 +1,6 @@
+// Usage:
+// povray +W1024 +H1024 +A povray/pik.pov <<< '"FuelRod"'
+
 #version 3.7;
 #include "colors.inc"
 #include "metals.inc"
@@ -6,7 +9,9 @@
 #include "textures.inc"
 #include "shapes3.inc"
 
-#declare view = 0;
+#fopen STDIN "/dev/stdin" read
+#read (STDIN, ITEM)
+
 // PROJECTION:
 // 0=perspective
 // 1=panoramic - good to display whole beam line
@@ -63,11 +68,16 @@ global_settings {
   #end
 }
 
-#switch ( view )
-  #case(0)
+#switch ( 0 )
+  #case(strcmp(ITEM,"Pool"))
     #declare cameraLocation = <900, 1000.0, 0.0>;
     #declare cameraLookAt   = <0, 0, 200>;
     #declare cameraAngle = 70;
+  #break
+  #case(strcmp(ITEM,"FuelRod"))
+    #declare cameraLocation = <2.0, 3.0, 45.0>;
+    #declare cameraLookAt   = <0, 0, 15>;
+    #declare cameraAngle = 10;
   #break
   #else
     #declare cameraLocation = <100, 100, 100>;
