@@ -163,6 +163,7 @@ SimPOVRay::writeMaterial(std::ostream& OX) const
       const std::string matName=mPtr->getName();
       if (ID && writtenMat.find(ID)==writtenMat.end())
 	{
+	  ELog::EM<<"Mat == "<<matName<<ELog::endDiag;
 	  const double transmit=
 	    MapSupport::findDefVal(transmitMap,matName,-1.0);
 	  mPtr->writePOVRay(OX,transmit);

@@ -3,7 +3,7 @@
  
  * File:   test/testConvex2D.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@
 #include <algorithm>
 #include <functional>
 #include <tuple>
+#include <random>
 
 #include <boost/format.hpp>
 
@@ -47,8 +48,6 @@
 #include "testConvex2D.h"
 
 using namespace Geometry;
-
-extern MTRand RNG;
 
 testConvex2D::testConvex2D()
   /*!
@@ -70,17 +69,21 @@ testConvex2D::initConvexPlane(Geometry::Convex2D& A,
 			      const double Width,
 			      const double RFactor)
   /*!
-    Initialize a plane
+    Initialize a plane of random points baed around the 
+    central normal
     \param A :: Convex2D to populate
     \param Origin :: Point on plane						
     \param Normal :: Plane normal
     \param N :: number required
     \param Width :: Spread required
     \param RFactor :: Random factor to add
-  */
+ */
 {
   ELog::RegMethod RegItem("testConvex2D","initConvexPlane");
 
+  std::mt19937 gen(17823);
+  std::normal_distribution<double> RNG(0.0,1.0);
+  
   const Geometry::Vec3D X=Normal.crossNormal();
   const Geometry::Vec3D Y=(Normal*X).unit();
   std::vector<Geometry::Vec3D> Pts;
@@ -88,9 +91,9 @@ testConvex2D::initConvexPlane(Geometry::Convex2D& A,
     {
       // Note the extra unnecessary call to Rand.randNorm
       Pts.push_back(Origin+
-		    X*(RNG.randNorm()*Width)+
-		    Y*(RNG.randNorm()*Width)+
-		    Normal*(RNG.randNorm()*RFactor));
+		    X*(RNG(gen)*Width)+
+		    Y*(RNG(gen)*Width)+
+		    Normal*(RNG(gen)*RFactor));
     }
   A.setPoints(Pts);
   return;
@@ -128,12 +131,16 @@ testConvex2D::initCircle(Convex2D& A,const Geometry::Vec3D& Cent,
       U[2]= -Norm[1]*factor;
     }
   V=Norm*U;
-  std::vector<Geometry::Vec3D> Pts;  
+
+    
+  std::mt19937 gen(17823);
+
+  std::vector<Geometry::Vec3D> Pts;
   for(int i=0;i<N;i++)
     {
       const double angle=i*M_PI*2.0/N;
-      Pts.push_back(Cent+U*RNG.randNorm(Radius*cos(angle),Random)+
-		    V*RNG.randNorm(Radius*sin(angle),Random));
+      std::normal_distribution<double> RNG(Radius*sin(angle),Random);
+      Pts.push_back(Cent+U*RNG(gen)+V*RNG(gen));
     }
   random_shuffle(Pts.begin(),Pts.end());
   A.setPoints(Pts);
@@ -274,6 +281,7 @@ testConvex2D::testMaxElement()
   
   const Geometry::Vec3D Normal(3,4,5);
   const Geometry::Vec3D Orig(0,0,0);
+  // calculate 
   initConvexPlane(A,Orig,Normal,50,10.0,0.0);
   A.calcNormal();
   
