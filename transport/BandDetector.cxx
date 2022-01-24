@@ -29,22 +29,21 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <random>
 #include <boost/format.hpp>
 #include <boost/multi_array.hpp>
 
-#include "MersenneTwister.h"
 #include "RefCon.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "mathSupport.h"
+#include "Random.h"
 #include "Vec3D.h"
 #include "particle.h"
 #include "Detector.h"
 #include "BandDetector.h"
-
-extern MTRand RNG;
 
 namespace Transport
 {
@@ -367,8 +366,8 @@ BandDetector::getRandPos() const
     \return Vector Position
   */
 {
-  return Cent+H*hSize*(0.5-RNG.rand())+
-    V*vSize*(0.5-RNG.rand());
+  return Cent+H*hSize*(0.5-Random::rand())+
+    V*vSize*(0.5-Random::rand());
 }
 
 void

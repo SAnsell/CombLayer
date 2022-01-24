@@ -1885,7 +1885,7 @@ Simulation::prepareWrite()
   
   cellOutOrder.clear();
 
-  for(const std::pair<int,MonteCarlo::Object*>& OVal : OList)
+  for(const std::pair<int,MonteCarlo::Object*> OVal : OList)
     {
       cellOutOrder.push_back(OVal.first);
     }

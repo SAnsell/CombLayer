@@ -3,7 +3,7 @@
  
  * File:   transport/ParticleInObj.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,6 @@
 #include <algorithm>
 #include <stdexcept> 
 
-#include "MersenneTwister.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
@@ -52,7 +51,6 @@
 #include "neutMaterial.h"
 #include "ParticleInObj.h"
 
-extern MTRand RNG;
 
 namespace Transport
 {

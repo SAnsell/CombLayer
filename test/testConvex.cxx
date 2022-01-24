@@ -29,6 +29,7 @@
 #include <string>
 #include <algorithm>
 #include <iterator>
+#include <random>
 #include <boost/format.hpp>
 
 #include "BaseVisit.h"
@@ -37,7 +38,7 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "MersenneTwister.h" 
+#include "Random.h" 
 #include "Vec3D.h"
 #include "Surface.h"
 #include "Quadratic.h"
@@ -48,8 +49,6 @@
 
 #include "testFunc.h"
 #include "testConvex.h"
-
-extern MTRand RNG;
 
 using namespace Geometry;
 
@@ -297,9 +296,9 @@ testConvex::testCube()
       // Test 50 random points
       for(int i=0;i<50;i++)
 	{
-	  const Geometry::Vec3D TPt(RNG.randNorm(0.5,1.0),
-				    RNG.randNorm(0.5,1.0),
-				    RNG.randNorm(-0.5,1.0));
+	  const Geometry::Vec3D TPt(Random::randNorm(0.5,1.0),
+				    Random::randNorm(0.5,1.0),
+				    Random::randNorm(-0.5,1.0));
 	  int flag(0);
 	  if (TPt[0]<0.0 && TPt[0]>1.0) flag++;
 	  if (TPt[1]<0.0 && TPt[1]>1.0) flag++;

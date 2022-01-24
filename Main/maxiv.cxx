@@ -35,7 +35,6 @@
 #include <array>
 
 #include "Exception.h"
-#include "MersenneTwister.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
@@ -58,8 +57,6 @@
 
 #include "DefUnitsMaxIV.h"
 #include "makeMaxIV.h"
-
-MTRand RNG(12345UL);
 
 ///\cond STATIC
 namespace ELog 

@@ -32,15 +32,13 @@
 #include <string>
 #include <algorithm>
 #include <memory>
+#include <random>
 #include <boost/format.hpp>
 
-#include "MersenneTwister.h"
 #include "FileReport.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
 #include "activeFluxPt.h"
-
-extern MTRand RNG;
 
 namespace SDef
 {

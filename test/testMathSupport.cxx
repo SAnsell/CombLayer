@@ -30,13 +30,14 @@
 #include <map>
 #include <algorithm>
 #include <functional>
+#include <random>
 #include <tuple>
 
-#include "MersenneTwister.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
+#include "Random.h"
 #include "mathSupport.h"
 #include "polySupport.h"
 #include "ClebschGordan.h"
@@ -383,11 +384,10 @@ testMathSupport::testIndexSort()
 {
   ELog::RegMethod RegA("testMathSupport","testIndexSort");
   
-  MTRand Rand(123456L);
 
   std::vector<double> V(10);
-  std::generate(V.begin(),V.end(),
-		std::bind<double(MTRand::*)()>(&MTRand::rand,Rand));
+  
+  std::generate(V.begin(),V.end(),[]{ return Random::rand(); });
 
 
   std::vector<size_t> Index(10);
@@ -420,11 +420,9 @@ testMathSupport::testPermSort()
 {
   ELog::RegMethod RegA("testMathSupport","testPermSort");
   
-  MTRand Rand(123456L);
-
   std::vector<double> V(30);
-  std::generate(V.begin(),V.end(),
-  		std::bind<double(MTRand::*)()>(&MTRand::rand,Rand));
+
+  std::generate(V.begin(),V.end(),[]{ return Random::rand(); });
 
   std::vector<size_t> Index=
     mathSupport::sortPermutation(V,[](const double& a,

@@ -40,7 +40,7 @@ my @mainLib=qw( visit src simMC  construct
     transport scatMat endf crystal source monte funcBase log monte
     flukaProcess flukaPhysics flukaTally
     phitsProcess phitsTally phitsSupport 
-    tally geometry mersenne src world work
+    tally geometry src world work
     xml poly support weights
     insertUnit md5 construct modelSupport
     global constructVar physics simMC

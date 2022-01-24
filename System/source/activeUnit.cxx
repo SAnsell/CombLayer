@@ -3,7 +3,7 @@
  
  * File:   source/activeUnit.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,10 +32,11 @@
 #include <string>
 #include <algorithm>
 #include <memory>
+#include <random>
 #include <boost/format.hpp>
 
 #include "Exception.h"
-#include "MersenneTwister.h"
+#include "Random.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
@@ -43,8 +44,6 @@
 #include "Vec3D.h"
 #include "mathSupport.h"
 #include "activeUnit.h"
-
-extern MTRand RNG;
 
 namespace SDef
 {
@@ -205,12 +204,12 @@ activeUnit::writePhoton(std::ostream& OX,const Geometry::Vec3D& Pt,
 {
   boost::format FMT("% 12.6e %|14t| % 12.6e %|28t| % 12.6e");
   boost::format FMTB("% 12.6e %|14t| % 12.6e");
-  const double thetaAngle=2*M_PI*RNG.rand();
-  const double z=2.0*(RNG.rand()-0.5);
+  const double thetaAngle=2*M_PI*Random::rand();
+  const double z=2.0*(Random::rand()-0.5);
   const double sinZ=sqrt(1-z*z);
   const Geometry::Vec3D uvw(sinZ*cos(thetaAngle),sinZ*sin(thetaAngle),z);
 
-  const double R=RNG.rand();
+  const double R=Random::rand();
   const double E=XInverse(R);
 
   //  OX<<(FMT % Pt.X() % Pt.Y() % Pt.Z())<<std::endl;

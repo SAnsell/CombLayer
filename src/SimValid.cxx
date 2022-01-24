@@ -3,7 +3,7 @@
  
  * File:   src/SimValid.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,15 +31,16 @@
 #include <set>
 #include <vector>
 #include <memory>
+#include <random>
 
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "MersenneTwister.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Vec3D.h"
+#include "Random.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -59,8 +60,6 @@
 #include "SimValid.h"
 
 #include "debugMethod.h"
-
-extern MTRand RNG;
 
 namespace ModelSupport
 {
@@ -195,7 +194,9 @@ SimValid::runPoint(const Simulation& System,
       if (initSurfNum)
 	{
 	  ELog::EM<<"Adjusting the initial point as on surface"<<ELog::endDiag;
-	  Pt+=Geometry::Vec3D(RNG.rand()*0.01,RNG.rand()*0.01,RNG.rand()*0.01);
+	  Pt+=Geometry::Vec3D(Random::rand()*0.01,
+			      Random::rand()*0.01,
+			      Random::rand()*0.01);
 	}
       InitObj=System.findCell(Pt,InitObj);
       initSurfNum=InitObj->isOnSurface(Pt);
@@ -210,8 +211,8 @@ SimValid::runPoint(const Simulation& System,
 	ELog::EM<<"ValidPoint == "<<i<<ELog::endDiag;
       std::vector<simPoint> Pts;
       // Get random starting point on edge of volume
-      phi=RNG.rand()*M_PI;
-      theta=2.0*RNG.rand()*M_PI;
+      phi=Random::rand()*M_PI;
+      theta=2.0*Random::rand()*M_PI;
       const Geometry::Vec3D uVec(cos(theta)*sin(phi),
 			     sin(theta)*sin(phi),
 			     cos(phi));

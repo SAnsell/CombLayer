@@ -40,7 +40,7 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
-#include "MersenneTwister.h"
+#include "Random.h"
 #include "Vert2D.h"
 #include "Convex2D.h"
 
@@ -102,7 +102,7 @@ testConvex2D::initConvexPlane(Geometry::Convex2D& A,
 void
 testConvex2D::initCircle(Convex2D& A,const Geometry::Vec3D& Cent,
 			 const Geometry::Vec3D& Norm,const double Radius,
-			 const int N,const double Random)
+			 const int N,const double sigma)
  
   /*!
     Set a circle into the convex. 
@@ -111,7 +111,7 @@ testConvex2D::initCircle(Convex2D& A,const Geometry::Vec3D& Cent,
     \param Norm  :: Normal of circle
     \param N :: number required
     \param Radius :: Circle radius
-    \param Random :: factor to add
+    \param sigma :: factor to add
    */
 {
   ELog::RegMethod RegA("testConvex2D","initCircle");
@@ -132,15 +132,14 @@ testConvex2D::initCircle(Convex2D& A,const Geometry::Vec3D& Cent,
     }
   V=Norm*U;
 
-    
-  std::mt19937 gen(17823);
-
   std::vector<Geometry::Vec3D> Pts;
   for(int i=0;i<N;i++)
     {
       const double angle=i*M_PI*2.0/N;
-      std::normal_distribution<double> RNG(Radius*sin(angle),Random);
-      Pts.push_back(Cent+U*RNG(gen)+V*RNG(gen));
+
+      Pts.push_back(Cent+
+		    U*Random::randNorm(Radius*sin(angle),sigma)+
+		    V*Random::randNorm(Radius*sin(angle),sigma));
     }
   random_shuffle(Pts.begin(),Pts.end());
   A.setPoints(Pts);

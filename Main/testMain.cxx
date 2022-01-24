@@ -3,7 +3,7 @@
  
  * File:   Main/testMain.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@
 #include <boost/multi_array.hpp>
 
 #include "Exception.h"
-#include "MersenneTwister.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
@@ -116,7 +115,6 @@
 #include "testMathSupport.h"
 #include "testMatrix.h"
 #include "testMD5.h"
-#include "testMersenne.h"
 #include "testMesh3D.h"
 #include "testModelSupport.h"
 #include "testNeutron.h"
@@ -162,7 +160,6 @@
 #include "testXML.h"
 
 //
-MTRand RNG(12345UL);
 
 namespace ELog 
 {
@@ -393,7 +390,6 @@ globalTest(const int type,const int extra)
       "testInsertComp",
       "testMapRange",
       "testMapSupport",
-      "testMersenne",
       "testNList",
       "testNRange",
       "testRotCounter",
@@ -452,12 +448,6 @@ globalTest(const int type,const int extra)
       if(index==cnt)
 	{
 	  testMapSupport A;
-	  X=A.applyTest(extra);
-	}
-      cnt++;
-      if(index==cnt)
-	{
-	  testMersenne A;
 	  X=A.applyTest(extra);
 	}
       cnt++;

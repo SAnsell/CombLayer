@@ -3,7 +3,7 @@
  
  * File:   Main/t1Real.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,6 @@
 #include <array>
 
 #include "Exception.h"
-#include "MersenneTwister.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
@@ -57,8 +56,6 @@
 #include "variableSetup.h"
 
 #include "makeT1Real.h"
-
-MTRand RNG(12345UL);
 
 ///\cond STATIC
 namespace ELog 
