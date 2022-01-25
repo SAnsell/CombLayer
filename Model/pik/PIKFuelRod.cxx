@@ -180,10 +180,10 @@ PIKFuelRod::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+10,Origin+X*(outerR-radius),Z,radius);
 
   double thickenCenter = radius+thickenR;
-  ModelSupport::buildCylinder(SMap,buildIndex+41,Origin-Y*(thickenCenter)+X*(thickenCenter),Z,thickenR);
-  ModelSupport::buildCylinder(SMap,buildIndex+42,Origin+Y*(thickenCenter)+X*(thickenCenter),Z,thickenR);
-  ModelSupport::buildCylinder(SMap,buildIndex+31,Origin-Y*(thickenCenter)-X*(thickenCenter),Z,thickenR);
-  ModelSupport::buildCylinder(SMap,buildIndex+32,Origin+Y*(thickenCenter)-X*(thickenCenter),Z,thickenR);
+  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin-Y*(thickenCenter)+X*(thickenCenter),Z,thickenR);
+  ModelSupport::buildCylinder(SMap,buildIndex+108,Origin+Y*(thickenCenter)+X*(thickenCenter),Z,thickenR);
+  ModelSupport::buildCylinder(SMap,buildIndex+109,Origin-Y*(thickenCenter)-X*(thickenCenter),Z,thickenR);
+  ModelSupport::buildCylinder(SMap,buildIndex+110,Origin+Y*(thickenCenter)-X*(thickenCenter),Z,thickenR);
 
   ModelSupport::buildPlane(SMap,buildIndex+101,Origin-Y*(thickenCenter),Y);
   ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*(thickenCenter),Y);
@@ -243,30 +243,29 @@ PIKFuelRod::createObjects(Simulation& System)
   makeCell("TipN",System,cellIndex++,mainMat,0.0,Out);
 
 
-  //Out=ModelSupport::getComposite(SMap,buildIndex," -1007 -1 -3 -31 5 -6");
-  Out=ModelSupport::getComposite(SMap,buildIndex," (-101:-103:-31) -3 -1 -1007 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex," (-101:-103:-109) -3 -1 -1007 5 -6");
   makeCell("VoidSW",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," (-101:104:-41) 4 -1 -1007 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex," (-101:104:-107) 4 -1 -1007 5 -6");
   makeCell("VoidNW",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," (102:104:-42) 2 4 -1007 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex," (102:104:-108) 2 4 -1007 5 -6");
   makeCell("VoidNE",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," (102:-103:-32) -3 2 -1007 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex," (102:-103:-110) -3 2 -1007 5 -6");
   makeCell("VoidSE",System,cellIndex++,0,0.0,Out);
 
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1 4 41 101 -104 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1 4 107 101 -104 5 -6");
   makeCell("MainCellNW",System,cellIndex++,mainMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 4 42 -102 -104 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 2 4 108 -102 -104 5 -6");
   makeCell("MainCellNE",System,cellIndex++,mainMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1 -3 31 101 103 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1 -3 109 101 103 5 -6");
   makeCell("MainCellSW",System,cellIndex++,mainMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -3 32 -102 103 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -3 110 -102 103 5 -6");
   makeCell("MainCellSE",System,cellIndex++,mainMat,0.0,Out);
 
 
