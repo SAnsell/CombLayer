@@ -202,77 +202,72 @@ PIKFuelRod::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("PIKFuelRod","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
-  //HeadRule Out;
-  //Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  //makeCell("MainCell",System,cellIndex++,mainMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 3 -4 5 -6");
+  makeCell("MainCell1",System,cellIndex++,mainMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 3 -4 5 -6");
-  makeCell("MainCell1",System,cellIndex++,mainMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -3 5 -6");
+  makeCell("MainCell2",System,cellIndex++,mainMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 13 -3 5 -6");
-  makeCell("MainCell2",System,cellIndex++,mainMat,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 4 -14 5 -6");
-  makeCell("MainCell3",System,cellIndex++,mainMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 4 -14 5 -6");
+  makeCell("MainCell3",System,cellIndex++,mainMat,0.0,HR);
 
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1007 7 3 -4 -11 5 -6");
-  makeCell("VoidW",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1007 7 3 -4 -11 5 -6");
+  makeCell("VoidW",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 -11 5 -6");
-  makeCell("TipW",System,cellIndex++,mainMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 -11 5 -6");
+  makeCell("TipW",System,cellIndex++,mainMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1007 8 3 -4 12 5 -6");
-  makeCell("VoidE",System,cellIndex++,0,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," -8 12 5 -6");
-  makeCell("TipE",System,cellIndex++,mainMat,0.0,Out);
-
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1007 9 1 -2 -13 5 -6");
-  makeCell("VoidS",System,cellIndex++,0,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," -9 -13 5 -6");
-  makeCell("TipS",System,cellIndex++,mainMat,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1007 10 1 -2 14 5 -6");
-  makeCell("VoidN",System,cellIndex++,0,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," -10 14 5 -6");
-  makeCell("TipN",System,cellIndex++,mainMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1007 8 3 -4 12 5 -6");
+  makeCell("VoidE",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-8 12 5 -6");
+  makeCell("TipE",System,cellIndex++,mainMat,0.0,HR);
 
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," (-101:-103:-109) -3 -1 -1007 5 -6");
-  makeCell("VoidSW",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1007 9 1 -2 -13 5 -6");
+  makeCell("VoidS",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," (-101:104:-107) 4 -1 -1007 5 -6");
-  makeCell("VoidNW",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-9 -13 5 -6");
+  makeCell("TipS",System,cellIndex++,mainMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," (102:104:-108) 2 4 -1007 5 -6");
-  makeCell("VoidNE",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1007 10 1 -2 14 5 -6");
+  makeCell("VoidN",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," (102:-103:-110) -3 2 -1007 5 -6");
-  makeCell("VoidSE",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-10 14 5 -6");
+  makeCell("TipN",System,cellIndex++,mainMat,0.0,HR);
+
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(-101:-103:-109) -3 -1 -1007 5 -6");
+  makeCell("VoidSW",System,cellIndex++,0,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(-101:104:-107) 4 -1 -1007 5 -6");
+  makeCell("VoidNW",System,cellIndex++,0,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(102:104:-108) 2 4 -1007 5 -6");
+  makeCell("VoidNE",System,cellIndex++,0,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(102:-103:-110) -3 2 -1007 5 -6");
+  makeCell("VoidSE",System,cellIndex++,0,0.0,HR);
 
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1 4 107 101 -104 5 -6");
-  makeCell("MainCellNW",System,cellIndex++,mainMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 4 107 101 -104 5 -6");
+  makeCell("MainCellNW",System,cellIndex++,mainMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 4 108 -102 -104 5 -6");
-  makeCell("MainCellNE",System,cellIndex++,mainMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 4 108 -102 -104 5 -6");
+  makeCell("MainCellNE",System,cellIndex++,mainMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1 -3 109 101 103 5 -6");
-  makeCell("MainCellSW",System,cellIndex++,mainMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 -3 109 101 103 5 -6");
+  makeCell("MainCellSW",System,cellIndex++,mainMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -3 110 -102 103 5 -6");
-  makeCell("MainCellSE",System,cellIndex++,mainMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -3 110 -102 103 5 -6");
+  makeCell("MainCellSE",System,cellIndex++,mainMat,0.0,HR);
 
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1007 5 -6");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1007 5 -6");
   
-
-  addOuterSurf(Out);
+  addOuterSurf(HR);
 
   return;
 }
