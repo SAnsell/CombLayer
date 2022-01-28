@@ -53,6 +53,7 @@
 #include "SourceBase.h"
 #include "BeamSource.h"
 #include "FlukaSource.h"
+#include "TDCSource.h"
 #include "RectangleSource.h"
 #include "GammaSource.h"
 #include "GaussBeamSource.h"
@@ -520,7 +521,7 @@ createTDCSource(const mainSystem::MITYPE& inputMap,
   ELog::RegMethod RegA("SourceCreate","createTDCSource");
 
   sourceDataBase& SDB=sourceDataBase::Instance();
-  FlukaSource GX(keyName,"TDC");
+  TDCSource GX(keyName);
 
   GX.createAll(inputMap,FC,sideIndex);
   SDB.registerSource(GX.getKeyName(),GX);

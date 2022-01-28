@@ -446,7 +446,7 @@ HeadRule::partMatched(const HeadRule& A) const
   if (levelActive)
     {
       // Sub components MUST be contained in one rule completely:
-      for(const HeadRule AS : ASet)
+      for(const HeadRule& AS : ASet)
 	{
 	  if (AS.partMatched(BSet))
 	    return 1;
@@ -455,7 +455,7 @@ HeadRule::partMatched(const HeadRule& A) const
     }
   
   // OK CHECK EACH Minor
-  for(const HeadRule AS : ASet)
+  for(const HeadRule& AS : ASet)
     {
       if (AS.partMatched(A))
 	return 1;
@@ -558,7 +558,7 @@ HeadRule::subMatched(const HeadRule& A,
   if (levelActive)
     {
       // Sub components MUST be contained in one rule completely:
-      for(const HeadRule AS : ASet)
+      for(const HeadRule& AS : ASet)
 	{
 	  if (AS.partMatched(BSet))
 	    {

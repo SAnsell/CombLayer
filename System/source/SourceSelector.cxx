@@ -254,6 +254,7 @@ sourceSelection(Simulation& System,
 	"D4C :: D4C neutron beam\n\n"
 	
 	"FlukaSource :: Source [external] fluka output \n"
+	"TDCSouce :: Source [external] fluka output for TDC \n"
 
 	"kcode :: fission kcode \n"
 	      <<ELog::endBasic;

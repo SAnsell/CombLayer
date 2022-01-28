@@ -173,13 +173,13 @@ FlukaSource::populate(const ITYPE& inputMap)
     }
   if (unitName=="tdc")
     sourceName="TDC";
-  if (mainSystem::hasInput(inputMap,"logWeight"))
+  else if (mainSystem::hasInput(inputMap,"logWeight"))
     sourceName="LOG";
 
   if (sourceName=="LOG")
-    ELog::EM<<"Source log type == "<<sourceName<<ELog::endDiag;
+    ELog::EM<<"Source LOG type "<<ELog::endDiag;
   else if  (sourceName=="TDC")
-    ELog::EM<<"Source type  == "<<sourceName<<ELog::endDiag;
+    ELog::EM<<"Source TDC type "<<ELog::endDiag;
   else
     ELog::EM<<"Source flat probability type "<<ELog::endDiag;
   
