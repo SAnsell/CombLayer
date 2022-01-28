@@ -133,6 +133,10 @@ flukaSourceSelection(Simulation& System,
       else if (sdefType=="external" || sdefType=="External" ||
 	       sdefType=="source" || sdefType=="Source")
 	eName=SDef::createFlukaSource(inputMap,"flukaSource",FC,linkIndex);
+
+      else if (sdefType=="dark" || sdefType=="Dark" ||
+	       sdefType=="tdc" || sdefType=="TDC")
+	eName=SDef::createTDCSource(inputMap,"flukaSource",FC,linkIndex);
 	 
       else
 	{
@@ -140,6 +144,7 @@ flukaSourceSelection(Simulation& System,
 	    "Beam :: Test Beam [Radial] source \n"
 	    "Wiggler :: Wiggler Source for balder \n"
 	    "External/Source :: External source from source.f \n"
+	    "TDC/Dark :: External source from source.f as TDC source \n"
 		  <<ELog::endBasic;
 	}
     }

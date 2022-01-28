@@ -58,7 +58,7 @@ class FlukaSource :
   
  public:
 
-  FlukaSource(const std::string&);
+  FlukaSource(const std::string&,const std::string&);
   FlukaSource(const FlukaSource&);
   FlukaSource& operator=(const FlukaSource&);
   virtual FlukaSource* clone() const;

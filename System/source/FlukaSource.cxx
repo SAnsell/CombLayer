@@ -83,6 +83,20 @@ FlukaSource::FlukaSource(const std::string& keyName) :
     sValues[i]=unitTYPE(0,"");
 }
 
+FlukaSource::FlukaSource(const std::string& keyName,
+			   const std::string& ssName) : 
+  FixedRotateUnit(keyName,0),SourceBase(),
+  sourceName(ssNAme)
+  /*!
+    Constructor BUT ALL variable are left unpopulated.
+    \param keyName :: main name
+  */
+{
+  if (
+  for(size_t i=0;i<12;i++)
+    sValues[i]=unitTYPE(0,"");
+}
+
 FlukaSource::FlukaSource(const FlukaSource& A) : 
   attachSystem::FixedRotateUnit(A),SourceBase(A),
   sourceName(A.sourceName),sValues(A.sValues)
