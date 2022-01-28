@@ -529,32 +529,6 @@ createTDCSource(const mainSystem::MITYPE& inputMap,
 }
 
 std::string
-createTDCSource(const mainSystem::MITYPE& inputMap,
-		  const std::string& keyName,
-		  const attachSystem::FixedComp& FC,
-		  const long int sideIndex)
-  /*!
-    Create the fluka source driven by the source.f routine
-    Note this still can use both BEAM and BEAMAXIS
-    \param inputMap :: Variables data base
-    \param keyName :: keyname for FlukaSource
-    \param FC :: link surface for origin
-    \param sideIndex ::surface number
-    \return keyName of source
-  */
-{
-  ELog::RegMethod RegA("SourceCreate","createFlukaSource");
-
-  sourceDataBase& SDB=sourceDataBase::Instance();
-  FlukaSource GX(keyName);
-
-  GX.createAll(inputMap,FC,sideIndex);
-  SDB.registerSource(GX.getKeyName(),GX);
-
-  return GX.getKeyName();      
-}
-
-std::string
 createRectSource(const mainSystem::MITYPE& inputMap,
 		 const std::string& keyName,
 		 const attachSystem::FixedComp& FC,
