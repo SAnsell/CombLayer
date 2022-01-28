@@ -45,9 +45,12 @@ class PIKFuelRod : public attachSystem::ContainedComp,
   double height;                ///< Height
   double outerR;                ///< Outer cylinder radius
   double radius;                ///< tip radius
-  double thickenR;              ///< thicken tadius
+  double thickenR;              ///< thicken radius
+  double shellthick;            ///< the thickness of the fuel rod shell
 
-  int mainMat;                   ///< Main material
+  int mainMat;                  ///< Main material
+  int shellMat;                 ///< Shell material
+  int coolMat;                  ///< heat carrier material
 
   void populate(const FuncDataBase&);
   void createSurfaces();

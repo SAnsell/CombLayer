@@ -83,7 +83,10 @@ PIKFuelRod::PIKFuelRod(const PIKFuelRod& A) :
   outerR(A.outerR),
   radius(A.radius),
   thickenR(A.thickenR),
-  mainMat(A.mainMat)
+  shellthick(A.shellthick),
+  mainMat(A.mainMat),
+  shellMat(A.shellMat),
+  coolMat(A.coolMat)
   /*!
     Copy constructor
     \param A :: PIKFuelRod to copy
@@ -107,7 +110,10 @@ PIKFuelRod::operator=(const PIKFuelRod& A)
       outerR=A.outerR;
       radius=A.radius;
       thickenR=A.thickenR;
+      shellthick=A.shellthick;
       mainMat=A.mainMat;
+      shellMat=A.shellMat;
+      coolMat=A.coolMat;
     }
   return *this;
 }
@@ -143,8 +149,11 @@ PIKFuelRod::populate(const FuncDataBase& Control)
   outerR=Control.EvalVar<double>(keyName+"OuterRadius");
   radius=Control.EvalVar<double>(keyName+"Radius");
   thickenR=Control.EvalVar<double>(keyName+"ThickenRadius");
+  shellthick=Control.EvalVar<double>(keyName+"ShellThick");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
+  shellMat=ModelSupport::EvalMat<int>(Control,keyName+"ShellMat");
+  coolMat=ModelSupport::EvalMat<int>(Control,keyName+"CoolMat");
 
   return;
 }
@@ -157,16 +166,8 @@ PIKFuelRod::createSurfaces()
 {
   ELog::RegMethod RegA("PIKFuelRod","createSurfaces");
 
-  ModelSupport::buildCylinder(SMap,buildIndex+1007,Origin,Z,outerR);
-
-  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(radius),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(radius),Y);
-
   ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(outerR-radius),Y);
   ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(outerR-radius),Y);
-
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(radius),X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(radius),X);
 
   ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(outerR-radius),X);
   ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(outerR-radius),X);
@@ -174,21 +175,41 @@ PIKFuelRod::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
-  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin-Y*(outerR-radius),Z,radius);
-  ModelSupport::buildCylinder(SMap,buildIndex+8,Origin+Y*(outerR-radius),Z,radius);
-  ModelSupport::buildCylinder(SMap,buildIndex+9,Origin-X*(outerR-radius),Z,radius);
-  ModelSupport::buildCylinder(SMap,buildIndex+10,Origin+X*(outerR-radius),Z,radius);
-
   double thickenCenter = radius+thickenR;
-  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin-Y*(thickenCenter)+X*(thickenCenter),Z,thickenR);
-  ModelSupport::buildCylinder(SMap,buildIndex+108,Origin+Y*(thickenCenter)+X*(thickenCenter),Z,thickenR);
-  ModelSupport::buildCylinder(SMap,buildIndex+109,Origin-Y*(thickenCenter)-X*(thickenCenter),Z,thickenR);
-  ModelSupport::buildCylinder(SMap,buildIndex+110,Origin+Y*(thickenCenter)-X*(thickenCenter),Z,thickenR);
+  ModelSupport::buildPlane(SMap,buildIndex+21,Origin-Y*(thickenCenter),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+22,Origin+Y*(thickenCenter),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+23,Origin-X*(thickenCenter),X);
+  ModelSupport::buildPlane(SMap,buildIndex+24,Origin+X*(thickenCenter),X);
 
-  ModelSupport::buildPlane(SMap,buildIndex+101,Origin-Y*(thickenCenter),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*(thickenCenter),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(thickenCenter),X);
-  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(thickenCenter),X);
+  double _radius_, _outerR_, _thickenR_;
+  int _index_;
+
+  for(int i=0; i<2; i++) {
+
+    _radius_=radius+shellthick*(double)i;
+    _outerR_=outerR+shellthick*(double)i;
+    _thickenR_=thickenR-shellthick*(double)i;
+    _index_=buildIndex+i*100;
+
+    ModelSupport::buildCylinder(SMap,_index_+1007,Origin,Z,_outerR_);
+
+    ModelSupport::buildPlane(SMap,_index_+1,Origin-Y*(_radius_),Y);
+    ModelSupport::buildPlane(SMap,_index_+2,Origin+Y*(_radius_),Y);
+
+    ModelSupport::buildPlane(SMap,_index_+3,Origin-X*(_radius_),X);
+    ModelSupport::buildPlane(SMap,_index_+4,Origin+X*(_radius_),X);
+
+    ModelSupport::buildCylinder(SMap,_index_+7,Origin-Y*(outerR-radius),Z,_radius_);
+    ModelSupport::buildCylinder(SMap,_index_+8,Origin+Y*(outerR-radius),Z,_radius_);
+    ModelSupport::buildCylinder(SMap,_index_+9,Origin-X*(outerR-radius),Z,_radius_);
+    ModelSupport::buildCylinder(SMap,_index_+10,Origin+X*(outerR-radius),Z,_radius_);
+
+    ModelSupport::buildCylinder(SMap,_index_+27,Origin-Y*(thickenCenter)+X*(thickenCenter),Z,_thickenR_);
+    ModelSupport::buildCylinder(SMap,_index_+28,Origin+Y*(thickenCenter)+X*(thickenCenter),Z,_thickenR_);
+    ModelSupport::buildCylinder(SMap,_index_+29,Origin-Y*(thickenCenter)-X*(thickenCenter),Z,_thickenR_);
+    ModelSupport::buildCylinder(SMap,_index_+30,Origin+Y*(thickenCenter)-X*(thickenCenter),Z,_thickenR_);
+
+  };
 
   return;
 }
@@ -204,69 +225,131 @@ PIKFuelRod::createObjects(Simulation& System)
 
   HeadRule HR;
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 3 -4 5 -6");
-  makeCell("MainCell1",System,cellIndex++,mainMat,0.0,HR);
+  //  fuel rod up-bottom bounds
+  HeadRule HRub=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6");
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -3 5 -6");
-  makeCell("MainCell2",System,cellIndex++,mainMat,0.0,HR);
+  /*
+   Uranium part
+  */
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 4 -14 5 -6");
-  makeCell("MainCell3",System,cellIndex++,mainMat,0.0,HR);
+  // FR cross
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 3 -4");
+  makeCell("MainCell1",System,cellIndex++,mainMat,0.0,HR*HRub);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -3");
+  makeCell("MainCell2",System,cellIndex++,mainMat,0.0,HR*HRub);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1007 7 3 -4 -11 5 -6");
-  makeCell("VoidW",System,cellIndex++,0,0.0,HR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 -11 5 -6");
-  makeCell("TipW",System,cellIndex++,mainMat,0.0,HR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1007 8 3 -4 12 5 -6");
-  makeCell("VoidE",System,cellIndex++,0,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-8 12 5 -6");
-  makeCell("TipE",System,cellIndex++,mainMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 4 -14");
+  makeCell("MainCell3",System,cellIndex++,mainMat,0.0,HR*HRub);
 
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1007 9 1 -2 -13 5 -6");
-  makeCell("VoidS",System,cellIndex++,0,0.0,HR);
+  // FR thickening in the center
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 4 27 21 -24");
+  makeCell("MainCellNW",System,cellIndex++,mainMat,0.0,HR*HRub);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-9 -13 5 -6");
-  makeCell("TipS",System,cellIndex++,mainMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 4 28 -22 -24");
+  makeCell("MainCellNE",System,cellIndex++,mainMat,0.0,HR*HRub);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1007 10 1 -2 14 5 -6");
-  makeCell("VoidN",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 -3 29 21 23");
+  makeCell("MainCellSW",System,cellIndex++,mainMat,0.0,HR*HRub);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-10 14 5 -6");
-  makeCell("TipN",System,cellIndex++,mainMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -3 30 -22 23");
+  makeCell("MainCellSE",System,cellIndex++,mainMat,0.0,HR*HRub);
+
+  // FR tips
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 -11");
+  makeCell("TipW",System,cellIndex++,mainMat,0.0,HR*HRub);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-8 12");
+  makeCell("TipE",System,cellIndex++,mainMat,0.0,HR*HRub);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-9 -13");
+  makeCell("TipS",System,cellIndex++,mainMat,0.0,HR*HRub);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-10 14");
+  makeCell("TipN",System,cellIndex++,mainMat,0.0,HR*HRub);
+
+  /*
+   Shell part
+  */
+
+  // shell tips
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7 -107 -11");
+  makeCell("ShellTipW",System,cellIndex++,shellMat,0.0,HR*HRub);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"8 -108 12");
+  makeCell("ShellTipE",System,cellIndex++,shellMat,0.0,HR*HRub);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"9 -109 -13");
+  makeCell("ShellTipS",System,cellIndex++,shellMat,0.0,HR*HRub);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"10 -110 14");
+  makeCell("ShellTipN",System,cellIndex++,shellMat,0.0,HR*HRub);
 
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(-101:-103:-109) -3 -1 -1007 5 -6");
-  makeCell("VoidSW",System,cellIndex++,0,0.0,HR);
+  // middle shell tips
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(4:-3) -104 103")*HRub;
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(-101:104:-107) 4 -1 -1007 5 -6");
-  makeCell("VoidNW",System,cellIndex++,0,0.0,HR);
+  makeCell("ShellW",System,cellIndex++,shellMat,0.0,
+    HR*ModelSupport::getHeadRule(SMap,buildIndex,"11 -21"));
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(102:104:-108) 2 4 -1007 5 -6");
-  makeCell("VoidNE",System,cellIndex++,0,0.0,HR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(102:-103:-110) -3 2 -1007 5 -6");
-  makeCell("VoidSE",System,cellIndex++,0,0.0,HR);
-
-  
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 4 107 101 -104 5 -6");
-  makeCell("MainCellNW",System,cellIndex++,mainMat,0.0,HR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 4 108 -102 -104 5 -6");
-  makeCell("MainCellNE",System,cellIndex++,mainMat,0.0,HR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 -3 109 101 103 5 -6");
-  makeCell("MainCellSW",System,cellIndex++,mainMat,0.0,HR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -3 110 -102 103 5 -6");
-  makeCell("MainCellSE",System,cellIndex++,mainMat,0.0,HR);
+  makeCell("ShellE",System,cellIndex++,shellMat,0.0,
+    HR*ModelSupport::getHeadRule(SMap,buildIndex,"22 -12"));
 
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1007 5 -6");
-  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(-1:2) 101 -102")*HRub;
+
+  makeCell("ShellN",System,cellIndex++,shellMat,0.0,
+    HR*ModelSupport::getHeadRule(SMap,buildIndex,"24 -14"));
+
+  makeCell("ShellS",System,cellIndex++,shellMat,0.0,
+    HR*ModelSupport::getHeadRule(SMap,buildIndex,"13 -23"));
+
+
+  // shell thickening in the center
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"127 -27 21 -24");
+  makeCell("ShellNW",System,cellIndex++,shellMat,0.0,HR*HRub);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"128 -28 -22 -24");
+  makeCell("ShellNE",System,cellIndex++,shellMat,0.0,HR*HRub);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"129 -29 21 23");
+  makeCell("ShellSW",System,cellIndex++,shellMat,0.0,HR*HRub);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"130 -30 -22 23");
+  makeCell("ShellSE",System,cellIndex++,shellMat,0.0,HR*HRub);
+
+  // light-water
+
+  // water near tips
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1107 107 103 -104 -11");
+  makeCell("VoidW",System,cellIndex++,coolMat,0.0,HR*HRub);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1107 108 103 -104 12");
+  makeCell("VoidE",System,cellIndex++,coolMat,0.0,HR*HRub);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1107 109 101 -102 -13");
+  makeCell("VoidS",System,cellIndex++,coolMat,0.0,HR*HRub);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1107 110 101 -102 14");
+  makeCell("VoidN",System,cellIndex++,coolMat,0.0,HR*HRub);
+
+  // water in the corners
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(-21:-23:-129) -103 -101 -1107");
+  makeCell("VoidSW",System,cellIndex++,coolMat,0.0,HR*HRub);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(-21:24:-127) 104 -101 -1107");
+  makeCell("VoidNW",System,cellIndex++,coolMat,0.0,HR*HRub);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(22:24:-128) 102 104 -1107");
+  makeCell("VoidNE",System,cellIndex++,coolMat,0.0,HR*HRub);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(22:-23:-130) -103 102 -1107");
+  makeCell("VoidSE",System,cellIndex++,coolMat,0.0,HR*HRub);
+
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1107")*HRub;
+
   addOuterSurf(HR);
 
   return;
