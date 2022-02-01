@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/LinacInc/TWCavity.h
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@ class TWCavity :
 {
  private:
 
-  int    nCells;                ///< Number of regular cells
+  size_t nCells;                ///< Number of regular cells
   double cellLength;            ///< Normal cell total length (void+iris)
   double cellRadius;            ///< Normal cell inner radius
   double irisLength;            ///< Iris length
@@ -52,7 +52,7 @@ class TWCavity :
   double couplerLength;         ///< coupler cell length
   double couplerWidth;          ///< coupler cell width
   double wallThick;             ///< Side wall thickness
-  int    wallMat;               ///< Side wall material
+  int wallMat;                  ///< Side wall material
   int mat;                      ///< Iris/cell material
 
   void populate(const FuncDataBase&);

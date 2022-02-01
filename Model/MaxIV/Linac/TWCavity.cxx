@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/Linac/TWCavity.cxx
  *
- * Copyright (c) 2004-2021 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,7 +67,7 @@ namespace tdcSystem
 
 TWCavity::TWCavity(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key,7),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::FrontBackCut()
@@ -75,7 +75,9 @@ TWCavity::TWCavity(const std::string& Key)  :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
-{}
+{
+  nameSideIndex(6,"MidPoint");
+}
 
 TWCavity::TWCavity(const TWCavity& A) :
   attachSystem::ContainedComp(A),
@@ -152,7 +154,7 @@ TWCavity::populate(const FuncDataBase& Control)
 
   FixedRotate::populate(Control);
 
-  nCells=ModelSupport::EvalMat<int>(Control,keyName+"NCells");
+  nCells=Control.EvalVar<size_t>(keyName+"NCells");
   cellLength=Control.EvalVar<double>(keyName+"CellLength");
   cellRadius=Control.EvalVar<double>(keyName+"CellRadius");
   irisLength=Control.EvalVar<double>(keyName+"IrisLength");
@@ -160,6 +162,7 @@ TWCavity::populate(const FuncDataBase& Control)
   couplerLength=Control.EvalVar<double>(keyName+"CouplerLength");
   couplerWidth=Control.EvalVar<double>(keyName+"CouplerWidth");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
+
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
@@ -175,7 +178,10 @@ TWCavity::createSurfaces()
   ELog::RegMethod RegA("TWCavity","createSurfaces");
 
   // -irisLengh since last cell does not have iris (its inside back copuler cell)
-  const double totalLength(couplerLength*2+(cellLength+irisLength)*nCells-irisLength);
+  const double totalLength
+    (couplerLength*2.0+
+     (cellLength+irisLength)*static_cast<double>(nCells)-
+     irisLength);
 
   if (!isActive("front"))
     {
@@ -209,14 +215,14 @@ TWCavity::createSurfaces()
   const double couplerR(couplerWidth/sqrt(2.0));
   ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,couplerR);
 
-  double y(couplerLength+cellLength);
+  double yDistance(couplerLength+cellLength);
   int SI(buildIndex+1000);
-  for (int i=0; i<nCells-1; ++i)
+  for (size_t i=1;i<nCells;i++)
     {
-      ModelSupport::buildPlane(SMap,SI+1,Origin+Y*(y),Y);
-      y += irisLength;
-      ModelSupport::buildPlane(SMap,SI+2,Origin+Y*(y),Y);
-      y += cellLength;
+      ModelSupport::buildPlane(SMap,SI+1,Origin+Y*yDistance,Y);
+      yDistance += irisLength;
+      ModelSupport::buildPlane(SMap,SI+2,Origin+Y*yDistance,Y);
+      yDistance += cellLength;
       SI += 10;
     }
 
@@ -233,90 +239,90 @@ TWCavity::createObjects(Simulation& System)
   ELog::RegMethod RegA("TWCavity","createObjects");
 
   int SI(buildIndex+1000);
-  std::string Out,Out1;
-  const std::string frontStr=getRuleStr("front");
-  const std::string backStr=getRuleStr("back");
+  HeadRule HR,HRedge;
+  const HeadRule frontHR=getRule("front");
+  const HeadRule backHR=getRule("back");
 
   // front coupler cell
-  Out=ModelSupport::getComposite(SMap,buildIndex," 17 -101 103 -104 105 -106 ")+frontStr;
-  makeCell("FrontCouplerCell",System,cellIndex++,mat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"17 -101 103 -104 105 -106");
+  makeCell("FrontCouplerCell",System,cellIndex++,mat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -17 -11 ")+frontStr;
-  makeCell("FrontCouplerFrontWall",System,cellIndex++,mat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 -17 -11 ")+frontStr;
-  makeCell("FrontCouplerFrontWall",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7 -17 -11 ");
+  makeCell("FrontCouplerFrontWall",System,cellIndex++,mat,0.0,HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 -17 -11 ");
+  makeCell("FrontCouplerFrontWall",System,cellIndex++,0,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI," -17 11 -21 ");
-  makeCell("FrontCouplerInnerVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,"-17 11 -21 ");
+  makeCell("FrontCouplerInnerVoid",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI," 7 -17 21 -101 ");
-  makeCell("FrontCouplerIrisWall",System,cellIndex++,mat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI," -7 21 -101 ");
-  makeCell("FrontCouplerIrisVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,"7 -17 21 -101 ");
+  makeCell("FrontCouplerIrisWall",System,cellIndex++,mat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,"-7 21 -101");
+  makeCell("FrontCouplerIrisVoid",System,cellIndex++,0,0.0,HR);
 
   // front coupler cell corners
-  Out1=ModelSupport::getComposite(SMap,buildIndex," -107 -101 ")+frontStr;
-  for (const std::string surf : {" -103 ", " 104 ", " -105 ", " 106 "})
+  HRedge=ModelSupport::getHeadRule(SMap,buildIndex,"-107 -101")*frontHR;
+  for (const int surfN : {-103,104,-105,106})
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,surf);
-      makeCell("FrontCouplerOuterVoid",System,cellIndex++,0,0.0,Out+Out1);
+      HR=HeadRule(SMap,buildIndex,surfN);
+      makeCell("FrontCouplerOuterVoid",System,cellIndex++,0,0.0,HR*HRedge);
     }
 
   // back coupler cell
-  Out=ModelSupport::getComposite(SMap,buildIndex," 17 102 103 -104 105 -106 ")+backStr;
-  makeCell("BackCouplerCell",System,cellIndex++,mat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"17 102 103 -104 105 -106");
+  makeCell("BackCouplerCell",System,cellIndex++,mat,0.0,HR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -17 12 ")+backStr;
-  makeCell("BackCouplerBackWall",System,cellIndex++,mat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 -17 12 ")+backStr;
-  makeCell("BackCouplerBackWall",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7 -17 12 ");
+  makeCell("BackCouplerBackWall",System,cellIndex++,mat,0.0,HR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 -17 12 ");
+  makeCell("BackCouplerBackWall",System,cellIndex++,0,0.0,HR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -17 22 -12 ");
-  makeCell("BackCouplerInnerVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 22 -12 ");
+  makeCell("BackCouplerInnerVoid",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -17 102 -22 ");
-  makeCell("BackCouplerIrisWall",System,cellIndex++,mat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 102 -22 ");
-  makeCell("BackCouplerIrisVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7 -17 102 -22 ");
+  makeCell("BackCouplerIrisWall",System,cellIndex++,mat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 102 -22 ");
+  makeCell("BackCouplerIrisVoid",System,cellIndex++,0,0.0,HR);
 
   // back coupler cell corners
-  Out1=ModelSupport::getComposite(SMap,buildIndex," -107 102 ")+backStr;
-  for (const std::string surf : {" -103 ", " 104 ", " -105 ", " 106 "})
+  HRedge=ModelSupport::getHeadRule(SMap,buildIndex,"-107 102")*
+    backHR;
+  for (const int surfN : {-103,104,-105,106})
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,surf);
-      makeCell("BackCouplerOuterVoid",System,cellIndex++,0,0.0,Out+Out1);
+      HR=HeadRule(SMap,buildIndex,surfN);
+      makeCell("BackCouplerOuterVoid",System,cellIndex++,0,0.0,HR*HRedge);
     }
 
-  for (int i=0; i<nCells; ++i)
+  for(size_t i=0;i<nCells;i++)
     {
       if (i==0)
-	Out=ModelSupport::getComposite(SMap,buildIndex,SI," 101 -1M -17 ");
+	HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,"101 -1M -17 ");
       else if (i==nCells-1)
-	Out=ModelSupport::getComposite(SMap,buildIndex,SI-10," 2M -102 -17 ");
+	HR=ModelSupport::getHeadRule(SMap,buildIndex,SI-10,"2M -102 -17");
       else
-	Out=ModelSupport::getComposite(SMap,buildIndex,SI-10,SI," 2M -1N -17 ");
+	HR=ModelSupport::getHeadRule(SMap,buildIndex,SI-10,SI,"2M -1N -17");
 
-      makeCell("NormalCell",System,cellIndex++,0,0.0,Out);
+      makeCell("NormalCell",System,cellIndex++,0,0.0,HR);
 
       if (i!=nCells-1)
 	{
-	  Out1=ModelSupport::getComposite(SMap,buildIndex,SI," 1M -2M 7 -17 ");
-	  makeCell("IrisWall",System,cellIndex++,mat,0.0,Out1);
-	  Out1=ModelSupport::getComposite(SMap,buildIndex,SI," 1M -2M -7 ");
-	  makeCell("IrisVoid",System,cellIndex++,0,0.0,Out1);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI," 1M -2M 7 -17 ");
+	  makeCell("IrisWall",System,cellIndex++,mat,0.0,HR);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI," 1M -2M -7 ");
+	  makeCell("IrisVoid",System,cellIndex++,0,0.0,HR);
 	}
-
       SI += 10;
     }
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 17 -27 ");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 101 -102 17 -27 ");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 27 -107 ");
-  makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 27 -107 ");
+  makeCell("OuterVoid",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -107 ")+frontStr+backStr;
-  addOuterSurf(Out);
+  HR=HeadRule(SMap,buildIndex,-107);
+  addOuterSurf(HR*frontHR*backHR);
 
   return;
 }
@@ -332,6 +338,8 @@ TWCavity::createLinks()
 
   ExternalCut::createLink("front",*this,0,Origin,Y);
   ExternalCut::createLink("back",*this,1,Origin,Y);
+
+  FixedComp::setConnect(6,(getLinkPt(1)+getLinkPt(2))/2.0,getLinkAxis(1));
 
   return;
 }

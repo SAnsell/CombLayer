@@ -71,7 +71,7 @@ class FrontBackCut :
 		   const Geometry::Vec3D&,const Geometry::Vec3D&);
   void createBackLinks(attachSystem::FixedComp&,
 		   const Geometry::Vec3D&,const Geometry::Vec3D&);
-
+  
   /// Flag accessor
   bool frontActive() const { return isActive("front"); }
   /// Flag accessor
