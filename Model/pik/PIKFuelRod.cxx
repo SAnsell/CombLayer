@@ -186,9 +186,9 @@ PIKFuelRod::createSurfaces()
 
   for(int i=0; i<2; i++) {
 
-    _radius_=radius+shellthick*(double)i;
-    _outerR_=outerR+shellthick*(double)i;
-    _thickenR_=thickenR-shellthick*(double)i;
+    _radius_=radius+shellthick*static_cast<double>(i);
+    _outerR_=outerR+shellthick*static_cast<double>(i);
+    _thickenR_=thickenR-shellthick*static_cast<double>(i);
     _index_=buildIndex+i*100;
 
     ModelSupport::buildCylinder(SMap,_index_+1007,Origin,Z,_outerR_);
