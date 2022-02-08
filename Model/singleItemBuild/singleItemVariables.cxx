@@ -693,6 +693,9 @@ localShieldVariables(FuncDataBase& Control)
   Control.addVariable("PIKFuelRodShellMat","Stainless304");
   Control.addVariable("PIKFuelRodCoolMat","H2O");
 
+  Control.copyVarSet("PIKFuelRod","PIKFuelRod1");
+  Control.addVariable("PIKFuelRod1XStep",1.0);
+
   return;
 }
 
