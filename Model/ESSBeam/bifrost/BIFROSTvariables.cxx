@@ -2511,6 +2511,7 @@ double   yStep = 14.0; // space for chopper disc
     
 
     //Sample environment -- need to find out how to take input from files in external project
+    Control.addVariable("SampleEnvironment","None"); // Default value. Can be set to "Magnet"
     //offset with respect to the link point the magnet base will be attached to 
     Control.addVariable("SampleMagnetBaseYStep",58.0);
   Control.addVariable("SampleMagnetBaseXStep",0.0);

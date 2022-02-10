@@ -232,6 +232,9 @@ caveDetector::populate(const FuncDataBase& Control)
       tankIntRad=Control.EvalVar<double>(keyName+"TankInternalRadius");
       tankThick=Control.EvalVar<double>(keyName+"TankWallThickness");
       tankExtRad=Control.EvalVar<double>(keyName+"TankExternalRadius");
+
+      innerRad= tankIntRad - shieldThick;
+      
       shelfWidth=Control.EvalVar<double>(keyName+"ShelfWidth");
       shelfThick=Control.EvalVar<double>(keyName+"ShelfThick");
       tankDepth=Control.EvalVar<double>(keyName+"TankDepth");

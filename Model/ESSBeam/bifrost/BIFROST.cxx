@@ -4293,11 +4293,7 @@ attachSystem::addToInsertSurfCtrl(*SimPtr,*Hatch3,*UpperBlockRoof1);
 			FocusCave1->getKey("Guide0"),2);
    }
 
-   
-  SampleSheet->addInsertCell(voidCave1);
-  SampleSheet->createAll(*SimPtr,*ACave,0);
- 
-    /*  
+   if( SimPtr->getDataBase().EvalVar<std::string>("SampleEnvironment")=="Magnet"){
   AMagnetBase->addInsertCell(voidCave1);
   AMagnetBase->createAll(*SimPtr,*ACave,0);
   ASample->addInsertCell(voidCave1);
@@ -4308,8 +4304,14 @@ attachSystem::addToInsertSurfCtrl(*SimPtr,*Hatch3,*UpperBlockRoof1);
    ASample->createAll(*SimPtr,*AMagnetBase,0);
    //Arguments for createAll: Simulation, FixedComponent, LinkPointNo of the FixedCompone nt
     attachSystem::addToInsertLineCtrl(*SimPtr,*AMagnetBase,*ASample);
-  */
-
+  
+   }
+   else
+     {
+   SampleSheet->addInsertCell(voidCave1);
+  SampleSheet->createAll(*SimPtr,*ACave,0);
+   }
+     
       CavePlatformB4C->addInsertCell(CaveLining->getCell("InnerSpace"));
       CavePlatformB4C->addInsertCell(voidCave1);
   
@@ -4544,11 +4546,19 @@ attachSystem::addToInsertSurfCtrl(*SimPtr,*Hatch3,*UpperBlockRoof1);
 
   
     if( SimPtr->getDataBase().EvalVar<size_t>("ConstructDetectorTank")>0){
-    
+
     Detector->addInsertCell(CaveLining->getCell("InnerSpace"));
+    Detector->addInsertCell(voidCave1);
+
+    if( SimPtr->getDataBase().EvalVar<std::string>("SampleEnvironment")=="Magnet"){
     Detector->createAll(*SimPtr,*AMagnetBase,0);
     //    Collimator->addInsertCell(Detector->getCell("DetectorCutOut"));
     Collimator->createAll(*SimPtr,*AMagnetBase,0);
+    }else{
+    Detector->createAll(*SimPtr,*SampleSheet,0);
+    //    Collimator->addInsertCell(Detector->getCell("DetectorCutOut"));
+    Collimator->createAll(*SimPtr,*SampleSheet,0);
+    }
     attachSystem::addToInsertSurfCtrl(*SimPtr,*Detector,*Collimator);
     }
     return;
