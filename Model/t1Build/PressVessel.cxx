@@ -256,23 +256,6 @@ PressVessel::populate(const FuncDataBase& Control)
 }
   
 void
-PressVessel::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
-  /*!
-    Create the unit vectors
-    - Y Down the beamline
-    \param FC :: FixedComp for origin and axis
-    \param sideIndex :: SideIndex link point
-  */
-{
-  ELog::RegMethod RegA("PressVessel","createUnitVector");
-
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  return;
-}
-
-void
 PressVessel::createSurfaces()
   /*!
     Create All the surfaces
@@ -621,7 +604,7 @@ PressVessel::buildChannels(Simulation& System)
   for(int i=0;i<NChannel;i++)
     {
       CItem.push_back(channel("PVesselChannel",i,buildIndex));
-      CPtr=&CItem.back();
+      CPtr= &CItem.back();
       CPtr->addInsertCell(outerWallCell);
       CPtr->setDefaultValues(Control,CPtr);
       CPtr->createAll(System,*this,0);

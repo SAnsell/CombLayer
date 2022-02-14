@@ -52,6 +52,7 @@ class TWCavity :
   double couplerLength;         ///< coupler cell length
   double couplerWidth;          ///< coupler cell width
   double wallThick;             ///< Side wall thickness
+
   int wallMat;                  ///< Side wall material
   int mat;                      ///< Iris/cell material
 
