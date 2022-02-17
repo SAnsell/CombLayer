@@ -432,12 +432,12 @@ cellValueSet<N>::setValues(const int cN,const double V,
       A[0].first=1;         // 1: values
       A[0].second=StrFunc::makeString(V);
     }
-  else if constexpr (N>1)
+  if constexpr (N>1)
     {
       A[1].first=1;
       A[1].second=StrFunc::makeString(V2);
     }
-  else if constexpr (N>2)
+  if constexpr (N>2)
     {
       A[2].first=1;
       A[2].second=StrFunc::makeString(V3);

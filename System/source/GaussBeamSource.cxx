@@ -309,7 +309,16 @@ GaussBeamSource::writePHITS(std::ostream& OX) const
       {
 	const double x= static_cast<double>(i)*xStep;
 	const double z= static_cast<double>(j)*zStep;
-	
+	const double expTerm=
+	  exp(-( x*x/(2.0*xSigma*xSigma)+z*z/(2.0*zSigma*zSigma) ));
+	// coordinate
+	const Geometry::Vec3D Pt=Origin+X*x+Z*z;
+      }
+     
+  return;
+}
+
+void
 GaussBeamSource::writeFLUKA(std::ostream& OX) const
   /*!
     Write out as a FLUKA source system
