@@ -3235,10 +3235,10 @@ Segment48(FuncDataBase& Control,
   PGen.setMat("Stainless304L","Stainless304L");
   PGen.setNoWindow();
 
-  EBGen.generateEBeamStop(Control,lKey+"BeamStopA",0);
+  EBGen.generateEBeamStop(Control,lKey+"BeamStopA",1);
   setBellow26(Control,lKey+"BellowA",7.5);
 
-  EBGen.generateEBeamStop(Control,lKey+"BeamStopB",0);
+  EBGen.generateEBeamStop(Control,lKey+"BeamStopB",1);
 
   PGen.generatePipe(Control,lKey+"PipeA",12.6); // measured
 
