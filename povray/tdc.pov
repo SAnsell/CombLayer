@@ -619,6 +619,18 @@ global_settings {
     #declare projection = 0;
     #declare cameraAngle = 50;
   #break
+    #case(strcmp(ITEM,"NoRoof1")) // BC2 area
+    #declare cameraLocation = <500, -1100, 1500>;
+    #declare cameraLookAt   = <0, 1500,  0>;
+    #declare projection = 0;
+    #declare cameraAngle = 30;
+  #break
+    #case(strcmp(ITEM,"NoRoof2")) // Switching area
+    #declare cameraLocation = <-150, 6500, 1500>;
+    #declare cameraLookAt   = <-400, 4600, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 30;
+  #break
   #else // whole beamline view (like All)
     #declare cameraLocation = <-500, 5200, 1000>;
     #declare cameraLookAt   = <-600, 5100, 0>;
