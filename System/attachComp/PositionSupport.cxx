@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   attachComp/PositionSupport.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -60,7 +60,7 @@ applyZAxisRotate(const FixedComp& FC,const double xyAngle,
 		 Geometry::Vec3D& V)
  /*!
    Apply a rotation to the vector around the z axis
-   \param FC :: Object to get Z axis from 
+   \param FC :: Object to get Z axis from
    \param xyAngle :: Angle in degrees
    \param V :: Vector to rotate
  */
@@ -80,15 +80,15 @@ Geometry::Vec3D
 getCntVec3D(const objectGroups& OGrp,
 	    const mainSystem::inputParam& IParam,
             const std::string& K,const size_t setIndex,
-            size_t& itemIndex) 
+            size_t& itemIndex)
   /*!
     Get a Vec3D [consuming a number of itemIndex]
     \param K :: keyName
     \param setIndex :: Index
     \param itemIndex :: item count
     \return Vecter point
-  */ 
-{ 
+  */
+{
   ELog::RegMethod RegA("PositionSuppport[F]","getCntVec3D");
 
 
@@ -117,13 +117,13 @@ getCntVec3D(const objectGroups& OGrp,
       itemIndex+=3;
       return Value;
     }
-  // object name 
+  // object name
   if (itemIndex+3<=NItems && DItems[itemIndex]=="object")
     {
       const attachSystem::FixedComp* TPtr=
 	OGrp.getObjectThrow<attachSystem::FixedComp>
 	(DItems[itemIndex+1],"FixedComp");
-      
+
       const long int linkNumber=
         TPtr->getSideIndex(DItems[itemIndex+2]);
       Value=TPtr->getLinkPt(linkNumber);
@@ -131,7 +131,7 @@ getCntVec3D(const objectGroups& OGrp,
       return Value;
     }
 
-  // objOffset name 
+  // objOffset name
   if (itemIndex+4<=NItems && DItems[itemIndex]=="objOffset")
     {
       const attachSystem::FixedComp* TPtr=
@@ -154,14 +154,14 @@ getCntVec3D(const objectGroups& OGrp,
         }
       else
         throw ColErr::InContainerError<std::string>
-          (DItems[4],"None-converted Offset (objOffset)");      
-      
+          (DItems[4],"None-converted Offset (objOffset)");
+
       Geometry::Vec3D XDir,YDir,ZDir;
       TPtr->calcLinkAxis(linkNumber,XDir,YDir,ZDir);
       Value+=XDir*DVec[0]+YDir*DVec[1]+ZDir*DVec[2];
       return Value;
     }
-  // implied object name 
+  // implied object name
   if (itemIndex+2<=NItems)
     {
       ELog::EM<<"Item == "<<DItems[itemIndex]<<ELog::endDiag;
@@ -175,13 +175,13 @@ getCntVec3D(const objectGroups& OGrp,
       itemIndex+=2;
       return Value;
     }
-  
+
   throw ColErr::TypeMatch(DItems[itemIndex],
-                          "Geomtery::Vec3D",K+":convert error");
+                          "Geometry::Vec3D",K+":convert error");
 
 }
 
-  
-  
+
+
 
 }  // NAMESPACE attachSystem

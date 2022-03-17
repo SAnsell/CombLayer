@@ -237,8 +237,13 @@ Segment28::buildObjects(Simulation& System)
       volume*=IZFlat->getFront().complement();
       volume*=IZFlat->getSurround();
       makeCell("FrontSpace",System,cellIndex++,0,0.0,volume);
+      buildZone->copyCells(*this,"FrontSpace");
     }
-  return;
+
+    if (prevSegPtr)
+	IZFlat->insertComponent(System,"Unit",0,prevSegPtr->getComplementRule("BeamStopZone"));
+
+    return;
 }
 
 void
@@ -263,6 +268,10 @@ Segment28::createLinks()
   joinItems.push_back(FixedComp::getFullRule("backMid"));
 
   buildZone->setBack(FixedComp::getFullRule("backMid"));
+
+  buildZone->copyCells(*this,"FrontSpace");
+  buildZone->copyAllCells(*IZTop);
+  buildZone->copyAllCells(*IZFlat);
 
   return;
 }

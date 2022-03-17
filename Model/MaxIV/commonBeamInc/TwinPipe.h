@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxpeemInc/TwinPipe.h
+ * File:   commonBeamInc/TwinPipe.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ namespace xraySystem
 */
 
 class TwinPipe :
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedGroup,
   public attachSystem::CellMap,
   public attachSystem::SurfMap,
@@ -88,7 +88,8 @@ class TwinPipe :
   TwinPipe(const TwinPipe&);
   TwinPipe& operator=(const TwinPipe&);
   virtual ~TwinPipe();
-  
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

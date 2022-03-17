@@ -55,6 +55,8 @@
 #include "PipeTubeGenerator.h"
 #include "PortTubeGenerator.h"
 #include "PortItemGenerator.h"
+#include "TriggerGenerator.h"
+#include "CylGateValveGenerator.h"
 #include "PipeShieldGenerator.h"
 #include "VacBoxGenerator.h"
 #include "MonoBoxGenerator.h"
@@ -66,7 +68,8 @@
 #include "PortChicaneGenerator.h"
 #include "WallLeadGenerator.h"
 #include "MonoShutterGenerator.h"
-
+#include "OpticsHutGenerator.h"
+#include "FlangeDomeGenerator.h"
 
 #include "DiffXIADP03Generator.h"
 
@@ -135,7 +138,7 @@ wallVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("cosaxsVariables[F]","wallVariables");
 
   WallLeadGenerator LGen;
-  LGen.setWidth(70,140.0);
+  LGen.setWidth(140,70.0);
   LGen.generateWall(Control,wallKey,3.0);
 
   return;
@@ -215,58 +218,30 @@ monoShutterVariables(FuncDataBase& Control,
 
 void
 opticsHutVariables(FuncDataBase& Control,
-		   const std::string& preName)
+		   const std::string& hutName)
   /*!
     Variable for the main optics hutch walls
     \param Control :: Database
-    \param preName :: Beamline name
+    \param hutName :: Optics hut name
   */
 {
   ELog::RegMethod RegA("cosaxsVariables[F]","opticsHutVariables");
 
-  const std::string hutName(preName+"OpticsHut");
+  OpticsHutGenerator OGen;
 
-  Control.addVariable(hutName+"Height",250.0);
-  Control.addVariable(hutName+"Length",886.1);  // changed from 906
-  Control.addVariable(hutName+"OutWidth",200.0);
-  Control.addVariable(hutName+"RingWidth",75.0);
-  Control.addVariable(hutName+"RingWallLen",80.0);
-  Control.addVariable(hutName+"RingWallAngle",18.50);
-  Control.addVariable(hutName+"RingConcThick",100.0);
-
-  Control.addVariable(hutName+"InnerThick",0.3);
-    
-  Control.addVariable(hutName+"PbWallThick",1.2);
-  Control.addVariable(hutName+"PbRoofThick",1.2);
-  Control.addVariable(hutName+"PbBackThick",2.0);
-  Control.addVariable(hutName+"PbFrontThick",2.0);
-
-  Control.addVariable(hutName+"OuterThick",0.3);
-    
-  Control.addVariable(hutName+"InnerOutVoid",10.0);  // side wall for chicane
-  Control.addVariable(hutName+"OuterOutVoid",10.0);
+  OGen.addHole(Geometry::Vec3D(3.2,0,0),3.5);
+  OGen.generateHut(Control,hutName,886.1);
   
-  Control.addVariable(hutName+"SkinMat","Stainless304");
-  Control.addVariable(hutName+"RingMat","Concrete");
-  Control.addVariable(hutName+"PbMat","Lead");
-
-  Control.addVariable(hutName+"HoleXStep",2.5);
-  Control.addVariable(hutName+"HoleZStep",0.0);
-  Control.addVariable(hutName+"HoleRadius",4.5);
-
-  Control.addVariable(hutName+"InletXStep",0.0);
-  Control.addVariable(hutName+"InletZStep",0.0);
-  Control.addVariable(hutName+"InletRadius",5.0);
-
-  Control.addVariable(preName+"OpticsNChicane",1);
+  Control.addVariable(hutName+"NChicane",1);
   PortChicaneGenerator PGen;
-  PGen.generatePortChicane(Control,preName+"OpticsChicane0",0,0);
+  PGen.generatePortChicane(Control,hutName+"Chicane0",0,0);
 
   return;
 }
 
 void
-exptHutVariables(FuncDataBase& Control,const std::string& preName)
+exptHutVariables(FuncDataBase& Control,
+		 const std::string& preName)
   /*!
     Variable for the main expt hutch walls
     \param Control :: Database
@@ -276,26 +251,36 @@ exptHutVariables(FuncDataBase& Control,const std::string& preName)
   ELog::RegMethod RegA("cosaxsVariables[F]","exptHutVariables");
 
   const std::string hutName(preName+"ExptHut");
+
   
-  Control.addVariable(hutName+"YStep",1000.0);
-  Control.addVariable(hutName+"Depth",120.0);
+  const double beamOffset(-0.4);
+
+  Control.addVariable(hutName+"YStep",1000.0);  
   Control.addVariable(hutName+"Height",200.0);
   Control.addVariable(hutName+"Length",858.4);
-  Control.addVariable(hutName+"OutWidth",198.50);
-  Control.addVariable(hutName+"RingWidth",248.6);
+  Control.addVariable(hutName+"OutWidth",260.0);
+  Control.addVariable(hutName+"RingWidth",200.0);
   Control.addVariable(hutName+"InnerThick",0.2);
+  Control.addVariable(hutName+"PbWallThick",0.4);
+  Control.addVariable(hutName+"PbBackThick",0.4);
+  Control.addVariable(hutName+"PbRoofThick",0.4);
   Control.addVariable(hutName+"PbThick",0.4);
   Control.addVariable(hutName+"OuterThick",0.2);
+
+  Control.addVariable(hutName+"HoleXStep",-beamOffset);
+  Control.addVariable(hutName+"HoleZStep",0.0);
+  Control.addVariable(hutName+"HoleRadius",0.0);
+  
+  Control.addVariable(hutName+"ExitXStep",-beamOffset);
+  Control.addVariable(hutName+"ExitZStep",0.0);
+  Control.addVariable(hutName+"ExitRadius",53.0);
+
+  Control.addVariable(hutName+"InnerOutVoid",10.0);
+  Control.addVariable(hutName+"OuterOutVoid",10.0);
 
   Control.addVariable(hutName+"VoidMat","Void");
   Control.addVariable(hutName+"SkinMat","Stainless304");
   Control.addVariable(hutName+"PbMat","Lead");
-  Control.addVariable(hutName+"FloorMat","Concrete");
-
-  Control.addVariable(hutName+"HoleXStep",0.0);
-  Control.addVariable(hutName+"HoleZStep",5.0);
-  Control.addVariable(hutName+"HoleRadius",7.0);
-  Control.addVariable(hutName+"HoleMat","Lead");
 
   return;
 }
@@ -425,6 +410,7 @@ diagUnit(FuncDataBase& Control,const std::string& Name)
   PTubeGen.setPortCF<CF63>();
   PTubeGen.setBPortCF<CF40>();
   PTubeGen.setBFlangeCF<CF63>();
+
   PTubeGen.setPortLength(-5.0,-7.5);
   PTubeGen.setAPortOffset(2.45,0);
   PTubeGen.setBPortOffset(2.45,0);
@@ -446,7 +432,7 @@ diagUnit(FuncDataBase& Control,const std::string& Name)
   PItemGen.generatePort(Control,portName+"1",MidPt,ZVec);
   PItemGen.generatePort(Control,portName+"2",PPos,ZVec);
   // view port
-  PItemGen.setCF<setVariable::CF63>(outerRadius+8.0);
+  PItemGen.setCF<setVariable::CF63>(outerRadius/cos(M_PI/4)+8.0);
   PItemGen.generatePort(Control,portName+"3",
 			Geometry::Vec3D(0,DLength/4.5,0),
 			Geometry::Vec3D(-1,-1,0));
@@ -485,6 +471,7 @@ diagUnit2(FuncDataBase& Control,const std::string& Name)
   // ports offset by 24.5mm in x direction
   // length 425+ 75 (a) 50 b
   const double outerRadius(8.0);
+  
   PTubeGen.setPipe(7.5,0.5);
   PTubeGen.setPortCF<CF63>();
   PTubeGen.setPortLength(-5.0,-5.0);
@@ -501,11 +488,11 @@ diagUnit2(FuncDataBase& Control,const std::string& Name)
   PItemGen.setOuterVoid(1);  // create boundary round flange
   PItemGen.setCF<setVariable::CF63>(outerRadius+5.0);
   PItemGen.generatePort(Control,portName+"0",-PPos,ZVec);
-  PItemGen.setCF<setVariable::CF63>(5.0);
+  PItemGen.setCF<setVariable::CF63>(outerRadius+5.0);
   PItemGen.generatePort(Control,portName+"1",MidPt,XVec);
   PItemGen.generatePort(Control,portName+"2",PPos,ZVec);
   // view port
-  PItemGen.setCF<setVariable::CF63>(outerRadius+8.0);
+  PItemGen.setCF<setVariable::CF63>(outerRadius/cos(M_PI/4)+8.0);
   PItemGen.generatePort(Control,portName+"3",
 			Geometry::Vec3D(0,DLength/5.0,0),
 			Geometry::Vec3D(-1,-1,0));
@@ -559,20 +546,22 @@ opticsVariables(FuncDataBase& Control,
   setVariable::BremMonoCollGenerator BremMonoGen;
   setVariable::JawFlangeGenerator JawFlangeGen;
   setVariable::DiffXIADP03Generator DiffGen;
+  setVariable::TriggerGenerator TGen;
+  setVariable::CylGateValveGenerator GVGen;
+  
 
   PipeGen.setNoWindow();   // no window
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,preName+"InitBellow",6.0);
 
-  CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
-  CrossGen.setPorts(-9.0,-9.0);     // len of ports (after main)
-  CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF100>
-    (Control,preName+"TriggerPipe",0.0,15.0,15.0);  // ystep/height/depth
-  
-  CrossGen.setPorts(1.2,1.2);     // len of ports (after main)
-  CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF63>
-    (Control,preName+"GaugeA",0.0,11.0,11.0);  // ystep/height/depth
+    // will be rotated vertical
+  TGen.setCF<CF100>();
+  TGen.setVertical(15.0,25.0);
+  TGen.setSideCF<setVariable::CF40>(10.0); // add centre distance?
+  TGen.generateTube(Control,preName+"TriggerUnit");
+
+  GVGen.generateGate(Control,preName+"GateTubeA",0);  // open
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setBFlangeCF<setVariable::CF63>();
@@ -753,9 +742,10 @@ exptVariables(FuncDataBase& Control,
   setVariable::MonoBoxGenerator VBoxGen;
   setVariable::DiffXIADP03Generator DiffGen;
   setVariable::PortItemGenerator PItemGen;
+  setVariable::FlangeDomeGenerator FDGen;
   
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,expName+"InitBellow",6.0);
+  BellowGen.generateBellow(Control,expName+"BellowA",6.0);
 
   // Gate valve A - cube gate
   GateGen.setLength(2.5);
@@ -834,7 +824,7 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(expName+"SampleAreaAirMat","Air");
   Control.addVariable(expName+"SampleAreaSampleMat","Stainless304");
 
-  const std::string tubeName(expName+"Tube");
+  const std::string tubeName(expName+"DetTube");
 
   // X032_CoSAXS_\(2019-02-11\)_dimensions.pdf:
   Control.addVariable(tubeName+"YStep", 454.748); // dummy
@@ -896,12 +886,14 @@ exptVariables(FuncDataBase& Control,
 
   setVariable::PipeTubeGenerator SimpleTubeGen;
   const double outerRadius(50.2+0.6);
+  const double flangeRadius(57.8);
   SimpleTubeGen.setPipe(50.2,0.6,57.8,4.3);  // Rad,thick,Flange (Rad,len)
 
+				
   std::string segName=tubeName+"Segment1";
   SimpleTubeGen.generateTube(Control,segName,167.2);  
   Control.addVariable(segName+"NPorts",1);
-
+  
   PItemGen.setCF<setVariable::CF350>(outerRadius+7.0);
   PItemGen.setPlate(CF350::flangeLength,"Stainless304");
   PItemGen.setOuterVoid(1);
@@ -932,8 +924,9 @@ exptVariables(FuncDataBase& Control,
   PItemGen.generatePort(Control,segName+"Port0",Geometry::Vec3D(0,38.2,0),PX);
   PItemGen.generatePort(Control,segName+"Port1",Geometry::Vec3D(0,-67.6,0),-PX);  
   // segments 5-9 are the same length [5 has more ports]
+  const double alpha(30*M_PI/180);
   setVariable::PortItemGenerator PItemExtraGen(PItemGen);
-  PItemExtraGen.setPort(19.0,17.8,0.6);          // len/rad/wall
+  PItemExtraGen.setPort(outerRadius/cos(alpha)+19.0,17.8,0.6);   // len/rad/wall
   PItemExtraGen.setFlange(20.0,1.0);
   PItemExtraGen.setPlate(2.5,"Stainless304");
 
@@ -943,7 +936,7 @@ exptVariables(FuncDataBase& Control,
   SimpleTubeGen.generateTube(Control,segName,264.0);
   Control.addVariable(segName+"NPorts",5);
 
-  const double alpha(30*M_PI/180);
+
   PItemGen.generatePort(Control,segName+"Port0",C2,PX);
   PItemGen.generatePort(Control,segName+"Port1",C3,-PX);
   PItemExtraGen.generatePort(Control,segName+"Port2",
@@ -953,7 +946,7 @@ exptVariables(FuncDataBase& Control,
 			     Geometry::Vec3D(0,60.9,0),
 			     Geometry::Vec3D(0,-sin(alpha),-cos(alpha)));
 
-  PItemExtraGen.setPort(7.0,10.0,0.6);
+  PItemExtraGen.setPort(outerRadius+7.0,10.0,0.6);
   PItemExtraGen.setFlange(12.0,2.5);
   PItemExtraGen.generatePort(Control,segName+"Port4",
 			     Geometry::Vec3D(0,-20.0,0),PX);
@@ -976,38 +969,50 @@ exptVariables(FuncDataBase& Control,
   segName=tubeName+"Segment8";
   SimpleTubeGen.setAFlange(57.8,4.0);
   SimpleTubeGen.setBFlange(57.8,4.0);
-  SimpleTubeGen.setFlangeCap(0.0,2.7);
+  //  SimpleTubeGen.setFlangeCap(0.0,2.7);
     
   SimpleTubeGen.generateTube(Control,segName,264);
   //  SimpleTubeGen.setFlange(4.)
-  Control.addVariable(segName+"NPorts",4);
+  Control.addVariable(segName+"NPorts",2);
   PItemGen.generatePort(Control,segName+"Port0",C2,PX);
   PItemGen.generatePort(Control,segName+"Port1",C3,-PX);
 
-  PItemGen.setPort(6.6,4,1.0);  // len/rad/wall
-  PItemGen.setFlange(8.3,2.0);  // rad/len
-  PItemGen.setPlate(0.7,"Stainless304");
-  PItemGen.generatePort(Control,segName+"Port2",
-			Geometry::Vec3D(34.8,0.0,0),PY);
-  PItemGen.generatePort(Control,segName+"Port3",
-			Geometry::Vec3D(-34.8,0.0,0),PY);
+  FDGen.setSphere(outerRadius,flangeRadius,2.0);
+  FDGen.generateDome(Control,tubeName+"BackDome");
+  
+  Control.addVariable(tubeName+"BackDomeNPorts",2);
+  PItemGen.setCF<setVariable::CF63>(10.0);
+  PItemGen.setWindowPlate(CF63::flangeLength,0.8*CF63::flangeLength,
+			  CF63::innerRadius*1.1,"Stainless304","SiO2");
+
+  PItemGen.generatePort(Control,tubeName+"BackDomePort0",
+			Geometry::Vec3D(-14.8, 0.0, 0.0),
+			Geometry::Vec3D(0,1,0));
+  PItemGen.generatePort(Control,tubeName+"BackDomePort1",
+			Geometry::Vec3D(14.8, 0.0, 0.0),
+			Geometry::Vec3D(0,1,0));
+
+    
+  // PItemGen.setPort(264.0/2.0+6.6,4,1.0);  // len/rad/wall
+  // PItemGen.setFlange(8.3,2.0);  // rad/len
+  // PItemGen.setPlate(0.7,"Stainless304");
+  // PItemGen.generatePort(Control,segName+"Port2",
+  // 			Geometry::Vec3D(34.8,0.0,0),PY);
+  // PItemGen.generatePort(Control,segName+"Port3",
+  // 			Geometry::Vec3D(-34.8,0.0,0),PY);
 
 
   Control.addParse<double>(tubeName+"OuterRadius",
 			   tubeName+"Segment3FlangeBRadius+10.0");
-  Control.addParse<double>(tubeName+"OuterLength",
-			   "CosaxsExptLineTubeNoseConeLength+"
-			   "CosaxsExptLineTubeSegment1Length+"
-			   "CosaxsExptLineTubeSegment2Length+"
-			   "CosaxsExptLineTubeSegment3Length+"
-			   "CosaxsExptLineTubeSegment4Length+"
-			   "CosaxsExptLineTubeSegment5Length+"
-			   "CosaxsExptLineTubeSegment6Length+"
-			   "CosaxsExptLineTubeSegment7Length+"
-			   "CosaxsExptLineTubeSegment8Length+"
-			   "100.0");
-  
 
+  // ugly few lines to addup the segment length
+  std::ostringstream cx;
+  cx<<tubeName<<"NoseConeLength";
+  for(size_t i=1;i<9;i++)
+    cx<<"+"<<tubeName<<"Segment"<<i<<"Length";
+  cx<<"+100.0";
+  Control.addParse<double>(tubeName+"OuterLength",
+			   cx.str());  
 
   Control.addVariable(tubeName+"CableWidth",  20.0); // [2]
   Control.addVariable(tubeName+"CableHeight", 10.0); // [2]
@@ -1018,8 +1023,9 @@ exptVariables(FuncDataBase& Control,
 
   Control.addVariable(tubeName+"DetYStep", 0.0);
 
-  Control.addVariable(tubeName+"BeamDumpLength", 0.6); // [2]
-  Control.addVariable(tubeName+"BeamDumpRadius", 0.15); // [2]
+  ELog::EM<<"BDUMP increase by 10cm"<<ELog::endCrit;
+  Control.addVariable(tubeName+"BeamDumpLength", 10.6); // [2]
+  Control.addVariable(tubeName+"BeamDumpRadius", 10.15); // [2]
   Control.addVariable(tubeName+"BeamDumpMat", "Tantalum");
 
   Control.addVariable(tubeName+"WAXSLength", 34.5); // [2]
@@ -1072,16 +1078,14 @@ COSAXSvariables(FuncDataBase& Control)
   cosaxsVar::undulatorVariables(Control,"CosaxsFrontBeam");
 
   // ystep (310.0)/ trans/ exit pipe
-  setVariable::R3FrontEndVariables(Control,"CosaxsFrontBeam",25.0);
+  setVariable::R3FrontEndVariables(Control,"Cosaxs");
   cosaxsVar::frontMaskVariables(Control,"CosaxsFrontBeam");
-    
-  cosaxsVar::wallVariables(Control,"CosaxsWallLead");
   
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); // was 2cm (why?)
-  PipeGen.generatePipe(Control,"CosaxsJoinPipe",130.0);
+  PipeGen.generatePipe(Control,"CosaxsJoinPipe",124.5);
   
-  cosaxsVar::opticsHutVariables(Control,"Cosaxs");
+  cosaxsVar::opticsHutVariables(Control,"CosaxsOpticsHut");
   cosaxsVar::opticsVariables(Control,"Cosaxs");
   cosaxsVar::exptHutVariables(Control,"Cosaxs");
   cosaxsVar::exptVariables(Control,"Cosaxs");
@@ -1090,7 +1094,7 @@ COSAXSvariables(FuncDataBase& Control)
 
   ShieldGen.setPlate(60.0,60.0,10.0);
   ShieldGen.generateShield(Control,"CosaxsScreenA",
-			   Geometry::Vec3D(0,4.0,0),0.0);
+			   Geometry::Vec3D(0,2.8,0),0.0);
 
   return;
 }

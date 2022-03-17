@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
- * File:   geomInc/SurfLine.h
+
+ * File:   include/LowMat.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,25 +16,32 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef SurInter_SurfLine_h
-#define SurInter_SurfLine_h
 
-namespace Geometry
+#ifndef LowMat_h
+#define LowMat_h
+
+/*!
+  \class LowMat
+  \brief Sets LOW-MAT card for FLUKA materials
+  \author K. Batkov
+  \version 1.0
+  \date June 2021
+ */
+
+class LowMat
 {
-  class Surface;
-}
+ private:
 
-namespace SurInter
-{
+  static const std::string& getLowName(const size_t);
+  static std::tuple<int,int,double> getID(const size_t,const size_t);
 
-Geometry::Vec3D
-lineSurfPoint(const Geometry::Vec3D&,const Geometry::Vec3D&,
-	      const int,const Geometry::Vec3D&);
+public:
 
+  static std::string getFLUKA(const size_t,const size_t,const std::string&);
+  
+};
 
-}
-
-#endif 
+#endif

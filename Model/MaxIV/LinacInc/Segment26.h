@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   LinacInc/6.h
+ * File:   LinacInc/Segment26.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +38,7 @@ namespace tdcSystem
   class YagUnit;
   class YagScreen;
   class LocalShielding;
+  class LocalShielding3;
 
   /*!
     \class Segment26
@@ -61,7 +62,7 @@ class Segment26 :
   std::shared_ptr<constructSystem::VacuumPipe> pipeBA;
   std::shared_ptr<constructSystem::VacuumPipe> pipeCA;
 
-  std::shared_ptr<tdcSystem::LocalShielding> shieldA; // local shielding
+  std::shared_ptr<tdcSystem::LocalShielding3> shieldA; // local shielding
 
   /// Connect bellows
   std::shared_ptr<constructSystem::Bellows> bellowAA;

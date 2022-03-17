@@ -159,7 +159,7 @@ userBdxConstruct::processBDX(SimFLUKA& System,
   const size_t NA=IParam.getDefValue<size_t>(1,"tally",Index,itemIndex++); 
 
   
-  userBdxConstruct::createTally(System,particleType,nextId,
+  userBdxConstruct::createTally(System,particleType,-nextId,
 				cellA,cellB,
 				1,EA,EB,NE,
 				0,AA,AB,NA);

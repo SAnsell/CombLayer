@@ -53,7 +53,7 @@ namespace xraySystem
 class cosaxsExptLine :
   public attachSystem::CopiedComp,
   public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap
 {
@@ -62,19 +62,24 @@ class cosaxsExptLine :
   /// point to stop [normal none]
   std::string stopPoint;
 
+  /// string for pre-insertion into mastercell:0
+  std::shared_ptr<attachSystem::ContainedGroup> preInsert;
   /// construction space for main object
-  attachSystem::InnerZone buildZone;
-
+  attachSystem::BlockZone buildZone;
+  int outerMat;                         ///< outermaterial if used
+  
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
 
   /// Inital bellow
-  std::shared_ptr<constructSystem::Bellows> pipeInit;
+  std::shared_ptr<constructSystem::Bellows> bellowA;
   /// Vacuum gate valve A - round
   std::shared_ptr<constructSystem::GateValveCube> gateA;
   /// Double slits
   std::shared_ptr<constructSystem::JawValveCylinder>  doubleSlitA;
+  /// Double slit
   std::shared_ptr<constructSystem::JawValveCylinder>  doubleSlitB;
+  /// Diagnostic unit 
   std::shared_ptr<xraySystem::MonoBox>  diagUnit;
   size_t nFilterHolders; ///< Number of filter holders
   std::vector<std::shared_ptr<xraySystem::FilterHolder> > filterHolder;
@@ -93,6 +98,8 @@ class cosaxsExptLine :
   double outerRight;   ///< Right width for cut rectangle
   double outerTop;     ///< Top lift for cut rectangle
 
+  void buildFilters(Simulation&);
+  
   void populate(const FuncDataBase&);
   void createSurfaces();
   void buildObjects(Simulation&);
@@ -105,8 +112,18 @@ class cosaxsExptLine :
   cosaxsExptLine& operator=(const cosaxsExptLine&);
   ~cosaxsExptLine();
 
+  /// Assignment to outer void
+  void setOuterMat(const int M) { outerMat=M; }
+  /// Assignment to extra for first volume
+  void setPreInsert
+    (const std::shared_ptr<attachSystem::ContainedGroup>& A) { preInsert=A; }
+
+  void insertSample(Simulation&,const int) const;
+  
   /// set stop point
   void setStopPoint(const std::string& S) { stopPoint=S; }
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

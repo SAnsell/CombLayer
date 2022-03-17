@@ -62,13 +62,9 @@ class BlockZone  :
 
   int voidMat;                       ///< Void material
 
-  /// single fake end volume [only one allowed]
-  int fakeCell;
-
   std::vector<int> insertCells;    ///< Cell to insert into
   std::map<int,const HeadRule> insertHR;  ///< Headrules of original cells
   
-  void removeFakeCell(Simulation&);
   void insertCell(Simulation&,const HeadRule&);
   
  public:
@@ -94,8 +90,10 @@ class BlockZone  :
   const HeadRule& getSurround() const { return surroundHR; }
   /// access front
   const HeadRule& getFront() const { return frontHR; }
-  /// access front
+  /// access current back
   const HeadRule& getBack() const { return backHR; }
+  /// access max outer surf
+  const HeadRule& getMaxExtent() const { return maxExtentHR; }
 
   HeadRule getVolume() const;
   
@@ -108,9 +106,8 @@ class BlockZone  :
   /// Accessor to insert cellls
   const std::vector<int>& getInsertCells() const
     { return insertCells; }
-  void write(std::ostream&) const;
-
-  int createFakeCell(Simulation&);
+  void clearInsertCells() { insertCells.clear(); }
+  
   
   int createUnit(Simulation&);
 
@@ -122,11 +119,15 @@ class BlockZone  :
 		 const attachSystem::FixedComp&,
 		 const std::string&);
 
+  void createLinks(const attachSystem::FixedComp&,const long int);
+  
   using FixedComp::createAll;  
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);
 
+  void write(std::ostream&) const;
+  
 };
 
 std::ostream&

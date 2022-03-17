@@ -3,7 +3,7 @@
  
  * File: species/SPECIES.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@
 #include "PointMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "CopiedComp.h"
 
 #include "VacuumPipe.h"
@@ -62,7 +62,7 @@
 #include "R1FrontEnd.h"
 #include "speciesFrontEnd.h"
 #include "speciesOpticsHut.h"
-#include "speciesOpticsBeamline.h"
+#include "speciesOpticsLine.h"
 #include "WallLead.h"
 
 #include "R1Beamline.h"
@@ -77,7 +77,7 @@ SPECIES::SPECIES(const std::string& KN) :
   wallLead(new WallLead(newName+"WallLead")),
   opticsHut(new speciesOpticsHut(newName+"OpticsHut")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
-  opticsBeam(new speciesOpticsBeamline(newName+"OpticsBeam"))
+  opticsBeam(new speciesOpticsLine(newName+"OpticsBeam"))
   /*!
     Constructor
     \param KN :: Keyname
@@ -117,18 +117,19 @@ SPECIES::build(Simulation& System,
   const size_t SIndex=(PIndex+1) % r1Ring->nConcave();
   const size_t OIndex=(sideIndex+1) % r1Ring->getNCells("OuterSegment");
 
-
   frontBeam->setStopPoint(stopPoint);
   frontBeam->setCutSurf("Floor",r1Ring->getSurf("Floor"));
+  frontBeam->setCutSurf("Roof",-r1Ring->getSurf("Roof"));
+  frontBeam->setCutSurf("REWall",r1Ring->getSurf("BeamInner",SIndex));
   frontBeam->addInsertCell(r1Ring->getCell("Void",9));
   frontBeam->addInsertCell(r1Ring->getCell("Void",0));
+  frontBeam->addInsertMagnetCell(r1Ring->getCell("Void",9));
   frontBeam->addInsertMagnetCell(r1Ring->getCell("Void",0));
   frontBeam->addInsertCell(r1Ring->getCell("VoidTriangle",PIndex));
 
-  frontBeam->setBack(r1Ring->getSurf("BeamInner",SIndex));
   frontBeam->createAll(System,FCOrigin,sideIndex);
 
-
+  
   wallLead->addInsertCell(r1Ring->getCell("FrontWall",SIndex));
   wallLead->setFront(-r1Ring->getSurf("BeamInner",SIndex));
   wallLead->setBack(r1Ring->getSurf("BeamOuter",SIndex));
@@ -155,17 +156,15 @@ SPECIES::build(Simulation& System,
 			 opticsHut->getSideIndex("innerFront"));
   opticsBeam->setCutSurf("back",*opticsHut,
 			 opticsHut->getSideIndex("innerBack"));
-  opticsBeam->setCutSurf("floor",r1Ring->getSurf("Floor"));
-  opticsBeam->createAll(System,*joinPipe,2);
+  opticsBeam->setCutSurf("floor",r1Ring->getSurfRule("Floor"));
+  opticsBeam->setCutSurf("roof",r1Ring->getSurfRule("#Roof"));
+  opticsBeam->setPreInsert(joinPipe);
+  
+  opticsBeam->createAll(System,*joinPipe,"back");
+  opticsBeam->buildExtras(System,*opticsHut);
+  
 
-  joinPipe->insertAllInCell(System,opticsBeam->getCell("OuterVoid",0)); 
- 
-  std::vector<int> cells(opticsHut->getCells("Back"));
-  cells.emplace_back(opticsHut->getCell("Extension"));
-  opticsBeam->buildOutGoingPipes(System,opticsBeam->getCell("LeftVoid"),
-				 opticsBeam->getCell("RightVoid"),
-				 cells);
-
+  
   return;
 }
 

@@ -3,7 +3,7 @@
  
  * File:   attachComp/ContainedGroup.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -542,6 +542,20 @@ ContainedGroup::addInsertCell(const std::string& Key,
 
 void 
 ContainedGroup::addInsertCell(const std::string& Key,
+			      const std::vector<int>& CN)
+  /*!
+    Adds a cell to the insert list
+    \param Key :: Key name for rule
+    \param CN :: Cell numbers
+  */
+{
+  ELog::RegMethod RegA("ContainedGroup","addInsertCell");
+  getCC(Key).addInsertCell(CN);
+  return;
+}
+
+void 
+ContainedGroup::addInsertCell(const std::string& Key,
 			      const ContainedComp& CC)
   /*!
     Adds a cell to the insert list
@@ -554,6 +568,8 @@ ContainedGroup::addInsertCell(const std::string& Key,
   return;
 }
 
+
+
 void 
 ContainedGroup::addAllInsertCell(const int CN)
   /*!
@@ -563,6 +579,7 @@ ContainedGroup::addAllInsertCell(const int CN)
 {
   ELog::RegMethod RegA("ContainedGroup","addAllInsertCell(cell)");
   CTYPE::iterator mc;
+
   for(mc=CMap.begin();mc!=CMap.end();mc++)
     mc->second.addInsertCell(CN);
   
@@ -627,25 +644,46 @@ ContainedGroup::setAllInsertCell(const int CN)
   return;
 }
 
+
 void 
-ContainedGroup::addInsertCell(const std::string& Key,
-			      const std::vector<int>& CN)
+ContainedGroup::insertAllInCell(Simulation& System,
+				const int CN) const
   /*!
-    Adds a cell to the insert list
-    \param Key :: Key name for rule
-    \param CN :: Cell numbers
+    Inserts all contained components into the cell 
+    \param System :: Simulation to get cells
+    \param CN :: Cell number
   */
 {
-  ELog::RegMethod RegA("ContainedGroup","addInsertCell");
-  getCC(Key).addInsertCell(CN);
+  ELog::RegMethod RegA("ContainedGroup","insertAllInCell");
+  CTYPE::const_iterator mc;
+  for(const CTYPE::value_type& mc : CMap)
+    mc.second.insertInCell(System,CN);
+
   return;
 }
 
+void 
+ContainedGroup::insertAllInCell(Simulation& System,
+				const std::vector<int>& CVec) const
+  /*!
+    Inserts all contained components into the cell 
+    \param System :: Simulation to get cells
+    \param CN :: Cell number
+  */
+{
+  ELog::RegMethod RegA("ContainedGroup","insertAllInCell(Vec)");
+  
+  CTYPE::const_iterator mc;
+  for(const CTYPE::value_type& mc : CMap)
+    mc.second.insertInCell(System,CVec);
+
+  return;
+}
 
 void 
 ContainedGroup::insertInCell(const std::string& Key,
 			     Simulation& System,
-			     const int CN)
+			     const int CN) const
   /*!
     Inserts a contained component into the cell 
     \param Key :: Group name
@@ -659,49 +697,14 @@ ContainedGroup::insertInCell(const std::string& Key,
 }
 
 void 
-ContainedGroup::insertAllInCell(Simulation& System,
-				const int CN)
-  /*!
-    Inserts all contained components into the cell 
-    \param System :: Simulation to get cells
-    \param CN :: Cell number
-  */
-{
-  ELog::RegMethod RegA("ContainedGroup","insertInCell");
-  CTYPE::iterator mc;
-  for(CTYPE::value_type& mc : CMap)
-    mc.second.insertInCell(System,CN);
-
-  return;
-}
-
-void 
-ContainedGroup::insertAllInCell(Simulation& System,
-				const std::vector<int>& CVec)
-  /*!
-    Inserts all contained components into the cell 
-    \param System :: Simulation to get cells
-    \param CN :: Cell number
-  */
-{
-  ELog::RegMethod RegA("ContainedGroup","insertInCell(Vec)");
-  
-  CTYPE::iterator mc;
-  for(CTYPE::value_type& mc : CMap)
-    mc.second.insertInCell(System,CVec);
-
-  return;
-}
-
-void 
 ContainedGroup::insertInCell(const std::string& Key,
 			     Simulation& System,
-			     const std::vector<int>& CVec)
+			     const std::vector<int>& CVec) const
   /*!
     Inserts a contained component into the cell 
     \param Key :: Group name
     \param System :: Simulation to get cells
-    \param CVec :: Cell numbers
+    \param CN :: Cell number
   */
 {
   ELog::RegMethod RegA("ContainedGroup","insertInCell");
@@ -711,7 +714,7 @@ ContainedGroup::insertInCell(const std::string& Key,
 
 void 
 ContainedGroup::insertInCell(const std::string& Key,
-			     MonteCarlo::Object& outerObj)
+			     MonteCarlo::Object& outerObj) const
   /*!
     Inserts a contained component into the cell 
     \param Key :: Group name
@@ -722,6 +725,7 @@ ContainedGroup::insertInCell(const std::string& Key,
   getCC(Key).insertInCell(outerObj);
   return;
 }
+
   
 void
 ContainedGroup::insertObjects(Simulation& System)

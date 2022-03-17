@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/WallLeadGenerator.cxx
+ * File:   commonGenerator/WallLeadGenerator.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -118,15 +118,15 @@ WallLeadGenerator::generateWall(FuncDataBase& Control,
   Control.addVariable(keyName+"FrontHeight",frontHeight);
   Control.addVariable(keyName+"BackWidth",backWidth);
   Control.addVariable(keyName+"BackHeight",backHeight);
-  Control.addVariable(keyName+"SteelOutWidth",steelOutWidth+xStep);
-  Control.addVariable(keyName+"SteelRingWidth",steelRingWidth-xStep);
+  Control.addVariable(keyName+"SteelOutWidth",steelOutWidth);
+  Control.addVariable(keyName+"SteelRingWidth",steelRingWidth);
   Control.addVariable(keyName+"SteelHeight",steelHeight);
   Control.addVariable(keyName+"SteelDepth",steelDepth);
   Control.addVariable(keyName+"SteelThick",steelThick);
   Control.addVariable(keyName+"SteelXCut",steelXCut);
   Control.addVariable(keyName+"SteelZCut",steelZCut);
-  Control.addVariable(keyName+"ExtraLeadOutWidth",extraLeadOutWidth+xStep);
-  Control.addVariable(keyName+"ExtraLeadRingWidth",extraLeadRingWidth-xStep);
+  Control.addVariable(keyName+"ExtraLeadOutWidth",extraLeadOutWidth);
+  Control.addVariable(keyName+"ExtraLeadRingWidth",extraLeadRingWidth);
   Control.addVariable(keyName+"ExtraLeadHeight",extraLeadHeight);
   Control.addVariable(keyName+"ExtraLeadDepth",extraLeadDepth);
   Control.addVariable(keyName+"ExtraLeadXCut",extraLeadXCut);

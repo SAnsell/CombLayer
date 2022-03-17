@@ -61,6 +61,7 @@ namespace xraySystem
   class Mirror;
   class OpticsHutch;
   class PipeShield;
+  class TriggerTube;
   class TwinPipe;
 
     
@@ -75,26 +76,31 @@ namespace xraySystem
 class maxpeemOpticsLine :
   public attachSystem::CopiedComp,
   public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::ExternalCut,
-  public attachSystem::CellMap
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
  private:
 
+  /// Items pre-insertion into mastercell:0
+  std::shared_ptr<attachSystem::ContainedGroup> preInsert;
+
   /// System for building a divided inner
-  attachSystem::InnerZone buildZone;
+  attachSystem::BlockZone buildZone;  
+  attachSystem::BlockZone IZLeft;       ///< Left section after divider
+  attachSystem::BlockZone IZRight;      ///< Right section after divider
+  int innerMat;                         ///< inner material if used
   
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
 
   /// Bellows to ionPump
   std::shared_ptr<constructSystem::Bellows> bellowA;
-  /// Real Ion pump (KF40) 24.4cm vertical
-  std::shared_ptr<constructSystem::CrossPipe> ionPA;
-  /// Gate valve for ring
-  std::shared_ptr<constructSystem::GateValveCube> gateRing;
-  /// Gate block
-  std::shared_ptr<xraySystem::CrossWayTube> gateTubeA;
+  /// vacuum trigger system
+  std::shared_ptr<xraySystem::TriggerTube> triggerPipe;
+  /// first ion pump+gate
+  std::shared_ptr<xraySystem::CylGateValve> gateTubeA;
   /// Bellow to first connect line
   std::shared_ptr<constructSystem::Bellows> bellowB;
   /// Pipe to some stuff
@@ -188,33 +194,24 @@ class maxpeemOpticsLine :
   /// Pipe to exit
   std::shared_ptr<constructSystem::VacuumPipe> outPipeB;
 
-  double outerRadius;           ///< Radius for inner void
+  double outerLeft;           ///< Radius for inner void
+  double outerRight;           ///< Radius for inner void
   
 
-  int constructDivideCell(Simulation&,const bool,
-			   const attachSystem::FixedComp&,
-			   const long int,
-			   const attachSystem::FixedComp&,
-			   const long int);
-
-  int createDoubleVoidUnit(Simulation&,
-			   HeadRule&,
-			   const attachSystem::FixedComp&,
-			   const long int);
   
   void insertFlanges(Simulation&,const constructSystem::PipeTube&);
   
 
-  void buildM1Mirror(Simulation&,MonteCarlo::Object*,
-		     const attachSystem::FixedComp&,const long int);
-  void buildM3Mirror(Simulation&,MonteCarlo::Object*,
-		     const attachSystem::FixedComp&,const long int);
-  void buildMono(Simulation&,MonteCarlo::Object*,
-		 const attachSystem::FixedComp&,const long int);
-  void buildSlitPackage(Simulation&,MonteCarlo::Object*,
-		       const attachSystem::FixedComp&,const long int);
-  void buildSplitter(Simulation&,MonteCarlo::Object*,MonteCarlo::Object*,
-		     const attachSystem::FixedComp&,const long int);
+  void buildM1Mirror
+  (Simulation&,const attachSystem::FixedComp&,const std::string&);
+  void buildM3Mirror
+  (Simulation&, const attachSystem::FixedComp&,const std::string&);
+  void buildMono
+  (Simulation&,const attachSystem::FixedComp&,const std::string&);
+  void buildSlitPackage
+  (Simulation&,const attachSystem::FixedComp&,const std::string&);
+  void buildSplitter
+  (Simulation&,const attachSystem::FixedComp&,const std::string&);
   
   void populate(const FuncDataBase&);
   void createSurfaces();
@@ -228,12 +225,18 @@ class maxpeemOpticsLine :
   maxpeemOpticsLine& operator=(const maxpeemOpticsLine&);
   ~maxpeemOpticsLine();
 
-  void buildOutGoingPipes(Simulation&,const int,const int,
-			  const std::vector<int>&);
+  /// Assignment to inner void
+  void setInnerMat(const int M) {  innerMat=M; }
+  /// Assignment to extra for first volume
+  void setPreInsert
+    (const std::shared_ptr<attachSystem::ContainedGroup>& A) { preInsert=A; }
+
+  void buildExtras(Simulation&,const attachSystem::CellMap&);
   
+  using attachSystem::FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
-
+  
 };
 
 }

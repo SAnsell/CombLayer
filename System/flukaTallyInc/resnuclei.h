@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   flukaTallyInc/resnuclei.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef flukaSystem_resnuclei_h
@@ -41,19 +41,22 @@ class resnuclei : public flukaTally
   int AMax;            ///< Max Z of material
   int ZMax;            ///< Max A of material
   size_t cellA;           ///< Cell number
-    
+
  public:
 
   resnuclei(const int,const int);
   resnuclei(const std::string&,const int,const int);
   resnuclei(const resnuclei&);
-  virtual resnuclei* clone() const; 
+  virtual resnuclei* clone() const;
   resnuclei& operator=(const resnuclei&);
   virtual ~resnuclei();
 
+  /// return fluke name
+  virtual std::string getType() const { return "RESNUCLE"; };
+
   void setCell(const int CN) { cellA=CN; }
   void setZaid(const int,const int);
-  virtual void write(std::ostream&) const;  
+  virtual void write(std::ostream&) const;
 };
 
 }

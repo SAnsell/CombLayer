@@ -142,6 +142,9 @@ class FixedComp
   void setBasicExtent(const double,const double,const double);
 
 
+  template<typename T>
+  void setNamedLinkSurf(const size_t,const std::string&,const T&);
+
   void setLinkSurf(const size_t,const int);
   void setLinkSurf(const size_t,const std::string&);
   void setLinkSurf(const size_t,const HeadRule&);
@@ -214,6 +217,7 @@ class FixedComp
   Geometry::Vec3D getLinkZAxis(const long int) const;
   
   virtual std::string getLinkString(const long int) const;
+  double getLinkDistance(const std::string&,const std::string&) const;
   double getLinkDistance(const long int,const long int) const;
   double getLinkDistance(const long int,const FixedComp&,
 			 const long int) const;

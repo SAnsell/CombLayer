@@ -56,8 +56,8 @@
 #include "FlatPipeGenerator.h"
 #include "BeamDividerGenerator.h"
 #include "IonPTubeGenerator.h"
-#include "LBeamStopGenerator.h"
 #include "NBeamStopGenerator.h"
+#include "TDCBeamDumpGenerator.h"
 
 #include "magnetVar.h"
 
@@ -292,8 +292,8 @@ Segment29Magnet(FuncDataBase& Control,
 
   setVariable::YagScreenGenerator YagScreenGen;
   setVariable::YagUnitGenerator YagUnitGen;
-  setVariable::LBeamStopGenerator BSGen;
-  setVariable::NBeamStopGenerator BSGenB;
+  setVariable::NBeamStopGenerator BSGen;
+  setVariable::TDCBeamDumpGenerator TDCBDGen;
 
   const Geometry::Vec3D startPtA(-637.608,9073.611,0.0);
   const Geometry::Vec3D startPtB(-637.608,9073.535,-84.888);
@@ -340,16 +340,26 @@ Segment29Magnet(FuncDataBase& Control,
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnitB",true);
   Control.addVariable(lKey+"YagUnitBYAngle",90.0);
 
-  YagScreenGen.generateScreen(Control,lKey+"YagScreenA",0);   // closed
+  YagScreenGen.generateScreen(Control,lKey+"YagScreenA",1);   // closed
   Control.addVariable(lKey+"YagScreenAYAngle",-90.0);
-  YagScreenGen.generateScreen(Control,lKey+"YagScreenB",0);   // closed
+  YagScreenGen.generateScreen(Control,lKey+"YagScreenB",1);   // closed
   Control.addVariable(lKey+"YagScreenBYAngle",-90.0);
 
+  TDCBDGen.generate(Control,lKey+"BeamStopA");
+  Control.addVariable(lKey+"BeamStopAYAngle",-90.0);
+  Control.addVariable(lKey+"BeamStopAYStep",4.0);
+  Control.addVariable(lKey+"BeamStopABackSkinThick",0.0);
+  Control.addVariable(lKey+"BeamStopAPreCoreLength",47.0);
 
-  BSGenB.generateBStop(Control,lKey+"BeamStopA");
-  BSGen.generateBStop(Control,lKey+"BeamStopB");
-  Control.addVariable(lKey+"BeamStopAYStep",30.0);
-  Control.addVariable(lKey+"BeamStopBYStep",30.0);
+  TDCBDGen.generate(Control,lKey+"BeamStopB");
+  Control.addVariable(lKey+"BeamStopBYAngle",-90.0);
+  Control.addVariable(lKey+"BeamStopBYStep",4.0);
+  Control.addVariable(lKey+"BeamStopBBackSkinThick",0.0);
+  Control.addVariable(lKey+"BeamStopBPreCoreLength",47.0);
+
+  // end void
+  Control.addVariable(lKey+"EndVoidLength",3.0);
+
   return;
 }
 

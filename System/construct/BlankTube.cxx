@@ -3,7 +3,7 @@
  
  * File:   construct/PipeTube.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -278,7 +278,29 @@ BlankTube::createLinks()
   return;
 }
 
-  
+void
+BlankTube::createPorts(Simulation& System)
+  /*!
+    Create the ports [for outside ports]
+    \param System :: Simulation for model
+   */
+{
+  ELog::RegMethod RegA("BlankTube","createPorts");
+    // both OUTWARD
+  MonteCarlo::Object* OPtr=
+    CellMap::getCellObject(System,"MainTube");
+
+  const HeadRule innerSurf(SurfMap::getSurfRules("#VoidCyl"));
+  const HeadRule outerSurf(SurfMap::getSurfRules("OuterCyl"));
+
+  if (outerVoid)
+    {
+      const HeadRule flangeSurf(SurfMap::getSurfRules("FlangeACyl"));
+      createPorts(System,OPtr,innerSurf,flangeSurf);
+    }
+  else
+    createPorts(System,OPtr,innerSurf,outerSurf);
+}
 
   
 }  // NAMESPACE constructSystem

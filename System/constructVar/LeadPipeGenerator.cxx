@@ -51,10 +51,14 @@ namespace setVariable
 {
 
 LeadPipeGenerator::LeadPipeGenerator() :
-  SplitPipeGenerator(),
-  cladStep(1.0),cladThick(1.0),
-  cladMat("Lead")
-  /*!
+  radius(8.0),thick(0.5),
+  claddingThick(1.0),claddingStep(1.0),
+  flangeARadius(12.0),flangeBRadius(12.0),
+  flangeALength(1.0),flangeBLength(1.0),
+
+  voidMat("Void"),pipeMat("Stainless304"),
+  claddingMat("Lead"),flangeMat("Stainless304")
+  /*
     Constructor and defaults
   */
 {}
@@ -72,10 +76,66 @@ LeadPipeGenerator::setCF()
     Set pipe/flange to CF-X format
   */
 {
-  SplitPipeGenerator::setCF<CF>();
   
-  cladStep=CF::bellowStep;
-  cladThick=CF::bellowThick;
+  radius=CF::innerRadius;
+  thick=CF::wallThick;
+  setAFlangeCF<CF>();
+  setBFlangeCF<CF>();
+
+  claddingStep=CF::bellowStep;
+  claddingThick=CF::bellowThick;
+  return;
+}
+
+template<typename CF>
+void
+LeadPipeGenerator::setAFlangeCF()
+  /*!
+    Set pipe/flange to CF-X format
+  */
+{
+  flangeALength=CF::flangeLength;
+  flangeARadius=CF::flangeRadius;
+  return;
+}
+
+template<typename CF>
+void
+LeadPipeGenerator::setBFlangeCF()
+  /*!
+    Set pipe/flange to CF-X format
+  */
+{
+  flangeBLength=CF::flangeLength;
+  flangeBRadius=CF::flangeRadius;
+  return;
+}
+
+  
+template<typename CF>
+void
+LeadPipeGenerator::setFlangeCF()
+  /*!
+    Set pipe/flange to CF-X format
+  */
+{
+  setAFlangeCF<CF>();
+  setBFlangeCF<CF>();
+  return;
+}
+
+  
+void
+LeadPipeGenerator::setFlangeLength(const double LA,const double LB)
+  /*!
+    Set pipe/flange to CF-X format
+    \param LA :: flange A length
+    \param LB :: flange B length
+  */
+{
+  flangeALength=LA;
+  flangeBLength=LB;
+
   return;
 }
 
@@ -87,8 +147,8 @@ LeadPipeGenerator::setCladding(const double S,const double BT)
     \param BT :: Clad Thickness
   */
 {
-  cladStep=S;
-  cladThick=BT;
+  claddingStep=S;
+  claddingThick=BT;
   return;
 }  
   
@@ -103,7 +163,8 @@ LeadPipeGenerator::setPipe(const double R,const double T,
     \param BT :: Clad Thickness
    */
 {
-  SplitPipeGenerator::setPipe(R,T);
+  radius=R;
+  thick=T;
   setCladding(S,BT);
   return;
 }
@@ -121,15 +182,15 @@ LeadPipeGenerator::setMat(const std::string& PMat,
 {
   ELog::RegMethod RegA("LeadPipeGenerator","setMat");
   
-  SplitPipeGenerator::setMat(PMat);
-  cladMat=CMat;
+  pipeMat=PMat;
+  claddingMat=CMat;
   return;
 }
   
 void
-LeadPipeGenerator::generateCladPipe(FuncDataBase& Control,
-				    const std::string& keyName,
-				    const double length) const
+LeadPipeGenerator::generatePipe(FuncDataBase& Control,
+				const std::string& keyName,
+				const double length) const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
@@ -139,13 +200,22 @@ LeadPipeGenerator::generateCladPipe(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("LeadPipeGenerator","generatorCladPipe");
 
-  SplitPipeGenerator::generatePipe(Control,keyName,length);
+  Control.addVariable(keyName+"Radius",radius);
+  Control.addVariable(keyName+"Length",length);
+  Control.addVariable(keyName+"Thick",thick);
+  Control.addVariable(keyName+"CladdingThick",claddingThick);
+  Control.addVariable(keyName+"CladdingStep",claddingStep);
+  Control.addVariable(keyName+"FlangeARadius",flangeARadius);
+  Control.addVariable(keyName+"FlangeBRadius",flangeBRadius);
+  Control.addVariable(keyName+"FlangeALength",flangeALength);
+  Control.addVariable(keyName+"FlangeBLength",flangeBLength);
+
+
+  Control.addVariable(keyName+"VoidMat",voidMat);
+  Control.addVariable(keyName+"PipeMat",pipeMat);
+  Control.addVariable(keyName+"CladdingMat",claddingMat);
+  Control.addVariable(keyName+"FlangeMat",flangeMat);
   
-  // VACUUM PIPES:
-  Control.addVariable(keyName+"CladThick",cladThick);
-  Control.addVariable(keyName+"CladStep",cladStep);
-  Control.addVariable(keyName+"CladMat",cladMat);
-      
   return;
 
 }
@@ -155,7 +225,19 @@ LeadPipeGenerator::generateCladPipe(FuncDataBase& Control,
 template void LeadPipeGenerator::setCF<CF40>();
 template void LeadPipeGenerator::setCF<CF63>();
 template void LeadPipeGenerator::setCF<CF100>();
-  
+
+template void LeadPipeGenerator::setFlangeCF<CF40>();
+template void LeadPipeGenerator::setFlangeCF<CF63>();
+template void LeadPipeGenerator::setFlangeCF<CF100>();
+
+template void LeadPipeGenerator::setAFlangeCF<CF40>();
+template void LeadPipeGenerator::setAFlangeCF<CF63>();
+template void LeadPipeGenerator::setAFlangeCF<CF100>();
+
+template void LeadPipeGenerator::setBFlangeCF<CF40>();
+template void LeadPipeGenerator::setBFlangeCF<CF63>();
+template void LeadPipeGenerator::setBFlangeCF<CF100>();
+
 ///\endcond TEMPLATE
 
   

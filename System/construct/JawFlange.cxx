@@ -117,25 +117,22 @@ JawFlange::populate(const FuncDataBase& Control)
 
 void
 JawFlange::setFillRadius(const attachSystem::FixedComp& portFC,
-			 const long int radiusIndex,
+			 const std::string& radiusSide,
 			 const int cellNumber)
   /*!
     Give a cylindical (or contained) link surface and the 
     cell that will be completely removed. 
     \param portFC :: Port FixedComp
-    \param radiusIndex :: link point to a radial surface 
+    \param radiusSide :: link point to a radial surface 
     \param cellNubmer :: cell to remove
   */
 {
   ELog::RegMethod Rega("JawFlange","setFillRadius");
 
-  cylRule=portFC.getMainRule(radiusIndex);
+  cylRule=portFC.getMainRule(radiusSide);
   cutCell=cellNumber;
   return;
 }
-
-
-  
 
 void
 JawFlange::createUnitVector(const attachSystem::FixedComp& mFC,
@@ -340,6 +337,30 @@ JawFlange::createAll(Simulation& ,
   ELog::RegMethod RegA("JawFlange","createAll(FC)");
 
   throw ColErr::AbsObjMethod("Single value createAll");
+  return;
+}
+
+void
+JawFlange::createAll(Simulation& System,
+		     const attachSystem::FixedComp& portFC,
+		     const std::string& portName,
+		     const attachSystem::FixedComp& beamFC,
+		     const std::string& beamName)
+ /*!
+    Generic function to create everything
+    Note that portFC and beamFC and often without orthogonal
+    axis sets. (e.g X' is not || to any of X,Y or Z)
+
+    \param System :: Simulation item
+    \param portFC :: FixedComp
+    \param portName :: Fixed Name for main axis
+    \param beamFC :: FixedComp for beam point (and beam axis)
+    \param beamName :: Fixed Index link point
+  */
+{
+  ELog::RegMethod RegA("JawFlange","createAll(FC,string,FC,string)");
+  createAll(System,portFC,portFC.getSideIndex(portName),
+	    beamFC,beamFC.getSideIndex(beamName));
   return;
 }
 

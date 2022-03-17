@@ -86,7 +86,6 @@ FORMAX::FORMAX(const std::string& KN) :
   pShield(new xraySystem::PipeShield(newName+"PShield")),
   exptBeam(new formaxExptLine(newName+"ExptLine")),
   detectorTube(new xraySystem::formaxDetectorTube(newName+"DetectorTube"))
-  
   /*!
     Constructor
     \param KN :: Keyname
@@ -126,7 +125,6 @@ FORMAX::build(Simulation& System,
   ELog::RegMethod RControl("FORMAX","build");
 
   const size_t NS=r3Ring->getNInnerSurf();
-
   const size_t PIndex=static_cast<size_t>(std::abs(sideIndex)-1);
   const size_t SIndex=(PIndex+1) % NS;
   const size_t prevIndex=(NS+PIndex-1) % NS;
@@ -146,24 +144,13 @@ FORMAX::build(Simulation& System,
   wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));    
   wallLead->createAll(System,FCOrigin,sideIndex);
 
-  if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
   
-  opticsHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
-  opticsHut->setCutSurf("RingWall",r3Ring->getSurf("BeamOuter",PIndex));
+  if (stopPoint=="frontEnd" || stopPoint=="Dipole"
+      || stopPoint=="FM1" || stopPoint=="FM2")
+    return;
+  
 
-  opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
-  opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
-
-  opticsHut->setCutSurf("InnerSideWall",r3Ring->getSurf("FlatInner",PIndex));
-  opticsHut->setCutSurf("SideWall",r3Ring->getSurf("FlatOuter",PIndex));
-
-  opticsHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
-
-  // Ugly HACK to get the two objects to merge
-  r3Ring->insertComponent
-    (System,"OuterFlat",SIndex,
-     *opticsHut,opticsHut->getSideIndex("frontCut"));
-
+  buildOpticsHutch(System,opticsHut,PIndex,exitLink);
 
   if (stopPoint=="opticsHut") return;
 
@@ -187,7 +174,7 @@ FORMAX::build(Simulation& System,
   exptHut->setCutSurf("frontWall",*opticsHut,"back");
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
-  exptHut->createAll(System,*opticsHut,"exitHole");
+  exptHut->createAll(System,*opticsHut,"exitHole0");
 
   joinPipeB->addAllInsertCell(opticsBeam->getCell("LastVoid"));  
   joinPipeB->addInsertCell("Main",opticsHut->getCell("ExitHole"));

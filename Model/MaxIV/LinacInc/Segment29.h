@@ -3,7 +3,7 @@
 
  * File:   LinacInc/Segment29.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,8 +24,9 @@
 
 namespace constructSystem
 {
- class Bellows;
- class VacuumPipe;
+  class Bellows;
+  class VacuumPipe;
+  class VoidUnit;
 }
 
 namespace tdcSystem
@@ -38,15 +39,14 @@ namespace tdcSystem
   class YagUnit;
   class YagScreen;
   class LBeamStop;
-  class NBeamStop;
-  
+  class TDCBeamDump;
 
   /*!
     \class Segment29
     \version 1.0
     \author S. Ansell
-    \date June 2020
-    \brief Dividing segment in the TDC from the linac
+    \date Oct 2021
+    \brief Final TDC beam line segment (branches A and B)
   */
 
 class Segment29 :
@@ -57,7 +57,7 @@ class Segment29 :
   std::unique_ptr<attachSystem::BlockZone> IZTop;        ///< Upper inner zone
   std::unique_ptr<attachSystem::BlockZone> IZMid;        ///< Flat inner zone
 
-  /// Join pipe 
+  /// Join pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeAA;
   std::shared_ptr<constructSystem::VacuumPipe> pipeBA;
 
@@ -65,7 +65,7 @@ class Segment29 :
   std::shared_ptr<constructSystem::Bellows> bellowAA;
   std::shared_ptr<constructSystem::Bellows> bellowBA;
 
-  /// Join pipe 
+  /// Join pipe
   std::shared_ptr<tdcSystem::YagUnit> yagUnitA;
   std::shared_ptr<tdcSystem::YagUnit> yagUnitB;
 
@@ -73,22 +73,24 @@ class Segment29 :
   std::shared_ptr<tdcSystem::YagScreen> yagScreenA;
   std::shared_ptr<tdcSystem::YagScreen> yagScreenB;
 
+  // End void for nice flat terminator
+  std::shared_ptr<constructSystem::VoidUnit> endVoid;
+
   /// beam-stops
-  std::shared_ptr<tdcSystem::NBeamStop> beamStopA;
-  std::shared_ptr<tdcSystem::LBeamStop> beamStopB;
+  std::shared_ptr<tdcSystem::TDCBeamDump> beamStopA;
+  std::shared_ptr<tdcSystem::TDCBeamDump> beamStopB;
 
   void buildObjects(Simulation&);
   void createLinks();
 
   void createSplitInnerZone();
-  
+
  public:
 
   Segment29(const std::string&);
   Segment29(const Segment29&);
   Segment29& operator=(const Segment29&);
   ~Segment29();
-
 
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,

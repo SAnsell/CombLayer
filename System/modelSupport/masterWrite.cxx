@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   process/masterWrite.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -67,7 +67,7 @@ masterWrite::setSigFig(const size_t S)
     throw ColErr::IndexError<size_t>(S,0,"masterWrite::setSigFig");
   std::ostringstream cx;
   cx<<"\%1."<<S<<"g";
-  sigFig=S; 
+  sigFig=S;
   FMTdouble=boost::format(cx.str());
   return;
 }
@@ -88,7 +88,7 @@ masterWrite::Num(const double& D)
   /*!
     Write out a specific double
     \param D :: number to process
-    \return formated number / 0.0 
+    \return formated number / 0.0
    */
 {
   if (std::abs(D)<zeroTol)
@@ -96,7 +96,7 @@ masterWrite::Num(const double& D)
 
   return (FMTdouble % D).str();
 }
-  
+
 std::string
 masterWrite::Num(const int& I)
   /*!
@@ -147,15 +147,16 @@ masterWrite::NumComma(const Geometry::Vec3D& V)
 std::string
 masterWrite::NameNoDot(std::string V)
   /*!
-    Write out a name without "." which is
-    forbidden in povray
-    \param V :: Name as a dot
+    Write out a name without symbols forbidden in POV-Ray
+    \param V :: Original name
     \return formated name
   */
 {
   std::replace(V.begin(),V.end(),'.','d');
   std::replace(V.begin(),V.end(),'%','p');
   std::replace(V.begin(),V.end(),'#','h');
+  std::replace(V.begin(),V.end(),'-','_');
+
   return V;
 }
 
@@ -184,7 +185,7 @@ masterWrite::padNum(const Geometry::Vec3D& V,const size_t len)
     \param V :: Value
     \param len :: length of each component
     \return Num(Vec3D) + spaces to length
-   */ 
+   */
 {
   std::string Out;
   for(size_t i=0;i<3;i++)
@@ -193,7 +194,7 @@ masterWrite::padNum(const Geometry::Vec3D& V,const size_t len)
       if (i!=2) Out+=" ";
     }
   return Out;
- 
+
 }
 
 ///\cond TEMPLATE

@@ -147,7 +147,7 @@ userBinConstruct::processMesh(SimFLUKA& System,
   else if (PType=="free")
     mainSystem::meshConstruct::getFreeMesh(IParam,"tally",Index,3,APt,BPt,Nxyz);
 
-  userBinConstruct::createTally(System,tallyParticle,nextId,APt,BPt,Nxyz);
+  userBinConstruct::createTally(System,tallyParticle,-nextId,APt,BPt,Nxyz);
   
   return;      
 }

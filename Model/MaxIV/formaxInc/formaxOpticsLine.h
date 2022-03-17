@@ -89,7 +89,7 @@ class formaxOpticsLine :
 {
  private:
 
-  /// string for pre-insertion into mastercell:0
+  /// Items pre-insertion into mastercell:0
   std::shared_ptr<attachSystem::ContainedGroup> preInsert;
   /// construction space for main object
   attachSystem::BlockZone buildZone;
@@ -102,10 +102,9 @@ class formaxOpticsLine :
   std::shared_ptr<constructSystem::Bellows> pipeInit;
   /// vacuum trigger system
   std::shared_ptr<xraySystem::TriggerTube> triggerPipe;
-  /// first ion pump
+  /// first ion pump+gate
   std::shared_ptr<xraySystem::CylGateValve> gateTubeA;
-
-  /// Addaptor to connect from pumpint point to diffuser
+  /// Addaptor to connect from pump into point to diffuser
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;
   /// bellow to collimator
   std::shared_ptr<constructSystem::Bellows> bellowA;
@@ -252,7 +251,8 @@ class formaxOpticsLine :
   /// Assignment to extra for first volume
   void setPreInsert
     (const std::shared_ptr<attachSystem::ContainedGroup>& A) { preInsert=A; }
-  
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

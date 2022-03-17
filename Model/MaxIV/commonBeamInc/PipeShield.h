@@ -34,11 +34,12 @@ namespace xraySystem
     \brief Extra beam stop for opticshutch
   */
   
-class PipeShield : public attachSystem::ContainedGroup,
-  public attachSystem::FixedRotate,
-  public attachSystem::CellMap,
-  public attachSystem::SurfMap,
-  public attachSystem::ExternalCut
+class PipeShield :
+    public attachSystem::ContainedGroup,
+    public attachSystem::FixedRotate,
+    public attachSystem::CellMap,
+    public attachSystem::SurfMap,
+    public attachSystem::ExternalCut
 {
  private:
   

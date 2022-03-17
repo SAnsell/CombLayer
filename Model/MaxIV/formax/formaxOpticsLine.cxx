@@ -73,7 +73,6 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
-#include "InnerZone.h"
 #include "BlockZone.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
@@ -302,7 +301,7 @@ formaxOpticsLine::createSurfaces()
 {
   ELog::RegMethod RegA("formaxOpticsLine","createSurface");
 
-  if (outerLeft>Geometry::zeroTol &&  isActive("floor"))
+  if (outerLeft>Geometry::zeroTol && isActive("floor"))
     {
       ModelSupport::buildPlane
 	(SMap,buildIndex+3,Origin-X*outerLeft,X);
@@ -508,8 +507,6 @@ formaxOpticsLine::constructMonoShutter(Simulation& System,
   return;
 }
 
-
-  
 
 void
 formaxOpticsLine::buildObjects(Simulation& System)

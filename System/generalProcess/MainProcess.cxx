@@ -681,7 +681,8 @@ buildFullSimulation(Simulation* SimPtr,
 
 
   SimPtr->minimizeObject("All");
-
+  SimPtr->removeDeadSurfaces();
+  
   // Extra
   if (createVTK(IParam,SimPtr,OName))
     return;

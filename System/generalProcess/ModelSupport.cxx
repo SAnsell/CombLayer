@@ -942,11 +942,11 @@ getAltHeadRule(const surfRegister& SMap,const int Offset,
     \param minorOffset :: minor Offset nubmer to add [M]
     \param secondOffset :: second minor Offset nubmer to add [N]
     \param BaseString :: BaseString number
-    \return HeadRuel components
+    \return HeadRule components
    */
 {
-  return HeadRule(getAltHeadRule(SMap,Offset,MinorOffset,
-				 SecondOffset,BaseString));
+  return HeadRule(getAltComposite(SMap,Offset,MinorOffset,
+				  SecondOffset,BaseString));
 }
 
 HeadRule
@@ -970,7 +970,7 @@ getAltHeadRule(const surfRegister& SMap,const int Offset,
     \return HeadRuel components
    */
 {
-  return HeadRule(getAltHeadRule(SMap,Offset,MinorOffset,BaseString));
+  return HeadRule(getAltComposite(SMap,Offset,MinorOffset,Offset,BaseString));
 }
 
 HeadRule
@@ -993,7 +993,7 @@ getAltHeadRule(const surfRegister& SMap,const int Offset,
     \return HeadRuel components
    */
 {
-  return HeadRule(getAltHeadRule(SMap,Offset,BaseString));
+  return HeadRule(getAltComposite(SMap,Offset,Offset,Offset,BaseString));
 }
 
 }  // NAMESPACE ModelSupport

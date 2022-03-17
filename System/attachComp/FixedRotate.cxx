@@ -234,7 +234,7 @@ FixedRotate::populate(const std::string& baseName,
   yAngle=Control.EvalDefTail<double>(keyName,baseName,"YAngle",yAngle);
   zAngle=Control.EvalDefTail<double>(keyName,baseName,"ZAngle",zAngle);
 
-  flipX=Control.EvalDefTail<double>(keyName,baseName,"FlipX",flipX);
+  flipX=Control.EvalDefTail<int>(keyName,baseName,"FlipX",flipX);
   return;
   
 }

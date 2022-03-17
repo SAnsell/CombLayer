@@ -52,7 +52,7 @@ class BlankTube :
   virtual void createLinks();
 
   std::string makeOuterVoid(Simulation&);
-  
+
  public:
 
   BlankTube(const std::string&);
@@ -60,6 +60,10 @@ class BlankTube :
   BlankTube& operator=(const BlankTube&);
   virtual ~BlankTube();
 
+  using VirtualTube::createPorts;
+  virtual void createPorts(Simulation&);
+  
+      
 };
 
 }

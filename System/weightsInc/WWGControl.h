@@ -55,19 +55,20 @@ class WWGControl
   std::map<std::string,Geometry::Plane> planePt;       ///< Plane points
   std::map<std::string,Geometry::Vec3D> sourcePt;      ///< Source Points
   std::map<std::string,Geometry::BasicMesh3D> meshUnit;     ///< mesh volumes
+  std::map<std::string,std::vector<double>> engUnit;        ///< energy grid
   
   //  void help() const
   
   void procMarkov(const mainSystem::inputParam&,const std::string&,
 		  const size_t);
-  void procEnergyType(const mainSystem::inputParam&);
+  void procEnergyMesh(const mainSystem::inputParam&);
   void procSourcePoint(const Simulation&,const mainSystem::inputParam&);
   void procPlanePoint(const Simulation&,const mainSystem::inputParam&);
   void procMeshPoint(const Simulation&,const mainSystem::inputParam&);
 
   void wwgVTK(const mainSystem::inputParam&);
   void wwgCreate(const Simulation&,const mainSystem::inputParam&);
-  void wwgCombine(const Simulation&,const mainSystem::inputParam&);
+  void wwgCADIS(const Simulation&,const mainSystem::inputParam&);
   
   void wwgMarkov(const Simulation&,const mainSystem::inputParam&);
   void wwgNormalize(const mainSystem::inputParam&);
@@ -76,7 +77,10 @@ class WWGControl
   void processPtString(std::string ptStr,std::string& pType,
 		       size_t&,bool&) const;
 
+  const std::vector<double>& getEnergy(std::string,size_t&) const;
+  const std::vector<double>& getEnergy(const std::string&) const;
   const Geometry::BasicMesh3D& getGrid(const std::string&) const;
+  
   bool hasSourcePoint(const std::string&) const;
   bool hasPlanePoint(const std::string&) const;
   const Geometry::Vec3D& getSourcePoint(const std::string&) const;

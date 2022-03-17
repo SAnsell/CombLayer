@@ -57,6 +57,8 @@ class VirtualTube :
   bool delayPortBuild;        ///< Delay port to manual construct
   size_t portConnectIndex;    ///< Port to connect for new-origin
   Geometry::Vec3D rotAxis;    ///< Rotation axis for port rotate
+  bool zNorm;                 ///< Apply Z tracking
+  Geometry::Vec3D postZAxis;  ///< Alignment axis for Z after tracking
   double postYRotation;       ///< Post Y rotation if Y aligned to port.
   
   std::set<int> portCells;               ///< Extra cells for the port
@@ -66,12 +68,10 @@ class VirtualTube :
   std::vector<std::shared_ptr<portItem>> Ports;     
 
   virtual void applyPortRotation();
-  Geometry::Vec3D calcCylinderDistance(const size_t) const;
 
   std::string makeOuterVoid(Simulation&);
   
   virtual void populate(const FuncDataBase&);
-  virtual void createUnitVector(const attachSystem::FixedComp&,const long int);
   virtual void createSurfaces() =0;
   virtual void createObjects(Simulation&) =0;
   virtual void createLinks() =0;
@@ -96,22 +96,26 @@ class VirtualTube :
 
   void setPortRotation(const size_t,const Geometry::Vec3D&,
 		       const double =0.0);
+  void setPortRotation(const size_t,const Geometry::Vec3D&,
+		       const Geometry::Vec3D&);
 
   void addInsertPortCells(const int);
   void intersectPorts(Simulation&,const size_t,const size_t) const;
   void intersectVoidPorts(Simulation&,const size_t,const size_t) const;
   const portItem& getPort(const size_t) const;
 
-  void createPorts(Simulation&,MonteCarlo::Object*,
+  virtual void createPorts(Simulation&,MonteCarlo::Object*,
 		   const HeadRule&,const HeadRule&);
+  virtual void createPorts(Simulation&) =0;
 
-  virtual void insertAllInCell(Simulation&,const int);
-  virtual void insertAllInCell(Simulation&,const std::vector<int>&);
-  virtual void insertMainInCell(Simulation&,const int);
-  virtual void insertMainInCell(Simulation&,const std::vector<int>&);
-  virtual void insertPortInCell(Simulation&,const int);
-  virtual void insertPortInCell(Simulation&,
-				const std::vector<std::set<int>>&);
+  virtual void insertAllInCell(Simulation&,const int) const;
+  virtual void insertAllInCell(Simulation&,const std::vector<int>&) const;
+  virtual void insertMainInCell(Simulation&,const int) const;
+  virtual void insertMainInCell(Simulation&,const std::vector<int>&) const;
+  virtual void insertPortInCell(Simulation&,const size_t,const int) const;
+  virtual void insertPortsInCell(Simulation&,const int) const;
+  virtual void insertPortsInCell(Simulation&,
+				const std::vector<std::set<int>>&) const;
 
   using FixedComp::createAll;
   virtual void createAll(Simulation&,

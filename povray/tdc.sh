@@ -20,12 +20,16 @@ else # last argument is not a segment name but the ITEM, so remove
     segments="${@:1:$(($#-1))}"
 fi
 
+params=" +A +W800 +H600 "
 void=""
-if [ $1 != " " ]; then # we build the beam line, therefore remove the InjectionHall walls
+if [ $ITEM == "SpectrometerDipole" -o $ITEM == "TDC26ShieldA" -o $ITEM == "TDC1" -o $ITEM == "TDC2" -o $ITEM == "L2SPF6ShieldA" ]; then # we build the beam line, therefore remove the InjectionHall walls
     void=" -v InjectionHallFloorMat Void -v InjectionHallRoofMat Void -v InjectionHallWallMat Void "
     void+=" -v InjectionHallPillarMat Void -v InjectionHallBTGMat Void -v InjectionHallSoilMat Void "
     void+=" -v InjectionHallBackWallMat Void -v InjectionHallWallIronMat Void "
     void+=" -v InjectionHallTHzMat Void -v InjectionHallMidTFrontLShieldMat Void "
+    void+=" -v InjectionHallSPFMazeLayerMat Void "
+    void+=" -v InjectionHallBDRoofIronMat Void "
+    void+=" -v TDC26ShieldAMainMat Lead "
 fi
 
 if [ "$segments" == "All" -a $ITEM == "SPF32DipoleA" ]; then
@@ -40,14 +44,21 @@ elif [ $ITEM == "L2SPF2YagScreenInBeam" ]; then
     void+="-v L2SPF2ShieldAMainMat Void -v L2SPF2YagUnitMainMat Void -v L2SPF2YagScreenScreenMat Wax -v L2SPF2YagScreenMirrorMat Copper -v L2SPF2YagScreenInBeam 1 "
 elif [ $ITEM == "L2SPF2YagScreen" ]; then
     void+="-v L2SPF2ShieldAMainMat Void -v L2SPF2YagUnitMainMat Void "
+elif [[ $ITEM =~ (NoRoof) ]]; then
+    void+="-v InjectionHallRoofMat Void -v InjectionHallSoilMat Void -v InjectionHallFloorMat Void "
+    params=" +A +W1600 +H1600 "
+#    params=" +A +W500 +H500 "
 fi
 
+if [ $ITEM == "BTG" ]; then
+    void+=" -v InjectionHallBTGMat H2O "
+fi
 
  echo $ITEM
  echo ${segments}
  echo $void
 
  ./maxiv   -defaultConfig LINAC ${segments} -povray $void a \
-    && povray +A +W800 +H600 povray/tdc.pov <<< \"$ITEM\" && exit 0
+    && povray ${params} povray/tdc.pov <<< \"$ITEM\" && exit 0
+#    && povray +A +W800 +H600 povray/tdc.pov <<< \"$ITEM\" && exit 0
 #    && povray +Q0 +W400 +H300 povray/tdc.pov <<< \"$ITEM\" && exit 0
-#    && povray +A +W1600 +H1200 povray/tdc.pov <<< \"$ITEM\" && exit 0

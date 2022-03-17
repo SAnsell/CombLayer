@@ -47,7 +47,7 @@ class PipeTube :
   double flangeACapThick;           ///< Thickness of Flange cap if present
   double flangeBCapThick;           ///< Thickness of Flange cap if present
   
-  std::string makeOuterVoid(Simulation&);
+  HeadRule makeOuterVoid(Simulation&);
   
   virtual void populate(const FuncDataBase&);
   virtual void createSurfaces();
@@ -63,12 +63,8 @@ class PipeTube :
   virtual ~PipeTube();
 
   using VirtualTube::createPorts;
-  void createPorts(Simulation&);
-
-  using FixedComp::createAll;
-  virtual void createAll(Simulation&,
-			 const attachSystem::FixedComp&,
-			 const long int);
+  virtual void createPorts(Simulation&);
+  
 };
 
 }

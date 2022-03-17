@@ -3,7 +3,7 @@
  
  * File:   commonBeam/BeamMount.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -284,6 +284,28 @@ BeamMount::createAll(Simulation& ,
   ELog::RegMethod RegA("BeamFlange","createAll(FC)");
 
   throw ColErr::AbsObjMethod("Single value createAll");
+  return;
+}
+
+void
+BeamMount::createAll(Simulation& System,
+		     const attachSystem::FixedComp& centreFC,
+		     const std::string& cName,
+		     const attachSystem::FixedComp& flangeFC,
+		     const std::string& fName)
+  /*!
+    Extrenal build everything
+    \param System :: Simulation
+    \param centreFC :: FixedComp for beam origin
+    \param cName :: link point of centre [and axis]
+    \param flangeFC :: link point of flange center
+    \param fName :: direction for links
+   */
+{
+  ELog::RegMethod RegA("BeamMount","createAll(name,name)");
+
+  createAll(System,centreFC,centreFC.getSideIndex(cName),
+	    flangeFC,flangeFC.getSideIndex(fName));
   return;
 }
 

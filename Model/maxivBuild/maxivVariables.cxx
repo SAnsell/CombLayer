@@ -105,7 +105,7 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
 
   const std::set<std::string> R3Beam
     ({"R3RING","RING3","FORMAX","COSAXS", "SOFTIMAX",
-	"DANMAX", "BALDER", "FORMAX"});
+	"DANMAX", "BALDER", "MICROMAX"});
   
   typedef void (*VariableFunction)(FuncDataBase&);
   typedef std::multimap<std::string,VariableFunction> VMap;
@@ -116,6 +116,7 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
      {"SOFTIMAX",  &SOFTIMAXvariables},
      {"DANMAX",    &DANMAXvariables},
      {"FLEXPES",   &FLEXPESvariables},
+     {"MICROMAX",  &MICROMAXvariables},
      {"FORMAX",    &FORMAXvariables},
      {"MAXPEEM",   &MAXPEEMvariables},
      {"SPECIES",   &SPECIESvariables}

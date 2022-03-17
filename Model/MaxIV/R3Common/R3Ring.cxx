@@ -113,6 +113,7 @@ R3Ring::populate(const FuncDataBase& Control)
   offsetCornerY=Control.EvalVar<double>(keyName+"OffsetCornerY");
 
   outerWall=Control.EvalVar<double>(keyName+"OuterWall");
+  outerWallCut=Control.EvalVar<double>(keyName+"OuterWallCut");
   ratchetWall=Control.EvalVar<double>(keyName+"RatchetWall");
   
   height=Control.EvalVar<double>(keyName+"Height");
@@ -194,18 +195,16 @@ R3Ring::createSurfaces()
       const Geometry::Vec3D& APt(outerPts[i]);
       const Geometry::Vec3D& XX(outerX[li]);
       const Geometry::Vec3D& YY(outerY[i]);
+      const Geometry::Vec3D& flatYY(outerY[li]);
 
-      ModelSupport::buildPlane(SMap,surfN+1,APt,XX);
-      SurfMap::addSurf("BeamInner",SMap.realSurf(surfN+1));
-      ModelSupport::buildPlane(SMap,surfN+3,APt,YY);
-      SurfMap::addSurf("FlatInner",-SMap.realSurf(surfN+3));
-      
+      SurfMap::makePlane("BeamInner",SMap,surfN+1,APt,XX);
+      SurfMap::makePlane("#FlatInner",SMap,surfN+3,APt,YY);
+
       // outer wall
-      ModelSupport::buildPlane(SMap,surfN+1001,APt+XX*ratchetWall,XX);
-      SurfMap::addSurf("BeamOuter",SMap.realSurf(surfN+1001));
-      ModelSupport::buildPlane(SMap,surfN+1003,APt+YY*outerWall,YY);
-      SurfMap::addSurf("FlatOuter",SMap.realSurf(surfN+1003));
-
+      SurfMap::makePlane("BeamOuter",SMap,surfN+1001,APt+XX*ratchetWall,XX);
+      SurfMap::makePlane("FlatOuter",SMap,surfN+1003,APt+YY*outerWall,YY);
+      SurfMap::makePlane("FlatOuterCut",SMap,surfN+1503,
+			 APt-flatYY*outerWallCut,flatYY);
       surfN+=10;
     }
   
@@ -277,7 +276,6 @@ R3Ring::createObjects(Simulation& System)
   int INext(buildIndex+1000);
   for(size_t i=0;i<NInnerSurf;i++)
     {
-
       // outer
       HR=ModelSupport::getHeadRule(SMap,BNext,BPrev," 1M -3M  -1 ");
       // inner
@@ -286,16 +284,17 @@ R3Ring::createObjects(Simulation& System)
       makeCell("InnerVoid",System,cellIndex++,0,0.0,HR*innerLayerHR);
       makeCell("Roof",System,cellIndex++,roofMat,0.0,HR*roofLayerHR);
 
-      HR=ModelSupport::getHeadRule(SMap,BNext,BPrev," 1001M -1003M  -1 3M");
+      HR=ModelSupport::getHeadRule(SMap,BNext,BPrev,
+				   "1001M -1003M  -1 3M -1503M");
       makeCell("OuterFlat",System,cellIndex++,wallMat,0.0,HR*fullLayerHR);
 
-      HR=ModelSupport::getHeadRule(SMap,BNext,BPrev," 1 -1001 -1003M  3 ");
+      HR=ModelSupport::getHeadRule(SMap,BNext,BPrev," 1 -1001 -1003M  3");
       makeCell("FrontWall",System,cellIndex++,wallMat,0.0,HR*fullLayerHR);
 
       HR=ModelSupport::getHeadRule
-	(SMap,BNext,BPrev,buildIndex," 1001 -1003M  1003 -9007N ");
+	(SMap,BNext,BPrev,buildIndex," 1001 -1003M  (1003:1503) -9007N ");
       makeCell("OuterSegment",System,cellIndex++,0,0.0,HR*fullLayerHR);
-      
+
       IPrev=INext;
       BPrev=BNext;
       INext+=10;
@@ -379,7 +378,8 @@ R3Ring::createLinks()
       FixedComp::nameSideIndex(i+NInnerSurf,"ExitCentre"+std::to_string(i));
       FixedComp::setLinkSurf(NInnerSurf+i,-BExit->getName());
       FixedComp::setConnect(NInnerSurf+i,exitCentre,Beam);
-					
+
+      
       theta+=2.0*M_PI/static_cast<double>(NInnerSurf);
     }
   return;

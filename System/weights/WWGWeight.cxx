@@ -73,6 +73,19 @@ WWGWeight::WWGWeight(const size_t index) :
 {}
 
 
+WWGWeight::WWGWeight(const size_t index,
+		       const WWGWeight& A) : 
+  ID(index),
+  WE(A.WE),WX(A.WX),WY(A.WY),WZ(A.WZ),
+  particles(A.particles),EBin(A.EBin),Grid(A.Grid),
+  WGrid(A.WGrid)
+  /*!
+    Copy constructor with pre-set index
+    \param index :: new ID number
+    \param A :: WWGWeight to copy
+  */
+{}
+
 WWGWeight::WWGWeight(const WWGWeight& A) : 
   ID(A.ID),
   WE(A.WE),WX(A.WX),WY(A.WY),WZ(A.WZ),
@@ -115,18 +128,19 @@ void
 WWGWeight::setEnergy(const std::vector<double>& EVal)
   /*!
     Set the energy table
+    \param EVal :: list of values
    */
 {
   EBin.clear();
-  EBin.push_back(0.0); // must have a zero:
   for(const double E : EVal)
     {
-      if (E-1e-6 > EBin.back())   // meV set min:
+      if (E>0.0 &&
+	  (EBin.empty() || E-1e-6 > EBin.back()))   // meV set min:
 	EBin.push_back(E);
     }
-  if (EBin.back()<1e3)
-    EBin.push_back(1e3);
-
+  if (EBin.size()<2)
+    EBin=std::vector<double>{0.0,1e3};
+      
   WE=static_cast<long int>(EBin.size())-1;
   resize();
   return;
@@ -454,37 +468,47 @@ WWGWeight::scaleMeshItem(const long int I,const long int J,
 void
 WWGWeight::scaleRange(const size_t eIndex,
 		      double AValue,double BValue,
-		      const double fullRange)
+		      const double fullRange,
+		      const double weightMax)
   /*!
-    Convert a set of value [EXP not taken]
-    into  a source. 
-    - 0 is full beam 
-    \param eIndex :: Energy index 
+    Scale the mesh so all values fall in a range given by fullRange
+    and groin from weightMax-fullRange : weightMax.
+    \param eIndex :: Offset energy Index [offset by +1] / 0 for full range
     \param AValue :: [log] Min Value [assumed to be fullRange] (+ve use min)
     \param BValue :: [log] Max value [above assumed to be 1.0] (+ve to use max)
     \param fullRange :: Range of data output [+ve]
+    \param weightMax :: Maximum value (so we get weightMax-fullRange : weightMax
   */
 {
-  ELog::RegMethod RegA("WWGWeight","scaleRange");
+  ELog::RegMethod RegA("WWGWeight","scaleRange(full)");
 
   if (fullRange<1.0 || fullRange>100.0)
     throw ColErr::RangeError<double>(fullRange,1.0,100.0,"fullRange");
 
-  if (eIndex>=static_cast<size_t>(WE))
-    throw ColErr::IndexError<size_t>
-	       (eIndex,static_cast<size_t>(WE),"Energy index");
-  
+  if (weightMax<-100.0 || weightMax>0.0)
+    throw ColErr::RangeError<double>(weightMax,-100.0,0.0,"weightMax");
 
   double* TData=WGrid.data();
-  const size_t NData=WGrid.num_elements()/WE;
-  
-  TData+=eIndex*static_cast<size_t>(WE);
+  size_t NData=WGrid.num_elements();
 
+  if (eIndex>0)
+    {
+      if (static_cast<long int>(eIndex)>WE)
+	throw ColErr::IndexError<size_t>
+	       (static_cast<long int>(eIndex),WE,"Energy out of range");
+      NData/=static_cast<size_t>(WE);
+      TData+= NData*(eIndex-1);
+    }
+      
   if (AValue > 0)
     AValue= *std::min_element(TData,TData+NData-1);
+  
   if (BValue > 0)
     BValue= *std::max_element(TData,TData+NData-1);
+  
 
+  if (AValue>BValue) std::swap(AValue,BValue);
+  
   double maxValue(-100);
   double minValue(100);
   if (AValue<BValue)
@@ -494,9 +518,9 @@ WWGWeight::scaleRange(const size_t eIndex,
       for(size_t i=0;i<NData;i++)
 	{
 	  if (TData[i]<=AValue)
-	    TData[i] = -fullRange;
+	    TData[i] = weightMax-fullRange;
 	  else if (TData[i]>=BValue)
-	    TData[i] = 0.0;
+	    TData[i] = weightMax;
 	  else
 	    {
 	      if (TData[i]>maxValue)
@@ -506,24 +530,26 @@ WWGWeight::scaleRange(const size_t eIndex,
 		minValue=TData[i];
 	      // F is +ve
 	      const double F=(TData[i]-AValue)/ABRange;
-	      TData[i]= -(1.0-F)*fullRange;
+	      TData[i]= weightMax-(1.0-F)*fullRange;
 	    }
 	}
     }
   
-  ELog::EM<<"Full range == "<<fullRange<<" "<<AValue<<" "<<BValue
+  ELog::EM<<"Full range == "<<weightMax-fullRange<<":"<<weightMax
+	  <<" Using basis:"<<AValue<<" "<<BValue
 	  <<"\n"
 	  <<"Scaled from ["<<minValue<<"]"<<exp(minValue)<<" ["
 	  <<maxValue<<"] "<<exp(maxValue)<<ELog::endDiag;
   
-  
   return;
 }
+
 
 template<typename T>
 void
 WWGWeight::wTrack(const Simulation& System,
 		  const T& initPt,
+		  const size_t eIndex,
 		  const double densityFactor,
 		  const double r2Length,
 		  const double r2Power)
@@ -550,12 +576,16 @@ WWGWeight::wTrack(const Simulation& System,
 	  const Geometry::Vec3D Pt=Grid.point(i,j,k);
 	  for(long int index=0;index<WE;index++)
 	    {
-	      const size_t eIndex(static_cast<size_t>(index));
-	      const double EVal=(EBin[eIndex]+EBin[eIndex])/2.0;
-	      const double DT=
-		distTrack(System,initPt,EVal,Pt,densityFactor,r2Length,r2Power);
-	      // energy
-	      addLogPoint(cN,index,DT);
+	      if (!eIndex || static_cast<size_t>(index+1)==eIndex)
+		{
+		  const size_t sIndex(static_cast<size_t>(index));
+		  const double EVal=(EBin[sIndex]+EBin[sIndex+1])/2.0;
+		  const double DT=
+		    distTrack(System,initPt,EVal,Pt,
+			      densityFactor,r2Length,r2Power);
+		  // energy
+		  addLogPoint(cN,index,DT);
+		}
 	    }
 	  cN++;
 	}
@@ -604,8 +634,11 @@ WWGWeight::distTrack(const Simulation& System,
 template<typename T,typename U>
 void
 WWGWeight::CADISnorm(const Simulation& System,
+		     const long int mIndex,
 		     const WWGWeight& Source,
+		     const long int sIndex,
 		     const WWGWeight& Adjoint,
+		     const long int aIndex,
 		     const T& sourcePt,
                      const U& tallyPt,
 		     const double densityFactor,
@@ -616,115 +649,140 @@ WWGWeight::CADISnorm(const Simulation& System,
     the cadis formalism [M. Munk et al : Nucl Sci Eng (2017)]
     Sets the sourceFlux to to R/adjoint[i] flux
     \param System :: Simulation for tracking
+    \param mIndex :: energy index for this
     \param Source :: Sourrce WWGWeight
+    \param sIndex :: energy index for source
     \param Adjoint :: Adjoint WWGWeight
+    \param aIndex :: energy index for adjoint
     \param sourcePt :: Source point [point/plane]
     \param tallyPt :: tally point   [point/plane]
   */
 {
   ELog::RegMethod RegA("WWGWeight","CADISnorm");
 
-  
-  
-  if (Source.WE!=Adjoint.WE &&
-      Source.WX!=Adjoint.WX &&
-      Source.WY!=Adjoint.WY &&
+  if (Source.WE!=Adjoint.WE ||
+      Source.WX!=Adjoint.WX ||
+      Source.WY!=Adjoint.WY ||
       Source.WZ!=Adjoint.WZ)
     throw ColErr::DimensionError<4,long int>
       ({Source.WX,Source.WY,Source.WZ,Source.WE},
        {Adjoint.WX,Adjoint.WY,Adjoint.WZ,Adjoint.WE},
        "Index values");
   
-  if (Source.WE!=WE && Source.WX!=WX &&
-      Source.WY!=WY && Source.WZ!=WZ)
+  if (Source.WE!=WE || Source.WX!=WX ||
+      Source.WY!=WY || Source.WZ!=WZ)
     {
+      Grid=Source.Grid;
       WE=Source.WE;
       WX=Source.WX;
       WY=Source.WY;
       WZ=Source.WZ;
       WGrid.resize(boost::extents[WE][WX][WY][WZ]);      
     }
+
+  if (mIndex<0 || mIndex>WE)
+    throw ColErr::IndexError<long int>(WE,mIndex,"Mesh E-Index");
+  if (sIndex<0 || sIndex>WE)
+    throw ColErr::IndexError<long int>(WE,sIndex,"Source E-Index");
+  if (aIndex<0 || aIndex>WE)
+    throw ColErr::IndexError<long int>(WE,aIndex,"Adjoint E-Index");
   
-  std::vector<double> sumR(static_cast<size_t>(WE));
-  std::vector<double> sumRA(static_cast<size_t>(WE));
-  for(long int e=0;e<WE;e++)
-    {
-      sumR[e]=minLOG;
-      sumRA[e]=minLOG;
-    }
+
   
-  ELog::EM<<"Source Point == "<<sourcePt<<ELog::endDiag;
+  double sumR=minLOG;
+  double sumRA=minLOG;
+  const double EVal=(EBin[mIndex]+EBin[mIndex])/2.0;  
   // STILL in log space
   for(long int i=0;i<WX;i++)
     for(long int j=0;j<WY;j++)
       for(long int k=0;k<WZ;k++)
 	{
 	  const Geometry::Vec3D gridPt=Grid.point(i,j,k);
-	  for(long int e=0;e<WE;e++)
-	    {
-	      const double EVal=(EBin[e]+EBin[e+1])/2.0;
-	      const double W=
-		distTrack(System,sourcePt,EVal,gridPt,
-			  densityFactor,r2Length,r2Power);
+
+	  const double W=
+	    distTrack(System,sourcePt,EVal,gridPt,
+		      densityFactor,r2Length,r2Power);
 	      
-	      sumR[e]=(i*j*k != 0) ?
-		mathFunc::logAdd(sumR[e],Source.WGrid[e][i][j][k]+W) :
-		Source.WGrid[e][i][j][k]+W;
-	      sumRA[e]=(i*j*k != 0) ?
-		mathFunc::logAdd(sumRA[e],Adjoint.WGrid[e][i][j][k]+W) :
-		Adjoint.WGrid[e][i][j][k]+W;
+	  sumR=(i*j*k != 0) ?
+	    mathFunc::logAdd(sumR,Source.WGrid[sIndex][i][j][k]+W) :
+	    Source.WGrid[sIndex][i][j][k]+W;
+	  sumRA=(i*j*k != 0) ?
+	    mathFunc::logAdd(sumRA,Adjoint.WGrid[aIndex][i][j][k]+W) :
+	    Adjoint.WGrid[aIndex][i][j][k]+W;
 	      
-	    }
 	}
   
-  for(size_t e=0;e<static_cast<size_t>(WE);e++)
-    {
-      const double EVal=(EBin[e]+EBin[e+1])/2.0;
-      ELog::EM<<"sumR["<<EVal<<"]  == "<<sumR[e]<<" "
-	      <<exp(sumR[e])<<ELog::endDiag;
-      ELog::EM<<"sumRA["<<EVal<<"]  == "<<sumRA[e]<<" "
-	      <<exp(sumRA[e])<<ELog::endDiag;
-    }
+  ELog::EM<<"sumR["<<EVal<<"]  == "<<sumR<<" "
+	  <<exp(sumR)<<ELog::endDiag;
+  ELog::EM<<"sumRA["<<EVal<<"]  == "<<sumRA<<" "
+	  <<exp(sumRA)<<ELog::endDiag;
+
   
   // SETS THIS
-  for(long int e=0;e<WE;e++)
-    for(long int i=0;i<WX;i++)
-      for(long int j=0;j<WY;j++)
-	for(long int k=0;k<WZ;k++)
-	  {
-	    WGrid[e][i][j][k]=
-	      Source.WGrid[e][i][j][k]
-	      +sumR[static_cast<size_t>(e)]
-	      -Adjoint.WGrid[e][i][j][k];
-	  }
+  for(long int i=0;i<WX;i++)
+    for(long int j=0;j<WY;j++)
+      for(long int k=0;k<WZ;k++)
+	{
+	  WGrid[mIndex][i][j][k]=
+	    Source.WGrid[sIndex][i][j][k]
+	    +sumR
+	    -Adjoint.WGrid[aIndex][i][j][k];
+	}
   
   return;
 }
   
 void
 WWGWeight::writeVTK(std::ostream& OX,
-		    const long int EIndex) const
+		    const long int EIndex,
+		    const bool logFlag) const
   /*!
     Write out the VTK format [write log format]
     \param OX :: Output stream
     \param EIndex :: energy index
+    \param logFlag :: Convert power to log space
   */
 {
   ELog::RegMethod RegA("WWGWeight","writeVTK");
-
-  boost::format fFMT("%1$11.6g%|14t|");
-
+  
   if (EIndex<0 || EIndex>=WE)
     throw ColErr::IndexError<long int>(EIndex,WE,"index in WMesh.ESize");
+
+  boost::format fFMT("%1$11.6g%|14t|");
   
+  OX<<"POINT_DATA "<<WX*WY*WZ<<std::endl;
+  OX<<"SCALARS cellID float 1.0"<<std::endl;
+  OX<<"LOOKUP_TABLE default"<<std::endl;
+
+  double wMin(1e80),wMax(-1e80);
   for(long int K=0;K<WZ;K++)
     for(long int J=0;J<WY;J++)
       {
 	for(long int I=0;I<WX;I++)
+	  {
+	    if (!logFlag)
+	      OX<<(fFMT % std::exp(WGrid[EIndex][I][J][K]));	
+	    else
+	      OX<<(fFMT % -WGrid[EIndex][I][J][K]);
+	    if (WGrid[EIndex][I][J][K]<wMin)
+	      wMin=WGrid[EIndex][I][J][K];
+	    if (WGrid[EIndex][I][J][K]>wMax)
+	      wMax=WGrid[EIndex][I][J][K];
+	  }
+	OX<<std::endl;
+      }
+
+  ELog::EM<<"WWG["<<ID<<"]["<<EIndex<<"] "<<wMin<<" "<<wMax<<ELog::endDiag;  
+
+  /*
+  for(long int I=0;I<WX;I++)
+    for(long int J=0;J<WY;J++)
+      {
+	for(long int K=0;K<WX;J++)
 	  OX<<(fFMT % std::exp(WGrid[EIndex][I][J][K]));
 	OX<<std::endl;
       }
-  
+  */
   return;
 }
 
@@ -794,9 +852,10 @@ WWGWeight::writeFLUKA(std::ostream& OX) const
 
   std::ostringstream cx;
 
+  // convert energy to GeV
   cx<<"USRICALL "<<ID;
   for(const double E : EBin)
-    cx<<" "<<E;
+    cx<<" "<<E*1e-3; 
   for (size_t i=EBin.size();i<5;i++)
     cx<<" -";
   cx<<" wwgEng";
@@ -812,9 +871,14 @@ WWGWeight::writeFLUKA(std::ostream& OX) const
     <<Grid.getZSize()<<" - - "
     <<"wwgSize";
   StrFunc::writeFLUKA(cx.str(),OX);
-  Grid.writeFLUKA(OX);
 
+  cx.str("");
+  cx<<"USRICALL "<<ID<<" "<<Grid.getLow()<<" - - "<<"wwgLow";
+  StrFunc::writeFLUKA(cx.str(),OX);
 
+  cx.str("");
+  cx<<"USRICALL "<<ID<<" "<<Grid.getHigh()<<" - - "<<"wwgHigh";
+  StrFunc::writeFLUKA(cx.str(),OX);
   
   for(long int EI=0;EI<WE;EI++)
     for(long int I=0;I<WX;I++)
@@ -823,10 +887,13 @@ WWGWeight::writeFLUKA(std::ostream& OX) const
 	  {
 	    cx.str("");
 	    cx<<"USRICALL "<<ID<<" "<<EI+1<<" "<<I+1<<" "<<J+1<<" "<<K+1;
+	    const double logV(WGrid[EI][I][J][K]>0.0 ? 0.0 :
+			      WGrid[EI][I][J][K]);
+			   
 	    if (logFlag)
-	      cx<<" "<<WGrid[EI][I][J][K];
+	      cx<<" "<<logV;
 	    else
-	      cx<<" "<<std::exp(WGrid[EI][I][J][K]);
+	      cx<<" "<<std::exp(logV);
 	    cx<<" wwg";
 	    StrFunc::writeFLUKA(cx.str(),OX);
 	  }
@@ -924,23 +991,25 @@ double WWGWeight::distTrack(const Simulation&,const Geometry::Vec3D&,
 
 template
 void WWGWeight::wTrack(const Simulation&,const Geometry::Vec3D&,
-		       const double,const double,
+		       const size_t,const double,const double,
 		       const double);
 
 template
 void WWGWeight::wTrack(const Simulation&,const Geometry::Plane&,
-		       const double,const double,
+		       const size_t,const double,const double,
 		       const double);
 
 template 
-void WWGWeight::CADISnorm(const Simulation&,const WWGWeight&,
-			  const WWGWeight&,
+void WWGWeight::CADISnorm(const Simulation&,const long int,
+			  const WWGWeight&,const long int,
+			  const WWGWeight&,const long int,
                           const Geometry::Vec3D&,const Geometry::Vec3D&,
 			  const double,const double,const double);
 
 template 
-void WWGWeight::CADISnorm(const Simulation&,const WWGWeight&,
-			  const WWGWeight&,
+void WWGWeight::CADISnorm(const Simulation&,const long int,
+			  const WWGWeight&,const long int,
+			  const WWGWeight&,const long int,
                           const Geometry::Plane&,const Geometry::Plane&,
 			  const double,const double,const double);
 

@@ -70,7 +70,9 @@ class BasicMesh3D
   size_t getXSize() const { return NX; }    ///< number of X-cells
   size_t getYSize() const { return NY; }    ///< number of Y-cells
   size_t getZSize() const { return NZ; }    ///< number of Z-cells
-  
+
+  const Geometry::Vec3D& getLow() const { return Origin; }
+  const Geometry::Vec3D& getHigh() const { return OuterPoint; }
   Geometry::Vec3D point(const size_t,const size_t,const size_t) const;
   Geometry::Vec3D point(const long int,const long int,const long int) const;
 
@@ -90,8 +92,8 @@ class BasicMesh3D
   double getZCoordinate(const size_t) const;
   
   void write(std::ostream&) const;
+  void writeVTK(std::ostream&) const;
   void writePHITS(std::ostream&) const;
-  void writeFLUKA(std::ostream&) const;
   void writeWWINP(std::ostream&) const;
 
 };

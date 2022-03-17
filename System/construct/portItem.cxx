@@ -310,9 +310,21 @@ portItem::setCentLine(const attachSystem::FixedComp& FC,
 {
   portItem::createUnitVector(FC,0);
   Origin+=X*Centre.X()+Y*Centre.Y()+Z*Centre.Z();
-  const Geometry::Vec3D DVec=X*Axis.X()+Y*Axis.Y()+Z*Axis.Z();
+  const Geometry::Vec3D DVec=Axis.getInBasis(X,Y,Z);
 
   FixedComp::reOrientate(1,DVec.unit());
+
+  return;
+}
+
+void
+portItem::reNormZ(const Geometry::Vec3D& Axis)
+  /*!
+    Apply extra rotation to Z [if needed]
+    \param Axis :: Z-Axis direction
+   */
+{
+  FixedComp::reOrientate(2,Axis.unit());
   return;
 }
 
@@ -546,7 +558,7 @@ portItem::constructFlange(Simulation& System,
       else // just a cap
 	{
 	  Out=ModelSupport::getComposite(SMap,buildIndex," -27 2 -202 ");
-	  makeCell("AbovePlate",System,cellIndex++,capMat,0.0,Out);
+	  makeCell("Plate",System,cellIndex++,capMat,0.0,Out);
 	}
     }
 
@@ -683,13 +695,12 @@ portItem::constructOuterFlange(Simulation& System,
       else // just a cap
 	{
 	  Out=ModelSupport::getComposite(SMap,buildIndex," -27 2 -202 ");
-	  makeCell("AbovePlate",System,cellIndex++,capMat,0.0,Out);
+	  makeCell("Plate",System,cellIndex++,capMat,0.0,Out);
 	}
     }
 
   if (outerFlag)
     {
-      ELog::EM<<"Outer["<<keyName<<"] == "<<ELog::endDiag;
       Out=ModelSupport::getComposite(SMap,buildIndex," 1 17 -27 -102  ");
       makeCell("OutVoid",System,cellIndex++,outerVoidMat,0.0,Out+midSurf);
       Out= (capFlag) ?

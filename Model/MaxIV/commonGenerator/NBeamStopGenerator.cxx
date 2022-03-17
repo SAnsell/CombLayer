@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonBeam/LBeamStopGenerator.cxx
+ * File:   commonGenerator/NBeamStopGenerator.cxx
  *
- * Copyright (c) 2004-2021 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,16 +50,24 @@ namespace setVariable
 {
 
 NBeamStopGenerator::NBeamStopGenerator() :
-  fullLength(120.0),
-  radii({2.0, 5.0, 20.0}),
-  len({{1.0,50.0},{7.0,60.0,},{12.0}}),
-  mat({{"Void","Tungsten","Stainless304"},
-       {"Void","Poly","Stainless304"},
-       {"Void","Stainless304"}})
+  fullLength(115.0),
+  radii({2.0, 30.0, 40.0, 45.0}),
+  len({
+       {20.0,60.0,100.0,110.0},
+       {100.0,110.0,115.0},
+       {110.0,115.0},
+       {115.0}
+    }),
+  mat({{"Void","Tungsten","Stainless304","Poly","B4C"},
+       {"Stainless304","Poly","B4C","Void"},
+       {"Poly","B4C","Void"},
+       {"B4C","Void"}
+    })
   /*!
     Constructor and defaults
   */
-{}
+{
+}
 
 NBeamStopGenerator::~NBeamStopGenerator()
  /*!
@@ -69,19 +77,21 @@ NBeamStopGenerator::~NBeamStopGenerator()
 
 void
 NBeamStopGenerator::generateBStop(FuncDataBase& Control,
-				  const std::string& keyName) const
+				  const std::string& keyName,
+				  const double yStep) const
 /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables
     \param keyName :: Head name for variable
+    \param yStep :: Step
   */
 {
   ELog::RegMethod RegA("NBeamStopGenerator","generateBStop");
 
+  Control.addVariable(keyName+"YStep",yStep);
   if (!radii.empty())
     {
       Control.addVariable(keyName+"Length",fullLength);
-      Control.addVariable(keyName+"OuterRadius",radii.back());
       Control.addVariable(keyName+"NLayers",mat.size());
       for(size_t i=0;i<radii.size();i++)
 	{
@@ -92,12 +102,12 @@ NBeamStopGenerator::generateBStop(FuncDataBase& Control,
 	    {
 	      std::string UNum(std::to_string(j));
 	      Control.addVariable(layerName+"Length"+UNum,len[i][j]);
-	      Control.addVariable(layerName+"Mat"+UNum,mat[i][j]);	  
+	      Control.addVariable(layerName+"Mat"+UNum,mat[i][j]);
 	    }
-	  Control.addVariable(layerName+"Mat"+std::to_string(j),mat[i][j]);	  
+	  Control.addVariable(layerName+"Mat"+std::to_string(j),mat[i][j]);
 	}
     }
-  return;  
+  return;
 }
 
 }  // namespace setVariable

@@ -1,13 +1,14 @@
 \subsection{Variance reduction}
 
 \subsubsection{New way: FW-CADIS}
-\nomenclature{CADIS}{Consistent Adjoint Driven Importance Sampling}
-We consider our result (response of a detector)~$R$ to be a convolution of particle angular
-flux~$\Psi(\vec{P})$ determined by all the parameters~$\vec{P}$
-(position~$\vec{r}$, energy~$E$, angular
-coordinate~$\hat{\Omega}$, i.e. all phase space) and a determenistic cross
-section\footnote{Detector cross section, response function.} % Haghighat2003, page 33
-$\sigma_D(\vec{P})$ that relates to that:
+
+\nomenclature{CADIS}{Consistent Adjoint Driven Importance Sampling} We
+consider our result (response of a detector)~$R$ to be a convolution
+of particle angular flux~$\Psi(\vec{P})$ determined by all the
+parameters~$\vec{P}$ (position~$\vec{r}$, energy~$E$, angular
+coordinate~$\hat{\Omega}$, i.e. all phase space) and a determenistic
+cross section\footnote{Detector cross section, response function.} %
+Haghighat2003, page 33 $\sigma_D(\vec{P})$ that relates to that:
 \begin{equation}
   \label{eq:vr:result}
   R = \int \Psi(\vec{P}) \sigma_D(\vec{P}) d\vec{P}
@@ -129,23 +130,38 @@ This leaves us with the new expression for $R$:
   \label{eq:vr:R1}
   R = \int d\Omega \int d\vec{r} \int dE \, \Psi(\vec{r},E,\Omega) \, f(\vec{r},E,\Omega)
 \end{equation}
-where $f(\vec{r},E,\Omega)$ is an approximation \alert{of what?} from the CADIS paper. \todo{Explain}
-They can find an approximation for this based on the true weight of the number of particles in the given cell
-(times the Monte Carlo density).
+where $f(\vec{r},E,\Omega)$ is an approximation of the transfer function
+from the phase point, $P(\vec{r},E,\Omega)$ to the detector. The CADIS paper
+uses a proper Monte-Carlo determined $f(\vec{r},E,\Omega)$ but CombLayer
+does not do this is approximates the term (for speed).
 
-CADIS is the name of the program they wrote.
+The CADIS authors find their version of the fuction based on the true weight of
+the number of particles in the given cell (times the Monte Carlo density).
+CombLayer approximates the particles in a given cell by direct transport in
+and a number of Markov-Chain steps (but not to convergence), which often
+is zero steps.
 
-First, we need to find $\Psi$, but we are not going to find it because it means we need to run full simulation.
-Therefore we will only find $\Psi$ in a one-group approximation.
+\subsection{CombLayer determination of R}
+
+CombLayer needs to find approximations for both $\Psi$ and $f$.
+First consider $\Psi$. CombLayer is not going get the exact value for
+$\Psi$ because it means we need to run full simulation.
+However, we can find $\Psi$ in a one-group approximation.
 To do this, we need $\sigma_{T}$ and $\sigma_{A}^\dagger$, where
 
 \begin{description}
-\item[$\sigma_{T}$] The total interaction cross section [including all absorption terms].
+\item[$\sigma_{T}$] The total interaction cross section [
+  including all absorption terms].
 \item[$\sigma_{A}^\dagger$] Probability that a neutron is lost from the group {\em plus} the probability that a neutron is being absorbed.
 \end{description}
 
 % 10:04
-CADIS divides energy range into 33 energy bins. CombLayer does not support so many~(SA says he tried 7).
+CADIS divides energy range into 33 energy bins.
+CombLayer could support that many but with the CombLayer approximations
+that would be excessive. It is suggested that for a typical spallation
+neutron monte-carlo, between 5 and 7 is a good starting number.
+For electron - photon problems between 2 to 3 energy bins seems to be
+a good starting point.
 
 \bigskip
 
@@ -158,11 +174,15 @@ When we run our variance reduction, we are going to calculate two things:
   first~--- from Target to Moderator, second~--- from Moderator to Monolith Insert, third~--- Insert to Bunker Wall etc).
 \end{itemize}
 
-So, you can have as many source points as you like, as long as you have an adjoint point to go with it.
-Not all sources are points: some are planes, some are cylinders. At the moment in CL there are 3 types of shapes: a point, a plane, a cone.
-More shapes and head rules will be added in the future.
-Equally, same shapes can be set as the adjoint sources~(where we are focusing into).
-Points work reasonably well, but should be extended to cones/cylinders.
+So, you can have as many source points as you like,
+and as many adjoint pionts as you like, but you need a minimum of one of each.
+
+Not all sources are points: some are planes, some are cylinders. At
+the moment in CL there are 3 types of shapes: a point, a plane, a
+cone.  More shapes and head rules will be added in the future.
+Equally, same shapes can be set as the adjoint sources~(where we are
+focusing into).  Points work reasonably well, but should be extended
+to cones/cylinders.
 
 The user defines the source point and the adjoint point, and CombLayer computes $R$ based on \eqref{eq:vr:R1} and
 weight based on~\eqref{eq:vr:w}\dots\ and you are done!
@@ -184,8 +204,10 @@ contribution of both variances [which should be done using the
   probability of exiting the monolith] and thus the variance reduction
 mesh can be significantly mis-scaled.
 
-Therefore, there is the option to re-normalised the whole variance reduction mesh by adding the flag
-{\tt --wwgNorm AValue BValue} such that the new normalisation range between low/high is limited between A and B.
+Therefore, there is the option to re-normalised the whole variance
+reduction mesh by adding the flag {\tt --wwgNorm meshName AValue BValue} such
+that the new normalisation range between low/high is limited between A
+and B.
 
 
 There is a rounding error of the order \SIrange{10}{15}{\percent}.
@@ -204,96 +226,133 @@ You can also put a limit to indicate that you do not want to write variance redu
 % 16:15.482 - start recording desktop
 
 \subsection{How to use it}
+
 There are two types of variance reduction in MCNP and in CombLayer.
 One is a cell-based, the other one is a mesh-based variance reduction.
-SA had modified his MCNP version to allow both at the same time.
+Stuart Ansel had modified his MCNP version to allow both at the same time,
+there are further modifications to PHITS and FLUKA to support this as well.
+The following are the general commands that are not specific to Monte-Carlo
+code choise.
+
+
 
 \subsubsection{Mesh-based variance reduction}
 \label{sec:vr:cadis:mesh}
 \git{7348754} \label{bash:vr:cadis:mesh:run}
+
 \begin{bash}
-ess -r -w -wWWG \ 
- --weightSource 'Vec3D(1000.0, 0.0, 14.0)' \
- --weightSource 'Vec3D(1500.0, 0.0, 14.0)' \
- --weightPlane 'Vec3D(1500.0, 0.0, 14.0)' 'Vec3D(-1, 0, 0)' \
- --wwgCalc SS0 1.0 \
- --wwgCalc TP0 -2 1 2 -4\
- --wwgCADIS SS1 \
- --wwgXMesh 1000 40 1600 \
- --wwgYMesh -50 10 50 \
- --wwgZMesh -100 20 100 \
- --weightEnergyType 1.0 \
- --wwgVTK testWWG.vtk \
-   a
+maxiv -w -wWWG \ 
+ --weightSource S0 'Vec3D(1000.0, 0.0, 14.0)' \
+ --weightSource S1 TDC29BeamStopA:back 'Vec3D(1500.0, 0.0, 14.0)' \
+ --wwgPlane P1 TDC29BeamStopA:back 'Vec3D(0,1,0)' 'Vec3D(0,240,0)' \
+ --wwgEnergy E1 0.01 2.0 1300.0 \
+ --wwgMesh M1 'Vec3D(-400,9900,-30)' 'Vec3D(-320,9970,30)' 30 50 1 \
+ --comment "mesh particle grid energyCut density r2length r2power"  \
+ --wwgCreate SS0 all M1 E1[0] S0 0.9 1.0 1.2 \
+ --wwgCreate TS0 all M1 E1[0] S1 0.9 1.0 1.2 \
+ --wwgCADIS SSX[0] SS0[0] TS0[0] S0 S1 0.009 1.0 1.5 \
+ --wwgCreate SS0 all M1 E1[1] S0 0.009 1.0 1.5 \
+ --wwgCreate TS0 all M1 E1[1] S1 0.009 1.0 1.5 \
+ --wwgCADIS SSX[1] SS0[1] TS0[1] S0 S1 0.009 1.0 1.5 \
+ --wwgNorm SSX[0] 8 \
+ --wwgNorm SSX[1] 5 -1 0.0 -20 \
+ --wwgActive SSX Log \
+ AA
 \end{bash}
+
+\subsection*{Summary of commands}
 
 \begin{description}
 \item[-w] needs to be the first flag in the list of biasing-related flags
 \item[-wWWG] we are interested in the mesh-based weight window generator
 \item[--weightSource] defines a (source or adjoint) {\em single point} in space. It's possible to define as many as necessary, and not all of them should be used.
-  Here we defined two point sources.
-\item[--wwg{[XYZ]}Mesh] defines a mesh (if we need it). Format: min nbins max.
-\item[--weightEnergyType] energy + list of values; just list of values; high|low|mid\todo{describe} \
-%\item[--wwgE] defines energy grid with MCNP notation (below \SI{1}{\mega\electronvolt}). There is no variance reduction above last energy bin.
-%  It is also possible to use the {\tt --weightEnergyType} argument as shown in \secref{sec:vr:cadis:cell}.
-\item[--wwgVTK] optionally you can output the mesh file into a VTK file for plotting.
-\item[--wwgCalc] define source and adjoint points. We must define at least one source and {\em at least} one adjoint point.
-  Syntax:
+  Here we defined two point sources. One at an absolute point and one relative to a FixedComp linkPoint.
+\item[--wwgEnergy] defines a mesh. Format: EnergyName [energy boundaries]
   \begin{description}
-  \item[SS0] First 'S': true source point. 'S0': first point in the list.
-  \item[1] means energy range above \SI{1}{\mega\electronvolt} (-1 would mean below \SI{1}{\mega\electronvolt}).
-  \item[TP0] First 'T': adjoint point (tally). 'P0': from the 1st plane in the list.
-    % 23:00
-  \item[-2] define energy grid. Negative number: up till this energy (cut-off energy).
-  \item[1] density factor. Normally the trick is to decrease density in order to populate remote cells.
-  \item[2] the power of $r^2$. SA does not find this parameter very useful.
-  \item[1] absolute minimal weight you can have. If the number is negative, it means the exponent ($10^{-n}$). If it's not negative, it must be between 0 and 1 (remember that weights can not go above 1).
+    \item E1 E2 E3 .... these are the energy bin boundaries. The minimum is 2.
   \end{description}
-% 25:45
-\item[--wwgCADIS] Finally you better do the CADIS summation~--- the integral over the whole thing. The final weight value has to still
-  come from the intrinsic integral point, and that should be the source point in order to do normalisation correctly (SA believes it's semi-redundant, but he is still using it anyway. In principle one should integrate all the source points, weight them and not need this coordinate, but currently SA take one point approximated. It will be changed in the future.)
+\item[--wwgMesh] defines a mesh.
+  \begin{description}
+    \item Vec3D(LowPoint) Low point of the box
+    \item Vec3D(HighPoint) High point of the box
+    \item NX NY NZ : Number of bins in each orthogonal axis
+  \end{description}
+  Note that each Vec3D point can be a generalized FixedComp linkPonit, or
+  a PointMap value.
+  
+\item[--wwgCreate] Fill a energy/grid mesh  from a source point
+  Syntax:
+\begin{description}
+  \item {\bf SS0} New name for the mesh (it can be any string).
+  \item {\bf all} particles to use for mesh, using full name e.g. neutron
+    they can be listed together e.g. photon,electron with a comma.
+  \item {\bf M1} Name of the grid to use for this mesh (defined with --wwgMesh)
+  \item {\bf E1[1]} Name of the energy vector (--wwgEnergy)
+    and the index of the energy boundary
+  \item {\bf S0} Name of the source point/plane (--wwgSource)
+  \item {\bf 0.009} density factor. Normally the trick is to decrease density in order to populate remote cells.
+  \item {\bf 1.0} fractional change of length
+  \item {\bf 1.5} the power of $r^2$. It is an effective buildup term.
 \end{description}
 
-% 25:15
-The source terms must cover the full energy range.
-It's completely acceptable that an individual source term does not cover full energy range,
-but somewhere you must have at least one other source term that covers the rest.
+\item[--wwgCADIS] The CADIS approximation basically calculates the weighted
+  fraction between source to cell and cell to tally. This is carries out on
+  a energy point by energy point basis. Currently both meshes in the CADIS
+  calculation have to be identical, the energy groups do not need to be.
 
-When you run it, the output is very verbose:
-\begin{bash}
-...
-CADIS norm[7700]:-46.0517 0.693147 == 1577.5 5 -95          WWGWeight::CADISnorm
-CADIS norm[7800]:-46.0517 0.693147 == 1592.5 -45 -95        WWGWeight::CADISnorm
-CADIS norm[7900]:-46.0517 0.693147 == 1592.5 5 -95          WWGWeight::CADISnorm
-sumR== -7.37277 0.000628129                                 WWGWeight::CADISnorm
-Min == 0.000314064 0.000314064 1                                  WWG::updateWM
-Warning : No WWG normalization step                        WWGControl::wwgNormalize
-\end{bash}
+\begin{description}
+  \item {\bf SSX[0]} Create a new group called SSX and carry out the
+    CADIS calculation for the first energy bin. The mesh/energy bins
+    will be taken from the source mesh.    
+  \item {\bf SS0[0]} Use mesh SS0 and use the first energy bin as the source
+  \item {\bf TS0[0]} Use mesh SS1 as the adjoint (tally).
+  \item {\bf S0} The source point to use for tracking from source to cell.
+  \item {\bf S1} The source point that is use for tracking from cell to point. It is the effective
+    tally point.
+  \item {\bf 0.009} density factor. Normally the trick is to decrease density in order to populate remote cells.
+  \item {\bf 1.0} fractional change of length
+  \item {\bf 1.5} the power of $r^2$. It is an effective buildup term.
+\end{description}
 
-% 27:51
-Every 100 points during integration it writes you the ratios of contribution of flux to a given point and the source to the given point.
-So, it finds that you get about
-\num[retain-unity-mantissa=false]{1e9} (0.693147) \todo{1e9 does not correspond to the output}
-contributions from the source at the start of the wall, but once you get through the wall you get
-\num[retain-unity-mantissa=false]{1e46} (-46.0517) contribution.
-You end up with the minimum weight (which is in fact the maximal weight \alert{???}), which is the normalisation factor. \\
-sumR are normalisation terms and its value (-7.37277) says we are out of normalisation a bit (therefore we can maybe do something with it).
 
-% 29:12 - ParaView
-The weight window is saved in the {\tt wwinp} file and optionally can be exported in a {\tt VTK} file by using the {\tt --wwgVTK} command line argument
-as shown in the listing on page \pageref{bash:vr:cadis:mesh:run}.
-This {\tt VTK} file can be visualised by an external program like {\tt VisIt} or {\tt ParaView}.
+\item[--wwgNORM] The command applied renormalization to part (all) of a mesh, so the weights
+  are between 1.0 and a very low number. The command works in natural log space.
+\begin{description}
+  \item {\bf SSX[1]} The mesh and energy bin to be normalized
+  \item {\bf 8} The range for the weight values (exp(8))
+  \item {\bf -1} The highest value in the weights.
+       Thus the range runs from exp(-1) to exp(-9) in the output.
+  \item {\bf 0} All values above exp(0) in the un-normalized mesh are
+       treaded as exp(0).
+  \item {\bf -20} All values below exp(-20) in the un-normalized mesh are treaded as exp(-20).
+\end{description}
 
-In the input deck, the weight-window parameters are defined as
+\item[--wwgVTK] Write out the mesh to a VTK file.
+\begin{description}
+  \item {\bf testA.vtk} Filename for the output
+  \item {\bf SSX[1]} The mesh and energy bin to be written.
+  \item {\bf Log} The file is either W (typically a small value) or
+    the -log(W). So the numbers are positive and run from 0 to a value.
+\end{description}
+
+\end{description}
+
+In MCNP, the input deck, the weight-window parameters are defined as
 \begin{deck}
  wwp:n 8 1.4 5 -1 -2 0
 \end{deck}
-where {\tt switchn=-2}. In the non-modified \mcnp this value indicates that ``the lower weight-window bounds should be read from an external {\tt wwinp} file
-containing either cell- or mesh-based lower weight window bounds''.
-SA modifies \mcnp, and this value means {\em both} cell and weight.
-It's possible to use {\tt switchn=-2} for non-modified \mcnp versions, and the rule is that when you've got outside of the mesh boundary, you score
-importance only. In your input file you have a list of the cells and cell weights, and with regular \mcnp you will get a warning saying that the cell weights being ignored.
-\mcnp will happily run, and if a particle drops outside of the boundary and has a scatter, you will be warned that importances are being sampled instead of {\tt wwinp} \todo{Show the exact message}
+where {\tt switchn=-2}.  In the non-modified \mcnp this value
+indicates that ``the lower weight-window bounds should be read from an
+external {\tt wwinp} file containing either cell- or mesh-based lower
+weight window bounds''.  SA modifies \mcnp, and this value means {\em
+  both} cell and weight.  It's possible to use {\tt switchn=-2} for
+non-modified \mcnp versions, and the rule is that when you've got
+outside of the mesh boundary, you score importance only. In your input
+file you have a list of the cells and cell weights, and with regular
+\mcnp you will get a warning saying that the cell weights being
+ignored.  \mcnp will happily run, and if a particle drops outside of
+the boundary and has a scatter, you will be warned that importances
+are being sampled instead of {\tt wwinp} \todo{Show the exact message}
 and you will get the default importance which in this case is 1.
 
 \paragraph{Modification of MCNP}
@@ -306,6 +365,12 @@ so you can have exactly the same behaviour as you currently have, but you can al
 that two meshes do not need to be orthogonal, they can follow bending in a curving beam line, which is useful\footnote{Especially for LOKI, which has two \SI{\sim 5}{\degree} bends.}.
 Or you can have a fixed mesh around the moderator, which does not have to respect whichever direction of beam line we are taking away.
 And SA can have that mesh isolated and separate.
+
+\paragraph{Modifications to FLUKA}
+
+Fluka provides a user set of functions, and for importance provides usibms.f,
+whichi is called if BIASING is set with SDUM=USER. This select which particles
+and which cells will call the user defined user-im
 
 \subsubsection{Old way: cell-based biasing}
 \label{sec:vr:cadis:cell}

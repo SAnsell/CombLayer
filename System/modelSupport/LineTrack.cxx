@@ -153,7 +153,7 @@ LineTrack::calculate(const Simulation& ASim)
   ELog::RegMethod RegA("LineTrack","calculate");
 
   double aDist(0);                         // Length of track
-  const Geometry::Surface* SPtr;           // Surface
+  const Geometry::Surface* SPtr(0);           // Surface
   const ModelSupport::ObjSurfMap* OSMPtr =ASim.getOSM();
   
   MonteCarlo::eTrack nOut(InitPt,EndPt-InitPt);
@@ -170,13 +170,16 @@ LineTrack::calculate(const Simulation& ASim)
 
   // ELog::EM<<"Initial test point == "<<
   //   OPtr->pointStr(InitPt)<<ELog::endDiag;
-  int SN=OPtr->isOnSide(InitPt);
 
+  int SN=-OPtr->isOnSide(InitPt);
+  // problem is that SN will be on TWO objects
+  // so which one is it? [it doesn't matter much]
+  
   while(OPtr)
     {
       // Note: Need OPPOSITE Sign on exiting surface
       SN= OPtr->trackCell(nOut,aDist,SPtr,SN);
-        // Update Track : returns 1 on excess of distance
+          // Update Track : returns 1 on excess of distance
       if (SN && updateDistance(OPtr,SPtr,SN,aDist))
 	{
 	  nOut.moveForward(aDist);

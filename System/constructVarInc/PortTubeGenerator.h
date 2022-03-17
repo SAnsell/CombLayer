@@ -88,7 +88,9 @@ class PortTubeGenerator
   void setBPort(const double,const double,const double);
   void setAPortOffset(const double,const double);
   void setBPortOffset(const double,const double);
+  void setFlangeLength(const double,const double);
   void setAFlange(const double,const double);
+  
   void setBFlange(const double,const double);
   /// set void material
   void setVoidMat(const std::string& M) { voidMat=M; }

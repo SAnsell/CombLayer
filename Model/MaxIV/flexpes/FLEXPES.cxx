@@ -3,7 +3,7 @@
  
  * File: flexpes/FLEXPES.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,16 +54,22 @@
 #include "PointMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "CopiedComp.h"
+#include "varList.h"
+#include "Code.h"
+#include "FuncDataBase.h"
+#include "groupRange.h"
+#include "objectGroups.h"
+#include "Simulation.h"
 
 #include "VacuumPipe.h"
 
 #include "R1Ring.h"
 #include "R1FrontEnd.h"
 #include "flexpesFrontEnd.h"
-#include "flexpesOpticsHut.h"
-#include "flexpesOpticsBeamline.h"
+#include "maxpeemOpticsHut.h"
+#include "maxpeemOpticsLine.h"
 #include "WallLead.h"
 
 #include "R1Beamline.h"
@@ -76,9 +82,9 @@ FLEXPES::FLEXPES(const std::string& KN) :
   R1Beamline("Flexpes",KN),
   frontBeam(new flexpesFrontEnd(newName+"FrontBeam")),
   wallLead(new WallLead(newName+"WallLead")),
-  opticsHut(new flexpesOpticsHut(newName+"OpticsHut")),
+  opticsHut(new maxpeemOpticsHut(newName+"OpticsHut")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
-  opticsBeam(new flexpesOpticsBeamline(newName+"OpticsBeam"))
+  opticsBeam(new maxpeemOpticsLine(newName+"OpticsBeam"))
   /*!
     Constructor
     \param KN :: Keyname
@@ -120,12 +126,13 @@ FLEXPES::build(Simulation& System,
 
   frontBeam->setStopPoint(stopPoint);
   frontBeam->setCutSurf("Floor",r1Ring->getSurf("Floor"));
+  frontBeam->setCutSurf("Roof",-r1Ring->getSurf("Roof"));
+  frontBeam->setCutSurf("back",r1Ring->getSurf("BeamInner",SIndex));
+
   frontBeam->addInsertCell(r1Ring->getCell("Void"));
   frontBeam->addInsertCell(r1Ring->getCell("VoidTriangle",PIndex));
   
-  frontBeam->setBack(r1Ring->getSurf("BeamInner",SIndex));
   frontBeam->createAll(System,FCOrigin,sideIndex);
-
   wallLead->addInsertCell(r1Ring->getCell("FrontWall",SIndex));
   wallLead->setFront(-r1Ring->getSurf("BeamInner",SIndex));
   wallLead->setBack(r1Ring->getSurf("BeamOuter",SIndex));
@@ -133,7 +140,9 @@ FLEXPES::build(Simulation& System,
 
   if (!stopPoint.empty())
     ELog::EM<<"Stop Point == "<<stopPoint<<ELog::endDiag;
-  if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
+  if (stopPoint=="frontEnd" ||
+      stopPoint=="Dipole" ||
+      stopPoint=="Quadrupole") return;
   
   opticsHut->setCutSurf("Floor",r1Ring->getSurf("Floor"));
   opticsHut->setCutSurf("RingWall",-r1Ring->getSurf("BeamOuter",SIndex));
@@ -151,16 +160,18 @@ FLEXPES::build(Simulation& System,
   opticsBeam->setCutSurf("back",*opticsHut,
 			 opticsHut->getSideIndex("innerBack"));
   opticsBeam->setCutSurf("floor",r1Ring->getSurf("Floor"));
-  opticsBeam->createAll(System,*joinPipe,2);
+  opticsBeam->setCutSurf("roof",r1Ring->getSurfRule("#Roof"));
+  opticsBeam->setPreInsert(joinPipe);
+  opticsBeam->createAll(System,*joinPipe,"back");
 
-  joinPipe->insertAllInCell(System,opticsBeam->getCell("OuterVoid",0));
+  opticsBeam->buildExtras(System,*opticsHut);
 
-  std::vector<int> cells(opticsHut->getCells("Back"));
-  cells.emplace_back(opticsHut->getCell("Extension"));
-  opticsBeam->buildOutGoingPipes(System,opticsBeam->getCell("LeftVoid"),
-  				 opticsBeam->getCell("RightVoid"),
-  				 cells);
-  
+
+  attachSystem::ContainedGroup* CC=
+    System.getObject<attachSystem::ContainedGroup>(newName+"OpticsBeamScreenB");
+  if (CC)
+    CC->insertInCell("Main",System,opticsHut->getCell("Void"));
+    
   return;
 }
 

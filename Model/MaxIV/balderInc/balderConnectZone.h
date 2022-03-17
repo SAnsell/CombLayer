@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balderInc/ConnectZone.h
+ * File:   balderInc/balderConnectZone.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_ConnectZone_h
-#define xraySystem_ConnectZone_h
+#ifndef xraySystem_balderConnectZone_h
+#define xraySystem_balderConnectZone_h
 
 namespace constructSystem
 {
@@ -44,17 +44,16 @@ namespace xraySystem
   class PipeShield;
   class Mirror;
   class OpticsHutch;
-
     
   /*!
-    \class ConnectZone
+    \class balderConnectZone
     \version 1.0
     \author S. Ansell
     \date January 2018
     \brief General constructor for the xray system
   */
 
-class ConnectZone :
+class balderConnectZone :
   public attachSystem::CopiedComp,
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
@@ -63,14 +62,18 @@ class ConnectZone :
 {
  private:
 
-  attachSystem::InnerZone buildZone;
+  /// Items pre-insertion into mastercell:0
+  std::shared_ptr<attachSystem::ContainedGroup> preInsert;
+
+  attachSystem::BlockZone buildZone;    ///< main block divider
+  int innerMat;                         ///< inner material if used
   
   /// First bellow
   std::shared_ptr<constructSystem::Bellows> bellowA;
 
-  std::shared_ptr<xraySystem::LeadBox> boxA;            ///< Lead box protecting bellow
+  std::shared_ptr<xraySystem::LeadBox> boxA;           ///< Lead box protecting bellow
   std::shared_ptr<constructSystem::LeadPipe> pipeA;    ///< Pipe from first bellow
-  std::shared_ptr<constructSystem::PortTube> ionPumpA; ///< Ion pump port
+  std::shared_ptr<constructSystem::PipeTube> ionPumpA; ///< Ion pump port
   std::shared_ptr<xraySystem::LeadBox> pumpBoxA;       ///< Ion pump lead box
 
   std::shared_ptr<xraySystem::PipeShield> pumpBoxAFShield;  ///< shield 
@@ -80,7 +83,7 @@ class ConnectZone :
   std::shared_ptr<xraySystem::LeadBox> boxB;            ///<  box protecting bellow
 
   std::shared_ptr<constructSystem::LeadPipe> pipeC;     
-  std::shared_ptr<constructSystem::PortTube> ionPumpB;
+  std::shared_ptr<constructSystem::PipeTube> ionPumpB;
   std::shared_ptr<xraySystem::LeadBox> pumpBoxB;      ///< Ion pump lead box
   
   std::shared_ptr<constructSystem::LeadPipe> pipeD;  ///< join pipe
@@ -91,7 +94,13 @@ class ConnectZone :
   std::shared_ptr<constructSystem::LeadPipe> JPipe;
   
   double outerRadius;          ///< radius of contained void
-  
+
+			
+  template<typename MidTYPE>
+  void makeBox(Simulation&,
+	       const constructSystem::LeadPipe&,const long int,
+	       LeadBox&,MidTYPE&,constructSystem::LeadPipe&);
+
   void populate(const FuncDataBase&);
   void createSurfaces();
   void buildObjects(Simulation&,const attachSystem::FixedComp&,
@@ -100,16 +109,22 @@ class ConnectZone :
   
  public:
   
-  ConnectZone(const std::string&);
-  ConnectZone(const ConnectZone&);
-  ConnectZone& operator=(const ConnectZone&);
-  ~ConnectZone();
+  balderConnectZone(const std::string&);
+  balderConnectZone(const balderConnectZone&);
+  balderConnectZone& operator=(const balderConnectZone&);
+  ~balderConnectZone();
 
-  /// Register pipe
-  void registerJoinPipe(const std::shared_ptr<constructSystem::LeadPipe>& JP)
+  /// external registration
+  void registerJoinPipe(std::shared_ptr<constructSystem::LeadPipe> JP)
     { JPipe=JP; }
-  
-  void insertFirstRegion(Simulation&,const int);
+ 
+  /// Assignment to inner void
+  void setInnerMat(const int M) {  innerMat=M; }
+  /// Assignment to extra for first volume
+  void setPreInsert
+    (const std::shared_ptr<attachSystem::ContainedGroup>& A) { preInsert=A; }
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

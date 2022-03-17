@@ -50,6 +50,7 @@
 #include "GateValveGenerator.h"
 #include "GratingMonoGenerator.h"
 #include "JawValveGenerator.h"
+#include "CylGateValveGenerator.h"
 
 #include "MirrorGenerator.h"
 #include "PipeGenerator.h"
@@ -61,6 +62,7 @@
 #include "SimpleChicaneGenerator.h"
 #include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
+#include "TriggerGenerator.h"
 #include "SqrFMaskGenerator.h"
 #include "TwinPipeGenerator.h"
 #include "VacBoxGenerator.h"
@@ -233,55 +235,37 @@ splitterVariables(FuncDataBase& Control,
   
 void
 preOpticsVariables(FuncDataBase& Control,
-		   const std::string& frontKey)
+		   const std::string& opticsKey)
   /*!
     Builds the variables for the optics going to the M1-Mirror
     in the optics hutch
     \param Control :: Database
-    \param frontKey :: prename
+    \param opticsKey :: prename
   */
 {
   ELog::RegMethod RegA("speciesVariables[F]","preOpticsVariables");
+
   setVariable::BellowGenerator BellowGen;
-  setVariable::GateValveGenerator GateGen;
+  setVariable::TriggerGenerator TGen;
+  setVariable::CylGateValveGenerator GVGen;
   setVariable::PipeGenerator PipeGen;
-  setVariable::CrossGenerator CrossGen;
-  setVariable::PipeTubeGenerator SimpleTubeGen;
-  setVariable::PortItemGenerator PItemGen;
-    
-  PipeGen.setNoWindow();   // no window
+  
+  PipeGen.setNoWindow();   
   PipeGen.setMat("Stainless304");
   
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,frontKey+"BellowA",12.5);
+  BellowGen.generateBellow(Control,opticsKey+"BellowA",12.5);
 
-    // flange if possible
-  CrossGen.setPlates(0.5,2.0,2.0);       // wall/Top/base
-  CrossGen.setTotalPorts(10.0,10.0);     // len of ports (after main)
-  CrossGen.setMat("Stainless304");
-  // height/depth
-  CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF100>
-    (Control,frontKey+"IonPA",0.0,24.4,36.6);
-
-  // joined and open
-  GateGen.setLength(3.5);
-  GateGen.setCubeCF<setVariable::CF40>();
-  GateGen.generateValve(Control,frontKey+"GateRing",0.0,0);
-  
   // will be rotated vertical
-  const std::string gateName=frontKey+"GateTubeA";
-  SimpleTubeGen.setCF<CF63>();
-  SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,gateName,30.0);
-  Control.addVariable(gateName+"NPorts",2);   // beam ports
-  const Geometry::Vec3D ZVec(0,0,1);
-  PItemGen.setCF<setVariable::CF40>(4.45);
-  PItemGen.setPlate(0.0,"Void");  
-  PItemGen.generatePort(Control,gateName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
-  PItemGen.generatePort(Control,gateName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
+  TGen.setCF<CF100>();
+  TGen.setVertical(15.0,25.0);
+  TGen.setSideCF<setVariable::CF40>(10.0); // add centre distance?
+  TGen.generateTube(Control,opticsKey+"TriggerPipe");
 
+  GVGen.generateGate(Control,opticsKey+"GateTubeA",0);
+  
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,frontKey+"BellowB",16.0);
+  BellowGen.generateBellow(Control,opticsKey+"BellowB",16.0);
   return;
 }
 
@@ -619,6 +603,15 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"InletXStep",0.0);
   Control.addVariable(hutName+"InletZStep",0.0);
   Control.addVariable(hutName+"InletRadius",5.0);
+
+
+  Control.addVariable(hutName+"Hole0Offset",Geometry::Vec3D(23.0,0,4));
+  Control.addVariable(hutName+"Hole0ZStep",1.0);
+  Control.addVariable(hutName+"Hole0Radius",5.0);
+
+  Control.addVariable(hutName+"Hole1Offset",Geometry::Vec3D(58.0,0,4));
+  Control.addVariable(hutName+"Hole1Radius",5.0);
+
 
   //  Control.addVariable(hutName+"InnerFarVoid",15.0);
   //  Control.addVariable(hutName+"OuterFarVoid",15.0);

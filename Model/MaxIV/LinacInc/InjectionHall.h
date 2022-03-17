@@ -59,6 +59,13 @@ class InjectionHall :
   double spfMazeLength;         ///< SPF access maze full length (along the x-axis)
   double spfMazeDoorThick;      ///< SPF maze door thick
   int    spfMazeDoorMat;        ///< SPF maze door material
+  double spfMazeLayerThick;     ///< SPF maze B4C layer thick
+  double spfMazeLayerHeight;    ///< SPF maze B4C layer height
+  double spfMazeLayerPipesWidth; ///< Width of the area occupied by pipes on the wall to the concrete door parking room
+  double spfMazeLayerPipesHeight; ///< Height of the area occupied by pipes on the wall to the concrete door parking room
+  double spfMazeLayerPLCWidth;  ///< Width of the area occupied by PLC equipment on the wall to the concrete door parking room
+  double spfMazeLayerPLCHeight; ///< Height of the area occupied by PLC equipment on the wall to the concrete door parking room
+  int spfMazeLayerMat;          ///< SPF maze B4C layer material
 
   double fkgDoorWidth;          ///< Future klystron gallery access door width
   double fkgDoorHeight;         ///< Future klystron gallery access door height
@@ -100,11 +107,13 @@ class InjectionHall :
 
   double linearWidth;            ///< Wall - Wall width
 
-  double floorDepth;             ///< Depth (floor to under roof)
-  double roofHeight;             ///< Height (floor to under roof)
+  double floorDepth;             ///< Depth
+  double roofHeight;             ///< Height
 
   double wallThick;             ///< Wall thickness
-  double roofThick;             ///< roof thickness
+  double roofThick;             ///< SPF hall roof thickness
+  double fkgRoofThick;          ///< FKG roof thickness
+  double fkgRoofYStep;          ///< Y-step offset of the FKG roof (below our office area)
   double floorThick;            ///< floor thickness
 
   double midTXStep;             ///< Step to centre of T
@@ -190,10 +199,10 @@ class InjectionHall :
   int floorMat;                 ///< Floor material
   int soilMat;                  ///< Earth material
 
+
   void createFloor(Simulation&);
   void layerProcess(Simulation&,const std::string&,
                     const int,const int,const size_t);
-
 
 
   void populate(const FuncDataBase&);
@@ -209,6 +218,8 @@ class InjectionHall :
   virtual ~InjectionHall();
 
   size_t getBackWallNLayers() const {return backWallNLayers; }
+  bool addPillars(Simulation&,const int) const;
+
 
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,

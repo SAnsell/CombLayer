@@ -3,7 +3,7 @@
  
  * File:   speciesInc/speciesOpticsHutch.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,22 +69,18 @@ class speciesOpticsHut :
   double inletZStep;            ///< Inlet ZStep  
   double inletRadius;           ///< Inlet radius
 
-  double holeXStep;            ///< Hole XStep
-  double holeZStep;            ///< Hole ZStep  
-  double holeRadius;           ///< Hole radius
+  std::vector<Geometry::Vec3D> holeOffset;   ///< Offset for holes (backwall)
+  std::vector<double> holeRadius;            ///< Radii for holes
 
   int voidMat;                 ///< void Material
   int innerMat;                ///< Fe layer material for walls
   int pbMat;                   ///< pb layer material for walls 
   int outerMat;                ///< Conc layer material for ring walls
 
-
-
   /// Chicanes 
   std::vector<std::shared_ptr<SimpleChicane>> PChicane;  
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();

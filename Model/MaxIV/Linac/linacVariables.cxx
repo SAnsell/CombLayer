@@ -73,6 +73,7 @@
 #include "SixPortGenerator.h"
 #include "CeramicGapGenerator.h"
 #include "EBeamStopGenerator.h"
+#include "TDCBeamDumpGenerator.h"
 #include "TWCavityGenerator.h"
 #include "UndVacGenerator.h"
 #include "FMUndulatorGenerator.h"
@@ -2044,6 +2045,15 @@ Segment26(FuncDataBase& Control,
   Control.addVariable(lKey+"ShieldAYStep",20.0); // approx
   Control.addVariable(lKey+"ShieldAZStep",5.0); // approx
   Control.addVariable(lKey+"ShieldAXAngle",-pipeBAXAngle);
+  Control.addVariable(lKey+"ShieldAMainMat","Stainless304L");
+
+  // from top to bottom:
+  Control.addVariable(lKey+"ShieldAMidHoleShieldHeight6",4.2);
+  Control.addVariable(lKey+"ShieldAMidHoleShieldHeight5",4.7);
+  Control.addVariable(lKey+"ShieldAMidHoleShieldHeight4",5.0);
+  Control.addVariable(lKey+"ShieldAMidHoleShieldHeight3",3.8);
+  Control.addVariable(lKey+"ShieldAMidHoleShieldHeight2",5.7);
+  Control.addVariable(lKey+"ShieldAMidHoleShieldHeight1",2.5);
 
   return;
 }
@@ -2062,7 +2072,7 @@ Segment27(FuncDataBase& Control,
 
   setVariable::YagScreenGenerator YagScreenGen;
   setVariable::YagUnitGenerator YagUnitGen;
-  setVariable::LBeamStopGenerator BSGen;
+  setVariable::TDCBeamDumpGenerator BSGen;
 
   const Geometry::Vec3D startPtA(-637.608,8173.261,0.0);
   const Geometry::Vec3D startPtB(-637.608,8180.263,-37.887);
@@ -2135,14 +2145,17 @@ Segment27(FuncDataBase& Control,
   Control.addVariable(lKey+"YagUnitCYAngle",90.0);
   Control.addVariable(lKey+"YagUnitCFrontLength",12.993); // No_27_00
 
-  YagScreenGen.generateScreen(Control,lKey+"YagScreenC",0);
+  YagScreenGen.generateScreen(Control,lKey+"YagScreenC",1);
   Control.addVariable(lKey+"YagScreenCYAngle",-90.0);
 
   setBellow37(Control,lKey+"BellowAC");
   setBellow37(Control,lKey+"BellowBC");
 
-  BSGen.generateBStop(Control,lKey+"BeamStopC");
-  Control.addVariable(lKey+"BeamStopCYStep",25.0);
+  BSGen.generate(Control,lKey+"BeamStopC");
+  Control.addVariable(lKey+"BeamStopCYAngle",-90.0);
+  Control.addVariable(lKey+"BeamStopCYStep",3.0);
+  Control.addVariable(lKey+"BeamStopCBulkThickBack",40.0+20.0);
+  Control.addVariable(lKey+"BeamStopCPreCoreLength",65.0);
 
   return;
 }
@@ -3222,10 +3235,10 @@ Segment48(FuncDataBase& Control,
   PGen.setMat("Stainless304L","Stainless304L");
   PGen.setNoWindow();
 
-  EBGen.generateEBeamStop(Control,lKey+"BeamStopA",0);
+  EBGen.generateEBeamStop(Control,lKey+"BeamStopA",1);
   setBellow26(Control,lKey+"BellowA",7.5);
 
-  EBGen.generateEBeamStop(Control,lKey+"BeamStopB",0);
+  EBGen.generateEBeamStop(Control,lKey+"BeamStopB",1);
 
   PGen.generatePipe(Control,lKey+"PipeA",12.6); // measured
 
@@ -3348,6 +3361,14 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"SPFMazeDoorThick",10.0); // SPF maze door thickness
   Control.addVariable(wallKey+"SPFMazeDoorMat","Concrete"); // SPF maze door thickness
 
+  Control.addVariable(wallKey+"SPFMazeLayerThick",5.0);
+  Control.addVariable(wallKey+"SPFMazeLayerMat","B4C");
+  Control.addVariable(wallKey+"SPFMazeLayerHeight",256.0); // HQ, 2021-06-21
+  Control.addVariable(wallKey+"SPFMazeLayerPipesWidth",150.0); // guess based on email HQ, 2021-06-21
+  Control.addVariable(wallKey+"SPFMazeLayerPipesHeight",145.0); // HQ, 2021-06-21
+  Control.addVariable(wallKey+"SPFMazeLayerPLCWidth",50.0); // HQ, 2021-06-21
+  Control.addVariable(wallKey+"SPFMazeLayerPLCHeight",165.0); // HQ, 2021-06-21
+
   Control.addVariable(wallKey+"FKGDoorWidth",131.0); // K_20-1_08F6c1 and K_20-2_349
   Control.addVariable(wallKey+"FKGDoorHeight",211.0); // K_20-2_349
   Control.addVariable(wallKey+"FKGMazeWidth",100.0); // K_20-1_08F6c1
@@ -3355,7 +3376,7 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"FKGMazeWallThick",200.0); // K_20-1_08F6c1
 
   Control.addVariable(wallKey+"BTGThick",90.0); // calculated from K_20-1_08G6b4: 2700-1800
-  Control.addVariable(wallKey+"BTGHeight",200.0); // derived from K_20-6_075
+  Control.addVariable(wallKey+"BTGHeight",200.0); // derived from K_20-6_075: 200
   Control.addVariable(wallKey+"BTGLength",1000.0); // K_20-1_08G6b[14]: 495000-489000-1416+5416
   Control.addVariable(wallKey+"BTGYOffset",180.0); // calculated from K_20-1_08G6b4: 5416-3616
   Control.addVariable(wallKey+"BTGMat","Concrete"); // AR 2020-11-17
@@ -3393,8 +3414,10 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"FloorDepth",floorDepth);
   Control.addVariable(wallKey+"RoofHeight",totalHeight-floorDepth);
 
-  Control.addVariable(wallKey+"RoofThick", 60.0); // K_20-6_053
   Control.addVariable(wallKey+"FloorThick",60.0); // K_20-6_050
+  Control.addVariable(wallKey+"RoofThick", 170.0); // K_20-6_075
+  Control.addVariable(wallKey+"FKGRoofThick", 60.0); // K_20-6_053
+  Control.addVariable(wallKey+"FKGRoofYStep", 10660.0); // approx. as of lower plot A2_40-2_G6-Y.pdf
 
   // Extra for boundary
   // 400 is enough, but we add more to allocate for soil
@@ -3459,8 +3482,12 @@ wallVariables(FuncDataBase& Control,
   // Lower tier - AR: 210119: I would
   // assume there is also a concrete plug in each duct, but for now
   // start with void.
-  const double dx = 60; // artificial offset based on img_5374
-  const double BTGductY = 9839.035 - dx; // K_20-2_355
+
+  // distance from b495 to BackWallConcrete: 361.6 [K_20-1_08G6b3]
+  // distance from b495 to first lower duct: 136.6 [K_20-2_355]
+  // therefore distance between first lower duct and BackWallConcrete is 225 cm
+  // BTGductY is adjusted to have this 225 cm distance
+  const double BTGductY = 9819.035;
   for (size_t i=0; i<=5; ++i)
     {
       const std::string name = wallKey+"MidTDuct" + std::to_string(i+10);
@@ -3470,7 +3497,12 @@ wallVariables(FuncDataBase& Control,
     }
   // Upper tier: G1-G5
   // Electric cables, but now we put void to be conservative
-  const double BTGductYup = BTGductY + 105.0 - dx; // K_20-2_355: 105 = 241.6-136.6
+
+  // In the drawings [K_20-2_355] there are only 4 ducts,
+  // but in reality there are 5
+  // (see http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/img_5374.jpg/view)
+  // therefore substract 60 cm to allocate space for this additional duct
+  const double BTGductYup = BTGductY + 105.0 - 60; // K_20-2_355: 105 = 241.6-136.6
   for (size_t i=0; i<=5; ++i)
     {
       const std::string name = wallKey+"MidTDuct" + std::to_string(i+16);
@@ -3674,8 +3706,8 @@ LINACvariables(FuncDataBase& Control)
 
   Control.addVariable("spfLongXStep",-622.286+linacVar::zeroX);
   Control.addVariable("spfLongYStep",4226.013+linacVar::zeroY);
-  Control.addVariable("spfLongOuterLeft",70.0);
-  Control.addVariable("spfLongOuterRight",50.0);
+  Control.addVariable("spfLongOuterLeft",250.0);
+  Control.addVariable("spfLongOuterRight",250.0);
   Control.addVariable("spfLongOuterTop",100.0);
 
 

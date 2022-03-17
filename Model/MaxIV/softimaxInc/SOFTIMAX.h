@@ -3,7 +3,7 @@
 
   * File:   softimaxInc/SOFTIMAX.h
   *
-  * Copyright (c) 2004-2020 by Konstantin Batkov
+  * Copyright (c) 2004-2021 by Konstantin Batkov
   *
   * This program is free software: you can redistribute it and/or modify
   * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@
 
 namespace xraySystem
 {
+  class OpticsHutch;
   class softimaxFrontEnd;
   class softimaxOpticsLine;
 
@@ -43,7 +44,7 @@ namespace xraySystem
     \brief SoftiMAX beam line
   */
 
-  class SOFTIMAX : public R3Beamline
+class SOFTIMAX : public R3Beamline
   {
   private:
     /// the components in the front end
@@ -51,7 +52,7 @@ namespace xraySystem
     /// lead in beam wall
     std::shared_ptr<WallLead> wallLead;
     /// Optics hutch
-    std::shared_ptr<balderOpticsHutch> opticsHut;
+    std::shared_ptr<OpticsHutch> opticsHut;
     /// Pipe joining frontend to optics hut
     std::shared_ptr<constructSystem::VacuumPipe> joinPipe;
     /// Optics beamlines

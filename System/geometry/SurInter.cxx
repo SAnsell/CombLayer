@@ -57,6 +57,7 @@
 #include "Circle.h"
 #include "Ellipse.h"
 #include "HeadRule.h"
+#include "surfIndex.h"
 #include "LineIntersectVisit.h"
 #include "SurInter.h"
 
@@ -64,6 +65,52 @@
 namespace SurInter
 {
 
+Geometry::Vec3D
+getLinePoint(const Geometry::Vec3D& Origin,
+	     const Geometry::Vec3D& LAxis,
+	     const int SNum,
+	     const Geometry::Vec3D& closePt)
+  /*!
+    Calculate the intersection object between two planes
+    \param Origin :: Start of line
+    \param LAxis :: Axis of line
+    \param SNum :: Surface number
+    \param closePt :: Point to determine closest solution
+    \return Line/Surf intersection
+  */
+{
+  ELog::RegMethod RegA("SurInter[F]","lineSurfPoint(int,close)");
+
+  ModelSupport::surfIndex& SurI=
+    ModelSupport::surfIndex::Instance();
+  const Geometry::Surface* SPtr=SurI.getSurf(SNum);
+  return getLinePoint(Origin,LAxis,SPtr,closePt);
+}
+
+Geometry::Vec3D
+getLinePoint(const Geometry::Vec3D& Origin,
+	     const Geometry::Vec3D& LAxis,
+	     const int SNum)
+  /*!
+    Calculate the intersection object between two planes
+    \param Origin :: Start of line
+    \param LAxis :: Axis of line
+    \param SNum :: Surface number
+    \return Line/Surf intersection
+  */
+{
+  ELog::RegMethod RegA("SurInter[F]","lineSurfPoint(int)");
+
+  ModelSupport::surfIndex& SurI=
+    ModelSupport::surfIndex::Instance();
+  // must be a plane to get one point
+  const Geometry::Plane* PPtr=SurI.realSurf<Geometry::Plane>(SNum);
+  if (!PPtr)
+    throw ColErr::InContainerError<int>(SNum,"Plane Surface");
+  return getLinePoint(Origin,LAxis,PPtr);
+}
+
+  
 Geometry::Vec3D
 getLinePoint(const Geometry::Vec3D& Origin,const Geometry::Vec3D& N,
 	     const HeadRule& mainHR,const HeadRule& sndHR)
@@ -120,6 +167,24 @@ getLinePoint(const Geometry::Vec3D& Origin,
   return trackLine.getPoint(PPtr);
 }
 
+Geometry::Vec3D
+getLinePoint(const Geometry::Vec3D& Origin,
+             const Geometry::Vec3D& Axis,
+	     const Geometry::Surface* SPtr,
+             const Geometry::Vec3D& NPoint)
+  /*!
+    Calculate the line though a surface
+    \param Origin :: Origin of the line
+    \param Axis :: axis direction
+    \param SPtr :: surface point
+    \param NPoint :: nearest point
+    \return Point on intersect
+  */
+{
+  MonteCarlo::LineIntersectVisit trackLine(Origin,Axis);
+  return trackLine.getPoint(SPtr,NPoint);
+}
+
 double
 getLineDistance(const Geometry::Vec3D& Origin,
              const Geometry::Vec3D& Axis,
@@ -137,24 +202,6 @@ getLineDistance(const Geometry::Vec3D& Origin,
 {
   MonteCarlo::LineIntersectVisit trackLine(Origin,Axis);
   return trackLine.getDist(PPtr);
-}
-
-Geometry::Vec3D
-getLinePoint(const Geometry::Vec3D& Origin,
-             const Geometry::Vec3D& Axis,
-	     const Geometry::Surface* SPtr,
-             const Geometry::Vec3D& NPoint)
-  /*!
-    Calculate the line though a surface
-    \param Origin :: Origin of the line
-    \param Axis :: axis direction
-    \param SPtr :: surface point
-    \param NPoint :: nearest point
-    \return Point on intersect
-  */
-{
-  MonteCarlo::LineIntersectVisit trackLine(Origin,Axis);
-  return trackLine.getPoint(SPtr,NPoint);
 }
 
 double

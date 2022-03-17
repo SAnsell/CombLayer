@@ -3,7 +3,7 @@
  
  * File:   micromaxInc/micromaxOpticsLine.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,12 +19,17 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_micromaxOpticsLineX_h
-#define xraySystem_micromaxOpticsLineX_h
+#ifndef xraySystem_micromaxOpticsLine_h
+#define xraySystem_micromaxOpticsLine_h
 
 namespace insertSystem
 {
   class insertPlate;
+}
+
+namespace tdcSystem
+{
+  class YagScreen;
 }
 
 namespace constructSystem
@@ -40,20 +45,32 @@ namespace constructSystem
   class GateValveCube;
   class JawValveCube;
   class JawFlange;
-
+  class DiffPumpXIADP03;
 }
 
 namespace xraySystem
 {
-  class OpticsHutch;
+  class CylGateValve;
   class BremColl;
+  class BremBlock;
+  class BeamPair;
+  class BremMonoColl;
+  class DCMTank;
   class FlangeMount;
+  class GaugeTube;
   class Mirror;
-  class MonoCrystals;
-  class MonoBox;
+  class MLMono;
+  class MonoBlockXstals;
+  class ShutterUnit;
+  class SquareFMask;
+  class IonGauge;
+  class TriggerTube;
+  class HPJaws;
+  class BremTube;
+  class ViewScreenTube;
   class MonoShutter;
   class PipeShield;
-  class ShutterUnit;
+  
     
   /*!
     \class micromaxOpticsLine
@@ -72,102 +89,151 @@ class micromaxOpticsLine :
 {
  private:
 
+  /// string for pre-insertion into mastercell:0
+  std::shared_ptr<attachSystem::ContainedGroup> preInsert;
   /// construction space for main object
-  attachSystem::InnerZone buildZone;
-  
+  attachSystem::BlockZone buildZone;
+  int innerMat;                         ///< inner material if used
+
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
 
   /// Inital bellow
   std::shared_ptr<constructSystem::Bellows> pipeInit;
-  /// vauucm trigger system
-  std::shared_ptr<constructSystem::CrossPipe> triggerPipe;
-  /// first ion pump
-  std::shared_ptr<constructSystem::CrossPipe> gaugeA;
-  /// bellows after ion pump to filter
+  /// vacuum trigger system
+  std::shared_ptr<xraySystem::TriggerTube> triggerPipe;
+  /// first ion pump+gate
+  std::shared_ptr<xraySystem::CylGateValve> gateTubeA;
+  /// Addaptor to connect from pump into point to diffuser
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;
+  /// bellow to collimator
   std::shared_ptr<constructSystem::Bellows> bellowA;
-  /// Vacuum pipe for collimator
-  std::shared_ptr<xraySystem::BremColl> bremCollA;
-  /// Filter tube
-  std::shared_ptr<constructSystem::PortTube> filterBoxA;
-  /// Filter stick [only one blade type -- fix]
-  std::shared_ptr<xraySystem::FlangeMount> filterStick;
-  /// First gate valve
-  std::shared_ptr<constructSystem::GateValveCube> gateA;
-  /// bellows after gateA ->view
+  /// Brem for collimator
+  std::shared_ptr<xraySystem::SquareFMask> bremCollA;
+  /// Ion Gauge
+  std::shared_ptr<xraySystem::IonGauge> ionGaugeA;
+  /// bellow to collimator
   std::shared_ptr<constructSystem::Bellows> bellowB;
-  
-  /// diamon screen(?)
-  std::shared_ptr<constructSystem::PipeTube> screenPipeA;
-  /// View/something(?)
-  std::shared_ptr<constructSystem::PipeTube> screenPipeB;
-  /// Primary jaw (Box)
-  std::shared_ptr<constructSystem::VacuumBox> primeJawBox;
-  /// Bellow to gate on mono
-  std::shared_ptr<constructSystem::Bellows> bellowC;
-  /// First gate valve
-  std::shared_ptr<constructSystem::GateValveCube> gateB;
-  /// Mono box
-  std::shared_ptr<xraySystem::MonoBox> monoBox;
-  /// Mono Xstal 
-  std::shared_ptr<xraySystem::MonoCrystals> monoXtal;
-  // Gate to isolate mono
-  std::shared_ptr<constructSystem::GateValveCube> gateC;
-  /// Bellow to diagnositics
-  std::shared_ptr<constructSystem::Bellows> bellowD;
-  /// Diagnostic unit 1:
-  std::shared_ptr<constructSystem::PortTube> diagBoxA;
-  /// Bellow from diagnositics
-  std::shared_ptr<constructSystem::Bellows> bellowE;
-  // Gate fro first mirror
-  std::shared_ptr<constructSystem::GateValveCube> gateD;
-
-  /// Mirror box 
-  std::shared_ptr<constructSystem::VacuumBox> mirrorA;
-  // Gate fro first mirror
-  std::shared_ptr<constructSystem::GateValveCube> gateE;
-  /// Bellow to diagnositics
-  std::shared_ptr<constructSystem::Bellows> bellowF;
-  /// Diagnostic unit 2:
-  std::shared_ptr<constructSystem::PortTube> diagBoxB;
-  /// Diag Box B :: Jaw units
-  std::array<std::shared_ptr<constructSystem::JawFlange>,2> jawCompB;
-
-  /// Bellow to mirror B
-  std::shared_ptr<constructSystem::Bellows> bellowG;
-  // Gate valve
-  std::shared_ptr<constructSystem::GateValveCube> gateF;
-  /// Mirror box B
-  std::shared_ptr<constructSystem::VacuumBox> mirrorB;
-  // Gate valve
-  std::shared_ptr<constructSystem::GateValveCube> gateG;
-  /// Bellow to mirror B
-  std::shared_ptr<constructSystem::Bellows> bellowH;
+  /// mini-Brem Collimator
+  std::shared_ptr<constructSystem::VacuumPipe> bremPipeB;
 
   /// Diagnostic unit 3:
-  std::shared_ptr<constructSystem::PortTube> diagBoxC;
-  /// Diag Box C :: Jaw units
-  std::array<std::shared_ptr<constructSystem::JawFlange>,2> jawCompC;
-  /// Monochromatic shutter
-  std::shared_ptr<xraySystem::MonoShutter> monoShutter;
-  /// Screen at end of hut
-  std::shared_ptr<xraySystem::PipeShield> screenA;
+  std::shared_ptr<constructSystem::PortTube> diagBoxA;
+  /// Jaws for the slit tube (x/z pair)
+  std::array<std::shared_ptr<xraySystem::BeamPair>,2> jaws;
 
-  /// Bellow to end station
+  /// mini pipe out of diag box
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;
+  /// gate valve
+  std::shared_ptr<xraySystem::CylGateValve> gateTubeB;
+  /// bellow to to mono
+  std::shared_ptr<constructSystem::Bellows> bellowC;
+
+  // PART 4: [MML]
+  /// MirrorMonoBox 
+  std::shared_ptr<constructSystem::VacuumBox> MLMVessel;
+  /// Mirror-Mono system
+  std::shared_ptr<xraySystem::MLMono> MLM;
+
+  // PART 5: [connection pipe]
+
+  /// bellow from MLM
+  std::shared_ptr<constructSystem::Bellows> bellowD;
+
+  std::shared_ptr<constructSystem::VacuumPipe> pipeC;
+  /// gate valve
+  std::shared_ptr<xraySystem::CylGateValve> gateTubeC;
+  /// bellow to DCM
+  std::shared_ptr<constructSystem::Bellows> bellowE;
+
+  /// H-res mono vessel
+  std::shared_ptr<xraySystem::DCMTank> monoVessel;
+  /// Crystal pair
+  std::shared_ptr<xraySystem::MonoBlockXstals> mbXstals;
+
+    /// bellow to diag
+  std::shared_ptr<constructSystem::Bellows> bellowF;
+  /// pipe to gate valve
+  std::shared_ptr<constructSystem::VacuumPipe> pipeD;
+  /// gate valve
+  std::shared_ptr<xraySystem::CylGateValve> gateTubeD;
+
+  /// Diag unit two contains Brem block
+  std::shared_ptr<xraySystem::BremTube> bremTubeA;
+  /// Brem collimator
+  std::shared_ptr<xraySystem::BremBlock> bremCollB;
+  /// Jaws
+  std::shared_ptr<xraySystem::HPJaws> hpJawsA;
+
+  /// Mirror box
+  std::shared_ptr<constructSystem::VacuumBox> mirrorBoxA;
+  /// Mirror front
+  std::shared_ptr<xraySystem::Mirror> mirrorFrontA;
+  /// Mirror back
+  std::shared_ptr<xraySystem::Mirror> mirrorBackA;
+
+  /// bellow from Mirror to Diag3
+  std::shared_ptr<constructSystem::Bellows> bellowG;
+  /// gate valve infront of diag3
+  std::shared_ptr<xraySystem::CylGateValve> gateTubeE;
+  /// view screen
+  std::shared_ptr<xraySystem::ViewScreenTube> viewTube;
+  /// yag screen in view screen tube
+  std::shared_ptr<tdcSystem::YagScreen> yagScreen;
+
+  /// Diag unit two contains Brem block
+  std::shared_ptr<constructSystem::PipeTube> bremTubeB; 
+  /// Brem collimator
+  std::shared_ptr<xraySystem::BremBlock> bremCollC;
+ /// Jaws
+  std::shared_ptr<xraySystem::HPJaws> hpJawsB;
+
+  /// bellow out of diag 3 [close]
+  std::shared_ptr<constructSystem::Bellows> bellowH;
+  /// pipe to exit bellow of diag 3
+  std::shared_ptr<constructSystem::VacuumPipe> pipeE;
+  /// bellow out of diag 3 [long/final]
   std::shared_ptr<constructSystem::Bellows> bellowI;
 
+  /// gate valve infront of diag3
+  std::shared_ptr<xraySystem::CylGateValve> gateTubeF;
+  /// view screen
+  std::shared_ptr<xraySystem::ViewScreenTube> viewTubeB;
+  /// bellow out of diag 3 [long/final]
+  std::shared_ptr<constructSystem::Bellows> bellowJ;
+  /// adaptor plate from CF63->CF40
+  std::shared_ptr<constructSystem::VacuumPipe> monoAdaptorA;
+  /// The main mono shutter
+  std::shared_ptr<xraySystem::MonoShutter> monoShutter;
+  /// adaptor plate from CF63->CF40
+  std::shared_ptr<constructSystem::VacuumPipe> monoAdaptorB;
+  /// Last gate valve:
+  std::shared_ptr<xraySystem::CylGateValve> gateTubeG;
+  /// last pipe
+  std::shared_ptr<constructSystem::VacuumPipe> pipeF;
+  
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
   double outerTop;     ///< Top lift for cut rectangle
+
+  void constructMirrorMono(Simulation&,const attachSystem::FixedComp&,
+			   const std::string&);
   
-  int constructDiag
-    (Simulation&,
-     MonteCarlo::Object**,
-     constructSystem::PortTube&,
-     std::array<std::shared_ptr<constructSystem::JawFlange>,2>&,
-     const attachSystem::FixedComp&,
-     const long int);
-  
+  void constructHDCM(Simulation&,const attachSystem::FixedComp&,
+		     const std::string&);
+
+  void constructDiag2(Simulation&,const attachSystem::FixedComp&,
+		      const std::string&);
+
+  void constructDiag3(Simulation&,const attachSystem::FixedComp&,
+		      const std::string&);
+
+  void constructDiag4(Simulation&,const attachSystem::FixedComp&,
+		      const std::string&);
+
+  void constructMonoShutter
+  (Simulation&,const attachSystem::FixedComp&,const std::string&);
+ 
   void populate(const FuncDataBase&);
   void createSurfaces();
   void buildObjects(Simulation&);
@@ -179,7 +245,14 @@ class micromaxOpticsLine :
   micromaxOpticsLine(const micromaxOpticsLine&);
   micromaxOpticsLine& operator=(const micromaxOpticsLine&);
   ~micromaxOpticsLine();
-  
+
+  /// Assignment to inner void
+  void setInnerMat(const int M) {  innerMat=M; }
+  /// Assignment to extra for first volume
+  void setPreInsert
+    (const std::shared_ptr<attachSystem::ContainedGroup>& A) { preInsert=A; }
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

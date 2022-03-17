@@ -26,7 +26,8 @@ class Simulation;
 
 namespace constructSystem
 {
-    class PipeTube;
+  class FlangeDome;
+  class PipeTube;
 }
 
 namespace xraySystem
@@ -49,33 +50,38 @@ namespace xraySystem
 
 class cosaxsTube :
     public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset,
+    public attachSystem::FixedRotate,
     public attachSystem::CellMap,
     public attachSystem::SurfMap,
     public attachSystem::FrontBackCut
 {
  private:
 
-  bool delayPortFlag; ///< Delay building port
-  double outerRadius; ///< Radius of bounding volume
-  double outerLength; ///< Length of bounding volume
-
-  attachSystem::InnerZone buildZone;
-  attachSystem::InnerZone buildZoneTube;
+  bool delayPortFlag;           ///< Delay building port
+  double outerRadius;           ///< Radius of bounding volume
+  double outerLength;           ///< Length of bounding volume
+ 
+  int outerMat;                 ///< Outer material
+  
+  attachSystem::BlockZone buildZone;      ///< Outer BlockZone
+  attachSystem::BlockZone tubeZone;       ///< Inner void BlockZone
 
   std::shared_ptr<xraySystem::cosaxsTubeNoseCone> noseCone;
   std::shared_ptr<constructSystem::GateValveCylinder> gateA;
   std::shared_ptr<xraySystem::cosaxsTubeStartPlate> startPlate;
   std::array<std::shared_ptr<constructSystem::PipeTube>, 8> seg;
+  std::shared_ptr<constructSystem::FlangeDome> backPlate;
+
+  // inner components:
   std::shared_ptr<xraySystem::MonoBeamStop> beamDump;
   std::shared_ptr<xraySystem::cosaxsTubeWAXSDetector> waxs;
   std::shared_ptr<xraySystem::cosaxsTubeAirBox> airBox;
   std::shared_ptr<xraySystem::cosaxsTubeCable>  cable;
+  
 
+  void createInnerObjects(Simulation&);
+  
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -85,12 +91,16 @@ class cosaxsTube :
   cosaxsTube(const std::string&);
   cosaxsTube(const cosaxsTube&);
   cosaxsTube& operator=(const cosaxsTube&);
-  virtual cosaxsTube* clone() const;
   virtual ~cosaxsTube();
 
   /// set delay
   void delayPorts() { delayPortFlag=1; }
   void createPorts(Simulation&);
+
+  /// Assignment to outer void
+  void setOuterMat(const int M) { outerMat=M; }
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
 };

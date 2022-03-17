@@ -55,6 +55,7 @@
 #include "GateValveGenerator.h"
 #include "CylGateValveGenerator.h"
 #include "BeamMountGenerator.h"
+#include "WallLeadGenerator.h"
 
 #include "EPSeparatorGenerator.h"
 #include "R3ChokeChamberGenerator.h"
@@ -68,10 +69,27 @@ void heatDumpVariables(FuncDataBase&,const std::string&);
 void shutterTable(FuncDataBase&,const std::string&);
 void moveApertureTable(FuncDataBase&,const std::string&);
 void collimatorVariables(FuncDataBase&,const std::string&);
+void wallVariables(FuncDataBase&,const std::string&);
+
+void
+wallVariables(FuncDataBase& Control,const std::string& wallKey)
+ /*!
+    Set the variables for the frontend wall
+    \param Control :: DataBase to use
+    \param wallKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("R3RingVariables[F]","wallVariables");
+
+  WallLeadGenerator LGen;
+  LGen.setWidth(140.0,70.0);
+  LGen.generateWall(Control,wallKey,3.0);
+
+  return;
+}
   
 void
-collimatorVariables(FuncDataBase& Control,
-		    const std::string& collKey)
+collimatorVariables(FuncDataBase& Control,const std::string& collKey)
   /*!
     Builds the variables for the collimator
     \param Control :: Database
@@ -316,21 +334,27 @@ heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
   setVariable::PortItemGenerator PItemGen;
   setVariable::HeatDumpGenerator HeatGen;
 
+  const double heatDumpDist(1708.75);
+    
   SimpleTubeGen.setMat("Stainless304");
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.setCap(1,0);
   SimpleTubeGen.generateTube(Control,frontKey+"HeatBox",20.0);
+  Control.addVariable(frontKey+"HeatBoxYStep",heatDumpDist);
   Control.addVariable(frontKey+"HeatBoxNPorts",2);
+
 
   // beam ports
   PItemGen.setCF<setVariable::CF40>(13.05);
   PItemGen.setPlate(0.0,"Void");  
+
 
   const Geometry::Vec3D ZVec(0,0,1);
   const std::string heatName=frontKey+"HeatBoxPort";
   const std::string hName=frontKey+"HeatDumpFlange";
   PItemGen.generatePort(Control,heatName+"0",Geometry::Vec3D(0,0,0),ZVec);
   PItemGen.generatePort(Control,heatName+"1",Geometry::Vec3D(0,0,0),-ZVec);
+
   
   const std::string hDump(frontKey+"HeatDump");
   HeatGen.setCF<CF100>();
@@ -362,13 +386,11 @@ R3RingDoors(FuncDataBase& Control,const std::string& preName)
 
 void
 R3FrontEndVariables(FuncDataBase& Control,
-		    const std::string& frontKey,
-		    const double exitLen) 
+		    const std::string& beamlineKey)
   /*!
     Set the variables for the front end
     \param Control :: DataBase to use
-    \param frontKey :: name before part names
-    \param exitLeng :: last exit pipe length
+    \param beamlineKey :: name of beamline
   */
 {
   ELog::RegMethod RegA("R3RingVariables[F]","R3FrontEndVariables");
@@ -381,12 +403,14 @@ R3FrontEndVariables(FuncDataBase& Control,
   setVariable::EPSeparatorGenerator ESGen;
   setVariable::R3ChokeChamberGenerator CCGen;
 
-  // Master off set from division -- 
-  Control.addVariable(frontKey+"YStep",524.4);  
+  const std::string frontKey(beamlineKey+"FrontBeam");
+  // Master off set from division --
+  Control.addVariable(frontKey+"YStep",524.4);
+  Control.addVariable(frontKey+"XStep",0.0);  
   Control.addVariable(frontKey+"OuterRadius",60.0);
 
   // BuildZone offset
-  Control.addVariable(frontKey+"FrontOffset",-250.0);  
+  Control.addVariable(frontKey+"FrontOffset",-400.0);  
 
   PipeGen.setNoWindow();
   PipeGen.setMat("Copper");
@@ -436,7 +460,7 @@ R3FrontEndVariables(FuncDataBase& Control,
 
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setAFlangeCF<setVariable::CF100>();
-  PipeGen.generatePipe(Control,frontKey+"CollExitPipe",65.5);
+  PipeGen.generatePipe(Control,frontKey+"CollExitPipe",165.5);
 
   // Create HEAT DUMP
   heatDumpTable(Control,frontKey);
@@ -444,8 +468,9 @@ R3FrontEndVariables(FuncDataBase& Control,
   shutterTable(Control,frontKey);
   
   PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,frontKey+"ExitPipe",exitLen);
+  PipeGen.generatePipe(Control,frontKey+"ExitPipe",24.0);
 
+  wallVariables(Control,beamlineKey+"WallLead");
   return;
 }
 
@@ -461,14 +486,15 @@ R3RingVariables(FuncDataBase& Control)
   ELog::RegMethod RegA("R3RingVariables[F]","R3RingVariables");
 
   const std::string preName("R3Ring");
-  
+
   Control.addVariable(preName+"FullOuterRadius",14000.0);
   Control.addVariable(preName+"IcosagonRadius",7865.0);       // U
-  Control.addVariable(preName+"BeamRadius",8409.0);       // 528m circum.
+  Control.addVariable(preName+"BeamRadius",8409.0-48.0);       // 528m circum.
   Control.addVariable(preName+"IcosagonWallThick",90.0);
   Control.addVariable(preName+"OffsetCornerX",716.0);
   Control.addVariable(preName+"OffsetCornerY",558.0);
-  Control.addVariable(preName+"OuterWall",100.0);
+  Control.addVariable(preName+"OuterWall",110.0);
+  Control.addVariable(preName+"OuterWallCut",-40.0);
   Control.addVariable(preName+"RatchetWall",120.0);
   
   Control.addVariable(preName+"Height",160.0);

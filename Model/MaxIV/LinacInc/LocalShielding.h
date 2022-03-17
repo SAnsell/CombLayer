@@ -42,7 +42,7 @@ class LocalShielding :
     public attachSystem::SurfMap,
     public attachSystem::ExternalCut
 {
- private:
+ protected:
 
   double length;                ///< Total length including void
   double width;                 ///< Width
@@ -73,7 +73,7 @@ class LocalShielding :
   void addConnection(const std::string&,const std::string&,const std::string&);
   void addSurf(const std::string&,const std::string&,const std::string&);
 
-  
+
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 

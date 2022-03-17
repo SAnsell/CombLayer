@@ -3,7 +3,7 @@
 
  * File:   constructInc/JawFlange.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,13 +76,17 @@ class JawFlange :
   virtual ~JawFlange();
 
   void setFillRadius(const attachSystem::FixedComp&,
-		     const long int,const int);
+		     const std::string&,const int);
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int,const attachSystem::FixedComp&,
 		 const long int);
+  void createAll(Simulation&,
+		 const attachSystem::FixedComp&,const std::string&,
+		 const attachSystem::FixedComp&,const std::string&);
 
 };
 

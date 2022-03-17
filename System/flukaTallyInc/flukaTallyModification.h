@@ -37,6 +37,7 @@ namespace flukaSystem
     getActiveTally(const SimFLUKA&,const std::string&);
 
   
+  int setAsciiOutput(SimFLUKA&,const std::string&);
   int setBinaryOutput(SimFLUKA&,const std::string&);
 
   int setDoseType(SimFLUKA&,const std::string&,

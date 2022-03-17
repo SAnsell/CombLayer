@@ -130,23 +130,41 @@ WWG::createMesh(const std::string& meshIndex)
 }
 
 WWGWeight&
-WWG::getCreateMesh(const std::string& meshIndex)
+WWG::copyMesh(const std::string& newUnit,
+	      const std::string& oldUnit)
   /*!
-    Get or create a mesh
+    Create a mesh [Must be unique]
+    \param newUnit :: new name of mesh
+    \param oldUnit :: old name name of mesh
+  */
+{
+  MeshTYPE::const_iterator mc=WMeshMap.find(newUnit);
+  if (mc!=WMeshMap.end())
+    throw ColErr::InContainerError<std::string>
+      (newUnit,"new mesh already exists");
+
+  mc=WMeshMap.find(oldUnit);
+  if (mc==WMeshMap.end())
+    throw ColErr::InContainerError<std::string>(oldUnit,"oldUnit");
+
+  size_t index(0);
+  StrFunc::convert(newUnit,index);  // leave as zero if not a number
+  WMeshMap.emplace(newUnit,new WWGWeight(index,*(mc->second)));
+
+  if (defUnit.empty()) defUnit=newUnit;
+  
+  return getMesh(newUnit);
+}
+
+bool
+WWG::hasMesh(const std::string& meshIndex) const 
+  /*!
+    Has a mesh
     \param meshIndex :: name
   */
 {
   MeshTYPE::const_iterator mc=WMeshMap.find(meshIndex);
-  if (mc!=WMeshMap.end())
-    return *(mc->second);
-
-  // zero ID means dont write
-  size_t index(0);
-  StrFunc::convert(meshIndex,index);  // leave as zero if not a nuber
-  WMeshMap.emplace(meshIndex,new WWGWeight(index));
-
-  if (defUnit.empty()) defUnit=meshIndex;
-  return getMesh(meshIndex);
+  return (mc!=WMeshMap.end()) ? 1 : 0;
 }
 
 WWGWeight&
@@ -245,28 +263,6 @@ WWG::powerRange(const std::string& meshIndex,
   WWGWeight& WMesh=getMesh(meshIndex);
 
   WMesh.scalePower(pR);
-  return;
-}
-
-void
-WWG::scaleRange(const std::string& meshIndex,
-		const size_t eIndex,
-		const double minR,
-		const double maxR,
-		const double fullRange)
-  /*!
-    Normalize the mesh to have a max at 1.0
-    \param eIndex :: energy index + 1
-    \param minR :: Min value
-    \param maxR :: Max value
-    \param fullRange :: range between 0 - fullRange [negative]
-  */
-{
-  ELog::RegMethod RegA("WWG","scaleRange");
-
-  WWGWeight& WMesh=getMesh(meshIndex);
-
-  WMesh.scaleRange(eIndex,minR,maxR,fullRange);
   return;
 }
   
@@ -373,53 +369,35 @@ WWG::writeWWINP(const std::string& FName) const
 
 void
 WWG::writeVTK(const std::string& FName,
+	      const bool logFlag,
 	      const std::string& meshName,
 	      const long int EIndex) const
   /*!
     Write out a VTK file
     \param FName :: filename 
+    \param meshName :: Mesh name
     \param EIndex :: energy index
   */
 {
   ELog::RegMethod RegA("WWG","writeVTK");
 
+  ELog::EM<<"WRITE VTK"<<" "<<FName<<" : "<<meshName<<" "<<EIndex<<ELog::endDiag;
   if (FName.empty()) return;
   std::ofstream OX(FName.c_str());
 
   const WWGWeight& WMesh=getMesh(meshName);
   const Geometry::BasicMesh3D& Grid=WMesh.getGeomGrid();
 
-  const long int XSize=WMesh.getXSize();
-  const long int YSize=WMesh.getYSize();
-  const long int ZSize=WMesh.getZSize();
+  // const long int XSize=WMesh.getXSize();
+  // const long int YSize=WMesh.getYSize();
+  // const long int ZSize=WMesh.getZSize();
   
   boost::format fFMT("%1$11.6g%|14t|");  
   OX<<"# vtk DataFile Version 2.0"<<std::endl;
   OX<<"WWG-MESH Data"<<std::endl;
   OX<<"ASCII"<<std::endl;
-  OX<<"DATASET RECTILINEAR_GRID"<<std::endl;
-
-  OX<<"DIMENSIONS "<<XSize<<" "<<YSize<<" "<<ZSize<<std::endl;
-  OX<<"X_COORDINATES "<<XSize<<" float"<<std::endl;
-  for(long int i=0;i<XSize;i++)
-    OX<<(fFMT % Grid.getXCoordinate(static_cast<size_t>(i)));
-  OX<<std::endl;
-  
-  OX<<"Y_COORDINATES "<<YSize<<" float"<<std::endl;
-  for(long int i=0;i<YSize;i++)
-    OX<<(fFMT % Grid.getYCoordinate(static_cast<size_t>(i)));
-  OX<<std::endl;
-
-  OX<<"Z_COORDINATES "<<ZSize<<" float"<<std::endl;
-  for(long int i=0;i<ZSize;i++)
-    OX<<(fFMT % Grid.getZCoordinate(static_cast<size_t>(i)));
-  OX<<std::endl;
-  
-  OX<<"POINT_DATA "<<XSize*YSize*ZSize<<std::endl;
-  OX<<"SCALARS cellID float 1.0"<<std::endl;
-  OX<<"LOOKUP_TABLE default"<<std::endl;
-
-  WMesh.writeVTK(OX,EIndex);
+  Grid.writeVTK(OX);
+  WMesh.writeVTK(OX,EIndex,logFlag);
   
   OX.close();
 
@@ -461,10 +439,7 @@ WWG::writeFLUKA(std::ostream& OX) const
   for(const auto& [Name,WMeshPtr] : WMeshMap)
     {
       if (WMeshPtr->getID()>0)
-	{
-	  ELog::EM<<"WRITE FLUKA "<<ELog::endDiag;
-	  WMeshPtr->writeFLUKA(OX);
-	}
+	WMeshPtr->writeFLUKA(OX);
     }
   return;
 }

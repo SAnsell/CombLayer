@@ -385,10 +385,22 @@ global_settings {
     #declare projection = 0;
     #declare cameraAngle = 70;
   #break
-  #case(strcmp(ITEM,"SPFMaze")) // SPF access maze
-    #declare cameraLocation = <-2800, 10400, 1000>;
-    #declare cameraLookAt   = <-2000, 10000, 300>;
-    #declare cameraAngle = 60;
+  #case(strcmp(ITEM,"SPFMazeS1")) // SPF access maze viewed from the S1 area
+    #declare cameraLocation = <-1275, 9930, 0>;
+    #declare cameraLookAt   = <-1785, 9930, 0>;
+    #declare cameraAngle = 80;
+    #declare projection = 0;
+  #break
+  #case(strcmp(ITEM,"SPFMazeSide")) // SPF access maze viewed from its side segment
+    #declare cameraLocation = <-1730, 9880, 0>;
+    #declare cameraLookAt   = <-1730, 10380, 0>;
+    #declare cameraAngle = 80;
+    #declare projection = 0;
+  #break
+  #case(strcmp(ITEM,"SPFMazeSPF")) // SPF access maze viewed from its segment in the SPF hallway
+    #declare cameraLocation = <-1780, 10328, 0>;
+    #declare cameraLookAt   = <-1450, 10320, 50>;
+    #declare cameraAngle = 80;
     #declare projection = 0;
   #break
   #case(strcmp(ITEM,"Anders40")) // Picture for Anders
@@ -416,9 +428,9 @@ global_settings {
     #declare projection = 0;
   #break
   #case(strcmp(ITEM,"BTG")) // BTG wall
-    #declare cameraLocation = <430, 10429, 100>;
-    #declare cameraLookAt   = <240, 10100, 150>;
-    #declare cameraAngle = 60;
+    #declare cameraLocation = <630, 10400, 100>;
+    #declare cameraLookAt   = <240, 10000, 80>;
+    #declare cameraAngle = 70;
     #declare projection = 0;
   #break
   #case(strcmp(ITEM,"BDRoom")) // Main beam dump room (view from SPF hall)
@@ -506,8 +518,14 @@ global_settings {
     #declare cameraAngle = 60;
   #break
     #case(strcmp(ITEM,"TDC26ShieldA"))
-    #declare cameraLocation = <-243, 7850, 20>;
-    #declare cameraLookAt   = <-352, 8115, 0>;
+    #declare cameraLocation = <-217, 7800, 30>;
+    #declare cameraLookAt   = <-352, 8200, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 40;
+  #break
+    #case(strcmp(ITEM,"TDC27BeamStopC"))
+    #declare cameraLocation = <-140, 8795, 20>;
+    #declare cameraLookAt   = <-352, 8950, -90>;
     #declare projection = 0;
     #declare cameraAngle = 40;
   #break
@@ -549,7 +567,7 @@ global_settings {
     #declare cameraAngle = 40;
   #break
     #case(strcmp(ITEM,"L2SPF6ShieldA"))
-    #declare cameraLocation = <180, 2300, 50>;
+    #declare cameraLocation = <180, 2300, 60>;
     #declare cameraLookAt   = <150, 2315, 0>;
     #declare projection = 0;
     #declare cameraAngle = 50;
@@ -580,7 +598,7 @@ global_settings {
   #break
     #case(strcmp(ITEM,"SpectrometerDipole"))
     #declare cameraLocation = <200, 7100, 100>;
-    #declare cameraLookAt   = <-300, 8150, 0>;
+    #declare cameraLookAt   = <-300, 8340, 0>;
     #declare projection = 0;
     #declare cameraAngle = 30;
   #break
@@ -588,6 +606,30 @@ global_settings {
     #declare cameraLocation = <500, 1700, 100>;
     #declare cameraLookAt   = <300, 1700, 0>;
     #declare projection = 1;
+  #break
+    #case(strcmp(ITEM,"FKGShield"))
+    #declare cameraLocation = <-730, 9600, 50>;
+    #declare cameraLookAt   = <-40, 9760, 100>;
+    #declare projection = 0;
+    #declare cameraAngle = 80;
+  #break
+    #case(strcmp(ITEM,"TDCBeamDump"))
+    #declare cameraLocation = <-150, 9600, 150>;
+    #declare cameraLookAt   = <-350, 10000, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 50;
+  #break
+    #case(strcmp(ITEM,"NoRoof1")) // BC2 area
+    #declare cameraLocation = <500, -1100, 1500>;
+    #declare cameraLookAt   = <0, 1500,  0>;
+    #declare projection = 0;
+    #declare cameraAngle = 30;
+  #break
+    #case(strcmp(ITEM,"NoRoof2")) // Switching area
+    #declare cameraLocation = <-150, 6500, 1500>;
+    #declare cameraLookAt   = <-400, 4600, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 30;
   #break
   #else // whole beamline view (like All)
     #declare cameraLocation = <-500, 5200, 1000>;

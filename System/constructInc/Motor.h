@@ -3,7 +3,7 @@
  
  * File:   constructInc/Motor.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ namespace constructSystem
 */
 
 class Motor :
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedGroup,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
@@ -75,7 +75,6 @@ class Motor :
   std::shared_ptr<boltRing> backPlate;      ///< back flange
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createPlates(Simulation&);
@@ -95,7 +94,8 @@ class Motor :
   /// set Ystep on inner planes -- REALLY UGLY
   void setYSteps(const double F,const double B)
     { yFront=F;yBack=B; }
-  
+
+  using attachSystem::FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 };

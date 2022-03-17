@@ -106,7 +106,7 @@ R1FrontEndVariables(FuncDataBase& Control,
   
   Control.addVariable(frontKey+"OuterLeft",25.0);
   Control.addVariable(frontKey+"OuterRight",25.0);
-  Control.addVariable(frontKey+"OuterTop",70.0);
+  Control.addVariable(frontKey+"OuterFront",300.0);
 
   // Block for new R1-M1
   setVariable::MagnetBlockGenerator MBGen;
@@ -361,6 +361,7 @@ shutterTable(FuncDataBase& Control,
   const std::string shutterName=frontKey+"ShutterBox";
   const double sBoxLen(51.0);
   SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.setCap(0,0);
   SimpleTubeGen.generateTube(Control,shutterName,sBoxLen);
   Control.addVariable(frontKey+"ShutterBoxNPorts",2);
   
