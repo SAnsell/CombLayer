@@ -53,14 +53,16 @@ class InjectionHall :
   double spfAngle;               ///< SPF hall diagonal wall
   double spfAngleStep;           ///< x-offset of the wall after spfAngle
 
-  double spfMazeWidthTDC;       ///< SPF access maze width from the TDC side
-  double spfMazeWidthSide;      ///< SPF access maze side width
-  double spfMazeWidthSPF;       ///< SPF access maze width from the SPF hallway
-  double spfMazeLength;         ///< SPF access maze full length (along the x-axis)
-  double spfMazeDoorThick;      ///< SPF maze door thick
-  int    spfMazeDoorMat;        ///< SPF maze door material
-  double spfMazeLayerThick;     ///< SPF maze B4C layer thick
-  double spfMazeLayerHeight;    ///< SPF maze B4C layer height
+  double spfMazeWidthTDC;        ///< SPF access maze width from the TDC side
+  double spfMazeWidthSide;       ///< SPF access maze side width
+  double spfMazeWidthSPF;        ///< SPF access maze width from the SPF hallway
+  double spfMazeLength;          ///< SPF access maze full length (along the x-axis)
+  double spfMazeDoorInThick;     ///< inner SPF maze door thick
+  int    spfMazeDoorInMat;       ///< inner SPF maze door material
+  double spfMazeDoorOutThick;    ///< outer SPF maze door thick
+  int    spfMazeDoorOutMat;      ///< outer SPF maze door material
+  double spfMazeLayerThick;      ///< SPF maze B4C layer thick
+  double spfMazeLayerHeight;     ///< SPF maze B4C layer height
   double spfMazeLayerPipesWidth; ///< Width of the area occupied by pipes on the wall to the concrete door parking room
   double spfMazeLayerPipesHeight; ///< Height of the area occupied by pipes on the wall to the concrete door parking room
   double spfMazeLayerPLCWidth;  ///< Width of the area occupied by PLC equipment on the wall to the concrete door parking room
