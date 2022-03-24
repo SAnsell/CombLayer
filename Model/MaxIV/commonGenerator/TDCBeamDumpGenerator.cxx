@@ -60,7 +60,8 @@ TDCBeamDumpGenerator::TDCBeamDumpGenerator() :
   carbonThick(0.5),
   coreMat("Lead"),
   bulkMat("S235JR"),
-  skinMat("B-Poly"),
+  skinMat("HighDensPoly"),
+  skinRightMat("B-Poly"),
   frontPlateMat("S235JR"),
   carbonMat("Graphite")
   /*!
@@ -102,6 +103,7 @@ TDCBeamDumpGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"CoreMat",coreMat);
   Control.addVariable(keyName+"BulkMat",bulkMat);
   Control.addVariable(keyName+"SkinMat",skinMat);
+  Control.addVariable(keyName+"SkinRightMat",skinRightMat);
   Control.addVariable(keyName+"FrontPlateMat",frontPlateMat);
   Control.addVariable(keyName+"CarbonMat",carbonMat);
 
