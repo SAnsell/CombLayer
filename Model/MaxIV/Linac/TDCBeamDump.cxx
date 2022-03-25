@@ -99,6 +99,9 @@ TDCBeamDump::TDCBeamDump(const TDCBeamDump& A) :
   preCoreLength(A.preCoreLength),
   preCoreRadius(A.preCoreRadius),
   skinThick(A.skinThick),
+  skinLeftThick(A.skinLeftThick),
+  skinRightThick(A.skinRightThick),
+  skinTopThick(A.skinTopThick),
   backSkinThick(A.backSkinThick),
   frontPlateThick(A.frontPlateThick),
   carbonThick(A.carbonThick),
@@ -141,6 +144,9 @@ TDCBeamDump::operator=(const TDCBeamDump& A)
       preCoreLength=A.preCoreLength;
       preCoreRadius=A.preCoreRadius;
       skinThick=A.skinThick;
+      skinLeftThick=A.skinLeftThick;
+      skinRightThick=A.skinRightThick;
+      skinTopThick=A.skinTopThick;
       backSkinThick=A.backSkinThick;
       frontPlateThick=A.frontPlateThick;
       carbonThick=A.carbonThick;
@@ -195,6 +201,9 @@ TDCBeamDump::populate(const FuncDataBase& Control)
   preCoreLength=Control.EvalVar<double>(keyName+"PreCoreLength");
   preCoreRadius=Control.EvalVar<double>(keyName+"PreCoreRadius");
   skinThick=Control.EvalVar<double>(keyName+"SkinThick");
+  skinLeftThick=Control.EvalDefVar<double>(keyName+"SkinLeftThick", skinThick);
+  skinRightThick=Control.EvalDefVar<double>(keyName+"SkinRightThick", skinThick);
+  skinTopThick=Control.EvalDefVar<double>(keyName+"SkinTopThick", skinThick);
   backSkinThick=Control.EvalVar<double>(keyName+"BackSkinThick");
   frontPlateThick=Control.EvalVar<double>(keyName+"FrontPlateThick");
   carbonThick=Control.EvalVar<double>(keyName+"CarbonThick");
@@ -269,9 +278,9 @@ TDCBeamDump::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+32,buildIndex+22,bY,backSkinThick);
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(bulkWidthLeft),X);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+13,buildIndex+3,X,-skinThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+13,buildIndex+3,X,-skinLeftThick);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(bulkWidthRight),X);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+14,buildIndex+4,X,skinThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+14,buildIndex+4,X,skinRightThick);
 
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-bZ*(bulkDepth),bZ);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+bZ*(bulkHeight),bZ);
@@ -279,7 +288,7 @@ TDCBeamDump::createSurfaces()
   //  ELog::EM << keyName << " createSurfaces: Z: " << Z << " bZ: " << bZ << ELog::endDiag;
 
   ModelSupport::buildShiftedPlane(SMap,buildIndex+15,buildIndex+5,bZ,-skinThick);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+16,buildIndex+6,bZ,skinThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+16,buildIndex+6,bZ,skinTopThick);
 
   ModelSupport::buildShiftedPlane(SMap,buildIndex+41,buildIndex+1,bY,frontPlateThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+42,buildIndex+2,Y,-carbonThick);
@@ -327,8 +336,11 @@ TDCBeamDump::createObjects(Simulation& System)
   Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -1 3 -4 5 -6 7 ");
   makeCell("SkinFront",System,cellIndex++,skinMat,0.0,Out*baseHR*frontHR);
 
-  Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -32 13 -14 6 -16 ");
-  makeCell("SkinTop",System,cellIndex++,skinMat,0.0,Out);
+  if (skinTopThick>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -32 13 -14 6 -16 ");
+      makeCell("SkinTop",System,cellIndex++,skinMat,0.0,Out);
+    }
 
   if (baseHR.isEmpty())
     {
@@ -342,11 +354,17 @@ TDCBeamDump::createObjects(Simulation& System)
       makeCell("SkinBack",System,cellIndex++,skinMat,0.0,Out*baseHR);
     }
 
-  Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -32 13 -3 5 -6 ");
-  makeCell("SkinLeft",System,cellIndex++,skinLeftMat,0.0,Out*baseHR*frontHR);
+  if (skinLeftThick>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -32 13 -3 5 -6 ");
+      makeCell("SkinLeft",System,cellIndex++,skinLeftMat,0.0,Out*baseHR*frontHR);
+    }
 
-  Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -32 4 -14 5 -6 ");
-  makeCell("SkinRight",System,cellIndex++,skinRightMat,0.0,Out*baseHR*frontHR);
+  if (skinRightThick>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -32 4 -14 5 -6 ");
+      makeCell("SkinRight",System,cellIndex++,skinRightMat,0.0,Out*baseHR*frontHR);
+    }
 
   Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -32 13 -14 15 -16");
   addOuterSurf(Out);
