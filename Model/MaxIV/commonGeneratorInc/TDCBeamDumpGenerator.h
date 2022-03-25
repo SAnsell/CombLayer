@@ -57,7 +57,6 @@ class TDCBeamDumpGenerator
   std::string coreMat;          ///< Core material
   std::string bulkMat;          ///< Bulk material
   std::string skinMat;          ///< Skin material
-  std::string skinRightMat;     ///< Right side skin material
   std::string frontPlateMat;    ///< Front plate material (to reduce activation dose rate)
   std::string carbonMat;        ///< Carbon plate material
 

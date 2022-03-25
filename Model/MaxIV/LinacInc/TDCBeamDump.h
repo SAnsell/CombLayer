@@ -61,6 +61,7 @@ class TDCBeamDump : public attachSystem::ContainedComp,
   int coreMat;                   ///< Core material
   int bulkMat;                  ///< Bulk material
   int skinMat;                  ///< Skin material
+  int skinLeftMat;              ///< Left side skin material
   int skinRightMat;             ///< Right side skin material
   int frontPlateMat;            ///< Front plate material (to reduce activation dose rate)
   int carbonMat;                ///< Carbon plate material
