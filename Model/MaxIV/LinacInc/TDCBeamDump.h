@@ -57,7 +57,7 @@ class TDCBeamDump : public attachSystem::ContainedComp,
   double skinLeftThick;         ///< Left side skin thickness
   double skinRightThick;        ///< Right side skin thickness
   double skinTopThick;          ///< Top side skin thickness
-  double backSkinThick;         ///< Skin thickness at the back
+  double skinBackThick;         ///< Skin thickness at the back
   double frontPlateThick;       ///< Front plate thickness
   double carbonThick;           ///< Carbon plate thickness (to contain evaporated Lead)
 

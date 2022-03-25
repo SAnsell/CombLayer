@@ -3360,7 +3360,7 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"SPFMazeLength",360.0); // derived from K_20-1_08G6b3: 690.0-330.0
 
   Control.addVariable(wallKey+"SPFMazeLayerThick",5.0);
-  Control.addVariable(wallKey+"SPFMazeLayerMat","B4C");
+  Control.addVariable(wallKey+"SPFMazeLayerMat","Void");
   Control.addVariable(wallKey+"SPFMazeLayerHeight",256.0); // HQ, 2021-06-21
   Control.addVariable(wallKey+"SPFMazeLayerPipesWidth",150.0); // guess based on email HQ, 2021-06-21
   Control.addVariable(wallKey+"SPFMazeLayerPipesHeight",145.0); // HQ, 2021-06-21

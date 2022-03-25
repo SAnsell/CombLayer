@@ -348,13 +348,13 @@ Segment29Magnet(FuncDataBase& Control,
   TDCBDGen.generate(Control,lKey+"BeamStopA");
   Control.addVariable(lKey+"BeamStopAYAngle",-90.0);
   Control.addVariable(lKey+"BeamStopAYStep",4.0);
-  Control.addVariable(lKey+"BeamStopABackSkinThick",0.0);
+  Control.addVariable(lKey+"BeamStopASkinBackThick",0.0);
   Control.addVariable(lKey+"BeamStopAPreCoreLength",47.0);
 
   TDCBDGen.generate(Control,lKey+"BeamStopB");
   Control.addVariable(lKey+"BeamStopBYAngle",-90.0);
   Control.addVariable(lKey+"BeamStopBYStep",4.0);
-  Control.addVariable(lKey+"BeamStopBBackSkinThick",0.0);
+  Control.addVariable(lKey+"BeamStopBSkinBackThick",0.0);
   Control.addVariable(lKey+"BeamStopBPreCoreLength",47.0);
 
   // end void

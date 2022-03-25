@@ -102,7 +102,7 @@ TDCBeamDump::TDCBeamDump(const TDCBeamDump& A) :
   skinLeftThick(A.skinLeftThick),
   skinRightThick(A.skinRightThick),
   skinTopThick(A.skinTopThick),
-  backSkinThick(A.backSkinThick),
+  skinBackThick(A.skinBackThick),
   frontPlateThick(A.frontPlateThick),
   carbonThick(A.carbonThick),
   coreMat(A.coreMat),
@@ -147,7 +147,7 @@ TDCBeamDump::operator=(const TDCBeamDump& A)
       skinLeftThick=A.skinLeftThick;
       skinRightThick=A.skinRightThick;
       skinTopThick=A.skinTopThick;
-      backSkinThick=A.backSkinThick;
+      skinBackThick=A.skinBackThick;
       frontPlateThick=A.frontPlateThick;
       carbonThick=A.carbonThick;
       coreMat=A.coreMat;
@@ -204,7 +204,7 @@ TDCBeamDump::populate(const FuncDataBase& Control)
   skinLeftThick=Control.EvalDefVar<double>(keyName+"SkinLeftThick", skinThick);
   skinRightThick=Control.EvalDefVar<double>(keyName+"SkinRightThick", skinThick);
   skinTopThick=Control.EvalDefVar<double>(keyName+"SkinTopThick", skinThick);
-  backSkinThick=Control.EvalVar<double>(keyName+"BackSkinThick");
+  skinBackThick=Control.EvalDefVar<double>(keyName+"SkinBackThick", skinThick);
   frontPlateThick=Control.EvalVar<double>(keyName+"FrontPlateThick");
   carbonThick=Control.EvalVar<double>(keyName+"CarbonThick");
 
@@ -275,7 +275,7 @@ TDCBeamDump::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(preCoreLength+coreLength),Y);
 
   ModelSupport::buildPlane(SMap,buildIndex+22,Origin+bY*(preCoreLength+coreLength+bulkThickBack),bY);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+32,buildIndex+22,bY,backSkinThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+32,buildIndex+22,bY,skinBackThick);
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(bulkWidthLeft),X);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+13,buildIndex+3,X,-skinLeftThick);
@@ -348,7 +348,7 @@ TDCBeamDump::createObjects(Simulation& System)
       makeCell("SkinBottom",System,cellIndex++,skinMat,0.0,Out*baseHR);
     }
 
-  if (backSkinThick>Geometry::zeroTol)
+  if (skinBackThick>Geometry::zeroTol)
     {
       Out=ModelSupport::getHeadRule(SMap,buildIndex,"22 -32 3 -4 5 -6 ");
       makeCell("SkinBack",System,cellIndex++,skinMat,0.0,Out*baseHR);
