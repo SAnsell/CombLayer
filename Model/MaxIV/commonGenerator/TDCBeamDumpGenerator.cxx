@@ -54,7 +54,7 @@ TDCBeamDumpGenerator::TDCBeamDumpGenerator() :
   bulkHeight(30.0),bulkDepth(30), bulkThickBack(85.0),
   coreRadius(3.0),coreLength(5.0),preCoreLength(25.0),
   preCoreRadius(3.0),
-  skinThick(5.0),
+  skinThick(10.0),
   frontPlateThick(5.0),
   carbonThick(0.5),
   coreMat("Lead"),
