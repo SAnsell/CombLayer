@@ -211,8 +211,8 @@ TDCBeamDump::populate(const FuncDataBase& Control)
   coreMat=ModelSupport::EvalMat<int>(Control,keyName+"CoreMat");
   bulkMat=ModelSupport::EvalMat<int>(Control,keyName+"BulkMat");
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
-  skinLeftMat=ModelSupport::EvalDefMat<int>(Control,keyName+"SkinLeftMat",skinMat);
-  skinRightMat=ModelSupport::EvalDefMat<int>(Control,keyName+"SkinRightMat",skinMat);
+  skinLeftMat=ModelSupport::EvalDefMat(Control,keyName+"SkinLeftMat",skinMat);
+  skinRightMat=ModelSupport::EvalDefMat(Control,keyName+"SkinRightMat",skinMat);
   frontPlateMat=ModelSupport::EvalMat<int>(Control,keyName+"FrontPlateMat");
   carbonMat=ModelSupport::EvalMat<int>(Control,keyName+"CarbonMat");
 
