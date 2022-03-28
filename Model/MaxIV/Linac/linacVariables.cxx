@@ -2157,6 +2157,7 @@ Segment27(FuncDataBase& Control,
   Control.addVariable(lKey+"BeamStopCYStep",3.0);
   Control.addVariable(lKey+"BeamStopCBulkThickBack",40.0+20.0);
   Control.addVariable(lKey+"BeamStopCPreCoreLength",65.0);
+  Control.addVariable(lKey+"BeamStopCSkinTopThick",9.0);
 
   return;
 }
@@ -3236,10 +3237,10 @@ Segment48(FuncDataBase& Control,
   PGen.setMat("Stainless304L","Stainless304L");
   PGen.setNoWindow();
 
-  EBGen.generateEBeamStop(Control,lKey+"BeamStopA",0);
+  EBGen.generateEBeamStop(Control,lKey+"BeamStopA",1);
   setBellow26(Control,lKey+"BellowA",7.5);
 
-  EBGen.generateEBeamStop(Control,lKey+"BeamStopB",0);
+  EBGen.generateEBeamStop(Control,lKey+"BeamStopB",1);
 
   PGen.generatePipe(Control,lKey+"PipeA",12.6); // measured
 
@@ -3360,14 +3361,6 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"SPFMazeWidthSPF",160.0); // K_20-1_08G6b3
   Control.addVariable(wallKey+"SPFMazeLength",360.0); // derived from K_20-1_08G6b3: 690.0-330.0
 
-  Control.addVariable(wallKey+"SPFMazeLayerThick",5.0);
-  Control.addVariable(wallKey+"SPFMazeLayerMat","B4C");
-  Control.addVariable(wallKey+"SPFMazeLayerHeight",256.0); // HQ, 2021-06-21
-  Control.addVariable(wallKey+"SPFMazeLayerPipesWidth",150.0); // guess based on email HQ, 2021-06-21
-  Control.addVariable(wallKey+"SPFMazeLayerPipesHeight",145.0); // HQ, 2021-06-21
-  Control.addVariable(wallKey+"SPFMazeLayerPLCWidth",50.0); // HQ, 2021-06-21
-  Control.addVariable(wallKey+"SPFMazeLayerPLCHeight",165.0); // HQ, 2021-06-21
-
   Control.addVariable(wallKey+"FKGDoorWidth",131.0); // K_20-1_08F6c1 and K_20-2_349
   Control.addVariable(wallKey+"FKGDoorHeight",211.0); // K_20-2_349
   Control.addVariable(wallKey+"FKGMazeWidth",100.0); // K_20-1_08F6c1
@@ -3387,11 +3380,6 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"SPFExitLength",250.0); // derived from K_20-1_08G6b3: 1446.6-1156.6-40
   Control.addVariable(wallKey+"SPFExitDoorLength",101.0); // K_20-2_353
   Control.addVariable(wallKey+"SPFExitDoorHeight",211.0); // K_20-2_353
-
-  Control.addVariable(wallKey+"StorageShieldThick",5.0); // own design
-  Control.addVariable(wallKey+"StorageShieldMat","Void"); // own design
-  Control.addVariable(wallKey+"FemtoMAXShieldThick",5.0); // own design
-  Control.addVariable(wallKey+"FemtoMAXShieldMat","Void"); // own design
 
   Control.addVariable(wallKey+"FemtoMAXWallThick",105.0); // K_01-0_010 IV1.13
   Control.addVariable(wallKey+"FemtoMAXWallOffset",405.0); // derived from K_20-1_08G6b[34]

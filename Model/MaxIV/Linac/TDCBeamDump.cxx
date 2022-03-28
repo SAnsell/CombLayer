@@ -99,12 +99,17 @@ TDCBeamDump::TDCBeamDump(const TDCBeamDump& A) :
   preCoreLength(A.preCoreLength),
   preCoreRadius(A.preCoreRadius),
   skinThick(A.skinThick),
-  backSkinThick(A.backSkinThick),
+  skinLeftThick(A.skinLeftThick),
+  skinRightThick(A.skinRightThick),
+  skinTopThick(A.skinTopThick),
+  skinBackThick(A.skinBackThick),
   frontPlateThick(A.frontPlateThick),
   carbonThick(A.carbonThick),
   coreMat(A.coreMat),
   bulkMat(A.bulkMat),
   skinMat(A.skinMat),
+  skinLeftMat(A.skinLeftMat),
+  skinRightMat(A.skinRightMat),
   frontPlateMat(A.frontPlateMat),
   carbonMat(A.carbonMat),
   mainFC1(A.mainFC1),
@@ -139,12 +144,17 @@ TDCBeamDump::operator=(const TDCBeamDump& A)
       preCoreLength=A.preCoreLength;
       preCoreRadius=A.preCoreRadius;
       skinThick=A.skinThick;
-      backSkinThick=A.backSkinThick;
+      skinLeftThick=A.skinLeftThick;
+      skinRightThick=A.skinRightThick;
+      skinTopThick=A.skinTopThick;
+      skinBackThick=A.skinBackThick;
       frontPlateThick=A.frontPlateThick;
       carbonThick=A.carbonThick;
       coreMat=A.coreMat;
       bulkMat=A.bulkMat;
       skinMat=A.skinMat;
+      skinLeftMat=A.skinLeftMat;
+      skinRightMat=A.skinRightMat;
       frontPlateMat=A.frontPlateMat;
       carbonMat=A.carbonMat;
       mainFC1=A.mainFC1;
@@ -191,13 +201,18 @@ TDCBeamDump::populate(const FuncDataBase& Control)
   preCoreLength=Control.EvalVar<double>(keyName+"PreCoreLength");
   preCoreRadius=Control.EvalVar<double>(keyName+"PreCoreRadius");
   skinThick=Control.EvalVar<double>(keyName+"SkinThick");
-  backSkinThick=Control.EvalVar<double>(keyName+"BackSkinThick");
+  skinLeftThick=Control.EvalDefVar<double>(keyName+"SkinLeftThick", skinThick);
+  skinRightThick=Control.EvalDefVar<double>(keyName+"SkinRightThick", skinThick);
+  skinTopThick=Control.EvalDefVar<double>(keyName+"SkinTopThick", skinThick);
+  skinBackThick=Control.EvalDefVar<double>(keyName+"SkinBackThick", skinThick);
   frontPlateThick=Control.EvalVar<double>(keyName+"FrontPlateThick");
   carbonThick=Control.EvalVar<double>(keyName+"CarbonThick");
 
   coreMat=ModelSupport::EvalMat<int>(Control,keyName+"CoreMat");
   bulkMat=ModelSupport::EvalMat<int>(Control,keyName+"BulkMat");
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
+  skinLeftMat=ModelSupport::EvalDefMat<int>(Control,keyName+"SkinLeftMat",skinMat);
+  skinRightMat=ModelSupport::EvalDefMat<int>(Control,keyName+"SkinRightMat",skinMat);
   frontPlateMat=ModelSupport::EvalMat<int>(Control,keyName+"FrontPlateMat");
   carbonMat=ModelSupport::EvalMat<int>(Control,keyName+"CarbonMat");
 
@@ -260,12 +275,12 @@ TDCBeamDump::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(preCoreLength+coreLength),Y);
 
   ModelSupport::buildPlane(SMap,buildIndex+22,Origin+bY*(preCoreLength+coreLength+bulkThickBack),bY);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+32,buildIndex+22,bY,backSkinThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+32,buildIndex+22,bY,skinBackThick);
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(bulkWidthLeft),X);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+13,buildIndex+3,X,-skinThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+13,buildIndex+3,X,-skinLeftThick);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(bulkWidthRight),X);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+14,buildIndex+4,X,skinThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+14,buildIndex+4,X,skinRightThick);
 
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-bZ*(bulkDepth),bZ);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+bZ*(bulkHeight),bZ);
@@ -273,7 +288,7 @@ TDCBeamDump::createSurfaces()
   //  ELog::EM << keyName << " createSurfaces: Z: " << Z << " bZ: " << bZ << ELog::endDiag;
 
   ModelSupport::buildShiftedPlane(SMap,buildIndex+15,buildIndex+5,bZ,-skinThick);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+16,buildIndex+6,bZ,skinThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+16,buildIndex+6,bZ,skinTopThick);
 
   ModelSupport::buildShiftedPlane(SMap,buildIndex+41,buildIndex+1,bY,frontPlateThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+42,buildIndex+2,Y,-carbonThick);
@@ -316,13 +331,16 @@ TDCBeamDump::createObjects(Simulation& System)
   makeCell("Bulk",System,cellIndex++,bulkMat,0.0,Out*baseHR);
 
   Out=ModelSupport::getHeadRule(SMap,buildIndex,"12 -22 3 -4 5 -6 ");
-  makeCell("Bulk",System,cellIndex++,bulkMat,0.0,Out*baseHR);
+  makeCell("BulkBack",System,cellIndex++,bulkMat,0.0,Out*baseHR);
 
   Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -1 3 -4 5 -6 7 ");
   makeCell("SkinFront",System,cellIndex++,skinMat,0.0,Out*baseHR*frontHR);
 
-  Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -32 13 -14 6 -16 ");
-  makeCell("SkinTop",System,cellIndex++,skinMat,0.0,Out);
+  if (skinTopThick>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -32 13 -14 6 -16 ");
+      makeCell("SkinTop",System,cellIndex++,skinMat,0.0,Out);
+    }
 
   if (baseHR.isEmpty())
     {
@@ -330,17 +348,23 @@ TDCBeamDump::createObjects(Simulation& System)
       makeCell("SkinBottom",System,cellIndex++,skinMat,0.0,Out*baseHR);
     }
 
-  if (backSkinThick>Geometry::zeroTol)
+  if (skinBackThick>Geometry::zeroTol)
     {
       Out=ModelSupport::getHeadRule(SMap,buildIndex,"22 -32 3 -4 5 -6 ");
       makeCell("SkinBack",System,cellIndex++,skinMat,0.0,Out*baseHR);
     }
 
-  Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -32 13 -3 5 -6 ");
-  makeCell("SkinLeft",System,cellIndex++,skinMat,0.0,Out*baseHR*frontHR);
+  if (skinLeftThick>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -32 13 -3 5 -6 ");
+      makeCell("SkinLeft",System,cellIndex++,skinLeftMat,0.0,Out*baseHR*frontHR);
+    }
 
-  Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -32 4 -14 5 -6 ");
-  makeCell("SkinRight",System,cellIndex++,skinMat,0.0,Out*baseHR*frontHR);
+  if (skinRightThick>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -32 4 -14 5 -6 ");
+      makeCell("SkinRight",System,cellIndex++,skinRightMat,0.0,Out*baseHR*frontHR);
+    }
 
   Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -32 13 -14 15 -16");
   addOuterSurf(Out);

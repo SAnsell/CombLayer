@@ -518,7 +518,7 @@ global_settings {
     #declare cameraAngle = 60;
   #break
     #case(strcmp(ITEM,"TDC26ShieldA"))
-    #declare cameraLocation = <-220, 7800, 20>;
+    #declare cameraLocation = <-217, 7800, 30>;
     #declare cameraLookAt   = <-352, 8200, 0>;
     #declare projection = 0;
     #declare cameraAngle = 40;
@@ -567,7 +567,7 @@ global_settings {
     #declare cameraAngle = 40;
   #break
     #case(strcmp(ITEM,"L2SPF6ShieldA"))
-    #declare cameraLocation = <180, 2300, 50>;
+    #declare cameraLocation = <180, 2300, 60>;
     #declare cameraLookAt   = <150, 2315, 0>;
     #declare projection = 0;
     #declare cameraAngle = 50;
@@ -618,6 +618,18 @@ global_settings {
     #declare cameraLookAt   = <-350, 10000, 0>;
     #declare projection = 0;
     #declare cameraAngle = 50;
+  #break
+    #case(strcmp(ITEM,"NoRoof1")) // BC2 area
+    #declare cameraLocation = <500, -1100, 1500>;
+    #declare cameraLookAt   = <0, 1500,  0>;
+    #declare projection = 0;
+    #declare cameraAngle = 30;
+  #break
+    #case(strcmp(ITEM,"NoRoof2")) // Switching area
+    #declare cameraLocation = <-150, 6500, 1500>;
+    #declare cameraLookAt   = <-400, 4600, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 30;
   #break
   #else // whole beamline view (like All)
     #declare cameraLocation = <-500, 5200, 1000>;

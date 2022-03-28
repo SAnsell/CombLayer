@@ -1364,7 +1364,7 @@ DBMaterial::initMaterial()
   setMaterial(MObj);
 
 
-  // Material # 141 MagnadenseHC from Luca 3.5 g/cm3
+  // Material # 152 MagnadenseHC from Luca 3.5 g/cm3
   MObj.setMaterial(152, "MagnadenseHC",
 		   "01001.70c 1.1079E-02  "
 		   "01002.70c 1.2742E-06  "
@@ -1602,7 +1602,7 @@ DBMaterial::initMaterial()
   MObj.setMaterial(165,"Be20K","4009.70c 0.1234855","BE-MET.20T",MLib);
   setMaterial(MObj);
 
-    // Stainless steel with 1% (weight) boron content
+  // Stainless steel with 1% (weight) boron content
   // Reference: Compendium of Material Composition Data for Radiation Trans
   //            PNNL-15870Rev1, page 280
   //            plone:doc/misc/pnnl-15870rev1.pdf/view
@@ -1633,6 +1633,104 @@ DBMaterial::initMaterial()
 		   " 28064.70c 0.000762 ","fe56.12t",MLib);
   MObj.setMXitem(6000, 70, 'c', "h", "06012");
   MObj.setDensity(-7.87);
+  setMaterial(MObj);
+
+  // Steel S235JR
+  // Reference: Email from AB 2021-12-08, 0936_001_High-Ni-value.pdf (measured)
+  //            The steel sample with the hightest Nickel value used
+  //            (to get conservative Cobalt content for residual activation,
+  //            see S235JR_Co).
+  //            Density calculated from dimensions and mass: 13738000./(10*250*700)
+
+  MObj.setMaterial(167, "S235JR",
+		   " 06000.70c 0.000600 "
+		   " 25055.70c 0.014900 "
+		   " 14028.70c 0.001660 "
+		   " 14029.70c 0.000084 "
+		   " 14030.70c 0.000056 "
+		   " 15031.70c 0.000070 "
+		   " 16032.70c 0.000019 "
+		   " 16034.70c 0.000001 "
+		   " 24050.70c 0.000001 "
+		   " 24052.70c 0.000014 "
+		   " 24053.70c 0.000002 "
+		   " 29063.70c 0.000131 "
+		   " 29065.70c 0.000059 "
+		   " 28058.70c 0.001784 "
+		   " 28060.70c 0.000687 "
+		   " 28061.70c 0.000030 "
+		   " 28062.70c 0.000095 "
+		   " 28064.70c 0.000024 "
+		   " 42092.70c 0.000001 "
+		   " 42094.70c 0.000001 "
+		   " 42095.70c 0.000002 "
+		   " 42096.70c 0.000002 "
+		   " 42097.70c 0.000001 "
+		   " 42098.70c 0.000002 "
+		   " 42100.70c 0.000001 "
+		   " 13027.70c 0.000440 "
+		   " 41093.70c 0.000260 "
+		   " 23051.70c 0.000020 "
+		   " 22046.70c 0.000016 "
+		   " 22047.70c 0.000014 "
+		   " 22048.70c 0.000140 "
+		   " 22049.70c 0.000010 "
+		   " 22050.70c 0.000010 "
+		   " 07014.70c 0.000045 "
+		   " 05011.70c 0.000002 "
+		   " 26054.70c 0.057212 "
+		   " 26056.70c 0.898103 "
+		   " 26057.70c 0.020741 "
+		   " 26058.70c 0.002760 ", "fe56.12t",MLib);
+  MObj.setMXitem(6000, 70, 'c', "h", "06012");
+  MObj.setDensity(-7.85);
+  setMaterial(MObj);
+
+  // Steel S235JR with ~0.5% weight Cobalt content based on its Nickel content
+  // See also S235JR and S234JR_Co.inp
+
+  MObj.setMaterial(168, "S235JR_Co",
+		   " 06000.70c 0.000599 "
+		   " 25055.70c 0.014900 "
+		   " 14028.70c 0.001661 "
+		   " 14029.70c 0.000084 "
+		   " 14030.70c 0.000056 "
+		   " 15031.70c 0.000070 "
+		   " 16032.70c 0.000020 "
+		   " 16034.70c 0.000001 "
+		   " 24050.70c 0.000001 "
+		   " 24052.70c 0.000014 "
+		   " 24053.70c 0.000002 "
+		   " 29063.70c 0.000131 "
+		   " 29065.70c 0.000058 "
+		   " 28058.70c 0.001784 "
+		   " 28060.70c 0.000687 "
+		   " 28061.70c 0.000030 "
+		   " 28062.70c 0.000095 "
+		   " 28064.70c 0.000024 "
+		   " 42092.70c 0.000002 "
+		   " 42094.70c 0.000001 "
+		   " 42095.70c 0.000002 "
+		   " 42096.70c 0.000002 "
+		   " 42097.70c 0.000001 "
+		   " 42098.70c 0.000003 "
+		   " 42100.70c 0.000001 "
+		   " 13027.70c 0.000440 "
+		   " 41093.70c 0.000260 "
+		   " 23051.70c 0.000020 "
+		   " 22046.70c 0.000016 "
+		   " 22047.70c 0.000014 "
+		   " 22048.70c 0.000140 "
+		   " 22049.70c 0.000010 "
+		   " 22050.70c 0.000010 "
+		   " 07014.70c 0.000044 "
+		   " 26054.70c 0.057203 "
+		   " 26056.70c 0.897965 "
+		   " 26057.70c 0.020738 "
+		   " 26058.70c 0.002760 "
+		   " 27059.70c 0.000153 ","fe56.12t",MLib);
+  MObj.setMXitem(6000, 70, 'c', "h", "06012");
+  MObj.setDensity(-7.85);
   setMaterial(MObj);
 
   return;
