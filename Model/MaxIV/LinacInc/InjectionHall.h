@@ -57,13 +57,6 @@ class InjectionHall :
   double spfMazeWidthSide;      ///< SPF access maze side width
   double spfMazeWidthSPF;       ///< SPF access maze width from the SPF hallway
   double spfMazeLength;         ///< SPF access maze full length (along the x-axis)
-  double spfMazeLayerThick;     ///< SPF maze B4C layer thick
-  double spfMazeLayerHeight;    ///< SPF maze B4C layer height
-  double spfMazeLayerPipesWidth; ///< Width of the area occupied by pipes on the wall to the concrete door parking room
-  double spfMazeLayerPipesHeight; ///< Height of the area occupied by pipes on the wall to the concrete door parking room
-  double spfMazeLayerPLCWidth;  ///< Width of the area occupied by PLC equipment on the wall to the concrete door parking room
-  double spfMazeLayerPLCHeight; ///< Height of the area occupied by PLC equipment on the wall to the concrete door parking room
-  int spfMazeLayerMat;          ///< SPF maze B4C layer material
 
   double fkgDoorWidth;          ///< Future klystron gallery access door width
   double fkgDoorHeight;         ///< Future klystron gallery access door height
