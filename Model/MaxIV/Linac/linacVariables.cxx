@@ -3619,6 +3619,15 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"MidTFrontLShieldWidth",100.0); // AR 2021-01-20
   Control.addVariable(wallKey+"MidTFrontLShieldMat","Lead"); // AR 2021-01-20
 
+
+  // soil
+  Control.addVariable(wallKey+"SoilBermTopWidth",200.0);
+  Control.addVariable(wallKey+"SoilBermBaseWidth",800.0);
+  Control.addVariable(wallKey+"SoilBermFullHeight",200.0);
+  Control.addVariable(wallKey+"SoilBermBaseHeight",130.0);
+  Control.addVariable(wallKey+"SoilBermSoilMat","Earth");
+  
+  
   return;
 }
 

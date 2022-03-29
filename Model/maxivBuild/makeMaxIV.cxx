@@ -3,7 +3,7 @@
 
  * File:   maxivBuild/makeMaxIV.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,6 @@
 #include "PointMap.h"
 #include "BlockZone.h"
 #include "World.h"
-
 
 #include "InjectionHall.h"
 #include "R1Ring.h"
@@ -148,7 +147,7 @@ makeMaxIV::populateStopPoint(const mainSystem::inputParam& IParam,
       if (beamNAMES.find(SP.first)==beamNAMES.end())
 	{
 	  // make generic
-	  for(const std::string Item : beamNAMES)
+	  for(const std::string& Item : beamNAMES)
 	    beamStop.emplace(Item,SP.first);    // doesn't overwrite specific
 	}
       else if (!SP.second.empty())

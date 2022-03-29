@@ -36,25 +36,27 @@
 
 #include "FileReport.h"
 #include "OutputLog.h"
+#include "Exception.h"
+#include "NameStack.h"
+#include "RegMethod.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
 #include "Vec3D.h"
+#include "Quaternion.h"
 #include "surfRegister.h"
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "surfDivide.h"
 #include "surfDBase.h"
 #include "mergeTemplate.h"
-#include "Exception.h"
-#include "NameStack.h"
-#include "RegMethod.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "Quaternion.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -69,6 +71,7 @@
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"
+#include "SoilRoof.h"
 
 #include "InjectionHall.h"
 
@@ -80,7 +83,8 @@ InjectionHall::InjectionHall(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
-  nPillars(0)
+  nPillars(0),
+  soilBerm(new SoilRoof("SoilBerm"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -344,8 +348,6 @@ InjectionHall::createSurfaces()
 		     Origin+Z*(roofHeight+roofThick-fkgRoofThick),Z);
   SurfMap::makePlane("OutRoof",SMap,buildIndex+26,
 		     Origin+Z*(roofHeight+roofThick),Z);
-  SurfMap::makePlane("BermRoof",SMap,buildIndex+36,
-		     Origin+Z*(roofHeight+roofThick+bermThick),Z);
 
   // MID T [1000]:
   const Geometry::Vec3D MidPt(Origin+X*midTXStep+Y*midTYStep);
@@ -1376,30 +1378,6 @@ InjectionHall::createLinks()
   return;
 }
 
-
-void
-InjectionHall::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC,
-		       const long int FIndex)
-  /*!
-    Generic function to create everything
-    \param System :: Simulation item
-    \param FC :: FixedComp
-    \param FIndex :: Fixed Index
-  */
-{
-  ELog::RegMethod RegA("InjectionHall","createAll(FC)");
-
-  populate(System.getDataBase());
-  createUnitVector(FC,FIndex);
-  createSurfaces();
-  createLinks();
-  createObjects(System);
-  insertObjects(System);
-
-  return;
-}
-
 void
 InjectionHall::layerProcess(Simulation& System,
 			    const std::string& cellName,
@@ -1513,5 +1491,42 @@ InjectionHall::addPillars(Simulation& System,const int CN) const
   return flag;
 }
 
+void
+InjectionHall::createBerm(Simulation& System)
+{
+  ELog::RegMethod RegA("InjectionHall","createRoof");
+  
+  soilBrem->setCutSurf("Roof",SurfMap::getSurfRules("OutRoof"));
+  soilBrem->setCutSurf("Front",SurfMap::getSurfRules("Front"));
+  soilBrem->setCutSurf("Back",SurfMap::getSurfRules("#Back"));
+
+  soilBrem->
+
+  return;
+}
+
+
+void
+InjectionHall::createAll(Simulation& System,
+		       const attachSystem::FixedComp& FC,
+		       const long int FIndex)
+  /*!
+    Generic function to create everything
+    \param System :: Simulation item
+    \param FC :: FixedComp
+    \param FIndex :: Fixed Index
+  */
+{
+  ELog::RegMethod RegA("InjectionHall","createAll(FC)");
+
+  populate(System.getDataBase());
+  createUnitVector(FC,FIndex);
+  createSurfaces();
+  createLinks();
+  createObjects(System);
+  insertObjects(System);
+  
+  return;
+}
 
 }  // NAMESPACE tdcSystem

@@ -26,6 +26,7 @@ class Simulation;
 
 namespace tdcSystem
 {
+  class SoilRoof;
 
 /*!
   \class InjectionHall
@@ -103,7 +104,6 @@ class InjectionHall :
 
   double wallThick;             ///< Wall thickness
   double roofThick;             ///< SPF hall roof thickness
-  double bermThick;             ///< extra earth berm on roof
   double fkgRoofThick;          ///< FKG roof thickness
   double fkgRoofYStep;          ///< Y-step offset of the FKG roof (below our office area)
   double floorThick;            ///< floor thickness
@@ -191,8 +191,10 @@ class InjectionHall :
   int floorMat;                 ///< Floor material
   int soilMat;                  ///< Earth material
 
+  std::shared_ptr<SoilRoof> soilBerm;            ///< Soil berm
 
-  void createFloor(Simulation&);
+  void createBerm(Simulation&);
+  
   void layerProcess(Simulation&,const std::string&,
                     const int,const int,const size_t);
 
