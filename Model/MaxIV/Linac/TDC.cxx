@@ -313,7 +313,7 @@ TDC::buildInnerZone(Simulation& System,
       {"spfAngle",           {"TVoidB","SPFVoid"}},
       {"spf",                {"SPFVoid","LongVoid"}},
       {"spfFar",             {"LongVoid"}},             // last cell with columns
-      {"spfBehindBackWall",  {"C080016shield","C080016fom","C080016"}}    // cell behind back wall
+      {"spfBehindBackWall",  {"C080016"}}    // cell behind back wall
     });
   const static RegionMAP regZones
     ({

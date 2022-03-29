@@ -344,6 +344,8 @@ InjectionHall::createSurfaces()
 		     Origin+Z*(roofHeight+roofThick-fkgRoofThick),Z);
   SurfMap::makePlane("OutRoof",SMap,buildIndex+26,
 		     Origin+Z*(roofHeight+roofThick),Z);
+  SurfMap::makePlane("BermRoof",SMap,buildIndex+36,
+		     Origin+Z*(roofHeight+roofThick+bermThick),Z);
 
   // MID T [1000]:
   const Geometry::Vec3D MidPt(Origin+X*midTXStep+Y*midTYStep);
@@ -493,7 +495,8 @@ InjectionHall::createSurfaces()
   SurfMap::makePlane("MazeDoorZ",SMap,buildIndex+6106,Origin-Z*(floorDepth-bspMidMazeDoorHeight),Z);
 
   // iron layers
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+6201,buildIndex+6101,Y,-bspFrontMazeIronThick);
+  SurfMap::makeShiftedPlane("FemtoMAXFront",SMap,buildIndex+6201,
+			    buildIndex+6101,Y,-bspFrontMazeIronThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+6211,buildIndex+6111,Y,bspMidMazeIronThick1);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+6212,buildIndex+6111,Y,bspMidMazeIronThick2);
 
@@ -1255,6 +1258,11 @@ InjectionHall::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7611 -7612 7604 -7614 5 -6");
   makeCell("WasteRoomWall",System,cellIndex++,wallMat,0.0,HR);
 
+  // Addition of earth roof -- but not sure of extent -- to make life simple
+  // it is multiple areas.
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"36");
+  makeCell("SoilRoof",System,cellIndex++,soilMat,0.0,HR);
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 53 -54 7505 -26");
   addOuterSurf(HR);
 
@@ -1281,54 +1289,6 @@ InjectionHall::createObjects(Simulation& System)
 	       -SMap.realSurf(buildIndex+7403),
 	       btgNLayers);
 
-  // layerProcess(System,"C080016BackWall",
-  // 	       SMap.realSurf(buildIndex+6101),
-  // 	       -SMap.realSurf(buildIndex+6102),
-  // 	       btgNLayers);
-  // layerProcess(System,"C080016BackWallIron",
-  // 	       SMap.realSurf(buildIndex+6201),
-  // 	       -SMap.realSurf(buildIndex+6101),
-  // 	       btgNLayers);
-
-  // layerProcess(System,"C080016Maze",
-  // 	       SMap.realSurf(buildIndex+6211),
-  // 	       -SMap.realSurf(buildIndex+6112),
-  // 	       btgNLayers);
-  // layerProcess(System,"C080016MazeIron",
-  // 	       SMap.realSurf(buildIndex+6111),
-  // 	       -SMap.realSurf(buildIndex+6211),
-  // 	       btgNLayers);
-  // layerProcess(System,"C080016MazeBack",
-  // 	       SMap.realSurf(buildIndex+6212),
-  // 	       -SMap.realSurf(buildIndex+6112),
-  // 	       btgNLayers);
-
-  // layerProcess(System,"C080017BackWall",
-  // 	       SMap.realSurf(buildIndex+6101),
-  // 	       -SMap.realSurf(buildIndex+6102),
-  // 	       btgNLayers);
-  // layerProcess(System,"C080017BackWallIron",
-  // 	       SMap.realSurf(buildIndex+6201),
-  // 	       -SMap.realSurf(buildIndex+6101),
-  // 	       btgNLayers);
-
-  // layerProcess(System,"C080017Maze",
-  // 	       SMap.realSurf(buildIndex+6211),
-  // 	       -SMap.realSurf(buildIndex+6112),
-  // 	       btgNLayers);
-  // layerProcess(System,"C080017MazeIron",
-  // 	       SMap.realSurf(buildIndex+6111),
-  // 	       -SMap.realSurf(buildIndex+6211),
-  // 	       btgNLayers);
-  // layerProcess(System,"C080017MazeBack",
-  // 	       SMap.realSurf(buildIndex+6212),
-  // 	       -SMap.realSurf(buildIndex+6112),
-  // 	       btgNLayers);
-
-  // layerProcess(System,"C08MazeBackWall",
-  // 	       SMap.realSurf(buildIndex+6121),
-  // 	       -SMap.realSurf(buildIndex+6122),
-  // 	       btgNLayers);
 
   // Future Klystron Gallery
   layerProcess(System,"FKGMazeFrontWall",

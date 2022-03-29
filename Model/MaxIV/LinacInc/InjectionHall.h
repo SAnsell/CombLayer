@@ -3,7 +3,7 @@
 
  * File: LinacInc/InjectionHall.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2022 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -103,6 +103,7 @@ class InjectionHall :
 
   double wallThick;             ///< Wall thickness
   double roofThick;             ///< SPF hall roof thickness
+  double bermThick;             ///< extra earth berm on roof
   double fkgRoofThick;          ///< FKG roof thickness
   double fkgRoofYStep;          ///< Y-step offset of the FKG roof (below our office area)
   double floorThick;            ///< floor thickness

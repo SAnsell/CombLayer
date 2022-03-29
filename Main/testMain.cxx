@@ -82,7 +82,6 @@
 #include "testAttachSupport.h"
 #include "testBinData.h"
 #include "testBnId.h"
-#include "testBoost.h"
 #include "testBoundary.h"
 #include "testBoxLine.h"
 #include "testCone.h"
@@ -418,12 +417,6 @@ globalTest(const int type,const int extra)
       if (index==cnt)
 	{
 	  testBnId A;
-	  X=A.applyTest(extra);
-	}
-      cnt++;
-      if (index==cnt)
-	{
-	  testBoost A;
 	  X=A.applyTest(extra);
 	}
       cnt++;
