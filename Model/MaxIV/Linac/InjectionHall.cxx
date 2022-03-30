@@ -3,7 +3,7 @@
 
  * File:   Linac/InjectionHall.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2022 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,7 +84,7 @@ InjectionHall::InjectionHall(const std::string& Key) :
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   nPillars(0),
-  soilBerm(new SoilRoof("SoilBerm"))
+  soilBerm(new SoilRoof(keyName+"SoilBerm"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -472,15 +472,22 @@ InjectionHall::createSurfaces()
 
   // Wall between SPF hallway and FemtoMAX beamline area
   ModelSupport::buildShiftedPlane(SMap,buildIndex+6003,buildIndex+223,X,femtoMAXWallOffset);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+6004,buildIndex+6003,X,femtoMAXWallThick);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+6014,buildIndex+6004,X,bspMazeWidth);
+  SurfMap::makeShiftedPlane("FemtoLeft",SMap,buildIndex+6004,
+			    buildIndex+6003,X,femtoMAXWallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+6014,
+				  buildIndex+6004,X,bspMazeWidth);
 
   // Wall between FemtoMAX and BSP01 beamline areas
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+6103,buildIndex+223,X,bsp01WallOffset);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+6104,buildIndex+6103,X,bspWallThick);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+6013,buildIndex+6103,X,-bspMazeWidth);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+6113,buildIndex+1003,X,-bspMazeWidth);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+6114,buildIndex+6104,X,bspMazeWidth);
+  SurfMap::makeShiftedPlane("FemtoRight",SMap,buildIndex+6103,
+			    buildIndex+223,X,bsp01WallOffset);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+6104,
+				  buildIndex+6103,X,bspWallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+6013,
+				  buildIndex+6103,X,-bspMazeWidth);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+6113,
+				  buildIndex+1003,X,-bspMazeWidth);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+6114,
+				  buildIndex+6104,X,bspMazeWidth);
 
   // maze in the end of FemtoMAX/BSP01 areas
   const Geometry::Vec3D bspOrg(Origin+Y*(backWallYStep+backWallThick));
@@ -1260,11 +1267,6 @@ InjectionHall::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7611 -7612 7604 -7614 5 -6");
   makeCell("WasteRoomWall",System,cellIndex++,wallMat,0.0,HR);
 
-  // Addition of earth roof -- but not sure of extent -- to make life simple
-  // it is multiple areas.
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"36");
-  makeCell("SoilRoof",System,cellIndex++,soilMat,0.0,HR);
-
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 53 -54 7505 -26");
   addOuterSurf(HR);
 
@@ -1357,6 +1359,7 @@ InjectionHall::createLinks()
   FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+223));
   FixedComp::nameSideIndex(6,"SPFMazeOut");
 
+
   // BTG
   const Geometry::Plane* p7401 = SMap.realPtr<Geometry::Plane>(buildIndex+7401);
   const Geometry::Plane* p7402 = SMap.realPtr<Geometry::Plane>(buildIndex+7402);
@@ -1366,7 +1369,7 @@ InjectionHall::createLinks()
   FixedComp::setConnect(7,Origin+X*btgdX+Y*btgdY,X);
   FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+7403));
   FixedComp::nameSideIndex(7,"BTGSide");
-  //  ELog::EM << "BTGSide: " << getLinkPt("BTGSide") << ELog::endWarn;
+
 
   FixedComp::setConnect(8,getLinkPt("BTGSide")
 			-X*(btgThick)
@@ -1374,6 +1377,20 @@ InjectionHall::createLinks()
 			,X);
   FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+7913));
   FixedComp::nameSideIndex(8, "BTGTopMiddleSide");
+
+
+  // Get Back wall of the SPF line
+  const Geometry::Vec3D backWallPt(Origin+Y*(backWallYStep+backWallThick));
+  HeadRule sideA=SurfMap::getSurfRule("FemtoLeft");
+  HeadRule sideB=SurfMap::getSurfRule("FemtoRight");
+  sideA.populateSurf();
+  sideB.populateSurf();
+  const Geometry::Vec3D MidPt=
+    (sideA.trackPoint(backWallPt,X)+
+     sideB.trackPoint(backWallPt,X))/2.0;
+  FixedComp::setConnect(9,MidPt,X);
+  FixedComp::setNamedLinkSurf(9,"FemtoMax",SurfMap::getSignedSurf("BackWallBack"));
+
 
   return;
 }
@@ -1496,12 +1513,13 @@ InjectionHall::createBerm(Simulation& System)
 {
   ELog::RegMethod RegA("InjectionHall","createRoof");
   
-  soilBrem->setCutSurf("Roof",SurfMap::getSurfRules("OutRoof"));
-  soilBrem->setCutSurf("Front",SurfMap::getSurfRules("Front"));
-  soilBrem->setCutSurf("Back",SurfMap::getSurfRules("#Back"));
+  soilBerm->setCutSurf("Roof",SurfMap::getSurfRules("OutRoof"));
+  soilBerm->setCutSurf("Front",SurfMap::getSurfRules("Front"));
+  soilBerm->setCutSurf("Back",SurfMap::getSurfRules("#Back"));
 
-  soilBrem->
-
+  soilBerm->createAll(System,*this,"FemtoMax");
+  ELog::EM<<"Cells -= "<<this->getInsertCells().size()<<ELog::endDiag;
+  soilBerm->insertInCell(System,this->getInsertCells());
   return;
 }
 
@@ -1525,7 +1543,8 @@ InjectionHall::createAll(Simulation& System,
   createLinks();
   createObjects(System);
   insertObjects(System);
-  
+
+  createBerm(System);
   return;
 }
 

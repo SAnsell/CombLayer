@@ -113,6 +113,7 @@ SoilRoof::createUnitVector(const attachSystem::FixedComp& FC,
   FixedRotate::createUnitVector(FC,sideIndex);
 
   Origin=ExternalCut::getRule("Roof").trackPoint(Origin,Z);
+  ELog::EM<<"Oriign = "<<Origin<<ELog::endDiag;
   return;
 }
   
@@ -135,7 +136,7 @@ SoilRoof::createSurfaces()
   SurfMap::makePlane("Left",SMap,buildIndex+3,
 		     Origin-X*(baseWidth/2.0),MAxis);
 
-  SurfMap::makePlane("Right",SMap,buildIndex+3,
+  SurfMap::makePlane("Right",SMap,buildIndex+4,
 		     Origin-X*(baseWidth/2.0),PAxis);
 
 

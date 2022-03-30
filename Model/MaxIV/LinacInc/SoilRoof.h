@@ -73,7 +73,8 @@ class SoilRoof :
   SoilRoof& operator=(const SoilRoof&);
   virtual ~SoilRoof() =default;
 
-  void createAll(Simulation&,
+  using FixedComp::createAll;
+  virtual void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);
 

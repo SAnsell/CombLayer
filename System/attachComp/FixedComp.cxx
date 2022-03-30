@@ -892,7 +892,7 @@ FixedComp::setNamedLinkSurf(const size_t Index,
     \param SUnit :: String/HeadRule/int to process
   */
 {
-  ELog::RegMethod RegA("FixedComp","setLinkSurf(string,string)");
+  ELog::RegMethod RegA("FixedComp","setNamedLinkSurf(string,string)");
 
   setLinkSurf(Index,SUnit);
   nameSideIndex(Index,linkName);
