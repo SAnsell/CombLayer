@@ -429,11 +429,9 @@ InjectionHall::createSurfaces()
 
   // now build externals:
 
-  ModelSupport::buildPlane
-    (SMap,buildIndex+53,
+  SurfMap::makePlane("OuterLeft",SMap,buildIndex+53,
        Origin-X*(linearWidth/2.0+spfAngleStep+boundaryWidth+wallThick),X);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+54,
+  SurfMap::makePlane("OuterRight",SMap,buildIndex+54,
        Origin+X*(linearWidth/2.0+rightWallStep+boundaryWidth+wallThick),X);
 
   // Auxiliary cyliner to cure geometric problems in corners
@@ -627,13 +625,11 @@ InjectionHall::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+7805,Origin-Z*(midTFrontLShieldHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+7806,Origin+Z*(midTFrontLShieldHeight/2.0),Z);
 
-
   // transfer for later
   SurfMap::setSurf("BDRoomRoof",SMap.realSurf(buildIndex+7516));
 
   SurfMap::addSurf("MidAngleWall",-SMap.realSurf(buildIndex+1001));
   SurfMap::addSurf("MidAngleWall",SMap.realSurf(buildIndex+2007));
-
 
   SurfMap::setSurf("DoorEndWall",SMap.realSurf(buildIndex+1522));
   SurfMap::setSurf("KlystronWall",SMap.realSurf(buildIndex+3002));
@@ -1520,9 +1516,10 @@ InjectionHall::createBerm(Simulation& System)
   soilBerm->setCutSurf("Roof",SurfMap::getSurfRules("OutRoof"));
   soilBerm->setCutSurf("Front",SurfMap::getSurfRules("Front"));
   soilBerm->setCutSurf("Back",SurfMap::getSurfRules("#Back"));
+  soilBerm->setCutSurf("Left",SurfMap::getSurfRules("OuterLeft"));
+  soilBerm->setCutSurf("Right",SurfMap::getSurfRules("#OuterRight"));
 
   soilBerm->createAll(System,*this,"FemtoMax");
-  ELog::EM<<"Cells -= "<<this->getInsertCells().size()<<ELog::endDiag;
   soilBerm->insertInCell(System,this->getInsertCells());
   return;
 }

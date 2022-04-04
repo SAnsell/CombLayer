@@ -132,10 +132,10 @@ SoilRoof::createSurfaces()
   const Geometry::Vec3D PAxis(Z*((baseWidth-topWidth)/2.0)+X*fullHeight);
   const Geometry::Vec3D MAxis(Z*((baseWidth-topWidth)/2.0)-X*fullHeight);
   // axis point outwared
-  SurfMap::makePlane("Left",SMap,buildIndex+3,
+  SurfMap::makePlane("AngleLeft",SMap,buildIndex+3,
 		     Origin-X*(baseWidth/2.0),MAxis.unit());
 
-  SurfMap::makePlane("Right",SMap,buildIndex+4,
+  SurfMap::makePlane("AngleRight",SMap,buildIndex+4,
 		     Origin+X*(baseWidth/2.0),PAxis.unit());
 
 
@@ -156,12 +156,21 @@ SoilRoof::createObjects(Simulation& System)
   const HeadRule roofHR=ExternalCut::getRule("Roof");
   const HeadRule frontHR=ExternalCut::getRule("Front");
   const HeadRule backHR=ExternalCut::getRule("Back");
+  const HeadRule leftHR=ExternalCut::getRule("Left");
+  const HeadRule rightHR=ExternalCut::getRule("Right");
   const HeadRule allHR(roofHR*frontHR*backHR);
   
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-3 -4 -6");
   makeCell("Berm",System,cellIndex++,soilMat,0.0,HR*allHR);
 
-  addOuterSurf(HR*allHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -6");
+  makeCell("Void",System,cellIndex++,0,0.0,HR*allHR*leftHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"4 -6");
+  makeCell("Void",System,cellIndex++,0,0.0,HR*allHR*rightHR);
+
+  HR=HeadRule(SMap,buildIndex,-6);
+  addOuterSurf(HR*allHR*leftHR*rightHR);
 
   return;
 }
