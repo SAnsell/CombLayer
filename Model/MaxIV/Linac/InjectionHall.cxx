@@ -1388,7 +1388,7 @@ InjectionHall::createLinks()
   const Geometry::Vec3D MidPt=
     (sideA.trackPoint(backWallPt,X)+
      sideB.trackPoint(backWallPt,X))/2.0;
-  FixedComp::setConnect(9,MidPt,X);
+  FixedComp::setConnect(9,MidPt,Y);
   FixedComp::setNamedLinkSurf(9,"FemtoMax",SurfMap::getSignedSurf("BackWallBack"));
 
 
@@ -1510,6 +1510,10 @@ InjectionHall::addPillars(Simulation& System,const int CN) const
 
 void
 InjectionHall::createBerm(Simulation& System)
+  /*!
+    Crate the soil top berm over the main SPF line roof
+    \param System :: simulation
+   */
 {
   ELog::RegMethod RegA("InjectionHall","createRoof");
   
@@ -1526,8 +1530,8 @@ InjectionHall::createBerm(Simulation& System)
 
 void
 InjectionHall::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC,
-		       const long int FIndex)
+			 const attachSystem::FixedComp& FC,
+			 const long int FIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -1542,9 +1546,10 @@ InjectionHall::createAll(Simulation& System,
   createSurfaces();
   createLinks();
   createObjects(System);
+  createBerm(System);
   insertObjects(System);
 
-  createBerm(System);
+
   return;
 }
 

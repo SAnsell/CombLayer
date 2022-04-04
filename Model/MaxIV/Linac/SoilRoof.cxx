@@ -113,7 +113,7 @@ SoilRoof::createUnitVector(const attachSystem::FixedComp& FC,
   FixedRotate::createUnitVector(FC,sideIndex);
 
   Origin=ExternalCut::getRule("Roof").trackPoint(Origin,Z);
-  ELog::EM<<"Oriign = "<<Origin<<ELog::endDiag;
+  ELog::EM<<"Orign = "<<Origin<<ELog::endDiag;
   return;
 }
   
@@ -131,13 +131,12 @@ SoilRoof::createSurfaces()
   // note cross product already taken.
   const Geometry::Vec3D PAxis(Z*((baseWidth-topWidth)/2.0)+X*fullHeight);
   const Geometry::Vec3D MAxis(Z*((baseWidth-topWidth)/2.0)-X*fullHeight);
-
   // axis point outwared
   SurfMap::makePlane("Left",SMap,buildIndex+3,
-		     Origin-X*(baseWidth/2.0),MAxis);
+		     Origin-X*(baseWidth/2.0),MAxis.unit());
 
   SurfMap::makePlane("Right",SMap,buildIndex+4,
-		     Origin-X*(baseWidth/2.0),PAxis);
+		     Origin+X*(baseWidth/2.0),PAxis.unit());
 
 
   return;
@@ -162,9 +161,7 @@ SoilRoof::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-3 -4 -6");
   makeCell("Berm",System,cellIndex++,soilMat,0.0,HR*allHR);
 
-
-
-  addOuterSurf(HR);
+  addOuterSurf(HR*allHR);
 
   return;
 }
