@@ -60,6 +60,7 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
+#include "TallySelector.h"
 
 
 bool
@@ -105,11 +106,60 @@ constructLinkRegion(const Simulation& System,
 
 bool
 constructSurfRegion(const Simulation& System,
+		    const std::string& FCname,
+		    int& cellA,int& cellB)
+  /*!
+    Construct a link region exiting the SurfMap link unit
+    FCname also names a groupRange which is used 
+    to ensure that cellA is part of the groupRange
+    \param System :: Simulation to use	
+    \param FCname :: composite name  of FC:SurfMap
+    \param cellA :: Primary region cell number
+    \param cellB :: Secondary region cell number
+  */
+{
+  const std::string::size_type pos=FCname.find(':');
+  if (pos==std::string::npos)
+    return 0;
+
+  const std::string FC=FCname.substr(0,pos);
+  std::string Surf=FCname.substr(pos+1);
+  if (!Surf.empty() && Surf[0]==':')
+    Surf.erase(0,1);
+
+
+  bool out = constructSurfRegion(System,FC,Surf,0,0,cellA,cellB);
+  return out;
+}
+
+bool
+constructSurfRegion(const Simulation& System,
 		      const std::string& FCname,
 		      const std::string& surfName,
-		      const size_t indexA,
-		      const size_t indexB,
 		      int& cellA,int& cellB)
+  /*!
+    Construct a link region exiting the SurfMap link unit
+    FCname also names a groupRange which is used 
+    to ensure that cellA is part of the groupRange
+    \param System :: Simulation to use	
+    \param FCname :: name of SurfMap
+    \param surfName :: name of surface [signed]
+    \param cellA :: Primary region cell number
+    \param cellB :: Secondary region cell number
+  */
+{
+  return constructSurfRegion(System,FCname,surfName,
+			     0,0,cellA,cellB);
+}
+
+
+bool
+constructSurfRegion(const Simulation& System,
+		    const std::string& FCname,
+		    const std::string& surfName,
+		    const size_t indexA,
+		    const size_t indexB,
+		    int& cellA,int& cellB)
   /*!
     Construct a link region exiting the SurfMap link unit
     FCname also names a groupRange which is used 
@@ -121,6 +171,7 @@ constructSurfRegion(const Simulation& System,
     \param indexB :: Index region found in secondary
     \param cellA :: Primary region cell number
     \param cellB :: Secondary region cell number
+    \return 1 on success
   */
 {
   ELog::RegMethod RegA("TallySelector[F]","constructSurfRegion");

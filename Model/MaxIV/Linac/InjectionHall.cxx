@@ -65,6 +65,7 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
+#include "objectRegister.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
@@ -89,7 +90,14 @@ InjectionHall::InjectionHall(const std::string& Key) :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{}
+{
+  ELog::RegMethod RegA("InjectionHall","InjectionHall");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  OR.addObject(soilBerm);
+}
 
 InjectionHall::~InjectionHall()
   /*!

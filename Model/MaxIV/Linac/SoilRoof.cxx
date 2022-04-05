@@ -90,6 +90,7 @@ SoilRoof::populate(const FuncDataBase& Control)
   topWidth=Control.EvalVar<double>(keyName+"TopWidth");
   baseWidth=Control.EvalVar<double>(keyName+"BaseWidth");
   fullHeight=Control.EvalVar<double>(keyName+"FullHeight");
+  unitGap=Control.EvalDefVar<double>(keyName+"UnitGap",1.0);
   baseHeight=Control.EvalVar<double>(keyName+"BaseHeight");
 
   soilMat=ModelSupport::EvalMat<int>(Control,keyName+"SoilMat");
@@ -126,7 +127,9 @@ SoilRoof::createSurfaces()
   ELog::RegMethod RegA("SoilRoof","createSurfaces");
 
   // we have Pre-calculated the origin at the roof so this works:  
-  SurfMap::makePlane("Top",SMap,buildIndex+6,Origin+Z*fullHeight,Z);
+  SurfMap::makePlane("SoilTop",SMap,buildIndex+6,Origin+Z*fullHeight,Z);
+  SurfMap::makePlane("Top",SMap,buildIndex+16,
+		     Origin+Z*(fullHeight+unitGap),Z);
 
   // note cross product already taken.
   const Geometry::Vec3D PAxis(Z*((baseWidth-topWidth)/2.0)+X*fullHeight);
@@ -159,6 +162,7 @@ SoilRoof::createObjects(Simulation& System)
   const HeadRule leftHR=ExternalCut::getRule("Left");
   const HeadRule rightHR=ExternalCut::getRule("Right");
   const HeadRule allHR(roofHR*frontHR*backHR);
+  const HeadRule fbHR(frontHR*backHR);
   
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-3 -4 -6");
   makeCell("Berm",System,cellIndex++,soilMat,0.0,HR*allHR);
@@ -169,7 +173,10 @@ SoilRoof::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"4 -6");
   makeCell("Void",System,cellIndex++,0,0.0,HR*allHR*rightHR);
 
-  HR=HeadRule(SMap,buildIndex,-6);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"6 -16");
+  makeCell("FullVoid",System,cellIndex++,0,0.0,HR*fbHR*rightHR*leftHR);
+
+  HR=HeadRule(SMap,buildIndex,-16);
   addOuterSurf(HR*allHR*leftHR*rightHR);
 
   return;

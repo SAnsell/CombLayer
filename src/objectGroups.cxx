@@ -661,7 +661,6 @@ objectGroups::getObject(const std::string& Name) const
   */
 {
   ELog::RegMethod RegA("objectGroups","getObject(const)");
-
   const attachSystem::FixedComp* FCPtr = getInternalObject(Name);
   return dynamic_cast<const T*>(FCPtr);
 }

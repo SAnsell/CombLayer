@@ -52,12 +52,6 @@ class userTrackConstruct
   /// Private constructor
   userTrackConstruct() {}
 
-  static bool constructLinkRegion(const Simulation&,const std::string&,
-				  const std::string&,int&,int&);
-  static bool constructSurfRegion(const Simulation&,const std::string&,
-				  const std::string&,const size_t,
-				  const size_t,int&,int&);
-
   static bool checkLinkCells(const Simulation&,const int,const int);
   
   static void createTally(SimFLUKA&,const std::string&,const int,

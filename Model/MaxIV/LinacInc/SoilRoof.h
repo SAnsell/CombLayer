@@ -3,7 +3,7 @@
 
  * File: LinacInc/SoilRoof.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2022 by Stuart Ansell 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,6 +52,8 @@ class SoilRoof :
   double baseWidth;              ///< base flat size
   double fullHeight;             ///< full height in middel
   double baseHeight;             ///< full height at edges
+
+  double unitGap;                ///< size of gap to allow full surf integration
 
   int soilMat;                   ///< Earth material
 
