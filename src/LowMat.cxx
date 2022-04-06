@@ -3,7 +3,7 @@
 
  * File:   src/LowMat.cxx
  *
- * Copyright (c) 2004-2021 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,7 +86,8 @@ LowMat::getIDinfn(const size_t Z,const size_t iso)
    	 { 8016, {8, 16, 296.0, "OXYGE-16"} },
 	 {    8, {8, -2, 296.0, "OXYGEN"} },
   	 {14028, {14, 28, 296.0,"SILIC-28"} },
- 	  {26056, {26, 56, 296.0,"56-FE"} }
+	 {26056, {26, 56, 296.0,"56-FE"} },
+	 {41093, {41, 93, 296.0,"NIOBIUM"} }
 	});
 
   const size_t zaid=Z*1000+iso;
@@ -169,7 +170,6 @@ LowMat::getID(const size_t Z,const size_t iso)
 	 {   38, {38, -2, 296.0,"STRONTIU"} },
 	 {   39, {39, -2, 296.0,"YTTRIUM"} },
 	 {   40, {40, -2, 296.0,"ZIRCONIU"} },
-	 {   41, {41, -2, 296.0,"NIOBIUM"} },
 	 {   42, {42, -2, 296.0,"MOLYBDEN"} },
 	 {43099, {43, 99, 296.0,"99-TC"} },
 	 {   44, {44, -2, 296.0,"PALLADIU"} },

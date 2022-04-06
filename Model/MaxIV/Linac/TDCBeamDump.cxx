@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/Linac/TDCBeamDump.cxx
  *
- * Copyright (c) 2004-2021 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -244,9 +244,8 @@ TDCBeamDump::createUnitVector(const attachSystem::FixedComp& centreFC,
   beamFC.createUnitVector(pipeFC,pIndex);
 
   applyOffset();
-  // if (upFlag)
-  //   beamFC.applyShift(0,0,lift);  // only beam offset
-  setDefault("Beam");
+
+  setDefault("Beam","Main");
   setSecondary("Main");
   return;
 }
@@ -260,14 +259,11 @@ TDCBeamDump::createSurfaces()
 {
   ELog::RegMethod RegA("TDCBeamDump","createSurfaces");
 
-  //  setDefault("Beam", "Main");
-
-  // if (!mainFC1)
-  //   bZ = mainFC1->getZ();
-  // else
+  ELog::EM<<"XBy == "<<bY<<" "<<bZ<<ELog::endDiag;
   bY = Geometry::Vec3D(0,1,0);
   bZ = Geometry::Vec3D(0,0,1);
-
+  ELog::EM<<"By == "<<bY<<" "<<bZ<<ELog::endDiag;
+  
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin+bY*skinThick,bY);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+11,buildIndex+1,bY,-skinThick);
 

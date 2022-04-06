@@ -53,6 +53,9 @@ class SoilRoof :
   double fullHeight;             ///< full height in middel
   double baseHeight;             ///< full height at edges
 
+  double frontLength;            ///< Optional front cut length
+  double backLength;             ///< Optional back cut length
+  
   double unitGap;                ///< size of gap to allow full surf integration
 
   int soilMat;                   ///< Earth material

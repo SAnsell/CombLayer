@@ -3621,11 +3621,12 @@ wallVariables(FuncDataBase& Control,
 
 
   // soil
-  ELog::EM<<"WALL == "<<wallKey<<ELog::endDiag;
-  Control.addVariable(wallKey+"SoilBermTopWidth",200.0);
-  Control.addVariable(wallKey+"SoilBermBaseWidth",800.0);
+  Control.addVariable(wallKey+"SoilBermTopWidth",800.0);
+  Control.addVariable(wallKey+"SoilBermBaseWidth",1000.0);
   Control.addVariable(wallKey+"SoilBermFullHeight",200.0);
-  Control.addVariable(wallKey+"SoilBermBaseHeight",130.0);
+  Control.addVariable(wallKey+"SoilBermFrontLength",200.0);
+  Control.addVariable(wallKey+"SoilBermBackLength",300.0);
+  Control.addVariable(wallKey+"SoilBermBaseHeight",180.0);
   Control.addVariable(wallKey+"SoilBermSoilMat","Earth");
   
   

@@ -90,6 +90,8 @@ SoilRoof::populate(const FuncDataBase& Control)
   topWidth=Control.EvalVar<double>(keyName+"TopWidth");
   baseWidth=Control.EvalVar<double>(keyName+"BaseWidth");
   fullHeight=Control.EvalVar<double>(keyName+"FullHeight");
+  frontLength=Control.EvalDefVar<double>(keyName+"FrontLength",-1.0);
+  backLength=Control.EvalDefVar<double>(keyName+"BackLength",-1.0);
   unitGap=Control.EvalDefVar<double>(keyName+"UnitGap",1.0);
   baseHeight=Control.EvalVar<double>(keyName+"BaseHeight");
 
@@ -114,7 +116,6 @@ SoilRoof::createUnitVector(const attachSystem::FixedComp& FC,
   FixedRotate::createUnitVector(FC,sideIndex);
 
   Origin=ExternalCut::getRule("Roof").trackPoint(Origin,Z);
-  ELog::EM<<"Orign = "<<Origin<<ELog::endDiag;
   return;
 }
   
@@ -141,7 +142,16 @@ SoilRoof::createSurfaces()
   SurfMap::makePlane("AngleRight",SMap,buildIndex+4,
 		     Origin+X*(baseWidth/2.0),PAxis.unit());
 
-
+  if (frontLength)
+    {
+      SurfMap::makePlane("Front",SMap,buildIndex+1,Origin-Y*frontLength,Y);
+      ExternalCut::setCutSurf("Front",SurfMap::getSurfRule("Front"));
+    }
+  if (backLength)
+    {
+      SurfMap::makePlane("Back",SMap,buildIndex+2,Origin+Y*backLength,Y);
+      ExternalCut::setCutSurf("Back",SurfMap::getSurfRule("#Back"));
+    }
   return;
 }
 
