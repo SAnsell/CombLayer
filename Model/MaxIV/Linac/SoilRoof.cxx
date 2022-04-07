@@ -87,13 +87,12 @@ SoilRoof::populate(const FuncDataBase& Control)
 
   FixedRotate::populate(Control);
 
-  topWidth=Control.EvalVar<double>(keyName+"TopWidth");
-  baseWidth=Control.EvalVar<double>(keyName+"BaseWidth");
-  fullHeight=Control.EvalVar<double>(keyName+"FullHeight");
+  height=Control.EvalVar<double>(keyName+"Height");
   frontLength=Control.EvalDefVar<double>(keyName+"FrontLength",-1.0);
-  backLength=Control.EvalDefVar<double>(keyName+"BackLength",-1.0);
+  ringRadius=Control.EvalVar<double>(keyName+"RingRadius");
+  ringCentre=Control.EvalVar<Geometry::Vec3D>(keyName+"RingCentre");
+
   unitGap=Control.EvalDefVar<double>(keyName+"UnitGap",1.0);
-  baseHeight=Control.EvalVar<double>(keyName+"BaseHeight");
 
   soilMat=ModelSupport::EvalMat<int>(Control,keyName+"SoilMat");
 
@@ -128,30 +127,18 @@ SoilRoof::createSurfaces()
   ELog::RegMethod RegA("SoilRoof","createSurfaces");
 
   // we have Pre-calculated the origin at the roof so this works:  
-  SurfMap::makePlane("SoilTop",SMap,buildIndex+6,Origin+Z*fullHeight,Z);
+  SurfMap::makePlane("SoilTop",SMap,buildIndex+6,Origin+Z*height,Z);
   SurfMap::makePlane("Top",SMap,buildIndex+16,
-		     Origin+Z*(fullHeight+unitGap),Z);
+		     Origin+Z*(height+unitGap),Z);
 
-  // note cross product already taken.
-  const Geometry::Vec3D PAxis(Z*((baseWidth-topWidth)/2.0)+X*fullHeight);
-  const Geometry::Vec3D MAxis(Z*((baseWidth-topWidth)/2.0)-X*fullHeight);
-  // axis point outwared
-  SurfMap::makePlane("AngleLeft",SMap,buildIndex+3,
-		     Origin-X*(baseWidth/2.0),MAxis.unit());
+  SurfMap::makePlane("Extion",SMap,buildIndex+2,
+		     Origin+Y*(frontLength),Z);
 
-  SurfMap::makePlane("AngleRight",SMap,buildIndex+4,
-		     Origin+X*(baseWidth/2.0),PAxis.unit());
+  // Note Ring Centre is ABSOLUTLE (relative to TDC)
 
-  if (frontLength)
-    {
-      SurfMap::makePlane("Front",SMap,buildIndex+1,Origin-Y*frontLength,Y);
-      ExternalCut::setCutSurf("Front",SurfMap::getSurfRule("Front"));
-    }
-  if (backLength)
-    {
-      SurfMap::makePlane("Back",SMap,buildIndex+2,Origin+Y*backLength,Y);
-      ExternalCut::setCutSurf("Back",SurfMap::getSurfRule("#Back"));
-    }
+  SurfMap::makePlane("RingDivide",SMap,buildIndex+100,ringCentre,Y);
+  SurfMap::makeCylinder("RingCyl",SMap,buildIndex+7,ringCentre,Z,ringRadius);
+
   return;
 }
 
@@ -171,23 +158,24 @@ SoilRoof::createObjects(Simulation& System)
   const HeadRule backHR=ExternalCut::getRule("Back");
   const HeadRule leftHR=ExternalCut::getRule("Left");
   const HeadRule rightHR=ExternalCut::getRule("Right");
-  const HeadRule allHR(roofHR*frontHR*backHR);
-  const HeadRule fbHR(frontHR*backHR);
+  const HeadRule boxHR(leftHR*rightHR*roofHR);
   
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-3 -4 -6");
-  makeCell("Berm",System,cellIndex++,soilMat,0.0,HR*allHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 7 -6 -2");
+  makeCell("Berm",System,cellIndex++,soilMat,0.0,HR*backHR*boxHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -6");
-  makeCell("Void",System,cellIndex++,0,0.0,HR*allHR*leftHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 -6");
+  makeCell("BackVoid",System,cellIndex++,0,0.0,HR*boxHR*backHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"4 -6");
-  makeCell("Void",System,cellIndex++,0,0.0,HR*allHR*rightHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 -6 -1");
+  makeCell("FrontVoid",System,cellIndex++,0,0.0,HR*boxHR*frontHR);
+
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"6 -16");
-  makeCell("FullVoid",System,cellIndex++,0,0.0,HR*fbHR*rightHR*leftHR);
+  makeCell("FullVoid",System,cellIndex++,0,0.0,
+	   HR*frontHR*backHR*rightHR*leftHR);
 
   HR=HeadRule(SMap,buildIndex,-16);
-  addOuterSurf(HR*allHR*leftHR*rightHR);
+  addOuterSurf(HR*frontHR*backHR*boxHR);
 
   return;
 }

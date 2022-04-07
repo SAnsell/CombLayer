@@ -3621,12 +3621,11 @@ wallVariables(FuncDataBase& Control,
 
 
   // soil
-  Control.addVariable(wallKey+"SoilBermTopWidth",800.0);
-  Control.addVariable(wallKey+"SoilBermBaseWidth",1000.0);
-  Control.addVariable(wallKey+"SoilBermFullHeight",200.0);
-  Control.addVariable(wallKey+"SoilBermFrontLength",200.0);
-  Control.addVariable(wallKey+"SoilBermBackLength",300.0);
-  Control.addVariable(wallKey+"SoilBermBaseHeight",180.0);
+  Control.addVariable(wallKey+"SoilBermHeight",220.0);
+  Control.addVariable(wallKey+"SoilBermFrontLength",400.0);
+  Control.addVariable(wallKey+"SoilBermRingCentre",
+		      Geometry::Vec3D(3400,-1100,0));
+  Control.addVariable(wallKey+"SoilBermRingRadius",400.0);
   Control.addVariable(wallKey+"SoilBermSoilMat","Earth");
   
   

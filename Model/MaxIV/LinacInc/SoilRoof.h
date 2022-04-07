@@ -48,13 +48,11 @@ class SoilRoof :
 {
  private:
 
-  double topWidth;               ///< top flat size
-  double baseWidth;              ///< base flat size
-  double fullHeight;             ///< full height in middel
-  double baseHeight;             ///< full height at edges
+  double height;             ///< full height in middel
 
   double frontLength;            ///< Optional front cut length
-  double backLength;             ///< Optional back cut length
+  double ringRadius;             ///< Synchrotron radius (outer building)
+  Geometry::Vec3D ringCentre;    ///< Synchrotron centre
   
   double unitGap;                ///< size of gap to allow full surf integration
 
