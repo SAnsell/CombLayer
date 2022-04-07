@@ -276,8 +276,8 @@ Segment29::buildObjects(Simulation& System)
   beamStopB->setCutSurf("front",frontHR);
   beamStopB->setCutSurf("base",ExternalCut::getRule("Floor"));
   beamStopB->addInsertCell(outerVoid);
-  beamStopB->createAll(System,*yagUnitB,"back");
-
+  beamStopB->createAll(System,*yagUnitA,"back",*yagUnitB,"back");
+  ELog::EM<<"Yag == "<<yagUnitA->getLinkPt("back")<<ELog::endDiag;
   return;
 }
 

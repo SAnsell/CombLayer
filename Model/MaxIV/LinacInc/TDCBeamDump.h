@@ -69,7 +69,7 @@ class TDCBeamDump : public attachSystem::ContainedComp,
   int frontPlateMat;            ///< Front plate material (to reduce activation dose rate)
   int carbonMat;                ///< Carbon plate material
 
-  attachSystem::FixedComp* mainFC1;
+  const attachSystem::FixedComp* mainFC;
   long int mainFCSide;
 
   void populate(const FuncDataBase&);
@@ -84,13 +84,27 @@ class TDCBeamDump : public attachSystem::ContainedComp,
   TDCBeamDump(const std::string&);
   TDCBeamDump(const TDCBeamDump&);
   TDCBeamDump& operator=(const TDCBeamDump&);
-  virtual TDCBeamDump* clone() const;
   virtual ~TDCBeamDump();
 
-  void setMainAxis(const attachSystem::FixedComp&, const long int); //std::string&);
+  void setMainAxis(const attachSystem::FixedComp&,
+		   const std::string&);
 
   using attachSystem::FixedComp::createAll;
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+
+  void createAll(Simulation&,
+		 const attachSystem::FixedComp&,const std::string&,
+		 const attachSystem::FixedComp&,const std::string&);
+  void createAll(Simulation&,
+		 const attachSystem::FixedComp&,const long int,
+		 const attachSystem::FixedComp&,const long int);
+
+  /// Transfer function to pair state
+  void createAll(Simulation& System,
+		 const attachSystem::FixedComp& FC,
+		 const long int sideIndex)
+  {
+    createAll(System,FC,sideIndex,FC,sideIndex);
+  }
 
 };
 
