@@ -91,7 +91,7 @@ SoilRoof::populate(const FuncDataBase& Control)
   frontLength=Control.EvalDefVar<double>(keyName+"FrontLength",-1.0);
   ringRadius=Control.EvalVar<double>(keyName+"RingRadius");
   ringCentre=Control.EvalVar<Geometry::Vec3D>(keyName+"RingCentre");
-
+  ELog::EM<<"Ring Centre == "<<ringCentre<<ELog::endDiag;
   unitGap=Control.EvalDefVar<double>(keyName+"UnitGap",1.0);
 
   soilMat=ModelSupport::EvalMat<int>(Control,keyName+"SoilMat");
@@ -131,12 +131,14 @@ SoilRoof::createSurfaces()
   SurfMap::makePlane("Top",SMap,buildIndex+16,
 		     Origin+Z*(height+unitGap),Z);
 
-  SurfMap::makePlane("Extion",SMap,buildIndex+2,
-		     Origin+Y*(frontLength),Z);
+  SurfMap::makePlane("Extention",SMap,buildIndex+2,
+		     Origin+Y*(frontLength),Y);
+  ELog::EM<<"Origin == "<<Origin<<" "<<Origin+Y*frontLength<<ELog::endDiag;
 
   // Note Ring Centre is ABSOLUTLE (relative to TDC)
-
+  ELog::EM<<"Ring Centre == "<<ringCentre<<ELog::endDiag;
   SurfMap::makePlane("RingDivide",SMap,buildIndex+100,ringCentre,Y);
+  ELog::EM<<"Y == "<<Y<<ELog::endDiag;
   SurfMap::makeCylinder("RingCyl",SMap,buildIndex+7,ringCentre,Z,ringRadius);
 
   return;
@@ -163,10 +165,10 @@ SoilRoof::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 7 -6 -2");
   makeCell("Berm",System,cellIndex++,soilMat,0.0,HR*backHR*boxHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 -6");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -6");
   makeCell("BackVoid",System,cellIndex++,0,0.0,HR*boxHR*backHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 -6 -1");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 -6");
   makeCell("FrontVoid",System,cellIndex++,0,0.0,HR*boxHR*frontHR);
 
 
