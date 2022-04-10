@@ -3,7 +3,7 @@
  
  * File:   input/inputParamSupport.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,6 +54,7 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedGroup.h"
 #include "BaseMap.h"
 #include "PointMap.h"
 #include "SurfMap.h"
@@ -99,8 +100,7 @@ getNamedPoint(const Simulation& System,
 	IParam.getValueError<std::string>
 	(keyItem,setIndex,index,errStr+"[Object Name/Point]");
     }
-      
-  
+
   index++;
   Geometry::Vec3D point;
   if (StrFunc::convert(objName,point))
@@ -115,26 +115,41 @@ getNamedPoint(const Simulation& System,
       // unitFC MUST work and indexName can be number/name
       const attachSystem::FixedComp* FCptr=
 	System.getObjectThrow<attachSystem::FixedComp>(unitFC,errStr);
+
+
       // PointMap
       const attachSystem::PointMap* PMptr=
 	dynamic_cast<const attachSystem::PointMap*>(FCptr);
       if (PMptr)
 	{
-	  const std::string::size_type posB=indexName.find(':');
+	  std::string pointName(indexName);
+	  const std::string::size_type posB=pointName.find(':');
 	  size_t itemIndex(0);
 	  if (posB!=std::string::npos &&
-	      StrFunc::convert(indexName.substr(posB+1),itemIndex))
+	      StrFunc::convert(pointName.substr(posB+1),itemIndex))
 	    {
-	      indexName.erase(posB,std::string::npos);
+	      pointName.erase(posB,std::string::npos);
 	    }
-	  if (PMptr->hasPoint(indexName,itemIndex))
-	    return PMptr->getPoint(indexName,itemIndex);
+	  if (PMptr->hasPoint(pointName,itemIndex))
+	    return PMptr->getPoint(pointName,itemIndex);
+	}
+
+      // FixedGroup [last search -- so can destroy indexName]
+      const std::string::size_type posB=indexName.find(':');
+      if (posB!=std::string::npos)
+	{
+	  const std::string grpFC=indexName.substr(0,posB);
+	  indexName=indexName.substr(posB+1);
+	  const attachSystem::FixedGroup* FGptr=
+	    dynamic_cast<const attachSystem::FixedGroup*>(FCptr);
+	  if (FGptr && FGptr->hasKey(grpFC))
+	      FCptr=&FGptr->getKey(grpFC);
 	}
       // FixedComp
       if (FCptr->hasLinkPt(indexName))
 	return FCptr->getLinkPt(indexName);
     }
-  
+
   // Everything failed
   index--;
   throw ColErr::InContainerError<std::string>(objName,errStr);

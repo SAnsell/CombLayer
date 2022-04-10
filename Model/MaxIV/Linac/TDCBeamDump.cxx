@@ -355,6 +355,8 @@ TDCBeamDump::createLinks()
   attachSystem::FixedComp& mainFC=getKey("Main");
   attachSystem::FixedComp& beamFC=getKey("Beam");
 
+  mainFC.nameSideIndex(0,"Front");
+  
   mainFC.setConnect(0,Origin,-Y);
   mainFC.setLinkSurf(0,-SMap.realSurf(buildIndex+11));
 
@@ -372,6 +374,7 @@ TDCBeamDump::createLinks()
 
   mainFC.setConnect(5,Origin+Z*(bulkHeight+skinThick),Z);
   mainFC.setLinkSurf(5,SMap.realSurf(buildIndex+16));
+
 
   return;
 }
