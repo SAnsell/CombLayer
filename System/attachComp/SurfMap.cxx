@@ -499,7 +499,10 @@ SurfMap::makeCone(const std::string& Key,
 ///\cond template
 template Geometry::Plane*
 SurfMap::realPtr(const std::string&,const size_t) const;
-  
+
+template const Geometry::Plane*
+SurfMap::realPtr(const std::string&,const size_t) const;
+
 ///\endcond template
   
   

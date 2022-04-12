@@ -78,14 +78,14 @@ class BeamMount :
   BeamMount(const BeamMount&);
   BeamMount& operator=(const BeamMount&);
   virtual ~BeamMount();
-
+ 
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,const std::string&,
 		 const attachSystem::FixedComp&,const std::string&);
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,const long int,
 		 const attachSystem::FixedComp&,const long int);
-  
+ 
 };
 
 }

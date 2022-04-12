@@ -73,6 +73,63 @@
 namespace mainSystem
 {
 
+bool
+getNamedPlanePoints(const Simulation& System,
+		    const inputParam& IParam,
+		    const std::string& keyItem,
+		    const size_t setIndex,
+		    size_t& index,
+		    Geometry::Vec3D& POrg,
+		    Geometry::Vec3D& PNorm)
+  /*!
+    Generate the set of named point based on extracting 
+    a surfMap plane
+    
+    - Vec3D(x,y,z)
+    - FixedComp:Index
+    - PointMap:Index
+  */
+{
+  ELog::RegMethod RegA("inputParamSupport[F]","getNamedPlanePoints");  
+
+  std::string objName=
+    IParam.getDefValue<std::string>("",keyItem,setIndex,index);
+
+  const std::string::size_type pos=objName.find(':');
+  if (pos!=std::string::npos)
+    {
+      std::string indexName=objName.substr(pos+1);
+      objName.erase(pos,std::string::npos);
+
+      const std::string::size_type posB=indexName.find(':');
+      size_t itemIndex(0);
+      if (posB!=std::string::npos)
+	{
+	  StrFunc::convert(indexName.substr(posB+1),itemIndex);
+	  indexName.erase(posB,std::string::npos);
+	}
+      
+      const attachSystem::SurfMap* SMptr=
+	System.getObject<attachSystem::SurfMap>(objName);
+
+      if (SMptr)
+	{
+	  if (SMptr->hasSurf(indexName,itemIndex))
+	    {
+	      const Geometry::Plane* PPtr=
+		SMptr->realPtr<const Geometry::Plane>(indexName,itemIndex);
+	      if (PPtr)
+		{
+		  POrg=PPtr->closestPt(Geometry::Vec3D(0,0,0));
+		  PNorm=PPtr->getNormal();
+		  return 1;
+		}
+	    }
+	}
+    }
+  return 0;
+}
+
 Geometry::Vec3D
 getNamedPoint(const Simulation& System,
 	      const inputParam& IParam,
@@ -111,39 +168,39 @@ getNamedPoint(const Simulation& System,
     {
       const std::string unitFC=objName.substr(0,pos);
       std::string indexName=objName.substr(pos+1);
+
+      const std::string::size_type posB=indexName.find(':');
+      std::string extraName;
+      if (posB!=std::string::npos)
+	{
+	  extraName=indexName.substr(0,posB);
+	  indexName.erase(posB,std::string::npos);
+	}
       
       // unitFC MUST work and indexName can be number/name
       const attachSystem::FixedComp* FCptr=
 	System.getObjectThrow<attachSystem::FixedComp>(unitFC,errStr);
-
 
       // PointMap
       const attachSystem::PointMap* PMptr=
 	dynamic_cast<const attachSystem::PointMap*>(FCptr);
       if (PMptr)
 	{
-	  std::string pointName(indexName);
-	  const std::string::size_type posB=pointName.find(':');
 	  size_t itemIndex(0);
-	  if (posB!=std::string::npos &&
-	      StrFunc::convert(pointName.substr(posB+1),itemIndex))
-	    {
-	      pointName.erase(posB,std::string::npos);
-	    }
-	  if (PMptr->hasPoint(pointName,itemIndex))
-	    return PMptr->getPoint(pointName,itemIndex);
+	  StrFunc::convert(extraName,itemIndex);
+	  if (PMptr->hasPoint(indexName,itemIndex))
+	    return PMptr->getPoint(indexName,itemIndex);
 	}
-
+      
       // FixedGroup [last search -- so can destroy indexName]
-      const std::string::size_type posB=indexName.find(':');
-      if (posB!=std::string::npos)
+      if (!extraName.empty())
 	{
-	  const std::string grpFC=indexName.substr(0,posB);
-	  indexName=indexName.substr(posB+1);
 	  const attachSystem::FixedGroup* FGptr=
 	    dynamic_cast<const attachSystem::FixedGroup*>(FCptr);
-	  if (FGptr && FGptr->hasKey(grpFC))
-	      FCptr=&FGptr->getKey(grpFC);
+	  if (FGptr && FGptr->hasKey(indexName))
+	      FCptr=&FGptr->getKey(indexName);
+	  if (FCptr->hasLinkPt(extraName))
+	    return FCptr->getLinkPt(extraName);
 	}
       // FixedComp
       if (FCptr->hasLinkPt(indexName))

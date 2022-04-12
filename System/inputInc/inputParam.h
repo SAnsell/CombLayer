@@ -38,6 +38,13 @@ namespace mainSystem
   class IItem;
   class inputParam;
   
+bool
+getNamedPlanePoints(const Simulation&,const inputParam&,
+		    const std::string&,const size_t,
+		    size_t&,
+		    Geometry::Vec3D&,
+		    Geometry::Vec3D&);
+  
 Geometry::Vec3D
 getNamedPoint(const Simulation&,const inputParam&,
 	      const std::string&,const size_t,
