@@ -133,12 +133,9 @@ SoilRoof::createSurfaces()
 
   SurfMap::makePlane("Extention",SMap,buildIndex+2,
 		     Origin+Y*(frontLength),Y);
-  ELog::EM<<"Origin == "<<Origin<<" "<<Origin+Y*frontLength<<ELog::endDiag;
 
   // Note Ring Centre is ABSOLUTLE (relative to TDC)
-  ELog::EM<<"Ring Centre == "<<ringCentre<<ELog::endDiag;
   SurfMap::makePlane("RingDivide",SMap,buildIndex+100,ringCentre,Y);
-  ELog::EM<<"Y == "<<Y<<ELog::endDiag;
   SurfMap::makeCylinder("RingCyl",SMap,buildIndex+7,ringCentre,Z,ringRadius);
 
   return;

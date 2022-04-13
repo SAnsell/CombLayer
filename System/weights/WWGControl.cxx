@@ -279,7 +279,7 @@ WWGControl::procPlanePoint(const Simulation& System,
       if (mainSystem::getNamedPlanePoints
 	  (System,IParam,wKey,setIndex,itemCnt,PPoint,Norm))
 	{
-	  
+	  ELog::EM<<"Success after NamedPlanePoints"<<ELog::endDiag;
 	}
       else
 	{

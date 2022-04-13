@@ -94,7 +94,7 @@ getNamedPlanePoints(const Simulation& System,
 
   std::string objName=
     IParam.getDefValue<std::string>("",keyItem,setIndex,index);
-
+  ELog::EM<<"Object == "<<objName<<ELog::endDiag;
   const std::string::size_type pos=objName.find(':');
   if (pos!=std::string::npos)
     {
@@ -122,6 +122,7 @@ getNamedPlanePoints(const Simulation& System,
 		{
 		  POrg=PPtr->closestPt(Geometry::Vec3D(0,0,0));
 		  PNorm=PPtr->getNormal();
+		  index++;
 		  return 1;
 		}
 	    }
@@ -173,7 +174,7 @@ getNamedPoint(const Simulation& System,
       std::string extraName;
       if (posB!=std::string::npos)
 	{
-	  extraName=indexName.substr(0,posB);
+	  extraName=indexName.substr(posB+1,std::string::npos);
 	  indexName.erase(posB,std::string::npos);
 	}
       
