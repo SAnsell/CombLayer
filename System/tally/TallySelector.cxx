@@ -118,7 +118,7 @@ constructSurfRegion(const Simulation& System,
     \param cellB :: Secondary region cell number
   */
 {
-  const std::string::size_type pos=FCname.find(':');
+  std::string::size_type pos=FCname.find(':');
   if (pos==std::string::npos)
     return 0;
 
@@ -127,8 +127,31 @@ constructSurfRegion(const Simulation& System,
   if (!Surf.empty() && Surf[0]==':')
     Surf.erase(0,1);
 
+  bool out(0);
+  long int indexA(0);   // need to remove -ve sign
+  long int indexB(0);
+  pos=Surf.find(':');
+  if (pos!=std::string::npos)
+    {
+      std::string part=Surf.substr(pos+1);
+      if (part.find('-')!=std::string::npos &&
+	  StrFunc::sectPartNum(part,indexA) &&
+	  StrFunc::sectPartNum(part,indexB) )
+	{
+	  out = constructSurfRegion
+	    (System,FC,Surf,indexA,-indexB,cellA,cellB);
+	}
+      else if (StrFunc::section(part,indexA))
+	{
+	  out = constructSurfRegion
+	    (System,FC,Surf,indexA,0,cellA,cellB);
+	}
+    }
+  else
+    {
+      out = constructSurfRegion(System,FC,Surf,0,0,cellA,cellB);
+    }
 
-  bool out = constructSurfRegion(System,FC,Surf,0,0,cellA,cellB);
   return out;
 }
 

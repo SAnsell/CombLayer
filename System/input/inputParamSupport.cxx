@@ -94,7 +94,7 @@ getNamedPlanePoints(const Simulation& System,
 
   std::string objName=
     IParam.getDefValue<std::string>("",keyItem,setIndex,index);
-  ELog::EM<<"Object == "<<objName<<ELog::endDiag;
+
   const std::string::size_type pos=objName.find(':');
   if (pos!=std::string::npos)
     {

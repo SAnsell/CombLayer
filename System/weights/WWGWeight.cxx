@@ -3,7 +3,7 @@
  
  * File:   weight/WWGWeight.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,6 +55,7 @@
 #include "ObjectTrackPoint.h"
 #include "ObjectTrackPlane.h"
 #include "phitsWriteSupport.h"
+#include "particleConv.h"
 #include "WWGWeight.h"
 
 namespace WeightSystem
@@ -860,12 +861,43 @@ WWGWeight::writeFLUKA(std::ostream& OX) const
     cx<<" -";
   cx<<" wwgEng";
   StrFunc::writeFLUKA(cx.str(),OX);
-  
+
+  // PARTICLES:
+  if (!particles.empty())
+    {
+      size_t index(0);
+      // note that flukaGenParticles are not supported:
+      const particleConv& Pconv=
+	particleConv::Instance();
+      for(const std::string& P : particles)
+	{
+	  if (!index)
+	    {
+	      cx.str("");
+	      cx<<"USRICALL "<<ID<<" ";
+	    }
+	  cx<<Pconv.flukaITYP(P)<<" ";
+	  index++;
+	  if (index==6)
+	    {
+	      cx<<"wwgPart";
+	      StrFunc::writeFLUKA(cx.str(),OX);
+	      index=0;
+	    }
+	}
+      if (index)
+	{
+	  for(;index<6;index++)
+	    cx<<"- ";
+	  cx<<"wwgPart";
+	  StrFunc::writeFLUKA(cx.str(),OX);
+	}
+    }
+
   // This should be extended to allow multiple wwg meshes:
   // size : Must be infront of Low/High/wwg
   cx.str("");
-  cx<<"USRICALL ";
-  cx<<ID<<" "                  // INDEX not energy bins
+  cx<<"USRICALL "<<ID<<" "                  // INDEX not energy bins
     <<Grid.getXSize()<<" "
     <<Grid.getYSize()<<" "
     <<Grid.getZSize()<<" - - "
