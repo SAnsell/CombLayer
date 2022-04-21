@@ -353,7 +353,7 @@ TDCBeamDump::createLinks()
   const double totalLength = preCoreLength + coreLength + bulkThickBack + skinThick;
 
   attachSystem::FixedComp& mainFC=getKey("Main");
-  attachSystem::FixedComp& beamFC=getKey("Beam");
+  //  attachSystem::FixedComp& beamFC=getKey("Beam");
 
   mainFC.nameSideIndex(0,"Front");
   

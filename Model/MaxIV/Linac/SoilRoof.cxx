@@ -131,6 +131,9 @@ SoilRoof::createSurfaces()
   SurfMap::makePlane("Top",SMap,buildIndex+16,
 		     Origin+Z*(height+unitGap),Z);
 
+  ExternalCut::makeShiftedSurf(SMap,"Roof",buildIndex+5,Z,unitGap);
+  SurfMap::setSurf("RoofThin",SMap.realSurf(buildIndex+5));
+  
   SurfMap::makePlane("Extention",SMap,buildIndex+2,
 		     Origin+Y*(frontLength),Y);
 
@@ -158,9 +161,12 @@ SoilRoof::createObjects(Simulation& System)
   const HeadRule leftHR=ExternalCut::getRule("Left");
   const HeadRule rightHR=ExternalCut::getRule("Right");
   const HeadRule boxHR(leftHR*rightHR*roofHR);
-  
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 7 -6 -2");
-  makeCell("Berm",System,cellIndex++,soilMat,0.0,HR*backHR*boxHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 7 -5 -2");
+  makeCell("BermThin",System,cellIndex++,soilMat,0.0,HR*backHR*boxHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 7 5 -6 -2");
+  makeCell("Berm",System,cellIndex++,soilMat,0.0,HR*backHR*rightHR*leftHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -6");
   makeCell("BackVoid",System,cellIndex++,0,0.0,HR*boxHR*backHR);

@@ -133,11 +133,15 @@ constructSurfRegion(const Simulation& System,
   pos=Surf.find(':');
   if (pos!=std::string::npos)
     {
+      ELog::EM<<"Surf == "<<Surf<<ELog::endDiag;
       std::string part=Surf.substr(pos+1);
       if (part.find('-')!=std::string::npos &&
 	  StrFunc::sectPartNum(part,indexA) &&
 	  StrFunc::sectPartNum(part,indexB) )
 	{
+	  ELog::EM<<"Surf == "<<part<<ELog::endDiag;
+	  Surf.erase(pos);
+	  ELog::EM<<"Surf == "<<Surf<<ELog::endDiag;
 	  out = constructSurfRegion
 	    (System,FC,Surf,indexA,-indexB,cellA,cellB);
 	}
@@ -205,6 +209,7 @@ constructSurfRegion(const Simulation& System,
   if (!SMPtr || surfName.empty()) return 0;
   
   const int surfN=SMPtr->getSignedSurf(surfName);
+  ELog::EM<<"Joining surface "<<surfN<<ELog::endDiag;
   if (!surfN) return 0;
   // throws on error [unlikely because SurfMap is good]
   const groupRange& activeGrp=System.getGroup(FCname);

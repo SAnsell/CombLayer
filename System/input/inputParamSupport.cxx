@@ -469,7 +469,7 @@ getNamedCellsWithMat(const Simulation& System,
     Calculate the objects based on a name e.g. a FixedComp.
     \param System :: Main simulation
     \param IParam :: Input parameters
-    \param keyItem :: key Item to search fore
+    \param keyItem :: key Item to search for
     \param setIndex :: input set index
     \param index :: item index 
     \param matName :: Material name [all/nonVoid/Void/Zaid/matName]
