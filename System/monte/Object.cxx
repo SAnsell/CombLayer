@@ -255,6 +255,20 @@ Object::setMaterial(const int matID)
 }
 
 void
+Object::setMaterial(const std::string& matName)
+  /*!
+    Given a material id , set the new(?) material pointer
+    This function should not be called under most cases.
+    \param matName :: Material id
+   */
+{
+  ELog::RegMethod RegA("Object","setMaterial(string)");
+
+  matPtr=ModelSupport::DBMaterial::Instance().getMaterialPtr(matName);
+  return;
+}
+
+void
 Object::setMagStep(const double minV,const double maxV)
   /*!
     Set the min/max steps for the steps of charged particle

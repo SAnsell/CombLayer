@@ -122,7 +122,8 @@ class Object
   int procString(const std::string&);
   int procHeadRule(const HeadRule&);
 
-  void setMaterial(const int);  // to be written
+  void setMaterial(const int);
+  void setMaterial(const std::string&); 
   void setMagStep(const double,const double);
   
   int complementaryObject(const int,std::string&);

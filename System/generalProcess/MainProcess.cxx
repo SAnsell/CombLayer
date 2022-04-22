@@ -372,6 +372,9 @@ createSimulation(inputParam& IParam,
   // Get a copy of the command used to run the program
   std::stringstream cmdLine;
 
+  const std::string worldMat=
+    IParam.getDefValue("Void","outerVoidMat");
+  
   copy(Names.begin(),Names.end(),
        std::ostream_iterator<std::string>(cmdLine," "));
   Oname=InputControl::getFileName(Names);
@@ -431,6 +434,9 @@ createSimulation(inputParam& IParam,
 
   // OR.setObjectGroup(*SimPtr);
   // buildWorld(*SimPtr);
+
+  // there better be a void cell :
+  SimPtr->findObjectThrow(74123)->setMaterial(worldMat);
   
   // DNF split the cells
   SimPtr->setCellDNF(IParam.getDefValue<size_t>(0,"cellDNF"));

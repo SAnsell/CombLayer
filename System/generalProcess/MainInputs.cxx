@@ -128,6 +128,7 @@ createInputs(inputParam& IParam)
   IParam.regFlag("noThermal","noThermal");
   IParam.regMulti("ObjAdd","objectAdd",1000);
   IParam.regMulti("offset","offset",10000,1,8);
+  IParam.regItem("outerVoidMat","outerVoidMat");
   IParam.regDefItem<double>("photon","photon",1,0.001);  // 1keV
   IParam.regDefItem<double>("photonModel","photonModel",1,100.0);
   IParam.regMulti("plotgeom","plotgeom",2,1);
@@ -286,6 +287,8 @@ createInputs(inputParam& IParam)
   IParam.setDesc("noThermal","No thermal cross-section in materials def");
   IParam.setDesc("offset","Displace to component [name]");
   IParam.setDesc("ObjAdd","Add a component (cell)");
+  IParam.setDesc("outerVoidMat",
+		 "Sets the outer void (74123) to be named material ");
   IParam.setDesc("plotgeom","Write out PLOTGEOM for FLUKA");
   IParam.setDesc("photon","Photon Cut energy");
   IParam.setDesc("photonModel","Photon Model Energy [min]");
@@ -313,7 +316,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("u","Units in cm");
   IParam.setDesc("um","Unset spherical void area (from imp=0)");
   IParam.setDesc("void","Adds the void card to the simulation");
-  IParam.setDesc("voidObject","Sets material of FC-object by name");
+  IParam.setDesc("voidObject","Sets material(s) of FC-object(s) by name");
   IParam.setDesc("volume","Create volume about point/radius for f4 tally");
   IParam.setDesc("volCells","Cells [object/range]");
   IParam.setDesc("volCard","set/delete the vol card");
