@@ -96,15 +96,6 @@ class Object
   virtual Object* clone() const;
   virtual ~Object();
 
-  /// Effective typeid
-  virtual std::string className() const { return "Object"; }
-  /// Visitor Acceptance
-  virtual void acceptVisitor(Global::BaseVisit& A) const
-    {  A.Accept(*this); }
-  /// Accept visitor for input
-  virtual void acceptVisitor(Global::BaseModVisit& A)
-    { A.Accept(*this); }
-
   /// set the name
   void setFCUnit(const std::string& FC) { FCUnit=FC; }
   void setName(const int nx) { ObjName=nx; }           ///< Set Name 

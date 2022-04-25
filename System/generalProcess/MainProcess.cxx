@@ -59,6 +59,9 @@
 #include "SimMCNP.h"
 #include "DetGroup.h"
 #include "SimMonte.h"
+#include "HeadRule.h"
+#include "Importance.h"
+#include "Object.h"
 #include "DBModify.h"
 #include "SimProcess.h"
 #include "Process.h"
@@ -373,7 +376,7 @@ createSimulation(inputParam& IParam,
   std::stringstream cmdLine;
 
   const std::string worldMat=
-    IParam.getDefValue("Void","outerVoidMat");
+    IParam.getDefValue<std::string>("Void","outerVoidMat");
   
   copy(Names.begin(),Names.end(),
        std::ostream_iterator<std::string>(cmdLine," "));
