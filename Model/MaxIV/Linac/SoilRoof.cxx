@@ -34,15 +34,23 @@
 #include <memory>
 
 #include "FileReport.h"
+#include "OutputLog.h"
+#include "Exception.h"
+#include "Vec3D.h"
+#include "HeadRule.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+#include "surfDivide.h"
+#include "surfDBase.h"
+#include "mergeTemplate.h"
+#include "Importance.h"
+#include "Object.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "OutputLog.h"
-#include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
-#include "HeadRule.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -89,10 +97,11 @@ SoilRoof::populate(const FuncDataBase& Control)
   frontLength=Control.EvalDefVar<double>(keyName+"FrontLength",-1.0);
   ringRadius=Control.EvalVar<double>(keyName+"RingRadius");
   ringCentre=Control.EvalVar<Geometry::Vec3D>(keyName+"RingCentre");
-  ELog::EM<<"Ring Centre == "<<ringCentre<<ELog::endDiag;
+  //  ELog::EM<<"Ring Centre == "<<ringCentre<<ELog::endDiag;
   unitGap=Control.EvalDefVar<double>(keyName+"UnitGap",1.0);
 
   soilMat=ModelSupport::EvalMat<int>(Control,keyName+"SoilMat");
+  soilNLayers=Control.EvalDefVar<size_t>(keyName+"NLayers", 1);
 
   return;
 }
@@ -180,6 +189,11 @@ SoilRoof::createObjects(Simulation& System)
   HR=HeadRule(SMap,buildIndex,-16);
   addOuterSurf(HR*frontHR*backHR*boxHR);
 
+  layerProcess(System,"Berm",
+	       SMap.realSurf(buildIndex+5),
+	       -SMap.realSurf(buildIndex+6),
+	       soilNLayers);
+
   return;
 }
 
@@ -220,6 +234,64 @@ SoilRoof::createAll(Simulation& System,
   insertObjects(System);
 
   return;
+}
+
+void
+SoilRoof::layerProcess(Simulation& System,
+		       const std::string& cellName,
+		       const int primSurf,
+		       const int sndSurf,
+		       const size_t NLayers)
+  /*!
+    Processes the splitting of the surfaces into a multilayer system
+    \param System :: Simulation to work on
+    \param cellName :: cell name
+    \param primSurf :: primary surface
+    \param sndSurf  :: secondary surface
+    \param NLayers :: number of layers to divide to
+  */
+{
+    ELog::RegMethod RegA("InjectionHall","layerProcess");
+
+    if (NLayers<=1) return;
+
+    // cellmap -> material
+    const int wallCell=this->getCell(cellName);
+    const MonteCarlo::Object* wallObj=System.findObject(wallCell);
+    if (!wallObj)
+      throw ColErr::InContainerError<int>
+	(wallCell,"Cell '" + cellName + "' not found");
+
+    const int mat=wallObj->getMatID();
+    double baseFrac = 1.0/static_cast<double>(NLayers);
+    ModelSupport::surfDivide DA;
+    for(size_t i=1;i<NLayers;i++)
+      {
+	DA.addFrac(baseFrac);
+	DA.addMaterial(mat);
+	baseFrac += 1.0/static_cast<double>(NLayers);
+      }
+    DA.addMaterial(mat);
+
+    DA.setCellN(wallCell);
+    // CARE here :: buildIndex + X should be so that X+NLayer does not
+    // interfer.
+    DA.setOutNum(cellIndex, buildIndex+8000);
+
+    ModelSupport::mergeTemplate<Geometry::Plane,
+				Geometry::Plane> surroundRule;
+
+    surroundRule.setSurfPair(primSurf,sndSurf);
+
+    surroundRule.setInnerRule(primSurf);
+    surroundRule.setOuterRule(sndSurf);
+
+    DA.addRule(&surroundRule);
+    DA.activeDivideTemplate(System,this);
+
+    cellIndex=DA.getCellNum();
+
+    return;
 }
 
 }  // tdcSystem

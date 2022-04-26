@@ -107,6 +107,7 @@ class InjectionHall :
   double fkgRoofThick;          ///< FKG roof thickness
   double fkgRoofYStep;          ///< Y-step offset of the FKG roof (below our office area)
   double floorThick;            ///< floor thickness
+  size_t roofNLayers;           ///< Number of imp layers in the roof
 
   double midTXStep;             ///< Step to centre of T
   double midTYStep;             ///< Step to centre of T
@@ -197,7 +198,6 @@ class InjectionHall :
 
   void layerProcess(Simulation&,const std::string&,
                     const int,const int,const size_t);
-
 
   void populate(const FuncDataBase&);
   void createSurfaces();

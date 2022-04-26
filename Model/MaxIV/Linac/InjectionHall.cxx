@@ -167,6 +167,7 @@ InjectionHall::populate(const FuncDataBase& Control)
   fkgRoofThick=Control.EvalVar<double>(keyName+"FKGRoofThick");
   fkgRoofYStep=Control.EvalVar<double>(keyName+"FKGRoofYStep");
   floorThick=Control.EvalVar<double>(keyName+"FloorThick");
+  roofNLayers=Control.EvalDefVar<size_t>(keyName+"RoofNLayers", 1);
 
   floorDepth=Control.EvalVar<double>(keyName+"FloorDepth");
   roofHeight=Control.EvalVar<double>(keyName+"RoofHeight");
@@ -1039,11 +1040,16 @@ InjectionHall::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -201 13 -14 6 -26");
   makeCell("Roof",System,cellIndex++,roofMat,0.0,HR);
 
+  // Roof segment in the trapezoid region
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -211 213 -14 6 -26");
-  makeCell("Roof",System,cellIndex++,roofMat,0.0,HR);
+  makeCell("RoofPreBeamDump",System,cellIndex++,roofMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"211 -2 233 -1004 6 -26");
-  makeCell("Roof",System,cellIndex++,roofMat,0.0,HR);
+  // Roof segment above the beam dumps
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"211 -22 233 -1004 6 -26");
+  makeCell("RoofBeamDump",System,cellIndex++,roofMat,0.0,HR);
+  // Roof segmenta after the beam dumps
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"22  -2 233 -1004 6 -26");
+  makeCell("RoofAfterBeamDump",System,cellIndex++,roofMat,0.0,HR);
 
   // FKGRoof: A2_40-2_G6-Y.pdf
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"211 -232 1004 -114 6 -16");
@@ -1323,6 +1329,16 @@ InjectionHall::createObjects(Simulation& System)
   	       -SMap.realSurf(buildIndex+223),
   	       SMap.realSurf(buildIndex+233),
   	       btgNLayers);
+
+  // IH Roof
+  layerProcess(System,"RoofPreBeamDump",
+  	       SMap.realSurf(buildIndex+6),
+  	       -SMap.realSurf(buildIndex+26),
+  	       roofNLayers);
+  layerProcess(System,"RoofBeamDump",
+  	       SMap.realSurf(buildIndex+6),
+  	       -SMap.realSurf(buildIndex+26),
+  	       roofNLayers);
 
   return;
 }

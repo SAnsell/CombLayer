@@ -57,6 +57,7 @@ class SoilRoof :
   double unitGap;                ///< size of gap to allow full surf integration
 
   int soilMat;                   ///< Earth material
+  size_t soilNLayers;           ///< Number of imp layers in the soil
 
   void layerProcess(Simulation&,const std::string&,
                     const int,const int,const size_t);
