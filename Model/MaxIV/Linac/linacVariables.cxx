@@ -86,7 +86,6 @@
 #include "PrismaChamberGenerator.h"
 #include "IonPTubeGenerator.h"
 #include "GaugeGenerator.h"
-#include "LBeamStopGenerator.h"
 #include "LocalShieldingGenerator.h"
 #include "SPFCameraShieldGenerator.h"
 
@@ -3446,7 +3445,9 @@ wallVariables(FuncDataBase& Control,
     {
       const std::string name = wallKey+"MidTDuct" + std::to_string(i+2);
       Control.addVariable(name+"Radius",5.0); // K_20-2_354
-      Control.addVariable(name+"YStep",D1YStep+30*i); // K_20-2_354
+
+      // K_20-2_354
+      Control.addVariable(name+"YStep",D1YStep+30*static_cast<double>(i));
       Control.addVariable(name+"ZStep",D1ZStep); // K_20-2_354
     }
 
@@ -3460,7 +3461,7 @@ wallVariables(FuncDataBase& Control,
     {
       const std::string name = wallKey+"MidTDuct" + std::to_string(i+6);
       Control.addVariable(name+"Radius",5.0); // dummy
-      Control.addVariable(name+"YStep",floorDuctY+35*i); // dummy
+      Control.addVariable(name+"YStep",floorDuctY+35*static_cast<double>(i));
       Control.addVariable(name+"ZStep",-115); // dummy
     }
 
@@ -3498,7 +3499,9 @@ wallVariables(FuncDataBase& Control,
     {
       const std::string name = wallKey+"MidTDuct" + std::to_string(i+16);
       Control.addVariable(name+"Radius",5.0); // K_20-2_355
-      Control.addVariable(name+"YStep",BTGductYup+30*i); // distance: K_20-2_355
+      // distance: K_20-2_355
+      Control.addVariable
+	(name+"YStep",BTGductYup+30.0*static_cast<double>(i));
       Control.addVariable(name+"ZStep",158.0); // measured in K_20-2_355
     }
   ///////////////////////////////////////////////
@@ -3612,6 +3615,16 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"MidTFrontLShieldHeight",100.0); // AR 2021-01-20
   Control.addVariable(wallKey+"MidTFrontLShieldWidth",100.0); // AR 2021-01-20
   Control.addVariable(wallKey+"MidTFrontLShieldMat","Lead"); // AR 2021-01-20
+
+
+  // soil
+  Control.addVariable(wallKey+"SoilBermHeight",220.0);
+  Control.addVariable(wallKey+"SoilBermFrontLength",400.0);
+  Control.addVariable(wallKey+"SoilBermRingCentre",
+		      Geometry::Vec3D(3400,-1100,0));
+  Control.addVariable(wallKey+"SoilBermRingRadius",6000.0);
+  Control.addVariable(wallKey+"SoilBermSoilMat","Earth");
+
 
   return;
 }

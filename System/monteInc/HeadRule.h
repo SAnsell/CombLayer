@@ -32,6 +32,11 @@ namespace Geometry
   class Surface;
 }
 
+namespace ModelSupport
+{
+  class surfRegister;
+}
+
 /*!
   \class HeadRule
   \brief Holds the topRule pointer
@@ -60,12 +65,15 @@ class HeadRule
 
   HeadRule();
   explicit HeadRule(const int);
+  explicit HeadRule(const ModelSupport::surfRegister&,const int);
+  explicit HeadRule(const ModelSupport::surfRegister&,const int,const int);
   explicit HeadRule(const std::string&);
   HeadRule(const HeadRule&);
   HeadRule(HeadRule&&);
   HeadRule(const Rule*);
   HeadRule& operator=(const HeadRule&);
   ~HeadRule();
+  
   bool operator==(const HeadRule&) const;
   bool operator!=(const HeadRule&) const;
   HeadRule& operator+=(const HeadRule&);
@@ -129,6 +137,7 @@ class HeadRule
   std::set<const Geometry::Surface*> getOppositeSurfaces() const;
   const Geometry::Surface* getSurface(const int) const;
   std::vector<const Geometry::Surface*> getSurfaces() const;
+  std::set<int> getSignedSurfaceNumbers() const;
   std::vector<int> getSurfaceNumbers() const;
   std::vector<int> getTopSurfaces() const;
   int getPrimarySurface() const;

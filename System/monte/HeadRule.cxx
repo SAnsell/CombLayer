@@ -3,7 +3,7 @@
  
  * File:   monte/HeadRule.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,7 +55,9 @@
 #include "RuleCheck.h"
 #include "Line.h"
 #include "LineIntersectVisit.h"
+#include "surfRegister.h"
 #include "HeadRule.h"
+
 
 #include "SurInter.h"
 
@@ -99,11 +101,35 @@ HeadRule::HeadRule(const int surfNum) :
     \param surfNum :: rule as surface number
   */
 {
-  ELog::RegMethod RegA("HeadRule","HeadRule(string)");
+  ELog::RegMethod RegA("HeadRule","HeadRule(int)");
 
-  if (!surfNum || !procString(std::to_string(surfNum)))
+  if (!surfNum || !procSurfNum(surfNum))
     throw ColErr::InvalidLine(std::to_string(surfNum),"surfNum",0);
 }
+
+
+HeadRule::HeadRule(const ModelSupport::surfRegister& SMap,
+		   const int surfNum) :
+  HeadRule(SMap.realSurf(surfNum))
+  /*!
+    Creates a new rule
+    \param SMap :: Surface register
+    \param surfNum :: surface index
+  */
+{}
+
+HeadRule::HeadRule(const ModelSupport::surfRegister& SMap,
+		   const int offsetIndex,
+		   const int surfNum) :
+  HeadRule(SMap,(surfNum>0) ? offsetIndex+surfNum :
+	   surfNum-offsetIndex)
+  /*!
+    Creates a new rule
+    \param SMap :: Surface register
+    \param offsetIndex :: main offset index
+    \param surfNum :: signed surface index
+  */
+{}
 
 HeadRule::HeadRule(const Rule* RPtr) :
   HeadNode((RPtr) ? RPtr->clone() : nullptr)
@@ -420,7 +446,7 @@ HeadRule::partMatched(const HeadRule& A) const
   if (levelActive)
     {
       // Sub components MUST be contained in one rule completely:
-      for(const HeadRule AS : ASet)
+      for(const HeadRule& AS : ASet)
 	{
 	  if (AS.partMatched(BSet))
 	    return 1;
@@ -429,7 +455,7 @@ HeadRule::partMatched(const HeadRule& A) const
     }
   
   // OK CHECK EACH Minor
-  for(const HeadRule AS : ASet)
+  for(const HeadRule& AS : ASet)
     {
       if (AS.partMatched(A))
 	return 1;
@@ -532,7 +558,7 @@ HeadRule::subMatched(const HeadRule& A,
   if (levelActive)
     {
       // Sub components MUST be contained in one rule completely:
-      for(const HeadRule AS : ASet)
+      for(const HeadRule& AS : ASet)
 	{
 	  if (AS.partMatched(BSet))
 	    {
@@ -798,6 +824,7 @@ HeadRule::isDirectionValid(const Geometry::Vec3D& Pt,
     assuming PT is ont surfaces ExSN.
     \param Pt :: Point to test
     \param ExSN :: Excluded surfaces
+    \param surfNum :: singed directional surface 
    */
 {
   return (HeadNode) ? HeadNode->isDirectionValid(Pt,ExSN,surfNum) : 0;
@@ -1001,6 +1028,48 @@ HeadRule::getSurfaces() const
   return Out;
 }
 
+std::set<int>
+HeadRule::getSignedSurfaceNumbers() const
+  /*!
+    Calculate the surfaces that are within the object
+    \return Set of surface
+  */
+{
+  ELog::RegMethod RegA("HeadRule","getSignedSurfaceNumbers");
+
+  std::set<int> surfSet;
+  const SurfPoint* SP;
+  if (!HeadNode) return surfSet;
+
+  const Rule *headPtr,*leafA,*leafB;       
+  // Parent : left/right : Child
+
+  // Tree stack of rules
+  std::stack<const Rule*> TreeLine;   
+  TreeLine.push(HeadNode);
+  while (!TreeLine.empty())        // need to exit on active
+    {
+      headPtr=TreeLine.top();
+      TreeLine.pop();	  
+      if (headPtr->type())             // MUST BE INTERSECTION/Union
+	{
+	  leafA=headPtr->leaf(0);        // get leaves (two of) 
+	  leafB=headPtr->leaf(1);
+	  if (leafA)
+	    TreeLine.push(leafA);
+	  if (leafB)
+	    TreeLine.push(leafB);
+	}
+      else if (headPtr->type()==0)        // MIGHT BE SURF
+	{
+	  SP=dynamic_cast<const SurfPoint*>(headPtr);
+	  if (SP)
+	    surfSet.emplace(SP->getSignKeyN());
+	}
+    }
+  return surfSet;
+}
+
 std::vector<int>
 HeadRule::getSurfaceNumbers() const
   /*!
@@ -1050,7 +1119,7 @@ HeadRule::getPrimarySurface() const
     The master surface is when the surface is the ONLY surface
     at the master level. Throw if that is not the case
 
-    \return single surface number / 0 if not a single primary
+    \return single surface number / 0 if not a single primary [signed]
   */
 {
   const std::vector<int> TSet=getTopSurfaces();
@@ -1064,7 +1133,7 @@ std::vector<int>
 HeadRule::getTopSurfaces() const
   /*!
     Calculate the surfaces that are within the top level
-    \return Set of surface
+    \return Set of surface [signed]
   */
 {
   ELog::RegMethod RegA("HeadRule","getOppositeSurfaces");

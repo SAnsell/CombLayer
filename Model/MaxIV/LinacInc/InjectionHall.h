@@ -3,7 +3,7 @@
 
  * File: LinacInc/InjectionHall.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2022 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@ class Simulation;
 
 namespace tdcSystem
 {
+  class SoilRoof;
 
 /*!
   \class InjectionHall
@@ -190,8 +191,10 @@ class InjectionHall :
   int floorMat;                 ///< Floor material
   int soilMat;                  ///< Earth material
 
+  std::shared_ptr<SoilRoof> soilBerm;            ///< Soil berm
 
-  void createFloor(Simulation&);
+  void createBerm(Simulation&);
+
   void layerProcess(Simulation&,const std::string&,
                     const int,const int,const size_t);
 
