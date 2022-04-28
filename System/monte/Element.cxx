@@ -373,7 +373,7 @@ Element::populateIso()
     17, 17, 15, 12, 5, 
     5, 2, 8, 6, 11, 
     11, 13, 9, 13, 9, 
-    9, 7, 6, 6, 5 }; 
+    9, 7, 6, 6};
   
   const size_t IsoAM[]={
     1, 2, 3,                                     // Hydrogen   
@@ -704,9 +704,9 @@ Element::populateIso()
     0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 
     0.000000 }; 
 
-  Isotopes.resize(100);
+  Isotopes.resize(99);
   size_t cnt(0);
-  for(size_t i=0;i<100;i++)
+  for(size_t i=0;i<99;i++)
     {
       Abundance A(i+1);
       for(size_t j=0;j<NIso[i];j++)
