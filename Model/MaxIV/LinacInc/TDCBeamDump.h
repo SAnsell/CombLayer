@@ -88,7 +88,6 @@ class TDCBeamDump : public attachSystem::ContainedComp,
   TDCBeamDump& operator=(const TDCBeamDump&);
   virtual ~TDCBeamDump();
 
-
   using attachSystem::FixedComp::createAll;
 
   void createAll(Simulation&,
