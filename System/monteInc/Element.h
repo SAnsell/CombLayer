@@ -73,7 +73,7 @@ class Element
   std::map<std::string,size_t> Nmap;   ///< Map of names to Z
   std::vector<std::string> Sym;        ///< Vector of symbols
   std::vector<double> KEdge;           ///< Vector of k-Edge [keV]
-  std::vector<Abundance> Isotopes;     ///< Vector of Isotopes and abunances
+  std::vector<Abundance> Isotopes;     ///< Vector of Isotopes and abundances
 
   void populate();     
   void populateEdge(); 
