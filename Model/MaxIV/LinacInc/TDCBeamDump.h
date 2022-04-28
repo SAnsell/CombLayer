@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/LinacInc/TDCBeamDump.h
  *
- * Copyright (c) 2004-2021 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,13 +60,15 @@ class TDCBeamDump : public attachSystem::ContainedComp,
   double skinBackThick;         ///< Skin thickness at the back
   double frontPlateThick;       ///< Front plate thickness
   double carbonThick;           ///< Carbon plate thickness (to contain evaporated Lead)
+  double topPlateThick;         ///< Extra plate on top to stop gamma shine
 
-  int coreMat;                   ///< Core material
+  int coreMat;                  ///< Core material
   int bulkMat;                  ///< Bulk material
   int skinMat;                  ///< Skin material
   int skinLeftMat;              ///< Left side skin material
   int skinRightMat;             ///< Right side skin material
   int frontPlateMat;            ///< Front plate material (to reduce activation dose rate)
+  int topPlateMat;              ///< Extra plate material (
   int carbonMat;                ///< Carbon plate material
 
   const attachSystem::FixedComp* mainFC;
@@ -86,8 +88,6 @@ class TDCBeamDump : public attachSystem::ContainedComp,
   TDCBeamDump& operator=(const TDCBeamDump&);
   virtual ~TDCBeamDump();
 
-  void setMainAxis(const attachSystem::FixedComp&,
-		   const std::string&);
 
   using attachSystem::FixedComp::createAll;
 

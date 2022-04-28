@@ -3,7 +3,7 @@
 
  * File: Linac/TDC.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -561,6 +561,7 @@ TDC::createAll(Simulation& System,
 	  std::shared_ptr<attachSystem::BlockZone> buildZone=
 	    buildInnerZone(System,BL,bzName);
 
+
 	  segPtr->setCutSurf("Floor",injectionHall->getSurfRule("Floor"));
 	  segPtr->setCutSurf("BackWallFront",
 			     injectionHall->getSurfRule("BackWallFront"));
@@ -600,6 +601,7 @@ TDC::createAll(Simulation& System,
 	      segPtr->setNextZone(secondZone.get());
 	    }
 
+	  ELog::EM<<"Segment0 == "<<segPtr->getKeyName()<<ELog::endDiag;
 	  // Add side segments:
 	  for(const std::string& sideItem : sideSegNames)
 	    {
@@ -608,7 +610,7 @@ TDC::createAll(Simulation& System,
 	      if (sidePtr->isBuilt())
 		segPtr->registerSideSegment(sidePtr);
 	    }
-
+	  ELog::EM<<"SegmentA == "<<segPtr->getKeyName()<<ELog::endDiag;
 	  if (BL=="Segment48")   // SPECIAL CHANGE OF FRONT
 	    {
 	      SegTYPE::const_iterator ci=SegMap.find("Segment47");
@@ -618,19 +620,21 @@ TDC::createAll(Simulation& System,
 		  buildZone->setFront(seg47Ptr->getFullRule(2));
 		}
 	    }
-
+	  ELog::EM<<"SegmentB == "<<segPtr->getKeyName()<<ELog::endDiag;
 	  //	  segPtr->setInnerZone(buildZone.get());
 	  segPtr->removeSpaceFillers(System);
-
+	  ELog::EM<<"SegmentC == "<<segPtr->getKeyName()<<ELog::endDiag;
+	  
 	  segPtr->createAll
 	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
+	  ELog::EM<<"SegmentD == "<<segPtr->getKeyName()<<ELog::endDiag;
 	  segPtr->insertPrevSegment(System,prevSegPtr);
 	  segPtr->createBeamLink(System.getDataBase());
 	  if (!noCheck)
 	    segPtr->totalPathCheck(System.getDataBase(),0.1);
 	  if (pointCheck)
 	    segPtr->writePoints();
-
+	  ELog::EM<<"Segment == "<<segPtr->getKeyName()<<ELog::endDiag;
 	  if (BL=="Segment47")   // SPECIAL REMOVAL
 	    {
 	      SegTYPE::const_iterator ci=SegMap.find("Segment45");
@@ -652,6 +656,7 @@ TDC::createAll(Simulation& System,
 	    }
 	}
     }
+  ELog::EM<<"ADSFASFSDAF "<<ELog::endDiag;
   reconstructInjectionHall(System);
 
 

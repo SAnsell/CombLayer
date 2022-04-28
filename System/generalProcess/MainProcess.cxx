@@ -375,13 +375,11 @@ createSimulation(inputParam& IParam,
   // Get a copy of the command used to run the program
   std::stringstream cmdLine;
 
-  const std::string worldMat=
-    IParam.getDefValue<std::string>("Void","outerVoidMat");
-  
   copy(Names.begin(),Names.end(),
        std::ostream_iterator<std::string>(cmdLine," "));
   Oname=InputControl::getFileName(Names);
 
+ 
   if (Oname[0]=='-')
     {
       IParam.writeDescription(ELog::EM.Estream());
@@ -394,6 +392,10 @@ createSimulation(inputParam& IParam,
 
 
   IParam.processMainInput(Names);
+
+  const std::string worldMat=
+    IParam.getDefValue<std::string>("Void","outerVoidMat");
+  ELog::EM<<"Outer == "<<worldMat<<ELog::endDiag;
 
   Simulation* SimPtr;
   if (IParam.flag("PHITS"))

@@ -3,7 +3,7 @@
 
  * File: Linac/Segment27.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2022 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -241,6 +241,7 @@ Segment27::buildObjects(Simulation& System)
       bellowCA->setFront(joinItems[2].display());
     }
 
+  
   bellowAA->createAll(System,*this,0);
   bellowBA->createAll(System,*this,0);
   bellowCA->createAll(System,*this,0);
@@ -303,13 +304,10 @@ Segment27::buildObjects(Simulation& System)
     (System,*IZTop,*yagUnitA,"back",*bellowAC);
   constructSystem::constructUnit
     (System,*IZFlat,*yagUnitB,"back",*bellowBC);
-
   beamStopC->setCutSurf("base",ExternalCut::getRule("Floor"));
-  beamStopC->setMainAxis(*IHall, 0);
+
   beamStopC->createAll(System,*yagUnitC,"back");
-
   const int outerCell = IZLower->createUnit(System,beamStopC->getKey("Main"),2);
-
   // for segment28:
   ExternalCut::setCutSurf("BeamStopZone",beamStopC->getOuterSurf());
 
@@ -406,7 +404,9 @@ Segment27::createAll(Simulation& System,
   FixedRotate::populate(System.getDataBase());
 
   createUnitVector(FC,sideIndex);
+
   buildObjects(System);
+
   buildFrontSpacer(System);
   createLinks();
   return;
