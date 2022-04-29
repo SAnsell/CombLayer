@@ -364,7 +364,7 @@ InjectionHall::createSurfaces()
 
   ModelSupport::buildPlane(SMap,buildIndex+1011,MidPt,Y);
   ModelSupport::buildPlane(SMap,buildIndex+1003,MidPt-X*(midTThickX/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+1004,MidPt+X*(midTThickX/2.0),X);
+  SurfMap::makePlane("FKGLeft",SMap,buildIndex+1004,MidPt+X*(midTThickX/2.0),X);
 
   const Geometry::Quaternion QRMid=
     Geometry::Quaternion::calcQRotDeg(midTAngle,Z);
@@ -1390,16 +1390,13 @@ InjectionHall::createLinks()
   FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+7403));
   FixedComp::nameSideIndex(7,"BTGSide");
 
-
   FixedComp::setConnect(8,getLinkPt("BTGSide")
 			-X*(btgThick)
 			+Z*(btgHeight-floorDepth+roofHeight)/2.0
 			,X);
-  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+7913));
-  FixedComp::nameSideIndex(8, "BTGTopMiddleSide");
+  FixedComp::setNamedLinkSurf(8, "BTGTopMiddleSide", SurfMap::getSignedSurf("FKGLeft"));
 
-
-  // Get Back wall of the SPF line
+  // Back shielding wall and the FemtoMAX room
   const Geometry::Vec3D backWallPt(Origin+Y*(backWallYStep+backWallThick));
   HeadRule sideA=SurfMap::getSurfRule("FemtoLeft");
   HeadRule sideB=SurfMap::getSurfRule("FemtoRight");
@@ -1411,6 +1408,9 @@ InjectionHall::createLinks()
   FixedComp::setConnect(9,MidPt,Y);
   FixedComp::setNamedLinkSurf(9,"FemtoMax",SurfMap::getSignedSurf("BackWallBack"));
 
+  // Back shielding wall and the BSP01 storage room
+  FixedComp::setConnect(10,getLinkPt("FemtoMax")+X*(femtoMAXWallOffset),Y);
+  FixedComp::setNamedLinkSurf(10, "BSP01", SurfMap::getSignedSurf("BackWallBack"));
 
   return;
 }
