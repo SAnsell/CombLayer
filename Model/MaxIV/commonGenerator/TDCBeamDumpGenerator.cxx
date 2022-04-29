@@ -59,7 +59,7 @@ TDCBeamDumpGenerator::TDCBeamDumpGenerator() :
   carbonThick(0.5),
   coreMat("Lead"),
   bulkMat("S235JR"),
-  skinMat("Poly"),
+  skinMat("BoratedPolyTDC"),
   frontPlateMat("S235JR"),
   carbonMat("Graphite")
   /*!
