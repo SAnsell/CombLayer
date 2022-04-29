@@ -369,11 +369,11 @@ LayerDivide3D::checkDivide() const
    */
 {
   ELog::RegMethod RegA("LayerDivide3D","checkDivide");
-  if (AWall.first*AWall.second==0)
+  if (AWall.first==0 || AWall.second==0)
     throw ColErr::EmptyValue<int>("Section A not set");
-  if (BWall.first*BWall.second==0)
+  if (BWall.first==0 || BWall.second==0)
     throw ColErr::EmptyValue<int>("Section B not set");
-  if (CWall.first*CWall.second==0)
+  if (CWall.first==0 || CWall.second==0)
     throw ColErr::EmptyValue<int>("Section C not set");
   return;
 }
