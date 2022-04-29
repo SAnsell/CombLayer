@@ -2155,7 +2155,6 @@ Segment27(FuncDataBase& Control,
   Control.addVariable(lKey+"BeamStopCYStep",3.0);
   Control.addVariable(lKey+"BeamStopCBulkThickBack",40.0+20.0);
   Control.addVariable(lKey+"BeamStopCPreCoreLength",65.0);
-  Control.addVariable(lKey+"BeamStopCSkinTopThick",9.0);
 
   return;
 }
