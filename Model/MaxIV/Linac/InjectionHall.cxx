@@ -755,12 +755,21 @@ InjectionHall::createObjects(Simulation& System)
 				"211 -31 223 -1003 5 -6 97M 117M 127M 137M 147M 157M 167M");
   makeCell("LongVoid",System,cellIndex++,voidMat,0.0,HR);
 
+  // Splitting the back wall in order to allow separate importances of
+  // the wall cells in the vicinity of the SPF hall access maze
+  // backWallNLayers will divide only the cells away from the maze
   HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
-				"21 -22 7003 -1003 5 -6");
+				"21 -22 7003 -223 5 -6");
+  makeCell("BackWallConcreteMaze",System,cellIndex++,backWallMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+				"21 -22 223 -1003 5 -6");
   makeCell("BackWallConcrete",System,cellIndex++,backWallMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
-				"31 -21 7003 -1003 5 -6");
+				"31 -21 7003 -223 5 -6");
+  makeCell("BackWallIronMaze",System,cellIndex++,wallIronMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+				"31 -21 223 -1003 5 -6");
   makeCell("BackWallIron",System,cellIndex++,wallIronMat,0.0,HR);
 
   // SPF hallway
