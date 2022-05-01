@@ -1330,14 +1330,14 @@ InjectionHall::createObjects(Simulation& System)
   	       SMap.realSurf(buildIndex+2111),
   	       -SMap.realSurf(buildIndex+111),
   	       btgNLayers);
-  layerProcess(System,"ParkingExitWall",
-  	       SMap.realSurf(buildIndex+7102),
-  	       -SMap.realSurf(buildIndex+7201),
-  	       btgNLayers);
-  layerProcess(System,"SPFEmergencyExitDoorWall",
-  	       -SMap.realSurf(buildIndex+223),
-  	       SMap.realSurf(buildIndex+233),
-  	       btgNLayers);
+  // layerProcess(System,"ParkingExitWall",
+  // 	       SMap.realSurf(buildIndex+7102),
+  // 	       -SMap.realSurf(buildIndex+7201),
+  // 	       btgNLayers);
+  // layerProcess(System,"SPFEmergencyExitDoorWall",
+  // 	       -SMap.realSurf(buildIndex+223),
+  // 	       SMap.realSurf(buildIndex+233),
+  // 	       btgNLayers);
 
   // IH Roof
   layerProcess(System,"RoofPreBeamDump",
