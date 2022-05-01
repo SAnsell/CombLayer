@@ -1404,7 +1404,7 @@ InjectionHall::createLinks()
   sideB.populateSurf();
   const Geometry::Vec3D MidPt=
     (sideA.trackPoint(backWallPt,X)+
-     sideB.trackPoint(backWallPt,X))/2.0;
+     sideB.trackPoint(backWallPt,X))/2.0 - X*70.0;
   FixedComp::setConnect(9,MidPt,Y);
   FixedComp::setNamedLinkSurf(9,"FemtoMAX",SurfMap::getSignedSurf("BackWallBack"));
 
