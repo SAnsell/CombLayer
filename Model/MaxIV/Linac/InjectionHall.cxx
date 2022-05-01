@@ -1406,10 +1406,10 @@ InjectionHall::createLinks()
     (sideA.trackPoint(backWallPt,X)+
      sideB.trackPoint(backWallPt,X))/2.0;
   FixedComp::setConnect(9,MidPt,Y);
-  FixedComp::setNamedLinkSurf(9,"FemtoMax",SurfMap::getSignedSurf("BackWallBack"));
+  FixedComp::setNamedLinkSurf(9,"FemtoMAX",SurfMap::getSignedSurf("BackWallBack"));
 
   // Back shielding wall and the BSP01 storage room
-  FixedComp::setConnect(10,getLinkPt("FemtoMax")+X*(femtoMAXWallOffset),Y);
+  FixedComp::setConnect(10,getLinkPt("FemtoMAX")+X*(femtoMAXWallOffset),Y);
   FixedComp::setNamedLinkSurf(10, "BSP01", SurfMap::getSignedSurf("BackWallBack"));
 
   return;
@@ -1543,7 +1543,7 @@ InjectionHall::createBerm(Simulation& System)
   soilBerm->setCutSurf("Left",SurfMap::getSurfRules("OuterLeft"));
   soilBerm->setCutSurf("Right",SurfMap::getSurfRules("#OuterRight"));
 
-  soilBerm->createAll(System,*this,"FemtoMax");
+  soilBerm->createAll(System,*this,"FemtoMAX");
   soilBerm->insertInCell(System,this->getInsertCells());
   return;
 }
