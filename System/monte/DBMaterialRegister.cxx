@@ -345,9 +345,11 @@ DBMaterial::initMaterial()
 
   // Material #52: 5% borated poly
   // Total atom density 0.1154 atom/barn-cm
+  // See also: BoratedPolyTDC (m154)
   MObj.setMaterial(52,"B-Poly","1001.70c  0.0752 6000.70c "
 		   "0.0376 5010.70c  0.00051 5011.70c  0.002053",
 		   "poly.01t",MLib);
+  MObj.setMXitem(6000, 70, 'c', "h", "06012");
   setMaterial(MObj);
 
   // Material #53: Lithium
@@ -1731,6 +1733,22 @@ DBMaterial::initMaterial()
 		   " 27059.70c 0.000153 ","fe56.12t",MLib);
   MObj.setMXitem(6000, 70, 'c', "h", "06012");
   MObj.setDensity(-7.85);
+  setMaterial(MObj);
+
+  // Borated polyethyelene used at the MAX IV TDC beam line
+  // 5% mass of Boron (5% wt B as B4C in Poly)
+  // Density: 0.97 g/cm3
+  // Reference: MatMCNP:BoratedPolyTDC.inp
+  // See also: B-Poly (m52)
+  MObj.setMaterial(154,"BoratedPolyTDC",
+		   " 1001.70c 0.643500 "
+		   " 1002.70c 0.000074 "
+		   " 5010.70c 0.004512 "
+		   " 5011.70c 0.018161 "
+		   " 6000.70c 0.333753 ",
+		   "poly.01t",MLib);
+  MObj.setMXitem(6000, 70, 'c', "h", "06012");
+  MObj.setDensity(-0.97);
   setMaterial(MObj);
 
   return;

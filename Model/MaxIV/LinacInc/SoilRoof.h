@@ -4,6 +4,7 @@
  * File: LinacInc/SoilRoof.h
  *
  * Copyright (c) 2004-2022 by Stuart Ansell 
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,13 +31,13 @@ namespace tdcSystem
 /*!
   \class SoilRoof
   \version 1.0
-  \author S. Ansell 
+  \author S. Ansell
   \date March 2022
   \brief Extra soil brem roof for the SPF hall.
-  
-  This class builds the soil roof for the SPF. It needs the 
+
+  This class builds the soil roof for the SPF. It needs the
   top of the concrete roof and the front/back of the SPF area for
-  the brem.
+  the brem, provided as ExternalCut.
 */
 
 class SoilRoof :
@@ -48,15 +49,16 @@ class SoilRoof :
 {
  private:
 
-  double height;             ///< full height in middel
+  double height;                 ///< full height in middel
 
   double frontLength;            ///< Optional front cut length
   double ringRadius;             ///< Synchrotron radius (outer building)
   Geometry::Vec3D ringCentre;    ///< Synchrotron centre
-  
+
   double unitGap;                ///< size of gap to allow full surf integration
 
   int soilMat;                   ///< Earth material
+  size_t soilNLayers;            ///< Number of imp layers in the soil
 
   void layerProcess(Simulation&,const std::string&,
                     const int,const int,const size_t);
@@ -64,7 +66,7 @@ class SoilRoof :
   void populate(const FuncDataBase&);
   virtual void createUnitVector(const attachSystem::FixedComp&,
 				const long int);
-    
+
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();

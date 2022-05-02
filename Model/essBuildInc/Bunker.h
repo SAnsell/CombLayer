@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/Bunker.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,7 +75,7 @@ class Bunker : public attachSystem::ContainedComp,
 
   /// Roof component
   std::shared_ptr<BunkerRoof> roofObj;              
-  /// Roof component
+  /// main wall component
   std::shared_ptr<BunkerWall> wallObj;              
 
   // SIDES:

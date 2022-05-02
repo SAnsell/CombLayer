@@ -87,7 +87,6 @@
 #include "PrismaChamberGenerator.h"
 #include "IonPTubeGenerator.h"
 #include "GaugeGenerator.h"
-#include "LBeamStopGenerator.h"
 #include "LocalShieldingGenerator.h"
 #include "SPFCameraShieldGenerator.h"
 
@@ -2157,7 +2156,6 @@ Segment27(FuncDataBase& Control,
   Control.addVariable(lKey+"BeamStopCYStep",3.0);
   Control.addVariable(lKey+"BeamStopCBulkThickBack",40.0+20.0);
   Control.addVariable(lKey+"BeamStopCPreCoreLength",65.0);
-  Control.addVariable(lKey+"BeamStopCSkinTopThick",9.0);
 
   return;
 }
@@ -3455,7 +3453,8 @@ wallVariables(FuncDataBase& Control,
     }
 
   // Ducts near the floor
-  // They are not in the drawings, but should be approx. 2 meters to the right side after
+  // They are not in the drawings, but should be approx.
+  // 2 meters to the right side after
   // D4 (last duct in the previous serie)
   // Water pipes go through them, but to be conservative we leave them empty
   // [email from AR 2021-01-19]
@@ -3463,7 +3462,7 @@ wallVariables(FuncDataBase& Control,
   for (size_t i=0; i<=4; ++i)
     {
       const std::string name = wallKey+"MidTDuct" + std::to_string(i+6);
-      Control.addVariable(name+"Radius",5.0); // dummy      
+      Control.addVariable(name+"Radius",5.0); // dummy
       Control.addVariable(name+"YStep",floorDuctY+35*static_cast<double>(i));
       Control.addVariable(name+"ZStep",-115); // dummy
     }
@@ -3627,8 +3626,7 @@ wallVariables(FuncDataBase& Control,
 		      Geometry::Vec3D(3400,-1100,0));
   Control.addVariable(wallKey+"SoilBermRingRadius",6000.0);
   Control.addVariable(wallKey+"SoilBermSoilMat","Earth");
-  
-  
+
   return;
 }
 

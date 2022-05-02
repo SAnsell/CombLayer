@@ -167,6 +167,7 @@ InjectionHall::populate(const FuncDataBase& Control)
   fkgRoofThick=Control.EvalVar<double>(keyName+"FKGRoofThick");
   fkgRoofYStep=Control.EvalVar<double>(keyName+"FKGRoofYStep");
   floorThick=Control.EvalVar<double>(keyName+"FloorThick");
+  roofNLayers=Control.EvalDefVar<size_t>(keyName+"RoofNLayers", 1);
 
   floorDepth=Control.EvalVar<double>(keyName+"FloorDepth");
   roofHeight=Control.EvalVar<double>(keyName+"RoofHeight");
@@ -363,7 +364,7 @@ InjectionHall::createSurfaces()
 
   ModelSupport::buildPlane(SMap,buildIndex+1011,MidPt,Y);
   ModelSupport::buildPlane(SMap,buildIndex+1003,MidPt-X*(midTThickX/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+1004,MidPt+X*(midTThickX/2.0),X);
+  SurfMap::makePlane("FKGLeft",SMap,buildIndex+1004,MidPt+X*(midTThickX/2.0),X);
 
   const Geometry::Quaternion QRMid=
     Geometry::Quaternion::calcQRotDeg(midTAngle,Z);
@@ -754,12 +755,21 @@ InjectionHall::createObjects(Simulation& System)
 				"211 -31 223 -1003 5 -6 97M 117M 127M 137M 147M 157M 167M");
   makeCell("LongVoid",System,cellIndex++,voidMat,0.0,HR);
 
+  // Splitting the back wall in order to allow separate importances of
+  // the wall cells in the vicinity of the SPF hall access maze
+  // backWallNLayers will divide only the cells away from the maze
   HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
-				"21 -22 7003 -1003 5 -6");
+				"21 -22 7003 -223 5 -6");
+  makeCell("BackWallConcreteMaze",System,cellIndex++,backWallMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+				"21 -22 223 -1003 5 -6");
   makeCell("BackWallConcrete",System,cellIndex++,backWallMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
-				"31 -21 7003 -1003 5 -6");
+				"31 -21 7003 -223 5 -6");
+  makeCell("BackWallIronMaze",System,cellIndex++,wallIronMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
+				"31 -21 223 -1003 5 -6");
   makeCell("BackWallIron",System,cellIndex++,wallIronMat,0.0,HR);
 
   // SPF hallway
@@ -1039,11 +1049,17 @@ InjectionHall::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -201 13 -14 6 -26");
   makeCell("Roof",System,cellIndex++,roofMat,0.0,HR);
 
+  // Roof segment in the trapezoid region
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -211 213 -14 6 -26");
-  makeCell("Roof",System,cellIndex++,roofMat,0.0,HR);
+  makeCell("RoofPreBeamDump",System,cellIndex++,roofMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"211 -2 233 -1004 6 -26");
-  makeCell("Roof",System,cellIndex++,roofMat,0.0,HR);
+  // Roof segment above the beam dumps
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"211 -22 233 -1004 6 -26");
+  makeCell("RoofBeamDump",System,cellIndex++,roofMat,0.0,HR);
+  // Roof segmenta after the beam dumps
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"22  -2 233 -1004 6 -26");
+  makeCell("RoofAfterBeamDump",System,cellIndex++,roofMat,0.0,HR);
+
 
   // FKGRoof: A2_40-2_G6-Y.pdf
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"211 -232 1004 -114 6 -16");
@@ -1315,14 +1331,24 @@ InjectionHall::createObjects(Simulation& System)
   	       SMap.realSurf(buildIndex+2111),
   	       -SMap.realSurf(buildIndex+111),
   	       btgNLayers);
-  layerProcess(System,"ParkingExitWall",
-  	       SMap.realSurf(buildIndex+7102),
-  	       -SMap.realSurf(buildIndex+7201),
-  	       btgNLayers);
-  layerProcess(System,"SPFEmergencyExitDoorWall",
-  	       -SMap.realSurf(buildIndex+223),
-  	       SMap.realSurf(buildIndex+233),
-  	       btgNLayers);
+  // layerProcess(System,"ParkingExitWall",
+  // 	       SMap.realSurf(buildIndex+7102),
+  // 	       -SMap.realSurf(buildIndex+7201),
+  // 	       btgNLayers);
+  // layerProcess(System,"SPFEmergencyExitDoorWall",
+  // 	       -SMap.realSurf(buildIndex+223),
+  // 	       SMap.realSurf(buildIndex+233),
+  // 	       btgNLayers);
+
+  // IH Roof
+  layerProcess(System,"RoofPreBeamDump",
+  	       SMap.realSurf(buildIndex+6),
+  	       -SMap.realSurf(buildIndex+26),
+  	       roofNLayers);
+  layerProcess(System,"RoofBeamDump",
+  	       SMap.realSurf(buildIndex+6),
+  	       -SMap.realSurf(buildIndex+26),
+  	       roofNLayers);
 
   return;
 }
@@ -1374,16 +1400,12 @@ InjectionHall::createLinks()
   FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+7403));
   FixedComp::nameSideIndex(7,"BTGSide");
 
-
   FixedComp::setConnect(8,getLinkPt("BTGSide")
 			-X*(btgThick)
 			+Z*(btgHeight-floorDepth+roofHeight)/2.0
 			,X);
-  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+7913));
-  FixedComp::nameSideIndex(8, "BTGTopMiddleSide");
-
-
-  // Get Back wall of the SPF line
+  FixedComp::setNamedLinkSurf(8, "BTGTopMiddleSide", SurfMap::getSignedSurf("FKGLeft"));
+  // Back shielding wall and the FemtoMAX room
   const Geometry::Vec3D backWallPt(Origin+Y*(backWallYStep+backWallThick));
   HeadRule sideA=SurfMap::getSurfRule("FemtoLeft");
   HeadRule sideB=SurfMap::getSurfRule("FemtoRight");
@@ -1391,10 +1413,13 @@ InjectionHall::createLinks()
   sideB.populateSurf();
   const Geometry::Vec3D MidPt=
     (sideA.trackPoint(backWallPt,X)+
-     sideB.trackPoint(backWallPt,X))/2.0;
+     sideB.trackPoint(backWallPt,X))/2.0 - X*70.0;
   FixedComp::setConnect(9,MidPt,Y);
-  FixedComp::setNamedLinkSurf(9,"FemtoMax",SurfMap::getSignedSurf("BackWallBack"));
+  FixedComp::setNamedLinkSurf(9,"FemtoMAX",SurfMap::getSignedSurf("BackWallBack"));
 
+  // Back shielding wall and the BSP01 storage room
+  FixedComp::setConnect(10,getLinkPt("FemtoMAX")+X*(femtoMAXWallOffset),Y);
+  FixedComp::setNamedLinkSurf(10, "BSP01", SurfMap::getSignedSurf("BackWallBack"));
 
   return;
 }
@@ -1520,14 +1545,14 @@ InjectionHall::createBerm(Simulation& System)
    */
 {
   ELog::RegMethod RegA("InjectionHall","createRoof");
-  
+
   soilBerm->setCutSurf("Roof",SurfMap::getSurfRules("OutRoof"));
   soilBerm->setCutSurf("Front",SurfMap::getSurfRules("Front"));
   soilBerm->setCutSurf("Back",SurfMap::getSurfRules("#Back"));
   soilBerm->setCutSurf("Left",SurfMap::getSurfRules("OuterLeft"));
   soilBerm->setCutSurf("Right",SurfMap::getSurfRules("#OuterRight"));
 
-  soilBerm->createAll(System,*this,"FemtoMax");
+  soilBerm->createAll(System,*this,"FemtoMAX");
   soilBerm->insertInCell(System,this->getInsertCells());
   return;
 }
@@ -1553,7 +1578,6 @@ InjectionHall::createAll(Simulation& System,
   createObjects(System);
   createBerm(System);
   insertObjects(System);
-
 
   return;
 }
