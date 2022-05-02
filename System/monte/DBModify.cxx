@@ -3,7 +3,7 @@
 
  * File:   monte/DBModify.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2022 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -129,7 +129,9 @@ cloneESSMaterial()
 
   ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
 
+  ELog::EM<<"DAFASFDSA "<<ELog::endDiag;
   DB.cloneMaterial("Tungsten_15.1g","Tungsten151");
+  ELog::EM<<"DAFASFDSA "<<ELog::endDiag;
   DB.cloneMaterial("Tungsten_15.1g","Tungsten_15.3g");
   DB.cloneMaterial("Iron_10H2O","Iron10H2O");
   DB.cloneMaterial("Void","Helium");

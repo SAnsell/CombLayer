@@ -74,7 +74,8 @@ Material::Material() :
   */
 {} 
 
-Material::Material(const int mcnpNum,const std::string N,
+Material::Material(const int mcnpNum,
+		   const std::string N,
 		   const double D) :
   matID(mcnpNum),Name(std::move(N)),atomDensity(D)
   /*!

@@ -3,7 +3,7 @@
  
  * File:   monteInc/DBMaterial.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,14 +41,16 @@ namespace ModelSupport
 class DBMaterial
 {  
  private:
-  /// String convert type
+  /// String to id-number
   typedef std::map<std::string,int> SCTYPE;
-  /// Storage type for Materials
+  /// Storage type for Materials (based on id number)
   typedef std::map<int,MonteCarlo::Material> MTYPE;
 
-  /// Storage type for Neut Materials
+  /// Storage type for Neutron Materials 
   typedef std::map<int,scatterSystem::neutMaterial*> NTYPE;
 
+  int nextID;        ///< Next id number
+  
   SCTYPE IndexMap;   ///< Map of indexes
   MTYPE  MStore;     ///< Store of materials
   NTYPE  NStore;     ///< Store of neutron materials [if exist]
@@ -71,6 +73,8 @@ class DBMaterial
   int createNewDensity(const std::string&,const std::string&,
 		       const double);
 
+  int getNextID();
+  
  public:
   
   static DBMaterial& Instance();
@@ -96,7 +100,10 @@ class DBMaterial
   void setNeutMaterial(const int,const scatterSystem::neutMaterial&);
   void setNeutMaterial(const int,const scatterSystem::neutMaterial*);
 
-
+  MonteCarlo::Material&
+  createMaterial(const std::string&,const std::string&,
+		 const std::string&,const std::string&);
+  
   bool createMaterial(const std::string&);
   int processMaterial(const std::string&);
 

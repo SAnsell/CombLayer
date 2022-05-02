@@ -84,7 +84,8 @@ main(int argc,char* argv[])
       InputControl::mainVector(argc,argv,Names);
       mainSystem::inputParam IParam;
       createXrayInputs(IParam);
-      
+
+      mainSystem::setMaterialsDataBase(IParam);
       SimPtr=createSimulation(IParam,Names,Oname);
       if (!SimPtr) return -1;
 
@@ -99,7 +100,7 @@ main(int argc,char* argv[])
 	(SimPtr->getDataBase(),magField,beamlines);
 
       InputModifications(SimPtr,IParam,Names);
-      mainSystem::setMaterialsDataBase(IParam);
+
 
       xraySystem::makeMaxIV BObj;
       BObj.build(*SimPtr,IParam);

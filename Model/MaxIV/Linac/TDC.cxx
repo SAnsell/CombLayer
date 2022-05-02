@@ -656,7 +656,6 @@ TDC::createAll(Simulation& System,
 	    }
 	}
     }
-  ELog::EM<<"ADSFASFSDAF "<<ELog::endDiag;
   reconstructInjectionHall(System);
 
 

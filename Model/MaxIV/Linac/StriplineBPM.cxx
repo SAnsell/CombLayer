@@ -3,7 +3,7 @@
 
  * File:   Linac/StriplineBPM.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
@@ -66,7 +66,7 @@ namespace tdcSystem
 {
 
 StriplineBPM::StriplineBPM(const std::string& Key) :
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::FrontBackCut(),
   attachSystem::CellMap(),
@@ -93,7 +93,7 @@ StriplineBPM::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("StriplineBPM","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   radius=Control.EvalVar<double>(keyName+"Radius");
   length=Control.EvalVar<double>(keyName+"Length");
@@ -152,8 +152,7 @@ StriplineBPM::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+outerThick);
 
-  Geometry::Cylinder* Cptr=
-    ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeARadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeARadius);
   
   ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,flangeBRadius);
 
@@ -215,88 +214,88 @@ StriplineBPM::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("StriplineBPM","createObjects");
 
-  std::string Out;
-
-  const std::string frontStr=getRuleStr("front");
-  const std::string backStr=getRuleStr("back");
+  HeadRule HR;
+  
+  const HeadRule frontHR=getRule("front");
+  const HeadRule backHR=getRule("back");
 
   // inner void
-  Out=ModelSupport::getComposite(SMap,buildIndex," -307 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-307");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
   // front void
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 307 -401 ");
-  makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 307 -401");
+  makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
 
   // main walll
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -202 7 -17 ");
-  makeCell("Outer",System,cellIndex++,outerMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -202 7 -17");
+  makeCell("Outer",System,cellIndex++,outerMat,0.0,HR);
 
   // front flange
-  Out=ModelSupport::getComposite(SMap,buildIndex," -101 7 -107 ");
-  makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 7 -107");
+  makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,HR*frontHR);
 
   // back flange
-  Out=ModelSupport::getComposite(SMap,buildIndex," 202 7 -207 ");
-  makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"202 7 -207");
+  makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,HR*backHR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 17 401 -402 -411 -412 -413 -414 -415 -416 -417 -418 ");
-  makeCell("ElectronPlate",System,cellIndex++,striplineMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"17 401 -402 -411 -412 -413 -414 -415 -416 -417 -418");
+  makeCell("ElectronPlate",System,cellIndex++,striplineMat,0.0,HR);
 
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 101 17 -401 -411 -412 -413 -414 -415 -416 -417 -418 ");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"101 17 -401 -411 -412 -413 -414 -415 -416 -417 -418");
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -202 17 402 -411 -412 -413 -414 -415 -416 -417 -418 ");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-202 17 402 -411 -412 -413 -414 -415 -416 -417 -418");
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);
 
   if (striplineRadius>flangeARadius)
     {
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex," -101 107 -411 -412 -413 -414 -415 -416 -417 -418 ");
-      makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"-101 107 -411 -412 -413 -414 -415 -416 -417 -418");
+      makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
     }
   else
     {
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex," 101 -202 -107 (411:412:413:414:415:416:417:418) ");
-      makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"101 -202 -107 (411:412:413:414:415:416:417:418)");
+      makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
     }
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 202 207 -411 -412 -413 -414 -415 -416 -417 -418 ");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"202 207 -411 -412 -413 -414 -415 -416 -417 -418");
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR*backHR);
 
   int BI(0);
-  const std::string IOut=
-    ModelSupport::getComposite(SMap,buildIndex," 401 -302  307 -317 ");
+  const HeadRule IHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"401 -302  307 -317");
   for(size_t i=0;i<4;i++)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex+BI," 351 -352");
-      makeCell("Stripline",System,cellIndex++,striplineMat,0.0,IOut+Out);
-      Out=ModelSupport::getRangeComposite
-	(SMap,351,358,BI,buildIndex," 352R -353R");
-      makeCell("StriplineGap",System,cellIndex++,voidMat,0.0,IOut+Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex+BI,"351 -352");
+      makeCell("Stripline",System,cellIndex++,striplineMat,0.0,IHR+HR);
+      HR=ModelSupport::getRangeHeadRule
+	(SMap,351,358,BI,buildIndex,"352R -353R");
+      makeCell("StriplineGap",System,cellIndex++,voidMat,0.0,IHR+HR);
       BI+=2;
     }
   // edge electrod void
-  Out=ModelSupport::getComposite(SMap,buildIndex," 401 -302 317 -7");
-  makeCell("EdgeVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"401 -302 317 -7");
+  makeCell("EdgeVoid",System,cellIndex++,voidMat,0.0,HR);
 
   // edge electrod void
-  Out=ModelSupport::getComposite(SMap,buildIndex," 302  307 -7");
-  makeCell("StriplineEnd",System,cellIndex++,striplineMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"302  307 -7");
+  makeCell("StriplineEnd",System,cellIndex++,striplineMat,0.0,HR*backHR);
 
   if (striplineRadius>flangeARadius)
-    Out=ModelSupport::getComposite
-      (SMap,buildIndex," -411 -412 -413 -414 -415 -416 -417 -418 ");
+    HR=ModelSupport::getHeadRule
+      (SMap,buildIndex,"-411 -412 -413 -414 -415 -416 -417 -418");
   else
-    Out=ModelSupport::getComposite
-      (SMap,buildIndex," -107 ");
-  addOuterSurf(Out+frontStr+backStr);
+    HR=ModelSupport::getHeadRule
+      (SMap,buildIndex,"-107");
+  addOuterSurf(HR*frontHR*backHR);
 
   return;
 }

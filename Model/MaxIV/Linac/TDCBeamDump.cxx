@@ -352,12 +352,13 @@ TDCBeamDump::createObjects(Simulation& System)
   if (skinRightThick>Geometry::zeroTol)
     {
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -32 4 -14 5 -6 ");
-      makeCell("SkinRight",System,cellIndex++,skinRightMat,0.0,HR*baseHR*frontHR);
+      makeCell("SkinRight",System,cellIndex++,skinRightMat,0.0,
+	       HR*baseHR*frontHR);
     }
 
-  HR=ModelSupport::getAltHeadRule(SMap,buildIndex,"11 -32 13 -14 15 -26A -16B -6C");
+  HR=ModelSupport::getAltHeadRule(SMap,buildIndex,
+				  "11 -32 13 -14 15 -26A -16B -6C");
   addOuterSurf(HR);
-
   return;
 }
 

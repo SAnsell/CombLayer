@@ -329,7 +329,6 @@ Segment27::buildFrontSpacer(Simulation& System)
 
   if (!prevSegPtr || !prevSegPtr->isBuilt())
     {
-
       HeadRule volume=buildZone->getFront();
       volume*=IZTop->getFront().complement();
       volume*=IZTop->getSurround();
@@ -388,8 +387,8 @@ Segment27::createLinks()
 
 void
 Segment27::createAll(Simulation& System,
-			 const attachSystem::FixedComp& FC,
-			 const long int sideIndex)
+		     const attachSystem::FixedComp& FC,
+		     const long int sideIndex)
   /*!
     Carry out the full build
     \param System :: Simulation system
@@ -399,14 +398,12 @@ Segment27::createAll(Simulation& System,
 {
   // For output stream
   ELog::RegMethod RControl("Segment27","build");
-  IHall=dynamic_cast<const InjectionHall*>(&FC);
 
   FixedRotate::populate(System.getDataBase());
 
   createUnitVector(FC,sideIndex);
 
   buildObjects(System);
-
   buildFrontSpacer(System);
   createLinks();
   return;
