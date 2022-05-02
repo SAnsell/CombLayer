@@ -343,7 +343,21 @@ Segment27::buildFrontSpacer(Simulation& System)
       volume*=IZLower->getSurround();
       makeCell("FrontSpace",System,cellIndex++,0,0.0,volume);
     }
-    return;
+  return;
+}
+
+void
+Segment27::buildSpaceFiller(Simulation& System)
+  /*!
+    Build the back spacer if needed
+   */
+{
+  ELog::RegMethod RegA("Segment27","buildSpaceFiller");
+  /*
+  HeadRule volume=buildZone->getFront();
+  ELog::EM<<"Vol == "<<volume<<ELog::endDiag;
+  */
+  return;
 }
 
 void
@@ -405,6 +419,7 @@ Segment27::createAll(Simulation& System,
 
   buildObjects(System);
   buildFrontSpacer(System);
+  buildSpaceFiller(System);
   createLinks();
   return;
 }

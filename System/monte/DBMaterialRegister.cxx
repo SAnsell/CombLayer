@@ -270,13 +270,11 @@ DBMaterial::initMaterial()
   createMaterial("B4C","5010.70c 0.021741 "
 		 "5011.70c 0.087512 6000.70c 0.027313","",MLib);
 
-  ELog::EM<<"Called setMaterial A"<<ELog::endCrit;
 
   // Material #48 Poly:
   Mptr= &createMaterial("Poly","6000.70c 0.0333333 "
 			"1001.70c 0.0666666666","poly.01t",MLib);
   Mptr->setDensity(-0.91);
-  ELog::EM<<"Called setMaterial BX"<<ELog::endCrit;
   
   // Material #49 Regular concrete
   // Regular concrete at 2.339 g/cc [supposedly]
@@ -318,7 +316,6 @@ DBMaterial::initMaterial()
   Mptr->setMXitem(6000, 70, 'c', "h", "06012");
 
 
-  ELog::EM<<"Called setMaterial B"<<ELog::endCrit;
 
   // Material #53: Lithium
   // Total atom density 0.0219560 - 1.270 g/cc
@@ -916,7 +913,6 @@ DBMaterial::initMaterial()
   // density at 300 K according to the Material handbook.
   // YJL says at 600K we should use the same density (??)
   Mptr->setDensity(-19.298);
-  ELog::EM<<"Called setMaterial"<<ELog::endCrit;
 
   // # 125 Zircalloy-2 -- 6.56g/cc
   // NEEDS 0.1% Cr / 1.4% Sn / 0.1% Fe / 0.12% O / 0.05% Ni

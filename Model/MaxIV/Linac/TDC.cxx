@@ -582,6 +582,7 @@ TDC::createAll(Simulation& System,
 		buildInnerZone(System,"Segment10B","spfAngle");
 	      segPtr->setNextZone(secondZone.get());
 	    }
+	  
 	  if (BL=="Segment30")
 	    sideSegNames={"Segment13","Segment14","Segment15"};
 
@@ -601,7 +602,6 @@ TDC::createAll(Simulation& System,
 	      segPtr->setNextZone(secondZone.get());
 	    }
 
-	  ELog::EM<<"Segment0 == "<<segPtr->getKeyName()<<ELog::endDiag;
 	  // Add side segments:
 	  for(const std::string& sideItem : sideSegNames)
 	    {
@@ -610,7 +610,7 @@ TDC::createAll(Simulation& System,
 	      if (sidePtr->isBuilt())
 		segPtr->registerSideSegment(sidePtr);
 	    }
-	  ELog::EM<<"SegmentA == "<<segPtr->getKeyName()<<ELog::endDiag;
+
 	  if (BL=="Segment48")   // SPECIAL CHANGE OF FRONT
 	    {
 	      SegTYPE::const_iterator ci=SegMap.find("Segment47");
@@ -620,21 +620,19 @@ TDC::createAll(Simulation& System,
 		  buildZone->setFront(seg47Ptr->getFullRule(2));
 		}
 	    }
-	  ELog::EM<<"SegmentB == "<<segPtr->getKeyName()<<ELog::endDiag;
 	  //	  segPtr->setInnerZone(buildZone.get());
 	  segPtr->removeSpaceFillers(System);
-	  ELog::EM<<"SegmentC == "<<segPtr->getKeyName()<<ELog::endDiag;
 	  
 	  segPtr->createAll
 	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
-	  ELog::EM<<"SegmentD == "<<segPtr->getKeyName()<<ELog::endDiag;
+
 	  segPtr->insertPrevSegment(System,prevSegPtr);
 	  segPtr->createBeamLink(System.getDataBase());
 	  if (!noCheck)
 	    segPtr->totalPathCheck(System.getDataBase(),0.1);
 	  if (pointCheck)
 	    segPtr->writePoints();
-	  ELog::EM<<"Segment == "<<segPtr->getKeyName()<<ELog::endDiag;
+	  
 	  if (BL=="Segment47")   // SPECIAL REMOVAL
 	    {
 	      SegTYPE::const_iterator ci=SegMap.find("Segment45");
