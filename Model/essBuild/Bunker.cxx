@@ -80,7 +80,8 @@ Bunker::Bunker(const std::string& Key)  :
   attachSystem::CellMap(),attachSystem::SurfMap(),
   leftWallFlag(1),rightWallFlag(1),
   roofObj(new BunkerRoof(Key)),
-  wallObj(new BunkerWall(Key))
+  wallObj(new BunkerWall(Key)),
+  revFlag(false)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
