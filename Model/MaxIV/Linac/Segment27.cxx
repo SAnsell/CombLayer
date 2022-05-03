@@ -349,14 +349,23 @@ Segment27::buildFrontSpacer(Simulation& System)
 void
 Segment27::buildSpaceFiller(Simulation& System)
   /*!
-    Build the back spacer if needed
+    Build the back spacer if needed. Note that 
+    cells marked as "SpceFiller" are removed if the
+    next segment (28) is built.
+    \param System :: Simulation to use
    */
 {
   ELog::RegMethod RegA("Segment27","buildSpaceFiller");
-  /*
-  HeadRule volume=buildZone->getFront();
-  ELog::EM<<"Vol == "<<volume<<ELog::endDiag;
-  */
+
+  HeadRule extraVol=buildZone->getBack().complement();
+  extraVol*=IZFlat->getBack()*IZFlat->getSurround();
+  extraVol*=beamStopC->getOuterSurf().complement();
+  makeCell("SpaceFiller",System,cellIndex++,0,0.0,extraVol);
+
+  extraVol=buildZone->getBack().complement();
+  extraVol*=IZTop->getBack()*IZTop->getSurround();
+  makeCell("SpaceFiller",System,cellIndex++,0,0.0,extraVol);
+
   return;
 }
 
@@ -419,8 +428,9 @@ Segment27::createAll(Simulation& System,
 
   buildObjects(System);
   buildFrontSpacer(System);
-  buildSpaceFiller(System);
   createLinks();
+    buildSpaceFiller(System);
+    
   return;
 }
 
