@@ -49,6 +49,7 @@ class TDCBeamDump : public attachSystem::ContainedComp,
   double bulkHeight;            ///< Bulk height
   double bulkDepth;             ///< Bulk depth
   double bulkThickBack;         ///< Bulk thickness behind the core
+  double innerCoreRadius;       ///< Inner Core radius
   double coreRadius;            ///< Core radius
   double coreLength;            ///< Core length
   double preCoreLength;         ///< Length of void before core
@@ -61,7 +62,9 @@ class TDCBeamDump : public attachSystem::ContainedComp,
   double frontPlateThick;       ///< Front plate thickness
   double carbonThick;           ///< Carbon plate thickness (to contain evaporated Lead)
   double topPlateThick;         ///< Extra plate on top to stop gamma shine
+  double extraTopPlateThick;    ///< Extra plate on top to stop gamma shine
 
+  int innerCoreMat;             ///< Inner Core material
   int coreMat;                  ///< Core material
   int bulkMat;                  ///< Bulk material
   int skinMat;                  ///< Skin material
@@ -69,6 +72,7 @@ class TDCBeamDump : public attachSystem::ContainedComp,
   int skinRightMat;             ///< Right side skin material
   int frontPlateMat;            ///< Front plate material (to reduce activation dose rate)
   int topPlateMat;              ///< Extra plate material (
+  int extraTopPlateMat;              ///< Extra plate material (
   int carbonMat;                ///< Carbon plate material
 
   const attachSystem::FixedComp* mainFC;

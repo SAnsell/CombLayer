@@ -92,7 +92,6 @@ Segment27::Segment27(const std::string& Key) :
   IZTop(new attachSystem::BlockZone(keyName+"IZTop")),
   IZFlat(new attachSystem::BlockZone(keyName+"IZFlat")),
   IZLower(new attachSystem::BlockZone(keyName+"IZLower")),
-  IHall(nullptr),
 
   bellowAA(new constructSystem::Bellows(keyName+"BellowAA")),
   bellowBA(new constructSystem::Bellows(keyName+"BellowBA")),

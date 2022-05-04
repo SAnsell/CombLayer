@@ -626,14 +626,14 @@ getAltComposite(const surfRegister& SMap,const int Offset,
 
   std::string OutUnit;
   int cellN;
-  size_t index(7);         // A,B,C
+  size_t index(15);         // A,B,C,D
   while(StrFunc::section(segment,OutUnit))
     {
       const size_t oL=OutUnit.length();
       if (oL>=2)
 	{
 	  const char Unit=OutUnit[oL-1];
-	  if (Unit=='A' || Unit=='B' || Unit=='C')
+	  if (Unit=='A' || Unit=='B' || Unit=='C' || Unit=='D')
 	    {
 	      OutUnit[oL-1]=' ';
 	      int Plus=Offset;
@@ -657,16 +657,17 @@ getAltComposite(const surfRegister& SMap,const int Offset,
 		  const int CN((cellN>0) ? cellN+Plus : cellN-Plus);
 		  if (!SMap.hasSurf(CN))
 		    {
-		      if (Unit=='A') index &= 3;  // 011
-		      if (Unit=='B') index &= 5;  // 101
-		      if (Unit=='C') index &= 6;  // 110
+		      if (Unit=='A') index &= 7;   // 0111
+		      if (Unit=='B') index &= 11;  // 1011
+		      if (Unit=='C') index &= 13;  // 1101
+		      if (Unit=='D') index &= 14;  // 1110
 		    }
 		}
 	    }
 	}
     }  
   // preserve either A,B,C,' '.
-  const char preserve=" CBBAAAA"[index];
+  const char preserve=" DCCBBBBAAAAAAAA"[index];
   while(StrFunc::section(segmentB,OutUnit))
     {
       const size_t oL=OutUnit.length();
@@ -675,7 +676,7 @@ getAltComposite(const surfRegister& SMap,const int Offset,
 	  const char OU=OutUnit[oL-1];
 	  if (preserve==OU)
 	    OutUnit[oL-1]=' ';
-	  else if (OU=='A' || OU=='B' || OU=='C' )
+	  else if (OU=='A' || OU=='B' || OU=='C' || OU=='D')
 	    OutUnit="";
 	    
 	  cx<<OutUnit<<" ";

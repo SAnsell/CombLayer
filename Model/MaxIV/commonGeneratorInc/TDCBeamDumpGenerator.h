@@ -45,6 +45,8 @@ class TDCBeamDumpGenerator
   double bulkHeight;            ///< Bulk height
   double bulkDepth;             ///< Bulk depth
   double bulkThickBack;         ///< Bulk thickness behind the core
+  double innerCoreRadius;       ///< Inner Core radius
+  double innerCoreLength;       ///< Inner Core length
   double coreRadius;            ///< Core radius
   double coreLength;            ///< Core length
   double preCoreLength;         ///< Length of void before core
@@ -53,6 +55,7 @@ class TDCBeamDumpGenerator
   double frontPlateThick;       ///< Front plate thickness
   double carbonThick;           ///< Carbon plate thickness
 
+  std::string innerCoreMat;          ///< Core material
   std::string coreMat;          ///< Core material
   std::string bulkMat;          ///< Bulk material
   std::string skinMat;          ///< Skin material
@@ -66,6 +69,7 @@ class TDCBeamDumpGenerator
   TDCBeamDumpGenerator& operator=(const TDCBeamDumpGenerator&);
   virtual ~TDCBeamDumpGenerator();
 
+  void setInnerCore(const double,const double,const std::string&);
   virtual void generate(FuncDataBase&,const std::string&) const;
 
 };
