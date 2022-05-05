@@ -3,7 +3,7 @@
  
  * File:   src/mainJobs.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -119,7 +119,6 @@ createVTK(const mainSystem::inputParam& IParam,
 {
   ELog::RegMethod RegA("mainJobs[F]","createVTK");
 
-  const SimMCNP* SimMCPtr=dynamic_cast<const SimMCNP*>(SimPtr);
   if (IParam.flag("vtk"))
     {
       const std::string vForm=

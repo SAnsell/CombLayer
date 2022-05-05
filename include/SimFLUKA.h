@@ -3,7 +3,7 @@
 
  * File:   include/SimFLUKA.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 namespace magnetSystem
 {
   class magnetUnit;
+  class elecUnit;
 }
 
 namespace flukaSystem
@@ -53,6 +54,8 @@ class SimFLUKA : public Simulation
   /// Name : magnet
   typedef std::map<std::string,
     std::shared_ptr<magnetSystem::magnetUnit>> MagTYPE;
+  typedef std::map<std::string,
+    std::shared_ptr<magnetSystem::elecUnit>> ElecTYPE;
   /// Name : Flag active
   typedef std::map<std::string,std::string> FlagTYPE;
 
@@ -76,6 +79,7 @@ class SimFLUKA : public Simulation
   FTallyTYPE FTItem;              ///< Fluka tally map
 
   MagTYPE MagItem;                ///< Fluka magnetic map
+  ElecTYPE rfItem;                ///< Fluka RF system
 
   flukaSystem::flukaPhysics* PhysPtr;   ///< Fluka physics
   flukaSystem::radDecay* RadDecayPtr;   ///< Fluka rad decay modification

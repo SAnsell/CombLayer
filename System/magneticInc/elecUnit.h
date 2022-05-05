@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   magneticInc/magnetUnit.h
+ * File:   magneticInc/elecUnit.h
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
  *
@@ -19,33 +19,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef magnetSystem_magnetUnit_h
-#define magnetSystem_magnetUnit_h
+#ifndef magnetSystem_elecUnit_h
+#define magnetSystem_elecUnit_h
 
 namespace magnetSystem
 {
   
 /*!
-  \class magnetUnit
+  \class elecUnit
   \version 1.0
-  \date February 2019
+  \date May 2022
   \author S. Ansell
-  \brief Holds an external magnetic system
+  \brief Holds an variable electric field (RF)
 
-  FixedRotate holds the basis set for the axial components
+  This component holds a variable electric field for
+  R.F components
 */
 
-class magnetUnit :
+class elecUnit :
   public attachSystem::FixedRotate
 {
  protected:
 
   bool zeroField;         ///< If field currently zero
-  size_t index;           ///< ID number for magnetic field
+  size_t index;           ///< ID number for electric field
+  
+  Geometry::Vec3D extent;  ///< extent of electric field
 
-  Geometry::Vec3D magExtent;  ///< extent of magnetic field
-
-  std::array<double,4> KFactor;  ///< Magnet units
   /// active cells
   std::set<int> activeCells; 
 
@@ -55,24 +55,23 @@ class magnetUnit :
   
  public:
 
-  magnetUnit(const std::string&);
-  magnetUnit(const std::string&,const size_t);
-  magnetUnit(const magnetUnit&);
-  magnetUnit& operator=(const magnetUnit&);
-  virtual ~magnetUnit();
+  elecUnit(const std::string&);
+  elecUnit(const std::string&,const size_t);
+  elecUnit(const elecUnit&);
+  elecUnit& operator=(const elecUnit&);
+  virtual ~elecUnit();
 
   void setIndex(const size_t I) { index=I; }
   void setExtent(const double,const double,const double);
   void addCell(const int);
-  void setKFactor(const std::vector<double>&);
   
   using attachSystem::FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
-  void createAll(Simulation&,const Geometry::Vec3D&,
-		 const Geometry::Vec3D&,const Geometry::Vec3D&,
-		 const Geometry::Vec3D&,
-		 const std::vector<double>&);
+  void createAll(Simulation&,const Geometry::Vec3D&, 
+   		 const Geometry::Vec3D&,const Geometry::Vec3D&,
+   		 const Geometry::Vec3D&, 
+   		 const std::vector<double>&);
 
 
   
