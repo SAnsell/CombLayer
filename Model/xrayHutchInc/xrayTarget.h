@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   pipeInc/pipeTube.h
+ * File:   xrayHutchInc/xrayTarget.h
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
  *
@@ -19,24 +19,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef pipeSystem_pipeTube_h
-#define pipeSystem_pipeTube_h
+#ifndef xrayHutSystem_xrayTarget_h
+#define xrayHutSystem_xrayTarget_h
 
 class Simulation;
 
-namespace pipeSystem
+namespace xrayHutSystem
 {
 /*!
-  \class pipeTube
+  \class xrayTarget
   \author S. Ansell
   \version 1.0
-  \date May 2015
-  \brief Simple pipe with layers [rectangular xsec]
+  \date May 2022
+  \brief Simple hutch
 
-  Constructed from the front point
+  Constructed hutch -- the intent is to add chicanes/openings etc
 */
 
-class pipeTube : public attachSystem::ContainedComp,
+class xrayTarget :
+  public attachSystem::ContainedComp,
   public attachSystem::FixedRotate,
   public attachSystem::CellMap
 {
@@ -46,28 +47,21 @@ class pipeTube : public attachSystem::ContainedComp,
   double height;            ///< Total height 
   double width;             ///< Total width
 
-  double innerHeight;       ///< innerHeight of rectangule void
-  double innerWidth;        ///< innerWidth of rectangle void
-
-  int wallMat;              ///< wall material
-
-  size_t nWallLayers;       ///< Layers in wall
-  std::vector<double> wallFracList;
-  std::vector<int> wallMatList; 
+  int mat;              ///< wall material
   
   void populate(const FuncDataBase&);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-  void layerProcess(Simulation&);
 
  public:
 
-  pipeTube(const std::string&);
-  pipeTube(const pipeTube&);
-  pipeTube& operator=(const pipeTube&);
-  ~pipeTube();
+  xrayTarget(const std::string&);
+  xrayTarget(const xrayTarget&);
+  xrayTarget& operator=(const xrayTarget&);
+  ~xrayTarget();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
     

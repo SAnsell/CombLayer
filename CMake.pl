@@ -99,6 +99,12 @@ foreach my $mainProg (@masterProg)
 	push(@example,@mainLib);
 	$gM->addDepUnit("example", [@example]);
       }
+    elsif ($mainProg eq "xrayHut")
+      { 
+	my @hut = qw( xrayHutch );
+	push(@hut,@mainLib);
+	$gM->addDepUnit("xrayHut", [@hut]);
+      }
     
     elsif ($mainProg eq "maxiv")
       { 

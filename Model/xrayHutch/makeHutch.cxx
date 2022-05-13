@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   pipeBuild/makePipe.cxx
+ * File:   xrayHutch/makeHutch.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
  *
@@ -50,17 +50,17 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "World.h"
-#include "pipeTube.h"
+#include "xrayHutch.h"
+#include "xrayTarget.h"
 
-#include "makePipe.h"
+#include "makeHutch.h"
 
-namespace pipeSystem
+namespace xrayHutSystem
 {
 
-makePipe::makePipe() :
-  ATube(new pipeSystem::pipeTube("ATube")),
-  BTube(new pipeSystem::pipeTube("BTube")),
-  CTube(new pipeSystem::pipeTube("CTube"))
+makeHutch::makeHutch() :
+  hut(new xrayHutSystem::xrayHutch("Hut")),
+  target(new xrayHutSystem::xrayTarget("Target"))
   /*!
     Constructor
   */
@@ -68,48 +68,19 @@ makePipe::makePipe() :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(ATube);
-  OR.addObject(BTube);
-  OR.addObject(CTube);
-
+  OR.addObject(hut);
+  OR.addObject(target);
 }
 
-makePipe::makePipe(const makePipe& A) : 
-  ATube(new pipeSystem::pipeTube(*(A.ATube))),
-  BTube(new pipeSystem::pipeTube(*(A.BTube))),
-  CTube(new pipeSystem::pipeTube(*(A.CTube)))
-  /*!
-    Copy constructor
-    \param A :: makePipe to copy
-  */
-{}
-
-makePipe&
-makePipe::operator=(const makePipe& A)
-  /*!
-    Assignment operator
-    \param A :: makePipe to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      *ATube=*A.ATube;
-      *BTube=*A.BTube;
-      *CTube=*A.CTube;
-    }
-  return *this;
-}
-
-makePipe::~makePipe()
+makeHutch::~makeHutch()
   /*!
     Destructor
    */
 {}
 
 void 
-makePipe::build(Simulation* SimPtr,
-		       const mainSystem::inputParam&)
+makeHutch::build(Simulation& System,
+		 const mainSystem::inputParam&)
 /*!
   Carry out the full build
   \param SimPtr :: Simulation system
@@ -117,21 +88,18 @@ makePipe::build(Simulation* SimPtr,
 */
 {
   // For output stream
-  ELog::RegMethod RControl("makePipe","build");
+  ELog::RegMethod RControl("makeHutch","build");
 
   int voidCell(74123);
 
-  ATube->addInsertCell(voidCell);
-  ATube->createAll(*SimPtr,World::masterOrigin(),0);
+  hut->setInsertCell(voidCell);
+  hut->createAll(System,World::masterOrigin(),0);
 
-  BTube->addInsertCell(voidCell);
-  BTube->createAll(*SimPtr,*ATube,2);
-
-  CTube->addInsertCell(voidCell);
-  CTube->createAll(*SimPtr,*BTube,2);
+  target->setInsertCell(hut->getCell("InnerVoid"));
+  target->createAll(
   return;
 }
-
+    
 
 }   // NAMESPACE pipeSystem
 

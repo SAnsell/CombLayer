@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   Main/pipe.cxx
+ * File:   Main/xrayHut.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
  *
@@ -32,6 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <memory>
+#include <array>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -52,14 +53,15 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "Volumes.h"
-#include "variableSetup.h"
-#include "makePipe.h"
+#include "xrayHutVariables.h"
+#include "DefUnitsXrayHut.h"
+
+#include "makeHutch.h"
 
 ///\cond STATIC
 namespace ELog 
 {
   ELog::OutputLog<EReport> EM;
-  ELog::OutputLog<FileReport> FM("Spectrum.log");
   ELog::OutputLog<FileReport> RN("Renumber.txt");   ///< Renumber
   ELog::OutputLog<StreamReport> CellM;
 }
@@ -71,6 +73,7 @@ main(int argc,char* argv[])
   int exitFlag(0);                // Value on exit
   ELog::RegMethod RControl("","main");
   mainSystem::activateLogging(RControl);
+
   std::string Oname;
   std::vector<std::string> Names;  
 
@@ -82,23 +85,27 @@ main(int argc,char* argv[])
       mainSystem::inputParam IParam;
       createInputs(IParam);
 
+      mainSystem::setMaterialsDataBase(IParam);
       SimPtr=createSimulation(IParam,Names,Oname);
       if (!SimPtr) return -1;
-      
-      setVariable::PipeVariables(SimPtr->getDataBase());
+
+      // The big variable setting
+      mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
+      setVariable::xrayHutVariables(SimPtr->getDataBase());
 
       InputModifications(SimPtr,IParam,Names);
-      mainSystem::setMaterialsDataBase(IParam);
-      
-      pipeSystem::makePipe pipeObj;
-      pipeObj.build(SimPtr,IParam);
-      
-      mainSystem::buildFullSimulation(SimPtr,IParam,Oname);      
+
+      xrayHutSystem::makeHutch BObj;
+      BObj.build(*SimPtr,IParam);
+
+      mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
-      
+
       ModelSupport::calcVolumes(SimPtr,IParam);
-      SimPtr->objectGroups::write("ObjectRegister.txt");
+      SimPtr->objectGroups::write("ObjectRegister.txt",
+				  IParam.flag("fullOR"));
     }
+  
   catch (ColErr::ExitAbort& EA)
     {
       if (!EA.pathFlag())
@@ -119,6 +126,5 @@ main(int argc,char* argv[])
 
   delete SimPtr;
   ModelSupport::surfIndex::Instance().reset();
-
   return exitFlag;
 }

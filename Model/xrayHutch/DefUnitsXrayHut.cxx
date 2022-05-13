@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   saxs/DefUnitsSAXS.cxx
+ * File:   xrayHutBuild/DefUnitsXrayHut.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
  *
@@ -44,35 +44,41 @@ namespace mainSystem
 {
 
 void 
-setDefUnits(FuncDataBase& Control,inputParam& IParam)
+setDefUnits(FuncDataBase& Control,
+	    inputParam& IParam)
   /*!
     Based on the defaultConf set up the model
     \param Control :: FuncDataBase
     \param IParam :: input system
   */
 {
-  ELog::RegMethod RegA("DefUnitsMaxIV[F]","setDefUnits");
+  ELog::RegMethod RegA("DefUnitsXrayHut[F]","setDefUnits");
 
   defaultConfig A("");
   if (IParam.flag("defaultConfig"))
     {
       const std::string Key=IParam.getValue<std::string>("defaultConfig");
-      
-      std::vector<std::string> LItems=
-	IParam.getObjectItems("defaultConfig",0);
-      const std::string sndItem=(LItems.size()>1) ? LItems[1] : "";
-      const std::string extraItem=(LItems.size()>2) ? LItems[2] : "";
-
-      ELog::EM<<"Unknown Default Key ::"<<Key<<ELog::endDiag;
-      throw ColErr::InContainerError<std::string>
-	(Key,"Iparam.defaultConfig");
-
-
+      if (Key=="None")
+	return;
+      else if (Key=="help")
+	{
+	  ELog::EM<<"Options : "<<ELog::endDiag;
+	  ELog::EM<<"  NO OPTIONS SET  "<<ELog::endDiag;
+	  throw ColErr::InContainerError<std::string>
+	    (Key,"Iparam.defaultConfig");	  
+	}
+      else 
+	{
+	  ELog::EM<<"Unknown Default Key ::"<<Key<<ELog::endDiag;
+	  throw ColErr::InContainerError<std::string>
+	    (Key,"Iparam.defaultConfig");
+	}
     }
-  A.setOption("sdefType","Beam");  
+
+  A.setOption("sdefType","Point");  
   A.process(Control,IParam);
+      
   return;
 }
-
-
+  
 } // NAMESPACE mainSystem

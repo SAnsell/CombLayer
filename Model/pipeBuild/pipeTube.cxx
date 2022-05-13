@@ -3,7 +3,7 @@
  
  * File:   pipeBuild/pipeTube.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -67,7 +67,7 @@ namespace pipeSystem
 
 pipeTube::pipeTube(const std::string& Key) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6)
+  attachSystem::FixedRotate(Key,6)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -76,7 +76,7 @@ pipeTube::pipeTube(const std::string& Key) :
 
 pipeTube::pipeTube(const pipeTube& A) : 
   attachSystem::ContainedComp(A),
-  attachSystem::FixedOffset(A),attachSystem::CellMap(A),
+  attachSystem::FixedRotate(A),attachSystem::CellMap(A),
   length(A.length),height(A.height),width(A.width),
   innerHeight(A.innerHeight),innerWidth(A.innerWidth),
   wallMat(A.wallMat),nWallLayers(A.nWallLayers),
@@ -98,7 +98,7 @@ pipeTube::operator=(const pipeTube& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
       length=A.length;
       height=A.height;
@@ -129,7 +129,7 @@ pipeTube::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("pipeTube","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
   height=Control.EvalVar<double>(keyName+"Height");
@@ -147,23 +147,6 @@ pipeTube::populate(const FuncDataBase& Control)
 				  keyName+"WLayerThick",
 				  (height-innerHeight)/2.0,
 				  wallFracList);
-
-  return;
-}
-
-void
-pipeTube::createUnitVector(const attachSystem::FixedComp& FC,
-			   const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed Component
-    \param sideIndex :: link point
-  */
-{
-  ELog::RegMethod RegA("pipeTube","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  yStep+=length/2.0;
-  FixedOffset::applyOffset();
 
   return;
 }
@@ -313,7 +296,7 @@ pipeTube::createAll(Simulation& System,
   ELog::RegMethod RegA("pipeTube","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC,sideIndex);
+  createCentredUnitVector(FC,sideIndex,length/2.0);
 
   createSurfaces();
   createObjects(System);

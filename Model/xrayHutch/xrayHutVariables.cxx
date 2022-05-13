@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   saxs/DefUnitsSAXS.cxx
+ * File:   xrayHutBuild/xrayHutVariables.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
  *
@@ -25,54 +25,51 @@
 #include <sstream>
 #include <cmath>
 #include <complex>
+#include <list>
 #include <vector>
 #include <set>
-#include <list>
 #include <map>
 #include <string>
+#include <algorithm>
+#include <iterator>
+#include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
-#include "inputParam.h"
-#include "defaultConfig.h"
+#include "Code.h"
+#include "varList.h"
+#include "FuncDataBase.h"
+#include "xrayHutVariables.h"
 
-namespace mainSystem
+namespace setVariable
 {
-
-void 
-setDefUnits(FuncDataBase& Control,inputParam& IParam)
+  
+void
+xrayHutVariables(FuncDataBase& Control)
   /*!
-    Based on the defaultConf set up the model
-    \param Control :: FuncDataBase
-    \param IParam :: input system
+    Create all the beamline variabes
+    \param Control :: DataBase
   */
 {
-  ELog::RegMethod RegA("DefUnitsMaxIV[F]","setDefUnits");
-
-  defaultConfig A("");
-  if (IParam.flag("defaultConfig"))
-    {
-      const std::string Key=IParam.getValue<std::string>("defaultConfig");
-      
-      std::vector<std::string> LItems=
-	IParam.getObjectItems("defaultConfig",0);
-      const std::string sndItem=(LItems.size()>1) ? LItems[1] : "";
-      const std::string extraItem=(LItems.size()>2) ? LItems[2] : "";
-
-      ELog::EM<<"Unknown Default Key ::"<<Key<<ELog::endDiag;
-      throw ColErr::InContainerError<std::string>
-	(Key,"Iparam.defaultConfig");
+  ELog::RegMethod RegA("xrayHutVariables[F]","XrayHutVariables");
+  
+  Control.addVariable("HutLength",350.0);
+  Control.addVariable("HutWidth",75.0);
+  Control.addVariable("HutHeight",100.0);
+  Control.addVariable("HutWallThick",0.4);
+  Control.addVariable("HutWallMat","Stainless304");
+  
+  Control.addVariable("TargetLength",5.0);
+  Control.addVariable("TargetWidth",1.0);
+  Control.addVariable("TargetHeight",1.0);
+  Control.addVariable("TargetMat","Tungsten");
 
 
-    }
-  A.setOption("sdefType","Beam");  
-  A.process(Control,IParam);
   return;
 }
 
-
-} // NAMESPACE mainSystem
+}  // NAMESPACE setVariable
+ 
