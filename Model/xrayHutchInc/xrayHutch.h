@@ -39,7 +39,9 @@ namespace xrayHutSystem
 class xrayHutch :
   public attachSystem::ContainedComp,
   public attachSystem::FixedRotate,
-  public attachSystem::CellMap
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
+  
 {
  private:
   

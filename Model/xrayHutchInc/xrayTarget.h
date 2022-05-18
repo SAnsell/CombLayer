@@ -44,6 +44,7 @@ class xrayTarget :
  private:
   
   double length;            ///< Total length
+  double sliceAngle;        ///< Angle to cut front face
   double height;            ///< Total height 
   double width;             ///< Total width
 

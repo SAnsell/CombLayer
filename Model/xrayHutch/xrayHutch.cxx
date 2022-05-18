@@ -56,6 +56,7 @@
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "xrayHutch.h"
 
 namespace xrayHutSystem
@@ -63,7 +64,8 @@ namespace xrayHutSystem
 
 xrayHutch::xrayHutch(const std::string& Key) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(Key,6)
+  attachSystem::FixedRotate(Key,6),
+  attachSystem::SurfMap()
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -107,12 +109,12 @@ xrayHutch::createSurfaces()
 {
   ELog::RegMethod RegA("xrayHutch","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);  
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);  
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);  
+  SurfMap::makePlane("front",SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
+  SurfMap::makePlane("back",SMap,buildIndex+2,Origin+Y*(length/2.0),Y);  
+  SurfMap::makePlane("left",SMap,buildIndex+3,Origin-X*(width/2.0),X);
+  SurfMap::makePlane("right",SMap,buildIndex+4,Origin+X*(width/2.0),X);  
+  SurfMap::makePlane("base",SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
+  SurfMap::makePlane("top",SMap,buildIndex+6,Origin+Z*(height/2.0),Z);  
 
   ModelSupport::buildPlane
     (SMap,buildIndex+11,Origin-Y*(length/2.0+wallThick),Y);

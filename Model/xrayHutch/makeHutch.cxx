@@ -49,6 +49,7 @@
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "World.h"
 #include "xrayHutch.h"
 #include "xrayTarget.h"
@@ -83,7 +84,7 @@ makeHutch::build(Simulation& System,
 		 const mainSystem::inputParam&)
 /*!
   Carry out the full build
-  \param SimPtr :: Simulation system
+  \param System :: Simulation system
   \param :: Input parameters
 */
 {
@@ -96,7 +97,7 @@ makeHutch::build(Simulation& System,
   hut->createAll(System,World::masterOrigin(),0);
 
   target->setInsertCell(hut->getCell("InnerVoid"));
-  target->createAll(
+  target->createAll(System,*hut,"Origin");
   return;
 }
     

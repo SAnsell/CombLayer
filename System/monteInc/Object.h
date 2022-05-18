@@ -58,6 +58,10 @@ class Object
   bool activeMag;          ///< Magnetic field active
   double magMinStep;       ///< min step for mag field [fluka]
   double magMaxStep;       ///< max step for mag field [fluka]
+
+  bool activeElec;         ///< Electric field active
+  double elecMinStep;       ///< min step for mag field [fluka]
+  double elecMaxStep;       ///< max step for mag field [fluka]
   
   HeadRule HRule;           ///< Top rule
 
@@ -107,6 +111,7 @@ class Object
   void setImp(const std::string& particle,const double V)
   { imp.setImp(particle,V); }
   void setMagFlag() { activeMag=1; }  ///< implicit mag flag [no field]
+  void setElecFlag() { activeElec=1; }  ///< implicit elec flag [no field]
   
   int setObject(std::string);
   int setObject(const int,const int,const std::vector<Token>&);
@@ -116,6 +121,7 @@ class Object
   void setMaterial(const int);
   void setMaterial(const std::string&); 
   void setMagStep(const double,const double);
+  void setElecStep(const double,const double);
   
   int complementaryObject(const int,std::string&);
   int hasComplement() const;                           
@@ -168,9 +174,12 @@ class Object
 
   bool hasSurface(const int) const;
   bool hasMagField() const { return activeMag; }  ///< Active mag
+  bool hasElecField() const { return activeElec; }  ///< Active elec field
   /// Steps
   std::pair<double,double> getMagStep() const
     { return std::pair<double,double>(magMinStep,magMaxStep); }  
+  std::pair<double,double> getElecStep() const
+    { return std::pair<double,double>(elecMinStep,elecMaxStep); }  
   int isValid(const Geometry::Vec3D&) const;            
   int isValid(const Geometry::Vec3D&,const int) const;            
   int isDirectionValid(const Geometry::Vec3D&,const int) const;

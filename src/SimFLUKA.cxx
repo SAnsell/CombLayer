@@ -74,6 +74,7 @@
 #include "radDecay.h"
 #include "flukaPhysics.h"
 #include "magnetUnit.h"
+#include "elecUnit.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "LowMat.h"
@@ -418,6 +419,48 @@ SimFLUKA::writeMagField(std::ostream& OX) const
 }
 
 void
+SimFLUKA::writeElecField(std::ostream& OX) const
+  /*!
+    Writes out the tallies using a nice boost binding
+    construction.
+    \param OX :: Output stream
+   */
+{
+  ELog::RegMethod RegA("SimFluka","writeElecField");
+
+  OX<<"* ------------------------------------------------------"<<std::endl;
+  OX<<"* ------------------- ELECTIRC CARDS ----------------------"<<std::endl;
+  OX<<"* ------------------------------------------------------"<<std::endl;
+
+  std::ostringstream cx;
+  if (!ElecItem.empty())
+    {
+      // Need to set elecfield to zero
+      cx<<"ELCFIELD 15.0 0.05 0.1 - - - ";
+      StrFunc::writeFLUKA(cx.str(),OX);
+
+      flukaSystem::cellValueSet<2> Steps("stepsize","STEPSIZE");
+      for(const OTYPE::value_type& mp : OList)
+	{
+	  if (mp.second->hasElecField())
+	    {
+	      const std::pair<double,double> elecStep=
+		mp.second->getElecStep();
+	      Steps.setValues
+		(mp.second->getName(),elecStep.first,elecStep.second);
+	    }
+	}
+      const std::string fmtSTR("%2 %3 R0 R1 1.0 - ");
+      const std::vector<int> cellInfo=this->getCellVector();
+      Steps.writeFLUKA(OX,cellInfo,fmtSTR);
+
+      for(const ElecTYPE::value_type& EI : ElecItem)
+	EI.second->writeFLUKA(OX);
+    }
+  return;
+}
+
+void
 SimFLUKA::writeTransform(std::ostream& OX) const
   /*!
     Write all the transforms in standard MCNPX output
@@ -541,12 +584,14 @@ SimFLUKA::writeMaterial(std::ostream& OX) const
   OX<<"* MATERIAL CARDS "<<std::endl;
   OX<<alignment<<std::endl;
   // WRITE OUT ASSIGNMENT:
-  bool magField(0);
+  bool magField(0),elecField(0);
   for(const OTYPE::value_type& mp : OList)
     {
       mp.second->writeFLUKAmat(OX);
       if (mp.second->hasMagField())
 	magField=1;
+      if (mp.second->hasElecField())
+	elecField=1;
     }
   writeElements(OX);
 
@@ -561,6 +606,8 @@ SimFLUKA::writeMaterial(std::ostream& OX) const
 
   if (magField)
     writeMagField(OX);
+  if (elecField)
+    writeElecField(OX);
   return;
 }
 

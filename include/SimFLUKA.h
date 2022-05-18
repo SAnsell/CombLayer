@@ -32,7 +32,6 @@ namespace flukaSystem
 {
   class flukaTally;
   class flukaPhysics;
-  class magnetUnit;
   class plotGeom;
   class radDecay;
 }
@@ -79,7 +78,7 @@ class SimFLUKA : public Simulation
   FTallyTYPE FTItem;              ///< Fluka tally map
 
   MagTYPE MagItem;                ///< Fluka magnetic map
-  ElecTYPE rfItem;                ///< Fluka RF system
+  ElecTYPE ElecItem;                ///< Fluka RF system
 
   flukaSystem::flukaPhysics* PhysPtr;   ///< Fluka physics
   flukaSystem::radDecay* RadDecayPtr;   ///< Fluka rad decay modification
@@ -90,6 +89,7 @@ class SimFLUKA : public Simulation
   void writeCells(std::ostream&) const;
   void writeSurfaces(std::ostream&) const;
   void writeMagField(std::ostream&) const;
+  void writeElecField(std::ostream&) const;
   void writeFlags(std::ostream&) const;
 
   // general stuff [from Simulation]

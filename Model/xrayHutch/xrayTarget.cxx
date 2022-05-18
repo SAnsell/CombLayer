@@ -89,9 +89,11 @@ xrayTarget::populate(const FuncDataBase& Control)
   FixedRotate::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
+  sliceAngle=Control.EvalDefVar<double>(keyName+"SliceAngle",45.0);
   height=Control.EvalVar<double>(keyName+"Height");
   width=Control.EvalVar<double>(keyName+"Width");
 
+  mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   return;
 }
 
@@ -104,14 +106,14 @@ xrayTarget::createSurfaces()
 {
   ELog::RegMethod RegA("xrayTarget","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);  
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);  
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);  
 
-
+  ModelSupport::buildPlaneRotAxis
+    (SMap,buildIndex+11,Origin-Y*(length/2.0),Y,Z,sliceAngle);
   return; 
 }
 
@@ -127,10 +129,9 @@ xrayTarget::createObjects(Simulation& System)
   HeadRule HR;
 
   // Inner 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -2 3 -4 5 -6");
   makeCell("Inner",System,cellIndex++,mat,0.0,HR);
   
-
   addOuterSurf(HR);
   return; 
 }
@@ -145,6 +146,12 @@ xrayTarget::createLinks()
   */
 {  
   ELog::RegMethod RegA("xrayTarget","createLinks");
+
+  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  
+  FixedComp::setConnect(0,Origin+Y*(length/2.0),Y);
+  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+2));
 
 
   return;

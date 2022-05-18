@@ -294,8 +294,8 @@ buildPlaneRotAxis(surfRegister& SMap,const int N,
   Geometry::Vec3D RotNorm(D);
   Geometry::Quaternion::calcQRotDeg(degAngle,Axis).rotate(RotNorm);  
   PX->setPlane(O,RotNorm);
+    
   const int NFound=SMap.registerSurf(N,PX);
-
   return SMap.realPtr<Geometry::Plane>(NFound);
 }
 

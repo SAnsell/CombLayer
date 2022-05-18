@@ -3,7 +3,7 @@
  
  * File:   monte/Object.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -87,6 +87,7 @@ Object::Object() :
   matPtr(ModelSupport::DBMaterial::Instance().getVoidPtr()),
   trcl(0),populated(0),
   activeMag(0),magMinStep(1e-3),magMaxStep(1e-1),
+  activeElec(0),elecMinStep(1e-3),elecMaxStep(1e-1),
   objSurfValid(0)
    /*!
      Defaut constuctor, set temperature to 300C and material to vacuum
@@ -97,8 +98,10 @@ Object::Object(const int N,const int M,
 	       const double T,const std::string& Line) :
   ObjName(N),listNum(-1),Tmp(T),
   matPtr(ModelSupport::DBMaterial::Instance().getMaterialPtr(M)),
-  trcl(0),populated(0),activeMag(0),
-  magMinStep(1e-3),magMaxStep(1e-1),objSurfValid(0)
+  trcl(0),populated(0),
+  activeMag(0),magMinStep(1e-3),magMaxStep(1e-1),
+  activeElec(0),elecMinStep(1e-3),elecMaxStep(1e-1),
+  objSurfValid(0)
  /*!
    Constuctor, set temperature to 300C 
    \param N :: number
@@ -114,9 +117,10 @@ Object::Object(const int N,const int M,
 	       const double T,const HeadRule& HR) :
   ObjName(N),listNum(-1),Tmp(T),
   matPtr(ModelSupport::DBMaterial::Instance().getMaterialPtr(M)),
-  trcl(0),populated(0),activeMag(0),
-  magMinStep(1e-3),magMaxStep(1e-1),HRule(HR),
-  objSurfValid(0)
+  trcl(0),populated(0),
+  activeMag(0),magMinStep(1e-3),magMaxStep(1e-1),
+  activeElec(0),elecMinStep(1e-3),elecMaxStep(1e-1),
+  HRule(HR),objSurfValid(0)
  /*!
    Constuctor, set temperature to 300C 
    \param N :: number
@@ -130,8 +134,9 @@ Object::Object(const std::string& FCName,const int N,const int M,
 	       const double T,const std::string& Line) :
   FCUnit(FCName),ObjName(N),listNum(-1),Tmp(T),
   matPtr(ModelSupport::DBMaterial::Instance().getMaterialPtr(M)),
-  trcl(0),populated(0),activeMag(0),
-  magMinStep(1e-3),magMaxStep(1e-1),
+  trcl(0),populated(0),
+  activeMag(0),magMinStep(1e-3),magMaxStep(1e-1),
+  activeElec(0),elecMinStep(1e-3),elecMaxStep(1e-1),
   objSurfValid(0)
  /*!
    Constuctor, set temperature to 300C 
@@ -148,8 +153,9 @@ Object::Object(const std::string& FCName,const int N,const int M,
 	       const double T,const HeadRule& HR) :
   FCUnit(FCName),ObjName(N),listNum(-1),Tmp(T),
   matPtr(ModelSupport::DBMaterial::Instance().getMaterialPtr(M)),
-  trcl(0),populated(0),activeMag(0),
-  magMinStep(1e-3),magMaxStep(1e-1),
+  trcl(0),populated(0),
+  activeMag(0),magMinStep(1e-3),magMaxStep(1e-1),
+  activeElec(0),elecMinStep(1e-3),elecMaxStep(1e-1),
   HRule(HR),
   objSurfValid(0)
  /*!
@@ -165,8 +171,9 @@ Object::Object(const Object& A) :
   FCUnit(A.FCUnit),ObjName(A.ObjName),
   listNum(A.listNum),Tmp(A.Tmp),matPtr(A.matPtr),
   trcl(A.trcl),imp(A.imp),populated(A.populated),
-  activeMag(A.activeMag),
-  magMinStep(A.magMinStep),magMaxStep(A.magMaxStep),
+  activeMag(A.activeMag),magMinStep(A.magMinStep),
+  magMaxStep(A.magMaxStep),activeElec(A.activeElec),
+  elecMinStep(A.elecMinStep),elecMaxStep(A.elecMaxStep),
   HRule(A.HRule),objSurfValid(0),
   SurList(A.SurList),SurSet(A.SurSet)
   /*!
@@ -196,6 +203,9 @@ Object::operator=(const Object& A)
       activeMag=A.activeMag;
       magMinStep=A.magMinStep;
       magMaxStep=A.magMaxStep;
+      activeElec=A.activeElec;
+      elecMinStep=A.elecMinStep;
+      elecMaxStep=A.elecMaxStep;
       HRule=A.HRule;
       objSurfValid=0;
       SurList=A.SurList;
@@ -281,6 +291,23 @@ Object::setMagStep(const double minV,const double maxV)
 
   magMinStep=std::min(minV,maxV);
   magMaxStep=std::max(minV,maxV);
+
+  return;
+}
+
+void
+Object::setElecStep(const double minV,const double maxV)
+  /*!
+    Set the min/max steps for the steps of charged particle
+    in a magnetic field
+    \param minV :: min step value
+    \param maxV :: max step value
+  */
+{
+  ELog::RegMethod RegA("Object","setMagStep");
+
+  elecMinStep=std::min(minV,maxV);
+  elecMaxStep=std::max(minV,maxV);
 
   return;
 }
