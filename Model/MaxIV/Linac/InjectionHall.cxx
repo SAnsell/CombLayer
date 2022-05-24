@@ -1275,7 +1275,7 @@ InjectionHall::createObjects(Simulation& System)
 
   // Radioactive waste room
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7601 -7602 1004 -7604 5 -6");
-  makeCell("WasteRoom",System,cellIndex++,0,0.0,HR);
+  makeCell("WasteRoom",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7611 -7601 1004 -7604 5 -6");
   makeCell("WasteRoomWall",System,cellIndex++,wallMat,0.0,HR);

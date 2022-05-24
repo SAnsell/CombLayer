@@ -110,6 +110,7 @@ TDCBeamDump::TDCBeamDump(const TDCBeamDump& A) :
   skinMat(A.skinMat),
   skinLeftMat(A.skinLeftMat),
   skinRightMat(A.skinRightMat),
+  airMat(A.airMat),
   frontPlateMat(A.frontPlateMat),
   carbonMat(A.carbonMat),
   mainFC1(A.mainFC1),
@@ -155,6 +156,7 @@ TDCBeamDump::operator=(const TDCBeamDump& A)
       skinMat=A.skinMat;
       skinLeftMat=A.skinLeftMat;
       skinRightMat=A.skinRightMat;
+      airMat=A.airMat;
       frontPlateMat=A.frontPlateMat;
       carbonMat=A.carbonMat;
       mainFC1=A.mainFC1;
@@ -213,6 +215,7 @@ TDCBeamDump::populate(const FuncDataBase& Control)
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
   skinLeftMat=ModelSupport::EvalDefMat<int>(Control,keyName+"SkinLeftMat",skinMat);
   skinRightMat=ModelSupport::EvalDefMat<int>(Control,keyName+"SkinRightMat",skinMat);
+  airMat=ModelSupport::EvalDefMat<int>(Control,keyName+"AirMat",0);
   frontPlateMat=ModelSupport::EvalMat<int>(Control,keyName+"FrontPlateMat");
   carbonMat=ModelSupport::EvalMat<int>(Control,keyName+"CarbonMat");
 
@@ -315,7 +318,7 @@ TDCBeamDump::createObjects(Simulation& System)
 
   HeadRule Out;
   Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -42 -7 ");
-  makeCell("PreCore",System,cellIndex++,0,0.0,Out*frontHR);
+  makeCell("PreCore",System,cellIndex++,airMat,0.0,Out*frontHR);
   Out=ModelSupport::getHeadRule(SMap,buildIndex,"42 -2 -7 ");
   makeCell("Carbon",System,cellIndex++,carbonMat,0.0,Out);
   Out=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 -17 ");
