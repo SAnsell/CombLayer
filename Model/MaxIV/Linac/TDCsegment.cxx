@@ -3,7 +3,7 @@
 
  * File: Linac/TDCsegment.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,8 +74,8 @@ TDCsegment::TDCsegment(const std::string& Key,const size_t NL) :
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
-  NCellInit(0),
-  prevSegPtr(nullptr)
+  voidMat(0),NCellInit(0),
+  nextZone(nullptr),prevSegPtr(nullptr)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -89,6 +89,18 @@ TDCsegment::~TDCsegment()
    */
 {}
 
+void
+TDCsegment::setInnerZone(attachSystem::BlockZone* IZPtr)
+  /*! 
+    Set the current inner zone [allows joining of segments]
+    \parma IZPtr :: Inner zone
+   */
+{
+  buildZone=IZPtr;
+  voidMat=IZPtr->getInnerMat();
+  return;
+}
+  
 void
 TDCsegment::setFirstItems
   (const std::shared_ptr<attachSystem::FixedComp>& FCptr)

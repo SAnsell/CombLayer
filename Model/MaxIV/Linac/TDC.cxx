@@ -363,6 +363,7 @@ TDC::buildInnerZone(Simulation& System,
 
   buildZone->setSurround(surHR);
   buildZone->setMaxExtent(injectionHall->getSurfRules(backSurfName));
+  buildZone->setInnerMat(injectionHall->getVoidMat());
 
   for(const std::string& voidName : cc->second)
     setVoidSpace(System,buildZone,voidName);

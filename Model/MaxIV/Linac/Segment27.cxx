@@ -332,15 +332,15 @@ Segment27::buildFrontSpacer(Simulation& System)
       volume*=IZTop->getFront().complement();
       volume*=IZTop->getSurround();
       volume.addIntersection(SMap.realSurf(buildIndex+5015));
-      makeCell("FrontSpace",System,cellIndex++,0,0.0,volume);
+      makeCell("FrontSpace",System,cellIndex++,voidMat,0.0,volume);
       volume=buildZone->getFront();
       volume*=IZFlat->getFront().complement();
       volume*=IZFlat->getSurround();
-      makeCell("FrontSpace",System,cellIndex++,0,0.0,volume);
+      makeCell("FrontSpace",System,cellIndex++,voidMat,0.0,volume);
       volume=buildZone->getFront();
       volume*=IZLower->getFront().complement();
       volume*=IZLower->getSurround();
-      makeCell("FrontSpace",System,cellIndex++,0,0.0,volume);
+      makeCell("FrontSpace",System,cellIndex++,voidMat,0.0,volume);
     }
   return;
 }
@@ -359,11 +359,11 @@ Segment27::buildSpaceFiller(Simulation& System)
   HeadRule extraVol=buildZone->getBack().complement();
   extraVol*=IZFlat->getBack()*IZFlat->getSurround();
   extraVol*=beamStopC->getOuterSurf().complement();
-  makeCell("SpaceFiller",System,cellIndex++,0,0.0,extraVol);
+  makeCell("SpaceFiller",System,cellIndex++,voidMat,0.0,extraVol);
 
   extraVol=buildZone->getBack().complement();
   extraVol*=IZTop->getBack()*IZTop->getSurround();
-  makeCell("SpaceFiller",System,cellIndex++,0,0.0,extraVol);
+  makeCell("SpaceFiller",System,cellIndex++,voidMat,0.0,extraVol);
 
   return;
 }

@@ -3,7 +3,7 @@
 
  * File:   flukaTallyInc/resnuclei.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +38,9 @@ class resnuclei : public flukaTally
 {
  private:
 
+  static int zOut;     ///< Max Z number
+  static int mOut;     ///< Max of N-Z
+  
   int AMax;            ///< Max Z of material
   int ZMax;            ///< Max A of material
   size_t cellA;        ///< Cell number
@@ -56,6 +59,9 @@ public:
   /// set cell for tally
   void setCell(const int CN) { cellA=CN; }
   void setZaid(const int,const int);
+  int getZMax() const { return ZMax; }
+  int getAMax() const { return AMax; }
+  void setMaxAZ(const int,const int);
   virtual void write(std::ostream&) const;
 };
 

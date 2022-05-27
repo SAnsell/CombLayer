@@ -182,6 +182,9 @@ Segment29::createSplitInnerZone()
   IZTop->setSurround(HSurroundA);
   IZMid->setSurround(HSurroundB);
 
+  IZTop->setInnerMat(voidMat);
+  IZMid->setInnerMat(voidMat);
+
   return;
 }
 
@@ -252,7 +255,7 @@ Segment29::buildObjects(Simulation& System)
   const HeadRule& backHR=ExternalCut::getRule("BackWallFront");
   const HeadRule& surHR=buildZone->getSurround();
 
-  makeCell("EndVoid",System,cellIndex++,0,0.0,
+  makeCell("EndVoid",System,cellIndex++,voidMat,0.0,
 	   frontHR*backHR.complement()*surHR);
   const int outerVoid=CellMap::getCell("EndVoid");
 
@@ -263,11 +266,11 @@ Segment29::buildObjects(Simulation& System)
       HeadRule volume=buildZone->getFront();
       volume*=IZTop->getFront().complement();
       volume*=IZTop->getSurround();
-      makeCell("FrontSpace",System,cellIndex++,0,0.0,volume);
+      makeCell("FrontSpace",System,cellIndex++,voidMat,0.0,volume);
       volume=buildZone->getFront();
       volume*=IZMid->getFront().complement();
       volume*=IZMid->getSurround();
-      makeCell("FrontSpace",System,cellIndex++,0,0.0,volume);
+      makeCell("FrontSpace",System,cellIndex++,voidMat,0.0,volume);
       buildZone->copyCells(*this,"FrontSpace");
     }
   beamStopA->addInsertCell(outerVoid);
@@ -277,7 +280,6 @@ Segment29::buildObjects(Simulation& System)
   beamStopB->setCutSurf("base",ExternalCut::getRule("Floor"));
   beamStopB->addInsertCell(outerVoid);
   beamStopB->createAll(System,*yagUnitA,"back",*yagUnitB,"back");
-  ELog::EM<<"Yag == "<<yagUnitA->getLinkPt("back")<<ELog::endDiag;
   return;
 }
 

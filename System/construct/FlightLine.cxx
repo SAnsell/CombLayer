@@ -78,6 +78,7 @@ FlightLine::FlightLine(const std::string& Key)  :
   attachSystem::ContainedGroup("inner","outer"),
   attachSystem::FixedOffset(Key,12),
   attachSystem::ExternalCut(),
+  attachSystem::CellMap(),
   plateIndex(0),nLayer(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -89,6 +90,7 @@ FlightLine::FlightLine(const FlightLine& A) :
   attachSystem::ContainedGroup(A),
   attachSystem::FixedOffset(A),
   attachSystem::ExternalCut(A),
+  attachSystem::CellMap(A),
   height(A.height),width(A.width),
   plateIndex(A.plateIndex),nLayer(A.nLayer),lThick(A.lThick),
   lMat(A.lMat),capActive(A.capActive),capLayer(A.capLayer),
@@ -117,6 +119,7 @@ FlightLine::operator=(const FlightLine& A)
       attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::ExternalCut::operator=(A);
+      attachSystem::CellMap::operator=(A);
       anglesXY[0]=A.anglesXY[0];
       anglesXY[1]=A.anglesXY[1];
       anglesZ[0]=A.anglesZ[0];

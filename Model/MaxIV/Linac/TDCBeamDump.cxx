@@ -386,7 +386,6 @@ TDCBeamDump::createObjects(Simulation& System)
   
   HR=ModelSupport::getAltHeadRule(SMap,buildIndex,
 				 "11 -32 13 -14 15 -36A -26B -16C -6D");
-  ELog::EM<<"Beam:"<<keyName<<" == "<<HR<<ELog::endDiag;
   addOuterSurf(HR);
   return;
 }

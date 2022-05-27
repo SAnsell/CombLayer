@@ -56,6 +56,7 @@ class TDCsegment :
   /// System for building a divided inner
   attachSystem::BlockZone* buildZone;
 
+  int voidMat;             ///< Void material
   size_t NCellInit;        ///< Cells at start of buildZone:
 
   /// System for next building a divided inner
@@ -88,8 +89,8 @@ class TDCsegment :
 
   void removeSpaceFillers(Simulation&) const;
   
-  /// set the current inner zone [allows joining of segments]
-  void setInnerZone(attachSystem::BlockZone* IZPtr) { buildZone=IZPtr; }
+
+  void setInnerZone(attachSystem::BlockZone* IZPtr);
 
   /// set the NEXT inner zone [allows joining of segments]
   void setNextZone(attachSystem::BlockZone* IZPtr)

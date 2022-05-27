@@ -23,6 +23,11 @@
 #define MonteCarlo_Object_h
 
 class Token;
+namespace Geometry
+{
+  class Plane;
+}
+ 
 
 namespace MonteCarlo
 {
