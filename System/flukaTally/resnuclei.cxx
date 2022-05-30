@@ -121,12 +121,12 @@ resnuclei::setZaid(const int Z,const int A)
 {
   AMax=A;
   ZMax=Z;
-  if (ZMax>zOut)
+  if (zOut<ZMax)
     zOut=ZMax;
+
   const int NMax=AMax-ZMax;
-  if (mOut < 5+NMax-ZMax)
-    mOut=5+NMax;               // dont thing manual correct
-    //    mOut=5+NMax-ZMax;
+  if (mOut < NMax)
+    mOut=NMax;               // dont thing manual correct
   
   return;
 }
@@ -142,7 +142,7 @@ resnuclei::write(std::ostream& OX) const
 {
   std::ostringstream cx;
   //  const int M=AMax-ZMax+5;
-  cx<<"RESNUCLEI  3.0 "<<outputUnit<<" "<<zOut+5<<" "<<mOut<<
+  cx<<"RESNUCLEI  3.0 "<<outputUnit<<" "<<zOut+5<<" "<<mOut+5<<
     " R"<<cellA<<" 1.0 ";
   cx<<" "<<keyName;
   StrFunc::writeFLUKA(cx.str(),OX);
