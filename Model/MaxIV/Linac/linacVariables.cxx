@@ -3486,7 +3486,8 @@ wallVariables(FuncDataBase& Control,
     {
       const std::string name = wallKey+"MidTDuct" + std::to_string(i+10);
       Control.addVariable(name+"Radius",7.5); // K_20-2_355
-      Control.addVariable(name+"YStep",BTGductY+35*i); // distance: K_20-2_355
+      Control.addVariable(name+"YStep",
+			  BTGductY+35*static_cast<double>(i)); //K_20-2_355
       Control.addVariable(name+"ZStep",86.0); // measured in K_20-2_355
     }
   // Upper tier: G1-G5

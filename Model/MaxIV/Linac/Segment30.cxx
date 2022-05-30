@@ -3,7 +3,7 @@
 
  * File: Linac/Segment30.cxx
  *
- * Copyright (c) 2004-2021 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -145,7 +145,6 @@ Segment30::createSplitInnerZone(Simulation& System)
 
       if (sideSegment->getKeyName()=="L2SPF13")
 	{
-	  int SNremoved(0);
 	  for(const TDCsegment* sidePtr : sideVec)
 	    {
 	      ELog::EM<<"SidePtr = "<<sidePtr->getKeyName()<<ELog::endDiag;

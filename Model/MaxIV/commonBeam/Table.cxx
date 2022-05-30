@@ -3,7 +3,7 @@
 
  * File:   commonBeam/Table.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -256,7 +256,7 @@ Table::insertAllInCells(Simulation& System,
       X*(width/2.0)
     });
 
-  for(const Geometry::Vec3D shiftPt : LStep)
+  for(const Geometry::Vec3D& shiftPt : LStep)
     ModelSupport::calcLineTrack(System,APt+shiftPt,BPt+shiftPt,OMap);
   
   for(const int CN : cellN)
