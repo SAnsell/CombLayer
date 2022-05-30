@@ -125,7 +125,8 @@ resnuclei::setZaid(const int Z,const int A)
     zOut=ZMax;
   const int NMax=AMax-ZMax;
   if (mOut < 5+NMax-ZMax)
-    mOut=5+NMax-ZMax;
+    mOut=5+NMax;               // dont thing manual correct
+    //    mOut=5+NMax-ZMax;
   
   return;
 }

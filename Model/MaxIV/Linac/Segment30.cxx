@@ -154,7 +154,7 @@ Segment30::createSplitInnerZone(Simulation& System)
 		    {
 		      MonteCarlo::Object* OPtr=System.findObject(CN);
 		      HeadRule HA=OPtr->getHeadRule();   // copy
-		      SNremoved=HA.removeOuterPlane(Origin+Y*10.0,-X,0.9);
+		      HA.removeOuterPlane(Origin+Y*10.0,-X,0.9);
 		      HA.addIntersection(SMap.realSurf(buildIndex+5005));
 		      OPtr->procHeadRule(HA);
 		    }
