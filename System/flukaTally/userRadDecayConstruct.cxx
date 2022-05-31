@@ -3,7 +3,7 @@
  
  * File:   flukaTally/userRadDecayConstruct.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -153,11 +153,11 @@ userRadDecayConstruct::writeHelp(std::ostream& OX)
   */
 {
   OX<<
-    "recordType filename \n"
-    "  --recordType avaiable:\n"
-    "    source : trajectory : local : continuous\n"
-    "    sourceLoss : trajLoss : user";
-
+    "raddecay decay time : time in seconds of decays \n"
+    "raddecay tallyName index name* : \n"
+    "   - Set a given decay time (by index 1-N) "
+    "for the active decay in a tally\n";
+  
   return;
 }
 

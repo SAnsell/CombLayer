@@ -3,7 +3,7 @@
  
  * File:   flukaTally/radDecay.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,8 +59,9 @@ radDecay::radDecay() :
 radDecay::radDecay(const radDecay& A) : 
   nReplica(A.nReplica),biasCard(A.biasCard),
   gammaTransCut(A.gammaTransCut),
-  iradTime(A.iradTime),decayTime(A.decayTime),
-  detectors(A.detectors)
+  eCutEnergy(A.eCutEnergy),pCutEnergy(A.pCutEnergy),
+  iradFlux(A.iradFlux),iradTime(A.iradTime),
+  decayTime(A.decayTime),detectors(A.detectors)
   /*!
     Copy constructor
     \param A :: radDecay to copy
