@@ -64,6 +64,7 @@ class TDCBeamDump : public attachSystem::ContainedComp,
   double topPlateThick;         ///< Extra plate on top to stop gamma shine
   double extraTopPlateThick;    ///< Extra plate on top to stop gamma shine
 
+  int voidMat;                  ///< Initial beam path material
   int innerCoreMat;             ///< Inner Core material
   int coreMat;                  ///< Core material
   int bulkMat;                  ///< Bulk material
@@ -75,6 +76,7 @@ class TDCBeamDump : public attachSystem::ContainedComp,
   int extraTopPlateMat;              ///< Extra plate material (
   int carbonMat;                ///< Carbon plate material
 
+  
   const attachSystem::FixedComp* mainFC;
   long int mainFCSide;
 

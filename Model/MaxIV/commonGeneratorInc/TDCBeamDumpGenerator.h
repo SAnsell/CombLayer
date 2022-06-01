@@ -55,7 +55,8 @@ class TDCBeamDumpGenerator
   double frontPlateThick;       ///< Front plate thickness
   double carbonThick;           ///< Carbon plate thickness
 
-  std::string innerCoreMat;          ///< Core material
+  std::string voidMat;          ///< Beam enterance material
+  std::string innerCoreMat;     ///< Core material
   std::string coreMat;          ///< Core material
   std::string bulkMat;          ///< Bulk material
   std::string skinMat;          ///< Skin material

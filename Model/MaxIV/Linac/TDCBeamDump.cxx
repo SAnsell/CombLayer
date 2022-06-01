@@ -199,6 +199,7 @@ TDCBeamDump::populate(const FuncDataBase& Control)
   topPlateThick=Control.EvalDefVar<double>(keyName+"TopPlateThick",-1.0);
   extraTopPlateThick=Control.EvalDefVar<double>(keyName+"ExtraTopPlateThick",-1.0);
 
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   innerCoreMat=ModelSupport::EvalDefMat(Control,keyName+"InnerCoreMat",0);
   coreMat=ModelSupport::EvalMat<int>(Control,keyName+"CoreMat");
   bulkMat=ModelSupport::EvalMat<int>(Control,keyName+"BulkMat");
@@ -302,8 +303,9 @@ TDCBeamDump::createObjects(Simulation& System)
   const HeadRule& baseHR=ExternalCut::getRule("base");
 
   HeadRule HR;
+  
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -42 -7");
-  makeCell("PreCore",System,cellIndex++,0,0.0,HR*frontHR);
+  makeCell("PreCore",System,cellIndex++,voidMat,0.0,HR*frontHR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"42 -2 -7");
   makeCell("Carbon",System,cellIndex++,carbonMat,0.0,HR);
 

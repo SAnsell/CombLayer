@@ -142,7 +142,7 @@ resnuclei::write(std::ostream& OX) const
 {
   std::ostringstream cx;
   //  const int M=AMax-ZMax+5;
-  cx<<"RESNUCLEI  3.0 "<<outputUnit<<" "<<zOut+5<<" "<<mOut+5<<
+  cx<<"RESNUCLEI  3.0 "<<outputUnit<<" "<<zOut+7<<" "<<mOut+5<<
     " R"<<cellA<<" 1.0 ";
   cx<<" "<<keyName;
   StrFunc::writeFLUKA(cx.str(),OX);
