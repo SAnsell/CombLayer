@@ -113,7 +113,7 @@ OpticsHutch::populate(const FuncDataBase& Control)
   backPlateThick=Control.EvalVar<double>(keyName+"BackPlateThick");
   backPlateWidth=Control.EvalVar<double>(keyName+"BackPlateWidth");
   backPlateHeight=Control.EvalVar<double>(keyName+"BackPlateHeight");
-    
+
   innerOutVoid=Control.EvalDefVar<double>(keyName+"InnerOutVoid",0.0);
   outerOutVoid=Control.EvalDefVar<double>(keyName+"OuterOutVoid",0.0);
   outerBackVoid=Control.EvalDefVar<double>(keyName+"OuterBackVoid",0.0);
@@ -139,11 +139,11 @@ OpticsHutch::populate(const FuncDataBase& Control)
     } while(holeRad>Geometry::zeroTol);
 
   forks.populate(Control);
-  
+
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
   pbMat=ModelSupport::EvalMat<int>(Control,keyName+"PbMat");
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
-  
+
   return;
 }
 
@@ -156,11 +156,11 @@ OpticsHutch::createSurfaces()
   ELog::RegMethod RegA("OpticsHutch","createSurfaces");
 
   // getsurfaces to expand:
-  
+
   // Inner void
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
   SurfMap::makePlane("innerWall",SMap,buildIndex+3,Origin-X*outWidth,X);
-  
+
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
 
   if (innerOutVoid>Geometry::zeroTol)
@@ -175,7 +175,7 @@ OpticsHutch::createSurfaces()
 			   Origin-X*(outWidth+innerThick),X);
   ModelSupport::buildPlane(SMap,buildIndex+16,
 			       Origin+Z*(height+innerThick),Z);
-  
+
   // Lead
   ModelSupport::buildPlane(SMap,buildIndex+22,
 			   Origin+Y*(length+innerThick+pbBackThick),Y);
@@ -189,7 +189,7 @@ OpticsHutch::createSurfaces()
   // OuterWall
   SurfMap::makePlane("outerBack",SMap,buildIndex+32,
 		     Origin+Y*(length+steelThick+pbBackThick),Y);
-  
+
   SurfMap::makePlane("outerWall",SMap,buildIndex+33,
 			   Origin-X*(outWidth+steelThick+pbWallThick),X);
 
@@ -209,7 +209,7 @@ OpticsHutch::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(backPlateWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(backPlateHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(backPlateWidth/2.0),Z);
-  
+
   int BI(buildIndex);
   for(size_t i=0;i<holeRadius.size();i++)
     {
@@ -225,7 +225,7 @@ OpticsHutch::createSurfaces()
        Origin-X*(outWidth+steelThick+pbWallThick+outerOutVoid),X);
 
   forks.createSurfaces(SMap,*this,buildIndex+3000);
-  
+
   return;
 }
 
@@ -239,11 +239,11 @@ OpticsHutch::createObjects(Simulation& System)
   ELog::RegMethod RegA("OpticsHutch","createObjects");
 
   /* Walls going forward are : */
-  
+
   // ring wall
   const HeadRule sideWall=ExternalCut::getValidRule("SideWall",Origin);
   const HeadRule sideCut=ExternalCut::getValidRule("SideWallCut",Origin);
-  
+
   const HeadRule floor=ExternalCut::getValidRule("Floor",Origin);
   const HeadRule frontWall=
     ExternalCut::getValidRule("RingWall",Origin+Y*length);
@@ -261,7 +261,7 @@ OpticsHutch::createObjects(Simulation& System)
   HeadRule HR;
 
   if (innerOutVoid>Geometry::zeroTol)
-    {  
+    {
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-112 3 -1003 -6");
       makeCell("WallVoid",System,cellIndex++,voidMat,0.0,HR*floor*frontWall);
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-112 1003 -6");
@@ -283,7 +283,7 @@ OpticsHutch::createObjects(Simulation& System)
   makeCell("OuterWall",System,cellIndex++,skinMat,0.0,
 	   HR*floor*frontWall*forkWallOuter);
 
-  
+
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,
 				  "2 -12 13 -6 (-103:104:-105:106)");
   makeCell("BackIWall",System,cellIndex++,skinMat,0.0,
@@ -297,7 +297,7 @@ OpticsHutch::createObjects(Simulation& System)
 
   if (outerBackVoid>Geometry::zeroTol)
     {
-      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"3 32 -52 33 -26 ");
+      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"32 -52 33 -36 ");
       makeCell("OuterBackVoid",System,cellIndex++,0,0.0,HR*floor*sideWall);
     }
 
@@ -315,13 +315,13 @@ OpticsHutch::createObjects(Simulation& System)
 
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"112 -102 103 -104 105 -106");
   makeCell("BackPlateSkin",System,cellIndex++,skinMat,0.0,HR*holeCut);
-  
+
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,
-				  "112 -2 3 (-103:104:-105:106)");
+				  "112 -2 3 -6 (-103:104:-105:106)");
   makeCell("BackPlateVoid",System,cellIndex++,voidMat,0.0,
 	   HR*floor*sideWall);
-  
-  
+
+
   // Outer void for pipe(s)
   BI=buildIndex;
   for(size_t i=0;i<holeRadius.size();i++)
@@ -368,7 +368,7 @@ OpticsHutch::createForkCut(Simulation& System)
 	      HR=ModelSupport::getHeadRule
 		(SMap,buildIndex,BI,"3003 -3004 5M -6M 2 -32");
 	      makeCell("ForkHole",System,cellIndex++,voidMat,0.0,HR);
-	      cutHR*=ModelSupport::getHeadRule(SMap,BI,"(-5:6)");	  
+	      cutHR*=ModelSupport::getHeadRule(SMap,BI,"(-5:6)");
 	      BI+=10;
 	    }
 	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3003 -3004 -6 2 -12");
@@ -385,7 +385,7 @@ OpticsHutch::createForkCut(Simulation& System)
 	      HR=ModelSupport::getHeadRule
 		(SMap,buildIndex,BI,"3001 -3002 5M -6M -3 33");
 	      makeCell("ForkHole",System,cellIndex++,voidMat,0.0,HR);
-	      cutHR*=ModelSupport::getHeadRule(SMap,BI,"(-5:6)");	  
+	      cutHR*=ModelSupport::getHeadRule(SMap,BI,"(-5:6)");
 	      BI+=10;
 	    }
 	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3001 -3002 -6 -3 13");
@@ -409,7 +409,7 @@ OpticsHutch::createLinks()
   ELog::RegMethod RegA("OpticsHutch","createLinks");
 
   const double wallThick(pbBackThick+innerThick+outerThick);
-  
+
   setConnect(0,Origin,Y);
   setLinkSurf(0,ExternalCut::getValidRule("RingWall",Origin+Y*length));
 
@@ -450,7 +450,7 @@ OpticsHutch::createLinks()
   return;
 }
 
-  
+
 void
 OpticsHutch::createChicane(Simulation& System)
   /*!
@@ -466,7 +466,7 @@ OpticsHutch::createChicane(Simulation& System)
   const FuncDataBase& Control=System.getDataBase();
   const size_t NChicane=
     Control.EvalDefVar<size_t>(keyName+"NChicane",0);
-  
+
   for(size_t i=0;i<NChicane;i++)
     {
       const std::string NStr(std::to_string(i));

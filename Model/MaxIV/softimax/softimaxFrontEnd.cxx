@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: softimax/softimaxFrontEnd.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -65,11 +65,11 @@ namespace xraySystem
 {
 
 // Note currently uncopied:
-  
+
 softimaxFrontEnd::softimaxFrontEnd(const std::string& Key) :
   R3FrontEnd(Key),
   undulatorPipe(new xraySystem::UTubePipe(newName+"UPipe")),
-  undulator(new xraySystem::Undulator(newName+"Undulator"))   
+  undulator(new xraySystem::Undulator(newName+"Undulator"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -82,7 +82,7 @@ softimaxFrontEnd::softimaxFrontEnd(const std::string& Key) :
   OR.addObject(undulatorPipe);
   OR.addObject(undulator);
 }
-  
+
 softimaxFrontEnd::~softimaxFrontEnd()
   /*!
     Destructor
@@ -97,11 +97,12 @@ softimaxFrontEnd::createLinks()
 {
   setLinkCopy(0,*undulator,1);
   setLinkCopy(1,*lastComp,2);
+
   return;
 }
 
 
-  
+
 const attachSystem::FixedComp&
 softimaxFrontEnd::buildUndulator(Simulation& System,
 				 const attachSystem::FixedComp& preFC,
@@ -112,7 +113,7 @@ softimaxFrontEnd::buildUndulator(Simulation& System,
     \param System :: Simulation to use
     \param preFC :: Initial cell
     \param preSideIndex :: Initial side index
-    \return link object 
+    \return link object
   */
 {
   ELog::RegMethod RegA("softimaxFrontEnd","buildUndulator");
@@ -122,7 +123,7 @@ softimaxFrontEnd::buildUndulator(Simulation& System,
   outerCell=buildZone.createUnit(System,*undulatorPipe,2);
 
   CellMap::addCell("UndulatorOuter",outerCell);
-  
+
   undulatorPipe->insertInCell("FFlange",System,outerCell);
   undulatorPipe->insertInCell("BFlange",System,outerCell);
   undulatorPipe->insertInCell("Pipe",System,outerCell);
@@ -131,10 +132,10 @@ softimaxFrontEnd::buildUndulator(Simulation& System,
   undulator->createAll(System,*undulatorPipe,0);
   undulatorPipe->insertInCell("Pipe",System,undulator->getCell("Void"));
 
-  ELog::EM<<"Undulater Centre - "<<undulatorPipe->getCentre()<<ELog::endDiag;
+  ELog::EM<<"Undulater Centre: "<<undulatorPipe->getCentre()<<ELog::endDiag;
+
   return *undulatorPipe;
 }
 
-  
-}   // NAMESPACE xraySystem
 
+}   // NAMESPACE xraySystem
