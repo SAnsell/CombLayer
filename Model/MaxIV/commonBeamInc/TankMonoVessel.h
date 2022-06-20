@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   speciesInc/TankMonoVessel.h
+ * File:   commonBeamInc/TankMonoVessel.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,14 +70,14 @@ class TankMonoVessel :
   double portBTubeLength;     ///< Port tube length
   double portBTubeRadius;     ///< Port tube radius
 
-  double flangeAXStep;         ///< Step of flange [offset]
-  double flangeAZStep;         ///< Step of flange [offset]
-  double flangeBXStep;         ///< Step of flange [offset]
+  double flangeAXStep;        ///< Step of flange [offset]
+  double flangeAZStep;        ///< Step of flange [offset]
+  double flangeBXStep;        ///< Step of flange [offset]
   double flangeBZStep;        ///< Step of flange [offset]
-  double flangeARadius;        ///< Joining Flange radius
-  double flangeALength;        ///< Joining Flange length
-  double flangeBRadius;        ///< Joining Flange radius
-  double flangeBLength;        ///< Joining Flange length
+  double flangeARadius;       ///< Joining Flange radius
+  double flangeALength;       ///< Joining Flange length
+  double flangeBRadius;       ///< Joining Flange radius
+  double flangeBLength;       ///< Joining Flange length
 
   std::set<int> portCells;               ///< Extra cells for the port
   std::vector<Geometry::Vec3D> PCentre;  ///< Centre points [relative to origin]

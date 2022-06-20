@@ -3,7 +3,7 @@
 
  * File:   commonBeam/OpticsHutch.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -297,7 +297,8 @@ OpticsHutch::createObjects(Simulation& System)
 
   if (outerBackVoid>Geometry::zeroTol)
     {
-      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"3 32 -52 33 -26 ");
+      ELog::EM<<"CReating "<<cellIndex<<ELog::endDiag;
+      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"32 -52 33 -36");
       makeCell("OuterBackVoid",System,cellIndex++,0,0.0,HR*floor*sideWall);
     }
 
@@ -308,20 +309,18 @@ OpticsHutch::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-32 33  26 -36");
   makeCell("RoofOuterWall",System,cellIndex++,skinMat,0.0,HR*frontWall*sideCut);
 
-
   // Back plate:
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"102 -12 103 -104 105 -106");
   makeCell("BackPlate",System,cellIndex++,pbMat,0.0,HR*holeCut);
 
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"112 -102 103 -104 105 -106");
   makeCell("BackPlateSkin",System,cellIndex++,skinMat,0.0,HR*holeCut);
-  
+
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,
-				  "112 -2 3 (-103:104:-105:106)");
+				  "112 -2 3 -6 (-103:104:-105:106)");
   makeCell("BackPlateVoid",System,cellIndex++,voidMat,0.0,
 	   HR*floor*sideWall);
-  
-  
+    
   // Outer void for pipe(s)
   BI=buildIndex;
   for(size_t i=0;i<holeRadius.size();i++)
@@ -486,7 +485,6 @@ OpticsHutch::createChicane(Simulation& System)
       PItem->createAll(System,*this,getSideIndex("outerWall"));
       PChicane.push_back(PItem);
     }
-
   return;
 }
 
