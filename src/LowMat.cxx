@@ -54,7 +54,7 @@ LowMat::getIDcern(const size_t Z,const size_t iso)
 {
   // List of unique items to INFN data base
   typedef std::map<size_t,std::tuple<int,int,double,std::string>> mapTYPE;
-  
+
   static const mapTYPE mUnit
 	({
 	 {    8, {8, 16, 296.0, "OXYGEN"} }
@@ -63,7 +63,7 @@ LowMat::getIDcern(const size_t Z,const size_t iso)
   const size_t zaid=Z*1000+iso;
   mapTYPE::const_iterator mc=mUnit.find(zaid);
   if (mc==mUnit.end()) mc=mUnit.find(Z);
-  
+
   return (mc==mUnit.end()) ? getID(Z,iso) : mc->second;
 }
 
@@ -80,20 +80,19 @@ LowMat::getIDinfn(const size_t Z,const size_t iso)
 {
   // List of unique items to INFN data base
   typedef std::map<size_t,std::tuple<int,int,double,std::string>> mapTYPE;
-  
+
   static const mapTYPE mUnit
 	({
    	 { 8016, {8, 16, 296.0, "OXYGE-16"} },
 	 {    8, {8, -2, 296.0, "OXYGEN"} },
   	 {14028, {14, 28, 296.0,"SILIC-28"} },
 	 {26056, {26, 56, 296.0,"56-FE"} },
-	 {41093, {41, 93, 296.0,"NIOBIUM"} }
 	});
 
   const size_t zaid=Z*1000+iso;
   mapTYPE::const_iterator mc=mUnit.find(zaid);
   if (mc==mUnit.end()) mc=mUnit.find(Z);
-  
+
   return (mc==mUnit.end()) ? getID(Z,iso) : mc->second;
 }
 
@@ -133,7 +132,7 @@ LowMat::getID(const size_t Z,const size_t iso)
 	 {    4, {4,  9, 296.0, "BERYLLIU"} },
 	 { 5010, {5, 10, 296.0, "BORON-10"} },
 	 { 5011, {5, 11, 296.0, "BORON-11"} },
-	 {    5, {5, -2, 296.0, "BORON"} }, 
+	 {    5, {5, -2, 296.0, "BORON"} },
 	 { 6012, {6, -2, 296.0, "CARBON"} },
 	 {    6, {6, -2, 296.0, "CARBON"} },   // this may not work
 	 {    7, {7, -2, 296.0, "NITROGEN"} },
@@ -170,6 +169,7 @@ LowMat::getID(const size_t Z,const size_t iso)
 	 {   38, {38, -2, 296.0,"STRONTIU"} },
 	 {   39, {39, -2, 296.0,"YTTRIUM"} },
 	 {   40, {40, -2, 296.0,"ZIRCONIU"} },
+	 {41093, {41, 93, 296.0,"NIOBIUM"} },
 	 {   42, {42, -2, 296.0,"MOLYBDEN"} },
 	 {43099, {43, 99, 296.0,"99-TC"} },
 	 {   44, {44, -2, 296.0,"PALLADIU"} },
@@ -223,7 +223,7 @@ LowMat::getID(const size_t Z,const size_t iso)
   const size_t zaid=Z*1000+iso;
   mapTYPE::const_iterator mc=mUnit.find(zaid);
   if (mc==mUnit.end()) mc=mUnit.find(Z);
-  
+
   return (mc==mUnit.end()) ?
     std::tuple<int,int,double,std::string>(0,0,0.0,"") : mc->second;
 }
