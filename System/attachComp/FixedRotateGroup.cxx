@@ -384,6 +384,36 @@ FixedRotateGroup::populate(const std::map<std::string,
 }
 
 void
+FixedRotateGroup::applyOffset(const std::string& unitName)
+  /*!
+    Apply a rotation step to a single system
+  */
+{
+  ELog::RegMethod RegA("FixedRotateGroup","applyOffset");
+
+  FTYPE::iterator FCmc=FMap.find(unitName);
+  std::map<std::string,rotate>::const_iterator mc=GOffset.find(unitName);
+  if (FCmc==FMap.end() || mc==GOffset.end()) 
+    throw ColErr::InContainerError<std::string>
+      (unitName,"Rotate not found");
+  
+  const rotate& GO=mc->second;
+  FCmc->second->applyAngleRotate(preXAngle+GO.preXAngle,
+				    preYAngle+GO.preYAngle,
+                                    preZAngle+GO.preZAngle);
+
+  FCmc->second->applyShift(xStep+GO.xStep,yStep+GO.yStep,zStep+GO.zStep);
+
+  FCmc->second->applyAngleRotate(xAngle+GO.xAngle,
+				    yAngle+GO.yAngle,
+				    zAngle+GO.zAngle);
+
+  FCmc->second->reOrientate();
+  return;
+}
+
+
+void
 FixedRotateGroup::applyOffset()
   /*!
     Apply the rotation/step offset
@@ -394,23 +424,7 @@ FixedRotateGroup::applyOffset()
 
   for(FTYPE::value_type& FCmc : FMap)
     {
-      std::map<std::string,rotate>::const_iterator mc=GOffset.find(FCmc.first);
-      if (mc==GOffset.end())
-        throw ColErr::InContainerError<std::string>
-          (FCmc.first,"Rotate not found");
-      
-      const rotate& GO=mc->second;
-      FCmc.second->applyAngleRotate(preXAngle+GO.preXAngle,
-				    preYAngle+GO.preYAngle,
-                                    preZAngle+GO.preZAngle);
-
-      FCmc.second->applyShift(xStep+GO.xStep,yStep+GO.yStep,zStep+GO.zStep);
-
-      FCmc.second->applyAngleRotate(xAngle+GO.xAngle,
-				    yAngle+GO.yAngle,
-				    zAngle+GO.zAngle);
-
-      FCmc.second->reOrientate();
+      applyOffset(FCmc.first);
     }
   return;
 }
@@ -429,6 +443,24 @@ FixedRotateGroup::createUnitVector(const attachSystem::FixedComp& FC,
   FixedGroup::createUnitVector(FC,sideIndex);
   applyOffset();
     
+  return;
+}
+
+void
+FixedRotateGroup::createUnitVector(const std::string& unitName,
+				   const attachSystem::FixedComp& FC,
+				   const long int sideIndex)
+  /*!
+    Create the unit vectors
+    \param FC :: Fixed Component
+    \param sideIndex :: signed linkpt			
+  */
+{
+  ELog::RegMethod RegA("FixedOffset","createUnitVector(name)");
+
+  attachSystem::FixedComp& activeFC=getKey(unitName);
+  activeFC.createUnitVector(FC,sideIndex);
+  applyOffset(unitName);    
   return;
 }
  

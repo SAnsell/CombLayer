@@ -430,8 +430,8 @@ std::set<int>
 getNamedCells(const Simulation& System,
 	      const inputParam& IParam,
 	      const std::string& keyItem,
-	      const long int setIndex,
-	      const long int index,
+	      const size_t setIndex,
+	      const size_t index,
 	      const std::string& errStr)
   /*!
     Calculate the objects based on a name e.g. a FixedComp.
@@ -461,8 +461,8 @@ std::set<int>
 getNamedCellsWithMat(const Simulation& System,
 		     const inputParam& IParam,
 		     const std::string& keyItem,
-		     const long int setIndex,
-		     const long int index,
+		     const size_t setIndex,
+		     const size_t index,
 		     const std::string& matName,
 		     const std::string& errStr)
   /*!
@@ -496,8 +496,8 @@ std::set<const MonteCarlo::Object*>
 getNamedObjectsWithMat(const Simulation& System,
 		       const inputParam& IParam,
 		       const std::string& keyItem,
-		       const long int setIndex,
-		       const long int index,
+		       const size_t setIndex,
+		       const size_t index,
 		       const std::string& matName,
 		       const std::string& errStr)
   /*!
@@ -531,8 +531,8 @@ std::set<MonteCarlo::Object*>
 getNamedObjects(const Simulation& System,
 		const inputParam& IParam,
 		const std::string& keyItem,
-		const long int setIndex,
-		const long int index,
+		const size_t setIndex,
+		const size_t index,
 		const std::string& errStr)
   /*!
     Calculate the objects based on a name e.g. a FixedComp.
