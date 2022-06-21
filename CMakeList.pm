@@ -423,14 +423,13 @@ sub writeExcutables
 	  $item,".cxx)\n";
 
       ## Special first and last item
-      my $firstUnit=undef;
       my $lastUnit=undef;
       if (@{$self->{depLists}{$item}}>2)
         {
 #	    $firstUnit=shift @{$self->{depLists}{$item}};
 	    $lastUnit=pop @{$self->{depLists}{$item}};
 	    print $DX "target_link_libraries(",
-		$item," -Wl,--start-group lib",$firstUnit,")\n";
+		$item," -Wl,--start-group lib",$lastUnit,")\n";
 	}
       foreach my $dItem (@{$self->{depLists}{$item}})
       {
