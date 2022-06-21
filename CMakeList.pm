@@ -426,7 +426,6 @@ sub writeExcutables
       my $lastUnit=undef;
       if (@{$self->{depLists}{$item}}>2)
         {
-#	    $firstUnit=shift @{$self->{depLists}{$item}};
 	    $lastUnit=pop @{$self->{depLists}{$item}};
 	    print $DX "target_link_libraries(",
 		$item," -Wl,--start-group lib",$lastUnit,")\n";

@@ -1,6 +1,6 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   attachComp/FixedRotateGroup.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
