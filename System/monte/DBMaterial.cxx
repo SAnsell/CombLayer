@@ -225,7 +225,7 @@ DBMaterial::createMaterial(const std::string& matName,
   
   const int matID=getNextID();
   MonteCarlo::Material MObj;
-  MObj.setMaterial(matID,MLine,MTLine,LibLine);
+  MObj.setMaterial(matID,matName,MLine,MTLine,LibLine);
   IndexMap.emplace(matName,matID);
   const auto& mPair=MStore.emplace(matID,MObj);
 

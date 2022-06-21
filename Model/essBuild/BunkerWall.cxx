@@ -3,7 +3,7 @@
  
  * File:   essBuild/BunkerWall.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -145,7 +145,7 @@ BunkerWall::populate(const FuncDataBase& Control)
   
   wallThick=Control.EvalVar<double>(keyName+"Thick");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
-
+  
   // PASSIVE
   nBasic=Control.EvalVar<size_t>(keyName+"NBasic");
 
@@ -154,8 +154,6 @@ BunkerWall::populate(const FuncDataBase& Control)
   ModelSupport::populateDivide(Control,nBasic,keyName+"Mat",
 			       ModelSupport::EvalMatString(wallMat),
 			       basicMatVec);
-
-
   // Need two sets active and passive :
   // ACTIVE:
   // BOOLEAN NUMBER!!!!!!!

@@ -274,11 +274,15 @@ StriplineBPM::createObjects(Simulation& System)
     ModelSupport::getHeadRule(SMap,buildIndex,"401 -302  307 -317");
   for(size_t i=0;i<4;i++)
     {
+
       HR=ModelSupport::getHeadRule(SMap,buildIndex+BI,"351 -352");
-      makeCell("Stripline",System,cellIndex++,striplineMat,0.0,IHR+HR);
+      ELog::EM<<"OuterX == "<<cellIndex
+	      <<" "<<HR<<ELog::endDiag;
+
+      makeCell("Stripline",System,cellIndex++,striplineMat,0.0,IHR*HR);
       HR=ModelSupport::getRangeHeadRule
 	(SMap,351,358,BI,buildIndex,"352R -353R");
-      makeCell("StriplineGap",System,cellIndex++,voidMat,0.0,IHR+HR);
+      makeCell("StriplineGap",System,cellIndex++,voidMat,0.0,IHR*HR);
       BI+=2;
     }
   // edge electrod void

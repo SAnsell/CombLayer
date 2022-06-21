@@ -103,13 +103,14 @@ populateDivide(const FuncDataBase& Control,const size_t N,
     \param Vec :: Vector to populate [and clear]
   */
 {
-  ELog::RegMethod RegA("surfDIter","populateDivide");
+  ELog::RegMethod RegA("surfDIter[F]","populateDivide(I,S,Vec)");
+
   if (N>0)
     {
       double frac=1.0/static_cast<double>(N);
       for(size_t i=1;i<N;i++)
 	{
-	  const std::string NName=StrFunc::makeString(i);
+	  const std::string NName=std::to_string(i);
 	  const double fA=Control.EvalDefVar<double>(Name+NName,frac);
 	  Vec.push_back(fA);
 	  frac=((static_cast<double>(N-i)-1.0)*Vec.back()+1.0)/
@@ -133,6 +134,8 @@ populateDivide(const FuncDataBase& Control,const size_t N,
     \param Vec :: Vector to populate [and clear]
   */
 {
+  ELog::RegMethod RegA("surfDIter[F]","populateDivide(I,S,I,Vec)");
+
   Vec.clear();
   int defV=defValue;
   for(size_t i=0;i<N;i++)
@@ -158,12 +161,14 @@ populateDivide(const FuncDataBase& Control,const size_t N,
     \param Vec :: Vector to populate [and clear]
   */
 {
+  ELog::RegMethod RegA("surfDIter[F]","populateDivide(I,S,S,Vec)");
+
   Vec.clear();
   std::string defV=defValue;
   for(size_t i=0;i<N;i++)
     {
       defV=Control.EvalDefVar<std::string>
-	(Name+StrFunc::makeString(i),defV);
+	(Name+std::to_string(i),defV);
       Vec.push_back(defV);
     }
   return;
@@ -183,6 +188,8 @@ populateDivide(const FuncDataBase& Control,const size_t N,
     \param Vec :: Vector to populate [and clear]
   */
 {
+  ELog::RegMethod RegA("surfDIter[F]","populateDivide(I,S,D,Vec)");
+
   Vec.clear();
   if (N>0)
     {
@@ -214,7 +221,7 @@ populateAddRange(const FuncDataBase& Control,const size_t N,
     \param Vec :: Vector to populate [and cleared]
   */
 {
-  ELog::RegMethod RegA("surfDIter","populateRange[flag]");
+  ELog::RegMethod RegA("surfDIter[F]","populateAddRange");
   
   Vec.clear();
   if (N>0)
@@ -278,7 +285,7 @@ populateRange(const FuncDataBase& Control,const size_t N,
     \param Vec :: Vector to populate [and cleared]
   */
 {
-  ELog::RegMethod RegA("surfDIter","populateRange[flag]");
+  ELog::RegMethod RegA("surfDIter[F]","populateRange");
   
   Vec.clear();
   if (N>0)
@@ -290,7 +297,7 @@ populateRange(const FuncDataBase& Control,const size_t N,
       setValues.push_back(0);
       for(size_t i=1;i<N;i++)
 	{
-	  const std::string NName=Name+StrFunc::makeString(i);
+	  const std::string NName=Name+std::to_string(i);
 	  if (Control.hasVariable(NName))
 	    {
 	      const double fA=Control.EvalVar<double>(NName);
@@ -339,7 +346,7 @@ populateQuadRange(const FuncDataBase& Control,const size_t N,
     \param Vec :: Vector to populate [and cleared]
   */
 {
-  ELog::RegMethod RegA("surfDIter","populateQuadRange[flag]");
+  ELog::RegMethod RegA("surfDIter[F]","populateQuadRange");
 
   // Initial matrix
   std::vector<double> ABC;
@@ -356,7 +363,7 @@ populateQuadRange(const FuncDataBase& Control,const size_t N,
       Y.push_back(ARange);
       for(size_t i=1;i<N;i++)
 	{
-	  const std::string NName=Name+StrFunc::makeString(i);
+	  const std::string NName=Name+std::to_string(i);
 	  if (Control.hasVariable(NName))
 	    {
 	      const double fA=Control.EvalVar<double>(NName);
@@ -406,7 +413,7 @@ populateVecDivide(const FuncDataBase& Control,
     \param VecOut :: Vector to populate [and clear]
   */
 {
-
+  ELog::RegMethod RegA("surfDIter[F]","populateVecDivide(S,vec(s),vec(s))");
   VecOut.clear();
 
   for(size_t i=0;i<VecDef.size();i++)
@@ -433,7 +440,7 @@ populateVecDivide(const FuncDataBase& Control,
     \param VecOut :: Vector to populate [and clear]
   */
 {
-  ELog::RegMethod RegA("surfDIter[F]","populateVecDivide");
+  ELog::RegMethod RegA("surfDIter[F]","populateVecDivide(S,vec(i),vec(i)");
   VecOut.clear();
 
   for(size_t i=0;i<VecDef.size();i++)

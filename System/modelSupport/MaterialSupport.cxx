@@ -256,7 +256,6 @@ EvalMatString(const int matIndex)
 
   if(!DB.hasKey(matIndex))
     throw ColErr::InContainerError<int>(matIndex,"Material not present");
-
   return DB.getKey(matIndex);
 }
 
