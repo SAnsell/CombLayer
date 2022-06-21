@@ -3,7 +3,7 @@
  
  * File: R3Common/R3FrontEnd.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -665,7 +665,7 @@ R3FrontEnd::createAll(Simulation& System,
   */
 {
   // For output stream
-  ELog::RegMethod RControl("R3FrontEnd","build");
+  ELog::RegMethod RControl("R3FrontEnd","createAll");
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

@@ -3,7 +3,7 @@
  
  * File:   R3Common/R3RingVariables.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -411,7 +411,7 @@ R3FrontEndVariables(FuncDataBase& Control,
   Control.addVariable(frontKey+"OuterRadius",60.0);
 
   // BuildZone offset
-  Control.addVariable(frontKey+"FrontOffset",-400.0);  
+  Control.addVariable(frontKey+"FrontOffset",-450.0);  
 
   PipeGen.setNoWindow();
   PipeGen.setMat("Copper");

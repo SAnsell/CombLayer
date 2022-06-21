@@ -160,14 +160,6 @@ SOFTIMAX::build(Simulation& System,
   opticsBeam->createAll(System,*joinPipe,2);
 
   opticsBeam->buildExtras(System,*opticsHut);
-  return;
-  std::vector<int> cells(opticsHut->getCells("BackWall"));
-  cells.emplace_back(opticsHut->getCell("Extension"));
-  
-  return;
-  opticsBeam->buildOutGoingPipes(System,opticsBeam->getCell("LeftVoid"),
-				 opticsBeam->getCell("RightVoid"),
-				 cells);
 
   return;
 }
