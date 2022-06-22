@@ -159,6 +159,7 @@ SOFTIMAX::build(Simulation& System,
   opticsBeam->setPreInsert(joinPipe);
   opticsBeam->createAll(System,*joinPipe,2);
 
+  return;
   opticsBeam->buildExtras(System,*opticsHut);
 
   return;

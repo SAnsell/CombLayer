@@ -3,7 +3,7 @@
  
  * File:   R3Common/R3ChokeChamber.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -68,7 +68,7 @@ namespace xraySystem
 {
 
 R3ChokeChamber::R3ChokeChamber(const std::string& Key) :
-  attachSystem::FixedOffset(Key,12),
+  attachSystem::FixedRotate(Key,12),
   attachSystem::ContainedGroup("Main","Photon","Electron","Inlet","Side"),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -88,7 +88,7 @@ R3ChokeChamber::R3ChokeChamber(const std::string& Key) :
 
 
 R3ChokeChamber::R3ChokeChamber(const R3ChokeChamber& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedGroup(A),
+  attachSystem::FixedRotate(A),attachSystem::ContainedGroup(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   attachSystem::ExternalCut(A),
   radius(A.radius),wallThick(A.wallThick),length(A.length),
@@ -127,7 +127,7 @@ R3ChokeChamber::operator=(const R3ChokeChamber& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedGroup::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
@@ -191,7 +191,7 @@ R3ChokeChamber::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("R3ChokeChamber","populate");
   
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   radius=Control.EvalVar<double>(keyName+"Radius");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");

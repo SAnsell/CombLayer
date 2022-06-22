@@ -52,7 +52,7 @@ namespace xraySystem
 class softimaxOpticsLine :
   public attachSystem::CopiedComp,
   public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap,
   public attachSystem::SurfMap

@@ -50,8 +50,10 @@ class TankMonoVessel :
   double voidRadius;          ///< void main radius
   double voidDepth;           ///< void depth to dome
   double voidHeight;          ///< void height to lid flange
+  double voidFrontGap;        ///< Extra space at front if needed
   double baseGap;             ///< Extra at base for curve
   double topGap;              ///< Extra at top for curve
+
   
   double wallThick;           ///< Thick of side walls
   double lidOffset;           ///< Lid flange step from voidHeight line
@@ -107,7 +109,6 @@ class TankMonoVessel :
   void createPorts(Simulation&);
 
   void insertPortInCell(Simulation&,const size_t,const int) const;
-
 
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,

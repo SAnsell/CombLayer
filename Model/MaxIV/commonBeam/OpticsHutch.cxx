@@ -297,7 +297,6 @@ OpticsHutch::createObjects(Simulation& System)
 
   if (outerBackVoid>Geometry::zeroTol)
     {
-      ELog::EM<<"CReating "<<cellIndex<<ELog::endDiag;
       HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"32 -52 33 -36");
       makeCell("OuterBackVoid",System,cellIndex++,0,0.0,HR*floor*sideWall);
     }

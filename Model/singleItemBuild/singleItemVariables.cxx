@@ -3,7 +3,7 @@
 
  * File:   singleItemBuild/singleItemVariables.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -402,17 +402,17 @@ SingleItemVariables(FuncDataBase& Control)
   MBGen.generateBlock(Control,"MB1",0.0);
 
   setVariable::QuadUnitGenerator M1QGen;
-  M1QGen.generatePipe(Control,"M1QuadUnit",0.0);
+  M1QGen.generatePipe(Control,"MB1QuadUnit",0.0);
 
   //  setVariable::DipoleChamberGenerator DCGen;
-  DCGen.generatePipe(Control,"M1DipoleChamber",0.0);
+  DCGen.generatePipe(Control,"MB1DipoleChamber",0.0);
 
-  DEGen.generatePipe(Control,"M1DipoleExtract",0.0);
+  DEGen.generatePipe(Control,"MB1DipoleExtract",0.0);
 
-  DBGen.generatePipe(Control,"M1DipoleSndBend",2.8);
+  DBGen.generatePipe(Control,"MB1DipoleSndBend",2.8);
 
   DEGen.setLength(82.0);
-  DEGen.generatePipe(Control,"M1DipoleOut",0.0);
+  DEGen.generatePipe(Control,"MB1DipoleOut",0.0);
 
   // Beam Stop
   setVariable::NBeamStopGenerator BS;

@@ -3,7 +3,7 @@
  
  * File:   commonBeam/HPJaws.cxx.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -134,6 +133,11 @@ HPJaws::createSurfaces()
 {
   ELog::RegMethod RegA("HPJaws","createSurfaces");
 
+  // main void
+  // main volume
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length/2.0),Y);
+  
   // Option A : Front defined
   if (!isActive("front"))
     {
@@ -145,13 +149,10 @@ HPJaws::createSurfaces()
 	}
       else
 	{
-	  ModelSupport::buildPlane
-	    (SMap,buildIndex+21,Origin-Y*(length/2.0-wallThick),Y);
-	  ExternalCut::setCutSurf("front",SMap.realSurf(buildIndex+21));
+	  ExternalCut::setCutSurf("front",SMap.realSurf(buildIndex+11));
 	}
-	
     }
-  
+
   if (!isActive("back"))
     {
       ModelSupport::buildPlane
@@ -167,13 +168,8 @@ HPJaws::createSurfaces()
   ModelSupport::buildCylinder
     (SMap,buildIndex+207,Origin,Y,flangeRadius);
 
-  // main volume
-  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length/2.0),Y);
-
-  if (!flangeJoin)
-    ModelSupport::buildPlane
-      (SMap,buildIndex+21,Origin-Y*(length/2.0-wallThick),Y);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+21,Origin-Y*(length/2.0-wallThick),Y);
 
   ModelSupport::buildPlane
     (SMap,buildIndex+22,Origin+Y*(length/2.0-wallThick),Y);

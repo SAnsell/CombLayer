@@ -3,7 +3,7 @@
 
  * File:   singleItemBuild/makeSingleItem.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -189,8 +189,8 @@ makeSingleItem::build(Simulation& System,
       "CorrectorMag","Jaws","LQuadF","LQuadH","LSexupole",
       "MagnetBlock","Sexupole","MagnetM1","MagnetU1",
       "Octupole","CeramicGap",
-      "EBeamStop","FMask","R3ChokeChamber","QuadUnit",
-      "DipoleChamber","DipoleExtract","DipoleSndBend",
+      "EBeamStop","FMask","R3ChokeChamber",
+      "DipoleExtract","DipoleSndBend",
       "EPSeparator","EPCombine","EPContinue",
       "Quadrupole","TargetShield","FourPort",
       "FlatPipe","TriPipe","TriGroup","SixPort","CrossWay","CrossBlank",
@@ -480,7 +480,7 @@ makeSingleItem::build(Simulation& System,
 
       CM->setCutSurf("Inner",*VC,"outerPipe");
       CM->addInsertCell(voidCell);
-      CM->createAll(System,World::masterOrigin(),0);
+      CM->createAll(System,*VC,0);
 
       return;
     }
@@ -809,33 +809,11 @@ makeSingleItem::build(Simulation& System,
   if (item=="HalfElectronPipe")
     {
       std::shared_ptr<xraySystem::HalfElectronPipe>
-	HE(new xraySystem::HalfElectronPipe("N1BlockHalfElectron"));
+	HE(new xraySystem::HalfElectronPipe("M1BlockHalfElectron"));
       OR.addObject(HE);
       HE->addAllInsertCell(voidCell);
       HE->createAll(System,World::masterOrigin(),0);
 
-      return;
-    }
-  if (item=="QuadUnit" || item=="DipoleChamber" || item=="EPSeparator")
-    {
-      std::shared_ptr<xraySystem::QuadUnit>
-	PDipole(new xraySystem::QuadUnit("PreDipole"));
-      OR.addObject(PDipole);
-      PDipole->addAllInsertCell(voidCell);
-      PDipole->createAll(System,World::masterOrigin(),0);
-
-
-      std::shared_ptr<xraySystem::DipoleChamber>
-	DCSep(new xraySystem::DipoleChamber("DipoleChamber"));
-      OR.addObject(DCSep);
-      DCSep->addAllInsertCell(voidCell);
-      DCSep->createAll(System,*PDipole,2);
-
-      std::shared_ptr<xraySystem::EPSeparator>
-	EPSep(new xraySystem::EPSeparator("EPSep"));
-      OR.addObject(EPSep);
-      EPSep->addInsertCell(voidCell);
-      EPSep->createAll(System,*PDipole,2);
       return;
     }
   if (item == "PrismaChamber")
@@ -852,9 +830,8 @@ makeSingleItem::build(Simulation& System,
 
   if (item=="Quadrupole")
     {
-
       std::shared_ptr<xraySystem::Quadrupole>
-	Quad(new xraySystem::Quadrupole("Quad","Quad"));
+	Quad(new xraySystem::Quadrupole("QFend","QFend"));
       OR.addObject(Quad);
       Quad->addInsertCell(voidCell);
       Quad->createAll(System,World::masterOrigin(),0);

@@ -3,7 +3,7 @@
 
  * File: softimax/softimaxOpticsLine.cxx
  *
- * Copyright (c) 2004-2021 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -111,7 +111,7 @@ namespace xraySystem
 softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(newName,2),
+  attachSystem::FixedRotate(newName,2),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -273,7 +273,7 @@ softimaxOpticsLine::populate(const FuncDataBase& Control)
     Populate the intial values [movement]
    */
 {
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   outerLeft=Control.EvalDefVar<double>(keyName+"OuterLeft",0.0);
   outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",outerLeft);
@@ -490,10 +490,6 @@ softimaxOpticsLine::buildMono(Simulation& System,
 
   int outerCell;
 
-  // offPipeA->createAll(System,initFC,sideIndex);
-  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*offPipeA,2);
-  // offPipeA->insertInCell(System,outerCell);
-
   monoVessel->createAll(System,initFC,sideIndex);
   outerCell=buildZone.createUnit(System,*monoVessel,2);
   monoVessel->insertInCell(System,outerCell);
@@ -502,6 +498,7 @@ softimaxOpticsLine::buildMono(Simulation& System,
   grating->copyCutSurf("innerCylinder",*monoVessel,"innerRadius");
   grating->createAll(System,*monoVessel,0);
 
+  zeroOrderBlock->addInsertCell("Body", monoVessel->getCell("TopVoid"));
   zeroOrderBlock->addInsertCell("Body", monoVessel->getCell("Void"));
   zeroOrderBlock->addInsertCell("Blade", monoVessel->getCell("Void"));
   zeroOrderBlock->setFront(*monoVessel,3);
@@ -639,6 +636,7 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,*pipeInit,"back",*triggerPipe);
 
+
   constructSystem::constructUnit
     (System,buildZone,*triggerPipe,"back",*gateTubeA);
 
@@ -648,9 +646,11 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,*bellowA,"back",*pipeA);
 
+
   pumpM1->setPortRotation(3,Geometry::Vec3D(1,0,0));
   pumpM1->setOuterVoid();
   pumpM1->createAll(System,*pipeA,"back");
+
   
   ///////////// split for FLUKA
   //  const constructSystem::portItem& VP0=pumpM1->getPort(0);
@@ -689,22 +689,8 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   pumpM1->insertPortInCell(System,3,getCell("OuterVoid",0));
   pumpM1->insertPortInCell(System,4,getCell("OuterVoid",2));
   pumpM1->insertPortInCell(System,5,getCell("OuterVoid",1));
-  pumpM1->insertPortInCell(System,6,getCell("OuterVoid",4));
+  pumpM1->insertPortInCell(System,6,getCell("OuterVoid",4));  
 
-
-
-  /* st std::vector<int> cellUnit=this->getCells("OuterVoid");
-  pumpM1->insertMainInCell(System,cellUnit);
-
-  pumpM1->insertPortInCell
-    (System,{{outerCell+4,outerCell},{outerCell,outerCell+1,outerCell+2},{outerCell+3},{outerCell},
-	     {outerCell+2},{outerCell+1},
-	     {outerCell+4}});
-  
-  cellIndex+=5;
-  */
-  /////////////////////////////////////////
-  
 
   constructSystem::constructUnit
     (System,buildZone,VP1,"OuterPlate",*gateA);
@@ -737,12 +723,11 @@ softimaxOpticsLine::buildObjects(Simulation& System)
 
   constructSystem::constructUnit
     (System,buildZone,*gateB,"back",*bellowD);
-  
+
   constructSlitTube(System,*bellowD,"back");
 
   buildMono(System,*slitTube,2);
 
-  
   constructSystem::constructUnit
     (System,buildZone,*monoVessel,"back",*gateC);
 
@@ -765,7 +750,7 @@ softimaxOpticsLine::buildObjects(Simulation& System)
 
   constructSystem::constructUnit
     (System,buildZone,*joinPipeA,"back",*bellowF);
-
+  
   constructSystem::constructUnit
     (System,buildZone,*bellowF,"back",*slitsA);
 
@@ -824,9 +809,18 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   buildZone.rebuildInsertCells(System);
 
   buildSplitter(System,*M3STXMTube,2);
-  System.removeCell(buildZone.getLastCell("Unit"));
 
-  lastComp=bellowJ;
+
+  buildZone.createUnit(System);
+  buildZone.rebuildInsertCells(System);
+
+  lastComp=bellowJ;  
+  return;
+
+  
+  //  System.removeCell(buildZone.getLastCell("Unit"));
+
+  //  lastComp=bellowJ;
   return;
 }
 

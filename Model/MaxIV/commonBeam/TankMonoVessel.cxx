@@ -39,7 +39,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -102,6 +101,7 @@ TankMonoVessel::populate(const FuncDataBase& Control)
   voidRadius=Control.EvalVar<double>(keyName+"VoidRadius");
   voidHeight=Control.EvalVar<double>(keyName+"VoidHeight");
   voidDepth=Control.EvalVar<double>(keyName+"VoidDepth");
+  voidFrontGap=Control.EvalDefVar<double>(keyName+"VoidFrontGap",0.0);
 
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
@@ -228,6 +228,8 @@ TankMonoVessel::createSurfaces()
   // Inner void
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*voidDepth,Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*voidHeight,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+10,
+			   Origin+Y*(voidRadius-voidFrontGap),Y);
   SurfMap::makeCylinder("VoidCyl",SMap,buildIndex+7,Origin,Z,voidRadius);
   setCutSurf("innerRadius",-SMap.realSurf(buildIndex+7));
 
@@ -298,49 +300,56 @@ TankMonoVessel::createObjects(Simulation& System)
   const HeadRule BPortHR(ExternalCut::getRule("back"));
 
   // Main Void
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," (5:-208) (-6:-108) -7 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -7");
   CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"  -17 6 -118 108 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-5 -208 -7");
+  CellMap::makeCell("BaseVoid",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"6 -108 -7");
+  CellMap::makeCell("TopVoid",System,cellIndex++,voidMat,0.0,HR);
+
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 6 -118 108 ");
   CellMap::makeCell("TopPlate",System,cellIndex++,wallMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"  17 -27 25 -26 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"17 -27 25 -26 ");
   CellMap::makeCell("TopFlange",System,cellIndex++,wallMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,
-				 "  5 -6 7 -17 (507:1000) (607:-1000)");
+				 "5 -6 7 -17 (507:1000) (607:-1000)");
   CellMap::makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"  -17 -5 -218 208 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 -5 -218 208");
   CellMap::makeCell("BasePlate",System,cellIndex++,wallMat,0.0,HR);
 
   // Front/Back port
 
   // PORTS:
   // front port
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -1000 7 -507 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1000 7 -507 ");
   CellMap::makeCell("PortAVoid",System,cellIndex++,voidMat,0.0,HR*FPortHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -1000 17 507 -517 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1000 17 507 -517 ");
   CellMap::makeCell("PortAWall",System,cellIndex++,wallMat,0.0,HR*FPortHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -511 517 -527 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-511 517 -527 ");
   CellMap::makeCell("PortAFlange",System,cellIndex++,wallMat,0.0,HR*FPortHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -1000 17 511 517 -527 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1000 17 511 517 -527 ");
   CellMap::makeCell("PortAScreen",System,cellIndex++,voidMat,0.0,HR);
 
   // back port
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1000 7 -607 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1000 7 -607 ");
   CellMap::makeCell("PortBVoid",System,cellIndex++,voidMat,0.0,HR*BPortHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1000 17 607 -617 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1000 17 607 -617 ");
   CellMap::makeCell("PortBWall",System,cellIndex++,wallMat,0.0,HR*BPortHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 611 617 -627 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"611 617 -627 ");
   CellMap::makeCell("PortBFlange",System,cellIndex++,wallMat,0.0,HR*BPortHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1000 17 -611 617 -627 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1000 17 -611 617 -627 ");
   CellMap::makeCell("PortBScreen",System,cellIndex++,voidMat,0.0,HR);
 
   // OUTER VOID SPACE
@@ -351,30 +360,30 @@ TankMonoVessel::createObjects(Simulation& System)
   CellMap::makeCell("OuterFrontVoid",System,cellIndex++,0,0.0,HR*FPortHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,
-				 " 627 1013 -1014 5 -25 17 1000");
+				 "627 1013 -1014 5 -25 17 1000");
   CellMap::makeCell("OuterBackVoid",System,cellIndex++,0,0.0,HR*BPortHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1003 -1013 5 -25 17 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1003 -1013 5 -25 17 ");
   CellMap::makeCell("OuterLeftVoid",System,cellIndex++,0,0.0,HR*fbCut);
   
   ELog::EM<<"CREATE Outer "<<cellIndex<<ELog::endDiag;
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -1004 1014 5 -25 17 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1004 1014 5 -25 17 ");
   CellMap::makeCell("OuterRightVoid",System,cellIndex++,0,0.0,HR*fbCut);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,
-				 " 1003 -1004 1005 -1006 25 -26 27 ");
+				 "1003 -1004 1005 -1006 25 -26 27 ");
   CellMap::makeCell("OuterFlangeVoid",System,cellIndex++,0,0.0,HR*fbCut);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,
-				 " 1003 -1004 26 (118:17) -1006 ");
+				 "1003 -1004 26 (118:17) -1006 ");
   CellMap::makeCell("OuterTopVoid",System,cellIndex++,0,0.0,HR*fbCut);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,
-				 " 1003 -1004 -5 (218:17) 1005 ");
+				 "1003 -1004 -5 (218:17) 1005 ");
   CellMap::makeCell("OuterBaseVoid",System,cellIndex++,0,0.0,HR*fbCut);
 
   // Main exclusion box
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1003 -1004 1005 -1006 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1003 -1004 1005 -1006 ");
 
   addOuterSurf(HR*fbCut);
 
