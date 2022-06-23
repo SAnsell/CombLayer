@@ -872,8 +872,10 @@ makeSingleItem::build(Simulation& System,
       OR.addObject(TubeB);
       OR.addObject(Surround);
 
+      ELog::EM<<"ASDFASFDSAF "<<ELog::endDiag;
       TubeA->addInsertCell(voidCell);
       TubeA->createAll(System,World::masterOrigin(),0);
+      ELog::EM<<"ASDFASFDSAF "<<ELog::endDiag;
       TubeB->addInsertCell(voidCell);
       TubeB->createAll(System,*TubeA,2);
       return;

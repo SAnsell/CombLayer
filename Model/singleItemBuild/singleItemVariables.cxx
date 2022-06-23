@@ -133,10 +133,10 @@
 namespace setVariable
 {
 
-void
-exptHutVariables(FuncDataBase&,const std::string&,const double);
-void
-localShieldVariables(FuncDataBase&);
+void exptHutVariables(FuncDataBase&,const std::string&,const double);
+void localShieldVariables(FuncDataBase&);
+void targetShieldVariables(FuncDataBase&);
+
 
 
 void
@@ -154,6 +154,7 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable("zero",0.0);     // Zero
   Control.addVariable("one",1.0);      // one
 
+  targetShieldVariables(Control);
   // photon test
   Control.addVariable("TargetZStep",0.0);
   Control.addVariable("TargetRadius",5.0);
@@ -683,7 +684,24 @@ SingleItemVariables(FuncDataBase& Control)
   return;
 }
 
+void
+targetShieldVariables(FuncDataBase& Control)
+{
+  // photon test
+  Control.addVariable("TargetZStep",0.0);
+  Control.addVariable("TargetRadius",5.0);
+  Control.addVariable("TargetDefMat","Stainless304");
 
+  Control.addVariable("TubeARadius",5.0);
+  Control.addVariable("TubeALength",25.0);
+  Control.addVariable("TubeBRadius",5.0);
+  Control.addVariable("TubeBLength",5.0);
+  Control.addVariable("TubeADefMat","Stainless304");
+  Control.addVariable("TubeBDefMat","Lead");
+
+  return;
+}
+  
 void
 localShieldVariables(FuncDataBase& Control)
   /*!

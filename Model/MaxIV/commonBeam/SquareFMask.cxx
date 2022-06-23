@@ -3,7 +3,7 @@
  
  * File:   commonBeam/SquareFMask.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -358,7 +358,6 @@ SquareFMask::createObjects(Simulation& System)
     }
   else   // two simple sections [NO pipes]
     {
-      ELog::EM<<"ASDFASFD "<<ELog::endDiag;
       // metal [ inner section]
       HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,"11 -101 3 -4 5 -6 (-103:104:-105:106)");
