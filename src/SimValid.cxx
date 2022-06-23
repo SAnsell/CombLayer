@@ -188,12 +188,19 @@ SimValid::runPoint(const Simulation& System,
   // Find Initial cell [Store for next time]
   //  Centre+=Geometry::Vec3D(0.001,0.001,0.001);
   int initSurfNum(0);
+  bool debugFlag(0);
   Geometry::Vec3D Pt(CP);
   do
     {
       if (initSurfNum)
 	{
-	  ELog::EM<<"Adjusting the initial point as on surface"<<ELog::endDiag;
+	  if (!debugFlag)
+	    {
+	      ELog::EM<<"Adjusting the initial point as on surface:\n"
+		      <<initSurfNum<<" object "<<InitObj->getName()
+		      <<ELog::endCrit;
+	      debugFlag=1;
+	    }
 	  Pt+=Geometry::Vec3D(Random::rand()*0.01,
 			      Random::rand()*0.01,
 			      Random::rand()*0.01);

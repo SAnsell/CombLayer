@@ -3,7 +3,7 @@
  
  * File:   R3CommonInc/R3ChokeChamber.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -85,7 +85,7 @@ class R3ChokeChamber :
   int flangeMat;              ///< Flange material
   int capMat;                 ///< Side cap material 
 
-  bool epPairSet;                 ///< Setting of phot/elec Origin.
+  int epPairSet;                  ///< Setting of phot/elec Origin.
   Geometry::Vec3D photOrg;        ///< Photon origin
   Geometry::Vec3D elecOrg;        ///< Electron origin
   
@@ -93,8 +93,6 @@ class R3ChokeChamber :
   Geometry::Vec3D elecYAxis;      ///< Electron beam axis
 
   Geometry::Vec3D flangeOrg;      ///< flange origin
-
-  void special();
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
@@ -108,6 +106,10 @@ class R3ChokeChamber :
   R3ChokeChamber(const R3ChokeChamber&);
   R3ChokeChamber& operator=(const R3ChokeChamber&);
   virtual ~R3ChokeChamber();
+
+  void setEPOriginPair(const Geometry::Vec3D&,
+		       const Geometry::Vec3D&,
+		       const Geometry::Vec3D&);
 
   void setEPOriginPair(const attachSystem::FixedComp&,
 		       const long int,const long int);

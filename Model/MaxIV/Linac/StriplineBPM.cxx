@@ -276,9 +276,6 @@ StriplineBPM::createObjects(Simulation& System)
     {
 
       HR=ModelSupport::getHeadRule(SMap,buildIndex+BI,"351 -352");
-      ELog::EM<<"OuterX == "<<cellIndex
-	      <<" "<<HR<<ELog::endDiag;
-
       makeCell("Stripline",System,cellIndex++,striplineMat,0.0,IHR*HR);
       HR=ModelSupport::getRangeHeadRule
 	(SMap,351,358,BI,buildIndex,"352R -353R");

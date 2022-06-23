@@ -262,13 +262,19 @@ R3ChokeChamber::createUnitVector(const attachSystem::FixedComp& FC,
       photOrg=Origin;
       Origin+=Y*inletLength;
     }
-  else
+  else if (epPairSet==1)
     {
       // this must be done here because we didnt
       // know the value of X / electronXStep at setEPOriginPair()
       elecOrg+=X*electronXStep;   
       elecXAxis=elecYAxis*Z;
       Origin=(elecOrg+photOrg)/2.0+Y*inletLength;
+    }
+  else 
+    {
+      // this must be done here because we didnt
+      // know the value of X / electronXStep at setEPOriginPair()
+      Origin+=Y*inletLength;
     }
   return;
 }
@@ -336,7 +342,7 @@ R3ChokeChamber::createSurfaces()
 
   // Photon Pipe (200)
   //--------------------
-
+  ELog::EM<<"Photo Path["<<Origin<<"] == "<<photOrg-Origin<<":"<<Y<<ELog::endDiag;
   ModelSupport::buildCylinder(SMap,buildIndex+207,photOrg,Y,photonRadius);
   ModelSupport::buildCylinder
     (SMap,buildIndex+217,photOrg,Y,photonRadius+photonThick);
@@ -351,7 +357,8 @@ R3ChokeChamber::createSurfaces()
 
   // electron Pipe (300)
   //---------------
-  
+
+  ELog::EM<<"Elec Path["<<Origin<<"] == "<<elecOrg-Origin<<":"<<elecYAxis<<ELog::endDiag;
   ModelSupport::buildCylinder
     (SMap,buildIndex+307,elecOrg,elecYAxis,electronRadius);
   ModelSupport::buildCylinder
@@ -543,6 +550,27 @@ R3ChokeChamber::createLinks()
   return;
 }
 
+void
+R3ChokeChamber::setEPOriginPair(const Geometry::Vec3D& POrg,
+				const Geometry::Vec3D& EOrg,
+				const Geometry::Vec3D& EAxis)
+  /*!
+    Set the electron/Photon origins exactly
+    \param POrg :: photon origin (absolute)
+    \param EOrg :: electron origin (absolute)
+    \param EAxis :: electron axis
+   */
+{
+  ELog::RegMethod RegA("R3ChokeChamber","setEPOriginPair");
+
+  photOrg=POrg;
+  elecOrg=EOrg;
+  elecYAxis=EAxis.unit();
+  
+  epPairSet=2;
+  return;
+}
+  
 void
 R3ChokeChamber::setEPOriginPair(const attachSystem::FixedComp& FC,
 				const long int photonIndex,
