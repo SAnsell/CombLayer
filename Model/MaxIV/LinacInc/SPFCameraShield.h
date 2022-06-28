@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/LinacInc/SPFCameraShield.h
  *
- * Copyright (c) 2004-2021 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef tdcSystem_SPFCameraShield_h
@@ -35,10 +35,11 @@ namespace tdcSystem
   \brief SPF Chamera shield
 */
 
-class SPFCameraShield : public attachSystem::ContainedComp,
-			public attachSystem::FixedRotate,
-			public attachSystem::CellMap,
-			public attachSystem::SurfMap
+class SPFCameraShield :
+    public attachSystem::ContainedComp,
+    public attachSystem::FixedRotate,
+    public attachSystem::CellMap,
+    public attachSystem::SurfMap
 {
  private:
 

@@ -3,7 +3,7 @@
 
  * File:   essBuild/Box.cxx
  *
- * Copyright (c) 2004-2021 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -308,9 +308,20 @@ Box::getLayerSurf(const size_t layerIndex,
     \return Surface string
   */
 {
-  ELog::RegMethod RegA("Box","getLinkSurf");
+  ELog::RegMethod RegA("Box","getLayerSurf");
 
-  throw ColErr::AbsObjMethod("Not implemented yet - do it similar to DiskPreMod?");
+  if (layerIndex>nLayers)
+    throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layerIndex");
+
+  const int uSIndex(std::abs(static_cast<int>(sideIndex)));
+  const int signValue((sideIndex>0) ? 1 : -1);  
+  const int SI(10*static_cast<int>(layerIndex)+buildIndex);
+  
+
+  if (uSIndex<1 || uSIndex>6)
+    throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
+  
+  return signValue*SMap.realSurf(SI+uSIndex);
 }
 
 
@@ -320,7 +331,7 @@ Box::getLayerString(const size_t layerIndex,
   /*!
     Given a side and a layer calculate the layer string
     \param layerIndex :: layer, 0 is inner moderator [0-4]
-    \param sideIndex :: Side [0-3]
+    \param sideIndex :: Side [1-6]
     \return Surface string
   */
 {
@@ -331,44 +342,40 @@ Box::getLayerString(const size_t layerIndex,
 
   const int SI(10*static_cast<int>(layerIndex)+buildIndex);
 
-  std::string Out;
+  HeadRule HR;
   const long int uSIndex(std::abs(sideIndex));
   switch(uSIndex)
     {
     case 1:
-      Out=ModelSupport::getComposite(SMap,SI," -1 ");
+      HR=ModelSupport::getHeadRule(SMap,SI,"-1");
       break;
     case 2:
-      Out=ModelSupport::getComposite(SMap,SI," 2 ");
+      HR=ModelSupport::getHeadRule(SMap,SI,"2");
       break;
     case 3:
-      Out=ModelSupport::getComposite(SMap,SI," -3 ");
+      HR=ModelSupport::getHeadRule(SMap,SI,"-3");
       break;
     case 4:
-      Out=ModelSupport::getComposite(SMap,SI," 4 ");
+      HR=ModelSupport::getHeadRule(SMap,SI,"4");
       break;
     case 5:
-      Out=ModelSupport::getComposite(SMap,SI," -5 ");
+      HR=ModelSupport::getHeadRule(SMap,SI,"-5");
       break;
     case 6:
-      Out=ModelSupport::getComposite(SMap,SI," 6 ");
+      HR=ModelSupport::getHeadRule(SMap,SI,"6");
       break;
     default:
       throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
     }
   if (sideIndex<0)
-    {
-      HeadRule HR(Out);
-      HR.makeComplement();
-      return HR.display();
-    }
+    HR.makeComplement();
 
-  return Out;
+  return HR.display();
 }
 
 Geometry::Vec3D
 Box::getSurfacePoint(const size_t layerIndex,
-                            const long int sideIndex) const
+		     const long int sideIndex) const
   /*!
     Given a side and a layer calculate the surface point
     \param layerIndex :: layer, 0 is inner moderator

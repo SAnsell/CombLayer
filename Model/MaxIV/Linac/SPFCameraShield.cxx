@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/Linac/SPFCameraShield.cxx
  *
- * Copyright (c) 2004-2021 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,7 +67,8 @@ namespace tdcSystem
 SPFCameraShield::SPFCameraShield(const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,6),
-  attachSystem::CellMap()
+  attachSystem::CellMap(),
+  attachSystem::SurfMap()
  /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -78,6 +79,7 @@ SPFCameraShield::SPFCameraShield(const SPFCameraShield& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedRotate(A),
   attachSystem::CellMap(A),
+  attachSystem::SurfMap(A),
   length(A.length),width(A.width),height(A.height),
   wallThick(A.wallThick),
   roofLength(A.roofLength),
@@ -104,6 +106,7 @@ SPFCameraShield::operator=(const SPFCameraShield& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
+      attachSystem::SurfMap::operator=(A);
       length=A.length;
       width=A.width;
       height=A.height;

@@ -189,8 +189,6 @@ SquareFMask::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+8,Origin,Y,flangeBInRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+18,Origin,Y,flangeBOutRadius);
 
-  // Inner Structure
-  //ModelSupport::buildPlane(SMap,buildIndex+101,MPt,Y);
   
   const double AH2(innerAHeight/2.0);
   const double MH2(innerMinHeight/2.0);
@@ -198,6 +196,8 @@ SquareFMask::createSurfaces()
   const double AW2(innerAWidth/2.0);
   const double MW2(innerMinWidth/2.0);
   const double BW2(innerBWidth/2.0);
+  // Inner Structure (no pipe)
+  ModelSupport::buildPlane(SMap,buildIndex+101,MPt,Y);
   
   ModelSupport::buildPlane(SMap,buildIndex+103,
 			   APt-X*AW2-Z*AH2,

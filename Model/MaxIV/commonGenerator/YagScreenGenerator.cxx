@@ -3,7 +3,7 @@
 
  * File:   commonGenerator/YagScreenGenerator.cxx
  *
- * Copyright (c) 2004-2021 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,9 +66,9 @@ YagScreenGenerator::YagScreenGenerator() :
   screenHolderRadius(1.3), screenHolderThick(0.3), // measured,
   
   holderMat("Stainless304L"),
-  mirrorMat("SiO2"),
   screenMat("SiO2"),
-  screenHolderMat("Aluminium")
+  screenHolderMat("Aluminium"),
+  mirrorMat("SiO2")
   /*!
     Constructor and defaults
   */

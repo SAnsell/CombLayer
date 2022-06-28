@@ -3,7 +3,7 @@
  
  * File:   essBuild/DiskLayerMod.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -354,10 +354,10 @@ DiskLayerMod::getLayerSurf(const size_t layerIndex,
     \return Surface string
   */
 {
-  ELog::RegMethod RegA("H2Moderator","getLinkSurf");
+  ELog::RegMethod RegA("H2Moderator","getLayerSurf");
 
   const size_t SI(static_cast<size_t>(std::abs(sideIndex)));
-  const int signValue((SI>0) ? 1 : -1);
+  const int signValue((sideIndex>0) ? 1 : -1);
 
   // Z direction is nLayer
   if (SI==5 || SI==6)

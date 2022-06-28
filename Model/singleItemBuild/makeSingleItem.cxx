@@ -504,9 +504,16 @@ makeSingleItem::build(Simulation& System,
       fm->addInsertCell(voidCell);
       fm->createAll(System,World::masterOrigin(),0);
 
+      // with pipes:
+      std::shared_ptr<xraySystem::SquareFMask>
+	fmb(new xraySystem::SquareFMask("FMaskB"));
+      OR.addObject(fmb);
+
+      fmb->addInsertCell(voidCell);
+      fmb->createAll(System,World::masterOrigin(),0);
+
       return;
     }
-
 
   if (item == "Jaws")
     {

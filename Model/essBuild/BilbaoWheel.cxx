@@ -3,7 +3,7 @@
 
  * File:   essBuild/BilbaoWheel.cxx
  *
- * Copyright (c) 2004-2019 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1397,7 +1397,8 @@ BilbaoWheel::buildSectors(Simulation& System) const
 	c(new BilbaoWheelCassette(keyName,"Sec",i));
       OR.addObject(c);
       c->createAll(System,*this,0,
-		   7,8,9,12,i*360.0/static_cast<double>(nSectors));
+		   7,8,9,12,
+		   static_cast<double>(i)*360.0/static_cast<double>(nSectors));
     }
 }
 

@@ -253,13 +253,17 @@ SingleItemVariables(FuncDataBase& Control)
 
   // collimator block
   setVariable::SqrFMaskGenerator FMaskGen;
+
+  // B is standard
+  FMaskGen.generateColl(Control,"FMask",0.0,15.0);
+
   FMaskGen.setPipeRadius(-10.0);
   // FMaskGen.setCF<CF63>();
   // FMaskGen.setBFlangeCF<CF40>();
   // FMaskGen.setFrontGap(3.99,1.97);  //1033.8
   // FMaskGen.setBackGap(0.71,0.71);
   // FMaskGen.setMinSize(10.2,0.71,0.71);
-  FMaskGen.generateColl(Control,"FMask",0.0,15.0);
+  FMaskGen.generateColl(Control,"FMaskB",40.0,15.0);
 
 
   setVariable::EPSeparatorGenerator EPSGen;
