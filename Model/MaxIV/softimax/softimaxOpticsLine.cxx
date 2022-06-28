@@ -582,8 +582,7 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
   
   joinPipeAB->createAll(System,*bremCollAA,"back");
   joinPipeAB->insertAllInCell(System,outerCell);
-
-
+  
   // RIGHT
   constructSystem::constructUnit
     (System,IZRight,*M3Pump,"outB",*bellowBB);
@@ -594,11 +593,11 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
   constructSystem::constructUnit
     (System,IZRight,*joinPipeBA,"back",*bremCollBA);
 
-
   outerCell=IZRight.createUnit(System);
   
   joinPipeBB->createAll(System,*bremCollBA,"back");
   joinPipeBB->insertAllInCell(System,outerCell);
+  joinPipeBB->insertInCell("Main",System,this->getCell("ExitHoleB"));
 
 
   setCell("LeftVoid",IZLeft.getLastCell("Unit"));
@@ -606,8 +605,6 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
 
   return;
 }
-
-
 
 void
 softimaxOpticsLine::buildObjects(Simulation& System)
@@ -804,45 +801,40 @@ softimaxOpticsLine::buildObjects(Simulation& System)
 
   buildM3STXMMirror(System,*bellowJ,"back");
    
-
   buildZone.createUnit(System);  // build to end
   buildZone.rebuildInsertCells(System);
-
+  
   buildSplitter(System,*M3STXMTube,2);
 
-
-  buildZone.createUnit(System);
-  buildZone.rebuildInsertCells(System);
-
-  lastComp=bellowJ;  
-  return;
+  //  buildZone.createUnit(System);
+  //  buildZone.rebuildInsertCells(System);
 
   
-  //  System.removeCell(buildZone.getLastCell("Unit"));
+  System.removeCell(buildZone.getLastCell("Unit"));
+  lastComp=bellowJ;  
+  buildExtras(System);
 
-  //  lastComp=bellowJ;
   return;
 }
 
 
 void
-softimaxOpticsLine::buildExtras(Simulation& System,
-				const attachSystem::CellMap& hut)
+softimaxOpticsLine::buildExtras(Simulation& System)
   /*!
     Essential bulder to put pipes and shields into softimax
     \param System :: Simulation
-    \param hut :: optics hut
    */
 {
   ELog::RegMethod RegA("softiMaxOpticsLine","buildExtras");
 
-  joinPipeAB->insertInCell("Main",System,hut.getCell("ExitHole",0));
-  joinPipeBB->insertInCell("Main",System,hut.getCell("ExitHole",1));
+  joinPipeAB->insertInCell("Main",System,this->getCell("ExitHoleA"));
+  joinPipeBB->insertInCell("Main",System,this->getCell("ExitHoleB"));
+    
 
-  joinPipeAB->insertInCell("Main",System,hut.getCell("OuterBackVoid"));
-  joinPipeBB->insertInCell("Main",System,hut.getCell("OuterBackVoid"));
-  joinPipeAB->insertInCell("FlangeB",System,hut.getCell("OuterBackVoid"));
-  joinPipeBB->insertInCell("FlangeB",System,hut.getCell("OuterBackVoid"));
+  joinPipeAB->insertInCell("Main",System,this->getCell("OuterBackVoid"));
+  joinPipeBB->insertInCell("Main",System,this->getCell("OuterBackVoid"));
+  joinPipeAB->insertInCell("FlangeB",System,this->getCell("OuterBackVoid"));
+  joinPipeBB->insertInCell("FlangeB",System,this->getCell("OuterBackVoid"));
 
   screenA->addAllInsertCell(getCell("RightVoid"));
   screenA->addAllInsertCell(getCell("LeftVoid"));
@@ -854,8 +846,6 @@ softimaxOpticsLine::buildExtras(Simulation& System,
 
   return;
 }
-
-
 
 void
 softimaxOpticsLine::createLinks()

@@ -150,6 +150,9 @@ SOFTIMAX::build(Simulation& System,
   joinPipe->createAll(System,*frontBeam,2);
 
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
+  opticsBeam->setCell("ExitHoleA",opticsHut->getCell("ExitHole",0));
+  opticsBeam->setCell("ExitHoleB",opticsHut->getCell("ExitHole",1));
+  opticsBeam->setCell("OuterBackVoid",opticsHut->getCell("OuterBackVoid"));
   opticsBeam->setCutSurf("front",*opticsHut,
 			 opticsHut->getSideIndex("innerFront"));
 
@@ -159,9 +162,9 @@ SOFTIMAX::build(Simulation& System,
   opticsBeam->setPreInsert(joinPipe);
   opticsBeam->createAll(System,*joinPipe,2);
 
-  return;
-  opticsBeam->buildExtras(System,*opticsHut);
+  //  joinPipeAB->insertInCell("Main",System,opticsHut->getCell("exitHole",0));
 
+  
   return;
 }
 
