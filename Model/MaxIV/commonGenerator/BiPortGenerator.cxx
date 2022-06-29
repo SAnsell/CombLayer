@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonBeam/BiPortGenerator.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -67,22 +67,21 @@ BiPortGenerator::BiPortGenerator() :
   outWallThick(CF50::wallThick),
   outFlangeRadius(CF50::flangeRadius),
   outFlangeLength(CF50::flangeLength),
-  
-  voidMat("Void"),wallMat("Stainless304"),
-  capMat("Stainless304")
+
+  voidMat("Void"),wallMat("Stainless304")
   /*!
     Constructor and defaults
   */
 {}
 
-  
-BiPortGenerator::~BiPortGenerator() 
+
+BiPortGenerator::~BiPortGenerator()
  /*!
    Destructor
  */
 {}
 
-  
+
 template<typename CF>
 void
 BiPortGenerator::setCF(const double L)
@@ -134,16 +133,16 @@ BiPortGenerator::generateBPort(FuncDataBase& Control,
 /*!
     Primary funciton for setting the variables
     It is expected that BiPort is places a set distance from
-    a base object. The left/right link points will need to be 
+    a base object. The left/right link points will need to be
     set in the control program before it can be built.
 
-    \param Control :: Database to add variables 
+    \param Control :: Database to add variables
     \param keyName :: head name for variable
     \param yStep :: Distance from main fixed poit
   */
 {
   ELog::RegMethod RegA("BiPortGenerator","generateColl");
-  
+
   Control.addVariable(keyName+"YStep",yStep);
 
   Control.addVariable(keyName+"Radius",radius);
@@ -151,8 +150,7 @@ BiPortGenerator::generateBPort(FuncDataBase& Control,
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"FlangeRadius",flangeRadius);
   Control.addVariable(keyName+"FlangeLength",flangeLength);
-  Control.addVariable(keyName+"CapThick",capThick);
-  
+
   Control.addVariable(keyName+"OutLength",outLength);
   Control.addVariable(keyName+"InPortRadius",inPortRadius);
   Control.addVariable(keyName+"InWallThick",inWallThick);
@@ -166,8 +164,7 @@ BiPortGenerator::generateBPort(FuncDataBase& Control,
 
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"WallMat",wallMat);
-  Control.addVariable(keyName+"CapMat",capMat);
-  
+
   return;
 }
 
@@ -175,5 +172,5 @@ template void BiPortGenerator::setCF<CF120>(const double);
 template void BiPortGenerator::setCF<CF150>(const double);
 template void BiPortGenerator::setCF<CF200>(const double);
 
-  
+
 }  // NAMESPACE setVariable

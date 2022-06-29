@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonBeamInc/BiPortGenerator.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef setVariable_BiPortGenerator_h
@@ -39,22 +39,21 @@ class BiPortGenerator
 {
  private:
 
-  
+
   double radius;              ///< radius of main tube
   double wallThick;           ///< wall thickness of main tube
   double length;              ///< Main length
 
   double flangeRadius;        ///< Vertical Flange radius
   double flangeLength;        ///< Vertical Flange length
-  double capThick;            ///< Vertical Cap thickness
 
   double outLength;           ///< Flange on outlet port
-  
+
   double inPortRadius;        ///< Radius on inlet port
   double inWallThick;         ///< Wall thickness on inlet port
   double inFlangeRadius;      ///< Flange on inlet port
   double inFlangeLength;      ///< Flange on inlet port
-  
+
   double outPortRadius;        ///< Radius on outlet port
   double outWallThick;         ///< Wall thickness on outlet port
   double outFlangeRadius;      ///< Flange on outlet port
@@ -62,7 +61,6 @@ class BiPortGenerator
 
   std::string voidMat;         ///< void material
   std::string wallMat;         ///< Fe material layer
-  std::string capMat;          ///< flange cap material layer
 
  public:
 
@@ -74,7 +72,7 @@ class BiPortGenerator
   template<typename CF> void setCF(const double);
   template<typename CF> void setFrontCF();
   template<typename CF> void setBackCF(const double);
-  
+
   void generateBPort(FuncDataBase&,const std::string&,
 		     const double) const;
 
@@ -83,4 +81,3 @@ class BiPortGenerator
 }
 
 #endif
- 
