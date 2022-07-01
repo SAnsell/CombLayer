@@ -45,7 +45,7 @@ elif [ $ITEM == "L2SPF2YagScreenInBeam" ]; then
 elif [ $ITEM == "L2SPF2YagScreen" ]; then
     void+="-v L2SPF2ShieldAMainMat Void -v L2SPF2YagUnitMainMat Void "
 elif [[ $ITEM =~ (NoRoof) ]]; then
-    void+="-v InjectionHallRoofMat Void -v InjectionHallSoilMat Void -v InjectionHallFloorMat Void "
+    void+="-v InjectionHallRoofMat Void -v InjectionHallSoilMat Void -v InjectionHallFloorMat Void -v InjectionHallSoilBermSoilMat Void "
     params=" +A +W1600 +H1600 "
 #    params=" +A +W500 +H500 "
 fi
@@ -58,7 +58,9 @@ fi
  echo ${segments}
  echo $void
 
- ./maxiv   -defaultConfig LINAC ${segments} -povray $void a \
+  ./maxiv   -defaultConfig LINAC ${segments} -povray $void a \
     && povray ${params} povray/tdc.pov <<< \"$ITEM\" && exit 0
 #    && povray +A +W800 +H600 povray/tdc.pov <<< \"$ITEM\" && exit 0
 #    && povray +Q0 +W400 +H300 povray/tdc.pov <<< \"$ITEM\" && exit 0
+
+# ./maxiv   -defaultConfig LINAC ${segments} $void a \
