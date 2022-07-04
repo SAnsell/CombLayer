@@ -214,7 +214,6 @@ setDefMagnets(SimTYPE& System,
 			{
 			  Simulation::OTYPE::const_iterator mc=
 			    CellObjects.find(CN);
-			  ELog::EM<<"EMPLACE Cells:"<<CN<<ELog::endCrit;
 			  if (mc!=CellObjects.end())
 			    magnetCells.emplace(mc->second);
 			}
