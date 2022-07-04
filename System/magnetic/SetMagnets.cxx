@@ -113,7 +113,6 @@ setMagneticExternal(SimTYPE& System,
 	    mainSystem::getNamedOriginAxis
 	    (System,IParam,"MagUnit",setIndex,index,
 	     "MagUnit not found");
-	  ELog::EM<<"AOrg == "<<AOrg<<ELog::endDiag;
 
 	  const Geometry::Vec3D Extent=
 	    IParam.getCntVec3D("MagUnit",setIndex,index,"Extent");
@@ -140,13 +139,15 @@ setMagneticExternal(SimTYPE& System,
 	  System.addMagnetObject(OPtr);
 	}
     }
+
   return;
 }
 
   
 template<typename SimTYPE>
 void
-setDefMagnets(SimTYPE& System)
+setDefMagnets(SimTYPE& System,
+	      const bool syncFlag)
   /*!
     This sets the magnets from the main Control variables
     assuming that a magnet region has been built.
@@ -213,6 +214,7 @@ setDefMagnets(SimTYPE& System)
 			{
 			  Simulation::OTYPE::const_iterator mc=
 			    CellObjects.find(CN);
+			  ELog::EM<<"EMPLACE Cells:"<<CN<<ELog::endCrit;
 			  if (mc!=CellObjects.end())
 			    magnetCells.emplace(mc->second);
 			}
@@ -225,8 +227,7 @@ setDefMagnets(SimTYPE& System)
     ELog::EM<<"Warning : No default magnetic fields set"<<ELog::endWarn;
 
   for(MonteCarlo::Object* OPtr : magnetCells)
-    OPtr->setMagFlag();
-
+    OPtr->setMagFlag(syncFlag);
   
   return; 
 }
@@ -244,8 +245,9 @@ setMagneticPhysics(SimTYPE& System,
 {
   ELog::RegMethod RegA("SetMagnets","setMagneticPhysics");
 
+  const bool syncFlag=IParam.flag("MagSyncRadiation");
   if (IParam.flag("defMagnet"))
-    setDefMagnets(System);
+    setDefMagnets(System,syncFlag);
 
   //
   // Choose which cells have a magnetic field present
@@ -262,7 +264,7 @@ setMagneticPhysics(SimTYPE& System,
 	    (System,IParam,"MagField",setIndex,index,"MagField Cells");
 
 	  for(MonteCarlo::Object* OPtr : Cells)
-	    OPtr->setMagFlag();
+	    OPtr->setMagFlag(syncFlag);
 	}
     }
   if (nSet) setMagneticExternal(System,IParam);
@@ -271,11 +273,11 @@ setMagneticPhysics(SimTYPE& System,
 
 ///\cond TEMPLATE
 
-template void setDefMagnets(SimFLUKA&);
+template void setDefMagnets(SimFLUKA&,const bool);
 template void setMagneticPhysics(SimFLUKA&,const mainSystem::inputParam&);
 template void setMagneticExternal(SimFLUKA&,const mainSystem::inputParam&);
 
-template void setDefMagnets(SimPHITS&);
+template void setDefMagnets(SimPHITS&,const bool);
 template void setMagneticPhysics(SimPHITS&,const mainSystem::inputParam&);
 template void setMagneticExternal(SimPHITS&,const mainSystem::inputParam&);
 

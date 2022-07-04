@@ -83,6 +83,7 @@ createInputs(inputParam& IParam)
   IParam.regFlag("fullOR","fullOR");
   IParam.regItem("geomPrecision","geomPrecision");
   IParam.regItem("mode","mode");
+  IParam.regMulti("MagSyncRadiation","MagSyncRadiation",1000,0);
   IParam.regMulti("MagStep","MagStep",1000,0);
   IParam.regMulti("MagUnit","MagUnit",1000,0);
   IParam.regMulti("MagField","MagField",1000,0);
@@ -280,6 +281,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("transmitMat","Transmission value for povray");
   IParam.setDesc("PHITS","PHITS output");
   IParam.setDesc("Monte","MonteCarlo capable simulation");
+  IParam.setDesc("MagSyncRadiation","Set the new CERN fluka sync for cells");
   IParam.setDesc("MagStep","Set the min/max step size for magnetics");
   IParam.setDesc("MagUnit","Add a magnetic type");
   IParam.setDesc("MagField","Set the various units");

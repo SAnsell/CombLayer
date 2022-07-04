@@ -45,9 +45,10 @@ class magnetUnit :
 
   Geometry::Vec3D magExtent;  ///< extent of magnetic field
 
+  bool syncRad;                  ///< Synchroton flag
   std::array<double,4> KFactor;  ///< Magnet units
-  /// active cells
-  std::set<int> activeCells; 
+  std::set<int> activeCells;     /// active cells
+
 
   void populate(const FuncDataBase&);
 
@@ -63,7 +64,8 @@ class magnetUnit :
 
   void setIndex(const size_t I) { index=I; }
   void setExtent(const double,const double,const double);
-  void addCell(const int);
+  void addCells(const int);
+  void addCells(const std::vector<int>&);
   void setKFactor(const std::vector<double>&);
   
   using attachSystem::FixedComp::createAll;

@@ -35,7 +35,7 @@ namespace mainSystem
 namespace magnetSystem
 {
 
-  template<typename SimTYPE> void setDefMagnets(SimTYPE&);
+  template<typename SimTYPE> void setDefMagnets(SimTYPE&,const bool);
   template<typename SimTYPE>
     void setMagneticPhysics(SimTYPE&,const mainSystem::inputParam&);
   template<typename SimTYPE>

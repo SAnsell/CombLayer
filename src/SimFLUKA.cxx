@@ -398,19 +398,25 @@ SimFLUKA::writeMagField(std::ostream& OX) const
       StrFunc::writeFLUKA(cx.str(),OX);
 
       flukaSystem::cellValueSet<2> Steps("stepsize","STEPSIZE");
+      flukaSystem::cellValueSet<0> Sync("syrastep","SYRASTEP");
       for(const OTYPE::value_type& mp : OList)
 	{
-	  if (mp.second->hasMagField())
+	  const int magType=mp.second->hasMagField(); // 1:normal 2:sync
+	  if (magType)  
 	    {
 	      const std::pair<double,double> magStep=
 		mp.second->getMagStep();
 	      Steps.setValues
 		(mp.second->getName(),magStep.first,magStep.second);
+	      if (magType==2)
+		Sync.setValues(mp.second->getName());
 	    }
 	}
       const std::string fmtSTR("%2 %3 R0 R1 1.0 - ");
+      const std::string fmtBSTR("- - R0 R1 1.0 - ");
       const std::vector<int> cellInfo=this->getCellVector();
       Steps.writeFLUKA(OX,cellInfo,fmtSTR);
+      Sync.writeFLUKA(OX,cellInfo,fmtBSTR);
 
       for(const MagTYPE::value_type& MI : MagItem)
 	MI.second->writeFLUKA(OX);

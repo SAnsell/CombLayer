@@ -60,7 +60,7 @@ class Object
 
   int populated;           ///< Full population
 
-  bool activeMag;          ///< Magnetic field active
+  int activeMag;           ///< Mag active [0:None:1:Basic:2:Sync+Mag]
   double magMinStep;       ///< min step for mag field [fluka]
   double magMaxStep;       ///< max step for mag field [fluka]
 
@@ -115,7 +115,8 @@ class Object
   void setImp(const double V) { imp.setImp(V); }
   void setImp(const std::string& particle,const double V)
   { imp.setImp(particle,V); }
-  void setMagFlag() { activeMag=1; }  ///< implicit mag flag [no field]
+  void setMagFlag(const bool syncFlag)
+    { activeMag=(syncFlag) ? 2 : 1; }    ///< implicit mag flag [no field]
   void setElecFlag() { activeElec=1; }  ///< implicit elec flag [no field]
   
   int setObject(std::string);

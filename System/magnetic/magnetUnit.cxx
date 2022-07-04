@@ -165,13 +165,25 @@ magnetUnit::setExtent(const double EX,const double EY,
 }
   
 void
-magnetUnit::addCell(const int CN)
+magnetUnit::addCells(const int CN)
   /*!
     Add cell to system
     \param CN :: Cell number
    */
 {
   activeCells.insert(CN);
+  return;
+}
+
+void
+magnetUnit::addCells(const std::vector<int>& CVec)
+  /*!
+    Add cell to system
+    \param CN :: Cell number
+   */
+{
+  for(const int CN : CVec)
+    activeCells.insert(CN);
   return;
 }
 
