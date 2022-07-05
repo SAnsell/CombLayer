@@ -149,6 +149,7 @@
 #include "forkHoles.h"
 #include "ExperimentalHutch.h"
 #include "ConnectorTube.h"
+#include "CornerPipe.h"
 #include "LocalShielding.h"
 #include "WrapperCell.h"
 #include "FlangeDome.h"
@@ -188,7 +189,7 @@ makeSingleItem::build(Simulation& System,
   std::set<std::string> validItems
     ({
       "default",
-      "ChopperPit","CylGateValve",
+      "CornerPipe","ChopperPit","CylGateValve",
       "GateValveCube","GateValveCylinder","CleaningMagnet",
       "CorrectorMag","Jaws","LQuadF","LQuadH","LSexupole",
       "MagnetBlock","Sexupole","MagnetM1","MagnetU1",
@@ -1131,6 +1132,17 @@ makeSingleItem::build(Simulation& System,
 
       tp->addAllInsertCell(voidCell);
       tp->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item == "CornerPipe")
+    {
+      std::shared_ptr<constructSystem::CornerPipe>
+	cp(new constructSystem::CornerPipe("CornerPipe"));
+      OR.addObject(cp);
+
+      cp->addAllInsertCell(voidCell);
+      cp->createAll(System,World::masterOrigin(),0);
 
       return;
     }

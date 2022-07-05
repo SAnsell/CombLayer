@@ -47,6 +47,7 @@
 #include "CryoGenerator.h"
 #include "BladeGenerator.h"
 #include "PipeGenerator.h"
+#include "CornerPipeGenerator.h"
 #include "RectPipeGenerator.h"
 #include "TwinBaseGenerator.h"
 #include "TwinGenerator.h"
@@ -238,6 +239,9 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::RectPipeGenerator RPipeGen;
   RPipeGen.generatePipe(Control,"singleBoxPipeA",0.0,80.0);
   RPipeGen.generatePipe(Control,"singleBoxPipeB",0.0,80.0);
+
+  setVariable::CornerPipeGenerator CPipeGen;
+  CPipeGen.generatePipe(Control,"CornerPipe",80.0);
 
   setVariable::ChopperGenerator CGen;
   CGen.setMotorRadius(10.0);

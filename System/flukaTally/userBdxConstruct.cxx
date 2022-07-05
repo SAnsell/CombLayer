@@ -56,7 +56,6 @@
 #include "userBdx.h"
 #include "userBdxConstruct.h" 
 
-
 namespace flukaSystem
 {
 

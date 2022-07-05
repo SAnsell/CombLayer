@@ -829,7 +829,6 @@ softimaxOpticsLine::buildExtras(Simulation& System)
 
   joinPipeAB->insertInCell("Main",System,this->getCell("ExitHoleA"));
   joinPipeBB->insertInCell("Main",System,this->getCell("ExitHoleB"));
-    
 
   joinPipeAB->insertInCell("Main",System,this->getCell("OuterBackVoid"));
   joinPipeBB->insertInCell("Main",System,this->getCell("OuterBackVoid"));

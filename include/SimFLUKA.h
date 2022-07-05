@@ -78,7 +78,7 @@ class SimFLUKA : public Simulation
   FTallyTYPE FTItem;              ///< Fluka tally map
 
   MagTYPE MagItem;                ///< Fluka magnetic map
-  ElecTYPE ElecItem;                ///< Fluka RF system
+  ElecTYPE ElecItem;              ///< Fluka RF system
 
   flukaSystem::flukaPhysics* PhysPtr;   ///< Fluka physics
   flukaSystem::radDecay* RadDecayPtr;   ///< Fluka rad decay modification

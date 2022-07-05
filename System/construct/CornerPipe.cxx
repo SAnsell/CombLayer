@@ -112,13 +112,13 @@ CornerPipe::populate(const FuncDataBase& Control)
 
   const double fR=Control.EvalDefVar<double>(keyName+"FlangeRadius",-1.0);
 
-  flangeARadius=Control.EvalDefVar<double>(keyName+"FlangeFrontRadius",fR);
+  flangeARadius=Control.EvalDefVar<double>(keyName+"FlangeARadius",fR);
 
-  flangeBRadius=Control.EvalDefVar<double>(keyName+"FlangeBackRadius",fR);
+  flangeBRadius=Control.EvalDefVar<double>(keyName+"FlangeBRadius",fR);
 
   const double fL=Control.EvalDefVar<double>(keyName+"FlangeLength",-1.0);
-  flangeALength=Control.EvalDefVar<double>(keyName+"FlangeFrontLength",fL);
-  flangeBLength=Control.EvalDefVar<double>(keyName+"FlangeBackLength",fL);
+  flangeALength=Control.EvalDefVar<double>(keyName+"FlangeALength",fL);
+  flangeBLength=Control.EvalDefVar<double>(keyName+"FlangeBLength",fL);
 
 
   voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
@@ -195,7 +195,6 @@ CornerPipe::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+237,midD,Y,WT);
   
   // FLANGE SURFACES FRONT:
-
   ModelSupport::buildCylinder(SMap,buildIndex+1007,Origin,Y,flangeARadius);
   ModelSupport::buildCylinder(SMap,buildIndex+2007,Origin,Y,flangeBRadius);
 
@@ -250,23 +249,23 @@ CornerPipe::createObjects(Simulation& System)
   
   // FLANGE
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"-1007 -101 -5 (107:3) (-4:137)");
+    (SMap,buildIndex,"-1007 -101 (-15:-3:4) 107 137");
   makeCell("FlangeA",System,cellIndex++,wallMat,0.0,HR*frontHR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"-1007 -101 6 (117:3) (-4:127)");
-  makeCell("FlangeB",System,cellIndex++,wallMat,0.0,HR*frontHR);
+    (SMap,buildIndex,"-1007 -101 (16:-3:4) 6 117 127");
+  makeCell("FlangeA",System,cellIndex++,wallMat,0.0,HR*frontHR);
 
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"-1007 -101 (-13:14) 5 -6 ");
   makeCell("FlangeA",System,cellIndex++,wallMat,0.0,HR*frontHR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"-2007 102 -5 (107:3) (-4:137)");
+    (SMap,buildIndex,"-2007 102 (-15:-3:4) 107 137 -5");
   makeCell("FlangeB",System,cellIndex++,wallMat,0.0,HR*backHR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"-2007 102 6 (117:3) (-4:127)");
+    (SMap,buildIndex,"-2007 102 (16:-3:4) 117 127 6");
   makeCell("FlangeB",System,cellIndex++,wallMat,0.0,HR*backHR);
 
   HR=ModelSupport::getHeadRule
@@ -285,7 +284,25 @@ CornerPipe::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"4 -5 -24 25 237 101 -102");
   makeCell("OutCorner",System,cellIndex++,voidMat,0.0,HR);
   
-
+  // currently as
+  if (outerVoid)
+    {
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"-1007 (-23:24:-25:26) 101 -102");
+      makeCell("OutVoid",System,cellIndex++,voidMat,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1007");
+      addOuterSurf("Main",HR*frontHR*backHR);
+    }
+  else
+    {
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1007 -101");
+      addOuterSurf("FlangeA",HR*frontHR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2007 102");
+      addOuterSurf("FlangeB",HR*backHR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 23 -24 25 -26");
+      addOuterSurf("Main",HR);
+    }
+  
   return;
 }
 
