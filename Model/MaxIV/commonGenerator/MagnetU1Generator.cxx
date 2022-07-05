@@ -57,7 +57,7 @@ namespace setVariable
 {
 
 MagnetU1Generator::MagnetU1Generator() :
-  yOffset(234.6),blockYStep(10.5),length(220.0),
+  yOffset(130.2),blockYStep(10.5),length(220.0),
   outerVoid(12.0),ringVoid(12.0),topVoid(12.0),
   baseVoid(12.0),baseThick(8.0),wallThick(6.0),
   voidMat("Void"),wallMat("Stainless304")

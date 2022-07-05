@@ -62,10 +62,14 @@
 #include "SurfMap.h"
 #include "PointMap.h"
 #include "World.h"
+#include "FixedGroup.h"
+#include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "insertObject.h"
 #include "insertSphere.h"
 #include "insertCylinder.h"
 #include "insertShell.h"
+
 #include "VacuumPipe.h"
 #include "Quadrupole.h"
 #include "Sexupole.h"
@@ -73,6 +77,7 @@
 #include "LQuadF.h"
 #include "LQuadH.h"
 #include "LSexupole.h"
+#include "ChopperPit.h"
 #include "CorrectorMag.h"
 #include "CollTube.h"
 #include "CollUnit.h"
@@ -126,8 +131,6 @@
 #include "UndulatorVacuum.h"
 #include "PrismaChamber.h"
 #include "PortTube.h"
-#include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
 #include "JawFlange.h"
 #include "portItem.h"
 #include "portSet.h"
@@ -185,7 +188,8 @@ makeSingleItem::build(Simulation& System,
   std::set<std::string> validItems
     ({
       "default",
-      "CylGateValve","GateValveCube","GateValveCylinder","CleaningMagnet",
+      "ChopperPit","CylGateValve",
+      "GateValveCube","GateValveCylinder","CleaningMagnet",
       "CorrectorMag","Jaws","LQuadF","LQuadH","LSexupole",
       "MagnetBlock","Sexupole","MagnetM1","MagnetU1",
       "Octupole","CeramicGap",
@@ -231,6 +235,17 @@ makeSingleItem::build(Simulation& System,
       GV->addInsertCell(voidCell);
       GV->createAll(System,World::masterOrigin(),0);
 
+      return;
+    }
+  if (item == "ChopperPit")
+    {
+      std::shared_ptr<constructSystem::ChopperPit>
+	PitA(new constructSystem::ChopperPit("ChopperPit"));
+
+      OR.addObject(PitA);
+
+      PitA->addInsertCell(voidCell);
+      PitA->createAll(System,World::masterOrigin(),0);
       return;
     }
   if (item == "MagTube")

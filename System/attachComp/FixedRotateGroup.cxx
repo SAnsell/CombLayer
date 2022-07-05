@@ -387,6 +387,7 @@ void
 FixedRotateGroup::applyOffset(const std::string& unitName)
   /*!
     Apply a rotation step to a single system
+    \param unitName :: Named unit
   */
 {
   ELog::RegMethod RegA("FixedRotateGroup","applyOffset");
@@ -409,6 +410,7 @@ FixedRotateGroup::applyOffset(const std::string& unitName)
 				    zAngle+GO.zAngle);
 
   FCmc->second->reOrientate();
+  FixedGroup::setBeamCoord(unitName);
   return;
 }
 
@@ -423,26 +425,46 @@ FixedRotateGroup::applyOffset()
   ELog::RegMethod RegA("FixedRotateGroup","applyOffset");
 
   for(FTYPE::value_type& FCmc : FMap)
-    {
-      applyOffset(FCmc.first);
-    }
+    applyOffset(FCmc.first);
+
   return;
 }
 
 void
 FixedRotateGroup::createUnitVector(const attachSystem::FixedComp& FC,
-				   const long int sideIndex)
+				    const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed Component
     \param sideIndex :: signed linkpt			
   */
 {
-  ELog::RegMethod RegA("FixedOffset","createUnitVector");
+  ELog::RegMethod RegA("FixedRotateGroup","createUnitVector");
 
   FixedGroup::createUnitVector(FC,sideIndex);
+  //
+  // NOW apply primary rotation to ALL because secondary(s) are already set
+  // 
   applyOffset();
     
+  return;
+}
+
+void
+FixedRotateGroup::secondaryUnitVector(const attachSystem::FixedComp& FC,
+				      const long int sideIndex)
+/*!
+    Create the unit vector for the secondary
+    NOTE: It DOES NOT apply the rotations because that is done
+    after populate / createUnitVector from the real objects createAll.
+    \param FC :: Fixed Component
+    \param sideIndex :: signed linkpt			
+  */
+{
+  ELog::RegMethod RegA("FixedRotateGroup","primaryUnitVector");
+
+  FixedGroup::secondaryUnitVector(FC,sideIndex);
+  
   return;
 }
 
@@ -456,7 +478,7 @@ FixedRotateGroup::createUnitVector(const std::string& unitName,
     \param sideIndex :: signed linkpt			
   */
 {
-  ELog::RegMethod RegA("FixedOffset","createUnitVector(name)");
+  ELog::RegMethod RegA("FixedRotateGroup","createUnitVector(name)");
 
   attachSystem::FixedComp& activeFC=getKey(unitName);
   activeFC.createUnitVector(FC,sideIndex);

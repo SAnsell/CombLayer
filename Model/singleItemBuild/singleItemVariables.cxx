@@ -92,6 +92,7 @@
 #include "TriGroupGenerator.h"
 #include "subPipeUnit.h"
 #include "MultiPipeGenerator.h"
+#include "PitGenerator.h"
 #include "ScreenGenerator.h"
 #include "CooledScreenGenerator.h"
 #include "YagScreenGenerator.h"
@@ -211,6 +212,11 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable("CryoBApertureHeight",2.0);
 
   Control.addVariable("CryoBMat","Aluminium");
+
+  setVariable::PitGenerator CPitGen;
+  CPitGen.setFeLayer(6.0);
+  CPitGen.setConcLayer(10.0);
+  CPitGen.generatePit(Control,"ChopperPit",0.0,340.0,150.0,120.0,30.0);
 
   setVariable::EArrivalMonGenerator EMonGen;
   EMonGen.generateMon(Control,"BeamMon",0.0);

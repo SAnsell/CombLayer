@@ -90,8 +90,8 @@ MagnetU1::MagnetU1(const std::string& Key) :
   */
 {
   nameSideIndex(1,"Flange");
-  nameSideIndex(2,"Photon");
-  nameSideIndex(3,"Electron");
+  nameSideIndex(2,"Electron");
+  nameSideIndex(3,"Photon");
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();

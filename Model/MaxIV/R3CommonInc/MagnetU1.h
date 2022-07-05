@@ -104,6 +104,7 @@ class MagnetU1 :
   MagnetU1& operator=(const MagnetU1&);
   virtual ~MagnetU1();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

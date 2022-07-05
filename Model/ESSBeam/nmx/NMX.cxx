@@ -240,6 +240,7 @@ NMX::build(Simulation& System,
   ShieldA->createAll(System,FocusWall->getKey("Guide0"),2);
 
   MainShutter->addInsertCell(ShieldA->getCells("Void"));
+  MainShutter->secondaryUnitVector(*ShieldA,-1);
   MainShutter->createAll(System,*ShieldA,-1);
   
                              

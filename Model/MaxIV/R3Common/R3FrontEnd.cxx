@@ -535,6 +535,7 @@ R3FrontEnd::buildObjects(Simulation& System)
 
   magBlockM1->createAll(System,*this,0);
   
+  
   transPipe->setCutSurf("front",undulatorFC,2);
   transPipe->setCutSurf("back",*magBlockM1,1);
   transPipe->createAll(System,undulatorFC,2);
@@ -545,7 +546,6 @@ R3FrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createUnit(System,*magBlockM1,2);
   magBlockM1->insertAllInCell(System,outerCell);
   
-
   epSeparator->setCutSurf("front",*magBlockM1,2);
   epSeparator->setEPOriginPair(*magBlockM1,"Photon","Electron");
   epSeparator->createAll(System,*magBlockM1,2);
@@ -574,6 +574,7 @@ R3FrontEnd::buildObjects(Simulation& System)
   eCutMagDisk->createAll(System,*chokeChamber,
 		      chokeChamber->getSideIndex("-electron"));
 
+  
   // FM1 Built relateive to MASTER coordinate
   collA->createAll(System,*this,0);
   bellowA->createAll(System,*collA,1);  
@@ -590,6 +591,13 @@ R3FrontEnd::buildObjects(Simulation& System)
 
   outerCell=buildZone.createUnit(System,*collA,2);
   collA->insertInCell(System,outerCell);
+  
+  magBlockU1->insertAllInCell(System,outerCell);
+  magBlockU1->createAll(System,*epSeparator,"Electron");
+  ELog::EM<<"Elec == "<<epSeparator->getLinkAxis("Electron")<<ELog::endDiag;;
+  ELog::EM<<"Phot == "<<epSeparator->getLinkAxis("Photon")<<ELog::endDiag;
+  lastComp=chokeChamber;
+  return;
 
   if (stopPoint=="Dipole")
     {

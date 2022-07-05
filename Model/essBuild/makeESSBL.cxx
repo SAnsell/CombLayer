@@ -184,7 +184,7 @@ makeESSBL::build(Simulation& System,const Bunker& bunkerObj)
   const GuideItem* mainGIPtr=dynamic_cast<const GuideItem*>(mainFCPtr);
   if (!mainGIPtr)
     throw ColErr::InContainerError<std::string>(shutterName,"GuideItem");
-	
+
   if (beamName=="BEER")
     {
       BEER beerBL("beer");

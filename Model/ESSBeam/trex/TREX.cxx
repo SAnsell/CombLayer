@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/trex/TREX.cxx
  *
- * Copyright (c) 2004-2019 by Tsitohaina Randriamalala/Stuart Ansell
+ * Copyright (c) 2004-2022 by Tsitohaina Randriamalala/Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
-#include "stringCombine.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Code.h"
@@ -58,6 +57,7 @@
 #include "FixedOffsetUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
@@ -232,7 +232,7 @@ TREX::TREX(const std::string& keyName):
   
   for(size_t i=0;i<nC;i++)
     {
-      const std::string strNum(StrFunc::makeString(i));
+      const std::string strNum(std::to_string(i));
       VPipeOutCs[i]=std::shared_ptr<constructSystem::VacuumPipe>
 	(new constructSystem::VacuumPipe(newName+"PipeOutC"+strNum));
       BendOutCs[i]=std::shared_ptr<beamlineSystem::GuideLine>
@@ -260,7 +260,7 @@ TREX::TREX(const std::string& keyName):
   OR.addObject(ShieldF);
   for(size_t i=0;i<nF;i++)
     {
-      const std::string strNum(StrFunc::makeString(i));
+      const std::string strNum(std::to_string(i));
 
       VPipeOutFs[i]=std::shared_ptr<constructSystem::VacuumPipe>
 	(new constructSystem::VacuumPipe(newName+"PipeOutF"+strNum));

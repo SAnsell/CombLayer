@@ -3,7 +3,7 @@
  
  * File:   construct/ChopperPit.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,8 +57,9 @@
 #include "LinkUnit.h"  
 #include "FixedComp.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 
@@ -68,8 +69,10 @@ namespace constructSystem
 {
 
 ChopperPit::ChopperPit(const std::string& Key) : 
-  attachSystem::FixedOffsetGroup(Key,"Inner",6,"Mid",6,"Outer",6),
-  attachSystem::ContainedComp(),attachSystem::CellMap(),
+  attachSystem::FixedRotateGroup(Key,"Inner",6,"Mid",6,"Outer",6),
+  attachSystem::ContainedComp(),
+  attachSystem::ExternalCut(),
+  attachSystem::CellMap(),
   activeFront(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -78,8 +81,9 @@ ChopperPit::ChopperPit(const std::string& Key) :
 {}
 
 ChopperPit::ChopperPit(const ChopperPit& A) : 
-  attachSystem::FixedOffsetGroup(A)
-  ,attachSystem::ContainedComp(A),
+  attachSystem::FixedRotateGroup(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::ExternalCut(A),
   attachSystem::CellMap(A),
   activeFront(A.activeFront),frontCut(A.frontCut),
   voidHeight(A.voidHeight),voidWidth(A.voidWidth),
@@ -107,8 +111,9 @@ ChopperPit::operator=(const ChopperPit& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffsetGroup::operator=(A);
+      attachSystem::FixedRotateGroup::operator=(A);
       attachSystem::ContainedComp::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       attachSystem::CellMap::operator=(A);
       activeFront=A.activeFront;
       frontCut=A.frontCut;
@@ -151,7 +156,7 @@ ChopperPit::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("ChopperPit","populate");
   
-  FixedOffsetGroup::populate(Control);
+  FixedRotateGroup::populate(Control);
 
   // Void + Fe special:
   voidHeight=Control.EvalVar<double>(keyName+"VoidHeight");
