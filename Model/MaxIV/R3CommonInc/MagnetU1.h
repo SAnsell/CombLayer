@@ -3,7 +3,7 @@
  
  * File:   R3CommonInc/MagnetU1.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,10 @@
 
 class Simulation;
 
+namespace constructSystem
+{
+  class CornerPipe;
+}
 
 namespace xraySystem
 {
@@ -83,6 +87,7 @@ class MagnetU1 :
   std::shared_ptr<xraySystem::Sexupole> SD1;
   /// Dipole
   std::shared_ptr<xraySystem::Dipole> DIPm;
+  //std::shared_ptr<tdcSystem::DipoleDIBMag> DIPm;
   /// Sextupole [small]
   std::shared_ptr<xraySystem::Sexupole> SD2;
 
@@ -103,6 +108,8 @@ class MagnetU1 :
   MagnetU1(const MagnetU1&);
   MagnetU1& operator=(const MagnetU1&);
   virtual ~MagnetU1();
+
+  void insertDipolePipe(Simulation&,const constructSystem::CornerPipe&);
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

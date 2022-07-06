@@ -31,6 +31,7 @@ namespace insertSystem
 namespace constructSystem
 {
   class Bellows;
+  class CornerPipe;
   class CrossPipe;
   class GateValveCube;
   class OffsetFlangePipe;
@@ -115,7 +116,7 @@ class R3FrontEnd :
   std::shared_ptr<xraySystem::R3ChokeInsert> chokeInsert;
 
   /// dipole connection pipe
-  std::shared_ptr<constructSystem::VacuumPipe> dipolePipe;
+  std::shared_ptr<constructSystem::CornerPipe> dipolePipe;
   /// electron cut cell
   std::shared_ptr<insertSystem::insertCylinder> eCutDisk;
   /// electron cut cell [with magnetic field]

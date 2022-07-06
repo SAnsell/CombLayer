@@ -797,7 +797,8 @@ interceptRuleConst(const HeadRule& HR,
     \param HR :: HeadRule
     \param Origin :: Origin of line
     \param N :: Direction of the line
-    \return pair of position and surface sign.
+    \retval Origin / 0 :: Empty intercept
+    \retval ClosePoint / SideDirection :: intercept
   */
 {
   ELog::RegMethod RegA("SurInter[F]","interceptRuleConst");
@@ -806,6 +807,7 @@ interceptRuleConst(const HeadRule& HR,
   const std::vector<Geometry::Vec3D> Pts=
     LI.getPoints(HR);
 
+  // EMPTY return
   if (Pts.empty())
     return std::pair<Geometry::Vec3D,int>(Origin,0);
 

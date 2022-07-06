@@ -45,6 +45,7 @@
 #include "RingDoorGenerator.h"
 
 #include "PipeGenerator.h"
+#include "CornerPipeGenerator.h"
 #include "PipeTubeGenerator.h"
 #include "VacBoxGenerator.h"
 #include "SplitPipeGenerator.h"
@@ -398,6 +399,7 @@ R3FrontEndVariables(FuncDataBase& Control,
 
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PipeGen;
+  setVariable::CornerPipeGenerator CPipeGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::VacBoxGenerator VBoxGen;
 
@@ -429,9 +431,9 @@ R3FrontEndVariables(FuncDataBase& Control,
   CCGen.generateChamber(Control,frontKey+"ChokeChamber");
   CCGen.generateInsert(Control,frontKey+"ChokeInsert");
 
-  PipeGen.setCF<CF40>();
-  PipeGen.setMat("Stainless304");
-  PipeGen.generatePipe(Control,frontKey+"DipolePipe",800.00); 
+  CPipeGen.setCF<CF40>();
+  CPipeGen.setMat("Aluminium","Stainless304");
+  CPipeGen.generatePipe(Control,frontKey+"DipolePipe",800.00); 
 
   //  Note bellow reversed for FM fixed:
   BellowGen.setCF<setVariable::CF40>();
@@ -443,6 +445,7 @@ R3FrontEndVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,frontKey+"BellowB",16.0);
   
   PipeGen.setCF<CF40>();
+  PipeGen.setMat("Stainless304");
   PipeGen.generatePipe(Control,frontKey+"CollABPipe",222.0);
 
   Control.addVariable(frontKey+"ECutDiskYStep",5.0);

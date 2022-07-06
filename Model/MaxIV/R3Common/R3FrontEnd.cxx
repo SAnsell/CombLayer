@@ -69,6 +69,7 @@
 #include "generalConstruct.h"
 
 #include "VacuumPipe.h"
+#include "CornerPipe.h"
 #include "insertObject.h"
 #include "insertCylinder.h"
 #include "SplitFlangePipe.h"
@@ -113,7 +114,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   epSeparator(new xraySystem::EPSeparator(newName+"EPSeparator")),
   chokeChamber(new xraySystem::R3ChokeChamber(newName+"ChokeChamber")),
   chokeInsert(new xraySystem::R3ChokeInsert(newName+"ChokeInsert")),
-  dipolePipe(new constructSystem::VacuumPipe(newName+"DipolePipe")),
+  dipolePipe(new constructSystem::CornerPipe(newName+"DipolePipe")),
   eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),
   eCutMagDisk(new insertSystem::insertCylinder(newName+"ECutMagDisk")),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
@@ -585,23 +586,23 @@ R3FrontEnd::buildObjects(Simulation& System)
 			chokeChamber->getSideIndex("photon"));
   outerCell=buildZone.createUnit(System,*dipolePipe,2);
   dipolePipe->insertAllInCell(System,outerCell);
+  buildZone.addCell("dipoleUnit",outerCell);
 
   outerCell=buildZone.createUnit(System,*bellowA,1);
   bellowA->insertInCell(System,outerCell);
 
   outerCell=buildZone.createUnit(System,*collA,2);
   collA->insertInCell(System,outerCell);
-  
-  magBlockU1->insertAllInCell(System,outerCell);
   magBlockU1->createAll(System,*epSeparator,"Electron");
   ELog::EM<<"Elec == "<<epSeparator->getLinkAxis("Electron")<<ELog::endDiag;;
   ELog::EM<<"Phot == "<<epSeparator->getLinkAxis("Photon")<<ELog::endDiag;
-  lastComp=chokeChamber;
-  return;
+  magBlockU1->insertAllInCell(System,buildZone.getCell("dipoleUnit"));
+  magBlockU1->insertDipolePipe(System,*dipolePipe);
 
   if (stopPoint=="Dipole")
     {
       lastComp=dipolePipe;
+      setCell("MasterVoid",outerCell);
       return;
     }
       

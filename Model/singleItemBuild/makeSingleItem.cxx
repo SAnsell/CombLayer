@@ -100,6 +100,7 @@
 #include "BeamDivider.h"
 #include "CeramicGap.h"
 #include "DipoleDIBMag.h"
+#include "Dipole.h"
 #include "EArrivalMon.h"
 #include "EBeamStop.h"
 #include "SixPortTube.h"
@@ -195,7 +196,7 @@ makeSingleItem::build(Simulation& System,
       "MagnetBlock","Sexupole","MagnetM1","MagnetU1",
       "Octupole","CeramicGap",
       "EBeamStop","FMask","R3ChokeChamber",
-      "DipoleExtract","DipoleSndBend",
+	"DipoleExtract","DipoleSndBend","Dipole",
       "EPSeparator","EPCombine","EPContinue",
       "Quadrupole","TargetShield","FourPort",
       "FlatPipe","TriPipe","TriGroup","SixPort","CrossWay","CrossBlank",
@@ -1161,6 +1162,26 @@ makeSingleItem::build(Simulation& System,
       VC->createAll(System,World::masterOrigin(),0);
 
       DIB->setCutSurf("Inner",*VC,"outerPipe");
+      DIB->addInsertCell(voidCell);
+      DIB->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
+  if (item=="Dipole")
+    {
+      std::shared_ptr<constructSystem::VacuumPipe>
+	VC(new constructSystem::VacuumPipe("DipolePipe"));
+      std::shared_ptr<xraySystem::Dipole>
+	DIB(new xraySystem::Dipole("DIM"));
+
+      OR.addObject(VC);
+      OR.addObject(DIB);
+      
+      //VC->addAllInsertCell(voidCell);
+      //VC->createAll(System,World::masterOrigin(),0);
+
+      //      DIB->setCutSurf("Inner",*VC,"outerPipe");
       DIB->addInsertCell(voidCell);
       DIB->createAll(System,World::masterOrigin(),0);
 

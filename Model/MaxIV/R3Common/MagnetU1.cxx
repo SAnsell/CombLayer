@@ -3,7 +3,7 @@
  
  * File:   R3Common/MagnetU1.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,16 +57,21 @@
 #include "FixedRotateUnit.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
-#include "ExternalCut.h" 
+#include "ExternalCut.h"
+#include "FrontBackCut.h" 
 #include "BaseMap.h"
 #include "SurfMap.h"
 #include "CellMap.h"
+#include "Importance.h"
+#include "Object.h"
 
 #include "Dipole.h"
 #include "Quadrupole.h"
 #include "Sexupole.h"
 #include "CorrectorMag.h"
+#include "CornerPipe.h"
 #include "MagnetU1.h"
+
 
 namespace xraySystem
 {
@@ -276,6 +281,62 @@ MagnetU1::createLinks()
   ELog::RegMethod RegA("MagnetU1","createLinks");
 
 
+  return;
+}
+
+void
+MagnetU1::insertDipolePipe(Simulation& System,
+			   const constructSystem::CornerPipe& dipolePipe)
+{
+  ELog::RegMethod RegA("MagnetU1","insertDipolePipe");
+
+  const HeadRule pipeHR=
+    dipolePipe.getCC("Tube").getOuterSurf().complement();
+  ELog::EM<<"PI == "<<pipeHR<<ELog::endDiag;
+  
+  // get corners
+  std::vector<Geometry::Vec3D> Pts;
+  const Geometry::Vec3D Axis(dipolePipe.getLinkAxis("cornerA"));
+			     
+  Pts.push_back(dipolePipe.getLinkPt("cornerA"));
+  Pts.push_back(dipolePipe.getLinkPt("cornerB"));
+  Pts.push_back(dipolePipe.getLinkPt("cornerC"));
+  Pts.push_back(dipolePipe.getLinkPt("cornerD"));
+
+  System.populateCells();
+  System.validateObjSurfMap();
+
+  // SETS of cells : (maybe should use CellMap here)
+  //  SD1(new xraySystem::Sexupole(keyName+"SD1")),
+  //  DIPm(new xraySystem::Dipole(keyName+"DIPm")),
+  //  SD2(new xraySystem::Sexupole(keyName+"SD2"))
+  const std::set<std::string> OItems({
+      "QFm1","SFm","QFm2","cMagVA","cMagHA","SD1","DIPm"});
+  std::set<int> CSet=System.getObjectRange(keyName);
+  for(const std::string& objName : OItems)
+    {
+      const std::set<int> PSet=System.getObjectRange(keyName+objName);
+      CSet.insert(PSet.begin(),PSet.end());
+    }
+  
+  for(const int CN : CSet)
+    {
+      MonteCarlo::Object* OPtr=System.findObjectThrow(CN);
+      size_t index=0;
+      size_t flag(0);
+      do
+	{
+	  flag=OPtr->hasIntercept(Pts[index],Y);
+
+	  index++;
+	} while(index<4 && !flag);
+      
+      if (flag)
+	{
+	  OPtr->addIntersection(pipeHR);
+	}
+    }
+  
   return;
 }
 

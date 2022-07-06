@@ -77,7 +77,7 @@ public:
   virtual ~ContainedComp();
 
   virtual const HeadRule& getOuterSurf() const;
-  virtual const HeadRule& getBoundary() const;
+  virtual const HeadRule& getBoundary() const; // dont use
   
   virtual std::string getExclude() const;
   virtual std::string getCompExclude() const;
