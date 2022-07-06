@@ -342,7 +342,6 @@ R3ChokeChamber::createSurfaces()
 
   // Photon Pipe (200)
   //--------------------
-  ELog::EM<<"Photo Path["<<Origin<<"] == "<<photOrg-Origin<<":"<<Y<<ELog::endDiag;
   ModelSupport::buildCylinder(SMap,buildIndex+207,photOrg,Y,photonRadius);
   ModelSupport::buildCylinder
     (SMap,buildIndex+217,photOrg,Y,photonRadius+photonThick);
@@ -358,7 +357,6 @@ R3ChokeChamber::createSurfaces()
   // electron Pipe (300)
   //---------------
 
-  ELog::EM<<"Elec Path["<<Origin<<"] == "<<elecOrg-Origin<<":"<<elecYAxis<<ELog::endDiag;
   ModelSupport::buildCylinder
     (SMap,buildIndex+307,elecOrg,elecYAxis,electronRadius);
   ModelSupport::buildCylinder
@@ -537,7 +535,7 @@ R3ChokeChamber::createLinks()
   FixedComp::setConnect
     (3,elecOrg+elecYAxis*(electronLength+inletLength),elecYAxis);
   FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+202));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+303));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+302));
 
   // side (outward)
   FixedComp::setConnect(4,Origin-X*(sideLength+sideCapThick),-X);

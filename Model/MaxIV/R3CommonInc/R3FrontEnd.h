@@ -117,6 +117,8 @@ class R3FrontEnd :
 
   /// dipole connection pipe
   std::shared_ptr<constructSystem::CornerPipe> dipolePipe;
+  /// electron transfer pipe M1->U1
+  std::shared_ptr<constructSystem::VacuumPipe> eTransPipe;
   /// electron cut cell
   std::shared_ptr<insertSystem::insertCylinder> eCutDisk;
   /// electron cut cell [with magnetic field]

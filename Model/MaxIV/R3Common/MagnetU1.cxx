@@ -280,6 +280,11 @@ MagnetU1::createLinks()
 {
   ELog::RegMethod RegA("MagnetU1","createLinks");
 
+  // Tempory needs an entrance pipe:
+
+  setConnect(0,Origin+Y*blockYStep,-Y);
+  setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+
 
   return;
 }

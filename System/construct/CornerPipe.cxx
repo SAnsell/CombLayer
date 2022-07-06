@@ -249,11 +249,11 @@ CornerPipe::createObjects(Simulation& System)
   
   // FLANGE
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"-1007 -101 (-15:-3:4) 107 137");
+    (SMap,buildIndex,"-1007 -101 (-15:-3:4) 107 137 -5");
   makeCell("FlangeA",System,cellIndex++,wallMat,0.0,HR*frontHR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"-1007 -101 (16:-3:4) 6 117 127");
+    (SMap,buildIndex,"-1007 -101 (16:-3:4) 117 127 6");
   makeCell("FlangeA",System,cellIndex++,wallMat,0.0,HR*frontHR);
 
   HR=ModelSupport::getHeadRule

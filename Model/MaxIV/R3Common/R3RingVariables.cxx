@@ -432,8 +432,13 @@ R3FrontEndVariables(FuncDataBase& Control,
   CCGen.generateInsert(Control,frontKey+"ChokeInsert");
 
   CPipeGen.setCF<CF40>();
+  CPipeGen.setAFlangeCF<CF25>();
   CPipeGen.setMat("Aluminium","Stainless304");
-  CPipeGen.generatePipe(Control,frontKey+"DipolePipe",800.00); 
+  CPipeGen.generatePipe(Control,frontKey+"DipolePipe",800.0); 
+
+  PipeGen.setCF<CF25>();
+  PipeGen.setMat("Stainless304");
+  PipeGen.generatePipe(Control,frontKey+"ETransPipe",800.0); 
 
   //  Note bellow reversed for FM fixed:
   BellowGen.setCF<setVariable::CF40>();

@@ -115,6 +115,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   chokeChamber(new xraySystem::R3ChokeChamber(newName+"ChokeChamber")),
   chokeInsert(new xraySystem::R3ChokeInsert(newName+"ChokeInsert")),
   dipolePipe(new constructSystem::CornerPipe(newName+"DipolePipe")),
+  eTransPipe(new constructSystem::VacuumPipe(newName+"ETransPipe")),
   eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),
   eCutMagDisk(new insertSystem::insertCylinder(newName+"ECutMagDisk")),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
@@ -178,6 +179,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   OR.addObject(chokeInsert);
       
   OR.addObject(dipolePipe);
+  OR.addObject(eTransPipe);
   OR.addObject(bellowA);
   OR.addObject(collA);
   OR.addObject(bellowB);
@@ -553,13 +555,13 @@ R3FrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createUnit(System,*epSeparator,2);
   epSeparator->insertInCell(System,outerCell);
 
-
   chokeChamber->setCutSurf("front",*epSeparator,2);
   chokeChamber->setEPOriginPair(*epSeparator,"Photon","Electron");
   chokeChamber->createAll(System,*epSeparator,2);
   outerCell=buildZone.createUnit(System,*chokeChamber,2);
   chokeChamber->insertAllInCell(System,outerCell);
-
+  chokeChamber->setCell("BlockOuter",outerCell);
+  
   chokeInsert->setCutSurf("front",*chokeChamber,"innerSide");
   chokeInsert->addInsertCell(chokeChamber->getCell("MainVoid"));
   chokeInsert->addInsertCell(chokeChamber->getCell("SideVoid"));
@@ -580,24 +582,35 @@ R3FrontEnd::buildObjects(Simulation& System)
   collA->createAll(System,*this,0);
   bellowA->createAll(System,*collA,1);  
 
-  dipolePipe->setFront(*chokeChamber,chokeChamber->getSideIndex("photon"));
-  dipolePipe->setBack(*bellowA,2);
-  dipolePipe->createAll(System,*chokeChamber,
-			chokeChamber->getSideIndex("photon"));
+  dipolePipe->setFront(*chokeChamber,"photon");
+  dipolePipe->setBack(*bellowA,"back");
+  dipolePipe->createAll(System,*chokeChamber,"photon");
   outerCell=buildZone.createUnit(System,*dipolePipe,2);
   dipolePipe->insertAllInCell(System,outerCell);
   buildZone.addCell("dipoleUnit",outerCell);
+
+  magBlockU1->createAll(System,*epSeparator,"Electron");
+  magBlockU1->insertAllInCell(System,buildZone.getCell("dipoleUnit"));
+  magBlockU1->insertDipolePipe(System,*dipolePipe);
+
+  eTransPipe->setFront(*chokeChamber,"electron");
+  eTransPipe->setBack(*magBlockU1,"front");
+  eTransPipe->createAll(System,*chokeChamber,"electron");
+  eTransPipe->insertInCell("FlangeA",System,
+			   chokeChamber->getCell("PhotonOuterVoid"));
+  eTransPipe->insertInCell("FlangeA",System,
+			   chokeChamber->getCell("BlockOuter"));
+  eTransPipe->insertInCell("Main",System,
+			   chokeChamber->getCell("BlockOuter"));
+  eTransPipe->insertInCell("Main",System,outerCell);
+  eTransPipe->insertInCell("FlangeB",System,outerCell);
 
   outerCell=buildZone.createUnit(System,*bellowA,1);
   bellowA->insertInCell(System,outerCell);
 
   outerCell=buildZone.createUnit(System,*collA,2);
   collA->insertInCell(System,outerCell);
-  magBlockU1->createAll(System,*epSeparator,"Electron");
-  ELog::EM<<"Elec == "<<epSeparator->getLinkAxis("Electron")<<ELog::endDiag;;
-  ELog::EM<<"Phot == "<<epSeparator->getLinkAxis("Photon")<<ELog::endDiag;
-  magBlockU1->insertAllInCell(System,buildZone.getCell("dipoleUnit"));
-  magBlockU1->insertDipolePipe(System,*dipolePipe);
+
 
   if (stopPoint=="Dipole")
     {
