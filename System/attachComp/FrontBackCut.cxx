@@ -3,7 +3,7 @@
  
  * File:   attachComp/FrontBackCut.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -480,5 +480,51 @@ FrontBackCut::backInterPoint(const Geometry::Vec3D& Centre,
 
   return ExternalCut::interPoint("back",Centre,CAxis);  
 }
-  
+
+void
+FrontBackCut::setFrontPoint(const Geometry::Vec3D& Pt)
+  /*!
+    Set the extra point if possible
+    \param Pt :: Point value to use
+  */
+{
+  ELog::RegMethod RegA("FrontBackCut","setFrontPoint");
+  ExternalCut::setExternalPoint("front",Pt);
+  return;
+}
+
+void
+FrontBackCut::setBackPoint(const Geometry::Vec3D& Pt)
+  /*!
+    Set the extra point if possible
+    \param Pt :: Point value to use
+  */
+{
+  ELog::RegMethod RegA("FrontBackCut","setBackPoint");
+  ExternalCut::setExternalPoint("back",Pt);
+  return;
+}
+
+const Geometry::Vec3D&
+FrontBackCut::getFrontPoint() const
+  /*!
+    Accessor to front point
+    \return FrontPoint 
+  */
+{
+  ELog::RegMethod RegA("FrontBackCut","getFrontPoint");
+  return ExternalCut::getExternalPoint("front");
+}
+
+const Geometry::Vec3D&
+FrontBackCut::getBackPoint() const
+  /*!
+    Accessor to back point
+    \return BackPoint 
+  */
+{
+  ELog::RegMethod RegA("FrontBackCut","getBackPoint");
+  return ExternalCut::getExternalPoint("back");
+}
+
 }  // NAMESPACE attachSystem

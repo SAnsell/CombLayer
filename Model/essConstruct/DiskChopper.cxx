@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/DiskChopper.cxx
+ * File:   essConstruct/DiskChopper.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
  *
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -57,7 +55,7 @@
 #include "LinkUnit.h"  
 #include "FixedComp.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h" 
+#include "FixedRotateGroup.h" 
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -65,11 +63,11 @@
 #include "DiskBlades.h"
 #include "DiskChopper.h"
 
-namespace constructSystem
+namespace essConstruct
 {
 
 DiskChopper::DiskChopper(const std::string& Key) : 
-  attachSystem::FixedOffsetGroup(Key,"Main",6,"Beam",2),
+  attachSystem::FixedRotateGroup(Key,"Main",6,"Beam",2),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   centreFlag(0),offsetFlag(0),nDisk(0)
   /*!
@@ -79,7 +77,7 @@ DiskChopper::DiskChopper(const std::string& Key) :
 {}
 
 DiskChopper::DiskChopper(const DiskChopper& A) : 
-  attachSystem::FixedOffsetGroup(A),
+  attachSystem::FixedRotateGroup(A),
   attachSystem::ContainedComp(A),attachSystem::CellMap(A),
   centreFlag(A.centreFlag),offsetFlag(A.offsetFlag),
   innerRadius(A.innerRadius),outerRadius(A.outerRadius),
@@ -100,7 +98,7 @@ DiskChopper::operator=(const DiskChopper& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffsetGroup::operator=(A);
+      attachSystem::FixedRotateGroup::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       centreFlag=A.centreFlag;
@@ -131,7 +129,7 @@ DiskChopper::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("DiskChopper","populate");
 
-  FixedOffsetGroup::populate(Control);
+  FixedRotateGroup::populate(Control);
 
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");

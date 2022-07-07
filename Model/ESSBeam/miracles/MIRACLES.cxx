@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/miracles/MIRACLES.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +58,7 @@
 #include "FixedOffsetUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
@@ -75,6 +76,7 @@
 #include "TwinChopper.h"
 #include "GuideLine.h"
 #include "DiskChopper.h"
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
@@ -101,22 +103,22 @@ MIRACLES::MIRACLES(const std::string& keyName) :
 
   AppA(new constructSystem::Aperture(newName+"AppA")),
   
-  TwinB(new constructSystem::TwinChopper(newName+"TwinB")),
-  BDiskTop(new constructSystem::DiskChopper(newName+"BBladeTop")),
-  BDiskLow(new constructSystem::DiskChopper(newName+"BBladeLow")),
+  TwinB(new essConstruct::TwinChopper(newName+"TwinB")),
+  BDiskTop(new essConstruct::DiskChopper(newName+"BBladeTop")),
+  BDiskLow(new essConstruct::DiskChopper(newName+"BBladeLow")),
 
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   FocusD(new beamlineSystem::GuideLine(newName+"FD")),
 
-  TwinC(new constructSystem::TwinChopper(newName+"TwinC")),
-  CDiskTop(new constructSystem::DiskChopper(newName+"CBladeTop")),
-  CDiskLow(new constructSystem::DiskChopper(newName+"CBladeLow")),
+  TwinC(new essConstruct::TwinChopper(newName+"TwinC")),
+  CDiskTop(new essConstruct::DiskChopper(newName+"CBladeTop")),
+  CDiskLow(new essConstruct::DiskChopper(newName+"CBladeLow")),
 
   VPipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
   FocusE(new beamlineSystem::GuideLine(newName+"FE")),
 
-  ChopE(new constructSystem::SingleChopper(newName+"ChopE")),
-  EDisk(new constructSystem::DiskChopper(newName+"EBlade")),
+  ChopE(new essConstruct::SingleChopper(newName+"ChopE")),
+  EDisk(new essConstruct::DiskChopper(newName+"EBlade")),
 
   ShutterA(new constructSystem::BeamShutter(newName+"ShutterA")),
 

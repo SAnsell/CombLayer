@@ -3,7 +3,7 @@
  
  * File:   photon/VacuumVessel.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
@@ -69,7 +69,7 @@ namespace photonSystem
 {
       
 VacuumVessel::VacuumVessel(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
+  attachSystem::ContainedComp(),attachSystem::FixedRotate(Key,6),
   CentPort(new constructSystem::RingFlange(keyName+"CentPort"))
   /*!
     Constructor
@@ -83,7 +83,7 @@ VacuumVessel::VacuumVessel(const std::string& Key) :
 }
 
 VacuumVessel::VacuumVessel(const VacuumVessel& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedRotate(A),
   attachSystem::CellMap(A),  
   wallThick(A.wallThick),frontLength(A.frontLength),
   radius(A.radius),backLength(A.backLength),width(A.width),
@@ -107,7 +107,7 @@ VacuumVessel::operator=(const VacuumVessel& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
       wallThick=A.wallThick;
       frontLength=A.frontLength;
@@ -141,7 +141,7 @@ VacuumVessel::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("VacuumVessel","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   frontLength=Control.EvalVar<double>(keyName+"FrontLength");

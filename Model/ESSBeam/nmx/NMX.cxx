@@ -66,7 +66,9 @@
 #include "FrontBackCut.h"
 #include "GuideItem.h"
 #include "GuideLine.h"
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
+#include "WindowPipe.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "BeamShutter.h"
@@ -85,15 +87,15 @@ NMX::NMX(const std::string& keyName) :
   stopPoint(0),
   nmxAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
-  VPipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
+  VPipeA(new constructSystem::WindowPipe(newName+"PipeA")),
   BendA(new beamlineSystem::GuideLine(newName+"BA")),
-  VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
+  VPipeB(new constructSystem::WindowPipe(newName+"PipeB")),
   BendB(new beamlineSystem::GuideLine(newName+"BB")),
-  VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
+  VPipeC(new constructSystem::WindowPipe(newName+"PipeC")),
   BendC(new beamlineSystem::GuideLine(newName+"BC")),
-  VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
+  VPipeD(new constructSystem::WindowPipe(newName+"PipeD")),
   BendD(new beamlineSystem::GuideLine(newName+"BD")),
-  VPipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
+  VPipeE(new constructSystem::WindowPipe(newName+"PipeE")),
   BendE(new beamlineSystem::GuideLine(newName+"BE")),
   CollA(new constructSystem::PipeCollimator(newName+"CollA")),
   BInsert(new BunkerInsert(newName+"BInsert")),
@@ -167,8 +169,6 @@ NMX::build(Simulation& System,
   FocusA->setBack(GItem.getKey("Beam"),-2);
   FocusA->createAll(System,*nmxAxis,-3,*nmxAxis,-3); // beam front reversed
   if (stopPoint==1) return;                  // STOP at Monolith
-  //  ELog::EM<<"Front == "<<GuideA.getKey("Beam").getLinkString(-1)
-  //          <<ELog::endDiag;
 
 
   // PIPE after gamma shield
@@ -181,7 +181,7 @@ NMX::build(Simulation& System,
 
   // PIPE from 10m to 14m
   VPipeB->addAllInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeB->setJoinFront(*VPipeA,2);
+  VPipeB->setFront(*VPipeA,2);
   VPipeB->createAll(System,BendA->getKey("Guide0"),2);
 
   BendB->addInsertCell(VPipeB->getCells("Void"));
@@ -190,7 +190,7 @@ NMX::build(Simulation& System,
 
   // PIPE from 14m to 18m
   VPipeC->addAllInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeC->setJoinFront(*VPipeB,2);
+  VPipeC->setFront(*VPipeB,2);
   VPipeC->createAll(System,BendB->getKey("Guide0"),2);
 
   BendC->addInsertCell(VPipeC->getCells("Void"));
@@ -199,7 +199,7 @@ NMX::build(Simulation& System,
 
   // PIPE from 18m to 22m
   VPipeD->addAllInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeD->setJoinFront(*VPipeC,2);
+  VPipeD->setFront(*VPipeC,2);
   VPipeD->createAll(System,BendC->getKey("Guide0"),2);
 
   BendD->addInsertCell(VPipeD->getCells("Void"));
@@ -208,7 +208,7 @@ NMX::build(Simulation& System,
 
   // PIPE from 22m to Wall
   VPipeE->addAllInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeE->setJoinFront(*VPipeD,2);
+  VPipeE->setFront(*VPipeD,2);
   VPipeE->createAll(System,BendD->getKey("Guide0"),2);
 
   BendE->addInsertCell(VPipeE->getCells("Void"));

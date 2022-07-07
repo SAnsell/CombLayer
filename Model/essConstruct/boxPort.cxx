@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/boxPort.cxx
+ * File:   essConstruct/boxPort.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,8 +39,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -57,7 +55,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -66,12 +64,12 @@
 #include "FrontBackCut.h"
 #include "boxPort.h"
 
-namespace constructSystem
+namespace essConstruct
 {
 
 boxPort::boxPort(const std::string& BKey,
 		 const std::string& PKey) :
-  attachSystem::FixedOffset(BKey+PKey,6),
+  attachSystem::FixedRotate(BKey+PKey,6),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   attachSystem::FrontBackCut(),
@@ -165,7 +163,7 @@ boxPort::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("boxPort","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   if (!(populated & 1))
     {
       const size_t NB=

@@ -62,6 +62,7 @@
 #include "ContainedGroup.h"
 #include "BlockZone.h"
 #include "generalConstruct.h"
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "VirtualTube.h"
 #include "PipeTube.h"

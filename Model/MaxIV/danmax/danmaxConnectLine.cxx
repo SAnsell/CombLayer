@@ -66,6 +66,7 @@
 #include "FuncDataBase.h"
 #include "Simulation.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"

@@ -74,6 +74,7 @@
 #include "Aperture.h"
 #include "GuideLine.h"
 #include "DiskChopper.h"
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
@@ -95,8 +96,8 @@ MAGIC::MAGIC(const std::string& keyName) :
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   BendC(new beamlineSystem::GuideLine(newName+"BC")),
-  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
-  PSCDisk(new constructSystem::DiskChopper(newName+"PSCBlade")),
+  ChopperA(new essConstruct::SingleChopper(newName+"ChopperA")),
+  PSCDisk(new essConstruct::DiskChopper(newName+"PSCBlade")),
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   FocusD(new beamlineSystem::GuideLine(newName+"FD")),
   VPipeE(new constructSystem::VacuumPipe(newName+"PipeE")),

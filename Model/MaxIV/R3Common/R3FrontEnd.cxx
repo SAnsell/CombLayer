@@ -68,6 +68,7 @@
 #include "generateSurf.h"
 #include "generalConstruct.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "CornerPipe.h"
 #include "insertObject.h"

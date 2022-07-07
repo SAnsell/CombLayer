@@ -75,6 +75,7 @@
 
 #include "GuideLine.h"
 #include "DiskChopper.h"
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "Bunker.h"
 #include "SingleChopper.h"
@@ -105,8 +106,8 @@ LOKI::LOKI(const std::string& keyN) :
   VPipeBLink(new constructSystem::VacuumPipe(newName+"PipeBLink")),
   BendBLink(new beamlineSystem::GuideLine(newName+"BBLink")),
 
-  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
-  DDiskA(new constructSystem::DiskChopper(newName+"DBladeA")),
+  ChopperA(new essConstruct::SingleChopper(newName+"ChopperA")),
+  DDiskA(new essConstruct::DiskChopper(newName+"DBladeA")),
 
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   FocusC(new beamlineSystem::GuideLine(newName+"FC")),
@@ -117,8 +118,8 @@ LOKI::LOKI(const std::string& keyN) :
 
   OutPitA(new constructSystem::ChopperPit(newName+"OutPitA")),
   PitACut(new constructSystem::HoleShape(newName+"PitACut")),
-  ChopperOutA(new constructSystem::SingleChopper(newName+"ChopperOutA")),
-  DDiskOutA(new constructSystem::DiskChopper(newName+"DBladeOutA")),
+  ChopperOutA(new essConstruct::SingleChopper(newName+"ChopperOutA")),
+  DDiskOutA(new essConstruct::DiskChopper(newName+"DBladeOutA")),
 
   ShieldA(new constructSystem::LineShield(newName+"ShieldA")),
   

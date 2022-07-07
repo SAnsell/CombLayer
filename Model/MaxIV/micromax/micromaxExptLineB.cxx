@@ -77,6 +77,7 @@
 #include "PipeTube.h"
 #include "portItem.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "VacuumBox.h"
 #include "Mirror.h"

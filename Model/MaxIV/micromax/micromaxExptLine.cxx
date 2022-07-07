@@ -79,6 +79,7 @@
 #include "portItem.h"
 #include "FlangePlate.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "VacuumBox.h"
 #include "Mirror.h"

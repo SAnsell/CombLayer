@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/boltRing.cxx
+ * File:   essConstruct/boltRing.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,8 +39,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "surfRegister.h"
@@ -67,7 +65,7 @@
 #include "FrontBackCut.h"
 #include "boltRing.h"
 
-namespace constructSystem
+namespace essConstruct
 {
 
 boltRing::boltRing(const std::string& BKey,
@@ -363,7 +361,7 @@ boltRing::createObjects(Simulation& System)
 	(SMap,prevBoltIndex,boltIndex," 3 -3M 7M ");
           
       makeCell("Ring",System,cellIndex++,mainMat,0.0,
-	       HR*frontBackHR+EdgeHR*sealUnit.complement());
+	       HR*frontBackHR*EdgeHR*sealUnit.complement());
       
       if (sealFlag)
 	{

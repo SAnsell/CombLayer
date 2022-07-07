@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/cspec/CSPEC.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,6 +57,7 @@
 #include "FixedOffsetUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
@@ -70,6 +71,7 @@
 #include "GuideItem.h"
 #include "GuideLine.h"
 #include "DiskChopper.h"
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "Bunker.h"
 #include "SingleChopper.h"
@@ -92,8 +94,8 @@ CSPEC::CSPEC(const std::string& keyName) :
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   FocusC(new beamlineSystem::GuideLine(newName+"FC")),
 
-  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
-  BWDiskA(new constructSystem::DiskChopper(newName+"BWDiskA")),
+  ChopperA(new essConstruct::SingleChopper(newName+"ChopperA")),
+  BWDiskA(new essConstruct::DiskChopper(newName+"BWDiskA")),
 
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   BendD(new beamlineSystem::GuideLine(newName+"BD"))

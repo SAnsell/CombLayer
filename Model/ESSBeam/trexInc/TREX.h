@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/trexInc/TREX.h
  *
- * Copyright (c) 2004-2019 by Tsitohaina Randriamalala/Stuart Ansell
+ * Copyright (c) 2004-2022 by Tsitohaina Randriamalala/Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,13 +32,17 @@ namespace attachSystem
   class CellMap;
 }
 
+namespace essConstruct
+{
+  class SingleChopper;
+  class DiskChopper;
+}
+
 namespace constuctSystem
 {
   class Jaws;
-  class DiskChopper;
   class ChopperPit;
   class ChopperHousing;
-  class SingleChopper;
   class RotaryCollimator;
   class VacuumBox;
   class VacuumPipe;
@@ -108,8 +112,8 @@ class TREX : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::ChopperPit> PitA;
   std::shared_ptr<constructSystem::HoleShape> PitACutFront;
   std::shared_ptr<constructSystem::HoleShape> PitACutBack;
-  std::shared_ptr<constructSystem::SingleChopper> ChopperA;
-  std::shared_ptr<constructSystem::DiskChopper> DiskA;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperA;
+  std::shared_ptr<essConstruct::DiskChopper> DiskA;
   std::shared_ptr<constructSystem::LineShield> ShieldA;
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutA;
   std::shared_ptr<beamlineSystem::GuideLine> BendOutA;
@@ -118,8 +122,8 @@ class TREX : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::ChopperPit> PitB;
   std::shared_ptr<constructSystem::HoleShape> PitBCutFront;
   std::shared_ptr<constructSystem::HoleShape> PitBCutBack;
-  std::shared_ptr<constructSystem::SingleChopper> ChopperB;
-  std::shared_ptr<constructSystem::DiskChopper> DiskB;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperB;
+  std::shared_ptr<essConstruct::DiskChopper> DiskB;
   std::shared_ptr<constructSystem::LineShield> ShieldB;
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutB;
   std::shared_ptr<beamlineSystem::GuideLine> BendOutB;
@@ -129,8 +133,8 @@ class TREX : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::ChopperPit> PitC;
   std::shared_ptr<constructSystem::HoleShape> PitCCutFront;
   std::shared_ptr<constructSystem::HoleShape> PitCCutBack;
-  std::shared_ptr<constructSystem::SingleChopper> ChopperC;
-  std::shared_ptr<constructSystem::DiskChopper> DiskC;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperC;
+  std::shared_ptr<essConstruct::DiskChopper> DiskC;
 
 
   std::array<std::shared_ptr<constructSystem::VacuumPipe>,7>
@@ -146,9 +150,9 @@ class TREX : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::ChopperPit> PitE;
   std::shared_ptr<constructSystem::HoleShape> PitECutFront;
   std::shared_ptr<constructSystem::HoleShape> PitECutBack;
-  std::shared_ptr<constructSystem::SingleChopper> ChopperE;
-  std::shared_ptr<constructSystem::DiskChopper> DiskE1;
-  std::shared_ptr<constructSystem::DiskChopper> DiskE2;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperE;
+  std::shared_ptr<essConstruct::DiskChopper> DiskE1;
+  std::shared_ptr<essConstruct::DiskChopper> DiskE2;
   std::shared_ptr<constructSystem::LineShield> ShieldE;
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutE;
   std::shared_ptr<beamlineSystem::GuideLine> GuideOutE;
@@ -163,15 +167,15 @@ class TREX : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutG;
   std::shared_ptr<beamlineSystem::GuideLine> GuideOutG;
 
-  std::shared_ptr<constructSystem::SingleChopper> ChopperG;
-  std::shared_ptr<constructSystem::DiskChopper> DiskG;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperG;
+  std::shared_ptr<essConstruct::DiskChopper> DiskG;
   
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutH;
   std::shared_ptr<beamlineSystem::GuideLine> GuideOutH;
 
-  std::shared_ptr<constructSystem::SingleChopper> ChopperH;
-  std::shared_ptr<constructSystem::DiskChopper> DiskH1;
-  std::shared_ptr<constructSystem::DiskChopper> DiskH2;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperH;
+  std::shared_ptr<essConstruct::DiskChopper> DiskH1;
+  std::shared_ptr<essConstruct::DiskChopper> DiskH2;
 
   std::shared_ptr<beamlineSystem::GuideLine> GuideOutI;
  

@@ -69,6 +69,7 @@
 #include "FixedOffsetGroup.h"
 #include "generateSurf.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "VirtualTube.h"
 #include "PipeTube.h"

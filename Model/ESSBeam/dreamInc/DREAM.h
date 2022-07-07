@@ -83,11 +83,11 @@ class DREAM : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusB;
   
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::SingleChopper> ChopperA;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperA;
   /// Double disk chopper
-  std::shared_ptr<constructSystem::DiskChopper> DDisk;
+  std::shared_ptr<essConstruct::DiskChopper> DDisk;
   /// Double disk chopper
-  std::shared_ptr<constructSystem::DiskChopper> SDisk;
+  std::shared_ptr<essConstruct::DiskChopper> SDisk;
 
   std::shared_ptr<constructSystem::PipeCollimator> CollimA;
   std::shared_ptr<constructSystem::PipeCollimator> CollimB;
@@ -100,18 +100,18 @@ class DREAM : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusC;
 
   /// Vac box for BandPass chopper
-  std::shared_ptr<constructSystem::SingleChopper> ChopperB;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperB;
   /// Band Chopper
-  std::shared_ptr<constructSystem::DiskChopper> BandADisk;
+  std::shared_ptr<essConstruct::DiskChopper> BandADisk;
 
   /// Pipe between T0 chopper and BandA
   std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
   std::shared_ptr<beamlineSystem::GuideLine> FocusD;
   
   /// Vac box for T0 chopper
-  std::shared_ptr<constructSystem::SingleChopper> ChopperC;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperC;
   /// TO disk chopper [part A]
-  std::shared_ptr<constructSystem::DiskChopper> T0DiskA;
+  std::shared_ptr<essConstruct::DiskChopper> T0DiskA;
 
   /// Pipe between  T0 and heavy shutter
   std::shared_ptr<constructSystem::VacuumPipe> VPipeE1;

@@ -88,9 +88,9 @@ class LOKI : public attachSystem::CopiedComp
 
 
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::SingleChopper> ChopperA;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperA;
   /// Double disk chopper
-  std::shared_ptr<constructSystem::DiskChopper> DDiskA;
+  std::shared_ptr<essConstruct::DiskChopper> DDiskA;
 
   /// Vacuum pipe to first chopper
   std::shared_ptr<constructSystem::VacuumPipe> VPipeC;
@@ -109,9 +109,9 @@ class LOKI : public attachSystem::CopiedComp
   /// Exit of pit A
   std::shared_ptr<constructSystem::HoleShape> PitACut;
   /// vac box for first chopper out of bunker
-  std::shared_ptr<constructSystem::SingleChopper> ChopperOutA;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperOutA;
   /// double disks for first chopper out of bunker
-  std::shared_ptr<constructSystem::DiskChopper> DDiskOutA;
+  std::shared_ptr<essConstruct::DiskChopper> DDiskOutA;
 
   /// First shielding after bunker wall
   std::shared_ptr<constructSystem::LineShield> ShieldA;

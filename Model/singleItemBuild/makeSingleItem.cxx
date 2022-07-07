@@ -70,7 +70,9 @@
 #include "insertCylinder.h"
 #include "insertShell.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
+#include "WindowPipe.h"
 #include "Quadrupole.h"
 #include "Sexupole.h"
 #include "Octupole.h"
@@ -78,6 +80,7 @@
 #include "LQuadH.h"
 #include "LSexupole.h"
 #include "ChopperPit.h"
+#include "SingleChopper.h"
 #include "CorrectorMag.h"
 #include "CollTube.h"
 #include "CollUnit.h"
@@ -190,29 +193,30 @@ makeSingleItem::build(Simulation& System,
   std::set<std::string> validItems
     ({
       "default",
-      "CornerPipe","ChopperPit","CylGateValve",
-      "GateValveCube","GateValveCylinder","CleaningMagnet",
-      "CorrectorMag","Jaws","LQuadF","LQuadH","LSexupole",
-      "MagnetBlock","Sexupole","MagnetM1","MagnetU1",
-      "Octupole","CeramicGap",
-      "EBeamStop","FMask","R3ChokeChamber",
+	"CornerPipe","ChopperPit","CylGateValve","SingleChopper",
+	"GateValveCube","GateValveCylinder","CleaningMagnet",
+	"CorrectorMag","Jaws","LQuadF","LQuadH","LSexupole",
+	"MagnetBlock","Sexupole","MagnetM1","MagnetU1",
+	"Octupole","CeramicGap",
+	"EBeamStop","FMask","R3ChokeChamber",
 	"DipoleExtract","DipoleSndBend","Dipole",
-      "EPSeparator","EPCombine","EPContinue",
-      "Quadrupole","TargetShield","FourPort",
-      "FlatPipe","TriPipe","TriGroup","SixPort","CrossWay","CrossBlank",
-      "GaugeTube","BremBlock","DipoleDIBMag","EArrivalMon","YagScreen",
-      "YAG","YagUnit","YagUnitBig","CooledScreen","CooledUnit",
-      "StriplineBPM","BeamDivider","BeamScrapper",
-      "Scrapper","TWCavity","Bellow", "VacuumPipe","HalfElectronPipe",
-      "MultiPipe","PipeTube","PortTube","BlankTube","ButtonBPM",
-      "PrismaChamber","uVac", "UndVac","UndulatorVacuum",
-      "IonPTube","IonGauge","CollTube",
-      "NBeamStop","MagTube","TriggerTube",
-      "BremTube","HPJaws","BoxJaws","HPCombine","ViewTube",
-      "DiffPumpXIADP03","CRLTube","ExperimentalHutch",
-      "ConnectorTube","LocalShield","FlangeDome",
-      "MonoShutter","RoundMonoShutter",
-      "Help","help"
+	"EPSeparator","EPCombine","EPContinue",
+	"Quadrupole","TargetShield","FourPort",
+	"FlatPipe","TriPipe","TriGroup","SixPort","CrossWay","CrossBlank",
+	"GaugeTube","BremBlock","DipoleDIBMag","EArrivalMon","YagScreen",
+	"YAG","YagUnit","YagUnitBig","CooledScreen","CooledUnit",
+	"StriplineBPM","BeamDivider","BeamScrapper",
+	"Scrapper","TWCavity","Bellow", "VacuumPipe","WindowPipe",
+	"HalfElectronPipe",
+	"MultiPipe","PipeTube","PortTube","BlankTube","ButtonBPM",
+	"PrismaChamber","uVac", "UndVac","UndulatorVacuum",
+	"IonPTube","IonGauge","CollTube",
+	"NBeamStop","MagTube","TriggerTube",
+	"BremTube","HPJaws","BoxJaws","HPCombine","ViewTube",
+	"DiffPumpXIADP03","CRLTube","ExperimentalHutch",
+	"ConnectorTube","LocalShield","FlangeDome",
+	"MonoShutter","RoundMonoShutter",
+	"Help","help"
     });
 
   ModelSupport::objectRegister& OR=
@@ -248,6 +252,17 @@ makeSingleItem::build(Simulation& System,
 
       PitA->addInsertCell(voidCell);
       PitA->createAll(System,World::masterOrigin(),0);
+      return;
+    }
+  if (item == "SingleChopper")
+    {
+      std::shared_ptr<essConstruct::SingleChopper>
+	SC(new essConstruct::SingleChopper("singleChopper"));
+
+      OR.addObject(SC);
+
+      SC->addInsertCell(voidCell);
+      SC->createAll(System,World::masterOrigin(),0);
       return;
     }
   if (item == "MagTube")
@@ -1228,6 +1243,19 @@ makeSingleItem::build(Simulation& System,
     {
       std::shared_ptr<constructSystem::VacuumPipe>
 	VC(new constructSystem::VacuumPipe("VC"));
+
+      OR.addObject(VC);
+
+      VC->addAllInsertCell(voidCell);
+      VC->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
+  if (item == "WindowPipe" )
+    {
+      std::shared_ptr<constructSystem::WindowPipe>
+	VC(new constructSystem::WindowPipe("VCWin"));
 
       OR.addObject(VC);
 

@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/FrontBackCut.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,9 @@ namespace attachSystem
 */
 
 class FrontBackCut :
-  public ExternalCut
+    public ExternalCut
 {
+
  public:
 
   FrontBackCut();
@@ -76,7 +77,10 @@ class FrontBackCut :
   bool frontActive() const { return isActive("front"); }
   /// Flag accessor
   bool backActive() const { return isActive("back"); }
-
+  /// Point as well as frontActive
+  bool frontPointActive() const { return hasExternalPoint("front"); }
+  /// Point as well as backActive
+  bool backPointActive() const { return hasExternalPoint("back"); }
 
   std::string frontRule() const;
   std::string backRule() const;
@@ -105,6 +109,15 @@ class FrontBackCut :
 				  const Geometry::Vec3D&) const;
   Geometry::Vec3D backInterPoint(const Geometry::Vec3D&,
 				 const Geometry::Vec3D&) const;
+
+  const Geometry::Vec3D& getFrontPoint() const;
+  const Geometry::Vec3D& getBackPoint() const;
+
+  void setFrontPoint(const Geometry::Vec3D&);
+  void setBackPoint(const Geometry::Vec3D&);
+
+
+  
 };
 
 }

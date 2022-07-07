@@ -73,6 +73,7 @@
 #include "Aperture.h"
 #include "GuideLine.h"
 #include "DiskChopper.h"
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "Bunker.h"
 #include "CompBInsert.h"
@@ -97,14 +98,14 @@ BIFROST::BIFROST(const std::string& keyName) :
   FocusB(new beamlineSystem::GuideLine(newName+"FB")),
   AppA(new constructSystem::Aperture(newName+"AppA")),
 
-  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
-  DDisk(new constructSystem::DiskChopper(newName+"DBlade")),
+  ChopperA(new essConstruct::SingleChopper(newName+"ChopperA")),
+  DDisk(new essConstruct::DiskChopper(newName+"DBlade")),
 
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   FocusC(new beamlineSystem::GuideLine(newName+"FC")),
   
-  ChopperB(new constructSystem::SingleChopper(newName+"ChopperB")),
-  FOCDiskB(new constructSystem::DiskChopper(newName+"FOC1Blade")),
+  ChopperB(new essConstruct::SingleChopper(newName+"ChopperB")),
+  FOCDiskB(new essConstruct::DiskChopper(newName+"FOC1Blade")),
 
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   FocusD(new beamlineSystem::GuideLine(newName+"FD")),
@@ -112,8 +113,8 @@ BIFROST::BIFROST(const std::string& keyName) :
   VPipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
   FocusE(new beamlineSystem::GuideLine(newName+"FE")),
 
-  ChopperC(new constructSystem::SingleChopper(newName+"ChopperC")),
-  FOCDiskC(new constructSystem::DiskChopper(newName+"FOC2Blade")),
+  ChopperC(new essConstruct::SingleChopper(newName+"ChopperC")),
+  FOCDiskC(new essConstruct::DiskChopper(newName+"FOC2Blade")),
 
   VPipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
   FocusF(new beamlineSystem::GuideLine(newName+"FF")),
@@ -140,8 +141,8 @@ BIFROST::BIFROST(const std::string& keyName) :
   OutACutFront(new constructSystem::HoleShape(newName+"OutACutFront")),
   OutACutBack(new constructSystem::HoleShape(newName+"OutACutBack")),
 
-  ChopperOutA(new constructSystem::SingleChopper(newName+"ChopperOutA")),
-  FOCDiskOutA(new constructSystem::DiskChopper(newName+"FOCOutABlade")),
+  ChopperOutA(new essConstruct::SingleChopper(newName+"ChopperOutA")),
+  FOCDiskOutA(new essConstruct::DiskChopper(newName+"FOCOutABlade")),
 
   ShieldB(new constructSystem::LineShield(newName+"ShieldB")),
 

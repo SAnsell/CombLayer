@@ -93,11 +93,11 @@ class MIRACLES : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::Aperture> AppA;
 
   /// Twin first chopper pair
-  std::shared_ptr<constructSystem::TwinChopper> TwinB;
+  std::shared_ptr<essConstruct::TwinChopper> TwinB;
   /// Top twin disk
-  std::shared_ptr<constructSystem::DiskChopper> BDiskTop;
+  std::shared_ptr<essConstruct::DiskChopper> BDiskTop;
   /// Lower twin disk
-  std::shared_ptr<constructSystem::DiskChopper> BDiskLow;
+  std::shared_ptr<essConstruct::DiskChopper> BDiskLow;
 
   /// Pipe from Chopper A  to B
   std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
@@ -105,11 +105,11 @@ class MIRACLES : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusD;
 
   /// Twin second chopper pair
-  std::shared_ptr<constructSystem::TwinChopper> TwinC;
+  std::shared_ptr<essConstruct::TwinChopper> TwinC;
   /// Top twin disk (2)
-  std::shared_ptr<constructSystem::DiskChopper> CDiskTop;
+  std::shared_ptr<essConstruct::DiskChopper> CDiskTop;
   /// Lower twin disk (2)
-  std::shared_ptr<constructSystem::DiskChopper> CDiskLow;
+  std::shared_ptr<essConstruct::DiskChopper> CDiskLow;
 
   /// Pipe from Chopper C to D
   std::shared_ptr<constructSystem::VacuumPipe> VPipeE;
@@ -117,9 +117,9 @@ class MIRACLES : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusE;
 
   /// First single chopper pair
-  std::shared_ptr<constructSystem::SingleChopper> ChopE;
+  std::shared_ptr<essConstruct::SingleChopper> ChopE;
   /// Top twin disk
-  std::shared_ptr<constructSystem::DiskChopper> EDisk;
+  std::shared_ptr<essConstruct::DiskChopper> EDisk;
   
   /// Shutter
   std::shared_ptr<constructSystem::BeamShutter> ShutterA;

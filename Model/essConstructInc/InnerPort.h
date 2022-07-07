@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/InnerPort.h
+ * File:   essConstructInc/InnerPort.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,12 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_InnerPort_h
-#define constructSystem_InnerPort_h
+#ifndef essConstruct_InnerPort_h
+#define essConstruct_InnerPort_h
 
 class Simulation;
 
-namespace constructSystem
+namespace essConstruct
 {
   
 /*!
@@ -39,7 +39,7 @@ namespace constructSystem
 */
 
 class InnerPort :
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
   public attachSystem::ExternalCut

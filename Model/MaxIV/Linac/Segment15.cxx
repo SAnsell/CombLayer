@@ -64,6 +64,7 @@
 #include "BlockZone.h"
 #include "generalConstruct.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "YagUnit.h"
 #include "YagScreen.h"

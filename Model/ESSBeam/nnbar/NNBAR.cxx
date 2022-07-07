@@ -71,6 +71,7 @@
 #include "GuideItem.h"
 #include "HoleShape.h"
 #include "GuideLine.h"
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuildInc/VESPA.h
+ * File:   vespaInc/VESPA.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,14 @@ namespace attachSystem
   class CellMap;
 }
 
+namespace essConstruct
+{
+  class DiskChopper;  
+  class SingleChopper;
+  class TwinChopper;
+  class TwinChopperFlat;
+}
+
 namespace instrumentSystem
 {
   class CylSample;
@@ -37,7 +45,6 @@ namespace constructSystem
 {  
   class ChopperPit;
   class Cryostat;   
-  class DiskChopper;
   class Jaws;
   class JawSet;
   class LineShield;
@@ -46,12 +53,9 @@ namespace constructSystem
   class VacuumBox;
   class VacuumPipe;
   class VacuumWindow;
-  class SingleChopper;
-  class TwinChopper;
   class HoleShape;
   class CrystalMount;
   class TubeDetBox;
-  class TwinChopperFlat;
 }
 
 namespace essSystem
@@ -95,11 +99,11 @@ class VESPA : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusC;
 
   /// PulseShapingChopper-A 
-  std::shared_ptr<constructSystem::TwinChopperFlat> TwinChopperA;
+  std::shared_ptr<essConstruct::TwinChopperFlat> TwinChopperA;
   /// PSC -- top disk
-  std::shared_ptr<constructSystem::DiskChopper> PSCDiskTopA;
+  std::shared_ptr<essConstruct::DiskChopper> PSCDiskTopA;
   /// PSC -- lower disk
-  std::shared_ptr<constructSystem::DiskChopper> PSCDiskBottomA;
+  std::shared_ptr<essConstruct::DiskChopper> PSCDiskBottomA;
 
   /// Joining pipe between Choppers: A-B
   std::shared_ptr<constructSystem::VacuumPipe> JPipeAB;
@@ -107,11 +111,11 @@ class VESPA : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusD;
   
   /// PulseShapingChopper-B 
-  std::shared_ptr<constructSystem::TwinChopperFlat> TwinChopperB;
+  std::shared_ptr<essConstruct::TwinChopperFlat> TwinChopperB;
   /// PSC -- top disk 
-  std::shared_ptr<constructSystem::DiskChopper> PSCDiskTopB;
+  std::shared_ptr<essConstruct::DiskChopper> PSCDiskTopB;
   /// PSC -- lower disk
-  std::shared_ptr<constructSystem::DiskChopper> PSCDiskBottomB;
+  std::shared_ptr<essConstruct::DiskChopper> PSCDiskBottomB;
 
   /// Joining pipe between Choppers: B-C
   std::shared_ptr<constructSystem::VacuumPipe> JPipeBC;
@@ -119,11 +123,11 @@ class VESPA : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusE;
 
   /// PulseShapingChopper-C 
-  std::shared_ptr<constructSystem::TwinChopperFlat> TwinChopperC;
+  std::shared_ptr<essConstruct::TwinChopperFlat> TwinChopperC;
   /// PSC -- top disk 
-  std::shared_ptr<constructSystem::DiskChopper> PSCDiskTopC;
+  std::shared_ptr<essConstruct::DiskChopper> PSCDiskTopC;
   /// PSC -- lower disk
-  std::shared_ptr<constructSystem::DiskChopper> PSCDiskBottomC;
+  std::shared_ptr<essConstruct::DiskChopper> PSCDiskBottomC;
 
   /// Joining pipe between Choppers: C to Out
   std::shared_ptr<constructSystem::VacuumPipe> JPipeCOut;
@@ -136,9 +140,9 @@ class VESPA : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusG;
 
   /// FO-Chopper
-  std::shared_ptr<constructSystem::SingleChopper> ChopperFOC;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperFOC;
   /// FO-Chopper Disk
-  std::shared_ptr<constructSystem::DiskChopper> FOCDisk;
+  std::shared_ptr<essConstruct::DiskChopper> FOCDisk;
 
   /// General Pipe between FOC and Bunker wall
   std::shared_ptr<constructSystem::VacuumPipe> VPipeH;
@@ -157,9 +161,9 @@ class VESPA : public attachSystem::CopiedComp
   /// Shield for Chopper Out-A
   std::shared_ptr<constructSystem::ChopperPit> OutPitT0;
   /// Quad chopper housing 
-  std::shared_ptr<constructSystem::SingleChopper> ChopperT0;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperT0;
   /// T0 chopper [15.5m]
-  std::shared_ptr<constructSystem::DiskChopper> T0Disk;
+  std::shared_ptr<essConstruct::DiskChopper> T0Disk;
   /// Collimator hole 
   std::shared_ptr<constructSystem::HoleShape> T0ExitPort;
   
@@ -173,7 +177,7 @@ class VESPA : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusOutA;
 
   /// Vac box for First Out-of-bunker chopper
-  std::shared_ptr<constructSystem::SingleChopper> ChopperOutA;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperOutA;
 
   /// Shield for Chopper Out-B
   std::shared_ptr<constructSystem::ChopperPit> OutPitB;
@@ -184,7 +188,7 @@ class VESPA : public attachSystem::CopiedComp
 
 
   /// Double disk chopper [Frame overlap chopper]
-  std::shared_ptr<constructSystem::DiskChopper> FOCDiskB;
+  std::shared_ptr<essConstruct::DiskChopper> FOCDiskB;
   /// Shield out of PitA
   std::shared_ptr<constructSystem::TriangleShield> ShieldB;
   /// Vac pipe out of PitA
@@ -200,9 +204,9 @@ class VESPA : public attachSystem::CopiedComp
   std::vector<std::shared_ptr<beamlineSystem::GuideLine>> FocusArray;
   
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::SingleChopper> ChopperOutB;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperOutB;
   /// Double disk chopper [Wavelength Frame multiplication]
-  std::shared_ptr<constructSystem::DiskChopper> FOCDiskOutB;
+  std::shared_ptr<essConstruct::DiskChopper> FOCDiskOutB;
 
   /// Shield out of PitB
   std::shared_ptr<constructSystem::LineShield> ShieldC;

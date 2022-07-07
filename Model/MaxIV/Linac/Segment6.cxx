@@ -62,6 +62,7 @@
 #include "BlockZone.h"
 #include "generalConstruct.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "CeramicGap.h"
 #include "Scrapper.h"

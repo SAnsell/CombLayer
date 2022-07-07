@@ -56,6 +56,7 @@
 #include "CopiedComp.h"
 #include "BlockZone.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "LeadPipe.h"

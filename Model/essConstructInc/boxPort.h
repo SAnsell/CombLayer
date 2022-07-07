@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/boxPort.h
+ * File:   essConstructInc/boxPort.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,12 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_boxPort_h
-#define constructSystem_boxPort_h
+#ifndef essConstruct_boxPort_h
+#define essConstruct_boxPort_h
 
 class Simulation;
 
-namespace constructSystem
+namespace essConstruct
 {
   class RingSeal;
   class InnerPort;
@@ -41,7 +41,7 @@ namespace constructSystem
 */
 
 class boxPort :
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
   public attachSystem::SurfMap,

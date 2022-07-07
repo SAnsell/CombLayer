@@ -58,6 +58,7 @@
 #include "CopiedComp.h"
 #include "BlockZone.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "JawFlange.h"
 #include "R3FrontEnd.h"

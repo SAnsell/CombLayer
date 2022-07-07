@@ -72,6 +72,7 @@
 #include "GuideLine.h"
 #include "DiskChopper.h"
 #include "Motor.h"
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "SingleChopper.h"
 #include "Bunker.h"
@@ -127,9 +128,9 @@ SKADI::SKADI(const std::string& keyName):
   PitACutFront(new constructSystem::HoleShape(newName+"PitACutFront")),
   
   PitACutBack(new constructSystem::HoleShape(newName+"PitACutBack")),
-  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
-  ChopAMotor(new constructSystem::Motor(newName+"ChopAMotor")),
-  DiskA(new constructSystem::DiskChopper(newName+"ADisk")),
+  ChopperA(new essConstruct::SingleChopper(newName+"ChopperA")),
+  ChopAMotor(new essConstruct::Motor(newName+"ChopAMotor")),
+  DiskA(new essConstruct::DiskChopper(newName+"ADisk")),
 
   ShieldB(new constructSystem::LineShield(newName+"ShieldB")),
   VPipeOutB(new constructSystem::VacuumPipe(newName+"PipeOutB")),
@@ -137,8 +138,8 @@ SKADI::SKADI(const std::string& keyName):
   PitB(new constructSystem::ChopperPit(newName+"PitB")),
   PitBCutFront(new constructSystem::HoleShape(newName+"PitBCutFront")),
   PitBCutBack(new constructSystem::HoleShape(newName+"PitBCutBack")),
-  ChopperB(new constructSystem::SingleChopper(newName+"ChopperB")),
-  DiskB(new constructSystem::DiskChopper(newName+"BDisk")),
+  ChopperB(new essConstruct::SingleChopper(newName+"ChopperB")),
+  DiskB(new essConstruct::DiskChopper(newName+"BDisk")),
 
   ShieldC(new constructSystem::LineShield(newName+"ShieldC")),
   VPipeOutC(new constructSystem::VacuumPipe(newName+"PipeOutC")),
@@ -147,10 +148,10 @@ SKADI::SKADI(const std::string& keyName):
   PitCCutFront(new
   constructSystem::HoleShape(newName+"PitCCutFront")),
   PitCCutBack(new constructSystem::HoleShape(newName+"PitCCutBack")),
-  ChopperC1(new constructSystem::SingleChopper(newName+"ChopperC1")),
-  DiskC1(new constructSystem::DiskChopper(newName+"C1Disk")),
-  ChopperC2(new constructSystem::SingleChopper(newName+"ChopperC2")),
-  DiskC2(new constructSystem::DiskChopper(newName+"C2Disk")),
+  ChopperC1(new essConstruct::SingleChopper(newName+"ChopperC1")),
+  DiskC1(new essConstruct::DiskChopper(newName+"C1Disk")),
+  ChopperC2(new essConstruct::SingleChopper(newName+"ChopperC2")),
+  DiskC2(new essConstruct::DiskChopper(newName+"C2Disk")),
 
   ShieldD(new constructSystem::LineShield(newName+"ShieldD")),
   VPipeOutD(new constructSystem::VacuumPipe(newName+"PipeOutD")),

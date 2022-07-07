@@ -3,7 +3,7 @@
  
  * File:   essConstruct/TwinChopperFlat.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,8 +51,8 @@
 #include "LinkUnit.h"  
 #include "FixedComp.h"
 #include "FixedGroup.h"
-#include "FixedOffset.h"
-#include "FixedOffsetGroup.h"
+#include "FixedRotate.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
@@ -63,13 +63,13 @@
 #include "TwinBase.h"
 #include "TwinChopperFlat.h"
 
-namespace constructSystem
+namespace essConstruct
 {
 
 TwinChopperFlat::TwinChopperFlat(const std::string& Key) :
   TwinBase(Key),
-  frontBoxPort(new constructSystem::boxPort(Key,"BoxPortFront")),
-  backBoxPort(new constructSystem::boxPort(Key,"BoxPortBack"))
+  frontBoxPort(new essConstruct::boxPort(Key,"BoxPortFront")),
+  backBoxPort(new essConstruct::boxPort(Key,"BoxPortBack"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName

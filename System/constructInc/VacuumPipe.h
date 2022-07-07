@@ -3,7 +3,7 @@
 
  * File:   constructInc/VacuumPipe.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,22 +27,6 @@ class Simulation;
 namespace constructSystem
 {
 
-  /*!
-    \struct windowInfo
-    \version 1.0
-    \date July 2015
-    \author S. Ansell
-    \brief window build data
-  */
-struct windowInfo
-{
-  double thick;           ///< Joining Flange length
-  double radius;          ///< Window radius
-  double height;          ///< Window Height
-  double width;           ///< Window Width
-  int mat;                ///< Material
-};
-
 /*!
   \class VacuumPipe
   \version 1.0
@@ -52,21 +36,9 @@ struct windowInfo
 */
 
 class VacuumPipe :
-  public attachSystem::FixedRotate,
-  public attachSystem::ContainedGroup,
-  public attachSystem::CellMap,
-  public attachSystem::SurfMap,
-  public attachSystem::FrontBackCut
+  public GeneralPipe
 {
  private:
-
-  bool frontJoin;               ///< Flag for front join
-  Geometry::Vec3D FPt;          ///< Front point
-  Geometry::Vec3D FAxis;        ///< Front point
-
-  bool backJoin;                ///< Flag for front join
-  Geometry::Vec3D BPt;          ///< Front point for join
-  Geometry::Vec3D BAxis;        ///< Front axis for join
 
   double radius;                ///< void radius [inner]
   double height;                ///< void radius [inner]
@@ -87,10 +59,6 @@ class VacuumPipe :
   double flangeBWidth;           ///< Joining Flange width
   double flangeBLength;          ///< Joining Flange length
 
-  int activeWindow;             ///< Flag on window activity
-  windowInfo windowFront;       ///< Front window info
-  windowInfo windowBack;        ///< Back window info
-
   int voidMat;                  ///< Void material
   int feMat;                    ///< Pipe material
   int claddingMat;              ///< Pipe cladding material
@@ -99,12 +67,9 @@ class VacuumPipe :
   int outerVoid;                ///< Flag to build the outer void cell between flanges
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-
-  void applyActiveFrontBack();
 
  public:
 

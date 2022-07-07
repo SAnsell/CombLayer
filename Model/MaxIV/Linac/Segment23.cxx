@@ -63,6 +63,7 @@
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "StriplineBPM.h"
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "LQuadF.h"
 #include "LQuadH.h"

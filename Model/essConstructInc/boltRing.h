@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/boltRing.h
+ * File:   essConstruct/boltRing.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,12 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_boltRing_h
-#define constructSystem_boltRing_h
+#ifndef essConstruct_boltRing_h
+#define essConstruct_boltRing_h
 
 class Simulation;
 
-namespace constructSystem
+namespace essConstruct
 {
   class RingSeal;
   class InnerPort;

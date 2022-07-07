@@ -90,9 +90,9 @@ class BIFROST : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::Aperture> AppA;
 
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::SingleChopper> ChopperA;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperA;
   /// Double disk chopper
-  std::shared_ptr<constructSystem::DiskChopper> DDisk;
+  std::shared_ptr<essConstruct::DiskChopper> DDisk;
   
   /// Pipe from first chopper [4m]
   std::shared_ptr<constructSystem::VacuumPipe> VPipeC;
@@ -100,9 +100,9 @@ class BIFROST : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusC;
 
   /// 10.5m FOC 
-  std::shared_ptr<constructSystem::SingleChopper> ChopperB;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperB;
   /// single disk chopper
-  std::shared_ptr<constructSystem::DiskChopper> FOCDiskB;
+  std::shared_ptr<essConstruct::DiskChopper> FOCDiskB;
 
   /// Pipe from first chopper [6m]
   std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
@@ -115,9 +115,9 @@ class BIFROST : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusE;
 
   /// 20.5m FOC-2
-  std::shared_ptr<constructSystem::SingleChopper> ChopperC;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperC;
   /// single disk chopper
-  std::shared_ptr<constructSystem::DiskChopper> FOCDiskC;
+  std::shared_ptr<essConstruct::DiskChopper> FOCDiskC;
 
   /// Pipe from first chopper [4m]
   std::shared_ptr<constructSystem::VacuumPipe> VPipeF;
@@ -163,9 +163,9 @@ class BIFROST : public attachSystem::CopiedComp
   /// Collimator hole 
   std::shared_ptr<constructSystem::HoleShape> OutACutBack;
   /// First out of bunker chopper 
-  std::shared_ptr<constructSystem::SingleChopper> ChopperOutA;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperOutA;
   /// single disk chopper
-  std::shared_ptr<constructSystem::DiskChopper> FOCDiskOutA;
+  std::shared_ptr<essConstruct::DiskChopper> FOCDiskOutA;
   
   /// Second shield wall : chopperOutA to Cave
   std::shared_ptr<constructSystem::LineShield> ShieldB;  

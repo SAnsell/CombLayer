@@ -352,10 +352,10 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
     }
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"FeThick",pipeThick);
-  Control.addVariable(keyName+"FlangeFrontRadius",realFlangeARadius);
-  Control.addVariable(keyName+"FlangeBackRadius",realFlangeBRadius);
-  Control.addVariable(keyName+"FlangeFrontLength",flangeALen);
-  Control.addVariable(keyName+"FlangeBackLength",flangeBLen);
+  Control.addVariable(keyName+"FlangeARadius",realFlangeARadius);
+  Control.addVariable(keyName+"FlangeBRadius",realFlangeBRadius);
+  Control.addVariable(keyName+"FlangeALength",flangeALen);
+  Control.addVariable(keyName+"FlangeBLength",flangeBLen);
   Control.addVariable(keyName+"FeMat",pipeMat);
 
 
@@ -364,8 +364,8 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
   Control.addVariable(keyName+"WindowRadius",realWindowRadius);
 
   Control.addVariable(keyName+"WindowThick",windowThick);
-  Control.addVariable(keyName+"WindowFrontMat",frontWindowMat);
-  Control.addVariable(keyName+"WindowBackMat",backWindowMat);
+  Control.addVariable(keyName+"WindowAMat",frontWindowMat);
+  Control.addVariable(keyName+"WindowBMat",backWindowMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
 
   Control.addVariable(keyName+"CladdingThick",claddingThick);

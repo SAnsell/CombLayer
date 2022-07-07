@@ -3,7 +3,7 @@
  
  * File:   constructInc/RingSeal.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,13 +40,12 @@ namespace constructSystem
 */
 
 class RingSeal :
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap
 {
  protected:
   
-
   size_t NSection;      ///< Divide into sections
   size_t NTrack;        ///< Track number [for find cells]
   double radius;        ///< main innner radius
@@ -81,6 +80,7 @@ class RingSeal :
   void setInnerExclude(const HeadRule&);
   void setOuter(const HeadRule&);
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

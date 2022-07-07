@@ -65,6 +65,7 @@
 #include "BlockZone.h"
 #include "generalConstruct.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "GateValveCylinder.h"
 #include "vacTube.h"

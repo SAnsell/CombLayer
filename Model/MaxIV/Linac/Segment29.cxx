@@ -71,6 +71,7 @@
 
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "YagUnit.h"
 #include "YagScreen.h"

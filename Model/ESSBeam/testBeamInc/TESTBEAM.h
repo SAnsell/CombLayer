@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/testbeam/TESTBEAM.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,6 +34,12 @@ namespace instrumentSystem
   class CylSample;
 }
 
+namespace essConstruct
+{
+  class SingleChopper;
+  class Motor;
+}
+
 namespace constructSystem
 {  
   class ChopperPit;
@@ -43,11 +49,9 @@ namespace constructSystem
   class JawSet;
   class LineShield;
   class RotaryCollimator;
-  class Motor;
   class VacuumBox;
   class VacuumPipe;
   class VacuumWindow;
-  class SingleChopper;
   class TwinChopper;
   class HoleShape;
   class CrystalMount;
@@ -84,19 +88,19 @@ class TESTBEAM : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusA;
 
   /// Test item [Twin chopper]
-  std::shared_ptr<constructSystem::TwinChopper> TwinA;
+  std::shared_ptr<essConstruct::TwinChopper> TwinA;
 
   /// Blade for Twin - chopper
-  std::shared_ptr<constructSystem::DiskChopper> ADisk;
+  std::shared_ptr<essConstruct::DiskChopper> ADisk;
   /// Blade for Twin - chopper
-  std::shared_ptr<constructSystem::DiskChopper> BDisk;
+  std::shared_ptr<essConstruct::DiskChopper> BDisk;
 
   /// Test item : T0 Chopper
-  std::shared_ptr<constructSystem::SingleChopper> ChopperT0;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperT0;
   /// Test item : T0 Chopper blades
-  std::shared_ptr<constructSystem::DiskChopper> T0Disk;
+  std::shared_ptr<essConstruct::DiskChopper> T0Disk;
   /// Test item : T0 Chopper motor
-  std::shared_ptr<constructSystem::Motor> T0Motor;
+  std::shared_ptr<essConstruct::Motor> T0Motor;
 
   /// Test item [Crysotat]
   std::shared_ptr<constructSystem::Cryostat> CryoA;

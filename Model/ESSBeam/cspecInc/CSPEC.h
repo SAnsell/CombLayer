@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuildInc/CSPEC.h
+ * File:   cspec/CSPEC.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,10 +34,15 @@ namespace instrumentSystem
   class CylSample;
 }
 
+namespace essConstruct
+{
+  class DiskChopper;
+  class SingleChopper;
+}
+
 namespace constructSystem
 {  
   class ChopperPit;
-  class DiskChopper;
   class Jaws;
   class LineShield;
   class RotaryCollimator;
@@ -45,7 +50,7 @@ namespace constructSystem
   class VacuumPipe;
   class VacuumWindow;
   class ChopperHousing;
-  class SingleChopper;
+
 }
 
 namespace essSystem
@@ -86,9 +91,9 @@ class CSPEC : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusC;
 
   /// First Chopper unit [BW1]
-  std::shared_ptr<constructSystem::SingleChopper> ChopperA;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperA;
   /// First BW blade
-  std::shared_ptr<constructSystem::DiskChopper> BWDiskA;
+  std::shared_ptr<essConstruct::DiskChopper> BWDiskA;
 
   /// Vac pipe to bunker wall
   std::shared_ptr<constructSystem::VacuumPipe> VPipeD;

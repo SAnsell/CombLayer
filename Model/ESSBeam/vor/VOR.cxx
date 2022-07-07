@@ -72,6 +72,7 @@
 #include "GuideItem.h"
 #include "GuideLine.h"
 #include "DiskChopper.h"
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
@@ -100,8 +101,8 @@ VOR::VOR(const std::string& keyName) :
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   FocusC(new beamlineSystem::GuideLine(newName+"FC")),
 
-  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
-  DDisk(new constructSystem::DiskChopper(newName+"DBlade")),
+  ChopperA(new essConstruct::SingleChopper(newName+"ChopperA")),
+  DDisk(new essConstruct::DiskChopper(newName+"DBlade")),
 
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   FocusD(new beamlineSystem::GuideLine(newName+"FD")),
@@ -111,8 +112,8 @@ VOR::VOR(const std::string& keyName) :
   FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
 
   OutPitA(new constructSystem::ChopperPit(newName+"OutPitA")),
-  ChopperOutA(new constructSystem::SingleChopper(newName+"ChopperOutA")),
-  FOCDisk(new constructSystem::DiskChopper(newName+"FOCDisk")),
+  ChopperOutA(new essConstruct::SingleChopper(newName+"ChopperOutA")),
+  FOCDisk(new essConstruct::DiskChopper(newName+"FOCDisk")),
   FOCExitPort(new constructSystem::HoleShape(newName+"FOCExitPort")),
 
   ShieldA(new constructSystem::LineShield(newName+"ShieldA")),
@@ -120,8 +121,8 @@ VOR::VOR(const std::string& keyName) :
   FocusOutA(new beamlineSystem::GuideLine(newName+"FOutA")),
 
   OutPitB(new constructSystem::ChopperPit(newName+"OutPitB")),
-  ChopperOutB(new constructSystem::SingleChopper(newName+"ChopperOutB")),
-  FOCDiskB(new constructSystem::DiskChopper(newName+"FOCDiskB")),
+  ChopperOutB(new essConstruct::SingleChopper(newName+"ChopperOutB")),
+  FOCDiskB(new essConstruct::DiskChopper(newName+"FOCDiskB")),
   FOCEntryPortB(new constructSystem::HoleShape(newName+"FOCEntryPortB")),
   FOCExitPortB(new constructSystem::HoleShape(newName+"FOCExitPortB")),
 

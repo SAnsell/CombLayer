@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/ExternalCut.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,6 +36,11 @@ struct cutUnit
 {
   HeadRule main;           ///<  cut
   HeadRule divider;        ///<  divider
+  bool activePoint;        ///< Was point active
+  Geometry::Vec3D Pt;      ///< Point value
+
+  void setPoint(const Geometry::Vec3D& P)
+  { Pt=P ; activePoint=1; }
 };
   
 /*!
@@ -51,7 +56,7 @@ struct cutUnit
 class ExternalCut 
 {
  private:
-
+  
   /// typedef for map holder of rules
   typedef std::map<std::string,cutUnit> cutTYPE;
   cutTYPE cutItems;        ///< Set of external rules
@@ -63,6 +68,8 @@ class ExternalCut
 			       const HeadRule&,const int,
 			       const Geometry::Vec3D&,
 			       const double);
+
+  cutUnit* findUnit(const std::string&);
   
  public:
 
@@ -119,6 +126,10 @@ class ExternalCut
 			const Geometry::Vec3D&,
 			const double) const;
 
+  bool hasExternalPoint(const std::string&) const;
+  void setExternalPoint(const std::string&,const Geometry::Vec3D&);
+  const Geometry::Vec3D& getExternalPoint(const std::string&) const;
+  
   void write(std::ostream&) const;
 };
 

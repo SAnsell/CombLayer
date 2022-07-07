@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/DiskChopper.h
+ * File:   essConstructInc/DiskChopper.h
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
  *
@@ -19,12 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_DiskChopper_h
-#define constructSystem_DiskChopper_h
+#ifndef essConstruct_DiskChopper_h
+#define essConstruct_DiskChopper_h
 
 class Simulation;
 
-namespace constructSystem
+namespace essConstruct
 {
   class DiskBlades;
 /*!
@@ -35,9 +35,10 @@ namespace constructSystem
   \brief DiskChopper unit  
 */
 
-class DiskChopper : public attachSystem::FixedOffsetGroup,
-  public attachSystem::ContainedComp,
-  public attachSystem::CellMap
+class DiskChopper :
+    public attachSystem::FixedRotateGroup,
+    public attachSystem::ContainedComp,
+    public attachSystem::CellMap
 {
  private:
   
@@ -75,7 +76,7 @@ class DiskChopper : public attachSystem::FixedOffsetGroup,
   /// Access centre flag
   void setOffsetFlag(const int O) { offsetFlag=O; }
 
-  using FixedComp::createAll;
+  using attachSystem::FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
   void createAll(Simulation&,const attachSystem::FixedComp&,

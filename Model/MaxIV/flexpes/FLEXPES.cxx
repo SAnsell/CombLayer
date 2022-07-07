@@ -63,6 +63,7 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 
 #include "R1Ring.h"

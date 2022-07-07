@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/TwinBase.cxx
+ * File:   essConstruct/TwinBase.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,6 +62,7 @@
 #include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -70,16 +71,16 @@
 #include "Motor.h"
 #include "TwinBase.h"
 
-namespace constructSystem
+namespace essConstruct
 {
 
 TwinBase::TwinBase(const std::string& Key) : 
-  attachSystem::FixedOffsetGroup(Key,"Main",6,"Beam",2,
+  attachSystem::FixedRotateGroup(Key,"Main",6,"Beam",2,
 				 "MotorTop",3,"MotorBase",3),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap(),
-  motorA(new constructSystem::Motor(Key+"MotorA")),
-  motorB(new constructSystem::Motor(Key+"MotorB"))
+  motorA(new essConstruct::Motor(Key+"MotorA")),
+  motorB(new essConstruct::Motor(Key+"MotorB"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -107,7 +108,7 @@ TwinBase::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("TwinBase","populate");
 
-  FixedOffsetGroup::populate(Control);
+  FixedRotateGroup::populate(Control);
   //  + Fe special:
   stepHeight=Control.EvalVar<double>(keyName+"StepHeight");
   length=Control.EvalVar<double>(keyName+"Length");

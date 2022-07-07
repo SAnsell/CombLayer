@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/odin/ODIN.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,7 +68,9 @@
 #include "AttachSupport.h"
 #include "beamlineSupport.h"
 #include "GuideItem.h"
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
+#include "WindowPipe.h"
 #include "SingleChopper.h"
 #include "LineShield.h"
 #include "GuideLine.h"
@@ -98,37 +100,37 @@ ODIN::ODIN(const std::string& keyName) :
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   FocusC(new beamlineSystem::GuideLine(newName+"FC")),
 
-  ChopperAA(new constructSystem::SingleChopper(newName+"ChopperAA")),
-  DiskAA(new constructSystem::DiskChopper(newName+"DiskAA")),
-  ChopperAB(new constructSystem::SingleChopper(newName+"ChopperAB")),
-  DiskAB(new constructSystem::DiskChopper(newName+"DiskAB")),
+  ChopperAA(new essConstruct::SingleChopper(newName+"ChopperAA")),
+  DiskAA(new essConstruct::DiskChopper(newName+"DiskAA")),
+  ChopperAB(new essConstruct::SingleChopper(newName+"ChopperAB")),
+  DiskAB(new essConstruct::DiskChopper(newName+"DiskAB")),
 
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   FocusD(new beamlineSystem::GuideLine(newName+"FD")),
 
-  ChopperB(new constructSystem::SingleChopper(newName+"ChopperB")),
-  T0Disk(new constructSystem::DiskChopper(newName+"T0Disk")),
+  ChopperB(new essConstruct::SingleChopper(newName+"ChopperB")),
+  T0Disk(new essConstruct::DiskChopper(newName+"T0Disk")),
   
-  ChopperFOC1(new constructSystem::SingleChopper(newName+"ChopperFOC1")),
-  FOC1Disk(new constructSystem::DiskChopper(newName+"FOC1Blade")),
+  ChopperFOC1(new essConstruct::SingleChopper(newName+"ChopperFOC1")),
+  FOC1Disk(new essConstruct::DiskChopper(newName+"FOC1Blade")),
   
   VPipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
   FocusE(new beamlineSystem::GuideLine(newName+"FE")),
 
-  ChopperFOC2(new constructSystem::SingleChopper(newName+"ChopperFOC2")),
-  FOC2Disk(new constructSystem::DiskChopper(newName+"FOC2Blade")),
+  ChopperFOC2(new essConstruct::SingleChopper(newName+"ChopperFOC2")),
+  FOC2Disk(new essConstruct::DiskChopper(newName+"FOC2Blade")),
 
   VPipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
   FocusF(new beamlineSystem::GuideLine(newName+"FF")),
 
-  ChopperFOC3(new constructSystem::SingleChopper(newName+"ChopperFOC3")),
-  FOC3Disk(new constructSystem::DiskChopper(newName+"FOC3Blade")),
+  ChopperFOC3(new essConstruct::SingleChopper(newName+"ChopperFOC3")),
+  FOC3Disk(new essConstruct::DiskChopper(newName+"FOC3Blade")),
 
   VPipeG(new constructSystem::VacuumPipe(newName+"PipeG")),
   FocusG(new beamlineSystem::GuideLine(newName+"FG")),
 
-  ChopperFOC4(new constructSystem::SingleChopper(newName+"ChopperFOC4")),
-  FOC4Disk(new constructSystem::DiskChopper(newName+"FOC4Blade")),
+  ChopperFOC4(new essConstruct::SingleChopper(newName+"ChopperFOC4")),
+  FOC4Disk(new essConstruct::DiskChopper(newName+"FOC4Blade")),
 
   VPipeH(new constructSystem::VacuumPipe(newName+"PipeH")),
   FocusH(new beamlineSystem::GuideLine(newName+"FH")),
@@ -143,8 +145,8 @@ ODIN::ODIN(const std::string& keyName) :
   OutPitA(new constructSystem::ChopperPit(newName+"OutPitA")),
   OutACut(new constructSystem::HoleShape(newName+"OutACut")),
   OutBCut(new constructSystem::HoleShape(newName+"OutBCut")),
-  ChopOutFOC5(new constructSystem::SingleChopper(newName+"ChopOutFOC5")),
-  FOC5Disk(new constructSystem::DiskChopper(newName+"FOC5Blade")),
+  ChopOutFOC5(new essConstruct::SingleChopper(newName+"ChopOutFOC5")),
+  FOC5Disk(new essConstruct::DiskChopper(newName+"FOC5Blade")),
   
   ShieldB(new constructSystem::LineShield(newName+"ShieldB")),
   VPipeOutB(new constructSystem::VacuumPipe(newName+"PipeOutB")),
@@ -479,6 +481,7 @@ ODIN::build(Simulation& System,
   const FuncDataBase& Control=System.getDataBase();
   CopiedComp::process(System.getDataBase());
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
+
   ELog::EM<<"GItem == "<<GItem.getKey("Beam").getLinkPt(-1)
 	  <<" in bunker: "<<bunkerObj.getKeyName()<<ELog::endDiag;
 
@@ -510,12 +513,6 @@ ODIN::build(Simulation& System,
   buildOutGuide(System,FocusWall->getKey("Guide0"),2,voidCell);
 
   buildCave(System,*ShieldB,2,voidCell);
-
-  return;
-
-
-  
-
  
   return;
 }

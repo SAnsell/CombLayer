@@ -72,6 +72,7 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "OffsetFlangePipe.h"

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/Motor.cxx
+ * File:   essConstruct/Motor.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -68,7 +66,7 @@
 #include "boltRing.h"
 #include "Motor.h"
 
-namespace constructSystem
+namespace essConstruct
 {
 
 Motor::Motor(const std::string& Key) : 
@@ -77,8 +75,8 @@ Motor::Motor(const std::string& Key) :
   attachSystem::CellMap(),attachSystem::SurfMap(),
   frontInner(0),backInner(0),revFlag(0),
   yFront(0.0),yBack(0.0),
-  frontPlate(new constructSystem::boltRing(Key,"FrontPlate")),
-  backPlate(new constructSystem::boltRing(Key,"BackPlate"))
+  frontPlate(new essConstruct::boltRing(Key,"FrontPlate")),
+  backPlate(new essConstruct::boltRing(Key,"BackPlate"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName

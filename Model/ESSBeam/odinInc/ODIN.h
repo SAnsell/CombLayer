@@ -30,6 +30,11 @@ namespace attachSystem
   class CellMap;
 }
 
+namespace essConstruct
+{
+    class SingleChopper;
+}
+
 namespace constructSystem
 {
   class ChopperPit;
@@ -83,13 +88,13 @@ class ODIN : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusC;
 
   /// Front chopper housing pair [movable]
-  std::shared_ptr<constructSystem::SingleChopper> ChopperAA;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperAA;
   /// Front  blades
-  std::shared_ptr<constructSystem::DiskChopper> DiskAA;
+  std::shared_ptr<essConstruct::DiskChopper> DiskAA;
   /// Back chopper housing pair [movable]
-  std::shared_ptr<constructSystem::SingleChopper> ChopperAB;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperAB;
   /// Back chopper bladed
-  std::shared_ptr<constructSystem::DiskChopper> DiskAB;
+  std::shared_ptr<essConstruct::DiskChopper> DiskAB;
 
   /// Pipe after T0 [4m section]
   std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
@@ -97,14 +102,14 @@ class ODIN : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusD;
 
   /// T0 housing
-  std::shared_ptr<constructSystem::SingleChopper> ChopperB;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperB;
   /// T0 chopper [8.150m]
-  std::shared_ptr<constructSystem::DiskChopper> T0Disk;
+  std::shared_ptr<essConstruct::DiskChopper> T0Disk;
 
   /// FOC1 housing
-  std::shared_ptr<constructSystem::SingleChopper> ChopperFOC1;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperFOC1;
   /// FOC1 chopper [8.50m]
-  std::shared_ptr<constructSystem::DiskChopper> FOC1Disk;
+  std::shared_ptr<essConstruct::DiskChopper> FOC1Disk;
 
   /// Section between FOC1 - FOC2
   std::shared_ptr<constructSystem::VacuumPipe> VPipeE;
@@ -112,9 +117,9 @@ class ODIN : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusE;
 
   /// FOC2 housing
-  std::shared_ptr<constructSystem::SingleChopper> ChopperFOC2;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperFOC2;
   /// FOC2 chopper [11.84m]
-  std::shared_ptr<constructSystem::DiskChopper> FOC2Disk;
+  std::shared_ptr<essConstruct::DiskChopper> FOC2Disk;
   
   /// Pipe from FOC2 - FOC3
   std::shared_ptr<constructSystem::VacuumPipe> VPipeF;
@@ -122,9 +127,9 @@ class ODIN : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusF;
 
   /// FOC3 housing [16.49m]
-  std::shared_ptr<constructSystem::SingleChopper> ChopperFOC3;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperFOC3;
   /// FOC3 chopper [16.49m]
-  std::shared_ptr<constructSystem::DiskChopper> FOC3Disk;
+  std::shared_ptr<essConstruct::DiskChopper> FOC3Disk;
   
   /// Second 4m section
   std::shared_ptr<constructSystem::VacuumPipe> VPipeG;
@@ -132,9 +137,9 @@ class ODIN : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusG;
   
   /// FOC4 housing [22.97m]
-  std::shared_ptr<constructSystem::SingleChopper> ChopperFOC4;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperFOC4;
   /// FOC3 chopper [22.97m]
-  std::shared_ptr<constructSystem::DiskChopper> FOC4Disk;
+  std::shared_ptr<essConstruct::DiskChopper> FOC4Disk;
 
   /// Section of pipe to bunker wall
   std::shared_ptr<constructSystem::VacuumPipe> VPipeH;
@@ -160,9 +165,9 @@ class ODIN : public attachSystem::CopiedComp
   /// Collimator hole 
   std::shared_ptr<constructSystem::HoleShape> OutBCut;
   /// 32.0m FOC
-  std::shared_ptr<constructSystem::SingleChopper> ChopOutFOC5;
+  std::shared_ptr<essConstruct::SingleChopper> ChopOutFOC5;
   /// Singe disk chopper (FOC5)
-  std::shared_ptr<constructSystem::DiskChopper> FOC5Disk;
+  std::shared_ptr<essConstruct::DiskChopper> FOC5Disk;
 
   /// First Shield wall
   std::shared_ptr<constructSystem::LineShield> ShieldB;  

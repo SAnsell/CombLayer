@@ -71,6 +71,7 @@
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"

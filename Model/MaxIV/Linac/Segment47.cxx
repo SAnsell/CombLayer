@@ -64,6 +64,7 @@
 #include "BlockZone.h"
 #include "WrapperCell.h"
 #include "generalConstruct.h"
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "PrismaChamber.h"
 #include "CrossWayTube.h"

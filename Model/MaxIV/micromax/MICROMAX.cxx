@@ -56,6 +56,7 @@
 #include "FrontBackCut.h"
 #include "BlockZone.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "PipeShield.h"
 #include "forkHoles.h"

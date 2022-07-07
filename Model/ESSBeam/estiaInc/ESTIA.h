@@ -89,7 +89,7 @@ class ESTIA : public attachSystem::CopiedComp
 		      const constructSystem::VacuumBox&,
 		      constructSystem::VacuumBox&,
 		      beamlineSystem::GuideLine&,
-		      constructSystem::DiskChopper&,
+		      essConstruct::DiskChopper&,
 		      constructSystem::ChopperHousing&,
 		      constructSystem::VacuumPipe&);
   

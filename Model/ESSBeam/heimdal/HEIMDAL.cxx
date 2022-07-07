@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/heimdal/HEIMDAL.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,6 +57,7 @@
 #include "FixedOffsetUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
@@ -70,6 +71,7 @@
 #include "GuideItem.h"
 #include "GuideLine.h"
 #include "DiskChopper.h"
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "Bunker.h"
 #include "SingleChopper.h"
@@ -95,9 +97,9 @@ HEIMDAL::HEIMDAL(const std::string& keyName) :
   FocusTC(new beamlineSystem::GuideLine(newName+"FTC")),
   FocusCC(new beamlineSystem::GuideLine(newName+"FCC")),
 
-  TChopA(new constructSystem::SingleChopper(newName+"TChopA")),
-  ADiskOne(new constructSystem::DiskChopper(newName+"ADiskOne")),
-  ADiskTwo(new constructSystem::DiskChopper(newName+"ADiskTwo")),
+  TChopA(new essConstruct::SingleChopper(newName+"TChopA")),
+  ADiskOne(new essConstruct::DiskChopper(newName+"ADiskOne")),
+  ADiskTwo(new essConstruct::DiskChopper(newName+"ADiskTwo")),
 
   VPipeTD(new constructSystem::VacuumPipe(newName+"PipeTD")),
   FocusTD(new beamlineSystem::GuideLine(newName+"FTD")),
@@ -106,14 +108,14 @@ HEIMDAL::HEIMDAL(const std::string& keyName) :
   FocusCD(new beamlineSystem::GuideLine(newName+"FCD")),
   BendCD(new beamlineSystem::GuideLine(newName+"BCD")),
 
-  TChopB(new constructSystem::SingleChopper(newName+"TChopB")),
-  BDisk(new constructSystem::DiskChopper(newName+"BDisk")),
+  TChopB(new essConstruct::SingleChopper(newName+"TChopB")),
+  BDisk(new essConstruct::DiskChopper(newName+"BDisk")),
 
   VPipeTE(new constructSystem::VacuumPipe(newName+"PipeTE")),
   FocusTE(new beamlineSystem::GuideLine(newName+"FTE")),
 
-  ChopperT0(new constructSystem::SingleChopper(newName+"ChopperT0")), 
-  T0Disk(new constructSystem::DiskChopper(newName+"T0Disk")),
+  ChopperT0(new essConstruct::SingleChopper(newName+"ChopperT0")), 
+  T0Disk(new essConstruct::DiskChopper(newName+"T0Disk")),
 
   VPipeTF(new constructSystem::VacuumPipe(newName+"PipeTF")),
   FocusTF(new beamlineSystem::GuideLine(newName+"FTF"))

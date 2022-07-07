@@ -86,9 +86,9 @@ class VOR : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusC;
 
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::SingleChopper> ChopperA;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperA;
   /// Double disk chopper
-  std::shared_ptr<constructSystem::DiskChopper> DDisk;
+  std::shared_ptr<essConstruct::DiskChopper> DDisk;
 
 
   /// Pipe to bunker Insert
@@ -106,9 +106,9 @@ class VOR : public attachSystem::CopiedComp
   /// Shield for Chopper Out-A
   std::shared_ptr<constructSystem::ChopperPit> OutPitA;
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::SingleChopper> ChopperOutA;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperOutA;
   /// FOC disk chopper
-  std::shared_ptr<constructSystem::DiskChopper> FOCDisk;
+  std::shared_ptr<essConstruct::DiskChopper> FOCDisk;
   /// Collimator hole 
   std::shared_ptr<constructSystem::HoleShape> FOCExitPort;
 
@@ -123,9 +123,9 @@ class VOR : public attachSystem::CopiedComp
   /// Shield for Chopper Out-A
   std::shared_ptr<constructSystem::ChopperPit> OutPitB;
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::SingleChopper> ChopperOutB;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperOutB;
   /// FOC disk chopper
-  std::shared_ptr<constructSystem::DiskChopper> FOCDiskB;
+  std::shared_ptr<essConstruct::DiskChopper> FOCDiskB;
   /// Collimator hole [front]
   std::shared_ptr<constructSystem::HoleShape> FOCEntryPortB;
   /// Collimator hole [exit]

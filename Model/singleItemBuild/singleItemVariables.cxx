@@ -483,10 +483,13 @@ SingleItemVariables(FuncDataBase& Control)
 
   PGen.setCF<setVariable::CF40_22>();
   PGen.generatePipe(Control,"VC",80.0);
-  Control.addVariable("VC",-40.0);
+
+  PGen.setWindow(1.5,0.2);
+  PGen.generatePipe(Control,"VCWin",80.0);
 
 
   PGen.setCF<setVariable::CF40_22>();
+  PGen.setNoWindow();
   PGen.generatePipe(Control,"DipolePipe",80.0);
   Control.addVariable("DipolePipeYStep",-40.0);
 

@@ -87,9 +87,9 @@ class MAGIC : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> BendC;
 
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::SingleChopper> ChopperA;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperA;
   /// Double disk chopper
-  std::shared_ptr<constructSystem::DiskChopper> PSCDisk;
+  std::shared_ptr<essConstruct::DiskChopper> PSCDisk;
 
   /// Pipe in the gamma shield [6.5m to 13m]
   std::shared_ptr<constructSystem::VacuumPipe> VPipeD;

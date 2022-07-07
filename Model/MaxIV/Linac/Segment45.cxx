@@ -67,6 +67,7 @@
 #include "ModelSupport.h"
 #include "generalConstruct.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "YagUnitBig.h"
 #include "YagScreen.h"

@@ -192,8 +192,8 @@ foreach my $mainProg (@masterProg)
 	push(@singleItem,@mainLib);
 	$gM->addDepUnit("singleItem",
 			[@singleItem,
-			 qw( commonVar commonGenerator R1Common R3Common 
-			     commonBeam Linac )]);
+			 qw( essConstruct commonVar commonGenerator
+			     R1Common R3Common commonBeam Linac )]);
       }
     
     

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/TwinChopperFlat.h
+ * File:   essConstructInc/TwinChopperFlat.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,12 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_TwinChopperFlat_h
-#define constructSystem_TwinChopperFlat_h
+#ifndef essConstruct_TwinChopperFlat_h
+#define essConstruct_TwinChopperFlat_h
 
 class Simulation;
 
-namespace constructSystem
+namespace essConstruct
 {
   class boxPort;
 /*!
