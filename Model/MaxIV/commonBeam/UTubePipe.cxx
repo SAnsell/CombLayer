@@ -3,7 +3,7 @@
  
  * File:   commonBeam/UTubePipe.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -104,14 +104,14 @@ UTubePipe::populate(const FuncDataBase& Control)
   
   feThick=Control.EvalVar<double>(keyName+"FeThick");
 
-  flangeARadius=Control.EvalPair<double>(keyName+"FlangeFrontRadius",
+  flangeARadius=Control.EvalPair<double>(keyName+"FlangeARadius",
 					 keyName+"FlangeRadius");
-  flangeBRadius=Control.EvalPair<double>(keyName+"FlangeBackRadius",
+  flangeBRadius=Control.EvalPair<double>(keyName+"FlangeBRadius",
 					 keyName+"FlangeRadius");
 
-  flangeALength=Control.EvalPair<double>(keyName+"FlangeFrontLength",
+  flangeALength=Control.EvalPair<double>(keyName+"FlangeALength",
 					 keyName+"FlangeLength");
-  flangeBLength=Control.EvalPair<double>(keyName+"FlangeBackLength",
+  flangeBLength=Control.EvalPair<double>(keyName+"FlangeBLength",
 					 keyName+"FlangeLength");
 
 

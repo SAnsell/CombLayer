@@ -3,7 +3,7 @@
  
  * File:   construct/OffsetFlangePipe.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,24 +54,23 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "SurfMap.h"
 
+#include "GeneralPipe.h"
 #include "OffsetFlangePipe.h"
 
 namespace constructSystem
 {
 
-OffsetFlangePipe::OffsetFlangePipe(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,11),
-  attachSystem::ContainedComp(),attachSystem::CellMap(),
-  attachSystem::SurfMap(),attachSystem::FrontBackCut(),
-  frontJoin(0),backJoin(0)
+OffsetFlangePipe::OffsetFlangePipe(const std::string& Key) :
+  GeneralPipe(Key,11)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -81,12 +80,8 @@ OffsetFlangePipe::OffsetFlangePipe(const std::string& Key) :
   nameSideIndex(10,"FlangeBCentre");
 }
 
-OffsetFlangePipe::OffsetFlangePipe(const OffsetFlangePipe& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
-  attachSystem::CellMap(A),attachSystem::SurfMap(A),
-  attachSystem::FrontBackCut(A),
-  frontJoin(A.frontJoin),FPt(A.FPt),FAxis(A.FAxis),
-  backJoin(A.backJoin),BPt(A.BPt),BAxis(A.BAxis),
+OffsetFlangePipe::OffsetFlangePipe(const OffsetFlangePipe& A) :
+  GeneralPipe(A),
   radius(A.radius),length(A.length),feThick(A.feThick),
   flangeAXStep(A.flangeAXStep),flangeAZStep(A.flangeAZStep),
   flangeAXYAngle(A.flangeAXYAngle),flangeAZAngle(A.flangeAZAngle),
@@ -112,17 +107,7 @@ OffsetFlangePipe::operator=(const OffsetFlangePipe& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
-      attachSystem::ContainedComp::operator=(A);
-      attachSystem::CellMap::operator=(A);
-      attachSystem::SurfMap::operator=(A);
-      attachSystem::FrontBackCut::operator=(A);
-      frontJoin=A.frontJoin;
-      FPt=A.FPt;
-      FAxis=A.FAxis;
-      backJoin=A.backJoin;
-      BPt=A.BPt;
-      BAxis=A.BAxis;
+      GeneralPipe::operator=(A);
       radius=A.radius;
       length=A.length;
       feThick=A.feThick;
@@ -161,26 +146,26 @@ OffsetFlangePipe::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("OffsetFlangePipe","populate");
   
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   // Void + Fe special:
   radius=Control.EvalVar<double>(keyName+"Radius");  
   length=Control.EvalVar<double>(keyName+"Length");
   feThick=Control.EvalVar<double>(keyName+"FeThick");
 
-  flangeARadius=Control.EvalPair<double>(keyName+"FlangeFrontRadius",
+  flangeARadius=Control.EvalPair<double>(keyName+"FlangeARadius",
 					 keyName+"FlangeRadius");
-  flangeBRadius=Control.EvalPair<double>(keyName+"FlangeBackRadius",
+  flangeBRadius=Control.EvalPair<double>(keyName+"FlangeARadius",
 					 keyName+"FlangeRadius");
 
-  flangeALength=Control.EvalPair<double>(keyName+"FlangeFrontLength",
+  flangeALength=Control.EvalPair<double>(keyName+"FlangeALength",
 					 keyName+"FlangeLength");
-  flangeBLength=Control.EvalPair<double>(keyName+"FlangeBackLength",
+  flangeBLength=Control.EvalPair<double>(keyName+"FlangeBLength",
 					 keyName+"FlangeLength");
 
-  flangeAXStep=Control.EvalDefPair<double>(keyName+"FlangeFrontXStep",
+  flangeAXStep=Control.EvalDefPair<double>(keyName+"FlangeAXStep",
 					   keyName+"FlangeXStep",0.0);
-  flangeAZStep=Control.EvalDefPair<double>(keyName+"FlangeFrontZStep",
+  flangeAZStep=Control.EvalDefPair<double>(keyName+"FlangeAZStep",
 					   keyName+"FlangeZStep",0.0);
   flangeAXYAngle=Control.EvalDefVar<double>
     (keyName+"FlangeFrontXYAngle",0.0);
@@ -188,9 +173,9 @@ OffsetFlangePipe::populate(const FuncDataBase& Control)
   flangeAZAngle=Control.EvalDefVar<double>
     (keyName+"FlangeFrontZAngle",0.0);
     
-  flangeBXStep=Control.EvalDefPair<double>(keyName+"FlangeBackXStep",
+  flangeBXStep=Control.EvalDefPair<double>(keyName+"FlangeBXStep",
 					   keyName+"FlangeXStep",0.0);
-  flangeBZStep=Control.EvalDefPair<double>(keyName+"FlangeBackZStep",
+  flangeBZStep=Control.EvalDefPair<double>(keyName+"FlangeBZStep",
 					   keyName+"FlangeZStep",0.0);
   flangeBXYAngle=Control.EvalDefVar<double>
     (keyName+"FlangeBackXYAngle",0.0);
@@ -217,42 +202,9 @@ OffsetFlangePipe::createUnitVector(const attachSystem::FixedComp& FC,
 
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
-  applyActiveFrontBack();
+  applyActiveFrontBack(length);
   flangeAYAxis=Y;
   flangeBYAxis=Y;
-  return;
-}
-
-void
-OffsetFlangePipe::applyActiveFrontBack()
-  /*!
-    Apply the active front/back point to re-calcuate Origin
-    It applies the rotation of Y to Y' to both X/Z to preserve
-    orthogonality.
-   */
-{
-  ELog::RegMethod RegA("OffsetFlangePipe","applyActiveFrontBack");
-
-  const Geometry::Vec3D curFP=(frontJoin) ? FPt : Origin;
-  const Geometry::Vec3D curBP=(backJoin) ? BPt : Origin+Y*length;
-
-  Origin=(curFP+curBP)/2.0;
-  const Geometry::Vec3D YAxis=(curBP-curFP).unit();
-  Geometry::Vec3D RotAxis=(YAxis*Y).unit();   // need unit for numerical acc.
-  if (!RotAxis.nullVector())
-    {
-      const Geometry::Quaternion QR=
-	Geometry::Quaternion::calcQVRot(Y,YAxis,RotAxis);
-      Y=YAxis;
-      QR.rotate(X);
-      QR.rotate(Z);
-    }
-  else if (Y.dotProd(YAxis) < -0.5) // (reversed
-    {
-      Y=YAxis;
-      X*=-1.0;
-      Z*=-1.0;
-    }
   return;
 }
   
@@ -319,34 +271,34 @@ OffsetFlangePipe::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("OffsetFlangePipe","createObjects");
 
-  std::string Out;
+  HeadRule HR; 
 
-  const std::string frontStr=frontRule();
-  const std::string backStr=backRule();
+  const HeadRule frontHR=getFrontRule();
+  const HeadRule backHR=getBackRule();
   
   // Void
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
   // FLANGE Front: 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -11 -107 7 ");
-  makeCell("FrontFlange",System,cellIndex++,feMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -11 -107 7 ");
+  makeCell("FrontFlange",System,cellIndex++,feMat,0.0,HR*frontHR);
 
     // FLANGE Back: 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -207 7 ");
-  makeCell("BackFlange",System,cellIndex++,feMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 12 -207 7 ");
+  makeCell("BackFlange",System,cellIndex++,feMat,0.0,HR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 -17 7");
-  makeCell("MainPipe",System,cellIndex++,feMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -12 -17 7");
+  makeCell("MainPipe",System,cellIndex++,feMat,0.0,HR);
 
   // outer boundary [flange front/back]
-  Out=ModelSupport::getSetComposite(SMap,buildIndex," -11 -107 ");
-  addOuterSurf(Out+frontStr);
-  Out=ModelSupport::getSetComposite(SMap,buildIndex," 12 -207 ");
-  addOuterUnionSurf(Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -107");
+  addOuterSurf("FlangeA",HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -207");
+  addOuterSurf("FlangeB",HR*backHR);
   // outer boundary mid tube
-  Out=ModelSupport::getSetComposite(SMap,buildIndex," 11 -12 -17 ");
-  addOuterUnionSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 -17");
+  addOuterSurf("Main",HR);
 
   return;
 }
@@ -392,47 +344,6 @@ OffsetFlangePipe::createLinks()
   return;
 }
   
-void
-OffsetFlangePipe::setJoinFront(const attachSystem::FixedComp& FC,
-			       const long int sideIndex)
-  /*!
-    Set front surface
-    \param FC :: FixedComponent 
-    \param sideIndex ::  Direction to link
-    \param joinFlag :: joint front to link object 
-   */
-{
-  ELog::RegMethod RegA("OffsetFlangePipe","setFront");
-
-  
-  FrontBackCut::setFront(FC,sideIndex);
-
-  frontJoin=1;
-  FPt=FC.getLinkPt(sideIndex);
-  FAxis=FC.getLinkAxis(sideIndex);
-    
-  return;
-}
-  
-void
-OffsetFlangePipe::setJoinBack(const attachSystem::FixedComp& FC,
-			  const long int sideIndex)
-  /*!
-    Set Back surface
-    \param FC :: FixedComponent 
-    \param sideIndex ::  Direction to link
-   */
-{
-  ELog::RegMethod RegA("OffsetFlangePipe","setBack");
-  
-  FrontBackCut::setBack(FC,sideIndex);
-  
-  backJoin=1;
-  BPt=FC.getLinkPt(sideIndex);
-  BAxis=FC.getLinkAxis(sideIndex);
-
-  return;
-}
   
 void
 OffsetFlangePipe::createAll(Simulation& System,

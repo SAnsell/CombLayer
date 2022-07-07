@@ -507,7 +507,7 @@ R3FrontEnd::buildShutterTable(Simulation& System,
   
   offPipeB->createAll(System,*shutterBox,2);
   outerCell=buildZone.createUnit(System,*offPipeB,2);
-  offPipeB->insertInCell(System,outerCell);
+  offPipeB->insertAllInCell(System,outerCell);
     
   // bellows
 
