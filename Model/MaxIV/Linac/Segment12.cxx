@@ -153,14 +153,17 @@ Segment12::buildObjects(Simulation& System)
 	       {"FlangeA","Pipe"},"Origin","outerPipe",dipoleA);
   pipeTerminateGroup(System,*buildZone,flatA,{"FlangeB","Pipe"});
 
+
   beamA->setCutSurf("front",*flatA,"back");
   beamA->createAll(System,*flatA,"back");
-
+  ELog::EM<<"ASDFSDAF "<<beamA->getLinkPt("front")<<ELog::endDiag;
   /////////// Local shielding
   shieldA->setCutSurf("Inner",*beamA,"outerBox");
+  ELog::EM<<"ASDFSDAF "<<beamA->getLinkPt("front")<<ELog::endDiag;
   shieldA->createAll(System,*beamA,"front");
   outerCell=buildZone->createUnit(System,*shieldA,-1);
-
+  ELog::EM<<"ASDFSDAF "<<ELog::endDiag;
+  
   beamA->insertInCell("Box",System,outerCell);
   beamA->insertInCell("FlangeA",System,outerCell);
 
