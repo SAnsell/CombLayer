@@ -130,10 +130,10 @@ frontMaskVariables(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("balderVariables[F]","frontMaskVariables");
-  setVariable::SqrFMaskGenerator FMaskGen;
-  
   const double FM1dist(1172.60);
   const double FM2dist(1624.2);
+
+  setVariable::SqrFMaskGenerator FMaskGen;
 
   FMaskGen.setCF<CF100>();
   FMaskGen.setFrontGap(2.62,1.86);       // 1033.8
@@ -144,8 +144,9 @@ frontMaskVariables(FuncDataBase& Control,
 
   FMaskGen.setFrontGap(2.13,2.146);
   FMaskGen.setBackGap(0.756,0.432);
-  // approx for 800uRad x 200uRad  
-  FMaskGen.setMinAngleSize(29.0,FM2dist,800.0,200.0);
+  // approx for 800uRad x 200uRad
+  FMaskGen.setMinSize(25.0,0.71,0.71); // L,dy,dz
+  //  FMaskGen.setMinAngleSize(20.0,FM2dist,800.0,200.0);
   FMaskGen.generateColl(Control,preName+"CollB",FM2dist,34.2);
 
   // FM 3:
@@ -153,7 +154,7 @@ frontMaskVariables(FuncDataBase& Control,
   FMaskGen.setFrontGap(0.84,0.582);
   FMaskGen.setBackGap(0.750,0.357);
   // approx for 100uRad x 100uRad
-  FMaskGen.setMinAngleSize(12.0,1600.0, 400.0, 100.0);
+  FMaskGen.setMinAngleSize(12.0,FM2dist+34.2, 400.0, 100.0);
   FMaskGen.generateColl(Control,preName+"CollC",17.0/2.0,17.0);
 
   return;
@@ -263,7 +264,7 @@ shieldVariables(FuncDataBase& Control)
 
   const std::string preName("Balder");
   
-  Control.addVariable(preName+"PShieldYStep",10.1);
+  Control.addVariable(preName+"PShieldYStep",12.7);
   Control.addVariable(preName+"PShieldLength",10.0);
   Control.addVariable(preName+"PShieldWidth",80.0);
   Control.addVariable(preName+"PShieldHeight",80.0);

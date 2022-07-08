@@ -46,7 +46,8 @@ while(@ARGV)
       }
 
     if (!$active)
-      {
+    {
+	print STDERR "Active file ",$file,"\n";
 	system("cp tmp ".$file);
       }
   }

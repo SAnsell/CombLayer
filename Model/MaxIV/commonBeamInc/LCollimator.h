@@ -55,9 +55,6 @@ class LCollimator :
   int mat;                      ///< material
   int voidMat;                  ///< void material
 
-  
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -71,6 +68,7 @@ class LCollimator :
 
   void populate(const FuncDataBase&);
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
   

@@ -228,6 +228,7 @@ COSAXS::build(Simulation& System,
 
   tube->insertComponent(System,"tubeVoid",9,wallCut.complement());
 
+  System.removeCell(exptHut->getCell("ExitHole"));
   return;
 
 }

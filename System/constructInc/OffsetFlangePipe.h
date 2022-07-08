@@ -36,7 +36,7 @@ namespace constructSystem
 */
 
 class OffsetFlangePipe :
-    public GeneralPipe
+    public constructSystem::GeneralPipe
 {
  private:
   
@@ -71,7 +71,6 @@ class OffsetFlangePipe :
   void createObjects(Simulation&);
   void createLinks();
 
-  
  public:
 
   OffsetFlangePipe(const std::string&);

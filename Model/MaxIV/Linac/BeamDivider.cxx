@@ -313,8 +313,8 @@ BeamDivider::createLinks()
   FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+502));
   FixedComp::setLineConnect(2,exitOrg,RAxis);
 
-  const std::string Out=ModelSupport::getComposite(SMap,buildIndex," -13:14:-15:16 ");
-  FixedComp::setLinkSurf(3,Out);
+  const HeadRule HR=ModelSupport::getHeadRule(SMap,buildIndex,"-13:14:-15:16");
+  FixedComp::setLinkSurf(3,HR);
   FixedComp::nameSideIndex(3,"outerBox");
 
   FixedComp::nameSideIndex(2,"exit");

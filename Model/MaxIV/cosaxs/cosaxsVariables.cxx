@@ -3,7 +3,7 @@
  
  * File:   cosaxs/cosaxsVariables.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2022 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -231,7 +231,7 @@ opticsHutVariables(FuncDataBase& Control,
   OpticsHutGenerator OGen;
 
   OGen.addHole(Geometry::Vec3D(3.2,0,0),3.5);
-  OGen.generateHut(Control,hutName,886.1);
+  OGen.generateHut(Control,hutName,892.1);
   
   Control.addVariable(hutName+"NChicane",1);
   PortChicaneGenerator PGen;
@@ -252,13 +252,13 @@ exptHutVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("cosaxsVariables[F]","exptHutVariables");
 
   const std::string hutName(preName+"ExptHut");
-  const double beamOffset(0.4);
+  const double beamOffset(3.2);
 
   setVariable::ExptHutGenerator EGen;
   EGen.setBackLead(0.4);
   EGen.setRoofLead(0.4);
   EGen.setWallLead(0.4);
-  EGen.addHole(Geometry::Vec3D(-beamOffset,0,0),53.0);
+  EGen.addHole(Geometry::Vec3D(beamOffset,0,0),53.0);
   EGen.generateHut(Control,hutName,0.0,1858.4);
   // inner/outer where 0.2 mm
 

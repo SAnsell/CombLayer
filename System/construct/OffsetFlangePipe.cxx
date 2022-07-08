@@ -38,7 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "surfRegister.h"
@@ -107,7 +106,7 @@ OffsetFlangePipe::operator=(const OffsetFlangePipe& A)
 {
   if (this!=&A)
     {
-      GeneralPipe::operator=(A);
+      constructSystem::GeneralPipe::operator=(A);
       radius=A.radius;
       length=A.length;
       feThick=A.feThick;
@@ -155,7 +154,7 @@ OffsetFlangePipe::populate(const FuncDataBase& Control)
 
   flangeARadius=Control.EvalPair<double>(keyName+"FlangeARadius",
 					 keyName+"FlangeRadius");
-  flangeBRadius=Control.EvalPair<double>(keyName+"FlangeARadius",
+  flangeBRadius=Control.EvalPair<double>(keyName+"FlangeBRadius",
 					 keyName+"FlangeRadius");
 
   flangeALength=Control.EvalPair<double>(keyName+"FlangeALength",
@@ -168,20 +167,20 @@ OffsetFlangePipe::populate(const FuncDataBase& Control)
   flangeAZStep=Control.EvalDefPair<double>(keyName+"FlangeAZStep",
 					   keyName+"FlangeZStep",0.0);
   flangeAXYAngle=Control.EvalDefVar<double>
-    (keyName+"FlangeFrontXYAngle",0.0);
+    (keyName+"FlangeAXYAngle",0.0);
 
   flangeAZAngle=Control.EvalDefVar<double>
-    (keyName+"FlangeFrontZAngle",0.0);
+    (keyName+"FlangeAZAngle",0.0);
     
   flangeBXStep=Control.EvalDefPair<double>(keyName+"FlangeBXStep",
 					   keyName+"FlangeXStep",0.0);
   flangeBZStep=Control.EvalDefPair<double>(keyName+"FlangeBZStep",
 					   keyName+"FlangeZStep",0.0);
   flangeBXYAngle=Control.EvalDefVar<double>
-    (keyName+"FlangeBackXYAngle",0.0);
+    (keyName+"FlangeBXYAngle",0.0);
 
   flangeBZAngle=Control.EvalDefVar<double>
-    (keyName+"FlangeBackZAngle",0.0);
+    (keyName+"FlangeBZAngle",0.0);
 
   voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
@@ -271,24 +270,24 @@ OffsetFlangePipe::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("OffsetFlangePipe","createObjects");
 
-  HeadRule HR; 
-
-  const HeadRule frontHR=getFrontRule();
-  const HeadRule backHR=getBackRule();
+    HeadRule HR;
+  const HeadRule& frontHR=getFrontRule();
+  const HeadRule& backHR=getBackRule();
   
   // Void
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
   // FLANGE Front: 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -11 -107 7 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -107 7");
   makeCell("FrontFlange",System,cellIndex++,feMat,0.0,HR*frontHR);
 
-    // FLANGE Back: 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 12 -207 7 ");
+  // FLANGE Back: 
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -207 7");
   makeCell("BackFlange",System,cellIndex++,feMat,0.0,HR*backHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -12 -17 7");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 -17 7");
   makeCell("MainPipe",System,cellIndex++,feMat,0.0,HR);
 
   // outer boundary [flange front/back]
@@ -343,8 +342,7 @@ OffsetFlangePipe::createLinks()
 
   return;
 }
-  
-  
+
 void
 OffsetFlangePipe::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,

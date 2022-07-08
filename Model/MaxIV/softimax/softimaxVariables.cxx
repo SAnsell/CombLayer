@@ -151,7 +151,8 @@ frontMaskVariables(FuncDataBase& Control,
   // dimensions are from softimax-description.djvu, page1
 
   // there are 2 ways to set FM variables, via angles or via front/back/min gaps
-  // I have a drawing with gaps (softimax-description.djvu, page1), so I use the gap approach:
+  // I have a drawing with gaps (softimax-description.djvu, page1),
+  // so I use the gap approach:
   // via angles:
   // FMaskGen.setFrontAngleSize(FM1dist,1300.0,1300.0);
   //  FMaskGen.setMinAngleSize(10.0,FM1dist,1000.0,1000.0);
@@ -483,8 +484,7 @@ m3MirrorVariables(FuncDataBase& Control,
   PipeGen.setCF<CF63>();
   PipeGen.setBFlangeCF<CF150>();
   PipeGen.generatePipe(Control,mirrorKey+"M3Front",4.05);
-  Control.addVariable(mirrorKey+"M3FrontWindowActive",0);
-  Control.addVariable(mirrorKey+"M3FrontFlangeBackLength",0.2); // measured STEP
+  Control.addVariable(mirrorKey+"M3FrontFlangeBLength",0.2); // measured STEP
 
 
   const std::string mName=mirrorKey+"M3Tube";
@@ -514,8 +514,7 @@ m3MirrorVariables(FuncDataBase& Control,
   PipeGen.setCF<CF63>();
   PipeGen.setAFlangeCF<CF150>();
   PipeGen.generatePipe(Control,mirrorKey+"M3Back",4.05);
-  Control.addVariable(mirrorKey+"M3BackWindowActive",0);
-  Control.addVariable(mirrorKey+"M3BackFlangeFrontLength",0.2); // measured STEP
+  Control.addVariable(mirrorKey+"M3BackFlangeALength",0.2); // measured STEP
 
   // M3 STXM part
 
@@ -524,7 +523,7 @@ m3MirrorVariables(FuncDataBase& Control,
   PipeGen.setBFlangeCF<CF150>();
   PipeGen.generatePipe(Control,mirrorKey+"M3STXMFront",5.85);
   Control.addVariable(mirrorKey+"M3STXMFrontWindowActive",0);
-  Control.addVariable(mirrorKey+"M3STXMFrontFlangeBackLength",0.2);
+  Control.addVariable(mirrorKey+"M3STXMFrontFlangeBLength",0.2);
 
 
   const std::string stxmName=mirrorKey+"M3STXMTube";

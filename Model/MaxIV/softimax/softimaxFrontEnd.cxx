@@ -55,6 +55,7 @@
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
 #include "BlockZone.h"
+#include "GeneralPipe.h"
 #include "UTubePipe.h"
 #include "Undulator.h"
 #include "R3FrontEnd.h"
@@ -123,13 +124,11 @@ softimaxFrontEnd::buildUndulator(Simulation& System,
 
   CellMap::addCell("UndulatorOuter",outerCell);
   
-  undulatorPipe->insertInCell("FFlange",System,outerCell);
-  undulatorPipe->insertInCell("BFlange",System,outerCell);
-  undulatorPipe->insertInCell("Pipe",System,outerCell);
+  undulatorPipe->insertAllInCell(System,outerCell);
 
   undulator->addInsertCell(outerCell);
   undulator->createAll(System,*undulatorPipe,0);
-  undulatorPipe->insertInCell("Pipe",System,undulator->getCell("Void"));
+  undulatorPipe->insertInCell("Main",System,undulator->getCell("Void"));
 
   ELog::EM<<"Undulater Centre - "<<undulatorPipe->getCentre()<<ELog::endDiag;
   return *undulatorPipe;

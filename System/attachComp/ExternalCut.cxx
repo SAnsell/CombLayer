@@ -277,7 +277,8 @@ ExternalCut::setCutSurf(const std::string& extName,
   A.main.populateSurf();
   A.divider.populateSurf();
 
-  A.setPoint(WFC.getLinkPt(sideIndex));
+  if (WFC.hasLinkPt(sideIndex))
+    A.setPoint(WFC.getLinkPt(sideIndex));
   return;
 }
 

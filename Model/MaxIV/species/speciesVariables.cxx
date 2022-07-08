@@ -437,7 +437,7 @@ monoVariables(FuncDataBase& Control,
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setBFlange(17.8,1.0);
   PipeGen.generatePipe(Control,monoKey+"OffPipeA",3.0);
-  Control.addVariable(monoKey+"OffPipeAFlangeBackZStep",-7.0);
+  Control.addVariable(monoKey+"OffPipeAFlangeBZStep",-7.0);
   
 
   //
@@ -470,7 +470,7 @@ monoVariables(FuncDataBase& Control,
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setAFlange(17.8,1.0);
   PipeGen.generatePipe(Control,monoKey+"OffPipeB",3.0);
-  Control.addVariable(monoKey+"OffPipeBFlangeFrontZStep",-7.0);
+  Control.addVariable(monoKey+"OffPipeBFlangeAZStep",-7.0);
 
   return;
 }
