@@ -3,7 +3,7 @@
  
  * File:   constructInc/OffsetFlangePipe.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,22 +36,10 @@ namespace constructSystem
 */
 
 class OffsetFlangePipe :
-  public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
-  public attachSystem::CellMap,
-  public attachSystem::SurfMap,
-  public attachSystem::FrontBackCut
+    public constructSystem::GeneralPipe
 {
  private:
   
-  bool frontJoin;               ///< Flag for front join to calc midpoint
-  Geometry::Vec3D FPt;          ///< Front point
-  Geometry::Vec3D FAxis;        ///< Front axis
-
-  bool backJoin;                ///< Flag for back join to calc midpoint
-  Geometry::Vec3D BPt;          ///< Back point for join
-  Geometry::Vec3D BAxis;        ///< Back axis for join
-
   double radius;                ///< void radius [inner]
   double length;                ///< void length [total]
   
@@ -83,18 +71,12 @@ class OffsetFlangePipe :
   void createObjects(Simulation&);
   void createLinks();
 
-  void applyActiveFrontBack();
-
-  
  public:
 
   OffsetFlangePipe(const std::string&);
   OffsetFlangePipe(const OffsetFlangePipe&);
   OffsetFlangePipe& operator=(const OffsetFlangePipe&);
   virtual ~OffsetFlangePipe();
-
-  void setJoinFront(const attachSystem::FixedComp&,const long int);
-  void setJoinBack(const attachSystem::FixedComp&,const long int);
 
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,

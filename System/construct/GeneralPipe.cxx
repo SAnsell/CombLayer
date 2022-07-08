@@ -75,7 +75,8 @@ GeneralPipe::GeneralPipe(const std::string& Key) :
   attachSystem::ContainedGroup("Main","FlangeA","FlangeB"),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
-  attachSystem::FrontBackCut()
+  attachSystem::FrontBackCut(),
+  activeFlag(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -92,7 +93,8 @@ GeneralPipe::GeneralPipe(const std::string& Key,
   attachSystem::ContainedGroup("Main","FlangeA","FlangeB"),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
-  attachSystem::FrontBackCut()
+  attachSystem::FrontBackCut(),
+  activeFlag(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -103,52 +105,13 @@ GeneralPipe::GeneralPipe(const std::string& Key,
   FixedComp::nameSideIndex(6,"midPoint");
 }
 
-
-
-
-  
-void
-GeneralPipe::applyActiveFrontBack(const double length)
-  /*!
-    Apply the active front/back point to re-calcuate Origin
-    It applies the rotation of Y to Y' to both X/Z to preserve
-    orthogonality.
-   */
-{
-  ELog::RegMethod RegA("GeneralPipe","applyActiveFrontBack");
-
-  const Geometry::Vec3D curFP= 
-    (frontPointActive()) ? getFrontPoint() : Origin;
-  const Geometry::Vec3D curBP= (backPointActive()) ?
-    getBackPoint() : Origin+Y*length;
-  
-  Origin=(curFP+curBP)/2.0;
-  const Geometry::Vec3D YAxis=(curBP-curFP).unit();
-  Geometry::Vec3D RotAxis=(YAxis*Y).unit();   // need unit for numerical acc.
-  if (!RotAxis.nullVector())
-    {
-      const Geometry::Quaternion QR=
-	Geometry::Quaternion::calcQVRot(Y,YAxis,RotAxis);
-      Y=YAxis;
-      QR.rotate(X);
-      QR.rotate(Z);
-    }
-  else if (Y.dotProd(YAxis) < -0.5) // (reversed
-    {
-      Y=YAxis;
-      X*=-1.0;
-      Z*=-1.0;
-    }
-
-  return;
-}
-
 GeneralPipe::GeneralPipe(const GeneralPipe& A) : 
   attachSystem::FixedRotate(A),
   attachSystem::ContainedGroup(A),
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
-  attachSystem::FrontBackCut(A)
+  attachSystem::FrontBackCut(A),
+  activeFlag(A.activeFlag)
   /*!
     Copy constructor
     \param A :: GeneralPipe to copy
@@ -170,8 +133,50 @@ GeneralPipe::operator=(const GeneralPipe& A)
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
+      activeFlag=A.activeFlag;
     }
   return *this;
+}
+  
+void
+GeneralPipe::applyActiveFrontBack(const double length)
+  /*!
+    Apply the active front/back point to re-calcuate Origin
+    It applies the rotation of Y to Y' to both X/Z to preserve
+    orthogonality.
+   */
+{
+  ELog::RegMethod RegA("GeneralPipe","applyActiveFrontBack");
+  
+  const Geometry::Vec3D curFP=((activeFlag & 1) && frontPointActive()) ?
+    getFrontPoint() : Origin;
+  const Geometry::Vec3D curBP=((activeFlag & 2) && backPointActive()) ?
+    getBackPoint() : Origin+Y*length;
+  
+  Origin=(curFP+curBP)/2.0;
+
+  if (activeFlag)
+    {
+      const Geometry::Vec3D YAxis=(curBP-curFP).unit();
+      // need unit for numerical acc.
+      Geometry::Vec3D RotAxis=(YAxis*Y).unit();
+      
+      if (!RotAxis.nullVector())
+	{
+	  const Geometry::Quaternion QR=
+	    Geometry::Quaternion::calcQVRot(Y,YAxis,RotAxis);
+	  Y=YAxis;
+	  QR.rotate(X);
+	  QR.rotate(Z);
+	}
+      else if (Y.dotProd(YAxis) < -0.5) // (reversed
+	{
+	  Y=YAxis;
+	  X*=-1.0;
+	  Z*=-1.0;
+	}
+    }
+  return;
 }
 
 }  // NAMESPACE constructSystem

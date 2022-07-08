@@ -62,6 +62,7 @@
 #include "BlockZone.h"
 #include "generalConstruct.h"
 
+#include "GeneralPipe.h"
 #include "OffsetFlangePipe.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"

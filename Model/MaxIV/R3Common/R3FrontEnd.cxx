@@ -39,7 +39,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -56,6 +55,7 @@
 #include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -218,6 +218,8 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   OR.addObject(offPipeB);
   OR.addObject(bellowK);
 
+  OR.addObject(exitPipe);
+
  
 }
   
@@ -363,10 +365,10 @@ R3FrontEnd::buildApertureTable(Simulation& System,
   ELog::RegMethod RegA("R3FrontEnd","buildApertureTable");
 
   int outerCell;
-  // NOTE order for master cell [Next 4 object
+  // NOTE order for master cell [Next 4 objects]
   aperturePipe->createAll(System,preFC,preSideIndex);  // pipeB
   moveCollA->addInsertCell(aperturePipe->getCell("Void"));
-  moveCollA->createAll(System,*aperturePipe,0);
+  moveCollA->createAll(System,*aperturePipe,"midPoint");
   
   // bellows AFTER movable aperture pipe
   bellowE->setFront(preFC,preSideIndex);
@@ -397,8 +399,8 @@ R3FrontEnd::buildApertureTable(Simulation& System,
   // Next 4 objects need to be build before insertion
   aperturePipeB->createAll(System,*ionPC,2);
   moveCollB->addInsertCell(aperturePipeB->getCell("Void"));
-  moveCollB->createAll(System,*aperturePipeB,0);
-
+  moveCollB->createAll(System,*aperturePipeB,"midPoint");
+  
   // bellows AFTER movable aperture pipe
   bellowG->setFront(*ionPC,2);
   bellowG->setBack(*aperturePipeB,1);
@@ -504,10 +506,12 @@ R3FrontEnd::buildShutterTable(Simulation& System,
 			     PI,PI.getSideIndex("InnerPlate"));
     }
 
+  constructSystem::constructUnit
+    (System,buildZone,*shutterBox,"back",*offPipeB);
   
-  offPipeB->createAll(System,*shutterBox,2);
-  outerCell=buildZone.createUnit(System,*offPipeB,2);
-  offPipeB->insertInCell(System,outerCell);
+  // offPipeB->createAll(System,*shutterBox,"back");
+  // outerCell=buildZone.createUnit(System,*offPipeB,2);
+  // offPipeB->insertAllInCell(System,outerCell);
     
   // bellows
 
@@ -654,11 +658,9 @@ R3FrontEnd::buildObjects(Simulation& System)
   buildHeatTable(System);  
   buildApertureTable(System,*pipeB,2);
   buildShutterTable(System,*pipeC,"back");
-  
-  exitPipe->createAll(System,*bellowK,2);
-  outerCell=buildZone.createUnit(System,*exitPipe,2);
-  exitPipe->insertAllInCell(System,outerCell);
 
+  constructSystem::constructUnit
+    (System,buildZone,*bellowK,"back",*exitPipe);
 
   if (ExternalCut::isActive("REWall"))
     {

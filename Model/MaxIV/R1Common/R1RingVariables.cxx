@@ -355,7 +355,7 @@ shutterTable(FuncDataBase& Control,
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setBFlangeCF<setVariable::CF150>();
   PipeGen.generatePipe(Control,frontKey+"OffPipeA",6.8);
-  Control.addVariable(frontKey+"OffPipeAFlangeBackZStep",3.0);
+  Control.addVariable(frontKey+"OffPipeAFlangeBZStep",3.0);
 
 
   const std::string shutterName=frontKey+"ShutterBox";
@@ -388,7 +388,7 @@ shutterTable(FuncDataBase& Control,
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setAFlangeCF<setVariable::CF150>();
   PipeGen.generatePipe(Control,frontKey+"OffPipeB",21.0);
-  Control.addVariable(frontKey+"OffPipeBFlangeFrontZStep",3.0);
+  Control.addVariable(frontKey+"OffPipeBFlangeAZStep",3.0);
   Control.addVariable(frontKey+"OffPipeBZStep",-3.0);
 
   Control.addVariable(frontKey+"BremBlockRadius",3.0);

@@ -483,8 +483,7 @@ m3MirrorVariables(FuncDataBase& Control,
   PipeGen.setCF<CF63>();
   PipeGen.setBFlangeCF<CF150>();
   PipeGen.generatePipe(Control,mirrorKey+"M3Front",4.05);
-  Control.addVariable(mirrorKey+"M3FrontWindowActive",0);
-  Control.addVariable(mirrorKey+"M3FrontFlangeBackLength",0.2); // measured STEP
+  Control.addVariable(mirrorKey+"M3FrontFlangeBLength",0.2); // measured STEP
 
 
   const std::string mName=mirrorKey+"M3Tube";
@@ -514,8 +513,7 @@ m3MirrorVariables(FuncDataBase& Control,
   PipeGen.setCF<CF63>();
   PipeGen.setAFlangeCF<CF150>();
   PipeGen.generatePipe(Control,mirrorKey+"M3Back",4.05);
-  Control.addVariable(mirrorKey+"M3BackWindowActive",0);
-  Control.addVariable(mirrorKey+"M3BackFlangeFrontLength",0.2); // measured STEP
+  Control.addVariable(mirrorKey+"M3BackFlangeALength",0.2); // measured STEP
 
   // M3 STXM part
 
@@ -524,7 +522,7 @@ m3MirrorVariables(FuncDataBase& Control,
   PipeGen.setBFlangeCF<CF150>();
   PipeGen.generatePipe(Control,mirrorKey+"M3STXMFront",5.85);
   Control.addVariable(mirrorKey+"M3STXMFrontWindowActive",0);
-  Control.addVariable(mirrorKey+"M3STXMFrontFlangeBackLength",0.2);
+  Control.addVariable(mirrorKey+"M3STXMFrontFlangeBLength",0.2);
 
 
   const std::string stxmName=mirrorKey+"M3STXMTube";

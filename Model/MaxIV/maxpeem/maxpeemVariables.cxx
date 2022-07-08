@@ -468,8 +468,8 @@ m1MirrorVariables(FuncDataBase& Control,
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setBFlangeCF<CF150>();
   PipeGen.generatePipe(Control,mirrorKey+"OffPipeA",6.8);
-  Control.addVariable(mirrorKey+"OffPipeAFlangeBackXYAngle",-4.0);
-  Control.addVariable(mirrorKey+"OffPipeAFlangeBackXStep",-2.0);
+  Control.addVariable(mirrorKey+"OffPipeAFlangeBXYAngle",-4.0);
+  Control.addVariable(mirrorKey+"OffPipeAFlangeBXStep",-2.0);
 
   const std::string mName=mirrorKey+"M1Tube";
   const double centreOffset(sin(M_PI*4.0/180.0)*6.8/2);  // half 6.8
@@ -481,7 +481,7 @@ m1MirrorVariables(FuncDataBase& Control,
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setAFlangeCF<setVariable::CF150>();
   PipeGen.generatePipe(Control,mirrorKey+"OffPipeB",13.8);
-  Control.addVariable(mirrorKey+"OffPipeBFlangeFrontXStep",-2.0);
+  Control.addVariable(mirrorKey+"OffPipeBFlangeAXStep",-2.0);
   Control.addVariable(mirrorKey+"OffPipeBXStep",2.0);
 
 
@@ -729,7 +729,7 @@ shutterTable(FuncDataBase& Control,
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setBFlangeCF<setVariable::CF150>();
   PipeGen.generatePipe(Control,frontKey+"OffPipeA",6.8);
-  Control.addVariable(frontKey+"OffPipeAFlangeBackZStep",3.0);
+  Control.addVariable(frontKey+"OffPipeAFlangeBZStep",3.0);
 
 
   const std::string shutterName=frontKey+"ShutterBox";
@@ -761,7 +761,7 @@ shutterTable(FuncDataBase& Control,
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setAFlangeCF<setVariable::CF150>();
   PipeGen.generatePipe(Control,frontKey+"OffPipeB",21.0);
-  Control.addVariable(frontKey+"OffPipeBFlangeFrontZStep",3.0);
+  Control.addVariable(frontKey+"OffPipeBFlangeAZStep",3.0);
   Control.addVariable(frontKey+"OffPipeBZStep",-3.0);
 
   Control.addVariable(frontKey+"BremBlockRadius",3.0);

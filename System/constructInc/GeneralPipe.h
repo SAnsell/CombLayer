@@ -62,6 +62,7 @@ class GeneralPipe :
 {
  protected:
 
+  int activeFlag;    ///< flag to apply shift
   void applyActiveFrontBack(const double);
 
  public:

@@ -56,6 +56,7 @@
 #include "CopiedComp.h"
 #include "BlockZone.h"
 
+#include "GeneralPipe.h"
 #include "UTubePipe.h"
 #include "Undulator.h"
 
@@ -115,11 +116,11 @@ flexpesFrontEnd::buildUndulator(Simulation& System,
   undulator->setCutSurf("back",*undulatorPipe,"-back");
   undulator->createAll(System,*undulatorPipe,0);
   
-  undulatorPipe->insertInCell("Pipe",System,undulator->getCell("Void"));
-  undulatorPipe->insertInCell("FFlange",System,undulator->getCell("FrontVoid"));
-  undulatorPipe->insertInCell("Pipe",System,undulator->getCell("FrontVoid"));
-  undulatorPipe->insertInCell("BFlange",System,undulator->getCell("BackVoid"));
-  undulatorPipe->insertInCell("Pipe",System,undulator->getCell("BackVoid"));
+  undulatorPipe->insertInCell("Main",System,undulator->getCell("Void"));
+  undulatorPipe->insertInCell("FlangeA",System,undulator->getCell("FrontVoid"));
+  undulatorPipe->insertInCell("Main",System,undulator->getCell("FrontVoid"));
+  undulatorPipe->insertInCell("FlangeB",System,undulator->getCell("BackVoid"));
+  undulatorPipe->insertInCell("Main",System,undulator->getCell("BackVoid"));
 
   ELog::EM<<"Undulater Centre - "<<undulatorPipe->getCentre()<<ELog::endDiag;
   return *undulatorPipe;
