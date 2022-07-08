@@ -67,6 +67,7 @@
 #include "BlockZone.h"
 #include "generateSurf.h"
 
+#include "GeneralPipe.h"
 #include "SplitFlangePipe.h"
 #include "LeadPipe.h"
 #include "Bellows.h"
@@ -241,14 +242,12 @@ balderConnectZone::makeBox(Simulation& System,
   
 void
 balderConnectZone::buildObjects(Simulation& System,
-			  const attachSystem::FixedComp& FC,
-			  const long int sideIndex)
+				const attachSystem::FixedComp& FC)
   /*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
-    \parma FC :: Connection point
-    \param sideIndex :: link piont
+    \parma FC :: Lead Pipe connection
   */
 {
   ELog::RegMethod RegA("balderConnectZone","buildObjects");
@@ -259,7 +258,6 @@ balderConnectZone::buildObjects(Simulation& System,
 
   buildZone.addInsertCells(this->getInsertCells());
 
-  
   // offset from pipe
   pipeA->createAll(System,*this,0);  
 
@@ -308,9 +306,9 @@ balderConnectZone::createLinks()
   
 void 
 balderConnectZone::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC,
-		       const long int sideIndex)
-  /*!
+			     const attachSystem::FixedComp& FC,
+			     const long int sideIndex)
+/*!
     Carry out the full build
     \param System :: Simulation system
     \param FC :: Fixed component
@@ -324,7 +322,7 @@ balderConnectZone::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   createSurfaces();
 
-  buildObjects(System,FC,sideIndex);    
+  buildObjects(System,FC);    
   createLinks();
   insertObjects(System);
   return;

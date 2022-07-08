@@ -103,8 +103,7 @@ class balderConnectZone :
 
   void populate(const FuncDataBase&);
   void createSurfaces();
-  void buildObjects(Simulation&,const attachSystem::FixedComp&,
-		    const long int);
+  void buildObjects(Simulation&,const attachSystem::FixedComp&);
   void createLinks();
   
  public:

@@ -145,7 +145,7 @@ BALDER::build(Simulation& System,
 
   frontBeam->setStopPoint(stopPoint);
   frontBeam->setCutSurf("REWall",-r3Ring->getSurf("BeamInner",PIndex));
-  frontBeam->deactivateFM3();
+  //  frontBeam->deactivateFM3();
   frontBeam->addInsertCell(r3Ring->getCell("InnerVoid",SIndex));
 
   frontBeam->setBack(-r3Ring->getSurf("BeamInner",PIndex));

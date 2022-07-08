@@ -50,6 +50,7 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
+#include "FrontBackCut.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "varList.h"
@@ -59,17 +60,14 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 
+#include "GeneralPipe.h"
 #include "LeadPipe.h"
 
 namespace constructSystem
 {
 
 LeadPipe::LeadPipe(const std::string& Key) :
-  attachSystem::FixedRotate(Key,6),
-  attachSystem::ContainedGroup("Main","FlangeA","FlangeB"),
-  attachSystem::CellMap(),
-  attachSystem::SurfMap(),
-  attachSystem::ExternalCut(),
+  constructSystem::GeneralPipe(Key,6),
   outerVoid(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.

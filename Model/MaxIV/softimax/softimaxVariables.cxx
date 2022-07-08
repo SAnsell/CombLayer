@@ -151,7 +151,8 @@ frontMaskVariables(FuncDataBase& Control,
   // dimensions are from softimax-description.djvu, page1
 
   // there are 2 ways to set FM variables, via angles or via front/back/min gaps
-  // I have a drawing with gaps (softimax-description.djvu, page1), so I use the gap approach:
+  // I have a drawing with gaps (softimax-description.djvu, page1),
+  // so I use the gap approach:
   // via angles:
   // FMaskGen.setFrontAngleSize(FM1dist,1300.0,1300.0);
   //  FMaskGen.setMinAngleSize(10.0,FM1dist,1000.0,1000.0);

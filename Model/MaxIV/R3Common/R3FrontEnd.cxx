@@ -645,11 +645,11 @@ R3FrontEnd::buildObjects(Simulation& System)
   collB->insertInCell(System,outerCell);
 
   std::shared_ptr<attachSystem::FixedComp> linkFC(collB);
+  ELog::EM<<"ACTIVE == "<<collFM3Active<<ELog::endDiag;
   if (collFM3Active)
     {
-      collC->createAll(System,*collB,2);
-      outerCell=buildZone.createUnit(System,*collC,2);
-      collC->insertInCell(System,outerCell);
+      constructSystem::constructUnit
+	(System,buildZone,*collB,"back",*collC);
       linkFC=collC;
     }
 

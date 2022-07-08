@@ -391,7 +391,8 @@ shutterTable(FuncDataBase& Control,
   Control.addVariable(frontKey+"OffPipeBFlangeAZStep",3.0);
   Control.addVariable(frontKey+"OffPipeBZStep",-3.0);
 
-  Control.addVariable(frontKey+"BremBlockRadius",3.0);
+  Control.addVariable(frontKey+"BremBlockWidth",3.0);
+  Control.addVariable(frontKey+"BremBlockHeight",3.0);
   Control.addVariable(frontKey+"BremBlockLength",20.0);
   Control.addVariable(frontKey+"BremBlockHoleWidth",2.0);
   Control.addVariable(frontKey+"BremBlockHoleHeight",2.0);

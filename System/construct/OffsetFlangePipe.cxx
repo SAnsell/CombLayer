@@ -201,9 +201,7 @@ OffsetFlangePipe::createUnitVector(const attachSystem::FixedComp& FC,
 
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
-  ELog::EM<<"Y["<<keyName<<"] == "<<Y<<ELog::endDiag;
   applyActiveFrontBack(length);
-  ELog::EM<<"YPrime["<<keyName<<"] == "<<Y<<ELog::endDiag;
   flangeAYAxis=Y;
   flangeBYAxis=Y;
   return;

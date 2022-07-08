@@ -36,12 +36,7 @@ namespace constructSystem
 */
 
 class LeadPipe :
-    public attachSystem::FixedRotate,
-    public attachSystem::ContainedGroup,
-    public attachSystem::CellMap,
-    public attachSystem::SurfMap,
-    public attachSystem::ExternalCut
-    
+    public constructSystem::GeneralPipe    
 {
  private:
 
@@ -77,8 +72,7 @@ class LeadPipe :
   virtual ~LeadPipe();
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,
-			 const FixedComp&,
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 			 const long int);
 };
 
