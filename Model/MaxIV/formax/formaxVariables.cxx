@@ -469,7 +469,7 @@ monoShutterVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,preName+"BellowL",10.0);    
 
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,preName+"PipeF",32.0);  
+  PipeGen.generatePipe(Control,preName+"PipeF",35.0);  
   return;
 }
   
@@ -629,7 +629,7 @@ mirrorBox(FuncDataBase& Control,
 
   VBoxGen.setBPortOffset(widthDelta,heightDelta);
   // if rotated through 90 then theta/phi reversed
-  VBoxGen.setBPortAngle(2.0*phi,2.0*theta);
+  VBoxGen.setBPortAngle(2.0*phi,2.0*theta) ;
 
   VBoxGen.setMat("Stainless304");
   VBoxGen.setWallThick(1.0);
