@@ -37,7 +37,7 @@ namespace xraySystem
 
 class cosaxsTubeNoseCone :
     public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset,
+    public attachSystem::FixedRotate,
     public attachSystem::CellMap,
     public attachSystem::SurfMap,
     public attachSystem::FrontBackCut
@@ -66,8 +66,8 @@ class cosaxsTubeNoseCone :
   double windowRadius;             ///< Extra window radius 
   double windowThick;              ///< Thickness of nosecone window
   
-  int wallMat;                  ///< Wall material
-  int windowMat;                  ///< Wall material
+  int wallMat;                    ///< Wall material
+  int windowMat;                  ///< Window material
 
   void populate(const FuncDataBase&);
 
@@ -83,6 +83,7 @@ class cosaxsTubeNoseCone :
   virtual cosaxsTubeNoseCone* clone() const;
   virtual ~cosaxsTubeNoseCone();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
 };

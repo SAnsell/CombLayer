@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/cosaxs/cosaxsTubeNoseCone.cxx
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -67,7 +67,7 @@ namespace xraySystem
 
 cosaxsTubeNoseCone::cosaxsTubeNoseCone(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::FrontBackCut()
@@ -79,7 +79,7 @@ cosaxsTubeNoseCone::cosaxsTubeNoseCone(const std::string& Key)  :
 
 cosaxsTubeNoseCone::cosaxsTubeNoseCone(const cosaxsTubeNoseCone& A) :
   attachSystem::ContainedComp(A),
-  attachSystem::FixedOffset(A),
+  attachSystem::FixedRotate(A),
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
@@ -115,7 +115,7 @@ cosaxsTubeNoseCone::operator=(const cosaxsTubeNoseCone& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
@@ -166,7 +166,7 @@ cosaxsTubeNoseCone::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("cosaxsTubeNoseCone","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
   frontPlateWidth=Control.EvalVar<double>(keyName+"FrontPlateWidth");
@@ -231,7 +231,7 @@ cosaxsTubeNoseCone::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+33,
 				  Origin-X*(backPlateWidth/2.0-backPlateRimThick),X);
   ModelSupport::buildPlane(SMap,buildIndex+34,
-				  Origin+X*(backPlateWidth/2.0+backPlateRimThick),X);
+				  Origin+X*(backPlateWidth/2.0-backPlateRimThick),X);
   ModelSupport::buildPlane(SMap,buildIndex+35,
 				  Origin-Z*(backPlateHeight/2.0-backPlateRimThick),Z);
   ModelSupport::buildPlane(SMap,buildIndex+36,
@@ -292,57 +292,61 @@ cosaxsTubeNoseCone::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("cosaxsTubeNoseCone","createObjects");
 
-  std::string Out;
-  const std::string frontStr(frontRule()); // start
-  const std::string backStr(backRule()); // end
+  HeadRule HR;
+  const HeadRule& frontHR(getFrontRule()); // start
+  const HeadRule& backHR(getBackRule()); // end
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 102 107 -41 13 -14 15 -16 ");
-  makeCell("FrontPlate",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 107 -41 13 -14 15 -16");
+  makeCell("FrontPlate",System,cellIndex++,wallMat,0.0,HR);
 
   // void outside back plate
-  Out=ModelSupport::getComposite(SMap,buildIndex," 102 -41 23 -24 25 -26 (-13:14:-15:16) ");
-  System.addCell(cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"102 -41 23 -24 25 -26 (-13:14:-15:16)");
+  System.addCell(cellIndex++,0,0.0,HR);
 
   // trapeze area
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 41 -42 43 -44 45 -46 (-53:54:-55:56) ");
-  makeCell("Trapeze",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"41 -42 43 -44 45 -46 (-53:54:-55:56)");
+  makeCell("Trapeze",System,cellIndex++,wallMat,0.0,HR);
 
   // void outside trapeze
-  Out=ModelSupport::getComposite(SMap,buildIndex," 41 -42 23 -24 25 -26 (-41:42:-43:44:-45:46) ");
-  System.addCell(cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"41 -42 23 -24 25 -26 (-43:44:-45:46)");
+  System.addCell(cellIndex++,0,0.0,HR);
 
   // void inside trapeze
-  Out=ModelSupport::getComposite(SMap,buildIndex," 41 -42 53 -54 55 -56  ");
-  System.addCell(cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"41 -42 53 -54 55 -56 ");
+  System.addCell(cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 42 23 -24 25 -26 (-33:34:-35:36)");
-  makeCell("BackPlateRim",System,cellIndex++,wallMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"42 23 -24 25 -26 (-33:34:-35:36)");
+  makeCell("BackPlateRim",System,cellIndex++,wallMat,0.0,HR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 42 33 -34 35 -36 ");
-  makeCell("BackPlateVoid",System,cellIndex++,0,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"42 33 -34 35 -36");
+  makeCell("BackPlateVoid",System,cellIndex++,0,0.0,HR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 107 -108 ");
-  makeCell("Pipe",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 107 -108");
+  makeCell("Pipe",System,cellIndex++,wallMat,0.0,HR);
 
   // Window
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1001 -1002 -1007 ");
-  makeCell("Window",System,cellIndex++,windowMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1001 -1002 -1007");
+  makeCell("Window",System,cellIndex++,windowMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -107 -41 (-1001 : 1002) ");
-  makeCell("PipeVoidInside",System,cellIndex++,0,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-107 -41 (-1001 : 1002)");
+  makeCell("PipeVoidInside",System,cellIndex++,0,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 108 23 -24 25 -26");
-  makeCell("PipeVoidOutside",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 108 23 -24 25 -26");
+  makeCell("PipeVoidOutside",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -101 107 -109 (-1001 : 1002 : 1007) ");
-  makeCell("Flange",System,cellIndex++,wallMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-101 107 -109 (-1001 : 1002 : 1007)");
+  makeCell("Flange",System,cellIndex++,wallMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -101 109 23 -24 25 -26");
-  makeCell("FlangeVoidOutside",System,cellIndex++,0,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 109 23 -24 25 -26");
+  makeCell("FlangeVoidOutside",System,cellIndex++,0,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 23 -24 25 -26 ");
-  addOuterSurf(Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"23 -24 25 -26");
+  addOuterSurf(HR*frontHR*backHR);
 
   return;
 }
@@ -375,8 +379,8 @@ cosaxsTubeNoseCone::createLinks()
 
 void
 cosaxsTubeNoseCone::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC,
-		       const long int sideIndex)
+			      const attachSystem::FixedComp& FC,
+			      const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -387,7 +391,7 @@ cosaxsTubeNoseCone::createAll(Simulation& System,
   ELog::RegMethod RegA("cosaxsTubeNoseCone","createAll");
 
   populate(System.getDataBase());
-  FixedOffset::createUnitVector(FC,sideIndex);
+  FixedRotate::createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

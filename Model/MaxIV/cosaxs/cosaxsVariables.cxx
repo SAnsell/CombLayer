@@ -839,8 +839,15 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(noseName+"WindowMat","Diamond");
 
   GateGen.setLength(10.0);
-  GateGen.setCylCF<setVariable::CF40>();
+  GateGen.setLength(10.0);
+
+  //  GateGen.setCylCF<setVariable::CF100>();
+  GateGen.setRadius(17.0); // measured
+  GateGen.setBladeLift(10.0); // measured
+  GateGen.setPort(11.0,0.6,CF100::flangeRadius-CF100::innerRadius);
   GateGen.generateValve(Control,tubeName+"GateA",0.0,0);
+  // This is a trick to make the system round but square
+  
   Control.addVariable(tubeName+"GateARadius",17.0); // measured
 
   // [1] = x032_cosaxs_-2019-02-11-_dimensions.pdf

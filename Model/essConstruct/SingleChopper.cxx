@@ -74,7 +74,7 @@
 
 namespace essConstruct
 {
-
+  
 SingleChopper::SingleChopper(const std::string& Key) : 
   attachSystem::FixedRotateGroup(Key,"Main",6,"Beam",2,"BuildBeam",0),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
@@ -185,7 +185,7 @@ SingleChopper::populate(const FuncDataBase& Control)
 
 void
 SingleChopper::createUnitVector(const attachSystem::FixedComp& FC,
-                              const long int sideIndex)
+				const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed component to link to

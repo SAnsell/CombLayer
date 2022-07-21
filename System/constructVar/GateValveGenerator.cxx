@@ -3,7 +3,7 @@
 
  * File:   constructVar/GateValveGenerator.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -134,7 +134,7 @@ GateValveGenerator::setPort(const double R,const double L,
   /*!
     Set both the ports
     \param R :: radius of port tube
-    \param L :: lenght of port tube
+    \param L :: length of port tube
     \param T :: Thickness of port tube (outer radius extention)
    */
 {
@@ -243,18 +243,12 @@ GateValveGenerator::generateValve(FuncDataBase& Control,
   Control.addVariable(keyName+"YStep",yStep);   // step + flange
 
   Control.addVariable(keyName+"Length",length);
-  if (radius>Geometry::zeroTol)
-    {
-      Control.addVariable(keyName+"Radius",radius);
-      Control.addVariable(keyName+"LiftWidth",liftWidth);
-      Control.addVariable(keyName+"LiftHeight",liftHeight);
-    }
-  else
-    {
-      Control.addVariable(keyName+"Width",width);
-      Control.addVariable(keyName+"Height",height);
-      Control.addVariable(keyName+"Depth",depth);
-    }
+  Control.addVariable(keyName+"Radius",radius);
+  Control.addVariable(keyName+"LiftWidth",liftWidth);
+  Control.addVariable(keyName+"LiftHeight",liftHeight);
+  Control.addVariable(keyName+"Width",width);
+  Control.addVariable(keyName+"Height",height);
+  Control.addVariable(keyName+"Depth",depth);
 
   Control.addVariable(keyName+"WallThick",wallThick);
 

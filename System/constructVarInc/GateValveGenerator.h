@@ -86,6 +86,11 @@ class GateValveGenerator
   /// set blade thickness
   void setBladeThick(const double T) { bladeThick=T; }
 
+  void setBladeLift(const double L) { bladeLift=L; }
+  void setBladeRadius(const double R) { bladeRadius=R; }
+
+  /// make a radius system
+  void setRadius(const double R) { radius=R; }
   /// set total thickness
   void setLength(const double L) { length=L; }
   void setOuter(const double,const double,
