@@ -415,6 +415,7 @@ R3FrontEndVariables(FuncDataBase& Control,
   // BuildZone offset
   Control.addVariable(frontKey+"FrontOffset",-450.0);  
 
+  PipeGen.setCF<CF40>();
   PipeGen.setNoWindow();
   PipeGen.setMat("Copper");
   // placeholder length (100.0)

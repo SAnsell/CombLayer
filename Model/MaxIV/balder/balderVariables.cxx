@@ -3,7 +3,7 @@
  
  * File:   balder/balderVariables.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -514,11 +514,11 @@ opticsVariables(FuncDataBase& Control,
   PTubeGen.setPortLength(2.0,2.0);
   // ystep/width/height/depth/length
   PTubeGen.generateTube(Control,opticsName+"ShieldPipe",0.0,52.0);
-
+  
   Control.addVariable(opticsName+"ShieldPipeNPorts",4);
-
+  
   // first Two ports are CF100 
-  PItemGen.setCF<setVariable::CF100>(20.0);
+  PItemGen.setCF<setVariable::CF100>(CF100::outerRadius+20.0);
   PItemGen.setPlate(0.0,"Void");  
   // centre of mid point
   CPos=Geometry::Vec3D(0,-15.0,0);
@@ -527,7 +527,7 @@ opticsVariables(FuncDataBase& Control,
   PItemGen.generatePort(Control,nameShield+"0",CPos,ZVec);
   PItemGen.generatePort(Control,nameShield+"1",CPos,-ZVec);
 
-  PItemGen.setCF<setVariable::CF40>(10.0);
+  PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+10.0);
   PItemGen.setPlate(0.0,"Void");
   
   PItemGen.generatePort(Control,nameShield+"2",
@@ -545,7 +545,7 @@ opticsVariables(FuncDataBase& Control,
   GateGen.generateValve(Control,opticsName+"GateD",0.0,0);
 
   VBoxGen.setCF<CF40>();
-  VBoxGen.setPortLength(4.5,4.5); // La/Lb
+  VBoxGen.setPortLength(4.5,5.0); // La/Lb
   // [length is 177.4cm total]
   VBoxGen.generateBox(Control,opticsName+"MirrorBoxB",54.0,15.3,31.3,178.0);
 
@@ -617,7 +617,7 @@ opticsVariables(FuncDataBase& Control,
     }
   Control.addVariable(opticsName+"NShield0YStep",1.5);
   Control.addVariable(opticsName+"NShield1YStep",3.0);
-  Control.addVariable(opticsName+"NShield2YStep",1.0);
+  Control.addVariable(opticsName+"NShield2YStep",2.0);
   return;
 }
 
@@ -631,8 +631,6 @@ connectingVariables(FuncDataBase& Control)
   ELog::RegMethod RegA("balderVariables[F]","connectingVariables");
 
   const std::string baseName="BalderConnect";
-  const Geometry::Vec3D OPos(0,0,0);
-  const Geometry::Vec3D ZVec(0,0,-1);
 
   Control.addVariable(baseName+"OuterRadius",60.0);
   
@@ -667,6 +665,8 @@ connectingVariables(FuncDataBase& Control)
   PItemGen.setCF<setVariable::CF40>(CF40::outerRadius+3.0);
   PItemGen.setNoPlate();
 
+  const Geometry::Vec3D OPos(0,4,0);
+  const Geometry::Vec3D ZVec(0,0,-1);
   PItemGen.generatePort(Control,baseName+"IonPumpAPort0",OPos,ZVec);
   
   // temp offset
