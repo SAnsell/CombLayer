@@ -108,8 +108,7 @@ class GeneralShutter :
   int lowerCell;                ///< Block that stops the beam
   int innerVoidCell;            ///< inner void cell
 
-  double ZOffset;               ///< Extra to offset by
-
+  double ZOffset;
   //--------------
   // FUNCTIONS:
   //--------------
@@ -123,7 +122,7 @@ class GeneralShutter :
   void createCutUnit(Simulation&,const HeadRule&);
   void createBlocks(Simulation&);
   void createLinks();
-  void applyRotations(const double);
+  void applyRotations();
 
   
  public:

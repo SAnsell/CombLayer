@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   build/BulkInsert.cxx
+ * File:   ralBuild/BulkInsert.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -190,11 +190,12 @@ BulkInsert::createUnitVector(const attachSystem::FixedComp& FC,
   attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
-  FixedGroup::createUnitVector(FC,2);
-
   const GeneralShutter& GS=dynamic_cast<const GeneralShutter&>(FC);
-  mainFC.createUnitVector(GS.getKey("Main"),2);
-  beamFC.createUnitVector(GS.getKey("Beam"),2);
+  FixedGroup::createUnitVector(GS.getKey("Beam"),sideIndex);
+
+  mainFC.createUnitVector(GS.getKey("Main"),sideIndex);
+
+  beamFC.createUnitVector(GS.getKey("Beam"),sideIndex);
   Origin=GS.getTargetPoint();
   mainFC.setCentre(Origin);
   setDefault("Main","Beam");
@@ -362,8 +363,10 @@ BulkInsert::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
+    
   createSurfaces();
   createObjects(System);
+  ELog::EM<<"ASDFASF "<<ELog::endDiag;
   
   createLinks();
   return;

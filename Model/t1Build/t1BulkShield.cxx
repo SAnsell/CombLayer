@@ -3,7 +3,7 @@
  
  * File:   t1Build/t1BulkShield.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,8 +40,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -220,6 +218,7 @@ t1BulkShield::createShutters(Simulation& System)
   GData.clear();
   for(size_t i=1;i<=numberBeamLines;i++)
     {
+      ELog::EM<<"Shutter number "<<i<<ELog::endDiag;
       if (i==sandalsShutter)
 	GData.push_back(std::make_shared<BlockShutter>
 			(i,"shutter","sandalsShutter"));
@@ -321,7 +320,8 @@ t1BulkShield::createBulkInserts(Simulation& System)
       BItem->setCutSurf("ROuter",-SMap.realSurf(buildIndex+37));
 
       OR.addObject(BItem->getKeyName(),BItem);
-      BItem->createAll(System,*GData[i],0);
+      ELog::EM<<"BulkInsert create "<<i<<ELog::endDiag;
+      BItem->createAll(System,*GData[i],2);
       
       BData.push_back(BItem);
     }

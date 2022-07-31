@@ -107,7 +107,7 @@ GeneralShutter::GeneralShutter(const GeneralShutter& A) :
   reversed(A.reversed),SBlock(A.SBlock),XYAxis(A.XYAxis),
   BeamAxis(A.BeamAxis),zSlope(A.zSlope),targetPt(A.targetPt),
   frontPt(A.frontPt),endPt(A.endPt),upperCell(A.upperCell),
-  lowerCell(A.lowerCell)
+  lowerCell(A.lowerCell),innerVoidCell(A.innerVoidCell)
   /*!
     Copy constructor
     \param A :: GeneralShutter to copy
@@ -287,10 +287,9 @@ GeneralShutter::createUnitVector(const attachSystem::FixedComp& FC,
 }
 
 void 
-GeneralShutter::applyRotations(const double ZOffset)
+GeneralShutter::applyRotations()
   /*!
     Apply the rotations to the beamsystem 
-    \param ZOffset :: additional offset if required
    */
 {
   ELog::RegMethod RegA("GeneralShutter","applyRotations");
@@ -307,7 +306,7 @@ GeneralShutter::applyRotations(const double ZOffset)
 			
   BeamAxis=mainFC.getY();
   XYAxis=BeamAxis;
-  if (XYAxis.abs()<0.999) ELog::EM<<"ERRROR "<<BeamAxis<<ELog::endErr;
+  if (XYAxis.abs()<0.999) ELog::EM<<"ERROR "<<BeamAxis<<ELog::endErr;
   
   zSlope=Z;
   Geometry::Quaternion::calcQRotDeg(zAngle,X).rotate(BeamAxis);
@@ -325,16 +324,16 @@ GeneralShutter::applyRotations(const double ZOffset)
   mainFC.setConnect(0,frontPt,-XYAxis);
   mainFC.setConnect(1,endPt,XYAxis);
 
+
+  // Now shift : frontPt:  
+  const double zShift=(closed % 2) ? 
+    closedZShift+ZOffset : openZShift+ZOffset;
+
   // TWIN STATUS [UN Modified direction]:
   beamFC.createUnitVector(frontPt+Z*ZOffset,XYAxis*Z,XYAxis,Z);
   beamFC.setConnect(0,frontPt+Z*ZOffset,-beamFC.getY());
   beamFC.setConnect(1,frontPt+beamFC.getY()*
 		    (outerRadius-innerRadius)+Z*ZOffset,beamFC.getY());
-
-
-  // Now shift : frontPt:  
-  const double zShift=(closed % 2) ? 
-    closedZShift+ZOffset : openZShift+ZOffset;
 
   frontPt=Origin+XYAxis*innerRadius+Z*zShift;
   endPt=frontPt+BeamAxis*(outerRadius-innerRadius);
@@ -783,9 +782,10 @@ GeneralShutter::createLinks()
   */
 {
   ELog::RegMethod RegA("GeneralShutter","createLinks");
-  std::string Out;
+
 
   attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Main");
 
   const HeadRule RInnerComp=ExternalCut::getComplementRule("RInner");
   const HeadRule ROuterHR=ExternalCut::getRule("ROuter");
@@ -797,9 +797,11 @@ GeneralShutter::createLinks()
 
   HR=dA*RInnerComp;
   mainFC.addLinkSurf(0,HR);
+  beamFC.addLinkSurf(0,HR);
   
   HR=dB*ROuterHR;
   mainFC.addLinkSurf(1,HR);
+  beamFC.addLinkSurf(1,HR);
 
   mainFC.addLinkSurf(2,SMap.realSurf(buildIndex+113));
   mainFC.addLinkSurf(3,SMap.realSurf(buildIndex+114));
@@ -816,6 +818,8 @@ GeneralShutter::createLinks()
   mainFC.setConnect(6,Origin,Y);
   mainFC.addLinkSurf(6,SMap.realSurf(buildIndex+200));
 
+  // BEAM (set in apply rotations):
+  
 
   return;
 }
@@ -828,7 +832,6 @@ GeneralShutter::createAll(Simulation& System,
   /*!
     Create the shutter
     \param System :: Simulation to process
-    \param ZOffset :: Shift to the shutter creation
     \param FCPtr :: Previously valid axis system
   */
 {
@@ -837,7 +840,7 @@ GeneralShutter::createAll(Simulation& System,
   
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
-  applyRotations(ZOffset);
+  applyRotations();
   createSurfaces();
   createObjects(System);
   createBlocks(System); 
