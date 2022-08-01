@@ -630,7 +630,7 @@ Simulation::getOrderedMaterial() const
     \return map : 
   */
 {
-  ELog::RegMethod RegA("Simulation","getOrdereMaterial");
+  ELog::RegMethod RegA("Simulation","getOrderedMaterial");
   
   // set ordered otherwize output random [which is annoying]
   std::map<int,const MonteCarlo::Material*> orderedMat;
@@ -714,6 +714,7 @@ Simulation::removeNullSurfaces()
     \returns Number of surface removed (will do)
   */
 {
+  ELog::RegMethod RegA("Simulation","removeNullSurfaces");
   
   ModelSupport::surfIndex& SI=ModelSupport::surfIndex::Instance();
   const ModelSupport::surfIndex::STYPE& SurMap=SI.surMap();
@@ -783,7 +784,7 @@ Simulation::populateCells(const T& cellVec)
     \retval -1 failed to find surface key
   */
 {
-  ELog::RegMethod RegA("Simulation","populateCells");
+  ELog::RegMethod RegA("Simulation","populateCells(Vec)");
   
   OTYPE::iterator oc;
 
@@ -885,18 +886,21 @@ Simulation::findObject(const int CellN)
 }
 
 MonteCarlo::Object*
-Simulation::findObjectThrow(const int CellN)
+Simulation::findObjectThrow(const int CellN,
+			    const std::string& throwInfo)
   /*!
     Helper function to determine the hull object 
     given a particular cell number
     \param CellN : Number of the Object to find
+    \param throwInfo :: extra text info for the throw
     \returns Object pointer to the object
   */
 {
-  ELog::RegMethod RegA("Simulation","findObject");
+  ELog::RegMethod RegA("Simulation","findObjectThrow");
   OTYPE::iterator mp=OList.find(CellN);
   if (mp==OList.end())
-    throw ColErr::InContainerError<int>(CellN,"Cell Number in Simulation");
+    throw ColErr::InContainerError<int>
+      (CellN,throwInfo+":Cell Number in Simulation");
   return mp->second;
 }
 
@@ -916,22 +920,24 @@ Simulation::findObject(const int CellN) const
 }
 
 const MonteCarlo::Object*
-Simulation::findObjectThrow(const int CellN) const
+Simulation::findObjectThrow(const int CellN,
+			    const std::string& throwInfo) const
   /*! 
     Helper function to determine the hull object 
     given a particulat cell number (const varient)
-    \param CellN :: Cell number 
+    \param CellN :: Cell number
+    \param throwInfo :: extra text info for the throw
     \return Object pointer 
   */
 {
-  ELog::RegMethod RegA("Simulation","findObject const");
+  ELog::RegMethod RegA("Simulation","findObjectThrow const");
 
   OTYPE::const_iterator mp=OList.find(CellN);
   if (mp==OList.end())
-    throw ColErr::InContainerError<int>(CellN,"Cell Number in Simulation");
+    throw ColErr::InContainerError<int>
+            (CellN,throwInfo+":Cell Number in Simulation");
   return mp->second;
 }
-
 
 int
 Simulation::calcVertex(const int CellN)
@@ -1093,7 +1099,6 @@ Simulation::setSourceName(const std::string& S)
    \param S :: Source name
   */
 {
-  ELog::EM<<"Source == "<<S<<ELog::endDiag;
   sourceName=S;
   return;
 }
@@ -1457,7 +1462,7 @@ Simulation::getCellVectorRange(const int RA,const int RB) const
     \return vector of cell numbers (ordered)
   */
 {
-  ELog::RegMethod RegA("Simluation","getCellVecotRange");
+  ELog::RegMethod RegA("Simluation","getCellVectorRange");
 
   std::vector<int> cellOrder;
 
@@ -1630,7 +1635,7 @@ Simulation::setObjectVoid(const std::string& ObjName)
     \param ObjName :: Object to void
   */
 {
-  ELog::RegMethod RegA("Simulation","voidObject");
+  ELog::RegMethod RegA("Simulation","setObjectVoid");
 
   // full name:
   //   (a) Object:CellMap
@@ -1808,7 +1813,7 @@ Simulation::minimizeObject(const int CN)
     \retval -1 :: if an object deleted
   */
 {
-  ELog::RegMethod RegA("Simualation","minimizeObject");
+  ELog::RegMethod RegA("Simualation","minimizeObject(cell)");
 
   MonteCarlo::Object* CPtr = findObject(CN);
   if (!CPtr)

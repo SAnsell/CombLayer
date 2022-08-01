@@ -128,8 +128,8 @@ class Simulation : public objectGroups
   MonteCarlo::Object* findObject(const int);         
   const MonteCarlo::Object* findObject(const int) const; 
 
-  MonteCarlo::Object* findObjectThrow(const int);         
-  const MonteCarlo::Object* findObjectThrow(const int) const; 
+  MonteCarlo::Object* findObjectThrow(const int,const std::string&);         
+  const MonteCarlo::Object* findObjectThrow(const int,const std::string&) const; 
 
   MonteCarlo::Object* findCell(const Geometry::Vec3D&,
 			       MonteCarlo::Object*) const;

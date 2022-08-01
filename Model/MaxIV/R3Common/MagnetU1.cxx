@@ -326,7 +326,8 @@ MagnetU1::insertDipolePipe(Simulation& System,
   
   for(const int CN : CSet)
     {
-      MonteCarlo::Object* OPtr=System.findObjectThrow(CN);
+      MonteCarlo::Object* OPtr=
+	System.findObjectThrow(CN,"CN from CSet");
       size_t index=0;
       size_t flag(0);
       do
@@ -337,9 +338,7 @@ MagnetU1::insertDipolePipe(Simulation& System,
 	} while(index<4 && !flag);
       
       if (flag)
-	{
-	  OPtr->addIntersection(pipeHR);
-	}
+	OPtr->addIntersection(pipeHR);
     }
   
   return;
@@ -358,8 +357,6 @@ MagnetU1::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("MagnetU1","createAll");
 
-  int outerCell;
-  
   populate(System.getDataBase());
 
   createUnitVector(FC,sideIndex);

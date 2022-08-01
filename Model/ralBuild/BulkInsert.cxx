@@ -279,7 +279,7 @@ BulkInsert::createObjects(Simulation& System)
   shutterObj->addIntersection(HR);
 
   
-  shutterObj=System.findObject(outerCell);  
+  shutterObj=System.findObjectThrow(outerCell,"shutterObj");  
   if (!shutterObj)
     throw ColErr::InContainerError<int>(outerCell,"shutterObj");
 
@@ -366,9 +366,8 @@ BulkInsert::createAll(Simulation& System,
     
   createSurfaces();
   createObjects(System);
-  ELog::EM<<"ASDFASF "<<ELog::endDiag;
-  
   createLinks();
+
   return;
 }
 

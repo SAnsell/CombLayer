@@ -50,7 +50,7 @@ class RingFlange : public RingSeal
   int windowMat;           ///< Material for window
   
   void insertBolt(Simulation&,const double,const double,
-		  const std::string&) const;
+		  const HeadRule&) const;
   
   void addWindow(Simulation&);
   void addBolts(Simulation&);

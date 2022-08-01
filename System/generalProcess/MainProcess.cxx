@@ -441,7 +441,7 @@ createSimulation(inputParam& IParam,
   // buildWorld(*SimPtr);
 
   // there better be a void cell :
-  SimPtr->findObjectThrow(74123)->setMaterial(worldMat);
+  SimPtr->findObjectThrow(74123,"worldCell")->setMaterial(worldMat);
   
   // DNF split the cells
   SimPtr->setCellDNF(IParam.getDefValue<size_t>(0,"cellDNF"));

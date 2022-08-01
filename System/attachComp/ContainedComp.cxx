@@ -217,7 +217,7 @@ ContainedComp::addOuterSurf(const int SN)
 {
   ELog::RegMethod RegA("ContainedComp","addOuterSurf");
   
-  outerSurf.addIntersection(std::to_string(SN));
+  outerSurf.addIntersection(HeadRule(SN));
   outerSurf.populateSurf();
   return;
 }
@@ -324,7 +324,7 @@ ContainedComp::addBoundarySurf(const int SN)
 {
   ELog::RegMethod RegA("ContainedComp","addBoundarySurf(int)");
 
-  boundary.addIntersection(std::to_string(SN));
+  boundary.addIntersection(HeadRule(SN));
   boundary.populateSurf();
   return;
 }
@@ -721,16 +721,13 @@ ContainedComp::insertExternalObject(Simulation& System,
 {
   ELog::RegMethod RegA("ContainedComp","insertExternalObject");
   
-  const std::string excludeStr=
-    excludeObj.getHeadRule().complement().display();
+  const HeadRule excludeHR=
+    excludeObj.getHeadRule().complement();
 
   for(const int CN : insertCells)
     {
-      MonteCarlo::Object* outerObj=System.findObject(CN);
-      if (outerObj)
-	outerObj->addSurfString(excludeStr);
-      else
-	throw ColErr::InContainerError<int>(CN,"OuterObject");
+      MonteCarlo::Object* outerObj=System.findObjectThrow(CN,"OuterObject");
+      outerObj->addIntersection(excludeHR);
     }
   return;
 }
@@ -747,11 +744,9 @@ ContainedComp::insertObjects(Simulation& System)
 
   for(const int CN : insertCells)
     {
-      MonteCarlo::Object* outerObj=System.findObject(CN);
-      if (outerObj)
-	outerObj->addSurfString(getExclude());
-      else
-	throw ColErr::InContainerError<int>(CN,"Cell in Simulation");
+      MonteCarlo::Object* outerObj=
+	System.findObjectThrow(CN,"Cell in Simulation");
+      outerObj->addIntersection(outerSurf.complement());
     }
   insertCells.clear();
   return;
@@ -780,7 +775,7 @@ ContainedComp::insertObjects(Simulation& System,
 	    {
 	      if (HR.isValid(Pts))
 		{
-		  outerObj->addSurfString(getExclude());
+		  outerObj->addIntersection(outerSurf.complement());
 		  break;
 		}
 	    }
@@ -802,7 +797,7 @@ ContainedComp::insertInCell(MonteCarlo::Object& outerObj) const
   ELog::RegMethod RegA("ContainedComp","insertInCell(Obj)");
   
   if (!hasOuterSurf()) return;
-  outerObj.addSurfString(getExclude());
+  outerObj.addIntersection(outerSurf.complement());
   return;
 }
 
@@ -817,7 +812,7 @@ ContainedComp::insertInCell(Simulation& System,
 {
   ELog::RegMethod RegA("ContainedComp","insertInCell");
   
-  MonteCarlo::Object* outerObj=System.findObjectThrow(cellN);
+  MonteCarlo::Object* outerObj=System.findObjectThrow(cellN,"cellN");
   this->insertInCell(*outerObj);
   return;
 }
@@ -836,8 +831,8 @@ ContainedComp::insertInCell(Simulation& System,
   if (!hasOuterSurf()) return;
   for(const int cellN : cellVec)
     {
-      MonteCarlo::Object* outerObj=System.findObjectThrow(cellN);
-      outerObj->addSurfString(getExclude());
+      MonteCarlo::Object* outerObj=System.findObjectThrow(cellN,"cellN");
+      outerObj->addIntersection(outerSurf.complement());
     }
   return;
 }

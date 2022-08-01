@@ -731,8 +731,11 @@ ExperimentalHutch::splitChicane(Simulation& System,
 	  
 	  this->splitObjectAbsolute(System,5001,getCell("LeftWallVoid"),
 				    midPt,Axis);
-	  for(const std::string& cellName : {
-	      "InnerLeftWall","LeadLeftWall","OuterLeftWall","OuterLeftVoid" })
+	  for(const std::string cellName :
+		{
+		  "InnerLeftWall","LeadLeftWall",
+		  "OuterLeftWall","OuterLeftVoid"
+		})
 	    {
 	      this->splitObject(System,buildIndex+5001,getCell(cellName));
 	    }
@@ -746,8 +749,11 @@ ExperimentalHutch::splitChicane(Simulation& System,
 	  
 	  this->splitObjectAbsolute(System,5001,getCell("RightWallVoid"),
 				    midPt,Axis);
-	  for(const std::string& cellName : {
-	      "InnerRingWall","LeadRingWall","OuterRingWall","OuterRightVoid" })
+	  for(const std::string cellName :
+		{
+		  "InnerRingWall","LeadRingWall",
+		  "OuterRingWall","OuterRightVoid"
+		})
 	    {
 	      this->splitObject(System,buildIndex+5001,getCell(cellName));
 	    }
@@ -772,8 +778,8 @@ ExperimentalHutch::getPortItem(const size_t index) const
 
 void
 ExperimentalHutch::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC,
-		       const long int FIndex)
+			     const attachSystem::FixedComp& FC,
+			     const long int FIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/LayerDivide3D.cxx
+ * File:   monte/LayerDivide3D.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  * 
  ****************************************************************************/
 #include <fstream>
@@ -465,7 +465,8 @@ LayerDivide3D::setDividerByExclude(const Simulation& System,const int cellN)
 {
   ELog::RegMethod RegA("LayerDivide3D","setDividerByExclude");
 
-  const MonteCarlo::Object* CPtr=System.findObjectThrow(cellN);
+  const MonteCarlo::Object* CPtr=
+    System.findObjectThrow(cellN,"CellN");
 
   HeadRule CellRule= CPtr->getHeadRule();
 

@@ -86,8 +86,8 @@ resnucConstruct::createTally(SimFLUKA& System,
 {
   ELog::RegMethod RegA("resnucConstruct","createTally");
 
-  const MonteCarlo::Object* OPtr=System.findObjectThrow(cellA);
-
+  const MonteCarlo::Object* OPtr=
+    System.findObjectThrow(cellA,"cellA");
   
   const std::vector<MonteCarlo::Zaid> ZVec=
     OPtr->getMatPtr()->getZaidVec();
