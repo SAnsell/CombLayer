@@ -3,7 +3,7 @@
  
  * File:   construct/doublePortItem.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -133,20 +133,165 @@ doublePortItem::createSurfaces()
   ELog::RegMethod RegA("doublePortItem","createSurfaces");
 
   portItem::createSurfaces();
+
   ModelSupport::buildCylinder(SMap,buildIndex+1007,Origin,Y,radiusB);
   ModelSupport::buildCylinder(SMap,buildIndex+1017,Origin,Y,radiusB+wall);
-  
 
+  ModelSupport::buildPlane(SMap,buildIndex+1001,
+			   Origin+Y*externPartLen,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1002,
+			   Origin+Y*(externPartLen+wall),Y);
+    
   return;
 }
 
+
+void
+doublePortItem::constructObject(Simulation& System,
+				const HeadRule& innerSurf,
+				const HeadRule& outerSurf)
+  /*!
+    Construct a flange from the centre point
+    \param System :: Simulation to use
+    \param inner Surface of main cell to cut (into the void typically)
+    \param wall Surface of main cell to cut 
+  */
+{
+  ELog::RegMethod RegA("doublePortItem","constructObject");
+
+  const bool capFlag(capThick>Geometry::zeroTol);
+  const bool windowFlag(windowThick>Geometry::zeroTol);
+  
+  // construct inner volume:
+  HeadRule HR;
+
+  if (radius<radiusB)
+    {
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -7 -1001");
+      makeCell("Void",System,cellIndex++,voidMat,0.0,HR*innerSurf);
+      
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1001 -1007 -2");
+      makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
+      
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -17 7 -1001");
+      makeCell("Wall",System,cellIndex++,wallMat,0.0,HR*innerSurf);
+
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1001 -17 1007 -1002");
+      makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
+
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1002 -2 1007 -1017");
+      makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
+
+
+      if (outerFlag)
+	{
+	  if (flangeRadius>=radius)
+	    {
+	      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1017 -102 1002 -17");
+	      makeCell("OutVoid",System,cellIndex++,outerVoidMat,0.0,HR);
+	      
+	      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 17 -27 -102");
+	      makeCell("OutVoid",System,cellIndex++,outerVoidMat,0.0,HR*outerSurf);
+
+	      HR= (capFlag) ?
+		ModelSupport::getHeadRule(SMap,buildIndex,"-202 -27 1") :
+		ModelSupport::getHeadRule(SMap,buildIndex,"-2 -27  1");
+
+	      addOuterSurf(HR*outerSurf);
+	    }
+	  else 
+	    {
+	      HR= (capFlag) ?
+		ModelSupport::getHeadRule(SMap,buildIndex,"-202 102 -27") :
+		ModelSupport::getHeadRule(SMap,buildIndex,"-2 -27 102");
+	      makeCell("OutVoid",System,cellIndex++,outerVoidMat,0.0,HR);
+	      
+	      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1002 -17 1017 -102");
+	      makeCell("OutVoid",System,cellIndex++,outerVoidMat,0.0,HR);
+
+	      HR= (capFlag) ?
+		ModelSupport::getHeadRule(SMap,buildIndex,"-202 -17 1") :
+		ModelSupport::getHeadRule(SMap,buildIndex,"-2 -17 1");
+	      addOuterSurf(HR*outerSurf);	      
+	    }
+	}
+    }
+  else
+    {
+      // NOT COMPLTE
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -7 -1002");
+      makeCell("Void",System,cellIndex++,voidMat,0.0,HR*innerSurf);
+      
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1002 -1007 -2");
+      makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
+      
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -17 7 -1001");
+      makeCell("Wall",System,cellIndex++,wallMat,0.0,HR*innerSurf);
+
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1001 7 -1017 -1002");
+      makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
+
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1002 -2 1007 -1017");
+      makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
+    }
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -27 1017 -2");
+  makeCell("Flange",System,cellIndex++,wallMat,0.0,HR);
+
+  if (capFlag)
+    {
+      // we have window AND flange:
+      if (windowFlag)
+	{
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-207 -211 2");
+	  makeCell("BelowPlate",System,cellIndex++,voidMat,0.0,HR);
+
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-207 212 -202");
+	  makeCell("AbovePlate",System,cellIndex++,outerVoidMat,0.0,HR);
+
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-207 211 -212");
+	  makeCell("Plate",System,cellIndex++,windowMat,0.0,HR);
+
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 207 -202 2");
+	  makeCell("PlateSurround",System,cellIndex++,capMat,0.0,HR);
+	}
+      else // just a cap
+	{
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 2 -202");
+	  makeCell("Plate",System,cellIndex++,capMat,0.0,HR);
+	}
+    }
+
+  if (outerFlag)
+    {
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 17  -27 -102");
+      makeCell("OutVoid",System,cellIndex++,outerVoidMat,0.0,HR*outerSurf);
+      HR= (capFlag) ?
+	ModelSupport::getHeadRule(SMap,buildIndex,"-202 -27 1") :
+	ModelSupport::getHeadRule(SMap,buildIndex,"-2 -27  1");
+
+      addOuterSurf(HR*outerSurf);
+    }
+  else
+    {
+      HR= (capFlag) ?
+	ModelSupport::getHeadRule(SMap,buildIndex,"-202 -27 102") :
+	ModelSupport::getHeadRule(SMap,buildIndex,"-2 -27 102");
+      addOuterSurf(HR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 -102 1");
+      addOuterUnionSurf(HR*outerSurf);
+    }
+  return;
+}
+
+  
 void
 doublePortItem::constructOuterFlange(Simulation& System,
 			       const ModelSupport::LineTrack& LT,
 			       const size_t startIndex,
 			       const size_t lastIndex)
   /*!
-    Find the length and outer fangge
+    Find the length and outer flange
     Copied from portItem -- needs refactoring
     \parma System :: Simulation to use
     \param LT :: Line track out of object
@@ -156,6 +301,7 @@ doublePortItem::constructOuterFlange(Simulation& System,
 {
   ELog::RegMethod RegA("doublePortItem","constructOuterFlange");
 
+  ELog::EM<<"ADSFASFD "<<ELog::endDiag;
   const Geometry::Vec3D exitPoint=LT.getPoint(lastIndex+1);
 
   // Final outer

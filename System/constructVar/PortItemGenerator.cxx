@@ -3,7 +3,7 @@
 
  * File:   constructVar/PortItemGenerator.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -279,6 +279,31 @@ PortItemGenerator::generateAnglePort(FuncDataBase& Control,
   Control.addVariable(keyName+"BAxis",BAxis.unit());
   Control.addVariable(keyName+"LengthB",length);
   Control.addVariable(keyName+"LengthB",bLength);
+
+  return;
+}
+
+void
+PortItemGenerator::generateDoublePort(FuncDataBase& Control,
+				      const std::string& keyName,
+				      const Geometry::Vec3D& C,
+				      const Geometry::Vec3D& Axis,
+				      const double L,const double R) const 
+/*!
+    Primary funciton for setting the variables
+    \param Control :: Database to add variables
+    \param keyName :: head name for variable
+    \param C :: centre
+    \param AAxis :: axis of first section
+  */
+{
+  ELog::RegMethod RegA("PortItemGenerator","generateDoublePort");
+
+  generatePort(Control,keyName,C,Axis);
+  Control.addVariable(keyName+"PortType","Double");
+
+  Control.addVariable(keyName+"PartLength",L);
+  Control.addVariable(keyName+"RadiusB",R);
 
   return;
 }

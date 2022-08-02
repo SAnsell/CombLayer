@@ -201,7 +201,7 @@ makeSingleItem::build(Simulation& System,
 	"EBeamStop","FMask","R3ChokeChamber",
 	"DipoleExtract","DipoleSndBend","Dipole",
 	"EPSeparator","EPCombine","EPContinue",
-	"Quadrupole","TargetShield","FourPort",
+	"Quadrupole","TargetShield","FourPort","DoublePort",
 	"FlatPipe","TriPipe","TriGroup","SixPort","CrossWay","CrossBlank",
 	"GaugeTube","BremBlock","DipoleDIBMag","EArrivalMon","YagScreen",
 	"YAG","YagUnit","YagUnitBig","CooledScreen","CooledUnit",
@@ -583,6 +583,14 @@ makeSingleItem::build(Simulation& System,
 			      diagBox->getCell("Void"),{0,2});
     }
 
+  if (item == "DoublePort")
+    {
+      std::shared_ptr<constructSystem::PipeTube>
+	dPipe(new constructSystem::PipeTube("DoublePipe"));
+      dPipe->addAllInsertCell(voidCell);
+      dPipe->createAll(System,World::masterOrigin(),0);
+    }
+  
   if (item == "EArrivalMon" )
     {
       std::shared_ptr<tdcSystem::EArrivalMon>
@@ -1286,19 +1294,6 @@ makeSingleItem::build(Simulation& System,
 	ELog::EM<<"pipeTube == "<<pipeTube->getCentre()<<ELog::endDiag;
 	ELog::EM<<"pipeTube[Y] == "<<pipeTube->getY()<<ELog::endDiag;
 	ELog::EM<<"pipeTube[Z] == "<<pipeTube->getZ()<<ELog::endDiag;
-	/*
-	const constructSystem::portItem& PI=
-	  pipeTube->getPort(0);
-
-	ELog::EM<<"PORT == "<<PI.getCentre()<<ELog::endDiag;
-	ELog::EM<<"PORT[Y] == "<<PI.getY()<<ELog::endDiag;
-	*/
-	// const constructSystem::portItem& PIB=
-	//   pipeTube->getPort(1);
-
-	// ELog::EM<<"PORTB == "<<PIB.getCentre()<<ELog::endDiag;
-	// ELog::EM<<"PORT[Y] == "<<PIB.getY()<<ELog::endDiag;
-
 
 	return;
       }

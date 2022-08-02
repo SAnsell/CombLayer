@@ -33,16 +33,14 @@ namespace constructSystem
   
   /*!
     \class portItem
-    \brief Calculates the intersection port with an object
+    \brief This is a half pipe added to a component
     \author S. Ansell
     \date January 2018
     \version 1.0
-    
-    This is NOT a standard FixedComp  because it 
-    is an adjoint to an existing FixedComp. 
-    The problem is the that this item MUST establish
-    a full basis set or createUnitVector cannot work 
-    when called from this object.
+
+    This is a standard object except that it can find the surface
+    of the object it is linked to. The intention is to add a port
+    to an object e.g. a pipe or a box etc.
   */
 
 class portItem :

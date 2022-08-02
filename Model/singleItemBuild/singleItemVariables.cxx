@@ -695,6 +695,22 @@ SingleItemVariables(FuncDataBase& Control)
 			Geometry::Vec3D(0.0, 0.0, 0.0),
 			Geometry::Vec3D(0,1,0));
 
+
+
+  // Double pipe
+  SimpleTubeGen.setCF<CF63>();
+  SimpleTubeGen.generateTube(Control,"DoublePipe",20.0);
+
+
+  Control.addVariable("DoublePipeNPorts",1);
+  PItemGen.setCF<setVariable::CF40>(30.0);
+  PItemGen.setNoPlate();
+  PItemGen.generateDoublePort(Control,"DoublePipePort0",
+			      Geometry::Vec3D(0.0, -3.0, 0.0),
+			      Geometry::Vec3D(-1.0, 0.0, 0.0),
+			      10.0,setVariable::CF25::innerRadius);
+
+  
   // expt hutch
   exptHutVariables(Control,"",0.0);
   localShieldVariables(Control);
@@ -716,6 +732,8 @@ targetShieldVariables(FuncDataBase& Control)
   Control.addVariable("TubeADefMat","Stainless304");
   Control.addVariable("TubeBDefMat","Lead");
 
+
+  
   return;
 }
   

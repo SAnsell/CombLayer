@@ -39,9 +39,9 @@ class PortItemGenerator
 {
  private:
 
-  double length;          ///< length from outer
-  double radius;          ///< Inner radius
-  double wallThick;       ///< wall thickness
+  double length;            ///< length from outer
+  double radius;            ///< Inner radius
+  double wallThick;         ///< wall thickness
   
   double flangeLen;         ///< Flange length
   double flangeRadius;      ///< Flange radius
@@ -89,6 +89,11 @@ class PortItemGenerator
 			 const Geometry::Vec3D&,
 			 const Geometry::Vec3D&,
 			 const double) const;
+
+  void generateDoublePort(FuncDataBase&,const std::string&,
+			  const Geometry::Vec3D&,
+			  const Geometry::Vec3D&,
+			  const double,const double) const;
   
 };
 

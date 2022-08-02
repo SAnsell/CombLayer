@@ -196,7 +196,7 @@ registerOuter(Simulation& System,const int cellNum,const int vNum)
 
   std::ostringstream cx;
   cx<<" #"<<vNum;
-  Cptr->addSurfString(cx.str());
+  Cptr->addIntersection(HeadRule(-vNum));
   return;
 }
 
