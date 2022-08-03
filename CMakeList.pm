@@ -320,7 +320,7 @@ sub writeHeader
   my $DX=shift;   ## FILEGLOB
 
   print $DX "project(CombLayer)\n";
-  print $DX "cmake_minimum_required(VERSION 2.8)\n\n";
+  print $DX "cmake_minimum_required(VERSION 3.0)\n\n";
 
 
   print $DX "set(CMAKE_CXX_COMPILER ",$self->{ccomp},")\n";
