@@ -145,11 +145,29 @@ doublePortItem::createSurfaces()
   return;
 }
 
-
 void
 doublePortItem::constructObject(Simulation& System,
 				const HeadRule& innerSurf,
 				const HeadRule& outerSurf)
+/*!
+    Construct a flange from the centre point
+    \param System :: Simulation to use
+    \param inner Surface of main cell to cut (into the void typically)
+    \param wall Surface of main cell to cut 
+*/
+{
+  if (radius>radiusB)
+    constructObjectReducing(System,innerSurf,outerSurf);
+  else
+    constructObjectIncreasing(System,innerSurf,outerSurf);
+  return;
+}
+
+  
+void
+doublePortItem::constructObjectReducing(Simulation& System,
+					const HeadRule& innerSurf,
+					const HeadRule& outerSurf)
   /*!
     Construct a flange from the centre point
     \param System :: Simulation to use
@@ -157,7 +175,7 @@ doublePortItem::constructObject(Simulation& System,
     \param wall Surface of main cell to cut 
   */
 {
-  ELog::RegMethod RegA("doublePortItem","constructObject");
+  ELog::RegMethod RegA("doublePortItem","constructObjectReducing");
 
   const bool capFlag(capThick>Geometry::zeroTol);
   const bool windowFlag(windowThick>Geometry::zeroTol);
@@ -165,75 +183,106 @@ doublePortItem::constructObject(Simulation& System,
   // construct inner volume:
   HeadRule HR;
 
-  if (radius<radiusB)
+  ELog::EM<<"Radius B == "<<radius<<" > "<<radiusB<<ELog::endDiag;
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -7 -1001");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*innerSurf);
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1001 -1007 -2");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -17 7 -1001");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR*innerSurf);
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1001 -17 1007 -1002");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1002 -2 1007 -1017");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
+  
+  if (outerFlag)
     {
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -7 -1001");
-      makeCell("Void",System,cellIndex++,voidMat,0.0,HR*innerSurf);
-      
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1001 -1007 -2");
-      makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
-      
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -17 7 -1001");
-      makeCell("Wall",System,cellIndex++,wallMat,0.0,HR*innerSurf);
-
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1001 -17 1007 -1002");
-      makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
-
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1002 -2 1007 -1017");
-      makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
-
-
-      if (outerFlag)
+      if (flangeRadius>=radius)
 	{
-	  if (flangeRadius>=radius)
-	    {
-	      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1017 -102 1002 -17");
-	      makeCell("OutVoid",System,cellIndex++,outerVoidMat,0.0,HR);
-	      
-	      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 17 -27 -102");
-	      makeCell("OutVoid",System,cellIndex++,outerVoidMat,0.0,HR*outerSurf);
-
-	      HR= (capFlag) ?
-		ModelSupport::getHeadRule(SMap,buildIndex,"-202 -27 1") :
-		ModelSupport::getHeadRule(SMap,buildIndex,"-2 -27  1");
-
-	      addOuterSurf(HR*outerSurf);
-	    }
-	  else 
-	    {
-	      HR= (capFlag) ?
-		ModelSupport::getHeadRule(SMap,buildIndex,"-202 102 -27") :
-		ModelSupport::getHeadRule(SMap,buildIndex,"-2 -27 102");
-	      makeCell("OutVoid",System,cellIndex++,outerVoidMat,0.0,HR);
-	      
-	      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1002 -17 1017 -102");
-	      makeCell("OutVoid",System,cellIndex++,outerVoidMat,0.0,HR);
-
-	      HR= (capFlag) ?
-		ModelSupport::getHeadRule(SMap,buildIndex,"-202 -17 1") :
-		ModelSupport::getHeadRule(SMap,buildIndex,"-2 -17 1");
-	      addOuterSurf(HR*outerSurf);	      
-	    }
+	  HR=ModelSupport::getHeadRule
+	    (SMap,buildIndex,"1017 -102 1002 -17");
+	  makeCell("OutVoid",System,cellIndex++,outerVoidMat,0.0,HR);
+	  
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 17 -27 -102");
+	  makeCell("OutVoid",System,cellIndex++,outerVoidMat,0.0,HR*outerSurf);
+	  
+	  HR= (capFlag) ?
+	    ModelSupport::getHeadRule(SMap,buildIndex,"-202 -27 1") :
+	    ModelSupport::getHeadRule(SMap,buildIndex,"-2 -27  1");
+	  
+	  addOuterSurf(HR*outerSurf);
+	}
+      else 
+	{
+	  HR= (capFlag) ?
+	    ModelSupport::getHeadRule(SMap,buildIndex,"-202 102 -27") :
+	    ModelSupport::getHeadRule(SMap,buildIndex,"-2 -27 102");
+	  makeCell("OutVoid",System,cellIndex++,outerVoidMat,0.0,HR);
+	  
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1002 -17 1017 -102");
+	  makeCell("OutVoid",System,cellIndex++,outerVoidMat,0.0,HR);
+	  
+	  HR= (capFlag) ?
+	    ModelSupport::getHeadRule(SMap,buildIndex,"-202 -17 1") :
+	    ModelSupport::getHeadRule(SMap,buildIndex,"-2 -17 1");
+	  addOuterSurf(HR*outerSurf);	      
 	}
     }
-  else
+  else  // outerFlag  NOT set:
     {
-      // NOT COMPLTE
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -7 -1002");
-      makeCell("Void",System,cellIndex++,voidMat,0.0,HR*innerSurf);
+      HR= (capFlag) ?
+	ModelSupport::getHeadRule(SMap,buildIndex,"-202 -27 102") :
+	ModelSupport::getHeadRule(SMap,buildIndex,"-2 -27 102");
+      addOuterSurf(HR);
       
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1002 -1007 -2");
-      makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-102 -1017 1002");
+      addOuterUnionSurf(HR);
       
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -17 7 -1001");
-      makeCell("Wall",System,cellIndex++,wallMat,0.0,HR*innerSurf);
-
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1001 7 -1017 -1002");
-      makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
-
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1002 -2 1007 -1017");
-      makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -17 -1002");
+      addOuterUnionSurf(HR*outerSurf);
     }
+  return;
+}
+
+
+void
+doublePortItem::constructObjectIncreasing(Simulation& System,
+					  const HeadRule& innerSurf,
+					  const HeadRule& outerSurf)
+  /*!
+    Construct a flange from the centre point
+    \param System :: Simulation to use
+    \param innerSurf :: inner Surface of main cell to cut
+                   (into the void typically)
+    \param outerSurf :: wall Surface of main cell to cut 
+  */
+{
+  ELog::RegMethod RegA("doublePortItem","constructObjectIncreasing");
+
+  const bool capFlag(capThick>Geometry::zeroTol);
+  const bool windowFlag(windowThick>Geometry::zeroTol);
+  
+  // construct inner volume:
+  HeadRule HR;
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -7 -1002");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*innerSurf);
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1002 -1007 -2");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -17 7 -1001");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR*innerSurf);
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1001 7 -1017 -1002");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1002 -2 1007 -1017");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -27 1017 -2");
   makeCell("Flange",System,cellIndex++,wallMat,0.0,HR);
@@ -260,7 +309,7 @@ doublePortItem::constructObject(Simulation& System,
 	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 2 -202");
 	  makeCell("Plate",System,cellIndex++,capMat,0.0,HR);
 	}
-    }
+    }  
 
   if (outerFlag)
     {
@@ -285,155 +334,5 @@ doublePortItem::constructObject(Simulation& System,
 }
 
   
-void
-doublePortItem::constructOuterFlange(Simulation& System,
-			       const ModelSupport::LineTrack& LT,
-			       const size_t startIndex,
-			       const size_t lastIndex)
-  /*!
-    Find the length and outer flange
-    Copied from portItem -- needs refactoring
-    \parma System :: Simulation to use
-    \param LT :: Line track out of object
-    \param startIndex :: index of last point
-    \param lastIndex :: index of last point
-  */
-{
-  ELog::RegMethod RegA("doublePortItem","constructOuterFlange");
-
-  ELog::EM<<"ADSFASFD "<<ELog::endDiag;
-  const Geometry::Vec3D exitPoint=LT.getPoint(lastIndex+1);
-
-  // Final outer
-  ModelSupport::buildPlane(SMap,buildIndex+2,
-			   exitPoint+Y*externalLength,Y);
-  // inner split
-  ModelSupport::buildPlane(SMap,buildIndex+1002,
-			   exitPoint+Y*externPartLen,Y);
-  // inner split
-  ModelSupport::buildPlane(SMap,buildIndex+1012,
-			   exitPoint+Y*(externPartLen+wall),Y);
-
-  ModelSupport::buildPlane(SMap,buildIndex+102,
-			   exitPoint+Y*(externalLength-flangeLength),Y);
-
-  if (capThick>Geometry::zeroTol)
-    ModelSupport::buildPlane(SMap,buildIndex+202,
-			     exitPoint+Y*(externalLength+capThick),Y);
-  
-  // determine start surface:
-  std::string frontSurf,midSurf;
-  if (startIndex!=0)
-    frontSurf=std::to_string(LT.getSurfIndex()[startIndex-1]);
-  if (startIndex+1<LT.getSurfIndex().size())
-    midSurf=std::to_string(LT.getSurfIndex()[startIndex]);
-  else
-    midSurf=frontSurf;
-
-  // construct inner volume:
-  std::string Out;
-  
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -1007 -1002 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontSurf);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1002 -7 -2 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -1017 1007 -1002 ");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+frontSurf);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1002 -17 7 -2 ");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1002 -1012 -1017 17 ");
-  makeCell("MidWall",System,cellIndex++,wallMat,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 102 -27 17 -2 ");
-  makeCell("Flange",System,cellIndex++,wallMat,0.0,Out);
-
-  if (capThick>Geometry::zeroTol)
-    {
-      Out=ModelSupport::getComposite(SMap,buildIndex," -27 -202 2 ");
-      makeCell("Plate",System,cellIndex++,capMat,0.0,Out);
-    }
-
-  if (outerFlag)
-    {
-      Out=ModelSupport::getComposite(SMap,buildIndex,"1012 -1017 17 -102");
-      makeCell("OutVoid",System,cellIndex++,0,0.0,Out);
-      if (radiusB>flangeRadius+Geometry::zeroTol)  
-	{
-	  Out= (capThick>Geometry::zeroTol) ?
-	    ModelSupport::getComposite(SMap,buildIndex," 102 27 -1017 -202") :
-	    ModelSupport::getComposite(SMap,buildIndex," 102 27 -1017 -2");
-	  makeCell("FlangeVoid",System,cellIndex++,0,0.0,Out);
-
-	  Out= (capThick>Geometry::zeroTol) ?
-	    ModelSupport::getComposite(SMap,buildIndex," -202 -1017  1 ") :
-	    ModelSupport::getComposite(SMap,buildIndex," -2 -1017  1 ");
-	}
-      else
-	{
-	  Out=ModelSupport::getComposite(SMap,buildIndex," -102 -27 1017 1 ");
-	  makeCell("FlangeVoid",System,cellIndex++,0,0.0,Out+midSurf);
-	  Out= (capThick>Geometry::zeroTol) ?
-	    ModelSupport::getComposite(SMap,buildIndex," -202 -27  1 ") :
-	    ModelSupport::getComposite(SMap,buildIndex," -2 -27  1 ");
-	}
-      addOuterSurf(Out);
-    }
-  else  // no outer system
-    {
-      Out= (capThick>Geometry::zeroTol) ?
-	ModelSupport::getComposite(SMap,buildIndex," -202 -27 102 ") :
-	ModelSupport::getComposite(SMap,buildIndex," -2 -27 102 ");
-      addOuterSurf(Out);
-      Out=ModelSupport::getComposite(SMap,buildIndex," -1017 -1012 1 ");
-      addOuterUnionSurf(Out+midSurf);
-
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1012 -17 -102 ");
-      addOuterUnionSurf(Out);
-    }
-  
-  // Mid port exclude
-  const std::string tubeExclude=
-    ModelSupport::getComposite(SMap,buildIndex," ( 1017 : -1 )");
-
-  //  std::set<int> activeCell;
-  const std::vector<MonteCarlo::Object*>& OVec=LT.getObjVec();
-  const std::vector<double>& Track=LT.getSegmentLen();
-  double T(0.0);   // extention base out point
-
-  for(size_t i=startIndex;i<OVec.size() &&
-	T<(externalLength-Geometry::zeroTol);i++)
-    {
-      MonteCarlo::Object* OPtr=OVec[i];
-      const int OName=OPtr->getName();
-      if (i>lastIndex)
-	T+=Track[i];
-
-      if (outerCell.find(OName)==outerCell.end())
-	{
-	  if (i>lastIndex)
-	    OPtr->addSurfString(getExclude());
-	  else 
-	    OPtr->addSurfString(tubeExclude);
-	}
-    }
-  if (externalLength<flangeLength+Geometry::zeroTol)
-    {
-      const Geometry::Surface* cylPtr=LT.getSurfVec()[lastIndex];
-      insertComponent(System,"Flange",std::to_string(cylPtr->getName()));
-    }
-  // do essential outerCells
-  for(const int ON : outerCell)
-    {
-      MonteCarlo::Object* OPtr=System.findObject(ON);
-      if (!OPtr)
-	throw ColErr::InContainerError<int>(ON,"Cell not found");
-      OPtr->addSurfString(getExclude());
-    }
-  return;
-}
 
 }  // NAMESPACE constructSystem

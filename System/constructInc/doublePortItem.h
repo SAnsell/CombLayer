@@ -52,11 +52,9 @@ class doublePortItem :
 
   void createSurfaces();
   
-  virtual void constructOuterFlange(Simulation&,
-				    const ModelSupport::LineTrack&,
-				    const size_t,const size_t);
-
   virtual void constructObject(Simulation&,const HeadRule&,const HeadRule&);
+  void constructObjectIncreasing(Simulation&,const HeadRule&,const HeadRule&);
+  void constructObjectReducing(Simulation&,const HeadRule&,const HeadRule&);
   
  public:
 
