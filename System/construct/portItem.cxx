@@ -3,7 +3,7 @@
 
  * File:   construct/portItem.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,7 +75,7 @@ portItem::portItem(const std::string& baseKey,
   attachSystem::CellMap(),
   portBase(baseKey),
   statusFlag(0),outerFlag(0),
-  externalLength(0.0),radius(0.0),wall(0.0),
+  length(0.0),radius(0.0),wall(0.0),
   flangeRadius(0.0),flangeLength(0.0),capThick(0.0),
   voidMat(0),wallMat(0),capMat(-1)
   /*!
@@ -90,7 +90,7 @@ portItem::portItem(const std::string& Key) :
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   portBase(keyName),
   statusFlag(0),outerFlag(0),
-  externalLength(0.0),radius(0.0),wall(0.0),
+  length(0.0),radius(0.0),wall(0.0),
   flangeRadius(0.0),flangeLength(0.0),capThick(0.0),
   windowRadius(0.0),windowThick(0.0),
   voidMat(0),wallMat(0),capMat(-1),windowMat(-1),
@@ -107,7 +107,7 @@ portItem::portItem(const portItem& A) :
   attachSystem::CellMap(A),
   portBase(A.portBase),statusFlag(A.statusFlag),
   outerFlag(A.outerFlag),centreOffset(A.centreOffset),
-  axisOffset(A.axisOffset),externalLength(A.externalLength),
+  axisOffset(A.axisOffset),length(A.length),
   radius(A.radius),wall(A.wall),flangeRadius(A.flangeRadius),
   flangeLength(A.flangeLength),capThick(A.capThick),
   windowRadius(A.windowRadius),windowThick(A.windowThick),
@@ -137,7 +137,7 @@ portItem::operator=(const portItem& A)
       outerFlag=A.outerFlag;
       centreOffset=A.centreOffset;
       axisOffset=A.axisOffset;
-      externalLength=A.externalLength;
+      length=A.length;
       radius=A.radius;
       wall=A.wall;
       flangeRadius=A.flangeRadius;
@@ -174,7 +174,7 @@ portItem::setMain(const double L,const double R,const double WT)
 
   */
 {
-  externalLength=L;
+  length=L;
   radius=R;
   wall=WT;
   return;
@@ -241,7 +241,7 @@ portItem::populate(const FuncDataBase& Control)
   axisOffset=
     Control.EvalTail<Geometry::Vec3D>(keyName,portBase,"Axis");
 
-  externalLength=Control.EvalTail<double>(keyName,portBase,"Length");
+  length=Control.EvalTail<double>(keyName,portBase,"Length");
   radius=Control.EvalTail<double>(keyName,portBase,"Radius");
   wall=Control.EvalTail<double>(keyName,portBase,"Wall");
 
@@ -346,9 +346,6 @@ portItem::createSurfaces()
   // divider surface if needeed :
 
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
-  if (flangeRadius-Geometry::zeroTol<=radius+wall)
-    throw ColErr::SizeError<double>(flangeRadius,wall+radius,
-				    "Wall Radius<FlangeRadius");
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+wall);
   ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,flangeRadius);
@@ -356,10 +353,10 @@ portItem::createSurfaces()
   
   // Final outer
   ModelSupport::buildPlane(SMap,buildIndex+2,
-			   Origin+Y*externalLength,Y);
+			   Origin+Y*length,Y);
 
   ModelSupport::buildPlane(SMap,buildIndex+102,
-			   Origin+Y*(externalLength-flangeLength),Y);
+			   Origin+Y*(length-flangeLength),Y);
 
   const bool capFlag(capThick>Geometry::zeroTol);
   const bool windowFlag (capFlag &&
@@ -373,7 +370,7 @@ portItem::createSurfaces()
   // 
   if (capFlag)
     {
-      Geometry::Vec3D capPt(Origin+Y*(externalLength+capThick));
+      Geometry::Vec3D capPt(Origin+Y*(length+capThick));
       ModelSupport::buildPlane(SMap,buildIndex+202,capPt,Y);
       // if we have a cap we might have a window:
       if (windowFlag)
@@ -415,37 +412,37 @@ portItem::createLinks()
   
   if (capThick>Geometry::zeroTol)
     {
-      FixedComp::setConnect(1,Origin+Y*(externalLength+capThick),Y);
+      FixedComp::setConnect(1,Origin+Y*(length+capThick),Y);
       FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+202));
     }
   else
     {
-      FixedComp::setConnect(1,Origin+Y*externalLength,Y);
+      FixedComp::setConnect(1,Origin+Y*length,Y);
       FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
     }
 
   FixedComp::nameSideIndex(2,"InnerRadius");
-  FixedComp::setConnect(2,Origin+Y*(externalLength/2.0)+X*radius,X);
+  FixedComp::setConnect(2,Origin+Y*(length/2.0)+X*radius,X);
   FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+7));
   FixedComp::setBridgeSurf(2,SMap.realSurf(buildIndex+1));
 
   FixedComp::nameSideIndex(3,"WallRadius");
-  FixedComp::setConnect(3,Origin+Y*(externalLength/2.0)+X*(wall+radius),X);
+  FixedComp::setConnect(3,Origin+Y*(length/2.0)+X*(wall+radius),X);
   FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+17));
   FixedComp::setBridgeSurf(3,SMap.realSurf(buildIndex+1));
 
   FixedComp::nameSideIndex(4,"InnerPlate");
-  FixedComp::setConnect(4,Origin+Y*externalLength,-Y);
+  FixedComp::setConnect(4,Origin+Y*length,-Y);
   FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+2));
 
   FixedComp::nameSideIndex(5,"VoidRadius");
-  FixedComp::setConnect(5,Origin+Y*externalLength,-Y);
+  FixedComp::setConnect(5,Origin+Y*length,-Y);
   FixedComp::setLinkSurf(5,-SMap.realSurf(buildIndex+27));
   FixedComp::setBridgeSurf(5,SMap.realSurf(buildIndex+1));
 
   FixedComp::nameSideIndex(6,"FlangePlate");
   const Geometry::Vec3D flangePoint=
-    Origin+Y*(externalLength-flangeLength);
+    Origin+Y*(length-flangeLength);
   
   FixedComp::setConnect(6,flangePoint,Y);
   FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+102));
@@ -485,13 +482,13 @@ portItem::constructObject(Simulation& System,
   // construct inner volume:
   HeadRule HR;
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -7 -2 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -7 -2");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*innerSurf);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -17 7 -2 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -17 7 -2");
   makeCell("Wall",System,cellIndex++,wallMat,0.0,HR*innerSurf);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 102 -27 17 -2 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -27 17 -2");
   makeCell("Flange",System,cellIndex++,wallMat,0.0,HR);
 
   if (capFlag)
@@ -513,7 +510,7 @@ portItem::constructObject(Simulation& System,
 	}
       else // just a cap
 	{
-	  HR=ModelSupport::getHeadRule(SMap,buildIndex," -27 2 -202 ");
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 2 -202");
 	  makeCell("Plate",System,cellIndex++,capMat,0.0,HR);
 	}
     }

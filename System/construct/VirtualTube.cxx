@@ -332,7 +332,7 @@ VirtualTube::applyPortRotation()
   const portItem& PI=getPort(pIndex);
   const Geometry::Vec3D portAxis=PAxis[pIndex].unit();
   const Geometry::Vec3D portCentre=PCentre[pIndex];
-  const double pLen=PI.getExternalLength();
+  const double pLen=PI.getLength();
 
   // old Y basis unit
   const Geometry::Vec3D frontShift=-Y*(length/2.0);

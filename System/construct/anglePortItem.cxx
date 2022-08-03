@@ -3,7 +3,7 @@
 
  * File:   construct/anglePortItem.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -165,7 +165,7 @@ anglePortItem::createSurfaces()
   // bisecting vector
   const Geometry::Vec3D bsectY((bY+Y)/2.0);
   // end point
-  const Geometry::Vec3D midPt(Origin+Y*externalLength);
+  const Geometry::Vec3D midPt(Origin+Y*length);
   // bisecting plane
   ModelSupport::buildPlane(SMap,buildIndex+1000,midPt,bsectY);
 
@@ -320,37 +320,37 @@ anglePortItem::createLinks()
   
   if (capThick>Geometry::zeroTol)
     {
-      FixedComp::setConnect(1,Origin+Y*(externalLength+capThick),Y);
+      FixedComp::setConnect(1,Origin+Y*(length+capThick),Y);
       FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+202));
     }
   else
     {
-      FixedComp::setConnect(1,Origin+Y*externalLength,Y);
+      FixedComp::setConnect(1,Origin+Y*length,Y);
       FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
     }
 
   FixedComp::nameSideIndex(2,"InnerRadius");
-  FixedComp::setConnect(2,Origin+Y*(externalLength/2.0)+X*radius,X);
+  FixedComp::setConnect(2,Origin+Y*(length/2.0)+X*radius,X);
   FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+7));
   FixedComp::setBridgeSurf(2,SMap.realSurf(buildIndex+1));
 
   FixedComp::nameSideIndex(3,"OuterRadius");
-  FixedComp::setConnect(3,Origin+Y*(externalLength/2.0)+X*(wall+radius),X);
+  FixedComp::setConnect(3,Origin+Y*(length/2.0)+X*(wall+radius),X);
   FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+17));
   FixedComp::setBridgeSurf(3,SMap.realSurf(buildIndex+1));
 
   FixedComp::nameSideIndex(4,"InnerPlate");
-  FixedComp::setConnect(4,Origin+Y*externalLength,-Y);
+  FixedComp::setConnect(4,Origin+Y*length,-Y);
   FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+2));
 
   FixedComp::nameSideIndex(5,"VoidRadius");
-  FixedComp::setConnect(5,Origin+Y*externalLength,-Y);
+  FixedComp::setConnect(5,Origin+Y*length,-Y);
   FixedComp::setLinkSurf(5,-SMap.realSurf(buildIndex+27));
   FixedComp::setBridgeSurf(5,SMap.realSurf(buildIndex+1));
 
   FixedComp::nameSideIndex(6,"FlangePlate");
   const Geometry::Vec3D flangePoint=
-    Origin+Y*(externalLength-flangeLength);
+    Origin+Y*(length-flangeLength);
   
   FixedComp::setConnect(6,flangePoint,Y);
   FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+102));

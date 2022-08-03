@@ -71,7 +71,7 @@ namespace constructSystem
 doublePortItem::doublePortItem(const std::string& baseKey,
 				 const std::string& Key) :
   portItem(baseKey,Key),
-  externPartLen(0.0),radiusB(0.0)
+  lengthB(0.0),radiusB(0.0),wallB(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param baseKey :: Base name
@@ -81,7 +81,7 @@ doublePortItem::doublePortItem(const std::string& baseKey,
 
 doublePortItem::doublePortItem(const std::string& Key) :
   portItem(Key),
-  externPartLen(0.0),radiusB(0.0)
+  lengthB(0.0),radiusB(0.0),wallB(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -93,19 +93,6 @@ doublePortItem::~doublePortItem()
     Destructor
   */
 {}
-
-void
-doublePortItem::setLarge(const double L,const double R)
-  /*!
-    Set the port first radius part
-    \param L :: Length of externPart
-    \param R :: Main radius
-   */
-{
-  externPartLen=L;
-  radiusB=R;
-  return;
-}
   
 void
 doublePortItem::populate(const FuncDataBase& Control)
@@ -117,8 +104,16 @@ doublePortItem::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("doublePortItem","populate");
 
   portItem::populate(Control);
-  externPartLen=Control.EvalTail<double>(keyName,portBase,"PartLength");
-  radiusB=Control.EvalTail<double>(keyName,portBase,"RadiusB");
+  lengthB=Control.EvalTail<double>(keyName,portBase,"ExtraLength");
+  radiusB=Control.EvalTail<double>(keyName,portBase,"ExtraRadius");
+  wallB=Control.EvalTail<double>(keyName,portBase,"ExtraWall");
+
+  flangeRadius=Control.EvalTail<double>
+    (keyName,portBase,"ExtraFlangeRadius");
+  flangeLength=Control.EvalTail<double>
+    (keyName,portBase,"ExtraFlangeLength");
+  lengthA=length;
+  length+=lengthB;
 
   return;
 }
@@ -135,12 +130,12 @@ doublePortItem::createSurfaces()
   portItem::createSurfaces();
 
   ModelSupport::buildCylinder(SMap,buildIndex+1007,Origin,Y,radiusB);
-  ModelSupport::buildCylinder(SMap,buildIndex+1017,Origin,Y,radiusB+wall);
+  ModelSupport::buildCylinder(SMap,buildIndex+1017,Origin,Y,radiusB+wallB);
 
   ModelSupport::buildPlane(SMap,buildIndex+1001,
-			   Origin+Y*externPartLen,Y);
+			   Origin+Y*lengthA,Y);
   ModelSupport::buildPlane(SMap,buildIndex+1002,
-			   Origin+Y*(externPartLen+wall),Y);
+			   Origin+Y*(lengthA+wall),Y);
     
   return;
 }
@@ -183,7 +178,6 @@ doublePortItem::constructObjectReducing(Simulation& System,
   // construct inner volume:
   HeadRule HR;
 
-  ELog::EM<<"Radius B == "<<radius<<" > "<<radiusB<<ELog::endDiag;
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -7 -1001");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*innerSurf);
   
@@ -198,6 +192,10 @@ doublePortItem::constructObjectReducing(Simulation& System,
   
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1002 -2 1007 -1017");
   makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
+
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -27 1017 -2");
+  makeCell("Flange",System,cellIndex++,wallMat,0.0,HR);
   
   if (outerFlag)
     {
@@ -219,8 +217,8 @@ doublePortItem::constructObjectReducing(Simulation& System,
       else 
 	{
 	  HR= (capFlag) ?
-	    ModelSupport::getHeadRule(SMap,buildIndex,"-202 102 -27") :
-	    ModelSupport::getHeadRule(SMap,buildIndex,"-2 -27 102");
+	    ModelSupport::getHeadRule(SMap,buildIndex,"-202 102 -17 27") :
+	    ModelSupport::getHeadRule(SMap,buildIndex,"-2 -17 27 102");
 	  makeCell("OutVoid",System,cellIndex++,outerVoidMat,0.0,HR);
 	  
 	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1002 -17 1017 -102");
@@ -313,8 +311,10 @@ doublePortItem::constructObjectIncreasing(Simulation& System,
 
   if (outerFlag)
     {
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 17  -27 -102");
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"1 17 -27 (-1001:1017) -102");
       makeCell("OutVoid",System,cellIndex++,outerVoidMat,0.0,HR*outerSurf);
+      
       HR= (capFlag) ?
 	ModelSupport::getHeadRule(SMap,buildIndex,"-202 -27 1") :
 	ModelSupport::getHeadRule(SMap,buildIndex,"-2 -27  1");

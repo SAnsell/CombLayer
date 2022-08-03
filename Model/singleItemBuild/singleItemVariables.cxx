@@ -699,16 +699,21 @@ SingleItemVariables(FuncDataBase& Control)
 
   // Double pipe
   SimpleTubeGen.setCF<CF63>();
-  SimpleTubeGen.generateTube(Control,"DoublePipe",20.0);
-
+  SimpleTubeGen.generateTube(Control,"DoublePipe",40.0);
 
   Control.addVariable("DoublePipeNPorts",1);
   PItemGen.setCF<setVariable::CF40>(30.0);
   PItemGen.setNoPlate();
-  PItemGen.generateDoublePort(Control,"DoublePipePort0",
-			      Geometry::Vec3D(0.0, -3.0, 0.0),
-			      Geometry::Vec3D(-1.0, 0.0, 0.0),
-			      10.0,setVariable::CF25::innerRadius);
+
+  // second pipe
+  setVariable::PortItemGenerator PItemGenB(PItemGen);
+  PItemGenB.setCF<setVariable::CF63>(15.0);
+
+  PItemGen.generateDoublePort
+    (Control,"DoublePipePort0",
+     PItemGenB,
+     Geometry::Vec3D(0.0, -3.0, 0.0),
+     Geometry::Vec3D(-1.0, 0.0, 0.0));
 
   
   // expt hutch

@@ -47,8 +47,10 @@ class doublePortItem :
 {
  private:
   
-  double externPartLen;     ///< Length of larger item
-  double radiusB;           ///< larger radius of pipe
+  double lengthA;     ///< Length of larger item
+  double lengthB;     ///< Length of larger item
+  double radiusB;             ///< larger radius of pipe
+  double wallB;               ///< Wall thickness of B
 
   void createSurfaces();
   
@@ -65,8 +67,6 @@ class doublePortItem :
   virtual ~doublePortItem();
 
   virtual void populate(const FuncDataBase&);
-  
-  void setLarge(const double,const double);
   
 };
   

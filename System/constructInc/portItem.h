@@ -58,7 +58,7 @@ class portItem :
   Geometry::Vec3D centreOffset;  ///< Centre axis
   Geometry::Vec3D axisOffset;    ///< axis Offset
   
-  double externalLength;     ///< Length of item 
+  double length;             ///< Length of port (to flange end)
   double radius;             ///< radius of pipe
   double wall;               ///< wall thick
   double flangeRadius;       ///< flange radius
@@ -96,7 +96,7 @@ class portItem :
   // make public as accessor function:
   virtual void populate(const FuncDataBase&);
   
-  double getExternalLength() const { return externalLength; }
+  double getLength() const { return length; }
   double getCapLength() const
     { return std::max(capThick,0.0); }
   
