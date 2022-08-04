@@ -329,7 +329,8 @@ addToInsertControl(Simulation& System,
                        "addToInsertControl(CM,string,FC,CC)");
 
   const std::vector<Geometry::Vec3D> linkPts=FC.getAllLinkPts();
-  const std::string excludeStr=CC.getExclude();
+
+  const HeadRule& excludeHR=CC.getOuterSurf().complement();
 
   for(const int cN : BaseObj.getCells(cellName))
     {
@@ -341,7 +342,7 @@ addToInsertControl(Simulation& System,
 	    {
 	      if (CRPtr->isValid(IP))
 		{
-		  CRPtr->addSurfString(excludeStr);
+		  CRPtr->addIntersection(excludeHR);
 		  break;
 		}
 	    }
@@ -370,7 +371,7 @@ addToInsertControl(Simulation& System,
   ELog::RegMethod RegA("AttachSupport","addToInsertControl");
 
   const std::vector<Geometry::Vec3D> linkPts=FC.getAllLinkPts();
-  const std::string excludeStr=CC.getExclude();
+  const HeadRule excludeHR=CC.getOuterSurf().complement();
 
   for(const int CN : cellVec)
     {
@@ -382,7 +383,7 @@ addToInsertControl(Simulation& System,
 	    {
 	      if (CRPtr->isValid(IP))
 		{
-		  CRPtr->addSurfString(excludeStr);
+		  CRPtr->addIntersection(excludeHR);
 		  break;
 		}
 	    }
@@ -804,7 +805,7 @@ addToInsertForced(Simulation& System,
 {
   ELog::RegMethod RegA("AttachSupport","addToInsertForce(int,int,CG)");
 
-  const HeadRule HR(CG.getAllExclude());
+  const HeadRule excludeHR(CG.getAllExclude());
   for(const int CN : cellVec)
     {
       MonteCarlo::Object* CRPtr=System.findObject(CN);
@@ -812,7 +813,7 @@ addToInsertForced(Simulation& System,
 	{
 	  CRPtr->populate();
 	  CRPtr->createSurfaceList();
-	  CRPtr->addUnion(HR);
+	  CRPtr->addIntersection(excludeHR);
 	}
     }
   return;

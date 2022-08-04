@@ -446,11 +446,13 @@ makeT1Real::build(Simulation& System,
 
   RefObj->addToInsertChain(*WaterModObj);
   WaterModObj->createAll(System,*VoidObj,0);
+  System.populateCells();
 
   flightLines(System);
 
   RefObj->createBoxes(System,TarExcludeName);
-
+  ELog::EM<<"EARLY RETURN"<<ELog::endDiag;
+  return;
   H2PipeObj->createAll(System,*Lh2ModObj,5);   // long int sideIndex
 
   WaterPipeObj->createAll(System,*WaterModObj,12);
@@ -458,7 +460,7 @@ makeT1Real::build(Simulation& System,
   MPipeObj->createAll(System,*MerlinMod,12);
 
 
-  CH4PipeObj->createAll(System,*CH4ModObj,5);  // long int sideIndex
+  CH4PipeObj->createAll(System,*CH4ModObj,5 );  // long int sideIndex
 
   if (IParam.flag("BeRods"))
     RefObj->createRods(System);  

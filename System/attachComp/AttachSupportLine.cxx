@@ -253,8 +253,8 @@ addToInsertLineCtrl(Simulation& System,
 
   if (CRPtr && checkLineIntersect(InsertFC,*CRPtr))
     {
-      const std::string excludeStr=CC.getExclude();
-      CRPtr->addSurfString(excludeStr);
+      const HeadRule excludeHR=CC.getOuterSurf().complement();
+      CRPtr->addIntersection(excludeHR);
     }
   return;
 }

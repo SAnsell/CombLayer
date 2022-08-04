@@ -3,7 +3,7 @@
  
  * File:   construct/LWInner.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -112,39 +112,44 @@ LWInner::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("LWInner","createObjects");
 
-  std::ostringstream cx;
-  std::copy(surfNum.begin(),surfNum.end(),
-	    std::ostream_iterator<int>(cx," "));
-  
-  addOuterSurf(cx.str());
-  std::string Outer=cx.str();
-  std::string Inner=cx.str();
+  const HeadRule boundaryComp(ExcludedComp::getExcludeUnit().complement());
+  HeadRule HR;
+  for(const int SN : surfNum)
+    HR.addIntersection(SN);
+
+  addOuterSurf(HR);
+
+  HeadRule OuterHR(HR);
   for(size_t i=0;i<nLayers;i++)
     {
-      cx.str("");
+      HeadRule CX;
       int lSurf(buildIndex+101+100*static_cast<int>(i));
       for(size_t j=0;j<surfNum.size();j++)
 	{
 	  const int signV((surfNum[j]>0) ? 1 : -1);
 	  if (sectorFlag(i,j))
-	    cx<<SMap.realSurf(signV*lSurf)<<" ";
+	    CX.addIntersection(SMap.realSurf(signV*lSurf));
 	  else
-	    cx<<SMap.realSurf(surfNum[j])<<" ";
+	    CX.addIntersection(SMap.realSurf(surfNum[j]));
 	  lSurf++;
 	}
-      Inner=cx.str();
-      System.addCell(MonteCarlo::Object(cellIndex++,layerMat[i],0.0,
-				       Outer+getNotExcludeUnit()+
-				       " #( "+Inner+" )" ));
-      Outer=Inner;
+      System.addCell(cellIndex++,layerMat[i],0.0,
+		     OuterHR*boundaryComp*CX.complement());
+      if (cellIndex==1920001+1)
+	{
+	  ELog::EM<<"Cell = "<<*System.findObject(cellIndex-1)<<ELog::endDiag;
+	  ELog::EM<<"Outer == "<<OuterHR<<ELog::endDiag;
+	  ELog::EM<<"Boundary == "<<boundaryComp<<ELog::endDiag;
+	}
+      OuterHR=CX;
     }
   // Special object : the inner:
   // Add boundary exclude:
   if (defMat>=0)
     {
-      addBoundarySurf(Inner);
-      Inner+=getNotExcludeUnit();
-      System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Inner));
+      addBoundarySurf(OuterHR.display());
+      OuterHR*=boundaryComp;
+      System.addCell(cellIndex++,defMat,0.0,OuterHR);
     }
   return;
 }

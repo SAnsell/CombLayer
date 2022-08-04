@@ -218,7 +218,6 @@ t1BulkShield::createShutters(Simulation& System)
   GData.clear();
   for(size_t i=1;i<=numberBeamLines;i++)
     {
-      ELog::EM<<"Shutter number "<<i<<ELog::endDiag;
       if (i==sandalsShutter)
 	GData.push_back(std::make_shared<BlockShutter>
 			(i,"shutter","sandalsShutter"));
@@ -320,7 +319,6 @@ t1BulkShield::createBulkInserts(Simulation& System)
       BItem->setCutSurf("ROuter",-SMap.realSurf(buildIndex+37));
 
       OR.addObject(BItem->getKeyName(),BItem);
-      ELog::EM<<"BulkInsert create "<<i<<ELog::endDiag;
       BItem->createAll(System,*GData[i],2);
       
       BData.push_back(BItem);

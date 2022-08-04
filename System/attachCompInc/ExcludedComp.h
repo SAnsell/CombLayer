@@ -66,8 +66,8 @@ class ExcludedComp
 
   virtual void applyBoundary(Simulation&);
 
-  virtual std::string getNotExcludeUnit() const;
-  virtual std::string getExcludeUnit() const;
+  //  virtual std::string getNotExcludeUnit() const;
+  virtual const HeadRule& getExcludeUnit() const;
 
   void clearRules();
   /// Test if has rule

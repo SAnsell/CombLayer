@@ -113,7 +113,7 @@ ExcludedComp::clearRules()
   return;
 }
 
-std::string
+const HeadRule&
 ExcludedComp::getExcludeUnit() const
   /*!
     Calculate the write out the excluded surface.
@@ -122,24 +122,22 @@ ExcludedComp::getExcludeUnit() const
     \return Exclude string [union]
   */
 {
-  ELog::RegMethod RegA("ExcludedComp","getExcludeUnit");
-
-  return boundary.display();
+  return boundary;
 }
 
-std::string
-ExcludedComp::getNotExcludeUnit() const
-  /*!
-    Calculate the write out the excluded surface.
-    This allows the object to be inserted in a larger
-    object.
-    \return Exclude string [union]
-  */
-{
-  ELog::RegMethod RegA("ExcludedComp","getNotExcludeUnit");
+// std::string
+// ExcludedComp::getNotExcludeUnit() const
+//   /*!
+//     Calculate the write out the excluded surface.
+//     This allows the object to be inserted in a larger
+//     object.
+//     \return Exclude string [union]
+//   */
+// {
+//   ELog::RegMethod RegA("ExcludedComp","getNotExcludeUnit");
 
-  return boundary.complement().display();
-}
+//   return boundary.complement().display();
+// }
 
 
 
@@ -326,7 +324,7 @@ ExcludedComp::applyBoundary(Simulation& System)
     {
       MonteCarlo::Object* outerObj=System.findObject(CN);
       if (outerObj)
-	outerObj->addSurfString(getNotExcludeUnit());
+	outerObj->addIntersection(boundary.complement());
       else
 	ELog::EM<<"Failed to find outerObject: "<<CN<<ELog::endErr;
     }

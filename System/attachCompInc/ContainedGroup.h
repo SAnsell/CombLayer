@@ -82,7 +82,7 @@ public:
   ContainedGroup& operator=(const ContainedGroup&);
   virtual ~ContainedGroup();
 
-  virtual std::string getAllExclude() const;
+  virtual HeadRule getAllExclude() const;
   
   virtual const HeadRule& getOuterSurf(const std::string&) const;
   virtual const HeadRule& getBoundary(const std::string&) const;

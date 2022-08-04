@@ -170,6 +170,7 @@ LWOuter::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("LWOuter","createObjects");
 
+  const HeadRule boundaryComp=getBoundary().complement();
    // Outer boundary is the #Inner . Final-Outer
   std::string outBoundary;
 
@@ -200,7 +201,7 @@ LWOuter::createObjects(Simulation& System)
       Inner=cx.str();
 
       const std::string cellStr=
-	Inner+getNotExcludeUnit()+" #( "+Outer+" ) "
+	Inner+boundaryComp.display()+" #( "+Outer+" ) "
 	+control.str()+exclude;
       System.addCell(MonteCarlo::Object
 		     (cellIndex++,layerMat[i],0.0,cellStr));

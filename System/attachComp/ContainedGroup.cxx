@@ -453,7 +453,7 @@ ContainedGroup::getBoundary(const std::string& Key) const
   return getCC(Key).getBoundary();
 }
   
-std::string
+HeadRule
 ContainedGroup::getAllExclude() const
   /*!
     Calculate the write out the excluded surface.
@@ -467,7 +467,7 @@ ContainedGroup::getAllExclude() const
   for(const auto& [key,CC] : CMap)
     Out.addUnion(CC.getOuterSurf());
 		 
-  return Out.complement().display();
+  return Out.complement();
 }
 
 std::string

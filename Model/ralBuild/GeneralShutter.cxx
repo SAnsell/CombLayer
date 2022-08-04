@@ -564,7 +564,7 @@ GeneralShutter::createObjects(Simulation& System)
   // Bulk Steel
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"200 -15 25 3 -4")*RInnerComp*ROuterHR;
-  makeCell("UpperCell",System,cellIndex++,shutterMat,0.0,HR);  
+  makeCell("UpperCell",System,cellIndex++,shutterMat,0.0,HR);
   upperCell=cellIndex-1;
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-15 25");
@@ -649,6 +649,7 @@ GeneralShutter::createBlocks(Simulation& System)
   ELog::RegMethod RegA("GeneralShutter","createAllBlocks");
   for(size_t i=0;i<SBlock.size();i++)
     createStopBlocks(System,i);
+  
   return;
 }
 
@@ -669,85 +670,84 @@ GeneralShutter::createStopBlocks(Simulation& System,const size_t BN)
     throw ColErr::IndexError<size_t>(BN,SBlock.size(),
 				     " stopBlock size");
   const shutterBlock& SB=SBlock[BN];
-  
-  int TCube[6];      // 6-sides of a cube [Lower/Upper]
-  int LCube[6];
-  const int surfOffset(buildIndex+1000+
-		       10*static_cast<int>(BN));
 
-  // Front/Back (Y AXIS)
-  ModelSupport::buildPlane(SMap,surfOffset+3,
-			   frontPt+Y*(SB.centY-SB.length/2.0),Y);
-  LCube[0]=TCube[0]=SMap.realSurf(surfOffset+3);
-  ModelSupport::buildPlane(SMap,surfOffset+4,
-			   frontPt+Y*(SB.centY+SB.length/2.0),Y);
-  LCube[1]=TCube[1]=SMap.realSurf(surfOffset+4);
+  const int surfOffset(buildIndex+1000+10*static_cast<int>(BN));
+
+  HeadRule TCubeHR;
+  HeadRule LCubeHR;
+  ModelSupport::buildPlane
+    (SMap,surfOffset+3,frontPt+Y*(SB.centY-SB.length/2.0),Y);
+
+  ModelSupport::buildPlane
+    (SMap,surfOffset+4,frontPt+Y*(SB.centY+SB.length/2.0),Y);
+
+  LCubeHR=ModelSupport::getHeadRule(SMap,surfOffset,"3 -4");
+  TCubeHR=LCubeHR;
 
   // Z [view side]
   if (SB.edgeVGap>0)
     {
       ModelSupport::buildPlane(SMap,surfOffset+5,
 	   frontPt+Z*(voidZOffset+voidHeightOuter/2.0+SB.edgeVGap),Z);
-      TCube[2]=SMap.realSurf(surfOffset+5);
 
       ModelSupport::buildPlane(SMap,surfOffset+7,
 	   frontPt-Z*(-voidZOffset+voidHeightOuter/2.0+SB.edgeVGap),Z);
-      LCube[3]=SMap.realSurf(surfOffset+7);
+      LCubeHR.addIntersection(-SMap.realSurf(surfOffset+7));
+      TCubeHR.addIntersection(SMap.realSurf(surfOffset+5));
     }
   else
     {
-      TCube[2]=SMap.realSurf(buildIndex+25);
-      LCube[3]=SMap.realSurf(buildIndex+26);
+      TCubeHR.addIntersection(SMap.realSurf(buildIndex+25));
+      LCubeHR.addIntersection(-SMap.realSurf(buildIndex+26));
     }
 
   // Full height
   ModelSupport::buildPlane(SMap,surfOffset+6,
 	    frontPt+Z*(voidZOffset+voidHeightOuter/2.0+SB.edgeVGap+SB.height),Z);
-  TCube[3]=SMap.realSurf(surfOffset+6);
+
 
   ModelSupport::buildPlane(SMap,surfOffset+8,
       frontPt-Z*(-voidZOffset+voidHeightOuter/2.0+SB.edgeVGap+SB.height),Z);
-  LCube[2]=SMap.realSurf(surfOffset+8);
-  
+  TCubeHR.addIntersection(-SMap.realSurf(surfOffset+6));
+  LCubeHR.addIntersection(SMap.realSurf(surfOffset+8));
+
   // X coordinate:
+  int surfA,surfB;
   if (std::abs(SB.edgeHGap)>Geometry::shiftTol)
     {
       ModelSupport::buildPlane(SMap,surfOffset+1,      
 			       Origin-X*(totalWidth/2.0-SB.edgeHGap),X);
-      LCube[4]=TCube[4]=SMap.realSurf(surfOffset+1);
-
       ModelSupport::buildPlane(SMap,surfOffset+2,      
 			       Origin+X*(totalWidth/2.0-SB.edgeHGap),X);
-      LCube[5]=TCube[5]=SMap.realSurf(surfOffset+2);
+      surfA=SMap.realSurf(surfOffset+1);
+      surfB=SMap.realSurf(surfOffset+2);
+      LCubeHR.addIntersection(surfA);
+      TCubeHR.addIntersection(surfA);
+      LCubeHR.addIntersection(-surfB);
+      TCubeHR.addIntersection(-surfB);
     }
   else 
     {
-      LCube[4]=TCube[4]= SMap.realSurf(buildIndex+3);
-      LCube[5]=TCube[5]= SMap.realSurf(buildIndex+4);
+      surfA=SMap.realSurf(buildIndex+3);
+      surfB=SMap.realSurf(buildIndex+4);
+      LCubeHR.addIntersection(surfA);
+      TCubeHR.addIntersection(surfA);
+      LCubeHR.addIntersection(-surfB);
+      TCubeHR.addIntersection(-surfB);
     }
-  // ---------------------------
-  // CREATE Inner objects:
-  // ---------------------------
-
-  std::ostringstream tx;  // top 
-  std::ostringstream lx;  // lower
-  int sign(1);
-  for(size_t i=0;i<6;i++)
-    {
-      lx<<sign*LCube[i]<<" ";
-      tx<<sign*TCube[i]<<" ";
-      sign*=-1;
-    }
+  
   if (SB.flag & 2)          // Lower
     {
-      System.addCell(MonteCarlo::Object(cellIndex,SB.matN,0.0,lx.str())); 
-      SimProcess::registerOuter(System,lowerCell,cellIndex++);
+      System.addCell(cellIndex++,SB.matN,0.0,LCubeHR);
+      CellMap::insertComponent(System,"LowerCell",LCubeHR.complement());
     }
   if (SB.flag & 1) 
     {
-      System.addCell(MonteCarlo::Object(cellIndex,SB.matN,0.0,tx.str())); 
-      SimProcess::registerOuter(System,upperCell,cellIndex++);
+      System.addCell(cellIndex++,SB.matN,0.0,TCubeHR);
+      CellMap::insertComponent(System,"UpperCell",TCubeHR.complement());
     }
+  System.populateCells();
+
   return;
 }
 
@@ -837,7 +837,6 @@ GeneralShutter::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("GeneralShutter","createAll");
 
-  
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   applyRotations();
