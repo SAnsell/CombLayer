@@ -494,7 +494,7 @@ ContainedGroup::getCompExclude(const std::string& Key) const
     \return Exclude string [union]
   */
 {
-  ELog::RegMethod RegA("ContainedGroup","getExclude");
+  ELog::RegMethod RegA("ContainedGroup","getCompExclude");
   return getCC(Key).getCompExclude();
 }
 

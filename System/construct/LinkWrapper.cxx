@@ -54,15 +54,16 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
-#include "ExcludedComp.h"
+#include "ContainedGroup.h"
 #include "LinkWrapper.h"
 
 namespace constructSystem
 {
 
 LinkWrapper::LinkWrapper(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::ExcludedComp(),
-  attachSystem::FixedComp(Key,40),InOutLinkB(20),
+  attachSystem::ContainedComp(),
+  attachSystem::FixedComp(Key,40),
+  InOutLinkB(20),
   nLayers(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -72,8 +73,8 @@ LinkWrapper::LinkWrapper(const std::string& Key)  :
 
 LinkWrapper::LinkWrapper(const LinkWrapper& A) : 
   attachSystem::ContainedComp(A),
-  attachSystem::ExcludedComp(A),
-  attachSystem::FixedComp(A),InOutLinkB(A.InOutLinkB),
+  attachSystem::FixedComp(A),
+  InOutLinkB(A.InOutLinkB),
   surfNum(A.surfNum),surfCent(A.surfCent),
   surfAxis(A.surfAxis),flag(A.flag),
   surfEntryOrder(A.surfEntryOrder),nLayers(A.nLayers),
@@ -96,7 +97,6 @@ LinkWrapper::operator=(const LinkWrapper& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::ExcludedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
       surfNum=A.surfNum;
       surfCent=A.surfCent;
@@ -263,6 +263,7 @@ LinkWrapper::getComposite(const std::string& surfList) const
     \return Composite string
   */
 {
+  ELog::EM<<"ERROR CALL"<<ELog::endErr;
   return ModelSupport::getComposite(SMap,buildIndex,surfList);
 }
 
@@ -328,6 +329,64 @@ LinkWrapper::maskSection(std::string sectList)
     
   return;
 }
+
+void
+LinkWrapper::addExcludeObj(const objectGroups& OGrp,
+			   const std::string& objName,
+			   const std::string& grpName) 
+  /*!
+    Add a set of surfaces to the output
+    \param ObjName ::  ContainedGroup Object Name [to use outer cell]
+    \param grpName ::  Group in CG
+  */
+{
+  ELog::RegMethod RegA("LinkWrapper","addExcludeObj(str,str)");
+
+  const attachSystem::ContainedGroup* CCPtr=
+    OGrp.getObjectThrow<attachSystem::ContainedGroup>
+    (objName,"objectHame");
+  
+  const std::string OutStr=CCPtr->getCompExclude(grpName);
+  excludeSpace.addUnion(CCPtr->getOuterSurf(grpName)); 
+ return;
+}
+
+void
+LinkWrapper::addExcludeObj(const objectGroups& OGrp,
+			   const std::string& objName)
+  /*!
+    Add a set of surfaces to the output
+    \param ObjName ::  ContainedComp/Group Object Name [to use outer cell]
+  */
+{
+  ELog::RegMethod RegA("LinkWrapper","addExcludeObj(str,str)");
+
+  const attachSystem::ContainedGroup* CCPtr=
+    OGrp.getObject<attachSystem::ContainedGroup>(objName);
+  if (CCPtr)
+    excludeSpace.addUnion(CCPtr->getAllExclude());
+  else
+    {
+      const ContainedComp* CCPtr=
+	OGrp.getObjectThrow<ContainedComp>(objName,"Object Name");
+      excludeSpace.addUnion(CCPtr->getOuterSurf());      
+    }
+  return;
+}
+
+void
+LinkWrapper::addExcludeObj(const HeadRule& HR)
+  /*!
+    Add a set of surfaces to the output
+    \param HR ::  HeadRule to add
+  */
+{
+  ELog::RegMethod RegA("LinkWrapper","addExcludeObj(HR)");
+
+  excludeSpace.addUnion(HR);      
+  return;
+}
+
 
 void
 LinkWrapper::createAll(Simulation& System,

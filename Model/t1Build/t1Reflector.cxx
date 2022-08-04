@@ -3,7 +3,7 @@
  
  * File:   t1Build/t1Reflector.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -257,7 +256,8 @@ t1Reflector::getComposite(const std::string& surfList) const
 }
 
 void
-t1Reflector::createBoxes(Simulation& System,const std::string& TName)
+t1Reflector::createBoxes(Simulation& System,
+			 const std::string& TName)
   /*!
     Create the reflector boxes
     \param System :: Simulation
@@ -273,14 +273,11 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
      (new constructSystem::LWInner("RBoxLBase")));
   
   Boxes[0]->addSurface(*this,"-9 -1 -2 -3 -4 -5");  // base
-  //  Boxes[0]->addSurface(*this,6);  // base
   Boxes[0]->addSurface(Origin-Z*baseZCut,Geometry::Vec3D(0,0,-1));  // base
   Boxes[0]->addSurface(Origin,Geometry::Vec3D(-1,0,0));  // base
-  //  Boxes[0]->maskSection(5);
-  //  Boxes[0]->addInsertCell(buildIndex+1);
   Boxes[0]->createAll(System,*this,0);
 
-  
+
   // ---------------- RIGHT BASE --------------------------------
   Boxes.push_back
     (std::shared_ptr<constructSystem::LinkWrapper>
@@ -316,18 +313,18 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
   Boxes[3]->addSurface(OGrp,"WaterMod",3);  
   Boxes[3]->addSurface(OGrp,"WatSouthFlight",3); 
   Boxes[3]->addSurface(Origin-Z*zStep*2.0,Geometry::Vec3D(0,0,1));  //
-  Boxes[3]->addSurface(OGrp,"MerlinMod",-6);  //  What is this for?     
+  Boxes[3]->addSurface(OGrp,"MerlinMod",-6);  //  What is this for?
+
   Boxes[3]->addExcludeObj(System,"MerlinMod");
   Boxes[3]->addExcludeObj(System,"MerlinFlight","outer");
   Boxes[3]->addExcludeObj(System,TName);
-
   Boxes[3]->createAll(System,*this,0);
 
   // ---------------- Methane CORNER --------------------------------
   Boxes.push_back
     (std::shared_ptr<constructSystem::LinkWrapper>
      (new constructSystem::LWInner("RBoxMethane")));
-
+  ELog::EM<<"ASDFASFSDA F"<<ELog::endDiag;
   Boxes[4]->addSurface(*this,"-3 -2 -1"); 
   Boxes[4]->addSurface(OGrp,"CH4FlightS",4);  // base
   Boxes[4]->addSurface(OGrp,"CH4Mod",4);  // base
@@ -339,7 +336,8 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
   Boxes[4]->addExcludeObj(System,"ProtonVoid");    
   Boxes[4]->createAll(System,*this,0);
   
-
+  ELog::EM<<"BOX == "<<Boxes[4]->getExcludeSpace()<<ELog::endWarn;
+  ELog::EM<<"Cell == "<<Boxes[4]->getNextCell()<<ELog::endErr;
   // ---------------- LH2 CORNER --------------------------------
   Boxes.push_back
     (std::shared_ptr<constructSystem::LinkWrapper>
@@ -353,6 +351,7 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
   Boxes[5]->addSurface(*Boxes[0],7);
   Boxes[5]->addSurface(Origin-Z*zStep*2.0,Geometry::Vec3D(0,0,-1));  // roof    
 
+									  
   Boxes[5]->addExcludeObj(System,"H2Mod");
   Boxes[5]->addExcludeObj(System,"H2Flight","outer");
   Boxes[5]->addExcludeObj(System,TName);
@@ -382,6 +381,7 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
 
   Boxes[7]->addSurface(OGrp,"H2Mod","-1 -2 -3 -4");
   Boxes[7]->addSurface(OGrp,"H2Flight","-5 -6");
+
   Boxes[7]->addBoundarySurf(Boxes[5]->getLinkSurf(-27));
   Boxes[7]->addBoundaryUnionSurf(Boxes[5]->getLinkSurf(-28));
   Boxes[7]->addBoundaryUnionSurf(Boxes[5]->getLinkSurf(-29));
@@ -440,7 +440,7 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
   Boxes[10]->addExcludeObj(System,TName);
   Boxes[10]->addExcludeObj(System,"ProtonVoid");                     
   Boxes[10]->addExcludeObj(System,"WaterMod");
-  Boxes[10]->addExcludeObj(*Boxes[2]);
+  Boxes[10]->addExcludeObj(Boxes[2]->getBoundary());
   Boxes[10]->addExcludeObj(System,"WatNorthFlight","outer");
   Boxes[10]->addExcludeObj(System,"WatSouthFlight","outer");
   Boxes[10]->maskSection(4);
@@ -460,7 +460,7 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
   Boxes[11]->addExcludeObj(System,TName); 
   Boxes[11]->addExcludeObj(System,"ProtonVoid");             
   Boxes[11]->addExcludeObj(System,"WaterMod");
-  Boxes[11]->addExcludeObj(*Boxes[2]);
+  Boxes[11]->addExcludeObj(Boxes[2]->getBoundary());
   Boxes[11]->addExcludeObj(System,"WatNorthFlight","outer");
   Boxes[11]->addExcludeObj(System,"WatSouthFlight","outer");
 
@@ -518,7 +518,7 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
   Boxes[14]->addSurface(OGrp,"CH4Mod","-1 -2 -3 -4");  
   Boxes[14]->addSurface(*Boxes[0],7);  
   Boxes[14]->addSurface(Origin-Z*zStep*2.0,Geometry::Vec3D(0,0,-1));  // 
-    
+
   Boxes[14]->addExcludeObj(System,TName);
   Boxes[14]->addExcludeObj(System,"ProtonVoid");
   Boxes[14]->addExcludeObj(System,"CH4Mod");

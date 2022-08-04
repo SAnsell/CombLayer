@@ -108,6 +108,7 @@ ExcludedComp::clearRules()
   */
 {
   ELog::RegMethod RegA("ExludedComp","clearRules");
+  ELog::EM<<"CALL "<<ELog::endErr;
 
   boundary.reset();
   return;
@@ -163,6 +164,8 @@ ExcludedComp::addExcludeCell(const int CN)
   */
 {
   ELog::RegMethod RegA("ExcludedComp","addInsertCell");
+  ELog::EM<<"CALL "<<ELog::endErr;
+
   excludeCells.push_back(CN);
   return;
 }
@@ -175,6 +178,7 @@ ExcludedComp::setExcludeCell(const int CN)
   */
 {
   ELog::RegMethod RegA("ExcludedComp","setInsertCell");
+  ELog::EM<<"CALL "<<ELog::endErr;
 
   excludeCells.clear();
   if (CN)
@@ -204,6 +208,7 @@ ExcludedComp::addExcludeSurf(const std::string& SList)
   */
 {
   ELog::RegMethod RegA("ExcludedComp","addExcludeSurf(std::string)");
+  ELog::EM<<"CALL "<<ELog::endErr;
 
   boundary.addUnion(SList);
   return;
@@ -221,6 +226,7 @@ ExcludedComp::addExcludeSurf(const attachSystem::FixedComp& FC,
 
 {
   ELog::RegMethod RegA("RefBox","addExcludeSurf(FC,Index)");
+  ELog::EM<<"CALL "<<ELog::endErr;
 
   // Surfaces on links point outwards (hence swap of sign)
   boundary.addUnion(FC.getLinkSurf(LIndex));
@@ -255,6 +261,7 @@ ExcludedComp::addExcludeObj(const objectGroups& OGrp,
   */
 {
   ELog::RegMethod RegA("ExcludedComp","addExcludeObj(str)");
+  ELog::EM<<"CALL "<<ELog::endErr;
 
   
   const ContainedComp* CCPtr=
@@ -280,6 +287,7 @@ ExcludedComp::addExcludeObj(const objectGroups& OGrp,
 {
   ELog::RegMethod RegA("ExcludedComp","addExcludeObj(str,str)");
 
+  ELog::EM<<"CALL "<<ELog::endErr;
   
   const ContainedGroup* CCPtr=
     OGrp.getObject<ContainedGroup>(objName);
@@ -302,6 +310,7 @@ ExcludedComp::addExcludeObj(const std::string& grpName,
   */
 {
   ELog::RegMethod RegA("ExcludedComp","addExcludeObj(str,CG)");
+  ELog::EM<<"CALL "<<ELog::endErr;
   
   const std::string OutStr=CG.getCompExclude(grpName);
   boundary.addUnion(OutStr);
@@ -319,6 +328,7 @@ ExcludedComp::applyBoundary(Simulation& System)
   ELog::RegMethod RegA("ExcludedComp","applyBoundary");
 
   if (!boundary.hasRule()) return;
+  ELog::EM<<"CALL "<<ELog::endErr;
 
   for(const int CN : excludeCells)
     {

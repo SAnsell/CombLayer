@@ -36,8 +36,8 @@ namespace constructSystem
   \brief TS1 t1Reflector [insert object]
 */
 
-class LinkWrapper : public attachSystem::ContainedComp,
-    public attachSystem::ExcludedComp,
+class LinkWrapper :
+    public attachSystem::ContainedComp,
     public attachSystem::FixedComp
 {
  protected:
@@ -57,6 +57,8 @@ class LinkWrapper : public attachSystem::ContainedComp,
   int defMat;                         ///< Default material
  
   std::map<size_t,size_t> mask;       ///< Mask to be applied 
+
+  HeadRule excludeSpace;    ///< additional object to exclude
   
   virtual void populate(const FuncDataBase&);
 
@@ -82,7 +84,11 @@ class LinkWrapper : public attachSystem::ContainedComp,
 		  const std::string&);
   void addSurface(const objectGroups& OGrp,const std::string&,
 		  const long int);
- 
+
+  void addExcludeObj(const objectGroups&,const std::string&);
+  void addExcludeObj(const objectGroups&,const std::string&,const std::string&);
+  void addExcludeObj(const HeadRule&);
+  
   /// Get Central cell [last built]
   int centralCell() const { return cellIndex-1; }
   std::string getComposite(const std::string&) const;
@@ -90,6 +96,10 @@ class LinkWrapper : public attachSystem::ContainedComp,
   void maskSection(const size_t);
   void maskSection(std::string);
 
+  /// accessor
+  const HeadRule& getExcludeSpace() const { return excludeSpace; }
+  
+  using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 			 const long int);
 };

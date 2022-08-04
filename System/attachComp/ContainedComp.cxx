@@ -401,7 +401,7 @@ ContainedComp::getCompExclude() const
     \return Exclude string [union]
   */
 {
-  ELog::RegMethod RegA("ContainedComp","getExclude");
+  ELog::RegMethod RegA("ContainedComp","getCompExclude");
 
   return outerSurf.display();
 }

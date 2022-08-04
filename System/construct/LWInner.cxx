@@ -112,7 +112,7 @@ LWInner::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("LWInner","createObjects");
 
-  const HeadRule boundaryComp(ExcludedComp::getExcludeUnit().complement());
+  const HeadRule boundaryComp(excludeSpace.complement());
   HeadRule HR;
   for(const int SN : surfNum)
     HR.addIntersection(SN);
@@ -135,12 +135,6 @@ LWInner::createObjects(Simulation& System)
 	}
       System.addCell(cellIndex++,layerMat[i],0.0,
 		     OuterHR*boundaryComp*CX.complement());
-      if (cellIndex==1920001+1)
-	{
-	  ELog::EM<<"Cell = "<<*System.findObject(cellIndex-1)<<ELog::endDiag;
-	  ELog::EM<<"Outer == "<<OuterHR<<ELog::endDiag;
-	  ELog::EM<<"Boundary == "<<boundaryComp<<ELog::endDiag;
-	}
       OuterHR=CX;
     }
   // Special object : the inner:
@@ -150,6 +144,13 @@ LWInner::createObjects(Simulation& System)
       addBoundarySurf(OuterHR.display());
       OuterHR*=boundaryComp;
       System.addCell(cellIndex++,defMat,0.0,OuterHR);
+
+      if (cellIndex==1920003+1)
+	{
+	  ELog::EM<<"Def Cell = "<<*System.findObject(cellIndex-1)<<ELog::endDiag;
+	  ELog::EM<<"Outer == "<<OuterHR<<ELog::endDiag;
+	  ELog::EM<<"Boundary == "<<boundaryComp<<ELog::endErr;
+	}
     }
   return;
 }

@@ -170,7 +170,8 @@ LWOuter::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("LWOuter","createObjects");
 
-  const HeadRule boundaryComp=getBoundary().complement();
+  const HeadRule boundaryComp(excludeSpace.complement());
+  
    // Outer boundary is the #Inner . Final-Outer
   std::string outBoundary;
 
