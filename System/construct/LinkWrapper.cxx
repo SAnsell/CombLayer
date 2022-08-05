@@ -3,7 +3,7 @@
  
  * File:   construct/LinkWrapper.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -386,6 +386,7 @@ LinkWrapper::addExcludeObj(const HeadRule& HR)
   excludeSpace.addUnion(HR);      
   return;
 }
+
 
 
 void

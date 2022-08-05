@@ -324,7 +324,7 @@ t1Reflector::createBoxes(Simulation& System,
   Boxes.push_back
     (std::shared_ptr<constructSystem::LinkWrapper>
      (new constructSystem::LWInner("RBoxMethane")));
-  ELog::EM<<"ASDFASFSDA F"<<ELog::endDiag;
+
   Boxes[4]->addSurface(*this,"-3 -2 -1"); 
   Boxes[4]->addSurface(OGrp,"CH4FlightS",4);  // base
   Boxes[4]->addSurface(OGrp,"CH4Mod",4);  // base
@@ -336,8 +336,6 @@ t1Reflector::createBoxes(Simulation& System,
   Boxes[4]->addExcludeObj(System,"ProtonVoid");    
   Boxes[4]->createAll(System,*this,0);
   
-  ELog::EM<<"BOX == "<<Boxes[4]->getExcludeSpace()<<ELog::endWarn;
-  ELog::EM<<"Cell == "<<Boxes[4]->getNextCell()<<ELog::endErr;
   // ---------------- LH2 CORNER --------------------------------
   Boxes.push_back
     (std::shared_ptr<constructSystem::LinkWrapper>
@@ -440,7 +438,7 @@ t1Reflector::createBoxes(Simulation& System,
   Boxes[10]->addExcludeObj(System,TName);
   Boxes[10]->addExcludeObj(System,"ProtonVoid");                     
   Boxes[10]->addExcludeObj(System,"WaterMod");
-  Boxes[10]->addExcludeObj(Boxes[2]->getBoundary());
+  Boxes[10]->addExcludeObj(Boxes[2]->getOuterSurf());
   Boxes[10]->addExcludeObj(System,"WatNorthFlight","outer");
   Boxes[10]->addExcludeObj(System,"WatSouthFlight","outer");
   Boxes[10]->maskSection(4);
@@ -460,7 +458,7 @@ t1Reflector::createBoxes(Simulation& System,
   Boxes[11]->addExcludeObj(System,TName); 
   Boxes[11]->addExcludeObj(System,"ProtonVoid");             
   Boxes[11]->addExcludeObj(System,"WaterMod");
-  Boxes[11]->addExcludeObj(Boxes[2]->getBoundary());
+  Boxes[11]->addExcludeObj(Boxes[2]->getOuterSurf());
   Boxes[11]->addExcludeObj(System,"WatNorthFlight","outer");
   Boxes[11]->addExcludeObj(System,"WatSouthFlight","outer");
 

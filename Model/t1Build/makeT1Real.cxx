@@ -451,8 +451,7 @@ makeT1Real::build(Simulation& System,
   flightLines(System);
 
   RefObj->createBoxes(System,TarExcludeName);
-  ELog::EM<<"EARLY RETURN"<<ELog::endDiag;
-  return;
+
   H2PipeObj->createAll(System,*Lh2ModObj,5);   // long int sideIndex
 
   WaterPipeObj->createAll(System,*WaterModObj,12);

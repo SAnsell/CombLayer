@@ -142,15 +142,9 @@ LWInner::createObjects(Simulation& System)
   if (defMat>=0)
     {
       addBoundarySurf(OuterHR.display());
+      const HeadRule preOuter(OuterHR);
       OuterHR*=boundaryComp;
       System.addCell(cellIndex++,defMat,0.0,OuterHR);
-
-      if (cellIndex==1920003+1)
-	{
-	  ELog::EM<<"Def Cell = "<<*System.findObject(cellIndex-1)<<ELog::endDiag;
-	  ELog::EM<<"Outer == "<<OuterHR<<ELog::endDiag;
-	  ELog::EM<<"Boundary == "<<boundaryComp<<ELog::endErr;
-	}
     }
   return;
 }
