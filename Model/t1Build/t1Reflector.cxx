@@ -54,7 +54,6 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "ExcludedComp.h"
 #include "LinkWrapper.h"
 #include "LWOuter.h"
 #include "LWInner.h"

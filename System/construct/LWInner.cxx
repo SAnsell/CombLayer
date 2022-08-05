@@ -58,7 +58,6 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
-#include "ExcludedComp.h"
 #include "LinkWrapper.h"
 #include "LWInner.h"
 
