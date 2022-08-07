@@ -170,52 +170,43 @@ LWOuter::createObjects(Simulation& System)
   ELog::RegMethod RegA("LWOuter","createObjects");
 
   const HeadRule boundaryComp(excludeSpace.complement());
-  
-   // Outer boundary is the #Inner . Final-Outer
-  std::string outBoundary;
 
-  const std::string exclude=getCompContainer();
+  HeadRule HR;
+  for(const int SN : surfNum)
+    HR.addIntersection(SN);
 
-  std::ostringstream cx;
-  std::ostringstream control;
-  std::copy(surfNum.begin(),surfNum.end(),
-	    std::ostream_iterator<int>(cx," "));
-  
-  outBoundary=cx.str();
-  std::string Outer=cx.str();
-  std::string Inner=cx.str();
+  HeadRule OuterHR(HR);
+  HeadRule ControlHR;
   for(size_t i=0;i<nLayers;i++)
     {
-      cx.str("");
-      control.str("");
+      HeadRule CX;
       int lSurf(buildIndex+101+100*static_cast<int>(i));
       for(size_t j=0;j<surfNum.size();j++)
 	{
 	  const int signV((surfNum[j]>0) ? 1 : -1);
 	  if (sectorFlag(i,j))
-	    cx<<SMap.realSurf(signV*lSurf)<<" ";
+	    CX.addIntersection(SMap.realSurf(signV*lSurf));
 	  else
-	    control<<SMap.realSurf(surfNum[j])<<" ";
+	    ControlHR.addIntersection(SMap.realSurf(surfNum[j]));
 	  lSurf++;
 	}
-      Inner=cx.str();
-
-      const std::string cellStr=
-	Inner+boundaryComp.display()+" #( "+Outer+" ) "
-	+control.str()+exclude;
-      System.addCell(MonteCarlo::Object
-		     (cellIndex++,layerMat[i],0.0,cellStr));
-      Outer=Inner;
+     
+      System.addCell(cellIndex++,layerMat[i],0.0,
+		     ControlHR*OuterHR.complement()*boundaryComp*CX);
+      OuterHR=CX;
     }
   // Create boundary:
   //outBoundary+=" #( "+Inner+" )";
   // The space it is NOT:
-  outBoundary="( "+outBoundary+") : #( "+Inner+" ) : #( "+control.str()+")";
-
+  const HeadRule outerBoundaryHR=
+    OuterHR.complement()*ControlHR.complement();
+  ELog::EM<<"OUTER["<<keyName<<"] \n"<<outerBoundaryHR<<"\n"<<ELog::endDiag;
+  
   // The space it is :
-  outBoundary= "#("+outBoundary+") "+Inner+" "+control.str();
-  addOuterSurf(outBoundary);
-  addBoundarySurf(outBoundary);
+  addOuterSurf(outerBoundaryHR);
+  excludeSpace=outerBoundaryHR;
+
+  
 
   return;
 }
