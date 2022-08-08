@@ -105,7 +105,7 @@ t1BulkShield::t1BulkShield(const std::string& Key)  :
 
 t1BulkShield::t1BulkShield(const t1BulkShield& A) : 
   attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
-  attachSystem::CellMap(A),  attachSystem::ExternalCut(A),
+  attachSystem::CellMap(A),attachSystem::ExternalCut(A),
   numberBeamLines(A.numberBeamLines),
   GData(A.GData),BData(A.BData),vYoffset(A.vYoffset),
   voidRadius(A.voidRadius),shutterRadius(A.shutterRadius),

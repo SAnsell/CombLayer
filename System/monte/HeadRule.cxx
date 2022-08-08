@@ -1435,7 +1435,7 @@ HeadRule::findAxisPlane(const Geometry::Vec3D& Axis,
     \return active surface
   */
 {
-  ELog::RegMethod RegA("HeadRule","axisPlane");
+  ELog::RegMethod RegA("HeadRule","findAxisPlane");
 
 
   const std::set<int> activePlane=

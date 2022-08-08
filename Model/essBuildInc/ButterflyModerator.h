@@ -3,7 +3,7 @@
 
  * File:   essBuildInc/ButterflyModerator.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,6 +56,7 @@ class ButterflyModerator :
   double outerRadius;                     ///< Main outer radius
 
   void populate(const FuncDataBase&);
+  using FixedComp::createUnitVector;
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int,
 			const attachSystem::FixedComp&,
@@ -90,6 +91,7 @@ class ButterflyModerator :
   std::string getLeftFarExclude() const;
   std::string getRightFarExclude() const;
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 			 const long int);
   

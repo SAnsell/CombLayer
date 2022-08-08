@@ -88,7 +88,6 @@ class HeadRule
   /// access main rule
   const Rule* getTopRule() const { return HeadNode; }
 
-
   void populateSurf();
   void reset();
 

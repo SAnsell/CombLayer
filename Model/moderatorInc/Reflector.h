@@ -41,10 +41,11 @@ namespace moderatorSystem
   \brief Reflector [insert object]
 */
 
-class Reflector : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
-  public attachSystem::SurfMap,
-  public attachSystem::CellMap
+class Reflector :
+    public attachSystem::ContainedComp,
+    public attachSystem::FixedOffset,
+    public attachSystem::SurfMap,
+    public attachSystem::CellMap
 {
  private:
   

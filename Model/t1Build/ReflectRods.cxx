@@ -3,7 +3,7 @@
  
  * File:   t1Build/ReflectRods.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -267,41 +267,14 @@ ReflectRods::getZSurf()
   */
 {
   ELog::RegMethod RegA("ReflectRods","getZSurf");
-  
-  const std::vector<const Geometry::Surface*>& SL=
-    RefObj->getSurList();
-  
 
-  std::vector<Geometry::Vec3D> Pts;
-  Geometry::Line LN(Geometry::Vec3D(0,0,0),Z);
-  const HeadRule& HR=RefObj->getHeadRule();
+  HeadRule HR=RefObj->getHeadRule();
 
-  double minDZ(1e38),maxDZ(-1e38);
-  
-  std::vector<const Geometry::Surface*>::const_iterator vc;
-  for(vc=SL.begin();vc!=SL.end();vc++)
-    {
-      Pts.clear();
-      const Geometry::Plane* PL=
-	dynamic_cast<const Geometry::Plane*>(*vc);
-      if (PL && HR.level(PL->getName())==0 && 
-	  LN.intersect(Pts,*PL))
-	{
-	  double dz=Pts.front().abs();
-	  if (Pts.front().dotProd(Z)<0.0)
-	    dz*=-1;
-	  if (minDZ>dz)
-	    {
-	      minDZ=dz;
-	      baseSurf=PL;
-	    }
-	  else if (maxDZ<dz)
-	    {
-	      maxDZ=dz;
-	      topSurf=PL;
-	    }
-	}
-    }
+  const int baseZ=HR.findAxisPlane(-Z,0.95);
+  const int topZ=HR.findAxisPlane(Z,0.95);
+  baseSurf=dynamic_cast<const Geometry::Plane*>(HR.getSurface(baseZ));
+  topSurf=dynamic_cast<const Geometry::Plane*>(HR.getSurface(topZ));
+
 
   if (!topSurf || !baseSurf)
     {
@@ -328,7 +301,6 @@ ReflectRods::calcCentre()
     RefObj->getSurList();
 
   std::vector<const Geometry::Plane*> PVec;  
-  std::vector<const Geometry::Surface*>::const_iterator vc;
   for(const Geometry::Surface* const& sPtr : SL)
     {
       const Geometry::Plane* PL=

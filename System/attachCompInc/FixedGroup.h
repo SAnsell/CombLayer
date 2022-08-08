@@ -70,6 +70,7 @@ class FixedGroup : public FixedComp
   FixedGroup& operator=(const FixedGroup&);
   virtual ~FixedGroup();
 
+  using FixedComp::createUnitVector;
   virtual void createUnitVector(const std::string&,
 				const attachSystem::FixedComp&,
 				const long int);

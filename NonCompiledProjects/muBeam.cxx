@@ -3,7 +3,7 @@
  
  * File:   Main/muBeam.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2022 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,51 +33,34 @@
 #include <algorithm>
 #include <memory>
 
+
 #include "Exception.h"
-#include "MersenneTwister.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "surfRegister.h"
-#include "objectRegister.h"
 #include "InputControl.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "inputParam.h"
-#include "Rules.h"
 #include "surfIndex.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
-#include "HeadRule.h"
-#include "Object.h"
 #include "MainProcess.h"
 #include "MainInputs.h"
-#include "SimProcess.h"
 #include "SimInput.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-#include "DefPhysics.h"
 #include "Volumes.h"
-#include "variableSetup.h"
-#include "ImportControl.h"
-#include "World.h"
+#include "muonVariables.h"
 
 #include "makeMuon.h"
-
-MTRand RNG(12345UL);
 
 ///\cond STATIC
 namespace ELog 
 {
   ELog::OutputLog<EReport> EM;
-  ELog::OutputLog<FileReport> FM("Spectrum.log");
   ELog::OutputLog<FileReport> RN("Renumber.txt");   ///< Renumber
   ELog::OutputLog<StreamReport> CellM;
 }
@@ -96,12 +79,12 @@ main(int argc,char* argv[])
   Simulation* SimPtr(0);
   try
     {
-      
       // PROCESS INPUT:
       InputControl::mainVector(argc,argv,Names);
       mainSystem::inputParam IParam;
       mainSystem::createMuonInputs(IParam);
-      
+
+      mainSystem::setMaterialsDataBase(IParam);
       SimPtr=createSimulation(IParam,Names,Oname);
       if (!SimPtr) return -1;
       
@@ -109,18 +92,16 @@ main(int argc,char* argv[])
       setVariable::MuonVariables(SimPtr->getDataBase());
       InputModifications(SimPtr,IParam,Names);
       mainSystem::setVariables(*SimPtr,IParam,Names);
-      mainSystem::setMaterialsDataBase(IParam);
       
       muSystem::makeMuon MuObj;
-      World::createOuterObjects(*SimPtr);
       MuObj.build(SimPtr,IParam);
 
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
-	  
-      
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
+      
       ModelSupport::calcVolumes(SimPtr,IParam);
-      SimPtr->write("ObjectRegister.txt");
+      SimPtr->objectGroups::write("ObjectRegister.txt",
+				  IParam.flag("fullOR"));
     }
   catch (ColErr::ExitAbort& EA)
     {

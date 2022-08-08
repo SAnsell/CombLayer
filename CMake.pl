@@ -246,7 +246,7 @@ foreach my $mainProg (@masterProg)
 	$gM->addDepUnit("epb", [@epb]);
       }
     
-    elsif ($mainProg eq "muon")
+    elsif ($mainProg eq "muBeam")
       { 
 	my @muBeam = qw( muon ) ;
 	push(@muBeam,@mainLib);

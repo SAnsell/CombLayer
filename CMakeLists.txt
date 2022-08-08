@@ -116,212 +116,210 @@ include_directories("${PROJECT_SOURCE_DIR}/Model/MaxIV/speciesInc")
 ## END INCLUDES 
 
 ## GLOBS 
-file(GLOB md5 "${PROJECT_SOURCE_DIR}/System/md5/*.cxx")
-add_library(libmd5 SHARED ${md5})
-file(GLOB dream "${PROJECT_SOURCE_DIR}/Model/ESSBeam/dream/*.cxx")
-add_library(libdream SHARED ${dream})
-file(GLOB sinbadBuild "${PROJECT_SOURCE_DIR}/Model/sinbadBuild/*.cxx")
-add_library(libsinbadBuild SHARED ${sinbadBuild})
-file(GLOB phitsSupport "${PROJECT_SOURCE_DIR}/System/phitsSupport/*.cxx")
-add_library(libphitsSupport SHARED ${phitsSupport})
-file(GLOB work "${PROJECT_SOURCE_DIR}/System/work/*.cxx")
-add_library(libwork SHARED ${work})
-file(GLOB simpleItem "${PROJECT_SOURCE_DIR}/Model/ESSBeam/simpleItem/*.cxx")
-add_library(libsimpleItem SHARED ${simpleItem})
-file(GLOB essLinac "${PROJECT_SOURCE_DIR}/Model/essLinac/*.cxx")
-add_library(libessLinac SHARED ${essLinac})
-file(GLOB testBeam "${PROJECT_SOURCE_DIR}/Model/ESSBeam/testBeam/*.cxx")
-add_library(libtestBeam SHARED ${testBeam})
-file(GLOB singleItemBuild "${PROJECT_SOURCE_DIR}/Model/singleItemBuild/*.cxx")
-add_library(libsingleItemBuild SHARED ${singleItemBuild})
-file(GLOB formax "${PROJECT_SOURCE_DIR}/Model/MaxIV/formax/*.cxx")
-add_library(libformax SHARED ${formax})
-file(GLOB bifrost "${PROJECT_SOURCE_DIR}/Model/ESSBeam/bifrost/*.cxx")
-add_library(libbifrost SHARED ${bifrost})
-file(GLOB muon "${PROJECT_SOURCE_DIR}/Model/muon/*.cxx")
-add_library(libmuon SHARED ${muon})
-file(GLOB monte "${PROJECT_SOURCE_DIR}/System/monte/*.cxx")
-add_library(libmonte SHARED ${monte})
-file(GLOB global "${PROJECT_SOURCE_DIR}/global/*.cxx")
-add_library(libglobal SHARED ${global})
-file(GLOB attachComp "${PROJECT_SOURCE_DIR}/System/attachComp/*.cxx")
-add_library(libattachComp SHARED ${attachComp})
-file(GLOB maxpeem "${PROJECT_SOURCE_DIR}/Model/MaxIV/maxpeem/*.cxx")
-add_library(libmaxpeem SHARED ${maxpeem})
-file(GLOB modelSupport "${PROJECT_SOURCE_DIR}/System/modelSupport/*.cxx")
-add_library(libmodelSupport SHARED ${modelSupport})
 file(GLOB R1Common "${PROJECT_SOURCE_DIR}/Model/MaxIV/R1Common/*.cxx")
 add_library(libR1Common SHARED ${R1Common})
-file(GLOB insertUnit "${PROJECT_SOURCE_DIR}/System/insertUnit/*.cxx")
-add_library(libinsertUnit SHARED ${insertUnit})
-file(GLOB cuBlock "${PROJECT_SOURCE_DIR}/Model/cuBlock/*.cxx")
-add_library(libcuBlock SHARED ${cuBlock})
+file(GLOB beamline "${PROJECT_SOURCE_DIR}/beamline/*.cxx")
+add_library(libbeamline SHARED ${beamline})
+file(GLOB danmax "${PROJECT_SOURCE_DIR}/Model/MaxIV/danmax/*.cxx")
+add_library(libdanmax SHARED ${danmax})
+file(GLOB essConstruct "${PROJECT_SOURCE_DIR}/Model/essConstruct/*.cxx")
+add_library(libessConstruct SHARED ${essConstruct})
+file(GLOB nnbar "${PROJECT_SOURCE_DIR}/Model/ESSBeam/nnbar/*.cxx")
+add_library(libnnbar SHARED ${nnbar})
+file(GLOB miracles "${PROJECT_SOURCE_DIR}/Model/ESSBeam/miracles/*.cxx")
+add_library(libmiracles SHARED ${miracles})
+file(GLOB phitsSupport "${PROJECT_SOURCE_DIR}/System/phitsSupport/*.cxx")
+add_library(libphitsSupport SHARED ${phitsSupport})
+file(GLOB flukaTally "${PROJECT_SOURCE_DIR}/System/flukaTally/*.cxx")
+add_library(libflukaTally SHARED ${flukaTally})
+file(GLOB poly "${PROJECT_SOURCE_DIR}/System/poly/*.cxx")
+add_library(libpoly SHARED ${poly})
+file(GLOB heimdal "${PROJECT_SOURCE_DIR}/Model/ESSBeam/heimdal/*.cxx")
+add_library(libheimdal SHARED ${heimdal})
+file(GLOB objectMod "${PROJECT_SOURCE_DIR}/System/objectMod/*.cxx")
+add_library(libobjectMod SHARED ${objectMod})
+file(GLOB beer "${PROJECT_SOURCE_DIR}/Model/ESSBeam/beer/*.cxx")
+add_library(libbeer SHARED ${beer})
+file(GLOB snsBuild "${PROJECT_SOURCE_DIR}/Model/snsBuild/*.cxx")
+add_library(libsnsBuild SHARED ${snsBuild})
+file(GLOB maxivBuild "${PROJECT_SOURCE_DIR}/Model/maxivBuild/*.cxx")
+add_library(libmaxivBuild SHARED ${maxivBuild})
+file(GLOB xrayHutch "${PROJECT_SOURCE_DIR}/Model/xrayHutch/*.cxx")
+add_library(libxrayHutch SHARED ${xrayHutch})
+file(GLOB balder "${PROJECT_SOURCE_DIR}/Model/MaxIV/balder/*.cxx")
+add_library(libbalder SHARED ${balder})
+file(GLOB weights "${PROJECT_SOURCE_DIR}/System/weights/*.cxx")
+add_library(libweights SHARED ${weights})
+file(GLOB freia "${PROJECT_SOURCE_DIR}/Model/ESSBeam/freia/*.cxx")
+add_library(libfreia SHARED ${freia})
+file(GLOB flexpes "${PROJECT_SOURCE_DIR}/Model/MaxIV/flexpes/*.cxx")
+add_library(libflexpes SHARED ${flexpes})
+file(GLOB simMC "${PROJECT_SOURCE_DIR}/System/simMC/*.cxx")
+add_library(libsimMC SHARED ${simMC})
+file(GLOB lensModel "${PROJECT_SOURCE_DIR}/Model/lensModel/*.cxx")
+add_library(liblensModel SHARED ${lensModel})
+file(GLOB test "${PROJECT_SOURCE_DIR}/test/*.cxx")
+add_library(libtest SHARED ${test})
+file(GLOB src "${PROJECT_SOURCE_DIR}/src/*.cxx")
+add_library(libsrc SHARED ${src})
+file(GLOB physics "${PROJECT_SOURCE_DIR}/System/physics/*.cxx")
+add_library(libphysics SHARED ${physics})
+file(GLOB constructVar "${PROJECT_SOURCE_DIR}/System/constructVar/*.cxx")
+add_library(libconstructVar SHARED ${constructVar})
+file(GLOB moderator "${PROJECT_SOURCE_DIR}/Model/moderator/*.cxx")
+add_library(libmoderator SHARED ${moderator})
+file(GLOB softimax "${PROJECT_SOURCE_DIR}/Model/MaxIV/softimax/*.cxx")
+add_library(libsoftimax SHARED ${softimax})
+file(GLOB vor "${PROJECT_SOURCE_DIR}/Model/ESSBeam/vor/*.cxx")
+add_library(libvor SHARED ${vor})
+file(GLOB d4cModel "${PROJECT_SOURCE_DIR}/Model/d4cModel/*.cxx")
+add_library(libd4cModel SHARED ${d4cModel})
+file(GLOB essBuild "${PROJECT_SOURCE_DIR}/Model/essBuild/*.cxx")
+add_library(libessBuild SHARED ${essBuild})
+file(GLOB species "${PROJECT_SOURCE_DIR}/Model/MaxIV/species/*.cxx")
+add_library(libspecies SHARED ${species})
+file(GLOB commonGenerator "${PROJECT_SOURCE_DIR}/Model/MaxIV/commonGenerator/*.cxx")
+add_library(libcommonGenerator SHARED ${commonGenerator})
+file(GLOB compWeights "${PROJECT_SOURCE_DIR}/System/compWeights/*.cxx")
+add_library(libcompWeights SHARED ${compWeights})
 file(GLOB nmx "${PROJECT_SOURCE_DIR}/Model/ESSBeam/nmx/*.cxx")
 add_library(libnmx SHARED ${nmx})
+file(GLOB exampleBuild "${PROJECT_SOURCE_DIR}/Model/exampleBuild/*.cxx")
+add_library(libexampleBuild SHARED ${exampleBuild})
+file(GLOB scatMat "${PROJECT_SOURCE_DIR}/scatMat/*.cxx")
+add_library(libscatMat SHARED ${scatMat})
+file(GLOB bifrost "${PROJECT_SOURCE_DIR}/Model/ESSBeam/bifrost/*.cxx")
+add_library(libbifrost SHARED ${bifrost})
+file(GLOB sinbadBuild "${PROJECT_SOURCE_DIR}/Model/sinbadBuild/*.cxx")
+add_library(libsinbadBuild SHARED ${sinbadBuild})
+file(GLOB crystal "${PROJECT_SOURCE_DIR}/System/crystal/*.cxx")
+add_library(libcrystal SHARED ${crystal})
+file(GLOB magic "${PROJECT_SOURCE_DIR}/Model/ESSBeam/magic/*.cxx")
+add_library(libmagic SHARED ${magic})
+file(GLOB phitsPhysics "${PROJECT_SOURCE_DIR}/System/phitsPhysics/*.cxx")
+add_library(libphitsPhysics SHARED ${phitsPhysics})
+file(GLOB log "${PROJECT_SOURCE_DIR}/System/log/*.cxx")
+add_library(liblog SHARED ${log})
+file(GLOB pipeBuild "${PROJECT_SOURCE_DIR}/Model/pipeBuild/*.cxx")
+add_library(libpipeBuild SHARED ${pipeBuild})
+file(GLOB phitsProcess "${PROJECT_SOURCE_DIR}/System/phitsProcess/*.cxx")
+add_library(libphitsProcess SHARED ${phitsProcess})
+file(GLOB funcBase "${PROJECT_SOURCE_DIR}/System/funcBase/*.cxx")
+add_library(libfuncBase SHARED ${funcBase})
+file(GLOB generalProcess "${PROJECT_SOURCE_DIR}/System/generalProcess/*.cxx")
+add_library(libgeneralProcess SHARED ${generalProcess})
+file(GLOB epbBuild "${PROJECT_SOURCE_DIR}/Model/epbBuild/*.cxx")
+add_library(libepbBuild SHARED ${epbBuild})
+file(GLOB R3Common "${PROJECT_SOURCE_DIR}/Model/MaxIV/R3Common/*.cxx")
+add_library(libR3Common SHARED ${R3Common})
+file(GLOB delft "${PROJECT_SOURCE_DIR}/Model/delft/*.cxx")
+add_library(libdelft SHARED ${delft})
+file(GLOB photon "${PROJECT_SOURCE_DIR}/Model/photon/*.cxx")
+add_library(libphoton SHARED ${photon})
+file(GLOB md5 "${PROJECT_SOURCE_DIR}/System/md5/*.cxx")
+add_library(libmd5 SHARED ${md5})
+file(GLOB phitsTally "${PROJECT_SOURCE_DIR}/System/phitsTally/*.cxx")
+add_library(libphitsTally SHARED ${phitsTally})
+file(GLOB simpleItem "${PROJECT_SOURCE_DIR}/Model/ESSBeam/simpleItem/*.cxx")
+add_library(libsimpleItem SHARED ${simpleItem})
+file(GLOB cosaxs "${PROJECT_SOURCE_DIR}/Model/MaxIV/cosaxs/*.cxx")
+add_library(libcosaxs SHARED ${cosaxs})
+file(GLOB cuBlock "${PROJECT_SOURCE_DIR}/Model/cuBlock/*.cxx")
+add_library(libcuBlock SHARED ${cuBlock})
+file(GLOB testBeam "${PROJECT_SOURCE_DIR}/Model/ESSBeam/testBeam/*.cxx")
+add_library(libtestBeam SHARED ${testBeam})
+file(GLOB commonVar "${PROJECT_SOURCE_DIR}/Model/ESSBeam/commonVar/*.cxx")
+add_library(libcommonVar SHARED ${commonVar})
+file(GLOB world "${PROJECT_SOURCE_DIR}/System/world/*.cxx")
+add_library(libworld SHARED ${world})
+file(GLOB singleItemBuild "${PROJECT_SOURCE_DIR}/Model/singleItemBuild/*.cxx")
+add_library(libsingleItemBuild SHARED ${singleItemBuild})
+file(GLOB ralBuild "${PROJECT_SOURCE_DIR}/Model/ralBuild/*.cxx")
+add_library(libralBuild SHARED ${ralBuild})
+file(GLOB geometry "${PROJECT_SOURCE_DIR}/System/geometry/*.cxx")
+add_library(libgeometry SHARED ${geometry})
 file(GLOB input "${PROJECT_SOURCE_DIR}/System/input/*.cxx")
 add_library(libinput SHARED ${input})
+file(GLOB mcnpProcess "${PROJECT_SOURCE_DIR}/System/mcnpProcess/*.cxx")
+add_library(libmcnpProcess SHARED ${mcnpProcess})
+file(GLOB filter "${PROJECT_SOURCE_DIR}/Model/filter/*.cxx")
+add_library(libfilter SHARED ${filter})
+file(GLOB modelSupport "${PROJECT_SOURCE_DIR}/System/modelSupport/*.cxx")
+add_library(libmodelSupport SHARED ${modelSupport})
+file(GLOB t1Build "${PROJECT_SOURCE_DIR}/Model/t1Build/*.cxx")
+add_library(libt1Build SHARED ${t1Build})
+file(GLOB gammaBuild "${PROJECT_SOURCE_DIR}/Model/gammaBuild/*.cxx")
+add_library(libgammaBuild SHARED ${gammaBuild})
+file(GLOB bibBuild "${PROJECT_SOURCE_DIR}/Model/bibBuild/*.cxx")
+add_library(libbibBuild SHARED ${bibBuild})
+file(GLOB odin "${PROJECT_SOURCE_DIR}/Model/ESSBeam/odin/*.cxx")
+add_library(libodin SHARED ${odin})
+file(GLOB source "${PROJECT_SOURCE_DIR}/System/source/*.cxx")
+add_library(libsource SHARED ${source})
+file(GLOB maxpeem "${PROJECT_SOURCE_DIR}/Model/MaxIV/maxpeem/*.cxx")
+add_library(libmaxpeem SHARED ${maxpeem})
+file(GLOB essLinac "${PROJECT_SOURCE_DIR}/Model/essLinac/*.cxx")
+add_library(libessLinac SHARED ${essLinac})
+file(GLOB micromax "${PROJECT_SOURCE_DIR}/Model/MaxIV/micromax/*.cxx")
+add_library(libmicromax SHARED ${micromax})
+file(GLOB transport "${PROJECT_SOURCE_DIR}/transport/*.cxx")
+add_library(libtransport SHARED ${transport})
+file(GLOB formax "${PROJECT_SOURCE_DIR}/Model/MaxIV/formax/*.cxx")
+add_library(libformax SHARED ${formax})
+file(GLOB global "${PROJECT_SOURCE_DIR}/global/*.cxx")
+add_library(libglobal SHARED ${global})
+file(GLOB monte "${PROJECT_SOURCE_DIR}/System/monte/*.cxx")
+add_library(libmonte SHARED ${monte})
+file(GLOB skadi "${PROJECT_SOURCE_DIR}/Model/ESSBeam/skadi/*.cxx")
+add_library(libskadi SHARED ${skadi})
 file(GLOB xml "${PROJECT_SOURCE_DIR}/System/xml/*.cxx")
 add_library(libxml SHARED ${xml})
 file(GLOB tally "${PROJECT_SOURCE_DIR}/System/tally/*.cxx")
 add_library(libtally SHARED ${tally})
-file(GLOB crystal "${PROJECT_SOURCE_DIR}/System/crystal/*.cxx")
-add_library(libcrystal SHARED ${crystal})
-file(GLOB t1Build "${PROJECT_SOURCE_DIR}/Model/t1Build/*.cxx")
-add_library(libt1Build SHARED ${t1Build})
-file(GLOB R3Common "${PROJECT_SOURCE_DIR}/Model/MaxIV/R3Common/*.cxx")
-add_library(libR3Common SHARED ${R3Common})
-file(GLOB flukaTally "${PROJECT_SOURCE_DIR}/System/flukaTally/*.cxx")
-add_library(libflukaTally SHARED ${flukaTally})
-file(GLOB flukaPhysics "${PROJECT_SOURCE_DIR}/System/flukaPhysics/*.cxx")
-add_library(libflukaPhysics SHARED ${flukaPhysics})
-file(GLOB flexpes "${PROJECT_SOURCE_DIR}/Model/MaxIV/flexpes/*.cxx")
-add_library(libflexpes SHARED ${flexpes})
-file(GLOB softimax "${PROJECT_SOURCE_DIR}/Model/MaxIV/softimax/*.cxx")
-add_library(libsoftimax SHARED ${softimax})
-file(GLOB compWeights "${PROJECT_SOURCE_DIR}/System/compWeights/*.cxx")
-add_library(libcompWeights SHARED ${compWeights})
-file(GLOB world "${PROJECT_SOURCE_DIR}/System/world/*.cxx")
-add_library(libworld SHARED ${world})
-file(GLOB source "${PROJECT_SOURCE_DIR}/System/source/*.cxx")
-add_library(libsource SHARED ${source})
-file(GLOB maxivBuild "${PROJECT_SOURCE_DIR}/Model/maxivBuild/*.cxx")
-add_library(libmaxivBuild SHARED ${maxivBuild})
-file(GLOB phitsTally "${PROJECT_SOURCE_DIR}/System/phitsTally/*.cxx")
-add_library(libphitsTally SHARED ${phitsTally})
-file(GLOB nnbar "${PROJECT_SOURCE_DIR}/Model/ESSBeam/nnbar/*.cxx")
-add_library(libnnbar SHARED ${nnbar})
-file(GLOB commonGenerator "${PROJECT_SOURCE_DIR}/Model/MaxIV/commonGenerator/*.cxx")
-add_library(libcommonGenerator SHARED ${commonGenerator})
-file(GLOB phitsPhysics "${PROJECT_SOURCE_DIR}/System/phitsPhysics/*.cxx")
-add_library(libphitsPhysics SHARED ${phitsPhysics})
-file(GLOB vespa "${PROJECT_SOURCE_DIR}/Model/ESSBeam/vespa/*.cxx")
-add_library(libvespa SHARED ${vespa})
-file(GLOB epbBuild "${PROJECT_SOURCE_DIR}/Model/epbBuild/*.cxx")
-add_library(libepbBuild SHARED ${epbBuild})
-file(GLOB beer "${PROJECT_SOURCE_DIR}/Model/ESSBeam/beer/*.cxx")
-add_library(libbeer SHARED ${beer})
-file(GLOB pipeBuild "${PROJECT_SOURCE_DIR}/Model/pipeBuild/*.cxx")
-add_library(libpipeBuild SHARED ${pipeBuild})
-file(GLOB delft "${PROJECT_SOURCE_DIR}/Model/delft/*.cxx")
-add_library(libdelft SHARED ${delft})
-file(GLOB lensModel "${PROJECT_SOURCE_DIR}/Model/lensModel/*.cxx")
-add_library(liblensModel SHARED ${lensModel})
-file(GLOB bibBuild "${PROJECT_SOURCE_DIR}/Model/bibBuild/*.cxx")
-add_library(libbibBuild SHARED ${bibBuild})
-file(GLOB loki "${PROJECT_SOURCE_DIR}/Model/ESSBeam/loki/*.cxx")
-add_library(libloki SHARED ${loki})
-file(GLOB magic "${PROJECT_SOURCE_DIR}/Model/ESSBeam/magic/*.cxx")
-add_library(libmagic SHARED ${magic})
-file(GLOB construct "${PROJECT_SOURCE_DIR}/System/construct/*.cxx")
-add_library(libconstruct SHARED ${construct})
+file(GLOB attachComp "${PROJECT_SOURCE_DIR}/System/attachComp/*.cxx")
+add_library(libattachComp SHARED ${attachComp})
 file(GLOB support "${PROJECT_SOURCE_DIR}/System/support/*.cxx")
 add_library(libsupport SHARED ${support})
-file(GLOB saxs "${PROJECT_SOURCE_DIR}/Model/saxs/*.cxx")
-add_library(libsaxs SHARED ${saxs})
-file(GLOB essBuild "${PROJECT_SOURCE_DIR}/Model/essBuild/*.cxx")
-add_library(libessBuild SHARED ${essBuild})
-file(GLOB cspec "${PROJECT_SOURCE_DIR}/Model/ESSBeam/cspec/*.cxx")
-add_library(libcspec SHARED ${cspec})
-file(GLOB heimdal "${PROJECT_SOURCE_DIR}/Model/ESSBeam/heimdal/*.cxx")
-add_library(libheimdal SHARED ${heimdal})
-file(GLOB snsBuild "${PROJECT_SOURCE_DIR}/Model/snsBuild/*.cxx")
-add_library(libsnsBuild SHARED ${snsBuild})
-file(GLOB skadi "${PROJECT_SOURCE_DIR}/Model/ESSBeam/skadi/*.cxx")
-add_library(libskadi SHARED ${skadi})
-file(GLOB filter "${PROJECT_SOURCE_DIR}/Model/filter/*.cxx")
-add_library(libfilter SHARED ${filter})
-file(GLOB species "${PROJECT_SOURCE_DIR}/Model/MaxIV/species/*.cxx")
-add_library(libspecies SHARED ${species})
-file(GLOB moderator "${PROJECT_SOURCE_DIR}/Model/moderator/*.cxx")
-add_library(libmoderator SHARED ${moderator})
-file(GLOB trex "${PROJECT_SOURCE_DIR}/Model/ESSBeam/trex/*.cxx")
-add_library(libtrex SHARED ${trex})
-file(GLOB physics "${PROJECT_SOURCE_DIR}/System/physics/*.cxx")
-add_library(libphysics SHARED ${physics})
-file(GLOB photon "${PROJECT_SOURCE_DIR}/Model/photon/*.cxx")
-add_library(libphoton SHARED ${photon})
-file(GLOB transport "${PROJECT_SOURCE_DIR}/transport/*.cxx")
-add_library(libtransport SHARED ${transport})
-file(GLOB gammaBuild "${PROJECT_SOURCE_DIR}/Model/gammaBuild/*.cxx")
-add_library(libgammaBuild SHARED ${gammaBuild})
-file(GLOB endf "${PROJECT_SOURCE_DIR}/System/endf/*.cxx")
-add_library(libendf SHARED ${endf})
-file(GLOB scatMat "${PROJECT_SOURCE_DIR}/scatMat/*.cxx")
-add_library(libscatMat SHARED ${scatMat})
-file(GLOB t2Build "${PROJECT_SOURCE_DIR}/Model/t2Build/*.cxx")
-add_library(libt2Build SHARED ${t2Build})
-file(GLOB mcnpProcess "${PROJECT_SOURCE_DIR}/System/mcnpProcess/*.cxx")
-add_library(libmcnpProcess SHARED ${mcnpProcess})
-file(GLOB visit "${PROJECT_SOURCE_DIR}/System/visit/*.cxx")
-add_library(libvisit SHARED ${visit})
-file(GLOB phitsProcess "${PROJECT_SOURCE_DIR}/System/phitsProcess/*.cxx")
-add_library(libphitsProcess SHARED ${phitsProcess})
-file(GLOB instrument "${PROJECT_SOURCE_DIR}/instrument/*.cxx")
-add_library(libinstrument SHARED ${instrument})
-file(GLOB log "${PROJECT_SOURCE_DIR}/System/log/*.cxx")
-add_library(liblog SHARED ${log})
-file(GLOB estia "${PROJECT_SOURCE_DIR}/Model/ESSBeam/estia/*.cxx")
-add_library(libestia SHARED ${estia})
-file(GLOB commonBeam "${PROJECT_SOURCE_DIR}/Model/MaxIV/commonBeam/*.cxx")
-add_library(libcommonBeam SHARED ${commonBeam})
-file(GLOB generalProcess "${PROJECT_SOURCE_DIR}/System/generalProcess/*.cxx")
-add_library(libgeneralProcess SHARED ${generalProcess})
-file(GLOB exampleBuild "${PROJECT_SOURCE_DIR}/Model/exampleBuild/*.cxx")
-add_library(libexampleBuild SHARED ${exampleBuild})
-file(GLOB geometry "${PROJECT_SOURCE_DIR}/System/geometry/*.cxx")
-add_library(libgeometry SHARED ${geometry})
-file(GLOB weights "${PROJECT_SOURCE_DIR}/System/weights/*.cxx")
-add_library(libweights SHARED ${weights})
-file(GLOB balder "${PROJECT_SOURCE_DIR}/Model/MaxIV/balder/*.cxx")
-add_library(libbalder SHARED ${balder})
-file(GLOB magnetic "${PROJECT_SOURCE_DIR}/System/magnetic/*.cxx")
-add_library(libmagnetic SHARED ${magnetic})
-file(GLOB ralBuild "${PROJECT_SOURCE_DIR}/Model/ralBuild/*.cxx")
-add_library(libralBuild SHARED ${ralBuild})
-file(GLOB d4cModel "${PROJECT_SOURCE_DIR}/Model/d4cModel/*.cxx")
-add_library(libd4cModel SHARED ${d4cModel})
-file(GLOB miracles "${PROJECT_SOURCE_DIR}/Model/ESSBeam/miracles/*.cxx")
-add_library(libmiracles SHARED ${miracles})
-file(GLOB beamline "${PROJECT_SOURCE_DIR}/beamline/*.cxx")
-add_library(libbeamline SHARED ${beamline})
-file(GLOB freia "${PROJECT_SOURCE_DIR}/Model/ESSBeam/freia/*.cxx")
-add_library(libfreia SHARED ${freia})
-file(GLOB odin "${PROJECT_SOURCE_DIR}/Model/ESSBeam/odin/*.cxx")
-add_library(libodin SHARED ${odin})
-file(GLOB flukaProcess "${PROJECT_SOURCE_DIR}/System/flukaProcess/*.cxx")
-add_library(libflukaProcess SHARED ${flukaProcess})
-file(GLOB vor "${PROJECT_SOURCE_DIR}/Model/ESSBeam/vor/*.cxx")
-add_library(libvor SHARED ${vor})
-file(GLOB commonVar "${PROJECT_SOURCE_DIR}/Model/ESSBeam/commonVar/*.cxx")
-add_library(libcommonVar SHARED ${commonVar})
-file(GLOB src "${PROJECT_SOURCE_DIR}/src/*.cxx")
-add_library(libsrc SHARED ${src})
-file(GLOB poly "${PROJECT_SOURCE_DIR}/System/poly/*.cxx")
-add_library(libpoly SHARED ${poly})
-file(GLOB common "${PROJECT_SOURCE_DIR}/Model/ESSBeam/common/*.cxx")
-add_library(libcommon SHARED ${common})
-file(GLOB micromax "${PROJECT_SOURCE_DIR}/Model/MaxIV/micromax/*.cxx")
-add_library(libmicromax SHARED ${micromax})
+file(GLOB work "${PROJECT_SOURCE_DIR}/System/work/*.cxx")
+add_library(libwork SHARED ${work})
+file(GLOB dream "${PROJECT_SOURCE_DIR}/Model/ESSBeam/dream/*.cxx")
+add_library(libdream SHARED ${dream})
 file(GLOB Linac "${PROJECT_SOURCE_DIR}/Model/MaxIV/Linac/*.cxx")
 add_library(libLinac SHARED ${Linac})
-file(GLOB test "${PROJECT_SOURCE_DIR}/test/*.cxx")
-add_library(libtest SHARED ${test})
-file(GLOB constructVar "${PROJECT_SOURCE_DIR}/System/constructVar/*.cxx")
-add_library(libconstructVar SHARED ${constructVar})
-file(GLOB cosaxs "${PROJECT_SOURCE_DIR}/Model/MaxIV/cosaxs/*.cxx")
-add_library(libcosaxs SHARED ${cosaxs})
-file(GLOB essConstruct "${PROJECT_SOURCE_DIR}/Model/essConstruct/*.cxx")
-add_library(libessConstruct SHARED ${essConstruct})
-file(GLOB simMC "${PROJECT_SOURCE_DIR}/System/simMC/*.cxx")
-add_library(libsimMC SHARED ${simMC})
-file(GLOB objectMod "${PROJECT_SOURCE_DIR}/System/objectMod/*.cxx")
-add_library(libobjectMod SHARED ${objectMod})
-file(GLOB xrayHutch "${PROJECT_SOURCE_DIR}/Model/xrayHutch/*.cxx")
-add_library(libxrayHutch SHARED ${xrayHutch})
-file(GLOB danmax "${PROJECT_SOURCE_DIR}/Model/MaxIV/danmax/*.cxx")
-add_library(libdanmax SHARED ${danmax})
-file(GLOB funcBase "${PROJECT_SOURCE_DIR}/System/funcBase/*.cxx")
-add_library(libfuncBase SHARED ${funcBase})
+file(GLOB cspec "${PROJECT_SOURCE_DIR}/Model/ESSBeam/cspec/*.cxx")
+add_library(libcspec SHARED ${cspec})
+file(GLOB instrument "${PROJECT_SOURCE_DIR}/instrument/*.cxx")
+add_library(libinstrument SHARED ${instrument})
+file(GLOB visit "${PROJECT_SOURCE_DIR}/System/visit/*.cxx")
+add_library(libvisit SHARED ${visit})
+file(GLOB flukaProcess "${PROJECT_SOURCE_DIR}/System/flukaProcess/*.cxx")
+add_library(libflukaProcess SHARED ${flukaProcess})
+file(GLOB magnetic "${PROJECT_SOURCE_DIR}/System/magnetic/*.cxx")
+add_library(libmagnetic SHARED ${magnetic})
+file(GLOB commonBeam "${PROJECT_SOURCE_DIR}/Model/MaxIV/commonBeam/*.cxx")
+add_library(libcommonBeam SHARED ${commonBeam})
+file(GLOB construct "${PROJECT_SOURCE_DIR}/System/construct/*.cxx")
+add_library(libconstruct SHARED ${construct})
+file(GLOB t2Build "${PROJECT_SOURCE_DIR}/Model/t2Build/*.cxx")
+add_library(libt2Build SHARED ${t2Build})
+file(GLOB estia "${PROJECT_SOURCE_DIR}/Model/ESSBeam/estia/*.cxx")
+add_library(libestia SHARED ${estia})
+file(GLOB saxs "${PROJECT_SOURCE_DIR}/Model/saxs/*.cxx")
+add_library(libsaxs SHARED ${saxs})
+file(GLOB insertUnit "${PROJECT_SOURCE_DIR}/System/insertUnit/*.cxx")
+add_library(libinsertUnit SHARED ${insertUnit})
+file(GLOB loki "${PROJECT_SOURCE_DIR}/Model/ESSBeam/loki/*.cxx")
+add_library(libloki SHARED ${loki})
+file(GLOB flukaPhysics "${PROJECT_SOURCE_DIR}/System/flukaPhysics/*.cxx")
+add_library(libflukaPhysics SHARED ${flukaPhysics})
+file(GLOB trex "${PROJECT_SOURCE_DIR}/Model/ESSBeam/trex/*.cxx")
+add_library(libtrex SHARED ${trex})
+file(GLOB endf "${PROJECT_SOURCE_DIR}/System/endf/*.cxx")
+add_library(libendf SHARED ${endf})
+file(GLOB vespa "${PROJECT_SOURCE_DIR}/Model/ESSBeam/vespa/*.cxx")
+add_library(libvespa SHARED ${vespa})
+file(GLOB common "${PROJECT_SOURCE_DIR}/Model/ESSBeam/common/*.cxx")
+add_library(libcommon SHARED ${common})
 ## END GLOBS 
 
 ## EXECUTABLES 
@@ -981,109 +979,108 @@ target_link_libraries(xrayHut m)
 ## END EXECUTABLE 
 
 set(ALLCXX 
-     ./System/md5/*.cxx 
-     ./Model/ESSBeam/dream/*.cxx 
-     ./Model/sinbadBuild/*.cxx 
-     ./System/phitsSupport/*.cxx 
-     ./System/work/*.cxx 
-     ./Model/ESSBeam/simpleItem/*.cxx 
-     ./Model/essLinac/*.cxx 
-     ./Model/ESSBeam/testBeam/*.cxx 
-     ./Model/singleItemBuild/*.cxx 
-     ./Model/MaxIV/formax/*.cxx 
-     ./Model/ESSBeam/bifrost/*.cxx 
-     ./Model/muon/*.cxx 
-     ./System/monte/*.cxx 
-     ./global/*.cxx 
-     ./System/attachComp/*.cxx 
-     ./Model/MaxIV/maxpeem/*.cxx 
-     ./System/modelSupport/*.cxx 
      ./Model/MaxIV/R1Common/*.cxx 
-     ./System/insertUnit/*.cxx 
-     ./Model/cuBlock/*.cxx 
+     ./beamline/*.cxx 
+     ./Model/MaxIV/danmax/*.cxx 
+     ./Model/essConstruct/*.cxx 
+     ./Model/ESSBeam/nnbar/*.cxx 
+     ./Model/ESSBeam/miracles/*.cxx 
+     ./System/phitsSupport/*.cxx 
+     ./System/flukaTally/*.cxx 
+     ./System/poly/*.cxx 
+     ./Model/ESSBeam/heimdal/*.cxx 
+     ./System/objectMod/*.cxx 
+     ./Model/ESSBeam/beer/*.cxx 
+     ./Model/snsBuild/*.cxx 
+     ./Model/maxivBuild/*.cxx 
+     ./Model/xrayHutch/*.cxx 
+     ./Model/MaxIV/balder/*.cxx 
+     ./System/weights/*.cxx 
+     ./Model/ESSBeam/freia/*.cxx 
+     ./Model/MaxIV/flexpes/*.cxx 
+     ./System/simMC/*.cxx 
+     ./Model/lensModel/*.cxx 
+     ./test/*.cxx 
+     ./src/*.cxx 
+     ./System/physics/*.cxx 
+     ./System/constructVar/*.cxx 
+     ./Model/moderator/*.cxx 
+     ./Model/MaxIV/softimax/*.cxx 
+     ./Model/ESSBeam/vor/*.cxx 
+     ./Model/d4cModel/*.cxx 
+     ./Model/essBuild/*.cxx 
+     ./Model/MaxIV/species/*.cxx 
+     ./Model/MaxIV/commonGenerator/*.cxx 
+     ./System/compWeights/*.cxx 
      ./Model/ESSBeam/nmx/*.cxx 
+     ./Model/exampleBuild/*.cxx 
+     ./scatMat/*.cxx 
+     ./Model/ESSBeam/bifrost/*.cxx 
+     ./Model/sinbadBuild/*.cxx 
+     ./System/crystal/*.cxx 
+     ./Model/ESSBeam/magic/*.cxx 
+     ./System/phitsPhysics/*.cxx 
+     ./System/log/*.cxx 
+     ./Model/pipeBuild/*.cxx 
+     ./System/phitsProcess/*.cxx 
+     ./System/funcBase/*.cxx 
+     ./System/generalProcess/*.cxx 
+     ./Model/epbBuild/*.cxx 
+     ./Model/MaxIV/R3Common/*.cxx 
+     ./Model/delft/*.cxx 
+     ./Model/photon/*.cxx 
+     ./System/md5/*.cxx 
+     ./System/phitsTally/*.cxx 
+     ./Model/ESSBeam/simpleItem/*.cxx 
+     ./Model/MaxIV/cosaxs/*.cxx 
+     ./Model/cuBlock/*.cxx 
+     ./Model/ESSBeam/testBeam/*.cxx 
+     ./Model/ESSBeam/commonVar/*.cxx 
+     ./System/world/*.cxx 
+     ./Model/singleItemBuild/*.cxx 
+     ./Model/ralBuild/*.cxx 
+     ./System/geometry/*.cxx 
      ./System/input/*.cxx 
+     ./System/mcnpProcess/*.cxx 
+     ./Model/filter/*.cxx 
+     ./System/modelSupport/*.cxx 
+     ./Model/t1Build/*.cxx 
+     ./Model/gammaBuild/*.cxx 
+     ./Model/bibBuild/*.cxx 
+     ./Model/ESSBeam/odin/*.cxx 
+     ./System/source/*.cxx 
+     ./Model/MaxIV/maxpeem/*.cxx 
+     ./Model/essLinac/*.cxx 
+     ./Model/MaxIV/micromax/*.cxx 
+     ./transport/*.cxx 
+     ./Model/MaxIV/formax/*.cxx 
+     ./global/*.cxx 
+     ./System/monte/*.cxx 
+     ./Model/ESSBeam/skadi/*.cxx 
      ./System/xml/*.cxx 
      ./System/tally/*.cxx 
-     ./System/crystal/*.cxx 
-     ./Model/t1Build/*.cxx 
-     ./Model/MaxIV/R3Common/*.cxx 
-     ./System/flukaTally/*.cxx 
-     ./System/flukaPhysics/*.cxx 
-     ./Model/MaxIV/flexpes/*.cxx 
-     ./Model/MaxIV/softimax/*.cxx 
-     ./System/compWeights/*.cxx 
-     ./System/world/*.cxx 
-     ./System/source/*.cxx 
-     ./Model/maxivBuild/*.cxx 
-     ./System/phitsTally/*.cxx 
-     ./Model/ESSBeam/nnbar/*.cxx 
-     ./Model/MaxIV/commonGenerator/*.cxx 
-     ./System/phitsPhysics/*.cxx 
-     ./Model/ESSBeam/vespa/*.cxx 
-     ./Model/epbBuild/*.cxx 
-     ./Model/ESSBeam/beer/*.cxx 
-     ./Model/pipeBuild/*.cxx 
-     ./Model/delft/*.cxx 
-     ./Model/lensModel/*.cxx 
-     ./Model/bibBuild/*.cxx 
-     ./Model/ESSBeam/loki/*.cxx 
-     ./Model/ESSBeam/magic/*.cxx 
-     ./System/construct/*.cxx 
+     ./System/attachComp/*.cxx 
      ./System/support/*.cxx 
-     ./Model/saxs/*.cxx 
-     ./Model/essBuild/*.cxx 
-     ./Model/ESSBeam/cspec/*.cxx 
-     ./Model/ESSBeam/heimdal/*.cxx 
-     ./Model/snsBuild/*.cxx 
-     ./Model/ESSBeam/skadi/*.cxx 
-     ./Model/filter/*.cxx 
-     ./Model/MaxIV/species/*.cxx 
-     ./Model/moderator/*.cxx 
-     ./Model/ESSBeam/trex/*.cxx 
-     ./System/physics/*.cxx 
-     ./Model/photon/*.cxx 
-     ./transport/*.cxx 
-     ./Model/gammaBuild/*.cxx 
-     ./System/endf/*.cxx 
-     ./scatMat/*.cxx 
-     ./Model/t2Build/*.cxx 
-     ./System/mcnpProcess/*.cxx 
-     ./System/visit/*.cxx 
-     ./System/phitsProcess/*.cxx 
-     ./instrument/*.cxx 
-     ./System/log/*.cxx 
-     ./Model/ESSBeam/estia/*.cxx 
-     ./Model/MaxIV/commonBeam/*.cxx 
-     ./System/generalProcess/*.cxx 
-     ./Model/exampleBuild/*.cxx 
-     ./System/geometry/*.cxx 
-     ./System/weights/*.cxx 
-     ./Model/MaxIV/balder/*.cxx 
-     ./System/magnetic/*.cxx 
-     ./Model/ralBuild/*.cxx 
-     ./Model/d4cModel/*.cxx 
-     ./Model/ESSBeam/miracles/*.cxx 
-     ./beamline/*.cxx 
-     ./Model/ESSBeam/freia/*.cxx 
-     ./Model/ESSBeam/odin/*.cxx 
-     ./System/flukaProcess/*.cxx 
-     ./Model/ESSBeam/vor/*.cxx 
-     ./Model/ESSBeam/commonVar/*.cxx 
-     ./src/*.cxx 
-     ./System/poly/*.cxx 
-     ./Model/ESSBeam/common/*.cxx 
-     ./Model/MaxIV/micromax/*.cxx 
+     ./System/work/*.cxx 
+     ./Model/ESSBeam/dream/*.cxx 
      ./Model/MaxIV/Linac/*.cxx 
-     ./test/*.cxx 
-     ./System/constructVar/*.cxx 
-     ./Model/MaxIV/cosaxs/*.cxx 
-     ./Model/essConstruct/*.cxx 
-     ./System/simMC/*.cxx 
-     ./System/objectMod/*.cxx 
-     ./Model/xrayHutch/*.cxx 
-     ./Model/MaxIV/danmax/*.cxx 
-     ./System/funcBase/*.cxx 
+     ./Model/ESSBeam/cspec/*.cxx 
+     ./instrument/*.cxx 
+     ./System/visit/*.cxx 
+     ./System/flukaProcess/*.cxx 
+     ./System/magnetic/*.cxx 
+     ./Model/MaxIV/commonBeam/*.cxx 
+     ./System/construct/*.cxx 
+     ./Model/t2Build/*.cxx 
+     ./Model/ESSBeam/estia/*.cxx 
+     ./Model/saxs/*.cxx 
+     ./System/insertUnit/*.cxx 
+     ./Model/ESSBeam/loki/*.cxx 
+     ./System/flukaPhysics/*.cxx 
+     ./Model/ESSBeam/trex/*.cxx 
+     ./System/endf/*.cxx 
+     ./Model/ESSBeam/vespa/*.cxx 
+     ./Model/ESSBeam/common/*.cxx 
      ./Main/*.cxx )
 set(ALLHXX 
      ./include/*.h 
@@ -1195,109 +1192,108 @@ set(ASRC ${ALLHXX} ${ALLCXX} )
 add_custom_target(doxygen  COMMAND  { cat Doxyfile \; echo "INPUT=" ${ASRC} "" \;} | doxygen - )
 add_custom_target(sloc  COMMAND sloccount ${ASRC} )
 add_custom_target(words  COMMAND grep -v -e '^[[:space:][:cntrl:]]*$$' 
-     ./System/md5/*.cxx 
-     ./Model/ESSBeam/dream/*.cxx 
-     ./Model/sinbadBuild/*.cxx 
-     ./System/phitsSupport/*.cxx 
-     ./System/work/*.cxx 
-     ./Model/ESSBeam/simpleItem/*.cxx 
-     ./Model/essLinac/*.cxx 
-     ./Model/ESSBeam/testBeam/*.cxx 
-     ./Model/singleItemBuild/*.cxx 
-     ./Model/MaxIV/formax/*.cxx 
-     ./Model/ESSBeam/bifrost/*.cxx 
-     ./Model/muon/*.cxx 
-     ./System/monte/*.cxx 
-     ./global/*.cxx 
-     ./System/attachComp/*.cxx 
-     ./Model/MaxIV/maxpeem/*.cxx 
-     ./System/modelSupport/*.cxx 
      ./Model/MaxIV/R1Common/*.cxx 
-     ./System/insertUnit/*.cxx 
-     ./Model/cuBlock/*.cxx 
+     ./beamline/*.cxx 
+     ./Model/MaxIV/danmax/*.cxx 
+     ./Model/essConstruct/*.cxx 
+     ./Model/ESSBeam/nnbar/*.cxx 
+     ./Model/ESSBeam/miracles/*.cxx 
+     ./System/phitsSupport/*.cxx 
+     ./System/flukaTally/*.cxx 
+     ./System/poly/*.cxx 
+     ./Model/ESSBeam/heimdal/*.cxx 
+     ./System/objectMod/*.cxx 
+     ./Model/ESSBeam/beer/*.cxx 
+     ./Model/snsBuild/*.cxx 
+     ./Model/maxivBuild/*.cxx 
+     ./Model/xrayHutch/*.cxx 
+     ./Model/MaxIV/balder/*.cxx 
+     ./System/weights/*.cxx 
+     ./Model/ESSBeam/freia/*.cxx 
+     ./Model/MaxIV/flexpes/*.cxx 
+     ./System/simMC/*.cxx 
+     ./Model/lensModel/*.cxx 
+     ./test/*.cxx 
+     ./src/*.cxx 
+     ./System/physics/*.cxx 
+     ./System/constructVar/*.cxx 
+     ./Model/moderator/*.cxx 
+     ./Model/MaxIV/softimax/*.cxx 
+     ./Model/ESSBeam/vor/*.cxx 
+     ./Model/d4cModel/*.cxx 
+     ./Model/essBuild/*.cxx 
+     ./Model/MaxIV/species/*.cxx 
+     ./Model/MaxIV/commonGenerator/*.cxx 
+     ./System/compWeights/*.cxx 
      ./Model/ESSBeam/nmx/*.cxx 
+     ./Model/exampleBuild/*.cxx 
+     ./scatMat/*.cxx 
+     ./Model/ESSBeam/bifrost/*.cxx 
+     ./Model/sinbadBuild/*.cxx 
+     ./System/crystal/*.cxx 
+     ./Model/ESSBeam/magic/*.cxx 
+     ./System/phitsPhysics/*.cxx 
+     ./System/log/*.cxx 
+     ./Model/pipeBuild/*.cxx 
+     ./System/phitsProcess/*.cxx 
+     ./System/funcBase/*.cxx 
+     ./System/generalProcess/*.cxx 
+     ./Model/epbBuild/*.cxx 
+     ./Model/MaxIV/R3Common/*.cxx 
+     ./Model/delft/*.cxx 
+     ./Model/photon/*.cxx 
+     ./System/md5/*.cxx 
+     ./System/phitsTally/*.cxx 
+     ./Model/ESSBeam/simpleItem/*.cxx 
+     ./Model/MaxIV/cosaxs/*.cxx 
+     ./Model/cuBlock/*.cxx 
+     ./Model/ESSBeam/testBeam/*.cxx 
+     ./Model/ESSBeam/commonVar/*.cxx 
+     ./System/world/*.cxx 
+     ./Model/singleItemBuild/*.cxx 
+     ./Model/ralBuild/*.cxx 
+     ./System/geometry/*.cxx 
      ./System/input/*.cxx 
+     ./System/mcnpProcess/*.cxx 
+     ./Model/filter/*.cxx 
+     ./System/modelSupport/*.cxx 
+     ./Model/t1Build/*.cxx 
+     ./Model/gammaBuild/*.cxx 
+     ./Model/bibBuild/*.cxx 
+     ./Model/ESSBeam/odin/*.cxx 
+     ./System/source/*.cxx 
+     ./Model/MaxIV/maxpeem/*.cxx 
+     ./Model/essLinac/*.cxx 
+     ./Model/MaxIV/micromax/*.cxx 
+     ./transport/*.cxx 
+     ./Model/MaxIV/formax/*.cxx 
+     ./global/*.cxx 
+     ./System/monte/*.cxx 
+     ./Model/ESSBeam/skadi/*.cxx 
      ./System/xml/*.cxx 
      ./System/tally/*.cxx 
-     ./System/crystal/*.cxx 
-     ./Model/t1Build/*.cxx 
-     ./Model/MaxIV/R3Common/*.cxx 
-     ./System/flukaTally/*.cxx 
-     ./System/flukaPhysics/*.cxx 
-     ./Model/MaxIV/flexpes/*.cxx 
-     ./Model/MaxIV/softimax/*.cxx 
-     ./System/compWeights/*.cxx 
-     ./System/world/*.cxx 
-     ./System/source/*.cxx 
-     ./Model/maxivBuild/*.cxx 
-     ./System/phitsTally/*.cxx 
-     ./Model/ESSBeam/nnbar/*.cxx 
-     ./Model/MaxIV/commonGenerator/*.cxx 
-     ./System/phitsPhysics/*.cxx 
-     ./Model/ESSBeam/vespa/*.cxx 
-     ./Model/epbBuild/*.cxx 
-     ./Model/ESSBeam/beer/*.cxx 
-     ./Model/pipeBuild/*.cxx 
-     ./Model/delft/*.cxx 
-     ./Model/lensModel/*.cxx 
-     ./Model/bibBuild/*.cxx 
-     ./Model/ESSBeam/loki/*.cxx 
-     ./Model/ESSBeam/magic/*.cxx 
-     ./System/construct/*.cxx 
+     ./System/attachComp/*.cxx 
      ./System/support/*.cxx 
-     ./Model/saxs/*.cxx 
-     ./Model/essBuild/*.cxx 
-     ./Model/ESSBeam/cspec/*.cxx 
-     ./Model/ESSBeam/heimdal/*.cxx 
-     ./Model/snsBuild/*.cxx 
-     ./Model/ESSBeam/skadi/*.cxx 
-     ./Model/filter/*.cxx 
-     ./Model/MaxIV/species/*.cxx 
-     ./Model/moderator/*.cxx 
-     ./Model/ESSBeam/trex/*.cxx 
-     ./System/physics/*.cxx 
-     ./Model/photon/*.cxx 
-     ./transport/*.cxx 
-     ./Model/gammaBuild/*.cxx 
-     ./System/endf/*.cxx 
-     ./scatMat/*.cxx 
-     ./Model/t2Build/*.cxx 
-     ./System/mcnpProcess/*.cxx 
-     ./System/visit/*.cxx 
-     ./System/phitsProcess/*.cxx 
-     ./instrument/*.cxx 
-     ./System/log/*.cxx 
-     ./Model/ESSBeam/estia/*.cxx 
-     ./Model/MaxIV/commonBeam/*.cxx 
-     ./System/generalProcess/*.cxx 
-     ./Model/exampleBuild/*.cxx 
-     ./System/geometry/*.cxx 
-     ./System/weights/*.cxx 
-     ./Model/MaxIV/balder/*.cxx 
-     ./System/magnetic/*.cxx 
-     ./Model/ralBuild/*.cxx 
-     ./Model/d4cModel/*.cxx 
-     ./Model/ESSBeam/miracles/*.cxx 
-     ./beamline/*.cxx 
-     ./Model/ESSBeam/freia/*.cxx 
-     ./Model/ESSBeam/odin/*.cxx 
-     ./System/flukaProcess/*.cxx 
-     ./Model/ESSBeam/vor/*.cxx 
-     ./Model/ESSBeam/commonVar/*.cxx 
-     ./src/*.cxx 
-     ./System/poly/*.cxx 
-     ./Model/ESSBeam/common/*.cxx 
-     ./Model/MaxIV/micromax/*.cxx 
+     ./System/work/*.cxx 
+     ./Model/ESSBeam/dream/*.cxx 
      ./Model/MaxIV/Linac/*.cxx 
-     ./test/*.cxx 
-     ./System/constructVar/*.cxx 
-     ./Model/MaxIV/cosaxs/*.cxx 
-     ./Model/essConstruct/*.cxx 
-     ./System/simMC/*.cxx 
-     ./System/objectMod/*.cxx 
-     ./Model/xrayHutch/*.cxx 
-     ./Model/MaxIV/danmax/*.cxx 
-     ./System/funcBase/*.cxx 
+     ./Model/ESSBeam/cspec/*.cxx 
+     ./instrument/*.cxx 
+     ./System/visit/*.cxx 
+     ./System/flukaProcess/*.cxx 
+     ./System/magnetic/*.cxx 
+     ./Model/MaxIV/commonBeam/*.cxx 
+     ./System/construct/*.cxx 
+     ./Model/t2Build/*.cxx 
+     ./Model/ESSBeam/estia/*.cxx 
+     ./Model/saxs/*.cxx 
+     ./System/insertUnit/*.cxx 
+     ./Model/ESSBeam/loki/*.cxx 
+     ./System/flukaPhysics/*.cxx 
+     ./Model/ESSBeam/trex/*.cxx 
+     ./System/endf/*.cxx 
+     ./Model/ESSBeam/vespa/*.cxx 
+     ./Model/ESSBeam/common/*.cxx 
      ./include/*.h 
      ./beamlineInc/*.h 
      ./globalInc/*.h 
@@ -1409,109 +1405,108 @@ add_custom_target(words  COMMAND grep -v -e '^[[:space:][:cntrl:]]*$$'
  | wc )
 
 add_custom_target(tar  COMMAND tar zcvf ${PROJECT_SOURCE_DIR}/Master.tgz 
-     ./System/md5/*.cxx 
-     ./Model/ESSBeam/dream/*.cxx 
-     ./Model/sinbadBuild/*.cxx 
-     ./System/phitsSupport/*.cxx 
-     ./System/work/*.cxx 
-     ./Model/ESSBeam/simpleItem/*.cxx 
-     ./Model/essLinac/*.cxx 
-     ./Model/ESSBeam/testBeam/*.cxx 
-     ./Model/singleItemBuild/*.cxx 
-     ./Model/MaxIV/formax/*.cxx 
-     ./Model/ESSBeam/bifrost/*.cxx 
-     ./Model/muon/*.cxx 
-     ./System/monte/*.cxx 
-     ./global/*.cxx 
-     ./System/attachComp/*.cxx 
-     ./Model/MaxIV/maxpeem/*.cxx 
-     ./System/modelSupport/*.cxx 
      ./Model/MaxIV/R1Common/*.cxx 
-     ./System/insertUnit/*.cxx 
-     ./Model/cuBlock/*.cxx 
+     ./beamline/*.cxx 
+     ./Model/MaxIV/danmax/*.cxx 
+     ./Model/essConstruct/*.cxx 
+     ./Model/ESSBeam/nnbar/*.cxx 
+     ./Model/ESSBeam/miracles/*.cxx 
+     ./System/phitsSupport/*.cxx 
+     ./System/flukaTally/*.cxx 
+     ./System/poly/*.cxx 
+     ./Model/ESSBeam/heimdal/*.cxx 
+     ./System/objectMod/*.cxx 
+     ./Model/ESSBeam/beer/*.cxx 
+     ./Model/snsBuild/*.cxx 
+     ./Model/maxivBuild/*.cxx 
+     ./Model/xrayHutch/*.cxx 
+     ./Model/MaxIV/balder/*.cxx 
+     ./System/weights/*.cxx 
+     ./Model/ESSBeam/freia/*.cxx 
+     ./Model/MaxIV/flexpes/*.cxx 
+     ./System/simMC/*.cxx 
+     ./Model/lensModel/*.cxx 
+     ./test/*.cxx 
+     ./src/*.cxx 
+     ./System/physics/*.cxx 
+     ./System/constructVar/*.cxx 
+     ./Model/moderator/*.cxx 
+     ./Model/MaxIV/softimax/*.cxx 
+     ./Model/ESSBeam/vor/*.cxx 
+     ./Model/d4cModel/*.cxx 
+     ./Model/essBuild/*.cxx 
+     ./Model/MaxIV/species/*.cxx 
+     ./Model/MaxIV/commonGenerator/*.cxx 
+     ./System/compWeights/*.cxx 
      ./Model/ESSBeam/nmx/*.cxx 
+     ./Model/exampleBuild/*.cxx 
+     ./scatMat/*.cxx 
+     ./Model/ESSBeam/bifrost/*.cxx 
+     ./Model/sinbadBuild/*.cxx 
+     ./System/crystal/*.cxx 
+     ./Model/ESSBeam/magic/*.cxx 
+     ./System/phitsPhysics/*.cxx 
+     ./System/log/*.cxx 
+     ./Model/pipeBuild/*.cxx 
+     ./System/phitsProcess/*.cxx 
+     ./System/funcBase/*.cxx 
+     ./System/generalProcess/*.cxx 
+     ./Model/epbBuild/*.cxx 
+     ./Model/MaxIV/R3Common/*.cxx 
+     ./Model/delft/*.cxx 
+     ./Model/photon/*.cxx 
+     ./System/md5/*.cxx 
+     ./System/phitsTally/*.cxx 
+     ./Model/ESSBeam/simpleItem/*.cxx 
+     ./Model/MaxIV/cosaxs/*.cxx 
+     ./Model/cuBlock/*.cxx 
+     ./Model/ESSBeam/testBeam/*.cxx 
+     ./Model/ESSBeam/commonVar/*.cxx 
+     ./System/world/*.cxx 
+     ./Model/singleItemBuild/*.cxx 
+     ./Model/ralBuild/*.cxx 
+     ./System/geometry/*.cxx 
      ./System/input/*.cxx 
+     ./System/mcnpProcess/*.cxx 
+     ./Model/filter/*.cxx 
+     ./System/modelSupport/*.cxx 
+     ./Model/t1Build/*.cxx 
+     ./Model/gammaBuild/*.cxx 
+     ./Model/bibBuild/*.cxx 
+     ./Model/ESSBeam/odin/*.cxx 
+     ./System/source/*.cxx 
+     ./Model/MaxIV/maxpeem/*.cxx 
+     ./Model/essLinac/*.cxx 
+     ./Model/MaxIV/micromax/*.cxx 
+     ./transport/*.cxx 
+     ./Model/MaxIV/formax/*.cxx 
+     ./global/*.cxx 
+     ./System/monte/*.cxx 
+     ./Model/ESSBeam/skadi/*.cxx 
      ./System/xml/*.cxx 
      ./System/tally/*.cxx 
-     ./System/crystal/*.cxx 
-     ./Model/t1Build/*.cxx 
-     ./Model/MaxIV/R3Common/*.cxx 
-     ./System/flukaTally/*.cxx 
-     ./System/flukaPhysics/*.cxx 
-     ./Model/MaxIV/flexpes/*.cxx 
-     ./Model/MaxIV/softimax/*.cxx 
-     ./System/compWeights/*.cxx 
-     ./System/world/*.cxx 
-     ./System/source/*.cxx 
-     ./Model/maxivBuild/*.cxx 
-     ./System/phitsTally/*.cxx 
-     ./Model/ESSBeam/nnbar/*.cxx 
-     ./Model/MaxIV/commonGenerator/*.cxx 
-     ./System/phitsPhysics/*.cxx 
-     ./Model/ESSBeam/vespa/*.cxx 
-     ./Model/epbBuild/*.cxx 
-     ./Model/ESSBeam/beer/*.cxx 
-     ./Model/pipeBuild/*.cxx 
-     ./Model/delft/*.cxx 
-     ./Model/lensModel/*.cxx 
-     ./Model/bibBuild/*.cxx 
-     ./Model/ESSBeam/loki/*.cxx 
-     ./Model/ESSBeam/magic/*.cxx 
-     ./System/construct/*.cxx 
+     ./System/attachComp/*.cxx 
      ./System/support/*.cxx 
-     ./Model/saxs/*.cxx 
-     ./Model/essBuild/*.cxx 
-     ./Model/ESSBeam/cspec/*.cxx 
-     ./Model/ESSBeam/heimdal/*.cxx 
-     ./Model/snsBuild/*.cxx 
-     ./Model/ESSBeam/skadi/*.cxx 
-     ./Model/filter/*.cxx 
-     ./Model/MaxIV/species/*.cxx 
-     ./Model/moderator/*.cxx 
-     ./Model/ESSBeam/trex/*.cxx 
-     ./System/physics/*.cxx 
-     ./Model/photon/*.cxx 
-     ./transport/*.cxx 
-     ./Model/gammaBuild/*.cxx 
-     ./System/endf/*.cxx 
-     ./scatMat/*.cxx 
-     ./Model/t2Build/*.cxx 
-     ./System/mcnpProcess/*.cxx 
-     ./System/visit/*.cxx 
-     ./System/phitsProcess/*.cxx 
-     ./instrument/*.cxx 
-     ./System/log/*.cxx 
-     ./Model/ESSBeam/estia/*.cxx 
-     ./Model/MaxIV/commonBeam/*.cxx 
-     ./System/generalProcess/*.cxx 
-     ./Model/exampleBuild/*.cxx 
-     ./System/geometry/*.cxx 
-     ./System/weights/*.cxx 
-     ./Model/MaxIV/balder/*.cxx 
-     ./System/magnetic/*.cxx 
-     ./Model/ralBuild/*.cxx 
-     ./Model/d4cModel/*.cxx 
-     ./Model/ESSBeam/miracles/*.cxx 
-     ./beamline/*.cxx 
-     ./Model/ESSBeam/freia/*.cxx 
-     ./Model/ESSBeam/odin/*.cxx 
-     ./System/flukaProcess/*.cxx 
-     ./Model/ESSBeam/vor/*.cxx 
-     ./Model/ESSBeam/commonVar/*.cxx 
-     ./src/*.cxx 
-     ./System/poly/*.cxx 
-     ./Model/ESSBeam/common/*.cxx 
-     ./Model/MaxIV/micromax/*.cxx 
+     ./System/work/*.cxx 
+     ./Model/ESSBeam/dream/*.cxx 
      ./Model/MaxIV/Linac/*.cxx 
-     ./test/*.cxx 
-     ./System/constructVar/*.cxx 
-     ./Model/MaxIV/cosaxs/*.cxx 
-     ./Model/essConstruct/*.cxx 
-     ./System/simMC/*.cxx 
-     ./System/objectMod/*.cxx 
-     ./Model/xrayHutch/*.cxx 
-     ./Model/MaxIV/danmax/*.cxx 
-     ./System/funcBase/*.cxx 
+     ./Model/ESSBeam/cspec/*.cxx 
+     ./instrument/*.cxx 
+     ./System/visit/*.cxx 
+     ./System/flukaProcess/*.cxx 
+     ./System/magnetic/*.cxx 
+     ./Model/MaxIV/commonBeam/*.cxx 
+     ./System/construct/*.cxx 
+     ./Model/t2Build/*.cxx 
+     ./Model/ESSBeam/estia/*.cxx 
+     ./Model/saxs/*.cxx 
+     ./System/insertUnit/*.cxx 
+     ./Model/ESSBeam/loki/*.cxx 
+     ./System/flukaPhysics/*.cxx 
+     ./Model/ESSBeam/trex/*.cxx 
+     ./System/endf/*.cxx 
+     ./Model/ESSBeam/vespa/*.cxx 
+     ./Model/ESSBeam/common/*.cxx 
      ./include/*.h 
      ./beamlineInc/*.h 
      ./globalInc/*.h 
@@ -1623,109 +1618,108 @@ add_custom_target(tar  COMMAND tar zcvf ${PROJECT_SOURCE_DIR}/Master.tgz
  )
 
 add_custom_target(tags  COMMAND etags  
-     ${PROJECT_SOURCE_DIR}/System/md5/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/dream/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/sinbadBuild/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/phitsSupport/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/work/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/simpleItem/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/essLinac/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/testBeam/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/singleItemBuild/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/MaxIV/formax/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/bifrost/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/muon/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/monte/*.cxx 
-     ${PROJECT_SOURCE_DIR}/global/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/attachComp/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/MaxIV/maxpeem/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/modelSupport/*.cxx 
      ${PROJECT_SOURCE_DIR}/Model/MaxIV/R1Common/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/insertUnit/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/cuBlock/*.cxx 
+     ${PROJECT_SOURCE_DIR}/beamline/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/MaxIV/danmax/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/essConstruct/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/nnbar/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/miracles/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/phitsSupport/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/flukaTally/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/poly/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/heimdal/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/objectMod/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/beer/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/snsBuild/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/maxivBuild/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/xrayHutch/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/MaxIV/balder/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/weights/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/freia/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/MaxIV/flexpes/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/simMC/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/lensModel/*.cxx 
+     ${PROJECT_SOURCE_DIR}/test/*.cxx 
+     ${PROJECT_SOURCE_DIR}/src/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/physics/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/constructVar/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/moderator/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/MaxIV/softimax/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/vor/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/d4cModel/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/essBuild/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/MaxIV/species/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/MaxIV/commonGenerator/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/compWeights/*.cxx 
      ${PROJECT_SOURCE_DIR}/Model/ESSBeam/nmx/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/exampleBuild/*.cxx 
+     ${PROJECT_SOURCE_DIR}/scatMat/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/bifrost/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/sinbadBuild/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/crystal/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/magic/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/phitsPhysics/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/log/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/pipeBuild/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/phitsProcess/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/funcBase/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/generalProcess/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/epbBuild/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/MaxIV/R3Common/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/delft/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/photon/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/md5/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/phitsTally/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/simpleItem/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/MaxIV/cosaxs/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/cuBlock/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/testBeam/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/commonVar/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/world/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/singleItemBuild/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/ralBuild/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/geometry/*.cxx 
      ${PROJECT_SOURCE_DIR}/System/input/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/mcnpProcess/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/filter/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/modelSupport/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/t1Build/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/gammaBuild/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/bibBuild/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/odin/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/source/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/MaxIV/maxpeem/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/essLinac/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/MaxIV/micromax/*.cxx 
+     ${PROJECT_SOURCE_DIR}/transport/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/MaxIV/formax/*.cxx 
+     ${PROJECT_SOURCE_DIR}/global/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/monte/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/skadi/*.cxx 
      ${PROJECT_SOURCE_DIR}/System/xml/*.cxx 
      ${PROJECT_SOURCE_DIR}/System/tally/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/crystal/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/t1Build/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/MaxIV/R3Common/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/flukaTally/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/flukaPhysics/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/MaxIV/flexpes/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/MaxIV/softimax/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/compWeights/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/world/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/source/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/maxivBuild/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/phitsTally/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/nnbar/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/MaxIV/commonGenerator/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/phitsPhysics/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/vespa/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/epbBuild/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/beer/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/pipeBuild/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/delft/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/lensModel/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/bibBuild/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/loki/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/magic/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/construct/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/attachComp/*.cxx 
      ${PROJECT_SOURCE_DIR}/System/support/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/saxs/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/essBuild/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/cspec/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/heimdal/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/snsBuild/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/skadi/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/filter/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/MaxIV/species/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/moderator/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/trex/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/physics/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/photon/*.cxx 
-     ${PROJECT_SOURCE_DIR}/transport/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/gammaBuild/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/endf/*.cxx 
-     ${PROJECT_SOURCE_DIR}/scatMat/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/t2Build/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/mcnpProcess/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/visit/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/phitsProcess/*.cxx 
-     ${PROJECT_SOURCE_DIR}/instrument/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/log/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/estia/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/MaxIV/commonBeam/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/generalProcess/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/exampleBuild/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/geometry/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/weights/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/MaxIV/balder/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/magnetic/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/ralBuild/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/d4cModel/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/miracles/*.cxx 
-     ${PROJECT_SOURCE_DIR}/beamline/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/freia/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/odin/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/flukaProcess/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/vor/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/commonVar/*.cxx 
-     ${PROJECT_SOURCE_DIR}/src/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/poly/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/common/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/MaxIV/micromax/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/work/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/dream/*.cxx 
      ${PROJECT_SOURCE_DIR}/Model/MaxIV/Linac/*.cxx 
-     ${PROJECT_SOURCE_DIR}/test/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/constructVar/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/MaxIV/cosaxs/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/essConstruct/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/simMC/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/objectMod/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/xrayHutch/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/MaxIV/danmax/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/funcBase/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/cspec/*.cxx 
+     ${PROJECT_SOURCE_DIR}/instrument/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/visit/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/flukaProcess/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/magnetic/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/MaxIV/commonBeam/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/construct/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/t2Build/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/estia/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/saxs/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/insertUnit/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/loki/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/flukaPhysics/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/trex/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/endf/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/vespa/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/common/*.cxx 
      ${PROJECT_SOURCE_DIR}/include/*.h 
      ${PROJECT_SOURCE_DIR}/beamlineInc/*.h 
      ${PROJECT_SOURCE_DIR}/globalInc/*.h 

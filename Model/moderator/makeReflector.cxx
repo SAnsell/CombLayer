@@ -3,7 +3,7 @@
  
  * File:   moderator/makeReflector.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -259,8 +259,6 @@ makeReflector::createInternalObjects(Simulation& System,
 
   TarObj->addProtonLineInsertCell(RefObj->getCell("Reflector"));
   TarObj->addProtonLine(System);
-
-  return;
   
   GrooveObj->createAll(System,*RefObj,0);
   HydObj->setCutSurf("innerWall",GrooveObj->getLinkSurf(1));
@@ -271,6 +269,9 @@ makeReflector::createInternalObjects(Simulation& System,
       OI.build(System,*HydObj,*GrooveObj);
     }
   VacObj->buildPair(System,*GrooveObj,*HydObj);
+
+
+  return;
   std::string Out;
 
   Out = RefObj->combine("CornerB Back Right").display();
