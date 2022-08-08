@@ -331,6 +331,19 @@ LinkWrapper::maskSection(std::string sectList)
 }
 
 void
+LinkWrapper::addExcludeObj(const int SN)
+  /*!
+    Add a single surface to the exclude space (union)
+    \param SN ::  Surf number
+  */
+{
+  ELog::RegMethod RegA("LinkWrapper","addExcludeObj(int)");
+
+  excludeSpace.addUnion(HeadRule(SN)); 
+  return;
+}
+
+void
 LinkWrapper::addExcludeObj(const objectGroups& OGrp,
 			   const std::string& objName,
 			   const std::string& grpName) 

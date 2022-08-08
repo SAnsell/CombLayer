@@ -361,8 +361,9 @@ t1Reflector::createBoxes(Simulation& System,
      (new constructSystem::LWOuter("RBoxMerlinWrapper")));
 
   Boxes[6]->addSurface(OGrp,"MerlinMod","-1 -2 -3 -4 -5 -6");
-  Boxes[6]->addBoundarySurf(Boxes[3]->getLinkSurf(-27));
-  Boxes[6]->addBoundaryUnionSurf(Boxes[3]->getLinkSurf(-28));
+
+  Boxes[6]->addExcludeObj(Boxes[3]->getLinkSurf(-27));
+  Boxes[6]->addExcludeObj(Boxes[3]->getLinkSurf(-28));
 
   Boxes[6]->maskSection(0);
   Boxes[6]->maskSection(4);
@@ -379,10 +380,10 @@ t1Reflector::createBoxes(Simulation& System,
   Boxes[7]->addSurface(OGrp,"H2Mod","-1 -2 -3 -4");
   Boxes[7]->addSurface(OGrp,"H2Flight","-5 -6");
 
-  Boxes[7]->addBoundarySurf(Boxes[5]->getLinkSurf(-27));
-  Boxes[7]->addBoundaryUnionSurf(Boxes[5]->getLinkSurf(-28));
-  Boxes[7]->addBoundaryUnionSurf(Boxes[5]->getLinkSurf(-29));
-  Boxes[7]->addBoundaryUnionSurf(Boxes[5]->getLinkSurf(-26));
+  Boxes[7]->addExcludeObj(Boxes[5]->getLinkSurf(-27));
+  Boxes[7]->addExcludeObj(Boxes[5]->getLinkSurf(-28));
+  Boxes[7]->addExcludeObj(Boxes[5]->getLinkSurf(-29));
+  Boxes[7]->addExcludeObj(Boxes[5]->getLinkSurf(-26));
   
   Boxes[7]->maskSection(0);
   Boxes[7]->maskSection(4);
@@ -413,7 +414,7 @@ t1Reflector::createBoxes(Simulation& System,
   Boxes[9]->addSurface(OGrp,"H2Flight","-3 -4 -5 -6");
 //  Boxes[9]->addSurface(OGrp,"H2Mod",-4);
   Boxes[9]->addSurface(OGrp,"H2Mod",1);    
-  Boxes[9]->addBoundarySurf(Boxes[5]->getLinkSurf(-21));
+  Boxes[9]->addExcludeObj(Boxes[5]->getLinkSurf(-21));
   Boxes[9]->maskSection(0);
   Boxes[9]->maskSection(1);
   Boxes[9]->maskSection(5); 

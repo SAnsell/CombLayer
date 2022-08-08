@@ -170,7 +170,8 @@ LWOuter::createObjects(Simulation& System)
   ELog::RegMethod RegA("LWOuter","createObjects");
 
   const HeadRule boundaryComp(excludeSpace.complement());
-
+  const std::string exclude=getCompContainer();
+  
   HeadRule HR;
   for(const int SN : surfNum)
     HR.addIntersection(SN);
@@ -179,6 +180,7 @@ LWOuter::createObjects(Simulation& System)
   HeadRule ControlHR;
   for(size_t i=0;i<nLayers;i++)
     {
+      ControlHR.reset();
       HeadRule CX;
       int lSurf(buildIndex+101+100*static_cast<int>(i));
       for(size_t j=0;j<surfNum.size();j++)
@@ -196,17 +198,11 @@ LWOuter::createObjects(Simulation& System)
       OuterHR=CX;
     }
   // Create boundary:
-  //outBoundary+=" #( "+Inner+" )";
-  // The space it is NOT:
   const HeadRule outerBoundaryHR=
-    OuterHR.complement()*ControlHR.complement();
-  ELog::EM<<"OUTER["<<keyName<<"] \n"<<outerBoundaryHR<<"\n"<<ELog::endDiag;
+    HR*OuterHR*ControlHR;
   
-  // The space it is :
   addOuterSurf(outerBoundaryHR);
-  excludeSpace=outerBoundaryHR;
-
-  
+  excludeSpace.addIntersection(outerBoundaryHR);
 
   return;
 }
