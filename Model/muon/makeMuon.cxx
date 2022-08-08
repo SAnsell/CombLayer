@@ -3,7 +3,7 @@
  
  * File:   muon/makeMuon.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2022 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -215,6 +215,7 @@ makeMuon::build(Simulation* SimPtr,
   PosRing1Obj->createAll(*SimPtr,World::masterOrigin(),0);  
   attachSystem::addToInsertForced(*SimPtr,*TargShieldObj,*PosRing1Obj);
   attachSystem::addToInsertForced(*SimPtr,*MuRoomObj,*PosRing1Obj);
+
   //  
   if (!IParam.flag("exclude") || 
       !IParam.compValue("E",std::string("EPBBeamline")))
@@ -259,9 +260,10 @@ makeMuon::build(Simulation* SimPtr,
       // +++++++++++++++++++++++++++++++++++  muon beamline  
       Q1Obj->createAll(*SimPtr,World::masterOrigin(),0);
       attachSystem::addToInsertForced(*SimPtr,*MuRoomObj,*Q1Obj);
+      attachSystem::addToInsertForced(*SimPtr,*Q1Obj,*PosRing1Obj);
 
       // Muon vacuum tube 1    
-      MuTube1Obj->createAll(*SimPtr,World::masterOrigin(),0);         
+      MuTube1Obj->createAll(*SimPtr,World::masterOrigin(),0);
       attachSystem::addToInsertForced(*SimPtr,*Q1Obj,*MuTube1Obj);
       attachSystem::addToInsertForced(*SimPtr,*MuRoomObj,*MuTube1Obj);
 
