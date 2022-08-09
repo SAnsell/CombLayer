@@ -142,8 +142,8 @@ Reflector::populate(const FuncDataBase& Control)
   for(size_t i=0;i<nPads;i++)
     Pads.push_back(CoolPad("coolPad",i+1));
 
-  flightLine.resize(1);
-  for(size_t i=0;i<1;i++)
+  flightLine.resize(2);
+  for(size_t i=0;i<2;i++)
     {
       const std::string flName=keyName+"FL"+std::to_string(i);
       flightLine[i].Org=
@@ -180,8 +180,6 @@ Reflector::createFlightLineSurfaces()
       const Geometry::Vec3D Org=Origin+FL.Org.getInBasis(X,Y,Z);
       const Geometry::Vec3D Axis=FL.Axis.getInBasis(X,Y,Z).unit();
       const Geometry::Vec3D AxisX=Z*Axis;
-      ELog::EM<<"Axis == "<<Axis<<ELog::endDiag;
-      ELog::EM<<"AxisX == "<<AxisX<<ELog::endDiag;
       
       Geometry::Vec3D Norm;
 
@@ -190,9 +188,9 @@ Reflector::createFlightLineSurfaces()
       const Geometry::Quaternion Qplus=
 	Geometry::Quaternion::calcQRotDeg(FL.plusAngle,Z);
       const Geometry::Quaternion Qdown=
-	Geometry::Quaternion::calcQRotDeg(-FL.downAngle,AxisX);
+	Geometry::Quaternion::calcQRotDeg(FL.downAngle,AxisX);
       const Geometry::Quaternion Qup=
-	Geometry::Quaternion::calcQRotDeg(FL.upAngle,AxisX);
+	Geometry::Quaternion::calcQRotDeg(-FL.upAngle,AxisX);
       
       makePlane("FLcut",SMap,FIndex+1,Org,Axis);
       Norm=Qneg.makeRotate(AxisX);
@@ -318,9 +316,16 @@ Reflector::createObjects(Simulation& System)
   
   int FIndex(buildIndex+1000);
   HeadRule FLhr;
+
   FLhr=ModelSupport::getHeadRule
     (SMap,buildIndex,FIndex,"3 1 13 1M 3M -4M 5M -6M");
   makeCell("FLGroove",System,cellIndex++,0,0.0,FLhr);
+  HR.addIntersection(FLhr.complement());
+
+  FIndex+=100;
+  FLhr=ModelSupport::getHeadRule
+    (SMap,buildIndex,FIndex,"-4 -14 1M 3M -4M 5M -6M");
+  makeCell("FLHydro",System,cellIndex++,0,0.0,FLhr);
   HR.addIntersection(FLhr.complement());
 
   FIndex+=100;

@@ -272,8 +272,21 @@ makeReflector::createInternalObjects(Simulation& System,
   VacObj->buildPair(System,*GrooveObj,*HydObj);
 
   RefObj->insertComponent(System,"FLGroove",VacObj->getMainRule("front"));
+  RefObj->insertComponent(System,"FLHydro",VacObj->getMainRule("back"));
 
-  //  RefObj->insertComponent(System,"FLHydrogen",VacObj->getMainRule("back"));
+  
+  PMgroove->setTargetSurf(TarObj->getLinkSurf(1));
+  PMgroove->setDivideSurf(VacObj->getDivideSurf());
+  PMgroove->setEdge();
+  PMgroove->createAll(System,*VacObj,6); 
+
+  PMhydro->setTargetSurf(TarObj->getLinkSurf(1));
+  PMhydro->setDivideSurf(-VacObj->getDivideSurf());
+  PMhydro->setEdge();
+  PMhydro->setRotate();
+  PMhydro->createAll(System,*VacObj,6);  
+  Horn->setDivideSurf(-VacObj->getDivideSurf());
+  // Horn->build(System,*VacObj,*FLhydro,*PMhydro);
 
   return;
   std::string Out;
@@ -304,6 +317,7 @@ makeReflector::createInternalObjects(Simulation& System,
   PMhydro->createAll(System,*VacObj,6);  
   Horn->setDivideSurf(-VacObj->getDivideSurf());
   Horn->build(System,*VacObj,*FLhydro,*PMhydro);
+
   processDecoupled(System,IParam);
   const attachSystem::ContainedComp* CMod=
     System.getObjectThrow<attachSystem::ContainedComp>

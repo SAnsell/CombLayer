@@ -101,10 +101,21 @@ TS2layout(FuncDataBase& Control)
 		      Geometry::Vec3D(-0.951057,0.309017,0.0));
   Control.addVariable("ReflectorFL0NegAngle",26.5);  // Angle out
   Control.addVariable("ReflectorFL0PlusAngle",26.5);  // Angle out
-  Control.addVariable("ReflectorFL0DownAngle",0.0); //;2.5);  // Step down angle
+  Control.addVariable("ReflectorFL0DownAngle",2.5); //;2.5);  // Step down angle
   Control.addVariable("ReflectorFL0UpAngle",0.0); // Step up angle
   Control.addVariable("ReflectorFL0Height",3.3);     // Full height
   Control.addVariable("ReflectorFL0Width",18.3);     // Full width
+  
+  Control.addVariable("ReflectorFL1Org",
+		      Geometry::Vec3D(-6.9450+13.8*0.9513,-2.36-13.8*0.30,-12.5));
+  Control.addVariable("ReflectorFL1Axis",
+		      Geometry::Vec3D(0.951057,-0.309017,0.0));
+  Control.addVariable("ReflectorFL1NegAngle",53.2);  // Angle out
+  Control.addVariable("ReflectorFL1PlusAngle",9.0);  // Angle out
+  Control.addVariable("ReflectorFL1DownAngle",0.0); //;2.5);  // Step down angle
+  Control.addVariable("ReflectorFL1UpAngle",0.0); // Step up angle
+  Control.addVariable("ReflectorFL1Height",11.5);     // Full height
+  Control.addVariable("ReflectorFL1Width",14.3);     // Full width
 
 // NEW COUPLED STUFF:
   
