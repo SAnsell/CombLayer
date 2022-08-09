@@ -3,7 +3,7 @@
  
  * File:   moderator/Groove.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "BaseMap.h"
 #include "SurfMap.h"
 #include "CellMap.h"
@@ -68,7 +68,7 @@ namespace moderatorSystem
 
 Groove::Groove(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,7),
+  attachSystem::FixedRotate(Key,7),
   attachSystem::CellMap(),
   attachSystem::SurfMap()
   /*!
@@ -94,7 +94,7 @@ Groove::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("Groove","populate");
   
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   width=Control.EvalVar<double>(keyName+"MethWidth");
   height=Control.EvalVar<double>(keyName+"MethHeight");
@@ -133,13 +133,13 @@ Groove::createUnitVector(const attachSystem::FixedComp& FC,
     - Y Points down the Groove direction
     - X Across the Groove
     - Z up (towards the target)
-    \param FC :: FixedComp for origin/axisx
+    \param FC :: FixedComp for origin/axis
+    \param sideIndex :: linkPoint
   */
 {
   ELog::RegMethod RegA("Groove","createUnitVector");
 
-  FixedOffset::createUnitVector(FC,sideIndex);
-    
+  FixedRotate::createUnitVector(FC,sideIndex);
   // Groove Centre:
   // -- Step in by cut, and  
   const double MStep=(depth-innerCut)-

@@ -57,6 +57,8 @@ class DiskChopper :
   Geometry::Vec3D beamAxis;       ///< Orginal beam axis [before offset]
   
   void populate(const FuncDataBase&);
+
+  using FixedRotateGroup::createUnitVector;
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createUnitVector(const attachSystem::FixedComp&,const long int,
 			const attachSystem::FixedComp&,const long int);

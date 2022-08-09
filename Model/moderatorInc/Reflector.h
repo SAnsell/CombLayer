@@ -3,7 +3,7 @@
  
  * File:   moderatorInc/Reflector.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef moderatorSystem_ReflectorX_h
-#define moderatorSystem_ReflectorX_h
+#ifndef moderatorSystem_Reflector_h
+#define moderatorSystem_Reflector_h
 
 class Simulation;
 
@@ -33,6 +33,20 @@ namespace TMRSystem
 namespace moderatorSystem
 {
 
+struct flightInfo
+{
+  Geometry::Vec3D Org;
+  Geometry::Vec3D Axis;
+
+  double height;   // at centre
+  double width;    // at center
+
+  double negAngle;
+  double plusAngle;
+  double upAngle;
+  double downAngle;
+};
+  
 /*!
   \class Reflector
   \version 1.0
@@ -43,7 +57,7 @@ namespace moderatorSystem
 
 class Reflector :
     public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset,
+    public attachSystem::FixedRotate,
     public attachSystem::SurfMap,
     public attachSystem::CellMap
 {
@@ -53,14 +67,18 @@ class Reflector :
   double xySize;                ///< Left/Right size
   double zSize;                 ///< Vertical size
   double cutSize;               ///< End cuts
-  int defMat;                   ///< Default material
 
+  std::vector<flightInfo> flightLine;
+
+  int defMat;                   ///< Default material
+  
 
   // The pads
   std::vector<moderatorSystem::CoolPad> Pads;
 
   void populate(const FuncDataBase&);
   void createSurfaces();
+  void createFlightLineSurfaces();
   void createObjects(Simulation&);
   void createLinks(const Geometry::Vec3D&,const Geometry::Vec3D&);
 

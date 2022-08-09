@@ -57,6 +57,7 @@
 #include "FixedComp.h"
 #include "FixedUnit.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -160,6 +161,7 @@ makeReflector::createObjects(Simulation& System)
 
   TarObj->addInsertCell(refCell);
   VacObj->addInsertCell(refCell);
+  
   FLgroove->addInsertCell("outer",refCell);
   FLhydro->addInsertCell("outer",refCell);
   PMgroove->addInsertCell(refCell);
@@ -255,8 +257,7 @@ makeReflector::createInternalObjects(Simulation& System,
 
   TarObj->setCutSurf("FrontPlate",RefObj->getSurf("CornerB"));
   TarObj->setCutSurf("BackPlate",RefObj->getSurf("CornerA"));
-  TarObj->createAll(System,*RefObj,"CornerCentre");
-
+  TarObj->createAll(System,World::masterOrigin(),0);
   TarObj->addProtonLineInsertCell(RefObj->getCell("Reflector"));
   TarObj->addProtonLine(System);
   
@@ -270,6 +271,9 @@ makeReflector::createInternalObjects(Simulation& System,
     }
   VacObj->buildPair(System,*GrooveObj,*HydObj);
 
+  RefObj->insertComponent(System,"FLGroove",VacObj->getMainRule("front"));
+
+  //  RefObj->insertComponent(System,"FLHydrogen",VacObj->getMainRule("back"));
 
   return;
   std::string Out;

@@ -35,11 +35,11 @@ namespace moderatorSystem
   \brief Groove [insert object]
 */
 
-class Groove : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
-  public attachSystem::CellMap,
-  public attachSystem::SurfMap
-  
+class Groove :
+    public attachSystem::ContainedComp,
+    public attachSystem::FixedRotate,
+    public attachSystem::CellMap,
+    public attachSystem::SurfMap
 {
  private:
   
@@ -86,7 +86,8 @@ class Groove : public attachSystem::ContainedComp,
   int viewSurf() const;
   Geometry::Vec3D getViewPoint() const;
   Geometry::Vec3D getBackGroove() const;
-  
+
+  using attachSystem::FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

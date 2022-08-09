@@ -60,7 +60,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedUnit.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -76,7 +76,7 @@ namespace ts1System
 
 PressVessel::PressVessel(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,12),
+  attachSystem::FixedRotate(Key,12),
   outerWallCell(0),IVoidCell(0),targetLen(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -85,7 +85,7 @@ PressVessel::PressVessel(const std::string& Key)  :
 {}
 
 PressVessel::PressVessel(const PressVessel& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedRotate(A),
   outerWallCell(A.outerWallCell),IVoidCell(A.IVoidCell),
   width(A.width),
   height(A.height),length(A.length),frontLen(A.frontLen),
@@ -123,7 +123,7 @@ PressVessel::operator=(const PressVessel& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       outerWallCell=A.outerWallCell;
       IVoidCell=A.IVoidCell;
       width=A.width;
@@ -186,7 +186,7 @@ PressVessel::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("PressVessel","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");

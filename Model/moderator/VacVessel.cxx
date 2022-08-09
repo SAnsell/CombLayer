@@ -3,7 +3,7 @@
  
  * File:   moderator/VacVessel.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,8 +39,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -58,7 +56,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedUnit.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -497,7 +495,8 @@ VacVessel::buildPair(Simulation& System,const Groove& GMod,
   insertObjects(System);       
 
   
-  // Mid of grood
+  // Mid of groove
+  
   FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+41));
   FixedComp::setBridgeSurf(6,SMap.realSurf(divideSurf));
 

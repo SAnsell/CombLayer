@@ -3,7 +3,7 @@
  
  * File:   construct/BeamWindow.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -56,7 +54,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BeamWindow.h"
 
@@ -64,7 +62,7 @@ namespace ts1System
 {
 
 BeamWindow::BeamWindow(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,2)
+  attachSystem::ContainedComp(),attachSystem::FixedRotate(Key,2)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -72,7 +70,7 @@ BeamWindow::BeamWindow(const std::string& Key)  :
 {}
 
 BeamWindow::BeamWindow(const BeamWindow& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedRotate(A),
   incThick1(A.incThick1),waterThick(A.waterThick),
   incThick2(A.incThick2),heMat(A.heMat),
   inconelMat(A.inconelMat),waterMat(A.waterMat)
@@ -93,7 +91,7 @@ BeamWindow::operator=(const BeamWindow& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       incThick1=A.incThick1;
       waterThick=A.waterThick;
       incThick2=A.incThick2;
@@ -120,7 +118,7 @@ BeamWindow::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BeamWindow","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   // Master values
 
   incThick1=Control.EvalVar<double>(keyName+"IncThick1");
@@ -134,27 +132,9 @@ BeamWindow::populate(const FuncDataBase& Control)
   //  populated = (incThick1*waterThick*incThick2
   //	       <Geometry::zeroTol) ? 0 : 1;
 
-
   return;
 }
   
-void
-BeamWindow::createUnitVector(const attachSystem::FixedComp& FC,
-			     const long int indexPt)
-  /*!
-    Create the unit vectors
-    - Y Down the beamline
-    \param FC :: Linked object
-    \param indexPt :: connection point
-  */
-{
-  ELog::RegMethod RegA("BeamWindow","createUnitVector");
-
-  attachSystem::FixedComp::createUnitVector(FC,indexPt);	
-  applyOffset();
-  return;
-}
-
 void
 BeamWindow::createSurfaces()
   /*!

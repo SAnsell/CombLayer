@@ -35,8 +35,9 @@ namespace ts1System
   \brief PressVessel [insert object]
 */
 
-class PressVessel : public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset
+class PressVessel :
+    public attachSystem::ContainedComp,
+    public attachSystem::FixedRotate
 {
  private:
   
@@ -86,7 +87,6 @@ class PressVessel : public attachSystem::ContainedComp,
   double winHouseThick;          ///
   
   std::vector<channel> CItem;   ///< Set of channel objects
-
 
   int wallMat;                  ///< Material for walls
   int taMat;                    ///< Tantalum WINDOW HOUSING

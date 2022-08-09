@@ -44,7 +44,7 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
 #include "BaseMap.h"
@@ -59,7 +59,7 @@ namespace TMRSystem
   
 TargetBase::TargetBase(const std::string& Key,const size_t NLink)  : 
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,NLink),
+  attachSystem::FixedRotate(Key,NLink),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   PLine(new ts1System::ProtonVoid("ProtonVoid"))
@@ -77,7 +77,7 @@ TargetBase::TargetBase(const std::string& Key,const size_t NLink)  :
 
 TargetBase::TargetBase(const TargetBase& A) : 
   attachSystem::ContainedComp(A),
-  attachSystem::FixedOffset(A),
+  attachSystem::FixedRotate(A),
   attachSystem::ExternalCut(A),
   attachSystem::CellMap(A),
   BWPtr((A.BWPtr) ? new ts1System::BeamWindow(*A.BWPtr) : 0),
@@ -100,7 +100,7 @@ TargetBase::operator=(const TargetBase& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ExternalCut::operator=(A);
       attachSystem::CellMap::operator=(A);
       
