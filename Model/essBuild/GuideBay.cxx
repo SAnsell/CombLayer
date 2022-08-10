@@ -174,25 +174,7 @@ GuideBay::populate(const FuncDataBase& Control)
   nItems=Control.EvalTail<size_t>(keyName,baseKey,"NItems");
   return;
 }
-  
-  
-void
-GuideBay::createUnitVector(const attachSystem::FixedComp& FC,
-                           const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Linked object
-    \param sideIndex :: linkPoint index
-  */
-{
-  ELog::RegMethod RegA("GuideBay","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
-  return;
-}
-  
+    
 void
 GuideBay::createSurfaces()
   /*!
@@ -428,6 +410,7 @@ GuideBay::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
+
   createSurfaces();
   createObjects(System);
   createLinks();

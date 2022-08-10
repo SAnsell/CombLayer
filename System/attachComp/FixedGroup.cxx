@@ -466,7 +466,7 @@ FixedGroup::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("FixedGroup","createUnitVector");
   
-  createUnitVector(primKey,FC,sideIndex);  
+  FixedGroup::createUnitVector(primKey,FC,sideIndex);  
   return;
 }
 
@@ -479,9 +479,9 @@ FixedGroup::secondaryUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: signed linkpoint			
   */
 {
-  ELog::RegMethod RegA("FixedGroup","createUnitVector(name)");
+  ELog::RegMethod RegA("FixedGroup","secondaryUnitVector");
 
-  createUnitVector(sndKey,FC,sideIndex);
+  FixedGroup::createUnitVector(sndKey,FC,sideIndex);
   return;
 }
 
@@ -497,7 +497,7 @@ FixedGroup::createUnitVector(const std::string& unitName,
     \param sideIndex :: signed linkpoint			
   */
 {
-  ELog::RegMethod RegA("FixedGroup","createUnitVector(name)");
+  ELog::RegMethod RegA("FixedGroup","createUnitVector(int)");
 
   attachSystem::FixedComp& activeFC=getKey(unitName);
   activeFC.createUnitVector(FC,sideIndex);

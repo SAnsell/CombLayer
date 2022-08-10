@@ -113,6 +113,22 @@ FuncDataBase::hasVariable(const std::string& Key) const
   return (FI) ? 1 : 0;
 }
 
+int
+FuncDataBase::hasTailVariable(const std::string& Key,
+			      const std::string& Base,
+			      const std::string& tail) const
+  /*!
+    Determine if we have a variable
+    \param Key :: variable name to test
+    \return 1 if complete key / -1 if base key
+  */
+{
+  const FItem* FI=findItem(Key+tail);
+  if (FI) return 1;
+  FI=findItem(Base+tail);
+  return (FI) ? -1 : 0;
+}
+
 
 std::string
 FuncDataBase::EvalVarString(const std::string& Key) const

@@ -231,8 +231,7 @@ WedgeFlightLine::createAll(Simulation& System,
                                               innerFC, innerIndex,
                                               outerFC, outerIndex);
   populate(System.getDataBase());
-  buildWedges(System,
-	      innerFC,innerIndex,
+  buildWedges(System,innerFC,innerIndex,
 	      outerFC,outerIndex);
     
   return;

@@ -87,8 +87,8 @@ EssVariables(FuncDataBase& Control,
 
   Control.addVariable("TopAFlightAngleXY1",60.0);  // Angle out
   Control.addVariable("TopAFlightAngleXY2",60.0);  // Angle out
-  Control.addVariable("TopAFlightXYAngle",180.0);
-  Control.addVariable("TopAFlightZAngle",0.0);
+  Control.addVariable("TopAFlightZAngle",180.0);
+  Control.addVariable("TopAFlightXAngle",0.0);
   Control.addVariable("TopAFlightTapSurf","cone");  // Step down angle
   Control.addVariable("TopAFlightAngleZTop",1.1);    // fight line cuts the Bilbao target wheel ESS-0032315.3
   Control.addVariable("TopAFlightAngleZBase",1.33);// Step up angle ESS-0032315.3 
@@ -106,9 +106,9 @@ EssVariables(FuncDataBase& Control,
   Control.addVariable("TopBFlightZStep",0.0);      // Step from centre
   Control.addVariable("TopBFlightAngleXY1",60.0);  // Angle out
   Control.addVariable("TopBFlightAngleXY2",60.0);  // Angle out
-  Control.addVariable("TopBFlightXYAngle", .0);
   Control.addVariable("TopBFlightZAngle",0.0);
-    Control.addParse<double>("TopBFlightAngleZTop","TopAFlightAngleZTop");
+  Control.addVariable("TopBFlightXAngle",0.0);
+  Control.addParse<double>("TopBFlightAngleZTop","TopAFlightAngleZTop");
   Control.addParse<double>("TopBFlightAngleZBase","TopAFlightAngleZBase");
   Control.addParse<double>("TopBFlightHeight","TopAFlightHeight");
   Control.addParse<double>("TopBFlightWidth","TopAFlightWidth");
@@ -555,7 +555,7 @@ EssFlightLineVariables(FuncDataBase& Control)
 
   Control.addVariable("LowAFlightXStep",0.0); // Step from centre
   Control.addVariable("LowAFlightZStep",0.0);      // Step from centre
-  Control.addVariable("LowAFlightXYAngle",0.0);  // Angle out
+  Control.addVariable("LowAFlightXAngle",0.0);  // Angle out
   Control.addVariable("LowAFlightZAngle",0.0);  // Angle out
   Control.addVariable("LowAFlightAngleXY1",60.0);  // Angle out
   Control.addVariable("LowAFlightAngleXY2",60.0);  // Angle out
@@ -576,8 +576,8 @@ EssFlightLineVariables(FuncDataBase& Control)
   Control.addVariable("LowBFlightTapSurf","cone");  // Step down angle
   Control.addVariable("LowBFlightXStep",0.0);     // Angle
   Control.addVariable("LowBFlightZStep",0.0);      // Step from centre
-  Control.addVariable("LowBFlightXYAngle",180.0);  // Angle out
-  Control.addVariable("LowBFlightZAngle",0.0);     // Angle out
+  Control.addVariable("LowBFlightZAngle",180.0);  // Angle out
+  Control.addVariable("LowBFlightXAngle",0.0);     // Angle out
   Control.addVariable("LowBFlightAngleXY1",60.0);  // Angle out
   Control.addVariable("LowBFlightAngleXY2",60.0);  // Angle out
   Control.addVariable("LowBFlightAngleZTop",0.9);  // Step down angle

@@ -63,9 +63,6 @@ class GuideBay :
   std::vector<std::shared_ptr<GuideItem> > GUnit;
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&);

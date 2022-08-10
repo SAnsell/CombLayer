@@ -461,10 +461,9 @@ FixedRotateGroup::secondaryUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: signed linkpt			
   */
 {
-  ELog::RegMethod RegA("FixedRotateGroup","primaryUnitVector");
+  ELog::RegMethod RegA("FixedRotateGroup","secondaryUnitVector");
 
   FixedGroup::secondaryUnitVector(FC,sideIndex);
-  
   return;
 }
 

@@ -3,7 +3,7 @@
  
  * File:   construct/BasicFlightLine.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -145,7 +145,6 @@ BasicFlightLine::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("BasicFlightLine","populate");
 
   FixedRotate::populate(Control);
-
   anglesXY[0]=Control.EvalVar<double>(keyName+"AngleXY1");
   anglesXY[1]=Control.EvalVar<double>(keyName+"AngleXY2");
 
@@ -180,26 +179,6 @@ BasicFlightLine::populate(const FuncDataBase& Control)
   return;
 }
   
-void
-BasicFlightLine::createUnitVector(const attachSystem::FixedComp& FC,
-				  const long int sideIndex)
-  /*!
-    Create the unit vectors
-    - Y Points towards the beamline
-    - X Across the Face
-    - Z up (towards the target)
-    \param FC :: A FixedComp to use as basis set
-    \param sideIndex :: Index for centre and axis
-  */
-{
-  ELog::RegMethod RegA("BasicFlightLine","createUnitVector");
-  FixedComp::createUnitVector(FC,sideIndex);
-  // maybe zero yStep?
-  yStep=0.0;
-  applyOffset();
-
-  return;
-}
 
 void
 BasicFlightLine::createSurfaces()
@@ -400,6 +379,7 @@ BasicFlightLine::createAll(Simulation& System,
 
   createObjects(System,innerFC,innerIndex,outerFC,outerIndex);
   insertObjects(System);       
+
 
   return;
 }
