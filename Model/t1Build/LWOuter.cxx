@@ -192,15 +192,17 @@ LWOuter::createObjects(Simulation& System)
 	    ControlHR.addIntersection(SMap.realSurf(surfNum[j]));
 	  lSurf++;
 	}
-     
+
+      // ELog::EM<<"Outer["<<cellIndex<<"] == \n"<<
+      // 	ControlHR*OuterHR.complement()*boundaryComp*CX<<"\n"<<ELog::endDiag;
       System.addCell(cellIndex++,layerMat[i],0.0,
 		     ControlHR*OuterHR.complement()*boundaryComp*CX);
       OuterHR=CX;
     }
   // Create boundary:
   const HeadRule outerBoundaryHR=
-    HR*OuterHR*ControlHR;
-  
+    HR.complement()*OuterHR*ControlHR;
+
   addOuterSurf(outerBoundaryHR);
   excludeSpace.addIntersection(outerBoundaryHR);
 
