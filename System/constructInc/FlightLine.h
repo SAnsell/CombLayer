@@ -46,7 +46,7 @@ namespace moderatorSystem
 
 class FlightLine :
     public attachSystem::ContainedGroup,
-    public attachSystem::FixedOffset,
+    public attachSystem::FixedRotate,
     public attachSystem::ExternalCut,
     public attachSystem::CellMap
 {

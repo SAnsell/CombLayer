@@ -3,7 +3,7 @@
  
  * File:   essBuild/GuideItem.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -75,7 +75,7 @@ namespace essSystem
 
 GuideItem::GuideItem(const std::string& Key,const size_t Index)  :
   attachSystem::ContainedGroup("Inner","Outer"),
-  attachSystem::FixedOffsetGroup(Key+std::to_string(Index),
+  attachSystem::FixedRotateGroup(Key+std::to_string(Index),
                                  "Main",6,"Beam",6),
   attachSystem::CellMap(),baseName(Key),
   active(1),innerCyl(0),outerCyl(0),GPtr(0)
@@ -88,7 +88,7 @@ GuideItem::GuideItem(const std::string& Key,const size_t Index)  :
 
 GuideItem::GuideItem(const GuideItem& A) : 
   attachSystem::ContainedGroup(A),
-  attachSystem::FixedOffsetGroup(A),
+  attachSystem::FixedRotateGroup(A),
   attachSystem::CellMap(A),
   baseName(A.baseName),active(A.active),beamXStep(A.beamXStep),
   beamZStep(A.beamZStep),beamXYAngle(A.beamXYAngle),
@@ -114,7 +114,7 @@ GuideItem::operator=(const GuideItem& A)
   if (this!=&A)
     {
       attachSystem::ContainedGroup::operator=(A);
-      attachSystem::FixedOffsetGroup::operator=(A);
+      attachSystem::FixedRotateGroup::operator=(A);
       attachSystem::CellMap::operator=(A);
       active=A.active;
       beamXStep=A.beamXStep;
@@ -178,7 +178,7 @@ GuideItem::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("GuideItem","populate");
 
-  FixedOffsetGroup::populate(Control);
+  FixedRotateGroup::populate(Control);
   active=Control.EvalTail<int>(keyName,baseName,"Active");
 
   beamXYAngle=Control.EvalTail<double>(keyName,baseName,"BeamXYAngle");

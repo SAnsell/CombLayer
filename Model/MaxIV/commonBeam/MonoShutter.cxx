@@ -3,7 +3,7 @@
  
  * File:   commonBeam/MonoShutter.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,6 @@
 #include "OutputLog.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
@@ -53,7 +52,6 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "FixedGroup.h"
 #include "FixedRotateGroup.h"
@@ -77,7 +75,7 @@ namespace xraySystem
 MonoShutter::MonoShutter(const std::string& Key) :
   attachSystem::ContainedGroup("Main","FlangeA","FlangeB",
 			       "ShutterA","ShutterB"),
-  attachSystem::FixedOffset(Key,3),
+  attachSystem::FixedRotate(Key,3),
   attachSystem::ExternalCut(),
   attachSystem::SurfMap(),
   attachSystem::CellMap(),
@@ -113,7 +111,7 @@ MonoShutter::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("MonoShutter","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   divideBStep=Control.EvalVar<double>(keyName+"DivideBStep");
 

@@ -92,7 +92,7 @@ SimPHITS::SimPHITS() :
 SimPHITS::SimPHITS(const SimPHITS& A) :
   Simulation(A),nps(A.nps),rndSeed(A.rndSeed),
   PTItem(A.PTItem),MagItem(A.MagItem),
-  PhysPtr(new phitsSystem::phitsPhysics(*PhysPtr))
+  PhysPtr(new phitsSystem::phitsPhysics(*A.PhysPtr))
  /*!
    Copy constructor
    \param A :: Simulation to copy
@@ -118,7 +118,7 @@ SimPHITS::operator=(const SimPHITS& A)
       rndSeed=A.rndSeed;
       PTItem=A.PTItem;
       MagItem=A.MagItem;
-      *PhysPtr=*PhysPtr;
+      *PhysPtr=*A.PhysPtr;
     }
   return *this;
 }

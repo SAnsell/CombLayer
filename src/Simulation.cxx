@@ -580,8 +580,8 @@ Simulation::getObjectRangeWithMat(const std::string& objName,
     return Cells;
 
   std::set<int> remove;
-  int zaidNum(-100);
-  if (StrFunc::convert(matName,zaidNum) && zaidNum>0)
+  size_t zaidNum(0);    // invalid particle
+  if (StrFunc::convert(matName,zaidNum) && zaidNum)
     {
       std::map<int,int> matZaidCache;  // cell : 0 / 1
       std::map<int,int>::const_iterator mz;
@@ -605,7 +605,7 @@ Simulation::getObjectRangeWithMat(const std::string& objName,
 	}
       // MAT NAME
     } 
-  const int matNum((zaidNum != -100) ? zaidNum :
+  const int matNum((zaidNum) ? static_cast<int>(zaidNum) :
     ModelSupport::DBMaterial::Instance().getIndex(matName));
 
   for(const int CN : Cells)

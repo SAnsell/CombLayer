@@ -291,7 +291,10 @@ SimValid::runFixedComp(const Simulation& System,
       const std::vector<Geometry::Vec3D> FCPts=
 	FC->getAllLinkPts();
       for(const Geometry::Vec3D& Pt : FCPts)
-	ELog::EM<<"PT == "<<FC->getKeyName()<<" :: "<<Pt<<ELog::endDiag;
+	{
+	  ELog::EM<<"PT == "<<FC->getKeyName()<<" :: "<<Pt<<ELog::endDiag;
+	  runPoint(System,Pt,N);
+	}
     }
   
   ELog::EM<<"Finished Validation check"<<ELog::endDiag;

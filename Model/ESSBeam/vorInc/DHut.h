@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/DHut.h
+ * File:   vorInc/DHut.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,14 +36,13 @@ namespace essSystem
 */
 
 class DHut :
-  public attachSystem::FixedOffsetGroup,
+  public attachSystem::FixedRotateGroup,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap
   
 {
  private:
   
-
   double voidHeight;            ///< void height [top only]
   double voidWidth;             ///< void width [total]
   double voidDepth;             ///< void depth [low only]
@@ -72,6 +71,7 @@ class DHut :
   DHut& operator=(const DHut&);
   virtual ~DHut();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

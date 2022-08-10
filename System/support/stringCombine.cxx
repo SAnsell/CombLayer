@@ -83,8 +83,7 @@ alphaToIndex(const char C)
   static const char cmap[]=
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     "abcdefghijklmnopqrstuvwxyz";
-  size_t pos=(strchr(cmap,C)-cmap);
-  return pos;
+  return static_cast<size_t>((strchr(cmap,C)-cmap));
 }
 
 size_t
@@ -98,8 +97,7 @@ revAlphaToIndex(const char C)
   static const char cmap[]=
     "abcdefghijklmnopqrstuvwxyz"
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  size_t pos=(strchr(cmap,C)-cmap);
-  return pos;
+  return static_cast<size_t>((strchr(cmap,C)-cmap));
 }
 
 

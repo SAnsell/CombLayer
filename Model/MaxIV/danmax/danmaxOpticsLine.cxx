@@ -3,7 +3,7 @@
  
  * File: danmax/danmaxOpticsLine.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -54,10 +52,9 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -109,7 +106,7 @@ namespace xraySystem
 danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(newName,2),
+  attachSystem::FixedRotate(newName,2),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
 
@@ -234,9 +231,10 @@ void
 danmaxOpticsLine::populate(const FuncDataBase& Control)
   /*!
     Populate the intial values [movement]
+    \param Control :: Data base for variables
    */
 {
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   outerLeft=Control.EvalDefVar<double>(keyName+"OuterLeft",0.0);
   outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",outerLeft);
@@ -731,7 +729,6 @@ danmaxOpticsLine::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RControl("danmaxOpticsLine","createAll");
-
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

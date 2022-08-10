@@ -3,7 +3,7 @@
  
  * File:   balder/Wiggler.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -64,7 +64,7 @@ namespace xraySystem
 {
 
 Wiggler::Wiggler(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -87,7 +87,7 @@ Wiggler::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("Wiggler","populate");
   
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   // Void + Fe special:
   length=Control.EvalVar<double>(keyName+"Length");
@@ -102,22 +102,6 @@ Wiggler::populate(const FuncDataBase& Control)
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   blockMat=ModelSupport::EvalMat<int>(Control,keyName+"BlockMat");
 
-  return;
-}
-
-void
-Wiggler::createUnitVector(const attachSystem::FixedComp& FC,
-			  const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("Wiggler","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
   return;
 }
  

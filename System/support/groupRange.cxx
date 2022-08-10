@@ -362,8 +362,8 @@ groupRange::addItem(const int A)
   if (indexP<LowUnit.size() && indexM<LowUnit.size())
     {
       HighUnit[indexM]=HighUnit[indexP];
-      LowUnit.erase(LowUnit.begin()+indexP);
-      HighUnit.erase(HighUnit.begin()+indexP);
+      LowUnit.erase(LowUnit.begin()+static_cast<long int>(indexP));
+      HighUnit.erase(HighUnit.begin()+static_cast<long int>(indexP));
       return;
     }
   
@@ -420,8 +420,8 @@ groupRange::removeItem(const int A)
   // case 1: short unit to be deleted
   if (LowUnit[index]==HighUnit[index])
     {
-      LowUnit.erase(LowUnit.begin()+index);
-      HighUnit.erase(HighUnit.begin()+index);
+      LowUnit.erase(LowUnit.begin()+static_cast<long int>(index));
+      HighUnit.erase(HighUnit.begin()+static_cast<long int>(index));
       return;
     }
 

@@ -84,7 +84,7 @@ class GuideLine :
 
   int activeShield;              ///< Outer layer active
   int feMat;                     ///< Layer shielding
- 
+  
   std::string shapeFrontSurf(const bool,const size_t) const;
   std::string shapeBackSurf(const bool,const size_t) const;
   
@@ -95,6 +95,7 @@ class GuideLine :
 		    const double,const double);
 
   void populate(const FuncDataBase&);
+  using FixedGroup::createUnitVector;
   void createUnitVector(const attachSystem::FixedComp&,const long int,
 			const attachSystem::FixedComp&,const long int);
   

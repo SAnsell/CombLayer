@@ -198,7 +198,7 @@ radDecay::write(const SimFLUKA& System,
       cx<<"IRRPROFI ";
       if (iradTime.empty())
 	ELog::EM<<"Empty IRRAD "<<ELog::endDiag;
-      for(const std::pair<double,double> IR : iradTime)
+      for(const std::pair<double,double>& IR : iradTime)
 	{
 	  cx<<IR.first<<" "<<IR.second*iradFlux;
 	  index++;
@@ -230,7 +230,7 @@ radDecay::write(const SimFLUKA& System,
       if (index % 6)
 	StrFunc::writeFLUKA(cx.str(),OX);
 
-      for(const std::pair<std::string,size_t>& TN : detectors)
+      for(const std::pair<std::string,size_t> TN : detectors)
 	{
 	  const std::set<flukaTally*> activeTally=
 	    flukaSystem::getActiveTally(System,TN.first);

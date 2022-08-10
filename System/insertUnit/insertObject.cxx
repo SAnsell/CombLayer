@@ -3,7 +3,7 @@
  
  * File:   insertUnit/insertObject.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@
 #include "MaterialSupport.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "BaseMap.h"
 #include "SurfMap.h"
 #include "CellMap.h"
@@ -64,7 +64,7 @@ namespace insertSystem
 
 insertObject::insertObject(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   attachSystem::FrontBackCut(),
   populated(0),defMat(0),delayInsert(0)
@@ -77,7 +77,7 @@ insertObject::insertObject(const std::string& Key)  :
 insertObject::insertObject(const std::string& baseKey,
 			   const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   attachSystem::FrontBackCut(),
   baseName(baseKey),populated(0),defMat(0),delayInsert(0)
@@ -88,7 +88,7 @@ insertObject::insertObject(const std::string& baseKey,
 {}
 
 insertObject::insertObject(const insertObject& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedRotate(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
   baseName(A.baseName),populated(A.populated),
@@ -110,7 +110,7 @@ insertObject::operator=(const insertObject& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       cellIndex=A.cellIndex;
@@ -138,7 +138,7 @@ insertObject::populate(const FuncDataBase& Control)
   
   if (!populated)
     {
-      FixedOffset::populate(baseName,Control);      
+      FixedRotate::populate(baseName,Control);      
       defMat=ModelSupport::EvalMat<int>
 	(Control,keyName+"DefMat",baseName+"DefMat");
       populated=1;
@@ -290,8 +290,8 @@ insertObject::setAngles(const double XS,const double ZA)
     \param ZA :: Z angle
    */
 {
-  xyAngle=XS;
-  zAngle=ZA;
+  zAngle=XS;
+  xAngle=ZA;
   return;
 }
 

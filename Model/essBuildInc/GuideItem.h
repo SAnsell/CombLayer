@@ -35,11 +35,12 @@ namespace essSystem
   \brief Simple Guide element Housing + void
 */
 
-class GuideItem : public attachSystem::ContainedGroup,
-  public attachSystem::FixedOffsetGroup,
-  public attachSystem::CellMap
+class GuideItem :
+    public attachSystem::ContainedGroup,
+    public attachSystem::FixedRotateGroup,
+    public attachSystem::CellMap
 {
- private:
+private:
   
   const std::string baseName;   ///< Base keyname
   int active;                   ///< Build/don't build flag
@@ -97,7 +98,7 @@ class GuideItem : public attachSystem::ContainedGroup,
   
   void setCylBoundary(const int,const int,const int);
 
-    
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
   

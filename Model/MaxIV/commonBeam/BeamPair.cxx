@@ -3,7 +3,7 @@
  
  * File:   commonBeam/BeamPair.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ namespace xraySystem
 
 BeamPair::BeamPair(const std::string& Key) :
   attachSystem::ContainedGroup("BlockA","BlockB","SupportA","SupportB"),
-  attachSystem::FixedOffsetGroup(Key,"Main",6,"Beam",2),
+  attachSystem::FixedRotateGroup(Key,"Main",6,"Beam",2),
   attachSystem::ExternalCut(),
   attachSystem::CellMap()
   /*!
@@ -91,7 +91,7 @@ BeamPair::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BeamPair","populate");
 
-  FixedOffsetGroup::populate(Control);
+  FixedRotateGroup::populate(Control);
   
   upFlag=Control.EvalDefVar<int>(keyName+"UpFlag",1);
   

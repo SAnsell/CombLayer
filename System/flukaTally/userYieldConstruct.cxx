@@ -3,7 +3,7 @@
  
  * File:   flukaTally/userYieldConstruct.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -157,8 +157,8 @@ userYieldConstruct::processYield(SimFLUKA& System,
       // special class because must give regions
       itemIndex+=2;
 
-      const size_t regionIndexA=IParam.getDefValue(0,"tally",Index,4);
-      const size_t regionIndexB=IParam.getDefValue(0,"tally",Index,5);
+      const size_t regionIndexA=IParam.getDefValue<size_t>(0,"tally",Index,4);
+      const size_t regionIndexB=IParam.getDefValue<size_t>(0,"tally",Index,5);
 
       if (!constructSurfRegion(System,FCname,FCindex,
 			       regionIndexA,regionIndexB,cellA,cellB))

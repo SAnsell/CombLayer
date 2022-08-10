@@ -3,7 +3,7 @@
  
  * File:   construct/FlightLine.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
@@ -76,7 +76,7 @@ namespace moderatorSystem
 
 FlightLine::FlightLine(const std::string& Key)  :
   attachSystem::ContainedGroup("inner","outer"),
-  attachSystem::FixedOffset(Key,12),
+  attachSystem::FixedRotate(Key,12),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   plateIndex(0),nLayer(0)
@@ -88,7 +88,7 @@ FlightLine::FlightLine(const std::string& Key)  :
 
 FlightLine::FlightLine(const FlightLine& A) : 
   attachSystem::ContainedGroup(A),
-  attachSystem::FixedOffset(A),
+  attachSystem::FixedRotate(A),
   attachSystem::ExternalCut(A),
   attachSystem::CellMap(A),
   height(A.height),width(A.width),
@@ -117,7 +117,7 @@ FlightLine::operator=(const FlightLine& A)
   if (this!=&A)
     {
       attachSystem::ContainedGroup::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ExternalCut::operator=(A);
       attachSystem::CellMap::operator=(A);
       anglesXY[0]=A.anglesXY[0];
@@ -153,7 +153,7 @@ FlightLine::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("FlightLine","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   // First get inner widths:
 
   anglesXY[0]=Control.EvalVar<double>(keyName+"AngleXY1");
@@ -204,7 +204,7 @@ FlightLine::createRotatedUnitVector(const attachSystem::FixedComp& FC,
 
   createUnitVector(FC,sideIndex); 
   
-  applyFullRotate(xyAngle,zAngle,CentPt);
+  applyFullRotate(xAngle,0.0,zAngle,CentPt);
   applyShift(xStep,0,zStep);
   return;
 }
@@ -311,7 +311,7 @@ FlightLine::getRotatedDivider(const attachSystem::FixedComp& FC,
   static int offset(750);
 
   attachRule=FC.getMainRule(sideIndex);
-  if (std::abs(xyAngle)<45.0) 
+  if (std::abs(zAngle)<45.0) 
     return attachRule;
 
   HeadRule rotHead(FC.getCommonRule(sideIndex));
@@ -325,9 +325,9 @@ FlightLine::getRotatedDivider(const attachSystem::FixedComp& FC,
       if (PN)
 	{
 	  const Geometry::Quaternion QrotXY=
-	    Geometry::Quaternion::calcQRotDeg(xyAngle,Z);
+	    Geometry::Quaternion::calcQRotDeg(zAngle,Z);
 	  const Geometry::Quaternion QrotZ=
-	    Geometry::Quaternion::calcQRotDeg(zAngle,X);
+	    Geometry::Quaternion::calcQRotDeg(xAngle,X);
 	  Geometry::Vec3D PAxis=PN->getNormal();
 	  QrotZ.rotate(PAxis);
 	  QrotXY.rotate(PAxis);

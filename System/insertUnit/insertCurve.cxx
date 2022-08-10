@@ -38,7 +38,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "surfRegister.h"
@@ -59,7 +58,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "BaseMap.h"
 #include "SurfMap.h"
 #include "CellMap.h"
@@ -307,13 +306,12 @@ insertCurve::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("insertCurve","createObjects");
 
-  std::string Out=
-    ModelSupport::getSetComposite(SMap,buildIndex," 1 -2 7 -17 5 -6 ");
-  Out+=frontRule();
-  Out+=backRule();
-  System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));
-  addCell("Main",cellIndex-1);
-  addOuterSurf(Out);
+  HeadRule HR= 
+    ModelSupport::getSetHeadRule(SMap,buildIndex,"1 -2 7 -17 5 -6");
+  HR*=getFrontRule();
+  HR*=getBackRule();
+  makeCell("Main",System,cellIndex++,defMat,0.0,HR);
+  addOuterSurf(HR);
   return;
 }
 

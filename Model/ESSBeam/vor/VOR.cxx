@@ -54,9 +54,8 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotateUnit.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
 #include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -91,7 +90,7 @@ namespace essSystem
 
 VOR::VOR(const std::string& keyName) :
   attachSystem::CopiedComp("vor",keyName),
-  vorAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
+  vorAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
 
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
 

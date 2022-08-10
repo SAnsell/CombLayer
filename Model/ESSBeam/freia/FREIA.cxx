@@ -54,9 +54,8 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotateUnit.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
 #include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -90,7 +89,7 @@ namespace essSystem
 FREIA::FREIA(const std::string& keyName) :
   attachSystem::CopiedComp("freia",keyName),
   startPoint(0),stopPoint(0),
-  freiaAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
+  freiaAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
 
   BendA(new beamlineSystem::GuideLine(newName+"BA")),
 

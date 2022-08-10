@@ -3,7 +3,7 @@
  
  * File:   construct/JawUnit.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -53,7 +52,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
@@ -64,7 +63,8 @@ namespace constructSystem
 {
 
 JawUnit::JawUnit(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,10),attachSystem::ContainedComp(),
+  attachSystem::FixedRotate(Key,10),
+  attachSystem::ContainedComp(),
   attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -73,7 +73,7 @@ JawUnit::JawUnit(const std::string& Key) :
 {}
 
 JawUnit::JawUnit(const JawUnit& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedRotate(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
   zOpen(A.zOpen),
   zOffset(A.zOffset),zThick(A.zThick),zHeight(A.zHeight),
@@ -96,7 +96,7 @@ JawUnit::operator=(const JawUnit& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
@@ -134,7 +134,7 @@ JawUnit::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("JawUnit","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   
   zOpen=Control.EvalVar<double>(keyName+"ZOpen");
   zOffset=Control.EvalVar<double>(keyName+"ZOffset");
@@ -155,23 +155,6 @@ JawUnit::populate(const FuncDataBase& Control)
   xJawMat=ModelSupport::EvalMat<int>(Control,keyName+"XJawMat",
 				     keyName+"JawMat");
   
-  return;
-}
-
-void
-JawUnit::createUnitVector(const attachSystem::FixedComp& FC,
-		       const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("JawUnit","createUnitVector");
-  
-  FixedComp::createUnitVector(FC,sideIndex);
-  FixedOffset::applyOffset();
-
   return;
 }
 

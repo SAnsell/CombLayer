@@ -3,7 +3,7 @@
  
  * File:   insertUnit/insertGrid.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "surfRegister.h"
@@ -57,7 +56,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "BaseMap.h"
 #include "SurfMap.h"
 #include "CellMap.h"
@@ -302,25 +301,24 @@ insertGrid::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("insertGrid","createObjects");
 
-  std::string Out;
-  const std::string FB=frontRule()+backRule();
+  HeadRule HR;
+  const HeadRule FB=getFrontRule()*getBackRule();
 
   // Inner space
-  Out=ModelSupport::getSetComposite(SMap,buildIndex," 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out+FB));
-  addCell("Inner",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
+  makeCell("Inner",System,cellIndex++,defMat,0.0,HR*FB);
 
   int PI(buildIndex+50);
   for(size_t i=0;i<nLayer;i++)
     {
-      Out=ModelSupport::getComposite
-	(SMap,PI,PI-50," 3 -4 5 -6 (-3:4:-5:6) ");
-      System.addCell(MonteCarlo::Object(cellIndex++,wallMat[i],0.0,Out+FB));
+      HR=ModelSupport::getHeadRule
+	(SMap,PI,PI-50,"3 -4 5 -6 (-3:4:-5:6)");
+      System.addCell(cellIndex++,wallMat[i],0.0,HR*FB);
       PI+=50;
     }
 
-  Out=ModelSupport::getComposite(SMap,PI-50," 3 -4 5 -6 ");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,PI-50,"3 -4 5 -6");
+  addOuterSurf(HR*FB);
   return;
 }
 

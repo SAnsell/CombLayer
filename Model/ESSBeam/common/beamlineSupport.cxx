@@ -46,6 +46,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "FixedGroup.h"
 
 
@@ -53,7 +54,7 @@ namespace essBeamSystem
 {
 
 void
-setBeamAxis(attachSystem::FixedOffset& beamAxis,
+setBeamAxis(attachSystem::FixedRotate& beamAxis,
 	    const FuncDataBase& Control,
 	    const attachSystem::FixedGroup& GItem,
 	    const int reverseZ)

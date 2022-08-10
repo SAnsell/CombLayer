@@ -3,7 +3,7 @@
  
  * File:   commonBeam/MonoBox.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -54,7 +53,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -69,7 +68,7 @@ namespace xraySystem
 
 MonoBox::MonoBox(const std::string& Key,
 		       const bool flag) : 
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -98,7 +97,7 @@ MonoBox::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("MonoBox","populate");
   
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   // Void + Fe special:
   voidHeight=Control.EvalVar<double>(keyName+"VoidHeight");
@@ -368,10 +367,10 @@ MonoBox::createAll(Simulation& System,
 
   populate(System.getDataBase());
   if (!centreOrigin)
-    FixedOffset::createCentredUnitVector
+    FixedRotate::createCentredUnitVector
       (FC,FIndex,portATubeLength+wallThick+voidLength/2.0);
   else
-    FixedOffset::createUnitVector(FC,FIndex);
+    FixedRotate::createUnitVector(FC,FIndex);
   createSurfaces();    
   createObjects(System);
   

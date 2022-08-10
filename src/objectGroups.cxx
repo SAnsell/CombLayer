@@ -444,22 +444,21 @@ objectGroups::renumberCell(const int oldCellN,
 
   
 int
-objectGroups::cell(const std::string& Name,const size_t size)
+objectGroups::cell(const std::string& Name,const size_t unitSize)
   /*!
     Add a component and get a new cell number 
     This is called via FixedComp and creates an active range
     \param Name :: Name of the unit
-    \param size :: Size of unit to register [units of 10000]
+    \param unitSize :: Size of unit to register [units of 10000]
     \return the start number of the cellvalue
   */
 {
   ELog::RegMethod RegA("objectGroups","cell");
 
+  if (!unitSize)
+    throw ColErr::EmptyValue<size_t>("unitSize");
 
-  if (!size)
-    throw ColErr::EmptyValue<size_t>("size");
-
-  const size_t range=( (1+(size-1)/cellZone) );
+  const size_t range=( (1+(unitSize-1)/static_cast<size_t>(cellZone)) );
 
   MTYPE::const_iterator mc=regionMap.find(Name);
   if (mc!=regionMap.end())
@@ -688,7 +687,7 @@ objectGroups::getObjectThrow(const std::string& Name,
     Throws InContainerError if not 
     \param Name :: Name
     \param Err :: Error string for exception
-    \return ObjectPtr 
+    \return ObjectPtr f
   */
 {
   ELog::RegMethod RegA("objectGroups","getObjectThrow(const)");
@@ -748,18 +747,69 @@ objectGroups::getObject(const std::string& Name) const
     \return ObjectPtr / 0 
   */
 {
-  ELog::RegMethod RegA("objectGroups","getObject(containedComp)");
+  ELog::RegMethod RegA("objectGroups","getObject(containedComp) const");
   
   const std::string::size_type pos=Name.find(":");
+  cMapTYPE::const_iterator mc;
+  // pure ContainedComp
   if (pos==std::string::npos || !pos || pos==Name.size()-1)
     {
-      cMapTYPE::const_iterator mc=Components.find(Name);
+      mc=Components.find(Name);
       return (mc!=Components.end()) ?
 	dynamic_cast<const attachSystem::ContainedComp*>(mc->second.get()) 
 	: 0;
     }
-  const std::string PreItem=Name.substr(0,pos);
-  const std::string PostItem=Name.substr(pos);
+
+  const std::string preItem=Name.substr(0,pos);
+  const std::string postItem=Name.substr(pos);
+  mc=Components.find(preItem);
+  if (mc!=Components.end())
+    {
+      const attachSystem::ContainedGroup* cGrp=
+	dynamic_cast<const attachSystem::ContainedGroup*>(mc->second.get());
+
+      if (cGrp && cGrp->hasKey(postItem))
+	return &(cGrp->getCC(postItem));
+    }
+  
+  return 0;
+}
+
+template<>
+attachSystem::ContainedComp* 
+objectGroups::getObject(const std::string& Name) 
+  /*!
+    Special for containedComp as it could be a componsite
+    of containedGroup
+    \param Name :: Name
+    \return ObjectPtr / 0 
+  */
+{
+  ELog::RegMethod RegA("objectGroups","getObject(containedComp) const");
+  
+  const std::string::size_type pos=Name.find(":");
+  cMapTYPE::const_iterator mc;
+  // pure ContainedComp
+  if (pos==std::string::npos || !pos || pos==Name.size()-1)
+    {
+      mc=Components.find(Name);
+      return (mc!=Components.end()) ?
+	dynamic_cast<attachSystem::ContainedComp*>(mc->second.get()) 
+	: 0;
+    }
+
+  const std::string preItem=Name.substr(0,pos);
+  const std::string postItem=Name.substr(pos);
+  mc=Components.find(preItem);
+  if (mc!=Components.end())
+    {
+      attachSystem::ContainedGroup* cGrp=
+	dynamic_cast<attachSystem::ContainedGroup*>(mc->second.get());
+
+      if (cGrp && cGrp->hasKey(postItem))
+	return &(cGrp->getCC(postItem));
+    }
+  
   return 0;
 }
 
@@ -1057,9 +1107,6 @@ objectGroups::getAllObjectNames() const
 template const attachSystem::FixedComp* 
   objectGroups::getObject(const std::string&) const;
 
-template const attachSystem::ContainedComp* 
-  objectGroups::getObject(const std::string&) const;
-
 template const attachSystem::ContainedGroup* 
   objectGroups::getObject(const std::string&) const;
 
@@ -1078,9 +1125,6 @@ template attachSystem::FixedComp*
 template attachSystem::FixedGroup* 
   objectGroups::getObject(const std::string&);
 
-template attachSystem::ContainedComp* 
-  objectGroups::getObject(const std::string&);
-
 template attachSystem::ContainedGroup* 
   objectGroups::getObject(const std::string&);
 
@@ -1089,8 +1133,6 @@ template attachSystem::CellMap*
 
 template attachSystem::SurfMap* 
   objectGroups::getObject(const std::string&);
-
-
 
 template const attachSystem::FixedComp* 
   objectGroups::getObjectThrow(const std::string&,const std::string&) const;

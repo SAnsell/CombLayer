@@ -43,7 +43,7 @@ class resnuclei : public flukaTally
   
   int AMax;            ///< Max Z of material
   int ZMax;            ///< Max A of material
-  size_t cellA;        ///< Cell number
+  int cellA;           ///< Cell number
 
 public:
 

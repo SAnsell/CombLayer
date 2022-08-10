@@ -70,7 +70,7 @@ class VOR : public attachSystem::CopiedComp
   int stopPoint;  
 
   /// Main Beam Axis [for construction]
-  std::shared_ptr<attachSystem::FixedOffset> vorAxis;
+  std::shared_ptr<attachSystem::FixedRotate> vorAxis;
 
   /// Elliptic forcus in bulkshield [m5]
   std::shared_ptr<beamlineSystem::GuideLine> FocusA;

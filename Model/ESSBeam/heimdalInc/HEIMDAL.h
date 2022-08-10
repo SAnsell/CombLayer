@@ -83,7 +83,7 @@ class HEIMDAL : public attachSystem::CopiedComp
   int stopPoint;  
 
   /// Main Beam Axis [for construction]
-  std::shared_ptr<attachSystem::FixedOffsetUnit> heimdalAxis;
+  std::shared_ptr<attachSystem::FixedRotateUnit> heimdalAxis;
 
   /// Elliptic focus in bulkshield [m5]
   std::shared_ptr<beamlineSystem::GuideLine> FocusTA;

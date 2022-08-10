@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/simpleItemInc/SimpleITEM.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 namespace attachSystem
 {
   class FixedComp;
-  class FixedOffset;
+  class FixedRotate;
   class TwinComp;
   class CellMap;
 }
@@ -55,7 +55,7 @@ class simpleITEM : public attachSystem::CopiedComp
   int stopPoint;
   
   /// Main Beam Axis [for construction]
-  std::shared_ptr<attachSystem::FixedOffset> simpleAxis;
+  std::shared_ptr<attachSystem::FixedRotate> simpleAxis;
 
   /// Simple plate
   std::shared_ptr<insertSystem::insertPlate> Plate;

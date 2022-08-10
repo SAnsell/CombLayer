@@ -3,7 +3,7 @@
  
  * File:   construct/VacuumBox.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,7 +55,7 @@
 #include "geomSupport.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -69,7 +69,7 @@ namespace constructSystem
 
 VacuumBox::VacuumBox(const std::string& Key,
 		       const bool flag) : 
-  attachSystem::FixedOffset(Key,10),
+  attachSystem::FixedRotate(Key,10),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::FrontBackCut(),
   centreOrigin(flag)
@@ -81,7 +81,7 @@ VacuumBox::VacuumBox(const std::string& Key,
 {}
 
 VacuumBox::VacuumBox(const VacuumBox& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedRotate(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),attachSystem::FrontBackCut(A),
   centreOrigin(A.centreOrigin),voidHeight(A.voidHeight),
   voidWidth(A.voidWidth),voidDepth(A.voidDepth),
@@ -112,7 +112,7 @@ VacuumBox::operator=(const VacuumBox& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
@@ -163,7 +163,7 @@ VacuumBox::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("VacuumBox","populate");
   
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   // Void + Fe special:
   voidHeight=Control.EvalVar<double>(keyName+"VoidHeight");
@@ -244,8 +244,6 @@ VacuumBox::createUnitVector(const attachSystem::FixedComp& FC,
     Origin+=Y*(portATubeLength+feFront+voidLength/2.0)-
       X*portAXStep-
       Z*portAZStep;
-
-
   
   return;
 }

@@ -52,11 +52,9 @@
 
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotateUnit.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
 #include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -84,7 +82,7 @@ namespace essSystem
 HEIMDAL::HEIMDAL(const std::string& keyName) :
   attachSystem::CopiedComp("heimdal",keyName),
   startPoint(0),stopPoint(0),
-  heimdalAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
+  heimdalAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
 
   FocusTA(new beamlineSystem::GuideLine(newName+"FTA")),
   FocusCA(new beamlineSystem::GuideLine(newName+"FCA")),

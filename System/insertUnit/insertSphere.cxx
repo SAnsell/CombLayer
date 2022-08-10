@@ -3,7 +3,7 @@
  
  * File:   insertUnit/insertSphere.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -59,7 +57,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "BaseMap.h"
 #include "SurfMap.h"
 #include "CellMap.h"
@@ -171,12 +169,12 @@ insertSphere::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("insertSphere","createObjects");
-  
-  std::string Out=
-    ModelSupport::getComposite(SMap,buildIndex," -7 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));
-  addCell("Main",cellIndex-1);
-  addOuterSurf(Out);
+
+  HeadRule HR= 
+    ModelSupport::getHeadRule(SMap,buildIndex,"-7");
+  makeCell("Main",System,cellIndex++,defMat,0.0,HR);
+  addOuterSurf(HR);
+
   return;
 }
 

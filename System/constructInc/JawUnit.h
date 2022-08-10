@@ -3,7 +3,7 @@
  
  * File:   constructInc/JawUnit.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,9 +35,10 @@ namespace constructSystem
   \brief JawUnit unit  
 */
 
-class JawUnit : public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
-  public attachSystem::CellMap
+class JawUnit :
+    public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
+    public attachSystem::CellMap
 {
  private:
     
@@ -59,7 +60,6 @@ class JawUnit : public attachSystem::FixedOffset,
   int xJawMat;                  ///< X material
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -71,7 +71,7 @@ class JawUnit : public attachSystem::FixedOffset,
   JawUnit& operator=(const JawUnit&);
   virtual ~JawUnit();
 
-
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
