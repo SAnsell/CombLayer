@@ -3,7 +3,7 @@
  
  * File:   exmapleBuild/BremBlock.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -53,7 +52,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -65,7 +64,7 @@ namespace exampleSystem
 {
 
 ShieldRoom::ShieldRoom(const std::string& Key) :
-  attachSystem::FixedOffset(Key,2),
+  attachSystem::FixedRotate(Key,2),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap()
@@ -90,7 +89,7 @@ ShieldRoom::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("ShieldRoom","populate");
   
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");

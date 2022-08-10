@@ -3,7 +3,7 @@
  
  * File:   constructInc/BeamShutter.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,10 +34,11 @@ namespace constructSystem
     \brief Movable shutter [keeps link pt fixed]
   */
   
-class BeamShutter : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffsetGroup,
-  public attachSystem::CellMap,
-  public attachSystem::SurfMap
+class BeamShutter :
+    public attachSystem::ContainedComp,
+    public attachSystem::FixedRotateGroup,
+    public attachSystem::CellMap,
+    public attachSystem::SurfMap
 {
  private:
 
@@ -77,6 +78,7 @@ class BeamShutter : public attachSystem::ContainedComp,
   void setInnerExclude(const HeadRule&);
   void setOuter(const HeadRule&);
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
   

@@ -35,7 +35,7 @@ namespace essSystem
   \brief SkadiHut unit  
 */
 class TrexHut:
-  public attachSystem::FixedOffsetGroup,
+  public attachSystem::FixedRotateGroup,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap
 {
@@ -86,6 +86,7 @@ class TrexHut:
   TrexHut& operator=(const TrexHut&);
   virtual ~TrexHut();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

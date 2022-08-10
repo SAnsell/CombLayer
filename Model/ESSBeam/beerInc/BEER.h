@@ -80,7 +80,7 @@ class BEER : public attachSystem::CopiedComp
   int stopPoint;  
 
   /// Main Beam Axis [for construction]
-  std::shared_ptr<attachSystem::FixedOffsetUnit> beerAxis;
+  std::shared_ptr<attachSystem::FixedRotateUnit> beerAxis;
 
   /// Elliptic focus in monolith [m5]
   std::shared_ptr<beamlineSystem::GuideLine> BendA;

@@ -38,7 +38,7 @@ namespace essSystem
 
 class BeRef :
     public attachSystem::ContainedComp,
-    public attachSystem::FixedOffsetUnit,
+    public attachSystem::FixedRotateUnit,
     public attachSystem::CellMap
 {
  private:

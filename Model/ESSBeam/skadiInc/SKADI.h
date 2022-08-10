@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/skadic/SKADI.h
  *
- * Copyright (c) 2004-2019 by Tsitohaina Randriamalala/Stuart Ansell
+ * Copyright (c) 2004-2022 by Tsitohaina Randriamalala/Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,7 +72,7 @@ class SKADI : public attachSystem::CopiedComp
   int stopPoint;  
 
   /// Main Beam Axis
-  std::shared_ptr<attachSystem::FixedOffsetUnit> skadiAxis;
+  std::shared_ptr<attachSystem::FixedRotateUnit> skadiAxis;
   
   /// Monolith guideline
   std::shared_ptr<beamlineSystem::GuideLine> BendA;

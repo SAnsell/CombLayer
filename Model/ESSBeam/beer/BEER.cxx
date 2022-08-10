@@ -54,7 +54,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotateUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "FixedRotateGroup.h"
@@ -90,7 +90,7 @@ namespace essSystem
 BEER::BEER(const std::string& keyName) :
   attachSystem::CopiedComp("beer",keyName),
   stopPoint(0),
-  beerAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
+  beerAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
 
   BendA(new beamlineSystem::GuideLine(newName+"BA")),
 

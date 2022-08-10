@@ -72,7 +72,7 @@ class ODIN : public attachSystem::CopiedComp
   int stopPoint;  
 
   /// Main Beam Axis [for construction]
-  std::shared_ptr<attachSystem::FixedOffsetUnit> odinAxis;
+  std::shared_ptr<attachSystem::FixedRotateUnit> odinAxis;
   /// Elliptic guide in monolith
   std::shared_ptr<beamlineSystem::GuideLine> FocusA;
 

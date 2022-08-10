@@ -60,8 +60,8 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotate.h"
+#include "FixedRotateUnit.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -73,7 +73,7 @@ namespace moderatorSystem
 
 BasicFlightLine::BasicFlightLine(const std::string& Key)  :
   attachSystem::ContainedGroup("inner","outer"),
-  attachSystem::FixedOffsetUnit(Key,12),
+  attachSystem::FixedRotateUnit(Key,12),
   nLayer(0),tapFlag(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -83,7 +83,7 @@ BasicFlightLine::BasicFlightLine(const std::string& Key)  :
 
 BasicFlightLine::BasicFlightLine(const BasicFlightLine& A) : 
   attachSystem::ContainedGroup(A),
-  attachSystem::FixedOffsetUnit(A),
+  attachSystem::FixedRotateUnit(A),
   attachSystem::CellMap(A),
   height(A.height),width(A.width),
   innerMat(A.innerMat),nLayer(A.nLayer),lThick(A.lThick),
@@ -111,7 +111,7 @@ BasicFlightLine::operator=(const BasicFlightLine& A)
   if (this!=&A)
     {
       attachSystem::ContainedGroup::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
       anglesXY[0]=A.anglesXY[0];
       anglesXY[1]=A.anglesXY[1];
@@ -144,7 +144,7 @@ BasicFlightLine::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BasicFlightLine","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   anglesXY[0]=Control.EvalVar<double>(keyName+"AngleXY1");
   anglesXY[1]=Control.EvalVar<double>(keyName+"AngleXY2");

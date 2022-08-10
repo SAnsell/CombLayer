@@ -36,7 +36,7 @@ namespace essSystem
 */
 
 class EmptyCyl : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffsetUnit
+  public attachSystem::FixedRotateUnit
 {
  private:
 
@@ -44,9 +44,6 @@ class EmptyCyl : public attachSystem::ContainedComp,
   int mat;                     ///< material
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-  
   void createSurfaces();
   void createObjects(Simulation&,const attachSystem::FixedComp&,
 		     const long int,const long int,const long int,

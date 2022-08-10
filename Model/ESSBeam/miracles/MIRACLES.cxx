@@ -55,9 +55,8 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotateUnit.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
 #include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -92,7 +91,7 @@ namespace essSystem
 MIRACLES::MIRACLES(const std::string& keyName) :
   attachSystem::CopiedComp("miracles",keyName),
   nGuideSection(8),nSndSection(7),nEllSection(4),stopPoint(0),
-  miraclesAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
+  miraclesAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
 
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),

@@ -57,7 +57,7 @@
 #include "LinkUnit.h"  
 #include "FixedComp.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -71,7 +71,7 @@ namespace constructSystem
 {
 
 JawFlange::JawFlange(const std::string& Key) : 
-  attachSystem::FixedOffsetGroup(Key,"Main",2,"Beam",2),
+  attachSystem::FixedRotateGroup(Key,"Main",2,"Beam",2),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut(),
   cutCell(0)
@@ -97,7 +97,7 @@ JawFlange::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("JawFlange","populate");
   
-  attachSystem::FixedOffsetGroup::populate(Control);
+  attachSystem::FixedRotateGroup::populate(Control);
 
   // If length -ve then extra from beam-flange length
   length=Control.EvalVar<double>(keyName+"Length");

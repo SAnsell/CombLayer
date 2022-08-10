@@ -3,7 +3,7 @@
  
  * File:   construct/BeamShutter.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -70,7 +70,7 @@ namespace constructSystem
 
 BeamShutter::BeamShutter(const std::string& Key) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffsetGroup(Key,"Main",6,"Void",2,"Beam",2),
+  attachSystem::FixedRotateGroup(Key,"Main",6,"Void",2,"Beam",2),
   attachSystem::CellMap(),attachSystem::SurfMap()
   /*!
     Default constructor
@@ -88,7 +88,7 @@ BeamShutter::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BeamShutter","populate");
 
-  attachSystem::FixedOffsetGroup::populate(Control);
+  attachSystem::FixedRotateGroup::populate(Control);
   liftZStep=Control.EvalVar<double>(keyName+"LiftZStep");
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");

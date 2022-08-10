@@ -54,7 +54,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotateUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "FixedRotateGroup.h"
@@ -96,7 +96,7 @@ namespace essSystem
 
 LOKI::LOKI(const std::string& keyN) :
   attachSystem::CopiedComp("loki",keyN),startPoint(0),stopPoint(0),
-  lokiAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
+  lokiAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
   BendA(new beamlineSystem::GuideLine(newName+"BA")),
 
   ShutterA(new insertSystem::insertPlate(newName+"BlockShutter")),  

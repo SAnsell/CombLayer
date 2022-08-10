@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/GuideBay.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,9 +37,10 @@ namespace essSystem
 */
 
 
-class GuideBay : public attachSystem::ContainedGroup,
-  public attachSystem::FixedOffset,
-  public attachSystem::CellMap
+class GuideBay :
+    public attachSystem::ContainedGroup,
+    public attachSystem::FixedRotate,
+    public attachSystem::CellMap
 {
  private:
   
@@ -84,6 +85,8 @@ class GuideBay : public attachSystem::ContainedGroup,
   
   void outerMerge(Simulation&,GuideBay&);
   void createGuideItems(Simulation&,const std::string&,const std::string&);
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

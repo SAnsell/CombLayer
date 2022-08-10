@@ -3,7 +3,7 @@
  
  * File:   essBuild/makeESSBL.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,9 +60,10 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "FixedOffset.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotate.h"
+#include "FixedRotateUnit.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "Bunker.h"

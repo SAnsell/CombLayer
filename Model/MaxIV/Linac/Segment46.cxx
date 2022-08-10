@@ -3,7 +3,7 @@
 
  * File: Linac/Segment46.cxx
  *
- * Copyright (c) 2004-2021 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,6 +46,8 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
+#include "FixedGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -65,8 +67,6 @@
 #include "Simulation.h"
 #include "generalConstruct.h"
 #include "LObjectSupport.h"
-#include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
 #include "generateSurf.h"
 
 #include "GeneralPipe.h"

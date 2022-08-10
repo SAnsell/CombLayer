@@ -35,8 +35,9 @@ namespace essSystem
   \brief Proton beam instrumentation plug
 */
 
-class PBIP : public attachSystem::ContainedGroup,
-  public attachSystem::FixedOffsetUnit
+class PBIP :
+    public attachSystem::ContainedGroup,
+    public attachSystem::FixedRotateUnit
 {
  private:
 
@@ -64,9 +65,6 @@ class PBIP : public attachSystem::ContainedGroup,
   int foilMat; ///< foil material
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&,

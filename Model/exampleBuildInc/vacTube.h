@@ -48,7 +48,7 @@ namespace exampleSystem
 
   
 class vacTube :
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap

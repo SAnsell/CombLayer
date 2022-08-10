@@ -3,7 +3,7 @@
  
  * File:   constructInc/BasicFlightLine.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,9 +35,10 @@ namespace moderatorSystem
   \brief BasicFlightLine [insert object]
 */
 
-class BasicFlightLine : public attachSystem::ContainedGroup,
-  public attachSystem::FixedOffsetUnit,
-  public attachSystem::CellMap
+class BasicFlightLine :
+    public attachSystem::ContainedGroup,
+    public attachSystem::FixedRotateUnit,
+    public attachSystem::CellMap
 {
  private:
   

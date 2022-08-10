@@ -54,7 +54,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotateUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "FixedRotateGroup.h"
@@ -99,7 +99,7 @@ namespace essSystem
 VESPA::VESPA(const std::string& keyName) :
   attachSystem::CopiedComp("vespa",keyName),
   startPoint(0),stopPoint(0),
-  vespaAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
+  vespaAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
   
   // Guide into the monolith
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),

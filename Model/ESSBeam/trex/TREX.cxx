@@ -54,9 +54,8 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotateUnit.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
 #include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -91,7 +90,7 @@ namespace essSystem
 TREX::TREX(const std::string& keyName):
   attachSystem::CopiedComp("trex",keyName),
   nC(7),nF(8),stopPoint(0),
-  trexAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
+  trexAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
 
   FocusMono(new beamlineSystem::GuideLine(newName+"FMono")),
   VPipeBridge(new constructSystem::VacuumPipe(newName+"PipeBridge")),

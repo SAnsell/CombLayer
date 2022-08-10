@@ -3,7 +3,7 @@
 
  * File: Linac/Segment48.cxx
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,8 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
+#include "FixedGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -67,8 +69,6 @@
 #include "VirtualTube.h"
 #include "PipeTube.h"
 #include "PortTube.h"
-#include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
 #include "portItem.h"
 #include "FixedOffset.h"
 #include "EBeamStop.h"

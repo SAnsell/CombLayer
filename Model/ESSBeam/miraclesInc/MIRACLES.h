@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuildInc/MIRACLES.h
+ * File:   miriclesInc/MIRACLES.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,7 +76,7 @@ class MIRACLES : public attachSystem::CopiedComp
   int stopPoint;  
 
   /// Main Beam Axis [for construction]
-  std::shared_ptr<attachSystem::FixedOffset> miraclesAxis;
+  std::shared_ptr<attachSystem::FixedRotateUnit> miraclesAxis;
 
   /// Elliptic focus in bulkshield [m3]
   std::shared_ptr<beamlineSystem::GuideLine> FocusA;

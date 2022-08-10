@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BIFROST.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,7 +76,7 @@ class BIFROST : public attachSystem::CopiedComp
   int stopPoint;  
 
   /// Main Beam Axis [for construction]
-  std::shared_ptr<attachSystem::FixedOffset> bifrostAxis;
+  std::shared_ptr<attachSystem::FixedRotateUnit> bifrostAxis;
 
   /// Elliptic focus in bulkshield [m3]
   std::shared_ptr<beamlineSystem::GuideLine> FocusA;

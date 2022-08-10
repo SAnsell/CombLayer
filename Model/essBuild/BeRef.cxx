@@ -3,7 +3,7 @@
  
  * File:   essBuild/BeRef.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,8 +55,8 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotate.h"
+#include "FixedRotateUnit.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -69,7 +69,7 @@ namespace essSystem
 
 BeRef::BeRef(const std::string& Key) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffsetUnit(Key,11),
+  attachSystem::FixedRotateUnit(Key,11),
   attachSystem::CellMap(),
   engActive(0),
   InnerCompTop(new BeRefInnerStructure(Key+"TopInnerStructure")),
@@ -86,7 +86,7 @@ BeRef::BeRef(const std::string& Key) :
 
 BeRef::BeRef(const BeRef& A) : 
   attachSystem::ContainedComp(A),
-  attachSystem::FixedOffsetUnit(A),
+  attachSystem::FixedRotateUnit(A),
   attachSystem::CellMap(A),
   
   engActive(A.engActive),
@@ -117,7 +117,7 @@ BeRef::operator=(const BeRef& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       CellMap::operator=(A);
       engActive=A.engActive;
       *InnerCompTop = *A.InnerCompTop;
@@ -162,7 +162,7 @@ BeRef::populateWithDef(const FuncDataBase& Control,
 {
   ELog::RegMethod RegA("BeRef","populateWithDef");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   globalPopulate(Control);
   //  engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
   

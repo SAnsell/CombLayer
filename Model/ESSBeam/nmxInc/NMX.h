@@ -62,7 +62,7 @@ class NMX : public attachSystem::CopiedComp
   int stopPoint;  
 
   /// Main Beam Axis [for construction]
-  std::shared_ptr<attachSystem::FixedOffset> nmxAxis;
+  std::shared_ptr<attachSystem::FixedRotate> nmxAxis;
 
   /// tapper in insert bay
   std::shared_ptr<beamlineSystem::GuideLine> FocusA;

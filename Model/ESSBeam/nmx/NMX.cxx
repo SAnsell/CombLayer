@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/nmx/NMX.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,9 +53,9 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotateUnit.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
@@ -85,7 +85,7 @@ namespace essSystem
 NMX::NMX(const std::string& keyName) :
   attachSystem::CopiedComp("nmx",keyName),
   stopPoint(0),
-  nmxAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
+  nmxAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
   VPipeA(new constructSystem::WindowPipe(newName+"PipeA")),
   BendA(new beamlineSystem::GuideLine(newName+"BA")),

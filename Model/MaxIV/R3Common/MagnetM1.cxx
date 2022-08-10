@@ -3,7 +3,7 @@
  
  * File:   R3Common/MagnetM1.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -358,7 +358,6 @@ MagnetM1::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("MagnetM1","createAll");
 
-  int outerCell;
   populate(System.getDataBase());
 
   createUnitVector(FC,sideIndex);

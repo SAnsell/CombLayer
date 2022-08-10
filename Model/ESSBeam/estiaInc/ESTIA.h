@@ -65,7 +65,7 @@ class ESTIA : public attachSystem::CopiedComp
   int stopPoint;  
 
   /// Main Beam Axis [for construction]
-  std::shared_ptr<attachSystem::FixedOffsetUnit> estiaAxis;
+  std::shared_ptr<attachSystem::FixedRotateUnit> estiaAxis;
 
   /// mirror to end of monolith
   std::shared_ptr<beamlineSystem::GuideLine> FocusMono;

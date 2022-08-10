@@ -54,7 +54,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotateUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "FixedRotateGroup.h"
@@ -88,7 +88,7 @@ namespace essSystem
 DREAM::DREAM(const std::string& keyName) :
   attachSystem::CopiedComp("dream",keyName),
   stopPoint(0),
-  dreamAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
+  dreamAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
 
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
  

@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/LOKI.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 namespace attachSystem
 {
   class FixedComp;
-  class FixedOffset;
+  class FixedRotate;
   class TwinComp;
   class CellMap;
 }
@@ -70,7 +70,7 @@ class LOKI : public attachSystem::CopiedComp
   int stopPoint;
   
   /// Main Beam Axis [for construction]
-  std::shared_ptr<attachSystem::FixedOffset> lokiAxis;
+  std::shared_ptr<attachSystem::FixedRotate> lokiAxis;
 
   /// Bender in insert bay
   std::shared_ptr<beamlineSystem::GuideLine> BendA;

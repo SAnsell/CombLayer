@@ -3,7 +3,7 @@
  
  * File:   skadiInc/SkadiHut.h
  *
- * Copyright (c) 2004-2017 by Tsitohaina Randiamalala & Stuart Ansell
+ * Copyright (c) 2004-2022 by Tsitohaina Randiamalala & Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,13 +34,11 @@ namespace essSystem
   \brief SkadiHut unit  
 */
 class SkadiHut:
-  public attachSystem::FixedOffsetGroup,
+  public attachSystem::FixedRotateGroup,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap
 {
  private:
-  
-
 
   double voidHeight;            ///< void height [top only]
   double voidWidth;             ///< void width [total]
@@ -93,6 +91,7 @@ class SkadiHut:
   SkadiHut& operator=(const SkadiHut&);
   virtual ~SkadiHut();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

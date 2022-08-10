@@ -55,9 +55,8 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotateUnit.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
 #include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -91,7 +90,7 @@ namespace essSystem
 MAGIC::MAGIC(const std::string& keyName) :
   attachSystem::CopiedComp("magic",keyName),
   startPoint(0),stopPoint(0),
-  magicAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
+  magicAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),

@@ -78,7 +78,7 @@ class TREX : public attachSystem::CopiedComp
   int stopPoint;  
 
   /// Main Beam Axis
-  std::shared_ptr<attachSystem::FixedOffsetUnit> trexAxis;
+  std::shared_ptr<attachSystem::FixedRotateUnit> trexAxis;
   
   /// Monolith guideline
   std::shared_ptr<beamlineSystem::GuideLine> FocusMono;

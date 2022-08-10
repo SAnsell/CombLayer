@@ -54,9 +54,8 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotateUnit.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
 #include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -92,7 +91,7 @@ namespace essSystem
 SKADI::SKADI(const std::string& keyName):
   attachSystem::CopiedComp("skadi",keyName),
   stopPoint(0),
-  skadiAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
+  skadiAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
 
   BendA(new beamlineSystem::GuideLine(newName+"BA")),
 

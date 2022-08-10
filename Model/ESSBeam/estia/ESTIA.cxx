@@ -54,7 +54,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotateUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "FixedRotateGroup.h"
@@ -84,7 +84,7 @@ namespace essSystem
 ESTIA::ESTIA(const std::string& keyName) :
   attachSystem::CopiedComp("estia",keyName),
   stopPoint(0),
-  estiaAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
+  estiaAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
   FocusMono(new beamlineSystem::GuideLine(newName+"FMono")),
   VPipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),

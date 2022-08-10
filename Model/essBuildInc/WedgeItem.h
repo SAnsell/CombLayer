@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/WedgeItem.h
  *
- * Copyright (c) 2004-2019 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,8 +35,9 @@ namespace essSystem
   \brief Flight line Wedge Item
 */
 
-class WedgeItem : public attachSystem::ContainedComp,
-    public attachSystem::FixedOffsetUnit
+class WedgeItem :
+    public attachSystem::ContainedComp,
+    public attachSystem::FixedRotateUnit
 {
  private:
 

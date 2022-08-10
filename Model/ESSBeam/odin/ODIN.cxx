@@ -53,7 +53,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotateUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "FixedRotateGroup.h"
@@ -90,7 +90,7 @@ namespace essSystem
 ODIN::ODIN(const std::string& keyName) :
   attachSystem::CopiedComp("odin",keyName),
   stopPoint(0),
-  odinAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
+  odinAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
 
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
   

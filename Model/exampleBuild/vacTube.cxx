@@ -53,7 +53,6 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -74,7 +73,7 @@ namespace exampleSystem
 {
 
 vacTube::vacTube(const std::string& Key) :
-  attachSystem::FixedOffset(Key,2),
+  attachSystem::FixedRotate(Key,2),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -98,7 +97,7 @@ vacTube::vacTube(const std::string& Key) :
 }
 
 vacTube::vacTube(const vacTube& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedRotate(A),attachSystem::ContainedComp(A),
   attachSystem::ExternalCut(A),
   attachSystem::CellMap(A),
   buildZone(A.buildZone),
@@ -120,7 +119,7 @@ vacTube::operator=(const vacTube& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::ExternalCut::operator=(A);
       attachSystem::CellMap::operator=(A);
@@ -143,7 +142,7 @@ vacTube::~vacTube()
 void
 vacTube::populate(const FuncDataBase& Control)
 {
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   boxWidth=Control.EvalVar<double>(keyName+"BoxWidth");
   return;
 }

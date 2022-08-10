@@ -3,7 +3,7 @@
  
  * File:   essBuild/BeamMonitor.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,8 +57,8 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotate.h"
+#include "FixedRotateUnit.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 
@@ -68,7 +68,7 @@ namespace essSystem
 {
 
 BeamMonitor::BeamMonitor(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffsetUnit(Key,3)
+  attachSystem::ContainedComp(),attachSystem::FixedRotateUnit(Key,3)
   /*!
     Constructor
     \param Key :: Keyname for system
@@ -76,7 +76,7 @@ BeamMonitor::BeamMonitor(const std::string& Key) :
 {}
 
 BeamMonitor::BeamMonitor(const BeamMonitor& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffsetUnit(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedRotateUnit(A),
   nSec(A.nSec),radius(A.radius),thick(A.thick),
   mat(A.mat),halfThick(A.halfThick)
   /*!
@@ -96,7 +96,7 @@ BeamMonitor::operator=(const BeamMonitor& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       nSec=A.nSec;
       radius=A.radius;
       thick=A.thick;
@@ -121,7 +121,7 @@ BeamMonitor::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BeamMonitor","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   nSec=Control.EvalVar<size_t>(keyName+"BoxNSections");   
   double RW(0.0);
@@ -151,21 +151,6 @@ BeamMonitor::populate(const FuncDataBase& Control)
       thick.push_back(TW);
       mat.push_back(MW);
     }
-  return;
-}
-
-void
-BeamMonitor::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int linkIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed Component
-    \param linkIndex :: Link index position
-  */
-{
-  ELog::RegMethod RegA("BeamMonitor","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,linkIndex);
-  applyOffset();
   return;
 }
 

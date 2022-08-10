@@ -54,9 +54,8 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotateUnit.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
 #include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -86,7 +85,7 @@ namespace essSystem
 TESTBEAM::TESTBEAM(const std::string& keyName) :
   attachSystem::CopiedComp("testBeam",keyName),
   startPoint(0),stopPoint(0),
-  testAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
+  testAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
 
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
   

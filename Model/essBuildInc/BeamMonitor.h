@@ -35,8 +35,9 @@ namespace essSystem
   \brief BeamMonitor
 */
 
-class BeamMonitor : public attachSystem::ContainedComp,
-    public attachSystem::FixedOffsetUnit
+class BeamMonitor :
+    public attachSystem::ContainedComp,
+    public attachSystem::FixedRotateUnit
 {
  private:
 
@@ -49,7 +50,6 @@ class BeamMonitor : public attachSystem::ContainedComp,
   // Functions:
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&,const attachSystem::ContainedGroup&,
 		     const std::string&);
@@ -65,8 +65,7 @@ class BeamMonitor : public attachSystem::ContainedComp,
   BeamMonitor(const std::string&);
   BeamMonitor(const BeamMonitor&);
   BeamMonitor& operator=(const BeamMonitor&);
-  virtual ~BeamMonitor();
-   
+  virtual ~BeamMonitor();   
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int,const attachSystem::ContainedGroup&,

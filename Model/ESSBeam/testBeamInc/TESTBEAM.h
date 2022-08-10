@@ -82,7 +82,7 @@ class TESTBEAM : public attachSystem::CopiedComp
   int stopPoint;  
 
   /// Main Beam Axis [for construction]
-  std::shared_ptr<attachSystem::FixedOffsetUnit> testAxis;
+  std::shared_ptr<attachSystem::FixedRotateUnit> testAxis;
 
   /// Elliptic focus in bulkshield [m5]
   std::shared_ptr<beamlineSystem::GuideLine> FocusA;
