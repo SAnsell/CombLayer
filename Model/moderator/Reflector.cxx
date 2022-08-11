@@ -175,9 +175,11 @@ Reflector::createFlightLineSurfaces()
 
   int FIndex(buildIndex+1000);
   size_t linkIndex(10);
-  for(const flightInfo& FL : flightLine)
+  const std::vector<std::string> fName({
+      "FLgroove","FLhydro","FLbroad","FLnarrow"});
+  std::vector<std::string>::const_iterator vc=fName.begin();
+  for(const flightInfo& FL  : flightLine)
     {
-      
       const Geometry::Vec3D Org=Origin+FL.Org.getInBasis(X,Y,Z);
       const Geometry::Vec3D Axis=FL.Axis.getInBasis(X,Y,Z).unit();
       const Geometry::Vec3D AxisX=Z*Axis;
@@ -209,7 +211,8 @@ Reflector::createFlightLineSurfaces()
       FixedComp::setLinkSurf(linkIndex,FLHR);
       FixedComp::setConnect(linkIndex,Org,Axis);
       linkIndex++;
-      
+
+      FixedComp::nameSideIndex(linkIndex,*vc++);
       
       FIndex+=100;
     }
