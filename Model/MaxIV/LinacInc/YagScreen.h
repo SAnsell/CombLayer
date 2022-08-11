@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/LinacInc/YagScreen.h
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,11 @@
 #define tdcSystem_YagScreen_h
 
 class Simulation;
+
+namespace Geometry
+{
+  class Line;
+}
 
 namespace tdcSystem
 {
@@ -102,7 +107,7 @@ class YagScreen :
   bool inBeam;                ///< screen and mirror are in the beam
 
   /// Norminal line to get screen centre 
-  Geometry::Line beamAxis;
+  std::unique_ptr<Geometry::Line> beamAxis;
 
   void calcImpactVector();
 

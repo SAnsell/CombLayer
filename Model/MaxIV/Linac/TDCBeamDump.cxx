@@ -215,36 +215,6 @@ TDCBeamDump::populate(const FuncDataBase& Control)
 }
 
 void
-TDCBeamDump::createUnitVector(const attachSystem::FixedComp& centreFC,
-			      const long int cIndex,
-			      const attachSystem::FixedComp& pipeFC,
-			      const long int pIndex)
-/*!
-    Create the unit vectors.
-    The first beamFC is to set the X,Y,Z relative to the beam
-    and the origin at the beam centre position.
-
-    \param centreFC :: FixedComp for origin
-    \param cIndex :: link point of centre [and axis]
-    \param pipeFC :: link point of pipe centre
-    \param pIndex :: direction for links
-  */
-{
-  ELog::RegMethod RegA("TDCBeamDump","createUnitVector");
-
-  attachSystem::FixedComp& mainFC=getKey("Main");
-  attachSystem::FixedComp& beamFC=getKey("Beam");
-
-  mainFC.createUnitVector(centreFC,cIndex);
-  beamFC.createUnitVector(pipeFC,pIndex);
-  applyOffset();
-
-  setDefault("Main","Beam");
-  return;
-}
-
-
-void
 TDCBeamDump::createSurfaces()
   /*!
     Create All the surfaces
@@ -433,50 +403,24 @@ TDCBeamDump::createLinks()
 void
 TDCBeamDump::createAll(Simulation& System,
 		       const attachSystem::FixedComp& mainFC,
-		       const std::string& mainSideName,
-		       const attachSystem::FixedComp& beamFC,
-		       const std::string& beamSideName)
+		       const long int mainSideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
-    \param mainFC :: Central origin (floor and outer)
-    \param mainSideName :: Link point for 
-    \param beamFC :: beam direction (pipe with lead etc)
-    \param beamSideName :: link point for direct of beam + origin
+    \param mainFC :: Central origin (pipe)
+    \param mainSideIndex :: link point for origin
   */
 {
   ELog::RegMethod RegA("TDCBeamDump","createAll");
-
-  const long int mainSideIndex=mainFC.getSideIndex(mainSideName);
-  const long int beamSideIndex=beamFC.getSideIndex(beamSideName);
-  createAll(System,mainFC,mainSideIndex,beamFC,beamSideIndex);
-  
-  return;
-}
-
-void
-TDCBeamDump::createAll(Simulation& System,
-		       const attachSystem::FixedComp& mainFC,
-		       const long int mainSideIndex,
-		       const attachSystem::FixedComp& beamFC,
-		       const long int beamSideIndex)
-  /*!
-    Generic function to create everything
-    \param System :: Simulation item
-    \param FC :: Central origin (pipe)
-    \param sideIndex :: link point for origin
-  */
-{
-  ELog::RegMethod RegA("TDCBeamDump","createAll");
-
+ 
   populate(System.getDataBase());
 
-  createUnitVector(mainFC,mainSideIndex,beamFC,beamSideIndex);
+  createUnitVector(mainFC,mainSideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();
   insertObjects(System);
-
+ 
   return;
 }
 

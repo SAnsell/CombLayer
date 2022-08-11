@@ -38,10 +38,7 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
-#include "Line.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Code.h"
@@ -67,7 +64,6 @@
 #include "generateSurf.h"
 #include "FixedGroup.h"
 #include "FixedRotateGroup.h"
-
 
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
@@ -275,12 +271,14 @@ Segment29::buildObjects(Simulation& System)
       buildZone->copyCells(*this,"FrontSpace");
     }
   beamStopA->addInsertCell(outerVoid);
+  beamStopB->secondaryUnitVector(*yagUnitA,"back");
   beamStopA->createAll(System,*yagUnitA,"back");
 
   beamStopB->setCutSurf("front",frontHR);
   beamStopB->setCutSurf("base",ExternalCut::getRule("Floor"));
   beamStopB->addInsertCell(outerVoid);
-  beamStopB->createAll(System,*yagUnitA,"back",*yagUnitB,"back");
+  beamStopB->secondaryUnitVector(*yagUnitB,"back");
+  beamStopB->createAll(System,*yagUnitA,"back");
   return;
 }
 

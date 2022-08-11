@@ -403,7 +403,7 @@ insertPlate::createAll(Simulation& System,const Geometry::Vec3D& OG,
   ELog::RegMethod RegA("insertPlate","createAll(Vec,FC)");
   if (!populated) 
     populate(System.getDataBase());  
-  createUnitVector(OG,FC);
+  createUnitVector(FC,OG);
   mainAll(System);
   return;
 }

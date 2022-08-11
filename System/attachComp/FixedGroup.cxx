@@ -486,6 +486,24 @@ FixedGroup::secondaryUnitVector(const attachSystem::FixedComp& FC,
 }
 
 void
+FixedGroup::secondaryUnitVector(const attachSystem::FixedComp& FC,
+				const std::string& sideName)
+  /*!
+    Simple way to call createUnitVector(second...)
+    \param FC :: Fixed Component (FixedGroup)
+    \param sideIndex :: signed linkpoint			
+  */
+{
+  ELog::RegMethod RegA("FixedGroup","secondaryUnitVector(name)");
+
+  // care here : need to call this for virtual table -- don't
+  // directy call FixedGroup::createUnitVector.
+  secondaryUnitVector(FC,FC.getSideIndex(sideName));
+
+  return;
+}
+
+void
 FixedGroup::createUnitVector(const std::string& unitName,
 			     const attachSystem::FixedComp& FC,
 			     const long int sideIndex)

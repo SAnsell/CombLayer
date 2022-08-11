@@ -574,8 +574,8 @@ makeSingleItem::build(Simulation& System,
 	  jawComp[index]->addInsertCell(diagBox->getCell("Void"));
 	  if (index)
 	    jawComp[index]->addInsertCell(jawComp[index-1]->getCell("Void"));
-	  jawComp[index]->createAll
-	    (System,DPI,DPI.getSideIndex("InnerPlate"),*diagBox,0);
+	  jawComp[index]->secondaryUnitVector(*diagBox,0);
+	  jawComp[index]->createAll(System,DPI,"InnerPlate");
 	}
 
       // simplify the DiagnosticBox inner cell

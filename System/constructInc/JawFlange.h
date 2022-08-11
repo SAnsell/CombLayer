@@ -62,8 +62,7 @@ class JawFlange :
   void calcBeamCentre();
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int,
-			const attachSystem::FixedComp&,const long int);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -78,15 +77,10 @@ class JawFlange :
   void setFillRadius(const attachSystem::FixedComp&,
 		     const std::string&,const int);
 
+
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int,const attachSystem::FixedComp&,
-		 const long int);
-  void createAll(Simulation&,
-		 const attachSystem::FixedComp&,const std::string&,
-		 const attachSystem::FixedComp&,const std::string&);
 
 };
 

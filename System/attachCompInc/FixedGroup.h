@@ -79,6 +79,8 @@ class FixedGroup : public FixedComp
 				 const long int);
   virtual void secondaryUnitVector(const attachSystem::FixedComp&,
 				   const long int);
+  virtual void secondaryUnitVector(const attachSystem::FixedComp&,
+				   const std::string&);
   
   void setDefault(const std::string&);
   void setSecondary(const std::string&);

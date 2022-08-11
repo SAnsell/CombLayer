@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -72,7 +70,6 @@
 #include "FixedGroup.h"
 #include "FixedRotateGroup.h"
 
-#include "Line.h"
 #include "YagScreen.h"
 #include "YagUnit.h"
 #include "TDCBeamDump.h"
@@ -306,6 +303,8 @@ Segment27::buildObjects(Simulation& System)
     (System,*IZFlat,*yagUnitB,"back",*bellowBC);
   beamStopC->setCutSurf("base",ExternalCut::getRule("Floor"));
 
+  
+  beamStopC->secondaryUnitVector(*yagUnitC,"back");
   beamStopC->createAll(System,*yagUnitC,"back");
   const int outerCell = IZLower->createUnit(System,beamStopC->getKey("Main"),2);
   // for segment28:

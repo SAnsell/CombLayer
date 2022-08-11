@@ -125,7 +125,8 @@ class FixedRotateGroup  : public FixedGroup
 				const long int);
   virtual void createUnitVector(const attachSystem::FixedComp&,
 				const long int);
-  
+
+  using FixedGroup::secondaryUnitVector;
   virtual void secondaryUnitVector(const attachSystem::FixedComp&,
 				   const long int);
 

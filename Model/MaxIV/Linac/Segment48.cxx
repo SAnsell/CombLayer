@@ -189,8 +189,8 @@ Segment48::buildObjects(Simulation& System)
       jaws[index]->addInsertCell(slitTube->getCell("Void"));
       if (index)
   	jaws[index]->addInsertCell(jaws[index-1]->getCell("Void"));
-      jaws[index]->createAll
-  	(System,DPI,DPI.getSideIndex("InnerPlate"),*slitTube,0);
+      jaws[index]->secondaryUnitVector(*slitTube,0);
+      jaws[index]->createAll(System,DPI,"InnerPlate");
     }
 
   // simplify the DiagnosticBox inner cell

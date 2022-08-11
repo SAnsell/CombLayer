@@ -39,8 +39,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "Vec3D.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "surfRegister.h"
 #include "HeadRule.h"
 #include "LinkUnit.h"
@@ -264,8 +262,8 @@ Segment46::buildObjects(Simulation& System)
       jaws[index]->addInsertCell(slitTube->getCell("Void"));
       if (index)
 	jaws[index]->addInsertCell(jaws[index-1]->getCell("Void"));
-      jaws[index]->createAll
-	(System,DPI,DPI.getSideIndex("InnerPlate"),*slitTube,0);
+      jaws[index]->secondaryUnitVector(*slitTube,0);
+      jaws[index]->createAll(System,DPI,"InnerPlate");
     }
 
   // simplify the DiagnosticBox inner cell

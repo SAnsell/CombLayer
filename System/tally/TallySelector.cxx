@@ -3,7 +3,7 @@
  
  * File:   tally/TallySelector.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "support.h"
 #include "TallyCreate.h"
@@ -61,7 +59,6 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "TallySelector.h"
-
 
 bool
 constructLinkRegion(const Simulation& System,
@@ -127,7 +124,9 @@ constructSurfRegion(const Simulation& System,
   if (!Surf.empty() && Surf[0]==':')
     Surf.erase(0,1);
 
-  bool out(0);
+  // assuming the that region indexes are given by
+  // FC:SurfName:2-3 : where a negative separates the number
+  bool outFlag(0);
   long int indexA(0);   // need to remove -ve sign
   long int indexB(0);
   pos=Surf.find(':');
@@ -139,24 +138,27 @@ constructSurfRegion(const Simulation& System,
 	  StrFunc::sectPartNum(part,indexA) &&
 	  StrFunc::sectPartNum(part,indexB) )
 	{
-	  ELog::EM<<"Surf == "<<part<<ELog::endDiag;
+	  ELog::EM<<"Surf(Part) == "<<part<<ELog::endDiag;
 	  Surf.erase(pos);
-	  ELog::EM<<"Surf == "<<Surf<<ELog::endDiag;
-	  out = constructSurfRegion
-	    (System,FC,Surf,indexA,-indexB,cellA,cellB);
+	  ELog::EM<<"Surf(region) == "<<Surf<<ELog::endDiag;
+	  const size_t regionA(static_cast<size_t>(std::abs(indexA)));
+	  const size_t regionB(static_cast<size_t>(std::abs(indexA)));
+	  outFlag = constructSurfRegion
+	    (System,FC,Surf,regionA,regionB,cellA,cellB);
 	}
       else if (StrFunc::section(part,indexA))
 	{
-	  out = constructSurfRegion
-	    (System,FC,Surf,indexA,0,cellA,cellB);
+	  const size_t regionA(static_cast<size_t>(std::abs(indexA)));
+	  outFlag = constructSurfRegion
+	    (System,FC,Surf,regionA,0,cellA,cellB);
 	}
     }
   else
     {
-      out = constructSurfRegion(System,FC,Surf,0,0,cellA,cellB);
+      outFlag = constructSurfRegion(System,FC,Surf,0,0,cellA,cellB);
     }
 
-  return out;
+  return outFlag;
 }
 
 bool
@@ -194,7 +196,7 @@ constructSurfRegion(const Simulation& System,
     \param System :: Simulation to use	
     \param FCname :: name of SurfMap
     \param surfName :: name of surface [signed]
-    \param indexA :: Index of region found in primary
+    \param indexA :: Index of region found in primary (assuming not just one)
     \param indexB :: Index region found in secondary
     \param cellA :: Primary region cell number
     \param cellB :: Secondary region cell number

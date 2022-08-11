@@ -291,7 +291,8 @@ insertCylinder::mainAll(Simulation& System)
 
 
 void
-insertCylinder::createAll(Simulation& System,const Geometry::Vec3D& OG,
+insertCylinder::createAll(Simulation& System,
+			  const Geometry::Vec3D& OG,
                           const attachSystem::FixedComp& FC)
 /*!
     Generic function to create everything
@@ -303,7 +304,7 @@ insertCylinder::createAll(Simulation& System,const Geometry::Vec3D& OG,
   ELog::RegMethod RegA("insertCylinder","createAll(Vec,FC)");
   if (!populated) 
     populate(System.getDataBase());  
-  createUnitVector(OG,FC);
+  createUnitVector(FC,OG);
   mainAll(System);
   return;
 }

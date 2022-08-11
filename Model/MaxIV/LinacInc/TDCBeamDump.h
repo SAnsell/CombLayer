@@ -75,14 +75,9 @@ class TDCBeamDump : public attachSystem::ContainedComp,
   int topPlateMat;              ///< Extra plate material (
   int extraTopPlateMat;              ///< Extra plate material (
   int carbonMat;                ///< Carbon plate material
-
   
-  const attachSystem::FixedComp* mainFC;
-  long int mainFCSide;
-
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int,
-			const attachSystem::FixedComp&,const long int);
+  using FixedRotateGroup::createUnitVector;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -96,20 +91,9 @@ class TDCBeamDump : public attachSystem::ContainedComp,
 
   using attachSystem::FixedComp::createAll;
 
-  void createAll(Simulation&,
-		 const attachSystem::FixedComp&,const std::string&,
-		 const attachSystem::FixedComp&,const std::string&);
-  void createAll(Simulation&,
-		 const attachSystem::FixedComp&,const long int,
-		 const attachSystem::FixedComp&,const long int);
 
-  /// Transfer function to pair state
-  void createAll(Simulation& System,
-		 const attachSystem::FixedComp& FC,
-		 const long int sideIndex)
-  {
-    createAll(System,FC,sideIndex,FC,sideIndex);
-  }
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

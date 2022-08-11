@@ -293,6 +293,26 @@ FixedComp::createUnitVector(const FixedComp& FC,
 
 void
 FixedComp::createUnitVector(const Geometry::Vec3D& OG,
+			    const Geometry::Vec3D& Axis)
+  /*!
+    Create the unit vectors [using beam directions]
+    \param OG :: Origin
+    \param Axis :: Direction for Y
+  */
+{
+  ELog::RegMethod RegA("FixedComp","createUnitVector(Vec3D,Vec3D)");
+
+  Y=Axis.unit();
+  X=Y.crossNormal();
+  Z=X*Y;  
+  makeOrthogonal();
+  Origin=OG;
+  if (primeAxis>0) reOrientate();
+  return;
+}
+
+void
+FixedComp::createUnitVector(const Geometry::Vec3D& OG,
 			    const Geometry::Vec3D& YAxis,
                             const Geometry::Vec3D& ZAxis)
   /*!
@@ -302,7 +322,7 @@ FixedComp::createUnitVector(const Geometry::Vec3D& OG,
     \param ZAxis :: Direction for Z
   */
 {
-  ELog::RegMethod RegA("FixedComp","createUnitVector(Vec3D,Vec3D,Vec3D))");
+  ELog::RegMethod RegA("FixedComp","createUnitVector(Vec3D,Vec3D,Vec3D)");
 
   Y=YAxis.unit();
   Z=ZAxis.unit();
@@ -327,7 +347,7 @@ FixedComp::createUnitVector(const Geometry::Vec3D& OG,
     \param ZAxis :: Direction for Z
   */
 {
-  ELog::RegMethod RegA("FixedComp","createUnitVector(4xVec3D))");
+  ELog::RegMethod RegA("FixedComp","createUnitVector(4xVec3D)");
 
   X=XAxis.unit();
   Y=YAxis.unit();

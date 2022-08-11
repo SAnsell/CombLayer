@@ -3,7 +3,7 @@
  
  * File:   construct/JawFlange
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -136,31 +136,25 @@ JawFlange::setFillRadius(const attachSystem::FixedComp& portFC,
 
 void
 JawFlange::createUnitVector(const attachSystem::FixedComp& mFC,
-			    const long int mainIndex,
-			    const attachSystem::FixedComp& bFC,
-			    const long int beamIndex)
+			    const long int mainIndex)
+
   /*!
     Create the unit vectors
     We set the origin external to the front face of the sealing ring.
     and adjust the origin to the middle.
     \param mFC :: Fixed component of central axis
     \param mainIndex :: Link point and direction [0 for origin]
-    \param bFC :: Fixed component of beam
-    \param beamIndex :: Link point and direction [0 for origin]
   */
 {
   ELog::RegMethod RegA("JawFlange","createUnitVector");
 
-  attachSystem::FixedComp& mainFC=getKey("Main");
-  attachSystem::FixedComp& beamFC=getKey("Beam");
-
-  mainFC.FixedComp::createUnitVector(mFC,mainIndex);
-  beamFC.FixedComp::createUnitVector(bFC,beamIndex);
+  // no rotation:
+  FixedGroup::createUnitVector(mFC,mainIndex);
 
   calcBeamCentre();
   applyOffset();
 
-  setDefault("Main");
+  setDefault("Main","Beam");
   return;
 }
 
@@ -324,65 +318,21 @@ JawFlange::createLinks()
 }
 
 void
-JawFlange::createAll(Simulation& ,
-		     const attachSystem::FixedComp&,
-		     const long int)
+JawFlange::createAll(Simulation& System,
+		     const attachSystem::FixedComp& portFC,
+		     const long int portIndex)
  /*!
     Generic function to create everything
+    beam set by secondaryUnitVector.
     \param System :: Simulation item
     \param portFC :: FixedComp
     \param portIndex :: Fixed Index
-  */
-{
-  ELog::RegMethod RegA("JawFlange","createAll(FC)");
-
-  throw ColErr::AbsObjMethod("Single value createAll");
-  return;
-}
-
-void
-JawFlange::createAll(Simulation& System,
-		     const attachSystem::FixedComp& portFC,
-		     const std::string& portName,
-		     const attachSystem::FixedComp& beamFC,
-		     const std::string& beamName)
- /*!
-    Generic function to create everything
-    Note that portFC and beamFC and often without orthogonal
-    axis sets. (e.g X' is not || to any of X,Y or Z)
-
-    \param System :: Simulation item
-    \param portFC :: FixedComp
-    \param portName :: Fixed Name for main axis
-    \param beamFC :: FixedComp for beam point (and beam axis)
-    \param beamName :: Fixed Index link point
-  */
-{
-  ELog::RegMethod RegA("JawFlange","createAll(FC,string,FC,string)");
-  createAll(System,portFC,portFC.getSideIndex(portName),
-	    beamFC,beamFC.getSideIndex(beamName));
-  return;
-}
-
-void
-JawFlange::createAll(Simulation& System,
-		     const attachSystem::FixedComp& portFC,
-		     const long int portIndex,
-		     const attachSystem::FixedComp& beamFC,
-		     const long int beamIndex)
- /*!
-    Generic function to create everything
-    \param System :: Simulation item
-    \param portFC :: FixedComp
-    \param portIndex :: Fixed Index
-    \param beamFC :: FixedComp for beam axis
-    \param beamIndex :: Fixed Index link point
   */
 {
   ELog::RegMethod RegA("JawFlange","createAll(FC)");
 
   populate(System.getDataBase());
-  createUnitVector(portFC,portIndex,beamFC,beamIndex);
+  createUnitVector(portFC,portIndex);
   createSurfaces();    
   createObjects(System);
   createLinks();

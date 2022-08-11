@@ -337,7 +337,8 @@ cosaxsOpticsLine::constructDiag
       jawComp[index]->addInsertCell(diagBoxItem.getCell("Void"));
       if (index)
 	jawComp[index]->addInsertCell(jawComp[index-1]->getCell("Void"));
-      jawComp[index]->createAll(System,DPI,"InnerPlate",diagBoxItem,"Origin");
+      jawComp[index]->secondaryUnitVector(diagBoxItem,"Origin");
+      jawComp[index]->createAll(System,DPI,"InnerPlate");
     }
 
   diagBoxItem.splitVoidPorts(System,"SplitOuter",2001,
