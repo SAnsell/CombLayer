@@ -65,6 +65,7 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
+#include "AttachSupport.h"
 
 #include "TargetBase.h"
 #include "TS2target.h"
@@ -286,6 +287,12 @@ makeReflector::createInternalObjects(Simulation& System,
   PMhydro->setRotate();
   PMhydro->createAll(System,*VacObj,6);  
   Horn->setDivideSurf(-VacObj->getDivideSurf());
+  const HeadRule VUnit=
+    attachSystem::intersectionLink(*VacObj,{-2,3,-4,5});
+  const HeadRule RefUnit=
+    attachSystem::intersectionLink(*RefObj,{-2,3,-4,5});
+  Horn->setCutSurf("VacCan",VUnit);
+  
   // Horn->build(System,*VacObj,*FLhydro,*PMhydro);
 
   return;

@@ -68,7 +68,7 @@ namespace moderatorSystem
 
 Reflector::Reflector(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(Key,12),
+  attachSystem::FixedRotate(Key,16),
   attachSystem::SurfMap(),
   attachSystem::CellMap()
   /*!
@@ -174,6 +174,7 @@ Reflector::createFlightLineSurfaces()
   // a small adjustment to the angle that is shown in the flight line
 
   int FIndex(buildIndex+1000);
+  size_t linkIndex(10);
   for(const flightInfo& FL : flightLine)
     {
       
@@ -202,6 +203,14 @@ Reflector::createFlightLineSurfaces()
       makePlane("FLdown",SMap,FIndex+5,Org-Z*(FL.height/2.0),Norm);
       Norm=Qup.makeRotate(Z);
       makePlane("FLup",SMap,FIndex+6,Org+Z*(FL.height/2.0),Norm);
+
+      // create links:
+      const HeadRule FLHR=ModelSupport::getHeadRule(SMap,FIndex,"3 -4 5 -6");
+      FixedComp::setLinkSurf(linkIndex,FLHR);
+      FixedComp::setConnect(linkIndex,Org,Axis);
+      linkIndex++;
+      
+      
       FIndex+=100;
     }
   return;
@@ -295,8 +304,7 @@ Reflector::createLinks(const Geometry::Vec3D& XR,
   FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+12));
   FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+13));
   FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+14));
-
-
+     
   return;
 }
 
@@ -320,27 +328,24 @@ Reflector::createObjects(Simulation& System)
   FLhr=ModelSupport::getHeadRule
     (SMap,buildIndex,FIndex,"3 1 13 1M 3M -4M 5M -6M");
   makeCell("FLGroove",System,cellIndex++,0,0.0,FLhr);
+  FLhr=ModelSupport::getHeadRule(SMap,FIndex,"1 3 -4 5 -6");
   HR.addIntersection(FLhr.complement());
 
   FIndex+=100;
   FLhr=ModelSupport::getHeadRule
     (SMap,buildIndex,FIndex,"-4 -14 1M 3M -4M 5M -6M");
   makeCell("FLHydro",System,cellIndex++,0,0.0,FLhr);
+  FLhr=ModelSupport::getHeadRule(SMap,FIndex,"1 3 -4 5 -6");
   HR.addIntersection(FLhr.complement());
 
-  FIndex+=100;
-
-
   
-  
-
   makeCell("Reflector",System,cellIndex++,defMat,0.0,HR);
   
   for(CoolPad& PD : Pads)
     PD.addInsertCell(this->getInsertCells());
  
-  for(CoolPad& PD : Pads)
-    PD.createAll(System,*this,3);
+  //  for(CoolPad& PD : Pads)
+  //    PD.createAll(System,*this,3);
       
   return;
 }
