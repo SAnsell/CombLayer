@@ -3,7 +3,7 @@
  
  * File:   attachComp/FixedComp.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1261,6 +1261,54 @@ FixedComp::setLinkCopy(const size_t Index,
     throw ColErr::IndexError<long int>
       (sideIndex,static_cast<long int>(FC.LU.size()),"FC/sideIndex");
 
+  return;
+}
+
+void
+FixedComp::setLinkCopy(const std::string& indexName,
+		       const FixedComp& FC,
+		       const std::string& sideName)
+  /*!
+    Copy the opposite (as if joined) link surface 
+    Note that the surfaces are complemented
+    \param indexName :: Link index number
+    \param FC :: Other Fixed component to copy object from
+    \param sideName :: signed link unit of other object
+  */
+{
+  ELog::RegMethod RegA("FixedComp","setLinkCopy("+sideName+")");
+
+  const long int LI=getSideIndex(indexName);
+  if (!LI)
+    throw ColErr::InContainerError<std::string>(indexName,"indexName zero");
+  
+  const size_t Index=static_cast<size_t>(std::abs(LI-1));
+  setLinkCopy(Index,FC,FC.getSideIndex(sideName));
+  return;
+}
+
+void
+FixedComp::setLinkCopy(const std::string& indexName,
+		       const FixedComp& FC,
+		       const long int sideIndex)
+  /*!
+    Copy the opposite (as if joined) link surface 
+    Note that the surfaces are complemented
+    \param indexame :: Link index number
+    \param FC :: Other Fixed component to copy object from
+    \param sideIndex :: signed link unit of other object
+  */
+{
+  ELog::RegMethod RegA("FixedComp","setLinkCopy("+std::to_string(sideIndex)+")");
+
+  if (!hasSideIndex(indexName))
+    throw ColErr::InContainerError<std::string>(indexName,"indexName");
+  const long int LI=getSideIndex(indexName);
+  if (!LI)
+    throw ColErr::InContainerError<std::string>(indexName,"indexName zero");
+  
+  const size_t Index=static_cast<size_t>(std::abs(LI-1));
+  setLinkCopy(Index,FC,sideIndex);
   return;
 }
 

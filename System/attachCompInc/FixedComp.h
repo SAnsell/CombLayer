@@ -178,6 +178,8 @@ class FixedComp
 
   void setLinkCopy(const size_t,const FixedComp&,const std::string&);
   void setLinkCopy(const size_t,const FixedComp&,const long int);
+  void setLinkCopy(const std::string&,const FixedComp&,const long int);
+  void setLinkCopy(const std::string&,const FixedComp&,const std::string&);
 
   /// Get keyname
   const std::string& getKeyName() const { return keyName; }

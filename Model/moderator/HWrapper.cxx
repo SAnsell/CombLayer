@@ -61,6 +61,8 @@
 #include "FixedUnit.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "HWrapper.h"
 
 namespace moderatorSystem
@@ -68,16 +70,26 @@ namespace moderatorSystem
 
 HWrapper::HWrapper(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedUnit(Key,0),
+  attachSystem::FixedUnit(Key,16),
+  attachSystem::ExternalCut(),
+  attachSystem::CellMap(),
   divideSurf(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
-{}
+{
+  nameSideIndex(7,"FLhydroNeg");
+  nameSideIndex(8,"FLhydroPlus");
+  nameSideIndex(9,"FLhydroDown");
+  nameSideIndex(10,"FLhydroUp");
+}
 
 HWrapper::HWrapper(const HWrapper& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedUnit(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::FixedUnit(A),
+  attachSystem::ExternalCut(A),
+  attachSystem::CellMap(A),
   divideSurf(A.divideSurf),sideExt(A.sideExt),
   heightExt(A.heightExt),backExt(A.backExt),forwardExt(A.forwardExt),
   wingLen(A.wingLen),vacInner(A.vacInner),alInner(A.alInner),
@@ -101,6 +113,8 @@ HWrapper::operator=(const HWrapper& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
+      attachSystem::CellMap::operator=(A);
       divideSurf=A.divideSurf;
       sideExt=A.sideExt;
       heightExt=A.heightExt;
@@ -124,6 +138,25 @@ HWrapper::~HWrapper()
   */
 {}
 
+void
+HWrapper::checkExternalCut()
+  /*!
+    The class can be constructed either from FixedComp
+    or from ExternalCut. If it is done from FixedComp
+    the ExternalCut are constructed here.
+   */
+{
+  ELog::RegMethod RegA("HWrapper","checkExternalCut");
+
+  for(const std::string name : {"FLHydroNeg","FLHydroPlus"
+				"FLHydroDown","FLHydroUp"})
+    {
+      if (!ExternalCut::isActive(name))
+	ExternalCut::setCutSurf(name,*this,name);  // if not set?
+    }
+  return;
+}
+  
 void
 HWrapper::populate(const FuncDataBase& Control)
   /*!
@@ -151,59 +184,9 @@ HWrapper::populate(const FuncDataBase& Control)
   
   return;
 }
-
+    
 void
-HWrapper::createSurfMesh(const int NSurf,const int GPlus,
-			 const int* baseSurf,const double* Offset,
-			 const int* signDir)
-  /*!
-    Construct a set of surfaces
-    \param NSurf :: Number of surfaces
-    \param GPlus :: Global offset 
-    \param baseSurf :: List of the base surface set
-    \param Offset :: Distance to move
-    \param signDir :: Sign to multiply by
-  */
-{
-  ELog::RegMethod RegA("HWrapper","createSurfMesh");
-
-  Geometry::Surface* SX;
-  for(int i=0;i<NSurf;i++)
-    {
-      SX=ModelSupport::surfaceCreateExpand
-	(SMap.realSurfPtr(buildIndex+baseSurf[i]),Offset[i]);
-      SX->setName(buildIndex+GPlus+baseSurf[i]);
-      if (signDir[i]<0)
-	{
-	  Geometry::Plane* PPtr=dynamic_cast<Geometry::Plane*>(SX);
-	  if (PPtr)
-	    PPtr->mirrorSelf();
-	  else
-	    ELog::EM<<"Negative surf "<<SX->getName()<<ELog::endErr;
-	}
-      SMap.registerSurf(buildIndex+GPlus+baseSurf[i],SX);
-    }
-  return;
-}
-  
-  
-void
-HWrapper::createUnitVector(const attachSystem::FixedComp& VacFC)
-  /*!
-    Create the unit vectors
-    \param VacFC :: Vacuum vessel
-  */
-{
-  ELog::RegMethod RegA("HWrapper","createUnitVector");
-
-  FixedComp::createUnitVector(VacFC,0);
-  FixedComp::applyRotation(Z,180.0);
-  return;
-}
-  
-void
-HWrapper::createSurfaces(const attachSystem::FixedComp& VacFC,
-			 const attachSystem::FixedComp& FLine)
+HWrapper::createSurfaces()
   /*!
     Create All the surfaces
     \param VacFC :: Fixed unit that connects to this moderator
@@ -221,22 +204,17 @@ HWrapper::createSurfaces(const attachSystem::FixedComp& VacFC,
 
   // Note can use the divide surface as a real surface.
   SMap.addMatch(buildIndex+1,divideSurf);
-  SMap.addMatch(buildIndex+2,VacFC.getLinkSurf(2));  // front
-  SMap.addMatch(buildIndex+3,VacFC.getLinkSurf(3));  // side
-  SMap.addMatch(buildIndex+4,VacFC.getLinkSurf(4));  // side
-  SMap.addMatch(buildIndex+5,VacFC.getLinkSurf(5));  // base
-  SMap.addMatch(buildIndex+6,VacFC.getLinkSurf(6));  // top  [target]
 
-  // FLight line
-  SMap.addMatch(buildIndex+103,FLine.getLinkSurf(-3));  // side 
-  SMap.addMatch(buildIndex+104,FLine.getLinkSurf(4));  // side
-  SMap.addMatch(buildIndex+105,FLine.getLinkSurf(-5));  // base [outer]
-  SMap.addMatch(buildIndex+106,FLine.getLinkSurf(6));  // top  [target]
-
+  
   const double sideWater=sideExt-(alInner+vacOuter+vacInner);
   const double topWater=heightExt-(alOuter+alInner+vacOuter+vacInner);
   //  const double frontWater=forwardExt-(alOuter+alInner+vacOuter+vacInner);
-
+  
+  ExternalCut::makeExpandedSurf
+    (SMap,"FLhydroNeg",buildIndex+13,Origin,sideExt);
+  ELog::EM<<"Real Surf == "<<
+    *(SMap.realSurfPtr(buildIndex+13))<<ELog::endDiag;
+  /*  
   const int baseSurf[NSurf]={1,2,3,4,5,6,103,104,105,106};
   double mainOffset[NSurf]={backExt,forwardExt,-sideExt,sideExt,
 			    -heightExt,0.0,0,0,0,0};
@@ -296,7 +274,7 @@ HWrapper::createSurfaces(const attachSystem::FixedComp& VacFC,
     (SMap.realSurfPtr(buildIndex+2),wingLen-(alOuter+vacOuter));
   SX->setName(buildIndex+222);
   SMap.registerSurf(buildIndex+222,SX);
-  
+  */  
   return;
 }
 
@@ -310,108 +288,107 @@ HWrapper::createObjects(Simulation& System,
   */
 {
   ELog::RegMethod RegA("HWrapper","createObjects");
-    
-  std::string Out;
-  // basic HWrapper
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 15 -6 ");
-  addOuterSurf(Out);
-  // Outer horn object
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 12 163 -164 165 -166 -202");
-  addOuterUnionSurf(Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 15 -6 "
-				 " (2 : -3 : 4 : -5 ) "
+  const HeadRule vacHR=getComplementRule("VacCan");
+  const HeadRule FLhydroHR=getComplementRule("FLhydro");
+  const HeadRule baseCutHR=getComplementRule("BaseCut");
+  
+  HeadRule HR;
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,
+     "(11 -12 13 -14 15 -6) :"
+     "1 12 163 -164 165 -166 -202");
+  addOuterSurf(HR);
+
+  // Out space
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+			       "11 -12 13 -14 15 -6 "
 				 "(-23 : 24 : 22 : -25 : -21 : 26)"
 				 "( -31 : -153 : 154 : -155 : 156) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  System.addCell(cellIndex++,0,0.0,HR*vacHR.complement());
 
   // Al skin
-  Out=ModelSupport::getComposite(SMap,buildIndex,"21 -22 23 -24 25 -26 "
-				 " (52 : -53 : 54 : -55 ) "
-				 "(-33 : 34 : 32 : -35 : -31 : 36)"
-				 "( -1 : -143 : 144 : -145 : 146) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -22 23 -24 25 -26 "
+			       " (52 : -53 : 54 : -55 ) "
+			       "(-33 : 34 : 32 : -35 : -31 : 36)"
+			       "( -1 : -143 : 144 : -145 : 146) ");
+  makeCell("AlSkin",System,cellIndex++,alMat,0.0,HR);
 
   // Al EXTRA [26 > 156]
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 2 -22 153 -154 26 -156 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
-
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 2 -22 153 -154 26 -156");
+  makeCell("AlSkin",System,cellIndex++,alMat,modTemp,HR);
+  
   // Al EXTRA [36 > 146]
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 52 -42 143 -144 36 -146 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 52 -42 143 -144 36 -146");
+  makeCell("AlSkin",System,cellIndex++,alMat,modTemp,HR);
 
   // Water
-  Out=ModelSupport::getComposite(SMap,buildIndex,"31 -32 33 -34 35 -36 "
-				 " (2 : -3 : 4 : -5 ) "
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"31 -32 33 -34 35 -36 "
 				 "(-43 : 44 : 42 : -45 : -41 )"
 				 "( -1 : -133 : 134 : -135 : 136) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
+  makeCell("Water",System,cellIndex++,modMat,modTemp,HR*vacHR);
 
   // Water EXTRA [36 > 146]
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 42 -32 143 -144 36 -146 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 42 -32 143 -144 36 -146 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,HR));
 
   // AL Inner
-  Out=ModelSupport::getComposite(SMap,buildIndex,"31 -42 43 -44 45 -36 "
-				 " (2 : -3 : 4 : -5 ) "
-				 "(-53 : 54 : 52 : -55 : -51 : 56)"
-				 "( -1 : -103 : 104 : -105 : 106) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"31 -42 43 -44 45 -36 "
+			       "(-53 : 54 : 52 : -55 : -51 : 56) ");
+  //  				 "( -1 : -103 : 104 : -105 : 106) ");
+  makeCell("AlInner",System,cellIndex++,alMat,modTemp,HR*vacHR*FLhydroHR);
 
 
   // Vac inner
-  Out=ModelSupport::getComposite(SMap,buildIndex,"21 -52 53 -54 55 -26 "
-				 " (2 : -3 : 4 : -5 ) "
-				 "( -1 : -103 : 104 : -105 : 106) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -52 53 -54 55 -26 "
+			       "( -1 : -103 : 104 : -105 : 106) ");
+  makeCell("VacInner",System,cellIndex++,0,0.0,HR*vacHR);
 
   // WINGS:
 
   // Al inner
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 42 133 -134 135 -136 -212 "
-				 " (-103 : 104 : -105 : 106) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 42 133 -134 135 -136 -212 ");
+  makeCell("AlWing",System,cellIndex++,alMat,modTemp,HR*FLhydroHR);
 
   // Water inner
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 32 143 -144 145 -146 -222 "
-				 " (-133 : 134 : -135 : 136) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 32 143 -144 145 -146 -222 "
+				" (-133 : 134 : -135 : 136) ");
+  makeCell("WaterWing",System,cellIndex++,modMat,modTemp,HR);
 
   // outer Al
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 22 153 -154 155 -156 -212 "
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 22 153 -154 155 -156 -212 "
 				 " (-143 : 144 : 222 : -145 : 146) "
 				 " (-133 : 134 : -135 : 136) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
+  makeCell("OuterAl",System,cellIndex++,alMat,modTemp,HR);
 
   // outer Vac
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 12 163 -164 165 -166 -202 "
-				 " (-153 : 154 : 212 : -155 : 156) "
-				 " (-103 : 104 : -105 : 106) ");
-  Out+=CM.getExclude();
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+			       "1 12 163 -164 165 -166 -202 "
+			       "(-153 : 154 : 212 : -155 : 156) ");
+  makeCell("OuterVac",System,cellIndex++,0,0.0,HR*baseCutHR*FLhydroHR);
 
   return;
 }
 
 void
-HWrapper::build(Simulation& System,
-		const attachSystem::FixedComp& vacFC,
-		const attachSystem::FixedComp& FLine,
-		const attachSystem::ContainedComp& CM)
+HWrapper::createAll(Simulation& System,
+		    const attachSystem::FixedComp& FC,
+		    const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
-    \param vacFC :: Fixed unit that connects to this moderator
-    \param FLine :: Hydrogen Flight line
-    \param CM :: Central Pre-moderator
+    \param FC :: Fixed unit that connects to this moderator
+    \param sideIndex :: link point
   */
 {
-  ELog::RegMethod RegA("HWrapper","build");
-  populate(System.getDataBase());
+  ELog::RegMethod RegA("HWrapper","creatAll");
 
-  createUnitVector(vacFC);
-  createSurfaces(vacFC,FLine);
-  createObjects(System,CM);
+  populate(System.getDataBase());
+  createUnitVector(FC,sideIndex);
+  checkExternalCut();
+  createSurfaces();
+  //  createSurfaces(vacFC,FLine);
+  //  createObjects(System,CM);
   insertObjects(System);       
   
   return;

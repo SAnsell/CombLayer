@@ -174,7 +174,7 @@ Reflector::createFlightLineSurfaces()
   // a small adjustment to the angle that is shown in the flight line
 
   int FIndex(buildIndex+1000);
-  size_t linkIndex(10);
+  size_t linkIndex(14);  
   const std::vector<std::string> fName({
       "FLgroove","FLhydro","FLbroad","FLnarrow"});
   std::vector<std::string>::const_iterator vc=fName.begin();
@@ -184,7 +184,6 @@ Reflector::createFlightLineSurfaces()
       const Geometry::Vec3D Axis=FL.Axis.getInBasis(X,Y,Z).unit();
       const Geometry::Vec3D AxisX=Z*Axis;
       
-      Geometry::Vec3D Norm;
 
       const Geometry::Quaternion Qneg=
 	Geometry::Quaternion::calcQRotDeg(-FL.negAngle,Z);
@@ -196,24 +195,43 @@ Reflector::createFlightLineSurfaces()
 	Geometry::Quaternion::calcQRotDeg(-FL.upAngle,AxisX);
       
       makePlane("FLcut",SMap,FIndex+1,Org,Axis);
-      Norm=Qneg.makeRotate(AxisX);
-      makePlane("FLneg",SMap,FIndex+3,Org-AxisX*(FL.width/2.0),Norm);
-      Norm=Qplus.makeRotate(AxisX);
-      makePlane("FLplus",SMap,FIndex+4,Org+AxisX*(FL.width/2.0),Norm);
+      const Geometry::Vec3D normNeg=Qneg.makeRotate(AxisX);
+      makePlane("FLneg",SMap,FIndex+3,Org-AxisX*(FL.width/2.0),normNeg);
+      const Geometry::Vec3D normPlus=Qplus.makeRotate(AxisX);
+      makePlane("FLplus",SMap,FIndex+4,Org+AxisX*(FL.width/2.0),normPlus);
 
-      Norm=Qdown.makeRotate(Z);
-      makePlane("FLdown",SMap,FIndex+5,Org-Z*(FL.height/2.0),Norm);
-      Norm=Qup.makeRotate(Z);
-      makePlane("FLup",SMap,FIndex+6,Org+Z*(FL.height/2.0),Norm);
+      const Geometry::Vec3D normDown=Qdown.makeRotate(Z);
+      makePlane("FLdown",SMap,FIndex+5,Org-Z*(FL.height/2.0),normDown);
+      const Geometry::Vec3D normUp=Qup.makeRotate(Z);
+      makePlane("FLup",SMap,FIndex+6,Org+Z*(FL.height/2.0),normUp);
 
       // create links:
       const HeadRule FLHR=ModelSupport::getHeadRule(SMap,FIndex,"3 -4 5 -6");
       FixedComp::setLinkSurf(linkIndex,FLHR);
       FixedComp::setConnect(linkIndex,Org,Axis);
+      FixedComp::nameSideIndex(linkIndex,*vc);
       linkIndex++;
 
-      FixedComp::nameSideIndex(linkIndex,*vc++);
-      
+      // individual links for the HWrapper:
+      if (*vc=="FLhydro")
+	{
+	  ELog::EM<<"Side == "<<*vc<<ELog::endDiag;
+
+	  FixedComp::setLinkSurf(10,-SMap.realSurf(FIndex+3));
+	  FixedComp::setLinkSurf(11,SMap.realSurf(FIndex+4));
+	  FixedComp::setLinkSurf(12,-SMap.realSurf(FIndex+5));
+	  FixedComp::setLinkSurf(13,SMap.realSurf(FIndex+6));
+	  FixedComp::setConnect(10,Org-AxisX*(FL.width/2.0),-normNeg);
+	  FixedComp::setConnect(11,Org+AxisX*(FL.width/2.0),normPlus);
+	  FixedComp::setConnect(12,Org-Z*(FL.height/2.0),-normDown);
+	  FixedComp::setConnect(13,Org+Z*(FL.height/2.0),normUp);
+
+	  FixedComp::nameSideIndex(10,"FLhydroNeg");
+	  FixedComp::nameSideIndex(11,"FLhydroPlus");
+	  FixedComp::nameSideIndex(12,"FLhydroDown");
+	  FixedComp::nameSideIndex(13,"FLhydroUp");
+	}
+      vc++;
       FIndex+=100;
     }
   return;

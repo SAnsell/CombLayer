@@ -241,8 +241,8 @@ makeReflector::processDecoupled(Simulation& System,
 }
 
 void
-makeReflector::createInternalObjects(Simulation& System,
-				     const mainSystem::inputParam& IParam)
+makeReflector::createInternalObjects
+   (Simulation& System,const mainSystem::inputParam& IParam)
   /*!
     Build the inner objects
     \param System :: Simulation to use
@@ -250,7 +250,6 @@ makeReflector::createInternalObjects(Simulation& System,
   */
 {
   ELog::RegMethod RegA("makeReflector","createInternalObjects");
-
 
   const std::string TarName=
     IParam.getValue<std::string>("targetType",0);
@@ -286,14 +285,22 @@ makeReflector::createInternalObjects(Simulation& System,
   PMhydro->setEdge();
   PMhydro->setRotate();
   PMhydro->createAll(System,*VacObj,6);  
+
   Horn->setDivideSurf(-VacObj->getDivideSurf());
   const HeadRule VUnit=
     attachSystem::intersectionLink(*VacObj,{-2,3,-4,5});
-  const HeadRule RefUnit=
-    attachSystem::intersectionLink(*RefObj,{-2,3,-4,5});
   Horn->setCutSurf("VacCan",VUnit);
-  
-  // Horn->build(System,*VacObj,*FLhydro,*PMhydro);
+
+  Horn->setCutSurf("FLhydro",RefObj->getFullRule("FLhydro"));
+
+  Horn->setLinkCopy("FLhydroNeg",*RefObj,"FLhydroNeg");
+  Horn->setLinkCopy("FLhydroPlus",*RefObj,"FLhydroPlus");
+  Horn->setLinkCopy("FLhydroDown",*RefObj,"FLhydroDown");
+  Horn->setLinkCopy("FLhydroUp",*RefObj,"FLhydroUp");
+
+  // This can be optimised to a smaller surface:
+  Horn->setCutSurf("BaseCut",PMhydro->getOuterSurf());
+  Horn->createAll(System,*HydObj,0);
 
   return;
   std::string Out;
@@ -322,8 +329,8 @@ makeReflector::createInternalObjects(Simulation& System,
   PMhydro->setEdge();
   PMhydro->setRotate();
   PMhydro->createAll(System,*VacObj,6);  
-  Horn->setDivideSurf(-VacObj->getDivideSurf());
-  Horn->build(System,*VacObj,*FLhydro,*PMhydro);
+  //  Horn->setDivideSurf(-VacObj->getDivideSurf());
+  //  Horn->build(System,*VacObj,*FLhydro,*PMhydro);
 
   processDecoupled(System,IParam);
   const attachSystem::ContainedComp* CMod=

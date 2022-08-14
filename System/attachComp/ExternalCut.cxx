@@ -166,7 +166,7 @@ ExternalCut::copyCutSurf(const std::string& extName,
     \param outerName :: external-cut name
   */
 {
-  ELog::RegMethod RegA("ExternalCut","setCutSurf(ExternalCut)");
+  ELog::RegMethod RegA("ExternalCut","copyCutSurf(ExternalCut)");
 
   cutUnit& A=getUnit(extName);
   const cutUnit* BPtr=ESurf.findUnit(otherName);

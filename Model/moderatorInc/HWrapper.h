@@ -38,7 +38,8 @@ namespace moderatorSystem
 class HWrapper :
     public attachSystem::ContainedComp,
     public attachSystem::FixedUnit,
-    public attachSystem::ExternalCut
+    public attachSystem::ExternalCut,
+    public attachSystem::CellMap
 {
  private:
   
@@ -60,17 +61,14 @@ class HWrapper :
   int modMat;               ///< Moderator material
   int alMat;                ///< Al material
 
+  void checkExternalCut();
   
   void populate(const FuncDataBase&);
 
-  void createSurfMesh(const int,const int,const int*,
-		      const double*,const int*);
-
-  void createUnitVector(const attachSystem::FixedComp&);
 
 
-  void createSurfaces(const attachSystem::FixedComp&,
-		      const attachSystem::FixedComp&);
+  void createSurfaces();
+
   void createObjects(Simulation&,
 		     const attachSystem::ContainedComp&);
 
@@ -84,10 +82,10 @@ class HWrapper :
   /// Divide Plane setter
   void setDivideSurf(const int SN) { divideSurf=SN; }
 
-  void build(Simulation&,const attachSystem::FixedComp&,
-		 const attachSystem::FixedComp&,
-		 const attachSystem::ContainedComp&);
 
+  using FixedComp::createAll;
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 };
 
 }
