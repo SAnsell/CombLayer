@@ -237,6 +237,9 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("hornPMHeightExt",3.2);     // Full Depth 
   Control.addVariable("hornPMBackExt",0.0);    // Full Height
   Control.addVariable("hornPMForwardExt",3.2);    // Full Height
+
+  Control.addVariable("hornPMModThick",2.0);     // Full width
+
   Control.addVariable("hornPMVacInner",0.51);    // Vac inner thickness
   Control.addVariable("hornPMVacOuter",0.41);    // Vac outer thickness
   Control.addVariable("hornPMAlInner",0.35);    // Al skin thickness [inner]

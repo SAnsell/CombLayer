@@ -3,7 +3,7 @@
  
  * File:   weights/WWG.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ WWG::WWG(const WWG& A) :
     \param A :: WWG to copy
   */
 {
-  for(const auto [ Name,WPtr ] : A.WMeshMap)
+  for(const auto& [ Name,WPtr ] : A.WMeshMap)
     WMeshMap.emplace(Name,new WWGWeight(*WPtr));
 }
 

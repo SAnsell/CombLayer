@@ -287,9 +287,12 @@ PreMod::createLinks()
   FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
 
-  FixedComp::setConnect(4,Origin+Z*(height/2.0),Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+6));
-  
+  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+
+  nameSideIndex(4,"minusZ");
+  nameSideIndex(5,"plusZ");
+    
   return;
 }
   

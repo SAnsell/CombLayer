@@ -35,11 +35,11 @@ namespace moderatorSystem
   \brief GPreMod [insert object]
 */
 
-class PreMod : public attachSystem::ContainedComp,
+class PreMod :
+    public attachSystem::ContainedComp,
     public attachSystem::FixedComp
 {
  private:
-  
 
   int centOrgFlag;              ///< Origin centred / at a point
 

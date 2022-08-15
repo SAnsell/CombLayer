@@ -37,21 +37,16 @@ namespace moderatorSystem
 
 class HWrapper :
     public attachSystem::ContainedComp,
-    public attachSystem::FixedUnit,
+    public attachSystem::FixedComp,
     public attachSystem::ExternalCut,
     public attachSystem::CellMap
 {
  private:
   
-  int divideSurf;               ///< Divider surface for cylinders
-
-  double sideExt;              ///< Extra at side [total]
-  double heightExt;            ///< Extra at      [total]
-  double backExt;              ///< Total depth   [Total]
-  double forwardExt;           ///< Total depth   [Total]
   double wingLen;              ///< Forward length of wing
 
-  double vacInner;      ///< Inner Vac spacing 
+  double vacInner;      ///< Inner Vac spacing  [not on wings]
+  double modThick;      ///< Water thickness
   double alInner;       ///< Inner Al layer
   double alOuter;       ///< Outer Al layer
   double vacOuter;      ///< Outer spacing
@@ -61,16 +56,11 @@ class HWrapper :
   int modMat;               ///< Moderator material
   int alMat;                ///< Al material
 
-  void checkExternalCut();
-  
+  void checkExternalCut();  
   void populate(const FuncDataBase&);
-
-
-
   void createSurfaces();
+  void createObjects(Simulation&);
 
-  void createObjects(Simulation&,
-		     const attachSystem::ContainedComp&);
 
  public:
 
@@ -78,10 +68,6 @@ class HWrapper :
   HWrapper(const HWrapper&);
   HWrapper& operator=(const HWrapper&);
   ~HWrapper();
-
-  /// Divide Plane setter
-  void setDivideSurf(const int SN) { divideSurf=SN; }
-
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

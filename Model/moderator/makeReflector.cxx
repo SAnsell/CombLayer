@@ -286,26 +286,31 @@ makeReflector::createInternalObjects
   PMhydro->setRotate();
   PMhydro->createAll(System,*VacObj,6);  
 
-  Horn->setDivideSurf(-VacObj->getDivideSurf());
+  Horn->setCutSurf("DivideSurf",-VacObj->getDivideSurf());
+
   const HeadRule VUnit=
-    attachSystem::intersectionLink(*VacObj,{-2,3,-4,5});
+    attachSystem::intersectionLink(*VacObj,{-2,3,-4,5,-6});
+
   Horn->setCutSurf("VacCan",VUnit);
 
-  Horn->setCutSurf("FLhydro",RefObj->getFullRule("FLhydro"));
-
+  Horn->setLinkCopy("FLhydro",*RefObj,"FLhydro");
   Horn->setLinkCopy("FLhydroNeg",*RefObj,"FLhydroNeg");
   Horn->setLinkCopy("FLhydroPlus",*RefObj,"FLhydroPlus");
   Horn->setLinkCopy("FLhydroDown",*RefObj,"FLhydroDown");
   Horn->setLinkCopy("FLhydroUp",*RefObj,"FLhydroUp");
-  
-  Horn->setLinkCopy("VacNeg",*VacObj,"FLhydroNeg");
-  Horn->setLinkCopy("VacPlus",*VacObj,"FLhydroPlus");
-  Horn->setLinkCopy("VacDown",*VacObj,"FLhydroDown");
-  Horn->setLinkCopy("VacUp",*VacObj,"FLhydroUp");
-  Horn->setLinkCopy("VacOut",*VacObj,"FLhydroUp");
+
+  Horn->setLinkCopy("VacFront",*VacObj,"VacDivider");
+  Horn->setLinkCopy("VacBack",*VacObj,"VacBack");
+  Horn->setLinkCopy("VacNeg",*VacObj,"VacNeg");
+  Horn->setLinkCopy("VacPlus",*VacObj,"VacPlus");
+  Horn->setLinkCopy("VacDown",*VacObj,"VacDown");
+  Horn->setLinkCopy("VacUp",*VacObj,"VacUp");
+
 
   // This can be optimised to a smaller surface:
-  Horn->setCutSurf("BaseCut",PMhydro->getOuterSurf());
+  Horn->setCutSurf("BaseCut",*PMhydro,"minusZ");
+  Horn->setCutSurf("BaseFullCut",PMhydro->getOuterSurf());
+  Horn->setCutSurf("BaseFrontCut",*PMhydro,"back");
   Horn->createAll(System,*HydObj,0);
 
   return;

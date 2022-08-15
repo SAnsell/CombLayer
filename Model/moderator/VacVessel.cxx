@@ -383,10 +383,25 @@ VacVessel::createLinks()
 {
   ELog::RegMethod RegA("VacVessel","createLinks");
 
+  nameSideIndex(0,"VacFront");
+  nameSideIndex(1,"VacBack");
+  nameSideIndex(2,"VacNeg");
+  nameSideIndex(3,"VacPlus");
+  nameSideIndex(4,"VacDown");
+  nameSideIndex(5,"VacUp");
+  nameSideIndex(6,"VacDivider");
+
+  // For Cylindrical surface must also have a divider:
+  // -- Groove:
   FixedComp::setConnect(0,BVec[0]+Y*(vacPosGap+alPos+terPos+
                                     outPos+clearNeg),Y);
   FixedComp::setConnect(1,BVec[1]-Y*(vacNegGap+alPos+terNeg+
                                     outNeg+clearNeg),-Y);
+  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+41));
+  FixedComp::setBridgeSurf(0,SMap.realSurf(divideSurf));
+
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+42));
+  FixedComp::setBridgeSurf(1,-SMap.realSurf(divideSurf));
 
   // set Links:
   for(size_t i=2;i<6;i++)
@@ -398,13 +413,9 @@ VacVessel::createLinks()
     FixedComp::setLinkSurf(static_cast<size_t>(i),
 			   SMap.realSurf(buildIndex+41+i));
 
-  // For Cylindrical surface must also have a divider:
-  // -- Groove:
-  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+41));
-  FixedComp::setBridgeSurf(0,-SMap.realSurf(divideSurf));
+  FixedComp::setConnect(6,Origin,Y);
+  FixedComp::setLinkSurf(6,SMap.realSurf(divideSurf));
 
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+42));
-  FixedComp::setBridgeSurf(1,-SMap.realSurf(divideSurf));
 
   return;
 }

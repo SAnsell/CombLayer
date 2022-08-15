@@ -183,7 +183,6 @@ Reflector::createFlightLineSurfaces()
       const Geometry::Vec3D Org=Origin+FL.Org.getInBasis(X,Y,Z);
       const Geometry::Vec3D Axis=FL.Axis.getInBasis(X,Y,Z).unit();
       const Geometry::Vec3D AxisX=Z*Axis;
-      
 
       const Geometry::Quaternion Qneg=
 	Geometry::Quaternion::calcQRotDeg(-FL.negAngle,Z);
@@ -194,7 +193,7 @@ Reflector::createFlightLineSurfaces()
       const Geometry::Quaternion Qup=
 	Geometry::Quaternion::calcQRotDeg(-FL.upAngle,AxisX);
       
-      makePlane("FLcut",SMap,FIndex+1,Org,Axis);
+      makePlane("FLcut",SMap,FIndex+1,Org-Axis*2.0,Axis);
       const Geometry::Vec3D normNeg=Qneg.makeRotate(AxisX);
       makePlane("FLneg",SMap,FIndex+3,Org-AxisX*(FL.width/2.0),normNeg);
       const Geometry::Vec3D normPlus=Qplus.makeRotate(AxisX);
