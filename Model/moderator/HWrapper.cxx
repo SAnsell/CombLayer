@@ -148,8 +148,8 @@ HWrapper::checkExternalCut()
 {
   ELog::RegMethod RegA("HWrapper","checkExternalCut");
 
-  for(const std::string name : {"FLHydroNeg","FLHydroPlus"
-				"FLHydroDown","FLHydroUp"})
+  for(const std::string name : {"FLhydroNeg","FLhydroPlus",
+				"FLhydroDown","FLhydroUp"})
     {
       if (!ExternalCut::isActive(name))
 	ExternalCut::setCutSurf(name,*this,name);  // if not set?
@@ -212,8 +212,19 @@ HWrapper::createSurfaces()
   
   ExternalCut::makeExpandedSurf
     (SMap,"FLhydroNeg",buildIndex+13,Origin,sideExt);
+  ExternalCut::makeExpandedSurf
+    (SMap,"FLhydroPlus",buildIndex+14,Origin,sideExt);
+  ExternalCut::makeExpandedSurf
+    (SMap,"FLhydroDown",buildIndex+15,Origin,sideExt);
+  ExternalCut::makeExpandedSurf
+    (SMap,"FLhydroUp",buildIndex+16,Origin,sideExt);
+
+  ExternalCut::makeExpandedSurf
+    (SMap,"FLhydroNeg",buildIndex+23,Origin,sideExt+vacOuter);
   ELog::EM<<"Real Surf == "<<
     *(SMap.realSurfPtr(buildIndex+13))<<ELog::endDiag;
+  ELog::EM<<"Real Surf == "<<
+    *(SMap.realSurfPtr(buildIndex+23))<<ELog::endDiag;
   /*  
   const int baseSurf[NSurf]={1,2,3,4,5,6,103,104,105,106};
   double mainOffset[NSurf]={backExt,forwardExt,-sideExt,sideExt,

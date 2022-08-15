@@ -297,6 +297,12 @@ makeReflector::createInternalObjects
   Horn->setLinkCopy("FLhydroPlus",*RefObj,"FLhydroPlus");
   Horn->setLinkCopy("FLhydroDown",*RefObj,"FLhydroDown");
   Horn->setLinkCopy("FLhydroUp",*RefObj,"FLhydroUp");
+  
+  Horn->setLinkCopy("VacNeg",*VacObj,"FLhydroNeg");
+  Horn->setLinkCopy("VacPlus",*VacObj,"FLhydroPlus");
+  Horn->setLinkCopy("VacDown",*VacObj,"FLhydroDown");
+  Horn->setLinkCopy("VacUp",*VacObj,"FLhydroUp");
+  Horn->setLinkCopy("VacOut",*VacObj,"FLhydroUp");
 
   // This can be optimised to a smaller surface:
   Horn->setCutSurf("BaseCut",PMhydro->getOuterSurf());
