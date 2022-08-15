@@ -192,6 +192,7 @@ makeReflector::processDecoupled(Simulation& System,
    */
 {
   ELog::RegMethod RegA("makeReflector","processDecoupled");
+
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
@@ -211,7 +212,7 @@ makeReflector::processDecoupled(Simulation& System,
     {
       std::shared_ptr<Decoupled> DModPtr(new Decoupled("decoupled"));
       //      OR.addObject(DModPtr);
-      DModPtr->createAll(System,World::masterTS2Origin(),0);
+      DModPtr->createAll(System,World::masterOrigin(),0);
       DMod=DModPtr;
     }
   else if (DT=="layer")  // layer
@@ -313,44 +314,17 @@ makeReflector::createInternalObjects
   Horn->setCutSurf("BaseFrontCut",*PMhydro,"back");
   Horn->createAll(System,*HydObj,0);
 
-  return;
-  std::string Out;
-
-  Out = RefObj->combine("CornerB Back Right").display();
-  FLgroove->addBoundarySurf("inner",Out);  
-  FLgroove->addBoundarySurf("outer",Out);  
-  FLgroove->createAll(System,*VacObj,1);
-
-
-  Out = RefObj->combine("CornerC Front").display(); 
-  FLhydro->addBoundarySurf("inner",Out);  
-  FLhydro->addBoundarySurf("outer",Out);  
-  FLhydro->createAll(System,*VacObj,2);
-
-  return;
+  processDecoupled(System,IParam);
   
 
-  PMgroove->setTargetSurf(TarObj->getLinkSurf(1));
-  PMgroove->setDivideSurf(VacObj->getDivideSurf());
-  PMgroove->setEdge();
-  PMgroove->createAll(System,*VacObj,6); 
-
-  PMhydro->setTargetSurf(TarObj->getLinkSurf(1));
-  PMhydro->setDivideSurf(-VacObj->getDivideSurf());
-  PMhydro->setEdge();
-  PMhydro->setRotate();
-  PMhydro->createAll(System,*VacObj,6);  
-  //  Horn->setDivideSurf(-VacObj->getDivideSurf());
-  //  Horn->build(System,*VacObj,*FLhydro,*PMhydro);
-
-  processDecoupled(System,IParam);
   const attachSystem::ContainedComp* CMod=
     System.getObjectThrow<attachSystem::ContainedComp>
     (DMod->getKeyName(),"DMod to CC failed");
-
+  std::string Out;
   if (DT!="plate")
     {
       DVacObj->buildSingle(System,*DMod,CMod->getExclude());
+      return;
       Out = RefObj->combine("CornerC Back Left").display();
       FLnarrow->addBoundarySurf("inner",Out);  
       FLnarrow->addBoundarySurf("outer",Out);  
@@ -381,9 +355,14 @@ makeReflector::createInternalObjects
       PMdec->setRotate();
       PMdec->createAll(System,*DMod,6);
     }  
+  return;
+
   Out = RefObj->combine("Left").display();
+
+
   IRcut->addBoundarySurf(Out);  
   IRcut->createAll(System,*TarObj,0);
+
   
   CdBucket->addBoundarySurf(FLwish->getExclude("outer"));
   CdBucket->addBoundarySurf(FLnarrow->getExclude("outer"));
