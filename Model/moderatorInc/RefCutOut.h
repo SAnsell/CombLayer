@@ -37,21 +37,19 @@ namespace moderatorSystem
 
 class RefCutOut : 
   public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset
+  public attachSystem::FixedRotate,
+  public attachSystem::ExternalCut,
+  public attachSystem::CellMap
+  
 {
  private:
 
-  int active;                  ///< Is object active
-  
-  double tarLen;               ///< Distance down target
-  double tarOut;               ///< Distance to target Centre
+  double tarOutStep;           ///< Distance from target centre
   double radius;               ///< radius of hole
   
-  int matN;                    ///< Material Number
+  int mat;                     ///< Material
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
-
   void createSurfaces();
   void createObjects(Simulation&);
 
@@ -62,7 +60,7 @@ class RefCutOut :
   RefCutOut& operator=(const RefCutOut&);
   ~RefCutOut();
 
-
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

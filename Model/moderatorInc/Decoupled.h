@@ -36,12 +36,11 @@ namespace moderatorSystem
   \brief Decoupled [insert object]
 */
 
-class Decoupled : public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset
+class Decoupled :
+    public attachSystem::ContainedComp,
+    public attachSystem::FixedRotate
 {
  protected:
-  
-  int populated;                ///< 1:var,2:axis,4:cent,8:face,16:cell
   
   std::shared_ptr<VanePoison> VP;  ///< Vane poisoning
 

@@ -3,7 +3,7 @@
  
  * File:   moderator/DecLayer.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -56,7 +54,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "Decoupled.h"
 #include "DecLayer.h"
@@ -75,7 +73,9 @@ DecLayer::DecLayer(const std::string& Key,
 {}
 
 DecLayer::DecLayer(const DecLayer& A) : 
-  Decoupled(A)
+  Decoupled(A),lkeyName(A.lkeyName),
+  lThick(A.lThick),lMat(A.lMat),lTemp(A.lTemp),
+  centMat(A.centMat),centTemp(A.centTemp)
   /*!
     Copy constructor
     \param A :: DecLayer to copy
@@ -93,6 +93,11 @@ DecLayer::operator=(const DecLayer& A)
   if (this!=&A)
     {
       Decoupled::operator=(A);
+      lThick=A.lThick;
+      lMat=A.lMat;
+      lTemp=A.lTemp;
+      centMat=A.centMat;
+      centTemp=A.centTemp;
     }
   return *this;
 }
@@ -130,7 +135,7 @@ DecLayer::populate(const FuncDataBase& Control)
      }
   centMat=ModelSupport::EvalMat<int>(Control,lkeyName+"CentMat");
   centTemp=Control.EvalVar<double>(lkeyName+"CentTemp");
-  populated |= 1;  
+
   return;
 }
   
@@ -214,7 +219,9 @@ DecLayer::createAll(Simulation& System,
   ELog::RegMethod RegA("DecLayer","createAll");
 
   // Check that everything from here is called in Decoupled:
+
   ELog::EM<<"Calling createAll"<<ELog::endTrace;
+
   Decoupled::createAll(System,FC,sideIndex);
   populate(System.getDataBase());
   createSurfaces();

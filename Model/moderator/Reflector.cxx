@@ -68,7 +68,7 @@ namespace moderatorSystem
 
 Reflector::Reflector(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(Key,16),
+  attachSystem::FixedRotate(Key,24),
   attachSystem::SurfMap(),
   attachSystem::CellMap()
   /*!
@@ -142,8 +142,8 @@ Reflector::populate(const FuncDataBase& Control)
   for(size_t i=0;i<nPads;i++)
     Pads.push_back(CoolPad("coolPad",i+1));
 
-  flightLine.resize(2);
-  for(size_t i=0;i<2;i++)
+  flightLine.resize(4);
+  for(size_t i=0;i<flightLine.size();i++)
     {
       const std::string flName=keyName+"FL"+std::to_string(i);
       flightLine[i].Org=
@@ -174,9 +174,10 @@ Reflector::createFlightLineSurfaces()
   // a small adjustment to the angle that is shown in the flight line
 
   int FIndex(buildIndex+1000);
-  size_t linkIndex(14);  
+  size_t linkIndex(14);
+  // link point names
   const std::vector<std::string> fName({
-      "FLgroove","FLhydro","FLbroad","FLnarrow"});
+      "FLgroove","FLhydro","FLnarrow","FLwish"});
   std::vector<std::string>::const_iterator vc=fName.begin();
   for(const flightInfo& FL  : flightLine)
     {
@@ -214,8 +215,6 @@ Reflector::createFlightLineSurfaces()
       // individual links for the HWrapper:
       if (*vc=="FLhydro")
 	{
-	  ELog::EM<<"Side == "<<*vc<<ELog::endDiag;
-
 	  FixedComp::setLinkSurf(10,-SMap.realSurf(FIndex+3));
 	  FixedComp::setLinkSurf(11,SMap.realSurf(FIndex+4));
 	  FixedComp::setLinkSurf(12,-SMap.realSurf(FIndex+5));
@@ -235,7 +234,7 @@ Reflector::createFlightLineSurfaces()
     }
   return;
 }
-  
+
 void
 Reflector::createSurfaces()
   /*!
@@ -340,7 +339,6 @@ Reflector::createObjects(Simulation& System)
   HeadRule HR;
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6 11 -12 13 -14");
   addOuterSurf(HR);
-
   
   int FIndex(buildIndex+1000);
   HeadRule FLhr;
@@ -355,6 +353,20 @@ Reflector::createObjects(Simulation& System)
   FLhr=ModelSupport::getHeadRule
     (SMap,buildIndex,FIndex,"-4 -14 1M 3M -4M 5M -6M");
   makeCell("FLHydro",System,cellIndex++,0,0.0,FLhr);
+  FLhr=ModelSupport::getHeadRule(SMap,FIndex,"1 3 -4 5 -6");
+  HR.addIntersection(FLhr.complement());
+
+  FIndex+=100;
+  FLhr=ModelSupport::getHeadRule
+    (SMap,buildIndex,FIndex,"13 3 1M 3M -4M 5M -6M");
+  makeCell("FLNarrow",System,cellIndex++,0,0.0,FLhr);
+  FLhr=ModelSupport::getHeadRule(SMap,FIndex,"1 3 -4 5 -6");
+  HR.addIntersection(FLhr.complement());
+
+  FIndex+=100;
+  FLhr=ModelSupport::getHeadRule
+    (SMap,buildIndex,FIndex,"-4 1M 3M -4M 5M -6M");
+  makeCell("FLWish",System,cellIndex++,0,0.0,FLhr);
   FLhr=ModelSupport::getHeadRule(SMap,FIndex,"1 3 -4 5 -6");
   HR.addIntersection(FLhr.complement());
 

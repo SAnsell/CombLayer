@@ -3,7 +3,7 @@
  
  * File:   moderator/Decoupled.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,8 +39,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -58,7 +56,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "Decoupled.h"
 #include "VanePoison.h"
@@ -67,8 +65,9 @@ namespace moderatorSystem
 {
 
 Decoupled::Decoupled(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,12),
-  populated(0),VP(new VanePoison("decPoison"))
+  attachSystem::ContainedComp(),
+  attachSystem::FixedRotate(Key,12),
+  VP(new VanePoison("decPoison"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -81,8 +80,7 @@ Decoupled::Decoupled(const std::string& Key)  :
 }
   
 Decoupled::Decoupled(const Decoupled& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  populated(A.populated),
+  attachSystem::ContainedComp(A),attachSystem::FixedRotate(A),
   VP(new VanePoison("decPoison")),width(A.width),
   height(A.height),westCentre(A.westCentre),eastCentre(A.eastCentre),
   westRadius(A.westRadius),eastRadius(A.eastRadius),westDepth(A.westDepth),
@@ -112,7 +110,7 @@ Decoupled::operator=(const Decoupled& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      populated=A.populated;
+
       *VP = *A.VP;
       width=A.width;
       height=A.height;
@@ -148,7 +146,7 @@ Decoupled::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("Decoupled","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
@@ -166,7 +164,6 @@ Decoupled::populate(const FuncDataBase& Control)
   modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
   alMat=ModelSupport::EvalMat<int>(Control,keyName+"AlMat");
   
-  populated |= 1;
   return;
 }
   

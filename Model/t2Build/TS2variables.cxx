@@ -107,7 +107,8 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("ReflectorFL0Width",18.3);     // Full width
   
   Control.addVariable("ReflectorFL1Org",
-		      Geometry::Vec3D(-6.9450+13.8*0.9513,-2.36-13.8*0.30,-12.5));
+		      Geometry::Vec3D(-6.9450+13.8*0.9513,
+				      -2.36-13.8*0.30,-12.5));
   Control.addVariable("ReflectorFL1Axis",
 		      Geometry::Vec3D(0.951057,-0.309017,0.0));
   Control.addVariable("ReflectorFL1NegAngle",53.2);  // Angle out
@@ -116,6 +117,38 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("ReflectorFL1UpAngle",0.0); // Step up angle
   Control.addVariable("ReflectorFL1Height",11.5);     // Full height
   Control.addVariable("ReflectorFL1Width",14.3);     // Full width
+
+  // Internal Reflector decoupled flight line
+  const Geometry::Vec3D decAxis(-sin(M_PI*57.0/180.0),
+				  cos(M_PI*57.0/180.0),0.0);
+  const Geometry::Vec3D decAxisX(-sin(M_PI*147.0/180.0),
+				  cos(M_PI*147.0/180.0),0.0);
+  const Geometry::Vec3D decZ(0,0,11.862);
+  Control.addVariable("ReflectorFL2Org",decAxisX*3.6+decZ);
+  Control.addVariable("ReflectorFL2Axis",decAxis);
+
+  // NARROW
+  Control.addVariable("ReflectorFL2PlusAngle",27.06);  // Angle out
+  Control.addVariable("ReflectorFL2NegAngle",12.02);  // Angle out
+  Control.addVariable("ReflectorFL2DownAngle",0.0);  // Step down angle
+  Control.addVariable("ReflectorFL2UpAngle",0.0);    // Step up angle
+  Control.addVariable("ReflectorFL2Height",11.5);     // Full height
+  Control.addVariable("ReflectorFL2Width",13.3);     // Full width
+
+  // WISH
+  Control.addVariable("ReflectorFL3Org",decAxisX*3.6+decZ);
+  Control.addVariable("ReflectorFL3Axis",-decAxis);
+  Control.addVariable("ReflectorFL3NegAngle",27.34);  // Angle out
+  Control.addVariable("ReflectorFL3PlusAngle",11.01);  // Angle out
+  Control.addVariable("ReflectorFL3DownAngle",0.0);  // Step down angle
+  Control.addVariable("ReflectorFL3UpAngle",0.0);    // Step up angle
+  Control.addVariable("ReflectorFL3Height",11.5);     // Full height
+  Control.addVariable("ReflectorFL3Width",9.3);     // Full width
+  Control.addVariable("ReflectorFL3NLayer",2);     // Full width
+  Control.addVariable("ReflectorFL3NLayer0Mat","Aluminium");     // Full width
+  Control.addVariable("ReflectorFL3NLayer1Mat","Cadnium");     // Full width
+  Control.addVariable("ReflectorFL3NLayer0Thick",0.5);     // Full width
+  Control.addVariable("ReflectorFL3NLayer1Thick",0.12);     // Full width
 
 // NEW COUPLED STUFF:
   
@@ -148,15 +181,6 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("grooveModMat","Void");  // CH4 + 10% Al
   Control.addVariable("grooveAlMat","Aluminium");   // Aluminium mat
   Control.addVariable("grooveModTemp",26.0);        // Moderator temperature
-
-  Control.addVariable("grooveFlightXStep",0.0);      // Step from centre
-  Control.addVariable("grooveFlightZStep",3.0);      // Step from centre
-  Control.addVariable("grooveFlightAngleXY1",26.5);  // Angle out
-  Control.addVariable("grooveFlightAngleXY2",26.5);  // Angle out
-  Control.addVariable("grooveFlightAngleZTop",2.5);  // Step down angle
-  Control.addVariable("grooveFlightAngleZBase",0.0); // Step up angle
-  Control.addVariable("grooveFlightHeight",3.3);     // Full height
-  Control.addVariable("grooveFlightWidth",18.3);     // Full width
 
   Control.addVariable("groovePMWidth",25.8);     // Full width
   Control.addVariable("groovePMDepth",10.2);     // Full Depth 
@@ -300,13 +324,11 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("decPlateDepth",5.0);       //  Tilt angle
   Control.addVariable("decPlateDefMat","Aluminium");       //  Tilt angle
 
-    //  NEW DECOUPLED MODERATOR
-
+  //  NEW DECOUPLED MODERATOR
   Control.addVariable("decoupledXStep",0.0);        //  X [across] shift
-  Control.addVariable("decoupledYStep",4.6);        //  Y [target] shift
+  Control.addVariable("decoupledYStep",10-4.6);        //  Y [target] shift
   Control.addVariable("decoupledZStep",11.862);     //  Z Shift 
-  Control.addVariable("decoupledZAngle",0.0);       //  Tilt angle
-  Control.addVariable("decoupledXYAngle",57.0);     // Angle  [relative to Y]
+  Control.addVariable("decoupledZAngle",57.0);       //  Tilt angle
   Control.addVariable("decoupledEastRadius",30.2);  // Radius of East curve
   Control.addVariable("decoupledWestRadius",30.2);  // Radius of West curve
 
@@ -391,30 +413,6 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("decPoisonBladeMat","SiCrystal");  // Silicon
   Control.addVariable("decPoisonAbsMat","Gadolinium");   // GD
   
-  Control.addVariable("wishFlightXStep",0.0);       // Step from centre
-  Control.addVariable("wishFlightZStep",0.0);       // Step from centre
-  Control.addVariable("wishFlightAngleXY1",11.01);  // Angle out
-  Control.addVariable("wishFlightAngleXY2",27.34);  // Angle out
-  Control.addVariable("wishFlightAngleZTop",0.0);   // Step down angle
-  Control.addVariable("wishFlightAngleZBase",0.0);  // Step up angle
-  Control.addVariable("wishFlightHeight",11.5);     // Full height
-  Control.addVariable("wishFlightWidth",14.3);      // Full width
-  
-  Control.addVariable("wishFlightNLiner",2);           // Number of layers
-  Control.addVariable("wishFlightLinerThick1",0.5);    // Thickness
-  Control.addVariable("wishFlightLinerThick2",0.12);   // Thickness
-  Control.addVariable("wishFlightLinerMat1","Aluminium");  
-  Control.addVariable("wishFlightLinerMat2","Cadmium");
-
-  Control.addVariable("narrowFlightXStep",0.0);       // Step from centre
-  Control.addVariable("narrowFlightZStep",0.0);       // Step from centre
-  Control.addVariable("narrowFlightAngleXY1",27.06);  // Angle out
-  Control.addVariable("narrowFlightAngleXY2",12.02);  // Angle out
-  Control.addVariable("narrowFlightAngleZTop",0.0);   // Step down angle
-  Control.addVariable("narrowFlightAngleZBase",0.0);  // Step up angle
-  Control.addVariable("narrowFlightHeight",11.5);     // Full height
-  Control.addVariable("narrowFlightWidth",14.3);      // Full width
-  Control.addVariable("narrowFlightInnerMat","Void");  // Material
 
   Control.addVariable("decPMWidth",25.8);     // Full width
   Control.addVariable("decPMDepth",10.2);     // Full Depth 
@@ -495,11 +493,10 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("coolPadMat","Aluminium");   
 
   // REFLECTOR CUT SYSTEM
-  Control.addVariable("chipIRCutActive",1);          // Flag for building
-  Control.addVariable("chipIRCutXYAngle",46.0);      // Rotation angle
-  Control.addVariable("chipIRCutZAngle",4.76);       // Rotation angle
-  Control.addVariable("chipIRCutTargetDepth",4.55);  // Depth down target
-  Control.addVariable("chipIRCutTargetOut",12.0);    // Rotation angle
+  Control.addVariable("chipIRCutXAngle",4.76);     // Rotation angle
+  Control.addVariable("chipIRCutZAngle",46.0);     // Rotation angle
+  Control.addVariable("chipIRCutYStep",4.55);  // Depth down target
+  Control.addVariable("chipIRCutTarOutStep",12.0); // out step from centreline
   Control.addVariable("chipIRCutRadius",2.55);       // Radius [outer]
   Control.addVariable("chipIRCutMat","Void");        // Material [void]
 

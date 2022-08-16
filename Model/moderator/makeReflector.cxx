@@ -213,6 +213,9 @@ makeReflector::processDecoupled(Simulation& System,
       std::shared_ptr<Decoupled> DModPtr(new Decoupled("decoupled"));
       //      OR.addObject(DModPtr);
       DModPtr->createAll(System,World::masterOrigin(),0);
+      ELog::EM<<"Decoupled ="<<DModPtr->getX()<<ELog::endDiag;
+      ELog::EM<<"Decoupled ="<<DModPtr->getY()<<ELog::endDiag;
+      ELog::EM<<"Decoupled ="<<DModPtr->getZ()<<ELog::endDiag;
       DMod=DModPtr;
     }
   else if (DT=="layer")  // layer
@@ -275,7 +278,6 @@ makeReflector::createInternalObjects
   RefObj->insertComponent(System,"FLGroove",VacObj->getMainRule("front"));
   RefObj->insertComponent(System,"FLHydro",VacObj->getMainRule("back"));
 
-  
   PMgroove->setTargetSurf(TarObj->getLinkSurf(1));
   PMgroove->setDivideSurf(VacObj->getDivideSurf());
   PMgroove->setEdge();
@@ -320,48 +322,19 @@ makeReflector::createInternalObjects
   const attachSystem::ContainedComp* CMod=
     System.getObjectThrow<attachSystem::ContainedComp>
     (DMod->getKeyName(),"DMod to CC failed");
-  std::string Out;
-  if (DT!="plate")
-    {
-      DVacObj->buildSingle(System,*DMod,CMod->getExclude());
-      return;
-      Out = RefObj->combine("CornerC Back Left").display();
-      FLnarrow->addBoundarySurf("inner",Out);  
-      FLnarrow->addBoundarySurf("outer",Out);  
-      FLnarrow->createAll(System,*DVacObj,1);
 
-      Out = RefObj->combine("CornerA CornerD Right").display();
-      FLwish->addBoundarySurf("inner",Out);  
-      FLwish->addBoundarySurf("outer",Out);
-      FLwish->createAll(System,*DVacObj,2);
-      
-      PMdec->setTargetSurf(TarObj->getLinkSurf(1));
-      PMdec->setRotate();
-      PMdec->createAll(System,*DVacObj,5); 
-    }
-  else
-    {
-      Out = RefObj->combine("CornerC Back Left").display();
-      FLnarrow->addBoundarySurf("inner",Out);  
-      FLnarrow->addBoundarySurf("outer",Out);  
-      FLnarrow->createAll(System,*DMod,1);
+  DVacObj->buildSingle(System,*DMod,CMod->getExclude());
+  RefObj->insertComponent(System,"FLNarrow",DVacObj->getMainRule("front"));
+  RefObj->insertComponent(System,"FLWish",DVacObj->getMainRule("back"));
+    
+  PMdec->setTargetSurf(TarObj->getLinkSurf(1));
+  PMdec->setRotate();
+  PMdec->createAll(System,*DVacObj,5); 
 
-      Out = RefObj->combine("CornerA CornerD Front").display();
-      FLwish->addBoundarySurf("inner",Out);  
-      FLwish->addBoundarySurf("outer",Out);  
-      FLwish->createAll(System,*DMod,2);
-      
-      PMdec->setTargetSurf(TarObj->getLinkSurf(1));
-      PMdec->setRotate();
-      PMdec->createAll(System,*DMod,6);
-    }  
-  return;
-
-  Out = RefObj->combine("Left").display();
-
-
-  IRcut->addBoundarySurf(Out);  
+  IRcut->setCutSurf("RefEdge",RefObj->getSurfRules("Left"));
   IRcut->createAll(System,*TarObj,0);
+
+  return;
 
   
   CdBucket->addBoundarySurf(FLwish->getExclude("outer"));

@@ -45,6 +45,9 @@ struct flightInfo
   double plusAngle;
   double upAngle;
   double downAngle;
+
+  std::vector<double> layerThick;      ///< layer thickness (if present)
+  std::vector<std::string> layerMat;   ///< layers (if present)
 };
   
 /*!

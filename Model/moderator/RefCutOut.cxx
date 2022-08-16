@@ -3,7 +3,7 @@
  
  * File:   moderator/RefCutOut.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,8 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -53,18 +51,20 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "RefCutOut.h"
 
 namespace moderatorSystem
 {
 
 RefCutOut::RefCutOut(const std::string& Key)  :
-  attachSystem::FixedOffset(Key,1)
+  attachSystem::FixedRotate(Key,1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -73,8 +73,12 @@ RefCutOut::RefCutOut(const std::string& Key)  :
 
 RefCutOut::RefCutOut(const RefCutOut& A) : 
   attachSystem::ContainedComp(A),
-  attachSystem::FixedOffset(A),
-  tarLen(A.tarLen),tarOut(A.tarOut),radius(A.radius),matN(A.matN)
+  attachSystem::FixedRotate(A),
+  attachSystem::ExternalCut(A),
+  attachSystem::CellMap(A),
+  tarOutStep(A.tarOutStep),
+  radius(A.radius),
+  mat(A.mat)
   /*!
     Copy constructor
     \param A :: RefCutOut to copy
@@ -92,11 +96,10 @@ RefCutOut::operator=(const RefCutOut& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
-      tarLen=A.tarLen;
-      tarOut=A.tarOut;
+      attachSystem::FixedRotate::operator=(A);
+      tarOutStep=A.tarOutStep;
       radius=A.radius;
-      matN=A.matN;
+      mat=A.mat;
     }
   return *this;
 }
@@ -115,41 +118,17 @@ RefCutOut::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("RefCutOut","populate");
-  
 
-  active=Control.EvalDefVar<int>(keyName+"Active",1);
-  if (active)
-    {
-      xyAngle=Control.EvalVar<double>(keyName+"XYAngle"); 
-      zAngle=Control.EvalVar<double>(keyName+"ZAngle"); 
-      tarLen=Control.EvalVar<double>(keyName+"TargetDepth");
-      tarOut=Control.EvalVar<double>(keyName+"TargetOut");
-      radius=Control.EvalVar<double>(keyName+"Radius"); 
-      
-      matN=ModelSupport::EvalMat<int>(Control,keyName+"Mat"); 
-    }
+  FixedRotate::populate(Control);
   
+  tarOutStep=Control.EvalVar<double>(keyName+"TarOutStep");
+  radius=Control.EvalVar<double>(keyName+"Radius"); 
+  
+  mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat"); 
+
   return;
 }
   
-
-void
-RefCutOut::createUnitVector(const attachSystem::FixedComp& CUnit,
-			    const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param CUnit :: Fixed unit that it is connected to 
-  */
-{
-  ELog::RegMethod RegA("RefCutOut","createUnitVector");
-  chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
-
-  yStep+=tarLen;
-  FixedOffset::createUnitVector(CUnit,sideIndex);
-
-  return;
-}
-
 void
 RefCutOut::createSurfaces()
   /*!
@@ -158,8 +137,8 @@ RefCutOut::createSurfaces()
 {
   ELog::RegMethod RegA("RefCutOut","createSurface");
 
-  ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*tarOut,Y);
-  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin+Y*tarOut,Y,radius);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
   return;
 }
 
@@ -172,14 +151,13 @@ RefCutOut::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("RefCutOut","createObjects");
   
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -7 ");
-  addOuterSurf(Out);
+  HeadRule HR;
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -7");
 
   // Inner Void
-  Out+=" "+ContainedComp::getContainer();
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-
+  ELog::EM<<"Center == "<<Origin<<ELog::endDiag;
+  makeCell("Inner",System,cellIndex++,0,0.0,HR*getRule("RefEdge"));
+  addOuterSurf(HR);
   return;
 }
 
@@ -192,18 +170,17 @@ RefCutOut::createAll(Simulation& System,
     Generic function to create everything
     \param System :: Simulation to create objects in
     \param FUnit :: Fixed Base unit
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("RefCutOut","createAll");
-  populate(System.getDataBase());
 
-  if (active)
-    {
-      createUnitVector(FUnit,sideIndex);
-      createSurfaces();
-      createObjects(System);
-      insertObjects(System);       
-    }
+  populate(System.getDataBase());
+  createCentredUnitVector(FUnit,sideIndex,tarOutStep);
+  createSurfaces();
+  createObjects(System);
+  insertObjects(System);       
+
   return;
 }
   

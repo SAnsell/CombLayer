@@ -3,7 +3,7 @@
  
  * File:   moderator/DecFileMod.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,7 +60,7 @@
 #include "ObjSurfMap.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "Decoupled.h"
 #include "DecFileMod.h"
@@ -117,10 +117,8 @@ DecFileMod::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("DecFileMod","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   // Master values
-  
-  populated |= 1;  
   return;
 }
 
