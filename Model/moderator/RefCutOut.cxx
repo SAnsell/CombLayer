@@ -155,7 +155,6 @@ RefCutOut::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -7");
 
   // Inner Void
-  ELog::EM<<"Center == "<<Origin<<ELog::endDiag;
   makeCell("Inner",System,cellIndex++,0,0.0,HR*getRule("RefEdge"));
   addOuterSurf(HR);
   return;

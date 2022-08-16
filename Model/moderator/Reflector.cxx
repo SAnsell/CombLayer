@@ -283,7 +283,6 @@ Reflector::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+14,Origin+XR*cutSize,XR);
   SurfMap::addSurf("CornerC",SMap.realSurf(buildIndex+13));
   SurfMap::addSurf("CornerD",-SMap.realSurf(buildIndex+14));
-
   createLinks(XR,YR);
 
   return;

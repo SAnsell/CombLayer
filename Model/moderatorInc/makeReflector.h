@@ -92,8 +92,6 @@ class makeReflector
     
   void insertPipeObjects(Simulation&,const mainSystem::inputParam&);
 
-  virtual std::string getExclude() const;
-
   void build(Simulation&,const mainSystem::inputParam&,int&);
 
 

@@ -213,9 +213,6 @@ makeReflector::processDecoupled(Simulation& System,
       std::shared_ptr<Decoupled> DModPtr(new Decoupled("decoupled"));
       //      OR.addObject(DModPtr);
       DModPtr->createAll(System,World::masterOrigin(),0);
-      ELog::EM<<"Decoupled ="<<DModPtr->getX()<<ELog::endDiag;
-      ELog::EM<<"Decoupled ="<<DModPtr->getY()<<ELog::endDiag;
-      ELog::EM<<"Decoupled ="<<DModPtr->getZ()<<ELog::endDiag;
       DMod=DModPtr;
     }
   else if (DT=="layer")  // layer
@@ -334,17 +331,10 @@ makeReflector::createInternalObjects
   IRcut->setCutSurf("RefEdge",RefObj->getSurfRules("Left"));
   IRcut->createAll(System,*TarObj,0);
 
-  return;
+  CdBucket->setCutSurf("FLwish",*RefObj,"FLwish");
+  CdBucket->setCutSurf("FLnarrow",*RefObj,"FLnarrow");
+  CdBucket->createAll(System,*RefObj,"Origin");
 
-  
-  CdBucket->addBoundarySurf(FLwish->getExclude("outer"));
-  CdBucket->addBoundarySurf(FLnarrow->getExclude("outer"));
-  CdBucket->addBoundarySurf(TarObj->getExclude());
-  CdBucket->createAll(System,*RefObj,0);
-
-  // for(CoolPad& PD : Pads)
-  //   PD.createAll(System,*this,3);
-      
   return;
 }
 
@@ -359,14 +349,13 @@ makeReflector::insertPipeObjects(Simulation& System,
   */
 {
   ELog::RegMethod RegA("makeReflector","insertPipeObjects");
-  return;
   
   CouplePipe CP("cplPipe");
   System.createObjSurfMap();
   CP.build(System,*HydObj,4,*VacObj);
 
   DecouplePipe DP("decPipe");
-  //  DP.createAll(System,*DMod,5,*DVacObj,DMod->needsHePipe());
+  DP.build(System,*DMod,0,*DVacObj,1);
 
   if (IParam.flag("bolts"))
     {
@@ -450,21 +439,6 @@ makeReflector::getViewOrigin(const int BeamLine) const
   return DVacObj->getSurfacePoint(0,2);
 }
 
-std::string
-makeReflector::getExclude() const 
-  /*!
-    Virtual function to add the cooling pads
-    \return Full Exlcude path
-  */
-{
-  ELog::RegMethod RegA("makeReflector","getExclude");
-
-  std::string Out=RefObj->getExclude();
-  // for(const CoolPad& PD : Pads)
-  //   Out+=PD.getExclude();
-  return Out;
-}
-
 
 void
 makeReflector::build(Simulation& System,
@@ -482,20 +456,7 @@ makeReflector::build(Simulation& System,
   RefObj->addInsertCell(excludeCell);
   createObjects(System);
   createInternalObjects(System,IParam);
-  /*  
   
-  IRcut->addInsertCell(cellIndex-1);
-  CdBucket->addInsertCell(cellIndex-1);
-   Out=ModelSupport::getComposite(SMap,buildIndex," 3 ");
-  IRcut->addBoundarySurf(Out);  
-  IRcut->createAll(System,*this,0);
-  
-  CdBucket->addBoundarySurf(FLwish->getExclude("outer"));
-  CdBucket->addBoundarySurf(FLnarrow->getExclude("outer"));
-  CdBucket->addBoundarySurf(TarObj->getExclude());
-  CdBucket->createAll(System,*this,0);
- // torpedoCell=cellIndex-1;
-*/
   return;
 }
 

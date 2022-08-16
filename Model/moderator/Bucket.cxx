@@ -3,7 +3,7 @@
  
  * File:   moderator/Bucket.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,8 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -55,15 +53,21 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
+#include "BaseMap.h"
+#include "CellMap.h"
+
+
 #include "Bucket.h"
 
 namespace moderatorSystem
 {
 
 Bucket::Bucket(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,1)
+  attachSystem::ContainedComp(),
+  attachSystem::FixedRotate(Key,1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -71,9 +75,12 @@ Bucket::Bucket(const std::string& Key)  :
 {}
 
 Bucket::Bucket(const Bucket& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::ExternalCut(A),
+  attachSystem::CellMap(A),
   radius(A.radius),thickness(A.thickness),
-  openZ(A.openZ),topZ(A.topZ),matN(A.matN)
+  openZ(A.openZ),topZ(A.topZ),mat(A.mat)
   /*!
     Copy constructor
     \param A :: Bucket to copy
@@ -91,12 +98,14 @@ Bucket::operator=(const Bucket& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
+      attachSystem::CellMap::operator=(A);
       radius=A.radius;
       thickness=A.thickness;
       openZ=A.openZ;
       topZ=A.topZ;
-      matN=A.matN;
+      mat=A.mat;
     }
   return *this;
 }
@@ -116,14 +125,14 @@ Bucket::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("Bucket","populate");
   
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   
   radius=Control.EvalVar<double>(keyName+"Radius"); 
   thickness=Control.EvalVar<double>(keyName+"Thick"); 
   openZ=Control.EvalVar<double>(keyName+"OpenZ"); 
   topZ=Control.EvalVar<double>(keyName+"TopZ"); 
 
-  matN=ModelSupport::EvalMat<int>(Control,keyName+"Mat"); 
+  mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat"); 
   
   return;
 }
@@ -154,14 +163,15 @@ Bucket::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Bucket","createObjects");
-  
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7 (17 : 12)");
-  addOuterSurf(Out);
 
-  // Inner Void
-  Out+=" "+ContainedComp::getContainer();
-  System.addCell(MonteCarlo::Object(cellIndex++,matN,0.0,Out));
+  HeadRule HR;
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -7 (17 : 12)");
+  addOuterSurf(HR);
+
+  HR*=ExternalCut::getComplementRule("FLwish");
+  HR*=ExternalCut::getComplementRule("FLnarrow");
+  makeCell("Bucket",System,cellIndex++,mat,0.0,HR);
 
   return;
 }
@@ -179,8 +189,8 @@ Bucket::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("Bucket","createAll");
-  populate(System.getDataBase());
 
+  populate(System.getDataBase());
   createUnitVector(FUnit,sideIndex);
   createSurfaces();
   createObjects(System);

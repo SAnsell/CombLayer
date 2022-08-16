@@ -3,7 +3,7 @@
  
  * File:   moderatorInc/Bucket.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,17 +37,18 @@ namespace moderatorSystem
 
 class Bucket : 
   public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset
+  public attachSystem::FixedRotate,
+  public attachSystem::ExternalCut,
+  public attachSystem::CellMap
 {
  private:
   
- 
   double radius;               ///< radius of hole
   double thickness;            ///< Thickness
   double openZ;                ///< Open Z height
   double topZ;                 ///< Top height
   
-  int matN;                    ///< Material Number [Cd]
+  int mat;                     ///< Material Number [Cd]
   
   void populate(const FuncDataBase&);
   void createSurfaces();
@@ -60,7 +61,7 @@ class Bucket :
   Bucket& operator=(const Bucket&);
   ~Bucket();
 
-
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

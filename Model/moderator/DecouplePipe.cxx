@@ -3,7 +3,7 @@
  
  * File:   moderator/DecouplePipe.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,10 @@ namespace moderatorSystem
 
 DecouplePipe::DecouplePipe(const std::string& Key)  :
   attachSystem::FixedUnit(Key,0),
-  Outer("dOuter"),HeIn("HeIn"),HeOut("HeOut"),CH4In("CH4In"),
+  Outer("dOuter"),
+  HeIn("HeIn"),
+  HeOut("HeOut"),
+  CH4In("CH4In"),
   CH4Out("CH4Out")
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -186,24 +189,6 @@ DecouplePipe::populate(const FuncDataBase& Control)
   
   return;
 }
-  
-void
-DecouplePipe::createUnitVector(const attachSystem::FixedComp& CUnit,
-			       const long int sideIndex)
-  /*!
-    Create the unit vectors
-    - Y Points towards WISH
-    - X Across the moderator
-    - Z up (towards the target)
-    \param CUnit :: Fixed unit that it is connected to 
-    \param sideIndex :: Connection point to use as origin
-  */
-{
-  ELog::RegMethod RegA("DecouplePipe","createUnitVector");
-
-  FixedComp::createUnitVector(CUnit,sideIndex);
-  return;
-}
 
 void 
 DecouplePipe::insertOuter(Simulation& System,const VacVessel& VC)
@@ -279,25 +264,6 @@ DecouplePipe::insertHePipe(Simulation& System,const VacVessel& VC)
 }
 
 void
-DecouplePipe::insertPipes(Simulation& System)
-  /*!
-    Add a pipe to the master system system:
-    \remark This should be called after the void vessel has
-    been constructed and all objects inserted.
-    \param System :: Simulation to add pipe to
-  */
-{
-  ELog::RegMethod RegA("DecouplePipe","insertPipe");
-
-  // First job is to re-create the OSM
-  
-  System.createObjSurfMap();
-
-  return;
-}
-
-  
-void
 DecouplePipe::build(Simulation& System,
 		    const attachSystem::FixedComp& FUnit,
 		    const long int sideIndex,
@@ -317,7 +283,7 @@ DecouplePipe::build(Simulation& System,
 
   // First job is to re-create the OSM and populate cells
   populate(System.getDataBase());
-  createUnitVector(FUnit,sideIndex);
+  FixedComp::createUnitVector(FUnit,sideIndex);
   insertOuter(System,VCell); 
 
   if (flag)

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/pipeUnit.cxx
+ * File:   modelSupport/pipeUnit.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,10 +40,7 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
-#include "stringCombine.h"
 #include "surfRegister.h"
 #include "HeadRule.h"
 #include "Importance.h"
@@ -83,7 +80,8 @@ pipeUnit::pipeUnit(const std::string& Key,const size_t Index) :
 {}
 
 pipeUnit::pipeUnit(const pipeUnit& A) : 
-  attachSystem::FixedUnit(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedUnit(A),
+  attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
   nAngle(A.nAngle),
   prev(A.prev),next(A.next),APt(A.APt),BPt(A.BPt),Axis(A.Axis),
@@ -303,12 +301,12 @@ pipeUnit::createSurfaces()
   if (!ASurf.hasRule())
     {
       ModelSupport::buildPlane(SMap,buildIndex+5,APt,ANorm);
-      ASurf=HeadRule(StrFunc::makeString(SMap.realSurf(buildIndex+5)));
+      ASurf=HeadRule(SMap,buildIndex,5);
     }
   if (!BSurf.hasRule())
     {
       ModelSupport::buildPlane(SMap,buildIndex+6,BPt,BNorm);
-      BSurf=HeadRule(StrFunc::makeString(SMap.realSurf(buildIndex+6)));
+      BSurf=HeadRule(SMap,buildIndex,6);
     }
 
   // Create cylinders
@@ -476,7 +474,7 @@ pipeUnit::insertObjects(Simulation& System)
 	    OMap.insert(MTYPE::value_type(forceCellN,SObj));
 	}
     }
-  
+/
   excludeUnit(System,OMap);
   
   return;

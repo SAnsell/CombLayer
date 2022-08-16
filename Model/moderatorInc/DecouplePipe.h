@@ -35,7 +35,8 @@ namespace moderatorSystem
   \brief DecouplePipe [insert object]
 */
 
-class DecouplePipe : public attachSystem::FixedUnit
+class DecouplePipe :
+    public attachSystem::FixedUnit
 {
  private:
   
@@ -76,7 +77,6 @@ class DecouplePipe : public attachSystem::FixedUnit
   double fullLen;              ///< Outer Height
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
   
   void insertPipes(Simulation&);
   void insertOuter(Simulation&,const VacVessel&);
