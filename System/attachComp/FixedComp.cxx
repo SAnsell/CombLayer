@@ -1491,7 +1491,7 @@ FixedComp::getSideName(const long int sideIndex) const
 
   if (!sideIndex) return "Origin";
 
-  const size_t index=std::abs(sideIndex)-1;
+  const size_t index=static_cast<size_t>(std::abs(sideIndex-1));
   std::map<std::string,size_t>::const_iterator mc=
     std::find_if(keyMap.begin(),keyMap.end(),
 		[&index](const std::pair<std::string,size_t>& item)
@@ -1499,8 +1499,8 @@ FixedComp::getSideName(const long int sideIndex) const
 		  return item.second==index;
 		});
   if (mc==keyMap.end())
-  throw ColErr::InContainerError<size_t>
-    (sideIndex,"Side index not named");
+    throw ColErr::InContainerError<long int>
+      (sideIndex,"Side index not named");
 
 
   if (sideIndex<0)

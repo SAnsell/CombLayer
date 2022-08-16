@@ -3,7 +3,7 @@
  
  * File:   attachComp/BaseMap.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -353,7 +353,7 @@ BaseMap::getNames() const
    */
 {
   std::vector<std::string> Out;
-  for(const LCTYPE::value_type lUnit : Items)
+  for(const LCTYPE::value_type& lUnit : Items)
     Out.push_back(lUnit.first);
   return Out;
 }
