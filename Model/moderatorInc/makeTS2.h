@@ -47,9 +47,9 @@ namespace shutterSystem
 
 namespace moderatorSystem
 {
-  class FlightLine;
   class Reflector;
   class makeRefStructure;
+  class ReflectorAssembly;
 
   /*!
     \class makeTS2
@@ -63,7 +63,7 @@ class makeTS2
 {
  private:
 
-  
+  std::shared_ptr<ReflectorAssembly> RefObj;
   
  public:
   

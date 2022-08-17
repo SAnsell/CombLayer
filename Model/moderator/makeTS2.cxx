@@ -42,7 +42,20 @@
 #include "MatrixBase.h"
 #include "inputParam.h"
 #include "objectRegister.h"
+#include "surfRegister.h"
+#include "Vec3D.h"
+#include "HeadRule.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
+#include "FixedRotate.h"
+#include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
+#include "SurfMap.h"
+#include "ExternalCut.h"
+#include "World.h"
 
+#include "ReflectorAssembly.h"
 
 #include "makeTS2Bulk.h"
 #include "makeReflector.h"
@@ -52,11 +65,16 @@
 namespace moderatorSystem
 {
 
-makeTS2::makeTS2()
+makeTS2::makeTS2() :
+  RefObj(new ReflectorAssembly("ReflectorAssembly"))
 /*!
   Constructor
  */
-{}
+{
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  OR.addObject(RefObj);
+}
 
 makeTS2::~makeTS2()
 /*!
@@ -77,8 +95,12 @@ makeTS2::build(Simulation* SimPtr,
   // For output stream
   ELog::RegMethod RControl("makeTS2","build");
 
-  int excludeCell(74123);
+  int voidCell(74123);
 
+  RefObj->addInsertCell(voidCell);
+  RefObj->createAll(*SimPtr,World::masterOrigin(),0);
+  
+  /*
   moderatorSystem::makeTS2Bulk bulkObj;
   moderatorSystem::makeReflector refObj;
   
@@ -97,10 +119,10 @@ makeTS2::build(Simulation* SimPtr,
       if (!IParam.compValue("E",std::string("zoom")))  
 	zoomObj.build(*SimPtr,IParam,*bulkObj.getBulkShield());
     }
-  */
+  * /
   // Insert pipes [make part of makeTS2Bulk]
   refObj.insertPipeObjects(*SimPtr,IParam);
-
+  */
   // refObj.insertInCell(*SimPtr,excludeCell)
   return;
 }

@@ -32,6 +32,7 @@ namespace TMRSystem
 
 namespace moderatorSystem
 {
+  class Reflector;
   class Groove;
   class Hydrogen;
   class VacVessel;
