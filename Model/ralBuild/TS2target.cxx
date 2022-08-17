@@ -437,8 +437,6 @@ TS2target::createNoseConeObjects(Simulation& System)
   System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
   const std::string watICyl=ModelSupport::getExclude(cellIndex-1);
 
-
-
   // Inner Water Cut:
   Out=ModelSupport::getComposite(SMap,buildIndex," 71 -29 73 -74 -59 ");
   System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
