@@ -3,7 +3,7 @@
  
  * File:   monte/SurfPoint.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -234,7 +234,7 @@ SurfPoint::isDirectionValid(const Geometry::Vec3D& Pt,
 {
   if (!key) return 0;
   if (abs(ExSN)==keyN)
-      return ((sign*ExSN>0) ? 1 : 0);
+    return ((sign*ExSN>0) ? 1 : 0);
   if (sideSet.find(keyN)!=sideSet.end()) return 1;
   return (key->side(Pt)*sign)>=0 ? 1 : 0;
 }
@@ -289,35 +289,38 @@ SurfPoint::isValid(const Geometry::Vec3D& Pt) const
     return 0;
 }
 
-int
-SurfPoint::pairValid(const int SN,const Geometry::Vec3D& Pt) const
-  /*! 
-    Determines if a point  is valid.  
-    \param SN :: Surface number
-    \param Pt :: Point to test
-    \return Surf false : true if Pt != SN [otherwize control]
-  */
-{
-  if (!key) return 0;
-  if (keyN==abs(SN)) 
-    return (sign>0) ? 2 : 1;
-  
-  return (key->side(Pt)*sign)>=0 ? 3 : 0;
-}
-
 bool
 SurfPoint::isValid(const std::map<int,int>& MX) const
   /*! 
     Use MX to determine if the surface truth etc is 
     valid. If second == 0 then always return true, else
     signed control
-    \param MX :: map of key + logical value XOR sign
+    \param MX :: map of key + logical value (-1/either/1)
 
     \returns MX.second if key found or 0
   */
 {
   std::map<int,int>::const_iterator lx=MX.find(keyN);
   return (lx->second*sign)>=0 ? 1 : 0;
+}
+
+bool
+SurfPoint::isValid(const Geometry::Vec3D& Pt,
+		   const std::map<int,int>& MX) const
+  /*! 
+    Use MX to determine if the surface truth etc is 
+    valid. If second == 0 then always return true, else
+    signed control
+    \param MX :: map of key + logical value
+
+    \returns MX.second if key found or 0
+  */
+{
+  std::map<int,int>::const_iterator lx=MX.find(keyN);
+  if (lx!=MX.end())
+    return (lx->second*sign)>=0 ? 1 : 0;
+
+  return (key->side(Pt)*sign)>=0 ? 1 : 0;
 }
 
 void

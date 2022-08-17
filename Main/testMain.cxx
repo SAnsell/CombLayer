@@ -385,7 +385,6 @@ globalTest(const int type,const int extra)
   const std::vector<std::string> TestName=
     {
       "testBnId",
-      "testBoost",
       "testHeadRule",
       "testInsertComp",
       "testMapRange",

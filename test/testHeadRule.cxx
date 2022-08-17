@@ -3,7 +3,7 @@
  
  * File:   test/testHeadRule.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,6 +48,7 @@
 #include "HeadRule.h"
 #include "surfIndex.h"
 #include "SurInter.h"
+#include "Surface.h"
 #include "Line.h"
 #include "LineIntersectVisit.h"
 
@@ -91,6 +92,13 @@ testHeadRule::createSurfaces()
   SurI.createSurface(14,"py 1");
   SurI.createSurface(15,"pz -1");
   SurI.createSurface(16,"pz 1");
+
+  SurI.createSurface(21,"px -11");
+  SurI.createSurface(22,"px 11");
+  SurI.createSurface(23,"py -11");
+  SurI.createSurface(24,"py 11");
+  SurI.createSurface(25,"pz -11");
+  SurI.createSurface(26,"pz 11");
   return;
 }
 
@@ -117,6 +125,7 @@ testHeadRule::applyTest(const int extra)
       &testHeadRule::testFindTopNodes,
       &testHeadRule::testGetComponent,
       &testHeadRule::testGetLevel,
+      &testHeadRule::testGetOppositeSurfaces,
       &testHeadRule::testInterceptRule,
       &testHeadRule::testLevel,
       &testHeadRule::testPartEqual,
@@ -133,6 +142,7 @@ testHeadRule::applyTest(const int extra)
       "FindTopNodes",
       "GetComponent",
       "GetLevel",
+      "GetOppositeSurfaces",
       "InterceptRule",
       "IntersectHead",
       "Level",
@@ -466,6 +476,65 @@ testHeadRule::testGetComponent()
 }
 
 
+int
+testHeadRule::testGetOppositeSurfaces()
+  /*!
+    Tests if the function to determine the opposite signed surfaces
+    works
+    \retval 0 :: success
+  */
+{
+  ELog::RegMethod RegA("testHeadRule","testGetOppositeSurfaces");
+
+  createSurfaces();
+    // HeadRule : surfaces (if any)
+  typedef std::tuple<std::string,std::set<int>> TTYPE;
+
+  // Target / result
+  std::vector<TTYPE> Tests;
+  Tests={
+    TTYPE("1 -2 3 -4 (5:-6) ",{}),
+    TTYPE("1 -2 3 -4 5 -6 (-5:-6) ",{5}),
+
+    // 59 : 2/ 64 3/ 73 4/29 5/ 71 6/
+    TTYPE("( 2 : 3 : -4 : 5 : -6 ) ( 2 : -5 ) "
+	  "( -2 : 1 : 3 : -11 : -12 : 13 )"
+	  "( -2 : -14 ) ( -15 : 16 : 21 : ( 22 23 ) )"
+	  "24 -25 -1 ",{1,2,5})
+  };
+
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
+    {
+      HeadRule HM(std::get<0>(tc));
+      HM.populateSurf();
+      const std::set<int>& outSet=std::get<1>(tc);
+      std::set<const Geometry::Surface*> realSet=
+	HM.getOppositeSurfaces();
+
+      int fail(0);
+      for(const Geometry::Surface* SPtr : realSet)
+	{
+	  const int SN=SPtr->getName();
+	  if (outSet.find(SN)==outSet.end())
+	    fail++;
+	}
+      if (fail || realSet.size()!=outSet.size())
+	{
+	  ELog::EM<<"Failed on test "<<cnt<<ELog::endTrace;
+	  ELog::EM<<"HR "<<HM<<ELog::endDiag;
+	  ELog::EM<<"Found surfaces : \n";
+	  for(const Geometry::Surface* SPtr : realSet)
+	    {
+	      const int SN=SPtr->getName();
+	      ELog::EM<<"Surf= "<<SN<<ELog::endDiag;
+	    }
+	  return -1;
+	}
+      cnt++;
+    }
+  return 0;
+}
 
 int
 testHeadRule::testInterceptRule()

@@ -82,7 +82,6 @@ calcLineTrack(Simulation& System,
     }
   return;
 }
-
-
+  
 } // NAMESPACE ModelSupport
 

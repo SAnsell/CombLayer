@@ -39,7 +39,7 @@ namespace MapSupport
   TB findDefVal(const std::map<TA,TB>&,const TA&,const TB&);
 
   template<typename T> 
-    bool iterateBinMap(std::map<T,int>&);
+  bool iterateBinMap(std::map<T,int>&,const int,const int);
   
   /*!
     \class valEqual

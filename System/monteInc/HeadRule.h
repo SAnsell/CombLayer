@@ -52,7 +52,9 @@ class HeadRule
  private:
 
   Rule* HeadNode;                    ///< Parent object (for tree)
-
+  ///< set of surfaces with opposite signs
+  std::set<const Geometry::Surface*> signPairedSurf;   
+  
   Rule* findKey(const int); 
   void removeItem(const Rule*);
   static int procPair(std::string&,std::map<int,Rule*>&,int&);
@@ -100,9 +102,10 @@ class HeadRule
 
   bool isValid(const Geometry::Vec3D&,const std::set<int>&) const;
   bool isValid(const Geometry::Vec3D&,const int) const;           
-  bool isValid(const Geometry::Vec3D&) const;           
-  int pairValid(const int,const Geometry::Vec3D&) const;           
-  bool isValid(const std::map<int,int>&) const; 
+  bool isValid(const Geometry::Vec3D&) const;
+  bool isValid(const std::map<int,int>&) const;
+  bool isValid(const Geometry::Vec3D&,const std::map<int,int>&) const;
+  
   bool isDirectionValid(const Geometry::Vec3D&,const int) const;
   bool isDirectionValid(const Geometry::Vec3D&,
 			const std::set<int>&,const int) const;

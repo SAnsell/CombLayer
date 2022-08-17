@@ -11,7 +11,9 @@ namespace MapSupport
 
 template<typename T>
 bool
-iterateBinMap(typename std::map<T,int>& M)
+iterateBinMap(typename std::map<T,int>& M,
+	      const int falseState,
+	      const int trueState)
   /*!
     Simple iteratator over a 0/1 state mat.
     The map (M) is assumed to have values of only 0 / 1
@@ -23,14 +25,14 @@ iterateBinMap(typename std::map<T,int>& M)
 {
   for(typename std::map<T,int>::value_type& mc : M)
     {
-      if (mc.second)
+      if (mc.second==trueState)
 	{
 	  // zero and move to next
-	  mc.second=0;  
+	  mc.second=falseState;  
 	}
       else
 	{
-	  mc.second=1;
+	  mc.second=trueState;
 	  return 0;  // no more work to do
 	}
     }
@@ -58,7 +60,7 @@ findDefVal(const std::map<TA,TB>& map,
 
 ///\cond TEMPLATE  
 template 
-bool iterateBinMap(std::map<int,int>&);
+bool iterateBinMap(std::map<int,int>&,const int,const int);
 
 template
 double

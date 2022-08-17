@@ -314,6 +314,7 @@ pipeUnit::createSurfaces()
   size_t bitIndex(1);    // Index for flag bit [Which to build]
   for(size_t i=0;i<cylVar.size();i++)
     {
+
       if (!activeFlag || (activeFlag & bitIndex))
 	ModelSupport::buildCylinder(SMap,buildIndex+7+static_cast<int>(i)*10,
 				    APt,Axis,cylVar[i].CRadius);
@@ -448,7 +449,7 @@ pipeUnit::insertObjects(Simulation& System)
   const Geometry::Vec3D AY(AX*Axis);
   double radius=getOuterRadius()+0.001;
   if (prev && std::abs(prev->getOuterRadius()-radius)<10.0*Geometry::zeroTol)
-    radius+=Geometry::zeroTol*100;  
+    radius+=Geometry::zeroTol*100.0;  
 
   const double angleStep(2*M_PI/static_cast<double>(nAngle));
   double angle(0.0);
@@ -474,7 +475,6 @@ pipeUnit::insertObjects(Simulation& System)
 	    OMap.insert(MTYPE::value_type(forceCellN,SObj));
 	}
     }
-  ELog::EM<<"Exclude == "<<keyName<<ELog::endDiag;
   excludeUnit(System,OMap);
   
   return;

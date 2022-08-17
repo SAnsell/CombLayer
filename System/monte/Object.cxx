@@ -947,6 +947,19 @@ Object::isValid(const std::map<int,int>& SMap) const
   return HRule.isValid(SMap);
 }
 
+int
+Object::isValid(const Geometry::Vec3D& Pt,
+		const std::map<int,int>& SMap) const
+/*! 
+  Determines is group of surface maps are valid
+  \param Pt :: Point to use if SMap incomplete
+  \param SMap :: map of SurfaceNumber : status [-1/ 0(either) / 1]
+  \returns 1 if true and 0 if false
+*/
+{
+  return HRule.isValid(Pt,SMap);
+}
+
 std::map<int,int>
 Object::mapValid(const Geometry::Vec3D& Pt) const
   /*! 
@@ -965,24 +978,6 @@ Object::mapValid(const Geometry::Vec3D& Pt) const
 		((*vc)->getName(),(*vc)->side(Pt)));
 
   return SMap;
-}
-
-int
-Object::pairValid(const int SN,const Geometry::Vec3D& Pt) const
-  /*!
-    Given a surface number determine if the 
-    Point is invalid/valid with respect to the
-    surface SN.
-    - 0 
-    \param SN :: surface number
-    \param Pt :: Point to test
-    \retval 0 : Not valid [SN true/false]   
-    \retval 1 : valid [SN false only]
-    \retval 2 : valid [SN true only]
-    \retval 3 : valid [SN true/false]
-  */
-{
-  return HRule.pairValid(SN,Pt);
 }
 
 int

@@ -3,7 +3,7 @@
  
  * File:   t1Build/PlateTarget.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,8 +39,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -84,6 +82,7 @@ PlateTarget::PlateTarget(const std::string& Key)  :
 PlateTarget::PlateTarget(const PlateTarget& A) : 
   attachSystem::FixedComp(A),
   attachSystem::ContainedComp(A),
+  attachSystem::ExternalCut(A),
   attachSystem::CellMap(A),
   height(A.height),width(A.width),nBlock(A.nBlock),
   tBlock(A.tBlock),taThick(A.taThick),
@@ -108,6 +107,7 @@ PlateTarget::operator=(const PlateTarget& A)
     {
       attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       attachSystem::CellMap::operator=(A);
       height=A.height;
       width=A.width;

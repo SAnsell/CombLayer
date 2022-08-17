@@ -192,8 +192,8 @@ class Object
   int isDirectionValid(const Geometry::Vec3D&,const std::set<int>&,
 		       const int) const;            
   int isValid(const Geometry::Vec3D&,const std::set<int>&) const;            
-  int pairValid(const int,const Geometry::Vec3D&) const;   
-  int isValid(const std::map<int,int>&) const; 
+  int isValid(const std::map<int,int>&) const;
+  int isValid(const Geometry::Vec3D&,const std::map<int,int>&) const; 
   std::set<int> surfValid(const Geometry::Vec3D&) const;
   std::map<int,int> mapValid(const Geometry::Vec3D&) const;
 

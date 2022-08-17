@@ -3,7 +3,7 @@
  
  * File:   modelSupport/LineTrack.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -195,8 +195,7 @@ LineTrack::calculate(const Simulation& ASim)
   //
   // remove last object if point does not reach it:
   //
-  OPtr=(ObjVec.empty()) ? 0 : ObjVec.back();
-  if (OPtr)
+  if (ObjVec.size()>1 && OPtr) 
     {
       if (OPtr->trackDirection(EndPt,nOut.uVec)==-1)
 	{
@@ -224,24 +223,33 @@ LineTrack::calculateError(const Simulation& ASim)
   const ModelSupport::ObjSurfMap* OSMPtr =ASim.getOSM();
 
   MonteCarlo::eTrack nOut(InitPt,EndPt-InitPt);
-  // Find Initial cell [no default]
-  MonteCarlo::Object* OPtr=ASim.findCell(InitPt+
-					 (EndPt-InitPt).unit()*1e-5,0);
 
+  // Find Initial cell [no default]
+  MonteCarlo::Object* OPtr=ASim.findCell(InitPt,0);
   if (!OPtr)
-    ColErr::InContainerError<Geometry::Vec3D>
+    throw ColErr::InContainerError<Geometry::Vec3D>
       (InitPt,"Initial point not in model");
 
-  const MonteCarlo::Object* prevOPtr(0);
   int SN=OPtr->isOnSide(InitPt);
-  
+
+  if (SN && OPtr->trackDirection(InitPt,nOut.uVec)<0)
+    {
+      ELog::EM<<"Updating to previous object / surface "
+	      <<OPtr->getName()<<ELog::endDiag;
+      OPtr = OSMPtr->findNextObject(-SN,nOut.Pos,OPtr->getName());
+      ELog::EM<<"New object ::"<<OPtr->getName()<<ELog::endDiag;
+    }
+
+  const MonteCarlo::Object* prevOPtr(0);
+  ELog::EM<<"OPtr "<<OPtr->getHeadRule().display(InitPt)<<ELog::endDiag;
+  ELog::EM<<"OPtr "<<OPtr->isValid(InitPt)<<ELog::endDiag;
   while(OPtr)
     {
       ELog::EM<<std::setprecision(12)<<ELog::endDiag;
       ELog::EM<<"== Tracking in cell == "<<*OPtr;
       ELog::EM<<"Track == "<<nOut<<" "<<aDist<<ELog::endDiag;
       ELog::EM<<"SN at start== "<<SN<<ELog::endDiag;
-
+      
       // Note: Need OPPOSITE Sign on exiting surface
       SN= OPtr->trackCell(nOut,aDist,SPtr,SN);
       ELog::EM<<"Found exit Surf == "<<SN<<" "<<aDist<<ELog::endDiag;
@@ -290,9 +298,9 @@ LineTrack::calculateError(const Simulation& ASim)
 	      ELog::EM<<ELog::endErr;
 	    }
 
-	  if (aDist<Geometry::zeroTol)
+	  if (!OPtr || aDist<Geometry::zeroTol)
 	    {
-	      ELog::EM<<"ZERO CELL "<<ELog::endErr;
+	      ELog::EM<<"ZERO CELL "<<ELog::endCrit;
 	      OPtr=ASim.findCell(nOut.Pos,0);
 	    }
 	}
@@ -301,7 +309,7 @@ LineTrack::calculateError(const Simulation& ASim)
     }
 
   ELog::EM<<"Finished "<<ELog::endDiag;
-  ELog::EM<<ELog::endErr;
+  ELog::EM<<ELog::endCrit;
   return;
 }
 

@@ -267,24 +267,6 @@ CompObj::isValid(const Geometry::Vec3D& Pt,
   return 1;
 }
 
-int
-CompObj::pairValid(const int SN,const Geometry::Vec3D& Pt) const
-  /*! 
-    Determines if a point  is valid.  with the surface
-    SN false/true
-    \param SN :: Surface number
-    \param Pt :: Point to test
-    \return valid(SN->false) : valid(SN->true);
-  */
-{
-  if (key)
-    {
-      const int Aout=key->pairValid(SN,Pt);
-      // now make opposite [bitwize not & 3]
-      return (~Aout) & 3;
-    }
-  return 3;
-}
 
 bool
 CompObj::isValid(const std::map<int,int>& SMap) const
@@ -295,6 +277,18 @@ CompObj::isValid(const std::map<int,int>& SMap) const
   */
 {
   return (key) ? !(key->isValid(SMap)) : 1;
+}
+
+bool
+CompObj::isValid(const Geometry::Vec3D& Pt,
+		 const std::map<int,int>& SMap) const
+  /*! 
+    Determines if a point  is valid.  
+    \param  SMap :: map of surface number and true values
+    \returns :: status
+  */
+{
+  return (key) ? !(key->isValid(Pt,SMap)) : 1;
 }
 
 int
@@ -549,21 +543,21 @@ BoolValue::isValid(const Geometry::Vec3D&) const
   return status;
 }
 
-int
-BoolValue::pairValid(const int,const Geometry::Vec3D&) const
-  /*! 
-    Determines if a point  is valid.  with the surface
-    SN false/true
-    \param :: [PlaceHolder] Surface number
-    \param :: Point to test
-    \return valid(SN->false) : valid(SN->true);
-  */
-{
-  return (status) ? 3 : 0;
-}
 
 bool
 BoolValue::isValid(const std::map<int,int>&) const
+  /*! 
+    Determines if a point  is valid.  
+    \param  :: map of surface number and true values
+    \returns :: status
+  */
+{
+  return status;
+}
+
+bool
+BoolValue::isValid(const Geometry::Vec3D&,
+		   const std::map<int,int>&) const
   /*! 
     Determines if a point  is valid.  
     \param  :: map of surface number and true values
@@ -900,25 +894,6 @@ CompGrp::isValid(const Geometry::Vec3D& Pt,
   return 1;
 }
 
-int
-CompGrp::pairValid(const int SN,const Geometry::Vec3D& Pt) const
-  /*! 
-    Determines if a point  is valid.  with the surface
-    SN false/true
-    \param SN :: Surface number
-    \param Pt :: Point to test
-    \return valid(SN->false) : valid(SN->true);
-  */
-{
-  // Note:: if isValid is true then return 0:
-  if (A)
-    {
-      const int Aout=A->pairValid(SN,Pt);
-      // now make opposite [bitwize not & 3]
-      return (~Aout) & 3;
-    }
-  return 3;
-}
 
 bool
 CompGrp::isValid(const std::map<int,int>& SMap) const
@@ -931,6 +906,21 @@ CompGrp::isValid(const std::map<int,int>& SMap) const
   // Note:: if isValid is true then return 0:
   if (A)
     return (A->isValid(SMap)) ? 0 : 1;
+  return 1;
+}
+
+bool
+CompGrp::isValid(const Geometry::Vec3D& Pt,
+		 const std::map<int,int>& SMap) const
+  /*! 
+    Determines if a point  is valid.  
+    \param  SMap :: map of surface number and true values
+    \returns :: status
+  */
+{
+  // Note:: if isValid is true then return 0:
+  if (A)
+    return (A->isValid(Pt,SMap)) ? 0 : 1;
   return 1;
 }
 

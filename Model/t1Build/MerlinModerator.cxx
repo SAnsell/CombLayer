@@ -158,7 +158,6 @@ MerlinModerator::populate(const FuncDataBase& Control)
   return;
 }
 
-
 Geometry::Vec3D
 MerlinModerator::getSurfacePoint(const size_t layerIndex,
 				 const long int sideIndex) const

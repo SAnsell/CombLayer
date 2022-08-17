@@ -234,6 +234,9 @@ DecouplePipe::insertHePipe(Simulation& System,const VacVessel& VC)
   */
 {
   ELog::RegMethod RegA("DecouplePipe","insertHePipe");
+
+  System.populateCells();
+  System.createObjSurfMap();
   const long int dircNum(6);
 
   const Geometry::Vec3D APt(VC.getSurfacePoint(0,dircNum)+

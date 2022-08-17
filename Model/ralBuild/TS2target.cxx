@@ -430,7 +430,7 @@ TS2target::createNoseConeObjects(Simulation& System)
   
   Out=ModelSupport::getComposite(SMap,buildIndex,"-81 61 63 -64 -59 (29:24)");
   System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
-  ELog::EM<<"Cell == "<<cellIndex-1<<ELog::endDiag;;
+
   const std::string watOCap=ModelSupport::getExclude(cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-48 62 63 -64 -1 59");
