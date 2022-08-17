@@ -474,7 +474,7 @@ pipeUnit::insertObjects(Simulation& System)
 	    OMap.insert(MTYPE::value_type(forceCellN,SObj));
 	}
     }
-/
+  ELog::EM<<"Exclude == "<<keyName<<ELog::endDiag;
   excludeUnit(System,OMap);
   
   return;

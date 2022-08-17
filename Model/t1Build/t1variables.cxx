@@ -302,7 +302,7 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("MerlinModXStep",0.0);      // guess
   Control.addVariable("MerlinModYStep",18.9-9.2);  //  relative to VoidVessel    
   Control.addVariable("MerlinModZStep",14.6);      // guess
-  Control.addVariable("MerlinModXYAngle",80.0);      // guess
+  Control.addVariable("MerlinModZAngle",80.0);      // guess
 
   Control.addVariable("MerlinModWidth",12.5);    // guess
   Control.addVariable("MerlinModDepth",4.5);    // guess

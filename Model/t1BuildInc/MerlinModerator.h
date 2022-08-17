@@ -3,7 +3,7 @@
  
  * File:   t1BuildInc/MerlinModerator.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ namespace ts1System
 
 class MerlinModerator :
     public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset
+    public attachSystem::FixedRotate
 {
  private:
   
@@ -60,10 +60,9 @@ class MerlinModerator :
   std::map<size_t,double> modLayer;  ///< Surface modification layer
   int mainCell;                      ///< Main water cell
 
-  void applyModification();
   Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
-  void populate(const FuncDataBase&);
 
+  void populate(const FuncDataBase&);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -76,6 +75,7 @@ class MerlinModerator :
   MerlinModerator& operator=(const MerlinModerator&);
   virtual ~MerlinModerator();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

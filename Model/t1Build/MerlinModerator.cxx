@@ -3,7 +3,7 @@
  
  * File:   t1Build/MerlinModerator.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,9 +39,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "stringCombine.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -59,7 +56,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "VanePoison.h"
 #include "MerlinModerator.h"
@@ -68,7 +65,7 @@ namespace ts1System
 {
 
 MerlinModerator::MerlinModerator(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,12)
+  attachSystem::ContainedComp(),attachSystem::FixedRotate(Key,12)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -76,7 +73,7 @@ MerlinModerator::MerlinModerator(const std::string& Key)  :
 {}
 
 MerlinModerator::MerlinModerator(const MerlinModerator& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedRotate(A),
   width(A.width),depth(A.depth),
   height(A.height),innerThick(A.innerThick),vacThick(A.vacThick),
   nPoison(A.nPoison),vaneSide(A.vaneSide),poisonYStep(A.poisonYStep),
@@ -99,7 +96,7 @@ MerlinModerator::operator=(const MerlinModerator& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       width=A.width;
       depth=A.depth;
       height=A.height;
@@ -133,7 +130,7 @@ MerlinModerator::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("MerlinModerator","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
@@ -147,10 +144,8 @@ MerlinModerator::populate(const FuncDataBase& Control)
   double ys,t;
   for(size_t i=0;i<nPoison;i++)
     {
-      ys=Control.EvalVar<double>(keyName+
-				 StrFunc::makeString("PoisonYStep",i+1));
-      t=Control.EvalVar<double>(keyName+
-				StrFunc::makeString("PoisonThick",i+1));
+      ys=Control.EvalVar<double>(keyName+"PoisonYStep"+std::to_string(i+1));
+      t=Control.EvalVar<double>(keyName+"PoisonThick"+std::to_string(i+1));
       poisonYStep.push_back(ys);
       poisonThick.push_back(t);
     } 
@@ -160,20 +155,9 @@ MerlinModerator::populate(const FuncDataBase& Control)
   waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
   poisonMat=ModelSupport::EvalMat<int>(Control,keyName+"PoisonMat");
 
-  applyModification();
   return;
 }
 
-void
-MerlinModerator::applyModification() 
-  /*!
-    Create the modified layer set
-    layers are numbered in set of 10 going from the inner all
-    (no modification) to 50 at the outer. Then in -/+ (Y,X,Z).
-  */
-{
-  return;
-}
 
 Geometry::Vec3D
 MerlinModerator::getSurfacePoint(const size_t layerIndex,
