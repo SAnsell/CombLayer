@@ -3,7 +3,7 @@
  
  * File:   t1BuildInc/H2Moderator.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,9 +36,12 @@ namespace ts1System
   \brief TS1 H2Moderator [insert object]
 */
 
-class H2Moderator : public attachSystem::ContainedComp,
-  public attachSystem::LayerComp,
-  public attachSystem::FixedOffset
+class H2Moderator :
+    public attachSystem::ContainedComp,
+    public attachSystem::LayerComp,
+    public attachSystem::FixedRotate,
+    public attachSystem::CellMap,
+    public attachSystem::ExternalCut
 {
  private:
   
@@ -81,13 +84,12 @@ class H2Moderator : public attachSystem::ContainedComp,
   H2Moderator& operator=(const H2Moderator&);
   virtual ~H2Moderator();
 //
-  std::string getComposite(const std::string&) const;
-  virtual void addToInsertChain(attachSystem::ContainedComp&) const;
 //  void createAll(Simulation&,const attachSystem::FixedComp&);
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
   virtual std::string getLayerString(const size_t,const long int) const;
   virtual int getLayerSurf(const size_t,const long int) const;
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

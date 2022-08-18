@@ -3,7 +3,7 @@
  
  * File:   constructInc/CylMod.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,8 +72,6 @@ class CylMod : public constructSystem::ModBase
   virtual ~CylMod();
   virtual CylMod* clone() const;
   
-  /// Accessor to the main H2 body
-  virtual int getMainBody() const { return buildIndex+1; }
 
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
   virtual int getLayerSurf(const size_t,const long int) const;

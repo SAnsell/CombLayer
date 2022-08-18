@@ -135,8 +135,8 @@ TargetBase::createBeamWindow(Simulation& System,
 	  BWPtr=std::shared_ptr<ts1System::BeamWindow>
 	  (new ts1System::BeamWindow("BWindow"));
 	  OR.addObject(BWPtr);
-	}      
-      BWPtr->addBoundarySurf(PLine->getCompContainer());
+	}
+      BWPtr->copyCutSurf("Boundary",*PLine,"Boundary");
       BWPtr->setInsertCell(PLine->getCell("VoidCell"));
       BWPtr->createAll(System,*this,sideIndex);
     }

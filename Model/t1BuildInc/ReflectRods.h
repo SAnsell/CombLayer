@@ -3,7 +3,7 @@
  
  * File:   t1BuildInc/ReflectRods.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,8 +39,9 @@ namespace ts1System
   \brief Mesh of rod inserted into an object
 */
 
-class ReflectRods : public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset
+class ReflectRods :
+    public attachSystem::ContainedComp,
+    public attachSystem::FixedRotate
 {
  private:
 
@@ -67,7 +68,7 @@ class ReflectRods : public attachSystem::ContainedComp,
   const Geometry::Plane* topSurf;    ///< Top Plane in refObj
   const Geometry::Plane* baseSurf;   ///< Base Plane in refObj
 
-  MonteCarlo::Object* RefObj;              ///< Reflector object to replace
+  MonteCarlo::Object* RefObj;             ///< Reflector object to replace
   std::vector<const Rule*> RefItems;      ///< Reflector items
   std::vector<Geometry::Plane*> OPSurf;   ///< Planes in the Reflector Object
   MTYPE HVec;               ///< Tubes

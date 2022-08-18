@@ -3,7 +3,7 @@
  
  * File:   t1Build/CH4Moderator.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,8 +39,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -57,7 +55,9 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "LayerComp.h"
 #include "ContainedComp.h"
 #include "CH4Moderator.h"
@@ -66,8 +66,11 @@ namespace ts1System
 {
 
 CH4Moderator::CH4Moderator(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::LayerComp(4),
-  attachSystem::FixedOffset(Key,6)
+  attachSystem::ContainedComp(),
+  attachSystem::LayerComp(4),
+  attachSystem::FixedRotate(Key,6),
+  attachSystem::CellMap()
+  
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -76,7 +79,7 @@ CH4Moderator::CH4Moderator(const std::string& Key)  :
 
 CH4Moderator::CH4Moderator(const CH4Moderator& A) : 
   attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
-  attachSystem::FixedOffset(A),
+  attachSystem::FixedRotate(A),
   width(A.width),height(A.height),depth(A.depth),
   viewSphere(A.viewSphere),innerThick(A.innerThick),
   vacThick(A.vacThick),outerThick(A.outerThick),
@@ -105,7 +108,7 @@ CH4Moderator::operator=(const CH4Moderator& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
 
       width=A.width;
       height=A.height;
@@ -148,7 +151,7 @@ CH4Moderator::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("CH4Moderator","populate");
   
   nLayers=4;  
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
@@ -181,21 +184,6 @@ CH4Moderator::populate(const FuncDataBase& Control)
   return;
 }
   
-void
-CH4Moderator::createUnitVector(const attachSystem::FixedComp& FC,
-			       const long int sideIndex)
-  /*!
-    Create the unit vectors
-    - Y Down the beamline
-    \param FC :: Linked object
-    \param sideIndex :: linkpoint
-  */
-{
-  ELog::RegMethod RegA("CH4Moderator","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  return;
-}
 
 void
 CH4Moderator::createSurfaces()
@@ -299,53 +287,49 @@ CH4Moderator::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("CH4Moderator","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   
     // CH4 + Poison
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-	"101 -102 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,poisonMat,ch4Temp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 3 -4 5 -6");
+  makeCell("Poison",System,cellIndex++,poisonMat,ch4Temp,HR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
 	"111 -101 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,ch4Temp,Out));
+  makeCell("AlLayer",System,cellIndex++,alMat,ch4Temp,HR);
+
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-	"-112 102 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,ch4Temp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-112 102 3 -4 5 -6");
+  makeCell("AlLayer",System,cellIndex++,alMat,ch4Temp,HR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-7 -111 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,ch4Mat,ch4Temp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 -111 3 -4 5 -6");
+  makeCell("CH4",System,cellIndex++,ch4Mat,ch4Temp,HR);
   
-    Out=ModelSupport::getComposite(SMap,buildIndex,"-8 112 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,ch4Mat,ch4Temp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-8 112 3 -4 5 -6");
+  makeCell("CH4",System,cellIndex++,ch4Mat,ch4Temp,HR);
 
   // Inner al
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-17 -18 13 -14 15 -16 "
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 -18 13 -14 15 -16 "
 				 " (7:8:-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,ch4Temp,Out));
+  makeCell("InnerAl",System,cellIndex++,alMat,ch4Temp,HR);
 
   // Vac layer
-  Out=ModelSupport::getComposite(SMap,buildIndex,"23 -24 -27 -28 25 -26 "
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"23 -24 -27 -28 25 -26 "
 				 " (17:18:-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  makeCell("VacLayer",System,cellIndex++,0,0.0,HR);
 
   // Outer Al
-  Out=ModelSupport::getComposite(SMap,buildIndex,"33 -34 -37 -38 35 -36 "
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"33 -34 -37 -38 35 -36 "
 				 " (-23:24:27:28:-25:26) ");  
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
+  makeCell("OuterAl",System,cellIndex++,alMat,0.0,HR);
 
   // Outer Al
-  Out=ModelSupport::getComposite(SMap,buildIndex,"41 -42 43 -44 45 -46 ");
-  addOuterSurf(Out);
-  addBoundarySurf(Out);  
-  Out+=ModelSupport::getComposite(SMap,buildIndex, " (-33:34:37:38:-35:36) ");  
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"41 -42 43 -44 45 -46");
+  addOuterSurf(HR);
+
+  HR*=ModelSupport::getHeadRule(SMap,buildIndex,"(-33:34:37:38:-35:36)");  
+  makeCell("OuterVoid",System,cellIndex++,0,0.0,HR);
 
 
-//  Out=ModelSupport::getComposite(SMap,buildIndex," 41 -42 43 -44 45 -46 ");
-//  addOuterSurf(Out);
-//  addBoundarySurf(Out);
 
   return;
 }
@@ -477,7 +461,6 @@ CH4Moderator::getLayerString(const size_t layerIndex,
   */
 {
   ELog::RegMethod RegA("CH4Moderator","getLayerString");
-  ELog::EM<<"CONTORL CHECK "<<ELog::endErr;
 
   if (sideIndex>6 || sideIndex<-6 || !sideIndex) 
     throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
@@ -504,16 +487,6 @@ CH4Moderator::getLayerString(const size_t layerIndex,
   return HR.display();
 }
 
-std::string
-CH4Moderator::getComposite(const std::string& surfList) const
-  /*!
-    Exposes local version of getComposite
-    \param surfList :: surface list
-    \return Composite string
-  */
-{
-  return ModelSupport::getComposite(SMap,buildIndex,surfList);
-}
 
 void
 CH4Moderator::createAll(Simulation& System,
@@ -527,6 +500,7 @@ CH4Moderator::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("CH4Moderator","createAll");
+
   populate(System.getDataBase());
 
   createUnitVector(FC,sideIndex); 

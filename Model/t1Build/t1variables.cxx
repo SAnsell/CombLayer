@@ -66,14 +66,13 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("t1ReflectXStep",0.0);      // guess
   Control.addVariable("t1ReflectYStep",12.0-9.2);      // guess
   Control.addVariable("t1ReflectZStep",-0.875);      // guess
-//  Control.addVariable("t1ReflectZStep",1.0);      // guess
   Control.addVariable("t1ReflectXSize",52.0);      // guess
   Control.addVariable("t1ReflectYSize",70.0);      // guess
   Control.addVariable("t1ReflectYSizeColdCut",5.0);      // guess  
-//  Control.addVariable("t1ReflectZSize",76.0);      // guess
+
   Control.addVariable("t1ReflectZSize",83.0);      // guess
-  Control.addVariable("t1ReflectXYAngle",0.0);      // guess
-//  Control.addVariable("t1ReflectCutLen",8.0);      // guess
+  Control.addVariable("t1ReflectZAngle",0.0);      // guess
+
   Control.addVariable("t1ReflectCutLen",12.00);      // guess
 
   Control.addVariable("t1ReflectBaseZCut",22.4);      // from centre
@@ -230,10 +229,9 @@ TS1real(FuncDataBase& Control)
 
   // LH2 Moderator:
   Control.addVariable("H2ModXStep",0.98);      
-//  Control.addVariable("H2ModYStep",18.37); 
   Control.addVariable("H2ModYStep",18.37-9.2);       //  relative to VoidVessel 
   Control.addVariable("H2ModZStep",-14.6);      // Dave Bellenger
-  Control.addVariable("H2ModXYAngle",-81.0);      // Dave Bellenger
+  Control.addVariable("H2ModZAngle",-81.0);      // Dave Bellenger
 
   Control.addVariable("H2ModHeight",12.0);  
   Control.addVariable("H2ModDepth",8.0);    
@@ -265,7 +263,7 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("CH4ModYStep",0.9-9.2);       //  relative to VoidVessel
   Control.addVariable("CH4ModZStep",-14.6);      // Dave Bellenger   
 //  Control.addVariable("CH4ModZStep",-15.2);      // 
-  Control.addVariable("CH4ModXYAngle",-90.0-33.0);      // Dave Bellenger
+  Control.addVariable("CH4ModZAngle",-90.0-33.0);      // Dave Bellenger
 
     
   Control.addVariable("CH4ModHeight",11.5);      // ok 

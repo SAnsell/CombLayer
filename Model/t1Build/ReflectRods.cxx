@@ -63,7 +63,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "gridUnit.h"
 #include "hexUnit.h"
 #include "ReflectRods.h"
@@ -73,8 +73,8 @@ namespace ts1System
 
 ReflectRods::ReflectRods(const std::string& Key,const size_t index)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key+std::to_string(index),0),
-  baseName(Key),populated(0),
+  attachSystem::FixedRotate(Key+std::to_string(index),0),
+  baseName(Key),
   topSurf(0),baseSurf(0),RefObj(0)  
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -84,7 +84,7 @@ ReflectRods::ReflectRods(const std::string& Key,const size_t index)  :
 {}
 
 ReflectRods::ReflectRods(const ReflectRods& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedRotate(A),
   baseName(A.baseName),populated(A.populated),
   outerMat(A.outerMat),
   innerMat(A.innerMat),linerMat(A.linerMat),HexHA(A.HexHA),
@@ -110,9 +110,8 @@ ReflectRods::operator=(const ReflectRods& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       cellIndex=A.cellIndex;
-      populated=A.populated;
       outerMat=A.outerMat;
       innerMat=A.innerMat;
       linerMat=A.linerMat;
@@ -220,7 +219,7 @@ ReflectRods::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("ReflectRods","populate");
 
-  FixedOffset::populate(baseName,Control);
+  FixedRotate::populate(baseName,Control);
   
   centSpc=Control.EvalTail<double>(keyName,baseName,"CentSpace");
   radius=Control.EvalTail<double>(keyName,baseName,"Radius");
@@ -233,7 +232,7 @@ ReflectRods::populate(const FuncDataBase& Control)
   outerMat=ModelSupport::EvalMat<int>(Control,keyName+"OuterMat",
 				      baseName+"OuterMat");
   
-  populated= (radius<Geometry::zeroTol) ? 0 : 1;
+
   
   return;
 }
@@ -739,7 +738,7 @@ ReflectRods::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("ReflectRods","createAll");
   populate(System.getDataBase());
-  if (populated)
+  if (radius>Geometry::zeroTol)
     {
       createUnitVector(FC,sideIndex);
       getZSurf();

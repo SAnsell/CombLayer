@@ -48,7 +48,7 @@
 #include "ModelSupport.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "LayerComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"

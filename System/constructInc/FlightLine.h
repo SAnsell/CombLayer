@@ -70,12 +70,9 @@ class FlightLine :
   std::vector<int> capLayer;       ///< End cap layers
   std::vector<HeadRule> capRule;   ///< Rule for each cap
 
-  HeadRule attachRule;          ///< Attached rule
+  HeadRule attachRule;             ///< Attached rule
   
   void populate(const FuncDataBase&);
-  void createRotatedUnitVector(const attachSystem::FixedComp&,const long int,
-			       const long int);
-
   void createSurfaces();
   void createCapSurfaces(const attachSystem::FixedComp&,const long int);
   void createObjects(Simulation&,const attachSystem::FixedComp&,
@@ -84,9 +81,9 @@ class FlightLine :
 		     const long int,
 		     const attachSystem::ContainedComp&);
 
-  void removeObjects(Simulation&);
   HeadRule getRotatedDivider(const attachSystem::FixedComp&,
 			     const long int);
+
   
  public:
 
@@ -100,8 +97,6 @@ class FlightLine :
 
 
   
-  void reBoundary(Simulation&,const long int,
-		  const attachSystem::FixedComp&);
 
   void processIntersectMajor(Simulation&,
 			     const attachSystem::ContainedGroup&,
@@ -114,11 +109,7 @@ class FlightLine :
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
-  void createAll(Simulation&,const long int,const long int,
-		 const attachSystem::FixedComp&);
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const attachSystem::ContainedComp&,const long int =0);
-
+ 
 };
 
 }

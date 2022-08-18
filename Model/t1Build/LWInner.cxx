@@ -140,7 +140,6 @@ LWInner::createObjects(Simulation& System)
   // Add boundary exclude:
   if (defMat>=0)
     {
-      addBoundarySurf(OuterHR.display());
       const HeadRule preOuter(OuterHR);
       OuterHR*=boundaryComp;
       System.addCell(cellIndex++,defMat,0.0,OuterHR);

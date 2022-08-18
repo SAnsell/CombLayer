@@ -38,7 +38,9 @@ namespace ts1System
 
 class BeamWindow :
     public attachSystem::ContainedComp,
-    public attachSystem::FixedRotate
+    public attachSystem::FixedRotate,
+    public attachSystem::CellMap,
+    public attachSystem::ExternalCut
 {
  private:
 

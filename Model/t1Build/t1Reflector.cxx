@@ -52,8 +52,10 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "LinkWrapper.h"
 #include "LWOuter.h"
 #include "LWInner.h"
@@ -65,7 +67,8 @@ namespace ts1System
 
 t1Reflector::t1Reflector(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,11)
+  attachSystem::FixedRotate(Key,11),
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -73,7 +76,9 @@ t1Reflector::t1Reflector(const std::string& Key)  :
 {}
 
 t1Reflector::t1Reflector(const t1Reflector& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::CellMap(A),
   xSize(A.xSize),ySize(A.ySize),
   ySizeColdCut(A.ySizeColdCut),zSize(A.zSize),cutLen(A.cutLen),
   defMat(A.defMat),Boxes(A.Boxes),Rods(A.Rods),
@@ -95,7 +100,8 @@ t1Reflector::operator=(const t1Reflector& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
+      attachSystem::CellMap::operator=(A);
       xSize=A.xSize;
       ySize=A.ySize;
       ySizeColdCut=A.ySizeColdCut;
@@ -125,7 +131,7 @@ t1Reflector::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("t1Reflector","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   xSize=Control.EvalVar<double>(keyName+"XSize");
   ySize=Control.EvalVar<double>(keyName+"YSize");
@@ -175,17 +181,6 @@ t1Reflector::createSurfaces()
   return;
 }
 
-void
-t1Reflector::addToInsertChain(attachSystem::ContainedComp& CC) const
-  /*!
-    Adds this object to the containedComp to be inserted.
-    \param CC :: ContainedComp object to add to this
-  */
-{
-  for(int i=buildIndex+1;i<cellIndex;i++)
-    CC.addInsertCell(i);
-  return;
-}
 
 void
 t1Reflector::createObjects(Simulation&)
@@ -196,12 +191,11 @@ t1Reflector::createObjects(Simulation&)
 {
   ELog::RegMethod RegA("t1Reflector","createObjects");
   
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "1 -2 3 -4 5 -6 -11 -12 -13 -14");
-  addOuterSurf(Out);
-  addBoundarySurf(Out);
-  
+  HeadRule HR;
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1 -2 3 -4 5 -6 -11 -12 -13 -14");
+  addOuterSurf(HR);
+
   return;
 }
 
@@ -341,7 +335,6 @@ t1Reflector::createBoxes(Simulation& System,
      (new constructSystem::LWInner("RBoxLH2")));
 
   Boxes[5]->addSurface(*this,"-4 -11 -6 -7");  // sides
-  Boxes[5]->addBoundarySurf(this->getLinkSurf(-11));
   Boxes[5]->addSurface(OGrp,"CH4FlightS",3);  // base
   Boxes[5]->addSurface(OGrp,"CH4Mod",3);  // base
   Boxes[5]->addSurface(OGrp,"CH4FlightN",4);  // base

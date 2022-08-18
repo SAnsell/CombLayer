@@ -185,29 +185,6 @@ FlightLine::populate(const FuncDataBase& Control)
   return;
 }
   
-void
-FlightLine::createRotatedUnitVector(const attachSystem::FixedComp& FC,
-				    const long int origIndex,
-				    const long int sideIndex)
-  /*!
-    Create the unit vectors
-    - Y Points towards the beamline
-    - X Across the Face
-    - Z up (towards the target)
-    \param FC :: A Contained FixedComp to use as basis set
-    \param origIndex :: Index for centre of rotation
-    \param sideIndex :: Index on fixed unit
-  */
-{
-  ELog::RegMethod RegA("FlightLine","createRotatedUnitVector");
-  const Geometry::Vec3D CentPt=FC.getLinkPt(origIndex);
-
-  createUnitVector(FC,sideIndex); 
-  
-  applyFullRotate(xAngle,0.0,zAngle,CentPt);
-  applyShift(xStep,0,zStep);
-  return;
-}
 
 
 void
@@ -280,20 +257,6 @@ FlightLine::createSurfaces()
   return;
 }
 
-void
-FlightLine::removeObjects(Simulation& System)
-  /*!
-    Remove all the objects
-    \param System :: Simulation to remove objects from
-  */
-{
-  ELog::RegMethod RegA("FlightLine","removeObjects");
-
-  for(int i=buildIndex+1;i<cellIndex;i++)
-    System.removeCell(i);
-  cellIndex=buildIndex+1;
-  return;
-}
 
 HeadRule
 FlightLine::getRotatedDivider(const attachSystem::FixedComp& FC,
@@ -437,6 +400,7 @@ FlightLine::createObjects(Simulation& System,
   HR*=attachRule;
   addOuterSurf("inner",HR);
 
+  HR*=ExternalCut::getRule("BeOuter");
   HR*=ContainedGroup::getBoundary("outer");      // Be outer surface
 
   makeCell("Inner",System,cellIndex++,innerMat,0.0,HR);
@@ -607,26 +571,6 @@ FlightLine::getInnerVec(std::vector<int>& ISurf) const
 }
 
 void
-FlightLine::reBoundary(Simulation& System,
-		       const long int sideIndex,
-		       const attachSystem::FixedComp& FC)
-  /*!
-    Reposition a flightline after initial construction
-    \param System :: Simulation to add vessel to
-    \param sideIndex :: Side index
-    \param FC :: Moderator Object
-  */
-{
-  ELog::RegMethod RegA("FlightLine","reboundary");
-
-  removeObjects(System);
-  createObjects(System,FC,sideIndex);
-  insertObjects(System);       
-
-  return;
-}
-
-void
 FlightLine::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
 		      const long int sideIndex)
@@ -648,7 +592,6 @@ FlightLine::createAll(Simulation& System,
       (0,0,"sideIndex == 0 no long possible"
        " as flightline cannot current track from centre origin");
 
-
   createCapSurfaces(FC,sideIndex);
   FixedComp::setLinkCopy(0,FC,sideIndex);
   FixedComp::setLinkCopy(6,FC,sideIndex);
@@ -659,61 +602,6 @@ FlightLine::createAll(Simulation& System,
   return;
 }
 
-void
-FlightLine::createAll(Simulation& System,
-		      const long int orgIndex,
-		      const long int sideIndex,
-		      const attachSystem::FixedComp& FC)
-  /*!
-    Global creation of the vac-vessel
-    \param System :: Simulation to add vessel to
-    \param orgIndex :: Origin index for rotation
-    \param sideIndex :: Side index
-    \param FC :: Moderator Object
-  */
-{
-  ELog::RegMethod RegA("FlightLine","createAll(int,int,FC)");
-  populate(System.getDataBase());
 
-  createRotatedUnitVector(FC,orgIndex,sideIndex);
-  createSurfaces();
-  FixedComp::setLinkCopy(0,FC,sideIndex);
-  FixedComp::setLinkCopy(6,FC,sideIndex);
-  createObjects(System,FC,sideIndex);
-  insertObjects(System);       
-
-  return;
-}
-
-void
-FlightLine::createAll(Simulation& System,
-		      const attachSystem::FixedComp& FC,
-		      const attachSystem::ContainedComp& CC,
-		      const long int modSideIndex)
-  /*!
-    Global creation of the vac-vessel
-    \param System :: Simulation to add vessel to
-    \param FC :: Moderator Object
-    \param CC :: Full Object
-    \param modSideIndex :: Use side index from moderator
-  */
-{
-  ELog::RegMethod RegA("FlightLine","createAll(FC,CC)");
-
-  populate(System.getDataBase());
-  
-  if (modSideIndex)
-    plateIndex=modSideIndex;
-  
-  if (plateIndex==0)
-    ELog::EM<<"Plate Index for FlightLine not set "<<ELog::endErr;
-
-  createUnitVector(FC,plateIndex);
-  createSurfaces();
-  createObjects(System,FC,plateIndex,CC);
-  insertObjects(System);       
-
-  return;
-}
   
 }  // NAMESPACE moderatorSystem

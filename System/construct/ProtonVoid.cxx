@@ -63,7 +63,7 @@ namespace ts1System
 
 ProtonVoid::ProtonVoid(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedComp(Key,2),
+  attachSystem::FixedComp(Key,3),
   attachSystem::ExternalCut(),
   attachSystem::CellMap()
   /*!
@@ -73,7 +73,8 @@ ProtonVoid::ProtonVoid(const std::string& Key)  :
 {}
 
 ProtonVoid::ProtonVoid(const ProtonVoid& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::FixedComp(A),
   attachSystem::ExternalCut(A),
   attachSystem::CellMap(A),
   viewRadius(A.viewRadius)
@@ -138,25 +139,27 @@ ProtonVoid::createSurfaces()
 }
 
 void
-ProtonVoid::createObjects(Simulation& System,
-			  const std::string& TargetSurfBoundary,
-			  const std::string& RefSurfBoundary)
+ProtonVoid::createObjects(Simulation& System)
   /*!
-    Adds the Chip guide components
+    Creates the proton objects within the reflector front edge(s)
+    and the target front face.
     \param System :: Simulation to create objects in
-    \param TargetSurfBoundary :: boundary layer [expect to be target edge]
-    \param RefSurfBoundary :: boundary layer [expect to be reflector edge]
   */
 {
   ELog::RegMethod RegA("ProtonVoid","createObjects");
 
-  std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex, " -7 ");
-  Out+=RefSurfBoundary+" "+TargetSurfBoundary;
-  CellMap::makeCell("VoidCell",System,cellIndex++,0,0.0,Out);
-  addOuterSurf(Out);
-  addBoundarySurf(-SMap.realSurf(buildIndex+7));    
+  const HeadRule& TSurfHR=ExternalCut::getRule("TargetSurf");
+  const HeadRule& RSurfHR=ExternalCut::getRule("RefBoundary");
+
+
+  HeadRule HR;
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7");
+  ExternalCut::setCutSurf("Boundary",HR);
+  HR*=RSurfHR*TSurfHR;
+  CellMap::makeCell("VoidCell",System,cellIndex++,0,0.0,HR);
+  addOuterSurf(HR);
+  //  addBoundarySurf(-SMap.realSurf(buildIndex+7));    
 
   return;
 }
@@ -167,7 +170,7 @@ ProtonVoid::createLinks()
     Creates a full attachment set [Internal]
   */
 {
-
+  
   return;
 }
 
@@ -187,11 +190,9 @@ ProtonVoid::createAll(Simulation& System,
 
   createUnitVector(TargetFC,tIndex);
   createSurfaces();
-  // This need to be from externalCut:
-  const std::string TSurf=TargetFC.getLinkString(tIndex);
-  const std::string RSurf=ExternalCut::getRuleStr("RefBoundary");
 
-  createObjects(System,TSurf,RSurf);
+  ExternalCut::setCutSurf("TargetSurf",TargetFC,tIndex);  
+  createObjects(System);
   createLinks();
   insertObjects(System);       
   //  buildChannels(System);

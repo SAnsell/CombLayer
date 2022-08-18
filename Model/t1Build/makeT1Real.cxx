@@ -95,6 +95,7 @@
 namespace ts1System
 {
 
+  
 makeT1Real::makeT1Real() :
   RefObj(new t1Reflector("t1Reflect")),
   Lh2ModObj(new H2Moderator("H2Mod")),
@@ -222,41 +223,29 @@ makeT1Real::flightLines(Simulation& System)
   std::string Out;
   std::string Out1;
 
-  RefObj->addToInsertChain(H2FL->getCC("outer"));
   Out=RefObj->getComposite(" 3 ");
-  H2FL->addBoundarySurf("inner",Out);  
-  H2FL->addBoundarySurf("outer",Out);  
+  H2FL->setCutSurf("BeOuter",Out);
   H2FL->createAll(System,*Lh2ModObj,1);
   
-  RefObj->addToInsertChain(CH4NorthFL->getCC("outer"));
-  Out=RefObj->getComposite(" 3 -12 ");
-  Out1=Lh2ModObj->getComposite(" (-61:64)  ");
-  CH4NorthFL->addBoundarySurf("inner",Out+Out1);
-  CH4NorthFL->addBoundarySurf("outer",Out+Out1);
+  Out=RefObj->getComposite("3 -12");
+  HeadRule HR(Out);
+  CH4NorthFL->setCutSurf("BeOuter",HR*Lh2ModObj->getRule("EdgeCut"));
   CH4NorthFL->createAll(System,*CH4ModObj,1);
 
-  RefObj->addToInsertChain(CH4SouthFL->getCC("outer"));
   Out=RefObj->getComposite(" 1 -4 -13 ");
-  CH4SouthFL->addBoundarySurf("inner",Out);
-  CH4SouthFL->addBoundarySurf("outer",Out);
+  CH4SouthFL->setCutSurf("BeOuter",Out);
   CH4SouthFL->createAll(System,*CH4ModObj,2); 
 
   Out=RefObj->getComposite(" -4 ");
-  MerlinFL->addBoundarySurf("inner",Out);
-  MerlinFL->addBoundarySurf("outer",Out);
-  RefObj->addToInsertChain(MerlinFL->getCC("outer"));
+  MerlinFL->setCutSurf("BeOuter",Out);
   MerlinFL->createAll(System,*MerlinMod,1);
   
   Out=RefObj->getComposite(" 1 3 -11 ");
-  RefObj->addToInsertChain(WaterNorthFL->getCC("outer"));
-  WaterNorthFL->addBoundarySurf("inner",Out);
-  WaterNorthFL->addBoundarySurf("outer",Out);
+  WaterNorthFL->setCutSurf("BeOuter",Out);
   WaterNorthFL->createAll(System,*WaterModObj,1);
 
   Out=RefObj->getComposite(" -14 -4 ");
-  RefObj->addToInsertChain(WaterSouthFL->getCC("outer"));
-  WaterSouthFL->addBoundarySurf("inner",Out);
-  WaterSouthFL->addBoundarySurf("outer",Out);
+  WaterSouthFL->setCutSurf("BeOuter",Out);
   WaterSouthFL->createAll(System,*WaterModObj,2); 
 
   // Flight line intersects:
@@ -292,7 +281,6 @@ makeT1Real::buildTarget(Simulation& System,
       TarObj->setCutSurf("RefBoundary",RefObj->getLinkString(-1));
       OR.addObject(TarObj);
       TarObj->addInsertCell(voidCell);
-      RefObj->addToInsertChain(*TarObj);
       TarObj->createAll(System,World::masterOrigin(),0);
       return "PVessel";
     }
@@ -354,7 +342,6 @@ makeT1Real::buildTarget(Simulation& System,
       TarObj=std::shared_ptr<TMRSystem::TargetBase>
 	(new ts1System::OpenBlockTarget("t1BlockTarget"));
       OR.addObject(TarObj);
-      RefObj->addToInsertChain(*TarObj);
       TarObj->setCutSurf("FrontPlate",RefObj->getLinkSurf(-3));
       TarObj->createAll(System,World::masterOrigin(),0);
       return "t1BlockTarget";
@@ -435,19 +422,13 @@ makeT1Real::build(Simulation& System,
   // Add target flight line
   TarObj->addProtonLine(System); // *RefObj,-1
 
-  RefObj->addToInsertChain(*Lh2ModObj);
   Lh2ModObj->createAll(System,*VoidObj,0);
 
-  RefObj->addToInsertChain(*CH4ModObj);
   CH4ModObj->createAll(System,*VoidObj,0);
 
-  RefObj->addToInsertChain(*MerlinMod);
   MerlinMod->createAll(System,*VoidObj,0);
 
-  RefObj->addToInsertChain(*WaterModObj);
   WaterModObj->createAll(System,*VoidObj,0);
-  ELog::EM<<"Void Mod == "<<VoidObj->getLinkPt(0)<<ELog::endDiag;
-  ELog::EM<<"Water Mod == "<<WaterModObj->getCentre()<<ELog::endDiag;
   System.populateCells();
 
   flightLines(System);
@@ -461,7 +442,7 @@ makeT1Real::build(Simulation& System,
   MPipeObj->createAll(System,*MerlinMod,12);
 
 
-  CH4PipeObj->createAll(System,*CH4ModObj,5 );  // long int sideIndex
+  CH4PipeObj->createAll(System,*CH4ModObj,5);  // long int sideIndex
 
   if (IParam.flag("BeRods"))
     RefObj->createRods(System);  

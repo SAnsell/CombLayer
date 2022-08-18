@@ -3,7 +3,7 @@
 
  * File:   commonGenerator/BremTubeGenerator.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,8 +66,8 @@ BremTubeGenerator::BremTubeGenerator() :
   backLength(12.0),
   backFlangeRadius(CF150::flangeRadius),
   backFlangeLength(CF150::flangeLength),
-  plateThick(CF150::flangeLength),
   wallThick(CF150::wallThick),
+  plateThick(CF150::flangeLength),
   voidMat("Void"),wallMat("Stainless304L"),
   plateMat("Stainless304L")
   /*!

@@ -38,7 +38,8 @@ namespace ts1System
 
 class MerlinModerator :
     public attachSystem::ContainedComp,
-    public attachSystem::FixedRotate
+    public attachSystem::FixedRotate,
+    public attachSystem::CellMap
 {
  private:
   
@@ -54,11 +55,10 @@ class MerlinModerator :
   std::vector<double> poisonThick; ///< Poison (Gadolinium) thickness
 
   int alMat;                    ///< Al
-  int waterMat;                   ///< water
-  int poisonMat;                  ///< Poison (Gadolinium)  
+  int waterMat;                 ///< water
+  int poisonMat;                ///< Poison (Gadolinium)  
 
   std::map<size_t,double> modLayer;  ///< Surface modification layer
-  int mainCell;                      ///< Main water cell
 
   Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
 

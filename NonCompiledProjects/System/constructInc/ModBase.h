@@ -47,13 +47,6 @@ class ModBase :
   std::vector<long int> flightSides;  ///< Sides for flight inde
 
   virtual void populate(const FuncDataBase&);
-  virtual void createUnitVector(const attachSystem::FixedComp&,
-				const long int,
-				const attachSystem::FixedComp&,
-				const long int);
-
-  virtual void createUnitVector(const attachSystem::FixedComp&,
-				const long int);
   
  public:
 
