@@ -813,7 +813,7 @@ interceptRuleConst(const HeadRule& HR,
 
   const size_t indexA=SurInter::closestPt(Pts,Origin);
   const std::vector<const Geometry::Surface*>& SVec=
-    LI.getSurfIndex();
+    LI.getSurfPointers();
 
   return(SVec[indexA]->side(Origin)>=0) ?
     std::pair<Geometry::Vec3D,int>(Pts[indexA],-SVec[indexA]->getName()) :

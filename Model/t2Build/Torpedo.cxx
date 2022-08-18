@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   build/Torpedo.cxx
+ * File:   t2Build/Torpedo.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
@@ -75,7 +75,7 @@ namespace shutterSystem
 {
 
 Torpedo::Torpedo(const size_t ID,const std::string& Key) : 
-  attachSystem::FixedOffset(Key+std::to_string(ID),6),
+  attachSystem::FixedRotate(Key+std::to_string(ID),6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::ExternalCut(),
   baseName(Key),shutterNumber(ID)
@@ -87,12 +87,12 @@ Torpedo::Torpedo(const size_t ID,const std::string& Key) :
 {}
 
 Torpedo::Torpedo(const Torpedo& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedRotate(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),attachSystem::ExternalCut(A),
   baseName(A.baseName),shutterNumber(A.shutterNumber),
   vBox(A.vBox),voidXoffset(A.voidXoffset),
   innerRadius(A.innerRadius),
-  Height(A.Height),Width(A.Width),innerSurf(A.innerSurf)
+  Height(A.Height),Width(A.Width)
   /*!
     Copy constructor
     \param A :: Torpedo to copy
@@ -109,7 +109,7 @@ Torpedo::operator=(const Torpedo& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::ExternalCut::operator=(A);
@@ -118,7 +118,6 @@ Torpedo::operator=(const Torpedo& A)
       innerRadius=A.innerRadius;
       Height=A.Height;
       Width=A.Width;
-      innerSurf=A.innerSurf;
     }
   return *this;
 }
@@ -139,7 +138,7 @@ Torpedo::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("Torpedo","populate");
 
   // Global from shutter size:
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   
   voidXoffset=Control.EvalVar<double>("voidXoffset");
   innerRadius=Control.EvalVar<double>("bulkShutterRadius");
@@ -152,17 +151,19 @@ Torpedo::populate(const FuncDataBase& Control)
 }
 
 void
-Torpedo::calcVoidIntercept(const attachSystem::ContainedComp& CC)
+Torpedo::calcVoidIntercept()
   /*!
-    Determine what surfaces need to be on the inside edge of the 
+    Determine which surfaces need to be on the inside edge of the 
     torpedo tube
-    \param CC :: Contained object 
-   */
+  */
 {
   ELog::RegMethod RegA("Torpedo","calcVoidIntercept");
-  // Clear set
-  innerSurf.erase(innerSurf.begin(),innerSurf.end());
 
+  const HeadRule& InnerHR=getRule("Inner");
+  // Clear set
+  //  innerSurf.erase(innerSurf.begin(),innerSurf.end());
+
+  std::set<int> surf;
   // Create 4 lines: 
   for(int i=0;i<4;i++)
     {
@@ -172,11 +173,16 @@ Torpedo::calcVoidIntercept(const attachSystem::ContainedComp& CC)
       // and then look back
       const Geometry::Vec3D OP=Origin+Y*1000.0+Z*zScale+
 	X*xScale;
-      const Geometry::Line LA(OP,-Y);
-      const int surfN=CC.surfOuterIntersect(LA);
+      const int surfN=InnerHR.trackSurf(OP,-Y);
+      
       if (surfN)
-	innerSurf.insert(-surfN);
+	surf.insert(-surfN);
     }
+  HeadRule cutHR;
+  for(const int SN : surf)
+    cutHR.addUnion(SN);
+
+  ExternalCut::setCutSurf("VacVessel",cutHR);
   return;
 }
 
@@ -217,23 +223,6 @@ Torpedo::createSurfaces()
   return;
 }
   
-std::string
-Torpedo::getInnerSurf() const
-  /*!
-    Get the interal string
-    \return string of surfaces
-  */
-{
-  std::ostringstream cx;
-
-  // Large number of objects
-  std::set<int>::const_iterator vc;
-  for(vc=innerSurf.begin();vc!=innerSurf.end();vc++)
-    cx<<" "<<*vc;
-  cx<<" ";
-
-  return cx.str();
-}
 
 void
 Torpedo::createObjects(Simulation& System)
@@ -244,31 +233,18 @@ Torpedo::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Torpedo","constructObjects");
 
-  std::string Out,dSurf;
-
+  HeadRule HR;
   // Calculate Cut WITHOUT inner cylinder:
-  dSurf=getInnerSurf();
-  Out=ModelSupport::getComposite(SMap,buildIndex,"3 -4 5 -6 ");
-  Out+=ExternalCut::getRuleStr("Outer");
-  // ADD INNER SURF HERE:
-  CellMap::makeCell("Void",System,cellIndex++,0,0.0,Out+dSurf);
+  const HeadRule VacHR=getRule("VacVessel");
+    
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
+  addOuterSurf(HR*VacHR);
   
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,"3 -4 5 -6 ")+dSurf;  
-  addOuterSurf(Out);
-
+  HR*=ExternalCut::getRule("Outer");
+  // ADD INNER SURF HERE:
+  CellMap::makeCell("Void",System,cellIndex++,0,0.0,HR*VacHR);
+  
   return;
-}
-
-std::string
-Torpedo::getSurfString(const std::string& SList) const
-  /*!
-    Way to get a composite string (for exclude)
-    \param SList :: String list
-    \return surface string
-  */
-{
-  return ModelSupport::getComposite(SMap,buildIndex,SList);
 }
 
 void
@@ -280,6 +256,7 @@ Torpedo::createLinks()
   ELog::RegMethod RegA("Torpedo","createLinks");
 
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+7));
+  /*
   std::set<int>::const_iterator vc;
   for(vc=innerSurf.begin();vc!=innerSurf.end();vc++)
     {
@@ -287,7 +264,7 @@ Torpedo::createLinks()
       if (vc==innerSurf.begin())
 	FixedComp::addLinkSurf(1,-*vc);
     }
-
+  */
   FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+3));
   FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+4));
   FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+5));
@@ -296,11 +273,13 @@ Torpedo::createLinks()
   // set Links
   // First point is center line intersect
   const Geometry::Vec3D OP=Origin+Y*innerRadius;
+
   MonteCarlo::LineIntersectVisit LI(OP,Y);
+
   
   //  ELog::EM<<"Inner Surf "<<getInnerSurf()<<ELog::endDiag;
   //  ELog::EM<<"INNER POINT == "<<to<<LI.getPoint(getInnerSurf(),OP)<<ELog::endDiag;
-  FixedComp::setConnect(0,LI.getPoint(getInnerSurf(),OP),-Y);
+  //  FixedComp::setConnect(0,LI.getPoint(getInnerSurf(),OP),-Y);
   FixedComp::setConnect(1,LI.getPoint(SMap.realSurfPtr(buildIndex+7),OP),Y);
   FixedComp::setConnect(2,Origin-X*(Width/2.0),-X);
   FixedComp::setConnect(3,Origin+X*(Width/2.0),X);
@@ -384,10 +363,11 @@ Torpedo::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(GS,sideIndex);
   createSurfaces();
-  //  calcVoidIntercept(CC);  //FIGURE OUT CC
+  calcVoidIntercept();  
   createObjects(System);
   calcConvex(System);
-  createLinks();
+  //  createLinks();
+  insertObjects(System);
   return;
 }
 

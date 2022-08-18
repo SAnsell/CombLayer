@@ -35,9 +35,10 @@ namespace shutterSystem
   \brief Specialized for for the VoidVessel
 */
 
-class VoidVessel : public attachSystem::FixedComp,
-  public attachSystem::ContainedComp,
-  public attachSystem::CellMap
+class VoidVessel :
+    public attachSystem::FixedComp,
+    public attachSystem::ContainedComp,
+    public attachSystem::CellMap
 {
  private:
   
@@ -81,9 +82,6 @@ class VoidVessel : public attachSystem::FixedComp,
   int vWindowMat;                 ///< Void window material
   int vMat;                       ///< Void material
 
-  // Created values:
-  int steelCell;                  ///< Cell for the windows
-
   // Functions:
 
   void populate(const FuncDataBase&);
@@ -98,7 +96,8 @@ class VoidVessel : public attachSystem::FixedComp,
   VoidVessel& operator=(const VoidVessel&);
   virtual ~VoidVessel();
 
-  void processVoid(Simulation&);
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
   

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   moderatorInc/OrthoInsert.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * File:   t2BuildInc/OrthoInsert.h
+ *
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,14 +32,16 @@ namespace moderatorSystem
   \version 1.0
   \author S. Ansell
   \date April 2011
-  \brief OrthoInsert [insert object]
+  \brief Insert o
 */
 
-class OrthoInsert : public attachSystem::ContainedGroup,
-    public attachSystem::FixedUnit
+class OrthoInsert :
+    public attachSystem::ContainedGroup,
+    public attachSystem::FixedUnit,
+    public attachSystem::ExternalCut,
+    public attachSystem::CellMap
 {
  private:
-  
   
   Geometry::Vec3D GCent;     ///< Groove centre
   double grooveThick;       ///< Total Width
@@ -54,12 +56,12 @@ class OrthoInsert : public attachSystem::ContainedGroup,
   double orthoTemp;         ///< Temperature [-ve ==> default]
   int orthoMat;             ///< Material
 
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createUnitVector(const Hydrogen&,
 			const Groove&);
 
   void createSurfaces(const Hydrogen&);
-  void createObjects(Simulation&,const attachSystem::ContainedComp&);
+  void createObjects(Simulation&);
 
  public:
 

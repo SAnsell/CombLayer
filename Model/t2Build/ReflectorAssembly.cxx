@@ -100,7 +100,7 @@ ReflectorAssembly::ReflectorAssembly(const std::string& Key)  :
   attachSystem::FixedRotate(Key,12),
   attachSystem::ContainedComp(),
 
-  decType("Standard"),decFile(""),orthoHFlag(0),
+  decType("standard"),decFile(""),orthoHFlag(0),
   
   TarObj(new TMRSystem::TS2target("t2Target")),
   GrooveObj(new Groove("groove")),
@@ -424,7 +424,7 @@ ReflectorAssembly::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   createObjects(System);
   //  createLinks();
-  //  insertObject
+  insertObjects(System);
   return;
 }
 

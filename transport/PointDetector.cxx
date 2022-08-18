@@ -196,7 +196,7 @@ PointDetector::writeHeader(std::ostream& OX) const
     ModelSupport::DBMaterial::Instance();
 
   OX<<"# ";
-  for(const std::pair<int,double>& MItem  : cnt)
+  for(const std::pair<int,double> MItem  : cnt)
     OX<<DB.getKey(MItem.first)<<" ";
   OX<<std::endl;
   OX<<"# NumberPts == "<<nps<<std::endl;
@@ -214,7 +214,7 @@ PointDetector::write(std::ostream& OX) const
   ELog::RegMethod RegA("PointDetector","write(stream,double)");
   
   OX<<index<<" "<<angle<<" ";
-  for(const std::pair<int,double>& MItem  : cnt)
+  for(const std::pair<int,double> MItem  : cnt)
     OX<<MItem.second<<" ";
   OX<<std::endl;
   return;

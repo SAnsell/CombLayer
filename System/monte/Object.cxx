@@ -1301,7 +1301,8 @@ Object::trackCell(const MonteCarlo::particle& N,double& D,
 
   const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
   const std::vector<double>& dPts(LI.getDistance());
-  const std::vector<const Geometry::Surface*>& surfIndex(LI.getSurfIndex());
+  const std::vector<const Geometry::Surface*>& surfIndex=
+    LI.getSurfPointers();
 
   const int absSN(std::abs(startSurf));
   const int signSN(startSurf>0 ? 1 : -1);   // pAB/mAB is 1 / 0 

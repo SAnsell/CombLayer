@@ -129,6 +129,9 @@ class HeadRule
   Geometry::Vec3D trackClosestPoint
     (const Geometry::Vec3D&,const Geometry::Vec3D&,
      const Geometry::Vec3D&) const;
+  int trackClosestSurface
+    (const Geometry::Vec3D&,const Geometry::Vec3D&,
+     const Geometry::Vec3D&) const;
 
   size_t calcSurfIntersection
     (const Geometry::Vec3D&,const Geometry::Vec3D&,

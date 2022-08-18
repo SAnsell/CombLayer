@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   buildInc/makeTS2Bulk.h
+ * File:   moderatorInc/makeTS2.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,51 +19,65 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef moderatorSystem_makeTS2Bulk_h
-#define moderatorSystem_makeTS2Bulk_h
+#ifndef moderatorSystem_makeT2_h
+#define moderatorSystem_makeT2_h
+
+namespace hutchSystem
+{
+  class ChipIRHutch;
+}
+
+namespace constructSystem
+{
+  class TargetBase;
+}
+
+namespace TMRSystem
+{
+  class TS2target;
+}  
 
 namespace shutterSystem
 {
   class BulkShield;
   class VoidVessel;
+  class t1BulkShield;
+  class t1CylVessel;
+  class t1Vessel;
+  class MonoPlug;
 }
 
 namespace moderatorSystem
 {
   class Reflector;
+  class makeRefStructure;
+  class ReflectorAssembly;
 
   /*!
-    \class makeTS2Bulk
+    \class makeTS2
     \version 1.0
     \author S. Ansell
     \date July 2012
-    \brief General constructor for TS2 void+bulk system
+    \brief General constructor for the TS2 system
   */
 
-class makeTS2Bulk
+class makeTS2
 {
  private:
 
   /// Reflector object  
+  std::shared_ptr<ReflectorAssembly> RefObj;
   std::shared_ptr<shutterSystem::VoidVessel> VObj;     ///< Void vessel
   std::shared_ptr<shutterSystem::BulkShield> BulkObj;  ///< Bulk shield
-  
+
  public:
   
-  makeTS2Bulk();
-  makeTS2Bulk(const makeTS2Bulk&);
-  makeTS2Bulk& operator=(const makeTS2Bulk&);
-  ~makeTS2Bulk();
+  makeTS2();
+  makeTS2(const makeTS2&);
+  makeTS2& operator=(const makeTS2&);
+  ~makeTS2();
   
-  void build(Simulation*,const mainSystem::inputParam&,int&);
-  void setSource(Simulation*,const mainSystem::inputParam&);
-  
-
-  /// Accessor to bulk object 
-  const shutterSystem::BulkShield* getBulkShield() const 
-    { return BulkObj.get(); } 
-
-  void insertPipeObjects(Simulation*,const mainSystem::inputParam&);
+  void build(Simulation*,const mainSystem::inputParam&);
 
 };
 

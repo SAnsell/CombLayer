@@ -67,9 +67,8 @@ MagnetM1Generator::MagnetM1Generator() :
   entryFlangeLength(CF50::flangeLength),
   
   // half pipe
-  photonRadius(1.10),
-  pipeWallThick(0.1),electronRadius(1910.0),
-  electronAngle(1.5),
+  photonRadius(1.10),electronRadius(1910.0),
+  pipeWallThick(0.1),electronAngle(1.5),
 
   // full pipe
   fullLength(205.0),

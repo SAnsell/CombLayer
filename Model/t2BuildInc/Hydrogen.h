@@ -35,9 +35,11 @@ namespace moderatorSystem
   \brief Hydrogen [insert object]
 */
 
-class Hydrogen : public attachSystem::ContainedComp,
-  public attachSystem::FixedComp,
-  public attachSystem::ExternalCut
+class Hydrogen :
+    public attachSystem::ContainedComp,
+    public attachSystem::FixedComp,
+    public attachSystem::ExternalCut,
+    public attachSystem::CellMap
   
 {
  private:
@@ -59,7 +61,6 @@ class Hydrogen : public attachSystem::ContainedComp,
   int alMat;                ///< Al material
 
   Geometry::Vec3D HCentre;  ///< Centre of Radius  
-  int HCell;                ///< Main H2 cell
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
@@ -80,7 +81,6 @@ class Hydrogen : public attachSystem::ContainedComp,
   const Geometry::Vec3D& getHCentre() const { return HCentre; }
   /// Access Radius
   double getRadius() const { return radius; }
-  int getMainBody() const { return HCell; }
   /// Access divide width
   double getAlDivide() const { return alDivide; }
 

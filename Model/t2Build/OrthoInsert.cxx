@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   moderator/OrthoInsert.cxx
+ * File:   t2Build/OrthoInsert.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
  *
@@ -78,7 +78,10 @@ OrthoInsert::OrthoInsert(const std::string& Key)  :
 {}
 
 OrthoInsert::OrthoInsert(const OrthoInsert& A) : 
-  attachSystem::ContainedGroup(A),attachSystem::FixedUnit(A),
+  attachSystem::ContainedGroup(A),
+  attachSystem::FixedUnit(A),
+  attachSystem::ExternalCut(A),
+  attachSystem::CellMap(A),
   GCent(A.GCent),grooveThick(A.grooveThick),grooveWidth(A.grooveWidth),
   grooveHeight(A.grooveHeight),HCent(A.HCent),
   HRadius(A.HRadius),hydroThick(A.hydroThick),
@@ -101,6 +104,8 @@ OrthoInsert::operator=(const OrthoInsert& A)
     {
       attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedComp::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
+      attachSystem::CellMap::operator=(A);
       GCent=A.GCent;
       grooveThick=A.grooveThick;
       grooveWidth=A.grooveWidth;
@@ -122,7 +127,7 @@ OrthoInsert::~OrthoInsert()
 {}
 
 void
-OrthoInsert::populate(const Simulation& System)
+OrthoInsert::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param System :: Simulation to use
@@ -130,8 +135,6 @@ OrthoInsert::populate(const Simulation& System)
 {
   ELog::RegMethod RegA("OrthoInsert","populate");
   
-  const FuncDataBase& Control=System.getDataBase();
-
   grooveThick=Control.EvalVar<double>(keyName+"GrooveThick");
   grooveWidth=Control.EvalVar<double>(keyName+"GrooveWidth");
   grooveHeight=Control.EvalVar<double>(keyName+"GrooveHeight");
@@ -197,26 +200,28 @@ OrthoInsert::createSurfaces(const Hydrogen& HC)
 }
 
 void
-OrthoInsert::createObjects(Simulation& System,
-			   const attachSystem::ContainedComp& CU)
+OrthoInsert::createObjects(Simulation& System)
   /*!
-    Adds the Chip guide components
+    Adds the orthorgonal
     \param System :: Simulation to create objects in
-    \param CU :: Contained unit				
   */
 {
   ELog::RegMethod RegA("OrthoInsert","createObjects");
+
+  const HeadRule& mainCellHR=getRule("HCell");
+
+  HeadRule HR;
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 13 -14 15 -16");
+  addOuterSurf("HSide",HR);
   
-  std::string Out;  
-  Out=ModelSupport::getComposite(SMap,buildIndex," 12 13 -14 15 -16 ");
-  addOuterSurf("HSide",Out); 
-  Out+=CU.getContainer();
-  System.addCell(MonteCarlo::Object(cellIndex++,orthoMat,orthoTemp,Out));
+  makeCell("HydroH2",System,cellIndex++,orthoMat,orthoTemp,
+	   HR*mainCellHR);
   // Groove side
-  Out=ModelSupport::getComposite(SMap,buildIndex," -11 (-13:14:-15:16) ");
-  addOuterSurf("GSide",Out); 
-  Out+=CU.getContainer();
-  System.addCell(MonteCarlo::Object(cellIndex++,orthoMat,orthoTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 (-13:14:-15:16) ");
+  addOuterSurf("GSide",HR); 
+
+  makeCell("GrooveH2",System,cellIndex++,orthoMat,orthoTemp,
+	   HR*mainCellHR);
   
   return;
 }
@@ -234,12 +239,13 @@ OrthoInsert::build(Simulation& System,
 {
   ELog::RegMethod RegA("OrthoInsert","createAll");
 
-  populate(System);
+  setCutSurf("HCell",HUnit.getCellHR(System,"HCell"));
+  populate(System.getDataBase());
 
   createUnitVector(HUnit,GUnit);
   createSurfaces(HUnit);
-  createObjects(System,HUnit);
-  addAllInsertCell(HUnit.getMainBody());
+  createObjects(System);
+  addAllInsertCell(HUnit.getCell("HCell"));
   insertObjects(System);       
   
   return;

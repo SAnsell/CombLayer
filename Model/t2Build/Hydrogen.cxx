@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   moderator/Hydrogen.cxx
+ * File:   t2Build/Hydrogen.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
  *
@@ -55,14 +55,18 @@
 #include "FixedComp.h"
 #include "ExternalCut.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "Hydrogen.h"
 
 namespace moderatorSystem
 {
 
 Hydrogen::Hydrogen(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
-  attachSystem::ExternalCut()
+  attachSystem::ContainedComp(),
+  attachSystem::FixedComp(Key,6),
+  attachSystem::ExternalCut(),
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -70,8 +74,10 @@ Hydrogen::Hydrogen(const std::string& Key)  :
 {}
 
 Hydrogen::Hydrogen(const Hydrogen& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::FixedComp(A),
   attachSystem::ExternalCut(A),
+  attachSystem::CellMap(A),
   width(A.width),height(A.height),
   depth(A.depth),radius(A.radius),innerXShift(A.innerXShift),
   alDivide(A.alDivide),alFront(A.alFront),alTop(A.alTop),
@@ -96,6 +102,7 @@ Hydrogen::operator=(const Hydrogen& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
       attachSystem::ExternalCut::operator=(A);
+      attachSystem::CellMap::operator=(A);
       width=A.width;
       height=A.height;
       depth=A.depth;
@@ -226,20 +233,20 @@ Hydrogen::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Hydrogen","createObjects");
 
-  const std::string innerWall(ExternalCut::getRuleStr("innerWall"));
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex," -12 13 -14 15 -16");
-  addOuterSurf(Out+innerWall);
+  const HeadRule innerWallHR=ExternalCut::getRule("innerWall");
+  HeadRule HR;  
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
-  addBoundarySurf(Out);
-  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
-  HCell=cellIndex-1;
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  makeCell("HCell",System,cellIndex++,modMat,modTemp,HR);
+
   // Al layers :
-  Out=ModelSupport::getComposite(SMap,buildIndex," -12 13 -14 15 -16 "
-				 " (-1 : 2 : -3 : 4 : -5 : 6 ) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out+innerWall));
-  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 13 -14 15 -16"
+				 "(-1 : 2 : -3 : 4 : -5 : 6 )");
+  makeCell("AlWall",System,cellIndex++,alMat,modTemp,HR*innerWallHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 13 -14 15 -16");
+  addOuterSurf(HR*innerWallHR);
+
   return;
 }
 

@@ -55,10 +55,9 @@
 #include "ExternalCut.h"
 #include "World.h"
 
+#include "BulkShield.h"
+#include "VoidVessel.h"
 #include "ReflectorAssembly.h"
-
-#include "makeTS2Bulk.h"
-#include "makeReflector.h"
 
 #include "makeTS2.h"
 
@@ -66,14 +65,19 @@ namespace moderatorSystem
 {
 
 makeTS2::makeTS2() :
-  RefObj(new ReflectorAssembly("ReflectorAssembly"))
-/*!
-  Constructor
- */
+  RefObj(new ReflectorAssembly("ReflectorAssembly")),
+  VObj(new shutterSystem::VoidVessel("void")),
+  BulkObj(new shutterSystem::BulkShield("bulk"))
+  /*!
+    Constructor
+  */
 {
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
+
   OR.addObject(RefObj);
+  OR.addObject(VObj);
+  OR.addObject(BulkObj);
 }
 
 makeTS2::~makeTS2()
@@ -97,8 +101,28 @@ makeTS2::build(Simulation* SimPtr,
 
   int voidCell(74123);
 
-  RefObj->addInsertCell(voidCell);
-  RefObj->createAll(*SimPtr,World::masterOrigin(),0);
+  if (!IParam.flag("exclude") ||
+      (!IParam.compValue("E",std::string("Bulk"))) ) 
+    {
+      BulkObj->addInsertCell(voidCell);
+      BulkObj->createAll(*SimPtr,World::masterOrigin(),0);
+      
+      VObj->addInsertCell(BulkObj->getCell("Torpedo"));
+      VObj->addInsertCell(BulkObj->getCell("Shutter"));
+      VObj->createAll(*SimPtr,World::masterOrigin(),0);
+      
+      BulkObj->setCutSurf("Inner",VObj->getOuterSurf());
+      BulkObj->createTorpedoes(*SimPtr);
+
+      RefObj->addInsertCell(VObj->getCell("Void"));
+      RefObj->createAll(*SimPtr,World::masterOrigin(),0);
+    }
+  else
+    {
+      RefObj->addInsertCell(voidCell);
+      RefObj->createAll(*SimPtr,World::masterOrigin(),0);
+    }
+
   
   /*
   moderatorSystem::makeTS2Bulk bulkObj;

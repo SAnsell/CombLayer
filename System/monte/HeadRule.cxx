@@ -2469,7 +2469,7 @@ HeadRule::trackClosestPoint(const Geometry::Vec3D& Org,
 
   */
 {
-  ELog::RegMethod RegA("HeadRule","trackPoint");
+  ELog::RegMethod RegA("HeadRule","trackClosestPoint");
   MonteCarlo::LineIntersectVisit LI(Org,VUnit);
 
   const std::vector<Geometry::Vec3D>& Pts=LI.getPoints(*this);
@@ -2478,6 +2478,31 @@ HeadRule::trackClosestPoint(const Geometry::Vec3D& Org,
 
   const size_t index=SurInter::closestPt(Pts,targetPt);
   return Pts[index];
+}
+
+int
+HeadRule::trackClosestSurface(const Geometry::Vec3D& Org,
+			      const Geometry::Vec3D& VUnit,
+			      const Geometry::Vec3D& targetPt) const
+  /*!
+    Track the line to the boundary of the HeadRule. There is 
+    likely multiple exits, and the closest exit to targetPt is selected.
+    \param Org :: Origin of line
+    \param VUnit :: Direction of line
+    \param TargetPt :: Target point
+    \return Exit surface (signed)
+  */
+{
+  ELog::RegMethod RegA("HeadRule","trackClosestSurface");
+  MonteCarlo::LineIntersectVisit LI(Org,VUnit);
+
+  const std::vector<Geometry::Vec3D>& Pts=LI.getPoints(*this);
+  if (Pts.empty())
+    throw ColErr::EmptyContainer("No points found");
+
+  const size_t index=SurInter::closestPt(Pts,targetPt);
+  
+  return LI.getSurfIndexX()[index];
 }
 
 
@@ -2502,8 +2527,8 @@ HeadRule::trackSurfIntersect(const Geometry::Vec3D& Org,
 
   const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
   const std::vector<double>& dPts(LI.getDistance());
-  const std::vector<const Geometry::Surface*>& surfIndex(LI.getSurfIndex());
-
+  const std::vector<const Geometry::Surface*>& surfIndex
+    (LI.getSurfPointers());
 
   double D= std::numeric_limits<double>::max();
   const Geometry::Surface* surfPtr=0;
@@ -2572,7 +2597,7 @@ HeadRule::trackSurfDistance(const Geometry::Vec3D& Org,
     Calculate a track of a line to a change in state surface
     \param Org :: Origin of line
     \param Unit :: Direction of line
-    \return exit surface [signed??]
+    \return exit surface [signed??] / distance
   */
 {
   ELog::RegMethod RegA("HeadRule","trackSurfDistance");
@@ -2593,12 +2618,12 @@ HeadRule::trackSurf(const Geometry::Vec3D& Org,
 
     \param Org :: Origin of line
     \param Unit :: Direction of line
-    \param activeSurf :: signed avoid surfaces
     \return exit surface [signed - ingoing sense: Origin is true to surface]
   */
 {
   ELog::RegMethod RegA("HeadRule","trackSurf(O,U)");
 
+  // surface/surfPtr/point/distance
   const std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
     result=trackSurfIntersect(Org,Unit);
 
@@ -2697,7 +2722,8 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
   // IPTS contains both non-exit and invalid points
   const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
   const std::vector<double>& dPts(LI.getDistance());
-  const std::vector<const Geometry::Surface*>& surfIndex(LI.getSurfIndex());
+  const std::vector<const Geometry::Surface*>& surfIndex
+    (LI.getSurfPointers());
  
   // Clear data
   Pts.clear();
