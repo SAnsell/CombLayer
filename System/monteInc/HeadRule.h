@@ -167,6 +167,7 @@ class HeadRule
   int removeTopItem(const int);
   int substituteSurf(const int,const int,const Geometry::Surface*);
   void removeCommon();
+  void removeComplement();
 
   std::set<int> findAxisPlanes(const Geometry::Vec3D&,const double);
   int findAxisPlane(const Geometry::Vec3D&,const double);

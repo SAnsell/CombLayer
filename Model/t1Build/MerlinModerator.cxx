@@ -65,7 +65,8 @@ namespace ts1System
 {
 
 MerlinModerator::MerlinModerator(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedRotate(Key,12)
+  attachSystem::ContainedComp(),
+  attachSystem::FixedRotate(Key,12)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search

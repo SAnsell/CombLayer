@@ -446,6 +446,8 @@ makeT1Real::build(Simulation& System,
 
   RefObj->addToInsertChain(*WaterModObj);
   WaterModObj->createAll(System,*VoidObj,0);
+  ELog::EM<<"Void Mod == "<<VoidObj->getLinkPt(0)<<ELog::endDiag;
+  ELog::EM<<"Water Mod == "<<WaterModObj->getCentre()<<ELog::endDiag;
   System.populateCells();
 
   flightLines(System);

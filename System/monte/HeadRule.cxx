@@ -1946,6 +1946,23 @@ HeadRule::substituteSurf(const int SurfN,const int newSurfN,
 }
 
 void
+HeadRule::removeComplement()
+  /*!
+    Remove Complements from the rule
+   */
+{
+  ELog::RegMethod RegA("HeadRule","removeComplement");
+
+  if (!HeadNode) return;
+  MonteCarlo::Algebra AX;
+  AX.setFunctionObjStr(HeadNode->display());
+
+  delete HeadNode;
+  HeadNode=Rule::procString(AX.writeMCNPX());
+  return;
+}
+
+void
 HeadRule::makeComplement()
   /*!
     Complement the rule
