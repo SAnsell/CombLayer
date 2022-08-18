@@ -23,7 +23,7 @@ my @masterProg=getAllMain();
 ## Model Directory
 ##my @modelLibDir=qw( bibBuild build 
 ##                    cuBlock d4cModel delft epbBuild essBuild
-##                    gammaBuild lensModel t2Build
+##                    lensModel t2Build
 ##                    muon pipeBuild photon sinbadBuild snsBuild t1Build
 ##                     );
 
@@ -252,14 +252,7 @@ foreach my $mainProg (@masterProg)
 	push(@muBeam,@mainLib);
 	$gM->addDepUnit("muBeam", [@muBeam]);
       }
-    
-    elsif ($mainProg eq "gamma")
-      { 
-	my @gamma = qw( gammaBuild ) ;
-	push(@gamma,@mainLib);
-	$gM->addDepUnit("gamma", [@gamma]);
-      }
-    
+        
     elsif ($mainProg eq "saxs")
       {  
 	my @saxs = qw( saxs d4cModel instrument );
