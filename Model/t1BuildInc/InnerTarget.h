@@ -100,7 +100,7 @@ class InnerTarget :
   /// Main cell body
   int getMainBody() const { return buildIndex+1; }
   void addInnerBoundary(attachSystem::ContainedComp&) const;
-  /// Set the extext of the reflector
+  /// Set the extent of the reflector
   void setRefPlates(const int A,const int B) 
     { frontPlate=A; backPlate=B; }
 

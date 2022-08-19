@@ -289,10 +289,8 @@ makeT1Real::buildTarget(Simulation& System,
       TarObj=std::shared_ptr<TMRSystem::TargetBase>
 	(new TMRSystem::TS2target("t1CylTarget"));
       OR.addObject(TarObj);
-      TarObj->setCutSurf("RefBoundary",RefObj->getLinkString(-1));
+      TarObj->setCutSurf("FrontPlate",RefObj->getLinkSurf(-1));
       TarObj->setCutSurf("BackPlate",RefObj->getLinkSurf(-5));
-      //     TarObj->setCutSurf("BackPlate",);
-
       TarObj->createAll(System,World::masterOrigin(),0);
       return "t1CylTarget";
     }    
@@ -301,6 +299,7 @@ makeT1Real::buildTarget(Simulation& System,
       TarObj=std::shared_ptr<TMRSystem::TargetBase>
 	(new ts1System::InnerTarget("t1Inner"));
       OR.addObject(TarObj);
+      TarObj->setCutSurf("FrontPlate",RefObj->getLinkString(-1));      
       TarObj->setCutSurf("BackPlate",RefObj->getLinkSurf(-5));
       TarObj->createAll(System,World::masterOrigin(),0);
       return "t1Inner";
@@ -327,6 +326,7 @@ makeT1Real::buildTarget(Simulation& System,
       TarObj=std::shared_ptr<TMRSystem::TargetBase>
 	(new ts1System::SideCoolTarget("t1EllCylTarget"));
       OR.addObject(TarObj);
+      TarObj->setCutSurf("FrontPlate",RefObj->getLinkSurf(-1));
       TarObj->setCutSurf("BackPlate",RefObj->getLinkSurf(-5));
       TarObj->createAll(System,World::masterOrigin(),0);
       return "t1EllCylTarget";
@@ -359,7 +359,7 @@ makeT1Real::buildTarget(Simulation& System,
       ELog::EM<<"    t1Inner :: Inner triple core target"<<ELog::endBasic;
       ELog::EM<<"    t1Cyl   :: TS2 style cylindrical target"<<ELog::endBasic;
       ELog::EM<<"    t1Plate :: Plate target [current]"<<ELog::endBasic;
-      ELog::EM<<"    t1Cyl   :: Side cooled target"<<ELog::endBasic;
+      ELog::EM<<"    t1Side   :: Side cooled target"<<ELog::endBasic;
       throw ColErr::ExitAbort("help exit");
     }    
   
