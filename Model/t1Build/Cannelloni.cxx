@@ -368,43 +368,45 @@ Cannelloni::createInnerObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Cannelloni","createInnerObject");
 
+
   int cylIndex(12000+buildIndex);
   CellMap::deleteCell(System,"MainCell");
-  
-  const std::string endCap=
-    ModelSupport::getComposite(SMap,buildIndex," 1 -2 ");
 
-  const std::string outer=
-    ModelSupport::getComposite(SMap,buildIndex," -7 ");
+  HeadRule HR;
+  const HeadRule outerHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"-7");
 
   std::map<int,constructSystem::hexUnit*>::const_iterator ac;
   for(ac=HVec.begin();ac!=HVec.end();ac++)
     {
       const constructSystem::hexUnit* APtr= ac->second;
-      // Create Inner plane here just to help order stuff
-      ModelSupport::buildCylinder(SMap,cylIndex+7,
-				  APtr->getCentre(),Y,tubeRadius-tubeClad);
-      ModelSupport::buildCylinder(SMap,cylIndex+8,
-				  APtr->getCentre(),Y,tubeRadius-10.0*Geometry::zeroTol);
-      std::string CylA=
-	ModelSupport::getComposite(SMap,buildIndex,cylIndex," -7M 1 -2");
-      std::string CylB=
-	ModelSupport::getComposite(SMap,buildIndex,cylIndex," 7M -8M 1 -2");
+      // Create Inner cylinder here just to help order stuff
+      ModelSupport::buildCylinder
+	(SMap,cylIndex+7, APtr->getCentre(),Y,tubeRadius-tubeClad);
+      ModelSupport::buildCylinder
+	(SMap,cylIndex+8,APtr->getCentre(),Y,tubeRadius-10.0*Geometry::zeroTol);
+      HeadRule CylA=
+	ModelSupport::getHeadRule(SMap,buildIndex,cylIndex,"-7M 1 -2");
+      HeadRule CylB=
+	ModelSupport::getHeadRule(SMap,buildIndex,cylIndex,"7M -8M 1 -2");
 
-      std::string Out=APtr->getInner()+
-      	ModelSupport::getComposite(SMap,cylIndex," 8 ");
+      ELog::EM<<"Inner = "<<APtr->getShell()<<ELog::endDiag;
+
+      HR=HeadRule(APtr->getShell())*
+      	ModelSupport::getHeadRule(SMap,buildIndex,cylIndex,"1 -2 8M");
 
       if (!APtr->isComplete()) 
 	{
-	  CylA+=outer;
-	  CylB+=outer;
-	  Out+=outer;
+	  CylA*=outerHR;
+	  CylB*=outerHR;
+	  HR=outerHR;
 	}
-      System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,CylA));
-      System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,CylB));
-      
-      System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out+endCap));
+      makeCell("WRod",System,cellIndex++,wMat,0.0,CylA);
+      makeCell("TaClad",System,cellIndex++,taMat,0.0,CylB);
+
+      makeCell("Outer",System,cellIndex++,waterMat,0.0,HR);
       cylIndex+=10;
+      return;
     }
   return;
 }
@@ -496,11 +498,10 @@ Cannelloni::addProtonLine(Simulation& System)
 {
   ELog::RegMethod RegA("Cannelloni","addProtonLine");
 
-  // 0 ::  front fact of target
-  PLine->createAll(System,*this,0);
-  createBeamWindow(System,1);
-  System.populateCells();
-  System.createObjSurfMap();
+  PLine->setCutSurf("TargetSurf",*this,"front");
+  PLine->setCutSurf("RefBoundary",getRule("FrontPlate"));
+  PLine->createAll(System,*this,1);
+  createBeamWindow(System,-1);
   return;
 }
 

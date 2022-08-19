@@ -336,6 +336,7 @@ makeT1Real::buildTarget(Simulation& System,
       TarObj=std::shared_ptr<TMRSystem::TargetBase>
 	(new ts1System::Cannelloni("t1Cannelloni"));
       OR.addObject(TarObj);
+      TarObj->setCutSurf("FrontPlate",RefObj->getLinkSurf(-1));
       TarObj->setCutSurf("BackPlate",RefObj->getLinkSurf(-5));
       TarObj->createAll(System,World::masterOrigin(),0);
       return "t1Cannelloni";
