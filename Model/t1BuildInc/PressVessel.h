@@ -37,13 +37,11 @@ namespace ts1System
 
 class PressVessel :
     public attachSystem::ContainedComp,
-    public attachSystem::FixedRotate
+    public attachSystem::FixedRotate,
+    public attachSystem::CellMap
 {
  private:
   
-  int outerWallCell;            ///< outer wall cell
-  int IVoidCell;                ///< Inner void cell
-
   double width;                 ///< Width tank
   double height;                ///< Height tank
   double length;                ///< Length of main tank
@@ -105,6 +103,7 @@ class PressVessel :
   void createObjects(Simulation&);
   void buildChannels(Simulation&);
 
+
  public:
 
   PressVessel(const std::string&);
@@ -114,12 +113,8 @@ class PressVessel :
 
   /// set target length
   void setTargetLength(const double T) { targetLen=T; }
-  /// Get Inner void cell
-  int getInnerVoid() const { return IVoidCell; }
-  /// Get Inner void cell
-  int getOuterWall() const { return outerWallCell; }
   void buildFeedThrough(Simulation&);
-  int addProtonLine(Simulation&,const std::string&);
+
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

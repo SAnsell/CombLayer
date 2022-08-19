@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "surfRegister.h"
@@ -72,7 +70,7 @@ namespace TMRSystem
 {
 
 TS2target::TS2target(const std::string& Key) :
-  TMRSystem::TargetBase(Key,4)
+  TMRSystem::TargetBase(Key,5)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -532,7 +530,7 @@ TS2target::createObjects(Simulation& System)
   makeCell("Spacer",System,cellIndex++,0,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -101");
-  makeCell("Spacer",System,cellIndex++,0,0.0,HR*frontPlateHR);
+  makeCell("Spacer",System,cellIndex++,0,0.0,HR*backPlateHR);
     
   // Set EXCLUDE:
   HR=ModelSupport::getHeadRule(SMap,buildIndex,
@@ -556,14 +554,18 @@ TS2target::createLinks()
   FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+91));
   FixedComp::addLinkSurf(2,-SMap.realSurf(buildIndex+59));
 
+  FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+1));
+
   FixedComp::setConnect(0,Origin+Z*voidRadius,Z);
   FixedComp::setConnect(1,Origin+Y*mainLength,Y);
   FixedComp::setConnect(2,Origin-Y*(tCapDisplace+tCapOuterRadius),-Y);
+  FixedComp::setConnect(3,Origin,-Y);
 
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+27));
-  FixedComp::setConnect(3,Origin+Z*(coreRadius+cladThick),Z);
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+27));
+  FixedComp::setConnect(4,Origin+Z*(coreRadius+cladThick),Z);
 
-  FixedComp::nameSideIndex(3,"CoreRadius");
+  FixedComp::nameSideIndex(4,"CoreRadius");
+  FixedComp::nameSideIndex(2,"TargetFront");
   return;
 }
 
@@ -613,9 +615,11 @@ TS2target::addProtonLine(Simulation& System)
 
   ELog::EM<<"Target centre [TS2] "<<Origin<<ELog::endDebug;
 
-  PLine->setCutSurf("RefBoundary",getRule("BackPlate"));
+  PLine->setCutSurf("TargetSurf",*this,"TargetFront");
+  PLine->setCutSurf("RefBoundary",getRule("FrontPlate"));
+  ELog::EM<<"FRont == "<<getRule("FrontPlate")<<ELog::endDiag;
   PLine->createAll(System,*this,3);
-  createBeamWindow(System,-3);
+  createBeamWindow(System,-4);
 
   return;
 }

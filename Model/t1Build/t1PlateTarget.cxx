@@ -146,8 +146,9 @@ t1PlateTarget::addProtonLine(Simulation& System)
   ELog::RegMethod RegA("t1PlateTarget","addProtonLine");
 
   PLine->copyCutSurf("RefBoundary",*this,"RefBoundary");
-  PLine->createAll(System,*PressVObj,-7);
-  createBeamWindow(System,7);
+  PLine->setCutSurf("TargetSurf",*PressVObj,"BeamWindow");
+  PLine->createAll(System,*PressVObj,"BeamWindow");
+  createBeamWindow(System,-7);
   
   return;
 }
@@ -172,13 +173,11 @@ t1PlateTarget::createAll(Simulation& System,
   FixedComp::copyLinkObjects(*PressVObj);
   ContainedComp::copyRules(*PressVObj);
 
-
-  PlateTarObj->addInsertCell(PressVObj->getInnerVoid());
-  PlateTarObj->addInsertCell(PressVObj->getOuterWall());
+  PlateTarObj->addInsertCell(PressVObj->getCell("IVoid"));
+  PlateTarObj->addInsertCell(PressVObj->getCell("OuterWall"));
   PlateTarObj->createAll(System,*PressVObj,0);
 
-  DivObj->addInsertCell(PressVObj->getInnerVoid());
-  //  DivObj->createAll(System,*PlateTarObj,*PressVObj,0);
+  DivObj->addInsertCell(PressVObj->getCell("IVoid"));
   DivObj->build(System,*PlateTarObj,*PressVObj);
 
   insertObjects(System);

@@ -148,6 +148,7 @@ BeamPair::createUnitVector(const attachSystem::FixedComp& centreFC,
   attachSystem::FixedComp& beamFC=getKey("Beam");
 
   mainFC.createUnitVector(flangeFC,fIndex);
+  
   const Geometry::Vec3D& ZBeam=mainFC.getY();
   const Geometry::Vec3D YBeam=centreFC.getLinkAxis(cIndex);
   const Geometry::Vec3D XBeam=ZBeam*YBeam;
@@ -161,7 +162,7 @@ BeamPair::createUnitVector(const attachSystem::FixedComp& centreFC,
   if (XBeam.abs()>0.5)
     beamFC.createUnitVector(BC,XBeam,YBeam,ZBeam);
   else
-      beamFC.createUnitVector(flangeFC,fIndex);
+    beamFC.createUnitVector(flangeFC,fIndex);
   applyOffset();
 
   setDefault("Main","Beam");

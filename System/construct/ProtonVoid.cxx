@@ -3,7 +3,7 @@
  
  * File:   construct/ProtonVoid.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -152,11 +152,11 @@ ProtonVoid::createObjects(Simulation& System)
   const HeadRule& TSurfHR=ExternalCut::getRule("TargetSurf");
   const HeadRule& RSurfHR=ExternalCut::getRule("RefBoundary");
 
-
   HeadRule HR;
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7");
   ExternalCut::setCutSurf("Boundary",HR);
   HR*=RSurfHR*TSurfHR;
+  ELog::EM<<"Proton surf == "<<TSurfHR<<ELog::endDiag;
   CellMap::makeCell("VoidCell",System,cellIndex++,0,0.0,HR);
   addOuterSurf(HR);
   //  addBoundarySurf(-SMap.realSurf(buildIndex+7));    
@@ -191,7 +191,8 @@ ProtonVoid::createAll(Simulation& System,
   createUnitVector(TargetFC,tIndex);
   createSurfaces();
 
-  ExternalCut::setCutSurf("TargetSurf",TargetFC,tIndex);  
+  if (!ExternalCut::isActive("TargetSurf"))
+    ExternalCut::setCutSurf("TargetSurf",TargetFC,tIndex);  
   createObjects(System);
   createLinks();
   insertObjects(System);       

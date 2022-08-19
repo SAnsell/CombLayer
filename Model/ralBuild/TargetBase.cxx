@@ -138,7 +138,7 @@ TargetBase::createBeamWindow(Simulation& System,
 	}
       BWPtr->copyCutSurf("Boundary",*PLine,"Boundary");
       BWPtr->setInsertCell(PLine->getCell("VoidCell"));
-      BWPtr->createAll(System,*this,sideIndex);
+       BWPtr->createAll(System,*this,sideIndex);
     }
   return;
 }
