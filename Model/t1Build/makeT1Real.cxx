@@ -314,6 +314,7 @@ makeT1Real::buildTarget(Simulation& System,
 
       std::shared_ptr<TMRSystem::TS2ModifyTarget> TarObjModify
 	(new TMRSystem::TS2ModifyTarget("t1CylFluxTrap"));
+      TarObjModify->setCutSurf("TargetEdge",*TarObj,"CoreRadius");
       TarObjModify->createAll(System,*TarObj,0);
       OR.addObject(TarObjModify);
 

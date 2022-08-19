@@ -96,9 +96,6 @@ class TS2target :
   double waterTemp;             ///< Water temperature
   double externTemp;            ///< Pressure temperature
 
-  int mainCell;                 ///< Main tungsten cylinder
-  int skinCell;                 ///< Main ta cylinder
-
   size_t nLayers;               ///< number of layers
   std::vector<double> mainFrac; ///< Main fraction
 
@@ -117,14 +114,6 @@ class TS2target :
   TS2target& operator=(const TS2target&);
   virtual TS2target* clone() const; 
   virtual ~TS2target();
-
-  /// Main cell body
-  virtual int getMainBody() const  { return mainCell; }
-  /// Ta cell body
-  virtual int getSkinBody() const { return skinCell; }
-
-  void addInnerBoundary(attachSystem::ContainedComp&) const;
-
 
   void addProtonLine(Simulation&);	 
   void layerProcess(Simulation&);

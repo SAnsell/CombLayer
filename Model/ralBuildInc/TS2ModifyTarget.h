@@ -3,7 +3,7 @@
  
  * File:   ralBuildInc/TS2ModifyTarget.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -116,7 +116,9 @@ struct sphereCut
 
 class TS2ModifyTarget :
   public attachSystem::FixedComp,
-  public attachSystem::ContainedComp
+  public attachSystem::ContainedComp,
+  public attachSystem::CellMap,
+  public attachSystem::ExternalCut
 {
  private:
   
@@ -148,6 +150,7 @@ class TS2ModifyTarget :
   TS2ModifyTarget& operator=(const TS2ModifyTarget&);
   ~TS2ModifyTarget();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 };

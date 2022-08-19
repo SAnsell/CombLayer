@@ -72,7 +72,9 @@ namespace TMRSystem
 
 TS2ModifyTarget::TS2ModifyTarget(const std::string& MKey) :
   attachSystem::FixedComp(MKey,0),
-  attachSystem::ContainedComp()
+  attachSystem::ContainedComp(),
+  attachSystem::CellMap(),
+  attachSystem::ExternalCut()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param MKey :: Name for Moly changers
@@ -80,7 +82,10 @@ TS2ModifyTarget::TS2ModifyTarget(const std::string& MKey) :
 {}
 
 TS2ModifyTarget::TS2ModifyTarget(const TS2ModifyTarget& A) :  
-  attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
+  attachSystem::ExternalCut(A),
   PCut(A.PCut),SCent(A.SCent),Radius(A.Radius),
   SCut(A.SCut),CCut(A.CCut)
   /*!
@@ -100,6 +105,10 @@ TS2ModifyTarget::operator=(const TS2ModifyTarget& A)
   if (this!=&A)
     {
       attachSystem::FixedComp::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
+	  
       PCut=A.PCut;
       SCent=A.SCent;
       Radius=A.Radius;
@@ -276,7 +285,8 @@ TS2ModifyTarget::createSurfaces()
 
 void
 TS2ModifyTarget::createObjects(Simulation& System,
-			       const int mainBody,const int skinBody)
+			       const int mainBody,
+			       const int skinBody)
   /*!
     Adds the Chip guide components
     \param System :: Simulation to create objects in
@@ -286,7 +296,9 @@ TS2ModifyTarget::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("TS2ModifyTarget","createObjects");
 
-  std::string Out;
+  HeadRule HR;
+  const HeadRule coreHR=getComplementRule("TargetEdge");
+  
   int offset;
 
   MonteCarlo::Object* QPtrA=System.findObject(mainBody);
@@ -309,10 +321,10 @@ TS2ModifyTarget::createObjects(Simulation& System,
       offset=buildIndex+2000;
       for(size_t i=0;i<SCut.size();i++)
 	{
-	  Out=ModelSupport::getComposite(SMap,offset,"1 -2 7 8 ");
-	  addOuterUnionSurf(Out);
-	  Out+=getContainer();
-	  System.addCell(MonteCarlo::Object(cellIndex++,SCut[i].mat,0.0,Out));
+	  HR=ModelSupport::getHeadRule(SMap,offset,"1 -2 7 8");
+	  addOuterUnionSurf(HR);
+	  HR*=coreHR;
+	  makeCell("Sphere",System,cellIndex++,SCut[i].mat,0.0,HR);
 	  offset+=100;
 	}
     }
@@ -320,6 +332,7 @@ TS2ModifyTarget::createObjects(Simulation& System,
   // Cone:
   if (!CCut.empty())
     {
+      std::string Out;
       HeadRule ExCone;
       HeadRule ConeItem;
       offset=buildIndex+3000;
@@ -331,14 +344,14 @@ TS2ModifyTarget::createObjects(Simulation& System,
 	    <<" "<< CCut[i].cutFlagA()*SMap.realSurf(offset+17)<<" ";
 	  if (CCut[i].dist<0)
 	    cx<< CCut[i].cutFlagB()*SMap.realSurf(offset+18)<<" ";
-	  Out=cx.str()+getContainer();
+	  Out=cx.str()+coreHR.display();
 	  System.addCell(MonteCarlo::Object
 			 (cellIndex++,CCut[i].layerMat,0.0,Out));
 	  
 	  cx.str("");
 	  cx<<" "<< -CCut[i].cutFlagA()*SMap.realSurf(offset+17)
 	    <<" "<< CCut[i].cutFlagB()*SMap.realSurf(offset+18)<<" ";
-	  Out=cx.str()+getContainer();
+	  Out=cx.str()+coreHR.display();
 	  System.addCell(MonteCarlo::Object(cellIndex++,CCut[i].mat,0.0,Out));
 
 	  cx.str("");
@@ -346,7 +359,7 @@ TS2ModifyTarget::createObjects(Simulation& System,
 	    <<" "<< -CCut[i].cutFlagB()*SMap.realSurf(offset+18)<<" ";
 	  if (CCut[i].dist<0)
 	    cx<< -CCut[i].cutFlagA()*SMap.realSurf(offset+7)<<" ";
-	  Out=cx.str()+getContainer();
+	  Out=cx.str()+coreHR.display();
 	  System.addCell(MonteCarlo::Object
 			 (cellIndex++,CCut[i].layerMat,0.0,Out));
 
@@ -354,7 +367,7 @@ TS2ModifyTarget::createObjects(Simulation& System,
 	  cx<<" "<< -CCut[i].cutFlagA()*SMap.realSurf(offset+7)
 	    <<" "<< CCut[i].cutFlagB()*SMap.realSurf(offset+8)<<" ";
 	  ExCone.addUnion(cx.str());      
-	  ConeItem.procString(cx.str()+getContainer());
+	  ConeItem.procString(cx.str()+coreHR.display());
 	  ConeItem.populateSurf();
 	  ConeUnits.push_back(ConeItem);
 	  offset+=100;
@@ -367,39 +380,33 @@ TS2ModifyTarget::createObjects(Simulation& System,
   if (!PCut.empty())
     {
       HeadRule ExPlate;
-      std::string cutConeStr;
+      HeadRule cutCone;
       offset=buildIndex;
       for(size_t i=0;i<PCut.size();i++)
 	{
-	  Out=ModelSupport::getComposite(SMap,offset,"1 -2 ");    
-	  ExPlate.addUnion(Out);
+	  HR=ModelSupport::getHeadRule(SMap,offset,"1 -2");    
+	  ExPlate.addUnion(HR);
 	  const size_t cUnit=calcConeIntersect(ConeUnits,i);
 	  if (cUnit)
-	    {
-	      HeadRule cCut=ConeUnits[cUnit-1];
-	      cCut.makeComplement();
-	      cutConeStr=cCut.display();
-	    }
+	    cutCone=ConeUnits[cUnit-1].complement();
 	  if (PCut[i].layerMat<0)
 	    {
-	      Out+=getContainer()+cutConeStr;
-	      System.addCell(MonteCarlo::Object
-			     (cellIndex++,PCut[i].mat,0.0,Out));
+	      HR*=coreHR*cutCone;
+	      makeCell("PlaneCone",System,cellIndex++,PCut[i].mat,0.0,HR);
 	    }
 	  else
 	    {
-	      Out=ModelSupport::getComposite(SMap,offset,"1 -11 ");    
-	      Out+=getContainer()+cutConeStr;
-	      System.addCell(MonteCarlo::Object(cellIndex++,
-					       PCut[i].layerMat,0.0,Out));
-	      Out=ModelSupport::getComposite(SMap,offset,"12 -2 ");    
-	      Out+=getContainer()+cutConeStr;
-	      System.addCell(MonteCarlo::Object(cellIndex++,
-					       PCut[i].layerMat,0.0,Out));
-	      Out=ModelSupport::getComposite(SMap,offset,"11 -12 ");    ;
-	      Out+=getContainer()+cutConeStr;
-	      System.addCell(MonteCarlo::Object(cellIndex++,
-					       PCut[i].mat,0.0,Out));
+	      HR=ModelSupport::getHeadRule(SMap,offset,"1 -11");    
+	      HR*=coreHR+cutCone;
+	      makeCell("PlaneCone",System,cellIndex++,PCut[i].layerMat,0.0,HR);
+
+	      HR=ModelSupport::getHeadRule(SMap,offset,"12 -2");    
+	      HR*=coreHR+cutCone;
+	      makeCell("PlaneCone",System,cellIndex++,PCut[i].layerMat,0.0,HR);
+
+	      HR=ModelSupport::getHeadRule(SMap,offset,"11 -12");    
+	      HR*=coreHR+cutCone;
+	      makeCell("PlaneCone",System,cellIndex++,PCut[i].layerMat,0.0,HR);
 	    }
 	  offset+=100;
 	}
@@ -455,7 +462,7 @@ void
 TS2ModifyTarget::createAll(Simulation& System,
 			   const attachSystem::FixedComp& FC,
 			   const long int sideIndex)
-/*!
+  /*!
     Generic function to create everything
     \param System :: Simulation item
     \param TB :: Target Base
@@ -473,7 +480,7 @@ TS2ModifyTarget::createAll(Simulation& System,
     throw ColErr::DynamicConv("FixedComp","TargetBase","");
   createSurfaces();
   addBoundarySurf(TB->getContainer());
-  createObjects(System,TB->getMainBody(),TB->getSkinBody());
+  createObjects(System,TB->getCell("MainCell"),TB->getCell("SkinCell"));
 
   return;
 }
