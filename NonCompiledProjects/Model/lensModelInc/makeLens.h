@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   lensModelInc/FlightCluster.h
+ * File:   lensModelInc/makeLens.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,51 +19,48 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef lensModel_FlightCluster_h
-#define lensModel_FlightCluster_h
+#ifndef lensSystem_makeLens_h
+#define lensSystem_makeLens_h
 
-class Simulation;
+class SimMCNP;
 
 namespace lensSystem
 {
-/*!
-  \class FlightCluster
-  \version 1.0
-  \author S. Ansell
-  \date January 2010
-  \brief Adds the ChipIR Guide
-*/
+  class siModerator;
+  class candleStick;
+  class layers;
+  class FlightCluster;
+  
+  /*!
+    \class makeLens
+    \version 1.0
+    \author S. Ansell
+    \date September 2011
+    \brief Contains and builds the lens primary model
+  */
 
-class FlightCluster 
+class makeLens
 {
  private:
 
-  const std::string keyName;
-  /// Actual flight lines
-  std::vector<moderatorSystem::FlightLine> FL;
-  std::vector<int> InsertCells;     ///< Cells to be inserted
+  std::shared_ptr<siModerator> SiModObj;            ///< Inner Silicon moderator
+  std::shared_ptr<candleStick> candleObj;           ///< candlestick holder
+  std::shared_ptr<layers> layerObj;                 ///< Layers of shielding
 
-  void populate(const FuncDataBase&);
-  void createLines(Simulation&,const attachSystem::FixedComp&,
-		   const int);
-
+  void setMaterials(const mainSystem::inputParam& IParam);
+  const FlightCluster& getFlightCluster() const;
+  
  public:
-
-  FlightCluster(const std::string&);
-  FlightCluster(const FlightCluster&);
-  FlightCluster& operator=(const FlightCluster&);
-  ~FlightCluster();
-
-  /// Clear cells
-  void clearCells() { InsertCells.clear(); }
-  void addInsertCell(const int);
-
-  const attachSystem::FixedComp& getLine(const size_t) const;
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const int);
+  
+  makeLens();
+  makeLens(const makeLens&);
+  makeLens& operator=(const makeLens&);
+  ~makeLens();
+  
+  void build(Simulation* SimPtr);
+  
 };
 
 }
 
 #endif
- 

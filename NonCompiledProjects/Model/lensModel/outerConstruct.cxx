@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MCNPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   lensModel/outerConstruct.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,8 +35,6 @@
 
 #include "FileReport.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Code.h"
 #include "varList.h"
@@ -62,19 +60,12 @@ outerConstruct(Simulation& System)
   // Add outer void
   System.addCell(MonteCarlo::Object(100,0,0.0,"-1"));
 
+  /*
   SimProcess::registerOuter(System,100,20000);  // Arm 
   SimProcess::registerOuter(System,100,60000);  // outer clearance [top]
   SimProcess::registerOuter(System,100,70000);  // outer clearance [top]
   SimProcess::registerOuter(System,100,80000);  // outer clearance [low]
   SimProcess::registerOuter(System,100,90000);  // outer clearance [low]
-
-  /*  SimProcess::registerOuter(System,100,30001);  // [Water]
-  SimProcess::registerOuter(System,100,30002);  // [Al]
-  SimProcess::registerOuter(System,100,30003);  // [DC]
-  SimProcess::registerOuter(System,100,30004);  // [LEAD]
-  SimProcess::registerOuter(System,100,30005);  // [BPOLY]
-  SimProcess::registerOuter(System,100,30006);  // [EPOXY]
-  SimProcess::registerOuter(System,100,30007);  // [POLY]
   */
   
   return;

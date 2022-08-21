@@ -629,7 +629,7 @@ ReflectRods::createObjects(Simulation& System)
       std::string CylB=
 	ModelSupport::getComposite(SMap,cylIndex," 7 -8 ")+plates;
 	
-      std::string Out=APtr->getInner()+
+      std::string Out=APtr->getInner().display()+
       	ModelSupport::getComposite(SMap,cylIndex+iLayer," 7 ");
 
       if (!APtr->isCut())

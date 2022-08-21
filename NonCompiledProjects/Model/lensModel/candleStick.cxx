@@ -3,7 +3,7 @@
  
  * File:   lensModel/candleStick.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "surfRegister.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
@@ -204,26 +202,24 @@ candleStick::populate(const FuncDataBase& Control)
   baseYoffset=Control.EvalVar<double>(keyName+"BaseYoffset");
 
   vsHeight=Control.EvalVar<double>(keyName+"VSHeight");
-  vsWidth=SimProcess::getDefVar<double>(Control,keyName+"VSWidth",baseWidth);
+  vsWidth=Control.EvalDefVar<double>(keyName+"VSWidth",baseWidth);
   vsDepth=Control.EvalVar<double>(keyName+"VSDepth");
   
   //
   // First we have to calculate the vsXYoffsets if no value found
   //  -- The stick is 
 
-  vsXoffset=SimProcess::getDefVar<double>(Control,keyName+"VSXoffset",
-					  baseXoffset+(vsDepth-baseLength)/2.0);
-  vsYoffset=
-    SimProcess::getDefVar<double>(Control,keyName+"VSYoffset",baseYoffset);
+  vsXoffset=Control.EvalDefVar<double>
+	(keyName+"VSXoffset",baseXoffset+(vsDepth-baseLength)/2.0);
+  vsYoffset=Control.EvalDefVar<double>
+    (keyName+"VSYoffset",baseYoffset);
 
   //
   // Flat section:
   //
-  flatWidth= SimProcess::getDefVar<double>
-    (Control,keyName+"FlatWidth",vsWidth);
+  flatWidth=Control.EvalDefVar<double>(keyName+"FlatWidth",vsWidth);
   flatLength=Control.EvalVar<double>(keyName+"FlatLength");
-  flatThick= SimProcess::getDefVar<double>
-    (Control,keyName+"FlatThick",vsDepth);
+  flatThick=Control.EvalDefVar<double>(keyName+"FlatThick",vsDepth);
   
   vacLowMX=Control.EvalVar<double>(keyName+"VacLowMX");
   vacLowPX=Control.EvalVar<double>(keyName+"VacLowPX");

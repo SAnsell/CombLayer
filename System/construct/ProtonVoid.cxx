@@ -156,10 +156,9 @@ ProtonVoid::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7");
   ExternalCut::setCutSurf("Boundary",HR);
   HR*=RSurfHR*TSurfHR;
-  ELog::EM<<"Proton surf == "<<TSurfHR<<ELog::endDiag;
+
   CellMap::makeCell("VoidCell",System,cellIndex++,0,0.0,HR);
   addOuterSurf(HR);
-  //  addBoundarySurf(-SMap.realSurf(buildIndex+7));    
 
   return;
 }

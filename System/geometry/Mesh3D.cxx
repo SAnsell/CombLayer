@@ -147,14 +147,30 @@ Mesh3D::setMesh(const Geometry::Vec3D& LowPt,
 		const std::array<size_t,3>& NPts)
   /*!
     Ugly way to set the mesh from the WWG constructor
-    \ap
+    
   */
 {
   NX=NPts[0];
   NY=NPts[1];
   NZ=NPts[2];
   Origin=LowPt;
-  
+
+  if (NX*NY*NZ != 0)
+    {
+      const Geometry::Vec3D XUnit(HighPt-LowPt);
+      const double xStep=XUnit.X()/static_cast<double>(NX);
+      const double yStep=XUnit.Y()/static_cast<double>(NY);
+      const double zStep=XUnit.Z()/static_cast<double>(NZ);
+      X.clear();
+      Y.clear();
+      Z.clear();
+      for(size_t i=0;i<NX;i++)
+	X.push_back(xStep*i);
+      for(size_t i=0;i<NY;i++)
+	Y.push_back(yStep*i);
+      for(size_t i=0;i<NZ;i++)
+	Z.push_back(zStep*i);
+    }  
   return;
 }
 

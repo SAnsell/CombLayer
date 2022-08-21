@@ -447,9 +447,10 @@ Intersection::isDirectionValid(const Geometry::Vec3D& Pt,
     \param Pt :: Point to test
     \param sideSet : surface which we consider Pt to be on 
      so their sign is to help validity
-    \param ExSN :: Excluded surface number [signed]
-    \retval 1 ::  Vec is within object 
-    \retval 0 :: Vec is outside object.
+     \param sideSet :: suppost to be on the side but not applied yet.
+     \param ExSN :: Excluded surface number [signed]
+     \retval 1 ::  Vec is within object 
+     \retval 0 :: Vec is outside object.
   */
 {
   if (!A || !B)  return 0;

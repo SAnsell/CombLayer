@@ -3,7 +3,7 @@
  
  * File:   delft/delftH2Moderator.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,8 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -328,6 +326,7 @@ delftH2Moderator::createObjects(Simulation& System)
   std::string BInner;
   std::string FInner;
 
+  HeadRule HR;
   if (backDir>0)
     {
       BOuter=ModelSupport::getComposite(SMap,buildIndex," -21 ");
@@ -367,7 +366,7 @@ delftH2Moderator::createObjects(Simulation& System)
   // Hydrogen:
   Out=ModelSupport::getComposite(SMap,buildIndex," -3 ");
   Out+=FInner+BInner;
-  addBoundarySurf(Out);
+  
   System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
   HCell=cellIndex-1;
 
@@ -380,7 +379,7 @@ delftH2Moderator::createObjects(Simulation& System)
 
   Out+=ModelSupport::getComposite(SMap,buildIndex," -13 ");
   Out+=FOuter+BOuter;
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
+  System.addCell(cellIndex++,alMat,modTemp,Out);
   return;
 }
 

@@ -304,18 +304,6 @@ Cannelloni::createLinks()
   return;
 }
 
-const Geometry::Vec3D&
-Cannelloni::getHexAxis(const size_t Index) const
-  /*!
-    Calculate the direction based on a Index 
-    \param Index :: Index value [0-6]
-    \return Vector for normal of plane
-  */
-{
-  static const Geometry::Vec3D* VUnit[3]={&HexHA,&HexHC,&HexHB};
-  return *(VUnit[Index % 3]);
-}
-
 
 void
 Cannelloni::createLinkSurf()
@@ -331,24 +319,42 @@ Cannelloni::createLinkSurf()
   std::map<int,constructSystem::hexUnit*>::iterator ac;
   std::map<int,constructSystem::hexUnit*>::iterator bc;
   int planeIndex(buildIndex+2001);
+  int cnt(20);
+ 
+  ELog::EM<<"HVec size= "<<HVec.size()<<ELog::endDiag;
   for(ac=HVec.begin();ac!=HVec.end();ac++)
     {
+      constructSystem::hexUnit* APtr = ac->second;
+      const Geometry::Vec3D AC=APtr->getCentre();
       // iterate over the index set [6]
+
       for(size_t i=0;i<6;i++)
 	{
-	  constructSystem::hexUnit* APtr = ac->second;
 	  if (!APtr->hasLink(i))
 	    {
 	      const int JA=ac->first+APtr->gridIndex(i);
 	      bc=HVec.find(JA);
 	      if (bc!=HVec.end())   // now construct link surface
 		{
-		  constructSystem::hexUnit* BPtr=bc->second; 
-		  ModelSupport::buildPlane
-		    (SMap,planeIndex,(APtr->getCentre()+BPtr->getCentre())/2.0,
-		     getHexAxis(i));
+		  constructSystem::hexUnit* BPtr=bc->second;
+		  const Geometry::Vec3D BC=BPtr->getCentre();
+		  // axis points out:
+		  const Geometry::Vec3D axis((BC-AC).unit());
+		  Geometry::Plane* PX=
+		  ModelSupport::buildPlane(SMap,planeIndex,(AC+BC)/2.0,axis);
+		  if (cnt<10)
+		    {
+		      ELog::EM<<"Index == "<<i<<ELog::endDiag;
+		      ELog::EM<<"A == "<<APtr->getCentre()<<ELog::endDiag;
+		      ELog::EM<<"B == "<<BPtr->getCentre()<<ELog::endDiag;
+		      ELog::EM<<"D == "<<
+			(BPtr->getCentre()-APtr->getCentre()).unit()
+			      <<ELog::endDiag;
+		      ELog::EM<<"Norma "<<PX->getNormal()<<ELog::endDiag;
+		      ELog::EM<<"Surface == "<<*PX<<ELog::endDiag;
+		      cnt++;
+		    }
 		  int surNum=SMap.realSurf(planeIndex);
-		  if (i>1 && i<5) surNum*=-1;
 		  BPtr->setSurf((i+3) % 6,surNum);
 		  APtr->setSurf(i,-surNum);
 		  planeIndex++;
@@ -373,13 +379,17 @@ Cannelloni::createInnerObjects(Simulation& System)
   CellMap::deleteCell(System,"MainCell");
 
   HeadRule HR;
+
   const HeadRule outerHR=
     ModelSupport::getHeadRule(SMap,buildIndex,"-7");
 
+  HeadRule excludeHR;
   std::map<int,constructSystem::hexUnit*>::const_iterator ac;
+  int cnt(0);
   for(ac=HVec.begin();ac!=HVec.end();ac++)
     {
       const constructSystem::hexUnit* APtr= ac->second;
+
       // Create Inner cylinder here just to help order stuff
       ModelSupport::buildCylinder
 	(SMap,cylIndex+7, APtr->getCentre(),Y,tubeRadius-tubeClad);
@@ -389,24 +399,25 @@ Cannelloni::createInnerObjects(Simulation& System)
 	ModelSupport::getHeadRule(SMap,buildIndex,cylIndex,"-7M 1 -2");
       HeadRule CylB=
 	ModelSupport::getHeadRule(SMap,buildIndex,cylIndex,"7M -8M 1 -2");
-
-      ELog::EM<<"Inner = "<<APtr->getShell()<<ELog::endDiag;
-
-      HR=HeadRule(APtr->getShell())*
-      	ModelSupport::getHeadRule(SMap,buildIndex,cylIndex,"1 -2 8M");
+      
+      HR=HeadRule(APtr->getInner());
+      HR*=
+	ModelSupport::getHeadRule(SMap,buildIndex,cylIndex,"1 -2 8M");
 
       if (!APtr->isComplete()) 
 	{
 	  CylA*=outerHR;
 	  CylB*=outerHR;
-	  HR=outerHR;
+	  HR*=outerHR;
 	}
       makeCell("WRod",System,cellIndex++,wMat,0.0,CylA);
       makeCell("TaClad",System,cellIndex++,taMat,0.0,CylB);
-
       makeCell("Outer",System,cellIndex++,waterMat,0.0,HR);
       cylIndex+=10;
-      return;
+
+      
+      cnt++;
+
     }
   return;
 }

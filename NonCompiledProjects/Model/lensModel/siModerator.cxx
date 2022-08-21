@@ -3,7 +3,7 @@
  
  * File:   lensModel/siModerator.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "surfRegister.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
@@ -55,6 +53,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "siModerator.h"
 
@@ -62,8 +61,8 @@ namespace lensSystem
 {
 
 siModerator::siModerator(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
-  populated(0)
+  attachSystem::ContainedComp(),attachSystem::FixedRotate(Key,6)
+
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -71,8 +70,8 @@ siModerator::siModerator(const std::string& Key) :
 {}
 
 siModerator::siModerator(const siModerator& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  populated(A.populated),modLength(A.modLength),
+  attachSystem::ContainedComp(A),attachSystem::FixedRotate(A),
+  modLength(A.modLength),
   modWidth(A.modWidth),modHeight(A.modHeight),topThick(A.topThick),
   baseThick(A.baseThick),sideThick(A.sideThick),
   siThick(A.siThick),polyThick(A.polyThick),temp(A.temp),
@@ -94,8 +93,7 @@ siModerator::operator=(const siModerator& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
-      populated=A.populated;
+      attachSystem::FixedRotate::operator=(A);
       modLength=A.modLength;
       modWidth=A.modWidth;
       modHeight=A.modHeight;
@@ -119,6 +117,10 @@ siModerator::populate(const FuncDataBase& Control)
     \param Control :: Variable table to use
   */
 {
+  ELog::RegMethod RegA("siModerator","populate");
+  
+  FixedRotate::populate(Control);
+  
   modHeight=Control.EvalVar<double>(keyName+"Height");
   modWidth=Control.EvalVar<double>(keyName+"Width");
   modLength=Control.EvalVar<double>(keyName+"Length");
@@ -183,42 +185,43 @@ siModerator::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("siModerator","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   // Virtual box:
-  Out=ModelSupport::getComposite(buildIndex,"11 -12 3 -4 15 -16");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(buildIndex,"11 -12 3 -4 15 -16");
+  addOuterSurf(HR);
 
   //  System.makeVirtual(cellIndex-1);         
   // Now create Z plane silicon/poly layers:
-  const std::string XYsides("1 -2 3 -4 ");
+  //  const std::string XYsides("1 -2 3 -4 ");
+  const HeadRule XYsides=
+    ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4");
 
   std::ostringstream cx;
   double Zpoint = -modHeight/2.0+polyThick;
   int nextType(0);          // 0 ==> next to add is poly / 1 next to add is poly
+
+  HeadRule prevSurf=HeadRule(SMap,buildIndex,5);
+  
   int planeIndex(101);      // Plane to add
-  int prevIndex(5);
   int mat[2]={polyMat,siMat};
   while(Zpoint<modHeight/2.0-siThick)
     {
-      cx.str("");
-      cx<<prevIndex<<" "<<(-planeIndex);
-      Out=ModelSupport::getComposite(buildIndex,XYsides+cx.str());
-      System.addCell(MonteCarlo::Object(cellIndex++,mat[nextType],temp,Out));
-      prevIndex=planeIndex;
-      planeIndex++;
+      const HeadRule nextSurf(SMap,buildIndex,-planeIndex);
+      HR=XYsides*nextSurf*prevSurf;
+      System.addCell(cellIndex++,mat[nextType],temp,HR);      
+      prevSurf=nextSurf.complement();
+      planeIndex++;     
       nextType=1-nextType;
       Zpoint+=(nextType) ? siThick : polyThick;      
     }
+  HR=XYsides*prevSurf*HeadRule(SMap,buildIndex,-6);
   // Last cell that hits the outside limit:
-  cx.str("");
-  cx<<prevIndex<<" -6";
-  Out=ModelSupport::getComposite(buildIndex,XYsides+cx.str());
-  System.addCell(MonteCarlo::Object(cellIndex++,mat[nextType],temp,Out));
+  System.addCell(cellIndex++,mat[nextType],temp,HR);
 
   // Add AL surrounds:
-  Out=ModelSupport::getComposite(buildIndex,
-				 "11 -12 3 -4 15 -16 ( -1 : 2 : -5 : 6 )");
-  System.addCell(MonteCarlo::Object(cellIndex++,surroundMat,temp,Out));
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"11 -12 3 -4 15 -16 (-1:2:-5:6)");
+  System.addCell(cellIndex++,surroundMat,temp,HR);
   return; 
 }
 

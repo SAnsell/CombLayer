@@ -3,7 +3,7 @@
  
  * File:   Main/lens.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,64 +35,36 @@
 #include <array>
 
 #include "Exception.h"
-#include "MersenneTwister.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "surfRegister.h"
-#include "objectRegister.h"
 #include "InputControl.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "inputParam.h"
-#include "Surface.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
-#include "Line.h"
-#include "Rules.h"
+#include "surfIndex.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
-#include "surfIndex.h"
-#include "HeadRule.h"
-#include "Object.h"
 #include "MainProcess.h"
-#include "SimProcess.h"
+#include "MainInputs.h"
 #include "SimInput.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-#include "ContainedComp.h"
-#include "ContainedGroup.h"
-#include "LinkUnit.h"
-#include "FixedComp.h"
-#include "mainJobs.h"
 #include "Volumes.h"
-#include "DefPhysics.h"
-#include "TallySelector.h"
-
-#include "LensSource.h"
-#include "FlightLine.h"
-#include "FlightCluster.h"
-#include "LensTally.h"
-#include "makeLens.h"
-
-
 #include "variableSetup.h"
 
-MTRand RNG(12345UL);
+// #include "LensSource.h"
+// #include "FlightLine.h"
+// #include "FlightCluster.h"
+// #include "LensTally.h"
+#include "makeLens.h"
 
 ///\cond STATIC
 namespace ELog 
 {
   ELog::OutputLog<EReport> EM;
-  ELog::OutputLog<FileReport> FM("Spectrum.log");
   ELog::OutputLog<FileReport> RN("Renumber.txt");   ///< Renumber
   ELog::OutputLog<StreamReport> CellM;
 }
@@ -108,8 +80,6 @@ main(int argc,char* argv[])
   std::string Oname;
   std::vector<std::string> Names;  
 
-
-
   Simulation* SimPtr(0);
   try
     {
@@ -119,7 +89,7 @@ main(int argc,char* argv[])
       mainSystem::inputParam IParam;
       createLensInputs(IParam);
 
-            
+      mainSystem::setMaterialsDataBase(IParam);
       SimPtr=createSimulation(IParam,Names,Oname);
       if (!SimPtr) return -1;
       
@@ -127,24 +97,18 @@ main(int argc,char* argv[])
       setVariable::LensModel(SimPtr->getDataBase());
       InputModifications(SimPtr,IParam,Names);
       mainSystem::setVariables(*SimPtr,IParam,Names);
-      mainSystem::setMaterialsDataBase(IParam);
-
-      Simulation* SimPtr=createSimulation(IParam,Names,Oname);
-      if (!SimPtr) return -1;
-
 	  
       lensSystem::makeLens lensObj;
       lensObj.build(SimPtr);
 
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
-      lensObj.createTally(*SimPtr,IParam);
-
-
+      //      lensObj.createTally(*SimPtr,IParam);
       
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
+
       ModelSupport::calcVolumes(SimPtr,IParam);
-      ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");
-      
+      SimPtr->objectGroups::write("ObjectRegister.txt",
+				  IParam.flag("fullOR"));
     }
   catch (ColErr::ExitAbort& EA)
     {
@@ -165,7 +129,6 @@ main(int argc,char* argv[])
     }
   
   delete SimPtr;
-  ModelSupport::objectRegister::Instance().reset();
   ModelSupport::surfIndex::Instance().reset();
   return exitFlag;
 }

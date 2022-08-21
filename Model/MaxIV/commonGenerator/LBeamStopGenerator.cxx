@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonBeam/LBeamStopGenerator.cxx
+ * File:   commonGenerator/LBeamStopGenerator.cxx
  *
- * Copyright (c) 2004-2021 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,9 +53,8 @@ LBeamStopGenerator::LBeamStopGenerator() :
   length(50.0),innerVoidLen(15.0),
   innerLength(5.0),innerRadius(4.0),
   midVoidLen(7.5),midLength(22.5),
-  midRadius(7.0),outerRadius(20.0),
-  midNLayers(1),
-  outerNLayers(1),
+  midRadius(7.0),midNLayers(1),
+  outerRadius(20.0),outerNLayers(1),
   voidMat("Void"),innerMat("Graphite"),
   midMat("Poly"),outerMat("Stainless304L")
   /*!

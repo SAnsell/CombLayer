@@ -118,8 +118,8 @@ class gridUnit
     { return (boundaryClosed.first && boundaryClosed.second); }
   int clearBoundary(const size_t);
   
-  virtual std::string getShell() const;
-  virtual std::string getInner() const;
+  virtual HeadRule getShell() const;
+  virtual HeadRule getInner() const;
 
   void write(std::ostream&) const;
 

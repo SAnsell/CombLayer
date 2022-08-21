@@ -148,34 +148,6 @@ writeIndexSimPHITS(SimPHITS& System,const std::string& FName,
 }
 
 
-template<typename T,typename U>
-T
-getDefIndexVar(const FuncDataBase& Control,
-	       const std::string& FName,
-	       const std::string& BName,
-	       const U& index,
-	       const T& defVal)
-  /*!
-    Get an item based on the FName+[index]+BName 
-    with interal index. It adds a default value to obtain
-    \tparam T :: Type of variable (int/double etc)
-    \param Control :: Control name
-    \param FName :: Forward name
-    \param BName :: Back name
-    \param index :: index value
-    \param defVal :: default value to return if no variable.
-    \return Value found/ defVal
-  */
-{
-  ELog::RegMethod RegA("SimProcess","getDefIndexVar");
-  std::ostringstream cx;
-  cx<<FName<<index<<BName;
-  if (Control.hasVariable(cx.str()))
-    return Control.EvalVar<T>(cx.str());
-  if (Control.hasVariable(FName+BName))
-    return Control.EvalVar<T>(FName+BName);
-  return defVal;
-}
 
 
 
@@ -202,33 +174,5 @@ registerOuter(Simulation& System,const int cellNum,const int vNum)
 
 
 ///\cond TEMPLATE
-
-
-template 
-int
-getDefIndexVar(const FuncDataBase&,const std::string&,
-	       const std::string&,const int&,const int&);
-template 
-double
-getDefIndexVar(const FuncDataBase&,const std::string&,
-	       const std::string&,const int&,const double&);
-template 
-int
-getDefIndexVar(const FuncDataBase&,const std::string&,
-	       const std::string&,const size_t&,const int&);
-template 
-double
-getDefIndexVar(const FuncDataBase&,const std::string&,
-	       const std::string&,const size_t&,const double&);
-
-
-// template 
-// int
-// getDefVar(const FuncDataBase&,const std::string&,const int&);
-
-// template 
-// double
-// getDefVar(const FuncDataBase&,const std::string&,const double&);
-
 
 }  // NAMESPACE SimProcess

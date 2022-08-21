@@ -61,37 +61,15 @@
 namespace lensSystem
 {
 
-FlightCluster::FlightCluster(const std::string& Key) :  
-  keyName(Key)
+FlightCluster::FlightCluster(const std::string& Key) :
+  attachSystem::FixedRotate(Key,6),
+  attachSystem::ContainedComp()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
 {}
 
-FlightCluster::FlightCluster(const FlightCluster& A) : 
-  keyName(A.keyName),FL(A.FL),InsertCells(A.InsertCells)
-  /*!
-    Copy constructor
-    \param A :: FlightCluster to copy
-  */
-{}
-
-FlightCluster&
-FlightCluster::operator=(const FlightCluster& A)
-  /*!
-    Assignment operator
-    \param A :: FlightCluster to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      FL=A.FL;
-      InsertCells=A.InsertCells;
-    }
-  return *this;
-}
 
 FlightCluster::~FlightCluster() 
   /*!
@@ -108,13 +86,16 @@ FlightCluster::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("FlightCluster","populate");
-
+  
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  
   const size_t flightN=Control.EvalVar<size_t>(keyName+"Number");
   for(size_t i=0;i<flightN;i++)
     {
-      std::ostringstream cx;
-      cx<<"FL"<<i+1;
-      FL.push_back(moderatorSystem::FlightLine(cx.str()));
+      const std::string FLname="FL"+std::to_string(i+1);
+      FL.push_back(new moderatorSystem::FlightLine(FL));
+      OR.register(FL.back());
     }
 
   return;

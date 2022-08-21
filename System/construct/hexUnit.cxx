@@ -36,6 +36,7 @@
 #include "FileReport.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
+#include "HeadRule.h"
 #include "gridUnit.h"
 #include "hexUnit.h"
 

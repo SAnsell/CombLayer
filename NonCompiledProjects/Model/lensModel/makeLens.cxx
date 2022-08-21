@@ -95,32 +95,6 @@ makeLens::makeLens() :
   OR.addObject(layerObj);
 }
 
-makeLens::makeLens(const makeLens& A) : 
-  SiModObj(new siModerator(*A.SiModObj)),
-  candleObj(new candleStick(*A.candleObj)),
-  layerObj(new layers(*A.layerObj))
-  /*!
-    Copy constructor
-    \param A :: makeLens to copy
-  */
-{}
-
-makeLens&
-makeLens::operator=(const makeLens& A)
-  /*!
-    Assignment operator
-    \param A :: makeLens to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      *SiModObj=*A.SiModObj;
-      *candleObj=*A.candleObj;
-      *layerObj=*A.layerObj;
-    }
-  return *this;
-}
 
 makeLens::~makeLens()
   /*!
@@ -158,58 +132,13 @@ makeLens::build(Simulation* SimPtr)
   SiModObj->createAll(*SimPtr,World::masterOrigin(),0);
   candleObj->setBasePoint(SiModObj->getLinkPt(5));
   candleObj->createAll(*SimPtr,*SiModObj,0);
-  //  candleObj->specialExclude(*SimPtr,74123);
-  
+
+  layerObj->setCutSurf("FrontCandleStick",*candleObj,2);
+  layerObj->setCutSurf("CandleStickOuter",candleObj->getOuterSurf());
+  layerObj->setCutSurf("CandleStickTop",candleObj->getTopExclude());
   layerObj->build(*SimPtr,*candleObj);
   return;
 }
-
-const FlightCluster&
-makeLens::getFlightCluster() const 
-  /*!
-    Access the flight cluster
-    \return FlightCluster object
-  */
-{
-  ELog::RegMethod RegA("makeLens","getFC");
-  if (!layerObj)
-    throw ColErr::EmptyValue<void>("LayerObject ");
- 
-  return layerObj->getFlightCluster();
-}
-
-void
-makeLens::createTally(SimMCNP& System,
-		      const mainSystem::inputParam& IParam)
-  /*!
-    Create all the tallies for lens
-    \param System :: Simulation 
-    \param IParam :: Input paramter 
-  */
-{
-  ELog::RegMethod RegA("makeLens","createTally");
   
-  const size_t NSTally=IParam.setCnt("surfTally");
-  //  const size_t NEng=IParam.setCnt("tallyEnergy");
-  
-  size_t FL;
-  double Dist;
-  for(size_t i=0;i<NSTally;i++)
-    {
-      std::string A=
-	IParam.getValue<std::string>("surfTally",i,0);
-      std::string B=
-	IParam.getValue<std::string>("surfTally",i,1);
-      if ( StrFunc::convert(A,FL) && StrFunc::convert(B,Dist) )
-	{
-	  ELog::EM<<"Creating tally FL"<<FL+1
-		  <<" at "<<Dist<<" cm "<<ELog::endDiag;
-	  lensSystem::addSurfTally(System,getFlightCluster(),FL,Dist);
-	}
-    }
-
-  return;
-}
-
 
 }   // NAMESPACE lensSystem

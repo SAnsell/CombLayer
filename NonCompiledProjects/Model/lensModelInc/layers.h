@@ -2,8 +2,8 @@
   CombLayer : MCNP(X) Input builder
  
  * File:   lensModelInc/layers.h
-*
- * Copyright (c) 2004-2021 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,16 +37,17 @@ class siModerator;
   \brief Layers surrounding the LENS moderator space
 */
 
- class layers :public attachSystem::ContainedComp,
-  public attachSystem::FixedUnit
+ class layers :
+    public attachSystem::ContainedComp,
+    public attachSystem::FixedRotate,
+    public attachSystem::ExternalCut
 {
  private:
 
-  int populated;                ///< populated or not
   int innerCompSurf;            ///< InnerCompSurf;
 
-  ProtonFlight PA;              ///< Proton flight line
-  FlightCluster flightCluster;             ///< Outgoing Flight Cluster
+  std::shared_ptr<ProtonFlight> PA;                ///< Proton flight line
+  std::shared_ptr<FlightCluster> flightCluster;    ///< Outgoing Flight Cluster
 
   // Master radii
   double waterRad;            ///< Water radius

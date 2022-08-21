@@ -79,7 +79,6 @@ class Cannelloni :
   double externTemp;            ///< Pressure temperature
 
   void clearHVec();
-  const Geometry::Vec3D& getHexAxis(const size_t) const;
   void createCentres(const Geometry::Plane*);
 
   void createLinkSurf();

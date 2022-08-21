@@ -44,12 +44,11 @@ namespace lensSystem
   \brief Inner construct of lens
  */
 
-class siModerator : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+class siModerator :
+    public attachSystem::ContainedComp,
+    public attachSystem::FixedRotate
 {
  private:
-
-  int populated;                ///< populated or not
 
   double modLength;        ///< Moderator length
   double modWidth;         ///< Moderator width
@@ -78,7 +77,9 @@ class siModerator : public attachSystem::ContainedComp,
   siModerator& operator=(const siModerator&);
   ~siModerator() {}  ///< Destructor
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+  using FixedComp::createAll;
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
   /// lowest Point
   double getDepth() const { return -baseThick-modHeight/2.0; }

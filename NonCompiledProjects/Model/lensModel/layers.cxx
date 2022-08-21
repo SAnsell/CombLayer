@@ -40,8 +40,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "surfRegister.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "varList.h"
@@ -58,7 +56,6 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedUnit.h"
 #include "FixedRotate.h"
 #include "ExternalCut.h"
 #include "ContainedComp.h"
@@ -78,91 +75,20 @@ namespace lensSystem
 
 layers::layers(const std::string& Key) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedUnit(Key,3),
-  innerCompSurf(0),
-  PA("proton"),flightCluster("flight")
+  attachSystem::FixedRotate(Key,6),
+  PA(new ProtonLine("proton")),
+  flightCluster(new FlightCluser("flight"))
   /*!
     Constructor
     \param Key :: KeyName
   */
-{}
-
-layers::layers(const layers& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedUnit(A),
-  innerCompSurf(A.innerCompSurf),PA(A.PA),
-  flightCluster(A.flightCluster),waterRad(A.waterRad),
-  DCRad(A.DCRad),leadRad(A.leadRad),
-  bPolyRad(A.bPolyRad),epoxyRad(A.epoxyRad),outPolyRad(A.outPolyRad),
-  outVoidRad(A.outVoidRad),waterAlThick(A.waterAlThick),
-  waterHeight(A.waterHeight),
-  waterDepth(A.waterDepth),DCHeight(A.DCHeight),DCDepth(A.DCDepth),
-  leadHeight(A.leadHeight),leadDepth(A.leadDepth),bPolyHeight(A.bPolyHeight),
-  bPolyDepth(A.bPolyDepth),epoxyHeight(A.epoxyHeight),epoxyDepth(A.epoxyDepth),
-  outPolyHeight(A.outPolyHeight),outPolyDepth(A.outPolyDepth),
-  wedgeWidth(A.wedgeWidth),wedgeHeight(A.wedgeHeight),
-  nWedge(A.nWedge),wedgeLiner(A.wedgeLiner),wedgeLinerMat(A.wedgeLinerMat),
-  waterMat(A.waterMat),alMat(A.alMat),DCMat(A.DCMat),leadMat(A.leadMat),
-  bPolyMat(A.bPolyMat),epoxyMat(A.epoxyMat),outPolyMat(A.outPolyMat)
-  /*!
-    Copy constructor
-    \param A :: layers to copy
-  */
 {
-  wedgeAngleXY[0]=A.wedgeAngleXY[0];      
-  wedgeAngleXY[1]=A.wedgeAngleXY[1];
-}
-
-layers&
-layers::operator=(const layers& A)
-  /*!
-    Assignment operator
-    \param A :: layers to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
-      innerCompSurf=A.innerCompSurf;
-      PA=A.PA;
-      flightCluster=A.flightCluster;
-      waterRad=A.waterRad;
-      DCRad=A.DCRad;
-      leadRad=A.leadRad;
-      bPolyRad=A.bPolyRad;
-      epoxyRad=A.epoxyRad;
-      outPolyRad=A.outPolyRad;
-      outVoidRad=A.outVoidRad;
-      waterAlThick=A.waterAlThick;
-      waterHeight=A.waterHeight;
-      waterDepth=A.waterDepth;
-      DCHeight=A.DCHeight;
-      DCDepth=A.DCDepth;
-      leadHeight=A.leadHeight;
-      leadDepth=A.leadDepth;
-      bPolyHeight=A.bPolyHeight;
-      bPolyDepth=A.bPolyDepth;
-      epoxyHeight=A.epoxyHeight;
-      epoxyDepth=A.epoxyDepth;
-      outPolyHeight=A.outPolyHeight;
-      outPolyDepth=A.outPolyDepth;
-      wedgeWidth=A.wedgeWidth;
-      wedgeHeight=A.wedgeHeight;
-      wedgeAngleXY[0]=A.wedgeAngleXY[0];      
-      wedgeAngleXY[1]=A.wedgeAngleXY[1];
-      nWedge=A.nWedge;
-      wedgeLiner=A.wedgeLiner;
-      wedgeLinerMat=A.wedgeLinerMat;
-      waterMat=A.waterMat;
-      alMat=A.alMat;
-      DCMat=A.DCMat;
-      leadMat=A.leadMat;
-      bPolyMat=A.bPolyMat;
-      epoxyMat=A.epoxyMat;
-      outPolyMat=A.outPolyMat;
-    }
-  return *this;
+   ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  
+   OR.addObject(PA);
+   OR.addObject(flightCluster);
+ 
 }
 
   
@@ -174,9 +100,13 @@ layers::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("layers","populate");
+
+  FixedRotate::populate(Control);
   
-  flightCluster.clearCells();
-  waterRad=Control.EvalVar<double>(keyName+"WaterRadius");
+
+ flightCluster.clearCells();
+
+ waterRad=Control.EvalVar<double>(keyName+"WaterRadius");
   DCRad=Control.EvalVar<double>(keyName+"DCRadius");
   leadRad=Control.EvalVar<double>(keyName+"LeadRadius");
   bPolyRad=Control.EvalVar<double>(keyName+"BPolyRadius");
@@ -303,8 +233,7 @@ layers::createSurfaces()
 }
 
 void 
-layers::createObjects(Simulation& System,
-		      const candleStick& CS)
+layers::createObjects(Simulation& System)
   /*!
     Create all the objects
     \param System :: Simulation
@@ -315,44 +244,47 @@ layers::createObjects(Simulation& System,
 
   std::string Wedge,Out;
   // Build Wedge Takeout
-  Wedge=ModelSupport::getComposite(SMap,buildIndex,"-127 ")+
-    CS.getLinkString(2);
+
+  const HeadRule WedgeHR=getRule("FrontCandleStick")*
+    ModelSupport::getHeadRule(SMap,buildIndex,"-127");
+  const HeadRule CSouter=getRule("CandleStickOuter");
+  const HeadRule CStop=getRule("CandleStickTop");
   
   // Build Wedge units [Always build 1]
   for(int i=0;i<=static_cast<int>(nWedge);i++)
     {
+      ELog::EM<<"Build = "<<buildIndex<<ELog::endDiag;
       const unsigned int uI(static_cast<unsigned int>(i));
-      Out=ModelSupport::getComposite(SMap,buildIndex+i*10,"203 -204 205 -206 ");
-      Out+=Wedge;
+      HR=ModelSupport::getHeadRule(SMap,buildIndex+i*10,"203 -204 205 -206");
+      HR*=WedgeHR;
       if (i!=static_cast<int>(nWedge))
-	Out+=ModelSupport::getComposite(SMap,buildIndex+(i+1)*10,
+	HR*=ModelSupport::getHeadRule(SMap,buildIndex+(i+1)*10,
 					"(-203:204:-205:206) ");
 
-      System.addCell(MonteCarlo::Object(cellIndex++,
-				       wedgeLinerMat[uI],0.0,Out));
+      System.addCell(cellIndex++,wedgeLinerMat[uI],0.0,HR);
     }
   
-  Wedge+=ModelSupport::getComposite(SMap,buildIndex," 203 -204 205 -206 ");  
-
+  WedgeHR*=ModelSupport::getComposite(SMap,buildIndex,"203 -204 205 -206");  
+  WedgeHR.makeComplement();
   // Build objects:
   // Inner water
-  Out=ModelSupport::getComposite(SMap,buildIndex,"105 -106 -107 ");  
-  Out+=CS.getTopExclude();
-  Out+="#("+Wedge+")";
+  HR*=ModelSupport::getHeadRule(SMap,buildIndex,"105 -106 -107 ");  
+  HR*=CStop;
+  HR*=WedgeHR;
   System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
   //  FC.addInsertCell(cellIndex-1);
   PA.addAllInsertCell(cellIndex-1);
 
   // Outer Al :
-  Out=ModelSupport::getComposite(SMap,buildIndex,"115 -116 -117 (-105:106:107) ");
-  Out+=CS.getTopExclude();
-  Out+="#("+Wedge+")";
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"115 -116 -117 (-105:106:107)");
+  HR*=CStop;
+  HR*=WedgeHR;
   flightCluster.addInsertCell(cellIndex);
   PA.addInsertCell("line",cellIndex);
   System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
 
   // DECOUPLER:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"125 -126 -127 (-115 : 116 : 117) ");
+  Out=ModelSupport::getHeadRule(SMap,buildIndex,"125 -126 -127 (-115 : 116 : 117) ");
   //				 "(-71 : 72 :-73 : 74 : -115 )");
   Out+=CS.getExclude()+CS.getHeadExclude();
   Out+="#("+Wedge+")";
@@ -361,7 +293,7 @@ layers::createObjects(Simulation& System,
   PA.addInsertCell("line",cellIndex-1);
 
   // LEAD:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"135 -136 -137 (-125 : 126 : 127)");
+  Out=ModelSupport::getHeadRule(SMap,buildIndex,"135 -136 -137 (-125 : 126 : 127)");
   // (56 : -71 : 72 : -73 : 74 : -125)");    
   Out+=CS.getExclude()+CS.getHeadExclude();
   System.addCell(MonteCarlo::Object(cellIndex++,leadMat,0.0,Out));
@@ -369,7 +301,7 @@ layers::createObjects(Simulation& System,
   PA.addInsertCell("line",cellIndex-1);
 
   // BPOLY
-  Out= ModelSupport::getComposite(SMap,buildIndex,"145 -146 -147 "
+  Out= ModelSupport::getHeadRule(SMap,buildIndex,"145 -146 -147 "
 				  "(-135 : 136 : 137) ");
   Out+=CS.getExclude()+CS.getHeadExclude();
   System.addCell(MonteCarlo::Object(cellIndex++,bPolyMat,0.0,Out));  
@@ -377,7 +309,7 @@ layers::createObjects(Simulation& System,
   PA.addInsertCell("line",cellIndex-1);
 
   // EPOXY
-  Out= ModelSupport::getComposite(SMap,buildIndex,"155 -156 -157 "
+  Out= ModelSupport::getHeadRule(SMap,buildIndex,"155 -156 -157 "
 				  "(-145 : 146 : 147) ");
   Out+=CS.getExclude();
   System.addCell(MonteCarlo::Object(cellIndex++,epoxyMat,0.0,Out));
@@ -385,28 +317,28 @@ layers::createObjects(Simulation& System,
   PA.addInsertCell("line",cellIndex-1);
 
   // OUT POLY
-  Out=ModelSupport::getComposite(SMap,buildIndex,"165 -166 -167 "
-				 "(-155 : 156 : 157) ");
-  Out+=CS.getExclude();
-  System.addCell(MonteCarlo::Object(cellIndex++,outPolyMat,0.0,Out));
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"165 -166 -167 (-155 : 156 : 157)");
+  HR*=CSouter
+  System.addCell(cellIndex++,outPolyMat,0.0,HR);
   flightCluster.addInsertCell(cellIndex-1);
   PA.addInsertCell("line",cellIndex-1);
 
   // OUT VOID
-  Out=ModelSupport::getComposite(SMap,buildIndex,"165 -166 -177 167");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"165 -166 -177 167");
+  System.addCell(cellIndex++,0,0.0,HR);
   flightCluster.addInsertCell(cellIndex-1);
   PA.addInsertCell("line",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"165 -166 -177 ");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"165 -166 -177");
+  addOuterSurf(HR);
   return;
 }
 
 void
 layers::createLinks(const attachSystem::FixedComp& CS)
   /*!
-    Create teh links. This is really really ugly since
+    Create the links. This is really really ugly since
     it uses the Candle stick to get the dividing surface
     AND y is positive in both directions [is this right?]
     \param CS :: CandleStick
