@@ -353,7 +353,6 @@ TS2FlatTarget::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "331 -207 (-101 : (201 -202))");
   addOuterSurf(Out);
-  addBoundarySurf(-SMap.realSurf(buildIndex+101));    
   return;
 }
 
@@ -408,19 +407,6 @@ TS2FlatTarget::layerProcess(Simulation& System)
       DA.activeDivide(System);
       cellIndex=DA.getCellNum();
     }
-  return;
-}
-
-
-void
-TS2FlatTarget::addInnerBoundary(attachSystem::ContainedComp& CC) const
-  /*!
-    Adds the inner W boundary to an object
-    \param CC :: Object to boundary to 
-   */
-{
-  ELog::RegMethod RegA("TS2FlatTarget","addInnerBoundary");
-  CC.addBoundarySurf(-SMap.realSurf(buildIndex+27));
   return;
 }
 

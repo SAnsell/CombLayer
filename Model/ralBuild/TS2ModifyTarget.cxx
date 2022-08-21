@@ -345,8 +345,7 @@ TS2ModifyTarget::createObjects(Simulation& System,
 	  if (CCut[i].dist<0)
 	    cx<< CCut[i].cutFlagB()*SMap.realSurf(offset+18)<<" ";
 	  Out=cx.str()+coreHR.display();
-	  System.addCell(MonteCarlo::Object
-			 (cellIndex++,CCut[i].layerMat,0.0,Out));
+	  System.addCell(cellIndex++,CCut[i].layerMat,0.0,Out);
 	  
 	  cx.str("");
 	  cx<<" "<< -CCut[i].cutFlagA()*SMap.realSurf(offset+17)
@@ -397,15 +396,15 @@ TS2ModifyTarget::createObjects(Simulation& System,
 	  else
 	    {
 	      HR=ModelSupport::getHeadRule(SMap,offset,"1 -11");    
-	      HR*=coreHR+cutCone;
+	      HR*=coreHR*cutCone;
 	      makeCell("PlaneCone",System,cellIndex++,PCut[i].layerMat,0.0,HR);
 
 	      HR=ModelSupport::getHeadRule(SMap,offset,"12 -2");    
-	      HR*=coreHR+cutCone;
+	      HR*=coreHR*cutCone;
 	      makeCell("PlaneCone",System,cellIndex++,PCut[i].layerMat,0.0,HR);
 
 	      HR=ModelSupport::getHeadRule(SMap,offset,"11 -12");    
-	      HR*=coreHR+cutCone;
+	      HR*=coreHR*cutCone;
 	      makeCell("PlaneCone",System,cellIndex++,PCut[i].layerMat,0.0,HR);
 	    }
 	  offset+=100;

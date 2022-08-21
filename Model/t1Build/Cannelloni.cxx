@@ -278,7 +278,7 @@ Cannelloni::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-37 31 -32");
   addOuterSurf(HR);
 
-  addBoundarySurf(buildIndex+7);
+  setCutSurf("Boundary",-(buildIndex+7));
 
   return;
 }
@@ -451,7 +451,7 @@ Cannelloni::createCentres(const Geometry::Plane* PX)
   int step(0);
 
   clearHVec();
-
+  const HeadRule& boundary=getRule("Boundary");
   while(acceptFlag)
     {
       acceptFlag=0;
@@ -466,7 +466,8 @@ Cannelloni::createCentres(const Geometry::Plane* PX)
 		MonteCarlo::LineIntersectVisit LI(C,Y);
 		const Geometry::Vec3D TPoint = LI.getPoint(PX)+
 		  Y*(Geometry::zeroTol*10.0);
-		const bool cFlag=isBoundaryValid(TPoint);
+
+		const bool cFlag=boundary.isValid(TPoint);		
 		if (cFlag)
 		  {
 		    HVec.insert(MTYPE::value_type
