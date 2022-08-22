@@ -159,8 +159,8 @@ ReflectorAssembly::createObjects(Simulation& System)
   const int refCell=RefObj->getCell("Reflector");
 
   TarObj->addInsertCell(refCell);  
-  TarObj->setCutSurf("FrontPlate",RefObj->getSurf("CornerB"));
-  TarObj->setCutSurf("BackPlate",RefObj->getSurf("CornerA"));
+  TarObj->setCutSurf("FrontPlate",RefObj->getSurf("CornerA"));
+  TarObj->setCutSurf("BackPlate",RefObj->getSurf("CornerB"));
   TarObj->createAll(System,*this,0);
   TarObj->addProtonLineInsertCell(RefObj->getCell("Reflector"));
   TarObj->addProtonLine(System);

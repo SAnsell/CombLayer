@@ -57,7 +57,7 @@ class OrthoInsert :
   int orthoMat;             ///< Material
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const Hydrogen&,
+  void setModeratorCentres(const Hydrogen&,
 			const Groove&);
 
   void createSurfaces(const Hydrogen&);

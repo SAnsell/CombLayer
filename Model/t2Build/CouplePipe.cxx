@@ -3,7 +3,7 @@
  
  * File:   moderator/CouplePipe.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -172,26 +172,6 @@ CouplePipe::populate(const FuncDataBase& Control)
 }
   
 
-void
-CouplePipe::createUnitVector(const attachSystem::FixedComp& CUnit,
-			     const size_t sideIndex)
-  /*!
-    Create the unit vectors
-    - Y Points towards NIMROD
-    - X Across the moderator
-    - Z up (towards the target)
-    \param CUnit :: Fixed unit that it is connected to 
-    \param sideIndex :: Connection point to use as origin
-  */
-{
-  ELog::RegMethod RegA("CouplePipe","createUnitVector");
-
-  FixedComp::createUnitVector(CUnit);
-  const attachSystem::LinkUnit& LU=CUnit.getLU(sideIndex);
-  Origin=LU.getConnectPt();
-
-  return;
-}
 
 void 
 CouplePipe::insertOuter(Simulation& System,

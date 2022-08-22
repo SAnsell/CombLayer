@@ -617,7 +617,6 @@ TS2target::addProtonLine(Simulation& System)
 
   PLine->setCutSurf("TargetSurf",*this,"TargetFront");
   PLine->setCutSurf("RefBoundary",getRule("FrontPlate"));
-  ELog::EM<<"FRont == "<<getRule("FrontPlate")<<ELog::endDiag;
   PLine->createAll(System,*this,3);
   createBeamWindow(System,-4);
 

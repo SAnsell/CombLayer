@@ -308,17 +308,17 @@ CH4Moderator::createObjects(Simulation& System)
 
   // Inner al
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 -18 13 -14 15 -16 "
-				 " (7:8:-3:4:-5:6) ");
+				 " (7:8:-3:4:-5:6)");
   makeCell("InnerAl",System,cellIndex++,alMat,ch4Temp,HR);
 
   // Vac layer
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"23 -24 -27 -28 25 -26 "
-				 " (17:18:-13:14:-15:16) ");
+				 " (17:18:-13:14:-15:16)");
   makeCell("VacLayer",System,cellIndex++,0,0.0,HR);
 
   // Outer Al
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"33 -34 -37 -38 35 -36 "
-				 " (-23:24:27:28:-25:26) ");  
+				 " (-23:24:27:28:-25:26)");  
   makeCell("OuterAl",System,cellIndex++,alMat,0.0,HR);
 
   // Outer Al

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   moderatorInc/CouplePipe.h
-*
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * File:   t2BuildInc/CouplePipe.h
+ *
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,8 +72,6 @@ class CouplePipe :
   double hThick;            ///< Wall thickness
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const size_t);
-
   void insertPipes(Simulation&,const VacVessel&);
   void insertOuter(Simulation&,const VacVessel&);
 

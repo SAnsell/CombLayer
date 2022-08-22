@@ -148,9 +148,9 @@ OrthoInsert::populate(const FuncDataBase& Control)
   
 
 void
-OrthoInsert::createUnitVector(const Hydrogen& HUnit,
-			      const Groove& GUnit)
-  /*!
+OrthoInsert::setModeratorCentres(const Hydrogen& HUnit,
+				 const Groove& GUnit)
+/*!
     Create the unit vectors
     - Y Points down the OrthoInsert direction
     - X Across the OrthoInsert
@@ -242,7 +242,7 @@ OrthoInsert::build(Simulation& System,
   setCutSurf("HCell",HUnit.getCellHR(System,"HCell"));
   populate(System.getDataBase());
 
-  createUnitVector(HUnit,GUnit);
+  setModeratorCentres(HUnit,GUnit);
   createSurfaces(HUnit);
   createObjects(System);
   addAllInsertCell(HUnit.getCell("HCell"));
