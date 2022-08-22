@@ -32,8 +32,6 @@ function procExit
 ./singleItem --singleItem DipoleSndBend     --validCheck 1000 AA; procExit
 ./singleItem --singleItem EArrivalMon       --validCheck 1000 AA; procExit
 ./singleItem --singleItem EBeamStop         --validCheck 1000 AA; procExit
-./singleItem --singleItem EPCombine         --validCheck 1000 AA; procExit
-./singleItem --singleItem EPContinue        --validCheck 1000 AA; procExit
 ./singleItem --singleItem EPSeparator       --validCheck 1000 AA; procExit
 ./singleItem --singleItem ExperimentalHutch --validCheck 1000 AA; procExit
 ./singleItem --singleItem FMask             --validCheck 1000 AA; procExit

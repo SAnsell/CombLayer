@@ -85,7 +85,6 @@ class SideCoolTarget :
 
   /// Main cell body
   int getMainBody() const { return buildIndex+1; }
-  virtual std::vector<int> getInnerCells() const;
   void addInnerBoundary(attachSystem::ContainedComp&) const;
 
   void addProtonLine(Simulation&);

@@ -66,11 +66,6 @@ class TargetBase :
   virtual void addProtonLineInsertCell(const int);
   virtual void addProtonLineInsertCell(const std::vector<int>&);
 
-  virtual std::vector<int> getInnerCells() const;
-  /// Main cell body
-  virtual int getMainBody() const  { return 0; }
-  /// Ta cell body
-  virtual int getSkinBody() const { return 0; }
 
 
   /// Proton line    

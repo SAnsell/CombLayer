@@ -356,19 +356,6 @@ SideCoolTarget::addProtonLine(Simulation& System)
   return;
 }
 
-std::vector<int>  
-SideCoolTarget::getInnerCells() const
-  /*!
-    Get the main inner cells
-    \return Inner W and Ta cladding vector
-  */
-{
-  std::vector<int> Out;
-  Out.push_back(getMainBody());
-  Out.push_back(buildIndex+2);
-  return Out;
-}
-
 void
 SideCoolTarget::createAll(Simulation& System,
 			  const attachSystem::FixedComp& FC,

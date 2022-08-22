@@ -125,8 +125,6 @@ class ContainedComp
   const std::vector<int>& getInsertCells() const 
     { return insertCells; }
 
-  int getMainCell() const;
-  
   void write(std::ostream&) const;
 
 };

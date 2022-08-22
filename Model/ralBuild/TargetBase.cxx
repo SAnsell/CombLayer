@@ -3,7 +3,7 @@
  
  * File:   ralBuild/TargetBase.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -138,7 +138,7 @@ TargetBase::createBeamWindow(Simulation& System,
 	}
       BWPtr->copyCutSurf("Boundary",*PLine,"Boundary");
       BWPtr->setInsertCell(PLine->getCell("VoidCell"));
-       BWPtr->createAll(System,*this,sideIndex);
+      BWPtr->createAll(System,*this,sideIndex);
     }
   return;
 }
@@ -170,17 +170,6 @@ TargetBase::addProtonLineInsertCell(const std::vector<int>& cellVec)
 		  this->PLine->addInsertCell(cv);
 		});
   return;
-}
-
-std::vector<int>  
-TargetBase::getInnerCells() const
-  /*!
-    Return those cells that consititue the inner cells
-    and can be modified
-    \return vector of cell numbers
-  */
-{
-  return std::vector<int>();
 }
 
 }  // NAMESPACE TMRSystem
