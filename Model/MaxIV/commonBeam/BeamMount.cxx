@@ -3,7 +3,7 @@
  
  * File:   commonBeam/BeamMount.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedGroup.h"
@@ -67,7 +67,7 @@ namespace xraySystem
 
 BeamMount::BeamMount(const std::string& Key) :
   attachSystem::ContainedGroup("Block","Support"),
-  attachSystem::FixedOffsetGroup(Key,"Main",6,"Beam",2),
+  attachSystem::FixedRotateGroup(Key,"Main",6,"Beam",2),
   attachSystem::ExternalCut(),
   attachSystem::CellMap()
   /*!
@@ -92,7 +92,7 @@ BeamMount::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BeamMount","populate");
 
-  FixedOffsetGroup::populate(Control);
+  FixedRotateGroup::populate(Control);
 
   blockFlag=Control.EvalDefVar<int>(keyName+"BlockFlag",0);
   
@@ -161,6 +161,7 @@ BeamMount::createUnitVector(const attachSystem::FixedComp& centreFC,
     {
       beamFC.createUnitVector(flangeFC,fIndex);
     }
+
   applyOffset();
 
   if (upFlag)

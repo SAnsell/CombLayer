@@ -37,7 +37,7 @@ namespace xraySystem
 
 class HeatDump :
   public attachSystem::ContainedGroup,
-  public attachSystem::FixedOffsetGroup,
+  public attachSystem::FixedRotateGroup,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap
 {
@@ -94,6 +94,7 @@ class HeatDump :
   HeatDump& operator=(const HeatDump&);
   virtual ~HeatDump();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,const long int,
 		 const attachSystem::FixedComp&,const long int);

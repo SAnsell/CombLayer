@@ -2281,7 +2281,42 @@ FixedComp::getExitWindow(const long int sideIndex,
 }
 
 void
-FixedComp::createAll(Simulation& System,const FixedComp& FC,
+FixedComp::createAll(Simulation&,const FixedComp& FC,
+		     const long int)
+  /*!
+    Modification accessor to get createAll based on a name
+    \param :: Simulation to build component in
+    \param FC :: FixedComp to use as origin/basis set
+    \param :: linkPoint
+  */
+{
+  ELog::RegMethod RegA("FixedComp","createAll(FC)");
+  
+  throw ColErr::AbsObjMethod("Single FC["+FC.keyName+"]"+
+			     " Function not implemented");
+}
+
+void
+FixedComp::createAll(Simulation&,
+		     const FixedComp& FCA,const long int,
+		     const FixedComp& FCB,const long int)
+  /*!
+    Double FC / FC createAll - only throws
+    \param :: Simulation to build component in
+    \param FCA :: FixedComp to use as origin/basis set
+    \param FCB :: FixedComp to use as origin/basis set
+  */
+{
+  ELog::RegMethod RegA("FixedComp","createAll(FC,FC)");
+  
+  throw ColErr::AbsObjMethod("Double FC["+FCA.keyName+"]"+
+			     "FC["+FCB.keyName+"]"+
+			     " Function not implemented");
+}
+
+void
+FixedComp::createAll(Simulation& System,
+		     const FixedComp& FC,
 		     const std::string& linkName)
   /*!
     Modification accessor to get createAll based on a name
@@ -2293,6 +2328,30 @@ FixedComp::createAll(Simulation& System,const FixedComp& FC,
   ELog::RegMethod RegA("FixedComp","createAll(Named)");
   
   this->createAll(System,FC,FC.getSideIndex(linkName));
+  return;
+}
+
+void
+FixedComp::createAll(Simulation& System,
+		     const FixedComp& FCA,
+		     const std::string& linkNameA,
+		     const FixedComp& FCB,
+		     const std::string& linkNameB)
+  /*!
+    Modification accessor to get createAll based on a name
+    [Normal for independent Origin / axis systems]
+    \param System :: Simulation to build component in
+    \param FCA :: FixedComp to use as origin/basis set
+    \param FCB :: Seoncd FixedComp to use as origin/basis set
+    \param linkNameA :: linkPoint
+    \param linkNameB :: linkPoint
+  */
+{
+  ELog::RegMethod RegA("FixedComp","createAll(Named,Named)");
+  
+  this->createAll(System,
+		  FCA,FCA.getSideIndex(linkNameA),
+		  FCB,FCB.getSideIndex(linkNameB));
   return;
 }
 

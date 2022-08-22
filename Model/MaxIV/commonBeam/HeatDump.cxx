@@ -53,7 +53,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedGroup.h"
@@ -66,7 +66,7 @@ namespace xraySystem
 
 HeatDump::HeatDump(const std::string& Key) :
   attachSystem::ContainedGroup("Inner","Outer"),
-  attachSystem::FixedOffsetGroup(Key,"Main",6,"Beam",4),
+  attachSystem::FixedRotateGroup(Key,"Main",6,"Beam",4),
   attachSystem::ExternalCut(),
   attachSystem::CellMap()
   /*!
@@ -76,7 +76,7 @@ HeatDump::HeatDump(const std::string& Key) :
 {}
 
 HeatDump::HeatDump(const HeatDump& A) : 
-  attachSystem::ContainedGroup(A),attachSystem::FixedOffsetGroup(A),
+  attachSystem::ContainedGroup(A),attachSystem::FixedRotateGroup(A),
   attachSystem::ExternalCut(A),attachSystem::CellMap(A),
   upFlag(A.upFlag),radius(A.radius),height(A.height),
   width(A.width),thick(A.thick),lift(A.lift),cutHeight(A.cutHeight),
@@ -104,7 +104,7 @@ HeatDump::operator=(const HeatDump& A)
   if (this!=&A)
     {
       attachSystem::ContainedGroup::operator=(A);
-      attachSystem::FixedOffsetGroup::operator=(A);
+      attachSystem::FixedRotateGroup::operator=(A);
       attachSystem::ExternalCut::operator=(A);
       attachSystem::CellMap::operator=(A);
       upFlag=A.upFlag;
@@ -148,7 +148,7 @@ HeatDump::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("HeatDump","populate");
 
-  FixedOffsetGroup::populate(Control);
+  FixedRotateGroup::populate(Control);
   
   radius=Control.EvalVar<double>(keyName+"Radius");
   width=Control.EvalVar<double>(keyName+"Width");

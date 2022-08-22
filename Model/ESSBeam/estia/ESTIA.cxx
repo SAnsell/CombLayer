@@ -173,7 +173,7 @@ void
 ESTIA::build(Simulation& System,
 	    const GuideItem& GItem,
 	    const Bunker& bunkerObj,
-	    const int voidCell)
+	    const int )
   /*!
     Carry out the full build
     \param System :: Simulation system

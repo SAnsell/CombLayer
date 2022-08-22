@@ -78,8 +78,6 @@ class FixedUnit : public FixedComp
   FixedUnit(const FixedComp& A) : FixedComp(A) {}
   virtual ~FixedUnit() {}     ///< Destructor
 
-  using FixedComp::createAll;
-  void createAll(Simulation&,const FixedComp&,const long int) {}
 };
 
 }
