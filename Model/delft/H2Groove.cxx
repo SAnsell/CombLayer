@@ -3,7 +3,7 @@
  
  * File:   delft/H2Groove.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,9 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "stringCombine.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "surfRegister.h"
@@ -57,15 +54,19 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "H2Groove.h"
 
 namespace delftSystem
 {
 
 H2Groove::H2Groove(const std::string& Key,const int NG)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,0),
+  attachSystem::ContainedComp(),
+  attachSystem::FixedRotate(Key,0),
+  attachSystem::CellMap(),
   gID(NG)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -74,9 +75,11 @@ H2Groove::H2Groove(const std::string& Key,const int NG)  :
 {}
 
 H2Groove::H2Groove(const H2Groove& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::CellMap(A),
   gID(A.gID),
-  face(A.face),height(A.height),xyAngleA(A.xyAngleA),xyAngleB(A.xyAngleB),
+  height(A.height),xyAngleA(A.xyAngleA),xyAngleB(A.xyAngleB),
   siTemp(A.siTemp),siMat(A.siMat)
   /*!
     Copy constructor
@@ -95,8 +98,8 @@ H2Groove::operator=(const H2Groove& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
-      face=A.face;
+      attachSystem::FixedRotate::operator=(A);
+      attachSystem::CellMap::operator=(A);
       height=A.height;
       xyAngleA=A.xyAngleA;
       xyAngleB=A.xyAngleB;
@@ -121,12 +124,9 @@ H2Groove::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("H2Groove","populate");
 
-  FixedOffset::populate(Control);
-
+  FixedRotate::populate(Control);
   
-  const std::string keyNum(keyName+StrFunc::makeString(gID));
-
-  face=Control.EvalPair<int>(keyNum+"Face",keyName+"Face");
+  const std::string keyNum(keyName+std::to_string(gID));
 
   xStep=Control.EvalPair<double>(keyNum+"XStep",keyName+"XStep");
   yStep=Control.EvalPair<double>(keyNum+"YStep",keyName+"YStep");
@@ -153,13 +153,13 @@ H2Groove::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height/2.0,Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height/2.0,Z);
 
+  Geometry::Vec3D PtA(Y);
+  Geometry::Vec3D PtB(Y);
   const Geometry::Quaternion QxyA=
     Geometry::Quaternion::calcQRotDeg(xyAngleA,Z);
-  Geometry::Vec3D PtA(Y*face);
 
   const Geometry::Quaternion QxyB=
     Geometry::Quaternion::calcQRotDeg(xyAngleB,Z);
-  Geometry::Vec3D PtB(Y*face);
 
   QxyA.rotate(PtA);
   QxyB.rotate(PtB);
@@ -186,28 +186,27 @@ H2Groove::createLinks()
 }
   
 void
-H2Groove::createObjects(Simulation& System,
-			const attachSystem::ContainedComp& CC)
+H2Groove::createObjects(Simulation& System)
   /*!
-    Adds the Chip guide components
+    Build an H2 Groove moderator
     \param System :: Simulation to create objects in
   */
 {
   ELog::RegMethod RegA("H2Groove","createObjects");
   
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex,"7 -8 5 -6 ");
-  addOuterSurf(Out);
-  Out+=CC.getContainer();
-  System.addCell(MonteCarlo::Object(cellIndex++,siMat,siTemp,Out));
+  HeadRule HR;
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7 -8 5 -6");
+  addOuterSurf(HR);
+  System.addCell(MonteCarlo::Object(cellIndex++,siMat,siTemp,HR));
   
   return;
 }
   
 void
 H2Groove::createAll(Simulation& System,
-		    const attachSystem::FixedComp& FUnit,
-		    const attachSystem::ContainedComp& CC)
+		    const attachSystem::FixedComp& FC,
+		    const long int sideIndex)
+
   /*!
     Generic function to create everything
     \param System :: Simulation to create objects in
@@ -218,18 +217,12 @@ H2Groove::createAll(Simulation& System,
   ELog::RegMethod RegA("H2Groove","createAll");
   populate(System.getDataBase());
 
-  if (face)
-    {
-      if (face<0)
-	createUnitVector(FUnit,1);
-      else 
-	createUnitVector(FUnit,2);
+  createUnitVector(FC,sideIndex);
+  createSurfaces();
+  createObjects(System);
+  createLinks();
+  insertObjects(System);       
 
-      createSurfaces();
-      createObjects(System,CC);
-      createLinks();
-      insertObjects(System);       
-    }
   
   return;
 }

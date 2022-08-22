@@ -87,7 +87,7 @@ ContainedComp::ContainedComp()
 {}
 
 ContainedComp::ContainedComp(const ContainedComp& A) : 
-  boundary(A.boundary),outerSurf(A.outerSurf),
+  outerSurf(A.outerSurf),
   insertCells(A.insertCells)
   /*!
     Copy constructor
@@ -105,7 +105,6 @@ ContainedComp::operator=(const ContainedComp& A)
 {
   if (this!=&A)
     {
-      boundary=A.boundary;
       outerSurf=A.outerSurf;
       insertCells=A.insertCells;
     }
@@ -125,7 +124,6 @@ ContainedComp::clearRules()
     Zero all the rules
    */
 {
-  boundary.reset();
   outerSurf.reset();
   return;
 }
@@ -140,7 +138,6 @@ ContainedComp::copyRules(const ContainedComp& A)
   ELog::RegMethod RegA("ContainedComp","copyRules");
   if (&A != this)
     {
-      boundary=A.boundary;
       outerSurf=A.outerSurf;
     }
   return;
@@ -315,61 +312,6 @@ ContainedComp::addOuterUnionSurf(const ContainedComp& CC)
   return;
 }
 
-void
-ContainedComp::addBoundarySurf(const int SN)
-  /*!
-    Add a set of surfaces to the boundary object [intersection]
-    \param SN ::  Signed surface number
-  */
-{
-  ELog::RegMethod RegA("ContainedComp","addBoundarySurf(int)");
-
-  boundary.addIntersection(HeadRule(SN));
-  boundary.populateSurf();
-  return;
-}
-
-void
-ContainedComp::addBoundarySurf(const std::string& SList) 
-  /*!
-    Add a set of surfaces to the boundary object
-    \param SList ::  Surface string [fully decomposed]
-  */
-{
-  ELog::RegMethod RegA("ContainedComp","addBoundarySurf(std::string)");
-  boundary.addIntersection(SList);
-  boundary.populateSurf();
-
-  return;
-}
-
-
-void
-ContainedComp::addBoundaryUnionSurf(const int SN)
-  /*!
-    Add a set of surfaces to the boundary object
-    \param SN ::  Signed surface number
-  */
-{
-  ELog::RegMethod RegA("ContainedComp","addBoundaryUnionSurf(int)");
-  boundary.addUnion(std::to_string(SN));
-  boundary.populateSurf();
-  return;
-}
-
-void
-ContainedComp::addBoundaryUnionSurf(const std::string& SList) 
-  /*!
-    Add a set of surfaces to the boundary object
-    \param SList ::  Surface string [fully decomposed]
-  */
-{
-  ELog::RegMethod RegA("ContainedComp","addBoundaryUnionSurf(std::string)");
-  boundary.addUnion(SList);
-  boundary.populateSurf();
-  return;
-}
-
 const HeadRule&
 ContainedComp::getOuterSurf() const
   /*!
@@ -379,17 +321,6 @@ ContainedComp::getOuterSurf() const
   */
 {
   return outerSurf;
-}
-
-const HeadRule&
-ContainedComp::getBoundary() const
-  /*!
-    Care here because this can return a referenece
-    due to ContainedGroup not having a complete outer surf
-    \return Outer headRule
-  */
-{
-  return boundary;
 }
   
 std::string
@@ -419,35 +350,6 @@ ContainedComp::getExclude() const
   
   if (outerSurf.hasRule())
     return outerSurf.complement().display();
-  return "";
-}
-
-std::string
-ContainedComp::getContainer() const
-  /*!
-    Calculate the write out the containing surface,
-    allows an object to be inserted into this object without
-    exceeding the boundary.
-    \return Exclude string [union]
-  */
-{
-  ELog::RegMethod RegA("ContainedComp","getContainer");
-  return boundary.display();
-}
-
-std::string
-ContainedComp::getCompContainer() const
-  /*!
-    Calculate the write out the containing surface,
-    allows an object to be inserted into this object without
-    exceeding the boundary.
-    \return Exclude string [union]
-  */
-{
-  ELog::RegMethod RegA("ContainedComp","getCompContainer");
-
-  if (boundary.hasRule())
-    return boundary.complement().display();
   return "";
 }
 
@@ -488,28 +390,6 @@ ContainedComp::validIntersection(const HeadRule& BObj,
     }
   return 0;
 }
-
-
-std::string
-ContainedComp::getCompContainer(const Geometry::Surface* ASurf,
-				const Geometry::Surface* BSurf) const
-  /*!
-    Calculate the write out the containing surface,
-    allows an object to be inserted into this object without
-    exceeding the boundary.
-    \param ASurf :: First surf    
-    \param BSurf :: Second surf
-    \return Exclude string [union]
-  */
-{
-  ELog::RegMethod RegA("ContainedComp","getCompContainer");
-  if(validIntersection(boundary,1,ASurf,BSurf))
-    {
-      return getCompContainer();
-    }
-
-  return "";
-}
   
 int
 ContainedComp::surfOuterIntersect(const Geometry::Line& LA) const
@@ -529,19 +409,6 @@ ContainedComp::surfOuterIntersect(const Geometry::Line& LA) const
       return std::get<0>(result);
     }
   return 0;
-}
-
-int
-ContainedComp::isBoundaryValid(const Geometry::Vec3D& V) const
-  /*!
-    Determine if the boundary is valid [reverse test]
-    \param V :: Vector to test
-    \return true/false
-   */
-{
-  ELog::RegMethod RegA("ContainedComp","isBoundaryValid"); 
-
-  return (boundary.isValid(V)) ? 0 : 1;
 }
 
 bool
@@ -844,9 +711,6 @@ ContainedComp::write(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
-  OX<<"\nboundary:";
-  StrFunc::writeMCNPX(boundary.display(),OX);
-  OX<<std::endl;
   OX<<"outerSurf:";
   StrFunc::writeMCNPX(outerSurf.display(),OX);
   OX<<std::endl;

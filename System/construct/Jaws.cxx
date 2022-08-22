@@ -260,70 +260,68 @@ Jaws::createObjects(Simulation& System)
   ELog::RegMethod RegA("Jaws","createObjects");
 
   HeadRule CutRule;
-  std::string Out;
+  HeadRule HR;
   
   // X Jaw A:
   if (linerThick>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     " 101 -102 103 -1103 105 -106 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,linerMat,0.0,Out));
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     " 101 -102 -104 1104 105 -106 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,linerMat,0.0,Out));
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"101 -102 103 -1103 105 -106");
+      System.addCell(cellIndex++,linerMat,0.0,HR);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"101 -102 -104 1104 105 -106");
+      System.addCell(cellIndex++,linerMat,0.0,HR);
     }
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 -103 153 105 -106 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,xJawMat,0.0,Out));
-  addCell("xJaw",cellIndex-1);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -102 1103 -1104 105 -106");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 104 -154 105 -106 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,xJawMat,0.0,Out));
-  addCell("xJaw",cellIndex-1);
-
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 -103 153 105 -106");
+  makeCell("xJaw",System,cellIndex++,xJawMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 1103 -1104 105 -106");
+  System.addCell(cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 104 -154 105 -106 ");
+  makeCell("xJaw",System,cellIndex++,xJawMat,0.0,HR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 153 -154 105 -106 ");
-  CutRule.procString(Out);
+  CutRule=
+    ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 153 -154 105 -106");
 
   // Z Jaw A:
   if (linerThick>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     " 201 -202 205 -1205 203 -204 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,linerMat,0.0,Out));
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     " 201 -202 -206 1206 203 -204 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,linerMat,0.0,Out));
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"201 -202 205 -1205 203 -204");
+      System.addCell(cellIndex++,linerMat,0.0,HR);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"201 -202 -206 1206 203 -204");
+      System.addCell(cellIndex++,linerMat,0.0,HR);
     }
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -202 -205 255 203 -204 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,zJawMat,0.0,Out));
-  addCell("zJaw",cellIndex-1);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -202 1205 -1206 203 -204 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -202 206 -256 203 -204 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,zJawMat,0.0,Out));
-  addCell("zJaw",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -202 -205 255 203 -204");
+  makeCell("zJaw",System,cellIndex++,zJawMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -202 203 -204 255 -256 ");
-  CutRule.addUnion(Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"201 -202 1205 -1206 203 -204");
+  System.addCell(cellIndex++,0,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -202 206 -256 203 -204");
+  makeCell("zJaw",System,cellIndex++,zJawMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -202 203 -204 255 -256");
+  CutRule.addUnion(HR);
   CutRule.makeComplement();
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
-  Out+=getContainer();
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+CutRule.display()));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  //  ELog::EM<<"Container == "<<getContainer<<ELog::endDiag;
+  //  Out+=getContainer();
+  System.addCell(cellIndex++,0,0.0,HR*CutRule);
 
   if (wallThick>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,
 				 "1 -2 13 -14 15 -16 (-3 : 4 : -5: 6)");
-      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+      System.addCell(cellIndex++,wallMat,0.0,HR);
     }
-
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 13 -14 15 -16 ");
-  addOuterSurf(Out);      
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -14 15 -16");
+  addOuterSurf(HR);      
 
   return;
 }

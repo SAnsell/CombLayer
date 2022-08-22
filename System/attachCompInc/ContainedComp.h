@@ -52,7 +52,6 @@ class ContainedComp
 {
  protected:
 
-  HeadRule boundary;        ///< Boundary object [Imposed containment]
   HeadRule outerSurf;       ///< Outer surfaces [Excluding boundary]
 
   std::vector<int> insertCells;    ///< Cell to insert into
@@ -60,15 +59,7 @@ class ContainedComp
   static int validIntersection(const HeadRule&,const bool,
 			       const Geometry::Surface*,
 			       const Geometry::Surface*);
-
-private:
-
-  // to be removed:
-  void addBoundarySurf(const int);
-  void addBoundarySurf(const std::string&);
-  void addBoundaryUnionSurf(const int);
-  void addBoundaryUnionSurf(const std::string&);
-
+  
  public:
 
   ContainedComp();
@@ -77,17 +68,9 @@ private:
   virtual ~ContainedComp();
 
   virtual const HeadRule& getOuterSurf() const;
-  virtual const HeadRule& getBoundary() const; // dont use
   
   virtual std::string getExclude() const;
   virtual std::string getCompExclude() const;
-  virtual std::string getContainer() const;
-  virtual std::string getCompContainer() const;
-
-  virtual std::string 
-    getCompContainer(const Geometry::Surface*,
-		     const Geometry::Surface*) const;
-
 
   void copyRules(const ContainedComp&);
   void clearRules();
@@ -95,9 +78,6 @@ private:
 
   /// Test if has outer rule
   bool hasOuterSurf() const { return outerSurf.hasRule(); }
-  /// Test if has boundary rule
-  bool hasBoundary() const { return boundary.hasRule(); }
-  int isBoundaryValid(const Geometry::Vec3D&) const;
 
   int isOuterValid(const Geometry::Vec3D&) const;
   int isOuterValid(const Geometry::Vec3D&,const std::set<int>&) const;

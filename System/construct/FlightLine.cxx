@@ -94,7 +94,7 @@ FlightLine::FlightLine(const FlightLine& A) :
   height(A.height),width(A.width),
   plateIndex(A.plateIndex),nLayer(A.nLayer),lThick(A.lThick),
   lMat(A.lMat),capActive(A.capActive),capLayer(A.capLayer),
-  capRule(A.capRule),attachRule(A.attachRule)
+  capRule(A.capRule),attachRuleHR(A.attachRuleHR)
   /*!
     Copy constructor
     \param A :: FlightLine to copy
@@ -133,7 +133,7 @@ FlightLine::operator=(const FlightLine& A)
       capActive=A.capActive;
       capLayer=A.capLayer;
       capRule=A.capRule;
-      attachRule=A.attachRule;
+      attachRuleHR=A.attachRuleHR;
     }
   return *this;
 }
@@ -273,9 +273,9 @@ FlightLine::getRotatedDivider(const attachSystem::FixedComp& FC,
 
   static int offset(750);
 
-  attachRule=FC.getMainRule(sideIndex);
+  attachRuleHR=FC.getMainRule(sideIndex);
   if (std::abs(zAngle)<45.0) 
-    return attachRule;
+    return attachRuleHR;
 
   HeadRule rotHead(FC.getCommonRule(sideIndex));
   const std::set<int> commonSN(rotHead.getSurfSet());
@@ -302,8 +302,8 @@ FlightLine::getRotatedDivider(const attachSystem::FixedComp& FC,
 	  rotHead.substituteSurf(abs(SN),signV*PXNum,PX);
 	}
     }
-  attachRule*=rotHead;
-  return attachRule;
+  attachRuleHR*=rotHead;
+  return attachRuleHR;
 }
 
 void
@@ -388,20 +388,19 @@ FlightLine::createObjects(Simulation& System,
 
   // attachRule SET in getRotatedDivider
   const HeadRule dividerHR=getRotatedDivider(FC,sideIndex);
-  attachRule=dividerHR*FC.getMainRule(sideIndex);
+  attachRuleHR=dividerHR*FC.getMainRule(sideIndex);
 
   HeadRule HR;
   
   HR=ModelSupport::getHeadRule(SMap,outIndex," 3 -4 5 -6 ");
-  addOuterSurf("outer",HR*attachRule);
+  addOuterSurf("outer",HR*attachRuleHR);
 
   // Inner Void
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 5 -6 ");
-  HR*=attachRule;
+  HR*=attachRuleHR;
   addOuterSurf("inner",HR);
 
   HR*=ExternalCut::getRule("BeOuter");
-  HR*=ContainedGroup::getBoundary("outer");      // Be outer surface
 
   makeCell("Inner",System,cellIndex++,innerMat,0.0,HR);
 
@@ -422,65 +421,14 @@ FlightLine::createObjects(Simulation& System,
 	{
 	  HR=ModelSupport::getHeadRule(SMap,buildIndex+10*II,
 				     " 13 -14 15 -16 (-3:4:-5:6)");
-	  HR*=attachRule;         // forward boundary of object
-	}
-      
-      HR*=ContainedGroup::getBoundary("outer");      // Be outer surface
+	  HR*=attachRuleHR;         // forward boundary of object
+	}      
       makeCell("Outer",System,cellIndex++,lMat[i],0.0,HR);
     }      
 
   return;
 }
 
-void
-FlightLine::createObjects(Simulation& System,
-			  const attachSystem::FixedComp& FC,
-			  const long int sideIndex,
-			  const attachSystem::ContainedComp& CC)
-  /*!
-    Creates the objects for a flightline signed relative to the 
-    surface FC and exluding the object give by CC.
-    \param System :: Simulation to create objects in
-    \param FC :: Surface linked object
-    \param sideIndex :: side index
-    \param CC :: Inner Object
-  */
-{
-  ELog::RegMethod RegA("FlightLine","createObjects(FC,sign,sideIndex,CC)");
-
-  const int outIndex=buildIndex+static_cast<int>(nLayer)*10;
-
-  // attachRule SET in getRotatedDivider
-  const HeadRule dividerHR=getRotatedDivider(FC,sideIndex);
-  
-  attachRule*=dividerHR*FC.getMainRule(sideIndex);
-  // Note this is negative
-  const HeadRule baseSurf(FC.getMainRule(sideIndex));
-
-  HeadRule HR;
-  HR=ModelSupport::getHeadRule(SMap,outIndex," 3 -4 5 -6 ");
-  HR*=baseSurf;
-  addOuterSurf("outer",HR);
-  addOuterSurf("inner",HR);
-
-  const HeadRule attachRuleHR=baseSurf*CC.getOuterSurf().complement();
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 5 -6 ");
-  HR*=attachRule;         // forward boundary of object
-  HR*=ContainedGroup::getBoundary("outer");      // Be outer surface
-  makeCell("Inner",System,cellIndex++,innerMat,0.0,HR);
-
-  //Flight layers:
-  for(size_t i=0;i<nLayer;i++)
-    {
-      HR=ModelSupport::getHeadRule(SMap,buildIndex+10*static_cast<int>(i),
-				     " 13 -14 15 -16 (-3:4:-5:6) ");
-      HR*=attachRule;         // forward boundary of object
-      HR*=ContainedGroup::getBoundary("outer");      // Be outer surface
-      makeCell("FlightLayer",System,cellIndex++,lMat[i],0.0,HR);
-    }      
-
-  return;
-}
 
 void
 FlightLine::processIntersectMajor(Simulation& System,
@@ -514,8 +462,7 @@ FlightLine::processIntersectMajor(Simulation& System,
   const int outIndex=buildIndex+static_cast<int>(nLayer)*10;
   
   HR=ModelSupport::getHeadRule(SMap,outIndex,"3 -4 5 -6");
-  HR*=attachRule;
-  HR*=ContainedGroup::getBoundary("outer");      // Be outer surface
+  HR*=attachRuleHR;
   HR*=ModelSupport::getHeadRule(SMap,buildIndex,"(-3:4:-5:6)");  
   HR*=CC.getOuterSurf(iKey);
   makeCell("Inner",System,cellIndex++,0,0.0,HR);

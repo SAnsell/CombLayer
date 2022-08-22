@@ -116,12 +116,10 @@ testAttachSupport::applyTest(const int extra)
   typedef int (testAttachSupport::*testPtr)();
   testPtr TPtr[]=
     {
-      &testAttachSupport::testBoundaryValid,
       &testAttachSupport::testInsertComponent
     };
   const std::string TestName[]=
     {
-      "BoundaryValid",
       "InsertComponent"
     };
   
@@ -170,7 +168,6 @@ testAttachSupport::testBoundaryValid()
     (const Geometry::Vec3D&) const;
   MPtr TPtr[]=
     {
-      &ContainedComp::isBoundaryValid,
       &ContainedComp::isOuterValid
     };
 

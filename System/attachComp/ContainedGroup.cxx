@@ -365,64 +365,6 @@ ContainedGroup::addOuterUnionSurf(const std::string& Key,
   return;
 }
 
-void
-ContainedGroup::addBoundarySurf(const std::string& Key,
-				const int SN)
-  
-  /*!
-    Add a set of surfaces to the boundary object
-    \param Key :: Group name for rule
-    \param SN ::  Signed surface number
-  */
-{
-  ELog::RegMethod RegA("ContainedGroup","addBoundarySurf(std::string)");
-  getCC(Key).addBoundarySurf(SN);
-  return;
-}
-  
-void
-ContainedGroup::addBoundarySurf(const std::string& Key,
-				const std::string& SList) 
-  /*!
-    Add a set of surfaces to the boundary object
-    \param Key :: Key name for rule
-    \param SList ::  Surface string [fully decomposed]
-  */
-{
-  ELog::RegMethod RegA("ContainedGroup","addBoundarySurf(std::string)");
-  getCC(Key).addBoundarySurf(SList);
-  return;
-}
-
-void
-ContainedGroup::addBoundaryUnionSurf(const std::string& Key,
-				     const int SN)
-  
-  /*!
-    Add a set of surfaces to the boundary object in union
-    \param Key :: Group name for rule
-    \param SN ::  Signed surface number
-  */
-{
-  ELog::RegMethod RegA("ContainedGroup","addBoundaryUnionSurf(std::string)");
-  getCC(Key).addBoundaryUnionSurf(SN);
-  return;
-}
-
-void
-ContainedGroup::addBoundaryUnionSurf(const std::string& Key,
-				     const std::string& SList) 
-  /*!
-    Add a set of surfaces to the boundary object in union
-    \param Key :: Key name for rule
-    \param SList ::  Surface string [fully decomposed]
-  */
-{
-  ELog::RegMethod RegA("ContainedGroup","addBoundaryUnionSurf(std::string)");
-  getCC(Key).addBoundaryUnionSurf(SList);
-  return;
-}
-
 const HeadRule&
 ContainedGroup::getOuterSurf(const std::string& Key) const
   /*!
@@ -436,21 +378,6 @@ ContainedGroup::getOuterSurf(const std::string& Key) const
   ELog::RegMethod RegA("ContainedGroup","getOuterSurf");
   
   return getCC(Key).getOuterSurf();
-}
-
-const HeadRule&
-ContainedGroup::getBoundary(const std::string& Key) const
-  /*!
-    Calculate the write out the excluded surface.
-    This allows the object to be inserted in a larger
-    object.
-    \param Key :: Key name for rule
-    \return outer surf
-  */
-{
-  ELog::RegMethod RegA("ContainedGroup","getBoundayr");
-  
-  return getCC(Key).getBoundary();
 }
   
 HeadRule
@@ -496,35 +423,6 @@ ContainedGroup::getCompExclude(const std::string& Key) const
 {
   ELog::RegMethod RegA("ContainedGroup","getCompExclude");
   return getCC(Key).getCompExclude();
-}
-
-
-std::string
-ContainedGroup::getContainer(const std::string& Key) const
-  /*!
-    Calculate the write out the containing surface,
-    allows an object to be inserted into this object without
-    exceeding the boundary.
-    \param Key :: Key name for rule
-    \return Exclude string [union]
-  */
-{
-  ELog::RegMethod RegA("ContainedGroup","getContainer");
-  return getCC(Key).getContainer();
-}
-
-std::string
-ContainedGroup::getCompContainer(const std::string& Key) const
-  /*!
-    Calculate the write out the containing surface,
-    allows an object to be inserted into this object without
-    exceeding the boundary.
-    \param Key :: Key name for rule
-    \return Exclude string [union]
-  */
-{
-  ELog::RegMethod RegA("ContainedGroup","getContainer");
-  return getCC(Key).getCompContainer();
 }
   
 int

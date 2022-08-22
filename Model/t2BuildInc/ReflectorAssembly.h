@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   moderatorInc/ReflectorAssembly.h
+ * File:   t2BuildInc/ReflectorAssembly.h
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
  *
@@ -77,11 +77,8 @@ class ReflectorAssembly :
   std::shared_ptr<Bucket> CdBucket;         ///< Cd Bucket
   std::shared_ptr<Reflector> RefObj;        ///< Reflector
 
-
-
   void createObjects(Simulation&);
   void processDecoupled(Simulation&);
-
 
  public:
 
@@ -90,8 +87,6 @@ class ReflectorAssembly :
   ReflectorAssembly& operator=(const ReflectorAssembly&);
   virtual ~ReflectorAssembly();
 
-  int calcModeratorPlanes(const int,std::vector<int>&,int&) const;
-  Geometry::Vec3D getViewOrigin(const int) const;
   void insertPipeObjects(Simulation&);
 
   using FixedComp::createAll;

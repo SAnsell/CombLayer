@@ -3,7 +3,7 @@
  
  * File:   delftInc/H2Groove.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,15 +35,15 @@ namespace delftSystem
   \brief H2Groove [insert object]
 */
 
-class H2Groove : public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset
+class H2Groove :
+    public attachSystem::ContainedComp,
+    public attachSystem::FixedRotate,
+    public attachSystem::CellMap
 {
  private:
-
   
   int gID;                  ///< Groove ide
   
-  int face;                 ///< 0 not object / +/- Y direction
   double height;            ///< Height 
   double xyAngleA;          ///< angle A 
   double xyAngleB;          ///< Angle B
@@ -53,7 +53,7 @@ class H2Groove : public attachSystem::ContainedComp,
 
   void populate(const FuncDataBase&);
   void createSurfaces();
-  void createObjects(Simulation&,const attachSystem::ContainedComp&);
+  void createObjects(Simulation&);
   void createLinks();
 
  public:
@@ -62,12 +62,11 @@ class H2Groove : public attachSystem::ContainedComp,
   H2Groove(const H2Groove&);
   H2Groove& operator=(const H2Groove&);
   ~H2Groove();
-
-  /// Access main cell
-  int getMainCell() const { return buildIndex+1 ; }
-
+  
+  
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const attachSystem::ContainedComp&);
+		 const long int);
 
 };
 

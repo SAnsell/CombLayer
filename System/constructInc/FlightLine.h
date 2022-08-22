@@ -70,16 +70,13 @@ class FlightLine :
   std::vector<int> capLayer;       ///< End cap layers
   std::vector<HeadRule> capRule;   ///< Rule for each cap
 
-  HeadRule attachRule;             ///< Attached rule
+  HeadRule attachRuleHR;           ///< Attached rule
   
   void populate(const FuncDataBase&);
   void createSurfaces();
   void createCapSurfaces(const attachSystem::FixedComp&,const long int);
   void createObjects(Simulation&,const attachSystem::FixedComp&,
 		     const long int);
-  void createObjects(Simulation&,const attachSystem::FixedComp&,
-		     const long int,
-		     const attachSystem::ContainedComp&);
 
   HeadRule getRotatedDivider(const attachSystem::FixedComp&,
 			     const long int);

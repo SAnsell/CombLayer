@@ -204,85 +204,85 @@ LeadBox::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("LeadBox","createObjects");
 
-  const std::string excludeObj=getContainer("Main");
-  const std::string portSurfA=getRuleStr("portCut")+getRuleStr("portCutA");
-  const std::string portSurfB=getRuleStr("portCut")+getRuleStr("portCutB");;
-  const std::string leadRadiusA=getRuleStr("leadRadiusA");
-  const std::string leadRadiusB=getRuleStr("leadRadiusB");
+  const HeadRule portSurfA=getRule("portCut")*getRule("portCutA");
+  const HeadRule portSurfB=getRule("portCut")*getRule("portCutB");;
+  const HeadRule leadRadiusA=getRule("leadRadiusA");
+  const HeadRule leadRadiusB=getRule("leadRadiusB");
 
-  std::string Out;
+  
+  HeadRule HR;
   // Main Void
   if (voidActive)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
-      CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,Out+excludeObj);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+      CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
     }
   
   // port Void
 
   // only 17 or 117 used
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"11 -1 -117 -17 ");
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"11 -1 -117 -17");
   CellMap::makeCell("FrontPortVoid",System,
-		    cellIndex++,voidMat,0.0,Out+portSurfA);
+		    cellIndex++,voidMat,0.0,HR*portSurfA);
 
   // only 17 or 217 used
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"2 -12 -217 -17");
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"2 -12 -217 -17");
   CellMap::makeCell("BackPortVoid",System,
-		    cellIndex++,voidMat,0.0,Out+portSurfB);
+		    cellIndex++,voidMat,0.0,HR*portSurfB);
 
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,
-				 "1 -2 13 -14 15 -16 (-3:4:-5:6) " );
-  CellMap::makeCell("MainWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,
+				 "1 -2 13 -14 15 -16 (-3:4:-5:6)");
+  CellMap::makeCell("MainWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,
 				 "11 -1  13 -14 15 -16 17 117 " );
-  CellMap::makeCell("FrontWall",System,cellIndex++,wallMat,0.0,Out);
+  CellMap::makeCell("FrontWall",System,cellIndex++,wallMat,0.0,HR);
 
   if (plateFlag)
     {
       // front plate
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,
-					"21 -11  23 -24 25 -26 " );
+      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,
+					"21 -11  23 -24 25 -26");
       CellMap::makeCell("FrontPlate",System,cellIndex++,
-			wallMat,0.0,Out+leadRadiusA);
-      Out=ModelSupport::getSetComposite
-	(SMap,buildIndex," -11 21  (-23:24:-25:26) 13 -14 15 -16 " );
-      CellMap::makeCell("FrontVoid",System,cellIndex++,0,0.0,Out);
+			wallMat,0.0,HR*leadRadiusA);
+      HR=ModelSupport::getSetHeadRule
+	(SMap,buildIndex," -11 21  (-23:24:-25:26) 13 -14 15 -16");
+      CellMap::makeCell("FrontVoid",System,cellIndex++,0,0.0,HR);
       // back plate
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,
-					"12 -22  23 -24 25 -26 " );
+      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,
+				      "12 -22  23 -24 25 -26");
 
       CellMap::makeCell("BackPlate",System,cellIndex++,
-			wallMat,0.0,Out+leadRadiusB);
-      Out=ModelSupport::getSetComposite
+			wallMat,0.0,HR*leadRadiusB);
+      HR=ModelSupport::getSetHeadRule
 	(SMap,buildIndex," 12 -22  (-23:24:-25:26) 13 -14 15 -16 " );
-      CellMap::makeCell("BackVoid",System,cellIndex++,0,0.0,Out);
+      CellMap::makeCell("BackVoid",System,cellIndex++,0,0.0,HR);
     }
       
 
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,
-				 "2 -12  13 -14 15 -16 17 217 " );
-  CellMap::makeCell("BackWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,
+				 "2 -12  13 -14 15 -16 17 217");
+  CellMap::makeCell("BackWall",System,cellIndex++,wallMat,0.0,HR);
 
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," (2 -12 ) : (11 -1 ) ");
-  addOuterSurf("Walls",Out);      
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(2 -12 ) : (11 -1 )");
+  addOuterSurf("Walls",HR);      
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -1 13 -14 15 -16 ");
-  addOuterSurf("FrontWall",Out);      
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -1 13 -14 15 -16 ");
+  addOuterSurf("FrontWall",HR);      
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
 				 "1 -2 13 -14 15 -16 (-3:4:-5:6) ");
-  addOuterSurf("MainWall",Out);      
+  addOuterSurf("MainWall",HR);      
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 13 -14 15 -16 ");
-  addOuterSurf("BackWall",Out);      
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 2 -12 13 -14 15 -16 ");
+  addOuterSurf("BackWall",HR);      
 
   if (!plateFlag)
-    Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -14 15 -16 ");
+    HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -12 13 -14 15 -16 ");
   else
-    Out=ModelSupport::getComposite(SMap,buildIndex," 21 -22 13 -14 15 -16 ");
-  addOuterSurf("Main",Out);      
+    HR=ModelSupport::getHeadRule(SMap,buildIndex," 21 -22 13 -14 15 -16 ");
+  addOuterSurf("Main",HR);      
   return;
 }
 

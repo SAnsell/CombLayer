@@ -79,7 +79,7 @@ CH4Moderator::CH4Moderator(const std::string& Key)  :
 
 CH4Moderator::CH4Moderator(const CH4Moderator& A) : 
   attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
-  attachSystem::FixedRotate(A),
+  attachSystem::FixedRotate(A),attachSystem::CellMap(A),
   width(A.width),height(A.height),depth(A.depth),
   viewSphere(A.viewSphere),innerThick(A.innerThick),
   vacThick(A.vacThick),outerThick(A.outerThick),
@@ -109,7 +109,7 @@ CH4Moderator::operator=(const CH4Moderator& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
       attachSystem::FixedRotate::operator=(A);
-
+      attachSystem::CellMap::operator=(A);
       width=A.width;
       height=A.height;
       depth=A.depth;
@@ -273,8 +273,7 @@ CH4Moderator::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+111,Origin+
                       Y*(poisonYStep-(poisonGdThick+poisonAlThick)/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+112,Origin+
-                      Y*(poisonYStep+(poisonGdThick+poisonAlThick)/2.0),Y);                      
-                      
+                      Y*(poisonYStep+(poisonGdThick+poisonAlThick)/2.0),Y);
   return;
 }
 

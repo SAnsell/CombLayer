@@ -170,7 +170,6 @@ LWOuter::createObjects(Simulation& System)
   ELog::RegMethod RegA("LWOuter","createObjects");
 
   const HeadRule boundaryComp(excludeSpace.complement());
-  const std::string exclude=getCompContainer();
   
   HeadRule HR;
   for(const int SN : surfNum)
