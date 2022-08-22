@@ -3,7 +3,7 @@
  
  * File:   commonBeam/RingDoor.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -164,7 +164,8 @@ RingDoor::createSurfaces()
       ("InnerWall/OuterWall/floor","Door:"+keyName);
 
   // origin in on outer wall:
-  
+
+  ELog::EM<<"InnerHeight == "<<innerHeight<<" "<<outerHeight<<ELog::endDiag;
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(innerWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(innerWidth/2.0),X);
   ExternalCut::makeShiftedSurf(SMap,"floor",buildIndex+6,Z,innerHeight);

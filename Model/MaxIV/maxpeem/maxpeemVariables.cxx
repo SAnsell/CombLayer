@@ -3,7 +3,7 @@
  
  * File:   maxpeem/maxpeemVariables.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -243,7 +243,7 @@ m3MirrorVariables(FuncDataBase& Control,
   // will be rotated vertical
   const std::string viewName=mirrorKey+"ViewTube";
   SimpleTubeGen.setCF<CF63>();
-  SimpleTubeGen.setBFlangeCF<CF100>();
+  SimpleTubeGen.setBFlange(CF100::flangeRadius,CF100::flangeLength/2.0);
   SimpleTubeGen.generateTube(Control,viewName,15.0);
   Control.addVariable(viewName+"NPorts",1);   // beam ports
 
@@ -279,8 +279,10 @@ m3MirrorVariables(FuncDataBase& Control,
   PItemGen.generatePort(Control,pumpName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
 
   const Geometry::Vec3D pAngVec(0,sin(M_PI*37.0/180.0),-cos(M_PI*37.0/180.0));
-  const double PLen=14.0-8.05/cos(M_PI*37.0/180.0);
-  PItemGen.setCF<setVariable::CF40>(CF150::outerRadius+PLen);
+  const double PLen=16.0-8.05/cos(M_PI*37.0/180.0);
+
+  PItemGen.setCF<setVariable::CF25>(CF150::outerRadius+PLen);
+  PItemGen.setFlange(1.7,1.15);
   PItemGen.setOuterVoid(0);
   PItemGen.generatePort(Control,pumpName+"Port2",
 			Geometry::Vec3D(0,0,0),-pAngVec);

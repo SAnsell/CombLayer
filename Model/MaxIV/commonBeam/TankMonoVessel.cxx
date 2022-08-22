@@ -366,7 +366,6 @@ TankMonoVessel::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1003 -1013 5 -25 17 ");
   CellMap::makeCell("OuterLeftVoid",System,cellIndex++,0,0.0,HR*fbCut);
   
-  ELog::EM<<"CREATE Outer "<<cellIndex<<ELog::endDiag;
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1004 1014 5 -25 17 ");
   CellMap::makeCell("OuterRightVoid",System,cellIndex++,0,0.0,HR*fbCut);
 
@@ -442,7 +441,7 @@ TankMonoVessel::createPorts(Simulation& System)
 
       MonteCarlo::Object* OPtr=
 	CellMap::getCellObject(System,"Wall");
-      if (PAxis[i].dotProd(X)>0.0)
+      if (PAxis[i].dotProd(X)<0.0)
 	Ports[i].addInsertCell(CellMap::getCell("OuterLeftVoid"));
       else
 	Ports[i].addInsertCell(CellMap::getCell("OuterRightVoid"));

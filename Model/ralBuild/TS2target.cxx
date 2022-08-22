@@ -33,7 +33,6 @@
 #include <algorithm>
 #include <memory>
 
-
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
@@ -485,10 +484,8 @@ TS2target::createObjects(Simulation& System)
   ELog::RegMethod RegA("TS2target","createObjects");
 
   // INNER PLANES    
-  const HeadRule& frontPlateHR(ExternalCut::getRule("FrontPlate"));
+  //  const HeadRule& frontPlateHR(ExternalCut::getRule("FrontPlate"));
   const HeadRule& backPlateHR(ExternalCut::getRule("BackPlate"));
-
-  std::string Out;
 
   HeadRule HR;
   // Main cylinder:

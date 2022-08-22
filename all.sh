@@ -6,7 +6,9 @@ function procExit
     fi
 }
 
-
+./maxiv --defaultConfig Single  MAXPEEM --validAll --validCheck 1000 AA; procExit
+#./maxiv --defaultConfig Single  SPECIES --validAll --validCheck 10000 AA; procExit
+exit
 ./singleItem --singleItem BeamDivider       --validCheck 1000 AA; procExit
 ./singleItem --singleItem BeamScrapper      --validCheck 1000 AA; procExit
 ./singleItem --singleItem Bellow            --validCheck 1000 AA; procExit

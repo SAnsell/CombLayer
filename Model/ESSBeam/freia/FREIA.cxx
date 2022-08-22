@@ -322,8 +322,8 @@ FREIA::buildBunkerUnits(Simulation& System,
 
 void
 FREIA::buildOutGuide(Simulation& System,
-                     const attachSystem::FixedComp& FW,
-                     const long int startIndex,
+                     const attachSystem::FixedComp&,
+                     const long int,
                      const int voidCell)
   /*!
     Build all the components that are outside of the wall
@@ -398,9 +398,9 @@ FREIA::buildOutGuide(Simulation& System,
 
 void
 FREIA::buildHut(Simulation& System,
-		const attachSystem::FixedComp& connectFC,
-		const long int connectIndex,
-                const int voidCell)
+		const attachSystem::FixedComp&,
+		const long int,
+                const int)
   /*!
     Builds the hut connected to the FixedPoint given
     \param System :: Simulation to build with

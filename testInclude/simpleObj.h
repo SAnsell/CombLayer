@@ -83,6 +83,8 @@ class simpleObj :
   void setRefFlag(const int R) {refFlag=R;}
   /// Set offset
   void setOffset(const Geometry::Vec3D& O) { offset=O; }
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const double,const double,const double);
   void createAll(Simulation&,const attachSystem::FixedComp&,

@@ -640,6 +640,10 @@ maxpeemOpticsLine::buildObjects(Simulation& System)
   pumpTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   pumpTubeA->createAll(System,*pipeB,"back");
 
+  const constructSystem::portItem& CPB=pumpTubeA->getPort(2);
+  ELog::EM<<"Outer Sonze -= "<<outerCell<<ELog::endDiag;
+  CPB.insertInCell(System,outerCell);
+
   const constructSystem::portItem& CPI=pumpTubeA->getPort(1);
   outerCell=buildZone.createUnit(System,CPI,"OuterPlate");
   pumpTubeA->insertAllInCell(System,outerCell);
@@ -647,7 +651,6 @@ maxpeemOpticsLine::buildObjects(Simulation& System)
 
   constructSystem::constructUnit
     (System,buildZone,CPI,"OuterPlate",*offPipeA);
-
 
   buildM1Mirror(System,*offPipeA,"FlangeBCentre");
 

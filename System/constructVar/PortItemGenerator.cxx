@@ -327,6 +327,7 @@ PortItemGenerator::generateDoublePort(FuncDataBase& Control,
 
 template void PortItemGenerator::setCF<CF16>(const double);
 template void PortItemGenerator::setCF<CF18_TDC>(const double);
+template void PortItemGenerator::setCF<CF25>(const double);
 template void PortItemGenerator::setCF<CF34_TDC>(const double);
 template void PortItemGenerator::setCF<CF35_TDC>(const double);
 template void PortItemGenerator::setCF<CF37_TDC>(const double);
@@ -341,6 +342,7 @@ template void PortItemGenerator::setCF<CF350>(const double);
 
 template void PortItemGenerator::setFlangeCF<CF16>();
 template void PortItemGenerator::setFlangeCF<CF18_TDC>();
+template void PortItemGenerator::setFlangeCF<CF25>();
 template void PortItemGenerator::setFlangeCF<CF34_TDC>();
 template void PortItemGenerator::setFlangeCF<CF35_TDC>();
 template void PortItemGenerator::setFlangeCF<CF37_TDC>();

@@ -336,7 +336,7 @@ shutterTable(FuncDataBase& Control,
   const Geometry::Vec3D XVec(1,0,0);
   const Geometry::Vec3D ZVec(0,0,1);
 
-  PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+2.0);
+  PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+2.1);
   PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,florName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
   PItemGen.generatePort(Control,florName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
@@ -465,7 +465,7 @@ moveApertureTable(FuncDataBase& Control,
   // [End fix for BellowH]
   PipeGen.setCF<CF40>();
   PipeGen.setAFlangeCF<CF63>();
-  PipeGen.generatePipe(Control,frontKey+"PipeC",10.0);
+  PipeGen.generatePipe(Control,frontKey+"PipeC",9.8);
   Control.addVariable(frontKey+"PipeCYStep",52.0);
   
   return;

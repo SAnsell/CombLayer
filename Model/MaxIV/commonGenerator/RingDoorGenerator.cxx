@@ -50,8 +50,8 @@ namespace setVariable
 {
 
 RingDoorGenerator::RingDoorGenerator(const bool) :
-  innerHeight(210.0),innerWidth(218.0),
-  innerThick(40.0),outerHeight(180.0),
+  innerHeight(180.0),innerWidth(218.0),
+  innerThick(40.0),outerHeight(210.0),
   outerWidth(238.0),gapSpace(1.0),
   innerTopGap(2.5),outerTopGap(5.0),
   tubeRadius(5.0),tubeXStep(30.0),tubeZStep(140.0),

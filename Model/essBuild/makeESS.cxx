@@ -1126,8 +1126,8 @@ makeESS::build(Simulation& System,
   const double TMAssembly=
     TopPreMod->getHeight()+TMHeight+TopCapMod->getHeight();
 
-  Reflector->createAll(System,World::masterOrigin(),0,
-		       Target->wheelHeight(),LMAssembly,TMAssembly);
+  Reflector->setVoidThick( Target->wheelHeight(),LMAssembly,TMAssembly);
+  Reflector->createAll(System,World::masterOrigin(),0);
   
   Reflector->insertComponent(System,"targetVoid",*Target,1);
   Bulk->setCutSurf("Reflector",Reflector->getExclude());
