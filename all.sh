@@ -6,7 +6,10 @@ function procExit
     fi
 }
 
-./maxiv --defaultConfig Single  MAXPEEM --validAll --validCheck 1000 AA; procExit
+./maxiv --defaultConfig Single  SOFTIMAX --validAll --validCheck 1000 AA; procExit
+#./maxiv --defaultConfig Single  COSAXS --validAll --validCheck 1000 AA; procExit
+#./maxiv --defaultConfig Single  BALDER --validAll --validCheck 1000 AA; procExit
+#./maxiv --defaultConfig Single  MAXPEEM --validAll --validCheck 1000 AA; procExit
 #./maxiv --defaultConfig Single  SPECIES --validAll --validCheck 10000 AA; procExit
 exit
 ./singleItem --singleItem BeamDivider       --validCheck 1000 AA; procExit

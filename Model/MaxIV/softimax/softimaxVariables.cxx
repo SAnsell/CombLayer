@@ -693,11 +693,11 @@ opticsVariables(FuncDataBase& Control,
   PItemGen.generatePort(Control,pumpName+"Port3",Geometry::Vec3D(0,0,0),XVec);
 
   PItemGen.setCF<setVariable::CF40>(CF150::outerRadius+5.4); // port length
-  PItemGen.generatePort(Control,pumpName+"Port4",Geometry::Vec3D(0,10,0),XVec);
+  PItemGen.generatePort(Control,pumpName+"Port4",Geometry::Vec3D(0,10.7,0),XVec);
 
   // above port 2
   PItemGen.setCF<setVariable::CF40>(CF150::outerRadius+5.4); // port length
-  PItemGen.generatePort(Control,pumpName+"Port5",Geometry::Vec3D(0,10,0),-XVec);
+  PItemGen.generatePort(Control,pumpName+"Port5",Geometry::Vec3D(0,10.7,0),-XVec);
 
   constexpr double xyAngle6(70.0*M_PI/180.0);
   const Geometry::Vec3D pAngVec6(sin(xyAngle6),0.0,-cos(xyAngle6));
