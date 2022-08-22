@@ -447,6 +447,7 @@ PancakeModerator::createAll(Simulation& System,
   createUnitVector(orgFC,orgIndex,axisFC,axisIndex);
   createSurfaces();
 
+  ELog::EM<<"Call Mit"<<ELog::endDiag;
   MidH2->createAll(System,*this,0,false,0.0);
 
   const std::string Exclude=
