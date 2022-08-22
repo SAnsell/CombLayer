@@ -192,16 +192,16 @@ CuCollet::createObjects(Simulation& System)
     }
 
   // Cu : Checked for existance of inner
-  HR=ModelSupport::getSetComposite(SMap,buildIndex,"21 -22 -27 17");
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"21 -22 -27 17");
   System.addCell(cellIndex++,cuMat,0.0,HR);
   if (cuGap>Geometry::zeroTol)
     {
-      HR=ModelSupport::getSetComposite(SMap,buildIndex,"21 -22 -17");
+      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"21 -22 -17");
       System.addCell(cellIndex++,0.0,0.0,HR);
     }
   // Outer Boundary : 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -22 -27 (-7:12)");
-  addOuterSurf(Out);
+  addOuterSurf(HR);
   
   return;
 }

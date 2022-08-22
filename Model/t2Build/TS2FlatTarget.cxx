@@ -445,7 +445,7 @@ TS2FlatTarget::createAll(Simulation& System,
   createObjects(System);
   layerProcess(System);
   createLinks();
-  addInnerBoundary(*this);
+  //  addInnerBoundary(*this);
   insertObjects(System);
 
   return;

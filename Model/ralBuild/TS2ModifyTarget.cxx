@@ -478,7 +478,6 @@ TS2ModifyTarget::createAll(Simulation& System,
   if (!TB)
     throw ColErr::DynamicConv("FixedComp","TargetBase","");
   createSurfaces();
-  addBoundarySurf(TB->getContainer());
   createObjects(System,TB->getCell("MainCell"),TB->getCell("SkinCell"));
 
   return;

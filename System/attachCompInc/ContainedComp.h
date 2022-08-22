@@ -61,7 +61,7 @@ class ContainedComp
 			       const Geometry::Surface*,
 			       const Geometry::Surface*);
 
-public:
+private:
 
   // to be removed:
   void addBoundarySurf(const int);
