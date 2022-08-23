@@ -2980,7 +2980,7 @@ Segment45(FuncDataBase& Control,
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable
-    (lKey+"XYAngle",
+    (lKey+"ZAngle",
      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
   Control.addVariable
     (lKey+"XAngle",
@@ -3019,10 +3019,13 @@ Segment45(FuncDataBase& Control,
 
   // additional stuff for beam dump - not present in the original
   // drawings
+  PGen.setCF<setVariable::CF66_TDC>();
   PGen.generatePipe(Control,lKey+"PipeC",100.0); // approx
+
+
   Control.addVariable(lKey+"PipeCYAngle",-90);
-  Control.addVariable(lKey+"PipeCFlangeFrontRadius",4.5); // to avoid cutting EBeam
-  Control.addVariable(lKey+"PipeCFlangeBackRadius",4.5); // to avoid cutting EBeam
+  Control.addVariable(lKey+"PipeCFlangeARadius",3.5); // to avoid cutting EBeam
+  Control.addVariable(lKey+"PipeCFlangeBRadius",3.5); // to avoid cutting EBeam
   setVariable::EBeamStopGenerator EBGen;
   EBGen.generateEBeamStop(Control,lKey+"EBeam",1);
   Control.addVariable(lKey+"EBeamShieldActive",1);
@@ -3049,7 +3052,7 @@ Segment46(FuncDataBase& Control,
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable
-    (lKey+"XYAngle",atan((startPt.X()-endPt.X())/
+    (lKey+"ZAngle",atan((startPt.X()-endPt.X())/
 			 (endPt.Y()-startPt.Y()))*180.0/M_PI);
 
   // Pipes
@@ -3146,7 +3149,7 @@ Segment47(FuncDataBase& Control,
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
-  Control.addVariable(lKey+"XYAngle",
+  Control.addVariable(lKey+"ZAngle",
   		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
   setVariable::PipeGenerator PGen;
@@ -3225,7 +3228,7 @@ Segment48(FuncDataBase& Control,
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
-  Control.addVariable(lKey+"XYAngle",
+  Control.addVariable(lKey+"ZAngle",
   		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
   setVariable::EBeamStopGenerator EBGen;
@@ -3301,7 +3304,7 @@ Segment49(FuncDataBase& Control,
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
-  Control.addVariable(lKey+"XYAngle",
+  Control.addVariable(lKey+"ZAngle",
   		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
   Control.addVariable(lKey+"WallRadius",4.0); // K_20-2_354

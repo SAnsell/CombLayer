@@ -6,11 +6,19 @@ function procExit
     fi
 }
 
-./maxiv --defaultConfig Single  SOFTIMAX --validAll --validCheck 1000 AA; procExit
-#./maxiv --defaultConfig Single  COSAXS --validAll --validCheck 1000 AA; procExit
+#segments=$(for i in {40..49}; do echo -n "Segment$i "; done)
+
+segments=All
+./maxiv --noLengthCheck --defaultConfig Linac ${segments} -validAll --validCheck 100 AA; procExit
 #./maxiv --defaultConfig Single  BALDER --validAll --validCheck 1000 AA; procExit
+#./maxiv --defaultConfig Single  COSAXS --validAll --validCheck 1000 AA; procExit
+#./maxiv --defaultConfig Single  DANMAX --validAll --validCheck 1000 AA; procExit
+#./maxiv --defaultConfig Single  FLEXPES --validAll --validCheck 1000 AA; procExit
+#./maxiv --defaultConfig Single  FORMAX --validAll --validCheck 1000 AA; procExit
 #./maxiv --defaultConfig Single  MAXPEEM --validAll --validCheck 1000 AA; procExit
+#./maxiv --defaultConfig Single  MICROMAX --validAll --validCheck 1000 AA; procExit
 #./maxiv --defaultConfig Single  SPECIES --validAll --validCheck 10000 AA; procExit
+#./maxiv --defaultConfig Single  SOFTIMAX --validAll --validCheck 1000 AA; procExit
 exit
 ./singleItem --singleItem BeamDivider       --validCheck 1000 AA; procExit
 ./singleItem --singleItem BeamScrapper      --validCheck 1000 AA; procExit

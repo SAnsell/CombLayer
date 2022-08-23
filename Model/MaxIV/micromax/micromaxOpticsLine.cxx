@@ -383,10 +383,9 @@ micromaxOpticsLine::constructDiag2(Simulation& System,
   bremScrapper->setBeamAxis(*monoBremTube,1);
   bremScrapper->createAll(System,PI,"InnerPlate");
   bremScrapper->insertInCell("Connect",System,PI.getCell("Void"));
-  bremScrapper->insertInCell
-    ("Connect",System,monoBremTube->getCell("MidVoid"));
-  bremScrapper->insertInCell
-    ("Payload",System,monoBremTube->getCell("MidVoid"));
+  bremScrapper->insertInCell("Connect",System,monoBremTube->getCell("MidVoid"));
+  bremScrapper->insertInCell("Payload",System,PI.getCell("Void"));
+  bremScrapper->insertInCell("Payload",System,monoBremTube->getCell("MidVoid"));
   
   
   bremCollB->addInsertCell(monoBremTube->getCell("Void"));

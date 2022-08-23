@@ -230,7 +230,7 @@ m3MirrorVariables(FuncDataBase& Control,
   const Geometry::Vec3D angVec(0,cos(M_PI*37.0/180.0),-sin(M_PI*37.0/180.0));
   const double DLen=14.0-wallThick/sin(M_PI*37.0/180.0);
 
-  PItemGen.setCF<setVariable::CF40>(CF63::outerRadius+DLen);
+  PItemGen.setCF<setVariable::CF25>(CF63::outerRadius+DLen);
   PItemGen.setOuterVoid(0);
   PItemGen.generatePort(Control,viewName+"Port0",
 			Geometry::Vec3D(0,7.5,0),-angVec);
@@ -257,8 +257,8 @@ m3MirrorVariables(FuncDataBase& Control,
   PItemGen.generatePort(Control,pumpName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
 
   const Geometry::Vec3D pAngVec(0,sin(M_PI*37.0/180.0),-cos(M_PI*37.0/180.0));
-  const double PLen=14.0-8.05/cos(M_PI*37.0/180.0);
-  PItemGen.setCF<setVariable::CF40>(CF150::outerRadius+PLen);
+  const double PLen=15.8-8.05/cos(M_PI*37.0/180.0);
+  PItemGen.setCF<setVariable::CF25>(CF150::outerRadius+PLen);
   PItemGen.setOuterVoid(0);
   PItemGen.generatePort(Control,pumpName+"Port2",
 			Geometry::Vec3D(0,0,0),-pAngVec);
@@ -569,7 +569,7 @@ opticsBeamVariables(FuncDataBase& Control,
 
   const Geometry::Vec3D angVec(0,sin(M_PI*35.0/180.0),-cos(M_PI*35.0/180.0));
   const double DLen=17.2-7.55/cos(M_PI*35.0/180.0);
-  PItemGen.setCF<setVariable::CF40>(CF150::outerRadius+DLen);
+  PItemGen.setCF<setVariable::CF25>(CF150::outerRadius+DLen);
   PItemGen.setOuterVoid(0);
   PItemGen.generatePort(Control,collName+"Port2",
 			Geometry::Vec3D(0,0,0),-angVec);

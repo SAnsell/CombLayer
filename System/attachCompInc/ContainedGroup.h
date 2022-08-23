@@ -75,6 +75,7 @@ class ContainedGroup
   virtual HeadRule getAllExclude() const;
   
   virtual const HeadRule& getOuterSurf(const std::string&) const;
+  virtual HeadRule getExcludeSurf(const std::string&) const;
   virtual std::string getExclude(const std::string&) const;
   virtual std::string getCompExclude(const std::string&) const;
 

@@ -438,16 +438,22 @@ TankMonoVessel::createPorts(Simulation& System)
 
       const HeadRule innerSurf(SurfMap::getSurfRules("VoidCyl"));
       const HeadRule outerSurf(SurfMap::getSurfRules("OuterCyl"));
+      const HeadRule& leftVoidHR=CellMap::getCellHR(System,"OuterLeftVoid");
+      const HeadRule& rightVoidHR=CellMap::getCellHR(System,"OuterRightVoid");
 
       MonteCarlo::Object* OPtr=
 	CellMap::getCellObject(System,"Wall");
-      if (PAxis[i].dotProd(X)<0.0)
-	Ports[i].addInsertCell(CellMap::getCell("OuterLeftVoid"));
-      else
-	Ports[i].addInsertCell(CellMap::getCell("OuterRightVoid"));
 
-      Ports[i].constructTrack(System,OPtr,innerSurf,outerSurf);      
-      Ports[i].insertObjects(System);
+      Ports[i].constructTrack(System,OPtr,innerSurf,outerSurf);
+      const Geometry::Vec3D endPt(Ports[i].getLinkPt(2));
+      
+      if (leftVoidHR.isValid(endPt))
+	Ports[i].insertInCell(System,CellMap::getCell("OuterLeftVoid"));
+      else if (rightVoidHR.isValid(endPt))
+	Ports[i].insertInCell(System,CellMap::getCell("OuterRightVoid"));
+      else
+	throw ColErr::InContainerError<Geometry::Vec3D>
+	  (endPt,"End Point of Port not in cell");
     }
   return;
 }

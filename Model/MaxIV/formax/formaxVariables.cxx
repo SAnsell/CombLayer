@@ -3,7 +3,7 @@
  
  * File:   formax/formaxVariables.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -469,7 +469,7 @@ monoShutterVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,preName+"BellowL",10.0);    
 
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,preName+"PipeF",32.0);  
+  PipeGen.generatePipe(Control,preName+"PipeF",34.0);  
   return;
 }
   
@@ -586,6 +586,7 @@ shieldVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("formaxVariables","shieldVariables");
   
   Control.addVariable(preName+"PShieldLength",5.0);
+  Control.addVariable(preName+"PShieldYStep",-3.9);
   Control.addVariable(preName+"PShieldWidth",60.0);
   Control.addVariable(preName+"PShieldHeight",60.0);
   Control.addVariable(preName+"PShieldWallThick",0.5);

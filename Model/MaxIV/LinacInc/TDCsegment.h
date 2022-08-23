@@ -111,8 +111,6 @@ class TDCsegment :
 
   virtual void insertPrevSegment(Simulation&,const TDCsegment*) const {}
 
-
-  
   /// Access to buildZone surround.
   const HeadRule& getSurround() const { return buildZone->getSurround(); }
   

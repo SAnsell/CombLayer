@@ -169,6 +169,8 @@ Segment7::buildObjects(Simulation& System)
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagVA);
   pipeTerminate(System,*buildZone,pipeB);
 
+  setCutSurf("EndPipeFlange",pipeB->getExcludeSurf("FlangeB"));
+  setCutSurf("EndPipeMain",pipeB->getExcludeSurf("Main"));
   return;
 }
 

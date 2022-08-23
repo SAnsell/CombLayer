@@ -3,7 +3,7 @@
  
  * File:   danmax/danmaxVariables.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -251,8 +251,6 @@ connectVariables(FuncDataBase& Control,
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   
-  PItemGen.setCF<setVariable::CF40>(3.0);
-  PItemGen.setPlate(0.0,"Void");
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>();
@@ -280,8 +278,11 @@ connectVariables(FuncDataBase& Control,
   SimpleTubeGen.setMat("Stainless304");
   SimpleTubeGen.setCF<CF100>();
   // ystep/length
-  SimpleTubeGen.generateTube(Control,beamName+"IonPumpA",8.0);
+  SimpleTubeGen.generateTube(Control,beamName+"IonPumpA",10.0);
   Control.addVariable(beamName+"IonPumpANPorts",1);
+  PItemGen.setCF<setVariable::CF40>(10.0+CF100::outerRadius);
+  PItemGen.setOuterVoid(0);
+  PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,beamName+"IonPumpAPort0",OPos,ZVec);
 
   PipeGen.setCF<setVariable::CF40>();
@@ -633,7 +634,7 @@ monoPackage(FuncDataBase& Control,const std::string& monoKey)
 
   const std::string portName=monoKey+"MonoVessel";
   Control.addVariable(monoKey+"MonoVesselNPorts",1);   // beam ports (lots!!)
-  PItemGen.setCF<setVariable::CF63>(5.0);
+  PItemGen.setCF<setVariable::CF63>(5.0+31.2);
   PItemGen.setWindowPlate(2.5,2.0,-0.8,"Stainless304","LeadGlass");
   PItemGen.generatePort(Control,portName+"Port0",
   			Geometry::Vec3D(0,5.0,-10.0),

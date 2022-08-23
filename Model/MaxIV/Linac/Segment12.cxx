@@ -3,7 +3,7 @@
 
  * File: Linac/Segment12.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -156,13 +156,11 @@ Segment12::buildObjects(Simulation& System)
 
   beamA->setCutSurf("front",*flatA,"back");
   beamA->createAll(System,*flatA,"back");
-  ELog::EM<<"ASDFSDAF "<<beamA->getLinkPt("front")<<ELog::endDiag;
+
   /////////// Local shielding
   shieldA->setCutSurf("Inner",*beamA,"outerBox");
-  ELog::EM<<"ASDFSDAF "<<beamA->getLinkPt("front")<<ELog::endDiag;
   shieldA->createAll(System,*beamA,"front");
   outerCell=buildZone->createUnit(System,*shieldA,-1);
-  ELog::EM<<"ASDFSDAF "<<ELog::endDiag;
   
   beamA->insertInCell("Box",System,outerCell);
   beamA->insertInCell("FlangeA",System,outerCell);

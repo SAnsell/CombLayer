@@ -3,7 +3,7 @@
  
  * File:   modelSupport/SimInput.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -121,8 +121,6 @@ processExitChecks(Simulation& System,
 	  const Geometry::Vec3D CPoint=FC->getLinkPt(sideIndex)+
 	    Geometry::Vec3D(0.001,0.001,0.001);
 	  ELog::EM<<"Validation point "<<CPoint<<ELog::endDiag;
-	  ELog::EM<<"NEEDS TO BE RE-WRITTEN SO WORKS STARTING"
-	    " ON A SURFACE"<<ELog::endCrit;
 
 	  if (!SValidCheck.runPoint
 	      (System,CPoint,IParam.getValue<size_t>("validCheck")))
@@ -138,8 +136,12 @@ processExitChecks(Simulation& System,
 	    {
 	      const attachSystem::FixedComp& FC = *(mc.second);
 	      const Geometry::Vec3D& CP=FC.getCentre();
-	      if (SValidCheck.runPoint(System,CP,NPts))
-		  errFlag += -1;
+	      if (CP!=Geometry::Vec3D(0,0,0))
+		{
+		  ELog::EM<<"FC["<<FC.getKeyName()<<"] ";
+		  if (SValidCheck.runPoint(System,CP,NPts))
+		    errFlag += -1;
+		}
 	    }
 	}
       else 

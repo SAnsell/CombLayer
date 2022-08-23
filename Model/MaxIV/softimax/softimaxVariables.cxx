@@ -252,8 +252,8 @@ opticsHutVariables(FuncDataBase& Control,
   OpticsHutGenerator OGen; 
 
   OGen.setOuterBackExt(40.0);
-  OGen.addHole(Geometry::Vec3D(20,0,0),5.0);
-  OGen.addHole(Geometry::Vec3D(43,0,0),5.0);
+  OGen.addHole(Geometry::Vec3D(22,0,0),5.0);
+  OGen.addHole(Geometry::Vec3D(45,0,0),5.0);
   OGen.generateHut(Control,hutName,1070.0);
 
   // chicane dimensions: http://localhost:8080/maxiv/work-log/softimax/drawings/06643-03-000-folio-1-2-ind-g.pdf/view

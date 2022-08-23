@@ -153,7 +153,7 @@ struct CF25
   static constexpr double innerRadius=1.25;
   static constexpr double wallThick=0.12;
   static constexpr double outerRadius=wallThick+innerRadius;
-  static constexpr double flangeRadius=2.7;
+  static constexpr double flangeRadius=2.4;
   static constexpr double flangeLength=1.15;
   static constexpr double bellowStep=0.9;
   static constexpr double bellowThick=0.8;

@@ -176,9 +176,9 @@ FixedRotate::populate(const FuncDataBase& Control)
   // note extra so can use a fixedoffset angle system if over-step
   if (Control.hasVariable(keyName+"XYAngle"))
     {
-      preZAngle=Control.EvalDefVar<double>(keyName+"XYAngle",preZAngle);
-      preXAngle=Control.EvalDefVar<double>(keyName+"ZAngle",preXAngle);
-      preYAngle=0.0;
+      zAngle=Control.EvalDefVar<double>(keyName+"XYAngle",preZAngle);
+      xAngle=Control.EvalDefVar<double>(keyName+"ZAngle",preXAngle);
+      yAngle=0.0;
     }
   else
     {

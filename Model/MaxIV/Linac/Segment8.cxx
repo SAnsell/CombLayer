@@ -3,7 +3,7 @@
 
  * File: Linac/Segment8.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2022 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -126,9 +126,11 @@ Segment8::buildObjects(Simulation& System)
   outerCell=buildZone->createUnit(System,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
 
+  ELog::EM<<"beamStop == "<<isActive("Front")<<ELog::endCrit;
+
   constructSystem::constructUnit
     (System,*buildZone,*bellowA,"back",*beamStop);
-
+  
   constructSystem::constructUnit
     (System,*buildZone,*beamStop,"back",*bellowB);
 
@@ -141,19 +143,17 @@ Segment8::buildObjects(Simulation& System)
       beamStop->insertAllInCell(System,outerCell+2);
       beamStop->insertAllInCell(System,outerCell+3);
 
-      attachSystem::addToInsertControl(System,*beamStop,*bellowA);
-      attachSystem::addToInsertControl(System,*beamStop,*bellowB);
-      attachSystem::addToInsertControl(System,*beamStop,*pipeA,"FlangeA");
-      attachSystem::addToInsertControl(System,*beamStop,*pipeA,"Main");
+      beamStop->insertComponent(System,"ShieldSideFrontHole",*bellowA);
+      beamStop->insertComponent(System,"ShieldSideBackHole",*bellowB);
+      beamStop->insertComponent(System,"ShieldSideBackHole",*pipeA);
 
-      for (const TDCsegment* sideSegment : sideVec)
+      if (prevSegPtr)
 	{
-	  const std::vector<int> cellVec= sideSegment->getCells("BlockVoid");
-	  beamStop->insertAllInCell(System,cellVec.end()[-1]);
-	  const Segment7 *seg7 = dynamic_cast<const Segment7*>(sideSegment);
-
-	  attachSystem::addToInsertControl(System,*beamStop,*seg7->getPipeB(),"FlangeB");
-	  attachSystem::addToInsertControl(System,*beamStop,*seg7->getPipeB(),"Main");
+	  const int prevCell= prevSegPtr->getCells("BlockVoid").back();
+	  beamStop->insertInCell("FlangeA",System,prevCell);
+	  beamStop->insertInCell("Main",System,prevCell);
+	  beamStop->insertComponent(System,"ShieldSideFrontHole",prevSegPtr->getRule("EndPipeFlange"));
+	  beamStop->insertComponent(System,"ShieldSideFrontHole",prevSegPtr->getRule("EndPipeMain"));
 	}
     }
 

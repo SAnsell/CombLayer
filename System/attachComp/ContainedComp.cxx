@@ -307,6 +307,17 @@ ContainedComp::getOuterSurf() const
 {
   return outerSurf;
 }
+
+HeadRule
+ContainedComp::getExcludeSurf() const
+  /*!
+    Care here because this can return a referenece
+    due to ContainedGroup not having a complete outer surf
+    \return Outer headRule
+  */
+{
+  return outerSurf.complement();
+}
   
 std::string
 ContainedComp::getCompExclude() const
