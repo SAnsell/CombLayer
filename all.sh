@@ -9,7 +9,10 @@ function procExit
 #segments=$(for i in {40..49}; do echo -n "Segment$i "; done)
 
 segments=All
-./maxiv --noLengthCheck --defaultConfig Linac ${segments} -validAll --validCheck 100 AA; procExit
+#./fullBuild -validAll --validCheck 1000 AA; procExit  ## issue tracking with curved surfaces
+./t1Real -validAll --validCheck 1000 AA; procExit
+#./reactor -validAll --validCheck 100 AA; procExit
+#./maxiv --noLengthCheck --defaultConfig Linac ${segments} -validAll --validCheck 100 AA; procExit
 #./maxiv --defaultConfig Single  BALDER --validAll --validCheck 1000 AA; procExit
 #./maxiv --defaultConfig Single  COSAXS --validAll --validCheck 1000 AA; procExit
 #./maxiv --defaultConfig Single  DANMAX --validAll --validCheck 1000 AA; procExit
