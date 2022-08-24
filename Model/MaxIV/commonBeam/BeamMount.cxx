@@ -272,45 +272,6 @@ BeamMount::createLinks()
 }
 
 void
-BeamMount::createAll(Simulation& ,
-		      const attachSystem::FixedComp&,
-		      const long int)
- /*!
-    Generic function to create everything
-    \param System :: Simulation item
-    \param portFC :: FixedComp
-    \param portIndex :: Fixed Index
-  */
-{
-  ELog::RegMethod RegA("BeamFlange","createAll(FC)");
-
-  throw ColErr::AbsObjMethod("Single value createAll");
-  return;
-}
-
-void
-BeamMount::createAll(Simulation& System,
-		     const attachSystem::FixedComp& centreFC,
-		     const std::string& cName,
-		     const attachSystem::FixedComp& flangeFC,
-		     const std::string& fName)
-  /*!
-    Extrenal build everything
-    \param System :: Simulation
-    \param centreFC :: FixedComp for beam origin
-    \param cName :: link point of centre [and axis]
-    \param flangeFC :: link point of flange center
-    \param fName :: direction for links
-   */
-{
-  ELog::RegMethod RegA("BeamMount","createAll(name,name)");
-
-  createAll(System,centreFC,centreFC.getSideIndex(cName),
-	    flangeFC,flangeFC.getSideIndex(fName));
-  return;
-}
-
-void
 BeamMount::createAll(Simulation& System,
 		    const attachSystem::FixedComp& centreFC,
 		    const long int cIndex,

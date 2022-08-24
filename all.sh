@@ -9,10 +9,8 @@ function procExit
 #segments=$(for i in {40..49}; do echo -n "Segment$i "; done)
 
 segments=All
-./fullBuild -validAll --validCheck 1000 AA; procExit  ## issue tracking with curved surfaces
-echo "ASDFASFDSAFSAFDSAFSADF"
+./fullBuild -validAll --validCheck 1000 AA; procExit 
 ./t1Real -validAll --validCheck 1000 AA; procExit
-echo "ASDFASFDSAFSAFDSAFSADF"
 ./reactor -validAll --validCheck 100 AA; procExit
 ./maxiv --noLengthCheck --defaultConfig Linac ${segments} -validAll --validCheck 1000 AA; procExit
 ./maxiv --defaultConfig Single  BALDER --validAll --validCheck 1000 AA; procExit
@@ -25,7 +23,6 @@ echo "ASDFASFDSAFSAFDSAFSADF"
 ./maxiv --defaultConfig Single  SPECIES --validAll --validCheck 10000 AA; procExit
 ./maxiv --defaultConfig Single  SOFTIMAX --validAll --validCheck 1000 AA; procExit
 
-echo "ASDFASFDSAFSAFDSAFSADF"
 ./singleItem --singleItem BeamDivider       --validCheck 1000 AA; procExit
 ./singleItem --singleItem BeamScrapper      --validCheck 1000 AA; procExit
 ./singleItem --singleItem Bellow            --validCheck 1000 AA; procExit
@@ -54,7 +51,7 @@ echo "ASDFASFDSAFSAFDSAFSADF"
 ./singleItem --singleItem EPSeparator       --validCheck 1000 AA; procExit
 ./singleItem --singleItem ExperimentalHutch --validCheck 1000 AA; procExit
 ./singleItem --singleItem FMask             --validCheck 1000 AA; procExit
-exit
+
 ./singleItem --singleItem FlangeDome        --validCheck 1000 AA; procExit
 ./singleItem --singleItem FlatPipe          --validCheck 1000 AA; procExit
 ./singleItem --singleItem FourPort          --validCheck 1000 AA; procExit
