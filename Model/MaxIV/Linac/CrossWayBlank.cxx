@@ -208,8 +208,8 @@ CrossWayBlank::createObjects(Simulation& System)
 
   HeadRule HR;
   
-  const std::string frontHR=getRuleStr("front");
-  const std::string backHR=getRuleStr("back");
+  const HeadRule& frontHR=getRule("front");
+  const HeadRule& backHR=getRule("back");
 
   // inner void
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7");
@@ -315,7 +315,7 @@ CrossWayBlank::createObjects(Simulation& System)
 
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"(323 -327 -324) : (425 -426 -427)");
-  addOuterUnionSurf(Out*frontHR*backHR);
+  addOuterUnionSurf(HR*frontHR*backHR);
 
   return;
 }
