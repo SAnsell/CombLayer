@@ -194,13 +194,6 @@ SimValid::runPoint(const Simulation& System,
     {
       if (initSurfNum)
 	{
-	  if (!debugFlag)
-	    {
-	      ELog::EM<<"Adjusting the initial point as on surface:\n"
-		      <<initSurfNum<<" object "<<InitObj->getName()
-		      <<ELog::endWarn;
-	      debugFlag=1;
-	    }
 	  Pt+=Geometry::Vec3D(Random::rand()*0.01,
 			      Random::rand()*0.01,
 			      Random::rand()*0.01);

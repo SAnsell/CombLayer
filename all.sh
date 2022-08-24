@@ -9,20 +9,23 @@ function procExit
 #segments=$(for i in {40..49}; do echo -n "Segment$i "; done)
 
 segments=All
-#./fullBuild -validAll --validCheck 1000 AA; procExit  ## issue tracking with curved surfaces
-#./t1Real -validAll --validCheck 1000 AA; procExit
-#./reactor -validAll --validCheck 100 AA; procExit
+./fullBuild -validAll --validCheck 1000 AA; procExit  ## issue tracking with curved surfaces
+echo "ASDFASFDSAFSAFDSAFSADF"
+./t1Real -validAll --validCheck 1000 AA; procExit
+echo "ASDFASFDSAFSAFDSAFSADF"
+./reactor -validAll --validCheck 100 AA; procExit
 ./maxiv --noLengthCheck --defaultConfig Linac ${segments} -validAll --validCheck 1000 AA; procExit
-#./maxiv --defaultConfig Single  BALDER --validAll --validCheck 1000 AA; procExit
-#./maxiv --defaultConfig Single  COSAXS --validAll --validCheck 1000 AA; procExit
-#./maxiv --defaultConfig Single  DANMAX --validAll --validCheck 1000 AA; procExit
-#./maxiv --defaultConfig Single  FLEXPES --validAll --validCheck 1000 AA; procExit
-#./maxiv --defaultConfig Single  FORMAX --validAll --validCheck 1000 AA; procExit
-#./maxiv --defaultConfig Single  MAXPEEM --validAll --validCheck 1000 AA; procExit
-#./maxiv --defaultConfig Single  MICROMAX --validAll --validCheck 1000 AA; procExit
-#./maxiv --defaultConfig Single  SPECIES --validAll --validCheck 10000 AA; procExit
-#./maxiv --defaultConfig Single  SOFTIMAX --validAll --validCheck 1000 AA; procExit
-exit
+./maxiv --defaultConfig Single  BALDER --validAll --validCheck 1000 AA; procExit
+./maxiv --defaultConfig Single  COSAXS --validAll --validCheck 1000 AA; procExit
+./maxiv --defaultConfig Single  DANMAX --validAll --validCheck 1000 AA; procExit
+./maxiv --defaultConfig Single  FLEXPES --validAll --validCheck 1000 AA; procExit
+./maxiv --defaultConfig Single  FORMAX --validAll --validCheck 1000 AA; procExit
+./maxiv --defaultConfig Single  MAXPEEM --validAll --validCheck 1000 AA; procExit
+./maxiv --defaultConfig Single  MICROMAX --validAll --validCheck 1000 AA; procExit
+./maxiv --defaultConfig Single  SPECIES --validAll --validCheck 10000 AA; procExit
+./maxiv --defaultConfig Single  SOFTIMAX --validAll --validCheck 1000 AA; procExit
+
+echo "ASDFASFDSAFSAFDSAFSADF"
 ./singleItem --singleItem BeamDivider       --validCheck 1000 AA; procExit
 ./singleItem --singleItem BeamScrapper      --validCheck 1000 AA; procExit
 ./singleItem --singleItem Bellow            --validCheck 1000 AA; procExit

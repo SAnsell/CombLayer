@@ -106,6 +106,7 @@ main(int argc,char* argv[])
 	      <<ELog::endBasic;
 
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
+      ELog::EM<<"Exit == "<<exitFlag<<ELog::endDiag;
       ModelSupport::calcVolumes(SimPtr,IParam);
       SimPtr->objectGroups::write("ObjectRegister.txt");
     }

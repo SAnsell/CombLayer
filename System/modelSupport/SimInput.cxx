@@ -139,8 +139,11 @@ processExitChecks(Simulation& System,
 	      if (CP!=Geometry::Vec3D(0,0,0))
 		{
 		  ELog::EM<<"FC["<<FC.getKeyName()<<"] ";
-		  if (SValidCheck.runPoint(System,CP,NPts))
-		    errFlag += -1;
+		  if (!SValidCheck.runPoint(System,CP,NPts))
+		    {
+		      ELog::EM<<"ERROR "<<ELog::endErr;
+		      errFlag += -1;
+		    }
 		}
 	    }
 	}
