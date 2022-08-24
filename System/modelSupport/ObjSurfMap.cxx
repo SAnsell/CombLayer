@@ -291,13 +291,14 @@ ObjSurfMap::findNextObject(const int SN,
   ELog::RegMethod RegA("ObjSurfMap","findNextObject");
 
   const STYPE& MVec=getObjects(SN);
-
+  
   for(MonteCarlo::Object* MPtr : MVec)
     {
       if (MPtr->getName()!=objExclude && 
 	  MPtr->isDirectionValid(Pos,SN))
 	return MPtr;
     }
+    
   return 0;
 }
 

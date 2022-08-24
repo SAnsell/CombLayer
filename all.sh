@@ -10,9 +10,9 @@ function procExit
 
 segments=All
 #./fullBuild -validAll --validCheck 1000 AA; procExit  ## issue tracking with curved surfaces
-./t1Real -validAll --validCheck 1000 AA; procExit
+#./t1Real -validAll --validCheck 1000 AA; procExit
 #./reactor -validAll --validCheck 100 AA; procExit
-#./maxiv --noLengthCheck --defaultConfig Linac ${segments} -validAll --validCheck 100 AA; procExit
+./maxiv --noLengthCheck --defaultConfig Linac ${segments} -validAll --validCheck 1000 AA; procExit
 #./maxiv --defaultConfig Single  BALDER --validAll --validCheck 1000 AA; procExit
 #./maxiv --defaultConfig Single  COSAXS --validAll --validCheck 1000 AA; procExit
 #./maxiv --defaultConfig Single  DANMAX --validAll --validCheck 1000 AA; procExit

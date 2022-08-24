@@ -220,7 +220,7 @@ SimValid::runPoint(const Simulation& System,
       // Get random starting point on edge of volume
       phi=Random::rand()*M_PI;
       theta=2.0*Random::rand()*M_PI;
-      const Geometry::Vec3D uVec(cos(theta)*sin(phi),
+      Geometry::Vec3D uVec(cos(theta)*sin(phi),
 			     sin(theta)*sin(phi),
 			     cos(phi));
       MonteCarlo::eTrack TNeut(Pt,uVec);
@@ -230,6 +230,7 @@ SimValid::runPoint(const Simulation& System,
       Pts.push_back(simPoint(TNeut.Pos,TNeut.uVec,OPtr->getName(),SN,OPtr));
       while(OPtr && !OPtr->isZeroImp())
 	{
+
 	  // Note: Need OPPOSITE Sign on exiting surface
 	  SN= OPtr->trackCell(TNeut,aDist,SPtr,SN);
 	  if (aDist>1e30 && Pts.size()<=1)
@@ -243,14 +244,20 @@ SimValid::runPoint(const Simulation& System,
 	    }
 	  TNeut.moveForward(aDist);
 	  Pts.push_back(simPoint(TNeut.Pos,TNeut.uVec,OPtr->getName(),SN,OPtr));
+		  
 	  OPtr=(SN) ?
-	    OSMPtr->findNextObject(SN,TNeut.Pos,OPtr->getName()) : 0;	    
+	    OSMPtr->findNextObject(SN,TNeut.Pos,OPtr->getName()) : 0;
+	  if (!OPtr)
+	    {
+	      TNeut.moveForward(Geometry::zeroTol*5.0);
+	      OPtr=System.findCell(TNeut.Pos,0);
+	    }
 	}
 
       if (!OPtr)
 	{
 	  ELog::EM<<"OPtr not found["<<i<<"] at : "<<Pt<<ELog::endCrit;
-	  ELog::EM<<"Line SEARCH == "<<ELog::endCrit;
+	  ELog::EM<<"Line SEARCH == "<<i<<ELog::endCrit;
 	  ModelSupport::LineTrack LT(Pt,uVec,10000.0);
 	  LT.calculate(System);
 	  ELog::EM<<"LT == "<<LT<<ELog::endDiag;

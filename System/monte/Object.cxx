@@ -1315,8 +1315,8 @@ Object::trackCell(const MonteCarlo::particle& N,double& D,
   for(size_t i=0;i<dPts.size();i++)
     {
       // Is point possible closer
-      if ( dPts[i]>10.0*Geometry::zeroTol &&
-	   dPts[i]>Geometry::zeroTol && dPts[i]<D )
+
+      if ( dPts[i]>Geometry::zeroTol && dPts[i]<D+Geometry::zeroTol*10.0)
 	{
 	  const int NS=surfIndex[i]->getName();	    // NOT SIGNED
 	  const int pAB=isDirectionValid(IPts[i],NS);
