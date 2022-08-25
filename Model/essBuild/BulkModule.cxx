@@ -3,7 +3,7 @@
  
  * File:   essBuild/BulkModule.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,9 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "stringCombine.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -141,18 +138,14 @@ BulkModule::populate(const FuncDataBase& Control)
   COffset.resize(nLayer);
   for(size_t i=0;i<nLayer;i++)
     {
-      radius[i]=Control.EvalVar<double>
-	(keyName+StrFunc::makeString("Radius",i+1));
-      height[i]=Control.EvalVar<double>
-	(keyName+StrFunc::makeString("Height",i+1));
-      depth[i]=Control.EvalVar<double>
-	(keyName+StrFunc::makeString("Depth",i+1));
-      Mat[i]=ModelSupport::EvalMat<int>(Control,
-	keyName+StrFunc::makeString("Mat",i+1));
+      const std::string nStr(std::to_string(i+1));
+      radius[i]=Control.EvalVar<double>(keyName+"Radius"+nStr);
+      height[i]=Control.EvalVar<double>(keyName+"Height"+nStr);
+      depth[i]=Control.EvalVar<double>(keyName+"Depth"+nStr);      
+      Mat[i]=ModelSupport::EvalMat<int>(Control,keyName+"Mat"+nStr);
       if (i)
 	COffset[i]=Control.EvalDefVar<Geometry::Vec3D>
-	  (keyName+StrFunc::makeString("Offset",i+1),
-	   Geometry::Vec3D(0,0,0));
+	  (keyName+"Offset"+nStr,Geometry::Vec3D(0,0,0));
     }
   return;
 }
@@ -214,36 +207,25 @@ BulkModule::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("BulkModule","createObjects");
 
-  const std::string boundary=
-    ExternalCut::getRuleStr("Reflector");
-  
+  const HeadRule boundaryHR=
+    ExternalCut::getRule("Reflector");
+
+  HeadRule HR;
+  HeadRule HRX=boundaryHR;
+
   std::string Out,OutX;
   int RI(buildIndex);
   for(size_t i=0;i<nLayer;i++)
     {
-      Out=ModelSupport::getComposite(SMap,RI,"5 -6 -7 ");
-      if (i)
-	OutX=ModelSupport::getComposite(SMap,RI-10,"(-5:6:7)");
-      else
-	OutX=boundary;
-      System.addCell(MonteCarlo::Object(cellIndex++,Mat[i],0.0,Out+OutX));
+      HR=ModelSupport::getHeadRule(SMap,RI,"5 -6 -7");
+      System.addCell(cellIndex++,Mat[i],0.0,HR*HRX);
       RI+=10;
+      HRX=HR.complement();
     }
-  
-  addOuterSurf(Out);
+  addOuterSurf(HR);
   return;
 }
 
-std::string
-BulkModule::getComposite(const std::string& surfList) const
-  /*!
-    Exposes local version of getComposite
-    \param surfList :: surface list
-    \return Composite string
-  */
-{
-  return ModelSupport::getComposite(SMap,buildIndex,surfList);
-}
 
 void
 BulkModule::createLinks()
@@ -320,7 +302,7 @@ BulkModule::addFlightUnit(Simulation& System,
 				 buildIndex+10*static_cast<int>(nLayer-1),
 				 " 7 -7M ");
   // Dividing surface ?
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+cx.str()));
+  System.addCell(cellIndex++,0,0.0,Out+cx.str());
   return;
 }
 

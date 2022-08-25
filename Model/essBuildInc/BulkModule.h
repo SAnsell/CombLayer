@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BulkModule.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,10 +35,11 @@ namespace essSystem
   \brief Bulk around Reflector
 */
 
-class BulkModule : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
-  public attachSystem::SurfMap,
-  public attachSystem::ExternalCut
+class BulkModule :
+    public attachSystem::ContainedComp,
+    public attachSystem::FixedOffset,
+    public attachSystem::SurfMap,
+    public attachSystem::ExternalCut
 {
  private:
      
@@ -56,7 +57,7 @@ class BulkModule : public attachSystem::ContainedComp,
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&);
-
+  
  public:
 
   BulkModule(const std::string&);
@@ -64,9 +65,10 @@ class BulkModule : public attachSystem::ContainedComp,
   BulkModule& operator=(const BulkModule&);
   virtual ~BulkModule();
 
-  std::string getComposite(const std::string&) const;
+
 
   void addFlightUnit(Simulation&,const attachSystem::FixedComp&);
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

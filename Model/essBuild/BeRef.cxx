@@ -282,66 +282,65 @@ BeRef::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("BeRef","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   // low segment
   if (voidCylRadius>Geometry::zeroTol)
     {
       //  void volume
-      Out=ModelSupport::getComposite(SMap,buildIndex," -307 305 -105 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-307 305 -105");
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,HR));
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," -7 5 -105 (307:-305) ");
-      makeCell("lowBe",System,cellIndex++,lowRefMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 5 -105 (307:-305)");
+      makeCell("lowBe",System,cellIndex++,lowRefMat,0.0,HR);
     }
   else
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," -7 5 -105 ");
-      makeCell("lowBe",System,cellIndex++,lowRefMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 5 -105");
+      makeCell("lowBe",System,cellIndex++,lowRefMat,0.0,HR);
     }
   
   // low void
-  Out=ModelSupport::getComposite(SMap,buildIndex," -17 115 -205");
-  makeCell("lowVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 115 -205");
+  makeCell("lowVoid",System,cellIndex++,0,0.0,HR);
 
   // Target void
-  Out=ModelSupport::getComposite(SMap,buildIndex," -17 205 -206");
-  makeCell("targetVoid",System,cellIndex++,targSepMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 205 -206");
+  makeCell("targetVoid",System,cellIndex++,targSepMat,0.0,HR);
   
   // top Segment
-  Out=ModelSupport::getComposite(SMap,buildIndex," -17 -116 206");
-  makeCell("topVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 -116 206");
+  makeCell("topVoid",System,cellIndex++,0,0.0,HR);
 
   // top segment
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 -6 106");
-  makeCell("topBE",System,cellIndex++,topRefMat,0.0,Out);
-  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 -6 106");
+  makeCell("topBE",System,cellIndex++,topRefMat,0.0,HR);
+
   if (wallThick>Geometry::zeroTol)
     {
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," -17 15 -105 (7:-5)");
-      System.addCell(MonteCarlo::Object(cellIndex++,lowWallMat,0.0,Out));
-      makeCell("lowWall",System,cellIndex++,lowWallMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 15 -105 (7:-5)");
+      makeCell("lowWall",System,cellIndex++,lowWallMat,0.0,HR);
       
       if (wallThickLow>Geometry::zeroTol)
 	{
 	  // divide layer
-	  Out=ModelSupport::getComposite(SMap,buildIndex," -17 105 -115 ");
-	  makeCell("lowWallDivider",System,cellIndex++,lowWallMat,0.0,Out);
-	  
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 105 -115");
+	  makeCell("lowWallDivider",System,cellIndex++,lowWallMat,0.0,HR);
+
 	  // divide layer
-	  Out=ModelSupport::getComposite(SMap,buildIndex," -17 -106 116 ");
-	  System.addCell(MonteCarlo::Object(cellIndex++,topWallMat,0.0,Out));
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 -106 116");
+	  makeCell("lowWallDivider",System,cellIndex++,topWallMat,0.0,HR);
 	}
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," -17 -16 106 (7:6)");
-      System.addCell(cellIndex++,topWallMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 -16 106 (7:6)");
+      makeCell("topWall",System,cellIndex++,topWallMat,0.0,HR);
       
-      Out=ModelSupport::getComposite(SMap,buildIndex," -17 15 -16 ");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 15 -16");
     }
   else
-    Out=ModelSupport::getComposite(SMap,buildIndex," -17 5 -6 ");
+    HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 5 -6");
 
-  addOuterSurf(Out);
+  addOuterSurf(HR);
   return; 
 
 }

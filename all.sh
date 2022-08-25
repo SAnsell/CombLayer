@@ -9,6 +9,9 @@ function procExit
 #segments=$(for i in {40..49}; do echo -n "Segment$i "; done)
 
 segments=All
+./ess -validAll --validCheck 1000 AA; procExit 
+exit
+
 ./fullBuild -validAll --validCheck 1000 AA; procExit 
 ./t1Real -validAll --validCheck 1000 AA; procExit
 ./reactor -validAll --validCheck 100 AA; procExit

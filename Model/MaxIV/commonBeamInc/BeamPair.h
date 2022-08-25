@@ -78,9 +78,6 @@ class BeamPair :
   void createObjects(Simulation&);
   void createLinks();
   std::vector<Geometry::Vec3D> calcEdgePoints() const;
-
-  void createAll(Simulation&,
-		 const attachSystem::FixedComp&,const long int) {}
     
  public:
 
@@ -89,7 +86,8 @@ class BeamPair :
   BeamPair& operator=(const BeamPair&);
   virtual ~BeamPair();
 
-  
+
+  using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,const long int,
 		 const attachSystem::FixedComp&,const long int);

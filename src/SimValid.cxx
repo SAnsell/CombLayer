@@ -223,28 +223,23 @@ SimValid::runPoint(const Simulation& System,
       Pts.push_back(simPoint(TNeut.Pos,TNeut.uVec,OPtr->getName(),SN,OPtr));
       while(OPtr && !OPtr->isZeroImp())
 	{
-
 	  // Note: Need OPPOSITE Sign on exiting surface
 	  SN= OPtr->trackCell(TNeut,aDist,SPtr,SN);
-	  if (aDist>1e30 && Pts.size()<=1)
-	    {
-	      ELog::EM<<"Fail on Pts==1 and aDist INF"<<ELog::endDiag;
-	      ELog::EM<<"Index == "<<Pts.size()<<ELog::endDiag;
-	      ELog::EM<<"Pts[0].pos == "<<Pts[0].Pt<<ELog::endDiag;
-	      ELog::EM<<"Pts[0].dir == "<<Pts[0].Dir<<ELog::endDiag;
-	      ELog::EM<<"SN == "<<SN<<ELog::endDiag;
-	      aDist=1e-5;
-	    }
-	  TNeut.moveForward(aDist);
-	  Pts.push_back(simPoint(TNeut.Pos,TNeut.uVec,OPtr->getName(),SN,OPtr));
-		  
-	  OPtr=(SN) ?
-	    OSMPtr->findNextObject(SN,TNeut.Pos,OPtr->getName()) : 0;
-	  if (!OPtr)
+
+	  // This is needed because sometimes we are on a multiway surf
+	  // boundary e.g. circles in contact
+	  if (!SN)
 	    {
 	      TNeut.moveForward(Geometry::zeroTol*5.0);
 	      OPtr=System.findCell(TNeut.Pos,0);
+	      if (OPtr)
+		SN= OPtr->trackCell(TNeut,aDist,SPtr,SN);		
 	    }
+	  TNeut.moveForward(aDist);
+	  Pts.push_back(simPoint(TNeut.Pos,TNeut.uVec,OPtr->getName(),SN,OPtr));
+
+	  OPtr=(SN) ?
+	    OSMPtr->findNextObject(SN,TNeut.Pos,OPtr->getName()) : 0;
 	}
 
       if (!OPtr)

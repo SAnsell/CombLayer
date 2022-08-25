@@ -2,8 +2,8 @@
   CombLayer : MCNP(X) Input builder
  
  * File:   commonBeamInc/ShutterUnit.h
-*
- * Copyright (c) 2004-2021 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,11 +49,11 @@ class ShutterUnit :
   double width;            ///< width accross beam
   double thick;            ///< Thickness in normal direction to reflection  
   double baseLift;         ///< Amount to lift [when closed]
-  double lift;             ///< Amount to lift [when raized]
+  double lift;             ///< Amount to lift [when raised]
   double liftScrewRadius;  ///< Radius of lifting thread
   double threadLength;     ///< Total length of thread
   
-  double topInnerRadius;          ///<  Flange inner radius radius 
+  double topInnerRadius;           ///< Inner radius after first flange
   double topFlangeRadius;          ///< Joining Flange radius 
   double topFlangeLength;          ///< Joining Flange length
 
@@ -66,7 +66,7 @@ class ShutterUnit :
   int blockMat;            ///<  Base material
   int flangeMat;           ///<  flange material
   int bellowMat;           ///<  bellow material
-  int threadMat;            ///<  water material
+  int threadMat;           ///<  water material
   // Functions:
 
   virtual void populate(const FuncDataBase&);
@@ -78,8 +78,6 @@ class ShutterUnit :
   void createLinks();
   std::vector<Geometry::Vec3D> calcEdgePoints() const;
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int) {}
-  
  public:
 
   ShutterUnit(const std::string&);
@@ -87,6 +85,7 @@ class ShutterUnit :
   ShutterUnit& operator=(const ShutterUnit&);
   virtual ~ShutterUnit();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,const long int,
 		 const attachSystem::FixedComp&,const long int);

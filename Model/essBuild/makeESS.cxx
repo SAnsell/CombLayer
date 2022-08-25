@@ -491,7 +491,6 @@ makeESS::buildTopButterfly(Simulation& System)
   BM->setRadiusX(Reflector->getRadius());
 
   TopMod=std::shared_ptr<EssModBase>(BM);
-  ELog::EM<<"ASDFSDF"<<ELog::endDiag;
   TopMod->createAll(System,*TopPreMod,6,*Reflector,0);
   return;
 }

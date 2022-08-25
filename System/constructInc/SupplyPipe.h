@@ -64,10 +64,6 @@ class SupplyPipe :
   std::string startSurf;               ///< Start surfaces [if needed]
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const size_t,
-			const long int);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
   void insertInlet(const attachSystem::FixedComp&,
 		   const long int);
   void addOuterPoints();
@@ -102,7 +98,7 @@ class SupplyPipe :
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,
+  void createAll(Simulation&,const attachSystem::LayerComp&,
 		 const size_t,const long int,const long int);
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
