@@ -788,7 +788,6 @@ HeadRule::isValid(const Geometry::Vec3D& Pt,
   if (signPairedSurf.empty() || !HeadNode)
     return (HeadNode) ? HeadNode->isValid(Pt,S) : 0;
 
-  
   std::map<int,int> SNum({{S,-1}});
   for(const Geometry::Surface* SPtr : signPairedSurf)
     {
@@ -859,6 +858,48 @@ HeadRule::isValid(const Geometry::Vec3D& Pt,
 {
   return (HeadNode) ? HeadNode->isValid(Pt,M) : 0;
 }
+
+
+
+bool
+HeadRule::isLineValid(const Geometry::Vec3D& APt,
+		      const Geometry::Vec3D& BPt) const
+  /*!
+    Given a line-segment defined between APt and BPt
+    find if the line intersect the rule
+    \param APt :: Origin of line
+    \param BPt :: End of line
+    \return true/false 
+  */
+{
+  if (!HeadNode) return 0;
+  if (HeadNode->isValid(APt) || HeadNode->isValid(BPt))
+    return 1;
+
+  const std::vector<const Geometry::Surface*> SVec=
+    getSurfaces();
+  const double ABDist=APt.Distance(BPt);
+  MonteCarlo::LineIntersectVisit LI(APt,BPt-APt);
+
+  for(const Geometry::Surface* SPtr : SVec)
+    {
+      LI.clearTrack();
+      const std::vector<Geometry::Vec3D>& pointVec=
+	LI.getPoints(SPtr);
+
+      std::vector<Geometry::Vec3D>::const_iterator pc;
+      for(const Geometry::Vec3D& Pt : pointVec)
+	{
+	  const double ADist=APt.Distance(Pt);
+	  const double BDist=BPt.Distance(Pt);
+	  if (std::abs(ADist+BDist-ABDist)<Geometry::zeroTol &&
+	      isValid(Pt,SPtr->getName()))
+	    return 1;
+	}
+    }
+  return 0;
+}
+
 
 std::set<int>
 HeadRule::surfValid(const Geometry::Vec3D& Pt) const

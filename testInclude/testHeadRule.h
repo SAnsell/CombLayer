@@ -48,6 +48,7 @@ private:
   int testGetOppositeSurfaces();
   int testInterceptRule();
   int testIntersectHeadRule();
+  int testIsLineValid();
   int testLevel();
   int testPartEqual();
   int testRemoveSurf();

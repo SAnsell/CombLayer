@@ -407,50 +407,6 @@ ContainedComp::surfOuterIntersect(const Geometry::Line& LA) const
   return 0;
 }
 
-bool
-ContainedComp::isOuterLine(const Geometry::Vec3D& APt,
-			   const Geometry::Vec3D& BPt) const
-  /*!
-    Given a line defined by O,Dir find if the line intersect
-    the object and has a valid region within the system
-    \param APt :: Origin of line
-    \param BPt :: End of line
-    \return true if the line intersect the component.
-  */
-{
-  ELog::RegMethod RegA("ContainedComp","isOuterLine");
-
-  // First get surfaces of object:
-  if (!outerSurf.hasRule()) return 0;
-
-  std::vector<Geometry::Surface*> SVec=
-    outerSurf.getTopRule()->getSurfVector();
-
-  // First if either point within the object return true!
-  if (outerSurf.isValid(APt) || outerSurf.isValid(BPt) )
-    return 1;
-
-  const double ABDist=APt.Distance(BPt);
-  MonteCarlo::LineIntersectVisit LI(APt,BPt-APt);
-  std::vector<Geometry::Surface*>::const_iterator vc;
-  for(vc=SVec.begin();vc!=SVec.end();vc++)
-    {
-      LI.clearTrack();
-      const std::vector<Geometry::Vec3D>& PVec=
-	LI.getPoints(*vc);
-      std::vector<Geometry::Vec3D>::const_iterator pc;
-      for(pc=PVec.begin();pc!=PVec.end();pc++)
-	{
-	  const double ADist=APt.Distance(*pc);
-	  const double BDist=BPt.Distance(*pc);
-	  if (fabs(ADist+BDist-ABDist)<Geometry::zeroTol &&
-	      outerSurf.isValid(*pc,(*vc)->getName()))
-	    return 1;
-	}
-    }
-  return 0;
-}
-
 int
 ContainedComp::isOuterValid(const Geometry::Vec3D& V,
 			    const std::set<int>& SN) const

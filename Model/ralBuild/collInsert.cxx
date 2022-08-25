@@ -69,15 +69,6 @@ collInsert::collInsert(const std::string& Key,const int ID) :
 
 
 void
-collInsert::populate(const FuncDataBase& Control)
-{
-  ELog::RegMethod RegA("collInsert","populate");
-
-  ELog::EM<<"Un finished method"<<ELog::endErr;
-  return;
-}
-  
-void
 collInsert::createUnitVector(const attachSystem::FixedComp& FC,
 			     const long int sideIndex)
   /*!
@@ -175,7 +166,7 @@ collInsert::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("collInsert","createAll");
-  populate(System.getDataBase());
+
 
   createUnitVector(FC,sideIndex);
   createSurfaces();

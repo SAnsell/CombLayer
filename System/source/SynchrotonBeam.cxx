@@ -3,7 +3,7 @@
  
  * File:   source/SynchrotonBeam.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,8 +43,7 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotate.h"
 #include "inputSupport.h"
 #include "SourceBase.h"
 #include "SynchrotonBeam.h"
@@ -53,7 +52,7 @@ namespace SDef
 {
 
 SynchrotonBeam::SynchrotonBeam(const std::string& keyName) : 
-  FixedOffsetUnit(keyName,0),SourceBase()
+  FixedRotate(keyName,0),SourceBase()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param keyName :: main name
@@ -61,7 +60,7 @@ SynchrotonBeam::SynchrotonBeam(const std::string& keyName) :
 {}
 
 SynchrotonBeam::SynchrotonBeam(const SynchrotonBeam& A) : 
-  attachSystem::FixedOffsetUnit(A),SourceBase(A),
+  attachSystem::FixedRotate(A),SourceBase(A),
   electronEnergy(A.electronEnergy),magneticField(A.magneticField),
   lowEnergyLimit(A.lowEnergyLimit),arcLength(A.arcLength),
   beamXYZ(A.beamXYZ)
@@ -81,7 +80,7 @@ SynchrotonBeam::operator=(const SynchrotonBeam& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       SourceBase::operator=(A);
       electronEnergy=A.electronEnergy;
       magneticField=A.magneticField;
@@ -119,7 +118,7 @@ SynchrotonBeam::populate(const mainSystem::MITYPE& inputMap)
 {
   ELog::RegMethod RegA("SynchrotonBeam","populate");
 
-  attachSystem::FixedOffset::populate(inputMap);
+  attachSystem::FixedRotate::populate(inputMap);
   SourceBase::populate(inputMap);
   // default neutron
 
@@ -134,23 +133,6 @@ SynchrotonBeam::populate(const mainSystem::MITYPE& inputMap)
 
   beamXYZ=mainSystem::getDefInput<Geometry::Vec3D>
     (inputMap,"beamXYZ",0,Geometry::Vec3D(0,0,0)); 
-
-  return;
-}
-
-void
-SynchrotonBeam::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int linkIndex)
-  /*!
-    Create the unit vector
-    \param FC :: Fixed Componenet
-    \param linkIndex :: Link index [signed for opposite side]
-   */
-{
-  ELog::RegMethod RegA("SynchrotonBeam","createUnitVector");
-
-  attachSystem::FixedComp::createUnitVector(FC,linkIndex);
-  applyOffset();
 
   return;
 }
@@ -191,7 +173,7 @@ SynchrotonBeam::createAll(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("SynchrotonBeam","createAll(FC)");
   createUnitVector(FC,linkIndex);
-  FixedOffset::applyOffset();
+  FixedRotate::applyOffset();
   return;
 }
 
@@ -211,7 +193,7 @@ SynchrotonBeam::createAll(const mainSystem::MITYPE& inputMap,
   ELog::RegMethod RegA("SynchrotonBeam","createAll<inputMap,FC,linkIndex>");
   populate(inputMap);
   createUnitVector(FC,linkIndex);
-  FixedOffset::applyOffset();
+  FixedRotate::applyOffset();
   return;
 }
 

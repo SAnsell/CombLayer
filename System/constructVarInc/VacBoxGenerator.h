@@ -3,7 +3,7 @@
  
  * File:   constructVarInc/VacBoxGenerator.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -104,9 +104,9 @@ class VacBoxGenerator
   /// set wall material
   void setMat(const std::string& M) { wallMat=M; }
 
-  virtual void generateBox(FuncDataBase&,const std::string&,
-			   const double,const double,
-			   const double,const double) const;
+  void generateBox(FuncDataBase&,const std::string&,
+		   const double,const double,
+		   const double,const double) const;
   
 };
 

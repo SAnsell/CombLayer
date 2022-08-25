@@ -3,7 +3,7 @@
  
  * File:   R1Common/R1Ring.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -395,32 +395,31 @@ R1Ring::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("R1Ring","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
   createRoof(System);
   createFloor(System);
 
-  const std::string roofBase=
-    ModelSupport::getComposite(SMap,buildIndex," 6 -16 ");
-  const std::string wallBase=
-    ModelSupport::getComposite(SMap,buildIndex," 5 -16 ");
-  const std::string extraBase=
-    ModelSupport::getComposite(SMap,buildIndex," 16 -26 ");
-  const std::string fullBase=
-    ModelSupport::getComposite(SMap,buildIndex," 5 -26 ");
-  const std::string innerBase=
-    ModelSupport::getComposite(SMap,buildIndex," 5 -6 ");
+  const HeadRule roofBaseHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"6 -16");
+  const HeadRule wallBaseHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"5 -16");
+  const HeadRule extraBaseHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"16 -26");
+  const HeadRule fullBaseHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"5 -26");
+  const HeadRule innerBaseHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"5 -6");
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " -3 -13 -23 -33 -43 -53 " );
-  makeCell("InnerVoid",System,cellIndex++,0,0.0,Out+fullBase);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				"-3 -13 -23 -33 -43 -53");
+  makeCell("InnerVoid",System,cellIndex++,0,0.0,HR*fullBaseHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " -103 -113 -123 -133 -143 -153 "
-				 " (3 : 13 : 23 : 33 : 43 : 53) ");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+wallBase);
-  makeCell("WallExtra",System,cellIndex++,wallMat,0.0,Out+extraBase);
-
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				"-103 -113 -123 -133 -143 -153"
+				"(3 : 13 : 23 : 33 : 43 : 53)");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR*wallBaseHR);
+  makeCell("WallExtra",System,cellIndex++,wallMat,0.0,HR*extraBaseHR);
 
   // loop to make individual units:
   const std::vector<std::string> MidZone
@@ -434,12 +433,12 @@ R1Ring::createObjects(Simulation& System)
       "5059       143 6051 -6061 3057 3067",
       "5069 (143:153) 6061 -6071 3067 3077",
       "5079      153  6071 -6081 3077 3087",
-      "5089 (153:103) 6081 -6091 3087 3097",
+      "5089 (153:103) 6081 -6091 3087 3097"
 	});
   for(const std::string& Item : MidZone)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,Item);
-      makeCell("Void",System,cellIndex++,innerMat,0.0,Out+innerBase);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,Item);
+      makeCell("Void",System,cellIndex++,innerMat,0.0,HR*innerBaseHR);
     }
   
   // loop to make individual units:
@@ -460,23 +459,23 @@ R1Ring::createObjects(Simulation& System)
   int BI=buildIndex+3000;
   for(size_t i=0;i<concaveNPoints;i++)
     {
-      Out=ModelSupport::getComposite(SMap,BI," -7 ");
-      std::string OutB=ModelSupport::getComposite(SMap,BI," -8 ");
-      makeCell("VoidCyl",System,cellIndex++,0,0.0,Out+innerBase);
-      makeCell("RoofCyl",System,cellIndex++,roofMat,0.0,Out+roofBase);
-      makeCell("SkyCyl",System,cellIndex++,0,0.0,Out+extraBase);
-      makeCell("VoidCylB",System,cellIndex++,0,0.0,OutB+innerBase);
-      makeCell("RoofCylB",System,cellIndex++,roofMat,0.0,OutB+roofBase);
-      makeCell("SkyCylB",System,cellIndex++,0,0.0,OutB+extraBase);
+      HR=ModelSupport::getHeadRule(SMap,BI,"-7");
+      HeadRule HRB=ModelSupport::getHeadRule(SMap,BI," -8 ");
+      makeCell("VoidCyl",System,cellIndex++,0,0.0,HR*innerBaseHR);
+      makeCell("RoofCyl",System,cellIndex++,roofMat,0.0,HR*roofBaseHR);
+      makeCell("SkyCyl",System,cellIndex++,0,0.0,HR*extraBaseHR);
+      makeCell("VoidCylB",System,cellIndex++,0,0.0,HRB*innerBaseHR);
+      makeCell("RoofCylB",System,cellIndex++,roofMat,0.0,HRB*roofBaseHR);
+      makeCell("SkyCylB",System,cellIndex++,0,0.0,HRB*extraBaseHR);
       BI+=10;
     }
     
   for(const std::string& item : Voids)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,item);
-      makeCell("VoidTriangle",System,cellIndex++,0,0.0,Out+innerBase);
-      makeCell("RoofTriangle",System,cellIndex++,roofMat,0.0,Out+roofBase);
-      makeCell("RoofExtra",System,cellIndex++,0,0.0,Out+extraBase);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,item);
+      makeCell("VoidTriangle",System,cellIndex++,0,0.0,HR*innerBaseHR);
+      makeCell("RoofTriangle",System,cellIndex++,roofMat,0.0,HR*roofBaseHR);
+      makeCell("RoofExtra",System,cellIndex++,0,0.0,HR*extraBaseHR);
     }
 
 
@@ -511,19 +510,17 @@ R1Ring::createObjects(Simulation& System)
   // Front walls:
   for(const std::string& item : frontWalls)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,item);
-      makeCell("FrontWall",System,cellIndex++,wallMat,0.0,Out+wallBase);
-      makeCell("FrontExtra",System,cellIndex++,0,0.0,Out+extraBase);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,item);
+      makeCell("FrontWall",System,cellIndex++,wallMat,0.0,HR*wallBaseHR);
+      makeCell("FrontExtra",System,cellIndex++,0,0.0,HR*extraBaseHR);
     }      
 
   // Main walls:
   for(const std::string& item : walls)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,item);
-      makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+wallBase);
-      makeCell("Extra",System,cellIndex++,0,0.0,Out+extraBase);
-      //      makeCell("RoofTriangle",System,cellIndex++,roofMat,0.0,Out+roofBase);
-      //      makeCell("RoofExtra",System,cellIndex++,0,0.0,Out+extraBase);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,item);
+      makeCell("Wall",System,cellIndex++,wallMat,0.0,HR*wallBaseHR);
+      makeCell("Extra",System,cellIndex++,0,0.0,HR*extraBaseHR);
     }      
 
   // EXTERNAL void-triangles:
@@ -544,12 +541,12 @@ R1Ring::createObjects(Simulation& System)
     });
   for(const std::string& item : extTriangle)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,item);
-      makeCell("OuterSegment",System,cellIndex++,outerMat,0.0,Out+fullBase);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,item);
+      makeCell("OuterSegment",System,cellIndex++,outerMat,0.0,HR*fullBaseHR);
     }
 	  
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-9007 15 -26");
-  addOuterSurf(Out);    
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-9007 15 -26");
+  addOuterSurf(HR);    
   return;
 }
 
@@ -635,7 +632,8 @@ R1Ring::createDoor(Simulation& System)
 	("floor",SurfMap::getSurf("Floor"));
 
       doorPtr->addAllInsertCell(getCell("Wall",doorActive % 10));
-      doorPtr->createAll(System,*this,doorActive+2);
+      const std::string linkName="OpticCentre"+std::to_string(doorActive+2);
+      doorPtr->createAll(System,*this,linkName);
     }
   return;
 }

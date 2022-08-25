@@ -80,7 +80,7 @@ class RingDoor :
   RingDoor& operator=(const RingDoor&);
   virtual ~RingDoor() {}  ///< Destructor
 
-
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 };

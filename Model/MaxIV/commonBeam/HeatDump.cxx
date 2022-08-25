@@ -183,7 +183,7 @@ HeatDump::populate(const FuncDataBase& Control)
 }
 
 void
-HeatDump::createUnitVector(const attachSystem::FixedComp& centreFC,
+HeatDump::createPairVector(const attachSystem::FixedComp& centreFC,
 			   const long int cIndex,
 			   const attachSystem::FixedComp& flangeFC,
 			   const long int fIndex)
@@ -385,7 +385,7 @@ HeatDump::createAll(Simulation& System,
   ELog::RegMethod RegA("HeatDump","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(centreFC,cIndex,flangeFC,fIndex);
+  createPairVector(centreFC,cIndex,flangeFC,fIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

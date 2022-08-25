@@ -59,7 +59,6 @@ class collInsert  :
 			const long int);
   
   
-  virtual void populate(const FuncDataBase&);
   virtual void createSurfaces();
   virtual void createObjects(Simulation&);
   void createLinks();
@@ -73,6 +72,7 @@ class collInsert  :
 
   Geometry::Vec3D getWindowCentre() const;
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const FixedComp&,const long int);
 };
 

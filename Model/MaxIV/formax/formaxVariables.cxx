@@ -625,7 +625,7 @@ mirrorBox(FuncDataBase& Control,
   const double bMirrorDist((mainLength-centreDist)/2.0);
 
   const double heightDelta=tan(2.0*std::abs(phi)*M_PI/180.0)*aMirrorDist;
-  const double mirrorDelta=tan(2.0*std::abs(phi)*M_PI/180.0)*centreDist;
+  //  const double mirrorDelta=tan(2.0*std::abs(phi)*M_PI/180.0)*centreDist;
   const double widthDelta=tan(2.0*std::abs(theta)*M_PI/180.0)*bMirrorDist;
 
   VBoxGen.setBPortOffset(widthDelta,heightDelta);
@@ -827,7 +827,7 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,preName+"BellowA",12.6);
 
-  const double FM2dist(1624.2);
+
   FMaskGen.setCF<CF63>();
   FMaskGen.setFrontGap(2.13,2.146);
   FMaskGen.setBackGap(0.756,0.432);

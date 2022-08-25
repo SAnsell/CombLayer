@@ -84,7 +84,6 @@
 #include "BilbaoWheel.h"
 #include "BeRef.h"
 #include "ProtonTube.h"
-#include "BeamMonitor.h"
 #include "EssModBase.h"
 #include "H2Wing.h"
 #include "ButterflyModerator.h"
@@ -122,7 +121,6 @@ makeESS::makeESS() :
   Reflector(new BeRef("BeRef")),
   PBeam(new ProtonTube("ProtonTube")),
   pbip(new PBIP("PBIP")),
-  BMon(new BeamMonitor("BeamMonitor")),
 
   topFocus(new FocusPoints("TopFocus")),
   lowFocus(new FocusPoints("LowFocus")),
@@ -165,7 +163,6 @@ makeESS::makeESS() :
   OR.addObject(Reflector);
   OR.addObject(PBeam);
   OR.addObject(pbip);
-  OR.addObject(BMon);
   OR.addObject(topFocus);
   OR.addObject(lowFocus);
   

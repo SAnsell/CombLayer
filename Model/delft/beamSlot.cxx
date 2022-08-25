@@ -3,7 +3,7 @@
  
  * File:   delft/beamSlot.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -191,33 +189,32 @@ beamSlot::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("beamSlot","createObjects");
   
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
-  addOuterSurf(Out);
-
+  HeadRule HR;
   
-  // End plates
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -13 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,glassMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
+  addOuterSurf(HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 14 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,glassMat,0.0,Out));
+  // End plates
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -13 5 -6");
+  System.addCell(cellIndex++,glassMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 14 -4 5 -6");
+  System.addCell(cellIndex++,glassMat,0.0,HR);
 
   int surfOffset(buildIndex);
-  const std::string baseOut=
-    ModelSupport::getComposite(SMap,buildIndex," 1 -2 13 -14 ");
+  const HeadRule baseHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -14");
   
   for(size_t i=0;i<NChannels;i++)
     {
-      Out=baseOut+ModelSupport::getComposite(SMap,surfOffset," 5 -15 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,glassMat,0.0,Out));
-      Out=baseOut+ModelSupport::getComposite(SMap,surfOffset," 15 -25 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,surfOffset,"5 -15");
+      System.addCell(cellIndex++,glassMat,0.0,HR*baseHR);
+      HR=ModelSupport::getHeadRule(SMap,surfOffset,"15 -25");
+      System.addCell(cellIndex++,0,0.0,HR*baseHR);
       surfOffset+=20;
     }
-  Out=baseOut+ModelSupport::getComposite(SMap,buildIndex,
-					 surfOffset," 5M -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,glassMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,surfOffset,"5M -6");
+  System.addCell(cellIndex++,glassMat,0.0,HR*baseHR);
   
   return;
 }

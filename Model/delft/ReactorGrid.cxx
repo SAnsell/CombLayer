@@ -3,7 +3,7 @@
  
  * File:   delft/ReactorGrid.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,8 +40,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "support.h"
 #include "stringCombine.h"
 #include "Vec3D.h"
@@ -64,7 +62,8 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h" 
+#include "FixedOffset.h"
+#include "FixedRotate.h" 
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -339,22 +338,6 @@ ReactorGrid::populate(const FuncDataBase& Control)
 }
 
 void
-ReactorGrid::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Orign object
-    \param sideIndex :: Link point						
-  */
-{
-  ELog::RegMethod RegA("ReactorGrid","createUnitVector");
-  
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  return;
-}
-
-void
 ReactorGrid::createSurfaces()
   /*!
     Create All the surfaces
@@ -432,44 +415,45 @@ ReactorGrid::createObjects(Simulation& System)
   const FuncDataBase& Control=System.getDataBase();
 
   std::string Out;
+  HeadRule HR;
   // Outer Layers
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5005 -6 ");
-  addOuterSurf(Out);      
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5005 -6");
+  addOuterSurf(HR);      
 
-  const std::string ZPart=
-    ModelSupport::getComposite(SMap,buildIndex," 5 -6 ");
-  const std::string ZPlate=
-    ModelSupport::getComposite(SMap,buildIndex," -5 5005 ");
+  const HeadRule ZPartHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"5 -6");
+  const HeadRule ZPlateHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"-5 5005");
 
   
   // Note GridNumbers created at offset values:
   int cNum(buildIndex+5000);
   for(int i=0;i<static_cast<int>(NX);i++)
     {
-      const std::string XPart=
-	ModelSupport::getComposite(SMap,buildIndex+i*10," 7 -17 ");
+      const HeadRule XPartHR=
+	ModelSupport::getHeadRule(SMap,buildIndex+i*10,"7 -17");
       for(int j=0;j<static_cast<int>(NY);j++)
 	{
-	  const std::string YPart=
-	    ModelSupport::getComposite(SMap,buildIndex+j*10," 8 -18 ");
+	  const HeadRule YPartHR=
+	    ModelSupport::getHeadRule(SMap,buildIndex+j*10,"8 -18");
 	  
 	  const size_t si=static_cast<size_t>(i);
 	  const size_t sj=static_cast<size_t>(j);
 	  const int MatN=getMatElement(Control,keyName+"Mat",si,sj);
-	  System.addCell(MonteCarlo::Object(getCellNumber(i,j),MatN,0.0,
-					   XPart+YPart+ZPart));
+	  System.addCell(getCellNumber(i,j),MatN,0.0,XPartHR*YPartHR*ZPartHR);
 
 	  // Plates:
-	  const std::string Hole=
-	    ModelSupport::getComposite(SMap,cNum," -7 ");
-	  const std::string ExHole=
-	    ModelSupport::getComposite(SMap,cNum," 7 ");
-	  System.addCell(MonteCarlo::Object(getCellNumber(i,j)+5000,
-					   plateMat,0.0,
-					   XPart+YPart+ZPlate+ExHole));
+	  const HeadRule HoleHR=
+	    ModelSupport::getHeadRule(SMap,cNum," -7 ");
+	  const HeadRule ExHoleHR=HoleHR.complement();
 
-	  System.addCell(MonteCarlo::Object(getCellNumber(i,j)+6000,
-					   waterMat,0.0,ZPlate+Hole));
+	  
+	  System.addCell(getCellNumber(i,j)+5000,
+			 plateMat,0.0,
+			 XPartHR*YPartHR*ZPlateHR*ExHoleHR);
+
+	  System.addCell(getCellNumber(i,j)+6000,
+			 waterMat,0.0,ZPlateHR*HoleHR);
 	  cNum+=10;
 	}
     }

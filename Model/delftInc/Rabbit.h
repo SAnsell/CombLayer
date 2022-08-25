@@ -64,8 +64,6 @@ class Rabbit : public attachSystem::ContainedComp,
   double capThick;              ///< Cap thickness
   int capMat;                   ///< Cap material
  
-  int innerVoid;                ///< Inner void cell
-
   void populate(const FuncDataBase&);
   void createUnitVector(const ReactorGrid&);
 
@@ -80,10 +78,9 @@ class Rabbit : public attachSystem::ContainedComp,
   Rabbit& operator=(const Rabbit&);
   virtual ~Rabbit();
 
-  /// Accessor to inner void cell
-  int getInnerVoid() const { return innerVoid; }
-
   int build(Simulation&,const ReactorGrid&);
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
   
 

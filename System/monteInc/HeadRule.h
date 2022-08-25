@@ -105,6 +105,8 @@ class HeadRule
   bool isValid(const Geometry::Vec3D&) const;
   bool isValid(const std::map<int,int>&) const;
   bool isValid(const Geometry::Vec3D&,const std::map<int,int>&) const;
+
+  bool isLineValid(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
   
   bool isDirectionValid(const Geometry::Vec3D&,const int) const;
   bool isDirectionValid(const Geometry::Vec3D&,

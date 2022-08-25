@@ -118,7 +118,7 @@ BeamMount::populate(const FuncDataBase& Control)
 }
 
 void
-BeamMount::createUnitVector(const attachSystem::FixedComp& centreFC,
+BeamMount::createPairVector(const attachSystem::FixedComp& centreFC,
 			   const long int cIndex,
 			   const attachSystem::FixedComp& flangeFC,
 			   const long int fIndex)
@@ -289,7 +289,7 @@ BeamMount::createAll(Simulation& System,
   ELog::RegMethod RegA("BeamMount","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(centreFC,cIndex,flangeFC,fIndex);
+  createPairVector(centreFC,cIndex,flangeFC,fIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

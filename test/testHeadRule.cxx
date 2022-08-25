@@ -99,6 +99,12 @@ testHeadRule::createSurfaces()
   SurI.createSurface(24,"py 11");
   SurI.createSurface(25,"pz -11");
   SurI.createSurface(26,"pz 11");
+
+  // Sphere :
+  SurI.createSurface(100,"so 25");
+  // Cylinder :
+  SurI.createSurface(107,"cy 10");
+
   return;
 }
 
@@ -127,6 +133,8 @@ testHeadRule::applyTest(const int extra)
       &testHeadRule::testGetLevel,
       &testHeadRule::testGetOppositeSurfaces,
       &testHeadRule::testInterceptRule,
+      &testHeadRule::testIntersectHeadRule,
+      &testHeadRule::testIsLineValid,
       &testHeadRule::testLevel,
       &testHeadRule::testPartEqual,
       &testHeadRule::testRemoveSurf,
@@ -145,6 +153,7 @@ testHeadRule::applyTest(const int extra)
       "GetOppositeSurfaces",
       "InterceptRule",
       "IntersectHead",
+      "IsHeadRule",
       "Level",
       "PartEqual",
       "RemoveSurf",      
@@ -651,6 +660,53 @@ testHeadRule::testIntersectHeadRule()
 	}
     }
 
+  return 0;
+}
+
+int
+testHeadRule::testIsLineValid()
+  /*!
+    Test the line tracking through a cell .
+    Determine if a line tracks the out cell component
+    \retval 0 :: success / -ve on failure
+  */
+{
+  ELog::RegMethod RegA("testHeadRule","testIsOuterLine");
+
+  typedef std::tuple<std::string,Geometry::Vec3D,Geometry::Vec3D,bool> TTYPE;
+  std::vector<TTYPE> Tests;
+  Tests.push_back(TTYPE("1 -2 3 -4 5 -6",
+			Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0),1));
+
+  Tests.push_back(TTYPE("1 -2 3 -4 5 -6",
+			Geometry::Vec3D(-2,0,0),Geometry::Vec3D(-1.2,0,0),0));
+
+  Tests.push_back(TTYPE("3 -4 -107",
+			Geometry::Vec3D(-2,0,0),Geometry::Vec3D(-1.2,0,0),1));
+
+  Tests.push_back(TTYPE("3 -4 -107",
+			Geometry::Vec3D(-0,-2,0),Geometry::Vec3D(0,-1.2,0),0));
+
+  Tests.push_back(TTYPE("3 -4 -107",
+			Geometry::Vec3D(-1,0,0),Geometry::Vec3D(1,4,0),1));
+
+  Tests.push_back(TTYPE("3 -4 -107",
+			Geometry::Vec3D(1,4,0),Geometry::Vec3D(-1,0,0),1));
+  
+
+  for(const TTYPE& tc : Tests)
+    {
+      HeadRule HR(std::get<0>(tc));
+      bool Res=HR.isLineValid(std::get<1>(tc),std::get<2>(tc));
+      if (Res!=std::get<3>(tc))
+	{
+	  ELog::EM<<"Surface  == "<<std::get<0>(tc)<<ELog::endTrace;
+	  ELog::EM<<"Line == "<<std::get<1>(tc)<<" :: "
+		  <<std::get<2>(tc)<<ELog::endTrace;
+	  ELog::EM<<"Expect  == "<<std::get<3>(tc)<<ELog::endTrace;
+	  return -1;
+	}
+    }
   return 0;
 }
 

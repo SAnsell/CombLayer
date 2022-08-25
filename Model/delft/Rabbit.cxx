@@ -3,7 +3,7 @@
  
  * File:   delft/Rabbit.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,8 +39,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -72,7 +70,7 @@ Rabbit::Rabbit(const std::string& Key,const int index)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key+std::to_string(index),3),
   attachSystem::CellMap(),
-  baseName(Key),innerVoid(0)
+  baseName(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -86,7 +84,7 @@ Rabbit::Rabbit(const Rabbit& A) :
   baseName(A.baseName),
   nLayer(A.nLayer),
   Radii(A.Radii),Mat(A.Mat),length(A.length),capThick(A.capThick),
-  capMat(A.capMat),innerVoid(A.innerVoid)
+  capMat(A.capMat)
   /*!
     Copy constructor
     \param A :: Rabbit to copy
@@ -112,7 +110,6 @@ Rabbit::operator=(const Rabbit& A)
       length=A.length;
       capThick=A.capThick;
       capMat=A.capMat;
-      innerVoid=A.innerVoid;
     }
   return *this;
 }
@@ -257,44 +254,42 @@ Rabbit::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Rabbit","createObjects");
   
-
-  std::string Out;
-
+  HeadRule HR;
   // Add sample
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1007 ");
-  makeCell("Sample",System,cellIndex++,sampleMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1007");
+  makeCell("Sample",System,cellIndex++,sampleMat,0.0,HR);
   
   // Capsule
-  Out=ModelSupport::getComposite(SMap,buildIndex
-,				 "-507 (-508:501) (-509:-502) 1007 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex
+,				 "-507 (-508:501) (-509:-502) 1007");
+  System.addCell(cellIndex++,0,0.0,HR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"501 -502 507 -517 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,capsuleMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-501 508 -518");
-  System.addCell(MonteCarlo::Object(cellIndex++,capsuleMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex,"502 509 -519");
-  System.addCell(MonteCarlo::Object(cellIndex++,capsuleMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"501 -502 507 -517");
+  System.addCell(cellIndex++,capsuleMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-501 508 -518");
+  System.addCell(cellIndex++,capsuleMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"502 509 -519");
+  System.addCell(cellIndex++,capsuleMat,0.0,HR);
 
-  const std::string capExclude=
-    ModelSupport::getComposite(SMap,buildIndex," (507:508:509) ");
+  const HeadRule capExcludeHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"507:508:509");
 
   int RI=buildIndex-10;
   for(size_t i=0;i<nLayer;i++)
     {
       if (i)
-	Out=ModelSupport::getComposite(SMap,buildIndex,RI," 1 -2 7M -17M");
+	HR=ModelSupport::getHeadRule(SMap,buildIndex,RI,"1 -2 7M -17M");
       else
-	Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -7M ")+
-	  capExclude;
-      System.addCell(MonteCarlo::Object(cellIndex++,Mat[i],0.0,Out));
+	HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -7M")*
+	  capExcludeHR;
+      System.addCell(cellIndex++,Mat[i],0.0,HR);
       RI+=10;
     }
-  Out=ModelSupport::getComposite(SMap,buildIndex,RI," -1 11 -7M");
-  System.addCell(MonteCarlo::Object(cellIndex++,capMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,RI,"-1 11 -7M");
+  System.addCell(cellIndex++,capMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,RI," -2 11 -7M");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,RI,"-2 11 -7M");
+  addOuterSurf(HR);
 
   return;
 }

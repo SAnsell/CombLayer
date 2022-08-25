@@ -39,8 +39,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -209,10 +207,12 @@ BeamMonitor::calcExclude(const size_t index,
   for(size_t i=0;i<CG.nGroups();i++)
     {
       const std::string CKey=CName+std::to_string(i);
+      ELog::EM<<"Search "<<CKey<<ELog::endDiag;
       if (CG.hasKey(CKey))
 	{
 	  const ContainedComp& CA=CG.getCC(CKey);
-	  if (CA.isOuterLine(PtA,PtB))
+	  const HeadRule& HR = CA.getOuterSurf();
+	  if (HR.isLineValid(PtA,PtB))
 	    {
 	      ELog::EM<<"Found["<<index<<"] "<<i<<ELog::endTrace;
 	      Out+=CA.getExclude();
@@ -228,7 +228,7 @@ BeamMonitor::calcExclude(const size_t index,
 
 void
 BeamMonitor::createObjects(Simulation& System,
-			   const attachSystem::ContainedGroup& CG, 
+			   const attachSystem::ContainedGroup& CG,
 			   const std::string& CName)
   /*!
     Adds the components
@@ -283,11 +283,9 @@ BeamMonitor::createAll(Simulation& System,
   ELog::RegMethod RegA("BeamMonitor","createAll");
   populate(System.getDataBase());
 
-  std::string PBeam;
-
   createUnitVector(FC,linkIndex);
   createSurfaces();
-  createObjects(System,CG,CGName);
+  createObjects(System);
   createLinks();
   insertObjects(System); 
   return;

@@ -3,7 +3,7 @@
 
  * File:   essBuildInc/BeamMonitor.h
  *
- * Copyright (c) 2017-2019 by Konstantin Batkov
+ * Copyright (c) 2017-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ namespace essSystem
 
 class BeamMonitor :
     public attachSystem::ContainedComp,
-    public attachSystem::FixedRotateUnit
+    public attachSystem::FixedRotate
 {
  private:
 
@@ -55,10 +55,6 @@ class BeamMonitor :
 		     const std::string&);
   void createLinks();
   
-  std::string calcExclude(const size_t,
-			  const attachSystem::ContainedGroup&,
-			  const std::string&) const;
-
 
  public:
 

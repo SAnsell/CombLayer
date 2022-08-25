@@ -62,7 +62,7 @@ class BeamMount :
   // Functions:
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int,
+  void createPairVector(const attachSystem::FixedComp&,const long int,
 			const attachSystem::FixedComp&,const long int);
 
   void createSurfaces();

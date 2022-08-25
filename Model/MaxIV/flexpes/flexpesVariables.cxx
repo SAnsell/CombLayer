@@ -3,7 +3,7 @@
  
  * File:   flexpes/flexpesVariables.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -85,7 +85,6 @@ namespace flexpesVar
   void m1MirrorVariables(FuncDataBase&,const std::string&);
   void splitterVariables(FuncDataBase&,const std::string&);
   void slitPackageVariables(FuncDataBase&,const std::string&);
-  void shieldVariables(FuncDataBase&,const std::string&);
   void wallVariables(FuncDataBase&,const std::string&);
 
    
@@ -684,21 +683,6 @@ wallVariables(FuncDataBase& Control,
 }
 
 void
-shieldVariables(FuncDataBase& Control,
-		const std::string& shieldKey)
-  /*!
-    Set the variables for the front end extra shield
-    \param Control :: DataBase to use
-    \param shieldKey :: name before part names
-  */
-{
-  ELog::RegMethod RegA("flexpesVariables[F]","shieldVariables");
-
-
-  return;
-}
-
-void
 frontMaskVariables(FuncDataBase& Control,
 		   const std::string& frontKey)
   /*!
@@ -751,7 +735,6 @@ FLEXPESvariables(FuncDataBase& Control)
   flexpesVar::frontMaskVariables(Control,"FlexPesFrontBeam");
 
   flexpesVar::wallVariables(Control,"FlexPesWallLead");
-  flexpesVar::shieldVariables(Control,"FlexPes");
   flexpesVar::transferVariables(Control,"FlexPes");
   flexpesVar::opticsHutVariables(Control,"FlexPesOpticsHut");
   flexpesVar::opticsBeamVariables(Control,"FlexPesOpticsBeam");
