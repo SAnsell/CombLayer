@@ -138,7 +138,7 @@ class BilbaoWheel : public WheelBase
 			const HeadRule&,const HeadRule&);
   void buildSectors(Simulation&) const;
 
-  public:
+  public:xc
 
   BilbaoWheel(const std::string&);
   BilbaoWheel(const BilbaoWheel&);
