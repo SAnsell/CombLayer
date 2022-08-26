@@ -261,7 +261,7 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   int M;
   for(size_t i=0;i<nLayers;i++)
     {
-      const std::string nStr=StrFunc::makeString(i+1);
+      const std::string nStr=std::to_string(i+1);
       R=Control.EvalVar<double>(keyName+"Radius"+nStr);
       M = Control.EvalVar<int>(keyName+"MatTYPE"+nStr);
 
@@ -304,7 +304,7 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   nShaftLayers=Control.EvalVar<size_t>(keyName+"NShaftLayers");
   for (size_t i=0; i<nShaftLayers; i++)
     {
-      const std::string nStr=StrFunc::makeString(i+1);
+      const std::string nStr=std::to_string(i+1);
       R = Control.EvalVar<double>(keyName+"ShaftRadius"+nStr);
       M = ModelSupport::EvalMat<int>(Control,keyName+"ShaftMat"+nStr);
       if (i && R-shaftRadius.back()<Geometry::zeroTol)
@@ -552,185 +552,186 @@ BilbaoWheel::createShaftObjects(Simulation& System)
    */
 {
   ELog::RegMethod RegA("BilbaoWheel","createShaftObjects");
-  std::string Out;
+  HeadRule HR;
 
   // layer with circle of pipes
   buildCirclePipes(System,
-		   ModelSupport::getComposite(SMap,buildIndex,buildIndex+20,
-					      " 2007M -7 "),
-		   ModelSupport::getComposite(SMap,buildIndex," 115 -105 "),
-		   ModelSupport::getComposite(SMap,buildIndex," 106 -116 "),
-		   ModelSupport::getComposite(SMap,buildIndex," 105 -106 "),
-		   ModelSupport::getComposite(SMap,buildIndex," 115 -116 "));
+		   ModelSupport::getHeadRule
+		   (SMap,buildIndex,buildIndex+20,"2007M -7"),
+		   ModelSupport::getHeadRule(SMap,buildIndex,"115 -105"),
+		   ModelSupport::getHeadRule(SMap,buildIndex,"106 -116"),
+		   ModelSupport::getHeadRule(SMap,buildIndex,"105 -106"),
+		   ModelSupport::getHeadRule(SMap,buildIndex,"115 -116"));
 
   // void below
-  Out=ModelSupport::getComposite(SMap,buildIndex,buildIndex+20,"-7 35 -115 2127 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,buildIndex+20,"-7 35 -115 2127 ");
+  System.addCell(cellIndex++,0,mainTemp,HR);
 
   const int SJ(buildIndex+(static_cast<int>(nShaftLayers)-1)*10);
 
   // steel inside - outer radial part
-  Out=ModelSupport::getComposite(SMap,buildIndex,buildIndex+20,SJ-10,
-				 " 35 -115 -2127 2007M ");
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,buildIndex+20,SJ-10,
+			       "35 -115 -2127 2007M");
+  System.addCell(cellIndex++,steelMat,mainTemp,HR);
   // steel inside - central part
-  Out=ModelSupport::getComposite(SMap,buildIndex,buildIndex+20,SJ-10,
-				 " 35 -5 -2007M ");
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,buildIndex+20,SJ-10,
+				 "35 -5 -2007M");
+  System.addCell(cellIndex++,steelMat,mainTemp,HR);
 
   // lower cell
-  Out=ModelSupport::getComposite(SMap,buildIndex, " -7 2115 -2135" );
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex, " -7 2135 -35" );
-  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex, "-7 2115 -2135");
+  System.addCell(cellIndex++,steelMat,mainTemp,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex, "-7 2135 -35");
+  System.addCell(cellIndex++,0,mainTemp,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex, " 7 -17 2115 -25" );
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex, "7 -17 2115 -25");
+  System.addCell(cellIndex++,steelMat,mainTemp,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex, " 17 -2118 2115 -45 " );
-  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex, "17 -2118 2115 -45");
+  System.addCell(cellIndex++,0,mainTemp,HR);
 
   // 2nd void step
   // upper cell - inner steel - outer side layer
-  Out=ModelSupport::getComposite(SMap,buildIndex,SJ,
-				 " 7 -17 26 -2116 2007M" );
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SJ,
+				 "7 -17 26 -2116 2007M");
+  System.addCell(cellIndex++,steelMat,mainTemp,HR);
   // upper cell - inner steel - top layer
-  Out=ModelSupport::getComposite(SMap,buildIndex,SJ-10," -7 2136 -2116 2007M" );
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SJ-10,"-7 2136 -2116 2007M");
+  System.addCell(cellIndex++,steelMat,mainTemp,HR);
 
   // upper cell - inner steel - inner void
-  Out=ModelSupport::getComposite(SMap,buildIndex,buildIndex+20,
-				 " -7 116 -2136 2007M" );
-  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,buildIndex+20,
+				 "-7 116 -2136 2007M");
+  System.addCell(cellIndex++,0,mainTemp,HR);
 
   // upper cell - void around inner steel - vertical part
-  Out=ModelSupport::getComposite(SMap,buildIndex, " -2118 17 46 -2116 " );
-  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2118 17 46 -2116");
+  System.addCell(cellIndex++,0,mainTemp,HR);
 
   // upper/lower connection
-  Out=ModelSupport::getComposite(SMap,buildIndex,SJ-10,
-				 " -2127 2007M 2166 -2176 " );
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SJ-10,
+				 "-2127 2007M 2166 -2176");
+  System.addCell(cellIndex++,steelMat,mainTemp,HR);
 
   // shaft outer surface
-  const std::string Rsurf(ModelSupport::getComposite(SMap,SJ-10," 2007 "));
+  const HeadRule RsurfHR=ModelSupport::getHeadRule(SMap,SJ-10,"2007");
 
   // Connection flange:
   //   stiffener
-  Out=ModelSupport::getComposite(SMap,buildIndex, " 2116 -2146 -2148 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2116 -2146 -2148");
   if (engActive)
-    buildStiffeners(System,Out+Rsurf,buildIndex+3000,nSectors/2,steelMat);
+    buildStiffeners(System,HR*RsurfHR,buildIndex+3000);
   else
-    System.addCell(MonteCarlo::Object(cellIndex++,shaftUpperBigStiffHomoMat,mainTemp,Out+Rsurf));
+    System.addCell(cellIndex++,shaftUpperBigStiffHomoMat,mainTemp,HR*RsurfHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex, " 2116 -2126 2148 -2118 2157 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex, " 2126 2148 -2149 2157 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2116 -2126 2148 -2118 2157");
+  System.addCell(cellIndex++,0,mainTemp,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex, "2126 2148 -2149 2157");
+  System.addCell(cellIndex++,0,mainTemp,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex, " 2116 -2146 2148 -2157 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex, "2116 -2146 2148 -2157");
+  System.addCell(cellIndex++,0,mainTemp,HR);
 
   //   ring
-  Out=ModelSupport::getComposite(SMap,buildIndex, " 2146 -2156 -2147 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out+Rsurf));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2146 -2156 -2147");
+  System.addCell(cellIndex++,steelMat,mainTemp,HR*RsurfHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex, " 2146 -2156 2147 -2157");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2146 -2156 2147 -2157");
+  System.addCell(cellIndex++,0,mainTemp,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2156 -2166 -2157 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out+Rsurf));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2156 -2166 -2157");
+  System.addCell(cellIndex++,0,mainTemp,HR*RsurfHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2166 -2186 2127 -2157 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2166 -2186 2127 -2157");
+  System.addCell(cellIndex++,0,mainTemp,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SJ-10,
-				 " -2127 2007M 2176 -2186 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SJ-10,
+				 "-2127 2007M 2176 -2186");
+  System.addCell(cellIndex++,0,mainTemp,HR);
 
   // wheel catcher
 
-  Out=ModelSupport::getComposite(SMap,buildIndex, " 2247 2238 -2239 -2125 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex, "2247 2238 -2239 -2125");
+  System.addCell(cellIndex++,0,mainTemp,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex, " 2125 -2115  2238 -2118 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex, "2125 -2115  2238 -2118");
+  System.addCell(cellIndex++,0,mainTemp,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex, " 2237 -2247 2238 2205 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex, " 2237 -2247 2238 2205");
+  System.addCell(cellIndex++,0,mainTemp,HR);
 
   //     floor gap
-  Out=ModelSupport::getComposite(SMap,buildIndex, " -2147 2208 2205 -2215 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2147 2208 2205 -2215");
+  System.addCell(cellIndex++,0,mainTemp,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex, " 2205 -2245 -2208 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2205 -2245 -2208");
+  System.addCell(cellIndex++,steelMat,mainTemp,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex, " -2217 2205 -2245 2208 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2217 2205 -2245 2208 ");
+  System.addCell(cellIndex++,0,mainTemp,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex, " -2217 2205 2245 -2115 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2217 2205 2245 -2115 ");
+  System.addCell(cellIndex++,0,mainTemp,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex, " -2227 2217 2215 -2115 2218 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2227 2217 2215 -2115 2218 ");
+  System.addCell(cellIndex++,steelMat,mainTemp,HR);
 
   // small cell between base cones
-  Out=ModelSupport::getComposite(SMap,buildIndex, " 2217 -2218 2208 2215 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2217 -2218 2208 2215 ");
+  System.addCell(cellIndex++,0,mainTemp,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex, " 2227 -2237 2215 -2225 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex, " 2227 -2237 2215 -2225 ");
+  System.addCell(cellIndex++,steelMat,mainTemp,HR);
 
   // notch: big conical cell
-  Out=ModelSupport::getComposite(SMap,buildIndex, " -2238 2227 2225 -2115 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2238 2227 2225 -2115");
   if (engActive)
-    buildStiffeners(System,Out,buildIndex+3000,nSectors/2,steelMat);
+    buildStiffeners(System,HR,buildIndex+3000);
   else
-    System.addCell(MonteCarlo::Object(cellIndex++,shaftLowerBigStiffHomoMat,mainTemp,Out));
+    System.addCell(cellIndex++,shaftLowerBigStiffHomoMat,mainTemp,HR);
 
 
   // shaft layers
   int SI(buildIndex);
-  const std::string roof(ModelSupport::getComposite(SMap,buildIndex," -2006 "));
-  std::string floor;
+  const HeadRule roofHR(SMap,buildIndex,-2006);
+
+  HeadRule floorHR,innerHR;
   for (size_t i=0; i<nShaftLayers; i++)
     {
-      const std::string outer(ModelSupport::getComposite(SMap,SI," -2007 "));
-      const std::string inner(i==0?"":ModelSupport::getComposite(SMap,SI-10,
-								 " 2007 "));
+      const HeadRule outerHR=HeadRule(SMap,SI,-2007);
 
       if (i<3)
-	floor = " 5 ";
+	floorHR = HeadRule(SMap,buildIndex,5);
       else if (i==nShaftLayers-1)
-	floor = " 2186 ";
+	floorHR = HeadRule(SMap,buildIndex,2186);
       else
-	floor = " 2136 ";
-
-      floor = ModelSupport::getComposite(SMap,buildIndex,floor);
+	floorHR = HeadRule(SMap,buildIndex,2136);
 
       if (i==2)
 	{
-	  buildHoles(System,inner+outer,floor,roof,
+	  buildHoles(System,innerHR*outerHR,floorHR,roofHR,
 		     shaftMat[i],shaftHoleSize,shaftHoleXYangle,shaftHoleHeight,
 		     0.0, 1000);
 	  SI += 10;
-	  continue;
 	}
-
-      System.addCell(MonteCarlo::Object(cellIndex++,shaftMat[i],mainTemp,
-				       inner+outer+floor+roof));
-      SI += 10;
+      else
+	{
+	  System.addCell(cellIndex++,shaftMat[i],mainTemp,
+			 innerHR*outerHR*floorHR*roofHR);
+	  SI += 10;
+	}
+      innerHR=outerHR.complement();
     }
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI-10,
-				 " (-2007M -2006 2125) : " // connection
-				 " (2126 -2149) : " // upper stiffeners
-				 " (2126 -2186 -2157) : "  // above upper stiffeners
-				 " (-2118 2125 -2126) : " // 2nd step
-				 " ((-2239:-2247) 2205 -2125) "); // base
-  addOuterSurf("Shaft",Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,SI-10,
+     " (-2007M -2006 2125) : " // connection
+     " (2126 -2149) : " // upper stiffeners
+     " (2126 -2186 -2157) : "  // above upper stiffeners
+     " (-2118 2125 -2126) : " // 2nd step
+     " ((-2239:-2247) 2205 -2125) "); // base
+  addOuterSurf("Shaft",HR);
 
   return;
 }
@@ -741,14 +742,10 @@ BilbaoWheel::getSQSurface(const double R, const double e)
     Return MCNP(X) surface card for SQ ellipsoids
   */
 {
-  std::string surf = "sq " + StrFunc::makeString(1./std::pow(R,2)) + " " +
-    StrFunc::makeString(1./std::pow(R,2)) + " " +
-    StrFunc::makeString(e) + " 0 0 0 -1 " +
-    StrFunc::makeString(Origin[0]) + " " + // X
-    StrFunc::makeString(Origin[1]) + " " + // Y
-    StrFunc::makeString(Origin[2]);        // Z
-
-  return surf;
+  std::ostringstream cx;
+  cx<<"sq "<<1.0/(R*R)<<" "<<1.0/(R*R)<<" "<<
+    e<<" 0 0 0 -1 "<<Origin;
+  return cx.str();
 }
 
 
@@ -802,9 +799,9 @@ BilbaoWheel::createRadialSurfaces(const int SI, const size_t n,const double w)
 
 void
 BilbaoWheel::divideRadial(Simulation& System,
-			  const std::string& sides,
+			  const HeadRule& sidesHR,
 			  const int mat)
-  /*!
+/*!
     Divide wheel by sectors to help cell splitting
     \param System :: Simulation
     \param sides :: top/bottom and side surfaces
@@ -815,16 +812,16 @@ BilbaoWheel::divideRadial(Simulation& System,
 
   if (nSectors<2)
     {
-      System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,sides));
+      System.addCell(cellIndex++,mat,mainTemp,sidesHR);
       return;
     }
 
-  std::string Out;
+  HeadRule HR;
   int SJ(buildIndex+3000);
   for(size_t j=0;j<nSectors;j++)
     {
-      Out=ModelSupport::getComposite(SMap,SJ," 1 -11 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,Out+sides));
+      HR=ModelSupport::getHeadRule(SMap,SJ,"1 -11");
+      System.addCell(cellIndex++,mat,mainTemp,HR*sidesHR);
       SJ+=10;
     }
   return;
@@ -832,35 +829,32 @@ BilbaoWheel::divideRadial(Simulation& System,
 
 void
 BilbaoWheel::buildStiffeners(Simulation& System,
-			     const std::string& sides,
-			     const int SI,const size_t n,
-			     const int mat)
+			     const HeadRule sidesHR,
+			     const int SI)
   /*!
     Divide wheel by sectors to help cell splitting
     \param System :: Simulation
     \param sides :: top/bottom and side surfaces
     \param SI :: surface offset
-    \param n  :: number of sectors/plates
-    \param mat :: material
   */
 {
   ELog::RegMethod RegA("BilbaoWheel","buildStiffeners");
 
+  HeadRule HR;
   if (nSectors<2)
     {
-      System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,sides));
+      System.addCell(cellIndex++,steelMat,mainTemp,sidesHR);
       return;
     }
 
-  std::string Out;
   int SJ(SI);
-  for(size_t j=0;j<n;j++)
+  for(size_t j=0;j<nSectors/2;j++)
     {
-      Out=ModelSupport::getComposite(SMap,SJ," 2 3 -4 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,Out+sides));
+      HR=ModelSupport::getHeadRule(SMap,SJ,"2 3 -4");
+      System.addCell(cellIndex++,steelMat,mainTemp,HR*sidesHR);
 
-      Out=ModelSupport::getComposite(SMap,SJ," 2 4 -13 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,heMat,mainTemp,Out+sides));
+      HR=ModelSupport::getHeadRule(SMap,SJ,"2 4 -13");
+      System.addCell(cellIndex++,heMat,mainTemp,HR*sidesHR);
 
       SJ+=10;
     }
@@ -869,9 +863,9 @@ BilbaoWheel::buildStiffeners(Simulation& System,
 
 void
 BilbaoWheel::buildHoles(Simulation& System,
-			const std::string& sides,
-			const std::string& bot,
-			const std::string& top,
+			const HeadRule& sidesHR,
+			const HeadRule& baseHR,
+			const HeadRule& topHR,
 			const int mat,
 			const double hs,
 			const double xyAngle,
@@ -896,7 +890,7 @@ BilbaoWheel::buildHoles(Simulation& System,
 
   if (nSectors<2)
     {
-      System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,sides+top+bot));
+      System.addCell(cellIndex++,mat,mainTemp,sidesHR*topHR*baseHR);
       return;
     }
   const int SI0(buildIndex+30000+surfOffset);
@@ -922,7 +916,7 @@ BilbaoWheel::buildHoles(Simulation& System,
   // add 1st surface again with reversed normal - to simplify building cells
   SMap.addMatch(SI+1,SMap.realSurf(SI0+1));
 
-  std::string Out;
+  HeadRule HR;
   SI=SI0;
 
   if (height>0.0)
@@ -932,21 +926,21 @@ BilbaoWheel::buildHoles(Simulation& System,
       ModelSupport::buildPlane(SMap,SI0+6,Origin+Z*(z0+height/2.0),Z);
 
       // cell below holes
-      Out=ModelSupport::getComposite(SMap,SI0," -5 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,Out+bot+sides));
+      HR=HeadRule(SMap,SI0,-5);
+      System.addCell(cellIndex++,mat,mainTemp,HR*baseHR*sidesHR);
 
       // cell above holes
-      Out=ModelSupport::getComposite(SMap,SI0," 6 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,Out+top+sides+bot));
+      HR=HeadRule(SMap,SI0,6);
+      System.addCell(cellIndex++,mat,mainTemp,HR*sidesHR*topHR);
 
       // holes
       for(size_t j=0;j<nSectors;j++)
 	{
-	  Out=ModelSupport::getComposite(SMap,SI,SI0," 1 -2 5M -6M ");
-	  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out+sides));
+	  HR=ModelSupport::getHeadRule(SMap,SI,SI0,"1 -2 5M -6M");
+	  System.addCell(cellIndex++,0,mainTemp,HR*sidesHR);
 
-	  Out=ModelSupport::getComposite(SMap,SI,SI0," 2 -11 5M -6M ");
-	  System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,Out+sides));
+	  HR=ModelSupport::getHeadRule(SMap,SI,SI0,"2 -11 5M -6M");
+	  System.addCell(cellIndex++,mat,mainTemp,HR*sidesHR);
 
 	  SI+=SIstep;
 	}
@@ -954,11 +948,11 @@ BilbaoWheel::buildHoles(Simulation& System,
     {
       for(size_t j=0;j<nSectors;j++)
 	{
-	  Out=ModelSupport::getComposite(SMap,SI,SI0," 1 -2 ");
-	  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out+sides+top+bot));
+	  HR=ModelSupport::getHeadRule(SMap,SI,SI0,"1 -2");
+	  System.addCell(cellIndex++,0,mainTemp,HR*sidesHR*topHR*baseHR);
 
-	  Out=ModelSupport::getComposite(SMap,SI,SI0," 2 -11 ");
-	  System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,Out+sides+top+bot));
+	  HR=ModelSupport::getHeadRule(SMap,SI,SI0,"2 -11");
+	  System.addCell(cellIndex++,mat,mainTemp,HR*sidesHR*topHR*baseHR);
 
 	  SI+=SIstep;
 	}
@@ -968,11 +962,11 @@ BilbaoWheel::buildHoles(Simulation& System,
 
 void
 BilbaoWheel::buildCirclePipes(Simulation& System,
-			      const std::string& sides,
-			      const std::string& floor,
-			      const std::string& roof,
-			      const std::string& inner,
-			      const std::string& outer)
+			      const HeadRule& sidesHR,
+			      const HeadRule& floorHR,
+			      const HeadRule& roofHR,
+			      const HeadRule& innerHR,
+			      const HeadRule& outerHR)
   /*!
     Build circle of pipes
     \param System :: Simulation
@@ -984,52 +978,36 @@ BilbaoWheel::buildCirclePipes(Simulation& System,
   */
 {
   ELog::RegMethod RegA("BilbaoWheel","buildCirclePipes");
-  std::string Out;
-  int SJ(buildIndex+2300);
+
+
   if (nSectors<2)
     {
-      Out=sides+inner;
-      System.addCell(MonteCarlo::Object(cellIndex++,innerMat,mainTemp,Out));
-    } else
-    {
-      for (size_t j=0; j<nSectors; j++)
-	{
-	  Out=ModelSupport::getComposite(SMap,SJ," -8 ") + outer;
-	  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,mainTemp,Out));
-	  Out=ModelSupport::getComposite(SMap,SJ," 8 -9 ") + outer;
-	  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
-
-	  Out=ModelSupport::getComposite(SMap,SJ,SJ+10," 9 1 -1M ") + inner;
-	  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,mainTemp,
-					   Out+sides));
-
-	  Out=ModelSupport::getComposite(SMap,SJ,SJ+10," 9 1 -1M ") + floor;
-	  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,
-					   Out+sides));
-	  Out=ModelSupport::getComposite(SMap,SJ,SJ+10," 9 1 -1M ") + roof;
-	  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,
-					   Out+sides));
-	  SJ+=10;
-	}
+      System.addCell(cellIndex++,innerMat,mainTemp,sidesHR*innerHR);
+      return;
     }
-  return;
-}
 
-void
-BilbaoWheel::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed Component
-    \param sideIndex :: Link point
-  */
-{
-  ELog::RegMethod RegA("BilbaoWheel","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
-
+  HeadRule HR;
+  
+  int SJ(buildIndex+2300);
+  for (size_t j=0; j<nSectors; j++)
+    {
+      HR=HeadRule(SMap,SJ,-8);
+      System.addCell(cellIndex++,innerMat,mainTemp,HR*outerHR);
+  
+      HR=ModelSupport::getHeadRule(SMap,SJ,"8 -9");
+      System.addCell(cellIndex++,steelMat,mainTemp,HR*outerHR);
+      
+      HR=ModelSupport::getHeadRule(SMap,SJ,SJ+10,"9 1 -1M");
+      System.addCell(cellIndex++,innerMat,mainTemp,
+					HR*sidesHR*innerHR);
+      
+      HR=ModelSupport::getHeadRule(SMap,SJ,SJ+10,"9 1 -1M");
+      System.addCell(cellIndex++,steelMat,mainTemp,
+					HR*sidesHR*floorHR);
+      System.addCell(cellIndex++,steelMat,mainTemp,
+					HR*sidesHR*roofHR);
+      SJ+=10;
+    }
   return;
 }
 
@@ -1147,31 +1125,30 @@ BilbaoWheel::createObjects(Simulation& System)
   int SI(buildIndex);
   int nInner(0); // number of inner cells (must be 1)
   int mat(0);
-  std::string side;
+  HeadRule HR,sideHR;
   for(size_t i=0;i<nLayers;i++)
     {
       mat = matNum[matTYPE[i]];
-      side = ModelSupport::getComposite(SMap,SI," 7 -17 ");
+      sideHR = ModelSupport::getHeadRule(SMap,SI," 7 -17 ");
 
-      Out=side+ModelSupport::getComposite(SMap,buildIndex,SI," 5 -6 ");
       if (i==0)
 	{
-	  buildHoles(System,side,
-		     ModelSupport::getComposite(SMap,buildIndex," 116 "),
-		     ModelSupport::getComposite(SMap,buildIndex," -26 "),
+	  buildHoles(System,sideHR,
+		     HeadRule(SMap,buildIndex,116),
+		     HeadRule(SMap,buildIndex,-26),
 		     mat,innerHoleSize,innerHoleXYangle,-1,
 		     0.0, 4000);
 
-	  buildHoles(System,side,
-		     ModelSupport::getComposite(SMap,buildIndex," 25 "),
-		     ModelSupport::getComposite(SMap,buildIndex," -115 "),
+	  buildHoles(System,sideHR,
+		     HeadRule(SMap,buildIndex,25),
+		     HeadRule(SMap,buildIndex,-115),
 		     mat,innerHoleSize,innerHoleXYangle,-1,
 		     0.0, 5000);
 
 
-	  buildHoles(System,side,
-		     ModelSupport::getComposite(SMap,buildIndex," 115 "),
-		     ModelSupport::getComposite(SMap,buildIndex," -116 "),
+	  buildHoles(System,sideHR,
+		     HeadRule(SMap,buildIndex,115),
+		     HeadRule(SMap,buildIndex,-116),
 		     mat,innerHoleSize,innerHoleXYangle,innerHoleHeight,
 		     0.0, 0);
 	}
@@ -1181,43 +1158,43 @@ BilbaoWheel::createObjects(Simulation& System)
 	  // Do not build it with engActive=1 since the cassette goes there
 	  if (!engActive)
 	    {
-	      Out=ModelSupport::getComposite(SMap,buildIndex,SI," 117 -17M 5 -6 ");
-	      System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,Out));
+	      HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,"117 -17M 5 -6");
+	      System.addCell(cellIndex++,mat,mainTemp,HR);
 	    }
 
-	  side=ModelSupport::getComposite(SMap,buildIndex," -117 107 ");
+	  sideHR=ModelSupport::getHeadRule(SMap,buildIndex,"-117 107");
 
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 105 -106 ")+side;
-	  System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,Out));
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"105 -106");
+	  System.addCell(cellIndex++,mat,mainTemp,HR*sideHR);
+	  
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"106 -26");
+	  System.addCell(cellIndex++,steelMat,mainTemp,HR*sideHR);
 
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 106 -26 ")+side;
-	  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-105 25");
+	  System.addCell(cellIndex++,steelMat,mainTemp,HR*sideHR);
 
-	  Out=ModelSupport::getComposite(SMap,buildIndex,"-105 25 ")+side;
-	  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-25 35");
+	  System.addCell(cellIndex++,mat,mainTemp,HR*sideHR);
 
-	  Out=ModelSupport::getComposite(SMap,buildIndex," -25 35 ")+side;
-	  System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,Out));
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"26 -36");
+	  System.addCell(cellIndex++,mat,mainTemp,HR*sideHR);
 
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 26 -36 ")+side;
-	  System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,Out));
+	  sideHR=ModelSupport::getHeadRule(SMap,buildIndex,SI,"7M -107");
+	  
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"105 -106");
+	  System.addCell(cellIndex++,mat,mainTemp,HR*sideHR);
 
-	  side=ModelSupport::getComposite(SMap,buildIndex,SI," 7M -107 ");
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"106 -116");
+	  System.addCell(cellIndex++,steelMat,mainTemp,HR*sideHR);
 
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 105 -106 ")+side;
-	  System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,Out));
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-105 115");
+	  System.addCell(cellIndex++,steelMat,mainTemp,HR*sideHR);
 
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 106 -116 ")+side;
-	  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"116 -36");
+	  System.addCell(cellIndex++,mat,mainTemp,HR*sideHR);
 
-	  Out=ModelSupport::getComposite(SMap,buildIndex," -105 115 ")+side;
-	  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
-
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 116 -36 ")+side;
-	  System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,Out));
-
-	  Out=ModelSupport::getComposite(SMap,buildIndex," -115 35 ")+side;
-	  System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,Out));
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-115 35");
+	  System.addCell(cellIndex++,mat,mainTemp,HR*sideHR);
 	}
       else if (mat==homoWMat)
 	{
@@ -1229,79 +1206,80 @@ BilbaoWheel::createObjects(Simulation& System)
 	  if (!engActive)
 	    {
 	      //divideRadial(System, Out, mat); // geocheck fails, but MCNP - not. why???
-	      System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,Out));
+	      HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,"5 -6");
+	      System.addCell(cellIndex++,mat,mainTemp,HR*sideHR);
 	    }
 	  nInner++;
 	}
       else // never actually called with standard geometry since nLayers=3
 	{
-	  //divideRadial(System, Out, mat);
-	  System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,Out));
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,"5 -6");
+	  System.addCell(cellIndex++,mat,mainTemp,HR*sideHR);
 	}
 
       SI+=10;
     }
 
   // front coolant:
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI," 7M -517 35 -36");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI," 7M -517 35 -36");
   if (engActive)
-    divideRadial(System, Out, heMat);
+    divideRadial(System,HR,heMat);
   else
-    System.addCell(MonteCarlo::Object(cellIndex++,heMat,mainTemp,Out));
+    System.addCell(cellIndex++,heMat,mainTemp,HR);
 
-  side = ModelSupport::getComposite(SMap,buildIndex,SI," -7M 117" );
+  sideHR=ModelSupport::getHeadRule(SMap,buildIndex,SI,"-7M 117");
 
   // Void above W
-  Out=ModelSupport::getComposite(SMap,buildIndex," 6 -16 ")+side;
-  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"6 -16");
+  System.addCell(cellIndex++,0,mainTemp,HR*sideHR);
   // Void below W
-  Out=ModelSupport::getComposite(SMap,buildIndex," 15 -5 ")+side;
-  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"15 -5");
+  System.addCell(cellIndex++,0,mainTemp,HR*sideHR);
 
   // Steel above W
-  Out=ModelSupport::getComposite(SMap,buildIndex," 16 -26 ")+side;
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"16 -26");
+  System.addCell(cellIndex++,steelMat,mainTemp,HR*sideHR);
 
   // Steel below W
-  Out=ModelSupport::getComposite(SMap,buildIndex," 25 -15 ")+side;
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"25 -15");
+  System.addCell(cellIndex++,steelMat,mainTemp,HR*sideHR);
 
   // Coolant above steel
-  Out=ModelSupport::getComposite(SMap,buildIndex," 26 -36 ")+side;
-  System.addCell(MonteCarlo::Object(cellIndex++,ssVoidMat,mainTemp,Out));
-  CellMap::setCell("CoolantAboveSteel",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"26 -36");
+  makeCell("CoolantAboveSteel",System,cellIndex++,
+	   ssVoidMat,mainTemp,HR*sideHR);
 
   // Coolant below steel
-  Out=ModelSupport::getComposite(SMap,buildIndex," 35 -25 " )+side;
-  System.addCell(MonteCarlo::Object(cellIndex++,ssVoidMat,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"35 -25" );
+  System.addCell(cellIndex++,ssVoidMat,mainTemp,HR*sideHR);
 
   // Metal surround [ UNACCEPTABLE JUNK CELL]
   // Metal front:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-527 517 35 -36");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-527 517 35 -36");
   if (engActive)
-    divideRadial(System, Out, steelMat);
+    divideRadial(System, HR, steelMat);
   else
-    System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
+    System.addCell(cellIndex++,steelMat,mainTemp,HR);
 
   // forward Main sections:
-  side=ModelSupport::getComposite(SMap,buildIndex,"-527 17 ");
+  sideHR=ModelSupport::getHeadRule(SMap,buildIndex,"-527 17");
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -126 36 ")+side;	 // outer above W
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-126 36");  // outer above W
+  System.addCell(cellIndex++,steelMat,mainTemp,HR*sideHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 125 -35 ")+side;
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out)); // outer below W
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 125 -35 ");
+  System.addCell(cellIndex++,steelMat,mainTemp,HR*sideHR); // outer below W
 
   // Void surround
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "17 45 -46 -537 (-125:126:527)");
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"17 45 -46 -537 (-125:126:527)");
   if (engActive)
-    divideRadial(System, Out, 0);
+    divideRadial(System,HR,0);
   else
-    System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
+    System.addCell(cellIndex++,0,mainTemp,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-537 45 -46");
-  addOuterSurf("Wheel",Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-537 45 -46");
+  addOuterSurf("Wheel",HR);
 
   return;
 }

@@ -98,20 +98,5 @@ WheelBase::~WheelBase()
    */
 {}
 
-void
-WheelBase::createUnitVector(const attachSystem::FixedComp& FC,
-			    const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed Component
-    \param sideIndex :: sideIndex
-  */
-{
-  ELog::RegMethod RegA("WheelBase","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
-  return;
-}
   
 } // NAMESPACE essSystem
