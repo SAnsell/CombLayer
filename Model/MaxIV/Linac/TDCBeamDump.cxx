@@ -228,7 +228,8 @@ TDCBeamDump::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+2,bOrigin+bY*(preCoreLength),Y);
   ModelSupport::buildPlane(SMap,buildIndex+12,bOrigin+bY*(preCoreLength+coreLength),bY);
 
-  ModelSupport::buildPlane(SMap,buildIndex+22,bOrigin+Y*(preCoreLength+coreLength+bulkThickBack),Y);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+22,bOrigin+Y*(preCoreLength+coreLength+bulkThickBack),Y);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+32,buildIndex+22,Y,skinBackThick);
 
   ModelSupport::buildPlane(SMap,buildIndex+3,bOrigin-bX*(bulkWidthLeft),bX);

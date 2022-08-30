@@ -533,7 +533,7 @@ FixedGroup::setBeamCoord(const std::string& unitName)
   */
 {
   ELog::RegMethod RegA("FixedGroup","setBeamCoord");
-  
+
   if (unitName==primKey)
     {
       attachSystem::FixedComp& activeFC=getKey(unitName);
@@ -549,6 +549,8 @@ FixedGroup::setBeamCoord(const std::string& unitName)
       bY=activeFC.getY();
       bZ=activeFC.getZ();
       bOrigin=activeFC.getCentre();
+
+
     }
   return;
 }

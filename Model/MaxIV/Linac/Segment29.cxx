@@ -271,7 +271,7 @@ Segment29::buildObjects(Simulation& System)
       buildZone->copyCells(*this,"FrontSpace");
     }
   beamStopA->addInsertCell(outerVoid);
-  beamStopB->secondaryUnitVector(*yagUnitA,"back");
+  beamStopA->secondaryUnitVector(*yagUnitA,"back");
   beamStopA->createAll(System,*yagUnitA,"back");
 
   beamStopB->setCutSurf("front",frontHR);
