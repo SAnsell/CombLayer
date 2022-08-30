@@ -318,8 +318,10 @@ TDCBeamDump::createObjects(Simulation& System)
 	  makeCell("TopPlate",System,cellIndex++,topPlateMat,0.0,HR);
 	  if (extraTopPlateThick>Geometry::zeroTol)
 	    {
-	      HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -32 13 -14 26 -36");
-	      makeCell("ExtraTopPlate",System,cellIndex++,extraTopPlateMat,0.0,HR);
+	      HR=ModelSupport::getHeadRule
+		(SMap,buildIndex,"11 -32 13 -14 26 -36");
+	      makeCell("ExtraTopPlate",System,cellIndex++,
+		       extraTopPlateMat,0.0,HR);
 	    }
 	}
     }
@@ -372,7 +374,8 @@ TDCBeamDump::createLinks()
 {
   ELog::RegMethod RegA("TDCBeamDump","createLinks");
 
-  const double totalLength = preCoreLength + coreLength + bulkThickBack + skinThick;
+  const double totalLength = preCoreLength + coreLength +
+    bulkThickBack + skinThick;
 
   attachSystem::FixedComp& mainFC=getKey("Main");
   //  attachSystem::FixedComp& beamFC=getKey("Beam");

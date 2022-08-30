@@ -57,6 +57,7 @@
 #include "LinkUnit.h"
 #include "surfRegister.h"
 #include "FixedComp.h"
+#include "FixedGroup.h"
 #include "Zaid.h"
 #include "MXcards.h"
 #include "Material.h"
@@ -126,6 +127,43 @@ processExitChecks(Simulation& System,
 	      (System,CPoint,IParam.getValue<size_t>("validCheck")))
 	    errFlag += -1;
 	}
+      else if (IParam.flag("validCell") || IParam.flag("validAll"))
+	{
+	  typedef objectGroups::cMapTYPE CM;
+	  const CM& mapFC=System.getComponents();
+	  for(const CM::value_type& mc : mapFC)
+	    {
+	      std::set<Geometry::Vec3D> Pts;
+	      const attachSystem::FixedGroup* FG =
+		dynamic_cast<const attachSystem::FixedGroup*>
+		(mc.second.get());
+	      
+	      if (FG)
+		{
+		  std::set<std::string> units=FG->getAllKeys();
+		  for(const std::string& UName : units)
+		    Pts.emplace(FG->getKey(UName).getCentre());
+		}
+	      
+
+	      const attachSystem::FixedComp& FC = *(mc.second);
+
+	      const size_t iLk=FC.NConnect();
+	      for(long int i=0;i<static_cast<long int>(iLk);i++)
+		{
+		  if (FC.hasLinkPt(i))
+		    Pts.emplace(FC.getLinkPt(i));
+		}
+	      for(const Geometry::Vec3D& CP : Pts)
+		{
+		  if (CP.Y()<60 && CP.Y()>1)
+		    ELog::EM<<"CP == "<<CP<<ELog::endDiag;
+		  
+		  if (ModelSupport::SimValid::checkPoint(System,CP))
+		    errFlag += -1;
+		}
+	    }
+	}
       else if (IParam.flag("validAll"))
 	{
 	  // This should work BUT never does
@@ -147,25 +185,6 @@ processExitChecks(Simulation& System,
 		}
 	    }
 	}
-      /*
-      else if (IParam.flag("validCenter"))
-	{
-	  typedef objectGroups::cMapTYPE CM;
-	  const CM& mapFC=System.getComponents();
-	  for(const CM::value_type& mc : mapFC)
-	    {
-	      const attachSystem::FixedComp& FC = *(mc.second);
-	      const Geometry::Vec3D& CP=FC.getCentre();
-	      
-	      ELog::EM<<"FC["<<FC.getKeyName()<<"] ";
-	      if (!SValidCheck.runPoint(System,CP,NPts))
-		{
-		  ELog::EM<<"ERROR "<<ELog::endErr;
-		  errFlag += -1;
-		}
-	    }
-	}
-      */
       else 
 	{
 	  if (!SValidCheck.runPoint(System,Geometry::Vec3D(0,0,0),

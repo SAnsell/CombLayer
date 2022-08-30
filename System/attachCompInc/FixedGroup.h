@@ -87,8 +87,9 @@ class FixedGroup : public FixedComp
   void setDefault(const std::string&,const std::string&);
 
   /// Size accessor
-  size_t nGroups() const { return FMap.size(); } 
-  bool hasKey(const std::string&) const;
+  size_t nGroups() const { return FMap.size(); }
+  std::set<std::string> getAllKeys() const;
+  bool hasKey(const std::string&) const;  
   FixedComp& addKey(const std::string&,const size_t);
   virtual FixedComp& getKey(const std::string&);
   virtual const FixedComp& getKey(const std::string&) const;

@@ -220,6 +220,18 @@ FixedGroup::hasKey(const std::string& Key) const
   return (mc!=FMap.end()) ? 1 : 0;
 }
 
+std::set<std::string>
+FixedGroup::getAllKeys() const
+  /*!
+    Accessor to all keys
+   */
+{
+  std::set<std::string> units;
+  for(const auto& [Name,FC] : FMap)
+    units.emplace(Name);
+  return units;
+}
+  
 FixedComp&
 FixedGroup::addKey(const std::string& Key,const size_t NL)
   /*!
@@ -240,7 +252,7 @@ FixedGroup::addKey(const std::string& Key,const size_t NL)
   mc=FMap.find(Key);
   return *(mc->second);
 }
- 
+  
 FixedComp&
 FixedGroup::getKey(const std::string& Key)
   /*!
@@ -272,7 +284,7 @@ FixedGroup::getKey(const std::string& Key) const
     throw ColErr::InContainerError<std::string>(Key,"Key in FMap:"+keyName);
   return *(mc->second);
 }
-
+  
 FixedComp&
 FixedGroup::getPrimary() 
   /*!
