@@ -147,6 +147,25 @@ processExitChecks(Simulation& System,
 		}
 	    }
 	}
+      /*
+      else if (IParam.flag("validCenter"))
+	{
+	  typedef objectGroups::cMapTYPE CM;
+	  const CM& mapFC=System.getComponents();
+	  for(const CM::value_type& mc : mapFC)
+	    {
+	      const attachSystem::FixedComp& FC = *(mc.second);
+	      const Geometry::Vec3D& CP=FC.getCentre();
+	      
+	      ELog::EM<<"FC["<<FC.getKeyName()<<"] ";
+	      if (!SValidCheck.runPoint(System,CP,NPts))
+		{
+		  ELog::EM<<"ERROR "<<ELog::endErr;
+		  errFlag += -1;
+		}
+	    }
+	}
+      */
       else 
 	{
 	  if (!SValidCheck.runPoint(System,Geometry::Vec3D(0,0,0),

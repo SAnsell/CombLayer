@@ -584,8 +584,6 @@ maxpeemOpticsLine::buildExtras(Simulation& System,
   outPipeA->insertInCell("FlangeB",System,hut.getCell("BackVoid"));
   outPipeB->insertInCell("FlangeB",System,hut.getCell("BackVoid"));
 
-  ELog::EM<<"SCREN == "<<screenB->getKeyName()<<ELog::endDiag;
-
   return;
 }
 
@@ -641,7 +639,6 @@ maxpeemOpticsLine::buildObjects(Simulation& System)
   pumpTubeA->createAll(System,*pipeB,"back");
 
   const constructSystem::portItem& CPB=pumpTubeA->getPort(2);
-  ELog::EM<<"Outer Sonze -= "<<outerCell<<ELog::endDiag;
   CPB.insertInCell(System,outerCell);
 
   const constructSystem::portItem& CPI=pumpTubeA->getPort(1);

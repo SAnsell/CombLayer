@@ -147,11 +147,6 @@ writeIndexSimPHITS(SimPHITS& System,const std::string& FName,
   return;
 }
 
-
-
-
-
-
 void
 registerOuter(Simulation& System,const int cellNum,const int vNum)
   /*!

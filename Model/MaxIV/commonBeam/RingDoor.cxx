@@ -165,7 +165,6 @@ RingDoor::createSurfaces()
 
   // origin in on outer wall:
 
-  ELog::EM<<"InnerHeight == "<<innerHeight<<" "<<outerHeight<<ELog::endDiag;
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(innerWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(innerWidth/2.0),X);
   ExternalCut::makeShiftedSurf(SMap,"floor",buildIndex+6,Z,innerHeight);
