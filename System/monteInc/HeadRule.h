@@ -62,8 +62,6 @@ class HeadRule
 
   void createAddition(const int,const Rule*);
   const SurfPoint* findSurf(const int) const;
-
-  bool isValid(const Geometry::Vec3D&,const int) const;
   
  public:
 
@@ -104,8 +102,9 @@ class HeadRule
 
   bool isValid(const Geometry::Vec3D&,const std::set<int>&) const;
 
-  bool isSignedValid(const Geometry::Vec3D&,const int) const;           
+  bool isSignedValid(const Geometry::Vec3D&,const int) const;
   bool isValid(const Geometry::Vec3D&) const;
+  bool isValid(const Geometry::Vec3D&,const int) const;  
   bool isValid(const std::map<int,int>&) const;
   bool isValid(const Geometry::Vec3D&,const std::map<int,int>&) const;
 
