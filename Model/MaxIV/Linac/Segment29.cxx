@@ -278,7 +278,7 @@ Segment29::buildObjects(Simulation& System)
   beamStopB->setCutSurf("base",ExternalCut::getRule("Floor"));
   beamStopB->addInsertCell(outerVoid);
   beamStopB->secondaryUnitVector(*yagUnitB,"back");
-  beamStopB->createAll(System,*yagUnitA,"back");
+  beamStopB->createAll(System,*yagUnitB,"back");
   return;
 }
 
