@@ -20,7 +20,7 @@
 #declare projection = 1;
 #declare cameraAngle = 150;
 
-#declare quick=1; // 0=quick but low quality, 1=slow but somewhat better quality
+#declare quick=0; // 0=quick but low quality, 1=slow but somewhat better quality
 // another possibility to affect speed is command argument -q0 ... -q11
 // so one can set quick=0 and play with -q0
 
@@ -601,6 +601,12 @@ global_settings {
     #case(strcmp(ITEM,"SpectrometerDipole"))
     #declare cameraLocation = <200, 7100, 100>;
     #declare cameraLookAt   = <-300, 8340, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 30;
+  #break
+    #case(strcmp(ITEM,"TDCend")) // end of the TDC beam line
+    #declare cameraLocation = <-35, 6200, 100>;
+    #declare cameraLookAt   = <-600, 8340, 0>;
     #declare projection = 0;
     #declare cameraAngle = 30;
   #break

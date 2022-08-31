@@ -27,9 +27,13 @@ if [ $ITEM == "SpectrometerDipole" -o $ITEM == "TDC26ShieldA" -o $ITEM == "TDC1"
     void+=" -v InjectionHallPillarMat Void -v InjectionHallBTGMat Void -v InjectionHallSoilMat Void "
     void+=" -v InjectionHallBackWallMat Void -v InjectionHallWallIronMat Void "
     void+=" -v InjectionHallTHzMat Void -v InjectionHallMidTFrontLShieldMat Void "
-    void+=" -v InjectionHallSPFMazeLayerMat Void "
     void+=" -v InjectionHallBDRoofIronMat Void "
     void+=" -v TDC26ShieldAMainMat Lead "
+fi
+
+if [ $ITEM == "TDCend" ]; then
+    void=" -v TDC26ShieldAMainMat B4C "
+    params=" +A +W1600 +H1200 "
 fi
 
 if [ "$segments" == "All" -a $ITEM == "SPF32DipoleA" ]; then
