@@ -907,7 +907,6 @@ HeadRule::isLineValid(const Geometry::Vec3D& APt,
       const std::vector<Geometry::Vec3D>& pointVec=
 	LI.getPoints(SPtr);
 
-      std::vector<Geometry::Vec3D>::const_iterator pc;
       for(const Geometry::Vec3D& Pt : pointVec)
 	{
 	  const double ADist=APt.Distance(Pt);

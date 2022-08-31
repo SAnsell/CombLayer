@@ -360,7 +360,6 @@ R3Ring::createDoor(Simulation& System)
   
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-    
 
   if (doorActive)
     {
@@ -375,7 +374,7 @@ R3Ring::createDoor(Simulation& System)
 
       doorPtr->addAllInsertCell
 	(getCell("OuterFlatEnd",doorActive % NInnerSurf));
-      doorPtr->createAll(System,*this,doorActive+1);
+      doorPtr->createAll(System,*this,static_cast<long int>(doorActive+1));
     }
   return;
 }

@@ -348,44 +348,6 @@ ContainedComp::getExclude() const
     return outerSurf.complement().display();
   return "";
 }
-
-int
-ContainedComp::validIntersection(const HeadRule& BObj,
-				 const bool inwardCheck,
-				 const Geometry::Surface* ASurf,
-				 const Geometry::Surface* BSurf)
-  /*!
-    Using the two surface and each surface in the given rule
-    determine if the surf:surf:surf intersection points are 
-    within/outside the bounary object (BObj). 
-    \param BObj :: Boundary rule to check
-    \param inwardCheck :: true is inside
-    \param ASurf :: Surface [external]
-    \param BSurf :: Surface [external]
-    \return true if a valid intersection exists
-  */
-{
-  ELog::RegMethod RegA("ContainedComp","validIntersection");
-
-  if (BObj.hasRule())
-    {
-      const std::vector<Geometry::Surface*> SurfVec=
-	BObj.getTopRule()->getSurfVector();
-      std::vector<Geometry::Vec3D> Pts;
-      std::vector<Geometry::Surface*>::const_iterator vc;
-      std::vector<Geometry::Vec3D>::const_iterator ac;
-      for(vc=SurfVec.begin();vc!=SurfVec.end();vc++)
-	{
-	  Pts=SurInter::processPoint(ASurf,BSurf,*vc);	  
-	  for(ac=Pts.begin();ac!=Pts.end();ac++)
-	    {
-	      if (BObj.isValid(*ac,(*vc)->getName())==inwardCheck)
-		return 1;
-	    }
-	}
-    }
-  return 0;
-}
   
 int
 ContainedComp::surfOuterIntersect(const Geometry::Line& LA) const

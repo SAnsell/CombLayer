@@ -55,10 +55,6 @@ class ContainedComp
   HeadRule outerSurf;       ///< Outer surfaces [Excluding boundary]
 
   std::vector<int> insertCells;    ///< Cell to insert into
-
-  static int validIntersection(const HeadRule&,const bool,
-			       const Geometry::Surface*,
-			       const Geometry::Surface*);
   
  public:
 
