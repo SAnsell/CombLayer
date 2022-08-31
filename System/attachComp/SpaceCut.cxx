@@ -3,7 +3,7 @@
  
  * File:   attachComp/SpaceCut.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -244,7 +244,8 @@ SpaceCut::setOuterSurf(const Simulation& System,
 {
   ELog::RegMethod RegA("SpaceCut","setOuterSurf(cell)");
 
-  const MonteCarlo::Object* outerObj=System.findObjectThrow(cellN);
+  const MonteCarlo::Object* outerObj=
+    System.findObjectThrow(cellN,"cellNumber");
 
   outerSurfBox=outerObj->getHeadRule();
   return;
@@ -275,7 +276,8 @@ SpaceCut::setPrimaryCell(const Simulation& System,
 {
   ELog::RegMethod RegA("SpaceCut","setPrimaryCell(cell)");
 
-  const MonteCarlo::Object* outerObj=System.findObjectThrow(cellN);
+  const MonteCarlo::Object* outerObj=
+    System.findObjectThrow(cellN,"cellN");
 
   primaryBBox=outerObj->getHeadRule();
   primaryCell=cellN;
@@ -301,7 +303,8 @@ SpaceCut::calcBoundary(const Simulation& System,
 {
   ELog::RegMethod RegA("SpaceCut","calcBoundary(System)");
 
-  const MonteCarlo::Object* outerObj=System.findObjectThrow(cellN);
+  const MonteCarlo::Object* outerObj=
+    System.findObjectThrow(cellN,"cellN");
   const HeadRule objHR=outerObj->getHeadRule();
 
   return calcBoundary(objHR,NDivide,ALink,BLink);
@@ -553,7 +556,8 @@ SpaceCut::buildWrapCell(Simulation& System,
   double matTemp=0.0;
   if (pCell)
     {
-      const MonteCarlo::Object* outerObj=System.findObjectThrow(pCell);
+      const MonteCarlo::Object* outerObj=
+	System.findObjectThrow(pCell,"pCell");
       matN=outerObj->getMatID();
       matTemp=outerObj->getTemp();
     }
@@ -683,8 +687,9 @@ SpaceCut::insertPair(Simulation& System,
 
   for(const int pCell : insertCells)
      {
-      MonteCarlo::Object* outerObj=System.findObjectThrow(pCell);
-      outerObj->addSurfString(BBox.display());
+       MonteCarlo::Object* outerObj=
+	 System.findObjectThrow(pCell,"pCell");
+       outerObj->addIntersection(BBox);
     }      
   return;
 }
@@ -712,8 +717,9 @@ SpaceCut::insertObjects(Simulation& System)
   
   if (!noPrimaryInsert && primaryCell && buildCell)
     {
-      MonteCarlo::Object* outerObj=System.findObjectThrow(primaryCell);
-      outerObj->addSurfString(outerCut.complement().display());
+      MonteCarlo::Object* outerObj=
+	System.findObjectThrow(primaryCell,"primaryCell");
+      outerObj->addIntersection(outerCut.complement());
     }  
   return;
 }
@@ -746,8 +752,9 @@ SpaceCut::insertObjects(Simulation& System,
 
   if (!noPrimaryInsert && primaryCell && buildCell)
     {
-      MonteCarlo::Object* outerObj=System.findObjectThrow(primaryCell);
-      outerObj->addSurfString(outerCut.complement().display());
+      MonteCarlo::Object* outerObj=
+	System.findObjectThrow(primaryCell,"primaryCell");
+      outerObj->addIntersection(outerCut.complement());
     }  
   return;
 }

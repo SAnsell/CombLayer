@@ -3,7 +3,7 @@
  
  * File:   cuBlock/CuCollet.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -57,14 +55,14 @@
 #include "ContainedComp.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "CuCollet.h"
 
 namespace cuSystem
 {
 
 CuCollet::CuCollet(const std::string& Key)  : 
-  attachSystem::FixedOffset(Key,3),attachSystem::ContainedComp()
+  attachSystem::FixedRotate(Key,3),attachSystem::ContainedComp()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Key to use
@@ -72,7 +70,7 @@ CuCollet::CuCollet(const std::string& Key)  :
 {}
 
 CuCollet::CuCollet(const CuCollet& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedRotate(A),attachSystem::ContainedComp(A),
   radius(A.radius),cuRadius(A.cuRadius),holeRadius(A.holeRadius),
   cuGap(A.cuGap),cerThick(A.cerThick),steelThick(A.steelThick),
   cuThick(A.cuThick),cerMat(A.cerMat),steelMat(A.steelMat),
@@ -93,7 +91,7 @@ CuCollet::operator=(const CuCollet& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       radius=A.radius;
       cuRadius=A.cuRadius;
@@ -125,7 +123,7 @@ CuCollet::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("CuCollet","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   radius=Control.EvalVar<double>(keyName+"Radius");   
   holeRadius=Control.EvalVar<double>(keyName+"HoleRadius");   
@@ -140,23 +138,6 @@ CuCollet::populate(const FuncDataBase& Control)
   steelMat=ModelSupport::EvalMat<int>(Control,keyName+"SteelMat");
   cuMat=ModelSupport::EvalMat<int>(Control,keyName+"CuMat");
       
-  return;
-}
-
-void
-CuCollet::createUnitVector(const attachSystem::FixedComp& FC,
-			   const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: FixedComp for orgin
-    \param sideIndex :: link point
-  */
-{
-  ELog::RegMethod RegA("CuCollet","createUnitVector");
-
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  
   return;
 }
 
@@ -197,31 +178,30 @@ CuCollet::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("CuCollet","createObjects");
   
-  std::string Out;
-
+  HeadRule HR;
   // Ceramic
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7");
-  System.addCell(MonteCarlo::Object(cellIndex++,cerMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -7");
+  System.addCell(cellIndex++,cerMat,0.0,HR);
   // Steel
-  Out=ModelSupport::getComposite(SMap,buildIndex,"2 -12 -7");
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 -7");
+  System.addCell(cellIndex++,steelMat,0.0,HR);
   if (cuGap>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,"12 -21 -27");
-      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -21 -27");
+      System.addCell(cellIndex++,0,0.0,HR);
     }
 
   // Cu : Checked for existance of inner
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"21 -22 -27 17");
-  System.addCell(MonteCarlo::Object(cellIndex++,cuMat,0.0,Out));
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"21 -22 -27 17");
+  System.addCell(cellIndex++,cuMat,0.0,HR);
   if (cuGap>Geometry::zeroTol)
     {
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"21 -22 -17 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,0.0,0.0,Out));
+      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"21 -22 -17");
+      System.addCell(cellIndex++,0.0,0.0,HR);
     }
   // Outer Boundary : 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -22 -27 (-7:12)");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -22 -27 (-7:12)");
+  addOuterSurf(HR);
   
   return;
 }

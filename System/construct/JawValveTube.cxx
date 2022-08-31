@@ -3,7 +3,7 @@
  
  * File:   construct/JawValveTube
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -50,7 +49,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -118,7 +117,7 @@ JawValveTube::populate(const FuncDataBase& Control)
 
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
 
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   // set values to zero:

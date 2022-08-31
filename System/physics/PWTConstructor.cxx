@@ -3,7 +3,7 @@
  
  * File:   physics/PWTConstructor.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -93,7 +93,7 @@ PWTConstructor::procZone(const objectGroups& OGrp,
     }
   else if (NS>=2 && (StrItem[0]=="Object" || StrItem[0]=="object"))
     {
-      const std::vector<int> CVec=OGrp.getObjectRange(StrItem[1]);
+      const std::set<int> CVec=OGrp.getObjectRange(StrItem[1]);
 
       if (CVec.empty())
 	throw ColErr::InContainerError<std::string>(StrItem[1],"Object name");

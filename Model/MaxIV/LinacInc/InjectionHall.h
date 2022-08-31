@@ -193,7 +193,6 @@ class InjectionHall :
   int soilMat;                  ///< Earth material
 
   std::shared_ptr<SoilRoof> soilBerm;            ///< Soil berm
-
   void createBerm(Simulation&);
 
   void layerProcess(Simulation&,const std::string&,
@@ -211,6 +210,8 @@ class InjectionHall :
   InjectionHall& operator=(const InjectionHall&);
   virtual ~InjectionHall();
 
+  /// accessor to void mat
+  int getVoidMat() const { return voidMat; }
   size_t getBackWallNLayers() const {return backWallNLayers; }
   bool addPillars(Simulation&,const int) const;
 

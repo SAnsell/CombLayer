@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   5fR3Common/R3Ring.cxx
+ * File:   R3Common/R3Ring.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,9 +41,9 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Vec3D.h"
-#include "Surface.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
+#include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "SurInter.h"
@@ -115,7 +115,11 @@ R3Ring::populate(const FuncDataBase& Control)
   outerWall=Control.EvalVar<double>(keyName+"OuterWall");
   outerWallCut=Control.EvalVar<double>(keyName+"OuterWallCut");
   ratchetWall=Control.EvalVar<double>(keyName+"RatchetWall");
-  
+
+  insulation=Control.EvalVar<double>(keyName+"Insulation");
+  insulationCut=Control.EvalVar<double>(keyName+"InsulationCut");
+  insulationDepth=Control.EvalVar<double>(keyName+"InsulationDepth");
+
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
   floorThick=Control.EvalVar<double>(keyName+"FloorThick");
@@ -166,6 +170,9 @@ R3Ring::createSurfaces()
 
   ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(depth+floorThick),Z);
   ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height+roofThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(height+insulationDepth),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+107,
+			   Origin+Z*(height+insulationDepth+insulation),Z);
 
   // Inner coordinate points are all offset from the inner points
 
@@ -202,9 +209,20 @@ R3Ring::createSurfaces()
 
       // outer wall
       SurfMap::makePlane("BeamOuter",SMap,surfN+1001,APt+XX*ratchetWall,XX);
-      SurfMap::makePlane("FlatOuter",SMap,surfN+1003,APt+YY*outerWall,YY);
+      SurfMap::makePlane
+	("FlatOuter",SMap,surfN+1003,APt+YY*outerWall,YY);
       SurfMap::makePlane("FlatOuterCut",SMap,surfN+1503,
 			 APt-flatYY*outerWallCut,flatYY);
+      SurfMap::makePlane("InsulationOuterCut",SMap,surfN+1508,
+      			 APt-YY*insulationCut*sin(6.0*M_PI/180.0)
+			 -flatYY*outerWallCut,flatYY);
+      SurfMap::makePlane
+	("InsulationCut",SMap,surfN+1002,APt-XX*insulationCut,XX);
+      SurfMap::makePlane
+	("FlatInsulation",SMap,surfN+1008,APt+YY*insulationDepth,YY);
+      SurfMap::makePlane
+	("FlatInsulation",SMap,surfN+1009,
+	 APt+YY*(insulationDepth+insulation),YY);
       surfN+=10;
     }
   
@@ -219,10 +237,10 @@ R3Ring::createFloor(Simulation& System)
    */
 {
   ELog::RegMethod RegA("R3Ring","createFloor");
-  std::string Out;
+  HeadRule HR;
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-9007 -5 15 ");
-  makeCell("Floor",System,cellIndex++,floorMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-9007 -5 15");
+  makeCell("Floor",System,cellIndex++,floorMat,0.0,HR);
   return;
 }
 
@@ -236,11 +254,15 @@ R3Ring::createObjects(Simulation& System)
   ELog::RegMethod RegA("R3Ring","createObjects");
 
   const HeadRule fullLayerHR=
-    ModelSupport::getHeadRule(SMap,buildIndex," 5 -16 ");
-  const HeadRule roofLayerHR=
-    ModelSupport::getHeadRule(SMap,buildIndex," 6 -16 ");
+    ModelSupport::getHeadRule(SMap,buildIndex,"5 -16");
+  const HeadRule roofBaseHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"6 -106");
+  const HeadRule roofInsulationHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"106 -107");
+  const HeadRule roofTopHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"107 -16");
   const HeadRule innerLayerHR=
-    ModelSupport::getHeadRule(SMap,buildIndex," 5 -6 ");
+    ModelSupport::getHeadRule(SMap,buildIndex,"5 -6");
 
   // horrible code to build a list of 20 values
   std::ostringstream cx;
@@ -277,22 +299,41 @@ R3Ring::createObjects(Simulation& System)
   for(size_t i=0;i<NInnerSurf;i++)
     {
       // outer
-      HR=ModelSupport::getHeadRule(SMap,BNext,BPrev," 1M -3M  -1 ");
+      HR=ModelSupport::getHeadRule(SMap,BNext,BPrev,"1M -3M  -1");
       // inner
-      HR*=ModelSupport::getHeadRule(SMap,IPrev,INext," (3:3M) ");
+      HR*=ModelSupport::getHeadRule(SMap,IPrev,INext,"(3:3M)");
 
       makeCell("InnerVoid",System,cellIndex++,0,0.0,HR*innerLayerHR);
-      makeCell("Roof",System,cellIndex++,roofMat,0.0,HR*roofLayerHR);
+      makeCell("Roof",System,cellIndex++,roofMat,0.0,HR*roofBaseHR);
+      makeCell("Roof",System,cellIndex++,0,0.0,HR*roofInsulationHR);
+      makeCell("Roof",System,cellIndex++,roofMat,0.0,HR*roofTopHR);
+      
+      HR=ModelSupport::getHeadRule(SMap,BNext,BPrev,
+				   "1001M 3M -1008M -1002 -1503M");
+      makeCell("InnerFlat",System,cellIndex++,wallMat,0.0,HR*fullLayerHR);
 
       HR=ModelSupport::getHeadRule(SMap,BNext,BPrev,
-				   "1001M -1003M  -1 3M -1503M");
+				   "1001M 1008M -1009M  -1002 -1508M");
+      makeCell("InsulationFlat",System,cellIndex++,0,0.0,HR*fullLayerHR);
+
+      HR=ModelSupport::getHeadRule(SMap,BNext,BPrev,
+				   "1001M 1008M -1009M  -1503M 1508M");
+      makeCell("InsulationCut",System,cellIndex++,wallMat,0.0,HR*fullLayerHR);
+
+      HR=ModelSupport::getHeadRule(SMap,BNext,BPrev,
+				   "1001M 1009M -1003M -1002 -1503M");
       makeCell("OuterFlat",System,cellIndex++,wallMat,0.0,HR*fullLayerHR);
 
-      HR=ModelSupport::getHeadRule(SMap,BNext,BPrev," 1 -1001 -1003M  3");
+      HR=ModelSupport::getHeadRule(SMap,BNext,BPrev,
+				   "1002 3M -1003M -1 -1503M");
+      makeCell("OuterFlatEnd",System,cellIndex++,wallMat,0.0,HR*fullLayerHR);
+
+            
+      HR=ModelSupport::getHeadRule(SMap,BNext,BPrev,"1 -1001 -1003M  3");
       makeCell("FrontWall",System,cellIndex++,wallMat,0.0,HR*fullLayerHR);
 
       HR=ModelSupport::getHeadRule
-	(SMap,BNext,BPrev,buildIndex," 1001 -1003M  (1003:1503) -9007N ");
+	(SMap,BNext,BPrev,buildIndex,"1001 -1003M  (1003:1503) -9007N ");
       makeCell("OuterSegment",System,cellIndex++,0,0.0,HR*fullLayerHR);
 
       IPrev=INext;
@@ -332,7 +373,8 @@ R3Ring::createDoor(Simulation& System)
 	("outerWall",-SurfMap::getSurf("FlatOuter",doorActive-1));
       doorPtr->setCutSurf("floor",SurfMap::getSurf("Floor"));
 
-      doorPtr->addAllInsertCell(getCell("OuterFlat",doorActive % NInnerSurf));
+      doorPtr->addAllInsertCell
+	(getCell("OuterFlatEnd",doorActive % NInnerSurf));
       doorPtr->createAll(System,*this,doorActive+1);
     }
   return;

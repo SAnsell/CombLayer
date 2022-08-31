@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/Linac/LocalShielding.cxx
  *
- * Copyright (c) 2004-2021 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -208,93 +208,98 @@ LocalShielding::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("LocalShielding","createObjects");
 
-  std::string Out;
-  const std::string ICell=isActive("Inner") ? getRuleStr("Inner") : "";
+  HeadRule HR;
+  const HeadRule ICellHR=isActive("Inner") ? getRule("Inner") : HeadRule();
 
-  const std::string side=ModelSupport::getComposite(SMap,buildIndex," 1 -2 ");
+  const HeadRule sideHR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2");
 
-  const bool isMidHole = (midHoleWidth>Geometry::zeroTol) && (midHoleHeight>Geometry::zeroTol);
-  const bool isCorners = (cornerWidth>Geometry::zeroTol) && (cornerHeight>Geometry::zeroTol);
+  const bool isMidHole =
+    (midHoleWidth>Geometry::zeroTol) &&
+    (midHoleHeight>Geometry::zeroTol);
+  const bool isCorners =
+    (cornerWidth>Geometry::zeroTol) &&
+    (cornerHeight>Geometry::zeroTol);
 
-  const std::string top=ModelSupport::getComposite(SMap,buildIndex,
-						   isCorners ? " -26 " : " -6 ");
+  const HeadRule topHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,
+						   isCorners ?"-26":"-6");
 
   if ((!isMidHole) && (!isCorners))
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
-      makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
+      makeCell("Wall",System,cellIndex++,mainMat,0.0,HR*sideHR);
     }
   else if (isMidHole)
     {
-      if (opt == "SideOnly") // build only side walls, hole height does not make sence
+      if (opt =="SideOnly") // build only side walls, hole height does not make sence
 	{
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -13 5 ") + top;
-	  makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -13 5");
+	  makeCell("Wall",System,cellIndex++,mainMat,0.0,HR*sideHR*topHR);
 
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 5 ") + top;
-	  makeCell("Hole",System,cellIndex++,0,0.0,Out+side+ICell);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 5");
+	  makeCell("Hole",System,cellIndex++,0,0.0,HR*sideHR*ICellHR*topHR);
 
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 14 -4 5 ") + top;
-	  makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"14 -4 5");
+	  makeCell("Wall",System,cellIndex++,mainMat,0.0,HR*sideHR*topHR);
 	}
       else
 	{
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -15 ");
-	  makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -15");
+	  makeCell("Wall",System,cellIndex++,mainMat,0.0,HR*sideHR);
 
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -13 15 -16 ");
-	  makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -13 15 -16");
+	  makeCell("Wall",System,cellIndex++,mainMat,0.0,HR*sideHR);
 
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 15 -16 ");
-	  makeCell("Hole",System,cellIndex++,0,0.0,Out+side+ICell);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 15 -16");
+	  makeCell("Hole",System,cellIndex++,0,0.0,HR*sideHR*ICellHR);
 
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 14 -4 15 -16 ");
-	  makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"14 -4 15 -16");
+	  makeCell("Wall",System,cellIndex++,mainMat,0.0,HR*sideHR);
 
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 16 ") + top;
-	  makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 16");
+	  makeCell("Wall",System,cellIndex++,mainMat,0.0,HR*sideHR*topHR);
 	}
     }
   else
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 ") + top;
-      makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5");
+      makeCell("Wall",System,cellIndex++,mainMat,0.0,HR*sideHR*topHR);
     }
 
   if (isCorners)
     {
-      if (cType == "right") // left corner is not built
+      if (cType =="right") // left corner is not built
 	{
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -23 26 -6 ");
-	  makeCell("Corner",System,cellIndex++,0,0.0,Out+side);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -23 26 -6");
+	  makeCell("Corner",System,cellIndex++,0,0.0,HR*sideHR);
 
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 23 -4 26 -6 ");
-	  makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"23 -4 26 -6");
+	  makeCell("Wall",System,cellIndex++,mainMat,0.0,HR*sideHR);
 	}
-      else if (cType == "left") // right corner is not built
+      else if (cType =="left") // right corner is not built
 	{
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -24 26 -6 ");
-	  makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -24 26 -6");
+	  makeCell("Wall",System,cellIndex++,mainMat,0.0,HR*sideHR);
 
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 24 -4 26 -6 ");
-	  makeCell("Corner",System,cellIndex++,0,0.0,Out+side);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"24 -4 26 -6");
+	  makeCell("Corner",System,cellIndex++,0,0.0,HR*sideHR);
 	}
       else // both corners are built
 	{
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -23 26 -6 ");
-	  makeCell("Corner",System,cellIndex++,0,0.0,Out+side);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -23 26 -6");
+	  makeCell("Corner",System,cellIndex++,0,0.0,HR*sideHR);
 
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 23 -24 26 -6 ");
-	  makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"23 -24 26 -6");
+	  makeCell("Wall",System,cellIndex++,mainMat,0.0,HR*sideHR);
 
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 24 -4 26 -6 ");
-	  makeCell("Corner",System,cellIndex++,0,0.0,Out+side);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"24 -4 26 -6");
+	  makeCell("Corner",System,cellIndex++,0,0.0,HR*sideHR);
 	}
 
     }
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  addOuterSurf(HR);
 
   return;
 }

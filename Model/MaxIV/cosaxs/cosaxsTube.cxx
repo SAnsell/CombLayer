@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/cosaxs/cosaxsTube.cxx
  *
- * Copyright (c) 2004-2021 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -91,8 +90,8 @@ cosaxsTube::cosaxsTube(const std::string& Key)  :
   attachSystem::SurfMap(),
   attachSystem::FrontBackCut(),
 
-  outerMat(0),
   delayPortFlag(0),
+  outerMat(0),
 
   buildZone(Key+"BlockZone"),
   tubeZone(Key+"TubeZone"),
@@ -150,7 +149,7 @@ cosaxsTube::populate(const FuncDataBase& Control)
 
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
   outerLength=Control.EvalVar<double>(keyName+"OuterLength");
-  outerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"OuterMat",outerMat);
+  outerMat=ModelSupport::EvalDefMat(Control,keyName+"OuterMat",outerMat);
   return;
 }
 

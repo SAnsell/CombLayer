@@ -110,12 +110,11 @@ userTrackConstruct::processTrack(SimFLUKA& System,
   const std::string particleType=
     IParam.getValueError<std::string>("tally",Index,1,"tally:ParticleType");
 
-  
   const std::string FCname=
     IParam.getValueError<std::string>("tally",Index,2,"tally:Object/Cell");
 
   // throws on error
-  const std::vector<int> cellList=System.getObjectRange(FCname);
+  const std::set<int> cellList=System.getObjectRange(FCname);
   
   const double EA=IParam.getDefValue<double>(1e-9,"tally",Index,3);
   const double EB=IParam.getDefValue<double>(1000,"tally",Index,4);

@@ -31,6 +31,7 @@ namespace insertSystem
 namespace constructSystem
 {
   class Bellows;
+  class CornerPipe;
   class CrossPipe;
   class GateValveCube;
   class OffsetFlangePipe;
@@ -61,6 +62,7 @@ namespace xraySystem
   class BeamMount;
   class PreDipole;
   class MagnetM1;
+  class MagnetU1;
 
   class PreBendPipe;
   class EPSeparator;
@@ -101,6 +103,9 @@ class R3FrontEnd :
   /// First magnetic block out of undulator
   std::shared_ptr<xraySystem::MagnetM1> magBlockM1;
 
+  /// Second magnetic block out of undulator
+  std::shared_ptr<xraySystem::MagnetU1> magBlockU1;
+
   
   std::shared_ptr<xraySystem::EPSeparator> epSeparator;
   
@@ -111,7 +116,9 @@ class R3FrontEnd :
   std::shared_ptr<xraySystem::R3ChokeInsert> chokeInsert;
 
   /// dipole connection pipe
-  std::shared_ptr<constructSystem::VacuumPipe> dipolePipe;
+  std::shared_ptr<constructSystem::CornerPipe> dipolePipe;
+  /// electron transfer pipe M1->U1
+  std::shared_ptr<constructSystem::VacuumPipe> eTransPipe;
   /// electron cut cell
   std::shared_ptr<insertSystem::insertCylinder> eCutDisk;
   /// electron cut cell [with magnetic field]
@@ -203,9 +210,10 @@ class R3FrontEnd :
 		   const attachSystem::FixedComp&,
 		   const long int) =0;
 
+  /// Null op for extra components after build
+  virtual void buildExtras(Simulation&) {}
 
-  void buildHeatTable(Simulation&,
-		      const attachSystem::FixedComp&,const long int);
+  void buildHeatTable(Simulation&);
   void buildApertureTable(Simulation&,
 			  const attachSystem::FixedComp&,const long int);
   void buildShutterTable(Simulation&,

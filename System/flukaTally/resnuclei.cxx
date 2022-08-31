@@ -3,7 +3,7 @@
  
  * File:   flukaTally/resnuclei.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,11 @@
 namespace flukaSystem
 {
 
-
+///\cond STATIC
+int resnuclei::zOut=0;
+int resnuclei::mOut=0;
+///\endcond STATIC
+  
 resnuclei::resnuclei(const int ID,const int outIndex) :
   flukaTally("resn",ID,outIndex),
   cellA(0)
@@ -117,6 +121,13 @@ resnuclei::setZaid(const int Z,const int A)
 {
   AMax=A;
   ZMax=Z;
+  if (zOut<ZMax)
+    zOut=ZMax;
+
+  const int NMax=AMax-ZMax;
+  if (mOut < NMax)
+    mOut=NMax;               // dont thing manual correct
+  
   return;
 }
 
@@ -129,11 +140,9 @@ resnuclei::write(std::ostream& OX) const
     \param OX :: Output stream
    */
 {
-
   std::ostringstream cx;
   //  const int M=AMax-ZMax+5;
-  const int M=AMax+5;
-  cx<<"RESNUCLEI  3.0 "<<outputUnit<<" "<<ZMax+5<<" "<<M<<
+  cx<<"RESNUCLEI  3.0 "<<outputUnit<<" "<<zOut+7<<" "<<mOut+5<<
     " R"<<cellA<<" 1.0 ";
   cx<<" "<<keyName;
   StrFunc::writeFLUKA(cx.str(),OX);

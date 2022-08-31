@@ -3,7 +3,7 @@
 
  * File:   constructVar/PortItemGenerator.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -127,6 +127,20 @@ PortItemGenerator::setCF(const double L)
   return;
 }
 
+template<typename CF>
+void
+PortItemGenerator::setFlangeCF()
+  /*!
+    Set flange to CF-X format
+  */
+{
+  flangeLen=CF::flangeLength;
+  flangeRadius=CF::flangeRadius;
+  capThick=CF::flangeLength;
+
+  return;
+}
+
 
 void
 PortItemGenerator::setPort(const double L,const double R,
@@ -221,8 +235,10 @@ PortItemGenerator::generatePort(FuncDataBase& Control,
     \param A :: axis
   */
 {
-  ELog::RegMethod RegA("PortItemGenerator","generatorPort");
+  ELog::RegMethod RegA("PortItemGenerator","generatePort");
 
+  Control.addVariable(keyName+"PortType","Standard");
+  
   const double WThick((windowThick < -Geometry::zeroTol) ?
 		      -windowThick*capThick : windowThick);
 
@@ -248,14 +264,70 @@ PortItemGenerator::generatePort(FuncDataBase& Control,
   Control.addVariable(keyName+"WindowMat",windowMat);
   Control.addVariable(keyName+"OuterVoidMat",outerVoidMat);
 
-
   return;
 
+}
+
+void
+PortItemGenerator::generateAnglePort(FuncDataBase& Control,
+				     const std::string& keyName,
+				     const Geometry::Vec3D& C,
+				     const Geometry::Vec3D& AAxis,
+				     const Geometry::Vec3D& BAxis,
+				     const double bLength) const
+/*!
+    Primary funciton for setting the variables
+    \param Control :: Database to add variables
+    \param keyName :: head name for variable
+    \param C :: centre
+    \param AAxis :: axis of first section
+    \param BAxis :: axis after turn
+    \param bLength :: length of second section
+  */
+{
+  ELog::RegMethod RegA("PortItemGenerator","generateAnglePort");
+
+  generatePort(Control,keyName,C,AAxis);
+  Control.addVariable(keyName+"PortType","Angle");
+  
+  Control.addVariable(keyName+"BAxis",BAxis.unit());
+  Control.addVariable(keyName+"LengthB",length);
+  Control.addVariable(keyName+"LengthB",bLength);
+
+  return;
+}
+
+void
+PortItemGenerator::generateDoublePort(FuncDataBase& Control,
+				      const std::string& keyName,
+				      const PortItemGenerator& extraPI,
+				      const Geometry::Vec3D& C,
+				      const Geometry::Vec3D& Axis) const 
+/*!
+    Primary funciton for setting the variables
+    \param Control :: Database to add variables
+    \param keyName :: head name for variable
+    \param C :: centre
+    \param Axis :: axis of first section
+    \template CF :: pipe sepcifications for second section
+  */
+{
+  ELog::RegMethod RegA("PortItemGenerator","generateDoublePort");
+
+  generatePort(Control,keyName,C,Axis);
+  Control.addVariable(keyName+"PortType","Double");
+
+  extraPI.generatePort(Control,keyName+"Extra",C,Axis);
+
+  return;
 }
 
 
 ///\cond TEMPLATE
 
+template void PortItemGenerator::setCF<CF16>(const double);
+template void PortItemGenerator::setCF<CF18_TDC>(const double);
+template void PortItemGenerator::setCF<CF25>(const double);
 template void PortItemGenerator::setCF<CF34_TDC>(const double);
 template void PortItemGenerator::setCF<CF35_TDC>(const double);
 template void PortItemGenerator::setCF<CF37_TDC>(const double);
@@ -267,6 +339,21 @@ template void PortItemGenerator::setCF<CF100>(const double);
 template void PortItemGenerator::setCF<CF120>(const double);
 template void PortItemGenerator::setCF<CF150>(const double);
 template void PortItemGenerator::setCF<CF350>(const double);
+
+template void PortItemGenerator::setFlangeCF<CF16>();
+template void PortItemGenerator::setFlangeCF<CF18_TDC>();
+template void PortItemGenerator::setFlangeCF<CF25>();
+template void PortItemGenerator::setFlangeCF<CF34_TDC>();
+template void PortItemGenerator::setFlangeCF<CF35_TDC>();
+template void PortItemGenerator::setFlangeCF<CF37_TDC>();
+template void PortItemGenerator::setFlangeCF<CF40>();
+template void PortItemGenerator::setFlangeCF<CF40_22>();
+template void PortItemGenerator::setFlangeCF<CF50>();
+template void PortItemGenerator::setFlangeCF<CF63>();
+template void PortItemGenerator::setFlangeCF<CF100>();
+template void PortItemGenerator::setFlangeCF<CF120>();
+template void PortItemGenerator::setFlangeCF<CF150>();
+template void PortItemGenerator::setFlangeCF<CF350>();
 
 ///\endcond  TEMPLATE
 

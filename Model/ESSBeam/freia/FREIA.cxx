@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/freia/FREIA.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,9 +54,9 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotateUnit.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
@@ -71,6 +71,7 @@
 #include "GuideItem.h"
 #include "GuideLine.h"
 #include "DiskChopper.h"
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
@@ -88,7 +89,7 @@ namespace essSystem
 FREIA::FREIA(const std::string& keyName) :
   attachSystem::CopiedComp("freia",keyName),
   startPoint(0),stopPoint(0),
-  freiaAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
+  freiaAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
 
   BendA(new beamlineSystem::GuideLine(newName+"BA")),
 
@@ -98,29 +99,29 @@ FREIA::FREIA(const std::string& keyName) :
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   BendC(new beamlineSystem::GuideLine(newName+"BC")),
 
-  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
-  DDisk(new constructSystem::DiskChopper(newName+"DBlade")),
+  ChopperA(new essConstruct::SingleChopper(newName+"ChopperA")),
+  DDisk(new essConstruct::DiskChopper(newName+"DBlade")),
 
-  ChopperB(new constructSystem::SingleChopper(newName+"ChopperB")),
-  WFMDisk(new constructSystem::DiskChopper(newName+"WFMBlade")),
+  ChopperB(new essConstruct::SingleChopper(newName+"ChopperB")),
+  WFMDisk(new essConstruct::DiskChopper(newName+"WFMBlade")),
 
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   BendD(new beamlineSystem::GuideLine(newName+"BD")),
 
-  ChopperC(new constructSystem::SingleChopper(newName+"ChopperC")),
-  FOCDiskC(new constructSystem::DiskChopper(newName+"FOC1Blade")),
+  ChopperC(new essConstruct::SingleChopper(newName+"ChopperC")),
+  FOCDiskC(new essConstruct::DiskChopper(newName+"FOC1Blade")),
 
   VPipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
   BendE(new beamlineSystem::GuideLine(newName+"BE")),
   
-  ChopperD(new constructSystem::SingleChopper(newName+"ChopperD")),
-  WBC2Disk(new constructSystem::DiskChopper(newName+"WBC2Blade")),
+  ChopperD(new essConstruct::SingleChopper(newName+"ChopperD")),
+  WBC2Disk(new essConstruct::DiskChopper(newName+"WBC2Blade")),
 
   VPipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
   BendF(new beamlineSystem::GuideLine(newName+"BF")),
 
-  ChopperE(new constructSystem::SingleChopper(newName+"ChopperE")),
-  FOC2Disk(new constructSystem::DiskChopper(newName+"FOC2Blade")),
+  ChopperE(new essConstruct::SingleChopper(newName+"ChopperE")),
+  FOC2Disk(new essConstruct::DiskChopper(newName+"FOC2Blade")),
 
   BInsert(new BunkerInsert(newName+"BInsert")),
   VPipeWall(new constructSystem::VacuumPipe(newName+"PipeWall")),  
@@ -128,11 +129,11 @@ FREIA::FREIA(const std::string& keyName) :
 
   OutPitA(new constructSystem::ChopperPit(newName+"OutPitA")),
   OutACut(new constructSystem::HoleShape(newName+"OutACut")),
-  ChopperOutA(new constructSystem::SingleChopper(newName+"ChopperOutA")),
-  WBC3Disk(new constructSystem::DiskChopper(newName+"WBC3Blade")),
+  ChopperOutA(new essConstruct::SingleChopper(newName+"ChopperOutA")),
+  WBC3Disk(new essConstruct::DiskChopper(newName+"WBC3Blade")),
 
-  ChopperOutB(new constructSystem::SingleChopper(newName+"ChopperOutB")),
-  FOC3Disk(new constructSystem::DiskChopper(newName+"FOC3Blade")),
+  ChopperOutB(new essConstruct::SingleChopper(newName+"ChopperOutB")),
+  FOC3Disk(new essConstruct::DiskChopper(newName+"FOC3Blade")),
 
   JawPit(new constructSystem::ChopperPit(newName+"JawPit")),
   ShieldA(new constructSystem::LineShield(newName+"ShieldA")),
@@ -321,8 +322,8 @@ FREIA::buildBunkerUnits(Simulation& System,
 
 void
 FREIA::buildOutGuide(Simulation& System,
-                     const attachSystem::FixedComp& FW,
-                     const long int startIndex,
+                     const attachSystem::FixedComp&,
+                     const long int,
                      const int voidCell)
   /*!
     Build all the components that are outside of the wall
@@ -397,9 +398,9 @@ FREIA::buildOutGuide(Simulation& System,
 
 void
 FREIA::buildHut(Simulation& System,
-		const attachSystem::FixedComp& connectFC,
-		const long int connectIndex,
-                const int voidCell)
+		const attachSystem::FixedComp&,
+		const long int,
+                const int)
   /*!
     Builds the hut connected to the FixedPoint given
     \param System :: Simulation to build with

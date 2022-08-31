@@ -320,7 +320,7 @@ sub writeHeader
   my $DX=shift;   ## FILEGLOB
 
   print $DX "project(CombLayer)\n";
-  print $DX "cmake_minimum_required(VERSION 2.8)\n\n";
+  print $DX "cmake_minimum_required(VERSION 3.0)\n\n";
 
 
   print $DX "set(CMAKE_CXX_COMPILER ",$self->{ccomp},")\n";
@@ -423,14 +423,12 @@ sub writeExcutables
 	  $item,".cxx)\n";
 
       ## Special first and last item
-      my $firstUnit=undef;
       my $lastUnit=undef;
       if (@{$self->{depLists}{$item}}>2)
         {
-	    $firstUnit=shift @{$self->{depLists}{$item}};
 	    $lastUnit=pop @{$self->{depLists}{$item}};
 	    print $DX "target_link_libraries(",
-		$item," -Wl,--start-group lib",$firstUnit,")\n";
+		$item," -Wl,--start-group lib",$lastUnit,")\n";
 	}
       foreach my $dItem (@{$self->{depLists}{$item}})
       {

@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/FixedRotate.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,6 +66,10 @@ class FixedRotate  : public FixedComp
   virtual void populate(const std::string&,const FuncDataBase&);
   virtual void createUnitVector(const attachSystem::FixedComp&,
 				const long int);
+  virtual void createUnitVector(const attachSystem::FixedComp&,
+				const Geometry::Vec3D&);
+  virtual void createUnitVector(const Geometry::Vec3D&,
+				const Geometry::Vec3D&);
   virtual void createUnitVector(const Geometry::Vec3D&,
 				const Geometry::Vec3D&,
 				const Geometry::Vec3D&);

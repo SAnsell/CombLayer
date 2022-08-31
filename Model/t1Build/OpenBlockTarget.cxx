@@ -3,7 +3,7 @@
  
  * File:   t1Build/OpenBlockTarget.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,8 +39,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -57,7 +55,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
 #include "BaseMap.h"
@@ -152,7 +150,7 @@ OpenBlockTarget::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("OpenBlockTarget","populate");
 
-  attachSystem::FixedOffset::populate(Control);
+  attachSystem::FixedRotate::populate(Control);
 
   // Global values:
   height=Control.EvalVar<double>(keyName+"Height");
@@ -422,14 +420,10 @@ OpenBlockTarget::getTargetLength() const
 }
 
 void 
-OpenBlockTarget::addProtonLine(Simulation& System,
-			 const attachSystem::FixedComp& refFC,
-			 const long int index)
-  /*!
+OpenBlockTarget::addProtonLine(Simulation& System)
+/*!
     Add a proton void cell
     \param System :: Simualation
-    \param refFC :: reflector edge
-    \param index :: Index of the proton cutting surface [6 typically (-7)]
    */
 {
   ELog::RegMethod RegA("OpenBlockTarget","addProtonLine");

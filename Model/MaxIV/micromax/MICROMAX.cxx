@@ -56,15 +56,21 @@
 #include "FrontBackCut.h"
 #include "BlockZone.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "PipeShield.h"
+#include "forkHoles.h"
 #include "OpticsHutch.h"
+#include "OpticsStepHutch.h"
 #include "ExperimentalHutch.h"
 #include "WallLead.h"
 #include "R3Ring.h"
 #include "R3FrontEnd.h"
 #include "micromaxFrontEnd.h"
 #include "micromaxOpticsLine.h"
+#include "micromaxExptLine.h"
+#include "micromaxExptLineB.h"
+#include "PortChicane.h"
 
 #include "R3Beamline.h"
 #include "MICROMAX.h"
@@ -77,8 +83,15 @@ MICROMAX::MICROMAX(const std::string& KN) :
   frontBeam(new micromaxFrontEnd(newName+"FrontBeam")),
   wallLead(new WallLead(newName+"WallLead")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
-  opticsHut(new OpticsHutch(newName+"OpticsHut")),
-  opticsBeam(new micromaxOpticsLine(newName+"OpticsLine"))  
+  opticsHut(new OpticsStepHutch(newName+"OpticsHut")),
+  opticsBeam(new micromaxOpticsLine(newName+"OpticsLine")),
+  exptHut(new ExperimentalHutch(newName+"ExptHut")),
+  joinPipeB(new constructSystem::VacuumPipe(newName+"JoinPipeB")),
+  pShield(new xraySystem::PipeShield(newName+"PShield")),
+  exptBeam(new micromaxExptLine(newName+"ExptLine")),
+  exptHutB(new ExperimentalHutch(newName+"ExptHutB")),
+  joinPipeC(new constructSystem::VacuumPipe(newName+"JoinPipeC")),
+  exptBeamB(new micromaxExptLineB(newName+"ExptLineB"))
   /*!
     Constructor
     \param KN :: Keyname
@@ -93,6 +106,12 @@ MICROMAX::MICROMAX(const std::string& KN) :
   
   OR.addObject(opticsHut);
   OR.addObject(opticsBeam);
+  OR.addObject(joinPipeB);
+  OR.addObject(exptHut);
+  OR.addObject(exptBeam);
+  OR.addObject(exptHutB);
+  OR.addObject(joinPipeC);
+  OR.addObject(exptBeamB);
 }
 
 MICROMAX::~MICROMAX()
@@ -115,7 +134,6 @@ MICROMAX::build(Simulation& System,
   ELog::RegMethod RControl("MICROMAX","build");
 
   const size_t NS=r3Ring->getNInnerSurf();
-
   const size_t PIndex=static_cast<size_t>(std::abs(sideIndex)-1);
   const size_t SIndex=(PIndex+1) % NS;
   const size_t prevIndex=(NS+PIndex-1) % NS;
@@ -124,7 +142,8 @@ MICROMAX::build(Simulation& System,
 
   frontBeam->setStopPoint(stopPoint);
   frontBeam->setCutSurf("REWall",-r3Ring->getSurf("BeamInner",PIndex));
-  frontBeam->deactivateFM3();
+  // believed active on Micromax
+  //  frontBeam->deactivateFM3();
   frontBeam->addInsertCell(r3Ring->getCell("InnerVoid",SIndex));
 
   frontBeam->setBack(-r3Ring->getSurf("BeamInner",PIndex));
@@ -135,24 +154,11 @@ MICROMAX::build(Simulation& System,
   wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));    
   wallLead->createAll(System,FCOrigin,sideIndex);
 
-  if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
-  
-  opticsHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
-  opticsHut->setCutSurf("RingWall",r3Ring->getSurf("BeamOuter",PIndex));
+  if (stopPoint=="frontEnd" || stopPoint=="Dipole"
+      || stopPoint=="FM1" || stopPoint=="FM2" || stopPoint=="FM3")
+    return;
 
-  opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
-  opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
-
-  opticsHut->setCutSurf("InnerSideWall",r3Ring->getSurf("FlatInner",PIndex));
-  opticsHut->setCutSurf("SideWall",r3Ring->getSurf("FlatOuter",PIndex));
-
-  opticsHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
-
-  // Ugly HACK to get the two objects to merge
-  r3Ring->insertComponent
-    (System,"OuterFlat",SIndex,
-     *opticsHut,opticsHut->getSideIndex("frontCut"));
-
+  buildOpticsHutch(System,opticsHut,PIndex,exitLink);
 
   if (stopPoint=="opticsHut") return;
 
@@ -170,7 +176,64 @@ MICROMAX::build(Simulation& System,
   opticsBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
   opticsBeam->setPreInsert(joinPipe);
   opticsBeam->createAll(System,*joinPipe,2);
+
+  exptHut->setCutSurf("floor",r3Ring->getSurf("Floor"));
+  exptHut->setCutSurf("frontWall",*opticsHut,"back");
+  exptHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
+  exptHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
+  exptHut->createAll(System,*opticsHut,"back");
+  exptHut->splitChicane(System,1,2);
+
+  joinPipeB->addAllInsertCell(opticsBeam->getCell("LastVoid"));  
+  joinPipeB->addInsertCell("Main",opticsHut->getCell("ExitHole"));
+  joinPipeB->setFront(*opticsBeam,2);
+  joinPipeB->createAll(System,*opticsBeam,2);
+
+  // pipe shield goes around joinPipeB:
+
+  pShield->addAllInsertCell(opticsBeam->getCell("LastVoid"));
+  pShield->setCutSurf("inner",*joinPipeB,"outerPipe");
+  pShield->createAll(System,*opticsHut,"innerBack");
+
+  if (stopPoint=="exptHut") return;
+
+  exptBeam->setInsertCell(exptHut->getCells("Void"));
+  exptBeam->setOuterMat(exptHut->getInnerMat());
+  exptBeam->setCutSurf("front",*exptHut,
+			 exptHut->getSideIndex("innerFront"));
+  exptBeam->setCutSurf("back",*exptHut,
+			 exptHut->getSideIndex("innerBack"));
+  exptBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
+  exptBeam->setPreInsert(joinPipeB);
+  exptBeam->createAll(System,*joinPipeB,2);
+
+  exptHutB->setCutSurf("floor",r3Ring->getSurf("Floor"));
+  exptHutB->setCutSurf("frontWall",*exptHut,"back");
+  exptHutB->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
+  exptHutB->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
+  exptHutB->createAll(System,*exptHut,"back");
+  // special for portItem transfer
+  const PortChicane* PCPtr=exptHut->getPortItem(4);
+  if (PCPtr)
+    PCPtr->insertInCell
+      ("Main",System,exptHutB->getCell("FrontVoid"));
   
+  joinPipeC->addAllInsertCell(exptBeam->getCell("LastVoid"));  
+  joinPipeC->addInsertCell("Main",exptHut->getCell("ExitHole"));
+  joinPipeC->setFront(*exptBeam,2);
+  joinPipeC->createAll(System,*exptBeam,2);
+
+  exptBeamB->setInsertCell(exptHutB->getCells("Void"));
+  exptBeamB->setOuterMat(exptHutB->getInnerMat());
+  exptBeamB->setCutSurf("front",*exptHutB,
+			 exptHutB->getSideIndex("innerFront"));
+  exptBeamB->setCutSurf("back",*exptHutB,
+			 exptHutB->getSideIndex("innerBack"));
+  exptBeamB->setCutSurf("floor",r3Ring->getSurf("Floor"));
+  exptBeamB->setPreInsert(joinPipeC);
+  exptBeamB->createAll(System,*joinPipeC,2);
+
+
   return;
 }
 

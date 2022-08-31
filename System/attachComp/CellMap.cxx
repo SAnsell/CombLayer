@@ -3,7 +3,7 @@
  
  * File:   attachComp/CellMap.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -113,7 +113,7 @@ CellMap::insertCellMapInCell(Simulation& System,
       if (OPtr)
 	{
 	  const HeadRule compObj=OPtr->getHeadRule().complement();
-	  CPtr->addSurfString(compObj.display());
+	  CPtr->addIntersection(compObj);
 	}
     }  
   return;
@@ -144,7 +144,7 @@ CellMap::insertCellMapInCell(Simulation& System,
   if (!CPtr)
     throw ColErr::InContainerError<int>(cellN,"cellN in System");
 
-  CPtr->addSurfString(compObj.display());
+  CPtr->addIntersection(compObj);
   return;
 }
   
@@ -294,7 +294,7 @@ CellMap::insertComponent(Simulation& System,
       if (!outerObj)
 	throw ColErr::InContainerError<int>(cellNum,
 					    "Cell["+Key+"] not in simlutation");
-      outerObj->addSurfString(exclude);
+      outerObj->addIntersection(HeadRule(exclude));
     }
   return;
 }
@@ -320,7 +320,7 @@ CellMap::insertComponent(Simulation& System,
   if (!outerObj)
     throw ColErr::InContainerError<int>(cellNum,
 					"Cell["+Key+"] not present");
-  outerObj->addSurfString(exclude);
+  outerObj->addIntersection(HeadRule(exclude));
   return;
 }
 

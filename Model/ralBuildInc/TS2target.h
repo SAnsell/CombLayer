@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   buildInc/TS2target.h
+ * File:   ralBuildInc/TS2target.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -96,9 +96,6 @@ class TS2target :
   double waterTemp;             ///< Water temperature
   double externTemp;            ///< Pressure temperature
 
-  int mainCell;                 ///< Main tungsten cylinder
-  int skinCell;                 ///< Main ta cylinder
-
   size_t nLayers;               ///< number of layers
   std::vector<double> mainFrac; ///< Main fraction
 
@@ -118,17 +115,7 @@ class TS2target :
   virtual TS2target* clone() const; 
   virtual ~TS2target();
 
-  /// Main cell body
-  virtual int getMainBody() const  { return mainCell; }
-  /// Ta cell body
-  virtual int getSkinBody() const { return skinCell; }
-
-  void addInnerBoundary(attachSystem::ContainedComp&) const;
-
-
-  void addProtonLine(Simulation&,	 
-		     const attachSystem::FixedComp& refFC,
-		     const long int index);
+  void addProtonLine(Simulation&);	 
   void layerProcess(Simulation&);
 
   using FixedComp::createAll;

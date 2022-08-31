@@ -3,7 +3,7 @@
 
  * File: Linac/Segment48.cxx
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,8 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
+#include "FixedGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -62,19 +64,18 @@
 #include "ContainedGroup.h"
 #include "BlockZone.h"
 #include "generalConstruct.h"
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "VirtualTube.h"
 #include "PipeTube.h"
 #include "PortTube.h"
-#include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
 #include "portItem.h"
 #include "FixedOffset.h"
 #include "EBeamStop.h"
 #include "JawFlange.h"
 #include "CrossWayTube.h"
 #include "LocalShielding.h"
-#include "LObjectSupportB.h"
+#include "LObjectSupport.h"
 
 #include "TDCsegment.h"
 #include "Segment48.h"
@@ -188,8 +189,8 @@ Segment48::buildObjects(Simulation& System)
       jaws[index]->addInsertCell(slitTube->getCell("Void"));
       if (index)
   	jaws[index]->addInsertCell(jaws[index-1]->getCell("Void"));
-      jaws[index]->createAll
-  	(System,DPI,DPI.getSideIndex("InnerPlate"),*slitTube,0);
+      jaws[index]->secondaryUnitVector(*slitTube,0);
+      jaws[index]->createAll(System,DPI,"InnerPlate");
     }
 
   // simplify the DiagnosticBox inner cell

@@ -3,7 +3,7 @@
  
  * File:   construct/hexUnit.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,6 +36,7 @@
 #include "FileReport.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
+#include "HeadRule.h"
 #include "gridUnit.h"
 #include "hexUnit.h"
 

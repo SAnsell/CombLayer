@@ -36,7 +36,7 @@ namespace essSystem
 */
 
 class DetectorChamber :
-  public attachSystem::FixedOffsetGroup,
+  public attachSystem::FixedRotateGroup,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap
   
@@ -79,6 +79,7 @@ class DetectorChamber :
   DetectorChamber& operator=(const DetectorChamber&);
   virtual ~DetectorChamber();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

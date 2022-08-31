@@ -156,15 +156,17 @@ Acomp::expandIUI(const Acomp& A) const
       // N.aN
       for(const int BI : A.Units)
 	{
-	  Acomp addItem=unionCombine(AI,BI);
-	  Out.primativeAddItem(addItem);
+	  const Acomp addItem=unionCombine(AI,BI);
+	  if (Out.trueFlag!=1)
+	    Out.primativeAddItem(addItem);
 	}
 
       // N.ac
       for(const Acomp& AC : A.Comp)
 	{
-	  Acomp addItem=unionCombine(AI,AC);
-	  Out.primativeAddItem(addItem);
+	  const Acomp addItem=unionCombine(AI,AC);
+	  if (Out.trueFlag!=1)
+	    Out.primativeAddItem(addItem);
 	}
     }
   for(const Acomp& AC : Comp)
@@ -172,14 +174,16 @@ Acomp::expandIUI(const Acomp& A) const
       // C.aN
       for(const int BI : A.Units)
 	{
-	  Acomp addItem=unionCombine(BI,AC);
-	  Out.primativeAddItem(addItem);
+	  const Acomp addItem=unionCombine(BI,AC);
+	  if (Out.trueFlag!=1)
+	    Out.primativeAddItem(addItem);
 	}
       // C.aC
       for(const Acomp& BC : A.Comp)
 	{
 	  Acomp addItem=unionCombine(AC,BC);
-	  Out.primativeAddItem(addItem);
+	  if (Out.trueFlag!=1)
+	    Out.primativeAddItem(addItem);
 	}
     }
   return Out;
@@ -209,8 +213,9 @@ Acomp::expandIUU(const Acomp& A) const
       // N.ac
       for(const Acomp& AC : A.Comp)
 	{
-	  Acomp addItem=unionCombine(AI,AC);
-	  Out.primativeAddItem(addItem);
+	  const Acomp addItem=unionCombine(AI,AC);
+	  if (Out.trueFlag!=1)
+	    Out.primativeAddItem(addItem);
 	}
     }
 
@@ -226,8 +231,9 @@ Acomp::expandIUU(const Acomp& A) const
       // C.aC
       for(const Acomp& BC : A.Comp)
 	{
-	  Acomp addItem=unionCombine(AC,BC);
-	  Out.primativeAddItem(addItem);
+	  const Acomp addItem=unionCombine(AC,BC);
+	  if (Out.trueFlag!=1)
+	    Out.primativeAddItem(addItem);
 	}
     }
   return Out;
@@ -330,7 +336,10 @@ Acomp::unionCombine(const int A,const int B)
 {
   Acomp Out(0);  // union
   if (A == -B)   // need a special for this
-    ELog::EM<<"Totology"<<ELog::endDiag;
+    {
+      //      ELog::EM<<"Totology"<<ELog::endDiag;
+      Out.trueFlag=1;
+    }
   Out.Units.insert(A);
   Out.Units.insert(B);
   return Out;

@@ -64,9 +64,10 @@
 
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "CorrectorMag.h"
-#include "LObjectSupportB.h"
+#include "LObjectSupport.h"
 #include "CylGateValve.h"
 #include "StriplineBPM.h"
 #include "IonPumpTube.h"

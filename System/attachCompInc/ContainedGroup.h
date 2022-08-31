@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/ContainedGroup.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@ class ContainedGroup
   typedef std::map<std::string,ContainedComp> CTYPE;
   /// Named Container
   CTYPE CMap;
-
+  
  public:
 
   ContainedGroup();
@@ -72,20 +72,17 @@ class ContainedGroup
   ContainedGroup& operator=(const ContainedGroup&);
   virtual ~ContainedGroup();
 
-  virtual std::string getAllExclude() const;
+  virtual HeadRule getAllExclude() const;
   
   virtual const HeadRule& getOuterSurf(const std::string&) const;
-
+  virtual HeadRule getExcludeSurf(const std::string&) const;
   virtual std::string getExclude(const std::string&) const;
-  virtual std::string getContainer(const std::string&) const;
   virtual std::string getCompExclude(const std::string&) const;
-  virtual std::string getCompContainer(const std::string&) const;
 
   void clearRules();
   void clearRule(const std::string&);
   /// Test if has rule
   bool hasOuterSurf(const std::string&) const;
-  bool hasBoundary(const std::string&) const;
   
   void addOuterSurf(const std::string&,const int);
   void addOuterSurf(const std::string&,const std::string&);
@@ -96,10 +93,6 @@ class ContainedGroup
   void addOuterUnionSurf(const std::string&,const HeadRule&);
   void addOuterUnionSurf(const std::string&,const ContainedComp&);
 
-  void addBoundarySurf(const std::string&,const int);
-  void addBoundarySurf(const std::string&,const std::string&);
-  void addBoundaryUnionSurf(const std::string&,const int);
-  void addBoundaryUnionSurf(const std::string&,const std::string&);
 
   // Determine the surface that the line intersect first 
   // and its sign.

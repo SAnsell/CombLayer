@@ -3,7 +3,7 @@
  
  * File:   t1Build/t1BulkShield.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,8 +40,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -107,7 +105,7 @@ t1BulkShield::t1BulkShield(const std::string& Key)  :
 
 t1BulkShield::t1BulkShield(const t1BulkShield& A) : 
   attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
-  attachSystem::CellMap(A),  attachSystem::ExternalCut(A),
+  attachSystem::CellMap(A),attachSystem::ExternalCut(A),
   numberBeamLines(A.numberBeamLines),
   GData(A.GData),BData(A.BData),vYoffset(A.vYoffset),
   voidRadius(A.voidRadius),shutterRadius(A.shutterRadius),
@@ -321,7 +319,7 @@ t1BulkShield::createBulkInserts(Simulation& System)
       BItem->setCutSurf("ROuter",-SMap.realSurf(buildIndex+37));
 
       OR.addObject(BItem->getKeyName(),BItem);
-      BItem->createAll(System,*GData[i],0);
+      BItem->createAll(System,*GData[i],2);
       
       BData.push_back(BItem);
     }
@@ -340,7 +338,6 @@ t1BulkShield::createObjects(Simulation& System)
   const std::string innerComp=ExternalCut::getComplementStr("FullInner");
   std::string Out;
 
-  ELog::EM<<"Inner == "<<innerComp<<ELog::endDiag;
   Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -17 7 ");
   makeCell("shutterCell",System,cellIndex++,ironMat,0.0,Out+innerComp);
 
@@ -446,11 +443,8 @@ t1BulkShield::createAll(Simulation& System,
   createObjects(System); 
   processVoid(System);
   createShutters(System);
-  ELog::EM<<"ASDFASF "<<ELog::endDiag;
   createBulkInserts(System);
-  ELog::EM<<"ASDFASF "<<ELog::endDiag;
   createLinks();
-  ELog::EM<<"ASDFASF "<<ELog::endDiag;
 
   return;
 }

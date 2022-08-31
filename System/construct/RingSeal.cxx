@@ -3,7 +3,7 @@
  
  * File:   construct/RingSeal.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,14 +39,9 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "Surface.h"
 #include "surfRegister.h"
-#include "Quadratic.h"
-#include "Cylinder.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -61,7 +56,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -72,7 +67,7 @@ namespace constructSystem
 {
 
 RingSeal::RingSeal(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   standardInsert(0),setFlag(0)
   /*!
@@ -82,7 +77,7 @@ RingSeal::RingSeal(const std::string& Key) :
 {}
 
 RingSeal::RingSeal(const RingSeal& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedRotate(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
   NSection(A.NSection),NTrack(A.NTrack),radius(A.radius),
   deltaRad(A.deltaRad),thick(A.thick),mat(A.mat),
@@ -105,7 +100,7 @@ RingSeal::operator=(const RingSeal& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       NSection=A.NSection;
@@ -137,7 +132,7 @@ RingSeal::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("RingSeal","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   NSection=Control.EvalVar<size_t>(keyName+"NSection");
   NTrack=Control.EvalDefVar<size_t>(keyName+"NTrack",NSection);
@@ -182,15 +177,14 @@ RingSeal::createSurfaces()
   
   if (!(setFlag & 1))
     {
-      const Geometry::Cylinder* CPtr=
-	ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
-      innerStruct.procSurface(CPtr);
+      
+      ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
+      innerStruct.procSurface(SMap.realSurfPtr(buildIndex+7));
     }
   if (!(setFlag & 2))
     {
-      const Geometry::Cylinder* CPtr=
-	ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+deltaRad);
-      outerStruct.procSurface(CPtr);
+      ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+deltaRad);
+      outerStruct.procSurface(SMap.realSurfPtr(buildIndex+7));
       outerStruct.makeComplement();
     }
     
@@ -328,8 +322,7 @@ RingSeal::setInner(const HeadRule& HR)
 {
   ELog::RegMethod RegA("RingSeal","setInner");
 
-  innerStruct=HR;
-  innerStruct.makeComplement();
+  innerStruct=HR.complement();
   setFlag ^= 1;
   return;
 }

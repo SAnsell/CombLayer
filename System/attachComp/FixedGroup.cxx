@@ -3,7 +3,7 @@
  
  * File:   attachComp/FixedGroup.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -220,6 +220,18 @@ FixedGroup::hasKey(const std::string& Key) const
   return (mc!=FMap.end()) ? 1 : 0;
 }
 
+std::set<std::string>
+FixedGroup::getAllKeys() const
+  /*!
+    Accessor to all keys
+   */
+{
+  std::set<std::string> units;
+  for(const auto& [Name,FC] : FMap)
+    units.emplace(Name);
+  return units;
+}
+  
 FixedComp&
 FixedGroup::addKey(const std::string& Key,const size_t NL)
   /*!
@@ -240,7 +252,7 @@ FixedGroup::addKey(const std::string& Key,const size_t NL)
   mc=FMap.find(Key);
   return *(mc->second);
 }
- 
+  
 FixedComp&
 FixedGroup::getKey(const std::string& Key)
   /*!
@@ -272,7 +284,7 @@ FixedGroup::getKey(const std::string& Key) const
     throw ColErr::InContainerError<std::string>(Key,"Key in FMap:"+keyName);
   return *(mc->second);
 }
-
+  
 FixedComp&
 FixedGroup::getPrimary() 
   /*!
@@ -281,9 +293,11 @@ FixedGroup::getPrimary()
     \return FixedComp 
   */
 {
-  ELog::RegMethod RegA("FixedGroup","getKey");
+  ELog::RegMethod RegA("FixedGroup","getPrimary");
   
-  FTYPE::iterator mc=FMap.find(primKey);  // can't fail
+  FTYPE::iterator mc=FMap.find(primKey); 
+  if (mc==FMap.end())
+    throw ColErr::InContainerError<std::string>(primKey,"Key in FMap:"+keyName);
   return *(mc->second);
 }
 
@@ -295,9 +309,43 @@ FixedGroup::getPrimary() const
     \return FixedComp 
   */
 {
-  ELog::RegMethod RegA("FixedGroup","getKey(const)");
+  ELog::RegMethod RegA("FixedGroup","getPrimary(const)");
   
   FTYPE::const_iterator mc=FMap.find(primKey);  // can't fail
+  if (mc==FMap.end())
+    throw ColErr::InContainerError<std::string>(primKey,"Key in FMap:"+keyName);
+  return *(mc->second);
+}
+
+FixedComp&
+FixedGroup::getSecondary() 
+  /*!
+    Determine the component from the key
+    \param Key :: Key to look up
+    \return FixedComp 
+  */
+{
+  ELog::RegMethod RegA("FixedGroup","getSecondary");
+  
+  FTYPE::iterator mc=FMap.find(sndKey);  // can't fail
+  if (mc==FMap.end())
+    throw ColErr::InContainerError<std::string>(sndKey,"Key in FMap:"+keyName);
+  return *(mc->second);
+}
+
+const FixedComp&
+FixedGroup::getSecondary() const
+  /*!
+    Determine the component from the key
+    \param Key :: Key to look up
+    \return FixedComp 
+  */
+{
+  ELog::RegMethod RegA("FixedGroup","getSecondary(const)");
+  
+  FTYPE::const_iterator mc=FMap.find(sndKey);  // throws
+  if (mc==FMap.end())
+    throw ColErr::InContainerError<std::string>(sndKey,"Key in FMap:"+keyName);
   return *(mc->second);
 }
 
@@ -359,8 +407,6 @@ FixedGroup::setSecondary(const std::string& defKey)
   bY=mc->second->getY();
   bZ=mc->second->getZ();
   bOrigin=mc->second->getCentre();
-  bExit= (mc->second->hasLinkPt(2)) ?
-    mc->second->getLinkPt(2) : bOrigin;
 
   sndKey=defKey;
   return;
@@ -386,7 +432,6 @@ f    \param Axis :: rotation axis
   return;
 }
     
-
 void
 FixedGroup::applyRotation(const localRotate& LR)
   /*!
@@ -395,7 +440,6 @@ FixedGroup::applyRotation(const localRotate& LR)
    */
 {
   ELog::RegMethod RegA("FixedGroup","applyRotation(localRotate)");
-  
   
   FTYPE::iterator mc;
   for(mc=FMap.begin();mc!=FMap.end();mc++)
@@ -423,52 +467,106 @@ FixedGroup::setAxisControl(const long int axisIndex,
 void
 FixedGroup::createUnitVector(const attachSystem::FixedComp& FC,
 			     const long int sideIndex)
-  /*!
+/*!
     Create the unit vectors
     Applies FC[grp](sideIndex) to each component
     which has a name match.
-    Then applies FGrp [def](sideIndex) to all 
-    remaining units.
+    NOTE: secondaries and others not applied:
     \param FC :: Fixed Component (FixedGroup)
     \param sideIndex :: signed linkpoint			
   */
 {
   ELog::RegMethod RegA("FixedGroup","createUnitVector");
-
-  const attachSystem::FixedGroup* FCGrp=
-    dynamic_cast<const attachSystem::FixedGroup*>(&FC);
-  if (FCGrp)
-    {
-      // first extract primary group:
-      const attachSystem::FixedComp& primFC=FCGrp->getPrimary();
-      // key : shared_ptr
-      for(FTYPE::value_type& MItem : FMap)
-	{
-	  FTYPE::const_iterator mc=
-	    FCGrp->FMap.find(MItem.first);
-	  // if match apply
-	  // has key and has correct link points:
-	  if (mc!=FCGrp->FMap.end() &&
-	      mc->second->NConnect()<= static_cast<size_t>(std::abs(sideIndex)))
-	    {
-	      MItem.second->createUnitVector(*mc->second,sideIndex);
-	    }
-	  else  // no match [apply default]
-	    MItem.second->createUnitVector(primFC,sideIndex);
-	}
-    }
-  // Only a standard FC unit:
-  else
-    {
-      // key : shared_ptr
-      for(FTYPE::value_type& MItem : FMap)
-	MItem.second->createUnitVector(FC,sideIndex);
-    }
-  setDefault(primKey);
-  //  FixedComp::createUnitVector();
+  
+  FixedGroup::createUnitVector(primKey,FC,sideIndex);  
   return;
 }
 
+void
+FixedGroup::secondaryUnitVector(const attachSystem::FixedComp& FC,
+				const long int sideIndex)
+  /*!
+    Simple way to call createUnitVector(second...)
+    \param FC :: Fixed Component (FixedGroup)
+    \param sideIndex :: signed linkpoint			
+  */
+{
+  ELog::RegMethod RegA("FixedGroup","secondaryUnitVector");
+
+  FixedGroup::createUnitVector(sndKey,FC,sideIndex);
+  return;
+}
+
+void
+FixedGroup::secondaryUnitVector(const attachSystem::FixedComp& FC,
+				const std::string& sideName)
+  /*!
+    Simple way to call createUnitVector(second...)
+    \param FC :: Fixed Component (FixedGroup)
+    \param sideIndex :: signed linkpoint			
+  */
+{
+  ELog::RegMethod RegA("FixedGroup","secondaryUnitVector(name)");
+
+  // care here : need to call this for virtual table -- don't
+  // directy call FixedGroup::createUnitVector.
+  secondaryUnitVector(FC,FC.getSideIndex(sideName));
+
+  return;
+}
+
+void
+FixedGroup::createUnitVector(const std::string& unitName,
+			     const attachSystem::FixedComp& FC,
+			     const long int sideIndex)
+  /*!
+    Create the unit vectors
+    Applies FC[grp](sideIndex) to selected component
+    \param unitName :: Name of component
+    \param FC :: Fixed Component (FixedGroup)
+    \param sideIndex :: signed linkpoint			
+  */
+{
+  ELog::RegMethod RegA("FixedGroup","createUnitVector(int)");
+
+  attachSystem::FixedComp& activeFC=getKey(unitName);
+  activeFC.createUnitVector(FC,sideIndex);
+  setBeamCoord(unitName);
+
+  return;
+}
+
+void
+FixedGroup::setBeamCoord(const std::string& unitName)
+  /*!
+    Given a name set the bx value is the name is the
+    secondary or primary.
+    \param unitName :: name of the component begin set
+  */
+{
+  ELog::RegMethod RegA("FixedGroup","setBeamCoord");
+
+  if (unitName==primKey)
+    {
+      attachSystem::FixedComp& activeFC=getKey(unitName);
+      X=activeFC.getX();
+      Y=activeFC.getY();
+      Z=activeFC.getZ();
+      Origin=activeFC.getCentre();
+    }
+  if (unitName==sndKey)
+    {
+      attachSystem::FixedComp& activeFC=getKey(unitName);
+      bX=activeFC.getX();
+      bY=activeFC.getY();
+      bZ=activeFC.getZ();
+      bOrigin=activeFC.getCentre();
+
+
+    }
+  return;
+}
+  
   
 
 }  // NAMESPACE attachSystem

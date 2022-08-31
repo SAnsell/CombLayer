@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/nnBar/NNBAR.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,9 +54,9 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotateUnit.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
@@ -71,6 +71,7 @@
 #include "GuideItem.h"
 #include "HoleShape.h"
 #include "GuideLine.h"
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
@@ -85,7 +86,7 @@ namespace essSystem
 NNBAR::NNBAR(const std::string& keyName) :
   attachSystem::CopiedComp("nnbar",keyName),
   startPoint(0),stopPoint(0),
-  nnbarAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
+  nnbarAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   FocusB(new beamlineSystem::GuideLine(newName+"FB")),

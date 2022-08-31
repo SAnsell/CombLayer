@@ -89,8 +89,11 @@ class LineIntersectVisit : public Global::BaseVisit
 
     /// Point Accessor
     const std::vector<Geometry::Vec3D>& getPoints() const { return PtVec; }
+    /// Pointer Accessor
+    const std::vector<int>& getSurfIndexX() const 
+      { return surfNumber; }
     /// Index Accessor
-    const std::vector<const Geometry::Surface*>& getSurfIndex() const 
+    const std::vector<const Geometry::Surface*>& getSurfPointers() const 
       { return surfVec; }
 
     const std::vector<Geometry::Vec3D>& getPoints(const Geometry::Surface*);

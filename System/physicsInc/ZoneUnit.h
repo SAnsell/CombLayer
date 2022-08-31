@@ -3,7 +3,7 @@
  
  * File:   physicsInc/ZoneUnit.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +58,8 @@ class ZoneUnit
 
   static MapSupport::Range<int>
     createMapRange(std::vector<int>&);
+  static MapSupport::Range<int>
+  createMapRange(std::set<int>&);
 
   void sortZone();
   bool procZone(const objectGroups&,std::vector<std::string>&);

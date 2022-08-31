@@ -3,7 +3,7 @@
  
  * File:   constructInc/PipeCollimator.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@ class RingFlange : public RingSeal
 {
  private:
 
-
   size_t nBolts;           ///< Number of bolts
   double rotAngleOffset;   ///< Rotation angle offset
   double boltRadius;       ///< Radius of bolt
@@ -51,7 +50,7 @@ class RingFlange : public RingSeal
   int windowMat;           ///< Material for window
   
   void insertBolt(Simulation&,const double,const double,
-		  const std::string&) const;
+		  const HeadRule&) const;
   
   void addWindow(Simulation&);
   void addBolts(Simulation&);

@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/AttachSupport.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ void addToInsertControl(Simulation&,const FixedComp&,
 			const FixedComp&,const std::string&);
 void addToInsertControl(Simulation&,const std::string&,
 			 const FixedComp&,ContainedComp&);
-void addToInsertControl(Simulation&,const std::vector<int>&,
+void addToInsertControl(Simulation&,const std::set<int>&,
 			const FixedComp&,const ContainedComp&);
 
 // On surface intersects
@@ -72,14 +72,19 @@ void addToInsertSurfCtrl(Simulation&,const FixedComp&,
 			ContainedComp&);
 void addToInsertSurfCtrl(Simulation&,const CellMap&,const std::string&,
 			 ContainedComp&);
+
+void addToInsertSurfCtrl(Simulation&,const std::set<int>&,
+			 ContainedComp&);
+
 void addToInsertSurfCtrl(Simulation&,const std::vector<int>&,
 			 ContainedComp&);
+
 void addToInsertSurfCtrl(Simulation&,const int,ContainedComp&);
  
 void addToInsertOuterSurfCtrl(Simulation&,const FixedComp&,
 			ContainedComp&);
 void addToInsertOuterSurfCtrl(Simulation&,
-			      const std::vector<int>&,
+			      const std::set<int>&,
 			      const ContainedComp&,ContainedComp&);
 
 // Brutal forced option!!
@@ -87,9 +92,9 @@ void addToInsertForced(Simulation&,const FixedComp&,
 			ContainedComp&);
 void addToInsertForced(Simulation&,const FixedComp&,
 			ContainedGroup&);
-void addToInsertForced(Simulation&,const std::vector<int>&,
+void addToInsertForced(Simulation&,const std::set<int>&,
 		       ContainedComp&);
-void addToInsertForced(Simulation&,const std::vector<int>&,
+void addToInsertForced(Simulation&,const std::set<int>&,
 		       ContainedGroup&);
 
 // External check system

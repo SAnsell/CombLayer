@@ -3,7 +3,7 @@
  
  * File:   danmax/danmaxVariables.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,6 +81,7 @@
 #include "MLMonoGenerator.h"
 #include "BremBlockGenerator.h"
 #include "OpticsHutGenerator.h"
+#include "ExptHutGenerator.h"
 
 namespace setVariable
 {
@@ -161,7 +162,6 @@ frontMaskVariables(FuncDataBase& Control,
   const double FM1dist(1172.60);
   const double FM2dist(1624.2);
 
-  ELog::EM<<"HERER "<<preName<<ELog::endDiag;
     // collimator block
   FMaskGen.setCF<CF100>();
   FMaskGen.setMat("Copper");
@@ -210,7 +210,9 @@ opticsHutVariables(FuncDataBase& Control,
   OpticsHutGenerator OGen;
 
   OGen.setSkin(0.2);
-  OGen.setWallPbThick(2.0,2.0,10.0);
+  OGen.setBackLead(10.0);
+  OGen.setWallLead(2.0);
+  OGen.setRoofLead(2.0);
   OGen.addHole(Geometry::Vec3D(beamMirrorShift,0,0),3.5);
   OGen.generateHut(Control,hutName,999.6);
 
@@ -249,8 +251,6 @@ connectVariables(FuncDataBase& Control,
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   
-  PItemGen.setCF<setVariable::CF40>(3.0);
-  PItemGen.setPlate(0.0,"Void");
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>();
@@ -278,8 +278,11 @@ connectVariables(FuncDataBase& Control,
   SimpleTubeGen.setMat("Stainless304");
   SimpleTubeGen.setCF<CF100>();
   // ystep/length
-  SimpleTubeGen.generateTube(Control,beamName+"IonPumpA",8.0);
+  SimpleTubeGen.generateTube(Control,beamName+"IonPumpA",10.0);
   Control.addVariable(beamName+"IonPumpANPorts",1);
+  PItemGen.setCF<setVariable::CF40>(10.0+CF100::outerRadius);
+  PItemGen.setOuterVoid(0);
+  PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,beamName+"IonPumpAPort0",OPos,ZVec);
 
   PipeGen.setCF<setVariable::CF40>();
@@ -305,37 +308,23 @@ exptHutVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("danmaxVariables[F]","exptHutVariables");
 
-  const double beamMirrorShift(0.6);
+  setVariable::ExptHutGenerator EGen;
     
+    
+  const double beamMirrorShift(0.6);
   const std::string hutName(beamName+"ExptHut");
 
-  Control.addVariable(hutName+"YStep",1845.0);
-  Control.addVariable(hutName+"Length",858.4);
-  Control.addVariable(hutName+"Height",200.0);
-  Control.addVariable(hutName+"OutWidth",198.50);
+  EGen.setFrontHole(beamMirrorShift,0.0,4.0);
+  EGen.setCorner(45.0,138.0);
+  EGen.setFrontLead(0.5);
+  EGen.setBackLead(0.5);
+  EGen.setRoofLead(0.6);
+  EGen.setWallLead(0.4);
+
+
+  EGen.generateHut(Control,hutName,1845.0,858.4);
   Control.addVariable(hutName+"RingWidth",248.6);
-  Control.addVariable(hutName+"InnerThick",0.1);
-  Control.addVariable(hutName+"PbFrontThick",0.5);
 
-
-  Control.addVariable(hutName+"PbBackThick",0.5);
-  Control.addVariable(hutName+"PbRoofThick",0.6);
-  Control.addVariable(hutName+"PbWallThick",0.4);
-  Control.addVariable(hutName+"OuterThick",0.1);
-  Control.addVariable(hutName+"CornerLength",720.0);
-  Control.addVariable(hutName+"CornerAngle",45.0);
-  
-  Control.addVariable(hutName+"InnerOutVoid",10.0);
-  Control.addVariable(hutName+"OuterOutVoid",10.0);
-
-  Control.addVariable(hutName+"VoidMat","Void");
-  Control.addVariable(hutName+"SkinMat","Stainless304");
-  Control.addVariable(hutName+"PbMat","Lead");
-
-  Control.addVariable(hutName+"HoleXStep",beamMirrorShift);
-  Control.addVariable(hutName+"HoleZStep",0.0);
-  Control.addVariable(hutName+"HoleRadius",4.0);
-  Control.addVariable(hutName+"HoleMat","Void");
 
   // lead shield on pipe
   Control.addVariable(beamName+"PShieldXStep",beamMirrorShift);
@@ -532,8 +521,8 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   BremGen.centre();
   BremGen.setCube(10.0,10.0);
   BremGen.setAperature(5.0, 0.4,0.4, 0.4,0.4, 0.4,0.4);  // WRONG
-  BremGen.generateBlock(Control,viewKey+"BeamStop",0.0,8.0);
-  Control.addVariable(viewKey+"BeamStopZStep",10.750);
+  BremGen.generateBlock(Control,viewKey+"BeamStop",10.75);
+  Control.addVariable(viewKey+"BeamStopXAngle",90);
 
    // Single slit pair
   JawGen.setRadius(8.0);
@@ -597,8 +586,8 @@ revBeamStopPackage(FuncDataBase& Control,
   BremGen.centre();
   BremGen.setCube(10.0,10.0);
   BremGen.setAperature(5.0, 0.4,0.4, 0.4,0.4, 0.4,0.4);  // WRONG
-  BremGen.generateBlock(Control,viewKey+"RevBeamStop",0.0,8.0);
-  Control.addVariable(viewKey+"RevBeamStopZStep",10.750);
+  BremGen.generateBlock(Control,viewKey+"RevBeamStop",10.75);
+  Control.addVariable(viewKey+"RevBeamStopXAngle",90);
 
    // Single slit pair
   JawGen.setRadius(8.0);
@@ -645,7 +634,7 @@ monoPackage(FuncDataBase& Control,const std::string& monoKey)
 
   const std::string portName=monoKey+"MonoVessel";
   Control.addVariable(monoKey+"MonoVesselNPorts",1);   // beam ports (lots!!)
-  PItemGen.setCF<setVariable::CF63>(5.0);
+  PItemGen.setCF<setVariable::CF63>(5.0+31.2);
   PItemGen.setWindowPlate(2.5,2.0,-0.8,"Stainless304","LeadGlass");
   PItemGen.generatePort(Control,portName+"Port0",
   			Geometry::Vec3D(0,5.0,-10.0),

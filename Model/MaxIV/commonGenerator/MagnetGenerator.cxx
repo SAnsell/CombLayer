@@ -1,9 +1,9 @@
  /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonBeam/MagnetGenerator.cxx
+ * File:   commonGenerator/MagnetGenerator.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -160,20 +160,19 @@ MagnetGenerator::generateDipole(FuncDataBase& Control,
     Primary funciton for setting the variables
     \param Control :: Database to add variables
     \param keyName :: Head name for variable
-    \param fcUnit :: Part name of FC magnet
+    \param fcUnit :: Part name of FC magnet (link point origin)
     \param yAngle :: Angle
     \param QField :: K0 field
   */
 {
-  ELog::RegMethod RegA("MagnetGenerator","generateQuad");
+  ELog::RegMethod RegA("MagnetGenerator","generateDipole");
 
-  
   setSize(65.0,3.0,15.0);
   setField(QField,0.0,0.0,0.0);
   generate(Control,
 	   "Seg"+std::to_string(segNumber)+fcUnit,
 	   preName+std::to_string(segNumber)+fcUnit,
-	   "0",yAngle);
+	   "Origin",yAngle);
   
   return;
 }

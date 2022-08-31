@@ -3,7 +3,7 @@
 
  * File: Linac/Segment30.cxx
  *
- * Copyright (c) 2004-2021 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,13 +68,14 @@
 
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "CorrectorMag.h"
 #include "GaugeTube.h"
 #include "IonPumpTube.h"
 #include "LocalShielding.h"
 
-#include "LObjectSupportB.h"
+#include "LObjectSupport.h"
 #include "TDCsegment.h"
 #include "Segment30.h"
 
@@ -145,7 +146,6 @@ Segment30::createSplitInnerZone(Simulation& System)
 
       if (sideSegment->getKeyName()=="L2SPF13")
 	{
-	  int SNremoved(0);
 	  for(const TDCsegment* sidePtr : sideVec)
 	    {
 	      ELog::EM<<"SidePtr = "<<sidePtr->getKeyName()<<ELog::endDiag;
@@ -155,7 +155,7 @@ Segment30::createSplitInnerZone(Simulation& System)
 		    {
 		      MonteCarlo::Object* OPtr=System.findObject(CN);
 		      HeadRule HA=OPtr->getHeadRule();   // copy
-		      SNremoved=HA.removeOuterPlane(Origin+Y*10.0,-X,0.9);
+		      HA.removeOuterPlane(Origin+Y*10.0,-X,0.9);
 		      HA.addIntersection(SMap.realSurf(buildIndex+5005));
 		      OPtr->procHeadRule(HA);
 		    }

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamVar/PortChicaneGenerator.cxx
+ * File:   commonGenerator/PortChicaneGenerator.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +50,7 @@ namespace setVariable
 {
 
 PortChicaneGenerator::PortChicaneGenerator() :
-  width(60.0),height(45.0),clearGap(8.0),downStep(12.0),
+  width(60.0),height(45.0),clearGap(8.0),downGap(10.0),
   overHang(4.0),skinThick(0.3),plateThick(1.2),
   wallThick(0.8),plateMat("Lead"),
   skinMat("Stainless304"),wallMat("Stainless304")
@@ -62,6 +62,7 @@ PortChicaneGenerator::PortChicaneGenerator() :
 
 PortChicaneGenerator::PortChicaneGenerator(const PortChicaneGenerator& A) : 
   width(A.width),height(A.height),clearGap(A.clearGap),
+  downGap(A.downGap),overHang(A.overHang),
   skinThick(A.skinThick),plateThick(A.plateThick),
   wallThick(A.wallThick),plateMat(A.plateMat),
   skinMat(A.skinMat),wallMat(A.wallMat)
@@ -84,6 +85,8 @@ PortChicaneGenerator::operator=(const PortChicaneGenerator& A)
       width=A.width;
       height=A.height;
       clearGap=A.clearGap;
+      downGap=A.downGap;
+      overHang=A.overHang;
       skinThick=A.skinThick;
       plateThick=A.plateThick;
       wallThick=A.wallThick;
@@ -114,7 +117,7 @@ PortChicaneGenerator::setSize(const double G,
 {
   clearGap=G;
   width=W;
-  height=H;    
+  height=H;
   return;
 }
 
@@ -192,7 +195,7 @@ PortChicaneGenerator::generatePortChicane(FuncDataBase& Control,
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"ClearGap",clearGap);
-  Control.addVariable(keyName+"DownStep",downStep);
+  Control.addVariable(keyName+"DownStep",height-downGap);
   Control.addVariable(keyName+"OverHang",overHang);
   
   Control.addVariable(keyName+"InnerSkin",skinThick);

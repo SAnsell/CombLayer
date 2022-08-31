@@ -3,7 +3,7 @@
  
  * File:   transport/AreaBeam.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,17 +25,16 @@
 #include <cmath>
 #include <complex>
 #include <vector>
+#include <random>
 
-#include "MersenneTwister.h"
 #include "Vec3D.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
+#include "Random.h"
 #include "particle.h"
 #include "neutron.h"
 #include "Beam.h"
 #include "AreaBeam.h"
-
-extern MTRand RNG;
 
 namespace Transport
 {
@@ -99,8 +98,8 @@ AreaBeam::generateNeutron() const
   */
 {
   const Geometry::Vec3D CP=Cent+
-    WVec*(RNG.rand()-0.5)*Width*2.0+
-    HVec*(RNG.rand()-0.5)*Height*2.0+
+    WVec*(Random::rand()-0.5)*Width*2.0+
+    HVec*(Random::rand()-0.5)*Height*2.0+
     Axis*startY;
   return MonteCarlo::neutron(wavelength,CP,Axis);
 }

@@ -3,7 +3,7 @@
  
  * File:   essBuild/EmptyCyl.cxx
  *
- * Copyright (c) 2004-2019 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,8 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -55,8 +53,8 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotate.h"
+#include "FixedRotateUnit.h"
 #include "ContainedComp.h"
 
 #include "EmptyCyl.h"
@@ -66,7 +64,7 @@ namespace essSystem
 
 EmptyCyl::EmptyCyl(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffsetUnit(Key,6)
+  attachSystem::FixedRotateUnit(Key,6)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -75,7 +73,7 @@ EmptyCyl::EmptyCyl(const std::string& Key)  :
 
 EmptyCyl::EmptyCyl(const EmptyCyl& A) : 
   attachSystem::ContainedComp(A),
-  attachSystem::FixedOffsetUnit(A),
+  attachSystem::FixedRotateUnit(A),
   height(A.height),mat(A.mat)
   /*!
     Copy constructor
@@ -94,7 +92,7 @@ EmptyCyl::operator=(const EmptyCyl& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       height=A.height;
       mat=A.mat;
     }
@@ -126,7 +124,7 @@ EmptyCyl::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("EmptyCyl","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   height=Control.EvalVar<double>(keyName+"Height");
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
@@ -134,22 +132,6 @@ EmptyCyl::populate(const FuncDataBase& Control)
   return;
 }
   
-void
-EmptyCyl::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: object for origin
-    \param sideIndex :: link point for origin
-  */
-{
-  ELog::RegMethod RegA("EmptyCyl","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
-  return;
-}
   
 void
 EmptyCyl::createSurfaces()

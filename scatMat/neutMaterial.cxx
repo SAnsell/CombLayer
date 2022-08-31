@@ -3,7 +3,7 @@
  
  * File:   scatMat/neutMaterial.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,25 +27,23 @@
 #include <list>
 #include <vector>
 #include <map>
-#include <stack>
 #include <string>
 #include <algorithm>
+#include <random>
 
-#include "MersenneTwister.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "RefCon.h"
 #include "Vec3D.h"
+#include "Random.h"
 #include "particle.h"
 #include "neutron.h"
 #include "Zaid.h"
 #include "MXcards.h"
 #include "Material.h"
 #include "neutMaterial.h"
-
-extern MTRand RNG;
 
 namespace scatterSystem
 {
@@ -202,8 +200,8 @@ neutMaterial::scatterNeutron(MonteCarlo::particle& N) const
 {
   ELog::RegMethod RegA("neutMaterial","scatterNeutron");
 
-  const double theta=2*M_PI*RNG.rand();
-  const double phi=M_PI*RNG.rand();
+  const double theta=2*M_PI*Random::rand();
+  const double phi=M_PI*Random::rand();
   N.uVec[0]=cos(theta)*sin(phi);
   N.uVec[1]=sin(theta)*sin(phi);
   N.uVec[2]=cos(phi);

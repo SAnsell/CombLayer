@@ -3,7 +3,7 @@
 
  * File:   commonBeamInc/bladerOpticsHutch.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ namespace xraySystem
 */
 
 class OpticsHutch :
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap,
@@ -58,9 +58,14 @@ class OpticsHutch :
   double pbRoofThick;           ///< Thickness of lead in Roof
   double outerThick;            ///< Outer wall/roof skin
 
+  double backPlateThick;        ///< Back plate thick
+  double backPlateWidth;        ///< Back plate width
+  double backPlateHeight;       ///< back plate Height
+
   double innerOutVoid;          ///< Extension for inner left void space
   double outerOutVoid;          ///< Extension for outer left void space
-  double backVoid;              ///< Extension for outer back void space
+  double backVoid;              ///< Extension for inner back void space
+  double outerBackVoid;         ///< Extension for outer back void space
 
   std::vector<Geometry::Vec3D> holeOffset;  ///< hole offsets [y ignored]
   std::vector<double> holeRadius;           ///< hole radii
@@ -73,11 +78,16 @@ class OpticsHutch :
   /// Chicanes
   std::vector<std::shared_ptr<PortChicane>> PChicane;
 
+  forkHoles forks;              ///< Forklift holes if made 
+
   virtual void populate(const FuncDataBase&);
   virtual void createSurfaces();
   virtual void createObjects(Simulation&);
   void createLinks();
   void createChicane(Simulation&);
+  void createForkSurfaces();
+  void createForkCut(Simulation&);
+
 
  public:
 

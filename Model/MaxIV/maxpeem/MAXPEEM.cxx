@@ -3,7 +3,7 @@
  
  * File: maxpeem/MAXPEEM.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,6 +57,7 @@
 #include "BlockZone.h"
 #include "CopiedComp.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 
 #include "R1Ring.h"
@@ -120,7 +121,7 @@ MAXPEEM::build(Simulation& System,
   frontBeam->setCutSurf("Floor",r1Ring->getSurf("Floor"));
   frontBeam->setCutSurf("Roof",-r1Ring->getSurf("Roof"));
   frontBeam->setCutSurf("REWall",r1Ring->getSurf("BeamInner",SIndex));
-  
+
   frontBeam->addInsertCell(r1Ring->getCell("Void",8));
   frontBeam->addInsertCell(r1Ring->getCell("Void",9));
   frontBeam->addInsertMagnetCell(r1Ring->getCell("Void",8));

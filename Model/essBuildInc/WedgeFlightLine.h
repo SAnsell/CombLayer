@@ -44,7 +44,8 @@ class WedgeItem;
 
 
   
-class WedgeFlightLine : public moderatorSystem::BasicFlightLine
+class WedgeFlightLine :
+    public moderatorSystem::BasicFlightLine
 {
  private:
   

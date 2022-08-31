@@ -69,7 +69,6 @@
 #include "SurInter.h"
 
 #include "portItem.h"
-#include "doublePortItem.h"
 #include "BiPortTube.h"
 
 namespace xraySystem

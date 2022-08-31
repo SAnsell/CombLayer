@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   processInc/ModelSupport.h
-*
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * File:   generalProcessInc/ModelSupport.h
+ *
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,9 @@
  ****************************************************************************/
 #ifndef ModelSupport_h
 #define ModelSupport_h
+
+class HeadRule;
+
 
 /*!
   \namespace ModelSupport
@@ -102,6 +105,19 @@ namespace ModelSupport
   HeadRule getAltHeadRule(const surfRegister&,const int,
 			      const int,const int,const std::string&);
 
+
+  HeadRule getRangeHeadRule(const surfRegister&,
+				const int,const int,const int,
+			    const int,
+			    const std::string&);
+  HeadRule getRangeHeadRule(const surfRegister&,
+			    const int,const int,const int,
+			    const int,const int,
+			    const std::string&);
+  HeadRule getRangeHeadRule(const surfRegister&,
+			    const int,const int,const int,
+			    const int,const int,const int,
+			    const std::string&);
 }
 
 #endif

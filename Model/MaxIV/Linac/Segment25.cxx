@@ -63,13 +63,14 @@
 
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "TriPipe.h"
 #include "DipoleDIBMag.h"
 #include "SixPortTube.h"
 #include "MultiPipe.h"
 
-#include "LObjectSupportB.h"
+#include "LObjectSupport.h"
 #include "TDCsegment.h"
 #include "Segment25.h"
 

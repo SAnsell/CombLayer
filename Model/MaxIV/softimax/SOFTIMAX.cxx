@@ -3,7 +3,7 @@
 
   * File: softimax/SOFTIMAX.cxx
   *
-  * Copyright (c) 2004-2021 by Konstantin Batkov
+  * Copyright (c) 2004-2022 by Konstantin Batkov
   *
   * This program is free software: you can redistribute it and/or modify
   * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@
 #include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -58,9 +58,11 @@
 #include "CopiedComp.h"
 #include "BlockZone.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "JawFlange.h"
 #include "R3FrontEnd.h"
+#include "forkHoles.h"
 #include "OpticsHutch.h"
 #include "softimaxFrontEnd.h"
 #include "softimaxOpticsLine.h"
@@ -117,7 +119,7 @@ SOFTIMAX::build(Simulation& System,
   const size_t NS=r3Ring->getNInnerSurf();
   const size_t PIndex=static_cast<size_t>(std::abs(sideIndex)-1);
   const size_t SIndex=(PIndex+1) % NS;
-  const size_t prevIndex=(NS+PIndex-1) % NS;
+  //  const size_t prevIndex=(NS+PIndex-1) % NS;
 
   const std::string exitLink="ExitCentre"+std::to_string(PIndex);
 
@@ -149,6 +151,9 @@ SOFTIMAX::build(Simulation& System,
   joinPipe->createAll(System,*frontBeam,2);
 
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
+  opticsBeam->setCell("ExitHoleA",opticsHut->getCell("ExitHole",0));
+  opticsBeam->setCell("ExitHoleB",opticsHut->getCell("ExitHole",1));
+  opticsBeam->setCell("OuterBackVoid",opticsHut->getCell("OuterBackVoid"));
   opticsBeam->setCutSurf("front",*opticsHut,
 			 opticsHut->getSideIndex("innerFront"));
 
@@ -158,17 +163,9 @@ SOFTIMAX::build(Simulation& System,
   opticsBeam->setPreInsert(joinPipe);
   opticsBeam->createAll(System,*joinPipe,2);
 
-  opticsBeam->buildExtras(System,*opticsHut);
+  //  joinPipeAB->insertInCell("Main",System,opticsHut->getCell("exitHole",0));
 
-  return;
-  std::vector<int> cells(opticsHut->getCells("BackWall"));
-  cells.emplace_back(opticsHut->getCell("Extension"));
   
-  return;
-  opticsBeam->buildOutGoingPipes(System,opticsBeam->getCell("LeftVoid"),
-				 opticsBeam->getCell("RightVoid"),
-				 cells);
-
   return;
 }
 

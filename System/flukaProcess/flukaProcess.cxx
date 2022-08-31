@@ -46,9 +46,12 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
+#include "SimFLUKA.h"
 #include "Process.h"
+#include "inputParam.h"
 
 #include "flukaGenParticle.h"
+#include "plotGeom.h"
 #include "flukaProcess.h"
 
 namespace flukaSystem
@@ -95,6 +98,58 @@ getActiveParticle(const std::string& particle)
   std::set<int> activeOut;
   activeOut.emplace(GP.flukaITYP(particle));
   return activeOut;
+}
+
+void
+createPLOTGEOM(SimFLUKA& System,
+	       const mainSystem::inputParam& IParam)
+  /*!
+    Process the plot geom box
+    Note using the option either 
+     --plotgeom LowPoint HighPoint title
+     --plotgeom Region  
+    Option (a) defined the point region
+    Option (b) creates the plot geometry to build on region not material
+    \param System :: Simulation (fluka)
+    \param IParam :: Inpup parameters
+  */
+{
+  ELog::RegMethod RegA("mainJobs[F]","createPLOTGEOM");
+
+  bool region(0); // use region plotting;
+
+  if (IParam.flag("plotgeom"))
+    {
+      size_t itemIndex(0);
+      const std::string option=
+	IParam.getDefValue<std::string>("","plotgeom",0,0);
+      if (option=="region" || option=="Region")
+	{
+	  region=1;
+	  itemIndex++;
+	}
+      if (option=="material" || option=="Material")
+	itemIndex++;
+
+      Geometry::Vec3D MeshA;
+      Geometry::Vec3D MeshB;
+
+      MeshA=mainSystem::getNamedPoint
+	(System,IParam,"plotgeom",0,itemIndex,
+	 "MeshA Point");
+      MeshB=mainSystem::getNamedPoint
+	(System,IParam,"plotgeom",0,itemIndex,
+	 "MeshB Point");
+      const std::string title=
+	IParam.getDefValue<std::string>("","plotgeom",0,itemIndex);
+      plotGeom& PG=
+	System.getPlotGeom();
+      PG.setBox(MeshA,MeshB);
+      if (region) PG.setRegion();
+      PG.setTitle(title);
+    }
+
+  return;
 }
 
 } // NAMESPACE flukaSystem

@@ -23,7 +23,7 @@ my @masterProg=getAllMain();
 ## Model Directory
 ##my @modelLibDir=qw( bibBuild build 
 ##                    cuBlock d4cModel delft epbBuild essBuild
-##                    gammaBuild lensModel moderator
+##                    lensModel t2Build
 ##                    muon pipeBuild photon sinbadBuild snsBuild t1Build
 ##                     );
 
@@ -40,7 +40,7 @@ my @mainLib=qw( visit src simMC  construct
     transport scatMat endf crystal source monte funcBase log monte
     flukaProcess flukaPhysics flukaTally
     phitsProcess phitsTally phitsSupport 
-    tally geometry mersenne src world work
+    tally geometry src world work
     xml poly support weights
     insertUnit md5 construct modelSupport
     global constructVar physics simMC
@@ -99,6 +99,12 @@ foreach my $mainProg (@masterProg)
 	push(@example,@mainLib);
 	$gM->addDepUnit("example", [@example]);
       }
+    elsif ($mainProg eq "xrayHut")
+      { 
+	my @hut = qw( xrayHutch );
+	push(@hut,@mainLib);
+	$gM->addDepUnit("xrayHut", [@hut]);
+      }
     
     elsif ($mainProg eq "maxiv")
       { 
@@ -128,7 +134,7 @@ foreach my $mainProg (@masterProg)
     
     elsif ($mainProg eq "fullBuild")
       {
-	my @fullBuild = qw( moderator t2Build ralBuild );
+	my @fullBuild = qw( t2Build ralBuild );
 	push(@fullBuild,@mainLib);
 	$gM->addDepUnit("fullBuild", [@fullBuild]),
       }
@@ -186,8 +192,8 @@ foreach my $mainProg (@masterProg)
 	push(@singleItem,@mainLib);
 	$gM->addDepUnit("singleItem",
 			[@singleItem,
-			 qw( commonVar commonGenerator R1Common R3Common 
-			     commonBeam Linac )]);
+			 qw( essConstruct commonVar commonGenerator
+			     R1Common R3Common commonBeam Linac )]);
       }
     
     
@@ -240,20 +246,13 @@ foreach my $mainProg (@masterProg)
 	$gM->addDepUnit("epb", [@epb]);
       }
     
-    elsif ($mainProg eq "muon")
+    elsif ($mainProg eq "muBeam")
       { 
 	my @muBeam = qw( muon ) ;
 	push(@muBeam,@mainLib);
 	$gM->addDepUnit("muBeam", [@muBeam]);
       }
-    
-    elsif ($mainProg eq "gamma")
-      { 
-	my @gamma = qw( gammaBuild ) ;
-	push(@gamma,@mainLib);
-	$gM->addDepUnit("gamma", [@gamma]);
-      }
-    
+        
     elsif ($mainProg eq "saxs")
       {  
 	my @saxs = qw( saxs d4cModel instrument );

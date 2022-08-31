@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/BlockZone.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -99,6 +99,8 @@ class BlockZone  :
   
   /// set the void material
   void setInnerMat(const int M) { voidMat=M; }
+  /// access to void material
+  int getInnerMat() const { return voidMat; }
 
   void addInsertCell(const int);
   void addInsertCells(const std::vector<int>&);

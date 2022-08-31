@@ -3,7 +3,7 @@
 
  * File:   include/SimFLUKA.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,13 +25,14 @@
 namespace magnetSystem
 {
   class magnetUnit;
+  class elecUnit;
 }
 
 namespace flukaSystem
 {
   class flukaTally;
   class flukaPhysics;
-  class magnetUnit;
+  class plotGeom;
   class radDecay;
 }
 
@@ -52,6 +53,8 @@ class SimFLUKA : public Simulation
   /// Name : magnet
   typedef std::map<std::string,
     std::shared_ptr<magnetSystem::magnetUnit>> MagTYPE;
+  typedef std::map<std::string,
+    std::shared_ptr<magnetSystem::elecUnit>> ElecTYPE;
   /// Name : Flag active
   typedef std::map<std::string,std::string> FlagTYPE;
 
@@ -64,26 +67,29 @@ class SimFLUKA : public Simulation
   double geomPrecision;           ///< Precision (*1e-6) to use [def 0.0001]
   bool writeVariable;             ///< Prevent the writing of variables
   bool lowEnergyNeutron;          ///< Low energy neutron assigned
+  bool cernFluka;                 ///< True for cern fluka output
   size_t nps;                     ///< Number of particles
   long int rndSeed;               ///< Random number seed
 
   std::string sourceExtraName;    ///< Extra name if using combined sources
-
 
   FlagTYPE FlagItem;              ///< Fluka user flag items
 
   FTallyTYPE FTItem;              ///< Fluka tally map
 
   MagTYPE MagItem;                ///< Fluka magnetic map
+  ElecTYPE ElecItem;              ///< Fluka RF system
 
   flukaSystem::flukaPhysics* PhysPtr;   ///< Fluka physics
   flukaSystem::radDecay* RadDecayPtr;   ///< Fluka rad decay modification
-
+  flukaSystem::plotGeom* PGeomPtr;      ///< Fluka plotgeom card
+  
   void prepareImportance();
   // ALL THE sub-write stuff
   void writeCells(std::ostream&) const;
   void writeSurfaces(std::ostream&) const;
   void writeMagField(std::ostream&) const;
+  void writeElecField(std::ostream&) const;
   void writeFlags(std::ostream&) const;
 
   // general stuff [from Simulation]
@@ -110,6 +116,8 @@ class SimFLUKA : public Simulation
   /// get RadDecay ptr
   flukaSystem::radDecay* getRadDecay() { return RadDecayPtr; }
 
+  flukaSystem::plotGeom& getPlotGeom();
+  
   // FLag processing
   void addUserFlags(const std::string&,const std::string&);
 
@@ -143,6 +151,8 @@ class SimFLUKA : public Simulation
   void setNoVariables() { writeVariable=0; }
   /// no low energy neturon
   void setNoThermal() { lowEnergyNeutron=0; }
+  /// set output to CERN (for low-mat)
+  void setCERNfluka() { cernFluka=1; }
 
   void setDefaultPhysics(const std::string&);
   void setForCinder();

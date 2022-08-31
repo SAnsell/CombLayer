@@ -3,7 +3,7 @@
  
  * File:   exampleBuild/exampleVariables.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -131,7 +131,7 @@ exampleEX1Variables(FuncDataBase& Control)
   Control.addVariable("QuadBYStep",300.0);
   Control.addVariable("QuadCYStep",500.0);
   Control.addVariable("QuadDYStep",700.0);
-  for(const std::string& AName : {"QuadA","QuadB","QuadC","QuadD"})
+  for(const std::string AName : {"QuadA","QuadB","QuadC","QuadD"})
     {
       Control.addVariable(AName+"RadiusX",3.0);
       Control.addVariable(AName+"RadiusZ",1.5);

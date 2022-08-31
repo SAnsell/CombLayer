@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BeRef.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,9 +36,10 @@ namespace essSystem
   \brief Reflector object 
 */
 
-class BeRef : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffsetUnit,
-  public attachSystem::CellMap
+class BeRef :
+    public attachSystem::ContainedComp,
+    public attachSystem::FixedRotate,
+    public attachSystem::CellMap
 {
  private:
 
@@ -73,11 +74,7 @@ class BeRef : public attachSystem::ContainedComp,
 
   // Functions:
 
-  void populateWithDef(const FuncDataBase&,const double,const double,
-		       const double);
-  
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
-
+  void populate(const FuncDataBase&);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -90,12 +87,16 @@ class BeRef : public attachSystem::ContainedComp,
   virtual ~BeRef();
 
   void globalPopulate(const FuncDataBase&);
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int,const double,
-		 const double,const double);
   
   /// Access to radius
   double getRadius() const { return radius+wallThick; }
+
+  void setVoidThick(const double,const double,const double);
+
+  using FixedComp::createAll;
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
+  
 };
 
 }

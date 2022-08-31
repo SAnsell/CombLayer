@@ -138,7 +138,7 @@ formaxDetectorTube::populate(const FuncDataBase& Control)
 
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
-  outerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"OuterMat",0);
+  outerMat=ModelSupport::EvalDefMat(Control,keyName+"OuterMat",0);
   
   return;
 }

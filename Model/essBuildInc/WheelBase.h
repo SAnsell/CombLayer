@@ -35,9 +35,10 @@ namespace essSystem
   \brief Specialized for a Wheel system
 */
 
-class WheelBase : public attachSystem::ContainedGroup,
-  public attachSystem::FixedOffset,
-  public attachSystem::CellMap
+class WheelBase :
+    public attachSystem::ContainedGroup,
+    public attachSystem::FixedOffset,
+    public attachSystem::CellMap
 {
  protected:
 
@@ -50,8 +51,6 @@ class WheelBase : public attachSystem::ContainedGroup,
 
   virtual ~WheelBase();
 
-  virtual void createUnitVector(const attachSystem::FixedComp&,
-				const long int);
   ///\cond ABSTRACT
 
   virtual WheelBase* clone() const =0;

@@ -3,7 +3,7 @@
  
  * File:   t1Build/PressVessel.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,6 @@
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "stringCombine.h"
 #include "Vec3D.h"
 #include "Surface.h"
 #include "surfRegister.h"
@@ -61,8 +60,10 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedUnit.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "channel.h"
 #include "boxValues.h"
 #include "boxUnit.h"
@@ -75,8 +76,9 @@ namespace ts1System
 
 PressVessel::PressVessel(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,12),
-  outerWallCell(0),IVoidCell(0),targetLen(0.0)
+  attachSystem::FixedRotate(Key,12),
+  attachSystem::CellMap(),
+  targetLen(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -84,8 +86,9 @@ PressVessel::PressVessel(const std::string& Key)  :
 {}
 
 PressVessel::PressVessel(const PressVessel& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  outerWallCell(A.outerWallCell),IVoidCell(A.IVoidCell),
+  attachSystem::ContainedComp(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::CellMap(A),
   width(A.width),
   height(A.height),length(A.length),frontLen(A.frontLen),
   sideWallThick(A.sideWallThick),topWallThick(A.topWallThick),
@@ -122,9 +125,7 @@ PressVessel::operator=(const PressVessel& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
-      outerWallCell=A.outerWallCell;
-      IVoidCell=A.IVoidCell;
+      attachSystem::FixedRotate::operator=(A);
       width=A.width;
       height=A.height;
       length=A.length;
@@ -185,7 +186,7 @@ PressVessel::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("PressVessel","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
@@ -254,23 +255,6 @@ PressVessel::populate(const FuncDataBase& Control)
   return;
 }
   
-void
-PressVessel::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
-  /*!
-    Create the unit vectors
-    - Y Down the beamline
-    \param FC :: FixedComp for origin and axis
-    \param sideIndex :: SideIndex link point
-  */
-{
-  ELog::RegMethod RegA("PressVessel","createUnitVector");
-
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  return;
-}
-
 void
 PressVessel::createSurfaces()
   /*!
@@ -452,108 +436,90 @@ PressVessel::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("PressVessel","createObjects");
   
-  std::string Out;
+  HeadRule HR;
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6 -8 -9 ");
+  addOuterSurf(HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 -8 -9 ");
-  addOuterSurf(Out);
-
-  Out+=ModelSupport::getComposite(SMap,buildIndex,"(-11:12:-13:14:-15:16:18:19)"
-				  " (11:28) (11:-61:67:-28) ");
-  Out+=ModelSupport::getComposite(SMap,buildIndex, "(-12:71:77) ");                       				  
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
-  outerWallCell=cellIndex-1;
+  HR*=ModelSupport::getHeadRule(SMap,buildIndex,"(-11:12:-13:14:-15:16:18:19)"
+				" (11:28) (11:-61:67:-28) ");
+  HR*=ModelSupport::getHeadRule(SMap,buildIndex, "(-12:71:77) ");                       				  
+  makeCell("OuterWall",System,cellIndex++,wallMat,0.0,HR);
 
   // Inner Volume
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 15 -16 -18 -19 "
-				 " (28:22) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
-  IVoidCell=cellIndex-1;
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"11 -12 13 -14 15 -16 -18 -19 (28:22)");
+  makeCell("IVoid",System,cellIndex++,waterMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -22 (27:21) -28 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -22 (27:21) -28");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
   
     // Water IN  
-  Out=ModelSupport::getComposite(SMap,buildIndex,"12 -71 -77 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out)); 
-
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -71 -77");
+  makeCell("WaterIn",System,cellIndex++,waterMat,0.0,HR);
    // Big Water Channels at the end    
   int SN(buildIndex+1000);
   for(size_t i=0;i<nBwch;i++)  
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,SN,"701 -51 705 -706 3M -4M");
-      System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out)); 
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,SN,"701 -51 705 -706 3M -4M");
+      makeCell("ChannelA",System,cellIndex++,waterMat,0.0,HR);
       
-      Out=ModelSupport::getComposite(SMap,buildIndex,SN,
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,SN,
 				     "2 -801 805 -806 13M -14M");
-      System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));  
+      makeCell("ChannelB",System,cellIndex++,waterMat,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,SN,
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,SN,
 				     "801 -701 23M -24M 25M -26M");
-      System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));  
+      makeCell("ChannelC",System,cellIndex++,waterMat,0.0,HR);
       SN+=100;
      }
 
   // Pressure Vessel end
-  Out=ModelSupport::getComposite(SMap,buildIndex, "31 -41 33 -34 35 -36 ");
-  addOuterUnionSurf(Out);
-  Out+=ModelSupport::getComposite(SMap,buildIndex, "(-31:41:-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex, "31 -41 33 -34 35 -36");
+  addOuterUnionSurf(HR);
+  HR*=ModelSupport::getHeadRule(SMap,buildIndex, "(-31:41:-3:4:-5:6)");
+  makeCell("EndWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex, "41 -2 43 -44 45 -46 ");
-  addOuterUnionSurf(Out);
-  Out+=ModelSupport::getComposite(SMap,buildIndex, "(-41:2:-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,buildIndex, "2 -51 -57 ");
-  addOuterUnionSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex, "41 -2 43 -44 45 -46 ");
+  addOuterUnionSurf(HR);
+  HR*=ModelSupport::getHeadRule(SMap,buildIndex, "(-41:2:-3:4:-5:6) ");
+  makeCell("EndWall",System,cellIndex++,wallMat,0.0,HR);
+
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex, "2 -51 -57 ");
+  addOuterUnionSurf(HR);
 
 
   // THIS NEEDS TO BE IN SECTIONS: 
   // [ i.e not in one object unless surrounded by a wrapper]
-
-  std::string OutA=
-    ModelSupport::getComposite(SMap,buildIndex, "((-701:51:-705:706) : ( ");
-  std::string OutB=
-    ModelSupport::getComposite(SMap,buildIndex, "((-2:801:-805:806) : ( ");
-  std::string OutC=
-    ModelSupport::getComposite(SMap,buildIndex, "((-801:701) : ( ");
+  
+  HeadRule hrA=ModelSupport::getHeadRule(SMap,buildIndex, "-701:51:-705:706 ");
+  HeadRule hrB=ModelSupport::getHeadRule(SMap,buildIndex, "-2:801:-805:806");
+  HeadRule hrC=ModelSupport::getHeadRule(SMap,buildIndex, "-801:701");
+  
   SN=buildIndex+1000;
+  HeadRule aSumHR,bSumHR,cSumHR;
   for(size_t i=0;i<nBwch;SN+=100,i++)  
     {
       // THIS WORKS -- therefore it is independent and redundent (?)
-      OutA+=ModelSupport::getComposite(SMap,SN," (-3:4) ");
-      OutB+=ModelSupport::getComposite(SMap,SN," (-13:14) ");
-      OutC+=ModelSupport::getComposite(SMap,SN," (-23:24:-25:26)");
+      aSumHR*=ModelSupport::getHeadRule(SMap,SN,"-3:4");
+      bSumHR*=ModelSupport::getHeadRule(SMap,SN,"-13:14");
+      cSumHR*=ModelSupport::getHeadRule(SMap,SN,"-23:24:-25:26");
     }
-  OutA+="))";
-  OutB+="))";
-  OutC+="))";
-  Out+=OutA+OutB+OutC; 
-  Out+=ModelSupport::getComposite(SMap,buildIndex, "(-2:71:77) ");                       
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+  hrA+=aSumHR;
+  hrB+=bSumHR;
+  hrC+=cSumHR;
+  HR*=hrA*hrB*hrC;
+  HR*=ModelSupport::getHeadRule(SMap,buildIndex,"-2:71:77");                       
+
+  makeCell("MainWall",System,cellIndex++,wallMat,0.0,HR);
+  
   // WINDOW HOUSING - Tantalum
-  Out=ModelSupport::getComposite(SMap,buildIndex, "-22 61 -67 28");
-  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex, "-22 61 -67 28");
+  makeCell("WindowFrame",System,cellIndex++,taMat,0.0,HR);
 
   return;
-}
-
-int
-PressVessel::addProtonLine(Simulation& System,
-			   const std::string& RefSurfBoundary)
-   /*!
-     Adds a proton line up to the edge of the reflector
-     \param System :: Simulation to add
-     \param RefSurfBoundary :: reflector outside boundary
-     \return proton cell nubmer
-   */
-{
-  ELog::RegMethod RegA("PressVessel","addProtonLine");
-  // Proton flight line:
-  std::string Out=ModelSupport::getComposite(SMap,buildIndex, "-21 -27 ");
-  Out+=RefSurfBoundary;
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  return cellIndex-1;
 }
 
 void
@@ -581,9 +547,10 @@ PressVessel::createLinks()
   FixedComp::setConnect(5,Origin+Z*(height-topWallThick),-Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
   // Exit window
-  FixedComp::setConnect(6,Origin-Y*viewThickness,Y);
-  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+21));
-
+  FixedComp::setConnect(6,Origin-Y*viewThickness,-Y);
+  FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+21));
+  nameSideIndex(6,"BeamWindow");
+  
   // Outer Layers:
   FixedComp::setConnect(7,Origin-X*width,X);
   FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+3));
@@ -619,8 +586,8 @@ PressVessel::buildChannels(Simulation& System)
   for(int i=0;i<NChannel;i++)
     {
       CItem.push_back(channel("PVesselChannel",i,buildIndex));
-      CPtr=&CItem.back();
-      CPtr->addInsertCell(outerWallCell);
+      CPtr= &CItem.back();
+      CPtr->addInsertCell(getCell("OuterWall"));
       CPtr->setDefaultValues(Control,CPtr);
       CPtr->createAll(System,*this,0);
     }
@@ -659,7 +626,7 @@ PressVessel::buildFeedThrough(Simulation& System)
   for(size_t i=0;i<nBwch;i++)
     {
       ModelSupport::BoxLine 
-	EndWaterChannel(StrFunc::makeString("endWaterChannel",i+1));   
+	EndWaterChannel("endWaterChannel"+std::to_string(i+1));   
 
 //      const double sX((i % 2) ? -1 : 1);
 //      const double sZ((i / 2) ? -1 : 1);

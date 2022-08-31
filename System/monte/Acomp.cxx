@@ -3,7 +3,7 @@
  
  * File:   monte/Acomp.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -840,7 +840,7 @@ Acomp::logicalCover(const Acomp& A) const
     {
       if (isTrue(Base) != A.isTrue(Base))
 	return 0;
-    } while (!MapSupport::iterateBinMap(Base));
+    } while (!MapSupport::iterateBinMap<int>(Base,0,1));
   
   return 1;
 }
@@ -910,7 +910,7 @@ Acomp::logicalIntersectCover(const Acomp& A) const
       if (TFlag!=pairCCFlag) tOut=0;
       if (AFlag!=pairCCFlag) aOut=0;
       if (!aOut && !tOut) return 0;
-    } while (!MapSupport::iterateBinMap(Base));
+    } while (!MapSupport::iterateBinMap<int>(Base,0,1));
 
   return (tOut ? 1 : 0 ) | (aOut ? 2 : 0 );
 }
@@ -940,9 +940,9 @@ Acomp::logicalEqual(const Acomp& A) const
     {
       if (isTrue(Base) != A.isTrue(Base))
 	return 0;
+    } while (!MapSupport::iterateBinMap<int>(Base,0,1));
 
-    } while (!MapSupport::iterateBinMap(Base));
-
+  
   return 1;
 }
 
@@ -1409,7 +1409,7 @@ Acomp::getDNFobject(std::vector<int>& keyNumbers,
 	  State.setState(keyNumbers,Base);
 	  DNFobj.push_back(State);
 	}
-    } while (!MapSupport::iterateBinMap(Base));
+    } while (!MapSupport::iterateBinMap<int>(Base,0,1));
 
   return 0;
 }

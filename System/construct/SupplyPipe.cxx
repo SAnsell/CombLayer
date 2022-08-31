@@ -3,7 +3,7 @@
  
  * File:   construct/SupplyPipe.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "stringCombine.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -53,6 +52,8 @@
 #include "FixedComp.h"
 #include "FixedUnit.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "LayerComp.h"
 #include "pipeUnit.h"
 #include "PipeLine.h"
@@ -129,24 +130,24 @@ SupplyPipe::populate(const FuncDataBase& Control)
   NSegIn=Control.EvalPair<size_t>(optName+"NSegIn",keyName+"NSegIn");
   for(size_t i=0;i<=NSegIn;i++)
     {
-      numStr=StrFunc::makeString(i);
+      numStr=std::to_string(i);
       PPts.push_back(Control.EvalPair<Geometry::Vec3D>
 		     (optName+"PPt"+numStr,keyName+"PPt"+numStr));
     }
 
   size_t aN(0);
-  numStr=StrFunc::makeString(aN);
+  numStr="0";
   while(Control.hasVariable(keyName+"Active"+numStr))
     {
       ActiveFlag.push_back
 	(Control.EvalVar<size_t>(keyName+"Active"+numStr)); 
-      numStr=StrFunc::makeString(++aN);
+      numStr=std::to_string(++aN);
     }
 
   const size_t NRadii=Control.EvalVar<size_t>(keyName+"NRadii"); 
   for(size_t i=0;i<NRadii;i++)
     {
-      const std::string numStr=StrFunc::makeString(i);
+      const std::string numStr=std::to_string(i);
       Radii.push_back(Control.EvalVar<double>(keyName+"Radius"+numStr)); 
       Mat.push_back
 	(ModelSupport::EvalMat<int>(Control,keyName+"Mat"+numStr)); 
@@ -154,55 +155,6 @@ SupplyPipe::populate(const FuncDataBase& Control)
     }  
   return;
 }
-  
-
-void
-SupplyPipe::createUnitVector(const attachSystem::FixedComp& FC,
-			     const size_t layerIndex,
-			     const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed unit that it is connected to 
-    \param layerIndex :: Surface Layer for first point
-    \param sideIndex :: Connection point to use as origin [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("SupplyPipe","createUnitVector");
-
-  FixedComp::createUnitVector(FC);
-  const attachSystem::LayerComp* LC=
-    dynamic_cast<const attachSystem::LayerComp*>(&FC);
-
-  if (LC)
-    {
-      Origin=LC->getSurfacePoint(layerIndex,sideIndex);
-      if (sideIndex) FC.selectAltAxis(sideIndex,X,Y,Z);
-    }
-  else
-    throw ColErr::DynamicConv("FixedComp","LayerComp","FC:"+FC.getKeyName());
-
-      
-  ELog::EM<<"Side ="<<sideIndex<<" X == "<<X<<ELog::endDebug;
-  ELog::EM<<"Y ="<<Y<<" Z == "<<Z<<ELog::endDebug;
-  ELog::EM<<"Origin = "<<Origin<<ELog::endDebug;
-  return;
-}
-
-void
-SupplyPipe::createUnitVector(const attachSystem::FixedComp& FC,
-			     const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed unit that it is connected to 
-    \param sideIndex :: Connection point to use as origin [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("SupplyPipe","createUnitVector(FC,long int)");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  return;
-}
-
 
   
 void 
@@ -231,7 +183,7 @@ SupplyPipe::insertInlet(const attachSystem::FixedComp& FC,
   PtZ+=layerOffset;
   const int commonSurf=LC->getCommonSurf(lSideIndex);
   const std::string commonStr=(commonSurf) ? 		       
-    StrFunc::makeString(commonSurf) : "";
+    std::to_string(commonSurf) : "";
   if (PtZ!=Pt)
     Coaxial.addPoint(Pt);
   
@@ -275,7 +227,7 @@ SupplyPipe::addExtraLayer(const attachSystem::LayerComp& LC,
   if (NL)
     {
       const std::string commonStr=(commonSurf) ? 		       
-	StrFunc::makeString(commonSurf) : "";
+	std::to_string(commonSurf) : "";
       const Geometry::Vec3D PtZ=
 	LC.getSurfacePoint(NL-1,lSideIndex)+
 	layerOffset;
@@ -376,7 +328,6 @@ SupplyPipe::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("SupplyPipe","createAll");
   populate(System.getDataBase());
-
   createUnitVector(FC,sideIndex);
   addOuterPoints();
   setActive();
@@ -391,7 +342,7 @@ SupplyPipe::createAll(Simulation& System,
 
 void
 SupplyPipe::createAll(Simulation& System,
-		      const attachSystem::FixedComp& FC,
+		      const attachSystem::LayerComp& LC,
 		      const size_t orgLayerIndex,
 		      const long int orgSideIndex,
 		      const long int exitSideIndex)
@@ -406,8 +357,14 @@ SupplyPipe::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("SupplyPipe","createAll");
 
+  // all LayerComps are normally FixedComp : 
+  const attachSystem::FixedComp& FC=
+       dynamic_cast<const attachSystem::FixedComp&>(LC);
+  
   populate(System.getDataBase());
-  createUnitVector(FC,orgLayerIndex,orgSideIndex);
+  createUnitVector(FC,orgSideIndex);
+  Origin=LC.getSurfacePoint(orgLayerIndex,orgSideIndex);
+  
   insertInlet(FC,exitSideIndex);
   addOuterPoints();
   setActive();
@@ -443,8 +400,8 @@ SupplyPipe::createAll(Simulation& System,
   ELog::RegMethod RegA("SupplyPipe","createAll<LC>");
   populate(System.getDataBase());
 
-  createUnitVector(FC,orgLayerIndex,orgSideIndex);
-      
+  createUnitVector(FC,orgSideIndex);
+  Origin=LC.getSurfacePoint(orgLayerIndex,orgSideIndex);
   insertInlet(FC,exitSideIndex);
   addExtraLayer(LC,extraSide);
   addOuterPoints();

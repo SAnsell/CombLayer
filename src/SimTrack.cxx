@@ -3,7 +3,7 @@
  
  * File:   src/SimTrack.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,7 +81,8 @@ SimTrack::addSim(const Simulation* SimPtr)
   */
 {
   const fcTYPE::key_type sInt=
-    reinterpret_cast<const fcTYPE::key_type>(SimPtr);
+    reinterpret_cast<fcTYPE::key_type>(SimPtr);
+
   fcTYPE::iterator mc=findCell.find(sInt);
   if (mc==findCell.end())
     findCell.insert(fcTYPE::value_type(sInt,0));
@@ -90,7 +91,7 @@ SimTrack::addSim(const Simulation* SimPtr)
 
 void
 SimTrack::setCell(const Simulation* SimPtr,MonteCarlo::Object* OPtr)
-  /*!
+  /*! 
     Set the current cell pointer
     \param SimPtr :: Significant figures
     \param OPtr :: Object Pointer

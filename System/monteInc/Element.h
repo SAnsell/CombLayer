@@ -3,7 +3,7 @@
  
  * File:   monteInc/Element.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,7 +73,7 @@ class Element
   std::map<std::string,size_t> Nmap;   ///< Map of names to Z
   std::vector<std::string> Sym;        ///< Vector of symbols
   std::vector<double> KEdge;           ///< Vector of k-Edge [keV]
-  std::vector<Abundance> Isotopes;     ///< Vector of Isotopes and abunances
+  std::vector<Abundance> Isotopes;     ///< Vector of Isotopes and abundances
 
   void populate();     
   void populateEdge(); 

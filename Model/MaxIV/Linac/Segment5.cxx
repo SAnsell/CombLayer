@@ -67,7 +67,7 @@
 #include "DipoleDIBMag.h"
 #include "BeamDivider.h"
 
-#include "LObjectSupportB.h"
+#include "LObjectSupport.h"
 #include "TDCsegment.h"
 #include "Segment5.h"
 

@@ -3,7 +3,7 @@
  
  * File:   delftInc/beamSlot.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,9 +34,10 @@ namespace delftSystem
     Creates a beamslot
   */
   
-class beamSlot : public attachSystem::ContainedComp,
-  public attachSystem::FixedRotate,
-  public attachSystem::ExternalCut  
+class beamSlot :
+    public attachSystem::ContainedComp,
+    public attachSystem::FixedRotate,
+    public attachSystem::ExternalCut  
 {
  private:
 
@@ -64,6 +65,7 @@ class beamSlot : public attachSystem::ContainedComp,
   beamSlot& operator=(const beamSlot&);
   virtual ~beamSlot();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);  
 

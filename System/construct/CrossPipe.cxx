@@ -56,7 +56,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -70,7 +70,7 @@ namespace constructSystem
 {
 
 CrossPipe::CrossPipe(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut()
   /*!
@@ -83,7 +83,7 @@ CrossPipe::CrossPipe(const std::string& Key) :
 }
 
 CrossPipe::CrossPipe(const CrossPipe& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedRotate(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
   horrRadius(A.horrRadius),
@@ -108,7 +108,7 @@ CrossPipe::operator=(const CrossPipe& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
@@ -145,7 +145,7 @@ CrossPipe::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("CrossPipe","populate");
   
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   // Void + Fe special:
   horrRadius=Control.EvalVar<double>(keyName+"HorrRadius");
@@ -164,9 +164,9 @@ CrossPipe::populate(const FuncDataBase& Control)
   flangeRadius=Control.EvalDefVar<double>(keyName+"FlangeRadius",-1.0);
   flangeLength=Control.EvalDefVar<double>(keyName+"FlangeLength",0.0);
   
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
-  plateMat=ModelSupport::EvalDefMat<int>(Control,keyName+"PlateMat",feMat);
+  plateMat=ModelSupport::EvalDefMat(Control,keyName+"PlateMat",feMat);
 
   return;
 }

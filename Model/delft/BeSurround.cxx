@@ -136,7 +136,7 @@ BeSurround::populate(const FuncDataBase& Control)
       frontThick=Control.EvalDefVar<double>(keyName+"FrontThick",0.0);
 
       mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
-      frontMat=ModelSupport::EvalDefMat<int>(Control,keyName+"FrontMat",mat);
+      frontMat=ModelSupport::EvalDefMat(Control,keyName+"FrontMat",mat);
     }
 
   return;

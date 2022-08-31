@@ -3,7 +3,7 @@
  
  * File:   ralBuild/TargetBase.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
 #include "BaseMap.h"
@@ -59,8 +59,9 @@ namespace TMRSystem
   
 TargetBase::TargetBase(const std::string& Key,const size_t NLink)  : 
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,NLink),
+  attachSystem::FixedRotate(Key,NLink),
   attachSystem::ExternalCut(),
+  attachSystem::CellMap(),
   PLine(new ts1System::ProtonVoid("ProtonVoid"))
   /*!
     Constructor
@@ -76,8 +77,9 @@ TargetBase::TargetBase(const std::string& Key,const size_t NLink)  :
 
 TargetBase::TargetBase(const TargetBase& A) : 
   attachSystem::ContainedComp(A),
-  attachSystem::FixedOffset(A),
+  attachSystem::FixedRotate(A),
   attachSystem::ExternalCut(A),
+  attachSystem::CellMap(A),
   BWPtr((A.BWPtr) ? new ts1System::BeamWindow(*A.BWPtr) : 0),
   PLine(new ts1System::ProtonVoid(*A.PLine))
   /*!
@@ -98,8 +100,10 @@ TargetBase::operator=(const TargetBase& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ExternalCut::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      
       if (A.BWPtr)
 	*BWPtr = *A.BWPtr;
       else
@@ -131,8 +135,8 @@ TargetBase::createBeamWindow(Simulation& System,
 	  BWPtr=std::shared_ptr<ts1System::BeamWindow>
 	  (new ts1System::BeamWindow("BWindow"));
 	  OR.addObject(BWPtr);
-	}      
-      BWPtr->addBoundarySurf(PLine->getCompContainer());
+	}
+      BWPtr->copyCutSurf("Boundary",*PLine,"Boundary");
       BWPtr->setInsertCell(PLine->getCell("VoidCell"));
       BWPtr->createAll(System,*this,sideIndex);
     }
@@ -166,17 +170,6 @@ TargetBase::addProtonLineInsertCell(const std::vector<int>& cellVec)
 		  this->PLine->addInsertCell(cv);
 		});
   return;
-}
-
-std::vector<int>  
-TargetBase::getInnerCells() const
-  /*!
-    Return those cells that consititue the inner cells
-    and can be modified
-    \return vector of cell numbers
-  */
-{
-  return std::vector<int>();
 }
 
 }  // NAMESPACE TMRSystem

@@ -3,7 +3,7 @@
 
  * File:   src/SimFLUKA.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2022 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,9 +74,11 @@
 #include "radDecay.h"
 #include "flukaPhysics.h"
 #include "magnetUnit.h"
+#include "elecUnit.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "LowMat.h"
+#include "plotGeom.h"
 
 #include "Simulation.h"
 #include "SimFLUKA.h"
@@ -85,10 +87,11 @@ SimFLUKA::SimFLUKA() :
   Simulation(),
   alignment("*...+.WHAT....+....1....+....2....+....3....+....4....+....5....+....6....+.SDUM"),
   defType("PRECISION"),basicGeom(0),geomPrecision(0.0001),
-  writeVariable(1),lowEnergyNeutron(1),
+  writeVariable(1),lowEnergyNeutron(1),cernFluka(0),
   nps(1000),rndSeed(2374891),
   PhysPtr(new flukaSystem::flukaPhysics()),
-  RadDecayPtr(new flukaSystem::radDecay())
+  RadDecayPtr(new flukaSystem::radDecay()),
+  PGeomPtr(0)
   /*!
     Constructor
   */
@@ -103,7 +106,8 @@ SimFLUKA::SimFLUKA(const SimFLUKA& A) :
   nps(A.nps),rndSeed(A.rndSeed),
   sourceExtraName(A.sourceExtraName),
   PhysPtr(new flukaSystem::flukaPhysics(*A.PhysPtr)),
-  RadDecayPtr(new flukaSystem::radDecay(*A.RadDecayPtr))
+  RadDecayPtr(new flukaSystem::radDecay(*A.RadDecayPtr)),
+  PGeomPtr((A.PGeomPtr) ? new flukaSystem::plotGeom(*A.PGeomPtr) : 0)
  /*!
    Copy constructor
    \param A :: Simulation to copy
@@ -133,6 +137,8 @@ SimFLUKA::operator=(const SimFLUKA& A)
 	FTItem.emplace(TM->clone());
       *PhysPtr= *A.PhysPtr;
       *RadDecayPtr = *A.RadDecayPtr;
+      if (PGeomPtr) delete PGeomPtr;
+      PGeomPtr=(A.PGeomPtr) ? new flukaSystem::plotGeom(*A.PGeomPtr) : 0;
     }
   return *this;
 }
@@ -145,7 +151,20 @@ SimFLUKA::~SimFLUKA()
   clearTally();
   delete PhysPtr;
   delete RadDecayPtr;
+  delete PGeomPtr;
 }
+
+flukaSystem::plotGeom&
+SimFLUKA::getPlotGeom()
+  /*!
+    Simple accessor to plotGeom
+   */
+{
+  if (!PGeomPtr)
+    PGeomPtr=new flukaSystem::plotGeom;
+  return *PGeomPtr;
+}
+
 
 void
 SimFLUKA::setDefaultPhysics(const std::string& dName)
@@ -379,21 +398,70 @@ SimFLUKA::writeMagField(std::ostream& OX) const
       StrFunc::writeFLUKA(cx.str(),OX);
 
       flukaSystem::cellValueSet<2> Steps("stepsize","STEPSIZE");
+      flukaSystem::cellValueSet<0> Sync("syrastep","SYRASTEP");
       for(const OTYPE::value_type& mp : OList)
 	{
-	  if (mp.second->hasMagField())
+	  const int magType=mp.second->hasMagField(); // 1:normal 2:sync
+	  if (magType)  
 	    {
 	      const std::pair<double,double> magStep=
 		mp.second->getMagStep();
-	      Steps.setValues(mp.second->getName(),magStep.first,magStep.second);
+	      Steps.setValues
+		(mp.second->getName(),magStep.first,magStep.second);
+	      if (magType==2)
+		Sync.setValues(mp.second->getName());
+	    }
+	}
+      const std::string fmtSTR("%2 %3 R0 R1 1.0 - ");
+      const std::string fmtBSTR("- - R0 R1 1.0 - ");
+      const std::vector<int> cellInfo=this->getCellVector();
+      Steps.writeFLUKA(OX,cellInfo,fmtSTR);
+      Sync.writeFLUKA(OX,cellInfo,fmtBSTR);
+
+      for(const MagTYPE::value_type& MI : MagItem)
+	MI.second->writeFLUKA(OX);
+    }
+  return;
+}
+
+void
+SimFLUKA::writeElecField(std::ostream& OX) const
+  /*!
+    Writes out the tallies using a nice boost binding
+    construction.
+    \param OX :: Output stream
+   */
+{
+  ELog::RegMethod RegA("SimFluka","writeElecField");
+
+  OX<<"* ------------------------------------------------------"<<std::endl;
+  OX<<"* ------------------- ELECTIRC CARDS ----------------------"<<std::endl;
+  OX<<"* ------------------------------------------------------"<<std::endl;
+
+  std::ostringstream cx;
+  if (!ElecItem.empty())
+    {
+      // Need to set elecfield to zero
+      cx<<"ELCFIELD 15.0 0.05 0.1 - - - ";
+      StrFunc::writeFLUKA(cx.str(),OX);
+
+      flukaSystem::cellValueSet<2> Steps("stepsize","STEPSIZE");
+      for(const OTYPE::value_type& mp : OList)
+	{
+	  if (mp.second->hasElecField())
+	    {
+	      const std::pair<double,double> elecStep=
+		mp.second->getElecStep();
+	      Steps.setValues
+		(mp.second->getName(),elecStep.first,elecStep.second);
 	    }
 	}
       const std::string fmtSTR("%2 %3 R0 R1 1.0 - ");
       const std::vector<int> cellInfo=this->getCellVector();
       Steps.writeFLUKA(OX,cellInfo,fmtSTR);
 
-      for(const MagTYPE::value_type& MI : MagItem)
-	MI.second->writeFLUKA(OX);
+      for(const ElecTYPE::value_type& EI : ElecItem)
+	EI.second->writeFLUKA(OX);
     }
   return;
 }
@@ -481,6 +549,11 @@ SimFLUKA::writeElements(std::ostream& OX) const
 	setZA.insert(ZC);
     }
 
+  std::function<std::string(const size_t,const size_t,const std::string&)>
+    lowMatFunc = (cernFluka) ?
+  		  &LowMat::getFLUKAcern :
+  		  &LowMat::getFLUKAinfn;
+
   std::ostringstream cx,lowmat;
   for (const MonteCarlo::Zaid& za : setZA)
     {
@@ -488,9 +561,13 @@ SimFLUKA::writeElements(std::ostream& OX) const
 	{
 	  cx<<"MATERIAL "<<za.getZ()<<". - "<<" 1."
 	    <<" - - "<<za.getIso()<<". "<<za.getFlukaName()<<" ";
-	  lowmat<<LowMat::getFLUKA(za.getZ(),za.getIso(),za.getFlukaName());
+	  lowmat<<lowMatFunc(za.getZ(),za.getIso(),za.getFlukaName());
 	}
     }
+
+  
+
+	  
   
   StrFunc::writeFLUKA(cx.str(),OX);
   if (lowEnergyNeutron)
@@ -513,14 +590,15 @@ SimFLUKA::writeMaterial(std::ostream& OX) const
   OX<<"* MATERIAL CARDS "<<std::endl;
   OX<<alignment<<std::endl;
   // WRITE OUT ASSIGNMENT:
-  bool magField(0);
+  bool magField(0),elecField(0);
   for(const OTYPE::value_type& mp : OList)
     {
       mp.second->writeFLUKAmat(OX);
       if (mp.second->hasMagField())
 	magField=1;
+      if (mp.second->hasElecField())
+	elecField=1;
     }
-
   writeElements(OX);
 
   // set ordered otherwize output random [which is annoying]
@@ -534,6 +612,8 @@ SimFLUKA::writeMaterial(std::ostream& OX) const
 
   if (magField)
     writeMagField(OX);
+  if (elecField)
+    writeElecField(OX);
   return;
 }
 
@@ -733,10 +813,18 @@ SimFLUKA::write(const std::string& Fname) const
   OX<<"GEOEND"<<std::endl;
   writeWeights(OX);
   writeMaterial(OX);
-  RadDecayPtr->write(*this,OX);
-  writeTally(OX);
-  writeSource(OX);
-  writePhysics(OX);
+
+  if (PGeomPtr)
+    {
+      PGeomPtr->write(OX);
+    }
+  else
+    {
+      RadDecayPtr->write(*this,OX);
+      writeTally(OX);
+      writeSource(OX);
+      writePhysics(OX);
+    }
   OX<<"STOP"<<std::endl;
   OX.close();
   return;

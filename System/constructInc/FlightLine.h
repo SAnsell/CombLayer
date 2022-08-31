@@ -3,7 +3,7 @@
  
  * File:   constructInc/FlightLine.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,11 +44,13 @@ namespace moderatorSystem
   \brief FlightLine [insert object]
 */
 
-class FlightLine : public attachSystem::ContainedGroup,
-    public attachSystem::FixedOffset
+class FlightLine :
+    public attachSystem::ContainedGroup,
+    public attachSystem::FixedRotate,
+    public attachSystem::ExternalCut,
+    public attachSystem::CellMap
 {
  private:
-  
   
   double anglesXY[2];           ///< Rotation in the XY plane 
   double anglesZ[2];            ///< Rotation in the Z plane
@@ -64,33 +66,22 @@ class FlightLine : public attachSystem::ContainedGroup,
   std::vector<double> lThick;   ///< Linear Thickness 
   std::vector<int> lMat;        ///< Layer Material
 
-  bool capActive;               ///< Using front/back cap
-  std::vector<int> capLayer;    ///< End cap layers
+  bool capActive;                  ///< Using front/back cap
+  std::vector<int> capLayer;       ///< End cap layers
   std::vector<HeadRule> capRule;   ///< Rule for each cap
 
-  std::string attachRule;       ///< Attached rule
+  HeadRule attachRuleHR;           ///< Attached rule
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
-  void createUnitVector(const attachSystem::FixedComp&,const long int,
-			const long int);
-  //  void createUnitVector(const Geometry::Vec3D&,const Geometry::Vec3D&,
-  //			const Geometry::Vec3D&);
-  void createRotatedUnitVector(const attachSystem::FixedComp&,const long int,
-			       const long int);
-
   void createSurfaces();
   void createCapSurfaces(const attachSystem::FixedComp&,const long int);
   void createObjects(Simulation&,const attachSystem::FixedComp&,
 		     const long int);
-  void createObjects(Simulation&,const attachSystem::FixedComp&,
-		     const long int,
-		     const attachSystem::ContainedComp&);
 
-  void removeObjects(Simulation&);
-  std::string getRotatedDivider(const attachSystem::FixedComp&,
-				const long int);
+  HeadRule getRotatedDivider(const attachSystem::FixedComp&,
+			     const long int);
 
+  
  public:
 
   FlightLine(const std::string&);
@@ -103,8 +94,6 @@ class FlightLine : public attachSystem::ContainedGroup,
 
 
   
-  void reBoundary(Simulation&,const long int,
-		  const attachSystem::FixedComp&);
 
   void processIntersectMajor(Simulation&,
 			     const attachSystem::ContainedGroup&,
@@ -117,11 +106,7 @@ class FlightLine : public attachSystem::ContainedGroup,
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
-  void createAll(Simulation&,const long int,const long int,
-		 const attachSystem::FixedComp&);
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const attachSystem::ContainedComp&,const long int =0);
-
+ 
 };
 
 }

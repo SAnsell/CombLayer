@@ -174,9 +174,9 @@ PreModWing::populate(const FuncDataBase& Control)
       const std::string sNum=std::to_string(i);
       const double RL=Control.EvalVar<double>
         (keyName+"LayerRadius"+sNum);
-      const int iMat=ModelSupport::EvalDefMat<int>
+      const int iMat=ModelSupport::EvalDefMat
         (Control,keyName+"InnerMat"+sNum,mat);
-      const int sMat=ModelSupport::EvalDefMat<int>
+      const int sMat=ModelSupport::EvalDefMat
         (Control,keyName+"SurfMat"+sNum,wallMat);
       layerRadii.push_back(RL);
       innerMat.push_back(iMat);

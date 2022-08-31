@@ -3,7 +3,7 @@
  
  * File:   construct/JawValveBase
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -68,7 +68,7 @@ namespace constructSystem
 {
 
 JawValveBase::JawValveBase(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut(),
   JItem(Key+"Jaw")
@@ -79,7 +79,7 @@ JawValveBase::JawValveBase(const std::string& Key) :
 {}
 
 JawValveBase::JawValveBase(const JawValveBase& A) : 
-  attachSystem::FixedOffset(A),
+  attachSystem::FixedRotate(A),
   attachSystem::ContainedComp(A),attachSystem::CellMap(A),
   attachSystem::SurfMap(A),attachSystem::FrontBackCut(A),  
   length(A.length),wallThick(A.wallThick),portARadius(A.portARadius),
@@ -103,7 +103,7 @@ JawValveBase::operator=(const JawValveBase& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
@@ -139,7 +139,7 @@ JawValveBase::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("JawValveBase","populate");
   
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   // Void + Fe special:
   length=Control.EvalVar<double>(keyName+"Length");
@@ -160,7 +160,7 @@ JawValveBase::populate(const FuncDataBase& Control)
 				    keyName+"PortLen");
 
 
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   return;
@@ -179,7 +179,7 @@ JawValveBase::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("JawValveBase","createUnitVector");
 
-  FixedOffset::createUnitVector(FC,sideIndex);
+  FixedRotate::createUnitVector(FC,sideIndex);
 
   // moved to centre
   Origin+=Y*(length/2.0+portALen);

@@ -3,7 +3,7 @@
  
  * File:   beamline/GuideLine.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -57,9 +56,6 @@
 #include "surfDivide.h"
 #include "Quadratic.h"
 #include "Plane.h"
-#include "Cylinder.h"
-#include "Line.h"
-#include "LineIntersectVisit.h"
 #include "Rules.h"
 #include "SurInter.h"
 #include "varList.h"
@@ -242,7 +238,7 @@ GuideLine::populate(const FuncDataBase& Control)
   int M;
   for(size_t i=0;i<nShapeLayers;i++)
     {
-      const std::string NStr=StrFunc::makeString(i);
+      const std::string NStr=std::to_string(i);
       if (i)
 	T+=Control.EvalVar<double>(keyName+"LayerThick"+NStr);
       // Always get material
@@ -278,12 +274,12 @@ GuideLine::addGuideUnit(const size_t index,
 {
   ELog::RegMethod RegA("GuideLine","addGuideUnit");
 
-  const std::string GKey="Guide"+StrFunc::makeString(index);
+  const std::string GKey="Guide"+std::to_string(index);
 
   attachSystem::FixedComp& guideFC=FixedGroup::addKey(GKey,6);
   
   const std::string PGKey=(index) ? 
-    "Guide"+StrFunc::makeString(index-1) :  "GuideOrigin";
+    "Guide"+std::to_string(index-1) :  "GuideOrigin";
   const attachSystem::FixedComp& prevFC=FixedGroup::getKey(PGKey);
 
   
@@ -336,7 +332,7 @@ GuideLine::processShape(const FuncDataBase& Control)
 
   for(size_t index=0;index<nShapes;index++)
     {
-      const std::string NStr=StrFunc::makeString(index);
+      const std::string NStr=std::to_string(index);
       const std::string BKey=keyName+NStr;
 
       const std::string typeID= 
@@ -639,7 +635,7 @@ GuideLine::createObjects(Simulation& System)
   std::string back;
   for(size_t i=0;i<nShapes;i++)
     {
-      const std::string GKey("Guide"+StrFunc::makeString(i));
+      const std::string GKey("Guide"+std::to_string(i));
       const std::string front=shapeFrontSurf(false,i);
       back=shapeBackSurf(false,i);
       
@@ -731,7 +727,7 @@ GuideLine::createGuideLinks()
   int GI(buildIndex+2000);
   for(size_t i=0;i<nShapes;i++)
     {
-      const std::string GKey="Guide"+StrFunc::makeString(i);
+      const std::string GKey="Guide"+std::to_string(i);
       attachSystem::FixedComp& guideFC=FixedGroup::getKey(GKey);
 
       // [FRONT]

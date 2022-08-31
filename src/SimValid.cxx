@@ -3,7 +3,7 @@
  
  * File:   src/SimValid.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,15 +31,18 @@
 #include <set>
 #include <vector>
 #include <memory>
+#include <algorithm>
+#include <iterator>
+#include <random>
 
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "MersenneTwister.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Vec3D.h"
+#include "Random.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -59,8 +62,6 @@
 #include "SimValid.h"
 
 #include "debugMethod.h"
-
-extern MTRand RNG;
 
 namespace ModelSupport
 {
@@ -194,8 +195,9 @@ SimValid::runPoint(const Simulation& System,
     {
       if (initSurfNum)
 	{
-	  ELog::EM<<"Adjusting the initial point as on surface"<<ELog::endDiag;
-	  Pt+=Geometry::Vec3D(RNG.rand()*0.01,RNG.rand()*0.01,RNG.rand()*0.01);
+	  Pt+=Geometry::Vec3D(Random::rand()*0.01,
+			      Random::rand()*0.01,
+			      Random::rand()*0.01);
 	}
       InitObj=System.findCell(Pt,InitObj);
       initSurfNum=InitObj->isOnSurface(Pt);
@@ -210,9 +212,9 @@ SimValid::runPoint(const Simulation& System,
 	ELog::EM<<"ValidPoint == "<<i<<ELog::endDiag;
       std::vector<simPoint> Pts;
       // Get random starting point on edge of volume
-      phi=RNG.rand()*M_PI;
-      theta=2.0*RNG.rand()*M_PI;
-      const Geometry::Vec3D uVec(cos(theta)*sin(phi),
+      phi=Random::rand()*M_PI;
+      theta=2.0*Random::rand()*M_PI;
+      Geometry::Vec3D uVec(cos(theta)*sin(phi),
 			     sin(theta)*sin(phi),
 			     cos(phi));
       MonteCarlo::eTrack TNeut(Pt,uVec);
@@ -224,25 +226,27 @@ SimValid::runPoint(const Simulation& System,
 	{
 	  // Note: Need OPPOSITE Sign on exiting surface
 	  SN= OPtr->trackCell(TNeut,aDist,SPtr,SN);
-	  if (aDist>1e30 && Pts.size()<=1)
+
+	  // This is needed because sometimes we are on a multiway surf
+	  // boundary e.g. circles in contact
+	  if (!SN)
 	    {
-	      ELog::EM<<"Fail on Pts==1 and aDist INF"<<ELog::endDiag;
-	      ELog::EM<<"Index == "<<Pts.size()<<ELog::endDiag;
-	      ELog::EM<<"Pts[0].pos == "<<Pts[0].Pt<<ELog::endDiag;
-	      ELog::EM<<"Pts[0].dir == "<<Pts[0].Dir<<ELog::endDiag;
-	      ELog::EM<<"SN == "<<SN<<ELog::endDiag;
-	      aDist=1e-5;
+	      TNeut.moveForward(Geometry::zeroTol*5.0);
+	      OPtr=System.findCell(TNeut.Pos,0);
+	      if (OPtr)
+		SN= OPtr->trackCell(TNeut,aDist,SPtr,SN);		
 	    }
 	  TNeut.moveForward(aDist);
 	  Pts.push_back(simPoint(TNeut.Pos,TNeut.uVec,OPtr->getName(),SN,OPtr));
+
 	  OPtr=(SN) ?
-	    OSMPtr->findNextObject(SN,TNeut.Pos,OPtr->getName()) : 0;	    
+	    OSMPtr->findNextObject(SN,TNeut.Pos,OPtr->getName()) : 0;
 	}
 
       if (!OPtr)
 	{
 	  ELog::EM<<"OPtr not found["<<i<<"] at : "<<Pt<<ELog::endCrit;
-	  ELog::EM<<"Line SEARCH == "<<ELog::endCrit;
+	  ELog::EM<<"Line SEARCH == "<<i<<ELog::endCrit;
 	  ModelSupport::LineTrack LT(Pt,uVec,10000.0);
 	  LT.calculate(System);
 	  ELog::EM<<"LT == "<<LT<<ELog::endDiag;
@@ -283,11 +287,71 @@ SimValid::runFixedComp(const Simulation& System,
       const std::vector<Geometry::Vec3D> FCPts=
 	FC->getAllLinkPts();
       for(const Geometry::Vec3D& Pt : FCPts)
-	ELog::EM<<"PT == "<<FC->getKeyName()<<" :: "<<Pt<<ELog::endDiag;
+	{
+	  ELog::EM<<"PT == "<<FC->getKeyName()<<" :: "<<Pt<<ELog::endDiag;
+	  runPoint(System,Pt,N);
+	}
     }
   
   ELog::EM<<"Finished Validation check"<<ELog::endDiag;
   return 1;
 }
+
+int
+SimValid::checkPoint(const Simulation& System,
+		     const Geometry::Vec3D& Pt) 
+  /*!
+    Calculate the tracking from fixedcomp
+    \param System :: Simulation to use
+    \param Pt :: Point to test
+    \return true if valid / 0 if invalid
+  */
+{
+  ELog::RegMethod RegA("SimValid","checkPoint");
+
+  const Simulation::OTYPE& cellMap=System.getCells();
+  std::vector<const MonteCarlo::Object*> activeCell;
+  for(const auto& [CN,OPtr] : cellMap)
+    {
+      if (OPtr->isValid(Pt))
+	activeCell.push_back(OPtr);
+    }
+
+  if (activeCell.size()==1) return 0;  // good point
+
+
+  // compare pairs
+  for(size_t i=0;i<activeCell.size();i++)
+    for(size_t j=i+1;j<activeCell.size();j++)
+      {
+	const MonteCarlo::Object* APtr=activeCell[i];
+	const MonteCarlo::Object* BPtr=activeCell[j];
+
+	const std::set<int> ASurf=APtr->surfValid(Pt);
+	const std::set<int> BSurf=BPtr->surfValid(Pt);	
+
+	std::set<int> commonSurf;
+	std::set_intersection(ASurf.begin(),ASurf.end(),
+			      BSurf.begin(),BSurf.end(),
+			      std::inserter(commonSurf,commonSurf.begin()) );
+	if (commonSurf.empty()) break;
+
+	for(const int SN : commonSurf)
+	  {
+	    if ((APtr->isSignedValid(Pt,-SN) != BPtr->isSignedValid(Pt,SN)) ||
+		(APtr->isSignedValid(Pt,SN) != BPtr->isSignedValid(Pt,-SN)) )
+	      return 0;
+	  }
+      }
+
+  ELog::EM<<"Central Point Check ERROR ::\n";
+  for(const MonteCarlo::Object* OPtr : activeCell)
+    ELog::EM<<"Cell "<<OPtr->getName()<<"\n";
+  ELog::EM<<ELog::endErr;
+  return 1;
+}
+
+
+
 
 } // NAMESPACE ModelSupport

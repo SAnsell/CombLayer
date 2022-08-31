@@ -3,7 +3,7 @@
  
  * File:   test/simpleObj.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -56,6 +54,8 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "simpleObj.h"
 
 namespace testSystem
@@ -77,6 +77,7 @@ simpleObj::simpleObj(const std::string& Key)  :
 simpleObj::simpleObj(const simpleObj& A) : 
   attachSystem::ContainedComp(A),
   attachSystem::FixedComp(A),
+  attachSystem::CellMap(A),
   refFlag(A.refFlag),
   offset(A.offset),xyAngle(A.xyAngle),zAngle(A.zAngle),xSize(A.xSize),
   ySize(A.ySize),zSize(A.zSize),defMat(A.defMat)
@@ -98,7 +99,7 @@ simpleObj::operator=(const simpleObj& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
+      attachSystem::CellMap::operator=(A);
       refFlag=A.refFlag;
       offset=A.offset;
       xyAngle=A.xyAngle;
@@ -192,20 +193,19 @@ simpleObj::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("simpleObj","createObjects");
-  
-  std::string Out;
-  if (refFlag)
-    Out=ModelSupport::getComposite(SMap,buildIndex,"-1 2 -3 4 -5 6");
-  else
-    Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
-  addOuterSurf(Out);
-  addBoundarySurf(Out);
 
-  System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));
-  mainCell=cellIndex-1;
+  HeadRule HR;
+  if (refFlag)
+    HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 2 -3 4 -5 6");
+  else
+    HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+
+  makeCell("MainCell",System,cellIndex++,defMat,0.0,HR);
+  addOuterSurf(HR);
+    
   return;
 }
-
+  
 void
 simpleObj::createLinks()
   /*!
@@ -230,17 +230,6 @@ simpleObj::createLinks()
     }
 
   return;
-}
-
-std::string
-simpleObj::getComposite(const std::string& surfList) const
-  /*!
-    Exposes local version of getComposite
-    \param surfList :: surface list
-    \return Composite string
-  */
-{
-  return ModelSupport::getComposite(SMap,buildIndex,surfList);
 }
 
 void

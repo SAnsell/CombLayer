@@ -95,6 +95,7 @@ class SimValid
   /// Set the centre
   void setCentre(const Geometry::Vec3D& C) { Centre=C;} 
 
+  static int checkPoint(const Simulation&,const Geometry::Vec3D&);
   // MAIN RUN:
   int runPoint(const Simulation&,const Geometry::Vec3D&,const size_t) const;
   

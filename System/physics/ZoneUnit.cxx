@@ -3,7 +3,7 @@
  
  * File:   physics/ZoneUnit.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -104,6 +104,33 @@ ZoneUnit<T>::findItem(const int cellN) const
 
 template<typename T>
 MapSupport::Range<int>
+ZoneUnit<T>::createMapRange(std::set<int>& cellSet)
+  /*!
+    Convert the first range inthe vector into a Range
+    then remove the component
+  */
+{
+  ELog::RegMethod RegA("ZoneUnit","createMapRange(set)");
+
+  if (cellSet.empty())
+    throw ColErr::EmptyValue<int>("cellSet");
+
+  std::set<int>::iterator vc=cellSet.begin();
+  int ACell(*vc);
+  int BCell(ACell);
+    
+  vc++;
+  while(vc!=cellSet.end() && *vc== BCell+1)
+    {
+      BCell++;  // care here because BCell must not increase if vc==end
+      vc++;
+    }
+  cellSet.erase(cellSet.begin(),vc);
+  return MapSupport::Range<int>(ACell,BCell);
+}
+
+template<typename T>
+MapSupport::Range<int>
 ZoneUnit<T>::createMapRange(std::vector<int>& CellList)
   /*!
     Convert the first range inthe vector into a Range
@@ -127,7 +154,6 @@ ZoneUnit<T>::createMapRange(std::vector<int>& CellList)
     }
   CellList.erase(CellList.begin(),vc);
   return MapSupport::Range<int>(ACell,BCell);
-    
 }
   
 template<typename T>
@@ -152,7 +178,7 @@ ZoneUnit<T>::procZone(const objectGroups& OGrp,
     }
   else if (NS>=2 && (StrItem[0]=="Object" || StrItem[0]=="object"))
     {
-      std::vector<int> cellN=OGrp.getObjectRange(StrItem[1]);
+      std::set<int> cellN=OGrp.getObjectRange(StrItem[1]);
       while(!cellN.empty())
 	{
 	  Zones.push_back(createMapRange(cellN));

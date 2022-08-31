@@ -3,7 +3,7 @@
  
  * File:   ESSbeam/magicInc/MAGIC.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,7 +74,7 @@ class MAGIC : public attachSystem::CopiedComp
   int stopPoint;  
 
   /// Main Beam Axis [for construction]
-  std::shared_ptr<attachSystem::FixedOffsetUnit> magicAxis;
+  std::shared_ptr<attachSystem::FixedRotateUnit> magicAxis;
 
   /// Elliptic focus in bulkshield [m3]
   std::shared_ptr<beamlineSystem::GuideLine> FocusA;
@@ -87,9 +87,9 @@ class MAGIC : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> BendC;
 
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::SingleChopper> ChopperA;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperA;
   /// Double disk chopper
-  std::shared_ptr<constructSystem::DiskChopper> PSCDisk;
+  std::shared_ptr<essConstruct::DiskChopper> PSCDisk;
 
   /// Pipe in the gamma shield [6.5m to 13m]
   std::shared_ptr<constructSystem::VacuumPipe> VPipeD;

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   build/BulkInsert.cxx
+ * File:   ralBuild/BulkInsert.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -162,12 +162,12 @@ BulkInsert::populate(const FuncDataBase& Control)
   if (Control.hasVariable(keyName+"InnerMat"))
     innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");
   else
-    innerMat=ModelSupport::EvalDefMat<int>(Control,baseName+"InnerMat",0);
+    innerMat=ModelSupport::EvalDefMat(Control,baseName+"InnerMat",0);
 
   if (Control.hasVariable(keyName+"OuterMat"))    
     outerMat=ModelSupport::EvalMat<int>(Control,keyName+"OuterMat");
   else
-    outerMat=ModelSupport::EvalDefMat<int>(Control,baseName+"OuterMat",0);
+    outerMat=ModelSupport::EvalDefMat(Control,baseName+"OuterMat",0);
   
   return;
 }
@@ -190,11 +190,12 @@ BulkInsert::createUnitVector(const attachSystem::FixedComp& FC,
   attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
-  FixedGroup::createUnitVector(FC,2);
-
   const GeneralShutter& GS=dynamic_cast<const GeneralShutter&>(FC);
-  mainFC.createUnitVector(GS.getKey("Main"),2);
-  beamFC.createUnitVector(GS.getKey("Beam"),2);
+  FixedGroup::createUnitVector(GS.getKey("Beam"),sideIndex);
+
+  mainFC.createUnitVector(GS.getKey("Main"),sideIndex);
+
+  beamFC.createUnitVector(GS.getKey("Beam"),sideIndex);
   Origin=GS.getTargetPoint();
   mainFC.setCentre(Origin);
   setDefault("Main","Beam");
@@ -268,8 +269,8 @@ BulkInsert::createObjects(Simulation& System)
   if (!shutterObj)
     throw ColErr::InContainerError<int>(innerCell,"shutterObj");
 
-  ELog::EM<<"WARN == ZERO IMP SETTING CARE UPGRATE METHOD"<<ELog::endWarn;  
-  if (impZero) shutterObj->setImp(0);
+  // ELog::EM<<"WARN == ZERO IMP SETTING CARE UPGRATE METHOD"<<ELog::endWarn;  
+  // if (impZero) shutterObj->setImp(0);
   
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 -5 6 ");
 
@@ -278,12 +279,12 @@ BulkInsert::createObjects(Simulation& System)
   shutterObj->addIntersection(HR);
 
   
-  shutterObj=System.findObject(outerCell);  
+  shutterObj=System.findObjectThrow(outerCell,"shutterObj");  
   if (!shutterObj)
     throw ColErr::InContainerError<int>(outerCell,"shutterObj");
 
-  ELog::EM<<"WARN == ZERO IMP SETTING CARE UPGRATE METHOD"<<ELog::endWarn;
-  if (impZero) shutterObj->setImp(0);
+  // ELog::EM<<"WARN == ZERO IMP SETTING CARE UPGRATE METHOD"<<ELog::endWarn;
+  // if (impZero) shutterObj->setImp(0);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 -15 16 ");
   HR*=dSurf;
@@ -362,10 +363,11 @@ BulkInsert::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
+    
   createSurfaces();
   createObjects(System);
-  
   createLinks();
+
   return;
 }
 

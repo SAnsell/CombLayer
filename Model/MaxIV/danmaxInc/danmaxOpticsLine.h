@@ -3,7 +3,7 @@
  
  * File:   danmaxInc/danmaxOpticsLine.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,7 +81,7 @@ namespace xraySystem
 class danmaxOpticsLine :
   public attachSystem::CopiedComp,
   public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap
 {
@@ -243,6 +243,7 @@ class danmaxOpticsLine :
   void setPreInsert
     (const std::shared_ptr<attachSystem::ContainedGroup>& A) { preInsert=A; }
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

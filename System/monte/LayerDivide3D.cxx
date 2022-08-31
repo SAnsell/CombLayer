@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/LayerDivide3D.cxx
+ * File:   monte/LayerDivide3D.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  * 
  ****************************************************************************/
 #include <fstream>
@@ -369,11 +369,11 @@ LayerDivide3D::checkDivide() const
    */
 {
   ELog::RegMethod RegA("LayerDivide3D","checkDivide");
-  if (AWall.first*AWall.second==0)
+  if (AWall.first==0 || AWall.second==0)
     throw ColErr::EmptyValue<int>("Section A not set");
-  if (BWall.first*BWall.second==0)
+  if (BWall.first==0 || BWall.second==0)
     throw ColErr::EmptyValue<int>("Section B not set");
-  if (CWall.first*CWall.second==0)
+  if (CWall.first==0 || CWall.second==0)
     throw ColErr::EmptyValue<int>("Section C not set");
   return;
 }
@@ -465,7 +465,8 @@ LayerDivide3D::setDividerByExclude(const Simulation& System,const int cellN)
 {
   ELog::RegMethod RegA("LayerDivide3D","setDividerByExclude");
 
-  const MonteCarlo::Object* CPtr=System.findObjectThrow(cellN);
+  const MonteCarlo::Object* CPtr=
+    System.findObjectThrow(cellN,"CellN");
 
   HeadRule CellRule= CPtr->getHeadRule();
 

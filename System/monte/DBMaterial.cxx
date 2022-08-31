@@ -3,7 +3,7 @@
  
  * File:   monte/DBMaterial.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +50,8 @@
 namespace ModelSupport
 {
 
-DBMaterial::DBMaterial() 
+DBMaterial::DBMaterial() :
+  nextID(1)
   /*!
     Constructor
   */
@@ -193,11 +194,57 @@ DBMaterial::overwriteMaterial(const std::string& original,
   if (nx==IndexMap.end())
     throw ColErr::InContainerError<std::string>
       (original,"New material not available");
-
-  
   
   IndexMap.emplace(original,mc->second);
   return;
+}
+
+MonteCarlo::Material&
+DBMaterial::createMaterial(const std::string& matName,
+			   const std::string& MLine,
+			   const std::string& MTLine,
+			   const std::string& LibLine)
+/*!
+  Sets the material given a full line from MCNPX.
+  Passes strings of type 
+  - 56097.70c 0.034 62106.70c 0.024 
+  - mt24 be77.0k hlib=.24h
+  \param MLine :: Zaid line
+  \param MTLine :: Treamtment line
+  \param LibLine :: Libraries
+  \throw LineError if not valid
+  \return Material Object
+*/
+{
+  ELog::RegMethod RegA("DBMaterial","setMaterial(s,s,s,s)");
+
+  SCTYPE::const_iterator mc=IndexMap.find(matName);
+  if (mc!=IndexMap.end())
+    throw ColErr::InContainerError<std::string>
+      (matName,"Material name already used");
+  
+  const int matID=getNextID();
+  MonteCarlo::Material MObj;
+  MObj.setMaterial(matID,matName,MLine,MTLine,LibLine);
+  IndexMap.emplace(matName,matID);
+  const auto& mPair=MStore.emplace(matID,MObj);
+
+  return mPair.first->second;
+} 
+
+int
+DBMaterial::getNextID()
+  /*!
+    Get the next material number and update
+    nextID number
+  */
+{
+  while (MStore.find(nextID)!=MStore.end() &&
+	 NStore.find(nextID)!=NStore.end())
+    {
+      nextID++;
+    }
+  return nextID++;
 }
   
 void

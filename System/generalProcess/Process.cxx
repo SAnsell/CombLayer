@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   Process/Process.cxx
+ * File:   generalProcess/Process.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -88,13 +88,11 @@ setWImp(Simulation& System,const mainSystem::inputParam& IParam)
   std::string pType,cellName;
   for(size_t setIndex=0;setIndex<nIMP;setIndex++)
     {
-      const size_t nItem=IParam.itemCnt("wIMP",setIndex);
       double impValue(1.0);
 
       pType=IParam.getValueError<std::string>
 	("wIMP",setIndex,0,"No cell/object for wIMP ");
 
-      size_t index(2);
       if (pConv.hasName(pType))
 	{
 	  cellName=IParam.getValueError<std::string>
@@ -174,8 +172,7 @@ getActiveCell(const objectGroups& OGrp,
 {
   ELog::RegMethod RegA("Process[F]","getActiveCell");
 
-  const std::vector<int> Cells=OGrp.getObjectRange(cell);
-  std::set<int> activeCell(Cells.begin(),Cells.end());
+  std::set<int> activeCell=OGrp.getObjectRange(cell);
 
   activeCell.erase(1);
   return activeCell;

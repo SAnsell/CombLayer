@@ -3,7 +3,7 @@
  
  * File:   attachComp/AttachSupportLine.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,9 +74,12 @@ bool
 checkLineIntersect(const FixedComp& InsertFC,
                    const MonteCarlo::Object& CellObj)
   /*!
-    Calculate if a fixed component is within a cell object      
+    Calculate if any of the link points or the lines connecting
+    the link points from the FixedComp, intersect the
+    cell object.      
     \param InsertFC :: FixedComp to get intersect 
     \param CellObj :: Cell Object
+    \return true if the line/points intersect
    */
 {
   ELog::RegMethod RegA("AttachSupportLine[F]","checkLineInsert");
@@ -112,7 +115,7 @@ checkLineIntersect(const FixedComp& InsertFC,
               const std::vector<double>& distVec(LI.getDistance());
               const std::vector<Geometry::Vec3D>& dPts(LI.getPoints());
               const std::vector<const Geometry::Surface*>& 
-                surfPts=LI.getSurfIndex();
+                surfPts=LI.getSurfPointers();
               
               for(size_t dI=0;dI<dPts.size();dI++)
                 {
@@ -132,9 +135,9 @@ addToInsertLineCtrl(Simulation& System,
 		    const attachSystem::FixedComp& OuterFC,
 		    const attachSystem::FixedComp& InsertFC)
   /*!
-    Adds this object to the containedComp to be inserted.
-    CC is the fixed object that is to be inserted -- linkpoints
-    must be set. 
+    Convert the InsertFC to a ContainedComp. Then check all
+    lines connecting linkPt and linkPts from OuterFC to
+    see if any intersect the InsertFC. 
 
     It is tested by 
       -- A link point is within the object
@@ -217,7 +220,7 @@ addToInsertLineCtrl(Simulation& System,
 {
   ELog::RegMethod RegA("AttachSupport[F]","addtoInsectLineCtrl(FC,FC)");
 
-  const std::vector<int> CNum=
+  const std::set<int> CNum=
     System.getObjectRange(OuterFC.getKeyName());
   for(const int CN : CNum)
     addToInsertLineCtrl(System,InsertFC,CC,CN);
@@ -246,15 +249,15 @@ addToInsertLineCtrl(Simulation& System,
 {
   ELog::RegMethod RegA("AttachSupport[F]","addtoInsectLineCtrl(FC,FC)");
 
-  const std::vector<int>& cellVec=
+  const std::set<int>& cellVec=
     System.getObjectRange(InsertFC.getKeyName());
   System.populateCells(cellVec);
   MonteCarlo::Object* CRPtr=System.findObject(cellN);
 
   if (CRPtr && checkLineIntersect(InsertFC,*CRPtr))
     {
-      const std::string excludeStr=CC.getExclude();
-      CRPtr->addSurfString(excludeStr);
+      const HeadRule excludeHR=CC.getOuterSurf().complement();
+      CRPtr->addIntersection(excludeHR);
     }
   return;
 }

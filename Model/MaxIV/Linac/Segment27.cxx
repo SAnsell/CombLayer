@@ -3,7 +3,7 @@
 
  * File: Linac/Segment27.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2022 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -67,11 +65,11 @@
 
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "FixedGroup.h"
 #include "FixedRotateGroup.h"
 
-#include "Line.h"
 #include "YagScreen.h"
 #include "YagUnit.h"
 #include "TDCBeamDump.h"
@@ -92,7 +90,6 @@ Segment27::Segment27(const std::string& Key) :
   IZTop(new attachSystem::BlockZone(keyName+"IZTop")),
   IZFlat(new attachSystem::BlockZone(keyName+"IZFlat")),
   IZLower(new attachSystem::BlockZone(keyName+"IZLower")),
-  IHall(nullptr),
 
   bellowAA(new constructSystem::Bellows(keyName+"BellowAA")),
   bellowBA(new constructSystem::Bellows(keyName+"BellowBA")),
@@ -241,6 +238,7 @@ Segment27::buildObjects(Simulation& System)
       bellowCA->setFront(joinItems[2].display());
     }
 
+  
   bellowAA->createAll(System,*this,0);
   bellowBA->createAll(System,*this,0);
   bellowCA->createAll(System,*this,0);
@@ -303,13 +301,12 @@ Segment27::buildObjects(Simulation& System)
     (System,*IZTop,*yagUnitA,"back",*bellowAC);
   constructSystem::constructUnit
     (System,*IZFlat,*yagUnitB,"back",*bellowBC);
-
   beamStopC->setCutSurf("base",ExternalCut::getRule("Floor"));
-  beamStopC->setMainAxis(*IHall, 0);
+
+  
+  beamStopC->secondaryUnitVector(*yagUnitC,"back");
   beamStopC->createAll(System,*yagUnitC,"back");
-
   const int outerCell = IZLower->createUnit(System,beamStopC->getKey("Main"),2);
-
   // for segment28:
   ExternalCut::setCutSurf("BeamStopZone",beamStopC->getOuterSurf());
 
@@ -331,22 +328,44 @@ Segment27::buildFrontSpacer(Simulation& System)
 
   if (!prevSegPtr || !prevSegPtr->isBuilt())
     {
-
       HeadRule volume=buildZone->getFront();
       volume*=IZTop->getFront().complement();
       volume*=IZTop->getSurround();
       volume.addIntersection(SMap.realSurf(buildIndex+5015));
-      makeCell("FrontSpace",System,cellIndex++,0,0.0,volume);
+      makeCell("FrontSpace",System,cellIndex++,voidMat,0.0,volume);
       volume=buildZone->getFront();
       volume*=IZFlat->getFront().complement();
       volume*=IZFlat->getSurround();
-      makeCell("FrontSpace",System,cellIndex++,0,0.0,volume);
+      makeCell("FrontSpace",System,cellIndex++,voidMat,0.0,volume);
       volume=buildZone->getFront();
       volume*=IZLower->getFront().complement();
       volume*=IZLower->getSurround();
-      makeCell("FrontSpace",System,cellIndex++,0,0.0,volume);
+      makeCell("FrontSpace",System,cellIndex++,voidMat,0.0,volume);
     }
-    return;
+  return;
+}
+
+void
+Segment27::buildSpaceFiller(Simulation& System)
+  /*!
+    Build the back spacer if needed. Note that 
+    cells marked as "SpceFiller" are removed if the
+    next segment (28) is built.
+    \param System :: Simulation to use
+   */
+{
+  ELog::RegMethod RegA("Segment27","buildSpaceFiller");
+
+  HeadRule extraVol=buildZone->getBack().complement();
+  extraVol*=IZFlat->getBack()*IZFlat->getSurround();
+  extraVol*=beamStopC->getOuterSurf().complement();
+  makeCell("SpaceFiller",System,cellIndex++,voidMat,0.0,extraVol);
+
+  extraVol=buildZone->getBack().complement();
+  extraVol*=IZTop->getBack()*IZTop->getSurround();
+  makeCell("SpaceFiller",System,cellIndex++,voidMat,0.0,extraVol);
+
+  return;
 }
 
 void
@@ -390,8 +409,8 @@ Segment27::createLinks()
 
 void
 Segment27::createAll(Simulation& System,
-			 const attachSystem::FixedComp& FC,
-			 const long int sideIndex)
+		     const attachSystem::FixedComp& FC,
+		     const long int sideIndex)
   /*!
     Carry out the full build
     \param System :: Simulation system
@@ -401,14 +420,16 @@ Segment27::createAll(Simulation& System,
 {
   // For output stream
   ELog::RegMethod RControl("Segment27","build");
-  IHall=dynamic_cast<const InjectionHall*>(&FC);
 
   FixedRotate::populate(System.getDataBase());
 
   createUnitVector(FC,sideIndex);
+
   buildObjects(System);
   buildFrontSpacer(System);
   createLinks();
+    buildSpaceFiller(System);
+    
   return;
 }
 

@@ -34,28 +34,31 @@
 #include <memory>
 
 #include "FileReport.h"
+#include "NameStack.h"
+#include "RegMethod.h"
 #include "OutputLog.h"
 #include "Exception.h"
+#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "HeadRule.h"
-#include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "surfDivide.h"
 #include "surfDBase.h"
 #include "mergeTemplate.h"
 #include "Importance.h"
 #include "Object.h"
-#include "NameStack.h"
-#include "RegMethod.h"
 #include "surfRegister.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
+#include "HeadRule.h"
+
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
+#include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
@@ -97,7 +100,7 @@ SoilRoof::populate(const FuncDataBase& Control)
   frontLength=Control.EvalDefVar<double>(keyName+"FrontLength",-1.0);
   ringRadius=Control.EvalVar<double>(keyName+"RingRadius");
   ringCentre=Control.EvalVar<Geometry::Vec3D>(keyName+"RingCentre");
-  //  ELog::EM<<"Ring Centre == "<<ringCentre<<ELog::endDiag;
+
   unitGap=Control.EvalDefVar<double>(keyName+"UnitGap",1.0);
 
   soilMat=ModelSupport::EvalMat<int>(Control,keyName+"SoilMat");
@@ -113,19 +116,17 @@ SoilRoof::createUnitVector(const attachSystem::FixedComp& FC,
     This creates an shifted origin -- the normal origin is calculated
     BUT then the origin is shifted up so it impacts the roof surface.
     \param FC :: Fixed Component
-    \param sideIndex :: link point
+    \param sideIndex :: link point 
    */
 {
   ELog::RegMethod RegA("SoilRoof","createUnitVector");
-
-
   FixedRotate::createUnitVector(FC,sideIndex);
 
   Origin=ExternalCut::getRule("Roof").trackPoint(Origin,Z);
   return;
 }
 
-void
+  void
 SoilRoof::createSurfaces()
   /*!
     Create All the surfaces
@@ -133,7 +134,7 @@ SoilRoof::createSurfaces()
 {
   ELog::RegMethod RegA("SoilRoof","createSurfaces");
 
-  // we have Pre-calculated the origin at the roof so this works:
+  // we have Pre-calculated the origin at the roof so this works:  
   SurfMap::makePlane("SoilTop",SMap,buildIndex+6,Origin+Z*height,Z);
   SurfMap::makePlane("Top",SMap,buildIndex+16,
 		     Origin+Z*(height+unitGap),Z);
@@ -193,7 +194,6 @@ SoilRoof::createObjects(Simulation& System)
 	       SMap.realSurf(buildIndex+5),
 	       -SMap.realSurf(buildIndex+6),
 	       soilNLayers);
-
   return;
 }
 
@@ -231,7 +231,6 @@ SoilRoof::createAll(Simulation& System,
   createObjects(System);
   createLinks();
   insertObjects(System);
-
   return;
 }
 
@@ -292,5 +291,6 @@ SoilRoof::layerProcess(Simulation& System,
 
     return;
 }
+
 
 }  // tdcSystem

@@ -3,7 +3,7 @@
  
  * File:   geometry/surfIndex.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -860,6 +860,9 @@ surfIndex::addTypeSurface(Geometry::Cylinder*);
 
 
 template Geometry::Plane*
+surfIndex::realSurf(const int) const;
+
+template const Geometry::Plane*
 surfIndex::realSurf(const int) const;
 
 ///\endcond TEMPLATE

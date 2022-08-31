@@ -3,7 +3,7 @@
  
  * File:   modelSupport/SimInput.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,6 +57,7 @@
 #include "LinkUnit.h"
 #include "surfRegister.h"
 #include "FixedComp.h"
+#include "FixedGroup.h"
 #include "Zaid.h"
 #include "MXcards.h"
 #include "Material.h"
@@ -121,12 +122,47 @@ processExitChecks(Simulation& System,
 	  const Geometry::Vec3D CPoint=FC->getLinkPt(sideIndex)+
 	    Geometry::Vec3D(0.001,0.001,0.001);
 	  ELog::EM<<"Validation point "<<CPoint<<ELog::endDiag;
-	  ELog::EM<<"NEEDS TO BE RE-WRITTEN SO WORKS STARTING"
-	    " ON A SURFACE"<<ELog::endCrit;
 
 	  if (!SValidCheck.runPoint
 	      (System,CPoint,IParam.getValue<size_t>("validCheck")))
 	    errFlag += -1;
+	}
+      else if (IParam.flag("validCell") || IParam.flag("validAll"))
+	{
+	  typedef objectGroups::cMapTYPE CM;
+	  const CM& mapFC=System.getComponents();
+	  for(const CM::value_type& mc : mapFC)
+	    {
+	      std::set<Geometry::Vec3D> Pts;
+	      const attachSystem::FixedGroup* FG =
+		dynamic_cast<const attachSystem::FixedGroup*>
+		(mc.second.get());
+	      
+	      if (FG)
+		{
+		  std::set<std::string> units=FG->getAllKeys();
+		  for(const std::string& UName : units)
+		    Pts.emplace(FG->getKey(UName).getCentre());
+		}
+	      
+
+	      const attachSystem::FixedComp& FC = *(mc.second);
+
+	      const size_t iLk=FC.NConnect();
+	      for(long int i=0;i<static_cast<long int>(iLk);i++)
+		{
+		  if (FC.hasLinkPt(i))
+		    Pts.emplace(FC.getLinkPt(i));
+		}
+	      for(const Geometry::Vec3D& CP : Pts)
+		{
+		  if (CP.Y()<60 && CP.Y()>1)
+		    ELog::EM<<"CP == "<<CP<<ELog::endDiag;
+		  
+		  if (ModelSupport::SimValid::checkPoint(System,CP))
+		    errFlag += -1;
+		}
+	    }
 	}
       else if (IParam.flag("validAll"))
 	{
@@ -138,8 +174,15 @@ processExitChecks(Simulation& System,
 	    {
 	      const attachSystem::FixedComp& FC = *(mc.second);
 	      const Geometry::Vec3D& CP=FC.getCentre();
-	      if (SValidCheck.runPoint(System,CP,NPts))
-		  errFlag += -1;
+	      if (CP!=Geometry::Vec3D(0,0,0))
+		{
+		  ELog::EM<<"FC["<<FC.getKeyName()<<"] ";
+		  if (!SValidCheck.runPoint(System,CP,NPts))
+		    {
+		      ELog::EM<<"ERROR "<<ELog::endErr;
+		      errFlag += -1;
+		    }
+		}
 	    }
 	}
       else 

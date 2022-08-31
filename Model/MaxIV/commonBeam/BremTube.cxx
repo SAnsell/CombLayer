@@ -39,6 +39,7 @@
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "Vec3D.h"
+#include "Exception.h"
 #include "surfRegister.h"
 #include "varList.h"
 #include "Code.h"
@@ -58,8 +59,13 @@
 #include "FrontBackCut.h" 
 #include "BaseMap.h"
 #include "SurfMap.h"
-#include "CellMap.h" 
+#include "CellMap.h"
+#include "portItem.h"
+#include "portBuilder.h"
 
+#include "BaseModVisit.h"
+#include "Importance.h"
+#include "Object.h"
 #include "BremTube.h"
 
 namespace xraySystem
@@ -120,10 +126,44 @@ BremTube::populate(const FuncDataBase& Control)
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   plateMat=ModelSupport::EvalMat<int>(Control,keyName+"PlateMat");
 
+  constructSystem::populatePort(Control,keyName+"Front",FCentre,FAxis,FPorts);
+  constructSystem::populatePort(Control,keyName+"Main",MCentre,MAxis,MPorts);
+
   return;
 }
 
+void
+BremTube::createFrontPorts(Simulation& System)
+  /*!
+    Create the front port(s)
+   */
+{
+  ELog::RegMethod RegA("BremTube","createFrontPorts");
 
+  // both OUTWARD
+  MonteCarlo::Object* insertObj=
+    CellMap::getCellObject(System,"MidTube");
+
+  const HeadRule innerSurf(SurfMap::getSurfRules("midVoid"));
+  const HeadRule outerSurf(SurfMap::getSurfRules("midRadius"));
+  
+  for(size_t i=0;i<FPorts.size();i++)
+    {
+      //      const attachSystem::ContainedComp& CC=getCC("Main");
+      for(const int CN : this->getInsertCells())
+	FPorts[i]->addInsertCell(CN);
+
+      FPorts[i]->setCentLine(*this,FCentre[i],FAxis[i]);
+      FPorts[i]->constructTrack(System,insertObj,innerSurf,outerSurf);
+  
+      FPorts[i]->addPortCut(CellMap::getCellObject(System,"MidOuterVoid"));
+      FPorts[i]->insertObjects(System);
+    }
+
+  
+  return;
+}
+  
 void
 BremTube::createSurfaces()
   /*!
@@ -151,10 +191,10 @@ BremTube::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+300,Origin,Z);
 
   // front/back pipe and thickness
-  ModelSupport::buildCylinder(SMap,buildIndex+107,
-			      Origin,Y,frontRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+117,
+  makeCylinder("frontVoid",SMap,buildIndex+107,Origin,Y,frontRadius);
+  makeCylinder("frontRadius",SMap,buildIndex+117,
 			      Origin,Y,frontRadius+wallThick);
+  
   ModelSupport::buildCylinder(SMap,buildIndex+127,
 			      Origin,Y,frontFlangeRadius);
 
@@ -166,9 +206,8 @@ BremTube::createSurfaces()
   ModelSupport::buildPlane
     (SMap,buildIndex+212,Origin-Y*(midLength-wallThick),Y);
 
-  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,midRadius);
-  ModelSupport::buildCylinder
-    (SMap,buildIndex+217,Origin,Y,midRadius+wallThick);
+  makeCylinder("midVoid",SMap,buildIndex+207,Origin,Y,midRadius);
+  makeCylinder("midRadius",SMap,buildIndex+217,Origin,Y,midRadius+wallThick);
 
   // Main (VERTICAL) tube
   ModelSupport::buildPlane(SMap,buildIndex+305,Origin-Z*tubeDepth,Z);
@@ -209,84 +248,83 @@ BremTube::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("BremTube","createObjects");
 
-  std::string Out;
   
-  const std::string frontStr=getRuleStr("front");
-  const std::string backStr=getRuleStr("back");
-
+  const HeadRule frontHR=getRule("front");
+  const HeadRule backHR=getRule("back");
+  HeadRule HR;
   // Front
-  Out=ModelSupport::getComposite(SMap,buildIndex," -107 -212");
-  makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-107 -212");
+  makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 107 -117 -202");
-  makeCell("FrontTube",System,cellIndex++,wallMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"107 -117 -202");
+  makeCell("FrontTube",System,cellIndex++,wallMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 117 -127 -101");
-  makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,Out+frontStr);
-
-  // Note : using 427
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-427 127 -101");
-  makeCell("FrontFlangeVoid",System,cellIndex++,0,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"117 -127 -101");
+  makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,HR*frontHR);
 
   // Note : using 427
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-202 -427 117 101");
-  makeCell("FrontOuterVoid",System,cellIndex++,0,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 107 -212 202 -217");
-  makeCell("MidPlate",System,cellIndex++,wallMat,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," -200 307 -207 212");
-  makeCell("MidVoid",System,cellIndex++,0,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," -200 317 -217 207 212");
-  makeCell("MidWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-427 127 -101");
+  makeCell("FrontFlangeVoid",System,cellIndex++,0,0.0,HR*frontHR);
 
   // Note : using 427
-  Out=ModelSupport::getComposite(SMap,buildIndex," -427 -200 317 217 202");
-  makeCell("MidOuterVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-202 -427 117 101");
+  makeCell("FrontOuterVoid",System,cellIndex++,0,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"107 -212 202 -217");
+  makeCell("MidPlate",System,cellIndex++,wallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-200 307 -207 212");
+  makeCell("MidVoid",System,cellIndex++,0,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-200 317 -217 207 212");
+  makeCell("MidTube",System,cellIndex++,wallMat,0.0,HR);
+
+  // Note : using 427
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -427 -200 317 217 202");
+  makeCell("MidOuterVoid",System,cellIndex++,0,0.0,HR);
 
   // main tube
-  Out=ModelSupport::getComposite(SMap,buildIndex,"305 -306 -307");
-  makeCell("Void",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"305 -306 -307");
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"305 -306 307 -317 (207:200) (407:-200)");
-  makeCell("TubeWall",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("TubeWall",System,cellIndex++,wallMat,0.0,HR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-315 305 317 -327");
-  makeCell("TubeBaseFlange",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-315 305 317 -327");
+  makeCell("TubeBaseFlange",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"316 -306 317 -327");
-  makeCell("TubeTopFlange",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"316 -306 317 -327");
+  makeCell("TubeTopFlange",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"325 -305 -327");
-  makeCell("TubeBaseCap",System,cellIndex++,plateMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"325 -305 -327");
+  makeCell("TubeBaseCap",System,cellIndex++,plateMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-326 306 -327");
-  makeCell("TubeTopCap",System,cellIndex++,plateMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-326 306 -327");
+  makeCell("TubeTopCap",System,cellIndex++,plateMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"315 -316 -327 317 427");
-  makeCell("TubeOuterVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"315 -316 -327 317 427");
+  makeCell("TubeOuterVoid",System,cellIndex++,0,0.0,HR);
 
   // Extention
-  Out=ModelSupport::getComposite(SMap,buildIndex,"200 307 -407 ");
-  makeCell("BackVoid",System,cellIndex++,0,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"200 307 -407 ");
+  makeCell("BackVoid",System,cellIndex++,0,0.0,HR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"200 317 407 -417");
-  makeCell("BackWall",System,cellIndex++,wallMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"200 317 407 -417");
+  makeCell("BackWall",System,cellIndex++,wallMat,0.0,HR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"417 -427 412 ");
-  makeCell("BackFlange",System,cellIndex++,wallMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"417 -427 412 ");
+  makeCell("BackFlange",System,cellIndex++,wallMat,0.0,HR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-427 417 -412 200 317");
-  makeCell("BackOuterVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-427 417 -412 200 317");
+  makeCell("BackOuterVoid",System,cellIndex++,0,0.0,HR);
 
   // outer void box:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-427 ");
-  addOuterSurf(Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-427 ");
+  addOuterSurf(HR*frontHR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-327 325 -326");
-  addOuterUnionSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-327 325 -326");
+  addOuterUnionSurf(HR);
 
   return;
 }
@@ -318,9 +356,96 @@ BremTube::createLinks()
 }
 
 void
+BremTube::insertInCell(Simulation& System,const int cellN) const
+  /*!
+    Overload of ContainedComp so that the ports can also
+    be inserted if needed
+    \param System :: Simulation to use
+    \param cellN :: Cell for insert
+  */
+{
+  ELog::RegMethod RegA("BremTube","insertInCell(int)");
+  
+  ContainedComp::insertInCell(System,cellN);
+  for(const std::shared_ptr<constructSystem::portItem>& PC : FPorts)
+    PC->insertInCell(System,cellN);
+
+  return;
+}
+
+void
+BremTube::insertInCell(MonteCarlo::Object& obj) const
+  /*!
+    Overload of ContainedComp so that the ports can also
+    be inserted if needed
+    \param System :: Simulation to use
+    \param obj :: Cell for insert
+  */
+{
+  ELog::RegMethod RegA("BremTube","insertInCell(obj)");
+  
+  ContainedComp::insertInCell(obj);
+  for(const std::shared_ptr<constructSystem::portItem>& PC : FPorts)
+    PC->insertInCell(obj);
+
+  return;
+}
+
+void
+BremTube::insertInCell(Simulation& System,
+		       const std::vector<int>& cellVec) const
+  /*!
+    Overload of ContainedComp so that the ports can also
+    be inserted if needed
+    \param System :: Simulation to use
+    \param cellVec :: Cells for insert
+  */
+{
+  ELog::RegMethod RegA("BremTube","insertInCell(vec)");
+  
+  ContainedComp::insertInCell(System,cellVec);
+  for(const std::shared_ptr<constructSystem::portItem>& PC : FPorts)
+    PC->insertInCell(System,cellVec);
+
+  return;
+}
+
+const constructSystem::portItem&
+BremTube::getFrontPort(const size_t index) const
+  /*!
+    Accessor to frontports
+    \param index :: index point
+    \return port item
+  */
+{
+  ELog::RegMethod RegA("BremTube","getFrontPort");
+
+  if (index>=FPorts.size())
+    throw ColErr::IndexError<size_t>(index,FPorts.size(),"index/FPorts size");
+
+  return *(FPorts[index]);
+}
+
+const constructSystem::portItem&
+BremTube::getMainPort(const size_t index) const
+  /*!
+    Accessor to main ports
+    \param index :: index point
+    \return port item
+  */
+{
+  ELog::RegMethod RegA("BremTube","getMainPort");
+
+  if (index>=MPorts.size())
+    throw ColErr::IndexError<size_t>(index,MPorts.size(),"index/MPorts size");
+
+  return *(MPorts[index]);
+}
+
+void
 BremTube::createAll(Simulation& System,
-	       const attachSystem::FixedComp& FC,
-	       const long int sideIndex)
+		    const attachSystem::FixedComp& FC,
+		    const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -336,7 +461,7 @@ BremTube::createAll(Simulation& System,
   createObjects(System);
   createLinks();
   insertObjects(System);   
-  
+  createFrontPorts(System);
   return;
 }
   

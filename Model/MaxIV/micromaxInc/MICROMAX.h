@@ -48,10 +48,12 @@ namespace xraySystem
 {
   class BeamMount;
   class OpticsHutch;
+  class OpticsStepHutch;
   class ExperimentalHutch;
   class ExptBeamline;
   class micromaxDetectorTube;
   class micromaxExptLine;
+  class micromaxExptLineB;
   class micromaxOpticsLine;
   class R3FrontEndCave;
   class ConnectZone;
@@ -81,12 +83,12 @@ class MICROMAX : public R3Beamline
   std::shared_ptr<constructSystem::VacuumPipe> joinPipe;
 
   /// Optics hutch
-  std::shared_ptr<OpticsHutch> opticsHut;
+  std::shared_ptr<OpticsStepHutch> opticsHut;
   
   /// Beamline
   std::shared_ptr<micromaxOpticsLine> opticsBeam;
 
-  /// Optics hutch
+  /// Expt hutch A
   std::shared_ptr<ExperimentalHutch> exptHut;
 
   /// Pipe joining frontend to Expt hutch
@@ -98,8 +100,14 @@ class MICROMAX : public R3Beamline
   /// Beamline expt
   std::shared_ptr<micromaxExptLine> exptBeam;
 
-  /// Detector
-  std::shared_ptr<micromaxDetectorTube> detectorTube;
+  /// Expt hutch B
+  std::shared_ptr<ExperimentalHutch> exptHutB;
+
+  /// Pipe joining Expt Hutch to Expt Hutch B
+  std::shared_ptr<constructSystem::VacuumPipe> joinPipeC;
+
+  /// Beamline expt
+  std::shared_ptr<micromaxExptLineB> exptBeamB;
 
  public:
   

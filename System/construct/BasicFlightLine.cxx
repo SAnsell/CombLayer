@@ -3,7 +3,7 @@
  
  * File:   construct/BasicFlightLine.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,8 +60,8 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotate.h"
+#include "FixedRotateUnit.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -73,7 +73,7 @@ namespace moderatorSystem
 
 BasicFlightLine::BasicFlightLine(const std::string& Key)  :
   attachSystem::ContainedGroup("inner","outer"),
-  attachSystem::FixedOffsetUnit(Key,12),
+  attachSystem::FixedRotateUnit(Key,12),
   nLayer(0),tapFlag(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -83,7 +83,7 @@ BasicFlightLine::BasicFlightLine(const std::string& Key)  :
 
 BasicFlightLine::BasicFlightLine(const BasicFlightLine& A) : 
   attachSystem::ContainedGroup(A),
-  attachSystem::FixedOffsetUnit(A),
+  attachSystem::FixedRotateUnit(A),
   attachSystem::CellMap(A),
   height(A.height),width(A.width),
   innerMat(A.innerMat),nLayer(A.nLayer),lThick(A.lThick),
@@ -111,7 +111,7 @@ BasicFlightLine::operator=(const BasicFlightLine& A)
   if (this!=&A)
     {
       attachSystem::ContainedGroup::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
       anglesXY[0]=A.anglesXY[0];
       anglesXY[1]=A.anglesXY[1];
@@ -144,8 +144,7 @@ BasicFlightLine::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BasicFlightLine","populate");
 
-  FixedOffset::populate(Control);
-
+  FixedRotate::populate(Control);
   anglesXY[0]=Control.EvalVar<double>(keyName+"AngleXY1");
   anglesXY[1]=Control.EvalVar<double>(keyName+"AngleXY2");
 
@@ -155,7 +154,7 @@ BasicFlightLine::populate(const FuncDataBase& Control)
   height=Control.EvalVar<double>(keyName+"Height");
   width=Control.EvalVar<double>(keyName+"Width");
 
-  innerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"InnerMat",0);
+  innerMat=ModelSupport::EvalDefMat(Control,keyName+"InnerMat",0);
 
   nLayer=Control.EvalDefVar<size_t>(keyName+"NLiner",0);
   lThick.clear();
@@ -180,26 +179,6 @@ BasicFlightLine::populate(const FuncDataBase& Control)
   return;
 }
   
-void
-BasicFlightLine::createUnitVector(const attachSystem::FixedComp& FC,
-				  const long int sideIndex)
-  /*!
-    Create the unit vectors
-    - Y Points towards the beamline
-    - X Across the Face
-    - Z up (towards the target)
-    \param FC :: A FixedComp to use as basis set
-    \param sideIndex :: Index for centre and axis
-  */
-{
-  ELog::RegMethod RegA("BasicFlightLine","createUnitVector");
-  FixedComp::createUnitVector(FC,sideIndex);
-  // maybe zero yStep?
-  yStep=0.0;
-  applyOffset();
-
-  return;
-}
 
 void
 BasicFlightLine::createSurfaces()
@@ -400,6 +379,7 @@ BasicFlightLine::createAll(Simulation& System,
 
   createObjects(System,innerFC,innerIndex,outerFC,outerIndex);
   insertObjects(System);       
+
 
   return;
 }

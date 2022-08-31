@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/cspec/CSPEC.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,9 +54,10 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotateUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
@@ -70,6 +71,7 @@
 #include "GuideItem.h"
 #include "GuideLine.h"
 #include "DiskChopper.h"
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "Bunker.h"
 #include "SingleChopper.h"
@@ -82,7 +84,7 @@ namespace essSystem
 CSPEC::CSPEC(const std::string& keyName) :
   attachSystem::CopiedComp("cspec",keyName),
   stopPoint(0),
-  cspecAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
+  cspecAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
 
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
 
@@ -92,8 +94,8 @@ CSPEC::CSPEC(const std::string& keyName) :
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   FocusC(new beamlineSystem::GuideLine(newName+"FC")),
 
-  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
-  BWDiskA(new constructSystem::DiskChopper(newName+"BWDiskA")),
+  ChopperA(new essConstruct::SingleChopper(newName+"ChopperA")),
+  BWDiskA(new essConstruct::DiskChopper(newName+"BWDiskA")),
 
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   BendD(new beamlineSystem::GuideLine(newName+"BD"))
@@ -137,7 +139,7 @@ void
 CSPEC::build(Simulation& System,
 	    const GuideItem& GItem,
 	    const Bunker& bunkerObj,
-	    const int voidCell)
+	    const int)
   /*!
     Carry out the full build
     \param System :: Simulation system

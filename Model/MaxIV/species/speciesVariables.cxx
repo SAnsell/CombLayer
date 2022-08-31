@@ -3,7 +3,7 @@
  
  * File:   species/speciesVariables.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -199,7 +199,7 @@ splitterVariables(FuncDataBase& Control,
   Control.addVariable(gateNameA+"NPorts",1);   // beam ports
   Control.addVariable(gateNameB+"NPorts",1);   // beam ports
   const Geometry::Vec3D ZVec(0,0,1);
-  PItemGen.setCF<setVariable::CF40>(CF40::outerRadius+0.45);
+  PItemGen.setCF<setVariable::CF40>(CF40::outerRadius+1.45);
   PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,gateNameA+"Port0",Geometry::Vec3D(0,0,0),ZVec);
   PItemGen.generatePort(Control,gateNameB+"Port0",Geometry::Vec3D(0,0,0),ZVec);
@@ -437,7 +437,7 @@ monoVariables(FuncDataBase& Control,
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setBFlange(17.8,1.0);
   PipeGen.generatePipe(Control,monoKey+"OffPipeA",3.0);
-  Control.addVariable(monoKey+"OffPipeAFlangeBackZStep",-7.0);
+  Control.addVariable(monoKey+"OffPipeAFlangeBZStep",-7.0);
   
 
   //
@@ -470,7 +470,7 @@ monoVariables(FuncDataBase& Control,
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setAFlange(17.8,1.0);
   PipeGen.generatePipe(Control,monoKey+"OffPipeB",3.0);
-  Control.addVariable(monoKey+"OffPipeBFlangeFrontZStep",-7.0);
+  Control.addVariable(monoKey+"OffPipeBFlangeAZStep",-7.0);
 
   return;
 }
@@ -707,6 +707,7 @@ transferVariables(FuncDataBase& Control,
   PipeGen.setNoWindow();   // no window
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); // was 2cm (why?)
+  PipeGen.setAFlange(CF40::flangeRadius,CF40::flangeLength-0.2);
   PipeGen.generatePipe(Control,transKey+"JoinPipe",185.0);
 
   return;

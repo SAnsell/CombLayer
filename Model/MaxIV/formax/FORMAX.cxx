@@ -56,8 +56,10 @@
 #include "FrontBackCut.h"
 #include "BlockZone.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "PipeShield.h"
+#include "forkHoles.h"
 #include "OpticsHutch.h"
 #include "ExperimentalHutch.h"
 #include "WallLead.h"
@@ -132,6 +134,7 @@ FORMAX::build(Simulation& System,
   const std::string exitLink="ExitCentre"+std::to_string(PIndex);
 
   frontBeam->setStopPoint(stopPoint);
+  frontBeam->setCutSurf("Floor",r3Ring->getSurf("Floor"));
   frontBeam->setCutSurf("REWall",-r3Ring->getSurf("BeamInner",PIndex));
   frontBeam->deactivateFM3();
   frontBeam->addInsertCell(r3Ring->getCell("InnerVoid",SIndex));
@@ -169,12 +172,11 @@ FORMAX::build(Simulation& System,
   opticsBeam->setPreInsert(joinPipe);
   opticsBeam->createAll(System,*joinPipe,2);
 
-  
   exptHut->setCutSurf("floor",r3Ring->getSurf("Floor"));
   exptHut->setCutSurf("frontWall",*opticsHut,"back");
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
-  exptHut->createAll(System,*opticsHut,"exitHole0");
+  exptHut->createAll(System,*opticsHut,"back");
 
   joinPipeB->addAllInsertCell(opticsBeam->getCell("LastVoid"));  
   joinPipeB->addInsertCell("Main",opticsHut->getCell("ExitHole"));

@@ -3,7 +3,7 @@
  
  * File:   t1Build/makeT1Real.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,11 +79,23 @@
 #include "MonoPlug.h"
 #include "World.h"
 
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+#include "HeadRule.h"
+#include "Importance.h"
+#include "Object.h"
+#include "varList.h"
+#include "Code.h"
+#include "FuncDataBase.h"
+#include "groupRange.h"
+#include "objectGroups.h"
+#include "Simulation.h"
 #include "makeT1Real.h"
 
 namespace ts1System
 {
 
+  
 makeT1Real::makeT1Real() :
   RefObj(new t1Reflector("t1Reflect")),
   Lh2ModObj(new H2Moderator("H2Mod")),
@@ -211,41 +223,29 @@ makeT1Real::flightLines(Simulation& System)
   std::string Out;
   std::string Out1;
 
-  RefObj->addToInsertChain(H2FL->getCC("outer"));
   Out=RefObj->getComposite(" 3 ");
-  H2FL->addBoundarySurf("inner",Out);  
-  H2FL->addBoundarySurf("outer",Out);  
+  H2FL->setCutSurf("BeOuter",Out);
   H2FL->createAll(System,*Lh2ModObj,1);
   
-  RefObj->addToInsertChain(CH4NorthFL->getCC("outer"));
-  Out=RefObj->getComposite(" 3 -12 ");
-  Out1=Lh2ModObj->getComposite(" (-61:64)  ");
-  CH4NorthFL->addBoundarySurf("inner",Out+Out1);
-  CH4NorthFL->addBoundarySurf("outer",Out+Out1);
+  Out=RefObj->getComposite("3 -12");
+  HeadRule HR(Out);
+  CH4NorthFL->setCutSurf("BeOuter",HR*Lh2ModObj->getRule("EdgeCut"));
   CH4NorthFL->createAll(System,*CH4ModObj,1);
 
-  RefObj->addToInsertChain(CH4SouthFL->getCC("outer"));
   Out=RefObj->getComposite(" 1 -4 -13 ");
-  CH4SouthFL->addBoundarySurf("inner",Out);
-  CH4SouthFL->addBoundarySurf("outer",Out);
+  CH4SouthFL->setCutSurf("BeOuter",Out);
   CH4SouthFL->createAll(System,*CH4ModObj,2); 
 
   Out=RefObj->getComposite(" -4 ");
-  MerlinFL->addBoundarySurf("inner",Out);
-  MerlinFL->addBoundarySurf("outer",Out);
-  RefObj->addToInsertChain(MerlinFL->getCC("outer"));
+  MerlinFL->setCutSurf("BeOuter",Out);
   MerlinFL->createAll(System,*MerlinMod,1);
   
   Out=RefObj->getComposite(" 1 3 -11 ");
-  RefObj->addToInsertChain(WaterNorthFL->getCC("outer"));
-  WaterNorthFL->addBoundarySurf("inner",Out);
-  WaterNorthFL->addBoundarySurf("outer",Out);
+  WaterNorthFL->setCutSurf("BeOuter",Out);
   WaterNorthFL->createAll(System,*WaterModObj,1);
 
   Out=RefObj->getComposite(" -14 -4 ");
-  RefObj->addToInsertChain(WaterSouthFL->getCC("outer"));
-  WaterSouthFL->addBoundarySurf("inner",Out);
-  WaterSouthFL->addBoundarySurf("outer",Out);
+  WaterSouthFL->setCutSurf("BeOuter",Out);
   WaterSouthFL->createAll(System,*WaterModObj,2); 
 
   // Flight line intersects:
@@ -278,9 +278,9 @@ makeT1Real::buildTarget(Simulation& System,
     {
       TarObj=std::shared_ptr<TMRSystem::TargetBase>
 	(new t1PlateTarget("T1PlateTarget"));
+      TarObj->setCutSurf("RefBoundary",RefObj->getLinkString(-1));      
       OR.addObject(TarObj);
       TarObj->addInsertCell(voidCell);
-      RefObj->addToInsertChain(*TarObj);
       TarObj->createAll(System,World::masterOrigin(),0);
       return "PVessel";
     }
@@ -289,9 +289,8 @@ makeT1Real::buildTarget(Simulation& System,
       TarObj=std::shared_ptr<TMRSystem::TargetBase>
 	(new TMRSystem::TS2target("t1CylTarget"));
       OR.addObject(TarObj);
-      TarObj->setCutSurf("FrontPlate",RefObj->getLinkSurf(-5));
-      //     TarObj->setCutSurf("BackPlate",);
-
+      TarObj->setCutSurf("FrontPlate",RefObj->getLinkSurf(-1));
+      TarObj->setCutSurf("BackPlate",RefObj->getLinkSurf(-5));
       TarObj->createAll(System,World::masterOrigin(),0);
       return "t1CylTarget";
     }    
@@ -300,7 +299,8 @@ makeT1Real::buildTarget(Simulation& System,
       TarObj=std::shared_ptr<TMRSystem::TargetBase>
 	(new ts1System::InnerTarget("t1Inner"));
       OR.addObject(TarObj);
-      TarObj->setCutSurf("FrontPlate",RefObj->getLinkSurf(-5));
+      TarObj->setCutSurf("FrontPlate",RefObj->getLinkString(-1));      
+      TarObj->setCutSurf("BackPlate",RefObj->getLinkSurf(-5));
       TarObj->createAll(System,World::masterOrigin(),0);
       return "t1Inner";
     }    
@@ -309,11 +309,13 @@ makeT1Real::buildTarget(Simulation& System,
       TarObj=std::shared_ptr<TMRSystem::TargetBase>
 	(new TMRSystem::TS2target("t1CylTarget"));
       OR.addObject(TarObj);
-      TarObj->setCutSurf("FrontPlate",RefObj->getLinkSurf(-5));
+      TarObj->setCutSurf("FrontPlate",RefObj->getLinkSurf(-1));
+      TarObj->setCutSurf("BackPlate",RefObj->getLinkSurf(-5));
       TarObj->createAll(System,World::masterOrigin(),0);
 
       std::shared_ptr<TMRSystem::TS2ModifyTarget> TarObjModify
 	(new TMRSystem::TS2ModifyTarget("t1CylFluxTrap"));
+      TarObjModify->setCutSurf("TargetEdge",*TarObj,"CoreRadius");
       TarObjModify->createAll(System,*TarObj,0);
       OR.addObject(TarObjModify);
 
@@ -324,7 +326,8 @@ makeT1Real::buildTarget(Simulation& System,
       TarObj=std::shared_ptr<TMRSystem::TargetBase>
 	(new ts1System::SideCoolTarget("t1EllCylTarget"));
       OR.addObject(TarObj);
-      TarObj->setCutSurf("FrontPlate",RefObj->getLinkSurf(-5));
+      TarObj->setCutSurf("FrontPlate",RefObj->getLinkSurf(-1));
+      TarObj->setCutSurf("BackPlate",RefObj->getLinkSurf(-5));
       TarObj->createAll(System,World::masterOrigin(),0);
       return "t1EllCylTarget";
     }    
@@ -333,7 +336,8 @@ makeT1Real::buildTarget(Simulation& System,
       TarObj=std::shared_ptr<TMRSystem::TargetBase>
 	(new ts1System::Cannelloni("t1Cannelloni"));
       OR.addObject(TarObj);
-      TarObj->setCutSurf("FrontPlate",RefObj->getLinkSurf(-5));
+      TarObj->setCutSurf("FrontPlate",RefObj->getLinkSurf(-1));
+      TarObj->setCutSurf("BackPlate",RefObj->getLinkSurf(-5));
       TarObj->createAll(System,World::masterOrigin(),0);
       return "t1Cannelloni";
     }    
@@ -342,8 +346,7 @@ makeT1Real::buildTarget(Simulation& System,
       TarObj=std::shared_ptr<TMRSystem::TargetBase>
 	(new ts1System::OpenBlockTarget("t1BlockTarget"));
       OR.addObject(TarObj);
-      RefObj->addToInsertChain(*TarObj);
-      TarObj->setCutSurf("FrontPlate",RefObj->getLinkSurf(-3));
+      TarObj->setCutSurf("BackPlate",RefObj->getLinkSurf(-5));
       TarObj->createAll(System,World::masterOrigin(),0);
       return "t1BlockTarget";
     }    
@@ -357,7 +360,7 @@ makeT1Real::buildTarget(Simulation& System,
       ELog::EM<<"    t1Inner :: Inner triple core target"<<ELog::endBasic;
       ELog::EM<<"    t1Cyl   :: TS2 style cylindrical target"<<ELog::endBasic;
       ELog::EM<<"    t1Plate :: Plate target [current]"<<ELog::endBasic;
-      ELog::EM<<"    t1Cyl   :: Side cooled target"<<ELog::endBasic;
+      ELog::EM<<"    t1Side   :: Side cooled target"<<ELog::endBasic;
       throw ColErr::ExitAbort("help exit");
     }    
   
@@ -421,33 +424,33 @@ makeT1Real::build(Simulation& System,
     return;
 
   // Add target flight line
-  TarObj->addProtonLine(System,*RefObj,-1);
+  TarObj->addProtonLine(System); // *RefObj,-1
 
-  RefObj->addToInsertChain(*Lh2ModObj);
   Lh2ModObj->createAll(System,*VoidObj,0);
 
-  RefObj->addToInsertChain(*CH4ModObj);
   CH4ModObj->createAll(System,*VoidObj,0);
 
-  RefObj->addToInsertChain(*MerlinMod);
   MerlinMod->createAll(System,*VoidObj,0);
 
-  RefObj->addToInsertChain(*WaterModObj);
   WaterModObj->createAll(System,*VoidObj,0);
+  System.populateCells();
 
   flightLines(System);
 
   RefObj->createBoxes(System,TarExcludeName);
 
-  WaterPipeObj->createAll(System,*WaterModObj,6);
-  MPipeObj->createAll(System,*MerlinMod,6);
-
   H2PipeObj->createAll(System,*Lh2ModObj,5);   // long int sideIndex
+
+  WaterPipeObj->createAll(System,*WaterModObj,12);
+
+  MPipeObj->createAll(System,*MerlinMod,12);
+
+
   CH4PipeObj->createAll(System,*CH4ModObj,5);  // long int sideIndex
 
   if (IParam.flag("BeRods"))
     RefObj->createRods(System);  
-  
+
 
   return;
 }

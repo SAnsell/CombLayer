@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/VolSum.cxx
+ * File:   mcnpProcess/VolSum.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,15 +31,16 @@
 #include <set>
 #include <vector>
 #include <memory>
+#include <random>
 #include <boost/format.hpp>
 
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "MersenneTwister.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
+#include "Random.h"
 #include "Vec3D.h"
 #include "Triple.h"
 #include "NRange.h"
@@ -59,8 +60,6 @@
 #include "LineTrack.h"
 #include "volUnit.h"
 #include "VolSum.h"
-
-extern MTRand RNG;
 
 namespace ModelSupport
 {
@@ -293,7 +292,9 @@ VolSum::pointRun(const Simulation& System,const size_t N)
   */
 {
   ELog::RegMethod RegA("VolSum","run");
-  
+
+  std::uniform_real_distribution<double> RNG(0.0,1.0);
+
   MonteCarlo::Object* OPtr(0);
 
   reset();
@@ -304,9 +305,9 @@ VolSum::pointRun(const Simulation& System,const size_t N)
   for(size_t i=0;i<N;i++)
     { 
       Geometry::Vec3D Pt(Origin+
-			 X*(RNG.rand()-0.5)+
-			 Y*(RNG.rand()-0.5)+
-			 Z*(RNG.rand()-0.5));
+			 X*(Random::rand()-0.5)+
+			 Y*(Random::rand()-0.5)+
+			 Z*(Random::rand()-0.5));
       OPtr=System.findCell(Pt,OPtr);
       addDistance(OPtr->getName(),1.0);
     }
@@ -321,7 +322,7 @@ VolSum::getCubePoint() const
     \return surface point
   */
 {
-  double R=RNG.rand();
+  double R=Random::rand();
   double pm(0.5);
   if (R>0.5)   
     {
@@ -331,17 +332,17 @@ VolSum::getCubePoint() const
   Geometry::Vec3D Pt(Origin);
   if (R<fracX) // XY surface
     {
-      Pt+=X*(RNG.rand()-0.5)+Y*(RNG.rand()-0.5);
+      Pt+=X*(Random::rand()-0.5)+Y*(Random::rand()-0.5);
       Pt+=Z*pm;
     }
   else if (R<fracY)
     {
-      Pt+=X*(RNG.rand()-0.5)+Z*(RNG.rand()-0.5);
+      Pt+=X*(Random::rand()-0.5)+Z*(Random::rand()-0.5);
       Pt+=Y*pm;
     }
   else 
     {
-      Pt+=Y*(RNG.rand()-0.5)+Z*(RNG.rand()-0.5);
+      Pt+=Y*(Random::rand()-0.5)+Z*(Random::rand()-0.5);
       Pt+=X*pm;
     }
   return Pt;

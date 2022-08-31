@@ -80,9 +80,11 @@ FlangePlate::FlangePlate(const FlangePlate& A) :
   attachSystem::FixedRotate(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
-  innerRadius(A.innerRadius),flangeRadius(A.flangeRadius),
+  innerRadius(A.innerRadius),
+  innerThick(A.innerThick),
+  flangeRadius(A.flangeRadius),
   flangeLength(A.flangeLength),
-  innerMat(A.innerMat),flangeMat(A.flangeMat)
+  windowMat(A.windowMat),flangeMat(A.flangeMat)
   /*!
     Copy constructor
     \param A :: FlangePlate to copy
@@ -105,9 +107,10 @@ FlangePlate::operator=(const FlangePlate& A)
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
       innerRadius=A.innerRadius;
+      innerThick=A.innerThick;
       flangeRadius=A.flangeRadius;
       flangeLength=A.flangeLength;
-      innerMat=A.innerMat;
+      windowMat=A.windowMat;
       flangeMat=A.flangeMat;
     }
   return *this;
@@ -134,8 +137,10 @@ FlangePlate::populate(const FuncDataBase& Control)
   innerRadius=Control.EvalDefVar<double>(keyName+"InnerRadius",-1.0);
   flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
   flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
+  innerThick=Control.EvalDefVar<double>(keyName+"InnerThick",flangeLength);
 
-  innerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"InnerMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
+  windowMat=ModelSupport::EvalDefMat(Control,keyName+"WindowMat",0);
   flangeMat=ModelSupport::EvalMat<int>(Control,keyName+"FlangeMat");
 
   return;
@@ -166,8 +171,18 @@ FlangePlate::createSurfaces()
 
   if (innerRadius>Geometry::zeroTol &&
       innerRadius<flangeRadius-Geometry::zeroTol)
-    ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,innerRadius);
-
+    {
+      ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,innerRadius);
+      if (innerThick>Geometry::zeroTol && innerThick<flangeLength)
+	{
+	  makePlane("WindowFront",SMap,buildIndex+101,
+		    Origin-Y*(innerThick/2.0),Y);
+	  makePlane("WindowBack",SMap,buildIndex+102,
+		    Origin+Y*(innerThick/2.0),Y);
+	}
+      else
+	innerThick=-10.0;   // set as a flag
+    }
   return;
 }
 
@@ -176,31 +191,43 @@ FlangePlate::createObjects(Simulation& System)
   /*!
     Adds the vacuum box
     \param System :: Simulation to create objects in
-   */
+  */
 {
   ELog::RegMethod RegA("FlangePlate","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
-  const std::string frontStr=frontRule();
-  const std::string backStr=backRule();
+  const HeadRule frontHR=getFrontRule();
+  const HeadRule backHR=getBackRule();
 
   if (innerRadius>Geometry::zeroTol)
     {
-      Out=ModelSupport::getSetComposite(SMap,buildIndex," 107 -7 ");
-      makeCell("Main",System,cellIndex++,flangeMat,0.0,Out+frontStr+backStr);
-
-      Out=ModelSupport::getSetComposite(SMap,buildIndex," -107 ");
-      makeCell("Inner",System,cellIndex++,innerMat,0.0,Out+frontStr+backStr);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"107 -7");
+      makeCell("Main",System,cellIndex++,flangeMat,0.0,HR*frontHR*backHR);
+      
+      if (innerThick>0.0)
+	{
+      	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 -107");
+	  makeCell("Inner",System,cellIndex++,windowMat,0.0,HR);
+      	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 -107");
+	  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
+      	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -107");
+	  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,HR*backHR);
+	}
+      else
+	{
+      	  HR=HeadRule(SMap,buildIndex,-107);
+	  makeCell("Inner",System,cellIndex++,windowMat,0.0,HR*frontHR*backHR);
+	}
     }
   else
     {
-      Out=ModelSupport::getSetComposite(SMap,buildIndex," -7 ");
-      makeCell("Main",System,cellIndex++,flangeMat,0.0,Out+frontStr+backStr);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," -7 ");
+      makeCell("Main",System,cellIndex++,flangeMat,0.0,HR*frontHR*backHR);
     }
 
-  Out=ModelSupport::getSetComposite(SMap,buildIndex," -7 ");
-  addOuterSurf(Out+backStr+frontStr);
+  HR=HeadRule(SMap,buildIndex,-7);
+  addOuterSurf(HR*backHR*frontHR);
 
   return;
 }

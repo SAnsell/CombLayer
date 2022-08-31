@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/skadic/SKADI.h
  *
- * Copyright (c) 2004-2019 by Tsitohaina Randriamalala/Stuart Ansell
+ * Copyright (c) 2004-2022 by Tsitohaina Randriamalala/Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,7 +72,7 @@ class SKADI : public attachSystem::CopiedComp
   int stopPoint;  
 
   /// Main Beam Axis
-  std::shared_ptr<attachSystem::FixedOffsetUnit> skadiAxis;
+  std::shared_ptr<attachSystem::FixedRotateUnit> skadiAxis;
   
   /// Monolith guideline
   std::shared_ptr<beamlineSystem::GuideLine> BendA;
@@ -124,9 +124,9 @@ class SKADI : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::ChopperPit> PitA;
   std::shared_ptr<constructSystem::HoleShape> PitACutFront;
   std::shared_ptr<constructSystem::HoleShape> PitACutBack;
-  std::shared_ptr<constructSystem::SingleChopper> ChopperA;
-  std::shared_ptr<constructSystem::Motor> ChopAMotor;
-  std::shared_ptr<constructSystem::DiskChopper> DiskA;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperA;
+  std::shared_ptr<essConstruct::Motor> ChopAMotor;
+  std::shared_ptr<essConstruct::DiskChopper> DiskA;
 
   /// Structure Up to the First Chopper II  Pit
 
@@ -138,8 +138,8 @@ class SKADI : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::ChopperPit> PitB;
   std::shared_ptr<constructSystem::HoleShape> PitBCutFront;
   std::shared_ptr<constructSystem::HoleShape> PitBCutBack;
-  std::shared_ptr<constructSystem::SingleChopper> ChopperB;
-  std::shared_ptr<constructSystem::DiskChopper> DiskB;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperB;
+  std::shared_ptr<essConstruct::DiskChopper> DiskB;
 
   /// Structure Up to the First Chopper III  Pit
 
@@ -150,10 +150,10 @@ class SKADI : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::ChopperPit> PitC;
   std::shared_ptr<constructSystem::HoleShape> PitCCutFront;
   std::shared_ptr<constructSystem::HoleShape> PitCCutBack;
-  std::shared_ptr<constructSystem::SingleChopper> ChopperC1;
-  std::shared_ptr<constructSystem::DiskChopper> DiskC1;
-  std::shared_ptr<constructSystem::SingleChopper> ChopperC2;
-  std::shared_ptr<constructSystem::DiskChopper> DiskC2;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperC1;
+  std::shared_ptr<essConstruct::DiskChopper> DiskC1;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperC2;
+  std::shared_ptr<essConstruct::DiskChopper> DiskC2;
 
   std::shared_ptr<constructSystem::LineShield> ShieldD;
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutD;

@@ -3,7 +3,7 @@
  
  * File:   snsBuildInc/targetOuter.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -105,8 +105,7 @@ class targetOuter : public TMRSystem::TargetBase
   /// Main mercury cell body
   int getMainBody() const  { return mainCell; }
 
-  void addProtonLine(Simulation&,const attachSystem::FixedComp&,
-		     const long int);
+  void addProtonLine(Simulation&);
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

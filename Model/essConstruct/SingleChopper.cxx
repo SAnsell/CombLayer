@@ -3,7 +3,7 @@
  
  * File:   essConstruct/SingleChopper.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -60,7 +58,7 @@
 #include "FixedGroup.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
-#include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
@@ -74,19 +72,19 @@
 #include "Motor.h"
 #include "SingleChopper.h"
 
-namespace constructSystem
+namespace essConstruct
 {
-
+  
 SingleChopper::SingleChopper(const std::string& Key) : 
-  attachSystem::FixedOffsetGroup(Key,"Main",6,"Beam",2,"BuildBeam",0),
+  attachSystem::FixedRotateGroup(Key,"Main",6,"Beam",2,"BuildBeam",0),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap(),
-  motor(new constructSystem::Motor(Key+"Motor")),
-  frontFlange(new constructSystem::boltRing(Key,"FrontFlange")),
-  backFlange(new constructSystem::boltRing(Key,"BackFlange")),
+  motor(new essConstruct::Motor(Key+"Motor")),
+  frontFlange(new essConstruct::boltRing(Key,"FrontFlange")),
+  backFlange(new essConstruct::boltRing(Key,"BackFlange")),
   RS(new constructSystem::RingSeal(Key+"Ring")),
-  IPA(new constructSystem::InnerPort(Key+"IPortA")),
-  IPB(new constructSystem::InnerPort(Key+"IPortB"))
+  IPA(new essConstruct::InnerPort(Key+"IPortA")),
+  IPB(new essConstruct::InnerPort(Key+"IPortB"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
    \param Key :: KeyName
@@ -104,14 +102,14 @@ SingleChopper::SingleChopper(const std::string& Key) :
 }
 
 SingleChopper::SingleChopper(const SingleChopper& A) : 
-  attachSystem::FixedOffsetGroup(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedRotateGroup(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   height(A.height),
   width(A.width),depth(A.depth),length(A.length),
   shortHeight(A.shortHeight),shortWidth(A.shortWidth),
   mainRadius(A.mainRadius),mainThick(A.mainThick),
   boltMat(A.boltMat),wallMat(A.wallMat),
-  RS(new RingSeal(*A.RS)),IPA(new InnerPort(*A.IPA)),
+  RS(new constructSystem::RingSeal(*A.RS)),IPA(new InnerPort(*A.IPA)),
   IPB(new InnerPort(*A.IPB))
   /*!
     Copy constructor
@@ -129,7 +127,7 @@ SingleChopper::operator=(const SingleChopper& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffsetGroup::operator=(A);
+      attachSystem::FixedRotateGroup::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
@@ -165,7 +163,7 @@ SingleChopper::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("SingleChopper","populate");
 
-  FixedOffsetGroup::populate(Control);
+  FixedRotateGroup::populate(Control);
   //  + Fe special:
   height=Control.EvalVar<double>(keyName+"Height");
   width=Control.EvalVar<double>(keyName+"Width");
@@ -187,7 +185,7 @@ SingleChopper::populate(const FuncDataBase& Control)
 
 void
 SingleChopper::createUnitVector(const attachSystem::FixedComp& FC,
-                              const long int sideIndex)
+				const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed component to link to
@@ -275,16 +273,15 @@ SingleChopper::createObjects(Simulation& System)
   
   std::string Out,FBStr,EdgeStr,SealStr;
 
+  HeadRule HR,FBHR,EdgeHR,SealHR;
     // Main void
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 -17");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  addCell("Void",cellIndex-1);
-
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 -17");
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
+  
   // Main block
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-                "1 -2 3 -4 5 -6 7 8 9 10 (-11:12:17)");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
-  addCell("Wall",cellIndex-1);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1 -2 3 -4 5 -6 7 8 9 10 (-11:12:17)");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
   addCell("MainBlock",cellIndex-1);
 
 
@@ -295,39 +292,35 @@ SingleChopper::createObjects(Simulation& System)
   frontFlange->setBack(-SMap.realSurf(buildIndex+11));
   frontFlange->createAll(System,BuildBeam,0);
 
+
   backFlange->setInnerExclude();
   backFlange->addInsertCell(getCell("MainBlock"));
   backFlange->setFront(SMap.realSurf(buildIndex+12));
   backFlange->setBack(-SMap.realSurf(buildIndex+2));
   backFlange->createAll(System,BuildBeam,0);
 
+  // Outer
+
   // Port [Front/back]
-  const std::string innerFSurf=
-    std::to_string(-frontFlange->getSurf("innerRing"));
-  const std::string innerBSurf=
-    std::to_string(-backFlange->getSurf("innerRing"));
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -11 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+innerFSurf));
-  addCell("PortVoid",cellIndex-1);
+  const HeadRule innerFSurf=frontFlange->getSurfRule("#innerRing");
+  const HeadRule innerBSurf=backFlange->getSurfRule("#innerRing");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -11");
+  makeCell("PortVoid",System,cellIndex++,0,0.0,HR*innerFSurf);
 
   IPA->addInnerCell(getCell("PortVoid",0));
-  IPA->setCutSurf("Boundary",Out+innerFSurf);
+  IPA->setCutSurf("Boundary",HR*innerFSurf);
   IPA->createAll(System,BuildBeam,0);
 
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"12 -2 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+innerBSurf));
-  addCell("PortVoid",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -2 ");
+  makeCell("PortVoid",System,cellIndex++,0,0.0,HR*innerBSurf);
 
   IPB->addInnerCell(getCell("PortVoid",1));
-  IPB->setCutSurf("Boundary",Out+innerBSurf);
+  IPB->setCutSurf("Boundary",HR*innerBSurf);
   IPB->createAll(System,BuildBeam,0);
 
-  
-  // Outer
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 7 8 9 10");
-  addOuterSurf(Out);  
-  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6 7 8 9 10");
+  addOuterSurf(HR);  
   return;
 }
 
@@ -437,7 +430,7 @@ SingleChopper::createAll(Simulation& System,
   // LOTS of care here because insertObjects removes insert cells
   motor->addInsertCell("Outer",*this);
   insertObjects(System);
-
+  
   createMotor(System);
   return;
 }

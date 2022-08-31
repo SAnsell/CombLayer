@@ -336,7 +336,7 @@ shutterTable(FuncDataBase& Control,
   const Geometry::Vec3D XVec(1,0,0);
   const Geometry::Vec3D ZVec(0,0,1);
 
-  PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+2.0);
+  PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+2.1);
   PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,florName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
   PItemGen.generatePort(Control,florName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
@@ -355,7 +355,7 @@ shutterTable(FuncDataBase& Control,
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setBFlangeCF<setVariable::CF150>();
   PipeGen.generatePipe(Control,frontKey+"OffPipeA",6.8);
-  Control.addVariable(frontKey+"OffPipeAFlangeBackZStep",3.0);
+  Control.addVariable(frontKey+"OffPipeAFlangeBZStep",3.0);
 
 
   const std::string shutterName=frontKey+"ShutterBox";
@@ -388,10 +388,11 @@ shutterTable(FuncDataBase& Control,
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setAFlangeCF<setVariable::CF150>();
   PipeGen.generatePipe(Control,frontKey+"OffPipeB",21.0);
-  Control.addVariable(frontKey+"OffPipeBFlangeFrontZStep",3.0);
+  Control.addVariable(frontKey+"OffPipeBFlangeAZStep",3.0);
   Control.addVariable(frontKey+"OffPipeBZStep",-3.0);
 
-  Control.addVariable(frontKey+"BremBlockRadius",3.0);
+  Control.addVariable(frontKey+"BremBlockWidth",3.0);
+  Control.addVariable(frontKey+"BremBlockHeight",3.0);
   Control.addVariable(frontKey+"BremBlockLength",20.0);
   Control.addVariable(frontKey+"BremBlockHoleWidth",2.0);
   Control.addVariable(frontKey+"BremBlockHoleHeight",2.0);
@@ -464,7 +465,7 @@ moveApertureTable(FuncDataBase& Control,
   // [End fix for BellowH]
   PipeGen.setCF<CF40>();
   PipeGen.setAFlangeCF<CF63>();
-  PipeGen.generatePipe(Control,frontKey+"PipeC",10.0);
+  PipeGen.generatePipe(Control,frontKey+"PipeC",9.8);
   Control.addVariable(frontKey+"PipeCYStep",52.0);
   
   return;

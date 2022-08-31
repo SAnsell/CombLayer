@@ -3,7 +3,7 @@
  
  * File:   tally/fluxConstruct.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -83,39 +83,25 @@ fluxConstruct::processFlux(SimMCNP& System,
     throw ColErr::IndexError<size_t>(NItems,4,
 				     "Insufficient items for tally");
   // PARTICLE TYPE
-  const std::string PType(IParam.getValue<std::string>("tally",Index,1)); 
-  const std::string MType(IParam.getValue<std::string>("tally",Index,2));
-  const std::string cellKey(IParam.getValue<std::string>("tally",Index,3)); 
+  const std::string PType(IParam.getValue<std::string>("tally",Index,1));
+  // Material TYPE
+  const std::string matType(IParam.getValue<std::string>("tally",Index,2));
+  // cellKey to extract
+  const std::string cellKey(IParam.getValue<std::string>("tally",Index,3));
 
-  // Get Material number:
-  int matN(0);
-  if (!StrFunc::convert(MType,matN))
-    {
-      if (MType=="All" || MType=="all")
-	matN=-2;
-      else if (MType=="AllNonVoid" || MType=="allNonVoid")
-	matN=-1;
-      else
-	{
-	  matN=ModelSupport::DBMaterial::Instance().getIndex(MType);
-	}
-    }
+  const std::set<int> cells=
+    getNamedCellsWithMat(System,IParam,"tally",
+			Index,3,matType,
+			"cellKey+"+matType+"cell/mat not present in model");
   
-  const std::vector<int> cells=
-    objectSupport::getCellSelection(System,matN,cellKey);
-
-  if (cells.empty())
-    throw ColErr::InContainerError<std::string>
-      (cellKey+"/"+MType,"cell/mat not present in model");
   
-
   const int nTally=System.nextTallyNum(4);
   tallySystem::addF4Tally(System,nTally,PType,cells);
   tallySystem::Tally* TX=System.getTally(nTally); 
   TX->setPrintField("e f");
   const std::string Comment=
     "tally: "+std::to_string(nTally)+
-    " mat : "+std::to_string(matN)+":"+
+    " mat : "+matType+":"+
     cellKey;
   TX->setComment(Comment);
   return 0;

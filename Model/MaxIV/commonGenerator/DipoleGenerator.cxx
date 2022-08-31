@@ -52,7 +52,8 @@ namespace setVariable
 DipoleGenerator::DipoleGenerator() :
   height(20.0),poleAngle(1.5),poleRadius(1910.0),
   poleGap(2.6),poleWidth(3.0),
-  coilGap(4.0),coilLength(60.0),coilWidth(6.0),
+  coilGap(4.0),coilLength(0.0),coilWidth(4.0),
+  coilEndRadius(6.0),
   poleMat("Iron"),coilMat("Copper")
   /*!
     Constructor and defaults
@@ -91,8 +92,9 @@ DipoleGenerator::generateDipole(FuncDataBase& Control,
   Control.addVariable(keyName+"PoleWidth",poleWidth);
 
   Control.addVariable(keyName+"CoilGap",coilGap);
-  Control.addVariable(keyName+"CoilLength",coilLength);
+  Control.addVariable(keyName+"CoilLength",length+coilLength);
   Control.addVariable(keyName+"CoilWidth",coilWidth);
+  Control.addVariable(keyName+"CoilEndRadius",coilEndRadius);
 
 
   Control.addVariable(keyName+"PoleMat",poleMat);

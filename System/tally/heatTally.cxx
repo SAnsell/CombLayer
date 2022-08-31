@@ -3,7 +3,7 @@
  
  * File:   tally/heatTally.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #include <cmath>
 #include <string>
 #include <list>
+#include <set>
 #include <map>
 #include <vector>
 #include <iterator>
@@ -158,9 +159,20 @@ heatTally::addCells(const std::vector<int>& AVec)
     \param AVec :: Cells to add
   */
 {
-  std::vector<int>::const_iterator vc;
-  for(vc=AVec.begin();vc!=AVec.end();vc++)
-    cellList.addComp(*vc);
+  for(const int CN : AVec)
+    cellList.addComp(CN);
+  return;
+}
+
+void
+heatTally::addCells(const std::set<int>& AVec)
+  /*!
+    Adds a list of individual cells
+    \param AVec :: Cells to add
+  */
+{
+  for(const int CN : AVec)
+    cellList.addComp(CN);
   return;
 }
 

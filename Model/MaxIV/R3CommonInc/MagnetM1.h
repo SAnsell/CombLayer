@@ -64,6 +64,7 @@ class MagnetM1 :
 
   double baseThick;             ///< base thickness
   double wallThick;             ///< side wall thickness
+  double sideShift;             ///< side wall thickness
   
   int voidMat;                  ///< void material
   int wallMat;                  ///< wall material

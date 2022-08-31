@@ -22,6 +22,15 @@
 #ifndef ModelSupport_generateSurf_h
 #define ModelSupport_generateSurf_h
 
+namespace Geometry
+{
+  class Sphere;
+  class Plane;
+  class Cone;
+  class EllipticCyl;
+  class Cylinder;
+}
+
 namespace ModelSupport
 {
 

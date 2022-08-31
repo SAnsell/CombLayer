@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/FixedRotateGroup.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,9 +40,11 @@ struct rotate
   double preXAngle;      ///< pre-shift x Angle
   double preYAngle;      ///< pre-shift y Angle
   double preZAngle;      ///< pre-shift z Angle
+
   double xStep;          ///< x step
   double yStep;          ///< y step
   double zStep;          ///< z step
+  
   double xAngle;         ///< x Angle
   double yAngle;         ///< y Angle
   double zAngle;         ///< z Angle
@@ -75,9 +77,11 @@ class FixedRotateGroup  : public FixedGroup
   double preXAngle;      ///< pre-shift x Angle
   double preYAngle;      ///< pre-shift y Angle
   double preZAngle;      ///< pre-shift z Angle
+
   double xStep;          ///< x step
   double yStep;          ///< y step
   double zStep;          ///< z step
+
   double xAngle;         ///< x Angle
   double yAngle;         ///< y Angle
   double zAngle;         ///< z Angle
@@ -114,9 +118,22 @@ class FixedRotateGroup  : public FixedGroup
   virtual void populate(const std::map<std::string,
 			std::vector<std::string>>&);
   virtual void populate(const std::string&,const FuncDataBase&);
-  virtual void createUnitVector(const attachSystem::FixedComp&,const long int);
 
+  using FixedComp::createUnitVector;
+  virtual void createUnitVector(const std::string&,
+				const attachSystem::FixedComp&,
+				const long int);
+  virtual void createUnitVector(const attachSystem::FixedComp&,
+				const long int);
+
+  using FixedGroup::secondaryUnitVector;
+  virtual void secondaryUnitVector(const attachSystem::FixedComp&,
+				   const long int);
+
+
+  
   void applyOffset();
+  void applyOffset(const std::string&);
 };
 
 }

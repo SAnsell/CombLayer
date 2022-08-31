@@ -3,7 +3,7 @@
  
  * File:   essBuild/makeESS.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2022 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,9 +59,10 @@
 #include "FixedUnit.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotateUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
@@ -83,7 +84,6 @@
 #include "BilbaoWheel.h"
 #include "BeRef.h"
 #include "ProtonTube.h"
-#include "BeamMonitor.h"
 #include "EssModBase.h"
 #include "H2Wing.h"
 #include "ButterflyModerator.h"
@@ -121,7 +121,6 @@ makeESS::makeESS() :
   Reflector(new BeRef("BeRef")),
   PBeam(new ProtonTube("ProtonTube")),
   pbip(new PBIP("PBIP")),
-  BMon(new BeamMonitor("BeamMonitor")),
 
   topFocus(new FocusPoints("TopFocus")),
   lowFocus(new FocusPoints("LowFocus")),
@@ -164,7 +163,6 @@ makeESS::makeESS() :
   OR.addObject(Reflector);
   OR.addObject(PBeam);
   OR.addObject(pbip);
-  OR.addObject(BMon);
   OR.addObject(topFocus);
   OR.addObject(lowFocus);
   
@@ -490,7 +488,6 @@ makeESS::buildTopButterfly(Simulation& System)
   BM->setRadiusX(Reflector->getRadius());
 
   TopMod=std::shared_ptr<EssModBase>(BM);
-
   TopMod->createAll(System,*TopPreMod,6,*Reflector,0);
   return;
 }
@@ -1125,8 +1122,8 @@ makeESS::build(Simulation& System,
   const double TMAssembly=
     TopPreMod->getHeight()+TMHeight+TopCapMod->getHeight();
 
-  Reflector->createAll(System,World::masterOrigin(),0,
-		       Target->wheelHeight(),LMAssembly,TMAssembly);
+  Reflector->setVoidThick( Target->wheelHeight(),LMAssembly,TMAssembly);
+  Reflector->createAll(System,World::masterOrigin(),0);
   
   Reflector->insertComponent(System,"targetVoid",*Target,1);
   Bulk->setCutSurf("Reflector",Reflector->getExclude());

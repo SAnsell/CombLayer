@@ -3,7 +3,7 @@
 
  * File:   essBuildInc/BilbaoWheel.h
  *
- * Copyright (c) 2015-2016 Konstantin Batkov
+ * Copyright (c) 2015-2022 Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -118,9 +118,6 @@ class BilbaoWheel : public WheelBase
   // Functions:
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -129,16 +126,16 @@ class BilbaoWheel : public WheelBase
   std::string getSQSurface(const double,const double);
 
   void createRadialSurfaces(const int,const size_t,const double w=0.0);
-  void divideRadial(Simulation&,const std::string&,const int);
-  void buildStiffeners(Simulation&,const std::string&,const int,const size_t,const int);
+  void divideRadial(Simulation&,const HeadRule&,const int);
+  void buildStiffeners(Simulation&,const HeadRule,const int);
   void buildHoles(Simulation&,
-		  const std::string&,const std::string&,const std::string&,
+		  const HeadRule&,const HeadRule&,const HeadRule&,
 		  const int, const double, const double,const double,
 		  const double,const int);
 
-  void buildCirclePipes(Simulation&,const std::string&,
-			const std::string&,const std::string&,
-			const std::string&,const std::string&);
+  void buildCirclePipes(Simulation&,const HeadRule&,
+			const HeadRule&,const HeadRule&,
+			const HeadRule&,const HeadRule&);
   void buildSectors(Simulation&) const;
 
   public:
@@ -158,6 +155,7 @@ class BilbaoWheel : public WheelBase
   }
 
   //  virtual int getCell() const { return mainShaftCell; }
+  using FixedComp::createAll;
   virtual void createAll(Simulation&,
 			 const attachSystem::FixedComp&,
 			 const long int);

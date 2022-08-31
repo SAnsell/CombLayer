@@ -3,7 +3,7 @@
  
  * File:   support/support.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -260,7 +260,7 @@ getAllLine(std::istream& fh,const int spc)
       if (size<spc)
         {
 	  delete [] ss;
-	  ss=new char[spc+1];
+	  ss=new char[static_cast<size_t>(spc)+1];
 	  size=spc;
 	}
       if (fh.good())
@@ -294,7 +294,7 @@ getLine(std::istream& IX,const int spc)
       if (size!=spc)
         {
 	  delete [] ss;
-	  ss=new char[spc+1];
+	  ss=new char[static_cast<size_t>(spc)+1];
 	  size=spc;
 	}
       if (IX.good())

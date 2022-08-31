@@ -144,7 +144,7 @@ Aperture::populate(const FuncDataBase& Control)
   if (width-innerWidth<Geometry::zeroTol)
     throw ColErr::OrderError<double>(innerWidth,width,"innerWidth/Width");
   
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   defMat=ModelSupport::EvalMat<int>(Control,keyName+"DefMat");
 
   return;

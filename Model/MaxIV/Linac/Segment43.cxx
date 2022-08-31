@@ -67,6 +67,7 @@
 
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "StriplineBPM.h"
 #include "YagUnitBig.h"
@@ -74,7 +75,7 @@
 #include "CylGateValve.h"
 #include "ButtonBPM.h"
 #include "CorrectorMag.h"
-#include "LObjectSupportB.h"
+#include "LObjectSupport.h"
 
 #include "TDCsegment.h"
 #include "Segment43.h"

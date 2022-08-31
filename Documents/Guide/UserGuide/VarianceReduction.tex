@@ -229,11 +229,10 @@ You can also put a limit to indicate that you do not want to write variance redu
 
 There are two types of variance reduction in MCNP and in CombLayer.
 One is a cell-based, the other one is a mesh-based variance reduction.
-Stuart Ansel had modified his MCNP version to allow both at the same time,
+Stuart Ansell had modified his MCNP version to allow both at the same time,
 there are further modifications to PHITS and FLUKA to support this as well.
 The following are the general commands that are not specific to Monte-Carlo
 code choise.
-
 
 
 \subsubsection{Mesh-based variance reduction}
@@ -265,20 +264,47 @@ maxiv -w -wWWG \
 \begin{description}
 \item[-w] needs to be the first flag in the list of biasing-related flags
 \item[-wWWG] we are interested in the mesh-based weight window generator
-\item[--weightSource] defines a (source or adjoint) {\em single point} in space. It's possible to define as many as necessary, and not all of them should be used.
-  Here we defined two point sources. One at an absolute point and one relative to a FixedComp linkPoint.
-\item[--wwgEnergy] defines a mesh. Format: EnergyName [energy boundaries]
+
+\item[--weightSource] defines a (source or adjoint) {\em single point}
+  in space. It's possible to define as many as necessary, and not all
+  of them need to be used.  In this example, there are two point
+  sources defined: one at an absolute point (S0) and one at a relative
+  to a FixedComp linkPoint (S1). The names can be any valid string,
+  for simplicity in the example, they are called $S1$ and   $S1$.
+  
+\item[--wwgEnergy] defines the boundary of the energy bins. If there
+  are N energy boundaries, there are N-1 energy bins.
+  There is no implicit bin boundary at 0.0, it that is require it must
+  be explicity  included in the list. 
+
+  {\bf Format:} EnergyName(string) [$e_0$ $e_1$ $e_2$](double)
+
+  The name can be any valid string (gain 
   \begin{description}
-    \item E1 E2 E3 .... these are the energy bin boundaries. The minimum is 2.
+  \item $e_0$ $e_1$ $e_2$ .... these are the energy bin boundaries.
+    The minimum is 2 values (for one energy bin), and they should be
+    in increasing order.
   \end{description}
-\item[--wwgMesh] defines a mesh.
+  
+\item[--wwgMesh] defines a spacial mesh.
   \begin{description}
-    \item Vec3D(LowPoint) Low point of the box
-    \item Vec3D(HighPoint) High point of the box
+    \item $Vec3D(LowPoint)$ Low point of the box
+    \item $Vec3D(HighPoint)$ High point of the box
     \item NX NY NZ : Number of bins in each orthogonal axis
   \end{description}
-  Note that each Vec3D point can be a generalized FixedComp linkPonit, or
+  Note that each Vec3D point can be a generalized FixedComp linkPoint, or
   a PointMap value.
+  Examples :
+  \begin{enumerate}
+  \item --wwgMesh Vec3D(-100,-100,-100) Vec3D(300,300,300) 100 50 200
+  \item --wwgMesh Vec3D(-100,0,0) BeamStop:EndPoint 100 50 20
+  \end{enumerate}
+
+  \begin{description}
+  \item Example 1 : is a box between two point 400x400x400 in size and with
+    X,Y,Z cells 100, 50 and 200 respectively. This is a lot of cells!
+  \item Example 2 : This is a box which start at x=-100 and goes to the
+    PointMap positon given in FixedComp BeamStop
   
 \item[--wwgCreate] Fill a energy/grid mesh  from a source point
   Syntax:

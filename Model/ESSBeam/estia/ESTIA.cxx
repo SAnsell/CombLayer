@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   estia/ESTIA.cxx
+ * File:  estia/ESTIA.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,9 +54,10 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotateUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
@@ -70,6 +71,7 @@
 #include "GuideLine.h"
 #include "DiskChopper.h"
 #include "VacuumBox.h"
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "ChopperHousing.h"
 #include "Bunker.h"
@@ -82,7 +84,7 @@ namespace essSystem
 ESTIA::ESTIA(const std::string& keyName) :
   attachSystem::CopiedComp("estia",keyName),
   stopPoint(0),
-  estiaAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
+  estiaAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
   FocusMono(new beamlineSystem::GuideLine(newName+"FMono")),
   VPipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
@@ -124,7 +126,7 @@ ESTIA::buildChopperBlock(Simulation& System,
 			 const constructSystem::VacuumBox& prevVacBox,
 			 constructSystem::VacuumBox& VacBox,
 			 beamlineSystem::GuideLine& GL,
-			 constructSystem::DiskChopper& Disk,
+			 essConstruct::DiskChopper& Disk,
 			 constructSystem::ChopperHousing& House,
 			 constructSystem::VacuumPipe& Pipe)
   /*!
@@ -171,7 +173,7 @@ void
 ESTIA::build(Simulation& System,
 	    const GuideItem& GItem,
 	    const Bunker& bunkerObj,
-	    const int voidCell)
+	    const int )
   /*!
     Carry out the full build
     \param System :: Simulation system

@@ -56,7 +56,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -70,7 +70,7 @@ namespace essSystem
 {
   
 TelescopicPipe::TelescopicPipe(const std::string& Key) :
-  attachSystem::ContainedGroup(),attachSystem::FixedOffset(Key,3),
+  attachSystem::ContainedGroup(),attachSystem::FixedRotate(Key,3),
   attachSystem::FrontBackCut(),attachSystem::CellMap()
   /*!
     Constructor
@@ -79,7 +79,7 @@ TelescopicPipe::TelescopicPipe(const std::string& Key) :
 {}
 
 TelescopicPipe::TelescopicPipe(const TelescopicPipe& A) : 
-  attachSystem::ContainedGroup(A),attachSystem::FixedOffset(A),
+  attachSystem::ContainedGroup(A),attachSystem::FixedRotate(A),
   attachSystem::FrontBackCut(A),attachSystem::CellMap(A),
   nSec(A.nSec),radius(A.radius),length(A.length),zCut(A.zCut),
   thick(A.thick),inMat(A.inMat),wallMat(A.wallMat)
@@ -101,7 +101,7 @@ TelescopicPipe::operator=(const TelescopicPipe& A)
   if (this!=&A)
     {
       attachSystem::ContainedGroup::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
       attachSystem::CellMap::operator=(A);
       nSec=A.nSec;
@@ -165,22 +165,6 @@ TelescopicPipe::populate(const FuncDataBase& Control)
   return;
 }
 
-void
-TelescopicPipe::createUnitVector(const attachSystem::FixedComp& FC,
-				 const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed Component
-    \param sideIndex :: link point on target [signed]
-  */
-{
-  ELog::RegMethod RegA("TelescopicPipe","createUnitVector");
-
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
-  return;
-}
 
 void
 TelescopicPipe::createSurfaces()

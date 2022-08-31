@@ -3,7 +3,7 @@
  
  * File:   construct/LeadPipe.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,6 +50,7 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
+#include "FrontBackCut.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "varList.h"
@@ -59,17 +60,14 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 
+#include "GeneralPipe.h"
 #include "LeadPipe.h"
 
 namespace constructSystem
 {
 
 LeadPipe::LeadPipe(const std::string& Key) :
-  attachSystem::FixedRotate(Key,6),
-  attachSystem::ContainedGroup("Main","FlangeA","FlangeB"),
-  attachSystem::CellMap(),
-  attachSystem::SurfMap(),
-  attachSystem::ExternalCut(),
+  constructSystem::GeneralPipe(Key,6),
   outerVoid(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.

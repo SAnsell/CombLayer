@@ -3,7 +3,7 @@
  
  * File:   commonBeam/BeamMount.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedGroup.h"
@@ -67,7 +67,7 @@ namespace xraySystem
 
 BeamMount::BeamMount(const std::string& Key) :
   attachSystem::ContainedGroup("Block","Support"),
-  attachSystem::FixedOffsetGroup(Key,"Main",6,"Beam",2),
+  attachSystem::FixedRotateGroup(Key,"Main",6,"Beam",2),
   attachSystem::ExternalCut(),
   attachSystem::CellMap()
   /*!
@@ -92,7 +92,7 @@ BeamMount::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BeamMount","populate");
 
-  FixedOffsetGroup::populate(Control);
+  FixedRotateGroup::populate(Control);
 
   blockFlag=Control.EvalDefVar<int>(keyName+"BlockFlag",0);
   
@@ -118,7 +118,7 @@ BeamMount::populate(const FuncDataBase& Control)
 }
 
 void
-BeamMount::createUnitVector(const attachSystem::FixedComp& centreFC,
+BeamMount::createPairVector(const attachSystem::FixedComp& centreFC,
 			   const long int cIndex,
 			   const attachSystem::FixedComp& flangeFC,
 			   const long int fIndex)
@@ -161,6 +161,7 @@ BeamMount::createUnitVector(const attachSystem::FixedComp& centreFC,
     {
       beamFC.createUnitVector(flangeFC,fIndex);
     }
+
   applyOffset();
 
   if (upFlag)
@@ -271,45 +272,6 @@ BeamMount::createLinks()
 }
 
 void
-BeamMount::createAll(Simulation& ,
-		      const attachSystem::FixedComp&,
-		      const long int)
- /*!
-    Generic function to create everything
-    \param System :: Simulation item
-    \param portFC :: FixedComp
-    \param portIndex :: Fixed Index
-  */
-{
-  ELog::RegMethod RegA("BeamFlange","createAll(FC)");
-
-  throw ColErr::AbsObjMethod("Single value createAll");
-  return;
-}
-
-void
-BeamMount::createAll(Simulation& System,
-		     const attachSystem::FixedComp& centreFC,
-		     const std::string& cName,
-		     const attachSystem::FixedComp& flangeFC,
-		     const std::string& fName)
-  /*!
-    Extrenal build everything
-    \param System :: Simulation
-    \param centreFC :: FixedComp for beam origin
-    \param cName :: link point of centre [and axis]
-    \param flangeFC :: link point of flange center
-    \param fName :: direction for links
-   */
-{
-  ELog::RegMethod RegA("BeamMount","createAll(name,name)");
-
-  createAll(System,centreFC,centreFC.getSideIndex(cName),
-	    flangeFC,flangeFC.getSideIndex(fName));
-  return;
-}
-
-void
 BeamMount::createAll(Simulation& System,
 		    const attachSystem::FixedComp& centreFC,
 		    const long int cIndex,
@@ -327,7 +289,7 @@ BeamMount::createAll(Simulation& System,
   ELog::RegMethod RegA("BeamMount","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(centreFC,cIndex,flangeFC,fIndex);
+  createPairVector(centreFC,cIndex,flangeFC,fIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

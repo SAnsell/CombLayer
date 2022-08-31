@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonBeam/YagScreenGenerator.cxx
+ * File:   commonGenerator/YagScreenGenerator.cxx
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,20 +45,14 @@
 #include "FuncDataBase.h"
 #include "CFFlanges.h"
 
+#include "ScreenGenerator.h"
 #include "YagScreenGenerator.h"
 
 namespace setVariable
 {
 
 YagScreenGenerator::YagScreenGenerator() :
-  juncBoxLength(11.5),juncBoxWidth(8.0),
-  juncBoxHeight(8.0),juncBoxWallThick(0.3),
-  
-  feedLength(19.5),feedInnerRadius(0.95),
-  feedWallThick(0.95),feedFlangeLen(1.2),
-  feedFlangeRadius(3.5),
-
-  threadLift(7.0),threadRadius(feedInnerRadius*0.7), // guess
+  ScreenGenerator(),
 
   holderWidth(4.50),holderDepth(3.25),
   holderShortLen(1.32),holderLongLen(4.4),
@@ -71,15 +65,10 @@ YagScreenGenerator::YagScreenGenerator() :
  
   screenHolderRadius(1.3), screenHolderThick(0.3), // measured,
   
-  voidMat("Void"),
-  juncBoxMat("StbTCABL%Void%50"), // guess
-  juncBoxWallMat("Aluminium"),
-  threadMat("Aluminium"),
   holderMat("Stainless304L"),
-  mirrorMat("SiO2"),
   screenMat("SiO2"),
   screenHolderMat("Aluminium"),
-  feedWallMat("Stainless304L")
+  mirrorMat("SiO2")
   /*!
     Constructor and defaults
   */
@@ -90,33 +79,6 @@ YagScreenGenerator::~YagScreenGenerator()
    Destructor
  */
 {}
-
-template<typename CF>
-void
-YagScreenGenerator::setCF()
-  /*!
-    Set pipe and flange to CF-X format
-  */
-{
-  feedInnerRadius=CF::innerRadius;
-  feedWallThick=CF::wallThick;
-  setFlangeCF<CF>();
-
-  return;
-}
-
-template<typename CF>
-void
-YagScreenGenerator::setFlangeCF()
-  /*!
-    Setter for flange
-   */
-{
-  feedFlangeRadius=CF::flangeRadius;
-  feedFlangeLen=CF::flangeLength;
-
-  return;
-}
 
 
 void
@@ -132,21 +94,7 @@ YagScreenGenerator::generateScreen(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("YagScreenGenerator","generate");
 
-  Control.addVariable(keyName+"InBeam",static_cast<int>(inBeam));
-
-  Control.addVariable(keyName+"JuncBoxLength",juncBoxLength);
-  Control.addVariable(keyName+"JuncBoxWidth",juncBoxWidth);
-  Control.addVariable(keyName+"JuncBoxHeight",juncBoxHeight);
-  Control.addVariable(keyName+"JuncBoxWallThick",juncBoxWallThick);
-
-  Control.addVariable(keyName+"FeedLength",feedLength);
-  Control.addVariable(keyName+"FeedInnerRadius",feedInnerRadius);
-  Control.addVariable(keyName+"FeedWallThick",feedWallThick);
-  Control.addVariable(keyName+"FeedFlangeLen",feedFlangeLen);
-  Control.addVariable(keyName+"FeedFlangeRadius",feedFlangeRadius);
-
-  Control.addVariable(keyName+"ThreadLift",threadLift);
-  Control.addVariable(keyName+"ThreadRadius",threadRadius);
+  ScreenGenerator::generateScreen(Control,keyName,inBeam);
   
   Control.addVariable(keyName+"HolderWidth",holderWidth);
   Control.addVariable(keyName+"HolderDepth",holderDepth);
@@ -164,26 +112,13 @@ YagScreenGenerator::generateScreen(FuncDataBase& Control,
   Control.addVariable(keyName+"ScreenHolderRadius",screenHolderRadius);
   Control.addVariable(keyName+"ScreenHolderThick",screenHolderThick);
   
-  Control.addVariable(keyName+"VoidMat",voidMat);
-  Control.addVariable(keyName+"JuncBoxMat",juncBoxMat);
-  Control.addVariable(keyName+"JuncBoxWallMat",juncBoxWallMat);
-  Control.addVariable(keyName+"ThreadMat",threadMat);
   Control.addVariable(keyName+"HolderMat",holderMat);
   Control.addVariable(keyName+"MirrorMat",mirrorMat);
   Control.addVariable(keyName+"ScreenMat",screenMat);
   Control.addVariable(keyName+"ScreenHolderMat",screenHolderMat);
-    
-  Control.addVariable(keyName+"FeedWallMat",feedWallMat);
- 
+     
  return;
 
 }
-
-///\cond TEMPLATE
-
-  template void YagScreenGenerator::setCF<CF40_22>();
-  template void YagScreenGenerator::setFlangeCF<CF40_22>();
-
-  ///\endcond TEMPLATE
 
 }  // namespace setVariable

@@ -3,7 +3,7 @@
  
  * File:   beamlineInc/GuideLine.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,10 +38,11 @@ class ShapeUnit;
   \brief Basic beamline guide unit
 */
 
-class GuideLine : public attachSystem::ContainedComp,
-  public attachSystem::FixedGroup,
-  public attachSystem::CellMap,
-  public attachSystem::FrontBackCut
+class GuideLine :
+    public attachSystem::ContainedComp,
+    public attachSystem::FixedGroup,
+    public attachSystem::CellMap,
+    public attachSystem::FrontBackCut
 {
  private:
 
@@ -83,7 +84,7 @@ class GuideLine : public attachSystem::ContainedComp,
 
   int activeShield;              ///< Outer layer active
   int feMat;                     ///< Layer shielding
- 
+  
   std::string shapeFrontSurf(const bool,const size_t) const;
   std::string shapeBackSurf(const bool,const size_t) const;
   
@@ -94,6 +95,7 @@ class GuideLine : public attachSystem::ContainedComp,
 		    const double,const double);
 
   void populate(const FuncDataBase&);
+  using FixedGroup::createUnitVector;
   void createUnitVector(const attachSystem::FixedComp&,const long int,
 			const attachSystem::FixedComp&,const long int);
   
@@ -114,7 +116,8 @@ class GuideLine : public attachSystem::ContainedComp,
 
   HeadRule getXSection(const size_t =0,const size_t= 0) const;
   HeadRule getXSectionOut(const size_t =0,const size_t= 0) const;
-  
+
+  using FixedComp::createAll;
   virtual void createAll(Simulation&,
 			 const attachSystem::FixedComp&,const long int);
   virtual void createAll(Simulation&,

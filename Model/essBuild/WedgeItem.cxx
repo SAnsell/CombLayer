@@ -3,7 +3,7 @@
  
  * File:   essBuild/WedgeItem.cxx
  *
- * Copyright (c) 2004-2019 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,8 +59,8 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotate.h"
+#include "FixedRotateUnit.h"
 #include "ContainedComp.h"
 #include "SurInter.h"
 #include "WedgeItem.h"
@@ -71,7 +71,7 @@ namespace essSystem
 
 WedgeItem::WedgeItem(const std::string& Key,const size_t Index)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffsetUnit(Key+std::to_string(Index),6)
+  attachSystem::FixedRotateUnit(Key+std::to_string(Index),6)
 
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -82,7 +82,7 @@ WedgeItem::WedgeItem(const std::string& Key,const size_t Index)  :
 
 WedgeItem::WedgeItem(const WedgeItem& A) : 
   attachSystem::ContainedComp(A),
-  attachSystem::FixedOffsetUnit(A),
+  attachSystem::FixedRotateUnit(A),
   length(A.length),baseWidth(A.baseWidth),
   mat(A.mat)
   /*!
@@ -102,7 +102,7 @@ WedgeItem::operator=(const WedgeItem& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       length=A.length;
       baseWidth=A.baseWidth;
       mat=A.mat;
@@ -146,14 +146,14 @@ WedgeItem::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("WedgeItem","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
   baseWidth=Control.EvalVar<double>(keyName+"BaseWidth");
   tipWidth=Control.EvalVar<double>(keyName+"TipWidth");
 
   theta=Control.EvalVar<double>(keyName+"Theta");
-  xyAngle = getFixedXYAngle(theta);
+  zAngle = getFixedXYAngle(theta);
 
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
@@ -170,7 +170,7 @@ WedgeItem::createUnitVector(const attachSystem::FixedComp& FC)
   ELog::RegMethod RegA("WedgeItem","createUnitVector");
 
   FixedComp::createUnitVector(FC);
-  FixedOffset::applyOffset();
+  FixedRotate::applyOffset();
 
   return;
 }

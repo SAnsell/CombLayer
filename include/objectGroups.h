@@ -3,7 +3,7 @@
  
  * File:   include/objectGroups.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ class objectGroups
 {
  public:
  
-  /// Storage type : name : activeUnits
+  /// Storage type : name : activeUnits (cell numbers)
   typedef std::map<std::string,groupRange> MTYPE;
 
   /// Storage type : cell/cellZone  : name
@@ -124,7 +124,8 @@ class objectGroups
 
   int getFirstCell(const std::string&) const;
   int getLastCell(const std::string&) const;
-  std::vector<int> getObjectRange(const std::string&) const;
+  bool addObjectRange(std::set<int>&,const std::string&) const;
+  std::set<int> getObjectRange(const std::string&) const;
 
   const groupRange& getGroup(const std::string&) const;
   groupRange getZoneGroup(const std::string&) const;

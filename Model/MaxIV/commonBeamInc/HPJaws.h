@@ -3,7 +3,7 @@
  
  * File:   commonBeamInc/HPJaws.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef tdcSystem_HPJaws_h
-#define tdcSystem_HPJaws_h
+#ifndef xraySystem_HPJaws_h
+#define xraySystem_HPJaws_h
 
 class Simulation;
 
@@ -71,13 +71,12 @@ class HPJaws :
   double jawCornerFar;       ///< Corner cut size
 
 
-  double jawXGap;            ///< Separation
-  double jawZGap;            ///< Separation 
+  double jawXGap;            ///< Separation (x)
+  double jawZGap;            ///< Separation (z)
   
   int voidMat;               ///< void material
   int wallMat;               ///< main material
   int jawMat;                ///< jaw material
-
 
   void populate(const FuncDataBase&);  
   void createSurfaces();
@@ -94,6 +93,7 @@ class HPJaws :
 
   /// flag setting 
   void setFlangeJoin() { flangeJoin=1; }
+
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

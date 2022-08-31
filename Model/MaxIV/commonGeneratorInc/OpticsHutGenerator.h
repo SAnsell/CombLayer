@@ -37,7 +37,7 @@ namespace setVariable
 
 class OpticsHutGenerator 
 {
- private:
+ protected:
 
   double height;                ///< void height
   double outWidth;              ///< Width from beamline centre to outside
@@ -48,11 +48,16 @@ class OpticsHutGenerator
   double pbBackThick;           ///< Thickness of lead in back plate
   double pbRoofThick;           ///< Thickness of lead in Roof
   double outerThick;            ///< Outer wall/roof skin
+  
+  double backPlateThick;        ///< Back plate thick
+  double backPlateWidth;        ///< Back plate width
+  double backPlateHeight;       ///< back plate height
 
   double innerOutVoid;          ///< Extension for inner left void space
   double outerOutVoid;          ///< Extension for outer left void space
-  double backVoid;              ///< Extension for outer back void space
-
+  double frontVoid;             ///< Extension for inner front void space
+  double backVoid;              ///< Extension for inner back void space
+  double outerBackVoid;         ///< Extension for outer back void space
 
   std::vector<Geometry::Vec3D> holeOffset;  ///< hole offsets [y ignored]
   std::vector<double> holeRadius;           ///< hole radii
@@ -68,9 +73,19 @@ class OpticsHutGenerator
   OpticsHutGenerator& operator=(const OpticsHutGenerator&) =default;
   ~OpticsHutGenerator() =default;
 
+  // set skinthickness
   void setSkin(const double T) { outerThick=T; innerThick=T;}
-  void setWallPbThick(const double,const double,const double);
+
+  void setBackLead(const double T) { pbBackThick=T; }
+  void setRoofLead(const double T) { pbRoofThick=T; }
+  void setWallLead(const double T) { pbWallThick=T; }
+  void setFrontExt(const double T) { frontVoid=T; }
   void setBackExt(const double T) { backVoid=T; }
+  void setOuterBackExt(const double T) { outerBackVoid=T; }
+
+  /// Set back plate [must be smaller than back wall]
+  void setBackPlateSize(const double W,const double H,const double T)
+  { backPlateWidth=W;backPlateHeight=H;backPlateThick=T; }
 
   void addHole(const Geometry::Vec3D&,const double);
   

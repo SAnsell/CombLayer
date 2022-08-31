@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/SurfMap.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -119,6 +119,9 @@ class SurfMap : public BaseMap
   void makePlane(const std::string&,ModelSupport::surfRegister&,
 		 const int,const Geometry::Vec3D&,const Geometry::Vec3D&);
   void makeCylinder(const std::string&,ModelSupport::surfRegister&,
+		    const int,const Geometry::Vec3D&,
+		    const Geometry::Vec3D&,const double);
+  void makeCone(const std::string&,ModelSupport::surfRegister&,
 		    const int,const Geometry::Vec3D&,
 		    const Geometry::Vec3D&,const double);
   

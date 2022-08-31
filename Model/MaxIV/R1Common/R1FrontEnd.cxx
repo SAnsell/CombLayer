@@ -3,7 +3,7 @@
  
  * File: R1Common/R1FrontEnd.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -56,8 +54,8 @@
 #include "FixedComp.h"
 #include "FixedGroup.h"
 #include "FixedOffset.h"
-#include "FixedOffsetGroup.h"
 #include "FixedRotate.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -71,6 +69,7 @@
 #include "generateSurf.h"
 #include "generalConstruct.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "OffsetFlangePipe.h"
 #include "SplitFlangePipe.h"
@@ -235,7 +234,6 @@ R1FrontEnd::createSurfaces()
 
   if (!isActive("front"))
     {
-      ELog::EM<<"Building Front "<<outerFront<<ELog::endDiag;
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*outerFront,Y);
       setCutSurf("front",SMap.realSurf(buildIndex+1));
     }

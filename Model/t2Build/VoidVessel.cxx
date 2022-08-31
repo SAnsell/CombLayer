@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   build/VoidVessel.cxx
+ * File:   t2Build/VoidVessel.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,8 +74,7 @@ namespace shutterSystem
 VoidVessel::VoidVessel(const std::string& Key)  : 
   attachSystem::FixedComp(Key,0),
   attachSystem::ContainedComp(),
-  attachSystem::CellMap(),
-  steelCell(0)
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Key to use
@@ -98,7 +97,7 @@ VoidVessel::VoidVessel(const VoidVessel& A) :
   vWindowETopZ(A.vWindowETopZ),vWindowWLowZ(A.vWindowWLowZ),
   vWindowELowZ(A.vWindowELowZ),vWindowAngleLen(A.vWindowAngleLen),
   vWindowAngleROff(A.vWindowAngleROff),vWindowAngleLOff(A.vWindowAngleLOff),
-  vWindowMat(A.vWindowMat),vMat(A.vMat),steelCell(A.steelCell)
+  vWindowMat(A.vWindowMat),vMat(A.vMat)
   /*!
     Copy constructor
     \param A :: VoidVessel to copy
@@ -149,7 +148,6 @@ VoidVessel::operator=(const VoidVessel& A)
       vWindowAngleLOff=A.vWindowAngleLOff;
       vWindowMat=A.vWindowMat;
       vMat=A.vMat;
-      steelCell=A.steelCell;
     }
   return *this;
 }
@@ -360,22 +358,24 @@ VoidVessel::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("VoidVessel","createObjects");
   
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 13 14 "
-                         "(-21 : 22 : -23 : 24 : -25 : 26 : -33 : -34)");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HeadRule HR;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"21 -22 23 -24 25 -26 33 34 "
-                               "(-41 : 42 : -43 : 44 : -45 : 46 : -53 : -54)");
-  System.addCell(MonteCarlo::Object(cellIndex++,vMat,0.0,Out));
-  steelCell=cellIndex-1;
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+			       "1 -2 3 -4 5 -6 13 14 "
+			       "(-21:22:-23:24:-25:26:-33:-34)");
+  makeCell("OuterVoid",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"41 -42 43 -44 45 -46 53 54 ");
-  makeCell("Void",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+			       "21 -22 23 -24 25 -26 33 34 "
+			       "(-41:42:-43:44:-45:46:-53:-54)");
+  makeCell("SteelCell",System,cellIndex++,vMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"41 -42 43 -44 45 -46 53 54");
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
 
   // Now add Outer surface:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 13 14");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6 13 14");
+  addOuterSurf(HR);
   
   return;
 }
@@ -389,95 +389,77 @@ VoidVessel::createWindows(Simulation& System)
 {
   ELog::RegMethod RegA("VoidVessel","createWindows");
 
-  MonteCarlo::Object* steelObj=System.findObject(steelCell);
-  if (!steelObj)
-    throw ColErr::InContainerError<int>(steelCell,RegA.getBase());
-  std::string Out,outerInclude;
-  
+
+  HeadRule HR,outerIncludeHR;
   // West Top
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-103 23 101 -102 105 -106");
-  System.addCell(MonteCarlo::Object(cellIndex++,vWindowMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex,"103 -43 101 -102 105 -106");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  outerInclude=ModelSupport::getComposite(SMap,buildIndex,
-				  "( 43 : -101 : 102 : -105 : 106 ) ");
-  steelObj->addSurfString(outerInclude);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-103 23 101 -102 105 -106");
+  makeCell("WestTopWindow",System,cellIndex++,vWindowMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"103 -43 101 -102 105 -106");
+  makeCell("WestTopWindowVoid",System,cellIndex++,0,0.0,HR);
+  
+  outerIncludeHR=ModelSupport::getHeadRule(SMap,buildIndex,
+					   "(43:-101:102:-105:106)");
 
   // West Low
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-103 23 111 -112 115 -116");
-  System.addCell(MonteCarlo::Object(cellIndex++,vWindowMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-103 23 111 -112 115 -116");
+  makeCell("WestLowWindow",System,cellIndex++,vWindowMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"103 -43 111 -112 115 -116");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  outerInclude=ModelSupport::getComposite(SMap,buildIndex,
-				  "( 43 : -111 : 112 : -115 : 116 )");
-  steelObj->addSurfString(outerInclude);
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"103 -43 111 -112 115 -116");
+  makeCell("WestLowWindowVoid",System,cellIndex++,0,0.0,HR);
+  
+  outerIncludeHR*=ModelSupport::getHeadRule(SMap,buildIndex,
+					"(43:-111:112:-115:116)");
 
   // East Top:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"104 -24 121 -122 125 -126");
-  System.addCell(MonteCarlo::Object(cellIndex++,vWindowMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"104 -24 121 -122 125 -126");
+  makeCell("EastTopWindow",System,cellIndex++,vWindowMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-104 44 121 -122 125 -126");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  outerInclude=ModelSupport::getComposite(SMap,buildIndex,
-				  "( -44 : -121 : 122 : -125 : 126 )");
-  steelObj->addSurfString(outerInclude);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-104 44 121 -122 125 -126");
+  makeCell("EastTopWindowVoid",System,cellIndex++,0,0.0,HR);
+
+  outerIncludeHR*=ModelSupport::getHeadRule(SMap,buildIndex,
+					"(-44:-121:122:-125:126)");
 
   // East Low:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"104 -24 131 -132 135 -136");
-  System.addCell(MonteCarlo::Object(cellIndex++,vWindowMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"104 -24 131 -132 135 -136");
+  makeCell("EastLowWindow",System,cellIndex++,vWindowMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-104 44 131 -132 135 -136");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  outerInclude=ModelSupport::getComposite(SMap,buildIndex,
-				  "( -44 : -131 : 132 : -135 : 136 )");
-  steelObj->addSurfString(outerInclude);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-104 44 131 -132 135 -136");
+  makeCell("EastLowWindowVoid",System,cellIndex++,0,0.0,HR);
+
+  outerIncludeHR*=ModelSupport::getHeadRule(SMap,buildIndex,
+				"(-44:-131:132:-135:136)");
 
   // East Angle Low:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"33 -203 201 -202 135 -136");
-  System.addCell(MonteCarlo::Object(cellIndex++,vWindowMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"33 -203 201 -202 135 -136");
+  makeCell("EastAngleWindow",System,cellIndex++,vWindowMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "203 (-53:-43) -111 201 -202 135 -136");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
-  outerInclude=ModelSupport::getComposite
-    (SMap,buildIndex,"((53 43) : -201 : 202 : -135 : 136)");
-  steelObj->addSurfString(outerInclude);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+			       "203 (-53:-43) -111 201 -202 135 -136");
+  makeCell("EastAngleWindowVoid",System,cellIndex++,0,0.0,HR);
+
+  outerIncludeHR*=ModelSupport::getHeadRule(SMap,buildIndex,
+					    "((53 43):-201:202:-135:136)");
+
 
   // West Angle High:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"34 -223 221 -222 105 -106");
-  System.addCell(MonteCarlo::Object(cellIndex++,vWindowMat,0.0,Out));
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"34 -223 221 -222 105 -106");
+  makeCell("WestAngleWindow",System,cellIndex++,vWindowMat,0.0,HR);
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
 				 "223 (-54:44) -121 221 -222 105 -106");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  makeCell("WestAngleWindowVoid",System,cellIndex++,0,0.0,HR);
   
-  outerInclude=ModelSupport::getComposite
-    (SMap,buildIndex,"((54 -44) : -221 : 222 : -105 : 106)");
-  steelObj->addSurfString(outerInclude);
-  
+  outerIncludeHR*=ModelSupport::getHeadRule(SMap,buildIndex,
+					    "((54 -44):-221:222:-105:106)");
 
+  insertComponent(System,"SteelCell",outerIncludeHR);
   
   return;
 }
 
-void
-VoidVessel::processVoid(Simulation& System)
-  /*!
-    Adds this as the outside layer of the void
-    \param System :: Simulation object ot add
-  */
-{
-  // Add void
-  MonteCarlo::Object* Obj=System.findObject(74123);
-  if (Obj)
-    Obj->procString("-1 "+getExclude());
-  else
-    System.addCell(MonteCarlo::Object(74123,0,0.0,"-1 "+getExclude()));
-
-  return;
-}
 
 void
 VoidVessel::createAll(Simulation& System,

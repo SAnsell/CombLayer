@@ -3,7 +3,7 @@
  
  * File:   commonBeam/CorrectorMagGenerator.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,6 +69,18 @@ CorrectorMagGenerator::~CorrectorMagGenerator()
  */
 {}
 
+void
+CorrectorMagGenerator::setMagLength(const double L)
+  /*!
+    Scales the lengths 
+    \param L :: total mag length
+  */
+{
+  magInnerLength*=L/magLength;
+  magLength=L;
+  return;
+}
+  
 void
 CorrectorMagGenerator::generateMag(FuncDataBase& Control,
 				   const std::string& keyName,

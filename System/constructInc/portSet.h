@@ -26,7 +26,7 @@ class Simulation;
 
 namespace constructSystem
 {
-  
+  class portItem;
 /*!
   \class portSet
   \version 1.0
@@ -54,7 +54,6 @@ class portSet
   /// Vector of ports FixedComp
   std::vector<std::shared_ptr<portItem>> Ports;     
 
-
   void populate(const FuncDataBase&);
   template<typename T>
   int procSplit(Simulation&,const std::string&,const int,const int,
@@ -67,6 +66,9 @@ class portSet
   portSet& operator=(const portSet&);
   virtual ~portSet();
 
+  /// Return true if no ports defined
+  bool empty() { return Ports.empty(); }
+  
   int splitVoidPorts(Simulation&,const std::string&,
 		     const int,const int);
   int splitVoidPorts(Simulation&,const std::string&,const int,

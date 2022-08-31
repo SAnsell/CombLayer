@@ -3,7 +3,7 @@
  
  * File:   scatMat/SQWmaterial.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@
 #include <algorithm>
 #include <boost/multi_array.hpp>
 
-#include "MersenneTwister.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "FileReport.h"
@@ -52,8 +51,6 @@
 #include "ENDFmaterial.h"
 #include "neutMaterial.h"
 #include "SQWmaterial.h"
-
-extern MTRand RNG;
 
 namespace scatterSystem
 {

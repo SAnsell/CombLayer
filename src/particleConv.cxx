@@ -3,7 +3,7 @@
  
  * File:   src/particleConv.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,9 +76,10 @@ pName::pName(const pName& A) :
   */
 {}
 
-// mcnpChar : mcnpI : fluka : flukaI : phits : phitsI : mcplNumber : nucleons
+// mcnpChar : mcnpI : fluka : flukaI : phits : phitsI : mcplNumber : mass : nucleons
 particleConv::particleConv() : 
   particleVec({
+  {"+", -1,  "all",       0,  "all",       -1,      -1,   0.0,          0},
   {"v", 0,  "void",       0,  "void",       0,       0,   0.0,          0},
   {"h", 9,  "proton",     1,  "proton",     1,    2212,   938.2720813,  1},
   {"n", 1,  "neutron",    8,  "neutron",    2,    2112,   939.5654133,  1},   

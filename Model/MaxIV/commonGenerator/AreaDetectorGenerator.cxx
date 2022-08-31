@@ -91,7 +91,6 @@ AreaDetectorGenerator::generateDetector(FuncDataBase& Control,
   Control.addVariable(keyName+"ScreenDepth",screenDepth);
   Control.addVariable(keyName+"WallThick",wallThick);
 
-  ELog::EM<<"Area == "<<keyName<<"OuterMat"<<ELog::endDiag;
   Control.addVariable(keyName+"OuterMat",voidMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"DetMat",detMat);

@@ -3,7 +3,7 @@
  
  * File:   construct/VacuumBox.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,9 +52,10 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
+#include "geomSupport.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -68,7 +69,7 @@ namespace constructSystem
 
 VacuumBox::VacuumBox(const std::string& Key,
 		       const bool flag) : 
-  attachSystem::FixedOffset(Key,10),
+  attachSystem::FixedRotate(Key,10),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::FrontBackCut(),
   centreOrigin(flag)
@@ -80,7 +81,7 @@ VacuumBox::VacuumBox(const std::string& Key,
 {}
 
 VacuumBox::VacuumBox(const VacuumBox& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedRotate(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),attachSystem::FrontBackCut(A),
   centreOrigin(A.centreOrigin),voidHeight(A.voidHeight),
   voidWidth(A.voidWidth),voidDepth(A.voidDepth),
@@ -89,7 +90,8 @@ VacuumBox::VacuumBox(const VacuumBox& A) :
   feBack(A.feBack),portAXStep(A.portAXStep),portAZStep(A.portAZStep),
   portAWallThick(A.portAWallThick),portATubeLength(A.portATubeLength),
   portATubeRadius(A.portATubeRadius),portBXStep(A.portBXStep),
-  portBZStep(A.portBZStep),portBWallThick(A.portBWallThick),
+  portBZStep(A.portBZStep),portBXAngle(A.portBXAngle),
+  portBZAngle(A.portBZAngle),portBWallThick(A.portBWallThick),
   portBTubeLength(A.portBTubeLength),portBTubeRadius(A.portBTubeRadius),
   flangeARadius(A.flangeARadius),flangeALength(A.flangeALength),
   flangeBRadius(A.flangeBRadius),flangeBLength(A.flangeBLength),
@@ -110,7 +112,7 @@ VacuumBox::operator=(const VacuumBox& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
@@ -130,6 +132,8 @@ VacuumBox::operator=(const VacuumBox& A)
       portATubeRadius=A.portATubeRadius;
       portBXStep=A.portBXStep;
       portBZStep=A.portBZStep;
+      portBXAngle=A.portBXAngle;
+      portBZAngle=A.portBZAngle;
       portBWallThick=A.portBWallThick;
       portBTubeLength=A.portBTubeLength;
       portBTubeRadius=A.portBTubeRadius;
@@ -159,7 +163,7 @@ VacuumBox::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("VacuumBox","populate");
   
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   // Void + Fe special:
   voidHeight=Control.EvalVar<double>(keyName+"VoidHeight");
@@ -187,6 +191,9 @@ VacuumBox::populate(const FuncDataBase& Control)
   portBXStep=Control.EvalDefVar<double>(keyName+"PortBXStep",0.0);
   portBZStep=Control.EvalDefVar<double>(keyName+"PortBZStep",0.0);
 
+  portBXAngle=Control.EvalDefVar<double>(keyName+"PortBXAngle",0.0);
+  portBZAngle=Control.EvalDefVar<double>(keyName+"PortBZAngle",0.0);
+
   portBWallThick=Control.EvalPair<double>(keyName+"PortBWallThick",
 					  keyName+"PortWallThick");
   portBTubeLength=Control.EvalPair<double>(keyName+"PortBTubeLength",
@@ -213,7 +220,7 @@ VacuumBox::populate(const FuncDataBase& Control)
       (flangeBRadius,portBWallThick+portBTubeRadius,
        "Flange to small for "+keyName+" port B");
 
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
 
   return;
@@ -237,8 +244,6 @@ VacuumBox::createUnitVector(const attachSystem::FixedComp& FC,
     Origin+=Y*(portATubeLength+feFront+voidLength/2.0)-
       X*portAXStep-
       Z*portAZStep;
-
-
   
   return;
 }
@@ -299,15 +304,17 @@ VacuumBox::createSurfaces()
 
   // BACK PORT
   const Geometry::Vec3D BCentre(Origin+X*portBXStep+Z*portBZStep);
-
-  ModelSupport::buildCylinder(SMap,buildIndex+207,BCentre,Y,portBTubeRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+217,BCentre,Y,
+  const Geometry::Vec3D BAxis=
+    Geometry::calcRotatedVec(portBXAngle,0.0,portBZAngle,X,Y,Z,Y);
+  
+  ModelSupport::buildCylinder(SMap,buildIndex+207,BCentre,BAxis,portBTubeRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+217,BCentre,BAxis,
 			      portBTubeRadius+portBWallThick);
-  ModelSupport::buildCylinder(SMap,buildIndex+227,BCentre,Y,flangeBRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+227,BCentre,BAxis,flangeBRadius);
 
   // Flange cut
   FrontBackCut::getShiftedFront(SMap,buildIndex+111,Y,flangeALength);
-  FrontBackCut::getShiftedBack(SMap,buildIndex+211,Y,-flangeBLength);
+  FrontBackCut::getShiftedBack(SMap,buildIndex+211,BAxis,-flangeBLength);
 
   return;
 }
@@ -388,9 +395,11 @@ VacuumBox::createLinks()
 
   const Geometry::Vec3D ACentre(Origin+X*portAXStep+Z*portAZStep);
   const Geometry::Vec3D BCentre(Origin+X*portBXStep+Z*portBZStep);
-  
+  const Geometry::Vec3D BAxis=
+      Geometry::calcRotatedVec(portBXAngle,0.0,portBZAngle,X,Y,Z,Y);
+
   FrontBackCut::createFrontLinks(*this,ACentre,Y); 
-  FrontBackCut::createBackLinks(*this,BCentre,Y);  
+  FrontBackCut::createBackLinks(*this,BCentre,BAxis);  
 
   FixedComp::setConnect(2,Origin-X*((feWidth+voidWidth)/2.0),-X);
   FixedComp::setConnect(3,Origin+X*((feWidth+voidWidth)/2.0),X);

@@ -38,7 +38,7 @@ namespace essSystem
 
 
 class PBW : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffsetUnit
+  public attachSystem::FixedRotateUnit
 {
  private:
 

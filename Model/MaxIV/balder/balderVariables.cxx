@@ -3,7 +3,7 @@
  
  * File:   balder/balderVariables.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,6 +61,7 @@
 #include "PipeShieldGenerator.h"
 #include "WallLeadGenerator.h"
 #include "OpticsHutGenerator.h"
+#include "ExptHutGenerator.h"
 #include "TriggerGenerator.h"
 #include "CylGateValveGenerator.h"
 
@@ -129,10 +130,10 @@ frontMaskVariables(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("balderVariables[F]","frontMaskVariables");
-  setVariable::SqrFMaskGenerator FMaskGen;
-  
   const double FM1dist(1172.60);
   const double FM2dist(1624.2);
+
+  setVariable::SqrFMaskGenerator FMaskGen;
 
   FMaskGen.setCF<CF100>();
   FMaskGen.setFrontGap(2.62,1.86);       // 1033.8
@@ -143,8 +144,9 @@ frontMaskVariables(FuncDataBase& Control,
 
   FMaskGen.setFrontGap(2.13,2.146);
   FMaskGen.setBackGap(0.756,0.432);
-  // approx for 800uRad x 200uRad  
-  FMaskGen.setMinAngleSize(29.0,FM2dist,800.0,200.0);
+  // approx for 800uRad x 200uRad
+  FMaskGen.setMinSize(25.0,0.71,0.71); // L,dy,dz
+  //  FMaskGen.setMinAngleSize(20.0,FM2dist,800.0,200.0);
   FMaskGen.generateColl(Control,preName+"CollB",FM2dist,34.2);
 
   // FM 3:
@@ -152,7 +154,7 @@ frontMaskVariables(FuncDataBase& Control,
   FMaskGen.setFrontGap(0.84,0.582);
   FMaskGen.setBackGap(0.750,0.357);
   // approx for 100uRad x 100uRad
-  FMaskGen.setMinAngleSize(12.0,1600.0, 400.0, 100.0);
+  FMaskGen.setMinAngleSize(12.0,FM2dist+34.2, 400.0, 100.0);
   FMaskGen.generateColl(Control,preName+"CollC",17.0/2.0,17.0);
 
   return;
@@ -200,32 +202,15 @@ exptHutVariables(FuncDataBase& Control,
   const double beamOffset(4.0);
 
   const std::string hutName(beamName+"ExptHut");
+
+  setVariable::ExptHutGenerator EGen;
   
-  Control.addVariable(hutName+"YStep",1850.0);
-
-  Control.addVariable(hutName+"Height",200.0);
-  Control.addVariable(hutName+"Length",858.4);
-  Control.addVariable(hutName+"OutWidth",260);
-  Control.addVariable(hutName+"RingWidth",200);
-  Control.addVariable(hutName+"InnerThick",0.3);
-  Control.addVariable(hutName+"PbFrontThick",0.5);
-  Control.addVariable(hutName+"PbBackThick",0.5);
-  Control.addVariable(hutName+"PbRoofThick",0.5);
-  Control.addVariable(hutName+"PbWallThick",0.5);
-  Control.addVariable(hutName+"OuterThick",0.3);
-
-  Control.addVariable(hutName+"InnerOutVoid",10.0);
-  Control.addVariable(hutName+"OuterOutVoid",10.0);
-
-  Control.addVariable(hutName+"VoidMat","Void");
-  Control.addVariable(hutName+"SkinMat","Stainless304");
-  Control.addVariable(hutName+"PbMat","Lead");
-  
-  Control.addVariable(hutName+"HoleXStep",0.0);
-  Control.addVariable(hutName+"HoleZStep",beamOffset);
-  Control.addVariable(hutName+"HoleRadius",7.0);
-  Control.addVariable(hutName+"HoleMat","Lead");
-
+  EGen.setFrontHole(0.0,beamOffset,7.0);
+  EGen.setBackLead(0.5);
+  EGen.setRoofLead(0.5);
+  EGen.setWallLead(0.5);   
+  EGen.generateHut(Control,hutName,1850.0,858.0);
+  // inner/outer where 0.3 mm
 
   Control.addVariable(hutName+"NChicane",4);
   PortChicaneGenerator PGen;
@@ -279,7 +264,7 @@ shieldVariables(FuncDataBase& Control)
 
   const std::string preName("Balder");
   
-  Control.addVariable(preName+"PShieldYStep",10.1);
+  Control.addVariable(preName+"PShieldYStep",12.7);
   Control.addVariable(preName+"PShieldLength",10.0);
   Control.addVariable(preName+"PShieldWidth",80.0);
   Control.addVariable(preName+"PShieldHeight",80.0);
@@ -529,11 +514,11 @@ opticsVariables(FuncDataBase& Control,
   PTubeGen.setPortLength(2.0,2.0);
   // ystep/width/height/depth/length
   PTubeGen.generateTube(Control,opticsName+"ShieldPipe",0.0,52.0);
-
+  
   Control.addVariable(opticsName+"ShieldPipeNPorts",4);
-
+  
   // first Two ports are CF100 
-  PItemGen.setCF<setVariable::CF100>(20.0);
+  PItemGen.setCF<setVariable::CF100>(CF100::outerRadius+20.0);
   PItemGen.setPlate(0.0,"Void");  
   // centre of mid point
   CPos=Geometry::Vec3D(0,-15.0,0);
@@ -542,7 +527,7 @@ opticsVariables(FuncDataBase& Control,
   PItemGen.generatePort(Control,nameShield+"0",CPos,ZVec);
   PItemGen.generatePort(Control,nameShield+"1",CPos,-ZVec);
 
-  PItemGen.setCF<setVariable::CF40>(10.0);
+  PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+10.0);
   PItemGen.setPlate(0.0,"Void");
   
   PItemGen.generatePort(Control,nameShield+"2",
@@ -560,7 +545,7 @@ opticsVariables(FuncDataBase& Control,
   GateGen.generateValve(Control,opticsName+"GateD",0.0,0);
 
   VBoxGen.setCF<CF40>();
-  VBoxGen.setPortLength(4.5,4.5); // La/Lb
+  VBoxGen.setPortLength(4.5,5.0); // La/Lb
   // [length is 177.4cm total]
   VBoxGen.generateBox(Control,opticsName+"MirrorBoxB",54.0,15.3,31.3,178.0);
 
@@ -632,7 +617,7 @@ opticsVariables(FuncDataBase& Control,
     }
   Control.addVariable(opticsName+"NShield0YStep",1.5);
   Control.addVariable(opticsName+"NShield1YStep",3.0);
-  Control.addVariable(opticsName+"NShield2YStep",1.0);
+  Control.addVariable(opticsName+"NShield2YStep",2.0);
   return;
 }
 
@@ -646,8 +631,6 @@ connectingVariables(FuncDataBase& Control)
   ELog::RegMethod RegA("balderVariables[F]","connectingVariables");
 
   const std::string baseName="BalderConnect";
-  const Geometry::Vec3D OPos(0,0,0);
-  const Geometry::Vec3D ZVec(0,0,-1);
 
   Control.addVariable(baseName+"OuterRadius",60.0);
   
@@ -682,6 +665,8 @@ connectingVariables(FuncDataBase& Control)
   PItemGen.setCF<setVariable::CF40>(CF40::outerRadius+3.0);
   PItemGen.setNoPlate();
 
+  const Geometry::Vec3D OPos(0,4,0);
+  const Geometry::Vec3D ZVec(0,0,-1);
   PItemGen.generatePort(Control,baseName+"IonPumpAPort0",OPos,ZVec);
   
   // temp offset
@@ -692,25 +677,25 @@ connectingVariables(FuncDataBase& Control)
   LeadPipeGen.generatePipe(Control,baseName+"PipeB",188.0);
   Control.addVariable(baseName+"PipeBYStep",10.0);
   
-  BellowGen.generateBellow(Control,baseName+"BellowB",10.0);
-  LBGen.generateBox(Control,baseName+"LeadB",4.5,12.0);
+  BellowGen.generateBellow(Control,baseName+"BellowB",11.0);
+  LBGen.generateBox(Control,baseName+"LeadB",4.9,12.0);
   
   LeadPipeGen.generatePipe(Control,baseName+"PipeC",188.0);
-  Control.addVariable(baseName+"PipeCYStep",9.0);
+  Control.addVariable(baseName+"PipeCYStep",10.0);
   
   // ystep/width/height/depth/length
   SimpleTubeGen.generateTube(Control,baseName+"IonPumpB",2.8);
-  LBGen.generateBox(Control,baseName+"PumpBoxB",4.5,12.0);
+  LBGen.generateBox(Control,baseName+"PumpBoxB",4.9,12.0);
   
   Control.addVariable(baseName+"IonPumpBNPorts",1);
   PItemGen.generatePort(Control,baseName+"IonPumpBPort0",OPos,ZVec);
   
   LeadPipeGen.generatePipe(Control,baseName+"PipeD",172.0);
-  Control.addVariable(baseName+"PipeDYStep",9.0);
+  Control.addVariable(baseName+"PipeDYStep",10.0);
   // PTubeGen.getTotalLength(0.5));
 
   BellowGen.generateBellow(Control,baseName+"BellowC",8.0);
-  LBGen.generateBox(Control,baseName+"LeadC",4.5,12.0);
+  LBGen.generateBox(Control,baseName+"LeadC",4.9,12.0);
   
   return;
 }
@@ -755,7 +740,7 @@ BALDERvariables(FuncDataBase& Control)
 
   // note bellow skip
   LeadPipeGen.generatePipe(Control,"BalderJoinPipeC",81.0);
-  Control.addVariable("BalderJoinPipeCYStep",9.0);
+  Control.addVariable("BalderJoinPipeCYStep",9.3);
 
   balderVar::exptHutVariables(Control,"Balder");
 

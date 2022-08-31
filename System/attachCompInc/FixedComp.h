@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/FixedComp.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -111,10 +111,17 @@ class FixedComp
   virtual void createUnitVector(const FixedComp&,const Geometry::Vec3D&);
   virtual void createUnitVector(const FixedComp&,const long int);
   virtual void createUnitVector(const FixedComp&,const long int,const long int);
-  virtual void createUnitVector(const Geometry::Vec3D&,const Geometry::Vec3D&,
-			const Geometry::Vec3D&);
-  virtual void createUnitVector(const Geometry::Vec3D&,const Geometry::Vec3D&,
-			const Geometry::Vec3D&,const Geometry::Vec3D&);
+  virtual void createUnitVector(const Geometry::Vec3D&,
+				const Geometry::Vec3D&);
+
+  virtual void createUnitVector(const Geometry::Vec3D&,
+				const Geometry::Vec3D&,
+				const Geometry::Vec3D&);
+  
+  virtual void createUnitVector(const Geometry::Vec3D&,
+				const Geometry::Vec3D&,
+				const Geometry::Vec3D&,
+				const Geometry::Vec3D&);
 
   void createPairVector(const FixedComp&,const long int,
 			const FixedComp&,const long int);
@@ -171,6 +178,8 @@ class FixedComp
 
   void setLinkCopy(const size_t,const FixedComp&,const std::string&);
   void setLinkCopy(const size_t,const FixedComp&,const long int);
+  void setLinkCopy(const std::string&,const FixedComp&,const long int);
+  void setLinkCopy(const std::string&,const FixedComp&,const std::string&);
 
   /// Get keyname
   const std::string& getKeyName() const { return keyName; }
@@ -276,8 +285,12 @@ class FixedComp
     (Simulation&,const int,const int, const std::vector<Geometry::Vec3D>&,
      const std::vector<Geometry::Vec3D>&);
 
-  virtual void createAll(Simulation&,const FixedComp&,const long int) =0;
+  virtual void createAll(Simulation&,const FixedComp&,const long int);
+  virtual void createAll(Simulation&,const FixedComp&,const long int,
+			 const FixedComp&,const long int);
   virtual void createAll(Simulation&,const FixedComp&,const std::string&);
+  virtual void createAll(Simulation&,const FixedComp&,const std::string&,
+			 const FixedComp&,const std::string&);
 
 };
 

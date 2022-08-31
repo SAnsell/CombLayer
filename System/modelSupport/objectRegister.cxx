@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/objectRegister.cxx
+ * File:   modelSupport/objectRegister.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,8 +78,13 @@ objectRegister::Instance()
 
 bool
 objectRegister::hasGroup(const std::string& grpName) const
+  /*!
+    Simple accessor to determin if a group is register.
+    The group is likely to be a FixedComp unit and all resultant
+    objects
+   */
 {
-  return (GPtr) ? 0 : GPtr->hasObject(grpName);
+  return (!GPtr) ? 0 : GPtr->hasObject(grpName);
 }
   
 void

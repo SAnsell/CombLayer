@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/FixedGroup.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,10 +49,10 @@ class FixedGroup : public FixedComp
   Geometry::Vec3D bY;          ///< Secondary Y
   Geometry::Vec3D bZ;          ///< Secondary Z
   Geometry::Vec3D bOrigin;     ///< Secondary origin
-  Geometry::Vec3D bExit;       ///< Secondary origin
   
   void registerKey(const std::string&,const size_t);
-
+  void setBeamCoord(const std::string&);
+  
  public:
   
   FixedGroup(const std::string&,const std::string&,const size_t);
@@ -70,27 +70,39 @@ class FixedGroup : public FixedComp
   FixedGroup& operator=(const FixedGroup&);
   virtual ~FixedGroup();
 
-  virtual void createUnitVector(const attachSystem::FixedComp&,
+  using FixedComp::createUnitVector;
+  virtual void createUnitVector(const std::string&,
+				const attachSystem::FixedComp&,
 				const long int);
+
+  virtual void createUnitVector(const attachSystem::FixedComp&,
+				 const long int);
+  virtual void secondaryUnitVector(const attachSystem::FixedComp&,
+				   const long int);
+  virtual void secondaryUnitVector(const attachSystem::FixedComp&,
+				   const std::string&);
   
   void setDefault(const std::string&);
   void setSecondary(const std::string&);
   void setDefault(const std::string&,const std::string&);
 
   /// Size accessor
-  size_t nGroups() const { return FMap.size(); } 
-  bool hasKey(const std::string&) const;
+  size_t nGroups() const { return FMap.size(); }
+  std::set<std::string> getAllKeys() const;
+  bool hasKey(const std::string&) const;  
   FixedComp& addKey(const std::string&,const size_t);
   virtual FixedComp& getKey(const std::string&);
   virtual const FixedComp& getKey(const std::string&) const;
+
   const FixedComp& getPrimary() const;
   FixedComp& getPrimary();
 
-  
+  const FixedComp& getSecondary() const;
+  FixedComp& getSecondary();
+
   virtual void applyRotation(const localRotate&);
   virtual void applyRotation(const Geometry::Vec3D&,const double);
 
-  
   void setAxisControl(const long int,const Geometry::Vec3D&);
 
 };

@@ -51,12 +51,12 @@
 #include "PortItemGenerator.h"
 #include "StriplineBPMGenerator.h"
 #include "DipoleDIBMagGenerator.h"
+#include "ScreenGenerator.h"
 #include "YagScreenGenerator.h"
 #include "YagUnitGenerator.h"
 #include "FlatPipeGenerator.h"
 #include "BeamDividerGenerator.h"
 #include "IonPTubeGenerator.h"
-#include "NBeamStopGenerator.h"
 #include "TDCBeamDumpGenerator.h"
 
 #include "magnetVar.h"
@@ -292,7 +292,6 @@ Segment29Magnet(FuncDataBase& Control,
 
   setVariable::YagScreenGenerator YagScreenGen;
   setVariable::YagUnitGenerator YagUnitGen;
-  setVariable::NBeamStopGenerator BSGen;
   setVariable::TDCBeamDumpGenerator TDCBDGen;
 
   const Geometry::Vec3D startPtA(-637.608,9073.611,0.0);
@@ -346,6 +345,7 @@ Segment29Magnet(FuncDataBase& Control,
   Control.addVariable(lKey+"YagScreenBYAngle",-90.0);
 
   TDCBDGen.generate(Control,lKey+"BeamStopA");
+
   Control.addVariable(lKey+"BeamStopAYAngle",-90.0);
   Control.addVariable(lKey+"BeamStopAYStep",4.0);
   Control.addVariable(lKey+"BeamStopASkinBackThick",0.0);

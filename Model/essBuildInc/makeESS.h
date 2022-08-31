@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/makeESS.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2022 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,7 +67,6 @@ namespace essSystem
   class ProtonTube;
   class PreModWing;
   class GuideBay;
-  class BeamMonitor;
   class DiskLayerMod;
   class Bunker;
   class TwisterModule;
@@ -104,9 +103,8 @@ class makeESS
   std::shared_ptr<EmptyCyl> TargetLowClearance; ///< empty cell below target
 
   std::shared_ptr<BeRef> Reflector;      ///< reflector object
-  std::shared_ptr<ProtonTube> PBeam; ///< Proton Void
+  std::shared_ptr<ProtonTube> PBeam;     ///< Proton Void
   std::shared_ptr<PBIP> pbip;            ///< proton beam instrumentation plug
-  std::shared_ptr<BeamMonitor> BMon;     ///< Beam Monitor
 
   // main moderator focus points
   std::shared_ptr<FocusPoints> topFocus;   ///< Top focus

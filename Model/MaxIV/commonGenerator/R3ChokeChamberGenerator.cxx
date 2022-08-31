@@ -3,7 +3,7 @@
  
  * File:   commonGenerator/R3ChokeChamberGenerator.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,8 +68,8 @@ R3ChokeChamberGenerator::R3ChokeChamberGenerator() :
   photonXStep(0),
   photonRadius(1.0),photonLength(17.0),
   photonThick(CF40::wallThick),
-  flangePhotonRadius(CF40::flangeRadius),
-  flangePhotonLength(CF40::flangeLength),
+  flangePhotonRadius(CF25::flangeRadius),
+  flangePhotonLength(CF25::flangeLength),
 
   sideRadius(CF63::innerRadius),sideLength(11.5),
   sideThick(CF63::wallThick),
@@ -77,7 +77,7 @@ R3ChokeChamberGenerator::R3ChokeChamberGenerator() :
   flangeSideLength(CF63::flangeLength),
   sideCapThick(CF63::flangeLength),
 
-  plateThick(4.0),plateGap(0.2),
+  plateThick(4.0),plateGap(0.14),
   plateDepth(2.0),plateLength(15.0),
 
   voidMat("Void"),wallMat("Copper"),flangeMat("Stainless304"),

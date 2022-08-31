@@ -3,7 +3,7 @@
  
  * File:   commonBeam/UTubePipe.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,16 +63,14 @@
 #include "FrontBackCut.h"
 #include "SurfMap.h"
 
+#include "GeneralPipe.h"
 #include "UTubePipe.h"
 
 namespace xraySystem
 {
 
-UTubePipe::UTubePipe(const std::string& Key) : 
-  attachSystem::FixedRotate(Key,6),
-  attachSystem::ContainedGroup("Pipe","FFlange","BFlange"),
-  attachSystem::CellMap(),
-  attachSystem::SurfMap(),attachSystem::FrontBackCut()
+UTubePipe::UTubePipe(const std::string& Key) :
+  constructSystem::GeneralPipe(Key,6)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -104,18 +102,18 @@ UTubePipe::populate(const FuncDataBase& Control)
   
   feThick=Control.EvalVar<double>(keyName+"FeThick");
 
-  flangeARadius=Control.EvalPair<double>(keyName+"FlangeFrontRadius",
+  flangeARadius=Control.EvalPair<double>(keyName+"FlangeARadius",
 					 keyName+"FlangeRadius");
-  flangeBRadius=Control.EvalPair<double>(keyName+"FlangeBackRadius",
+  flangeBRadius=Control.EvalPair<double>(keyName+"FlangeBRadius",
 					 keyName+"FlangeRadius");
 
-  flangeALength=Control.EvalPair<double>(keyName+"FlangeFrontLength",
+  flangeALength=Control.EvalPair<double>(keyName+"FlangeALength",
 					 keyName+"FlangeLength");
-  flangeBLength=Control.EvalPair<double>(keyName+"FlangeBackLength",
+  flangeBLength=Control.EvalPair<double>(keyName+"FlangeBLength",
 					 keyName+"FlangeLength");
 
 
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
 
   return;
@@ -214,25 +212,25 @@ UTubePipe::createObjects(Simulation& System)
   makeCell("RightPipe",System,cellIndex++,feMat,0.0,HR);
 
   // FLANGE Front: 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,
-				 " -11 -107 ((7 -3) : (8 4) : -5 : 6) ");
+  HR=ModelSupport::getHeadRule
+       (SMap,buildIndex,"-11 -107 ((7 -3) : (8 4) : -5 : 6) ");
   makeCell("FrontFlange",System,cellIndex++,feMat,0.0,HR*frontHR);
 
   // FLANGE Back:
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,
-				 " 12 -207 ((7 -3) : (8 4) : -5 : 6) ");
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"12 -207 ((7 -3) : (8 4) : -5 : 6)");
   makeCell("BackFlange",System,cellIndex++,feMat,0.0,HR*backHR);
 
   // outer boundary [flange front/back]
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex," -11 -107 ");
-  addOuterSurf("FFlange",HR*frontHR);
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex," 12 -207 ");
-  addOuterUnionSurf("BFlange",HR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -11 -107 ");
+  addOuterSurf("FlangeA",HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 12 -207 ");
+  addOuterSurf("FlangeB",HR*backHR);
   // outer boundary mid tube
   //  (3:-7) (-4:8) 5 -6 ");
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,
-				    " 11 -12 15 -16 (3:-17) (-4:-18)");
-  addOuterUnionSurf("Pipe",HR);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"11 -12 15 -16 (3:-17) (-4:-18)");
+  addOuterSurf("Main",HR);
   return;
 }
   

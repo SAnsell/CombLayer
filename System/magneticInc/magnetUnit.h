@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   flukaMagneticInc/magnetUnit.h
+ * File:   magneticInc/magnetUnit.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,13 +41,14 @@ class magnetUnit :
  protected:
 
   bool zeroField;         ///< If field currently zero
-  size_t index;           ///< Order index for magnetic field
+  size_t index;           ///< ID number for magnetic field
 
   Geometry::Vec3D magExtent;  ///< extent of magnetic field
 
+  bool syncRad;                  ///< Synchroton flag
   std::array<double,4> KFactor;  ///< Magnet units
-  /// active cells
-  std::set<int> activeCells; 
+  std::set<int> activeCells;     /// active cells
+
 
   void populate(const FuncDataBase&);
 
@@ -63,7 +64,8 @@ class magnetUnit :
 
   void setIndex(const size_t I) { index=I; }
   void setExtent(const double,const double,const double);
-  void addCell(const int);
+  void addCells(const int);
+  void addCells(const std::vector<int>&);
   void setKFactor(const std::vector<double>&);
   
   using attachSystem::FixedComp::createAll;

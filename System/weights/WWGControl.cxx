@@ -3,7 +3,7 @@
  
  * File:   weights/WWGControl.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -220,7 +220,7 @@ WWGControl::hasSourcePoint(const std::string& sName) const
 
 void
 WWGControl::procSourcePoint(const Simulation& System,
-			       const mainSystem::inputParam& IParam)
+			    const mainSystem::inputParam& IParam)
   /*!
     Process the source weight point
     \param IParam :: Input param
@@ -256,8 +256,8 @@ void
 WWGControl::procPlanePoint(const Simulation& System,
 			   const mainSystem::inputParam& IParam)
   /*!
-    Determine inf the next component cat be a plane
-    Given as two Vec3D from inputParam
+    Determine if the next component can be a plane
+    Given as two Vec3D from inputParam or the plane two vectors
     \param IParam :: Input parameters
   */
 {
@@ -274,13 +274,23 @@ WWGControl::procPlanePoint(const Simulation& System,
         IParam.getValueError<std::string>
         (wKey,setIndex,0,"wwgPlane:PlaneName");
       size_t itemCnt(1);
-      const Geometry::Vec3D PPoint=
-	mainSystem::getNamedPoint
-	(System,IParam,wKey,setIndex,itemCnt,wKey+"Plane Point");
 
-      const Geometry::Vec3D Norm=
-	mainSystem::getNamedAxis
-	(System,IParam,wKey,setIndex,itemCnt,wKey+"Plane:Norm");
+      Geometry::Vec3D PPoint,Norm;
+      if (mainSystem::getNamedPlanePoints
+	  (System,IParam,wKey,setIndex,itemCnt,PPoint,Norm))
+	{
+	  ELog::EM<<"Success after NamedPlanePoints"<<ELog::endDiag;
+	}
+      else
+	{
+	  PPoint=
+	    mainSystem::getNamedPoint
+	    (System,IParam,wKey,setIndex,itemCnt,wKey+":Plane Point");
+	  
+	  Norm=
+	    mainSystem::getNamedAxis
+	    (System,IParam,wKey,setIndex,itemCnt,wKey+":Plane:Norm");
+	}
       
       const Geometry::Vec3D offset=
 	IParam.getDefCntVec3D(wKey,setIndex,itemCnt,Geometry::Vec3D(0,0,0));

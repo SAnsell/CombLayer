@@ -62,6 +62,7 @@
 #include "BlockZone.h"
 #include "generalConstruct.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
@@ -70,7 +71,7 @@
 #include "CorrectorMag.h"
 #include "IonPumpTube.h"
 
-#include "LObjectSupportB.h"
+#include "LObjectSupport.h"
 #include "TDCsegment.h"
 #include "Segment1.h"
 

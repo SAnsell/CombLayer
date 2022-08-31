@@ -3,7 +3,7 @@
  
  * File:   Main/maxiv.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,6 @@
 #include <array>
 
 #include "Exception.h"
-#include "MersenneTwister.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
@@ -58,8 +57,6 @@
 
 #include "DefUnitsMaxIV.h"
 #include "makeMaxIV.h"
-
-MTRand RNG(12345UL);
 
 ///\cond STATIC
 namespace ELog 
@@ -87,7 +84,8 @@ main(int argc,char* argv[])
       InputControl::mainVector(argc,argv,Names);
       mainSystem::inputParam IParam;
       createXrayInputs(IParam);
-      
+
+      mainSystem::setMaterialsDataBase(IParam);
       SimPtr=createSimulation(IParam,Names,Oname);
       if (!SimPtr) return -1;
 
@@ -102,7 +100,7 @@ main(int argc,char* argv[])
 	(SimPtr->getDataBase(),magField,beamlines);
 
       InputModifications(SimPtr,IParam,Names);
-      mainSystem::setMaterialsDataBase(IParam);
+
 
       xraySystem::makeMaxIV BObj;
       BObj.build(*SimPtr,IParam);

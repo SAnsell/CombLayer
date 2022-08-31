@@ -206,7 +206,7 @@ addHeatBlock(SimMCNP& System,const std::vector<int>& CellList)
   
 void
 addF4Tally(SimMCNP& System,const int tallyNum,
-	   const std::string& pType,const std::vector<int>& Units)
+	   const std::string& pType,const std::set<int>& Units)
   /*!
     Addition of a tally to the mcnpx deck
     \param System :: SimMCNP class
@@ -639,7 +639,7 @@ modF5TallyCells(SimMCNP& System,const int tNumber,
 void
 addF6Tally(SimMCNP& System,const int tNumber,
 	   const std::string& particleType,
-	   const std::vector<int>& cellList)
+	   const std::set<int>& cellList)
   /*!
     Creates a +f6 type tally
     \param System :: SimMCNP to add

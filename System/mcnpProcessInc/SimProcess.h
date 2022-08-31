@@ -44,18 +44,9 @@ namespace SimProcess
   void writeIndexSimPHITS(SimPHITS&,const std::string&,const int);
   void writeIndexSimFLUKA(SimFLUKA&,const std::string&,const int);
 
-  template<typename T>
-  T getDefVar(const FuncDataBase&,const std::string&,const T&);
-
   template<typename T,typename U>
   T getDefIndexVar(const FuncDataBase&,const std::string&,
 		   const std::string&,const U&,const T&);
-
-
-  template<typename T>
-  std::vector<T> getVarVec(const FuncDataBase&,const std::string&);
-  
-  void registerOuter(Simulation&,const int,const int);
 
 }  // namespace SimProcess
 

@@ -65,6 +65,7 @@
 #include "ModelSupport.h"
 #include "generalConstruct.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
@@ -74,7 +75,7 @@
 #include "IonPumpTube.h"
 #include "LocalShielding.h"
 
-#include "LObjectSupportB.h"
+#include "LObjectSupport.h"
 #include "TDCsegment.h"
 #include "InjectionHall.h"
 #include "Segment10.h"

@@ -3,7 +3,7 @@
  
  * File:   constructVarInc/PortItemGenerator.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,9 +39,9 @@ class PortItemGenerator
 {
  private:
 
-  double length;          ///< length from outer
-  double radius;          ///< Inner radius
-  double wallThick;       ///< wall thickness
+  double length;            ///< length from outer
+  double radius;            ///< Inner radius
+  double wallThick;         ///< wall thickness
   
   double flangeLen;         ///< Flange length
   double flangeRadius;      ///< Flange radius
@@ -65,6 +65,8 @@ class PortItemGenerator
   
 
   template<typename CF> void setCF(const double);
+  template<typename CF> void setFlangeCF();
+  
   // set L,R,WT
   void setPort(const double,const double,const double);
   // set flangeLen,flangeRad
@@ -84,6 +86,17 @@ class PortItemGenerator
 		    const Geometry::Vec3D&,
 		    const Geometry::Vec3D&) const;
 
+  void generateAnglePort(FuncDataBase&,const std::string&,
+			 const Geometry::Vec3D&,
+			 const Geometry::Vec3D&,
+			 const Geometry::Vec3D&,
+			 const double) const;
+
+  void generateDoublePort(FuncDataBase&,const std::string&,
+			  const PortItemGenerator&,
+			  const Geometry::Vec3D&,
+			  const Geometry::Vec3D&) const;
+  
 };
 
 }

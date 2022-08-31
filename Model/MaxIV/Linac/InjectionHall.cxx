@@ -1060,6 +1060,7 @@ InjectionHall::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"22  -2 233 -1004 6 -26");
   makeCell("RoofAfterBeamDump",System,cellIndex++,roofMat,0.0,HR);
 
+
   // FKGRoof: A2_40-2_G6-Y.pdf
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"211 -232 1004 -114 6 -16");
   makeCell("FKGRoof",System,cellIndex++,roofMat,0.0,HR);
@@ -1404,7 +1405,6 @@ InjectionHall::createLinks()
 			+Z*(btgHeight-floorDepth+roofHeight)/2.0
 			,X);
   FixedComp::setNamedLinkSurf(8, "BTGTopMiddleSide", SurfMap::getSignedSurf("FKGLeft"));
-
   // Back shielding wall and the FemtoMAX room
   const Geometry::Vec3D backWallPt(Origin+Y*(backWallYStep+backWallThick));
   HeadRule sideA=SurfMap::getSurfRule("FemtoLeft");
@@ -1584,7 +1584,6 @@ InjectionHall::createAll(Simulation& System,
   createObjects(System);
   createBerm(System);
   insertObjects(System);
-
 
   return;
 }

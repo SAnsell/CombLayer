@@ -3,7 +3,7 @@
  
  * File:   t1Build/t1variables.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,14 +66,13 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("t1ReflectXStep",0.0);      // guess
   Control.addVariable("t1ReflectYStep",12.0-9.2);      // guess
   Control.addVariable("t1ReflectZStep",-0.875);      // guess
-//  Control.addVariable("t1ReflectZStep",1.0);      // guess
   Control.addVariable("t1ReflectXSize",52.0);      // guess
   Control.addVariable("t1ReflectYSize",70.0);      // guess
   Control.addVariable("t1ReflectYSizeColdCut",5.0);      // guess  
-//  Control.addVariable("t1ReflectZSize",76.0);      // guess
+
   Control.addVariable("t1ReflectZSize",83.0);      // guess
-  Control.addVariable("t1ReflectXYAngle",0.0);      // guess
-//  Control.addVariable("t1ReflectCutLen",8.0);      // guess
+  Control.addVariable("t1ReflectZAngle",0.0);      // guess
+
   Control.addVariable("t1ReflectCutLen",12.00);      // guess
 
   Control.addVariable("t1ReflectBaseZCut",22.4);      // from centre
@@ -230,10 +229,9 @@ TS1real(FuncDataBase& Control)
 
   // LH2 Moderator:
   Control.addVariable("H2ModXStep",0.98);      
-//  Control.addVariable("H2ModYStep",18.37); 
   Control.addVariable("H2ModYStep",18.37-9.2);       //  relative to VoidVessel 
   Control.addVariable("H2ModZStep",-14.6);      // Dave Bellenger
-  Control.addVariable("H2ModXYAngle",-81.0);      // Dave Bellenger
+  Control.addVariable("H2ModZAngle",-81.0);      // Dave Bellenger
 
   Control.addVariable("H2ModHeight",12.0);  
   Control.addVariable("H2ModDepth",8.0);    
@@ -265,7 +263,7 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("CH4ModYStep",0.9-9.2);       //  relative to VoidVessel
   Control.addVariable("CH4ModZStep",-14.6);      // Dave Bellenger   
 //  Control.addVariable("CH4ModZStep",-15.2);      // 
-  Control.addVariable("CH4ModXYAngle",-90.0-33.0);      // Dave Bellenger
+  Control.addVariable("CH4ModZAngle",-90.0-33.0);      // Dave Bellenger
 
     
   Control.addVariable("CH4ModHeight",11.5);      // ok 
@@ -302,7 +300,7 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("MerlinModXStep",0.0);      // guess
   Control.addVariable("MerlinModYStep",18.9-9.2);  //  relative to VoidVessel    
   Control.addVariable("MerlinModZStep",14.6);      // guess
-  Control.addVariable("MerlinModXYAngle",80.0);      // guess
+  Control.addVariable("MerlinModZAngle",80.0);      // guess
 
   Control.addVariable("MerlinModWidth",12.5);    // guess
   Control.addVariable("MerlinModDepth",4.5);    // guess
@@ -323,8 +321,8 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("WaterModXStep",0.0);      // guess
 //  Control.addVariable("WaterModYStep",0.9);        // guess
   Control.addVariable("WaterModYStep",0.9-9.2);       //  relative to VoidVessel  
-  Control.addVariable("WaterModZStep",14.6);      // guess
-  Control.addVariable("WaterModXYAngle",-90.0+32.0);      // guess
+  Control.addVariable("WaterModZStep",14.6);            // guess
+  Control.addVariable("WaterModZAngle",-90.0+32.0);      // guess
 
   Control.addVariable("WaterModWidth",12.5);    // guess
   Control.addVariable("WaterModDepth",4.5);    // guess
@@ -540,12 +538,12 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("WaterPipeSteelRadius",2.8);           
 
   // PIPEWORK water WaterIN
-  Control.addVariable("WaterPipeInXStep",3.8); 
+  Control.addVariable("WaterPipeInXStep",2.8); 
   Control.addVariable("WaterPipeInYStep",0.0);             
   Control.addVariable("WaterPipeInFullLen",31.25);        
   
   // PIPEWORK water WaterOUT
-  Control.addVariable("WaterPipeOutXStep",-3.8);        
+  Control.addVariable("WaterPipeOutXStep",-2.8);        
   Control.addVariable("WaterPipeOutYStep",0.0);        
   Control.addVariable("WaterPipeOutFullLen",31.25);        
   Control.addVariable("WaterPipeOutOuterRadius",1.7);           

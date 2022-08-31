@@ -3,7 +3,7 @@
  
  * File:   attachComp/ContainedComp.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -87,7 +87,7 @@ ContainedComp::ContainedComp()
 {}
 
 ContainedComp::ContainedComp(const ContainedComp& A) : 
-  boundary(A.boundary),outerSurf(A.outerSurf),
+  outerSurf(A.outerSurf),
   insertCells(A.insertCells)
   /*!
     Copy constructor
@@ -105,7 +105,6 @@ ContainedComp::operator=(const ContainedComp& A)
 {
   if (this!=&A)
     {
-      boundary=A.boundary;
       outerSurf=A.outerSurf;
       insertCells=A.insertCells;
     }
@@ -125,7 +124,6 @@ ContainedComp::clearRules()
     Zero all the rules
    */
 {
-  boundary.reset();
   outerSurf.reset();
   return;
 }
@@ -140,7 +138,6 @@ ContainedComp::copyRules(const ContainedComp& A)
   ELog::RegMethod RegA("ContainedComp","copyRules");
   if (&A != this)
     {
-      boundary=A.boundary;
       outerSurf=A.outerSurf;
     }
   return;
@@ -193,21 +190,6 @@ ContainedComp::getConstSurfaces() const
   return outerSurf.getTopRule()->getConstSurfVector();
 }
   
-int
-ContainedComp::getMainCell() const
-  /*!
-    Get first cell if required
-    \todo [is it better to delete this cell?]
-    \return cell name
-   */
-{
-  ELog::RegMethod RegA("ContainedComp","getMainCell");
-  
-  if (insertCells.empty())
-    throw ColErr::EmptyContainer("insertCells");
-  return insertCells.front();
-}
-
 void
 ContainedComp::addOuterSurf(const int SN) 
   /*!
@@ -217,7 +199,7 @@ ContainedComp::addOuterSurf(const int SN)
 {
   ELog::RegMethod RegA("ContainedComp","addOuterSurf");
   
-  outerSurf.addIntersection(std::to_string(SN));
+  outerSurf.addIntersection(HeadRule(SN));
   outerSurf.populateSurf();
   return;
 }
@@ -315,61 +297,6 @@ ContainedComp::addOuterUnionSurf(const ContainedComp& CC)
   return;
 }
 
-void
-ContainedComp::addBoundarySurf(const int SN)
-  /*!
-    Add a set of surfaces to the boundary object [intersection]
-    \param SN ::  Signed surface number
-  */
-{
-  ELog::RegMethod RegA("ContainedComp","addBoundarySurf(int)");
-
-  boundary.addIntersection(std::to_string(SN));
-  boundary.populateSurf();
-  return;
-}
-
-void
-ContainedComp::addBoundarySurf(const std::string& SList) 
-  /*!
-    Add a set of surfaces to the boundary object
-    \param SList ::  Surface string [fully decomposed]
-  */
-{
-  ELog::RegMethod RegA("ContainedComp","addBoundarySurf(std::string)");
-  boundary.addIntersection(SList);
-  boundary.populateSurf();
-
-  return;
-}
-
-
-void
-ContainedComp::addBoundaryUnionSurf(const int SN)
-  /*!
-    Add a set of surfaces to the boundary object
-    \param SN ::  Signed surface number
-  */
-{
-  ELog::RegMethod RegA("ContainedComp","addBoundaryUnionSurf(int)");
-  boundary.addUnion(std::to_string(SN));
-  boundary.populateSurf();
-  return;
-}
-
-void
-ContainedComp::addBoundaryUnionSurf(const std::string& SList) 
-  /*!
-    Add a set of surfaces to the boundary object
-    \param SList ::  Surface string [fully decomposed]
-  */
-{
-  ELog::RegMethod RegA("ContainedComp","addBoundaryUnionSurf(std::string)");
-  boundary.addUnion(SList);
-  boundary.populateSurf();
-  return;
-}
-
 const HeadRule&
 ContainedComp::getOuterSurf() const
   /*!
@@ -379,6 +306,17 @@ ContainedComp::getOuterSurf() const
   */
 {
   return outerSurf;
+}
+
+HeadRule
+ContainedComp::getExcludeSurf() const
+  /*!
+    Care here because this can return a referenece
+    due to ContainedGroup not having a complete outer surf
+    \return Outer headRule
+  */
+{
+  return outerSurf.complement();
 }
   
 std::string
@@ -390,7 +328,7 @@ ContainedComp::getCompExclude() const
     \return Exclude string [union]
   */
 {
-  ELog::RegMethod RegA("ContainedComp","getExclude");
+  ELog::RegMethod RegA("ContainedComp","getCompExclude");
 
   return outerSurf.display();
 }
@@ -408,35 +346,6 @@ ContainedComp::getExclude() const
   
   if (outerSurf.hasRule())
     return outerSurf.complement().display();
-  return "";
-}
-
-std::string
-ContainedComp::getContainer() const
-  /*!
-    Calculate the write out the containing surface,
-    allows an object to be inserted into this object without
-    exceeding the boundary.
-    \return Exclude string [union]
-  */
-{
-  ELog::RegMethod RegA("ContainedComp","getContainer");
-  return boundary.display();
-}
-
-std::string
-ContainedComp::getCompContainer() const
-  /*!
-    Calculate the write out the containing surface,
-    allows an object to be inserted into this object without
-    exceeding the boundary.
-    \return Exclude string [union]
-  */
-{
-  ELog::RegMethod RegA("ContainedComp","getCompContainer");
-
-  if (boundary.hasRule())
-    return boundary.complement().display();
   return "";
 }
 
@@ -477,28 +386,6 @@ ContainedComp::validIntersection(const HeadRule& BObj,
     }
   return 0;
 }
-
-
-std::string
-ContainedComp::getCompContainer(const Geometry::Surface* ASurf,
-				const Geometry::Surface* BSurf) const
-  /*!
-    Calculate the write out the containing surface,
-    allows an object to be inserted into this object without
-    exceeding the boundary.
-    \param ASurf :: First surf    
-    \param BSurf :: Second surf
-    \return Exclude string [union]
-  */
-{
-  ELog::RegMethod RegA("ContainedComp","getCompContainer");
-  if(validIntersection(boundary,1,ASurf,BSurf))
-    {
-      return getCompContainer();
-    }
-
-  return "";
-}
   
 int
 ContainedComp::surfOuterIntersect(const Geometry::Line& LA) const
@@ -516,63 +403,6 @@ ContainedComp::surfOuterIntersect(const Geometry::Line& LA) const
 	result=outerSurf.trackSurfIntersect(LA.getOrigin(),LA.getDirect());
 
       return std::get<0>(result);
-    }
-  return 0;
-}
-
-int
-ContainedComp::isBoundaryValid(const Geometry::Vec3D& V) const
-  /*!
-    Determine if the boundary is valid [reverse test]
-    \param V :: Vector to test
-    \return true/false
-   */
-{
-  ELog::RegMethod RegA("ContainedComp","isBoundaryValid"); 
-
-  return (boundary.isValid(V)) ? 0 : 1;
-}
-
-bool
-ContainedComp::isOuterLine(const Geometry::Vec3D& APt,
-			   const Geometry::Vec3D& BPt) const
-  /*!
-    Given a line defined by O,Dir find if the line intersect
-    the object and has a valid region within the system
-    \param APt :: Origin of line
-    \param BPt :: End of line
-    \return true if the line intersect the component.
-  */
-{
-  ELog::RegMethod RegA("ContainedComp","isOuterLine");
-
-  // First get surfaces of object:
-  if (!outerSurf.hasRule()) return 0;
-
-  std::vector<Geometry::Surface*> SVec=
-    outerSurf.getTopRule()->getSurfVector();
-
-  // First if either point within the object return true!
-  if (outerSurf.isValid(APt) || outerSurf.isValid(BPt) )
-    return 1;
-
-  const double ABDist=APt.Distance(BPt);
-  MonteCarlo::LineIntersectVisit LI(APt,BPt-APt);
-  std::vector<Geometry::Surface*>::const_iterator vc;
-  for(vc=SVec.begin();vc!=SVec.end();vc++)
-    {
-      LI.clearTrack();
-      const std::vector<Geometry::Vec3D>& PVec=
-	LI.getPoints(*vc);
-      std::vector<Geometry::Vec3D>::const_iterator pc;
-      for(pc=PVec.begin();pc!=PVec.end();pc++)
-	{
-	  const double ADist=APt.Distance(*pc);
-	  const double BDist=BPt.Distance(*pc);
-	  if (fabs(ADist+BDist-ABDist)<Geometry::zeroTol &&
-	      outerSurf.isValid(*pc,(*vc)->getName()))
-	    return 1;
-	}
     }
   return 0;
 }
@@ -710,16 +540,13 @@ ContainedComp::insertExternalObject(Simulation& System,
 {
   ELog::RegMethod RegA("ContainedComp","insertExternalObject");
   
-  const std::string excludeStr=
-    excludeObj.getHeadRule().complement().display();
+  const HeadRule excludeHR=
+    excludeObj.getHeadRule().complement();
 
   for(const int CN : insertCells)
     {
-      MonteCarlo::Object* outerObj=System.findObject(CN);
-      if (outerObj)
-	outerObj->addSurfString(excludeStr);
-      else
-	throw ColErr::InContainerError<int>(CN,"OuterObject");
+      MonteCarlo::Object* outerObj=System.findObjectThrow(CN,"OuterObject");
+      outerObj->addIntersection(excludeHR);
     }
   return;
 }
@@ -736,11 +563,9 @@ ContainedComp::insertObjects(Simulation& System)
 
   for(const int CN : insertCells)
     {
-      MonteCarlo::Object* outerObj=System.findObject(CN);
-      if (outerObj)
-	outerObj->addSurfString(getExclude());
-      else
-	throw ColErr::InContainerError<int>(CN,"Cell in Simulation");
+      MonteCarlo::Object* outerObj=
+	System.findObjectThrow(CN,"Cell in Simulation");
+      outerObj->addIntersection(outerSurf.complement());
     }
   insertCells.clear();
   return;
@@ -769,7 +594,7 @@ ContainedComp::insertObjects(Simulation& System,
 	    {
 	      if (HR.isValid(Pts))
 		{
-		  outerObj->addSurfString(getExclude());
+		  outerObj->addIntersection(outerSurf.complement());
 		  break;
 		}
 	    }
@@ -791,7 +616,7 @@ ContainedComp::insertInCell(MonteCarlo::Object& outerObj) const
   ELog::RegMethod RegA("ContainedComp","insertInCell(Obj)");
   
   if (!hasOuterSurf()) return;
-  outerObj.addSurfString(getExclude());
+  outerObj.addIntersection(outerSurf.complement());
   return;
 }
 
@@ -806,7 +631,7 @@ ContainedComp::insertInCell(Simulation& System,
 {
   ELog::RegMethod RegA("ContainedComp","insertInCell");
   
-  MonteCarlo::Object* outerObj=System.findObjectThrow(cellN);
+  MonteCarlo::Object* outerObj=System.findObjectThrow(cellN,"cellN");
   this->insertInCell(*outerObj);
   return;
 }
@@ -825,8 +650,8 @@ ContainedComp::insertInCell(Simulation& System,
   if (!hasOuterSurf()) return;
   for(const int cellN : cellVec)
     {
-      MonteCarlo::Object* outerObj=System.findObjectThrow(cellN);
-      outerObj->addSurfString(getExclude());
+      MonteCarlo::Object* outerObj=System.findObjectThrow(cellN,"cellN");
+      outerObj->addIntersection(outerSurf.complement());
     }
   return;
 }
@@ -838,9 +663,6 @@ ContainedComp::write(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
-  OX<<"\nboundary:";
-  StrFunc::writeMCNPX(boundary.display(),OX);
-  OX<<std::endl;
   OX<<"outerSurf:";
   StrFunc::writeMCNPX(outerSurf.display(),OX);
   OX<<std::endl;

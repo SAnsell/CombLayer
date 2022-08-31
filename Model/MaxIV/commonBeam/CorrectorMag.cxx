@@ -3,7 +3,7 @@
  
  * File:   commonBeam/CorrectorMag.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -126,7 +126,7 @@ CorrectorMag::populate(const FuncDataBase& Control)
 
   frameHeight=Control.EvalVar<double>(keyName+"FrameHeight");
 
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   coilMat=ModelSupport::EvalMat<int>(Control,keyName+"CoilMat");
   clampMat=ModelSupport::EvalMat<int>(Control,keyName+"ClampMat");
   frameMat=ModelSupport::EvalMat<int>(Control,keyName+"FrameMat");

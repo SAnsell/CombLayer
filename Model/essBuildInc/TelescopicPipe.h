@@ -15,7 +15,7 @@ namespace essSystem
 */
 
 class TelescopicPipe : public attachSystem::ContainedGroup,
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::FrontBackCut,
   public attachSystem::CellMap
 {
@@ -32,8 +32,6 @@ class TelescopicPipe : public attachSystem::ContainedGroup,
   // Functions:
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -45,7 +43,8 @@ class TelescopicPipe : public attachSystem::ContainedGroup,
   TelescopicPipe& operator=(const TelescopicPipe&);
     virtual TelescopicPipe *clone() const;
   virtual ~TelescopicPipe();
-   
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
  

@@ -158,7 +158,7 @@ setReactorPhysics(physicsSystem::PhysicsCards& PC,
   
   const double elcEnergy=IParam.getValue<double>("electron");
   const double phtEnergy=IParam.getValue<double>("photon");
-  const double phtModel=IParam.getValue<double>("photonModel");
+  //  const double phtModel=IParam.getValue<double>("photonModel");
 
 
   const std::string elcAdd((elcEnergy>0 ? " e" : ""));

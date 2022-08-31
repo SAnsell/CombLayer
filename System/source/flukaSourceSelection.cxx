@@ -81,9 +81,17 @@ flukaSourceSelection(Simulation& System,
   const bool axisFlag(IParam.flag("sdefVec"));
   if (axisFlag)
     {
-      const Geometry::Vec3D Org=IParam.getDefValue<Geometry::Vec3D>(Geometry::Vec3D(0,0,0),"sdefVec",0);
-      const Geometry::Vec3D Axis=IParam.getDefValue<Geometry::Vec3D>(Geometry::Vec3D(0,1,0),"sdefVec",1);
-      const Geometry::Vec3D ZAxis=IParam.getDefValue<Geometry::Vec3D>(Geometry::Vec3D(0,0,1),"sdefVec",2);
+      size_t itemCnt(0);
+      const Geometry::Vec3D Org=
+	mainSystem::getDefNamedPoint(System,IParam,"sdefVec",
+				     0,itemCnt,Geometry::Vec3D(0,0,0));
+      
+      const Geometry::Vec3D Axis=
+	mainSystem::getDefNamedAxis(System,IParam,"sdefVec",
+				     1,itemCnt,Geometry::Vec3D(0,1,0));
+      const Geometry::Vec3D ZAxis=
+	mainSystem::getDefNamedAxis(System,IParam,"sdefVec",
+				    2,itemCnt,Geometry::Vec3D(0,0,1));
       beamAxis.createUnitVector(Org,Axis,ZAxis);
     }
   
@@ -125,6 +133,10 @@ flukaSourceSelection(Simulation& System,
       else if (sdefType=="external" || sdefType=="External" ||
 	       sdefType=="source" || sdefType=="Source")
 	eName=SDef::createFlukaSource(inputMap,"flukaSource",FC,linkIndex);
+
+      else if (sdefType=="dark" || sdefType=="Dark" ||
+	       sdefType=="tdc" || sdefType=="TDC")
+	eName=SDef::createTDCSource(inputMap,"flukaSource",FC,linkIndex);
 	 
       else
 	{
@@ -132,6 +144,7 @@ flukaSourceSelection(Simulation& System,
 	    "Beam :: Test Beam [Radial] source \n"
 	    "Wiggler :: Wiggler Source for balder \n"
 	    "External/Source :: External source from source.f \n"
+	    "TDC/Dark :: External source from source.f as TDC source \n"
 		  <<ELog::endBasic;
 	}
     }

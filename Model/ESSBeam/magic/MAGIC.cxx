@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/magic/MAGIC.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,9 +55,9 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotateUnit.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
@@ -73,6 +73,7 @@
 #include "Aperture.h"
 #include "GuideLine.h"
 #include "DiskChopper.h"
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
@@ -89,13 +90,13 @@ namespace essSystem
 MAGIC::MAGIC(const std::string& keyName) :
   attachSystem::CopiedComp("magic",keyName),
   startPoint(0),stopPoint(0),
-  magicAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
+  magicAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   BendC(new beamlineSystem::GuideLine(newName+"BC")),
-  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
-  PSCDisk(new constructSystem::DiskChopper(newName+"PSCBlade")),
+  ChopperA(new essConstruct::SingleChopper(newName+"ChopperA")),
+  PSCDisk(new essConstruct::DiskChopper(newName+"PSCBlade")),
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   FocusD(new beamlineSystem::GuideLine(newName+"FD")),
   VPipeE(new constructSystem::VacuumPipe(newName+"PipeE")),

@@ -3,7 +3,7 @@
  
  * File:   delft/BeOElement.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,8 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -173,20 +171,20 @@ BeOElement::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("BeOElement","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   // Outer Layers
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  addOuterSurf(Out);      
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
+  addOuterSurf(HR);      
 
-  Out+=ModelSupport::getComposite(SMap,buildIndex,"(-11:12:-13:14:-15)");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+  HR*=ModelSupport::getHeadRule(SMap,buildIndex,"(-11:12:-13:14:-15)");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -14 15 -6 "
-				  " (-21 : 22 : -23 : 24 : -25)");
-  System.addCell(MonteCarlo::Object(cellIndex++,coolMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14 15 -6"
+				  "(-21 : 22 : -23 : 24 : -25)");
+  makeCell("Coolant",System,cellIndex++,coolMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -22 23 -24 25 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,beMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -22 23 -24 25 -6");
+  makeCell("Main",System,cellIndex++,beMat,0.0,HR);
 
   return;
 }

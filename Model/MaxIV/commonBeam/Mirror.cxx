@@ -3,7 +3,7 @@
 
  * File:   commonBeam/Mirror.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -156,22 +156,6 @@ Mirror::populate(const FuncDataBase& Control)
   return;
 }
 
-void
-Mirror::createUnitVector(const attachSystem::FixedComp& FC,
-                               const long int sideIndex)
-  /*!
-    Create the unit vectors.
-    Note that it also set the view point that neutrons come from
-    \param FC :: FixedComp for origin
-    \param sideIndex :: direction for link
-  */
-{
-  ELog::RegMethod RegA("Mirror","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
-  return;
-}
 
 void
 Mirror::createSurfaces()
@@ -256,38 +240,38 @@ Mirror::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Mirror","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   // xstal
   if (std::abs(radius)<Geometry::zeroTol)
-    Out=ModelSupport::getComposite(SMap,buildIndex,
+    HR=ModelSupport::getHeadRule(SMap,buildIndex,
 				   " 101 -102 103 -104 105 -106 ");
   else
-    Out=ModelSupport::getComposite
+    HR=ModelSupport::getHeadRule
       (SMap,buildIndex," 103 -104 107 -117 105 ");
 
-  makeCell("Mirror",System,cellIndex++,mirrMat,0.0,Out);
+  makeCell("Mirror",System,cellIndex++,mirrMat,0.0,HR);
 
   // Make sides
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 -103 203 -205 206 ");
-  makeCell("LeftSide",System,cellIndex++,baseMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 104 -204 -205 206 ");
-  makeCell("RightSide",System,cellIndex++,baseMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 101 -102 -103 203 -205 206 ");
+  makeCell("LeftSide",System,cellIndex++,baseMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 101 -102 104 -204 -205 206 ");
+  makeCell("RightSide",System,cellIndex++,baseMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
 				 " 101 -102 103 -104 -216 206 ");
-  makeCell("Base",System,cellIndex++,baseMat,0.0,Out);
+  makeCell("Base",System,cellIndex++,baseMat,0.0,HR);
 
   // vacuum units:
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex," 101 -102 103 -104 -105 216" );
-  makeCell("BaseVac",System,cellIndex++,0,0.0,Out);
+  makeCell("BaseVac",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex," 101 -102 103 -104 -205 106 " );
-  makeCell("TopVac",System,cellIndex++,0,0.0,Out);
+  makeCell("TopVac",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex," 101 -102 203 -204 -205 206" );
-  addOuterSurf(Out);
+  addOuterSurf(HR);
 
   return;
 }

@@ -3,7 +3,7 @@
  
  * File:   insertUnit/insertCylinder.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "BaseMap.h"
 #include "SurfMap.h"
 #include "CellMap.h"
@@ -220,13 +220,12 @@ insertCylinder::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("insertCylinder","createObjects");
   
-  std::string Out=
-    ModelSupport::getSetComposite(SMap,buildIndex," 1 -2 -7 ");
-  Out+=frontRule();
-  Out+=backRule();
-  System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));
-  addCell("Main",cellIndex-1);
-  addOuterSurf(Out);
+  HeadRule HR=
+    ModelSupport::getSetHeadRule(SMap,buildIndex,"1 -2 -7");
+  HR*=getFrontRule();
+  HR*=getBackRule();
+  makeCell("Main",System,cellIndex++,defMat,0.0,HR);
+  addOuterSurf(HR);
   return;
 }
 
@@ -292,7 +291,8 @@ insertCylinder::mainAll(Simulation& System)
 
 
 void
-insertCylinder::createAll(Simulation& System,const Geometry::Vec3D& OG,
+insertCylinder::createAll(Simulation& System,
+			  const Geometry::Vec3D& OG,
                           const attachSystem::FixedComp& FC)
 /*!
     Generic function to create everything
@@ -304,7 +304,7 @@ insertCylinder::createAll(Simulation& System,const Geometry::Vec3D& OG,
   ELog::RegMethod RegA("insertCylinder","createAll(Vec,FC)");
   if (!populated) 
     populate(System.getDataBase());  
-  createUnitVector(OG,FC);
+  createUnitVector(FC,OG);
   mainAll(System);
   return;
 }

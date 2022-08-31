@@ -3,7 +3,7 @@
  
  * File:   R3CommonInc/MagnetU1.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,10 @@
 
 class Simulation;
 
+namespace constructSystem
+{
+  class CornerPipe;
+}
 
 namespace xraySystem
 {
@@ -53,12 +57,16 @@ class MagnetU1 :
 {
  private:
 
-  double blockXStep;            ///< X Centre offset
-  double blockXYAngle;          ///< XY angle of block
   double blockYStep;            ///< Step forward
-  double blockWidth;            ///< block width
-  double blockLength;           ///< block length
-  double blockHeight;           ///< block length
+  double length;                ///< frame length
+
+  double outerVoid;             ///< Size of outer void gap
+  double ringVoid;              ///< Size of outer void gap
+  double topVoid;               ///< Size of outer void gap
+  double baseVoid;              ///< Size of outer void gap
+
+  double baseThick;             ///< base thickness
+  double wallThick;             ///< side wall thickness
   
   int voidMat;                  ///< void material
   int wallMat;                  ///< wall material
@@ -79,12 +87,18 @@ class MagnetU1 :
   std::shared_ptr<xraySystem::Sexupole> SD1;
   /// Dipole
   std::shared_ptr<xraySystem::Dipole> DIPm;
+  //std::shared_ptr<tdcSystem::DipoleDIBMag> DIPm;
   /// Sextupole [small]
   std::shared_ptr<xraySystem::Sexupole> SD2;
+
+  void createUnit(Simulation&,size_t&,
+		  const attachSystem::FixedComp&,
+		  const attachSystem::FixedComp&);
   
   void populate(const FuncDataBase&);
   void createSurfaces();
   void createObjects(Simulation&);
+
   void createLinks();
   void createEndPieces();
 
@@ -95,6 +109,9 @@ class MagnetU1 :
   MagnetU1& operator=(const MagnetU1&);
   virtual ~MagnetU1();
 
+  void insertDipolePipe(Simulation&,const constructSystem::CornerPipe&);
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

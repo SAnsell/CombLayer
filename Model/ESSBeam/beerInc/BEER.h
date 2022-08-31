@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/beer/BEER.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,10 +34,16 @@ namespace instrumentSystem
   class CylSample;
 }
 
+namespace essConstruct
+{
+  class DiskChopper;  
+  class SingleChopper;
+  class TwinChopper;
+  class TwinChopperFlat;
+}
+
 namespace constructSystem
 {  
-  class ChopperPit;
-  class DiskChopper;
   class Jaws;
   class LineShield;
   class RotaryCollimator;
@@ -46,7 +52,6 @@ namespace constructSystem
   class VacuumWindow;
   class ChopperHousing;
   class ChopperPit;
-  class SingleChopper;
   class HoleShape;
   class JawSet;
 }
@@ -75,7 +80,7 @@ class BEER : public attachSystem::CopiedComp
   int stopPoint;  
 
   /// Main Beam Axis [for construction]
-  std::shared_ptr<attachSystem::FixedOffsetUnit> beerAxis;
+  std::shared_ptr<attachSystem::FixedRotateUnit> beerAxis;
 
   /// Elliptic focus in monolith [m5]
   std::shared_ptr<beamlineSystem::GuideLine> BendA;
@@ -91,14 +96,14 @@ class BEER : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> BendC;
 
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::SingleChopper> ChopperA;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperA;
   /// Double disk chopper
-  std::shared_ptr<constructSystem::DiskChopper> DDisk;
+  std::shared_ptr<essConstruct::DiskChopper> DDisk;
 
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::SingleChopper> ChopperB;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperB;
   /// Double disk chopper
-  std::shared_ptr<constructSystem::DiskChopper> WFMDisk;
+  std::shared_ptr<essConstruct::DiskChopper> WFMDisk;
 
   /// Pipe between chopper pairs
   std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
@@ -106,9 +111,9 @@ class BEER : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> BendD;
 
   /// 8.5m FOC 
-  std::shared_ptr<constructSystem::SingleChopper> ChopperC;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperC;
   /// Double disk chopper
-  std::shared_ptr<constructSystem::DiskChopper> FOCDiskC;
+  std::shared_ptr<essConstruct::DiskChopper> FOCDiskC;
 
   /// Pipe between chopper pairs
   std::shared_ptr<constructSystem::VacuumPipe> VPipeE;
@@ -116,9 +121,9 @@ class BEER : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> BendE;
 
   /// 10m 
-  std::shared_ptr<constructSystem::SingleChopper> ChopperD;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperD;
   /// Double disk chopper [wbc2]
-  std::shared_ptr<constructSystem::DiskChopper> WBC2Disk;
+  std::shared_ptr<essConstruct::DiskChopper> WBC2Disk;
 
   /// Pipe from 10.0 to 11.1m 
   std::shared_ptr<constructSystem::VacuumPipe> VPipeF;
@@ -126,9 +131,9 @@ class BEER : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> BendF;
 
   /// 11.1m FOC 
-  std::shared_ptr<constructSystem::SingleChopper> ChopperE;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperE;
   /// Double disk chopper
-  std::shared_ptr<constructSystem::DiskChopper> FOC2Disk;
+  std::shared_ptr<essConstruct::DiskChopper> FOC2Disk;
 
   /// Bunker insert
   std::shared_ptr<essSystem::BunkerInsert> BInsert;
@@ -143,14 +148,14 @@ class BEER : public attachSystem::CopiedComp
     /// 15m WBC3 
   std::shared_ptr<constructSystem::HoleShape> OutACut;
   /// 15m WBC3 
-  std::shared_ptr<constructSystem::SingleChopper> ChopperOutA;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperOutA;
   /// Double disk chopper (WBC3)
-  std::shared_ptr<constructSystem::DiskChopper> WBC3Disk;
+  std::shared_ptr<essConstruct::DiskChopper> WBC3Disk;
 
   /// 15m FOC3 
-  std::shared_ptr<constructSystem::SingleChopper> ChopperOutB;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperOutB;
   /// Double disk chopper (FOC3)
-  std::shared_ptr<constructSystem::DiskChopper> FOC3Disk;
+  std::shared_ptr<essConstruct::DiskChopper> FOC3Disk;
 
   /// Jaws at 20m
   std::shared_ptr<constructSystem::ChopperPit> JawPit;

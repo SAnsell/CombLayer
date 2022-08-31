@@ -3,7 +3,7 @@
 
  * File: cosaxs/cosaxsExptLine.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2022 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -67,6 +66,7 @@
 #include "generateSurf.h"
 #include "generalConstruct.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
@@ -148,7 +148,7 @@ cosaxsExptLine::populate(const FuncDataBase& Control)
   outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",outerLeft);
   outerTop=Control.EvalDefVar<double>(keyName+"OuterTop",outerLeft);
 
-  outerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"OuterMat",outerMat);
+  outerMat=ModelSupport::EvalDefMat(Control,keyName+"OuterMat",outerMat);
   nFilterHolders=Control.EvalDefVar<size_t>(keyName+"NFilterHolders",3);
 
   return;

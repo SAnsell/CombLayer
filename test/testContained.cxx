@@ -101,7 +101,7 @@ testContained::createSurfaces()
   SurI.createSurface(100,"so 25");
 
 
-  // Sphere :
+  // Cylinder :
   SurI.createSurface(107,"cy 10");
 
   
@@ -125,14 +125,12 @@ testContained::applyTest(const int extra)
   testPtr TPtr[]=
     {
       &testContained::testAddition,
-      &testContained::testAddSurfString,
-      &testContained::testIsOuterLine
+      &testContained::testAddSurfString
     };
   const std::string TestName[]=
     {
       "Addition",
-      "AddSurfString",
-      "IsOuterLine"
+      "AddSurfString"
     };
   
   const int TSize(sizeof(TPtr)/sizeof(testPtr));
@@ -214,53 +212,6 @@ testContained::testAddSurfString()
   return 0;
 }
 
-int
-testContained::testIsOuterLine()
-  /*!
-    Test the line tracking through a cell .
-    Determine if a line tracks the out cell component
-    \retval 0 :: success / -ve on failure
-  */
-{
-  ELog::RegMethod RegA("testContained","testAddSurfString");
-
-  typedef std::tuple<std::string,Geometry::Vec3D,Geometry::Vec3D,bool> TTYPE;
-  std::vector<TTYPE> Tests;
-  Tests.push_back(TTYPE("1 -2 3 -4 5 -6",
-			Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0),1));
-
-  Tests.push_back(TTYPE("1 -2 3 -4 5 -6",
-			Geometry::Vec3D(-2,0,0),Geometry::Vec3D(-1.2,0,0),0));
-
-  Tests.push_back(TTYPE("3 -4 -107",
-			Geometry::Vec3D(-2,0,0),Geometry::Vec3D(-1.2,0,0),1));
-
-  Tests.push_back(TTYPE("3 -4 -107",
-			Geometry::Vec3D(-0,-2,0),Geometry::Vec3D(0,-1.2,0),0));
-
-  Tests.push_back(TTYPE("3 -4 -107",
-			Geometry::Vec3D(-1,0,0),Geometry::Vec3D(1,4,0),1));
-
-  Tests.push_back(TTYPE("3 -4 -107",
-			Geometry::Vec3D(1,4,0),Geometry::Vec3D(-1,0,0),1));
-  
-
-  for(const TTYPE& tc : Tests)
-    {
-      ContainedComp C;
-      C.addOuterSurf(std::get<0>(tc));
-      bool Res=C.isOuterLine(std::get<1>(tc),std::get<2>(tc));
-      if (Res!=std::get<3>(tc))
-	{
-	  ELog::EM<<"Surface  == "<<std::get<0>(tc)<<ELog::endTrace;
-	  ELog::EM<<"Line == "<<std::get<1>(tc)<<" :: "
-		  <<std::get<2>(tc)<<ELog::endTrace;
-	  ELog::EM<<"Expect  == "<<std::get<3>(tc)<<ELog::endTrace;
-	  return -1;
-	}
-    }
-  return 0;
-}
 
 
 

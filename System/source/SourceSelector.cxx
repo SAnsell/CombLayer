@@ -3,7 +3,7 @@
  
  * File:   source/SourceSelector.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -254,6 +254,7 @@ sourceSelection(Simulation& System,
 	"D4C :: D4C neutron beam\n\n"
 	
 	"FlukaSource :: Source [external] fluka output \n"
+	"TDCSouce :: Source [external] fluka output for TDC \n"
 
 	"kcode :: fission kcode \n"
 	      <<ELog::endBasic;

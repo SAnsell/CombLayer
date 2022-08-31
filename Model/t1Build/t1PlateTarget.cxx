@@ -3,7 +3,7 @@
  
  * File:   t1Build/t1PlateTarget.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +50,7 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
 #include "BaseMap.h"
@@ -135,9 +135,7 @@ t1PlateTarget::~t1PlateTarget()
   
 
 void
-t1PlateTarget::addProtonLine(Simulation& System,
-			     const attachSystem::FixedComp& refFC,
-			     const long int index)
+t1PlateTarget::addProtonLine(Simulation& System)
   /*!
     Add a proton void cell
     \param System :: Simualation
@@ -147,9 +145,10 @@ t1PlateTarget::addProtonLine(Simulation& System,
 {
   ELog::RegMethod RegA("t1PlateTarget","addProtonLine");
 
-  PLine->setCutSurf("RefBoundary",refFC.getLinkString(index));
-  PLine->createAll(System,*PressVObj,-7);
-  createBeamWindow(System,7);
+  PLine->copyCutSurf("RefBoundary",*this,"RefBoundary");
+  PLine->setCutSurf("TargetSurf",*PressVObj,"BeamWindow");
+  PLine->createAll(System,*PressVObj,"BeamWindow");
+  createBeamWindow(System,-7);
   
   return;
 }
@@ -174,13 +173,11 @@ t1PlateTarget::createAll(Simulation& System,
   FixedComp::copyLinkObjects(*PressVObj);
   ContainedComp::copyRules(*PressVObj);
 
-
-  PlateTarObj->addInsertCell(PressVObj->getInnerVoid());
-  PlateTarObj->addInsertCell(PressVObj->getOuterWall());
+  PlateTarObj->addInsertCell(PressVObj->getCell("IVoid"));
+  PlateTarObj->addInsertCell(PressVObj->getCell("OuterWall"));
   PlateTarObj->createAll(System,*PressVObj,0);
 
-  DivObj->addInsertCell(PressVObj->getInnerVoid());
-  //  DivObj->createAll(System,*PlateTarObj,*PressVObj,0);
+  DivObj->addInsertCell(PressVObj->getCell("IVoid"));
   DivObj->build(System,*PlateTarObj,*PressVObj);
 
   insertObjects(System);

@@ -3,7 +3,7 @@
  
  * File:   t1Build/channel.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -217,7 +217,7 @@ channel::populate(const FuncDataBase& Control,
   for(size_t i=0;i<Size;i++)
     {
       std::ostringstream cx;
-      cx<<keyName<<blockIndex<<sndKey[i];
+      cx<<keyName<<sndKey[i];
       if (Control.hasVariable(cx.str()))
 	setVar(Control,i,cx.str());
       else if (defChannel)
@@ -305,7 +305,7 @@ channel::setDefaultValues(const FuncDataBase& Control,
 			  const channel* ZB)
   /*!
     \param Control :: Target origin system
-    \param ZB :: Channel to take default values
+    \param ZB :: Channel to copy default values from
   */
 {
   populate(Control,ZB);

@@ -57,6 +57,7 @@
 #include "BlockZone.h"
 #include "CopiedComp.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "R1Ring.h"
 #include "R1FrontEnd.h"

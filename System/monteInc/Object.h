@@ -3,7 +3,7 @@
  
  * File:   monteInc/Object.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,10 +23,16 @@
 #define MonteCarlo_Object_h
 
 class Token;
+namespace Geometry
+{
+  class Plane;
+}
+ 
 
 namespace MonteCarlo
 {
   class particle;
+  class Material;
 
 /*!
   \class Object
@@ -43,24 +49,28 @@ class Object
 {
  private:
 
-  std::string FCUnit; ///< FixedComp name
+  std::string FCUnit;      ///< FixedComp name
   
   int ObjName;             ///< Number for the object
   int listNum;             ///< Creation number
   double Tmp;              ///< Starting temperature (if given)
   const Material* matPtr;  ///< Material Number 
-  int trcl;          ///< transform number
-  Importance imp;           ///< importance / 0 
+  int trcl;                ///< transform number [deprecated]
+  Importance imp;          ///< importance / 0 
 
-  int populated;     ///< Full population
+  int populated;           ///< Full population
 
-  bool activeMag;         ///< Magnetic field active
-  double magMinStep;      ///< min step for mag field [fluka]
-  double magMaxStep;      ///< max step for mag field [fluka]
+  int activeMag;           ///< Mag active [0:None:1:Basic:2:Sync+Mag]
+  double magMinStep;       ///< min step for mag field [fluka]
+  double magMaxStep;       ///< max step for mag field [fluka]
+
+  bool activeElec;         ///< Electric field active
+  double elecMinStep;       ///< min step for mag field [fluka]
+  double elecMaxStep;       ///< max step for mag field [fluka]
   
-  HeadRule HRule;    ///< Top rule
+  HeadRule HRule;           ///< Top rule
 
-  Geometry::Vec3D COM;       ///< Centre of mass 
+  Geometry::Vec3D COM;      ///< Centre of mass 
   
   /// Set of surfaces that are logically opposite in the rule.
   std::set<const Geometry::Surface*> logicOppSurf;
@@ -78,8 +88,8 @@ class Object
   std::vector<const Geometry::Surface*> SurList;  
   std::set<int> SurSet;              ///< set of surfaces in cell [signed]
 
-  int trackDirection(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
-
+  const Geometry::Surface* getSurf(const int) const;
+  
  public:
 
   Object();
@@ -95,15 +105,6 @@ class Object
   virtual Object* clone() const;
   virtual ~Object();
 
-  /// Effective typeid
-  virtual std::string className() const { return "Object"; }
-  /// Visitor Acceptance
-  virtual void acceptVisitor(Global::BaseVisit& A) const
-    {  A.Accept(*this); }
-  /// Accept visitor for input
-  virtual void acceptVisitor(Global::BaseModVisit& A)
-    { A.Accept(*this); }
-
   /// set the name
   void setFCUnit(const std::string& FC) { FCUnit=FC; }
   void setName(const int nx) { ObjName=nx; }           ///< Set Name 
@@ -114,15 +115,19 @@ class Object
   void setImp(const double V) { imp.setImp(V); }
   void setImp(const std::string& particle,const double V)
   { imp.setImp(particle,V); }
-  void setMagFlag() { activeMag=1; }  ///< implicit mag flag [no field]
+  void setMagFlag(const bool syncFlag)
+    { activeMag=(syncFlag) ? 2 : 1; }    ///< implicit mag flag [no field]
+  void setElecFlag() { activeElec=1; }  ///< implicit elec flag [no field]
   
   int setObject(std::string);
   int setObject(const int,const int,const std::vector<Token>&);
   int procString(const std::string&);
   int procHeadRule(const HeadRule&);
 
-  void setMaterial(const int);  // to be written
+  void setMaterial(const int);
+  void setMaterial(const std::string&); 
   void setMagStep(const double,const double);
+  void setElecStep(const double,const double);
   
   int complementaryObject(const int,std::string&);
   int hasComplement() const;                           
@@ -175,17 +180,21 @@ class Object
 
   bool hasSurface(const int) const;
   bool hasMagField() const { return activeMag; }  ///< Active mag
+  bool hasElecField() const { return activeElec; }  ///< Active elec field
   /// Steps
   std::pair<double,double> getMagStep() const
     { return std::pair<double,double>(magMinStep,magMaxStep); }  
+  std::pair<double,double> getElecStep() const
+    { return std::pair<double,double>(elecMinStep,elecMaxStep); }  
   int isValid(const Geometry::Vec3D&) const;            
-  int isValid(const Geometry::Vec3D&,const int) const;            
+  int isValid(const Geometry::Vec3D&,const int) const;
+  int isSignedValid(const Geometry::Vec3D&,const int) const;            
   int isDirectionValid(const Geometry::Vec3D&,const int) const;
   int isDirectionValid(const Geometry::Vec3D&,const std::set<int>&,
 		       const int) const;            
   int isValid(const Geometry::Vec3D&,const std::set<int>&) const;            
-  int pairValid(const int,const Geometry::Vec3D&) const;   
-  int isValid(const std::map<int,int>&) const; 
+  int isValid(const std::map<int,int>&) const;
+  int isValid(const Geometry::Vec3D&,const std::map<int,int>&) const; 
   std::set<int> surfValid(const Geometry::Vec3D&) const;
   std::map<int,int> mapValid(const Geometry::Vec3D&) const;
 
@@ -218,12 +227,21 @@ class Object
   std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
   trackSurfIntersect(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
 
-  int trackSurf(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
+  Geometry::Vec3D trackPoint(const Geometry::Vec3D&,
+			     const Geometry::Vec3D&) const;
+  
+  Geometry::Vec3D trackClosestPoint(const Geometry::Vec3D&,
+				    const Geometry::Vec3D&,
+				    const Geometry::Vec3D&) const;
 
+  int trackSurf(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
   
   int trackCell(const MonteCarlo::particle&,double&,
 		const Geometry::Surface*&,
 		const int) const;
+
+  int trackDirection(const Geometry::Vec3D&,
+		     const Geometry::Vec3D&) const;
 
 
   /// acessor to forward 

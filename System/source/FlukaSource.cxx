@@ -3,7 +3,7 @@
  
  * File:   source/FlukaSource.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,6 +74,19 @@ operator<<(std::ostream& OX,const SDef::unitTYPE& unit)
   
 FlukaSource::FlukaSource(const std::string& keyName) : 
   FixedRotateUnit(keyName,0),SourceBase()
+  /*!
+    Constructor BUT ALL variable are left unpopulated.
+    \param keyName :: main name
+  */
+{
+  for(size_t i=0;i<12;i++)
+    sValues[i]=unitTYPE(0,"");
+}
+
+FlukaSource::FlukaSource(const std::string& keyName,
+			   const std::string& ssName) : 
+  FixedRotateUnit(keyName,0),SourceBase(),
+  sourceName(ssName)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param keyName :: main name
@@ -160,13 +173,13 @@ FlukaSource::populate(const ITYPE& inputMap)
     }
   if (unitName=="tdc")
     sourceName="TDC";
-  if (mainSystem::hasInput(inputMap,"logWeight"))
+  else if (mainSystem::hasInput(inputMap,"logWeight"))
     sourceName="LOG";
 
   if (sourceName=="LOG")
-    ELog::EM<<"Source log type == "<<sourceName<<ELog::endDiag;
+    ELog::EM<<"Source LOG type "<<ELog::endDiag;
   else if  (sourceName=="TDC")
-    ELog::EM<<"Source type  == "<<sourceName<<ELog::endDiag;
+    ELog::EM<<"Source TDC type "<<ELog::endDiag;
   else
     ELog::EM<<"Source flat probability type "<<ELog::endDiag;
   

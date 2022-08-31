@@ -3,7 +3,7 @@
 
  * File:   src/SimPOVRay.cxx
  *
- * Copyright (c) 2004-2019 by Konstantin Batkov/Stuart Ansell
+ * Copyright (c) 2004-2022 by Konstantin Batkov/Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,6 +45,7 @@
 #include "Zaid.h"
 #include "MXcards.h"
 #include "Material.h"
+#include "MapSupport.h"
 #include "Vec3D.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -87,6 +88,25 @@ SimPOVRay::operator=(const SimPOVRay& A)
       Simulation::operator=(A);
     }
   return *this;
+}
+
+void
+SimPOVRay::addTransmission(const std::string& Mat,const double V)
+  /*!
+    Adds a material to the transmission set
+    \param Mat :: Material name
+    \param V :: transmission value [0 -1]
+   */
+{
+  ELog::RegMethod RegA("SimPOVray","addTransmission");
+  
+  std::map<std::string,double>::iterator mc=
+    transmitMap.find(Mat);
+  if (mc!=transmitMap.end())
+    mc->second=V;
+  else
+    transmitMap.emplace(Mat,V);
+  return;
 }
 
 void
@@ -139,9 +159,14 @@ SimPOVRay::writeMaterial(std::ostream& OX) const
       (void) cellNum;        // avoid warning -- fixed c++20
       const MonteCarlo::Material* mPtr = objPtr->getMatPtr();
       const int ID=mPtr->getID();
+      // cant use this is set because not all a written [not unique]
+      const std::string matName=mPtr->getName();
       if (ID && writtenMat.find(ID)==writtenMat.end())
 	{
-	  mPtr->writePOVRay(OX);
+	  ELog::EM<<"Mat == "<<matName<<ELog::endDiag;
+	  const double transmit=
+	    MapSupport::findDefVal(transmitMap,matName,-1.0);
+	  mPtr->writePOVRay(OX,transmit);
 	  writtenMat.emplace(ID);
 	}
     }

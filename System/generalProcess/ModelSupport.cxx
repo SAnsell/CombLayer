@@ -286,7 +286,6 @@ getComposite(const surfRegister& SMap,const int SOffset,
   const int signV((SOffset<0) ? -1 : 1); 
   const int minorOffset((SminorOffset<0) ? -SminorOffset : SminorOffset);
   const int minorSignV((SminorOffset<0) ? -1 : 1); 
-
   
   cx<<" ";
   while(StrFunc::section(segment,OutUnit))
@@ -627,14 +626,14 @@ getAltComposite(const surfRegister& SMap,const int Offset,
 
   std::string OutUnit;
   int cellN;
-  size_t index(7);         // A,B,C
+  size_t index(15);         // A,B,C,D
   while(StrFunc::section(segment,OutUnit))
     {
       const size_t oL=OutUnit.length();
       if (oL>=2)
 	{
 	  const char Unit=OutUnit[oL-1];
-	  if (Unit=='A' || Unit=='B' || Unit=='C')
+	  if (Unit=='A' || Unit=='B' || Unit=='C' || Unit=='D')
 	    {
 	      OutUnit[oL-1]=' ';
 	      int Plus=Offset;
@@ -658,16 +657,17 @@ getAltComposite(const surfRegister& SMap,const int Offset,
 		  const int CN((cellN>0) ? cellN+Plus : cellN-Plus);
 		  if (!SMap.hasSurf(CN))
 		    {
-		      if (Unit=='A') index &= 3;  // 011
-		      if (Unit=='B') index &= 5;  // 101
-		      if (Unit=='C') index &= 6;  // 110
+		      if (Unit=='A') index &= 7;   // 0111
+		      if (Unit=='B') index &= 11;  // 1011
+		      if (Unit=='C') index &= 13;  // 1101
+		      if (Unit=='D') index &= 14;  // 1110
 		    }
 		}
 	    }
 	}
     }  
   // preserve either A,B,C,' '.
-  const char preserve=" CBBAAAA"[index];
+  const char preserve=" DCCBBBBAAAAAAAA"[index];
   while(StrFunc::section(segmentB,OutUnit))
     {
       const size_t oL=OutUnit.length();
@@ -676,7 +676,7 @@ getAltComposite(const surfRegister& SMap,const int Offset,
 	  const char OU=OutUnit[oL-1];
 	  if (preserve==OU)
 	    OutUnit[oL-1]=' ';
-	  else if (OU=='A' || OU=='B' || OU=='C' )
+	  else if (OU=='A' || OU=='B' || OU=='C' || OU=='D')
 	    OutUnit="";
 	    
 	  cx<<OutUnit<<" ";
@@ -995,5 +995,100 @@ getAltHeadRule(const surfRegister& SMap,const int Offset,
 {
   return HeadRule(getAltComposite(SMap,Offset,Offset,Offset,BaseString));
 }
+    
+HeadRule
+getRangeHeadRule(const surfRegister& SMap,
+		 const int IBase,
+		 const int IEnd,
+		 const int IOffset,
+		 const int Offset,
+		 const std::string& BaseString)
+  /*!
+    Given a base string add an offset to the numbers
+    The index select the equivilent starting point.
+    The post designator R is the index form.
+    
+
+    If a cell does not exist ignore [no error]
+    If a number is preceeded by T then it is a true number.
+    Use T-4000 etc.
+    \param SMap :: Surf register 
+    \param IBase :: base number for repeat
+    \param IEnd :: last number in repat
+    \param IOffset :: Offset number for range
+    \param Offset :: Offset number to add
+    \param minorOffset :: secondary primary offset from baseNumber
+    \param BaseString :: BaseString number
+    \return HeadRule with offset components
+   */
+{
+  return HeadRule(getRangeComposite(SMap,IBase,IEnd,IOffset,
+				    Offset,0,0,BaseString));
+}
+
+HeadRule
+getRangeHeadRule(const surfRegister& SMap,
+		 const int IBase,
+		 const int IEnd,
+		 const int IOffset,
+		 const int Offset,
+		 const int minorOffset,
+		 const std::string& BaseString)
+  /*!
+    Given a base string add an offset to the numbers
+    The index select the equivilent starting point.
+    The post designator R is the index form.
+    
+
+    If a cell does not exist ignore [no error]
+    If a number is preceeded by T then it is a true number.
+    Use T-4000 etc.
+    \param SMap :: Surf register 
+    \param IBase :: base number for repeat
+    \param IEnd :: last number in repat
+    \param IOffset :: Offset number for range
+    \param Offset :: Offset number to add
+    \param minorOffset :: secondary primary offset from baseNumber
+    \param BaseString :: BaseString number
+    \return HeadRule with offset components
+   */
+{
+  return HeadRule(getRangeComposite(SMap,IBase,IEnd,IOffset,
+				    Offset,minorOffset,0,BaseString));
+}
+
+HeadRule
+getRangeHeadRule(const surfRegister& SMap,
+		 const int IBase,
+		 const int IEnd,
+		 const int IOffset,
+		 const int Offset,
+		 const int minorOffset,
+		 const int sndOffset,
+		 const std::string& BaseString)
+  /*!
+    Given a base string add an offset to the numbers
+    The index select the equivilent starting point.
+    The post designator R is the index form.
+    
+
+    If a cell does not exist ignore [no error]
+    If a number is preceeded by T then it is a true number.
+    Use T-4000 etc.
+    \param SMap :: Surf register 
+    \param IBase :: base number for repeat
+    \param IEnd :: last number in repat
+    \param IOffset :: Offset number for range
+    \param Offset :: Offset number to add
+    \param minorOffset :: secondary primary offset from baseNumber
+    \param BaseString :: BaseString number
+    \return HeadRule with offset components
+   */
+{
+  return HeadRule(getRangeComposite
+		  (SMap,IBase,IEnd,IOffset,Offset,minorOffset,
+		   sndOffset,BaseString));
+}
+
 
 }  // NAMESPACE ModelSupport

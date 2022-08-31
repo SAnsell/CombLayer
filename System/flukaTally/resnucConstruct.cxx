@@ -3,7 +3,7 @@
  
  * File:   flukaTally/resnucConstruct.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Code.h"
 #include "varList.h"
@@ -75,6 +73,12 @@ resnucConstruct::createTally(SimFLUKA& System,
 /*!
     An amalgamation of values to determine what sort of mesh to put
     in the system.
+
+    Note: There is a bug in fluka -- this needs each and
+    every RESNUC card to have the same ZMax/AMax. So we 
+    update each to the groups max/min and then if we 
+    have a new on update all.
+
     \param System :: SimFLUKA to add tallies
     \param fortranTape :: output stream
     \param CellA :: initial region
@@ -82,13 +86,13 @@ resnucConstruct::createTally(SimFLUKA& System,
 {
   ELog::RegMethod RegA("resnucConstruct","createTally");
 
-
-  // get MaxZ/MaxA
-  int ZMax(0),AMax(0);
-  const MonteCarlo::Object* OPtr=System.findObjectThrow(cellA);
-
+  const MonteCarlo::Object* OPtr=
+    System.findObjectThrow(cellA,"cellA");
+  
   const std::vector<MonteCarlo::Zaid> ZVec=
     OPtr->getMatPtr()->getZaidVec();
+  int ZMax(0);
+  int AMax(0);
   for(const MonteCarlo::Zaid& zaid : ZVec)
     {
       const int Z=static_cast<int>(zaid.getZ());
@@ -115,8 +119,8 @@ resnucConstruct::processResNuc(SimFLUKA& System,
   /*!
     Add TRACK tally (s) as needed
     - Input:
-    -- FixedComp/CellMap name 
-    -- cellA  
+    -- FixedComp/CellMap name {mat}
+    -- cellNumber ... cellNumber
     \param System :: SimFLUKA to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
@@ -126,12 +130,17 @@ resnucConstruct::processResNuc(SimFLUKA& System,
 
   const std::string objectName=
     IParam.getValueError<std::string>("tally",Index,1,"tally:objectName");
-
+  const std::string matName=
+    (IParam.itemCnt("tally",Index)>2) ? 
+    IParam.getValue<std::string>("tally",Index,2) :
+    "All";
+  
   if (objectName=="help" ||  objectName=="Help")
     return writeHelp(ELog::EM.Estream());
-  
-  const std::vector<int> cellVec=
-    System.getObjectRange(objectName);
+
+  ELog::EM<<"Mat == "<<matName<<ELog::endDiag;
+  const std::set<int> cellVec=
+    System.getObjectRangeWithMat(objectName,matName);
   
   // This junk gets a good ID + fortranTape number
   int fortranTape(0),ID(0);

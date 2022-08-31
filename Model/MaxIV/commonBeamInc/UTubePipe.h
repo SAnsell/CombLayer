@@ -36,11 +36,7 @@ namespace xraySystem
 */
 
 class UTubePipe :
-  public attachSystem::FixedRotate,
-  public attachSystem::ContainedGroup,
-  public attachSystem::CellMap,
-  public attachSystem::SurfMap,
-  public attachSystem::FrontBackCut
+    public constructSystem::GeneralPipe
 {
  private:
   
@@ -64,9 +60,6 @@ class UTubePipe :
   void createObjects(Simulation&);
   void createLinks();
 
-  void applyActiveFrontBack();
-
-  
  public:
 
   UTubePipe(const std::string&);

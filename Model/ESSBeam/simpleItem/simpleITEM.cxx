@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/simpleItem/SimpleITEM.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,10 +52,10 @@
 
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotate.h"
+#include "FixedRotateUnit.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
@@ -77,7 +77,7 @@ namespace essSystem
 
 simpleITEM::simpleITEM(const std::string& keyN) :
   attachSystem::CopiedComp("simple",keyN),stopPoint(0),
-  simpleAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
+  simpleAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
   Plate(new insertSystem::insertPlate(newName+"Plate"))
   /*!
     Constructor
@@ -106,7 +106,7 @@ void
 simpleITEM::build(Simulation& System,
 	    const GuideItem& GItem,
 	    const Bunker& bunkerObj,
-	    const int voidCell)
+	    const int)
   /*!
     Carry out the full build
     \param System :: Simulation system

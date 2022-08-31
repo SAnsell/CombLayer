@@ -3,7 +3,7 @@
  
  * File:   sourceInc/SynchrotonBeam.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@ namespace SDef
 */
 
 class SynchrotonBeam : 
-  public attachSystem::FixedOffsetUnit,
+  public attachSystem::FixedRotate,
   public SourceBase
 {
  private:
@@ -57,8 +57,6 @@ class SynchrotonBeam :
   Geometry::Vec3D beamXYZ;      ///< Start point of beam [origin for emission]
   
   void populate(const mainSystem::MITYPE&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
 
  public:
 
@@ -68,18 +66,20 @@ class SynchrotonBeam :
   virtual SynchrotonBeam* clone() const;
   virtual ~SynchrotonBeam();
 
-  void createAll(const mainSystem::MITYPE&,
-		 const attachSystem::FixedComp&,
-		 const long int);
-  void createAll(const attachSystem::FixedComp&,
-		 const long int);
 
   virtual void rotate(const localRotate&);
   virtual void createSource(SDef::Source&) const;
   virtual void write(std::ostream&) const;
   virtual void writePHITS(std::ostream&) const;
   virtual void writeFLUKA(std::ostream&) const;
-    
+
+  using FixedComp::createAll;
+  void createAll(const mainSystem::MITYPE&,
+		 const attachSystem::FixedComp&,
+		 const long int);
+  void createAll(const attachSystem::FixedComp&,
+		 const long int);
+
 };
 
 }

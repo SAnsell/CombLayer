@@ -3,7 +3,7 @@
  
  * File:   buildInc/Torpedo.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,12 +36,13 @@ namespace shutterSystem
     Can be specialized a vacuum/air torpedo 
   */
 
-class Torpedo : public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
-  public attachSystem::CellMap,
-  public attachSystem::ExternalCut
+class Torpedo :
+    public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
+    public attachSystem::CellMap,
+    public attachSystem::ExternalCut
 {
- protected:
+ private:
 
   const std::string baseName;         ///< Base Keyname 
   const size_t shutterNumber;         ///< number of the shutter
@@ -55,9 +56,6 @@ class Torpedo : public attachSystem::FixedOffset,
   double Height;                      ///< Total height 
   double Width;                       ///< Total depth
 
-  std::set<int> innerSurf;            ///< Inner surfaces
-  
-
   //--------------
   // FUNCTIONS:
   //--------------
@@ -65,13 +63,10 @@ class Torpedo : public attachSystem::FixedOffset,
   void populate(const FuncDataBase&);
   void createSurfaces();
   void createObjects(Simulation&);
-  void calcVoidIntercept(const attachSystem::ContainedComp&);
+  void calcVoidIntercept();
   void calcConvex(Simulation&);
   void createLinks();
 
-  std::string getInnerSurf() const;
-  std::string getSurfString(const std::string&) const;
-  
  public:
 
   Torpedo(const size_t,const std::string&);
@@ -83,6 +78,7 @@ class Torpedo : public attachSystem::FixedOffset,
   void addCrossingIntersect(Simulation&,const Torpedo&);
   int findPlane(const Geometry::Face&) const;
 
+  using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);

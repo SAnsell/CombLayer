@@ -3,7 +3,7 @@
  
  * File:   testInclude/simpleObj.h
 *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,8 +46,10 @@ namespace testSystem
   \brief Simple Box object for testing
 */
 
-class simpleObj : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+class simpleObj :
+    public attachSystem::ContainedComp,
+    public attachSystem::FixedComp,
+    public attachSystem::CellMap
 {
  private:
   
@@ -60,7 +62,6 @@ class simpleObj : public attachSystem::ContainedComp,
   double zSize;                 ///< Vertical size
 
   int defMat;                   ///< Default material  
-  int mainCell;                 ///< Main cell
 
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createUnitVector(const attachSystem::FixedComp&,const double,
@@ -76,17 +77,14 @@ class simpleObj : public attachSystem::ContainedComp,
   simpleObj(const simpleObj&);
   simpleObj& operator=(const simpleObj&);
   virtual ~simpleObj();
-  
-  std::string getComposite(const std::string&) const;
-
-  /// Get main cell
-  int getCell() const { return mainCell; } 
-  
+    
   /// Set Material
   void setMat(const int M) { defMat=M; }
   void setRefFlag(const int R) {refFlag=R;}
   /// Set offset
   void setOffset(const Geometry::Vec3D& O) { offset=O; }
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const double,const double,const double);
   void createAll(Simulation&,const attachSystem::FixedComp&,

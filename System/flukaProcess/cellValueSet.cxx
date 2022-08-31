@@ -3,7 +3,7 @@
  
  * File:   flukaProcess/cellValueSet.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,6 +49,15 @@
 
 namespace flukaSystem
 {
+
+template<size_t N>
+std::ostream&
+operator<<(std::ostream& OX,const cellValueSet<N>& A)
+{
+  OX<<A.getFLUKAstring(0,"%1 %2");
+  return OX;
+}
+
   
 template<size_t N>
 cellValueSet<N>::cellValueSet(const std::string& KN,
@@ -227,7 +236,7 @@ cellValueSet<N>::simpleSplit(std::vector<std::tuple<int,int>>& initCell,
 	}
       else
 	{
-	  if (prev)
+	  if (N && prev)
 	    {
 	      for(size_t index=0;index<N;index++)
 		{
@@ -390,10 +399,17 @@ cellValueSet<N>::setValues(const int cN,
   */
 {
   valTYPE A;
-  A[0].first=1;
-  A[0].second=StrFunc::makeString(V);
-  A[1].first=1;
-  A[1].second=StrFunc::makeString(V2);
+  if constexpr (N>0)
+    {
+      A[0].first=1;
+      A[0].second=StrFunc::makeString(V);
+    }
+  if constexpr (N>1)
+    {
+      A[1].first=1;
+      A[1].second=StrFunc::makeString(V2);
+    }
+
   dataMap[cN]=A;
   return;
 }
@@ -411,12 +427,22 @@ cellValueSet<N>::setValues(const int cN,const double V,
   */
 {
   valTYPE A;
-  A[0].first=1;         // 1: values
-  A[0].second=StrFunc::makeString(V);
-  A[1].first=1;
-  A[1].second=StrFunc::makeString(V2);
-  A[2].first=1;
-  A[2].second=StrFunc::makeString(V3);
+  if constexpr (N>0)
+    {		 
+      A[0].first=1;         // 1: values
+      A[0].second=StrFunc::makeString(V);
+    }
+  if constexpr (N>1)
+    {
+      A[1].first=1;
+      A[1].second=StrFunc::makeString(V2);
+    }
+  if constexpr (N>2)
+    {
+      A[2].first=1;
+      A[2].second=StrFunc::makeString(V3);
+    }
+    
   dataMap[cN]=A;
   return;
 }
@@ -455,18 +481,20 @@ cellValueSet<N>::setValues(const int cN,const std::string& V1,
   */
 {
   valTYPE A;
-  const std::vector<const std::string*> VStr({&V1,&V2});
-  for(size_t i=0;i<VStr.size() && i<N;i++)
-    {
-      if (*VStr[i]=="def" || *VStr[i]=="Def")
-	A[i].first=0;
-      else
+  if constexpr (N>0)
+    {		 
+      const std::vector<const std::string*> VStr({&V1,&V2});
+      for(size_t i=0;i<2 && i<N;i++)
 	{
-	  double D;
-	  A[i].first= (StrFunc::convert(*VStr[i],D)) ? 1 : -1;
-	  A[i].second= *VStr[i];
+	  if (*VStr[i]=="def" || *VStr[i]=="Def")
+	    A[i].first=0;
+	  else
+	    {
+	      double D;
+	      A[i].first= (StrFunc::convert(*VStr[i],D)) ? 1 : -1;
+	      A[i].second= *VStr[i];
+	    }
 	}
-      
     }
   dataMap[cN]=A;
   return;
@@ -565,6 +593,80 @@ cellValueSet<N>::setValues(const std::string& cStr,
   return;
 }
 
+
+template<size_t N>
+std::string
+cellValueSet<N>::getFLUKAstring(const int AA,
+				const std::string& ControlStr) const 
+/*!
+    Process is to write keyName ControlStr units 
+    \param AA :: first cell number [sometimes not used]
+    \param AB :: second cell number [sometimes not used]
+    \param ControlStr units [%0/%1/%2] for cell range/Value
+  */
+{
+  ELog::RegMethod RegA("cellValueSet","getFLUKAstring[no-cell]");
+  
+  //  typedef std::tuple<int,int> TITEM;
+
+  std::ostringstream cx;
+
+  const std::vector<std::string> Units=StrFunc::StrParts(ControlStr);
+  std::vector<std::string> SArray(3+N);
+
+  SArray[0]=(AA<0) ? getStrIndex(AA) : std::to_string(AA);
+  SArray[1]=SArray[0];
+
+  std::string endChar;
+  typename dataTYPE::const_iterator mc=
+    (AA>0) ? dataMap.find(AA) : dataMap.begin();
+  if (mc==dataMap.end() && AA!=0)
+    throw ColErr::InContainerError<int>(AA,"dataMap");
+
+  if (mc!=dataMap.end())
+    {
+      const valTYPE& dArray(mc->second);
+      
+      // const TITEM& tc(Bgroup[index]);
+      // const valTYPE& dArray(Bdata[index]);
+      
+      for(size_t i=0;i<N;i++)
+	{
+	  if (dArray[i].first==1)
+	    {
+	      double D;
+	      StrFunc::convert(dArray[i].second,D);
+	      SArray[2+i]=StrFunc::makeString(D*scaleVec[i]);
+	    }
+	  else if (dArray[i].first == -1)
+	    SArray[2+i]=dArray[i].second;
+	  else
+	    SArray[2+i]="-";
+	}
+    }
+  cx.str("");
+  cx<<outName<<" ";
+  
+  for(const std::string& UC : Units)
+    {
+      if (UC.size()==2 &&
+	  (UC[0]=='%' || UC[0]=='R' ||
+	   UC[0]=='M' || UC[0]=='P'))
+	{
+	  const size_t SA=(static_cast<size_t>(UC[1]-'0') % (N+2));
+	  if (UC[0]=='%')
+	    cx<<SArray[SA]<<" ";
+	  else if (UC[0]=='M' || UC[0]=='R')
+	    cx<<UC[0]<<SArray[SA]<<" ";
+	  else if (UC[0]=='P')
+	    cx<<StrFunc::toUpperString(SArray[SA])<<" ";
+	}
+      else
+	cx<<UC<<" ";
+    }
+  cx<<tag;
+  return cx.str();
+}
 
 template<size_t N>
 void
@@ -721,7 +823,8 @@ template class cellValueSet<1>;
 template class cellValueSet<2>;
 template class cellValueSet<3>;
 ///\endcond TEMPLATE
-  
+
+template std::ostream& operator<<(std::ostream&,const cellValueSet<2>&);
 } // NAMESPACE flukaSystem
       
    

@@ -56,10 +56,12 @@
 #include "CopiedComp.h"
 #include "BlockZone.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "LeadPipe.h"
 
+#include "forkHoles.h"
 #include "OpticsHutch.h"
 #include "ExperimentalHutch.h"
 #include "WallLead.h"
@@ -143,7 +145,7 @@ BALDER::build(Simulation& System,
 
   frontBeam->setStopPoint(stopPoint);
   frontBeam->setCutSurf("REWall",-r3Ring->getSurf("BeamInner",PIndex));
-  frontBeam->deactivateFM3();
+  //  frontBeam->deactivateFM3();
   frontBeam->addInsertCell(r3Ring->getCell("InnerVoid",SIndex));
 
   frontBeam->setBack(-r3Ring->getSurf("BeamInner",PIndex));
@@ -187,7 +189,7 @@ BALDER::build(Simulation& System,
 
 
   //  exptHut->addInsertCell(voidCell);
-
+  ELog::EM<<"ASDFASDFASF S"<<ELog::endDiag;
   exptHut->setCutSurf("floor",r3Ring->getSurf("Floor"));
 
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
@@ -200,15 +202,12 @@ BALDER::build(Simulation& System,
   connectZone->setCutSurf("front",*opticsHut,2);
   connectZone->setCutSurf("back",*exptHut,1);
   connectZone->createAll(System,*joinPipeB,2);
-
-
     
   joinPipeC->insertAllInCell(System,exptHut->getCell("Void"));
   //  joinPipeC->insertInCell(System,exptHut->getCell("EntranceHole"));
-
+  
   exptBeam->addInsertCell(exptHut->getCell("Void"));
   exptBeam->createAll(System,*joinPipeC,2);
-
 
   // pipe shield goes around joinPipeB:
   pShield->addAllInsertCell(opticsBeam->getCell("LastVoid"));
@@ -216,11 +215,10 @@ BALDER::build(Simulation& System,
   pShield->createAll(System,*opticsHut,"#exitHole0");
 
   // pipe shield goes around joinPipeB:
-  ELog::EM<<"Cell = "<<connectZone->getCell("FirstVoid")<<ELog::endDiag;
+  //  ELog::EM<<"Cell = "<<connectZone->getCell("FirstVoid")<<ELog::endDiag;
   nShield->addAllInsertCell(connectZone->getCell("FirstVoid"));
   nShield->setCutSurf("inner",*joinPipeB,"outer");
   nShield->createAll(System,*opticsHut,"exitHole0");
-  ELog::EM<<"NShield == "<<nShield->getLinkPt(0)<<ELog::endDiag;
   // outer pipe shield goes around joinPipeB:
   /*
   outerShield->addAllInsertCell(connectZone->getCell("OuterVoid"));

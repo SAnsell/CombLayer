@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   build/collInsert.cxx
+ * File:   ralBuild/collInsert.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,6 +48,7 @@
 #include "FixedComp.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "collInsert.h"
 
@@ -56,7 +57,7 @@ namespace shutterSystem
 
 collInsert::collInsert(const std::string& Key,const int ID) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffsetGroup(Key+std::to_string(ID),"Main",2,"Beam",2),
+  attachSystem::FixedRotateGroup(Key+std::to_string(ID),"Main",2,"Beam",2),
   baseName(Key),blockID(ID)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -67,15 +68,6 @@ collInsert::collInsert(const std::string& Key,const int ID) :
 {}
 
 
-void
-collInsert::populate(const FuncDataBase& Control)
-{
-  ELog::RegMethod RegA("collInsert","populate");
-
-  ELog::EM<<"Un finished method"<<ELog::endErr;
-  return;
-}
-  
 void
 collInsert::createUnitVector(const attachSystem::FixedComp& FC,
 			     const long int sideIndex)
@@ -93,7 +85,7 @@ collInsert::createUnitVector(const attachSystem::FixedComp& FC,
   beamFC.createUnitVector(FC,sideIndex);
   mainFC.createUnitVector(FC,sideIndex);
   
-  FixedOffsetGroup::applyOffset();
+  FixedRotateGroup::applyOffset();
    
   setDefault("Main");
   return;
@@ -174,7 +166,7 @@ collInsert::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("collInsert","createAll");
-  populate(System.getDataBase());
+
 
   createUnitVector(FC,sideIndex);
   createSurfaces();

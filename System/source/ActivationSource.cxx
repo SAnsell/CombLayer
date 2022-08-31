@@ -3,7 +3,7 @@
  
  * File:   source/ActivationSource.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,20 +32,20 @@
 #include <string>
 #include <algorithm>
 #include <memory>
+#include <random>
 #ifndef NO_REGEX
 #include <boost/filesystem.hpp>
 #endif
 
 #include "Exception.h"
-#include "MersenneTwister.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
+#include "Random.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "Vec3D.h"
 #include "Surface.h"
 #include "Quadratic.h"
@@ -65,8 +65,6 @@
 #include "inputSupport.h"
 #include "SourceBase.h"
 #include "ActivationSource.h"
-
-extern MTRand RNG;
 
 namespace SDef
 {
@@ -236,8 +234,9 @@ ActivationSource::createFluxVolumes(const Simulation& System)
   ELog::EM<<"Report == "<<reportScore<<ELog::endDiag;
   while(index<nPoints)
     {
-      Geometry::Vec3D testPt(xStep*RNG.rand(),yStep*RNG.rand(),
-			     zStep*RNG.rand());
+      Geometry::Vec3D testPt(xStep*Random::rand(),
+			     yStep*Random::rand(),
+			     zStep*Random::rand());
       testPt+=ABoxPt;
 
       cellPtr=System.findCell(testPt,cellPtr);
@@ -490,7 +489,7 @@ ActivationSource::writePoints(const std::string& outputName) const
   std::ofstream OX;
   OX.open(outputName.c_str());
 
-  OX<<"ActivationSource TStep="<<StrFunc::makeString(timeStep)
+  OX<<"ActivationSource TStep="<<timeStep
     <<" Source == "<<ABoxPt<<" :: "<<BBoxPt<<std::endl;
   OX<<"-"<<nPoints<<std::endl;
 

@@ -35,10 +35,11 @@ namespace essSystem
   \brief Box with layers
 */
 
-class Box : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
-  public attachSystem::LayerComp,
-  public attachSystem::CellMap
+class Box :
+    public attachSystem::ContainedComp,
+    public attachSystem::FixedOffset,
+    public attachSystem::LayerComp,
+    public attachSystem::CellMap
 {
  private:
 

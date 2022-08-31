@@ -3,7 +3,7 @@
  
  * File:   attachComp/ExtractCut.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -119,6 +119,18 @@ ExternalCut::findUnit(const std::string& extName) const
   cutTYPE::const_iterator mc=cutItems.find(extName);
   return (mc!=cutItems.end()) ? &(mc->second) : 0;
 }
+
+cutUnit*
+ExternalCut::findUnit(const std::string& extName) 
+  /*!
+    Determine if we have unit by name
+    \param extName :: Cut name
+    \return Ptr / 0
+   */
+{
+  cutTYPE::iterator mc=cutItems.find(extName);
+  return (mc!=cutItems.end()) ? &(mc->second) : 0;
+}
   
 cutUnit&
 ExternalCut::getUnit(const std::string& extName)
@@ -154,7 +166,7 @@ ExternalCut::copyCutSurf(const std::string& extName,
     \param outerName :: external-cut name
   */
 {
-  ELog::RegMethod RegA("ExternalCut","setCutSurf(ExternalCut)");
+  ELog::RegMethod RegA("ExternalCut","copyCutSurf(ExternalCut)");
 
   cutUnit& A=getUnit(extName);
   const cutUnit* BPtr=ESurf.findUnit(otherName);
@@ -249,7 +261,7 @@ ExternalCut::setCutSurf(const std::string& extName,
 			const attachSystem::FixedComp& WFC,
 			const long int sideIndex)
 /*!
-    Set a surface from a linkpoint
+    Set a surface (and point0 from a linkpoint
     \param extName :: external-cut name
     \param WFC :: Fixedcomp
     \param sideIndex :: link point
@@ -264,7 +276,9 @@ ExternalCut::setCutSurf(const std::string& extName,
   A.divider=WFC.getCommonRule(sideIndex);
   A.main.populateSurf();
   A.divider.populateSurf();
-  
+
+  if (WFC.hasLinkPt(sideIndex))
+    A.setPoint(WFC.getLinkPt(sideIndex));
   return;
 }
 
@@ -506,9 +520,9 @@ ExternalCut::makeExpandedSurf(ModelSupport::surfRegister& SMap,
   
 Geometry::Vec3D
 ExternalCut::interPoint(const std::string& extName,
-			     const Geometry::Vec3D& Centre,
-			     const Geometry::Vec3D& CAxis) const
-  /*!
+			const Geometry::Vec3D& Centre,
+			const Geometry::Vec3D& CAxis) const
+/*!
     Calculate the intersection point on the points
     \param extName :: cutUnit name
     \param Centre :: Centre point of line
@@ -582,6 +596,61 @@ ExternalCut::makeExpandedSurf(ModelSupport::surfRegister& SMap,
   return;
 }
 
+bool
+ExternalCut::hasExternalPoint(const std::string& extName) const
+  /*!
+    Determines if the extcut. and point exist
+    \param extName :: Cut unit name
+    \return true if both extName and activePoint are true
+  */
+{
+  const cutUnit* CU=findUnit(extName);
+  if (!CU)
+    return 0;
+  return CU->activePoint;
+}
+
+  
+void
+ExternalCut::setExternalPoint(const std::string& extName,
+			      const Geometry::Vec3D& Pt)
+  /*!
+    Set a point for a given cut
+    \param extName :: Cut unit name
+    \param Pt :: Point to set
+  */
+{
+  ELog::RegMethod RegA("ExternalCut","setExternalPoint");
+
+  // Note: point is secondary so ONLY can be set if external cut is active
+  cutUnit* CU=findUnit(extName);
+  if (!CU)
+    throw ColErr::InContainerError<std::string>(extName,"Unit not found");
+  
+  CU->setPoint(Pt);
+  return;
+}
+
+const Geometry::Vec3D&
+ExternalCut::getExternalPoint(const std::string& extName) const
+  /*!
+    Get a point for a given cut
+    The extName must exist AND the point must be active (or throw)
+    \param extName :: Cut unit name
+    \return point
+  */
+{
+  ELog::RegMethod RegA("ExternalCut","getPoint");
+
+  // Note: point is secondary so ONLY can be set if external cut is active
+  const cutUnit* CU=findUnit(extName);
+  if (!CU)
+    throw ColErr::InContainerError<std::string>(extName,"Unit not found");
+  if (!CU->activePoint)
+    throw ColErr::InContainerError<std::string>(extName,"Point not active");
+  return CU->Pt;
+}
+    
 void
 ExternalCut::write(std::ostream& OX) const
   /*!

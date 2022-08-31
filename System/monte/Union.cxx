@@ -3,7 +3,7 @@
  
  * File:   monte/Union.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -264,20 +264,6 @@ Union::simplify()
   return 0;
 }
 
-int
-Union::pairValid(const int SN,const Geometry::Vec3D& Vec) const
-  /*!
-    Calculates if Vec is within the object
-    \param SN :: Surface number
-    \param Vec :: Point to test
-    \return RuleA(ab) | RuleB(ab) 
-  */
-{
-  const int flagA=(A) ? A->pairValid(SN,Vec) : 0;
-  const int flagB=(B) ? B->pairValid(SN,Vec) : 0;
-  return flagA | flagB;
-}
-
 bool
 Union::isEmpty() const
   /*!
@@ -344,31 +330,31 @@ Union::isDirectionValid(const Geometry::Vec3D& Pt,
 }
 
 bool
-Union::isValid(const Geometry::Vec3D& Vec,
+Union::isValid(const Geometry::Vec3D& Pt,
 	       const std::set<int>& ExSN) const
   /*!
-    Calculates if Vec is within the object
-    \param Vec :: Point to test
+    Calculates if Pt is within the object
+    \param Pt :: Point to test
     \param ExSN :: Excluded Surface
-    \retval  1 ::  Vec is within object 
-    \retval 0 :: Vec is outside object.
+    \retval  1 ::  Pt is within object 
+    \retval 0 :: Pt is outside object.
   */
 {
-  return ((A && A->isValid(Vec,ExSN)) ||
-	  (B && B->isValid(Vec,ExSN))) ? 1 : 0;
+  return ((A && A->isValid(Pt,ExSN)) ||
+	  (B && B->isValid(Pt,ExSN))) ? 1 : 0;
 }
 
 bool
-Union::isValid(const Geometry::Vec3D& Vec) const
+Union::isValid(const Geometry::Vec3D& Pt) const
   /*!
-    Calculates if Vec is within the object
-    \param Vec :: Point to test
-    \retval  1 ::  Vec is within object 
-    \retval 0 :: Vec is outside object.
+    Calculates if Pt is within the object
+    \param Pt :: Point to test
+    \retval  1 ::  Pt is within object 
+    \retval 0 :: Pt is outside object.
   */
 {
-  return ((A && A->isValid(Vec)) ||
-	  (B && B->isValid(Vec))) ? 1 : 0;
+  return ((A && A->isValid(Pt)) ||
+	  (B && B->isValid(Pt))) ? 1 : 0;
 }
 
 bool
@@ -383,6 +369,22 @@ Union::isValid(const std::map<int,int>& MX) const
 {
   return ((A && A->isValid(MX)) ||
 	  (B && B->isValid(MX))) ? 1 : 0;
+}
+
+bool
+Union::isValid(const Geometry::Vec3D& Pt,
+	       const std::map<int,int>& MX) const
+  /*!
+    Use MX to determine if the surface truth etc is 
+    valid
+    \parma Pt :: Point to use for surfaces outside of map
+    \param MX :: map of key + logical value (-1/0 either/1)
+    \retval 1 :: if either side is valid
+    \retval 0 :: Neither side is valid
+  */
+{
+  return ((A && A->isValid(Pt,MX)) ||
+	  (B && B->isValid(Pt,MX))) ? 1 : 0;
 }
 
 void

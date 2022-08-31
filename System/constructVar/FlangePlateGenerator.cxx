@@ -3,7 +3,7 @@
 
  * File:   constructVar/FlangePlateGenerator.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,9 +51,10 @@ namespace setVariable
 
 FlangePlateGenerator::FlangePlateGenerator() :
   innerRadius(-1.0),
+  innerThick(CF40::flangeLength),
   flangeRadius(CF40::flangeRadius),
   flangeLength(CF40::flangeLength),
-  innerMat("Void"),flangeMat("Stainless304L")
+  windowMat("Void"),flangeMat("Stainless304L")
   /*!
     Constructor and defaults
   */
@@ -79,6 +80,21 @@ FlangePlateGenerator::setFlange(const double R,const double T)
   return;
 }
 
+
+void
+FlangePlateGenerator::setWindow(const double R,const double T,
+				const std::string& winMat)
+  /*!
+    Set pipe/flange to CF-X format
+    \param R :: inner radius
+  */
+{
+  innerRadius=R;
+  innerThick=T;
+  windowMat=winMat;
+  
+  return;
+}
 
 template<typename CF>
 void
@@ -130,10 +146,11 @@ FlangePlateGenerator::generateFlangePlate
   ELog::RegMethod RegA("FlangePlateGenerator","generatorFlangePlate");
 
   Control.addVariable(keyName+"InnerRadius",innerRadius);
+  Control.addVariable(keyName+"InnerThick",innerThick);
   Control.addVariable(keyName+"FlangeRadius",flangeRadius);
   Control.addVariable(keyName+"FlangeLength",flangeLength);
 
-  Control.addVariable(keyName+"InnerMat",innerMat);
+  Control.addVariable(keyName+"WindowMat",windowMat);
   Control.addVariable(keyName+"FlangeMat",flangeMat);
 
   return;

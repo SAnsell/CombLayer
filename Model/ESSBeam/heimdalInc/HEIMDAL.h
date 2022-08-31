@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/heimdal/HEIMDAL.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,11 +34,19 @@ namespace instrumentSystem
   class CylSample;
 }
 
+
+namespace essConstruct
+{
+  class DiskChopper;  
+  class SingleChopper;
+  class TwinChopper;
+  class TwinChopperFlat;
+  class Motor;
+}
+
 namespace constructSystem
 {  
-  class ChopperPit;
   class Cryostat;   
-  class DiskChopper;
   class Jaws;
   class JawSet;
   class LineShield;
@@ -46,9 +54,6 @@ namespace constructSystem
   class VacuumBox;
   class VacuumPipe;
   class VacuumWindow;
-  class SingleChopper;
-  class Motor;
-  class TwinChopper;
   class HoleShape;
   class CrystalMount;
   class TubeDetBox;  
@@ -78,7 +83,7 @@ class HEIMDAL : public attachSystem::CopiedComp
   int stopPoint;  
 
   /// Main Beam Axis [for construction]
-  std::shared_ptr<attachSystem::FixedOffsetUnit> heimdalAxis;
+  std::shared_ptr<attachSystem::FixedRotateUnit> heimdalAxis;
 
   /// Elliptic focus in bulkshield [m5]
   std::shared_ptr<beamlineSystem::GuideLine> FocusTA;
@@ -100,11 +105,11 @@ class HEIMDAL : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusCC;
 
   /// First single chopper pair
-  std::shared_ptr<constructSystem::SingleChopper> TChopA;
+  std::shared_ptr<essConstruct::SingleChopper> TChopA;
   /// Top twin disk
-  std::shared_ptr<constructSystem::DiskChopper> ADiskOne;
+  std::shared_ptr<essConstruct::DiskChopper> ADiskOne;
   /// Lower twin disk
-  std::shared_ptr<constructSystem::DiskChopper> ADiskTwo;
+  std::shared_ptr<essConstruct::DiskChopper> ADiskTwo;
 
   /// 6.5m Vac pipe for Thermal
   std::shared_ptr<constructSystem::VacuumPipe> VPipeTD;
@@ -119,9 +124,9 @@ class HEIMDAL : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> BendCD;
 
   /// Second thermal chopper [single]
-  std::shared_ptr<constructSystem::SingleChopper> TChopB;
+  std::shared_ptr<essConstruct::SingleChopper> TChopB;
   /// Second Thermal disk
-  std::shared_ptr<constructSystem::DiskChopper> BDisk;
+  std::shared_ptr<essConstruct::DiskChopper> BDisk;
 
   /// 8mm Vac pipe for Thermal
   std::shared_ptr<constructSystem::VacuumPipe> VPipeTE;
@@ -129,11 +134,11 @@ class HEIMDAL : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusTE;
 
   /// Thermal T0 Chopper
-  std::shared_ptr<constructSystem::SingleChopper> ChopperT0;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperT0;
   /// Thermal T0 Chopper blades
-  std::shared_ptr<constructSystem::DiskChopper> T0Disk;
+  std::shared_ptr<essConstruct::DiskChopper> T0Disk;
   /// Thermal T0 Chopper motor
-  std::shared_ptr<constructSystem::Motor> T0Motor;
+  std::shared_ptr<essConstruct::Motor> T0Motor;
 
   /// Vac pipe for Thermal to bunker wall
   std::shared_ptr<constructSystem::VacuumPipe> VPipeTF;

@@ -38,7 +38,9 @@
 #include "FileReport.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
+#include "HeadRule.h"
 #include "gridUnit.h"
+
 
 namespace constructSystem
 {
@@ -279,40 +281,32 @@ gridUnit::setSurf(const size_t Index,const int surfN)
   return;
 }
 
-std::string
+HeadRule
 gridUnit::getShell() const
   /*!
     Get binding shell for the grid unit
     \return Shell string
    */
 {
-  std::ostringstream cx;
-  std::string extra=" (";
+  HeadRule HR;
   for(const int SN : surfKey)
-    {
-      if (SN)
-        {
-          cx<<extra<<-SN;
-          extra=" : ";
-        }
-    }
-  cx<<") ";
-  return cx.str();
+    if (SN)
+      HR += HeadRule(-SN);
+  return HR;
 }
 
-std::string
+HeadRule
 gridUnit::getInner() const
   /*!
     Get binding shell for the grid unit
     \return Shell string
    */
 {
-  std::ostringstream cx;
-  cx<<" ";
+  HeadRule HR;
   for(const int SN : surfKey)
     if (SN)
-      cx<<SN<<" ";
-  return cx.str();
+      HR*=HeadRule(SN);
+  return HR;
 }
 
   

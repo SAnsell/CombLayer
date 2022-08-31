@@ -233,7 +233,7 @@ PointSource::writePHITS(std::ostream& OX) const
 }
 
 void
-PointSource::writeFLUKA(std::ostream& OX) const
+PointSource::writeFLUKA(std::ostream&) const
   /*!
     Write out as a FLUKA source system
     \param OX :: Output stream

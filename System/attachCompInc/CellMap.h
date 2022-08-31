@@ -115,7 +115,6 @@ class CellMap  : public BaseMap
   std::vector<int> getCells() const
     { return BaseMap::getItems(); }
 
-
   //@}
   
   HeadRule getCellsHR(const Simulation&,const std::string&) const;

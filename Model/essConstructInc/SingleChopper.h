@@ -3,7 +3,7 @@
  
  * File:   essConstructInc/SingleChopper.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,15 +19,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_SingleChopper_h
-#define constructSystem_SingleChopper_h
+#ifndef essConstruct_SingleChopper_h
+#define essConstruct_SingleChopper_h
 
 class Simulation;
 
 namespace constructSystem
 {
-  class boltRing;
   class RingSeal;
+}
+
+namespace essConstruct
+{
+  class boltRing;
   class InnerPort;
   class Motor;
   
@@ -43,7 +47,7 @@ namespace constructSystem
 */
 
 class SingleChopper :
-  public attachSystem::FixedOffsetGroup,
+  public attachSystem::FixedRotateGroup,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
@@ -69,7 +73,7 @@ class SingleChopper :
   std::shared_ptr<Motor> motor;            ///< Motor 
   std::shared_ptr<boltRing> frontFlange;   ///< Front flange
   std::shared_ptr<boltRing> backFlange;    ///< Back flange
-  std::shared_ptr<RingSeal> RS;            ///< ringseal for main system
+  std::shared_ptr<constructSystem::RingSeal> RS;  ///< ringseal for main system
   std::shared_ptr<InnerPort> IPA;          ///< inner port
   std::shared_ptr<InnerPort> IPB;          ///< inner port
   

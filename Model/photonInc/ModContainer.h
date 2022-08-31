@@ -3,7 +3,7 @@
  
  * File:   photonInc/ModContainer.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,15 +41,16 @@ namespace photonSystem
   \brief Specialized for a layered cylinder Moderator
 */
 
-class ModContainer : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
-  public attachSystem::CellMap
+class ModContainer :
+    public attachSystem::ContainedComp,
+    public attachSystem::FixedRotate,
+    public attachSystem::CellMap
 {
  private:
 
 
-  double length;                ///< length of object
-  double radius;                ///< radius [inneer]
+  double length;               ///< length of object
+  double radius;               ///< radius [inneer]
   double thick;                ///< Outer thickenss
 
   int mat;                     ///< Outer material

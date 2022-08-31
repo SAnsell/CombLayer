@@ -3,7 +3,7 @@
 
  * File: cosaxs/cosaxsOpticsLine.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@
 #include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -71,6 +71,7 @@
 #include "generateSurf.h"
 #include "generalConstruct.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
@@ -119,7 +120,7 @@ cosaxsOpticsLine::cosaxsOpticsLine(const std::string& Key) :
   filterStick(new xraySystem::FlangeMount(newName+"FilterStick")),
   gateB(new constructSystem::GateValveCube(newName+"GateB")),
   screenPipeA(new constructSystem::PipeTube(newName+"ScreenPipeA")),
-  screenPipeB(new constructSystem::PipeTube(newName+"ScreenPipeB")),
+  screenPipeB(new constructSystem::PipeTube(newName+"ScreenPipeB")), 
   adaptorPlateA(new constructSystem::VacuumPipe(newName+"AdaptorPlateA")),
   diffPumpA(new xraySystem::DiffPumpXIADP03(newName+"DiffPumpA")),
   primeJawBox(new constructSystem::VacuumBox(newName+"PrimeJawBox")),
@@ -336,7 +337,8 @@ cosaxsOpticsLine::constructDiag
       jawComp[index]->addInsertCell(diagBoxItem.getCell("Void"));
       if (index)
 	jawComp[index]->addInsertCell(jawComp[index-1]->getCell("Void"));
-      jawComp[index]->createAll(System,DPI,"InnerPlate",diagBoxItem,"Origin");
+      jawComp[index]->secondaryUnitVector(diagBoxItem,"Origin");
+      jawComp[index]->createAll(System,DPI,"InnerPlate");
     }
 
   diagBoxItem.splitVoidPorts(System,"SplitOuter",2001,

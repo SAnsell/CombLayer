@@ -3,7 +3,7 @@
  
  * File:   t1Build/Cannelloni.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,7 +60,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
 #include "BaseMap.h"
@@ -94,7 +94,7 @@ Cannelloni::Cannelloni(const Cannelloni& A) :
   HexHA(A.HexHA),HexHB(A.HexHB),HexHC(A.HexHC),HVec(A.HVec),
   wMat(A.wMat),taMat(A.taMat),waterMat(A.waterMat),
   targetTemp(A.targetTemp),waterTemp(A.waterTemp),
-  externTemp(A.externTemp),mainCell(A.mainCell)
+  externTemp(A.externTemp)
   /*!
     Copy constructor
     \param A :: Cannelloni to copy
@@ -132,7 +132,6 @@ Cannelloni::operator=(const Cannelloni& A)
       targetTemp=A.targetTemp;
       waterTemp=A.waterTemp;
       externTemp=A.externTemp;
-      mainCell=A.mainCell;
     }
   return *this;
 }
@@ -162,7 +161,7 @@ Cannelloni::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("Cannelloni","populate");
 
-  attachSystem::FixedOffset::populate(Control);
+  attachSystem::FixedRotate::populate(Control);
   
   mainLength=Control.EvalVar<double>(keyName+"MainLength");
   coreRadius=Control.EvalVar<double>(keyName+"CoreRadius");
@@ -258,28 +257,28 @@ Cannelloni::createObjects(Simulation& System)
   
   // Tungsten inner core
 
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-7 1 -2");
-  System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
-  mainCell=cellIndex-1;
+  HeadRule HR;
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 1 -2");
+  makeCell("MainCell",System,cellIndex++,wMat,0.0,HR);
 
   // Cladding [with front water divider]
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-17 11 -12 (7:-1:2) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
-
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 11 -12 (7:-1:2) ");
+  makeCell("Caldding",System,cellIndex++,taMat,0.0,HR);
+  
   // W material
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-27 21 -22 (17:-11:12) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 21 -22 (17:-11:12) ");
+  makeCell("Tungsten",System,cellIndex++,wMat,0.0,HR);
 
   // void 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-37 31 -32 (27:-21:22) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-37 31 -32 (27:-21:22) ");
+  makeCell("OuterVoid",System,cellIndex++,0,0.0,HR);
   
   // Set EXCLUDE:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-37 31 -32");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-37 31 -32");
+  addOuterSurf(HR);
 
-  addBoundarySurf(buildIndex+7);
+  setCutSurf("Boundary",-(buildIndex+7));
 
   return;
 }
@@ -305,18 +304,6 @@ Cannelloni::createLinks()
   return;
 }
 
-const Geometry::Vec3D&
-Cannelloni::getHexAxis(const size_t Index) const
-  /*!
-    Calculate the direction based on a Index 
-    \param Index :: Index value [0-6]
-    \return Vector for normal of plane
-  */
-{
-  static const Geometry::Vec3D* VUnit[3]={&HexHA,&HexHC,&HexHB};
-  return *(VUnit[Index % 3]);
-}
-
 
 void
 Cannelloni::createLinkSurf()
@@ -332,24 +319,42 @@ Cannelloni::createLinkSurf()
   std::map<int,constructSystem::hexUnit*>::iterator ac;
   std::map<int,constructSystem::hexUnit*>::iterator bc;
   int planeIndex(buildIndex+2001);
+  int cnt(20);
+ 
+  ELog::EM<<"HVec size= "<<HVec.size()<<ELog::endDiag;
   for(ac=HVec.begin();ac!=HVec.end();ac++)
     {
+      constructSystem::hexUnit* APtr = ac->second;
+      const Geometry::Vec3D AC=APtr->getCentre();
       // iterate over the index set [6]
+
       for(size_t i=0;i<6;i++)
 	{
-	  constructSystem::hexUnit* APtr = ac->second;
 	  if (!APtr->hasLink(i))
 	    {
 	      const int JA=ac->first+APtr->gridIndex(i);
 	      bc=HVec.find(JA);
 	      if (bc!=HVec.end())   // now construct link surface
 		{
-		  constructSystem::hexUnit* BPtr=bc->second; 
-		  ModelSupport::buildPlane
-		    (SMap,planeIndex,(APtr->getCentre()+BPtr->getCentre())/2.0,
-		     getHexAxis(i));
+		  constructSystem::hexUnit* BPtr=bc->second;
+		  const Geometry::Vec3D BC=BPtr->getCentre();
+		  // axis points out:
+		  const Geometry::Vec3D axis((BC-AC).unit());
+		  Geometry::Plane* PX=
+		  ModelSupport::buildPlane(SMap,planeIndex,(AC+BC)/2.0,axis);
+		  if (cnt<10)
+		    {
+		      ELog::EM<<"Index == "<<i<<ELog::endDiag;
+		      ELog::EM<<"A == "<<APtr->getCentre()<<ELog::endDiag;
+		      ELog::EM<<"B == "<<BPtr->getCentre()<<ELog::endDiag;
+		      ELog::EM<<"D == "<<
+			(BPtr->getCentre()-APtr->getCentre()).unit()
+			      <<ELog::endDiag;
+		      ELog::EM<<"Norma "<<PX->getNormal()<<ELog::endDiag;
+		      ELog::EM<<"Surface == "<<*PX<<ELog::endDiag;
+		      cnt++;
+		    }
 		  int surNum=SMap.realSurf(planeIndex);
-		  if (i>1 && i<5) surNum*=-1;
 		  BPtr->setSurf((i+3) % 6,surNum);
 		  APtr->setSurf(i,-surNum);
 		  planeIndex++;
@@ -369,42 +374,50 @@ Cannelloni::createInnerObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Cannelloni","createInnerObject");
 
+
   int cylIndex(12000+buildIndex);
-  System.removeCell(mainCell);
-  const std::string endCap=
-    ModelSupport::getComposite(SMap,buildIndex," 1 -2 ");
+  CellMap::deleteCell(System,"MainCell");
 
-  const std::string outer=
-    ModelSupport::getComposite(SMap,buildIndex," -7 ");
+  HeadRule HR;
 
+  const HeadRule outerHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"-7");
+
+  HeadRule excludeHR;
   std::map<int,constructSystem::hexUnit*>::const_iterator ac;
+  int cnt(0);
   for(ac=HVec.begin();ac!=HVec.end();ac++)
     {
       const constructSystem::hexUnit* APtr= ac->second;
-      // Create Inner plane here just to help order stuff
-      ModelSupport::buildCylinder(SMap,cylIndex+7,
-				  APtr->getCentre(),Y,tubeRadius-tubeClad);
-      ModelSupport::buildCylinder(SMap,cylIndex+8,
-				  APtr->getCentre(),Y,tubeRadius-10.0*Geometry::zeroTol);
-      std::string CylA=
-	ModelSupport::getComposite(SMap,buildIndex,cylIndex," -7M 1 -2");
-      std::string CylB=
-	ModelSupport::getComposite(SMap,buildIndex,cylIndex," 7M -8M 1 -2");
 
-      std::string Out=APtr->getInner()+
-      	ModelSupport::getComposite(SMap,cylIndex," 8 ");
+      // Create Inner cylinder here just to help order stuff
+      ModelSupport::buildCylinder
+	(SMap,cylIndex+7, APtr->getCentre(),Y,tubeRadius-tubeClad);
+      ModelSupport::buildCylinder
+	(SMap,cylIndex+8,APtr->getCentre(),Y,tubeRadius-10.0*Geometry::zeroTol);
+      HeadRule CylA=
+	ModelSupport::getHeadRule(SMap,buildIndex,cylIndex,"-7M 1 -2");
+      HeadRule CylB=
+	ModelSupport::getHeadRule(SMap,buildIndex,cylIndex,"7M -8M 1 -2");
+      
+      HR=HeadRule(APtr->getInner());
+      HR*=
+	ModelSupport::getHeadRule(SMap,buildIndex,cylIndex,"1 -2 8M");
 
       if (!APtr->isComplete()) 
 	{
-	  CylA+=outer;
-	  CylB+=outer;
-	  Out+=outer;
+	  CylA*=outerHR;
+	  CylB*=outerHR;
+	  HR*=outerHR;
 	}
-      System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,CylA));
-      System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,CylB));
-      
-      System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out+endCap));
+      makeCell("WRod",System,cellIndex++,wMat,0.0,CylA);
+      makeCell("TaClad",System,cellIndex++,taMat,0.0,CylB);
+      makeCell("Outer",System,cellIndex++,waterMat,0.0,HR);
       cylIndex+=10;
+
+      
+      cnt++;
+
     }
   return;
 }
@@ -438,7 +451,7 @@ Cannelloni::createCentres(const Geometry::Plane* PX)
   int step(0);
 
   clearHVec();
-
+  const HeadRule& boundary=getRule("Boundary");
   while(acceptFlag)
     {
       acceptFlag=0;
@@ -453,7 +466,8 @@ Cannelloni::createCentres(const Geometry::Plane* PX)
 		MonteCarlo::LineIntersectVisit LI(C,Y);
 		const Geometry::Vec3D TPoint = LI.getPoint(PX)+
 		  Y*(Geometry::zeroTol*10.0);
-		const bool cFlag=isBoundaryValid(TPoint);
+
+		const bool cFlag=boundary.isValid(TPoint);		
 		if (cFlag)
 		  {
 		    HVec.insert(MTYPE::value_type
@@ -488,23 +502,18 @@ Cannelloni::createInnerCells(Simulation& System)
 }
 
 void
-Cannelloni::addProtonLine(Simulation& System,
-			 const attachSystem::FixedComp& refFC,
-			 const long int index)
+Cannelloni::addProtonLine(Simulation& System)
   /*!
     Add a proton void cell
     \param System :: Simualation
-    \param refFC :: reflector edge
-    \param index :: Index of the proton cutting surface [6 typically (-7)]
    */
 {
   ELog::RegMethod RegA("Cannelloni","addProtonLine");
 
-  // 0 ::  front fact of target
-  PLine->createAll(System,*this,0);
-  createBeamWindow(System,1);
-  System.populateCells();
-  System.createObjSurfMap();
+  PLine->setCutSurf("TargetSurf",*this,"front");
+  PLine->setCutSurf("RefBoundary",getRule("FrontPlate"));
+  PLine->createAll(System,*this,1);
+  createBeamWindow(System,-1);
   return;
 }
 

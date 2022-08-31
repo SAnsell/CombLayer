@@ -3,7 +3,7 @@
  
  * File:   R3Common/R3RingVariables.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,6 +45,7 @@
 #include "RingDoorGenerator.h"
 
 #include "PipeGenerator.h"
+#include "CornerPipeGenerator.h"
 #include "PipeTubeGenerator.h"
 #include "VacBoxGenerator.h"
 #include "SplitPipeGenerator.h"
@@ -60,6 +61,7 @@
 #include "EPSeparatorGenerator.h"
 #include "R3ChokeChamberGenerator.h"
 #include "MagnetM1Generator.h"
+#include "MagnetU1Generator.h"
 
 namespace setVariable
 {  
@@ -229,7 +231,7 @@ shutterTable(FuncDataBase& Control,
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setBFlangeCF<setVariable::CF150>();
   PipeGen.generatePipe(Control,frontKey+"OffPipeA",6.8);
-  Control.addVariable(frontKey+"OffPipeAFlangeBackZStep",3.0);
+  Control.addVariable(frontKey+"OffPipeAFlangeBZStep",3.0);
 
 
   const std::string shutterName=frontKey+"ShutterBox";
@@ -262,7 +264,7 @@ shutterTable(FuncDataBase& Control,
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setAFlangeCF<setVariable::CF150>();
   PipeGen.generatePipe(Control,frontKey+"OffPipeB",20.0);
-  Control.addVariable(frontKey+"OffPipeBFlangeFrontZStep",3.0);
+  Control.addVariable(frontKey+"OffPipeBFlangeAZStep",3.0);
   Control.addVariable(frontKey+"OffPipeBZStep",-3.0);
 
   Control.addVariable(frontKey+"BremBlockRadius",3.0);
@@ -397,6 +399,7 @@ R3FrontEndVariables(FuncDataBase& Control,
 
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PipeGen;
+  setVariable::CornerPipeGenerator CPipeGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::VacBoxGenerator VBoxGen;
 
@@ -410,8 +413,9 @@ R3FrontEndVariables(FuncDataBase& Control,
   Control.addVariable(frontKey+"OuterRadius",60.0);
 
   // BuildZone offset
-  Control.addVariable(frontKey+"FrontOffset",-400.0);  
+  Control.addVariable(frontKey+"FrontOffset",-450.0);  
 
+  PipeGen.setCF<CF40>();
   PipeGen.setNoWindow();
   PipeGen.setMat("Copper");
   // placeholder length (100.0)
@@ -420,14 +424,22 @@ R3FrontEndVariables(FuncDataBase& Control,
   setVariable::MagnetM1Generator M1Gen;
   M1Gen.generateBlock(Control,frontKey+"M1Block");
 
+  setVariable::MagnetU1Generator U1Gen;
+  U1Gen.generateBlock(Control,frontKey+"U1Block");
+
   ESGen.generatePipe(Control,frontKey+"EPSeparator");
   
   CCGen.generateChamber(Control,frontKey+"ChokeChamber");
   CCGen.generateInsert(Control,frontKey+"ChokeInsert");
 
-  PipeGen.setCF<CF40>();
+  CPipeGen.setCF<CF40>();
+  CPipeGen.setAFlangeCF<CF25>();
+  CPipeGen.setMat("Aluminium","Stainless304");
+  CPipeGen.generatePipe(Control,frontKey+"DipolePipe",800.0); 
+
+  PipeGen.setCF<CF25>();
   PipeGen.setMat("Stainless304");
-  PipeGen.generatePipe(Control,frontKey+"DipolePipe",800.00); 
+  PipeGen.generatePipe(Control,frontKey+"ETransPipe",800.0); 
 
   //  Note bellow reversed for FM fixed:
   BellowGen.setCF<setVariable::CF40>();
@@ -439,6 +451,7 @@ R3FrontEndVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,frontKey+"BellowB",16.0);
   
   PipeGen.setCF<CF40>();
+  PipeGen.setMat("Stainless304");
   PipeGen.generatePipe(Control,frontKey+"CollABPipe",222.0);
 
   Control.addVariable(frontKey+"ECutDiskYStep",5.0);
@@ -496,8 +509,13 @@ R3RingVariables(FuncDataBase& Control)
   Control.addVariable(preName+"OuterWall",110.0);
   Control.addVariable(preName+"OuterWallCut",-40.0);
   Control.addVariable(preName+"RatchetWall",120.0);
+
+  Control.addVariable(preName+"Insulation",10.0);
+  Control.addVariable(preName+"InsulationCut",400.0);
+  Control.addVariable(preName+"InsulationDepth",80.0);
+
   
-  Control.addVariable(preName+"Height",160.0);
+  Control.addVariable(preName+"Height",180.0);
   Control.addVariable(preName+"Depth",130.0);
   Control.addVariable(preName+"RoofThick",100.0);
   Control.addVariable(preName+"FloorThick",100.0);

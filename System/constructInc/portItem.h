@@ -3,7 +3,7 @@
  
  * File:   constructInc/portItem.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,16 +33,14 @@ namespace constructSystem
   
   /*!
     \class portItem
-    \brief Calculates the intersection port with an object
+    \brief This is a half pipe added to a component
     \author S. Ansell
     \date January 2018
     \version 1.0
-    
-    This is NOT a standard FixedComp  because it 
-    is an adjoint to an existing FixedComp. 
-    The problem is the that this item MUST establish
-    a full basis set or createUnitVector cannot work 
-    when called from this object.
+
+    This is a standard object except that it can find the surface
+    of the object it is linked to. The intention is to add a port
+    to an object e.g. a pipe or a box etc.
   */
 
 class portItem :
@@ -50,6 +48,7 @@ class portItem :
   public attachSystem::ContainedComp,
   public attachSystem::CellMap
 {
+
  protected:
 
   const std::string portBase;  ///< Base key name
@@ -59,7 +58,7 @@ class portItem :
   Geometry::Vec3D centreOffset;  ///< Centre axis
   Geometry::Vec3D axisOffset;    ///< axis Offset
   
-  double externalLength;     ///< Length of item 
+  double length;             ///< Length of port (to flange end)
   double radius;             ///< radius of pipe
   double wall;               ///< wall thick
   double flangeRadius;       ///< flange radius
@@ -79,19 +78,12 @@ class portItem :
   Geometry::Vec3D exitPoint; ///< exit point of object
  
   virtual void createSurfaces();
-  void createLinks(const ModelSupport::LineTrack&,
-		   const size_t,const size_t);
   void createLinks();
 
-  void constructFlange(Simulation&,const HeadRule&,
-		       const HeadRule&);
-
-  virtual void constructOuterFlange(Simulation&,
-				    const ModelSupport::LineTrack&,
-				    const size_t,const size_t);
-  void calcBoundaryCrossing(const objectGroups&,
-			    const ModelSupport::LineTrack&,
-			    size_t&,size_t&) const;
+  virtual void constructObject(Simulation&,
+			       const HeadRule&,
+			       const HeadRule&);
+  
   
  public:
 
@@ -104,7 +96,7 @@ class portItem :
   // make public as accessor function:
   virtual void populate(const FuncDataBase&);
   
-  double getExternalLength() const { return externalLength; }
+  double getLength() const { return length; }
   double getCapLength() const
     { return std::max(capThick,0.0); }
   
@@ -133,6 +125,7 @@ class portItem :
 		     const long int);
 
   void addPortCut(MonteCarlo::Object*) const;
+  void addFlangeCut(MonteCarlo::Object*) const;
   
   using FixedComp::createAll;
   virtual void createAll(Simulation&,

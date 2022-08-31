@@ -188,7 +188,7 @@ IonGauge::createSurfaces()
   
   ModelSupport::buildCylinder(SMap,buildIndex+407,Origin,Z,radius);
   ModelSupport::buildCylinder(SMap,buildIndex+417,Origin,Z,radius+wallThick);
-  ModelSupport::buildCylinder(SMap,buildIndex+427,Origin,Z,flangeZRadius);
+  SurfMap::makeCylinder("OuterFlange",SMap,buildIndex+427,Origin,Z,flangeZRadius);
 
   // Side Tubes 
   const Geometry::Vec3D sideOrg(Origin+Z*sideZOffset);
@@ -247,8 +247,8 @@ IonGauge::createObjects(Simulation& System)
   const HeadRule backHR=getRule("back");
 
   // inner void
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -7 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -7 407");
+  makeCell("PipeVoid",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 7 -17 407 ");
   makeCell("MainTube",System,cellIndex++,wallMat,0.0,HR*frontHR*backHR);
@@ -259,8 +259,8 @@ IonGauge::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 202 17 -107 ");
   makeCell("FlangeB",System,cellIndex++,wallMat,0.0,HR*backHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-407 405 -406 7");
-  makeCell("MainVoid",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-407 405 -406");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"(507:100) -417 407 405 -406 17 (607:-100)");
@@ -379,6 +379,8 @@ IonGauge::createLinks()
 {
   ELog::RegMethod RegA("IonGauge","createLinks");
 
+  nameSideIndex(2,"OuterRadius");
+  
   ExternalCut::createLink("front",*this,0,Origin,Y);  //front and back
   ExternalCut::createLink("back",*this,1,Origin,Y);  //front and back
 

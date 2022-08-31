@@ -70,20 +70,14 @@ testMapSupport::applyTest(const int extra)
   testPtr TPtr[]=
     {
       &testMapSupport::testIterator,
-      &testMapSupport::testMapDelete,
       &testMapSupport::testMapRange,
-      &testMapSupport::testMapWrite,
-      &testMapSupport::testSndValue,
       &testMapSupport::testValEqual
     };
 
   const std::string TestName[]=
     {
       "Iterator",
-      "MapDelete",
       "MapRange",
-      "MapWrite",
-      "SndValue",
       "ValEqual"
     };
 
@@ -157,59 +151,6 @@ testMapSupport::testIterator()
 }
 
 int
-testMapSupport::testSndValue()
-  /*!
-    Test of the sndValue functor.
-    Given a list of keynames finds the second value
-    for depositon 
-    \returns -ve on error 0 on success.
-   */
-{
-  std::map<std::string,int> MX;
-  MX["a"]=1;
-  MX["b"]=2;
-  MX["c"]=3;
-  std::vector<std::string> Kvec;
-  Kvec.push_back("a");
-  Kvec.push_back("c");
-  Kvec.push_back("b");
-  Kvec.push_back("a");
-
-  std::vector<int> Out(4);
-  
-  transform(Kvec.begin(),Kvec.end(),Out.begin(),
-	    MapSupport::sndValue<std::map<std::string,int> >(MX));
-
-  if (Out[0]!=1 || Out[1]!=3 || Out[2]!=2 || Out[3]!=1)
-    return -1;
-  
-  return 0;
-}
-
-int
-testMapSupport::testMapDelete()
-  /*!
-    Simple test of map delete 
-    \retval 0 :: success
-  */
-{
-  ELog::RegMethod RegA("testMapSupport","testMapDelete");
-  
-  std::map<std::string,int*> MX;
-  MX["a"]=new int[5];
-  MX["b"]=new int[2];
-  MX["c"]=new int[3];
-  MX["d"]=new int[4];
-  MX["e"]=new int[2];
-  
-  for_each(MX.begin(),MX.end(),
-	   MapSupport::mapDelete<std::map<std::string,int*> >());
-
-  return 0;
-}
-
-
-int
 testMapSupport::testMapRange()
   /*!
     Test of the range<int> class
@@ -265,33 +206,6 @@ testMapSupport::testMapRange()
   return 0;
 }
 
-int
-testMapSupport::testMapWrite()
-  /*!
-    Simple test of map write
-    \retval 0 :: success
-  */
-{
-  ELog::RegMethod RegA("testMapSupport","testMapWrite");
-  
-  std::map<std::string,int> MX;
-  MX["a"]=1;
-  MX["b"]=2;
-  MX["c"]=3;
-  MX["d"]=4;
-  MX["e"]=5;
-
-  std::ostringstream CX;
-  for_each(MX.begin(),MX.end(),
-	   MapSupport::mapWrite<std::map<std::string,int> >(CX));
-  if (StrFunc::removeAllSpace(CX.str())!="a1b2c3d4e5")
-    {
-      ELog::EM<<"Out == "<<ELog::endDiag;
-      ELog::EM<<StrFunc::removeAllSpace(CX.str())<<ELog::endDiag;      
-      return -1;
-    }
-  return 0;
-}
 
 int
 testMapSupport::testValEqual()

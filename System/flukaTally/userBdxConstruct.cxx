@@ -3,7 +3,7 @@
  
  * File:   flukaTally/userBdxConstruct.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,7 +55,6 @@
 #include "flukaTally.h"
 #include "userBdx.h"
 #include "userBdxConstruct.h" 
-
 
 namespace flukaSystem
 {
@@ -131,7 +130,7 @@ userBdxConstruct::processBDX(SimFLUKA& System,
   const std::string FCname=
     IParam.getValueError<std::string>("tally",Index,2,"tally:Object/Cell");
   const std::string FCindex=
-    IParam.getValueError<std::string>("tally",Index,3,"tally:linkPt/Cell");
+    IParam.getValueError<std::string>("tally",Index,3,"tally:linkPt/Cell/SurfName");
 
   size_t itemIndex(4);
   int cellA(0);
@@ -141,19 +140,26 @@ userBdxConstruct::processBDX(SimFLUKA& System,
        !StrFunc::convert(FCindex,cellB) ||
        !checkLinkCells(System,cellA,cellB) ) &&
       !constructCellMapPair(System,FCname,FCindex,cellA,cellB) &&
-      !constructLinkRegion(System,FCname,FCindex,cellA,cellB)
+      !constructLinkRegion(System,FCname,FCindex,cellA,cellB) &&
+      !constructSurfRegion(System,FCname,FCindex,cellA,cellB)
       )
     {
-      throw ColErr::CommandError(FCname+" "+FCindex,"Surf Tally conversion");
+      // Important because we need to correct itemIndex
+      if (constructSurfRegion(System,FCname,cellA,cellB))
+	itemIndex--;
+      else
+	throw ColErr::CommandError(FCname+" "+FCindex,"Surf Tally conversion");
+      
     }
   ELog::EM<<"Regions connected from "<<cellA<<" to "<<cellB<<ELog::endDiag;  
 
   // This needs to be more sophisticated
   const int nextId=System.getNextFTape();
+  // energy
   const double EA=IParam.getDefValue<double>(1e-9,"tally",Index,itemIndex++);
   const double EB=IParam.getDefValue<double>(1000.0,"tally",Index,itemIndex++);
   const size_t NE=IParam.getDefValue<size_t>(200,"tally",Index,itemIndex++); 
-
+  // angle
   const double AA=IParam.getDefValue<double>(0.0,"tally",Index,itemIndex++);
   const double AB=IParam.getDefValue<double>(2*M_PI,"tally",Index,itemIndex++);
   const size_t NA=IParam.getDefValue<size_t>(1,"tally",Index,itemIndex++); 

@@ -49,8 +49,8 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotate.h"
+#include "FixedRotateUnit.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "AttachSupport.h"
@@ -71,7 +71,7 @@ namespace essSystem
 ProtonTube::ProtonTube(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
   attachSystem::ContainedGroup(),
-  attachSystem::FixedOffsetUnit(newName,2),
+  attachSystem::FixedRotateUnit(newName,2),
   attachSystem::FrontBackCut(),
   tube(new TelescopicPipe(newName+"Pipe")),
   pbw(new PBW(newName+"PBW"))
@@ -91,7 +91,7 @@ ProtonTube::ProtonTube(const std::string& Key) :
 ProtonTube::ProtonTube(const ProtonTube& A) :
   attachSystem::CopiedComp(A),
   attachSystem::ContainedGroup(A),
-  attachSystem::FixedOffsetUnit(A),
+  attachSystem::FixedRotateUnit(A),
   attachSystem::FrontBackCut(A),
   engActive(A.engActive),
   tube(A.tube->clone()),

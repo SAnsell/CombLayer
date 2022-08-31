@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/vor/VOR.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,9 +54,9 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotateUnit.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
@@ -71,6 +71,7 @@
 #include "GuideItem.h"
 #include "GuideLine.h"
 #include "DiskChopper.h"
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
@@ -89,7 +90,7 @@ namespace essSystem
 
 VOR::VOR(const std::string& keyName) :
   attachSystem::CopiedComp("vor",keyName),
-  vorAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
+  vorAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
 
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
 
@@ -99,8 +100,8 @@ VOR::VOR(const std::string& keyName) :
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   FocusC(new beamlineSystem::GuideLine(newName+"FC")),
 
-  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
-  DDisk(new constructSystem::DiskChopper(newName+"DBlade")),
+  ChopperA(new essConstruct::SingleChopper(newName+"ChopperA")),
+  DDisk(new essConstruct::DiskChopper(newName+"DBlade")),
 
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   FocusD(new beamlineSystem::GuideLine(newName+"FD")),
@@ -110,8 +111,8 @@ VOR::VOR(const std::string& keyName) :
   FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
 
   OutPitA(new constructSystem::ChopperPit(newName+"OutPitA")),
-  ChopperOutA(new constructSystem::SingleChopper(newName+"ChopperOutA")),
-  FOCDisk(new constructSystem::DiskChopper(newName+"FOCDisk")),
+  ChopperOutA(new essConstruct::SingleChopper(newName+"ChopperOutA")),
+  FOCDisk(new essConstruct::DiskChopper(newName+"FOCDisk")),
   FOCExitPort(new constructSystem::HoleShape(newName+"FOCExitPort")),
 
   ShieldA(new constructSystem::LineShield(newName+"ShieldA")),
@@ -119,8 +120,8 @@ VOR::VOR(const std::string& keyName) :
   FocusOutA(new beamlineSystem::GuideLine(newName+"FOutA")),
 
   OutPitB(new constructSystem::ChopperPit(newName+"OutPitB")),
-  ChopperOutB(new constructSystem::SingleChopper(newName+"ChopperOutB")),
-  FOCDiskB(new constructSystem::DiskChopper(newName+"FOCDiskB")),
+  ChopperOutB(new essConstruct::SingleChopper(newName+"ChopperOutB")),
+  FOCDiskB(new essConstruct::DiskChopper(newName+"FOCDiskB")),
   FOCEntryPortB(new constructSystem::HoleShape(newName+"FOCEntryPortB")),
   FOCExitPortB(new constructSystem::HoleShape(newName+"FOCExitPortB")),
 

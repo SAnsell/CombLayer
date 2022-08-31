@@ -3,7 +3,7 @@
  
  * File:   construct/TriangleShield.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "surfRegister.h"
@@ -148,15 +146,15 @@ TriangleShield::populate(const FuncDataBase& Control)
       if (endWall>Geometry::zeroTol)
 	{
 	  nEndLayers=Control.EvalDefVar<size_t>(keyName+"NEndLayers",0);
-	  ModelSupport::populateDivide(Control,nRoofLayers,keyName+"EndMat",
+	  ModelSupport::populateDivide(Control,nEndLayers,keyName+"EndMat",
 				       defMat,endMat);
-	  ModelSupport::populateDivideLen(Control,nRoofLayers,keyName+"EndLen",
+	  ModelSupport::populateDivideLen(Control,nEndLayers,keyName+"EndLen",
 					  endWall,endFrac);
 	  endFrac.push_back(1.0);
 	}
     }
   
-  defMat=ModelSupport::EvalDefMat<int>(Control,keyName+"DefMat",0);
+  defMat=ModelSupport::EvalDefMat(Control,keyName+"DefMat",0);
 
   nSeg=Control.EvalDefVar<size_t>(keyName+"NSeg",1);
   nWallLayers=Control.EvalVar<size_t>(keyName+"NWallLayers");
@@ -185,7 +183,7 @@ TriangleShield::populate(const FuncDataBase& Control)
 
 void
 TriangleShield::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
+				 const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed component to link to
@@ -461,13 +459,17 @@ TriangleShield::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("TriangleShield","createAll(FC)");
 
+  ELog::EM<<"Top == "<<keyName<<ELog::endDiag;
   populate(System.getDataBase());
+  ELog::EM<<"POP == "<<keyName<<ELog::endDiag;
   createUnitVector(FC,FIndex);
-  createSurfaces();    
-  createObjects(System);  
+  createSurfaces();
+  ELog::EM<<"MID == "<<keyName<<ELog::endDiag;
+  createObjects(System);
   createLinks();
+  ELog::EM<<"BADE == "<<keyName<<ELog::endDiag;
   insertObjects(System);   
-  
+  ELog::EM<<"NOKEY == "<<keyName<<ELog::endDiag;
   return;
 }
   

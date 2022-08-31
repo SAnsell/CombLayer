@@ -3,7 +3,7 @@
  
  * File:   monte/Object.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -87,6 +87,7 @@ Object::Object() :
   matPtr(ModelSupport::DBMaterial::Instance().getVoidPtr()),
   trcl(0),populated(0),
   activeMag(0),magMinStep(1e-3),magMaxStep(1e-1),
+  activeElec(0),elecMinStep(1e-3),elecMaxStep(1e-1),
   objSurfValid(0)
    /*!
      Defaut constuctor, set temperature to 300C and material to vacuum
@@ -97,8 +98,10 @@ Object::Object(const int N,const int M,
 	       const double T,const std::string& Line) :
   ObjName(N),listNum(-1),Tmp(T),
   matPtr(ModelSupport::DBMaterial::Instance().getMaterialPtr(M)),
-  trcl(0),populated(0),activeMag(0),
-  magMinStep(1e-3),magMaxStep(1e-1),objSurfValid(0)
+  trcl(0),populated(0),
+  activeMag(0),magMinStep(1e-3),magMaxStep(1e-1),
+  activeElec(0),elecMinStep(1e-3),elecMaxStep(1e-1),
+  objSurfValid(0)
  /*!
    Constuctor, set temperature to 300C 
    \param N :: number
@@ -114,9 +117,10 @@ Object::Object(const int N,const int M,
 	       const double T,const HeadRule& HR) :
   ObjName(N),listNum(-1),Tmp(T),
   matPtr(ModelSupport::DBMaterial::Instance().getMaterialPtr(M)),
-  trcl(0),populated(0),activeMag(0),
-  magMinStep(1e-3),magMaxStep(1e-1),HRule(HR),
-  objSurfValid(0)
+  trcl(0),populated(0),
+  activeMag(0),magMinStep(1e-3),magMaxStep(1e-1),
+  activeElec(0),elecMinStep(1e-3),elecMaxStep(1e-1),
+  HRule(HR),objSurfValid(0)
  /*!
    Constuctor, set temperature to 300C 
    \param N :: number
@@ -130,8 +134,9 @@ Object::Object(const std::string& FCName,const int N,const int M,
 	       const double T,const std::string& Line) :
   FCUnit(FCName),ObjName(N),listNum(-1),Tmp(T),
   matPtr(ModelSupport::DBMaterial::Instance().getMaterialPtr(M)),
-  trcl(0),populated(0),activeMag(0),
-  magMinStep(1e-3),magMaxStep(1e-1),
+  trcl(0),populated(0),
+  activeMag(0),magMinStep(1e-3),magMaxStep(1e-1),
+  activeElec(0),elecMinStep(1e-3),elecMaxStep(1e-1),
   objSurfValid(0)
  /*!
    Constuctor, set temperature to 300C 
@@ -148,8 +153,9 @@ Object::Object(const std::string& FCName,const int N,const int M,
 	       const double T,const HeadRule& HR) :
   FCUnit(FCName),ObjName(N),listNum(-1),Tmp(T),
   matPtr(ModelSupport::DBMaterial::Instance().getMaterialPtr(M)),
-  trcl(0),populated(0),activeMag(0),
-  magMinStep(1e-3),magMaxStep(1e-1),
+  trcl(0),populated(0),
+  activeMag(0),magMinStep(1e-3),magMaxStep(1e-1),
+  activeElec(0),elecMinStep(1e-3),elecMaxStep(1e-1),
   HRule(HR),
   objSurfValid(0)
  /*!
@@ -165,8 +171,9 @@ Object::Object(const Object& A) :
   FCUnit(A.FCUnit),ObjName(A.ObjName),
   listNum(A.listNum),Tmp(A.Tmp),matPtr(A.matPtr),
   trcl(A.trcl),imp(A.imp),populated(A.populated),
-  activeMag(A.activeMag),
-  magMinStep(A.magMinStep),magMaxStep(A.magMaxStep),
+  activeMag(A.activeMag),magMinStep(A.magMinStep),
+  magMaxStep(A.magMaxStep),activeElec(A.activeElec),
+  elecMinStep(A.elecMinStep),elecMaxStep(A.elecMaxStep),
   HRule(A.HRule),objSurfValid(0),
   SurList(A.SurList),SurSet(A.SurSet)
   /*!
@@ -196,6 +203,9 @@ Object::operator=(const Object& A)
       activeMag=A.activeMag;
       magMinStep=A.magMinStep;
       magMaxStep=A.magMaxStep;
+      activeElec=A.activeElec;
+      elecMinStep=A.elecMinStep;
+      elecMaxStep=A.elecMaxStep;
       HRule=A.HRule;
       objSurfValid=0;
       SurList=A.SurList;
@@ -255,6 +265,20 @@ Object::setMaterial(const int matID)
 }
 
 void
+Object::setMaterial(const std::string& matName)
+  /*!
+    Given a material id , set the new(?) material pointer
+    This function should not be called under most cases.
+    \param matName :: Material id
+   */
+{
+  ELog::RegMethod RegA("Object","setMaterial(string)");
+
+  matPtr=ModelSupport::DBMaterial::Instance().getMaterialPtr(matName);
+  return;
+}
+
+void
 Object::setMagStep(const double minV,const double maxV)
   /*!
     Set the min/max steps for the steps of charged particle
@@ -267,6 +291,23 @@ Object::setMagStep(const double minV,const double maxV)
 
   magMinStep=std::min(minV,maxV);
   magMaxStep=std::max(minV,maxV);
+
+  return;
+}
+
+void
+Object::setElecStep(const double minV,const double maxV)
+  /*!
+    Set the min/max steps for the steps of charged particle
+    in a magnetic field
+    \param minV :: min step value
+    \param maxV :: max step value
+  */
+{
+  ELog::RegMethod RegA("Object","setMagStep");
+
+  elecMinStep=std::min(minV,maxV);
+  elecMaxStep=std::max(minV,maxV);
 
   return;
 }
@@ -672,26 +713,54 @@ Object::checkSurfaceValid(const Geometry::Vec3D& C,
   return status/2;
 }
 
+const Geometry::Surface*
+Object::getSurf(const int SN) const
+  /*!
+    Get a surface from the object. It is unsigned.
+    \param SN :: Surface number
+    \return Surface Ptr
+   */
+{
+  if (SurSet.find(SN)!=SurSet.end() ||
+      SurSet.find(SN)!=SurSet.end())
+    {
+      const int ASN=std::abs(SN);
+      for(const Geometry::Surface* SPtr : SurList)
+	if (SPtr->getName()==ASN)
+	  return SPtr;
+    }
+  return 0;
+}
+
 int
-Object::trackDirection(const Geometry::Vec3D& C,
-		       const Geometry::Vec3D& Nm) const
+Object::trackDirection(const Geometry::Vec3D& Pt,
+		       const Geometry::Vec3D& Norm) const
 			  
   /*!
     Determine if a point is valid by checking both
     directions of the normal away from the line
     A good point will have one valid and one invalid.
-    \param C :: Point on a basic surface to check 
-    \param Nm :: Direction +/- to be checked
+    \param Pt :: Point on a basic surface to check 
+    \param Norm :: Direction +/- to be checked
     \retval +1 ::  Entering the Object
     \retval 0 :: No-change
     \retval -1 ::  Exiting the object
   */
 {
-  Geometry::Vec3D tmp=C+Nm*(Geometry::shiftTol*5.0);
-  const int inStatus=isValid(tmp);    
-  tmp-= Nm*(Geometry::shiftTol*10.0);
-  const int outStatus=isValid(tmp);   
-  return inStatus-outStatus;
+  ELog::RegMethod RegA("Object","trackDirection");
+  
+  // first determine if on surface :
+  const int SN = isOnSide(Pt);
+  if (!SN) return 0;
+
+  const int pAB=isDirectionValid(Pt,std::abs(SN));   // true/false [1/0]
+  const int mAB=isDirectionValid(Pt,-std::abs(SN));
+  if (pAB==mAB)  return 0;  // not extiting [internal]
+
+  const Geometry::Surface* SPtr=getSurf(SN);
+
+  const int normD=SPtr->sideDirection(Pt,Norm);
+  return (normD == pAB || normD == -mAB ) ? 1 : -1;
 }  
 
 int
@@ -704,6 +773,20 @@ Object::isValid(const Geometry::Vec3D& Pt) const
 */
 {
   return HRule.isValid(Pt);
+}
+
+int
+Object::isSignedValid(const Geometry::Vec3D& Pt,
+		      const int SN) const
+  /*! 
+    Determines is Pt is within the object 
+    or on the surface
+    \param Pt :: Point to be tested
+    \param SN :: Excluded surf Number 
+    \returns 1 if true and 0 if false
+  */
+{
+  return HRule.isSignedValid(Pt,SN);
 }
 
 int
@@ -878,6 +961,19 @@ Object::isValid(const std::map<int,int>& SMap) const
   return HRule.isValid(SMap);
 }
 
+int
+Object::isValid(const Geometry::Vec3D& Pt,
+		const std::map<int,int>& SMap) const
+/*! 
+  Determines is group of surface maps are valid
+  \param Pt :: Point to use if SMap incomplete
+  \param SMap :: map of SurfaceNumber : status [-1/ 0(either) / 1]
+  \returns 1 if true and 0 if false
+*/
+{
+  return HRule.isValid(Pt,SMap);
+}
+
 std::map<int,int>
 Object::mapValid(const Geometry::Vec3D& Pt) const
   /*! 
@@ -899,24 +995,6 @@ Object::mapValid(const Geometry::Vec3D& Pt) const
 }
 
 int
-Object::pairValid(const int SN,const Geometry::Vec3D& Pt) const
-  /*!
-    Given a surface number determine if the 
-    Point is invalid/valid with respect to the
-    surface SN.
-    - 0 
-    \param SN :: surface number
-    \param Pt :: Point to test
-    \retval 0 : Not valid [SN true/false]   
-    \retval 1 : valid [SN false only]
-    \retval 2 : valid [SN true only]
-    \retval 3 : valid [SN true/false]
-  */
-{
-  return HRule.pairValid(SN,Pt);
-}
-
-int
 Object::createSurfaceList()
   /*! 
     Uses the topRule* to create a surface list
@@ -927,6 +1005,7 @@ Object::createSurfaceList()
   ELog::RegMethod RegA("Object","createSurfaceList");
   
   populate();  // checked in populate
+
   std::ostringstream debugCX;
 
   SurList.clear();
@@ -934,6 +1013,7 @@ Object::createSurfaceList()
 
   std::stack<const Rule*> TreeLine;
   TreeLine.push(HRule.getTopRule());
+
   while(!TreeLine.empty())
     {
       const Rule* tmpA=TreeLine.top();
@@ -962,15 +1042,18 @@ Object::createSurfaceList()
 	    }
 	}
     }
+
   sort(SurList.begin(),SurList.end());
-  
+
   std::vector<const Geometry::Surface*>::iterator sc=
     unique(SurList.begin(),SurList.end());
   if (sc!=SurList.end())
     SurList.erase(sc,SurList.end());
 
-  // sorted list will have zeros at front
-  if (*SurList.begin()==0)
+  
+  // sorted list will have zeros at front if there is a problem
+  // (e.g not populated)
+  if (SurList.empty() || (*SurList.begin()==0))
     {
       ELog::EM<<"SurList Failure "<<ELog::endCrit;
       ELog::EM<<"CX == "<<debugCX.str()<<ELog::endCrit;
@@ -1131,7 +1214,8 @@ std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
 Object::trackSurfIntersect(const Geometry::Vec3D& Org,
 			   const Geometry::Vec3D& unitAxis) const
   /*!
-    Transfer function to move Object into headrule
+    Track a line into an object. It effectively converts the
+    object into a HeadRule, then tracks the line into the object.
     \param Org :: Origin of line
     \param unitAxis :: track of line
     \return Tuple of SurfNumber[signed]/surfacePointer/ImpactPoint/distance
@@ -1151,6 +1235,40 @@ Object::trackSurf(const Geometry::Vec3D& Org,
   */
 {
   return HRule.trackSurf(Org,unitAxis);
+}
+
+Geometry::Vec3D
+Object::trackPoint(const Geometry::Vec3D& Org,
+		   const Geometry::Vec3D& unitAxis) const
+  /*!
+    Transfer function to move Object into HeadRule
+    This calculates the line and return the first point
+    that the line intersects
+    \param Org :: Origin of line
+    \param unitAxis :: track of line
+    \return Signed surf number
+  */
+{
+  ELog::RegMethod RegA("Object","trackPoint");
+  
+  return HRule.trackPoint(Org,unitAxis);
+}
+
+Geometry::Vec3D
+Object::trackClosestPoint(const Geometry::Vec3D& Org,
+			  const Geometry::Vec3D& unitAxis,
+			  const Geometry::Vec3D& aimPt) const
+  /*!
+    Transfer function to move Object into HeadRule
+    This calculates the line and return the first point
+    that the line intersects
+    \param Org :: Origin of line
+    \param unitAxis :: track of line
+    \return Signed surf number
+  */
+{
+  ELog::RegMethod RegA("Object","trackClosetPoint");
+  return HRule.trackClosestPoint(Org,unitAxis,aimPt);
 }
 
 
@@ -1183,7 +1301,7 @@ Object::trackCell(const MonteCarlo::particle& N,double& D,
     Track to a particle into/out of a cell. 
     \param N :: Particle 
     \param D :: Distance traveled to the cell [get added too]
-    \param surfPtr :: Surface at exit
+    \param surfPtr :: Surface at exit [output]
     \param startSurf :: Start surface [to be ignored]
     \return surface number of intercept
    */
@@ -1195,10 +1313,10 @@ Object::trackCell(const MonteCarlo::particle& N,double& D,
   for(const Geometry::Surface* isptr : SurList)
     isptr->acceptVisitor(LI);
 
-  
   const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
   const std::vector<double>& dPts(LI.getDistance());
-  const std::vector<const Geometry::Surface*>& surfIndex(LI.getSurfIndex());
+  const std::vector<const Geometry::Surface*>& surfIndex=
+    LI.getSurfPointers();
 
   const int absSN(std::abs(startSurf));
   const int signSN(startSurf>0 ? 1 : -1);   // pAB/mAB is 1 / 0 
@@ -1211,8 +1329,8 @@ Object::trackCell(const MonteCarlo::particle& N,double& D,
   for(size_t i=0;i<dPts.size();i++)
     {
       // Is point possible closer
-      if ( dPts[i]>10.0*Geometry::zeroTol &&
-	   dPts[i]>Geometry::zeroTol && dPts[i]<D )
+
+      if ( dPts[i]>Geometry::zeroTol && dPts[i]<D+Geometry::zeroTol*10.0)
 	{
 	  const int NS=surfIndex[i]->getName();	    // NOT SIGNED
 	  const int pAB=isDirectionValid(IPts[i],NS);

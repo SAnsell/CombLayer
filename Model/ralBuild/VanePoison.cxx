@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   moderator/VanePoison.cxx
+ * File:   ralBuild/VanePoison.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,8 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -55,7 +53,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "VanePoison.h"
 
@@ -63,7 +61,7 @@ namespace moderatorSystem
 {
 
 VanePoison::VanePoison(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6)
+  attachSystem::ContainedComp(),attachSystem::FixedRotate(Key,6)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -71,7 +69,8 @@ VanePoison::VanePoison(const std::string& Key)  :
 {}
   
 VanePoison::VanePoison(const VanePoison& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::FixedRotate(A),
   nBlades(A.nBlades),bWidth(A.bWidth),absThick(A.absThick),
   bGap(A.bGap),yLength(A.yLength),zLength(A.zLength),
   modTemp(A.modTemp),modMat(A.modMat),bladeMat(A.bladeMat),
@@ -93,7 +92,7 @@ VanePoison::operator=(const VanePoison& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       nBlades=A.nBlades;
       bWidth=A.bWidth;
       absThick=A.absThick;
@@ -123,7 +122,7 @@ VanePoison::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("VanePoison","populate");
   
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   nBlades=Control.EvalVar<size_t>(keyName+"NBlades");
 
   bGap=Control.EvalVar<double>(keyName+"BladeGap");
@@ -140,26 +139,6 @@ VanePoison::populate(const FuncDataBase& Control)
   return;
 }
   
-
-void
-VanePoison::createUnitVector(const attachSystem::FixedComp& FC,
-			     const long int linkPt)
-  /*!
-    Create the unit vectors
-    - Y Points down the VanePoison direction
-    - X Across the VanePoison
-    - Z up (towards the target)
-    \param FC :: fixed Comp [and link comp]
-    \param linkPt :: Link point
-  */
-{
-  ELog::RegMethod RegA("VanePoison","createUnitVector");
-  
-  FixedComp::createUnitVector(FC,linkPt);
-  applyOffset();
-  return;
-}
-
 void
 VanePoison::createLinks()
   /*!

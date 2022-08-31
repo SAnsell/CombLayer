@@ -62,13 +62,14 @@
 #include "BlockZone.h"
 #include "generalConstruct.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "CeramicGap.h"
 #include "Scrapper.h"
 #include "EBeamStop.h"
 #include "LocalShielding.h"
 
-#include "LObjectSupportB.h"
+#include "LObjectSupport.h"
 #include "TDCsegment.h"
 #include "Segment6.h"
 
@@ -157,10 +158,10 @@ Segment6::buildObjects(Simulation& System)
   outerCell=constructSystem::constructUnit
     (System,*buildZone,*pipeD,"back",*ceramicA);
 
-  beamStop->setCutSurf("Front", ceramicA->getExclude() +
+  beamStop->setCutSurf("FrontPipe", ceramicA->getExclude() +
 		       pipeD->getExclude("FlangeB") +
 		       pipeD->getExclude("Main"));
-
+  
   constructSystem::constructUnit
     (System,*buildZone,*ceramicA,"back",*beamStop);
 
@@ -173,8 +174,6 @@ Segment6::buildObjects(Simulation& System)
       beamStop->insertAllInCell(System,outerCell-1);
 
       beamStop->insertAllInCell(System,outerCell+2);
-
-      //      attachSystem::addToInsertControl(System,*beamStop,*ceramicB);
       beamStop->insertComponent(System,"ShieldSideBackHole",*ceramicB);
     }
 

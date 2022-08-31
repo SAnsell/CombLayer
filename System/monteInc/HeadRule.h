@@ -3,7 +3,7 @@
  
  * File:   monteInc/HeadRule.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,7 +52,9 @@ class HeadRule
  private:
 
   Rule* HeadNode;                    ///< Parent object (for tree)
-
+  ///< set of surfaces with opposite signs
+  std::set<const Geometry::Surface*> signPairedSurf;   
+  
   Rule* findKey(const int); 
   void removeItem(const Rule*);
   static int procPair(std::string&,std::map<int,Rule*>&,int&);
@@ -88,7 +90,6 @@ class HeadRule
   /// access main rule
   const Rule* getTopRule() const { return HeadNode; }
 
-
   void populateSurf();
   void reset();
 
@@ -100,10 +101,14 @@ class HeadRule
   bool isUnion() const;
 
   bool isValid(const Geometry::Vec3D&,const std::set<int>&) const;
-  bool isValid(const Geometry::Vec3D&,const int) const;           
-  bool isValid(const Geometry::Vec3D&) const;           
-  int pairValid(const int,const Geometry::Vec3D&) const;           
-  bool isValid(const std::map<int,int>&) const; 
+  bool isValid(const Geometry::Vec3D&,const int) const;
+  bool isSignedValid(const Geometry::Vec3D&,const int) const;           
+  bool isValid(const Geometry::Vec3D&) const;
+  bool isValid(const std::map<int,int>&) const;
+  bool isValid(const Geometry::Vec3D&,const std::map<int,int>&) const;
+
+  bool isLineValid(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
+  
   bool isDirectionValid(const Geometry::Vec3D&,const int) const;
   bool isDirectionValid(const Geometry::Vec3D&,
 			const std::set<int>&,const int) const;
@@ -125,6 +130,9 @@ class HeadRule
   Geometry::Vec3D trackPoint(const Geometry::Vec3D&,
 			     const Geometry::Vec3D&) const;
   Geometry::Vec3D trackClosestPoint
+    (const Geometry::Vec3D&,const Geometry::Vec3D&,
+     const Geometry::Vec3D&) const;
+  int trackClosestSurface
     (const Geometry::Vec3D&,const Geometry::Vec3D&,
      const Geometry::Vec3D&) const;
 
@@ -162,6 +170,7 @@ class HeadRule
   int removeTopItem(const int);
   int substituteSurf(const int,const int,const Geometry::Surface*);
   void removeCommon();
+  void removeComplement();
 
   std::set<int> findAxisPlanes(const Geometry::Vec3D&,const double);
   int findAxisPlane(const Geometry::Vec3D&,const double);

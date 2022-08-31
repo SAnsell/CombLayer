@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/SimProcess.cxx
+ * File:   mcnpProcess/SimProcess.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,8 +39,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Code.h"
 #include "varList.h"
@@ -149,39 +147,6 @@ writeIndexSimPHITS(SimPHITS& System,const std::string& FName,
   return;
 }
 
-
-template<typename T,typename U>
-T
-getDefIndexVar(const FuncDataBase& Control,
-	       const std::string& FName,
-	       const std::string& BName,
-	       const U& index,
-	       const T& defVal)
-  /*!
-    Get an item based on the FName+[index]+BName 
-    with interal index. It adds a default value to obtain
-    \tparam T :: Type of variable (int/double etc)
-    \param Control :: Control name
-    \param FName :: Forward name
-    \param BName :: Back name
-    \param index :: index value
-    \param defVal :: default value to return if no variable.
-    \return Value found/ defVal
-  */
-{
-  ELog::RegMethod RegA("SimProcess","getDefIndexVar");
-  std::ostringstream cx;
-  cx<<FName<<index<<BName;
-  if (Control.hasVariable(cx.str()))
-    return Control.EvalVar<T>(cx.str());
-  if (Control.hasVariable(FName+BName))
-    return Control.EvalVar<T>(FName+BName);
-  return defVal;
-}
-
-
-
-
 void
 registerOuter(Simulation& System,const int cellNum,const int vNum)
   /*!
@@ -194,43 +159,15 @@ registerOuter(Simulation& System,const int cellNum,const int vNum)
 {  
   ELog::RegMethod RegA("SimProcess","registerOuter");
 
-  MonteCarlo::Object* Cptr=System.findObjectThrow(cellNum);
+  MonteCarlo::Object* Cptr=System.findObjectThrow(cellNum,"cellNum");
 
   std::ostringstream cx;
   cx<<" #"<<vNum;
-  Cptr->addSurfString(cx.str());
+  Cptr->addIntersection(HeadRule(-vNum));
   return;
 }
 
 
 ///\cond TEMPLATE
-
-
-template 
-int
-getDefIndexVar(const FuncDataBase&,const std::string&,
-	       const std::string&,const int&,const int&);
-template 
-double
-getDefIndexVar(const FuncDataBase&,const std::string&,
-	       const std::string&,const int&,const double&);
-template 
-int
-getDefIndexVar(const FuncDataBase&,const std::string&,
-	       const std::string&,const size_t&,const int&);
-template 
-double
-getDefIndexVar(const FuncDataBase&,const std::string&,
-	       const std::string&,const size_t&,const double&);
-
-
-// template 
-// int
-// getDefVar(const FuncDataBase&,const std::string&,const int&);
-
-// template 
-// double
-// getDefVar(const FuncDataBase&,const std::string&,const double&);
-
 
 }  // NAMESPACE SimProcess

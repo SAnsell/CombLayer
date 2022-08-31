@@ -3,7 +3,7 @@
  
  * File:   test/testSVD.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,21 +30,21 @@
 #include <algorithm>
 #include <functional>
 #include <numeric>
+#include <random>
 #include <boost/format.hpp>
 
-#include "MersenneTwister.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
+#include "Random.h"
 #include "SVD.h"
 
 #include "testFunc.h"
 #include "testSVD.h"
 
-extern MTRand RNG;
 using namespace Geometry;
 
 
@@ -248,7 +248,7 @@ testSVD::testMakeSolLong()
 	  bValue+=xV*Param[j];
 	  xV*=x;
 	}
-      bValue+=RNG.randNorm(0.0,1.0);
+      bValue+=Random::randNorm(0.0,1.0);
       B.push_back(bValue);
       // Calc matrix terms:
       M[i][0]=1.0;

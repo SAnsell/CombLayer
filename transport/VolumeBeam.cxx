@@ -3,7 +3,7 @@
  
  * File:   transport/VolumeBeam.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,14 +27,15 @@
 #include <complex>
 #include <map>
 #include <vector>
+#include <random>
 #include <boost/multi_array.hpp>
 
 #include "Exception.h"
-#include "MersenneTwister.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
+#include "Random.h"
 #include "Vec3D.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
@@ -42,8 +43,6 @@
 #include "neutron.h"
 #include "Beam.h"
 #include "VolumeBeam.h"
-
-extern MTRand RNG;
 
 namespace Transport
 {
@@ -148,22 +147,22 @@ VolumeBeam::generateNeutron() const
 {
   ELog::RegMethod RegA("VolumeBeam","generateNeutron");
 
-  const double theta=2.0*M_PI*RNG.rand();
-  const double phi=M_PI*RNG.rand();
+  const double theta=2.0*M_PI*Random::rand();
+  const double phi=M_PI*Random::rand();
   Geometry::Vec3D uV(cos(theta)*sin(phi),sin(theta)*sin(phi),
 		     cos(phi));
   MonteCarlo::neutron Out(wavelength,Corner,uV);
   // Weighting based on the cos() factors of the centroid probability:
   Geometry::Vec3D NLocal(Corner);   // local position of the neutron
   
-  double xfrac=RNG.rand();
+  double xfrac=Random::rand();
   Out.weight*=cos( (xfrac-0.5)*M_PI );
   NLocal+=X*xfrac;
-  xfrac=RNG.rand();
+  xfrac=Random::rand();
   Out.weight*=cos( (xfrac-0.5)*M_PI );
   NLocal+=Z*xfrac;
   // Y is special
-  xfrac=RNG.rand();
+  xfrac=Random::rand();
   Out.weight*=cos( (xfrac-0.5)*M_PI );
   NLocal+=Y*xfrac;
   if (yBias>0.0)

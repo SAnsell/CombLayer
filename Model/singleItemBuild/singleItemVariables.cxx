@@ -3,7 +3,7 @@
 
  * File:   singleItemBuild/singleItemVariables.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,6 +47,7 @@
 #include "CryoGenerator.h"
 #include "BladeGenerator.h"
 #include "PipeGenerator.h"
+#include "CornerPipeGenerator.h"
 #include "RectPipeGenerator.h"
 #include "TwinBaseGenerator.h"
 #include "TwinGenerator.h"
@@ -61,11 +62,13 @@
 #include "OctupoleGenerator.h"
 #include "EPSeparatorGenerator.h"
 #include "EPCombineGenerator.h"
+#include "EPContinueGenerator.h"
 #include "PreDipoleGenerator.h"
 #include "DipoleChamberGenerator.h"
 #include "DipoleSndBendGenerator.h"
 #include "R3ChokeChamberGenerator.h"
 #include "MagnetM1Generator.h"
+#include "MagnetU1Generator.h"
 #include "MagnetBlockGenerator.h"
 #include "CorrectorMagGenerator.h"
 #include "QuadUnitGenerator.h"
@@ -90,7 +93,11 @@
 #include "TriGroupGenerator.h"
 #include "subPipeUnit.h"
 #include "MultiPipeGenerator.h"
+#include "PitGenerator.h"
+#include "ScreenGenerator.h"
+#include "CooledScreenGenerator.h"
 #include "YagScreenGenerator.h"
+#include "BeamScrapperGenerator.h"
 #include "YagUnitGenerator.h"
 #include "YagUnitBigGenerator.h"
 #include "TWCavityGenerator.h"
@@ -107,27 +114,31 @@
 #include "CleaningMagnetGenerator.h"
 #include "IonPTubeGenerator.h"
 #include "IonGaugeGenerator.h"
+#include "CollTubeGenerator.h"
+#include "CollUnitGenerator.h"
 #include "TriggerGenerator.h"
 #include "NBeamStopGenerator.h"
 #include "BremTubeGenerator.h"
 #include "HPJawsGenerator.h"
 #include "BoxJawsGenerator.h"
 #include "DiffXIADP03Generator.h"
-#include "CLRTubeGenerator.h"
+#include "CRLTubeGenerator.h"
 #include "ViewScreenGenerator.h"
 #include "PortChicaneGenerator.h"
 #include "ConnectorGenerator.h"
 #include "LocalShieldingGenerator.h"
 #include "FlangeDomeGenerator.h"
 #include "BeamBoxGenerator.h"
+#include "MonoShutterGenerator.h"
+#include "RoundShutterGenerator.h"
 
 namespace setVariable
 {
 
-void
-exptHutVariables(FuncDataBase&,const std::string&,const double);
-void
-localShieldVariables(FuncDataBase&);
+void exptHutVariables(FuncDataBase&,const std::string&,const double);
+void localShieldVariables(FuncDataBase&);
+void targetShieldVariables(FuncDataBase&);
+
 
 
 void
@@ -145,6 +156,7 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable("zero",0.0);     // Zero
   Control.addVariable("one",1.0);      // one
 
+  targetShieldVariables(Control);
   // photon test
   Control.addVariable("TargetZStep",0.0);
   Control.addVariable("TargetRadius",5.0);
@@ -202,6 +214,11 @@ SingleItemVariables(FuncDataBase& Control)
 
   Control.addVariable("CryoBMat","Aluminium");
 
+  setVariable::PitGenerator CPitGen;
+  CPitGen.setFeLayer(6.0);
+  CPitGen.setConcLayer(10.0);
+  CPitGen.generatePit(Control,"ChopperPit",0.0,340.0,150.0,120.0,30.0);
+
   setVariable::EArrivalMonGenerator EMonGen;
   EMonGen.generateMon(Control,"BeamMon",0.0);
 
@@ -223,6 +240,9 @@ SingleItemVariables(FuncDataBase& Control)
   RPipeGen.generatePipe(Control,"singleBoxPipeA",0.0,80.0);
   RPipeGen.generatePipe(Control,"singleBoxPipeB",0.0,80.0);
 
+  setVariable::CornerPipeGenerator CPipeGen;
+  CPipeGen.generatePipe(Control,"CornerPipe",80.0);
+
   setVariable::ChopperGenerator CGen;
   CGen.setMotorRadius(10.0);
   CGen.generateChopper(Control,"singleChopper",10.0,12.0,5.55);
@@ -243,13 +263,17 @@ SingleItemVariables(FuncDataBase& Control)
 
   // collimator block
   setVariable::SqrFMaskGenerator FMaskGen;
+
+  // B is standard
+  FMaskGen.generateColl(Control,"FMask",0.0,15.0);
+
   FMaskGen.setPipeRadius(-10.0);
   // FMaskGen.setCF<CF63>();
   // FMaskGen.setBFlangeCF<CF40>();
   // FMaskGen.setFrontGap(3.99,1.97);  //1033.8
   // FMaskGen.setBackGap(0.71,0.71);
   // FMaskGen.setMinSize(10.2,0.71,0.71);
-  FMaskGen.generateColl(Control,"FMask",0.0,15.0);
+  FMaskGen.generateColl(Control,"FMaskB",40.0,15.0);
 
 
   setVariable::EPSeparatorGenerator EPSGen;
@@ -266,12 +290,19 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::R3ChokeChamberGenerator CCGen;
   CCGen.generateChamber(Control,"R3Chamber");
-
+  
   setVariable::MagnetM1Generator M1Gen;
   M1Gen.generateBlock(Control,"M1Block");
 
+  setVariable::MagnetU1Generator U1Gen;  
+  U1Gen.generateBlock(Control,"U1Block");
+
+
   setVariable::EPCombineGenerator EPCGen;
   EPCGen.generatePipe(Control,"EPCombine");
+
+  setVariable::EPContinueGenerator EPCCGen;
+  EPCCGen.generatePipe(Control,"EPContinue");
 
   setVariable::QuadrupoleGenerator QGen;
   QGen.generateQuad(Control,"QFend",20.0,25.0);
@@ -287,6 +318,9 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::SixPortGenerator SPGen;
   SPGen.generateSixPort(Control,"SixPort");
+  SPGen.setCF<CF40>();
+  SPGen.setSideCF<CF150>();
+  SPGen.setXSideLength(70.0,70.0);
   SPGen.generateSixPort(Control,"FourPort");
 
   setVariable::CrossWayGenerator MSPGen;
@@ -297,8 +331,7 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::BremBlockGenerator BBGen;
   BBGen.setAperature(-1,1.0,1.0,1.0,1.0,1.0,1.0);
-  BBGen.generateBlock(Control,"BremBlock",0,8.0);
-
+  BBGen.generateBlock(Control,"BremBlock",0.0);
 
   setVariable::CrossWayGenerator CWBlankGen;
   CWBlankGen.setCF<CF63>();
@@ -327,14 +360,26 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::DiffXIADP03Generator DPXGen;
   DPXGen.generatePump(Control,"DiffXIA",54.4);
 
-  setVariable::CLRTubeGenerator DPGen;
-  DPGen.generatePump(Control,"CLRTube",1);
+  setVariable::CRLTubeGenerator DPGen;
+  DPGen.generateLens(Control,"CRLTube",1);
+
+  setVariable::MonoShutterGenerator MSGen;
+  MSGen.generateShutter(Control,"MS",1,1);
+
+  setVariable::RoundShutterGenerator RMSGen;
+  RMSGen.generateShutter(Control,"RMS",1,1);
 
   setVariable::ViewScreenGenerator VTGen;
   VTGen.generateView(Control,"ViewTube");
 
   setVariable::IonGaugeGenerator IonGGen;
   IonGGen.generateTube(Control,"IonGauge");
+
+  setVariable::CollTubeGenerator CTGen;
+  CTGen.generateTube(Control,"CollTube",25.0);
+
+  setVariable::CollUnitGenerator CUGen;
+  CUGen.generateScreen(Control,"CollUnit");
 
   setVariable::TriggerGenerator TrigGen;
   TrigGen.generateTube(Control,"TriggerTube");
@@ -372,17 +417,17 @@ SingleItemVariables(FuncDataBase& Control)
   MBGen.generateBlock(Control,"MB1",0.0);
 
   setVariable::QuadUnitGenerator M1QGen;
-  M1QGen.generatePipe(Control,"M1QuadUnit",0.0);
+  M1QGen.generatePipe(Control,"MB1QuadUnit",0.0);
 
   //  setVariable::DipoleChamberGenerator DCGen;
-  DCGen.generatePipe(Control,"M1DipoleChamber",0.0);
+  DCGen.generatePipe(Control,"MB1DipoleChamber",0.0);
 
-  DEGen.generatePipe(Control,"M1DipoleExtract",0.0);
+  DEGen.generatePipe(Control,"MB1DipoleExtract",0.0);
 
-  DBGen.generatePipe(Control,"M1DipoleSndBend",2.8);
+  DBGen.generatePipe(Control,"MB1DipoleSndBend",2.8);
 
   DEGen.setLength(82.0);
-  DEGen.generatePipe(Control,"M1DipoleOut",0.0);
+  DEGen.generatePipe(Control,"MB1DipoleOut",0.0);
 
   // Beam Stop
   setVariable::NBeamStopGenerator BS;
@@ -418,7 +463,7 @@ SingleItemVariables(FuncDataBase& Control)
 
   // CylGateValve
   setVariable::CylGateValveGenerator GVGen;
-  GVGen.generateGate(Control,"GV",1);
+  GVGen.generateGate(Control,"GV",0);
 
   // CylGateValve
   setVariable::GateValveGenerator CGateGen;
@@ -438,11 +483,22 @@ SingleItemVariables(FuncDataBase& Control)
 
   PGen.setCF<setVariable::CF40_22>();
   PGen.generatePipe(Control,"VC",80.0);
-  Control.addVariable("VC",-40.0);
+
+  PGen.setWindow(1.5,0.2);
+  PGen.generatePipe(Control,"VCWin",80.0);
+
 
   PGen.setCF<setVariable::CF40_22>();
+  PGen.setNoWindow();
   PGen.generatePipe(Control,"DipolePipe",80.0);
   Control.addVariable("DipolePipeYStep",-40.0);
+
+  setVariable::CooledScreenGenerator CoolGen;
+  CoolGen.generateScreen(Control,"Cool",1);  // in beam
+  Control.addVariable("CoolYAngle",-90.0);
+
+  setVariable::BeamScrapperGenerator BeamSGen;
+  BeamSGen.generateScreen(Control,"BeamScrapper");
 
   setVariable::YagScreenGenerator YagGen;
   YagGen.generateScreen(Control,"YAG",1);  // in beam
@@ -639,13 +695,53 @@ SingleItemVariables(FuncDataBase& Control)
 			Geometry::Vec3D(0.0, 0.0, 0.0),
 			Geometry::Vec3D(0,1,0));
 
+
+
+  // Double pipe
+  SimpleTubeGen.setCF<CF63>();
+  SimpleTubeGen.generateTube(Control,"DoublePipe",40.0);
+
+  Control.addVariable("DoublePipeNPorts",1);
+  PItemGen.setCF<setVariable::CF40>(30.0);
+  PItemGen.setNoPlate();
+
+  // second pipe
+  setVariable::PortItemGenerator PItemGenB(PItemGen);
+  PItemGenB.setCF<setVariable::CF63>(15.0);
+
+  PItemGen.generateDoublePort
+    (Control,"DoublePipePort0",
+     PItemGenB,
+     Geometry::Vec3D(0.0, -3.0, 0.0),
+     Geometry::Vec3D(-1.0, 0.0, 0.0));
+
+  
   // expt hutch
   exptHutVariables(Control,"",0.0);
   localShieldVariables(Control);
   return;
 }
 
+void
+targetShieldVariables(FuncDataBase& Control)
+{
+  // photon test
+  Control.addVariable("TargetZStep",0.0);
+  Control.addVariable("TargetRadius",5.0);
+  Control.addVariable("TargetDefMat","Stainless304");
 
+  Control.addVariable("TubeARadius",5.0);
+  Control.addVariable("TubeALength",25.0);
+  Control.addVariable("TubeBRadius",5.0);
+  Control.addVariable("TubeBLength",5.0);
+  Control.addVariable("TubeADefMat","Stainless304");
+  Control.addVariable("TubeBDefMat","Lead");
+
+
+  
+  return;
+}
+  
 void
 localShieldVariables(FuncDataBase& Control)
   /*!

@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/trex/TREX.cxx
  *
- * Copyright (c) 2004-2019 by Tsitohaina Randriamalala/Stuart Ansell
+ * Copyright (c) 2004-2022 by Tsitohaina Randriamalala/Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
-#include "stringCombine.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Code.h"
@@ -55,9 +54,9 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotateUnit.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
@@ -71,6 +70,7 @@
 #include "GuideItem.h"
 #include "GuideLine.h"
 #include "DiskChopper.h"
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "SingleChopper.h"
 #include "Bunker.h"
@@ -90,7 +90,7 @@ namespace essSystem
 TREX::TREX(const std::string& keyName):
   attachSystem::CopiedComp("trex",keyName),
   nC(7),nF(8),stopPoint(0),
-  trexAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
+  trexAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
 
   FocusMono(new beamlineSystem::GuideLine(newName+"FMono")),
   VPipeBridge(new constructSystem::VacuumPipe(newName+"PipeBridge")),
@@ -118,8 +118,8 @@ TREX::TREX(const std::string& keyName):
   PitA(new constructSystem::ChopperPit(newName+"PitA")),
   PitACutFront(new constructSystem::HoleShape(newName+"PitACutFront")),
   PitACutBack(new constructSystem::HoleShape(newName+"PitACutBack")),
-  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
-  DiskA(new constructSystem::DiskChopper(newName+"ADisk")),
+  ChopperA(new essConstruct::SingleChopper(newName+"ChopperA")),
+  DiskA(new essConstruct::DiskChopper(newName+"ADisk")),
   ShieldA(new constructSystem::LineShield(newName+"ShieldA")),
   VPipeOutA(new constructSystem::VacuumPipe(newName+"PipeOutA")),
   BendOutA(new beamlineSystem::GuideLine(newName+"BOutA")),
@@ -127,8 +127,8 @@ TREX::TREX(const std::string& keyName):
   PitB(new constructSystem::ChopperPit(newName+"PitB")),
   PitBCutFront(new constructSystem::HoleShape(newName+"PitBCutFront")),
   PitBCutBack(new constructSystem::HoleShape(newName+"PitBCutBack")),
-  ChopperB(new constructSystem::SingleChopper(newName+"ChopperB")),
-  DiskB(new constructSystem::DiskChopper(newName+"BDisk")),
+  ChopperB(new essConstruct::SingleChopper(newName+"ChopperB")),
+  DiskB(new essConstruct::DiskChopper(newName+"BDisk")),
 
   ShieldB(new constructSystem::LineShield(newName+"ShieldB")),
   VPipeOutB(new constructSystem::VacuumPipe(newName+"PipeOutB")),
@@ -138,8 +138,8 @@ TREX::TREX(const std::string& keyName):
   PitC(new constructSystem::ChopperPit(newName+"PitC")),
   PitCCutFront(new constructSystem::HoleShape(newName+"PitCCutFront")),
   PitCCutBack(new constructSystem::HoleShape(newName+"PitCCutBack")),
-  ChopperC(new constructSystem::SingleChopper(newName+"ChopperC")),
-  DiskC(new constructSystem::DiskChopper(newName+"CDisk")),
+  ChopperC(new essConstruct::SingleChopper(newName+"ChopperC")),
+  DiskC(new essConstruct::DiskChopper(newName+"CDisk")),
 
   ShieldD(new constructSystem::LineShield(newName+"ShieldD")),
   VPipeOutD(new constructSystem::VacuumPipe(newName+"PipeOutD")),
@@ -148,9 +148,9 @@ TREX::TREX(const std::string& keyName):
   PitE(new constructSystem::ChopperPit(newName+"PitE")),
   PitECutFront(new constructSystem::HoleShape(newName+"PitECutFront")),
   PitECutBack(new constructSystem::HoleShape(newName+"PitECutBack")),
-  ChopperE(new constructSystem::SingleChopper(newName+"ChopperE")),
-  DiskE1(new constructSystem::DiskChopper(newName+"E1Disk")),
-  DiskE2(new constructSystem::DiskChopper(newName+"E2Disk")),
+  ChopperE(new essConstruct::SingleChopper(newName+"ChopperE")),
+  DiskE1(new essConstruct::DiskChopper(newName+"E1Disk")),
+  DiskE2(new essConstruct::DiskChopper(newName+"E2Disk")),
   ShieldE(new constructSystem::LineShield(newName+"ShieldE")),
   VPipeOutE(new constructSystem::VacuumPipe(newName+"PipeOutE")),
   GuideOutE(new beamlineSystem::GuideLine(newName+"GOutE")),
@@ -163,15 +163,15 @@ TREX::TREX(const std::string& keyName):
   VPipeOutG(new constructSystem::VacuumPipe(newName+"PipeOutG")),
   GuideOutG(new beamlineSystem::GuideLine(newName+"GOutG")),
   
-  ChopperG(new constructSystem::SingleChopper(newName+"ChopperG")),
-  DiskG(new constructSystem::DiskChopper(newName+"GDisk")),
+  ChopperG(new essConstruct::SingleChopper(newName+"ChopperG")),
+  DiskG(new essConstruct::DiskChopper(newName+"GDisk")),
   
   VPipeOutH(new constructSystem::VacuumPipe(newName+"PipeOutH")),
   GuideOutH(new beamlineSystem::GuideLine(newName+"GOutH")),
   
-  ChopperH(new constructSystem::SingleChopper(newName+"ChopperH")),
-  DiskH1(new constructSystem::DiskChopper(newName+"H1Disk")),
-  DiskH2(new constructSystem::DiskChopper(newName+"H2Disk")),
+  ChopperH(new essConstruct::SingleChopper(newName+"ChopperH")),
+  DiskH1(new essConstruct::DiskChopper(newName+"H1Disk")),
+  DiskH2(new essConstruct::DiskChopper(newName+"H2Disk")),
 
   GuideOutI(new beamlineSystem::GuideLine(newName+"GOutI"))
 
@@ -232,7 +232,7 @@ TREX::TREX(const std::string& keyName):
   
   for(size_t i=0;i<nC;i++)
     {
-      const std::string strNum(StrFunc::makeString(i));
+      const std::string strNum(std::to_string(i));
       VPipeOutCs[i]=std::shared_ptr<constructSystem::VacuumPipe>
 	(new constructSystem::VacuumPipe(newName+"PipeOutC"+strNum));
       BendOutCs[i]=std::shared_ptr<beamlineSystem::GuideLine>
@@ -260,7 +260,7 @@ TREX::TREX(const std::string& keyName):
   OR.addObject(ShieldF);
   for(size_t i=0;i<nF;i++)
     {
-      const std::string strNum(StrFunc::makeString(i));
+      const std::string strNum(std::to_string(i));
 
       VPipeOutFs[i]=std::shared_ptr<constructSystem::VacuumPipe>
 	(new constructSystem::VacuumPipe(newName+"PipeOutF"+strNum));

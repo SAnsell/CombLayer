@@ -3,7 +3,7 @@
  
  * File:   pipeInc/pipeTube.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ namespace pipeSystem
 */
 
 class pipeTube : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::CellMap
 {
  private:
@@ -56,7 +56,6 @@ class pipeTube : public attachSystem::ContainedComp,
   std::vector<int> wallMatList; 
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();

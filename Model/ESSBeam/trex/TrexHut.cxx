@@ -57,7 +57,7 @@
 #include "LinkUnit.h"  
 #include "FixedComp.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -67,7 +67,7 @@
 namespace essSystem
 {
 TrexHut::TrexHut(const std::string& Key) :
-  attachSystem::FixedOffsetGroup(Key,"Inner",6,"Mid",6,"Outer",6),
+  attachSystem::FixedRotateGroup(Key,"Inner",6,"Mid",6,"Outer",6),
   attachSystem::ContainedComp(),attachSystem::CellMap()
 {}
 
@@ -78,7 +78,7 @@ void TrexHut::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("TrexHut","populate");
 
-  FixedOffsetGroup::populate(Control);
+  FixedRotateGroup::populate(Control);
 
   voidHeight=Control.EvalVar<double>(keyName+"VoidHeight");
   voidWidth=Control.EvalVar<double>(keyName+"VoidWidth");

@@ -3,7 +3,7 @@
 
  * File:   linac/linacMagnetVariables.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2022 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -118,15 +118,14 @@ LINACmagnetVariables(FuncDataBase& Control,
   if (magField=="TDCline" ||
       magField=="TDClineA" ||
       magField=="TDClineB" ||
-      magField=="TDClineC"
-      )
+      magField=="TDClineC")
     {
       const std::vector<std::string> TDCname
 	({
 	  "Seg13CMagHA L2SPF13PipeA:Void",
-	  "Seg13QuadA L2SPF13PipeB:Void",
-	  "Seg13SexuA L2SPF13PipeB:Void",
-	  "Seg13QuadB L2SPF13PipeB:Void",
+	  "Seg13QuadA  L2SPF13PipeB:Void",
+	  "Seg13SexuA  L2SPF13PipeB:Void",
+	  "Seg13QuadB  L2SPF13PipeB:Void",
 	  "Seg13CMagVA L2SPF13PipeC:Void",
 
 	  "Seg14DipoleA TDC14FlatA:Void",
@@ -219,11 +218,10 @@ LINACmagnetVariables(FuncDataBase& Control,
   MUdipole.generateCorMag(Control,2,"QuadD",0.0);
   MUdipole.generateCorMag(Control,2,"QuadE",0.0);
 
-  // SEGMENT 3
-  MUdipole.generateDipole(Control,3,"DipoleA",-90.0,0.8575);  // 0.86
+  MUdipole.generateDipole(Control,3,"DipoleA",-90.0,0.8575);  
   MUdipole.generateCorMag(Control,3,"CMagHA",90.0);
   MUdipole.generateCorMag(Control,3,"CMagVA",0.0);
-  MUdipole.generateDipole(Control,3,"DipoleB",-90.0,0.8625);   // 0.865
+  MUdipole.generateDipole(Control,3,"DipoleB",-90.0,0.8625);  
 
   // SEGMENT 4
   MUdipole.generateQuad(Control,4,"QuadA",0.0,0.0);
@@ -233,11 +231,8 @@ LINACmagnetVariables(FuncDataBase& Control,
   MUdipole.generateCorMag(Control,4,"CMagVA",0.0);
 
   // SEGMENT 5
-  MUdipole.setSize(65.0,15.0,3.0);
-  MUdipole.setField(0.859,0,0,0);
-  MUdipole.generate(Control,"Seg5DipoleA","L2SPF5DipoleA","0",-90.0);
-  MUdipole.setField(0.859,0,0,0);  // 0.66 : 0.8
-  MUdipole.generate(Control,"Seg5DipoleB","L2SPF5DipoleB","0",-90.0);
+  MUdipole.generateDipole(Control,5,"DipoleA",-90.0,0.859);
+  MUdipole.generateDipole(Control,5,"DipoleB",-90.0,0.859);
 
   // SEGMENT 6
 
@@ -279,10 +274,10 @@ LINACmagnetVariables(FuncDataBase& Control,
       MUdipole.generateQuad(Control,13,"QuadB",0.0,0.0);
       MUdipole.generateCorMag(Control,13,"CMagVA",0.0);
 
-      // SEGMENT 14
+      // SEGMENT 14 [y=4800]
       MUdipole.setPreName("TDC");
-      MUdipole.generateDipole(Control,14,"DipoleA",90.0,0.855);
-      MUdipole.generateDipole(Control,14,"DipoleB",90.0,0.855);
+      MUdipole.generateDipole(Control,14,"DipoleA",90.0,0.855);  
+      MUdipole.generateDipole(Control,14,"DipoleB",90.0,0.855);  
 
       // SEGMENT 15
 

@@ -3,7 +3,7 @@
  
  * File:   R3Common/MagnetBlock.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -391,8 +391,6 @@ MagnetBlock::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("MagnetBlock","createAll");
 
-  int outerCell;
-  
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
 

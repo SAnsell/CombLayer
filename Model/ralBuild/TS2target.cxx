@@ -3,7 +3,7 @@
  
  * File:  ralBuild/TS2target.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,13 +33,10 @@
 #include <algorithm>
 #include <memory>
 
-
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "surfRegister.h"
@@ -58,7 +55,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -72,7 +69,7 @@ namespace TMRSystem
 {
 
 TS2target::TS2target(const std::string& Key) :
-  TMRSystem::TargetBase(Key,3)
+  TMRSystem::TargetBase(Key,5)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -99,7 +96,7 @@ TS2target::TS2target(const TS2target& A) :
   flangeYStep(A.flangeYStep),flangeMat(A.flangeMat),
   wMat(A.wMat),taMat(A.taMat),waterMat(A.waterMat),
   targetTemp(A.targetTemp),waterTemp(A.waterTemp),
-  externTemp(A.externTemp),mainCell(A.mainCell),
+  externTemp(A.externTemp),
   nLayers(A.nLayers),mainFrac(A.mainFrac)
   /*!
     Copy constructor
@@ -156,7 +153,6 @@ TS2target::operator=(const TS2target& A)
       targetTemp=A.targetTemp;
       waterTemp=A.waterTemp;
       externTemp=A.externTemp;
-      mainCell=A.mainCell;
       nLayers=A.nLayers;
       mainFrac=A.mainFrac;
     }
@@ -188,7 +184,7 @@ TS2target::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("TS2target","populate");
 
-  attachSystem::FixedOffset::populate(Control);
+  attachSystem::FixedRotate::populate(Control);
   
   mainLength=Control.EvalVar<double>(keyName+"MainLength");
   coreRadius=Control.EvalVar<double>(keyName+"CoreRadius");
@@ -404,75 +400,76 @@ TS2target::createNoseConeObjects(Simulation& System)
 {
   ELog::RegMethod RegA("TS2target","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   // Front piece [Cylinder/Sphere]
   if (surfThick>Geometry::zeroTol && nLayers>1)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,
 				     "-9 -19 3 -4 -8 (109:-103:104:108)");
-      System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
-      Out=ModelSupport::getComposite(SMap,buildIndex,"-109 -19 103 -104 -108");
-      System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
-      Out=ModelSupport::getComposite(SMap,buildIndex,
+      makeCell("InnerWater",System,cellIndex++,waterMat,0.0,HR);
+      
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-109 -19 103 -104 -108");
+      makeCell("InnerWater",System,cellIndex++,waterMat,0.0,HR);
+
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,
 				     "-1 -8  19 3 -4 (108:-103:104)");
-      System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
-      Out=ModelSupport::getComposite(SMap,buildIndex,"-1 -108  19 103 -104");
-      System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
+      makeCell("InnerWater",System,cellIndex++,waterMat,0.0,HR);
+
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 -108  19 103 -104");
+      makeCell("InnerWater",System,cellIndex++,waterMat,0.0,HR);
+
     }
   else
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,"-1 -8 (-9 : 19) 3 -4");
-      System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 -8 (-9 : 19) 3 -4");
+      makeCell("InnerWater",System,cellIndex++,waterMat,0.0,HR);
     }
 
   // ----------------- WATER -------------------------------
   // Water Cut Top: 
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-81 61 63 -64 -59 (29:24)");
-  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
-  ELog::EM<<"Cell == "<<cellIndex-1<<ELog::endDiag;;
-  const std::string watOCap=ModelSupport::getExclude(cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-81 61 63 -64 -59 (29:24)");
+  makeCell("InnerWater",System,cellIndex++,waterMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-48 62 63 -64 -1 59");
-  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
-  const std::string watICyl=ModelSupport::getExclude(cellIndex-1);
+  //  ModelSupport::getExclude(cellIndex-1);
+  const HeadRule watOCapHR=HR.complement();
 
-
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-48 62 63 -64 -1 59");
+  makeCell("InnerWater",System,cellIndex++,waterMat,0.0,HR);
+  const HeadRule watICylHR=HR.complement();
 
   // Inner Water Cut:
-  Out=ModelSupport::getComposite(SMap,buildIndex," 71 -29 73 -74 -59 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
-  const std::string watICap=ModelSupport::getExclude(cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 71 -29 73 -74 -59");
+  makeCell("InnerWater",System,cellIndex++,waterMat,0.0,HR);
+  const HeadRule watICapHR=HR.complement();
 
   // Tungsen Cap [Part Sphere]
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-1 23 -24 (-27:-59) "
-                                   "(-29: 59) "
-   				 "(-3 : 4 : 8 : ( 9 -19 ) ) "
-                                 +watICap+watICyl);
-  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-1 23 -24 (-27:-59) (-29: 59) "
+     "(-3 : 4 : 8 : ( 9 -19 ) ) ");
 
+  makeCell("Cap",System,cellIndex++,taMat,0.0,HR*watICapHR*watICylHR);
   // Cut: [Top section]
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-1 59 -48 (27 : -23 : 24)"
-                                 +watICyl); 
-  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 59 -48 (27 : -23 : 24)");
 
+  makeCell("CutSection",System,cellIndex++,taMat,0.0,HR*watICylHR);
   // Cut: [Top section/Part 2]
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-59 -81  "
-   				 "(-23 : 24 : ( 29 -39 ) ) "
-                                 +watICap+watOCap);
-  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
-
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+			       "-59 -81 (-23 : 24 : ( 29 -39 ) ) ");
+                                 
+  makeCell("CutSection",System,cellIndex++,taMat,0.0,HR*watICapHR*watOCapHR);
 
   // Cap Base:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-1 -57 59 48");
-  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 -57 59 48");
+  makeCell("CapBase",System,cellIndex++,taMat,0.0,HR);
   // Cap Top:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-59 -91 81");
-  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-59 -91 81");
+  makeCell("TopCap",System,cellIndex++,taMat,0.0,HR);
 
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-1 59 57 -101");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 59 57 -101");
+  makeCell("TopCapVoid",System,cellIndex++,0,0.0,HR);
+  
 
   return;
 }
@@ -485,71 +482,58 @@ TS2target::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("TS2target","createObjects");
-  // INNER PLANES    
-  const std::string frontPlate(ExternalCut::getRuleStr("FrontPlate"));
-  const std::string backPlate(ExternalCut::getRuleStr("BackPlate"));
 
-  std::string Out;
-  mainCell=cellIndex;
+  // INNER PLANES    
+  //  const HeadRule& frontPlateHR(ExternalCut::getRule("FrontPlate"));
+  const HeadRule& backPlateHR(ExternalCut::getRule("BackPlate"));
+
+  HeadRule HR;
   // Main cylinder:
   if (surfThick>Geometry::zeroTol && nLayers>1)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -17");
-      System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
-      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7 17");
-      System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -17");
+      makeCell("MainCell",System,cellIndex++,wMat,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -7 17");
+      makeCell("MainCellSkin",System,cellIndex++,wMat,0.0,HR);
     }
   else
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7");
-      System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -7");
+      makeCell("MainCell",System,cellIndex++,wMat,0.0,HR);
     }
 
 
   // ----------------- FLANGE ----------------
-  Out=ModelSupport::getComposite(SMap,buildIndex,"201 -202 -207 101");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -202 -207 101");
+  makeCell("Flange",System,cellIndex++,0,0.0,HR);
+
 
     
   // -- WATER -- [Main Cylinder]
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 27 -47");
-  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 27 -47");
+  makeCell("Water",System,cellIndex++,waterMat,0.0,HR);
 
   // -----------------------------------------------------------
   // Main Cylinder
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 7 -27");
-  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
-  skinCell=cellIndex-1;
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 7 -27");
+  makeCell("SkinCell",System,cellIndex++,taMat,0.0,HR);
 
   // Ta Press: [Cylinder]
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 47 -57");
-  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
-  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 47 -57");
+  makeCell("TaPressure",System,cellIndex++,taMat,0.0,HR);
 
   // Spacer Void around target:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 57 -101");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 57 -101");
+  makeCell("Spacer",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"2 -101 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+frontPlate));
-  
-
-  // Front spacer [Proton flight line]:
-  // if (backPlate)
-  //   Out=ModelSupport::getComposite
-  //    (SMap,buildIndex,"-59 91 -101 -190")+backPlate
-  ;
-  // else
-  //   Out=ModelSupport::getComposite(SMap,buildIndex,"-59 91 -101 -202 186");
-  // System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  //  protonVoidCell=cellIndex-1;
-  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -101");
+  makeCell("Spacer",System,cellIndex++,0,0.0,HR*backPlateHR);
+    
   // Set EXCLUDE:
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "(59 :-91) -207 (-101 : (201 -202))");
-  addOuterSurf(Out);
-  // Inner boundary
-  addBoundarySurf(-SMap.realSurf(buildIndex+27));    
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+			       "(59 :-91) -207 (-101 : (201 -202))");
+  addOuterSurf(HR);
+
   return;
 }
 
@@ -567,10 +551,18 @@ TS2target::createLinks()
   FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+91));
   FixedComp::addLinkSurf(2,-SMap.realSurf(buildIndex+59));
 
+  FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+1));
+
   FixedComp::setConnect(0,Origin+Z*voidRadius,Z);
   FixedComp::setConnect(1,Origin+Y*mainLength,Y);
   FixedComp::setConnect(2,Origin-Y*(tCapDisplace+tCapOuterRadius),-Y);
+  FixedComp::setConnect(3,Origin,-Y);
 
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+27));
+  FixedComp::setConnect(4,Origin+Z*(coreRadius+cladThick),Z);
+
+  FixedComp::nameSideIndex(4,"CoreRadius");
+  FixedComp::nameSideIndex(2,"TargetFront");
   return;
 }
 
@@ -599,7 +591,7 @@ TS2target::layerProcess(Simulation& System)
       DA.addMaterial(wMat);
       
       // Cell Specific:
-      DA.setCellN(mainCell);
+      DA.setCellN(getCell("MainCell",0));
       DA.setOutNum(cellIndex,buildIndex+801);
       DA.makeTemplate<Geometry::Plane>(SMap.realSurf(buildIndex+1),
 				   SMap.realSurf(buildIndex+2));
@@ -609,42 +601,22 @@ TS2target::layerProcess(Simulation& System)
   return;
 }
 
-
 void
-TS2target::addInnerBoundary(attachSystem::ContainedComp& CC) const
-  /*!
-    Adds the inner W boundary to an object
-    \param CC :: Object to boundary to 
-   */
-{
-  ELog::RegMethod RegA("TS2target","addInnerBoundary");
-  CC.addBoundarySurf(-SMap.realSurf(buildIndex+27));
-  return;
-}
-
-
-
-void
-TS2target::addProtonLine(Simulation& System,
-			 const attachSystem::FixedComp& refFC,
-			 const long int index)
+TS2target::addProtonLine(Simulation& System)
   /*!
     Add a proton void cell
     \param System :: Simualation
-    \param refFC :: reflector edge
-    \param index :: Index of the proton cutting surface [6 typically (-7)]
    */
 {
   ELog::RegMethod RegA("TS2target","addProtonLine");
 
   ELog::EM<<"Target centre [TS2] "<<Origin<<ELog::endDebug;
 
-  PLine->setCutSurf("RefBoundary",getRule("BackPlate"));
+  PLine->setCutSurf("TargetSurf",*this,"TargetFront");
+  PLine->setCutSurf("RefBoundary",getRule("FrontPlate"));
   PLine->createAll(System,*this,3);
-  createBeamWindow(System,-3);
+  createBeamWindow(System,-4);
 
-  System.populateCells();
-  System.createObjSurfMap();
   return;
 }
 
@@ -670,7 +642,6 @@ TS2target::createAll(Simulation& System,
   layerProcess(System);
   createLinks();
   insertObjects(System);
-  //  addInnerBoundary()
 
   return;
 }

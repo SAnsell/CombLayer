@@ -52,11 +52,14 @@ namespace setVariable
 
 
 OpticsHutGenerator::OpticsHutGenerator() :
-  height(200.0),outWidth(260.0),
+  height(277.0),outWidth(259.6),
   innerThick(0.3),pbWallThick(1.6),
-  pbBackThick(9.0),pbRoofThick(1.6),
-  outerThick(0.3),
-  innerOutVoid(10.0),outerOutVoid(10.0),backVoid(0.0),
+  pbBackThick(7.0),pbRoofThick(1.6),
+  outerThick(0.3),backPlateThick(5.0),
+  backPlateWidth(120.0),backPlateHeight(120.0),
+  innerOutVoid(10.0),outerOutVoid(10.0),
+  frontVoid(0.0),backVoid(0.0),
+  outerBackVoid(0.0),
   skinMat("Stainless304"),pbMat("Lead"),
   voidMat("Void")
   /*!
@@ -81,29 +84,10 @@ OpticsHutGenerator::addHole(const Geometry::Vec3D& HO,
   return;
 }
   
-  
-void
-OpticsHutGenerator::setWallPbThick(const double mainT,
-				 const double roofT,
-				 const double backT)
-  /*!
-    Simple setter
-    \param mainT :: Set main wal thicknes
-    \param roofT :: Set roof thickness
-    \param backT :: Set back thickness
-   */
-{
-  pbWallThick=mainT;
-  pbRoofThick=roofT;
-  pbBackThick=backT;
-  return;
-}
-  
-  
 void
 OpticsHutGenerator::generateHut(FuncDataBase& Control,
-					const std::string& keyName,
-					const double length) const
+				const std::string& keyName,
+				const double length) const
   /*!
     Primary function for setting the variables
     \param Control :: Database to add variables
@@ -124,8 +108,14 @@ OpticsHutGenerator::generateHut(FuncDataBase& Control,
   Control.addVariable(keyName+"OuterThick",outerThick);
   Control.addVariable(keyName+"InnerOutVoid",innerOutVoid);
   Control.addVariable(keyName+"OuterOutVoid",outerOutVoid);
+  Control.addVariable(keyName+"FrontVoid",frontVoid);
   Control.addVariable(keyName+"BackVoid",backVoid);
+  Control.addVariable(keyName+"OuterBackVoid",outerBackVoid);
 
+  Control.addVariable(keyName+"BackPlateThick",backPlateThick);
+  Control.addVariable(keyName+"BackPlateWidth",backPlateWidth);
+  Control.addVariable(keyName+"BackPlateHeight",backPlateHeight);
+    
   for(size_t i=0;i<holeRadius.size();i++)
     {
       const std::string iStr("Hole"+std::to_string(i)); 

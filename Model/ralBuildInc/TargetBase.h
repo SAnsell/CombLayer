@@ -3,7 +3,7 @@
  
  * File:   ralBuildInc/TargetBase.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_TargetBase_h
-#define constructSystem_TargetBase_h
+#ifndef TMRSystem_TargetBase_h
+#define TMRSystem_TargetBase_h
 
 class Simulation;
 
@@ -43,8 +43,9 @@ namespace TMRSystem
 
 class TargetBase :
   public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
-  public attachSystem::ExternalCut
+  public attachSystem::FixedRotate,
+  public attachSystem::ExternalCut,
+  public attachSystem::CellMap
 {
  protected:
 
@@ -61,16 +62,10 @@ class TargetBase :
   virtual ~TargetBase() {}   ///< Destructor
   virtual TargetBase* clone() const =0;
 
-  virtual void addProtonLine(Simulation&,const attachSystem::FixedComp&,
-		     const long int) =0;
+  virtual void addProtonLine(Simulation&) =0;
   virtual void addProtonLineInsertCell(const int);
   virtual void addProtonLineInsertCell(const std::vector<int>&);
 
-  virtual std::vector<int> getInnerCells() const;
-  /// Main cell body
-  virtual int getMainBody() const  { return 0; }
-  /// Ta cell body
-  virtual int getSkinBody() const { return 0; }
 
 
   /// Proton line    

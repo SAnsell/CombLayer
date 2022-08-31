@@ -61,7 +61,7 @@ class SimPHITS : public Simulation
 
   PTallyTYPE PTItem;                   ///< Phits tally map
 
-  MagTYPE MagItem;                ///< Fluka magnetic map
+  MagTYPE MagItem;                    ///< Phits magnetic map
   
   phitsSystem::phitsPhysics* PhysPtr;   ///< Phits physics 
   

@@ -3,7 +3,7 @@
  
  * File: species/speciesOpticsLine.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -56,8 +54,8 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
 #include "FixedRotate.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -74,6 +72,7 @@
 
 #include "insertObject.h"
 #include "insertPlate.h"
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "OffsetFlangePipe.h"
@@ -333,6 +332,7 @@ speciesOpticsLine::buildM1Mirror(Simulation& System,
   screenA->addAllInsertCell(outerCell);
   screenA->setCutSurf("inner",*pipeB,"pipeOuterTop");
   screenA->createAll(System,*pipeB,0);
+
   leadBrick->createAll(System,*screenA,2);
 
   return;
@@ -344,7 +344,7 @@ speciesOpticsLine::buildSlitPackage(Simulation& System,
 				    const attachSystem::FixedComp& initFC, 
 				    const std::string& sideName)
   /*!
-    Sub build of the slit package unit
+    Sub build of the slit package uni t
     \param System :: Simulation to use
     \param initFC :: Start point
     \param sideName :: start link point
@@ -354,14 +354,12 @@ speciesOpticsLine::buildSlitPackage(Simulation& System,
   
   int outerCell;
 
-
-  constructSystem::constructUnit
+  outerCell=constructSystem::constructUnit
     (System,buildZone,initFC,sideName,*gateA);
-
+  addCell("SplitOuter",outerCell);
+  
   constructSystem::constructUnit
     (System,buildZone,*gateA,"back",*pipeC);
-
-
 
   slitTube->createAll(System,*pipeC,"back");
   outerCell=
@@ -644,6 +642,7 @@ speciesOpticsLine::buildObjects(Simulation& System)
   buildFrontTable(System,*bellowA,"back");
   buildM1Mirror(System,*bellowB,"back");
   buildSlitPackage(System,*pipeB,"back");
+  leadBrick->insertInCell(System,this->getCell("SplitOuter"));
   
   buildMono(System,*pipeD,"back");
   buildM3Mirror(System,*offPipeB,"back");

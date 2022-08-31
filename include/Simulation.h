@@ -3,7 +3,7 @@
  
  * File:   include/Simulation.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -128,8 +128,8 @@ class Simulation : public objectGroups
   MonteCarlo::Object* findObject(const int);         
   const MonteCarlo::Object* findObject(const int) const; 
 
-  MonteCarlo::Object* findObjectThrow(const int);         
-  const MonteCarlo::Object* findObjectThrow(const int) const; 
+  MonteCarlo::Object* findObjectThrow(const int,const std::string&);         
+  const MonteCarlo::Object* findObjectThrow(const int,const std::string&) const; 
 
   MonteCarlo::Object* findCell(const Geometry::Vec3D&,
 			       MonteCarlo::Object*) const;
@@ -161,7 +161,8 @@ class Simulation : public objectGroups
   int removeComplements(); 
 
   int populateCells();  
-  int populateCells(const std::vector<int>&);  
+  template<typename T> int populateCells(const T&);
+  
 
   int calcVertex(const int); 
   void calcAllVertex();
@@ -192,6 +193,9 @@ class Simulation : public objectGroups
   std::map<int,const MonteCarlo::Material*>
     getOrderedMaterial() const;
 
+  std::set<int> getObjectRangeWithMat(const std::string&,
+				      const std::string&) const;
+  
   int removeDeadSurfaces(); 
  
   virtual void removeCell(const int);
@@ -214,6 +218,7 @@ class Simulation : public objectGroups
   void renumberSurfaces(const std::vector<int>&,
 			const std::vector<int>&);
   int splitObject(const int,const int,const int);
+  int minimizeObject(MonteCarlo::Object*);
   int minimizeObject(const std::string&);
   int minimizeObject(const int);
   void makeObjectsDNForCNF();

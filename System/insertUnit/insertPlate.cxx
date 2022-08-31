@@ -3,7 +3,7 @@
  
  * File:   insertUnit/insertPlate.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,8 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -58,7 +56,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "BaseMap.h"
 #include "SurfMap.h"
 #include "CellMap.h"
@@ -276,13 +274,13 @@ insertPlate::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("insertPlate","createObjects");
   
-  std::string Out=
-    ModelSupport::getSetComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  Out+=frontRule();
-  Out+=backRule();
-  System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));
-  addCell("Main",cellIndex-1);
-  addOuterSurf(Out);
+  HeadRule HR= 
+    ModelSupport::getSetHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  HR*=getFrontRule();
+  HR*=getBackRule();
+  makeCell("Main",System,cellIndex++,defMat,0.0,HR);
+  addOuterSurf(HR);
+
   return;
 }
 
@@ -405,7 +403,7 @@ insertPlate::createAll(Simulation& System,const Geometry::Vec3D& OG,
   ELog::RegMethod RegA("insertPlate","createAll(Vec,FC)");
   if (!populated) 
     populate(System.getDataBase());  
-  createUnitVector(OG,FC);
+  createUnitVector(FC,OG);
   mainAll(System);
   return;
 }

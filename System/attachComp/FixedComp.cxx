@@ -3,7 +3,7 @@
  
  * File:   attachComp/FixedComp.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -293,6 +293,26 @@ FixedComp::createUnitVector(const FixedComp& FC,
 
 void
 FixedComp::createUnitVector(const Geometry::Vec3D& OG,
+			    const Geometry::Vec3D& Axis)
+  /*!
+    Create the unit vectors [using beam directions]
+    \param OG :: Origin
+    \param Axis :: Direction for Y
+  */
+{
+  ELog::RegMethod RegA("FixedComp","createUnitVector(Vec3D,Vec3D)");
+
+  Y=Axis.unit();
+  X=Y.crossNormal();
+  Z=X*Y;  
+  makeOrthogonal();
+  Origin=OG;
+  if (primeAxis>0) reOrientate();
+  return;
+}
+
+void
+FixedComp::createUnitVector(const Geometry::Vec3D& OG,
 			    const Geometry::Vec3D& YAxis,
                             const Geometry::Vec3D& ZAxis)
   /*!
@@ -302,7 +322,7 @@ FixedComp::createUnitVector(const Geometry::Vec3D& OG,
     \param ZAxis :: Direction for Z
   */
 {
-  ELog::RegMethod RegA("FixedComp","createUnitVector(Vec3D,Vec3D,Vec3D))");
+  ELog::RegMethod RegA("FixedComp","createUnitVector(Vec3D,Vec3D,Vec3D)");
 
   Y=YAxis.unit();
   Z=ZAxis.unit();
@@ -327,7 +347,7 @@ FixedComp::createUnitVector(const Geometry::Vec3D& OG,
     \param ZAxis :: Direction for Z
   */
 {
-  ELog::RegMethod RegA("FixedComp","createUnitVector(4xVec3D))");
+  ELog::RegMethod RegA("FixedComp","createUnitVector(4xVec3D)");
 
   X=XAxis.unit();
   Y=YAxis.unit();
@@ -892,7 +912,7 @@ FixedComp::setNamedLinkSurf(const size_t Index,
     \param SUnit :: String/HeadRule/int to process
   */
 {
-  ELog::RegMethod RegA("FixedComp","setLinkSurf(string,string)");
+  ELog::RegMethod RegA("FixedComp","setNamedLinkSurf(string,string)");
 
   setLinkSurf(Index,SUnit);
   nameSideIndex(Index,linkName);
@@ -1245,6 +1265,54 @@ FixedComp::setLinkCopy(const size_t Index,
 }
 
 void
+FixedComp::setLinkCopy(const std::string& indexName,
+		       const FixedComp& FC,
+		       const std::string& sideName)
+  /*!
+    Copy the opposite (as if joined) link surface 
+    Note that the surfaces are complemented
+    \param indexName :: Link index number
+    \param FC :: Other Fixed component to copy object from
+    \param sideName :: signed link unit of other object
+  */
+{
+  ELog::RegMethod RegA("FixedComp","setLinkCopy("+sideName+")");
+
+  const long int LI=getSideIndex(indexName);
+  if (!LI)
+    throw ColErr::InContainerError<std::string>(indexName,"indexName zero");
+  
+  const size_t Index=static_cast<size_t>(std::abs(LI-1));
+  setLinkCopy(Index,FC,FC.getSideIndex(sideName));
+  return;
+}
+
+void
+FixedComp::setLinkCopy(const std::string& indexName,
+		       const FixedComp& FC,
+		       const long int sideIndex)
+  /*!
+    Copy the opposite (as if joined) link surface 
+    Note that the surfaces are complemented
+    \param indexame :: Link index number
+    \param FC :: Other Fixed component to copy object from
+    \param sideIndex :: signed link unit of other object
+  */
+{
+  ELog::RegMethod RegA("FixedComp","setLinkCopy("+std::to_string(sideIndex)+")");
+
+  if (!hasSideIndex(indexName))
+    throw ColErr::InContainerError<std::string>(indexName,"indexName");
+  const long int LI=getSideIndex(indexName);
+  if (!LI)
+    throw ColErr::InContainerError<std::string>(indexName,"indexName zero");
+  
+  const size_t Index=static_cast<size_t>(std::abs(LI-1));
+  setLinkCopy(Index,FC,sideIndex);
+  return;
+}
+
+void
 FixedComp::setBasicExtent(const double XWidth,const double YWidth,
 			  const double ZWidth)
  /*!
@@ -1423,7 +1491,7 @@ FixedComp::getSideName(const long int sideIndex) const
 
   if (!sideIndex) return "Origin";
 
-  const size_t index=std::abs(sideIndex)-1;
+  const size_t index=static_cast<size_t>(std::abs(sideIndex-1));
   std::map<std::string,size_t>::const_iterator mc=
     std::find_if(keyMap.begin(),keyMap.end(),
 		[&index](const std::pair<std::string,size_t>& item)
@@ -1431,8 +1499,8 @@ FixedComp::getSideName(const long int sideIndex) const
 		  return item.second==index;
 		});
   if (mc==keyMap.end())
-  throw ColErr::InContainerError<size_t>
-    (sideIndex,"Side index not named");
+    throw ColErr::InContainerError<long int>
+      (sideIndex,"Side index not named");
 
 
   if (sideIndex<0)
@@ -2213,7 +2281,42 @@ FixedComp::getExitWindow(const long int sideIndex,
 }
 
 void
-FixedComp::createAll(Simulation& System,const FixedComp& FC,
+FixedComp::createAll(Simulation&,const FixedComp& FC,
+		     const long int)
+  /*!
+    Modification accessor to get createAll based on a name
+    \param :: Simulation to build component in
+    \param FC :: FixedComp to use as origin/basis set
+    \param :: linkPoint
+  */
+{
+  ELog::RegMethod RegA("FixedComp","createAll(FC)");
+  
+  throw ColErr::AbsObjMethod("Single FC["+FC.keyName+"]"+
+			     " Function not implemented");
+}
+
+void
+FixedComp::createAll(Simulation&,
+		     const FixedComp& FCA,const long int,
+		     const FixedComp& FCB,const long int)
+  /*!
+    Double FC / FC createAll - only throws
+    \param :: Simulation to build component in
+    \param FCA :: FixedComp to use as origin/basis set
+    \param FCB :: FixedComp to use as origin/basis set
+  */
+{
+  ELog::RegMethod RegA("FixedComp","createAll(FC,FC)");
+  
+  throw ColErr::AbsObjMethod("Double FC["+FCA.keyName+"]"+
+			     "FC["+FCB.keyName+"]"+
+			     " Function not implemented");
+}
+
+void
+FixedComp::createAll(Simulation& System,
+		     const FixedComp& FC,
 		     const std::string& linkName)
   /*!
     Modification accessor to get createAll based on a name
@@ -2225,6 +2328,30 @@ FixedComp::createAll(Simulation& System,const FixedComp& FC,
   ELog::RegMethod RegA("FixedComp","createAll(Named)");
   
   this->createAll(System,FC,FC.getSideIndex(linkName));
+  return;
+}
+
+void
+FixedComp::createAll(Simulation& System,
+		     const FixedComp& FCA,
+		     const std::string& linkNameA,
+		     const FixedComp& FCB,
+		     const std::string& linkNameB)
+  /*!
+    Modification accessor to get createAll based on a name
+    [Normal for independent Origin / axis systems]
+    \param System :: Simulation to build component in
+    \param FCA :: FixedComp to use as origin/basis set
+    \param FCB :: Seoncd FixedComp to use as origin/basis set
+    \param linkNameA :: linkPoint
+    \param linkNameB :: linkPoint
+  */
+{
+  ELog::RegMethod RegA("FixedComp","createAll(Named,Named)");
+  
+  this->createAll(System,
+		  FCA,FCA.getSideIndex(linkNameA),
+		  FCB,FCB.getSideIndex(linkNameB));
   return;
 }
 

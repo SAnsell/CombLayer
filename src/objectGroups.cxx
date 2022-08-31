@@ -3,7 +3,7 @@
  
  * File:   src/objectGroups.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -444,22 +444,21 @@ objectGroups::renumberCell(const int oldCellN,
 
   
 int
-objectGroups::cell(const std::string& Name,const size_t size)
+objectGroups::cell(const std::string& Name,const size_t unitSize)
   /*!
     Add a component and get a new cell number 
     This is called via FixedComp and creates an active range
     \param Name :: Name of the unit
-    \param size :: Size of unit to register [units of 10000]
+    \param unitSize :: Size of unit to register [units of 10000]
     \return the start number of the cellvalue
   */
 {
   ELog::RegMethod RegA("objectGroups","cell");
 
+  if (!unitSize)
+    throw ColErr::EmptyValue<size_t>("unitSize");
 
-  if (!size)
-    throw ColErr::EmptyValue<size_t>("size");
-
-  const size_t range=( (1+(size-1)/cellZone) );
+  const size_t range=( (1+(unitSize-1)/static_cast<size_t>(cellZone)) );
 
   MTYPE::const_iterator mc=regionMap.find(Name);
   if (mc!=regionMap.end())
@@ -661,7 +660,6 @@ objectGroups::getObject(const std::string& Name) const
   */
 {
   ELog::RegMethod RegA("objectGroups","getObject(const)");
-
   const attachSystem::FixedComp* FCPtr = getInternalObject(Name);
   return dynamic_cast<const T*>(FCPtr);
 }
@@ -689,7 +687,7 @@ objectGroups::getObjectThrow(const std::string& Name,
     Throws InContainerError if not 
     \param Name :: Name
     \param Err :: Error string for exception
-    \return ObjectPtr 
+    \return ObjectPtr f
   */
 {
   ELog::RegMethod RegA("objectGroups","getObjectThrow(const)");
@@ -749,18 +747,69 @@ objectGroups::getObject(const std::string& Name) const
     \return ObjectPtr / 0 
   */
 {
-  ELog::RegMethod RegA("objectGroups","getObject(containedComp)");
+  ELog::RegMethod RegA("objectGroups","getObject(containedComp) const");
   
   const std::string::size_type pos=Name.find(":");
+  cMapTYPE::const_iterator mc;
+  // pure ContainedComp
   if (pos==std::string::npos || !pos || pos==Name.size()-1)
     {
-      cMapTYPE::const_iterator mc=Components.find(Name);
+      mc=Components.find(Name);
       return (mc!=Components.end()) ?
 	dynamic_cast<const attachSystem::ContainedComp*>(mc->second.get()) 
 	: 0;
     }
-  const std::string PreItem=Name.substr(0,pos);
-  const std::string PostItem=Name.substr(pos);
+
+  const std::string preItem=Name.substr(0,pos);
+  const std::string postItem=Name.substr(pos);
+  mc=Components.find(preItem);
+  if (mc!=Components.end())
+    {
+      const attachSystem::ContainedGroup* cGrp=
+	dynamic_cast<const attachSystem::ContainedGroup*>(mc->second.get());
+
+      if (cGrp && cGrp->hasKey(postItem))
+	return &(cGrp->getCC(postItem));
+    }
+  
+  return 0;
+}
+
+template<>
+attachSystem::ContainedComp* 
+objectGroups::getObject(const std::string& Name) 
+  /*!
+    Special for containedComp as it could be a componsite
+    of containedGroup
+    \param Name :: Name
+    \return ObjectPtr / 0 
+  */
+{
+  ELog::RegMethod RegA("objectGroups","getObject(containedComp) const");
+  
+  const std::string::size_type pos=Name.find(":");
+  cMapTYPE::const_iterator mc;
+  // pure ContainedComp
+  if (pos==std::string::npos || !pos || pos==Name.size()-1)
+    {
+      mc=Components.find(Name);
+      return (mc!=Components.end()) ?
+	dynamic_cast<attachSystem::ContainedComp*>(mc->second.get()) 
+	: 0;
+    }
+
+  const std::string preItem=Name.substr(0,pos);
+  const std::string postItem=Name.substr(pos);
+  mc=Components.find(preItem);
+  if (mc!=Components.end())
+    {
+      attachSystem::ContainedGroup* cGrp=
+	dynamic_cast<attachSystem::ContainedGroup*>(mc->second.get());
+
+      if (cGrp && cGrp->hasKey(postItem))
+	return &(cGrp->getCC(postItem));
+    }
+  
   return 0;
 }
 
@@ -788,9 +837,9 @@ objectGroups::getLastCell(const std::string& objName) const
   return (mc==regionMap.end()) ? 0 : mc->second.getLast();
 }
 
-
-std::vector<int>
-objectGroups::getObjectRange(const std::string& objName) const
+bool
+objectGroups::addObjectRange(std::set<int>& cellSet,
+			     const std::string& objName) const
   /*!
     Calculate the object cells range based on the name
     Processes down to cellMap items if objName is of the 
@@ -800,11 +849,12 @@ objectGroups::getObjectRange(const std::string& objName) const
     - objectName             :: cells in FixedComp
     - frontName:ZONE        :: Cells matching front part of the object name  
 
+    \param cellVec :: vector to add additional cells to
     \param objName :: Object name
-    \return vector of items
+    \return true if at least one cell was added (0 on error)
   */
 {
-  ELog::RegMethod RegA("objectGroups","getObjectRange");
+  ELog::RegMethod RegA("objectGroups","addObjectRange");
 
   const std::vector<std::string> Units=
     StrFunc::StrSeparate(objName,":");
@@ -824,9 +874,12 @@ objectGroups::getObjectRange(const std::string& objName) const
       if (cellName=="ZONE")
 	{
 	  const groupRange zoneGroup=getZoneGroup(itemName);
-	  return zoneGroup.getAllCells();
+	  const std::vector<int> allCells=zoneGroup.getAllCells();
+	  std::copy(allCells.begin(),allCells.end(),
+		    std::inserter(cellSet,cellSet.begin()));
+	  
+	  return 1; 
 	}
-
       if (CPtr)
 	{
 	  if (Units.size()==3)   // CellMap : Name : Index
@@ -835,18 +888,22 @@ objectGroups::getObjectRange(const std::string& objName) const
 	      if(!StrFunc::convert(Units[2],cellIndex))
 		throw ColErr::InContainerError<std::string>
 		  (objName,"CellMap:cellName:Index");
-	      return std::vector<int>({CPtr->getCell(cellName,cellIndex)});
+	      const std::vector<int> allCells
+		({CPtr->getCell(cellName,cellIndex)});
+	      std::copy(allCells.begin(),allCells.end(),
+			std::inserter(cellSet,cellSet.begin()));
+	      return 1; 
 	    }
 
 	  // case 2: CellMap : Name
 	  const std::vector<int> Out=CPtr->getCells(cellName);
 	  if (!Out.empty())
-	    return Out;
+	    {
+	      std::copy(Out.begin(),Out.end(),
+			std::inserter(cellSet,cellSet.begin()));
+	      return 1;
+	    }
 	}
-
-      
-    ELog::EM<<"DDDDDD == "<<cellName<<ELog::endCrit;
-
       
       // FIXED COMP [index :: cell index offset]
       if (Units.size()==2) 
@@ -856,7 +913,10 @@ objectGroups::getObjectRange(const std::string& objName) const
 	      hasObject(itemName))
 	    {
 	      const groupRange& fcGroup=getGroup(itemName);
-	      return std::vector<int>({ fcGroup.getCellIndex(index) });
+	      const std::vector<int> allCells({ fcGroup.getCellIndex(index) });
+	      std::copy(allCells.begin(),allCells.end(),
+			std::inserter(cellSet,cellSet.begin()));
+	      return 1;	      
 	    }
 	}
     }
@@ -870,22 +930,27 @@ objectGroups::getObjectRange(const std::string& objName) const
       const std::string BName=objName.substr(pos+1);
       if (!StrFunc::convert(AName,ANum) ||
           !StrFunc::convert(BName,BNum) )
-        throw ColErr::InContainerError<std::string>
-          (objName,"objectName does not convert to numbers");
-      
+	return -1;
+      //throw ColErr::InContainerError<std::string>
+      //  (objName,"objectName does not convert to numbers");
+
+            
       if (ANum>BNum)
         std::swap(ANum,BNum);
       std::vector<int> Out;
       for(int index=ANum;index<BNum;index++)
 	if (isActive(index))
-	  Out.push_back(index);
-
-      return Out;
+	  cellSet.insert(index);
+	    
+      return 1;
     }
-
   // SPECIALS:
   if (objName=="All" || objName=="all")
-    return std::vector<int>(activeCells.begin(),activeCells.end());
+    {
+      std::copy(activeCells.begin(),activeCells.end(),
+		std::inserter(cellSet,cellSet.begin()));
+      return 1;
+    }
 
   // FixedComp  -- All
   if (Units.size()==1)
@@ -893,9 +958,36 @@ objectGroups::getObjectRange(const std::string& objName) const
       if (hasObject(objName))
 	{
 	  const groupRange& fcGroup=getGroup(objName);
-	  return fcGroup.getAllCells();
+	  const std::vector<int> allCells=fcGroup.getAllCells();
+	  std::copy(allCells.begin(),allCells.end(),
+		    std::inserter(cellSet,cellSet.begin()));
+	  return  1;
 	}
     }
+
+  return 0;  
+}
+  
+std::set<int>
+objectGroups::getObjectRange(const std::string& objName) const
+  /*!
+    Calculate the object cells range based on the name
+    Processes down to cellMap items if objName is of the 
+    form ::
+
+    - objecName:cellMapName  :: cells in cellmap object
+    - objectName             :: cells in FixedComp
+    - frontName:ZONE        :: Cells matching front part of the object name  
+
+    \param objName :: Object name
+    \return set of items
+  */
+{
+  ELog::RegMethod RegA("objectGroups","getObjectRange");
+
+  std::set<int> cellSet;
+  if (addObjectRange(cellSet,objName))
+    return cellSet;
 
   throw ColErr::InContainerError<std::string>
     (objName,"objectName does not convert to cells");  
@@ -1015,9 +1107,6 @@ objectGroups::getAllObjectNames() const
 template const attachSystem::FixedComp* 
   objectGroups::getObject(const std::string&) const;
 
-template const attachSystem::ContainedComp* 
-  objectGroups::getObject(const std::string&) const;
-
 template const attachSystem::ContainedGroup* 
   objectGroups::getObject(const std::string&) const;
 
@@ -1036,9 +1125,6 @@ template attachSystem::FixedComp*
 template attachSystem::FixedGroup* 
   objectGroups::getObject(const std::string&);
 
-template attachSystem::ContainedComp* 
-  objectGroups::getObject(const std::string&);
-
 template attachSystem::ContainedGroup* 
   objectGroups::getObject(const std::string&);
 
@@ -1047,8 +1133,6 @@ template attachSystem::CellMap*
 
 template attachSystem::SurfMap* 
   objectGroups::getObject(const std::string&);
-
-
 
 template const attachSystem::FixedComp* 
   objectGroups::getObjectThrow(const std::string&,const std::string&) const;

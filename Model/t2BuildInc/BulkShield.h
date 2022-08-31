@@ -3,7 +3,7 @@
  
  * File:   buildInc/BulkShield.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,7 +80,6 @@ class BulkShield : public attachSystem::FixedComp,
   void createSurfaces();
   void createObjects(Simulation&);
   void createBulkInserts(Simulation&);
-  void createTorpedoes(Simulation&);
   void createShutters(Simulation&);
 
  public:
@@ -90,36 +89,16 @@ class BulkShield : public attachSystem::FixedComp,
   BulkShield& operator=(const BulkShield&);
   virtual ~BulkShield();
 
+  void createTorpedoes(Simulation&);
   
   static const size_t chipShutter;   ///< Chip shutter number
   static const size_t imatShutter;   ///< Imat shutter number
   static const size_t letShutter;    ///< LET shutter number
   static const size_t zoomShutter;   ///< zoom shutter number
 
-  /// Set excluded items
-  void addExlcude(const std::string& A)
-    { excludeSet.insert(A); }
-  /// Access outer limit
-  double getORadius() const { return outerRadius; }
-
-  /// Get Mono Exit surface
-  int getMonoSurf() const { return SMap.realSurf(buildIndex+37); }
-  /// Get Inner Bulk surface
-  int getInnerSurf() const { return SMap.realSurf(buildIndex+27); }
-  /// Get  Bulk surface
-  int getShutterSurf() const { return SMap.realSurf(buildIndex+17); }
-  /// Get Torpedo surface
-  int getTorpedoSurf() const { return SMap.realSurf(buildIndex+7); }
-
-  const shutterSystem::Torpedo* getTorpedo(const size_t) const;
-  const shutterSystem::GeneralShutter* getShutter(const size_t) const;
-  const shutterSystem::BulkInsert* getInsert(const size_t) const;
-  void processVoid(Simulation&);
-
   // This three functions should die:
   int calcTorpedoPlanes(const int,std::vector<int>&,int&) const; 
   int calcShutterPlanes(const int,std::vector<int>&,int&) const; 
-  int calcOuterPlanes(const int,std::vector<int>&,int&) const;
 
   void beamlineZeroImp(Simulation&,const int) const;
 

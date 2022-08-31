@@ -3,7 +3,7 @@
  
  * File:   tallyInc/TallyCreate.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,8 @@ namespace tallySystem
   void addF1Tally(SimMCNP&,const int,
 		  const int,const std::vector<int>&);  
 
-  void addF4Tally(SimMCNP&,const int,const std::string&,const std::vector<int>&);    
+  void addF4Tally(SimMCNP&,const int,const std::string&,
+		  const std::set<int>&);    
 
   void addF7Tally(SimMCNP&,const int,const std::vector<int>&);    
 
@@ -64,7 +65,7 @@ namespace tallySystem
   void divideF5Tally(SimMCNP&,const int,const int,const int);
 
   void addF6Tally(SimMCNP&,const int,const std::string&,
-		  const std::vector<int>&);
+		  const std::set<int>&);
 
   void writePlanes(const int,const int,const std::vector<int>&);
 

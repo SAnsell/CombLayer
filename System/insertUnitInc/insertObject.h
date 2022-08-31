@@ -3,7 +3,7 @@
  
  * File:   insertUnitInc/insertObject.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ namespace insertSystem
 
 class insertObject :
     public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset,
+    public attachSystem::FixedRotate,
     public attachSystem::CellMap,
     public attachSystem::SurfMap,
     public attachSystem::FrontBackCut
@@ -56,16 +56,7 @@ class insertObject :
   virtual void populate(const FuncDataBase&);
   virtual void findObjects(Simulation&);
 
-  virtual void createUnitVector(const Geometry::Vec3D&,
-				const attachSystem::FixedComp&);
-
-  virtual void createUnitVector(const attachSystem::FixedComp&,
-				const long int);
-  virtual void createUnitVector(const Geometry::Vec3D&,
-				const Geometry::Vec3D&,
-				const Geometry::Vec3D&);
-  virtual void createUnitVector(const Geometry::Vec3D&,
-				const Geometry::Vec3D&);
+  using FixedRotate::createUnitVector;
   
  public:
 
@@ -84,7 +75,9 @@ class insertObject :
   void setStep(const double,const double,const double);
   void setStep(const Geometry::Vec3D&);
   void setAngles(const double,const double);
-  
+
+  virtual void createAll(Simulation&,const FixedComp&,
+			 const long int) =0;
 };
 
 }

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/RingDoorGenerator.cxx
+ * File:   commonGenerator/RingDoorGenerator.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,12 +50,12 @@ namespace setVariable
 {
 
 RingDoorGenerator::RingDoorGenerator(const bool) :
-  innerHeight(120.0),  innerWidth(120.0),
-  innerThick(40.0),outerHeight(180.0),
-  outerWidth(180.0),gapSpace(1.0),
+  innerHeight(180.0),innerWidth(218.0),
+  innerThick(40.0),outerHeight(210.0),
+  outerWidth(238.0),gapSpace(1.0),
   innerTopGap(2.5),outerTopGap(5.0),
   tubeRadius(5.0),tubeXStep(30.0),tubeZStep(140.0),
-  underStepHeight(15.0),underStepWidth(20.0),
+  underStepHeight(6.5),underStepWidth(47.0),
   underStepXSep(80.0),
   underAMat("Void"),underBMat("Void"),
   tubeMat("Void"),doorMat("Concrete")
@@ -65,13 +65,13 @@ RingDoorGenerator::RingDoorGenerator(const bool) :
 {}
 
 RingDoorGenerator::RingDoorGenerator() :
-  innerHeight(180.0),  innerWidth(180.0),
-  innerThick(50.0),outerHeight(240.0),
+  innerHeight(205.0),innerWidth(220.0),
+  innerThick(55.0),outerHeight(220.0),
   outerWidth(240.0),gapSpace(1.0),
   innerTopGap(2.5),outerTopGap(5.0),
   tubeRadius(5.0),tubeXStep(30.0),tubeZStep(140.0),
-  underStepHeight(15.0),underStepWidth(20.0),
-  underStepXSep(80.0),
+  underStepHeight(7.0),underStepWidth(48.0),
+  underStepXSep(96.0),
   underAMat("Void"),underBMat("Void"),
   tubeMat("Void"),doorMat("Concrete")
   /*!

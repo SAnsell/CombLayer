@@ -296,7 +296,7 @@ RectangleSource::write(std::ostream& OX) const
 }
 
 void
-RectangleSource::writePHITS(std::ostream& OX) const
+RectangleSource::writePHITS(std::ostream&) const
   /*!
     Write out as a PHITS source system
     \param OX :: Output stream

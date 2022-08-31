@@ -57,14 +57,16 @@
 #include "CopiedComp.h"
 #include "BlockZone.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 
+#include "forkHoles.h"
 #include "OpticsHutch.h"
 #include "ExperimentalHutch.h"
+#include "OpticsStepHutch.h"
 #include "WallLead.h"
 #include "R3FrontEnd.h"
 #include "danmaxFrontEnd.h"
-#include "danmaxOpticsHutch.h"
 #include "danmaxOpticsLine.h"
 #include "danmaxConnectLine.h"
 #include "PipeShield.h"
@@ -82,7 +84,7 @@ DANMAX::DANMAX(const std::string& KN) :
   frontBeam(new danmaxFrontEnd(newName+"FrontBeam")),
   wallLead(new WallLead(newName+"WallLead")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
-  opticsHut(new danmaxOpticsHutch(newName+"OpticsHut")),
+  opticsHut(new OpticsStepHutch(newName+"OpticsHut")),
   opticsBeam(new danmaxOpticsLine(newName+"OpticsLine")),
   joinPipeB(new constructSystem::VacuumPipe(newName+"JoinPipeB")),
   connectUnit(new danmaxConnectLine(newName+"ConnectUnit")),
@@ -182,7 +184,7 @@ DANMAX::build(Simulation& System,
   joinPipeB->createAll(System,*opticsBeam,2);
 
 
-  exptHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
+  exptHut->setCutSurf("floor",r3Ring->getSurf("Floor"));
   exptHut->setCutSurf("InnerSideWall",r3Ring->getSurf("FlatInner",PIndex));
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));

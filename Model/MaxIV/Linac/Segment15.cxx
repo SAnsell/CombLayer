@@ -64,13 +64,14 @@
 #include "BlockZone.h"
 #include "generalConstruct.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "YagUnit.h"
 #include "YagScreen.h"
 #include "CrossWayBlank.h"
 #include "LocalShielding.h"
 
-#include "LObjectSupportB.h"
+#include "LObjectSupport.h"
 #include "TDCsegment.h"
 #include "Segment15.h"
 

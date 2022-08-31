@@ -3,7 +3,7 @@
  
  * File:   tally/TallySelector.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "support.h"
 #include "TallyCreate.h"
@@ -60,7 +58,7 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-
+#include "TallySelector.h"
 
 bool
 constructLinkRegion(const Simulation& System,
@@ -105,10 +103,68 @@ constructLinkRegion(const Simulation& System,
 
 bool
 constructSurfRegion(const Simulation& System,
+		    const std::string& FCname,
+		    int& cellA,int& cellB)
+  /*!
+    Construct a link region exiting the SurfMap link unit
+    FCname also names a groupRange which is used 
+    to ensure that cellA is part of the groupRange
+    \param System :: Simulation to use	
+    \param FCname :: composite name  of FC:SurfMap
+    \param cellA :: Primary region cell number
+    \param cellB :: Secondary region cell number
+  */
+{
+  std::string::size_type pos=FCname.find(':');
+  if (pos==std::string::npos)
+    return 0;
+
+  const std::string FC=FCname.substr(0,pos);
+  std::string Surf=FCname.substr(pos+1);
+  if (!Surf.empty() && Surf[0]==':')
+    Surf.erase(0,1);
+
+  // assuming the that region indexes are given by
+  // FC:SurfName:2-3 : where a negative separates the number
+  bool outFlag(0);
+  long int indexA(0);   // need to remove -ve sign
+  long int indexB(0);
+  pos=Surf.find(':');
+  if (pos!=std::string::npos)
+    {
+      ELog::EM<<"Surf == "<<Surf<<ELog::endDiag;
+      std::string part=Surf.substr(pos+1);
+      if (part.find('-')!=std::string::npos &&
+	  StrFunc::sectPartNum(part,indexA) &&
+	  StrFunc::sectPartNum(part,indexB) )
+	{
+	  ELog::EM<<"Surf(Part) == "<<part<<ELog::endDiag;
+	  Surf.erase(pos);
+	  ELog::EM<<"Surf(region) == "<<Surf<<ELog::endDiag;
+	  const size_t regionA(static_cast<size_t>(std::abs(indexA)));
+	  const size_t regionB(static_cast<size_t>(std::abs(indexA)));
+	  outFlag = constructSurfRegion
+	    (System,FC,Surf,regionA,regionB,cellA,cellB);
+	}
+      else if (StrFunc::section(part,indexA))
+	{
+	  const size_t regionA(static_cast<size_t>(std::abs(indexA)));
+	  outFlag = constructSurfRegion
+	    (System,FC,Surf,regionA,0,cellA,cellB);
+	}
+    }
+  else
+    {
+      outFlag = constructSurfRegion(System,FC,Surf,0,0,cellA,cellB);
+    }
+
+  return outFlag;
+}
+
+bool
+constructSurfRegion(const Simulation& System,
 		      const std::string& FCname,
 		      const std::string& surfName,
-		      const size_t indexA,
-		      const size_t indexB,
 		      int& cellA,int& cellB)
   /*!
     Construct a link region exiting the SurfMap link unit
@@ -117,10 +173,34 @@ constructSurfRegion(const Simulation& System,
     \param System :: Simulation to use	
     \param FCname :: name of SurfMap
     \param surfName :: name of surface [signed]
-    \param indexA :: Index of region found in primary
+    \param cellA :: Primary region cell number
+    \param cellB :: Secondary region cell number
+  */
+{
+  return constructSurfRegion(System,FCname,surfName,
+			     0,0,cellA,cellB);
+}
+
+
+bool
+constructSurfRegion(const Simulation& System,
+		    const std::string& FCname,
+		    const std::string& surfName,
+		    const size_t indexA,
+		    const size_t indexB,
+		    int& cellA,int& cellB)
+  /*!
+    Construct a link region exiting the SurfMap link unit
+    FCname also names a groupRange which is used 
+    to ensure that cellA is part of the groupRange
+    \param System :: Simulation to use	
+    \param FCname :: name of SurfMap
+    \param surfName :: name of surface [signed]
+    \param indexA :: Index of region found in primary (assuming not just one)
     \param indexB :: Index region found in secondary
     \param cellA :: Primary region cell number
     \param cellB :: Secondary region cell number
+    \return 1 on success
   */
 {
   ELog::RegMethod RegA("TallySelector[F]","constructSurfRegion");
@@ -131,6 +211,7 @@ constructSurfRegion(const Simulation& System,
   if (!SMPtr || surfName.empty()) return 0;
   
   const int surfN=SMPtr->getSignedSurf(surfName);
+  ELog::EM<<"Joining surface "<<surfN<<ELog::endDiag;
   if (!surfN) return 0;
   // throws on error [unlikely because SurfMap is good]
   const groupRange& activeGrp=System.getGroup(FCname);

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/MainProcess.cxx
+ * File:   generalProcess/MainProcess.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,6 +59,9 @@
 #include "SimMCNP.h"
 #include "DetGroup.h"
 #include "SimMonte.h"
+#include "HeadRule.h"
+#include "Importance.h"
+#include "Object.h"
 #include "DBModify.h"
 #include "SimProcess.h"
 #include "Process.h"
@@ -76,6 +79,7 @@
 #include "mcnpDefPhysics.h"
 #include "flukaDefPhysics.h"
 #include "flukaSourceSelector.h"
+#include "flukaProcess.h"
 #include "phitsDefPhysics.h"
 #include "ObjectAddition.h"
 
@@ -375,6 +379,7 @@ createSimulation(inputParam& IParam,
        std::ostream_iterator<std::string>(cmdLine," "));
   Oname=InputControl::getFileName(Names);
 
+ 
   if (Oname[0]=='-')
     {
       IParam.writeDescription(ELog::EM.Estream());
@@ -388,6 +393,10 @@ createSimulation(inputParam& IParam,
 
   IParam.processMainInput(Names);
 
+  const std::string worldMat=
+    IParam.getDefValue<std::string>("Void","outerVoidMat");
+  ELog::EM<<"Outer == "<<worldMat<<ELog::endDiag;
+
   Simulation* SimPtr;
   if (IParam.flag("PHITS"))
     SimPtr=new SimPHITS;
@@ -395,10 +404,30 @@ createSimulation(inputParam& IParam,
     {
       masterWrite::Instance().setSigFig(12);
       masterWrite::Instance().setZero(1e-14);
-      SimPtr=new SimFLUKA;
+      const std::string cernFlag=
+	IParam.getDefValue<std::string>("","FLUKA");
+
+      SimFLUKA* SimFPtr=new SimFLUKA;
+      if (cernFlag=="CERN" || cernFlag=="cern")
+	SimFPtr->setCERNfluka();
+      SimPtr=SimFPtr;
     }
   else if (IParam.flag("POVRAY"))
-    SimPtr=new SimPOVRay;
+    {
+      SimPOVRay* SimPovPtr=new SimPOVRay;
+      const size_t nMat= IParam.setCnt("transmitMat");
+      const std::string matError("Material not given for transmission");
+      const std::string dblError("Value not given for transmission"); 
+      for(size_t i=0;i<nMat;i++)
+	{
+	  const std::string transMat=
+	    IParam.getValueError<std::string>("transmitMat",i,0,matError);
+	  const double V=
+	    IParam.getValueError<double>("transmitMat",i,1,dblError);
+	  SimPovPtr->addTransmission(transMat,V);
+	} 
+      SimPtr=SimPovPtr;
+    }
   else if (IParam.flag("Monte"))
     SimPtr=new SimMonte; 
   else
@@ -410,6 +439,9 @@ createSimulation(inputParam& IParam,
 
   // OR.setObjectGroup(*SimPtr);
   // buildWorld(*SimPtr);
+
+  // there better be a void cell :
+  SimPtr->findObjectThrow(74123,"worldCell")->setMaterial(worldMat);
   
   // DNF split the cells
   SimPtr->setCellDNF(IParam.getDefValue<size_t>(0,"cellDNF"));
@@ -516,6 +548,9 @@ buildFullSimFLUKA(SimFLUKA* SimFLUKAPtr,
   const int multi=IParam.getValue<int>("multi");
   if (IParam.flag("noVariables"))
     SimFLUKAPtr->setNoVariables();
+
+  // Extra for plotGEOM
+  flukaSystem::createPLOTGEOM(*SimFLUKAPtr,IParam);
 
   flukaSystem::setDefaultPhysics(*SimFLUKAPtr,IParam);
 

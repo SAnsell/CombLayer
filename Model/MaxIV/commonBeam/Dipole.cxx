@@ -3,7 +3,7 @@
  
  * File:   commonBeam/Dipole.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -143,6 +143,7 @@ Dipole::populate(const FuncDataBase& Control)
   coilGap=Control.EvalVar<double>(keyName+"CoilGap");
   coilLength=Control.EvalVar<double>(keyName+"CoilLength");
   coilWidth=Control.EvalVar<double>(keyName+"CoilWidth");
+  coilEndRadius=Control.EvalVar<double>(keyName+"CoilEndRadius");
 
   poleMat=ModelSupport::EvalMat<int>(Control,keyName+"PoleMat");
   coilMat=ModelSupport::EvalMat<int>(Control,keyName+"CoilMat");
@@ -199,12 +200,18 @@ Dipole::createSurfaces()
   
   const Geometry::Vec3D coilOrg=Origin+YCoil*(length/2.0);
   ModelSupport::buildPlane
-    (SMap,buildIndex+101,coilOrg-YCoil*(coilLength/2.0),YCoil);
+    (SMap,buildIndex+101,coilOrg-YCoil*(1.0+coilLength/2.0),YCoil);
   ModelSupport::buildPlane
-    (SMap,buildIndex+102,coilOrg+YCoil*(coilLength/2.0),YCoil);
+    (SMap,buildIndex+102,coilOrg+YCoil*(1.0+coilLength/2.0),YCoil);
 
-  ModelSupport::buildPlane(SMap,buildIndex+103,coilOrg-X*coilWidth,XCoil);
-  ModelSupport::buildPlane(SMap,buildIndex+104,coilOrg+X*coilWidth,XCoil);
+  
+  ModelSupport::buildPlane(SMap,buildIndex+113,coilOrg-XCoil*coilWidth,XCoil);
+  ModelSupport::buildPlane(SMap,buildIndex+114,coilOrg+XCoil*coilWidth,XCoil);
+
+  ModelSupport::buildPlane
+    (SMap,buildIndex+103,coilOrg-XCoil*(coilEndRadius+coilWidth),XCoil);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+104,coilOrg+XCoil*(coilEndRadius+coilWidth),XCoil);
 
   ModelSupport::buildPlane
     (SMap,buildIndex+105,coilOrg-Z*(coilGap/2.0),Z);
@@ -212,19 +219,25 @@ Dipole::createSurfaces()
     (SMap,buildIndex+106,coilOrg+Z*(coilGap/2.0),Z);
   
   // Coil end cylinders
+  const Geometry::Vec3D coilMinus=coilOrg-YCoil*(coilLength/2.0);
+  const Geometry::Vec3D coilPlus=coilOrg+YCoil*(coilLength/2.0);
   ModelSupport::buildCylinder
-    (SMap,buildIndex+107,coilOrg-YCoil*(coilLength/2.0),Z,coilWidth);
+    (SMap,buildIndex+107,coilMinus-XCoil*coilWidth,Z,coilEndRadius);
   ModelSupport::buildCylinder
-    (SMap,buildIndex+108,coilOrg+YCoil*(coilLength/2.0),Z,coilWidth);
+    (SMap,buildIndex+108,coilMinus+XCoil*coilWidth,Z,coilEndRadius);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+117,coilPlus-XCoil*coilWidth,Z,coilEndRadius);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+118,coilPlus+XCoil*coilWidth,Z,coilEndRadius);
 
   // Cylinder cutters
   ModelSupport::buildPlane
-    (SMap,buildIndex+201,coilOrg-YCoil*(coilLength/2.0+coilWidth),YCoil);
+    (SMap,buildIndex+201,coilOrg-YCoil*(coilLength/2.0+coilEndRadius),YCoil);
   ModelSupport::buildPlane
-    (SMap,buildIndex+202,coilOrg+YCoil*(coilLength/2.0+coilWidth),YCoil);
+    (SMap,buildIndex+202,coilOrg+YCoil*(coilLength/2.0+coilEndRadius),YCoil);
 
-  FixedComp::setConnect(0,coilOrg-YCoil*(coilLength/2.0+coilWidth),YCoil);
-  FixedComp::setConnect(1,coilOrg+YCoil*(coilLength/2.0+coilWidth),YCoil);
+  FixedComp::setConnect(0,coilOrg-YCoil*(coilLength/2.0+coilEndRadius),YCoil);
+  FixedComp::setConnect(1,coilOrg+YCoil*(coilLength/2.0+coilEndRadius),YCoil);
   FixedComp::setConnect(6,coilOrg,YCoil);
 
   return;
@@ -248,8 +261,7 @@ Dipole::createObjects(Simulation& System)
       const HeadRule ACell=getComplementRule("InnerA");
       const HeadRule BCell=getComplementRule("InnerB");
 
-      HR=ModelSupport::getHeadRule
-	(SMap,buildIndex," 15 -16 103 -104 201 ");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," 15 -16 103 -104 201 ");
       makeCell("MidVoidA",System,cellIndex++,
 	       0,0.0,HR*MSplit.complement()*ACell);
 
@@ -267,11 +279,11 @@ Dipole::createObjects(Simulation& System)
 
   // side voids
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex," (-1:2:17:-27) -15 105 103 -104 (-107:101) (-108:-102)");
+    (SMap,buildIndex," (-1:2:17:-27) -15 105 103 -104 201 -202");
   makeCell("BaseVoid",System,cellIndex++,0,0.0,HR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex," (-1:2:17:-27) 16 -106 103 -104 (-107:101) (-108:-102)");
+    (SMap,buildIndex," (-1:2:17:-27) 16 -106 103 -104 201 -202");
   makeCell("TopVoid",System,cellIndex++,0,0.0,HR);
 
   // Pole pieces
@@ -282,23 +294,50 @@ Dipole::createObjects(Simulation& System)
   makeCell("Pole",System,cellIndex++,poleMat,0.0,HR);
   
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex," (-107:101) (-108:-102) -105 5 103 -104 "
-    " (-1:2:17:-27) ");
+    (SMap,buildIndex," 101 -102 -105 5 113 -114 (-1:2:17:-27) ");
   makeCell("CoilA",System,cellIndex++,coilMat,0.0,HR);
 
-  
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex," (-107:101) (-108:-102) 106 -6 103 -104 "
-    " (-1:2:17:-27) ");
+    (SMap,buildIndex," (-107:101) (-117:-102) -105 5 -113 103");
+  makeCell("CoilA",System,cellIndex++,coilMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex," (-108:101) (-118:-102) -105 5 114 -104");
+  makeCell("CoilA",System,cellIndex++,coilMat,0.0,HR);
+
+  // end pieces x2
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"113 -114 -101 201 5 -105");
+  makeCell("CoilA",System,cellIndex++,coilMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"113 -114 -101 201 -6 106");
+  makeCell("CoilA",System,cellIndex++,coilMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex," 101 -102 106 -6 113 -114 (-1:2:17:-27) ");
+  makeCell("CoilB",System,cellIndex++,coilMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex," (-107:101) (-117:-102) 106 -6 103 -113");
+  makeCell("CoilB",System,cellIndex++,coilMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex," (-108:101) (-118:-102) 106 -6 -104 114");
+  makeCell("CoilB",System,cellIndex++,coilMat,0.0,HR);
+
+  // end pieces x2
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"113 -114 102 -202 5 -105");
+  makeCell("CoilB",System,cellIndex++,coilMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"113 -114 102 -202 -6 106");
   makeCell("CoilB",System,cellIndex++,coilMat,0.0,HR);
 
   // Void ends
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex," 201 107 -101 5 -6 103 -104 (-15 : 16)");
+    (SMap,buildIndex," 201 107 108 -101 5 -6 103 -104 (-113:114) (-105:106)");
   makeCell("FrontVoid",System,cellIndex++,0,0.0,HR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex," -202 108 102 5 -6 103 -104 (-15 : 16)");
+    (SMap,buildIndex," -202 118 117 102 5 -6 103 -104 (-113:114) (-105 : 106)");
   makeCell("BackVoid",System,cellIndex++,0,0.0,HR);
   
   HR=ModelSupport::getHeadRule

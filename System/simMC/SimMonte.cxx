@@ -3,7 +3,7 @@
  
  * File:   src/SimMonte.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,8 +35,8 @@
 #include <functional>
 #include <numeric>
 #include <iterator>
+#include <random>
 
-#include "MersenneTwister.h"
 #include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
@@ -45,6 +45,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "BaseVisit.h"
+#include "Random.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
@@ -70,8 +71,6 @@
 #include "Simulation.h"
 #include "LineTrack.h"
 #include "SimMonte.h"
-
-extern MTRand RNG;
 
 SimMonte::SimMonte() :
   Simulation(),TCount(0),MSActive(0),B(0),DUnit()
@@ -230,7 +229,7 @@ SimMonte::runMonteNeutron(const size_t Npts)
 	  while (OPtr && !OPtr->isZeroImp())
 	    {
 	      Transport::ParticleInObj<MonteCarlo::neutron> Cell(OPtr);
-	      double R=RNG.randExc();
+	      double R=Random::rand();
 	      // Calculate forward Track:
 	      int surfN;
 	      surfN=Cell.trackWeight(n,R,surfPtr);

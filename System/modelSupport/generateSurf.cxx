@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/generateSurf.cxx
+ * File:   modelSupport/generateSurf.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -294,8 +294,8 @@ buildPlaneRotAxis(surfRegister& SMap,const int N,
   Geometry::Vec3D RotNorm(D);
   Geometry::Quaternion::calcQRotDeg(degAngle,Axis).rotate(RotNorm);  
   PX->setPlane(O,RotNorm);
+    
   const int NFound=SMap.registerSurf(N,PX);
-
   return SMap.realPtr<Geometry::Plane>(NFound);
 }
 

@@ -3,7 +3,7 @@
  
  * File:   commonBeamInc/PortChicane.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ namespace xraySystem
   
 class PortChicane :
     public attachSystem::ContainedGroup,
-    public attachSystem::FixedOffset,
+    public attachSystem::FixedRotate,
     public attachSystem::CellMap,
     public attachSystem::SurfMap,
     public attachSystem::ExternalCut
@@ -66,8 +66,6 @@ class PortChicane :
   int wallMat;                    ///< wall material
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -80,7 +78,7 @@ class PortChicane :
   PortChicane& operator=(const PortChicane&);
   virtual ~PortChicane() {}  ///< Destructor
 
-
+  using attachSystem::FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 };

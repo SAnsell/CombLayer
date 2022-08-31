@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/ContainedComp.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,7 +52,6 @@ class ContainedComp
 {
  protected:
 
-  HeadRule boundary;        ///< Boundary object [Imposed containment]
   HeadRule outerSurf;       ///< Outer surfaces [Excluding boundary]
 
   std::vector<int> insertCells;    ///< Cell to insert into
@@ -60,7 +59,7 @@ class ContainedComp
   static int validIntersection(const HeadRule&,const bool,
 			       const Geometry::Surface*,
 			       const Geometry::Surface*);
-
+  
  public:
 
   ContainedComp();
@@ -69,15 +68,10 @@ class ContainedComp
   virtual ~ContainedComp();
 
   virtual const HeadRule& getOuterSurf() const;
+  virtual HeadRule getExcludeSurf() const;
+  
   virtual std::string getExclude() const;
   virtual std::string getCompExclude() const;
-  virtual std::string getContainer() const;
-  virtual std::string getCompContainer() const;
-
-  virtual std::string 
-    getCompContainer(const Geometry::Surface*,
-		     const Geometry::Surface*) const;
-
 
   void copyRules(const ContainedComp&);
   void clearRules();
@@ -85,16 +79,10 @@ class ContainedComp
 
   /// Test if has outer rule
   bool hasOuterSurf() const { return outerSurf.hasRule(); }
-  /// Test if has boundary rule
-  bool hasBoundary() const { return boundary.hasRule(); }
-  int isBoundaryValid(const Geometry::Vec3D&) const;
 
   int isOuterValid(const Geometry::Vec3D&) const;
   int isOuterValid(const Geometry::Vec3D&,const std::set<int>&) const;
   int isOuterValid(const Geometry::Vec3D&,const int) const;
-
-  // line in
-  bool isOuterLine(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
 
   void addOuterSurf(const int);
   void addOuterSurf(const std::string&);
@@ -105,10 +93,6 @@ class ContainedComp
   void addOuterUnionSurf(const ContainedComp&);
   void addOuterUnionSurf(const HeadRule&);
   
-  void addBoundarySurf(const int);
-  void addBoundarySurf(const std::string&);
-  void addBoundaryUnionSurf(const int);
-  void addBoundaryUnionSurf(const std::string&);
 
   // Determine the surface that the line intersect first 
   // and its sign.
@@ -139,8 +123,6 @@ class ContainedComp
   const std::vector<int>& getInsertCells() const 
     { return insertCells; }
 
-  int getMainCell() const;
-  
   void write(std::ostream&) const;
 
 };

@@ -3,7 +3,7 @@
  
  * File:   moderatorInc/VanePoison.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,11 +35,11 @@ namespace moderatorSystem
   \brief VanePoison [insert object]
 */
 
-class VanePoison : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset
+class VanePoison :
+    public attachSystem::ContainedComp,
+    public attachSystem::FixedRotate
 {
   private:
-  
 
   size_t nBlades;           ///< number of blades
   double bWidth;            ///< Width of a blade
@@ -55,9 +55,6 @@ class VanePoison : public attachSystem::ContainedComp,
   int absMat;               ///< Moderator material
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createLinks();
   void createSurfaces();
   void createObjects(Simulation&,
@@ -73,6 +70,7 @@ class VanePoison : public attachSystem::ContainedComp,
   virtual VanePoison* clone() const { return new VanePoison(*this); }
   virtual ~VanePoison();
 
+  using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 			 const long int);
 

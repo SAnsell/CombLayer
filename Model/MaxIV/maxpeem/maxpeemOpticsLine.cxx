@@ -3,7 +3,7 @@
  
  * File: maxpeem/maxpeemOpticsLine.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -56,8 +54,8 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
 #include "FixedRotate.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -72,6 +70,7 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "OffsetFlangePipe.h"
@@ -243,7 +242,7 @@ maxpeemOpticsLine::populate(const FuncDataBase& Control)
 
   outerLeft=Control.EvalDefVar<double>(keyName+"OuterLeft",0.0);
   outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",outerLeft);
-  const int voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  const int voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   buildZone.setInnerMat(voidMat);
 
   return;
@@ -585,8 +584,6 @@ maxpeemOpticsLine::buildExtras(Simulation& System,
   outPipeA->insertInCell("FlangeB",System,hut.getCell("BackVoid"));
   outPipeB->insertInCell("FlangeB",System,hut.getCell("BackVoid"));
 
-  ELog::EM<<"SCREN == "<<screenB->getKeyName()<<ELog::endDiag;
-
   return;
 }
 
@@ -641,6 +638,9 @@ maxpeemOpticsLine::buildObjects(Simulation& System)
   pumpTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   pumpTubeA->createAll(System,*pipeB,"back");
 
+  const constructSystem::portItem& CPB=pumpTubeA->getPort(2);
+  CPB.insertInCell(System,outerCell);
+
   const constructSystem::portItem& CPI=pumpTubeA->getPort(1);
   outerCell=buildZone.createUnit(System,CPI,"OuterPlate");
   pumpTubeA->insertAllInCell(System,outerCell);
@@ -648,7 +648,6 @@ maxpeemOpticsLine::buildObjects(Simulation& System)
 
   constructSystem::constructUnit
     (System,buildZone,CPI,"OuterPlate",*offPipeA);
-
 
   buildM1Mirror(System,*offPipeA,"FlangeBCentre");
 

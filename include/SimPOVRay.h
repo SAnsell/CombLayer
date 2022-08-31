@@ -3,7 +3,7 @@
  
  * File:   include/SimPOVRay.h
  *
- * Copyright (c) 2017 by Konstantin Batkov
+ * Copyright (c) 2017-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,9 @@ class SimPOVRay : public Simulation
 {
  private:
 
+  /// Material transmission values
+  std::map<std::string,double> transmitMap;
+  
   // ALL THE sub-write stuff
   void writeCells(std::ostream&) const;
   void writeSurfaces(std::ostream&) const;
@@ -45,6 +48,7 @@ class SimPOVRay : public Simulation
   SimPOVRay& operator=(const SimPOVRay&);
   virtual ~SimPOVRay() {}           ///< Destructor
 
+  void addTransmission(const std::string&,const double);
   virtual void write(const std::string&) const;
 
 };

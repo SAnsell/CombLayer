@@ -3,7 +3,7 @@
 
  * File: Linac/TDC.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -296,45 +296,58 @@ TDC::buildInnerZone(Simulation& System,
   ELog::RegMethod RegA("TDC","buildInnerZone");
 
   // FrontSurf : BackSurf : Cell : Cell(if not empty)
-  typedef std::tuple<std::string,std::string,std::string,std::string> RTYPE;
-  typedef std::map<std::string,RTYPE> RMAP;
-  typedef std::map<std::string,std::string> EMAP;
+  typedef std::tuple<std::string,std::string> SurfTYPE;
+  typedef std::map<std::string,SurfTYPE> RegionMAP;      // front/back surfaces 
+  typedef std::map<std::string,std::set<std::string>> CellMAP;      // object to intersect
+  typedef std::map<std::string,std::string> ExtraSurfMAP;   // extra surfaces
 
   // front : back : Insert
-  const static RMAP regZones
+  const static CellMAP cellZones
     ({
-      {"l2spf",{"Front","#KlystronWall","LinearVoid","LWideVoid"}},
-      {"l2spfTurn",{"KlystronWall","#MidWall","LWideVoid",""}},
-      {"l2spfAngle",{"KlystronCorner","MidAngleWall","LWideVoid","LTVoid"}},
-      //      {"tdcFront"  ,{"DoorEndWall","#TDCMid","SPFVoid","TVoidB"}},
-      //      {"tdcMain"  ,{"TDCStart","#TDCMid","SPFVoid",""}},
-      {"tdc"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
-      {"tdcShort", {"TDCAngleMid","#TDCMid","SPFVoid","LongVoid"}},
-      {"spfLong"  ,{"TDCMid","#Back","LongVoid",""}},
-      {"spfAngle"  ,{"DoorEndWall","#TDCMid","TVoidB","SPFVoid"}},
-      {"spf"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
-      {"spfFar"  ,{"TDCMid","#BackWallFront","LongVoid",""}}, // last cell with columns
-      {"spfBehindBackWall"  ,{"BackWallBack","#FemtoMAXBack","C080016",""}} // cell behind back wall
+      {"l2spf",              {"LinearVoid","LWideVoid"}},
+      {"l2spfTurn",          {"LWideVoid"}},
+      {"l2spfAngle",         {"LWideVoid","LTVoid"}},
+      {"tdc",                {"SPFVoid","LongVoid"}},
+      {"tdcShort",           {"SPFVoid","LongVoid"}},
+      {"spfLong",            {"LongVoid"}},
+      {"spfAngle",           {"TVoidB","SPFVoid"}},
+      {"spf",                {"SPFVoid","LongVoid"}},
+      {"spfFar",             {"LongVoid"}},             // last cell with columns
+      {"spfBehindBackWall",  {"C080016"}}    // cell behind back wall
+    });
+  const static RegionMAP regZones
+    ({
+      {"l2spf",{"Front","#KlystronWall"}},
+      {"l2spfTurn",{"KlystronWall","#MidWall"}},
+      {"l2spfAngle",{"KlystronCorner","MidAngleWall"}},
+      {"tdc"  ,{"TDCCorner","#TDCMid"}},
+      {"tdcShort", {"TDCAngleMid","#TDCMid"}},
+      {"spfLong"  ,{"TDCMid","#Back"}},
+      {"spfAngle"  ,{"DoorEndWall","#TDCMid"}},
+      {"spf"  ,{"TDCCorner","#TDCMid"}},
+      {"spfFar"  ,{"TDCMid","#BackWallFront"}}, // last cell with columns
+      {"spfBehindBackWall"  ,{"BackWallBack","#FemtoMAXFront"}} // cell behind back wall
     });
   //Extra surfaces to add to the main surround
-  const static EMAP extraSUR
+  const static ExtraSurfMAP extraSUR
     ({
       {"l2spfAngle","#MidWall"}
     });
 
   const FuncDataBase& Control=System.getDataBase();
 
-  RMAP::const_iterator rc=regZones.find(regionName);
-  if (rc==regZones.end())
+  RegionMAP::const_iterator rc=regZones.find(regionName);
+  CellMAP::const_iterator cc=cellZones.find(regionName);
+  if (rc==regZones.end() || cc==cellZones.end())
     throw ColErr::InContainerError<std::string>(regionName,"regionZones");
-  EMAP::const_iterator ec=extraSUR.find(regionName);
+  ExtraSurfMAP::const_iterator ec=extraSUR.find(regionName);
 
   // try not to use front surf:
-  const RTYPE& walls=rc->second;
+  const SurfTYPE& walls=rc->second;
   const std::string& frontSurfName=std::get<0>(walls);
   const std::string& backSurfName=std::get<1>(walls);
-  const std::string& voidName=std::get<2>(walls);
-  const std::string& voidNameB=std::get<3>(walls);
+  // const std::string& voidName=std::get<2>(walls);
+  // const std::string& voidNameB=std::get<3>(walls);
 
   if (bZone.find(segmentName)!=bZone.end())
     throw ColErr::InContainerError<std::string>
@@ -350,9 +363,10 @@ TDC::buildInnerZone(Simulation& System,
 
   buildZone->setSurround(surHR);
   buildZone->setMaxExtent(injectionHall->getSurfRules(backSurfName));
+  buildZone->setInnerMat(injectionHall->getVoidMat());
 
-  setVoidSpace(System,buildZone,voidName);
-  setVoidSpace(System,buildZone,voidNameB);
+  for(const std::string& voidName : cc->second)
+    setVoidSpace(System,buildZone,voidName);
 
   auto [mc,successflag] =  bZone.emplace(segmentName,buildZone);
   return mc->second;
@@ -548,6 +562,7 @@ TDC::createAll(Simulation& System,
 	  std::shared_ptr<attachSystem::BlockZone> buildZone=
 	    buildInnerZone(System,BL,bzName);
 
+
 	  segPtr->setCutSurf("Floor",injectionHall->getSurfRule("Floor"));
 	  segPtr->setCutSurf("BackWallFront",
 			     injectionHall->getSurfRule("BackWallFront"));
@@ -559,15 +574,13 @@ TDC::createAll(Simulation& System,
 	  if (BL=="Segment7")
 	    sideSegNames={"Segment6"};
 
-	  if (BL=="Segment8")
-	    sideSegNames={"Segment7"};
-
 	  if (BL=="Segment10")
 	    {
 	      std::shared_ptr<attachSystem::BlockZone> secondZone=
 		buildInnerZone(System,"Segment10B","spfAngle");
 	      segPtr->setNextZone(secondZone.get());
 	    }
+	  
 	  if (BL=="Segment30")
 	    sideSegNames={"Segment13","Segment14","Segment15"};
 
@@ -605,19 +618,19 @@ TDC::createAll(Simulation& System,
 		  buildZone->setFront(seg47Ptr->getFullRule(2));
 		}
 	    }
-
 	  //	  segPtr->setInnerZone(buildZone.get());
 	  segPtr->removeSpaceFillers(System);
-
+	  
 	  segPtr->createAll
 	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
+
 	  segPtr->insertPrevSegment(System,prevSegPtr);
 	  segPtr->createBeamLink(System.getDataBase());
 	  if (!noCheck)
 	    segPtr->totalPathCheck(System.getDataBase(),0.1);
 	  if (pointCheck)
 	    segPtr->writePoints();
-
+	  
 	  if (BL=="Segment47")   // SPECIAL REMOVAL
 	    {
 	      SegTYPE::const_iterator ci=SegMap.find("Segment45");

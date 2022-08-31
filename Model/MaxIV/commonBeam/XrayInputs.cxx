@@ -33,7 +33,6 @@
 #include <iterator>
 #include <memory>
 
-
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
@@ -60,7 +59,7 @@ createXrayInputs(inputParam& IParam)
   IParam.regFlag("pointCheck","pointCheck");
   IParam.regMulti("beamlines","beamlines",1000);
   IParam.regMulti("stopPoint","stopPoint",1000);
-
+  
   IParam.setValue("sdefType",std::string("Wiggler"));
 
   // IParam.setDesc("defaultMag",

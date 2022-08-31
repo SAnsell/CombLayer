@@ -3,7 +3,7 @@
  
  * File:   t1BuildInc/t1Reflector.h
 *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,8 @@ namespace ts1System
 
 class t1Reflector :
     public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset
+    public attachSystem::FixedRotate,
+    public attachSystem::CellMap
 {
  private:
   
@@ -81,7 +82,6 @@ class t1Reflector :
   virtual ~t1Reflector();
 
   std::string getComposite(const std::string&) const;
-  virtual void addToInsertChain(attachSystem::ContainedComp&) const;
 
   void createBoxes(Simulation&,const std::string&);
   void createRods(Simulation&);

@@ -3,7 +3,7 @@
  
  * File:   monte/Material.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,7 +74,8 @@ Material::Material() :
   */
 {} 
 
-Material::Material(const int mcnpNum,const std::string N,
+Material::Material(const int mcnpNum,
+		   const std::string N,
 		   const double D) :
   matID(mcnpNum),Name(std::move(N)),atomDensity(D)
   /*!
@@ -86,9 +87,10 @@ Material::Material(const int mcnpNum,const std::string N,
 {} 
 
 Material::Material(const Material& A) :
-  matID(A.matID),Name(A.Name),zaidVec(A.zaidVec),
-  mxCards(A.mxCards),Libs(A.Libs),SQW(A.SQW),
-  atomDensity(A.atomDensity)
+  matID(A.matID),Name(A.Name),
+  atomDensity(A.atomDensity),zaidVec(A.zaidVec),
+  mxCards(A.mxCards),Libs(A.Libs),SQW(A.SQW)
+
   /*!
     Default Copy constructor
     \param A :: Material to copy
@@ -190,7 +192,7 @@ Material::operator+=(const Material& A)
 	}
     }
   // Now add All cards in A, that don't exist in *this.
-  for(const MXTYPE::value_type AMX : A.mxCards)
+  for(const MXTYPE::value_type& AMX : A.mxCards)
     {
       MXTYPE::const_iterator mc=mxCards.find(AMX.first);
       if (mc==mxCards.end())
@@ -902,11 +904,13 @@ Material::writeFLUKA(std::ostream& OX) const
 } 
 
 void 
-Material::writePOVRay(std::ostream& OX) const
+Material::writePOVRay(std::ostream& OX,
+		      const double V) const
   /*!
     Write out the information about the material
     in the POV-Ray form
     \param OX :: Output stream
+    \param V :: transmision value
   */
 {
   ELog::RegMethod RegA("Material","writePOVRay");
@@ -918,10 +922,20 @@ Material::writePOVRay(std::ostream& OX) const
   Geometry::Vec3D rgbCol(rgb/0xFFFF,(rgb % 0xFFFF)/0xFF,rgb % 0xFF);
   rgbCol.makeUnit();
 
-  OX<<"#declare mat"<<MW.NameNoDot(Name)<<" = texture {"
-    << " pigment{color rgb<"
-    <<   MW.NumComma(rgbCol)
-    <<"> } };"<<std::endl;
+  if (V>0.0 && V<1.0)
+    {
+      OX<<"#declare mat"<<MW.NameNoDot(Name)<<" = texture {"
+	<< " pigment{color rgb<"
+	<<   MW.NumComma(rgbCol)
+	<<"> transmit "<<V<<"} };"<<std::endl;
+    }
+  else
+   {
+     OX<<"#declare mat"<<MW.NameNoDot(Name)<<" = texture {"
+       << " pigment{color rgb<"
+       <<   MW.NumComma(rgbCol)
+       <<"> } };"<<std::endl;
+   }
   return;
 } 
 

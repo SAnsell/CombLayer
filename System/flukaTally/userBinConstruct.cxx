@@ -56,8 +56,6 @@
 #include "userBin.h"
 #include "userBinConstruct.h" 
 
-
-
 namespace flukaSystem
 {
 

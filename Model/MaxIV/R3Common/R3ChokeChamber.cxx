@@ -3,7 +3,7 @@
  
  * File:   R3Common/R3ChokeChamber.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -68,7 +68,7 @@ namespace xraySystem
 {
 
 R3ChokeChamber::R3ChokeChamber(const std::string& Key) :
-  attachSystem::FixedOffset(Key,12),
+  attachSystem::FixedRotate(Key,12),
   attachSystem::ContainedGroup("Main","Photon","Electron","Inlet","Side"),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -88,7 +88,7 @@ R3ChokeChamber::R3ChokeChamber(const std::string& Key) :
 
 
 R3ChokeChamber::R3ChokeChamber(const R3ChokeChamber& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedGroup(A),
+  attachSystem::FixedRotate(A),attachSystem::ContainedGroup(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   attachSystem::ExternalCut(A),
   radius(A.radius),wallThick(A.wallThick),length(A.length),
@@ -127,7 +127,7 @@ R3ChokeChamber::operator=(const R3ChokeChamber& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedGroup::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
@@ -191,7 +191,7 @@ R3ChokeChamber::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("R3ChokeChamber","populate");
   
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   radius=Control.EvalVar<double>(keyName+"Radius");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
@@ -262,13 +262,19 @@ R3ChokeChamber::createUnitVector(const attachSystem::FixedComp& FC,
       photOrg=Origin;
       Origin+=Y*inletLength;
     }
-  else
+  else if (epPairSet==1)
     {
       // this must be done here because we didnt
       // know the value of X / electronXStep at setEPOriginPair()
       elecOrg+=X*electronXStep;   
       elecXAxis=elecYAxis*Z;
       Origin=(elecOrg+photOrg)/2.0+Y*inletLength;
+    }
+  else 
+    {
+      // this must be done here because we didnt
+      // know the value of X / electronXStep at setEPOriginPair()
+      Origin+=Y*inletLength;
     }
   return;
 }
@@ -336,7 +342,6 @@ R3ChokeChamber::createSurfaces()
 
   // Photon Pipe (200)
   //--------------------
-
   ModelSupport::buildCylinder(SMap,buildIndex+207,photOrg,Y,photonRadius);
   ModelSupport::buildCylinder
     (SMap,buildIndex+217,photOrg,Y,photonRadius+photonThick);
@@ -351,7 +356,7 @@ R3ChokeChamber::createSurfaces()
 
   // electron Pipe (300)
   //---------------
-  
+
   ModelSupport::buildCylinder
     (SMap,buildIndex+307,elecOrg,elecYAxis,electronRadius);
   ModelSupport::buildCylinder
@@ -530,7 +535,7 @@ R3ChokeChamber::createLinks()
   FixedComp::setConnect
     (3,elecOrg+elecYAxis*(electronLength+inletLength),elecYAxis);
   FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+202));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+303));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+302));
 
   // side (outward)
   FixedComp::setConnect(4,Origin-X*(sideLength+sideCapThick),-X);
@@ -543,6 +548,27 @@ R3ChokeChamber::createLinks()
   return;
 }
 
+void
+R3ChokeChamber::setEPOriginPair(const Geometry::Vec3D& POrg,
+				const Geometry::Vec3D& EOrg,
+				const Geometry::Vec3D& EAxis)
+  /*!
+    Set the electron/Photon origins exactly
+    \param POrg :: photon origin (absolute)
+    \param EOrg :: electron origin (absolute)
+    \param EAxis :: electron axis
+   */
+{
+  ELog::RegMethod RegA("R3ChokeChamber","setEPOriginPair");
+
+  photOrg=POrg;
+  elecOrg=EOrg;
+  elecYAxis=EAxis.unit();
+  
+  epPairSet=2;
+  return;
+}
+  
 void
 R3ChokeChamber::setEPOriginPair(const attachSystem::FixedComp& FC,
 				const long int photonIndex,

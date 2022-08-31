@@ -3,7 +3,7 @@
  
  * File:   tallyInc/heatTally.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +50,8 @@ class heatTally : public Tally
   virtual std::string className() const 
   { return "heatTally"; }
   
-  void addCells(const std::vector<int>&);   
+  void addCells(const std::vector<int>&);
+  void addCells(const std::set<int>&);   
   void clearCells();
   void setPlus(const int V) { plus=V; } ///< Set the + flag
   

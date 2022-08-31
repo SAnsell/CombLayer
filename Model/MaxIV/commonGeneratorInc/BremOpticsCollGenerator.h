@@ -3,7 +3,7 @@
 
  * File:   commonGeneratorInc/BremOpticsCollGenerator.h
  *
- * Copyright (c) 2004-2019 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,9 +55,9 @@ class BremOpticsCollGenerator
 
   double holeXStep;            ///< X-offset of hole
   double holeZStep;            ///< Z-offset of hole
-  double colYStep;         ///< absorber y offset
   double holeWidth;           ///< width of hole
   double holeHeight;          ///< height of hole
+  double colYStep;         ///< absorber y offset
   double colLength;           ///< Length of absorber
   double colRadius;           ///< Absorber radius
 

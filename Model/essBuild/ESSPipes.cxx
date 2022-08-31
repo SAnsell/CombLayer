@@ -3,7 +3,7 @@
  
  * File:   essBuild/ESSPipes.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,6 +54,8 @@
 #include "FixedComp.h"
 #include "FixedUnit.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "pipeUnit.h"
 #include "PipeLine.h"
 #include "SupplyPipe.h"
@@ -158,8 +160,8 @@ ESSPipes::buildH2Pipe(Simulation& System,const std::string& lobeName,
   PipeTYPE& pipeAl=getPipe(pipeAlName);
   ///  PipeTYPE& pipeConnect=getPipe(pipeConnectName);
   ///  PipeTYPE& pipeInvar=getPipe(pipeInvarName);
-  const attachSystem::FixedComp* lobe=
-    System.getObjectThrow<attachSystem::FixedComp>(lobeName,"FixedComp::Lobe");
+  const attachSystem::LayerComp* lobe=
+    System.getObjectThrow<attachSystem::LayerComp>(lobeName,"FixedComp::Lobe");
 
   // const attachSystem::CellMap* waterCM=
   //   System.getObjectThrow<attachSystem::CellMap>(waterName,"CellMap::Water");

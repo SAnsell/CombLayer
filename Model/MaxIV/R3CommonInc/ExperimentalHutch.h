@@ -3,7 +3,7 @@
  
  * File:   R3CommonInc/ExperimentalHutch.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ namespace xraySystem
 */
 
 class ExperimentalHutch :
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap,
@@ -62,24 +62,34 @@ class ExperimentalHutch :
   double pbRoofThick;           ///< Thickness of lead in Roof
   double outerThick;            ///< Outer wall/roof skin
 
-  double holeRadius;            ///< Radius of front hole (if used)
-  double holeXStep;             ///< X step offset
-  double holeZStep;             ///< Z step offset
+  double fHoleRadius;            ///< Radius of front hole (if used)
+  double fHoleXStep;             ///< X step offset
+  double fHoleZStep;             ///< Z step offset
+
+  std::vector<Geometry::Vec3D> holeOffset;  ///< hole offsets [y ignored]
+  std::vector<double> holeRadius;           ///< hole radii
   
-  double exitRadius;            ///< Radius of front hole (if used)
-  double exitXStep;             ///< X step offset
-  double exitZStep;             ///< Z step offset
+  double innerOutVoid;          ///< Extension for inner void space (side)
+  double outerOutVoid;          ///< Extension for outer void space (side)
+  double frontVoid;             ///< Extension for inner front void space
+  double backVoid;              ///< Extension for inner back void space
+  double outerBackVoid;         ///< Extension for outer back void space
   
-  double innerOutVoid;          ///< Extension for inner void space
-  double outerOutVoid;          ///< Extension for outer void space 
-  double extension;
+  std::string forkWall;         ///< Wall for forklift [only one allowed]
+  double forkXStep;             ///< Step across beamline for forklift hole
+  double forkYStep;             ///< Step down beamline for forklift hole
+  double forkLength;            ///< length of units
+  double forkHeight;            ///< height of unit
+  std::vector<double> fZStep;   ///< step of units
   
-  int voidMat;                ///< Void material [air]
-  int skinMat;                ///< Fe layer material for walls
-  int pbMat;                  ///< pb layer material for walls
+  int voidMat;                  ///< Void material [air]
+  int skinMat;                  ///< Fe layer material for walls
+  int pbMat;                    ///< pb layer material for walls
 
   /// Chicanes 
   std::vector<std::shared_ptr<PortChicane>> PChicane;  
+
+  forkHoles forks;              ///< Forklift holes if made
   
   void populate(const FuncDataBase&);
   void createSurfaces();
@@ -87,7 +97,8 @@ class ExperimentalHutch :
   void createLinks();
 
   void createChicane(Simulation&);
-
+  void createForkCut(Simulation&);
+  
  public:
 
   ExperimentalHutch(const std::string&);
@@ -95,6 +106,12 @@ class ExperimentalHutch :
   ExperimentalHutch& operator=(const ExperimentalHutch&);
   virtual ~ExperimentalHutch();
 
+  /// accessor to void mat
+  int getInnerMat() const { return voidMat; }
+
+  const PortChicane* getPortItem(const size_t) const;
+  
+  void splitChicane(Simulation& System,const size_t,const size_t);
   using FixedComp::createAll;
   virtual void createAll(Simulation&,
 			 const attachSystem::FixedComp&,

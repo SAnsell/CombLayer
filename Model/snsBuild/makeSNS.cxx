@@ -3,7 +3,7 @@
  
  * File:   snsBuild/makeSNS.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,6 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
-#include <utility>
 #include <cmath>
 #include <complex>
 #include <list>
@@ -47,8 +46,11 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "LayerComp.h"
 #include "World.h"
 #include "AttachSupport.h"
@@ -106,6 +108,7 @@ makeSNS::build(Simulation* SimPtr,
 
   attachSystem::addToInsertSurfCtrl(*SimPtr,*refObj,*tarOuterObj);
 
+  tarOuterObj->setCutSurf("RefBoundary",*refObj,-1);
   // LineVoid->createAll(*SimPtr,World::masterOrigin());
   // attachSystem::addToInsertSurfCtrl(*SimPtr,*Hall,*LineVoid);
 

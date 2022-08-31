@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   processInc/pipeSupport.h
+ * File:   modelSupportInc/pipeSupport.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 #ifndef ModelSupport_pipeSupport_h
 #define ModelSupport_pipeSupport_h
 
-///\file System/processInc/pipeSupport.h
+///\file System/modelSupportInc/pipeSupport.h
 
 namespace ModelSupport
 {

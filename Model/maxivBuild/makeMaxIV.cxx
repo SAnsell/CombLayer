@@ -3,7 +3,7 @@
 
  * File:   maxivBuild/makeMaxIV.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,7 +57,6 @@
 #include "BlockZone.h"
 #include "World.h"
 
-
 #include "InjectionHall.h"
 #include "R1Ring.h"
 #include "R1Beamline.h"
@@ -80,22 +79,11 @@
 namespace xraySystem
 {
 
-makeMaxIV::makeMaxIV() :
-  r1Ring(new R1Ring("R1Ring")),
-  r3Ring(new R3Ring("R3Ring")),
-  tdc(new tdcSystem::TDC("TDC"))
-
+makeMaxIV::makeMaxIV() 
  /*!
     Constructor
  */
-{
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  OR.addObject(r1Ring);
-  OR.addObject(r3Ring);
-  OR.addObject(tdc);
-}
+{}
 
 
 makeMaxIV::~makeMaxIV()
@@ -148,7 +136,7 @@ makeMaxIV::populateStopPoint(const mainSystem::inputParam& IParam,
       if (beamNAMES.find(SP.first)==beamNAMES.end())
 	{
 	  // make generic
-	  for(const std::string Item : beamNAMES)
+	  for(const std::string& Item : beamNAMES)
 	    beamStop.emplace(Item,SP.first);    // doesn't overwrite specific
 	}
       else if (!SP.second.empty())
@@ -268,6 +256,12 @@ makeMaxIV::buildInjection(Simulation& System,
 
     });
 
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance(); 
+
+  tdc=std::make_shared<tdcSystem::TDC>("TDC");
+  OR.addObject(tdc);
+
   bool activeLinac(0);
   const size_t NSet=IParam.setCnt("beamlines");  // converted from
                                                  //  defaultConfig linac
@@ -332,6 +326,11 @@ makeMaxIV::buildR1Ring(Simulation& System,
 	{"SPECIES","OpticCentre8"}
     });
 
+  ModelSupport::objectRegister& OR=
+     ModelSupport::objectRegister::Instance(); 
+ 
+  r1Ring=std::make_shared<R1Ring>("R1Ring");
+  OR.addObject(r1Ring);
 
   // Determine if R1Ring/beamlines need to be built
   std::set<std::string> activeBL;
@@ -407,7 +406,12 @@ makeMaxIV::buildR3Ring(Simulation& System,
   */
 {
   ELog::RegMethod RegA("makeMaxIV","buildR3Ring");
+  ModelSupport::objectRegister& OR=
+     ModelSupport::objectRegister::Instance();
 
+  r3Ring=std::make_shared<R3Ring>("R3Ring");
+  OR.addObject(r3Ring);
+  
   static const std::map<std::string,std::string> beamNAMES
     ({ {"BALDER","OpticCentre1"},
        {"COSAXS","OpticCentre1"},

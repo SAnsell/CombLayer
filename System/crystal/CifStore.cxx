@@ -33,9 +33,9 @@
 #include <functional>
 #include <memory>
 #include <limits>
-#include <boost/multi_array.hpp>
+#include <iterator>
+#include <random>
 
-#include "MersenneTwister.h"
 #include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
@@ -54,8 +54,6 @@
 #include "CifItem.h"
 #include "CifLoop.h"
 #include "CifStore.h"
-
-extern MTRand RNG;
 
 namespace Crystal
 {
@@ -898,12 +896,16 @@ CifStore::applyOcc()
   */
 {
   ELog::RegMethod RControl("CifStore","applyOcc");
+
+  std::mt19937 gen(17823);
+  std::uniform_real_distribution<double> RNG(0.0,1.0);
+  
   int eCnt(0);
   size_t index(0);
   while(index<FullCell.size())
     {
       const double Occ=FullCell[index].getOcc();
-      if (Occ<1.0 && Occ<RNG.rand())
+      if (Occ<1.0 && Occ<RNG(gen))
         {
           FullCell.erase(FullCell.begin()+static_cast<long int>(index));
           eCnt++;

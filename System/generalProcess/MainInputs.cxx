@@ -3,7 +3,7 @@
  
  * File:   process/MainInputs.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -83,6 +83,7 @@ createInputs(inputParam& IParam)
   IParam.regFlag("fullOR","fullOR");
   IParam.regItem("geomPrecision","geomPrecision");
   IParam.regItem("mode","mode");
+  IParam.regMulti("MagSyncRadiation","MagSyncRadiation",1000,0);
   IParam.regMulti("MagStep","MagStep",1000,0);
   IParam.regMulti("MagUnit","MagUnit",1000,0);
   IParam.regMulti("MagField","MagField",1000,0);
@@ -120,15 +121,18 @@ createInputs(inputParam& IParam)
   IParam.regDefItem<int>("n","nps",1,10000);
   IParam.regItem("noVariables","noVariables");
   IParam.regFlag("phits","PHITS");
-  IParam.regFlag("fluka","FLUKA");
+  IParam.regItem("fluka","FLUKA");
   IParam.regItem("povray","POVRAY");
+  IParam.regMulti("transmitMat","transmitMat");
   IParam.regDefItem<int>("mcnp","MCNP",1,6);
   IParam.regFlag("Monte","Monte");
   IParam.regFlag("noThermal","noThermal");
   IParam.regMulti("ObjAdd","objectAdd",1000);
   IParam.regMulti("offset","offset",10000,1,8);
+  IParam.regItem("outerVoidMat","outerVoidMat");
   IParam.regDefItem<double>("photon","photon",1,0.001);  // 1keV
   IParam.regDefItem<double>("photonModel","photonModel",1,100.0);
+  IParam.regMulti("plotgeom","plotgeom",2,1);
   IParam.regMulti("postOffset","postOffset",10000,1,8);
   IParam.regDefItem<std::string>("print","printTable",1,
 				 "10 20 40 50 110 120");  
@@ -162,6 +166,7 @@ createInputs(inputParam& IParam)
   IParam.regItem("validCheck","validCheck",1);
   IParam.regItem("validAll","validAll",0);
   IParam.regItem("validFC","validFC",1);
+  IParam.regItem("validCell","validCell",1);
   IParam.regMulti("validLine","validLine",1000);
   IParam.regItem("validPoint","validPoint",1);
   IParam.regFlag("um","voidUnMask");
@@ -274,8 +279,10 @@ createInputs(inputParam& IParam)
   IParam.setDesc("MCNP","MCNP version");
   IParam.setDesc("FLUKA","FLUKA output");
   IParam.setDesc("POVRAY","PovRay output");
+  IParam.setDesc("transmitMat","Transmission value for povray");
   IParam.setDesc("PHITS","PHITS output");
   IParam.setDesc("Monte","MonteCarlo capable simulation");
+  IParam.setDesc("MagSyncRadiation","Set the new CERN fluka sync for cells");
   IParam.setDesc("MagStep","Set the min/max step size for magnetics");
   IParam.setDesc("MagUnit","Add a magnetic type");
   IParam.setDesc("MagField","Set the various units");
@@ -283,6 +290,9 @@ createInputs(inputParam& IParam)
   IParam.setDesc("noThermal","No thermal cross-section in materials def");
   IParam.setDesc("offset","Displace to component [name]");
   IParam.setDesc("ObjAdd","Add a component (cell)");
+  IParam.setDesc("outerVoidMat",
+		 "Sets the outer void (74123) to be named material ");
+  IParam.setDesc("plotgeom","Write out PLOTGEOM for FLUKA");
   IParam.setDesc("photon","Photon Cut energy");
   IParam.setDesc("photonModel","Photon Model Energy [min]");
   IParam.setDesc("r","Renubmer cells");
@@ -309,7 +319,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("u","Units in cm");
   IParam.setDesc("um","Unset spherical void area (from imp=0)");
   IParam.setDesc("void","Adds the void card to the simulation");
-  IParam.setDesc("voidObject","Sets material of FC-object by name");
+  IParam.setDesc("voidObject","Sets material(s) of FC-object(s) by name");
   IParam.setDesc("volume","Create volume about point/radius for f4 tally");
   IParam.setDesc("volCells","Cells [object/range]");
   IParam.setDesc("volCard","set/delete the vol card");

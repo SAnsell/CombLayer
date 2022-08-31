@@ -3,7 +3,7 @@
 
  * File:   softimax/softimaxVariables.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2022 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -151,7 +151,8 @@ frontMaskVariables(FuncDataBase& Control,
   // dimensions are from softimax-description.djvu, page1
 
   // there are 2 ways to set FM variables, via angles or via front/back/min gaps
-  // I have a drawing with gaps (softimax-description.djvu, page1), so I use the gap approach:
+  // I have a drawing with gaps (softimax-description.djvu, page1),
+  // so I use the gap approach:
   // via angles:
   // FMaskGen.setFrontAngleSize(FM1dist,1300.0,1300.0);
   //  FMaskGen.setMinAngleSize(10.0,FM1dist,1000.0,1000.0);
@@ -250,9 +251,9 @@ opticsHutVariables(FuncDataBase& Control,
   const std::string hutName(preName+"OpticsHut");
   OpticsHutGenerator OGen; 
 
-  OGen.setBackExt(40.0);
-  OGen.addHole(Geometry::Vec3D(20,0,0),5.0);
-  OGen.addHole(Geometry::Vec3D(43,0,0),5.0);
+  OGen.setOuterBackExt(40.0);
+  OGen.addHole(Geometry::Vec3D(22,0,0),5.0);
+  OGen.addHole(Geometry::Vec3D(45,0,0),5.0);
   OGen.generateHut(Control,hutName,1070.0);
 
   // chicane dimensions: http://localhost:8080/maxiv/work-log/softimax/drawings/06643-03-000-folio-1-2-ind-g.pdf/view
@@ -483,8 +484,7 @@ m3MirrorVariables(FuncDataBase& Control,
   PipeGen.setCF<CF63>();
   PipeGen.setBFlangeCF<CF150>();
   PipeGen.generatePipe(Control,mirrorKey+"M3Front",4.05);
-  Control.addVariable(mirrorKey+"M3FrontWindowActive",0);
-  Control.addVariable(mirrorKey+"M3FrontFlangeBackLength",0.2); // measured STEP
+  Control.addVariable(mirrorKey+"M3FrontFlangeBLength",0.2); // measured STEP
 
 
   const std::string mName=mirrorKey+"M3Tube";
@@ -514,8 +514,7 @@ m3MirrorVariables(FuncDataBase& Control,
   PipeGen.setCF<CF63>();
   PipeGen.setAFlangeCF<CF150>();
   PipeGen.generatePipe(Control,mirrorKey+"M3Back",4.05);
-  Control.addVariable(mirrorKey+"M3BackWindowActive",0);
-  Control.addVariable(mirrorKey+"M3BackFlangeFrontLength",0.2); // measured STEP
+  Control.addVariable(mirrorKey+"M3BackFlangeALength",0.2); // measured STEP
 
   // M3 STXM part
 
@@ -524,7 +523,7 @@ m3MirrorVariables(FuncDataBase& Control,
   PipeGen.setBFlangeCF<CF150>();
   PipeGen.generatePipe(Control,mirrorKey+"M3STXMFront",5.85);
   Control.addVariable(mirrorKey+"M3STXMFrontWindowActive",0);
-  Control.addVariable(mirrorKey+"M3STXMFrontFlangeBackLength",0.2);
+  Control.addVariable(mirrorKey+"M3STXMFrontFlangeBLength",0.2);
 
 
   const std::string stxmName=mirrorKey+"M3STXMTube";
@@ -694,11 +693,11 @@ opticsVariables(FuncDataBase& Control,
   PItemGen.generatePort(Control,pumpName+"Port3",Geometry::Vec3D(0,0,0),XVec);
 
   PItemGen.setCF<setVariable::CF40>(CF150::outerRadius+5.4); // port length
-  PItemGen.generatePort(Control,pumpName+"Port4",Geometry::Vec3D(0,10,0),XVec);
+  PItemGen.generatePort(Control,pumpName+"Port4",Geometry::Vec3D(0,10.7,0),XVec);
 
   // above port 2
   PItemGen.setCF<setVariable::CF40>(CF150::outerRadius+5.4); // port length
-  PItemGen.generatePort(Control,pumpName+"Port5",Geometry::Vec3D(0,10,0),-XVec);
+  PItemGen.generatePort(Control,pumpName+"Port5",Geometry::Vec3D(0,10.7,0),-XVec);
 
   constexpr double xyAngle6(70.0*M_PI/180.0);
   const Geometry::Vec3D pAngVec6(sin(xyAngle6),0.0,-cos(xyAngle6));

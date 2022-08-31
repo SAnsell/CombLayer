@@ -3,7 +3,7 @@
  
  * File:   geomInc/geomSupport.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,6 +44,11 @@ namespace Geometry
 		     const Geometry::Vec3D&,
 		     const double);
   
+
+  Geometry::Vec3D
+    calcRotatedVec(const double,const double,const double,
+		   const Geometry::Vec3D&,const Geometry::Vec3D&,
+		   const Geometry::Vec3D&,const Geometry::Vec3D&);
   
 }     // NAMESPACE Geometry
 

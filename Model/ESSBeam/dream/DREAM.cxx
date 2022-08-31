@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/dream/DREAM.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,9 +54,10 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotateUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
@@ -70,6 +71,7 @@
 #include "GuideItem.h"
 #include "GuideLine.h"
 #include "DiskChopper.h"
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "Bunker.h"
 #include "CompBInsert.h"
@@ -86,16 +88,16 @@ namespace essSystem
 DREAM::DREAM(const std::string& keyName) :
   attachSystem::CopiedComp("dream",keyName),
   stopPoint(0),
-  dreamAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
+  dreamAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
 
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
  
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   FocusB(new beamlineSystem::GuideLine(newName+"FB")),
 
-  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
-  DDisk(new constructSystem::DiskChopper(newName+"DBlade")),
-  SDisk(new constructSystem::DiskChopper(newName+"SBlade")),
+  ChopperA(new essConstruct::SingleChopper(newName+"ChopperA")),
+  DDisk(new essConstruct::DiskChopper(newName+"DBlade")),
+  SDisk(new essConstruct::DiskChopper(newName+"SBlade")),
 
   CollimA(new constructSystem::PipeCollimator(newName+"CollimA")),
   CollimB(new constructSystem::PipeCollimator(newName+"CollimB")),
@@ -106,14 +108,14 @@ DREAM::DREAM(const std::string& keyName) :
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   FocusC(new beamlineSystem::GuideLine(newName+"FC")),
   
-  ChopperB(new constructSystem::SingleChopper(newName+"ChopperB")),
-  BandADisk(new constructSystem::DiskChopper(newName+"BandADisk")),  
+  ChopperB(new essConstruct::SingleChopper(newName+"ChopperB")),
+  BandADisk(new essConstruct::DiskChopper(newName+"BandADisk")),  
 
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   FocusD(new beamlineSystem::GuideLine(newName+"FD")),
   
-  ChopperC(new constructSystem::SingleChopper(newName+"ChopperC")), 
-  T0DiskA(new constructSystem::DiskChopper(newName+"T0DiskA")),
+  ChopperC(new essConstruct::SingleChopper(newName+"ChopperC")), 
+  T0DiskA(new essConstruct::DiskChopper(newName+"T0DiskA")),
 
   VPipeE1(new constructSystem::VacuumPipe(newName+"PipeE1")),
   FocusE1(new beamlineSystem::GuideLine(newName+"FE1")),

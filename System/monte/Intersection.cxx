@@ -3,7 +3,7 @@
  
  * File:   monte/Intersection.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -447,9 +447,10 @@ Intersection::isDirectionValid(const Geometry::Vec3D& Pt,
     \param Pt :: Point to test
     \param sideSet : surface which we consider Pt to be on 
      so their sign is to help validity
-    \param ExSN :: Excluded surface number [signed]
-    \retval 1 ::  Vec is within object 
-    \retval 0 :: Vec is outside object.
+     \param sideSet :: suppost to be on the side but not applied yet.
+     \param ExSN :: Excluded surface number [signed]
+     \retval 1 ::  Vec is within object 
+     \retval 0 :: Vec is outside object.
   */
 {
   if (!A || !B)  return 0;
@@ -489,19 +490,6 @@ Intersection::isValid(const Geometry::Vec3D& Vec,
   return (A->isValid(Vec,ExSN) && B->isValid(Vec,ExSN)) ? 1 : 0;
 }
 
-int
-Intersection::pairValid(const int SN,const Geometry::Vec3D& Vec) const
-  /*!
-    Calculates if Vec is within the object
-    \param SN :: Surface Nubmer
-    \param Vec :: Point to test
-    \return  RuleA(ab) & RuleB(ab)
-  */
-{
-  if (!A || !B) return 0;
-  return (A->pairValid(SN,Vec) & B->pairValid(SN,Vec));
-}
-
 bool
 Intersection::isValid(const std::map<int,int>& MX) const
   /*!
@@ -515,6 +503,23 @@ Intersection::isValid(const std::map<int,int>& MX) const
   if (!A || !B)
     return 0;
   return (A->isValid(MX) && B->isValid(MX)) ? 1 : 0;
+}
+
+bool
+Intersection::isValid(const Geometry::Vec3D& Pt,
+		      const std::map<int,int>& MX) const
+  /*!
+    Use MX to determine if the surface truth etc is 
+    valid
+    \param Pt :: Pont ot use if ouside of map
+    \param MX :: map of key + logical value XOR sign
+    \retval 1 ::  Both sides are valid
+    \retval 0 :: Either side is invalid.
+  */
+{
+  if (!A || !B)
+    return 0;
+  return (A->isValid(Pt,MX) && B->isValid(Pt,MX)) ? 1 : 0;
 }
 
 int

@@ -3,7 +3,7 @@
  
  * File: cosaxs/COSAXS.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@
 #include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -64,8 +64,10 @@
 #include "CopiedComp.h"
 #include "BlockZone.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 
+#include "forkHoles.h"
 #include "OpticsHutch.h"
 #include "ExperimentalHutch.h"
 #include "JawFlange.h"
@@ -193,7 +195,7 @@ COSAXS::build(Simulation& System,
   exptHut->setCutSurf("floor",r3Ring->getSurf("Floor"));
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
-  exptHut->createAll(System,*opticsHut,"exitHole");
+  exptHut->createAll(System,*opticsHut,"back");
 
   if (stopPoint=="exptHut")
     {
@@ -219,14 +221,14 @@ COSAXS::build(Simulation& System,
   const attachSystem::CellMap* tube =
     System.getObjectThrow<attachSystem::CellMap>(tubeName,"CellMap");
 
-
-  HeadRule wallCut=
+  const HeadRule wallCut=
     exptHut->getSurfRule("innerBack")*
     exptHut->getSurfRule("#outerBack")*
     exptHut->getSurfRule("exitHole");
-  wallCut.makeComplement();
-  tube->insertComponent(System,"tubeVoid",9,wallCut);
 
+  tube->insertComponent(System,"tubeVoid",9,wallCut.complement());
+
+  System.removeCell(exptHut->getCell("ExitHole"));
   return;
 
 }

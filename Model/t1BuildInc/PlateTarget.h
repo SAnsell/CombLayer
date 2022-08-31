@@ -2,8 +2,8 @@
   CombLayer : MCNP(X) Input builder
  
  * File:   t1BuildInc/PlateTarget.h
-*
- * Copyright (c) 2004-2019 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,12 +35,13 @@ namespace ts1System
   \brief W/Ta plates 
 */
 
-class PlateTarget : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+class PlateTarget :
+    public attachSystem::FixedComp,
+    public attachSystem::ContainedComp,
+    public attachSystem::ExternalCut,
+    public attachSystem::CellMap
 {
  private:
-  
-  int populated;                ///< 1:var
   
   double height;                 ///< Width tank
   double width;                 ///< Width tank

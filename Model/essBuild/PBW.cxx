@@ -55,8 +55,8 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotate.h"
+#include "FixedRotateUnit.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -73,7 +73,7 @@ namespace essSystem
 
 PBW::PBW(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffsetUnit(Key,8),
+  attachSystem::FixedRotateUnit(Key,8),
   shield(new TelescopicPipe(Key+"Shield"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -90,7 +90,7 @@ PBW::PBW(const std::string& Key)  :
 
 PBW::PBW(const PBW& A) :
   attachSystem::ContainedComp(A),
-  attachSystem::FixedOffsetUnit(A),
+  attachSystem::FixedRotateUnit(A),
 
   engActive(A.engActive),
   plugLength1(A.plugLength1),
@@ -146,7 +146,7 @@ PBW::operator=(const PBW& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       cellIndex=A.cellIndex;
       engActive=A.engActive;
       plugLength1=A.plugLength1;
@@ -215,7 +215,7 @@ PBW::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("PBW","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   engActive=Control.EvalTail<int>(keyName,"","EngineeringActive");
 
   plugLength1=Control.EvalVar<double>(keyName+"PlugLength1");

@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/LinacInc/YagScreenGenerator.h
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,24 +35,10 @@ namespace setVariable
   \brief YagScreenGenerator for variables
 */
 
-class YagScreenGenerator
+class YagScreenGenerator :
+    public ScreenGenerator
 {
  private:
-
-  double juncBoxLength;         ///< electronics junction box length
-  double juncBoxWidth;          ///< electronics junction box width
-  double juncBoxHeight;         ///< electronics junction box height
-  double juncBoxWallThick;      ///< electronics junction box wall thickness
-
-
-  double feedLength;            ///< linear pneumatics feedthrough length
-  double feedInnerRadius;       ///< linear pneumatics feedthrough inner radius
-  double feedWallThick;         ///< linear pneumatics feedthrough wall thickness
-  double feedFlangeLen;         ///< linear pneumatics feedthrough flange length
-  double feedFlangeRadius;      ///< linear pneumatics feedthrough flange radius
-
-  double threadLift;            ///< screen thread lift
-  double threadRadius;          ///< screen thread inner radius
 
   // volume containing Yag screen + mirror
 
@@ -71,38 +57,25 @@ class YagScreenGenerator
   double screenThick;           ///< Thickness of screen
 
   double screenHolderRadius;     ///< screen holder thickness
-  double screenHolderThick;     ///< screen holder thickness
+  double screenHolderThick;      ///< screen holder thickness
 
-
-  std::string voidMat;               ///< void material
-
-  /// electronics junction box cable/inside material
-  std::string juncBoxMat;                
-  std::string juncBoxWallMat;        ///< electronics junction box wall material
-  std::string threadMat;             ///< screen thread material
 
   std::string holderMat;             ///< mirror holder material
+  std::string screenMat;             ///< mirror holder material
+  std::string screenHolderMat;       ///< mirror holder material
   std::string mirrorMat;             ///< mirror  material
-
-  std::string screenMat;             ///< screen  material  
-  std::string screenHolderMat;       ///< screen holder material
-
-  std::string feedWallMat;           ///< Feedthrough wall material  
-
 
  public:
 
   YagScreenGenerator();
   YagScreenGenerator(const YagScreenGenerator&);
   YagScreenGenerator& operator=(const YagScreenGenerator&);
-  ~YagScreenGenerator();
+  virtual ~YagScreenGenerator();
 
-  template<typename CF> void setCF();
-  template<typename CF> void setFlangeCF();
 
-  void generateScreen(FuncDataBase&,const std::string&,
-		      const bool) const;
-
+  virtual void generateScreen(FuncDataBase&,const std::string&,
+			      const bool) const;
+  
 };
 
 }

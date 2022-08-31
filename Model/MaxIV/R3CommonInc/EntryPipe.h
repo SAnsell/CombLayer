@@ -3,7 +3,7 @@
 
  * File:   R3CommonInc/EntryPipe.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef constructSystem_EntryPipe_h
-#define constructSystem_EntryPipe_h
+#ifndef xraySystem_EntryPipe_h
+#define xraySystem_EntryPipe_h
 
 class Simulation;
 
@@ -44,10 +44,9 @@ class EntryPipe :
 {
  private:
 
-
   double radius;                ///< void radius [inner]
   double length;                ///< void length [total]
-  double wallThick;               ///< pipe thickness
+  double wallThick;             ///< pipe thickness
 
   double flangeRadius;          ///< Joining Flange radius [-ve for rect]
   double flangeLength;          ///< Joining Flange length

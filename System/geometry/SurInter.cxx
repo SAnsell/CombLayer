@@ -3,7 +3,7 @@
  
  * File:   geometry/SurInter.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -698,7 +698,7 @@ getPoint(const Geometry::Surface* A,
 
   const std::vector<Geometry::Vec3D> Out=
     processPoint(A,B,C);
-  for(const Geometry::Vec3D Pt : Out)
+  for(const Geometry::Vec3D& Pt : Out)
     if (Control->side(Pt)*signV>0) return Pt;
 
   throw ColErr::MisMatch<size_t>(Out.size(),1,"No matching points in Out");
@@ -797,7 +797,8 @@ interceptRuleConst(const HeadRule& HR,
     \param HR :: HeadRule
     \param Origin :: Origin of line
     \param N :: Direction of the line
-    \return pair of position and surface sign.
+    \retval Origin / 0 :: Empty intercept
+    \retval ClosePoint / SideDirection :: intercept
   */
 {
   ELog::RegMethod RegA("SurInter[F]","interceptRuleConst");
@@ -806,12 +807,13 @@ interceptRuleConst(const HeadRule& HR,
   const std::vector<Geometry::Vec3D> Pts=
     LI.getPoints(HR);
 
+  // EMPTY return
   if (Pts.empty())
     return std::pair<Geometry::Vec3D,int>(Origin,0);
 
   const size_t indexA=SurInter::closestPt(Pts,Origin);
   const std::vector<const Geometry::Surface*>& SVec=
-    LI.getSurfIndex();
+    LI.getSurfPointers();
 
   return(SVec[indexA]->side(Origin)>=0) ?
     std::pair<Geometry::Vec3D,int>(Pts[indexA],-SVec[indexA]->getName()) :

@@ -3,7 +3,7 @@
  
  * File:   insertUnit/insertObject.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@
 #include "MaterialSupport.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "BaseMap.h"
 #include "SurfMap.h"
 #include "CellMap.h"
@@ -64,7 +64,7 @@ namespace insertSystem
 
 insertObject::insertObject(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   attachSystem::FrontBackCut(),
   populated(0),defMat(0),delayInsert(0)
@@ -77,7 +77,7 @@ insertObject::insertObject(const std::string& Key)  :
 insertObject::insertObject(const std::string& baseKey,
 			   const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   attachSystem::FrontBackCut(),
   baseName(baseKey),populated(0),defMat(0),delayInsert(0)
@@ -88,7 +88,7 @@ insertObject::insertObject(const std::string& baseKey,
 {}
 
 insertObject::insertObject(const insertObject& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedRotate(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
   baseName(A.baseName),populated(A.populated),
@@ -110,7 +110,7 @@ insertObject::operator=(const insertObject& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       cellIndex=A.cellIndex;
@@ -138,89 +138,11 @@ insertObject::populate(const FuncDataBase& Control)
   
   if (!populated)
     {
-      FixedOffset::populate(baseName,Control);      
+      FixedRotate::populate(baseName,Control);      
       defMat=ModelSupport::EvalMat<int>
 	(Control,keyName+"DefMat",baseName+"DefMat");
       populated=1;
     }
-  return;
-}
-
-void
-insertObject::createUnitVector(const attachSystem::FixedComp& FC,
-			       const long int lIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed coordinate system
-    \param lIndex :: link index
-  */
-{
-  ELog::RegMethod RegA("insertObject","createUnitVector(FC,index)");
-
-  FixedComp::createUnitVector(FC,lIndex);
-  applyOffset();
-  return;
-}
-
-void
-insertObject::createUnitVector(const Geometry::Vec3D& OG,
-			       const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    \param OG :: Origin
-    \param FC :: LinearComponent to attach to
-  */
-{
-  ELog::RegMethod RegA("insertObject","createUnitVector");
-
-  FixedComp::createUnitVector(FC);
-  Origin=OG;
-  applyOffset();
-  return;
-}
-
-void
-insertObject::createUnitVector(const Geometry::Vec3D& OG,
-			       const Geometry::Vec3D& Axis)
-  /*!
-    Create the unit vectors
-    \param OG :: Origin
-    \param Axis :: Y-direction 
-  */
-{
-  ELog::RegMethod RegA("insertObject","createUnitVector<Vec,Vec>");
-  
-  Y=Axis.unit();
-  X=Y.crossNormal();
-  Z=X*Y;
-  createUnitVector(OG,Axis,Z);
-  return;
-}
-
-  
-void
-insertObject::createUnitVector(const Geometry::Vec3D& OG,
-			       const Geometry::Vec3D& YUnit,
-			       const Geometry::Vec3D& ZUnit)
-  /*!
-    Create the unit vectors
-    \param OG :: Origin
-    \param YUnit :: Y-direction
-    \param ZUnit :: Z-direction
-  */
-{
-  ELog::RegMethod RegA("insertObject","createUnitVector<Vec>");
-
-
-  Geometry::Vec3D xTest(YUnit.unit()*ZUnit.unit());
-  Geometry::Vec3D yTest(YUnit.unit());
-  Geometry::Vec3D zTest(ZUnit.unit());
-  FixedComp::computeZOffPlane(xTest,yTest,zTest);
-
-  FixedComp::createUnitVector(OG,yTest*zTest,yTest,zTest);
-  Origin=OG;
-  applyOffset();
-
   return;
 }
   
@@ -290,8 +212,8 @@ insertObject::setAngles(const double XS,const double ZA)
     \param ZA :: Z angle
    */
 {
-  xyAngle=XS;
-  zAngle=ZA;
+  zAngle=XS;
+  xAngle=ZA;
   return;
 }
 

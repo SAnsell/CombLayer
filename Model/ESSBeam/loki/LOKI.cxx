@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/loki/LOKI.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,9 +54,10 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotateUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
@@ -74,6 +75,7 @@
 
 #include "GuideLine.h"
 #include "DiskChopper.h"
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "Bunker.h"
 #include "SingleChopper.h"
@@ -94,7 +96,7 @@ namespace essSystem
 
 LOKI::LOKI(const std::string& keyN) :
   attachSystem::CopiedComp("loki",keyN),startPoint(0),stopPoint(0),
-  lokiAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
+  lokiAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
   BendA(new beamlineSystem::GuideLine(newName+"BA")),
 
   ShutterA(new insertSystem::insertPlate(newName+"BlockShutter")),  
@@ -104,8 +106,8 @@ LOKI::LOKI(const std::string& keyN) :
   VPipeBLink(new constructSystem::VacuumPipe(newName+"PipeBLink")),
   BendBLink(new beamlineSystem::GuideLine(newName+"BBLink")),
 
-  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
-  DDiskA(new constructSystem::DiskChopper(newName+"DBladeA")),
+  ChopperA(new essConstruct::SingleChopper(newName+"ChopperA")),
+  DDiskA(new essConstruct::DiskChopper(newName+"DBladeA")),
 
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   FocusC(new beamlineSystem::GuideLine(newName+"FC")),
@@ -116,8 +118,8 @@ LOKI::LOKI(const std::string& keyN) :
 
   OutPitA(new constructSystem::ChopperPit(newName+"OutPitA")),
   PitACut(new constructSystem::HoleShape(newName+"PitACut")),
-  ChopperOutA(new constructSystem::SingleChopper(newName+"ChopperOutA")),
-  DDiskOutA(new constructSystem::DiskChopper(newName+"DBladeOutA")),
+  ChopperOutA(new essConstruct::SingleChopper(newName+"ChopperOutA")),
+  DDiskOutA(new essConstruct::DiskChopper(newName+"DBladeOutA")),
 
   ShieldA(new constructSystem::LineShield(newName+"ShieldA")),
   

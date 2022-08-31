@@ -70,15 +70,17 @@ class ParabolicSource :
   void setRectangle(const double,const double);
   void setNPts(const size_t,const size_t);
   
-  void createAll(const mainSystem::MITYPE&,
-		 const attachSystem::FixedComp&,
-		 const long int);
 
   virtual void rotate(const localRotate&);
   virtual void createSource(SDef::Source&) const;
   virtual void write(std::ostream&) const;
   virtual void writePHITS(std::ostream&) const;
   virtual void writeFLUKA(std::ostream&) const;
+
+  void createAll(const mainSystem::MITYPE&,
+		 const attachSystem::FixedComp&,
+		 const long int);
+
 };
 
 }

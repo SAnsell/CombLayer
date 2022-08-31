@@ -37,9 +37,9 @@ namespace ts1System
 
 class ProtonVoid :
     public attachSystem::ContainedComp,
-  public attachSystem::FixedComp,
-  public attachSystem::ExternalCut,
-  public attachSystem::CellMap
+    public attachSystem::FixedComp,
+    public attachSystem::ExternalCut,
+    public attachSystem::CellMap
 {
  private:
   
@@ -48,7 +48,7 @@ class ProtonVoid :
   void populate(const FuncDataBase&);
   void createSurfaces();
   void createLinks();
-  void createObjects(Simulation&,const std::string&,const std::string&);
+  void createObjects(Simulation&);
 
  public:
 
@@ -57,6 +57,7 @@ class ProtonVoid :
   ProtonVoid& operator=(const ProtonVoid&);
   ~ProtonVoid();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

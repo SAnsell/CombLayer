@@ -3,7 +3,7 @@
  
  * File:   Main/fullBuild.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,6 @@
 #include <array>
 
 #include "Exception.h"
-#include "MersenneTwister.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
@@ -58,9 +57,6 @@
 #include "Volumes.h"
 
 #include "MemStack.h"
-
-// Random number
-MTRand RNG(12345UL);
 
 namespace ELog 
 {
@@ -110,6 +106,7 @@ main(int argc,char* argv[])
 	      <<ELog::endBasic;
 
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
+      ELog::EM<<"Exit == "<<exitFlag<<ELog::endDiag;
       ModelSupport::calcVolumes(SimPtr,IParam);
       SimPtr->objectGroups::write("ObjectRegister.txt");
     }

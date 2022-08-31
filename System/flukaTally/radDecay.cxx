@@ -3,7 +3,7 @@
  
  * File:   flukaTally/radDecay.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,8 +59,9 @@ radDecay::radDecay() :
 radDecay::radDecay(const radDecay& A) : 
   nReplica(A.nReplica),biasCard(A.biasCard),
   gammaTransCut(A.gammaTransCut),
-  iradTime(A.iradTime),decayTime(A.decayTime),
-  detectors(A.detectors)
+  eCutEnergy(A.eCutEnergy),pCutEnergy(A.pCutEnergy),
+  iradFlux(A.iradFlux),iradTime(A.iradTime),
+  decayTime(A.decayTime),detectors(A.detectors)
   /*!
     Copy constructor
     \param A :: radDecay to copy
@@ -197,7 +198,7 @@ radDecay::write(const SimFLUKA& System,
       cx<<"IRRPROFI ";
       if (iradTime.empty())
 	ELog::EM<<"Empty IRRAD "<<ELog::endDiag;
-      for(const std::pair<double,double> IR : iradTime)
+      for(const std::pair<double,double>& IR : iradTime)
 	{
 	  cx<<IR.first<<" "<<IR.second*iradFlux;
 	  index++;
@@ -229,7 +230,7 @@ radDecay::write(const SimFLUKA& System,
       if (index % 6)
 	StrFunc::writeFLUKA(cx.str(),OX);
 
-      for(const std::pair<std::string,size_t>& TN : detectors)
+      for(const std::pair<std::string,size_t> TN : detectors)
 	{
 	  const std::set<flukaTally*> activeTally=
 	    flukaSystem::getActiveTally(System,TN.first);
@@ -243,9 +244,6 @@ radDecay::write(const SimFLUKA& System,
 	      StrFunc::writeFLUKA(cx.str(),OX);	      
 	    }
 	}
-	  
-      
-      
     }
   return;
 }

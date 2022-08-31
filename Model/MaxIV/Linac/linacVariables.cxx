@@ -3,7 +3,7 @@
 
  * File:   linac/linacVariables.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2022 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,6 +62,7 @@
 #include "GateValveGenerator.h"
 #include "DipoleDIBMagGenerator.h"
 #include "EArrivalMonGenerator.h"
+#include "ScreenGenerator.h"
 #include "YagScreenGenerator.h"
 #include "YagUnitGenerator.h"
 #include "YagUnitBigGenerator.h"
@@ -2979,7 +2980,7 @@ Segment45(FuncDataBase& Control,
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable
-    (lKey+"XYAngle",
+    (lKey+"ZAngle",
      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
   Control.addVariable
     (lKey+"XAngle",
@@ -3018,10 +3019,13 @@ Segment45(FuncDataBase& Control,
 
   // additional stuff for beam dump - not present in the original
   // drawings
+  PGen.setCF<setVariable::CF66_TDC>();
   PGen.generatePipe(Control,lKey+"PipeC",100.0); // approx
+
+
   Control.addVariable(lKey+"PipeCYAngle",-90);
-  Control.addVariable(lKey+"PipeCFlangeFrontRadius",4.5); // to avoid cutting EBeam
-  Control.addVariable(lKey+"PipeCFlangeBackRadius",4.5); // to avoid cutting EBeam
+  Control.addVariable(lKey+"PipeCFlangeARadius",3.5); // to avoid cutting EBeam
+  Control.addVariable(lKey+"PipeCFlangeBRadius",3.5); // to avoid cutting EBeam
   setVariable::EBeamStopGenerator EBGen;
   EBGen.generateEBeamStop(Control,lKey+"EBeam",1);
   Control.addVariable(lKey+"EBeamShieldActive",1);
@@ -3048,7 +3052,7 @@ Segment46(FuncDataBase& Control,
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable
-    (lKey+"XYAngle",atan((startPt.X()-endPt.X())/
+    (lKey+"ZAngle",atan((startPt.X()-endPt.X())/
 			 (endPt.Y()-startPt.Y()))*180.0/M_PI);
 
   // Pipes
@@ -3145,7 +3149,7 @@ Segment47(FuncDataBase& Control,
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
-  Control.addVariable(lKey+"XYAngle",
+  Control.addVariable(lKey+"ZAngle",
   		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
   setVariable::PipeGenerator PGen;
@@ -3224,7 +3228,7 @@ Segment48(FuncDataBase& Control,
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
-  Control.addVariable(lKey+"XYAngle",
+  Control.addVariable(lKey+"ZAngle",
   		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
   setVariable::EBeamStopGenerator EBGen;
@@ -3300,7 +3304,7 @@ Segment49(FuncDataBase& Control,
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
-  Control.addVariable(lKey+"XYAngle",
+  Control.addVariable(lKey+"ZAngle",
   		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
   Control.addVariable(lKey+"WallRadius",4.0); // K_20-2_354
@@ -3405,6 +3409,7 @@ wallVariables(FuncDataBase& Control,
 
   Control.addVariable(wallKey+"FloorThick",60.0); // K_20-6_050
   Control.addVariable(wallKey+"RoofThick", 170.0); // K_20-6_075
+  Control.addVariable(wallKey+"BermThick", 200.0); // K_20-6_075
   Control.addVariable(wallKey+"FKGRoofThick", 60.0); // K_20-6_053
   Control.addVariable(wallKey+"FKGRoofYStep", 10660.0); // approx. as of lower plot A2_40-2_G6-Y.pdf
 
@@ -3451,7 +3456,8 @@ wallVariables(FuncDataBase& Control,
     }
 
   // Ducts near the floor
-  // They are not in the drawings, but should be approx. 2 meters to the right side after
+  // They are not in the drawings, but should be approx.
+  // 2 meters to the right side after
   // D4 (last duct in the previous serie)
   // Water pipes go through them, but to be conservative we leave them empty
   // [email from AR 2021-01-19]
@@ -3483,7 +3489,8 @@ wallVariables(FuncDataBase& Control,
     {
       const std::string name = wallKey+"MidTDuct" + std::to_string(i+10);
       Control.addVariable(name+"Radius",7.5); // K_20-2_355
-      Control.addVariable(name+"YStep",BTGductY+35*i); // distance: K_20-2_355
+      Control.addVariable(name+"YStep",
+			  BTGductY+35*static_cast<double>(i)); //K_20-2_355
       Control.addVariable(name+"ZStep",86.0); // measured in K_20-2_355
     }
   // Upper tier: G1-G5
@@ -3623,7 +3630,6 @@ wallVariables(FuncDataBase& Control,
 		      Geometry::Vec3D(3400,-1100,0));
   Control.addVariable(wallKey+"SoilBermRingRadius",6000.0);
   Control.addVariable(wallKey+"SoilBermSoilMat","Earth");
-
 
   return;
 }

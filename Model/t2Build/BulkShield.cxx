@@ -3,7 +3,7 @@
  
  * File:   build/BulkShield.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,8 +41,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -64,6 +62,7 @@
 #include "FixedComp.h"
 #include "FixedGroup.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
@@ -94,8 +93,10 @@ BulkShield::BulkShield(const std::string& Key)  :
 {}
 
 BulkShield::BulkShield(const BulkShield& A) : 
-  attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
-  attachSystem::CellMap(A),attachSystem::ExternalCut(A),
+  attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
+  attachSystem::ExternalCut(A),
   numberBeamLines(A.numberBeamLines),
   TData(A.TData),GData(A.GData),BData(A.BData),vXoffset(A.vXoffset),
   torpedoRadius(A.torpedoRadius),shutterRadius(A.shutterRadius),
@@ -235,10 +236,10 @@ BulkShield::createTorpedoes(Simulation& System)
 
   for(size_t i=0;i<static_cast<size_t>(numberBeamLines);i++)
     {
-      TData[i]->setCutSurf("Outer",SMap.realSurf(buildIndex+7));
-      TData[i]->createAll(System,*GData[i],2);          
-      torpedoObj->addSurfString(TData[i]->getExclude());
-
+      TData[i]->setCutSurf("Outer",-SMap.realSurf(buildIndex+7));
+      TData[i]->copyCutSurf("Inner",*this,"Inner");
+      TData[i]->addInsertCell(getCell("Torpedo"));
+      TData[i]->createAll(System,*GData[i],0);
       // Now Torpedos might intersect with there neighbours
       if (i) TData[i]->addCrossingIntersect(System,*TData[i-1]);
 
@@ -356,75 +357,26 @@ BulkShield::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("BulkShield","createObjects");
 
-  const std::string bulkInsertStr=ExternalCut::getRuleStr("BulkInsert");
+  const HeadRule& bulkInsertHR=ExternalCut::getRule("BulkInsert");
   // Inner volume [for torpedoes etc]
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -7")+bulkInsertStr;
-  makeCell("Torpedo",System,cellIndex++,ironMat,0.0,Out);
+  HeadRule HR;
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -7");
+  makeCell("Torpedo",System,cellIndex++,ironMat,0.0,HR*bulkInsertHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -17 7")+bulkInsertStr;
-  makeCell("Shutter",System,cellIndex++,ironMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -17 7");
+  makeCell("Shutter",System,cellIndex++,ironMat,0.0,HR*bulkInsertHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -27 17");
-  makeCell("Inner",System,cellIndex++,ironMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -27 17");
+  makeCell("Inner",System,cellIndex++,ironMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -37 27");
-  makeCell("Outer",System,cellIndex++,ironMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -37 27");
+  makeCell("Outer",System,cellIndex++,ironMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -37");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -37");
+  addOuterSurf(HR);
 
   return;
 }
-
-
-
-const shutterSystem::Torpedo* 
-BulkShield::getTorpedo(const size_t Index) const
-  /*!
-    Get a torpedo pointer
-    \param Index :: Index of shutter/torpedo to get
-    \return shutter pointer
-   */
-{
-  ELog::RegMethod RegA("BulkShield","getTorpedo");
-
-  if (Index>=TData.size())
-    throw ColErr::IndexError<size_t>(Index,TData.size(),"Index/TData.size()");
-  return TData[Index].get();
-}
-
-const shutterSystem::GeneralShutter* 
-BulkShield::getShutter(const size_t Index) const
-  /*!
-    Get a shutter pointer
-    \param Index :: Index of shutter to get
-    \return shutter pointer
-   */
-{
-  ELog::RegMethod RegA("BulkShield","getShutter");
-  if (Index>=GData.size())
-    throw ColErr::IndexError<size_t>(Index,GData.size(),"Index/GData.size()");
-
-  return GData[Index].get();
-}
-
-const shutterSystem::BulkInsert* 
-BulkShield::getInsert(const size_t Index) const
-  /*!
-    Get an insert pointer
-    \param Index :: Index of insert to get
-    \return BulkInsert point 
-   */
-{
-  ELog::RegMethod RegA("BulkShield","getInsert");
-
-  if (Index>=BData.size())
-    throw ColErr::IndexError<size_t>(Index,BData.size(),"Index/BData.size()");
-
-  return BData[Index].get();
-}
-
 
 int
 BulkShield::calcTorpedoPlanes(const int BeamLine,
@@ -472,30 +424,6 @@ BulkShield::calcShutterPlanes(const int BeamLine,
   return 0;
 }
 
-int
-BulkShield::calcOuterPlanes(const int BeamLine,
-			    std::vector<int>& Window,
-			    int& dSurf) const
-  /*!
-    Given the beamline calculate the defining view and the 
-    active surface 
-    \param BeamLine :: BeamLine number to use
-    \param Window :: Window of surface to use
-    \param dSurf :: divide surface
-    \return Master Plane
-  */
-{
-  ELog::RegMethod RegA("BulkShield","calcOuterPlanes");
-
-  ELog::EM<<"Calling unfinished code for beamline:"
-	  <<BeamLine<<ELog::endErr;
-  
-  dSurf=0;
-  Window.clear();
-  
-  return 0;
-}
-
 void
 BulkShield::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
@@ -511,11 +439,8 @@ BulkShield::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
-  //  processVoid(System);
-
   createShutters(System);
   createBulkInserts(System);
-  //  createTorpedoes(System);
   insertObjects(System);
   return;
 }

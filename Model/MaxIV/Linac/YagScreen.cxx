@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/Linac/YagScreen.cxx
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,7 +72,8 @@ YagScreen::YagScreen(const std::string& Key)  :
   attachSystem::FixedRotate(Key,6),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
-  inBeam(false)
+  inBeam(false),
+  beamAxis(std::make_unique<Geometry::Line>())
  /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -104,7 +105,7 @@ YagScreen::calcImpactVector()
   // This point is the beam centre point between the main axis:
 
   std::tie(std::ignore,mirrorCentre)=
-    beamAxis.closestPoints(Geometry::Line(Origin,Y));
+    beamAxis->closestPoints(Geometry::Line(Origin,Y));
 
   // Beam Centre point projected along -X hits the mirror at half way
   // between the short and long length [holderShortLen/holderLongLen]
@@ -423,9 +424,8 @@ YagScreen::setBeamAxis(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("YagScreen","setBeamAxis(FC)");
 
-  beamAxis=Geometry::Line(FC.getLinkPt(sIndex),
+  *beamAxis=Geometry::Line(FC.getLinkPt(sIndex),
 			  FC.getLinkAxis(sIndex));
-
 
   return;
 }
@@ -441,7 +441,7 @@ YagScreen::setBeamAxis(const Geometry::Vec3D& Org,
 {
   ELog::RegMethod RegA("YagScreen","setBeamAxis(Vec3D)");
 
-  beamAxis=Geometry::Line(Org,Axis);
+  *beamAxis=Geometry::Line(Org,Axis);
   return;
 }
 

@@ -3,7 +3,7 @@
  
  * File:   constructVarInc/VacBoxGenerator.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,12 +55,14 @@ class VacBoxGenerator
 
   double portBXStep;         ///< X offset of second flange
   double portBZStep;         ///< Z offset of second flange
+  double portBXAngle;        ///< Rotation about X
+  double portBZAngle;        ///< Rotation about Z
   double portBWallThick;     ///< Flange wall thickness
   double portBTubeLength;    ///< Port tube
   double portBTubeRadius;    ///< Port tube length
   
   double flangeALen;          ///< Flange length
-  double flangeARadius;       ///< Flange radius
+  double flangeARadius;       ///< Flange Radius
   double flangeBLen;          ///< Flange length
   double flangeBRadius;       ///< Flange radius
     
@@ -87,10 +89,13 @@ class VacBoxGenerator
 
   void setPortLength(const double,const double);
   void setPort(const double,const double,const double);
+
   void setAPort(const double,const double,const double);
   void setBPort(const double,const double,const double);
   void setAPortOffset(const double,const double);
   void setBPortOffset(const double,const double);
+  void setBPortAngle(const double,const double);
+  
   void setFlange(const double,const double);
   void setAFlange(const double,const double);
   void setBFlange(const double,const double);
@@ -99,10 +104,9 @@ class VacBoxGenerator
   /// set wall material
   void setMat(const std::string& M) { wallMat=M; }
 
-  
-  virtual void generateBox(FuncDataBase&,const std::string&,
-			   const double,const double,
-			   const double,const double) const;
+  void generateBox(FuncDataBase&,const std::string&,
+		   const double,const double,
+		   const double,const double) const;
   
 };
 

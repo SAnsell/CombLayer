@@ -3,7 +3,7 @@
  
  * File:   t1BuildInc/PressVessel.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,14 +35,13 @@ namespace ts1System
   \brief PressVessel [insert object]
 */
 
-class PressVessel : public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset
+class PressVessel :
+    public attachSystem::ContainedComp,
+    public attachSystem::FixedRotate,
+    public attachSystem::CellMap
 {
  private:
   
-  int outerWallCell;            ///< outer wall cell
-  int IVoidCell;                ///< Inner void cell
-
   double width;                 ///< Width tank
   double height;                ///< Height tank
   double length;                ///< Length of main tank
@@ -87,7 +86,6 @@ class PressVessel : public attachSystem::ContainedComp,
   
   std::vector<channel> CItem;   ///< Set of channel objects
 
-
   int wallMat;                  ///< Material for walls
   int taMat;                    ///< Tantalum WINDOW HOUSING
   int waterMat;                 ///< Water [D2O]
@@ -100,12 +98,11 @@ class PressVessel : public attachSystem::ContainedComp,
   double targetLen;            ///< Target length [if set]
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&);
   void buildChannels(Simulation&);
+
 
  public:
 
@@ -116,13 +113,10 @@ class PressVessel : public attachSystem::ContainedComp,
 
   /// set target length
   void setTargetLength(const double T) { targetLen=T; }
-  /// Get Inner void cell
-  int getInnerVoid() const { return IVoidCell; }
-  /// Get Inner void cell
-  int getOuterWall() const { return outerWallCell; }
   void buildFeedThrough(Simulation&);
-  int addProtonLine(Simulation&,const std::string&);
 
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

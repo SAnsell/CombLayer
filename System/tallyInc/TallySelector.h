@@ -3,7 +3,7 @@
  
  * File:   tallyInc/TallySelector.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 #ifndef TallySelector_h
 #define TallySelector_h
 
+class Simulation;
 class SimMCNP;
 
 bool checkLinkCells(const Simulation&,const int,const int);
@@ -33,6 +34,14 @@ bool
 constructLinkRegion(const Simulation&,
 		    const std::string&,
 		    const std::string&,
+		    int&,int&);
+
+bool
+constructSurfRegion(const Simulation&,const std::string&,
+		    int&,int&);
+bool
+constructSurfRegion(const Simulation&,
+		    const std::string&,const std::string&,
 		    int&,int&);
 
 bool

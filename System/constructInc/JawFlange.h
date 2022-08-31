@@ -3,7 +3,7 @@
 
  * File:   constructInc/JawFlange.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ namespace constructSystem
 */
 
 class JawFlange :
-  public attachSystem::FixedOffsetGroup,
+  public attachSystem::FixedRotateGroup,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
   public attachSystem::SurfMap,
@@ -62,8 +62,7 @@ class JawFlange :
   void calcBeamCentre();
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int,
-			const attachSystem::FixedComp&,const long int);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -78,15 +77,10 @@ class JawFlange :
   void setFillRadius(const attachSystem::FixedComp&,
 		     const std::string&,const int);
 
+
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int,const attachSystem::FixedComp&,
-		 const long int);
-  void createAll(Simulation&,
-		 const attachSystem::FixedComp&,const std::string&,
-		 const attachSystem::FixedComp&,const std::string&);
 
 };
 

@@ -3,7 +3,7 @@
 
  * File:   singleItemBuild/makeSingleItem.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,21 +60,33 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
-#include "InnerZone.h"
+#include "PointMap.h"
 #include "World.h"
+#include "FixedGroup.h"
+#include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "insertObject.h"
 #include "insertSphere.h"
 #include "insertCylinder.h"
 #include "insertShell.h"
+
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
+#include "WindowPipe.h"
 #include "Quadrupole.h"
 #include "Sexupole.h"
 #include "Octupole.h"
 #include "LQuadF.h"
 #include "LQuadH.h"
 #include "LSexupole.h"
+#include "ChopperPit.h"
+#include "SingleChopper.h"
 #include "CorrectorMag.h"
+#include "CollTube.h"
+#include "CollUnit.h"
 #include "EPSeparator.h"
+#include "EPCombine.h"
+#include "EPContinue.h"
 #include "QuadUnit.h"
 #include "DipoleChamber.h"
 #include "DipoleExtract.h"
@@ -82,6 +94,7 @@
 #include "R3ChokeChamber.h"
 #include "HalfElectronPipe.h"
 #include "MagnetM1.h"
+#include "MagnetU1.h"
 #include "MagnetBlock.h"
 #include "CylGateValve.h"
 #include "GateValveCube.h"
@@ -90,6 +103,7 @@
 #include "BeamDivider.h"
 #include "CeramicGap.h"
 #include "DipoleDIBMag.h"
+#include "Dipole.h"
 #include "EArrivalMon.h"
 #include "EBeamStop.h"
 #include "SixPortTube.h"
@@ -104,9 +118,11 @@
 #include "TriGroup.h"
 #include "CurveMagnet.h"
 #include "MultiPipe.h"
+#include "CooledScreen.h"
 #include "YagScreen.h"
 #include "YagUnit.h"
 #include "YagUnitBig.h"
+#include "BeamScrapper.h"
 #include "TWCavity.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
@@ -119,8 +135,6 @@
 #include "UndulatorVacuum.h"
 #include "PrismaChamber.h"
 #include "PortTube.h"
-#include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
 #include "JawFlange.h"
 #include "portItem.h"
 #include "portSet.h"
@@ -134,13 +148,17 @@
 #include "HPJaws.h"
 #include "BoxJaws.h"
 #include "DiffPumpXIADP03.h"
-#include "CLRTube.h"
+#include "CRLTube.h"
 #include "ViewScreenTube.h"
+#include "forkHoles.h"
 #include "ExperimentalHutch.h"
 #include "ConnectorTube.h"
+#include "CornerPipe.h"
 #include "LocalShielding.h"
 #include "WrapperCell.h"
 #include "FlangeDome.h"
+#include "MonoShutter.h"
+#include "RoundMonoShutter.h"
 
 #include "makeSingleItem.h"
 
@@ -175,22 +193,30 @@ makeSingleItem::build(Simulation& System,
   std::set<std::string> validItems
     ({
       "default",
-      "CylGateValve","GateValveCube","GateValveCylinder","CleaningMagnet",
-      "CorrectorMag","Jaws","LQuadF","LQuadH","LSexupole",
-      "MagnetBlock","Sexupole","MagnetM1","Octupole","CeramicGap",
-      "EBeamStop","EPSeparator","FMask","R3ChokeChamber","QuadUnit",
-      "DipoleChamber","DipoleExtract","DipoleSndBend",
-      "EPSeparator","Quadrupole","TargetShield","FourPort",
-      "FlatPipe","TriPipe","TriGroup","SixPort","CrossWay","CrossBlank",
-      "GaugeTube","BremBlock","DipoleDIBMag","EArrivalMon","YagScreen","YAG",
-      "YagUnit","YagUnitBig","StriplineBPM","BeamDivider",
-      "Scrapper","TWCavity","Bellow", "VacuumPipe","HalfElectronPipe",
-      "MultiPipe","PipeTube","PortTube","BlankTube","ButtonBPM",
-      "PrismaChamber","uVac", "UndVac","UndulatorVacuum",
-      "IonPTube","IonGauge","NBeamStop","MagTube","TriggerTube",
-      "BremTube","HPJaws","BoxJaws","HPCombine","ViewTube",
-      "DiffPumpXIADP03","CLRTube","ExperimentalHutch",
-      "ConnectorTube","LocalShield","FlangeDome","Help","help"
+	"CornerPipe","ChopperPit","CylGateValve","SingleChopper",
+	"GateValveCube","GateValveCylinder","CleaningMagnet",
+	"CorrectorMag","Jaws","LQuadF","LQuadH","LSexupole",
+	"MagnetBlock","Sexupole","MagnetM1","MagnetU1",
+	"Octupole","CeramicGap",
+	"EBeamStop","FMask","R3ChokeChamber",
+	"DipoleExtract","DipoleSndBend","Dipole",
+	"EPSeparator","EPCombine","EPContinue",
+	"Quadrupole","TargetShield","FourPort","DoublePort",
+	"FlatPipe","TriPipe","TriGroup","SixPort","CrossWay","CrossBlank",
+	"GaugeTube","BremBlock","DipoleDIBMag","EArrivalMon","YagScreen",
+	"YAG","YagUnit","YagUnitBig","CooledScreen","CooledUnit",
+	"StriplineBPM","BeamDivider","BeamScrapper",
+	"Scrapper","TWCavity","Bellow", "VacuumPipe","WindowPipe",
+	"HalfElectronPipe",
+	"MultiPipe","PipeTube","PortTube","BlankTube","ButtonBPM",
+	"PrismaChamber","uVac", "UndVac","UndulatorVacuum",
+	"IonPTube","IonGauge","CollTube",
+	"NBeamStop","MagTube","TriggerTube",
+	"BremTube","HPJaws","BoxJaws","HPCombine","ViewTube",
+	"DiffPumpXIADP03","CRLTube","ExperimentalHutch",
+	"ConnectorTube","LocalShield","FlangeDome",
+	"MonoShutter","RoundMonoShutter",
+	"Help","help"
     });
 
   ModelSupport::objectRegister& OR=
@@ -215,6 +241,28 @@ makeSingleItem::build(Simulation& System,
       GV->addInsertCell(voidCell);
       GV->createAll(System,World::masterOrigin(),0);
 
+      return;
+    }
+  if (item == "ChopperPit")
+    {
+      std::shared_ptr<constructSystem::ChopperPit>
+	PitA(new constructSystem::ChopperPit("ChopperPit"));
+
+      OR.addObject(PitA);
+
+      PitA->addInsertCell(voidCell);
+      PitA->createAll(System,World::masterOrigin(),0);
+      return;
+    }
+  if (item == "SingleChopper")
+    {
+      std::shared_ptr<essConstruct::SingleChopper>
+	SC(new essConstruct::SingleChopper("singleChopper"));
+
+      OR.addObject(SC);
+
+      SC->addInsertCell(voidCell);
+      SC->createAll(System,World::masterOrigin(),0);
       return;
     }
   if (item == "MagTube")
@@ -259,6 +307,22 @@ makeSingleItem::build(Simulation& System,
       return;
     }
 
+  // This is similar to yagscreen/cooledscreen and
+  // can attach to flange.
+  if (item == "BeamScrapper")
+    {
+      std::shared_ptr<xraySystem::BeamScrapper>
+	BS(new xraySystem::BeamScrapper("BeamScrapper"));
+      OR.addObject(BS);
+
+      BS->addAllInsertCell(voidCell);
+      BS->setBeamAxis(Geometry::Vec3D(0,10,0),
+		       Geometry::Vec3D(1,0,0));
+      BS->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
   if (item == "YAG" || item=="YagScreen")
     {
       std::shared_ptr<tdcSystem::YagScreen>
@@ -269,6 +333,20 @@ makeSingleItem::build(Simulation& System,
       YAG->setBeamAxis(Geometry::Vec3D(0,-10,0),
 		       Geometry::Vec3D(1,0,0));
       YAG->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
+  if (item == "CooledScreen")
+    {
+      std::shared_ptr<xraySystem::CooledScreen>
+	Cool(new xraySystem::CooledScreen("Cool"));
+      OR.addObject(Cool);
+
+      Cool->addAllInsertCell(voidCell);
+      Cool->setBeamAxis(Geometry::Vec3D(0,-10,0),
+		       Geometry::Vec3D(1,0,0));
+      Cool->createAll(System,World::masterOrigin(),0);
 
       return;
     }
@@ -293,6 +371,30 @@ makeSingleItem::build(Simulation& System,
       yagScreen->insertInCell("Connect",System,yagUnit->getCell("PlateB"));
       yagScreen->insertInCell("Connect",System,yagUnit->getCell("Void"));
       yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
+
+      return;
+    }
+
+  if (item == "CooledUnit")
+    {
+      std::shared_ptr<tdcSystem::YagUnit>
+	yagUnit(new tdcSystem::YagUnit("YU"));
+
+      std::shared_ptr<xraySystem::CooledScreen>
+	coolScreen(new xraySystem::CooledScreen("Cool"));
+
+      OR.addObject(yagUnit);
+      OR.addObject(coolScreen);
+
+      yagUnit->addInsertCell(voidCell);
+      yagUnit->createAll(System,World::masterOrigin(),0);
+
+      coolScreen->setBeamAxis(*yagUnit,1);
+      coolScreen->createAll(System,*yagUnit,4);
+      coolScreen->insertInCell("Outer",System,voidCell);
+      coolScreen->insertInCell("Connect",System,yagUnit->getCell("PlateB"));
+      coolScreen->insertInCell("Connect",System,yagUnit->getCell("Void"));
+      coolScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
 
       return;
     }
@@ -410,7 +512,7 @@ makeSingleItem::build(Simulation& System,
 
       CM->setCutSurf("Inner",*VC,"outerPipe");
       CM->addInsertCell(voidCell);
-      CM->createAll(System,World::masterOrigin(),0);
+      CM->createAll(System,*VC,0);
 
       return;
     }
@@ -434,9 +536,16 @@ makeSingleItem::build(Simulation& System,
       fm->addInsertCell(voidCell);
       fm->createAll(System,World::masterOrigin(),0);
 
+      // with pipes:
+      std::shared_ptr<xraySystem::SquareFMask>
+	fmb(new xraySystem::SquareFMask("FMaskB"));
+      OR.addObject(fmb);
+
+      fmb->addInsertCell(voidCell);
+      fmb->createAll(System,World::masterOrigin(),0);
+
       return;
     }
-
 
   if (item == "Jaws")
     {
@@ -465,8 +574,8 @@ makeSingleItem::build(Simulation& System,
 	  jawComp[index]->addInsertCell(diagBox->getCell("Void"));
 	  if (index)
 	    jawComp[index]->addInsertCell(jawComp[index-1]->getCell("Void"));
-	  jawComp[index]->createAll
-	    (System,DPI,DPI.getSideIndex("InnerPlate"),*diagBox,0);
+	  jawComp[index]->secondaryUnitVector(*diagBox,0);
+	  jawComp[index]->createAll(System,DPI,"InnerPlate");
 	}
 
       // simplify the DiagnosticBox inner cell
@@ -474,6 +583,14 @@ makeSingleItem::build(Simulation& System,
 			      diagBox->getCell("Void"),{0,2});
     }
 
+  if (item == "DoublePort")
+    {
+      std::shared_ptr<constructSystem::PipeTube>
+	dPipe(new constructSystem::PipeTube("DoublePipe"));
+      dPipe->addAllInsertCell(voidCell);
+      dPipe->createAll(System,World::masterOrigin(),0);
+    }
+  
   if (item == "EArrivalMon" )
     {
       std::shared_ptr<tdcSystem::EArrivalMon>
@@ -570,7 +687,6 @@ makeSingleItem::build(Simulation& System,
       QH->addInsertCell(voidCell);
       QH->createAll(System,World::masterOrigin(),0);
 
-
       return;
     }
 
@@ -633,6 +749,19 @@ makeSingleItem::build(Simulation& System,
       return;
     }
 
+  if (item=="MagnetU1")
+    {
+      std::shared_ptr<xraySystem::MagnetU1>
+	MagBlock(new xraySystem::MagnetU1("U1Block"));
+
+      OR.addObject(MagBlock);
+
+      MagBlock->addAllInsertCell(voidCell);
+      MagBlock->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
   if (item=="Octupole")
     {
       std::shared_ptr<xraySystem::Octupole>
@@ -656,11 +785,45 @@ makeSingleItem::build(Simulation& System,
       return;
     }
 
+  if (item=="EPCombine" || item=="EPContinue")
+    {
+      const double angle(1.5*M_PI/180.0);
+      const Geometry::Vec3D photOrg(0,0,0);
+      const Geometry::Vec3D elecOrg(1.84502,0,0);
+      const Geometry::Vec3D elecAxis(sin(angle),cos(angle),0);
+
+      std::shared_ptr<xraySystem::EPCombine>
+	EPcom(new xraySystem::EPCombine("EPCombine"));
+      OR.addObject(EPcom);
+      EPcom->setEPOriginPair(photOrg,elecOrg,elecAxis);
+      EPcom->addInsertCell(voidCell);
+      EPcom->createAll(System,World::masterOrigin(),0);
+
+      if (item=="EPContinue")
+	{
+
+	  std::shared_ptr<xraySystem::EPContinue>
+	    EPcont(new xraySystem::EPContinue("EPContinue"));
+	  OR.addObject(EPcont);
+	  EPcont->setEPOriginPair(*EPcom);
+	  EPcont->addInsertCell(voidCell);
+	  EPcont->createAll(System,*EPcom,2);
+	}
+      return;
+    }
+
   if (item=="R3ChokeChamber")
     {
+      const double angle(1.5*M_PI/180.0);
+      const Geometry::Vec3D photOrg(0,0,0);
+      const Geometry::Vec3D elecOrg(1.84502,0,0);
+      const Geometry::Vec3D elecAxis(sin(angle),cos(angle),0);
+      
       std::shared_ptr<xraySystem::R3ChokeChamber>
 	CChamber(new xraySystem::R3ChokeChamber("R3Chamber"));
       OR.addObject(CChamber);
+      CChamber->setEPOriginPair(photOrg,elecOrg,elecAxis);
+	      
       CChamber->addAllInsertCell(voidCell);
       CChamber->createAll(System,World::masterOrigin(),0);
 
@@ -700,33 +863,11 @@ makeSingleItem::build(Simulation& System,
   if (item=="HalfElectronPipe")
     {
       std::shared_ptr<xraySystem::HalfElectronPipe>
-	HE(new xraySystem::HalfElectronPipe("N1BlockHalfElectron"));
+	HE(new xraySystem::HalfElectronPipe("M1BlockHalfElectron"));
       OR.addObject(HE);
       HE->addAllInsertCell(voidCell);
       HE->createAll(System,World::masterOrigin(),0);
 
-      return;
-    }
-  if (item=="QuadUnit" || item=="DipoleChamber" || item=="EPSeparator")
-    {
-      std::shared_ptr<xraySystem::QuadUnit>
-	PDipole(new xraySystem::QuadUnit("PreDipole"));
-      OR.addObject(PDipole);
-      PDipole->addAllInsertCell(voidCell);
-      PDipole->createAll(System,World::masterOrigin(),0);
-
-
-      std::shared_ptr<xraySystem::DipoleChamber>
-	DCSep(new xraySystem::DipoleChamber("DipoleChamber"));
-      OR.addObject(DCSep);
-      DCSep->addAllInsertCell(voidCell);
-      DCSep->createAll(System,*PDipole,2);
-
-      std::shared_ptr<xraySystem::EPSeparator>
-	EPSep(new xraySystem::EPSeparator("EPSep"));
-      OR.addObject(EPSep);
-      EPSep->addInsertCell(voidCell);
-      EPSep->createAll(System,*PDipole,2);
       return;
     }
   if (item == "PrismaChamber")
@@ -743,9 +884,8 @@ makeSingleItem::build(Simulation& System,
 
   if (item=="Quadrupole")
     {
-
       std::shared_ptr<xraySystem::Quadrupole>
-	Quad(new xraySystem::Quadrupole("Quad","Quad"));
+	Quad(new xraySystem::Quadrupole("QFend","QFend"));
       OR.addObject(Quad);
       Quad->addInsertCell(voidCell);
       Quad->createAll(System,World::masterOrigin(),0);
@@ -779,8 +919,10 @@ makeSingleItem::build(Simulation& System,
       OR.addObject(TubeB);
       OR.addObject(Surround);
 
+      ELog::EM<<"ASDFASFDSAF "<<ELog::endDiag;
       TubeA->addInsertCell(voidCell);
       TubeA->createAll(System,World::masterOrigin(),0);
+      ELog::EM<<"ASDFASFDSAF "<<ELog::endDiag;
       TubeB->addInsertCell(voidCell);
       TubeB->createAll(System,*TubeA,2);
       return;
@@ -804,7 +946,7 @@ makeSingleItem::build(Simulation& System,
 	FP(new xraySystem::FourPortTube("FourPort"));
 
       OR.addObject(FP);
-
+      FP->setSideVoid();
       FP->addInsertCell(voidCell);
       FP->createAll(System,World::masterOrigin(),0);
 
@@ -879,6 +1021,26 @@ makeSingleItem::build(Simulation& System,
 
       IG->addInsertCell(voidCell);
       IG->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item=="CollTube")
+    {
+      std::shared_ptr<xraySystem::CollTube>
+	CT(new xraySystem::CollTube("CollTube"));
+      std::shared_ptr<xraySystem::CollUnit>
+	CU(new xraySystem::CollUnit("CollUnit"));
+
+      OR.addObject(CT);
+      OR.addObject(CU);
+
+
+      CT->addInsertCell(voidCell);
+      CT->createAll(System,World::masterOrigin(),0);
+      CU->addInsertCell(CT->getCell("Void"));
+      CU->addInsertCell(CT->getCell("PipeVoid"));
+      CU->setCutSurf("Flange",*CT,"TopFlange");
+      CU->createAll(System,*CT,"Origin");
 
       return;
     }
@@ -997,6 +1159,17 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
+  if (item == "CornerPipe")
+    {
+      std::shared_ptr<constructSystem::CornerPipe>
+	cp(new constructSystem::CornerPipe("CornerPipe"));
+      OR.addObject(cp);
+
+      cp->addAllInsertCell(voidCell);
+      cp->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
 
   if (item=="DipoleDIBMag")
     {
@@ -1012,6 +1185,26 @@ makeSingleItem::build(Simulation& System,
       VC->createAll(System,World::masterOrigin(),0);
 
       DIB->setCutSurf("Inner",*VC,"outerPipe");
+      DIB->addInsertCell(voidCell);
+      DIB->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
+  if (item=="Dipole")
+    {
+      std::shared_ptr<constructSystem::VacuumPipe>
+	VC(new constructSystem::VacuumPipe("DipolePipe"));
+      std::shared_ptr<xraySystem::Dipole>
+	DIB(new xraySystem::Dipole("DIM"));
+
+      OR.addObject(VC);
+      OR.addObject(DIB);
+      
+      //VC->addAllInsertCell(voidCell);
+      //VC->createAll(System,World::masterOrigin(),0);
+
+      //      DIB->setCutSurf("Inner",*VC,"outerPipe");
       DIB->addInsertCell(voidCell);
       DIB->createAll(System,World::masterOrigin(),0);
 
@@ -1067,6 +1260,19 @@ makeSingleItem::build(Simulation& System,
       return;
     }
 
+  if (item == "WindowPipe" )
+    {
+      std::shared_ptr<constructSystem::WindowPipe>
+	VC(new constructSystem::WindowPipe("VCWin"));
+
+      OR.addObject(VC);
+
+      VC->addAllInsertCell(voidCell);
+      VC->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
     if (item == "PipeTube" )
       {
 	std::shared_ptr<constructSystem::Bellows>
@@ -1088,19 +1294,6 @@ makeSingleItem::build(Simulation& System,
 	ELog::EM<<"pipeTube == "<<pipeTube->getCentre()<<ELog::endDiag;
 	ELog::EM<<"pipeTube[Y] == "<<pipeTube->getY()<<ELog::endDiag;
 	ELog::EM<<"pipeTube[Z] == "<<pipeTube->getZ()<<ELog::endDiag;
-	/*
-	const constructSystem::portItem& PI=
-	  pipeTube->getPort(0);
-
-	ELog::EM<<"PORT == "<<PI.getCentre()<<ELog::endDiag;
-	ELog::EM<<"PORT[Y] == "<<PI.getY()<<ELog::endDiag;
-	*/
-	// const constructSystem::portItem& PIB=
-	//   pipeTube->getPort(1);
-
-	// ELog::EM<<"PORTB == "<<PIB.getCentre()<<ELog::endDiag;
-	// ELog::EM<<"PORT[Y] == "<<PIB.getY()<<ELog::endDiag;
-
 
 	return;
       }
@@ -1191,11 +1384,10 @@ makeSingleItem::build(Simulation& System,
 	return;
       }
 
-    if (item == "CLRTube")
+    if (item == "CRLTube")
       {
-	std::shared_ptr<xraySystem::CLRTube>
-	  clr(new xraySystem::CLRTube("CLRTube"));
-
+	std::shared_ptr<xraySystem::CRLTube>
+	  clr(new xraySystem::CRLTube("CRLTube"));
 	OR.addObject(clr);
 
 	clr->addAllInsertCell(voidCell);
@@ -1241,6 +1433,30 @@ makeSingleItem::build(Simulation& System,
 	yagScreen->insertInCell("Connect",System,vt->getCell("Plate"));
 	yagScreen->insertInCell("Connect",System,vt->getCell("Void"));
 	yagScreen->insertInCell("Payload",System,vt->getCell("Void"));
+
+	return;
+      }
+
+    if (item == "MonoShutter" )
+      {
+	std::shared_ptr<xraySystem::MonoShutter>
+	  ms(new xraySystem::MonoShutter("MS"));
+
+	OR.addObject(ms);
+
+	ms->createAll(System,World::masterOrigin(),0);
+	ms->insertAllInCell(System,voidCell);
+	return;
+      }
+    if (item == "RoundMonoShutter" )
+      {
+	std::shared_ptr<xraySystem::RoundMonoShutter>
+	  rs(new xraySystem::RoundMonoShutter("RMS"));
+
+	OR.addObject(rs);
+
+	rs->createAll(System,World::masterOrigin(),0);
+	rs->insertAllInCell(System,voidCell);
 
 	return;
       }

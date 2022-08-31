@@ -71,6 +71,7 @@
 
 #include "insertObject.h"
 #include "insertPlate.h"
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"

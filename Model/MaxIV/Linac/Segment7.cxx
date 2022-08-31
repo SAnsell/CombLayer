@@ -62,13 +62,14 @@
 #include "BlockZone.h"
 #include "generalConstruct.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "StriplineBPM.h"
 #include "LQuadF.h"
 #include "CorrectorMag.h"
 #include "EBeamStop.h"
 
-#include "LObjectSupportB.h"
+#include "LObjectSupport.h"
 #include "TDCsegment.h"
 #include "Segment6.h"
 #include "Segment7.h"
@@ -168,6 +169,8 @@ Segment7::buildObjects(Simulation& System)
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagVA);
   pipeTerminate(System,*buildZone,pipeB);
 
+  setCutSurf("EndPipeFlange",pipeB->getExcludeSurf("FlangeB"));
+  setCutSurf("EndPipeMain",pipeB->getExcludeSurf("Main"));
   return;
 }
 

@@ -3,7 +3,7 @@
  
  * File:   maxpeem/maxpeemVariables.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -243,7 +243,7 @@ m3MirrorVariables(FuncDataBase& Control,
   // will be rotated vertical
   const std::string viewName=mirrorKey+"ViewTube";
   SimpleTubeGen.setCF<CF63>();
-  SimpleTubeGen.setBFlangeCF<CF100>();
+  SimpleTubeGen.setBFlange(CF100::flangeRadius,CF100::flangeLength/2.0);
   SimpleTubeGen.generateTube(Control,viewName,15.0);
   Control.addVariable(viewName+"NPorts",1);   // beam ports
 
@@ -279,8 +279,10 @@ m3MirrorVariables(FuncDataBase& Control,
   PItemGen.generatePort(Control,pumpName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
 
   const Geometry::Vec3D pAngVec(0,sin(M_PI*37.0/180.0),-cos(M_PI*37.0/180.0));
-  const double PLen=14.0-8.05/cos(M_PI*37.0/180.0);
-  PItemGen.setCF<setVariable::CF40>(CF150::outerRadius+PLen);
+  const double PLen=16.0-8.05/cos(M_PI*37.0/180.0);
+
+  PItemGen.setCF<setVariable::CF25>(CF150::outerRadius+PLen);
+  PItemGen.setFlange(1.7,1.15);
   PItemGen.setOuterVoid(0);
   PItemGen.generatePort(Control,pumpName+"Port2",
 			Geometry::Vec3D(0,0,0),-pAngVec);
@@ -468,8 +470,8 @@ m1MirrorVariables(FuncDataBase& Control,
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setBFlangeCF<CF150>();
   PipeGen.generatePipe(Control,mirrorKey+"OffPipeA",6.8);
-  Control.addVariable(mirrorKey+"OffPipeAFlangeBackXYAngle",-4.0);
-  Control.addVariable(mirrorKey+"OffPipeAFlangeBackXStep",-2.0);
+  Control.addVariable(mirrorKey+"OffPipeAFlangeBXYAngle",-4.0);
+  Control.addVariable(mirrorKey+"OffPipeAFlangeBXStep",-2.0);
 
   const std::string mName=mirrorKey+"M1Tube";
   const double centreOffset(sin(M_PI*4.0/180.0)*6.8/2);  // half 6.8
@@ -481,7 +483,7 @@ m1MirrorVariables(FuncDataBase& Control,
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setAFlangeCF<setVariable::CF150>();
   PipeGen.generatePipe(Control,mirrorKey+"OffPipeB",13.8);
-  Control.addVariable(mirrorKey+"OffPipeBFlangeFrontXStep",-2.0);
+  Control.addVariable(mirrorKey+"OffPipeBFlangeAXStep",-2.0);
   Control.addVariable(mirrorKey+"OffPipeBXStep",2.0);
 
 
@@ -729,7 +731,7 @@ shutterTable(FuncDataBase& Control,
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setBFlangeCF<setVariable::CF150>();
   PipeGen.generatePipe(Control,frontKey+"OffPipeA",6.8);
-  Control.addVariable(frontKey+"OffPipeAFlangeBackZStep",3.0);
+  Control.addVariable(frontKey+"OffPipeAFlangeBZStep",3.0);
 
 
   const std::string shutterName=frontKey+"ShutterBox";
@@ -761,7 +763,7 @@ shutterTable(FuncDataBase& Control,
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setAFlangeCF<setVariable::CF150>();
   PipeGen.generatePipe(Control,frontKey+"OffPipeB",21.0);
-  Control.addVariable(frontKey+"OffPipeBFlangeFrontZStep",3.0);
+  Control.addVariable(frontKey+"OffPipeBFlangeAZStep",3.0);
   Control.addVariable(frontKey+"OffPipeBZStep",-3.0);
 
   Control.addVariable(frontKey+"BremBlockRadius",3.0);
@@ -833,7 +835,7 @@ MAXPEEMvariables(FuncDataBase& Control)
   Control.addVariable("sdefType","Wiggler");
   // add ring door to our sector
   RGen.generateDoor(Control,"R1RingRingDoor",50.0);
-  Control.addVariable("R1RingRingDoorWallID",9);
+  Control.addVariable("R1RingRingDoorWallID",7);
 
   maxpeemVar::undulatorVariables(Control,"MaxPeemFrontBeam");
   // ystep [0] / dipole pipe / exit pipe

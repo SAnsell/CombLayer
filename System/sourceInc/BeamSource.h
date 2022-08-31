@@ -3,7 +3,7 @@
  
  * File:   sourceInc/BeamSource.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,6 +59,10 @@ class BeamSource :
 
   /// Set radius
   void setRadius(const double R) { radius=R; }
+
+
+
+  using FixedComp::createAll;
   void createAll(const ITYPE&,const attachSystem::FixedComp&,
 		 const long int);
   void createAll(const ITYPE&,const Geometry::Vec3D&,
@@ -68,10 +72,11 @@ class BeamSource :
 
   virtual void rotate(const localRotate&);
   virtual void createSource(SDef::Source&) const;
+
   virtual void write(std::ostream&) const;
   virtual void writePHITS(std::ostream&) const;
   virtual void writeFLUKA(std::ostream&) const;
-    
+
 };
 
 }

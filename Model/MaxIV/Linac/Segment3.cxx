@@ -3,7 +3,7 @@
 
  * File: Linac/Segment3.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,6 +62,7 @@
 #include "BlockZone.h"
 #include "generalConstruct.h"
 
+#include "GeneralPipe.h"
 #include "OffsetFlangePipe.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
@@ -70,7 +71,7 @@
 #include "CorrectorMag.h"
 #include "LocalShielding.h"
 
-#include "LObjectSupportB.h"
+#include "LObjectSupport.h"
 #include "TDCsegment.h"
 #include "Segment3.h"
 

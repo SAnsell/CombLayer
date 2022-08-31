@@ -250,7 +250,7 @@ WCellControl::procObject(const Simulation& System,
       procParam(IParam,"weightObject",iSet,2);
 
       objectList.insert(objectKey);      
-      const std::vector<int> objCells=
+      const std::set<int> objCells=
 	System.getObjectRange(objectKey);
     
       if (objCells.empty())
@@ -328,7 +328,7 @@ WCellControl::scaleObject(const Simulation& System,
       else
         EW= (EW<-eCut) ? 1.0/SW : 1.0;
     }
-  const std::vector<int> cellVec=System.getObjectRange(objKey);
+  const std::set<int> cellVec=System.getObjectRange(objKey);
   for(const int cellN : cellVec)
     {
       const MonteCarlo::Object* CellPtr=System.findObject(cellN);
@@ -382,7 +382,7 @@ WCellControl::findMax(const Simulation& System,
   const long int eIndex=
     std::lower_bound(WEng.begin(),WEng.end(),std::abs(eCut))-WEng.begin();
 
-  const std::vector<int> cellRange=System.getObjectRange(objKey);
+  const std::set<int> cellRange=System.getObjectRange(objKey);
   
   
   double maxVal(0.0);
@@ -482,7 +482,7 @@ WCellControl::cTrack(const Simulation& System,
 void
 WCellControl::calcCellTrack(const Simulation& System,
                             const Geometry::Cone& curCone,
-			    const std::vector<int>& cellVec,
+			    const std::set<int>& cellVec,
                             CellWeight& CTrack)
 /*!
   Calculate a given cone : calculate those cells
@@ -515,7 +515,7 @@ WCellControl::calcCellTrack(const Simulation& System,
 void
 WCellControl::calcCellTrack(const Simulation& System,
                              const Geometry::Plane& curPlane,
-                             const std::vector<int>& cellVec,
+                             const std::set<int>& cellVec,
                              CellWeight& CTrack)
 /*!
   Calculate a given track 
@@ -548,7 +548,7 @@ WCellControl::calcCellTrack(const Simulation& System,
 void
 WCellControl::calcCellTrack(const Simulation& System,
                              const Geometry::Vec3D& initPt,
-                             const std::vector<int>& cellVec,
+                             const std::set<int>& cellVec,
                              CellWeight& CTrack)
   /*!
     Calculate a given track for a point

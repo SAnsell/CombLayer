@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/BremBlockGenerator.h
+ * File:   commonGeneratorInc/BremBlockGenerator.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ class BremBlockGenerator
  private:
 
   bool centFlag;              ///< centre flag
-  double radius;              ///< Main radius [-ve to use square]
+  double length;              ///< Main length
   double width;               ///< Optional width
   double height;              ///< Optional height
 
@@ -68,19 +68,20 @@ class BremBlockGenerator
 
   void centre() { centFlag=1; }
   void setMaterial(const std::string&,const std::string&);
-  void setRadius(const double);
+  void setLength(const double);
   void setCube(const double,const double);
   void setHoleXY(const double,const double);
   void setAperature(const double,const double,const double,
 		    const double,const double,
 		    const double,const double);
+  void setAperatureAngle(const double,const double,
+			 const double,const double,
+			 const double);
   
-  void generateBlock(FuncDataBase&,const std::string&,
-		     const double,const double) const;
+  void generateBlock(FuncDataBase&,const std::string&,const double) const;
 
 };
 
 }
 
 #endif
- 

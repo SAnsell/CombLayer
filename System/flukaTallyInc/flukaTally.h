@@ -3,7 +3,7 @@
  
  * File:   flukaTallyInc/flukaTally.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,8 +43,6 @@ class flukaTally
   static std::string idForm(const std::string&,const int);  
 
  protected:
-
-
   
   std::string keyName;              ///< tally name
   int ID;                           ///< ID number

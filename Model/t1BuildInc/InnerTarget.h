@@ -42,7 +42,8 @@ namespace ts1System
   Provides linkage to its outside on FixedComp[0]
 */
 
-class InnerTarget : public TMRSystem::TargetBase
+class InnerTarget :
+    public TMRSystem::TargetBase
 {
  private:
   
@@ -99,13 +100,11 @@ class InnerTarget : public TMRSystem::TargetBase
   /// Main cell body
   int getMainBody() const { return buildIndex+1; }
   void addInnerBoundary(attachSystem::ContainedComp&) const;
-  /// Set the extext of the reflector
+  /// Set the extent of the reflector
   void setRefPlates(const int A,const int B) 
     { frontPlate=A; backPlate=B; }
 
-  void addProtonLine(Simulation&,	 
-		     const attachSystem::FixedComp& refFC,
-		     const long int index);
+  void addProtonLine(Simulation&);
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
   

@@ -64,6 +64,7 @@
 
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "StriplineBPM.h"
 #include "CylGateValve.h"

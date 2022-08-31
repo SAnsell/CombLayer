@@ -3,7 +3,7 @@
  
  * File:   t1Build/InnerTarget.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,8 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -55,7 +53,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
 #include "BaseMap.h"
@@ -69,7 +67,7 @@ namespace ts1System
 {
 
 InnerTarget::InnerTarget(const std::string& Key) :
-  TMRSystem::TargetBase(Key,3),
+  TMRSystem::TargetBase(Key,6),
   frontPlate(0),backPlate(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -163,7 +161,7 @@ InnerTarget::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("InnerTarget","populate");
 
-  attachSystem::FixedOffset::populate(Control);
+  attachSystem::FixedRotate::populate(Control);
   
   mainLength=Control.EvalVar<double>(keyName+"MainLength");
   coreRadius=Control.EvalVar<double>(keyName+"CoreRadius");
@@ -339,97 +337,101 @@ InnerTarget::createObjects(Simulation& System)
   
   // Tungsten inner core
 
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-8 : (1 -2 -7)");
-  System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
+  HeadRule HR;
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-8 : (1 -2 -7)");
+  makeCell("Core",System,cellIndex++,wMat,0.0,HR);
 
   // Cladding [with front water divider]
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-18 -1 8 117");
-  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -17 -12 (7:2) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-18 -1 8 117");
+  makeCell("CoreClad",System,cellIndex++,taMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -17 -12 (7:2)");
+  makeCell("CoreClad",System,cellIndex++,taMat,0.0,HR);
 
   // Water
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-28 -1 18");
-  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -27 -22 (17:12) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-28 -1 18");
+  makeCell("Water",System,cellIndex++,waterMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -27 -22 (17:12)");
+  makeCell("Water",System,cellIndex++,waterMat,0.0,HR);
 
   // TA outer [pressure]
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-38 -1 28");
-  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -37 -32 (27:22) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-38 -1 28");
+  makeCell("Outer",System,cellIndex++,taMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -37 -32 (27:22) ");
+  makeCell("Outer",System,cellIndex++,taMat,0.0,HR);
 
   // void 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-48 -1 38");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -47 -42 (37:32) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  
-  // Inner objects:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-18 -107 -201 228");
-  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-48 -1 38");
+  makeCell("VoidLayer",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-18 -117 107 -201 228");
-  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -47 -42 (37:32)");
+  makeCell("VoidLayer",System,cellIndex++,0,0.0,HR);
+
+ 
+  // Inner objects:
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-18 -107 -201 228");
+  makeCell("Water",System,cellIndex++,waterMat,0.0,HR);
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-18 -117 107 -201 228");
+  makeCell("WaterTa",System,cellIndex++,taMat,0.0,HR);
+
 
   // First half sphere
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-208 -201");
-  System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-218 208 -201");
-  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-228 218 -201");
-  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-238 228 -201 117 ");  
-  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-208 -201");
+  makeCell("Sphere",System,cellIndex++,wMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-218 208 -201");
+  makeCell("SphereWall",System,cellIndex++,taMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-228 218 -201");
+  makeCell("SphereWater",System,cellIndex++,waterMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-238 228 -201 117");
+  makeCell("SphereWall",System,cellIndex++,taMat,0.0,HR);
 
   // Second  sphere
   int TI(buildIndex+200);
   for(size_t i=1;i<nSphere;i++)
     {
-      Out=ModelSupport::getComposite(SMap,TI,"(-8:-108) 1 -101");
-      System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
-      Out=ModelSupport::getComposite(SMap,TI,"(-18:-118) (8 108) 1 -101");
-      System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
-      Out=ModelSupport::getComposite(SMap,TI,"(-28:-128) (18 118) 1 -101");
-      System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
-      Out=ModelSupport::getComposite(SMap,TI,"(-38:-138) (28 128) 1 -101");
-      System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,TI,"(-8:-108) 1 -101");
+      makeCell("Sphere",System,cellIndex++,wMat,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,TI,"(-18:-118) (8 108) 1 -101");
+      makeCell("SphereWall",System,cellIndex++,taMat,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,TI,"(-28:-128) (18 118) 1 -101");
+      makeCell("SphereWater",System,cellIndex++,waterMat,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,TI,"(-38:-138) (28 128) 1 -101");
+      makeCell("SphereWall",System,cellIndex++,taMat,0.0,HR);
+
       TI+=100;
     }
   // Cone:
-  Out=ModelSupport::getComposite(SMap,TI,buildIndex,"1 -109 -2M -7M");
-  System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,TI,buildIndex,"1 -2M 109 -119 -7M");
-  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,TI,buildIndex,"1 -2M 119 -129 -7M");
-  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,TI,buildIndex,"1 -2M 129 -139 -7M");
-  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,TI,buildIndex,"1 -109 -2M -7M");
+  makeCell("Cone",System,cellIndex++,wMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,TI,buildIndex,"1 -2M 109 -119 -7M");
+  makeCell("ConeWall",System,cellIndex++,taMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,TI,buildIndex,"1 -2M 119 -129 -7M");
+  makeCell("ConeWater",System,cellIndex++,waterMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,TI,buildIndex,"1 -2M 129 -139 -7M");
+  makeCell("ConeWall",System,cellIndex++,taMat,0.0,HR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," (117 : 201) ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"117 : 201");
   TI=buildIndex+200;
   for(size_t i=1;i<nSphere;i++)
     {
-      Out+=ModelSupport::getComposite(SMap,TI," 38 ");
+      HR*=ModelSupport::getHeadRule(SMap,TI,"38");
       TI+=100;
     }
-
   // Outer cone
   if (nSphere)
     {
-      Out+=ModelSupport::getComposite(SMap,TI," (38:1) ");
-      Out+=ModelSupport::getComposite(SMap,TI," (139 : -1) ");
+      HR*=ModelSupport::getHeadRule(SMap,TI,"38:1");
+      HR*=ModelSupport::getHeadRule(SMap,TI,"139:-1");
     }
-  MonteCarlo::Object* IPtr=System.findObject(buildIndex+1); 
-  IPtr->addSurfString(Out);
 
+  CellMap::insertComponent(System,"Core",HR);
   
   // Set EXCLUDE:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-48 : (1 -42 -47)");
-  addOuterSurf(Out);
-  addBoundarySurf(SMap.realSurf(buildIndex+48));    
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-48 : (1 -42 -47)");
+  addOuterSurf(HR);
   return;
 }
 
@@ -461,9 +463,7 @@ InnerTarget::createLinks()
 
 
 void
-InnerTarget::addProtonLine(Simulation& System,
-			 const attachSystem::FixedComp& refFC,
-			 const long int index)
+InnerTarget::addProtonLine(Simulation& System)
   /*!
     Add a proton void cell
     \param System :: Simualation
@@ -474,13 +474,12 @@ InnerTarget::addProtonLine(Simulation& System,
   ELog::RegMethod RegA("InnerTarget","addProtonLine");
 
   // 0 ::  front fact of target
-  PLine->createAll(System,*this,0);
-  createBeamWindow(System,1);
-  System.populateCells();
-  System.createObjSurfMap();
+  PLine->setCutSurf("TargetSurf",*this,"front");
+  PLine->setCutSurf("RefBoundary",getRule("FrontPlate"));
+  PLine->createAll(System,*this,1);
+  createBeamWindow(System,-1);
   return;
 }
-
   
 void
 InnerTarget::createAll(Simulation& System,

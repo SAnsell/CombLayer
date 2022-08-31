@@ -3,7 +3,7 @@
  
  * File:   t1Build/ReflectRods.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "gridUnit.h"
 #include "hexUnit.h"
 #include "ReflectRods.h"
@@ -73,8 +73,8 @@ namespace ts1System
 
 ReflectRods::ReflectRods(const std::string& Key,const size_t index)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key+std::to_string(index),0),
-  baseName(Key),populated(0),
+  attachSystem::FixedRotate(Key+std::to_string(index),0),
+  baseName(Key),
   topSurf(0),baseSurf(0),RefObj(0)  
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -84,7 +84,7 @@ ReflectRods::ReflectRods(const std::string& Key,const size_t index)  :
 {}
 
 ReflectRods::ReflectRods(const ReflectRods& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedRotate(A),
   baseName(A.baseName),populated(A.populated),
   outerMat(A.outerMat),
   innerMat(A.innerMat),linerMat(A.linerMat),HexHA(A.HexHA),
@@ -110,9 +110,8 @@ ReflectRods::operator=(const ReflectRods& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       cellIndex=A.cellIndex;
-      populated=A.populated;
       outerMat=A.outerMat;
       innerMat=A.innerMat;
       linerMat=A.linerMat;
@@ -220,7 +219,7 @@ ReflectRods::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("ReflectRods","populate");
 
-  FixedOffset::populate(baseName,Control);
+  FixedRotate::populate(baseName,Control);
   
   centSpc=Control.EvalTail<double>(keyName,baseName,"CentSpace");
   radius=Control.EvalTail<double>(keyName,baseName,"Radius");
@@ -233,7 +232,7 @@ ReflectRods::populate(const FuncDataBase& Control)
   outerMat=ModelSupport::EvalMat<int>(Control,keyName+"OuterMat",
 				      baseName+"OuterMat");
   
-  populated= (radius<Geometry::zeroTol) ? 0 : 1;
+
   
   return;
 }
@@ -267,41 +266,14 @@ ReflectRods::getZSurf()
   */
 {
   ELog::RegMethod RegA("ReflectRods","getZSurf");
-  
-  const std::vector<const Geometry::Surface*>& SL=
-    RefObj->getSurList();
-  
 
-  std::vector<Geometry::Vec3D> Pts;
-  Geometry::Line LN(Geometry::Vec3D(0,0,0),Z);
-  const HeadRule& HR=RefObj->getHeadRule();
+  HeadRule HR=RefObj->getHeadRule();
 
-  double minDZ(1e38),maxDZ(-1e38);
-  
-  std::vector<const Geometry::Surface*>::const_iterator vc;
-  for(vc=SL.begin();vc!=SL.end();vc++)
-    {
-      Pts.clear();
-      const Geometry::Plane* PL=
-	dynamic_cast<const Geometry::Plane*>(*vc);
-      if (PL && HR.level(PL->getName())==0 && 
-	  LN.intersect(Pts,*PL))
-	{
-	  double dz=Pts.front().abs();
-	  if (Pts.front().dotProd(Z)<0.0)
-	    dz*=-1;
-	  if (minDZ>dz)
-	    {
-	      minDZ=dz;
-	      baseSurf=PL;
-	    }
-	  else if (maxDZ<dz)
-	    {
-	      maxDZ=dz;
-	      topSurf=PL;
-	    }
-	}
-    }
+  const int baseZ=HR.findAxisPlane(-Z,0.95);
+  const int topZ=HR.findAxisPlane(Z,0.95);
+  baseSurf=dynamic_cast<const Geometry::Plane*>(HR.getSurface(baseZ));
+  topSurf=dynamic_cast<const Geometry::Plane*>(HR.getSurface(topZ));
+
 
   if (!topSurf || !baseSurf)
     {
@@ -328,7 +300,6 @@ ReflectRods::calcCentre()
     RefObj->getSurList();
 
   std::vector<const Geometry::Plane*> PVec;  
-  std::vector<const Geometry::Surface*>::const_iterator vc;
   for(const Geometry::Surface* const& sPtr : SL)
     {
       const Geometry::Plane* PL=
@@ -658,7 +629,7 @@ ReflectRods::createObjects(Simulation& System)
       std::string CylB=
 	ModelSupport::getComposite(SMap,cylIndex," 7 -8 ")+plates;
 	
-      std::string Out=APtr->getInner()+
+      std::string Out=APtr->getInner().display()+
       	ModelSupport::getComposite(SMap,cylIndex+iLayer," 7 ");
 
       if (!APtr->isCut())
@@ -767,7 +738,7 @@ ReflectRods::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("ReflectRods","createAll");
   populate(System.getDataBase());
-  if (populated)
+  if (radius>Geometry::zeroTol)
     {
       createUnitVector(FC,sideIndex);
       getZSurf();

@@ -3,7 +3,7 @@
  
  * File:   test/testHeadRule.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,6 +48,7 @@
 #include "HeadRule.h"
 #include "surfIndex.h"
 #include "SurInter.h"
+#include "Surface.h"
 #include "Line.h"
 #include "LineIntersectVisit.h"
 
@@ -91,6 +92,19 @@ testHeadRule::createSurfaces()
   SurI.createSurface(14,"py 1");
   SurI.createSurface(15,"pz -1");
   SurI.createSurface(16,"pz 1");
+
+  SurI.createSurface(21,"px -11");
+  SurI.createSurface(22,"px 11");
+  SurI.createSurface(23,"py -11");
+  SurI.createSurface(24,"py 11");
+  SurI.createSurface(25,"pz -11");
+  SurI.createSurface(26,"pz 11");
+
+  // Sphere :
+  SurI.createSurface(100,"so 25");
+  // Cylinder :
+  SurI.createSurface(107,"cy 10");
+
   return;
 }
 
@@ -117,7 +131,10 @@ testHeadRule::applyTest(const int extra)
       &testHeadRule::testFindTopNodes,
       &testHeadRule::testGetComponent,
       &testHeadRule::testGetLevel,
+      &testHeadRule::testGetOppositeSurfaces,
       &testHeadRule::testInterceptRule,
+      &testHeadRule::testIntersectHeadRule,
+      &testHeadRule::testIsLineValid,
       &testHeadRule::testLevel,
       &testHeadRule::testPartEqual,
       &testHeadRule::testRemoveSurf,
@@ -133,8 +150,10 @@ testHeadRule::applyTest(const int extra)
       "FindTopNodes",
       "GetComponent",
       "GetLevel",
+      "GetOppositeSurfaces",
       "InterceptRule",
       "IntersectHead",
+      "IsHeadRule",
       "Level",
       "PartEqual",
       "RemoveSurf",      
@@ -466,6 +485,65 @@ testHeadRule::testGetComponent()
 }
 
 
+int
+testHeadRule::testGetOppositeSurfaces()
+  /*!
+    Tests if the function to determine the opposite signed surfaces
+    works
+    \retval 0 :: success
+  */
+{
+  ELog::RegMethod RegA("testHeadRule","testGetOppositeSurfaces");
+
+  createSurfaces();
+    // HeadRule : surfaces (if any)
+  typedef std::tuple<std::string,std::set<int>> TTYPE;
+
+  // Target / result
+  std::vector<TTYPE> Tests;
+  Tests={
+    TTYPE("1 -2 3 -4 (5:-6) ",{}),
+    TTYPE("1 -2 3 -4 5 -6 (-5:-6) ",{5}),
+
+    // 59 : 2/ 64 3/ 73 4/29 5/ 71 6/
+    TTYPE("( 2 : 3 : -4 : 5 : -6 ) ( 2 : -5 ) "
+	  "( -2 : 1 : 3 : -11 : -12 : 13 )"
+	  "( -2 : -14 ) ( -15 : 16 : 21 : ( 22 23 ) )"
+	  "24 -25 -1 ",{1,2,5})
+  };
+
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
+    {
+      HeadRule HM(std::get<0>(tc));
+      HM.populateSurf();
+      const std::set<int>& outSet=std::get<1>(tc);
+      std::set<const Geometry::Surface*> realSet=
+	HM.getOppositeSurfaces();
+
+      int fail(0);
+      for(const Geometry::Surface* SPtr : realSet)
+	{
+	  const int SN=SPtr->getName();
+	  if (outSet.find(SN)==outSet.end())
+	    fail++;
+	}
+      if (fail || realSet.size()!=outSet.size())
+	{
+	  ELog::EM<<"Failed on test "<<cnt<<ELog::endTrace;
+	  ELog::EM<<"HR "<<HM<<ELog::endDiag;
+	  ELog::EM<<"Found surfaces : \n";
+	  for(const Geometry::Surface* SPtr : realSet)
+	    {
+	      const int SN=SPtr->getName();
+	      ELog::EM<<"Surf= "<<SN<<ELog::endDiag;
+	    }
+	  return -1;
+	}
+      cnt++;
+    }
+  return 0;
+}
 
 int
 testHeadRule::testInterceptRule()
@@ -582,6 +660,53 @@ testHeadRule::testIntersectHeadRule()
 	}
     }
 
+  return 0;
+}
+
+int
+testHeadRule::testIsLineValid()
+  /*!
+    Test the line tracking through a cell .
+    Determine if a line tracks the out cell component
+    \retval 0 :: success / -ve on failure
+  */
+{
+  ELog::RegMethod RegA("testHeadRule","testIsOuterLine");
+
+  typedef std::tuple<std::string,Geometry::Vec3D,Geometry::Vec3D,bool> TTYPE;
+  std::vector<TTYPE> Tests;
+  Tests.push_back(TTYPE("1 -2 3 -4 5 -6",
+			Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0),1));
+
+  Tests.push_back(TTYPE("1 -2 3 -4 5 -6",
+			Geometry::Vec3D(-2,0,0),Geometry::Vec3D(-1.2,0,0),0));
+
+  Tests.push_back(TTYPE("3 -4 -107",
+			Geometry::Vec3D(-2,0,0),Geometry::Vec3D(-1.2,0,0),1));
+
+  Tests.push_back(TTYPE("3 -4 -107",
+			Geometry::Vec3D(-0,-2,0),Geometry::Vec3D(0,-1.2,0),0));
+
+  Tests.push_back(TTYPE("3 -4 -107",
+			Geometry::Vec3D(-1,0,0),Geometry::Vec3D(1,4,0),1));
+
+  Tests.push_back(TTYPE("3 -4 -107",
+			Geometry::Vec3D(1,4,0),Geometry::Vec3D(-1,0,0),1));
+  
+
+  for(const TTYPE& tc : Tests)
+    {
+      HeadRule HR(std::get<0>(tc));
+      bool Res=HR.isLineValid(std::get<1>(tc),std::get<2>(tc));
+      if (Res!=std::get<3>(tc))
+	{
+	  ELog::EM<<"Surface  == "<<std::get<0>(tc)<<ELog::endTrace;
+	  ELog::EM<<"Line == "<<std::get<1>(tc)<<" :: "
+		  <<std::get<2>(tc)<<ELog::endTrace;
+	  ELog::EM<<"Expect  == "<<std::get<3>(tc)<<ELog::endTrace;
+	  return -1;
+	}
+    }
   return 0;
 }
 

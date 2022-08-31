@@ -3,7 +3,7 @@
  
  * File:   magnetic/SetMagnets.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -113,7 +113,6 @@ setMagneticExternal(SimTYPE& System,
 	    mainSystem::getNamedOriginAxis
 	    (System,IParam,"MagUnit",setIndex,index,
 	     "MagUnit not found");
-	  ELog::EM<<"AOrg == "<<AOrg<<ELog::endDiag;
 
 	  const Geometry::Vec3D Extent=
 	    IParam.getCntVec3D("MagUnit",setIndex,index,"Extent");
@@ -140,13 +139,15 @@ setMagneticExternal(SimTYPE& System,
 	  System.addMagnetObject(OPtr);
 	}
     }
+
   return;
 }
 
   
 template<typename SimTYPE>
 void
-setDefMagnets(SimTYPE& System)
+setDefMagnets(SimTYPE& System,
+	      const bool syncFlag)
   /*!
     This sets the magnets from the main Control variables
     assuming that a magnet region has been built.
@@ -207,7 +208,7 @@ setDefMagnets(SimTYPE& System)
 		{
 		  if (System.builtFCName(Item))
 		    {
-		      const std::vector<int> CellNumbers=
+		      const std::set<int> CellNumbers=
 			System.getObjectRange(Item);
 		      for(const int CN : CellNumbers)
 			{
@@ -225,8 +226,7 @@ setDefMagnets(SimTYPE& System)
     ELog::EM<<"Warning : No default magnetic fields set"<<ELog::endWarn;
 
   for(MonteCarlo::Object* OPtr : magnetCells)
-    OPtr->setMagFlag();
-
+    OPtr->setMagFlag(syncFlag);
   
   return; 
 }
@@ -244,8 +244,9 @@ setMagneticPhysics(SimTYPE& System,
 {
   ELog::RegMethod RegA("SetMagnets","setMagneticPhysics");
 
+  const bool syncFlag=IParam.flag("MagSyncRadiation");
   if (IParam.flag("defMagnet"))
-    setDefMagnets(System);
+    setDefMagnets(System,syncFlag);
 
   //
   // Choose which cells have a magnetic field present
@@ -262,7 +263,7 @@ setMagneticPhysics(SimTYPE& System,
 	    (System,IParam,"MagField",setIndex,index,"MagField Cells");
 
 	  for(MonteCarlo::Object* OPtr : Cells)
-	    OPtr->setMagFlag();
+	    OPtr->setMagFlag(syncFlag);
 	}
     }
   if (nSet) setMagneticExternal(System,IParam);
@@ -271,11 +272,11 @@ setMagneticPhysics(SimTYPE& System,
 
 ///\cond TEMPLATE
 
-template void setDefMagnets(SimFLUKA&);
+template void setDefMagnets(SimFLUKA&,const bool);
 template void setMagneticPhysics(SimFLUKA&,const mainSystem::inputParam&);
 template void setMagneticExternal(SimFLUKA&,const mainSystem::inputParam&);
 
-template void setDefMagnets(SimPHITS&);
+template void setDefMagnets(SimPHITS&,const bool);
 template void setMagneticPhysics(SimPHITS&,const mainSystem::inputParam&);
 template void setMagneticExternal(SimPHITS&,const mainSystem::inputParam&);
 

@@ -3,7 +3,7 @@
  
  * File:   monte/objectSupport.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -151,50 +151,6 @@ cellSelection(const Simulation& System,
 
 }
 
-std::vector<int>
-getCellSelection(const Simulation& System,
-		 const int matN,const std::string& keyName) 
-  /*!
-    Extract all the cells with a material based on matN and keyName
-    \param System :: Simulation for build [needed for nonVoidcells ] 
-    \param matN :: Material number
-           -1 : all materials 
-	   -2 : all non zero materials
-	   > 1000 : materials containing zaid
-    \param keyName :: keyName
-    \return vector of cell indexes
-   */
-{
-  ELog::RegMethod RegA("objectSupport[F]","getCellSelection");
-
-
-  std::vector<int> cells;
-  // NOTE that getting all the cells from OR is insane
-  if (keyName=="allNonVoid" || keyName=="AllNonVoid")
-    cells=System.getNonVoidCellVector();
-  else if (keyName=="All" || keyName=="all")
-    cells=System.getCellVector();
-  else
-    cells=System.getObjectRange(keyName);
-
-  // PROCESS mat:
-  std::vector<int> Out;
-  std::vector<int> matCell;
-  
-  if (matN>1000)
-    matCell=System.getCellWithZaid(static_cast<size_t>(matN));
-  else  
-    matCell=System.getCellWithMaterial(matN);
-
-  if (!cells.size())
-    throw ColErr::InContainerError<std::string>
-      (keyName,"cell emepty for mat:"+std::to_string(matN));
-
-  std::set_intersection(cells.begin(),cells.end(),
-                        matCell.begin(),matCell.end(),
-                        std::back_inserter(Out));
-  return Out;
-}
 
 template std::vector<int>
 cellSelection(const Simulation&,const std::string&,const std::vector<int>&);

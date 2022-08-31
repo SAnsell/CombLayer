@@ -3,7 +3,7 @@
  
  * File:   essBuild/Bunker.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,7 +80,8 @@ Bunker::Bunker(const std::string& Key)  :
   attachSystem::CellMap(),attachSystem::SurfMap(),
   leftWallFlag(1),rightWallFlag(1),
   roofObj(new BunkerRoof(Key)),
-  wallObj(new BunkerWall(Key))
+  wallObj(new BunkerWall(Key)),
+  revFlag(false)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -123,7 +124,7 @@ Bunker::populate(const FuncDataBase& Control)
   roofThick=Control.EvalVar<double>(keyName+"RoofThick");
   floorThick=Control.EvalVar<double>(keyName+"FloorThick");
 
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   roofMat=ModelSupport::EvalMat<int>(Control,keyName+"RoofMat");
   

@@ -3,7 +3,7 @@
  
  * File:   flexpes/flexpesVariables.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -85,7 +85,6 @@ namespace flexpesVar
   void m1MirrorVariables(FuncDataBase&,const std::string&);
   void splitterVariables(FuncDataBase&,const std::string&);
   void slitPackageVariables(FuncDataBase&,const std::string&);
-  void shieldVariables(FuncDataBase&,const std::string&);
   void wallVariables(FuncDataBase&,const std::string&);
 
    
@@ -230,7 +229,7 @@ m3MirrorVariables(FuncDataBase& Control,
   const Geometry::Vec3D angVec(0,cos(M_PI*37.0/180.0),-sin(M_PI*37.0/180.0));
   const double DLen=14.0-wallThick/sin(M_PI*37.0/180.0);
 
-  PItemGen.setCF<setVariable::CF40>(CF63::outerRadius+DLen);
+  PItemGen.setCF<setVariable::CF25>(CF63::outerRadius+DLen);
   PItemGen.setOuterVoid(0);
   PItemGen.generatePort(Control,viewName+"Port0",
 			Geometry::Vec3D(0,7.5,0),-angVec);
@@ -257,8 +256,8 @@ m3MirrorVariables(FuncDataBase& Control,
   PItemGen.generatePort(Control,pumpName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
 
   const Geometry::Vec3D pAngVec(0,sin(M_PI*37.0/180.0),-cos(M_PI*37.0/180.0));
-  const double PLen=14.0-8.05/cos(M_PI*37.0/180.0);
-  PItemGen.setCF<setVariable::CF40>(CF150::outerRadius+PLen);
+  const double PLen=15.8-8.05/cos(M_PI*37.0/180.0);
+  PItemGen.setCF<setVariable::CF25>(CF150::outerRadius+PLen);
   PItemGen.setOuterVoid(0);
   PItemGen.generatePort(Control,pumpName+"Port2",
 			Geometry::Vec3D(0,0,0),-pAngVec);
@@ -447,8 +446,8 @@ m1MirrorVariables(FuncDataBase& Control,
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setBFlangeCF<CF150>();
   PipeGen.generatePipe(Control,mirrorKey+"OffPipeA",6.8);
-  Control.addVariable(mirrorKey+"OffPipeAFlangeBackXYAngle",-4.0);
-  Control.addVariable(mirrorKey+"OffPipeAFlangeBackXStep",-2.0);
+  Control.addVariable(mirrorKey+"OffPipeAFlangeBXYAngle",-4.0);
+  Control.addVariable(mirrorKey+"OffPipeAFlangeBXStep",-2.0);
 
   const std::string mName=mirrorKey+"M1Tube";
   const double centreOffset(sin(M_PI*4.0/180.0)*6.8/2);  // half 6.8
@@ -460,7 +459,7 @@ m1MirrorVariables(FuncDataBase& Control,
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setAFlangeCF<setVariable::CF150>();
   PipeGen.generatePipe(Control,mirrorKey+"OffPipeB",13.8);
-  Control.addVariable(mirrorKey+"OffPipeBFlangeFrontXStep",-2.0);
+  Control.addVariable(mirrorKey+"OffPipeBFlangeAXStep",-2.0);
   Control.addVariable(mirrorKey+"OffPipeBXStep",2.0);
 
 
@@ -569,7 +568,7 @@ opticsBeamVariables(FuncDataBase& Control,
 
   const Geometry::Vec3D angVec(0,sin(M_PI*35.0/180.0),-cos(M_PI*35.0/180.0));
   const double DLen=17.2-7.55/cos(M_PI*35.0/180.0);
-  PItemGen.setCF<setVariable::CF40>(CF150::outerRadius+DLen);
+  PItemGen.setCF<setVariable::CF25>(CF150::outerRadius+DLen);
   PItemGen.setOuterVoid(0);
   PItemGen.generatePort(Control,collName+"Port2",
 			Geometry::Vec3D(0,0,0),-angVec);
@@ -684,21 +683,6 @@ wallVariables(FuncDataBase& Control,
 }
 
 void
-shieldVariables(FuncDataBase& Control,
-		const std::string& shieldKey)
-  /*!
-    Set the variables for the front end extra shield
-    \param Control :: DataBase to use
-    \param shieldKey :: name before part names
-  */
-{
-  ELog::RegMethod RegA("flexpesVariables[F]","shieldVariables");
-
-
-  return;
-}
-
-void
 frontMaskVariables(FuncDataBase& Control,
 		   const std::string& frontKey)
   /*!
@@ -751,7 +735,6 @@ FLEXPESvariables(FuncDataBase& Control)
   flexpesVar::frontMaskVariables(Control,"FlexPesFrontBeam");
 
   flexpesVar::wallVariables(Control,"FlexPesWallLead");
-  flexpesVar::shieldVariables(Control,"FlexPes");
   flexpesVar::transferVariables(Control,"FlexPes");
   flexpesVar::opticsHutVariables(Control,"FlexPesOpticsHut");
   flexpesVar::opticsBeamVariables(Control,"FlexPesOpticsBeam");

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   tallyInc/objectSupport.h
+ * File:   monteInc/objectSupport.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef tallySystem_objectSupport_h
-#define tallySystem_objectSupport_h
+#ifndef objectSupport_objectSupport_h
+#define objectSupport_objectSupport_h
 
 class Simulation;
 
@@ -44,11 +44,13 @@ namespace objectSupport
 
   template<typename T>
   T cellSelection(const Simulation&,const std::string&,const T&);
-  
-  
-  std::vector<int> getCellSelection(const Simulation&,
-				    const int,
-				    const std::string&);
+    
+  /* REMOVED
+  std::set<int> getCellSelection(const Simulation&,
+				 const int,
+				 const std::string&);
+  */
+
 }
 
 #endif

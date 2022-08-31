@@ -3,7 +3,7 @@
  
  * File:   photon/ModContainer.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
@@ -69,7 +69,8 @@ namespace photonSystem
 {
       
 ModContainer::ModContainer(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,12),
+  attachSystem::ContainedComp(),
+  attachSystem::FixedRotate(Key,12),
   attachSystem::CellMap(),
   FrontFlange(new constructSystem::RingFlange(keyName+"FFlange")),
   BackFlange(new constructSystem::RingFlange(keyName+"BFlange"))
@@ -87,7 +88,7 @@ ModContainer::ModContainer(const std::string& Key) :
 }
 
 ModContainer::ModContainer(const ModContainer& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedRotate(A),
   attachSystem::CellMap(A),  
   length(A.length),
   radius(A.radius),thick(A.thick),mat(A.mat),temp(A.temp),
@@ -110,7 +111,7 @@ ModContainer::operator=(const ModContainer& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
       length=A.length;
       radius=A.radius;
@@ -146,7 +147,7 @@ ModContainer::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("ModContainer","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   radius=Control.EvalVar<double>(keyName+"Radius");
   length=Control.EvalVar<double>(keyName+"Length");

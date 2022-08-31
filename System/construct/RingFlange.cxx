@@ -3,7 +3,7 @@
  
  * File:   construct/RingFlange.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "surfRegister.h"
@@ -57,7 +55,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -148,7 +146,7 @@ void
 RingFlange::insertBolt(Simulation& System,
 		       const double angle,
 		       const double boltSolidAngle,
-		       const std::string& exclude) const
+		       const HeadRule& excludeHR) const
   /*!
     Insert the bolt in to the segmented (or not)
     ring seal
@@ -163,8 +161,8 @@ RingFlange::insertBolt(Simulation& System,
   if (!NSection)
     {
       const int CN=getCell("Ring",0);
-      MonteCarlo::Object* segComp=System.findObjectThrow(CN);
-      segComp->addSurfString(exclude);
+      MonteCarlo::Object* segComp=System.findObjectThrow(CN,"CN from Ring");
+      segComp->addIntersection(excludeHR);
       return;
     }
   
@@ -192,8 +190,9 @@ RingFlange::insertBolt(Simulation& System,
 
   for(const int CN : cellN)
     {
-      MonteCarlo::Object* segComp=System.findObjectThrow(CN);
-      segComp->addSurfString(exclude);
+      MonteCarlo::Object* segComp=
+	System.findObjectThrow(CN,"CN from Ring");
+      segComp->addIntersection(excludeHR);
     }  
   return;
 }
@@ -207,14 +206,13 @@ RingFlange::addWindow(Simulation& System)
 {
   ELog::RegMethod RegA("RingFlange","addWindow");
 
-
   if (windowFlag)
     {
       // Add links: EXTRA:
       const size_t NLink=NConnect();
       if (NLink<12) setNConnect(12);
 
-      std::string Out;
+      HeadRule HR;
       int windowIndex(buildIndex+2000);
       ModelSupport::buildPlane(SMap,windowIndex+1,
 			       Origin+Y*(windowStep-windowThick/2.0),Y);
@@ -222,33 +220,26 @@ RingFlange::addWindow(Simulation& System)
 			       Origin+Y*(windowStep+windowThick/2.0),Y);
 
       // Create window
-      const std::string radSurf=innerStruct.complement().display();
-      Out=ModelSupport::getComposite(SMap,windowIndex,"1 -2  ");
-      System.addCell(MonteCarlo::Object(cellIndex++,windowMat,0.0,Out+radSurf));
-      addCell("window",cellIndex-1);
+      const HeadRule radSurf=innerStruct.complement();
+      HR=ModelSupport::getHeadRule(SMap,windowIndex,"1 -2");
+      makeCell("window",System,cellIndex++,windowMat,0.0,HR*radSurf);
       
       if (windowFlag>0)
 	{
-	  Out=ModelSupport::getComposite(SMap,windowIndex,buildIndex," 2 -2M ");
-	  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+radSurf));
-	  addCell("window",cellIndex-1);
-	  Out=ModelSupport::getComposite(SMap,windowIndex,buildIndex," -1 1M ");
-	  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+radSurf));
-	  addCell("window",cellIndex-1);
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 ");
-
+	  HR=ModelSupport::getHeadRule(SMap,windowIndex,buildIndex,"2 -2M");
+      	  makeCell("window",System,cellIndex++,0,0.0,HR*radSurf);
+	  HR=ModelSupport::getHeadRule(SMap,windowIndex,buildIndex,"-1 1M");
+	  makeCell("window",System,cellIndex++,0,0.0,HR*radSurf);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2");
 	}
       // exclude:
-      addOuterUnionSurf(Out+radSurf);
+      addOuterUnionSurf(HR*radSurf);
 
       // Add links:	  
       setConnect(6,Origin+Y*(windowStep-windowThick/2.0),-Y);
       setConnect(7,Origin+Y*(windowStep+windowThick/2.0),Y);
       setLinkSurf(6,-SMap.realSurf(windowIndex+1));
       setLinkSurf(7,SMap.realSurf(windowIndex+2));
-
-
-
     }
   
   return;
@@ -265,11 +256,11 @@ RingFlange::addBolts(Simulation& System)
 
   if (nBolts>0)
     {
-      std::string Out;
+      HeadRule HR;
       const double boltSolidAngle
 	((180.0/M_PI)*std::atan((boltRadius+Geometry::zeroTol)/boltCentDist));
-      const std::string FBStr=
-	ModelSupport::getComposite(SMap,buildIndex," 1 -2 ");
+      const HeadRule fbHR=
+	ModelSupport::getHeadRule(SMap,buildIndex,"1 -2");
       
       const double angleBR=360.0/static_cast<double>(nBolts);
       Geometry::Vec3D BAxis(Z*boltCentDist);
@@ -289,12 +280,11 @@ RingFlange::addBolts(Simulation& System)
           ModelSupport::buildCylinder(SMap,boltIndex+7,boltC,Y,boltRadius);
           QBolt.rotate(BAxis);
 	  
-	  Out=ModelSupport::getComposite(SMap,boltIndex," -7 ");
-	  System.addCell(MonteCarlo::Object(cellIndex++,boltMat,0.0,Out+FBStr));
-          addCell("Bolts",cellIndex-1);
+	  HR=ModelSupport::getHeadRule(SMap,boltIndex,"-7");
+	  makeCell("Bolts",System,cellIndex++,boltMat,0.0,HR*fbHR);
 	  // exclude:
-	  Out=ModelSupport::getComposite(SMap,boltIndex," 7 ");
-	  insertBolt(System,angleBCent,boltSolidAngle,Out);
+	  HR=ModelSupport::getHeadRule(SMap,boltIndex,"7");
+	  insertBolt(System,angleBCent,boltSolidAngle,HR);
 	  
 	  angleBCent+=angleBR;
 	  boltIndex+=10; // AT END

@@ -3,7 +3,7 @@
  
  * File:   t1Build/SideCoolTarget.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,8 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "surfRegister.h"
@@ -56,7 +54,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ExternalCut.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
@@ -152,7 +150,7 @@ SideCoolTarget::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("SideCoolTarget","populate");
   
-  attachSystem::FixedOffset::populate(Control);
+  attachSystem::FixedRotate::populate(Control);
   
   mainLength=Control.EvalVar<double>(keyName+"MainLength");
   xRadius=Control.EvalVar<double>(keyName+"XRadius");
@@ -257,58 +255,59 @@ SideCoolTarget::createSurfaces()
 void
 SideCoolTarget::createObjects(Simulation& System)
   /*!
-    Adds the Chip guide components
+    Creates the objects for a side cooled target
     \param System :: Simulation to create objects in
   */
 {
   ELog::RegMethod RegA("SideCoolTarget","createObjects");
   
+
+  HeadRule HR;
+
   // Tungsten inner core
-
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7");
-  System.addCell(MonteCarlo::Object(cellIndex++,wMat,targetTemp,Out));
-  addBoundarySurf(-SMap.realSurf(buildIndex+17));
-
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -7");
+  makeCell("Core",System,cellIndex++,wMat,targetTemp,HR);
+  
   // Cladding
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 -17 (-1:2:7)");
-  System.addCell(MonteCarlo::Object(cellIndex++,taMat,waterTemp,Out));
-
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 -17 (-1:2:7)");
+  makeCell("Cladding",System,cellIndex++,taMat,waterTemp,HR);
+  
   // Water : Stops at the Tungsten edge
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 -27 23 -24 101 17");
-  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,waterTemp,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 -27 -23 24 -101 17");
-  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,waterTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 -27 23 -24 101 17");
+  makeCell("Water",System,cellIndex++,waterMat,waterTemp,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 -27 -23 24 -101 17");
+  makeCell("Water",System,cellIndex++,waterMat,waterTemp,HR);
+
   // front face
-  Out=ModelSupport::getComposite(SMap,buildIndex,"21 -11 -27 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,waterTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -11 -27");
+  makeCell("Water",System,cellIndex++,waterMat,waterTemp,HR);
   
   // Pressure
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
 				 "11 -12 -37 33 -34 101 17 (27:-23:24)");
-  System.addCell(MonteCarlo::Object(cellIndex++,taMat,externTemp,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  makeCell("Pressure",System,cellIndex++,taMat,externTemp,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
 				 "11 -12 -37 -35 36 -101 17 (27:23:-24)");
-  System.addCell(MonteCarlo::Object(cellIndex++,taMat,externTemp,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex,"31 -11 -37 (-21 : 27) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,taMat,externTemp,Out));
-
+  makeCell("Pressure",System,cellIndex++,taMat,externTemp,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"31 -11 -37 (-21 : 27)");
+  makeCell("Pressure",System,cellIndex++,taMat,externTemp,HR);
+  
   // clearance void
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
 				 "11 -12 -47 101 17 (37:-33:34)");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
 				 "11 -12 -47 -101 17 (37:35:-36)");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex,"41 -11 -47 (-31 : 37) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"41 -11 -47 (-31 : 37)");
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
   // Tail to be replaced with something
-  Out=ModelSupport::getComposite(SMap,buildIndex,"12 -42 -47 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -42 -47 ");
+  makeCell("Tail",System,cellIndex++,0,0.0,HR);
 
   // Set EXCLUDE:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"41 -42 -47");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"41 -42 -47");
+  addOuterSurf(HR);
   return;
 }
 
@@ -342,37 +341,19 @@ SideCoolTarget::createLinks()
 
 
 void
-SideCoolTarget::addProtonLine(Simulation& System,
-			      const attachSystem::FixedComp& refFC,
-			      const long int index)
+SideCoolTarget::addProtonLine(Simulation& System)
   /*!
     Add a proton void cell
     \param System :: Simualation
-    \param refFC :: reflector edge
-    \param index :: Index of the proton cutting surface [6 typically (-7)]
    */
 {
   ELog::RegMethod RegA("SideCoolTarget","addProtonLine");
 
-  // 0 ::  front face of target
-  PLine->createAll(System,*this,0);
-  createBeamWindow(System,1);
-  System.populateCells();
-  System.createObjSurfMap();
+  PLine->setCutSurf("TargetSurf",*this,"front");
+  PLine->setCutSurf("RefBoundary",getRule("FrontPlate"));
+  PLine->createAll(System,*this,1);
+  createBeamWindow(System,-1);
   return;
-}
-
-std::vector<int>  
-SideCoolTarget::getInnerCells() const
-  /*!
-    Get the main inner cells
-    \return Inner W and Ta cladding vector
-  */
-{
-  std::vector<int> Out;
-  Out.push_back(getMainBody());
-  Out.push_back(buildIndex+2);
-  return Out;
 }
 
 void

@@ -3,7 +3,7 @@
  
  * File:   t1Build/H2Moderator.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,8 +39,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -57,17 +55,23 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
-#include "LayerComp.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
+#include "ExternalCut.h"
+#include "LayerComp.h"
 #include "H2Moderator.h"
 
 namespace ts1System
 {
 
 H2Moderator::H2Moderator(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::LayerComp(6),
-  attachSystem::FixedOffset(Key,6)
+  attachSystem::ContainedComp(),
+  attachSystem::LayerComp(6),
+  attachSystem::FixedRotate(Key,6),
+  attachSystem::CellMap(),
+  attachSystem::ExternalCut()
 
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -77,8 +81,11 @@ H2Moderator::H2Moderator(const std::string& Key)  :
 
 
 H2Moderator::H2Moderator(const H2Moderator& A) : 
-  attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
-  attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::LayerComp(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::CellMap(A),
+  attachSystem::ExternalCut(A),
   width(A.width),height(A.height),depth(A.depth),
   viewSphere(A.viewSphere),innerThick(A.innerThick),
   vacThick(A.vacThick),midThick(A.midThick),
@@ -104,7 +111,9 @@ H2Moderator::operator=(const H2Moderator& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
 
       width=A.width;
       height=A.height;
@@ -142,7 +151,7 @@ H2Moderator::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("H2Moderator","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
@@ -239,7 +248,7 @@ H2Moderator::createSurfaces()
 			       Origin+Z*(height/2.0+T[5]),Z);
       HI+=10;
     }
-  // Special 
+  // curved view surfaces
   ModelSupport::buildSphere(SMap,buildIndex+17,
    			    Origin-Y*(innerThick+depth/2.0-viewSphere),
    			    viewSphere);
@@ -251,64 +260,51 @@ H2Moderator::createSurfaces()
 }
 
 void
-H2Moderator::addToInsertChain(attachSystem::ContainedComp& CC) const
-  /*!
-    Adds this object to the containedComp to be inserted.
-    \param CC :: ContainedComp object to add to this
-    THIS IS JUNK TO BE REMOVED
-  */
-{
-  for(int i=buildIndex+1;i<cellIndex;i++)
-    CC.addInsertCell(i);
-  return;
-}
-
-void
 H2Moderator::createObjects(Simulation& System)
   /*!
-    Adds the Chip guide components
+    Builds the H2 moderator
     \param System :: Simulation to create objects in
   */
 {
   ELog::RegMethod RegA("H2Moderator","createObjects");
 
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-7 -8 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,lh2Mat,h2Temp,Out));
-
+  HeadRule HR;
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 -8 3 -4 5 -6");
+  makeCell("H2",System,cellIndex++,lh2Mat,h2Temp,HR);
   // Inner al
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-17 -18 13 -14 15 -16 "
-				 " (7:8:-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,h2Temp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 -18 13 -14 15 -16 "
+				 " (7:8:-3:4:-5:6)");
+  makeCell("InnerAl",System,cellIndex++,alMat,h2Temp,HR);
 
   // Vac layer
-  Out=ModelSupport::getComposite(SMap,buildIndex,"21 -22 23 -24 25 -26 "
-				 " (17:18:-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -22 23 -24 25 -26 "
+				 " (17:18:-13:14:-15:16)");
+  makeCell("InnerVoid",System,cellIndex++,0,0.0,HR);
 
   // Mid al
-  Out=ModelSupport::getComposite(SMap,buildIndex,"31 -32 33 -34 35 -36 "
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"31 -32 33 -34 35 -36 "
 				 " (-21:22:-23:24:-25:26) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
+  makeCell("MidAl",System,cellIndex++,alMat,0.0,HR);
 
   // Tertiary Layer
-  Out=ModelSupport::getComposite(SMap,buildIndex,"41 -42 43 -44 45 -46 "
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"41 -42 43 -44 45 -46 "
 				 " (-31:32:-33:34:-35:36) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  makeCell("MidVoid",System,cellIndex++,0,0.0,HR);
+
 
   // Outer Al
-  Out=ModelSupport::getComposite(SMap,buildIndex,"51 -52 53 -54 55 -56 "
-				 " (-41:42:-43:44:-45:46) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"51 -52 53 -54 55 -56 "
+				 " (-41:42:-43:44:-45:46)");
+  makeCell("OuterAl",System,cellIndex++,alMat,0.0,HR);
 
   // Outer Al
-  Out=ModelSupport::getComposite(SMap,buildIndex,"61 -62 63 -64 65 -66 "
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"61 -62 63 -64 65 -66 "
 				 " (-51:52:-53:54:-55:56) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  makeCell("OuterVoid",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 61 -62 63 -64 65 -66 ");
-  addOuterSurf(Out);
-  addBoundarySurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"61 -62 63 -64 65 -66");
+  addOuterSurf(HR);
 
   return;
 }
@@ -336,6 +332,9 @@ H2Moderator::createLinks()
   FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+65));
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+66));
 
+  // externl cut for LW wrapper
+  const HeadRule HR=getHeadRule(SMap,buildIndex,"-61:64");
+  ExternalCut::setCutSurf("EdgeCut",HR);
   return;
 }
 
@@ -452,17 +451,6 @@ H2Moderator::getLayerSurf(const size_t layerIndex,
   return (sideIndex<0) ? -SMap.realSurf(surfN) : SMap.realSurf(surfN);
 }
 
-
-std::string
-H2Moderator::getComposite(const std::string& surfList) const
-  /*!
-    Exposes local version of getComposite
-    \param surfList :: surface list
-    \return Composite string
-  */
-{
-  return ModelSupport::getComposite(SMap,buildIndex,surfList);
-}
 
 void
 H2Moderator::createAll(Simulation& System,

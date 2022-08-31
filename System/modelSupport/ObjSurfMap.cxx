@@ -291,38 +291,14 @@ ObjSurfMap::findNextObject(const int SN,
   ELog::RegMethod RegA("ObjSurfMap","findNextObject");
 
   const STYPE& MVec=getObjects(SN);
-
+  
   for(MonteCarlo::Object* MPtr : MVec)
     {
       if (MPtr->getName()!=objExclude && 
 	  MPtr->isDirectionValid(Pos,SN))
 	return MPtr;
     }
-  
-  // DEBUG CODE FOR FAILURE:
-  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
-
-  ELog::EM<<"Failure to find surface on "<<SN<<" :: "
-	  <<Pos<<ELog::endCrit;
-
-  ELog::EM<<"EXCLUDE  "<<objExclude<<" "
-	  <<Pos<<" :: "<<SN<<ELog::endDiag;
-  if (SurI.getSurf(abs(SN)))
-    {
-      Geometry::Surface* SPtr=SurI.getSurf(abs(SN));
-      ELog::EM<<"Surface == "<<*SPtr<<ELog::endWarn;
-      ELog::EM<<"Distance [should be 0 ]== "<<SPtr->distance(Pos)<<ELog::endDiag;
-      const Geometry::Vec3D N = SPtr->surfaceNormal(Pos);
-      ELog::EM<<"SurfaceNormal == "<<N<<ELog::endDiag;
-    }
-  else
-    {
-      ELog::EM<<"Failed to get == "<<SN<<ELog::endErr;
-    }
     
-  for(const MonteCarlo::Object* MPtr : MVec)
-    ELog::EM<<"Common surf Cell  == "<<MPtr->getName()<<ELog::endDiag;
-
   return 0;
 }
 

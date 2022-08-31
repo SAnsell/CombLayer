@@ -3,7 +3,7 @@
  
  * File:   constructInc/doublePortItem.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,16 +33,13 @@ namespace constructSystem
   
   /*!
     \class doublePortItem
-    \brief Calculates the intersection port with an object
+    \brief This is double radius pipe attachement 
     \author S. Ansell
     \date January 2018
     \version 1.0
-    
-    This is NOT a standard FixedComp  because it 
-    is an adjoint to an existing FixedComp. 
-    The problem is the that this item MUST establish
-    a full basis set or createUnitVector cannot work 
-    when called from this object.
+
+    This is a portItem which has two radii the first and the
+    second and a closure between them e.g. for a telescopic pipe.
   */
 
 class doublePortItem :
@@ -50,14 +47,16 @@ class doublePortItem :
 {
  private:
   
-  double externPartLen;     ///< Length of larger item
-  double radiusB;           ///< larger radius of pipe
+  double lengthA;     ///< Length of larger item
+  double lengthB;     ///< Length of larger item
+  double radiusB;             ///< larger radius of pipe
+  double wallB;               ///< Wall thickness of B
 
   void createSurfaces();
   
-  virtual void constructOuterFlange(Simulation&,
-				    const ModelSupport::LineTrack&,
-				    const size_t,const size_t);
+  virtual void constructObject(Simulation&,const HeadRule&,const HeadRule&);
+  void constructObjectIncreasing(Simulation&,const HeadRule&,const HeadRule&);
+  void constructObjectReducing(Simulation&,const HeadRule&,const HeadRule&);
   
  public:
 
@@ -68,8 +67,6 @@ class doublePortItem :
   virtual ~doublePortItem();
 
   virtual void populate(const FuncDataBase&);
-  
-  void setLarge(const double,const double);
   
 };
   

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/TESTBEAM.cxx
+ * File:   /TESTBEAM.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,9 +54,9 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotateUnit.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
@@ -85,17 +85,17 @@ namespace essSystem
 TESTBEAM::TESTBEAM(const std::string& keyName) :
   attachSystem::CopiedComp("testBeam",keyName),
   startPoint(0),stopPoint(0),
-  testAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
+  testAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
 
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
   
-  TwinA(new constructSystem::TwinChopper(newName+"TwinA")),
-  ADisk(new constructSystem::DiskChopper(newName+"BladeA")),
-  BDisk(new constructSystem::DiskChopper(newName+"BladeB")),
+  TwinA(new essConstruct::TwinChopper(newName+"TwinA")),
+  ADisk(new essConstruct::DiskChopper(newName+"BladeA")),
+  BDisk(new essConstruct::DiskChopper(newName+"BladeB")),
 
-  ChopperT0(new constructSystem::SingleChopper(newName+"ChopperT0")), 
-  T0Disk(new constructSystem::DiskChopper(newName+"T0Disk")),
-  T0Motor(new constructSystem::Motor(newName+"T0Motor")),
+  ChopperT0(new essConstruct::SingleChopper(newName+"ChopperT0")), 
+  T0Disk(new essConstruct::DiskChopper(newName+"T0Disk")),
+  T0Motor(new essConstruct::Motor(newName+"T0Motor")),
   CryoA(new constructSystem::Cryostat(newName+"CryoA"))
   /*!
     Constructor
@@ -132,9 +132,9 @@ TESTBEAM::~TESTBEAM()
 
 void
 TESTBEAM::buildBunkerUnits(Simulation& System,
-                        const attachSystem::FixedComp& FA,
-                        const long int startIndex,
-                        const int bunkerVoid)
+         const attachSystem::FixedComp& FA,
+         const long int startIndex,
+         const int bunkerVoid)
   /*!
     Build all the components in the bunker space
     \param System :: simulation
@@ -150,7 +150,7 @@ TESTBEAM::buildBunkerUnits(Simulation& System,
 
   T0Disk->addInsertCell(ChopperT0->getCell("Void"));
   T0Disk->createAll(System,ChopperT0->getKey("Main"),0,
-                    ChopperT0->getKey("BuildBeam"),0);
+     ChopperT0->getKey("BuildBeam"),0);
 
   //  T0Motor->addInsertCell(bunkerVoid);
   //  T0Motor->createAll(System,ChopperT0->getKey("Main"),1);
@@ -164,7 +164,7 @@ TESTBEAM::buildBunkerUnits(Simulation& System,
 
   ADisk->addInsertCell(TwinA->getCell("Void"));
   ADisk->createAll(System,TwinA->getKey("MotorTop"),0,
-                   TwinA->getKey("Beam"),-1);
+    TwinA->getKey("Beam"),-1);
   TwinA->insertAxle(System,*ADisk,attachSystem::CellMap());
   //  DiskA->createAll(System,
   return;
@@ -206,7 +206,7 @@ void
 TESTBEAM::build(Simulation& System,
 	    const GuideItem& GItem,
 	    const Bunker& bunkerObj,
-	    const int voidCell)
+	    const int)
   /*!
     Carry out the full build
     \param System :: Simulation system
@@ -232,12 +232,12 @@ TESTBEAM::build(Simulation& System,
   FocusA->setBack(GItem.getKey("Beam"),-2);
   FocusA->createAll(System,*testAxis,-3,*testAxis,-3);
 
-  if (stopPoint==1) return;                      // STOP At monolith
-                                                 // edge  
+  if (stopPoint==1) return;       // STOP At monolith
+    // edge  
   buildBunkerUnits(System,FocusA->getKey("Guide0"),2,
-                   bunkerObj.getCell("MainVoid"));
+    bunkerObj.getCell("MainVoid"));
 
-  if (stopPoint==2) return;                      // STOP At bunker edge
+  if (stopPoint==2) return;       // STOP At bunker edge
 
   
   return;

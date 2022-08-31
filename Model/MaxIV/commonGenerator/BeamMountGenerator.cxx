@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/BeamMountGenerator.cxx
+ * File:   commonGenerator/BeamMountGenerator.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -152,7 +152,7 @@ BeamMountGenerator::generateMount(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("BeamMountGenerator","generatorMount");
 
-  Control.addVariable(keyName+"XYAngle",xyAngle);
+  Control.addVariable(keyName+"ZAngle",xyAngle);
 
   Control.addVariable(keyName+"BlockFlag",blockType);
   Control.addVariable(keyName+"UpFlag",upFlag);

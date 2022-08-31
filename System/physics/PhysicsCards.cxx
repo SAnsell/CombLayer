@@ -262,13 +262,14 @@ PhysicsCards::hasWImpFlag(const std::string& particleType) const
 }
 
 void
-PhysicsCards::addHistpCells(const std::vector<int>& AL)
+PhysicsCards::addHistpCells(const std::set<int>& AL)
   /*!
     Adds a cell list to the hist tape file
     \param AL :: List to add
    */
 {
   ELog::RegMethod RegA("PhysicsCards","addHistpCells");
+
   for(const int CellN : AL)
     histpCells.emplace(CellN);
   return;

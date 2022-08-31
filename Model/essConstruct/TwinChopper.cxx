@@ -3,7 +3,7 @@
  
  * File:   essConstruct/TwinChopper.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -59,6 +57,7 @@
 #include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
@@ -70,15 +69,15 @@
 #include "TwinBase.h"
 #include "TwinChopper.h"
 
-namespace constructSystem
+namespace essConstruct
 {
 
 TwinChopper::TwinChopper(const std::string& Key) :
   TwinBase(Key),
-  frontFlange(new constructSystem::boltRing(Key,"FrontFlange")),
-  backFlange(new constructSystem::boltRing(Key,"BackFlange")),
-  IPA(new constructSystem::InnerPort(Key+"IPortA")),
-  IPB(new constructSystem::InnerPort(Key+"IPortB"))
+  frontFlange(new essConstruct::boltRing(Key,"FrontFlange")),
+  backFlange(new essConstruct::boltRing(Key,"BackFlange")),
+  IPA(new essConstruct::InnerPort(Key+"IPortA")),
+  IPB(new essConstruct::InnerPort(Key+"IPortB"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName

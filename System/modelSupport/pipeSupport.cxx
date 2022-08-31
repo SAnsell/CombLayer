@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/pipeSupport.cxx
+ * File:   modelSupport/pipeSupport.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,10 +45,9 @@
 #include "HeadRule.h"
 #include "Importance.h"
 #include "Object.h"
-#include "Source.h"
 #include "LineTrack.h"
 
-///\file System/process/pipeSupport.cxx
+///\file System/modelSupport/pipeSupport.cxx
 
 namespace ModelSupport
 {
@@ -83,7 +82,6 @@ calcLineTrack(Simulation& System,
     }
   return;
 }
-
-
+  
 } // NAMESPACE ModelSupport
 

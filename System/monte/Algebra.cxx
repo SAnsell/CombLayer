@@ -3,7 +3,7 @@
  
  * File:   monte/Algebra.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -334,9 +334,8 @@ Algebra::constructShannonDivision(const int mcnpSN)
 {
   ELog::RegMethod RegA("Algebra","constructShannonDivision ");
 
-  bool outFlag(1);
   const int PSN=convertMCNPSurf(mcnpSN);
-  const int realPNS=getSurfIndex(PSN);
+  //  const int realPNS=getSurfIndex(PSN);
   
 
   Acomp FaT(F);
@@ -417,8 +416,8 @@ Algebra::constructShannonExpansion()
       // note that a -> b does not imply b' -> a'. 
       const int& SNA=IP.first;
       const int& SNB=IP.second;
-      const int realSNA=getSurfIndex(SNA);
-      const int realSNB=getSurfIndex(SNB);
+      //      const int realSNA=getSurfIndex(SNA);
+      //      const int realSNB=getSurfIndex(SNB);
 
       Acomp FaFbT(FX);
       FaFbT.resolveTrue(-SNA);     // a=0

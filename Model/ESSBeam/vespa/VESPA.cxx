@@ -3,7 +3,7 @@
 
  * File:   ESSBeam/vespa/VESPA.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,9 +54,10 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotateUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
@@ -71,6 +72,7 @@
 #include "GuideItem.h"
 #include "GuideLine.h"
 #include "DiskChopper.h"
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
@@ -97,7 +99,7 @@ namespace essSystem
 VESPA::VESPA(const std::string& keyName) :
   attachSystem::CopiedComp("vespa",keyName),
   startPoint(0),stopPoint(0),
-  vespaAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
+  vespaAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
   
   // Guide into the monolith
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
@@ -108,25 +110,25 @@ VESPA::VESPA(const std::string& keyName) :
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   FocusC(new beamlineSystem::GuideLine(newName+"FC")),
 
-  TwinChopperA(new constructSystem::TwinChopperFlat(newName+"TwinChopperA")),
-  PSCDiskTopA(new constructSystem::DiskChopper(newName+"PSCTopBladeA")),
-  PSCDiskBottomA(new constructSystem::DiskChopper(newName+"PSCBottomBladeA")),
+  TwinChopperA(new essConstruct::TwinChopperFlat(newName+"TwinChopperA")),
+  PSCDiskTopA(new essConstruct::DiskChopper(newName+"PSCTopBladeA")),
+  PSCDiskBottomA(new essConstruct::DiskChopper(newName+"PSCBottomBladeA")),
 
   // Joining Pipe AB
   JPipeAB(new constructSystem::VacuumPipe(newName+"JoinPipeAB")),
   FocusD(new beamlineSystem::GuideLine(newName+"FD")),
 
-  TwinChopperB(new constructSystem::TwinChopperFlat(newName+"TwinChopperB")),
-  PSCDiskTopB(new constructSystem::DiskChopper(newName+"PSCTopBladeB")),
-  PSCDiskBottomB(new constructSystem::DiskChopper(newName+"PSCBottomBladeB")),
+  TwinChopperB(new essConstruct::TwinChopperFlat(newName+"TwinChopperB")),
+  PSCDiskTopB(new essConstruct::DiskChopper(newName+"PSCTopBladeB")),
+  PSCDiskBottomB(new essConstruct::DiskChopper(newName+"PSCBottomBladeB")),
 
   // Joining Pipe AB
   JPipeBC(new constructSystem::VacuumPipe(newName+"JoinPipeBC")),
   FocusE(new beamlineSystem::GuideLine(newName+"FE")),
 
-  TwinChopperC(new constructSystem::TwinChopperFlat(newName+"TwinChopperC")),
-  PSCDiskTopC(new constructSystem::DiskChopper(newName+"PSCTopBladeC")),
-  PSCDiskBottomC(new constructSystem::DiskChopper(newName+"PSCBottomBladeC")),
+  TwinChopperC(new essConstruct::TwinChopperFlat(newName+"TwinChopperC")),
+  PSCDiskTopC(new essConstruct::DiskChopper(newName+"PSCTopBladeC")),
+  PSCDiskBottomC(new essConstruct::DiskChopper(newName+"PSCBottomBladeC")),
 
   // Joining Pipe C to outer
   JPipeCOut(new constructSystem::VacuumPipe(newName+"JoinPipeCOut")),
@@ -136,8 +138,8 @@ VESPA::VESPA(const std::string& keyName) :
   FocusG(new beamlineSystem::GuideLine(newName+"FG")),
 
   // FOC
-  ChopperFOC(new constructSystem::SingleChopper(newName+"ChopperFOC")),
-  FOCDisk(new constructSystem::DiskChopper(newName+"FOCBlade")),
+  ChopperFOC(new essConstruct::SingleChopper(newName+"ChopperFOC")),
+  FOCDisk(new essConstruct::DiskChopper(newName+"FOCBlade")),
 
   VPipeH(new constructSystem::VacuumPipe(newName+"PipeH")),
   FocusH(new beamlineSystem::GuideLine(newName+"FH")),
@@ -148,8 +150,8 @@ VESPA::VESPA(const std::string& keyName) :
   FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
 
   OutPitT0(new constructSystem::ChopperPit(newName+"OutPitT0")),
-  ChopperT0(new constructSystem::SingleChopper(newName+"ChopperT0")),
-  T0Disk(new constructSystem::DiskChopper(newName+"T0Disk")),
+  ChopperT0(new essConstruct::SingleChopper(newName+"ChopperT0")),
+  T0Disk(new essConstruct::DiskChopper(newName+"T0Disk")),
   T0ExitPort(new constructSystem::HoleShape(newName+"T0ExitPort")),
   
   OutPitA(new constructSystem::ChopperPit(newName+"OutPitA")),
@@ -157,19 +159,19 @@ VESPA::VESPA(const std::string& keyName) :
   
   VPipeOutA(new constructSystem::VacuumPipe(newName+"PipeOutA")),
   FocusOutA(new beamlineSystem::GuideLine(newName+"FOutA")),
-  ChopperOutA(new constructSystem::SingleChopper(newName+"ChopperOutA")),
+  ChopperOutA(new essConstruct::SingleChopper(newName+"ChopperOutA")),
 
   OutPitB(new constructSystem::ChopperPit(newName+"OutPitB")),
   PitBPortA(new constructSystem::HoleShape(newName+"PitBPortA")),
   PitBPortB(new constructSystem::HoleShape(newName+"PitBPortB")),
   
-  FOCDiskB(new constructSystem::DiskChopper(newName+"FOCBladeB")),
+  FOCDiskB(new essConstruct::DiskChopper(newName+"FOCBladeB")),
   ShieldB(new constructSystem::TriangleShield(newName+"ShieldB")),
   VPipeOutB(new constructSystem::VacuumPipe(newName+"PipeOutB")),
   FocusOutB(new beamlineSystem::GuideLine(newName+"FOutB")),
   
-  ChopperOutB(new constructSystem::SingleChopper(newName+"ChopperOutB")),
-  FOCDiskOutB(new constructSystem::DiskChopper(newName+"FOCBladeOutB")),
+  ChopperOutB(new essConstruct::SingleChopper(newName+"ChopperOutB")),
+  FOCDiskOutB(new essConstruct::DiskChopper(newName+"FOCBladeOutB")),
   
   ShieldC(new constructSystem::LineShield(newName+"ShieldC")),
   VPipeOutC(new constructSystem::VacuumPipe(newName+"PipeOutC")),
@@ -400,6 +402,7 @@ VESPA::buildOutGuide(Simulation& System,
   //  added before:
   //    OutPitT0->addFrontWall(bunkerObj,2);
   //
+	
   OutPitT0->addInsertCell(voidCell);
   OutPitT0->createAll(System,FW,startIndex);
 
@@ -421,7 +424,7 @@ VESPA::buildOutGuide(Simulation& System,
 
   OutPitA->addInsertCell(voidCell);
   OutPitA->createAll(System,FocusWall->getKey("Shield"),2);
-  
+
   ShieldA->addInsertCell(voidCell);
   ShieldA->addInsertCell(OutPitT0->getCells("Outer"));
   ShieldA->addInsertCell(OutPitT0->getCells("MidLayer"));
@@ -430,7 +433,7 @@ VESPA::buildOutGuide(Simulation& System,
   ShieldA->addInsertCell(OutPitA->getCells("MidLayer"));
   ShieldA->setBack(OutPitA->getKey("Mid"),1);
   ShieldA->createAll(System,FocusWall->getKey("Shield"),2);
-
+  
   // Elliptic 6m section
   VPipeOutA->addAllInsertCell(ShieldA->getCells("Void"));
   VPipeOutA->setFront(OutPitT0->getKey("Mid"),2);
@@ -449,11 +452,13 @@ VESPA::buildOutGuide(Simulation& System,
   FOCDiskB->addInsertCell(ChopperOutA->getCell("Void"));
   FOCDiskB->createAll(System,ChopperOutA->getKey("Main"),0);
   ChopperOutA->insertAxle(System,*FOCDiskB); 
- 
+
   ShieldB->addInsertCell(OutPitA->getCells("Outer"));
   ShieldB->addInsertCell(voidCell);
   ShieldB->setFront(OutPitA->getKey("Mid"),2);
+  ELog::EM<<"XXXX == "<<ELog::endDiag;
   ShieldB->createAll(System,ChopperOutA->getKey("Beam"),2);
+  ELog::EM<<"XXXX == "<<ELog::endDiag; 
 
   VPipeOutB->addAllInsertCell(ShieldB->getCells("Void"));
   VPipeOutB->addAllInsertCell(OutPitA->getCells("Collet"));
@@ -463,6 +468,7 @@ VESPA::buildOutGuide(Simulation& System,
 
   FocusOutB->addInsertCell(VPipeOutB->getCell("Void"));
   FocusOutB->createAll(System,*VPipeOutB,-1,*VPipeOutB,-1);
+
 
   // Mid section array:
   ShieldArray[0]->addInsertCell(voidCell);
@@ -489,7 +495,7 @@ VESPA::buildOutGuide(Simulation& System,
   
   const size_t lastIndex(ShieldArray.size()-1);
   for(size_t i=1;i<ShieldArray.size();i++)
-    {
+    {	  
       ShieldArray[i]->addInsertCell(voidCell);
       ShieldArray[i]->setFront(*ShieldArray[i-1],2);
       if (i+1==ShieldArray.size())
@@ -720,21 +726,22 @@ VESPA::build(Simulation& System,
                    bunkerObj.getCell("MainVoid"));
 
   if (stopPoint==2) return;                      // STOP At bunker edge
-
+  ELog::EM<<"ASDFSADF "<<ELog::endDiag;
   // IN WALL
   // Make bunker insert
   BInsert->setBunkerObject(bunkerObj);
   BInsert->createAll(System,FocusH->getKey("Guide0"),2);
-  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
+
+  //attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
 
   // using 7 : mid point
   FocusWall->addInsertCell(BInsert->getCell("Void"));
   FocusWall->createAll(System,*BInsert,7,*BInsert,7);
   OutPitT0->addFrontWall(bunkerObj,2);
-  
+  ELog::EM<<"ASDFSADF "<<ELog::endDiag;
+
   if (stopPoint==3) return;                      // STOP At bunker exit
   buildOutGuide(System,FocusWall->getKey("Guide0"),2,voidCell);
-
 
   if (stopPoint==4) return;                      // STOP At hutch
   buildHut(System,ChopperOutB->getKey("Beam"),2,voidCell);

@@ -3,7 +3,7 @@
  
  * File:   essBuild/GuideBay.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,9 +61,9 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "SurInter.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -78,7 +78,7 @@ namespace essSystem
 
 GuideBay::GuideBay(const std::string& Key,const size_t BN)  :
   attachSystem::ContainedGroup("Inner","Outer"),
-  attachSystem::FixedOffset(Key+std::to_string(BN),6),
+  attachSystem::FixedRotate(Key+std::to_string(BN),6),
   attachSystem::CellMap(),
   baseKey(Key),bayNumber(BN),
   nItems(0)
@@ -89,7 +89,7 @@ GuideBay::GuideBay(const std::string& Key,const size_t BN)  :
 {}
 
 GuideBay::GuideBay(const GuideBay& A) : 
-  attachSystem::ContainedGroup(A),attachSystem::FixedOffset(A),
+  attachSystem::ContainedGroup(A),attachSystem::FixedRotate(A),
   attachSystem::CellMap(A),
   baseKey(A.baseKey),bayNumber(A.bayNumber),
   viewAngle(A.viewAngle),innerHeight(A.innerHeight),
@@ -113,7 +113,7 @@ GuideBay::operator=(const GuideBay& A)
   if (this!=&A)
     {
       attachSystem::ContainedGroup::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
       viewAngle=A.viewAngle;
       innerHeight=A.innerHeight;
@@ -160,7 +160,7 @@ GuideBay::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("GuideBay","populate");
 
-  FixedOffset::populate(baseKey,Control);
+  FixedRotate::populate(baseKey,Control);
   
   height=Control.EvalTail<double>(keyName,baseKey,"Height");
   depth=Control.EvalTail<double>(keyName,baseKey,"Depth");
@@ -174,25 +174,7 @@ GuideBay::populate(const FuncDataBase& Control)
   nItems=Control.EvalTail<size_t>(keyName,baseKey,"NItems");
   return;
 }
-  
-  
-void
-GuideBay::createUnitVector(const attachSystem::FixedComp& FC,
-                           const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Linked object
-    \param sideIndex :: linkPoint index
-  */
-{
-  ELog::RegMethod RegA("GuideBay","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
-  return;
-}
-  
+    
 void
 GuideBay::createSurfaces()
   /*!
@@ -428,6 +410,7 @@ GuideBay::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
+
   createSurfaces();
   createObjects(System);
   createLinks();

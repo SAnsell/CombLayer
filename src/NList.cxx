@@ -25,6 +25,7 @@
 #include <sstream>
 #include <cmath>
 #include <vector>
+#include <set>
 #include <map>
 #include <string>
 #include <algorithm>
@@ -271,9 +272,27 @@ NList<Unit>::addComp(const std::vector<Unit>& Obj)
 
 template<typename Unit>
 void
+NList<Unit>::addComp(const std::set<Unit>& Obj) 
+  /*!
+    Adds a component to the list of type vector<int/double>
+    to be included in a bracket form. E.g. ( 4 5 6 7)
+    \param Obj :: set object to add to the list
+  */
+{
+  Items.push_back(CompUnit(1,0,"("));
+
+  for(const Unit& item : Obj)
+    Items.push_back(CompUnit(0,item,""));
+      
+  Items.push_back(CompUnit(1,0,")"));
+  return;
+}
+
+template<typename Unit>
+void
 NList<Unit>::splitComp()
   /*!
-    Take the outer bracket appart
+    Take the outer bracket apart
   */
 {
   ELog::RegMethod RegA("NList","splitComp");

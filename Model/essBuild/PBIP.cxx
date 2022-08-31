@@ -56,11 +56,10 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotate.h"
+#include "FixedRotateUnit.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
-#include "FixedOffset.h"
 
 #include "PBIP.h"
 
@@ -69,7 +68,7 @@ namespace essSystem
 
 PBIP::PBIP(const std::string& Key)  :
   attachSystem::ContainedGroup("before","main","after"),
-  attachSystem::FixedOffsetUnit(Key,6)
+  attachSystem::FixedRotateUnit(Key,6)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -78,7 +77,7 @@ PBIP::PBIP(const std::string& Key)  :
 
 PBIP::PBIP(const PBIP& A) :
   attachSystem::ContainedGroup(A),
-  attachSystem::FixedOffsetUnit(A),
+  attachSystem::FixedRotateUnit(A),
   engActive(A.engActive),
   length(A.length),width(A.width),height(A.height),
   wallThick(A.wallThick),
@@ -111,7 +110,7 @@ PBIP::operator=(const PBIP& A)
   if (this!=&A)
     {
       attachSystem::ContainedGroup::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       cellIndex=A.cellIndex;
       engActive=A.engActive;
       length=A.length;
@@ -160,7 +159,7 @@ PBIP::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("PBIP","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   engActive=Control.EvalTail<int>(keyName,"","EngineeringActive");
 
   length=Control.EvalVar<double>(keyName+"Length");
@@ -181,22 +180,6 @@ PBIP::populate(const FuncDataBase& Control)
   foilOffset=Control.EvalVar<double>(keyName+"FoilOffset");
   foilThick=Control.EvalVar<double>(keyName+"FoilThick");
   foilMat=ModelSupport::EvalMat<int>(Control,keyName+"FoilMat");
-
-  return;
-}
-
-void
-PBIP::createUnitVector(const attachSystem::FixedComp& FC,
-		       const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: object for origin
-  */
-{
-  ELog::RegMethod RegA("PBIP","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
 
   return;
 }

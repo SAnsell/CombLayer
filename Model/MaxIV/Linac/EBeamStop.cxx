@@ -376,89 +376,89 @@ EBeamStop::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("EBeamStop","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
-  const std::string frontStr=getRuleStr("front");
-  const std::string backStr=getRuleStr("back");
+  const HeadRule& frontHR=getRule("front");
+  const HeadRule& backHR=getRule("back");
 
   // inner void : excluding main BS
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 101 -102 103 -104 105 -106 "
-     "(600: -605: 607 ) (-501 : 502 : 507) ");
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"101 -102 103 -104 105 -106"
+     "(600: -605: 607 ) (-501 : 502 : 507)");
   if (!closedFlag)
-    Out+=ModelSupport::getComposite(SMap,buildIndex," (617:605) ");
+    HR*=ModelSupport::getHeadRule(SMap,buildIndex,"(617:605)");
 
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex," 101 -102 113 -114 105 -116 (-103:104:106) ");
-  makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("SideWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex," 111 -101 113 -114 105 -116 207 ");
-  makeCell("FrontWall",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("FrontWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -101 -207 ");
-  makeCell("PortAVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
-  Out=ModelSupport::getComposite(SMap,buildIndex," -111 -217 207 ");
-  makeCell("PortAWall",System,cellIndex++,wallMat,0.0,Out+frontStr);
-  Out=ModelSupport::getComposite(SMap,buildIndex," -201 -227 217 ");
-  makeCell("PortAFlange",System,cellIndex++,flangeMat,0.0,Out+frontStr);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -227 217 -111 ");
-  makeCell("PortAOuter",System,cellIndex++,outerMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -101 -207 ");
+  makeCell("PortAVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -111 -217 207 ");
+  makeCell("PortAWall",System,cellIndex++,wallMat,0.0,HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -201 -227 217 ");
+  makeCell("PortAFlange",System,cellIndex++,flangeMat,0.0,HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 201 -227 217 -111 ");
+  makeCell("PortAOuter",System,cellIndex++,outerMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex," -112 102 113 -114 105 -116 207 ");
-  makeCell("BackWall",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("BackWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 102 -207 ");
-  makeCell("PortBVoid",System,cellIndex++,voidMat,0.0,Out+backStr);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 112 -217 207 ");
-  makeCell("PortBWall",System,cellIndex++,wallMat,0.0,Out+backStr);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 202 -227 217 ");
-  makeCell("PortBFlange",System,cellIndex++,flangeMat,0.0,Out+backStr);
-  Out=ModelSupport::getComposite(SMap,buildIndex," -202 -227 217 112 ");
-  makeCell("PortBOuter",System,cellIndex++,outerMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 102 -207 ");
+  makeCell("PortBVoid",System,cellIndex++,voidMat,0.0,HR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 112 -217 207 ");
+  makeCell("PortBWall",System,cellIndex++,wallMat,0.0,HR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 202 -227 217 ");
+  makeCell("PortBFlange",System,cellIndex++,flangeMat,0.0,HR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -202 -227 217 112 ");
+  makeCell("PortBOuter",System,cellIndex++,outerMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex," 121 -122 123 -124 115 -105 307 407 ");
-  makeCell("Base",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("Base",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex," 121 -122 123 -124 105 -125 (-111:112:-113:114)");
-  makeCell("BaseFlange",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("BaseFlange",System,cellIndex++,wallMat,0.0,HR);
 
   // ion pump
-  Out=ModelSupport::getComposite(SMap,buildIndex," -105 -307  305");
-  makeCell("IonVoid",System,cellIndex++,voidMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," -115 307 -317  305");
-  makeCell("IonWall",System,cellIndex++,wallMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 305 -315 -327 317 ");
-  makeCell("IonFlange",System,cellIndex++,flangeMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 315 -115 317 -327  ");
-  makeCell("IonOuter",System,cellIndex++,outerMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -105 -307  305");
+  makeCell("IonVoid",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -115 307 -317  305");
+  makeCell("IonWall",System,cellIndex++,wallMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 305 -315 -327 317 ");
+  makeCell("IonFlange",System,cellIndex++,flangeMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 315 -115 317 -327  ");
+  makeCell("IonOuter",System,cellIndex++,outerMat,0.0,HR);
 
   // stopper
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
 				 " -105 -407  405 617 (607 : -605)");
-  makeCell("StopVoid",System,cellIndex++,voidMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," -115 407 -417  405");
-  makeCell("StopWall",System,cellIndex++,wallMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 405 -415 -427 417 ");
-  makeCell("StopFlange",System,cellIndex++,flangeMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 415 -115 417 -427  ");
-  makeCell("StopOuter",System,cellIndex++,outerMat,0.0,Out);
+  makeCell("StopVoid",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -115 407 -417  405");
+  makeCell("StopWall",System,cellIndex++,wallMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 405 -415 -427 417 ");
+  makeCell("StopFlange",System,cellIndex++,flangeMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 415 -115 417 -427  ");
+  makeCell("StopOuter",System,cellIndex++,outerMat,0.0,HR);
 
 
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex," 111 -112 123 -124 125 -116 (-111:112:-113:114)");
-  makeCell("SideOuter",System,cellIndex++,0,0.0,Out);
-  Out=ModelSupport::getComposite
+  makeCell("SideOuter",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex," 121 -111 123 -124 125 -116 227 ");
-  makeCell("FrontOuter",System,cellIndex++,0,0.0,Out);
-  Out=ModelSupport::getComposite
+  makeCell("FrontOuter",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex," 112 -122 123 -124 125 -116 227 ");
-  makeCell("BackOuter",System,cellIndex++,0,0.0,Out);
+  makeCell("BackOuter",System,cellIndex++,0,0.0,HR);
 
 
   // Main BEAM STOP:
@@ -466,161 +466,163 @@ EBeamStop::createObjects(Simulation& System)
   int BI(buildIndex+500);
   for(size_t i=0;i<NS;i++)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,BI,"-507 1M -11M ");
-      makeCell("BS"+std::to_string(i),System,cellIndex++,stopMat[i],0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,BI,"-507 1M -11M ");
+      makeCell("BS"+std::to_string(i),System,cellIndex++,stopMat[i],0.0,HR);
       BI+=10;
     }
-  Out=ModelSupport::getComposite(SMap,buildIndex,BI,"-507 1M -502 ");
-  makeCell("BS"+std::to_string(NS),System,cellIndex++,stopMat[NS],0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,BI,"-507 1M -502 ");
+  makeCell("BS"+std::to_string(NS),System,cellIndex++,stopMat[NS],0.0,HR);
 
   // Support:
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,BI," 507 -600 605 -607 657 ");
-  makeCell("SupportCone",System,cellIndex++,supportMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,BI," -607 -657 ");
-  makeCell("SupportHole",System,cellIndex++,voidMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," -605 405 -407 -617 ");
-  makeCell("SupportDrive",System,cellIndex++,supportMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,BI," 507 -600 605 -607 657 ");
+  makeCell("SupportCone",System,cellIndex++,supportMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,BI," -607 -657 ");
+  makeCell("SupportHole",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -605 405 -407 -617 ");
+  makeCell("SupportDrive",System,cellIndex++,supportMat,0.0,HR);
 
 
   if (stopPortLength>=ionPortLength)
     {
-      Out=ModelSupport::getComposite
+      HR=ModelSupport::getHeadRule
 	(SMap,buildIndex," -115 405 121 -122 123 -124 427 (327:-305) ");
-      makeCell("BaseOuter",System,cellIndex++,0,0.0,Out);
-      Out=ModelSupport::getComposite
+      makeCell("BaseOuter",System,cellIndex++,0,0.0,HR);
+      HR=ModelSupport::getHeadRule
 	(SMap,buildIndex," 121 -122 123 -124 405 -116 ");
     }
   else
     {
-      Out=ModelSupport::getComposite
+      HR=ModelSupport::getHeadRule
 	(SMap,buildIndex," -115 305 121 -122 123 -124 327 (427:405) ");
-      makeCell("BaseOuter",System,cellIndex++,0,0.0,Out);
-      Out=ModelSupport::getComposite
+      makeCell("BaseOuter",System,cellIndex++,0,0.0,HR);
+      HR=ModelSupport::getHeadRule
 	(SMap,buildIndex," 121 -122 123 -124 305 -116 ");
     }
 
   if (shieldActive)
     {
       // exclude rules of other components located inside shielding
-      const std::string front=isActive("Front") ? getRuleStr("Front") : "";
-      const std::string back=isActive("Back") ? getRuleStr("Back") : "";
+      // retruns null rule if empty
+      const HeadRule& frontPipeHR=getRule("FrontPipe");
+      const HeadRule& backPipeHR=getRule("BackPipe");
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1021 -1022 1023 -1024 116 -1036 ");
-      makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," 1021 -1022 1023 -1024 116 -1036 ");
+      makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1021 -1022 1023 -1024 1106 -116 (-121:122:-123:124) ");
-      makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," 1021 -1022 1023 -1024 1106 -116 (-121:122:-123:124) ");
+      makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,HR);
 
       // long sides
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1021 -1022 124 -1024 1105 -1106");
-      makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,Out);
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1021 -1022 1023 -123 1105 -1106");
-      makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," 1021 -1022 124 -1024 1105 -1106");
+      makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," 1021 -1022 1023 -123 1105 -1106");
+      makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,HR);
 
       // short sides
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1021 -121 123 -1103 1105 -1106");
-      makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,Out);
-      Out=ModelSupport::getComposite(SMap,buildIndex," 122 -1022 123 -1103 1105 -1106");
-      makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," 1021 -121 123 -1103 1105 -1106");
+      makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," 122 -1022 123 -1103 1105 -1106");
+      makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1021 -121 1104 -124 1105 -1106");
-      makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,Out);
-      Out=ModelSupport::getComposite(SMap,buildIndex," 122 -1022 1104 -124 1105 -1106");
-      makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," 1021 -121 1104 -124 1105 -1106");
+      makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," 122 -1022 1104 -124 1105 -1106");
+      makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,
 				     " 1021 -1022 1023 -1024 1025 -1105 (-121:122:-123:124) ");
-      makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,Out);
+      makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,
 				     " 1001 -1002 1003 -1004 405 -1005 (-121:122:-123:124) ");
-      makeCell("BottomVoid",System,cellIndex++,0,0.0,Out);
+      makeCell("BottomVoid",System,cellIndex++,0,0.0,HR);
 
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     " 1001 -1002 1003 -1004 1005 -1015 (-121:122:-123:124) ");
-      makeCell("ShieldOuterFloor",System,cellIndex++,shieldOuterMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				     " 1001 -1002 1003 -1004 1005 -1015 (-121:122:-123:124)");
+      makeCell("ShieldOuterFloor",System,cellIndex++,shieldOuterMat,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1011 -1012 1013 -1014 1016 -1006 ");
-      makeCell("ShieldOuterRoof",System,cellIndex++,shieldOuterMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1011 -1012 1013 -1014 1016 -1006 ");
+      makeCell("ShieldOuterRoof",System,cellIndex++,shieldOuterMat,0.0,HR);
 
       // long sides
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1001 -1002 1003 -1013 1015 -1006 ");
-      makeCell("ShieldOuterSide",System,cellIndex++,shieldOuterMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1001 -1002 1003 -1013 1015 -1006");
+      makeCell("ShieldOuterSide",System,cellIndex++,shieldOuterMat,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1001 -1002 1014 -1004 1015 -1006 ");
-      makeCell("ShieldOuterSide",System,cellIndex++,shieldOuterMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1001 -1002 1014 -1004 1015 -1006");
+      makeCell("ShieldOuterSide",System,cellIndex++,shieldOuterMat,0.0,HR);
 
       // short sides
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     " 1001 -1011 1013 -1014 1015 -1006 (-1103:1104:-1105:1106) ");
-      makeCell("ShieldOuterSideFront",System,cellIndex++,shieldOuterMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				     " 1001 -1011 1013 -1014 1015 -1006 (-1103:1104:-1105:1106)");
+      makeCell("ShieldOuterSideFront",System,cellIndex++,shieldOuterMat,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1012 -1002 1013 -1014 1015 -1006 ");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," 1012 -1002 1013 -1014 1015 -1006");
       if (shieldBackHoleActive)
-	Out+=ModelSupport::getComposite(SMap,buildIndex," (-1103:1104:-1105:1106) ");
-      makeCell("ShieldOuterSideBack",System,cellIndex++,shieldOuterMat,0.0,Out);
+	HR*=ModelSupport::getHeadRule(SMap,buildIndex," (-1103:1104:-1105:1106)");
+      makeCell("ShieldOuterSideBack",System,cellIndex++,shieldOuterMat,0.0,HR);
 
-      HeadRule HR;
-      HR.procString(ModelSupport::getComposite(SMap,buildIndex, " -227 ") + frontStr);
-      HR.makeComplement();
+      HeadRule cutHR;
+      cutHR=ModelSupport::getHeadRule(SMap,buildIndex,"-227 ")*frontHR;
+      cutHR.makeComplement();
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				     " 1001 -121 1103 -1104 1105 -1106");
+      makeCell("ShieldSideFrontHole",System,cellIndex++,0,0.0,HR*frontPipeHR*cutHR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     " 1001 -121 1103 -1104 1105 -1106 ");
-      makeCell("ShieldSideFrontHole",System,cellIndex++,0,0.0,Out + HR.display() + front);
+      ELog::EM<<"Cell Index["<<keyName<<"] == "<<cellIndex-1<<ELog::endCrit;
+	    
+      cutHR=ModelSupport::getHeadRule(SMap,buildIndex, "-227")*backHR;
+      cutHR.makeComplement();
 
-      HR.procString(ModelSupport::getComposite(SMap,buildIndex, " -227 ") + backStr);
-      HR.makeComplement();
-
-      Out=ModelSupport::getComposite(SMap,buildIndex," 122 1103 -1104 1105 -1106 ");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"122 1103 -1104 1105 -1106");
       if (shieldBackHoleActive)
-	Out+=ModelSupport::getComposite(SMap,buildIndex," -1002 ");
+	HR*=ModelSupport::getHeadRule(SMap,buildIndex," -1002 ");
       else
-	Out+=ModelSupport::getComposite(SMap,buildIndex," -1022 ");
-      makeCell("ShieldSideBackHole",System,cellIndex++,0,0.0,Out + HR.display() + back);
+	HR*=ModelSupport::getHeadRule(SMap,buildIndex," -1022 ");
+      makeCell("ShieldSideBackHole",System,cellIndex++,0,0.0,HR*cutHR*backPipeHR);
 
       // inner layer
-      Out=ModelSupport::getComposite(SMap,buildIndex,
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,
 				     " 1011 -1012 1013 -1014 1015 -1025 (-121:122:-123:124) ");
-      makeCell("ShieldInnerFloor",System,cellIndex++,shieldInnerMat,0.0,Out);
+      makeCell("ShieldInnerFloor",System,cellIndex++,shieldInnerMat,0.0,HR);
 
       // long sides
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1021 -1012 1013 -1023 1025 -1036 ");
-      makeCell("ShieldInnerSide",System,cellIndex++,shieldInnerMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," 1021 -1012 1013 -1023 1025 -1036 ");
+      makeCell("ShieldInnerSide",System,cellIndex++,shieldInnerMat,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1021 -1012 1024 -1014 1025 -1036 ");
-      makeCell("ShieldInnerSide",System,cellIndex++,shieldInnerMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," 1021 -1012 1024 -1014 1025 -1036 ");
+      makeCell("ShieldInnerSide",System,cellIndex++,shieldInnerMat,0.0,HR);
 
       // short sides
-      Out=ModelSupport::getComposite(SMap,buildIndex,
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,
 				     " 1011 -1021 1013 -1014 1025 -1036 (-1103:1104:-1105:1106) ");
-      makeCell("ShieldInnerSide",System,cellIndex++,shieldInnerMat,0.0,Out);
+      makeCell("ShieldInnerSide",System,cellIndex++,shieldInnerMat,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1022 -1012 1023 -1024 1025 -1036 ");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," 1022 -1012 1023 -1024 1025 -1036 ");
       if (shieldBackHoleActive)
-	Out+=ModelSupport::getComposite(SMap,buildIndex,"(-1103:1104:-1105:1106) ");
-      makeCell("ShieldInnerSide",System,cellIndex++,shieldInnerMat,0.0,Out);
+	HR*=ModelSupport::getHeadRule(SMap,buildIndex,"(-1103:1104:-1105:1106) ");
+      makeCell("ShieldInnerSide",System,cellIndex++,shieldInnerMat,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1011 -1012 1013 -1014 1026 -1016 ");
-      makeCell("ShieldInnerRoof",System,cellIndex++,shieldInnerMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," 1011 -1012 1013 -1014 1026 -1016 ");
+      makeCell("ShieldInnerRoof",System,cellIndex++,shieldInnerMat,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1011 -1012 1013 -1014 1036 -1026 ");
-      makeCell("ShieldRoofPlate",System,cellIndex++,shieldRoofPlateMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," 1011 -1012 1013 -1014 1036 -1026 ");
+      makeCell("ShieldRoofPlate",System,cellIndex++,shieldRoofPlateMat,0.0,HR);
 
       // main outer rule
-      Out=ModelSupport::getComposite(SMap,buildIndex, " 1001 -1002 1003 -1004 405 -1006 ");
-      addOuterSurf("Main",Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex, " 1001 -1002 1003 -1004 405 -1006 ");
+      addOuterSurf("Main",HR);
     }
   else
     {
-      addOuterSurf("Main",Out);
+      addOuterSurf("Main",HR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," -121 -227 ");
-      addOuterSurf("FlangeA",Out+frontStr);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," -121 -227");
+      addOuterSurf("FlangeA",HR*frontHR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," 122 -227 ");
-      addOuterSurf("FlangeB",Out+backStr);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"122 -227");
+      addOuterSurf("FlangeB",HR*backHR);
     }
 
   return;

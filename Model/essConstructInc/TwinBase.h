@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/TwinBase.h
+ * File:   essConstructInc/TwinBase.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,12 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_TwinBase_h
-#define constructSystem_TwinBase_h
+#ifndef essConstruct_TwinBase_h
+#define essConstruct_TwinBase_h
 
 class Simulation;
 
-namespace constructSystem
+namespace essConstruct
 {
   class Motor;
   class boltRing;
@@ -43,13 +43,12 @@ namespace constructSystem
 */
 
 class TwinBase :
-  public attachSystem::FixedOffsetGroup,
+  public attachSystem::FixedRotateGroup,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {
  protected:
-  
 
   Geometry::Vec3D lowOutCent;    ///< Low centre of outer metal
   Geometry::Vec3D topOutCent;    ///< Top centre of outer metal

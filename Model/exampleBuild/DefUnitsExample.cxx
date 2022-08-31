@@ -3,7 +3,7 @@
  
  * File:   maxviBuildInc/DefUnitsExample.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,7 +84,7 @@ setDefUnits(FuncDataBase& Control,inputParam& IParam)
 
 void
 setExampleEX1(defaultConfig& A,
-	      const std::vector<std::string>& LItems)
+	      const std::vector<std::string>&)
   /*!
     Placeholder for EX1
     \param A :: defaultConfig to set
@@ -97,7 +97,7 @@ setExampleEX1(defaultConfig& A,
 
 void
 setLinacVacTube(defaultConfig& A,
-	      const std::vector<std::string>& LItems)
+	      const std::vector<std::string>&)
   /*!
     Placeholder for Linac Vac Tube
     \param A :: defaultConfig to set

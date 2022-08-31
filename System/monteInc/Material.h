@@ -3,7 +3,7 @@
  
  * File:   monteInc/Material.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,12 +42,12 @@ class Material
  protected:
  
   int matID;                        ///< Material Number (Necessary)  
-  std::string Name;                 ///< Material Name (un-necessary)
+  std::string Name;                 ///< Material Name (un-ecessary)
   double atomDensity;               ///< Calculated atom density
   
  private:
   
-  std::vector<Zaid> zaidVec;       ///< vector of zaids
+  std::vector<Zaid> zaidVec;                 ///< vector of zaids
   std::map<std::string,MXcards> mxCards;     ///< particle:MX card
   
   std::vector<std::string> Libs;    ///< Library extra
@@ -90,9 +90,8 @@ class Material
   void setID(const int ID) { matID=ID; }
  
   int setMaterial(const std::vector<std::string>&);
-  int setMaterial(const int,const std::string&,
-		  const std::string&,const std::string&,
-		  const std::string&);
+  int setMaterial(const int,const std::string&,const std::string&,
+		  const std::string&,const std::string&);
   int setMaterial(const int,const std::string&,const std::string&,
 		  const std::string&);
 
@@ -126,7 +125,7 @@ class Material
   void writeCinder(std::ostream&) const;
   void writeFLUKA(std::ostream&) const;
   void writePHITS(std::ostream&) const;
-  void writePOVRay(std::ostream&) const;               
+  void writePOVRay(std::ostream&,const double) const;               
   
 };
 

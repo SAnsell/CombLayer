@@ -3,7 +3,7 @@
 
  * File:   System/support/stringCombine.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -83,8 +83,7 @@ alphaToIndex(const char C)
   static const char cmap[]=
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     "abcdefghijklmnopqrstuvwxyz";
-  size_t pos=(strchr(cmap,C)-cmap);
-  return pos;
+  return static_cast<size_t>((strchr(cmap,C)-cmap));
 }
 
 size_t
@@ -98,8 +97,7 @@ revAlphaToIndex(const char C)
   static const char cmap[]=
     "abcdefghijklmnopqrstuvwxyz"
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  size_t pos=(strchr(cmap,C)-cmap);
-  return pos;
+  return static_cast<size_t>((strchr(cmap,C)-cmap));
 }
 
 

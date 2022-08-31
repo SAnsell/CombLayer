@@ -3,7 +3,7 @@
  
  * File:   essBuild/ButterflyModerator.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,8 +41,6 @@
 #include "OutputLog.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"

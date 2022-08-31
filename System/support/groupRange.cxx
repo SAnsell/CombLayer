@@ -47,6 +47,17 @@ groupRange::groupRange(const std::vector<int>& AVec)
   return;
 }
 
+groupRange::groupRange(const std::set<int>& AVec) 
+  /*!
+    Constructor
+    \param AVec :: Vect to set
+  */
+{
+  for(const int I : AVec)
+    addItem(I);
+  return;
+}
+
 groupRange::groupRange(const int LV,const int HV) :
   LowUnit({std::min(LV,HV)}),HighUnit({std::max(LV,HV)})
   /*!
@@ -324,6 +335,18 @@ groupRange::addItem(const std::vector<int>& AVec)
 }
 
 void
+groupRange::addItem(const std::set<int>& AVec)
+  /*!
+    Add an item if required [uses merge for efficiency]
+    \param AVec :: Item to add
+  */
+{
+  groupRange A(AVec);
+  this->combine(A);
+  return;
+}
+
+void
 groupRange::addItem(const int A)
   /*!
     Add an item if required
@@ -339,8 +362,8 @@ groupRange::addItem(const int A)
   if (indexP<LowUnit.size() && indexM<LowUnit.size())
     {
       HighUnit[indexM]=HighUnit[indexP];
-      LowUnit.erase(LowUnit.begin()+indexP);
-      HighUnit.erase(HighUnit.begin()+indexP);
+      LowUnit.erase(LowUnit.begin()+static_cast<long int>(indexP));
+      HighUnit.erase(HighUnit.begin()+static_cast<long int>(indexP));
       return;
     }
   
@@ -397,8 +420,8 @@ groupRange::removeItem(const int A)
   // case 1: short unit to be deleted
   if (LowUnit[index]==HighUnit[index])
     {
-      LowUnit.erase(LowUnit.begin()+index);
-      HighUnit.erase(HighUnit.begin()+index);
+      LowUnit.erase(LowUnit.begin()+static_cast<long int>(index));
+      HighUnit.erase(HighUnit.begin()+static_cast<long int>(index));
       return;
     }
 

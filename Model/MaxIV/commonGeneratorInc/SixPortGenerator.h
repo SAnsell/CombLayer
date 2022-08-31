@@ -39,13 +39,17 @@ class SixPortGenerator
 {
  private:
   
-  double radius;               ///< void radius
-  double linkRadius;           ///< void radius on 4 cross way
-  double wallThick;            ///< pipe thickness
+  double radius;                ///< void radius
+  double linkRadius;            ///< void radius on 4 cross way
+  double wallThick;             ///< pipe thickness
+  double linkWallThick;         ///< side pipe thickness
 
-  double frontLength;            ///< full to flange length
-  double backLength;             ///< full to flange length
-  double sideLength;              ///< full to flange length
+  double frontLength;           ///< full to flange length
+  double backLength;            ///< full to flange length
+  double sideXALength;           ///< full to flange length
+  double sideXBLength;           ///< full to flange length
+  double sideZALength;           ///< full to flange length
+  double sideZBLength;           ///< full to flange length
 
   double flangeARadius;         ///< Front Flange radius
   double flangeBRadius;         ///< Back Flange radius
@@ -55,12 +59,12 @@ class SixPortGenerator
   double flangeBLength;         ///< Back Flange length
   double flangeSLength;         ///< Side Flange length
   
-  double plateThick;         ///< Joining Flange radius
+  double plateThick;            ///< Joining Flange radius
 
-  std::string voidMat;                 ///< void material
-  std::string mainMat;                 ///< main material
-  std::string flangeMat;               ///< flange material
-  std::string plateMat;                ///< plate material
+  std::string voidMat;          ///< void material
+  std::string mainMat;          ///< main material
+  std::string flangeMat;        ///< flange material
+  std::string plateMat;         ///< plate material
 
  public:
 
@@ -71,9 +75,14 @@ class SixPortGenerator
 
   template<typename T> void setCF();
   template<typename T> void setFlangeCF();
-
-  void setLength(const double FL,const double BL,const double SL)
-    { frontLength=FL; backLength=BL; sideLength=SL; }
+  template<typename T> void setSideCF();
+  
+  void setSideLength(const double);
+  void setXSideLength(const double,const double);
+  void setZSideLength(const double,const double);
+  
+  void setLength(const double FL,const double BL)
+    { frontLength=FL; backLength=BL; }
 
   void generateSixPort(FuncDataBase&,
 		       const std::string&) const;

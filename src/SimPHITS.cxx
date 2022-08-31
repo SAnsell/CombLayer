@@ -3,7 +3,7 @@
 
  * File:   src/SimPHITS.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,7 +92,7 @@ SimPHITS::SimPHITS() :
 SimPHITS::SimPHITS(const SimPHITS& A) :
   Simulation(A),nps(A.nps),rndSeed(A.rndSeed),
   PTItem(A.PTItem),MagItem(A.MagItem),
-  PhysPtr(new phitsSystem::phitsPhysics(*PhysPtr))
+  PhysPtr(new phitsSystem::phitsPhysics(*A.PhysPtr))
  /*!
    Copy constructor
    \param A :: Simulation to copy
@@ -118,7 +118,7 @@ SimPHITS::operator=(const SimPHITS& A)
       rndSeed=A.rndSeed;
       PTItem=A.PTItem;
       MagItem=A.MagItem;
-      *PhysPtr=*PhysPtr;
+      *PhysPtr=*A.PhysPtr;
     }
   return *this;
 }

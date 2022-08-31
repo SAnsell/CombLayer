@@ -3,7 +3,7 @@
  
  * File:   input/inputParamSupport.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,6 +54,7 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedGroup.h"
 #include "BaseMap.h"
 #include "PointMap.h"
 #include "SurfMap.h"
@@ -62,10 +63,73 @@
 #include "Cone.h"
 #include "Cylinder.h"
 #include "Plane.h"
-
+#include "Importance.h"
+#include "Object.h"
+#include "MXcards.h"
+#include "Zaid.h"
+#include "Material.h"
+#include "DBMaterial.h"
 
 namespace mainSystem
 {
+
+bool
+getNamedPlanePoints(const Simulation& System,
+		    const inputParam& IParam,
+		    const std::string& keyItem,
+		    const size_t setIndex,
+		    size_t& index,
+		    Geometry::Vec3D& POrg,
+		    Geometry::Vec3D& PNorm)
+  /*!
+    Generate the set of named point based on extracting 
+    a surfMap plane
+    
+    - Vec3D(x,y,z)
+    - FixedComp:Index
+    - PointMap:Index
+  */
+{
+  ELog::RegMethod RegA("inputParamSupport[F]","getNamedPlanePoints");  
+
+  std::string objName=
+    IParam.getDefValue<std::string>("",keyItem,setIndex,index);
+
+  const std::string::size_type pos=objName.find(':');
+  if (pos!=std::string::npos)
+    {
+      std::string indexName=objName.substr(pos+1);
+      objName.erase(pos,std::string::npos);
+
+      const std::string::size_type posB=indexName.find(':');
+      size_t itemIndex(0);
+      if (posB!=std::string::npos)
+	{
+	  StrFunc::convert(indexName.substr(posB+1),itemIndex);
+	  indexName.erase(posB,std::string::npos);
+	}
+      
+      const attachSystem::SurfMap* SMptr=
+	System.getObject<attachSystem::SurfMap>(objName);
+
+      if (SMptr)
+	{
+	  if (SMptr->hasSurf(indexName,itemIndex))
+	    {
+	      const Geometry::Plane* PPtr=
+		SMptr->realPtr<const Geometry::Plane>(indexName,itemIndex);
+	      if (PPtr)
+		{
+		  POrg=PPtr->closestPt(Geometry::Vec3D(0,0,0));
+		  PNorm=PPtr->getNormal();
+		  index++;
+		  return 1;
+		}
+	    }
+	}
+    }
+  return 0;
+}
 
 Geometry::Vec3D
 getNamedPoint(const Simulation& System,
@@ -83,9 +147,17 @@ getNamedPoint(const Simulation& System,
 {
   ELog::RegMethod RegA("inputParamSupport[F]","getNamedPoint");  
 
-  const std::string objName=
+  std::string objName=
     IParam.getValueError<std::string>
     (keyItem,setIndex,index,errStr+"[Object Name/Point]");
+  // remove leading free/object
+  if (objName=="free" || objName=="object")
+    {
+      index++;
+      objName=
+	IParam.getValueError<std::string>
+	(keyItem,setIndex,index,errStr+"[Object Name/Point]");
+    }
 
   index++;
   Geometry::Vec3D point;
@@ -97,30 +169,45 @@ getNamedPoint(const Simulation& System,
     {
       const std::string unitFC=objName.substr(0,pos);
       std::string indexName=objName.substr(pos+1);
+
+      const std::string::size_type posB=indexName.find(':');
+      std::string extraName;
+      if (posB!=std::string::npos)
+	{
+	  extraName=indexName.substr(posB+1,std::string::npos);
+	  indexName.erase(posB,std::string::npos);
+	}
       
       // unitFC MUST work and indexName can be number/name
       const attachSystem::FixedComp* FCptr=
 	System.getObjectThrow<attachSystem::FixedComp>(unitFC,errStr);
+
       // PointMap
       const attachSystem::PointMap* PMptr=
 	dynamic_cast<const attachSystem::PointMap*>(FCptr);
       if (PMptr)
 	{
-	  const std::string::size_type posB=indexName.find(':');
 	  size_t itemIndex(0);
-	  if (posB!=std::string::npos &&
-	      StrFunc::convert(indexName.substr(posB+1),itemIndex))
-	    {
-	      indexName.erase(posB,std::string::npos);
-	    }
+	  StrFunc::convert(extraName,itemIndex);
 	  if (PMptr->hasPoint(indexName,itemIndex))
 	    return PMptr->getPoint(indexName,itemIndex);
+	}
+      
+      // FixedGroup [last search -- so can destroy indexName]
+      if (!extraName.empty())
+	{
+	  const attachSystem::FixedGroup* FGptr=
+	    dynamic_cast<const attachSystem::FixedGroup*>(FCptr);
+	  if (FGptr && FGptr->hasKey(indexName))
+	      FCptr=&FGptr->getKey(indexName);
+	  if (FCptr->hasLinkPt(extraName))
+	    return FCptr->getLinkPt(extraName);
 	}
       // FixedComp
       if (FCptr->hasLinkPt(indexName))
 	return FCptr->getLinkPt(indexName);
     }
-  
+
   // Everything failed
   index--;
   throw ColErr::InContainerError<std::string>(objName,errStr);
@@ -339,12 +426,12 @@ getNamedOriginAxis(const Simulation& System,
 }
 
 
-std::vector<int>
+std::set<int>
 getNamedCells(const Simulation& System,
 	      const inputParam& IParam,
 	      const std::string& keyItem,
-	      const long int setIndex,
-	      const long int index,
+	      const size_t setIndex,
+	      const size_t index,
 	      const std::string& errStr)
   /*!
     Calculate the objects based on a name e.g. a FixedComp.
@@ -362,7 +449,7 @@ getNamedCells(const Simulation& System,
     IParam.getValueError<std::string>
     (keyItem,setIndex,index,errStr+"[Object Name]");
 
-  const std::vector<int> Cells=System.getObjectRange(objName);
+  const std::set<int> Cells=System.getObjectRange(objName);
   if (Cells.empty())
     throw ColErr::InContainerError<std::string>
       (objName,errStr+" [Empty cell]");
@@ -370,12 +457,82 @@ getNamedCells(const Simulation& System,
   return Cells;
 }
 
+std::set<int>
+getNamedCellsWithMat(const Simulation& System,
+		     const inputParam& IParam,
+		     const std::string& keyItem,
+		     const size_t setIndex,
+		     const size_t index,
+		     const std::string& matName,
+		     const std::string& errStr)
+  /*!
+    Calculate the objects based on a name e.g. a FixedComp.
+    \param System :: Main simulation
+    \param IParam :: Input parameters
+    \param keyItem :: key Item to search for
+    \param setIndex :: input set index
+    \param index :: item index 
+    \param matName :: Material name [all/nonVoid/Void/Zaid/matName]
+    \param errStr :: base of error string
+  */  
+{
+  ELog::RegMethod RegA("inputParamSupport[F]","getNamedCellsWithMat");
+
+  const std::string objName=
+    IParam.getValueError<std::string>
+    (keyItem,setIndex,index,errStr+"[Object Name]");
+
+  const std::set<int> Cells=
+    System.getObjectRangeWithMat(objName,matName);
+  
+  if (Cells.empty())
+    throw ColErr::InContainerError<std::string>
+      (objName,errStr+" [Empty cell]");
+
+  return Cells;
+}
+
+std::set<const MonteCarlo::Object*>
+getNamedObjectsWithMat(const Simulation& System,
+		       const inputParam& IParam,
+		       const std::string& keyItem,
+		       const size_t setIndex,
+		       const size_t index,
+		       const std::string& matName,
+		       const std::string& errStr)
+  /*!
+    Calculate the objects based on a name e.g. a FixedComp.
+    \param System :: Main simulation
+    \param IParam :: Input parameters
+    \param keyItem :: key Item to search fore
+    \param setIndex :: input set index
+    \param index :: item index 
+    \param matName :: Material name [all/nonVoid/Void/Zaid/matName]
+    \param errStr :: base of error string
+  */  
+{
+  ELog::RegMethod RegA("inputParamSupport[F]","getNamedObjectsWithMat");
+
+  const std::set<int> cellNumbers=
+    mainSystem::getNamedCellsWithMat(System,IParam,keyItem,
+				     setIndex,index,matName,errStr);
+
+  std::set<const MonteCarlo::Object*> objCells;
+  for(const int CN : cellNumbers)
+    {
+      const MonteCarlo::Object* OPtr=System.findObject(CN);
+      objCells.emplace(OPtr);
+    }
+
+  return objCells;
+}
+
 std::set<MonteCarlo::Object*>
 getNamedObjects(const Simulation& System,
 		const inputParam& IParam,
 		const std::string& keyItem,
-		const long int setIndex,
-		const long int index,
+		const size_t setIndex,
+		const size_t index,
 		const std::string& errStr)
   /*!
     Calculate the objects based on a name e.g. a FixedComp.
@@ -389,11 +546,10 @@ getNamedObjects(const Simulation& System,
 {
   ELog::RegMethod RegA("inputParamSupport[F]","getNamedObjects");
 
-  const std::vector<int> Cells=
+  const std::set<int> Cells=
     getNamedCells(System,IParam,keyItem,setIndex,index,errStr);
 
   std::set<MonteCarlo::Object*> outObjects;
-    
 
   const Simulation::OTYPE& CellObjects=System.getCells();
   // Special to set cells in OBJECT  [REMOVE]
@@ -403,8 +559,7 @@ getNamedObjects(const Simulation& System,
 	CellObjects.find(CN);
       if (mc!=CellObjects.end())
 	outObjects.emplace(mc->second);
-    }
-  
+    }  
   
   return outObjects;
 }

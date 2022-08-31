@@ -3,7 +3,7 @@
 
  * File: Linac/Segment12.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,6 +61,7 @@
 #include "BlockZone.h"
 #include "generalConstruct.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
@@ -70,7 +71,7 @@
 #include "IonPumpTube.h"
 #include "LocalShielding.h"
 
-#include "LObjectSupportB.h"
+#include "LObjectSupport.h"
 #include "TDCsegment.h"
 #include "Segment12.h"
 
@@ -152,6 +153,7 @@ Segment12::buildObjects(Simulation& System)
 	       {"FlangeA","Pipe"},"Origin","outerPipe",dipoleA);
   pipeTerminateGroup(System,*buildZone,flatA,{"FlangeB","Pipe"});
 
+
   beamA->setCutSurf("front",*flatA,"back");
   beamA->createAll(System,*flatA,"back");
 
@@ -159,7 +161,7 @@ Segment12::buildObjects(Simulation& System)
   shieldA->setCutSurf("Inner",*beamA,"outerBox");
   shieldA->createAll(System,*beamA,"front");
   outerCell=buildZone->createUnit(System,*shieldA,-1);
-
+  
   beamA->insertInCell("Box",System,outerCell);
   beamA->insertInCell("FlangeA",System,outerCell);
 

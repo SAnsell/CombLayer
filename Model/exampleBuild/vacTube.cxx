@@ -3,7 +3,7 @@
  
  * File:   exampleBuild/vacTube.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,7 +53,6 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -62,9 +61,10 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "GateValveCylinder.h"
 #include "vacTube.h"
@@ -73,12 +73,12 @@ namespace exampleSystem
 {
 
 vacTube::vacTube(const std::string& Key) :
-  attachSystem::FixedOffset(Key,2),
+  attachSystem::FixedRotate(Key,2),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
 
-  buildZone(*this,cellIndex),
+  buildZone(keyName+"BlockZone"),
 
   pipeA(new constructSystem::VacuumPipe("PipeA")),
   gateA(new constructSystem::GateValveCylinder("GateA")),
@@ -97,7 +97,7 @@ vacTube::vacTube(const std::string& Key) :
 }
 
 vacTube::vacTube(const vacTube& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedRotate(A),attachSystem::ContainedComp(A),
   attachSystem::ExternalCut(A),
   attachSystem::CellMap(A),
   buildZone(A.buildZone),
@@ -119,7 +119,7 @@ vacTube::operator=(const vacTube& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::ExternalCut::operator=(A);
       attachSystem::CellMap::operator=(A);
@@ -142,7 +142,7 @@ vacTube::~vacTube()
 void
 vacTube::populate(const FuncDataBase& Control)
 {
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   boxWidth=Control.EvalVar<double>(keyName+"BoxWidth");
   return;
 }
@@ -157,15 +157,18 @@ vacTube::createSurfaces()
 
   if (boxWidth>Geometry::zeroTol)
     {
-      std::string Out;
+      HeadRule HR;
       ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(boxWidth/2.0),X);
       ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(boxWidth/2.0),X);
       ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(boxWidth/2.0),Z);
       ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(boxWidth/2.0),Z);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6");
-      const HeadRule HR(Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
       buildZone.setSurround(HR);
+
+      buildZone.setFront(getRule("front"));
+      buildZone.setMaxExtent(getRule("back"));
+
     }
   
   return;
@@ -181,25 +184,17 @@ vacTube::createObjects(Simulation& System)
   
   int outerCell;
 
-  //  buildZone.setFront(shieldRoom->getSurfRule("Front"));
-  //  buildZone.setBack(shieldRoom->getSurfRule("-Back"));
-
-  buildZone.setFront(getRule("front"));
-  buildZone.setBack(getRule("back"));
-  buildZone.setInsertCells(this->getInsertCells());
-  MonteCarlo::Object* masterCell=
-    buildZone.constructMasterCell(System);
+  buildZone.addInsertCells(this->getInsertCells());
 
   pipeA->createAll(System,*this,0);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeA,2);
+  outerCell=buildZone.createUnit(System,*pipeA,"back");
   pipeA->insertAllInCell(System,outerCell);
   
+  constructSystem::constructUnit
+    (System,buildZone,*pipeA,"back",*gateA);
 
   constructSystem::constructUnit
-    (System,buildZone,masterCell,*pipeA,"back",*gateA);
-
-  constructSystem::constructUnit
-    (System,buildZone,masterCell,*gateA,"back",*pipeB);
+    (System,buildZone,*gateA,"back",*pipeB);
 
   /*
   gateA->addInsertCell(shieldRoom->getCell("Void"));

@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/LOKI.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 namespace attachSystem
 {
   class FixedComp;
-  class FixedOffset;
+  class FixedRotate;
   class TwinComp;
   class CellMap;
 }
@@ -70,7 +70,7 @@ class LOKI : public attachSystem::CopiedComp
   int stopPoint;
   
   /// Main Beam Axis [for construction]
-  std::shared_ptr<attachSystem::FixedOffset> lokiAxis;
+  std::shared_ptr<attachSystem::FixedRotate> lokiAxis;
 
   /// Bender in insert bay
   std::shared_ptr<beamlineSystem::GuideLine> BendA;
@@ -88,9 +88,9 @@ class LOKI : public attachSystem::CopiedComp
 
 
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::SingleChopper> ChopperA;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperA;
   /// Double disk chopper
-  std::shared_ptr<constructSystem::DiskChopper> DDiskA;
+  std::shared_ptr<essConstruct::DiskChopper> DDiskA;
 
   /// Vacuum pipe to first chopper
   std::shared_ptr<constructSystem::VacuumPipe> VPipeC;
@@ -109,9 +109,9 @@ class LOKI : public attachSystem::CopiedComp
   /// Exit of pit A
   std::shared_ptr<constructSystem::HoleShape> PitACut;
   /// vac box for first chopper out of bunker
-  std::shared_ptr<constructSystem::SingleChopper> ChopperOutA;
+  std::shared_ptr<essConstruct::SingleChopper> ChopperOutA;
   /// double disks for first chopper out of bunker
-  std::shared_ptr<constructSystem::DiskChopper> DDiskOutA;
+  std::shared_ptr<essConstruct::DiskChopper> DDiskOutA;
 
   /// First shielding after bunker wall
   std::shared_ptr<constructSystem::LineShield> ShieldA;

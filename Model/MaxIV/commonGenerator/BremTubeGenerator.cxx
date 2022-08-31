@@ -3,7 +3,7 @@
 
  * File:   commonGenerator/BremTubeGenerator.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,11 +53,11 @@ namespace setVariable
 
 BremTubeGenerator::BremTubeGenerator() :
   frontRadius(CF40::innerRadius),
-  frontLength(5.0),
+  frontLength(4.0),
   frontFlangeRadius(CF40::flangeRadius),
   frontFlangeLength(CF40::flangeLength), 
   midRadius(CF63::innerRadius),
-  midLength(13.6),
+  midLength(8.0+CF150::outerRadius),
   tubeRadius(CF150::innerRadius),
   tubeHeight(15.0),tubeDepth(35.0),
   tubeFlangeRadius(CF150::flangeRadius),
@@ -66,8 +66,8 @@ BremTubeGenerator::BremTubeGenerator() :
   backLength(12.0),
   backFlangeRadius(CF150::flangeRadius),
   backFlangeLength(CF150::flangeLength),
-  plateThick(CF150::flangeLength),
   wallThick(CF150::wallThick),
+  plateThick(CF150::flangeLength),
   voidMat("Void"),wallMat("Stainless304L"),
   plateMat("Stainless304L")
   /*!
@@ -133,6 +133,8 @@ BremTubeGenerator::generateTube(FuncDataBase& Control,
   Control.addVariable(keyName+"WallMat",wallMat);
   Control.addVariable(keyName+"PlateMat",plateMat);
 
+  Control.addVariable(keyName+"FrontNPorts",0);
+  Control.addVariable(keyName+"MainNPorts",0);
   return;
 
 }

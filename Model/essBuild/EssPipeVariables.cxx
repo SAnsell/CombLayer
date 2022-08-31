@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/essVariables.cxx
+ * File:   essBuild/EssPipeVariables.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2022 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "stringCombine.h"
 #include "Vec3D.h"
 #include "Code.h"
 #include "varList.h"
@@ -81,7 +80,7 @@ EssPipeVariables(FuncDataBase& Control)
   const std::vector<double> temp({20.0,20.0,300.0,300.0});
 
   double signV(1.0);
-  for(const std::string& MItem :
+  for(const std::string MItem :
     {"TSupplyLeft","TReturnLeft","LSupplyLeft","LReturnLeft",
     "TSupplyRight","TReturnRight","LSupplyRight","LReturnRight"})
 
@@ -110,7 +109,7 @@ EssPipeVariables(FuncDataBase& Control)
 
       for (size_t i=0;i<nRad;i++)
         {
-          const std::string strIndex = StrFunc::makeString(i);
+          const std::string strIndex = std::to_string(i);
           
           // TOP LEFT
           Control.addVariable(MItem+"AlRadius"+ strIndex,R[i]);

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   build/TS2FlatTarget.cxx
+ * File:   t2Build/TS2FlatTarget.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "surfDivide.h"
@@ -57,7 +55,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -170,7 +168,7 @@ TS2FlatTarget::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("TS2FlatTarget","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   
   mainLength=Control.EvalVar<double>(keyName+"MainLength");
   coreRadius=Control.EvalVar<double>(keyName+"CoreRadius");
@@ -355,7 +353,6 @@ TS2FlatTarget::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "331 -207 (-101 : (201 -202))");
   addOuterSurf(Out);
-  addBoundarySurf(-SMap.realSurf(buildIndex+101));    
   return;
 }
 
@@ -413,28 +410,11 @@ TS2FlatTarget::layerProcess(Simulation& System)
   return;
 }
 
-
 void
-TS2FlatTarget::addInnerBoundary(attachSystem::ContainedComp& CC) const
-  /*!
-    Adds the inner W boundary to an object
-    \param CC :: Object to boundary to 
-   */
-{
-  ELog::RegMethod RegA("TS2FlatTarget","addInnerBoundary");
-  CC.addBoundarySurf(-SMap.realSurf(buildIndex+27));
-  return;
-}
-
-void
-TS2FlatTarget::addProtonLine(Simulation& System,
-			 const attachSystem::FixedComp& refFC,
-			 const long int index)
+TS2FlatTarget::addProtonLine(Simulation& System)
   /*!
     Add a proton void cell
     \param System :: Simualation
-    \param refFC :: reflector edge
-    \param index :: Index of the proton cutting surface [6 typically (-7)]
    */
 {
   ELog::RegMethod RegA("TS2Target","addProtonLine");
@@ -465,7 +445,7 @@ TS2FlatTarget::createAll(Simulation& System,
   createObjects(System);
   layerProcess(System);
   createLinks();
-  addInnerBoundary(*this);
+  //  addInnerBoundary(*this);
   insertObjects(System);
 
   return;

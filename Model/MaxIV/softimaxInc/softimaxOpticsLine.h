@@ -52,7 +52,7 @@ namespace xraySystem
 class softimaxOpticsLine :
   public attachSystem::CopiedComp,
   public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
@@ -198,11 +198,13 @@ class softimaxOpticsLine :
 		 const attachSystem::FixedComp&,const long int);
   void buildSplitter(Simulation&,const attachSystem::FixedComp&,
 		     const long int);
-
+  void buildExtras(Simulation&);
+  
   void populate(const FuncDataBase&);
   void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();
+
 
  public:
 
@@ -211,10 +213,8 @@ class softimaxOpticsLine :
   softimaxOpticsLine& operator=(const softimaxOpticsLine&);
   ~softimaxOpticsLine();
 
-  void buildExtras(Simulation&,const attachSystem::CellMap&);
-  void buildOutGoingPipes(Simulation&,const int,const int,
-			  const std::vector<int>&);
 
+  
   /// Assignment to inner void
   void setInnerMat(const int M) {  innerMat=M; }
 

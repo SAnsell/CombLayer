@@ -3,7 +3,7 @@
  
  * File:   include/NList.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,6 +67,7 @@ class NList
   
   
   void addComp(const std::vector<Unit>&);
+  void addComp(const std::set<Unit>&);
   void addComp(const Unit&);
   void addComp(const std::string&);
   

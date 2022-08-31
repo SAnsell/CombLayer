@@ -3,7 +3,7 @@
 
  * File: Linac/Segment29.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,10 +38,7 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
-#include "Line.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Code.h"
@@ -68,9 +65,9 @@
 #include "FixedGroup.h"
 #include "FixedRotateGroup.h"
 
-
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "YagUnit.h"
 #include "YagScreen.h"
@@ -182,6 +179,9 @@ Segment29::createSplitInnerZone()
   IZTop->setSurround(HSurroundA);
   IZMid->setSurround(HSurroundB);
 
+  IZTop->setInnerMat(voidMat);
+  IZMid->setInnerMat(voidMat);
+
   return;
 }
 
@@ -252,7 +252,7 @@ Segment29::buildObjects(Simulation& System)
   const HeadRule& backHR=ExternalCut::getRule("BackWallFront");
   const HeadRule& surHR=buildZone->getSurround();
 
-  makeCell("EndVoid",System,cellIndex++,0,0.0,
+  makeCell("EndVoid",System,cellIndex++,voidMat,0.0,
 	   frontHR*backHR.complement()*surHR);
   const int outerVoid=CellMap::getCell("EndVoid");
 
@@ -263,21 +263,22 @@ Segment29::buildObjects(Simulation& System)
       HeadRule volume=buildZone->getFront();
       volume*=IZTop->getFront().complement();
       volume*=IZTop->getSurround();
-      makeCell("FrontSpace",System,cellIndex++,0,0.0,volume);
+      makeCell("FrontSpace",System,cellIndex++,voidMat,0.0,volume);
       volume=buildZone->getFront();
       volume*=IZMid->getFront().complement();
       volume*=IZMid->getSurround();
-      makeCell("FrontSpace",System,cellIndex++,0,0.0,volume);
+      makeCell("FrontSpace",System,cellIndex++,voidMat,0.0,volume);
       buildZone->copyCells(*this,"FrontSpace");
     }
   beamStopA->addInsertCell(outerVoid);
+  beamStopA->secondaryUnitVector(*yagUnitA,"back");
   beamStopA->createAll(System,*yagUnitA,"back");
 
   beamStopB->setCutSurf("front",frontHR);
   beamStopB->setCutSurf("base",ExternalCut::getRule("Floor"));
   beamStopB->addInsertCell(outerVoid);
-  beamStopB->createAll(System,*yagUnitB,"back");
-
+  beamStopB->secondaryUnitVector(*yagUnitB,"back");
+  beamStopB->createAll(System,*yagUnitA,"back");
   return;
 }
 
