@@ -611,7 +611,8 @@ addToInsertOuterSurfCtrl(Simulation& System,
 }
 
 bool
-checkIntersect(const ContainedComp& CC,const MonteCarlo::Object& CellObj,
+checkIntersect(const ContainedComp& CC,
+	       const MonteCarlo::Object& CellObj,
 	       const std::vector<const Geometry::Surface*>& CellSVec)
    /*
      Determine if the surface group is in the Contained Component
@@ -623,49 +624,59 @@ checkIntersect(const ContainedComp& CC,const MonteCarlo::Object& CellObj,
 {
   ELog::RegMethod RegA("AttachSupport","checkInsert");
   //  ELog::debugMethod DegA;
-  const std::vector<Geometry::Surface*>& SVec=CC.getSurfaces(); 
+  
+  const std::vector<Geometry::Surface*>& SVec=CC.getSurfaces();
+  const HeadRule& CCHR=CC.getOuterSurf();
   std::vector<Geometry::Vec3D> Out;
   std::vector<Geometry::Vec3D>::const_iterator vc;
 
+  // first check the cell object / surface intersection
   for(size_t iA=0;iA<SVec.size();iA++)
-    for(size_t iB=0;iB<CellSVec.size();iB++)
-      for(size_t iC=iB+1;iC<CellSVec.size();iC++)
-	{	      
-	  Out=SurInter::processPoint(SVec[iA],CellSVec[iB],CellSVec[iC]);
-	  for(vc=Out.begin();vc!=Out.end();vc++)
-	    {
-	      std::set<int> boundarySet;
-	      boundarySet.insert(CellSVec[iB]->getName());
-	      boundarySet.insert(CellSVec[iC]->getName());		  
-	      // Outer valid returns true if out of object
-	      if (CellObj.isValid(*vc,boundarySet) &&
-		  !CC.isOuterValid(*vc,SVec[iA]->getName()))
-		return 1;
-	    }
-	}
+    {
+      const int SN = SVec[iA]->getName();
+      for(size_t iB=0;iB<CellSVec.size();iB++)
+	for(size_t iC=iB+1;iC<CellSVec.size();iC++)
+	  {	      
+	    Out=SurInter::processPoint(SVec[iA],CellSVec[iB],CellSVec[iC]);
+	    for(const Geometry::Vec3D testPoint : Out)
+	      {
+		std::set<int> boundarySet;
+		boundarySet.insert(CellSVec[iB]->getName());
+		boundarySet.insert(CellSVec[iC]->getName());		  
+		// Outer valid returns true if out of object
+		if (CellObj.isValid(testPoint,boundarySet) &&
+		    (CCHR.isSignedValid(testPoint,SN) ||
+		     CCHR.isSignedValid(testPoint,-SN) ))
+		  return 1;
+	      }
+	  }
+    }
+  // Test surface/surface/surface intersect
   for(size_t iA=0;iA<SVec.size();iA++)
     for(size_t iB=iA+1;iB<SVec.size();iB++)
       for(size_t iC=iB+1;iC<SVec.size();iC++)
 	{
 	  Out=SurInter::processPoint(SVec[iA],SVec[iB],SVec[iC]);
-	  for(vc=Out.begin();vc!=Out.end();vc++)
+	  for(const Geometry::Vec3D testPoint : Out)
 	    {
-	      if (CellObj.isValid(*vc))
+	      if (CellObj.isValid(testPoint))
 		return 1;
 	    }
 	}
+  
   for(size_t iA=0;iA<SVec.size();iA++)
     for(size_t iB=iA+1;iB<SVec.size();iB++)
       for(size_t iC=0;iC<CellSVec.size();iC++)
 	{
 	  Out=SurInter::processPoint(SVec[iA],SVec[iB],CellSVec[iC]);
+	  for(const Geometry::Vec3D testPoint : Out)
 	  for(vc=Out.begin();vc!=Out.end();vc++)
 	    {
 	      std::set<int> boundarySet;
 	      boundarySet.insert(SVec[iA]->getName());
 	      boundarySet.insert(SVec[iB]->getName());
 	      if (CellObj.isValid(*vc,CellSVec[iC]->getName()) &&
-		  !CC.isOuterValid(*vc,boundarySet))
+		  !CCHR.isValid(*vc,boundarySet))
 		{
 		  return 1;
 		}

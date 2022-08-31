@@ -395,15 +395,17 @@ ContainedComp::isOuterValid(const Geometry::Vec3D& V,const int SN) const
 {
   ELog::RegMethod RegA("ContainedComp","isOuterValid(int))"); 
   
-  return (outerSurf.isValid(V,SN)) ? 0 : 1;
+  return (outerSurf.isSignedValid(V,SN)) ? 0 : 1;
 }
 
 int
 ContainedComp::isOuterValid(const Geometry::Vec3D& V) const
   /*!
-    Determine if the boundary is valid
-    \param V :: Vector to test
-    \return true/false
+    Determine if the boundary is valid. Returns TRUE
+    
+    \param V :: Point to test
+    \retval false :: point is within exclude region
+    \retval true :: point is outside exclude region
    */
 {
   ELog::RegMethod RegA("ContainedComp","isOuterValid())"); 
