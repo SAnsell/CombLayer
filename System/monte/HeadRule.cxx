@@ -42,6 +42,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "mathSupport.h"
 #include "stringCombine.h"
 #include "Vec3D.h"
 #include "Surface.h"
@@ -776,6 +777,80 @@ HeadRule::isValid(const Geometry::Vec3D& Pt,
 
 bool
 HeadRule::isSignedValid(const Geometry::Vec3D& Pt,
+			const int S) const
+  /*!
+    Calculate if an object is valid
+    \param Pt :: Point to test
+    \param S :: Exclude items [unsigned]
+    \return true/false 
+  */
+{
+  if (!HeadNode) return 0;
+
+  std::map<int,int> SMap; 
+  if (!signPairedSurf.empty())
+    {
+      for(const Geometry::Surface* SPtr : signPairedSurf)
+	{
+	  if (SPtr->getName()!=S && !SPtr->side(Pt))  
+	    SNum.emplace(SPtr->getName(),-1);
+	}
+    }
+  if (SMap.empty())   // easy solution:
+    return HeadNode->isDirectionValid(Pt,S);
+
+  // needs to be -1 for iterator
+  const int SAbs=std::abs(S);
+  const int SSign=sign(S);
+  
+  SMap.emplace(SAbs,-1);
+  do
+    {
+      if (SMap[SAbs]==SSign && isValid(Pt,SMap)) return 1;
+    } while (!MapSupport::iterateBinMap<int>(SMap,-1,1));
+
+  return 0;
+}
+
+bool
+HeadRule::isSideValid(const Geometry::Vec3D& Pt,
+		      const int S) const
+  /*!
+    Calculate if an object is valid
+    \param Pt :: Point to test
+    \param S :: Exclude items [unsigned]
+    \return true/false 
+  */
+{
+  if (!HeadNode) return 0;
+
+  std::map<int,int> SMap; 
+  if (!signPairedSurf.empty())
+    {
+      for(const Geometry::Surface* SPtr : signPairedSurf)
+	{
+	  if (SPtr->getName()!=S && !SPtr->side(Pt))  
+	    SNum.emplace(SPtr->getName(),-1);
+	}
+    }
+  if (SMap.empty())   // easy solution:
+    return HeadNode->isValid(Pt,S);
+
+  // needs to be -1 for iterator
+  const int SAbs=std::abs(S);
+  const int SSign=sign(S);
+  
+  SMap.emplace(SAbs,-1);
+  do
+    {
+      if (SMap[SAbs]==SSign && isValid(Pt,SMap)) return 1;
+    } while (!MapSupport::iterateBinMap<int>(SMap,-1,1));
+
+  return 0;
+}
+
+bool
+HeadRule::isValid(const Geometry::Vec3D& Pt,
 			const int S) const
   /*!
     Calculate if an object is valid

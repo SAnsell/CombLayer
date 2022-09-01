@@ -45,7 +45,6 @@ private:
   void createSurfaces();
 
   //Tests 
-  int testBoundaryValid();
   int testInsertComponent();
 
 public:

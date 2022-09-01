@@ -3,7 +3,7 @@
  
  * File:   geometry/geomSupport.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -89,9 +89,11 @@ findCornerCircle(const HeadRule& zoneRule,
 		 const double radius)
 
   /*!
-    Given a circle of radius , find the centre 
-    relative to the two lines between A-Cpt and B-Cpt
-    where Cpt is the intersection between Plane A-B.
+    Given a circle of radius (R) , find the centre
+    such that the centre lies in plane ZPln. the circle
+    is tangent to planes APln) and BPln. The four possible
+    solutions are selected so that the point is within
+    the head rule (zoneRule).
     
     \parma zoneRule :: Two Plane rule for valid section
     \param APln :: Plane not parallel to other
@@ -122,10 +124,12 @@ findCornerCircle(const HeadRule& zoneRule,
   const Geometry::Vec3D Mb=Zb*Zunit;
 
   // construct two points on the plane/lines that are valid to the headrule
+  const int SAPln=APln.getName();
+  const int SBPln=BPln.getName();
   const Geometry::Vec3D PA=
-    (zoneRule.isValid(CPt+Ma,APln.getName())) ? CPt+Ma : CPt-Ma;
+    zoneRule.isSideValid(CPt+Ma,SAPln) ? CPt+Ma : CPt-Ma;
   const Geometry::Vec3D PB=
-    (zoneRule.isValid(CPt+Mb,BPln.getName())) ? CPt+Mb : CPt-Mb;
+    zoneRule.isSideValid(CPt+Mb,SBPln) ? CPt+Mb : CPt-Mb;
 
   return findCornerCircle(CPt,PA,PB,radius);
 }

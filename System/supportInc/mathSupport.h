@@ -3,7 +3,7 @@
  
  * File:   supportInc/mathSupport.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,26 +48,43 @@ double fibonacci(const int);
 double normalDist(const double); ///< convert a number 0->1 into a normal distribute
 double invErf(const double);    ///< Inverse error function
 
+
 template<typename T>
 size_t
 inUnorderedRange(const std::vector<T>&,
 		 const std::vector<T>&,
 		 const T&);
 
-template<typename T>
-int 
-sign(const T& V)
+template <typename T> inline constexpr
+T sign(T x, std::false_type is_signed)
   /*!
-    Determine the sign of an object with zero being 
-    treated specially
-    \param V :: Value to test
-    \return -1 : 0 : 1 (dependend of value)
-  */
+    Determine the signed value (-1,0,1)
+    of a type if unsigned
+   */
 {
-  if (V<0) return -1;
-  if (V>0) return 1;
-  return 0;
+  return T(T(0) < x);
 }
+
+template <typename T> inline constexpr
+T sign(T x, std::true_type is_signed)
+  /*!
+    Determine the signed value (-1,0,1)
+    of a type if signed
+   */
+{
+  return T((T(0) < x) - (x < T(0)));
+}
+
+template <typename T> inline constexpr
+  /*!
+    Determine the signed value (-1,0,1)
+    of a type if signed
+   */
+T sign(T x)
+{
+  return sign(x, std::is_signed<T>());
+}
+
 
 template<typename T>
 long int
