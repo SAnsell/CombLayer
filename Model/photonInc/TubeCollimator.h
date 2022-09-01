@@ -3,7 +3,7 @@
  
  * File:   t1BuildInc/TubeCollimator.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,14 +40,13 @@ namespace photonSystem
   \brief Mesh of rod inserted into an object
 */
 
-class TubeCollimator : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset
+class TubeCollimator :
+    public attachSystem::ContainedComp,
+    public attachSystem::FixedOffset
 {
  private:
 
   typedef std::map<int,constructSystem::gridUnit*> MTYPE;
-  
-
 
   std::string layoutType;      ///< layout type
   std::string boundaryType;    ///< boundary type
@@ -89,10 +88,10 @@ class TubeCollimator : public attachSystem::ContainedComp,
   void createJoinLinks();
   void createJoinSurf();  
   void createCells(Simulation&);
-  std::string calcBoundary(constructSystem::gridUnit*) const;
+  HeadRule calcBoundary(constructSystem::gridUnit*) const;
   void createTubes(Simulation&);
 
-  std::string boundaryString() const;
+  HeadRule boundaryHR() const;
   bool calcGapInside(constructSystem::gridUnit*);
 
   
@@ -103,6 +102,7 @@ class TubeCollimator : public attachSystem::ContainedComp,
   TubeCollimator& operator=(const TubeCollimator&);
   ~TubeCollimator();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
