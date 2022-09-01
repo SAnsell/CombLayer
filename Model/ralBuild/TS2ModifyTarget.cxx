@@ -418,8 +418,9 @@ TS2ModifyTarget::createObjects(Simulation& System,
 }
 
 size_t
-TS2ModifyTarget::calcConeIntersect(const std::vector<HeadRule>& ConeUnits,
-				   const size_t Index) const
+TS2ModifyTarget::calcConeIntersect
+(const std::vector<HeadRule>& ConeUnits,
+ const size_t Index) const
   /*!
     Determine the cone/plane cut intersect
     \param ConeUnits :: Cone units to use
@@ -447,7 +448,7 @@ TS2ModifyTarget::calcConeIntersect(const std::vector<HeadRule>& ConeUnits,
 
 	  for(const Geometry::Vec3D& ImpactPt : Out)
 	    {
-	      if (CItem.isValid(ImpactPt,SPtr->getName()))
+	      if (CItem.isSideValid(ImpactPt,SPtr->getName()))
 		return 1+cIndex;
 	    }
 	}
