@@ -32,7 +32,7 @@ parallel --halt now,fail=1 "./maxiv --defaultConfig Single {} --validAll --valid
 	 BALDER COSAXS DANMAX FORMAX FLEXPES MICROMAX SOFTIMAX SPECIES MAXPEEM
 procExit
 
-# No need to use --validAll for singleItem since these geometries are very simple:
+# No need to use --validAll for singleItem since these models are very simple:
 
 parallel --halt now,fail=1  "./singleItem --singleItem {} --validCheck $NA AA" ::: \
 	 BeamDivider BeamScrapper Bellow BlankTube BoxJaws BremBlock BremTube ButtonBPM \
