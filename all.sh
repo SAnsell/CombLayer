@@ -15,12 +15,10 @@ function procExit
 # number of angles to check
 NA=1000
 
-./ess -validAll --validCheck $NA AA; procExit
-
 # Don't forget to use procExit after the 'parallel' calls!
 
 parallel --halt now,fail=1 "./{} -validAll --validCheck $NA AA" ::: \
-	 fullBuild t1Real reactor
+	 ess fullBuild t1Real reactor
 procExit
 
 #segments=$(for i in {40..49}; do echo -n "Segment$i "; done)
