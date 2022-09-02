@@ -162,14 +162,20 @@ LineTrack::calculate(const Simulation& ASim)
   if (!OPtr)
     throw ColErr::InContainerError<Geometry::Vec3D>
       (InitPt,"Initial point not in model");
-  
 
-  int SN=OPtr->isOnSide(InitPt);
-  if (SN && OPtr->trackDirection(InitPt,nOut.uVec)<0)
+  int SN(0);
+  const std::set<int> SSet=OPtr->isOnSide(InitPt);
+  if (!SSet.empty())
     {
-      OPtr = OSMPtr->findNextObject(-SN,nOut.Pos,OPtr->getName());
-    }
+      int TD(0);
+      std::set<int>::const_iterator sc;
+      for(sc=SSet.begin();!TD && sc!=SSet.end();sc++)
+	TD=OPtr->trackDirection(*sc,nOut.Pos,nOut.uVec);
+      SN=*sc;
+      OPtr=OSMPtr->findNextObject(TD*SN,nOut.Pos,OPtr->getName());
 
+    }
+  
   // problem is that SN will be on TWO objects
   // so which one is it? [it doesn't matter much]
   while(OPtr)
@@ -230,13 +236,19 @@ LineTrack::calculateError(const Simulation& ASim)
     throw ColErr::InContainerError<Geometry::Vec3D>
       (InitPt,"Initial point not in model");
 
-  int SN=OPtr->isOnSide(InitPt);
-
-  if (SN && OPtr->trackDirection(InitPt,nOut.uVec)<0)
+  int SN(0);
+  const std::set<int> SSet=OPtr->isOnSide(InitPt);
+  if (!SSet.empty())
     {
       ELog::EM<<"Updating to previous object / surface "
 	      <<OPtr->getName()<<ELog::endDiag;
-      OPtr = OSMPtr->findNextObject(-SN,nOut.Pos,OPtr->getName());
+
+      int TD(0);
+      std::set<int>::const_iterator sc;
+      for(sc=SSet.begin();!TD && sc!=SSet.end();sc++)
+	TD=OPtr->trackDirection(*sc,nOut.Pos,nOut.uVec);
+      SN=*sc;
+      OPtr=OSMPtr->findNextObject(TD* *sc,nOut.Pos,OPtr->getName());
       ELog::EM<<"New object ::"<<OPtr->getName()<<ELog::endDiag;
     }
 

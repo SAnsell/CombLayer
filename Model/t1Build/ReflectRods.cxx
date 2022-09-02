@@ -316,27 +316,22 @@ ReflectRods::calcCentre()
   baseCentre=Geometry::Vec3D(0,0,0);
   int cntA(0);
 
-  std::set<int> ExSN;
-  ExSN.insert(topSurf->getName());  
   for(ac=PVec.begin();ac!=PVec.end();ac++)
     {
-      ExSN.insert((*ac)->getName());
       for(bc=ac+1;bc!=PVec.end();bc++)
 	{
 	  OutA=SurInter::makePoint(topSurf,*ac,*bc);
 	  if (!OutA.empty())
 	    {
-	      ExSN.insert((*bc)->getName());
+
 	      const Geometry::Vec3D FP=OutA.front();
-	      if (RefObj->isValid(FP,ExSN))
+	      if (RefObj->isValid(FP))
 		{
 		  topCentre+=FP;
 		  cntA++;
 		}
-	      ExSN.erase((*bc)->getName());
 	    }
 	}
-      ExSN.erase((*ac)->getName());
     }
   if (!cntA)
     {
@@ -441,7 +436,7 @@ ReflectRods::checkCorners(const int surfN,
   for(size_t k=0;k<6;k++)
     {
       const Geometry::Vec3D CX=C+getHexPoint(k);
-      validCnt+=RefObj->isValid(CX,surfN);
+      validCnt+=RefObj->isSideValid(CX,surfN);
     }
   if (validCnt==6) return 0;
   return (validCnt) ? 1 : -1;
@@ -470,7 +465,7 @@ ReflectRods::checkCorners(const int surfN,
   for(size_t k=0;k<6;k++)
     {
       const Geometry::Vec3D CX=C+getHexPoint(k);
-      if (RefObj->isValid(CX,surfN)) 
+      if (RefObj->isSideValid(CX,surfN)) 
 	{
 	  validCnt++;
 	  inPt=CX;

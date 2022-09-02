@@ -84,7 +84,6 @@ checkLineIntersect(const FixedComp& InsertFC,
 {
   ELog::RegMethod RegA("AttachSupportLine[F]","checkLineInsert");
   
-
   const std::vector<Geometry::Vec3D> linkPts=
     InsertFC.getAllLinkPts();
 
@@ -93,7 +92,6 @@ checkLineIntersect(const FixedComp& InsertFC,
       if (CellObj.isValid(IP))
 	return 1;
     }
-
 
   // Check line intersection:
   const std::vector<const Geometry::Surface*>& SurList=
@@ -120,7 +118,7 @@ checkLineIntersect(const FixedComp& InsertFC,
               for(size_t dI=0;dI<dPts.size();dI++)
                 {
                   if ((distVec[dI]>0.0 && distVec[dI]<LLen) &&
-                      CellObj.isValid(dPts[dI],surfPts[dI]->getName()))
+                      CellObj.isSideValid(dPts[dI],surfPts[dI]->getName()))
                     return 1;
                 }
 	    }

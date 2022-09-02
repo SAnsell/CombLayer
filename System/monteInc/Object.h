@@ -71,12 +71,8 @@ class Object
   HeadRule HRule;           ///< Top rule
 
   Geometry::Vec3D COM;      ///< Centre of mass 
-  
-  /// Set of surfaces that are logically opposite in the rule.
-  std::set<const Geometry::Surface*> logicOppSurf;
- 
+   
   int checkSurfaceValid(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
-  int checkExteriorValid(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
   /// Calc in/out 
   int calcInOut(const int,const int) const;
 
@@ -168,7 +164,6 @@ class Object
   void populate();
   void rePopulate();
   int createSurfaceList();
-  void createLogicOpp();
   int isObjSurfValid() const { return objSurfValid; }  ///< Check validity needed
   void setObjSurfValid()  { objSurfValid=1; }          ///< set as valid
   int addSurfString(const std::string&);
@@ -186,12 +181,10 @@ class Object
     { return std::pair<double,double>(magMinStep,magMaxStep); }  
   std::pair<double,double> getElecStep() const
     { return std::pair<double,double>(elecMinStep,elecMaxStep); }  
+
   int isValid(const Geometry::Vec3D&) const;            
-  int isValid(const Geometry::Vec3D&,const int) const;
-  int isSignedValid(const Geometry::Vec3D&,const int) const;            
-  int isDirectionValid(const Geometry::Vec3D&,const int) const;
-  int isDirectionValid(const Geometry::Vec3D&,const std::set<int>&,
-		       const int) const;            
+  int isSignedValid(const Geometry::Vec3D&,const int) const;
+  int isSideValid(const Geometry::Vec3D&,const int) const;            
   int isValid(const Geometry::Vec3D&,const std::set<int>&) const;            
   int isValid(const std::map<int,int>&) const;
   int isValid(const Geometry::Vec3D&,const std::map<int,int>&) const; 
@@ -200,7 +193,7 @@ class Object
 
   
   int isOnSurface(const Geometry::Vec3D&) const;
-  int isOnSide(const Geometry::Vec3D&) const;
+  std::set<int> isOnSide(const Geometry::Vec3D&) const;
 
   int surfSign(const int) const;
   /// Access surface index
@@ -213,7 +206,7 @@ class Object
 
   std::vector<std::pair<int,int>> getImplicatePairs(const int) const;
   std::vector<std::pair<int,int>> getImplicatePairs() const;
-  std::set<int> getSelfPairs() const;
+
   
   ///\cond ABSTRACT
   virtual void displace(const Geometry::Vec3D&) {}
@@ -240,6 +233,9 @@ class Object
 		const Geometry::Surface*&,
 		const int) const;
 
+  int trackDirection(const int,
+		     const Geometry::Vec3D&,
+		     const Geometry::Vec3D&) const;
   int trackDirection(const Geometry::Vec3D&,
 		     const Geometry::Vec3D&) const;
 

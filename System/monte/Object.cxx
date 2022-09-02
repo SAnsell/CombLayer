@@ -634,63 +634,41 @@ Object::isOnSurface(const Geometry::Vec3D& Pt) const
 }
 
 
-int
+std::set<int>
 Object::isOnSide(const Geometry::Vec3D& Pt) const
   /*!
     Determine if the point is in/out on the object
+    The requirement is that for all sides that the points is
+    on, moving the boolean value of that from -1 to +1 results
+    in the point leaving and entering the object.
     \param Pt :: Point to check
-    \returns SurfNumber if the point is on the surface [signed]
+    \returns SurfNumber if the point is on the surface 
   */
 {
   ELog::RegMethod RegA("Object","isOnSide");
 
+
   std::map<int,int> surMap=mapValid(Pt);
-  std::map<int,int>::iterator mc;
 
   std::set<int> onSurf;
-  for(const auto& [sn , sideFlag] : surMap)
+  for(const auto& [SN , sideFlag] : surMap)
     {
       if (!sideFlag)
-	onSurf.insert(sn);
+	onSurf.emplace(SN);
     }
-  // Definately not on the surface
-  if (onSurf.empty()) return 0;
-  std::set<int>::const_iterator sc;
-  for(sc=onSurf.begin();sc!=onSurf.end();sc++)
+  if (onSurf.empty()) return onSurf;
+
+  std::set<int> sideSurfSet;
+  for(const int SN : onSurf)
     {
-      mc=surMap.find(*sc);
-      mc->second=-1;
-      const int Adir=HRule.isValid(surMap);
-      mc->second=1;
-      const int Bdir=HRule.isValid(surMap);
-
-      if ((Adir ^ Bdir)==1)        // Opposite 
-	return (Bdir) ? *sc : -(*sc);
-      mc->second=0;
+      bool aFlag=HRule.isSignedValid(Pt,-SN);
+      bool bFlag=HRule.isSignedValid(Pt,SN);
+      if (aFlag!=bFlag)
+	sideSurfSet.emplace(SN);
     }
-
-  return 0;
+  return sideSurfSet;
 }
 
-int
-Object::checkExteriorValid(const Geometry::Vec3D& C,
-			   const Geometry::Vec3D& Nm) const
-  /*!
-    Determine if a point is valid by checking both
-    directions of the normal away from the line
-    A good point will have an invalid point as this
-    point is already deamed to be valid
-    \param C :: Point on a basic surface to check 
-    \param Nm :: Direction +/- to be checked
-    \retval 0 :: All interiaor
-    \retval 1 :: An exterior point
-  */
-{
-  Geometry::Vec3D tmp=C+Nm*(Geometry::shiftTol*5.0);
-  if (!isValid(tmp)) return 1;
-  tmp-= Nm*(Geometry::shiftTol*10.0);
-  return (!isValid(tmp)) ? 1 : 0;
-}
 
 int
 Object::checkSurfaceValid(const Geometry::Vec3D& C,
@@ -722,7 +700,7 @@ Object::getSurf(const int SN) const
    */
 {
   if (SurSet.find(SN)!=SurSet.end() ||
-      SurSet.find(SN)!=SurSet.end())
+      SurSet.find(-SN)!=SurSet.end())
     {
       const int ASN=std::abs(SN);
       for(const Geometry::Surface* SPtr : SurList)
@@ -731,6 +709,39 @@ Object::getSurf(const int SN) const
     }
   return 0;
 }
+
+int
+Object::trackDirection(const int SN,
+		       const Geometry::Vec3D& Pt,
+		       const Geometry::Vec3D& Norm) const
+  /*!
+    Determine if a point is valid by checking both
+    directions of the normal away from the line
+    A good point will have one valid and one invalid.
+    \param SN :: surface number to test
+    \param Pt :: Point on a basic surface to check 
+    \param Norm :: Direction +/- to be checked
+    \retval +1 ::  Entering the Object
+    \retval 0 :: No-change
+    \retval -1 ::  Exiting the object
+  */
+{
+  const int pAB=HRule.isSignedValid(Pt,SN);   // true/false [1/0]
+  const int mAB=HRule.isSignedValid(Pt,-SN);	    
+
+  if (pAB!=mAB)    // exiting/entering
+    {
+      const Geometry::Surface* SPtr=getSurf(SN);
+      if (!SPtr)
+	throw ColErr::InContainerError<int>
+	  (SN,"Surf not in object"+str());
+
+      const int normD=SPtr->sideDirection(Pt,Norm);
+      return (normD == pAB || normD == -mAB ) ? 1 : -1;
+    }
+  return 0;
+}
+		
 
 int
 Object::trackDirection(const Geometry::Vec3D& Pt,
@@ -747,21 +758,20 @@ Object::trackDirection(const Geometry::Vec3D& Pt,
     \retval -1 ::  Exiting the object
   */
 {
-  ELog::RegMethod RegA("Object","trackDirection");
+  ELog::RegMethod RegA("Object","trackDirection(all)");
   
   // first determine if on surface :
-  const int SN = isOnSide(Pt);
-  if (!SN) return 0;
+  const std::set<int> SSet = isOnSide(Pt);
+  if (SSet.empty()) return 0;
 
-  const int pAB=isDirectionValid(Pt,std::abs(SN));   // true/false [1/0]
-  const int mAB=isDirectionValid(Pt,-std::abs(SN));
-  if (pAB==mAB)  return 0;  // not extiting [internal]
+  for(const int SN : SSet)
+    {
+      const int result=trackDirection(SN,Pt,Norm);
+      if (result) return result;
+    }
+  return 0;
+}
 
-  const Geometry::Surface* SPtr=getSurf(SN);
-
-  const int normD=SPtr->sideDirection(Pt,Norm);
-  return (normD == pAB || normD == -mAB ) ? 1 : -1;
-}  
 
 int
 Object::isValid(const Geometry::Vec3D& Pt) const
@@ -790,17 +800,17 @@ Object::isSignedValid(const Geometry::Vec3D& Pt,
 }
 
 int
-Object::isValid(const Geometry::Vec3D& Pt,
-		const int ExSN) const
+Object::isSideValid(const Geometry::Vec3D& Pt,
+		      const int SN) const
   /*! 
     Determines is Pt is within the object 
     or on the surface
     \param Pt :: Point to be tested
-    \param ExSN :: Excluded surf Number [unsigned]
+    \param SN :: Excluded surf Number 
     \returns 1 if true and 0 if false
   */
 {
-  return HRule.isValid(Pt,ExSN);
+  return HRule.isSideValid(Pt,SN);
 }
 
 std::set<int>
@@ -817,36 +827,6 @@ Object::surfValid(const Geometry::Vec3D& Pt) const
 }
 
 int
-Object::isDirectionValid(const Geometry::Vec3D& Pt,
-			 const int ExSN) const
-/*! 
-  Determines is Pt is within the object 
-  or on the surface
-  \param Pt :: Point to be tested 
-  \param ExSN :: Excluded surf Number [signed]
-  \returns 1 if true and 0 if false
-*/
-{
-  return HRule.isDirectionValid(Pt,ExSN);
-}
-
-int
-Object::isDirectionValid(const Geometry::Vec3D& Pt,
-			 const std::set<int>& surfSet,
-			 const int ExSN) const
-/*! 
-  Determines is Pt is within the object 
-  or on the surface
-  \param Pt :: Point to be tested 
-  \param ExSN :: Excluded surf Number [signed]
-  \returns 1 if true and 0 if false
-*/
-{
-  return HRule.isDirectionValid(Pt,surfSet,ExSN);
-}
-
-
-int
 Object::isValid(const Geometry::Vec3D& Pt,
 		const std::set<int>& ExSN) const
 /*! 
@@ -857,25 +837,9 @@ Object::isValid(const Geometry::Vec3D& Pt,
   \returns 1 if true and 0 if false
 */
 {
-  return HRule.isValid(Pt,ExSN);
+  return HRule.isSideValid(Pt,ExSN);
 }
 
-std::set<int>
-Object::getSelfPairs() const
-  /*!
-    Determine the set of surfaces that are represented
-    twice in the model and as both signs (+/-)
-    \return Set of opposite surfaces
-  */
-{
-  ELog::RegMethod RegA("Object","getSelfPairs(int)");
-
-  std::set<int> Out;
-  for(const Geometry::Surface* APtr : logicOppSurf)
-    Out.emplace(APtr->getName());
-  
-  return Out;
-}
 
 std::vector<std::pair<int,int>>
 Object::getImplicatePairs(const int SN) const
@@ -977,19 +941,19 @@ Object::isValid(const Geometry::Vec3D& Pt,
 std::map<int,int>
 Object::mapValid(const Geometry::Vec3D& Pt) const
   /*! 
-    Populates the validity map
-    the surface 
+    Populates the validity map the surfaces
+    For each surface determine if the surface is true(1)/false(-1)/
+    onSide(0)
+    
     \param Pt :: Point to testsd
-    \returns Map [ surfNumber: -1/1 ]
+    \returns Map [ surfNumber: -1/0/1 ]
   */
 {
   ELog::RegMethod RegA("Object","mapValid");
 
   std::map<int,int> SMap;
-  std::vector<const Geometry::Surface*>::const_iterator vc;
-  for(vc=SurList.begin();vc!=SurList.end();vc++)
-    SMap.insert(std::map<int,int>::value_type
-		((*vc)->getName(),(*vc)->side(Pt)));
+  for(const Geometry::Surface* SPtr : SurList)
+    SMap.emplace(SPtr->getName(),SPtr->side(Pt));
 
   return SMap;
 }
@@ -1064,7 +1028,6 @@ Object::createSurfaceList()
       throw ColErr::ExitAbort("Empty surf List");
     }
 
-  createLogicOpp();
   return 1;
 }
 
@@ -1078,20 +1041,6 @@ Object::isVoid() const
   return matPtr->isVoid();
 }
 
-void
-Object::createLogicOpp()
-  /*!
-    Find logically opposite surfaces in the object for valid check later
-   */
-{
-  ELog::RegMethod RegA("Object","createLogicOpp");
-  // create Logical
-  //  static int cnt(0);
-
-  logicOppSurf=HRule.getOppositeSurfaces();
-  return;
-}
-
 
 std::vector<int>
 Object::getSurfaceIndex() const
@@ -1101,9 +1050,9 @@ Object::getSurfaceIndex() const
   */
 {
   std::vector<int> out;
-  transform(SurList.begin(),SurList.end(),
-	    std::insert_iterator<std::vector<int> >(out,out.begin()),
-	    std::mem_fun(&Geometry::Surface::getName));
+  for(const Geometry::Surface* SPtr : SurList)
+    out.push_back(SPtr->getName());
+
   return out;
 }
 
@@ -1333,8 +1282,8 @@ Object::trackCell(const MonteCarlo::particle& N,double& D,
       if ( dPts[i]>Geometry::zeroTol && dPts[i]<D+Geometry::zeroTol*10.0)
 	{
 	  const int NS=surfIndex[i]->getName();	    // NOT SIGNED
-	  const int pAB=isDirectionValid(IPts[i],NS);
-	  const int mAB=isDirectionValid(IPts[i],-NS);
+	  const int pAB=HRule.isSignedValid(IPts[i],NS);
+	  const int mAB=HRule.isSignedValid(IPts[i],-NS);
 	  if (pAB!=mAB)           // out going positive surface
 	    {
 	      const int normD=surfIndex[i]->sideDirection(IPts[i],N.uVec);

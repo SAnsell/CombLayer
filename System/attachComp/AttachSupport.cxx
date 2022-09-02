@@ -3,7 +3,7 @@
  
  * File:   attachComp/AttachSupport.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -626,8 +626,9 @@ checkIntersect(const ContainedComp& CC,
   //  ELog::debugMethod DegA;
   
   const std::vector<Geometry::Surface*>& SVec=CC.getSurfaces();
+  const HeadRule& CellHR=CellObj.getHeadRule();
   const HeadRule& CCHR=CC.getOuterSurf();
-  std::vector<Geometry::Vec3D> Out;
+  std::vector<Geometry::Vec3D> intersectPoints;
   std::vector<Geometry::Vec3D>::const_iterator vc;
 
   // first check the cell object / surface intersection
@@ -637,16 +638,16 @@ checkIntersect(const ContainedComp& CC,
       for(size_t iB=0;iB<CellSVec.size();iB++)
 	for(size_t iC=iB+1;iC<CellSVec.size();iC++)
 	  {	      
-	    Out=SurInter::processPoint(SVec[iA],CellSVec[iB],CellSVec[iC]);
-	    for(const Geometry::Vec3D testPoint : Out)
+	    intersectPoints=
+	      SurInter::processPoint(SVec[iA],CellSVec[iB],CellSVec[iC]);
+	    for(const Geometry::Vec3D& testPoint : intersectPoints)
 	      {
 		std::set<int> boundarySet;
 		boundarySet.insert(CellSVec[iB]->getName());
 		boundarySet.insert(CellSVec[iC]->getName());		  
 		// Outer valid returns true if out of object
-		if (CellObj.isValid(testPoint,boundarySet) &&
-		    (CCHR.isSignedValid(testPoint,SN) ||
-		     CCHR.isSignedValid(testPoint,-SN) ))
+		if (CellHR.isSideValid(testPoint,boundarySet) &&
+		    CCHR.isSideValid(testPoint,SN))
 		  return 1;
 	      }
 	  }
@@ -656,8 +657,9 @@ checkIntersect(const ContainedComp& CC,
     for(size_t iB=iA+1;iB<SVec.size();iB++)
       for(size_t iC=iB+1;iC<SVec.size();iC++)
 	{
-	  Out=SurInter::processPoint(SVec[iA],SVec[iB],SVec[iC]);
-	  for(const Geometry::Vec3D testPoint : Out)
+	  intersectPoints=
+	    SurInter::processPoint(SVec[iA],SVec[iB],SVec[iC]);
+	  for(const Geometry::Vec3D& testPoint : intersectPoints)
 	    {
 	      if (CellObj.isValid(testPoint))
 		return 1;
@@ -668,15 +670,15 @@ checkIntersect(const ContainedComp& CC,
     for(size_t iB=iA+1;iB<SVec.size();iB++)
       for(size_t iC=0;iC<CellSVec.size();iC++)
 	{
-	  Out=SurInter::processPoint(SVec[iA],SVec[iB],CellSVec[iC]);
-	  for(const Geometry::Vec3D testPoint : Out)
-	  for(vc=Out.begin();vc!=Out.end();vc++)
+	  intersectPoints=
+	    SurInter::processPoint(SVec[iA],SVec[iB],CellSVec[iC]);
+	  for(const Geometry::Vec3D& testPoint : intersectPoints)
 	    {
 	      std::set<int> boundarySet;
 	      boundarySet.insert(SVec[iA]->getName());
 	      boundarySet.insert(SVec[iB]->getName());
-	      if (CellObj.isValid(*vc,CellSVec[iC]->getName()) &&
-		  !CCHR.isValid(*vc,boundarySet))
+	      if (CellHR.isSideValid(testPoint,CellSVec[iC]->getName()) &&
+		  !CCHR.isSideValid(testPoint,boundarySet))
 		{
 		  return 1;
 		}
@@ -705,27 +707,29 @@ checkPlaneIntersect(const Geometry::Plane& BPlane,
 
   const std::vector<const Geometry::Surface*>& ASVec=AObj.getSurList(); 
   const std::vector<const Geometry::Surface*>& BSVec=BObj.getSurList(); 
-
-  std::vector<Geometry::Vec3D> Out;
-  std::vector<Geometry::Vec3D>::const_iterator vc;
+  const HeadRule& AObjHR=AObj.getHeadRule();
+  const HeadRule& BObjHR=BObj.getHeadRule();
+  
+  std::vector<Geometry::Vec3D> intersectPoints;
 
   for(size_t iA=0;iA<ASVec.size();iA++)
     for(size_t iB=0;iB<BSVec.size();iB++)
       {	      
-	Out=SurInter::processPoint(&BPlane,ASVec[iA],BSVec[iB]);
-	  for(vc=Out.begin();vc!=Out.end();vc++)
-	    {
-	      if (BObj.isValid(*vc,BSVec[iB]->getName()) &&
-		  AObj.isValid(*vc,ASVec[iA]->getName()) )
-		{
-		  if (BObj.isDirectionValid(*vc,BSVec[iB]->getName()) !=
-		      BObj.isDirectionValid(*vc,-BSVec[iB]->getName()) && 
-		      AObj.isDirectionValid(*vc,ASVec[iA]->getName()) !=
-		      AObj.isDirectionValid(*vc,-ASVec[iA]->getName()) ) 
-		    return 1;
-		}
-	    }
-	}
+	intersectPoints=
+	  SurInter::processPoint(&BPlane,ASVec[iA],BSVec[iB]);
+	const int aSN(ASVec[iA]->getName());
+	const int bSN(BSVec[iB]->getName());
+	
+	for(const Geometry::Vec3D& testPoint : intersectPoints)
+	  {
+	    const bool aMinus=AObjHR.isSignedValid(testPoint,-aSN);
+	    const bool aPlus=AObjHR.isSignedValid(testPoint,aSN);
+	    const bool bMinus=BObjHR.isSignedValid(testPoint,-bSN);
+	    const bool bPlus=BObjHR.isSignedValid(testPoint,bSN);
+	    if (aMinus!=aPlus && bMinus!=bPlus)
+	      return 1;
+	  }
+      }
   return 0;
 }
 
@@ -736,8 +740,10 @@ findPlaneIntersect(const Geometry::Plane& BPlane,
 		   std::vector<int>& ASurf,
 		   std::vector<int>& BSurf)
 /*!
-  Determine if the surface group intersects the CellObj based
-  on the base
+  Determine if the pair of objects have an intersecting
+  point along a plane. Given plane: BPlane find the
+  object that surf-surf intersections that are valid in
+  both objects
   \param BPlane :: Base plane
   \param AObj :: First object
   \param BObj :: Second object
@@ -751,22 +757,29 @@ findPlaneIntersect(const Geometry::Plane& BPlane,
   const std::vector<const Geometry::Surface*>& ASVec=AObj.getSurList(); 
   const std::vector<const Geometry::Surface*>& BSVec=BObj.getSurList(); 
 
-  std::vector<Geometry::Vec3D> Out;
-  std::vector<Geometry::Vec3D>::const_iterator vc;
+  const HeadRule& AObjHR=AObj.getHeadRule();
+  const HeadRule& BObjHR=BObj.getHeadRule();
+  
+  std::vector<Geometry::Vec3D> intersectPoints;
 
   for(size_t iA=0;iA<ASVec.size();iA++)
     for(size_t iB=0;iB<BSVec.size();iB++)
       {	      
-	Out=SurInter::processPoint(&BPlane,ASVec[iA],BSVec[iB]);
-	  for(vc=Out.begin();vc!=Out.end();vc++)
-	    {
-	      if (BObj.isValid(*vc,BSVec[iB]->getName()) &&
-		  AObj.isValid(*vc,ASVec[iA]->getName()) )
-		{
-		  ASurf.push_back(ASVec[iA]->getName());
-		  BSurf.push_back(BSVec[iB]->getName());
-		}
-	    }
+	intersectPoints=
+	  SurInter::processPoint(&BPlane,ASVec[iA],BSVec[iB]);
+	const int aSN(ASVec[iA]->getName());
+	const int bSN(BSVec[iB]->getName());
+
+	for(const Geometry::Vec3D& testPoint : intersectPoints)
+	  {
+
+	    if (AObjHR.isSideValid(testPoint,aSN) &&
+		BObjHR.isSideValid(testPoint,bSN))
+	      {
+		ASurf.push_back(aSN);
+		BSurf.push_back(bSN);
+	      }
+	  }
       }
   
   return (ASurf.empty()) ? 0 : 1;

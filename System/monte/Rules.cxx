@@ -42,6 +42,7 @@
 #include "Triple.h"
 #include "support.h"
 #include "MatrixBase.h"
+#include "MapSupport.h"
 #include "surfIndex.h"
 #include "BnId.h"
 #include "AcompTools.h"
@@ -490,6 +491,29 @@ Rule::makeCNF(Rule* &TopRule)
     }
   return count-1;  //return number of changes 
 }
+
+
+bool
+Rule::isAnyValid(const Geometry::Vec3D& Pt,
+		 const std::set<int>& SSet) const
+  /*!
+    Determine if -/+ flag on the SMap produces a valid
+    point within point in the rule
+    \param SSet :: set of surfaces (+ve assumed)
+  */
+{
+  std::map<int,int> SMap;
+  for(const int SN : SSet)
+    SMap.emplace(SN,-1);
+  do
+    {
+      if (this->isValid(Pt,SMap))
+	return 1;
+    }
+  while (!MapSupport::iterateBinMap<int>(SMap,-1,1));
+  return 0;
+}
+
 
 void
 Rule::removeLeaf(const int aIndex) 

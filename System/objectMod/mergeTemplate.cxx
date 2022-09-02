@@ -334,6 +334,7 @@ mergeTemplate<T,U>::process(const double fA,
     Result.subMatched(OutTemplate,makeOuter());
 
   HR=Result;
+
   return;
 }
 
@@ -402,8 +403,16 @@ mergeTemplate<T,U>::makeOuter() const
   HeadRule HR(OutTemplate);
 
   for(size_t i=0;i<sSurf.size();i++)
-    HR.substituteSurf(sSurf[i],OSPtr[i]->getName(),OSPtr[i]);
+    {
+      ELog::EM<<"P "<<sSurf[i]<<" "<<OSPtr[i]<<":"
+	      <<OSPtr[i]->getName()<<ELog::endDiag;
 
+      HR.substituteSurf(sSurf[i],OSPtr[i]->getName(),OSPtr[i]);
+      ELog::EM<<"WQ "<<sSurf[i]<<" "<<OSPtr[i]<<":"
+	      <<OSPtr[i]->getName()<<ELog::endDiag;
+
+    }
+  ELog::EM<<"ASDFASFDSF"<<ELog::endDiag;
   return HR;
 }
 
@@ -420,6 +429,7 @@ mergeTemplate<T,U>::makeOuterComp() const
   HeadRule HR(OutTemplate);
   for(size_t i=0;i<sSurf.size();i++)
     HR.substituteSurf(sSurf[i],PSPtr[i]->getName(),PSPtr[i]);
+    
   HR.makeComplement();
   return HR;
 }

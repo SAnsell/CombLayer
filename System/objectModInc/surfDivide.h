@@ -118,7 +118,6 @@ class surfDivide
 
   void divideAction(std::vector<Token>&,std::vector<Token>&);
 
-  void activeDivide(Simulation&);
   void activeDivideTemplate(Simulation&,attachSystem::CellMap* CM=nullptr);
 
   void addLayers(const size_t,const std::vector<double>&,

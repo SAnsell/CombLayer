@@ -3,7 +3,7 @@
  
  * File:   test/testObject.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "support.h"
 #include "Vec3D.h"
 #include "Rules.h"
@@ -297,10 +295,10 @@ testObject::testSetObject()
   typedef std::tuple<std::string,std::string> TTYPE;
   std::vector<TTYPE> Tests=
     {
-      TTYPE(" 4 10 0.118747  -5  8  60  -61  62  -63 #3",
-	    "4 10 0.118747 #3 -63 62 -61 60 8 -5")
+      TTYPE(" 4 10 0.100283  -5  8  60  -61  62  -63 #3",
+	    "4 10 0.100283 #3 -63 62 -61 60 8 -5")
     };
-  
+
   int cnt(1);
   for(const TTYPE& tc : Tests)
     {
@@ -339,19 +337,20 @@ testObject::testSetObjectExtra()
 
   typedef std::tuple<std::string,double> TTYPE;
   std::vector<TTYPE> Tests;
-  Tests.push_back(TTYPE(" 4 10 0.05524655  -5  8  60  -61  62  -63 tmp=3.4",
+  Tests.push_back(TTYPE("4 10 0.05524655  -5  8  60  -61  62  -63 tmp=3.4",
 			3.4));
-  Tests.push_back(TTYPE(" 4 10 0.05524655  -5  8  60  -61  62  -63 tmp = 3.4",
+  Tests.push_back(TTYPE("4 10 0.05524655  -5  8  60  -61  62  -63 tmp = 3.4",
 			3.4));
-  Tests.push_back(TTYPE(" 4 10 0.05524655  -5  8  60  imp:n = 45 tmp = 3.4",
+  Tests.push_back(TTYPE("4 10 0.05524655  -5  8  60  imp:n = 45 tmp = 3.4",
 			3.4));
   int cnt(1);
+
   for(const TTYPE& tc : Tests)
     {
       std::ostringstream cx;
       Object A;
       A.setObject(std::get<0>(tc));
-      if (fabs(A.getTemp()-std::get<1>(tc))>1e-5)
+      if (std::abs(A.getTemp()-std::get<1>(tc))>1e-5)
 	{
 	  ELog::EM<<"Failed on test "<<cnt<<ELog::endTrace;
 	  ELog::EM<<"Input == "<<std::get<0>(tc)<<ELog::endTrace;
@@ -474,7 +473,7 @@ testObject::testIsValid()
       const int SN=std::get<1>(tc);
       
       res=(SN) ?
-	A.isDirectionValid(std::get<2>(tc),SN) :
+	A.isSignedValid(std::get<2>(tc),SN) :
 	A.isValid(std::get<2>(tc));
       
       if (res!=std::get<3>(tc))
@@ -517,7 +516,7 @@ testObject::testIsOnSide()
   Tests.push_back(TTYPE("4 5 0.05 1 -2 3 -4 5 -6",
 			Geometry::Vec3D(0,-1,1),3));
   Tests.push_back(TTYPE("4 5 0.05 11 -12 13 -14 15 -16 (-1:2:-3:4:-5:6)",
-			Geometry::Vec3D(0,1,3),-16));
+			Geometry::Vec3D(0,1,3),16));
   Tests.push_back(TTYPE("4 5 0.05 11 -12 13 -14 15 -16 (-1:2:-3:4:-5:6)",
 			Geometry::Vec3D(0,1,0.5),4));
   Tests.push_back(TTYPE("4 5 0.05 11 -12 13 -14 15 -16 (-1:2:-3:4:-5:6)",
@@ -533,7 +532,8 @@ testObject::testIsOnSide()
       A.setObject(std::get<0>(tc));
 		  
       A.createSurfaceList();
-      const int res=A.isOnSide(std::get<1>(tc));
+      const std::set<int> resSet=A.isOnSide(std::get<1>(tc));
+      const int res=resSet.empty() ? 0 : *resSet.begin();
       if (res!=std::get<2>(tc))
 	{
 	  ELog::EM<<"Failed on test "<<cnt<<ELog::endDebug;
@@ -698,7 +698,7 @@ testObject::testMakeComplement()
   typedef std::tuple<int,std::string> TTYPE;
   const std::vector<TTYPE> Tests=
     {
-      TTYPE(2,"2 5 0.0582256 (63 : -62 : 61 : -60 : -5 : 4)")
+      TTYPE(2,"2 5 0.030391 (63 : -62 : 61 : -60 : -5 : 4)")
     };
   
   for(const TTYPE& tc : Tests)

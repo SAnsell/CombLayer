@@ -369,48 +369,6 @@ ContainedComp::surfOuterIntersect(const Geometry::Line& LA) const
   return 0;
 }
 
-int
-ContainedComp::isOuterValid(const Geometry::Vec3D& V,
-			    const std::set<int>& SN) const
-  /*!
-    Determine if the boundary is valid [reverst test]
-    \param V :: Vector to test
-    \param SN :: surface numbers to ignore
-    \return true/false
-   */
-{
-  ELog::RegMethod RegA("ContainedComp","isOuterValid(set))"); 
-  
-  return (outerSurf.isValid(V,SN)) ? 0 : 1;
-}
-
-int
-ContainedComp::isOuterValid(const Geometry::Vec3D& V,const int SN) const
-  /*!
-    Determine if the boundary is valid [reverst test]
-    \param V :: Vector to test
-    \param SN :: surface number to ignore
-    \return true/false
-   */
-{
-  ELog::RegMethod RegA("ContainedComp","isOuterValid(int))"); 
-  
-  return (outerSurf.isSignedValid(V,SN)) ? 0 : 1;
-}
-
-int
-ContainedComp::isOuterValid(const Geometry::Vec3D& V) const
-  /*!
-    Determine if the boundary is valid. Returns TRUE
-    
-    \param V :: Point to test
-    \retval false :: point is within exclude region
-    \retval true :: point is outside exclude region
-   */
-{
-  ELog::RegMethod RegA("ContainedComp","isOuterValid())"); 
-  return (outerSurf.isValid(V)) ? 0 : 1;
-}
 
 void
 ContainedComp::addInsertCell(const ContainedComp& CC)

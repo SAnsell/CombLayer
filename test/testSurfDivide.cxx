@@ -3,7 +3,7 @@
  
  * File:   test/testSurfDivide.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -258,9 +258,8 @@ testSurfDivide::testMultiOuter()
   DA.init(); 
   DA.setCellN(4);   // Cube cell
   DA.setOutNum(11,8001);
-  //  DA.makeMulti<Geometry::Plane>(23,24,27);
-  DA.makeTemplate<Geometry::Plane>(23,24,27);
-  DA.activeDivide(ASim);
+  DA.makeTemplate<Geometry::Plane>(23,-24,-27);
+  DA.activeDivideTemplate(ASim);
 
   // Initial cell : 11 -12 13 -14 15 -16 -17
   resTest=checkResults(11,"21 -22 23 -8002 -8001 25 -26");
@@ -302,21 +301,7 @@ testSurfDivide::testBasicPair()
   DA.addMaterial(6);
 
   int resTest;
-  /*
-  // Test Cell 3:
-  DA.init(); 
-  DA.setCellN(3);   // Cube cell
-  DA.setOutNum(11,8001);
-  DA.makeTemplate<Geometry::Plane>(13,-14);
-  DA.activeDivideTemplate(ASim);
-  
-  int resTest=checkResults(11,"11 -12 13 -8001 15 -16");
-  resTest+=checkResults(12,"11 -12 8001 -8002 15 -16");
-  resTest+=checkResults(13,"11 -12 8002 -14 15 -16");
-  resTest+=checkSurfaceEqual(8001,"8001 py 0.2");
-  resTest+=checkSurfaceEqual(8002,"8002 py 0.6");
-  if (resTest) return -1;
-  */
+
   initSim();
   DA.init();
   DA.setCellN(3);   // Cube cell

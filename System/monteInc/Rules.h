@@ -100,7 +100,10 @@ class Rule
   /// Abstract: Does the object have surfaces
   virtual bool isEmpty() const =0;
   
-  /// Abstract: The point is within the object
+  // using isValid by virtual
+  bool isAnyValid(const Geometry::Vec3D&,
+			  const std::set<int>&) const;    
+  
   virtual bool isValid(const Geometry::Vec3D&,const int) const =0;           
   /// Abstract: The point is within the object
   virtual bool isValid(const Geometry::Vec3D&) const =0;           

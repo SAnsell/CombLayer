@@ -55,8 +55,8 @@ inUnorderedRange(const std::vector<T>&,
 		 const std::vector<T>&,
 		 const T&);
 
-template <typename T> inline constexpr
-T sign(T x, std::false_type is_signed)
+template <typename T> constexpr
+T sign(T x,std::false_type)
   /*!
     Determine the signed value (-1,0,1)
     of a type if unsigned
@@ -65,8 +65,8 @@ T sign(T x, std::false_type is_signed)
   return T(T(0) < x);
 }
 
-template <typename T> inline constexpr
-T sign(T x, std::true_type is_signed)
+template <typename T> constexpr
+T sign(T x,std::true_type)
   /*!
     Determine the signed value (-1,0,1)
     of a type if signed
@@ -75,14 +75,15 @@ T sign(T x, std::true_type is_signed)
   return T((T(0) < x) - (x < T(0)));
 }
 
-template <typename T> inline constexpr
+template <typename T> constexpr
+T sign(T x)
   /*!
     Determine the signed value (-1,0,1)
     of a type if signed
+    \param x :: input
    */
-T sign(T x)
 {
-  return sign(x, std::is_signed<T>());
+  return sign(x,std::is_signed<T>());
 }
 
 

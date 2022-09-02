@@ -56,10 +56,6 @@ class ContainedComp
 
   std::vector<int> insertCells;    ///< Cell to insert into
 
-  int isOuterValid(const Geometry::Vec3D&) const;
-  int isOuterValid(const Geometry::Vec3D&,const std::set<int>&) const;
-  int isOuterValid(const Geometry::Vec3D&,const int) const;
-
  public:
 
   ContainedComp();

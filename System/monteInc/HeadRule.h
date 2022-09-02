@@ -63,8 +63,6 @@ class HeadRule
   void createAddition(const int,const Rule*);
   const SurfPoint* findSurf(const int) const;
 
-  bool isValid(const Geometry::Vec3D&,const int) const;
-  
  public:
 
   HeadRule();
@@ -102,10 +100,10 @@ class HeadRule
   bool isComplementary() const;
   bool isUnion() const;
 
-  bool isValid(const Geometry::Vec3D&,const std::set<int>&) const;
-
+  bool isSideValid(const Geometry::Vec3D&,const std::set<int>&) const;
+  bool isSideValid(const Geometry::Vec3D&,const int) const;
   bool isSignedValid(const Geometry::Vec3D&,const int) const;
-  bool isSideValid(const Geometry::Vec3D&,const int) const;           
+
   bool isValid(const Geometry::Vec3D&) const;
   bool isValid(const std::map<int,int>&) const;
   bool isValid(const Geometry::Vec3D&,const std::map<int,int>&) const;
@@ -113,9 +111,9 @@ class HeadRule
   bool isLineValid(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
   
   bool isDirectionValid(const Geometry::Vec3D&,const int) const;
-  bool isDirectionValid(const Geometry::Vec3D&,
-			const std::set<int>&,const int) const;
 
+  std::set<int> getPairedSurf() const;
+  
   std::set<int> surfValid(const Geometry::Vec3D&) const;
   std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
   trackSurfIntersect(const Geometry::Vec3D&,const Geometry::Vec3D&)
