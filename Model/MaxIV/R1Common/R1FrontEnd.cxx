@@ -234,7 +234,6 @@ R1FrontEnd::createSurfaces()
 
   if (!isActive("front"))
     {
-      ELog::EM<<"Building Front "<<outerFront<<ELog::endDiag;
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*outerFront,Y);
       setCutSurf("front",SMap.realSurf(buildIndex+1));
     }

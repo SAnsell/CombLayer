@@ -8,17 +8,16 @@ function procExit
     fi
 }
 
-# validCheck - use only one single point (default: origin (0,0,0))
-# use validPoint to specify the point
-# validAll - use all link points of all fixed components and the origin
+# --validCheck - use only one single point (default: origin (0,0,0))
+# use --validPoint to specify the point
+# --validAll - use all link points of all fixed components and the origin
 
 # number of angles to check
 NA=1000
 
 ./ess -validAll --validCheck $NA AA; procExit
 
-# no procExit is replaced with the --halt argument, but don't forget
-# to use procExit after 'parallel'
+# Don't forget to use procExit after the 'parallel' calls!
 
 parallel --halt now,fail=1 "./{} -validAll --validCheck $NA AA" ::: \
 	 fullBuild t1Real reactor
@@ -33,6 +32,7 @@ parallel --halt now,fail=1 "./maxiv --defaultConfig Single {} --validAll --valid
 	 BALDER COSAXS DANMAX FORMAX FLEXPES MICROMAX SOFTIMAX SPECIES MAXPEEM
 procExit
 
+# No need to use --validAll for singleItem since these geometry are very simple:
 
 parallel --halt now,fail=1  "./singleItem --singleItem {} --validCheck $NA AA" ::: \
 	 BeamDivider BeamScrapper Bellow BlankTube BoxJaws BremBlock BremTube ButtonBPM \

@@ -776,6 +776,20 @@ Object::isValid(const Geometry::Vec3D& Pt) const
 }
 
 int
+Object::isSignedValid(const Geometry::Vec3D& Pt,
+		      const int SN) const
+  /*! 
+    Determines is Pt is within the object 
+    or on the surface
+    \param Pt :: Point to be tested
+    \param SN :: Excluded surf Number 
+    \returns 1 if true and 0 if false
+  */
+{
+  return HRule.isSignedValid(Pt,SN);
+}
+
+int
 Object::isValid(const Geometry::Vec3D& Pt,
 		const int ExSN) const
   /*! 

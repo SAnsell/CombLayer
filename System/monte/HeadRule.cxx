@@ -775,6 +775,26 @@ HeadRule::isValid(const Geometry::Vec3D& Pt,
 }
 
 bool
+HeadRule::isSignedValid(const Geometry::Vec3D& Pt,
+			const int S) const
+  /*!
+    Calculate if an object is valid
+    \param Pt :: Point to test
+    \param S :: Exclude items [unsigned]
+    \return true/false 
+  */
+{
+  if (!HeadNode) return 0;
+  if (S>0)
+    {
+      std::map<int,int> SMap({{S,1}});
+      return HeadNode->isValid(Pt,SMap);
+    }
+  std::map<int,int> SMap({{S,-1}});
+  return HeadNode->isValid(Pt,SMap);  
+}
+
+bool
 HeadRule::isValid(const Geometry::Vec3D& Pt,
 		  const int S) const
   /*!
@@ -917,23 +937,16 @@ HeadRule::surfValid(const Geometry::Vec3D& Pt) const
   const std::vector<const Geometry::Surface*> SVec=getSurfaces();
   for(const Geometry::Surface* SPtr : SVec)
     {
-      ELog::EM<<"SPtr = "<<*SPtr;
-      
       if (!SPtr->side(Pt))
-	sideSurf.emplace(SPtr->getName());
+	{
+	  const int S = SPtr->getName();
+	  const std::map<int,int> SNeg({{S,-1}});
+	  const std::map<int,int> SPlus({{S,1}});
+	  if (isValid(Pt,SNeg) !=  isValid(Pt,SPlus))
+	    sideSurf.emplace(SPtr->getName());
+	}
     }
-  ELog::EM<<"Side Surf == "<<sideSurf.size()<<ELog::endDiag;
-  if (sideSurf.size()<2) return sideSurf;
-
-  std::set<int> Out;
-  for(const int SN : sideSurf)
-    {
-      const bool aPlus=isDirectionValid(Pt,SN);
-      const bool aMinus=isDirectionValid(Pt,-SN);
-      if (aPlus!=aMinus)
-	Out.emplace(SN);
-    }
-  return Out;
+  return sideSurf;
 }
 
 bool

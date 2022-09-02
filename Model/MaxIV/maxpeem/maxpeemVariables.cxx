@@ -835,7 +835,7 @@ MAXPEEMvariables(FuncDataBase& Control)
   Control.addVariable("sdefType","Wiggler");
   // add ring door to our sector
   RGen.generateDoor(Control,"R1RingRingDoor",50.0);
-  Control.addVariable("R1RingRingDoorWallID",9);
+  Control.addVariable("R1RingRingDoorWallID",7);
 
   maxpeemVar::undulatorVariables(Control,"MaxPeemFrontBeam");
   // ystep [0] / dipole pipe / exit pipe

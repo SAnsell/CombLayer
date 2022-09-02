@@ -121,7 +121,7 @@ MAXPEEM::build(Simulation& System,
   frontBeam->setCutSurf("Floor",r1Ring->getSurf("Floor"));
   frontBeam->setCutSurf("Roof",-r1Ring->getSurf("Roof"));
   frontBeam->setCutSurf("REWall",r1Ring->getSurf("BeamInner",SIndex));
-  
+
   frontBeam->addInsertCell(r1Ring->getCell("Void",8));
   frontBeam->addInsertCell(r1Ring->getCell("Void",9));
   frontBeam->addInsertMagnetCell(r1Ring->getCell("Void",8));

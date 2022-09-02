@@ -166,6 +166,7 @@ createInputs(inputParam& IParam)
   IParam.regItem("validCheck","validCheck",1);
   IParam.regItem("validAll","validAll",0);
   IParam.regItem("validFC","validFC",1);
+  IParam.regItem("validCell","validCell",1);
   IParam.regMulti("validLine","validLine",1000);
   IParam.regItem("validPoint","validPoint",1);
   IParam.regFlag("um","voidUnMask");

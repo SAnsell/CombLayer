@@ -579,6 +579,7 @@ R1Ring::createLinks()
       const Geometry::Vec3D Beam= -BInner->getNormal();
       const Geometry::Vec3D Axis= -Beam*Z;
       const Geometry::Vec3D PtX=Origin+Axis*beamStepOut;
+
       FixedComp::nameSideIndex(index+2,"OpticCentre"+std::to_string(index));
       FixedComp::setLinkSurf(index+2,-BInner->getName());
       FixedComp::setConnect(index+2,PtX,Beam);

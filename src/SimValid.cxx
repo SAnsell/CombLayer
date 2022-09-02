@@ -31,6 +31,8 @@
 #include <set>
 #include <vector>
 #include <memory>
+#include <algorithm>
+#include <iterator>
 #include <random>
 
 #include "FileReport.h"
@@ -188,7 +190,6 @@ SimValid::runPoint(const Simulation& System,
   // Find Initial cell [Store for next time]
   //  Centre+=Geometry::Vec3D(0.001,0.001,0.001);
   int initSurfNum(0);
-  bool debugFlag(0);
   Geometry::Vec3D Pt(CP);
   do
     {
@@ -295,5 +296,62 @@ SimValid::runFixedComp(const Simulation& System,
   ELog::EM<<"Finished Validation check"<<ELog::endDiag;
   return 1;
 }
+
+int
+SimValid::checkPoint(const Simulation& System,
+		     const Geometry::Vec3D& Pt) 
+  /*!
+    Calculate the tracking from fixedcomp
+    \param System :: Simulation to use
+    \param Pt :: Point to test
+    \return true if valid / 0 if invalid
+  */
+{
+  ELog::RegMethod RegA("SimValid","checkPoint");
+
+  const Simulation::OTYPE& cellMap=System.getCells();
+  std::vector<const MonteCarlo::Object*> activeCell;
+  for(const auto& [CN,OPtr] : cellMap)
+    {
+      if (OPtr->isValid(Pt))
+	activeCell.push_back(OPtr);
+    }
+
+  if (activeCell.size()==1) return 0;  // good point
+
+
+  // compare pairs
+  for(size_t i=0;i<activeCell.size();i++)
+    for(size_t j=i+1;j<activeCell.size();j++)
+      {
+	const MonteCarlo::Object* APtr=activeCell[i];
+	const MonteCarlo::Object* BPtr=activeCell[j];
+
+	const std::set<int> ASurf=APtr->surfValid(Pt);
+	const std::set<int> BSurf=BPtr->surfValid(Pt);	
+
+	std::set<int> commonSurf;
+	std::set_intersection(ASurf.begin(),ASurf.end(),
+			      BSurf.begin(),BSurf.end(),
+			      std::inserter(commonSurf,commonSurf.begin()) );
+	if (commonSurf.empty()) break;
+
+	for(const int SN : commonSurf)
+	  {
+	    if ((APtr->isSignedValid(Pt,-SN) != BPtr->isSignedValid(Pt,SN)) ||
+		(APtr->isSignedValid(Pt,SN) != BPtr->isSignedValid(Pt,-SN)) )
+	      return 0;
+	  }
+      }
+
+  ELog::EM<<"Central Point Check ERROR ::\n";
+  for(const MonteCarlo::Object* OPtr : activeCell)
+    ELog::EM<<"Cell "<<OPtr->getName()<<"\n";
+  ELog::EM<<ELog::endErr;
+  return 1;
+}
+
+
+
 
 } // NAMESPACE ModelSupport

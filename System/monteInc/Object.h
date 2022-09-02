@@ -187,7 +187,8 @@ class Object
   std::pair<double,double> getElecStep() const
     { return std::pair<double,double>(elecMinStep,elecMaxStep); }  
   int isValid(const Geometry::Vec3D&) const;            
-  int isValid(const Geometry::Vec3D&,const int) const;            
+  int isValid(const Geometry::Vec3D&,const int) const;
+  int isSignedValid(const Geometry::Vec3D&,const int) const;            
   int isDirectionValid(const Geometry::Vec3D&,const int) const;
   int isDirectionValid(const Geometry::Vec3D&,const std::set<int>&,
 		       const int) const;            
