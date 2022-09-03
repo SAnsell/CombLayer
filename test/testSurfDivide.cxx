@@ -246,6 +246,7 @@ testSurfDivide::testMultiOuter()
   ELog::RegMethod RegA("testSurfDivide","testMultiOuter");
   int resTest(0);
 
+  initSim();
   ModelSupport::surfDivide DA;
   DA.addFrac(0.6);
   DA.addFrac(0.8);

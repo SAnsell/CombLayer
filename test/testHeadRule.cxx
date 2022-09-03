@@ -617,8 +617,7 @@ testHeadRule::testIntersectHeadRule()
     \return 0 sucess / -ve on failure
   */
 {
-  ELog::RegMethod RegItem("testHeadRule","testInterHeadRule");
-
+  ELog::RegMethod RegItem("testHeadRule","testIntersectHeadRule");
 
   createSurfaces();
   

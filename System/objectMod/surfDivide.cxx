@@ -220,6 +220,8 @@ surfDivide::makeTemplate(const int iPt,const int oPtA,const int oPtB)
   mergeTemplate<T,T>* DR=new mergeTemplate<T,T>();
   DR->setSurfPair(iPt,oPtA);
   DR->setSurfPair(iPt,oPtB);
+  DR->setInnerRule(iPt);
+  DR->setOuterRule(std::to_string(oPtA)+std::to_string(oPtB));
 
   PRules.push_back(DR);
   return;
@@ -317,18 +319,15 @@ surfDivide::activeDivideTemplate(Simulation& System,
 	throw ColErr::EmptyContainer("BaseObj not set");
 
       HeadRule cell(BaseObj->getHeadRule());
-
+      //      cell.populateSurf();
       for(size_t rN=0;rN<PRules.size();rN++)
-	{
-	  ELog::EM<<"RN == "<<rN<<ELog::endDiag;
-	  PRules[rN]->process(fA,fB,cell);
-	}
-      ELog::EM<<"Process = "<<cellName<<" "<<frac.size()<<ELog::endDiag;
+	PRules[rN]->process(fA,fB,cell);
+
       // Set cell:
       MonteCarlo::Object NewObj(*BaseObj);
       NewObj.setName(outCellN);
       NewObj.setMaterial(material[i]);
-      NewObj.procString(cell.display());
+      NewObj.procHeadRule(cell);
       System.addCell(NewObj);
       if (!cellName.empty())
 	CM->addCell(cellName+std::to_string(i),outCellN);

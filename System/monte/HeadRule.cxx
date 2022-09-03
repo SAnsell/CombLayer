@@ -483,7 +483,6 @@ HeadRule::subMatched(const HeadRule& A,
 
   if (!A.HeadNode || !HeadNode) return 0;
 
-  ELog::EM<<"ASFASFDS F"<<ELog::endDiag;
   std::vector<const Rule*> AVec=
     findTopNodes();
   std::vector<const Rule*> BVec=
@@ -568,10 +567,7 @@ HeadRule::subMatched(const HeadRule& A,
       for(const HeadRule& AS : ASet)
 	{
 	  if (AS.partMatched(BSet))
-	    {
-	      ELog::EM<<"Level HERE"<<ELog::endDiag;
-	      return 1;
-	    }
+	    return 1;
 	}
       return 0;
     }
@@ -2006,12 +2002,10 @@ HeadRule::substituteSurf(const int SurfN,const int newSurfN,
   if (SurfN==newSurfN) return 0;
   int cnt(0);
   const int  SN(std::abs(SurfN));
-
+  
   SurfPoint* Ptr=dynamic_cast<SurfPoint*>(HeadNode->findKey(SN));
-  ELog::EM<<"Ptr "<<Ptr<<ELog::endDiag;
   while(Ptr)
     {
-      ELog::EM<<"PtrX "<<Ptr<<ELog::endDiag;
       Ptr->setKeyN(Ptr->getSign()*newSurfN);
       Ptr->setKey(SPtr);
       cnt++;

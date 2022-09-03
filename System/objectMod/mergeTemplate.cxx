@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/mergeTemplate.cxx
+ * File:   objectMod/mergeTemplate.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -273,6 +273,7 @@ mergeTemplate<T,U>::setOuterRule(const std::string& oStr)
   ELog::RegMethod RegA("mergeTemplate","setOuterRule");
   if (!OutTemplate.procString(oStr))
     throw ColErr::InvalidLine(oStr,"oStr value",0);
+
   return;
 }
 
@@ -300,7 +301,6 @@ mergeTemplate<T,U>::setOuterRule(const int oSurf)
 {
   ELog::RegMethod RegA("mergeTemplate","setOuterRule(surfN)");
 
-  
   OutTemplate=HeadRule(oSurf);
   return;
 }
@@ -327,12 +327,12 @@ mergeTemplate<T,U>::process(const double fA,
 
   HeadRule Result(HR);
   // Create Inner/Outer Units:
+
   if (fA>Geometry::zeroTol)
     Result.subMatched(InTemplate,makeOuterComp());
 
   if ((1.0-fB)>Geometry::zeroTol)
     Result.subMatched(OutTemplate,makeOuter());
-
   HR=Result;
 
   return;
@@ -400,19 +400,12 @@ mergeTemplate<T,U>::makeOuter() const
   */
 {
   ELog::RegMethod RegA("mergeTempalte","makeOuter");
+
   HeadRule HR(OutTemplate);
 
   for(size_t i=0;i<sSurf.size();i++)
-    {
-      ELog::EM<<"P "<<sSurf[i]<<" "<<OSPtr[i]<<":"
-	      <<OSPtr[i]->getName()<<ELog::endDiag;
+    HR.substituteSurf(sSurf[i],OSPtr[i]->getName(),OSPtr[i]);
 
-      HR.substituteSurf(sSurf[i],OSPtr[i]->getName(),OSPtr[i]);
-      ELog::EM<<"WQ "<<sSurf[i]<<" "<<OSPtr[i]<<":"
-	      <<OSPtr[i]->getName()<<ELog::endDiag;
-
-    }
-  ELog::EM<<"ASDFASFDSF"<<ELog::endDiag;
   return HR;
 }
 
