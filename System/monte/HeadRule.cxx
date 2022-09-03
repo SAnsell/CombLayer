@@ -921,10 +921,12 @@ HeadRule::isLineValid(const Geometry::Vec3D& APt,
     \return true/false 
   */
 {
+  ELog::RegMethod RegA("HeadRule","isLineValid");
+
   if (!HeadNode) return 0;
   if (HeadNode->isValid(APt) || HeadNode->isValid(BPt))
     return 1;
-
+  
   const std::vector<const Geometry::Surface*> SVec=
     getSurfaces();
   const double ABDist=APt.Distance(BPt);

@@ -9,6 +9,7 @@ function procExit
 #segments=$(for i in {40..49}; do echo -n "Segment$i "; done)
 
 segments=All
+#./maxiv --noLengthCheck --defaultConfig Linac ${segments} AA
 ./maxiv --noLengthCheck --defaultConfig Linac ${segments} -validAll --validCheck 1000 AA; procExit
 exit
 

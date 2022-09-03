@@ -328,9 +328,8 @@ RInterval<T>::getItem(const int index) const
 
   if (index<static_cast<int>(index>=count))
     throw ColErr::IndexError<int>(index,count,"index");
-  
-  
-  const T step=(bValue-aValue)/static_cast<T>(count-1);
+
+  const T step=(bValue-aValue)/static_cast<T>(count);
   return aValue+index*step;
 }
   
@@ -432,7 +431,8 @@ RLog<T>::getItem(const int index) const
   const double bLog=std::log(static_cast<double>(bValue));
   const double step=(bLog-aLog)/static_cast<double>(count);
 
-  return static_cast<T>(std::exp(aLog+index*step));
+  
+  return static_cast<T>(std::exp(aLog+(index+1)*step));
 }
   
 template<typename T>  
@@ -542,16 +542,16 @@ NGroup<T>::operator[](const int Index) const
 
   if (Index<0)
     throw ColErr::IndexError<int>(Index,0,"Index");
-  
-  int cnt(0);
-  typename std::list<RUnit<T>>::const_iterator vc;
 
+  int cnt(0);
   for(const RUnit<T>* unit : Items)
     {
       const int ISize=unit->getSize();
       if (cnt+ISize>Index)
-	return unit->getItem(Index-cnt);
-      cnt+=ISize;
+	{
+	  return unit->getItem(Index-cnt);
+	}
+      cnt+=(ISize>1) ? ISize-1 : 1;
     }
   throw ColErr::IndexError<int>(Index,cnt,"Index");
 }
@@ -753,7 +753,6 @@ NGroup<T>::condense(const double Tol,
 	type[i]=1;
       else if (i>1 && intervalVal(Tol,Values[i-2],Values[i-1],Values[i]))
 	{
-	  ELog::EM<<"In value == "<<Values[i-2]<<ELog::endDiag;
 	  type[i-1]=2;    // linear interval
 	  type[i]=2;    // linear interval
 	}
