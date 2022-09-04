@@ -534,9 +534,9 @@ TubeCollimator::createCells(Simulation& System)
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
 
-  const std::string FBStr=
-    ModelSupport::getComposite(SMap,buildIndex," 1 -2 ");
-  const std::string OutBoundary=boundaryString();
+  const HeadRule FBHR=
+    ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 ");
+  const HeadRule outBoundaryHR=boundaryHR();
   
   int RI(buildIndex);
   for(MTYPE::value_type& MU : GGrid)
@@ -546,29 +546,27 @@ TubeCollimator::createCells(Simulation& System)
       ModelSupport::buildCylinder(SMap,RI+7,APtr->getCentre(),Y,radius);
       ModelSupport::buildCylinder(SMap,RI+8,APtr->getCentre(),Y,radius+wallThick);
 
-      std::string CylA=ModelSupport::getComposite(SMap,RI," -7 ");
-      std::string CylB=ModelSupport::getComposite(SMap,RI," 7 -8 ");
-      std::string Out=APtr->getInner().display()+
-      	ModelSupport::getComposite(SMap,RI," 8 ");
+      const HeadRule CylA=ModelSupport::getHeadRule(SMap,RI,"-7");
+      const HeadRule CylB=ModelSupport::getHeadRule(SMap,RI,"7 -8");
+      HeadRule HR=APtr->getInner()*ModelSupport::getHeadRule(SMap,RI,"8");
 
       if (!APtr->isComplete())
 	{
-	  const std::string OutB=calcBoundary(APtr);
-	  Out+=OutB;
-	  //	  Out+=OutBoundary;
+	  const HeadRule OutB=calcBoundary(APtr);
+	  HR*=OutB;
 	}
 
-      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,CylA+FBStr));
-      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,CylB+FBStr));
-      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+FBStr));
+      System.addCell(cellIndex++,0,0.0,CylA*FBHR);
+      System.addCell(cellIndex++,wallMat,0.0,CylB*FBHR);
+      System.addCell(cellIndex++,0,0.0,HR*FBHR);
       RI+=10;
     }
-  addOuterSurf(OutBoundary+FBStr);
+  addOuterSurf(outBoundaryHR+FBHR);
   return;
 }
 
   
-std::string
+HeadRule
 TubeCollimator::calcBoundary(constructSystem::gridUnit* APtr) const
  /*!
    Calculate the intersection of the headrule of the gridUnit
@@ -583,7 +581,7 @@ TubeCollimator::calcBoundary(constructSystem::gridUnit* APtr) const
   // The only surfaces that can freely intersect the boundary are the open
   // surface.
 
-  std::string Out(" ");
+  HeadRule outHR;
   for(size_t i=0;i<nLinks;i++)
     {
       if (APtr->hasSurfLink(i) &&
@@ -591,42 +589,37 @@ TubeCollimator::calcBoundary(constructSystem::gridUnit* APtr) const
 	{
 	  // maybe overlap with neighbouring cutting surfaces
 	  constructSystem::gridUnit* LPtr=APtr->getLink(i);
-	  int extraSurfN=LPtr->clearBoundary((i+3) % nLinks);
+	  const int extraSurfN=LPtr->clearBoundary((i+3) % nLinks);
 	  if (extraSurfN)
+	    outHR*=HeadRule(extraSurfN);
+
+	  // Calc mid point of plane:
+	  const Geometry::Vec3D& CentPt=APtr->getCentre();
+	  const Geometry::Plane* PlanePtr=
+	    SMap.realPtr<Geometry::Plane>(APtr->getSurf(i));
+	  // could just calc distance and project along normal but
+	  // this is easier.
+	  const Geometry::Vec3D MidPt=
+	    SurInter::getLinePoint(CentPt,PlanePtr->getNormal(),PlanePtr);
+	  //          Geometry::Vec3D LineNormal=((MidPt-CentPt)*Y).unit();
+	  const Geometry::Vec3D LineNormal=(MidPt-CentPt)*Y;
+	  
+	  std::vector<Geometry::Vec3D> Pts;
+	  std::vector<int> SNum;
+	  HeadRule InnerControl(APtr->getInner());
+	  InnerControl.populateSurf();
+	  
+	  if (voidBoundary.calcSurfIntersection(MidPt,LineNormal,Pts,SNum))
 	    {
-	      Out+=std::to_string(extraSurfN)+" ";
-	      extraSurfN=0;
-	    }
-	  if (!extraSurfN)
-	    {
-	      // Calc mid point of plane:
-	      const Geometry::Vec3D& CentPt=APtr->getCentre();
-	      const Geometry::Plane* PlanePtr=
-		SMap.realPtr<Geometry::Plane>(APtr->getSurf(i));
-	      // could just calc distance and project along normal but
-	      // this is easier.
-	      const Geometry::Vec3D MidPt=
-		SurInter::getLinePoint(CentPt,PlanePtr->getNormal(),PlanePtr);
-	      //          Geometry::Vec3D LineNormal=((MidPt-CentPt)*Y).unit();
-	      const Geometry::Vec3D LineNormal=(MidPt-CentPt)*Y;
-	      
-	      std::vector<Geometry::Vec3D> Pts;
-	      std::vector<int> SNum;
-	      HeadRule InnerControl(APtr->getInner());
-	      InnerControl.populateSurf();
-	      
-	      if (voidBoundary.calcSurfIntersection(MidPt,LineNormal,Pts,SNum))
+	      for(size_t j=0;j<SNum.size();j++)
 		{
-		  for(size_t j=0;j<SNum.size();j++)
-		    {
-		      if (InnerControl.isValid(Pts[j],SNum[j]))
-			Out+=std::to_string(-SNum[j])+" ";
-		    }
+		  if (InnerControl.isSideValid(Pts[j],SNum[j]))
+		    outHR*=HeadRule(-SNum[j]);
 		}
 	    }
 	}
     }
-  return Out;
+  return outHR;
   
 }
 
@@ -643,16 +636,16 @@ TubeCollimator::createTubes(Simulation& System)
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
 
-  const std::string FBStr=
-    ModelSupport::getComposite(SMap,buildIndex," 1 -2 ");
+  const HeadRule FBHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"1 -2");
 
-  
-  std::string Out;
+
+  HeadRule HR;
   int RI(buildIndex);
 
   // Outer boundary:
-  const std::string OutBoundary=boundaryString();
-  std::string HoleStr;
+  const HeadRule outBoundaryHR=boundaryHR();
+  HeadRule HoleHR;
       
   bool acceptFlag(1);
   long int step(0);   
@@ -672,45 +665,45 @@ TubeCollimator::createTubes(Simulation& System)
 		ModelSupport::buildCylinder(SMap,RI+7,CPoint,Y,radius);
 		ModelSupport::buildCylinder(SMap,RI+8,CPoint,Y,radius+wallThick);
 		
-		Out=ModelSupport::getComposite(SMap,RI," -7 ");
-		System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+FBStr));
+		HR=ModelSupport::getHeadRule(SMap,RI,"-7");
+		System.addCell(cellIndex++,0,0.0,HR*FBHR);
 		
-		Out=ModelSupport::getComposite(SMap,RI," 7 -8 ");
-		System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+FBStr));
+		HR=ModelSupport::getHeadRule(SMap,RI,"7 -8");
+		System.addCell(cellIndex++,wallMat,0.0,HR*FBHR);
 		
 		if (!gridExclude)
-		  Out=ModelSupport::getComposite(SMap,RI," 8 ");
+		  HR=ModelSupport::getHeadRule(SMap,RI,"8");
 		
 		GGrid.insert(MTYPE::value_type((i*1000+j),newGridUnit(i,j,CPoint)));
-		HoleStr+=Out;
+		HoleHR*=HR;
 		RI+=10;
 	      }
 	  }
       step++;
     }
   
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,OutBoundary+FBStr+HoleStr));
-  addOuterSurf(OutBoundary+FBStr);
+  System.addCell(cellIndex++,0,0.0,outBoundaryHR*FBHR*HoleHR);
+  addOuterSurf(outBoundaryHR+FBHR);
   
   return; 
 }
 
-std::string
-TubeCollimator::boundaryString() const
+HeadRule
+TubeCollimator::boundaryHR() const
   /*!
     Create the boundary string
-    \return boundary string
+    \return boundary HR
   */
 {
   ELog::RegMethod RegA("TubeCollimator","createBoundary");
 
   if (boundaryType=="Rectangle" || boundaryType=="rectangle")
-    return ModelSupport::getComposite(SMap,buildIndex," 6003 -6004 6005 -6006");
+    return ModelSupport::getHeadRule(SMap,buildIndex,"6003 -6004 6005 -6006");
   
   if (boundaryType=="Circle" || boundaryType=="circle")
-    return ModelSupport::getComposite(SMap,buildIndex," -6007");
+    return ModelSupport::getHeadRule(SMap,buildIndex,"-6007");
 
-  return "";
+  return HeadRule();
 }
 
 
@@ -732,8 +725,8 @@ TubeCollimator::createLinks()
 
 void
 TubeCollimator::createAll(Simulation& System,
-		    const attachSystem::FixedComp& FC,
-		    const long int sideIndex)
+			  const attachSystem::FixedComp& FC,
+			  const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation

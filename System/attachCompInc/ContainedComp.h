@@ -55,7 +55,7 @@ class ContainedComp
   HeadRule outerSurf;       ///< Outer surfaces [Excluding boundary]
 
   std::vector<int> insertCells;    ///< Cell to insert into
-  
+
  public:
 
   ContainedComp();
@@ -76,9 +76,6 @@ class ContainedComp
   /// Test if has outer rule
   bool hasOuterSurf() const { return outerSurf.hasRule(); }
 
-  int isOuterValid(const Geometry::Vec3D&) const;
-  int isOuterValid(const Geometry::Vec3D&,const std::set<int>&) const;
-  int isOuterValid(const Geometry::Vec3D&,const int) const;
 
   void addOuterSurf(const int);
   void addOuterSurf(const std::string&);

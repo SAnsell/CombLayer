@@ -1213,7 +1213,7 @@ Simulation::findCellPair(const Geometry::Vec3D& Pt,const int SN) const
 
   for(const MonteCarlo::Object* OPtr : negType)
     {
-      if (OPtr->isDirectionValid(Pt,-SN))
+      if (OPtr->isValid(Pt,-SN))
 	{
 	  Out.first=OPtr;
 	  break;
@@ -1222,7 +1222,7 @@ Simulation::findCellPair(const Geometry::Vec3D& Pt,const int SN) const
 
   for(const MonteCarlo::Object* OPtr : plusType)
     {
-      if (OPtr->isDirectionValid(Pt,SN))
+      if (OPtr->isValid(Pt,SN))
 	{
 	  Out.second=OPtr;
 	  break;
@@ -1768,8 +1768,8 @@ Simulation::minimizeObject(MonteCarlo::Object* OPtr)
   std::vector<std::pair<int,int>>
     IP=OPtr->getImplicatePairs();
   
-  OPtr->createLogicOpp();
-  const std::set<int> SPair=OPtr->getSelfPairs();
+  const std::set<int> SPair=
+    OPtr->getHeadRule().getPairedSurf();
   
   bool activeFlag(0);
   MonteCarlo::Algebra AX;

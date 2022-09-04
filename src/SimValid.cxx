@@ -301,7 +301,7 @@ int
 SimValid::checkPoint(const Simulation& System,
 		     const Geometry::Vec3D& Pt) 
   /*!
-    Calculate the tracking from fixedcomp
+    Calculates if a point is within multiple cells:
     \param System :: Simulation to use
     \param Pt :: Point to test
     \return true if valid / 0 if invalid
@@ -319,7 +319,6 @@ SimValid::checkPoint(const Simulation& System,
 
   if (activeCell.size()==1) return 0;  // good point
 
-
   // compare pairs
   for(size_t i=0;i<activeCell.size();i++)
     for(size_t j=i+1;j<activeCell.size();j++)
@@ -329,26 +328,31 @@ SimValid::checkPoint(const Simulation& System,
 
 	const std::set<int> ASurf=APtr->surfValid(Pt);
 	const std::set<int> BSurf=BPtr->surfValid(Pt);	
-
 	std::set<int> commonSurf;
 	std::set_intersection(ASurf.begin(),ASurf.end(),
 			      BSurf.begin(),BSurf.end(),
 			      std::inserter(commonSurf,commonSurf.begin()) );
-	if (commonSurf.empty()) break;
-
+	int errFlag(1);
 	for(const int SN : commonSurf)
 	  {
-	    if ((APtr->isSignedValid(Pt,-SN) != BPtr->isSignedValid(Pt,SN)) ||
-		(APtr->isSignedValid(Pt,SN) != BPtr->isSignedValid(Pt,-SN)) )
-	      return 0;
+	    if ((APtr->isValid(Pt,-SN) != BPtr->isValid(Pt,-SN)) &&
+		(APtr->isValid(Pt,SN) != BPtr->isValid(Pt,SN)) )
+	      {
+		errFlag=0;
+		break;
+	      }
+	  }
+	if (errFlag)
+	  {
+	    ELog::EM<<"Central Point Check ERROR ::"<<Pt<<"\n";
+	    for(const MonteCarlo::Object* OPtr : activeCell)
+	      ELog::EM<<"Cell "<<OPtr->getName()<<"\n";
+	    
+	    ELog::EM<<ELog::endErr;
 	  }
       }
 
-  ELog::EM<<"Central Point Check ERROR ::\n";
-  for(const MonteCarlo::Object* OPtr : activeCell)
-    ELog::EM<<"Cell "<<OPtr->getName()<<"\n";
-  ELog::EM<<ELog::endErr;
-  return 1;
+  return 0;
 }
 
 

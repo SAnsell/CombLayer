@@ -198,82 +198,6 @@ SurfPoint::simplify()
 }
 
 bool
-SurfPoint::isDirectionValid(const Geometry::Vec3D& Pt,
-			    const int ExSN) const
-  /*! 
-    Determines if a point  is valid. IF ExSN is +ve then 
-    it is assumed that the surface is true (+ve) 
-    \param Pt :: Point to test
-    \param ExSN :: Exclude surf number [signed]
-    \retval 1 :: Pt is the +ve side of the 
-    surface or on the surface
-    \retval 0 :: Pt is on the -ve side of the surface
-  */
-{
-  if (!key) return 0;
-  if (abs(ExSN)==keyN)
-      return ((sign*ExSN>0) ? 1 : 0);
-
-  return (key->side(Pt)*sign)>=0 ? 1 : 0;
-}
-
-bool
-SurfPoint::isDirectionValid(const Geometry::Vec3D& Pt,
-			    const std::set<int>& sideSet,
-			    const int ExSN) const
-  /*! 
-    Determines if a point  is valid. IF ExSN is +ve then 
-    it is assumed that we are on the +ve side of the surf
-    \param Pt :: Point to test
-    \param sideSet : surface which we consider Pt to be on 
-     so their sign is to help validity
-    \param ExSN :: Exclude surf number [signed]
-    \retval 1 :: Pt in the object (with ExSN as signed)
-    \retval 0 :: Pt outside on the (with ExSN as signed)
-  */
-{
-  if (!key) return 0;
-  if (abs(ExSN)==keyN)
-    return ((sign*ExSN>0) ? 1 : 0);
-  if (sideSet.find(keyN)!=sideSet.end()) return 1;
-  return (key->side(Pt)*sign)>=0 ? 1 : 0;
-}
-
-bool
-SurfPoint::isValid(const Geometry::Vec3D& Pt,
-		   const int ExSN) const
-  /*! 
-    Determines if a point  is valid.  
-    \param Pt :: Point to test
-    \param ExSN :: Exclude surf number  [unsigned]
-    \retval 1 :: Pt is the +ve side of the 
-    surface or on the surface
-    \retval 0 :: Pt is on the -ve side of the surface
-  */
-{
-  if (!key) return 0;
-  if (abs(ExSN)==keyN) return 1;
-  return (key->side(Pt)*sign)>=0 ? 1 : 0;
-}
-
-bool
-SurfPoint::isValid(const Geometry::Vec3D& Pt,
-		   const std::set<int>& ExSN) const
-  /*! 
-    Determines if a point  is valid.  
-    \param Pt :: Point to test
-    \param ExSN :: Exclude surf numbers 
-    \retval 1 :: Pt is the +ve side of the 
-    surface or on the surface
-    \retval 0 :: Pt is on the -ve side of the surface
-  */
-{
-  if (!key) return 0;
-  if (ExSN.find(keyN)!=ExSN.end()) return 1;
-  return (key->side(Pt)*sign)>=0 ? 1 : 0;
-}
-
-bool
 SurfPoint::isValid(const Geometry::Vec3D& Pt) const
   /*! 
     Determines if a point  is valid.  
@@ -287,6 +211,26 @@ SurfPoint::isValid(const Geometry::Vec3D& Pt) const
     return (key->side(Pt)*sign)>=0 ? 1 : 0;
   else
     return 0;
+}
+
+bool
+SurfPoint::isValid(const Geometry::Vec3D& Pt,
+		   const int SN) const
+  /*! 
+    Determines if a point  is valid. IF ExSN is +ve then 
+    it is assumed that the surface is true (+ve) 
+    \param Pt :: Point to test
+    \param ExSN :: Exclude surf number [signed]
+    \retval 1 :: Pt is the +ve side of the 
+    surface or on the surface
+    \retval 0 :: Pt is on the -ve side of the surface
+  */
+{
+  if (!key) return 0;
+  if (abs(SN)==keyN)
+      return ((sign*SN>0) ? 1 : 0);
+
+  return (key->side(Pt)*sign)>=0 ? 1 : 0;
 }
 
 bool

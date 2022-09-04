@@ -335,31 +335,48 @@ EBeamStop::createSurfaces()
       ModelSupport::buildPlane(SMap,buildIndex+1005,Origin-Z*(shieldDepth),Z);
       ModelSupport::buildPlane(SMap,buildIndex+1006,Origin+Z*(shieldHeight),Z);
 
-      ModelSupport::buildShiftedPlane(SMap,buildIndex+1011,buildIndex+1001,Y,shieldOuterSideThick);
-      ModelSupport::buildShiftedPlane(SMap,buildIndex+1012,buildIndex+1002,Y,-shieldOuterSideThick);
+      ModelSupport::buildShiftedPlane(SMap,buildIndex+1011,
+				      buildIndex+1001,Y,shieldOuterSideThick);
+      ModelSupport::buildShiftedPlane(SMap,buildIndex+1012,
+				      buildIndex+1002,Y,-shieldOuterSideThick);
 
-      ModelSupport::buildShiftedPlane(SMap,buildIndex+1013,buildIndex+1003,X,shieldOuterSideThick);
-      ModelSupport::buildShiftedPlane(SMap,buildIndex+1014,buildIndex+1004,X,-shieldOuterSideThick);
+      ModelSupport::buildShiftedPlane(SMap,buildIndex+1013,
+				      buildIndex+1003,X,shieldOuterSideThick);
+      ModelSupport::buildShiftedPlane(SMap,buildIndex+1014,
+				      buildIndex+1004,X,-shieldOuterSideThick);
 
-      ModelSupport::buildShiftedPlane(SMap,buildIndex+1015,buildIndex+1005,Z,shieldOuterFloorThick);
-      ModelSupport::buildShiftedPlane(SMap,buildIndex+1016,buildIndex+1006,Z,-shieldOuterRoofThick);
+      ModelSupport::buildShiftedPlane(SMap,buildIndex+1015,
+				      buildIndex+1005,Z,shieldOuterFloorThick);
+      ModelSupport::buildShiftedPlane(SMap,buildIndex+1016,
+				      buildIndex+1006,Z,-shieldOuterRoofThick);
 
       // pipe penetrations
-      ModelSupport::buildPlane(SMap,buildIndex+1103,Origin-X*(shieldSideHoleWidth/2.0),X);
-      ModelSupport::buildPlane(SMap,buildIndex+1104,Origin+X*(shieldSideHoleWidth/2.0),X);
+      ModelSupport::buildPlane(SMap,buildIndex+1103,
+			       Origin-X*(shieldSideHoleWidth/2.0),X);
+      ModelSupport::buildPlane(SMap,buildIndex+1104,
+			       Origin+X*(shieldSideHoleWidth/2.0),X);
 
-      ModelSupport::buildPlane(SMap,buildIndex+1105,Origin-Z*(shieldSideHoleHeight/2.0),Z);
-      ModelSupport::buildPlane(SMap,buildIndex+1106,Origin+Z*(shieldSideHoleHeight/2.0),Z);
+      ModelSupport::buildPlane(SMap,buildIndex+1105,
+			       Origin-Z*(shieldSideHoleHeight/2.0),Z);
+      ModelSupport::buildPlane(SMap,buildIndex+1106,
+			       Origin+Z*(shieldSideHoleHeight/2.0),Z);
 
       // inner layer
-      ModelSupport::buildShiftedPlane(SMap,buildIndex+1021,buildIndex+1011,X,shieldInnerSideThick);
-      ModelSupport::buildShiftedPlane(SMap,buildIndex+1022,buildIndex+1012,X,-shieldInnerSideThick);
+      ModelSupport::buildShiftedPlane(SMap,buildIndex+1021,
+				      buildIndex+1011,X,shieldInnerSideThick);
+      ModelSupport::buildShiftedPlane(SMap,buildIndex+1022,
+				      buildIndex+1012,X,-shieldInnerSideThick);
 
-      ModelSupport::buildShiftedPlane(SMap,buildIndex+1023,buildIndex+1013,X,shieldInnerSideThick);
-      ModelSupport::buildShiftedPlane(SMap,buildIndex+1024,buildIndex+1014,X,-shieldInnerSideThick);
-      ModelSupport::buildShiftedPlane(SMap,buildIndex+1025,buildIndex+1015,Z,shieldInnerFloorThick);
-      ModelSupport::buildShiftedPlane(SMap,buildIndex+1026,buildIndex+1016,Z,-shieldInnerRoofThick);
-      ModelSupport::buildShiftedPlane(SMap,buildIndex+1036,buildIndex+1026,Z,-shieldRoofPlateThick);
+      ModelSupport::buildShiftedPlane(SMap,buildIndex+1023,
+				      buildIndex+1013,X,shieldInnerSideThick);
+      ModelSupport::buildShiftedPlane(SMap,buildIndex+1024,
+				      buildIndex+1014,X,-shieldInnerSideThick);
+      ModelSupport::buildShiftedPlane(SMap,buildIndex+1025,
+				      buildIndex+1015,Z,shieldInnerFloorThick);
+      ModelSupport::buildShiftedPlane(SMap,buildIndex+1026,
+				      buildIndex+1016,Z,-shieldInnerRoofThick);
+      ModelSupport::buildShiftedPlane(SMap,buildIndex+1036,
+				      buildIndex+1026,Z,-shieldRoofPlateThick);
 
     }
 
@@ -384,44 +401,44 @@ EBeamStop::createObjects(Simulation& System)
   // inner void : excluding main BS
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"101 -102 103 -104 105 -106"
-     "(600: -605: 607 ) (-501 : 502 : 507)");
+    "(600: -605: 607 ) (-501 : 502 : 507)");
   if (!closedFlag)
     HR*=ModelSupport::getHeadRule(SMap,buildIndex,"(617:605)");
 
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex," 101 -102 113 -114 105 -116 (-103:104:106) ");
+    (SMap,buildIndex," 101 -102 113 -114 105 -116 (-103:104:106)");
   makeCell("SideWall",System,cellIndex++,wallMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex," 111 -101 113 -114 105 -116 207 ");
+    (SMap,buildIndex," 111 -101 113 -114 105 -116 207");
   makeCell("FrontWall",System,cellIndex++,wallMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -101 -207 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -101 -207");
   makeCell("PortAVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -111 -217 207 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -111 -217 207");
   makeCell("PortAWall",System,cellIndex++,wallMat,0.0,HR*frontHR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -201 -227 217 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -201 -227 217");
   makeCell("PortAFlange",System,cellIndex++,flangeMat,0.0,HR*frontHR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 201 -227 217 -111 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 201 -227 217 -111");
   makeCell("PortAOuter",System,cellIndex++,outerMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex," -112 102 113 -114 105 -116 207 ");
+    (SMap,buildIndex," -112 102 113 -114 105 -116 207");
   makeCell("BackWall",System,cellIndex++,wallMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 102 -207 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 102 -207");
   makeCell("PortBVoid",System,cellIndex++,voidMat,0.0,HR*backHR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 112 -217 207 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 112 -217 207");
   makeCell("PortBWall",System,cellIndex++,wallMat,0.0,HR*backHR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 202 -227 217 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 202 -227 217");
   makeCell("PortBFlange",System,cellIndex++,flangeMat,0.0,HR*backHR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -202 -227 217 112 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -202 -227 217 112");
   makeCell("PortBOuter",System,cellIndex++,outerMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex," 121 -122 123 -124 115 -105 307 407 ");
+    (SMap,buildIndex," 121 -122 123 -124 115 -105 307 407");
   makeCell("Base",System,cellIndex++,wallMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
@@ -433,20 +450,20 @@ EBeamStop::createObjects(Simulation& System)
   makeCell("IonVoid",System,cellIndex++,voidMat,0.0,HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -115 307 -317  305");
   makeCell("IonWall",System,cellIndex++,wallMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 305 -315 -327 317 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 305 -315 -327 317");
   makeCell("IonFlange",System,cellIndex++,flangeMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 315 -115 317 -327  ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 315 -115 317 -327 ");
   makeCell("IonOuter",System,cellIndex++,outerMat,0.0,HR);
 
   // stopper
   HR=ModelSupport::getHeadRule(SMap,buildIndex,
-				 " -105 -407  405 617 (607 : -605)");
+				" -105 -407  405 617 (607 : -605)");
   makeCell("StopVoid",System,cellIndex++,voidMat,0.0,HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -115 407 -417  405");
   makeCell("StopWall",System,cellIndex++,wallMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 405 -415 -427 417 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 405 -415 -427 417");
   makeCell("StopFlange",System,cellIndex++,flangeMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 415 -115 417 -427  ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 415 -115 417 -427 ");
   makeCell("StopOuter",System,cellIndex++,outerMat,0.0,HR);
 
 
@@ -454,10 +471,10 @@ EBeamStop::createObjects(Simulation& System)
     (SMap,buildIndex," 111 -112 123 -124 125 -116 (-111:112:-113:114)");
   makeCell("SideOuter",System,cellIndex++,0,0.0,HR);
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex," 121 -111 123 -124 125 -116 227 ");
+    (SMap,buildIndex," 121 -111 123 -124 125 -116 227");
   makeCell("FrontOuter",System,cellIndex++,0,0.0,HR);
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex," 112 -122 123 -124 125 -116 227 ");
+    (SMap,buildIndex," 112 -122 123 -124 125 -116 227");
   makeCell("BackOuter",System,cellIndex++,0,0.0,HR);
 
 
@@ -466,38 +483,38 @@ EBeamStop::createObjects(Simulation& System)
   int BI(buildIndex+500);
   for(size_t i=0;i<NS;i++)
     {
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,BI,"-507 1M -11M ");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,BI,"-507 1M -11M");
       makeCell("BS"+std::to_string(i),System,cellIndex++,stopMat[i],0.0,HR);
       BI+=10;
     }
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,BI,"-507 1M -502 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,BI,"-507 1M -502");
   makeCell("BS"+std::to_string(NS),System,cellIndex++,stopMat[NS],0.0,HR);
 
   // Support:
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,BI," 507 -600 605 -607 657 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,BI," 507 -600 605 -607 657");
   makeCell("SupportCone",System,cellIndex++,supportMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,BI," -607 -657 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,BI," -607 -657");
   makeCell("SupportHole",System,cellIndex++,voidMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -605 405 -407 -617 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -605 405 -407 -617");
   makeCell("SupportDrive",System,cellIndex++,supportMat,0.0,HR);
 
 
   if (stopPortLength>=ionPortLength)
     {
       HR=ModelSupport::getHeadRule
-	(SMap,buildIndex," -115 405 121 -122 123 -124 427 (327:-305) ");
+	(SMap,buildIndex," -115 405 121 -122 123 -124 427 (327:-305)");
       makeCell("BaseOuter",System,cellIndex++,0,0.0,HR);
       HR=ModelSupport::getHeadRule
-	(SMap,buildIndex," 121 -122 123 -124 405 -116 ");
+	(SMap,buildIndex," 121 -122 123 -124 405 -116");
     }
   else
     {
       HR=ModelSupport::getHeadRule
-	(SMap,buildIndex," -115 305 121 -122 123 -124 327 (427:405) ");
+	(SMap,buildIndex," -115 305 121 -122 123 -124 327 (427:405)");
       makeCell("BaseOuter",System,cellIndex++,0,0.0,HR);
       HR=ModelSupport::getHeadRule
-	(SMap,buildIndex," 121 -122 123 -124 305 -116 ");
+	(SMap,buildIndex," 121 -122 123 -124 305 -116");
     }
 
   if (shieldActive)
@@ -507,43 +524,43 @@ EBeamStop::createObjects(Simulation& System)
       const HeadRule& frontPipeHR=getRule("FrontPipe");
       const HeadRule& backPipeHR=getRule("BackPipe");
 
-      HR=ModelSupport::getHeadRule(SMap,buildIndex," 1021 -1022 1023 -1024 116 -1036 ");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1021 -1022 1023 -1024 116 -1036");
       makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,HR);
 
-      HR=ModelSupport::getHeadRule(SMap,buildIndex," 1021 -1022 1023 -1024 1106 -116 (-121:122:-123:124) ");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1021 -1022 1023 -1024 1106 -116 (-121:122:-123:124)");
       makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,HR);
 
       // long sides
-      HR=ModelSupport::getHeadRule(SMap,buildIndex," 1021 -1022 124 -1024 1105 -1106");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1021 -1022 124 -1024 1105 -1106");
       makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,HR);
-      HR=ModelSupport::getHeadRule(SMap,buildIndex," 1021 -1022 1023 -123 1105 -1106");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1021 -1022 1023 -123 1105 -1106");
       makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,HR);
 
       // short sides
-      HR=ModelSupport::getHeadRule(SMap,buildIndex," 1021 -121 123 -1103 1105 -1106");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1021 -121 123 -1103 1105 -1106");
       makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,HR);
-      HR=ModelSupport::getHeadRule(SMap,buildIndex," 122 -1022 123 -1103 1105 -1106");
-      makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,HR);
-
-      HR=ModelSupport::getHeadRule(SMap,buildIndex," 1021 -121 1104 -124 1105 -1106");
-      makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,HR);
-      HR=ModelSupport::getHeadRule(SMap,buildIndex," 122 -1022 1104 -124 1105 -1106");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"122 -1022 123 -1103 1105 -1106");
       makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,HR);
 
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,
-				     " 1021 -1022 1023 -1024 1025 -1105 (-121:122:-123:124) ");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1021 -121 1104 -124 1105 -1106");
+      makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"122 -1022 1104 -124 1105 -1106");
       makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,HR);
 
       HR=ModelSupport::getHeadRule(SMap,buildIndex,
-				     " 1001 -1002 1003 -1004 405 -1005 (-121:122:-123:124) ");
+				    "1021 -1022 1023 -1024 1025 -1105 (-121:122:-123:124)");
+      makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,HR);
+
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				    "1001 -1002 1003 -1004 405 -1005 (-121:122:-123:124)");
       makeCell("BottomVoid",System,cellIndex++,0,0.0,HR);
 
 
       HR=ModelSupport::getHeadRule(SMap,buildIndex,
-				     " 1001 -1002 1003 -1004 1005 -1015 (-121:122:-123:124)");
+				    "1001 -1002 1003 -1004 1005 -1015 (-121:122:-123:124)");
       makeCell("ShieldOuterFloor",System,cellIndex++,shieldOuterMat,0.0,HR);
 
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1011 -1012 1013 -1014 1016 -1006 ");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1011 -1012 1013 -1014 1016 -1006");
       makeCell("ShieldOuterRoof",System,cellIndex++,shieldOuterMat,0.0,HR);
 
       // long sides
@@ -555,70 +572,81 @@ EBeamStop::createObjects(Simulation& System)
 
       // short sides
       HR=ModelSupport::getHeadRule(SMap,buildIndex,
-				     " 1001 -1011 1013 -1014 1015 -1006 (-1103:1104:-1105:1106)");
+				    "1001 -1011 1013 -1014 1015 -1006 (-1103:1104:-1105:1106)");
       makeCell("ShieldOuterSideFront",System,cellIndex++,shieldOuterMat,0.0,HR);
 
-      HR=ModelSupport::getHeadRule(SMap,buildIndex," 1012 -1002 1013 -1014 1015 -1006");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1012 -1002 1013 -1014 1015 -1006");
       if (shieldBackHoleActive)
-	HR*=ModelSupport::getHeadRule(SMap,buildIndex," (-1103:1104:-1105:1106)");
+	HR*=ModelSupport::getHeadRule(SMap,buildIndex,"(-1103:1104:-1105:1106)");
       makeCell("ShieldOuterSideBack",System,cellIndex++,shieldOuterMat,0.0,HR);
 
       HeadRule cutHR;
-      cutHR=ModelSupport::getHeadRule(SMap,buildIndex,"-227 ")*frontHR;
+      cutHR=ModelSupport::getHeadRule(SMap,buildIndex,"-227")*frontHR;
       cutHR.makeComplement();
       HR=ModelSupport::getHeadRule(SMap,buildIndex,
-				     " 1001 -121 1103 -1104 1105 -1106");
-      makeCell("ShieldSideFrontHole",System,cellIndex++,0,0.0,HR*frontPipeHR*cutHR);
+				    "1001 -121 1103 -1104 1105 -1106");
+      makeCell("ShieldSideFrontHole",System,cellIndex++,0,0.0,
+	       HR*frontPipeHR*cutHR);
 
-      ELog::EM<<"Cell Index["<<keyName<<"] == "<<cellIndex-1<<ELog::endCrit;
 	    
-      cutHR=ModelSupport::getHeadRule(SMap,buildIndex, "-227")*backHR;
+      cutHR=ModelSupport::getHeadRule(SMap,buildIndex,"-227")*backHR;
       cutHR.makeComplement();
 
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"122 1103 -1104 1105 -1106");
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"122 1103 -1104 1105 -1106");
       if (shieldBackHoleActive)
-	HR*=ModelSupport::getHeadRule(SMap,buildIndex," -1002 ");
+	HR*=ModelSupport::getHeadRule(SMap,buildIndex,"-1002");
       else
-	HR*=ModelSupport::getHeadRule(SMap,buildIndex," -1022 ");
-      makeCell("ShieldSideBackHole",System,cellIndex++,0,0.0,HR*cutHR*backPipeHR);
+	HR*=ModelSupport::getHeadRule(SMap,buildIndex,"-1022");
+      makeCell("ShieldSideBackHole",System,cellIndex++,0,0.0,
+	       HR*cutHR*backPipeHR);
 
       // inner layer
       HR=ModelSupport::getHeadRule(SMap,buildIndex,
-				     " 1011 -1012 1013 -1014 1015 -1025 (-121:122:-123:124) ");
+				    "1011 -1012 1013 -1014 1015 -1025 (-121:122:-123:124)");
       makeCell("ShieldInnerFloor",System,cellIndex++,shieldInnerMat,0.0,HR);
 
       // long sides
-      HR=ModelSupport::getHeadRule(SMap,buildIndex," 1021 -1012 1013 -1023 1025 -1036 ");
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"1021 -1012 1013 -1023 1025 -1036");
       makeCell("ShieldInnerSide",System,cellIndex++,shieldInnerMat,0.0,HR);
 
-      HR=ModelSupport::getHeadRule(SMap,buildIndex," 1021 -1012 1024 -1014 1025 -1036 ");
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"1021 -1012 1024 -1014 1025 -1036");
       makeCell("ShieldInnerSide",System,cellIndex++,shieldInnerMat,0.0,HR);
 
       // short sides
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,
-				     " 1011 -1021 1013 -1014 1025 -1036 (-1103:1104:-1105:1106) ");
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"1011 -1021 1013 -1014 1025 -1036 "
+	 "(-1103:1104:-1105:1106)");
       makeCell("ShieldInnerSide",System,cellIndex++,shieldInnerMat,0.0,HR);
 
-      HR=ModelSupport::getHeadRule(SMap,buildIndex," 1022 -1012 1023 -1024 1025 -1036 ");
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"1022 -1012 1023 -1024 1025 -1036");
+      
       if (shieldBackHoleActive)
-	HR*=ModelSupport::getHeadRule(SMap,buildIndex,"(-1103:1104:-1105:1106) ");
+	HR*=ModelSupport::getHeadRule
+	  (SMap,buildIndex,"(-1103:1104:-1105:1106)");
       makeCell("ShieldInnerSide",System,cellIndex++,shieldInnerMat,0.0,HR);
 
-      HR=ModelSupport::getHeadRule(SMap,buildIndex," 1011 -1012 1013 -1014 1026 -1016 ");
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"1011 -1012 1013 -1014 1026 -1016");
       makeCell("ShieldInnerRoof",System,cellIndex++,shieldInnerMat,0.0,HR);
 
-      HR=ModelSupport::getHeadRule(SMap,buildIndex," 1011 -1012 1013 -1014 1036 -1026 ");
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"1011 -1012 1013 -1014 1036 -1026");
       makeCell("ShieldRoofPlate",System,cellIndex++,shieldRoofPlateMat,0.0,HR);
 
       // main outer rule
-      HR=ModelSupport::getHeadRule(SMap,buildIndex, " 1001 -1002 1003 -1004 405 -1006 ");
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"1001 -1002 1003 -1004 405 -1006");
       addOuterSurf("Main",HR);
     }
   else
     {
       addOuterSurf("Main",HR);
 
-      HR=ModelSupport::getHeadRule(SMap,buildIndex," -121 -227");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-121 -227");
       addOuterSurf("FlangeA",HR*frontHR);
 
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"122 -227");

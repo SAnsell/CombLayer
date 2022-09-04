@@ -3,7 +3,7 @@
  
  * File:   test/testWriteSupport.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,8 +79,7 @@ testWriteSupport::applyTest(const int extra)
   const std::string TestName[]=
     {
       "Double",
-      "PHITS",
-      
+      "PHITS"
     };
 
   const size_t TSize(sizeof(TPtr)/sizeof(testPtr));
@@ -167,8 +166,8 @@ testWriteSupport::testPHITS()
   const std::vector<TTYPE> Tests=
     {
       //         1234567890 
-      TTYPE("unit",1,   "    unit          ="),
-      TTYPE("unitlog",1,"    unitlog       =")
+      TTYPE("unit",1,   "    unit            = "),
+      TTYPE("unitlog",1,"    unitlog         = ")
     };
 
   int cnt(1);

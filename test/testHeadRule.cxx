@@ -153,7 +153,7 @@ testHeadRule::applyTest(const int extra)
       "GetOppositeSurfaces",
       "InterceptRule",
       "IntersectHead",
-      "IsHeadRule",
+      "IsLineValid",
       "Level",
       "PartEqual",
       "RemoveSurf",      
@@ -617,8 +617,7 @@ testHeadRule::testIntersectHeadRule()
     \return 0 sucess / -ve on failure
   */
 {
-  ELog::RegMethod RegItem("testHeadRule","testInterHeadRule");
-
+  ELog::RegMethod RegItem("testHeadRule","testIntersectHeadRule");
 
   createSurfaces();
   
@@ -629,8 +628,10 @@ testHeadRule::testIntersectHeadRule()
   // Target / result
   const std::vector<TTYPE> Tests=
     {
-      TTYPE("1",Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0),
-	    0,Geometry::Vec3D(0,0,0))
+      TTYPE("1",Geometry::Vec3D(0,-1,0),Geometry::Vec3D(0,1,0),
+	    0,Geometry::Vec3D(0,0,0)),
+      TTYPE("1",Geometry::Vec3D(-1,-1,0),Geometry::Vec3D(1,0,0),
+	    1,Geometry::Vec3D(0,-1,0))
     };
  
   for(const TTYPE& tc : Tests)
@@ -638,21 +639,23 @@ testHeadRule::testIntersectHeadRule()
       HeadRule HM(std::get<0>(tc));
       const Geometry::Vec3D& O(std::get<1>(tc));
       const Geometry::Vec3D& A(std::get<2>(tc));
-      
+      HM.populateSurf();
+
       MonteCarlo::LineIntersectVisit LI(O,A);
       const std::vector<Geometry::Vec3D>& Pts=
 	LI.getPoints(HM);
 
       const size_t index(std::get<3>(tc));
       const Geometry::Vec3D expectPoint(std::get<4>(tc));
-      
-      if (Pts.size()<=index || expectPoint.Distance(Pts[index])>1e-5)
+      if (Pts.size()>index &&
+	  expectPoint.Distance(Pts[index-1])>1e-5)
 	{
 	  ELog::EM<<"Line :"<<std::get<1>(tc)<<" :: "
 		  <<std::get<2>(tc)<<ELog::endDiag;	      
 	  ELog::EM<<"HR :"<<HM<<ELog::endDiag;
 	  ELog::EM<<"Index   :"<<index<<ELog::endDiag;
 	  ELog::EM<<"Expected :"<<expectPoint<<ELog::endDiag;
+	  ELog::EM<<"Pts size == "<<Pts.size()<<ELog::endDiag;
 	  if (Pts.size()>index)
 	    ELog::EM<<"Actual   :"<<Pts[index]<<ELog::endDiag;
 	  
@@ -666,13 +669,17 @@ testHeadRule::testIntersectHeadRule()
 int
 testHeadRule::testIsLineValid()
   /*!
-    Test the line tracking through a cell .
-    Determine if a line tracks the out cell component
+    Test the line segment between start/end point is
+    within a cell.
+    Determine if a line tracks out of a cell component
     \retval 0 :: success / -ve on failure
   */
 {
   ELog::RegMethod RegA("testHeadRule","testIsOuterLine");
 
+  createSurfaces();
+  
+  // cell : start : end : exit(true/false)
   typedef std::tuple<std::string,Geometry::Vec3D,Geometry::Vec3D,bool> TTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE("1 -2 3 -4 5 -6",
@@ -697,7 +704,9 @@ testHeadRule::testIsLineValid()
   for(const TTYPE& tc : Tests)
     {
       HeadRule HR(std::get<0>(tc));
+      HR.populateSurf();
       bool Res=HR.isLineValid(std::get<1>(tc),std::get<2>(tc));
+
       if (Res!=std::get<3>(tc))
 	{
 	  ELog::EM<<"Surface  == "<<std::get<0>(tc)<<ELog::endTrace;

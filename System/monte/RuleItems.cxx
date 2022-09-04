@@ -3,7 +3,7 @@
  
  * File:   monte/RuleItems.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -210,63 +210,6 @@ CompObj::isValid(const Geometry::Vec3D& Pt,const int ExSN) const
     return (key->isValid(Pt,ExSN)) ? 0 : 1;
   return 1;
 }
-
-bool
-CompObj::isDirectionValid(const Geometry::Vec3D& Pt,
-			  const int ExSN) const
-  /*! 
-    Determines if a point  is valid.  
-    Checks to see if the point is valid in the object
-    and returns ture if it is not valid.
-    \param  Pt :: Point to test
-    \param  ExSN :: Excluded points
-    \retval not valid in the object 
-    \retval true is no object is set
-  */
-{
-  if (key)
-    return (key->isDirectionValid(Pt,ExSN)) ? 0 : 1;
-  return 1;
-}
-
-bool
-CompObj::isDirectionValid(const Geometry::Vec3D& Pt,
-			  const std::set<int>& surfSet,
-			  const int ExSN) const
-  /*! 
-    Determines if a point  is valid.  
-    Checks to see if the point is valid in the object
-    and returns ture if it is not valid.
-    \param  Pt :: Point to test
-    \param surfSet :: surface set
-    \param  ExSN :: Excluded points
-    \retval not valid in the object 
-    \retval true is no object is set
-  */
-{
-  if (key)
-    return (key->isDirectionValid(Pt,surfSet,ExSN)) ? 0 : 1;
-  return 1;
-}
-
-bool
-CompObj::isValid(const Geometry::Vec3D& Pt,
-		 const std::set<int>& ExSN) const
-  /*! 
-    Determines if a point  is valid.  
-    Checks to see if the point is valid in the object
-    and returns ture if it is not valid.
-    \param  Pt :: Point to test
-    \param  ExSN :: Excluded points
-    \retval not valid in the object 
-    \retval true is no object is set
-  */
-{
-  if (key)
-    return (key->isValid(Pt,ExSN)) ? 0 : 1;
-  return 1;
-}
-
 
 bool
 CompObj::isValid(const std::map<int,int>& SMap) const
@@ -488,41 +431,6 @@ BoolValue::findLeaf(const Rule* A) const
 
 bool
 BoolValue::isValid(const Geometry::Vec3D&,const int) const
-  /*! 
-    Determines if a point  is valid.  
-    \param  :: Point to test
-    \returns status
-  */
-{
-  return status;
-}
-
-bool
-BoolValue::isDirectionValid(const Geometry::Vec3D&,const int) const
-  /*! 
-    Determines if a point  is valid.  
-    \param  :: Point to test
-    \returns status
-  */
-{
-  return status;
-}
-
-bool
-BoolValue::isDirectionValid(const Geometry::Vec3D&,
-			    const std::set<int>&,
-			    const int) const
-  /*! 
-    Determines if a point  is valid.  
-    \param  :: Point to test
-    \returns status
-  */
-{
-  return status;
-}
-
-bool
-BoolValue::isValid(const Geometry::Vec3D&,const std::set<int>&) const
   /*! 
     Determines if a point  is valid.  
     \param  :: Point to test
@@ -831,69 +739,6 @@ CompGrp::isValid(const Geometry::Vec3D& Pt,const int ExSN) const
     return (A->isValid(Pt,ExSN)) ? 0 : 1;
   return 1;
 }
-
-bool
-CompGrp::isDirectionValid(const Geometry::Vec3D& Pt,
-			  const int ExSN) const
-  /*! 
-    Determines if a point  is valid.  
-    Checks to see if the point is valid in the object
-    and returns ture if it is not valid.
-    Note the complementary reverse in the test.
-    \param  Pt :: Point to test
-    \param ExSN :: Excluded surface
-    \retval not valid in the object 
-    \retval true is no object is set
-  */
-{
-  // Note:: if isValid is true then return 0:
-  if (A)
-    return (A->isDirectionValid(Pt,ExSN)) ? 0 : 1;
-  return 1;
-}
-
-bool
-CompGrp::isDirectionValid(const Geometry::Vec3D& Pt,
-			  const std::set<int>& surfSet,
-			  const int ExSN) const
-  /*! 
-    Determines if a point  is valid.  
-    Checks to see if the point is valid in the object
-    and returns ture if it is not valid.
-    Note the complementary reverse in the test.
-    \param  Pt :: Point to test
-    \param surfSet :: Excluded surfaces
-    \param ExSN :: Excluded surface
-    \retval not valid in the object 
-    \retval true is no object is set
-  */
-{
-  // Note:: if isValid is true then return 0:
-  if (A)
-    return (A->isDirectionValid(Pt,surfSet,ExSN)) ? 0 : 1;
-  return 1;
-}
-
-bool
-CompGrp::isValid(const Geometry::Vec3D& Pt,
-		 const std::set<int>& ExSN) const
-  /*! 
-    Determines if a point  is valid.  
-    Checks to see if the point is valid in the object
-    and returns ture if it is not valid.
-    Note the complementary reverse in the test.
-    \param  Pt :: Point to test
-    \param ExSN :: Excluded surfaces
-    \retval not valid in the object 
-    \retval true is no object is set
-  */
-{
-  // Note:: if isValid is true then return 0:
-  if (A)
-    return (A->isValid(Pt,ExSN)) ? 0 : 1;
-  return 1;
-}
-
 
 bool
 CompGrp::isValid(const std::map<int,int>& SMap) const
