@@ -60,7 +60,6 @@
 #include "MapSupport.h"
 #include "HeadRule.h"
 
-
 #include "SurInter.h"
 
 
@@ -927,12 +926,11 @@ HeadRule::isLineValid(const Geometry::Vec3D& APt,
   if (HeadNode->isValid(APt) || HeadNode->isValid(BPt))
     return 1;
   
-  const std::vector<const Geometry::Surface*> SVec=
-    getSurfaces();
+  const std::set<const Geometry::Surface*> SSet=getSurfaces();
   const double ABDist=APt.Distance(BPt);
   MonteCarlo::LineIntersectVisit LI(APt,BPt-APt);
 
-  for(const Geometry::Surface* SPtr : SVec)
+  for(const Geometry::Surface* SPtr : SSet)
     {
       LI.clearTrack();
       const std::vector<Geometry::Vec3D>& pointVec=
@@ -961,15 +959,21 @@ HeadRule::surfValid(const Geometry::Vec3D& Pt) const
     \return set of surfaces that the point is on AND are external
    */
 {
+
   std::set<int> sideSurf;
   if (!isValid(Pt)) return sideSurf;
-  
-  const std::vector<const Geometry::Surface*> SVec=getSurfaces();
+
+  const std::set<const Geometry::Surface*> SVec=getSurfaces();
   for(const Geometry::Surface* SPtr : SVec)
     {
+	
       if (!SPtr->side(Pt))
 	{
 	  const int S = SPtr->getName();
+	  if (S==1290015)
+	    ELog::EM<<"HERER "<<SPtr->getName()<<ELog::endDiag;
+
+		  
 	  const std::map<int,int> SNeg({{S,-1}});
 	  const std::map<int,int> SPlus({{S,1}});
 	  if (isValid(Pt,SNeg) !=  isValid(Pt,SPlus))
@@ -1124,7 +1128,7 @@ HeadRule::getSurface(const int SN) const
   return nullOut;
 }
 
-std::vector<const Geometry::Surface*>
+std::set<const Geometry::Surface*>
 HeadRule::getSurfaces() const
   /*!
     Calculate the surfaces that are within the top level
@@ -1132,9 +1136,9 @@ HeadRule::getSurfaces() const
   */
 {
   ELog::RegMethod RegA("HeadRule","getSurfaces");
-  std::vector<const Geometry::Surface*> Out;
+  std::set<const Geometry::Surface*> SSetOut;
   const SurfPoint* SP;
-  if (!HeadNode) return Out;
+  if (!HeadNode) return SSetOut;
 
   const Rule *headPtr,*leafA,*leafB;       
   // Parent : left/right : Child
@@ -1159,10 +1163,10 @@ HeadRule::getSurfaces() const
 	{
 	  SP=dynamic_cast<const SurfPoint*>(headPtr);
 	  if (SP)
-	    Out.push_back(SP->getKey());
+	    SSetOut.emplace(SP->getKey());
 	}
     }
-  return Out;
+  return SSetOut;
 }
 
 std::set<int>
@@ -2608,7 +2612,7 @@ HeadRule::trackSurfIntersect(const Geometry::Vec3D& Org,
     
   MonteCarlo::LineIntersectVisit LI(Org,Unit);
 
-  const std::vector<const Geometry::Surface*> SurfList=
+  const std::set<const Geometry::Surface*> SurfList=
     this->getSurfaces();
   for(const Geometry::Surface* SPtr : SurfList)
     SPtr->acceptVisitor(LI);
@@ -2761,16 +2765,17 @@ HeadRule::calcSurfSurfIntersection(std::vector<Geometry::Vec3D>& Pts) const
 
   if (!HeadNode) return 0;
   
-  const std::vector<const Geometry::Surface*> SurfList=
+  const std::set<const Geometry::Surface*> SurfSet=
     this->getSurfaces();
 
-  for(size_t i=0;i<SurfList.size();i++)
-    for(size_t j=i+1;j<SurfList.size();j++)
-      for(size_t k=j+1;k<SurfList.size();k++)
+  std::set<const Geometry::Surface*>::const_iterator ac,bc,cc;
+  for(ac=SurfSet.begin();ac!=SurfSet.end();ac++)
+    for(bc=SurfSet.begin();bc!=ac;bc++)
+      for(cc=SurfSet.begin();cc!=bc;cc++)
 	{
-	  const Geometry::Surface* SurfX(SurfList[i]);
-	  const Geometry::Surface* SurfY(SurfList[j]);
-	  const Geometry::Surface* SurfZ(SurfList[k]);
+	  const Geometry::Surface* SurfX(*ac);
+	  const Geometry::Surface* SurfY(*bc);
+	  const Geometry::Surface* SurfZ(*cc);
 	  std::vector<Geometry::Vec3D> PntOut=
 	    SurInter::processPoint(SurfX,SurfY,SurfZ);
 	  if (!PntOut.empty())
@@ -2985,19 +2990,19 @@ HeadRule::Intersects(const HeadRule& A) const
   // quick check:
   if (!HeadNode || !A.HeadNode) return 0;
   
-  const std::vector<const Geometry::Surface*> 
-    AVec(this->getSurfaces());
-  const std::vector<const Geometry::Surface*> 
-    BVec(A.getSurfaces());
+  const std::set<const Geometry::Surface*> 
+    ASet(this->getSurfaces());
+  const std::set<const Geometry::Surface*> 
+    BSet(A.getSurfaces());
 
   // Surf/Surf/Surf intersection
-
-  for(size_t i=0;i<AVec.size();i++)
-    for(size_t j=i+1;j<AVec.size();j++)
+  std::set<const Geometry::Surface*>::const_iterator ac,bc;
+  for(ac=ASet.begin();ac!=ASet.end();ac++)
+    for(bc=ASet.begin();bc!=ac;bc++)
       {
-	const Geometry::Surface* ASurf(AVec[i]);
-	const Geometry::Surface* BSurf(AVec[j]);
-	for(const Geometry::Surface* CSurf : BVec)
+	const Geometry::Surface* ASurf(*ac);
+	const Geometry::Surface* BSurf(*bc);
+	for(const Geometry::Surface* CSurf : BSet)
 	  {
 	    const std::vector<Geometry::Vec3D> intersectPoints=
 	      SurInter::processPoint(ASurf,BSurf,CSurf);

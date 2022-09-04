@@ -148,7 +148,6 @@ Segment30::createSplitInnerZone(Simulation& System)
 	{
 	  for(const TDCsegment* sidePtr : sideVec)
 	    {
-	      ELog::EM<<"SidePtr = "<<sidePtr->getKeyName()<<ELog::endDiag;
 	      if (sidePtr->getKeyName()!="TDC15")
 		{
 		  for(const int CN : sidePtr->getCells("Unit"))
@@ -215,17 +214,14 @@ Segment30::postBuild(Simulation& System)
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("Segment46","postBuild");
+  ELog::RegMethod RegA("Segment30","postBuild");
 
   typedef std::map<std::string,const TDCsegment*> mapTYPE;
   if (!sideVec.empty())
     {
       mapTYPE segNames;
       for(const TDCsegment* sidePtr : sideVec)
-	{
-	  segNames.emplace(sidePtr->getKeyName(),sidePtr);
-	  ELog::EM<<"Segment == "<<sidePtr->getKeyName()<<ELog::endDiag;
-	}
+	segNames.emplace(sidePtr->getKeyName(),sidePtr);
 
       HeadRule surHR=buildZone->getSurround();
       surHR.removeOuterPlane(Origin+Y*10.0,-X,0.9);
@@ -294,7 +290,7 @@ Segment30::registerPrevSeg(const TDCsegment* PSPtr,
    \param PSPtr :: previous segment
   */
 {
-  ELog::RegMethod RegA("TDCsegment","processPrevSeg");
+  ELog::RegMethod RegA("Segment30","processPrevSeg");
 
   prevSegPtr=PSPtr;
   if (prevSegPtr)
@@ -320,7 +316,7 @@ Segment30::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("Segment30","build");
+  ELog::RegMethod RControl("Segment30","createAll");
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

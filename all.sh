@@ -10,11 +10,10 @@ function procExit
 
 segments=All
 #./maxiv --noLengthCheck --defaultConfig Linac ${segments} AA
-./maxiv --noLengthCheck --defaultConfig Linac ${segments} -validAll --validCheck 1000 AA; procExit
-exit
+#./maxiv --noLengthCheck --defaultConfig Linac ${segments} -validAll --validCheck 1000 AA; procExit
 
 ./ess -validAll --validCheck 1000 AA; procExit 
-
+exit
 ./fullBuild -validAll --validCheck 1000 AA; procExit 
 ./t1Real -validAll --validCheck 1000 AA; procExit
 ./reactor -validAll --validCheck 100 AA; procExit

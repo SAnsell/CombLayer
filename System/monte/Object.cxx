@@ -823,7 +823,10 @@ Object::surfValid(const Geometry::Vec3D& Pt) const
     \returns 1 if true and 0 if false
   */
 {
-  return HRule.surfValid(Pt);
+  ELog::EM<<"HR == "<<getName()<<ELog::endDiag;
+  std::set<int> out= HRule.surfValid(Pt);
+  ELog::EM<<"ENDHR == "<<getName()<<ELog::endDiag;
+  return out;
 }
 
 int

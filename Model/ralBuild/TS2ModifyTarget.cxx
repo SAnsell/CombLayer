@@ -439,9 +439,9 @@ TS2ModifyTarget::calcConeIntersect
   for(size_t cIndex=0;cIndex<ConeUnits.size();cIndex++)
     {
       const HeadRule& CItem(ConeUnits[cIndex]);
-      const std::vector<const Geometry::Surface*> 
-	SVec=CItem.getSurfaces();
-      for(const Geometry::Surface* SPtr : SVec)
+      const std::set<const Geometry::Surface*> 
+	SSet=CItem.getSurfaces();
+      for(const Geometry::Surface* SPtr : SSet)
 	{
 	  const std::vector<Geometry::Vec3D> Out=
 	    LI.getPoints(SPtr);

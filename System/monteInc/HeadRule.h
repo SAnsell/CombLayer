@@ -146,7 +146,7 @@ class HeadRule
 
   std::set<const Geometry::Surface*> getOppositeSurfaces() const;
   const Geometry::Surface* getSurface(const int) const;
-  std::vector<const Geometry::Surface*> getSurfaces() const;
+  std::set<const Geometry::Surface*> getSurfaces() const;
   std::set<int> getSignedSurfaceNumbers() const;
   std::vector<int> getSurfaceNumbers() const;
   std::vector<int> getTopSurfaces() const;
