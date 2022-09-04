@@ -299,7 +299,7 @@ SimValid::runFixedComp(const Simulation& System,
 
 int
 SimValid::checkPoint(const Simulation& System,
-		     const Geometry::Vec3D& PtDebug) 
+		     const Geometry::Vec3D& Pt) 
   /*!
     Calculates if a point is within multiple cells:
     \param System :: Simulation to use
@@ -308,7 +308,7 @@ SimValid::checkPoint(const Simulation& System,
   */
 {
   ELog::RegMethod RegA("SimValid","checkPoint");
-  const Geometry::Vec3D Pt(556,0,-220);
+
   const Simulation::OTYPE& cellMap=System.getCells();
   std::vector<const MonteCarlo::Object*> activeCell;
   for(const auto& [CN,OPtr] : cellMap)
@@ -331,22 +331,6 @@ SimValid::checkPoint(const Simulation& System,
 
 	const std::set<int> ASurf=APtr->surfValid(Pt);
 	const std::set<int> BSurf=BPtr->surfValid(Pt);
-	if (AObj==1330003 && BObj==1540001)
-	  {
-	    ELog::EM<<"Testss on object - >"<<ELog::endDiag;
-	    for(const int SN : ASurf)
-	      ELog::EM<<" "<<SN;
-	    ELog::EM<<ELog::endDiag;
-	  }
-	if (AObj==1330003 && BObj==1540001)
-	  {
-	    ELog::EM<<"B == "<<*BPtr<<ELog::endDiag;
-	    ELog::EM<<"Testss on object - >"<<ELog::endDiag;
-	    for(const int SN : BSurf)
-	      ELog::EM<<" "<<SN;
-	    ELog::EM<<ELog::endDiag;
-	  }
-
 
 	std::set<int> commonSurf;
 	std::set_intersection(ASurf.begin(),ASurf.end(),
@@ -356,10 +340,6 @@ SimValid::checkPoint(const Simulation& System,
 	
 	for(const int SN : commonSurf)
 	  {
-	if (AObj==1330003 && BObj==1540001)
-	  {
-	    ELog::EM<<"Testss on object - >"<<SN<<ELog::endDiag;
-	  }
 	    if ((APtr->isValid(Pt,-SN) != BPtr->isValid(Pt,-SN)) &&
 		(APtr->isValid(Pt,SN) != BPtr->isValid(Pt,SN)) )
 	      {
@@ -367,9 +347,6 @@ SimValid::checkPoint(const Simulation& System,
 		break;
 	      }
 	  }
-	ELog::EM<<"Test on object - >"<<APtr->getName()
-		<<" "<<BPtr->getName()<<" == "<<errFlag<<ELog::endDiag;
-		
 	if (errFlag)
 	  {
 	    ELog::EM<<"Central Point Check ERROR ::"<<Pt<<"\n";

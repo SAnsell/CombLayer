@@ -970,13 +970,7 @@ HeadRule::surfValid(const Geometry::Vec3D& Pt) const
       if (!SPtr->side(Pt))
 	{
 	  const int S = SPtr->getName();
-	  if (S==1290015)
-	    ELog::EM<<"HERER "<<SPtr->getName()<<ELog::endDiag;
-
-		  
-	  const std::map<int,int> SNeg({{S,-1}});
-	  const std::map<int,int> SPlus({{S,1}});
-	  if (isValid(Pt,SNeg) !=  isValid(Pt,SPlus))
+	  if (isValid(Pt,-S) !=  isValid(Pt,S))
 	    sideSurf.emplace(SPtr->getName());
 	}
     }
