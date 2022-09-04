@@ -183,11 +183,14 @@ class Object
     { return std::pair<double,double>(elecMinStep,elecMaxStep); }  
 
   int isValid(const Geometry::Vec3D&) const;            
-  int isSignedValid(const Geometry::Vec3D&,const int) const;
+  int isValid(const Geometry::Vec3D&,const int) const;
   int isSideValid(const Geometry::Vec3D&,const int) const;            
-  int isValid(const Geometry::Vec3D&,const std::set<int>&) const;            
   int isValid(const std::map<int,int>&) const;
   int isValid(const Geometry::Vec3D&,const std::map<int,int>&) const; 
+
+  
+  int isAnyValid(const Geometry::Vec3D&,const std::set<int>&) const;
+  
   std::set<int> surfValid(const Geometry::Vec3D&) const;
   std::map<int,int> mapValid(const Geometry::Vec3D&) const;
 

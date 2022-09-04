@@ -335,8 +335,8 @@ SimValid::checkPoint(const Simulation& System,
 	int errFlag(1);
 	for(const int SN : commonSurf)
 	  {
-	    if ((APtr->isSignedValid(Pt,-SN) != BPtr->isSignedValid(Pt,-SN)) &&
-		(APtr->isSignedValid(Pt,SN) != BPtr->isSignedValid(Pt,SN)) )
+	    if ((APtr->isValid(Pt,-SN) != BPtr->isValid(Pt,-SN)) &&
+		(APtr->isValid(Pt,SN) != BPtr->isValid(Pt,SN)) )
 	      {
 		errFlag=0;
 		break;

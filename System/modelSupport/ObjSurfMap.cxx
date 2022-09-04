@@ -295,7 +295,7 @@ ObjSurfMap::findNextObject(const int SN,
   for(MonteCarlo::Object* MPtr : MVec)
     {
       if (MPtr->getName()!=objExclude && 
-	  MPtr->isSignedValid(Pos,SN))
+	  MPtr->isValid(Pos,SN))
 	return MPtr;
     }
     

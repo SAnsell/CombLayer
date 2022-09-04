@@ -207,7 +207,7 @@ CompObj::isValid(const Geometry::Vec3D& Pt,const int ExSN) const
   */
 {
   if (key)
-    return (key->isSignedValid(Pt,ExSN)) ? 0 : 1;
+    return (key->isValid(Pt,ExSN)) ? 0 : 1;
   return 1;
 }
 

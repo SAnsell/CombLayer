@@ -646,7 +646,7 @@ checkIntersect(const ContainedComp& CC,
 		boundarySet.insert(CellSVec[iB]->getName());
 		boundarySet.insert(CellSVec[iC]->getName());		  
 		// Outer valid returns true if out of object
-		if (CellHR.isSideValid(testPoint,boundarySet) &&
+		if (CellHR.isAnyValid(testPoint,boundarySet) &&
 		    CCHR.isSideValid(testPoint,SN))
 		  return 1;
 	      }
@@ -678,7 +678,7 @@ checkIntersect(const ContainedComp& CC,
 	      boundarySet.insert(SVec[iA]->getName());
 	      boundarySet.insert(SVec[iB]->getName());
 	      if (CellHR.isSideValid(testPoint,CellSVec[iC]->getName()) &&
-		  !CCHR.isSideValid(testPoint,boundarySet))
+		  !CCHR.isAnyValid(testPoint,boundarySet))
 		{
 		  return 1;
 		}
@@ -722,10 +722,10 @@ checkPlaneIntersect(const Geometry::Plane& BPlane,
 	
 	for(const Geometry::Vec3D& testPoint : intersectPoints)
 	  {
-	    const bool aMinus=AObjHR.isSignedValid(testPoint,-aSN);
-	    const bool aPlus=AObjHR.isSignedValid(testPoint,aSN);
-	    const bool bMinus=BObjHR.isSignedValid(testPoint,-bSN);
-	    const bool bPlus=BObjHR.isSignedValid(testPoint,bSN);
+	    const bool aMinus=AObjHR.isValid(testPoint,-aSN);
+	    const bool aPlus=AObjHR.isValid(testPoint,aSN);
+	    const bool bMinus=BObjHR.isValid(testPoint,-bSN);
+	    const bool bPlus=BObjHR.isValid(testPoint,bSN);
 	    if (aMinus!=aPlus && bMinus!=bPlus)
 	      return 1;
 	  }

@@ -83,7 +83,7 @@ getIntersect(const MonteCarlo::Object& obj,
 	
   for(const Geometry::Vec3D& VC : PntOut)
     {
-      if (obj.isValid(VC,ExSN) &&         // Is point in/on the object
+      if (obj.isAnyValid(VC,ExSN) &&         // Is point in/on the object
 	  VC.abs()<1e8)          // Tracked onto the very large points
 	{
 	  MonteCarlo::SurfVertex tmp;

@@ -756,7 +756,7 @@ HeadRule::isUnion() const
 }
 
 bool
-HeadRule::isSignedValid(const Geometry::Vec3D& Pt,
+HeadRule::isValid(const Geometry::Vec3D& Pt,
 			const int S) const
   /*!
     Calculate if an object is valid
@@ -825,7 +825,7 @@ HeadRule::isSideValid(const Geometry::Vec3D& Pt,
 }
 
 bool
-HeadRule::isSideValid(const Geometry::Vec3D& Pt,
+HeadRule::isAnyValid(const Geometry::Vec3D& Pt,
 		      const std::set<int>& SSet) const
   /*!
     Calculate if an object is valid
@@ -2632,8 +2632,8 @@ HeadRule::trackSurfIntersect(const Geometry::Vec3D& Org,
 	   dPts[i]<D )
 	{
 	  const int NS=surfIndex[i]->getName();	    // NOT SIGNED
-	  const int pAB=isSignedValid(IPts[i],NS);
-	  const int mAB=isSignedValid(IPts[i],-NS);
+	  const int pAB=isValid(IPts[i],NS);
+	  const int mAB=isValid(IPts[i],-NS);
 	  const int normD=surfIndex[i]->sideDirection(IPts[i],Unit);
 	  if (pAB!=mAB)  // out going positive surface
 	    {

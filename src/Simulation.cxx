@@ -1213,7 +1213,7 @@ Simulation::findCellPair(const Geometry::Vec3D& Pt,const int SN) const
 
   for(const MonteCarlo::Object* OPtr : negType)
     {
-      if (OPtr->isSignedValid(Pt,-SN))
+      if (OPtr->isValid(Pt,-SN))
 	{
 	  Out.first=OPtr;
 	  break;
@@ -1222,7 +1222,7 @@ Simulation::findCellPair(const Geometry::Vec3D& Pt,const int SN) const
 
   for(const MonteCarlo::Object* OPtr : plusType)
     {
-      if (OPtr->isSignedValid(Pt,SN))
+      if (OPtr->isValid(Pt,SN))
 	{
 	  Out.second=OPtr;
 	  break;

@@ -473,7 +473,7 @@ testObject::testIsValid()
       const int SN=std::get<1>(tc);
       
       res=(SN) ?
-	A.isSignedValid(std::get<2>(tc),SN) :
+	A.isValid(std::get<2>(tc),SN) :
 	A.isValid(std::get<2>(tc));
       
       if (res!=std::get<3>(tc))

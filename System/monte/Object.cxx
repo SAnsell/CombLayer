@@ -661,8 +661,8 @@ Object::isOnSide(const Geometry::Vec3D& Pt) const
   std::set<int> sideSurfSet;
   for(const int SN : onSurf)
     {
-      bool aFlag=HRule.isSignedValid(Pt,-SN);
-      bool bFlag=HRule.isSignedValid(Pt,SN);
+      bool aFlag=HRule.isValid(Pt,-SN);
+      bool bFlag=HRule.isValid(Pt,SN);
       if (aFlag!=bFlag)
 	sideSurfSet.emplace(SN);
     }
@@ -726,8 +726,8 @@ Object::trackDirection(const int SN,
     \retval -1 ::  Exiting the object
   */
 {
-  const int pAB=HRule.isSignedValid(Pt,SN);   // true/false [1/0]
-  const int mAB=HRule.isSignedValid(Pt,-SN);	    
+  const int pAB=HRule.isValid(Pt,SN);   // true/false [1/0]
+  const int mAB=HRule.isValid(Pt,-SN);	    
 
   if (pAB!=mAB)    // exiting/entering
     {
@@ -786,17 +786,17 @@ Object::isValid(const Geometry::Vec3D& Pt) const
 }
 
 int
-Object::isSignedValid(const Geometry::Vec3D& Pt,
-		      const int SN) const
+Object::isValid(const Geometry::Vec3D& Pt,
+		const int SN) const
   /*! 
     Determines is Pt is within the object 
     or on the surface
     \param Pt :: Point to be tested
-    \param SN :: Excluded surf Number 
+    \param SN :: Excluded surf Number (signed)
     \returns 1 if true and 0 if false
   */
 {
-  return HRule.isSignedValid(Pt,SN);
+  return HRule.isValid(Pt,SN);
 }
 
 int
@@ -827,7 +827,7 @@ Object::surfValid(const Geometry::Vec3D& Pt) const
 }
 
 int
-Object::isValid(const Geometry::Vec3D& Pt,
+Object::isAnyValid(const Geometry::Vec3D& Pt,
 		const std::set<int>& ExSN) const
 /*! 
   Determines is Pt is within the object 
@@ -837,7 +837,7 @@ Object::isValid(const Geometry::Vec3D& Pt,
   \returns 1 if true and 0 if false
 */
 {
-  return HRule.isSideValid(Pt,ExSN);
+  return HRule.isAnyValid(Pt,ExSN);
 }
 
 
@@ -1282,8 +1282,8 @@ Object::trackCell(const MonteCarlo::particle& N,double& D,
       if ( dPts[i]>Geometry::zeroTol && dPts[i]<D+Geometry::zeroTol*10.0)
 	{
 	  const int NS=surfIndex[i]->getName();	    // NOT SIGNED
-	  const int pAB=HRule.isSignedValid(IPts[i],NS);
-	  const int mAB=HRule.isSignedValid(IPts[i],-NS);
+	  const int pAB=HRule.isValid(IPts[i],NS);
+	  const int mAB=HRule.isValid(IPts[i],-NS);
 	  if (pAB!=mAB)           // out going positive surface
 	    {
 	      const int normD=surfIndex[i]->sideDirection(IPts[i],N.uVec);
