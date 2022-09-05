@@ -142,7 +142,8 @@ Segment7::buildObjects(Simulation& System)
       const Segment6 *seg6 = dynamic_cast<const Segment6*>(sideSegment);
       if (seg6)
 	{
-	  const std::shared_ptr<EBeamStop> beamStop = seg6->getBeamStop();
+	  const std::shared_ptr<EBeamStop> beamStop =
+	    seg6->getBeamStop();
 	  if (beamStop->isShieldActive())
 	    {
 	      beamStop->insertAllInCell(System,outerCell-4);
