@@ -126,8 +126,6 @@ Segment8::buildObjects(Simulation& System)
   outerCell=buildZone->createUnit(System,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
 
-  ELog::EM<<"beamStop == "<<isActive("Front")<<ELog::endCrit;
-
   constructSystem::constructUnit
     (System,*buildZone,*bellowA,"back",*beamStop);
   
@@ -185,7 +183,7 @@ Segment8::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("Segment8","build");
+  ELog::RegMethod RControl("Segment8","createAll");
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

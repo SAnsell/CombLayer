@@ -40,6 +40,10 @@ namespace MapSupport
 
   template<typename T> 
   bool iterateBinMap(std::map<T,int>&,const int,const int);
+
+  template<typename T> 
+  bool iterateBinMapLocked(std::map<T,int>&,const T&,
+			   const int,const int);
   
   /*!
     \class valEqual

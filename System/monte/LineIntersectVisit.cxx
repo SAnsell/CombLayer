@@ -286,8 +286,8 @@ LineIntersectVisit::Accept(const HeadRule& HR)
 	{
 	  const Geometry::Vec3D& Pt(LI.PtVec[index]);
 	  
-	  const int pAB=HR.isDirectionValid(Pt,NS);
-	  const int mAB=HR.isDirectionValid(Pt,-NS);
+	  const int pAB=HR.isValid(Pt,NS);
+	  const int mAB=HR.isValid(Pt,-NS);
 
 	  if (pAB!=mAB)  // out going positive surface
 	    {

@@ -76,6 +76,8 @@
 #include "BasicFlightLine.h"
 #include "WedgeFlightLine.h"
 #include "AttachSupport.h"
+#include "Importance.h"
+#include "Object.h"
 
 #include "FocusPoints.h"
 #include "beamlineConstructor.h"
@@ -1056,7 +1058,7 @@ makeESS::build(Simulation& System,
   const std::string targetType=IParam.getValue<std::string>("targetType");
   const std::string iradLine=IParam.getValue<std::string>("iradLineType");
 
-  const size_t nF5=IParam.getValue<size_t>("nF5");
+  //  const size_t nF5=IParam.getValue<size_t>("nF5");
 
   
   if (StrFunc::checkKey("help",lowPipeType,lowModType,targetType) ||
@@ -1140,10 +1142,10 @@ makeESS::build(Simulation& System,
       LowAFL->createAll(System,*LowMod,0,*Reflector,4,*Bulk,-3);
       LowBFL->createAll(System,*LowMod,0,*Reflector,3,*Bulk,-3);
     }
-
   
   // THESE calls correct the MAIN volume so pipe work MUST be after here:
   attachSystem::addToInsertSurfCtrl(System,*Bulk,Target->getCC("Wheel"));
+
   attachSystem::addToInsertForced(System,*Bulk,Target->getCC("Shaft"));
   if (lowModType != "None")
     {

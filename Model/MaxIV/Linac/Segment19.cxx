@@ -3,7 +3,7 @@
 
  * File: Linac/Segment19.cxx
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -159,8 +159,8 @@ Segment19::createLinks()
 
 void
 Segment19::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC,
-		       const long int sideIndex)
+		     const attachSystem::FixedComp& FC,
+		     const long int sideIndex)
   /*!
     Carry out the full build
     \param System :: Simulation system
@@ -169,7 +169,7 @@ Segment19::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("Segment19","build");
+  ELog::RegMethod RControl("Segment19","createAll");
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

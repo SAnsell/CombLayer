@@ -955,40 +955,66 @@ HeadRule::surfValid(const Geometry::Vec3D& Pt) const
     Given a point determine those surfaces the point is on
     and are REALLY the object surface [e.g. moving a little
     out/in of the surface exits/enters the object or vis-versa]
+    
     \param Pt :: Point to test
     \return set of surfaces that the point is on AND are external
    */
 {
+  /*
+    Note the problem here is that at a corner, if one surface
+    is tested then is possible that it is unimportant because
+    of another surface.
+  */
+    
 
   std::set<int> sideSurf;
   if (!isValid(Pt)) return sideSurf;
 
   const std::set<const Geometry::Surface*> SVec=getSurfaces();
+  std::map<int,int> STest;
   for(const Geometry::Surface* SPtr : SVec)
     {
-	
       if (!SPtr->side(Pt))
 	{
 	  const int S = SPtr->getName();
 	  if (isValid(Pt,-S) !=  isValid(Pt,S))
 	    sideSurf.emplace(SPtr->getName());
+	  else
+	    STest.emplace(S,-1);
 	}
     }
-  return sideSurf;
-}
-  
-bool
-HeadRule::isDirectionValid(const Geometry::Vec3D& Pt,
-			   const int S) const
-  /*!
-    Calculate if an object is valid
-    \param Pt :: Point to test
-    \param S :: Surface to treat as true/false [based on sign]
-    \return true/false 
+  if (STest.empty()) return sideSurf;
+  /*
+    Loop over all STest to find any surface that there is
+    a +/- for ANY cobmination of any other surface binarys
   */
-{
-  return (HeadNode) ? HeadNode->isValid(Pt,S) : 0;
-}
+  std::map<int,int> SNeg(STest);
+  std::map<int,int> SPlus(STest);
+
+  for(const auto [SN,side] : STest)
+    {
+      bool resetFlag(0);
+      // both reset to -1 state:
+      for(auto& [sideName,flag] : SNeg) flag=-1;
+      for(auto& [sideName,flag] : SPlus) flag=-1;
+      SNeg[SN]=-1;
+      SPlus[SN]=1;
+      
+      do
+	{
+	  const bool negFlag=isValid(Pt,SNeg);
+	  const bool plusFlag=isValid(Pt,SPlus);
+	  if (negFlag!=plusFlag)
+	    {
+	      sideSurf.emplace(SN);
+	      resetFlag=1;
+	    }
+	} while(!resetFlag &&
+		!MapSupport::iterateBinMapLocked(SNeg,SN,-1,1) && 
+		!MapSupport::iterateBinMapLocked(SPlus,SN,-1,1));
+    }
+  return sideSurf;
+}  
 
 void
 HeadRule::isolateSurfNum(const std::set<int>& SN) 
@@ -2828,8 +2854,8 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
       const Geometry::Surface* surfPtr=surfIndex[i];
       // Is point possible closer
       const int NS=surfPtr->getName();	    // NOT SIGNED
-      const int pAB=isDirectionValid(IPts[i],NS);
-      const int mAB=isDirectionValid(IPts[i],-NS);
+      const int pAB=isValid(IPts[i],NS);
+      const int mAB=isValid(IPts[i],-NS);
       const int normD=surfPtr->sideDirection(IPts[i],Unit);
       const double lambda=dPts[i];
       if (pAB!=mAB)  // out going positive surface

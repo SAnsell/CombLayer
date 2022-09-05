@@ -80,9 +80,9 @@ class Object
   
   int objSurfValid;                 ///< Object surface valid
 
-  /// Full surfaces (make a map including complementary object ?)
-  std::vector<const Geometry::Surface*> SurList;  
-  std::set<int> SurSet;              ///< set of surfaces in cell [signed]
+  /// Full surfaces 
+  std::set<const Geometry::Surface*> surfSet;  
+  std::set<int> surNameSet;              ///< set of surfaces in cell [signed]
 
   const Geometry::Surface* getSurf(const int) const;
   
@@ -199,13 +199,13 @@ class Object
   std::set<int> isOnSide(const Geometry::Vec3D&) const;
 
   int surfSign(const int) const;
-  /// Access surface index
-  const std::set<int>& getSurfSet() const { return SurSet; }
+  /// Access surface set
+  const std::set<int>& getSurfSet() const { return surNameSet; }
 
   std::vector<int> getSurfaceIndex() const;
   /// Access the surface list [of pointers]
-  const std::vector<const Geometry::Surface*>& getSurList() const
-    { return SurList; }
+  const std::set<const Geometry::Surface*>& getSurList() const
+    { return surfSet; }
 
   std::vector<std::pair<int,int>> getImplicatePairs(const int) const;
   std::vector<std::pair<int,int>> getImplicatePairs() const;

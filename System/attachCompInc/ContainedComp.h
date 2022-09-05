@@ -108,9 +108,6 @@ class ContainedComp
   virtual void insertObjects(Simulation&,
 			     const std::vector<Geometry::Vec3D>&);
 
-  /// Accessor to surface [ugly]
-  std::vector<Geometry::Surface*> getSurfaces() const;
-  std::vector<const Geometry::Surface*> getConstSurfaces() const;
     
   /// Accessor [ugly]
   const std::vector<int>& getInsertCells() const 

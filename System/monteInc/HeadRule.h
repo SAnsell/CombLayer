@@ -62,7 +62,7 @@ class HeadRule
 
   void createAddition(const int,const Rule*);
   const SurfPoint* findSurf(const int) const;
-
+  
  public:
 
   HeadRule();
@@ -111,7 +111,6 @@ class HeadRule
 
   bool isLineValid(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
   
-  bool isDirectionValid(const Geometry::Vec3D&,const int) const;
 
   std::set<int> getPairedSurf() const;
   

@@ -79,10 +79,7 @@ class Segment7 :
   Segment7(const Segment7&);
   Segment7& operator=(const Segment7&);
   ~Segment7();
-
-  // ugly accessor
-  std::shared_ptr<constructSystem::VacuumPipe> getPipeB() const
-  { return pipeB; }
+  
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

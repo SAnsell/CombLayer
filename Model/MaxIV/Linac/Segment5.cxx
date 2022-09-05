@@ -3,7 +3,7 @@
 
  * File: Linac/Segment5.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -154,7 +154,7 @@ Segment5::createLinks()
   setLinkCopy(0,*flatA,1);
   setLinkCopy(1,*bellowA,2);
 
-  joinItems.push_back(FixedComp::getFullRule(2));
+  joinItems.push_back(FixedComp::getFullRule("back"));
   return;
 }
 
@@ -170,7 +170,7 @@ Segment5::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("Segment5","build");
+  ELog::RegMethod RControl("Segment5","createAll");
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

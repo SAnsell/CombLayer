@@ -87,15 +87,17 @@ checkLineIntersect(const FixedComp& InsertFC,
   const std::vector<Geometry::Vec3D> linkPts=
     InsertFC.getAllLinkPts();
 
+  const HeadRule& HR=CellObj.getHeadRule();
   for(const Geometry::Vec3D& IP : linkPts)
     {
-      if (CellObj.isValid(IP))
+      if (HR.isValid(IP))
 	return 1;
     }
 
+
   // Check line intersection:
-  const std::vector<const Geometry::Surface*>& SurList=
-    CellObj.getSurList();
+  const std::set<const Geometry::Surface*>& surfSet=
+    HR.getSurfaces();
 
   for(const Geometry::Vec3D& IP : linkPts)
     {
@@ -106,9 +108,8 @@ checkLineIntersect(const FixedComp& InsertFC,
           if (LLen>Geometry::zeroTol)
             {
               MonteCarlo::LineIntersectVisit LI(IP,UV);
-              std::vector<const Geometry::Surface*>::const_iterator vc;
-              for(vc=SurList.begin();vc!=SurList.end();vc++)
-                (*vc)->acceptVisitor(LI);
+	      for(const Geometry::Surface* SPtr : surfSet)
+                SPtr->acceptVisitor(LI);
               
               const std::vector<double>& distVec(LI.getDistance());
               const std::vector<Geometry::Vec3D>& dPts(LI.getPoints());
@@ -118,8 +119,8 @@ checkLineIntersect(const FixedComp& InsertFC,
               for(size_t dI=0;dI<dPts.size();dI++)
                 {
                   if ((distVec[dI]>0.0 && distVec[dI]<LLen) &&
-                      CellObj.isSideValid(dPts[dI],surfPts[dI]->getName()))
-                    return 1;
+                      CellObj.isValid(dPts[dI]))
+		    return 1;
                 }
 	    }
         }

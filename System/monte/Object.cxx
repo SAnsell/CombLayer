@@ -175,7 +175,7 @@ Object::Object(const Object& A) :
   magMaxStep(A.magMaxStep),activeElec(A.activeElec),
   elecMinStep(A.elecMinStep),elecMaxStep(A.elecMaxStep),
   HRule(A.HRule),objSurfValid(0),
-  SurList(A.SurList),SurSet(A.SurSet)
+  surfSet(A.surfSet),surNameSet(A.surNameSet)
   /*!
     Copy constructor
     \param A :: Object to copy
@@ -208,8 +208,8 @@ Object::operator=(const Object& A)
       elecMaxStep=A.elecMaxStep;
       HRule=A.HRule;
       objSurfValid=0;
-      SurList=A.SurList;
-      SurSet=A.SurSet;
+      surfSet=A.surfSet;
+      surNameSet=A.surNameSet;
     }
   return *this;
 }
@@ -357,8 +357,8 @@ Object::complementaryObject(const int Cnum,std::string& Ln)
   if (!HRule.procString(Part))
     throw ColErr::InvalidLine(0,Part);
 
-  SurList.clear();
-  SurSet.erase(SurSet.begin(),SurSet.end());
+  surfSet.clear();
+  surNameSet.clear();
   Ln.erase(posA-1,posB+1);  //Delete brackets ( Part ) .
   std::ostringstream CompCell;
   CompCell<<Cnum<<" ";
@@ -449,8 +449,8 @@ Object::setObject(std::string Ln)
   // note that this invalidates the read density:
 
     
-  SurList.clear();
-  SurSet.erase(SurSet.begin(),SurSet.end());
+  surfSet.clear();
+  surNameSet.clear();
   objSurfValid=0;
 
   setMaterial(matN);
@@ -514,8 +514,8 @@ Object::setObject(const int N,const int matNum,
   if (!HRule.procString(cx.str()))
     throw ColErr::InvalidLine("Token string",cx.str());
 
-  SurList.clear();
-  SurSet.erase(SurSet.begin(),SurSet.end());
+  surfSet.clear();
+  surNameSet.clear();
   objSurfValid=0;
   populated=0;
   return 1;
@@ -699,11 +699,11 @@ Object::getSurf(const int SN) const
     \return Surface Ptr
    */
 {
-  if (SurSet.find(SN)!=SurSet.end() ||
-      SurSet.find(-SN)!=SurSet.end())
+  if (surNameSet.find(SN)!=surNameSet.end() ||
+      surNameSet.find(-SN)!=surNameSet.end())
     {
       const int ASN=std::abs(SN);
-      for(const Geometry::Surface* SPtr : SurList)
+      for(const Geometry::Surface* SPtr : surfSet)
 	if (SPtr->getName()==ASN)
 	  return SPtr;
     }
@@ -865,7 +865,7 @@ Object::getImplicatePairs(const int SN) const
   if (!APtr)
     throw ColErr::InContainerError<int>(SN,"Surface not found");
 
-  for(const Geometry::Surface* BPtr : SurList)
+  for(const Geometry::Surface* BPtr : surfSet)
     {
       if (APtr!=BPtr)
 	{
@@ -895,23 +895,21 @@ Object::getImplicatePairs() const
 
   std::vector<std::pair<int,int>> Out;
 
-  for(size_t i=0;i<SurList.size();i++)
-    for(size_t j=0;j<SurList.size();j++)
-      {
-	if (j!=i)
-	  {
-	    const Geometry::Surface* APtr=SurList[i];
-	    const Geometry::Surface* BPtr=SurList[j];
-	    // This is JUST surface SIGNS:
-	    const std::pair<int,int> dirFlag=SImp.isImplicate(APtr,BPtr);
-	    if (dirFlag.first)
-	      {
-		Out.push_back(std::pair<int,int>
-			      (dirFlag.first * APtr->getName(),
-			       dirFlag.second * BPtr->getName()));
-	      }
-	  }
-      }
+  // Dont get smart :: A->B not same as B->A.
+  for(const Geometry::Surface* APtr : surfSet)
+    for(const Geometry::Surface* BPtr : surfSet)
+      if (APtr!=BPtr)
+	{
+	  // This is JUST surface SIGNS:
+	  const std::pair<int,int> dirFlag=SImp.isImplicate(APtr,BPtr);
+	  if (dirFlag.first)
+	    {
+	      Out.push_back(std::pair<int,int>
+			    (dirFlag.first * APtr->getName(),
+			     dirFlag.second * BPtr->getName()));
+	    }
+	}
+
   return Out;
 }
 
@@ -953,7 +951,7 @@ Object::mapValid(const Geometry::Vec3D& Pt) const
   ELog::RegMethod RegA("Object","mapValid");
 
   std::map<int,int> SMap;
-  for(const Geometry::Surface* SPtr : SurList)
+  for(const Geometry::Surface* SPtr : surfSet)
     SMap.emplace(SPtr->getName(),SPtr->side(Pt));
 
   return SMap;
@@ -973,8 +971,8 @@ Object::createSurfaceList()
 
   std::ostringstream debugCX;
 
-  SurList.clear();
-  SurSet.erase(SurSet.begin(),SurSet.end());
+  surfSet.clear();
+  surNameSet.clear();
 
   std::stack<const Rule*> TreeLine;
   TreeLine.push(HRule.getTopRule());
@@ -1001,30 +999,22 @@ Object::createSurfaceList()
 		{
 		  if (SurX->getKey()==0)
 		    debugCX<<" "<<SurX->getKey()<<" "<<SurX->getKeyN();
-		  SurList.push_back(SurX->getKey());
-		  SurSet.insert(SurX->getKeyN()*SurX->getSign());
+		  surfSet.emplace(SurX->getKey());
+		  surNameSet.insert(SurX->getKeyN()*SurX->getSign());
 		}
 	    }
 	}
     }
-
-  sort(SurList.begin(),SurList.end());
-
-  std::vector<const Geometry::Surface*>::iterator sc=
-    unique(SurList.begin(),SurList.end());
-  if (sc!=SurList.end())
-    SurList.erase(sc,SurList.end());
-
   
   // sorted list will have zeros at front if there is a problem
   // (e.g not populated)
-  if (SurList.empty() || (*SurList.begin()==0))
+  if (surfSet.empty() || (*surfSet.begin()==0))
     {
-      ELog::EM<<"SurList Failure "<<ELog::endCrit;
+      ELog::EM<<"surfSet Failure "<<ELog::endCrit;
       ELog::EM<<"CX == "<<debugCX.str()<<ELog::endCrit;
       ELog::EM<<"Found zero Item "<<this->getName()<<" "
 	      <<" "<<populated<<" :: "<<ELog::endCrit;
-      ELog::EM<<"SList size "<<SurList.size()<<ELog::endCrit;
+      ELog::EM<<"SList size "<<surfSet.size()<<ELog::endCrit;
       ELog::EM<<"Cell == "<<*this<<ELog::endErr;
       throw ColErr::ExitAbort("Empty surf List");
     }
@@ -1051,7 +1041,7 @@ Object::getSurfaceIndex() const
   */
 {
   std::vector<int> out;
-  for(const Geometry::Surface* SPtr : SurList)
+  for(const Geometry::Surface* SPtr : surfSet)
     out.push_back(SPtr->getName());
 
   return out;
@@ -1065,7 +1055,7 @@ Object::hasSurface(const int SN) const
     \return true/false
    */
 {
-  return (SurSet.find(SN)!=SurSet.end()) ? 1 : 0;
+  return (surNameSet.find(SN)!=surNameSet.end()) ? 1 : 0;
 }
 
 int 
@@ -1076,8 +1066,8 @@ Object::surfSign(const int SN) const
     \return +/-1 or 0 [both/nosurf]
    */
 {
-  int sign=(SurSet.find(SN)!=SurSet.end()) ? 1 : 0;
-  sign+=(SurSet.find(-SN)!=SurSet.end()) ? -1 : 0;
+  int sign=(surNameSet.find(SN)!=surNameSet.end()) ? 1 : 0;
+  sign+=(surNameSet.find(-SN)!=surNameSet.end()) ? -1 : 0;
   return sign;
 }
 
@@ -1144,10 +1134,9 @@ Object::hasIntercept(const Geometry::Vec3D& IP,
   ELog::RegMethod RegA("Object","hadIntercept");
 
   MonteCarlo::LineIntersectVisit LI(IP,UV);
- 
-  std::vector<const Geometry::Surface*>::const_iterator vc;
-  for(vc=SurList.begin();vc!=SurList.end();vc++)
-    (*vc)->acceptVisitor(LI);
+
+  for(const Geometry::Surface* SPtr : surfSet)
+    SPtr->acceptVisitor(LI);
 
   const std::vector<double>& dPts(LI.getDistance());
   for(size_t i=0;i<dPts.size();i++)
@@ -1260,7 +1249,7 @@ Object::trackCell(const MonteCarlo::particle& N,double& D,
 
 
   MonteCarlo::LineIntersectVisit LI(N);
-  for(const Geometry::Surface* isptr : SurList)
+  for(const Geometry::Surface* isptr : surfSet)
     isptr->acceptVisitor(LI);
 
   const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
@@ -1302,8 +1291,8 @@ Object::trackCell(const MonteCarlo::particle& N,double& D,
     D=Geometry::zeroTol;
 
   const int NSsurf=surfPtr->getName();
-  const bool pSurfFound(SurSet.find(NSsurf)!=SurSet.end());
-  const bool mSurfFound(SurSet.find(-NSsurf)!=SurSet.end());
+  const bool pSurfFound(surNameSet.find(NSsurf)!=surNameSet.end());
+  const bool mSurfFound(surNameSet.find(-NSsurf)!=surNameSet.end());
   
   int retNum;
   if (pSurfFound && mSurfFound)
@@ -1514,7 +1503,7 @@ Object::writeFLUKA(std::ostream& OX) const
 
   std::ostringstream cx;
   cx<<"* "<<FCUnit<<" "<<ObjName<<std::endl;
-  cx<<"R"<<ObjName<<" "<<SurList.size()<<" ";
+  cx<<"R"<<ObjName<<" "<<surfSet.size()<<" ";
   cx<<HRule.displayFluka()<<std::endl;
   StrFunc::writeMCNPX(cx.str(),OX);
   

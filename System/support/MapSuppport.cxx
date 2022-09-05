@@ -21,6 +21,8 @@ iterateBinMap(typename std::map<T,int>& M,
     number by added 1 to the map from. The carry is returned
     as the output flag (and the map is all 0). 
     \param M :: Map 
+    \retval 0  :: next interation
+    \retval 1  :: loop iteration
    */
 {
   for(typename std::map<T,int>::value_type& mc : M)
@@ -34,6 +36,42 @@ iterateBinMap(typename std::map<T,int>& M,
 	{
 	  mc.second=trueState;
 	  return 0;  // no more work to do
+	}
+    }
+  return 1;
+}
+
+template<typename T>
+bool
+iterateBinMapLocked(typename std::map<T,int>& M,
+		    const T& lockItem,
+		    const int falseState,
+		    const int trueState)
+  /*!
+    Simple iteratator over a 0/1 state mat.
+    The map (M) is assumed to have values of only 0 / 1
+    The map is then updated as if it is a REVERSED binary
+    number by added 1 to the map from. The carry is returned
+    as the output flag (and the map is all 0). 
+    \param M :: Map
+    \retval 0  :: next interation
+    \retval 1  :: loop iteration
+   */
+{
+  for(typename std::map<T,int>::value_type& mc : M)
+    {
+      if (mc.first!=lockItem)
+	{
+	  if (mc.second==trueState)
+	    {
+	      // zero and move to next
+	      mc.second=falseState;  
+	    }
+	  else
+	    {
+	      mc.second=trueState;
+	      return 0;  // no more work to do
+	    }
 	}
     }
   return 1;
@@ -61,6 +99,10 @@ findDefVal(const std::map<TA,TB>& map,
 ///\cond TEMPLATE  
 template 
 bool iterateBinMap(std::map<int,int>&,const int,const int);
+
+template 
+bool iterateBinMapLocked(std::map<int,int>&,const int&,
+			 const int,const int);
 
 template
 double

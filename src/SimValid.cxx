@@ -44,6 +44,7 @@
 #include "Vec3D.h"
 #include "Random.h"
 #include "varList.h"
+#include "MapSupport.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
@@ -311,6 +312,7 @@ SimValid::checkPoint(const Simulation& System,
 
   const Simulation::OTYPE& cellMap=System.getCells();
   std::vector<const MonteCarlo::Object*> activeCell;
+
   for(const auto& [CN,OPtr] : cellMap)
     {
       if (OPtr->isValid(Pt))
@@ -326,29 +328,40 @@ SimValid::checkPoint(const Simulation& System,
 	const MonteCarlo::Object* APtr=activeCell[i];
 	const MonteCarlo::Object* BPtr=activeCell[j];
 	
-	const int AObj=APtr->getName();
-	const int BObj=BPtr->getName();
-
 	const std::set<int> ASurf=APtr->surfValid(Pt);
 	const std::set<int> BSurf=BPtr->surfValid(Pt);
-
+	
 	std::set<int> commonSurf;
 	std::set_intersection(ASurf.begin(),ASurf.end(),
 			      BSurf.begin(),BSurf.end(),
 			      std::inserter(commonSurf,commonSurf.begin()) );
 	int errFlag(1);
-	
+	std::map<int,int> SNeg,SPlus;
 	for(const int SN : commonSurf)
 	  {
-	    if ((APtr->isValid(Pt,-SN) != BPtr->isValid(Pt,-SN)) &&
-		(APtr->isValid(Pt,SN) != BPtr->isValid(Pt,SN)) )
+	    SNeg.emplace(SN,-1);
+	    SPlus.emplace(SN,-1);
+	  }
+	for(const int SN : commonSurf)
+	  {
+	    // both reset to -1 state:
+	    for(auto& [sideName,flag] : SNeg) flag=-1;
+	    for(auto& [sideName,flag] : SPlus) flag=-1;
+	    SNeg[SN]=-1;
+	    SPlus[SN]=1;
+	    do
 	      {
-		errFlag=0;
-		break;
-	      }
+		if ((APtr->isValid(Pt,SNeg) != BPtr->isValid(Pt,SNeg)) ||
+		    (APtr->isValid(Pt,SPlus) != BPtr->isValid(Pt,SPlus)) )
+		  errFlag=0;
+	      }	 while(errFlag &&
+		       !MapSupport::iterateBinMapLocked(SNeg,SN,-1,1) && 
+		       !MapSupport::iterateBinMapLocked(SPlus,SN,-1,1));
+	    if (!errFlag) break;
 	  }
 	if (errFlag)
 	  {
+	    ELog::EM<<std::setprecision(16);
 	    ELog::EM<<"Central Point Check ERROR ::"<<Pt<<"\n";
 	    for(const MonteCarlo::Object* OPtr : activeCell)
 	      ELog::EM<<"Cell "<<OPtr->getName()<<"\n";

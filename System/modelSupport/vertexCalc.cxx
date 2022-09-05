@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/ModelSupport.cxx
+ * File:   modelSupport/vertexCalc.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -109,16 +109,16 @@ calcVertex(const MonteCarlo::Object& obj)
   ELog::RegMethod RegA("vertexCalc[F]","calcVertex");
 
   std::vector<MonteCarlo::SurfVertex> VList;
-  const std::vector<const Geometry::Surface*>& surfList=
+  const std::set<const Geometry::Surface*>& surfList=
     obj.getSurList();
 
-  std::vector<const Geometry::Surface*>::const_iterator ic,jc,kc;
-  for(ic=surfList.begin();ic!=surfList.end();ic++)
-    for(jc=ic+1;jc!=surfList.end();jc++)
-      for(kc=jc+1;kc!=surfList.end();kc++)
+  std::set<const Geometry::Surface*>::const_iterator ac,bc,cc;
+  for(ac=surfList.begin();ac!=surfList.end();ac++)
+    for(bc=surfList.begin();bc!=ac;bc++)
+      for(cc=surfList.begin();cc!=bc;cc++)
         {
 	  // This adds intersections to the VList
-	  getIntersect(obj,*ic,*jc,*kc,VList);
+	  getIntersect(obj,*ac,*bc,*cc,VList);
 	}
   // return number of item found
   return VList;

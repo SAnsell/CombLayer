@@ -12,10 +12,10 @@ segments=All
 #./maxiv --noLengthCheck --defaultConfig Linac ${segments} AA
 #./maxiv --noLengthCheck --defaultConfig Linac ${segments} -validAll --validCheck 1000 AA; procExit
 
-./ess -validAll --validCheck 1000 AA; procExit 
-exit
-./fullBuild -validAll --validCheck 1000 AA; procExit 
+#./ess -validAll --validCheck 1000 AA; procExit 
+#./fullBuild -validAll --validCheck 1000 AA; procExit 
 ./t1Real -validAll --validCheck 1000 AA; procExit
+exit
 ./reactor -validAll --validCheck 100 AA; procExit
 ./maxiv --defaultConfig Single  BALDER --validAll --validCheck 1000 AA; procExit
 ./maxiv --defaultConfig Single  COSAXS --validAll --validCheck 1000 AA; procExit

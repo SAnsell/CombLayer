@@ -441,32 +441,6 @@ addToInsertSurfCtrl(Simulation& System,
   return;
 }
 
-void
-addToInsertOuterSurfCtrl(Simulation& System,
-			 const attachSystem::FixedComp& BaseFC,
-			 attachSystem::ContainedComp& CC)
-  /*!
-    Adds this object to the containedComp to be inserted.
-    FC is the fixed object that is to be inserted -- linkpoints
-    must be set. It is tested against all the ojbect with
-    this object .
-    \param System :: Simulation to use
-    \param BaseFC :: FixedComp for name / and CC
-    \param CC :: ContainedComp object to add to this
-  */
-{
-  ELog::RegMethod RegA("AttachSupport","addToInsertOuterSurfCtrl(FC,CC)");
-  
-  const attachSystem::ContainedComp* BaseCC=
-    System.getObjectThrow<attachSystem::ContainedComp>
-    (BaseFC.getKeyName(),"ContainedComp");
-  const std::set<int> cellVec=
-    System.getObjectRange(BaseFC.getKeyName());
-
-  addToInsertOuterSurfCtrl(System,cellVec,*BaseCC,CC);
-
-  return;
-}
 
 void
 addToInsertSurfCtrl(Simulation& System,
@@ -484,20 +458,15 @@ addToInsertSurfCtrl(Simulation& System,
 {
   ELog::RegMethod RegA("AttachSupport","addToInsertSurfCtrl(int,int,CC)");
 
-  const std::vector<Geometry::Surface*> SVec=CC.getSurfaces();
-
   MonteCarlo::Object* CRPtr=System.findObject(cellA);
   if (!CRPtr) return;
   
   CRPtr->populate();
   CRPtr->createSurfaceList();
-  const std::vector<const Geometry::Surface*>&
-    CellSVec=CRPtr->getSurList();
   
-  if (checkIntersect(CC,*CRPtr,CellSVec))
-    CC.addInsertCell(cellA);
+  if (checkIntersect(CC,*CRPtr))
+    CC.insertInCell(System,cellA);
 
-  CC.insertObjects(System);
   return;
 }
 
@@ -517,7 +486,6 @@ addToInsertSurfCtrl(Simulation& System,
 {
   ELog::RegMethod RegA("AttachSupport","addToInsertSurfCtrl(int,vector,CC)");
 
-  const std::vector<Geometry::Surface*> SVec=CC.getSurfaces();
 
   for(const int CN : cellVec)
     {
@@ -526,14 +494,12 @@ addToInsertSurfCtrl(Simulation& System,
 	{
 	  CRPtr->populate();
 	  CRPtr->createSurfaceList();
-	  const std::vector<const Geometry::Surface*>&
-	    CellSVec=CRPtr->getSurList();
-	  
-	  if (checkIntersect(CC,*CRPtr,CellSVec))
-	    CC.addInsertCell(CN);
+
+	  if (checkIntersect(CC,*CRPtr))
+	    CC.insertInCell(System,CN);
 	}
     }
-  CC.insertObjects(System);
+
   return;
 }
 
@@ -553,132 +519,85 @@ addToInsertSurfCtrl(Simulation& System,
 {
   ELog::RegMethod RegA("AttachSupport","addToInsertSurfCtrl(int,vector,CC)");
 
-  const std::vector<Geometry::Surface*> SVec=CC.getSurfaces();
-
   for(const int CN : cellVec)
     {
       MonteCarlo::Object* CRPtr=System.findObject(CN);
       if (CRPtr)
 	{
 	  CRPtr->populate();
-	  CRPtr->createSurfaceList();
-	  const std::vector<const Geometry::Surface*>&
-	    CellSVec=CRPtr->getSurList();
-	  
-	  if (checkIntersect(CC,*CRPtr,CellSVec))
-	    CC.addInsertCell(CN);
+	  CRPtr->createSurfaceList();	  
+	  if (checkIntersect(CC,*CRPtr))
+	    CC.insertInCell(System,CN);
 	}
     }
   CC.insertObjects(System);
   return;
 }
 
-void
-addToInsertOuterSurfCtrl(Simulation& System,
-			 const std::set<int>& cellVec,
-			 const attachSystem::ContainedComp& BaseCC,
-			 attachSystem::ContainedComp& CC)
- /*!
-   Adds this object to the containedComp to be inserted.
-   FC is the fixed object that is to be inserted -- linkpoints
-   must be set. It is tested against all the object with
-   this object .
-   \param System :: Simulation to use
-   \param BaseCC :: Only search using the base Contained Comp
-   \param cellVec :: Range of cells [to test]
-   \param BaseCC :: ContainedComp object use as the dermination cell
-   \param CC :: ContainedComp object to add to this
-  */
-{
-  ELog::RegMethod RegA("AttachSupport","addToInsertSurfCtrl(vec,CC)");
-
-  const std::vector<Geometry::Surface*> SVec=CC.getSurfaces();
-
-
-  // Populate and createSurface list MUST have been called      
-  const std::vector<const Geometry::Surface*>
-    CellSVec=BaseCC.getConstSurfaces();
-
-  for(const int CN : cellVec)
-    {
-      MonteCarlo::Object* CRPtr=System.findObject(CN);
-      if (CRPtr && checkIntersect(CC,*CRPtr,CellSVec))
-	CC.addInsertCell(CN);
-    }
-
-  CC.insertObjects(System);
-  return;
-}
 
 bool
 checkIntersect(const ContainedComp& CC,
-	       const MonteCarlo::Object& CellObj,
-	       const std::vector<const Geometry::Surface*>& CellSVec)
+	       const MonteCarlo::Object& CellObj)
    /*
      Determine if the surface group is in the Contained Component
      \param CC :: Contained Component
      \param CellObj :: Cell Object
-     \param CellSVec :: Cell vector
      \return true/false
    */
 {
   ELog::RegMethod RegA("AttachSupport","checkInsert");
   //  ELog::debugMethod DegA;
-  
-  const std::vector<Geometry::Surface*>& SVec=CC.getSurfaces();
-  const HeadRule& CellHR=CellObj.getHeadRule();
-  const HeadRule& CCHR=CC.getOuterSurf();
-  std::vector<Geometry::Vec3D> intersectPoints;
-  std::vector<Geometry::Vec3D>::const_iterator vc;
 
+  const HeadRule& CCHR=CC.getOuterSurf();
+  const std::set<const Geometry::Surface*>& CCsurfSet=
+    CCHR.getSurfaces();
+  const HeadRule& CellHR=CellObj.getHeadRule();
+  const std::set<const Geometry::Surface*>& CellsurfSet=
+    CellHR.getSurfaces();
+    
+  std::vector<Geometry::Vec3D> intersectPoints;
+
+  std::set<const Geometry::Surface*>::const_iterator ac,bc,cc;
   // first check the cell object / surface intersection
-  for(size_t iA=0;iA<SVec.size();iA++)
+  for(const Geometry::Surface* SPtr : CCsurfSet)
     {
-      const int SN = SVec[iA]->getName();
-      for(size_t iB=0;iB<CellSVec.size();iB++)
-	for(size_t iC=iB+1;iC<CellSVec.size();iC++)
+      for(ac=CellsurfSet.begin();ac!=CellsurfSet.end();ac++)
+	for(bc=CellsurfSet.begin();bc!=ac;bc++)
 	  {	      
 	    intersectPoints=
-	      SurInter::processPoint(SVec[iA],CellSVec[iB],CellSVec[iC]);
+	      SurInter::processPoint(SPtr,*ac,*bc);
 	    for(const Geometry::Vec3D& testPoint : intersectPoints)
 	      {
-		std::set<int> boundarySet;
-		boundarySet.insert(CellSVec[iB]->getName());
-		boundarySet.insert(CellSVec[iC]->getName());		  
-		// Outer valid returns true if out of object
-		if (CellHR.isAnyValid(testPoint,boundarySet) &&
-		    CCHR.isSideValid(testPoint,SN))
+		if (CellHR.isValid(testPoint) &&
+		    CCHR.isValid(testPoint))
 		  return 1;
 	      }
 	  }
     }
   // Test surface/surface/surface intersect
-  for(size_t iA=0;iA<SVec.size();iA++)
-    for(size_t iB=iA+1;iB<SVec.size();iB++)
-      for(size_t iC=iB+1;iC<SVec.size();iC++)
-	{
-	  intersectPoints=
-	    SurInter::processPoint(SVec[iA],SVec[iB],SVec[iC]);
-	  for(const Geometry::Vec3D& testPoint : intersectPoints)
-	    {
-	      if (CellObj.isValid(testPoint))
-		return 1;
-	    }
-	}
-  
-  for(size_t iA=0;iA<SVec.size();iA++)
-    for(size_t iB=iA+1;iB<SVec.size();iB++)
-      for(size_t iC=0;iC<CellSVec.size();iC++)
-	{
-	  intersectPoints=
-	    SurInter::processPoint(SVec[iA],SVec[iB],CellSVec[iC]);
-	  for(const Geometry::Vec3D& testPoint : intersectPoints)
-	    {
-	      std::set<int> boundarySet;
-	      boundarySet.insert(SVec[iA]->getName());
-	      boundarySet.insert(SVec[iB]->getName());
-	      if (CellHR.isSideValid(testPoint,CellSVec[iC]->getName()) &&
-		  !CCHR.isAnyValid(testPoint,boundarySet))
+    for(ac=CCsurfSet.begin();ac!=CCsurfSet.end();ac++)
+      for(bc=CCsurfSet.begin();bc!=ac;bc++)
+	for(cc=CCsurfSet.begin();cc!=bc;cc++)
+	  {
+	    intersectPoints=
+	      SurInter::processPoint(*ac,*bc,*cc);
+	    for(const Geometry::Vec3D& testPoint : intersectPoints)
+	      {
+		if (CellObj.isValid(testPoint))
+		  return 1;
+	      }
+	  }
+    
+    for(ac=CCsurfSet.begin();ac!=CCsurfSet.end();ac++)
+      for(bc=CCsurfSet.begin();bc!=ac;bc++)
+	for(const Geometry::Surface* SPtr : CellsurfSet)
+	  {
+	    intersectPoints=
+	      SurInter::processPoint(*ac,*bc,SPtr);
+	    for(const Geometry::Vec3D& testPoint : intersectPoints)
+	      {
+		if (CellHR.isValid(testPoint);
+		    CCHR.isValid(testPoint))
 		{
 		  return 1;
 		}
@@ -705,20 +624,22 @@ checkPlaneIntersect(const Geometry::Plane& BPlane,
 {
   ELog::RegMethod RegA("AttachSupport","checkPlaneIntersect");
 
-  const std::vector<const Geometry::Surface*>& ASVec=AObj.getSurList(); 
-  const std::vector<const Geometry::Surface*>& BSVec=BObj.getSurList(); 
   const HeadRule& AObjHR=AObj.getHeadRule();
   const HeadRule& BObjHR=BObj.getHeadRule();
+  const std::set<const Geometry::Surface*>& ASSet=
+    AObjHR.getSurfaces(); 
+  const std::set<const Geometry::Surface*>& BSSet=
+    BObjHR.getSurfaces(); 
   
   std::vector<Geometry::Vec3D> intersectPoints;
 
-  for(size_t iA=0;iA<ASVec.size();iA++)
-    for(size_t iB=0;iB<BSVec.size();iB++)
+  for(const Geometry::Surface* ASPtr : ASSet)
+    for(const Geometry::Surface* BSPtr : BSSet)
       {	      
 	intersectPoints=
-	  SurInter::processPoint(&BPlane,ASVec[iA],BSVec[iB]);
-	const int aSN(ASVec[iA]->getName());
-	const int bSN(BSVec[iB]->getName());
+	  SurInter::processPoint(&BPlane,ASPtr,BSPtr);
+	const int aSN(ASPtr->getName());
+	const int bSN(BSPtr->getName());
 	
 	for(const Geometry::Vec3D& testPoint : intersectPoints)
 	  {
@@ -733,57 +654,6 @@ checkPlaneIntersect(const Geometry::Plane& BPlane,
   return 0;
 }
 
-bool
-findPlaneIntersect(const Geometry::Plane& BPlane,
-		   const MonteCarlo::Object& AObj,
-		   const MonteCarlo::Object& BObj,
-		   std::vector<int>& ASurf,
-		   std::vector<int>& BSurf)
-/*!
-  Determine if the pair of objects have an intersecting
-  point along a plane. Given plane: BPlane find the
-  object that surf-surf intersections that are valid in
-  both objects
-  \param BPlane :: Base plane
-  \param AObj :: First object
-  \param BObj :: Second object
-  \param ASurf :: AObj surf intersect pair
-  \param BSurf :: BObj surf intersect pair
-  \return true/false
-*/
-{
-  ELog::RegMethod RegA("AttachSupport","findPlaneIntersect");
-
-  const std::vector<const Geometry::Surface*>& ASVec=AObj.getSurList(); 
-  const std::vector<const Geometry::Surface*>& BSVec=BObj.getSurList(); 
-
-  const HeadRule& AObjHR=AObj.getHeadRule();
-  const HeadRule& BObjHR=BObj.getHeadRule();
-  
-  std::vector<Geometry::Vec3D> intersectPoints;
-
-  for(size_t iA=0;iA<ASVec.size();iA++)
-    for(size_t iB=0;iB<BSVec.size();iB++)
-      {	      
-	intersectPoints=
-	  SurInter::processPoint(&BPlane,ASVec[iA],BSVec[iB]);
-	const int aSN(ASVec[iA]->getName());
-	const int bSN(BSVec[iB]->getName());
-
-	for(const Geometry::Vec3D& testPoint : intersectPoints)
-	  {
-
-	    if (AObjHR.isSideValid(testPoint,aSN) &&
-		BObjHR.isSideValid(testPoint,bSN))
-	      {
-		ASurf.push_back(aSN);
-		BSurf.push_back(bSN);
-	      }
-	  }
-      }
-  
-  return (ASurf.empty()) ? 0 : 1;
-}
 
 void
 addToInsertForced(Simulation& System,
