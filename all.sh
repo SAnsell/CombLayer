@@ -8,6 +8,13 @@ function procExit
     fi
 }
 
+if ! command -v parallel &> /dev/null
+then
+    echo "ERROR: The GNU Parallel script not found."
+    echo "       https://www.gnu.org/s/parallel"
+    exit
+fi
+
 # --validCheck - use only one single point (default: origin (0,0,0))
 # use --validPoint to specify the point
 # --validAll - use all link points of all fixed components and the origin
