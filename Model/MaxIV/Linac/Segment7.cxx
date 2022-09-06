@@ -142,7 +142,8 @@ Segment7::buildObjects(Simulation& System)
       const Segment6 *seg6 = dynamic_cast<const Segment6*>(sideSegment);
       if (seg6)
 	{
-	  const std::shared_ptr<EBeamStop> beamStop = seg6->getBeamStop();
+	  const std::shared_ptr<EBeamStop> beamStop =
+	    seg6->getBeamStop();
 	  if (beamStop->isShieldActive())
 	    {
 	      beamStop->insertAllInCell(System,outerCell-4);
@@ -199,7 +200,7 @@ Segment7::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("Segment7","build");
+  ELog::RegMethod RControl("Segment7","createAll");
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

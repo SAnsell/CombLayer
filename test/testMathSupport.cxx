@@ -3,7 +3,7 @@
  
  * File:   test/testMathSupport.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -389,7 +389,6 @@ testMathSupport::testIndexSort()
   
   std::generate(V.begin(),V.end(),[]{ return Random::rand(); });
 
-
   std::vector<size_t> Index(10);
   std::generate(Index.begin(),Index.end(),IncSeq());
 
@@ -404,9 +403,15 @@ testMathSupport::testIndexSort()
 	  return -1;
 	}
       sumI+=Index[i];
-    }     
+    }
+  sumI+=Index[0]; 
   if (sumI!=45)
-    return -2;
+    {
+      for(const size_t i : Index)
+	ELog::EM<<"Index == "<<i<<ELog::endDiag;
+      ELog::EM<<"SumI == "<<sumI<<ELog::endDiag;
+      return -2;
+    } 
 
   return 0;
 }

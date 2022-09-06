@@ -422,72 +422,20 @@ Intersection::isValid(const Geometry::Vec3D& Vec) const
 }
 
 bool
-Intersection::isDirectionValid(const Geometry::Vec3D& Vec,
-			       const int ExSN) const
-  /*!
-    Calculates if Vec is within the object
-    \param Vec :: Point to test
-    \param ExSN :: Excluded surface number [signed]
-    \retval 1 ::  Vec is within object 
-    \retval 0 :: Vec is outside object.
-  */
-{
-  if (!A || !B)
-    return 0;
-  return (A->isDirectionValid(Vec,ExSN) && 
-	  B->isDirectionValid(Vec,ExSN)) ? 1 : 0;
-}
-
-bool
-Intersection::isDirectionValid(const Geometry::Vec3D& Pt,
-			       const std::set<int>& sideSet,
-			       const int ExSN) const
-  /*!
-    Calculates if Vec is within the object
-    \param Pt :: Point to test
-    \param sideSet : surface which we consider Pt to be on 
-     so their sign is to help validity
-     \param sideSet :: suppost to be on the side but not applied yet.
-     \param ExSN :: Excluded surface number [signed]
-     \retval 1 ::  Vec is within object 
-     \retval 0 :: Vec is outside object.
-  */
-{
-  if (!A || !B)  return 0;
-  return (A->isDirectionValid(Pt,ExSN) && 
-	  B->isDirectionValid(Pt,ExSN)) ? 1 : 0;
-}
-
-bool
 Intersection::isValid(const Geometry::Vec3D& Vec,
-		      const int ExSN) const
+		      const int SN) const
   /*!
     Calculates if Vec is within the object
     \param Vec :: Point to test
-    \param ExSN :: Excluded surface number
+    \param SN ::  Surface number [signed]
     \retval 1 ::  Vec is within object 
     \retval 0 :: Vec is outside object.
   */
 {
   if (!A || !B)
     return 0;
-  return (A->isValid(Vec,ExSN) && B->isValid(Vec,ExSN)) ? 1 : 0;
-}
-
-bool
-Intersection::isValid(const Geometry::Vec3D& Vec,
-		      const std::set<int>& ExSN) const
-  /*!
-    Calculates if Vec is within the object
-    \param Vec :: Point to test
-    \param ExSN :: Excluded surface numbers
-    \retval 1 ::  Vec is within object 
-    \retval 0 :: Vec is outside object.
-  */
-{
-  if (!A || !B)
-    return 0;
-  return (A->isValid(Vec,ExSN) && B->isValid(Vec,ExSN)) ? 1 : 0;
+  return (A->isValid(Vec,SN) && 
+	  B->isValid(Vec,SN)) ? 1 : 0;
 }
 
 bool

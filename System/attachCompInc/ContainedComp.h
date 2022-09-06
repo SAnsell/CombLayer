@@ -56,10 +56,6 @@ class ContainedComp
 
   std::vector<int> insertCells;    ///< Cell to insert into
 
-  static int validIntersection(const HeadRule&,const bool,
-			       const Geometry::Surface*,
-			       const Geometry::Surface*);
-  
  public:
 
   ContainedComp();
@@ -80,9 +76,6 @@ class ContainedComp
   /// Test if has outer rule
   bool hasOuterSurf() const { return outerSurf.hasRule(); }
 
-  int isOuterValid(const Geometry::Vec3D&) const;
-  int isOuterValid(const Geometry::Vec3D&,const std::set<int>&) const;
-  int isOuterValid(const Geometry::Vec3D&,const int) const;
 
   void addOuterSurf(const int);
   void addOuterSurf(const std::string&);
@@ -115,9 +108,6 @@ class ContainedComp
   virtual void insertObjects(Simulation&,
 			     const std::vector<Geometry::Vec3D>&);
 
-  /// Accessor to surface [ugly]
-  std::vector<Geometry::Surface*> getSurfaces() const;
-  std::vector<const Geometry::Surface*> getConstSurfaces() const;
     
   /// Accessor [ugly]
   const std::vector<int>& getInsertCells() const 

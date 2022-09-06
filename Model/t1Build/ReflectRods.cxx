@@ -296,48 +296,40 @@ ReflectRods::calcCentre()
   ELog::RegMethod RegA("ReflectRods","calcCentre");
 
   // Extract Container items  
-  const std::vector<const Geometry::Surface*>& SL=
+  const std::set<const Geometry::Surface*>& SL=
     RefObj->getSurList();
 
-  std::vector<const Geometry::Plane*> PVec;  
+  std::set<const Geometry::Plane*> PSet;  
   for(const Geometry::Surface* const& sPtr : SL)
     {
       const Geometry::Plane* PL=
 	dynamic_cast<const Geometry::Plane*>(sPtr);
       if (PL && fabs(PL->getNormal().dotProd(Z))<0.5)
-	PVec.push_back(PL);
+	PSet.emplace(PL);
     }
 
   // Loop over all pair to find possible surfaces
-  std::vector<const Geometry::Plane*>::const_iterator ac;
-  std::vector<const Geometry::Plane*>::const_iterator bc;
   std::vector<Geometry::Vec3D> OutA;
   topCentre=Geometry::Vec3D(0,0,0);
   baseCentre=Geometry::Vec3D(0,0,0);
   int cntA(0);
 
-  std::set<int> ExSN;
-  ExSN.insert(topSurf->getName());  
-  for(ac=PVec.begin();ac!=PVec.end();ac++)
-    {
-      ExSN.insert((*ac)->getName());
-      for(bc=ac+1;bc!=PVec.end();bc++)
-	{
-	  OutA=SurInter::makePoint(topSurf,*ac,*bc);
-	  if (!OutA.empty())
-	    {
-	      ExSN.insert((*bc)->getName());
-	      const Geometry::Vec3D FP=OutA.front();
-	      if (RefObj->isValid(FP,ExSN))
-		{
-		  topCentre+=FP;
-		  cntA++;
-		}
-	      ExSN.erase((*bc)->getName());
-	    }
-	}
-      ExSN.erase((*ac)->getName());
-    }
+  std::set<const Geometry::Plane*>::const_iterator ac,bc;
+  for(ac=PSet.begin();ac!=PSet.end();ac++)
+    for(bc=PSet.begin();bc!=ac;bc++)
+      {
+	OutA=SurInter::makePoint(topSurf,*ac,*bc);
+	if (!OutA.empty())
+	  {
+	    const Geometry::Vec3D FP=OutA.front();
+	    if (RefObj->isValid(FP))
+	      {
+		topCentre+=FP;
+		cntA++;
+	      }
+	  }
+      }
+  
   if (!cntA)
     {
       ELog::EM<<"Failed to find centre points "<<ELog::endErr;
@@ -441,7 +433,7 @@ ReflectRods::checkCorners(const int surfN,
   for(size_t k=0;k<6;k++)
     {
       const Geometry::Vec3D CX=C+getHexPoint(k);
-      validCnt+=RefObj->isValid(CX,surfN);
+      validCnt+=RefObj->isSideValid(CX,surfN);
     }
   if (validCnt==6) return 0;
   return (validCnt) ? 1 : -1;
@@ -470,7 +462,7 @@ ReflectRods::checkCorners(const int surfN,
   for(size_t k=0;k<6;k++)
     {
       const Geometry::Vec3D CX=C+getHexPoint(k);
-      if (RefObj->isValid(CX,surfN)) 
+      if (RefObj->isSideValid(CX,surfN)) 
 	{
 	  validCnt++;
 	  inPt=CX;

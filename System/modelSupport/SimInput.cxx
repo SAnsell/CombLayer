@@ -156,9 +156,6 @@ processExitChecks(Simulation& System,
 		}
 	      for(const Geometry::Vec3D& CP : Pts)
 		{
-		  if (CP.Y()<60 && CP.Y()>1)
-		    ELog::EM<<"CP == "<<CP<<ELog::endDiag;
-		  
 		  if (ModelSupport::SimValid::checkPoint(System,CP))
 		    errFlag += -1;
 		}

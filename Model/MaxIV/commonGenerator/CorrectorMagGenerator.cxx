@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/CorrectorMagGenerator.cxx
+ * File:   commonGenerator/CorrectorMagGenerator.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,9 +53,9 @@ CorrectorMagGenerator::CorrectorMagGenerator() :
   magOffset(6.185),
   magHeight(2.4),magWidth(5.62),magLength(14.20),
   magInnerWidth(2.13),magInnerLength(11.5),
-  magCorner((magWidth-magInnerWidth)/2.0),frameHeight(2.0),
   pipeClampYStep(0.8),pipeClampZStep(0.7),
   pipeClampThick(0.7),pipeClampWidth(5.5),pipeClampHeight(2.0),
+  magCorner((magWidth-magInnerWidth)/2.0),frameHeight(2.0),
   voidMat("Void"),coilMat("Copper"),clampMat("Stainless304"),
   frameMat("Iron")
   /*!
@@ -94,7 +94,7 @@ CorrectorMagGenerator::generateMag(FuncDataBase& Control,
     \param verticalFlag :: is the object rotated vertically
   */
 {
-  ELog::RegMethod RegA("CorrectorMagGenerator","generateQuad");
+  ELog::RegMethod RegA("CorrectorMagGenerator","generateMag");
 
   const double yAngle((verticalFlag) ? 90.0 : 0.0);
   

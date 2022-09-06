@@ -274,9 +274,8 @@ LineIntersectVisit::Accept(const HeadRule& HR)
   */
 {
   
-  const std::vector<const Geometry::Surface*> SurfList=
-    HR.getSurfaces();
-  for(const Geometry::Surface* SPtr : SurfList)
+  const std::set<const Geometry::Surface*> SurfSet=HR.getSurfaces();
+  for(const Geometry::Surface* SPtr : SurfSet)
     {
       // construct local LineIntersect
       LineIntersectVisit LI(ATrack);
@@ -287,8 +286,8 @@ LineIntersectVisit::Accept(const HeadRule& HR)
 	{
 	  const Geometry::Vec3D& Pt(LI.PtVec[index]);
 	  
-	  const int pAB=HR.isDirectionValid(Pt,NS);
-	  const int mAB=HR.isDirectionValid(Pt,-NS);
+	  const int pAB=HR.isValid(Pt,NS);
+	  const int mAB=HR.isValid(Pt,-NS);
 
 	  if (pAB!=mAB)  // out going positive surface
 	    {
@@ -445,11 +444,11 @@ LineIntersectVisit::getPoint(HeadRule& HRule,
   
   clearTrack();
   HRule.populateSurf();
-  const std::vector<const Geometry::Surface*> SVec=
+  const std::set<const Geometry::Surface*> SSet=
     HRule.getSurfaces();
 
   // Check all surfaces
-  for(const Geometry::Surface* SPtr : SVec)
+  for(const Geometry::Surface* SPtr : SSet)
     SPtr->acceptVisitor(*this);
 
   if (PtVec.empty())

@@ -22,6 +22,21 @@
 #ifndef StrFunc_support_h
 #define StrFunc_support_h
 
+template <typename T> inline constexpr
+T signum(T x, std::false_type is_signed)
+{
+  return T(T(0) < x);
+}
+
+template <typename T> inline constexpr
+T signum(T x, std::true_type is_signed) {
+  return T((T(0) < x) - (x < T(0)));
+}
+
+template <typename T> inline constexpr
+T signum(T x) {
+  return signum(x, std::is_signed<T>());
+}
 
 /*!
   \namespace StrFunc

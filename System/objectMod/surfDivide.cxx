@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   process/surfDivide.cxx
+ * File:   objectMod/surfDivide.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -105,9 +105,9 @@ surfDivide::operator=(const surfDivide& A)
       outSurfN=A.outSurfN;
 
       clearRules();
-      std::vector<surfDBase*>::const_iterator vc;
-      for(vc=A.PRules.begin();vc!=A.PRules.end();vc++)
-	PRules.push_back((*vc)->clone());
+      for(const surfDBase* RPtr : PRules)
+	PRules.push_back(RPtr->clone());	
+
 
       material=A.material;
       frac=A.frac;
@@ -129,9 +129,9 @@ surfDivide::clearRules()
     Delete the rules : Replace with shared_ptr ASAP
    */
 {
-  std::vector<surfDBase*>::iterator vc;
-  for(vc=PRules.begin();vc!=PRules.end();vc++)
-    delete *vc;
+  for(surfDBase* RPtr : PRules)
+    delete RPtr;
+
   PRules.clear();
   return;
 }
@@ -220,6 +220,8 @@ surfDivide::makeTemplate(const int iPt,const int oPtA,const int oPtB)
   mergeTemplate<T,T>* DR=new mergeTemplate<T,T>();
   DR->setSurfPair(iPt,oPtA);
   DR->setSurfPair(iPt,oPtB);
+  DR->setInnerRule(iPt);
+  DR->setOuterRule(std::to_string(oPtA)+std::to_string(oPtB));
 
   PRules.push_back(DR);
   return;
@@ -312,8 +314,12 @@ surfDivide::activeDivideTemplate(Simulation& System,
       // Process Rules:
       const double fA=(i) ? frac[i-1] : -1.0;
       const double fB=(i!=frac.size()) ? frac[i] : 2.0;
-      HeadRule cell(BaseObj->getHeadRule());
 
+      if (!BaseObj)
+	throw ColErr::EmptyContainer("BaseObj not set");
+
+      HeadRule cell(BaseObj->getHeadRule());
+      //      cell.populateSurf();
       for(size_t rN=0;rN<PRules.size();rN++)
 	PRules[rN]->process(fA,fB,cell);
 
@@ -321,7 +327,7 @@ surfDivide::activeDivideTemplate(Simulation& System,
       MonteCarlo::Object NewObj(*BaseObj);
       NewObj.setName(outCellN);
       NewObj.setMaterial(material[i]);
-      NewObj.procString(cell.display());
+      NewObj.procHeadRule(cell);
       System.addCell(NewObj);
       if (!cellName.empty())
 	CM->addCell(cellName+std::to_string(i),outCellN);
@@ -383,54 +389,6 @@ surfDivide::addFrac(const double F)
   return;
 }
 
-void
-surfDivide::activeDivide(Simulation& System)
-  /*!
-    Splits an object into two sections
-    - registers new surface
-    - register new object
-    - This currently requires that all initial surfaces, in the cell,
-    different
-    \param System :: Simulation to add to system
-   */
-{
-  ELog::RegMethod RegA("surfDivide","activeDivide");
-  // GET CELL:
-
-  preDivide(System);
-  populateSurfaces();
-  std::vector<Token> innerCell=BaseObj->cellVec();;  // Inner Cell
-  std::vector<Token> outerCell;  // outer Cell
-
-  for(size_t i=0;i<=frac.size();i++)
-    {
-      // Create outer object
-      MonteCarlo::Object NewObj(*BaseObj);
-      NewObj.setName(outCellN++);
-      NewObj.setMaterial(material[i]);
-      std::vector<Token> innerCell=NewObj.cellVec();
-      if (!i) outerCell=innerCell;
-      if (i!=frac.size())
-	{
-	  // Process Rules:
-	  for(size_t rN=0;rN<PRules.size();rN++)
-	    {
-	      // Process
-	      PRules[rN]->createSurf(frac[i],outSurfN);
-	      PRules[rN]->processInnerOuter(1,outerCell);
-	      PRules[rN]->processInnerOuter(0,innerCell);
-	    }
-	}
-
-      NewObj.procString(writeToken(outerCell));
-      System.addCell(NewObj);
-      outerCell=innerCell;
-    }
-  // Remove Original Cell
-  System.removeCell(cellNumber);
-
-  return;
-}
 
 void
 surfDivide::addLayers(const size_t N,

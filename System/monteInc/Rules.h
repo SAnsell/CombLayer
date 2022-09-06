@@ -99,10 +99,11 @@ class Rule
   
   /// Abstract: Does the object have surfaces
   virtual bool isEmpty() const =0;
-  /// Abstract: The point is within the object [exclude list]
-  virtual bool isValid(const Geometry::Vec3D&,
-		       const std::set<int>&) const =0;           
-  /// Abstract: The point is within the object
+  
+  // using isValid by virtual
+  bool isAnyValid(const Geometry::Vec3D&,
+			  const std::set<int>&) const;    
+  
   virtual bool isValid(const Geometry::Vec3D&,const int) const =0;           
   /// Abstract: The point is within the object
   virtual bool isValid(const Geometry::Vec3D&) const =0;           
@@ -111,10 +112,6 @@ class Rule
   virtual bool isValid(const Geometry::Vec3D&,
 		       const std::map<int,int>&) const =0;    
   
-  /// Abstract Validity based on signed surface true/false map
-  virtual bool isDirectionValid(const Geometry::Vec3D&,const int) const =0;
-  virtual bool isDirectionValid(const Geometry::Vec3D&,
-				const std::set<int>&,const int) const =0;
   
   /// Abstract: Can the rule be simplified 
   virtual int simplify() =0;
@@ -183,17 +180,12 @@ class Intersection : public Rule
 
   virtual bool isEmpty() const;
   
-   virtual bool isValid(const Geometry::Vec3D&) const;
-  
-  virtual bool isDirectionValid(const Geometry::Vec3D&,const int) const;
-  virtual bool isDirectionValid(const Geometry::Vec3D&,
-				  const std::set<int>&,const int) const;
+  virtual bool isValid(const Geometry::Vec3D&) const;
   virtual bool isValid(const Geometry::Vec3D&,const int) const;
-  virtual bool isValid(const Geometry::Vec3D&,
-		       const std::set<int>&) const;      
   virtual bool isValid(const std::map<int,int>&) const;
   virtual bool isValid(const Geometry::Vec3D&,
 		       const std::map<int,int>&) const;    
+
   int simplify();      ///< apply general intersection simplification
 
   virtual std::string display() const;
@@ -245,15 +237,10 @@ class Union : public Rule
   int type() const { return -1; }   ///< effective name
 
   virtual bool isEmpty() const;
-  
+
   virtual bool isValid(const Geometry::Vec3D&) const;
-  virtual bool isDirectionValid(const Geometry::Vec3D&,const int) const;
-  virtual bool isDirectionValid(const Geometry::Vec3D&,
-				const std::set<int>&,const int) const;
   virtual bool isValid(const Geometry::Vec3D&,const int) const;
-  virtual bool isValid(const std::map<int,int>&) const;    
-  virtual bool isValid(const Geometry::Vec3D&,
-		       const std::set<int>&) const;      
+  virtual bool isValid(const std::map<int,int>&) const;
   virtual bool isValid(const Geometry::Vec3D&,
 		       const std::map<int,int>&) const;    
 
@@ -285,8 +272,8 @@ class SurfPoint : public Rule
  private:
 
   const Geometry::Surface* key;     ///< Actual Surface Base Object
-  int keyN;                   ///< Key Number (identifer)
-  int sign;                   ///< +/- in Object unit
+  int keyN;                         ///< Key Number (identifer)
+  int sign;                         ///< +/- in Object unit
   
  public:
   
@@ -310,15 +297,10 @@ class SurfPoint : public Rule
 
   /// alway not empty
   virtual bool isEmpty() const { return 0; }
-  
-  virtual bool isDirectionValid(const Geometry::Vec3D&,const int) const;
-  virtual bool isDirectionValid(const Geometry::Vec3D&,
-				const std::set<int>&,const int) const;
+
   virtual bool isValid(const Geometry::Vec3D&) const;
   virtual bool isValid(const Geometry::Vec3D&,const int) const;
-  virtual bool isValid(const std::map<int,int>&) const;    
-  virtual bool isValid(const Geometry::Vec3D&,
-		       const std::set<int>&) const;      
+  virtual bool isValid(const std::map<int,int>&) const;
   virtual bool isValid(const Geometry::Vec3D&,
 		       const std::map<int,int>&) const;    
 
@@ -381,18 +363,12 @@ class CompObj : public Rule
 
 
   virtual bool isEmpty() const;
-  
+
   virtual bool isValid(const Geometry::Vec3D&) const;
-  virtual bool isDirectionValid(const Geometry::Vec3D&,const int) const;
-  virtual bool isDirectionValid(const Geometry::Vec3D&,
-				const std::set<int>&,const int) const;  
   virtual bool isValid(const Geometry::Vec3D&,const int) const;
-  virtual bool isValid(const std::map<int,int>&) const;    
-  virtual bool isValid(const Geometry::Vec3D&,
-		       const std::set<int>&) const;      
+  virtual bool isValid(const std::map<int,int>&) const;
   virtual bool isValid(const Geometry::Vec3D&,
 		       const std::map<int,int>&) const;    
-
 
   /// Get object number of component
   int getObjN() const { return objN; } 
@@ -448,15 +424,10 @@ class CompGrp : public Rule
 
   /// is empty
   virtual bool isEmpty() const { return (A && !A->isEmpty()) ? 0 : 1; }
-  
+
   virtual bool isValid(const Geometry::Vec3D&) const;
-  virtual bool isDirectionValid(const Geometry::Vec3D&,const int) const;
-  virtual bool isDirectionValid(const Geometry::Vec3D&,
-				const std::set<int>&,const int) const;  
   virtual bool isValid(const Geometry::Vec3D&,const int) const;
-  virtual bool isValid(const std::map<int,int>&) const;    
-  virtual bool isValid(const Geometry::Vec3D&,
-		       const std::set<int>&) const;      
+  virtual bool isValid(const std::map<int,int>&) const;
   virtual bool isValid(const Geometry::Vec3D&,
 		       const std::map<int,int>&) const;    
 
@@ -508,18 +479,13 @@ class BoolValue : public Rule
 
   /// is empty [alway - no surface]
   virtual bool isEmpty() const { return 1 ;}
-  
-  virtual bool isValid(const Geometry::Vec3D&) const;
-  virtual bool isDirectionValid(const Geometry::Vec3D&,const int) const;
-  virtual bool isDirectionValid(const Geometry::Vec3D&,
-				const std::set<int>&,const int) const;  
 
+  virtual bool isValid(const Geometry::Vec3D&) const;
   virtual bool isValid(const Geometry::Vec3D&,const int) const;
   virtual bool isValid(const std::map<int,int>&) const;
   virtual bool isValid(const Geometry::Vec3D&,
-		       const std::set<int>&) const;      
-  virtual bool isValid(const Geometry::Vec3D&,
 		       const std::map<int,int>&) const;    
+
 
   int simplify();                             
 

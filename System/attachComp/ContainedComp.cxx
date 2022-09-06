@@ -155,40 +155,6 @@ ContainedComp::copyInterObj(const ContainedComp& A)
     insertCells=A.insertCells;
   return;
 }
-
-std::vector<Geometry::Surface*>
-ContainedComp::getSurfaces() const
-  /*!
-    Stupidly inefficient method to get the surface cells 
-    from the contained boundary
-    \return vector of surfaces
-  */
-{
-  ELog::RegMethod RegA("ContainedComp","getSurfaces");
-  if (!outerSurf.hasRule())
-    {
-      std::vector<Geometry::Surface*> Empty;
-      return Empty;   // can this be done simpler?
-    }
-  return  outerSurf.getTopRule()->getSurfVector();
-}
-
-std::vector<const Geometry::Surface*>
-ContainedComp::getConstSurfaces() const
-  /*!
-    Stupidly inefficient method to get the surface cells 
-    from the contained boundary
-    \return vector of surfaces
-  */
-{
-  ELog::RegMethod RegA("ContainedComp","getSurfaces");
-  if (!outerSurf.hasRule())
-    {
-      std::vector<const Geometry::Surface*> Empty;
-      return Empty;   // can this be done simpler?
-    }
-  return outerSurf.getTopRule()->getConstSurfVector();
-}
   
 void
 ContainedComp::addOuterSurf(const int SN) 
@@ -348,44 +314,6 @@ ContainedComp::getExclude() const
     return outerSurf.complement().display();
   return "";
 }
-
-int
-ContainedComp::validIntersection(const HeadRule& BObj,
-				 const bool inwardCheck,
-				 const Geometry::Surface* ASurf,
-				 const Geometry::Surface* BSurf)
-  /*!
-    Using the two surface and each surface in the given rule
-    determine if the surf:surf:surf intersection points are 
-    within/outside the bounary object (BObj). 
-    \param BObj :: Boundary rule to check
-    \param inwardCheck :: true is inside
-    \param ASurf :: Surface [external]
-    \param BSurf :: Surface [external]
-    \return true if a valid intersection exists
-  */
-{
-  ELog::RegMethod RegA("ContainedComp","validIntersection");
-
-  if (BObj.hasRule())
-    {
-      const std::vector<Geometry::Surface*> SurfVec=
-	BObj.getTopRule()->getSurfVector();
-      std::vector<Geometry::Vec3D> Pts;
-      std::vector<Geometry::Surface*>::const_iterator vc;
-      std::vector<Geometry::Vec3D>::const_iterator ac;
-      for(vc=SurfVec.begin();vc!=SurfVec.end();vc++)
-	{
-	  Pts=SurInter::processPoint(ASurf,BSurf,*vc);	  
-	  for(ac=Pts.begin();ac!=Pts.end();ac++)
-	    {
-	      if (BObj.isValid(*ac,(*vc)->getName())==inwardCheck)
-		return 1;
-	    }
-	}
-    }
-  return 0;
-}
   
 int
 ContainedComp::surfOuterIntersect(const Geometry::Line& LA) const
@@ -407,46 +335,6 @@ ContainedComp::surfOuterIntersect(const Geometry::Line& LA) const
   return 0;
 }
 
-int
-ContainedComp::isOuterValid(const Geometry::Vec3D& V,
-			    const std::set<int>& SN) const
-  /*!
-    Determine if the boundary is valid [reverst test]
-    \param V :: Vector to test
-    \param SN :: surface numbers to ignore
-    \return true/false
-   */
-{
-  ELog::RegMethod RegA("ContainedComp","isOuterValid(set))"); 
-  
-  return (outerSurf.isValid(V,SN)) ? 0 : 1;
-}
-
-int
-ContainedComp::isOuterValid(const Geometry::Vec3D& V,const int SN) const
-  /*!
-    Determine if the boundary is valid [reverst test]
-    \param V :: Vector to test
-    \param SN :: surface number to ignore
-    \return true/false
-   */
-{
-  ELog::RegMethod RegA("ContainedComp","isOuterValid(int))"); 
-  
-  return (outerSurf.isValid(V,SN)) ? 0 : 1;
-}
-
-int
-ContainedComp::isOuterValid(const Geometry::Vec3D& V) const
-  /*!
-    Determine if the boundary is valid
-    \param V :: Vector to test
-    \return true/false
-   */
-{
-  ELog::RegMethod RegA("ContainedComp","isOuterValid())"); 
-  return (outerSurf.isValid(V)) ? 0 : 1;
-}
 
 void
 ContainedComp::addInsertCell(const ContainedComp& CC)

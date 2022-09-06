@@ -3,7 +3,7 @@
  
  * File: species/SPECIES.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -116,7 +116,8 @@ SPECIES::build(Simulation& System,
 
   const size_t PIndex=static_cast<size_t>(std::abs(sideIndex)-2);
   const size_t SIndex=(PIndex+1) % r1Ring->nConcave();
-  const size_t OIndex=(sideIndex+1) % r1Ring->getNCells("OuterSegment");
+  const size_t OIndex=static_cast<size_t>(sideIndex+1) %
+    r1Ring->getNCells("OuterSegment");
 
   frontBeam->setStopPoint(stopPoint);
   frontBeam->setCutSurf("Floor",r1Ring->getSurf("Floor"));

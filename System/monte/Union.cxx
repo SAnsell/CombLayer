@@ -277,74 +277,6 @@ Union::isEmpty() const
 }
 
 bool
-Union::isValid(const Geometry::Vec3D& Vec,const int ExSN) const
-  /*!
-    Calculates if Vec is within the object
-    \param Vec :: Point to test
-    \param ExSN :: Excluded Surface
-    \retval  1 ::  Vec is within object 
-    \retval 0 :: Vec is outside object.
-  */
-{
-  return ((A && A->isValid(Vec,ExSN)) ||
-	  (B && B->isValid(Vec,ExSN))) ? 1 : 0;
-}
-
-bool
-Union::isDirectionValid(const Geometry::Vec3D& Pt,
-			const int ExSN) const
-  /*!
-    Calculates if Vec is within the object
-    \param Pt :: Point to test
-    \param ExSN :: Excluded surface number [signed]
-    \retval 1 ::  Vec is within object 
-    \retval 0 :: Vec is outside object.
-  */
-{
-  if (!A && !B)  return 0;
-  if (!A)  return B->isDirectionValid(Pt,ExSN);
-  if (!B)  return A->isDirectionValid(Pt,ExSN);
-  return (A->isDirectionValid(Pt,ExSN) || 
-	  B->isDirectionValid(Pt,ExSN)) ? 1 : 0;
-}
-
-bool
-Union::isDirectionValid(const Geometry::Vec3D& Pt,
-			const std::set<int>& sideSet,
-			const int ExSN) const
-  /*!
-    Calculates if Vec is within the object
-    \param Pt :: Point to test
-    \param sideSet : surface which we consider Pt to be on 
-     so their sign is to help validity
-    \param ExSN :: Excluded surface number [signed]
-    \retval 1 ::  Vec is within object 
-    \retval 0 :: Vec is outside object.
-  */
-{
-  if (!A && !B)  return 0;
-  if (!A)  return B->isDirectionValid(Pt,sideSet,ExSN);
-  if (!B)  return A->isDirectionValid(Pt,sideSet,ExSN);
-  return (A->isDirectionValid(Pt,ExSN) || 
-	  B->isDirectionValid(Pt,ExSN)) ? 1 : 0;
-}
-
-bool
-Union::isValid(const Geometry::Vec3D& Pt,
-	       const std::set<int>& ExSN) const
-  /*!
-    Calculates if Pt is within the object
-    \param Pt :: Point to test
-    \param ExSN :: Excluded Surface
-    \retval  1 ::  Pt is within object 
-    \retval 0 :: Pt is outside object.
-  */
-{
-  return ((A && A->isValid(Pt,ExSN)) ||
-	  (B && B->isValid(Pt,ExSN))) ? 1 : 0;
-}
-
-bool
 Union::isValid(const Geometry::Vec3D& Pt) const
   /*!
     Calculates if Pt is within the object
@@ -355,6 +287,21 @@ Union::isValid(const Geometry::Vec3D& Pt) const
 {
   return ((A && A->isValid(Pt)) ||
 	  (B && B->isValid(Pt))) ? 1 : 0;
+}
+
+bool
+Union::isValid(const Geometry::Vec3D& Pt,
+	       const int SN) const
+  /*!
+    Calculates if Vec is within the object
+    \param Pt :: Point to test
+    \param SN :: Surface number [signed]
+    \retval 1 ::  Vec is within object 
+    \retval 0 :: Vec is outside object.
+  */
+{
+  return ((A && A->isValid(Pt,SN)) ||
+	  (B && B->isValid(Pt,SN))) ? 1 : 0;
 }
 
 bool

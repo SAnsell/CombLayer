@@ -323,10 +323,10 @@ SpaceCut::createSurfMap(const HeadRule& objHR)
 
   std::map<int,const Geometry::Surface*> OutMap;
   
-  std::vector<const Geometry::Surface*> SVec=
+  std::set<const Geometry::Surface*> SSet=
     objHR.getSurfaces();
 
-  for(const Geometry::Surface* SPtr : SVec)
+  for(const Geometry::Surface* SPtr : SSet)
     {
       if (SPtr)
 	OutMap.emplace(SPtr->getName(),SPtr);

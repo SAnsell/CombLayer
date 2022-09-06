@@ -42,6 +42,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "mathSupport.h"
 #include "stringCombine.h"
 #include "Vec3D.h"
 #include "Surface.h"
@@ -58,7 +59,6 @@
 #include "surfRegister.h"
 #include "MapSupport.h"
 #include "HeadRule.h"
-
 
 #include "SurInter.h"
 
@@ -481,6 +481,7 @@ HeadRule::subMatched(const HeadRule& A,
   ELog::RegMethod RegA("HeadRule","subMatched");
 
   if (!A.HeadNode || !HeadNode) return 0;
+
   std::vector<const Rule*> AVec=
     findTopNodes();
   std::vector<const Rule*> BVec=
@@ -565,10 +566,7 @@ HeadRule::subMatched(const HeadRule& A,
       for(const HeadRule& AS : ASet)
 	{
 	  if (AS.partMatched(BSet))
-	    {
-	      ELog::EM<<"Level HERE"<<ELog::endDiag;
-	      return 1;
-	    }
+	    return 1;
 	}
       return 0;
     }
@@ -595,6 +593,24 @@ HeadRule::subMatched(const HeadRule& A,
   // EVERYTHING FAILED !!!
   return 0;
 }  
+
+std::set<int>
+HeadRule::getPairedSurf() const
+  /*!
+    Determine the set of surfaces that are represented
+    twice in the model and as both signs (+/-)
+    \return Set of opposite surfaces
+  */
+{
+  ELog::RegMethod RegA("HeadRule","getPairedSurf");
+
+  std::set<int> Out;
+  for(const Geometry::Surface* APtr : signPairedSurf)
+    Out.emplace(APtr->getName());
+  
+  return Out;
+}
+
 
 HeadRule
 HeadRule::getLevel(const size_t levelNumber) const
@@ -738,45 +754,45 @@ HeadRule::isUnion() const
   return (dynamic_cast<const Union*>(HeadNode)) ? 1 : 0;
 }
 
-
 bool
 HeadRule::isValid(const Geometry::Vec3D& Pt,
-		  const std::set<int>& S) const
+			const int S) const
   /*!
     Calculate if an object is valid
     \param Pt :: Point to test
-    \param S :: Exclude set
+    \param S :: Surface (signed)
     \return true/false 
   */
 {
-  //early return for normal case:
-  if (signPairedSurf.empty() || !HeadNode)
-    return (HeadNode) ? HeadNode->isValid(Pt,S) : 0;
+  if (!HeadNode) return 0;
 
-  std::map<int,int> SNum;
-  for(const int SN : S)
-    SNum.emplace(SN,-1);
-  
-  for(const Geometry::Surface* SPtr : signPairedSurf)
+  std::map<int,int> SMap; 
+  if (!signPairedSurf.empty())
     {
-      const int SN=SPtr->getName();
-      if (S.find(SN)==S.end() && !SPtr->side(Pt))
-	SNum.emplace(SPtr->getName(),-1);
+      for(const Geometry::Surface* SPtr : signPairedSurf)
+	{
+	  if (SPtr->getName()!=S && !SPtr->side(Pt))  
+	    SMap.emplace(SPtr->getName(),-1);
+	}
     }
-  if (SNum.size()==S.size())                  // just exclude surface
+  if (SMap.empty())   // easy solution:
     return HeadNode->isValid(Pt,S);
 
+  // needs to be -1 for iterator
+  const int SAbs=std::abs(S);
+  const int SSign=sign(S);
+  
+  SMap.emplace(SAbs,-1);
   do
     {
-      if (isValid(Pt,SNum)) return 1;
-    } while (!MapSupport::iterateBinMap<int>(SNum,-1,1));
+      if (SMap[SAbs]==SSign && HeadNode->isValid(Pt,SMap)) return 1;
+    } while (!MapSupport::iterateBinMap<int>(SMap,-1,1));
 
   return 0;
 }
-
 bool
-HeadRule::isSignedValid(const Geometry::Vec3D& Pt,
-			const int S) const
+HeadRule::isSideValid(const Geometry::Vec3D& Pt,
+		      const int S) const
   /*!
     Calculate if an object is valid
     \param Pt :: Point to test
@@ -785,42 +801,61 @@ HeadRule::isSignedValid(const Geometry::Vec3D& Pt,
   */
 {
   if (!HeadNode) return 0;
-  if (S>0)
+
+  std::map<int,int> SMap; 
+  if (!signPairedSurf.empty())
     {
-      std::map<int,int> SMap({{S,1}});
-      return HeadNode->isValid(Pt,SMap);
+      for(const Geometry::Surface* SPtr : signPairedSurf)
+	{
+	  if (SPtr->getName()!=S && !SPtr->side(Pt))  
+	    SMap.emplace(SPtr->getName(),-1);
+	}
     }
-  std::map<int,int> SMap({{S,-1}});
-  return HeadNode->isValid(Pt,SMap);  
+  if (SMap.empty())   // easy solution:
+    return (HeadNode->isValid(Pt,S) || HeadNode->isValid(Pt,-S));
+  
+  SMap.emplace(S,-1);
+  do
+    {
+      if (HeadNode->isValid(Pt,SMap)) return 1;
+    } while (!MapSupport::iterateBinMap<int>(SMap,-1,1));
+
+  return 0;
 }
 
 bool
-HeadRule::isValid(const Geometry::Vec3D& Pt,
-		  const int S) const
+HeadRule::isAnyValid(const Geometry::Vec3D& Pt,
+		      const std::set<int>& SSet) const
   /*!
     Calculate if an object is valid
     \param Pt :: Point to test
-    \param S :: Exclude items [unsigned]
+    \param SSet :: Exclude items [unsigned]
     \return true/false 
   */
 {
-  //early return for normal case:
-  if (signPairedSurf.empty() || !HeadNode)
-    return (HeadNode) ? HeadNode->isValid(Pt,S) : 0;
+  if (!HeadNode) return 0;
 
-  std::map<int,int> SNum({{S,-1}});
-  for(const Geometry::Surface* SPtr : signPairedSurf)
+  std::map<int,int> SMap;
+
+  for(const int SN : SSet)
+    SMap.emplace(SN,-1);
+    
+  if (!signPairedSurf.empty())
     {
-      if (SPtr->getName()!=S && !SPtr->side(Pt))
-	SNum.emplace(SPtr->getName(),-1);
+      for(const Geometry::Surface* SPtr : signPairedSurf)
+	{
+	  const int SN=SPtr->getName();
+	  if (SSet.find(SN)==SSet.end() && !SPtr->side(Pt))  
+	    SMap.emplace(SN,-1);
+	}
     }
-  if (SNum.size()<1)                  // just exclude surface
-    return HeadNode->isValid(Pt,S);
-
+  if (SMap.empty())   // easy solution:
+    return HeadNode->isValid(Pt);
+  
   do
     {
-      if (isValid(Pt,SNum)) return 1;
-    } while (!MapSupport::iterateBinMap<int>(SNum,-1,1));
+      if (isValid(Pt,SMap)) return 1;
+    } while (!MapSupport::iterateBinMap<int>(SMap,-1,1));
 
   return 0;
 }
@@ -837,22 +872,15 @@ HeadRule::isValid(const Geometry::Vec3D& Pt) const
   if (signPairedSurf.empty() || !HeadNode)
     return (HeadNode) ? HeadNode->isValid(Pt) : 0;
 
-  std::map<int,int> SNum;
+  std::set<int> SSet;
   for(const Geometry::Surface* SPtr : signPairedSurf)
     {
       if (!SPtr->side(Pt))
-	SNum.emplace(SPtr->getName(),-1);
+	SSet.emplace(SPtr->getName());
     }
-  if (SNum.empty())
-    return  HeadNode->isValid(Pt);
-  
-  do
-    {
-      if (isValid(Pt,SNum)) return 1;
-    } while (!MapSupport::iterateBinMap<int>(SNum,-1,1));
-
-
-  return 0;
+  return  (SSet.empty()) ?
+    HeadNode->isValid(Pt) :
+    HeadNode->isAnyValid(Pt,SSet);
 }
 
 bool
@@ -892,28 +920,28 @@ HeadRule::isLineValid(const Geometry::Vec3D& APt,
     \return true/false 
   */
 {
+  ELog::RegMethod RegA("HeadRule","isLineValid");
+
   if (!HeadNode) return 0;
   if (HeadNode->isValid(APt) || HeadNode->isValid(BPt))
     return 1;
-
-  const std::vector<const Geometry::Surface*> SVec=
-    getSurfaces();
+  
+  const std::set<const Geometry::Surface*> SSet=getSurfaces();
   const double ABDist=APt.Distance(BPt);
   MonteCarlo::LineIntersectVisit LI(APt,BPt-APt);
 
-  for(const Geometry::Surface* SPtr : SVec)
+  for(const Geometry::Surface* SPtr : SSet)
     {
       LI.clearTrack();
       const std::vector<Geometry::Vec3D>& pointVec=
 	LI.getPoints(SPtr);
 
-      std::vector<Geometry::Vec3D>::const_iterator pc;
       for(const Geometry::Vec3D& Pt : pointVec)
 	{
 	  const double ADist=APt.Distance(Pt);
 	  const double BDist=BPt.Distance(Pt);
 	  if (std::abs(ADist+BDist-ABDist)<Geometry::zeroTol &&
-	      isValid(Pt,SPtr->getName()))
+	      isSideValid(Pt,SPtr->getName()))
 	    return 1;
 	}
     }
@@ -927,55 +955,66 @@ HeadRule::surfValid(const Geometry::Vec3D& Pt) const
     Given a point determine those surfaces the point is on
     and are REALLY the object surface [e.g. moving a little
     out/in of the surface exits/enters the object or vis-versa]
+    
     \param Pt :: Point to test
     \return set of surfaces that the point is on AND are external
    */
 {
+  /*
+    Note the problem here is that at a corner, if one surface
+    is tested then is possible that it is unimportant because
+    of another surface.
+  */
+    
+
   std::set<int> sideSurf;
   if (!isValid(Pt)) return sideSurf;
-  
-  const std::vector<const Geometry::Surface*> SVec=getSurfaces();
+
+  const std::set<const Geometry::Surface*> SVec=getSurfaces();
+  std::map<int,int> STest;
   for(const Geometry::Surface* SPtr : SVec)
     {
       if (!SPtr->side(Pt))
 	{
 	  const int S = SPtr->getName();
-	  const std::map<int,int> SNeg({{S,-1}});
-	  const std::map<int,int> SPlus({{S,1}});
-	  if (isValid(Pt,SNeg) !=  isValid(Pt,SPlus))
+	  if (isValid(Pt,-S) !=  isValid(Pt,S))
 	    sideSurf.emplace(SPtr->getName());
+	  else
+	    STest.emplace(S,-1);
 	}
     }
-  return sideSurf;
-}
-
-bool
-HeadRule::isDirectionValid(const Geometry::Vec3D& Pt,
-			   const std::set<int>& ExSN,
-			   const int surfNum) const
-  /*!
-    Given the point find is with signed surface surfNum, (and 
-    assuming PT is ont surfaces ExSN.
-    \param Pt :: Point to test
-    \param ExSN :: Excluded surfaces
-    \param surfNum :: singed directional surface 
-   */
-{
-  return (HeadNode) ? HeadNode->isDirectionValid(Pt,ExSN,surfNum) : 0;
-}
-  
-bool
-HeadRule::isDirectionValid(const Geometry::Vec3D& Pt,
-			   const int S) const
-  /*!
-    Calculate if an object is valid
-    \param Pt :: Point to test
-    \param S :: Surface to treat as true/false [based on sign]
-    \return true/false 
+  if (STest.empty()) return sideSurf;
+  /*
+    Loop over all STest to find any surface that there is
+    a +/- for ANY cobmination of any other surface binarys
   */
-{
-  return (HeadNode) ? HeadNode->isDirectionValid(Pt,S) : 0;
-}
+  std::map<int,int> SNeg(STest);
+  std::map<int,int> SPlus(STest);
+
+  for(const auto [SN,side] : STest)
+    {
+      bool resetFlag(0);
+      // both reset to -1 state:
+      for(auto& [sideName,flag] : SNeg) flag=-1;
+      for(auto& [sideName,flag] : SPlus) flag=-1;
+      SNeg[SN]=-1;
+      SPlus[SN]=1;
+      
+      do
+	{
+	  const bool negFlag=isValid(Pt,SNeg);
+	  const bool plusFlag=isValid(Pt,SPlus);
+	  if (negFlag!=plusFlag)
+	    {
+	      sideSurf.emplace(SN);
+	      resetFlag=1;
+	    }
+	} while(!resetFlag &&
+		!MapSupport::iterateBinMapLocked(SNeg,SN,-1,1) && 
+		!MapSupport::iterateBinMapLocked(SPlus,SN,-1,1));
+    }
+  return sideSurf;
+}  
 
 void
 HeadRule::isolateSurfNum(const std::set<int>& SN) 
@@ -1109,7 +1148,7 @@ HeadRule::getSurface(const int SN) const
   return nullOut;
 }
 
-std::vector<const Geometry::Surface*>
+std::set<const Geometry::Surface*>
 HeadRule::getSurfaces() const
   /*!
     Calculate the surfaces that are within the top level
@@ -1117,9 +1156,9 @@ HeadRule::getSurfaces() const
   */
 {
   ELog::RegMethod RegA("HeadRule","getSurfaces");
-  std::vector<const Geometry::Surface*> Out;
+  std::set<const Geometry::Surface*> SSetOut;
   const SurfPoint* SP;
-  if (!HeadNode) return Out;
+  if (!HeadNode) return SSetOut;
 
   const Rule *headPtr,*leafA,*leafB;       
   // Parent : left/right : Child
@@ -1144,10 +1183,10 @@ HeadRule::getSurfaces() const
 	{
 	  SP=dynamic_cast<const SurfPoint*>(headPtr);
 	  if (SP)
-	    Out.push_back(SP->getKey());
+	    SSetOut.emplace(SP->getKey());
 	}
     }
-  return Out;
+  return SSetOut;
 }
 
 std::set<int>
@@ -1984,11 +2023,13 @@ HeadRule::substituteSurf(const int SurfN,const int newSurfN,
 {
   ELog::RegMethod RegA("HeadRule","substitueSurf");
 
+
   // Quick check:
   if (SurfN==newSurfN) return 0;
   int cnt(0);
-
-  SurfPoint* Ptr=dynamic_cast<SurfPoint*>(HeadNode->findKey(abs(SurfN)));
+  const int  SN(std::abs(SurfN));
+  
+  SurfPoint* Ptr=dynamic_cast<SurfPoint*>(HeadNode->findKey(SN));
   while(Ptr)
     {
       Ptr->setKeyN(Ptr->getSign()*newSurfN);
@@ -2591,7 +2632,7 @@ HeadRule::trackSurfIntersect(const Geometry::Vec3D& Org,
     
   MonteCarlo::LineIntersectVisit LI(Org,Unit);
 
-  const std::vector<const Geometry::Surface*> SurfList=
+  const std::set<const Geometry::Surface*> SurfList=
     this->getSurfaces();
   for(const Geometry::Surface* SPtr : SurfList)
     SPtr->acceptVisitor(LI);
@@ -2615,8 +2656,8 @@ HeadRule::trackSurfIntersect(const Geometry::Vec3D& Org,
 	   dPts[i]<D )
 	{
 	  const int NS=surfIndex[i]->getName();	    // NOT SIGNED
-	  const int pAB=isDirectionValid(IPts[i],NS);
-	  const int mAB=isDirectionValid(IPts[i],-NS);
+	  const int pAB=isValid(IPts[i],NS);
+	  const int mAB=isValid(IPts[i],-NS);
 	  const int normD=surfIndex[i]->sideDirection(IPts[i],Unit);
 	  if (pAB!=mAB)  // out going positive surface
 	    {
@@ -2741,30 +2782,36 @@ HeadRule::calcSurfSurfIntersection(std::vector<Geometry::Vec3D>& Pts) const
    */
 {
   ELog::RegMethod RegA("HeadRule","calcSurfSurfIntersection");
+
+  if (!HeadNode) return 0;
   
-  const std::vector<const Geometry::Surface*> SurfList=
+  const std::set<const Geometry::Surface*> SurfSet=
     this->getSurfaces();
-  for(size_t i=0;i<SurfList.size();i++)
-    for(size_t j=0;j<SurfList.size();j++)
-      for(size_t k=0;k<SurfList.size();k++)
+
+  std::set<const Geometry::Surface*>::const_iterator ac,bc,cc;
+  for(ac=SurfSet.begin();ac!=SurfSet.end();ac++)
+    for(bc=SurfSet.begin();bc!=ac;bc++)
+      for(cc=SurfSet.begin();cc!=bc;cc++)
 	{
-	  const Geometry::Surface* SurfX(SurfList[i]);
-	  const Geometry::Surface* SurfY(SurfList[j]);
-	  const Geometry::Surface* SurfZ(SurfList[k]);
+	  const Geometry::Surface* SurfX(*ac);
+	  const Geometry::Surface* SurfY(*bc);
+	  const Geometry::Surface* SurfZ(*cc);
 	  std::vector<Geometry::Vec3D> PntOut=
 	    SurInter::processPoint(SurfX,SurfY,SurfZ);
 	  if (!PntOut.empty())
 	    {
-	      std::set<int> exclude;
-	      exclude.insert(SurfX->getName());
-	      exclude.insert(SurfY->getName());
-	      exclude.insert(SurfZ->getName());
+	      std::set<int> SSet;
+	      SSet.emplace(SurfX->getName());
+	      SSet.emplace(SurfY->getName());
+	      SSet.emplace(SurfZ->getName());
+	      
 	      for(const Geometry::Vec3D& testPt : PntOut)
-		if (isValid(testPt,exclude))
-		  Pts.push_back(testPt);
+		{
+		  if (HeadNode->isAnyValid(testPt,SSet))
+		    Pts.push_back(testPt);
+		}
 	    }
 	}
-  
   return Pts.size();
 }
 
@@ -2807,8 +2854,8 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
       const Geometry::Surface* surfPtr=surfIndex[i];
       // Is point possible closer
       const int NS=surfPtr->getName();	    // NOT SIGNED
-      const int pAB=isDirectionValid(IPts[i],NS);
-      const int mAB=isDirectionValid(IPts[i],-NS);
+      const int pAB=isValid(IPts[i],NS);
+      const int mAB=isValid(IPts[i],-NS);
       const int normD=surfPtr->sideDirection(IPts[i],Unit);
       const double lambda=dPts[i];
       if (pAB!=mAB)  // out going positive surface
@@ -2952,45 +2999,52 @@ bool
 HeadRule::Intersects(const HeadRule& A) const
    /*!
      Determine if two objects intersect
-     Done by line intersection along planes
+     Done by line intersection along planes/surfaces
      and by point intersection.
      \param A :: HeadRule to use
      \return true on intersection
    */
 {
   ELog::RegMethod RegA("HeadRule","Intersects");
+
+  // quick check:
+  if (!HeadNode || !A.HeadNode) return 0;
   
-  const std::vector<const Geometry::Surface*> 
-    AVec(this->getSurfaces());
-  const std::vector<const Geometry::Surface*> 
-    BVec(A.getSurfaces());
+  const std::set<const Geometry::Surface*> 
+    ASet(this->getSurfaces());
+  const std::set<const Geometry::Surface*> 
+    BSet(A.getSurfaces());
 
   // Surf/Surf/Surf intersection
-  std::vector<Geometry::Vec3D> Out;
-  std::vector<const Geometry::Surface*>::const_iterator ac,bc;
+  std::set<const Geometry::Surface*>::const_iterator ac,bc;
+  for(ac=ASet.begin();ac!=ASet.end();ac++)
+    for(bc=ASet.begin();bc!=ac;bc++)
+      {
+	const Geometry::Surface* ASurf(*ac);
+	const Geometry::Surface* BSurf(*bc);
+	for(const Geometry::Surface* CSurf : BSet)
+	  {
+	    const std::vector<Geometry::Vec3D> intersectPoints=
+	      SurInter::processPoint(ASurf,BSurf,CSurf);
+	    if (!intersectPoints.empty())
+	      {
+		// ALL three surfaces must be added BECAUSE
+		// object might share surface !!
+		// DO not optimize by moving upwards !
+		std::set<int> SSet;
+		SSet.emplace(ASurf->getName());
+		SSet.emplace(BSurf->getName());		  
+		SSet.emplace(CSurf->getName()); 
+		for(const Geometry::Vec3D& testPoint : intersectPoints)
+		  {
+		    // Outer valid returns true if in both objects
+		    if (HeadNode->isAnyValid(testPoint,SSet) &&
+			A.HeadNode->isAnyValid(testPoint,SSet))
+		      return 1;
+		  }
+	      }
+	  }
+      }
 
-  for(ac=AVec.begin();ac!=AVec.end();ac++)
-    {
-      for(bc=ac+1;bc!=AVec.end();bc++)
-	{
-	  const Geometry::Surface* ASurf(*ac);
-	  const Geometry::Surface* BSurf(*bc);
-	  std::set<int> boundarySet;
-	  boundarySet.insert(ASurf->getName());
-	  boundarySet.insert(BSurf->getName());		  
-	  for(const Geometry::Surface* CSurf : BVec)
-	    {
-	      Out=SurInter::processPoint(ASurf,BSurf,CSurf);
-	      for(const Geometry::Vec3D& vc : Out)
-		{
-		  ELog::EM<<"Testing "<<vc<<ELog::endDiag;
-		  // Outer valid returns true if out of object
-		  if (this->isValid(vc,boundarySet) &&
-		      A.isValid(vc,CSurf->getName()))
-		    return 1;
-		}
-	    }
-	}
-    }
   return 0;
 }

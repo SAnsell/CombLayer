@@ -3,7 +3,7 @@
  
  * File:   geometry/Convex2D.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -218,7 +218,7 @@ Convex2D::calcMaxIndex()
 {
   ELog::RegMethod RegItem("Convex2D","calcMaxIndex");
 
-  size_t distIndex(0);
+  distIndex=0;
   double maxDist(0.0);
   for(size_t i=0;i<Pts.size();i++)
     {
@@ -240,6 +240,7 @@ Convex2D::createVertex()
   */
 {
   ELog::RegMethod RegItem("Convex2D","createVertex");
+
   if (Pts.size()<=distIndex)
     throw ColErr::IndexError<size_t>(distIndex,Pts.size(),"createVertex");
 
@@ -263,14 +264,17 @@ Convex2D::createVertex()
 	    { return (A.getAngle() < B.getAngle()); }
 	    );
   
+
+  VTYPE::const_iterator vc=VList.begin();
+
   // Add first two points
   std::list<Vert2D> cList;
   std::list<Vert2D>::const_iterator lc;
   cList.push_front(Vert2D(distIndex,Pts[distIndex]));
-  cList.push_front(VList.front());
-  
-  VTYPE::const_iterator vc=VList.begin();
+  if (!distIndex) vc++;  // just incase first point is also most distant
+  cList.push_front(*vc);
   vc++;
+  
   int listSize(2);
   while(vc!=VList.end())
     {

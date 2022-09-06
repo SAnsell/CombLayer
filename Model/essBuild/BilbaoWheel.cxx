@@ -1361,10 +1361,11 @@ BilbaoWheel::createLinks()
 
 void
 BilbaoWheel::buildSectors(Simulation& System) const
-{
   /*!
     Build Tungsten sectors. Must be called after createLinks.
+    \param Systew :: Simulation to use
    */
+{
   ELog::RegMethod RegA("BilbaoWheel","buildSectors");
 
   ModelSupport::objectRegister& OR=ModelSupport::objectRegister::Instance();

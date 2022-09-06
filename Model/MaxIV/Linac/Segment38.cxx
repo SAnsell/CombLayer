@@ -3,7 +3,7 @@
 
  * File: Linac/Segment38.cxx
  *
- * Copyright (c) 2004-2021 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -157,7 +157,7 @@ Segment38::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("Segment38","build");
+  ELog::RegMethod RControl("Segment38","createAll");
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

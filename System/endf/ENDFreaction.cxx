@@ -3,7 +3,7 @@
  
  * File:   endf/ENDFreaction.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -251,7 +251,7 @@ ENDFreaction::exportWork(const std::vector<double>& EVal,
 }
 
 void
-ENDFreaction::write(std::ostream& OX) const
+ENDFreaction::write(std::ostream&) const
   /*!
     Output into a matrix form 
     \param OX :: Output stream

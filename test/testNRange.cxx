@@ -3,7 +3,7 @@
  
  * File:   test/testNRange.cxx
 *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -131,7 +131,7 @@ testNRange::testCondense()
        "1 8log 1e+09 4r 1e+12 1e+13 1.2e+13"},
       
       {"1 8log 1e+09 3r 1e9","1 8log 1e+09 4r"},
-      {"0 1 1 1 1 1 1 ","0 1 3r"}
+      {"0 1 1 1 1 1 1 ","0 1 5r"}
     });
 
   for(const TTYPE& tc : Tests)
@@ -216,12 +216,11 @@ testNRange::testOperator()
 {
   ELog::RegMethod RegA("testNRange","testOperator");
 
-
-
-  double results[]={0.001,0.01,0.1,1.0,10,100,
-                  100,100,100,
-		  1000,1001,1002,1003,1004,1005,
-		  1006,1007,1008,1009,1010,1011  };
+  const double results[]=
+    {0.001,0.01,0.1,1.0,10,100,
+     100,100,100,
+     1000,1001,1002,1003,1004,1005,
+     1006,1007,1008,1009,1010,1011  };
 
   const std::string testString("0.001 4log 100 3r 1000 49i 1050");
   RangeUnit::NGroup<double> NE;
@@ -234,10 +233,13 @@ testNRange::testOperator()
   // Basic string
   for(int i=0;i<20;i++)
     {
+      //      ELog::EM<<"G == "<<NE[58]<<ELog::endDiag;
       if (std::abs(results[i]-NE[i])/results[i]>1e-5)
 	{
 	  ELog::EM<<NE<<ELog::endBasic;
-	  ELog::EM<<"NE["<<i<<"]=="<<NE[i]<<ELog::endTrace;
+	  for(int i=0;i<20;i++)
+	    ELog::EM<<"NE["<<i<<"]=="<<NE[i]<<ELog::endTrace;
+
 	  return -2;
 	}
     }
@@ -308,15 +310,15 @@ testNRange::testRange()
   const std::vector<TTYPE> Tests
     ({
       {"1.3e2 100i 1.6e6 5r 0.8e9 12e8 10log 3.7e9",
-	  "130 100i 1.6e+06 5r 8e+08 1.2e+09 10log 3.7e+09"}
+       "130 100i 1.6e+06 5r 8e+08 1.2e+09 10log 3.7e+09"}
     });
 	
 
   for(const TTYPE& tc : Tests)
     {
       RangeUnit::NGroup<double> NE;
-      const std::string testString=std::get<0>(tc);
-      const std::string expectString=std::get<0>(tc);
+      const std::string& testString=std::get<0>(tc);
+      const std::string& expectString=std::get<1>(tc);
 
       if (NE.processString(testString))
 	{

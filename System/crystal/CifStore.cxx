@@ -3,7 +3,7 @@
  
  * File:   crystal/CifStore.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -798,7 +798,7 @@ CifStore::setCentralAtom(const std::string& CentAtom,const size_t index)
       if (!CentAtomList.empty())
         {
 	  ELog::EM<<"Central Atom positions:"<<ELog::endDiag;
-	  std::vector<int>::const_iterator vc;
+
 	  for(size_t i=0;i<CentAtomList.size();i++)
 	    ELog::EM<<i<<" :: "<<Cell[CentAtomList[i]]<<ELog::endDiag;
 

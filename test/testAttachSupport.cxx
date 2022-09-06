@@ -147,50 +147,6 @@ testAttachSupport::applyTest(const int extra)
   return 0;
 }
 
-int
-testAttachSupport::testBoundaryValid() 
-  /*!
-    Test the situation that a point is within/outof the boundary
-    \return 0 on success
-  */
-{
-  ELog::RegMethod RegA("testAttachSupport","testBoundaryValid");
-
-  
-  typedef std::tuple<size_t,Geometry::Vec3D,int> TTYPE;
-  std::vector<TTYPE> Tests;
-  Tests.push_back(TTYPE(0,Geometry::Vec3D(0,0,0),0));
-  Tests.push_back(TTYPE(0,Geometry::Vec3D(1000,0,0),1));
-  Tests.push_back(TTYPE(1,Geometry::Vec3D(0,0,0),0));
-  Tests.push_back(TTYPE(1,Geometry::Vec3D(1000,0,0),1));
-  
-  typedef int (attachSystem::ContainedComp::* MPtr)
-    (const Geometry::Vec3D&) const;
-  MPtr TPtr[]=
-    {
-      &ContainedComp::isOuterValid
-    };
-
-  initSim();
-  std::shared_ptr<testSystem::simpleObj> 
-    CC(new testSystem::simpleObj("A"));
-  CC->createAll(ASim,World::masterOrigin(),0);
-
-
-  int cnt(1);
-  for(const TTYPE& tc : Tests)
-    {
-      const int R=((*CC).*TPtr[std::get<0>(tc)])(std::get<1>(tc));
-      if (R!=std::get<2>(tc))
-	{
-	  ELog::EM<<"Failed Test "<<cnt<<ELog::endTrace;
-	  ELog::EM<<"Result["<< std::get<2>(tc)<<"] == "<<R<<ELog::endTrace;
-	  ELog::EM<<"Point["<< std::get<1>(tc)<<"] == "<<R<<ELog::endTrace;
-	  return -1;
-	}
-    }
-  return 0;
-}
 
 int
 testAttachSupport::testInsertComponent()

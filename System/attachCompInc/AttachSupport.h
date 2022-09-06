@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/AttachSupport.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,11 +81,6 @@ void addToInsertSurfCtrl(Simulation&,const std::vector<int>&,
 
 void addToInsertSurfCtrl(Simulation&,const int,ContainedComp&);
  
-void addToInsertOuterSurfCtrl(Simulation&,const FixedComp&,
-			ContainedComp&);
-void addToInsertOuterSurfCtrl(Simulation&,
-			      const std::set<int>&,
-			      const ContainedComp&,ContainedComp&);
 
 // Brutal forced option!!
 void addToInsertForced(Simulation&,const FixedComp&,
@@ -98,20 +93,14 @@ void addToInsertForced(Simulation&,const std::set<int>&,
 		       ContainedGroup&);
 
 // External check system
-bool checkIntersect(const ContainedComp&,const MonteCarlo::Object&,
-		    const std::vector<const Geometry::Surface*>&);
+bool checkIntersect(const ContainedComp&,const MonteCarlo::Object&);
+
 
 bool checkLineIntersect(const FixedComp&,const MonteCarlo::Object&);
 
 bool checkPlaneIntersect(const Geometry::Plane&,
 			 const MonteCarlo::Object&,
 			 const MonteCarlo::Object&);
-
-bool findPlaneIntersect(const Geometry::Plane&,
-			const MonteCarlo::Object&,
-			const MonteCarlo::Object&,
-			std::vector<int>&,
-			std::vector<int>&);
 
 HeadRule unionLink(const attachSystem::FixedComp&,
 		   const std::vector<long int>&);

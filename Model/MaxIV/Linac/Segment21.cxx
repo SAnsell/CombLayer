@@ -3,7 +3,7 @@
 
  * File: Linac/Segment21.cxx
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "OutputLog.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -52,7 +50,6 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -62,7 +59,6 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "BlockZone.h"
-#include "Line.h"
 #include "generalConstruct.h"
 
 #include "SplitFlangePipe.h"
@@ -189,8 +185,8 @@ Segment21::createLinks()
 
 void
 Segment21::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC,
-		       const long int sideIndex)
+		     const attachSystem::FixedComp& FC,
+		     const long int sideIndex)
   /*!
     Carry out the full build
     \param System :: Simulation system
@@ -199,7 +195,7 @@ Segment21::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("Segment21","build");
+  ELog::RegMethod RControl("Segment21","createAll");
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
