@@ -20,7 +20,7 @@ fi
 # --validAll - use all link points of all fixed components and the origin
 
 # number of angles to check
-NA=1000
+NA=100000
 
 # Don't forget to use procExit after the 'parallel' calls!
 
