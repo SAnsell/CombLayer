@@ -261,32 +261,7 @@ cosaxsExptLine::buildObjects(Simulation& System)
   buildZone.rebuildInsertCells(System);
 
   tube->addInsertCell(this->getInsertCells());
-  for(const int CN : this->getInsertCells())
-    ELog::EM<<"Cn = "<<CN<<ELog::endDiag;
   tube->createAll(System,*this,0);
-  /*
-
-  sampleArea->setFront(*telescopicSystem,2);
-  sampleArea->setBack(*tube,1);
-  sampleArea->createAll(System,*telescopicSystem,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*sampleArea,2);
-  sampleArea->insertInCell(System,outerCell);
-
-  
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*tube,2);
-
-  
-  tube->insertInCell(System,outerCell);
-
-  //  tube->createPorts(System);  
-  setCell("SurroundVoid",outerCell);
-  lastComp=tube;
-
-  //  buildZone.createUnit(System);
-  buildZone.rebuildInsertCells(System);
-  */
-
-
   
   setCell("LastVoid",buildZone.getLastCell("Unit"));
   lastComp=tube;

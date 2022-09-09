@@ -106,6 +106,19 @@ PipeTubeGenerator::~PipeTubeGenerator()
 {}
 
 void
+PipeTubeGenerator::setPipeRadius(const double R,const double W)
+  /*!
+    Set the pipe by hand
+    \param R :: Radius
+    \param W :: Wall thick
+  */
+{
+  radius=R;
+  wallThick=W;
+  return;
+}
+
+void
 PipeTubeGenerator::setPipe(const double R,const double W,
 			   const double FR,const double FL)
   /*!
@@ -125,7 +138,7 @@ PipeTubeGenerator::setPipe(const double R,const double W,
   ACap=0.0;
   BCap=0.0;
   return;
-}
+}  
 
 template<typename CF>
 void
