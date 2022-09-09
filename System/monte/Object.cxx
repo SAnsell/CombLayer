@@ -647,7 +647,6 @@ Object::isOnSide(const Geometry::Vec3D& Pt) const
 {
   ELog::RegMethod RegA("Object","isOnSide");
 
-
   std::map<int,int> surMap=mapValid(Pt);
 
   std::set<int> onSurf;

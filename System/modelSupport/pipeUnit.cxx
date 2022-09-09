@@ -456,14 +456,13 @@ pipeUnit::insertObjects(Simulation& System)
   Geometry::Vec3D addVec(0,0,0);
   //  addVec+=Axis*0.001;
   System.populateCells();
+
   for(size_t i=0;i<=nAngle;angle+=angleStep,i++)
     {
       calcLineTrack(System,APt+addVec,BPt+addVec,OMap);
       // set for next angle
       addVec=AX*(cos(angle)*radius)+AY*(sin(angle)*radius);
     }
-
-  // update 
   
   // add extra cells from insert forced list [cellCut]
   for(const int forceCellN : cellCut)

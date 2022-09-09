@@ -2,8 +2,8 @@
   CombLayer : MCNP(X) Input builder
  
  * File:   t1BuildInc/H2Pipe.h
-*
- * Copyright (c) 2004-2016 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
 #ifndef ts1System_H2Pipe_h
@@ -77,7 +77,7 @@ class H2Pipe : public attachSystem::FixedComp
   H2Pipe& operator=(const H2Pipe&);
   ~H2Pipe();
 
-
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
