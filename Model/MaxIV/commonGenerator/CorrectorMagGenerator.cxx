@@ -80,7 +80,7 @@ CorrectorMagGenerator::setMagLength(const double L)
   magLength=L;
   return;
 }
-  
+
 void
 CorrectorMagGenerator::generateMag(FuncDataBase& Control,
 				   const std::string& keyName,

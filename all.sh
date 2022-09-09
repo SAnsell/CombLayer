@@ -14,9 +14,8 @@ segments=All
 
 #./ess -validAll --validCheck 1000 AA; procExit 
 #./fullBuild -validAll --validCheck 1000 AA; procExit 
-./t1Real -validAll --validCheck 1000 AA; procExit
-exit
-./reactor -validAll --validCheck 100 AA; procExit
+#./t1Real -validAll --validCheck 1000 AA; procExit
+#./reactor -validAll --validCheck 100 AA; procExit
 ./maxiv --defaultConfig Single  BALDER --validAll --validCheck 1000 AA; procExit
 ./maxiv --defaultConfig Single  COSAXS --validAll --validCheck 1000 AA; procExit
 ./maxiv --defaultConfig Single  DANMAX --validAll --validCheck 1000 AA; procExit

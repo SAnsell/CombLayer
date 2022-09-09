@@ -31,6 +31,7 @@ namespace constructSystem
 
 namespace xraySystem
 {
+  class EntryPipe;
   class Quadrupole;
   class Sexupole;
   class Dipole;
@@ -60,6 +61,8 @@ class MagnetU1 :
   double blockYStep;            ///< Step forward
   double length;                ///< frame length
 
+  double frontVoid;             ///< Size of outer void gap
+  double backVoid;              ///< Size of outer void gap
   double outerVoid;             ///< Size of outer void gap
   double ringVoid;              ///< Size of outer void gap
   double topVoid;               ///< Size of outer void gap
@@ -70,7 +73,10 @@ class MagnetU1 :
   
   int voidMat;                  ///< void material
   int wallMat;                  ///< wall material
-  
+
+  /// Pipe that travels in pre-bend straight
+  std::shared_ptr<xraySystem::EntryPipe> entryPipe;
+
   /// Quad [first]
   std::shared_ptr<xraySystem::Quadrupole> QFm1;
   /// Sextupole [first]
@@ -90,6 +96,9 @@ class MagnetU1 :
   //std::shared_ptr<tdcSystem::DipoleDIBMag> DIPm;
   /// Sextupole [small]
   std::shared_ptr<xraySystem::Sexupole> SD2;
+
+  /// Pipe that travels in post-bend straight
+  std::shared_ptr<xraySystem::EntryPipe> exitPipe;
 
   void createUnit(Simulation&,size_t&,
 		  const attachSystem::FixedComp&,

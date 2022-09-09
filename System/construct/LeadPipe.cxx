@@ -124,7 +124,6 @@ LeadPipe::createSurfaces()
   if (!isActive("front"))
     {
       SurfMap::makePlane("Front",SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
-      ELog::EM<<"Key "<<keyName<<" "<<Origin-Y*(length/2.0)<<ELog::endDiag;
       ExternalCut::setCutSurf("front",SMap.realSurf(buildIndex+1));
     }
   ExternalCut::makeShiftedSurf(SMap,"front",buildIndex+11,Y,flangeALength);

@@ -592,9 +592,9 @@ R3FrontEnd::buildObjects(Simulation& System)
   magBlockU1->createAll(System,*epSeparator,"Electron");
   magBlockU1->insertAllInCell(System,buildZone.getCell("dipoleUnit"));
   magBlockU1->insertDipolePipe(System,*dipolePipe);
-
+  
   eTransPipe->setFront(*chokeChamber,"electron");
-  eTransPipe->setBack(*magBlockU1,"front");
+  eTransPipe->setBack(*magBlockU1,"voidFront");
   eTransPipe->createAll(System,*chokeChamber,"electron");
   eTransPipe->insertInCell("FlangeA",System,
 			   chokeChamber->getCell("PhotonOuterVoid"));
@@ -640,7 +640,6 @@ R3FrontEnd::buildObjects(Simulation& System)
   collB->insertInCell(System,outerCell);
 
   std::shared_ptr<attachSystem::FixedComp> linkFC(collB);
-  ELog::EM<<"ACTIVE == "<<collFM3Active<<ELog::endDiag;
   if (collFM3Active)
     {
       constructSystem::constructUnit

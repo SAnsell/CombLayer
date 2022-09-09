@@ -70,12 +70,14 @@
 namespace xraySystem
 {
 
-EntryPipe::EntryPipe(const std::string& Key) :
+EntryPipe::EntryPipe(const std::string& Key,
+		       const int flag) :
   attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedGroup("Main","Pipe","Flange"),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
-  attachSystem::FrontBackCut()
+  attachSystem::FrontBackCut(),
+  flangeFlag(flag)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -112,7 +114,6 @@ EntryPipe::populate(const FuncDataBase& Control)
   flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
   flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
 
-
   voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   flangeMat=ModelSupport::EvalDefMat(Control,keyName+"FlangeMat",wallMat);
@@ -141,14 +142,21 @@ EntryPipe::createSurfaces()
       ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
     }
 
-  // Front Inner void
-  //  getShiftedFront(SMap,buildIndex+11,-Y,flangeLength);
-  ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*flangeLength,Y);
-      
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
-
   makeCylinder("OuterRadius",SMap,buildIndex+17,Origin,Y,radius+wallThick);
-  makeCylinder("FlangeRadius",SMap,buildIndex+27,Origin,Y,flangeRadius);
+  
+  // Front Inner void
+   
+  if (flangeFlag== -1)
+    {
+      ExternalCut::makeShiftedSurf(SMap,"front",buildIndex+11,Y,flangeLength);
+      makeCylinder("FlangeRadius",SMap,buildIndex+27,Origin,Y,flangeRadius);
+    }
+  else if (flangeFlag== 1)
+    {
+      ExternalCut::makeShiftedSurf(SMap,"back",buildIndex+12,Y,-flangeLength);
+      makeCylinder("FlangeRadius",SMap,buildIndex+27,Origin,Y,flangeRadius);
+    }      
   return;
 }
 
@@ -174,15 +182,23 @@ EntryPipe::createObjects(Simulation& System)
   makeCell("Wall",System,cellIndex++,wallMat,0.0,HR*frontHR*backHR);
 
   // Front Flange
-  HR=ModelSupport::getHeadRule
-  (SMap,buildIndex," -27 17 -11 ");
-  makeCell("Flange",System,cellIndex++,flangeMat,0.0,HR*frontHR);
-
+  if (flangeFlag == -1)
+    {
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 17 -11");
+      makeCell("Flange",System,cellIndex++,flangeMat,0.0,HR*frontHR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 -11");
+      addOuterSurf("Flange",HR*frontHR);
+    }
+  else if (flangeFlag == 1)
+    {
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 17 12");
+      makeCell("Flange",System,cellIndex++,flangeMat,0.0,HR*backHR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 12");
+      addOuterSurf("Flange",HR*frontHR);      
+    }
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17");
   addOuterSurf("Main",HR*frontHR*backHR);
   addOuterSurf("Pipe",HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 -11");
-  addOuterSurf("Flange",HR*frontHR);
 
   return;
 }
