@@ -156,18 +156,19 @@ insertPlate::createSurfaces()
   if (!frontActive())
     {
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(depth/2.0),Y);
-      setSurf("Front",buildIndex+1);
+      ExternalCut::setCutSurf("front",SMap.realSurf(buildIndex+1));
+
     }
-  else
-    setSurf("Front",getFrontRule().getPrimarySurface());
+  
+  setSurf("Front",getFrontRule().getPrimarySurface());
   
   if (!backActive())
     {
       ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(depth/2.0),Y);
-      setSurf("Back",SMap.realSurf(buildIndex+2));
+      ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
     }
-  else
-    setSurf("Back",getBackRule().getPrimarySurface());
+
+  setSurf("Back",getBackRule().getPrimarySurface());
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
@@ -190,33 +191,7 @@ insertPlate::createLinks()
   ELog::RegMethod RegA("insertPlate","createLinks");
 
   FixedComp::setNConnect(14);
-  if (frontActive())
-    {
-      setLinkSurf(0,getFrontRule());
-      setLinkSurf(0,getFrontBridgeRule());
-      FixedComp::setConnect
-        (0,SurInter::getLinePoint(Origin,Y,getFrontRule(),
-				  getFrontBridgeRule()),-Y);
-    }
-  else
-    {
-      FixedComp::setConnect(0,Origin-Y*(depth/2.0),-Y);
-      FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-    }
-
-  if (backActive())
-    {
-      FixedComp::setLinkSurf(1,getBackRule());
-      FixedComp::setBridgeSurf(1,getBackBridgeRule());
-      FixedComp::setConnect
-        (1,SurInter::getLinePoint(Origin,Y,getBackRule(),
-				  getBackBridgeRule()),Y);  
-    }
-  else
-    {
-      FixedComp::setConnect(1,Origin+Y*(depth/2.0),Y);
-      FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
-    }
+  FrontBackCut::createLinks(*this,Origin,Y);
   
   FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
   FixedComp::setConnect(3,Origin+X*(width/2.0),X);

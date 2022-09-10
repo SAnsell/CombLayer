@@ -442,18 +442,20 @@ ExternalCut::createLink(const std::string& extName,
   ELog::RegMethod RegA("ExternalCut","createLink");
 
   const cutUnit* CU=findUnit(extName);
-  if (CU)  
-    {
-      if (CU->main.isEmpty())
-	throw ColErr::InContainerError<std::string>
-	  (extName,"FC:"+FC.getKeyName()+" has no surface rule");
-
-      const std::string keyN=FC.getKeyName();
-      FC.setLinkSurf(linkIndex,CU->main.complement());
-      FC.setBridgeSurf(linkIndex,CU->divider);
-      FC.setConnect(linkIndex,
-	 SurInter::getLinePoint(Org+YAxis,-YAxis,CU->main,CU->divider),YAxis);
-    }
+  if (!CU)
+    throw ColErr::InContainerError<std::string>
+      (extName,"FC:"+FC.getKeyName()+" is not active");
+  
+  if (CU->main.isEmpty())
+    throw ColErr::InContainerError<std::string>
+      (extName,"FC:"+FC.getKeyName()+" has no surface rule");
+  
+  const std::string keyN=FC.getKeyName();
+  FC.setLinkSurf(linkIndex,CU->main.complement());
+  FC.setBridgeSurf(linkIndex,CU->divider);
+  FC.setConnect(linkIndex,
+	 SurInter::getLinePoint(Org+YAxis,-YAxis,CU->main,CU->divider),
+		YAxis);
   return;
 }
   

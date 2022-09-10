@@ -176,7 +176,9 @@ FlangeDome::createLinks()
 {
   ELog::RegMethod RegA("FlangeDome","createLinks");
 
-  ExternalCut::createLink("front",*this,0,Origin,Y);  //front and back
+  ExternalCut::createLink("plate",*this,0,Origin,-Y);  //front and back
+  ExternalCut::createLink("plate",*this,1,Origin,Y);  //front and back
+
   return;
 }
 
@@ -184,6 +186,7 @@ void
 FlangeDome::createPorts(Simulation& System)
   /*!
     Construct port
+    \parma System :: Simulation to use
    */
 {
   ELog::RegMethod RegA("FlangeDome","createPorts");

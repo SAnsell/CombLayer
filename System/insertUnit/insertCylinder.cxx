@@ -138,22 +138,21 @@ insertCylinder::createSurfaces()
   ELog::RegMethod RegA("insertCylinder","createSurface");
 
   if (!frontActive())
-    ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*length/2.0,Y);
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*length/2.0,Y);
+      ExternalCut::setCutSurf("front",SMap.realSurf(buildIndex+1));
+    }
   if (!backActive())
-    ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length/2.0,Y);
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length/2.0,Y);
+      ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
+    }
 
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
 
 
-  if (!frontActive())
-    setSurf("Front",buildIndex+1);
-  else
-    setSurf("Front",getFrontRule().getPrimarySurface());
-
-  if (!backActive())
-    setSurf("Back",SMap.realSurf(buildIndex+2));
-  else
-    setSurf("Back",getBackRule().getPrimarySurface());
+  setSurf("Front",getFrontRule().getPrimarySurface());
+  setSurf("Back",getBackRule().getPrimarySurface());
 
   setSurf("Radius",SMap.realSurf(buildIndex+7));
   return;
@@ -169,17 +168,6 @@ insertCylinder::createLinks()
 
   FixedComp::setNConnect(10);
   FrontBackCut::createLinks(*this,Origin,Y);
-  if (!frontActive())
-    {
-      FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-      FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-    }
-
-  if (!backActive())
-    {
-      FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
-      FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
-    }
   
   FixedComp::setConnect(2,Origin-X*radius,-X);
   FixedComp::setConnect(3,Origin+X*radius,X);

@@ -471,7 +471,7 @@ FixedComp::reOrientate(const size_t index,
 
   const double cosTheta=axisDir.dotProd( *AVec[index] );
   // Both checks with tolerance:
-  if (cosTheta-Geometry::zeroTol>1.0) return;
+  if (cosTheta+Geometry::zeroTol>1.0) return;
   if (cosTheta+1.0<Geometry::zeroTol)
     {
       for(Geometry::Vec3D* A : AVec)

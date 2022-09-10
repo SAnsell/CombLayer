@@ -156,6 +156,7 @@ processExitChecks(Simulation& System,
 		}
 	      for(const Geometry::Vec3D& CP : Pts)
 		{
+
 		  if (ModelSupport::SimValid::checkPoint(System,CP))
 		    errFlag += -1;
 		}

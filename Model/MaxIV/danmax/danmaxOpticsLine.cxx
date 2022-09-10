@@ -603,10 +603,13 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   // This is a mess but want to preserve insert items already
   // in the hut beam port
   pipeInit->createAll(System,*this,0);
-  outerCell=buildZone.createUnit(System,*pipeInit,-1);
+  outerCell=buildZone.createUnit(System,*pipeInit,"#front");
+
+
   if (preInsert)
     preInsert->insertAllInCell(System,outerCell);
-  outerCell=buildZone.createUnit(System,*pipeInit,2);
+  outerCell=buildZone.createUnit(System,*pipeInit,"back");
+  pipeInit->insertInCell(System,outerCell);
 
   constructSystem::constructUnit
     (System,buildZone,*pipeInit,"back",*triggerPipe);

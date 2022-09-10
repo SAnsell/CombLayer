@@ -633,7 +633,8 @@ R1Ring::createDoor(Simulation& System)
 	("floor",SurfMap::getSurf("Floor"));
 
       doorPtr->addAllInsertCell(getCell("Wall",doorActive % 10));
-      const std::string linkName="OpticCentre"+std::to_string(doorActive+2);
+      const std::string linkName="OpticCentre"+
+	std::to_string((doorActive+2) % 10);
       doorPtr->createAll(System,*this,linkName);
     }
   return;
