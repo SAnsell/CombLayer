@@ -125,7 +125,7 @@ makePhoton2::buildWings(Simulation& System)
 
   const FuncDataBase& Control=System.getDataBase();
   const double H=Control.EvalDefVar<double>("SPlateHeight",1.5);
-  const double W=Control.EvalDefVar<double>("SPlateWidth",7.5);
+  //  const double W=Control.EvalDefVar<double>("SPlateWidth",7.5);
 
   const Geometry::Vec3D YA=PModObj->getLinkPt(1);
   const Geometry::Vec3D YB=PModObj->getLinkPt(2);
@@ -158,7 +158,7 @@ makePhoton2::buildWings(Simulation& System)
 void 
 makePhoton2::build(Simulation& System,
 		  const mainSystem::inputParam& IParam)
-/*!
+  /*!
     Carry out the full build
     \param System :: Simulation system
     \param IParam :: Input parameters

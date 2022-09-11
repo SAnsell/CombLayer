@@ -394,11 +394,10 @@ MagnetU1::insertDipolePipe(Simulation& System,
       MonteCarlo::Object* OPtr=
 	System.findObjectThrow(CN,"CN from CSet");
       size_t index=0;
-      size_t flag(0);
+      int flag(0);
       do
 	{
 	  flag=OPtr->hasIntercept(Pts[index],Y);
-
 	  index++;
 	} while(index<4 && !flag);
       

@@ -3,7 +3,7 @@
  
  * File:   supportInc/support.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,18 +23,20 @@
 #define StrFunc_support_h
 
 template <typename T> inline constexpr
-T signum(T x, std::false_type is_signed)
+T signum(T x, std::false_type)
 {
   return T(T(0) < x);
 }
 
 template <typename T> inline constexpr
-T signum(T x, std::true_type is_signed) {
+T signum(T x, std::true_type)
+{
   return T((T(0) < x) - (x < T(0)));
 }
 
 template <typename T> inline constexpr
-T signum(T x) {
+T signum(T x)
+{
   return signum(x, std::is_signed<T>());
 }
 
