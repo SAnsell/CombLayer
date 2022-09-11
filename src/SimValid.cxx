@@ -326,7 +326,6 @@ SimValid::checkPoint(const Simulation& System,
   for(size_t i=0;i<activeCell.size();i++)
     for(size_t j=i+1;j<activeCell.size();j++)
       {
-	ELog::EM<<"\n\n\n\n\n"<<ELog::endDiag;
 	const MonteCarlo::Object* APtr=activeCell[i];
 	const MonteCarlo::Object* BPtr=activeCell[j];
 
@@ -345,20 +344,6 @@ SimValid::checkPoint(const Simulation& System,
 	    SNeg.emplace(SN,-1);
 	    SPlus.emplace(SN,-1);
 	  }
-
-	ELog::EM<<"Objects "<<APtr->getName()<<" :: "
-		<<APtr->getHeadRule()<<ELog::endDiag;
-	ELog::EM<<"Objects "<<BPtr->getName()<<" :: "
-		<<BPtr->getHeadRule()<<ELog::endDiag;
-
-	ELog::EM<<"ASurf ";
-	for(const int SN : ASurf)
-	  ELog::EM<<SN<<" ";
-	ELog::EM<<ELog::endDiag;
-	ELog::EM<<"BSurf ";
-	for(const int SN : BSurf)
-	  ELog::EM<<SN<<" ";
-	ELog::EM<<ELog::endDiag;
 	for(const int SN : commonSurf)
 	  {
 	    // both reset to -1 state:
@@ -368,19 +353,9 @@ SimValid::checkPoint(const Simulation& System,
 	    SPlus[SN]=1;
 	    do
 	      {
-		ELog::EM<<"Map = ";
-		for(const auto& [S,B] : SNeg)
-		  ELog::EM<<" "<<S<<"["<<B<<"]";
-		ELog::EM<<ELog::endDiag;
-		const bool AN=APtr->isValid(Pt,SNeg);
-		const bool AP=APtr->isValid(Pt,SPlus);
-		const bool BN=BPtr->isValid(Pt,SNeg);
-		const bool BP=BPtr->isValid(Pt,SPlus);
-		ELog::EM<<"AN == "<<AN<<" "<<AP<<" "<<BN<<" "<<BP<<ELog::endDiag;
 		if ((APtr->isValid(Pt,SNeg) != BPtr->isValid(Pt,SNeg)) ||
 		    (APtr->isValid(Pt,SPlus) != BPtr->isValid(Pt,SPlus)) )
 		  {
-		    ELog::EM<<"Setting "<<APtr->getName()<<" "<<BPtr->getName()<<ELog::endCrit;
 		    errFlag=0;
 		  }
 	      }	 while(errFlag &&

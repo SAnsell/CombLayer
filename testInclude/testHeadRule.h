@@ -53,6 +53,7 @@ private:
   int testPartEqual();
   int testRemoveSurf();
   int testReplacePart();
+  int testSurfValid();
   int testSurfSet();
  
 public:

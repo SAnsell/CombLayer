@@ -960,13 +960,6 @@ HeadRule::surfValid(const Geometry::Vec3D& Pt) const
     \return set of surfaces that the point is on AND are external
    */
 {
-  /*
-    Note the problem here is that at a corner, if one surface
-    is tested then is possible that it is unimportant because
-    of another surface.
-  */
-    
-  
   std::set<int> sideSurf;
   if (!isValid(Pt)) return sideSurf;
 
@@ -974,20 +967,10 @@ HeadRule::surfValid(const Geometry::Vec3D& Pt) const
   std::map<int,int> STest;
   for(const Geometry::Surface* SPtr : SVec)
     {
-      const int ST = SPtr->getName();
-      if (ST==1770005)
-	ELog::EM<<"SM == "<<*this<<ELog::endDiag;
       if (!SPtr->side(Pt))
 	{
 	  const int S = SPtr->getName();
-	  if (ST==1770005)
-	    ELog::EM<<"Sides = "<<isValid(Pt,-S)
-		    <<" "<<isValid(Pt,S)<<ELog::endDiag;
-		  
-	  if (isValid(Pt,-S) !=  isValid(Pt,S))
-	    sideSurf.emplace(SPtr->getName());
-	  else
-	    STest.emplace(S,-1);
+	  STest.emplace(S,-1);
 	}
     }
   if (STest.empty()) return sideSurf;

@@ -10,22 +10,22 @@ function procExit
 
 segments=All
 #./maxiv --noLengthCheck --defaultConfig Linac ${segments} AA
-#./maxiv --noLengthCheck --defaultConfig Linac ${segments} -validAll --validCheck 1000 AA; procExit
+./maxiv --noLengthCheck --defaultConfig Linac ${segments} -validAll --validCheck 1000 AA; procExit
 
-#./ess -validAll --validCheck 1000 AA; procExit 
-#./fullBuild -validAll --validCheck 1000 AA; procExit 
-#./t1Real -validAll --validCheck 1000 AA; procExit
-#./reactor -validAll --validCheck 100 AA; procExit
-#./maxiv --defaultConfig Single  BALDER --validAll --validCheck 1000 AA; procExit
-#./maxiv --defaultConfig Single  COSAXS --validAll --validCheck 1000 AA; procExit
-#./maxiv --defaultConfig Single  DANMAX --validAll --validCheck 1000 AA; procExit
-#./maxiv --defaultConfig Single  FLEXPES --validAll --validCheck 1000 AA; procExit
-#./maxiv --defaultConfig Single  FORMAX --validAll --validCheck 1000 AA; procExit
-#./maxiv --defaultConfig Single  MAXPEEM --validAll --validCheck 1000 AA; procExit
-#./maxiv --defaultConfig Single  MICROMAX --validAll --validCheck 1000 AA; procExit
+./ess -validAll --validCheck 1000 AA; procExit 
+./fullBuild -validAll --validCheck 1000 AA; procExit 
+./t1Real -validAll --validCheck 1000 AA; procExit
+./reactor -validAll --validCheck 100 AA; procExit
+./maxiv --defaultConfig Single  BALDER --validAll --validCheck 1000 AA; procExit
+./maxiv --defaultConfig Single  COSAXS --validAll --validCheck 1000 AA; procExit
+./maxiv --defaultConfig Single  DANMAX --validAll --validCheck 1000 AA; procExit
+./maxiv --defaultConfig Single  FLEXPES --validAll --validCheck 1000 AA; procExit
+./maxiv --defaultConfig Single  FORMAX --validAll --validCheck 1000 AA; procExit
+./maxiv --defaultConfig Single  MAXPEEM --validAll --validCheck 1000 AA; procExit
+./maxiv --defaultConfig Single  MICROMAX --validAll --validCheck 1000 AA; procExit
 ./maxiv --defaultConfig Single  SPECIES --validAll --validCheck 10000 AA; procExit
-#./maxiv --defaultConfig Single  SOFTIMAX --validAll --validCheck 1000 AA; procExit
-exit
+./maxiv --defaultConfig Single  SOFTIMAX --validAll --validCheck 1000 AA; procExit
+
 ./singleItem --singleItem BeamDivider       --validCheck 1000 AA; procExit
 ./singleItem --singleItem BeamScrapper      --validCheck 1000 AA; procExit
 ./singleItem --singleItem Bellow            --validCheck 1000 AA; procExit
