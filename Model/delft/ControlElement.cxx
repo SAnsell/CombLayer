@@ -280,73 +280,77 @@ ControlElement::createObjects(Simulation& System)
 
   FuelElement::createObjects(System);
 
-  std::string Out;
+  HeadRule baseHR;
+  HeadRule HR;
 
   // First create the outer Al layers:
-  Out=ModelSupport::getComposite(SMap,controlIndex,buildIndex,
-				 " 23M -24M 25M 41 -31 -16");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
-  ContainedGroup::addOuterUnionSurf("Track",Out);      
-  Out=ModelSupport::getComposite(SMap,controlIndex,buildIndex,
-				 " 23M -24M 25M 32 -42 -16");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
-  ContainedGroup::addOuterUnionSurf("Track",Out);      
+  HR=ModelSupport::getHeadRule(SMap,controlIndex,buildIndex,
+				"23M -24M 25M 41 -31 -16");
+  System.addCell(cellIndex++,alMat,0.0,HR);
+
+  
+  ContainedGroup::addOuterUnionSurf("Track",HR);      
+  HR=ModelSupport::getHeadRule(SMap,controlIndex,buildIndex,
+				"23M -24M 25M 32 -42 -16");
+  System.addCell(cellIndex++,alMat,0.0,HR);
+  ContainedGroup::addOuterUnionSurf("Track",HR);      
   // Top Cap
-  Out=ModelSupport::getComposite(SMap,controlIndex,buildIndex,
-				 " 23M -24M  32 -2M 16 -46");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
-  ContainedGroup::addOuterUnionSurf("Cap",Out);      
-  Out=ModelSupport::getComposite(SMap,controlIndex,buildIndex,
-				 " 23M -24M 1M -31 16 -46");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
-  ContainedGroup::addOuterUnionSurf("Cap",Out);      
+  HR=ModelSupport::getHeadRule(SMap,controlIndex,buildIndex,
+				"23M -24M  32 -2M 16 -46");
+  System.addCell(cellIndex++,alMat,0.0,HR);
+  ContainedGroup::addOuterUnionSurf("Cap",HR);      
+  HR=ModelSupport::getHeadRule(SMap,controlIndex,buildIndex,
+				"23M -24M 1M -31 16 -46");
+  System.addCell(cellIndex++,alMat,0.0,HR);
+  ContainedGroup::addOuterUnionSurf("Cap",HR);      
 
 
   // Build Inner Core:
   // voids
-  Out=ModelSupport::getComposite(SMap,controlIndex,"-7 25 -26");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,controlIndex,"-8 25 -26");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,controlIndex,"-7 25 -26");
+  System.addCell(cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,controlIndex,"-8 25 -26");
+  System.addCell(cellIndex++,0,0.0,HR);
   // B4C [3 parts to avoid null point error]
-  Out=ModelSupport::getComposite(SMap,controlIndex,"-17 -3 25 -26 7");
-  System.addCell(MonteCarlo::Object(cellIndex++,absMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,controlIndex,"-18 4 25 -26 8");
-  System.addCell(MonteCarlo::Object(cellIndex++,absMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,controlIndex,"7 8 11 -12 3 -4 25 -26 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,absMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,controlIndex,"-17 -3 25 -26 7");
+  System.addCell(cellIndex++,absMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,controlIndex,"-18 4 25 -26 8");
+  System.addCell(cellIndex++,absMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,controlIndex,"7 8 11 -12 3 -4 25 -26");
+  System.addCell(cellIndex++,absMat,0.0,HR);
 
-  // Out=ModelSupport::getComposite(SMap,controlIndex,
-  // 				 "11 -12 (-17:3) (-18:-4) 7 8 25 -26");
-  // System.addCell(MonteCarlo::Object(cellIndex++,absMat,0.0,Out));
+  // HR=ModelSupport::getHeadRule(SMap,controlIndex,
+  // 				"11 -12 (-17:3) (-18:-4) 7 8 25 -26");
+  // System.addCell(cellIndex++,absMat,0.0,HR);
   
   // Cladding [3 parts]
-  Out=ModelSupport::getComposite(SMap,controlIndex,"-27 -3 25 -26 17");
-  System.addCell(MonteCarlo::Object(cellIndex++,cladMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,controlIndex,"-27 -3 25 -26 17");
+  System.addCell(cellIndex++,cladMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,controlIndex,"-28 4 25 -26 18");
-  System.addCell(MonteCarlo::Object(cellIndex++,cladMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,controlIndex,
-				 "21 -22 (-11:12) 3 -4 25 -26");
-  System.addCell(MonteCarlo::Object(cellIndex++,cladMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,controlIndex,"-28 4 25 -26 18");
+  System.addCell(cellIndex++,cladMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,controlIndex,
+				"21 -22 (-11:12) 3 -4 25 -26");
+  System.addCell(cellIndex++,cladMat,0.0,HR);
   
   // End Cap [3 block to avoid error]
-  Out=ModelSupport::getComposite(SMap,controlIndex,"-27 -3 35 -25");
-  System.addCell(MonteCarlo::Object(cellIndex++,cladMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,controlIndex,"-28 4 35 -25");
-  System.addCell(MonteCarlo::Object(cellIndex++,cladMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,controlIndex,"21 -22 3 -4 35 -25");
-  System.addCell(MonteCarlo::Object(cellIndex++,cladMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,controlIndex,"-27 -3 35 -25");
+  System.addCell(cellIndex++,cladMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,controlIndex,"-28 4 35 -25");
+  System.addCell(cellIndex++,cladMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,controlIndex,"21 -22 3 -4 35 -25");
+  System.addCell(cellIndex++,cladMat,0.0,HR);
+
   // Exclude
-  Out=ModelSupport::getComposite(SMap,controlIndex," -27 -3 35 -26 "); 
-  ContainedGroup::addOuterUnionSurf("Rod",Out);      
-  Out=ModelSupport::getComposite(SMap,controlIndex," -28 4 35 -26 "); 
-  ContainedGroup::addOuterUnionSurf("Rod",Out);      
-  Out=ModelSupport::getComposite(SMap,controlIndex," 21 -22 35 -26 3 -4 "); 
-  ContainedGroup::addOuterUnionSurf("Rod",Out);      
-  // Out=ModelSupport::getComposite(SMap,controlIndex,
-  // 				 "(-27:3) (-28:-4) 21 -22 35 -26 "); 
-  ContainedGroup::addOuterUnionSurf("Rod",Out);      
+  HR=ModelSupport::getHeadRule(SMap,controlIndex,"-27 -3 35 -26"); 
+  ContainedGroup::addOuterUnionSurf("Rod",HR);      
+  HR=ModelSupport::getHeadRule(SMap,controlIndex,"-28 4 35 -26"); 
+  ContainedGroup::addOuterUnionSurf("Rod",HR);      
+  HR=ModelSupport::getHeadRule(SMap,controlIndex,"21 -22 35 -26 3 -4"); 
+  ContainedGroup::addOuterUnionSurf("Rod",HR);      
+  // HR=ModelSupport::getHeadRule(SMap,controlIndex,
+  // 			       "(-27:3) (-28:-4) 21 -22 35 -26"); 
+  // ContainedGroup::addOuterUnionSurf("Rod",HR);      
 
   return;
 }
@@ -387,11 +391,12 @@ ControlElement::createAll(Simulation& System,
   if (!IC.empty())
     addAllInsertCell(IC.front());
 
-  ContainedGroup::addInsertCell("Rod",midCell.front());
-  ContainedGroup::addInsertCell("Rod",topCell);
-  ContainedGroup::addInsertCell("Track",midCell.front());
-  ContainedGroup::addInsertCell("Track",topCell);
-  ContainedGroup::addInsertCell("Cap",topCell);
+  ContainedGroup::addInsertCell("Rod",getCell("HolderCell"));
+  ContainedGroup::addInsertCell("Rod",getCell("MidCell",0));
+  ContainedGroup::addInsertCell("Rod",getCell("TopCell"));
+  ContainedGroup::addInsertCell("Track",getCell("MidCell",0));
+  ContainedGroup::addInsertCell("Track",getCell("TopCell"));
+  ContainedGroup::addInsertCell("Cap",getCell("TopCell"));
 
   if (FuelPtr)
     {

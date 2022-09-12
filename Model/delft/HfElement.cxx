@@ -240,7 +240,7 @@ HfElement::createObjects(Simulation& System)
 
   if (!cutSize) return;
 
-  std::string Out;
+  HeadRule HR;
   int cIndex(controlIndex);
   const Geometry::Vec3D cutPos[]=
     { plateCentre((cutSize+1)/2),
@@ -248,21 +248,21 @@ HfElement::createObjects(Simulation& System)
 
   for(size_t i=0;i<2;i++)  // front / back
     {
-      Out=ModelSupport::getComposite(SMap,cIndex,buildIndex,
-				     " 1 -2 23M -24M 25M -26M ");
-      System.addCell(MonteCarlo::Object(cellIndex++,bladeMat,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,cIndex,buildIndex,
+				   "1 -2 23M -24M 25M -26M");
+      System.addCell(cellIndex++,bladeMat,0.0,HR);
       
-      Out=ModelSupport::getComposite(SMap,cIndex,controlIndex,
-				     " 11 -12 3M -4M 5M -6M ");
-      ContainedGroup::addOuterUnionSurf("Rod",Out);      
-      System.addCell(MonteCarlo::Object(cellIndex++,absMat,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,cIndex,controlIndex,
+				     " 11 -12 3M -4M 5M -6M");
+      ContainedGroup::addOuterUnionSurf("Rod",HR);      
+      System.addCell(cellIndex++,absMat,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,cIndex,buildIndex,
-				     " 21 -22 23M -24M 25M -26M ");
-      System.addCell(MonteCarlo::Object(cellIndex++,bladeMat,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,cIndex,buildIndex,
+				     "21 -22 23M -24M 25M -26M");
+      System.addCell(cellIndex++,bladeMat,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,cIndex,"(-1:2) (-21:22)");
-      addWaterExclude(System,cutPos[i],Out);
+      HR=ModelSupport::getHeadRule(SMap,cIndex,"(-1:2) (-21:22)");
+      addWaterExclude(System,cutPos[i],HR);
 
       cIndex+=50;
     }	  
@@ -310,16 +310,13 @@ HfElement::createAll(Simulation& System,
   if (!IC.empty())
     addAllInsertCell(IC.front());
 
-  for(const int mc : midCell)
-    {
-      ContainedGroup::addInsertCell("Rod",mc);
-      ContainedGroup::addInsertCell("Track",mc);
-    }
+  ContainedGroup::addInsertCell("Rod",getCells("MidCell"));
+  ContainedGroup::addInsertCell("Track",getCells("MidCell"));
   
-  if (topCell)
+  if (hasCell("TopCell"))
     {
-      ContainedGroup::addInsertCell("Rod",topCell);
-      ContainedGroup::addInsertCell("Track",topCell);
+      ContainedGroup::addInsertCell("Rod",getCell("TopCell"));
+      ContainedGroup::addInsertCell("Track",getCell("TopCell"));
     }
   
   FuelElement::insertObjects(System);       

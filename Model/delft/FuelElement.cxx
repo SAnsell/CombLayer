@@ -71,7 +71,7 @@ namespace delftSystem
 
 FuelElement::FuelElement(const size_t XI,const size_t YI,
 			 const std::string& Key) :
-  RElement(XI,YI,Key),midCell(0),topCell(0)
+  RElement(XI,YI,Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param XI :: X coordinate
@@ -91,8 +91,7 @@ FuelElement::FuelElement(const FuelElement& A) :
   cladWidth(A.cladWidth),waterDepth(A.waterDepth),
   barRadius(A.barRadius),barOffset(A.barOffset),
   alMat(A.alMat),watMat(A.watMat),fuelMat(A.fuelMat),
-  midCell(A.midCell),midCentre(A.midCentre),
-  topCell(A.topCell)
+  midCentre(A.midCentre)
   /*!
     Copy constructor
     \param A :: FuelElement to copy
@@ -129,9 +128,7 @@ FuelElement::operator=(const FuelElement& A)
       alMat=A.alMat;
       watMat=A.watMat;
       fuelMat=A.fuelMat;
-      midCell=A.midCell;
       midCentre=A.midCentre;
-      topCell=A.topCell;
     }
   return *this;
 }
@@ -368,8 +365,7 @@ FuelElement::createObjects(Simulation& System)
   // Front water plate
   HR=ModelSupport::getHeadRule(SMap,buildIndex,surfOffset,
 				"1 -21M 23 -24 25 -26");
-  System.addCell(cellIndex++,watMat,0.0,HR);
-  waterCells.push_back(cellIndex-1);
+  makeCell("WaterCell",System,cellIndex++,watMat,0.0,HR);
   //  const double plateDepth(fuelDepth+cladDepth*2.0+waterDepth);
   // First Point
 
@@ -389,8 +385,7 @@ FuelElement::createObjects(Simulation& System)
 	  // Fuel
 	  HR=ModelSupport::getHeadRule(SMap,buildIndex,surfOffset,
 					" 11M -12M 13 -14 15 -16");
-	  System.addCell(cellIndex++,fuelMat,0.0,HR);
-	  fuelCells.push_back(cellIndex-1);
+	  makeCell("FuelCell",System,cellIndex++,fuelMat,0.0,HR);
 	  fuelCentre.push_back(plateCentre(i));
 	  // Cladding
 	  HR=ModelSupport::getHeadRule(SMap,buildIndex,surfOffset,
@@ -407,39 +402,38 @@ FuelElement::createObjects(Simulation& System)
 	    HR=ModelSupport::getHeadRule(SMap,buildIndex,surfOffset,
 					    " 22M -2 23 -24 25 -26");
 	  else 
-	    {
-	      HR=ModelSupport::getHeadRule(SMap,buildIndex,surfOffset,
+	    HR=ModelSupport::getHeadRule(SMap,buildIndex,surfOffset,
 					    " 22M -121M 23 -24 25 -26");
-	    }
-	  System.addCell(cellIndex++,watMat,0.0,HR);
-	  waterCells.push_back(cellIndex-1);
+
+	  makeCell("WaterCell",System,cellIndex++,watMat,0.0,HR);
 
 	  surfOffset+=100;      
 	}	  
-      else if (midCell.empty() || midCell.back()!=cellIndex-1)
-	midCell.push_back(cellIndex-1);
+      else 
+	{
+	  addCell("MidCell",cellIndex-1);
+	}
     }
 
   // -----  TOP  ----
-  if (midCell.empty())
+  if (hasCell("MidCell"))
     {
       // Holder:
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"23 -24 -37");
-      System.addCell(cellIndex++,alMat,0.0,HR);
+      makeCell("HolderCell",System,cellIndex++,alMat,0.0,HR);
+
+
       // Water in space
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 23 -24 26 -6 37");
-      System.addCell(cellIndex++,watMat,0.0,HR);
+      makeCell("TopCell",System,cellIndex++,watMat,0.0,HR);
     }
   else
     {
       // ONLY Water in space
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 23 -24 26 -6");
-      System.addCell(cellIndex++,watMat,0.0,HR);
+      makeCell("TopCell",System,cellIndex++,watMat,0.0,HR);
     }
-  topCell=cellIndex-1;
 
-  ELog::EM<<"Base== "<<baseHR<<ELog::endDiag;
-    
   // -------- BASE -----------------
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-25 -47");
   System.addCell(cellIndex++,watMat,0.0,HR*baseHR);
@@ -465,7 +459,7 @@ FuelElement::createLinks()
 void
 FuelElement::addWaterExclude(Simulation& System,
 			     const Geometry::Vec3D& Pt,
-			     const std::string& ExcStr)
+			     const HeadRule& ExcHR)
   /*!
     Find water cells that contain the given point
     \param System :: Simulation to get cells from
@@ -475,13 +469,12 @@ FuelElement::addWaterExclude(Simulation& System,
 {
   ELog::RegMethod RegA("FuelElement","addWaterExclude");
 
-  std::vector<int>::const_iterator vc;
-  for(vc=waterCells.begin();vc!=waterCells.end();vc++)
+  for(const int CN : getCells("WaterCell"))
     {
-      MonteCarlo::Object* OPtr=System.findObject(*vc);
+      MonteCarlo::Object* OPtr=System.findObject(CN);
       if (OPtr && OPtr->isValid(Pt))
 	{
-	  OPtr->addSurfString(ExcStr);
+	  OPtr->addIntersection(ExcHR);
 	  return;
 	}
     }
@@ -504,6 +497,8 @@ FuelElement::layerProcess(Simulation& System,const FuelLoad& FuelSystem)
   if (nFuel<2) return;
   // All fuel cells
   int SI(buildIndex+4001);
+
+  const std::vector<int>& fuelCells=getCells("FuelCell");
   for(size_t i=0;i<fuelCells.size();i++)
     {
       ModelSupport::surfDivide DA;
