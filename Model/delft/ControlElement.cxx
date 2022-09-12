@@ -3,7 +3,7 @@
  
  * File:   delft/ControlElement.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,8 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -57,6 +55,7 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 
@@ -75,7 +74,8 @@ ControlElement::ControlElement(const size_t XI,const size_t YI,
 			       const std::string& Key,
 			       const std::string& CKey) :
   FuelElement(XI,YI,Key),
-  attachSystem::ContainedGroup("Track","Rod","Cap"),cntlKey(CKey),
+  attachSystem::ContainedGroup("Track","Rod","Cap"),
+  cntlKey(CKey),
   controlIndex(buildIndex+5000)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -185,7 +185,7 @@ ControlElement::populate(const FuncDataBase& Control)
 }
 
 void
-ControlElement::createSurfaces(const attachSystem::FixedComp& RG)
+ControlElement::createSurfaces()
   /*!
     Creates/duplicates the surfaces for this block
     \param RG :: Reactor grid (surf 5)
@@ -193,8 +193,8 @@ ControlElement::createSurfaces(const attachSystem::FixedComp& RG)
 {  
   ELog::RegMethod RegA("ControlElement","createSurface");
 
-
-  FuelElement::createSurfaces(RG,cStartIndex,cEndIndex);
+  FuelElement::setExcludeRange(cStartIndex,cEndIndex);
+  FuelElement::createSurfaces();
 
   if (midCentre.empty())
     throw ColErr::EmptyValue<void>("midCentre");
@@ -366,22 +366,20 @@ ControlElement::createLinks()
 void
 ControlElement::createAll(Simulation& System,
                           const attachSystem::FixedComp& FC,
-			  const Geometry::Vec3D& OG,
-			  const FuelLoad& FuelSystem)
+			  const long int sideIndex)
   /*!
     Global creation of the control item
     \param System :: Simulation to add vessel to
     \param FC :: Fixed Unit
-    \param OG :: Origin
-    \param FuelSystem :: Fuel load for plates
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("ControlElement","createAll(ControlElement)");
 
   populate(System.getDataBase());
 
-  createUnitVector(FC,OG);
-  createSurfaces(FC);
+  FixedComp::createUnitVector(FC,sideIndex);
+  createSurfaces();
   createObjects(System);
   createLinks();
 
@@ -395,8 +393,11 @@ ControlElement::createAll(Simulation& System,
   ContainedGroup::addInsertCell("Track",topCell);
   ContainedGroup::addInsertCell("Cap",topCell);
 
-  FuelElement::layerProcess(System,FuelSystem);
-  FuelElement::insertObjects(System);       
+  if (FuelPtr)
+    {
+      FuelElement::layerProcess(System,*FuelPtr);
+      FuelElement::insertObjects(System);
+    }
   ContainedGroup::insertObjects(System);
 
   return;

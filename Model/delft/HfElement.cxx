@@ -36,8 +36,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -56,6 +54,7 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 
@@ -176,7 +175,7 @@ HfElement::populate(const FuncDataBase& Control)
 }
 
 void
-HfElement::createSurfaces(const attachSystem::FixedComp& RG)
+HfElement::createSurfaces()
   /*!
     Creates/duplicates the surfaces for this block
     \param RG :: Reactor grid (surf 5)
@@ -184,11 +183,10 @@ HfElement::createSurfaces(const attachSystem::FixedComp& RG)
 {  
   ELog::RegMethod RegA("HfElement","createSurface");
 
-  FuelElement::createSurfaces(RG);
+  FuelElement::createSurfaces();
   if (!cutSize) return;
   
   int cIndex(controlIndex);
-
   //
   // Work away from cut element:
   //
@@ -289,34 +287,33 @@ HfElement::createLinks()
 void
 HfElement::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FC,
-		     const Geometry::Vec3D& OG,
-		     const FuelLoad& FuelSystem)
+		     const long int sideIndex)
   /*!
     Global creation of element
     \param System :: Simulation to add vessel to
     \param FC :: Fixed Unit
     \param OG :: Origin
-    \param FuelSystem :: Fuelfor main elements
   */
 {
   ELog::RegMethod RegA("HfElement","createAll(HfElement)");
 
   populate(System.getDataBase());
-  createUnitVector(FC,OG);
-  createSurfaces(FC);
+  FixedComp::createUnitVector(FC,sideIndex);
+  createSurfaces();
   createObjects(System);
   createLinks();
 
-  FuelElement::layerProcess(System,FuelSystem);
+  if (FuelPtr)
+    FuelElement::layerProcess(System,*FuelPtr);
 
   const std::vector<int>& IC=getInsertCells();
   if (!IC.empty())
     addAllInsertCell(IC.front());
-  std::vector<int>::const_iterator vc;
-  for(vc=midCell.begin();vc!=midCell.end();vc++)
+
+  for(const int mc : midCell)
     {
-      ContainedGroup::addInsertCell("Rod",*vc);
-      ContainedGroup::addInsertCell("Track",*vc);
+      ContainedGroup::addInsertCell("Rod",mc);
+      ContainedGroup::addInsertCell("Track",mc);
     }
   
   if (topCell)
@@ -324,6 +321,7 @@ HfElement::createAll(Simulation& System,
       ContainedGroup::addInsertCell("Rod",topCell);
       ContainedGroup::addInsertCell("Track",topCell);
     }
+  
   FuelElement::insertObjects(System);       
   ContainedGroup::insertObjects(System);
 

@@ -3,7 +3,7 @@
  
  * File:   delft/DefElement.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,6 +49,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 
@@ -82,24 +83,6 @@ DefElement::populate(const FuncDataBase&)
 {
   ELog::RegMethod RegA("DefElement","populate");
 
-  return;
-}
-
-void
-DefElement::createUnitVector(const attachSystem::FixedComp& FC,
-			     const Geometry::Vec3D& OG)
-  /*!
-    Create the unit vectors
-    - Y Down the beamline
-    \param FC :: Reactor Grid Unit
-    \param OG :: Origin
-    \todo Update for newer FC,linkpt notation
-  */
-{
-  ELog::RegMethod RegA("DefElement","createUnitVector");
-
-  attachSystem::FixedComp::createUnitVector(FC);
-  Origin=OG;
   return;
 }
 
@@ -144,20 +127,18 @@ DefElement::createLinks()
 void
 DefElement::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
-		      const Geometry::Vec3D& OG,
-		      const FuelLoad&)
+		      const long int sideIndex)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
     \param FC :: Fixed Unit
     \param OG :: Origin				
-    \param :: FuelLoad 
   */
 {
   ELog::RegMethod RegA("DefElement","createAll(DefElement)");
   populate(System.getDataBase());
 
-  createUnitVector(FC,OG);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

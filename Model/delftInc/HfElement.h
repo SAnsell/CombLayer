@@ -3,7 +3,7 @@
  
  * File:   delftInc/HfElement.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,8 @@ namespace delftSystem
   \brief Modifies a fuel element to take a control rod
 */
 
-class HfElement : public FuelElement,
+class HfElement :
+    public FuelElement,
     public attachSystem::ContainedGroup
 {
  private:
@@ -57,7 +58,7 @@ class HfElement : public FuelElement,
 
   void populate(const FuncDataBase&);
   
-  void createSurfaces(const attachSystem::FixedComp&);
+  void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
 
@@ -69,8 +70,11 @@ class HfElement : public FuelElement,
   HfElement& operator=(const HfElement&);
   virtual ~HfElement() {}   ///< Destructor
 
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const Geometry::Vec3D&,const FuelLoad&);
+
+  using FixedComp::createAll;
+  virtual void createAll(Simulation&,
+			 const attachSystem::FixedComp&,
+			 const long int);
 
 };
 

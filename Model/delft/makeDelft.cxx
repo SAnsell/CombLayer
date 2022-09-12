@@ -256,6 +256,7 @@ makeDelft::buildCore(Simulation& System,
   if (IParam.flag("FuelXML"))
     GridPlate->writeFuelXML(IParam.getValue<std::string>("FuelXML"));
 
+  return;
 }
 
 void
@@ -268,8 +269,6 @@ makeDelft::buildFlight(Simulation& System,
    */
 {
   ELog::RegMethod RegA("makeDelft","buildFlight");
-
- 
  
   const attachSystem::FixedComp& WC=World::masterOrigin();
 

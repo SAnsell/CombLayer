@@ -3,7 +3,7 @@
  
  * File:   delft/RElement.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,6 +44,7 @@
 #include "FixedOffset.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "ExternalCut.h"
 #include "ContainedComp.h"
 
 #include "FuelLoad.h"
@@ -56,8 +57,11 @@ namespace delftSystem
 RElement::RElement(const size_t XI,const size_t YI,
 		   const std::string& Key) : 
   attachSystem::FixedOffset(ReactorGrid::getElementName(Key,XI,YI),6),
-  attachSystem::ContainedComp(),attachSystem::CellMap(),
-  baseName(Key),XIndex(XI),YIndex(YI)
+  attachSystem::ContainedComp(),
+  attachSystem::ExternalCut(),
+  attachSystem::CellMap(),
+  baseName(Key),XIndex(XI),YIndex(YI),
+  FuelPtr(nullptr),insertCell(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param XI :: Grid element index
@@ -68,9 +72,11 @@ RElement::RElement(const size_t XI,const size_t YI,
 
 RElement::RElement(const RElement& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
-  attachSystem::CellMap(A),baseName(A.baseName),
+  attachSystem::ExternalCut(A),
+  attachSystem::CellMap(A),
+  baseName(A.baseName),
   XIndex(A.XIndex),YIndex(A.YIndex),
-  insertCell(A.insertCell)
+  FuelPtr(A.FuelPtr),insertCell(A.insertCell)
   /*!
     Copy constructor
     \param A :: RElement to copy
@@ -89,7 +95,9 @@ RElement::operator=(const RElement& A)
     {
       attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       cellIndex=A.cellIndex;
+      FuelPtr=A.FuelPtr;
       insertCell=A.insertCell;
     }
   return *this;
@@ -129,7 +137,6 @@ RElement::getItemKeyName() const
 {
   return ReactorGrid::getElementName(keyName,XIndex,YIndex);
 }
-
 
 
 } // NAMESPACE delftSystem

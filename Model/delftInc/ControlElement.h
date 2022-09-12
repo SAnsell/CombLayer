@@ -35,12 +35,13 @@ namespace delftSystem
   \brief Modifies a fuel element to take a control rod
 */
 
-class ControlElement : public FuelElement,
+class ControlElement :
+    public FuelElement,
     public attachSystem::ContainedGroup
 {
  private:
   
-  const std::string cntlKey;          ///< Control keyname
+  const std::string cntlKey;    ///< Control keyname
   const int controlIndex;       ///< Control Index [offset]
   
   size_t cStartIndex;           ///< Element for control portion
@@ -67,7 +68,7 @@ class ControlElement : public FuelElement,
 
   void populate(const FuncDataBase&);
   
-  void createSurfaces(const attachSystem::FixedComp&);
+  void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
 
@@ -79,9 +80,10 @@ class ControlElement : public FuelElement,
   ControlElement& operator=(const ControlElement&);
   virtual ~ControlElement() {}   ///< Destructor
 
+  using FixedComp::createAll;
   virtual void createAll(Simulation&,
 			 const attachSystem::FixedComp&,
-			 const Geometry::Vec3D&,const FuelLoad&);
+			 const long int);
 
 };
 

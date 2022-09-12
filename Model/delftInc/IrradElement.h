@@ -2,8 +2,8 @@
   CombLayer : MCNP(X) Input builder
  
  * File:   delftInc/IrradElement.h
-*
- * Copyright (c) 2004-2016 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,10 +65,7 @@ class IrradElement  : public RElement
   int waterMat;           ///< Water coolant 
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const Geometry::Vec3D&);
-  
-  void createSurfaces(const attachSystem::FixedComp&);
+  void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
 
@@ -79,8 +76,9 @@ class IrradElement  : public RElement
   IrradElement& operator=(const IrradElement&);
   virtual ~IrradElement() {}   ///< Destructor
 
+  using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const Geometry::Vec3D&,const FuelLoad&);
+			 const long int);
 
 };
 

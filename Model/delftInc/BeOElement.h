@@ -51,10 +51,7 @@ class BeOElement  : public RElement
   int wallMat;              ///< Default [be material]
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const Geometry::Vec3D&);
-  
-  void createSurfaces(const attachSystem::FixedComp&);
+  void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
 
@@ -66,8 +63,8 @@ class BeOElement  : public RElement
   virtual ~BeOElement() {}   ///< Destructor
 
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const Geometry::Vec3D&,
-			 const FuelLoad&);
+			 const long int);
+
 
 };
 

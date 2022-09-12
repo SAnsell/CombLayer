@@ -3,7 +3,7 @@
  
  * File:   delftInc/RElement.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@ namespace delftSystem
 class RElement  :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
+  public attachSystem::ExternalCut,
   public attachSystem::CellMap
 {
  protected:
@@ -48,25 +49,27 @@ class RElement  :
   const size_t XIndex;         ///< Index of block [X]
   const size_t YIndex;         ///< Index of block [Z]
 
- 
+  const FuelLoad* FuelPtr;     ///< Fuel load (or null)
   int insertCell;               ///< Cell to insert into
 
   void populate(const FuncDataBase&);
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int) {}
   
  public:
 
   RElement(const size_t,const size_t,const std::string&);
   RElement(const RElement&);
   RElement& operator=(const RElement&);
-  virtual ~RElement() {}   ///< Destructor
+  virtual ~RElement() {}   
 
-  virtual std::string getItemKeyName() const;
-  ///\cond ABSTRACT
+  /// set fuel load
+  void setFuelLoad(const FuelLoad& FL) { FuelPtr=&FL; }
+    
+  virtual std::string getItemKeyName() const;  
+
+  using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const Geometry::Vec3D&,
-			 const FuelLoad&)=0;
-  ///\endcond ABSTRACT
+		 const long int) =0;
+
 
 };
 

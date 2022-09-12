@@ -3,7 +3,7 @@
  
  * File:   delftInc/FuelElement.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,12 +73,7 @@ class FuelElement  : public RElement
   int topCell;                               ///< Mid cell if needed
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const Geometry::Vec3D&);
-  
-  void createSurfaces(const attachSystem::FixedComp&,
-		      const size_t,const size_t);
-  void createSurfaces(const attachSystem::FixedComp&);
+  void createSurfaces();
   void createObjects(Simulation&);;
   void createLinks();
 
@@ -106,6 +101,7 @@ class FuelElement  : public RElement
   /// Accessor to number cells in a blade
   size_t getNSections() const { return nFuel; }
 
+  void setExcludeRange(const size_t,const size_t);
   /// Exclude set
   const std::set<size_t>& getRemovedSet() const { return Exclude; } 
   /// Fuel Vector
@@ -113,9 +109,10 @@ class FuelElement  : public RElement
   /// Access centres [for source]
   const std::vector<Geometry::Vec3D>& getFuelCentre() const 
      { return fuelCentre; } 
+
+  using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const Geometry::Vec3D&,
-			 const FuelLoad&);
+			 const long int);
 
 };
 
