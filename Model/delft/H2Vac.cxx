@@ -3,7 +3,7 @@
  
  * File:   delft/H2Vac.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -58,13 +56,16 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "H2Vac.h"
 
 namespace delftSystem
 {
 
 H2Vac::H2Vac(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6)
+  attachSystem::ContainedComp(),
+  attachSystem::FixedOffset(Key,6),
+  attachSystem::ExternalCut()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -72,7 +73,9 @@ H2Vac::H2Vac(const std::string& Key)  :
 {}
 
 H2Vac::H2Vac(const H2Vac& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::FixedOffset(A),
+  attachSystem::ExternalCut(A),
   vacPosGap(A.vacPosGap),
   vacNegGap(A.vacNegGap),vacPosRadius(A.vacPosRadius),
   vacNegRadius(A.vacNegRadius),vacSide(A.vacSide),
@@ -231,21 +234,6 @@ H2Vac::getSurfacePoint(const attachSystem::FixedComp& FC,
 }
 
 void
-H2Vac::createUnitVector(const attachSystem::FixedComp& FC,
-			const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: A Contained FixedComp to use as basis set
-    \param sideIndex :: side point
-  */
-{
-  ELog::RegMethod RegA("H2Vac","createUnitVector");
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  return;
-}
-
-void
 H2Vac::createSurfaces(const attachSystem::FixedComp& FC)
   /*!
     Create All the surfaces
@@ -317,39 +305,42 @@ H2Vac::createSurfaces(const attachSystem::FixedComp& FC)
 }
 
 void
-H2Vac::createObjects(Simulation& System,const std::string& Exclude)
+H2Vac::createObjects(Simulation& System)
+
   /*!
-    Adds the Chip guide components
+    Adds a H2 Vacuum system to a moderator system
     \param System :: Simulation to create objects in
     \param Exclude :: ContainedObject exclude string
   */
 {
   ELog::RegMethod RegA("H2Vac","createObjects");
-  
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-41 -42 -43 ");
-  addOuterSurf(Out);
+
+  const HeadRule& ExcludeHR=getRule("Exclude");
+
+  HeadRule HR;
 
   // Inner 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-1 -2 -3 ");
-  Out+=" "+Exclude;
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 -2 -3");
+  System.addCell(cellIndex++,0,0.0,HR*ExcludeHR);
 
   // First Al layer
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-11 -12 -13 ( 1:2:3) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -12 -13 ( 1:2:3)");
+  System.addCell(cellIndex++,alMat,0.0,HR);
 
   // Tertiay layer
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-21 -22 -23 (11:12:13) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-21 -22 -23 (11:12:13)");
+  System.addCell(cellIndex++,0,0.0,HR);
 
   // Tertiay layer
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-31 -32 -33 (21:22:23)");
-  System.addCell(MonteCarlo::Object(cellIndex++,outMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-31 -32 -33 (21:22:23)");
+  System.addCell(cellIndex++,outMat,0.0,HR);
 
   // Outer clearance
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-41 -42 -43 (31:32:33)");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-41 -42 -43 (31:32:33)");
+  System.addCell(cellIndex++,0,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-41 -42 -43 ");
+  addOuterSurf(HR);
 
   return;
 }
@@ -367,20 +358,20 @@ H2Vac::createLinks()
 void
 H2Vac::createAll(Simulation& System,
 		 const attachSystem::FixedComp& FC,
-		 const attachSystem::ContainedComp& CC)
+		 const long int sideIndex)
   /*!
     Global creation of the vac-vessel
     \param System :: Simulation to add vessel to
     \param FC :: Previously build  moderator
-    \param CC :: Container to wrap
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("H2Vac","createAll");
   populate(System.getDataBase());
  
-  createUnitVector(FC,0);                       // fixed 
+  createUnitVector(FC,sideIndex);                       // fixed 
   createSurfaces(FC);
-  createObjects(System,CC.getExclude());
+  createObjects(System);
   createLinks();
   insertObjects(System);       
 

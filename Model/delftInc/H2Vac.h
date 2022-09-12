@@ -3,7 +3,7 @@
  
  * File:   delftInc/H2Vac.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,8 @@ namespace delftSystem
 
 class H2Vac : 
   public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset
+  public attachSystem::FixedOffset,
+  public attachSystem::ExternalCut
 {
  private:
   
@@ -72,11 +73,9 @@ class H2Vac :
   int outMat;            ///< Al (outer) material
 
   void populate(const FuncDataBase&);
-
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces(const attachSystem::FixedComp&);
   void createLinks();
-  void createObjects(Simulation&,const std::string&);
+  void createObjects(Simulation&);
 
   Geometry::Vec3D getDirection(const size_t) const;
 
@@ -90,8 +89,9 @@ class H2Vac :
   virtual Geometry::Vec3D getSurfacePoint(const attachSystem::FixedComp&,
 					  const size_t,const long int) const;
 
-  void createAll(Simulation&, const attachSystem::FixedComp&,
-		 const attachSystem::ContainedComp&);
+  using FixedComp::createAll;
+  virtual void createAll(Simulation&, const attachSystem::FixedComp&,
+			 const long int);
 
 };
 
