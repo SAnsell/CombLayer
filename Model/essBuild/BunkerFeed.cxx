@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   bunker/BunkerFeed.cxx
+ * File:   essBuild/BunkerFeed.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -206,7 +206,6 @@ BunkerFeed::insertColl(Simulation& System)
   */
 {
   ELog::RegMethod RegA("BunkerFeed","insertColl");
-  ELog::debugMethod DegA;
 
   Geometry::Vec3D LineOrg=Origin+
     X*Offset[0]+Y*Offset[1]+Z*Offset[2];
@@ -227,7 +226,6 @@ BunkerFeed::insertColl(Simulation& System)
   // make void
   voidTrack->addSection(width,height,0,0.0);
   voidTrack->setInitZAxis(Z);
-  DegA.activate();
 
   voidTrack->build(System);
 

@@ -89,7 +89,7 @@ void writePHITSCont(std::ostream&,const size_t,const size_t,const T&);
 
 template<typename T>
 void writePHITSIndex(std::ostream& OX,const size_t depth,
-		     const std::string& unit,const size_t index,
+		     const std::string& unit,const int index,
 		     const T value,const std::string& comment ="")
   /*!
     Transfer function to write item(index) units

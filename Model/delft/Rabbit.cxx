@@ -340,12 +340,14 @@ Rabbit::build(Simulation& System,const ReactorGrid& RG)
 }
 
 void
-Rabbit::createAll(Simulation& System,const attachSystem::FixedComp& FC,
+Rabbit::createAll(Simulation& System,
+		  const attachSystem::FixedComp& FC,
 		  const long int sideIndex)
 /*!
     Global creation of the vac-vessel
     \param System :: Simulation to add vessel to
     \param FC :: Reactor Grid
+    \param sideIndex :: link pt
   */
 {
   ELog::RegMethod RegA("Rabbit","createAll");
@@ -355,7 +357,6 @@ Rabbit::createAll(Simulation& System,const attachSystem::FixedComp& FC,
   createObjects(System);
   createLinks();
   insertObjects(System);
-
   return;
 }
 

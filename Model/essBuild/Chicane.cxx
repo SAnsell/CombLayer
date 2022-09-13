@@ -3,7 +3,7 @@
  
  * File:   essBuild/Chicane.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,8 +69,9 @@ namespace essSystem
 {
 
 Chicane::Chicane(const std::string& Key)  :
+  attachSystem::FixedOffset(Key,6),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6)
+  attachSystem::FrontBackCut()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -78,7 +79,8 @@ Chicane::Chicane(const std::string& Key)  :
 {}
 
 Chicane::Chicane(const Chicane& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),
   attachSystem::FrontBackCut(A)
   /*!
     Copy constructor
@@ -96,8 +98,8 @@ Chicane::operator=(const Chicane& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
       nBlock=A.nBlock;
       CUnits=A.CUnits;
@@ -157,23 +159,6 @@ Chicane::createUnitVector(const Bunker& BUnit,
   Geometry::Vec3D DPos,DX,DY,DZ;
   BUnit.calcSegPosition(segIndex,DPos,DX,DY,DZ);
   attachSystem::FixedComp::createUnitVector(DPos,DX,DY,DZ);
-  applyOffset();
-  return;
-}
-
-  
-void
-Chicane::createUnitVector(const attachSystem::FixedComp& FC,
-                          const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: object for origin
-    \param sideIndex :: link point
-  */
-{
-  ELog::RegMethod RegA("Chicane","createUnitVector(FC)");
-
-  FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
   return;
 }
@@ -312,7 +297,7 @@ Chicane::createAll(Simulation& System,
   ELog::RegMethod RegA("Chicane","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC,sideIndex);
+  FixedOffset::createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();
@@ -322,7 +307,7 @@ Chicane::createAll(Simulation& System,
 }
   
 void
-Chicane::createAll(Simulation& System,
+Chicane::buildAll(Simulation& System,
 		   const Bunker& BUnit,
 		   const size_t segIndex)
   /*!

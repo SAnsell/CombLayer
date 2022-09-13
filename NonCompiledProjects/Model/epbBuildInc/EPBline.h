@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   epbBuildInc/BeamLine.h
+ * File:   epbBuildInc/EPBline.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,12 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef ts1System_EPBline_h
-#define ts1System_EPBline_h
+#ifndef epbSystem_EPBline_h
+#define epbSystem_EPBline_h
 
 class Simulation;
 
-namespace ts1System
+namespace epbSystem
 {
 
 /*!
@@ -35,21 +35,23 @@ namespace ts1System
   \brief EPBline [insert object]
 */
 
-class EPBline : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+class EPBline :
+    public attachSystem::ContainedComp,
+    public attachSystem::FixedOffset
 {
  private:
   
-
   double innerRad;             ///< Inner radius 
   double wallThick;            ///< Wall thick
+  int wallMat;                 ///< Wall Mat
   size_t nSeg;                 ///< N Segment
 
-  std::vector<Geometry::Ved3D> Pts;   ///< Point of ben
-  std::vector<Geometry::Ved3D> YVec;  ///< Y Vector
+  std::vector<Geometry::Vec3D> Pts;   ///< Point of ben
+  std::vector<Geometry::Vec3D> YVec;  ///< Y Vector
+  std::vector<Geometry::Vec3D> Cent;  ///< Calcualble centre!
   
   void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&);
@@ -61,7 +63,9 @@ class EPBline : public attachSystem::ContainedComp,
   EPBline& operator=(const EPBline&);
   ~EPBline();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  using FixedComp::createAll;
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int );
 
 };
 

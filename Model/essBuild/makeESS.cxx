@@ -241,7 +241,7 @@ makeESS::hasEngineering(const std::string& Item) const
   
 void
 makeESS::makeTarget(Simulation& System,
-		    const std::string& targetType)
+		    const mainSystem::inputParam& IParam)
   /*!
     Build the different ESS targets
     \param System :: Simulation
@@ -253,9 +253,11 @@ makeESS::makeTarget(Simulation& System,
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   const int voidCell(74123);  
-  
+  const std::string targetType=
+    IParam.getValue<std::string>("targetType");
+
   // Best place to put this to allow simple call
-  if (targetType=="help")
+    if (targetType=="help")
     {
       ELog::EM<<"Target Type [Target]:"<<ELog::endBasic;
       ELog::EM<<"  -- Wheel     : Simple wheel form"<<ELog::endBasic;
@@ -273,6 +275,9 @@ makeESS::makeTarget(Simulation& System,
       (targetType,"Unknown target type");
   
   Target->addInsertCell("Shaft",voidCell);
+  Target->addInsertCell("Wheel",voidCell);
+  if (IParam.flag("engActive"))
+    Target->setEngActive();
   Target->addInsertCell("Wheel",voidCell);
   Target->createAll(System,World::masterOrigin(),0);
 
@@ -706,7 +711,7 @@ makeESS::buildBunkerChicane(Simulation& System,
 	}
       else
 	{
-          CF->createAll(System,*BPtr,segNumber);
+          CF->buildAll(System,*BPtr,segNumber);
 	}
 
       attachSystem::addToInsertLineCtrl(System,*BPtr,"MainVoid",*CF,*CF);
@@ -786,21 +791,6 @@ makeESS::buildPillars(Simulation& System,
     }
   return;
 }
-  
-void
-makeESS::optionSummary(Simulation& System)
-  /*!
-    Write summary of options
-    \param System :: Dummy call variable 						
-   */
-{
-  ELog::RegMethod RegA("makeESS","optionSummary");
-  
-  makeTarget(System,"help");
-  
-  return;
-}
-
   
 void
 makeESS::makeBeamLine(Simulation& System,
@@ -1055,21 +1045,12 @@ makeESS::build(Simulation& System,
   const std::string topModType=IParam.getValue<std::string>("topMod");
 
   
-  const std::string targetType=IParam.getValue<std::string>("targetType");
   const std::string iradLine=IParam.getValue<std::string>("iradLineType");
 
   //  const size_t nF5=IParam.getValue<size_t>("nF5");
-
-  
-  if (StrFunc::checkKey("help",lowPipeType,lowModType,targetType) ||
-      StrFunc::checkKey("help",iradLine,topModType,""))
-    {
-      optionSummary(System);
-      throw ColErr::ExitAbort("Help system exit");
-    }
   
   buildFocusPoints(System);
-  makeTarget(System,targetType);
+  makeTarget(System,IParam);
   Reflector->globalPopulate(Control);
 
   // lower moderator

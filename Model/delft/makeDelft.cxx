@@ -222,7 +222,7 @@ makeDelft::makeRabbit(Simulation& System)
   do
     {
       RPType RB(new Rabbit("Rabbit",index));
-	
+
       flag=RB->build(System,*GridPlate);	
       if (flag) 
 	{
@@ -384,6 +384,7 @@ makeDelft::build(Simulation& System,
 
   const attachSystem::FixedComp* FCPtr=&WC;
   long int sideIndex(0);
+
   if (buildType!="Single")
     {
       Pool->addInsertCell(74123);

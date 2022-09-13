@@ -89,7 +89,6 @@ BilbaoWheel::BilbaoWheel(const std::string& Key) :
 
 BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   WheelBase(A),
-  engActive(A.engActive),
   targetHeight(A.targetHeight),
   targetInnerHeight(A.targetHeight),
   targetInnerHeightRadius(A.targetHeight),
@@ -159,7 +158,6 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
   if (this!=&A)
     {
       WheelBase::operator=(A);
-      engActive=A.engActive;
       targetHeight=A.targetHeight;
       targetInnerHeight=A.targetInnerHeight;
       targetInnerHeightRadius=A.targetInnerHeightRadius;
@@ -252,8 +250,6 @@ BilbaoWheel::populate(const FuncDataBase& Control)
 
   // Master values
   FixedOffset::populate(Control);
-
-  engActive=Control.EvalTail<int>(keyName,"","EngineeringActive");
 
   nSectors=Control.EvalDefVar<size_t>(keyName+"NSectors",3);
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
@@ -1370,6 +1366,7 @@ BilbaoWheel::buildSectors(Simulation& System) const
 
   ModelSupport::objectRegister& OR=ModelSupport::objectRegister::Instance();
 
+  ELog::EM<<"N Sector == "<<nSectors<<ELog::endDiag;
   for (size_t i=0; i<nSectors; i++)
     {
       std::shared_ptr<BilbaoWheelCassette>

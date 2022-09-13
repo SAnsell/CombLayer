@@ -131,7 +131,7 @@ main(int argc,char* argv[])
       World::createOuterObjects(*SimPtr);
       EPBObj.build(SimPtr,IParam);
 
-            mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
+      mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
       
       
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);

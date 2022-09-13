@@ -71,6 +71,7 @@ createESSInputs(inputParam& IParam)
   IParam.regMulti("bunkerPillars","bunkerPillars",1000,1);
   IParam.regMulti("bunkerQuake","bunkerQuake",1000,1);
   IParam.regMulti("iradObj","iradObject",1000,3);
+  IParam.regFlag("engActive","engActive");
   
   IParam.regDefItem<std::string>("bunker","bunkerType",1,std::string("null"));
   IParam.regMulti("beamlines","beamlines",1000);
@@ -90,7 +91,7 @@ createESSInputs(inputParam& IParam)
   IParam.setDesc("nF5","Number of F5 collimators to build. \n"
 		 "  -- The collimators will be named as F5, F15, etc.\n"
 		 "  -- The corresponding variables must exist.");
-
+  IParam.setDesc("engActive","Add extra engineering details");
   return;
 }
 

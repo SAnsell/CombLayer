@@ -81,6 +81,7 @@ class Box :
   double getHeight() const
     { return (depth.empty()) ? 0.0 : depth.back()+height.back(); }
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
 };
