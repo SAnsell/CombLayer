@@ -219,14 +219,11 @@ BilbaoWheelCassette::getSegWallThick() const
 {
   ELog::RegMethod RegA("BilbaoWheelCassette","getSegWallThick");
 
-  // Total wall length is sum of all its segments:
-  double L = std::accumulate(std::next(wallSegLength.begin()), wallSegLength.end(),
-			      std::abs(wallSegLength[0]),
-			      [](double b, double c){
-			       return std::abs(b)+std::abs(c);
-			      });
+  double sum(0.0);
+  for(const double D : wallSegLength)
+    sum+=std::abs(D);
 
-  return getSegWallArea()/L;
+  return getSegWallArea()/sum;
 }
 
 double
@@ -328,8 +325,8 @@ BilbaoWheelCassette::createSurfaces(const attachSystem::FixedComp& FC)
   ModelSupport::buildPlaneRotAxis(SMap,buildIndex+4,Origin,X,Z,delta/2.0);
 
   const double dw = getSegWallThick()+wallThick;
-  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+13,Origin+X*(dw),X,Z,-delta/2.0);
-  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+14,Origin-X*(dw),X,Z,delta/2.0);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+13,Origin+X*dw,X,Z,-delta/2.0);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+14,Origin-X*dw,X,Z,delta/2.0);
 
   const double R(innerCylRadius);
 
@@ -433,50 +430,47 @@ BilbaoWheelCassette::createSurfacesBricks(const attachSystem::FixedComp& FC)
 }
 
 void
-BilbaoWheelCassette::createObjects(Simulation& System,
-				   const attachSystem::FixedComp& FC)
+BilbaoWheelCassette::createObjects(Simulation& System)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
-    \param FC :: Tungsten layer rule
   */
 {
   ELog::RegMethod RegA("BilbaoWheelCassette","createObjects");
 
-  const std::string tb = FC.getLinkString(floor) + FC.getLinkString(roof);
-  const std::string outer = tb + FC.getLinkString(back) + FC.getLinkString(front);
+  const HeadRule tbHR=getRule("VerticalCut");
+  const HeadRule outerHR=tbHR*getRule("FrontBack");
 
-  ELog::EM<<"TB == "<<tb<<ELog::endDiag;
-  ELog::EM<<"Outer == "<<outer<<ELog::endDiag;
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -13 -1");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,temp,Out+outer));
+  HeadRule HR;
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -13 -1");
+  System.addCell(cellIndex++,wallMat,temp,HR*outerHR);
 
   if (nSteelRows>0)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 12 17 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,homoWMat,temp,Out+tb));
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 12 17");
+      System.addCell(cellIndex++,homoWMat,temp,HR*tbHR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 -17 7 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,homoSteelMat,temp,Out+tb));
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 -17 7");
+      System.addCell(cellIndex++,homoSteelMat,temp,HR*tbHR);
     }
   else
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 12 7 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,homoWMat,temp,Out+tb));
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 12 7");
+      System.addCell(cellIndex++,homoWMat,temp,HR*tbHR);
     }
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 -7 ") + FC.getLinkString(back);
-  System.addCell(MonteCarlo::Object(cellIndex++,heMat,temp,Out+tb));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 -7");
+  System.addCell(cellIndex++,heMat,temp,HR*outerHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 -12 ") + FC.getLinkString(front);
-  System.addCell(MonteCarlo::Object(cellIndex++,pipeCellMat,temp,Out+tb));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 -12");
+  System.addCell(cellIndex++,pipeCellMat,temp,HR*outerHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 14 -4 -1 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,temp,Out+outer));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"14 -4 -1");
+  System.addCell(cellIndex++,wallMat,temp,HR*outerHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -1 ");
-  addOuterSurf(Out+outer);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 -1");
+  addOuterSurf(HR*outerHR);
 
   return;
 }
@@ -651,7 +645,7 @@ BilbaoWheelCassette::createAll(Simulation& System,
   if (!bricksActive)
     {
       createSurfaces(FC);
-      createObjects(System,FC);
+      createObjects(System);
     } else
     {
       createSurfacesBricks(FC);

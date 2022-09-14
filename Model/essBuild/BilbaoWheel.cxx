@@ -1367,13 +1367,17 @@ BilbaoWheel::buildSectors(Simulation& System) const
 
   ModelSupport::objectRegister& OR=ModelSupport::objectRegister::Instance();
 
+  const HeadRule vHR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6");
+  const HeadRule fHR=getFullRule(9)*getFullRule(12);
+
   ELog::EM<<"N Sector == "<<nSectors<<ELog::endDiag;
   for (size_t i=0; i<nSectors; i++)
     {
       std::shared_ptr<BilbaoWheelCassette>
 	cassetteUnit(new BilbaoWheelCassette(keyName,"Sec",i));
       OR.addObject(cassetteUnit);
-
+      cassetteUnit->setCutSurf("VerticalCut",vHR);
+      cassetteUnit->setCutSurf("FrontBack",fHR);
       cassetteUnit->createAll(System,*this,0,
 		   7,8,9,12,
 		   static_cast<double>(i)*360.0/static_cast<double>(nSectors));

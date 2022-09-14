@@ -90,7 +90,7 @@ class BilbaoWheelCassette :
   void populate(const FuncDataBase&);
   void createSurfaces(const attachSystem::FixedComp&);
   void createSurfacesBricks(const attachSystem::FixedComp&);
-  void createObjects(Simulation&,const attachSystem::FixedComp&);
+  void createObjects(Simulation&);
   void createObjectsBricks(Simulation&,const attachSystem::FixedComp&);
   void createLinks();
 
