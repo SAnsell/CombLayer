@@ -59,16 +59,16 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
-#include "General.h"
-#include "Plane.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "General.h"
+#include "Plane.h"
 #include "SurInter.h"
 
 #include "BilbaoWheelCassette.h"
@@ -383,7 +383,8 @@ BilbaoWheel::createShaftSurfaces()
   ELog::RegMethod RegA("BilbaoWheel","createShaftSurfaces");
 
   // divider
-  const Geometry::Plane *px = ModelSupport::buildPlane(SMap,buildIndex+3,Origin,X);
+  const Geometry::Plane *px =
+    ModelSupport::buildPlane(SMap,buildIndex+3,Origin,X);
 
   ModelSupport::buildPlane(SMap,buildIndex+2006,Origin+Z*shaftHeight,Z);
 
@@ -1370,9 +1371,10 @@ BilbaoWheel::buildSectors(Simulation& System) const
   for (size_t i=0; i<nSectors; i++)
     {
       std::shared_ptr<BilbaoWheelCassette>
-	c(new BilbaoWheelCassette(keyName,"Sec",i));
-      OR.addObject(c);
-      c->createAll(System,*this,0,
+	cassetteUnit(new BilbaoWheelCassette(keyName,"Sec",i));
+      OR.addObject(cassetteUnit);
+
+      cassetteUnit->createAll(System,*this,0,
 		   7,8,9,12,
 		   static_cast<double>(i)*360.0/static_cast<double>(nSectors));
     }

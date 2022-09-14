@@ -61,6 +61,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "SurInter.h"
 
 #include "BilbaoWheelCassette.h"
@@ -88,8 +89,6 @@ BilbaoWheelCassette::BilbaoWheelCassette(const BilbaoWheelCassette& A) :
   attachSystem::FixedOffset(A),
   baseName(A.baseName),
   commonName(A.commonName),
-  engActive(A.engActive),
-  bricksActive(A.bricksActive),
   wallThick(A.wallThick),delta(A.delta),temp(A.temp),
   nWallSeg(A.nWallSeg),
   wallSegLength(A.wallSegLength),
@@ -130,8 +129,6 @@ BilbaoWheelCassette::operator=(const BilbaoWheelCassette& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      engActive=A.engActive;
-      bricksActive=A.bricksActive;
       wallThick=A.wallThick;
       delta=A.delta;
       temp=A.temp;
@@ -271,9 +268,8 @@ BilbaoWheelCassette::populate(const FuncDataBase& Control)
   FixedOffset::populate(Control);
 
 
-  engActive=Control.EvalTail<int>(keyName,"","EngineeringActive");
-  bricksActive=Control.EvalDefTail<int>(keyName,commonName,"BricksActive", 0);
-
+  bricksActive=Control.EvalDefTail<int>(keyName,commonName,"BricksActive",0);
+  ELog::EM<<"Active bricks == "<<bricksActive<<ELog::endDiag;
   const double nSectors = Control.EvalVar<double>(baseName+"NSectors");
   delta = 360.0/nSectors;
 
@@ -312,23 +308,6 @@ BilbaoWheelCassette::populate(const FuncDataBase& Control)
   pipeCellThick=Control.EvalTail<double>(keyName,commonName,"PipeCellThick");
   pipeCellMat=ModelSupport::EvalMat<int>(Control,commonName+"PipeCellMat",
 					 keyName+"PipeCellMat");
-
-  return;
-}
-
-void
-BilbaoWheelCassette::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: object for origin
-    \param sideIndex :: link point for origin
-  */
-{
-  ELog::RegMethod RegA("BilbaoWheelCassette","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
 
   return;
 }
@@ -467,6 +446,8 @@ BilbaoWheelCassette::createObjects(Simulation& System,
   const std::string tb = FC.getLinkString(floor) + FC.getLinkString(roof);
   const std::string outer = tb + FC.getLinkString(back) + FC.getLinkString(front);
 
+  ELog::EM<<"TB == "<<tb<<ELog::endDiag;
+  ELog::EM<<"Outer == "<<outer<<ELog::endDiag;
   std::string Out;
   Out=ModelSupport::getComposite(SMap,buildIndex," 3 -13 -1");
   System.addCell(MonteCarlo::Object(cellIndex++,wallMat,temp,Out+outer));

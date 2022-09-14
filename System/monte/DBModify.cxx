@@ -136,6 +136,7 @@ cloneESSMaterial()
   DB.cloneMaterial("Void","M2644");
   DB.cloneMaterial("Stainless304","SS316L");
   DB.cloneMaterial("Stainless304","SS316L_7.85g");
+  DB.cloneMaterial("Stainless304","SS316L_6.22g");
   DB.cloneMaterial("Stainless304","SS316L785");
   DB.cloneMaterial("Stainless304","SS316L3925");
 

@@ -3,7 +3,7 @@
  
  * File:   essBuild/targetVariables.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2022 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -229,7 +229,7 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelSecBrickWMat","Tungsten");
   Control.addVariable("BilbaoWheelSecNSteelRows",2);
   Control.addVariable("BilbaoWheelSecPipeCellThick", 1.2);
-  Control.addVariable("BilbaoWheelSecPipeCellMat", "SS316LBilbaoWheelPipeCellMat");
+  Control.addVariable("BilbaoWheelSecPipeCellMat","SS316L");
 
   Control.addVariable("WheelShaftNLayers",3);
   Control.addVariable("WheelShaftHeight",435.0);

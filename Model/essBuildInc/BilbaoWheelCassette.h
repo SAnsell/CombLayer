@@ -35,15 +35,16 @@ namespace essSystem
   \brief Bilbao wheel sector cassette
 */
 
-class BilbaoWheelCassette : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset
+class BilbaoWheelCassette :
+    public attachSystem::FixedOffset,
+    public attachSystem::ContainedComp,
+    public attachSystem::ExternalCut
 {
  private:
 
   const std::string baseName;   ///< Base Name
   const std::string commonName; ///< Template (part between wheel name and sector number)
 
-  int engActive;                ///< Engineering active flag
   int bricksActive;            ///< True if bricks are active
 
   double wallThick;             ///< Side wall thickness
@@ -87,9 +88,6 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
   void   buildBricks();
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces(const attachSystem::FixedComp&);
   void createSurfacesBricks(const attachSystem::FixedComp&);
   void createObjects(Simulation&,const attachSystem::FixedComp&);
