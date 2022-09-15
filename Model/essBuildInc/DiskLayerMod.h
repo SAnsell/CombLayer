@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/DiskLayerMod.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,6 +77,8 @@ class DiskLayerMod : public attachSystem::ContainedComp,
   double getZOffset() const { return zStep; }
 
   void setLayout(const bool,const double,const double);
+
+  using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 			 const long int);
 

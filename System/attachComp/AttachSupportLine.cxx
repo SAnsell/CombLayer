@@ -113,8 +113,6 @@ checkLineIntersect(const FixedComp& InsertFC,
               
               const std::vector<double>& distVec(LI.getDistance());
               const std::vector<Geometry::Vec3D>& dPts(LI.getPoints());
-              const std::vector<const Geometry::Surface*>& 
-                surfPts=LI.getSurfPointers();
               
               for(size_t dI=0;dI<dPts.size();dI++)
                 {

@@ -3,7 +3,7 @@
  
  * File:   essBuild/MidWaterDivider.cxx 
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,14 +39,12 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "Surface.h"
+//#include "Surface.h"
 #include "surfRegister.h"
-#include "Quadratic.h"
-#include "Plane.h"
+//#include "Quadratic.h"
+//#include "Plane.h"
 #include "geomSupport.h"
 #include "varList.h"
 #include "Code.h"
@@ -76,9 +74,9 @@ namespace essSystem
 
 MidWaterDivider::MidWaterDivider(const std::string& baseKey,
 				 const std::string& extraKey) :
+  attachSystem::FixedComp(baseKey+extraKey,14),
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0,0),
-  attachSystem::FixedComp(baseKey+extraKey,14),
   baseName(baseKey),AWingPtr(nullptr),BWingPtr(nullptr)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -88,8 +86,10 @@ MidWaterDivider::MidWaterDivider(const std::string& baseKey,
 {}
 
 MidWaterDivider::MidWaterDivider(const MidWaterDivider& A) : 
-  attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
-  attachSystem::FixedComp(A), baseName(A.baseName),
+  attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::LayerComp(A),
+  baseName(A.baseName),
   midYStep(A.midYStep),
   midAngle(A.midAngle),length(A.length),height(A.height),
   wallThick(A.wallThick),modMat(A.modMat),wallMat(A.wallMat),
@@ -110,9 +110,9 @@ MidWaterDivider::operator=(const MidWaterDivider& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
       midYStep=A.midYStep;
       midAngle=A.midAngle;
       length=A.length;
@@ -204,8 +204,8 @@ MidWaterDivider::createLinks()
   surfN.push_back(BWingPtr->getLinkSurf(3));
 
   // Now deterermine point which are divider points
-  const Geometry::Plane* midPlane=
-    SMap.realPtr<Geometry::Plane>(buildIndex+200);
+  const Geometry::Surface* midPlane=
+    SMap.realSurfPtr(buildIndex+200);
 
   const std::vector<std::pair<int,int>> InterVec =
     {
@@ -224,26 +224,25 @@ MidWaterDivider::createLinks()
       const int SA(buildIndex+Item.first);
       const int SB(Item.second>0 ? buildIndex+Item.second :
 		   surfN[static_cast<size_t>(-Item.second-1)]);
-      const Geometry::Plane* PA=SMap.realPtr<Geometry::Plane>(SA);
-      const Geometry::Plane* PB=SMap.realPtr<Geometry::Plane>(SB);
+      const Geometry::Surface* PA=SMap.realSurfPtr(SA);
+      const Geometry::Surface* PB=SMap.realSurfPtr(SB);
       FixedComp::setConnect
       	(index,SurInter::getPoint(PA,PB,midPlane),Axis[index]);
     }
 
   // full cut out
-  std::string Out;
+
   HeadRule HR;
 
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," ( (-123 (-137:138)) : (124 (-127:128)) ) -131 -132 ");
-  HR.procString(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+      "((-123 (-137:138)) : (124 (-127:128))) -131 -132");
   HR.makeComplement();
   FixedComp::setLinkSurf(10,HR);
   FixedComp::setBridgeSurf(10,-SMap.realSurf(buildIndex+100));
 
   // +ve Y
-  Out=ModelSupport::getComposite(SMap,buildIndex," ( (-103 (-117:118)) : (104  (-107:108)) )  -111 -112 ");
-  HR.procString(Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex, "( (-103 (-117:118)) : (104  (-107:108)) ) -111 -112");
   HR.makeComplement();  
   FixedComp::setLinkSurf(11,HR);
   FixedComp::setBridgeSurf(11,SMap.realSurf(buildIndex+100));

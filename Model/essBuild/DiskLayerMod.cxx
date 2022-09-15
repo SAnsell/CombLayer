@@ -427,6 +427,9 @@ void
 DiskLayerMod::setLayout(const bool zRotate,
 			const double VOffset,
 			const double ORad)
+  /*!
+    Set basic rotation and radius value
+  */
 {
   if (zRotate) preYAngle=180.0;
   zStep=VOffset;
@@ -434,7 +437,6 @@ DiskLayerMod::setLayout(const bool zRotate,
   return;
 }
   
-
 void
 DiskLayerMod::createAll(Simulation& System,
 			const attachSystem::FixedComp& FC,
