@@ -1299,13 +1299,13 @@ FixedComp::setLinkCopy(const std::string& indexName,
     \param sideIndex :: signed link unit of other object
   */
 {
-  ELog::RegMethod RegA("FixedComp","setLinkCopy("+std::to_string(sideIndex)+")");
+  ELog::RegMethod RegA("FixedComp",
+		       "setLinkCopy(S="+std::to_string(sideIndex)+")");
 
-  if (!hasSideIndex(indexName))
-    throw ColErr::InContainerError<std::string>(indexName,"indexName");
   const long int LI=getSideIndex(indexName);
   if (!LI)
-    throw ColErr::InContainerError<std::string>(indexName,"indexName zero");
+    throw ColErr::InContainerError<std::string>
+        (indexName,"FC["+keyName+"]::indexName zero");
   
   const size_t Index=static_cast<size_t>(std::abs(LI-1));
   setLinkCopy(Index,FC,sideIndex);
@@ -1472,10 +1472,31 @@ FixedComp::nameSideIndex(const size_t lP,
 {
   ELog::RegMethod RegA("FixedComp","nameSideIndex"+keyName);
 
-  if (keyMap.find(linkName)!=keyMap.end())
-    ColErr::InContainerError<std::string>(linkName,"linkName exists");
-      
-  keyMap.emplace(linkName,lP);
+  const std::map<std::string,size_t>::const_iterator
+    mc=keyMap.find(linkName);
+  if (mc!=keyMap.end())
+    {
+      if (mc->second!=lP)
+	ColErr::InContainerError<std::string>(linkName,"linkName exists");
+    }
+  else
+    keyMap.emplace(linkName,lP);
+  
+  return;
+}
+
+void
+FixedComp::nameSideIndex(const std::map<std::string,size_t>& linkMap)
+  /*!
+    Create a set of linkMaps
+    \param linkMap :: link item to use
+   */
+{
+  ELog::RegMethod RegA("FixedComp","nameSideIndex(map)"+keyName);
+
+  for(const auto& [ lItem, lP ] : linkMap)
+    nameSideIndex(lP,lItem);
+
   return;
 }
   
@@ -1571,13 +1592,12 @@ FixedComp::hasSideIndex(const std::string& sideName) const
       const std::string partName=
         (sideName[0]=='+' || sideName[0]=='-' || sideName[0]=='#') ?
            sideName.substr(1) : sideName;
+      if (partName=="Origin" || partName=="origin")
+        return 1;
 
       std::map<std::string,size_t>::const_iterator mc=
         keyMap.find(partName);
-      
       lp= (mc!=keyMap.end()) ?  mc->second : LU.size();      
-      if (partName=="Origin" || partName=="origin")
-        return 1;
     }
   return (lp<LU.size()) ? LU[lp].isComplete() : 0;
 }

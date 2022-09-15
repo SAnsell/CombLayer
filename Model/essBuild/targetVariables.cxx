@@ -208,7 +208,9 @@ EssWheel(FuncDataBase& Control)
   // https://plone.esss.lu.se/docs/neutronics/engineering/drawings/target/cassette-side-steel/view
 
   const std::vector<size_t> nBricks({0,9,10,11,10,11,12,11,12,13,14,13,14,15,16,15});
-  const std::vector<double> segLen({4.9,-3.2,-3.4,3.0,-3.2,-3.4,3.0,-3.2,-3.2,-3.4,3.0,-3.2,-3.2,-3.4,3.0,-4-1.2});
+  const std::vector<double> segLen
+    ({4.9,-3.2,-3.4,3.0,-3.2,-3.4,3.0,-3.2,
+       -3.2,-3.4,3.0,-3.2,-3.2,-3.4,3.0,-4-1.2});
   const size_t NB(nBricks.size());
   Control.addVariable("BilbaoWheelSecNWallSeg",NB); // 15 layers of bricks + 1
   if (segLen.size() != NB)
@@ -216,8 +218,8 @@ EssWheel(FuncDataBase& Control)
 
   for (size_t i=0; i<NB; i++)
     {
-      const std::string si(std::to_string(i));
-      Control.addVariable("BilbaoWheelSecWallSegLength"+si,segLen[i]);
+      const std::string si=std::to_string(i);
+      Control.addVariable("BilbaoWheelSecWallSegLength"+si,std::abs(segLen[i]));
       Control.addVariable("BilbaoWheelSecWallSegNBricks"+si,nBricks[i]);
     }
 

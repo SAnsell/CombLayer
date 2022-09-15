@@ -195,6 +195,7 @@ class FixedComp
   virtual const Geometry::Vec3D& getExit() const;
   
   void nameSideIndex(const size_t,const std::string&);
+  void nameSideIndex(const std::map<std::string,size_t>&);
   void copyLinkObjects(const FixedComp&);
   /// How many connections
   size_t NConnect() const { return LU.size(); }

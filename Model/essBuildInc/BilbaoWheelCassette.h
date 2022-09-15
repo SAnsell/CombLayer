@@ -88,14 +88,11 @@ class BilbaoWheelCassette :
   void   buildBricks();
 
   void populate(const FuncDataBase&);
-  void createSurfaces(const attachSystem::FixedComp&);
-  void createSurfacesBricks(const attachSystem::FixedComp&);
+  void createSurfaces();
+  void createSurfacesBricks();
   void createObjects(Simulation&);
-  void createObjectsBricks(Simulation&,const attachSystem::FixedComp&);
+  void createObjectsBricks(Simulation&);
   void createLinks();
-
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int) {}
   
 
  public:
@@ -106,13 +103,10 @@ class BilbaoWheelCassette :
   virtual BilbaoWheelCassette* clone() const;
   virtual ~BilbaoWheelCassette();
 
+  void setAngle(const double XY) { xyAngle=XY; }
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int,
-		 const long int,
-		 const long int,
-		 const long int,
-		 const long int,
-		 const double&);
+		 const long int);
 
 };
 

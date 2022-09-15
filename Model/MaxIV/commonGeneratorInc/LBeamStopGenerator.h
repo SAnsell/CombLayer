@@ -32,7 +32,7 @@ namespace setVariable
   \version 1.0
   \author Stuart Ansell
   \date November 2020
-  \brief LBeamStopGenerator for variables
+  \brief LBeamStopGenerator for variables (linac beamstop)
 */
 
 class LBeamStopGenerator
@@ -61,7 +61,6 @@ class LBeamStopGenerator
  public:
 
   LBeamStopGenerator();
-  LBeamStopGenerator(const std::string&);
   LBeamStopGenerator(const LBeamStopGenerator&);
   LBeamStopGenerator& operator=(const LBeamStopGenerator&);
   virtual ~LBeamStopGenerator();
