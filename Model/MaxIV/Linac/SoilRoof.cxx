@@ -121,12 +121,11 @@ SoilRoof::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("SoilRoof","createUnitVector");
   FixedRotate::createUnitVector(FC,sideIndex);
-
   Origin=ExternalCut::getRule("Roof").trackPoint(Origin,Z);
   return;
 }
 
-  void
+void
 SoilRoof::createSurfaces()
   /*!
     Create All the surfaces

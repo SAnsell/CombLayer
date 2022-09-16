@@ -86,6 +86,7 @@ class BoxModerator :
   Geometry::Vec3D getFocalPoint(const long int) const;
   std::vector<Geometry::Vec3D> getFocalPoints() const;
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
   void createAll(Simulation&,const attachSystem::FixedComp&,

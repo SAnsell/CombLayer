@@ -1404,22 +1404,27 @@ InjectionHall::createLinks()
 			-X*(btgThick)
 			+Z*(btgHeight-floorDepth+roofHeight)/2.0
 			,X);
-  FixedComp::setNamedLinkSurf(8, "BTGTopMiddleSide", SurfMap::getSignedSurf("FKGLeft"));
+  FixedComp::setNamedLinkSurf
+    (8,"BTGTopMiddleSide",SurfMap::getSignedSurf("FKGLeft"));
+  
   // Back shielding wall and the FemtoMAX room
   const Geometry::Vec3D backWallPt(Origin+Y*(backWallYStep+backWallThick));
   HeadRule sideA=SurfMap::getSurfRule("FemtoLeft");
   HeadRule sideB=SurfMap::getSurfRule("FemtoRight");
   sideA.populateSurf();
-  sideB.populateSurf();
+  sideB.populateSurf(); 
   const Geometry::Vec3D MidPt=
     (sideA.trackPoint(backWallPt,X)+
      sideB.trackPoint(backWallPt,X))/2.0 - X*70.0;
   FixedComp::setConnect(9,MidPt,Y);
-  FixedComp::setNamedLinkSurf(9,"FemtoMAX",SurfMap::getSignedSurf("BackWallBack"));
+  FixedComp::setNamedLinkSurf
+    (9,"FemtoMAX",SurfMap::getSignedSurf("BackWallBack"));
 
   // Back shielding wall and the BSP01 storage room
-  FixedComp::setConnect(10,getLinkPt("FemtoMAX")+X*(femtoMAXWallOffset),Y);
-  FixedComp::setNamedLinkSurf(10, "BSP01", SurfMap::getSignedSurf("BackWallBack"));
+  FixedComp::setConnect
+    (10,getLinkPt("FemtoMAX")+X*(femtoMAXWallOffset),Y);
+  FixedComp::setNamedLinkSurf
+    (10,"BSP01",SurfMap::getSignedSurf("BackWallBack"));
 
   return;
 }

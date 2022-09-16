@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/softimaxInc/BremOpticsColl.h
  *
- * Copyright (c) 2019 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,46 +36,43 @@ namespace xraySystem
 */
 
 class BremOpticsColl :
+    public attachSystem::FixedRotate,
     public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset,
     public attachSystem::CellMap,
     public attachSystem::SurfMap,
     public attachSystem::FrontBackCut
 {
  private:
 
-  double length;                ///< Total length including void
+  double length;                   ///< Total length including void
   double extWidth;                 ///< External part Width
   double extHeight;                ///< External part Height
-  double wallThick;             ///< Wall thickness
-  double holeXStep; ///< X-offset of the hole
-  double holeZStep; ///< Z-offset of the hole
-  double holeWidth; ///< width of the hole
-  double holeHeight; ///< height of the hole
+  double wallThick;                ///< Wall thickness
+  double holeXStep;                ///< X-offset of the hole
+  double holeZStep;                ///< Z-offset of the hole
+  double holeWidth;                ///< width of the hole
+  double holeHeight;               ///< height of the hole
 
-  double colYStep; ///< absorber y offset
-  double colLength; ///< absorber length
-  double colRadius; ///< absorber radius
-  int extActive; ///< true if external part should be built
-  double extXStep; ///< x offset of external part
-  double extZStep; ///< z offset of external part
+  double colYStep;                 ///< absorber y offset
+  double colLength;                ///< absorber length
+  double colRadius;                ///< absorber radius
+  int extActive;                   ///< true if external part should be built
+  double extXStep;                 ///< x offset of external part
+  double extZStep;                 ///< z offset of external part
 
-  double innerRadius;          ///< Inner radius of hole
-  double flangeARadius;        ///< Flange A outer radius
-  double flangeAInnerRadius;   ///< Flange A inner radius
-  double flangeALength;        ///< Flange A length
-  double flangeBRadius;        ///< Flange B outer radius
+  double innerRadius;               ///< Inner radius of hole
+  double flangeARadius;             ///< Flange A outer radius
+  double flangeAInnerRadius;        ///< Flange A inner radius
+  double flangeALength;             ///< Flange A length
+  double flangeBRadius;             ///< Flange B outer radius
   double flangeBInnerRadius;        ///< Flange B outer radius
-  double flangeBLength;        ///< Flange B length
+  double flangeBLength;             ///< Flange B length
 
-  int voidMat;                  ///< Main material
-  int wallMat;                  ///< Wall material
-  int colMat; ///< absorber material
+  int voidMat;                       ///< Main material
+  int wallMat;                       ///< Wall material
+  int colMat;                        ///< absorber material
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -88,7 +85,9 @@ class BremOpticsColl :
   virtual BremOpticsColl* clone() const;
   virtual ~BremOpticsColl();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+  using FixedComp::createAll;
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

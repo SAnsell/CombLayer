@@ -236,7 +236,7 @@ FixedComp::createUnitVector(const FixedComp& FC,
   */
 {
   ELog::RegMethod RegA("FixedComp","createUnitVector(FixedComp,side)");
-  FixedComp::createUnitVector(FC,sideIndex,sideIndex);
+  FixedComp::createUnitVector(FC,sideIndex,FC,sideIndex);
   return;
 }
 
@@ -254,43 +254,58 @@ FixedComp::createUnitVector(const FixedComp& FC,
 {
   ELog::RegMethod RegA("FixedComp","createUnitVector(FixedComp,org,basis)");
 
+  FixedComp::createUnitVector(FC,orgIndex,FC,basisIndex);
+  return;
+}
+
+void
+FixedComp::createUnitVector(const FixedComp& orgFC,
+			    const long int orgIndex,
+			    const FixedComp& axisFC,
+			    const long int basisIndex)
+  /*!
+    Create the unit vectors
+    \param FC :: Fixed unit for link points
+    \param orgIndex :: SIGNED +1 side index for origin
+    \param basisIndex :: SIGNED +1 side index for direction
+  */
+{
+  ELog::RegMethod RegA("FixedComp","createUnitVector(FC,org,FC,basis)");
+
   if (basisIndex==0)
     {
-      FixedComp::createUnitVector(FC);   // may have derived case
-      Origin=FC.getLinkPt(orgIndex);
+      FixedComp::createUnitVector(axisFC);   // may have derived case
+      Origin=orgFC.getLinkPt(orgIndex);
       return;
     }
-	  
-  const size_t linkIndex=
-    (basisIndex>0) ? static_cast<size_t>(basisIndex-1) :
-    static_cast<size_t>(-basisIndex-1) ;
-  if (linkIndex>=FC.LU.size())
-    throw ColErr::IndexError<size_t>
-      (linkIndex,FC.LU.size(),
-       "LU.size()/linkIndex in object:"+FC.getKeyName()+" to object "+
-       keyName);
-     
-  const LinkUnit& LU=FC.getLU(linkIndex);
-  const double signV((basisIndex>0) ? 1.0 : -1.0);
+  if (!orgFC.hasLinkPt(orgIndex))
+    throw ColErr::InContainerError<long int>
+      (basisIndex,"orgIndex in object:"+
+       axisFC.getKeyName()+" to object "+keyName);
 
-  const Geometry::Vec3D yTest=LU.getAxis()*signV;
-      
-  Geometry::Vec3D zTest=FC.getZ();
-  Geometry::Vec3D xTest=FC.getX();
+  if (!axisFC.hasLinkPt(basisIndex))
+    throw ColErr::InContainerError<long int>
+      (basisIndex,"basisIndex in object:"+
+       axisFC.getKeyName()+" to object "+keyName);
+
+  const Geometry::Vec3D yTest=axisFC.getLinkAxis(basisIndex);
+  Geometry::Vec3D zTest=axisFC.getZ();
+  Geometry::Vec3D xTest=axisFC.getX();
   if (std::abs(zTest.dotProd(yTest))>1.0-Geometry::zeroTol)
-    zTest=FC.getY();
+    zTest=axisFC.getY();
   else if (std::abs(xTest.dotProd(yTest))>1.0-Geometry::zeroTol)
-    xTest=FC.getY();
+    xTest=axisFC.getY();
 
   Geometry::Vec3D YY=yTest;
 
   computeZOffPlane(xTest,yTest,zTest);
-  FixedComp::createUnitVector(FC.getLinkPt(orgIndex),
-		   yTest*zTest,yTest,zTest);
+  FixedComp::createUnitVector(orgFC.getLinkPt(orgIndex),
+			      yTest*zTest,yTest,zTest);
 
   return;
 }
 
+  
 void
 FixedComp::createUnitVector(const Geometry::Vec3D& OG,
 			    const Geometry::Vec3D& Axis)
@@ -1570,7 +1585,7 @@ FixedComp::getSideIndex(const std::string& sideName) const
 bool
 FixedComp::hasSideIndex(const std::string& sideName) const
   /*!
-    Find the object has a side ined
+    Find the object has a side index AND is complete 
     \param sideName :: Name with +/- at front if require to change 
     \return true if possible
   */
