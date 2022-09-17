@@ -110,6 +110,7 @@
 #include "FourPortTube.h"
 #include "CrossWayTube.h"
 #include "CrossWayBlank.h"
+#include "TubeDetBox.h"
 #include "GaugeTube.h"
 #include "BremBlock.h"
 #include "Scrapper.h"
@@ -215,7 +216,7 @@ makeSingleItem::build(Simulation& System,
 	"BremTube","HPJaws","BoxJaws","HPCombine","ViewTube",
 	"DiffPumpXIADP03","CRLTube","ExperimentalHutch",
 	"ConnectorTube","LocalShield","FlangeDome",
-	"MonoShutter","RoundMonoShutter",
+	"MonoShutter","RoundMonoShutter","TubeDetBox",
 	"Help","help"
     });
 
@@ -1471,6 +1472,17 @@ makeSingleItem::build(Simulation& System,
 	eh->addInsertCell(voidCell);
 	eh->createAll(System,World::masterOrigin(),0);
 
+	return;
+      }
+
+    if (item == "TubeDetBox")
+      {
+	std::shared_ptr<constructSystem::TubeDetBox>
+	  Box(new constructSystem::TubeDetBox("TDetBox",0));
+	OR.addObject(Box);
+	
+	Box->addInsertCell(voidCell);
+	Box->createAll(System,World::masterOrigin(),0);
 	return;
       }
 

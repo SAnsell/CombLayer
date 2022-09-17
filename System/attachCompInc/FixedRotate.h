@@ -75,6 +75,8 @@ class FixedRotate  : public FixedComp
 				const Geometry::Vec3D&);
   virtual void createUnitVector(const attachSystem::FixedComp&,
 				const long int,const long int);
+  virtual void createUnitVector(const attachSystem::FixedComp&,const long int,
+				const attachSystem::FixedComp&,const long int);
 
   virtual void createCentredUnitVector
     (const attachSystem::FixedComp&,const long int,const double);

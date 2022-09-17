@@ -39,8 +39,8 @@ namespace essSystem
 */
 
 class BunkerRoof :
-    public attachSystem::ContainedComp,
     public attachSystem::FixedComp,
+    public attachSystem::ContainedComp,
     public attachSystem::CellMap,
     public attachSystem::SurfMap
 {
@@ -70,7 +70,7 @@ class BunkerRoof :
   std::string loadFile;            ///< BunkerRoof input file
   std::string outFile;             ///< BunkerRoof output file
   
-  std::string divider;             ///< Divider if needed
+  HeadRule dividerHR;              ///< Divider if needed
   int baseSurf;                    ///< Real base surf
   int topSurf;                     ///< Real top surf
   int innerSurf;                   ///< Real inner surf
@@ -88,7 +88,7 @@ class BunkerRoof :
   void setVertSurf(const int,const int);
   void setRadialSurf(const int,const int);
   /// Set the divider string for the inner radius
-  void setDivider(const std::string& Str) { divider=Str; }
+  void setDivider(const HeadRule& HR) { dividerHR=HR; }
   
   void createSector(Simulation&,const size_t,const int,
 		    const int,const int);

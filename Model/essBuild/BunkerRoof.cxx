@@ -59,9 +59,11 @@ namespace essSystem
 {
 
 BunkerRoof::BunkerRoof(const std::string& bunkerName) :
-  attachSystem::ContainedComp(),
   attachSystem::FixedComp(bunkerName+"Roof",6),
-  attachSystem::CellMap(),attachSystem::SurfMap(),baseName(bunkerName),
+  attachSystem::ContainedComp(),
+  attachSystem::CellMap(),
+  attachSystem::SurfMap(),
+  baseName(bunkerName),
   baseSurf(0),topSurf(0),innerSurf(0),outerSurf(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -69,8 +71,9 @@ BunkerRoof::BunkerRoof(const std::string& bunkerName) :
   */
 {}
 
-BunkerRoof::BunkerRoof(const BunkerRoof& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+BunkerRoof::BunkerRoof(const BunkerRoof& A) :
+  attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   baseName(A.baseName),
@@ -79,7 +82,7 @@ BunkerRoof::BunkerRoof(const BunkerRoof& A) :
   vert(A.vert),radial(A.radial),medial(A.medial),
   nBasicVert(A.nBasicVert),basicVert(A.basicVert),
   basicMatVec(A.basicMatVec),loadFile(A.loadFile),
-  outFile(A.outFile),divider(A.divider),baseSurf(A.baseSurf),
+  outFile(A.outFile),dividerHR(A.dividerHR),baseSurf(A.baseSurf),
   topSurf(A.topSurf),innerSurf(A.innerSurf),outerSurf(A.outerSurf)
   /*!
     Copy constructor
@@ -97,8 +100,8 @@ BunkerRoof::operator=(const BunkerRoof& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       roofThick=A.roofThick;
@@ -115,7 +118,7 @@ BunkerRoof::operator=(const BunkerRoof& A)
       basicMatVec=A.basicMatVec;
       loadFile=A.loadFile;
       outFile=A.outFile;
-      divider=A.divider;
+      dividerHR=A.dividerHR;
       baseSurf=A.baseSurf;
       topSurf=A.topSurf;
       innerSurf=A.innerSurf;

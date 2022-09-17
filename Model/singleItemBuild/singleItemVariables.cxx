@@ -130,7 +130,9 @@
 #include "FlangeDomeGenerator.h"
 #include "BeamBoxGenerator.h"
 #include "MonoShutterGenerator.h"
+
 #include "RoundShutterGenerator.h"
+#include "TubeDetBoxGenerator.h"
 
 namespace setVariable
 {
@@ -714,6 +716,10 @@ SingleItemVariables(FuncDataBase& Control)
      PItemGenB,
      Geometry::Vec3D(0.0, -3.0, 0.0),
      Geometry::Vec3D(-1.0, 0.0, 0.0));
+
+
+  TubeDetBoxGenerator TDBGen;
+  TDBGen.generateBox(Control,"TDetBox",Geometry::Vec3D(0,3.15,0),8);
 
   
   // expt hutch

@@ -359,6 +359,27 @@ FixedRotate::createUnitVector(const attachSystem::FixedComp& FC,
   return;
 }
 
+void
+FixedRotate::createUnitVector(const attachSystem::FixedComp& orgFC,
+			      const long int orgIndex,
+			      const attachSystem::FixedComp& axisFC,
+			      const long int basisIndex)
+  /*!
+    Create the unit vectors
+    \param orgFC :: Fixed Component for origin
+    \param axisFC :: Fixed Component for axis
+    \param orgIndex :: link point for origin
+    \param basisIndex :: link point for basis (xyz)
+  */
+{
+  ELog::RegMethod RegA("FixedRotate","createUnitVector(int,int)");
+
+  FixedComp::createUnitVector(orgFC,orgIndex,axisFC,basisIndex);  
+  applyOffset();
+    
+  return;
+}
+
 
 void
 FixedRotate::createUnitVector(const Geometry::Vec3D& Org,
@@ -424,7 +445,7 @@ FixedRotate::createCentredUnitVector(const attachSystem::FixedComp& FC,
     \param length :: full length of object
   */
 {
-  ELog::RegMethod RegA("FixedRotate","createUnitVector(length)");
+  ELog::RegMethod RegA("FixedRotate","createCentredUnitVector(length)");
 
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();

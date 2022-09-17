@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   processInc/LayerDivide3D.h
+ * File:   monteInc/LayerDivide3D.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,7 +58,8 @@ class LayerDivide3D :
   std::pair<int,int> AWall;      ///< A wall surf numbers
   std::pair<int,int> BWall;      ///< B wall surf numbers
   std::pair<int,int> CWall;      ///< C wall surf numbers
-  std::string divider;           ///< divider string [if any]
+
+  HeadRule dividerHR;            ///< divider string [if any]
 
   DivideGrid* DGPtr;             ///< Main divider materials
 
@@ -92,7 +93,7 @@ class LayerDivide3D :
 
   void setIndexNames(const std::string&,const std::string&,
 		  const std::string&);
-  void setDivider(const std::string&);
+  void setDivider(const HeadRule&);
   void setDividerByExclude(const Simulation&,const int);
 
   void setMaterials(const std::string&);

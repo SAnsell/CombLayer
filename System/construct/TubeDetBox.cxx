@@ -3,7 +3,7 @@
  
  * File:   construct/TubeDetBox.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "surfRegister.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
@@ -55,7 +53,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -66,12 +64,13 @@
 namespace constructSystem
 {
 
-TubeDetBox::TubeDetBox(const std::string& Key,const size_t index) :
+TubeDetBox::TubeDetBox(const std::string& Key,
+		       const size_t index) :
+  attachSystem::FixedRotate(Key+std::to_string(index),6),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key+std::to_string(index),6),
-  attachSystem::CellMap(),attachSystem::SurfMap(),
-  baseName(Key),ID(index),
-  nDet(0)
+  attachSystem::CellMap(),
+  attachSystem::SurfMap(),
+  baseName(Key),ID(index),nDet(0)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -79,14 +78,17 @@ TubeDetBox::TubeDetBox(const std::string& Key,const size_t index) :
   */
 {}
 
-TubeDetBox::TubeDetBox(const TubeDetBox& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  attachSystem::CellMap(A),attachSystem::SurfMap(A),
+TubeDetBox::TubeDetBox(const TubeDetBox& A) :  
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
+  attachSystem::SurfMap(A),
   baseName(A.baseName),ID(A.ID),
+  nDet(A.nDet),
   centRadius(A.centRadius),
   tubeRadius(A.tubeRadius),wallThick(A.wallThick),
   height(A.height),detMat(A.detMat),wallMat(A.wallMat),
-  nDet(A.nDet),DPoints(A.DPoints)
+  DPoints(A.DPoints)
   /*!
     Copy constructor
     \param A :: TubeDetBox to copy
@@ -104,7 +106,7 @@ TubeDetBox::operator=(const TubeDetBox& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       centRadius=A.centRadius;
@@ -135,9 +137,7 @@ TubeDetBox::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("TubeDetBox","populate");
 
-  FixedOffset::populate(Control);
-
-  active=Control.EvalDefTail<int>(keyName,baseName,"Active",1);
+  FixedRotate::populate(Control);
 
   tubeRadius=Control.EvalTail<double>(keyName,baseName,"TubeRadius");
   wallThick=Control.EvalTail<double>(keyName,baseName,"WallThick");
@@ -169,29 +169,12 @@ TubeDetBox::populate(const FuncDataBase& Control)
 }
 
 void
-TubeDetBox::createUnitVector(const attachSystem::FixedComp& FC,
-                             const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: FixedComp for origin
-  */
-{
-  ELog::RegMethod RegA("TubeDetBox","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
-  return;
-}
-
-void
 TubeDetBox::createSurfaces()
   /*!
     Create planes for the silicon and Polyethene layers
   */
 {
   ELog::RegMethod RegA("TubeDetBox","createSurfaces");
-
-
 
   //main inner box
   
@@ -234,7 +217,6 @@ TubeDetBox::createSurfaces()
 			       Origin+ZDist+Z*(gap+outerThick),Z);
     }
 
-
   if (nDet)
     {  
       Geometry::Vec3D tubeCent(Origin-XGap*(static_cast<double>(nDet-1)/2.0));
@@ -270,50 +252,47 @@ TubeDetBox::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("TubeDetBox","createObjects");
 
-  if (active)
+
+  HeadRule HR,mainBodyHR;
+  int DI(buildIndex);
+  for(size_t i=0;i<nDet;i++)
     {
-      std::string Out;
-      std::string mainBody;
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,DI,"5 -6 -7M");
+      makeCell("Tubes",System,cellIndex++,detMat,0.0,HR);
+      addCell("Tube"+std::to_string(i),cellIndex-1);
       
-      int DI(buildIndex);
-      for(size_t i=0;i<nDet;i++)
-        {
-          Out=ModelSupport::getComposite(SMap,buildIndex,DI," 5 -6 -7M ");
-          System.addCell(MonteCarlo::Object(cellIndex++,detMat,0.0,Out));
-          addCell("Tubes",cellIndex-1);
-          addCell("Tube"+std::to_string(i),cellIndex-1);
-          
-          Out=ModelSupport::getComposite(SMap,buildIndex,DI,
-                                         " 15 -16 (-5:6:7M) -17M ");
-          System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
-          
-          mainBody+=ModelSupport::getComposite(SMap,DI," 17 ");
-          DI+=100;
-        }
-	  // Main body:
-      Out= ModelSupport::getComposite(SMap,buildIndex,
-					  " 1001 -1002 15 -16  1003 -1004 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+mainBody));
-      if (outerMat>=0) 
-	{
-	  Out= ModelSupport::getComposite
-	    (SMap,buildIndex," 1001 -2002 2005 -2006  2003 -2004  "
-                           " (1002:-15:16:-1003:1004)");
-	  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-	  // filter
-	  Out= ModelSupport::getComposite
-	    (SMap,buildIndex," 2001 -1001 -2002 2005 -2006  2003 -2004  ");
-	  System.addCell(MonteCarlo::Object(cellIndex++,filterMat,0.0,Out));
-	  // outer wall
-	  Out= ModelSupport::getComposite
-	    (SMap,buildIndex," 2001 -2012 2015 -2016  2013 -2014  "
-                           " (2002:-2003:2004:-2005:2006)");
-	  System.addCell(MonteCarlo::Object(cellIndex++,outerMat,0.0,Out));
-	  Out= ModelSupport::getComposite
-	    (SMap,buildIndex," 2001 -2012 2015 -2016  2013 -2014 ");
-	}
-      addOuterSurf(Out);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,DI,"15 -16 (-5:6:7M) -17M");
+      System.addCell(cellIndex++,wallMat,0.0,HR);
+      
+      mainBodyHR *= HeadRule(SMap,DI,17);
+      DI+=100;
     }
+  // Main body:
+  HR= ModelSupport::getHeadRule
+    (SMap,buildIndex,"1001 -1002 15 -16 1003 -1004");
+  System.addCell(cellIndex++,0,0.0,HR*mainBodyHR);
+  if (outerMat>=0) 
+    {
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"1001 -2002 2005 -2006 2003 -2004 "
+	 " (1002:-15:16:-1003:1004)");
+      System.addCell(cellIndex++,0,0.0,HR);
+      // filter
+      HR=ModelSupport::getHeadRule 
+	(SMap,buildIndex," 2001 -1001 -2002 2005 -2006  2003 -2004  ");
+      makeCell("Filter",System,cellIndex++,filterMat,0.0,HR);
+      // outer wall
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex," 2001 -2012 2015 -2016  2013 -2014  "
+	 " (2002:-2003:2004:-2005:2006)");
+      System.addCell(cellIndex++,outerMat,0.0,HR);
+      
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"2001 -2012 2015 -2016  2013 -2014");
+    }
+  addOuterSurf(HR);
+
   return; 
 }
 

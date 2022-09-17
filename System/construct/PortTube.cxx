@@ -3,7 +3,7 @@
  
  * File:   construct/PortTube.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -218,75 +217,75 @@ PortTube::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("PortTube","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -7 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -7");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
   // main walls
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -17 7 -2 ");
-  makeCell("MainTube",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -17 7 -2");
+  makeCell("MainTube",System,cellIndex++,wallMat,0.0,HR);
 
   // plates front/back
   if ((portARadius+portAThick-(radius+wallThick))< -Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," -1 11 -17 117 ");
-      makeCell("FrontPlate",System,cellIndex++,wallMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 11 -17 117");
+      makeCell("FrontPlate",System,cellIndex++,wallMat,0.0,HR);
     }
   if ((portBRadius+portBThick-radius-wallThick)< -Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 -17 217 ");
-      makeCell("BackPlate",System,cellIndex++,wallMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 -17 217");
+      makeCell("BackPlate",System,cellIndex++,wallMat,0.0,HR);
     }
 
   // port:
-  const std::string frontSurf(frontRule());
-  const std::string backSurf(backRule());
+  const HeadRule& frontHR=getRule("front");
+  const HeadRule& backHR=getRule("back");
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1  -107 ");
-  makeCell("FrontPortVoid",System,cellIndex++,voidMat,0.0,Out+frontSurf);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -207 ");
-  makeCell("BackPortVoid",System,cellIndex++,voidMat,0.0,Out+backSurf);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1  -107");
+  makeCell("FrontPortVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -207");
+  makeCell("BackPortVoid",System,cellIndex++,voidMat,0.0,HR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1 107 -117");
-  makeCell("FrontPortWall",System,cellIndex++,wallMat,0.0,Out+frontSurf);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 207 -217 ");
-  makeCell("BackPortWall",System,cellIndex++,wallMat,0.0,Out+backSurf);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 107 -117");
+  makeCell("FrontPortWall",System,cellIndex++,wallMat,0.0,HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 207 -217");
+  makeCell("BackPortWall",System,cellIndex++,wallMat,0.0,HR*backHR);
 
   // flanges
-  Out=ModelSupport::getComposite(SMap,buildIndex," -111 117 -127 ");
-  makeCell("FrontPortFlange",System,cellIndex++,wallMat,0.0,Out+frontSurf);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 212 217 -227 ");
-  makeCell("BackPortFlange",System,cellIndex++,wallMat,0.0,Out+backSurf);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-111 117 -127");
+  makeCell("FrontPortFlange",System,cellIndex++,wallMat,0.0,HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"212 217 -227");
+  makeCell("BackPortFlange",System,cellIndex++,wallMat,0.0,HR*backHR);
 
   // OUTER SURF:
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 -17 ");
-  addOuterSurf("Main",Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 -17");
+  addOuterSurf("Main",HR);
   
   // outer void
   if (portAOuterFlag)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," -11 111 117 -127 ");
-      makeCell("FrontPortOuterVoid",System,cellIndex++,0,0.0,Out);
-      Out=ModelSupport::getComposite(SMap,buildIndex,"-11 -127 ");
-      addOuterSurf("FlangeA",Out+frontSurf);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 111 117 -127");
+      makeCell("FrontPortOuterVoid",System,cellIndex++,0,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -127");
+      addOuterSurf("FlangeA",HR*frontHR);
     }
   else
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,"-11 -127 (-117:-111) ");
-      addOuterSurf("FlangeA",Out+frontSurf);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -127 (-117:-111)");
+      addOuterSurf("FlangeA",HR*frontHR);
     }
 
   if (portBOuterFlag)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 12 -212 117 -227 ");
-      makeCell("BackPortOuterVoid",System,cellIndex++,0,0.0,Out);
-      Out=ModelSupport::getComposite(SMap,buildIndex," 12 -227 ");
-      addOuterSurf("FlangeB",Out+backSurf);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -212 117 -227");
+      makeCell("BackPortOuterVoid",System,cellIndex++,0,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -227");
+      addOuterSurf("FlangeB",HR*backHR);
     }
   else
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 12 -227 ( -217:212 ) ");
-      addOuterSurf("FlangeB",Out+backSurf);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -227 (-217:212)");
+      addOuterSurf("FlangeB",HR*backHR);
     }     
   return;
 }

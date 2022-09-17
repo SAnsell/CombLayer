@@ -561,8 +561,8 @@ portItem::addFlangeCut(MonteCarlo::Object* obj) const
   ELog::RegMethod RegA("portItem","addFlangeCut");
   if (!outerFlag)
     {
-      const HeadRule HR
-	(ModelSupport::getComposite(SMap,buildIndex," ( 27 : -102 )"));
+      const HeadRule HR=
+	ModelSupport::getHeadRule(SMap,buildIndex,"(27 : -102)");
       obj->addIntersection(HR);
     }
   return;

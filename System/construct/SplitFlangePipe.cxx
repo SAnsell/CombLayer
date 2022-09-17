@@ -3,7 +3,7 @@
 
  * File:   construct/SplitFlangePipe.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -200,6 +200,9 @@ SplitFlangePipe::createUnitVector(const attachSystem::FixedComp& FC,
                              const long int sideIndex)
   /*!
     Create the unit vectors
+    Note that the active:front/back is applied afterwards.
+    This corrects the mid point and Y based on front/back surfaces.
+    
     \param FC :: Fixed component to link to
     \param sideIndex :: Link point and direction [0 for origin]
   */
@@ -289,28 +292,28 @@ SplitFlangePipe::createSurfaces()
 void
 SplitFlangePipe::createObjects(Simulation& System)
   /*!
-    Adds the vacuum box
+    Adds the vacuum pipe and surround
     \param System :: Simulation to create objects in
   */
 {
   ELog::RegMethod RegA("SplitFlangePipe","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
-  const std::string frontStr=frontRule();
-  const std::string backStr=backRule();
+  const HeadRule& frontHR=getRule("front");
+  const HeadRule& backHR=getRule("back");
 
   // Void
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
   // FLANGE Front:
-  Out=ModelSupport::getComposite(SMap,buildIndex," -11 -107 7 ");
-  makeCell("FrontFlange",System,cellIndex++,feMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -107 7");
+  makeCell("FrontFlange",System,cellIndex++,feMat,0.0,HR*frontHR);
 
   // FLANGE Back:
-  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -207 7 ");
-  makeCell("BackFlange",System,cellIndex++,feMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -207 7");
+  makeCell("BackFlange",System,cellIndex++,feMat,0.0,HR*backHR);
 
   // Inner clip if present
   if (bellowStep>Geometry::zeroTol)
@@ -318,56 +321,56 @@ SplitFlangePipe::createObjects(Simulation& System)
 
       if (innerLayer)
 	{
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 -17 7");
-	  makeCell("MainPipe",System,cellIndex++,feMat,0.0,Out);
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -22 -27 17");
-	  makeCell("Cladding",System,cellIndex++,bellowMat,0.0,Out);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 -17 7");
+	  makeCell("MainPipe",System,cellIndex++,feMat,0.0,HR);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -22 -27 17");
+	  makeCell("Cladding",System,cellIndex++,bellowMat,0.0,HR);
 	}
       else
 	{
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -21 -17 7 ");
-	  makeCell("FrontClip",System,cellIndex++,feMat,0.0,Out);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -21 -17 7");
+	  makeCell("FrontClip",System,cellIndex++,feMat,0.0,HR);
 
-	  Out=ModelSupport::getComposite(SMap,buildIndex," -12 22 -17 7 ");
-	  makeCell("BackClip",System,cellIndex++,feMat,0.0,Out);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 22 -17 7");
+	  makeCell("BackClip",System,cellIndex++,feMat,0.0,HR);
 
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -22 -27 7");
-	  makeCell("Bellow",System,cellIndex++,bellowMat,0.0,Out);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -22 -27 7");
+	  makeCell("Bellow",System,cellIndex++,bellowMat,0.0,HR);
 	}
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," 11 -21 -27 17");
-      makeCell("FrontSpaceVoid",System,cellIndex++,0,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -21 -27 17");
+      makeCell("FrontSpaceVoid",System,cellIndex++,0,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," -12 22 -27 17");
-      makeCell("BackSpaceVoid",System,cellIndex++,0,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 22 -27 17");
+      makeCell("BackSpaceVoid",System,cellIndex++,0,0.0,HR);
     }
   else
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 11 -22 -27 7 ");
-      makeCell("Bellow",System,cellIndex++,bellowMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -22 -27 7");
+      makeCell("Bellow",System,cellIndex++,bellowMat,0.0,HR);
     }
 
   // we can simplify outer void if the flanges have the same radii
   if (std::abs(flangeARadius-flangeBRadius)<Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 27 -107 ");
-      makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 27 -107");
+      makeCell("OuterVoid",System,cellIndex++,0,0.0,HR);
 
-      Out=ModelSupport::getSetComposite(SMap,buildIndex," -107");
-      addOuterUnionSurf(Out+frontStr+backStr);
+      HR=HeadRule(SMap,buildIndex,-107);
+      addOuterUnionSurf(HR*frontHR*backHR);
     }
   else
     {
       // outer boundary [flange front]
-      Out=ModelSupport::getSetComposite(SMap,buildIndex," -11 -107 ");
-      addOuterSurf(Out+frontStr);
-      Out=ModelSupport::getSetComposite(SMap,buildIndex," 12 -207 ");
-      addOuterUnionSurf(Out+backStr);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -107");
+      addOuterSurf(HR*frontHR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -207");
+      addOuterUnionSurf(HR*backHR);
 
 
       // outer boundary mid tube
-      Out=ModelSupport::getSetComposite(SMap,buildIndex," 11 -12 -27");
-      addOuterUnionSurf(Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 -27");
+      addOuterUnionSurf(HR);
     }
 
   return;

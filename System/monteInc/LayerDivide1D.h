@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   processInc/LayerDivide1D.h
+ * File:   monteInc/LayerDivide1D.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +50,7 @@ class LayerDivide1D  : public attachSystem::FixedUnit,
 
   std::string WallID;            ///< ID names for walls
   std::pair<int,int> AWall;      ///< A wall surf numbers
-  std::string divider;           ///< divider string [if any]
+  HeadRule dividerHR;           ///< divider string [if any]
 
   std::string objName;           ///< XML component name
   std::string loadFile;          ///< File to load
@@ -79,7 +79,7 @@ class LayerDivide1D  : public attachSystem::FixedUnit,
   void setFractions(const size_t);
 
   void setIndexNames(const std::string&);
-  void setDivider(const std::string&);
+  void setDivider(const HeadRule&);
 
   void setMaterials(const std::string&);
   void setMaterials(const std::vector<std::string>&);

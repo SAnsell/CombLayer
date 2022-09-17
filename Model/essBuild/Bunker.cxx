@@ -468,12 +468,13 @@ Bunker::createMainRoof(Simulation& System,const int innerSurf)
   const int rwIndex((rightWallFlag) ? buildIndex+10 : buildIndex);
   int divIndex(buildIndex+1000);
 
-  const std::string Out=ModelSupport::getComposite(SMap,buildIndex," 1 ");
+  const HeadRule HR(SMap,buildIndex,1);
   roofObj->initialize(System.getDataBase(),*this,6);
-  roofObj->setVertSurf(SMap.realSurf(buildIndex+6),SMap.realSurf(buildIndex+16));
+  roofObj->setVertSurf(SMap.realSurf(buildIndex+6),
+		       SMap.realSurf(buildIndex+16));
   
   roofObj->setRadialSurf(SMap.realSurf(innerSurf),SMap.realSurf(outerSurf));
-  roofObj->setDivider(Out);
+  roofObj->setDivider(HR);
 
   for(size_t i=0;i<nSectors;i++)
     {
@@ -514,13 +515,13 @@ Bunker::createMainWall(Simulation& System)
   const int rwIndex((rightWallFlag) ? buildIndex+10 : buildIndex);
   int divIndex(buildIndex+1000);
 
-  const std::string Out=ModelSupport::getComposite(SMap,buildIndex," 1 ");
+  const HeadRule HR(SMap,buildIndex,1);
 
   wallObj->createAll(System,*this,0);
   wallObj->setVertSurf(SMap.realSurf(buildIndex+5),
 		       SMap.realSurf(buildIndex+106));
   wallObj->setRadialSurf(SMap.realSurf(innerSurf),SMap.realSurf(outerSurf));
-  wallObj->setDivider(Out);
+  wallObj->setDivider(HR);
 
   for(size_t i=0;i<nSectors;i++)
     {

@@ -3,7 +3,7 @@
  
  * File:   constructInc/TubeDetBox.h
 *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,40 +35,38 @@ namespace constructSystem
   \brief Grid of detector objects 
 */
 
-class TubeDetBox : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
-  public attachSystem::CellMap,
-  public attachSystem::SurfMap
+class TubeDetBox :
+    public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
+    public attachSystem::CellMap,
+    public attachSystem::SurfMap
 {
  private:
 
   const std::string baseName;  ///< Base name
   const size_t ID;             ///< ID Number
 
-
-  int active;                   ///< Build / no build flag
+  size_t nDet;                  ///< Number of detectors
+  
   double centRadius;            ///< Radius of from centre
   double tubeRadius;            ///< Radius of detector
   double wallThick;             ///< Outer wall thickness
   double height;                ///< Height/depth
 
-  double gap;              ///< Gap thickness
-  double outerThick;        ///< Wall thickness
+  double gap;                    ///< Gap thickness
+  double outerThick;             ///< Wall thickness
 
   int detMat;                   ///< Detector material
   int wallMat;                  ///< Wall material
   int outerMat;                 ///< Outer material
   int filterMat;                 ///< Outer material
 
-  size_t nDet;                  ///< Number of detectors
+
   std::vector<Geometry::Vec3D> DPoints;  ///< Centre points
 
   // Functions:
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -80,7 +78,7 @@ class TubeDetBox : public attachSystem::ContainedComp,
   TubeDetBox& operator=(const TubeDetBox&);
   virtual ~TubeDetBox();
 
-  void createTally(Simulation&) const;
+  using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);

@@ -81,7 +81,7 @@ BunkerWall::BunkerWall(const BunkerWall& A) :
   nRadial(A.nRadial),nMedial(A.nMedial),vert(A.vert),
   radial(A.radial),medial(A.medial),nBasic(A.nBasic),
   basic(A.basic),basicMatVec(A.basicMatVec),
-  loadFile(A.loadFile),outFile(A.outFile),divider(A.divider),
+  loadFile(A.loadFile),outFile(A.outFile),dividerHR(A.dividerHR),
   frontSurf(A.frontSurf),backSurf(A.backSurf),
   topSurf(A.topSurf),baseSurf(A.baseSurf)
   /*!
@@ -118,7 +118,7 @@ BunkerWall::operator=(const BunkerWall& A)
       basicMatVec=A.basicMatVec;
       loadFile=A.loadFile;
       outFile=A.outFile;
-      divider=A.divider;
+      dividerHR=A.dividerHR;
       frontSurf=A.frontSurf;
       backSurf=A.backSurf;
       topSurf=A.topSurf;
@@ -241,7 +241,7 @@ BunkerWall::createSector(Simulation& System,
   LD3.setSurfPair(0,frontSurf,backSurf);
   LD3.setSurfPair(1,lwIndex,rwIndex);
   LD3.setSurfPair(2,baseSurf,topSurf);
-  LD3.setDivider(divider);
+  LD3.setDivider(dividerHR);
 
   const bool AFlag (activeWall & (1 << sectNum));
 
