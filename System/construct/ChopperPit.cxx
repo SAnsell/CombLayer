@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -72,8 +70,7 @@ ChopperPit::ChopperPit(const std::string& Key) :
   attachSystem::FixedRotateGroup(Key,"Inner",6,"Mid",6,"Outer",6),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
-  attachSystem::CellMap(),
-  activeFront(0)
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -85,7 +82,6 @@ ChopperPit::ChopperPit(const ChopperPit& A) :
   attachSystem::ContainedComp(A),
   attachSystem::ExternalCut(A),
   attachSystem::CellMap(A),
-  activeFront(A.activeFront),frontCut(A.frontCut),
   voidHeight(A.voidHeight),voidWidth(A.voidWidth),
   voidDepth(A.voidDepth),voidLength(A.voidLength),
   feHeight(A.feHeight),feDepth(A.feDepth),feWidth(A.feWidth),
@@ -115,8 +111,6 @@ ChopperPit::operator=(const ChopperPit& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::ExternalCut::operator=(A);
       attachSystem::CellMap::operator=(A);
-      activeFront=A.activeFront;
-      frontCut=A.frontCut;
       voidHeight=A.voidHeight;
       voidWidth=A.voidWidth;
       voidDepth=A.voidDepth;
@@ -174,7 +168,6 @@ ChopperPit::populate(const FuncDataBase& Control)
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
   concMat=ModelSupport::EvalMat<int>(Control,keyName+"ConcMat");
 
-  
   concHeight=Control.EvalVar<double>(keyName+"ConcHeight");
   concDepth=Control.EvalVar<double>(keyName+"ConcDepth");
   concWidth=Control.EvalVar<double>(keyName+"ConcWidth");
@@ -229,8 +222,9 @@ ChopperPit::createSurfaces()
   ELog::RegMethod RegA("ChopperPit","createSurfaces");
 
   // Inner void
-  if (!activeFront)
+  if (!isActive("front"))
     ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(voidLength/2.0),Y);
+      
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(voidLength/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(voidWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(voidWidth/2.0),X);
@@ -238,7 +232,7 @@ ChopperPit::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*voidHeight,Z);  
 
   // Fe system [front face is link surf]
-  if (!activeFront)
+  if (!isActive("front"))
     ModelSupport::buildPlane(SMap,buildIndex+11,
 			     Origin-Y*(feFront+voidLength/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+12,
@@ -253,7 +247,7 @@ ChopperPit::createSurfaces()
 			   Origin+Z*(voidHeight+feHeight),Z);  
 
   // Conc system
-  if (!activeFront)
+  if (!isActive("front"))
     ModelSupport::buildPlane(SMap,buildIndex+21,
 			     Origin-Y*(feFront+concFront+voidLength/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+22,
@@ -298,53 +292,48 @@ ChopperPit::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("ChopperPit","createObjects");
 
-  std::string Out;
-  const std::string frontSurf=frontCut.display();
-  // Void 
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+frontSurf));
-  setCell("Void",cellIndex-1);
+
+  HeadRule HR;
+  const HeadRule frontHR=getRule("front"); // returns null if not set
+
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  makeCell("Void",System,cellIndex++,0,0.0,HR*frontHR);
 
   HeadRule Collet;
   if (colletMat>=0)
     {
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"2 -102 103 -104 105 -106");
-      Collet.procString(Out);
-      System.addCell(MonteCarlo::Object(cellIndex++,colletMat,0.0,Out));
-      Collet.makeComplement();
-      setCell("Collet",cellIndex-1);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -102 103 -104 105 -106");
+      makeCell("Collet",System,cellIndex++,colletMat,0.0,HR);
+      Collet=HR.complement();
     }
 
   // Split into three to allow beampiles more readilty
   // front:
-  if (!activeFront)
+  if (!isActive("front"))
     {
-      Out=ModelSupport::getSetComposite(SMap,buildIndex," 11 -1 3 -4 5 -6 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out+frontSurf));
-      addCell("MidLayerFront",cellIndex-1);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -1 3 -4 5 -6");
+      makeCell("MidLayerFront",System,cellIndex++,feMat,0.0,HR);
       addCell("MidLayer",cellIndex-1);
     }
     
   // Sides:
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"11 -12 13 -14 15 -16 (-3:4:-5:6)");
-  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out+frontSurf));
-  addCell("MidLayerSide",cellIndex-1);
+  HR=ModelSupport::getSetHeadRule
+    (SMap,buildIndex,"11 -12 13 -14 15 -16 (-3:4:-5:6)");
+  makeCell("MidLayerSide",System,cellIndex++,feMat,0.0,HR*frontHR);
+
   // back
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"2 -12 3 -4 5 -6");
-  Out+=Collet.display();
-  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
-  addCell("MidLayerBack",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 3 -4 5 -6");
+  makeCell("MidLayerBack",System,cellIndex++,feMat,0.0,HR*Collet);
   addCell("MidLayer",cellIndex-1);
   
   // Make full exclude:
-  Out=ModelSupport::getSetComposite
+  HR=ModelSupport::getSetHeadRule
     (SMap,buildIndex,"21 -22 23 -24 25 -26 (-11:12:-13:14:-15:16)");
-  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out+frontSurf));
-  setCell("Outer",cellIndex-1);
+  makeCell("Outer",System,cellIndex++,concMat,0.0,HR*frontHR);
 
   // Exclude:
-  Out=ModelSupport::getSetComposite(SMap,buildIndex," 21 -22 23 -24 25 -26 ");
-  addOuterSurf(Out+frontSurf);      
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"21 -22 23 -24 25 -26");
+  addOuterSurf(HR*frontHR);      
 
   return;
 }
@@ -463,7 +452,7 @@ ChopperPit::createLinks()
 {
   ELog::RegMethod RegA("ChopperPit","createLinks");
   
-  if (!activeFront)
+  if (!isActive("front"))
     createFrontLinks();
   createCommonLinks();
   return;
@@ -478,8 +467,8 @@ ChopperPit::addFrontWall(const attachSystem::FixedComp& WFC,
   */
 {
   createFrontLinks(WFC,sideIndex);
-  frontCut=WFC.getFullRule(sideIndex);
-  activeFront=1;
+  setCutSurf("front",WFC,sideIndex);
+
   return;
 }
   

@@ -3,7 +3,7 @@
  
  * File:   constructInc/PinHole.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef essSystem_PinHole_h
-#define essSystem_PinHole_h
+#ifndef constructSystem_PinHole_h
+#define constructSystem_PinHole_h
 
 class Simulation;
 
@@ -38,12 +38,11 @@ namespace constructSystem
 */
 
 class PinHole :
-    public attachSystem::ContainedComp,
     public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
     public attachSystem::CellMap
 {
  private:
-
 
   /// First collimator
   std::shared_ptr<constructSystem::RotaryCollimator> CollA;

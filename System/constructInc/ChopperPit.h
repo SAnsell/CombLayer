@@ -43,9 +43,6 @@ class ChopperPit :
 {
  private:
 
-  bool activeFront;             ///< Pit doesn't have front
-  HeadRule frontCut;            ///< Front cut
-
   double voidHeight;            ///< void height [top only]
   double voidWidth;             ///< void width [total]
   double voidDepth;             ///< void depth [low only]

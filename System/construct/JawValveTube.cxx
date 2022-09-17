@@ -174,21 +174,22 @@ JawValveTube::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("JawValveTube","createObjects");
 
-  std::string Out;
+  HeadRule HR;
+  
+  const HeadRule fbSurf=
+    getRule("front")*getRule("back");
 
-  const std::string fbSurf=
-    FrontBackCut::frontRule()+FrontBackCut::backRule();
-  // Void 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-7 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+fbSurf);
+  // Void
+  HR=HeadRule(SMap,buildIndex,-7);
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*fbSurf);
 
   // Main body
-  Out=ModelSupport::getComposite(SMap,buildIndex,"  -17 7 ");
-  makeCell("Body",System,cellIndex++,wallMat,0.0,Out+fbSurf);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 7");
+  makeCell("Body",System,cellIndex++,wallMat,0.0,HR*fbSurf);
 
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-17 ");
-  addOuterSurf(Out+fbSurf);
+  HR=HeadRule(SMap,buildIndex,-17);
+  addOuterSurf(HR*fbSurf);
 
   return;
 }

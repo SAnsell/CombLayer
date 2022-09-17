@@ -3,7 +3,7 @@
  
  * File:   construct/voidCylVolume.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,8 +39,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "surfRegister.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
@@ -55,7 +53,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "voidCylVolume.h"
 
@@ -63,7 +61,8 @@ namespace constructSystem
 {
 
 voidCylVolume::voidCylVolume(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,0),
+  attachSystem::FixedRotate(Key,0),
+  attachSystem::ContainedComp(),
   nSegment(0)
   /*!
     Constructor
@@ -72,7 +71,7 @@ voidCylVolume::voidCylVolume(const std::string& Key) :
 {}
 
 voidCylVolume::voidCylVolume(const voidCylVolume& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedRotate(A),
   nSegment(A.nSegment),radius(A.radius),thick(A.thick),
   height(A.height)
   /*!
@@ -92,7 +91,7 @@ voidCylVolume::operator=(const voidCylVolume& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       nSegment=A.nSegment;
       radius=A.radius;
       thick=A.thick;
@@ -116,7 +115,7 @@ voidCylVolume::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("voidCylVolume","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
       
     // Master values
   nSegment=Control.EvalVar<size_t>(keyName+"NSegment");
@@ -124,23 +123,6 @@ voidCylVolume::populate(const FuncDataBase& Control)
   radius=Control.EvalVar<double>(keyName+"Radius");
   thick=Control.EvalVar<double>(keyName+"Thick");
   height=Control.EvalVar<double>(keyName+"Height");
-  return;
-}
-
-void
-voidCylVolume::createUnitVector(const attachSystem::FixedComp& FC,
-				const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed Component for axis/origin
-    \param sideIndex :: link point
-  */
-{
-  ELog::RegMethod RegA("voidCylVolume","createUnitVector");
-
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
   return;
 }
 
@@ -186,22 +168,22 @@ voidCylVolume::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("voidCylVolume","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   
   int SI(buildIndex+10);
   for(size_t i=1;i<nSegment;i++)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-				     "5 -6  1M -2M 101M -201M");
-      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-      addOuterUnionSurf(Out);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,SI,"5 -6  1M -2M 101M -201M");
+      System.addCell(cellIndex++,0,0.0,HR);
+      addOuterUnionSurf(HR);
       SI++;
     }
   // Join
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-				 "5 -6  1M -11 101M -201M");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  addOuterUnionSurf(Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,SI,"5 -6  1M -11 101M -201M");
+  System.addCell(cellIndex++,0,0.0,HR);
+  addOuterUnionSurf(HR);
 
   return; 
 }

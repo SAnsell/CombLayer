@@ -3,7 +3,7 @@
  
  * File:   construct/LineShield.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,8 +39,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -61,6 +59,8 @@
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "ExternalCut.h"
+#include "FrontBackCut.h"
 #include "SurInter.h"
 #include "surfDIter.h"
 
@@ -71,8 +71,9 @@ namespace constructSystem
 
 LineShield::LineShield(const std::string& Key) : 
   attachSystem::FixedOffset(Key,6),
-  attachSystem::ContainedComp(),attachSystem::CellMap(),
-  activeFront(0),activeBack(0)
+  attachSystem::ContainedComp(),
+  attachSystem::FrontBackCut(),
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -80,11 +81,10 @@ LineShield::LineShield(const std::string& Key) :
 {}
 
 LineShield::LineShield(const LineShield& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::FrontBackCut(A),
   attachSystem::CellMap(A),
-  activeFront(A.activeFront),activeBack(A.activeBack),
-  frontSurf(A.frontSurf),frontCut(A.frontCut),
-  backSurf(A.backSurf),backCut(A.backCut),
   length(A.length),left(A.left),right(A.right),
   height(A.height),depth(A.depth),defMat(A.defMat),
   nSeg(A.nSeg),nWallLayers(A.nWallLayers),
@@ -110,13 +110,8 @@ LineShield::operator=(const LineShield& A)
     {
       attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
+      attachSystem::FrontBackCut::operator=(A);
       attachSystem::CellMap::operator=(A);
-      activeFront=A.activeFront;
-      activeBack=A.activeBack;
-      frontSurf=A.frontSurf;
-      frontCut=A.frontCut;
-      backSurf=A.backSurf;
-      backCut=A.backCut;
       length=A.length;
       left=A.left;
       right=A.right;
@@ -152,8 +147,9 @@ LineShield::removeFrontOverLap()
 {
   ELog::RegMethod RegA("LineShield","removeFrontOverLap");
 
-  if (activeFront)
+  if (isActive("front"))
     {
+      HeadRule frontSurf=getRule("front");
       size_t index(1);
       const double segStep(length/static_cast<double>(nSeg));
       // note : starts one step ahead of front.
@@ -225,25 +221,6 @@ LineShield::populate(const FuncDataBase& Control)
 }
 
 void
-LineShield::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("LineShield","createUnitVector");
-
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  // after rotation
-  Origin+=Y*(length/2.0);
-  return;
-}
-
-void
 LineShield::createSurfaces()
   /*!
     Create the surfaces. Note that layers is not used
@@ -253,14 +230,19 @@ LineShield::createSurfaces()
   ELog::RegMethod RegA("LineShield","createSurfaces");
 
   // Inner void
-  if (!activeFront)
-    ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
-      
-  if (!activeBack)
-    ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
-
-  if (activeFront)
+  if (!isActive("front"))
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
+      setFront(SMap.realSurf(buildIndex+1));
+    }
+  else
     removeFrontOverLap();
+  
+  if (!isActive("back"))
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+      setBack(-SMap.realSurf(buildIndex+2));
+    }
   
   const double segStep(length/static_cast<double>(nSeg));
   double segLen(-length/2.0);
@@ -309,31 +291,22 @@ LineShield::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("LineShield","createObjects");
 
-  std::string Out;
-  
-  const std::string frontStr
-    (activeFront ? frontSurf.display()+frontCut.display() : 
-     ModelSupport::getComposite(SMap,buildIndex," 1 "));
-  const std::string backStr
-    (activeBack ? backSurf.display()+backCut.display() : 
-     ModelSupport::getComposite(SMap,buildIndex," -2 "));
+  HeadRule HR;
+  const HeadRule& frontHR=getRule("front");
+  const HeadRule& backHR=getRule("back");
 
   // Inner void is a single segment
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
-  makeCell("Void",System,cellIndex++,0,0.0,Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
+  makeCell("Void",System,cellIndex++,0,0.0,HR*frontHR*backHR);
 
   // Loop over all segments:
-  std::string FBStr;
+  HeadRule FBHR;
   int SI(buildIndex);
   int WI(buildIndex),RI(buildIndex),FI(buildIndex);    
   for(size_t index=0;index<nSeg;index++)
     {
-      FBStr=((index) ?
-	     ModelSupport::getComposite(SMap,SI," 2 ") :
-	     frontStr);
-      FBStr+= ((index+1!=nSeg) ?
-	       ModelSupport::getComposite(SMap,SI," -12 ") :
-	       backStr);
+      FBHR=  (index) ? HeadRule(SMap,SI,2) : frontHR;
+      FBHR*= (index+1!=nSeg) ?  HeadRule(SMap,SI,-12) : backHR;
       SI+=10; 
 
       // Inner is a single component
@@ -341,13 +314,11 @@ LineShield::createObjects(Simulation& System)
       WI=buildIndex;
       for(size_t i=1;i<nWallLayers;i++)
 	{
-	  Out=ModelSupport::getComposite(SMap,WI,buildIndex," 13 -3 5M -6M ");
-	  System.addCell(MonteCarlo::Object
-			 (cellIndex++,wallMat[i],0.0,Out+FBStr));
+	  HR=ModelSupport::getHeadRule(SMap,WI,buildIndex,"13 -3 5M -6M");
+	  System.addCell(cellIndex++,wallMat[i],0.0,HR*FBHR);
 		 
-	  Out=ModelSupport::getComposite(SMap,WI,buildIndex," 4 -14 5M -6M ");
-	  System.addCell(MonteCarlo::Object
-			 (cellIndex++,wallMat[i],0.0,Out+FBStr));
+	  HR=ModelSupport::getHeadRule(SMap,WI,buildIndex,"4 -14 5M -6M");
+	  System.addCell(cellIndex++,wallMat[i],0.0,HR*FBHR);
 	  WI+=10;
 	}
 
@@ -355,9 +326,8 @@ LineShield::createObjects(Simulation& System)
       RI=buildIndex;
       for(size_t i=1;i<nRoofLayers;i++)
 	{
-	  Out=ModelSupport::getComposite(SMap,RI,buildIndex," 3M -4M -16 6 ");
-	  System.addCell(MonteCarlo::Object
-			 (cellIndex++,roofMat[i],0.0,Out+FBStr));
+	  HR=ModelSupport::getHeadRule(SMap,RI,buildIndex,"3M -4M -16 6");
+	  System.addCell(cellIndex++,roofMat[i],0.0,HR*FBHR);
 	  RI+=10;
 	}
     
@@ -365,9 +335,8 @@ LineShield::createObjects(Simulation& System)
       FI=buildIndex;
       for(size_t i=1;i<nFloorLayers;i++)
 	{
-	  Out=ModelSupport::getComposite(SMap,FI,WI," 3M -4M -5 15 ");
-	  System.addCell(MonteCarlo::Object
-			 (cellIndex++,floorMat[i],0.0,Out+FBStr));
+	  HR=ModelSupport::getHeadRule(SMap,FI,WI," 3M -4M -5 15");
+	  System.addCell(cellIndex++,floorMat[i],0.0,HR*FBHR);
 	  FI+=10;
 	}
       
@@ -380,19 +349,19 @@ LineShield::createObjects(Simulation& System)
 	    {
 	      const int mat((i>j) ? roofMat[i] : wallMat[j]);
 
-	      Out=ModelSupport::getComposite(SMap,WI,RI," -3 13 6M -16M ");
-	      System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out+FBStr));
+	      HR=ModelSupport::getHeadRule(SMap,WI,RI,"-3 13 6M -16M");
+	      System.addCell(cellIndex++,mat,0.0,HR*FBHR);
 	      
-	      Out=ModelSupport::getComposite(SMap,WI,RI," 4 -14 6M -16M ");
-	      System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out+FBStr));
+	      HR=ModelSupport::getHeadRule(SMap,WI,RI,"4 -14 6M -16M");
+	      System.addCell(cellIndex++,mat,0.0,HR*FBHR);
 	      WI+=10;
 	    }
 	  RI+=10;
 	}
     }
   // Outer
-  Out=ModelSupport::getComposite(SMap,WI,FI,RI," 3 -4 5M -6N ");
-  addOuterSurf(Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule(SMap,WI,FI,RI,"3 -4 5M -6N");
+  addOuterSurf(HR*frontHR*backHR);
 
   return;
 }
@@ -415,84 +384,16 @@ LineShield::createLinks()
   const int RI(buildIndex+(static_cast<int>(nRoofLayers)-1)*10);
   const int FI(buildIndex+(static_cast<int>(nFloorLayers)-1)*10);
 
-  if (!activeFront)
-    {
-      FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-      FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));      
-    }
-  else
-    {
-      FixedComp::setLinkSurf(0,frontSurf,1,frontCut,0);      
-      FixedComp::setConnect
-        (0,SurInter::getLinePoint(Origin,Y,frontSurf,frontCut),-Y);
-    }
-  
-  if (!activeBack)
-    {
-      FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
-      FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
-    }
-  else
-    {
-      FixedComp::setLinkSurf(1,backSurf,1,backCut,0);      
-      FixedComp::setConnect
-        (1,SurInter::getLinePoint(Origin,Y,backSurf,backCut),Y);
-    }
+  FrontBackCut::createLinks(*this,Origin,Y);
+
   FixedComp::setLinkSurf(2,-SMap.realSurf(WI+3));
   FixedComp::setLinkSurf(3,SMap.realSurf(WI+4));
   FixedComp::setLinkSurf(4,-SMap.realSurf(FI+5));
   FixedComp::setLinkSurf(5,SMap.realSurf(RI+6));
-
-
-
   return;
 }
   
-void
-LineShield::setFront(const attachSystem::FixedComp& FC,
-		     const long int sideIndex)
-  /*!
-    Set front surface
-    \param FC :: FixedComponent 
-    \param sideIndex ::  Direction to link
-   */
-{
-  ELog::RegMethod RegA("LineShield","setFront");
-  
-  if (sideIndex==0)
-    throw ColErr::EmptyValue<long int>("SideIndex cant be zero");
 
-  activeFront=1;
-  frontSurf=FC.getMainRule(sideIndex);
-  frontCut=FC.getCommonRule(sideIndex);
-  frontSurf.populateSurf();
-  frontCut.populateSurf();
-  
-  return;
-}
-
-void
-LineShield::setBack(const attachSystem::FixedComp& FC,
-		    const long int sideIndex)
-  /*!
-    Set back surface
-    \param FC :: FixedComponent 
-    \param sideIndex ::  Direction to link
-   */
-{
-  ELog::RegMethod RegA("LineShield","setBack");
-  
-  if (sideIndex==0)
-    throw ColErr::EmptyValue<long int>("SideIndex cant be zero");
-
-  activeBack=1;
-  backSurf=FC.getMainRule(sideIndex);
-  backCut=FC.getCommonRule(sideIndex);
-  backSurf.populateSurf();
-  backCut.populateSurf();
-  
-  return;
-}
 
 HeadRule
 LineShield::getXSectionIn() const
@@ -502,9 +403,8 @@ LineShield::getXSectionIn() const
    */
 {
   ELog::RegMethod RegA("LineShield","getXSectionIn");
-  const std::string Out=
-    ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
-  HeadRule HR(Out);
+  HeadRule HR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
   HR.populateSurf();
   return HR;
 }
@@ -524,7 +424,7 @@ LineShield::createAll(Simulation& System,
   ELog::RegMethod RegA("LineShield","createAll(FC)");
 
   populate(System.getDataBase());
-  createUnitVector(FC,FIndex);
+  createCentredUnitVector(FC,FIndex,length/2.0);
   createSurfaces();    
   createObjects(System);  
   createLinks();
