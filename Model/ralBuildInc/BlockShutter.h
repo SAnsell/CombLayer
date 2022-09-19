@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   buildInc/BlockShutter.h
+ * File:   ralBuildInc/BlockShutter.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,8 @@ namespace shutterSystem
   Added version to hold multiple InsertBlocks
 */
 
-class BlockShutter : public GeneralShutter
+class BlockShutter :
+    public GeneralShutter
 {
  private:
 
@@ -63,14 +64,15 @@ class BlockShutter : public GeneralShutter
   double colletFGap;                 ///< Forward gap
 
   int colletMat;                     ///< Collet material
-
+  std::shared_ptr<collInsert> collPtr;    ///< insert
+  
   //--------------
   // FUNCTIONS:
   //--------------
   void populate(const FuncDataBase&);
   void createInsert(Simulation&);  
   void createObjects(Simulation&);  
-  void createSurfaces();  
+  void createSurfaces();
   
   double processShutterDrop() const;
 
@@ -79,14 +81,16 @@ class BlockShutter : public GeneralShutter
   BlockShutter(const size_t,const std::string&,const std::string&);
   BlockShutter(const BlockShutter&);
   BlockShutter& operator=(const BlockShutter&);
+  
   virtual ~BlockShutter();
 
   Geometry::Vec3D getExitTrack() const;
   Geometry::Vec3D getExitPoint() const;
 
-  std::vector<Geometry::Vec3D>  createFrontViewPoints() const;
-  std::vector<Geometry::Vec3D>  createBackViewPoints() const;
+  std::vector<Geometry::Vec3D> createFrontViewPoints() const;
+  std::vector<Geometry::Vec3D> createBackViewPoints() const;
 
+  using FixedComp::createAll;
   virtual void createAll(Simulation&,
 			 const attachSystem::FixedComp&,
 			 const long int);

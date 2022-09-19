@@ -55,10 +55,11 @@
 namespace shutterSystem
 {
 
-collInsert::collInsert(const std::string& Key,const int ID) :
+collInsert::collInsert(const std::string& baseKey,
+		       const std::string& key) :
+  attachSystem::FixedGroup(key,"Main",2,"Beam",2),
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotateGroup(Key+std::to_string(ID),"Main",2,"Beam",2),
-  baseName(Key),blockID(ID)
+  baseName(baseKey)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param N :: Index value of block
@@ -84,8 +85,6 @@ collInsert::createUnitVector(const attachSystem::FixedComp& FC,
 
   beamFC.createUnitVector(FC,sideIndex);
   mainFC.createUnitVector(FC,sideIndex);
-  
-  FixedRotateGroup::applyOffset();
    
   setDefault("Main");
   return;
@@ -143,6 +142,8 @@ void
 collInsert::createSurfaces()
 {
   ELog::RegMethod RegA("collInsert","createSurfaces");
+
+  ELog::EM<<"Origin["<<keyName<<"] == "<<Origin <<" "<<bOrigin<<ELog::endDiag;
   return;
 }
 

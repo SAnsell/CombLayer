@@ -133,4 +133,4 @@ pairFactory::createPair(const Geometry::Surface* APtr,
   return outPtr;
 }
 
-} // NAMESPACE ModelSuppot
+} // NAMESPACE ModelSupport

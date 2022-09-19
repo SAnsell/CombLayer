@@ -3,7 +3,7 @@
  
  * File:   constructInc/Window.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,12 +36,13 @@ namespace constructSystem
   \brief Window system
 */
 
-class Window : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+class Window : 
+    public attachSystem::FixedComp,
+    public attachSystem::ContainedComp
 {
  private:
 
-  int baseCell;                 ///< Cell that it resides
+  int baseCell;                 ///< Cell that it resides in
 
   Geometry::Vec3D Centre;       ///< Centre point of view
   Geometry::Vec3D WAxis;        ///< Window primary axis

@@ -3,7 +3,7 @@
  
  * File:   build/shutterBlock.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,6 @@
 #include "OutputLog.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "stringCombine.h"
 #include "Vec3D.h"
 #include "Code.h"
 #include "varList.h"
@@ -113,10 +112,8 @@ shutterBlock::setFromControl(const FuncDataBase& Control,
     throw ColErr::IndexError<size_t>(Item,shutterBlock::Size,
 				     "shutterBlock::size/Item");
 
-  const std::string PName
-    (StrFunc::makeString(primName,shutterID));
-  const std::string INum
-    (StrFunc::makeString(sndKey[Item],Index+1));
+  const std::string PName=primName+std::to_string(shutterID);
+  const std::string INum=sndKey[Item]+std::to_string(Index+1);
   
   const std::string cx(PName+INum);
   const std::string dx(PName+sndKey[Item]);

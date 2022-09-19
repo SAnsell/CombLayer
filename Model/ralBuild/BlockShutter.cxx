@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   build/BlockShutter.cxx
+ * File:   ralBuild/BlockShutter.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,8 +40,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -59,6 +57,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -70,7 +69,8 @@
 namespace shutterSystem
 {
 
-BlockShutter::BlockShutter(const size_t ID,const std::string& K,
+BlockShutter::BlockShutter(const size_t ID,
+			   const std::string& K,
 			   const std::string& ZK) :
   GeneralShutter(ID,K),
   b4cMat(47),
@@ -82,7 +82,6 @@ BlockShutter::BlockShutter(const size_t ID,const std::string& K,
     \param ZK :: zoom Key name
   */
 {}
-
 
 BlockShutter::~BlockShutter() 
   /*!
@@ -163,8 +162,6 @@ BlockShutter::createSurfaces()
   return;
 }  
 
-
-
 void
 BlockShutter::createObjects(Simulation& System)
   /*!
@@ -174,9 +171,8 @@ BlockShutter::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("BlockShutter","constructObjects");
 
-  const HeadRule RInnerComp=ExternalCut::getComplementRule("RInner");
-  const HeadRule ROuterHR=ExternalCut::getRule("ROuter");
-
+  const HeadRule& RInnerComp=ExternalCut::getComplementRule("RInner");
+  const HeadRule& ROuterHR=ExternalCut::getRule("ROuter");
 
   // Flightline
   HeadRule HR;
@@ -205,11 +201,9 @@ BlockShutter::createObjects(Simulation& System)
       HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,"413 -414 -425 426 100 -401 (-313:314:325:-326)");
       makeCell("Spacer",System,cellIndex++,0,0.0,HR);
-      
     }
   return;
 }
-
 
 double
 BlockShutter::processShutterDrop() const
@@ -228,15 +222,36 @@ BlockShutter::processShutterDrop() const
   return drop-zStart;
 } 
 
+
+void
+BlockShutter::createInsert(Simulation& System)
+  /*!
+    Create the insert
+    \param System :: Simulation to replace
+  */
+{
+  ELog::RegMethod RegA("BlockShutter","createInsert");
+  const FuncDataBase& Control=System.getDataBase();
+
+  // Create
+  //collPtr=new collInsert();
   
+  ELog::EM<<"ADSFSADF["<<keyName<<"] "<<Origin<<" :: "<<Y<<ELog::endDiag;
+  return;
+}
+
+
+
 void
 BlockShutter::createAll(Simulation& System,
 			const attachSystem::FixedComp& FC,
 			const long int sideIndex)
   /*!
-    Create the shutter
+    Create the shutter (only creates the volume (with clearance gaps)
+    the actual beam path is added later. 
     \param System :: Simulation to process
-    \param FCPtr :: Fixed pointer for shutter origin [void centre]
+    \param FC :: Fixed pointer for shutter origin [void centre]
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("BlockShutter","createAll");
@@ -247,6 +262,7 @@ BlockShutter::createAll(Simulation& System,
 
   createSurfaces();
   createObjects(System);  
+  createInsert(System);
   
   return;
 }

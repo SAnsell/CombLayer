@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   build/GeneralShutter.cxx
+ * File:   ralBuild/GeneralShutter.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,8 +39,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "surfRegister.h"
@@ -270,7 +268,8 @@ GeneralShutter::createUnitVector(const attachSystem::FixedComp& FC,
 				 const long int sideIndex)
   /*!
     Create unit vectors for shutter along shutter direction
-    \param FCPtr :: Previously defined Axis system [if present]
+    \param FC :: Previously defined Axis system [if present]
+    \param sideIndex :: linke point
   */
 {
   ELog::RegMethod RegA("GeneralShutter","createUnitVector");
@@ -633,7 +632,7 @@ GeneralShutter::createObjects(Simulation& System)
     (SMap,buildIndex,"200 -6 2023 -2024")*RInnerComp*ROuterHR*BPlane;
   makeCell("BaseSteel",System,cellIndex++,shutterMat,0.0,HR);
 
-  // Add exclude
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"200 2023 -2024");
   addOuterSurf(HR);
   return;
@@ -746,6 +745,7 @@ GeneralShutter::createStopBlocks(Simulation& System,const size_t BN)
       System.addCell(cellIndex++,SB.matN,0.0,TCubeHR);
       CellMap::insertComponent(System,"UpperCell",TCubeHR.complement());
     }
+
   System.populateCells();
 
   return;

@@ -3,7 +3,7 @@
  
  * File:   construct/Window.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -135,16 +135,9 @@ Window::createCentre(Simulation& System)
 {
   ELog::RegMethod RegA("Window","createCentre");
   
-  MonteCarlo::Object* QHptr=System.findObject(baseCell);
-  if (!QHptr)
-    {
-      ELog::EM<<"Unable to find window base cell : "
-	      <<baseCell<<ELog::endErr;
-      return;
-    }
-  // QHptr->populate();
+  MonteCarlo::Object* QHptr=System.findObjectThrow(baseCell,"Window Base Cell");
   QHptr->createSurfaceList();
-
+  
   std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
     result=QHptr->trackSurfIntersect(Centre,WAxis);
 			    
@@ -162,7 +155,6 @@ Window::createCentre(Simulation& System)
   Y=WAxis;
   X=Y*Z;
   
-
   result=QHptr->trackSurfIntersect(Origin,WAxis);
   
   if (!std::get<0>(result))

@@ -38,13 +38,12 @@ namespace shutterSystem
 */
 
 class collInsert  :
-  public attachSystem::ContainedComp,
-  public attachSystem::FixedRotateGroup
+    public attachSystem::FixedGroup,
+    public attachSystem::ContainedComp
 {
  protected:
 
   const std::string baseName;   ///< basename
-  const int blockID;            ///< Block number
 
   double hGap;          ///< B4C horizontal gap 
   double vGap;          ///< B4C vertical 
@@ -57,15 +56,14 @@ class collInsert  :
 
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
-  
-  
+    
   virtual void createSurfaces();
   virtual void createObjects(Simulation&);
   void createLinks();
   
  public:
 
-  collInsert(const std::string&,const int);
+  collInsert(const std::string&,const std::string&);
   collInsert(const collInsert&);
   collInsert& operator=(const collInsert&);
   virtual ~collInsert() {}   ///< Destructor
@@ -76,7 +74,7 @@ class collInsert  :
   void createAll(Simulation&,const FixedComp&,const long int);
 };
 
-std::ostream& operator<<(std::ostream&,const collInsert&);
+
 }  
 
 #endif

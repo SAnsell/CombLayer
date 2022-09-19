@@ -71,7 +71,8 @@ voidCylVolume::voidCylVolume(const std::string& Key) :
 {}
 
 voidCylVolume::voidCylVolume(const voidCylVolume& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedRotate(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
   nSegment(A.nSegment),radius(A.radius),thick(A.thick),
   height(A.height)
   /*!
@@ -90,8 +91,8 @@ voidCylVolume::operator=(const voidCylVolume& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedRotate::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
       nSegment=A.nSegment;
       radius=A.radius;
       thick=A.thick;
