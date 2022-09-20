@@ -87,25 +87,6 @@ class t1BulkShield :
   t1BulkShield& operator=(const t1BulkShield&);
   virtual ~t1BulkShield();
 
-  static const size_t sandalsShutter;     ///< North 1
-  static const size_t prismaShutter;      ///< North 2
-  static const size_t surfShutter;        ///< North 3
-  static const size_t crispShutter;       ///< North 4
-  static const size_t loqShutter;         ///< North 5
-  static const size_t irisShutter;        ///< North 6
-  static const size_t polarisIIShutter;   ///< North 7
-  static const size_t toscaShutter;       ///< North 8
-  static const size_t hetShutter;         ///< North 9
-  static const size_t mapsShutter;        ///< South 1
-  static const size_t vesuvioShutter;     ///< South 2
-  static const size_t sxdShutter;         ///< South 3
-  static const size_t merlinShutter;      ///< South 4
-  static const size_t s5Shutter;          ///< South 5
-  static const size_t mariShutter;        ///< South 6
-  static const size_t gemShutter;         ///< South 7
-  static const size_t hrpdShutter;        ///< South 8
-  static const size_t pearlShutter;       ///< South 9
-
   /// Access outer limit
   double getORadius() const { return outerRadius; }
 

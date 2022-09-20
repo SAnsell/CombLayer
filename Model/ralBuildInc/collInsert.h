@@ -38,10 +38,11 @@ namespace shutterSystem
 */
 
 class collInsert  :
-    public attachSystem::FixedGroup,
-    public attachSystem::ContainedComp
+    public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
+    public attachSystem::ExternalCut
 {
- protected:
+ private:
 
   const std::string baseName;   ///< basename
 
@@ -54,9 +55,6 @@ class collInsert  :
 
   int mat;             ///< Material number  
 
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-    
   virtual void createSurfaces();
   virtual void createObjects(Simulation&);
   void createLinks();

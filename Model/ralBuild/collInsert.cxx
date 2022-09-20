@@ -46,10 +46,9 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
-#include "FixedRotateGroup.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "collInsert.h"
 
 namespace shutterSystem
@@ -57,7 +56,7 @@ namespace shutterSystem
 
 collInsert::collInsert(const std::string& baseKey,
 		       const std::string& key) :
-  attachSystem::FixedGroup(key,"Main",2,"Beam",2),
+  attachSystem::FixedRotate(key,2),
   attachSystem::ContainedComp(),
   baseName(baseKey)
   /*!
@@ -68,29 +67,7 @@ collInsert::collInsert(const std::string& baseKey,
   */
 {}
 
-
-void
-collInsert::createUnitVector(const attachSystem::FixedComp& FC,
-			     const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: A Contained FixedComp to use as basis set
-    \param sideIndex :: link point
-  */
-{
-  ELog::RegMethod RegA("BeamTube","createUnitVector");
-
-  attachSystem::FixedComp& mainFC=getKey("Main");
-  attachSystem::FixedComp& beamFC=getKey("Beam");
-
-  beamFC.createUnitVector(FC,sideIndex);
-  mainFC.createUnitVector(FC,sideIndex);
-   
-  setDefault("Main");
-  return;
-}
   
-
 void
 collInsert::createLinks()
   /*!
@@ -100,7 +77,7 @@ collInsert::createLinks()
   */
 {
   ELog::RegMethod RegA("collInsert","createLinks");
-  
+  /*
   attachSystem::FixedComp& mainFC=getKey("Main");
   attachSystem::FixedComp& beamFC=getKey("Beam");
   
@@ -118,7 +95,7 @@ collInsert::createLinks()
  
   beamFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
   beamFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));
-
+  */
   return;
 }
 
@@ -131,11 +108,12 @@ collInsert::getWindowCentre() const
   */
 {
   ELog::RegMethod RegA("collInsert","getWindowCentre");
-  
+
+  /*
   const attachSystem::FixedComp& beamFC=getKey("Beam");
   const Geometry::Vec3D beamOrigin(beamFC.getCentre());
-  
-  return beamOrigin;
+  */
+  return Origin;
 }
 
 void
@@ -143,7 +121,7 @@ collInsert::createSurfaces()
 {
   ELog::RegMethod RegA("collInsert","createSurfaces");
 
-  ELog::EM<<"Origin["<<keyName<<"] == "<<Origin <<" "<<bOrigin<<ELog::endDiag;
+  ELog::EM<<"Origin["<<keyName<<"] == "<<Origin <<" "<<Y<<ELog::endDiag;
   return;
 }
 
@@ -167,7 +145,6 @@ collInsert::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("collInsert","createAll");
-
 
   createUnitVector(FC,sideIndex);
   createSurfaces();

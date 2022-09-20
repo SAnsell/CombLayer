@@ -89,10 +89,10 @@ BlockShutterGenerator::generateBox
   
   Control.addVariable(fullName+"NBlocks",NSections);
   
-  Control.addVariable(fullName+"HGap",colletHGap);
-  Control.addVariable(fullName+"VGap",colletVGap);
-  Control.addVariable(fullName+"FGap",colletFGap);
-  Control.addVariable(fullName+"Mat","CastIron");  //   surround material  
+  Control.addVariable(fullName+"ColletHGap",colletHGap);
+  Control.addVariable(fullName+"ColletVGap",colletVGap);
+  Control.addVariable(fullName+"ColletFGap",colletFGap);
+  Control.addVariable(fullName+"ColletMat","CastIron");  //   surround material 
 
   Control.addVariable(fullName+"XAngle",xAngle);   // rotation off center
   Control.addVariable(fullName+"XStep",xStep);     // rotation off center

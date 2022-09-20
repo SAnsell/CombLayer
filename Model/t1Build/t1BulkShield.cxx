@@ -72,24 +72,24 @@
 namespace shutterSystem
 {
 
-const size_t t1BulkShield::sandalsShutter(1);  // North 1
-const size_t t1BulkShield::prismaShutter(2);  // North 2
-const size_t t1BulkShield::surfShutter(3);  // North 3
-const size_t t1BulkShield::crispShutter(4);  // North 4
-const size_t t1BulkShield::loqShutter(5);  // North 5
-const size_t t1BulkShield::irisShutter(6);  // North 6
-const size_t t1BulkShield::polarisIIShutter(7);  // North 7
-const size_t t1BulkShield::toscaShutter(8);  // North 8
-const size_t t1BulkShield::hetShutter(9);  // North 9
-const size_t t1BulkShield::mapsShutter(10);  // South 1
-const size_t t1BulkShield::vesuvioShutter(11);  // South 2
-const size_t t1BulkShield::sxdShutter(12);  // South 3
-const size_t t1BulkShield::merlinShutter(13);  // South 4
-const size_t t1BulkShield::s5Shutter(14);  // South 5
-const size_t t1BulkShield::mariShutter(15);  // South 6
-const size_t t1BulkShield::gemShutter(16);  // South 7
-const size_t t1BulkShield::hrpdShutter(17);  // South 8
-const size_t t1BulkShield::pearlShutter(18);  // South 9
+constexpr size_t sandalsShutter(1);  // North 1
+constexpr size_t prismaShutter(2);  // North 2
+constexpr size_t surfShutter(3);  // North 3
+constexpr size_t crispShutter(4);  // North 4
+constexpr size_t loqShutter(5);  // North 5
+constexpr size_t irisShutter(6);  // North 6
+constexpr size_t polarisShutter(7);  // North 7
+constexpr size_t toscaShutter(8);  // North 8
+constexpr size_t hetShutter(9);  // North 9
+constexpr size_t mapsShutter(10);  // South 1
+constexpr size_t vesuvioShutter(11);  // South 2
+constexpr size_t sxdShutter(12);  // South 3
+constexpr size_t merlinShutter(13);  // South 4
+constexpr size_t s5Shutter(14);  // South 5
+constexpr size_t mariShutter(15);  // South 6
+constexpr size_t gemShutter(16);  // South 7
+constexpr size_t hrpdShutter(17);  // South 8
+constexpr size_t pearlShutter(18);  // South 9
 
 t1BulkShield::t1BulkShield(const std::string& Key)  : 
   attachSystem::FixedComp(Key,3),
@@ -236,9 +236,9 @@ t1BulkShield::createShutters(Simulation& System)
       else if (i==irisShutter)
 	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new BlockShutter(i,"shutter","irisShutter")));
-      else if (i==polarisIIShutter)
+      else if (i==polarisShutter)
 	GData.push_back(std::shared_ptr<GeneralShutter>
-			(new BlockShutter(i,"shutter","polarisIIShutter")));
+			(new BlockShutter(i,"shutter","polarisShutter")));
       else if (i==toscaShutter)
 	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new BlockShutter(i,"shutter","toscaShutter")));

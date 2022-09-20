@@ -59,12 +59,14 @@
 #include "FixedComp.h"
 #include "FixedUnit.h"
 #include "FixedGroup.h"
+#include "FixedRotate.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ExternalCut.h"
 #include "ContainedComp.h"
 #include "GeneralShutter.h"
 #include "BlockShutter.h"
+#include "collInsert.h"
 
 namespace shutterSystem
 {
@@ -101,13 +103,14 @@ BlockShutter::populate(const FuncDataBase& Control)
   GeneralShutter::populate(Control);
 
   // Modification to the general shutter populated variables:
-  
+
+  ELog::EM<<"bloc == "<<blockKey<<ELog::endDiag;
   nBlock=Control.EvalVar<int>(blockKey+"NBlocks");
-  zStart=Control.EvalVar<double>(blockKey+"ZStart");
   // Note this is in mRadian
-  xAngle=Control.EvalVar<double>(blockKey+"GuideXAngle")*M_PI/180.0;
-  zAngle=Control.EvalVar<double>(blockKey+"GuideZAngle")*M_PI/180.0;
-  xStep=Control.EvalVar<double>(blockKey+"GuideXStep");
+  xAngle=Control.EvalVar<double>(blockKey+"XAngle")*M_PI/180.0;
+  zAngle=Control.EvalVar<double>(blockKey+"ZAngle")*M_PI/180.0;
+  xStep=Control.EvalVar<double>(blockKey+"XStep");
+  zStep=Control.EvalVar<double>(blockKey+"ZStep");
   
   colletHGap=Control.EvalVar<double>(blockKey+"ColletHGap");
   colletVGap=Control.EvalVar<double>(blockKey+"ColletVGap");
@@ -219,26 +222,28 @@ BlockShutter::processShutterDrop() const
   // currently it is to the target centre
 
   const double drop=innerRadius*tan(zAngle);
-  return drop-zStart;
+  return drop-zStep;
 } 
-
 
 void
 BlockShutter::createInsert(Simulation& System)
   /*!
     Create the insert
-    \param System :: Simulation to replace
-  */
+   */
 {
   ELog::RegMethod RegA("BlockShutter","createInsert");
-  const FuncDataBase& Control=System.getDataBase();
 
-  // Create
-  //collPtr=new collInsert();
+  const HeadRule& RInnerComp=ExternalCut::getComplementRule("RInner");
+  const HeadRule& ROuterHR=ExternalCut::getRule("ROuter");
+
+  ELog::EM<<"Origin = "<<this->getSecondary().getLinkPt(0)<<ELog::endDiag;
+  collPtr->copyCutSurf("RInner",*this,"RInner");
+  collPtr->copyCutSurf("ROuter",*this,"ROuter");
+  collPtr->createAll(System,this->getSecondary(),0);
   
-  ELog::EM<<"ADSFSADF["<<keyName<<"] "<<Origin<<" :: "<<Y<<ELog::endDiag;
   return;
 }
+
 
 
 
@@ -263,7 +268,6 @@ BlockShutter::createAll(Simulation& System,
   createSurfaces();
   createObjects(System);  
   createInsert(System);
-  
   return;
 }
   

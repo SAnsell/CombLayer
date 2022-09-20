@@ -55,8 +55,8 @@ class BlockShutter :
 
   int nBlock;                       ///< number of inner blocks    
   double xStep;                     ///< Start Shift
+  double zStep;                     ///< Start drop
   double xAngle;                    ///< X drop angle
-  double zStart;                    ///< Start drop
   double zAngle;                    ///< Z drop angle
 
   double colletHGap;                 ///< Horrizontal gap
@@ -70,12 +70,13 @@ class BlockShutter :
   // FUNCTIONS:
   //--------------
   void populate(const FuncDataBase&);
-  void createInsert(Simulation&);  
-  void createObjects(Simulation&);  
   void createSurfaces();
-  
+  void createObjects(Simulation&);
+
   double processShutterDrop() const;
 
+  void createInsert(Simulation&);
+  
  public:
 
   BlockShutter(const size_t,const std::string&,const std::string&);
