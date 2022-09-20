@@ -44,8 +44,6 @@ class collInsert  :
 {
  private:
 
-  const std::string baseName;   ///< basename
-
   double hGap;          ///< B4C horizontal gap 
   double vGap;          ///< B4C vertical 
   
@@ -61,7 +59,7 @@ class collInsert  :
   
  public:
 
-  collInsert(const std::string&,const std::string&);
+  collInsert(const std::string&);
   collInsert(const collInsert&);
   collInsert& operator=(const collInsert&);
   virtual ~collInsert() {}   ///< Destructor

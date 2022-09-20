@@ -42,6 +42,7 @@
 #include "OutputLog.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
+#include "objectRegister.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -76,14 +77,19 @@ BlockShutter::BlockShutter(const size_t ID,
 			   const std::string& ZK) :
   GeneralShutter(ID,K),
   b4cMat(47),
-  blockKey(ZK)
+  blockKey(ZK),
+  collPtr(new collInsert(blockKey+"Collet"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param ID :: Index number of shutter
     \param K :: Key name
     \param ZK :: zoom Key name
   */
-{}
+{
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  OR.addObject(collPtr);
+}
 
 BlockShutter::~BlockShutter() 
   /*!
@@ -243,9 +249,6 @@ BlockShutter::createInsert(Simulation& System)
   
   return;
 }
-
-
-
 
 void
 BlockShutter::createAll(Simulation& System,
