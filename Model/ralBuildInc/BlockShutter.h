@@ -54,10 +54,6 @@ class BlockShutter :
   std::string blockKey;              ///< Key Name
 
   int nBlock;                       ///< number of inner blocks    
-  double xStep;                     ///< Start Shift
-  double zStep;                     ///< Start drop
-  double xAngle;                    ///< X drop angle
-  double zAngle;                    ///< Z drop angle
 
   double colletHGap;                 ///< Horrizontal gap
   double colletVGap;                 ///< Vertical gap
@@ -72,9 +68,6 @@ class BlockShutter :
   void populate(const FuncDataBase&);
   void createSurfaces();
   void createObjects(Simulation&);
-
-  double processShutterDrop() const;
-
   void createInsert(Simulation&);
   
  public:

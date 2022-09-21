@@ -44,17 +44,19 @@ class collInsert  :
 {
  private:
 
+  double fStep;         ///< Main forward ste
   double hGap;          ///< B4C horizontal gap 
   double vGap;          ///< B4C vertical 
-  
+
   double length;        ///< length of unit 
   double width;         ///< Full width
   double height;        ///< Full height
 
   int mat;             ///< Material number  
 
-  virtual void createSurfaces();
-  virtual void createObjects(Simulation&);
+
+  void createSurfaces();
+  void createObjects(Simulation&);
   void createLinks();
   
  public:
@@ -64,6 +66,9 @@ class collInsert  :
   collInsert& operator=(const collInsert&);
   virtual ~collInsert() {}   ///< Destructor
 
+  void populate(const FuncDataBase&);
+  
+  double calcDrop(const double) const;
   Geometry::Vec3D getWindowCentre() const;
 
   using FixedComp::createAll;

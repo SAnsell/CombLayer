@@ -92,12 +92,19 @@ BlockShutterGenerator::generateBox
   Control.addVariable(fullName+"ColletHGap",colletHGap);
   Control.addVariable(fullName+"ColletVGap",colletVGap);
   Control.addVariable(fullName+"ColletFGap",colletFGap);
-  Control.addVariable(fullName+"ColletMat","CastIron");  //   surround material 
+  Control.addVariable(fullName+"ColletMat","CastIron");  //   surround material
 
-  Control.addVariable(fullName+"XAngle",xAngle);   // rotation off center
-  Control.addVariable(fullName+"XStep",xStep);     // rotation off center
-  Control.addVariable(fullName+"ZAngle",zAngle);   // rotation off center
-  Control.addVariable(fullName+"ZStep",zStep);     // rotation off center
+  const std::string colName=fullName+"Insert";
+								
+  Control.addVariable(colName+"XAngle",beamXAngle);   
+  Control.addVariable(colName+"XStep",xStep);     
+  Control.addVariable(colName+"ZAngle",beamZAngle);   
+  Control.addVariable(colName+"ZStep",zStep);     
+
+  Control.addVariable(colName+"Length",shutterInnerLen);
+  Control.addVariable(colName+"HGap",beamXSize);
+  Control.addVariable(colName+"VGap",beamZSize);    
+
 
   
   return;

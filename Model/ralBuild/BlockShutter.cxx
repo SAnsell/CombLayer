@@ -78,7 +78,7 @@ BlockShutter::BlockShutter(const size_t ID,
   GeneralShutter(ID,K),
   b4cMat(47),
   blockKey(ZK),
-  collPtr(new collInsert(blockKey+"Collet"))
+  collPtr(new collInsert(blockKey+"Insert"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param ID :: Index number of shutter
@@ -110,13 +110,8 @@ BlockShutter::populate(const FuncDataBase& Control)
 
   // Modification to the general shutter populated variables:
 
-  ELog::EM<<"bloc == "<<blockKey<<ELog::endDiag;
   nBlock=Control.EvalVar<int>(blockKey+"NBlocks");
   // Note this is in mRadian
-  xAngle=Control.EvalVar<double>(blockKey+"XAngle")*M_PI/180.0;
-  zAngle=Control.EvalVar<double>(blockKey+"ZAngle")*M_PI/180.0;
-  xStep=Control.EvalVar<double>(blockKey+"XStep");
-  zStep=Control.EvalVar<double>(blockKey+"ZStep");
   
   colletHGap=Control.EvalVar<double>(blockKey+"ColletHGap");
   colletVGap=Control.EvalVar<double>(blockKey+"ColletVGap");
@@ -214,22 +209,6 @@ BlockShutter::createObjects(Simulation& System)
   return;
 }
 
-double
-BlockShutter::processShutterDrop() const
-  /*!
-    Calculate the drop on the shutter, given that the 
-    fall has to be such that the shutter takes neutrons with
-    the correct angle for the shutter.
-    \return drop value
-  */
-{
-  ELog::RegMethod RegA("BlockShutter","processShutterDrop");
-  // Calculate the distance between the moderator/shutter enterance.
-  // currently it is to the target centre
-
-  const double drop=innerRadius*tan(zAngle);
-  return drop-zStep;
-} 
 
 void
 BlockShutter::createInsert(Simulation& System)
@@ -263,9 +242,11 @@ BlockShutter::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("BlockShutter","createAll");
-  
-  populate(System.getDataBase());
-  this->GeneralShutter::setZOffset(processShutterDrop());
+
+  const FuncDataBase& Control=System.getDataBase();
+  populate(Control);
+  collPtr->populate(Control);
+  this->GeneralShutter::setZOffset(collPtr->calcDrop(innerRadius));
   GeneralShutter::createAll(System,FC,sideIndex);
 
   createSurfaces();

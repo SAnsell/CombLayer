@@ -49,6 +49,7 @@
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
+#include "generateSurf.h"
 #include "collInsert.h"
 
 namespace shutterSystem
@@ -60,12 +61,38 @@ collInsert::collInsert(const std::string& key) :
   attachSystem::ExternalCut()
   /*!
     Constructor BUT ALL variable are left unpopulated.
-    \param N :: Index value of block
-    \param SN :: surface Index value
     \param Key :: Name for item in search
   */
 {}
 
+double
+collInsert::calcDrop(const double R) const
+  /*!
+    Calculate the effective drop of the beam
+    so the shutter fall in the correct place
+    \param R :: Radial distance to calculate
+  */
+{
+  const double drop=R*tan(M_PI*xAngle*180.0);
+  return drop-zStep;
+}
+  
+void
+collInsert::populate(const FuncDataBase& Control)
+  /*!
+    Populate main variabel
+   */
+{
+  ELog::RegMethod RegA("collInsert","populate");
+
+  FixedRotate::populate(Control);
+
+  length=Control.EvalVar<double>(keyName+"Length");
+  hGap=Control.EvalVar<double>(keyName+"HGap");
+  vGap=Control.EvalVar<double>(keyName+"VGap");
+
+  return;
+}
   
 void
 collInsert::createLinks()
@@ -120,7 +147,11 @@ collInsert::createSurfaces()
 {
   ELog::RegMethod RegA("collInsert","createSurfaces");
 
-  ELog::EM<<"Origin["<<keyName<<"] == "<<Origin <<" "<<Y<<ELog::endDiag;
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*hGap,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*hGap,X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*vGap,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*vGap,Z);
+
   return;
 }
 
@@ -145,6 +176,7 @@ collInsert::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("collInsert","createAll");
 
+  populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
