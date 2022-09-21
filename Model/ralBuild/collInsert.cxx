@@ -54,11 +54,10 @@
 namespace shutterSystem
 {
 
-collInsert::collInsert(const std::string& baseKey,
-		       const std::string& key) :
+collInsert::collInsert(const std::string& key) :
   attachSystem::FixedRotate(key,2),
   attachSystem::ContainedComp(),
-  baseName(baseKey)
+  attachSystem::ExternalCut()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param N :: Index value of block
