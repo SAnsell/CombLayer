@@ -411,6 +411,7 @@ GeneralShutter::createSurfaces()
 
   // Forward Plane
   ModelSupport::buildPlane(SMap,buildIndex+200,frontPt-Y*(innerRadius/4.0),Y);
+  setCutSurf("Divider",SMap.realSurf(buildIndex+200));
   // Divide Plane
   ModelSupport::buildPlane(SMap,buildIndex+100,frontPt+Y*voidDivide,Y);
 

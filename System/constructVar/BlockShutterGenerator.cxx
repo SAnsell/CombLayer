@@ -80,7 +80,14 @@ BlockShutterGenerator::generateBox
     Primary funciton for setting the variables
     \param Control :: Database to add variables
     \param keyName :: head name for variable
-    \param length :: length of pipe
+    \param xStep :: start offset point
+    \param zStep :: start offset point
+    \param xAngle :: direction of main beam
+    \param zAngle :: direction of main beam
+    \param beamXSize :: start B4C spacer
+    \param beamZSize :: start B4C spacer
+    \param beamXAngle :: change (reduction is +ve) of X size
+    \param beamZAngle :: change (reduction is +ve) of Z size
   */
 {
   ELog::RegMethod RegA("BlockShutterGenerator","generatorBox");
@@ -96,16 +103,25 @@ BlockShutterGenerator::generateBox
 
   const std::string colName=fullName+"Insert";
 								
-  Control.addVariable(colName+"XAngle",beamXAngle);   
+  Control.addVariable(colName+"XAngle",xAngle);   
   Control.addVariable(colName+"XStep",xStep);     
-  Control.addVariable(colName+"ZAngle",beamZAngle);   
+  Control.addVariable(colName+"ZAngle",zAngle);   
   Control.addVariable(colName+"ZStep",zStep);     
 
   Control.addVariable(colName+"Length",shutterInnerLen);
   Control.addVariable(colName+"HGap",beamXSize);
   Control.addVariable(colName+"VGap",beamZSize);    
+  Control.addVariable(colName+"HGapRAngle",beamXAngle);
+  Control.addVariable(colName+"VGapRAngle",beamZAngle);
 
-
+  /*
+  Control.addVariable(finalBlock+"CentX",0.0);    //   Inner blocks
+  Control.addVariable(finalBlock+"CentZ",0.0);    //   Inner blocks
+  Control.addVariable(finalBlock+"Len",3.4);      //   Inner blocks
+  Control.addVariable(finalBlock+"VGap",4.0);     //   Height
+  Control.addVariable(finalBlock+"HGap",4.0);     //   Hor. Gap (full)
+  Control.addVariable(finalBlock+"Mat","Void");   //   Spacer
+  */
   
   return;
 

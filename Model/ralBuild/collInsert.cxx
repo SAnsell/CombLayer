@@ -49,6 +49,7 @@
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
+#include "ModelSupport.h"
 #include "generateSurf.h"
 #include "collInsert.h"
 
@@ -73,7 +74,7 @@ collInsert::calcDrop(const double R) const
     \param R :: Radial distance to calculate
   */
 {
-  const double drop=R*tan(M_PI*xAngle*180.0);
+  const double drop=R*tan(M_PI*xAngle/180.0);
   return drop-zStep;
 }
   
@@ -91,6 +92,41 @@ collInsert::populate(const FuncDataBase& Control)
   hGap=Control.EvalVar<double>(keyName+"HGap");
   vGap=Control.EvalVar<double>(keyName+"VGap");
 
+  ELog::EM<<"H["<<keyName<<"]:"<<hGap<<ELog::endDiag;
+  return;
+}
+
+
+  
+void
+collInsert::createSurfaces()
+{
+  ELog::RegMethod RegA("collInsert","createSurfaces");
+
+  
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(hGap/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(hGap/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(vGap/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(vGap/2.0),Z);
+
+  return;
+}
+
+  
+void
+collInsert::createObjects(Simulation& System)
+{
+  ELog::RegMethod RegA("collInsert","createObject");
+
+  const HeadRule& RInnerComp=ExternalCut::getComplementRule("RInner");
+  const HeadRule& ROuterHR=ExternalCut::getRule("ROuter");
+  const HeadRule& RDivider=ExternalCut::getRule("Divider");
+
+  HeadRule HR;
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
+  System.addCell(cellIndex++,0,0.0,HR*RInnerComp*ROuterHR*RDivider);
+
+  addOuterSurf(HR);
   return;
 }
   
@@ -140,26 +176,6 @@ collInsert::getWindowCentre() const
   const Geometry::Vec3D beamOrigin(beamFC.getCentre());
   */
   return Origin;
-}
-
-void
-collInsert::createSurfaces()
-{
-  ELog::RegMethod RegA("collInsert","createSurfaces");
-
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*hGap,X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*hGap,X);
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*vGap,Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*vGap,Z);
-
-  return;
-}
-
-void
-collInsert::createObjects(Simulation&)
-{
-  ELog::RegMethod RegA("collInsert","createObject");
-  return;
 }
   
   

@@ -118,6 +118,7 @@ BlockShutter::populate(const FuncDataBase& Control)
   colletFGap=Control.EvalVar<double>(blockKey+"ColletFGap");
   colletMat=ModelSupport::EvalMat<int>(Control,blockKey+"ColletMat");
 
+
   return;
 }
 
@@ -180,6 +181,7 @@ BlockShutter::createObjects(Simulation& System)
 
   // Flightline
   HeadRule HR;
+
   if (voidDivide>0.0)
     {
       // exclude from flight line
@@ -195,7 +197,7 @@ BlockShutter::createObjects(Simulation& System)
 
       HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,"200 313 -314 -325 326 -401");
-      makeCell("InnerCollet",System,cellIndex++,colletMat,0.0,HR*RInnerComp);
+      makeCell("InnerCollet",System,cellIndex++,0,0.0,HR*RInnerComp);
       // OuterCollet
 
       HR=ModelSupport::getHeadRule
@@ -224,8 +226,11 @@ BlockShutter::createInsert(Simulation& System)
   ELog::EM<<"Origin = "<<this->getSecondary().getLinkPt(0)<<ELog::endDiag;
   collPtr->copyCutSurf("RInner",*this,"RInner");
   collPtr->copyCutSurf("ROuter",*this,"ROuter");
+  collPtr->copyCutSurf("Divider",*this,"Divider");
+
   collPtr->createAll(System,this->getSecondary(),0);
-  
+  collPtr->insertInCell(System,getCell("InnerCollet"));
+  collPtr->insertInCell(System,getCell("OuterCollet"));
   return;
 }
 
@@ -246,6 +251,7 @@ BlockShutter::createAll(Simulation& System,
   const FuncDataBase& Control=System.getDataBase();
   populate(Control);
   collPtr->populate(Control);
+
   this->GeneralShutter::setZOffset(collPtr->calcDrop(innerRadius));
   GeneralShutter::createAll(System,FC,sideIndex);
 
