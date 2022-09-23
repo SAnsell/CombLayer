@@ -110,9 +110,6 @@ BlockShutter::populate(const FuncDataBase& Control)
 
   // Modification to the general shutter populated variables:
 
-  nBlock=Control.EvalVar<int>(blockKey+"NBlocks");
-  // Note this is in mRadian
-  
   colletHGap=Control.EvalVar<double>(blockKey+"ColletHGap");
   colletVGap=Control.EvalVar<double>(blockKey+"ColletVGap");
   colletFGap=Control.EvalVar<double>(blockKey+"ColletFGap");

@@ -44,13 +44,24 @@ class collInsert  :
 {
  private:
 
-  double fStep;         ///< Main forward ste
-  double hGap;          ///< B4C horizontal gap 
-  double vGap;          ///< B4C vertical 
+  double fStep;          ///< forward step
 
   double length;        ///< length of unit 
   double width;         ///< Full width
   double height;        ///< Full height
+
+  double hGap;          ///< B4C horizontal gap 
+  double vGap;          ///< B4C vertical 
+
+  double hGapRAngle;          ///< B4C horizontal gap angle change
+  double vGapRAngle;          ///< B4C vertical gap angle change
+
+  size_t nB4C;               ///< number of B4C units
+  size_t nSteel;               ///< number of steel blocks
+
+  double steelBackStep;        ///< Steel back step distance
+  double b4cThick;             ///< b4c layers
+  double b4cGap;
 
   int mat;             ///< Material number  
 

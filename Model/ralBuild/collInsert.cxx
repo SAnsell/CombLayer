@@ -87,10 +87,15 @@ collInsert::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("collInsert","populate");
 
   FixedRotate::populate(Control);
-
+  ELog::EM<<"Coll["<<keyName<<"] = "<<zAngle<<" "<<xAngle<<ELog::endDiag;
+  nB4C=Control.EvalVar<double>(keyName+"NB4C");
+  nSteel=Control.EvalVar<double>(keyName+"NSteel");
+  
   length=Control.EvalVar<double>(keyName+"Length");
   hGap=Control.EvalVar<double>(keyName+"HGap");
   vGap=Control.EvalVar<double>(keyName+"VGap");
+  hGapRAngle=Control.EvalVar<double>(keyName+"HGapRAngle");
+  vGapRAngle=Control.EvalVar<double>(keyName+"VGapRAngle");
 
   ELog::EM<<"H["<<keyName<<"]:"<<hGap<<ELog::endDiag;
   return;
@@ -104,8 +109,12 @@ collInsert::createSurfaces()
   ELog::RegMethod RegA("collInsert","createSurfaces");
 
   
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(hGap/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(hGap/2.0),X);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+3,
+				  Origin-X*(hGap/2.0),X,
+				  Z,-5.0);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+4,
+				  Origin+X*(hGap/2.0),X,
+				  Z,5.0);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(vGap/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(vGap/2.0),Z);
 

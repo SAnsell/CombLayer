@@ -46,15 +46,12 @@ class BlockShutterGenerator
   double colletVGap;       ///< Collet gap vertial
   double colletFGap;       ///< Collet gap forward
 
+  double steelOffset;      ///< Steel back step distance
+
   double b4cThick;         ///< Total b4c thick
   double b4cSpace;         ///< Total b4c spacer
 
-  double blockVertGap;
-  double blockHorGap;
   
-  /// Steel Size [width:height]
-  std::vector< std::pair<double,double> > steelSize;
-
   std::string colletMat;         ///< Collet material
   
 

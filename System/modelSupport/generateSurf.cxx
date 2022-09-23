@@ -282,7 +282,7 @@ buildPlaneRotAxis(surfRegister& SMap,const int N,
     \param O :: Origin
     \param D :: Direction before rotation
     \param Axis :: Axis to rotate about 
-    \param degAngle :: Angle to rotate about [deg]
+    \param degAngle :: Angle to rotate about [deg] (+ve is clockwize)
     \return New Plane Pointer
    */
 {
