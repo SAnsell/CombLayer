@@ -1031,6 +1031,7 @@ TS1base(FuncDataBase& Control)
 
   BlockShutterGenerator BSGen;
 
+  // x/z step : x/zAngle : beamSize : beam change angle (+ve is focused)
   //  BSGen.generateCyl(Control,"sandals",-1.6,0.0,   -1.6,0.0,  7.3309,0.3595   );
   BSGen.generateBox(Control,"sandals",-1.6,0.0,   -1.6, 0.0,  6.17,8.61, 0.35,0.47);  // USE ABOVE
   BSGen.generateBox(Control,"prisma",  0.0,0.0,   -1.7, 0.0,  6.17,8.61, 0.35,0.47);

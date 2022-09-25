@@ -36,6 +36,7 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
+#include "Exception.h"
 #include "surfRegister.h"
 #include "varList.h"
 #include "Code.h"
@@ -81,21 +82,33 @@ collInsert::calcDrop(const double R) const
 void
 collInsert::populate(const FuncDataBase& Control)
   /*!
-    Populate main variabel
+    Populate main variabe
+    \param Control :: DataBase to use
    */
 {
   ELog::RegMethod RegA("collInsert","populate");
 
   FixedRotate::populate(Control);
   ELog::EM<<"Coll["<<keyName<<"] = "<<zAngle<<" "<<xAngle<<ELog::endDiag;
-  nB4C=Control.EvalVar<double>(keyName+"NB4C");
-  nSteel=Control.EvalVar<double>(keyName+"NSteel");
-  
+
+  nB4C=Control.EvalVar<size_t>(keyName+"NB4C");
+  nSteel=Control.EvalVar<size_t>(keyName+"NSteel");
+  fStep=Control.EvalVar<double>(keyName+"FStep");
   length=Control.EvalVar<double>(keyName+"Length");
   hGap=Control.EvalVar<double>(keyName+"HGap");
   vGap=Control.EvalVar<double>(keyName+"VGap");
   hGapRAngle=Control.EvalVar<double>(keyName+"HGapRAngle");
   vGapRAngle=Control.EvalVar<double>(keyName+"VGapRAngle");
+
+  steelOffset=Control.EvalVar<double>(keyName+"SteelOffset");
+  steelBWidth=Control.EvalVar<double>(keyName+"SteelAWidth");
+  steelAWidth=Control.EvalVar<double>(keyName+"SteelBWidth");
+
+  if (nB4C<3)
+    throw ColErr::IndexError<size_t>(nB4C,3,"nB4C too small");
+
+  if (nSteel<1)
+    throw ColErr::IndexError<size_t>(nB4C,3,"nB4C too small");
 
   ELog::EM<<"H["<<keyName<<"]:"<<hGap<<ELog::endDiag;
   return;
@@ -105,25 +118,97 @@ collInsert::populate(const FuncDataBase& Control)
   
 void
 collInsert::createSurfaces()
+  /*!
+    Constrcut inner surfaces
+   */
 {
   ELog::RegMethod RegA("collInsert","createSurfaces");
 
   
-  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+3,
-				  Origin-X*(hGap/2.0),X,
-				  Z,-5.0);
-  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+4,
-				  Origin+X*(hGap/2.0),X,
-				  Z,5.0);
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(vGap/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(vGap/2.0),Z);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+3,Origin-X*(hGap/2.0),X,
+				  Z,-hGapRAngle);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+4,Origin+X*(hGap/2.0),X,
+				  Z,hGapRAngle);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+5,Origin-Z*(vGap/2.0),Z,
+				  X,vGapRAngle);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+6,Origin+Z*(vGap/2.0),Z,
+				  X,-vGapRAngle);
 
+  // Steel layer
+  ModelSupport::buildPlaneRotAxis
+    (SMap,buildIndex+13,Origin-X*(steelOffset+hGap/2.0),X,Z,-hGapRAngle);
+  ModelSupport::buildPlaneRotAxis
+    (SMap,buildIndex+14,Origin+X*(steelOffset+hGap/2.0),X,Z,hGapRAngle);
+  ModelSupport::buildPlaneRotAxis
+    (SMap,buildIndex+15,Origin-Z*(steelOffset+vGap/2.0),Z,X,vGapRAngle);
+  ModelSupport::buildPlaneRotAxis
+    (SMap,buildIndex+16,Origin+Z*(steelOffset+vGap/2.0),Z,X,-vGapRAngle);
+
+    // Steel layer
+  ModelSupport::buildPlaneRotAxis
+    (SMap,buildIndex+23,Origin-X*(steelAWidth+hGap/2.0),X,Z,-hGapRAngle);
+  ModelSupport::buildPlaneRotAxis
+    (SMap,buildIndex+24,Origin+X*(steelAWidth+hGap/2.0),X,Z,hGapRAngle);
+  ModelSupport::buildPlaneRotAxis
+    (SMap,buildIndex+25,Origin-Z*(steelAWidth+vGap/2.0),Z,X,vGapRAngle);
+  ModelSupport::buildPlaneRotAxis
+    (SMap,buildIndex+26,Origin+Z*(steelAWidth+vGap/2.0),Z,X,-vGapRAngle);
+
+    // Steel layer
+  ModelSupport::buildPlaneRotAxis
+    (SMap,buildIndex+33,Origin-X*(steelBWidth+hGap/2.0),X,Z,-hGapRAngle);
+  ModelSupport::buildPlaneRotAxis
+    (SMap,buildIndex+34,Origin+X*(steelBWidth+hGap/2.0),X,Z,hGapRAngle);
+  ModelSupport::buildPlaneRotAxis
+    (SMap,buildIndex+35,Origin-Z*(steelBWidth+vGap/2.0),Z,X,vGapRAngle);
+  ModelSupport::buildPlaneRotAxis
+    (SMap,buildIndex+36,Origin+Z*(steelBWidth+vGap/2.0),Z,X,-vGapRAngle);
+
+
+  // calculate two length : gap for a B4C pair  and a steel block
+  const double b4cUnit=b4cGap*3.0+b4cThick*2.0;
+  const double steelUnit=(length-b4cUnit*static_cast<double>(nB4C-2))/
+    static_cast<double>((nB4C-1)*nSteel);
+
+  int BI(buildIndex+100);
+  Geometry::Vec3D Org(Origin+Y*fStep);
+  for(size_t i=0;i<nB4C;i++)
+    {
+      // B4C block
+      ModelSupport::buildPlane(SMap,BI+1,Org,Y);
+      Org+=Y*b4cGap;
+      ModelSupport::buildPlane(SMap,BI+11,Org,Y);
+      Org+=Y*b4cThick;
+      ModelSupport::buildPlane(SMap,BI+12,Org,Y);
+      Org+=Y*b4cGap;
+      ModelSupport::buildPlane(SMap,BI+21,Org,Y);
+      Org+=Y*b4cThick;
+      ModelSupport::buildPlane(SMap,BI+22,Org,Y);
+      Org+=Y*b4cGap;
+
+      if (i!=nB4C-1)
+	{
+	  int SI(BI);
+	  for(size_t j=0;j<nSteel;j++)
+	    {
+	      ModelSupport::buildPlane(SMap,SI+31,Org,Y);
+	      Org+=Y*steelUnit;
+	      SI++;
+	    }
+	  BI+=100;
+	}
+    }
+      // last surface
+  ModelSupport::buildPlane(SMap,BI+31,Org,Y);
   return;
 }
 
   
 void
 collInsert::createObjects(Simulation& System)
+  /*!
+    Construc int
+   */
 {
   ELog::RegMethod RegA("collInsert","createObject");
 
@@ -135,6 +220,24 @@ collInsert::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
   System.addCell(cellIndex++,0,0.0,HR*RInnerComp*ROuterHR*RDivider);
 
+  int BI(buildIndex+100);
+
+  for(size_t i=0;i<nB4C;i++)
+    {
+
+      if (i!=nB4C-1)
+	{
+	  int SI(BI);
+	  for(size_t j=0;j<nSteel;j++)
+	    {
+	    }
+	  BI+=100;
+	}
+    }
+      // last surface
+
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 15 -16");  
   addOuterSurf(HR);
   return;
 }

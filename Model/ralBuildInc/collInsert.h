@@ -56,10 +56,12 @@ class collInsert  :
   double hGapRAngle;          ///< B4C horizontal gap angle change
   double vGapRAngle;          ///< B4C vertical gap angle change
 
-  size_t nB4C;               ///< number of B4C units
+  size_t nB4C;                 ///< number of B4C units
   size_t nSteel;               ///< number of steel blocks
 
-  double steelBackStep;        ///< Steel back step distance
+  double steelOffset;          ///< Steel back step distance
+  double steelAWidth;          ///< Steel width front half units
+  double steelBWidth;          ///< Steel width back half units
   double b4cThick;             ///< b4c layers
   double b4cGap;
 

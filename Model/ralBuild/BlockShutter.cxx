@@ -221,6 +221,7 @@ BlockShutter::createInsert(Simulation& System)
   const HeadRule& ROuterHR=ExternalCut::getRule("ROuter");
 
   ELog::EM<<"Origin = "<<this->getSecondary().getLinkPt(0)<<ELog::endDiag;
+
   collPtr->copyCutSurf("RInner",*this,"RInner");
   collPtr->copyCutSurf("ROuter",*this,"ROuter");
   collPtr->copyCutSurf("Divider",*this,"Divider");

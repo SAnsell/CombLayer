@@ -41,12 +41,16 @@ class BlockShutterGenerator
 
   size_t NSections;        ///< Number of sections required
   size_t steelNumber;      ///< Number of steel blocks per section
-  double shutterInnerLen; 
+
+  double shutterFStep;     ///< Forward step of insert
+  double shutterLen;       ///< Length of shutter insert
   double colletHGap;       ///< Collet gap horrizontal
   double colletVGap;       ///< Collet gap vertial
   double colletFGap;       ///< Collet gap forward
 
   double steelOffset;      ///< Steel back step distance
+  double steelAWidth;          ///< Steel width front half units
+  double steelBWidth;          ///< Steel width back half units
 
   double b4cThick;         ///< Total b4c thick
   double b4cSpace;         ///< Total b4c spacer

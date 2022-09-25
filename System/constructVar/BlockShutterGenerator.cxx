@@ -51,10 +51,12 @@ namespace setVariable
 
 BlockShutterGenerator::BlockShutterGenerator() :
   NSections(8),steelNumber(4),
-  shutterInnerLen(179.2),
+  shutterFStep((201.0-179.2)/2.0),
+  shutterLen(179.2),
   colletHGap(0.6),colletVGap(0.6),colletFGap(0.6),
   b4cThick(0.635),b4cSpace(0.2),
-  steelOffset(1.0),
+  steelOffset(0.5),steelAWidth(1.0),
+  steelBWidth(3.0),
   colletMat("CastIron")
 
   /*!
@@ -74,7 +76,7 @@ BlockShutterGenerator::generateBox
 (FuncDataBase& Control,
  const std::string& keyName,
  const double xStep,const double zStep,
- const double xAngle,const double zAngle,
+ const double zAngle,const double xAngle,
  const double beamXSize,const double beamZSize,
  const double beamXAngle,const double beamZAngle) const
   /*!
@@ -111,7 +113,8 @@ BlockShutterGenerator::generateBox
   Control.addVariable(colName+"ZAngle",zAngle);   
   Control.addVariable(colName+"ZStep",zStep);     
 
-  Control.addVariable(colName+"Length",shutterInnerLen);
+  Control.addVariable(colName+"FStep",shutterFStep);
+  Control.addVariable(colName+"Length",shutterLen);
   Control.addVariable(colName+"HGap",beamXSize);
   Control.addVariable(colName+"VGap",beamZSize);    
   Control.addVariable(colName+"HGapRAngle",beamXAngle);
@@ -120,6 +123,8 @@ BlockShutterGenerator::generateBox
   Control.addVariable(colName+"B4CThick",b4cThick);
   Control.addVariable(colName+"B4CSpace",b4cSpace);
   Control.addVariable(colName+"SteelOffset",steelOffset);
+  Control.addVariable(colName+"SteelAWidth",steelAWidth);
+  Control.addVariable(colName+"SteelBWidth",steelBWidth);
 
   /*
   Control.addVariable(finalBlock+"CentX",0.0);    //   Inner blocks
