@@ -62,8 +62,8 @@ class collInsert  :
   double steelOffset;          ///< Steel back step distance
   double steelAWidth;          ///< Steel width front half units
   double steelBWidth;          ///< Steel width back half units
-  double b4cThick;             ///< b4c layers
-  double b4cGap;
+  double b4cThick;             ///< b4c thickness
+  double b4cSpace;
 
   int b4cMat;                  ///< B4C material
   int steelMat;                ///< Steel material

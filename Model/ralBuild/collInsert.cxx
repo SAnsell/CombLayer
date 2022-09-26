@@ -51,6 +51,7 @@
 #include "ContainedComp.h"
 #include "ExternalCut.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "collInsert.h"
 
@@ -89,7 +90,6 @@ collInsert::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("collInsert","populate");
 
   FixedRotate::populate(Control);
-  ELog::EM<<"Coll["<<keyName<<"] = "<<zAngle<<" "<<xAngle<<ELog::endDiag;
 
   nB4C=Control.EvalVar<size_t>(keyName+"NB4C");
   nSteel=Control.EvalVar<size_t>(keyName+"NSteel");
@@ -100,17 +100,22 @@ collInsert::populate(const FuncDataBase& Control)
   hGapRAngle=Control.EvalVar<double>(keyName+"HGapRAngle");
   vGapRAngle=Control.EvalVar<double>(keyName+"VGapRAngle");
 
-  steelOffset=Control.EvalVar<double>(keyName+"SteelOffset");
-  steelBWidth=Control.EvalVar<double>(keyName+"SteelAWidth");
-  steelAWidth=Control.EvalVar<double>(keyName+"SteelBWidth");
+  b4cThick=Control.EvalVar<double>(keyName+"B4CThick");
+  b4cSpace=Control.EvalVar<double>(keyName+"B4CSpace");
 
+  steelOffset=Control.EvalVar<double>(keyName+"SteelOffset");
+  steelAWidth=Control.EvalVar<double>(keyName+"SteelAWidth");
+  steelBWidth=Control.EvalVar<double>(keyName+"SteelBWidth");
+
+  b4cMat=ModelSupport::EvalMat<int>(Control,keyName+"B4CMat");
+  steelMat=ModelSupport::EvalMat<int>(Control,keyName+"SteelMat");
   if (nB4C<3)
     throw ColErr::IndexError<size_t>(nB4C,3,"nB4C too small");
 
   if (nSteel<1)
     throw ColErr::IndexError<size_t>(nB4C,3,"nB4C too small");
 
-  ELog::EM<<"H["<<keyName<<"]:"<<hGap<<ELog::endDiag;
+
   return;
 }
 
@@ -166,7 +171,7 @@ collInsert::createSurfaces()
 
 
   // calculate two length : gap for a B4C pair  and a steel block
-  const double b4cUnit=b4cGap*3.0+b4cThick*2.0;
+  const double b4cUnit=b4cSpace*3.0+b4cThick*2.0;
   const double steelUnit=(length-b4cUnit*static_cast<double>(nB4C-2))/
     static_cast<double>((nB4C-1)*nSteel);
 
@@ -176,15 +181,15 @@ collInsert::createSurfaces()
     {
       // B4C block
       ModelSupport::buildPlane(SMap,BI+1,Org,Y);
-      Org+=Y*b4cGap;
+      Org+=Y*b4cSpace;
       ModelSupport::buildPlane(SMap,BI+11,Org,Y);
       Org+=Y*b4cThick;
       ModelSupport::buildPlane(SMap,BI+12,Org,Y);
-      Org+=Y*b4cGap;
+      Org+=Y*b4cSpace;
       ModelSupport::buildPlane(SMap,BI+21,Org,Y);
       Org+=Y*b4cThick;
       ModelSupport::buildPlane(SMap,BI+22,Org,Y);
-      Org+=Y*b4cGap;
+      Org+=Y*b4cSpace;
 
       if (i!=nB4C-1)
 	{
@@ -224,26 +229,28 @@ collInsert::createObjects(Simulation& System)
   // outer steel layer
   const HeadRule outerHR=
     ModelSupport::getHeadRule(SMap,buildIndex,"33 -34 35 -36");
+
   const HeadRule steelHR=
     ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 15 -16");
   // mid divider
   const HeadRule midHR=
-    HeadRule(SMap,buildIndex+(100*nB4C/2),1);
+    HeadRule(SMap,buildIndex+100*(1+nB4C/2),1);
 
   HeadRule HR;
-
   // front space
   HR=HeadRule(SMap,buildIndex+100,-1);
   System.addCell(cellIndex++,0,0.0,HR*RInnerComp*innerHR*RDivider);
 
   const HeadRule voidHR=
     ModelSupport::getHeadRule(SMap,buildIndex,"-3:4:-5:6");
+
   
   int BI(buildIndex+100);
   HeadRule limitHR(innerHR);
   for(size_t i=0;i<nB4C;i++)
     {
-      if (i==nB4C) limitHR=outerHR;
+      if (i==nB4C/2)
+	limitHR=outerHR;
       
       HR=ModelSupport::getHeadRule(SMap,BI,"1 -11");
       System.addCell(cellIndex++,0,0.0,HR*limitHR*voidHR);
@@ -256,7 +263,7 @@ collInsert::createObjects(Simulation& System)
 
       HR=ModelSupport::getHeadRule(SMap,BI,"21 -22");
       System.addCell(cellIndex++,b4cMat,0.0,HR*limitHR*voidHR);
-
+      
       HR=ModelSupport::getHeadRule(SMap,BI,"22 -31");
       System.addCell(cellIndex++,0,0.0,HR*limitHR*voidHR);
       
@@ -270,7 +277,6 @@ collInsert::createObjects(Simulation& System)
 	      System.addCell(cellIndex++,0,0.0,HR*steelHR*voidHR);
 	      System.addCell(cellIndex++,steelMat,0.0,
 			     HR*steelHR.complement()*limitHR);
-	      ELog::EM<<"Count - "<<j<<ELog::endDiag;	      
 	      SI++;
 	    }
 	  BI+=100;
@@ -280,6 +286,8 @@ collInsert::createObjects(Simulation& System)
   HR=HeadRule(SMap,BI,31);
   System.addCell(cellIndex++,0,0.0,HR*ROuterHR*outerHR*RDivider);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,BI,"101 3 -4 5 -6 -31M");
+  System.addCell(cellIndex++,0,0.0,HR);
 
   addOuterSurf(innerHR*midHR.complement());
   addOuterUnionSurf(outerHR*midHR);

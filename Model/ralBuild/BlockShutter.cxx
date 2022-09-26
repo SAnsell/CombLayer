@@ -220,8 +220,6 @@ BlockShutter::createInsert(Simulation& System)
   const HeadRule& RInnerComp=ExternalCut::getComplementRule("RInner");
   const HeadRule& ROuterHR=ExternalCut::getRule("ROuter");
 
-  ELog::EM<<"Origin = "<<this->getSecondary().getLinkPt(0)<<ELog::endDiag;
-
   collPtr->copyCutSurf("RInner",*this,"RInner");
   collPtr->copyCutSurf("ROuter",*this,"ROuter");
   collPtr->copyCutSurf("Divider",*this,"Divider");
@@ -229,6 +227,7 @@ BlockShutter::createInsert(Simulation& System)
   collPtr->createAll(System,this->getSecondary(),0);
   collPtr->insertInCell(System,getCell("InnerCollet"));
   collPtr->insertInCell(System,getCell("OuterCollet"));
+
   return;
 }
 

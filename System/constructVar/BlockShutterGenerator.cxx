@@ -86,8 +86,8 @@ BlockShutterGenerator::generateBox
     \param keyName :: head name for variable
     \param xStep :: start offset point
     \param zStep :: start offset point
-    \param xAngle :: direction of main beam
-    \param zAngle :: direction of main beam
+    \param xAngle :: direction of main beam [from target centre]
+    \param zAngle :: direction of main beam [from target centre]
     \param beamXSize :: start B4C spacer
     \param beamZSize :: start B4C spacer
     \param beamXAngle :: change (reduction is +ve) of X size
@@ -108,8 +108,8 @@ BlockShutterGenerator::generateBox
 
   Control.addVariable(colName+"NB4C",NSections);
   Control.addVariable(colName+"NSteel",steelNumber);
-								
-  Control.addVariable(colName+"XAngle",xAngle);   
+
+  Control.addVariable(colName+"XAngle",xAngle);
   Control.addVariable(colName+"XStep",xStep);     
   Control.addVariable(colName+"ZAngle",zAngle);   
   Control.addVariable(colName+"ZStep",zStep);     
@@ -128,15 +128,7 @@ BlockShutterGenerator::generateBox
   Control.addVariable(colName+"SteelBWidth",steelBWidth);
 
   Control.addVariable(colName+"SteelMat",steelMat);
-  Control.addVariable(colName+"B4cMat",b4cMat);  
-  /*
-  Control.addVariable(finalBlock+"CentX",0.0);    //   Inner blocks
-  Control.addVariable(finalBlock+"CentZ",0.0);    //   Inner blocks
-  Control.addVariable(finalBlock+"Len",3.4);      //   Inner blocks
-  Control.addVariable(finalBlock+"VGap",4.0);     //   Height
-  Control.addVariable(finalBlock+"HGap",4.0);     //   Hor. Gap (full)
-  Control.addVariable(finalBlock+"Mat","Void");   //   Spacer
-  */
+  Control.addVariable(colName+"B4CMat",b4cMat);  
   
   return;
 

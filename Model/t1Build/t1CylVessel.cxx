@@ -229,7 +229,6 @@ t1CylVessel::createWindows(Simulation& System)
   */
 {
   ELog::RegMethod RegA("t1CylVessel","createWindows");
-  ELog::EM<<"ASDFSDF "<<keyName<<ELog::endDiag;
 
   const FuncDataBase& Control=System.getDataBase();
   const size_t nWin=Control.EvalVar<size_t>(keyName+"NPorts");
