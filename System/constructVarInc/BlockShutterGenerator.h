@@ -54,9 +54,10 @@ class BlockShutterGenerator
 
   double b4cThick;         ///< Total b4c thick
   double b4cSpace;         ///< Total b4c spacer
-
   
-  std::string colletMat;         ///< Collet material
+  std::string colletMat;   ///< Collet material
+  std::string b4cMat;      ///< b4c material
+  std::string steelMat;    ///< Inner Steel mat
   
 
  public:

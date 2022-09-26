@@ -21,6 +21,23 @@
  ****************************************************************************/
 #ifndef StrFunc_support_h
 #define StrFunc_support_h
+/*!
+  \class reverse
+  Template system to reverse interator.
+  Note that if can be used in range for loops e.g.
+  for(const int I : reverse(vecI))
+ */
+
+template<typename T>
+class reverse
+{
+private:
+  T& container;
+public:
+  explicit reverse(T& C) : container(C) {}
+  auto begin() const { return std::rbegin(container); }
+  auto end() const { return std::rend(container); }
+};
 
 template <typename T> inline constexpr
 T signum(T x, std::false_type)

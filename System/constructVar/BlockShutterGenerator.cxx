@@ -57,7 +57,8 @@ BlockShutterGenerator::BlockShutterGenerator() :
   b4cThick(0.635),b4cSpace(0.2),
   steelOffset(0.5),steelAWidth(1.0),
   steelBWidth(3.0),
-  colletMat("CastIron")
+  colletMat("CastIron"),b4cMat("B4C"),
+  steelMat("Stainless304")
 
   /*!
     Constructor and defaults
@@ -101,7 +102,7 @@ BlockShutterGenerator::generateBox
   Control.addVariable(fullName+"ColletHGap",colletHGap);
   Control.addVariable(fullName+"ColletVGap",colletVGap);
   Control.addVariable(fullName+"ColletFGap",colletFGap);
-  Control.addVariable(fullName+"ColletMat","CastIron");  //   surround material
+  Control.addVariable(fullName+"ColletMat",colletMat);  //   surround material
 
   const std::string colName=fullName+"Insert";
 
@@ -126,6 +127,8 @@ BlockShutterGenerator::generateBox
   Control.addVariable(colName+"SteelAWidth",steelAWidth);
   Control.addVariable(colName+"SteelBWidth",steelBWidth);
 
+  Control.addVariable(colName+"SteelMat",steelMat);
+  Control.addVariable(colName+"B4cMat",b4cMat);  
   /*
   Control.addVariable(finalBlock+"CentX",0.0);    //   Inner blocks
   Control.addVariable(finalBlock+"CentZ",0.0);    //   Inner blocks

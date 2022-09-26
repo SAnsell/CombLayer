@@ -65,7 +65,8 @@ class collInsert  :
   double b4cThick;             ///< b4c layers
   double b4cGap;
 
-  int mat;             ///< Material number  
+  int b4cMat;                  ///< B4C material
+  int steelMat;                ///< Steel material
 
 
   void createSurfaces();

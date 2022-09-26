@@ -216,29 +216,73 @@ collInsert::createObjects(Simulation& System)
   const HeadRule& ROuterHR=ExternalCut::getRule("ROuter");
   const HeadRule& RDivider=ExternalCut::getRule("Divider");
 
+  // inner void
+  
+  // inner steel layer
+  const HeadRule innerHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"23 -24 25 -26");
+  // outer steel layer
+  const HeadRule outerHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"33 -34 35 -36");
+  const HeadRule steelHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 15 -16");
+  // mid divider
+  const HeadRule midHR=
+    HeadRule(SMap,buildIndex+(100*nB4C/2),1);
+
   HeadRule HR;
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
-  System.addCell(cellIndex++,0,0.0,HR*RInnerComp*ROuterHR*RDivider);
 
+  // front space
+  HR=HeadRule(SMap,buildIndex+100,-1);
+  System.addCell(cellIndex++,0,0.0,HR*RInnerComp*innerHR*RDivider);
+
+  const HeadRule voidHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"-3:4:-5:6");
+  
   int BI(buildIndex+100);
-
+  HeadRule limitHR(innerHR);
   for(size_t i=0;i<nB4C;i++)
     {
+      if (i==nB4C) limitHR=outerHR;
+      
+      HR=ModelSupport::getHeadRule(SMap,BI,"1 -11");
+      System.addCell(cellIndex++,0,0.0,HR*limitHR*voidHR);
 
+      HR=ModelSupport::getHeadRule(SMap,BI,"11 -12");
+      System.addCell(cellIndex++,b4cMat,0.0,HR*limitHR*voidHR);
+
+      HR=ModelSupport::getHeadRule(SMap,BI,"12 -21");
+      System.addCell(cellIndex++,0,0.0,HR*limitHR*voidHR);
+
+      HR=ModelSupport::getHeadRule(SMap,BI,"21 -22");
+      System.addCell(cellIndex++,b4cMat,0.0,HR*limitHR*voidHR);
+
+      HR=ModelSupport::getHeadRule(SMap,BI,"22 -31");
+      System.addCell(cellIndex++,0,0.0,HR*limitHR*voidHR);
+      
       if (i!=nB4C-1)
 	{
 	  int SI(BI);
 	  for(size_t j=0;j<nSteel;j++)
 	    {
+	      HR=ModelSupport::getAltHeadRule(SMap,SI,BI,"31 -32A -101MB");
+	      
+	      System.addCell(cellIndex++,0,0.0,HR*steelHR*voidHR);
+	      System.addCell(cellIndex++,steelMat,0.0,
+			     HR*steelHR.complement()*limitHR);
+	      ELog::EM<<"Count - "<<j<<ELog::endDiag;	      
+	      SI++;
 	    }
 	  BI+=100;
 	}
     }
-      // last surface
+  // last surface
+  HR=HeadRule(SMap,BI,31);
+  System.addCell(cellIndex++,0,0.0,HR*ROuterHR*outerHR*RDivider);
 
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 15 -16");  
-  addOuterSurf(HR);
+  addOuterSurf(innerHR*midHR.complement());
+  addOuterUnionSurf(outerHR*midHR);
   return;
 }
   
