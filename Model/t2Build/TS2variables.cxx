@@ -40,7 +40,6 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
-#include "shutterVar.h"
 
 namespace setVariable
 {
@@ -257,20 +256,20 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("hydroPMModMat","H2O");        // Water
   Control.addVariable("hydroPMModTemp",333.0);    // 60C
 
-  Control.addVariable("hornPMSideExt",3.2);     // Full width
-  Control.addVariable("hornPMHeightExt",3.2);     // Full Depth 
-  Control.addVariable("hornPMBackExt",0.0);    // Full Height
-  Control.addVariable("hornPMForwardExt",3.2);    // Full Height
+  Control.addVariable("hornPMSideExt",3.2);      
+  Control.addVariable("hornPMHeightExt",3.2);    
+  Control.addVariable("hornPMBackExt",0.0);      
+  Control.addVariable("hornPMForwardExt",3.2);   
 
-  Control.addVariable("hornPMModThick",2.0);     // Full width
+  Control.addVariable("hornPMModThick",2.0);    
 
   Control.addVariable("hornPMVacInner",0.51);    // Vac inner thickness
   Control.addVariable("hornPMVacOuter",0.41);    // Vac outer thickness
   Control.addVariable("hornPMAlInner",0.35);    // Al skin thickness [inner]
   Control.addVariable("hornPMAlOuter",0.41);    // Al skin thickness [outer]
-  Control.addVariable("hornPMWingLen",15.0);    // Al skin thickness [outer]
-  Control.addVariable("hornPMAlMat","Aluminium");        // Aluminium Material
-  Control.addVariable("hornPMModMat","H2O");        // Water
+  Control.addVariable("hornPMWingLen",15.0);    
+  Control.addVariable("hornPMAlMat","Aluminium");  
+  Control.addVariable("hornPMModMat","H2O");       
   Control.addVariable("hornPMModTemp",333.0);    // 60C
 
   // VACUUM LAYER
@@ -278,30 +277,30 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("cvacVacNegRadius",20.0);      // Radius of hydro curve
   Control.addVariable("cvacVacPosGap",3.66666);      // Gap on groove side
   Control.addVariable("cvacVacNegGap",0.6);          // Gap on Hydrogen side
-  Control.addVariable("cvacVacSide",0.5);            // Gap on Hydrogen side
+  Control.addVariable("cvacVacSide",0.5);            
   Control.addVariable("cvacVacTop",0.6);             // Gap on Ref top
   Control.addVariable("cvacVacBase",0.6);            // Gap on Target base
 
   // AL LAYER
-  Control.addVariable("cvacAlPos",0.15);         // Gap on groove side
+  Control.addVariable("cvacAlPos",0.15);          // Gap on groove side
   Control.addVariable("cvacAlNeg",0.15);          // Gap on Hydrogen side
   Control.addVariable("cvacAlSide",0.3);          // Gap on Hydrogen side
   Control.addVariable("cvacAlTop",0.3);           // Gap on Ref top
-  Control.addVariable("cvacAlBase",0.15);          // Gap on Target base
+  Control.addVariable("cvacAlBase",0.15);         // Gap on Target base
 
   // Tertiary LAYER
-  Control.addVariable("cvacTerPos",0.2);         // Gap on groove side
-  Control.addVariable("cvacTerNeg",0.2);          // Gap on Hydrogen side
+  Control.addVariable("cvacTerPos",0.2);           // Gap on groove side
+  Control.addVariable("cvacTerNeg",0.2);           // Gap on Hydrogen side
   Control.addVariable("cvacTerSide",0.2);          // Gap on Hydrogen side
   Control.addVariable("cvacTerTop",0.2);           // Gap on Ref top
   Control.addVariable("cvacTerBase",0.2);          // Gap on Target base
 
   // Outer Al LAYER
-  Control.addVariable("cvacOutPos",0.10);         // Gap on groove sidex
+  Control.addVariable("cvacOutPos",0.10);          // Gap on groove sidex
   Control.addVariable("cvacOutNeg",0.10);          // Gap on Hydrogen side
-  Control.addVariable("cvacOutSide",0.30);          // Gap on Hydrogen side
-  Control.addVariable("cvacOutTop",0.30);           // Gap on Ref top
-  Control.addVariable("cvacOutBase",0.30);          // Gap on Target base
+  Control.addVariable("cvacOutSide",0.30);         // Gap on Hydrogen side
+  Control.addVariable("cvacOutTop",0.30);          // Gap on Ref top
+  Control.addVariable("cvacOutBase",0.30);         // Gap on Target base
 
   // Outer Al LAYER
   Control.addVariable("cvacClearPos",0.30);        // Clear Pos
@@ -319,18 +318,18 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("decPlateZStep",11.862);     //  Z Shift 
   Control.addVariable("decPlateZAngle",0.0);       //  Tilt angle
   Control.addVariable("decPlateXYAngle",57.0);     // Angle  [relative to Y]
-  Control.addVariable("decPlateWidth",14.0);       //  Tilt angle
-  Control.addVariable("decPlateHeight",12.0);       //  Tilt angle
-  Control.addVariable("decPlateDepth",5.0);       //  Tilt angle
-  Control.addVariable("decPlateDefMat","Aluminium");       //  Tilt angle
+  Control.addVariable("decPlateWidth",14.0);     
+  Control.addVariable("decPlateHeight",12.0);    
+  Control.addVariable("decPlateDepth",5.0);      
+  Control.addVariable("decPlateDefMat","Aluminium");  
 
   //  NEW DECOUPLED MODERATOR
-  Control.addVariable("decoupledXStep",0.0);        //  X [across] shift
-  Control.addVariable("decoupledYStep",10-4.6);        //  Y [target] shift
-  Control.addVariable("decoupledZStep",11.862);     //  Z Shift 
+  Control.addVariable("decoupledXStep",0.0);         //  X [across] shift
+  Control.addVariable("decoupledYStep",10-4.6);      //  Y [target] shift
+  Control.addVariable("decoupledZStep",11.862);      //  Z Shift 
   Control.addVariable("decoupledZAngle",57.0);       //  Tilt angle
-  Control.addVariable("decoupledEastRadius",30.2);  // Radius of East curve
-  Control.addVariable("decoupledWestRadius",30.2);  // Radius of West curve
+  Control.addVariable("decoupledEastRadius",30.2);   // Radius of East curve
+  Control.addVariable("decoupledWestRadius",30.2);   // Radius of West curve
 
   Control.addVariable("decoupledWidth",14.4);   // Full width
   Control.addVariable("decoupledHeight",12.0);   // Full height
@@ -361,12 +360,12 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("dvacVacNegRadius",30.2);   // 
   Control.addVariable("dvacVacPosGap",0.3);       // 
   Control.addVariable("dvacVacNegGap",0.3);       // 
-  Control.addVariable("dvacVacLSide",1.3);   //
-  Control.addVariable("dvacVacRSide",0.3);   //
-  Control.addVariable("dvacVacBase",0.3);    // 
-  Control.addVariable("dvacVacTop",0.3);     // 
+  Control.addVariable("dvacVacLSide",1.3);  
+  Control.addVariable("dvacVacRSide",0.3);  
+  Control.addVariable("dvacVacBase",0.3);   
+  Control.addVariable("dvacVacTop",0.3);    
 
-  Control.addVariable("dvacAlPos",0.15);    // First Al layer
+  Control.addVariable("dvacAlPos",0.15);    // First Al layer (groove)
   Control.addVariable("dvacAlNeg",0.15);    // 
   Control.addVariable("dvacAlSide",0.15);    // Sides of view
   Control.addVariable("dvacAlBase",0.15);    // up/down
@@ -379,10 +378,10 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("dvacTerTop",0.2);   // up/down
 
   Control.addVariable("dvacOutPos",0.2);    // Outer Al layer
-  Control.addVariable("dvacOutNeg",0.2);    // Actual curve
-  Control.addVariable("dvacOutSide",0.2);    // Sides of view
-  Control.addVariable("dvacOutBase",0.2);   // up/down
-  Control.addVariable("dvacOutTop",0.2);   // up/down
+  Control.addVariable("dvacOutNeg",0.2);    // 
+  Control.addVariable("dvacOutSide",0.2);   // Sides of view
+  Control.addVariable("dvacOutBase",0.2);   //
+  Control.addVariable("dvacOutTop",0.2);    //
 
   Control.addVariable("dvacClearPos",0.6);    // Actual curve
   Control.addVariable("dvacClearNeg",0.6);    // Actual curve
@@ -460,7 +459,6 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("decPipeHeMat","Void");          // Pipe outer radius
   Control.addVariable("decPipeHeAlMat","Aluminium");          // Pipe outer radius
   
-
   // CD BUCKET:
   Control.addVariable("cdBucketXStep",0.0);      // Offset
   Control.addVariable("cdBucketYStep",-4.8);     // Rotation angle  
@@ -821,9 +819,8 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("BWindowInconelMat","Inconnel");  // Inconel
   Control.addVariable("BWindowWaterMat","H2O");   // Light water
 
-
-  ts1System::shutterVar let("let"); // LET shutter number [west 7]
-  let.buildVar(Control,0.0,0.0,0.0,9.0,4.0,0.0,0.0); 
+  //  ts1System::shutterVar let("let"); // LET shutter number [west 7]
+  //  let.buildVar(Control,0.0,0.0,0.0,9.0,4.0,0.0,0.0); 
 
 
   return;

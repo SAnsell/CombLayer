@@ -40,7 +40,6 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
-#include "shutterVar.h"
 #include "BlockShutterGenerator.h"
 
 namespace setVariable
