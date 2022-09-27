@@ -43,7 +43,6 @@
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
-#include "CFFlanges.h"
 #include "BlockShutterGenerator.h"
 
 namespace setVariable
@@ -51,8 +50,8 @@ namespace setVariable
 
 BlockShutterGenerator::BlockShutterGenerator() :
   NSections(8),steelNumber(4),
-  shutterFStep((201.0-179.2)/2.0),
-  shutterLen(179.2),
+  shutterFStep(3.8/2.0),
+  shutterLen(196.2),
   colletHGap(0.6),colletVGap(0.6),colletFGap(0.6),
   b4cThick(0.635),b4cSpace(0.2),
   steelOffset(0.5),steelAWidth(1.0),

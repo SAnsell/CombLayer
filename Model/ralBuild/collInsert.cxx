@@ -172,7 +172,7 @@ collInsert::createSurfaces()
 
   // calculate two length : gap for a B4C pair  and a steel block
   const double b4cUnit=b4cSpace*3.0+b4cThick*2.0;
-  const double steelUnit=(length-b4cUnit*static_cast<double>(nB4C-2))/
+  const double steelUnit=(length-b4cUnit*static_cast<double>(nB4C))/
     static_cast<double>((nB4C-1)*nSteel);
 
   int BI(buildIndex+100);
@@ -246,23 +246,39 @@ collInsert::createObjects(Simulation& System)
 
   
   int BI(buildIndex+100);
+  int b4cI(buildIndex);
   HeadRule limitHR(innerHR);
   for(size_t i=0;i<nB4C;i++)
     {
       if (i==nB4C/2)
-	limitHR=outerHR;
-      
+	{
+	  limitHR=outerHR;
+	  b4cI+=10;
+	}
+
       HR=ModelSupport::getHeadRule(SMap,BI,"1 -11");
       System.addCell(cellIndex++,0,0.0,HR*limitHR*voidHR);
 
-      HR=ModelSupport::getHeadRule(SMap,BI,"11 -12");
-      System.addCell(cellIndex++,b4cMat,0.0,HR*limitHR*voidHR);
+      HR=ModelSupport::getHeadRule(SMap,BI,buildIndex,"11 -12 (-3M:4M)");
+      System.addCell(cellIndex++,b4cMat,0.0,HR*limitHR);
+      HR=ModelSupport::getHeadRule
+	(SMap,BI,buildIndex,b4cI,"11 -12 3M -4M -5M 25N");
+      System.addCell(cellIndex++,0,0.0,HR*limitHR);
+      HR=ModelSupport::getHeadRule
+	(SMap,BI,buildIndex,b4cI,"11 -12 3M -4M 6M -26N");
+      System.addCell(cellIndex++,0,0.0,HR*limitHR);
 
       HR=ModelSupport::getHeadRule(SMap,BI,"12 -21");
       System.addCell(cellIndex++,0,0.0,HR*limitHR*voidHR);
 
-      HR=ModelSupport::getHeadRule(SMap,BI,"21 -22");
-      System.addCell(cellIndex++,b4cMat,0.0,HR*limitHR*voidHR);
+      HR=ModelSupport::getHeadRule(SMap,BI,buildIndex,"21 -22 (-5M:6M)");
+      System.addCell(cellIndex++,b4cMat,0.0,HR*limitHR);
+      HR=ModelSupport::getHeadRule
+	(SMap,BI,buildIndex,b4cI,"21 -22 5M -6M -3M 23N");
+      System.addCell(cellIndex++,0,0.0,HR);
+      HR=ModelSupport::getHeadRule
+	(SMap,BI,buildIndex,b4cI,"21 -22 5M -6M 4M -24N");
+      System.addCell(cellIndex++,0,0.0,HR);
       
       HR=ModelSupport::getHeadRule(SMap,BI,"22 -31");
       System.addCell(cellIndex++,0,0.0,HR*limitHR*voidHR);

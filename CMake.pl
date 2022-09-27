@@ -56,11 +56,13 @@ $gM->findSubIncDir("System");
 $gM->findSubIncDir("Model");
 $gM->findSubIncDir("Model/ESSBeam");
 $gM->findSubIncDir("Model/MaxIV");
+$gM->findSubIncDir("Model/ralBuild");
 
 $gM->findSubSrcDir("Model");
 $gM->findSubSrcDir("System");
 $gM->findSubSrcDir("Model/ESSBeam");
 $gM->findSubSrcDir("Model/MaxIV");
+$gM->findSubSrcDir("Model/ralBuild");
 
 $gM->findSubSrcDir("","Aunit");  ## Aunit to be excluded
 
@@ -199,7 +201,7 @@ foreach my $mainProg (@masterProg)
     
     elsif ($mainProg eq "t1Real")
       { 
-	my @t1Real = qw( t1Build ralBuild  ) ;
+	my @t1Real = qw( t1Build ralBuild ralVar ) ;
 	push(@t1Real,@mainLib);
 	$gM->addDepUnit("t1Real", [@t1Real]);
       }
