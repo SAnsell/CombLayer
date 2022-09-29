@@ -40,7 +40,7 @@ class ShapeUnit;
 
 class GuideLine :
     public attachSystem::ContainedComp,
-    public attachSystem::FixedGroup,
+    public attachSystem::FixedRotateGroup,
     public attachSystem::CellMap,
     public attachSystem::FrontBackCut
 {
@@ -48,19 +48,6 @@ class GuideLine :
 
   const int SUItem;              ///< Item offest [200 def]
   const int SULayer;             ///< Item layer [20 def]
-
-  double xStep;                 ///< Shielding X Step
-  double yStep;                 ///< Shielding Y Step
-  double zStep;                 ///< Shielding Z Step
-  double xyAngle;               ///< Shielding Rotation angle
-  double zAngle;                ///< Shielding Rotation angle
-
-  double beamXStep;             ///< Guide X Step
-  double beamYStep;             ///< Guide Y Step
-  double beamZStep;             ///< Guide Z Step
-  double beamXYAngle;           ///< Guide Rotation angle
-  double beamZAngle;            ///< Guide Z-Rotation angle
-
   
   // OUTER DIMENTIONS:
   double length;               ///< Full length

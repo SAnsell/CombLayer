@@ -77,6 +77,8 @@
 #include "FixedComp.h" 
 #include "ContainedComp.h"
 #include "FixedGroup.h"
+#include "FixedRotate.h"
+#include "FixedRotateGroup.h" 
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ExternalCut.h"
@@ -94,7 +96,7 @@ namespace beamlineSystem
 
 GuideLine::GuideLine(const std::string& Key) : 
   attachSystem::ContainedComp(),
-  attachSystem::FixedGroup(Key,"Shield",6,"GuideOrigin",2),
+  attachSystem::FixedRotateGroup(Key,"Shield",6,"Beam",2),
   attachSystem::CellMap(),attachSystem::FrontBackCut(),
   SUItem(200),SULayer(20),nShapeLayers(0),
   beamFrontCut(false),beamEndCut(false),
@@ -106,13 +108,11 @@ GuideLine::GuideLine(const std::string& Key) :
 {}
 
 GuideLine::GuideLine(const GuideLine& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedGroup(A),
-  attachSystem::CellMap(A),attachSystem::FrontBackCut(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::FixedRotateGroup(A),
+  attachSystem::CellMap(A),
+  attachSystem::FrontBackCut(A),
   SUItem(A.SUItem),SULayer(A.SULayer),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),beamXStep(A.beamXStep),
-  beamYStep(A.beamYStep),beamZStep(A.beamZStep),
-  beamXYAngle(A.beamXYAngle),beamZAngle(A.beamZAngle),
   length(A.length),height(A.height),depth(A.depth),
   leftWidth(A.leftWidth),rightWidth(A.rightWidth),
   nShapeLayers(A.nShapeLayers),layerThick(A.layerThick),
@@ -140,19 +140,9 @@ GuideLine::operator=(const GuideLine& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedGroup::operator=(A);
+      attachSystem::FixedRotateGroup::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
-      beamXStep=A.beamXStep;
-      beamYStep=A.beamYStep;
-      beamZStep=A.beamZStep;
-      beamXYAngle=A.beamXYAngle;
-      beamZAngle=A.beamZAngle;
       length=A.length;
       height=A.height;
       depth=A.depth;
@@ -208,17 +198,7 @@ GuideLine::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("GuideLine","populate");
 
-  xStep=Control.EvalDefVar<double>(keyName+"XStep",0.0);
-  yStep=Control.EvalDefVar<double>(keyName+"YStep",0.0);
-  zStep=Control.EvalDefVar<double>(keyName+"ZStep",0.0);
-  xyAngle=Control.EvalDefVar<double>(keyName+"XYAngle",0.0);
-  zAngle=Control.EvalDefVar<double>(keyName+"ZAngle",0.0);
-
-  beamXStep=Control.EvalDefVar<double>(keyName+"BeamXStep",xStep);
-  beamYStep=Control.EvalDefVar<double>(keyName+"BeamYStep",yStep);  // special
-  beamZStep=Control.EvalDefVar<double>(keyName+"BeamZStep",zStep); 
-  beamXYAngle=Control.EvalDefVar<double>(keyName+"BeamXYAngle",xyAngle);
-  beamZAngle=Control.EvalDefVar<double>(keyName+"BeamZAngle",zAngle);
+  FixedRotateGroup::populate(Control);
 
   activeShield=Control.EvalDefVar<int>(keyName+"ActiveShield",1);    
   length=Control.EvalVar<double>(keyName+"Length");
@@ -248,8 +228,9 @@ GuideLine::populate(const FuncDataBase& Control)
     }
 
   // set frontcut based on offset:
-  if (!frontActive())
-    beamFrontCut=(std::abs<double>(beamYStep)>Geometry::zeroTol) ? 1 : 0;
+  //  const FixedRotate& get
+  //  if (!frontActive())
+  //    beamFrontCut=(std::abs<double>(beamYStep)>Geometry::zeroTol) ? 1 : 0;
 
   return;
 }
@@ -275,17 +256,17 @@ GuideLine::addGuideUnit(const size_t index,
   ELog::RegMethod RegA("GuideLine","addGuideUnit");
 
   const std::string GKey="Guide"+std::to_string(index);
-
+  const FixedRotate& beamFC=getKey("Beam");
+  
   attachSystem::FixedComp& guideFC=FixedGroup::addKey(GKey,6);
   
   const std::string PGKey=(index) ? 
-    "Guide"+std::to_string(index-1) :  "GuideOrigin";
+    "Guide"+std::to_string(index-1) :  "Beam";
   const attachSystem::FixedComp& prevFC=FixedGroup::getKey(PGKey);
 
-  
   guideFC.createUnitVector(prevFC,POrigin);
-  guideFC.applyShift(bX,0.0,bZ);
-  guideFC.applyAngleRotate(bXYang,bZang);
+  guideFC.applyCopiedOffset(beamFC);
+
 
   return;
 }

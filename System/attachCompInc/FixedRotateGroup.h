@@ -26,7 +26,7 @@ class FuncDataBase;
 
 namespace attachSystem
 {
-
+  class FixedRotate;
 /*!
   \struct offset 
   \version 1.0
@@ -86,7 +86,6 @@ class FixedRotateGroup  : public FixedGroup
   double yAngle;         ///< y Angle
   double zAngle;         ///< z Angle
 
-
   /// Mapping of group and local offset
   std::map<std::string,rotate> GOffset;
   
@@ -130,8 +129,7 @@ class FixedRotateGroup  : public FixedGroup
   virtual void secondaryUnitVector(const attachSystem::FixedComp&,
 				   const long int);
 
-
-  
+  void applyCopiedOffset(FixedComp&,const std::string&);
   void applyOffset();
   void applyOffset(const std::string&);
 };
