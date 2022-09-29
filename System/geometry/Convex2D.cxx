@@ -263,15 +263,14 @@ Convex2D::createVertex()
 	    [](const Vert2D& A,const Vert2D& B)
 	    { return (A.getAngle() < B.getAngle()); }
 	    );
-  
 
   VTYPE::const_iterator vc=VList.begin();
-
-  // Add first two points
+  
   std::list<Vert2D> cList;
   std::list<Vert2D>::const_iterator lc;
+
+  // Note : VList  does not contain distIndex point
   cList.push_front(Vert2D(distIndex,Pts[distIndex]));
-  if (!distIndex) vc++;  // just incase first point is also most distant
   cList.push_front(*vc);
   vc++;
   

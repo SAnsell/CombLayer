@@ -511,6 +511,7 @@ GuideLine::createUnitVector(const attachSystem::FixedComp& mainFC,
   guideFC.applyAngleRotate(beamXYAngle,beamZAngle);
   setDefault("GuideOrigin");
 
+ 
   return;
 }
 
@@ -647,11 +648,12 @@ GuideLine::createObjects(Simulation& System)
 	  Out+=front+back;
 	  if (j)
 	    Out+=shapeUnits[i]->getExclude(SMap,j-1);
+
 	  System.addCell(MonteCarlo::Object(cellIndex++,layerMat[j],0.0,Out));
-          if (!j)
-            addCell(GKey+"Void",cellIndex-1);
-          addCell("Full",cellIndex-1);
-          addCell(GKey,cellIndex-1);
+	  if (!j)
+	    addCell(GKey+"Void",cellIndex-1);
+	  addCell("Full",cellIndex-1);
+	  addCell(GKey,cellIndex-1);
 	}
       
       // Last one add exclude:
@@ -770,9 +772,6 @@ GuideLine::createGuideLinks()
     }
   return;
 }
-
-
-
 
 HeadRule
 GuideLine::getXSection(const size_t shapeIndex,

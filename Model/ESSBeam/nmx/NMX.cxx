@@ -169,7 +169,7 @@ NMX::build(Simulation& System,
   FocusA->setBack(GItem.getKey("Beam"),-2);
   FocusA->createAll(System,*nmxAxis,-3,*nmxAxis,-3); // beam front reversed
   if (stopPoint==1) return;                  // STOP at Monolith
-
+  return;
 
   // PIPE after gamma shield
   VPipeA->addAllInsertCell(bunkerObj.getCell("MainVoid"));
