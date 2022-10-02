@@ -412,6 +412,43 @@ FixedRotateGroup::applyOffset(const std::string& unitName)
   return;
 }
 
+void
+FixedRotateGroup::applyOffset(const std::string& unitName,
+			      const std::string& rotateName)
+  /*!
+    Apply a rotation step to a single system
+    \param unitName :: Named unit
+    \param rotateName :: Base unit for rotation
+  */
+{
+  ELog::RegMethod RegA("FixedRotateGroup","applyOffset");
+
+  FTYPE::iterator FCmc=FMap.find(unitName);
+
+  std::map<std::string,rotate>::const_iterator mc=GOffset.find(rotateName);
+  if (FCmc==FMap.end()) 
+    throw ColErr::InContainerError<std::string>
+      (unitName,"FC Unit not found");
+  if (mc==GOffset.end()) 
+    throw ColErr::InContainerError<std::string>
+      (unitName,"Rotate Unit not found");
+  
+  const rotate& GO=mc->second;
+  FCmc->second->applyAngleRotate(preXAngle+GO.preXAngle,
+				    preYAngle+GO.preYAngle,
+                                    preZAngle+GO.preZAngle);
+
+  FCmc->second->applyShift(xStep+GO.xStep,yStep+GO.yStep,zStep+GO.zStep);
+
+  FCmc->second->applyAngleRotate(xAngle+GO.xAngle,
+				    yAngle+GO.yAngle,
+				    zAngle+GO.zAngle);
+
+  FCmc->second->reOrientate();
+  FixedGroup::setBeamCoord(unitName);
+  return;
+}
+
 
 void
 FixedRotateGroup::applyOffset()
@@ -482,5 +519,5 @@ FixedRotateGroup::createUnitVector(const std::string& unitName,
   applyOffset(unitName);    
   return;
 }
- 
+
 }  // NAMESPACE attachSystem

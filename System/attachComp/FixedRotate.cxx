@@ -493,17 +493,17 @@ FixedRotate::applyOffset()
 }
 
 void
-FixedRotate::applyCopiedOffset(FixedComp& FR)
+FixedRotate::applyCopiedOffset(FixedComp& FC) const
   /*!
     Apply the rotation/step offset
-    \param FR :: FixedRotate apply copy rotation / offset to
+    \param FC :: FixedRotate apply copy rotation / offset to
   */
 {
   ELog::RegMethod RegA("FixedRotate","applyOffset");
 
-  FC.applyAngleRotate(FR.preXAngle,FR.preYAngle,FR.preZAngle);
-  FC.applyShift(FR.xStep,FR.yStep,FR.zStep);
-  FC.applyAngleRotate(FR.xAngle,FR.yAngle,FR.zAngle);
+  FC.applyAngleRotate(preXAngle,preYAngle,preZAngle);
+  FC.applyShift(xStep,yStep,zStep);
+  FC.applyAngleRotate(xAngle,yAngle,zAngle);
   FC.reOrientate();      // this might still be active
 
   if (flipX) FC.reverseX();

@@ -129,9 +129,9 @@ class FixedRotateGroup  : public FixedGroup
   virtual void secondaryUnitVector(const attachSystem::FixedComp&,
 				   const long int);
 
-  void applyCopiedOffset(FixedComp&,const std::string&);
   void applyOffset();
   void applyOffset(const std::string&);
+  void applyOffset(const std::string&,const std::string&);
 };
 
 }

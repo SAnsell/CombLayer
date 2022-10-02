@@ -256,17 +256,21 @@ GuideLine::addGuideUnit(const size_t index,
   ELog::RegMethod RegA("GuideLine","addGuideUnit");
 
   const std::string GKey="Guide"+std::to_string(index);
-  const FixedRotate& beamFC=getKey("Beam");
+
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
   
-  attachSystem::FixedComp& guideFC=FixedGroup::addKey(GKey,6);
+  attachSystem::FixedComp& guideFC=
+    FixedGroup::addKey(GKey,6);
   
   const std::string PGKey=(index) ? 
     "Guide"+std::to_string(index-1) :  "Beam";
-  const attachSystem::FixedComp& prevFC=FixedGroup::getKey(PGKey);
-
-  guideFC.createUnitVector(prevFC,POrigin);
-  guideFC.applyCopiedOffset(beamFC);
-
+  const attachSystem::FixedComp& prevFC=
+    FixedGroup::getKey(PGKey);
+  
+  // avoid using FixedRotateGroup rotation:
+  FixedGroup::createUnitVector(GKey,prevFC);
+  guideFC.
+  FixedRotateGroup::applyOffset(GKey,"PGKey")
 
   return;
 }
@@ -314,7 +318,7 @@ GuideLine::processShape(const FuncDataBase& Control)
   for(size_t index=0;index<nShapes;index++)
     {
       const std::string NStr=std::to_string(index);
-      const std::string BKey=keyName+NStr;
+      const std::string shapeKey=keyName+NStr;
 
       const std::string typeID= 
 	Control.EvalVar<std::string>(keyName+NStr+"TypeID");
@@ -322,10 +326,10 @@ GuideLine::processShape(const FuncDataBase& Control)
       // Beam position [def original]
 
       // Initial directions:
-      beamX=Control.EvalDefVar<double>(BKey+"XStep",0.0);
-      beamZ=Control.EvalDefVar<double>(BKey+"ZStep",0.0);
-      bXYang=Control.EvalDefVar<double>(BKey+"XYAngle",0.0);
-      bZang=Control.EvalDefVar<double>(BKey+"ZAngle",0.0);
+      beamX=Control.EvalDefVar<double>(shapeKey+"XStep",0.0);
+      beamZ=Control.EvalDefVar<double>(shapeKey+"ZStep",0.0);
+      bXYang=Control.EvalDefVar<double>(shapeKey+"XYAngle",0.0);
+      bZang=Control.EvalDefVar<double>(shapeKey+"ZAngle",0.0);
 
       if (index)
 	{
@@ -468,29 +472,26 @@ GuideLine::processShape(const FuncDataBase& Control)
 void
 GuideLine::createUnitVector(const attachSystem::FixedComp& mainFC,
 			    const long int mainLP,
-			    const attachSystem::FixedComp& beamFC,
-			    const long int beamLP)
+			    const attachSystem::FixedComp& bFC,
+			    const long int bLP)
   /*!
     Create the unit vectors
     \param mainFC :: Outer unit vector 
     \param mainLP :: Outer link unit designator
-    \param beamFC :: Beamline unit vector 
-    \param beamLP :: beamline link unit designator
+    \param bFC :: Beamline unit vector 
+    \param bLP :: beamline link unit designator
   */
 {
   ELog::RegMethod RegA("GuideLine","createUnitVector");
   
   attachSystem::FixedComp& shieldFC=FixedGroup::getKey("Shield");
   shieldFC.createUnitVector(mainFC,mainLP);
-  shieldFC.applyShift(xStep,yStep,zStep);
-  shieldFC.applyAngleRotate(xyAngle,zAngle);
 
-  attachSystem::FixedComp& guideFC=FixedGroup::getKey("GuideOrigin");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+  beamFC.createUnitVector(bFC,bLP);
 
-  guideFC.createUnitVector(beamFC,beamLP);
-  guideFC.applyShift(beamXStep,beamYStep,beamZStep);
-  guideFC.applyAngleRotate(beamXYAngle,beamZAngle);
-  setDefault("GuideOrigin");
+  applyOffset();
+  setDefault("Beam");
 
  
   return;
