@@ -28,6 +28,13 @@ namespace attachSystem
   class CellMap;
 }
 
+namespace beamlineSystem
+{
+  class GuideUnit;
+  class BenderUnit;
+  class PlateUnit;
+}
+
 namespace instrumentSystem
 {
   class CylSample;
@@ -45,7 +52,6 @@ namespace constructSystem
   class RotaryCollimator;
   class VacuumPipe;
   class VacuumWindow;
-
 
 }
 
@@ -77,14 +83,14 @@ class MAGIC : public attachSystem::CopiedComp
   std::shared_ptr<attachSystem::FixedRotateUnit> magicAxis;
 
   /// Elliptic focus in bulkshield [m3]
-  std::shared_ptr<beamlineSystem::GuideLine> FocusA;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusA;
   /// Pipe in the gamma shield [5.5m to 6m]
   std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
 
   /// Pipe for multichannel bender
   std::shared_ptr<constructSystem::VacuumPipe> VPipeC;
   /// 6.2m 200xchannel si-bender [0.9deg 
-  std::shared_ptr<beamlineSystem::GuideLine> BendC;
+  std::shared_ptr<beamlineSystem::BenderUnit> BendC;
 
   /// Vac box for first chopper
   std::shared_ptr<essConstruct::SingleChopper> ChopperA;
@@ -94,72 +100,72 @@ class MAGIC : public attachSystem::CopiedComp
   /// Pipe in the gamma shield [6.5m to 13m]
   std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
   /// Elliptic focus from 6.5m
-  std::shared_ptr<beamlineSystem::GuideLine> FocusD;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusD;
   /// Pipe in the gamma shield [13m to 19m]
   std::shared_ptr<constructSystem::VacuumPipe> VPipeE;
   /// Elliptic focus from 6.5m
-  std::shared_ptr<beamlineSystem::GuideLine> FocusE;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusE;
   /// Pipe in the gamma shield [19m to wall]
   std::shared_ptr<constructSystem::VacuumPipe> VPipeF;
   /// Elliptic focus from 6.5m
-  std::shared_ptr<beamlineSystem::GuideLine> FocusF;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusF;
   /// Bunker insert
   std::shared_ptr<essSystem::BunkerInsert> BInsert;
   /// Bunker insert pipe
   std::shared_ptr<constructSystem::VacuumPipe> VPipeWall;
   /// Guide running to bunker wall
-  std::shared_ptr<beamlineSystem::GuideLine> FocusWall;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusWall;
 
   /// Shield out of PitA
   std::shared_ptr<constructSystem::LineShield> ShieldA;
   /// Vac pipe out of PitA
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutA;
   /// Tapered guide out of PitA
-  std::shared_ptr<beamlineSystem::GuideLine> FocusOutA;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusOutA;
 
     /// Shield out of PitA
   std::shared_ptr<constructSystem::LineShield> ShieldB;
   /// Vac pipe out of PitA
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutB;
   /// Tapered guide out of PitA
-  std::shared_ptr<beamlineSystem::GuideLine> FocusOutB;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusOutB;
 
   /// Shield out of PitA
   std::shared_ptr<constructSystem::LineShield> ShieldC;
   /// Vac pipe out of PitA
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutC;
   /// Tapered guide out of PitA
-  std::shared_ptr<beamlineSystem::GuideLine> FocusOutC;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusOutC;
 
     /// Shield out of PitA
   std::shared_ptr<constructSystem::LineShield> ShieldD;
   /// Vac pipe out of PitA
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutD;
   /// Tapered guide out of PitA
-  std::shared_ptr<beamlineSystem::GuideLine> FocusOutD;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusOutD;
 
     /// Shield out of PitA
   std::shared_ptr<constructSystem::LineShield> ShieldE;
   /// Vac pipe out of PitA
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutE;
   /// Tapered guide out of PitA
-  std::shared_ptr<beamlineSystem::GuideLine> FocusOutE;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusOutE;
 
     /// Shield out of PitA
   std::shared_ptr<constructSystem::LineShield> ShieldF;
   /// Vac pipe out of PitA
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutF;
   /// Tapered guide out of PitA
-  std::shared_ptr<beamlineSystem::GuideLine> FocusOutF;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusOutF;
   /// Polarizer Pit
   std::shared_ptr<constructSystem::ChopperPit> PolarizerPit;
   /// Holder for the multichannel guide
-  std::shared_ptr<beamlineSystem::GuideLine> MCGuideA;
+  std::shared_ptr<beamlineSystem::PlateUnit> MCGuideA;
   /// Mutlichannel device
   std::shared_ptr<constructSystem::MultiChannel> MCInsertA;
 
   /// Holder for the multichannel guide
-  std::shared_ptr<beamlineSystem::GuideLine> MCGuideB;
+  std::shared_ptr<beamlineSystem::PlateUnit> MCGuideB;
   /// Mutlichannel device
   std::shared_ptr<constructSystem::MultiChannel> MCInsertB;
 
@@ -168,7 +174,7 @@ class MAGIC : public attachSystem::CopiedComp
   /// Vac pipe out of PitA
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutG;
   /// Tapered guide out of PitA
-  std::shared_ptr<beamlineSystem::GuideLine> FocusOutG;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusOutG;
 
   /// Tungsten apperature after gamma focus
   std::shared_ptr<constructSystem::Aperture> AppA;

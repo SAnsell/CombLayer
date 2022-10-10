@@ -71,7 +71,9 @@
 #include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "Aperture.h"
-#include "GuideLine.h"
+#include "GuideUnit.h"
+#include "PlateUnit.h"
+#include "BenderUnit.h"
 #include "DiskChopper.h"
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
@@ -91,54 +93,54 @@ MAGIC::MAGIC(const std::string& keyName) :
   attachSystem::CopiedComp("magic",keyName),
   startPoint(0),stopPoint(0),
   magicAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
-  FocusA(new beamlineSystem::GuideLine(newName+"FA")),
+  FocusA(new beamlineSystem::PlateUnit(newName+"FA")),
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
-  BendC(new beamlineSystem::GuideLine(newName+"BC")),
+  BendC(new beamlineSystem::BenderUnit(newName+"BC")),
   ChopperA(new essConstruct::SingleChopper(newName+"ChopperA")),
   PSCDisk(new essConstruct::DiskChopper(newName+"PSCBlade")),
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
-  FocusD(new beamlineSystem::GuideLine(newName+"FD")),
+  FocusD(new beamlineSystem::PlateUnit(newName+"FD")),
   VPipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
-  FocusE(new beamlineSystem::GuideLine(newName+"FE")),
+  FocusE(new beamlineSystem::PlateUnit(newName+"FE")),
   VPipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
-  FocusF(new beamlineSystem::GuideLine(newName+"FF")),
+  FocusF(new beamlineSystem::PlateUnit(newName+"FF")),
   BInsert(new BunkerInsert(newName+"BInsert")),
   VPipeWall(new constructSystem::VacuumPipe(newName+"PipeWall")),
-  FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
+  FocusWall(new beamlineSystem::PlateUnit(newName+"FWall")),
   ShieldA(new constructSystem::LineShield(newName+"ShieldA")),
   VPipeOutA(new constructSystem::VacuumPipe(newName+"PipeOutA")),
-  FocusOutA(new beamlineSystem::GuideLine(newName+"OutFA")),
+  FocusOutA(new beamlineSystem::PlateUnit(newName+"OutFA")),
   ShieldB(new constructSystem::LineShield(newName+"ShieldB")),
   VPipeOutB(new constructSystem::VacuumPipe(newName+"PipeOutB")),
-  FocusOutB(new beamlineSystem::GuideLine(newName+"OutFB")),
+  FocusOutB(new beamlineSystem::PlateUnit(newName+"OutFB")),
 
   ShieldC(new constructSystem::LineShield(newName+"ShieldC")),
   VPipeOutC(new constructSystem::VacuumPipe(newName+"PipeOutC")),
-  FocusOutC(new beamlineSystem::GuideLine(newName+"OutFC")),
+  FocusOutC(new beamlineSystem::PlateUnit(newName+"OutFC")),
 
   ShieldD(new constructSystem::LineShield(newName+"ShieldD")),
   VPipeOutD(new constructSystem::VacuumPipe(newName+"PipeOutD")),
-  FocusOutD(new beamlineSystem::GuideLine(newName+"OutFD")),
+  FocusOutD(new beamlineSystem::PlateUnit(newName+"OutFD")),
   
   ShieldE(new constructSystem::LineShield(newName+"ShieldE")),
   VPipeOutE(new constructSystem::VacuumPipe(newName+"PipeOutE")),
-  FocusOutE(new beamlineSystem::GuideLine(newName+"OutFE")),
+  FocusOutE(new beamlineSystem::PlateUnit(newName+"OutFE")),
   
   ShieldF(new constructSystem::LineShield(newName+"ShieldF")),
   VPipeOutF(new constructSystem::VacuumPipe(newName+"PipeOutF")),
-  FocusOutF(new beamlineSystem::GuideLine(newName+"OutFF")),
+  FocusOutF(new beamlineSystem::PlateUnit(newName+"OutFF")),
 
   PolarizerPit(new constructSystem::ChopperPit(newName+"PolarizerPit")),
-  MCGuideA(new beamlineSystem::GuideLine(newName+"MCGuideA")),
+  MCGuideA(new beamlineSystem::PlateUnit(newName+"MCGuideA")),
   MCInsertA(new constructSystem::MultiChannel(newName+"MCA")),
 
-  MCGuideB(new beamlineSystem::GuideLine(newName+"MCGuideB")),
+  MCGuideB(new beamlineSystem::PlateUnit(newName+"MCGuideB")),
   MCInsertB(new constructSystem::MultiChannel(newName+"MCB")),
 
   ShieldG(new constructSystem::LineShield(newName+"ShieldG")),
   VPipeOutG(new constructSystem::VacuumPipe(newName+"PipeOutG")),
-  FocusOutG(new beamlineSystem::GuideLine(newName+"OutFG")),
+  FocusOutG(new beamlineSystem::PlateUnit(newName+"OutFG")),
 
   AppA(new constructSystem::Aperture(newName+"AppA"))
 
@@ -314,13 +316,14 @@ MAGIC::buildOutGuide(Simulation& System,
   VPipeOutA->createAll(System,FWguide,startGuide);
 
   FocusOutA->addInsertCell(VPipeOutA->getCells("Void"));
-  FocusOutA->createAll(System,FWshield,startShield,*VPipeOutA,0);
+  //  FocusOutA->createAll(System,FWshield,startShield,*VPipeOutA,0);
+  FocusOutA->createAll(System,*VPipeOutA,0);
 
   ShieldB->addInsertCell(voidCell);
   ShieldB->createAll(System,*ShieldA,2);
 
   VPipeOutB->addAllInsertCell(ShieldB->getCell("Void"));
-  VPipeOutB->createAll(System,FocusOutA->getKey("Guide0"),2);
+  VPipeOutB->createAll(System,*FocusOutA,2);
 
   FocusOutB->addInsertCell(VPipeOutB->getCells("Void"));
   FocusOutB->createAll(System,*ShieldA,2,*VPipeOutB,0);
@@ -329,7 +332,7 @@ MAGIC::buildOutGuide(Simulation& System,
   ShieldC->addInsertCell(voidCell);
   ShieldC->createAll(System,*ShieldB,2);
   VPipeOutC->addAllInsertCell(ShieldC->getCell("Void"));
-  VPipeOutC->createAll(System,FocusOutB->getKey("Guide0"),2);
+  VPipeOutC->createAll(System,*FocusOutB,2);
   FocusOutC->addInsertCell(VPipeOutC->getCells("Void"));
   FocusOutC->createAll(System,*ShieldB,2,*VPipeOutC,0);
 
@@ -337,7 +340,7 @@ MAGIC::buildOutGuide(Simulation& System,
   ShieldD->addInsertCell(voidCell);
   ShieldD->createAll(System,*ShieldC,2);
   VPipeOutD->addAllInsertCell(ShieldD->getCell("Void"));
-  VPipeOutD->createAll(System,FocusOutC->getKey("Guide0"),2);
+  VPipeOutD->createAll(System,*FocusOutC,2);
   FocusOutD->addInsertCell(VPipeOutD->getCells("Void"));
   FocusOutD->createAll(System,*ShieldC,2,*VPipeOutD,0);
 
@@ -345,7 +348,7 @@ MAGIC::buildOutGuide(Simulation& System,
   ShieldE->addInsertCell(voidCell);
   ShieldE->createAll(System,*ShieldD,2);
   VPipeOutE->addAllInsertCell(ShieldE->getCell("Void"));
-  VPipeOutE->createAll(System,FocusOutD->getKey("Guide0"),2);
+  VPipeOutE->createAll(System,*FocusOutD,2);
   FocusOutE->addInsertCell(VPipeOutE->getCells("Void"));
   FocusOutE->createAll(System,*ShieldD,2,*VPipeOutE,0);
 
@@ -507,11 +510,11 @@ MAGIC::build(Simulation& System,
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);
   FocusA->setBack(GItem.getKey("Beam"),-2);
-  FocusA->createAll(System,*magicAxis,-3,*magicAxis,-3);
+  FocusA->createAll(System,*magicAxis,-3);
   
   if (stopPoint==1) return;                      // STOP At monolith
 
-  buildBunkerUnits(System,FocusA->getKey("Guide0"),2,
+  buildBunkerUnits(System,*FocusA,2,
                    bunkerObj.getCell("MainVoid"));
 
 
@@ -520,12 +523,12 @@ MAGIC::build(Simulation& System,
   // IN WALL
   // Make bunker insert
   BInsert->setBunkerObject(bunkerObj);
-  BInsert->createAll(System,FocusF->getKey("Guide0"),2);
+  BInsert->createAll(System,*FocusF,2);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
   
   // using 7 : mid point 
   FocusWall->addInsertCell(BInsert->getCell("Void"));
-  FocusWall->createAll(System,*BInsert,7,*BInsert,7);
+  FocusWall->createAll(System,*BInsert,7);
 
   if (stopPoint==3) return;
 
@@ -535,7 +538,7 @@ MAGIC::build(Simulation& System,
 
   if (stopPoint==4) return;
   
-  buildPolarizer(System,*ShieldE,2,FocusOutE->getKey("Guide0"),2,voidCell);
+  buildPolarizer(System,*ShieldE,2,*FocusOutE,2,voidCell);
 
   return;
   if (stopPoint==5) return;
