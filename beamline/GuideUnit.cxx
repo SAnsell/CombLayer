@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   beamline/ShapeUnit.cxx 
+ * File:   beamline/GuideUnit.cxx 
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -65,22 +66,60 @@
 #include "ContainedComp.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
+
 #include "GuideUnit.h"
 
 namespace beamlineSystem
 {
 
 GuideUnit::GuideUnit(const std::string& key)  :
-  FixedRotate(key,6),
-  ContainedComp(),
-  CellMap(),
-  FrontBackCut()
+  attachSystem::FixedRotate(key,6),
+  attachSystem::ContainedComp(),
+  attachSystem::CellMap(),
+  attachSystem::FrontBackCut()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param key :: keyName
   */
 {}
 
+GuideUnit::GuideUnit(const GuideUnit& A) : 
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
+  attachSystem::FrontBackCut(A),
+  begPt(A.begPt),endPt(A.endPt),length(A.length),
+  nShapeLayers(A.nShapeLayers),layerThick(A.layerThick),
+  layerMat(A.layerMat)
+  /*!
+    Copy constructor
+    \param A :: GuideUnit to copy
+  */
+{}
+
+GuideUnit&
+GuideUnit::operator=(const GuideUnit& A)
+  /*!
+    Assignment operator
+    \param A :: GuideUnit to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedRotate::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      attachSystem::FrontBackCut::operator=(A);
+      begPt=A.begPt;
+      endPt=A.endPt;
+      length=A.length;
+      nShapeLayers=A.nShapeLayers;
+      layerThick=A.layerThick;
+      layerMat=A.layerMat;
+    }
+  return *this;
+}
 
 GuideUnit::~GuideUnit() 
   /*!
@@ -88,9 +127,40 @@ GuideUnit::~GuideUnit()
    */
 {}
 
-
 void
-VacuumBox::createLinks()
+GuideUnit::populate(const FuncDataBase& Control)
+  /*!
+    Population of variables
+    \param Control :: Database for variables
+  */
+{
+  FixedRotate::populate(Control);
+
+  length=Control.EvalVar<double>(keyName+"Length");
+  nShapeLayers=Control.EvalVar<size_t>(keyName+"NShapeLayers");
+  
+  double T(0.0);
+  int M;
+  for(size_t i=0;i<nShapeLayers;i++)
+    {
+      const std::string NStr=std::to_string(i);
+      T=Control.EvalVar<double>(keyName+"LayerThick"+NStr);
+      // Always get material
+      M=ModelSupport::EvalMat<int>(Control,keyName+"LayerMat"+NStr);
+      layerThick.push_back(T);
+      layerMat.push_back(M);
+    }
+
+  // set frontcut based on offset:
+  //  const FixedRotate& get
+  //  if (!frontActive())
+  //    beamFrontCut=(std::abs<double>(beamYStep)>Geometry::zeroTol) ? 1 : 0;
+
+  return;
+}
+  
+void
+GuideUnit::createLinks()
   /*!
     Determines the link point on the outgoing plane.
     It must follow the beamline, but exit at the plane.
@@ -100,13 +170,8 @@ VacuumBox::createLinks()
 {
   ELog::RegMethod RegA("VacuumBox","createLinks");
 
-  const Geometry::Vec3D ACentre(Origin+X*portAXStep+Z*portAZStep);
-  const Geometry::Vec3D BCentre(Origin+X*portBXStep+Z*portBZStep);
-  const Geometry::Vec3D BAxis=
-      Geometry::calcRotatedVec(portBXAngle,0.0,portBZAngle,X,Y,Z,Y);
-
-  FrontBackCut::createFrontLinks(*this,ACentre,Y); 
-  FrontBackCut::createBackLinks(*this,BCentre,BAxis);  
+  FrontBackCut::createFrontLinks(*this,Origin,-Y); 
+  FrontBackCut::createBackLinks(*this,Origin,Y);  
 
   return;
 }

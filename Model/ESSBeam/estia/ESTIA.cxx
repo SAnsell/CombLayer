@@ -68,7 +68,7 @@
 #include "FrontBackCut.h"
 #include "beamlineSupport.h"
 #include "GuideItem.h"
-#include "GuideLine.h"
+#include "GuideUnit.h"
 #include "DiskChopper.h"
 #include "VacuumBox.h"
 #include "GeneralPipe.h"
@@ -85,7 +85,7 @@ ESTIA::ESTIA(const std::string& keyName) :
   attachSystem::CopiedComp("estia",keyName),
   stopPoint(0),
   estiaAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
-  FocusMono(new beamlineSystem::GuideLine(newName+"FMono")),
+  FocusMono(new beamlineSystem::PlateLine(newName+"FMono")),
   VPipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
 

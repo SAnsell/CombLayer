@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/CompBInsert.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,8 +35,9 @@ namespace essSystem
   \brief Multi-layer Beam insert
 */
 
-class CompBInsert : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
+class CompBInsert : 
+  public attachSystem::FixedRotate,
+  public attachSystem::ContainedComp,
   public attachSystem::CellMap,
   public attachSystem::FrontBackCut
 {
@@ -64,6 +65,7 @@ class CompBInsert : public attachSystem::ContainedComp,
   CompBInsert& operator=(const CompBInsert&);
   virtual ~CompBInsert();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

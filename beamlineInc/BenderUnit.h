@@ -3,7 +3,7 @@
  
  * File:   beamlineInc/BenderUnit.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,16 +34,14 @@ namespace beamlineSystem
   \brief Points associated with tracked beamline bender
 */
 
-class BenderUnit : public ShapeUnit
+class BenderUnit :
+    public GuideUnit
 {
  private:
 
   Geometry::Vec3D RCent;      ///< Rotation centre
   Geometry::Vec3D RAxis;      ///< Rotation axis
   Geometry::Vec3D RPlane;     ///< Rotation Centre direction
-
-  Geometry::Quaternion Qxy;   ///< Main XY bend-orientation rotation
-  Geometry::Quaternion Qz;    ///< Main Z bend-orientation rotation
   
   double Radius;              ///< Primary rotation ratius
   double aHeight;             ///< Height across rotation plane [start]
@@ -62,10 +60,15 @@ class BenderUnit : public ShapeUnit
   Geometry::Vec3D BZVec;    ///< Current ZVector [Back]
 
   Geometry::Vec3D calcWidthCent(const bool) const;
+
+
+  virtual void createSurfaces();
+  virtual void createObjects(Simulation&);
+  virtual void createLinks();
   
  public:
 
-  BenderUnit(const int,const int);
+  BenderUnit(const std::string&);
   BenderUnit(const BenderUnit&);
   BenderUnit& operator=(const BenderUnit&);
   virtual BenderUnit* clone() const;
@@ -83,17 +86,10 @@ class BenderUnit : public ShapeUnit
   Geometry::Vec3D getBegAxis() const { return -AYVec; }
   // Accessor to end axis
   Geometry::Vec3D getEndAxis() const { return BYVec; }
-  
-  virtual std::string getString(const ModelSupport::surfRegister&,
-				const size_t) const;
-  virtual std::string getExclude(const ModelSupport::surfRegister&,
-				 const size_t) const;
-  virtual void addSideLinks(const ModelSupport::surfRegister&,
-			    attachSystem::FixedComp&) const;
 
-  
-  virtual void createSurfaces(ModelSupport::surfRegister&,
-		      const std::vector<double>&);
+  using FixedComp::createAll;
+  virtual void createAll(Simulation&,const FixedComp&,const long int);
+
 };
 
 }

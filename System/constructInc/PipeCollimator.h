@@ -34,26 +34,21 @@ namespace constructSystem
     \brief Variable detemine hole type
   */
   
-class PipeCollimator : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
+class PipeCollimator : 
+  public attachSystem::FixedRotate,
+  public attachSystem::ContainedComp,
+  public attachSystem::ExternalCut,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {
  private:
 
-  int setFlag;                  ///< Structures set
-  HeadRule innerStruct;         ///< Front face
-  HeadRule outerStruct;         ///< Back face
-
-  double length;                 ///< thickness of collimator
-  int mat;                   ///< material
+  double length;                ///< thickness of collimator
+  int mat;                      ///< material
   
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-
   
  public:
   
@@ -64,10 +59,7 @@ class PipeCollimator : public attachSystem::ContainedComp,
 
   void populate(const FuncDataBase&);
   
-  void setInner(const HeadRule&);
-  void setInnerExclude(const HeadRule&);
-  void setOuter(const HeadRule&);
-
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
   

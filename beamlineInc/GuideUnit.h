@@ -44,21 +44,22 @@ class GuideUnit :
   public attachSystem::CellMap,
   public attachSystem::FrontBackCut
 {
- private:
-  
+ protected:
+
+  Geometry::Vec3D begPt;   ///< Current start point
+  Geometry::Vec3D endPt;   ///< Current exit point
+
   // OUTER DIMENTIONS:
-  double length;               ///< Full length
+  double length;                     ///< Full length
 
   size_t nShapeLayers;              ///< Number of shapeLayers
   std::vector<double> layerThick;   ///< Thickness [inner->outer]
   std::vector<int> layerMat;        ///< Mat
-  ShapeUnit* shapeUnits;
-  
-  
-  void populate(const FuncDataBase&);
-  void createSurfaces();
-  void createObjects(Simulation&);
-  void createLinks();
+
+  virtual void populate(const FuncDataBase&);
+  virtual void createSurfaces() =0;
+  virtual void createObjects(Simulation&) =0;
+  virtual void createLinks();
   
  public:
 

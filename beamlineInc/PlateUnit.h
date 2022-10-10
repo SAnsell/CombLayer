@@ -3,7 +3,7 @@
  
  * File:   beamlineInc/PlateUnit.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,69 +39,36 @@ namespace beamlineSystem
   \brief Points associated with tracked beamline projections
 */
 
-class PlateUnit : public ShapeUnit 
+class PlateUnit :
+    public GuideUnit
 {
  private:
 
-  Geometry::Convex2D* CHPtr;   ///< Convex hull ptr
-
-  Geometry::Vec3D XVec;    ///< Current XVector
-  Geometry::Vec3D YVec;    ///< Current YVector
-  Geometry::Vec3D ZVec;    ///< Current ZVector
-
-  size_t nCorner;                     ///< number of corner points
-  bool rotateFlag;                    ///< Rotation on points
   std::vector<Geometry::Vec3D> APts;  ///< Points of front shape
   std::vector<Geometry::Vec3D> BPts;  ///< Points of Tail shape
-  std::vector<int> nonConvex;         ///< Points are non-convex
+  
 
-  static size_t findFirstPoint(const Geometry::Vec3D&,
-			       const std::vector<Geometry::Vec3D>&); 
+  Geometry::Vec3D getFrontPt(const size_t,const double) const;
+  Geometry::Vec3D getBackPt(const size_t,const double) const;
 
-  Geometry::Vec3D frontPt(const size_t,const double) const;
-  Geometry::Vec3D backPt(const size_t,const double) const;
-
+  virtual void createSurfaces();
+  virtual void createObjects(Simulation&);
+  
  public:
 
-  PlateUnit(const int,const int);
+  PlateUnit(const std::string&);
   PlateUnit(const PlateUnit&);
   PlateUnit& operator=(const PlateUnit&);
   virtual PlateUnit* clone() const;
   virtual ~PlateUnit();
 
-  void setTrack(const Geometry::Vec3D*,const Geometry::Vec3D&,
-		const Geometry::Vec3D&,const double,const double,
-		const double);
+  void setFrontPoints(const std::vector<Geometry::Vec3D>&);
+  void setBackPoints(const std::vector<Geometry::Vec3D>&);
 
-  void setXAxis(const Geometry::Vec3D&,const Geometry::Vec3D&);
-  void setEndPts(const Geometry::Vec3D&,const Geometry::Vec3D&);
-
-  void constructConvex();
-
-  void clear();
-
-  int inHull(const Geometry::Vec3D&) const;
-  void addCell(const int);
-  /// access cells
-  const std::vector<int>& getCells() const { return cells; }
-
-  void addPrimaryPoint(const Geometry::Vec3D&);
-  void addPairPoint(const Geometry::Vec3D&,const Geometry::Vec3D&);
-
-  /// Direction axis at start
-  Geometry::Vec3D getBegAxis() const { return -YVec; }
-  /// Direction axis at end
-  Geometry::Vec3D getEndAxis() const { return YVec; }
-
-  virtual std::string getString(const ModelSupport::surfRegister&,
-				const size_t) const;
-  virtual std::string getExclude(const ModelSupport::surfRegister&,
-				 const size_t) const;
-  virtual void addSideLinks(const ModelSupport::surfRegister&,
-			    attachSystem::FixedComp&) const;
+  using FixedComp::createAll;
+  virtual void createAll(Simulation&,const FixedComp&,
+			 const long int);
   
-  virtual void createSurfaces(ModelSupport::surfRegister&,
-			      const std::vector<double>&);
 };
 
 
