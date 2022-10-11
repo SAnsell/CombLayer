@@ -165,12 +165,14 @@ NMX::build(Simulation& System,
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
   
   essBeamSystem::setBeamAxis(*nmxAxis,Control,GItem,1);
-  
+
+
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);
   FocusA->setBack(GItem.getKey("Beam"),-2);
   FocusA->createAll(System,*nmxAxis,-3); // beam front reversed
   if (stopPoint==1) return;                  // STOP at Monolith
+  
   return;
 
   // PIPE after gamma shield

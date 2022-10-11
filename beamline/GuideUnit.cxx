@@ -144,12 +144,16 @@ GuideUnit::populate(const FuncDataBase& Control)
   for(size_t i=0;i<nShapeLayers;i++)
     {
       const std::string NStr=std::to_string(i);
-      T=Control.EvalVar<double>(keyName+"LayerThick"+NStr);
       // Always get material
       M=ModelSupport::EvalMat<int>(Control,keyName+"LayerMat"+NStr);
-      layerThick.push_back(T);
       layerMat.push_back(M);
+      if (i)
+	{
+	  T=Control.EvalVar<double>(keyName+"LayerThick"+NStr);
+	  layerThick.push_back(T);
+	}
     }
+  layerThick.push_back(0.0);
 
   // set frontcut based on offset:
   //  const FixedRotate& get

@@ -140,26 +140,18 @@ FocusGenerator::writeLayers(FuncDataBase& Control,
   
   Control.addVariable(keyName+"Length",length);       
   Control.addVariable(keyName+"XStep",0.0);       
+
   if (!yStepActive)
-    Control.addParse<double>(keyName+"YStep","-"+keyName+"Length/2.0");
+    Control.addVariable<double>(keyName+"YStep",-length/2.0);
   else if (yStepActive==1)
     Control.addVariable<double>(keyName+"YStep",yStep);
   else
     Control.addVariable<double>(keyName+"YStep",yStep-length/2.0);
-  if (!yBeamActive)
-    Control.addParse<double>(keyName+"BeamYStep","-"+keyName+"Length/2.0");
-  else if (yBeamActive==1)
-    Control.addVariable<double>(keyName+"BeamYStep",yBeam);
-  else
-    Control.addVariable<double>(keyName+"BeamYStep",yStep-length/2.0);
 
   Control.addVariable(keyName+"ZStep",zStep);       
   Control.addVariable(keyName+"XYAngle",0.0);       
   Control.addVariable(keyName+"ZAngle",0.0);
   Control.addVariable(keyName+"BeamXYAngle",0.0);       
-
-  Control.addVariable(keyName+"NShapes",1);
-  Control.addVariable(keyName+"ActiveShield",0);
 
   Control.addVariable(keyName+"LayerMat0",layerMat[0]);
   size_t activeLayer(0);
@@ -178,7 +170,6 @@ FocusGenerator::writeLayers(FuncDataBase& Control,
   return;
   
 }
-  
   
 void
 FocusGenerator::generateTaper(FuncDataBase& Control,
@@ -201,13 +192,13 @@ FocusGenerator::generateTaper(FuncDataBase& Control,
 
     
   writeLayers(Control,keyName,length);
-  
-  Control.addVariable(keyName+"0TypeID","Taper");
-  Control.addVariable(keyName+"0HeightStart",VS);
-  Control.addVariable(keyName+"0HeightEnd",VE);
-  Control.addVariable(keyName+"0WidthStart",HS);
-  Control.addVariable(keyName+"0WidthEnd",HE);
-  Control.copyVar(keyName+"0Length",keyName+"Length");
+
+  Control.addVariable(keyName+"TypeID","Taper");
+  Control.addVariable(keyName+"HeightStart",VS);
+  Control.addVariable(keyName+"HeightEnd",VE);
+  Control.addVariable(keyName+"WidthStart",HS);
+  Control.addVariable(keyName+"WidthEnd",HE);
+  Control.addVariable(keyName+"Length",length);
 
   return;
 }

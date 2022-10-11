@@ -45,12 +45,14 @@ class PlateUnit :
  private:
 
   std::vector<Geometry::Vec3D> APts;  ///< Points of front shape
-  std::vector<Geometry::Vec3D> BPts;  ///< Points of Tail shape
+  std::vector<Geometry::Vec3D> BPts;  ///< Points of back shape 
   
 
   Geometry::Vec3D getFrontPt(const size_t,const double) const;
   Geometry::Vec3D getBackPt(const size_t,const double) const;
 
+  
+  virtual void populate(const FuncDataBase&);
   virtual void createSurfaces();
   virtual void createObjects(Simulation&);
   

@@ -133,7 +133,7 @@ PlateUnit::getFrontPt(const size_t index,const double T) const
 {
   const static Geometry::Vec3D zero(0,0,0);
   const Geometry::Vec3D A=APts[index]*(1.0+T);
-  return begPt + A.getInBasis(X,zero,Z);
+  return Origin+A.getInBasis(X,zero,Z);
 }
 
 Geometry::Vec3D
@@ -146,7 +146,7 @@ PlateUnit::getBackPt(const size_t index,const double T) const
 {
   const static Geometry::Vec3D zero(0,0,0);
   const Geometry::Vec3D B=BPts[index]*(1.0+T);
-  return endPt + B.getInBasis(X,zero,Z);
+  return Origin +Y*length+ B.getInBasis(X,zero,Z);
 }
 
   
@@ -171,6 +171,83 @@ PlateUnit::setBackPoints(const std::vector<Geometry::Vec3D>& PVec)
   BPts=PVec;
   return;
 }
+
+void
+PlateUnit::populate(const FuncDataBase& Control)
+  /*!
+    Sets the appropiate APts/BPtrs based on the type of
+    guide needed
+   */
+{
+  ELog::RegMethod RegA("PlateUnit","populate");
+
+  GuideUnit::populate(Control);
+  
+  const std::string typeID= 
+    Control.EvalVar<std::string>(keyName+"TypeID");
+  if (typeID=="Rectangle")   
+    {
+      APts.clear();
+      BPts.clear();
+      const double H=Control.EvalVar<double>(keyName+"Height");
+      const double W=Control.EvalVar<double>(keyName+"Width");
+      APts.push_back(Geometry::Vec3D(-W/2.0,0,-H/2.0));
+      APts.push_back(Geometry::Vec3D(W/2.0,0,-H/2.0));
+      APts.push_back(Geometry::Vec3D(W/2.0,0,H/2.0));
+      APts.push_back(Geometry::Vec3D(-W/2.0,0,H/2.0));
+      BPts=APts;
+    }
+  else if (typeID=="Tapper" || typeID=="Taper")   
+    {
+      APts.clear();
+      BPts.clear();
+      const double HA=Control.EvalVar<double>(keyName+"HeightStart");
+      const double WA=Control.EvalVar<double>(keyName+"WidthStart");
+      const double HB=Control.EvalVar<double>(keyName+"HeightEnd");
+      const double WB=Control.EvalVar<double>(keyName+"WidthEnd");
+      
+      APts.push_back(Geometry::Vec3D(-WA/2.0,0.0,-HA/2.0));
+      BPts.push_back(Geometry::Vec3D(-WB/2.0,0.0,-HB/2.0));
+      APts.push_back(Geometry::Vec3D(WA/2.0,0.0,-HA/2.0));
+      BPts.push_back(Geometry::Vec3D(WB/2.0,0.0,-HB/2.0));
+      APts.push_back(Geometry::Vec3D(WA/2.0,0.0,HA/2.0));
+      BPts.push_back(Geometry::Vec3D(WB/2.0,0.0,HB/2.0));
+      APts.push_back(Geometry::Vec3D(-WA/2.0,0.0,HA/2.0));
+      BPts.push_back(Geometry::Vec3D(-WB/2.0,0.0,HB/2.0));
+    }
+  else if (typeID=="Octagon")   
+    {
+      APts.clear();
+      BPts.clear();
+      const double SA=Control.EvalVar<double>(keyName+"WidthStart");
+      const double SB=Control.EvalVar<double>(keyName+"WidthEnd");
+      const double aA=sqrt(2.0)*SA/(2.0+sqrt(2.0));
+      const double aB=sqrt(2.0)*SB/(2.0+sqrt(2.0));
+      APts.push_back(Geometry::Vec3D(SA/2.0,0.0,aA/2.0));
+      BPts.push_back(Geometry::Vec3D(SB/2.0,0.0,aB/2.0));
+      APts.push_back(Geometry::Vec3D(aA/2.0,0.0,SA/2.0));
+      BPts.push_back(Geometry::Vec3D(aB/2.0,0.0,SB/2.0));
+      APts.push_back(Geometry::Vec3D(-aA/2.0,0.0,SA/2.0));
+      BPts.push_back(Geometry::Vec3D(-aB/2.0,0.0,SB/2.0));
+      APts.push_back(Geometry::Vec3D(-SA/2.0,0.0,aA/2.0));
+      BPts.push_back(Geometry::Vec3D(-SB/2.0,0.0,aB/2.0));
+      APts.push_back(Geometry::Vec3D(-SA/2.0,0.0,-aA/2.0));
+      BPts.push_back(Geometry::Vec3D(-SB/2.0,0.0,-aB/2.0));
+      APts.push_back(Geometry::Vec3D(-aA/2.0,0.0,-SA/2.0));
+      BPts.push_back(Geometry::Vec3D(-aB/2.0,0.0,-SB/2.0));
+      APts.push_back(Geometry::Vec3D(aA/2.0,0.0,-SA/2.0));
+      BPts.push_back(Geometry::Vec3D(aB/2.0,0.0,-SB/2.0));
+      APts.push_back(Geometry::Vec3D(SA/2.0,0.0,-aA/2.0));
+      BPts.push_back(Geometry::Vec3D(SB/2.0,0.0,-aB/2.0));
+    }
+  else if (typeID!="Free")
+    {
+      throw ColErr::InContainerError<std::string>
+	(typeID,"TypeID no known");
+    }
+  return;
+}
+
   
 void
 PlateUnit::createSurfaces()
@@ -180,23 +257,28 @@ PlateUnit::createSurfaces()
 {
   ELog::RegMethod RegA("PlateUnit","createSurfaces");
 
-
-  for(size_t i=0;i<layerThick.size();i++)
+  ELog::EM<<":["<<layerMat.size()<<ELog::endDiag;
+  for(size_t i=0;i<layerMat.size();i++)
     {
-      int SN(buildIndex+static_cast<int>(i)*20);  
+      int SN(buildIndex+static_cast<int>(i)*20+1);  
       // Start from 1
+      double T(0.0);
       for(size_t j=0;j<APts.size();j++)
 	{
-	  const Geometry::Vec3D PA=getFrontPt(j,layerThick[i]);
-	  const Geometry::Vec3D PB=getFrontPt(j+1,layerThick[i]);
-	  const Geometry::Vec3D BA=getBackPt(j,layerThick[i]);
-
+	  const size_t nP=(j) ? j-1 : APts.size()-1;
+	  const Geometry::Vec3D PA=getFrontPt(j,T);
+	  const Geometry::Vec3D PB=getFrontPt(nP,T);
+	  const Geometry::Vec3D BA=getBackPt(j,T);
 	  // make plane normal point to center of guide
 	  const Geometry::Vec3D Norm=
 	    Origin-(PA+PB)/2.0;
+	  ELog::EM<<"PA["<<j<<"] == "<<Norm<<ELog::endDiag;
+
 	  ModelSupport::buildPlane(SMap,SN,PA,PB,BA,Norm);
 	  SN++;
 	}
+      T+=layerThick[i];
+	  
     }   
   return;
 }
@@ -212,17 +294,20 @@ PlateUnit::createObjects(Simulation& System)
 
   const HeadRule fbHR=getFrontRule()*getBackRule();
 
+
   HeadRule HR;
   HeadRule innerHR;
   for(size_t i=0;i<layerThick.size();i++)
     {
-      int SN(buildIndex+static_cast<int>(i)*20);  
+      int SN(buildIndex+static_cast<int>(i)*20+1);  
       HeadRule HR;
       for(size_t j=0;j<APts.size();j++)
 	{
-	  HR*=HeadRule(SMap,SN);
+	  HR*=HeadRule(SMap,-SN);
 	  SN++;
 	}
+      ELog::EM<<"Cell == "<<APts.size()<<ELog::endDiag;
+      ELog::EM<<"Cell == "<<HR*fbHR*innerHR<<ELog::endDiag;
       makeCell("Layer"+std::to_string(i),System,
 	       cellIndex++,layerMat[i],0.0,HR*fbHR*innerHR);
       innerHR=HR.complement();
@@ -247,7 +332,7 @@ PlateUnit::createAll(Simulation& System,
   ELog::RegMethod RegA("PlateUnit","createAll");
 
   populate(System.getDataBase());
-
+  ELog::EM<<"ASDFAFDS"<<ELog::endDiag;
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
