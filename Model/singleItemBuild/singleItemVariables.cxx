@@ -130,6 +130,7 @@
 #include "FlangeDomeGenerator.h"
 #include "BeamBoxGenerator.h"
 #include "MonoShutterGenerator.h"
+#include "FocusGenerator.h"
 
 #include "RoundShutterGenerator.h"
 #include "TubeDetBoxGenerator.h"
@@ -721,7 +722,14 @@ SingleItemVariables(FuncDataBase& Control)
   TubeDetBoxGenerator TDBGen;
   TDBGen.generateBox(Control,"TDetBox",Geometry::Vec3D(0,3.15,0),8);
 
-  
+  // guideUnit variables
+  setVariable::FocusGenerator FGen;
+  FGen.setLayer(1,0.5,"Copper");
+  FGen.setLayer(2,2.5,"Stainless304");
+  FGen.setYOffset(2.0);
+  FGen.generateRectangle(Control,"FA",100.0,5.0,8.0);
+  //  FGen.generateTaper(Control,"FA",350.0,2.114,3.2417,3.16,3.9228);
+
   // expt hutch
   exptHutVariables(Control,"",0.0);
   localShieldVariables(Control);

@@ -257,10 +257,19 @@ PlateUnit::createSurfaces()
 {
   ELog::RegMethod RegA("PlateUnit","createSurfaces");
 
-  ELog::EM<<":["<<layerMat.size()<<ELog::endDiag;
+  if (!isActive("front"))
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+      setCutSurf("front",SMap.realSurf(buildIndex+1));
+    }
+  if (!isActive("back"))
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
+      setCutSurf("back",SMap.realSurf(buildIndex+2));
+    }
   for(size_t i=0;i<layerMat.size();i++)
     {
-      int SN(buildIndex+static_cast<int>(i)*20+1);  
+      int SN(buildIndex+static_cast<int>(i+1)*20+1);  
       // Start from 1
       double T(0.0);
       for(size_t j=0;j<APts.size();j++)
@@ -299,8 +308,8 @@ PlateUnit::createObjects(Simulation& System)
   HeadRule innerHR;
   for(size_t i=0;i<layerThick.size();i++)
     {
-      int SN(buildIndex+static_cast<int>(i)*20+1);  
-      HeadRule HR;
+      int SN(buildIndex+static_cast<int>(i+1)*20+1);
+      HR.reset();
       for(size_t j=0;j<APts.size();j++)
 	{
 	  HR*=HeadRule(SMap,-SN);

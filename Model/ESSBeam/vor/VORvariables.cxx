@@ -3,7 +3,7 @@
  
  * File:    ESSBeam/vor/VORvariables.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -89,8 +89,6 @@ VORvariables(FuncDataBase& Control)
   PipeGen.setWindow(-2.0,0.3);
   PipeGen.setFlange(-4.0,1.0);
 
-    
-  
   //  Control.addVariable("vorGABeamXYAngle",1.0);
   FGen.setYOffset(.20);
   FGen.generateTaper(Control,"vorFA",350.0,2.114,3.2417,3.16,3.9228);

@@ -160,6 +160,8 @@
 #include "FlangeDome.h"
 #include "MonoShutter.h"
 #include "RoundMonoShutter.h"
+#include "GuideUnit.h"
+#include "PlateUnit.h"
 
 #include "makeSingleItem.h"
 
@@ -217,6 +219,7 @@ makeSingleItem::build(Simulation& System,
 	"DiffPumpXIADP03","CRLTube","ExperimentalHutch",
 	"ConnectorTube","LocalShield","FlangeDome",
 	"MonoShutter","RoundMonoShutter","TubeDetBox",
+	"GuideUnit",
 	"Help","help"
     });
 
@@ -1483,6 +1486,16 @@ makeSingleItem::build(Simulation& System,
 	
 	Box->addInsertCell(voidCell);
 	Box->createAll(System,World::masterOrigin(),0);
+	return;
+      }
+    if (item == "GuideUnit")
+      {
+	std::shared_ptr<beamlineSystem::PlateUnit>
+	  FA(new beamlineSystem::PlateUnit("FA"));
+	OR.addObject(FA);
+	
+	FA->addInsertCell(voidCell);
+	FA->createAll(System,World::masterOrigin(),0);
 	return;
       }
 
