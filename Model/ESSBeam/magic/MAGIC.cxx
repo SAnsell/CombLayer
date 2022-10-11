@@ -248,13 +248,13 @@ MAGIC::buildBunkerUnits(Simulation& System,
   VPipeC->createAll(System,*VPipeB,2);
   
   BendC->addInsertCell(VPipeC->getCells("Void"));
-  BendC->createAll(System,*VPipeC,0,*VPipeC,0);
+  BendC->createAll(System,*VPipeC,0);
 
   // PulseShapping Chopper [2-blades]
   ChopperA->addInsertCell(bunkerVoid);
   ChopperA->getKey("Main").setAxisControl(3,ZVert);
   ChopperA->getKey("BuildBeam").setAxisControl(3,ZVert);
-  ChopperA->createAll(System,BendC->getKey("Guide0"),2);
+  ChopperA->createAll(System,*BendC,2);
 
   // Double disk chopper
   //  PSCDisk->addInsertCell(ChopperA->getCell("Void"));
@@ -264,19 +264,19 @@ MAGIC::buildBunkerUnits(Simulation& System,
   VPipeD->createAll(System,ChopperA->getKey("Beam"),2);
 
   FocusD->addInsertCell(VPipeD->getCells("Void"));
-  FocusD->createAll(System,*VPipeD,0,*VPipeD,0);
+  FocusD->createAll(System,*VPipeD,0);
 
   VPipeE->addAllInsertCell(bunkerVoid);
-  VPipeE->createAll(System,FocusD->getKey("Guide0"),2);
+  VPipeE->createAll(System,*FocusD,2);
   
   FocusE->addInsertCell(VPipeE->getCells("Void"));
-  FocusE->createAll(System,*VPipeE,0,*VPipeE,0);
+  FocusE->createAll(System,*VPipeE,0);
 
   VPipeF->addAllInsertCell(bunkerVoid);
-  VPipeF->createAll(System,FocusE->getKey("Guide0"),2);
+  VPipeF->createAll(System,*FocusE,2);
   
   FocusF->addInsertCell(VPipeF->getCells("Void"));
-  FocusF->createAll(System,*VPipeF,0,*VPipeF,0);
+  FocusF->createAll(System,*VPipeF,0);
 
   return;
 }
@@ -326,7 +326,9 @@ MAGIC::buildOutGuide(Simulation& System,
   VPipeOutB->createAll(System,*FocusOutA,2);
 
   FocusOutB->addInsertCell(VPipeOutB->getCells("Void"));
-  FocusOutB->createAll(System,*ShieldA,2,*VPipeOutB,0);
+  ELog::EM<<"WARNING DIFFERNT keys needed for focus"<<ELog::endCrit;
+  //  FocusOutB->createAll(System,*ShieldA,2,*VPipeOutB,0);
+  FocusOutB->createAll(System,*VPipeOutB,0);
 
   
   ShieldC->addInsertCell(voidCell);
@@ -334,7 +336,9 @@ MAGIC::buildOutGuide(Simulation& System,
   VPipeOutC->addAllInsertCell(ShieldC->getCell("Void"));
   VPipeOutC->createAll(System,*FocusOutB,2);
   FocusOutC->addInsertCell(VPipeOutC->getCells("Void"));
-  FocusOutC->createAll(System,*ShieldB,2,*VPipeOutC,0);
+  ELog::EM<<"WARNING DIFFERNT keys needed for focus"<<ELog::endCrit;
+  //  FocusOutC->createAll(System,*ShieldC,2,*VPipeOutC,0);
+  FocusOutC->createAll(System,*VPipeOutC,0);
 
     
   ShieldD->addInsertCell(voidCell);
@@ -342,7 +346,9 @@ MAGIC::buildOutGuide(Simulation& System,
   VPipeOutD->addAllInsertCell(ShieldD->getCell("Void"));
   VPipeOutD->createAll(System,*FocusOutC,2);
   FocusOutD->addInsertCell(VPipeOutD->getCells("Void"));
-  FocusOutD->createAll(System,*ShieldC,2,*VPipeOutD,0);
+  ELog::EM<<"WARNING DIFFERNT keys needed for focus"<<ELog::endCrit;
+  //  FocusOutD->createAll(System,*ShieldC,2,*VPipeOutD,0);
+  FocusOutD->createAll(System,*VPipeOutD,0);
 
       
   ShieldE->addInsertCell(voidCell);
@@ -350,7 +356,8 @@ MAGIC::buildOutGuide(Simulation& System,
   VPipeOutE->addAllInsertCell(ShieldE->getCell("Void"));
   VPipeOutE->createAll(System,*FocusOutD,2);
   FocusOutE->addInsertCell(VPipeOutE->getCells("Void"));
-  FocusOutE->createAll(System,*ShieldD,2,*VPipeOutE,0);
+  ELog::EM<<"WARNING DIFFERNT keys needed for focus"<<ELog::endCrit;
+  FocusOutE->createAll(System,*VPipeOutE,0);
 
 
 
@@ -402,16 +409,15 @@ MAGIC::buildPolarizer(Simulation& System,
   MCGuideB->createAll(System,*PolarizerPit,0,*PolarizerPit,0);
   
   MCInsertA->addInsertCell(MCGuideA->getCells("Guide0Void"));
-  MCInsertA->setFaces(MCGuideA->getKey("Guide0"),4,6);
-  MCInsertA->setLeftRight(MCGuideA->getKey("Guide0"),3,
-			  MCGuideA->getKey("Guide0"),5);
-  MCInsertA->createAll(System,MCGuideA->getKey("Guide0"),0);
+  MCInsertA->setFaces(*MCGuideA,4,6);
+  MCInsertA->setLeftRight(*MCGuideA,3,
+			  *MCGuideA,5);
+  MCInsertA->createAll(System,*MCGuideA,0);
 
   MCInsertB->addInsertCell(MCGuideB->getCells("Guide0Void"));
-  MCInsertB->setFaces(MCGuideB->getKey("Guide0"),4,6);
-  MCInsertB->setLeftRight(MCGuideB->getKey("Guide0"),3,
-			  MCGuideB->getKey("Guide0"),5);
-  MCInsertB->createAll(System,MCGuideB->getKey("Guide0"),0);
+  MCInsertB->setFaces(*MCGuideB,4,6);
+  MCInsertB->setLeftRight(*MCGuideB,3,*MCGuideB,5);
+  MCInsertB->createAll(System,*MCGuideB,0);
 
   
   return;
@@ -442,7 +448,7 @@ MAGIC::buildIsolated(Simulation& System,const int voidCell)
     {
       buildBunkerUnits(System,*FStart,startIndex,voidCell);
       // Set the start point fo rb
-      FStart= &(FocusF->getKey("Guide0"));
+      FStart= FocusF.get();
       startIndex= 2;
     }
   if (stopPoint==2 || stopPoint==1) return;
@@ -453,10 +459,10 @@ MAGIC::buildIsolated(Simulation& System,const int voidCell)
       VPipeWall->createAll(System,*FStart,startIndex);
       
       FocusWall->addInsertCell(VPipeWall->getCell("Void"));
-      FocusWall->createAll(System,*VPipeWall,0,*VPipeWall,0);
+      FocusWall->createAll(System,*VPipeWall,0);
 
-      FStart= &(FocusWall->getKey("Guide0"));
-      FExtra= &(FocusWall->getKey("Shield"));
+      FStart=FocusWall.get();
+      FExtra=FStart;  // &(FocusWall->getKey("Shield"));
       startIndex=2;
       extraIndex=2;
       ShieldA->setFront(*VPipeWall,2);
@@ -469,7 +475,7 @@ MAGIC::buildIsolated(Simulation& System,const int voidCell)
 		    *FStart,startIndex,
 		    *FExtra,extraIndex,voidCell);
       FStart= ShieldE.get();
-      FExtra= &FocusOutE->getKey("Guide0");
+      FExtra= FocusOutE.get();
       startIndex=2;
       extraIndex=2;
     }
@@ -532,9 +538,9 @@ MAGIC::build(Simulation& System,
 
   if (stopPoint==3) return;
 
-  ShieldA->setFront(*BInsert,2);    
-  buildOutGuide(System,FocusWall->getKey("Guide0"),2,
-                FocusWall->getKey("Shield"),2,voidCell);
+  ShieldA->setFront(*BInsert,2);
+  // could be shieldA needed insetead of two focuswall
+  buildOutGuide(System,*FocusWall,2,*FocusWall,2,voidCell);
 
   if (stopPoint==4) return;
   
@@ -545,7 +551,7 @@ MAGIC::build(Simulation& System,
 
   ShieldG->addInsertCell(voidCell);
   ShieldG->addInsertCell(PolarizerPit->getCells("Outer"));
-  ShieldG->addInsertCell(PolarizerPit->getCells("MidLayer"));
+  ShieldG->addInsertCell(PolarizerPit->getCells("MxidLayer"));
   ShieldG->setFront(PolarizerPit->getKey("Mid"),2);
   ShieldG->createAll(System,*ShieldF,2);
 

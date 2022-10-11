@@ -79,12 +79,12 @@ class BIFROST : public attachSystem::CopiedComp
   std::shared_ptr<attachSystem::FixedRotateUnit> bifrostAxis;
 
   /// Elliptic focus in bulkshield [m3]
-  std::shared_ptr<beamlineSystem::GuideLine> FocusA;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusA;
 
   /// Pipe in the gamma shield [5.5m to 6m]
   std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
   /// Elliptic guide from 5.5 to 6 metre
-  std::shared_ptr<beamlineSystem::GuideLine> FocusB;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusB;
 
   /// Tungsten apperature after gamma focus
   std::shared_ptr<constructSystem::Aperture> AppA;
@@ -97,7 +97,7 @@ class BIFROST : public attachSystem::CopiedComp
   /// Pipe from first chopper [4m]
   std::shared_ptr<constructSystem::VacuumPipe> VPipeC;
   /// Elliptic guide leaving first chopper
-  std::shared_ptr<beamlineSystem::GuideLine> FocusC;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusC;
 
   /// 10.5m FOC 
   std::shared_ptr<essConstruct::SingleChopper> ChopperB;
@@ -107,12 +107,12 @@ class BIFROST : public attachSystem::CopiedComp
   /// Pipe from first chopper [6m]
   std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
   /// Straight guide leaving second
-  std::shared_ptr<beamlineSystem::GuideLine> FocusD;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusD;
 
   /// Second pipe from first chopper [4m]
   std::shared_ptr<constructSystem::VacuumPipe> VPipeE;
   /// Straight guide in second length
-  std::shared_ptr<beamlineSystem::GuideLine> FocusE;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusE;
 
   /// 20.5m FOC-2
   std::shared_ptr<essConstruct::SingleChopper> ChopperC;
@@ -122,7 +122,7 @@ class BIFROST : public attachSystem::CopiedComp
   /// Pipe from first chopper [4m]
   std::shared_ptr<constructSystem::VacuumPipe> VPipeF;
   /// 4m elliptic leaving FOC2
-  std::shared_ptr<beamlineSystem::GuideLine> FocusF;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusF;
 
   /// Tungsten apperature after gamma focus
   std::shared_ptr<constructSystem::Aperture> AppB;
@@ -132,29 +132,29 @@ class BIFROST : public attachSystem::CopiedComp
   /// Pipe in bunker wall
   std::shared_ptr<constructSystem::VacuumPipe> VPipeWall;
   /// Guide running to bunker wall
-  std::shared_ptr<beamlineSystem::GuideLine> FocusWall;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusWall;
 
   /// First Shield wall
   std::shared_ptr<constructSystem::LineShield> ShieldA;  
   /// First vacuum pipe leaving bunker
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutA;
   /// First guide leaving bunker
-  std::shared_ptr<beamlineSystem::GuideLine> FocusOutA;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusOutA;
 
   /// First vacuum pipe leaving bunker
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutB;
   /// First guide leaving bunker
-  std::shared_ptr<beamlineSystem::GuideLine> FocusOutB;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusOutB;
 
   /// Last ellispe vacuum pipe
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutC;
   /// Last ellipse section
-  std::shared_ptr<beamlineSystem::GuideLine> FocusOutC;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusOutC;
 
   /// Vector of rectangular vac-pipe:
   std::array<std::shared_ptr<constructSystem::VacuumPipe>,8> RecPipe;
   /// Vector of rectangular units:
-  std::array<std::shared_ptr<beamlineSystem::GuideLine>,8> RecFocus;
+  std::array<std::shared_ptr<beamlineSystem::PlateUnit>,8> RecFocus;
 
   /// Chopper pit
   std::shared_ptr<constructSystem::ChopperPit> OutPitA;
@@ -173,12 +173,12 @@ class BIFROST : public attachSystem::CopiedComp
   /// Vector of rectangular vac-pipe:
   std::array<std::shared_ptr<constructSystem::VacuumPipe>,8> SndPipe;
   /// Vector of rectangular units:
-  std::array<std::shared_ptr<beamlineSystem::GuideLine>,7> SndFocus;
+  std::array<std::shared_ptr<beamlineSystem::PlateUnit>,7> SndFocus;
 
   /// Vector of rectangular vac-pipe:
   std::array<std::shared_ptr<constructSystem::VacuumPipe>,4> EllPipe;
   /// Vector of rectangular units:
-  std::array<std::shared_ptr<beamlineSystem::GuideLine>,4> EllFocus;
+  std::array<std::shared_ptr<beamlineSystem::PlateUnit>,4> EllFocus;
 
   /// single disk chopper
   std::shared_ptr<BifrostHut> Cave;

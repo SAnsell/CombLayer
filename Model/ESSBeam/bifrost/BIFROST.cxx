@@ -71,7 +71,8 @@
 #include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "Aperture.h"
-#include "GuideLine.h"
+#include "GuideUnit.h"
+#include "PlateUnit.h"
 #include "DiskChopper.h"
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
@@ -92,50 +93,50 @@ BIFROST::BIFROST(const std::string& keyName) :
   attachSystem::CopiedComp("bifrost",keyName),
   nGuideSection(8),nSndSection(7),nEllSection(4),stopPoint(0),
   bifrostAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
-  FocusA(new beamlineSystem::GuideLine(newName+"FA")),
+  FocusA(new beamlineSystem::PlateUnit(newName+"FA")),
 
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
-  FocusB(new beamlineSystem::GuideLine(newName+"FB")),
+  FocusB(new beamlineSystem::PlateUnit(newName+"FB")),
   AppA(new constructSystem::Aperture(newName+"AppA")),
 
   ChopperA(new essConstruct::SingleChopper(newName+"ChopperA")),
   DDisk(new essConstruct::DiskChopper(newName+"DBlade")),
 
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
-  FocusC(new beamlineSystem::GuideLine(newName+"FC")),
+  FocusC(new beamlineSystem::PlateUnit(newName+"FC")),
   
   ChopperB(new essConstruct::SingleChopper(newName+"ChopperB")),
   FOCDiskB(new essConstruct::DiskChopper(newName+"FOC1Blade")),
 
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
-  FocusD(new beamlineSystem::GuideLine(newName+"FD")),
+  FocusD(new beamlineSystem::PlateUnit(newName+"FD")),
 
   VPipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
-  FocusE(new beamlineSystem::GuideLine(newName+"FE")),
+  FocusE(new beamlineSystem::PlateUnit(newName+"FE")),
 
   ChopperC(new essConstruct::SingleChopper(newName+"ChopperC")),
   FOCDiskC(new essConstruct::DiskChopper(newName+"FOC2Blade")),
 
   VPipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
-  FocusF(new beamlineSystem::GuideLine(newName+"FF")),
+  FocusF(new beamlineSystem::PlateUnit(newName+"FF")),
   
   AppB(new constructSystem::Aperture(newName+"AppB")),
 
   //  BInsert(new BunkerInsert(newName+"BInsert")),
   BInsert(new CompBInsert(newName+"CInsert")),
   VPipeWall(new constructSystem::VacuumPipe(newName+"PipeWall")),
-  FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
+  FocusWall(new beamlineSystem::PlateUnit(newName+"FWall")),
 
 
   ShieldA(new constructSystem::LineShield(newName+"ShieldA")),
   VPipeOutA(new constructSystem::VacuumPipe(newName+"PipeOutA")),
-  FocusOutA(new beamlineSystem::GuideLine(newName+"FOutA")),
+  FocusOutA(new beamlineSystem::PlateUnit(newName+"FOutA")),
 
   VPipeOutB(new constructSystem::VacuumPipe(newName+"PipeOutB")),
-  FocusOutB(new beamlineSystem::GuideLine(newName+"FOutB")),
+  FocusOutB(new beamlineSystem::PlateUnit(newName+"FOutB")),
 
   VPipeOutC(new constructSystem::VacuumPipe(newName+"PipeOutC")),
-  FocusOutC(new beamlineSystem::GuideLine(newName+"FOutC")),
+  FocusOutC(new beamlineSystem::PlateUnit(newName+"FOutC")),
 
   OutPitA(new constructSystem::ChopperPit(newName+"OutPitA")),
   OutACutFront(new constructSystem::HoleShape(newName+"OutACutFront")),
@@ -164,8 +165,8 @@ BIFROST::BIFROST(const std::string& keyName) :
       const std::string strNum(std::to_string(i));
       RecPipe[i]=std::shared_ptr<constructSystem::VacuumPipe>
         (new constructSystem::VacuumPipe(newName+"PipeR"+strNum));
-      RecFocus[i]=std::shared_ptr<beamlineSystem::GuideLine>
-        (new beamlineSystem::GuideLine(newName+"FOutR"+strNum));
+      RecFocus[i]=std::shared_ptr<beamlineSystem::PlateUnit>
+        (new beamlineSystem::PlateUnit(newName+"FOutR"+strNum));
       OR.addObject(RecPipe[i]);
       OR.addObject(RecFocus[i]);
     }
@@ -175,8 +176,8 @@ BIFROST::BIFROST(const std::string& keyName) :
       const std::string strNum(std::to_string(i));
       SndPipe[i]=std::shared_ptr<constructSystem::VacuumPipe>
         (new constructSystem::VacuumPipe(newName+"PipeS"+strNum));
-      SndFocus[i]=std::shared_ptr<beamlineSystem::GuideLine>
-        (new beamlineSystem::GuideLine(newName+"FOutS"+strNum));
+      SndFocus[i]=std::shared_ptr<beamlineSystem::PlateUnit>
+        (new beamlineSystem::PlateUnit(newName+"FOutS"+strNum));
       OR.addObject(SndPipe[i]);
       OR.addObject(SndFocus[i]);
     }
@@ -186,8 +187,8 @@ BIFROST::BIFROST(const std::string& keyName) :
       const std::string strNum(std::to_string(i));
       EllPipe[i]=std::shared_ptr<constructSystem::VacuumPipe>
         (new constructSystem::VacuumPipe(newName+"PipeE"+strNum));
-      EllFocus[i]=std::shared_ptr<beamlineSystem::GuideLine>
-        (new beamlineSystem::GuideLine(newName+"FOutE"+strNum));
+      EllFocus[i]=std::shared_ptr<beamlineSystem::PlateUnit>
+        (new beamlineSystem::PlateUnit(newName+"FOutE"+strNum));
       OR.addObject(EllPipe[i]);
       OR.addObject(EllFocus[i]);
     }
@@ -285,7 +286,7 @@ BIFROST::build(Simulation& System,
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);
   FocusA->setBack(GItem.getKey("Beam"),-2);
-  FocusA->createAll(System,*bifrostAxis,-3,*bifrostAxis,-3); 
+  FocusA->createAll(System,*bifrostAxis,-3); 
   
   if (stopPoint==1) return;                      // STOP At monolith
 
@@ -293,9 +294,9 @@ BIFROST::build(Simulation& System,
   VPipeB->createAll(System,GItem.getKey("Beam"),2);
 
   FocusB->addInsertCell(VPipeB->getCells("Void"));
-  FocusB->createAll(System,*VPipeB,0,*VPipeB,0);
+  FocusB->createAll(System,*VPipeB,0);
   AppA->addInsertCell(bunkerObj.getCell("MainVoid"));
-  AppA->createAll(System,FocusB->getKey("Guide0"),2);
+  AppA->createAll(System,*FocusB,2);
 
   // Fist chopper
   ChopperA->addInsertCell(bunkerObj.getCell("MainVoid"));
@@ -311,11 +312,11 @@ BIFROST::build(Simulation& System,
   VPipeC->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeC->createAll(System,ChopperA->getKey("Beam"),2);
   FocusC->addInsertCell(VPipeC->getCells("Void"));
-  FocusC->createAll(System,*VPipeC,0,*VPipeC,0);
+  FocusC->createAll(System,*VPipeC,0);
 
   // 10.5m FOC chopper
   ChopperB->addInsertCell(bunkerObj.getCell("MainVoid"));
-  ChopperB->createAll(System,FocusC->getKey("Guide0"),2);
+  ChopperB->createAll(System,*FocusC,2);
   // Single disk FOC
   FOCDiskB->addInsertCell(ChopperB->getCell("Void"));
   FOCDiskB->setOffsetFlag(1);  // Z direction
@@ -326,17 +327,17 @@ BIFROST::build(Simulation& System,
   VPipeD->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeD->createAll(System,ChopperB->getKey("Beam"),2);
   FocusD->addInsertCell(VPipeD->getCells("Void"));
-  FocusD->createAll(System,*VPipeD,0,*VPipeD,0);
+  FocusD->createAll(System,*VPipeD,0);
 
   // Rectangle 4m section
   VPipeE->addAllInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeE->createAll(System,FocusD->getKey("Guide0"),2);
+  VPipeE->createAll(System,*FocusD,2);
   FocusE->addInsertCell(VPipeE->getCells("Void"));
-  FocusE->createAll(System,*VPipeE,0,*VPipeE,0);
+  FocusE->createAll(System,*VPipeE,0);
 
   // 20.5m FOC chopper-2
   ChopperC->addInsertCell(bunkerObj.getCell("MainVoid"));
-  ChopperC->createAll(System,FocusE->getKey("Guide0"),2);
+  ChopperC->createAll(System,*FocusE,2);
   // Single disk FOC-2
   FOCDiskC->addInsertCell(ChopperC->getCell("Void"));
   FOCDiskC->setOffsetFlag(1);  // Z direction
@@ -347,10 +348,10 @@ BIFROST::build(Simulation& System,
   VPipeF->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeF->createAll(System,ChopperC->getKey("Beam"),2);
   FocusF->addInsertCell(VPipeF->getCells("Void"));
-  FocusF->createAll(System,*VPipeF,0,*VPipeF,0);
+  FocusF->createAll(System,*VPipeF,0);
 
   AppB->addInsertCell(bunkerObj.getCell("MainVoid"));
-  AppB->createAll(System,FocusF->getKey("Guide0"),2);
+  AppB->createAll(System,*FocusF,2);
 
   if (stopPoint==2) return;                      // STOP At bunker edge
   // IN WALL
@@ -366,44 +367,47 @@ BIFROST::build(Simulation& System,
 
   // using 7 : mid point
   FocusWall->addInsertCell(BInsert->getCells("Item"));
-  FocusWall->createAll(System,*BInsert,7,*BInsert,7);
+  FocusWall->createAll(System,*BInsert,7);
 
   if (stopPoint==3) return;                      // STOP Out of bunker
   
 
   // First put pit into the main void
   OutPitA->addInsertCell(voidCell);
-  OutPitA->createAll(System,FocusWall->getKey("Shield"),2);
+  ELog::EM<<"Caution was get(shield)"<<ELog::endDiag;
+  //  OutPitA->createAll(System,FocusWall->getKey("Shield"),2);
+  OutPitA->createAll(System,*FocusWall,2);
   
   ShieldA->addInsertCell(voidCell);
   ShieldA->setFront(*BInsert,2);
   ShieldA->addInsertCell(OutPitA->getCells("Outer"));
   ShieldA->addInsertCell(OutPitA->getCells("MidLayer"));
   ShieldA->setBack(OutPitA->getKey("Mid"),1);
-  ShieldA->createAll(System,FocusWall->getKey("Shield"),2);
+  ELog::EM<<"Caution was get(shield)"<<ELog::endDiag;
+  ShieldA->createAll(System,*FocusWall,2);
 
   // Elliptic 6m section
   VPipeOutA->addAllInsertCell(ShieldA->getCell("Void"));
-  VPipeOutA->createAll(System,FocusWall->getKey("Guide0"),2);
+  VPipeOutA->createAll(System,*FocusWall,2);
 
   FocusOutA->addInsertCell(VPipeOutA->getCells("Void"));
-  FocusOutA->createAll(System,*VPipeOutA,0,*VPipeOutA,0);
+  FocusOutA->createAll(System,*VPipeOutA,0);
 
   // Elliptic 6m section
   VPipeOutB->addAllInsertCell(ShieldA->getCell("Void"));
-  VPipeOutB->createAll(System,FocusOutA->getKey("Guide0"),2);
+  VPipeOutB->createAll(System,*FocusOutA,2);
 
   FocusOutB->addInsertCell(VPipeOutB->getCells("Void"));
-  FocusOutB->createAll(System,*VPipeOutB,0,*VPipeOutB,0);
+  FocusOutB->createAll(System,*VPipeOutB,0);
 
   // Elliptic 6m section
   VPipeOutC->addAllInsertCell(ShieldA->getCell("Void"));
-  VPipeOutC->createAll(System,FocusOutB->getKey("Guide0"),2);
+  VPipeOutC->createAll(System,*FocusOutB,2);
 
   FocusOutC->addInsertCell(VPipeOutC->getCells("Void"));
-  FocusOutC->createAll(System,*VPipeOutC,0,*VPipeOutC,0);
+  FocusOutC->createAll(System,*VPipeOutC,0);
 
-  const attachSystem::FixedComp* LinkPtr= &FocusOutC->getKey("Guide0");
+  const attachSystem::FixedComp* LinkPtr= FocusOutC.get();
   for(size_t i=0;i<nGuideSection;i++)
     {
       // Elliptic 6m section
@@ -411,9 +415,9 @@ BIFROST::build(Simulation& System,
       RecPipe[i]->createAll(System,*LinkPtr,2);
       
       RecFocus[i]->addInsertCell(RecPipe[i]->getCells("Void"));
-      RecFocus[i]->createAll(System,*RecPipe[i],0,*RecPipe[i],0);
+      RecFocus[i]->createAll(System,*RecPipe[i],0);
 
-      LinkPtr= &RecFocus[i]->getKey("Guide0");
+      LinkPtr= RecFocus[i].get();
     }
 
   OutACutFront->addInsertCell(OutPitA->getCells("MidLayerFront"));
@@ -453,9 +457,9 @@ BIFROST::build(Simulation& System,
       SndPipe[i]->createAll(System,*LinkPtr,2);
       
       SndFocus[i]->addInsertCell(SndPipe[i]->getCells("Void"));
-      SndFocus[i]->createAll(System,*SndPipe[i],0,*SndPipe[i],0);
+      SndFocus[i]->createAll(System,*SndPipe[i],0);
 
-      LinkPtr= &SndFocus[i]->getKey("Guide0");
+      LinkPtr= SndFocus[i].get();
     }
 
   for(size_t i=0;i<nEllSection;i++)
@@ -465,9 +469,9 @@ BIFROST::build(Simulation& System,
       EllPipe[i]->createAll(System,*LinkPtr,2);
       
       EllFocus[i]->addInsertCell(EllPipe[i]->getCells("Void"));
-      EllFocus[i]->createAll(System,*EllPipe[i],0,*EllPipe[i],0);
+      EllFocus[i]->createAll(System,*EllPipe[i],0);
 
-      LinkPtr= &EllFocus[i]->getKey("Guide0");
+      LinkPtr= EllFocus[i].get();
     }
 
   Cave->addInsertCell(voidCell);

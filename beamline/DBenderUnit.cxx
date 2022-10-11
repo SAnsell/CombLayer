@@ -456,7 +456,7 @@ DBenderUnit::createAll(Simulation& System,
   ELog::RegMethod RegA("DBenderUnit","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC,FIndex);
+  createUnitVector(FC,sideIndex);
   
   createSurfaces();
   createObjects(System);

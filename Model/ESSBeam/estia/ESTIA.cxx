@@ -69,6 +69,7 @@
 #include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "GuideUnit.h"
+#include "PlateUnit.h"
 #include "DiskChopper.h"
 #include "VacuumBox.h"
 #include "GeneralPipe.h"
@@ -85,13 +86,13 @@ ESTIA::ESTIA(const std::string& keyName) :
   attachSystem::CopiedComp("estia",keyName),
   stopPoint(0),
   estiaAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
-  FocusMono(new beamlineSystem::PlateLine(newName+"FMono")),
+  FocusMono(new beamlineSystem::PlateUnit(newName+"FMono")),
   VPipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
-  FocusA(new beamlineSystem::GuideLine(newName+"FA")),
+  FocusA(new beamlineSystem::PlateUnit(newName+"FA")),
 
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   VacBoxA(new constructSystem::VacuumBox(newName+"VBoxA")),
-  FocusB(new beamlineSystem::GuideLine(newName+"FB"))
+  FocusB(new beamlineSystem::PlateUnit(newName+"FB"))
   /*! 
     Constructor
     \param keyName :: main beamline name
@@ -125,7 +126,7 @@ ESTIA::buildChopperBlock(Simulation& System,
 			 const attachSystem::FixedComp& prevFC,
 			 const constructSystem::VacuumBox& prevVacBox,
 			 constructSystem::VacuumBox& VacBox,
-			 beamlineSystem::GuideLine& GL,
+			 beamlineSystem::GuideUnit& GL,
 			 essConstruct::DiskChopper& Disk,
 			 constructSystem::ChopperHousing& House,
 			 constructSystem::VacuumPipe& Pipe)
@@ -163,7 +164,7 @@ ESTIA::buildChopperBlock(Simulation& System,
   GL.addInsertCell(Pipe.getCells("Void"));
   GL.addInsertCell(prevVacBox.getCells("Void"));
   GL.addInsertCell(VacBox.getCells("Void"));
-  GL.createAll(System,prevFC,2,prevFC,2);
+  GL.createAll(System,prevFC,2);
   return;
 } 
 
@@ -199,20 +200,18 @@ ESTIA::build(Simulation& System,
 
   // Shutter pipe [note gap front/back]
   VPipeA->addAllInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeA->createAll(System,FocusMono->getKey("Guide0"),2);
+  VPipeA->createAll(System,*FocusMono,2);
 
   FocusA->addInsertCell(VPipeA->getCells("Void"));
-  FocusA->createAll(System,FocusMono->getKey("Guide0"),2,
-		    FocusMono->getKey("Guide0"),2);
+  FocusA->createAll(System,*FocusMono,2);
 
   // pipe for first section
   VPipeB->addAllInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeB->createAll(System,FocusA->getKey("Guide0"),2);
+  VPipeB->createAll(System,*FocusA,2);
 
   return;
   FocusB->addInsertCell(VPipeA->getCells("Void"));
-  FocusB->createAll(System,FocusA->getKey("Guide0"),2,
-		    FocusA->getKey("Guide0"),2);
+  FocusB->createAll(System,*FocusA,2);
 
   return;
 }

@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -72,8 +70,7 @@ PipeCollimator::PipeCollimator(const std::string& Key) :
   attachSystem::FixedRotate(Key,2),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
-  attachSystem::SurfMap(),
-  setFlag(0)
+  attachSystem::SurfMap()
   /*!
     Default constructor
     \param Key :: Key name for variables
@@ -86,8 +83,7 @@ PipeCollimator::PipeCollimator(const PipeCollimator& A) :
   attachSystem::ContainedComp(A),
   attachSystem::ExternalCut(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
-  setFlag(A.setFlag),innerStruct(A.innerStruct),
-  outerStruct(A.outerStruct),length(A.length),mat(A.mat)
+  length(A.length),mat(A.mat)
   /*!
     Copy constructor
     \param A :: PipeCollimator to copy

@@ -391,7 +391,7 @@ BenderUnit::createAll(Simulation& System,
   ELog::RegMethod RegA("BenderUnit","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC,FIndex);
+  createUnitVector(FC,sideIndex);
 
   createSurfaces();
   createObjects(System);

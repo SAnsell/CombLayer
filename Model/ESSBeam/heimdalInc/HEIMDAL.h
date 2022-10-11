@@ -29,6 +29,12 @@ namespace attachSystem
   class CellMap;
 }
 
+namespace beamlineSystem
+{
+  class PlateUnit;
+  class BenderUnit;
+}
+
 namespace instrumentSystem
 {
   class CylSample;
@@ -86,23 +92,23 @@ class HEIMDAL : public attachSystem::CopiedComp
   std::shared_ptr<attachSystem::FixedRotateUnit> heimdalAxis;
 
   /// Elliptic focus in bulkshield [m5]
-  std::shared_ptr<beamlineSystem::GuideLine> FocusTA;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusTA;
   /// Elliptic focus in bulkshield [m5]
-  std::shared_ptr<beamlineSystem::GuideLine> FocusCA;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusCA;
 
   /// Vac pipe in gamma shutter
   std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
   /// Tapered guide from 5.5 to 6metre
-  std::shared_ptr<beamlineSystem::GuideLine> FocusTB;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusTB;
   /// Tapered guide from 5.5 to 6metre
-  std::shared_ptr<beamlineSystem::GuideLine> FocusCB;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusCB;
 
   /// 6.0 - 6.5m Vac piper
   std::shared_ptr<constructSystem::VacuumPipe> VPipeC;
   /// Cold guide from 6.0 to 6.5metre
-  std::shared_ptr<beamlineSystem::GuideLine> FocusTC;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusTC;
   /// Thermal guide from 6.0 to 6metre
-  std::shared_ptr<beamlineSystem::GuideLine> FocusCC;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusCC;
 
   /// First single chopper pair
   std::shared_ptr<essConstruct::SingleChopper> TChopA;
@@ -114,14 +120,14 @@ class HEIMDAL : public attachSystem::CopiedComp
   /// 6.5m Vac pipe for Thermal
   std::shared_ptr<constructSystem::VacuumPipe> VPipeTD;
   /// Themal guide from 6.5 to 8m
-  std::shared_ptr<beamlineSystem::GuideLine> FocusTD;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusTD;
 
   /// 6.5m to 12m
   std::shared_ptr<constructSystem::VacuumPipe> VPipeCD;
   /// Cold guide from 6.5 to 8m
-  std::shared_ptr<beamlineSystem::GuideLine> FocusCD;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusCD;
   /// Cold bender from 8m to 20m [too long?]
-  std::shared_ptr<beamlineSystem::GuideLine> BendCD;
+  std::shared_ptr<beamlineSystem::BenderUnit> BendCD;
 
   /// Second thermal chopper [single]
   std::shared_ptr<essConstruct::SingleChopper> TChopB;
@@ -131,7 +137,7 @@ class HEIMDAL : public attachSystem::CopiedComp
   /// 8mm Vac pipe for Thermal
   std::shared_ptr<constructSystem::VacuumPipe> VPipeTE;
   /// Themal guide from 8m to 20m [too long?]
-  std::shared_ptr<beamlineSystem::GuideLine> FocusTE;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusTE;
 
   /// Thermal T0 Chopper
   std::shared_ptr<essConstruct::SingleChopper> ChopperT0;
@@ -143,7 +149,7 @@ class HEIMDAL : public attachSystem::CopiedComp
   /// Vac pipe for Thermal to bunker wall
   std::shared_ptr<constructSystem::VacuumPipe> VPipeTF;
   /// Themal guide from 20m to bunker wall
-  std::shared_ptr<beamlineSystem::GuideLine> FocusTF;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusTF;
 
 
   void buildBunkerUnits(Simulation&,const attachSystem::FixedComp&,

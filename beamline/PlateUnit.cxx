@@ -248,7 +248,7 @@ PlateUnit::createAll(Simulation& System,
 
   populate(System.getDataBase());
 
-  createUnitVector(FC,FIndex);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

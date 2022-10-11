@@ -70,7 +70,6 @@
 #include "AttachSupport.h"
 #include "beamlineSupport.h"
 #include "GuideItem.h"
-#include "GuideLine.h"
 #include "DiskChopper.h"
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
@@ -80,6 +79,8 @@
 #include "SingleChopper.h"
 #include "TwinBase.h"
 #include "TwinChopperFlat.h"
+#include "GuideUnit.h"
+#include "PlateUnit.h"
 #include "LineShield.h"
 #include "TriangleShield.h"
 #include "HoleShape.h"
@@ -102,13 +103,13 @@ VESPA::VESPA(const std::string& keyName) :
   vespaAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
   
   // Guide into the monolith
-  FocusA(new beamlineSystem::GuideLine(newName+"FA")),
+  FocusA(new beamlineSystem::PlateUnit(newName+"FA")),
 
   VPipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
-  FocusB(new beamlineSystem::GuideLine(newName+"FB")),
+  FocusB(new beamlineSystem::PlateUnit(newName+"FB")),
 
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
-  FocusC(new beamlineSystem::GuideLine(newName+"FC")),
+  FocusC(new beamlineSystem::PlateUnit(newName+"FC")),
 
   TwinChopperA(new essConstruct::TwinChopperFlat(newName+"TwinChopperA")),
   PSCDiskTopA(new essConstruct::DiskChopper(newName+"PSCTopBladeA")),
@@ -116,7 +117,7 @@ VESPA::VESPA(const std::string& keyName) :
 
   // Joining Pipe AB
   JPipeAB(new constructSystem::VacuumPipe(newName+"JoinPipeAB")),
-  FocusD(new beamlineSystem::GuideLine(newName+"FD")),
+  FocusD(new beamlineSystem::PlateUnit(newName+"FD")),
 
   TwinChopperB(new essConstruct::TwinChopperFlat(newName+"TwinChopperB")),
   PSCDiskTopB(new essConstruct::DiskChopper(newName+"PSCTopBladeB")),
@@ -124,7 +125,7 @@ VESPA::VESPA(const std::string& keyName) :
 
   // Joining Pipe AB
   JPipeBC(new constructSystem::VacuumPipe(newName+"JoinPipeBC")),
-  FocusE(new beamlineSystem::GuideLine(newName+"FE")),
+  FocusE(new beamlineSystem::PlateUnit(newName+"FE")),
 
   TwinChopperC(new essConstruct::TwinChopperFlat(newName+"TwinChopperC")),
   PSCDiskTopC(new essConstruct::DiskChopper(newName+"PSCTopBladeC")),
@@ -132,22 +133,22 @@ VESPA::VESPA(const std::string& keyName) :
 
   // Joining Pipe C to outer
   JPipeCOut(new constructSystem::VacuumPipe(newName+"JoinPipeCOut")),
-  FocusF(new beamlineSystem::GuideLine(newName+"FF")),
+  FocusF(new beamlineSystem::PlateUnit(newName+"FF")),
 
   VPipeG(new constructSystem::VacuumPipe(newName+"PipeG")),
-  FocusG(new beamlineSystem::GuideLine(newName+"FG")),
+  FocusG(new beamlineSystem::PlateUnit(newName+"FG")),
 
   // FOC
   ChopperFOC(new essConstruct::SingleChopper(newName+"ChopperFOC")),
   FOCDisk(new essConstruct::DiskChopper(newName+"FOCBlade")),
 
   VPipeH(new constructSystem::VacuumPipe(newName+"PipeH")),
-  FocusH(new beamlineSystem::GuideLine(newName+"FH")),
+  FocusH(new beamlineSystem::PlateUnit(newName+"FH")),
 
   
   BInsert(new BunkerInsert(newName+"BInsert")),
   VPipeWall(new constructSystem::VacuumPipe(newName+"PipeWall")),  
-  FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
+  FocusWall(new beamlineSystem::PlateUnit(newName+"FWall")),
 
   OutPitT0(new constructSystem::ChopperPit(newName+"OutPitT0")),
   ChopperT0(new essConstruct::SingleChopper(newName+"ChopperT0")),
@@ -158,7 +159,7 @@ VESPA::VESPA(const std::string& keyName) :
   ShieldA(new constructSystem::TriangleShield(newName+"ShieldA")),
   
   VPipeOutA(new constructSystem::VacuumPipe(newName+"PipeOutA")),
-  FocusOutA(new beamlineSystem::GuideLine(newName+"FOutA")),
+  FocusOutA(new beamlineSystem::PlateUnit(newName+"FOutA")),
   ChopperOutA(new essConstruct::SingleChopper(newName+"ChopperOutA")),
 
   OutPitB(new constructSystem::ChopperPit(newName+"OutPitB")),
@@ -168,14 +169,14 @@ VESPA::VESPA(const std::string& keyName) :
   FOCDiskB(new essConstruct::DiskChopper(newName+"FOCBladeB")),
   ShieldB(new constructSystem::TriangleShield(newName+"ShieldB")),
   VPipeOutB(new constructSystem::VacuumPipe(newName+"PipeOutB")),
-  FocusOutB(new beamlineSystem::GuideLine(newName+"FOutB")),
+  FocusOutB(new beamlineSystem::PlateUnit(newName+"FOutB")),
   
   ChopperOutB(new essConstruct::SingleChopper(newName+"ChopperOutB")),
   FOCDiskOutB(new essConstruct::DiskChopper(newName+"FOCBladeOutB")),
   
   ShieldC(new constructSystem::LineShield(newName+"ShieldC")),
   VPipeOutC(new constructSystem::VacuumPipe(newName+"PipeOutC")),
-  FocusOutC(new beamlineSystem::GuideLine(newName+"FOutC")),
+  FocusOutC(new beamlineSystem::PlateUnit(newName+"FOutC")),
   Cave(new VespaHut(newName+"Cave")),
   VInner(new VespaInner(newName+"Inner")),
   VInnerExit(new constructSystem::HoleShape(newName+"InnerExit")),
@@ -247,7 +248,7 @@ VESPA::VESPA(const std::string& keyName) :
     {
       typedef std::shared_ptr<constructSystem::TriangleShield> STYPE;
       typedef std::shared_ptr<constructSystem::VacuumPipe> VTYPE;
-      typedef std::shared_ptr<beamlineSystem::GuideLine> GTYPE;
+      typedef std::shared_ptr<beamlineSystem::PlateUnit> GTYPE;
       
       ShieldArray.push_back
         (STYPE(new constructSystem::TriangleShield(newName+"ShieldArray"+
@@ -256,7 +257,7 @@ VESPA::VESPA(const std::string& keyName) :
         (VTYPE(new constructSystem::VacuumPipe(newName+"VPipeArray"+
                                                std::to_string(i))));
       FocusArray.push_back
-        (GTYPE(new beamlineSystem::GuideLine(newName+"FocusArray"+
+        (GTYPE(new beamlineSystem::PlateUnit(newName+"FocusArray"+
                                              std::to_string(i))));
       OR.addObject(ShieldArray.back());
       OR.addObject(VPipeArray.back());
@@ -304,17 +305,17 @@ VESPA::buildBunkerUnits(Simulation& System,
   VPipeA->createAll(System,FA,startIndex);
 
   FocusB->addInsertCell(VPipeA->getCells("Void"));
-  FocusB->createAll(System,*VPipeA,0,*VPipeA,0);
+  FocusB->createAll(System,*VPipeA,0);
 
   VPipeB->addAllInsertCell(bunkerVoid);
-  VPipeB->createAll(System,FocusB->getKey("Guide0"),2);
+  VPipeB->createAll(System,*FocusB,2);
 
   FocusC->addInsertCell(VPipeB->getCells("Void"));
-  FocusC->createAll(System,*VPipeB,0,*VPipeB,0);
+  FocusC->createAll(System,*VPipeB,0);
 
   //PSC-A
   TwinChopperA->addInsertCell(bunkerVoid);
-  TwinChopperA->createAll(System,FocusC->getKey("Guide0"),2);
+  TwinChopperA->createAll(System,*FocusC,2);
   PSCDiskTopA->addInsertCell(TwinChopperA->getCell("Void"));
   PSCDiskTopA->createAll(System,TwinChopperA->getKey("MotorTop"),0);
   PSCDiskBottomA->addInsertCell(TwinChopperA->getCell("Void"));
@@ -323,7 +324,7 @@ VESPA::buildBunkerUnits(Simulation& System,
 
     //PSC-B
   TwinChopperB->addInsertCell(bunkerVoid);
-  TwinChopperB->createAll(System,FocusC->getKey("Guide0"),2);
+  TwinChopperB->createAll(System,*FocusC,2);
   PSCDiskTopB->addInsertCell(TwinChopperB->getCell("Void"));
   PSCDiskTopB->createAll(System,TwinChopperB->getKey("MotorTop"),0);
   PSCDiskBottomB->addInsertCell(TwinChopperB->getCell("Void"));
@@ -332,7 +333,7 @@ VESPA::buildBunkerUnits(Simulation& System,
 
   //PSC-C
   TwinChopperC->addInsertCell(bunkerVoid);
-  TwinChopperC->createAll(System,FocusC->getKey("Guide0"),2);
+  TwinChopperC->createAll(System,*FocusC,2);
   PSCDiskTopC->addInsertCell(TwinChopperC->getCell("Void"));
   PSCDiskTopC->createAll(System,TwinChopperC->getKey("MotorTop"),0);
   PSCDiskBottomC->addInsertCell(TwinChopperC->getCell("Void"));
@@ -346,7 +347,7 @@ VESPA::buildBunkerUnits(Simulation& System,
   JPipeAB->setBack(TwinChopperB->getKey("Main"),1);  
   JPipeAB->createAll(System, TwinChopperA->getKey("Main"),2);
   FocusD->addInsertCell(JPipeAB->getCells("Void"));
-  FocusD->createAll(System,*JPipeAB,7,*JPipeAB,7);
+  FocusD->createAll(System,*JPipeAB,7);
 
   // JPipeBC
   JPipeBC->addAllInsertCell(bunkerVoid);
@@ -354,23 +355,23 @@ VESPA::buildBunkerUnits(Simulation& System,
   JPipeBC->setBack(TwinChopperC->getKey("Main"),1);
   JPipeBC->createAll(System,TwinChopperB->getKey("Main"),2);
   FocusE->addInsertCell(JPipeBC->getCells("Void"));
-  FocusE->createAll(System,*JPipeBC,7,*JPipeBC,7);
+  FocusE->createAll(System,*JPipeBC,7);
 
     // JPipeCOut
   JPipeCOut->addAllInsertCell(bunkerVoid);
   JPipeCOut->setFront(TwinChopperC->getKey("Main"),2);
   JPipeCOut->createAll(System,TwinChopperC->getKey("Main"),2);
   FocusF->addInsertCell(JPipeCOut->getCells("Void"));
-  FocusF->createAll(System,*JPipeCOut,7,*JPipeCOut,7);
+  FocusF->createAll(System,*JPipeCOut,7);
 
   VPipeG->addAllInsertCell(bunkerVoid);
-  VPipeG->createAll(System,FocusF->getKey("Guide0"),2);
+  VPipeG->createAll(System,*FocusF,2);
   FocusG->addInsertCell(VPipeG->getCells("Void"));
-  FocusG->createAll(System,*VPipeG,0,*VPipeG,0);
+  FocusG->createAll(System,*VPipeG,0);
 
   // FO-Chopper
   ChopperFOC->addInsertCell(bunkerVoid);
-  ChopperFOC->createAll(System,FocusG->getKey("Guide0"),2);
+  ChopperFOC->createAll(System,*FocusG,2);
   FOCDisk->addInsertCell(ChopperFOC->getCell("Void"));
   FOCDisk->createAll(System,ChopperFOC->getKey("Main"),0);
   ChopperFOC->insertAxle(System,*FOCDisk);
@@ -378,7 +379,7 @@ VESPA::buildBunkerUnits(Simulation& System,
   VPipeH->addAllInsertCell(bunkerVoid);
   VPipeH->createAll(System,ChopperFOC->getKey("Beam"),2);
   FocusH->addInsertCell(VPipeH->getCells("Void"));
-  FocusH->createAll(System,*VPipeH,0,*VPipeH,0);
+  FocusH->createAll(System,*VPipeH,0);
 
   return;
 }
@@ -423,7 +424,8 @@ VESPA::buildOutGuide(Simulation& System,
   T0ExitPort->createAll(System,OutPitT0->getKey("Inner"),2);
 
   OutPitA->addInsertCell(voidCell);
-  OutPitA->createAll(System,FocusWall->getKey("Shield"),2);
+  ELog::EM<<"SHIRLD"<<ELog::endDiag;
+  OutPitA->createAll(System,*FocusWall,2);
 
   ShieldA->addInsertCell(voidCell);
   ShieldA->addInsertCell(OutPitT0->getCells("Outer"));
@@ -432,21 +434,22 @@ VESPA::buildOutGuide(Simulation& System,
   ShieldA->addInsertCell(OutPitA->getCells("Outer"));
   ShieldA->addInsertCell(OutPitA->getCells("MidLayer"));
   ShieldA->setBack(OutPitA->getKey("Mid"),1);
-  ShieldA->createAll(System,FocusWall->getKey("Shield"),2);
+  ELog::EM<<"SHIRLD"<<ELog::endDiag;
+  ShieldA->createAll(System,*FocusWall,2);
   
   // Elliptic 6m section
   VPipeOutA->addAllInsertCell(ShieldA->getCells("Void"));
   VPipeOutA->setFront(OutPitT0->getKey("Mid"),2);
   VPipeOutA->setBack(OutPitA->getKey("Inner"),1);
   VPipeOutA->addAllInsertCell(OutPitA->getCells("MidLayer"));
-  VPipeOutA->createAll(System,FocusWall->getKey("Guide0"),2);
+  VPipeOutA->createAll(System,*FocusWall,2);
 
   FocusOutA->addInsertCell(VPipeOutA->getCells("Void"));
-  FocusOutA->createAll(System,*VPipeOutA,0,*VPipeOutA,0);
+  FocusOutA->createAll(System,*VPipeOutA,0);
 
   // First Chopper
   ChopperOutA->addInsertCell(OutPitA->getCells("Void"));
-  ChopperOutA->createAll(System,FocusOutA->getKey("Guide0"),2);
+  ChopperOutA->createAll(System,*FocusOutA,2);
 
   // Double disk chopper
   FOCDiskB->addInsertCell(ChopperOutA->getCell("Void"));
@@ -456,9 +459,7 @@ VESPA::buildOutGuide(Simulation& System,
   ShieldB->addInsertCell(OutPitA->getCells("Outer"));
   ShieldB->addInsertCell(voidCell);
   ShieldB->setFront(OutPitA->getKey("Mid"),2);
-  ELog::EM<<"XXXX == "<<ELog::endDiag;
   ShieldB->createAll(System,ChopperOutA->getKey("Beam"),2);
-  ELog::EM<<"XXXX == "<<ELog::endDiag; 
 
   VPipeOutB->addAllInsertCell(ShieldB->getCells("Void"));
   VPipeOutB->addAllInsertCell(OutPitA->getCells("Collet"));
@@ -467,7 +468,7 @@ VESPA::buildOutGuide(Simulation& System,
   VPipeOutB->createAll(System,ChopperOutA->getKey("Beam"),2);
 
   FocusOutB->addInsertCell(VPipeOutB->getCell("Void"));
-  FocusOutB->createAll(System,*VPipeOutB,-1,*VPipeOutB,-1);
+  FocusOutB->createAll(System,*VPipeOutB,-1);
 
 
   // Mid section array:
@@ -477,7 +478,7 @@ VESPA::buildOutGuide(Simulation& System,
   VPipeArray[0]->addAllInsertCell(ShieldArray[0]->getCells("Void"));
   VPipeArray[0]->createAll(System,*ShieldB,2);
   FocusArray[0]->addInsertCell(VPipeArray[0]->getCell("Void"));
-  FocusArray[0]->createAll(System,*VPipeArray[0],7,*VPipeArray[0],7);
+  FocusArray[0]->createAll(System,*VPipeArray[0],7);
 
   OutPitB->addInsertCell(voidCell);
   OutPitB->createAll(System,OutPitA->getKey("Inner"),2);
@@ -508,12 +509,12 @@ VESPA::buildOutGuide(Simulation& System,
       VPipeArray[i]->addAllInsertCell(ShieldArray[i]->getCells("Void"));
       VPipeArray[i]->createAll(System,*ShieldArray[i-1],2);
       FocusArray[i]->addInsertCell(VPipeArray[i]->getCell("Void"));
-      FocusArray[i]->createAll(System,*VPipeArray[i],7,*VPipeArray[i],7);
+      FocusArray[i]->createAll(System,*VPipeArray[i],7);
     }
 
     // First Chopper
   ChopperOutB->addInsertCell(OutPitB->getCells("Void"));
-  ChopperOutB->createAll(System,FocusArray[lastIndex]->getKey("Guide0"),2);
+  ChopperOutB->createAll(System,*FocusArray[lastIndex],2);
 
   // Double disk chopper FOC
   FOCDiskOutB->addInsertCell(ChopperOutB->getCell("Void"));
@@ -653,7 +654,7 @@ VESPA::buildIsolated(Simulation& System,const int voidCell)
     {
       buildBunkerUnits(System,*FStart,startIndex,voidCell);
       // Set the start point fo rb
-      FStart= &(FocusH->getKey("Guide0"));
+      FStart= FocusH.get();
       startIndex= 2;
     }
   if (stopPoint==2 || stopPoint==1) return;
@@ -664,8 +665,8 @@ VESPA::buildIsolated(Simulation& System,const int voidCell)
       VPipeWall->createAll(System,*FStart,startIndex);
       
       FocusWall->addInsertCell(VPipeWall->getCell("Void"));
-      FocusWall->createAll(System,*VPipeWall,0,*VPipeWall,0);
-      FStart= &(FocusWall->getKey("Guide0"));
+      FocusWall->createAll(System,*VPipeWall,0);
+      FStart= FocusWall.get();
       startIndex=2;
       OutPitT0->addFrontWall(*VPipeWall,2);
     }
@@ -718,30 +719,29 @@ VESPA::build(Simulation& System,
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);
   FocusA->setBack(GItem.getKey("Beam"),-2);
-  FocusA->createAll(System,*vespaAxis,-3,*vespaAxis,-3);
+  FocusA->createAll(System,*vespaAxis,-3);
   
   if (stopPoint==1) return;                      // STOP At monolith
                                                  // edge  
-  buildBunkerUnits(System,FocusA->getKey("Guide0"),2,
+  buildBunkerUnits(System,*FocusA,2,
                    bunkerObj.getCell("MainVoid"));
 
   if (stopPoint==2) return;                      // STOP At bunker edge
-  ELog::EM<<"ASDFSADF "<<ELog::endDiag;
+
   // IN WALL
   // Make bunker insert
   BInsert->setBunkerObject(bunkerObj);
-  BInsert->createAll(System,FocusH->getKey("Guide0"),2);
+  BInsert->createAll(System,*FocusH,2);
 
   //attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
 
   // using 7 : mid point
   FocusWall->addInsertCell(BInsert->getCell("Void"));
-  FocusWall->createAll(System,*BInsert,7,*BInsert,7);
+  FocusWall->createAll(System,*BInsert,7);
   OutPitT0->addFrontWall(bunkerObj,2);
-  ELog::EM<<"ASDFSADF "<<ELog::endDiag;
 
   if (stopPoint==3) return;                      // STOP At bunker exit
-  buildOutGuide(System,FocusWall->getKey("Guide0"),2,voidCell);
+  buildOutGuide(System,*FocusWall,2,voidCell);
 
   if (stopPoint==4) return;                      // STOP At hutch
   buildHut(System,ChopperOutB->getKey("Beam"),2,voidCell);

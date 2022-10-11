@@ -28,6 +28,11 @@ namespace attachSystem
   class TwinComp;
   class CellMap;
 }
+namespace beamlineSystem
+{
+  class BenderUnit;
+  class PlateUnit;
+}
 
 namespace constructSystem
 {  
@@ -65,32 +70,32 @@ class NMX : public attachSystem::CopiedComp
   std::shared_ptr<attachSystem::FixedRotate> nmxAxis;
 
   /// tapper in insert bay
-  std::shared_ptr<beamlineSystem::GuideLine> FocusA;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusA;
   
   /// Pipe between gamma shield / 10m
   std::shared_ptr<constructSystem::WindowPipe> VPipeA;
   /// Bender in first pipe [6-10m]
-  std::shared_ptr<beamlineSystem::GuideLine> BendA;
+  std::shared_ptr<beamlineSystem::BenderUnit> BendA;
 
   /// Pipe between 10m-14m
   std::shared_ptr<constructSystem::WindowPipe> VPipeB;
   /// Bender in second pipe [10-14m]
-  std::shared_ptr<beamlineSystem::GuideLine> BendB;
+  std::shared_ptr<beamlineSystem::BenderUnit> BendB;
   
   /// Pipe between 14m-18m
   std::shared_ptr<constructSystem::WindowPipe> VPipeC;
   /// Bender in second pipe [14-18m]
-  std::shared_ptr<beamlineSystem::GuideLine> BendC;
+  std::shared_ptr<beamlineSystem::BenderUnit> BendC;
 
   /// Pipe between 18m-22m
   std::shared_ptr<constructSystem::WindowPipe> VPipeD;
   /// Bender in second pipe [18m-22m]
-  std::shared_ptr<beamlineSystem::GuideLine> BendD;
+  std::shared_ptr<beamlineSystem::BenderUnit> BendD;
 
   /// Pipe between 22m-BunkerWall
   std::shared_ptr<constructSystem::WindowPipe> VPipeE;
   /// Bender in second pipe [22m-Wall]
-  std::shared_ptr<beamlineSystem::GuideLine> BendE;
+  std::shared_ptr<beamlineSystem::BenderUnit> BendE;
 
   /// Collimator A 
   std::shared_ptr<constructSystem::PipeCollimator> CollA;
@@ -99,7 +104,7 @@ class NMX : public attachSystem::CopiedComp
   std::shared_ptr<essSystem::BunkerInsert> BInsert;
 
   /// tapper in insert bay
-  std::shared_ptr<beamlineSystem::GuideLine> FocusWall;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusWall;
 
   /// Main beam shutter
   std::shared_ptr<constructSystem::BeamShutter> MainShutter;

@@ -40,6 +40,12 @@ namespace essConstruct
   class Motor;
 }
 
+namespace beamlineSystem
+{
+  class BenderUnit;
+  class PlateUnit;
+}
+
 namespace constructSystem
 {  
   class ChopperPit;
@@ -85,7 +91,7 @@ class TESTBEAM : public attachSystem::CopiedComp
   std::shared_ptr<attachSystem::FixedRotateUnit> testAxis;
 
   /// Elliptic focus in bulkshield [m5]
-  std::shared_ptr<beamlineSystem::GuideLine> FocusA;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusA;
 
   /// Test item [Twin chopper]
   std::shared_ptr<essConstruct::TwinChopper> TwinA;

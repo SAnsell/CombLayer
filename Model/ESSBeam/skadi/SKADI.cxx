@@ -337,7 +337,7 @@ SKADI::build(Simulation& System,
   BendA->addInsertCell(GItem.getCells("Void"));
   BendA->setFront(GItem.getKey("Beam"),-1);
   BendA->setBack(GItem.getKey("Beam"),-2);
-  BendA->createAll(System,*skadiAxis,-3,*skadiAxis,-3);
+  BendA->createAll(System,*skadiAxis,-3);
   
   if (stopPoint==1) return;          // Stop at Monolith
 

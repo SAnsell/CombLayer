@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   /TESTBEAM.cxx
+ * File:   testBeam/TESTBEAM.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
  *
@@ -68,7 +68,8 @@
 #include "World.h"
 #include "beamlineSupport.h"
 #include "GuideItem.h"
-#include "GuideLine.h"
+#include "GuideUnit.h"
+#include "PlateUnit.h"
 #include "DiskChopper.h"
 #include "Bunker.h"
 #include "SingleChopper.h"
@@ -87,7 +88,7 @@ TESTBEAM::TESTBEAM(const std::string& keyName) :
   startPoint(0),stopPoint(0),
   testAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
 
-  FocusA(new beamlineSystem::GuideLine(newName+"FA")),
+  FocusA(new beamlineSystem::PlateUnit(newName+"FA")),
   
   TwinA(new essConstruct::TwinChopper(newName+"TwinA")),
   ADisk(new essConstruct::DiskChopper(newName+"BladeA")),
@@ -230,11 +231,11 @@ TESTBEAM::build(Simulation& System,
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);
   FocusA->setBack(GItem.getKey("Beam"),-2);
-  FocusA->createAll(System,*testAxis,-3,*testAxis,-3);
+  FocusA->createAll(System,*testAxis,-3);
 
   if (stopPoint==1) return;       // STOP At monolith
     // edge  
-  buildBunkerUnits(System,FocusA->getKey("Guide0"),2,
+  buildBunkerUnits(System,*FocusA,2,
     bunkerObj.getCell("MainVoid"));
 
   if (stopPoint==2) return;       // STOP At bunker edge

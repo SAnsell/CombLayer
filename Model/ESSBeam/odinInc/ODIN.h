@@ -35,6 +35,13 @@ namespace essConstruct
     class SingleChopper;
 }
 
+namespace beamlineSystem
+{
+  class BenderUnit;
+  class PlateUnit;
+}
+
+
 namespace constructSystem
 {
   class ChopperPit;
@@ -74,18 +81,18 @@ class ODIN : public attachSystem::CopiedComp
   /// Main Beam Axis [for construction]
   std::shared_ptr<attachSystem::FixedRotateUnit> odinAxis;
   /// Elliptic guide in monolith
-  std::shared_ptr<beamlineSystem::GuideLine> FocusA;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusA;
 
 
   /// Pipe in gamma shield
   std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
   /// Elliptic guide from 5.5 to 6metre
-  std::shared_ptr<beamlineSystem::GuideLine> FocusB;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusB;
 
   /// Pipe from gamma shield to first chopper:
   std::shared_ptr<constructSystem::VacuumPipe> VPipeC;
   /// Basic tapered guide
-  std::shared_ptr<beamlineSystem::GuideLine> FocusC;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusC;
 
   /// Front chopper housing pair [movable]
   std::shared_ptr<essConstruct::SingleChopper> ChopperAA;
@@ -99,7 +106,7 @@ class ODIN : public attachSystem::CopiedComp
   /// Pipe after T0 [4m section]
   std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
   /// Basic tapered guide
-  std::shared_ptr<beamlineSystem::GuideLine> FocusD;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusD;
 
   /// T0 housing
   std::shared_ptr<essConstruct::SingleChopper> ChopperB;
@@ -114,7 +121,7 @@ class ODIN : public attachSystem::CopiedComp
   /// Section between FOC1 - FOC2
   std::shared_ptr<constructSystem::VacuumPipe> VPipeE;
   /// Basic tapered guide
-  std::shared_ptr<beamlineSystem::GuideLine> FocusE;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusE;
 
   /// FOC2 housing
   std::shared_ptr<essConstruct::SingleChopper> ChopperFOC2;
@@ -124,7 +131,7 @@ class ODIN : public attachSystem::CopiedComp
   /// Pipe from FOC2 - FOC3
   std::shared_ptr<constructSystem::VacuumPipe> VPipeF;
   /// Basic tapered guide
-  std::shared_ptr<beamlineSystem::GuideLine> FocusF;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusF;
 
   /// FOC3 housing [16.49m]
   std::shared_ptr<essConstruct::SingleChopper> ChopperFOC3;
@@ -134,7 +141,7 @@ class ODIN : public attachSystem::CopiedComp
   /// Second 4m section
   std::shared_ptr<constructSystem::VacuumPipe> VPipeG;
   /// Basic tapered guide
-  std::shared_ptr<beamlineSystem::GuideLine> FocusG;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusG;
   
   /// FOC4 housing [22.97m]
   std::shared_ptr<essConstruct::SingleChopper> ChopperFOC4;
@@ -144,19 +151,19 @@ class ODIN : public attachSystem::CopiedComp
   /// Section of pipe to bunker wall
   std::shared_ptr<constructSystem::VacuumPipe> VPipeH;
   /// Basic tapered guide
-  std::shared_ptr<beamlineSystem::GuideLine> FocusH;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusH;
 
   /// Bunker insert
   std::shared_ptr<essSystem::BunkerInsert> BInsert;
   /// Guide running to bunker wall
-  std::shared_ptr<beamlineSystem::GuideLine> FocusWall;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusWall;
 
   /// First Shield wall
   std::shared_ptr<constructSystem::LineShield> ShieldA;  
   /// Pipe from 28.0 to 31.0m
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutA;
   /// Beamline from bunker to hutch
-  std::shared_ptr<beamlineSystem::GuideLine> FocusOutA;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusOutA;
 
   /// Chopper at 32.0m 
   std::shared_ptr<constructSystem::ChopperPit> OutPitA;
@@ -174,22 +181,22 @@ class ODIN : public attachSystem::CopiedComp
   /// Pipe from 15.0 to 22m 
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutB;
   /// Beamline from bunker to hutch
-  std::shared_ptr<beamlineSystem::GuideLine> FocusOutB;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusOutB;
 
   /// Pipe from 22.0 to 30m 
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutC;
   /// Beamline from bunker to hutch
-  std::shared_ptr<beamlineSystem::GuideLine> FocusOutC;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusOutC;
 
   /// Pipe from 30.0 to Cave 
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutD;
   /// Beamline from bunker to hutch
-  std::shared_ptr<beamlineSystem::GuideLine> FocusOutD;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusOutD;
 
   /// Pipe into cave
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutE;
   /// Beamline from bunker to hutch
-  std::shared_ptr<beamlineSystem::GuideLine> FocusOutE;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusOutE;
   
   /// Main cave
   std::shared_ptr<essSystem::Hut> Cave;
@@ -201,7 +208,7 @@ class ODIN : public attachSystem::CopiedComp
   /// Beamguide in cave
   std::shared_ptr<constructSystem::VacuumPipe> VPipeCaveA;
   /// Guide in cave
-  std::shared_ptr<beamlineSystem::GuideLine> FocusCaveA;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusCaveA;
 
   /// Collimator
   std::shared_ptr<constructSystem::PinHole> PinA;

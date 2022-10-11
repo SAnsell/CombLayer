@@ -70,6 +70,8 @@
 #include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "GuideUnit.h"
+#include "PlateUnit.h"
+#include "BenderUnit.h"
 #include "DiskChopper.h"
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
@@ -86,19 +88,19 @@ CSPEC::CSPEC(const std::string& keyName) :
   stopPoint(0),
   cspecAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
 
-  FocusA(new beamlineSystem::GuideLine(newName+"FA")),
+  FocusA(new beamlineSystem::PlateUnit(newName+"FA")),
 
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
-  FocusB(new beamlineSystem::GuideLine(newName+"FB")),
+  FocusB(new beamlineSystem::PlateUnit(newName+"FB")),
 
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
-  FocusC(new beamlineSystem::GuideLine(newName+"FC")),
+  FocusC(new beamlineSystem::PlateUnit(newName+"FC")),
 
   ChopperA(new essConstruct::SingleChopper(newName+"ChopperA")),
   BWDiskA(new essConstruct::DiskChopper(newName+"BWDiskA")),
 
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
-  BendD(new beamlineSystem::GuideLine(newName+"BD"))
+  BendD(new beamlineSystem::BenderUnit(newName+"BD"))
 
 
  /*!
@@ -166,27 +168,27 @@ CSPEC::build(Simulation& System,
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);
   FocusA->setBack(GItem.getKey("Beam"),-2);
-  FocusA->createAll(System,*cspecAxis,-3,*cspecAxis,-3);
+  FocusA->createAll(System,*cspecAxis,-3);
 
   if (stopPoint==1) return;                      // STOP At monolith
                                                  // edge
   VPipeB->addAllInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeB->createAll(System,FocusA->getKey("Guide0"),2);
+  VPipeB->createAll(System,*FocusA,2);
 
   FocusB->addInsertCell(VPipeB->getCells("Void"));
-  FocusB->createAll(System,*VPipeB,0,*VPipeB,0);
+  FocusB->createAll(System,*VPipeB,0);
 
   VPipeC->addAllInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeC->createAll(System,FocusB->getKey("Guide0"),2);
+  VPipeC->createAll(System,*FocusB,2);
 
   
   FocusC->addInsertCell(VPipeC->getCells("Void"));
-  FocusC->createAll(System,*VPipeC,0,*VPipeC,0);
+  FocusC->createAll(System,*VPipeC,0);
 
   ChopperA->addInsertCell(bunkerObj.getCell("MainVoid"));
   ChopperA->getKey("Main").setAxisControl(3,ZVert);
   ChopperA->getKey("BuildBeam").setAxisControl(3,ZVert);
-  ChopperA->createAll(System,FocusC->getKey("Guide0"),2);
+  ChopperA->createAll(System,*FocusC,2);
 
   BWDiskA->addInsertCell(ChopperA->getCell("Void"));
   BWDiskA->createAll(System,ChopperA->getKey("Main"),0);
@@ -196,7 +198,7 @@ CSPEC::build(Simulation& System,
   VPipeD->createAll(System,ChopperA->getKey("Beam"),2);
 
   BendD->addInsertCell(VPipeD->getCells("Void"));
-  BendD->createAll(System,*VPipeD,0,*VPipeD,0);
+  BendD->createAll(System,*VPipeD,0);
   
   return;
 }

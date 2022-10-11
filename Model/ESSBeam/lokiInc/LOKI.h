@@ -34,6 +34,12 @@ namespace insertSystem
   class insertPlate;
 }
 
+namespace beamlineSystem
+{
+  class PlateUnit;
+  class BenderUnit;
+}
+
 namespace constructSystem
 {  
   class ChopperPit;
@@ -73,18 +79,18 @@ class LOKI : public attachSystem::CopiedComp
   std::shared_ptr<attachSystem::FixedRotate> lokiAxis;
 
   /// Bender in insert bay
-  std::shared_ptr<beamlineSystem::GuideLine> BendA;
+  std::shared_ptr<beamlineSystem::BenderUnit> BendA;
   /// Shutter around pipe in gamma block
   std::shared_ptr<insertSystem::insertPlate> ShutterA;
   /// Vacuum pipe in gamma shield
   std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
   /// Bender in gamma shield
-  std::shared_ptr<beamlineSystem::GuideLine> BendB;
+  std::shared_ptr<beamlineSystem::BenderUnit> BendB;
 
   /// Vacuum pipe in gamma shield
   std::shared_ptr<constructSystem::VacuumPipe> VPipeBLink;
   /// Bender in gamma shield
-  std::shared_ptr<beamlineSystem::GuideLine> BendBLink;
+  std::shared_ptr<beamlineSystem::BenderUnit> BendBLink;
 
 
   /// Vac box for first chopper
@@ -95,14 +101,14 @@ class LOKI : public attachSystem::CopiedComp
   /// Vacuum pipe to first chopper
   std::shared_ptr<constructSystem::VacuumPipe> VPipeC;
   /// Guide to first chopper
-  std::shared_ptr<beamlineSystem::GuideLine> FocusC;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusC;
 
   /// Bunker insert [specialized]
   std::shared_ptr<essSystem::CompBInsert> BInsert;
   /// Vac pipe in wall (if used)
   std::shared_ptr<constructSystem::VacuumPipe> VPipeWall;
   /// Gamma 
-  std::shared_ptr<beamlineSystem::GuideLine> FocusWall;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusWall;
 
   /// Shield for ChopperPit merged with bunker wall
   std::shared_ptr<constructSystem::ChopperPit> OutPitA;
@@ -119,7 +125,7 @@ class LOKI : public attachSystem::CopiedComp
   /// Vac pipe in OutPitA
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutA;
   /// Tapered guide in OutPitA
-  std::shared_ptr<beamlineSystem::GuideLine> FocusOutA;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusOutA;
   /// Aperture after first guide unit in shielding
   std::shared_ptr<constructSystem::Aperture> AppA;
   /// Collimator block
@@ -130,7 +136,7 @@ class LOKI : public attachSystem::CopiedComp
   /// Second outer vac pipe
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutB;
   /// Guide after first appater
-  std::shared_ptr<beamlineSystem::GuideLine> FocusOutB;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusOutB;
   /// collimator blockB
   std::shared_ptr<constructSystem::PipeCollimator> CollB;
   //aperture after second collimator
@@ -141,10 +147,10 @@ class LOKI : public attachSystem::CopiedComp
   /// cave entrace vacuum pipe
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutC;
   /// Guide into cave
-  std::shared_ptr<beamlineSystem::GuideLine> FocusOutC;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusOutC;
 
   /// Guide to sample
-  std::shared_ptr<beamlineSystem::GuideLine> CaveGuide;
+  std::shared_ptr<beamlineSystem::PlateUnit> CaveGuide;
   /// Vacuum tank
   std::shared_ptr<VacTank> VTank;
 
