@@ -132,8 +132,19 @@ PlateUnit::getFrontPt(const size_t index,const double T) const
    */
 {
   const static Geometry::Vec3D zero(0,0,0);
-  const Geometry::Vec3D A=APts[index]*(1.0+T);
-  return Origin+A.getInBasis(X,zero,Z);
+
+  // need to compute lines that we have in the forward an d
+  // backward direction
+  const size_t aIndex=(index+1) % APts.size();
+  const size_t bIndex=(index) ? index-1 APts.size()-1;
+  const Geometry::Vec3D O=APts[index];
+  const Geometry::Vec3D A=APts[ % aSize];
+  const Geometry::Vec3D B=APts[(index-1) % aSize];
+  c
+  +Geometry::Vec3D(T,0,T);
+  
+  const Geometry::Vec3D OutVec=A.getInBasis(X,zero,Z);
+  return Origin+OutVec;
 }
 
 Geometry::Vec3D
@@ -145,8 +156,10 @@ PlateUnit::getBackPt(const size_t index,const double T) const
    */
 {
   const static Geometry::Vec3D zero(0,0,0);
-  const Geometry::Vec3D B=BPts[index]*(1.0+T);
-  return Origin +Y*length+ B.getInBasis(X,zero,Z);
+
+  const Geometry::Vec3D B=BPts[index];
+  const Geometry::Vec3D OutVec=B.getInBasis(X,zero,Z);
+  return Origin+Y*length+OutVec*(1.0+T);
 }
 
   
@@ -267,27 +280,29 @@ PlateUnit::createSurfaces()
       ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
       setCutSurf("back",SMap.realSurf(buildIndex+2));
     }
+
+  double T(0.0);	
   for(size_t i=0;i<layerMat.size();i++)
     {
       int SN(buildIndex+static_cast<int>(i+1)*20+1);  
       // Start from 1
-      double T(0.0);
       for(size_t j=0;j<APts.size();j++)
 	{
 	  const size_t nP=(j) ? j-1 : APts.size()-1;
 	  const Geometry::Vec3D PA=getFrontPt(j,T);
-	  const Geometry::Vec3D PB=getFrontPt(nP,T);
-	  const Geometry::Vec3D BA=getBackPt(j,T);
+	  const Geometry::Vec3D innerNorm=getFrontNorm(j,T);
+	  
 	  // make plane normal point to center of guide
 	  const Geometry::Vec3D Norm=
 	    Origin-(PA+PB)/2.0;
-	  ELog::EM<<"PA["<<j<<"] == "<<Norm<<ELog::endDiag;
+	  ELog::EM<<"PA["<<i<<"]["<<j<<"] == "<<PA<<" : "<<PB<<ELog::endDiag;
+	  ELog::EM<<"N["<<j<<"]["<<T<<"] == "<<Norm<<":"<<Origin<<ELog::endDiag;
 
 	  ModelSupport::buildPlane(SMap,SN,PA,PB,BA,Norm);
 	  SN++;
 	}
+      ELog::EM<<"Thick["<<i<<"] == "<<layerThick[i]<<"\n"<<ELog::endDiag;
       T+=layerThick[i];
-	  
     }   
   return;
 }
@@ -320,6 +335,7 @@ PlateUnit::createObjects(Simulation& System)
       makeCell("Layer"+std::to_string(i),System,
 	       cellIndex++,layerMat[i],0.0,HR*fbHR*innerHR);
       innerHR=HR.complement();
+      
     }
   
   addOuterSurf(HR*fbHR);

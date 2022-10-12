@@ -220,10 +220,10 @@ FocusGenerator::generateRectangle(FuncDataBase& Control,
   ELog::RegMethod RegA("FocusGenerator","generateRectangle");
   writeLayers(Control,keyName,length);
   
-  Control.addVariable(keyName+"0TypeID","Rectangle");
-  Control.addVariable(keyName+"0Height",V);
-  Control.addVariable(keyName+"0Width",H);
-  Control.copyVar(keyName+"0Length",keyName+"Length");
+  Control.addVariable(keyName+"TypeID","Rectangle");
+  Control.addVariable(keyName+"Height",V);
+  Control.addVariable(keyName+"Width",H);
+  Control.addVariable(keyName+"Length",length);
 
   return;
 }
