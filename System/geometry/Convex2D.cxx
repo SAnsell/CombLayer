@@ -419,7 +419,6 @@ Convex2D::scalePoints(const double shift)
     }
   // Finished so now can track points back to Vect2D
   for(size_t i=0;i<Pts.size();i++)
-  for(const Geometry::Vec3D& Pt : newPts )
     VList[i].setPoint(Pt);
   Pts=newPts;
   return;
