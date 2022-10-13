@@ -137,11 +137,10 @@ PlateUnit::getFrontPt(const size_t index,const double T) const
   // backward direction
   const size_t aIndex=(index+1) % APts.size();
   const size_t bIndex=(index) ? index-1 APts.size()-1;
-  const Geometry::Vec3D O=APts[index];
-  const Geometry::Vec3D A=APts[ % aSize];
-  const Geometry::Vec3D B=APts[(index-1) % aSize];
-  c
-  +Geometry::Vec3D(T,0,T);
+  const Geometry::Vec3D& O=APts[index];
+  const Geometry::Vec3D& A=APts[aIndex];
+  const Geometry::Vec3D& B=APts[bIndex];
+
   
   const Geometry::Vec3D OutVec=A.getInBasis(X,zero,Z);
   return Origin+OutVec;

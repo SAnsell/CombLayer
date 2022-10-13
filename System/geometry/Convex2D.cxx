@@ -372,6 +372,24 @@ Convex2D::constructHull()
 }
 
 void
+Convex2D::scalePoints(const double scale)
+  /*!
+    Given a set of points
+  */
+{
+  for(size_t i=0;i<VList.size();i++)
+    {
+      const size_t aIndex=(i) ? i-1 : VList.size()-1;
+      const size_t bIndex=(i+1) % VList.size();
+      
+  for(const Vect2D& Pt : VList)
+    {
+      
+    }
+  
+}
+  
+void
 Convex2D::write(std::ostream& OX) const
   /*!
     Write out the convex hull

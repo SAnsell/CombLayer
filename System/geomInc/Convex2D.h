@@ -40,7 +40,7 @@ class Convex2D
 {
  private:
   
-  typedef std::vector<Vert2D> VTYPE;     ///< Vertex Type
+  typedef std::vector<Vert2D> VTYPE;          ///< Vertex Type
 
   std::vector<Geometry::Vec3D> Pts;           ///< Points
   VTYPE VList;                      ///< 
@@ -80,6 +80,8 @@ class Convex2D
   size_t getDistPoint() const { return distIndex; }
   std::vector<Geometry::Vec3D> getSequence() const;
 
+  void scalePoints(const double);
+  
   //  int isConvex() const;
   void write(std::ostream&) const;
 };
