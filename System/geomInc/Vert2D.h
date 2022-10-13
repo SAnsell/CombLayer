@@ -57,6 +57,8 @@ class Vert2D
 
   /// Get the point
   const Geometry::Vec3D& getV() const { return V; }
+  /// directly set point (leave everything else alone)
+  void setPoint(const Geometry::Vec3D& A} { V=A; }
   /// Get the index
   size_t getID() const { return vIndex; }         
  
@@ -69,6 +71,7 @@ class Vert2D
   void Done() { done=1; }                           ///< set done flag
   void setOnHull(const int F) { onHull=F; }         ///< set on-hull flag
   double calcAngle(const Vec3D&,const Vec3D&);        
+
   
   void write(std::ostream&) const;
 };

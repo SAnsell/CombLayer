@@ -778,10 +778,29 @@ Vec3D::crossNormal() const
    */
 {
   Geometry::Vec3D N(y,z,x);
-  
+
   return (*this * N).unit(); 
 }
 
+void
+Vec3D::makePosCos(const Geometry::Vec3D& A)
+ /*!
+   Given vector A, ensure that the vector
+   is signed so that A.this >= 0
+ */
+{
+  const double D=A.x*x+A.y*y+A.z*z;
+  if (D<0.0)
+    {
+      x *= -1.0;
+      y *= -1.0;
+      z *= -1.0;
+    }
+  return;
+}
+
+}
+  
 void
 Vec3D::read(std::istream& IX)
   /*!

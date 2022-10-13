@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geometry/Convex2D.cxx
  *
@@ -372,21 +372,57 @@ Convex2D::constructHull()
 }
 
 void
-Convex2D::scalePoints(const double scale)
+Convex2D::scalePoints(const double shift)
   /*!
-    Given a set of points
+    Given a shift value move each point approiately
+    bse on shifting the planes out by the appropiate
+    amount. Note that plane inside the convex have to move in
+    \param shift :: shift values
   */
 {
+  ELog::RegMethod RegA("Convex2D","scalePoints");
+
+  // create two orthonmal  (needed ???)
+  const Geometry::Vec3D X=normal.crossNormal();
+  const Geometry::Vec3D Y=normal*X;
+
+  std::vector<Geometry::Vec3D> newPts;
   for(size_t i=0;i<VList.size();i++)
     {
       const size_t aIndex=(i) ? i-1 : VList.size()-1;
       const size_t bIndex=(i+1) % VList.size();
+
+      const Geometry::Vec3D& O=VList[i].getV();
+      const Geometry::Vec3D& A=VList[aIndex].getV();
+      const Geometry::Vec3D& B=VList[bIndex].getV();
+      // vectors point
+      const Geometry::Vec3D aMidPlane(centroid-(O+A)/2.0);
+      const Geometry::Vec3D bMidPlane(centroid-(O+B)/2.0);
+
+      Geometry::Vec3D aPlaneNorm((A-O).unit());
+      Geometry::Vec3D bPlaneNorm((B-O).unit());
       
-  for(const Vect2D& Pt : VList)
-    {
-      
+      aPlaneNorm.makePosCos(aMidPlane);
+      bPlaneNorm.makePosCos(bMidPlane);
+
+      // construct New points on both of the planes
+      const double signedShift=(VList[i].isOnHull()) ? shift : -shift;
+      const Geometry::Vec3D aPA=A-aPlaneNorm*signedShift;
+      const Geometry::Vec3D bPA=O-aPlaneNorm*signedShift;
+
+      const Geometry::Vec3D aPB=B-bPlaneNorm*signedShift;
+      const Geometry::Vec3D bPB=O-bPlaneNorm*signedShift;
+
+      const Geometry::Line aPlane(aPA,bPA-aPA);
+      const Geometry::Line bPlane(aPB,bPB-aPB);
+      newPts.push_back(aPlane.closestPoint(bPlane));
     }
-  
+  // Finished so now can track points back to Vect2D
+  for(size_t i=0;i<Pts.size();i++)
+  for(const Geometry::Vec3D& Pt : newPts )
+    VList[i].setPoint(Pt);
+  Pts=newPts;
+  return;
 }
   
 void
