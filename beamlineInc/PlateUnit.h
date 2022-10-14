@@ -46,7 +46,9 @@ class PlateUnit :
 
   std::vector<Geometry::Vec3D> APts;  ///< Points of front shape
   std::vector<Geometry::Vec3D> BPts;  ///< Points of back shape 
-  
+
+  Geometry::Convex2D frontCV;
+  Geometry::Convex2D backCV;
 
   Geometry::Vec3D getFrontPt(const size_t,const double) const;
   Geometry::Vec3D getBackPt(const size_t,const double) const;

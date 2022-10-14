@@ -63,6 +63,8 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
+#include "Vert2D.h"
+#include "Convex2D.h"
 #include "GuideUnit.h"
 
 #include "PlateUnit.h"
@@ -135,13 +137,12 @@ PlateUnit::getFrontPt(const size_t index,const double T) const
 
   // need to compute lines that we have in the forward an d
   // backward direction
-  const size_t aIndex=(index+1) % APts.size();
+   const size_t aIndex=(index+1) % APts.size();
   const size_t bIndex=(index) ? index-1 APts.size()-1;
   const Geometry::Vec3D& O=APts[index];
   const Geometry::Vec3D& A=APts[aIndex];
   const Geometry::Vec3D& B=APts[bIndex];
 
-  
   const Geometry::Vec3D OutVec=A.getInBasis(X,zero,Z);
   return Origin+OutVec;
 }
@@ -184,6 +185,9 @@ PlateUnit::setBackPoints(const std::vector<Geometry::Vec3D>& PVec)
   return;
 }
 
+void
+PlateUnit::calcConvex
+  
 void
 PlateUnit::populate(const FuncDataBase& Control)
   /*!
@@ -279,7 +283,8 @@ PlateUnit::createSurfaces()
       ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
       setCutSurf("back",SMap.realSurf(buildIndex+2));
     }
-
+  calcConvex();
+  
   double T(0.0);	
   for(size_t i=0;i<layerMat.size();i++)
     {
