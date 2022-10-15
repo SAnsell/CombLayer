@@ -45,7 +45,7 @@ class Vert2D
   size_t vIndex;       ///< index number   
   double cAngle;       ///< Cos of Angle
 
-  Vec3D V;             ///< Current point 
+  Geometry::Vec3D V;             ///< Current point 
 
  public:
   
@@ -58,7 +58,7 @@ class Vert2D
   /// Get the point
   const Geometry::Vec3D& getV() const { return V; }
   /// directly set point (leave everything else alone)
-  void setPoint(const Geometry::Vec3D& A} { V=A; }
+  void setPoint(const Geometry::Vec3D& A) { V=A; }
   /// Get the index
   size_t getID() const { return vIndex; }         
  

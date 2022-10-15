@@ -68,13 +68,17 @@
 #include "GuideUnit.h"
 
 #include "PlateUnit.h"
-
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+#include "Surface.h"
 
 namespace beamlineSystem
 {
 
 PlateUnit::PlateUnit(const std::string& key) :
-  GuideUnit(key)
+  GuideUnit(key),
+  frontCV(new Geometry::Convex2D),
+  backCV(new Geometry::Convex2D)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param LS :: Layer separation
@@ -84,7 +88,10 @@ PlateUnit::PlateUnit(const std::string& key) :
 
 PlateUnit::PlateUnit(const PlateUnit& A) : 
   GuideUnit(A),
-  APts(A.APts),BPts(A.BPts)
+  APts(A.APts),BPts(A.BPts),
+  frontCV(new Geometry::Convex2D(*A.frontCV)),
+  backCV(new Geometry::Convex2D(*A.backCV))
+
   /*!
     Copy constructor
     \param A :: PlateUnit to copy
@@ -104,6 +111,8 @@ PlateUnit::operator=(const PlateUnit& A)
       GuideUnit::operator=(A);
       APts=A.APts;
       BPts=A.BPts;
+      *frontCV=*A.frontCV;
+      *backCV=*A.backCV;
     }
   return *this;
 }
@@ -123,45 +132,6 @@ PlateUnit::clone() const
 {
   return new PlateUnit(*this);
 }
-
-
-Geometry::Vec3D
-PlateUnit::getFrontPt(const size_t index,const double T) const
-  /*!
-    Get front point [no check]
-    \param index :: index of point
-    \param T :: thickness
-   */
-{
-  const static Geometry::Vec3D zero(0,0,0);
-
-  // need to compute lines that we have in the forward an d
-  // backward direction
-   const size_t aIndex=(index+1) % APts.size();
-  const size_t bIndex=(index) ? index-1 APts.size()-1;
-  const Geometry::Vec3D& O=APts[index];
-  const Geometry::Vec3D& A=APts[aIndex];
-  const Geometry::Vec3D& B=APts[bIndex];
-
-  const Geometry::Vec3D OutVec=A.getInBasis(X,zero,Z);
-  return Origin+OutVec;
-}
-
-Geometry::Vec3D
-PlateUnit::getBackPt(const size_t index,const double T) const
-  /*!
-    Get front point [no check]
-    \param index :: index of point
-    \param T :: thickness
-   */
-{
-  const static Geometry::Vec3D zero(0,0,0);
-
-  const Geometry::Vec3D B=BPts[index];
-  const Geometry::Vec3D OutVec=B.getInBasis(X,zero,Z);
-  return Origin+Y*length+OutVec*(1.0+T);
-}
-
   
 void 
 PlateUnit::setFrontPoints(const std::vector<Geometry::Vec3D>& PVec) 
@@ -177,7 +147,7 @@ PlateUnit::setFrontPoints(const std::vector<Geometry::Vec3D>& PVec)
 void 
 PlateUnit::setBackPoints(const std::vector<Geometry::Vec3D>& PVec) 
   /*!
-    Set the back points (relative to Origin impact point at O+Y*length
+    Set the back points (relative to Origin impact point at O+Y*length)
     \param PVec :: Points
    */
 {
@@ -185,14 +155,37 @@ PlateUnit::setBackPoints(const std::vector<Geometry::Vec3D>& PVec)
   return;
 }
 
-void
-PlateUnit::calcConvex
+Geometry::Vec3D
+PlateUnit::calcFrontPoint(const Geometry::Vec3D& Pt) const
+  /*!
+    Giving a point return the point in the FixedComp Frame
+    \param Pt :: Point on convex
+    \return Point in FixedComp Frame
+  */
+{
+  static const Geometry::Vec3D zero(0,0,0);
+  return Origin+Pt.getInBasis(X,zero,Z);
+}
+  
+Geometry::Vec3D
+PlateUnit::calcBackPoint(const Geometry::Vec3D& Pt) const
+  /*!
+    Giving a point return the point in the FixedComp Frame
+    \param Pt :: Point on convex
+    \return Point in FixedComp Frame
+  */
+{
+  static const Geometry::Vec3D zero(0,0,0);
+  return Origin+(Y*length)+Pt.getInBasis(X,zero,Z);
+}
+  
   
 void
 PlateUnit::populate(const FuncDataBase& Control)
   /*!
     Sets the appropiate APts/BPtrs based on the type of
     guide needed
+    \param Control :: DataBase of varaibels
    */
 {
   ELog::RegMethod RegA("PlateUnit","populate");
@@ -264,7 +257,6 @@ PlateUnit::populate(const FuncDataBase& Control)
   return;
 }
 
-  
 void
 PlateUnit::createSurfaces()
   /*!
@@ -273,6 +265,13 @@ PlateUnit::createSurfaces()
 {
   ELog::RegMethod RegA("PlateUnit","createSurfaces");
 
+
+  // First construct hull
+  frontCV->setPoints(APts);
+  backCV->setPoints(BPts);
+  frontCV->constructHull();
+  backCV->constructHull();
+  
   if (!isActive("front"))
     {
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
@@ -281,31 +280,40 @@ PlateUnit::createSurfaces()
   if (!isActive("back"))
     {
       ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
-      setCutSurf("back",SMap.realSurf(buildIndex+2));
+      setCutSurf("back",-SMap.realSurf(buildIndex+2));
     }
-  calcConvex();
   
   double T(0.0);	
   for(size_t i=0;i<layerMat.size();i++)
     {
       int SN(buildIndex+static_cast<int>(i+1)*20+1);  
-      // Start from 1
+
+      // Care here because frontPts/backPts are within
+      // APts convex
+      ELog::EM<<"T == "<<T<<ELog::endDiag;
+      const std::vector<Geometry::Vec3D>
+	frontPts=(std::abs<double>(T) < Geometry::zeroTol) ?
+	APts : frontCV->scalePoints(T);
+
+      const std::vector<Geometry::Vec3D>
+	backPts=(std::abs<double>(T) < Geometry::zeroTol) ?
+	BPts : backCV->scalePoints(T);
+
+      
       for(size_t j=0;j<APts.size();j++)
 	{
-	  const size_t nP=(j) ? j-1 : APts.size()-1;
-	  const Geometry::Vec3D PA=getFrontPt(j,T);
-	  const Geometry::Vec3D innerNorm=getFrontNorm(j,T);
-	  
-	  // make plane normal point to center of guide
-	  const Geometry::Vec3D Norm=
-	    Origin-(PA+PB)/2.0;
-	  ELog::EM<<"PA["<<i<<"]["<<j<<"] == "<<PA<<" : "<<PB<<ELog::endDiag;
-	  ELog::EM<<"N["<<j<<"]["<<T<<"] == "<<Norm<<":"<<Origin<<ELog::endDiag;
+	  const size_t jPlus=(j+1) % APts.size();
+	  const Geometry::Vec3D PA=calcFrontPoint(frontPts[j]);
+	  const Geometry::Vec3D PB=calcFrontPoint(frontPts[jPlus]);
+	  const Geometry::Vec3D BA=calcBackPoint(backPts[j]);
 
+	  ELog::EM<<"Origni == "<<Origin-PA<<" == "<<PA<<ELog::endDiag;
+	  const Geometry::Vec3D Norm=Origin-PA;
+	  //	  ELog::EM<<"Plane == "<<PA<<" :: "<<PB<<" :: "<<BA<<ELog::endDiag;
 	  ModelSupport::buildPlane(SMap,SN,PA,PB,BA,Norm);
+	  ELog::EM<<"Plane == "<<*(SMap.realSurfPtr(SN))<<ELog::endDiag;
 	  SN++;
 	}
-      ELog::EM<<"Thick["<<i<<"] == "<<layerThick[i]<<"\n"<<ELog::endDiag;
       T+=layerThick[i];
     }   
   return;
@@ -322,7 +330,6 @@ PlateUnit::createObjects(Simulation& System)
 
   const HeadRule fbHR=getFrontRule()*getBackRule();
 
-
   HeadRule HR;
   HeadRule innerHR;
   for(size_t i=0;i<layerThick.size();i++)
@@ -331,15 +338,12 @@ PlateUnit::createObjects(Simulation& System)
       HR.reset();
       for(size_t j=0;j<APts.size();j++)
 	{
-	  HR*=HeadRule(SMap,-SN);
+	  HR*=HeadRule(SMap,SN);
 	  SN++;
 	}
-      ELog::EM<<"Cell == "<<APts.size()<<ELog::endDiag;
-      ELog::EM<<"Cell == "<<HR*fbHR*innerHR<<ELog::endDiag;
       makeCell("Layer"+std::to_string(i),System,
 	       cellIndex++,layerMat[i],0.0,HR*fbHR*innerHR);
       innerHR=HR.complement();
-      
     }
   
   addOuterSurf(HR*fbHR);

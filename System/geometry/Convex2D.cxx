@@ -28,6 +28,7 @@
 #include <map>
 #include <list>
 #include <string>
+#include <complex>
 #include <algorithm>
 #include <iterator>
 #include <functional>
@@ -38,10 +39,13 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "MatrixBase.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
 #include "Matrix.h"
 #include "SVD.h"
 #include "Vec3D.h"
 #include "Vert2D.h"
+#include "Line.h"
 #include "Convex2D.h"
 
 namespace Geometry
@@ -106,9 +110,10 @@ Convex2D::setPoints(const std::vector<Geometry::Vec3D>& PVec)
 {  
   ELog::RegMethod RegItem("Convex2D","setPoints");
   Pts=PVec;
-  std::vector<Vec3D>::const_iterator vc;
-  for(vc=Pts.begin();vc!=Pts.end();vc++)
-    VList.push_back(Vert2D(VList.size(),*vc));
+  VList.clear();
+
+  for(size_t i=0;i<PVec.size();i++)
+    VList.push_back(Vert2D(i,Pts[i]));
 
   centroid=Geometry::Vec3D(0,0,0);
   normal=Geometry::Vec3D(1,0,0);
@@ -183,13 +188,11 @@ Convex2D::calcNormal()
     }
   centroid=Geometry::Vec3D(0,0,0);
 
-  std::vector<Vec3D>::const_iterator vc;
-  for(vc=Pts.begin();vc!=Pts.end();vc++)
-    centroid+=*vc;
+  for(const Geometry::Vec3D& Pt : Pts)
+    centroid+=Pt;
   centroid/=static_cast<double>(Pts.size());
   
   Matrix<double> M(Pts.size(),3);
-
   // Construct matrix M 
   for(size_t index=0;index<Pts.size();index++)
     for(size_t i=0;i<3;i++)
@@ -248,14 +251,15 @@ Convex2D::createVertex()
   // the line from the centre to the max point
   // in the plane
   VList.clear();
-  Geometry::Vec3D Line=(Pts[distIndex]-centroid)*normal;  
-  Line.makeUnit();
+  const Geometry::Vec3D crossNorm=
+    ((Pts[distIndex]-centroid)*normal).unit();  
+
   for(size_t i=0;i<Pts.size();i++)
     {
       if (i!=distIndex)
         {
 	  VList.push_back(Vert2D(i,Pts[i]));
-	  VList.back().calcAngle(Pts[distIndex],Line);
+	  VList.back().calcAngle(Pts[distIndex],crossNorm);
 	}
     }
 
@@ -278,13 +282,14 @@ Convex2D::createVertex()
   while(vc!=VList.end())
     {
       lc=cList.begin();
-      Geometry::Vec3D Line=lc->getV();
+      Geometry::Vec3D crossNorm=lc->getV();
       lc++;
       const Geometry::Vec3D Origin=lc->getV();
-      Line-=Origin;
+      lc++;
+      crossNorm-=Origin;
       const Geometry::Vec3D A=vc->getV()-Origin;
 
-      if ((A*Line).dotProd(normal)<0)       // Point is left
+      if ((A*crossNorm).dotProd(normal)<0)       // Point is left
         {
 	  cList.push_front(*vc); 
 	  vc++;
@@ -332,7 +337,7 @@ Convex2D::inHull(const Geometry::Vec3D& testPt) const
       const Geometry::Vec3D dVec=PtPlus-PtZero;
       tX=dVec.dotProd(testPt-PtZero);
       if (!i) tD=tX;
-      if (fabs(tX)<Geometry::zeroTol)
+      if (std::abs<double>(tX)<Geometry::zeroTol)
 	onLine=1;
       else if ( tX * tD < 0.0 )
 	return -1;
@@ -371,22 +376,20 @@ Convex2D::constructHull()
   return;
 }
 
-void
-Convex2D::scalePoints(const double shift)
+std::vector<Geometry::Vec3D>
+Convex2D::scalePoints(const double shiftDistance) const
   /*!
-    Given a shift value move each point approiately
-    bse on shifting the planes out by the appropiate
-    amount. Note that plane inside the convex have to move in
-    \param shift :: shift values
+    Given a shift value move each point appropriately
+    based on shifting the planes out by the correct
+    amount. Note that it is the planes that make up the
+    convex hull that shift outward by shiftDistance.
+    \param shiftDistance :: shift distance from base plane
+    \return Shifted points
   */
 {
   ELog::RegMethod RegA("Convex2D","scalePoints");
 
-  // create two orthonmal  (needed ???)
-  const Geometry::Vec3D X=normal.crossNormal();
-  const Geometry::Vec3D Y=normal*X;
-
-  std::vector<Geometry::Vec3D> newPts;
+  std::vector<Geometry::Vec3D> outPts;
   for(size_t i=0;i<VList.size();i++)
     {
       const size_t aIndex=(i) ? i-1 : VList.size()-1;
@@ -395,33 +398,29 @@ Convex2D::scalePoints(const double shift)
       const Geometry::Vec3D& O=VList[i].getV();
       const Geometry::Vec3D& A=VList[aIndex].getV();
       const Geometry::Vec3D& B=VList[bIndex].getV();
+
       // vectors point
       const Geometry::Vec3D aMidPlane(centroid-(O+A)/2.0);
       const Geometry::Vec3D bMidPlane(centroid-(O+B)/2.0);
 
-      Geometry::Vec3D aPlaneNorm((A-O).unit());
-      Geometry::Vec3D bPlaneNorm((B-O).unit());
+      Geometry::Vec3D aPlaneNorm((normal*(A-O)).unit());
+      Geometry::Vec3D bPlaneNorm((normal*(B-O)).unit());
       
       aPlaneNorm.makePosCos(aMidPlane);
       bPlaneNorm.makePosCos(bMidPlane);
 
       // construct New points on both of the planes
-      const double signedShift=(VList[i].isOnHull()) ? shift : -shift;
-      const Geometry::Vec3D aPA=A-aPlaneNorm*signedShift;
-      const Geometry::Vec3D bPA=O-aPlaneNorm*signedShift;
+      const Geometry::Vec3D aPA=A-aPlaneNorm*shiftDistance;
+      const Geometry::Vec3D bPA=O-aPlaneNorm*shiftDistance;
 
-      const Geometry::Vec3D aPB=B-bPlaneNorm*signedShift;
-      const Geometry::Vec3D bPB=O-bPlaneNorm*signedShift;
-
+      const Geometry::Vec3D aPB=B-bPlaneNorm*shiftDistance;
+      const Geometry::Vec3D bPB=O-bPlaneNorm*shiftDistance;
       const Geometry::Line aPlane(aPA,bPA-aPA);
       const Geometry::Line bPlane(aPB,bPB-aPB);
-      newPts.push_back(aPlane.closestPoint(bPlane));
+      outPts.push_back(aPlane.midPoint(bPlane));
     }
-  // Finished so now can track points back to Vect2D
-  for(size_t i=0;i<Pts.size();i++)
-    VList[i].setPoint(Pt);
-  Pts=newPts;
-  return;
+
+  return outPts;
 }
   
 void

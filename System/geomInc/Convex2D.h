@@ -63,6 +63,7 @@ class Convex2D
 
   void setPoints(const std::vector<Vec3D>&);
   void addPoint(const Vec3D&);
+
   double calcNormal();
   double calcArea() const;
   size_t calcMaxIndex();
@@ -80,7 +81,7 @@ class Convex2D
   size_t getDistPoint() const { return distIndex; }
   std::vector<Geometry::Vec3D> getSequence() const;
 
-  void scalePoints(const double);
+  std::vector<Geometry::Vec3D> scalePoints(const double) const;
   
   //  int isConvex() const;
   void write(std::ostream&) const;

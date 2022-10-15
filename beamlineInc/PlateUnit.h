@@ -47,12 +47,11 @@ class PlateUnit :
   std::vector<Geometry::Vec3D> APts;  ///< Points of front shape
   std::vector<Geometry::Vec3D> BPts;  ///< Points of back shape 
 
-  Geometry::Convex2D frontCV;
-  Geometry::Convex2D backCV;
+  Geometry::Convex2D* frontCV;        ///< Convex for front points
+  Geometry::Convex2D* backCV;         ///< Convex for back points
 
-  Geometry::Vec3D getFrontPt(const size_t,const double) const;
-  Geometry::Vec3D getBackPt(const size_t,const double) const;
-
+  Geometry::Vec3D calcFrontPoint(const Geometry::Vec3D&) const;
+  Geometry::Vec3D calcBackPoint(const Geometry::Vec3D&) const;
   
   virtual void populate(const FuncDataBase&);
   virtual void createSurfaces();

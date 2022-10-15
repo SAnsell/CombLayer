@@ -787,6 +787,7 @@ Vec3D::makePosCos(const Geometry::Vec3D& A)
  /*!
    Given vector A, ensure that the vector
    is signed so that A.this >= 0
+   \param A :: vector to compare
  */
 {
   const double D=A.x*x+A.y*y+A.z*z;
@@ -797,8 +798,6 @@ Vec3D::makePosCos(const Geometry::Vec3D& A)
       z *= -1.0;
     }
   return;
-}
-
 }
   
 void
