@@ -173,7 +173,6 @@ NMX::build(Simulation& System,
   FocusA->createAll(System,*nmxAxis,-3); // beam front reversed
   if (stopPoint==1) return;                  // STOP at Monolith
   
-  return;
 
   // PIPE after gamma shield
   VPipeA->addAllInsertCell(bunkerObj.getCell("MainVoid"));
@@ -181,6 +180,7 @@ NMX::build(Simulation& System,
 
   BendA->addInsertCell(VPipeA->getCells("Void"));
   BendA->createAll(System,*VPipeA,0);
+  return;
 
 
   // PIPE from 10m to 14m

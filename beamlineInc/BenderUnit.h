@@ -38,18 +38,19 @@ class BenderUnit :
     public GuideUnit
 {
  private:
+  
+  double aHeight;             ///< Height across rotation plane [start]
+  double bHeight;             ///< Across rotation plane [end]
+  double aWidth;              ///< In rotation plane [start]
+  double bWidth;              ///< In rotation plane [end]
+
+  double radius;              ///< Primary rotation ratius
+  double rotAng;              ///< Rotation of Z bend axis for bend
 
   Geometry::Vec3D RCent;      ///< Rotation centre
   Geometry::Vec3D RAxis;      ///< Rotation axis
   Geometry::Vec3D RPlane;     ///< Rotation Centre direction
   
-  double Radius;              ///< Primary rotation ratius
-  double aHeight;             ///< Height across rotation plane [start]
-  double bHeight;             ///< Across rotation plane [end]
-  double aWidth;              ///< In rotation plane [start]
-  double bWidth;              ///< In rotation plane [end]
-  double Length;              ///< Length of section
-  double rotAng;              ///< Rotation of Z bend axis for bend
 
   Geometry::Vec3D AXVec;    ///< Current XVector [Front]
   Geometry::Vec3D AYVec;    ///< Current YVector [Front]

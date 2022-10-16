@@ -68,9 +68,6 @@
 #include "GuideUnit.h"
 
 #include "PlateUnit.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "Surface.h"
 
 namespace beamlineSystem
 {
@@ -290,7 +287,6 @@ PlateUnit::createSurfaces()
 
       // Care here because frontPts/backPts are within
       // APts convex
-      ELog::EM<<"T == "<<T<<ELog::endDiag;
       const std::vector<Geometry::Vec3D>
 	frontPts=(std::abs<double>(T) < Geometry::zeroTol) ?
 	APts : frontCV->scalePoints(T);
@@ -307,11 +303,8 @@ PlateUnit::createSurfaces()
 	  const Geometry::Vec3D PB=calcFrontPoint(frontPts[jPlus]);
 	  const Geometry::Vec3D BA=calcBackPoint(backPts[j]);
 
-	  ELog::EM<<"Origni == "<<Origin-PA<<" == "<<PA<<ELog::endDiag;
 	  const Geometry::Vec3D Norm=Origin-PA;
-	  //	  ELog::EM<<"Plane == "<<PA<<" :: "<<PB<<" :: "<<BA<<ELog::endDiag;
 	  ModelSupport::buildPlane(SMap,SN,PA,PB,BA,Norm);
-	  ELog::EM<<"Plane == "<<*(SMap.realSurfPtr(SN))<<ELog::endDiag;
 	  SN++;
 	}
       T+=layerThick[i];
@@ -365,7 +358,7 @@ PlateUnit::createAll(Simulation& System,
   ELog::RegMethod RegA("PlateUnit","createAll");
 
   populate(System.getDataBase());
-  ELog::EM<<"ASDFAFDS"<<ELog::endDiag;
+
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);

@@ -3,7 +3,7 @@
  
  * File:   commonVar/FocusGenerator.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -234,7 +234,8 @@ FocusGenerator::generateBender(FuncDataBase& Control,
 			       const double length,
 			       const double HS,const double HE,
 			       const double VS,const double VE,
-			       const double radius,const double angleDir) const
+			       const double radius,
+			       const double angleDir) const
   /*!
     Create bender variables
     \param Control :: FuncDatabase to populate
@@ -252,14 +253,13 @@ FocusGenerator::generateBender(FuncDataBase& Control,
 
   writeLayers(Control,keyName,length);
 
-  Control.addVariable(keyName+"0TypeID","Bend");
-  Control.addVariable(keyName+"0AHeight",VS);
-  Control.addVariable(keyName+"0BHeight",VE);
-  Control.addVariable(keyName+"0AWidth",HS);
-  Control.addVariable(keyName+"0BWidth",HE);
-  Control.addVariable(keyName+"0Length",length);
-  Control.addVariable(keyName+"0AngDir",angleDir);
-  Control.addVariable(keyName+"0Radius",radius);
+  Control.addVariable(keyName+"AHeight",VS);
+  Control.addVariable(keyName+"BHeight",VE);
+  Control.addVariable(keyName+"AWidth",HS);
+  Control.addVariable(keyName+"BWidth",HE);
+  Control.addVariable(keyName+"Length",length);
+  Control.addVariable(keyName+"AngDir",angleDir);
+  Control.addVariable(keyName+"Radius",radius);
   return;
 }
   

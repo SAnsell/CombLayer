@@ -728,7 +728,11 @@ SingleItemVariables(FuncDataBase& Control)
   FGen.setLayer(2,2.5,"Stainless304");
   FGen.setYOffset(2.0);
   FGen.generateRectangle(Control,"FA",100.0,5.0,8.0);
-  //  FGen.generateTaper(Control,"FA",350.0,2.114,3.2417,3.16,3.9228);
+
+  const double bendAngle(0.0);   // relative to Z bend
+  const double bendRadius(12000.0);    // 120m
+  FGen.generateBender(Control,"BA",100.0,3.0,3.0,3.0,3.0,
+                      bendRadius,bendAngle);
 
   // expt hutch
   exptHutVariables(Control,"",0.0);

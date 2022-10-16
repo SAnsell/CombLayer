@@ -207,8 +207,6 @@ BenderUnit::setOriginAxis(const Geometry::Vec3D& O,
 {
   ELog::RegMethod RegA("BenderUnit","setOriginAxis");
 
-  begPt=O;
-  endPt=O;
   AXVec=XAxis;
   AYVec=YAxis;
   AZVec=ZAxis;
@@ -281,6 +279,28 @@ BenderUnit::calcWidthCent(const bool plusSide) const
   return RCent;
 }
 
+void
+BenderUnit::populate(const FuncDataBase& Control)
+  /*!
+    Sets the appropiate APts/BPtrs based on the type of
+    guide needed
+    \param Control :: DataBase of varaibels
+   */
+{
+  ELog::RegMethod RegA("PlateUnit","populate");
+
+  GuideUnit::populate(Control);
+  
+  aHeight=Control.EvalTail<double>(keyName,"AHeight","Height");
+  aWidth=Control.EvalTail<double>(keyName,"AWidth","Width");
+  bHeight=Control.EvalTail<double>(keyName,"BHeight","Height");
+  bWidth=Control.EvalTail<double>(keyName,"BWidth","Width");
+
+  radius=Control.EvalVar<double>(keyName+"Radius");
+  rotAng=Control.EvalVar<double>(keyName+"RotAngle");
+
+  return;
+}
 
 void
 BenderUnit::createSurfaces()
@@ -333,23 +353,24 @@ BenderUnit::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("BenderUnit","ceateObjects");
+  
+  const HeadRule fbHR=HeadRule(SMap,buildIndex,100)*
+    getFrontRule()*getBackRule();
 
   HeadRule HR;
 
   HeadRule innerHR;
-  const HeadRule divHR=HeadRule(SMap,buildIndex,100)*
-    getFrontRule()*getBackRule();
   int SN(buildIndex);
   for(size_t i=0;i<layerThick.size();i++)
     {
       HR=ModelSupport::getHeadRule(SMap,SN,"5 -6 7 -8");
       makeCell("Layer"+std::to_string(i),System,cellIndex++,layerMat[i],0.0,
-	       HR*innerHR*divHR);
+	       HR*innerHR*fbHR);
       SN+=20;
       innerHR=HR.complement();
     }
 
-  addOuterSurf(HR*divHR);
+  addOuterSurf(HR*fbHR);
   return ;
 }
 
