@@ -93,36 +93,54 @@ BenderUnit::clone() const
   return new BenderUnit(*this);
 }
 
-void
-BenderUnit::calcAxis()
-   /*!
-     Set axis and endpoints using a rotation 
-    */
+Geometry::Vec3D
+BenderUnit::calcWidthCent(const bool plusSide) const
+  /*!
+    Calculate the shifted centre based on the difference in
+    widths. Keeps the original width point correct (symmetric round
+    origin point) -- then track the exit track + / - round the centre line
+    bend.
+    \param plusSide :: to use the positive / negative side
+    \return new centre
+  */
 {
-  ELog::RegMethod RegA("BenderUnit","calcAxis");
+  ELog::RegMethod RegA("BenderUnit","calcWidthCent");
 
+  const double y=radius*sin(rotAng);
+  const double x=rotSide*radius*(1-cos(rotAng));
+  endPt=X*x+Y*y;  // this is the mid line point
+  bY=X*rotSide*sin(rotAng)+Y*cos(rotAng);
+  bX=bY*Z;   // figure out direction
 
-  const double rotAng=length/radius;
+  
+  const double DW=(bWidth-aWidth)/2.0;
+  const double pSign=(plusSide) ? -1.0 : 1.0;
+
+  const Geometry::Vec3D nEndPt=endPt+bX*(pSign*DW);
+  const Geometry::Vec3D midPt=(nEndPt+Origin)/2.0;
+  const Geometry::Vec3D LDir=((nEndPt-Origin)*Z).unit();
     
-  BXVec=X;
-  BYVec=Y;
-  BZVec=Z;
-  
-  const double RSign(rotSide ? 1.0 : -1.0);
-  RCent=Origin+X*(RSign*radius);
-  const Geometry::Quaternion Qxy=
-    Geometry::Quaternion::calcQRot(-,Z);
-  
+  const Geometry::Vec3D AMid=(nEndPt-begPt)/2.0;
+  std::pair<std::complex<double>,
+	    std::complex<double> > OutValues;
+  const size_t NAns=solveQuadratic(1.0,2.0*AMid.dotProd(LDir),
+				   AMid.dotProd(AMid)-radius*radius
+				   OutValues);
+  if (!NAns) 
+    {
+      ELog::EM<<"Failed to find quadratic solution for bender"<<ELog::endErr;
+      return Origin-X*radius;
+    }
 
-  // calc angle and rotation:
-  const double theta = Length/Radius;
-  endPt+=RPlane*(2.0*Radius*pow(sin(theta/2.0),2.0))+AYVec*(Radius*sin(theta));
+  if (std::abs(OutValues.first.imag())<Geometry::zeroTol &&
+      OutValues.first.real()>0.0)
+    return midPt+LDir*OutValues.first.real();
+  if (std::abs(OutValues.second.imag())<Geometry::zeroTol &&
+      OutValues.second.real()>0.0)
+    return midPt+LDir*OutValues.second.real();
 
-  Qxy.rotate(BXVec);
-  Qxy.rotate(BYVec);
-  Qxy.rotate(BZVec);
-
-  return;
+  // everything wrong
+  return Origin-X*radius;
 }
 
 void
@@ -151,7 +169,7 @@ BenderUnit::populate(const FuncDataBase& Control)
     rotAng=length/radius
   else if (rotAng>Geometry::zeroTol)
     radius=length/rotAng;
-  
+
   return;
 }
 
@@ -162,13 +180,9 @@ BenderUnit::createSurfaces()
    */
 {
   ELog::RegMethod RegA("BenderUnit","createSurfaces");
-
-  const double y=radius*sin(rotAng);
-  const double x=rotSide*radius*(1-cos(rotAng));
-
-  const Geometry::Vec3D endPt(X*x+Y*y);
-  const Geometry::Vec3D exitAxis=
-    X*rotSide*sin(rotAng)+Y*cos(rotAng);
+  
+    
+  
 
   
   ModelSupport::buildPlane(SMap,buildIndex+2,endPt,exitAxis);

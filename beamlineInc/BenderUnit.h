@@ -44,7 +44,6 @@ class BenderUnit :
   double aWidth;              ///< In rotation plane [start]
   double bWidth;              ///< In rotation plane [end]
 
-  bool rotSide;               ///< RCentre direction +ve -> +X
   double radius;              ///< Primary rotation ratius
   double rotAng;              ///< Rotation angle (radian)
 
