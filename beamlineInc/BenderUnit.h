@@ -44,25 +44,13 @@ class BenderUnit :
   double aWidth;              ///< In rotation plane [start]
   double bWidth;              ///< In rotation plane [end]
 
+  bool rotSide;               ///< RCentre direction +ve -> +X
   double radius;              ///< Primary rotation ratius
-  double rotAng;              ///< Rotation of Z bend axis for bend
+  double rotAng;              ///< Rotation angle (radian)
 
   Geometry::Vec3D RCent;      ///< Rotation centre
-  Geometry::Vec3D RAxis;      ///< Rotation axis
-  Geometry::Vec3D RPlane;     ///< Rotation Centre direction
   
-
-  Geometry::Vec3D AXVec;    ///< Current XVector [Front]
-  Geometry::Vec3D AYVec;    ///< Current YVector [Front]
-  Geometry::Vec3D AZVec;    ///< Current ZVector [Front]
-
-  Geometry::Vec3D BXVec;    ///< Current XVector [Back]
-  Geometry::Vec3D BYVec;    ///< Current YVector [Back]
-  Geometry::Vec3D BZVec;    ///< Current ZVector [Back]
-
   Geometry::Vec3D calcWidthCent(const bool) const;
-
-
   virtual void createSurfaces();
   virtual void createObjects(Simulation&);
   virtual void createLinks();
