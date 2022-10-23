@@ -76,6 +76,41 @@ BenderUnit::BenderUnit(const std::string& key)  :
     \param key :: keyName
   */
 {}
+
+BenderUnit::BenderUnit(const BenderUnit& A) : 
+  GuideUnit(A),
+  aHeight(A.aHeight),bHeight(A.bHeight),aWidth(A.aWidth),
+  bWidth(A.bWidth),radius(A.radius),rotAng(A.rotAng),
+  rCent(A.rCent),bX(A.bX),bY(A.bY)
+  /*!
+    Copy constructor
+    \param A :: BenderUnit to copy
+  */
+{}
+
+BenderUnit&
+BenderUnit::operator=(const BenderUnit& A)
+  /*!
+    Assignment operator
+    \param A :: BenderUnit to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      GuideUnit::operator=(A);
+      aHeight=A.aHeight;
+      bHeight=A.bHeight;
+      aWidth=A.aWidth;
+      bWidth=A.bWidth;
+      radius=A.radius;
+      rotAng=A.rotAng;
+      rCent=A.rCent;
+      bX=A.bX;
+      bY=A.bY;
+    }
+  return *this;
+}
   
 BenderUnit::~BenderUnit() 
   /*!
@@ -93,54 +128,51 @@ BenderUnit::clone() const
   return new BenderUnit(*this);
 }
 
+void
+BenderUnit::calcConstValues()
+  /*!
+    Basic value s
+   */
+{
+  ELog::RegMethod RegA("BenderUnit","calcConstValues");
+  
+  const Geometry::Quaternion Qxy=
+    Geometry::Quaternion::calcQRot(rotAng,-Z);  
+
+  rCent=Origin+X*radius;
+  endPt=rCent-X*(radius*cos(rotAng))+Y*(radius*sin(rotAng));
+  bY=Qxy.makeRotate(Y);
+  bX=Qxy.makeRotate(X);
+  return;
+}
+  
 Geometry::Vec3D
-BenderUnit::calcWidthCent(const bool plusSide) const
+BenderUnit::calcCentre(const double aLen,const double bLen) const
   /*!
     Calculate the shifted centre based on the difference in
     widths. Keeps the original width point correct (symmetric round
     origin point) -- then track the exit track + / - round the centre line
     bend.
-    \param plusSide :: to use the positive / negative side
+    The method constructs the mid point of the line A-B
+    and then determine the distance to the centre. It also
+    constructs the normal to the line 
     \return new centre
   */
 {
   ELog::RegMethod RegA("BenderUnit","calcWidthCent");
 
-  const double y=radius*sin(rotAng);
-  const double x=rotSide*radius*(1-cos(rotAng));
-  endPt=X*x+Y*y;  // this is the mid line point
-  bY=X*rotSide*sin(rotAng)+Y*cos(rotAng);
-  bX=bY*Z;   // figure out direction
+  const Geometry::Vec3D APt=Origin+X*aLen;
+  const Geometry::Vec3D BPt=endPt+bX*bLen;
+  const Geometry::Vec3D midPt((APt+BPt)/2.0);
+  const double L=APt.Distance(BPt)/2.0;  // lenght of half line
+  const double b=sqrt(radius*radius-L*L);
+  const Geometry::Vec3D norm=Z*(BPt-APt).unit();
 
-  
-  const double DW=(bWidth-aWidth)/2.0;
-  const double pSign=(plusSide) ? -1.0 : 1.0;
+  return (X.dotProd(norm)>1.0) ?
+    midPt+norm*b : midPt-norm*b;
 
-  const Geometry::Vec3D nEndPt=endPt+bX*(pSign*DW);
-  const Geometry::Vec3D midPt=(nEndPt+Origin)/2.0;
-  const Geometry::Vec3D LDir=((nEndPt-Origin)*Z).unit();
-    
-  const Geometry::Vec3D AMid=(nEndPt-begPt)/2.0;
-  std::pair<std::complex<double>,
-	    std::complex<double> > OutValues;
-  const size_t NAns=solveQuadratic(1.0,2.0*AMid.dotProd(LDir),
-				   AMid.dotProd(AMid)-radius*radius
-				   OutValues);
-  if (!NAns) 
-    {
-      ELog::EM<<"Failed to find quadratic solution for bender"<<ELog::endErr;
-      return Origin-X*radius;
-    }
 
-  if (std::abs(OutValues.first.imag())<Geometry::zeroTol &&
-      OutValues.first.real()>0.0)
-    return midPt+LDir*OutValues.first.real();
-  if (std::abs(OutValues.second.imag())<Geometry::zeroTol &&
-      OutValues.second.real()>0.0)
-    return midPt+LDir*OutValues.second.real();
 
-  // everything wrong
-  return Origin-X*radius;
 }
 
 void
@@ -154,11 +186,11 @@ BenderUnit::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("PlateUnit","populate");
 
   GuideUnit::populate(Control);
-  
-  aHeight=Control.EvalTail<double>(keyName,"AHeight","Height");
-  aWidth=Control.EvalTail<double>(keyName,"AWidth","Width");
-  bHeight=Control.EvalTail<double>(keyName,"BHeight","Height");
-  bWidth=Control.EvalTail<double>(keyName,"BWidth","Width");
+
+  aHeight=Control.EvalHead<double>(keyName,"AHeight","Height");
+  aWidth=Control.EvalHead<double>(keyName,"AWidth","Width");
+  bHeight=Control.EvalHead<double>(keyName,"BHeight","Height");
+  bWidth=Control.EvalHead<double>(keyName,"BWidth","Width");
 
   radius=Control.EvalDefVar<double>(keyName+"Radius",-1.0);
   rotAng=Control.EvalDefVar<double>(keyName+"RotAngle",-1.0);
@@ -166,7 +198,7 @@ BenderUnit::populate(const FuncDataBase& Control)
   if (radius>Geometry::zeroTol && rotAng>Geometry::zeroTol)
     length=rotAng*radius;
   else if (radius>Geometry::zeroTol)
-    rotAng=length/radius
+    rotAng=length/radius;
   else if (rotAng>Geometry::zeroTol)
     radius=length/rotAng;
 
@@ -180,36 +212,45 @@ BenderUnit::createSurfaces()
    */
 {
   ELog::RegMethod RegA("BenderUnit","createSurfaces");
-  
-    
-  
 
+  calcConstValues();
+
+  if (!isActive("front"))
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+      setFront(SMap.realSurf(buildIndex+1));
+    }
+  if (!isActive("back"))
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+2,endPt,bY);
+      setBack(-SMap.realSurf(buildIndex+2));
+    }
   
-  ModelSupport::buildPlane(SMap,buildIndex+2,endPt,exitAxis);
-			   
 
   const double maxThick=layerThick.back()+(aWidth+bWidth);
-  
-  ModelSupport::buildPlane(SMap,buildIndex+100,
-			   Origin+X*(rotSide*maxThick),
-			   Origin+X*(rotSide*maxThick)+Z,
-			   exitPt+X*(rotSide*maxThick),
-			   -X*rotside);
+
+  Geometry::Vec3D C=calcCentre(maxThick,maxThick);
+      
+  const Geometry::Vec3D APt=Origin+X*maxThick;
+  const Geometry::Vec3D BPt=endPt+bX*maxThick;
+  const Geometry::Vec3D midPt((APt+BPt)/2.0);
+  const Geometry::Vec3D norm=Z*(BPt-APt).unit();
+  ModelSupport::buildPlane(SMap,buildIndex+100,C,norm);
   
   int SN(buildIndex);
+
+  double T(0.0);
   for(size_t i=0;i<layerThick.size();i++)
     {
-      ModelSupport::buildPlane(SMap,SN+5,
-			       Origin-Z*(aHeight/2.0+layerThick[i]),Z);
-      ModelSupport::buildPlane(SMap,SN+6,
-			       Origin+Z*(aHeight/2.0+layerThick[i]),Z);
+      ModelSupport::buildPlane(SMap,SN+5,Origin-Z*(aHeight/2.0+T),Z);
+      ModelSupport::buildPlane(SMap,SN+6,Origin+Z*(aHeight/2.0+T),Z);
 
-      ModelSupport::buildCylinder(SMap,SN+7,
-				  RCent+X*(rotSide*(layerThick[i]+aWidth/2.0)),
-				  Z,radius);
-      ModelSupport::buildCylinder(SMap,SN+8,
-				  RCent-X*(rotSide*(layerThick[i]+aWidth/2.0)),
-				  Z,radius);
+      C=calcCentre(T+aWidth/2.0,T+bWidth/2.0);
+      ModelSupport::buildCylinder(SMap,SN+7,C,Z,radius);
+      C=calcCentre(-T-aWidth/2.0,-T-bWidth/2.0);
+      ModelSupport::buildCylinder(SMap,SN+8,C,Z,radius);
+
+      T+=layerThick[i];
       SN+=20;
     }
   return;
@@ -227,7 +268,7 @@ BenderUnit::createObjects(Simulation& System)
   
   const HeadRule fbHR=HeadRule(SMap,buildIndex,100)*
     getFrontRule()*getBackRule();
-
+  ELog::EM<<"Front == "<<fbHR<<ELog::endDiag;
   HeadRule HR;
 
   HeadRule innerHR;
@@ -237,8 +278,8 @@ BenderUnit::createObjects(Simulation& System)
       HR=ModelSupport::getHeadRule(SMap,SN,"5 -6 7 -8");
       makeCell("Layer"+std::to_string(i),System,cellIndex++,layerMat[i],0.0,
 	       HR*innerHR*fbHR);
-      SN+=20;
       innerHR=HR.complement();
+      SN+=20;
     }
 
   addOuterSurf(HR*fbHR);
@@ -261,10 +302,10 @@ BenderUnit::createLinks()
   setLinkSurf(5,SMap.realSurf(buildIndex+8));
 
 
-  setConnect(2,Origin-aHeight,-Z);
-  setConnect(3,RCent*Radius+RAxis*((aHeight+bHeight)/4.0),RAxis);
-  setConnect(4,RCent*(Radius-aWidth/2.0),-RPlane);
-  setConnect(5,RCent*(Radius+aWidth/2.0),RPlane);
+  // setConnect(2,Origin-aHeight,-Z);
+  // setConnect(3,RCent*Radius+RAxis*((aHeight+bHeight)/4.0),RAxis);
+  // setConnect(4,RCent*(Radius-aWidth/2.0),-RPlane);
+  // setConnect(5,RCent*(Radius+aWidth/2.0),RPlane);
 
   return;
 }

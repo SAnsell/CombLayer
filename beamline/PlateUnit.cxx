@@ -43,7 +43,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
 #include "polySupport.h"
 #include "surfRegister.h"
 #include "generateSurf.h"

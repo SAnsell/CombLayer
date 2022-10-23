@@ -47,12 +47,17 @@ class BenderUnit :
   double radius;              ///< Primary rotation ratius
   double rotAng;              ///< Rotation angle (radian)
 
-  Geometry::Vec3D RCent;      ///< Rotation centre
-  
-  Geometry::Vec3D calcWidthCent(const bool) const;
-  virtual void createSurfaces();
-  virtual void createObjects(Simulation&);
-  virtual void createLinks();
+  Geometry::Vec3D rCent;      ///< Rotation centre
+  Geometry::Vec3D bX;         ///< Axis at end plane
+  Geometry::Vec3D bY;         ///< Normal axis at end plane
+
+  void calcConstValues();
+  Geometry::Vec3D calcCentre(const double,const double) const;
+
+  void populate(const FuncDataBase&);
+  void createSurfaces();
+  void createObjects(Simulation&);
+  void createLinks();
   
  public:
 
@@ -61,19 +66,6 @@ class BenderUnit :
   BenderUnit& operator=(const BenderUnit&);
   virtual BenderUnit* clone() const;
   virtual ~BenderUnit();
-
-  void setValues(const double,const double,const double,
-		 const double,const double);
-  void setValues(const double,const double,const double,
-		 const double,const double,const double,
-		 const double);
-  void setOriginAxis(const Geometry::Vec3D&,const Geometry::Vec3D&,
-		     const Geometry::Vec3D&,const Geometry::Vec3D&);
-
-  // Accessor to beg axis
-  Geometry::Vec3D getBegAxis() const { return -AYVec; }
-  // Accessor to end axis
-  Geometry::Vec3D getEndAxis() const { return BYVec; }
 
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const FixedComp&,const long int);

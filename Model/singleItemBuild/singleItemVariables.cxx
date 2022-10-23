@@ -731,8 +731,10 @@ SingleItemVariables(FuncDataBase& Control)
 
   const double bendAngle(0.0);   // relative to Z bend
   const double bendRadius(12000.0);    // 120m
-  FGen.generateBender(Control,"BA",100.0,3.0,3.0,3.0,3.0,
+  FGen.generateBender(Control,"BA",100.0,30,30,30,30,
                       bendRadius,bendAngle);
+  //  FGen.generateBender(Control,"BA",100.0,3.0,3.0,3.0,3.0,
+  //                      bendRadius,bendAngle);
 
   // expt hutch
   exptHutVariables(Control,"",0.0);

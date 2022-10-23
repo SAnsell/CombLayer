@@ -235,7 +235,7 @@ FocusGenerator::generateBender(FuncDataBase& Control,
 			       const double HS,const double HE,
 			       const double VS,const double VE,
 			       const double radius,
-			       const double angleDir) const
+			       const double rotAngle) const
   /*!
     Create bender variables
     \param Control :: FuncDatabase to populate
@@ -258,7 +258,7 @@ FocusGenerator::generateBender(FuncDataBase& Control,
   Control.addVariable(keyName+"AWidth",HS);
   Control.addVariable(keyName+"BWidth",HE);
   Control.addVariable(keyName+"Length",length);
-  Control.addVariable(keyName+"AngDir",angleDir);
+  Control.addVariable(keyName+"RotAngle",rotAngle);
   Control.addVariable(keyName+"Radius",radius);
   return;
 }
