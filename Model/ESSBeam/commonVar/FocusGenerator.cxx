@@ -235,7 +235,7 @@ FocusGenerator::generateBender(FuncDataBase& Control,
 			       const double HS,const double HE,
 			       const double VS,const double VE,
 			       const double radius,
-			       const double rotAngle) const
+			       const double yRotAngle) const
   /*!
     Create bender variables
     \param Control :: FuncDatabase to populate
@@ -253,12 +253,13 @@ FocusGenerator::generateBender(FuncDataBase& Control,
 
   writeLayers(Control,keyName,length);
 
+  Control.addVariable(keyName+"YAngle",yRotAngle);
   Control.addVariable(keyName+"AHeight",VS);
   Control.addVariable(keyName+"BHeight",VE);
   Control.addVariable(keyName+"AWidth",HS);
   Control.addVariable(keyName+"BWidth",HE);
   Control.addVariable(keyName+"Length",length);
-  Control.addVariable(keyName+"RotAngle",rotAngle);
+
   Control.addVariable(keyName+"Radius",radius);
   return;
 }

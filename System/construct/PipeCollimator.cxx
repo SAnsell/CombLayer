@@ -154,14 +154,12 @@ PipeCollimator::createObjects(Simulation& System)
   ELog::RegMethod RegA("PipeCollimator","createObjects");
 
   HeadRule HR;
-
   
-  if (ExternalCut::isActive("Outer"))
+  if (!ExternalCut::isActive("Outer"))
     throw ColErr::EmptyContainer("Outer not set");
 
   const HeadRule innerHR=getRule("Inner").complement();
   const HeadRule outerHR=getRule("Outer");
-  
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2");
   
   makeCell("Main",System,cellIndex++,mat,0.0,HR*innerHR*outerHR);
@@ -197,7 +195,7 @@ PipeCollimator::createAll(Simulation& System,
     \param sideIndex :: position of linkpoint
   */
 {
-  ELog::RegMethod RegA("PipeCollimator","createAllNoPopulate");
+  ELog::RegMethod RegA("PipeCollimator","createAll");
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

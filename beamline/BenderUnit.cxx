@@ -70,7 +70,7 @@ namespace beamlineSystem
 {
 
 BenderUnit::BenderUnit(const std::string& key)  :
-  GuideUnit(key)
+  GuideUnit(key),resetYRotation(1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param key :: keyName
@@ -79,6 +79,7 @@ BenderUnit::BenderUnit(const std::string& key)  :
 
 BenderUnit::BenderUnit(const BenderUnit& A) : 
   GuideUnit(A),
+  resetYRotation(A.resetYRotation),
   aHeight(A.aHeight),bHeight(A.bHeight),aWidth(A.aWidth),
   bWidth(A.bWidth),radius(A.radius),rotAng(A.rotAng),
   rCent(A.rCent),bX(A.bX),bY(A.bY)
@@ -99,6 +100,7 @@ BenderUnit::operator=(const BenderUnit& A)
   if (this!=&A)
     {
       GuideUnit::operator=(A);
+      resetYRotation=A.resetYRotation;
       aHeight=A.aHeight;
       bHeight=A.bHeight;
       aWidth=A.aWidth;
@@ -159,20 +161,38 @@ BenderUnit::calcCentre(const double aLen,const double bLen) const
     \return new centre
   */
 {
-  ELog::RegMethod RegA("BenderUnit","calcWidthCent");
+  ELog::RegMethod RegA("BenderUnit","calcMidTrack");
+
+  return calcMidTrack(aLen,bLen).first;
+}
+
+std::pair<Geometry::Vec3D,Geometry::Vec3D>
+BenderUnit::calcMidTrack(const double aLen,const double bLen) const
+  /*!
+    Calculate the shifted centre based on the difference in
+    widths. Keeps the original width point correct (symmetric round
+    origin point) -- then track the exit track + / - round the centre line
+    bend.
+    The method constructs the mid point of the line A-B
+    and then determine the distance to the centre. It also
+    constructs the normal to the line 
+    \return new centre / normal pointing from centre
+  */
+{
+  ELog::RegMethod RegA("BenderUnit","calcMidTrack");
 
   const Geometry::Vec3D APt=Origin+X*aLen;
   const Geometry::Vec3D BPt=endPt+bX*bLen;
   const Geometry::Vec3D midPt((APt+BPt)/2.0);
   const double L=APt.Distance(BPt)/2.0;  // lenght of half line
   const double b=sqrt(radius*radius-L*L);
-  const Geometry::Vec3D norm=Z*(BPt-APt).unit();
+  Geometry::Vec3D norm=Z*(BPt-APt).unit();
 
-  return (X.dotProd(norm)>1.0) ?
-    midPt+norm*b : midPt-norm*b;
+  if (X.dotProd(norm)<0.0)
+    norm*=-1.0;
 
-
-
+  return std::pair<Geometry::Vec3D,Geometry::Vec3D>
+    (midPt+norm*b,-norm);
 }
 
 void
@@ -229,12 +249,9 @@ BenderUnit::createSurfaces()
 
   const double maxThick=layerThick.back()+(aWidth+bWidth);
 
-  Geometry::Vec3D C=calcCentre(maxThick,maxThick);
+  Geometry::Vec3D C,norm;
+  std::tie(C,norm)=calcMidTrack(maxThick,maxThick);
       
-  const Geometry::Vec3D APt=Origin+X*maxThick;
-  const Geometry::Vec3D BPt=endPt+bX*maxThick;
-  const Geometry::Vec3D midPt((APt+BPt)/2.0);
-  const Geometry::Vec3D norm=Z*(BPt-APt).unit();
   ModelSupport::buildPlane(SMap,buildIndex+100,C,norm);
   
   int SN(buildIndex);
@@ -268,7 +285,7 @@ BenderUnit::createObjects(Simulation& System)
   
   const HeadRule fbHR=HeadRule(SMap,buildIndex,100)*
     getFrontRule()*getBackRule();
-  ELog::EM<<"Front == "<<fbHR<<ELog::endDiag;
+
   HeadRule HR;
 
   HeadRule innerHR;
@@ -296,17 +313,32 @@ BenderUnit::createLinks()
 {
   ELog::RegMethod RegA("BenderUnit","addSideLinks");
 
+
+  ExternalCut::createLink("front",*this,0,Origin,-Y);
+  ExternalCut::createLink("back",*this,1,endPt,bY);
+
   setLinkSurf(2,SMap.realSurf(buildIndex+5));
   setLinkSurf(3,SMap.realSurf(buildIndex+6));
   setLinkSurf(4,SMap.realSurf(buildIndex+7));
   setLinkSurf(5,SMap.realSurf(buildIndex+8));
 
+  /*
+  const double maxThick=layerThick.back();
+  const Geometry::Vec3D midPt((endPt+Origin)/2.0);
+  const double L=APt.Distance(BPt)/2.0;  // lenght of half line
+  const double b=sqrt(radius*radius-L*L);
+  const Geometry::Vec3D norm=Z*(BPt-APt).unit();
+  *
+  / *
+  Geom
+  Geometry::Vec3D( (X.dotProd(norm)>1.0) ? midPt+norm*b : midPt-norm*b;
 
-  // setConnect(2,Origin-aHeight,-Z);
-  // setConnect(3,RCent*Radius+RAxis*((aHeight+bHeight)/4.0),RAxis);
-  // setConnect(4,RCent*(Radius-aWidth/2.0),-RPlane);
-  // setConnect(5,RCent*(Radius+aWidth/2.0),RPlane);
+  setConnect(2,Origin-aHeight,-Z);
+  setConnect(3,RCent*Radius+RAxis*((aHeight+bHeight)/4.0),RAxis);
 
+		   setConnect(4,RCent*(Radius-aWidth/2.0),-RPlane);
+   setConnect(5,RCent*(Radius+aWidth/2.0),RPlane);
+  */
   return;
 }
 
@@ -328,6 +360,8 @@ BenderUnit::createAll(Simulation& System,
 
   createSurfaces();
   createObjects(System);
+  if (resetYRotation)
+    applyAngleRotate(0,-yAngle,0);
   createLinks();
   insertObjects(System);
   

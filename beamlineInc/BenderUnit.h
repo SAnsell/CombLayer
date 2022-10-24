@@ -38,6 +38,8 @@ class BenderUnit :
     public GuideUnit
 {
  private:
+
+  bool resetYRotation;        ///< Reset rotoation in y used for bend axis
   
   double aHeight;             ///< Height across rotation plane [start]
   double bHeight;             ///< Across rotation plane [end]
@@ -52,6 +54,8 @@ class BenderUnit :
   Geometry::Vec3D bY;         ///< Normal axis at end plane
 
   void calcConstValues();
+  std::pair<Geometry::Vec3D,Geometry::Vec3D>
+  calcMidTrack(const double,const double) const;
   Geometry::Vec3D calcCentre(const double,const double) const;
 
   void populate(const FuncDataBase&);

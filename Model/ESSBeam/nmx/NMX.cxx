@@ -180,9 +180,7 @@ NMX::build(Simulation& System,
 
   BendA->addInsertCell(VPipeA->getCells("Void"));
   BendA->createAll(System,*VPipeA,0);
-  return;
-
-
+  ELog::EM<<"P == "<<VPipeA->getLinkAxis(0)<<ELog::endDiag;
   // PIPE from 10m to 14m
   VPipeB->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeB->setFront(*VPipeA,2);
@@ -195,7 +193,6 @@ NMX::build(Simulation& System,
   VPipeC->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeC->setFront(*VPipeB,2);
   VPipeC->createAll(System,*BendB,2);
-
   BendC->addInsertCell(VPipeC->getCells("Void"));
   BendC->createAll(System,*BendB,2);
 
@@ -216,8 +213,6 @@ NMX::build(Simulation& System,
   BendE->createAll(System,*BendD,2);
 
   // EXPERIMENTAL WAY TO PLACE A SIMPLE COLLIMATOR   
-  //  CollA->setInnerExclude(BendC->getXSectionOut());
-  //  CollA->setOuter(VPipeC->getFullRule(-3));
   
   CollA->setCutSurf("Inner",BendC->getOuterSurf());
   CollA->setCutSurf("Outer",*VPipeC,-3);
