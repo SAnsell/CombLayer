@@ -190,7 +190,6 @@ BenderUnit::calcMidTrack(const double aLen,const double bLen) const
 
   if (X.dotProd(norm)<0.0)
     norm*=-1.0;
-
   return std::pair<Geometry::Vec3D,Geometry::Vec3D>
     (midPt+norm*b,-norm);
 }

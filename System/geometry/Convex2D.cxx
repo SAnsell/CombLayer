@@ -307,12 +307,53 @@ Convex2D::createVertex()
     }
 
   VList.clear();
-  for(lc=cList.begin();lc!=cList.end();lc++)
-    VList.push_back(*lc);
+  for(Vert2D& V : cList)
+    {
+      V.Done();
+      if (inHull(V.getV()))
+	V.setOnHull(0);
+      else
+	V.setOnHull(1);
+      
+      VList.push_back(V);
+    }
+  // identify lowest left:
+  rotateVList();
   
   return;
 }
 
+void
+Convex2D::rotateVList()
+  /*!
+    Rotate the VList so that the first point is the first point
+    in  Pts that is on the List
+  */
+{
+  VTYPE::iterator vc;
+  for(const Geometry::Vec3D& P : Pts)
+    {
+      vc=std::find_if(VList.begin(),VList.end(),
+		      [&P](const Vert2D& V)
+		      { return (V.getV()==P); });
+      if (vc==VList.end())
+	throw ColErr::InContainerError<Geometry::Vec3D>(P,"Not point");
+
+      if (vc->isOnHull())
+	{
+	  ELog::EM<<"X == "<<vc->getV()<<ELog::endDiag;
+	  std::rotate(VList.begin(),vc,VList.end());
+	  return;
+	}
+      else
+	{
+	  ELog::EM<<"XX == "<<vc->getV()<<ELog::endDiag;
+	}
+    }
+  return;
+}
+
+  
 int
 Convex2D::inHull(const Geometry::Vec3D& testPt) const
   /*!

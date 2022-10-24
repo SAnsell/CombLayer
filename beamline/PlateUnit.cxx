@@ -292,15 +292,18 @@ PlateUnit::createSurfaces()
 
       // Care here because frontPts/backPts are within
       // APts convex
-      const std::vector<Geometry::Vec3D>
-	frontPts=(std::abs<double>(T) < Geometry::zeroTol) ?
-	APts : frontCV->scalePoints(T);
 
-      const std::vector<Geometry::Vec3D>
-	backPts=(std::abs<double>(T) < Geometry::zeroTol) ?
-	BPts : backCV->scalePoints(T);
+      const std::vector<Geometry::Vec3D> frontPts=
+	frontCV->scalePoints(T);
+      const std::vector<Geometry::Vec3D> backPts=
+	backCV->scalePoints(T);
 
-      
+      for(size_t j=0;j<APts.size();j++)
+	ELog::EM<<"BA["<<keyName<<"] ="<<frontPts[j]<<"  :  "
+		<<backPts[j]<<" == "
+		<<calcFrontPoint(frontPts[j])<<" :: "
+		<<calcBackPoint(frontPts[j])<<" "
+		<<ELog::endDiag;
       for(size_t j=0;j<APts.size();j++)
 	{
 	  const size_t jPlus=(j+1) % APts.size();
@@ -308,14 +311,16 @@ PlateUnit::createSurfaces()
 	  const Geometry::Vec3D PB=calcFrontPoint(frontPts[jPlus]);
 	  const Geometry::Vec3D BA=calcBackPoint(backPts[j]);
 
-
-
 	  const Geometry::Vec3D Norm=Origin-PA;
-	  ELog::EM<<"Ba["<<keyName<<"]["<<j<<"]== "<<Norm.unit()
-		  <<":";
 	  Geometry::Plane* PPtr=
 	    ModelSupport::buildPlane(SMap,SN,PA,PB,BA,Norm);
-	  ELog::EM<<PPtr->getNormal()<<ELog::endDiag;
+	  /*
+	  ELog::EM<<"Ba["<<keyName<<"]["<<j<<"]== "<<Norm.unit()
+		  <<":\t";
+	  ELog::EM<<PPtr->getNormal()
+		  <<"=="<<PPtr->getNormal().dotProd(Norm.unit())
+		  <<ELog::endDiag;
+	  */
 	  SN++;
 	}
       T+=layerThick[i];

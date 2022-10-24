@@ -99,7 +99,8 @@ DREAMvariables(FuncDataBase& Control)
   FGen.clearYOffset();
     //  FGen.generateTaper(Control,"dreamFB",50.0,2.88,2.11,3.81,3.95);   
   //  FGen.generateTaper(Control,"dreamFB",26.0,2.63,2.14,3.75,3.76);
-  FGen.generateTaper(Control,"dreamFB",26.0,2.63,2.14,3.75,3.75);   
+  FGen.generateTaper(Control,"dreamFB",26.0,2.63,2.14,3.75,3.76);
+
   
   // VACBOX A : 6.10m target centre
   //  Length 100.7 + Width [87.0] + Height [39.0] void Depth/2 + front

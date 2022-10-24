@@ -118,7 +118,9 @@ Vert2D::calcAngle(const Geometry::Vec3D& ZeroPt,const Geometry::Vec3D& Norm)
       cAngle=Pt.dotProd(Norm);
     }
   else
-    cAngle=0.0;
+    {
+      cAngle=0.0;
+    }
   return cAngle;
 }
 
@@ -129,7 +131,7 @@ Vert2D::write(std::ostream& OX) const
     \param OX :: Output stream
    */
 {
-  OX<<"(IHDc) "<<vIndex<<" "<<onHull<<" "<<done<<" "<<cAngle<<" : "<<V;
+  OX<<"(IHDc) "<<vIndex<<" "<<onHull<<" "<<done<<" "<<cAngle<<" \t: "<<V;
   return;
 }
 

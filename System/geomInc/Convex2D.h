@@ -43,12 +43,13 @@ class Convex2D
   typedef std::vector<Vert2D> VTYPE;          ///< Vertex Type
 
   std::vector<Geometry::Vec3D> Pts;           ///< Points
-  VTYPE VList;                      ///< 
+  VTYPE VList;                                ///< Points (in rotaton order)
 
   Geometry::Vec3D centroid;    ///< Centroid to points
   Geometry::Vec3D normal;      ///< Normal to points
   size_t distIndex;            ///< Most distant from centre
 
+  void rotateVList();
   void createVertex();
 
  public:
