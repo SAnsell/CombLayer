@@ -279,7 +279,7 @@ DREAM::build(Simulation& System,
   DDisk->setOffsetFlag(1);  // centre flag
   DDisk->createAll(System,ChopperA->getKey("Main"),0);
   ChopperA->insertAxle(System,*DDisk);
- 
+  return;   
   // Double disk chopper
   SDisk->addInsertCell(ChopperA->getCell("Void"));
   SDisk->setOffsetFlag(1);  // Centre offset control
@@ -358,7 +358,7 @@ DREAM::build(Simulation& System,
   VPipeG->createAll(System,*VPipeF,2);
   FocusG->addInsertCell(VPipeG->getCells("Void"));
   FocusG->createAll(System,*VPipeG,0);
-  
+
   if (stopPoint==2) return;      
 
   // STOP At bunker edge
@@ -385,7 +385,8 @@ DREAM::build(Simulation& System,
   BInsertB->addInsertCell(voidCell);
   BInsertB->createAll(System,*BInsertA,2);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsertB);
-  
+
+
   if (stopPoint==3) return;                      // STOP At bunker edge
   
   // Section up to 41.35 m 

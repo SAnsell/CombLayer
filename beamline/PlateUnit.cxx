@@ -67,6 +67,11 @@
 #include "GuideUnit.h"
 
 #include "PlateUnit.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+#include "Surface.h"
+#include "Quadratic.h"
+#include "Plane.h"
 
 namespace beamlineSystem
 {
@@ -172,6 +177,7 @@ PlateUnit::calcBackPoint(const Geometry::Vec3D& Pt) const
   */
 {
   static const Geometry::Vec3D zero(0,0,0);
+
   return Origin+(Y*length)+Pt.getInBasis(X,zero,Z);
 }
   
@@ -302,8 +308,14 @@ PlateUnit::createSurfaces()
 	  const Geometry::Vec3D PB=calcFrontPoint(frontPts[jPlus]);
 	  const Geometry::Vec3D BA=calcBackPoint(backPts[j]);
 
+
+
 	  const Geometry::Vec3D Norm=Origin-PA;
-	  ModelSupport::buildPlane(SMap,SN,PA,PB,BA,Norm);
+	  ELog::EM<<"Ba["<<keyName<<"]["<<j<<"]== "<<Norm.unit()
+		  <<":";
+	  Geometry::Plane* PPtr=
+	    ModelSupport::buildPlane(SMap,SN,PA,PB,BA,Norm);
+	  ELog::EM<<PPtr->getNormal()<<ELog::endDiag;
 	  SN++;
 	}
       T+=layerThick[i];

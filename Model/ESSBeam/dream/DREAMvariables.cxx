@@ -3,7 +3,7 @@
  
  * File:    ESSBeam/dream/DREAMvariables.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -91,13 +91,15 @@ DREAMvariables(FuncDataBase& Control)
   FGen.setYOffset(0.0);
   FGen.generateTaper(Control,"dreamFA",350.0, 7.630,2.96, 4.0,4.0);
 
-  PipeGen.setWindow(-2.0,0);
+  PipeGen.setNoWindow();
   PipeGen.setMat("Copper");
   PipeGen.generatePipe(Control,"dreamPipeB",26.0);
+  
   Control.addVariable("dreamPipeBYStep",6.5);
   FGen.clearYOffset();
     //  FGen.generateTaper(Control,"dreamFB",50.0,2.88,2.11,3.81,3.95);   
-  FGen.generateTaper(Control,"dreamFB",26.0,2.63,2.14,3.75,3.76);   
+  //  FGen.generateTaper(Control,"dreamFB",26.0,2.63,2.14,3.75,3.76);
+  FGen.generateTaper(Control,"dreamFB",26.0,2.63,2.14,3.75,3.75);   
   
   // VACBOX A : 6.10m target centre
   //  Length 100.7 + Width [87.0] + Height [39.0] void Depth/2 + front

@@ -727,8 +727,10 @@ SingleItemVariables(FuncDataBase& Control)
   FGen.setLayer(1,0.5,"Copper");
   FGen.setLayer(2,2.5,"Stainless304");
   FGen.setYOffset(2.0);
-  FGen.generateRectangle(Control,"FA",100.0,5.0,8.0);
-
+  //  FGen.generateRectangle(Control,"FA",100.0,5.0,8.0);
+  //  FGen.generateTaper(Control,"FA",100.0,2,2,2,10);
+  FGen.generateTaper(Control,"FA",26.0,2.63,2.14,3.75,4.76);   
+  
   const double bendAngle(0.0);   // relative to Z bend
   const double bendRadius(12000.0);    // 120m
   FGen.generateBender(Control,"BA",100.0,30,30,30,30,
