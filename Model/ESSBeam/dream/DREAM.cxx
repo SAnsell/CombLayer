@@ -279,7 +279,7 @@ DREAM::build(Simulation& System,
   DDisk->setOffsetFlag(1);  // centre flag
   DDisk->createAll(System,ChopperA->getKey("Main"),0);
   ChopperA->insertAxle(System,*DDisk);
-  return;   
+
   // Double disk chopper
   SDisk->addInsertCell(ChopperA->getCell("Void"));
   SDisk->setOffsetFlag(1);  // Centre offset control
@@ -292,8 +292,9 @@ DREAM::build(Simulation& System,
   VPipeC->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeC->createAll(System,*VPipeC0,2);
   FocusC->addInsertCell(VPipeC->getCells("Void"));
-  FocusC->createAll(System,*VPipeC,0,*VPipeC,0);
+  FocusC->createAll(System,*VPipeC,0);
   
+  return;     
   //  CollimA->setOuter(VPipeC->getFullRule(-6));
   //  CollimA->setInner(FocusC->getXSection(0,0));
   CollimA->setCutSurf("Outer",*VPipeC,-6);
