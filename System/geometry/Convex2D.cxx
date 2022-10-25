@@ -202,12 +202,13 @@ Convex2D::calcNormal()
   solA.setMatrix(M);
   solA.calcDecomp();
   
-//  Spow*=Spow;
-  
   // Get Normal
   const Matrix<double>& V=solA.getV();
   normal = Geometry::Vec3D(V[0][2],V[1][2],V[2][2]);
 
+  // this is needed because multiple convex hulls can have different
+  // orientation 
+  normal.makePosPrinciple();
   return solA.getS()[2][2];  
 }
 
@@ -330,6 +331,9 @@ Convex2D::rotateVList()
     in  Pts that is on the List
   */
 {
+  ELog::RegMethod RegA("Convex2D","roateVList");
+  
+  ELog::EM<<"X == "<<normal<<ELog::endDiag;
   VTYPE::iterator vc;
   for(const Geometry::Vec3D& P : Pts)
     {
@@ -344,10 +348,6 @@ Convex2D::rotateVList()
 	  ELog::EM<<"X == "<<vc->getV()<<ELog::endDiag;
 	  std::rotate(VList.begin(),vc,VList.end());
 	  return;
-	}
-      else
-	{
-	  ELog::EM<<"XX == "<<vc->getV()<<ELog::endDiag;
 	}
     }
   return;

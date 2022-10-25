@@ -106,6 +106,7 @@ class Vec3D
   Geometry::Vec3D component(const Geometry::Vec3D&) const; 
   Geometry::Vec3D cutComponent(const Geometry::Vec3D&) const;
   void makePosCos(const Geometry::Vec3D&);
+  void makePosPrinciple();
   
   /// Calculate the volmue of a cube X*Y*Z
   double volume() const { return std::abs(x*y*z); }      

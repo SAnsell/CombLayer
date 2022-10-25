@@ -469,6 +469,20 @@ Vec3D::masterDir(const double Tol) const
   return idx;
 }
 
+void
+Vec3D::makePosPrinciple()
+  /*!
+    Given a Vec3D find the principle direction
+    and rotate the vector so that principle direction
+    is +ve.
+  */
+{
+  const size_t pDir=principleDir();
+  if (this->operator[](pDir)<0.0)
+    this->operator*=(-1.0);
+  return;
+}
+
 size_t 
 Vec3D::principleDir() const
   /*! 
