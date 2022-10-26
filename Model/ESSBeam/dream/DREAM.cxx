@@ -260,10 +260,6 @@ DREAM::build(Simulation& System,
 
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);
-  ELog::EM<<"front == "<<FocusA->getFrontRule()<<ELog::endDiag;
-  ELog::EM<<"D == "<<FocusA->getDivider("front")<<ELog::endDiag;
-  ELog::EM<<"front == "<<GItem.getKey("Beam").getFullRule(-1)<<ELog::endDiag;
-
   FocusA->setBack(GItem.getKey("Beam"),-2);
   FocusA->createAll(System,GItem.getKey("Beam"),-1);
 
@@ -298,7 +294,7 @@ DREAM::build(Simulation& System,
   FocusC->addInsertCell(VPipeC->getCells("Void"));
   FocusC->createAll(System,*VPipeC,0);
   
-  return;     
+
   //  CollimA->setOuter(VPipeC->getFullRule(-6));
   //  CollimA->setInner(FocusC->getXSection(0,0));
   CollimA->setCutSurf("Outer",*VPipeC,-6);
@@ -332,7 +328,7 @@ DREAM::build(Simulation& System,
   VPipeE1->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeE1->createAll(System,ChopperC->getKey("Beam"),2);
   FocusE1->addInsertCell(VPipeE1->getCells("Void"));
-  FocusE1->createAll(System,*VPipeE1,0,*VPipeE1,0);
+  FocusE1->createAll(System,*VPipeE1,0);
 
   //  CollimB->setOuter(VPipeE1->getFullRule(-6));
   //CollimB->setInner(FocusE1->getXSection(0,0))
@@ -352,7 +348,7 @@ DREAM::build(Simulation& System,
   CollimC->setCutSurf("Inner",FocusE2->getOuterSurf());
   CollimC->addInsertCell(VPipeE2->getCells("Void"));
   CollimC->createAll(System,*VPipeE2,-2);
-  
+
   // move guide
   VPipeF->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeF->createAll(System,*VPipeE2,2);
@@ -376,7 +372,7 @@ DREAM::build(Simulation& System,
   BInsertA->createAll(System,*VPipeG,2);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsertA);
   
-  FocusWallA->addInsertCell(BInsertA->getCell("Item"));
+
   FocusWallA->createAll(System,*BInsertA,-1);
 
   ShieldA->addInsertCell(voidCell);
@@ -390,6 +386,10 @@ DREAM::build(Simulation& System,
   BInsertB->addInsertCell(voidCell);
   BInsertB->createAll(System,*BInsertA,2);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsertB);
+
+  FocusWallA->insertInCell(System,BInsertA->getCell("Item"));
+  FocusWallA->insertInCell(System,BInsertB->getCell("Item"));
+  FocusWallA->insertInCell(System,ShieldA->getCell("Void"));
 
 
   if (stopPoint==3) return;                      // STOP At bunker edge
@@ -411,9 +411,11 @@ DREAM::build(Simulation& System,
   VPipeOutB->setBack(*ShieldB,-2);
   VPipeOutB->createAll(System,*ShieldB,-1);
 
+  FocusOutA->insertInCell(System,VPipeOutB->getCell("Void"));
+  FocusOutB->setFront(*FocusOutA,"back");
   FocusOutB->addInsertCell(VPipeOutB->getCell("Void"));
   FocusOutB->createAll(System,*VPipeOutB,0);
-  
+
   // Section to 70.8m
   ShieldC->addInsertCell(voidCell);
   ShieldC->createAll(System,*ShieldB,2);
@@ -425,7 +427,8 @@ DREAM::build(Simulation& System,
 
   FocusOutC->addInsertCell(VPipeOutC->getCell("Void"));
   FocusOutC->createAll(System,*VPipeOutC,0);
-  
+
+
   Cave->addInsertCell(voidCell);
   Cave->createAll(System,*ShieldC,2);
   Cave->insertComponent(System,"FrontWall",*ShieldC);

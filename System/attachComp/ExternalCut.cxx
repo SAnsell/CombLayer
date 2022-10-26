@@ -273,7 +273,6 @@ ExternalCut::setCutSurf(const std::string& extName,
   cutUnit& A=getUnit(extName);
 
   A.main=WFC.getMainRule(sideIndex);
-  ELog::EM<<"Divider"<<WFC.getCommonRule(sideIndex)<<ELog::endDiag;
   A.divider=WFC.getCommonRule(sideIndex);
   A.main.populateSurf();
   A.divider.populateSurf();
@@ -395,7 +394,7 @@ ExternalCut::getComplementRule(const std::string& extName) const
   static HeadRule nullOut;
   
   const cutUnit* CU=findUnit(extName);
-  return (CU) ? CU->main.complement()*CU.divider :  nullOut;    
+  return (CU) ? CU->main.complement()*CU->divider :  nullOut;    
 }
 
 const HeadRule&

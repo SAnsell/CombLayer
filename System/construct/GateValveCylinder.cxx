@@ -292,94 +292,91 @@ GateValveCylinder::createObjects(Simulation& System)
   const bool portAExtends(wallThick<=portALen);  // port extends
   const bool portBExtends(wallThick<=portBLen);  // port extends
 
-  const std::string frontHR=frontRule();  // 101
-  const std::string backHR=backRule();    // -102
-  const std::string frontComp=getFrontComplement();  // -101
-  const std::string backComp=getBackComplement();    // 102
+  const HeadRule frontHR=getFrontRule();  // 101
+  const HeadRule backHR=getBackRule();    // -102
+  const HeadRule frontComp=getFrontComplement();  // -101
+  const HeadRule backComp=getBackComplement();    // 102
   // Void 
-  HR=ModelSupport::getComposite(SMap,buildIndex,
-				 " 1 -2 (-7: (3 -4 5 -6))  (307:-301:302) ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				"1 -2 (-7: (3 -4 5 -6))  (307:-301:302)");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
   // Main body
-  HR=ModelSupport::getComposite(SMap,buildIndex,
-				 " 1 -2 7 -17 (-3:4:-5) ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				"1 -2 7 -17 (-3:4:-5)");
   makeCell("Body",System,cellIndex++,wallMat,0.0,HR);
   // Top body
-  HR=ModelSupport::getComposite
-    (SMap,buildIndex," 11 -12 17 13 -14 -16 5 (-1:2:-3:4:6) ");
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"11 -12 17 13 -14 -16 5 (-1:2:-3:4:6)");
   makeCell("Body",System,cellIndex++,wallMat,0.0,HR);
 
   // blade
-  HR=ModelSupport::getComposite(SMap,buildIndex," -307 301 -302 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-307 301 -302");
   makeCell("Blade",System,cellIndex++,bladeMat,0.0,HR);
 
   // front plate
-  HR=ModelSupport::getComposite(SMap,buildIndex," -1 11 -17 117 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 11 -17 117");
   makeCell("FrontPlate",System,cellIndex++,wallMat,0.0,HR);
   // seal ring
-  HR=ModelSupport::getComposite(SMap,buildIndex," -1 107 -117 ");
-  makeCell("FrontSeal",System,cellIndex++,wallMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 107 -117");
+  makeCell("FrontSeal",System,cellIndex++,wallMat,0.0,HR*frontHR);
 
-  HR=ModelSupport::getComposite(SMap,buildIndex," -1 -107 ");
-  makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 -107");
+  makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
   
   if (!portAExtends)
     {
-      HR=ModelSupport::getComposite(SMap,buildIndex," 11 -117 ");
-      makeCell("FrontVoidExtra",System,cellIndex++,voidMat,0.0,Out+frontComp);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -117");
+      makeCell("FrontVoidExtra",System,cellIndex++,voidMat,0.0,HR*frontComp);
     }
        
   // back plate
-  HR=ModelSupport::getComposite(SMap,buildIndex," 2 -12 -17 217 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 -17 217");
   makeCell("BackPlate",System,cellIndex++,wallMat,0.0,HR);
   // seal ring
-  HR=ModelSupport::getComposite(SMap,buildIndex," 2 107 -217 ");
-  makeCell("BackSeal",System,cellIndex++,wallMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 107 -217");
+  makeCell("BackSeal",System,cellIndex++,wallMat,0.0,HR*backHR);
 
-  HR=ModelSupport::getComposite(SMap,buildIndex," 2 -207 ");
-  makeCell("BackVoid",System,cellIndex++,voidMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -207");
+  makeCell("BackVoid",System,cellIndex++,voidMat,0.0,HR*backHR);
   
   if (!portBExtends)
     {
-      HR=ModelSupport::getComposite(SMap,buildIndex," -12 -217 ");
-      makeCell("BackVoidExtra",System,cellIndex++,voidMat,0.0,Out+backComp);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 -217");
+      makeCell("BackVoidExtra",System,cellIndex++,voidMat,0.0,HR*backComp);
     }
-  HR=ModelSupport::getComposite
-    (SMap,buildIndex," 11 -12 (-17 : (13 -14 5 -16))");
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"11 -12 (-17 : (13 -14 5 -16))");
 
   if (portAExtends || portBExtends)
     {
       if (!portAExtends)
 	{
 	  addOuterSurf(HR);
-	  HR=ModelSupport::getComposite(SMap,buildIndex," 12 -217 ");
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -217");
 	}
       else if (!portBExtends)
 	{
 	  addOuterSurf(HR);
-	  HR=ModelSupport::getComposite(SMap,buildIndex," -11 -117 ");
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -117");
 	}
       else
 	{
-	  HR=ModelSupport::getComposite(SMap,buildIndex," -11 -17 117 ");
-	  makeCell("PortOuterVoid",System,cellIndex++,0,0.0,Out+frontStr);
-	  HR=ModelSupport::getComposite(SMap,buildIndex," 12 -17 217 ");
-	  makeCell("PortOuterVoid",System,cellIndex++,0,0.0,Out+backStr);
-	  HR=ModelSupport::getComposite
-	    (SMap,buildIndex," -11 -16 13 -14 5 17 ");
-	  makeCell("PortOuterVoid",System,cellIndex++,0,0.0,Out+frontStr);
-	  HR=ModelSupport::getComposite
-	    (SMap,buildIndex," 12 -16 13 -14 5 17 ");
-	  makeCell("PortOuterVoid",System,cellIndex++,0,0.0,Out+backStr);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -17 117");
+	  makeCell("PortOuterVoid",System,cellIndex++,0,0.0,HR*frontHR);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -17 217");
+	  makeCell("PortOuterVoid",System,cellIndex++,0,0.0,HR*backHR);
+	  HR=ModelSupport::getHeadRule
+	    (SMap,buildIndex,"-11 -16 13 -14 5 17");
+	  makeCell("PortOuterVoid",System,cellIndex++,0,0.0,HR*frontHR);
+	  HR=ModelSupport::getHeadRule
+	    (SMap,buildIndex,"12 -16 13 -14 5 17");
+	  makeCell("PortOuterVoid",System,cellIndex++,0,0.0,HR*backHR);
 
-	  HR=ModelSupport::getComposite(SMap,buildIndex," ( (13 -14 5 -16):-17 )");
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(13 -14 5 -16):-17");
 	}
-      addOuterUnionSurf(Out+frontStr+backStr);
-
+      addOuterUnionSurf(HR*frontHR*backHR);
     }
-
-  //  addOuterUnionSurf(Out+frontStr+backStr);
 
   return;
 }

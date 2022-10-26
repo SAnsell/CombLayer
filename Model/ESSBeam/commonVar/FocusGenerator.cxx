@@ -258,7 +258,6 @@ FocusGenerator::generateBender(FuncDataBase& Control,
   Control.addVariable(keyName+"BHeight",VE);
   Control.addVariable(keyName+"AWidth",HS);
   Control.addVariable(keyName+"BWidth",HE);
-  Control.addVariable(keyName+"Length",length);
 
   Control.addVariable(keyName+"Radius",radius);
   return;
@@ -268,7 +267,8 @@ void
 FocusGenerator::generateOctagon(FuncDataBase& Control,
 				const std::string& keyName,
 				const double length,
-				const double WS,const double WE)  const
+				const double WS,
+				const double WE)  const
 /*!
     Generate the focus-Octagon and Taper variables
     \param Control :: Functional data base
@@ -280,11 +280,10 @@ FocusGenerator::generateOctagon(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("FocusGenerator","generateOctagon");
   writeLayers(Control,keyName,length);
-  
-  Control.addVariable(keyName+"0TypeID","Octagon");
-  Control.addVariable(keyName+"0WidthStart",WS);
-  Control.addVariable(keyName+"0WidthEnd",WE);
-  Control.copyVar(keyName+"0Length",keyName+"Length");
+
+  Control.addVariable(keyName+"TypeID","Octagon");
+  Control.addVariable(keyName+"WidthStart",WS);
+  Control.addVariable(keyName+"WidthEnd",WE);
 
   return;
 }
