@@ -428,7 +428,6 @@ DREAM::build(Simulation& System,
   FocusOutC->addInsertCell(VPipeOutC->getCell("Void"));
   FocusOutC->createAll(System,*VPipeOutC,0);
 
-
   Cave->addInsertCell(voidCell);
   Cave->createAll(System,*ShieldC,2);
   Cave->insertComponent(System,"FrontWall",*ShieldC);

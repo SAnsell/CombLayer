@@ -203,6 +203,5 @@ CSPEC::build(Simulation& System,
   return;
 }
 
-
 }   // NAMESPACE essSystem
 

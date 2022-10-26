@@ -136,6 +136,7 @@ ODINvariables(FuncDataBase& Control)
 
   CGen.setMainRadius(45.0);
   CGen.setFrame(100.0,100.0);
+  CGen.setReverseMotor(1);
   CGen.generateChopper(Control,"odinChopperFOC1",10.0,10.0,6);
 
   // FOC5 single disk chopper
@@ -149,6 +150,7 @@ ODINvariables(FuncDataBase& Control)
   
   CGen.setMainRadius(55.0);
   CGen.setFrame(125.0,125.0);
+  CGen.setReverseMotor(0);
   CGen.generateChopper(Control,"odinChopperFOC2",10.0,10.0,6);
 
   // FOC2 single disk chopper

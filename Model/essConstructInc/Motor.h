@@ -47,8 +47,8 @@ class Motor :
 {
  private:
   
-  int frontInner;                  ///< Front inner surf
-  int backInner;                   ///< Back inner surf
+  int frontInner;               ///< Front inner surf
+  int backInner;                ///< Back inner surf
 
   int revFlag;                  ///< Reverse motor flag
   double bodyLength;            ///< length out of port

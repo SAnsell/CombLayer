@@ -345,6 +345,7 @@ ODIN::buildBunkerUnits(Simulation& System,
   VPipeH->addAllInsertCell(bunkerVoid);
   VPipeH->createAll(System,ChopperFOC4->getKey("Beam"),2);
   FocusH->addInsertCell(VPipeH->getCells("Void"));
+  ELog::EM<<"H == "<<VPipeH->getLinkPt(0)<<ELog::endDiag;
   FocusH->createAll(System,*VPipeH,0);
   
   return;
@@ -507,7 +508,7 @@ ODIN::build(Simulation& System,
       // using 7 : mid point
   FocusWall->addInsertCell(BInsert->getCell("Void"));
   FocusWall->createAll(System,*BInsert,7);
-
+  
   if (stopPoint==3) return;
 
   ShieldA->setFront(bunkerObj,2);

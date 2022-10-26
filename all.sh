@@ -14,6 +14,7 @@ segments=All
 
 ./ess -validAll --validCheck 1000 AA; procExit 
 ./ess --defaultConfig Single  DREAM --validAll --validCheck 1000 AA; procExit
+./ess --defaultConfig Single  CSPEC --validAll --validCheck 1000 AA; procExit
 
 ./fullBuild -validAll --validCheck 1000 AA; procExit 
 ./t1Real -validAll --validCheck 1000 AA; procExit 

@@ -3,7 +3,7 @@
  
  * File:   essBuild/BunkerInsert.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,8 +68,10 @@ namespace essSystem
 {
 
 BunkerInsert::BunkerInsert(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,15),
-  attachSystem::CellMap(),attachSystem::ExternalCut()
+  attachSystem::FixedOffset(Key,15),
+  attachSystem::ContainedComp(),
+  attachSystem::CellMap(),
+  attachSystem::ExternalCut()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -77,8 +79,10 @@ BunkerInsert::BunkerInsert(const std::string& Key)  :
 {}
 
 BunkerInsert::BunkerInsert(const BunkerInsert& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  attachSystem::CellMap(A),attachSystem::ExternalCut(A),
+  attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
+  attachSystem::ExternalCut(A),
   backStep(A.backStep),
   height(A.height),width(A.width),topWall(A.topWall),
   lowWall(A.lowWall),leftWall(A.leftWall),rightWall(A.rightWall),
@@ -99,8 +103,8 @@ BunkerInsert::operator=(const BunkerInsert& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::ExternalCut::operator=(A);
       backStep=A.backStep;
@@ -284,6 +288,7 @@ BunkerInsert::createLinks()
   endMidPt.push_back(Pts[indexB]);
 
   // Mid point [useful for guides etc]
+
   FixedComp::setConnect(6,(Pts[indexA]+Pts[indexB])/2.0,Y);
 
   FixedComp::setConnect(2,Origin-X*(width/2.0),X);

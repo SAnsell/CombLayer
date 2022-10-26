@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BunkerInsert.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,9 +35,11 @@ namespace essSystem
   \brief Bulk around Reflector
 */
 
-class BunkerInsert : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,public attachSystem::CellMap,
-  public attachSystem::ExternalCut
+class BunkerInsert :
+      public attachSystem::FixedOffset,
+      public attachSystem::ContainedComp,
+      public attachSystem::CellMap,
+      public attachSystem::ExternalCut
 {
  private:
 

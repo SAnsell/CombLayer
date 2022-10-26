@@ -273,7 +273,12 @@ PlateUnit::createSurfaces()
   backCV->setPoints(BPts);
   frontCV->constructHull();
   backCV->constructHull();
-  
+
+  if (keyName=="odinFH")
+    ELog::EM<<"Hx == "<<Origin<<" "<<yStep<<ELog::endDiag;
+  if (keyName=="odinFWall")
+    ELog::EM<<"Wx == "<<Origin<<" "<<yStep<<ELog::endDiag;
+
   if (!isActive("front"))
     {
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
