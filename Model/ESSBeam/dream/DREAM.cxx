@@ -253,13 +253,17 @@ DREAM::build(Simulation& System,
   const FuncDataBase& Control=System.getDataBase();
   CopiedComp::process(System.getDataBase());  // CONTROL modified
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
-  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getLinkPt(-1)
+  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getLinkPt("front")
 	  <<" in bunker: "<<bunkerObj.getKeyName()<<ELog::endDiag;
   
   essBeamSystem::setBeamAxis(*dreamAxis,Control,GItem,1);
 
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);
+  ELog::EM<<"front == "<<FocusA->getFrontRule()<<ELog::endDiag;
+  ELog::EM<<"D == "<<FocusA->getDivider("front")<<ELog::endDiag;
+  ELog::EM<<"front == "<<GItem.getKey("Beam").getFullRule(-1)<<ELog::endDiag;
+
   FocusA->setBack(GItem.getKey("Beam"),-2);
   FocusA->createAll(System,GItem.getKey("Beam"),-1);
 

@@ -333,7 +333,6 @@ Convex2D::rotateVList()
 {
   ELog::RegMethod RegA("Convex2D","roateVList");
   
-  ELog::EM<<"X == "<<normal<<ELog::endDiag;
   VTYPE::iterator vc;
   for(const Geometry::Vec3D& P : Pts)
     {
@@ -345,7 +344,6 @@ Convex2D::rotateVList()
 
       if (vc->isOnHull())
 	{
-	  ELog::EM<<"X == "<<vc->getV()<<ELog::endDiag;
 	  std::rotate(VList.begin(),vc,VList.end());
 	  return;
 	}

@@ -299,12 +299,6 @@ PlateUnit::createSurfaces()
 	backCV->scalePoints(T);
 
       for(size_t j=0;j<APts.size();j++)
-	ELog::EM<<"BA["<<keyName<<"] ="<<frontPts[j]<<"  :  "
-		<<backPts[j]<<" == "
-		<<calcFrontPoint(frontPts[j])<<" :: "
-		<<calcBackPoint(frontPts[j])<<" "
-		<<ELog::endDiag;
-      for(size_t j=0;j<APts.size();j++)
 	{
 	  const size_t jPlus=(j+1) % APts.size();
 	  const Geometry::Vec3D PA=calcFrontPoint(frontPts[j]);
@@ -314,13 +308,6 @@ PlateUnit::createSurfaces()
 	  const Geometry::Vec3D Norm=Origin-PA;
 	  Geometry::Plane* PPtr=
 	    ModelSupport::buildPlane(SMap,SN,PA,PB,BA,Norm);
-	  /*
-	  ELog::EM<<"Ba["<<keyName<<"]["<<j<<"]== "<<Norm.unit()
-		  <<":\t";
-	  ELog::EM<<PPtr->getNormal()
-		  <<"=="<<PPtr->getNormal().dotProd(Norm.unit())
-		  <<ELog::endDiag;
-	  */
 	  SN++;
 	}
       T+=layerThick[i];
