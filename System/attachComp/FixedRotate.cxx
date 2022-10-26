@@ -244,7 +244,7 @@ FixedRotate::populate(const std::string& baseName,
       preXAngle=Control.EvalDefTail<double>
 	(keyName,baseName,"PreXAngle",preXAngle);
       preYAngle=Control.EvalDefTail<double>
-	(keyName,baseName,"PreYAngle",preXAngle);
+	(keyName,baseName,"PreYAngle",preYAngle);
       preZAngle=Control.EvalDefTail<double>
 	(keyName,baseName,"PreZAngle",preZAngle);
     }
@@ -268,7 +268,7 @@ FixedRotate::populate(const std::string& baseName,
   else
     {
       xAngle=Control.EvalDefTail<double>(keyName,baseName,"XAngle",xAngle);
-      yAngle=Control.EvalDefTail<double>(keyName,baseName,"YAngle",zAngle);
+      yAngle=Control.EvalDefTail<double>(keyName,baseName,"YAngle",yAngle);
       zAngle=Control.EvalDefTail<double>(keyName,baseName,"ZAngle",zAngle);
     }
 
@@ -336,7 +336,8 @@ FixedRotate::createUnitVector(const attachSystem::FixedComp& FC,
       
   FixedComp::createUnitVector(FC,sideIndex);  
   applyOffset();
-    
+  if (keyName=="cspecBD")
+    ELog::EM<<"ZAngle = "<<zAngle<<" "<<xAngle<<ELog::endDiag;
   return;
 }
 

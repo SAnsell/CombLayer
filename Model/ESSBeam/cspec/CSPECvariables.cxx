@@ -106,8 +106,10 @@ CSPECvariables(FuncDataBase& Control)
 
   PipeGen.generatePipe(Control,"cspecPipeD",510.0);
   Control.addVariable("cspecPipeDYStep",4.0);
+  Control.addVariable("cspecPipeDZAngle",-1.0);
+
   FGen.generateBender(Control,"cspecBD",506.0, 3.0,3.0,3.0,3.0,20000.0,0.0);
-    
+  Control.addVariable("cspecBDZAngle",1.0);
   return;
 }
  

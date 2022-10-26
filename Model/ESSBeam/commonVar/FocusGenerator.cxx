@@ -149,9 +149,7 @@ FocusGenerator::writeLayers(FuncDataBase& Control,
     Control.addVariable<double>(keyName+"YStep",yStep-length/2.0);
 
   Control.addVariable(keyName+"ZStep",zStep);       
-  Control.addVariable(keyName+"XYAngle",0.0);       
   Control.addVariable(keyName+"ZAngle",0.0);
-  Control.addVariable(keyName+"BeamXYAngle",0.0);       
 
   Control.addVariable(keyName+"LayerMat0",layerMat[0]);
   size_t activeLayer(0);

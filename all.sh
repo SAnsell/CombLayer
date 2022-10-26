@@ -13,8 +13,10 @@ segments=All
 ./maxiv --noLengthCheck --defaultConfig Linac ${segments} -validAll --validCheck 1000 AA; procExit
 
 ./ess -validAll --validCheck 1000 AA; procExit 
+./ess --defaultConfig Single  DREAM --validAll --validCheck 1000 AA; procExit
+
 ./fullBuild -validAll --validCheck 1000 AA; procExit 
-## ./t1Real -validAll --validCheck 1000 AA; procExit UNDERGOING UPDATE/REPAIR
+./t1Real -validAll --validCheck 1000 AA; procExit 
 ./reactor -validAll --validCheck 100 AA; procExit
 ./maxiv --defaultConfig Single  BALDER --validAll --validCheck 1000 AA; procExit
 ./maxiv --defaultConfig Single  COSAXS --validAll --validCheck 1000 AA; procExit
@@ -25,6 +27,8 @@ segments=All
 ./maxiv --defaultConfig Single  MICROMAX --validAll --validCheck 1000 AA; procExit
 ./maxiv --defaultConfig Single  SPECIES --validAll --validCheck 10000 AA; procExit
 ./maxiv --defaultConfig Single  SOFTIMAX --validAll --validCheck 1000 AA; procExit
+
+./ess --defaultConfig Single  DREAM --validAll --validCheck 1000 AA; procExit
 
 ./singleItem --singleItem BeamDivider       --validCheck 1000 AA; procExit
 ./singleItem --singleItem BeamScrapper      --validCheck 1000 AA; procExit

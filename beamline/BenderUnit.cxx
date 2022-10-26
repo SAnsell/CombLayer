@@ -133,7 +133,7 @@ BenderUnit::clone() const
 void
 BenderUnit::calcConstValues()
   /*!
-    Basic value s
+    Basic value constant values
    */
 {
   ELog::RegMethod RegA("BenderUnit","calcConstValues");
