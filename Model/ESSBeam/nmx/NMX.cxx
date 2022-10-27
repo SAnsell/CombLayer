@@ -222,7 +222,9 @@ NMX::build(Simulation& System,
   if (stopPoint==2) return;                      // STOP At bunker edge
 
   // First collimator [In WALL]
-  BInsert->setBunkerObject(bunkerObj);
+  //  BInsert->setBunkerObject(bunkerObj);
+  BInsert->setCutSurf("front",bunkerObj,-1);
+  BInsert->setCutSurf("back",bunkerObj,-2);
   BInsert->createAll(System,*BendE,2);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);
 

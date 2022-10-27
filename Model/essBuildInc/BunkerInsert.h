@@ -56,14 +56,11 @@ class BunkerInsert :
   int voidMat;                   ///< void material
 
   HeadRule outCut;               ///< Cut volume for items
-
-  /// bunker object to construct insert in
-  const attachSystem::FixedComp* bunkerObj;
   
   void populate(const FuncDataBase&);
   void createSurfaces();
   void createLinks();
-  void createObjects(Simulation&,const std::string&);
+  void createObjects(Simulation&);
 
   void addCalcPoint();
   
@@ -73,9 +70,6 @@ class BunkerInsert :
   BunkerInsert(const BunkerInsert&);
   BunkerInsert& operator=(const BunkerInsert&);
   virtual ~BunkerInsert();
-
-  void setBunkerObject(const attachSystem::FixedComp& bunkerFC)
-    { bunkerObj= &bunkerFC; }
   
   int objectCut(const std::vector<Geometry::Vec3D>&) const;
   void createAll(Simulation&,const attachSystem::FixedComp&,

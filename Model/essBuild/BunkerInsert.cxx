@@ -215,37 +215,37 @@ BunkerInsert::addCalcPoint()
 
   std::vector<Geometry::Vec3D> Pts;
   outCut.calcSurfSurfIntersection(Pts);
-  ELog::EM<<"CALLED addCalPoint"<<ELog::endDiag;
   return; 
 }
 
   
 void
-BunkerInsert::createObjects(Simulation& System,
-			    const std::string& BCell)
+BunkerInsert::createObjects(Simulation& System)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
-    \param BCell :: Front/back of the bunker + divider
   */
 {
   ELog::RegMethod RegA("BunkerInsert","createObjects");
-  
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,voidMat,0.0,Out+BCell));
+
+  const HeadRule fbHR=getRule("front")*getRule("back");
+  HeadRule HR;
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*fbHR);
   setCell("Void",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 13 -14 15 -16 (-3 : 4: -5: 6) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+BCell));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				 "13 -14 15 -16 (-3 : 4: -5: 6)");
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,HR*fbHR));
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 13 -14 15 -16 ");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 13 -14 15 -16");
+  addOuterSurf(HR);
 
   // Create cut unit:
-  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 15 -16 ");
-  outCut.procString(Out+BCell);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 15 -16");
+
+  outCut=HR*fbHR; 
   outCut.populateSurf();
   
 
@@ -260,36 +260,18 @@ BunkerInsert::createLinks()
 {
   ELog::RegMethod RegA("BunkerInsert","createLinks");
 
-  FixedComp::setLinkCopy(0,*bunkerObj,1);
-  FixedComp::setLinkCopy(1,*bunkerObj,2);
-
-
-  // Calc bunker edge intersectoin
-  std::vector<Geometry::Vec3D> endMidPt;
-  std::vector<Geometry::Vec3D> Pts;
-  std::vector<int> SNum;
-
-  // Inner point
-  HeadRule HM(bunkerObj->getMainRule(1));
-  HM.addIntersection(bunkerObj->getCommonRule(1));
-  HM.populateSurf();
-  HM.calcSurfIntersection(Origin,Y,Pts,SNum);
-  const size_t indexA=SurInter::closestPt(Pts,Origin);
-  FixedComp::setConnect(0,Pts[indexA],-Y);
-  endMidPt.push_back(Pts[indexA]);
   
-  // Outer point
-  HM=bunkerObj->getMainRule(2);
-  HM.addIntersection(bunkerObj->getCommonRule(2));
-  HM.populateSurf();
-  HM.calcSurfIntersection(Origin,Y,Pts,SNum);
-  const size_t indexB=SurInter::closestPt(Pts,Origin);
-  FixedComp::setConnect(1,Pts[indexB],Y);
-  endMidPt.push_back(Pts[indexB]);
+  ExternalCut::createLink("front",*this,0,Origin,-Y);
+  ExternalCut::createLink("back",*this,1,Origin,Y);
+  // Calc bunker edge intersectoin
+  const std::vector<Geometry::Vec3D> endMidPt
+    ({
+      this->getLinkPt("front"),
+      this->getLinkPt("back")
+    });
 
   // Mid point [useful for guides etc]
-
-  FixedComp::setConnect(6,(Pts[indexA]+Pts[indexB])/2.0,Y);
+  FixedComp::setConnect(6,(endMidPt[0]+endMidPt[1])/2.0,Y);
 
   FixedComp::setConnect(2,Origin-X*(width/2.0),X);
   FixedComp::setConnect(3,Origin+X*(width/2.0),X);
@@ -338,17 +320,12 @@ BunkerInsert::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("BunkerInsert","createAll");
 
-  if (!bunkerObj)
-    throw ColErr::EmptyContainer("Bunker Object missing");
-
   populate(System.getDataBase());
   createUnitVector(FC,orgIndex);
   createSurfaces();
 
   // Walls : [put]
-  const std::string BWallStr=bunkerObj->getLinkString(-1)+" "+
-    bunkerObj->getLinkString(-2);
-  createObjects(System,BWallStr);
+  createObjects(System);
   createLinks();
   
   insertObjects(System);              

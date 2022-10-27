@@ -502,11 +502,13 @@ ODIN::build(Simulation& System,
   if (stopPoint==2) return;                      // STOP At bunker edge
 
     // First collimator [In WALL]
-  BInsert->setBunkerObject(bunkerObj);
+  BInsert->setCutSurf("front",bunkerObj,-1);
+  BInsert->setCutSurf("back",bunkerObj,-2);
   BInsert->createAll(System,*FocusH,2);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);
       // using 7 : mid point
   FocusWall->addInsertCell(BInsert->getCell("Void"));
+  ELog::EM<<"BInsert = "<<BInsert->getLinkPt(7)<<ELog::endDiag;
   FocusWall->createAll(System,*BInsert,7);
   
   if (stopPoint==3) return;

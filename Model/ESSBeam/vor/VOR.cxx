@@ -337,7 +337,8 @@ VOR::build(Simulation& System,
   if (stopPoint==2) return;
 
   // Make bunker insert
-  BInsert->setBunkerObject(bunkerObj);
+  BInsert->setCutSurf("front",bunkerObj,-1);
+  BInsert->setCutSurf("back",bunkerObj,-2);
   BInsert->createAll(System,*FocusD,-1);
   attachSystem::addToInsertLineCtrl(System,bunkerObj,"frontWall",
 				    *BInsert,*BInsert);

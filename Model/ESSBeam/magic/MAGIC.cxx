@@ -528,7 +528,8 @@ MAGIC::build(Simulation& System,
   ELog::EM<<"STOP POINT == "<<stopPoint<<ELog::endDiag;
   // IN WALL
   // Make bunker insert
-  BInsert->setBunkerObject(bunkerObj);
+  BInsert->setCutSurf("front",bunkerObj,-1);
+  BInsert->setCutSurf("back",bunkerObj,-2);
   BInsert->createAll(System,*FocusF,2);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
   
