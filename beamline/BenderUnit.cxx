@@ -310,8 +310,10 @@ BenderUnit::createLinks()
     \param FC :: FixedComp to use
    */
 {
-  ELog::RegMethod RegA("BenderUnit","addSideLinks");
+  ELog::RegMethod RegA("BenderUnit","createLinks");
 
+  if (resetYRotation)
+    applyAngleRotate(0,-yAngle,0);
 
   ExternalCut::createLink("front",*this,0,Origin,-Y);
   ExternalCut::createLink("back",*this,1,endPt,bY);
@@ -321,23 +323,6 @@ BenderUnit::createLinks()
   setLinkSurf(4,SMap.realSurf(buildIndex+7));
   setLinkSurf(5,SMap.realSurf(buildIndex+8));
 
-  /*
-  const double maxThick=layerThick.back();
-  const Geometry::Vec3D midPt((endPt+Origin)/2.0);
-  const double L=APt.Distance(BPt)/2.0;  // lenght of half line
-  const double b=sqrt(radius*radius-L*L);
-  const Geometry::Vec3D norm=Z*(BPt-APt).unit();
-  *
-  / *
-  Geom
-  Geometry::Vec3D( (X.dotProd(norm)>1.0) ? midPt+norm*b : midPt-norm*b;
-
-  setConnect(2,Origin-aHeight,-Z);
-  setConnect(3,RCent*Radius+RAxis*((aHeight+bHeight)/4.0),RAxis);
-
-		   setConnect(4,RCent*(Radius-aWidth/2.0),-RPlane);
-   setConnect(5,RCent*(Radius+aWidth/2.0),RPlane);
-  */
   return;
 }
 
@@ -359,8 +344,6 @@ BenderUnit::createAll(Simulation& System,
 
   createSurfaces();
   createObjects(System);
-  if (resetYRotation)
-    applyAngleRotate(0,-yAngle,0);
   createLinks();
   insertObjects(System);
   

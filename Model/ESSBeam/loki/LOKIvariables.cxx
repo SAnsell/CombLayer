@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/loki/LOKIvariables.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -105,13 +105,13 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiPipeBYStep",7.0);
   FGen.setLayer(1,0.5,"Aluminium");
   FGen.clearYOffset();
-  FGen.generateBender(Control,"lokiBB",41.0, 3.0,3.0,3.0,3.0,5700.0,0.0);
+  FGen.generateBender(Control,"lokiBB",41.0, 3.0,3.0,3.0,3.0,5700.0,-90.0);
 
   // Pipe in gamma shield
   PipeGen.generatePipe(Control,"lokiPipeBLink",44.0);
   Control.addVariable("lokiPipeBLinkYStep",2.0);
   FGen.clearYOffset();
-  FGen.generateBender(Control,"lokiBBLink",42.0, 3.0,3.0,3.0,3.0,5700.0,0.0);
+  FGen.generateBender(Control,"lokiBBLink",42.0, 3.0,3.0,3.0,3.0,5700.0,-90.0);
   
   CGen.setMainRadius(35.5);   // diameter 70.0 emali
   CGen.setFrame(80.0,80.0);
@@ -173,7 +173,8 @@ LOKIvariables(FuncDataBase& Control)
 
   CGen.setMainRadius(40.5);   // diameter 70.0 emali
   CGen.setFrame(90.0,90.0);
-  CGen.generateChopper(Control,"lokiChopperOutA",9.3,15.7,5.3);  
+  CGen.setReverseMotor(1);
+  CGen.generateChopper(Control,"lokiChopperOutA",11.0,15.7,5.3);  
 
   // Double Blade chopper
   BGen.setMaterials("Aluminium","Aluminium");

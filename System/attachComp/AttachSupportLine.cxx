@@ -217,6 +217,7 @@ addToInsertLineCtrl(Simulation& System,
 {
   ELog::RegMethod RegA("AttachSupport[F]","addtoInsectLineCtrl(FC,FC)");
 
+  ELog::EM<<"Cell = "<<OuterFC.getKeyName()<<ELog::endDiag;
   const std::set<int> CNum=
     System.getObjectRange(OuterFC.getKeyName());
   for(const int CN : CNum)

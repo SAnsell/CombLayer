@@ -86,7 +86,7 @@ BunkerInsert::BunkerInsert(const BunkerInsert& A) :
   backStep(A.backStep),
   height(A.height),width(A.width),topWall(A.topWall),
   lowWall(A.lowWall),leftWall(A.leftWall),rightWall(A.rightWall),
-  wallMat(A.wallMat),voidMat(A.voidMat),outCut(A.outCut)
+  wallMat(A.wallMat),voidMat(A.voidMat)
   /*!
     Copy constructor
     \param A :: BunkerInsert to copy
@@ -116,7 +116,6 @@ BunkerInsert::operator=(const BunkerInsert& A)
       rightWall=A.rightWall;
       wallMat=A.wallMat;
       voidMat=A.voidMat;
-      outCut=A.outCut;
     }
   return *this;
 }
@@ -179,45 +178,6 @@ BunkerInsert::createSurfaces()
   return;
 }
   
-int
-BunkerInsert::objectCut(const std::vector<Geometry::Vec3D>& Corners) const
-  /*!
-    Determine if a set of corners from another BunkerInsert item
-    are within, completely within, outside this bunker unit
-    \param Corners :: Points to test
-    \retval 0 :: No intercept
-    \retval -1 :: Partial inside
-    \retval 1 :: Full inside 
-   */
-{
-  ELog::RegMethod RegA("BunkerInsert","objectCut");
-
-  int good(0);
-  int fail(0);
-  for(const Geometry::Vec3D& Pt : Corners)
-    {
-      if (outCut.isValid(Pt))
-	good=1;
-      else
-	fail=1;
-      if (good & fail) return -1;
-    }
-  return (!fail) ? 1 : 0;
-}
-
-void
-BunkerInsert::addCalcPoint()
-  /*!
-    Process the string to calculate the corner points 
-   */
-{
-  ELog::RegMethod RegA("BunkerInsert","addCalcPoint");
-
-  std::vector<Geometry::Vec3D> Pts;
-  outCut.calcSurfSurfIntersection(Pts);
-  return; 
-}
-
   
 void
 BunkerInsert::createObjects(Simulation& System)
@@ -245,8 +205,6 @@ BunkerInsert::createObjects(Simulation& System)
   // Create cut unit:
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 15 -16");
 
-  outCut=HR*fbHR; 
-  outCut.populateSurf();
   
 
   return;

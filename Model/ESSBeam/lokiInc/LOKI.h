@@ -108,7 +108,7 @@ class LOKI : public attachSystem::CopiedComp
   /// Vac pipe in wall (if used)
   std::shared_ptr<constructSystem::VacuumPipe> VPipeWall;
   /// Gamma 
-  std::shared_ptr<beamlineSystem::PlateUnit> FocusWall;
+  std::shared_ptr<beamlineSystem::BenderUnit> FocusWall;
 
   /// Shield for ChopperPit merged with bunker wall
   std::shared_ptr<constructSystem::ChopperPit> OutPitA;

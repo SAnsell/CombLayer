@@ -116,7 +116,7 @@ LOKI::LOKI(const std::string& keyN) :
 
   BInsert(new CompBInsert(newName+"CInsert")),
   VPipeWall(new constructSystem::VacuumPipe(newName+"PipeWall")),  
-  FocusWall(new beamlineSystem::PlateUnit(newName+"FWall")),
+  FocusWall(new beamlineSystem::BenderUnit(newName+"FWall")),
 
   OutPitA(new constructSystem::ChopperPit(newName+"OutPitA")),
   PitACut(new constructSystem::HoleShape(newName+"PitACut")),
@@ -195,6 +195,7 @@ LOKI::registerObjects()
   OR.addObject(ChopperOutA);
   OR.addObject(DDiskOutA);
 
+  OR.addObject(ShieldA);
   OR.addObject(VPipeOutA);
   OR.addObject(FocusOutA);
   OR.addObject(AppA);
@@ -296,7 +297,8 @@ LOKI::buildOutGuide(Simulation& System,
   PitACut->setFaces(OutPitA->getKey("Inner").getFullRule(2),
                     OutPitA->getKey("Mid").getFullRule(-2));
   PitACut->createAll(System,OutPitA->getKey("Inner"),2);
-  
+
+
   //Chopper unit
   ChopperOutA->addInsertCell(OutPitA->getCell("Void"));
   ChopperOutA->createAll(System,*FocusWall,2);
@@ -307,7 +309,8 @@ LOKI::buildOutGuide(Simulation& System,
   DDiskOutA->createAll(System,ChopperOutA->getKey("Main"),0);  
   ChopperOutA->insertAxle(System,*DDiskOutA);
 
- //Beamline Shileding
+
+ //Beamline Shielding
   ShieldA->addInsertCell(voidCell);
   ShieldA->addInsertCell(OutPitA->getCells("MidLayer"));
   ShieldA->addInsertCell(OutPitA->getCell("Outer"));
@@ -327,6 +330,7 @@ LOKI::buildOutGuide(Simulation& System,
   AppA->createAll(System,*FocusOutA,2);
 
   attachSystem::addToInsertLineCtrl(System,*ShieldA,*AppA,*AppA);
+  return;
   attachSystem::addToInsertForced(System,*AppA,*VPipeOutA);
 
   //Collimator block in first shielding
@@ -454,14 +458,16 @@ LOKI::build(Simulation& System,
   BendA->setFront(GItem.getKey("Beam"),-1);
   BendA->setBack(GItem.getKey("Beam"),-2);
   BendA->createAll(System,*lokiAxis,-3); // beam front reversed
-
+  
   if (stopPoint==1) return;                // STOP At monolith edge
 
   buildBunkerUnits(System,*BendA,2,
                    bunkerObj.getCell("MainVoid"));
 
+
   if (stopPoint==2) return;                // STOP At Bunker Wall
-  
+
+
   // WALL
   BInsert->addInsertCell(bunkerObj.getCell("MainVoid"));
   BInsert->setFront(bunkerObj,-1);
@@ -474,11 +480,21 @@ LOKI::build(Simulation& System,
   FocusWall->setBack(*BInsert,-2);
   FocusWall->createAll(System,*BInsert,7); 
 
+  ELog::EM<<"Bend Directoin == "<<BendB->getLinkPt(1)
+	  <<" :: "<<BendB->getLinkAxis(-1)
+	  <<" :: "<<BendB->getLinkAxis(2)
+	  <<ELog::endDiag;
+  ELog::EM<<"Bend Directoin == "<<FocusWall->getLinkPt(1)
+	  <<" :: "<<FocusWall->getLinkAxis(-1)
+	  <<" :: "<<FocusWall->getLinkAxis(2)
+	  <<ELog::endDiag;
+
+
   if (stopPoint==3) return;                // STOP At Outer-Bunker Wall
   
   OutPitA->addFrontWall(bunkerObj,2);
   buildOutGuide(System,*FocusWall,2,voidCell);
-  
+  return;  
   Cave->addInsertCell(voidCell);
   Cave->createAll(System,*ShieldB,2);
 
