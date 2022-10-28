@@ -12,7 +12,12 @@ segments=All
 #./maxiv --noLengthCheck --defaultConfig Linac ${segments} AA
 ./maxiv --noLengthCheck --defaultConfig Linac ${segments} -validAll --validCheck 1000 AA; procExit
 
+./ess -defaultConfig Single CSPEC -validAll --validCheck 1000 AA; procExit 
+./ess -defaultConfig Single ODIN -validAll --validCheck 1000 AA; procExit 
+./ess -defaultConfig Single LOKI -validAll --validCheck 1000 AA; procExit 
+./ess -defaultConfig Single MAGIC -validAll --validCheck 1000 AA; procExit 
 ./ess -validAll --validCheck 1000 AA; procExit 
+
 ./fullBuild -validAll --validCheck 1000 AA; procExit 
 ## ./t1Real -validAll --validCheck 1000 AA; procExit UNDERGOING UPDATE/REPAIR
 ./reactor -validAll --validCheck 100 AA; procExit
