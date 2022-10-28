@@ -3,7 +3,7 @@
  
  * File:    ESSBeam/magic/MAGICvariables.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -151,12 +151,11 @@ MAGICvariables(FuncDataBase& Control)
   SGen.generateShield(Control,"magicShieldA",1000.0,40.0,40.0,60.0,4,8);
   PipeGen.generatePipe(Control,"magicPipeOutA",994.0);
   Control.addVariable("magicPipeOutAYStep",5.0);
-  FGen.clearYOffset();
-  FGen.setYMainOffset(8.0);  
-  FGen.generateTaper(Control,"magicOutFA",990.0, 5.89,6.65, 5.80,6.60 );
+  const double outFAlen(990.0);
+  FGen.generateTaper(Control,"magicOutFA",outFAlen, 5.89,6.65, 5.80,6.60);
 
   // 38m to 48m
-  FGen.setYMainOffset(4.0);  
+  //  FGen.setYMainOffset(4.0);  
   SGen.generateShield(Control,"magicShieldB",1000.0,40.0,40.0,60.0,4,8);
   PipeGen.generatePipe(Control,"magicPipeOutB",996.0);
   Control.addVariable("magicPipeOutBYStep",4.0);
@@ -184,7 +183,7 @@ MAGICvariables(FuncDataBase& Control)
   SGen.generateShield(Control,"magicShieldF",590.0,40.0,40.0,60.0,2,8);
   PipeGen.generatePipe(Control,"magicPipeOutF",586.0);
   Control.addVariable("magicPipeOutFYStep",6.0);
-  FGen.generateTaper(Control,"magicOutFF",582.0, 7.20,7.60, 7.18,7.58 );
+  FGen.generateTaper(Control,"magicOutFF",582.0, 7.20,7.60, 7.18,7.58);
 
   PGen.setFeLayer(6.0);
   PGen.setConcLayer(10.0);

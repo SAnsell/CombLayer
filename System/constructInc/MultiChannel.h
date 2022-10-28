@@ -34,9 +34,12 @@ namespace constructSystem
     \brief Multichannel reflector in a guide component
   */
   
-class MultiChannel : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,public attachSystem::CellMap,
-  public attachSystem::SurfMap
+class MultiChannel :
+    public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
+    public attachSystem::CellMap,
+    public attachSystem::SurfMap,
+    public attachSystem::ExternalCut
 {
  private:
 
@@ -58,9 +61,6 @@ class MultiChannel : public attachSystem::ContainedComp,
   int bladeMat;                 ///< material of blades
   int voidMat;                  ///< material of void
 
-  
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
   void createSurfaces();
   void processSurface(const size_t,const double,const double);
   void createObjects(Simulation&);
@@ -83,6 +83,7 @@ class MultiChannel : public attachSystem::ContainedComp,
   void setLeftRight(const attachSystem::FixedComp&,const long int,
 		    const attachSystem::FixedComp&,const long int);
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
   

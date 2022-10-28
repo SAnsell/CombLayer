@@ -70,16 +70,17 @@ namespace beamlineSystem
 {
 
 BenderUnit::BenderUnit(const std::string& key)  :
-  GuideUnit(key),resetYRotation(1)
+  GuideUnit(key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param key :: keyName
   */
-{}
+{
+  resetYRotation=1;
+}
 
 BenderUnit::BenderUnit(const BenderUnit& A) : 
   GuideUnit(A),
-  resetYRotation(A.resetYRotation),
   aHeight(A.aHeight),bHeight(A.bHeight),aWidth(A.aWidth),
   bWidth(A.bWidth),radius(A.radius),rotAng(A.rotAng),
   rCent(A.rCent),bX(A.bX),bY(A.bY)
@@ -100,7 +101,6 @@ BenderUnit::operator=(const BenderUnit& A)
   if (this!=&A)
     {
       GuideUnit::operator=(A);
-      resetYRotation=A.resetYRotation;
       aHeight=A.aHeight;
       bHeight=A.bHeight;
       aWidth=A.aWidth;

@@ -76,7 +76,8 @@ GuideUnit::GuideUnit(const std::string& key)  :
   attachSystem::FixedRotate(key,6),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
-  attachSystem::FrontBackCut()
+  attachSystem::FrontBackCut(),
+  resetYRotation(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param key :: keyName
@@ -88,6 +89,7 @@ GuideUnit::GuideUnit(const GuideUnit& A) :
   attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
   attachSystem::FrontBackCut(A),
+  resetYRotation(A.resetYRotation),
   begPt(A.begPt),endPt(A.endPt),length(A.length),
   nShapeLayers(A.nShapeLayers),layerThick(A.layerThick),
   layerMat(A.layerMat)
@@ -111,6 +113,7 @@ GuideUnit::operator=(const GuideUnit& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
+      resetYRotation=A.resetYRotation;
       begPt=A.begPt;
       endPt=A.endPt;
       length=A.length;
@@ -173,6 +176,9 @@ GuideUnit::createLinks()
   */
 {
   ELog::RegMethod RegA("VacuumBox","createLinks");
+
+  if (resetYRotation)
+    applyAngleRotate(0,-yAngle,0);
 
   FrontBackCut::createFrontLinks(*this,Origin,-Y); 
   FrontBackCut::createBackLinks(*this,Origin,Y);  

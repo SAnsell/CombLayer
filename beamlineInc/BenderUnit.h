@@ -39,8 +39,6 @@ class BenderUnit :
 {
  private:
 
-  bool resetYRotation;        ///< Reset rotoation in y used for bend axis
-  
   double aHeight;             ///< Height across rotation plane [start]
   double bHeight;             ///< Across rotation plane [end]
   double aWidth;              ///< In rotation plane [start]

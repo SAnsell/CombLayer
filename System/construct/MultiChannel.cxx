@@ -3,7 +3,7 @@
  
  * File:   construct/MultiChannel.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,10 +38,9 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
+#include "Vec3D.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "stringCombine.h"
-#include "Vec3D.h"
 #include "Surface.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -58,11 +57,12 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "ExternalCut.h"
 #include "surfDBase.h"
 #include "MultiChannel.h"
 
@@ -71,8 +71,11 @@ namespace constructSystem
 {
 
 MultiChannel::MultiChannel(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,2),
-  attachSystem::CellMap(),attachSystem::SurfMap(),
+  attachSystem::FixedRotate(Key,2),
+  attachSystem::ContainedComp(),
+  attachSystem::CellMap(),
+  attachSystem::SurfMap(),
+  attachSystem::ExternalCut(),
   setFlag(0)
   /*!
     Default constructor
@@ -81,8 +84,11 @@ MultiChannel::MultiChannel(const std::string& Key) :
 {}
   
 MultiChannel::MultiChannel(const MultiChannel& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  attachSystem::CellMap(A),attachSystem::SurfMap(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
+  attachSystem::SurfMap(A),
+  attachSystem::ExternalCut(A),
   setFlag(A.setFlag),topRule(A.topRule),baseRule(A.baseRule),
   topSurf(A.topSurf),baseSurf(A.baseSurf),
   divider(A.divider),leftStruct(A.leftStruct),
@@ -105,10 +111,11 @@ MultiChannel::operator=(const MultiChannel& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       
       setFlag=A.setFlag;
       topSurf=A.topSurf;
@@ -138,7 +145,7 @@ MultiChannel::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("MultiChannel","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   nBlades=Control.EvalVar<size_t>(keyName+"NBlades");
   bladeThick=Control.EvalVar<double>(keyName+"BladeThick");
@@ -150,24 +157,6 @@ MultiChannel::populate(const FuncDataBase& Control)
   
   return;
 }
-
-void
-MultiChannel::createUnitVector(const attachSystem::FixedComp& FC,
-                               const long int sideIndex)
-  /*!
-    Create the unit vectors: Note only to construct front/back surf
-    \param FC :: Centre point
-    \param sideIndex :: Side index
-  */
-{
-  ELog::RegMethod RegA("MultiChannel","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  
-  return;
-}
-
 
 void
 MultiChannel::processSurface(const size_t index,
@@ -222,8 +211,8 @@ MultiChannel::createSurfaces()
 			 static_cast<double>(nBlades+1));
 
   if (TotalD<BladeTotal+Geometry::zeroTol)
-    throw ColErr::SizeError<double>(TotalD,BladeTotal,
-       "Distance:BladeThick["+StrFunc::makeString(nBlades)+"]");
+    throw ColErr::SizeError<double>
+      (TotalD,BladeTotal,"Distance:BladeThick["+std::to_string(nBlades)+"]");
   
 
   double DPosA(voidThick);
@@ -245,32 +234,33 @@ MultiChannel::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("MultiChannel","createObjects");
-  std::string Out;
+
+  HeadRule HR;
 
 
-  std::string FB=ModelSupport::getComposite(SMap,buildIndex,"1 -2");
-  FB+=leftStruct.display()+rightStruct.display();
+  HeadRule fbHR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2");
+  fbHR*=leftStruct*rightStruct;
 
   HeadRule BHR(baseRule);
+
   int SN(buildIndex);
   for(size_t i=0;i<nBlades;i++)
     {
-      Out=BHR.display()+ModelSupport::getComposite(SMap,SN," -3 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,voidMat,0.0,Out+FB));
+      HR=BHR*HeadRule(SMap,SN,-3);
+      System.addCell(cellIndex++,voidMat,0.0,HR*fbHR);
 
-      Out=ModelSupport::getComposite(SMap,SN," 3 -4 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,bladeMat,0.0,Out+FB));
-      
-      Out=ModelSupport::getComposite(SMap,SN," 4 ");
-      BHR.procString(Out);
+      HR=ModelSupport::getHeadRule(SMap,SN,"3 -4");
+      System.addCell(cellIndex++,bladeMat,0.0,HR*fbHR);
+
+      BHR=HeadRule(SMap,SN,4);
       SN+=10;
     }
   // LAST Volume
-  Out=BHR.display()+topRule.display();
-  System.addCell(MonteCarlo::Object(cellIndex++,voidMat,0.0,Out+FB));
+  HR=BHR*topRule;
+  System.addCell(cellIndex++,voidMat,0.0,HR*fbHR);
   
-  Out=FB+baseRule.display()+" "+topRule.display();
-  addOuterSurf(Out);
+  HR=fbHR*baseRule*topRule;
+  addOuterSurf(HR);
   return;
 }
 
@@ -404,8 +394,6 @@ MultiChannel::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("MultiChannel","createAll");
 
-
-  ELog::EM<<"SET FLAG ="<<setFlag<<ELog::endDiag;
   if ((setFlag & 3) == 3)
     {
       populate(System.getDataBase());

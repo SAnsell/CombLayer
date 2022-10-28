@@ -274,11 +274,6 @@ PlateUnit::createSurfaces()
   frontCV->constructHull();
   backCV->constructHull();
 
-  if (keyName=="odinFH")
-    ELog::EM<<"Hx == "<<Origin<<" "<<yStep<<ELog::endDiag;
-  if (keyName=="odinFWall")
-    ELog::EM<<"Wx == "<<Origin<<" "<<yStep<<ELog::endDiag;
-
   if (!isActive("front"))
     {
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
@@ -313,6 +308,12 @@ PlateUnit::createSurfaces()
 	  const Geometry::Vec3D Norm=Origin-PA;
 	  Geometry::Plane* PPtr=
 	    ModelSupport::buildPlane(SMap,SN,PA,PB,BA,Norm);
+	  if (i==0)
+	    {
+	      FixedComp::setLinkSurf(2+j,SMap.realSurf(SN));
+	      const Geometry::Vec3D BB=calcBackPoint(backPts[jPlus]);
+	      FixedComp::setConnect(2+j,(PA+PB+BA+BB)/4.0,PPtr->getNormal());
+	    }
 	  SN++;
 	}
       T+=layerThick[i];
@@ -346,12 +347,13 @@ PlateUnit::createObjects(Simulation& System)
 	       cellIndex++,layerMat[i],0.0,HR*fbHR*innerHR);
       innerHR=HR.complement();
     }
-  
+
+  addCell("GuideVoid",getCell("Layer0"));
   addOuterSurf(HR*fbHR);
-  return;
-  
+  return;  
 }
-  
+
+
 void
 PlateUnit::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,

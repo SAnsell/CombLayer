@@ -46,6 +46,8 @@ class GuideUnit :
 {
  protected:
 
+  bool resetYRotation;        ///< Reset rotoation in y used for bend axis
+  
   Geometry::Vec3D begPt;   ///< Current start point
   Geometry::Vec3D endPt;   ///< Current exit point
 
