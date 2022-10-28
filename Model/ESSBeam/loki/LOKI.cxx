@@ -358,7 +358,7 @@ LOKI::buildOutGuide(Simulation& System,
   FocusOutB->addInsertCell(VPipeOutB->getCell("Void"));
   FocusOutB->createAll(System,*VPipeOutB,0);
 
-  return;
+
   //  CollB->setInnerExclude(VPipeOutB->getFullRule(9));
   //  CollB->setOuter(ShieldB->getXSectionIn());
   CollB->setCutSurf("Inner",*VPipeOutB,-9);
@@ -366,7 +366,7 @@ LOKI::buildOutGuide(Simulation& System,
   CollB->addInsertCell(ShieldB->getCell("Void"));
   CollB->addInsertCell(VPipeOutB->getCell("outerVoid"));
   CollB->createAll(System,*VPipeOutB,-1);
-  
+
   // Aperture after second collimator drum
   AppB->addInsertCell(ShieldB->getCell("Void"));
   AppB->createAll(System,*FocusOutB,2);
@@ -497,7 +497,7 @@ LOKI::build(Simulation& System,
   
   OutPitA->addFrontWall(bunkerObj,2);
   buildOutGuide(System,*FocusWall,2,voidCell);
-  return;  
+
   Cave->addInsertCell(voidCell);
   Cave->createAll(System,*ShieldB,2);
 
