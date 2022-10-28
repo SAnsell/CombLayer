@@ -74,8 +74,8 @@ BremOpticsColl::BremOpticsColl(const std::string& Key)  :
 {}
 
 BremOpticsColl::BremOpticsColl(const BremOpticsColl& A) :
-  attachSystem::ContainedComp(A),
   attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
@@ -116,8 +116,8 @@ BremOpticsColl::operator=(const BremOpticsColl& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedRotate::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);

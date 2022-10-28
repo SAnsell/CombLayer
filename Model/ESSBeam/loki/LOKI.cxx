@@ -317,9 +317,9 @@ LOKI::buildOutGuide(Simulation& System,
   ShieldA->setFront(OutPitA->getKey("Mid"),2);
   ShieldA->createAll(System,OutPitA->getKey("Mid"),2);
 
-  VPipeOutA->addAllInsertCell(ShieldA->getCell("Void"));
-  VPipeOutA->addAllInsertCell(OutPitA->getCell("Void"));
-  VPipeOutA->addAllInsertCell(PitACut->getCell("Void")); 
+  VPipeOutA->addInsertCell("Main",ShieldA->getCell("Void"));
+  VPipeOutA->addInsertCell("Main",OutPitA->getCell("Void"));
+  VPipeOutA->addInsertCell("Main",PitACut->getCell("Void")); 
   VPipeOutA->createAll(System,ChopperOutA->getKey("Beam"),2);
 
   FocusOutA->addInsertCell(VPipeOutA->getCell("Void"));
@@ -330,18 +330,20 @@ LOKI::buildOutGuide(Simulation& System,
   AppA->createAll(System,*FocusOutA,2);
 
   attachSystem::addToInsertLineCtrl(System,*ShieldA,*AppA,*AppA);
-  return;
-  attachSystem::addToInsertForced(System,*AppA,*VPipeOutA);
+
+  VPipeOutA->insertInCell("Main",System,AppA->getCell("Void"));
+  VPipeOutA->insertInCell("Main",System,AppA->getCell("Body"));
 
   //Collimator block in first shielding
   // CollA->setInnerExclude(VPipeOutA->getFullRule(9));
   // CollA->setOuter(ShieldA->getXSectionIn());
 
+
   CollA->setCutSurf("Inner",*VPipeOutA,-9);
   CollA->setCutSurf("Outer",ShieldA->getXSectionIn());
 
   CollA->addInsertCell(ShieldA->getCell("Void"));
-  CollA->addInsertCell(VPipeOutA->getCell("OutVoid"));
+  CollA->addInsertCell(VPipeOutA->getCell("outerVoid"));
   //  CollA->createAll(System,*VPipeOutA,-1);
 
 
@@ -356,12 +358,13 @@ LOKI::buildOutGuide(Simulation& System,
   FocusOutB->addInsertCell(VPipeOutB->getCell("Void"));
   FocusOutB->createAll(System,*VPipeOutB,0);
 
+  return;
   //  CollB->setInnerExclude(VPipeOutB->getFullRule(9));
   //  CollB->setOuter(ShieldB->getXSectionIn());
   CollB->setCutSurf("Inner",*VPipeOutB,-9);
   CollB->setCutSurf("Outer",ShieldB->getXSectionIn());  
   CollB->addInsertCell(ShieldB->getCell("Void"));
-  CollB->addInsertCell(VPipeOutB->getCell("OutVoid"));
+  CollB->addInsertCell(VPipeOutB->getCell("outerVoid"));
   CollB->createAll(System,*VPipeOutB,-1);
   
   // Aperture after second collimator drum

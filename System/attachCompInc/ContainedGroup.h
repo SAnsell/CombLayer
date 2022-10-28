@@ -106,6 +106,10 @@ class ContainedGroup
   void addInsertCell(const std::string&,const std::vector<int>&);
   void addInsertCell(const std::string&,const ContainedComp&);
 
+  void addInsertCell(const std::list<std::string>&,const int);
+  void addInsertCell(const std::list<std::string>&,const std::vector<int>&);
+  void addInsertCell(const std::list<std::string>&,const ContainedComp&);
+
   void setInsertCell(const std::string&,const int);
   void setAllInsertCell(const int);
 
@@ -119,6 +123,12 @@ class ContainedGroup
   void insertInCell(const std::string&,Simulation&,
 		    const std::vector<int>&) const;
   void insertInCell(const std::string&,MonteCarlo::Object&) const;
+
+  void insertInCell(const std::list<std::string>&,Simulation&,const int) const;
+  void insertInCell(const std::list<std::string>&,Simulation&,
+		    const std::vector<int>&) const;
+  void insertInCell(const std::list<std::string>&,
+		    MonteCarlo::Object&) const;
 
 
   /// Size accessor

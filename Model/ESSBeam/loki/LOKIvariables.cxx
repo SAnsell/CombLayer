@@ -188,7 +188,9 @@ LOKIvariables(FuncDataBase& Control)
   SGen.generateShield(Control,"lokiShieldA",270.0,100.0,100.0,150.0,8,8);
 
  // straight after fifth chopper inside the collimator drum
+  PipeGen.setOuterVoid();
   PipeGen.generatePipe(Control,"lokiPipeOutA",270.0);
+  
   Control.addVariable("lokiPipeOutAYStep",0.5);
   
   //  FGen.setYOffset(-134.0);

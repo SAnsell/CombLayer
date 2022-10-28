@@ -371,12 +371,12 @@ VacuumPipe::createObjects(Simulation& System)
     {
       // outer boundary [flange front]
       Out=ModelSupport::getSetComposite
-	(SMap,buildIndex," -101 -107 103 -104 105 -106 ");
+	(SMap,buildIndex,"-101 -107 103 -104 105 -106 ");
       addOuterSurf("FlangeA",Out+frontStr);
 
       // outer boundary [flange back]
       Out=ModelSupport::getSetComposite
-	(SMap,buildIndex," 102 -207 203 -204 205 -206 ");
+	(SMap,buildIndex,"102 -207 203 -204 205 -206 ");
       addOuterSurf("FlangeB",Out+backStr);
 
       // outer boundary mid tube
