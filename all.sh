@@ -12,7 +12,11 @@ function procExit
 ./ess --defaultConfig Single  DREAM --validAll --validCheck 1000 AA; procExit
 ./ess --defaultConfig Single  CSPEC --validAll --validCheck 1000 AA; procExit
 ./ess --defaultConfig Single  ODIN --validAll --validCheck 1000 AA; procExit
-exit(1)
+./ess --defaultConfig Single  MAGIC --validAll --validCheck 1000 AA; procExit
+./ess --defaultConfig Single  BIFROST --validAll --validCheck 1000 AA; procExit
+
+exit 1
+exit 1
 segments=All
 #./maxiv --noLengthCheck --defaultConfig Linac ${segments} AA
 ./maxiv --noLengthCheck --defaultConfig Linac ${segments} -validAll --validCheck 1000 AA; procExit

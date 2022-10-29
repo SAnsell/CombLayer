@@ -401,7 +401,7 @@ DREAM::build(Simulation& System,
       
   FocusOutA->addInsertCell(VPipeOutA->getCell("Void"));
   FocusOutA->createAll(System,*VPipeOutA,0);
-  
+
   // Section to 58.95m
   ShieldB->addInsertCell(voidCell);
   ShieldB->createAll(System,*ShieldA,2);

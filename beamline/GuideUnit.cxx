@@ -73,7 +73,7 @@ namespace beamlineSystem
 {
 
 GuideUnit::GuideUnit(const std::string& key)  :
-  attachSystem::FixedRotate(key,6),
+  attachSystem::FixedRotate(key,12),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::FrontBackCut(),
