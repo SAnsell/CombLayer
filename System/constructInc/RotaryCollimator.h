@@ -3,7 +3,7 @@
  
  * File:   constructInc/RotaryCollimator.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,11 +35,12 @@ namespace constructSystem
   \brief RotaryCollimator [insert object]
 */
 
-class RotaryCollimator : public attachSystem::ContainedComp,
-  public attachSystem::FixedGroup,public attachSystem::CellMap
+class RotaryCollimator :
+    public attachSystem::FixedGroup,
+    public attachSystem::ContainedComp,
+    public attachSystem::CellMap
 {
  private:
-  
   
   double xyAngle;           ///< Angle relative to LC 
   double zAngle;            ///< Angle relative LC 
