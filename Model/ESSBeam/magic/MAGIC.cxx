@@ -401,15 +401,19 @@ MAGIC::buildPolarizer(Simulation& System,
   MCGuideB->createAll(System,*PolarizerPit,0);
   
   MCInsertA->addInsertCell(MCGuideA->getCells("GuideVoid"));
-  MCInsertA->setFaces(*MCGuideA,4,6);
-  MCInsertA->setLeftRight(*MCGuideA,3,
-			  *MCGuideA,5);
+  MCInsertA->setCutSurf("Base",*MCGuideA,4);
+  MCInsertA->setCutSurf("Top",*MCGuideA,6);
+  MCInsertA->setCutSurf("Left",*MCGuideA,3);
+  MCInsertA->setCutSurf("Right",*MCGuideA,5);
   MCInsertA->createAll(System,*MCGuideA,0);
 
 
   MCInsertB->addInsertCell(MCGuideB->getCells("GuideVoid"));
-  MCInsertB->setFaces(*MCGuideB,4,6);
-  MCInsertB->setLeftRight(*MCGuideB,3,*MCGuideB,5);
+  MCInsertB->setCutSurf("Base",*MCGuideB,4);
+  MCInsertB->setCutSurf("Top",*MCGuideB,6);
+  MCInsertB->setCutSurf("Left",*MCGuideB,3);
+  MCInsertB->setCutSurf("Right",*MCGuideB,5);
+  
   MCInsertB->createAll(System,*MCGuideB,0);
   
   return;
@@ -539,12 +543,11 @@ MAGIC::build(Simulation& System,
 
   buildPolarizer(System,*ShieldE,2,*FocusOutE,2,voidCell);
 
-  return;
+
   if (stopPoint==5) return;
 
   ShieldG->addInsertCell(voidCell);
   ShieldG->addInsertCell(PolarizerPit->getCells("Outer"));
-  ShieldG->addInsertCell(PolarizerPit->getCells("MxidLayer"));
   ShieldG->setFront(PolarizerPit->getKey("Mid"),2);
   ShieldG->createAll(System,*ShieldF,2);
 

@@ -279,7 +279,7 @@ ExternalCut::setCutSurf(const std::string& extName,
 
   if (WFC.hasLinkPt(sideIndex))
     A.setPoint(WFC.getLinkPt(sideIndex));
-  
+
   return;
 }
 

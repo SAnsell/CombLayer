@@ -1280,6 +1280,21 @@ HeadRule::getPrimarySurface() const
   return TSet.front();
 }
 
+const Geometry::Surface*
+HeadRule::primarySurface() const
+  /*!
+    Calculate the surfaces that are within the top level
+    and return the surface if it is a  master surface.
+    The master surface is when the surface is the ONLY surface
+    at the master level. Throw if that is not the case
+
+    \return single surface ptr / 0 if not a single primary [signed]
+  */
+{
+  const int SN=getPrimarySurface();
+  return getSurface(SN);
+}
+
 std::vector<int>
 HeadRule::getTopSurfaces() const
   /*!

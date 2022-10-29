@@ -42,25 +42,17 @@ class MultiChannel :
     public attachSystem::ExternalCut
 {
  private:
-
-
-  int setFlag;                  ///< Structures set
-  HeadRule topRule;             ///< Base surface rule
-  HeadRule baseRule;            ///< Top surface rule
-  Geometry::Surface* topSurf;   ///< top face
-  Geometry::Surface* baseSurf;  ///< lower face
-
-  HeadRule divider;             ///< divider
-
-  HeadRule leftStruct;          ///< common left face
-  HeadRule rightStruct;         ///< common right face
-
+  
+  const Geometry::Surface* baseSurf;
+  const Geometry::Surface* topSurf;
+  
   size_t nBlades;               ///< Number of blades
   double bladeThick;            ///< thickness of blade
   double length;                ///< thickness of collimator
   int bladeMat;                 ///< material of blades
   int voidMat;                  ///< material of void
 
+  void populate(const FuncDataBase&);
   void createSurfaces();
   void processSurface(const size_t,const double,const double);
   void createObjects(Simulation&);
@@ -73,16 +65,7 @@ class MultiChannel :
   MultiChannel(const MultiChannel&);
   MultiChannel& operator=(const MultiChannel&);
   virtual ~MultiChannel() {}  ///< Destructor
-
-  void populate(const FuncDataBase&);
   
-  void setFaces(const int,const int);
-  void setFaces(const attachSystem::FixedComp&,const long int,const long int);
-  void setDivider(const HeadRule&);
-  void setLeftRight(const HeadRule&,const HeadRule&);
-  void setLeftRight(const attachSystem::FixedComp&,const long int,
-		    const attachSystem::FixedComp&,const long int);
-
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

@@ -75,8 +75,7 @@ MultiChannel::MultiChannel(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
-  attachSystem::ExternalCut(),
-  setFlag(0)
+  attachSystem::ExternalCut()
   /*!
     Default constructor
     \param Key :: Key name for variables
@@ -89,10 +88,7 @@ MultiChannel::MultiChannel(const MultiChannel& A) :
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::ExternalCut(A),
-  setFlag(A.setFlag),topRule(A.topRule),baseRule(A.baseRule),
-  topSurf(A.topSurf),baseSurf(A.baseSurf),
-  divider(A.divider),leftStruct(A.leftStruct),
-  rightStruct(A.rightStruct),nBlades(A.nBlades),
+  nBlades(A.nBlades),
   bladeThick(A.bladeThick),length(A.length),
   bladeMat(A.bladeMat),voidMat(A.voidMat)
   /*!
@@ -117,14 +113,6 @@ MultiChannel::operator=(const MultiChannel& A)
       attachSystem::SurfMap::operator=(A);
       attachSystem::ExternalCut::operator=(A);
       
-      setFlag=A.setFlag;
-      topSurf=A.topSurf;
-      baseSurf=A.baseSurf;
-      topRule=A.topRule;
-      baseRule=A.baseRule;
-      divider=A.divider;
-      leftStruct=A.leftStruct;
-      rightStruct=A.rightStruct;
       nBlades=A.nBlades;
       bladeThick=A.bladeThick;
       length=A.length;
@@ -196,8 +184,9 @@ MultiChannel::createSurfaces()
 {
   ELog::RegMethod RegA("MultiChannel","createSurface");
 
-  ELog::EM<<"Surface == "<<Origin<<ELog::endDiag;
-  ELog::EM<<"Surface == "<<length<<ELog::endDiag;
+  baseSurf=getRule("Base").primarySurface();
+  topSurf=getRule("Top").primarySurface();
+
   
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
@@ -235,13 +224,16 @@ MultiChannel::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("MultiChannel","createObjects");
 
+  const HeadRule baseRule=getRule("Base");
+  const HeadRule topRule=getRule("Top");
   HeadRule HR;
 
-
+  
   HeadRule fbHR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2");
-  fbHR*=leftStruct*rightStruct;
-
-  HeadRule BHR(baseRule);
+  fbHR*=getRule("Left")*getRule("Right")*getRule("Divider");
+  
+  //  topRule=getRule("Top");
+  HeadRule BHR(getRule("Base"));
 
   int SN(buildIndex);
   for(size_t i=0;i<nBlades;i++)
@@ -279,108 +271,7 @@ MultiChannel::createLinks()
   
   return;
 }
-
-void
-MultiChannel::setFaces(const int BS,const int TS)
-  /*!
-    Set the top/base surface numbers
-    \param BS :: Base surface number
-    \param TS :: Top surface number
-  */
-{
-  ELog::RegMethod RegA("MultiChannel","setFaces");
-
-  // DEAL WITH MIRROR PLANES:
-  baseSurf=SMap.realSurfPtr(BS);
-  topSurf=SMap.realSurfPtr(TS);
-  if (!baseSurf)
-    throw ColErr::InContainerError<int>(BS,"BaseSurf");
-  if (!topSurf)
-    throw ColErr::InContainerError<int>(TS,"TopSurf");
-
-  baseRule.procSurface(baseSurf);
-  topRule.procSurface(topSurf);
-
-  // NOTE: Top rule is complement originally
-  if (TS<0) topRule.makeComplement();
-  if (BS<0) baseRule.makeComplement();
-  setFlag |= 1;
-  return;
-}
-
-void
-MultiChannel::setFaces(const attachSystem::FixedComp& FC,
-		       const long int BS,const long int TS)
-  /*!
-    Set the top/base surface numbers
-    \param FC :: Fixed Component to use
-    \param BS :: Base surface link point
-    \param TS :: Top surface link point
-  */
-{
-  ELog::RegMethod RegA("MultiChannel","setFaces<FC>");
-
-  const int baseSurfN=FC.getLinkSurf(BS);
-  const int topSurfN=FC.getLinkSurf(TS);
-  setFaces(baseSurfN,topSurfN);
-
-  return;
-}
-  
-void
-MultiChannel::setDivider(const HeadRule& HR)
-  /*!
-    Set the inner volume
-    \param HR :: Headrule of inner surfaces
-  */
-{
-  ELog::RegMethod RegA("MultiChannel","setInner");
-
-  divider=HR;
-  setFlag |= 4;
-  return;
-}
-
-void
-MultiChannel::setLeftRight(const HeadRule& LR,const HeadRule& RR)
-  /*!
-    Set the left/right sides
-    \param LR :: HeadRule of left surface
-    \param RR :: HeadRule of right surface
-  */
-{
-  ELog::RegMethod RegA("MultiChannel","setLeftRight");
-
-  leftStruct=LR;
-  rightStruct=RR;
-  setFlag |= 2;
-  return;
-}
-
-void
-MultiChannel::setLeftRight(const attachSystem::FixedComp& FCA,
-                           const long int lIndex,
-			   const attachSystem::FixedComp& FCB,
-                           const long int rIndex)
-  /*!
-    Set the left/right sides
-    \param FCA :: Left fixed comp
-    \param lIndex :: left side index
-    \param FCB :: Left fixed comp
-    \param rIndex :: right side index
-  */
-{
-  ELog::RegMethod RegA("MultiChannel","setLeftRight(FC)");
-
-  leftStruct=FCA.getFullRule(lIndex);
-  rightStruct=FCB.getFullRule(rIndex);
-  setFlag |= 2;
-  return;
-}
-
-
-  
-  
+    
 void
 MultiChannel::createAll(Simulation& System,
                      const attachSystem::FixedComp& FC,
@@ -394,17 +285,12 @@ MultiChannel::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("MultiChannel","createAll");
 
-  if ((setFlag & 3) == 3)
-    {
-      populate(System.getDataBase());
-      createUnitVector(FC,sideIndex);
-      createSurfaces();
-      createObjects(System);
-      createLinks();
-      insertObjects(System);
-    }
-  else
-    ELog::EM<<"MC channel["<<keyName<<"] no configured"<<ELog::endWarn;
+  populate(System.getDataBase());
+  createUnitVector(FC,sideIndex);
+  createSurfaces();
+  createObjects(System);
+  createLinks();
+  insertObjects(System);
   return;
 }
 
