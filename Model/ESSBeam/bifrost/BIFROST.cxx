@@ -127,7 +127,6 @@ BIFROST::BIFROST(const std::string& keyName) :
   VPipeWall(new constructSystem::VacuumPipe(newName+"PipeWall")),
   FocusWall(new beamlineSystem::PlateUnit(newName+"FWall")),
 
-
   ShieldA(new constructSystem::LineShield(newName+"ShieldA")),
   VPipeOutA(new constructSystem::VacuumPipe(newName+"PipeOutA")),
   FocusOutA(new beamlineSystem::PlateUnit(newName+"FOutA")),
@@ -356,8 +355,9 @@ BIFROST::build(Simulation& System,
   if (stopPoint==2) return;                      // STOP At bunker edge
   // IN WALL
   // Make bunker insert
+  BInsert->setCutSurf("front",bunkerObj,-1);
+  BInsert->setCutSurf("back",bunkerObj,-2);
   BInsert->addInsertCell(bunkerObj.getCell("MainVoid"));
-  BInsert->addInsertCell(74123);
   BInsert->createAll(System,*AppB,2);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
 
@@ -366,6 +366,8 @@ BIFROST::build(Simulation& System,
   //  VPipeWall->createAll(System,*BInsert,-1);
 
   // using 7 : mid point
+  FocusWall->setFront(*BInsert,-1);
+  FocusWall->setBack(*BInsert,-2);
   FocusWall->addInsertCell(BInsert->getCells("Item"));
   FocusWall->createAll(System,*BInsert,7);
 
@@ -374,7 +376,6 @@ BIFROST::build(Simulation& System,
 
   // First put pit into the main void
   OutPitA->addInsertCell(voidCell);
-  ELog::EM<<"Caution was get(shield)"<<ELog::endDiag;
   //  OutPitA->createAll(System,FocusWall->getKey("Shield"),2);
   OutPitA->createAll(System,*FocusWall,2);
   

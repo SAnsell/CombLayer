@@ -425,6 +425,7 @@ LineShield::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createCentredUnitVector(FC,FIndex,length/2.0);
+
   createSurfaces();    
   createObjects(System);  
   createLinks();
