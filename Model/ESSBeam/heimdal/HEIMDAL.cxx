@@ -199,11 +199,12 @@ HEIMDAL::buildBunkerUnits(Simulation& System,
   
   FocusCB->addInsertCell(VPipeB->getCells("Void"));
   FocusCB->createAll(System,FCA,coldIndex);
-
+  
   ELog::EM<<"Cold = "<<FocusCB->getLinkAxis(2)
 	  <<ELog::endDiag;
   ELog::EM<<"Thermal = "<<FocusTB->getLinkAxis(2)
 	  <<ELog::endDiag;
+
   VPipeC->addAllInsertCell(bunkerVoid);
   VPipeC->createAll(System,*VPipeB,2);
 
@@ -216,7 +217,7 @@ HEIMDAL::buildBunkerUnits(Simulation& System,
   TChopA->addInsertCell(bunkerVoid);
   TChopA->getKey("Main").setAxisControl(3,ZVert);
   TChopA->createAll(System,*FocusTC,2);
-  
+
   // Double disk chopper
   ADiskOne->addInsertCell(TChopA->getCell("Void"));
   ADiskOne->createAll(System,TChopA->getKey("Main"),0);

@@ -102,9 +102,10 @@ main(int argc,char* argv[])
       
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
 
+
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
-      
+
       SimPtr->objectGroups::write("ObjectRegister.txt");
     }
   catch (ColErr::ExitAbort& EA)

@@ -255,7 +255,7 @@ BEERvariables(FuncDataBase& Control)
   Control.addVariable("beerBInsertWallMat","Stainless304");       
 
   // Guide in wall
-  FGen.generateTaper(Control,"beerFWall",308.0,6.0,6.0,6.0,6.0);
+  FGen.generateTaper(Control,"beerFWall",355.0,6.0,6.0,6.0,6.0);
   // Optional pipe in wall
   PipeGen.generatePipe(Control,"beerPipeWall",348.0);
   Control.addVariable("beerPipeWallYStep",4.0);
@@ -272,7 +272,7 @@ BEERvariables(FuncDataBase& Control)
   BGen.generateBlades(Control,"beerWBC3Blade",0.0,25.0,50.0);
 
   CGen.setMainRadius(81.0);
-  CGen.setFrame(175.0,175.0);
+  CGen.setFrame(165.0,165.0);
   CGen.generateChopper(Control,"beerChopperOutB",12.0,12.0,8.0);
 
   // FOC chopper

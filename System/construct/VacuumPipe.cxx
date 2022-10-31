@@ -355,11 +355,12 @@ VacuumPipe::createObjects(Simulation& System)
 	  makeCell("outerVoid",System,cellIndex++,0,0.0,HR*frontHR);
 
 	  HR=HeadRule(SMap,buildIndex,-207);
-	  addOuterSurf("Main",HR*frontHR+backHR);
+	  addOuterSurf("Main",HR*frontHR*backHR);
 	}
     }
   else
     {
+
       // outer boundary [flange front]
       HR=ModelSupport::getSetHeadRule
 	(SMap,buildIndex,"-101 -107 103 -104 105 -106");

@@ -42,6 +42,7 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "CFFlanges.h"
 #include "FocusGenerator.h"
 #include "ShieldGenerator.h"
 #include "ChopperGenerator.h"
@@ -69,9 +70,8 @@ MAGICvariables(FuncDataBase& Control)
   setVariable::PipeGenerator PipeGen;
   setVariable::BladeGenerator BGen;
 
-  PipeGen.setPipe(8.0,0.5);
-  PipeGen.setWindow(-2.0,0.5);
-  PipeGen.setFlange(-4.0,1.0);
+  PipeGen.setCF<CF150>();
+  PipeGen.setNoWindow();
 
   SGen.addWall(1,25.0,"CastIron");
   SGen.addRoof(1,25.0,"CastIron");

@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BunkerRoof.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,6 +41,7 @@ namespace essSystem
 class BunkerRoof :
     public attachSystem::FixedComp,
     public attachSystem::ContainedComp,
+    public attachSystem::ExternalCut,
     public attachSystem::CellMap,
     public attachSystem::SurfMap
 {

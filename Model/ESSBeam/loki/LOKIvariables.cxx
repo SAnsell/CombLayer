@@ -42,6 +42,7 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "CFFlanges.h"
 #include "FocusGenerator.h"
 #include "ShieldGenerator.h"
 #include "ChopperGenerator.h"
@@ -79,9 +80,9 @@ LOKIvariables(FuncDataBase& Control)
   SGen.addRoofMat(5,"Concrete");
   SGen.addWallMat(5,"Concrete");
 
-  PipeGen.setPipe(4.5,0.5);
-  PipeGen.setWindow(-2.0,0.3);
-  PipeGen.setFlange(-4.0,1.0);
+  PipeGen.setCF<CF100>();
+  PipeGen.setNoWindow();
+    //  PipeGen.setFlange(-4.0,1.0);
 
   Control.addVariable("lokiStopPoint",0);  
   Control.addVariable("lokiStartPoint",0);  
@@ -131,9 +132,9 @@ LOKIvariables(FuncDataBase& Control)
   PipeGen.setPipe(5.0,0.8);  // Rad / thick
   PipeGen.setWindow(-2.0,0.8);  // window offset/ thick
   PipeGen.setFlange(-4.0,1.0);
-  PipeGen.generatePipe(Control,"lokiPipeC",488.0);
+  PipeGen.generatePipe(Control,"lokiPipeC",487.0);
   Control.addVariable("lokiPipeCYStep",1.0);
-  FGen.generateRectangle(Control,"lokiFC",485.0,2.5,3.0);
+  FGen.generateRectangle(Control,"lokiFC",484.0,2.5,3.0);
 
 
 // NEW BEAM INSERT:

@@ -673,7 +673,7 @@ makeESS::buildBunkerChicane(Simulation& System,
       const std::string bunkerName=
         IParam.getValueError<std::string>
         ("bunkerChicane",j,0,"BunkerName "+errMess);
-
+      ELog::EM<<"Bunker Name == "<<bunkerName<<ELog::endDiag;
       // bunkerA/etc should be a map
       std::shared_ptr<Bunker> BPtr;
       if (bunkerName=="BunkerA" || bunkerName=="ABunker")
@@ -843,9 +843,9 @@ makeESS::makeBeamLine(Simulation& System,
 	  std::pair<int,int> BLNum=makeESSBL::getBeamNum(BL);
           ELog::EM<<"BLNum == "<<BLNum.first<<" "<<BLNum.second<<ELog::endDiag;
 	  
-	  if (BLNum.first==1 && BLNum.second<=11)
+	  if (BLNum.first==1 && BLNum.second<=10)
 	    BLfactory.build(System,*ABunker);
-	  else if (BLNum.first==1 && BLNum.second>11)
+	  else if (BLNum.first==1 && BLNum.second>10)
 	    BLfactory.build(System,*BBunker);
 	  else if (BLNum.first==2 && BLNum.second<=11)
 	    BLfactory.build(System,*DBunker);

@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   constructVar/BlockShutterGenerator.cxx
+ * File:   ralVar/BlockShutterGenerator.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
  *

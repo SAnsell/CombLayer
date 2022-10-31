@@ -3,7 +3,7 @@
  
  * File:   essBuild/BunkerRoof.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,6 +47,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -61,6 +62,7 @@ namespace essSystem
 BunkerRoof::BunkerRoof(const std::string& bunkerName) :
   attachSystem::FixedComp(bunkerName+"Roof",6),
   attachSystem::ContainedComp(),
+  attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   baseName(bunkerName),
@@ -74,6 +76,7 @@ BunkerRoof::BunkerRoof(const std::string& bunkerName) :
 BunkerRoof::BunkerRoof(const BunkerRoof& A) :
   attachSystem::FixedComp(A),
   attachSystem::ContainedComp(A),
+  attachSystem::ExternalCut(A),
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   baseName(A.baseName),
@@ -204,7 +207,7 @@ BunkerRoof::setRadialSurf(const int IS,const int OS)
     \param OS :: outer surface
   */
 {
-  ELog::RegMethod RegA("BunkerRoof","setVertSurf");
+  ELog::RegMethod RegA("BunkerRoof","setRadialSurf");
   
   innerSurf=IS;
   outerSurf=OS;
@@ -260,6 +263,7 @@ BunkerRoof::createSector(Simulation& System,
   
   LD3.divideCell(System,cellN);
   addCells("Sector"+std::to_string(sectNum),LD3.getCells());
+
   return;
 }
 

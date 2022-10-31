@@ -165,6 +165,7 @@ NNBAR::buildBunkerUnits(Simulation& System,
   FocusB->addInsertCell(VPipeB->getCells("Void"));
   FocusB->createAll(System,*VPipeB,0);
 
+  
   // pipe from gamma shield to 10m
   VPipeC->addAllInsertCell(bunkerVoid);
   VPipeC->createAll(System,*FocusB,2);
@@ -307,18 +308,17 @@ NNBAR::build(Simulation& System,
                                                  // edge  
   buildBunkerUnits(System,*FocusA,2,
                    bunkerObj.getCell("MainVoid"));
+  ELog::EM<<"Bunkder == "<<bunkerObj.getCell("MainVoid")<<ELog::endDiag;
 
   // IN WALL
   // Make bunker insert
   BInsert->setCutSurf("front",bunkerObj,-1);
   BInsert->setCutSurf("back",bunkerObj,-2);
   BInsert->createAll(System,*FocusC,2);
-  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
+  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);
 
-
-  VPipeD->addAllInsertCell(BInsert->getCell("Void"));
-  VPipeD->insertObjects(System);   
-
+  VPipeD->insertInCell("Main",System,BInsert->getCell("Void"));   
+  
   ShieldA->setFront(bunkerObj,2);
   buildOutGuide(System,*FocusD,2,voidCell);
 

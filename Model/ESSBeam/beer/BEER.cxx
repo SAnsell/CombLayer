@@ -67,6 +67,8 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "World.h"
+#include "Importance.h"
+#include "Object.h"
 #include "AttachSupport.h"
 #include "beamlineSupport.h"
 #include "GuideItem.h"
@@ -320,7 +322,7 @@ BEER::buildOutGuide(Simulation& System,
 {
   ELog::RegMethod RegA("BEER","buildOutGuide");
 
-
+  ELog::EM<<"START -== "<<FW.getLinkPt(startIndex)<<ELog::endDiag;
   OutPitA->addInsertCell(voidCell);
   OutPitA->createAll(System,FW,startIndex);
 
@@ -425,7 +427,51 @@ BEER::buildIsolated(Simulation& System,const int voidCell)
   
   return;
 }
-  
+
+void
+BEER::insertChoppersInRoof(Simulation& System,
+			   const Bunker& bunkerObj)
+  /*!
+    Carry out the full build
+    \param System :: Simulation system
+    \param bunkerObj :: Bunker object
+  */
+{
+  ELog::RegMethod RegA("BEER","insertChoppersInRoof");
+
+  // First (green chopper)
+  const std::vector<const essConstruct::SingleChopper*>
+    chopList({
+	ChopperA.get()
+      });
+
+  const std::vector<int> baseCells=bunkerObj.getCells("roofBase");
+  for(const essConstruct::SingleChopper* APtr : chopList)
+    {
+
+      const Geometry::Vec3D tA=APtr->getLinkPt("topLeft");
+      const Geometry::Vec3D tB=APtr->getLinkPt("topRight");
+      for(const int CN : baseCells)
+	{
+	  const MonteCarlo::Object* OPtr=System.findObject(CN);
+	  HeadRule HR=System.findObject(CN)->getHeadRule();
+	  if (CN==2730001)
+	    ELog::EM<<"SCx Flag == "<<*(System.findObject(2730001))
+		    <<ELog::endDiag;
+
+	  if (CN==2730001)
+	    ELog::EM<<"HR == "<<*OPtr<<ELog::endDiag;
+	  if (HR.isLineValid(tA,tB))
+	    {
+	      ELog::EM<<"APtr == "<<CN<<ELog::endDiag;
+	      APtr->insertInCell(System,CN);
+	    }
+	}
+    }
+
+  return;
+}
+ 
 void 
 BEER::build(Simulation& System,
 	    const GuideItem& GItem,
@@ -452,15 +498,15 @@ BEER::build(Simulation& System,
   essBeamSystem::setBeamAxis(*beerAxis,Control,GItem,1);
   
   BendA->addInsertCell(GItem.getCells("Void"));
+  BendA->setFront(GItem.getKey("Beam"),-1);
   BendA->setBack(GItem.getKey("Beam"),-2);
   BendA->createAll(System,*beerAxis,-3);
   ELog::EM<<"BeerAxis == "<<beerAxis->getLinkAxis(-3)<<ELog::endDiag;
   if (stopPoint==1) return;                      // STOP At monolith
                                                  // edge
-  
   buildBunkerUnits(System,*BendA,2,
                    bunkerObj.getCell("MainVoid"));
-  
+  insertChoppersInRoof(System,bunkerObj);
 
   if (stopPoint==2) return;                      // STOP At bunker edge
   // IN WALL
@@ -472,9 +518,11 @@ BEER::build(Simulation& System,
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
 
     // using 7 : mid point
+  FocusWall->setFront(*BInsert,-1);
+  FocusWall->setBack(*BInsert,-2);
   FocusWall->addInsertCell(BInsert->getCell("Void"));
   FocusWall->createAll(System,*BInsert,7);
-  
+
   OutPitA->addFrontWall(bunkerObj,2);
   buildOutGuide(System,*FocusWall,2,voidCell);
   

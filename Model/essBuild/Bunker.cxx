@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "surfRegister.h"
@@ -59,6 +57,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -487,7 +486,13 @@ Bunker::createMainRoof(Simulation& System,const int innerSurf)
 			    SMap.realSurf(LW),SMap.realSurf(RW));
       
       removeCell("roof"+SectNum);
-      addCells("roof",roofObj->getCells("Sector"+SectNum));
+      const std::vector<int> newCells=roofObj->getCells("Sector"+SectNum);
+      addCells("roof",newCells);
+
+      addCell("roofBase",newCells.front());
+      addCell("roofBase"+SectNum,newCells.front());
+      addCell("roofSector"+SectNum,newCells.front());
+
       if (i+1==nSectors)
         addCells("roofFarEdge",roofObj->getCells("Sector"+SectNum));
 

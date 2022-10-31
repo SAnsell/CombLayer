@@ -307,7 +307,6 @@ BlockZone::rebuildInsertCells(Simulation& System)
   
 }
   
-
 int
 BlockZone::createUnit(Simulation& System)
   /*!
@@ -376,11 +375,14 @@ BlockZone::createLinks(const attachSystem::FixedComp& FC,
 		       const long int sideIndex)
   /*!
     construct front/back points
+    \param FC :: Construct link for axises
+    \param sideIndex :: link point
    */
 {
-  ELog::RegMethod RegA("Segment27","createLinks");
+  ELog::RegMethod RegA("BlockZone","createLinks");
 
   createUnitVector(FC,sideIndex);
+  
   frontHR.populateSurf();
   backHR.populateSurf();
 

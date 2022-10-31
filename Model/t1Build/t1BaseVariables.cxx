@@ -1044,13 +1044,15 @@ TS1base(FuncDataBase& Control)
   BSGen.generateBox(Control,"maps",    1.3,0.0,    0.0,0.0,   7.34,7.34, 0.22,0.22); 
   BSGen.generateBox(Control,"vesuvio", 1.7,0.0,    0.0,0.0,   7.38,7.38, 0.58,0.58);
   BSGen.generateBox(Control,"sxd",     2.0,0.0,    2.0,0.0,   8.88,8.88, 0.58,0.58); 
-  BSGen.generateBox(Control,"merlin", -2.2,0.0,   -2.0,0.0,   9.4,9.4,   0.0,0.0);
+  BSGen.generateBox(Control,"merlin", -2.2,0.0,   -1.0,0.0,   9.4,9.4,   0.0,0.0);
   BSGen.generateBox(Control,"s5",      0.0,0.0,    0.0,0.0,   7.0,7.0,   0.0,0.0); // CLOSED
   BSGen.generateBox(Control,"mari",    2.0,0.0,    0.7,0.0,   7.74,7.74, 0.48,0.48); 
   BSGen.generateBox(Control,"gem",     1.4,0.0,    0.0,0.0,   7.4,8.6,   0.115,0.172);  
   BSGen.generateBox(Control,"hrpd",    1.5,0.0,    1.5,0.0,   8.0,6.0,   0.143,0.0);
   BSGen.generateBox(Control,"pearl",   1.3,0.0,    0.0,0.0,   8.23,8.23, 0.215,0.215);  
 
+
+  Control.addVariable("merlinShutterSteelBWidth",1.5);
   /*
 
   ts1System::shutterVar Sandals("sandals"); // SANDALS shutter number [north 1]; former SYM

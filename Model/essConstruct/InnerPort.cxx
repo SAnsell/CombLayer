@@ -371,6 +371,7 @@ InnerPort::createBolts(Simulation& System)
     }
 
   // Now create objects:
+  // Check which cells will need boundary cut
   const std::vector<int> cornerCut=
     {
       boundaryHR.isValid(Origin-X*HFull-Z*VFull),
@@ -379,9 +380,6 @@ InnerPort::createBolts(Simulation& System)
       boundaryHR.isValid(Origin+X*HFull-Z*VFull)
     };
   
-  for(const int I : cornerCut)
-    ELog::EM<<"Boundary == "<<I<<" "<<Origin-X*HFull-Z*VFull<<ELog::endDiag;
-
   const std::vector<std::string> surfSide
     ({"-23 33" , "26 -36","24 -34", "-25 35"});
   const std::vector<int> leftSide({35,23,36,24});
