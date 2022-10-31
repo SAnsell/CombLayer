@@ -534,6 +534,8 @@ LayerDivide3D::divideCell(Simulation& System,const int cellN)
       const int flag=System.minimizeObject(CN);
       if (flag==-1)
 	CellMap::removeCellNumber(CN);
+      if (CN==2730001)
+	ELog::EM<<"Cell == "<<*System.findObject(CN)<<ELog::endDiag;
     }
 
   if (DGPtr && !outputFile.empty())

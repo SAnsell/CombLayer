@@ -39,14 +39,13 @@ namespace essSystem
 */
 
 class HighBay :
-    public attachSystem::ContainedComp,
     public attachSystem::FixedComp,
+    public attachSystem::ContainedComp,
+    public attachSystem::ExternalCut,
     public attachSystem::CellMap,
     public attachSystem::SurfMap
 {
  private:
-
-  const std::string baseName;     ///< Bunker base name
 
   double length;                 ///< Y direction of roof
   double height;                 ///< Height 
@@ -55,17 +54,10 @@ class HighBay :
   int wallMat;                   ///< Default wall material
   int roofMat;                   ///< Default wall material
 
-  HeadRule curtainCut;           ///< Extra cut for curtain
-
- 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-  void createSurfaces(const Bunker&,const Bunker&);
-  void createObjects(Simulation&,const Bunker&,const Bunker&);
+  void createSurfaces();
+  void createObjects(Simulation&);
 
-  void createAll(Simulation&,const FixedComp&,const long int) {}
-  
  public:
 
   HighBay(const std::string&);
@@ -73,11 +65,7 @@ class HighBay :
   HighBay& operator=(const HighBay&);
   virtual ~HighBay();
 
-
-  /// set Curtain cut
-  void setCurtainCut(const HeadRule& H) { curtainCut=H;}
-  void buildAll(Simulation&,const Bunker&,const Bunker&);
-
+  void createAll(Simulation&,const FixedComp&,const long int);
 
 };
 

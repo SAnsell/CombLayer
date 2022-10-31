@@ -900,7 +900,6 @@ makeESS::makeBunker(Simulation& System,
 
   if (bunkerType.find("noCurtain")==std::string::npos)
     {
-
       TopCurtain->addInsertCell("Top",voidCell);
       TopCurtain->addInsertCell("Lower",voidCell);
       TopCurtain->addInsertCell("Mid",voidCell);
@@ -910,15 +909,39 @@ makeESS::makeBunker(Simulation& System,
       TopCurtain->addInsertCell("RoofCut",BBunker->getCells("roof"));
       TopCurtain->createAll(System,*ShutterBayObj,6,4);
 
-      ABHighBay->setCurtainCut
-	(TopCurtain->combine("-OuterRadius -OuterZStep"));
+      ABHighBay->setFrontCut("CurtainCut",*ABunker,3);
+      ABHighBay->setCutSurf("CurtainCut",
+			    TopCurtain->combine("-OuterRadius -OuterZStep"));
+
+      ABHighBay->setCutSurf
+	("leftWallInner",ABunker->getSurfRules("leftWallInner"));
+      ABHighBay->setCutSurf
+	("leftWallOuter",ABunker->getSurfRules("leftWallOuter"));
+      ABHighBay->setCutSurf
+	("rightWallInner",BBunker->getSurfRules("-rightWallInner"));
+      ABHighBay->setCutSurf
+	("rightWallInner",BBunker->getSurfRules("-rightWallInner"));
+      ABHighBay->setCutSurf
+	("roofOuter",ABunker->getSurfRules("roofouter"));
+      
       ABHighBay->addInsertCell(voidCell);
-      ABHighBay->buildAll(System,*ABunker,*BBunker);
+      ABHighBay->createAll(System,*CBunker,0);
 
       //      CDHighBay->setCurtainCut
       //	(TopCurtain->combine({"-OuterRadius","-OuterZStep"}));
+      CDHighBay->setFrontCut("curtainCut",*CBunker,3);
+      CDHighBay->setCutSurf
+	("leftWallInner",CBunker->getSurfRules("leftWallInner"));
+      CDHighBay->setCutSurf
+	("leftWallOuter",CBunker->getSurfRules("leftWallOuter"));
+      CDHighBay->setCutSurf
+	("rightWallInner",DBunker->getSurfRules("-rightWallInner"));
+      CDHighBay->setCutSurf
+	("rightWallInner",DBunker->getSurfRules("-rightWallInner"));
+      CDHighBay->setCutSurf
+	("roofOuter",CBunker->getSurfRules("roofouter"));
       CDHighBay->addInsertCell(voidCell);
-      CDHighBay->buildAll(System,*CBunker,*DBunker);
+      CDHighBay->createAll(System,*CBunker,0);
     }
   if (bunkerType.find("help")!=std::string::npos)
     {

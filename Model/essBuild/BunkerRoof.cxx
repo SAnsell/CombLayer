@@ -56,6 +56,12 @@
 #include "BunkerRoof.h"
 
 
+#include "Importance.h"
+#include "Object.h"
+#include "groupRange.h"
+#include "objectGroups.h"
+#include "Simulation.h"
+
 namespace essSystem
 {
 
@@ -235,7 +241,6 @@ BunkerRoof::createSector(Simulation& System,
   std::vector<double> empty;
   ModelSupport::LayerDivide3D LD3(keyName+"Main"+
 				  std::to_string(sectNum));
-
   // Front/back??
   LD3.setSurfPair(0,innerSurf,outerSurf);
   LD3.setSurfPair(1,lwIndex,rwIndex);
@@ -263,7 +268,6 @@ BunkerRoof::createSector(Simulation& System,
   
   LD3.divideCell(System,cellN);
   addCells("Sector"+std::to_string(sectNum),LD3.getCells());
-
   return;
 }
 

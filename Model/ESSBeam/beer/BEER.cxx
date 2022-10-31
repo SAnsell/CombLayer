@@ -459,8 +459,6 @@ BEER::insertChoppersInRoof(Simulation& System,
 	    ELog::EM<<"SCx Flag == "<<*(System.findObject(2730001))
 		    <<ELog::endDiag;
 
-	  if (CN==2730001)
-	    ELog::EM<<"HR == "<<*OPtr<<ELog::endDiag;
 	  if (HR.isLineValid(tA,tB))
 	    {
 	      ELog::EM<<"APtr == "<<CN<<ELog::endDiag;
@@ -486,7 +484,10 @@ BEER::build(Simulation& System,
    */
 {
   ELog::RegMethod RegA("BEER","build");
-
+  
+  ELog::EM<<"BULD Flag == "<<*(System.findObject(2730001))
+		    <<ELog::endDiag;
+  System.minimize
   ELog::EM<<"\nBuilding BEER on : "<<GItem.getKeyName()<<ELog::endDiag;
 
   const FuncDataBase& Control=System.getDataBase();
