@@ -42,6 +42,7 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "CFFlanges.h"
 #include "FocusGenerator.h"
 #include "LayerGenerator.h"
 #include "ChopperGenerator.h"
@@ -71,9 +72,8 @@ CSPECvariables(FuncDataBase& Control)
   setVariable::BladeGenerator BGen;
   setVariable::TwinGenerator TGen;
 
-  PipeGen.setPipe(8.0,0.5);
-  PipeGen.setWindow(-2.0,0.5);
-  PipeGen.setFlange(-2.0,1.0);
+  PipeGen.setNoWindow();
+  PipeGen.setCF<CF200>();
 
   // extent of beamline
   Control.addVariable("cspecStopPoint",0);

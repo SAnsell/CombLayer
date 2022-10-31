@@ -109,7 +109,8 @@ SingleChopper::SingleChopper(const SingleChopper& A) :
   shortHeight(A.shortHeight),shortWidth(A.shortWidth),
   mainRadius(A.mainRadius),mainThick(A.mainThick),
   boltMat(A.boltMat),wallMat(A.wallMat),
-  RS(new constructSystem::RingSeal(*A.RS)),IPA(new InnerPort(*A.IPA)),
+  RS(new constructSystem::RingSeal(*A.RS)),
+  IPA(new InnerPort(*A.IPA)),
   IPB(new InnerPort(*A.IPB))
   /*!
     Copy constructor

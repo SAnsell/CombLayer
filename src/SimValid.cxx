@@ -300,7 +300,7 @@ SimValid::runFixedComp(const Simulation& System,
 
 int
 SimValid::checkPoint(const Simulation& System,
-		     const Geometry::Vec3D& PtDebug) 
+		     const Geometry::Vec3D& Pt) 
   /*!
     Calculates if a point is within multiple cells:
     \param System :: Simulation to use
@@ -310,7 +310,6 @@ SimValid::checkPoint(const Simulation& System,
 {
   ELog::RegMethod RegA("SimValid","checkPoint");
 
-  const Geometry::Vec3D Pt(369.7442550526605,1942.775184587943,-2.5000) ;
   const Simulation::OTYPE& cellMap=System.getCells();
   std::vector<const MonteCarlo::Object*> activeCell;
 

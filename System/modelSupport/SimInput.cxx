@@ -156,15 +156,16 @@ processExitChecks(Simulation& System,
 		}
 	      for(const Geometry::Vec3D& CP : Pts)
 		{
-
+		  
 		  if (ModelSupport::SimValid::checkPoint(System,CP))
 		    errFlag += -1;
 		}
 	    }
 	}
-      else if (IParam.flag("validAll"))
+      if (IParam.flag("validAll"))
 	{
-	  // This should work BUT never does
+	  // set of used points ==>  this could be hashed
+	  std::set<Geometry::Vec3D> usedPoints;
 	  const size_t NPts=IParam.getValue<size_t>("validCheck");
 	  typedef objectGroups::cMapTYPE CM;
 	  const CM& mapFC=System.getComponents();
@@ -172,7 +173,7 @@ processExitChecks(Simulation& System,
 	    {
 	      const attachSystem::FixedComp& FC = *(mc.second);
 	      const Geometry::Vec3D& CP=FC.getCentre();
-	      if (CP!=Geometry::Vec3D(0,0,0))
+	      if (usedPoints.find(CP)==usedPoints.end())
 		{
 		  ELog::EM<<"FC["<<FC.getKeyName()<<"] ";
 		  if (!SValidCheck.runPoint(System,CP,NPts))
@@ -180,6 +181,7 @@ processExitChecks(Simulation& System,
 		      ELog::EM<<"ERROR "<<ELog::endErr;
 		      errFlag += -1;
 		    }
+		  usedPoints.emplace(CP);
 		}
 	    }
 	}

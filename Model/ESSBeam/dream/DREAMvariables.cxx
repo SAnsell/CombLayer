@@ -42,6 +42,7 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "CFFlanges.h"
 #include "FocusGenerator.h"
 #include "ShieldGenerator.h"
 #include "ChopperGenerator.h"
@@ -70,9 +71,12 @@ DREAMvariables(FuncDataBase& Control)
   setVariable::PipeGenerator PipeGen;
   setVariable::BladeGenerator BGen;
 
-  PipeGen.setPipe(8.0,0.5);
-  PipeGen.setWindow(-2.0,0.5);
-  PipeGen.setFlange(-4.0,1.0);
+  // pipe is 8cm radius 
+
+  PipeGen.setNoWindow();
+  PipeGen.setCF<CF150>();
+  //  PipeGen.setPipe(8.0,0.5);
+  //  PipeGen.setFlange(-4.0,1.0);
 
   SGen.addWall(1,20.0,"Steel71");
   SGen.addRoof(1,20.0,"Steel71");
@@ -122,7 +126,8 @@ DREAMvariables(FuncDataBase& Control)
   PipeGen.setMat("Aluminium");
   PipeGen.generatePipe(Control,"dreamPipeC0",28.5);
   Control.addVariable("dreamPipeC0YStep",0.5);
-  PipeGen.setWindow(-2.0,0.5);
+
+  PipeGen.setNoWindow();
   PipeGen.generatePipe(Control,"dreamPipeC",320.0);
   Control.addVariable("dreamPipeCYStep",0.5);
 

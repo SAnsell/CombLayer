@@ -42,6 +42,7 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "CFFlanges.h"
 #include "LayerGenerator.h"
 #include "PitGenerator.h"
 #include "FocusGenerator.h"
@@ -79,10 +80,9 @@ ODINvariables(FuncDataBase& Control)
   LGen.setRoof(30.0,{25.0,35.0}, {4,4}, {"CastIron","Concrete"});
   LGen.setFloor(30.0,{25.0,35.0}, {4,4}, {"CastIron","Concrete"});
  
-  PipeGen.setPipe(12.0,1.0);
-  PipeGen.setWindow(13.0,0.3);
-  PipeGen.setFlange(16.0,1.0);
-
+  PipeGen.setCF<CF200>();
+  PipeGen.setWindow(11.0,0.3);
+  
   // VACUUM PIPE in Gamma shield
   Control.addVariable("odinStopPoint",0);
 

@@ -508,7 +508,6 @@ ODIN::build(Simulation& System,
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);
       // using 7 : mid point
   FocusWall->addInsertCell(BInsert->getCell("Void"));
-  ELog::EM<<"BInsert = "<<BInsert->getLinkPt(7)<<ELog::endDiag;
   FocusWall->createAll(System,*BInsert,7);
   
   if (stopPoint==3) return;

@@ -8,12 +8,14 @@ function procExit
 
 #segments=$(for i in {40..49}; do echo -n "Segment$i "; done)
 
-./ess -validAll --validCheck 1000 AA; procExit 
-./ess --defaultConfig Single  DREAM --validAll --validCheck 1000 AA; procExit
-./ess --defaultConfig Single  CSPEC --validAll --validCheck 1000 AA; procExit
-./ess --defaultConfig Single  ODIN --validAll --validCheck 1000 AA; procExit
+##./ess -validAll --validCheck 1000 AA; procExit 
+#./ess --defaultConfig Single  DREAM --validAll --validCheck 1000 AA; procExit
+#./ess --defaultConfig Single  CSPEC --validAll --validCheck 1000 AA; procExit
+#./ess --defaultConfig Single  ODIN --validAll --validCheck 1000 AA; procExit
 ./ess --defaultConfig Single  MAGIC --validAll --validCheck 1000 AA; procExit
+exit
 ./ess --defaultConfig Single  BIFROST --validAll --validCheck 1000 AA; procExit
+./ess --defaultConfig Single  HEIMDAL --validAll --validCheck 1000 AA; procExit
 
 exit 1
 exit 1

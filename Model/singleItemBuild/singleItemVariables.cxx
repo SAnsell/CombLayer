@@ -247,10 +247,14 @@ SingleItemVariables(FuncDataBase& Control)
   CPipeGen.generatePipe(Control,"CornerPipe",80.0);
 
   setVariable::ChopperGenerator CGen;
+  CGen.setMainRadius(25.0);
+  CGen.setFrame(65.0,65.0);
+  CGen.generateChopper(Control,"singleChopper",38.0,10.0,4.55);
+  /*
   CGen.setMotorRadius(10.0);
   CGen.generateChopper(Control,"singleChopper",10.0,12.0,5.55);
   Control.addVariable("singleChopperMotorBodyLength",15.0);
-
+  */
 
   setVariable::BladeGenerator BGen;
   // Single Blade chopper
