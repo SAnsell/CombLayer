@@ -908,14 +908,21 @@ makeESS::makeBunker(Simulation& System,
       TopCurtain->addInsertCell("RoofCut",ABunker->getCells("roof"));
       TopCurtain->addInsertCell("RoofCut",BBunker->getCells("roof"));
       TopCurtain->createAll(System,*ShutterBayObj,6,4);
+      /*
+      ABHighBay->setCurtainCut
+	(TopCurtain->combine("-OuterRadius -OuterZStep"));
+      ABHighBay->addInsertCell(voidCell);
+      ABHighBay->buildAll(System,*ABunker,*BBunker);
 
+      //      CDHighBay->setCurtainCut
+      //	(TopCurtain->combine({"-OuterRadius","-OuterZStep"}));
+      CDHighBay->addInsertCell(voidCell);
+      CDHighBay->buildAll(System,*CBunker,*DBunker);
+      */
+      
       // minimize cells as curtain will be in MANY unnecessary roof objects:
       // and we will need to use them later:
-      
-      System.minimizeObject(TopCurtain->getKeyName());
-      System.minimizeObject(ABunker->getKeyName());
-      System.minimizeObject(BBunker->getKeyName());
-	    
+
       ABHighBay->setCutSurf("frontCut",*ABunker,3);
       ABHighBay->setCutSurf("curtainCut",
 			    TopCurtain->combine("-OuterRadius -OuterZStep"));
@@ -932,7 +939,7 @@ makeESS::makeBunker(Simulation& System,
 	("roofOuter",ABunker->getSurfRules("roofOuter"));
       
       ABHighBay->addInsertCell(voidCell);
-      ABHighBay->createAll(System,*CBunker,0);
+      ABHighBay->createAll(System,*ABunker,0);
 
       CDHighBay->setCutSurf("frontCut",*CBunker,3);
       //      CDHighBay->setCurtainCut
@@ -950,6 +957,7 @@ makeESS::makeBunker(Simulation& System,
       
       CDHighBay->addInsertCell(voidCell);
       CDHighBay->createAll(System,*CBunker,0);
+
     }
   if (bunkerType.find("help")!=std::string::npos)
     {

@@ -271,7 +271,7 @@ BEERvariables(FuncDataBase& Control)
   BGen.addPhase({95,275},{30.0,30.0});
   BGen.generateBlades(Control,"beerWBC3Blade",0.0,25.0,50.0);
 
-  CGen.setMainRadius(81.0);
+  CGen.setMainRadius(75.0);
   CGen.setFrame(165.0,165.0);
   CGen.generateChopper(Control,"beerChopperOutB",12.0,12.0,8.0);
 
