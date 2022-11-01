@@ -1,7 +1,7 @@
 
 nValid=1000
 #segments=$(for i in {40..49}; do echo -n "Segment$i "; done)
-./ess --defaultConfig Single  MIRACLES --validAll --validCheck ${nValid} AA || exit
+./ess --defaultConfig Single  TREX --validAll --validCheck ${nValid} AA || exit
 exit
 
 ./ess -validAll --validCheck ${nValid} AA || exit 

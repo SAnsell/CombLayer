@@ -517,11 +517,12 @@ TREX::build(Simulation& System,
 
   ChopperC->addInsertCell(PitC->getCell("Void"));
   ChopperC->createAll(System,*PitC,0);
+  /*
   DiskC->addInsertCell(ChopperC->getCell("Void"));
   DiskC->setCentreFlag(3);
   DiskC->createAll(System,ChopperC->getKey("Main"),0);
   ChopperC->insertAxle(System,*DiskC);
-  
+  */
   ShieldC->addInsertCell(voidCell);
   ShieldC->addInsertCell(PitB->getCells("Outer"));
   ShieldC->addInsertCell(PitB->getCells("MidLayer"));
@@ -595,14 +596,17 @@ TREX::build(Simulation& System,
   
   ChopperE->addInsertCell(PitE->getCell("Void")); 
   ChopperE->createAll(System,*PitE,0);
+
   DiskE1->addInsertCell(ChopperE->getCell("Void"));
   DiskE1->setOffsetFlag(1);
+  DiskE1->createAll(System,ChopperE->getKey("Main"),0,
+		    ChopperE->getKey("Beam"),0);
 
-  DiskE1->createAll(System,ChopperE->getKey("Beam"),0);
   DiskE2->addInsertCell(ChopperE->getCell("Void"));
   DiskE2->setOffsetFlag(1);
+  DiskE2->createAll(System,ChopperE->getKey("Main"),0,
+		    ChopperE->getKey("Beam"),0);
   
-  DiskE2->createAll(System,ChopperE->getKey("Beam"),0);
   ChopperE->insertAxle(System,*DiskE1);
   ChopperE->insertAxle(System,*DiskE2);
 
@@ -675,9 +679,11 @@ TREX::build(Simulation& System,
   
   ChopperG->addInsertCell(Cave->getCell("Void"));
   ChopperG->createAll(System,*GuideOutG,2);
+  
   DiskG->addInsertCell(ChopperG->getCell("Void"));
   DiskG->setOffsetFlag(1);
   DiskG->createAll(System,ChopperG->getKey("Main"),0);
+
   ChopperG->insertAxle(System,*DiskG);
 
   VPipeOutH->addAllInsertCell(Cave->getCell("Void"));

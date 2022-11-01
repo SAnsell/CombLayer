@@ -278,11 +278,7 @@ void TREXvariables(FuncDataBase& Control)
   Control.addVariable("trexPitECutBackShape","Square");
   Control.addVariable("trexPitECutBackRadius",5.0);
 
-  CGen.setFrame(126.5,126.5);
-  CGen.setMainRadius(50.122);
-
-
-  CGen.generateChopper(Control,"trexChopperE",0.0,35.0,25.0);
+  CGen.generateChopper(Control,"trexChopperE",1.5,35.0,25.0);
   BGen.generateBlades(Control,"trexE1Disk",-10.0,20.0,30.0);
   BGen.generateBlades(Control,"trexE2Disk",10.0,20.0,30.0);
 
@@ -319,17 +315,18 @@ void TREXvariables(FuncDataBase& Control)
 
   FGen.setYOffset(0.25);
   FGen.generateTaper(Control,"trexGOutG",60.0,3.81,3.75,4.84,4.79);
-  
-  CGen.generateChopper(Control,"trexChopperG",6.0,12.0,6.55);
-  Control.addVariable("trexChopperGYStep",6.25);
+
+  CGen.setReverseMotor(1);
+  CGen.generateChopper(Control,"trexChopperG",10.0,12.0,6.55);
+  //  Control.addVariable("trexChopperGYStep",);
   BGen.generateBlades(Control,"trexGDisk",0.0,25.0,35.0);
 
   FGen.clearYOffset();
   PipeGen.generatePipe(Control,"trexPipeOutH",289.5);
-  Control.addVariable("trexPipeOutHYStep",0.25);
+  Control.addVariable("trexPipeOutHYStep",0.85);
   FGen.generateTaper(Control,"trexGOutH",287.5,3.57,2.52,4.61,3.71);
-  CGen.generateChopper(Control,"trexChopperH",8.0,16.0,8.0);
-  Control.addVariable("trexChopperHYStep",310.0);
+  CGen.generateChopper(Control,"trexChopperH",315.0,16.0,8.0);
+
   BGen.generateBlades(Control,"trexH1Disk",-1.0,25.0,35.0);
   BGen.generateBlades(Control,"trexH2Disk",1.0,25.0,35.0);
 
