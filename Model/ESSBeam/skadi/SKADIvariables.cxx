@@ -129,7 +129,7 @@ void SKADIvariables(FuncDataBase& Control)
 
   //Beam Insert
   Control.addVariable("skadiBInsertNBox",1);
-  Control.addVariable("skadiBInsertLength",200.6);
+  Control.addVariable("skadiBInsertLength",190.6);
   Control.addVariable("skadiBInsertHeight",15.0);
   Control.addVariable("skadiBInsertWidth",15.0);
   Control.addVariable("skadiBInsertMat","Stainless304");

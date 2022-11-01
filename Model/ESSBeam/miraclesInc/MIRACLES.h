@@ -146,7 +146,7 @@ class MIRACLES : public attachSystem::CopiedComp
   /// Pipe in bunker wall
   std::shared_ptr<constructSystem::VacuumPipe> VPipeWall;
   /// Guide running to bunker wall
-  std::shared_ptr<beamlineSystem::PlateUnit> FocusWall;
+  std::shared_ptr<beamlineSystem::BenderUnit> FocusWall;
   /// Vacuum pipe in the bunker wall if not provided by BInsert
   std::shared_ptr<constructSystem::VacuumPipe> VPipeCave;
 

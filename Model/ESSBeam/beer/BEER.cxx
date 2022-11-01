@@ -524,7 +524,6 @@ BEER::build(Simulation& System,
   OutPitA->addFrontWall(bunkerObj,2);
   buildOutGuide(System,*FocusWall,2,voidCell);
   
-  return;
   CaveJaw->setInsertCell(JawPit->getCell("Void"));
   CaveJaw->createAll(System,JawPit->getKey("Inner"),0);
   

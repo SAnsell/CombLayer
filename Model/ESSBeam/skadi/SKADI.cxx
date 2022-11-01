@@ -348,11 +348,15 @@ SKADI::build(Simulation& System,
   if (stopPoint==2) return;         // Stop at last pipe in Bunker
   
   BInsert->addInsertCell(bunkerObj.getCell("MainVoid"));
+  BInsert->setFront(bunkerObj,-1);
   BInsert->createAll(System,*FocusF,"back");
 
+  
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);
 
   FocusWallA->addInsertCell(BInsert->getCells("Item"));
+  FocusWallA->setFront(*BInsert,-1);
+  FocusWallA->setBack(*BInsert,-2);
   FocusWallA->createAll(System,*BInsert,0);
   
   if (stopPoint==3) return;
@@ -376,14 +380,15 @@ SKADI::build(Simulation& System,
   ShieldA->setBack(PitA->getKey("Mid"),1);  
   ShieldA->createAll(System,*FocusWallA,2);
 
-  CInsert->addInsertCell(bunkerObj.getCell("MainVoid"));
   CInsert->addInsertCell(voidCell);
   CInsert->addInsertCell(ShieldA->getCell("Void"));
+  CInsert->setBack(bunkerObj,-2);
   CInsert->createAll(System,*BInsert,2);
 
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*CInsert);
   
   FocusWallB->addInsertCell(CInsert->getCells("Item"));
+  FocusWallB->addInsertCell(ShieldA->getCell("Void"));
   FocusWallB->createAll(System,*CInsert,-1);
 
   ChopperA->addInsertCell(PitA->getCell("Void"));
@@ -426,15 +431,16 @@ SKADI::build(Simulation& System,
 
   VPipeOutA->addAllInsertCell(ShieldB->getCell("Void"));
   VPipeOutA->createAll(System,PitA->getKey("Mid"),2);
+
   GuideOutA->addInsertCell(VPipeOutA->getCells("Void"));
-  GuideOutA->createAll(System,*VPipeOutA,0,*VPipeOutA,0);
+  GuideOutA->createAll(System,*VPipeOutA,0);
 
   //  VPipeOutB->addInsertCell(ShieldB1->getCell("Void"));
   VPipeOutB->addAllInsertCell(ShieldB->getCell("Void"));
   VPipeOutB->createAll(System,*VPipeOutA,2);
 
   GuideOutB->addInsertCell(VPipeOutB->getCells("Void"));
-  GuideOutB->createAll(System,*VPipeOutB,0,*VPipeOutB,0);
+  GuideOutB->createAll(System,*VPipeOutB,0);
   
   PitC->addInsertCell(voidCell); //Chopper III & IV pit
   PitC->createAll(System,PitB->getKey("Outer"),2);
@@ -474,7 +480,7 @@ SKADI::build(Simulation& System,
   VPipeOutC->createAll(System,*ShieldC,-1);
   
   GuideOutC->addInsertCell(VPipeOutC->getCells("Void"));
-  GuideOutC->createAll(System,*VPipeOutC,0,*VPipeOutC,0);
+  GuideOutC->createAll(System,*VPipeOutC,0);
 
   ShieldD->addInsertCell(voidCell);
   ShieldD->addInsertCell(PitC->getCells("Outer"));
@@ -486,7 +492,7 @@ SKADI::build(Simulation& System,
   VPipeOutD->setBack(*ShieldD,-2);
   VPipeOutD->createAll(System,*ShieldD,-1);
   GuideOutD->addInsertCell(VPipeOutD->getCells("Void"));
-  GuideOutD->createAll(System,*VPipeOutD,0,*VPipeOutD,0);
+  GuideOutD->createAll(System,*VPipeOutD,0);
 
   ShieldF->addInsertCell(voidCell);  
   ShieldF->createAll(System,*ShieldD,2);
@@ -503,7 +509,7 @@ SKADI::build(Simulation& System,
   GuideOutE->addInsertCell(voidCell);
   GuideOutE->addInsertCell(CaveFrontCut->getCells("Void"));
   GuideOutE->addInsertCell(Cave->getCell("Void"));
-  GuideOutE->createAll(System,*ShieldD,2,*ShieldD,2);
+  GuideOutE->createAll(System,*ShieldD,2);
   
 
   return;  

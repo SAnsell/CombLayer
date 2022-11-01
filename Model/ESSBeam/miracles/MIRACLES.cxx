@@ -131,7 +131,7 @@ MIRACLES::MIRACLES(const std::string& keyName) :
 
   BInsert(new BunkerInsert(newName+"BInsert")),
   VPipeWall(new constructSystem::VacuumPipe(newName+"PipeWall")),
-  FocusWall(new beamlineSystem::PlateUnit(newName+"FWall")),
+  FocusWall(new beamlineSystem::BenderUnit(newName+"FWall")),
 
   ShieldA(new constructSystem::LineShield(newName+"ShieldA")),
   VPipeOutA(new constructSystem::VacuumPipe(newName+"PipeOutA")),
@@ -224,7 +224,7 @@ MIRACLES::buildBunkerUnits(Simulation& System,
 
   FocusB->addInsertCell(VPipeB->getCells("Void"));
   FocusB->createAll(System,*VPipeB,0);
-
+  
   VPipeC->addAllInsertCell(bunkerVoid);
   VPipeC->createAll(System,*FocusB,2);
 
@@ -240,14 +240,15 @@ MIRACLES::buildBunkerUnits(Simulation& System,
   BDiskLow->addInsertCell(TwinB->getCell("Void"));
   BDiskLow->createAll(System,TwinB->getKey("MotorBase"),0,
                       TwinB->getKey("Beam"),-1);
-  
+
   BDiskTop->addInsertCell(TwinB->getCell("Void"));
   BDiskTop->createAll(System,TwinB->getKey("MotorTop"),0,
                       TwinB->getKey("Beam"),-1);
+
   TwinB->insertAxle(System,*BDiskLow,*BDiskTop);
-  
+
   VPipeD->addAllInsertCell(bunkerVoid);
-  VPipeD->createAll(System,TwinB->getKey("BuildBeam"),2);
+  VPipeD->createAll(System,TwinB->getKey("Beam"),2);
 
   FocusD->addInsertCell(VPipeD->getCells("Void"));
   FocusD->createAll(System,*VPipeD,0);
@@ -265,7 +266,7 @@ MIRACLES::buildBunkerUnits(Simulation& System,
   TwinC->insertAxle(System,*CDiskLow,*CDiskTop);
   
   VPipeE->addAllInsertCell(bunkerVoid);
-  VPipeE->createAll(System,TwinC->getKey("BuildBeam"),2);
+  VPipeE->createAll(System,TwinC->getKey("Beam"),2);
 
   FocusE->addInsertCell(VPipeE->getCells("Void"));
   FocusE->createAll(System,*VPipeE,0);

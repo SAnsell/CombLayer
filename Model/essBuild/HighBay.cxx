@@ -205,8 +205,6 @@ HighBay::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 6 -16");
   HR*=leftIWallHR*rightIWallHR*frontCutHR;
   makeCell("Roof",System,cellIndex++,roofMat,0.0,HR);
-  if (cellIndex==1520003)
-    ELog::EM<<"Cell == "<<*System.findObject(1520002)<<ELog::endDiag;
 
   // Left wall
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 -16");
