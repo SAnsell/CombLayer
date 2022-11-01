@@ -1771,11 +1771,6 @@ Simulation::minimizeObject(MonteCarlo::Object* OPtr)
   const std::set<int> SPair=
     OPtr->getHeadRule().getPairedSurf();
 
-  if (OPtr->getName()==2730001)
-    {
-      ELog::EM<<"OPt = ="<<*OPtr<<ELog::endDiag;
-      ELog::EM<<"IMPLA == "<<IP.size()<<" "<<SPair.size()<<ELog::endDiag;
-    }
   bool activeFlag(0);
   MonteCarlo::Algebra AX;
   AX.setFunctionObjStr(OPtr->cellCompStr());
@@ -1819,7 +1814,7 @@ Simulation::minimizeObject(const int CN)
   */
 {
   ELog::RegMethod RegA("Simualation","minimizeObject(cell)");
-
+  return 0;
   MonteCarlo::Object* CPtr = findObject(CN);
   if (!CPtr)
     throw ColErr::InContainerError<int>(CN,"Cell not found");

@@ -345,7 +345,7 @@ SingleChopper::createLinks()
   mainFC.setConnect(3,Origin+X*(width/2.0),X);
   mainFC.setConnect(4,Origin-Z*(height/2.0),-Z);
   mainFC.setConnect(5,Origin+Z*(height/2.0),Z);
-  mainFC.setConnect(6,Origin-X*(width/2.0)+Z*(height/2.0),-Z);
+  mainFC.setConnect(6,Origin-X*(width/2.0)+Z*(height/2.0),Z);
   mainFC.setConnect(7,Origin+X*(width/2.0)+Z*(height/2.0),Z);
 
   mainFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
@@ -418,19 +418,19 @@ SingleChopper::createMotor(Simulation& System)
 
 void
 SingleChopper::createAll(Simulation& System,
-                       const attachSystem::FixedComp& beamFC,
-                       const long int FIndex)
+			 const attachSystem::FixedComp& beamFC,
+			 const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param beamFC :: FixedComp at the beam centre
-    \param FIndex :: side index
+    \param sideIndex :: side index
   */
 {
   ELog::RegMethod RegA("SingleChopper","createAll(FC)");
 
   populate(System.getDataBase());
-  createUnitVector(beamFC,FIndex);
+  createUnitVector(beamFC,sideIndex);
   createSurfaces();    
   createObjects(System);
   

@@ -909,8 +909,15 @@ makeESS::makeBunker(Simulation& System,
       TopCurtain->addInsertCell("RoofCut",BBunker->getCells("roof"));
       TopCurtain->createAll(System,*ShutterBayObj,6,4);
 
-      ABHighBay->setFrontCut("CurtainCut",*ABunker,3);
-      ABHighBay->setCutSurf("CurtainCut",
+      // minimize cells as curtain will be in MANY unnecessary roof objects:
+      // and we will need to use them later:
+      
+      System.minimizeObject(TopCurtain->getKeyName());
+      System.minimizeObject(ABunker->getKeyName());
+      System.minimizeObject(BBunker->getKeyName());
+	    
+      ABHighBay->setCutSurf("frontCut",*ABunker,3);
+      ABHighBay->setCutSurf("curtainCut",
 			    TopCurtain->combine("-OuterRadius -OuterZStep"));
 
       ABHighBay->setCutSurf
@@ -920,16 +927,16 @@ makeESS::makeBunker(Simulation& System,
       ABHighBay->setCutSurf
 	("rightWallInner",BBunker->getSurfRules("-rightWallInner"));
       ABHighBay->setCutSurf
-	("rightWallInner",BBunker->getSurfRules("-rightWallInner"));
+	("rightWallOuter",BBunker->getSurfRules("-rightWallOuter"));
       ABHighBay->setCutSurf
-	("roofOuter",ABunker->getSurfRules("roofouter"));
+	("roofOuter",ABunker->getSurfRules("roofOuter"));
       
       ABHighBay->addInsertCell(voidCell);
       ABHighBay->createAll(System,*CBunker,0);
 
+      CDHighBay->setCutSurf("frontCut",*CBunker,3);
       //      CDHighBay->setCurtainCut
       //	(TopCurtain->combine({"-OuterRadius","-OuterZStep"}));
-      CDHighBay->setFrontCut("curtainCut",*CBunker,3);
       CDHighBay->setCutSurf
 	("leftWallInner",CBunker->getSurfRules("leftWallInner"));
       CDHighBay->setCutSurf
@@ -937,9 +944,10 @@ makeESS::makeBunker(Simulation& System,
       CDHighBay->setCutSurf
 	("rightWallInner",DBunker->getSurfRules("-rightWallInner"));
       CDHighBay->setCutSurf
-	("rightWallInner",DBunker->getSurfRules("-rightWallInner"));
+	("rightWallOuter",DBunker->getSurfRules("-rightWallOuter"));
       CDHighBay->setCutSurf
-	("roofOuter",CBunker->getSurfRules("roofouter"));
+	("roofOuter",CBunker->getSurfRules("roofOuter"));
+      
       CDHighBay->addInsertCell(voidCell);
       CDHighBay->createAll(System,*CBunker,0);
     }

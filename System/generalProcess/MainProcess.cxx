@@ -714,9 +714,7 @@ buildFullSimulation(Simulation* SimPtr,
   reportSelection(*SimPtr,IParam);
   SimPtr->createObjSurfMap();
 
-  ELog::EM<<"Cell == "<<*(SimPtr->findObject(2730001))<<ELog::endDiag;
   SimPtr->minimizeObject("All");
-  ELog::EM<<"Cell == "<<*(SimPtr->findObject(2730001))<<ELog::endDiag;
   SimPtr->removeDeadSurfaces();
   
   // Extra

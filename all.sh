@@ -1,11 +1,11 @@
 
 nValid=1000
 #segments=$(for i in {40..49}; do echo -n "Segment$i "; done)
-./ess --defaultConfig Single  BEER --validAll --validCheck ${nValid} AA&& exit
+./ess --defaultConfig Single  DREAM --validAll --validCheck ${nValid} AA&& exit
+#./ess --defaultConfig Single  BEER --validAll --validCheck ${nValid} AA&& exit
 exit
 
 ./ess -validAll --validCheck ${nValid} AA&& exit 
-./ess --defaultConfig Single  DREAM --validAll --validCheck ${nValid} AA&& exit
 ./ess --defaultConfig Single  CSPEC --validAll --validCheck ${nValid} AA&& exit
 ./ess --defaultConfig Single  ODIN --validAll --validCheck ${nValid} AA&& exit
 ./ess --defaultConfig Single  MAGIC --validAll --validCheck ${nValid} AA&& exit

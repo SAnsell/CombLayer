@@ -442,28 +442,28 @@ BEER::insertChoppersInRoof(Simulation& System,
   // First (green chopper)
   const std::vector<const essConstruct::SingleChopper*>
     chopList({
-	ChopperA.get()
+	ChopperA.get(),
+	ChopperB.get(),
+	ChopperC.get(),
+	ChopperD.get(),
+	ChopperE.get()
       });
+
 
   const std::vector<int> baseCells=bunkerObj.getCells("roofBase");
   for(const essConstruct::SingleChopper* APtr : chopList)
     {
-
       const Geometry::Vec3D tA=APtr->getLinkPt("topLeft");
       const Geometry::Vec3D tB=APtr->getLinkPt("topRight");
+
       for(const int CN : baseCells)
 	{
+	  System.minimizeObject(CN);
 	  const MonteCarlo::Object* OPtr=System.findObject(CN);
 	  HeadRule HR=System.findObject(CN)->getHeadRule();
-	  if (CN==2730001)
-	    ELog::EM<<"SCx Flag == "<<*(System.findObject(2730001))
-		    <<ELog::endDiag;
-
+	  HR.populateSurf();
 	  if (HR.isLineValid(tA,tB))
-	    {
-	      ELog::EM<<"APtr == "<<CN<<ELog::endDiag;
-	      APtr->insertInCell(System,CN);
-	    }
+	    APtr->insertInCell(System,CN);
 	}
     }
 
@@ -485,10 +485,7 @@ BEER::build(Simulation& System,
 {
   ELog::RegMethod RegA("BEER","build");
   
-  ELog::EM<<"BULD Flag == "<<*(System.findObject(2730001))
-		    <<ELog::endDiag;
-  System.minimize
-  ELog::EM<<"\nBuilding BEER on : "<<GItem.getKeyName()<<ELog::endDiag;
+  
 
   const FuncDataBase& Control=System.getDataBase();
   CopiedComp::process(System.getDataBase());

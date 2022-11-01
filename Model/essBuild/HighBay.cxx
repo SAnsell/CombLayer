@@ -84,7 +84,7 @@ HighBay::HighBay(const HighBay& A) :
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   length(A.length),height(A.height),roofThick(A.roofThick),
-  wallMat(A.wallMat),roofMat(A.roofMat),curtainCut(A.curtainCut)
+  wallMat(A.wallMat),roofMat(A.roofMat)
   /*!
     Copy constructor
     \param A :: HighBay to copy
@@ -111,7 +111,6 @@ HighBay::operator=(const HighBay& A)
       roofThick=A.roofThick;
       wallMat=A.wallMat;
       roofMat=A.roofMat;
-      curtainCut=A.curtainCut;
     }
   return *this;
 }
@@ -153,7 +152,7 @@ HighBay::createSurfaces()
 
   const HeadRule roofHR=getRule("roofOuter");
   
-  const int leftSurfRoof=roofHR.getPrimarySurf();
+  const int leftSurfRoof=roofHR.getPrimarySurface();
   
   ModelSupport::buildShiftedPlane(SMap,buildIndex+6,
 				  SMap.realPtr<Geometry::Plane>(leftSurfRoof),
@@ -197,31 +196,31 @@ HighBay::createObjects(Simulation& System)
   const HeadRule rightOWallHR=getRule("rightWallOuter");
   const HeadRule bunkerTopHR=getRule("roofOuter");
 
-  
   // void area
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -2 -6 ");
-  HR*=leftWallInnerHR*rightWallInnerHR*frontCutHR*bunkerTopHR;
-  makeCell("Void",System,cellIndex++,0,0.0,HR*curtainCut);
-
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 -6");
+  HR*=leftIWallHR*rightIWallHR*frontCutHR*bunkerTopHR;
+  makeCell("Void",System,cellIndex++,0,0.0,HR*curtainHR);
 
   // Roof area
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 6 -16");
-  HR*=leftWallInnerHR*rightWallInnerHR*frontCutHR;
+  HR*=leftIWallHR*rightIWallHR*frontCutHR;
   makeCell("Roof",System,cellIndex++,roofMat,0.0,HR);
+  if (cellIndex==1520003)
+    ELog::EM<<"Cell == "<<*System.findObject(1520002)<<ELog::endDiag;
 
   // Left wall
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -2 -16 ");
-  HR*=leftWallOuterHR*leftWallInner.complement();
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 -16");
+  HR*=leftOWallHR*leftIWallHR.complement();
   HR*=bunkerTopHR*frontCutHR;
   makeCell("LeftWall",System,cellIndex++,wallMat,0.0,HR);
   // Right wall
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -2 -16 ");
-  HR*=rightWallOuterHR*rightWallInnerHR.complement();
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 -16");
+  HR*=rightOWallHR*rightIWallHR.complement();
   HR*=bunkerTopHR*frontCutHR;
   makeCell("RightWall",System,cellIndex++,wallMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 -16");
-  HR*=leftWallOuterHR*rightWallOuterHR*frontCutHR*bunkerTopHR;
+  HR*=leftOWallHR*rightOWallHR*frontCutHR*bunkerTopHR;
   addOuterSurf(HR);
 
   return;
