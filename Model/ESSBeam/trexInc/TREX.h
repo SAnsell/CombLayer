@@ -77,8 +77,8 @@ class TREX : public attachSystem::CopiedComp
 {
  private:
 
-  const size_t nC;
-  const size_t nF;
+  static constexpr size_t nC=7;     // number of C shield units
+  static constexpr size_t nF=8;     // number of focus units
   
   /// Stop at [0:Complete / 1:Mono Wall / 2:Inner Bunker / 3:Outer Bunker ]
   int stopPoint;  
@@ -110,9 +110,9 @@ class TREX : public attachSystem::CopiedComp
   
   /// Bunker Insert
   std::shared_ptr<essSystem::CompBInsert> BInsertA;
-  std::shared_ptr<beamlineSystem::PlateUnit> FocusWallA;
+  std::shared_ptr<beamlineSystem::BenderUnit> FocusWallA;
   std::shared_ptr<essSystem::CompBInsert> BInsertB;
-  std::shared_ptr<beamlineSystem::PlateUnit> FocusWallB;
+  std::shared_ptr<beamlineSystem::BenderUnit> FocusWallB;
 
   /// Structure Up to the First Chopper Pit
   std::shared_ptr<constructSystem::ChopperPit> PitA;
@@ -143,9 +143,8 @@ class TREX : public attachSystem::CopiedComp
   std::shared_ptr<essConstruct::DiskChopper> DiskC;
 
 
-  std::array<std::shared_ptr<constructSystem::VacuumPipe>,7>
-  VPipeOutCs;
-  std::array<std::shared_ptr<beamlineSystem::BenderUnit>,7> BendOutCs;
+  std::array<std::shared_ptr<constructSystem::VacuumPipe>,nC> VPipeOutCs;
+  std::array<std::shared_ptr<beamlineSystem::BenderUnit>,nC> BendOutCs;
 
   /// Last part of the curve part
   std::shared_ptr<constructSystem::LineShield> ShieldD;

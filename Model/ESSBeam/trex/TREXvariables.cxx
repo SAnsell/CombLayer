@@ -277,6 +277,11 @@ void TREXvariables(FuncDataBase& Control)
   Control.addVariable("trexPitECutFrontRadius",5.0);
   Control.addVariable("trexPitECutBackShape","Square");
   Control.addVariable("trexPitECutBackRadius",5.0);
+
+  CGen.setFrame(126.5,126.5);
+  CGen.setMainRadius(50.122);
+
+
   CGen.generateChopper(Control,"trexChopperE",0.0,35.0,25.0);
   BGen.generateBlades(Control,"trexE1Disk",-10.0,20.0,30.0);
   BGen.generateBlades(Control,"trexE2Disk",10.0,20.0,30.0);

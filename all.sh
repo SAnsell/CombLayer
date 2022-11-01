@@ -17,6 +17,7 @@ exit
 ./ess --defaultConfig Single  BEER --validAll --validCheck ${nValid} AA || exit
 ./ess --defaultConfig Single  FREIA --validAll --validCheck ${nValid} AA || exit
 ./ess --defaultConfig Single  SKADI --validAll --validCheck ${nValid} AA || exit
+./ess --defaultConfig Single  MIRACLES --validAll --validCheck ${nValid} AA || exit
 
 segments=All
 ./maxiv --noLengthCheck --defaultConfig Linac ${segments} AA
