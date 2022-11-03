@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BunkerInsert.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,9 +35,11 @@ namespace essSystem
   \brief Bulk around Reflector
 */
 
-class BunkerInsert : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,public attachSystem::CellMap,
-  public attachSystem::ExternalCut
+class BunkerInsert :
+      public attachSystem::FixedOffset,
+      public attachSystem::ContainedComp,
+      public attachSystem::CellMap,
+      public attachSystem::ExternalCut
 {
  private:
 
@@ -53,29 +55,18 @@ class BunkerInsert : public attachSystem::ContainedComp,
   int wallMat;                   ///< wall material
   int voidMat;                   ///< void material
 
-  HeadRule outCut;               ///< Cut volume for items
-
-  /// bunker object to construct insert in
-  const attachSystem::FixedComp* bunkerObj;
-  
   void populate(const FuncDataBase&);
   void createSurfaces();
   void createLinks();
-  void createObjects(Simulation&,const std::string&);
+  void createObjects(Simulation&);
 
-  void addCalcPoint();
-  
  public:
 
   BunkerInsert(const std::string&);
   BunkerInsert(const BunkerInsert&);
   BunkerInsert& operator=(const BunkerInsert&);
   virtual ~BunkerInsert();
-
-  void setBunkerObject(const attachSystem::FixedComp& bunkerFC)
-    { bunkerObj= &bunkerFC; }
   
-  int objectCut(const std::vector<Geometry::Vec3D>&) const;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

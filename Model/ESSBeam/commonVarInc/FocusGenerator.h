@@ -81,6 +81,7 @@ class FocusGenerator
   void setYBeamOffset(const double D)
   { yBeam=D; yBeamActive=1; }
 
+  /// set zstep
   void setZOffset(const double D)
   { zStep=D; }
   /// clear the y step

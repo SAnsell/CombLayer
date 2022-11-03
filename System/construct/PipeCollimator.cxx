@@ -3,7 +3,7 @@
  
  * File:   construct/PipeCollimator.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -56,8 +54,9 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -68,9 +67,10 @@ namespace constructSystem
 {
 
 PipeCollimator::PipeCollimator(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,2),
-  attachSystem::CellMap(),attachSystem::SurfMap(),
-  setFlag(0)
+  attachSystem::FixedRotate(Key,2),
+  attachSystem::ContainedComp(),
+  attachSystem::CellMap(),
+  attachSystem::SurfMap()
   /*!
     Default constructor
     \param Key :: Key name for variables
@@ -79,10 +79,11 @@ PipeCollimator::PipeCollimator(const std::string& Key) :
   
 
 PipeCollimator::PipeCollimator(const PipeCollimator& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::ExternalCut(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
-  setFlag(A.setFlag),innerStruct(A.innerStruct),
-  outerStruct(A.outerStruct),length(A.length),mat(A.mat)
+  length(A.length),mat(A.mat)
   /*!
     Copy constructor
     \param A :: PipeCollimator to copy
@@ -99,13 +100,12 @@ PipeCollimator::operator=(const PipeCollimator& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
-      setFlag=A.setFlag;
-      innerStruct=A.innerStruct;
-      outerStruct=A.outerStruct;
+
       length=A.length;
       mat=A.mat;
     }
@@ -122,7 +122,8 @@ PipeCollimator::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("PipeCollimator","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
+
   length=Control.EvalVar<double>(keyName+"Length");
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   
@@ -130,30 +131,12 @@ PipeCollimator::populate(const FuncDataBase& Control)
 }
 
 void
-PipeCollimator::createUnitVector(const attachSystem::FixedComp& FC,
-				 const long int sideIndex)
-  /*!
-    Create the unit vectors: Note only to construct front/back surf
-    \param FC :: Centre point
-    \param sideIndex :: Side index
-  */
-{
-  ELog::RegMethod RegA("PipeCollimator","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
-  return;
-}
-
-
-void
 PipeCollimator::createSurfaces()
   /*!
     Create All the surfaces
    */
 {
-  ELog::RegMethod RegA("PipeCollimator","createSurface");
+  ELog::RegMethod RegA("PipeCollimator","createSurfaces");
 
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
@@ -169,19 +152,19 @@ PipeCollimator::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("PipeCollimator","createObjects");
-  std::string Out;
 
-  if ((setFlag & 2) !=2)
-    throw ColErr::EmptyContainer("outerStruct not set");
+  HeadRule HR;
+  
+  if (!ExternalCut::isActive("Outer"))
+    throw ColErr::EmptyContainer("Outer not set");
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2");
-  Out+=innerStruct.display()+outerStruct.display();
+  const HeadRule innerHR=getRule("Inner").complement();
+  const HeadRule outerHR=getRule("Outer");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2");
   
-  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
-  addCell("Main",cellIndex-1);
-  
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2");
-  addOuterSurf(Out);
+  makeCell("Main",System,cellIndex++,mat,0.0,HR*innerHR*outerHR);
+
+  addOuterSurf(HR);
   return;
 }
 
@@ -200,49 +183,6 @@ PipeCollimator::createLinks()
   
   return;
 }
-
-void
-PipeCollimator::setInner(const HeadRule& HR)
-  /*!
-    Set the inner volume
-    \param HR :: Headrule of inner surfaces
-  */
-{
-  ELog::RegMethod RegA("PipeCollimator","setInner");
-
-  innerStruct=HR;
-  innerStruct.makeComplement();
-  setFlag ^= 1;
-  return;
-}
-
-void
-PipeCollimator::setInnerExclude(const HeadRule& HR)
-  /*!
-    Set the inner volume (without inverse)
-    \param HR :: Headrule of inner surfaces
-  */
-{
-  ELog::RegMethod RegA("PipeCollimator","setInnerExclude");
-
-  innerStruct=HR;
-  setFlag ^= 1;
-  return;
-}
-
-void
-PipeCollimator::setOuter(const HeadRule& HR)
-  /*!
-    Set the outer volume
-    \param HR :: Headrule of outer surfaces
-  */
-{
-  ELog::RegMethod RegA("PipeCollimator","setInner");
-  
-  outerStruct=HR;
-  setFlag ^= 2;
-  return;
-}
   
 void
 PipeCollimator::createAll(Simulation& System,
@@ -255,7 +195,7 @@ PipeCollimator::createAll(Simulation& System,
     \param sideIndex :: position of linkpoint
   */
 {
-  ELog::RegMethod RegA("PipeCollimator","createAllNoPopulate");
+  ELog::RegMethod RegA("PipeCollimator","createAll");
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

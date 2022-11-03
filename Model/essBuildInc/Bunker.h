@@ -40,8 +40,9 @@ namespace essSystem
   \brief Bulk around Reflector
 */
 
-class Bunker : public attachSystem::ContainedComp,
+class Bunker : 
   public attachSystem::FixedComp,
+  public attachSystem::ContainedComp,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {
@@ -58,7 +59,6 @@ class Bunker : public attachSystem::ContainedComp,
   
   double leftAngle;              ///< Extent of left angle
   double rightAngle;             ///< Extent of right ange
-
 
   // MAIN WALL
   size_t nSectors;               ///< Number of sector divisions

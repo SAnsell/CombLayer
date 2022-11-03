@@ -284,7 +284,7 @@ TriangleShield::createObjects(Simulation& System)
   // Inner void is a single segment
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
   makeCell("Void",System,cellIndex++,0,0.0,
-	   HR*frontHR+backEndHR);
+	   HR*frontHR*backEndHR);
 
   // Loop over all segments:
   HeadRule fbHR;
@@ -364,6 +364,7 @@ TriangleShield::createObjects(Simulation& System)
     }
   
   // Outer
+
   HR=ModelSupport::getHeadRule(SMap,WI,FI,RI,"3 -4 5M -6N");
   addOuterSurf(HR*frontHR*backHR);
 
@@ -400,21 +401,6 @@ TriangleShield::createLinks()
   return;
 }
   
-
-HeadRule
-TriangleShield::getXSectionIn() const
-  /*!
-    Get the line shield inner void section
-    \return HeadRule of cross-section
-   */
-{
-  ELog::RegMethod RegA("TriangleShield","getXSectionIn");
-  HeadRule HR=
-    ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
-  HR.populateSurf();
-  
-  return HR;
-}
   
     
 void

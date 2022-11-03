@@ -76,7 +76,7 @@ namespace essConstruct
 {
   
 SingleChopper::SingleChopper(const std::string& Key) : 
-  attachSystem::FixedRotateGroup(Key,"Main",6,"Beam",2,"BuildBeam",0),
+  attachSystem::FixedRotateGroup(Key,"Main",8,"Beam",2,"BuildBeam",0),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap(),
   motor(new essConstruct::Motor(Key+"Motor")),
@@ -109,7 +109,8 @@ SingleChopper::SingleChopper(const SingleChopper& A) :
   shortHeight(A.shortHeight),shortWidth(A.shortWidth),
   mainRadius(A.mainRadius),mainThick(A.mainThick),
   boltMat(A.boltMat),wallMat(A.wallMat),
-  RS(new constructSystem::RingSeal(*A.RS)),IPA(new InnerPort(*A.IPA)),
+  RS(new constructSystem::RingSeal(*A.RS)),
+  IPA(new InnerPort(*A.IPA)),
   IPB(new InnerPort(*A.IPB))
   /*!
     Copy constructor
@@ -343,7 +344,9 @@ SingleChopper::createLinks()
   mainFC.setConnect(2,Origin-X*(width/2.0),-X);
   mainFC.setConnect(3,Origin+X*(width/2.0),X);
   mainFC.setConnect(4,Origin-Z*(height/2.0),-Z);
-  mainFC.setConnect(5,Origin-Z*(height/2.0),Z);
+  mainFC.setConnect(5,Origin+Z*(height/2.0),Z);
+  mainFC.setConnect(6,Origin-X*(width/2.0)+Z*(height/2.0),Z);
+  mainFC.setConnect(7,Origin+X*(width/2.0)+Z*(height/2.0),Z);
 
   mainFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
   mainFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));
@@ -351,6 +354,8 @@ SingleChopper::createLinks()
   mainFC.setLinkSurf(3,SMap.realSurf(buildIndex+4));
   mainFC.setLinkSurf(4,-SMap.realSurf(buildIndex+5));
   mainFC.setLinkSurf(5,SMap.realSurf(buildIndex+6));
+  mainFC.setLinkSurf(6,SMap.realSurf(buildIndex+6));
+  mainFC.setLinkSurf(7,SMap.realSurf(buildIndex+6));
 
   // These are protected from ZVertial re-orientation
   const Geometry::Vec3D BC(beamFC.getCentre());
@@ -361,6 +366,10 @@ SingleChopper::createLinks()
 
   beamFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
   beamFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));
+
+  // copy to main:
+  copyLinkObjects(mainFC);
+  nameSideIndex({{"topLeft",6},{"topRight",7}});
   return;
 }
 
@@ -409,19 +418,19 @@ SingleChopper::createMotor(Simulation& System)
 
 void
 SingleChopper::createAll(Simulation& System,
-                       const attachSystem::FixedComp& beamFC,
-                       const long int FIndex)
+			 const attachSystem::FixedComp& beamFC,
+			 const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param beamFC :: FixedComp at the beam centre
-    \param FIndex :: side index
+    \param sideIndex :: side index
   */
 {
   ELog::RegMethod RegA("SingleChopper","createAll(FC)");
 
   populate(System.getDataBase());
-  createUnitVector(beamFC,FIndex);
+  createUnitVector(beamFC,sideIndex);
   createSurfaces();    
   createObjects(System);
   

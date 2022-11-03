@@ -3,7 +3,7 @@
  
  * File:   construct/RotaryCollimator.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,8 +71,8 @@ namespace constructSystem
 {
 
 RotaryCollimator::RotaryCollimator(const std::string& Key)  :
-  attachSystem::ContainedComp(),
   attachSystem::FixedGroup(Key,"Main",16,"Beam",3,"Hole",0),
+  attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   holeIndex(0),nHole(0),nLayers(0)
   /*!
@@ -82,7 +82,8 @@ RotaryCollimator::RotaryCollimator(const std::string& Key)  :
 {}
 
 RotaryCollimator::RotaryCollimator(const RotaryCollimator& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedGroup(A),
+  attachSystem::FixedGroup(A),
+  attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
   xyAngle(A.xyAngle),
   zAngle(A.zAngle),xStep(A.xStep),yStep(A.yStep),
@@ -269,8 +270,7 @@ RotaryCollimator::createObjects(Simulation& System)
       addCell("Void"+StrFunc::makeString(i),HU->getCell("Void"));
     }
   Out+=" "+HoleExclude.display();
-  System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));            
-  addCell("Main",cellIndex-1);
+  makeCell("Main",System,cellIndex++,defMat,0.0,Out);            
   return;
 }
 

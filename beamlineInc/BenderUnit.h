@@ -3,7 +3,7 @@
  
  * File:   beamlineInc/BenderUnit.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,66 +34,44 @@ namespace beamlineSystem
   \brief Points associated with tracked beamline bender
 */
 
-class BenderUnit : public ShapeUnit
+class BenderUnit :
+    public GuideUnit
 {
  private:
 
-  Geometry::Vec3D RCent;      ///< Rotation centre
-  Geometry::Vec3D RAxis;      ///< Rotation axis
-  Geometry::Vec3D RPlane;     ///< Rotation Centre direction
-
-  Geometry::Quaternion Qxy;   ///< Main XY bend-orientation rotation
-  Geometry::Quaternion Qz;    ///< Main Z bend-orientation rotation
-  
-  double Radius;              ///< Primary rotation ratius
   double aHeight;             ///< Height across rotation plane [start]
   double bHeight;             ///< Across rotation plane [end]
   double aWidth;              ///< In rotation plane [start]
   double bWidth;              ///< In rotation plane [end]
-  double Length;              ///< Length of section
-  double rotAng;              ///< Rotation of Z bend axis for bend
 
-  Geometry::Vec3D AXVec;    ///< Current XVector [Front]
-  Geometry::Vec3D AYVec;    ///< Current YVector [Front]
-  Geometry::Vec3D AZVec;    ///< Current ZVector [Front]
+  double radius;              ///< Primary rotation ratius
+  double rotAng;              ///< Rotation angle (radian)
 
-  Geometry::Vec3D BXVec;    ///< Current XVector [Back]
-  Geometry::Vec3D BYVec;    ///< Current YVector [Back]
-  Geometry::Vec3D BZVec;    ///< Current ZVector [Back]
+  Geometry::Vec3D rCent;      ///< Rotation centre
+  Geometry::Vec3D bX;         ///< Axis at end plane
+  Geometry::Vec3D bY;         ///< Normal axis at end plane
 
-  Geometry::Vec3D calcWidthCent(const bool) const;
+  void calcConstValues();
+  std::pair<Geometry::Vec3D,Geometry::Vec3D>
+  calcMidTrack(const double,const double) const;
+  Geometry::Vec3D calcCentre(const double,const double) const;
+
+  void populate(const FuncDataBase&);
+  void createSurfaces();
+  void createObjects(Simulation&);
+  void createLinks();
   
  public:
 
-  BenderUnit(const int,const int);
+  BenderUnit(const std::string&);
   BenderUnit(const BenderUnit&);
   BenderUnit& operator=(const BenderUnit&);
   virtual BenderUnit* clone() const;
   virtual ~BenderUnit();
 
-  void setValues(const double,const double,const double,
-		 const double,const double);
-  void setValues(const double,const double,const double,
-		 const double,const double,const double,
-		 const double);
-  void setOriginAxis(const Geometry::Vec3D&,const Geometry::Vec3D&,
-		     const Geometry::Vec3D&,const Geometry::Vec3D&);
+  using FixedComp::createAll;
+  virtual void createAll(Simulation&,const FixedComp&,const long int);
 
-  // Accessor to beg axis
-  Geometry::Vec3D getBegAxis() const { return -AYVec; }
-  // Accessor to end axis
-  Geometry::Vec3D getEndAxis() const { return BYVec; }
-  
-  virtual std::string getString(const ModelSupport::surfRegister&,
-				const size_t) const;
-  virtual std::string getExclude(const ModelSupport::surfRegister&,
-				 const size_t) const;
-  virtual void addSideLinks(const ModelSupport::surfRegister&,
-			    attachSystem::FixedComp&) const;
-
-  
-  virtual void createSurfaces(ModelSupport::surfRegister&,
-		      const std::vector<double>&);
 };
 
 }

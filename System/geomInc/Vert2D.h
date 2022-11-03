@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geomInc/Vert2D.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,10 +42,10 @@ class Vert2D
 
   int done;            ///< Processed
   int onHull;          ///< On Hull
-  size_t vIndex;     ///< index number   
+  size_t vIndex;       ///< index number   
   double cAngle;       ///< Cos of Angle
 
-  Vec3D V;             ///< Current point 
+  Geometry::Vec3D V;             ///< Current point 
 
  public:
   
@@ -57,6 +57,8 @@ class Vert2D
 
   /// Get the point
   const Geometry::Vec3D& getV() const { return V; }
+  /// directly set point (leave everything else alone)
+  void setPoint(const Geometry::Vec3D& A) { V=A; }
   /// Get the index
   size_t getID() const { return vIndex; }         
  
@@ -69,6 +71,7 @@ class Vert2D
   void Done() { done=1; }                           ///< set done flag
   void setOnHull(const int F) { onHull=F; }         ///< set on-hull flag
   double calcAngle(const Vec3D&,const Vec3D&);        
+
   
   void write(std::ostream&) const;
 };

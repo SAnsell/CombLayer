@@ -104,10 +104,10 @@ HEIMDALvariables(FuncDataBase& Control)
   
   Control.addVariable("heimdalFTAZStep",0.0);   
   Control.addVariable("heimdalFCAZStep",-5.0);   
-  Control.addVariable("heimdalFTAZAngle",0.0);   
-  Control.addVariable("heimdalFCAZAngle",-1.3);   
-  Control.addVariable("heimdalFTAXYAngle",1.0);   
-  Control.addVariable("heimdalFCAXYAngle",-1.0);   
+  Control.addVariable("heimdalFTAXAngle",0.0);   
+  Control.addVariable("heimdalFCAXAngle",-1.3);   
+  Control.addVariable("heimdalFTAZAngle",0.0);  // 1
+  Control.addVariable("heimdalFCAZAngle",0.0);  // -1.   
 
   RPipeGen.generatePipe(Control,"heimdalPipeB",6.5,46.0);
   Control.addVariable("heimdalPipeBZStep",-8.0);

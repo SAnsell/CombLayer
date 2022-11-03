@@ -3,7 +3,7 @@
  
  * File:   essBuild/HighBay.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,8 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -56,6 +54,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -67,9 +66,11 @@ namespace essSystem
 {
 
 HighBay::HighBay(const std::string& key) :
-  attachSystem::ContainedComp(),
   attachSystem::FixedComp(key,6),
-  attachSystem::CellMap(),attachSystem::SurfMap()
+  attachSystem::ContainedComp(),
+  attachSystem::ExternalCut(),
+  attachSystem::CellMap(),
+  attachSystem::SurfMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param key :: Name of component
@@ -77,10 +78,13 @@ HighBay::HighBay(const std::string& key) :
 {}
 
 HighBay::HighBay(const HighBay& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  attachSystem::CellMap(A),attachSystem::SurfMap(A),
-  baseName(A.baseName),length(A.length),height(A.height),roofThick(A.roofThick),
-  wallMat(A.wallMat),roofMat(A.roofMat),curtainCut(A.curtainCut)
+  attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::ExternalCut(A),
+  attachSystem::CellMap(A),
+  attachSystem::SurfMap(A),
+  length(A.length),height(A.height),roofThick(A.roofThick),
+  wallMat(A.wallMat),roofMat(A.roofMat)
   /*!
     Copy constructor
     \param A :: HighBay to copy
@@ -97,8 +101,9 @@ HighBay::operator=(const HighBay& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       length=A.length;
@@ -106,7 +111,6 @@ HighBay::operator=(const HighBay& A)
       roofThick=A.roofThick;
       wallMat=A.wallMat;
       roofMat=A.roofMat;
-      curtainCut=A.curtainCut;
     }
   return *this;
 }
@@ -126,7 +130,6 @@ HighBay::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("HighBay","populate");
   
-
   length=Control.EvalVar<double>(keyName+"Length");
   height=Control.EvalVar<double>(keyName+"Height");
   roofThick=Control.EvalVar<double>(keyName+"Thick");
@@ -137,33 +140,19 @@ HighBay::populate(const FuncDataBase& Control)
   return;
 }
   
-void
-HighBay::createUnitVector(const attachSystem::FixedComp& FC,
-			  const long int sideIndex)
-/*!
-    Create the unit vectors
-    \param FC :: Linked object (bunker )
-    \param sideIndex :: Side for linkage centre (wall)
-  */
-{
-  ELog::RegMethod RegA("HighBay","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  return;
-}
   
 void
-HighBay::createSurfaces(const Bunker& leftBunker,
-			const Bunker& rightBunker)
+HighBay::createSurfaces()
+
   /*!
     Create all the surfaces
-    \param leftBunker :: left bunker unit
-    \param rightBunker :: right bunker unit
    */
 {
   ELog::RegMethod RegA("HighBay","createSurface");
 
-  const int leftSurfRoof=leftBunker.getSurf("roofOuter");
+  const HeadRule roofHR=getRule("roofOuter");
+  
+  const int leftSurfRoof=roofHR.getPrimarySurface();
   
   ModelSupport::buildShiftedPlane(SMap,buildIndex+6,
 				  SMap.realPtr<Geometry::Plane>(leftSurfRoof),
@@ -172,7 +161,7 @@ HighBay::createSurfaces(const Bunker& leftBunker,
 				  SMap.realPtr<Geometry::Plane>(leftSurfRoof),
 				  height+roofThick);
   
-  const int rightSurfRoof=rightBunker.getSurf("roofOuter");
+  const int rightSurfRoof=leftSurfRoof;
   if (rightSurfRoof!=leftSurfRoof)
     {
       ModelSupport::buildShiftedPlane
@@ -189,67 +178,56 @@ HighBay::createSurfaces(const Bunker& leftBunker,
 }
 
 void
-HighBay::createObjects(Simulation& System,
-		       const Bunker& leftBunker,
-		       const Bunker& rightBunker)
+HighBay::createObjects(Simulation& System)
   /*!
     Create all the objects
     \param System :: Simulation
-    \param leftBunker :: left bunker unit    
-    \param rightBunker :: left bunker unit
   */
 {
   ELog::RegMethod RegA("HighBay","createObjects");
-  std::string Out;
 
+  HeadRule HR;
 
-  const std::string frontCut=leftBunker.getLinkString(3);
-
-  const HeadRule leftWallInner(leftBunker.getSurfRules("leftWallInner"));
-  const HeadRule rightWallInner(rightBunker.getSurfRules("-rightWallInner"));
-  const HeadRule leftWallOuter(leftBunker.getSurfRules("leftWallOuter"));
-  const HeadRule rightWallOuter(rightBunker.getSurfRules("-rightWallOuter"));
-  const HeadRule bunkerTop=leftBunker.getSurfRules("roofOuter");
+  const HeadRule curtainHR=getComplementRule("curtainCut");
+  const HeadRule frontCutHR=getRule("frontCut");
+  const HeadRule leftIWallHR=getRule("leftWallInner");
+  const HeadRule leftOWallHR=getRule("leftWallOuter");
+  const HeadRule rightIWallHR=getRule("rightWallInner");
+  const HeadRule rightOWallHR=getRule("rightWallOuter");
+  const HeadRule bunkerTopHR=getRule("roofOuter");
 
   // void area
-  Out=ModelSupport::getComposite(SMap,buildIndex," -2 -6 ");
-  Out+=leftWallInner.display()+rightWallInner.display();
-  Out+=frontCut;
-  Out+=bunkerTop.display();
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,
-				   Out+curtainCut.complement().display()));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 -6");
+  HR*=leftIWallHR*rightIWallHR*frontCutHR*bunkerTopHR;
+  makeCell("Void",System,cellIndex++,0,0.0,HR*curtainHR);
 
   // Roof area
-  Out=ModelSupport::getComposite(SMap,buildIndex," -2 6 -16 ");
-  Out+=leftWallInner.display()+rightWallInner.display();
-  Out+=frontCut;
-  System.addCell(MonteCarlo::Object(cellIndex++,roofMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 6 -16");
+  HR*=leftIWallHR*rightIWallHR*frontCutHR;
+  makeCell("Roof",System,cellIndex++,roofMat,0.0,HR);
 
   // Left wall
-  Out=ModelSupport::getComposite(SMap,buildIndex," -2 -16 ");
-  Out+=leftWallOuter.display()+leftWallInner.complement().display();
-  Out+=bunkerTop.display();
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+frontCut));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 -16");
+  HR*=leftOWallHR*leftIWallHR.complement();
+  HR*=bunkerTopHR*frontCutHR;
+  makeCell("LeftWall",System,cellIndex++,wallMat,0.0,HR);
   // Right wall
-  Out=ModelSupport::getComposite(SMap,buildIndex," -2 -16 ");
-  Out+=rightWallOuter.display()+rightWallInner.complement().display();
-  Out+=bunkerTop.display();
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+frontCut));
-		 
-  
-  Out=ModelSupport::getComposite(SMap,buildIndex," -2 -16 ");
-  Out+=leftWallOuter.display()+rightWallOuter.display();
-  Out+=frontCut;
-  Out+=bunkerTop.display();
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 -16");
+  HR*=rightOWallHR*rightIWallHR.complement();
+  HR*=bunkerTopHR*frontCutHR;
+  makeCell("RightWall",System,cellIndex++,wallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 -16");
+  HR*=leftOWallHR*rightOWallHR*frontCutHR*bunkerTopHR;
+  addOuterSurf(HR);
 
   return;
 }
   
 void
-HighBay::buildAll(Simulation& System,
-		  const Bunker& leftBunker,
-		  const Bunker& rightBunker)
+HighBay::createAll(Simulation& System,
+		   const attachSystem::FixedComp& FC,
+		   const long int sideIndex)
   
   /*!
     Generic function to initialize everything
@@ -261,9 +239,9 @@ HighBay::buildAll(Simulation& System,
   ELog::RegMethod RegA("HighBay","createAll");
 
   populate(System.getDataBase());  
-  createUnitVector(leftBunker,0);
-  createSurfaces(leftBunker,rightBunker);
-  createObjects(System,leftBunker,rightBunker);
+  createUnitVector(FC,sideIndex);
+  createSurfaces();
+  createObjects(System);
   insertObjects(System);              
 
   return;

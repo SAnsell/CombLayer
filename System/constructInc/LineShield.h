@@ -65,7 +65,6 @@ class LineShield :
   std::vector<double> floorFrac;      ///< Layer thicknesss 
   std::vector<int> floorMat;          ///< Layer materials
 
-
   void removeFrontOverLap();
   
   void populate(const FuncDataBase&);
@@ -79,7 +78,6 @@ class LineShield :
   LineShield(const LineShield&);
   LineShield& operator=(const LineShield&);
   virtual ~LineShield();
-
 
   HeadRule getXSectionIn() const;
 

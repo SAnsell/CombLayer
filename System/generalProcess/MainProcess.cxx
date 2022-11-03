@@ -714,7 +714,6 @@ buildFullSimulation(Simulation* SimPtr,
   reportSelection(*SimPtr,IParam);
   SimPtr->createObjSurfMap();
 
-
   SimPtr->minimizeObject("All");
   SimPtr->removeDeadSurfaces();
   

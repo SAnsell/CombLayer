@@ -34,13 +34,13 @@ namespace constructSystem
     \brief Variable detemine hole type
   */
   
-class HoleShape : public attachSystem::ContainedComp,
+class HoleShape : 
   public attachSystem::FixedComp,
+  public attachSystem::ContainedComp,
   public attachSystem::CellMap
 {
  private:
 
-  
   size_t shapeType;             ///< Shape index
 
   double angleCentre;           ///< Mid point for alignment [for interigation]

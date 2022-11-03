@@ -65,7 +65,9 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "GuideItem.h"
-#include "GuideLine.h"
+#include "GuideUnit.h"
+#include "PlateUnit.h"
+#include "BenderUnit.h"
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "WindowPipe.h"
@@ -86,20 +88,20 @@ NMX::NMX(const std::string& keyName) :
   attachSystem::CopiedComp("nmx",keyName),
   stopPoint(0),
   nmxAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
-  FocusA(new beamlineSystem::GuideLine(newName+"FA")),
+  FocusA(new beamlineSystem::PlateUnit(newName+"FA")),
   VPipeA(new constructSystem::WindowPipe(newName+"PipeA")),
-  BendA(new beamlineSystem::GuideLine(newName+"BA")),
+  BendA(new beamlineSystem::BenderUnit(newName+"BA")),
   VPipeB(new constructSystem::WindowPipe(newName+"PipeB")),
-  BendB(new beamlineSystem::GuideLine(newName+"BB")),
+  BendB(new beamlineSystem::BenderUnit(newName+"BB")),
   VPipeC(new constructSystem::WindowPipe(newName+"PipeC")),
-  BendC(new beamlineSystem::GuideLine(newName+"BC")),
+  BendC(new beamlineSystem::BenderUnit(newName+"BC")),
   VPipeD(new constructSystem::WindowPipe(newName+"PipeD")),
-  BendD(new beamlineSystem::GuideLine(newName+"BD")),
+  BendD(new beamlineSystem::BenderUnit(newName+"BD")),
   VPipeE(new constructSystem::WindowPipe(newName+"PipeE")),
-  BendE(new beamlineSystem::GuideLine(newName+"BE")),
+  BendE(new beamlineSystem::BenderUnit(newName+"BE")),
   CollA(new constructSystem::PipeCollimator(newName+"CollA")),
   BInsert(new BunkerInsert(newName+"BInsert")),
-  FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
+  FocusWall(new beamlineSystem::PlateUnit(newName+"FWall")),
   MainShutter(new constructSystem::BeamShutter(newName+"MainShutter")),
   ShieldA(new constructSystem::LineShield(newName+"ShieldA"))
   /*!
@@ -163,81 +165,78 @@ NMX::build(Simulation& System,
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
   
   essBeamSystem::setBeamAxis(*nmxAxis,Control,GItem,1);
-  
+
+
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);
   FocusA->setBack(GItem.getKey("Beam"),-2);
-  FocusA->createAll(System,*nmxAxis,-3,*nmxAxis,-3); // beam front reversed
+  FocusA->createAll(System,*nmxAxis,-3); // beam front reversed
   if (stopPoint==1) return;                  // STOP at Monolith
-  return;
+  
 
   // PIPE after gamma shield
   VPipeA->addAllInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeA->createAll(System,FocusA->getKey("Guide0"),2);
+  VPipeA->createAll(System,*FocusA,2);
 
   BendA->addInsertCell(VPipeA->getCells("Void"));
-  BendA->createAll(System,*VPipeA,0,*VPipeA,0);
-
-
+  BendA->createAll(System,*VPipeA,0);
+  ELog::EM<<"P == "<<VPipeA->getLinkAxis(0)<<ELog::endDiag;
   // PIPE from 10m to 14m
   VPipeB->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeB->setFront(*VPipeA,2);
-  VPipeB->createAll(System,BendA->getKey("Guide0"),2);
+  VPipeB->createAll(System,*BendA,2);
 
   BendB->addInsertCell(VPipeB->getCells("Void"));
-  BendB->createAll(System,BendA->getKey("Guide0"),2,
-		   BendA->getKey("Guide0"),2);
+  BendB->createAll(System,*BendA,2);
 
   // PIPE from 14m to 18m
   VPipeC->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeC->setFront(*VPipeB,2);
-  VPipeC->createAll(System,BendB->getKey("Guide0"),2);
-
+  VPipeC->createAll(System,*BendB,2);
   BendC->addInsertCell(VPipeC->getCells("Void"));
-  BendC->createAll(System,BendB->getKey("Guide0"),2,
-		   BendB->getKey("Guide0"),2);
+  BendC->createAll(System,*BendB,2);
 
   // PIPE from 18m to 22m
   VPipeD->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeD->setFront(*VPipeC,2);
-  VPipeD->createAll(System,BendC->getKey("Guide0"),2);
+  VPipeD->createAll(System,*BendC,2);
 
   BendD->addInsertCell(VPipeD->getCells("Void"));
-  BendD->createAll(System,BendC->getKey("Guide0"),2,
-		   BendC->getKey("Guide0"),2);
+  BendD->createAll(System,*BendC,2);
 
   // PIPE from 22m to Wall
   VPipeE->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeE->setFront(*VPipeD,2);
-  VPipeE->createAll(System,BendD->getKey("Guide0"),2);
+  VPipeE->createAll(System,*BendD,2);
 
   BendE->addInsertCell(VPipeE->getCells("Void"));
-  BendE->createAll(System,BendD->getKey("Guide0"),2,
-		   BendD->getKey("Guide0"),2);
-
+  BendE->createAll(System,*BendD,2);
 
   // EXPERIMENTAL WAY TO PLACE A SIMPLE COLLIMATOR   
-  CollA->setInnerExclude(BendC->getXSectionOut());
-  CollA->setOuter(VPipeC->getFullRule(-3));
+  
+  CollA->setCutSurf("Inner",BendC->getOuterSurf());
+  CollA->setCutSurf("Outer",*VPipeC,-3);
   CollA->addInsertCell(VPipeC->getCell("Void"));
   CollA->createAll(System,*VPipeC,0);
   
   if (stopPoint==2) return;                      // STOP At bunker edge
 
   // First collimator [In WALL]
-  BInsert->setBunkerObject(bunkerObj);
-  BInsert->createAll(System,BendE->getKey("Guide0"),2);
+  //  BInsert->setBunkerObject(bunkerObj);
+  BInsert->setCutSurf("front",bunkerObj,-1);
+  BInsert->setCutSurf("back",bunkerObj,-2);
+  BInsert->createAll(System,*BendE,2);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);
 
     // using 7 : mid point
   FocusWall->addInsertCell(BInsert->getCell("Void"));
-  FocusWall->createAll(System,*BInsert,7,*BInsert,7);
+  FocusWall->createAll(System,*BInsert,7);
 
   if (stopPoint==3) return;                  // STOP At bunker edge
   // Section to 24.5m
   ShieldA->addInsertCell(voidCell);
   ShieldA->setFront(bunkerObj,2);
-  ShieldA->createAll(System,FocusWall->getKey("Guide0"),2);
+  ShieldA->createAll(System,*FocusWall,2);
 
   MainShutter->addInsertCell(ShieldA->getCells("Void"));
   MainShutter->secondaryUnitVector(*ShieldA,-1);

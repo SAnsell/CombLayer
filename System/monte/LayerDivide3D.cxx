@@ -526,10 +526,21 @@ LayerDivide3D::divideCell(Simulation& System,const int cellN)
       	    }
 	}
     }
+
   System.removeCell(cellN);
+
+  for(const int CN : getCells())
+    {
+      const int flag=System.minimizeObject(CN);
+      if (flag==-1)
+	CellMap::removeCellNumber(CN);
+    }
+
   if (DGPtr && !outputFile.empty())
     DGPtr->writeXML(outputFile,objName,ALen,BLen,CLen);
 
+
+  
   return;
 }
 

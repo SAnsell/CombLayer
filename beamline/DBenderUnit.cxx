@@ -3,7 +3,7 @@
  
  * File:   beamline/DBenderUnit.cxx 
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -38,48 +39,55 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "Vert2D.h"
-#include "Convex2D.h"
 #include "polySupport.h"
 #include "surfRegister.h"
-#include "Surface.h"
 #include "generateSurf.h"
 #include "ModelSupport.h"
+#include "varList.h"
+#include "Code.h"
+#include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "ShapeUnit.h"
+#include "FixedRotate.h"
+#include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
+#include "ExternalCut.h"
+#include "FrontBackCut.h"
+#include "groupRange.h"
+#include "objectGroups.h"
+#include "Simulation.h"
+#include "GuideUnit.h"
+
 #include "DBenderUnit.h"
 
 namespace beamlineSystem
 {
 
-DBenderUnit::DBenderUnit(const int ON,const int LS)  :
-  ShapeUnit(ON,LS)
+DBenderUnit::DBenderUnit(const std::string& key)  :
+  GuideUnit(key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
-    \param LS :: Layer separation
-    \param ON :: offset number
+    \param key :: Key Name
   */
 {}
 
 DBenderUnit::DBenderUnit(const DBenderUnit& A) : 
-  ShapeUnit(A),
+  GuideUnit(A),
   RCentA(A.RCentA),RCentB(A.RCentB),RAxisA(A.RAxisA),
   RAxisB(A.RAxisB),RPlaneFrontA(A.RPlaneFrontA),
   RPlaneFrontB(A.RPlaneFrontB),RPlaneBackA(A.RPlaneBackA),
-  RPlaneBackB(A.RPlaneBackB),endPtA(A.endPtA),
-  endPtB(A.endPtB),RadiusA(A.RadiusA),RadiusB(A.RadiusB),
-  aHeight(A.aHeight),bHeight(A.bHeight),aWidth(A.aWidth),
-  bWidth(A.bWidth),Length(A.Length),rotAng(A.rotAng),
-  sndAng(A.sndAng),AXVec(A.AXVec),AYVec(A.AYVec),
-  AZVec(A.AZVec),BXVec(A.BXVec),BYVec(A.BYVec),BZVec(A.BZVec)
+  RPlaneBackB(A.RPlaneBackB),endPtA(A.endPtA),endPtB(A.endPtB),
+  RadiusA(A.RadiusA),RadiusB(A.RadiusB),aHeight(A.aHeight),
+  bHeight(A.bHeight),aWidth(A.aWidth),bWidth(A.bWidth),
+  Length(A.Length),rotAng(A.rotAng),sndAng(A.sndAng),
+  AXVec(A.AXVec),AYVec(A.AYVec),AZVec(A.AZVec),
+  BXVec(A.BXVec),BYVec(A.BYVec),BZVec(A.BZVec)
   /*!
     Copy constructor
     \param A :: DBenderUnit to copy
@@ -96,7 +104,7 @@ DBenderUnit::operator=(const DBenderUnit& A)
 {
   if (this!=&A)
     {
-      ShapeUnit::operator=(A);
+      GuideUnit::operator=(A);
       RCentA=A.RCentA;
       RCentB=A.RCentB;
       RAxisA=A.RAxisA;
@@ -280,11 +288,11 @@ DBenderUnit::calcWidthCent(const bool plusSide) const
   
   if (NAns) 
     {
-      if (fabs(OutValues.first.imag())<Geometry::zeroTol &&
+      if (std::abs<double>(OutValues.first.imag())<Geometry::zeroTol &&
           OutValues.first.real()>0.0)
         return midPt+LDir*OutValues.first.real();
       
-      if (fabs(OutValues.second.imag())<Geometry::zeroTol &&
+      if (std::abs<double>(OutValues.second.imag())<Geometry::zeroTol &&
           OutValues.second.real()>0.0)
         return midPt+LDir*OutValues.second.real();
     }
@@ -336,12 +344,9 @@ DBenderUnit::calcHeightCent(const bool plusSide) const
 }
 
 void
-DBenderUnit::createSurfaces(ModelSupport::surfRegister& SMap,
-			  const std::vector<double>& Thick)
+DBenderUnit::createSurfaces()
   /*!
     Build the surfaces for the track
-    \param SMap :: SMap to use
-    \param Thick :: Thickness for each layer
    */
 {
   ELog::RegMethod RegA("DBenderUnit","createSurfaces");
@@ -354,99 +359,110 @@ DBenderUnit::createSurfaces(ModelSupport::surfRegister& SMap,
   const Geometry::Vec3D MHCentre= calcHeightCent(0);
 
   // Make divider plane width required
-  const double maxWidth=Thick.back()+(aWidth+bWidth);
-  ModelSupport::buildPlane(SMap,shapeIndex+1001,
+  const double maxWidth=layerThick.back()+(aWidth+bWidth);
+  ModelSupport::buildPlane(SMap,buildIndex+1001,
 			   begPt+RPlaneFrontA*maxWidth,
 			   endPt+RPlaneFrontA*maxWidth,
 			   endPt+RPlaneFrontA*maxWidth+RAxisA,
 			   -RPlaneFrontA);
   // Make divider plane heightx required
-  const double maxHeight=Thick.back()+(aHeight+bHeight);
-  ModelSupport::buildPlane(SMap,shapeIndex+1002,
+  const double maxHeight=layerThick.back()+(aHeight+bHeight);
+  ModelSupport::buildPlane(SMap,buildIndex+1002,
 			   begPt+RPlaneFrontB*maxHeight,
 			   endPt+RPlaneFrontB*maxHeight,
 			   endPt+RPlaneFrontB*maxHeight+RAxisB,
 			   -RPlaneFrontB);
 
   // Widths
-  for(size_t j=0;j<Thick.size();j++)
+  int SN(buildIndex);
+  for(size_t j=0;j<layerThick.size();j++)
     {
-      const int SN(shapeIndex+static_cast<int>(j)*layerSep);
-
       ModelSupport::buildCylinder(SMap,SN+5,MHCentre,
-				  RAxisB,RadiusB-(Thick[j]+aHeight/2.0));
+				  RAxisB,RadiusB-(layerThick[j]+aHeight/2.0));
       ModelSupport::buildCylinder(SMap,SN+6,PHCentre,
-				  RAxisB,RadiusB+(Thick[j]+aHeight/2.0));
+				  RAxisB,RadiusB+(layerThick[j]+aHeight/2.0));
 
       ModelSupport::buildCylinder(SMap,SN+7,MWCentre,
-				  RAxisA,RadiusB-(Thick[j]+aWidth/2.0));
+				  RAxisA,RadiusB-(layerThick[j]+aWidth/2.0));
       ModelSupport::buildCylinder(SMap,SN+8,PWCentre,
-				  RAxisA,RadiusB+(Thick[j]+aWidth/2.0));
+				  RAxisA,RadiusB+(layerThick[j]+aWidth/2.0));
+      SN+=20;
     }
 
   return;
 }
 
-std::string
-DBenderUnit::getString(const ModelSupport::surfRegister& SMap,
-		      const size_t layerN) const
+void
+DBenderUnit::createObjects(Simulation& System)
   /*!
-    Write string for layer number
-    \param SMap :: Surface register
-    \param layerN :: Layer number
-    \return inward string
+    Build all the objects
+    \param System :: Simulation
   */
 {
-  ELog::RegMethod RegA("DBenderUnit","getString");
 
-  const int SN(static_cast<int>(layerN)*layerSep);
-  return ModelSupport::getComposite
-    (SMap,shapeIndex+SN,shapeIndex," 1001M 1002M 5 -6 7 -8 ");
+  HeadRule HR;
+
+  HeadRule innerHR;
+  const HeadRule divHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"1001 1002")*
+    getFrontRule()*getBackRule();
+
+  int SN(buildIndex);
+  for(size_t i=0;i<layerThick.size();i++)
+    {
+      HR=ModelSupport::getHeadRule(SMap,SN,"5 -6 7 -8");
+      makeCell("Layer"+std::to_string(i),System,cellIndex++,layerMat[i],0.0,
+	       HR*innerHR*divHR);
+      SN+=20;
+      innerHR=HR.complement();
+    }
+  addOuterSurf(HR*divHR);
+  return ;
 }
-
-  
+    
 void
-DBenderUnit::addSideLinks(const ModelSupport::surfRegister& SMap,
-                         attachSystem::FixedComp& FC) const
+DBenderUnit::createLinks()
   /*!
     Add link points to the guide unit
-    \param SMap :: Surface Map 
-    \param FC :: FixedComp to use
-   */
+  */
 {
   ELog::RegMethod RegA("BenderUnit","addSideLinks");
 
-  FC.setLinkSurf(2,SMap.realSurf(shapeIndex+5));
-  FC.setLinkSurf(3,SMap.realSurf(shapeIndex+6));
-  FC.setLinkSurf(4,SMap.realSurf(shapeIndex+7));
-  FC.setLinkSurf(5,SMap.realSurf(shapeIndex+8));
+  setLinkSurf(2,SMap.realSurf(buildIndex+5));
+  setLinkSurf(3,SMap.realSurf(buildIndex+6));
+  setLinkSurf(4,SMap.realSurf(buildIndex+7));
+  setLinkSurf(5,SMap.realSurf(buildIndex+8));
 
   const Geometry::Vec3D MCentre= calcWidthCent(0);
-  FC.setConnect(2,MCentre+RCentA*RadiusA+RAxisA*((aWidth+bWidth)/4.0),-RAxisA);
-  FC.setConnect(3,MCentre+RCentA*RadiusA+RAxisA*((aWidth+bWidth)/4.0),RAxisA);
-  FC.setConnect(4,MCentre+RCentB*RadiusB+RAxisB*((aHeight+bHeight)/4.0),-RAxisB);
-  FC.setConnect(5,MCentre+RCentB*RadiusB+RAxisB*((aHeight+bHeight)/4.0),RAxisB);
+  setConnect(2,MCentre+RCentA*RadiusA+RAxisA*((aWidth+bWidth)/4.0),-RAxisA);
+  setConnect(3,MCentre+RCentA*RadiusA+RAxisA*((aWidth+bWidth)/4.0),RAxisA);
+  setConnect(4,MCentre+RCentB*RadiusB+RAxisB*((aHeight+bHeight)/4.0),-RAxisB);
+  setConnect(5,MCentre+RCentB*RadiusB+RAxisB*((aHeight+bHeight)/4.0),RAxisB);
 
   return;
 }
 
-std::string
-DBenderUnit::getExclude(const ModelSupport::surfRegister& SMap,
-		       const size_t layerN) const
+void
+DBenderUnit::createAll(Simulation& System,
+		       const attachSystem::FixedComp& FC,
+		       const long int sideIndex)
   /*!
-    Write string for layer number
-    \param SMap :: Surface register
-    \param layerN :: Layer number
-    \return inward string
-  */
+    Construct a DBender unit
+    \param System :: Simulation to use
+    \param FC :: FixedComp to use for basis set
+    \param sideIndex :: side link point
+   */
 {
-  ELog::RegMethod RegA("DBenderUnit","getExclude");
+  ELog::RegMethod RegA("DBenderUnit","createAll");
+
+  populate(System.getDataBase());
+  createUnitVector(FC,sideIndex);
   
-  std::ostringstream cx;
-
-  const int SN(static_cast<int>(layerN)*layerSep);
-  return ModelSupport::getComposite(SMap,shapeIndex+SN," (-5:6:-7:8) ");
+  createSurfaces();
+  createObjects(System);
+  createLinks();
+  insertObjects(System);
+  return;
 }
-
   
 }  // NAMESPACE beamlineSystem

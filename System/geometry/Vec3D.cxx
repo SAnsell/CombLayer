@@ -3,7 +3,7 @@
  
  * File:   geometry/Vec3D.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -469,6 +469,20 @@ Vec3D::masterDir(const double Tol) const
   return idx;
 }
 
+void
+Vec3D::makePosPrinciple()
+  /*!
+    Given a Vec3D find the principle direction
+    and rotate the vector so that principle direction
+    is +ve.
+  */
+{
+  const size_t pDir=principleDir();
+  if (this->operator[](pDir)<0.0)
+    this->operator*=(-1.0);
+  return;
+}
+
 size_t 
 Vec3D::principleDir() const
   /*! 
@@ -778,10 +792,28 @@ Vec3D::crossNormal() const
    */
 {
   Geometry::Vec3D N(y,z,x);
-  
+
   return (*this * N).unit(); 
 }
 
+void
+Vec3D::makePosCos(const Geometry::Vec3D& A)
+ /*!
+   Given vector A, ensure that the vector
+   is signed so that A.this >= 0
+   \param A :: vector to compare
+ */
+{
+  const double D=A.x*x+A.y*y+A.z*z;
+  if (D<0.0)
+    {
+      x *= -1.0;
+      y *= -1.0;
+      z *= -1.0;
+    }
+  return;
+}
+  
 void
 Vec3D::read(std::istream& IX)
   /*!

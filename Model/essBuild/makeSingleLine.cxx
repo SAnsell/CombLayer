@@ -55,10 +55,10 @@
 #include "FixedRotate.h"
 #include "FixedRotateUnit.h"
 #include "FixedGroup.h"
+#include "FixedRotateGroup.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "Bunker.h"
-#include "GuideLine.h"
 
 #include "BEER.h"
 #include "BIFROST.h"

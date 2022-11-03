@@ -89,6 +89,9 @@ class FixedRotate  : public FixedComp
   void setRotation(const double,const double,const double);
   void applyOffset();
 
+  void applyCopiedOffset(FixedComp&) const;
+  
+
   void linkShift(const size_t);
   void linkAngleRotate(const size_t);
   

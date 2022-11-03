@@ -222,87 +222,73 @@ InnerPort::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("InnerPort","createObjects");
-  
-  std::string Out;
-  const std::string boundaryStr=getRuleStr("Boundary");
+
+  HeadRule HR; 
+
+  const HeadRule boundaryHR=getRule("Boundary");
 
   if (windowMat)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,"101 -102 3 -4 5 -6");
-      System.addCell(MonteCarlo::Object(cellIndex++,windowMat,0.0,Out));
-      addCell("Window",cellIndex-1);
-      Out=ModelSupport::getComposite(SMap,buildIndex,
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 3 -4 5 -6");
+      makeCell("Window",System,cellIndex++,windowMat,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,
                                      "1 -2 3 -4 5 -6 (-101 : 102)");
-      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-      addCell("Void",cellIndex-1);
-
+      makeCell("Void",System,cellIndex++,0,0.0,HR);
     }
   else
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
-      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-      addCell("Void",cellIndex-1);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+      makeCell("Void",System,cellIndex++,0,0.0,HR);
     }
   
   if (sealStep>Geometry::zeroTol)
     {
 
       // Seal [4 segments]:
-      Out=ModelSupport::getComposite(SMap,buildIndex,"21 -22 23 -13 25 -26");
-      System.addCell(MonteCarlo::Object(cellIndex++,sealMat,0.0,Out));
-      addCell("Seal",cellIndex-1);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -22 23 -13 25 -26");
+      makeCell("Seal",System,cellIndex++,sealMat,0.0,HR);
       
-      Out=ModelSupport::getComposite(SMap,buildIndex,"21 -22 14 -24 25 -26");
-      System.addCell(MonteCarlo::Object(cellIndex++,sealMat,0.0,Out));
-      addCell("Seal",cellIndex-1);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -22 14 -24 25 -26");
+      makeCell("Seal",System,cellIndex++,sealMat,0.0,HR);
       
-      Out=ModelSupport::getComposite(SMap,buildIndex,"21 -22 13 -14 -15 25");
-      System.addCell(MonteCarlo::Object(cellIndex++,sealMat,0.0,Out));
-      addCell("Seal",cellIndex-1);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -22 13 -14 -15 25");
+      makeCell("Seal",System,cellIndex++,sealMat,0.0,HR);
       
-      Out=ModelSupport::getComposite(SMap,buildIndex,"21 -22 13 -14 16 -26");
-      System.addCell(MonteCarlo::Object(cellIndex++,sealMat,0.0,Out));
-      addCell("Seal",cellIndex-1);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -22 13 -14 16 -26");
+      makeCell("Seal",System,cellIndex++,sealMat,0.0,HR);
 
       // surrounding seal [front/back]
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-                                     "1 -21 23 -24 25 -26 (-13:14:-15:16) ");
-      System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
-      addCell("Main",cellIndex-1);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,
+                                     "1 -21 23 -24 25 -26 (-13:14:-15:16)");
+      makeCell("Main",System,cellIndex++,mat,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,
                                      "22 -2 23 -24 25 -26 (-13:14:-15:16) ");
-      System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
-      addCell("Main",cellIndex-1);
+      makeCell("Main",System,cellIndex++,mat,0.0,HR);
 
       // Inner seal Mat:
       
-      Out=ModelSupport::getComposite(SMap,buildIndex,
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,
                                      "1 -2 13 -14 15 -16 (-3:4:-5:6)");
-      System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
-      addCell("Main",cellIndex-1);
+      makeCell("Main",System,cellIndex++,mat,0.0,HR);
       
        // Metal surrounding seal
       const int boltIndex((nBolt) ? buildIndex+30 : buildIndex+20);
-      Out=ModelSupport::getComposite(SMap,buildIndex,boltIndex,
-                                     " 1 -2 (-3M:4M:-5M:6M) " );
-      System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,
-                                       Out+boundaryStr));
-      addCell("Outer",cellIndex-1);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,boltIndex,
+                                     "1 -2 (-3M:4M:-5M:6M)");
+      makeCell("Outer",System,cellIndex++,mat,0.0,HR*boundaryHR);
     }
   else // No seal
     {
       const int boltIndex((nBolt) ? buildIndex+30 : buildIndex);
-      Out=ModelSupport::getComposite(SMap,buildIndex,boltIndex,
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,boltIndex,
                                      " 1 -2 (-3M:4M:-5M:6M) " );
-      System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,
-                                       Out+boundaryStr));
-      addCell("Outer",cellIndex-1);
+      makeCell("Outer",System,cellIndex++,mat,0.0,HR*boundaryHR);
     }
 
   // Main container:
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 ");
-  addOuterSurf(Out);    
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2");
+  addOuterSurf(HR);    
     
   return;
 }
@@ -315,10 +301,13 @@ InnerPort::createBolts(Simulation& System)
    */
 {
   ELog::RegMethod RegA("InnerPort","createBolts");
+
   if (!nBolt) return;
-  const std::string boundaryStr=getRuleStr("Boundary");
+
+  HeadRule HR;
+  const HeadRule boundaryHR=getRule("Boundary");
     
-  std::string Out,OutComp,OutSide;
+  HeadRule HRComp,HRSide;
 
   const double NBDbl((nBolt>1) ? static_cast<double>(nBolt) : 1.0);
   // surf +2x
@@ -350,6 +339,8 @@ InnerPort::createBolts(Simulation& System)
       ModelSupport::buildPlane(SMap,BI+5,cutV,Z);
       BI+=10;
     }
+
+  std::vector<int> boltCut;  // are bolts cut by boundaryHR
   Geometry::Vec3D boltC;
   boltIndex=buildIndex+1000;
   for(size_t sideI=0;sideI<4;sideI++)
@@ -360,11 +351,16 @@ InnerPort::createBolts(Simulation& System)
       boltC= (sideI % 2) ?
         Origin+X*(xSign*HOffset)+Z*(zSign*VMid) :
         Origin+X*(xSign*HMid)+Z*(zSign*VOffset);
+
       
       const Geometry::Vec3D& ActiveStep
         ((sideI % 2)  ? -XStep*xSign : -ZStep*xSign);
       BI=boltIndex;
       boltC+= ActiveStep/2.0;
+      const Geometry::Vec3D boltTest =
+	boltC+X*(xSign*boltRadius)+Z*(zSign*boltRadius);
+      boltCut.push_back(boundaryHR.isValid(boltTest));
+			
       for(size_t i=0;i<nBolt;i++)
         {
           ModelSupport::buildCylinder(SMap,BI+7,boltC,Y,boltRadius);
@@ -375,16 +371,17 @@ InnerPort::createBolts(Simulation& System)
     }
 
   // Now create objects:
+  // Check which cells will need boundary cut
   const std::vector<int> cornerCut=
     {
-      calcIntersect(Origin-X*HFull-Z*VFull),
-      calcIntersect(Origin-X*HFull+Z*VFull),
-      calcIntersect(Origin+X*HFull+Z*VFull),
-      calcIntersect(Origin+X*HFull-Z*VFull)
+      boundaryHR.isValid(Origin-X*HFull-Z*VFull),
+      boundaryHR.isValid(Origin-X*HFull+Z*VFull),
+      boundaryHR.isValid(Origin+X*HFull+Z*VFull),
+      boundaryHR.isValid(Origin+X*HFull-Z*VFull)
     };
-
+  
   const std::vector<std::string> surfSide
-    ({"-23 33" , " 26 -36 "," 24 -34 ", " -25 35 "});
+    ({"-23 33" , "26 -36","24 -34", "-25 35"});
   const std::vector<int> leftSide({35,23,36,24});
   const std::vector<int> rightSide({36,24,35,23});
   const std::vector<int> planeSide({4,2,4,2});
@@ -392,7 +389,7 @@ InnerPort::createBolts(Simulation& System)
   BI=buildIndex+1000;
   for(size_t sideI=0;sideI<4;sideI++)
     {
-      OutSide=ModelSupport::getComposite(SMap,buildIndex,surfSide[sideI]);
+      HRSide=ModelSupport::getHeadRule(SMap,buildIndex,surfSide[sideI]);
 
       int leftIndex(buildIndex+leftSide[sideI]-1);
       int rightIndex;
@@ -404,30 +401,30 @@ InnerPort::createBolts(Simulation& System)
       BI=buildIndex+1000*(static_cast<int>(sideI)+1);
       for(size_t i=0;i<nBolt;i++)
         {
-          Out=ModelSupport::getComposite(SMap,buildIndex,BI,"1 -2 -7M");
-          System.addCell(MonteCarlo::Object(cellIndex++,boltMat,0.0,Out));
-          addCell("Bolt",cellIndex-1);
+          HR=ModelSupport::getHeadRule(SMap,buildIndex,BI,"1 -2 -7M");
+	  if ((i==0 || i+1==nBolt) && !boltCut[sideI])
+	    HR*=boundaryHR;	    
+          makeCell("Bolt",System,cellIndex++,boltMat,0.0,HR);
           
           rightIndex=(i!=nBolt-1) ?
             (PI+planeSide[sideI]) :
             buildIndex+rightSide[sideI]-1;
           if (sideI>1) rightIndex*=-1;
 
-          Out=ModelSupport::getComposite(SMap,leftIndex,rightIndex," 1 -1M ");
+          HR=ModelSupport::getHeadRule(SMap,leftIndex,rightIndex,"1 -1M");
           leftIndex=rightIndex;
-          OutComp=ModelSupport::getComposite(SMap,buildIndex,BI," 1 -2 7M ");
-          if (cornerCut[sideI])
-            OutComp+= boundaryStr;
+          HRComp=ModelSupport::getHeadRule(SMap,buildIndex,BI,"1 -2 7M");
+
+	  
+	  if (!cornerCut[sideI])
+	    HRComp *= boundaryHR;
           
-          System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,
-                                           Out+OutComp+OutSide));
-          addCell("Main",cellIndex-1);
+          makeCell("Main",System,cellIndex++,mat,0.0,HR*HRComp*HRSide);
           PI+= (sideI>1) ? -10 : 10;
           BI+=10;
         }
     }
 
-  //  Out=ModelSupport::getComposite(SMap,leftIndex,rightIndex," 1 -1M ");  
   return;
 }
 

@@ -244,7 +244,7 @@ FixedRotate::populate(const std::string& baseName,
       preXAngle=Control.EvalDefTail<double>
 	(keyName,baseName,"PreXAngle",preXAngle);
       preYAngle=Control.EvalDefTail<double>
-	(keyName,baseName,"PreYAngle",preXAngle);
+	(keyName,baseName,"PreYAngle",preYAngle);
       preZAngle=Control.EvalDefTail<double>
 	(keyName,baseName,"PreZAngle",preZAngle);
     }
@@ -268,7 +268,7 @@ FixedRotate::populate(const std::string& baseName,
   else
     {
       xAngle=Control.EvalDefTail<double>(keyName,baseName,"XAngle",xAngle);
-      yAngle=Control.EvalDefTail<double>(keyName,baseName,"YAngle",zAngle);
+      yAngle=Control.EvalDefTail<double>(keyName,baseName,"YAngle",yAngle);
       zAngle=Control.EvalDefTail<double>(keyName,baseName,"ZAngle",zAngle);
     }
 
@@ -336,7 +336,8 @@ FixedRotate::createUnitVector(const attachSystem::FixedComp& FC,
       
   FixedComp::createUnitVector(FC,sideIndex);  
   applyOffset();
-    
+  if (keyName=="cspecBD")
+    ELog::EM<<"ZAngle = "<<zAngle<<" "<<xAngle<<ELog::endDiag;
   return;
 }
 
@@ -489,6 +490,24 @@ FixedRotate::applyOffset()
   FixedComp::reOrientate();      // this might still be active
 
   if (flipX) FixedComp::reverseX();
+  return;
+}
+
+void
+FixedRotate::applyCopiedOffset(FixedComp& FC) const
+  /*!
+    Apply the rotation/step offset
+    \param FC :: FixedRotate apply copy rotation / offset to
+  */
+{
+  ELog::RegMethod RegA("FixedRotate","applyOffset");
+
+  FC.applyAngleRotate(preXAngle,preYAngle,preZAngle);
+  FC.applyShift(xStep,yStep,zStep);
+  FC.applyAngleRotate(xAngle,yAngle,zAngle);
+  FC.reOrientate();      // this might still be active
+
+  if (flipX) FC.reverseX();
   return;
 }
 

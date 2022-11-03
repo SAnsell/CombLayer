@@ -310,16 +310,6 @@ FrontBackCut::frontRule() const
 }
 
 std::string
-FrontBackCut::frontComplement() const
-  /*!
-    Accessor to front rule (complement)
-    \return frontRule.cmp with divider
-  */
-{
-  return ExternalCut::getComplementStr("front");  
-}
-
-std::string
 FrontBackCut::backRule() const
   /*!
     Accessor to back rule
@@ -327,36 +317,6 @@ FrontBackCut::backRule() const
   */
 {
   return ExternalCut::getRuleStr("back");
-}
-
-std::string
-FrontBackCut::backComplement() const
-  /*!
-    Accessor to back rule
-    \return backRule with divider
-  */
-{
-  return ExternalCut::getComplementStr("back");  
-}
-
-std::string
-FrontBackCut::frontBridgeRule() const
-  /*!
-    Accessor to front bridge rule
-    \return frontBridgeRule 
-  */
-{
-  return ExternalCut::getBridgeStr("front");  
-}
-
-std::string
-FrontBackCut::backBridgeRule() const
-  /*!
-    Accessor to back bridge rule
-    \return backRule divider
-  */
-{
-  return ExternalCut::getBridgeStr("back");  
 }
 
 void

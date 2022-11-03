@@ -809,9 +809,6 @@ FixedComp::copyLinkObjects(const FixedComp& A)
   ELog::RegMethod RegA("FixedComp","copyLinkObjects");
   if (this!=&A)
     {
-      if(LU.size()!=A.LU.size())
-	ELog::EM<<"Changing link size from "<<LU.size()
-		<<" to "<<A.LU.size()<<ELog::endCrit;
       LU=A.LU;
     }
   return;

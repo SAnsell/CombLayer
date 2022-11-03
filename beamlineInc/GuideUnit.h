@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuildInc/CompBInsert.h
+ * File:   beamlineInc/GuideUnit.h
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
  *
@@ -19,60 +19,65 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef essSystem_CompBInsert_h
-#define essSystem_CompBInsert_h
+#ifndef beamlineSystem_GuideUnit_h
+#define beamlineSystem_GuideUnit_h
 
 class Simulation;
 
-namespace essSystem
+
+namespace beamlineSystem
 {
 
+class ShapeUnit;
+
 /*!
-  \class CompBInsert
+  \class GuideUnit
   \version 1.0
   \author S. Ansell
-  \date June 2015
-  \brief Multi-layer Beam insert
+  \date April 2014
+  \brief Basic beamline guide unit
 */
 
-class CompBInsert : 
+class GuideUnit :
   public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
   public attachSystem::FrontBackCut
 {
- private:
+ protected:
 
-  size_t NBox;                   ///< number of boxes
-  std::vector<double> width;     ///< inner width of each box
-  std::vector<double> height;    ///< inner height of each box
-  std::vector<double> length;    ///< extent of each box
-  std::vector<int> mat;          ///< inner material 
+  bool resetYRotation;        ///< Reset rotoation in y used for bend axis
+  
+  Geometry::Vec3D begPt;   ///< Current start point
+  Geometry::Vec3D endPt;   ///< Current exit point
 
-  size_t NWall;                   ///< Number of walls
-  std::vector<double> wallThick;  ///< wall thickness
-  std::vector<int> wallMat;       ///< Wall materials.
-    
-  void populate(const FuncDataBase&);
-  void createSurfaces();
-  void createLinks();
-  void createObjects(Simulation&);
+  // OUTER DIMENTIONS:
+  double length;                     ///< Full length
 
+  size_t nShapeLayers;              ///< Number of shapeLayers
+  std::vector<double> layerThick;   ///< Thickness [inner->outer]
+  std::vector<int> layerMat;        ///< Mat
+
+  virtual void populate(const FuncDataBase&);
+  virtual void createSurfaces() =0;
+  virtual void createObjects(Simulation&) =0;
+  virtual void createLinks();
+  
  public:
 
-  CompBInsert(const std::string&);
-  CompBInsert(const CompBInsert&);
-  CompBInsert& operator=(const CompBInsert&);
-  virtual ~CompBInsert();
+  GuideUnit(const std::string&);
+  GuideUnit(const GuideUnit&);
+  GuideUnit& operator=(const GuideUnit&);
+  virtual ~GuideUnit();
 
   using FixedComp::createAll;
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
-
+  virtual void createAll(Simulation&,
+			 const attachSystem::FixedComp&,
+			 const long int);
+  
 };
 
 }
 
 #endif
  
-

@@ -3,7 +3,7 @@
  
  * File:   essBuild/BunkerInsert.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "SurInter.h"
@@ -68,8 +66,10 @@ namespace essSystem
 {
 
 BunkerInsert::BunkerInsert(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,15),
-  attachSystem::CellMap(),attachSystem::ExternalCut()
+  attachSystem::FixedOffset(Key,15),
+  attachSystem::ContainedComp(),
+  attachSystem::CellMap(),
+  attachSystem::ExternalCut()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -77,12 +77,14 @@ BunkerInsert::BunkerInsert(const std::string& Key)  :
 {}
 
 BunkerInsert::BunkerInsert(const BunkerInsert& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  attachSystem::CellMap(A),attachSystem::ExternalCut(A),
+  attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
+  attachSystem::ExternalCut(A),
   backStep(A.backStep),
   height(A.height),width(A.width),topWall(A.topWall),
   lowWall(A.lowWall),leftWall(A.leftWall),rightWall(A.rightWall),
-  wallMat(A.wallMat),voidMat(A.voidMat),outCut(A.outCut)
+  wallMat(A.wallMat),voidMat(A.voidMat)
   /*!
     Copy constructor
     \param A :: BunkerInsert to copy
@@ -99,8 +101,8 @@ BunkerInsert::operator=(const BunkerInsert& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::ExternalCut::operator=(A);
       backStep=A.backStep;
@@ -112,7 +114,6 @@ BunkerInsert::operator=(const BunkerInsert& A)
       rightWall=A.rightWall;
       wallMat=A.wallMat;
       voidMat=A.voidMat;
-      outCut=A.outCut;
     }
   return *this;
 }
@@ -175,74 +176,33 @@ BunkerInsert::createSurfaces()
   return;
 }
   
-int
-BunkerInsert::objectCut(const std::vector<Geometry::Vec3D>& Corners) const
-  /*!
-    Determine if a set of corners from another BunkerInsert item
-    are within, completely within, outside this bunker unit
-    \param Corners :: Points to test
-    \retval 0 :: No intercept
-    \retval -1 :: Partial inside
-    \retval 1 :: Full inside 
-   */
-{
-  ELog::RegMethod RegA("BunkerInsert","objectCut");
-
-  int good(0);
-  int fail(0);
-  for(const Geometry::Vec3D& Pt : Corners)
-    {
-      if (outCut.isValid(Pt))
-	good=1;
-      else
-	fail=1;
-      if (good & fail) return -1;
-    }
-  return (!fail) ? 1 : 0;
-}
-
-void
-BunkerInsert::addCalcPoint()
-  /*!
-    Process the string to calculate the corner points 
-   */
-{
-  ELog::RegMethod RegA("BunkerInsert","addCalcPoint");
-
-  std::vector<Geometry::Vec3D> Pts;
-  outCut.calcSurfSurfIntersection(Pts);
-  ELog::EM<<"CALLED addCalPoint"<<ELog::endDiag;
-  return; 
-}
-
   
 void
-BunkerInsert::createObjects(Simulation& System,
-			    const std::string& BCell)
+BunkerInsert::createObjects(Simulation& System)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
-    \param BCell :: Front/back of the bunker + divider
   */
 {
   ELog::RegMethod RegA("BunkerInsert","createObjects");
-  
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,voidMat,0.0,Out+BCell));
+
+  const HeadRule fbHR=getRule("front")*getRule("back");
+  HeadRule HR;
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*fbHR);
   setCell("Void",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 13 -14 15 -16 (-3 : 4: -5: 6) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+BCell));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				 "13 -14 15 -16 (-3 : 4: -5: 6)");
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,HR*fbHR));
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 13 -14 15 -16 ");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 13 -14 15 -16");
+  addOuterSurf(HR);
 
   // Create cut unit:
-  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 15 -16 ");
-  outCut.procString(Out+BCell);
-  outCut.populateSurf();
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 15 -16");
+
   
 
   return;
@@ -256,40 +216,27 @@ BunkerInsert::createLinks()
 {
   ELog::RegMethod RegA("BunkerInsert","createLinks");
 
-  FixedComp::setLinkCopy(0,*bunkerObj,1);
-  FixedComp::setLinkCopy(1,*bunkerObj,2);
-
-
-  // Calc bunker edge intersectoin
-  std::vector<Geometry::Vec3D> endMidPt;
-  std::vector<Geometry::Vec3D> Pts;
-  std::vector<int> SNum;
-
-  // Inner point
-  HeadRule HM(bunkerObj->getMainRule(1));
-  HM.addIntersection(bunkerObj->getCommonRule(1));
-  HM.populateSurf();
-  HM.calcSurfIntersection(Origin,Y,Pts,SNum);
-  const size_t indexA=SurInter::closestPt(Pts,Origin);
-  FixedComp::setConnect(0,Pts[indexA],-Y);
-  endMidPt.push_back(Pts[indexA]);
   
-  // Outer point
-  HM=bunkerObj->getMainRule(2);
-  HM.addIntersection(bunkerObj->getCommonRule(2));
-  HM.populateSurf();
-  HM.calcSurfIntersection(Origin,Y,Pts,SNum);
-  const size_t indexB=SurInter::closestPt(Pts,Origin);
-  FixedComp::setConnect(1,Pts[indexB],Y);
-  endMidPt.push_back(Pts[indexB]);
+  ExternalCut::createLink("front",*this,0,Origin,-Y);
+  ExternalCut::createLink("back",*this,1,Origin,Y);
+  // Calc bunker edge intersectoin
+  const std::vector<Geometry::Vec3D> endMidPt
+    ({
+      this->getLinkPt("front"),
+      this->getLinkPt("back")
+    });
 
+  // need to use midPt here because we have both
+  // front/back normally and Origin is often outside of the
+  // object.
+  const Geometry::Vec3D midPt((endMidPt[0]+endMidPt[1])/2.0);
   // Mid point [useful for guides etc]
-  FixedComp::setConnect(6,(Pts[indexA]+Pts[indexB])/2.0,Y);
+  FixedComp::setConnect(6,midPt,Y);
 
-  FixedComp::setConnect(2,Origin-X*(width/2.0),X);
-  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
-  FixedComp::setConnect(4,Origin-Z*(height/2.0),Z);
-  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
+  FixedComp::setConnect(2,midPt-X*(width/2.0),X);
+  FixedComp::setConnect(3,midPt+X*(width/2.0),X);
+  FixedComp::setConnect(4,midPt-Z*(height/2.0),Z);
+  FixedComp::setConnect(5,midPt+Z*(height/2.0),Z);
   
   FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+3));
   FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+4));
@@ -333,17 +280,12 @@ BunkerInsert::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("BunkerInsert","createAll");
 
-  if (!bunkerObj)
-    throw ColErr::EmptyContainer("Bunker Object missing");
-
   populate(System.getDataBase());
   createUnitVector(FC,orgIndex);
   createSurfaces();
 
   // Walls : [put]
-  const std::string BWallStr=bunkerObj->getLinkString(-1)+" "+
-    bunkerObj->getLinkString(-2);
-  createObjects(System,BWallStr);
+  createObjects(System);
   createLinks();
   
   insertObjects(System);              

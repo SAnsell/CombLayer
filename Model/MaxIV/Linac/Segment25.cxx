@@ -3,7 +3,7 @@
 
  * File: Linac/Segment25.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -179,6 +179,8 @@ Segment25::createLinks()
     Create a front/back link
    */
 {
+  ELog::RegMethod RegA("Segment25","createLinks");
+  
   setLinkCopy(0,*bellowA,1);
   setLinkCopy(1,*bellowAA,2);
   setLinkCopy(2,*bellowBA,2);
@@ -200,8 +202,8 @@ Segment25::createLinks()
 
 void
 Segment25::createAll(Simulation& System,
-			 const attachSystem::FixedComp& FC,
-			 const long int sideIndex)
+		     const attachSystem::FixedComp& FC,
+		     const long int sideIndex)
   /*!
     Carry out the full build
     \param System :: Simulation system

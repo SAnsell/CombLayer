@@ -210,7 +210,7 @@ buildPlane(surfRegister& SMap,const int N,
     \return New Plane Pointer
    */
 {
-  ELog::RegMethod("generateSurf","buildPlane(point)");
+  ELog::RegMethod("generateSurf","buildPlane(points)");
 
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
 
@@ -226,7 +226,8 @@ buildPlane(surfRegister& SMap,const int N,
 
 Geometry::Plane*
 buildPlane(surfRegister& SMap,const int N,
-	   const Geometry::Vec3D& O,const Geometry::Vec3D& D) 
+	   const Geometry::Vec3D& O,
+	   const Geometry::Vec3D& D) 
   /*!
     Simple constructor to build a surface [type plane]
     \param SMap :: Surface Map

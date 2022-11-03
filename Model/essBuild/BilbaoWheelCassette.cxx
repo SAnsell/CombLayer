@@ -74,6 +74,7 @@ BilbaoWheelCassette::BilbaoWheelCassette(const std::string& baseKey,
 					 const size_t& Index)  :
   attachSystem::FixedOffset(baseKey+extraKey+std::to_string(Index),40),
   attachSystem::ContainedComp(),
+  attachSystem::ExternalCut(),
   baseName(baseKey),
   commonName(baseKey+extraKey)
     /*!
@@ -92,6 +93,7 @@ BilbaoWheelCassette::BilbaoWheelCassette(const std::string& baseKey,
 BilbaoWheelCassette::BilbaoWheelCassette(const BilbaoWheelCassette& A) :
   attachSystem::FixedOffset(A),
   attachSystem::ContainedComp(A),
+  attachSystem::ExternalCut(A),
   baseName(A.baseName),
   commonName(A.commonName),
   wallThick(A.wallThick),delta(A.delta),temp(A.temp),
@@ -134,6 +136,7 @@ BilbaoWheelCassette::operator=(const BilbaoWheelCassette& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       wallThick=A.wallThick;
       delta=A.delta;
       temp=A.temp;

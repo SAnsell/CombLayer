@@ -83,17 +83,17 @@ checkLineIntersect(const FixedComp& InsertFC,
    */
 {
   ELog::RegMethod RegA("AttachSupportLine[F]","checkLineInsert");
-  
+
   const std::vector<Geometry::Vec3D> linkPts=
     InsertFC.getAllLinkPts();
 
-  const HeadRule& HR=CellObj.getHeadRule();
+  HeadRule HR=CellObj.getHeadRule();
+  HR.populateSurf();
   for(const Geometry::Vec3D& IP : linkPts)
     {
       if (HR.isValid(IP))
 	return 1;
     }
-
 
   // Check line intersection:
   const std::set<const Geometry::Surface*>& surfSet=
@@ -187,7 +187,7 @@ addToInsertLineCtrl(Simulation& System,
     \param CC :: Container for insersion
   */
 {
-  ELog::RegMethod RegA("AttachSupport[F]","addtoInsectLineCtrl(FC,FC)");
+  ELog::RegMethod RegA("AttachSupport[F]","addtoInsectLineCtrl(insertFC,CC)");
 
   for(const int cn : BaseCell.getCells(cellName))
     {
@@ -211,16 +211,19 @@ addToInsertLineCtrl(Simulation& System,
     being in the BaseFC. If it is an insert is made
     \param System :: Simulation to use
     \param OuterFC :: FixedComp to get name for cells
-    \param InsertFC :: FixedComp 
+    \param InsertFC :: FixedComp for tracking etc 
     \param CC :: Container for insersion
   */
 {
-  ELog::RegMethod RegA("AttachSupport[F]","addtoInsectLineCtrl(FC,FC)");
+  ELog::RegMethod RegA("AttachSupport[F]","addtoInsectLineCtrl(FC,FC,CC)");
 
   const std::set<int> CNum=
     System.getObjectRange(OuterFC.getKeyName());
+
   for(const int CN : CNum)
-    addToInsertLineCtrl(System,InsertFC,CC,CN);
+    {
+      addToInsertLineCtrl(System,InsertFC,CC,CN);
+    }
 
   return;
 }
@@ -244,11 +247,8 @@ addToInsertLineCtrl(Simulation& System,
     \param cellN :: Cell number of object to test
   */
 {
-  ELog::RegMethod RegA("AttachSupport[F]","addtoInsectLineCtrl(FC,FC)");
+  ELog::RegMethod RegA("AttachSupport[F]","addtoInsectLineCtrl(FC,CC,int)");
 
-  const std::set<int>& cellVec=
-    System.getObjectRange(InsertFC.getKeyName());
-  System.populateCells(cellVec);
   MonteCarlo::Object* CRPtr=System.findObject(cellN);
 
   if (CRPtr && checkLineIntersect(InsertFC,*CRPtr))

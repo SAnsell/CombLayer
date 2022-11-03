@@ -3,7 +3,7 @@
  
  * File:    ESSBeam/cspec/CSPECvariables.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "CFFlanges.h"
 #include "FocusGenerator.h"
 #include "LayerGenerator.h"
 #include "ChopperGenerator.h"
@@ -71,9 +72,8 @@ CSPECvariables(FuncDataBase& Control)
   setVariable::BladeGenerator BGen;
   setVariable::TwinGenerator TGen;
 
-  PipeGen.setPipe(8.0,0.5);
-  PipeGen.setWindow(-2.0,0.5);
-  PipeGen.setFlange(-2.0,1.0);
+  PipeGen.setNoWindow();
+  PipeGen.setCF<CF200>();
 
   // extent of beamline
   Control.addVariable("cspecStopPoint",0);
@@ -106,8 +106,10 @@ CSPECvariables(FuncDataBase& Control)
 
   PipeGen.generatePipe(Control,"cspecPipeD",510.0);
   Control.addVariable("cspecPipeDYStep",4.0);
+  Control.addVariable("cspecPipeDZAngle",-1.0);
+
   FGen.generateBender(Control,"cspecBD",506.0, 3.0,3.0,3.0,3.0,20000.0,0.0);
-    
+  Control.addVariable("cspecBDZAngle",1.0);
   return;
 }
  

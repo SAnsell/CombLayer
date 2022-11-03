@@ -3,7 +3,7 @@
  
  * File:    ESSBeam/dream/DREAMvariables.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "CFFlanges.h"
 #include "FocusGenerator.h"
 #include "ShieldGenerator.h"
 #include "ChopperGenerator.h"
@@ -70,9 +71,12 @@ DREAMvariables(FuncDataBase& Control)
   setVariable::PipeGenerator PipeGen;
   setVariable::BladeGenerator BGen;
 
-  PipeGen.setPipe(8.0,0.5);
-  PipeGen.setWindow(-2.0,0.5);
-  PipeGen.setFlange(-4.0,1.0);
+  // pipe is 8cm radius 
+
+  PipeGen.setNoWindow();
+  PipeGen.setCF<CF150>();
+  //  PipeGen.setPipe(8.0,0.5);
+  //  PipeGen.setFlange(-4.0,1.0);
 
   SGen.addWall(1,20.0,"Steel71");
   SGen.addRoof(1,20.0,"Steel71");
@@ -83,7 +87,7 @@ DREAMvariables(FuncDataBase& Control)
 
   // extent of beamline
   Control.addVariable("dreamStopPoint",0);
-  Control.addVariable("dreamAxisXYAngle",0.0);   // rotation
+  Control.addVariable("dreamAxisXAngle",0.0);   // rotation
   Control.addVariable("dreamAxisZAngle",0.0);   // rotation 
 
   FGen.setLayer(1,0.8,"Copper");
@@ -91,13 +95,16 @@ DREAMvariables(FuncDataBase& Control)
   FGen.setYOffset(0.0);
   FGen.generateTaper(Control,"dreamFA",350.0, 7.630,2.96, 4.0,4.0);
 
-  PipeGen.setWindow(-2.0,0);
+  PipeGen.setNoWindow();
   PipeGen.setMat("Copper");
   PipeGen.generatePipe(Control,"dreamPipeB",26.0);
+  
   Control.addVariable("dreamPipeBYStep",6.5);
   FGen.clearYOffset();
     //  FGen.generateTaper(Control,"dreamFB",50.0,2.88,2.11,3.81,3.95);   
-  FGen.generateTaper(Control,"dreamFB",26.0,2.63,2.14,3.75,3.76);   
+  //  FGen.generateTaper(Control,"dreamFB",26.0,2.63,2.14,3.75,3.76);
+  FGen.generateTaper(Control,"dreamFB",26.0,2.63,2.14,3.75,3.76);
+
   
   // VACBOX A : 6.10m target centre
   //  Length 100.7 + Width [87.0] + Height [39.0] void Depth/2 + front
@@ -119,7 +126,8 @@ DREAMvariables(FuncDataBase& Control)
   PipeGen.setMat("Aluminium");
   PipeGen.generatePipe(Control,"dreamPipeC0",28.5);
   Control.addVariable("dreamPipeC0YStep",0.5);
-  PipeGen.setWindow(-2.0,0.5);
+
+  PipeGen.setNoWindow();
   PipeGen.generatePipe(Control,"dreamPipeC",320.0);
   Control.addVariable("dreamPipeCYStep",0.5);
 

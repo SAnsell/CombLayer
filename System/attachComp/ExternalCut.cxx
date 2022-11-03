@@ -279,6 +279,7 @@ ExternalCut::setCutSurf(const std::string& extName,
 
   if (WFC.hasLinkPt(sideIndex))
     A.setPoint(WFC.getLinkPt(sideIndex));
+
   return;
 }
 
@@ -350,21 +351,24 @@ ExternalCut::getComplementStr(const std::string& extName) const
 }
 
 
-std::string
-ExternalCut::getBridgeStr(const std::string& extName) const
+
+HeadRule
+ExternalCut::getRule(const std::string& extName) const
   /*!
-    Accessor to bridge rule
-    \param extName :: CutUnit name						
-    \return Divider rule
+    Accessor to main rule
+    \param extName :: external-cut name
+    \return frontRule without divider
   */
 {
+  ELog::RegMethod RegA("ExternalCut","getRule");
+  static HeadRule nullOut;
+  
   const cutUnit* CU=findUnit(extName);
-  return (CU) ?
-    CU->divider.display() : "" ;    
+  return (CU) ? CU->main*CU->divider :  nullOut;    
 }
 
 const HeadRule&
-ExternalCut::getRule(const std::string& extName) const
+ExternalCut::getMainRule(const std::string& extName) const
   /*!
     Accessor to main rule
     \param extName :: external-cut name
@@ -387,7 +391,10 @@ ExternalCut::getComplementRule(const std::string& extName) const
   */
 {
   ELog::RegMethod RegA("ExternalCut","getComplementRule");
-  return getRule(extName).complement();
+  static HeadRule nullOut;
+  
+  const cutUnit* CU=findUnit(extName);
+  return (CU) ? CU->main.complement()*CU->divider :  nullOut;    
 }
 
 const HeadRule&

@@ -3,7 +3,7 @@
  
  * File:   beamline/PlateUnit.cxx 
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <functional>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -39,34 +40,46 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
-#include "Vert2D.h"
-#include "Convex2D.h"
+#include "polySupport.h"
 #include "surfRegister.h"
-#include "Surface.h"
 #include "generateSurf.h"
 #include "ModelSupport.h"
+#include "varList.h"
+#include "Code.h"
+#include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "ShapeUnit.h"
-#include "PlateUnit.h"
+#include "FixedRotate.h"
+#include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
+#include "ExternalCut.h"
+#include "FrontBackCut.h"
+#include "groupRange.h"
+#include "objectGroups.h"
+#include "Simulation.h"
+#include "Vert2D.h"
+#include "Convex2D.h"
+#include "GuideUnit.h"
 
-#include "Rules.h"
+#include "PlateUnit.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+#include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"
-#include "HeadRule.h"
 
 namespace beamlineSystem
 {
 
-PlateUnit::PlateUnit(const int ON,const int LS)  :
-  ShapeUnit(ON,LS),CHPtr(0),nCorner(0),rotateFlag(0)
+PlateUnit::PlateUnit(const std::string& key) :
+  GuideUnit(key),
+  frontCV(new Geometry::Convex2D),
+  backCV(new Geometry::Convex2D)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param LS :: Layer separation
@@ -75,11 +88,11 @@ PlateUnit::PlateUnit(const int ON,const int LS)  :
 {}
 
 PlateUnit::PlateUnit(const PlateUnit& A) : 
-  ShapeUnit(A),
-  CHPtr(A.CHPtr),XVec(A.XVec),YVec(A.YVec),ZVec(A.ZVec),
-  nCorner(A.nCorner),rotateFlag(A.rotateFlag),
+  GuideUnit(A),
   APts(A.APts),BPts(A.BPts),
-  nonConvex(A.nonConvex)
+  frontCV(new Geometry::Convex2D(*A.frontCV)),
+  backCV(new Geometry::Convex2D(*A.backCV))
+
   /*!
     Copy constructor
     \param A :: PlateUnit to copy
@@ -96,27 +109,20 @@ PlateUnit::operator=(const PlateUnit& A)
 {
   if (this!=&A)
     {
-      ShapeUnit::operator=(A);
-      XVec=A.XVec;
-      YVec=A.YVec;
-      ZVec=A.ZVec;
-      nCorner=A.nCorner;
-      rotateFlag=A.rotateFlag;
+      GuideUnit::operator=(A);
       APts=A.APts;
       BPts=A.BPts;
-      nonConvex=A.nonConvex;
+      *frontCV=*A.frontCV;
+      *backCV=*A.backCV;
     }
   return *this;
 }
-
 
 PlateUnit::~PlateUnit() 
   /*!
     Destructor
    */
-{
-  delete CHPtr;
-}
+{}
 
 PlateUnit*
 PlateUnit::clone() const 
@@ -127,355 +133,250 @@ PlateUnit::clone() const
 {
   return new PlateUnit(*this);
 }
-
-void
-PlateUnit::clear()
+  
+void 
+PlateUnit::setFrontPoints(const std::vector<Geometry::Vec3D>& PVec) 
   /*!
-    Clear all the points
+    Calculate the real point based on the offset Origin
+    \param PVec :: Points
    */
 {
-  delete CHPtr;
-  CHPtr=0;
-  nCorner=0;
-  rotateFlag=0;
-  cells.clear();
-  APts.clear();
-  BPts.clear();
-  nonConvex.clear();
+  APts=PVec;
+  return;
+}
+  
+void 
+PlateUnit::setBackPoints(const std::vector<Geometry::Vec3D>& PVec) 
+  /*!
+    Set the back points (relative to Origin impact point at O+Y*length)
+    \param PVec :: Points
+   */
+{
+  BPts=PVec;
   return;
 }
 
-void
-PlateUnit::addCell(const int C) 
+Geometry::Vec3D
+PlateUnit::calcFrontPoint(const Geometry::Vec3D& Pt) const
   /*!
-    Add a cell to the cell list
-    \param C :: Cell number
+    Giving a point return the point in the FixedComp Frame
+    \param Pt :: Point on convex
+    \return Point in FixedComp Frame
   */
 {
-  cells.push_back(C);
-  return;
-}
-
-size_t
-PlateUnit::findFirstPoint(const Geometry::Vec3D& testPt,
-			  const std::vector<Geometry::Vec3D>& BVec) 
- /*!
-   Find the first point in BVec that equals testPt
-   \param testPt :: First point to find
-   \param BVec :: Vector of look up
-   \return position in BVec 
-  */
-{
-  ELog::RegMethod RegA("PlateUnit","findFirstPt");
-  
-  std::vector<Geometry::Vec3D>::const_iterator vc=
-    find_if(BVec.begin(),BVec.end(),
-	    std::bind(std::equal_to<Geometry::Vec3D>(),
-		      std::placeholders::_1,testPt));
-
-  return (vc!=BVec.end()) ? 
-    static_cast<size_t>(vc-BVec.begin()) :  BVec.size();
+  static const Geometry::Vec3D zero(0,0,0);
+  return Origin+Pt.getInBasis(X,zero,Z);
 }
   
-void
-PlateUnit::constructConvex()
+Geometry::Vec3D
+PlateUnit::calcBackPoint(const Geometry::Vec3D& Pt) const
   /*!
-    Process a group of points to produce correct orientation
-    -- note need non-static as we need axis information (Y)
-    to remove bias
+    Giving a point return the point in the FixedComp Frame
+    \param Pt :: Point on convex
+    \return Point in FixedComp Frame
   */
 {
-  ELog::RegMethod RegA("PlateUnit","constructConvex");
+  static const Geometry::Vec3D zero(0,0,0);
 
-  if (nCorner>2)
+  return Origin+(Y*length)+Pt.getInBasis(X,zero,Z);
+}
+  
+  
+void
+PlateUnit::populate(const FuncDataBase& Control)
+  /*!
+    Sets the appropiate APts/BPtrs based on the type of
+    guide needed
+    \param Control :: DataBase of varaibels
+   */
+{
+  ELog::RegMethod RegA("PlateUnit","populate");
+
+  GuideUnit::populate(Control);
+  
+  const std::string typeID= 
+    Control.EvalVar<std::string>(keyName+"TypeID");
+  if (typeID=="Rectangle")   
     {
-      delete CHPtr;
-      // construct convex for front window
-      CHPtr=new Geometry::Convex2D;
-      
-      CHPtr->setPoints(APts);
-      CHPtr->constructHull();
-
-      std::vector<Geometry::Vec3D> OutPt=
-	CHPtr->getSequence();
-
-      /// DETERMINE THOSE POINTS IN CENTROID:
-      size_t i;
-      size_t APt(OutPt.size());
-      size_t BPt(OutPt.size());
-      for(i=0;i<nCorner && APt==OutPt.size();i++)
-	APt=findFirstPoint(APts[i],OutPt);
-      for(;i<nCorner && BPt==OutPt.size();i++)
-	BPt=findFirstPoint(APts[i],OutPt);
-      i--;
-      if (APt==OutPt.size())
-	throw ColErr::InContainerError<Geometry::Vec3D>
-	  (OutPt[APt],"Two outside points not found (A)");
-      if (BPt==OutPt.size())
-	throw ColErr::InContainerError<Geometry::Vec3D>
-	  (OutPt[BPt],"Two outside points not found (B)");
-
-      const Geometry::Vec3D AX=(OutPt[BPt]-OutPt[APt]).unit();  
-      Geometry::Vec3D Cent=(OutPt[BPt]+OutPt[APt])/2.0;
-      Cent-=CHPtr->getCentroid();
-      Cent.makeUnit();
-
-
-      const Geometry::Vec3D N(AX*YVec);
-      if (N.dotProd(Cent)>0)
-	{
-	  rotateFlag=1;
-	  // rotate : could you c++11 construct rotate
-	  for(size_t i=1;i<(nCorner+1)/2;i++)
-	    {
-	      std::swap(APts[i],APts[nCorner-i]);
-	      std::swap(BPts[i],BPts[nCorner-i]);
-	    }
-	}  
-      // Having done the rotation we now can check for non-convex.      
-      for(size_t i=0;i<nCorner;i++)
-	{
-	  APt=findFirstPoint(APts[i],OutPt);
-	  nonConvex[i] = (APt!=OutPt.size()) ? 0 : 1;
-	}
+      APts.clear();
+      BPts.clear();
+      const double H=Control.EvalVar<double>(keyName+"Height");
+      const double W=Control.EvalVar<double>(keyName+"Width");
+      APts.push_back(Geometry::Vec3D(-W/2.0,0,-H/2.0));
+      APts.push_back(Geometry::Vec3D(W/2.0,0,-H/2.0));
+      APts.push_back(Geometry::Vec3D(W/2.0,0,H/2.0));
+      APts.push_back(Geometry::Vec3D(-W/2.0,0,H/2.0));
+      BPts=APts;
     }
+  else if (typeID=="Tapper" || typeID=="Taper")   
+    {
+      APts.clear();
+      BPts.clear();
+      const double HA=Control.EvalVar<double>(keyName+"HeightStart");
+      const double WA=Control.EvalVar<double>(keyName+"WidthStart");
+      const double HB=Control.EvalVar<double>(keyName+"HeightEnd");
+      const double WB=Control.EvalVar<double>(keyName+"WidthEnd");
+      
+      APts.push_back(Geometry::Vec3D(-WA/2.0,0.0,-HA/2.0));
+      BPts.push_back(Geometry::Vec3D(-WB/2.0,0.0,-HB/2.0));
+      APts.push_back(Geometry::Vec3D(WA/2.0,0.0,-HA/2.0));
+      BPts.push_back(Geometry::Vec3D(WB/2.0,0.0,-HB/2.0));
+      APts.push_back(Geometry::Vec3D(WA/2.0,0.0,HA/2.0));
+      BPts.push_back(Geometry::Vec3D(WB/2.0,0.0,HB/2.0));
+      APts.push_back(Geometry::Vec3D(-WA/2.0,0.0,HA/2.0));
+      BPts.push_back(Geometry::Vec3D(-WB/2.0,0.0,HB/2.0));
+    }
+  else if (typeID=="Octagon")   
+    {
+      APts.clear();
+      BPts.clear();
+      const double SA=Control.EvalVar<double>(keyName+"WidthStart");
+      const double SB=Control.EvalVar<double>(keyName+"WidthEnd");
+      const double aA=sqrt(2.0)*SA/(2.0+sqrt(2.0));
+      const double aB=sqrt(2.0)*SB/(2.0+sqrt(2.0));
+      APts.push_back(Geometry::Vec3D(SA/2.0,0.0,aA/2.0));
+      BPts.push_back(Geometry::Vec3D(SB/2.0,0.0,aB/2.0));
+      APts.push_back(Geometry::Vec3D(aA/2.0,0.0,SA/2.0));
+      BPts.push_back(Geometry::Vec3D(aB/2.0,0.0,SB/2.0));
+      APts.push_back(Geometry::Vec3D(-aA/2.0,0.0,SA/2.0));
+      BPts.push_back(Geometry::Vec3D(-aB/2.0,0.0,SB/2.0));
+      APts.push_back(Geometry::Vec3D(-SA/2.0,0.0,aA/2.0));
+      BPts.push_back(Geometry::Vec3D(-SB/2.0,0.0,aB/2.0));
+      APts.push_back(Geometry::Vec3D(-SA/2.0,0.0,-aA/2.0));
+      BPts.push_back(Geometry::Vec3D(-SB/2.0,0.0,-aB/2.0));
+      APts.push_back(Geometry::Vec3D(-aA/2.0,0.0,-SA/2.0));
+      BPts.push_back(Geometry::Vec3D(-aB/2.0,0.0,-SB/2.0));
+      APts.push_back(Geometry::Vec3D(aA/2.0,0.0,-SA/2.0));
+      BPts.push_back(Geometry::Vec3D(aB/2.0,0.0,-SB/2.0));
+      APts.push_back(Geometry::Vec3D(SA/2.0,0.0,-aA/2.0));
+      BPts.push_back(Geometry::Vec3D(SB/2.0,0.0,-aB/2.0));
+    }
+  else if (typeID!="Free")
+    {
+      throw ColErr::InContainerError<std::string>
+	(typeID,"TypeID no known");
+    }
+
   return;
 }
 
 void
-PlateUnit::setEndPts(const Geometry::Vec3D& A,
-		     const Geometry::Vec3D& B)
-  /*!
-    Set the end points
-    \param A :: First point
-    \param B :: Second point
-   */
-{
-  begPt=A;
-  endPt=B;
-  return;
-}
-
-
-void
-PlateUnit::setXAxis(const Geometry::Vec3D& X,
-		    const Geometry::Vec3D& Z)
- /*!
-   Set the main axis
-   \param X :: XAxis direction
-   \param Z :: Z axis sense [i.e to ZVec is in its direction]
-  */
-{
-  ELog::RegMethod RegA("PlateUnit","setXAxis");
-  
-  if (begPt.Distance(endPt)<Geometry::zeroTol)
-    throw ColErr::NumericalAbort("Vector beg/end unset");
-  
-  XVec=X.unit();
-  YVec=(endPt-begPt).unit();
-  ZVec=XVec*YVec;
-  if (ZVec.dotProd(Z)<0)
-    ZVec*=-1.0;
-  ZVec.unit();
-  
-  return;
-}
-
-void
-PlateUnit::addPrimaryPoint(const Geometry::Vec3D& PA)
-  /*!
-    Add extra point
-    \param PA :: Point that is mirror to both ends
-   */
-{
-  APts.push_back(PA);
-  BPts.push_back(PA);
-  nonConvex.push_back(0);
-  nCorner=APts.size();
-  return;
-}
-
-void
-PlateUnit::addPairPoint(const Geometry::Vec3D& PA,
-			const Geometry::Vec3D& PB)
-  /*!
-    Add extra point
-    \param PA :: A Point
-    \param PB :: B Point
-   */
-{
-  APts.push_back(PA);
-  BPts.push_back(PB);
-  nonConvex.push_back(0);
-  nCorner=APts.size();
-  return;
-}
-
-Geometry::Vec3D
-PlateUnit::frontPt(const size_t Index,const double T) const
-  /*!
-    Calculate the real point based on the offset
-    \param Index :: Index point
-    \param T :: Offset distance (T)
-    \return real point 
-   */
-{
-  const Geometry::Vec3D& CPT(APts[Index % nCorner]);
-
-  const double XScale(1.0+T/fabs(CPT.X()));
-  const double ZScale(1.0+T/fabs(CPT.Z()));
-
-  return begPt+XVec*(CPT.X()*XScale)+ZVec*(CPT.Z()*ZScale);
-}
-
-Geometry::Vec3D
-PlateUnit::backPt(const size_t Index,const double T) const
-  /*!
-    Calculate the real point based on the offest
-    \param Index :: Index point
-    \return real point 
-   */
-{
-  const Geometry::Vec3D& CPT(BPts[Index % nCorner]);
-
-  const double XScale(1.0+T/fabs(CPT.X()));
-  const double ZScale(1.0+T/fabs(CPT.Z()));
-
-  return endPt+XVec*(CPT.X()*XScale)+ZVec*(CPT.Z()*ZScale);
-}
- 
-void
-PlateUnit::createSurfaces(ModelSupport::surfRegister& SMap,
-			  const std::vector<double>& Thick)
+PlateUnit::createSurfaces()
   /*!
     Build the surfaces for the track
-    \param SMap :: SMap to use
-    \param Thick :: Thickness for each layer
    */
 {
   ELog::RegMethod RegA("PlateUnit","createSurfaces");
 
-  
-  for(size_t j=0;j<Thick.size();j++)
-    {
-      // Start from 1
-      int SN(shapeIndex+layerSep*static_cast<int>(j)+1);
+  ELog::EM<<"Origin == "<<keyName<<" "<<Origin<<"::: "<<yStep<<ELog::endDiag;
 
-      for(size_t i=0;i<nCorner;i++)
+  // First construct hull
+  frontCV->setPoints(APts);
+  backCV->setPoints(BPts);
+  frontCV->constructHull();
+  backCV->constructHull();
+
+  if (!isActive("front"))
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+      setCutSurf("front",SMap.realSurf(buildIndex+1));
+    }
+  if (!isActive("back"))
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
+      setCutSurf("back",-SMap.realSurf(buildIndex+2));
+    }
+  
+  double T(0.0);	
+  for(size_t i=0;i<layerMat.size();i++)
+    {
+      int SN(buildIndex+static_cast<int>(i+1)*20+1);  
+
+      // Care here because frontPts/backPts are within
+      // APts convex
+
+      const std::vector<Geometry::Vec3D> frontPts=
+	frontCV->scalePoints(T);
+      const std::vector<Geometry::Vec3D> backPts=
+	backCV->scalePoints(T);
+
+      for(size_t j=0;j<APts.size();j++)
 	{
-	  const Geometry::Vec3D PA=frontPt(i,Thick[j]);
-	  const Geometry::Vec3D PB=frontPt(i+1,Thick[j]);
-	  const Geometry::Vec3D BA=backPt(i,Thick[j]);
-	  Geometry::Vec3D Norm=(BA-PA)*(PB-PA);
-	  Norm.makeUnit();
-	  
-	  if (!rotateFlag)
-	    Norm*=-1;
-	  ModelSupport::buildPlane(SMap,SN,PA,PB,BA,Norm);
+	  const size_t jPlus=(j+1) % APts.size();
+	  const Geometry::Vec3D PA=calcFrontPoint(frontPts[j]);
+	  const Geometry::Vec3D PB=calcFrontPoint(frontPts[jPlus]);
+	  const Geometry::Vec3D BA=calcBackPoint(backPts[j]);
+
+	  const Geometry::Vec3D Norm=Origin-PA;
+	  Geometry::Plane* PPtr=
+	    ModelSupport::buildPlane(SMap,SN,PA,PB,BA,Norm);
+	  if (i==0)
+	    {
+	      FixedComp::setLinkSurf(2+j,SMap.realSurf(SN));
+	      const Geometry::Vec3D BB=calcBackPoint(backPts[jPlus]);
+	      FixedComp::setConnect(2+j,(PA+PB+BA+BB)/4.0,PPtr->getNormal());
+	    }
 	  SN++;
 	}
+      T+=layerThick[i];
     }   
   return;
 }
 
-
-int
-PlateUnit::inHull(const Geometry::Vec3D& testPt) const
+void
+PlateUnit::createObjects(Simulation& System)
   /*!
-    Determine if the point is within the hull
-    \param testPt :: test Point
-    \return -1 [out of hull] if hull not built
+    Create the objects
+    \param System :: Simulation to use
    */
 {
-  ELog::RegMethod RegA("PlateUnit","inHull");
-  return (CHPtr) ? CHPtr->inHull(testPt) : -1;
-}
+  ELog::RegMethod RegA("PlateUnit","createObject");
 
-std::string
-PlateUnit::getString(const ModelSupport::surfRegister& SMap,
-		      const size_t layerN) const
-  /*!
-    Write string for layer number
-    \param SMap :: Surface register
-    \param layerN :: Layer number
-    \return inward string
-  */
-{
-  ELog::RegMethod RegA("PlateUnit","getString");
+  const HeadRule fbHR=getFrontRule()*getBackRule();
 
-  if (!nCorner) return "";
-
-  std::ostringstream cx;
-  bool bFlag(0);
-  // Start from 1
-  int SN(layerSep*static_cast<int>(layerN)+1);
-  for(size_t i=0;i<nCorner;i++)
+  HeadRule HR;
+  HeadRule innerHR;
+  for(size_t i=0;i<layerThick.size();i++)
     {
-      if (nonConvex[i] || nonConvex[(i+1) % nCorner])
+      int SN(buildIndex+static_cast<int>(i+1)*20+1);
+      HR.reset();
+      for(size_t j=0;j<APts.size();j++)
 	{
-	  cx<< ((!bFlag) ? " (" : ":");
-	  bFlag=1;
+	  HR*=HeadRule(SMap,SN);
+	  SN++;
 	}
-      else
-	{
-	  cx<< ((bFlag) ? ") " : " ");
-	  bFlag=0;
-	}
-      cx<<SN++;
+      makeCell("Layer"+std::to_string(i),System,
+	       cellIndex++,layerMat[i],0.0,HR*fbHR*innerHR);
+      innerHR=HR.complement();
     }
-  if (bFlag) cx<<")";
 
-  return ModelSupport::getComposite(SMap,shapeIndex,cx.str());
+  addCell("GuideVoid",getCell("Layer0"));
+  addOuterSurf(HR*fbHR);
+  return;  
 }
 
 
 void
-PlateUnit::addSideLinks(const ModelSupport::surfRegister& SMap,
-                        attachSystem::FixedComp& FC) const
-  /*!
-    Add link points to the guide unit
-    \param SMap :: Surface Map 
-    \param FC :: FixedComp to use
+PlateUnit::createAll(Simulation& System,
+		      const attachSystem::FixedComp& FC,
+		      const long int sideIndex)
+/*!
+    Construct a Bender unit
+    \param System :: Simulation to use
+    \param FC :: FixedComp to use for basis set
+    \param sideIndex :: side link point
    */
 {
-  ELog::RegMethod RegA("PlateUnit","addSideLinks");
+  ELog::RegMethod RegA("PlateUnit","createAll");
 
-  FC.setLinkSurf(2,SMap.realSurf(shapeIndex+1));
-  FC.setLinkSurf(3,SMap.realSurf(shapeIndex+2));
-  FC.setLinkSurf(4,SMap.realSurf(shapeIndex+3));
-  FC.setLinkSurf(5,SMap.realSurf(shapeIndex+4));
+  populate(System.getDataBase());
 
-
-  for(size_t i=0;i<4;i++)
-    {
-      const Geometry::Vec3D PA=frontPt(i,0.0);
-      const Geometry::Vec3D PB=frontPt(i+1,0.0);
-      const Geometry::Vec3D BA=backPt(i,0.0);
-      const Geometry::Vec3D BB=backPt(i+1,0.0);
-      Geometry::Vec3D Norm=(BA-PA)*(PB-PA);
-      Norm.makeUnit();
-      if (!rotateFlag) Norm*=-1;
-      FC.setConnect(i+2,(PA+PB+BA+BA)/4.0,Norm);
-    } 
+  createUnitVector(FC,sideIndex);
+  createSurfaces();
+  createObjects(System);
+  createLinks();
+  insertObjects(System);
   return;
 }
 
-  
-std::string
-PlateUnit::getExclude(const ModelSupport::surfRegister& SMap,
-		      const size_t layerN) const
-  /*!
-    Write string for layer number
-    \param SMap :: Surface register
-    \param layerN :: Layer number
-    \return inward string
-  */
-{
-  ELog::RegMethod RegA("PlateUnit","getExclude");
-  HeadRule Out(getString(SMap,layerN));
-  Out.makeComplement();
-  return Out.display();
-}
-
-  
 }  // NAMESPACE beamlineSystem
