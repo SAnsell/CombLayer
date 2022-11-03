@@ -419,8 +419,8 @@ VESPA::buildOutGuide(Simulation& System,
   
   T0ExitPort->addInsertCell(OutPitT0->getCells("MidLayerBack"));
   T0ExitPort->addInsertCell(OutPitT0->getCells("Collet"));
-  T0ExitPort->setFaces(OutPitT0->getKey("Inner").getFullRule(2),
-                       OutPitT0->getKey("Mid").getFullRule(-2));
+  T0ExitPort->setCutSurf("front",OutPitT0->getKey("Inner"),2);
+  T0ExitPort->setCutSurf("back",OutPitT0->getKey("Mid"),-2);
   T0ExitPort->createAll(System,OutPitT0->getKey("Inner"),2);
 
   OutPitA->addInsertCell(voidCell);
@@ -485,14 +485,14 @@ VESPA::buildOutGuide(Simulation& System,
   OutPitB->createAll(System,OutPitA->getKey("Inner"),2);
   
   PitBPortA->addInsertCell(OutPitB->getCells("MidLayerFront"));
-  PitBPortA->setFaces(OutPitB->getKey("Inner").getFullRule(1),
-                       OutPitB->getKey("Mid").getFullRule(-1));
+  PitBPortA->setCutSurf("front",OutPitB->getKey("Inner"),1);
+  PitBPortA->setCutSurf("back",OutPitB->getKey("Mid"),-1);
   PitBPortA->createAll(System,OutPitB->getKey("Inner"),2);
 
   PitBPortB->addInsertCell(OutPitB->getCells("MidLayerBack"));
   PitBPortB->addInsertCell(OutPitB->getCells("Collet"));
-  PitBPortB->setFaces(OutPitB->getKey("Inner").getFullRule(2),
-                      OutPitB->getKey("Mid").getFullRule(-2));
+  PitBPortB->setCutSurf("front",OutPitB->getKey("Inner"),2);
+  PitBPortB->setCutSurf("back",OutPitB->getKey("Mid"),-2);
   PitBPortB->createAll(System,OutPitB->getKey("Inner"),2);
   
   const size_t lastIndex(ShieldArray.size()-1);
@@ -558,8 +558,8 @@ VESPA::buildHut(Simulation& System,
 
   VInnerExit->addInsertCell(VInner->getCells("FeLayer"));
   VInnerExit->addInsertCell(VInner->getCells("ConcLayer"));
-  VInnerExit->setFaces(VInner->getKey("Inner").getFullRule(2),
-                       VInner->getKey("Outer").getFullRule(-2));
+  VInnerExit->setCutSurf("front",VInner->getKey("Inner"),2);
+  VInnerExit->setCutSurf("back",VInner->getKey("Outer"),-2);
   VInnerExit->createAll(System,VInner->getKey("Inner"),2);
 
   ShieldC->addInsertCell(Cave->getCells("FrontWall"));

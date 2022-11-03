@@ -365,13 +365,13 @@ SKADI::build(Simulation& System,
   PitA->createAll(System,*FocusWallA,2);
 
   PitACutFront->addInsertCell(PitA->getCells("MidLayerFront"));
-  PitACutFront->setFaces(PitA->getKey("Mid").getFullRule(-1),
-			 PitA->getKey("Inner").getFullRule(1));
+  PitACutFront->setCutSurf("front",PitA->getKey("Mid"),-1);
+  PitACutFront->setCutSurf("back",PitA->getKey("Inner"),1);
   PitACutFront->createAll(System,PitA->getKey("Inner"),-1);
   PitACutBack->addInsertCell(PitA->getCells("MidLayerBack"));
   PitACutBack->addInsertCell(PitA->getCells("Collet"));
-  PitACutBack->setFaces(PitA->getKey("Mid").getFullRule(-2),
-			 PitA->getKey("Inner").getFullRule(2));
+  PitACutBack->setCutSurf("front",PitA->getKey("Mid"),-2);
+  PitACutBack->setCutSurf("back",PitA->getKey("Inner"),2);
   PitACutBack->createAll(System,PitA->getKey("Inner"),2);
   
   ShieldA->addInsertCell(voidCell);
@@ -404,14 +404,16 @@ SKADI::build(Simulation& System,
   
   PitB->addInsertCell(voidCell); //Chopper II pit
   PitB->createAll(System,PitA->getKey("Outer"),2);
+
   PitBCutFront->addInsertCell(PitB->getCells("MidLayerFront"));
-  PitBCutFront->setFaces(PitB->getKey("Mid").getFullRule(-1),
-			 PitB->getKey("Inner").getFullRule(1));
+  PitBCutFront->setCutSurf("front",PitB->getKey("Mid"),-1);
+  PitBCutFront->setCutSurf("back",PitB->getKey("Inner"),1);
   PitBCutFront->createAll(System,PitB->getKey("Inner"),-1);
+
   PitBCutBack->addInsertCell(PitB->getCells("MidLayerBack"));
   PitBCutBack->addInsertCell(PitB->getCells("Collet"));
-  PitBCutBack->setFaces(PitB->getKey("Mid").getFullRule(-2),
-			 PitB->getKey("Inner").getFullRule(2));
+  PitBCutBack->setCutSurf("front",PitB->getKey("Mid"),-2);
+  PitBCutBack->setCutSurf("back",PitB->getKey("Inner"),2);
   PitBCutBack->createAll(System,PitB->getKey("Inner"),2);
 
   ChopperB->addInsertCell(PitB->getCell("Void"));
@@ -446,14 +448,14 @@ SKADI::build(Simulation& System,
   PitC->createAll(System,PitB->getKey("Outer"),2);
 
   PitCCutFront->addInsertCell(PitC->getCells("MidLayerFront"));
-  PitCCutFront->setFaces(PitC->getKey("Mid").getFullRule(-1),
-			 PitC->getKey("Inner").getFullRule(1));
+  PitCCutFront->setCutSurf("front",PitC->getKey("Mid"),-1);
+  PitCCutFront->setCutSurf("back",PitC->getKey("Inner"),1);
   PitCCutFront->createAll(System,PitC->getKey("Inner"),-1);
 
   PitCCutBack->addInsertCell(PitC->getCells("MidLayerBack"));
   PitCCutBack->addInsertCell(PitC->getCells("Collet"));
-  PitCCutBack->setFaces(PitC->getKey("Mid").getFullRule(-2),
-			 PitC->getKey("Inner").getFullRule(2));
+  PitCCutBack->setCutSurf("front",PitC->getKey("Mid"),-2);
+  PitCCutBack->setCutSurf("back",PitC->getKey("Inner"),2);
   PitCCutBack->createAll(System,PitC->getKey("Inner"),2);
 
   ChopperC1->addInsertCell(PitC->getCell("Void"));
@@ -502,8 +504,8 @@ SKADI::build(Simulation& System,
   Cave->createAll(System,*ShieldD,2);
   
   CaveFrontCut->addInsertCell(Cave->getCells("FrontWall"));
-  CaveFrontCut->setFaces(Cave->getKey("Outer").getFullRule(-1),
-			 Cave->getKey("Inner").getFullRule(1));
+  CaveFrontCut->setCutSurf("front",Cave->getKey("Outer"),-1);
+  CaveFrontCut->setCutSurf("back",Cave->getKey("Inner"),1);
   CaveFrontCut->createAll(System,*ShieldD,2);
   
   GuideOutE->addInsertCell(voidCell);

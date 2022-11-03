@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
 #include <fstream>
@@ -422,15 +422,15 @@ BIFROST::build(Simulation& System,
     }
 
   OutACutFront->addInsertCell(OutPitA->getCells("MidLayerFront"));
-  OutACutFront->setFaces(OutPitA->getKey("Mid").getFullRule(-1),
-                         OutPitA->getKey("Inner").getFullRule(1));
+  OutACutFront->setCutSurf("front",OutPitA->getKey("Mid"),-1);
+  OutACutFront->setCutSurf("back",OutPitA->getKey("Inner"),1);
   OutACutFront->createAll(System,OutPitA->getKey("Inner"),-1);
 
 
   OutACutBack->addInsertCell(OutPitA->getCells("MidLayerBack"));
+  OutACutBack->setCutSurf("front",OutPitA->getKey("Inner"),2);
+  OutACutBack->setCutSurf("back",OutPitA->getKey("Mid"),-2);
   OutACutBack->addInsertCell(OutPitA->getCells("Collet"));
-  OutACutBack->setFaces(OutPitA->getKey("Inner").getFullRule(2),
-                        OutPitA->getKey("Mid").getFullRule(-2));
   OutACutBack->createAll(System,OutPitA->getKey("Inner"),2);
   
 
@@ -482,14 +482,13 @@ BIFROST::build(Simulation& System,
   ShieldB->insertObjects(System);
 
   CaveCut->addInsertCell(Cave->getCells("IronFront"));
-  CaveCut->setFaces(Cave->getKey("Mid").getFullRule(-1),
-                    Cave->getKey("Inner").getFullRule(1));
+  CaveCut->setCutSurf("front",Cave->getKey("Mid"),-1);
+  CaveCut->setCutSurf("back",Cave->getKey("Inner"),1);
   CaveCut->createAll(System,*ShieldB,2);
 
   // Elliptic 6m section
   VPipeCave->addAllInsertCell(Cave->getCell("Void"));
   VPipeCave->createAll(System,*CaveCut,2);
-
   
   return; 
 }

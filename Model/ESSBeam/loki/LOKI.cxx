@@ -294,8 +294,8 @@ LOKI::buildOutGuide(Simulation& System,
   //Cut throught chopper pit for guide and pipe that are following it 
   PitACut->addInsertCell(OutPitA->getCells("MidLayerBack"));
   PitACut->addInsertCell(OutPitA->getCells("Collet"));
-  PitACut->setFaces(OutPitA->getKey("Inner").getFullRule(2),
-                    OutPitA->getKey("Mid").getFullRule(-2));
+  PitACut->setCutSurf("front",OutPitA->getKey("Inner"),2);
+  PitACut->setCutSurf("back",OutPitA->getKey("Mid"),-2);
   PitACut->createAll(System,OutPitA->getKey("Inner"),2);
 
 

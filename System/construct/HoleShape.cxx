@@ -55,10 +55,11 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
-#include "SurInter.h"
+#include "ExternalCut.h"
 #include "HoleShape.h"
 
 
@@ -66,26 +67,27 @@ namespace constructSystem
 {
 
 HoleShape::HoleShape(const std::string& Key) :
-  attachSystem::FixedComp(Key,2),
+  attachSystem::FixedRotate(Key,2),
   attachSystem::ContainedComp(),
+  attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   shapeType(0),
-  angleOffset(0),radialStep(0.0),radius(0.0),xradius(0.0),
-  cutFlag(0)
+  angleOffset(0),radialStep(0.0),radius(0.0),xradius(0.0)
   /*!
     Default constructor
     \param Key :: Key name for variables
   */
 {}
 
-HoleShape::HoleShape(const HoleShape& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+HoleShape::HoleShape(const HoleShape& A) :
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::ExternalCut(A),
   attachSystem::CellMap(A),
   shapeType(A.shapeType),angleCentre(A.angleCentre),
   angleOffset(A.angleOffset),radialStep(A.radialStep),
   radius(A.radius),xradius(A.xradius),rotCentre(A.rotCentre),
-  rotAngle(A.rotAngle),cutFlag(A.cutFlag),frontFace(A.frontFace),
-  backFace(A.backFace)
+  rotAngle(A.rotAngle)
   /*!
     Copy constructor
     \param A :: HoleShape to copy
@@ -102,19 +104,18 @@ HoleShape::operator=(const HoleShape& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       attachSystem::CellMap::operator=(A);
       shapeType=A.shapeType;
       angleCentre=A.angleCentre;
       angleOffset=A.angleOffset;
       radialStep=A.radialStep;
       radius=A.radius;
+      xradius=A.xradius;
       rotCentre=A.rotCentre;
       rotAngle=A.rotAngle;
-      cutFlag=A.cutFlag;
-      frontFace=A.frontFace;
-      backFace=A.backFace;
     }
   return *this;
 }
@@ -209,40 +210,9 @@ HoleShape::populate(const FuncDataBase& Control)
 
   radialStep=Control.EvalDefVar<double>(keyName+"RadialStep",0.0);
 
-  angleCentre=Control.EvalDefVar<double>(keyName+"AngleCentre",0.0);
-  angleOffset=Control.EvalDefVar<double>(keyName+"AngleOffset",0.0);
-
   radius=Control.EvalVar<double>(keyName+"Radius");
   xradius=Control.EvalDefVar<double>(keyName+"XRadius",radius);
 
-  const double masterAngle=
-    Control.EvalDefVar<double>(keyName+"MasterAngle",0.0);
-  setMasterAngle(masterAngle);
-  return;
-}
-
-void
-HoleShape::createUnitVector(const attachSystem::FixedComp& FC,
-			    const long int sideIndex)
-  /*!
-    Create the unit vectors:
-    LC gives the origin for the wheel
-    \param FC :: Rotational origin of wheel
-    \param sideIndex :: Side index
-  */
-{
-  ELog::RegMethod RegA("HoleShape","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  rotCentre=Origin;
-  
-  // Now need to move origin to centre of shape
-
-  const Geometry::Quaternion Qy=
-    Geometry::Quaternion::calcQRotDeg(rotAngle,Y);
-  Qy.rotate(X);
-  Qy.rotate(Z);
-  FixedComp::applyShift(0,0,radialStep);  
   return;
 }
 
@@ -260,48 +230,18 @@ HoleShape::createCircleSurfaces()
   return;
 }
 
-void
-HoleShape::setFaces(const int F,const int B)
-  /*!
-    Set face objects
-    \param F :: Front face
-    \param B :: Back face
-  */
-{
-  frontFace.reset();
-  backFace.reset();
-  frontFace.addIntersection(F);
-  backFace.addIntersection(B);
-  return;
-}
-
-void
-HoleShape::setFaces(const HeadRule& F,const HeadRule& B)
-  /*!
-    Set face objects
-    \param F :: Front face
-    \param B :: Back face
-  */
-{
-  frontFace=F;
-  backFace=B;
-  return;
-}
-
-std::string
-HoleShape::createCircleObj() 
+HeadRule
+HoleShape::createCircleObj() const
   /*!
     Create the void and liner objects.
     Note that the returned object will be passed via
-    getComposite later.
+    getHeadRule later.
     \return the exclusion surface object / set
   */
 {
   ELog::RegMethod RegA("HoleShape","createCircleObj");
 
-  const std::string Out=
-    ModelSupport::getComposite(SMap,buildIndex," -31 ");
-  return Out;
+  return HeadRule(SMap,buildIndex,-31);
 }
 
 void
@@ -340,8 +280,8 @@ HoleShape::createRectangleSurfaces()
   return;
 }
 
-std::string
-HoleShape::createSquareObj() 
+HeadRule
+HoleShape::createSquareObj() const
   /*!
     Create the square cutout
     \return the exclusion surface object / set
@@ -349,10 +289,10 @@ HoleShape::createSquareObj()
 {
   ELog::RegMethod RegA("HoleShape","createSquareObj");
   
-  const std::string Out=
-    ModelSupport::getComposite(SMap,buildIndex," 33 -34 35 -36");
+  HeadRule HR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"33 -34 35 -36");
 
-  return Out;
+  return HR;
 }
 
 void
@@ -376,8 +316,8 @@ HoleShape::createHexagonSurfaces()
   return;
 }
 
-std::string
-HoleShape::createHexagonObj() 
+HeadRule
+HoleShape::createHexagonObj() const 
   /*!
     Create the hexagon cutout
     \return the  surface object / set
@@ -385,9 +325,9 @@ HoleShape::createHexagonObj()
 {
   ELog::RegMethod RegA("HoleShape","createHexagonObj");
   
-  const std::string Out=
-    ModelSupport::getComposite(SMap,buildIndex," -31 -32 -33 -34 -35 -36");
-  return Out;
+  const HeadRule HR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"-31 -32 -33 -34 -35 -36");
+  return HR;
 }
 
 void
@@ -411,8 +351,8 @@ HoleShape::createOctagonSurfaces()
   return;
 }
 
-std::string
-HoleShape::createOctagonObj() 
+HeadRule
+HoleShape::createOctagonObj() const
   /*!
     Create the octagon cutout
     \return the exclusion surface object / set
@@ -420,15 +360,14 @@ HoleShape::createOctagonObj()
 {
   ELog::RegMethod RegA("HoleShape","createOctagonObj");
 
-  const std::string Out=
-    ModelSupport::getComposite(SMap,buildIndex,
-				 " -31 -32 -33 -34 -35 -36 -37 -38");
+  const HeadRule HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-31 -32 -33 -34 -35 -36 -37 -38");
 
-  return Out;
+  return HR;
 }
 
-std::string
-HoleShape::createRectangleObj() 
+HeadRule
+HoleShape::createRectangleObj() const
   /*!
     Create the octagon cutout
     \return the exclusion surface object / set
@@ -436,11 +375,10 @@ HoleShape::createRectangleObj()
 {
   ELog::RegMethod RegA("HoleShape","createRectangleObj");
 
-  const std::string Out=
-    ModelSupport::getComposite(SMap,buildIndex,
-				 " 33 -34 35 -36 ");
+  const HeadRule HR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"33 -34 35 -36");
 
-  return Out;
+  return HR;
 }
 
 void
@@ -483,35 +421,38 @@ HoleShape::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("HoleShape","createObjects");
-  std::string Out;
+
+  const HeadRule frontHR=getRule("front");
+  const HeadRule backHR=getRule("back");
+  
+  HeadRule HR;
   switch (shapeType)
     {
     case 1:  // circle
-      Out=createCircleObj();
+      HR=createCircleObj();
       break;
     case 2:  // square
-      Out=createSquareObj();
+      HR=createSquareObj();
       break;
     case 3:  // hexagon
-      Out=createHexagonObj();
+      HR=createHexagonObj();
       break;
     case 4:  // octagon
-      Out=createOctagonObj();
+      HR=createOctagonObj();
       break;
     case 5:  // rectangle
-      Out=createRectangleObj();
+      HR=createRectangleObj();
       break;
     default:  // No work
       return;
     }
 
-  System.addCell(MonteCarlo::Object
-		 (cellIndex++,0,0.0,Out+frontFace.display()+
-		  backFace.display()));
-  addCell("Void",cellIndex-1);
-  if (cutFlag & 1) Out+=frontFace.display();
-  if (cutFlag & 2) Out+=backFace.display();
-  addOuterSurf(Out);
+  makeCell("Void",System,
+	   cellIndex++,0,0.0,HR*frontHR*backHR);
+
+  if (cutFlag & 1) HR*=frontHR;
+  if (cutFlag & 2) HR*=backHR;
+  addOuterSurf(HR);
   return;
 }
 
@@ -522,31 +463,13 @@ HoleShape::createLinks()
    */
 {
   ELog::RegMethod RegA("HoleShape","createLinks");
-  
-  const std::pair<Geometry::Vec3D,int> Front=
-    SurInter::interceptRule(frontFace,Origin,Y);
-  const std::pair<Geometry::Vec3D,int> Back=
-    SurInter::interceptRule(backFace,Origin,Y);
 
-  FixedComp::setConnect(0,Front.first,-Y);
-  FixedComp::setConnect(1,Back.first,Y);
-  FixedComp::setLinkSurf(0,SMap.realSurf(Front.second));
-  FixedComp::setLinkSurf(1,SMap.realSurf(Back.second));
+  ExternalCut::createLink("front",*this,0,Origin,Y);
+  ExternalCut::createLink("back",*this,1,Origin,Y);
+
   return;
 }
 
-void
-HoleShape::setMasterAngle(const double masterAngle)
-  /*!
-    Given the main angle for the system
-    \param masterAngle :: angle for the wheel
-  */
-{
-  ELog::RegMethod RegA("HoleShape","setMasterAngle");
-  
-  rotAngle=masterAngle+angleOffset+angleCentre;
-  return;
-}
 
 void
 HoleShape::setCutFaceFlag(const size_t F)
@@ -560,28 +483,6 @@ HoleShape::setCutFaceFlag(const size_t F)
 }
   
 void
-HoleShape::createAllNoPopulate(Simulation& System,
-                               const attachSystem::FixedComp& FC,
-                               const long int sideIndex)
-  /*!
-    Generic function to create everything
-    \param System :: Simulation 
-    \param FC :: Fixed component to set axis etc
-    \param sideIndex :: side for hole
-  */
-{
-  ELog::RegMethod RegA("HoleShape","createAllNoPopulate");
-
-  createUnitVector(FC,sideIndex);
-  createSurfaces();
-  createObjects(System);
-  createLinks();
-  insertObjects(System);
-    
-  return;
-}
-
-void
 HoleShape::createAll(Simulation& System,
                      const attachSystem::FixedComp& FC,
                      const long int sideIndex)
@@ -592,10 +493,15 @@ HoleShape::createAll(Simulation& System,
     \param sideIndex :: side for hole
   */
 {
-  ELog::RegMethod RegA("HoleShape","createAllNoPopulate");
+  ELog::RegMethod RegA("HoleShape","createAll");
 
   populate(System.getDataBase());
-  createAllNoPopulate(System,FC,sideIndex);
+  createUnitVector(FC,sideIndex);
+  createSurfaces();
+  createObjects(System);
+  createLinks();
+  insertObjects(System);
+    
   return;
 }
 

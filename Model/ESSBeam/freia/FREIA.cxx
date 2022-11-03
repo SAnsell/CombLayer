@@ -349,8 +349,8 @@ FREIA::buildOutGuide(Simulation& System,
 
   OutACut->addInsertCell(OutPitA->getCells("MidLayerBack"));
   OutACut->addInsertCell(OutPitA->getCells("Collet"));
-  OutACut->setFaces(OutPitA->getKey("Inner").getFullRule(2),
-                    OutPitA->getKey("Mid").getFullRule(-2));
+  OutACut->setCutSurf("front",OutPitA->getKey("Inner"),2);
+  OutACut->setCutSurf("back",OutPitA->getKey("Mid"),-2);
   OutACut->createAll(System,*FocusWall,2);
 
   // 15m WBC chopper
@@ -399,16 +399,11 @@ FREIA::buildOutGuide(Simulation& System,
 }
 
 void
-FREIA::buildHut(Simulation& System,
-		const attachSystem::FixedComp&,
-		const long int,
-                const int)
+FREIA::buildHut(Simulation& System)
+
   /*!
     Builds the hut connected to the FixedPoint given
     \param System :: Simulation to build with
-    \param connectFC :: Connection point
-    \param connectIndex :: Connection index
-    \param voidCell :: Main void cell for this model
    */
 {
   ELog::RegMethod RegA("FREIA","buildHut");
@@ -417,14 +412,14 @@ FREIA::buildHut(Simulation& System,
   CaveJaw->createAll(System,JawPit->getKey("Inner"),0);
 
   OutBCutBack->addInsertCell(JawPit->getCells("MidLayerBack"));
+  OutBCutBack->setCutSurf("front",JawPit->getKey("Inner"),2);
+  OutBCutBack->setCutSurf("back",JawPit->getKey("Mid"),-2);
   OutBCutBack->addInsertCell(JawPit->getCells("Collet"));
-  OutBCutBack->setFaces(JawPit->getKey("Inner").getFullRule(2),
-                        JawPit->getKey("Mid").getFullRule(-2));
   OutBCutBack->createAll(System,JawPit->getKey("Inner"),2);
 
   OutBCutFront->addInsertCell(JawPit->getCells("MidLayerFront"));
-  OutBCutFront->setFaces(JawPit->getKey("Mid").getFullRule(-1),
-                         JawPit->getKey("Inner").getFullRule(1));
+  OutBCutFront->setCutSurf("front",JawPit->getKey("Mid"),-1);
+  OutBCutFront->setCutSurf("back",JawPit->getKey("Inner"),1);
   OutBCutFront->createAll(System,JawPit->getKey("Inner"),-1);
 
   return;
@@ -483,7 +478,7 @@ FREIA::buildIsolated(Simulation& System,const int voidCell)
 
   if (startPoint<4)
     {
-      buildHut(System,*FStart,startIndex,voidCell);
+      buildHut(System);
       //      buildDetectorArray(System,*Sample,0,Cave->getCell("Void"));
     }
   
@@ -543,19 +538,9 @@ FREIA::build(Simulation& System,
 
   if (stopPoint==4) return;                      // STOP Out of bunker
 
-  CaveJaw->setInsertCell(JawPit->getCell("Void"));
-  CaveJaw->createAll(System,JawPit->getKey("Inner"),0);
 
-  OutBCutBack->addInsertCell(JawPit->getCells("MidLayerBack"));
-  OutBCutBack->addInsertCell(JawPit->getCells("Collet"));
-  OutBCutBack->setFaces(JawPit->getKey("Inner").getFullRule(2),
-                        JawPit->getKey("Mid").getFullRule(-2));
-  OutBCutBack->createAll(System,JawPit->getKey("Inner"),2);
-
-  OutBCutFront->addInsertCell(JawPit->getCells("MidLayerFront"));
-  OutBCutFront->setFaces(JawPit->getKey("Mid").getFullRule(-1),
-                         JawPit->getKey("Inner").getFullRule(1));
-  OutBCutFront->createAll(System,JawPit->getKey("Inner"),-1);
+  buildHut(System);
+  
   
   return;
 }

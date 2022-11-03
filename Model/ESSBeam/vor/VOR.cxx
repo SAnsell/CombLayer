@@ -370,8 +370,8 @@ VOR::build(Simulation& System,
   
   FOCExitPort->addInsertCell(OutPitA->getCells("MidLayerBack"));
   FOCExitPort->addInsertCell(OutPitA->getCells("Collet"));
-  FOCExitPort->setFaces(OutPitA->getKey("Inner").getFullRule(2),
-                       OutPitA->getKey("Mid").getFullRule(-2));
+  FOCExitPort->setCutSurf("front",OutPitA->getKey("Inner"),2);
+  FOCExitPort->setCutSurf("back",OutPitA->getKey("Mid"),-2);  
   FOCExitPort->createAll(System,OutPitA->getKey("Inner"),2);
 
 
@@ -380,15 +380,15 @@ VOR::build(Simulation& System,
   OutPitB->createAll(System,OutPitA->getKey("Inner"),0);
 
   FOCEntryPortB->addInsertCell(OutPitB->getCells("MidLayerFront"));
-  FOCEntryPortB->setFaces(OutPitB->getKey("Inner").getFullRule(1),
-			  OutPitB->getKey("Mid").getFullRule(-1));
+  FOCEntryPortB->setCutSurf("front",OutPitB->getKey("Inner"),1);
+  FOCEntryPortB->setCutSurf("back",OutPitB->getKey("Mid"),-1);  
   FOCEntryPortB->createAll(System,OutPitB->getKey("Inner"),1);
 
   
   FOCExitPortB->addInsertCell(OutPitB->getCells("MidLayerBack"));
   FOCExitPortB->addInsertCell(OutPitB->getCells("Collet"));
-  FOCExitPortB->setFaces(OutPitB->getKey("Inner").getFullRule(2),
-                       OutPitB->getKey("Mid").getFullRule(-2));
+  FOCExitPortB->setCutSurf("front",OutPitB->getKey("Inner"),2);
+  FOCExitPortB->setCutSurf("back",OutPitB->getKey("Mid"),-2);  
   FOCExitPortB->createAll(System,OutPitB->getKey("Inner"),2);
 
   // shielding between PitA and P it B
@@ -399,7 +399,6 @@ VOR::build(Simulation& System,
   ShieldA->addInsertCell(OutPitB->getCells("Outer"));
   ShieldA->addInsertCell(OutPitB->getCells("MidLayer"));
   ShieldA->setBack(OutPitB->getKey("Mid"),1);
-  ELog::EM<<"WAS SHIELD "<<ELog::endDiag;
   ShieldA->createAll(System,*FocusWall,2);
 
   VPipeOutA->addAllInsertCell(ShieldA->getCell("Void"));
@@ -433,8 +432,8 @@ VOR::build(Simulation& System,
 
   CavePort->addInsertCell(Cave->getCells("Steel"));
   CavePort->setCutFaceFlag(1);
-  CavePort->setFaces(Cave->getKey("Inner").getFullRule(1),
-		     Cave->getKey("Mid").getFullRule(-1));
+  CavePort->setCutSurf("front",Cave->getKey("Inner"),1);
+  CavePort->setCutSurf("back",Cave->getKey("Mid"),-1);  
   CavePort->createAll(System,*FocusOutC,2);
 
   Tank->addInsertCell(Cave->getCells("Void"));

@@ -345,7 +345,6 @@ ODIN::buildBunkerUnits(Simulation& System,
   VPipeH->addAllInsertCell(bunkerVoid);
   VPipeH->createAll(System,ChopperFOC4->getKey("Beam"),2);
   FocusH->addInsertCell(VPipeH->getCells("Void"));
-  ELog::EM<<"H == "<<VPipeH->getLinkPt(0)<<ELog::endDiag;
   FocusH->createAll(System,*VPipeH,0);
   
   return;
@@ -382,14 +381,14 @@ ODIN::buildOutGuide(Simulation& System,
   ShieldA->insertObjects(System);
 
   OutACut->addInsertCell(OutPitA->getCells("MidLayerFront"));
-  OutACut->setFaces(OutPitA->getKey("Inner").getFullRule(1),
-                    OutPitA->getKey("Mid").getFullRule(-1));
+  OutACut->setCutSurf("front",OutPitA->getKey("Inner"),1);
+  OutACut->setCutSurf("back",OutPitA->getKey("Mid"),-1);
   OutACut->createAll(System,OutPitA->getKey("Inner"),1);
 
   OutBCut->addInsertCell(OutPitA->getCells("MidLayerBack"));
   OutBCut->addInsertCell(OutPitA->getCells("Collet"));
-  OutBCut->setFaces(OutPitA->getKey("Inner").getFullRule(2),
-                    OutPitA->getKey("Mid").getFullRule(-2));
+  OutBCut->setCutSurf("front",OutPitA->getKey("Inner"),2);
+  OutBCut->setCutSurf("back",OutPitA->getKey("Mid"),-2);
   OutBCut->createAll(System,OutPitA->getKey("Inner"),2);
   
     
@@ -438,8 +437,8 @@ ODIN::buildCave(Simulation& System,
   ShieldB->insertObjects(System);
 
   CaveCut->addInsertCell(Cave->getCells("FeNose"));
-  CaveCut->setFaces(Cave->getKey("Outer").getFullRule(-1),
-                    Cave->getKey("Inner").getFullRule(1));
+  CaveCut->setCutSurf("front",Cave->getKey("Outer"),-1);
+  CaveCut->setCutSurf("back",Cave->getKey("Inner"),1);
   CaveCut->createAll(System,Cave->getKey("Inner"),-1);
 
   VPipeCaveA->addAllInsertCell(Cave->getCells("VoidNose"));
@@ -449,8 +448,8 @@ ODIN::buildCave(Simulation& System,
   FocusCaveA->createAll(System,*VPipeCaveA,0);
 
   CaveMidCut->addInsertCell(Cave->getCells("InnerWall"));
-  CaveMidCut->setFaces(Cave->getSurf("InnerWallFront"),
-                       -Cave->getSurf("InnerWallBack"));
+  CaveMidCut->setCutSurf("front",Cave->getSurf("InnerWallFront"));
+  CaveMidCut->setCutSurf("back",-Cave->getSurf("InnerWallBack"));
   CaveMidCut->createAll(System,Cave->getKey("Inner"),-1);
 
   PinA->addInsertCell(Cave->getCell("VoidNose"));

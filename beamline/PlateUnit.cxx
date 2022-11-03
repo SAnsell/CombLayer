@@ -268,8 +268,6 @@ PlateUnit::createSurfaces()
 {
   ELog::RegMethod RegA("PlateUnit","createSurfaces");
 
-  ELog::EM<<"Origin == "<<keyName<<" "<<Origin<<"::: "<<yStep<<ELog::endDiag;
-
   // First construct hull
   frontCV->setPoints(APts);
   backCV->setPoints(BPts);

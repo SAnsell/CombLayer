@@ -468,8 +468,8 @@ TREX::build(Simulation& System,
   BendOutA->createAll(System,*VPipeOutA,0);
   
   PitACutFront->addInsertCell(PitA->getCells("MidLayerFront"));
-  PitACutFront->setFaces(PitA->getKey("Mid").getFullRule(-1),
-			 PitA->getKey("Inner").getFullRule(1));
+  PitACutFront->setCutSurf("front",PitA->getKey("Mid"),-1);
+  PitACutFront->setCutSurf("back",PitA->getKey("Inner"),1);
   PitACutFront->createAll(System,*BendOutA,2);
 
   if (stopPoint==4) return;    // Up to BW1 Chopper pit
@@ -499,14 +499,14 @@ TREX::build(Simulation& System,
   BendOutB->createAll(System,*VPipeOutB,0);
   
   PitACutBack->addInsertCell(PitA->getCells("MidLayerBack"));
-  PitACutBack->addInsertCell(PitA->getCells("Collet"));  
-  PitACutBack->setFaces(PitA->getKey("Inner").getFullRule(2),
-			 PitA->getKey("Mid").getFullRule(-2));
+  PitACutBack->addInsertCell(PitA->getCells("Collet"));
+  PitACutBack->setCutSurf("front",PitA->getKey("Inner"),2);
+  PitACutBack->setCutSurf("back",PitA->getKey("Mid"),-2);
   PitACutBack->createAll(System,*BendOutB,1);
 
   PitBCutFront->addInsertCell(PitB->getCells("MidLayerFront"));
-  PitBCutFront->setFaces(PitB->getKey("Mid").getFullRule(-1),
-			 PitB->getKey("Inner").getFullRule(1));
+  PitBCutFront->setCutSurf("front",PitA->getKey("Mid"),-1);
+  PitBCutFront->setCutSurf("back",PitA->getKey("Inner"),1);  
   PitBCutFront->createAll(System,*BendOutB,2);
   
 
@@ -539,9 +539,9 @@ TREX::build(Simulation& System,
   BendOutCs[0]->createAll(System,*VPipeOutCs[0],0);
   
   PitBCutBack->addInsertCell(PitB->getCells("MidLayerBack"));
-  PitBCutBack->addInsertCell(PitB->getCells("Collet"));  
-  PitBCutBack->setFaces(PitB->getKey("Inner").getFullRule(2),
-			 PitB->getKey("Mid").getFullRule(-2));
+  PitBCutBack->addInsertCell(PitB->getCells("Collet"));
+  PitBCutBack->setCutSurf("front",PitB->getKey("Inner"),2);
+  PitBCutBack->setCutSurf("back",PitB->getKey("Mid"),-2);  
   PitBCutBack->createAll(System,*BendOutCs[0],1);
   
   for(size_t i=1;i<nC-1;i++)
@@ -561,8 +561,8 @@ TREX::build(Simulation& System,
   BendOutCs[6]->createAll(System,*VPipeOutCs[6],0);
 
   PitCCutFront->addInsertCell(PitC->getCells("MidLayerFront"));
-  PitCCutFront->setFaces(PitC->getKey("Mid").getFullRule(-1),
-  			 PitC->getKey("Inner").getFullRule(1));
+  PitCCutFront->setCutSurf("front",PitC->getKey("Mid"),-1);
+  PitCCutFront->setCutSurf("back",PitC->getKey("Inner"),1);  
   PitCCutFront->createAll(System,*BendOutCs[6],2);
 
 
@@ -580,9 +580,9 @@ TREX::build(Simulation& System,
   BendOutD->createAll(System,*VPipeOutD,0);
 
   PitCCutBack->addInsertCell(PitC->getCells("MidLayerBack"));
-  PitCCutBack->addInsertCell(PitC->getCells("Collet"));  
-  PitCCutBack->setFaces(PitC->getKey("Inner").getFullRule(2),
-			 PitC->getKey("Mid").getFullRule(-2));
+  PitCCutBack->addInsertCell(PitC->getCells("Collet"));
+  PitCCutBack->setCutSurf("front",PitC->getKey("Inner"),2);
+  PitCCutBack->setCutSurf("back",PitC->getKey("Mid"),-2);  
   PitCCutBack->createAll(System,*BendOutD,1);
 
  
@@ -612,13 +612,14 @@ TREX::build(Simulation& System,
 
   
   PitECutFront->addInsertCell(PitE->getCells("MidLayerFront"));
-  PitECutFront->setFaces(PitE->getKey("Mid").getFullRule(-1),
-			 PitE->getKey("Inner").getFullRule(1));
+  PitECutFront->setCutSurf("front",PitE->getKey("Mid"),-1);
+  PitECutFront->setCutSurf("back",PitE->getKey("Inner"),1);  
   PitECutFront->createAll(System,PitE->getKey("Inner"),-1);
+
   PitECutBack->addInsertCell(PitE->getCells("MidLayerBack"));
-  PitECutBack->addInsertCell(PitE->getCells("Collet"));  
-  PitECutBack->setFaces(PitE->getKey("Inner").getFullRule(2),
-			 PitE->getKey("Mid").getFullRule(-2));
+  PitECutBack->addInsertCell(PitE->getCells("Collet"));
+  PitECutBack->setCutSurf("front",PitE->getKey("Inner"),2);
+  PitECutBack->setCutSurf("back",PitE->getKey("Mid"),-2);  
   PitECutBack->createAll(System,PitE->getKey("Inner"),2);
 
   ShieldE->addInsertCell(voidCell);
@@ -662,8 +663,8 @@ TREX::build(Simulation& System,
   
   CaveFrontCut->addInsertCell(Cave->getCell("L1Front"));
   CaveFrontCut->addInsertCell(Cave->getCell("L2Front"));
-  CaveFrontCut->setFaces(Cave->getKey("Mid").getFullRule(-1),
-  			 Cave->getKey("Inner").getFullRule(1));
+  CaveFrontCut->setCutSurf("front",Cave->getKey("Mid"),-1);
+  CaveFrontCut->setCutSurf("back",Cave->getKey("Inner"),1);  
   CaveFrontCut->createAll(System,Cave->getKey("Mid"),-1);
 
   VPipeOutFs[7]->addAllInsertCell(ShieldF->getCell("Void"));

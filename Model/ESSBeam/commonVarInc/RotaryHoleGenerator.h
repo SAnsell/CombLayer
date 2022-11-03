@@ -37,7 +37,7 @@ namespace setVariable
 
 struct holeInfo
 {
-  size_t shape;      ///< Shape [number until enum]
+  std::string shape; ///< Shape 
   double radius;     ///< Radius
   double xradius;    ///< Radius [if needed]
   double angCent;    ///< Angle centre

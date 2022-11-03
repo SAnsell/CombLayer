@@ -3,7 +3,7 @@
  
  * File:   commonVar/RotaryHoleGenerator.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,14 +45,6 @@
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
-#include "surfRegister.h"
-#include "HeadRule.h"
-#include "LinkUnit.h"
-#include "ContainedComp.h"
-#include "FixedComp.h"
-#include "BaseMap.h"
-#include "CellMap.h"
-#include "HoleShape.h"
 #include "RotaryHoleGenerator.h"
 
 namespace setVariable
@@ -118,8 +110,9 @@ RotaryHoleGenerator::addHole(const std::string& type,
 */
 {
   ELog::RegMethod RegA("RotaryHoleGenerator","addHole");
+
   holeInfo A;
-  A.shape=constructSystem::HoleShape::shapeIndex(type);
+  A.shape=type;
   A.radius=Rad;
   A.xradius=xRad;
   A.angCent=aCent;

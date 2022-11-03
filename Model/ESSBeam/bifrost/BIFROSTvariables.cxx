@@ -82,7 +82,7 @@ BIFROSTvariables(FuncDataBase& Control)
 
   // extent of beamline
   Control.addVariable("bifrostStopPoint",0);
-  Control.addVariable("bifrostAxisXYAngle",0.0);   // rotation
+  Control.addVariable("bifrostAxisXAngle",0.0);   // rotation
   Control.addVariable("bifrostAxisZAngle",0.0);   // rotation
   Control.addVariable("bifrostAxisZStep",2.0);   // +/- height
 

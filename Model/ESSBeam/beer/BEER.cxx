@@ -328,8 +328,8 @@ BEER::buildOutGuide(Simulation& System,
 
   OutACut->addInsertCell(OutPitA->getCells("MidLayer"));
   OutACut->addInsertCell(OutPitA->getCells("Collet"));
-  OutACut->setFaces(OutPitA->getKey("Inner").getFullRule(2),
-                    OutPitA->getKey("Mid").getFullRule(-2));
+  OutACut->setCutSurf("front",OutPitA->getKey("Inner"),2);
+  OutACut->setCutSurf("back",OutPitA->getKey("Mid"),-2);
   OutACut->createAll(System,OutPitA->getKey("Inner"),2);
 
   // 15m WBC chopper

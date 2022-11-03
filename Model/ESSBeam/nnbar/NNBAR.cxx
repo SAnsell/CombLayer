@@ -236,8 +236,8 @@ NNBAR::buildHut(Simulation& System,
   ShieldA->insertObjects(System);
 
   CaveCut->addInsertCell(Cave->getCells("IronFront"));
-  CaveCut->setFaces(Cave->getKey("Mid").getFullRule(-1),
-                    Cave->getKey("Inner").getFullRule(1));
+  CaveCut->setCutSurf("front",Cave->getKey("Mid"),-1);
+  CaveCut->setCutSurf("back",Cave->getKey("Inner"),1);
   CaveCut->createAll(System,Cave->getKey("Inner"),-1);
 
   return;

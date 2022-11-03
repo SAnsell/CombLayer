@@ -27,6 +27,7 @@ class Simulation;
 namespace constructSystem
 {
   class HoleShape;
+  class CentredHoleShape;
 /*!
   \class RotaryCollimator
   \version 1.0
@@ -64,7 +65,7 @@ class RotaryCollimator :
   
   size_t nHole;           ///< number of holes
   size_t nLayers;         ///< number of layers
-  std::vector<std::shared_ptr<HoleShape>> Holes;  ///< Holes
+  std::vector<std::shared_ptr<CentredHoleShape>> Holes;  ///< Holes
 
   std::vector<double> cFrac;    ///< coll Layer thicknesss (fractions)
   std::vector<int> cMat;        ///< coll Layer materials
