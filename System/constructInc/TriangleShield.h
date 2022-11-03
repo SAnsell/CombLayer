@@ -90,8 +90,6 @@ class TriangleShield :
   virtual ~TriangleShield();
 
 
-  HeadRule getXSectionIn() const;
-
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

@@ -339,9 +339,10 @@ VOR::build(Simulation& System,
   // Make bunker insert
   BInsert->setCutSurf("front",bunkerObj,-1);
   BInsert->setCutSurf("back",bunkerObj,-2);
-  BInsert->createAll(System,*FocusD,-1);
+  BInsert->createAll(System,*FocusD,2);
   attachSystem::addToInsertLineCtrl(System,bunkerObj,"frontWall",
 				    *BInsert,*BInsert);
+
 
   VPipeWall->addAllInsertCell(BInsert->getCell("Void"));
   VPipeWall->createAll(System,*BInsert,-1);

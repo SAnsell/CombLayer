@@ -144,9 +144,10 @@ FocusGenerator::writeLayers(FuncDataBase& Control,
   if (!yStepActive)
     Control.addVariable<double>(keyName+"YStep",-length/2.0);
   else if (yStepActive==1)
-    Control.addVariable<double>(keyName+"YStep",yStep);
+      Control.addVariable<double>(keyName+"YStep",yStep);
   else
     Control.addVariable<double>(keyName+"YStep",yStep-length/2.0);
+
 
   Control.addVariable(keyName+"ZStep",zStep);       
   Control.addVariable(keyName+"ZAngle",0.0);

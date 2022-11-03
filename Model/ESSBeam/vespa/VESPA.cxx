@@ -99,7 +99,7 @@ namespace essSystem
 
 VESPA::VESPA(const std::string& keyName) :
   attachSystem::CopiedComp("vespa",keyName),
-  startPoint(0),stopPoint(0),
+  cryoFlag(1),startPoint(0),stopPoint(0),
   vespaAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
   
   // Guide into the monolith
@@ -424,19 +424,20 @@ VESPA::buildOutGuide(Simulation& System,
   T0ExitPort->createAll(System,OutPitT0->getKey("Inner"),2);
 
   OutPitA->addInsertCell(voidCell);
-  ELog::EM<<"SHIRLD"<<ELog::endDiag;
   OutPitA->createAll(System,*FocusWall,2);
 
   ShieldA->addInsertCell(voidCell);
   ShieldA->addInsertCell(OutPitT0->getCells("Outer"));
   ShieldA->addInsertCell(OutPitT0->getCells("MidLayer"));
-  ShieldA->setFront(OutPitT0->getKey("Mid"),2);
+
   ShieldA->addInsertCell(OutPitA->getCells("Outer"));
-  ShieldA->addInsertCell(OutPitA->getCells("MidLayer"));
+  ShieldA->addInsertCell(OutPitA->getCells("MidLayer")); 
+
+  ShieldA->setFront(OutPitT0->getKey("Mid"),2);
   ShieldA->setBack(OutPitA->getKey("Mid"),1);
-  ELog::EM<<"SHIRLD"<<ELog::endDiag;
+
   ShieldA->createAll(System,*FocusWall,2);
-  
+
   // Elliptic 6m section
   VPipeOutA->addAllInsertCell(ShieldA->getCells("Void"));
   VPipeOutA->setFront(OutPitT0->getKey("Mid"),2);
@@ -512,7 +513,7 @@ VESPA::buildOutGuide(Simulation& System,
       FocusArray[i]->createAll(System,*VPipeArray[i],7);
     }
 
-    // First Chopper
+    // Outer Chopper
   ChopperOutB->addInsertCell(OutPitB->getCells("Void"));
   ChopperOutB->createAll(System,*FocusArray[lastIndex],2);
 
@@ -571,14 +572,16 @@ VESPA::buildHut(Simulation& System,
   VPipeOutC->createAll(System,connectFC,connectIndex);
 
   FocusOutC->addInsertCell(VPipeOutC->getCell("Void"));
-  FocusOutC->createAll(System,*VPipeOutC,0,*VPipeOutC,0);
-
+  FocusOutC->createAll(System,*VPipeOutC,0);
   
   VJaws->setInsertCell(VInner->getCell("Void"));
   VJaws->createAll(System,*ShieldC,2);
-  
-  Cryo->setInsertCell(Cave->getCell("Void"));
-  Cryo->createAll(System,*VJaws,2);
+
+  if (cryoFlag)
+    {
+      Cryo->setInsertCell(Cave->getCell("Void"));
+      Cryo->createAll(System,*VJaws,2);
+    }
 
   Sample->setInsertCell(Cryo->getCell("SampleVoid"));
   Sample->createAll(System,*Cryo,0);
@@ -606,25 +609,31 @@ VESPA::buildDetectorArray(Simulation& System,
     
   const FuncDataBase& Control=System.getDataBase();
   const size_t nDet=Control.EvalVar<size_t>(newName+"NDet");
-  
+
+  std::set<size_t> deactivateDet;
+  if (cryoFlag)
+    deactivateDet=std::set<size_t>{6,22};
+
+  typedef std::shared_ptr<constructSystem::CrystalMount> XTYPE;
+  typedef std::shared_ptr<constructSystem::TubeDetBox> DTYPE;
   for(size_t i=0;i<nDet;i++)
     {
-      typedef std::shared_ptr<constructSystem::CrystalMount> XTYPE;
-      typedef std::shared_ptr<constructSystem::TubeDetBox> DTYPE;
-
-      XTYPE xsPtr(new constructSystem::CrystalMount(newName+"XStal",i));
-      DTYPE dsPtr(new constructSystem::TubeDetBox(newName+"DBox",i));
-      OR.addObject(xsPtr);
-      OR.addObject(dsPtr);
-
-      xsPtr->addInsertCell(voidCell);
-      xsPtr->createAll(System,sampleFC,sampleIndex);
-
-      dsPtr->addInsertCell(voidCell);
-      dsPtr->createAll(System,*xsPtr,8);
-
-      XStalArray.push_back(xsPtr);
-      ADetArray.push_back(dsPtr);      
+      if (deactivateDet.find(i)==deactivateDet.end())
+	{
+	  XTYPE xsPtr(new constructSystem::CrystalMount(newName+"XStal",i));
+	  DTYPE dsPtr(new constructSystem::TubeDetBox(newName+"DBox",i));
+	  OR.addObject(xsPtr);
+	  OR.addObject(dsPtr);
+	  
+	  xsPtr->addInsertCell(voidCell);
+	  xsPtr->createAll(System,sampleFC,sampleIndex);
+	  
+	  dsPtr->addInsertCell(voidCell);
+	  dsPtr->createAll(System,*xsPtr,8);
+	  
+	  XStalArray.push_back(xsPtr);
+	  ADetArray.push_back(dsPtr);
+	}
     }
   return;
 
@@ -733,8 +742,7 @@ VESPA::build(Simulation& System,
   BInsert->setCutSurf("front",bunkerObj,-1);
   BInsert->setCutSurf("back",bunkerObj,-2);
   BInsert->createAll(System,*FocusH,2);
-
-  //attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
+  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
 
   // using 7 : mid point
   FocusWall->addInsertCell(BInsert->getCell("Void"));

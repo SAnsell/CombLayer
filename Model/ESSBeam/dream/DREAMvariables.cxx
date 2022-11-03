@@ -87,7 +87,7 @@ DREAMvariables(FuncDataBase& Control)
 
   // extent of beamline
   Control.addVariable("dreamStopPoint",0);
-  Control.addVariable("dreamAxisXYAngle",0.0);   // rotation
+  Control.addVariable("dreamAxisXAngle",0.0);   // rotation
   Control.addVariable("dreamAxisZAngle",0.0);   // rotation 
 
   FGen.setLayer(1,0.8,"Copper");

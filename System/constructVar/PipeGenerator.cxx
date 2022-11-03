@@ -236,6 +236,23 @@ PipeGenerator::setFlangePair(const double AR,const double AL,
 }
 
 void
+PipeGenerator::setMat(const std::string& M,
+		      const std::string& FM)
+  /*!
+    Set the pipe/flange materials 
+    \param M :: Material for main pipe
+    \param FM :: material for flange (if different)
+  */
+{
+  pipeMat = M;
+  if (FM=="")
+    flangeMat=pipeMat;
+  else
+    flangeMat=FM;
+  return;
+}
+  
+void
 PipeGenerator::setWindowMat(const std::string& M)
   /*!
     Set the window materials [back/front]

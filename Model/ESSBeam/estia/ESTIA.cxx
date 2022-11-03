@@ -195,22 +195,23 @@ ESTIA::build(Simulation& System,
   essBeamSystem::setBeamAxis(*estiaAxis,System.getDataBase(),GItem,1);
 
   FocusMono->addInsertCell(GItem.getCells("Void"));
-  FocusMono->setBack(GItem.getKey("Beam").getLinkString(-2));
-  FocusMono->createAll(System,*estiaAxis,-3,*estiaAxis,-3);
+  FocusMono->setFront(GItem.getKey("Beam"),-1);
+  FocusMono->setBack(GItem.getKey("Beam"),-2);
+  FocusMono->createAll(System,*estiaAxis,-3);
 
   // Shutter pipe [note gap front/back]
   VPipeA->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeA->createAll(System,*FocusMono,2);
-
+  
   FocusA->addInsertCell(VPipeA->getCells("Void"));
   FocusA->createAll(System,*FocusMono,2);
+
 
   // pipe for first section
   VPipeB->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeB->createAll(System,*FocusA,2);
 
-  return;
-  FocusB->addInsertCell(VPipeA->getCells("Void"));
+  FocusB->addInsertCell(VPipeB->getCells("Void"));
   FocusB->createAll(System,*FocusA,2);
 
   return;

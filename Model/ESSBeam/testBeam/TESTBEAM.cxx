@@ -152,22 +152,7 @@ TESTBEAM::buildBunkerUnits(Simulation& System,
   T0Disk->addInsertCell(ChopperT0->getCell("Void"));
   T0Disk->createAll(System,ChopperT0->getKey("Main"),0,
      ChopperT0->getKey("BuildBeam"),0);
-
-  //  T0Motor->addInsertCell(bunkerVoid);
-  //  T0Motor->createAll(System,ChopperT0->getKey("Main"),1);
-  return;
-  CryoA->addInsertCell(bunkerVoid);
-  CryoA->createAll(System,FA,startIndex);
-
-    
-  TwinA->addInsertCell(bunkerVoid);
-  TwinA->createAll(System,FA,startIndex);
-
-  ADisk->addInsertCell(TwinA->getCell("Void"));
-  ADisk->createAll(System,TwinA->getKey("MotorTop"),0,
-    TwinA->getKey("Beam"),-1);
-  TwinA->insertAxle(System,*ADisk,attachSystem::CellMap());
-  //  DiskA->createAll(System,
+  ChopperT0->insertAxle(System,*T0Disk);
   return;
 }
   

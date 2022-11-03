@@ -83,6 +83,8 @@ class VESPA : public attachSystem::CopiedComp
 {
  private:
 
+  bool cryoFlag;           ///< Insert cryo
+  
   /// Start at [0:Complete / 1:Cave]
   int startPoint;  
   /// Stop at [0:Complete / 1:Mono Wall / 2:Inner Bunker / 3:Outer Bunker ]

@@ -42,6 +42,9 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "ShieldGenerator.h"
+#include "FocusGenerator.h"
+#include "PipeGenerator.h"
 
 namespace setVariable
 {
@@ -54,73 +57,41 @@ ESTIAvariables(FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("ESTIAvariables[F]","ESTIAvariables");
+
+  setVariable::FocusGenerator FGen;
+  setVariable::PipeGenerator PipeGen;
+
+  // Shutter guide section
+  FGen.setLayer(1,0.4,"Glass");
+  FGen.setLayer(2,1.5,"Void");  
   
   Control.addVariable("estiaAxisXStep",0.0);
   Control.addVariable("estiaAxisYStep",0.0);
   Control.addVariable("estiaAxisZStep",0.0);
-  Control.addVariable("estiaAxisXYAngle",0.0);   // rotation 
-  Control.addVariable("estiaAxisZAngle",1.0);
+  Control.addVariable("estiaAxisZAngle",0.0);   // rotation 
+  Control.addVariable("estiaAxisXAngle",-1.0);
 
+  FGen.setYOffset(0.2);
+  FGen.generateTaper(Control,"estiaFMono",350.0, 2.0,5.2, 8.0,10.50);
 
-  Control.addVariable("estiaFMonoLength",350.0);       
-  Control.addVariable("estiaFMonoNShapes",1);       
-  Control.addVariable("estiaFMonoNShapeLayers",3);
-  Control.addVariable("estiaFMonoActiveShield",0);
-
-  Control.addVariable("estiaFMonoLayerThick1",0.4);  // glass thick
-  Control.addVariable("estiaFMonoLayerThick2",1.5);
-
-  Control.addVariable("estiaFMonoLayerMat0","Void");
-  Control.addVariable("estiaFMonoLayerMat1","Glass");
-  Control.addVariable("estiaFMonoLayerMat2","Void");       
-
-  Control.addVariable("estiaFMono0TypeID","Taper");
-  Control.addVariable("estiaFMono0HeightStart",2.0); // guess
-  Control.addVariable("estiaFMono0HeightEnd",5.2);
-  Control.addVariable("estiaFMono0WidthStart",8.0); // NOT Centred
-  Control.addVariable("estiaFMono0WidthEnd",10.5);
-  Control.addVariable("estiaFMono0Length",350.0);
+  PipeGen.setPipe(9.0,0.5);      // 8cm radius / 0.5cm wall
+  PipeGen.setMat("Aluminium");
+  PipeGen.setNoWindow();
+  PipeGen.setFlange(-4.0,1.0);
 
   // VACUUM PIPES for Shutter:
-  Control.addVariable("estiaPipeAYStep",2.0);
-  Control.addVariable("estiaPipeARadius",9.0);
-  Control.addVariable("estiaPipeALength",46.0);
-  Control.addVariable("estiaPipeAFeThick",1.0);
-  Control.addVariable("estiaPipeAFlangeRadius",12.0);
-  Control.addVariable("estiaPipeAFlangeLength",1.0);
-  Control.addVariable("estiaPipeAFeMat","Aluminium");
-  Control.addVariable("estiaPipeAVoidMat","Void");
+  PipeGen.generatePipe(Control,"estiaPipeA",46.0);
+  Control.addVariable("estiaPipeAYStep",6.5);
+    
+  FGen.setYOffset(7.0);
+  FGen.generateTaper(Control,"estiaFA",45.0, 4.8,5.2, 10.15,10.50);
 
-  // Shutter section
-  Control.addVariable("estiaFAYStep",3.0);       
-  Control.addVariable("estiaFALength",45.0);       
-  Control.addVariable("estiaFANShapes",1);       
-  Control.addVariable("estiaFANShapeLayers",3);
-  Control.addVariable("estiaFAActiveShield",0);
-
-  Control.addVariable("estiaFALayerThick1",0.4);  // glass thick
-  Control.addVariable("estiaFALayerThick2",1.5);
-
-  Control.addVariable("estiaFALayerMat0","Void");
-  Control.addVariable("estiaFALayerMat1","Glass");
-  Control.addVariable("estiaFALayerMat2","Void");       
-
-  Control.addVariable("estiaFA0TypeID","Taper");
-  Control.addVariable("estiaFA0HeightStart",4.8); // guess
-  Control.addVariable("estiaFA0HeightEnd",5.2);
-  Control.addVariable("estiaFA0WidthStart",10.15); // NOT Centred
-  Control.addVariable("estiaFA0WidthEnd",10.5);
-  Control.addVariable("estiaFA0Length",47.0);
-
-  // VACUUM PIPES for Light Shutter:
+  PipeGen.generatePipe(Control,"estiaPipeB",450.0);
   Control.addVariable("estiaPipeBYStep",2.0);
-  Control.addVariable("estiaPipeBRadius",9.0);
-  Control.addVariable("estiaPipeBLength",450.0);
-  Control.addVariable("estiaPipeBFeThick",1.0);
-  Control.addVariable("estiaPipeBFlangeRadius",12.0);
-  Control.addVariable("estiaPipeBFlangeLength",1.0);
-  Control.addVariable("estiaPipeBFeMat","Aluminium");
-  Control.addVariable("estiaPipeBVoidMat","Void");
+
+  FGen.setYOffset(3.0);
+  FGen.generateTaper(Control,"estiaFB",448.0, 4.8,5.2, 10.15,10.50);
+  
 
   
   return;

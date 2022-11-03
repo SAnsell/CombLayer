@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "SurInter.h"
@@ -228,13 +226,17 @@ BunkerInsert::createLinks()
       this->getLinkPt("back")
     });
 
+  // need to use midPt here because we have both
+  // front/back normally and Origin is often outside of the
+  // object.
+  const Geometry::Vec3D midPt((endMidPt[0]+endMidPt[1])/2.0);
   // Mid point [useful for guides etc]
-  FixedComp::setConnect(6,(endMidPt[0]+endMidPt[1])/2.0,Y);
+  FixedComp::setConnect(6,midPt,Y);
 
-  FixedComp::setConnect(2,Origin-X*(width/2.0),X);
-  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
-  FixedComp::setConnect(4,Origin-Z*(height/2.0),Z);
-  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
+  FixedComp::setConnect(2,midPt-X*(width/2.0),X);
+  FixedComp::setConnect(3,midPt+X*(width/2.0),X);
+  FixedComp::setConnect(4,midPt-Z*(height/2.0),Z);
+  FixedComp::setConnect(5,midPt+Z*(height/2.0),Z);
   
   FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+3));
   FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+4));
