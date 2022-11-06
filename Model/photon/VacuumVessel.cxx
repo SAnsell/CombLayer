@@ -70,7 +70,9 @@ namespace photonSystem
 {
       
 VacuumVessel::VacuumVessel(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key,6),
+  attachSystem::ContainedComp(),
+  attachSystem::CellMap(),
   CentPort(new constructSystem::RingFlange(keyName+"CentPort"))
   /*!
     Constructor
@@ -84,7 +86,8 @@ VacuumVessel::VacuumVessel(const std::string& Key) :
 }
 
 VacuumVessel::VacuumVessel(const VacuumVessel& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedRotate(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),  
   wallThick(A.wallThick),frontLength(A.frontLength),
   radius(A.radius),backLength(A.backLength),width(A.width),
@@ -107,8 +110,8 @@ VacuumVessel::operator=(const VacuumVessel& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedRotate::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       wallThick=A.wallThick;
       frontLength=A.frontLength;
@@ -164,22 +167,6 @@ VacuumVessel::populate(const FuncDataBase& Control)
 }
 
 void
-VacuumVessel::createUnitVector(const attachSystem::FixedComp& FC,
-			   const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed Component
-    \param sideIndex :: Link point surface to use as origin/basis.
-  */
-{
-  ELog::RegMethod RegA("VacuumVessel","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
-  return;
-}
-
-void
 VacuumVessel::createSurfaces()
   /*!
     Create simple structures
@@ -225,62 +212,54 @@ VacuumVessel::createSurfaces()
 void
 VacuumVessel::createObjects(Simulation& System)
   /*!
-    Create the tubed moderator
+    Create the vacuum vessel around cell
     \param System :: Simulation to add results
   */
 {
   ELog::RegMethod RegA("VacuumVessel","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
   // Inner void (Cyl)
-  Out=ModelSupport::getComposite(SMap,buildIndex,"  101 -2 -7 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,voidMat,0.0,Out));
-  addCell("Void",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 101 -2 -7");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
   // Inner void (Box)
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -101 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,voidMat,0.0,Out));
-  addCell("Void",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -101 3 -4 5 -6");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
   // Metal front
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -2 7 -17 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
-  addCell("Wall",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -2 7 -17");
+  makeCell("Wall",System,cellIndex++,mat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " -101 111 -17 (-13 : 14 : -15 : 16 )");
-  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
-  addCell("Wall",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				"-101 111 -17 (-13 : 14 : -15 : 16 )");
+  makeCell("Wall",System,cellIndex++,mat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 11 -101  13 -14 15 -16 ( -1:-3:4:-5:6 )");
-  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
-  addCell("Wall",cellIndex-1);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"11 -101  13 -14 15 -16 ( -1:-3:4:-5:6 )");
+  makeCell("Wall",System,cellIndex++,mat,0.0,HR);
 
   // DOOR
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 -17 27");
-  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
-  addCell("Wall",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 -17 27");
+  makeCell("Wall",System,cellIndex++,mat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 -27");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  addCell("DoorVoid",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 -27");
+  makeCell("DoorVoid",System,cellIndex++,0,0.0,HR);
 
   // set forward door
-  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -22 -37 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,doorMat,0.0,Out));
-  addCell("Door",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -22 -37");
+  makeCell("Door",System,cellIndex++,doorMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -22 37 -17");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  addCell("Edge",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -22 37 -17");
+  makeCell("Edge",System,cellIndex++,0,0.0,HR);
 
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," -22 -17 111");
-  addOuterSurf(Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," -101 13 -14 15 -16 11");
-  addOuterUnionSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-22 -17 111");
+  addOuterSurf(HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 13 -14 15 -16 11");
+  addOuterUnionSurf(HR);
 
   return; 
 }
