@@ -75,7 +75,8 @@ class Window :
   void setSize(const double,const double);
   void setCentre(const Geometry::Vec3D&,const Geometry::Vec3D&);
   void setBaseCell(const int);
-  
+
+  using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);

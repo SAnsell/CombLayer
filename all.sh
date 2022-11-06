@@ -1,5 +1,6 @@
 
 nValid=1000
+
 #segments=$(for i in {40..49}; do echo -n "Segment$i "; done)
 
 ./ess -validAll --validCheck ${nValid} AA || exit 
@@ -17,15 +18,15 @@ nValid=1000
 ./ess --defaultConfig Single  FREIA --validAll --validCheck ${nValid} AA || exit
 ./ess --defaultConfig Single  SKADI --validAll --validCheck ${nValid} AA || exit
 ./ess --defaultConfig Single  MIRACLES --validAll --validCheck ${nValid} AA || exit
-./ess --defaultConfig Single  TREX --validAll --validCheck ${nValid} AA || exit
 ./ess --defaultConfig Single  TESTBEAM --validAll --validCheck ${nValid} AA || exit
+./ess --defaultConfig Single  TREX --validAll --validCheck ${nValid} AA || exit
 ./ess --defaultConfig Single  VESPA --validAll --validCheck ${nValid} AA || exit
 ./ess --defaultConfig Single  VOR --validAll --validCheck ${nValid} AA || exit
 
 segments=All
 ./maxiv --noLengthCheck --defaultConfig Linac ${segments} AA
-./maxiv --noLengthCheck --defaultConfig Linac ${segments} -validAll --validCheck ${nValid} AA || exit
 
+./maxiv --noLengthCheck --defaultConfig Linac ${segments} -validAll --validCheck ${nValid} AA || exit
 ./fullBuild -validAll --validCheck ${nValid} AA || exit
 
 ./t1Real -validAll --validCheck ${nValid} AA || exit

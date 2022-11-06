@@ -3,7 +3,7 @@
  
  * File:   source/GaussBeamSource.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -241,23 +241,6 @@ GaussBeamSource::createSource(SDef::Source& sourceCard) const
   return;
 }  
 
-void
-GaussBeamSource::createAll(const mainSystem::MITYPE& inputMap,
-			   const attachSystem::FixedComp& FC,
-			   const long int linkIndex)
-
-  /*!
-    Create all the source
-    \param Control :: DataBase for variables
-    \param FC :: Fixed Point for origin/axis of beam
-    \param linkIndex :: link Index				
-   */
-{
-  ELog::RegMethod RegA("GaussBeamSource","createAll<FC,linkIndex>");
-  populate(inputMap);
-  createUnitVector(FC,linkIndex);
-  return;
-}
 
 void
 GaussBeamSource::write(std::ostream& OX) const
@@ -351,6 +334,23 @@ GaussBeamSource::writeFLUKA(std::ostream& OX) const
   StrFunc::writeFLUKA(cx.str(),OX);
   cx.str("");
 
+  return;
+}
+
+void
+GaussBeamSource::createAll(const mainSystem::MITYPE& inputMap,
+			   const attachSystem::FixedComp& FC,
+			   const long int linkIndex)
+  /*!
+    Create all the source
+    \param Control :: DataBase for variables
+    \param FC :: Fixed Point for origin/axis of beam
+    \param linkIndex :: link Index				
+   */
+{
+  ELog::RegMethod RegA("GaussBeamSource","createAll<FC,linkIndex>");
+  populate(inputMap);
+  createUnitVector(FC,linkIndex);
   return;
 }
 

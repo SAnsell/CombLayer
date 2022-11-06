@@ -505,8 +505,8 @@ TREX::build(Simulation& System,
   PitACutBack->createAll(System,*BendOutB,1);
 
   PitBCutFront->addInsertCell(PitB->getCells("MidLayerFront"));
-  PitBCutFront->setCutSurf("front",PitA->getKey("Mid"),-1);
-  PitBCutFront->setCutSurf("back",PitA->getKey("Inner"),1);  
+  PitBCutFront->setCutSurf("front",PitB->getKey("Mid"),-1);
+  PitBCutFront->setCutSurf("back",PitB->getKey("Inner"),1);  
   PitBCutFront->createAll(System,*BendOutB,2);
   
 

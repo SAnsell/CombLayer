@@ -36,8 +36,8 @@ namespace xraySystem
 */
 
 class BeamPair :
-  public attachSystem::ContainedGroup,
   public attachSystem::FixedRotateGroup,
+  public attachSystem::ContainedGroup,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap
 {
@@ -71,6 +71,7 @@ class BeamPair :
   // Functions:
 
   void populate(const FuncDataBase&);
+  using FixedComp::createUnitVector;
   void createUnitVector(const attachSystem::FixedComp&,const long int,
 			const attachSystem::FixedComp&,const long int);
 
