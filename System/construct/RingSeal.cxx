@@ -58,6 +58,7 @@
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 
@@ -68,8 +69,10 @@ namespace constructSystem
 
 RingSeal::RingSeal(const std::string& Key) : 
   attachSystem::FixedRotate(Key,6),
-  attachSystem::ContainedComp(),attachSystem::CellMap(),
-  standardInsert(0),setFlag(0)
+  attachSystem::ContainedComp(),
+  attachSystem::ExternalCut(),
+  attachSystem::CellMap(),
+  standardInsert(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -77,13 +80,13 @@ RingSeal::RingSeal(const std::string& Key) :
 {}
 
 RingSeal::RingSeal(const RingSeal& A) : 
-  attachSystem::FixedRotate(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::ExternalCut(A),
   attachSystem::CellMap(A),
   NSection(A.NSection),NTrack(A.NTrack),radius(A.radius),
   deltaRad(A.deltaRad),thick(A.thick),mat(A.mat),
-  standardInsert(A.standardInsert),
-  setFlag(A.setFlag),innerStruct(A.innerStruct),
-  outerStruct(A.outerStruct)
+  standardInsert(A.standardInsert)
   /*!
     Copy constructor
     \param A :: RingSeal to copy
@@ -102,6 +105,7 @@ RingSeal::operator=(const RingSeal& A)
     {
       attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       attachSystem::CellMap::operator=(A);
       NSection=A.NSection;
       NTrack=A.NTrack;
@@ -110,9 +114,6 @@ RingSeal::operator=(const RingSeal& A)
       thick=A.thick;
       mat=A.mat;
       standardInsert=A.standardInsert;
-      setFlag=A.setFlag;
-      innerStruct=A.innerStruct;
-      outerStruct=A.outerStruct;
     }
   return *this;
 }
@@ -174,18 +175,16 @@ RingSeal::createSurfaces()
   
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(thick/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(thick/2.0),Y);
-  
-  if (!(setFlag & 1))
+
+  if (!isActive("Inner"))
     {
-      
       ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
-      innerStruct.procSurface(SMap.realSurfPtr(buildIndex+7));
+      setCutSurf("Inner",SMap.realSurf(buildIndex+7));
     }
-  if (!(setFlag & 2))
+  if (!isActive("Outer"))
     {
       ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+deltaRad);
-      outerStruct.procSurface(SMap.realSurfPtr(buildIndex+7));
-      outerStruct.makeComplement();
+      setCutSurf("Outer",-SMap.realSurf(buildIndex+17));
     }
     
   if (NSection>1)
@@ -216,11 +215,12 @@ RingSeal::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("RingSeal","createObjects");
-  
-  std::string Out,SealStr;
 
-  SealStr=ModelSupport::getComposite(SMap,buildIndex," 1 -2 ");
-  SealStr+=innerStruct.display()+outerStruct.display();
+  const HeadRule IOHR=getRule("Inner")*getRule("Outer");
+  HeadRule HR;
+  HeadRule SealHR;
+
+  SealHR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2")*IOHR;
 
   if (NSection>1)
     {
@@ -228,23 +228,20 @@ RingSeal::createObjects(Simulation& System)
       int prevRingIndex(buildIndex);
       for(size_t i=1;i<NSection;i++)
         {
-          Out=ModelSupport::getComposite(SMap,prevRingIndex," 3 -13 ");
-          System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out+SealStr));
-          addCell("Ring",cellIndex-1);
+          HR=ModelSupport::getHeadRule(SMap,prevRingIndex,"3 -13");
+          makeCell("Ring",System,cellIndex++,mat,0.0,HR*SealHR);
           prevRingIndex+=10;
         }
 
-      Out=ModelSupport::getComposite(SMap,prevRingIndex,buildIndex,
-                                     " 3 -3M ");
-      System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out+SealStr));
-      addCell("Ring",cellIndex-1);
+      HR=ModelSupport::getHeadRule
+	(SMap,prevRingIndex,buildIndex,"3 -3M");
+      makeCell("Ring",System,cellIndex++,mat,0.0,HR*SealHR);
     }
   else  // one ring
     {
-      System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,SealStr));
-      addCell("Ring",cellIndex-1);
+      makeCell("Ring",System,cellIndex++,mat,0.0,SealHR);
     }
-  addOuterSurf(SealStr);    
+  addOuterSurf(SealHR);    
   return;
 }
 
@@ -310,48 +307,6 @@ RingSeal::createLinks()
   setLinkSurf(4,SMap.realSurf(buildIndex+17));
   setLinkSurf(5,SMap.realSurf(buildIndex+17));
   
-  return;
-}
-
-void
-RingSeal::setInner(const HeadRule& HR)
-  /*!
-    Set the inner volume
-    \param HR :: Headrule of inner surfaces
-  */
-{
-  ELog::RegMethod RegA("RingSeal","setInner");
-
-  innerStruct=HR.complement();
-  setFlag ^= 1;
-  return;
-}
-
-void
-RingSeal::setInnerExclude(const HeadRule& HR)
-  /*!
-    Set the inner volume (without inverse)
-    \param HR :: Headrule of inner surfaces
-  */
-{
-  ELog::RegMethod RegA("RingSeal","setInnerExclude");
-
-  innerStruct=HR;
-  setFlag ^= 1;
-  return;
-}
-
-void
-RingSeal::setOuter(const HeadRule& HR)
-  /*!
-    Set the outer volume
-    \param HR :: Headrule of outer surfaces
-  */
-{
-  ELog::RegMethod RegA("RingSeal","setInner");
-  
-  outerStruct=HR;
-  setFlag ^= 2;
   return;
 }
   

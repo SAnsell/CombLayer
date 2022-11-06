@@ -42,6 +42,7 @@ namespace constructSystem
 class RingSeal :
   public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
+  public attachSystem::ExternalCut,
   public attachSystem::CellMap
 {
  protected:
@@ -57,8 +58,6 @@ class RingSeal :
 
   bool standardInsert;          ///< If set do standard object insert
   int setFlag;                  ///< Structures set
-  HeadRule innerStruct;         ///< Front face
-  HeadRule outerStruct;         ///< Back face
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
@@ -76,9 +75,7 @@ class RingSeal :
 
   /// Normal object insert path
   void setStandardInsert() { standardInsert=1; }
-  void setInner(const HeadRule&);
-  void setInnerExclude(const HeadRule&);
-  void setOuter(const HeadRule&);
+
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

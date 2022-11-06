@@ -60,6 +60,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "RingSeal.h"
 #include "RingFlange.h"
 #include "VacuumVessel.h"
