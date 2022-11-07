@@ -38,7 +38,8 @@ namespace constructSystem
 
 class Window : 
     public attachSystem::FixedComp,
-    public attachSystem::ContainedComp
+    public attachSystem::ContainedComp,
+    public attachSystem::FrontBackCut
 {
  private:
 
@@ -46,10 +47,12 @@ class Window :
 
   Geometry::Vec3D Centre;       ///< Centre point of view
   Geometry::Vec3D WAxis;        ///< Window primary axis
+
   int fSign;                    ///< Front surface sign
   int bSign;                    ///< Back surface sign
   const Geometry::Surface* FSurf;     ///< Front surface
   const Geometry::Surface* BSurf;     ///< Back surface
+
   int divideFlag;               ///< Dividing plane required
 
   double width;                 ///< full width

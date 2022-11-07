@@ -3,7 +3,7 @@
  
  * File:   construct/ChopperHousing.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -56,7 +54,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -67,7 +65,7 @@ namespace constructSystem
 {
 
 ChopperHousing::ChopperHousing(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -76,7 +74,7 @@ ChopperHousing::ChopperHousing(const std::string& Key) :
 {}
 
 ChopperHousing::ChopperHousing(const ChopperHousing& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedRotate(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
   voidHeight(A.voidHeight),voidWidth(A.voidWidth),
   voidDepth(A.voidDepth),voidThick(A.voidThick),
@@ -97,7 +95,7 @@ ChopperHousing::operator=(const ChopperHousing& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       voidHeight=A.voidHeight;
@@ -126,7 +124,7 @@ ChopperHousing::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("ChopperHousing","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   // Void + Fe special:
   voidHeight=Control.EvalVar<double>(keyName+"VoidHeight");
   voidWidth=Control.EvalVar<double>(keyName+"VoidWidth");
@@ -138,24 +136,6 @@ ChopperHousing::populate(const FuncDataBase& Control)
 
   return;
 }
-
-void
-ChopperHousing::createUnitVector(const attachSystem::FixedComp& FC,
-				 const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("ChopperHousing","createUnitVector");
-
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  return;
-}
-
 
 void
 ChopperHousing::createSurfaces()
@@ -198,22 +178,21 @@ ChopperHousing::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("ChopperHousing","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
   // Void 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  addCell("Void",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
 
   // Wall
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "11 -12 13 -14 5 -16 (-1:2:-3:4:6)");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
-  addCell("Wall",cellIndex-1);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"11 -12 13 -14 5 -16 (-1:2:-3:4:6)");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
+
 
   // Outer
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 5 -16");
-  addOuterSurf(Out);      
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14 5 -16");
+  addOuterSurf(HR);      
   return;
 }
 

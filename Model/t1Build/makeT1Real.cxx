@@ -54,6 +54,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ExternalCut.h"
+#include "FrontBackCut.h"
 #include "ContainedGroup.h"
 #include "t1Reflector.h"
 #include "H2Moderator.h"

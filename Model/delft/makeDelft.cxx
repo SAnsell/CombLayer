@@ -49,8 +49,9 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
 #include "BaseMap.h"
@@ -351,8 +352,9 @@ makeDelft::buildModerator(Simulation& System,
       HeadRule CPCut(ColdPress->getFullRule(1));
       CPCut.addUnion(ColdPress->getFullRule(3));
       BePtr->setCutSurf("FlightCut",
-			FlightB->getExclude()+FlightC->getExclude()+
-			CPCut.display());
+			FlightB->getExcludeSurf()*
+			FlightC->getExcludeSurf()*
+			CPCut);
 
       BePtr->createAll(System,FC,sideIndex);
       
@@ -374,7 +376,6 @@ makeDelft::build(Simulation& System,
 {
   // For output stream
   ELog::RegMethod RControl("makeDelft","build");
-
 
   const attachSystem::FixedComp& WC=World::masterOrigin();
 

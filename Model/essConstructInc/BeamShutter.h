@@ -35,8 +35,8 @@ namespace constructSystem
   */
   
 class BeamShutter :
-    public attachSystem::ContainedComp,
     public attachSystem::FixedRotateGroup,
+    public attachSystem::ContainedComp,
     public attachSystem::CellMap,
     public attachSystem::SurfMap
 {

@@ -67,9 +67,10 @@ namespace constructSystem
 {
 
 BeamShutter::BeamShutter(const std::string& Key) :
-  attachSystem::ContainedComp(),
   attachSystem::FixedRotateGroup(Key,"Main",6,"Void",2,"Beam",2),
-  attachSystem::CellMap(),attachSystem::SurfMap()
+  attachSystem::ContainedComp(),
+  attachSystem::CellMap(),
+  attachSystem::SurfMap()
   /*!
     Default constructor
     \param Key :: Key name for variables
@@ -200,50 +201,46 @@ BeamShutter::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("BeamShutter","createObjects");
-  std::string Out;
+  HeadRule HR;
 
   int CN(buildIndex);
   for(size_t i=0;i<nLayers;i++)
     {
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex,CN,"1M -11M 3 -4 5 -6 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,Mat[i],0.0,Out));
-      addCell("Main",cellIndex-1);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,CN,"1M -11M 3 -4 5 -6");
+      makeCell("Main",System,cellIndex++,Mat[i],0.0,HR);
       CN+=10;
     }
   CN-=10;
   // Surround
-  Out=ModelSupport::getComposite(SMap,buildIndex,CN,
-				 "1 -11M 13 -14 15 -16 (-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,surroundMat,0.0,Out));
-  addCell("Surround",cellIndex-1);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,CN,"1 -11M 13 -14 15 -16 (-3:4:-5:6)");
+  makeCell("Surround",System,cellIndex++,surroundMat,0.0,HR);
 
   // lower void if present
   if (liftZStep>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,CN,
-                                     " 1 -11M 13 -14 105 -15 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-      addCell("Void",cellIndex-1);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,CN,"1 -11M 13 -14 105 -15");
+      makeCell("Void",System,cellIndex++,0,0.0,HR);
     }
 
   // top void if present
   if (liftZStep-topVoid < Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,CN,
-                                     " 1 -11M 13 -14 16 -106 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-      addCell("Void",cellIndex-1);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,CN,"1 -11M 13 -14 16 -106");
+      makeCell("Void",System,cellIndex++,0,0.0,HR);
 	    
     }
 
-  if (liftZStep>=0.0)
-    Out=ModelSupport::getComposite(SMap,buildIndex,CN,
-				   " 1 -11M 13 -14 105 -106  ");
+  if (liftZStep>=Geometry::zeroTol)
+    HR=ModelSupport::getHeadRule
+      (SMap,buildIndex,CN,"1 -11M 13 -14 105 -106");
   else
-    Out=ModelSupport::getComposite(SMap,buildIndex,CN,
-				   " 1 -11M 13 -14 15 -106  ");
-  addOuterSurf(Out);
+    HR=ModelSupport::getHeadRule
+      (SMap,buildIndex,CN,"1 -11M 13 -14 15 -106");
+  addOuterSurf(HR);
   return;
 }
 

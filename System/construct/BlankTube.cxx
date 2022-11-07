@@ -3,7 +3,7 @@
  
  * File:   construct/PipeTube.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -148,7 +147,7 @@ BlankTube::createSurfaces()
   return;
 }
 
-std::string
+HeadRule
 BlankTube::makeOuterVoid(Simulation& System)
   /*!
     Build outer void and return the outer volume
@@ -158,15 +157,16 @@ BlankTube::makeOuterVoid(Simulation& System)
 {
   ELog::RegMethod RegA("BlankTube","makeOuterVoid");
   
-  std::string Out;
-  const std::string frontSurf(frontRule());
-  const std::string backSurf(backRule());
+  HeadRule HR;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 17 -107 101 ");
-  makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"  -107 ")+
-    frontSurf+backSurf;
-  return Out;
+  const HeadRule frontHR=getFrontRule();
+  const HeadRule backHR=getBackRule();
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"17 -107 101");
+  makeCell("OuterVoid",System,cellIndex++,0,0.0,HR);
+  
+  HR=HeadRule(SMap,buildIndex,-107);
+  return HR*frontHR*backHR;
 }
 
 void
@@ -178,46 +178,45 @@ BlankTube::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("BlankTube","createObjects");
 
-  const std::string frontSurf(frontRule());
-  const std::string backSurf(backRule());
+  const HeadRule frontHR=getFrontRule();
+  const HeadRule backHR=getBackRule();
 
-  const std::string frontVoidSurf=
-    (flangeCapThick<Geometry::zeroTol) ? frontSurf :
-    ModelSupport::getComposite(SMap,buildIndex," 201 ");
+  const HeadRule frontVoidSurf=
+    (flangeCapThick<Geometry::zeroTol) ? frontHR :
+    HeadRule(SMap,buildIndex,201);
  
-  std::string Out;
+  HeadRule HR;
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 -102 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+
-	   frontVoidSurf);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 -102");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontVoidSurf);
   // main walls
-  Out=ModelSupport::getComposite(SMap,buildIndex," -17 7 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 7");
   makeCell("MainTube",System,cellIndex++,wallMat,0.0,
-	   Out+frontVoidSurf+backSurf);
+	   HR*frontVoidSurf*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 17 -107 -101 ");
-  makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,Out+frontVoidSurf);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"17 -107 -101");
+  makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,HR*frontVoidSurf);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 102 ");
-  makeCell("BackFlange",System,cellIndex++,wallMat,0.0,Out+backSurf);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 102");
+  makeCell("BackFlange",System,cellIndex++,wallMat,0.0,HR*backHR);
 
   if (flangeCapThick>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," -201 -107 ");
-      makeCell("FrontCap",System,cellIndex++,capMat,0.0,Out+frontSurf);	    
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-201 -107");
+      makeCell("FrontCap",System,cellIndex++,capMat,0.0,HR*frontHR);	    
     }
   if (outerVoid)
     {
-      Out=makeOuterVoid(System);
-      addOuterSurf("Main",Out);
+      HR=makeOuterVoid(System);
+      addOuterSurf("Main",HR);
     }
   else
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 101 -2 -17 ");
-      addOuterSurf("Main",Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -2 -17");
+      addOuterSurf("Main",HR);
       
-      Out=ModelSupport::getComposite(SMap,buildIndex," -107 -101 ");
-      addOuterSurf("Flange",Out+frontSurf);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-107 -101");
+      addOuterSurf("Flange",HR*frontHR);
       
     }
   return;
@@ -242,11 +241,8 @@ BlankTube::createLinks()
   FixedComp::setConnect(3,FixedComp::getLinkPt(2),Y);
 
   // make a composite flange
-  std::string Out;
-  const std::string frontSurf(frontRule());
-  const std::string backSurf(backRule());
-  Out=ModelSupport::getComposite(SMap,buildIndex," -101 -107 ");
-  FixedComp::setLinkComp(2,Out+frontSurf);
+  const HeadRule HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 -107");
+  FixedComp::setLinkComp(2,HR*getFrontRule());
 
 
   // inner links

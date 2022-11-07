@@ -198,7 +198,7 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftBePlugBeMat","Be300K");    
   Control.addVariable("delftBePlugWaterMat","H2O");    
 
-  // AirBox elemetn:
+  // AirBox element:
   // Irradiation element:
   Control.addVariable("delftAirBoxWidth",7.6);    
   Control.addVariable("delftAirBoxDepth",8.0);    
@@ -325,8 +325,8 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftFlightR1WaterStep",1.8);
   Control.addVariable("delftFlightR1XStep",23.127);
   Control.addVariable("delftFlightR1ZStep",-24.5);
-  Control.addVariable("delftFlightR1XYAngle",-90);
-  Control.addVariable("delftFlightR1BeamXYAngle",21.0);
+  Control.addVariable("delftFlightR1ZAngle",-90);
+  Control.addVariable("delftFlightR1BeamZAngle",21.0);
 
   Control.addVariable("delftFlightR1Length",1000.0);
   Control.addVariable("delftFlightR1InnerRadius",7.5);
@@ -361,8 +361,8 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftFlightR3WaterStep",1.8);
   Control.addVariable("delftFlightR3XStep",23.127);
   Control.addVariable("delftFlightR3ZStep",24.5);
-  Control.addVariable("delftFlightR3XYAngle",-90);
-  Control.addVariable("delftFlightR3BeamXYAngle",-26.0);
+  Control.addVariable("delftFlightR3ZAngle",-90);
+  Control.addVariable("delftFlightR3BeamZAngle",-26.0);
 
   Control.addVariable("delftFlightR3Length",1000.0);
   Control.addVariable("delftFlightR3InnerRadius",7.5);
@@ -396,8 +396,8 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftFlightL1WaterStep",-1.8);
   Control.addVariable("delftFlightL1XStep",-23.127);
   Control.addVariable("delftFlightL1ZStep",24.5);
-  Control.addVariable("delftFlightL1XYAngle",90);
-  Control.addVariable("delftFlightL1BeamXYAngle",26.0);
+  Control.addVariable("delftFlightL1ZAngle",90);
+  Control.addVariable("delftFlightL1BeamZAngle",26.0);
 
 
   Control.addVariable("delftFlightL1Length",1000.0);
@@ -434,8 +434,8 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftFlightL2XStep",-23.127);
   Control.addVariable("delftFlightL2YStep",0.0);
   Control.addVariable("delftFlightL2ZStep",0.0);
-  Control.addVariable("delftFlightL2XYAngle",90.0);
-  Control.addVariable("delftFlightL2ZAngle",0.0);
+  Control.addVariable("delftFlightL2ZAngle",90.0);
+  Control.addVariable("delftFlightL2XAngle",0.0);
 
   Control.addVariable("delftFlightL2Length",1000.0);
   Control.addVariable("delftFlightL2InnerRadius",10.3);
@@ -470,9 +470,9 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftFlightL3XStep",-23.127);
   Control.addVariable("delftFlightL3YStep",0.0);
   Control.addVariable("delftFlightL3ZStep",-24.5);
-  Control.addVariable("delftFlightL3XYAngle",90.0);
-  Control.addVariable("delftFlightL3BeamXYAngle",-21.0);
-  Control.addVariable("delftFlightL3ZAngle",0.0);
+  Control.addVariable("delftFlightL3ZAngle",90.0);
+  Control.addVariable("delftFlightL3BeamZAngle",-21.0);
+  Control.addVariable("delftFlightL3XAngle",0.0);
 
   Control.addVariable("delftFlightL3Length",1000.0);
   Control.addVariable("delftFlightL3InnerRadius",4.5);

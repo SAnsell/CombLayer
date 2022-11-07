@@ -3,7 +3,7 @@
  
  * File:   delft/SpaceBlock.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -56,7 +54,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "SpaceBlock.h"
 
@@ -64,7 +62,7 @@ namespace delftSystem
 {
 
 SpaceBlock::SpaceBlock(const std::string& Key,const size_t Index)  :
-  attachSystem::FixedOffset(Key+std::to_string(Index),6),
+  attachSystem::FixedRotate(Key+std::to_string(Index),6),
   attachSystem::ContainedComp(),baseName(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -74,7 +72,7 @@ SpaceBlock::SpaceBlock(const std::string& Key,const size_t Index)  :
 {}
 
 SpaceBlock::SpaceBlock(const SpaceBlock& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedRotate(A),attachSystem::ContainedComp(A),
   baseName(A.baseName),
   activeFlag(A.activeFlag),length(A.length),width(A.width),
   height(A.height),mat(A.mat)
@@ -94,7 +92,7 @@ SpaceBlock::operator=(const SpaceBlock& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       activeFlag=A.activeFlag;
       length=A.length;
@@ -123,7 +121,7 @@ SpaceBlock::populate(const FuncDataBase& Control)
   activeFlag=Control.EvalDefVar<int>(keyName+"Flag",0);
   if (activeFlag>0)
     {
-      attachSystem::FixedOffset::populate(Control);
+      attachSystem::FixedRotate::populate(Control);
       length=Control.EvalVar<double>(keyName+"Length");
       width=Control.EvalVar<double>(keyName+"Width");
       height=Control.EvalVar<double>(keyName+"Height");
@@ -131,27 +129,6 @@ SpaceBlock::populate(const FuncDataBase& Control)
     }
   return;
 }
-  
-void
-SpaceBlock::createUnitVector(const attachSystem::FixedComp& FC,
-			     const long int sideIndex)
-  /*!
-    Create the unit vectors
-    - Y Points towards the beamline
-    - X Across the Face
-    - Z up (towards the target)
-    \param FC :: A Contained FixedComp to use as basis set
-    \param sideIndex :: link point for origin/axis
-  */
-{
-  ELog::RegMethod RegA("SpaceBlock","createUnitVector");
-  
-  // PROCESS Origin of a point
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  return;
-}
-
 
 void
 SpaceBlock::createSurfaces()
@@ -180,11 +157,11 @@ SpaceBlock::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("SpaceBlock","createObjects");
   
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
+  const HeadRule HR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  System.addCell(cellIndex++,mat,0.0,HR);
 
-  addOuterSurf(Out);
+  addOuterSurf(HR);
 
   return;
 }

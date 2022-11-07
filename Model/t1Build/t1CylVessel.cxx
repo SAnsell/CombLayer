@@ -3,7 +3,7 @@
  
  * File:   t1Build/t1CylVessel.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "surfRegister.h"
@@ -59,6 +57,9 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
+#include "ExternalCut.h"
+#include "FrontBackCut.h"
 #include "Window.h"
 #include "t1CylVessel.h"
 
@@ -242,37 +243,36 @@ t1CylVessel::createWindows(Simulation& System)
 
   for(size_t i=0;i<nWin;i++)
     {
-      const std::string IndexStr(std::to_string(i+1));
+      const std::string indexStr(std::to_string(i+1));
       ports.push_back
-	(constructSystem::Window("t1Port"+std::to_string(i+1)));
+	(constructSystem::Window("t1Port"+indexStr));
       
       Geometry::Vec3D PCent;
       Geometry::Vec3D PAxis;
       // Centres:
-      PCent=Control.EvalTail<Geometry::Vec3D>(CKey,CHgh,IndexStr);
+      PCent=Control.EvalTail<Geometry::Vec3D>(CKey,CHgh,indexStr);
       // Angles:
-      if (Control.hasVariable(AKey+IndexStr))
-	PAxis=Control.EvalVar<Geometry::Vec3D>(AKey+IndexStr);
+      if (Control.hasVariable(AKey+indexStr))
+	PAxis=Control.EvalVar<Geometry::Vec3D>(AKey+indexStr);
       else
 	{
-	  const double angle=Control.EvalVar<double>(AAng+IndexStr);
+	  const double angle=Control.EvalVar<double>(AAng+indexStr);
 	  PAxis=Y;
 	  Geometry::Quaternion::calcQRotDeg(angle,Z).rotate(PAxis);
 	}
       // Height / Width
 
-      const double PHeight=Control.EvalPair<double>(HKey+IndexStr,HKey);
-      const double PWidth=Control.EvalPair<double>(WKey+IndexStr,WKey);
+      const double PHeight=Control.EvalPair<double>(HKey+indexStr,HKey);
+      const double PWidth=Control.EvalPair<double>(WKey+indexStr,WKey);
       ports.back().setCentre(PCent+Origin,PAxis);
       ports.back().setSize(PHeight,PWidth);
     }
   // CREATE OBJECTS
-  std::vector<constructSystem::Window>::iterator vc;
-  for(vc=ports.begin();vc!=ports.end();vc++)
+  for(constructSystem::Window& wItem : ports)
     {
-      vc->setBaseCell(steelCell);
-      vc->addInsertCell(steelCell);
-      vc->createAll(System,*this,0);
+      wItem.setBaseCell(steelCell);
+      wItem.addInsertCell(steelCell);
+      wItem.createAll(System,*this,0);
     }
   return;
 }
