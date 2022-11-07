@@ -36,14 +36,13 @@ namespace essSystem
 */
 
 class Box :
+    public attachSystem::FixedRotate,
     public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset,
+    public attachSystem::ExternalCut,
     public attachSystem::LayerComp,
     public attachSystem::CellMap
 {
  private:
-
-  int engActive;                  ///< Engineering active flag
 
   size_t nLayers;                ///< Number of layers
   std::vector<double> length;    ///< Lengths [additive]
@@ -53,12 +52,9 @@ class Box :
   std::vector<int>    mat;       ///< Materials
   std::vector<double> temp;      ///< Temperatures
   
-  std::string sideRule; ///< Side rule
+  HeadRule sideRuleHR; ///< Side rule
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -74,7 +70,7 @@ class Box :
   virtual int getLayerSurf(const size_t,const long int) const;
   virtual std::string getLayerString(const size_t,const long int) const;
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
-  std::string getSideRule() const { return sideRule; }
+  const HeadRule& getSideRule() const { return sideRuleHR; }
 
   /// total height of object
   double getZOffset() const { return zStep; }

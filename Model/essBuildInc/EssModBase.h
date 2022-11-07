@@ -35,14 +35,14 @@ namespace essSystem
   \brief General EssModBase unit
 */
 
-class EssModBase : public attachSystem::ContainedComp,
-  public attachSystem::LayerComp,
-  public attachSystem::FixedOffset,
-  public attachSystem::CellMap
+class EssModBase :
+    public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
+    public attachSystem::LayerComp,
+    public attachSystem::CellMap
 {
  protected:
   
-  void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int,
 			const attachSystem::FixedComp&,

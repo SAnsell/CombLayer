@@ -56,8 +56,9 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "LayerComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -68,8 +69,8 @@ namespace essSystem
 {
 
 Box::Box(const std::string& Key)  :
+  attachSystem::FixedRotate(Key,9),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,9),
   attachSystem::LayerComp(0),
   attachSystem::CellMap()
   /*!
@@ -80,16 +81,15 @@ Box::Box(const std::string& Key)  :
 
 Box::Box(const Box& A) :
   attachSystem::ContainedComp(A),
-  attachSystem::FixedOffset(A),
+  attachSystem::FixedRotate(A),
   attachSystem::LayerComp(A),
   attachSystem::CellMap(A),
-  engActive(A.engActive),
   nLayers(A.nLayers),
   length(A.length),width(A.width),height(A.height),
   depth(A.depth),
   mat(A.mat),
   temp(A.temp),
-  sideRule(A.sideRule)
+  sideRuleHR(A.sideRuleHR)
   /*!
     Copy constructor
     \param A :: Box to copy
@@ -107,10 +107,9 @@ Box::operator=(const Box& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::LayerComp::operator=(A);
       attachSystem::CellMap::operator=(A);
-      engActive=A.engActive;
       nLayers=A.nLayers;
       length=A.length;
       width=A.width;
@@ -118,7 +117,7 @@ Box::operator=(const Box& A)
       depth=A.depth;
       mat=A.mat;
       temp=A.temp;
-      sideRule=A.sideRule;
+      sideRuleHR=A.sideRuleHR;
     }
   return *this;
 }
@@ -148,8 +147,7 @@ Box::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("Box","populate");
 
-  FixedOffset::populate(Control);
-  engActive=Control.EvalTail<int>(keyName,"","EngineeringActive");
+  FixedRotate::populate(Control);
 
   double L(0.0);
   double W(0.0);
@@ -176,26 +174,6 @@ Box::populate(const FuncDataBase& Control)
       mat.push_back(M);
       temp.push_back(T);
     }
-
-  return;
-}
-
-void
-Box::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: object for origin
-    \param sideIndex :: link point for origin
-  */
-{
-  ELog::RegMethod RegA("Box","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
-  const double D=(depth.empty()) ? 0.0 : depth.back();
-  applyShift(0,0,D);
 
   return;
 }
@@ -236,25 +214,26 @@ Box::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Box","createObjects");
 
-  std::string Out;
+  HeadRule HR,innerHR;
+
   int SI(buildIndex);
   for (size_t i=0; i<nLayers; i++)
     {
-      Out=ModelSupport::getComposite(SMap,SI," 1 -2 3 -4 5 -6 ");
-      if (i)
-	Out += ModelSupport::getComposite(SMap,SI-10," (-1:2:-3:4:-5:6) ");
+      HR=ModelSupport::getHeadRule(SMap,SI,"1 -2 3 -4 5 -6");
+
+      if (!i)
+	makeCell("Inner",System,cellIndex++,mat[i],temp[i],HR*innerHR);
       else
-	CellMap::setCell("Inner", cellIndex-1);
+	makeCell("Layer"+std::to_string(i),
+		 System,cellIndex++,mat[i],temp[i],HR*innerHR);
 
-      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
-
+      innerHR=HR.complement();
       SI += 10;
     }
   
-  Out=ModelSupport::getComposite(SMap,SI-10," 1 -2 3 -4 5 -6 ");
-  addOuterSurf(Out);
+  addOuterSurf(HR);
 
-  sideRule=ModelSupport::getComposite(SMap,SI-10," 1 -2 3 -4 ");
+  sideRuleHR=ModelSupport::getHeadRule(SMap,SI-10,"1 -2 3 -4");
 
   return;
 }
@@ -268,33 +247,36 @@ Box::createLinks()
 {
   ELog::RegMethod RegA("Box","createLinks");
 
-  const int SI(buildIndex+static_cast<int>(nLayers-1)*10);
+  if (nLayers)
+    {
+      const int SI(buildIndex+static_cast<int>(nLayers-1)*10);
 
-  const double l = length[nLayers-1]/2.0;
-  const double w = width[nLayers-1]/2.0;
 
-  FixedComp::setConnect(0,Origin-Y*l,-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(SI+1));
-  FixedComp::setConnect(1,Origin+Y*l,Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(SI+2));
-
-  FixedComp::setConnect(2,Origin-X*w,-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(SI+3));
-  FixedComp::setConnect(3,Origin+X*w,X); 
-  FixedComp::setLinkSurf(3,SMap.realSurf(SI+4));
-
-  FixedComp::setConnect(4,Origin-Z*(depth[nLayers-1]),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(SI+5));
-  FixedComp::setConnect(5,Origin+Z*(height[nLayers-1]),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(SI+6));
-
-  // inner link points for F5 collimators
-  FixedComp::setConnect(7,Origin-Z*depth[0],Z);
-  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+5));
-
-  FixedComp::setConnect(8,Origin+Z*height[0],-Z);
-  FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+6));
-
+      const double l = length[nLayers-1]/2.0;
+      const double w = width[nLayers-1]/2.0;
+      
+      FixedComp::setConnect(0,Origin-Y*l,-Y);
+      FixedComp::setLinkSurf(0,-SMap.realSurf(SI+1));
+      FixedComp::setConnect(1,Origin+Y*l,Y);
+      FixedComp::setLinkSurf(1,SMap.realSurf(SI+2));
+      
+      FixedComp::setConnect(2,Origin-X*w,-X);
+      FixedComp::setLinkSurf(2,-SMap.realSurf(SI+3));
+      FixedComp::setConnect(3,Origin+X*w,X); 
+      FixedComp::setLinkSurf(3,SMap.realSurf(SI+4));
+      
+      FixedComp::setConnect(4,Origin-Z*(depth[nLayers-1]),-Z);
+      FixedComp::setLinkSurf(4,-SMap.realSurf(SI+5));
+      FixedComp::setConnect(5,Origin+Z*(height[nLayers-1]),Z);
+      FixedComp::setLinkSurf(5,SMap.realSurf(SI+6));
+      
+      // inner link points for F5 collimators
+      FixedComp::setConnect(7,Origin-Z*depth[0],Z);
+      FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+5));
+      
+      FixedComp::setConnect(8,Origin+Z*height[0],-Z);
+      FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+6));
+    }
   return;
 }
 
@@ -310,7 +292,7 @@ Box::getLayerSurf(const size_t layerIndex,
 {
   ELog::RegMethod RegA("Box","getLayerSurf");
 
-  if (layerIndex>nLayers)
+  if (layerIndex>=nLayers)
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layerIndex");
 
   const int uSIndex(std::abs(static_cast<int>(sideIndex)));
@@ -430,6 +412,8 @@ Box::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
+  const double D=(depth.empty()) ? 0.0 : depth.back();
+  applyShift(0,0,D);
   createSurfaces();
   createObjects(System);
   createLinks();
