@@ -40,8 +40,9 @@ namespace moderatorSystem
 */
 
 class VacVessel : 
-  public attachSystem::ContainedComp,
-  public attachSystem::FixedUnit
+    public attachSystem::FixedUnit,
+    public attachSystem::ContainedComp,
+    public attachSystem::ExternalCut
 {
  private:
   

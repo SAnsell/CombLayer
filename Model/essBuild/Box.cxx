@@ -71,6 +71,7 @@ namespace essSystem
 Box::Box(const std::string& Key)  :
   attachSystem::FixedRotate(Key,9),
   attachSystem::ContainedComp(),
+  attachSystem::ExternalCut(),
   attachSystem::LayerComp(0),
   attachSystem::CellMap()
   /*!
@@ -80,8 +81,9 @@ Box::Box(const std::string& Key)  :
 {}
 
 Box::Box(const Box& A) :
-  attachSystem::ContainedComp(A),
   attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::ExternalCut(A),
   attachSystem::LayerComp(A),
   attachSystem::CellMap(A),
   nLayers(A.nLayers),
@@ -106,8 +108,9 @@ Box::operator=(const Box& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedRotate::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       attachSystem::LayerComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       nLayers=A.nLayers;
@@ -201,7 +204,6 @@ Box::createSurfaces()
       SI += 10;
     }
 
-
   return;
 }
 
@@ -231,8 +233,8 @@ Box::createObjects(Simulation& System)
       SI += 10;
     }
   
-  addOuterSurf(HR);
 
+  addOuterSurf(HR);
   sideRuleHR=ModelSupport::getHeadRule(SMap,SI-10,"1 -2 3 -4");
 
   return;

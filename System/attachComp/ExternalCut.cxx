@@ -355,7 +355,7 @@ ExternalCut::getComplementStr(const std::string& extName) const
 HeadRule
 ExternalCut::getRule(const std::string& extName) const
   /*!
-    Accessor to main rule
+    Accessor to the rule
     \param extName :: external-cut name
     \return frontRule without divider
   */
@@ -368,7 +368,7 @@ ExternalCut::getRule(const std::string& extName) const
 }
 
 const HeadRule&
-ExternalCut::getMainRule(const std::string& extName) const
+ExternalCut::getNonDivideRule(const std::string& extName) const
   /*!
     Accessor to main rule
     \param extName :: external-cut name

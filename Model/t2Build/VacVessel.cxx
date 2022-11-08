@@ -70,8 +70,9 @@ namespace moderatorSystem
 {
 
 VacVessel::VacVessel(const std::string& Key)  :
+  attachSystem::FixedUnit(8,Key),
   attachSystem::ContainedComp(),
-  attachSystem::FixedUnit(8,Key)
+  attachSystem::ExternalCut()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
