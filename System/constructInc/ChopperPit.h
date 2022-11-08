@@ -83,11 +83,13 @@ class ChopperPit :
   ChopperPit(const ChopperPit&);
   ChopperPit& operator=(const ChopperPit&);
   virtual ~ChopperPit();
+  void addFrontWall(const attachSystem::FixedComp&,const long int);
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
-  void addFrontWall(const attachSystem::FixedComp&,const long int);
+
 };
 
 }

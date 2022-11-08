@@ -349,8 +349,8 @@ FREIA::buildOutGuide(Simulation& System,
 
   OutACut->addInsertCell(OutPitA->getCells("MidLayerBack"));
   OutACut->addInsertCell(OutPitA->getCells("Collet"));
-  OutACut->setCutSurf("front",OutPitA->getKey("Inner"),2);
-  OutACut->setCutSurf("back",OutPitA->getKey("Mid"),-2);
+  OutACut->setCutSurf("front",*OutPitA,"innerBack");
+  OutACut->setCutSurf("back",*OutPitA,"#midBack");
   OutACut->createAll(System,*FocusWall,2);
 
   // 15m WBC chopper
@@ -384,9 +384,9 @@ FREIA::buildOutGuide(Simulation& System,
   ShieldA->addInsertCell(OutPitA->getCells("MidLayer"));
   ShieldA->addInsertCell(JawPit->getCells("Outer"));
   ShieldA->addInsertCell(JawPit->getCells("MidLayer"));
-  ShieldA->setFront(OutPitA->getKey("Mid"),2);
-  ShieldA->setBack(JawPit->getKey("Mid"),1);
-  ShieldA->createAll(System,OutPitA->getKey("Inner"),0);
+  ShieldA->setFront(*OutPitA,"midBack");
+  ShieldA->setBack(*JawPit,"midFront");
+  ShieldA->createAll(System,*OutPitA,0);
   //  ShieldA->insertComponent(System,"Void",*VPipeOutA)
 
   VPipeOutA->addAllInsertCell(ShieldA->getCell("Void"));
@@ -409,18 +409,18 @@ FREIA::buildHut(Simulation& System)
   ELog::RegMethod RegA("FREIA","buildHut");
 
   CaveJaw->setInsertCell(JawPit->getCell("Void"));
-  CaveJaw->createAll(System,JawPit->getKey("Inner"),0);
+  CaveJaw->createAll(System,*JawPit,0);
 
   OutBCutBack->addInsertCell(JawPit->getCells("MidLayerBack"));
-  OutBCutBack->setCutSurf("front",JawPit->getKey("Inner"),2);
-  OutBCutBack->setCutSurf("back",JawPit->getKey("Mid"),-2);
+  OutBCutBack->setCutSurf("front",*JawPit,"innerBack");
+  OutBCutBack->setCutSurf("back",*JawPit,"#midBack");
   OutBCutBack->addInsertCell(JawPit->getCells("Collet"));
-  OutBCutBack->createAll(System,JawPit->getKey("Inner"),2);
+  OutBCutBack->createAll(System,*JawPit,"innerBack");
 
   OutBCutFront->addInsertCell(JawPit->getCells("MidLayerFront"));
-  OutBCutFront->setCutSurf("front",JawPit->getKey("Mid"),-1);
-  OutBCutFront->setCutSurf("back",JawPit->getKey("Inner"),1);
-  OutBCutFront->createAll(System,JawPit->getKey("Inner"),-1);
+  OutBCutFront->setCutSurf("front",*JawPit,"#midFront");
+  OutBCutFront->setCutSurf("back",*JawPit,"innerFront");
+  OutBCutFront->createAll(System,*JawPit,"#innerFront");
 
   return;
 }

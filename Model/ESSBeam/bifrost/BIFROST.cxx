@@ -420,17 +420,16 @@ BIFROST::build(Simulation& System,
     }
 
   OutACutFront->addInsertCell(OutPitA->getCells("MidLayerFront"));
-  OutACutFront->setCutSurf("front",*OutPitA,"midFront");
+  OutACutFront->setCutSurf("front",*OutPitA,"#midFront");
   OutACutFront->setCutSurf("back",*OutPitA,"innerFront");
   OutACutFront->createAll(System,*OutPitA,"#innerFront");
 
 
   OutACutBack->addInsertCell(OutPitA->getCells("MidLayerBack"));
-  OutACutBack->setCutSurf("front",OutPitA->getKey("Inner"),2);
-  OutACutBack->setCutSurf("back",OutPitA->getKey("Mid"),-2);
+  OutACutBack->setCutSurf("front",*OutPitA,"innerBack");
+  OutACutBack->setCutSurf("back",*OutPitA,"#midBack");
   OutACutBack->addInsertCell(OutPitA->getCells("Collet"));
-  OutACutBack->createAll(System,OutPitA->getKey("Inner"),2);
-  
+  OutACutBack->createAll(System,*OutPitA,"innerBack");
 
   // FOC chopper out of bunker
   ChopperOutA->addInsertCell(OutPitA->getCell("Void"));
@@ -443,7 +442,7 @@ BIFROST::build(Simulation& System,
   ChopperOutA->insertAxle(System,*FOCDiskOutA);
   
   ShieldB->addInsertCell(voidCell);
-  ShieldB->setFront(OutPitA->getKey("Mid"),2);
+  ShieldB->setFront(*OutPitA,"midBack");
   ShieldB->addInsertCell(OutPitA->getCells("Outer"));
   ShieldB->addInsertCell(OutPitA->getCells("MidLayer"));
   ShieldB->createAll(System,*LinkPtr,2);

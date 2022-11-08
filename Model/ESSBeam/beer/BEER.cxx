@@ -328,9 +328,9 @@ BEER::buildOutGuide(Simulation& System,
 
   OutACut->addInsertCell(OutPitA->getCells("MidLayer"));
   OutACut->addInsertCell(OutPitA->getCells("Collet"));
-  OutACut->setCutSurf("front",OutPitA->getKey("Inner"),2);
-  OutACut->setCutSurf("back",OutPitA->getKey("Mid"),-2);
-  OutACut->createAll(System,OutPitA->getKey("Inner"),2);
+  OutACut->setCutSurf("front",*OutPitA,"innerBack");
+  OutACut->setCutSurf("back",*OutPitA,"#midBack");
+  OutACut->createAll(System,*OutPitA,"innerBack");
 
   // 15m WBC chopper
   ChopperOutA->addInsertCell(OutPitA->getCell("Void"));
@@ -349,16 +349,16 @@ BEER::buildOutGuide(Simulation& System,
   ChopperOutB->insertAxle(System,*FOC3Disk);
   
   JawPit->addInsertCell(voidCell);
-  JawPit->createAll(System,OutPitA->getKey("Inner"),0);
+  JawPit->createAll(System,*OutPitA,0);
 
   ShieldA->addInsertCell(voidCell);
   ShieldA->addInsertCell(OutPitA->getCells("Outer"));
   ShieldA->addInsertCell(OutPitA->getCells("MidLayer"));
   ShieldA->addInsertCell(JawPit->getCells("Outer"));
   ShieldA->addInsertCell(JawPit->getCells("MidLayer"));
-  ShieldA->setFront(OutPitA->getKey("Mid"),2);
-  ShieldA->setBack(JawPit->getKey("Mid"),1);
-  ShieldA->createAll(System,OutPitA->getKey("Inner"),0);
+  ShieldA->setFront(*OutPitA,"midBack");
+  ShieldA->setBack(*JawPit,"midFront");
+  ShieldA->createAll(System,*OutPitA,0);
   //  ShieldA->insertComponent(System,"Void",*VPipeOutA)
 
   VPipeOutA->addAllInsertCell(ShieldA->getCell("Void"));
@@ -459,7 +459,7 @@ BEER::insertChoppersInRoof(Simulation& System,
       for(const int CN : baseCells)
 	{
 	  System.minimizeObject(CN);
-	  const MonteCarlo::Object* OPtr=System.findObject(CN);
+	  //	  const MonteCarlo::Object* OPtr=System.findObject(CN);
 	  HeadRule HR=System.findObject(CN)->getHeadRule();
 	  HR.populateSurf();
 	  if (HR.isLineValid(tA,tB))
@@ -525,7 +525,7 @@ BEER::build(Simulation& System,
   buildOutGuide(System,*FocusWall,2,voidCell);
   
   CaveJaw->setInsertCell(JawPit->getCell("Void"));
-  CaveJaw->createAll(System,JawPit->getKey("Inner"),0);
+  CaveJaw->createAll(System,*JawPit,0);
   
   return;
 }

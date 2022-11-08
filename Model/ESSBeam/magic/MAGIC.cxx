@@ -548,7 +548,7 @@ MAGIC::build(Simulation& System,
 
   ShieldG->addInsertCell(voidCell);
   ShieldG->addInsertCell(PolarizerPit->getCells("Outer"));
-  ShieldG->setFront(PolarizerPit->getKey("Mid"),2);
+  ShieldG->setFront(*PolarizerPit,"midBack");
   ShieldG->createAll(System,*ShieldF,2);
 
   //  AppA->addInsertCell(bunkerObj.getCell("MainVoid"));

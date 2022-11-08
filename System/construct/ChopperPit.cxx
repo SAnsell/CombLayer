@@ -54,8 +54,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedGroup.h"
-#include "FixedRotateGroup.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
 #include "BaseMap.h"
@@ -359,7 +358,7 @@ ChopperPit::createCommonLinks()
     {feBack,feWidth,feWidth,feDepth,feHeight,
      concBack,concWidth,concWidth,concDepth,concHeight};
 
-  double* LPtr(L);
+  const double* LPtr(L);
   int BI(buildIndex);
   for(size_t index=0;index<18;index+=6)
     {
@@ -380,6 +379,9 @@ ChopperPit::createCommonLinks()
 
       BI+=10;
     }
+  FixedComp::nameSideIndex(1,"innerBack");
+  FixedComp::nameSideIndex(7,"midBack");
+  FixedComp::nameSideIndex(13,"outerBack");
   
   
   return;
@@ -407,7 +409,7 @@ ChopperPit::addFrontWall(const attachSystem::FixedComp& WFC,
     \param WFC :: Front line
   */
 {
-  FixedComp::setLinkCopy(0,FC,sideIndex);
+  FixedComp::setLinkCopy(0,WFC,sideIndex);
   setCutSurf("front",WFC,sideIndex);
   FixedComp::nameSideIndex(0,"innerFront");
 

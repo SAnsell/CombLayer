@@ -62,7 +62,7 @@ generatePinHole(FuncDataBase& Control)
 {
     // PIN COLLIMATOR SYSTEM
   Control.addVariable("beerCaveJawLength",25.0);
-  Control.addVariable("beerCaveJawRadius",30.0);
+  Control.addVariable("beerCaveJawRadius",29.0);
 
   //
   // JAWS

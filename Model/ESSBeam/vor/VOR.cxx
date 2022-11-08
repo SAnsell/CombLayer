@@ -370,35 +370,35 @@ VOR::build(Simulation& System,
   
   FOCExitPort->addInsertCell(OutPitA->getCells("MidLayerBack"));
   FOCExitPort->addInsertCell(OutPitA->getCells("Collet"));
-  FOCExitPort->setCutSurf("front",OutPitA->getKey("Inner"),2);
-  FOCExitPort->setCutSurf("back",OutPitA->getKey("Mid"),-2);  
-  FOCExitPort->createAll(System,OutPitA->getKey("Inner"),2);
+  FOCExitPort->setCutSurf("front",*OutPitA,"innerBack");
+  FOCExitPort->setCutSurf("back",*OutPitA,"#midBack");  
+  FOCExitPort->createAll(System,*OutPitA,"innerBack");
 
 
     // First put pit into the main void
   OutPitB->addInsertCell(voidCell);
-  OutPitB->createAll(System,OutPitA->getKey("Inner"),0);
+  OutPitB->createAll(System,*OutPitA,0);
 
   FOCEntryPortB->addInsertCell(OutPitB->getCells("MidLayerFront"));
-  FOCEntryPortB->setCutSurf("front",OutPitB->getKey("Inner"),1);
-  FOCEntryPortB->setCutSurf("back",OutPitB->getKey("Mid"),-1);  
-  FOCEntryPortB->createAll(System,OutPitB->getKey("Inner"),1);
+  FOCEntryPortB->setCutSurf("front",*OutPitB,"innerFront");
+  FOCEntryPortB->setCutSurf("back",*OutPitB,"#midFront");  
+  FOCEntryPortB->createAll(System,*OutPitB,"innerFront");
 
   
   FOCExitPortB->addInsertCell(OutPitB->getCells("MidLayerBack"));
   FOCExitPortB->addInsertCell(OutPitB->getCells("Collet"));
-  FOCExitPortB->setCutSurf("front",OutPitB->getKey("Inner"),2);
-  FOCExitPortB->setCutSurf("back",OutPitB->getKey("Mid"),-2);  
-  FOCExitPortB->createAll(System,OutPitB->getKey("Inner"),2);
+  FOCExitPortB->setCutSurf("front",*OutPitB,"innerBack");
+  FOCExitPortB->setCutSurf("back",*OutPitB,"#midBack");  
+  FOCExitPortB->createAll(System,*OutPitB,"innerBack");
 
   // shielding between PitA and P it B
   ShieldA->addInsertCell(voidCell);
   ShieldA->addInsertCell(OutPitA->getCells("Outer"));
   ShieldA->addInsertCell(OutPitA->getCells("MidLayer"));
-  ShieldA->setFront(OutPitA->getKey("Mid"),2);
+  ShieldA->setFront(*OutPitA,"midBack");
   ShieldA->addInsertCell(OutPitB->getCells("Outer"));
   ShieldA->addInsertCell(OutPitB->getCells("MidLayer"));
-  ShieldA->setBack(OutPitB->getKey("Mid"),1);
+  ShieldA->setBack(*OutPitB,"midFront");
   ShieldA->createAll(System,*FocusWall,2);
 
   VPipeOutA->addAllInsertCell(ShieldA->getCell("Void"));
@@ -412,7 +412,7 @@ VOR::build(Simulation& System,
   ChopperOutB->createAll(System,*FocusOutA,2);
   
   Cave->addInsertCell(voidCell);
-  Cave->createAll(System,OutPitB->getKey("Inner"),0);
+  Cave->createAll(System,*OutPitB,0);
 
 
 
@@ -420,9 +420,9 @@ VOR::build(Simulation& System,
   ShieldB->addInsertCell(OutPitB->getCells("Outer"));
   ShieldB->addInsertCell(OutPitB->getCells("MidLayer"));
   ShieldB->addInsertCell(Cave->getCells("Concrete"));
-  ShieldB->setFront(OutPitB->getKey("Mid"),2);
+  ShieldB->setFront(*OutPitB,"midBack");
   ShieldB->setBack(Cave->getKey("Mid"),1);
-  ShieldB->createAll(System,OutPitB->getKey("Inner"),0);
+  ShieldB->createAll(System,*OutPitB,0);
 
   VPipeOutC->addAllInsertCell(ShieldB->getCell("Void"));
   VPipeOutC->createAll(System,*ShieldB,-1);

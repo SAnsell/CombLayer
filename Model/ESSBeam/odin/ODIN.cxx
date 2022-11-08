@@ -381,17 +381,17 @@ ODIN::buildOutGuide(Simulation& System,
   ShieldA->insertObjects(System);
 
   OutACut->addInsertCell(OutPitA->getCells("MidLayerFront"));
-  OutACut->setCutSurf("front",OutPitA->getKey("Inner"),1);
-  OutACut->setCutSurf("back",OutPitA->getKey("Mid"),-1);
-  OutACut->createAll(System,OutPitA->getKey("Inner"),1);
+  OutACut->setCutSurf("front",*OutPitA,"innerFront");
+  OutACut->setCutSurf("back",*OutPitA,"#midFront");
+  OutACut->createAll(System,*OutPitA,"innerFront");
+
 
   OutBCut->addInsertCell(OutPitA->getCells("MidLayerBack"));
   OutBCut->addInsertCell(OutPitA->getCells("Collet"));
-  OutBCut->setCutSurf("front",OutPitA->getKey("Inner"),2);
-  OutBCut->setCutSurf("back",OutPitA->getKey("Mid"),-2);
-  OutBCut->createAll(System,OutPitA->getKey("Inner"),2);
-  
-    
+  OutBCut->setCutSurf("front",*OutPitA,"innerBack");
+  OutBCut->setCutSurf("back",*OutPitA,"#midBack");
+  OutBCut->createAll(System,*OutPitA,"innerBack");
+
   // 15m WBC chopper
   ChopOutFOC5->addInsertCell(OutPitA->getCell("Void"));
   ChopOutFOC5->createAll(System,*FocusOutA,2);
@@ -402,8 +402,8 @@ ODIN::buildOutGuide(Simulation& System,
   
   ShieldB->addInsertCell(voidCell);
   ShieldB->addInsertCell(OutPitA->getCells("Outer"));
-  ShieldB->setFront(OutPitA->getKey("Mid"),2);
-  ShieldB->createAll(System,OutPitA->getKey("Inner"),0);
+  ShieldB->setFront(*OutPitA,"midBack");
+  ShieldB->createAll(System,*OutPitA,0);
   
   VPipeOutB->addAllInsertCell(ShieldB->getCell("Void"));
   VPipeOutB->createAll(System,ChopOutFOC5->getKey("Beam"),2);
@@ -513,7 +513,6 @@ ODIN::build(Simulation& System,
 
   ShieldA->setFront(bunkerObj,2);
   buildOutGuide(System,*FocusWall,2,voidCell);
-
   buildCave(System,*ShieldB,2,voidCell);
  
   return;

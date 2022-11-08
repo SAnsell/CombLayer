@@ -221,21 +221,23 @@ void TrexHut::createLinks()
 {
   ELog::RegMethod RegA("TrexHut","createLinks");
 
-
   double D[6]=
     {voidLength/2.0,voidLength/2.0,
      voidWidth/2.0,voidWidth/2.0,
      voidDepth,voidHeight};
-  const double L1[]=
-    {L1Front+L2Front,L1Back+L2Back,
-    L1LeftWall+L2LeftWall,
-    L1RightWall+L2RightWall,
-    L1Floor+L2Floor,
-    L1Roof+L2Roof};
   
-  const double L3[]={L3Front,L3Back,
-		     L3LeftWall,L3RightWall,
-		     L3Floor,L3Roof};
+  const double L1[]=
+    { L1Front+L2Front,
+      L1Back+L2Back,
+      L1LeftWall+L2LeftWall,
+      L1RightWall+L2RightWall,
+      L1Floor+L2Floor,
+      L1Roof+L2Roof };
+  
+  const double L3[]=
+    { L3Front,L3Back,
+      L3LeftWall,L3RightWall,
+      L3Floor,L3Roof};
 
   const double* LPtr=L1;
   int BI(buildIndex);
@@ -259,7 +261,7 @@ void TrexHut::createLinks()
       for(size_t i=0;i<6;i++)
 	D[i]+=LPtr[i];
       LPtr=L3;
-      BI+=(index) ? 20 : 10;
+      BI+=(index) ? 10 : 20;
     }
   FixedComp::nameSideIndex(0,"innerFront");
   FixedComp::nameSideIndex(6,"midFront");

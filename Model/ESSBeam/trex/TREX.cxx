@@ -440,7 +440,7 @@ TREX::build(Simulation& System,
 		       bunkerObj.getCell("MainVoid"));
 
   if (stopPoint==3) return;    // End of bunker
-  
+
   PitA->addInsertCell(voidCell);  // First pit wrt bunker insert
   PitA->createAll(System,*VPipeBridge,2);
 
@@ -448,7 +448,7 @@ TREX::build(Simulation& System,
   ShieldA->addInsertCell(PitA->getCells("Outer"));
   ShieldA->addInsertCell(PitA->getCells("MidLayer"));
   ShieldA->setFront(bunkerObj,2);
-  ShieldA->setBack(PitA->getKey("Mid"),1);  
+  ShieldA->setBack(*PitA,"midFront");  
   ShieldA->createAll(System,*FocusWallA,2);
   ShieldA->insertComponent(System,"Void",*BInsertB);
   
@@ -461,6 +461,7 @@ TREX::build(Simulation& System,
   DiskA->setOffsetFlag(1);
   DiskA->createAll(System,ChopperA->getKey("Main"),0);
   ChopperA->insertAxle(System,*DiskA);
+
   
   VPipeOutA->addAllInsertCell(ShieldA->getCell("Void"));
   VPipeOutA->createAll(System,*FocusWallB,2);
@@ -468,8 +469,8 @@ TREX::build(Simulation& System,
   BendOutA->createAll(System,*VPipeOutA,0);
   
   PitACutFront->addInsertCell(PitA->getCells("MidLayerFront"));
-  PitACutFront->setCutSurf("front",PitA->getKey("Mid"),-1);
-  PitACutFront->setCutSurf("back",PitA->getKey("Inner"),1);
+  PitACutFront->setCutSurf("front",*PitA,"#midFront");
+  PitACutFront->setCutSurf("back",*PitA,"innerFront");
   PitACutFront->createAll(System,*BendOutA,2);
 
   if (stopPoint==4) return;    // Up to BW1 Chopper pit
@@ -487,11 +488,11 @@ TREX::build(Simulation& System,
   ShieldB->addInsertCell(voidCell);
   ShieldB->addInsertCell(PitA->getCells("Outer"));
   ShieldB->addInsertCell(PitA->getCells("MidLayer"));
-  ShieldB->setFront(PitA->getKey("Mid"),2);
+  ShieldB->setFront(*PitA,"midBack");
   ShieldB->addInsertCell(PitB->getCells("Outer"));
   ShieldB->addInsertCell(PitB->getCells("MidLayer"));
-  ShieldB->setBack(PitB->getKey("Mid"),1);
-  ShieldB->createAll(System,PitA->getKey("Mid"),2);
+  ShieldB->setBack(*PitB,"midFront");
+  ShieldB->createAll(System,*PitA,"midBack");
 
   VPipeOutB->addAllInsertCell(ShieldB->getCell("Void"));
   VPipeOutB->createAll(System,*ShieldB,-1);
@@ -500,15 +501,15 @@ TREX::build(Simulation& System,
   
   PitACutBack->addInsertCell(PitA->getCells("MidLayerBack"));
   PitACutBack->addInsertCell(PitA->getCells("Collet"));
-  PitACutBack->setCutSurf("front",PitA->getKey("Inner"),2);
-  PitACutBack->setCutSurf("back",PitA->getKey("Mid"),-2);
+  PitACutBack->setCutSurf("front",*PitA,"innerBack");
+  PitACutBack->setCutSurf("back",*PitA,"#midBack");
   PitACutBack->createAll(System,*BendOutB,1);
 
   PitBCutFront->addInsertCell(PitB->getCells("MidLayerFront"));
-  PitBCutFront->setCutSurf("front",PitB->getKey("Mid"),-1);
-  PitBCutFront->setCutSurf("back",PitB->getKey("Inner"),1);  
+  PitBCutFront->setCutSurf("front",*PitB,"#midFront");
+  PitBCutFront->setCutSurf("back",*PitB,"innerFront");  
   PitBCutFront->createAll(System,*BendOutB,2);
-  
+
 
   if (stopPoint==5) return; // Up to BW2 Chopper Pit
 
@@ -526,11 +527,11 @@ TREX::build(Simulation& System,
   ShieldC->addInsertCell(voidCell);
   ShieldC->addInsertCell(PitB->getCells("Outer"));
   ShieldC->addInsertCell(PitB->getCells("MidLayer"));
-  ShieldC->setFront(PitB->getKey("Mid"),2);
+  ShieldC->setFront(*PitB,"midBack");
   ShieldC->addInsertCell(PitC->getCells("MidLayer"));
   ShieldC->addInsertCell(PitC->getCells("Outer"));
-  ShieldC->setBack(PitC->getKey("Mid"),1);
-  ShieldC->createAll(System,PitB->getKey("Mid"),2);
+  ShieldC->setBack(*PitC,"midFront");
+  ShieldC->createAll(System,*PitB,"midBack");
 
   VPipeOutCs[0]->addAllInsertCell(ShieldC->getCell("Void"));
   VPipeOutCs[0]->addAllInsertCell(PitB->getCells("MidLayer"));
@@ -540,10 +541,10 @@ TREX::build(Simulation& System,
   
   PitBCutBack->addInsertCell(PitB->getCells("MidLayerBack"));
   PitBCutBack->addInsertCell(PitB->getCells("Collet"));
-  PitBCutBack->setCutSurf("front",PitB->getKey("Inner"),2);
-  PitBCutBack->setCutSurf("back",PitB->getKey("Mid"),-2);  
+  PitBCutBack->setCutSurf("front",*PitB,"innerBack");
+  PitBCutBack->setCutSurf("back",*PitB,"#midBack");  
   PitBCutBack->createAll(System,*BendOutCs[0],1);
-  
+
   for(size_t i=1;i<nC-1;i++)
     {      
       VPipeOutCs[i]->addAllInsertCell(ShieldC->getCell("Void"));
@@ -561,8 +562,8 @@ TREX::build(Simulation& System,
   BendOutCs[6]->createAll(System,*VPipeOutCs[6],0);
 
   PitCCutFront->addInsertCell(PitC->getCells("MidLayerFront"));
-  PitCCutFront->setCutSurf("front",PitC->getKey("Mid"),-1);
-  PitCCutFront->setCutSurf("back",PitC->getKey("Inner"),1);  
+  PitCCutFront->setCutSurf("front",*PitC,"#midFront");
+  PitCCutFront->setCutSurf("back",*PitC,"innerFront");  
   PitCCutFront->createAll(System,*BendOutCs[6],2);
 
 
@@ -571,8 +572,8 @@ TREX::build(Simulation& System,
   ShieldD->addInsertCell(voidCell);
   ShieldD->addInsertCell(PitC->getCells("Outer"));
   ShieldD->addInsertCell(PitC->getCells("MidLayer"));
-  ShieldD->setFront(PitC->getKey("Mid"),2);
-  ShieldD->createAll(System,PitC->getKey("Mid"),2);
+  ShieldD->setFront(*PitC,"midBack");
+  ShieldD->createAll(System,*PitC,"midBack");
 
   VPipeOutD->addAllInsertCell(ShieldD->getCell("Void"));
   VPipeOutD->createAll(System,*ShieldD,-1);
@@ -581,10 +582,9 @@ TREX::build(Simulation& System,
 
   PitCCutBack->addInsertCell(PitC->getCells("MidLayerBack"));
   PitCCutBack->addInsertCell(PitC->getCells("Collet"));
-  PitCCutBack->setCutSurf("front",PitC->getKey("Inner"),2);
-  PitCCutBack->setCutSurf("back",PitC->getKey("Mid"),-2);  
+  PitCCutBack->setCutSurf("front",*PitC,"innerBack");
+  PitCCutBack->setCutSurf("back",*PitC,"#midBack");  
   PitCCutBack->createAll(System,*BendOutD,1);
-
  
   if (stopPoint==7) return; // END of LOS
 
@@ -612,21 +612,22 @@ TREX::build(Simulation& System,
 
   
   PitECutFront->addInsertCell(PitE->getCells("MidLayerFront"));
-  PitECutFront->setCutSurf("front",PitE->getKey("Mid"),-1);
-  PitECutFront->setCutSurf("back",PitE->getKey("Inner"),1);  
-  PitECutFront->createAll(System,PitE->getKey("Inner"),-1);
+  PitECutFront->setCutSurf("front",*PitE,"#midFront");
+  PitECutFront->setCutSurf("back",*PitE,"innerFront");  
+  PitECutFront->createAll(System,*PitE,"#innerFront");
 
   PitECutBack->addInsertCell(PitE->getCells("MidLayerBack"));
   PitECutBack->addInsertCell(PitE->getCells("Collet"));
-  PitECutBack->setCutSurf("front",PitE->getKey("Inner"),2);
-  PitECutBack->setCutSurf("back",PitE->getKey("Mid"),-2);  
-  PitECutBack->createAll(System,PitE->getKey("Inner"),2);
+  PitECutBack->setCutSurf("front",*PitE,"innerBack");
+  PitECutBack->setCutSurf("back",*PitE,"#midBack");  
+  PitECutBack->createAll(System,*PitE,"innerBack");
+
 
   ShieldE->addInsertCell(voidCell);
   ShieldE->setFront(*ShieldD,2);
   ShieldE->addInsertCell(PitE->getCells("Outer"));
   ShieldE->addInsertCell(PitE->getCells("MidLayer"));
-  ShieldE->setBack(PitE->getKey("Mid"),1);
+  ShieldE->setBack(*PitE,"midFront");
   ShieldE->createAll(System,*BendOutD,2);
   
   VPipeOutE->addAllInsertCell(ShieldE->getCell("Void"));
@@ -643,8 +644,8 @@ TREX::build(Simulation& System,
   ShieldF->addInsertCell(PitE->getCells("Outer"));
   ShieldF->addInsertCell(PitE->getCells("MidLayer"));
   ShieldF->addInsertCell(Cave->getCell("L3Front"));
-  ShieldF->createAll(System,PitE->getKey("Mid"),2);
-   
+  ShieldF->createAll(System,*PitE,"midBack");
+
   VPipeOutFs[0]->addAllInsertCell(ShieldF->getCell("Void"));
   VPipeOutFs[0]->createAll(System,*ShieldF,-1);
   
@@ -663,10 +664,10 @@ TREX::build(Simulation& System,
   
   CaveFrontCut->addInsertCell(Cave->getCell("L1Front"));
   CaveFrontCut->addInsertCell(Cave->getCell("L2Front"));
-  CaveFrontCut->setCutSurf("front",*Cave,"midFront");
+  CaveFrontCut->setCutSurf("front",*Cave,"#midFront");
   CaveFrontCut->setCutSurf("back",*Cave,"innerFront");  
   CaveFrontCut->createAll(System,*Cave,"#midFront");
-
+  return;
   VPipeOutFs[7]->addAllInsertCell(ShieldF->getCell("Void"));
   VPipeOutFs[7]->addAllInsertCell(CaveFrontCut->getCells("Void"));
   VPipeOutFs[7]->createAll(System,*VPipeOutFs[6],2);

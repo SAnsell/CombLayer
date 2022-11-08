@@ -365,19 +365,19 @@ SKADI::build(Simulation& System,
   PitA->createAll(System,*FocusWallA,2);
 
   PitACutFront->addInsertCell(PitA->getCells("MidLayerFront"));
-  PitACutFront->setCutSurf("front",PitA->getKey("Mid"),-1);
-  PitACutFront->setCutSurf("back",PitA->getKey("Inner"),1);
-  PitACutFront->createAll(System,PitA->getKey("Inner"),-1);
+  PitACutFront->setCutSurf("front",*PitA,"#midFront");
+  PitACutFront->setCutSurf("back",*PitA,"innerFront");
+  PitACutFront->createAll(System,*PitA,"#innerFront");
   PitACutBack->addInsertCell(PitA->getCells("MidLayerBack"));
   PitACutBack->addInsertCell(PitA->getCells("Collet"));
-  PitACutBack->setCutSurf("front",PitA->getKey("Mid"),-2);
-  PitACutBack->setCutSurf("back",PitA->getKey("Inner"),2);
-  PitACutBack->createAll(System,PitA->getKey("Inner"),2);
+  PitACutBack->setCutSurf("front",*PitA,"#midBack");
+  PitACutBack->setCutSurf("back",*PitA,"innerBack");
+  PitACutBack->createAll(System,*PitA,"innerBack");
   
   ShieldA->addInsertCell(voidCell);
   ShieldA->addInsertCell(PitA->getCells("Outer"));
   ShieldA->setFront(bunkerObj,2);
-  ShieldA->setBack(PitA->getKey("Mid"),1);  
+  ShieldA->setBack(*PitA,"midFront");  
   ShieldA->createAll(System,*FocusWallA,2);
 
   CInsert->addInsertCell(voidCell);
@@ -403,18 +403,18 @@ SKADI::build(Simulation& System,
   ChopperA->insertAxle(System,*DiskA);
   
   PitB->addInsertCell(voidCell); //Chopper II pit
-  PitB->createAll(System,PitA->getKey("Outer"),2);
+  PitB->createAll(System,*PitA,"outerBack");
 
   PitBCutFront->addInsertCell(PitB->getCells("MidLayerFront"));
-  PitBCutFront->setCutSurf("front",PitB->getKey("Mid"),-1);
-  PitBCutFront->setCutSurf("back",PitB->getKey("Inner"),1);
-  PitBCutFront->createAll(System,PitB->getKey("Inner"),-1);
+  PitBCutFront->setCutSurf("front",*PitB,"#midFront");
+  PitBCutFront->setCutSurf("back",*PitB,"innerFront");
+  PitBCutFront->createAll(System,*PitB,"innerFront");
 
   PitBCutBack->addInsertCell(PitB->getCells("MidLayerBack"));
   PitBCutBack->addInsertCell(PitB->getCells("Collet"));
-  PitBCutBack->setCutSurf("front",PitB->getKey("Mid"),-2);
-  PitBCutBack->setCutSurf("back",PitB->getKey("Inner"),2);
-  PitBCutBack->createAll(System,PitB->getKey("Inner"),2);
+  PitBCutBack->setCutSurf("front",*PitB,"#midBack");
+  PitBCutBack->setCutSurf("back",*PitB,"innerBack");
+  PitBCutBack->createAll(System,*PitB,"innerBack");
 
   ChopperB->addInsertCell(PitB->getCell("Void"));
   ChopperB->createAll(System,*PitB,0);
@@ -425,14 +425,14 @@ SKADI::build(Simulation& System,
   
   ShieldB->addInsertCell(voidCell);
   ShieldB->addInsertCell(PitA->getCells("Outer"));
-  ShieldB->setFront(PitA->getKey("Mid"),2);
+  ShieldB->setFront(*PitA,"midBack");
   ShieldB->addInsertCell(PitB->getCells("Outer"));
-  ShieldB->setBack(PitB->getKey("Mid"),1);  
-  ShieldB->createAll(System,PitA->getKey("Mid"),2);
+  ShieldB->setBack(*PitB,"midFront");  
+  ShieldB->createAll(System,*PitA,"midBack");
   
 
   VPipeOutA->addAllInsertCell(ShieldB->getCell("Void"));
-  VPipeOutA->createAll(System,PitA->getKey("Mid"),2);
+  VPipeOutA->createAll(System,*PitA,"midBack");
 
   GuideOutA->addInsertCell(VPipeOutA->getCells("Void"));
   GuideOutA->createAll(System,*VPipeOutA,0);
@@ -445,18 +445,18 @@ SKADI::build(Simulation& System,
   GuideOutB->createAll(System,*VPipeOutB,0);
   
   PitC->addInsertCell(voidCell); //Chopper III & IV pit
-  PitC->createAll(System,PitB->getKey("Outer"),2);
+  PitC->createAll(System,*PitB,"outerBack");
 
   PitCCutFront->addInsertCell(PitC->getCells("MidLayerFront"));
-  PitCCutFront->setCutSurf("front",PitC->getKey("Mid"),-1);
-  PitCCutFront->setCutSurf("back",PitC->getKey("Inner"),1);
-  PitCCutFront->createAll(System,PitC->getKey("Inner"),-1);
+  PitCCutFront->setCutSurf("front",*PitC,"#midFront");
+  PitCCutFront->setCutSurf("back",*PitC,"innerFront");
+  PitCCutFront->createAll(System,*PitC,"#innerFront");
 
   PitCCutBack->addInsertCell(PitC->getCells("MidLayerBack"));
   PitCCutBack->addInsertCell(PitC->getCells("Collet"));
-  PitCCutBack->setCutSurf("front",PitC->getKey("Mid"),-2);
-  PitCCutBack->setCutSurf("back",PitC->getKey("Inner"),2);
-  PitCCutBack->createAll(System,PitC->getKey("Inner"),2);
+  PitCCutBack->setCutSurf("front",*PitC,"#midBack");
+  PitCCutBack->setCutSurf("back",*PitC,"innerBack");
+  PitCCutBack->createAll(System,*PitC,"innerBack");
 
   ChopperC1->addInsertCell(PitC->getCell("Void"));
   ChopperC1->createAll(System,*PitC,0);
@@ -474,8 +474,8 @@ SKADI::build(Simulation& System,
   ShieldC->addInsertCell(voidCell);
   ShieldC->addInsertCell(PitB->getCells("Outer"));
   ShieldC->addInsertCell(PitC->getCells("Outer"));
-  ShieldC->setFront(PitB->getKey("Mid"),2);
-  ShieldC->setBack(PitC->getKey("Mid"),1);  
+  ShieldC->setFront(*PitB,"midBack");
+  ShieldC->setBack(*PitC,"midFront");  
   ShieldC->createAll(System,*VPipeOutB,2);
 
   VPipeOutC->addAllInsertCell(ShieldC->getCell("Void"));
@@ -487,7 +487,7 @@ SKADI::build(Simulation& System,
   ShieldD->addInsertCell(voidCell);
   ShieldD->addInsertCell(PitC->getCells("Outer"));
   ShieldD->addInsertCell(PitC->getCells("MidLayer"));
-  ShieldD->setFront(PitC->getKey("Mid"),2);
+  ShieldD->setFront(*PitC,"midBack");
   ShieldD->createAll(System,*VPipeOutC,2);
 
   VPipeOutD->addAllInsertCell(ShieldD->getCell("Void"));

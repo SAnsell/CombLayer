@@ -269,7 +269,6 @@ LOKI::buildBunkerUnits(Simulation& System,
   FocusC->createAll(System,*VPipeC,0);
 
   return;
-
 }
 
 void
@@ -294,9 +293,9 @@ LOKI::buildOutGuide(Simulation& System,
   //Cut throught chopper pit for guide and pipe that are following it 
   PitACut->addInsertCell(OutPitA->getCells("MidLayerBack"));
   PitACut->addInsertCell(OutPitA->getCells("Collet"));
-  PitACut->setCutSurf("front",OutPitA->getKey("Inner"),2);
-  PitACut->setCutSurf("back",OutPitA->getKey("Mid"),-2);
-  PitACut->createAll(System,OutPitA->getKey("Inner"),2);
+  PitACut->setCutSurf("front",*OutPitA,"innerBack");
+  PitACut->setCutSurf("back",*OutPitA,"#midBack");
+  PitACut->createAll(System,*OutPitA,"innerBack");
 
 
   //Chopper unit
@@ -314,8 +313,8 @@ LOKI::buildOutGuide(Simulation& System,
   ShieldA->addInsertCell(voidCell);
   ShieldA->addInsertCell(OutPitA->getCells("MidLayer"));
   ShieldA->addInsertCell(OutPitA->getCell("Outer"));
-  ShieldA->setFront(OutPitA->getKey("Mid"),2);
-  ShieldA->createAll(System,OutPitA->getKey("Mid"),2);
+  ShieldA->setFront(*OutPitA,"midBack");
+  ShieldA->createAll(System,*OutPitA,"midBack");
 
   VPipeOutA->addInsertCell("Main",ShieldA->getCell("Void"));
   VPipeOutA->addInsertCell("Main",OutPitA->getCell("Void"));

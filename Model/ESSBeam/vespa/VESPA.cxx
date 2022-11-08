@@ -419,9 +419,9 @@ VESPA::buildOutGuide(Simulation& System,
   
   T0ExitPort->addInsertCell(OutPitT0->getCells("MidLayerBack"));
   T0ExitPort->addInsertCell(OutPitT0->getCells("Collet"));
-  T0ExitPort->setCutSurf("front",OutPitT0->getKey("Inner"),2);
-  T0ExitPort->setCutSurf("back",OutPitT0->getKey("Mid"),-2);
-  T0ExitPort->createAll(System,OutPitT0->getKey("Inner"),2);
+  T0ExitPort->setCutSurf("front",*OutPitT0,"innerBack");
+  T0ExitPort->setCutSurf("back",*OutPitT0,"#midBack");
+  T0ExitPort->createAll(System,*OutPitT0,"innerBack");
 
   OutPitA->addInsertCell(voidCell);
   OutPitA->createAll(System,*FocusWall,2);
@@ -433,15 +433,15 @@ VESPA::buildOutGuide(Simulation& System,
   ShieldA->addInsertCell(OutPitA->getCells("Outer"));
   ShieldA->addInsertCell(OutPitA->getCells("MidLayer")); 
 
-  ShieldA->setFront(OutPitT0->getKey("Mid"),2);
-  ShieldA->setBack(OutPitA->getKey("Mid"),1);
+  ShieldA->setFront(*OutPitT0,"midBack");
+  ShieldA->setBack(*OutPitA,"midFront");
 
   ShieldA->createAll(System,*FocusWall,2);
 
   // Elliptic 6m section
   VPipeOutA->addAllInsertCell(ShieldA->getCells("Void"));
-  VPipeOutA->setFront(OutPitT0->getKey("Mid"),2);
-  VPipeOutA->setBack(OutPitA->getKey("Inner"),1);
+  VPipeOutA->setFront(*OutPitT0,"midBack");
+  VPipeOutA->setBack(*OutPitA,"innerFront");
   VPipeOutA->addAllInsertCell(OutPitA->getCells("MidLayer"));
   VPipeOutA->createAll(System,*FocusWall,2);
 
@@ -459,13 +459,13 @@ VESPA::buildOutGuide(Simulation& System,
 
   ShieldB->addInsertCell(OutPitA->getCells("Outer"));
   ShieldB->addInsertCell(voidCell);
-  ShieldB->setFront(OutPitA->getKey("Mid"),2);
+  ShieldB->setFront(*OutPitA,"midBack");
   ShieldB->createAll(System,ChopperOutA->getKey("Beam"),2);
 
   VPipeOutB->addAllInsertCell(ShieldB->getCells("Void"));
   VPipeOutB->addAllInsertCell(OutPitA->getCells("Collet"));
   VPipeOutB->addAllInsertCell(OutPitA->getCells("MidLayer"));
-  VPipeOutB->setFront(OutPitA->getKey("Inner"),2);
+  VPipeOutB->setFront(*OutPitA,"innerBack");
   VPipeOutB->createAll(System,ChopperOutA->getKey("Beam"),2);
 
   FocusOutB->addInsertCell(VPipeOutB->getCell("Void"));
@@ -482,18 +482,18 @@ VESPA::buildOutGuide(Simulation& System,
   FocusArray[0]->createAll(System,*VPipeArray[0],7);
 
   OutPitB->addInsertCell(voidCell);
-  OutPitB->createAll(System,OutPitA->getKey("Inner"),2);
+  OutPitB->createAll(System,*OutPitA,"innerBack");
   
   PitBPortA->addInsertCell(OutPitB->getCells("MidLayerFront"));
-  PitBPortA->setCutSurf("front",OutPitB->getKey("Inner"),1);
-  PitBPortA->setCutSurf("back",OutPitB->getKey("Mid"),-1);
-  PitBPortA->createAll(System,OutPitB->getKey("Inner"),2);
+  PitBPortA->setCutSurf("front",*OutPitB,"innerFront");
+  PitBPortA->setCutSurf("back",*OutPitB,"#midFront");
+  PitBPortA->createAll(System,*OutPitB,"innerBack");
 
   PitBPortB->addInsertCell(OutPitB->getCells("MidLayerBack"));
   PitBPortB->addInsertCell(OutPitB->getCells("Collet"));
-  PitBPortB->setCutSurf("front",OutPitB->getKey("Inner"),2);
-  PitBPortB->setCutSurf("back",OutPitB->getKey("Mid"),-2);
-  PitBPortB->createAll(System,OutPitB->getKey("Inner"),2);
+  PitBPortB->setCutSurf("front",*OutPitB,"innerBack");
+  PitBPortB->setCutSurf("back",*OutPitB,"#midBack");
+  PitBPortB->createAll(System,*OutPitB,"innerBack");
   
   const size_t lastIndex(ShieldArray.size()-1);
   for(size_t i=1;i<ShieldArray.size();i++)
@@ -504,7 +504,7 @@ VESPA::buildOutGuide(Simulation& System,
         {
           ShieldArray[i]->addInsertCell(OutPitB->getCells("Outer"));
           ShieldArray[i]->addInsertCell(OutPitB->getCells("MidLayer"));
-          ShieldArray[i]->setBack(OutPitB->getKey("Mid"),1);
+          ShieldArray[i]->setBack(*OutPitB,"midFront");
         }
       ShieldArray[i]->createAll(System,*ShieldArray[i-1],2);
       VPipeArray[i]->addAllInsertCell(ShieldArray[i]->getCells("Void"));
@@ -544,7 +544,7 @@ VESPA::buildHut(Simulation& System,
   if (OutPitB->hasItem("Outer"))
     {
       ShieldC->addInsertCell(OutPitB->getCells("Outer"));
-      ShieldC->setFront(OutPitB->getKey("Mid"),2);
+      ShieldC->setFront(*OutPitB,"midBack");
     }
   ShieldC->addInsertCell(voidCell);
   ShieldC->createAll(System,connectFC,connectIndex);
