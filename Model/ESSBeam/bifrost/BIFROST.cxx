@@ -376,15 +376,13 @@ BIFROST::build(Simulation& System,
 
   // First put pit into the main void
   OutPitA->addInsertCell(voidCell);
-  //  OutPitA->createAll(System,FocusWall->getKey("Shield"),2);
   OutPitA->createAll(System,*FocusWall,2);
   
   ShieldA->addInsertCell(voidCell);
   ShieldA->setFront(*BInsert,2);
   ShieldA->addInsertCell(OutPitA->getCells("Outer"));
   ShieldA->addInsertCell(OutPitA->getCells("MidLayer"));
-  ShieldA->setBack(OutPitA->getKey("Mid"),1);
-  ELog::EM<<"Caution was get(shield)"<<ELog::endDiag;
+  ShieldA->setBack(*OutPitA,"midFront");
   ShieldA->createAll(System,*FocusWall,2);
 
   // Elliptic 6m section
@@ -422,9 +420,9 @@ BIFROST::build(Simulation& System,
     }
 
   OutACutFront->addInsertCell(OutPitA->getCells("MidLayerFront"));
-  OutACutFront->setCutSurf("front",OutPitA->getKey("Mid"),-1);
-  OutACutFront->setCutSurf("back",OutPitA->getKey("Inner"),1);
-  OutACutFront->createAll(System,OutPitA->getKey("Inner"),-1);
+  OutACutFront->setCutSurf("front",*OutPitA,"midFront");
+  OutACutFront->setCutSurf("back",*OutPitA,"innerFront");
+  OutACutFront->createAll(System,*OutPitA,"#innerFront");
 
 
   OutACutBack->addInsertCell(OutPitA->getCells("MidLayerBack"));

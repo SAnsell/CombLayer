@@ -395,7 +395,9 @@ BilbaoWheel::createShaftSurfaces()
       SI+=10;
     }
 
+
   double H(wheelHeight()/2.0+caseThick);
+
 
   // 2nd void step
   H = shaft2StepHeight;
@@ -559,7 +561,6 @@ BilbaoWheel::createShaftObjects(Simulation& System)
 		   ModelSupport::getHeadRule(SMap,buildIndex,"106 -116"),
 		   ModelSupport::getHeadRule(SMap,buildIndex,"105 -106"),
 		   ModelSupport::getHeadRule(SMap,buildIndex,"115 -116"));
-
   // void below
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,buildIndex+20,"-7 35 -115 2127 ");

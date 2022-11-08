@@ -58,8 +58,8 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowFlyXStep",0.0);  
   Control.addVariable("LowFlyYStep",0.0);  
   Control.addVariable("LowFlyZStep",0.0);
-  Control.addVariable("LowFlyXYAngle",90.0);
-  Control.addVariable("LowFlyZAngle",180.0);
+  Control.addVariable("LowFlyZAngle",-90.0);
+  Control.addVariable("LowFlyXAngle",180.0);
   Control.addVariable("LowFlyTotalHeight",7.6);
   
   Control.addVariable("LowFlyLeftLobeXStep",1.0);  

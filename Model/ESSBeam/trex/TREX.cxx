@@ -663,9 +663,9 @@ TREX::build(Simulation& System,
   
   CaveFrontCut->addInsertCell(Cave->getCell("L1Front"));
   CaveFrontCut->addInsertCell(Cave->getCell("L2Front"));
-  CaveFrontCut->setCutSurf("front",Cave->getKey("Mid"),-1);
-  CaveFrontCut->setCutSurf("back",Cave->getKey("Inner"),1);  
-  CaveFrontCut->createAll(System,Cave->getKey("Mid"),-1);
+  CaveFrontCut->setCutSurf("front",*Cave,"midFront");
+  CaveFrontCut->setCutSurf("back",*Cave,"innerFront");  
+  CaveFrontCut->createAll(System,*Cave,"#midFront");
 
   VPipeOutFs[7]->addAllInsertCell(ShieldF->getCell("Void"));
   VPipeOutFs[7]->addAllInsertCell(CaveFrontCut->getCells("Void"));

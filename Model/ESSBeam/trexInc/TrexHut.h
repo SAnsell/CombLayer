@@ -35,14 +35,13 @@ namespace essSystem
   \brief SkadiHut unit  
 */
 class TrexHut:
-  public attachSystem::FixedRotateGroup,
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
+  public attachSystem::ExternalCut,
   public attachSystem::CellMap
 {
  private:
   
-
-
   double voidHeight;            ///< void height [top only]
   double voidWidth;             ///< void width [total]
   double voidDepth;             ///< void depth [low only]
@@ -74,7 +73,6 @@ class TrexHut:
   int L3Mat;                  ///< Third layer material
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();

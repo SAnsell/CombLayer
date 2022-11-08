@@ -419,7 +419,7 @@ FixedComp::createPairVector(const FixedComp& FCA,
 			    const long int sideIndexB)
   /*!
     Creates a merged pair between two link points
-    It shared shared the mid point and the axises
+    It shared shared the mid point and the axes
     \param FCA :: Fixed unit for link points
     \param sideIndexA :: SIGNED +1 side index
     \param FCB :: Fixed unit for link points

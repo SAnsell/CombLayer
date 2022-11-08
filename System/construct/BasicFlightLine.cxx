@@ -311,11 +311,10 @@ BasicFlightLine::createObjects(Simulation& System,
   */
 {
   ELog::RegMethod RegA("BasicFlightLine","createObjects");
-
     
   const std::string innerCut=innerFC.getLinkString(innerIndex);
   const std::string outerCut=outerFC.getLinkString(outerIndex);
-  
+
   setLinkCopy(0,innerFC,innerIndex);
   setLinkCopy(1,outerFC,outerIndex);
   
@@ -325,13 +324,12 @@ BasicFlightLine::createObjects(Simulation& System,
   addOuterSurf("outer",Out);
 
   // Inner Void :
-  Out=ModelSupport::getSetComposite(SMap,buildIndex," 3 -4 (5:505) (6:-506) ");  
+  Out=ModelSupport::getSetComposite(SMap,buildIndex," 3 -4 (5:505) (6:-506) ");
+ 
   addOuterSurf("inner",Out);
   Out+=innerCut+outerCut; 
 
-  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,0.0,Out));
-  CellMap::addCell("innerVoid",cellIndex-1);
-
+  makeCell("innerVoid",System,cellIndex++,innerMat,0.0,Out);
   //Flight layers:
 
   for(size_t i=0;i<nLayer;i++)

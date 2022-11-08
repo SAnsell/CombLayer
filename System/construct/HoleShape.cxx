@@ -72,7 +72,8 @@ HoleShape::HoleShape(const std::string& Key) :
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   shapeType(0),
-  angleOffset(0),radialStep(0.0),radius(0.0),xradius(0.0)
+  angleOffset(0),radialStep(0.0),radius(0.0),xradius(0.0),
+  cutFlag(0)
   /*!
     Default constructor
     \param Key :: Key name for variables
@@ -87,7 +88,7 @@ HoleShape::HoleShape(const HoleShape& A) :
   shapeType(A.shapeType),angleCentre(A.angleCentre),
   angleOffset(A.angleOffset),radialStep(A.radialStep),
   radius(A.radius),xradius(A.xradius),rotCentre(A.rotCentre),
-  rotAngle(A.rotAngle)
+  rotAngle(A.rotAngle),cutFlag(A.cutFlag)
   /*!
     Copy constructor
     \param A :: HoleShape to copy
@@ -116,6 +117,7 @@ HoleShape::operator=(const HoleShape& A)
       xradius=A.xradius;
       rotCentre=A.rotCentre;
       rotAngle=A.rotAngle;
+      cutFlag=A.cutFlag;
     }
   return *this;
 }

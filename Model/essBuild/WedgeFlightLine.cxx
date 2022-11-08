@@ -166,7 +166,8 @@ WedgeFlightLine::buildWedges(Simulation& System,
     outerFC.getLinkString(outerIndex)+
     this->getLinkString(-11)+
     this->getLinkString(-12);
-  
+  ELog::EM<<"Out["<<keyName<<"] == "<<baseOut<<ELog::endDiag;
+
   // Create the radial surfaces that divide the wedges 
   int index(buildIndex+1001);
   for(size_t i=0;i<nWedges;i++,index++)

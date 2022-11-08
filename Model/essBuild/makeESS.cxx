@@ -476,7 +476,6 @@ makeESS::buildLowButterfly(Simulation& System)
   
   LowMod=std::shared_ptr<EssModBase>(BM);
   LowMod->createAll(System,*LowPreMod,6,*Reflector,0);
-  
   return;
 }
 
@@ -488,7 +487,6 @@ makeESS::buildTopButterfly(Simulation& System)
   */
 {
   ELog::RegMethod RegA("makeESS","buildTopButteflyMod");
-
 
   std::shared_ptr<ButterflyModerator> BM
     (new essSystem::ButterflyModerator("TopFly"));
@@ -565,7 +563,6 @@ makeESS::buildTopBox(Simulation& System)
   */
 {
   ELog::RegMethod RegA("makeESS","buildTopBox");
-
 
   std::shared_ptr<BoxModerator> BM
     (new essSystem::BoxModerator("TopBox"));
@@ -645,8 +642,7 @@ makeESS::buildBunkerFeedThrough(Simulation& System,
           BF->buildAll(System,*BPtr,segNumber,feedName);  
           
           bFeedArray.push_back(BF);
-          //  attachSystem::addToInsertForced(System,*GB, Target->getCC("Wheel"));
-          
+          //  attachSystem::addToInsertForced(System,*GB, Target->getCC("Wheel"));          
         }
     }
   return;

@@ -3,7 +3,7 @@
  
  * File:   trex/TrexHut.cxx
  *
- * Copyright (c) 2004-2018 by Tsitohaina Randiamalala & Stuart Ansell
+ * Copyright (c) 2004-2022 by Tsitohaina Randiamalala & Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -56,9 +54,9 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedGroup.h"
-#include "FixedRotateGroup.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 
@@ -67,18 +65,22 @@
 namespace essSystem
 {
 TrexHut::TrexHut(const std::string& Key) :
-  attachSystem::FixedRotateGroup(Key,"Inner",6,"Mid",6,"Outer",6),
-  attachSystem::ContainedComp(),attachSystem::CellMap()
+  attachSystem::FixedRotate(Key,18),
+  attachSystem::ContainedComp(),
+  attachSystem::CellMap()
 {}
 
 TrexHut::~TrexHut()
 {}
 
 void TrexHut::populate(const FuncDataBase& Control)
+  /*!
+    Populate all the variables
+   */
 {
   ELog::RegMethod RegA("TrexHut","populate");
 
-  FixedRotateGroup::populate(Control);
+  FixedRotate::populate(Control);
 
   voidHeight=Control.EvalVar<double>(keyName+"VoidHeight");
   voidWidth=Control.EvalVar<double>(keyName+"VoidWidth");
@@ -89,18 +91,21 @@ void TrexHut::populate(const FuncDataBase& Control)
   L1LeftWall=Control.EvalVar<double>(keyName+"L1LeftWall");
   L1RightWall=Control.EvalVar<double>(keyName+"L1RightWall");
   L1Roof=Control.EvalVar<double>(keyName+"L1Roof");
+  L1Floor=Control.EvalVar<double>(keyName+"L1Floor");
   L1Back=Control.EvalVar<double>(keyName+"L1Back");
   
   L2Front=Control.EvalVar<double>(keyName+"L2Front");
   L2LeftWall=Control.EvalVar<double>(keyName+"L2LeftWall");
   L2RightWall=Control.EvalVar<double>(keyName+"L2RightWall");
   L2Roof=Control.EvalVar<double>(keyName+"L2Roof");
+  L2Floor=Control.EvalVar<double>(keyName+"L2Floor");
   L2Back=Control.EvalVar<double>(keyName+"L2Back");
 
   L3Front=Control.EvalVar<double>(keyName+"L3Front");
   L3LeftWall=Control.EvalVar<double>(keyName+"L3LeftWall");
   L3RightWall=Control.EvalVar<double>(keyName+"L3RightWall");
   L3Roof=Control.EvalVar<double>(keyName+"L3Roof");
+  L3Floor=Control.EvalVar<double>(keyName+"L3Floor");
   L3Back=Control.EvalVar<double>(keyName+"L3Back");
 
   L1Mat=ModelSupport::EvalMat<int>(Control,keyName+"L1Mat");
@@ -111,26 +116,10 @@ void TrexHut::populate(const FuncDataBase& Control)
 }
   
 void 
-TrexHut::createUnitVector(const attachSystem::FixedComp& FC,
-			  const long int sideIndex)
-{
-  ELog::RegMethod RegA("TrexHut","createUnitVector");
-  
-  yStep+=0.0;//voidLength/2.0;
-  attachSystem::FixedComp& Outer=getKey("Outer");
-  attachSystem::FixedComp& Mid=getKey("Mid");
-  attachSystem::FixedComp& Inner=getKey("Inner");
-  
-  Outer.createUnitVector(FC,sideIndex);
-  Mid.createUnitVector(FC,sideIndex);
-  Inner.createUnitVector(FC,sideIndex);
-  applyOffset();
-  setDefault("Inner");
-  return;
-}
-
-void 
 TrexHut::createSurfaces()
+  /*!
+    construct surfaces 
+    */
 {
   ELog::RegMethod RegA("TrexHut","createSurfaces");
 
@@ -186,49 +175,44 @@ TrexHut::createSurfaces()
 }
 
 void TrexHut::createObjects(Simulation& System)
+  /*!
+    Constructor of object
+   */
 {
   ELog::RegMethod RegA("TrexHut","createObjects");
 
-  std::string Out;
+  HeadRule HR;
+  
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  setCell("Void",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
 				 "1 -12 13 -14 15 -16 (2:-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,L1Mat,0.0,Out));
-  setCell("L1",cellIndex-1);
+  makeCell("L1",System,cellIndex++,L1Mat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1 11 13 -14 15 -16 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,L1Mat,0.0,Out));
-  setCell("FrontWall",cellIndex-1);
-  setCell("L1Front",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 11 13 -14 15 -16");
+  makeCell("L1Front",System,cellIndex++,L1Mat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-		 "11 -22 23 -24 25 -26 (12:-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,L2Mat,0.0,Out));
-  setCell("L2",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-11 21 23 -24 25 -26 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,L2Mat,0.0,Out));
-  addCell("FrontWall",cellIndex-1);
-  setCell("L2Front",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+		 "11 -22 23 -24 25 -26 (12:-13:14:-15:16)");
+  makeCell("L2",System,cellIndex++,L2Mat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-		 "21 -32 33 -34 35 -36 (22:-23:24:-25:26) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,L3Mat,0.0,Out));
-  setCell("L3",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 21 23 -24 25 -26");
+  makeCell("L2Front",System,cellIndex++,L2Mat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-21 31 33 -34 35 -36 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,L3Mat,0.0,Out));
-  addCell("FrontWall",cellIndex-1);
-  setCell("L3Front",cellIndex-1); 
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+		 "21 -32 33 -34 35 -36 (22:-23:24:-25:26)");
+  makeCell("L3",System,cellIndex++,L3Mat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-21 31 33 -34 35 -36");
+  makeCell("L3Front",System,cellIndex++,L3Mat,0.0,HR);
 
   // Exclude:
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-			 " 31 -32 33 -34  35 -36 ");
-  addOuterSurf(Out);      
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"31 -32 33 -34  35 -36");
+  addOuterSurf(HR);      
 
   return;
 }
@@ -237,52 +221,49 @@ void TrexHut::createLinks()
 {
   ELog::RegMethod RegA("TrexHut","createLinks");
 
-  attachSystem::FixedComp& innerFC=FixedGroup::getKey("Inner");
-  attachSystem::FixedComp& midFC=FixedGroup::getKey("Mid");
-  attachSystem::FixedComp& outerFC=FixedGroup::getKey("Outer");
 
-  innerFC.setConnect(0,Origin-Y*(voidLength/2.0),-Y);
-  innerFC.setConnect(1,Origin+Y*(voidLength/2.0),Y);
-  innerFC.setConnect(2,Origin-X*(voidWidth/2.0),-X);
-  innerFC.setConnect(3,Origin+X*(voidWidth/2.0),X);
-  innerFC.setConnect(4,Origin-Z*voidDepth,-Z);
-  innerFC.setConnect(5,Origin+Z*voidHeight,Z);  
-
-  innerFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  innerFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));
-  innerFC.setLinkSurf(2,-SMap.realSurf(buildIndex+3));
-  innerFC.setLinkSurf(3,SMap.realSurf(buildIndex+4));
-  innerFC.setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-  innerFC.setLinkSurf(5,SMap.realSurf(buildIndex+6));
-
+  double D[6]=
+    {voidLength/2.0,voidLength/2.0,
+     voidWidth/2.0,voidWidth/2.0,
+     voidDepth,voidHeight};
+  const double L1[]=
+    {L1Front+L2Front,L1Back+L2Back,
+    L1LeftWall+L2LeftWall,
+    L1RightWall+L2RightWall,
+    L1Floor+L2Floor,
+    L1Roof+L2Roof};
   
-  midFC.setConnect(0,Origin-Y*(L1Front+L2Front+voidLength/2.0),-Y);
-  midFC.setConnect(1,Origin+Y*(L1Back+L2Back+voidLength/2.0),Y);
-  midFC.setConnect(2,Origin-X*(L1LeftWall+L2LeftWall+voidWidth/2.0),-X);
-  midFC.setConnect(3,Origin+X*(L1RightWall+L2RightWall+voidWidth/2.0),X);
-  midFC.setConnect(4,Origin-Z*(L1Floor+L2Floor+voidDepth),-Z);
-  midFC.setConnect(5,Origin+Z*(L1Roof+L2Roof+voidHeight),Z);  
+  const double L3[]={L3Front,L3Back,
+		     L3LeftWall,L3RightWall,
+		     L3Floor,L3Roof};
 
-  midFC.setLinkSurf(0,-SMap.realSurf(buildIndex+21));
-  midFC.setLinkSurf(1,SMap.realSurf(buildIndex+22));
-  midFC.setLinkSurf(2,-SMap.realSurf(buildIndex+23));
-  midFC.setLinkSurf(3,SMap.realSurf(buildIndex+24));
-  midFC.setLinkSurf(4,-SMap.realSurf(buildIndex+25));
-  midFC.setLinkSurf(5,SMap.realSurf(buildIndex+26));
+  const double* LPtr=L1;
+  int BI(buildIndex);
+  
+  for(size_t index=0;index<18;index+=6)
+    {
+      setConnect(index,Origin-Y*D[0],-Y);
+      setConnect(index+1,Origin+Y*D[1],Y);
+      setConnect(index+2,Origin-X*D[2],-X);
+      setConnect(index+3,Origin+X*D[3],X);
+      setConnect(index+4,Origin-Z*D[4],-Z);
+      setConnect(index+5,Origin+Z*D[5],Z);
 
-  outerFC.setConnect(0,Origin-Y*(L1Front+L2Front+L3Front+voidLength/2.0),-Y);
-  outerFC.setConnect(1,Origin+Y*(L1Back+L2Back+L3Back+voidLength/2.0),Y);
-  outerFC.setConnect(2,Origin-X*(L1LeftWall+L2LeftWall+L3LeftWall+voidWidth/2.0),-X);
-  outerFC.setConnect(3,Origin+X*(L1RightWall+L2RightWall+L3RightWall+voidWidth/2.0),X);
-  outerFC.setConnect(4,Origin-Z*(L1Floor+L2Floor+L3Floor+voidDepth),-Z);
-  outerFC.setConnect(5,Origin+Z*(L1Roof+L2Roof+L3Floor+voidHeight),Z);  
+      setLinkSurf(index,-SMap.realSurf(BI+1));
+      setLinkSurf(index+1,SMap.realSurf(BI+2));
+      setLinkSurf(index+2,-SMap.realSurf(BI+3));
+      setLinkSurf(index+3,SMap.realSurf(BI+4));
+      setLinkSurf(index+4,-SMap.realSurf(BI+5));
+      setLinkSurf(index+5,SMap.realSurf(BI+6));
 
-  outerFC.setLinkSurf(0,-SMap.realSurf(buildIndex+31));
-  outerFC.setLinkSurf(1,SMap.realSurf(buildIndex+32));
-  outerFC.setLinkSurf(2,-SMap.realSurf(buildIndex+33));
-  outerFC.setLinkSurf(3,SMap.realSurf(buildIndex+34));
-  outerFC.setLinkSurf(4,-SMap.realSurf(buildIndex+35));
-  outerFC.setLinkSurf(5,SMap.realSurf(buildIndex+36));
+      for(size_t i=0;i<6;i++)
+	D[i]+=LPtr[i];
+      LPtr=L3;
+      BI+=(index) ? 20 : 10;
+    }
+  FixedComp::nameSideIndex(0,"innerFront");
+  FixedComp::nameSideIndex(6,"midFront");
+  FixedComp::nameSideIndex(12,"outerFront");
 
   return;
 }
@@ -305,4 +286,4 @@ void TrexHut::createAll(Simulation& System,
   return;
 }
 
-}//End namespace
+} // NAMESPACE  essSystem

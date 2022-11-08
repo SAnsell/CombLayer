@@ -56,7 +56,8 @@ namespace essSystem
 WheelBase::WheelBase(const std::string& Key) :
   attachSystem::ContainedGroup("Wheel","Shaft"),
   attachSystem::FixedOffset(Key,13),
-  attachSystem::CellMap()
+  attachSystem::CellMap(),
+  engActive(0)
   /*!
     Constructor
     There are 10 links possible -- last for are used if BilbaoWheel used..
@@ -67,7 +68,8 @@ WheelBase::WheelBase(const std::string& Key) :
 WheelBase::WheelBase(const WheelBase& A) : 
   attachSystem::ContainedGroup(A),
   attachSystem::FixedOffset(A),
-  attachSystem::CellMap(A)
+  attachSystem::CellMap(A),
+  engActive(A.engActive)
   /*!
     Copy constructor
     \param A :: WheelBase to copy
@@ -87,6 +89,7 @@ WheelBase::operator=(const WheelBase& A)
       attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
+      engActive=A.engActive;
     }
   return *this;
 }
