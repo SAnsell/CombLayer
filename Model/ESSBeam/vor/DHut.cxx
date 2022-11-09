@@ -54,8 +54,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedGroup.h"
-#include "FixedRotateGroup.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -66,8 +65,9 @@ namespace essSystem
 {
 
 DHut::DHut(const std::string& Key) : 
-  attachSystem::FixedRotateGroup(Key,"Inner",6,"Mid",6,"Outer",6),
-  attachSystem::ContainedComp(),attachSystem::CellMap()
+  attachSystem::FixedRotate(Key,18),
+  attachSystem::ContainedComp(),
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -89,7 +89,7 @@ DHut::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("DHut","populate");
   
-  FixedRotateGroup::populate(Control);
+  FixedRotate::populate(Control);
 
   // Void + Fe special:
   voidHeight=Control.EvalVar<double>(keyName+"VoidHeight");
@@ -110,31 +110,6 @@ DHut::populate(const FuncDataBase& Control)
   return;
 }
 
-void
-DHut::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("DHut","createUnitVector");
-
-  // add nosecone + half centre
-  yStep+=voidLength/2.0+concThick+feThick;
-
-  attachSystem::FixedComp& Outer=getKey("Outer");
-  attachSystem::FixedComp& Mid=getKey("Mid");
-  attachSystem::FixedComp& Inner=getKey("Inner");
-
-  Outer.createUnitVector(FC,sideIndex);
-  Mid.createUnitVector(FC,sideIndex);
-  Inner.createUnitVector(FC,sideIndex);
-  applyOffset();
-  setDefault("Inner");
-  return;
-}
 
 void
 DHut::createSurfaces()
@@ -255,58 +230,33 @@ DHut::createLinks()
 {
   ELog::RegMethod RegA("DHut","createLinks");
 
-  attachSystem::FixedComp& innerFC=FixedGroup::getKey("Inner");
-  attachSystem::FixedComp& midFC=FixedGroup::getKey("Mid");
-  attachSystem::FixedComp& outerFC=FixedGroup::getKey("Outer");
-
+  size_t index(0);
+  int BI(buildIndex);
+  for(const double& T : {0.0,feThick,feThick+concThick})
+    {
   // INNER VOID
-  innerFC.setConnect(0,Origin-Y*(voidLength/2.0),-Y);
-  innerFC.setConnect(1,Origin+Y*(voidLength/2.0),Y);
-  innerFC.setConnect(2,Origin-X*(voidWidth/2.0),-X);
-  innerFC.setConnect(3,Origin+X*(voidWidth/2.0),X);
-  innerFC.setConnect(4,Origin-Z*voidDepth,-Z);
-  innerFC.setConnect(5,Origin+Z*voidHeight,Z);  
-
-  innerFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  innerFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));
-  innerFC.setLinkSurf(2,-SMap.realSurf(buildIndex+3));
-  innerFC.setLinkSurf(3,SMap.realSurf(buildIndex+4));
-  innerFC.setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-  innerFC.setLinkSurf(5,SMap.realSurf(buildIndex+6));
-
-  
-    // OUTER VOID
-  double TThick(feThick);
-  midFC.setConnect(0,Origin-Y*(TThick+voidLength/2.0),-Y);
-  midFC.setConnect(1,Origin+Y*(TThick+voidLength/2.0),Y);
-  midFC.setConnect(2,Origin-X*(TThick+voidWidth/2.0),-X);
-  midFC.setConnect(3,Origin+X*(TThick+voidWidth/2.0),X);
-  midFC.setConnect(4,Origin-Z*(TThick+voidDepth),-Z);
-  midFC.setConnect(5,Origin+Z*(TThick+voidHeight),Z);  
-
-  midFC.setLinkSurf(0,-SMap.realSurf(buildIndex+101));
-  midFC.setLinkSurf(1,SMap.realSurf(buildIndex+102));
-  midFC.setLinkSurf(2,-SMap.realSurf(buildIndex+103));
-  midFC.setLinkSurf(3,SMap.realSurf(buildIndex+104));
-  midFC.setLinkSurf(4,-SMap.realSurf(buildIndex+105));
-  midFC.setLinkSurf(5,SMap.realSurf(buildIndex+106));
-
-  // OUTER VOID
-  TThick+=concThick;
-  outerFC.setConnect(0,Origin-Y*(TThick+voidLength/2.0),-Y);
-  outerFC.setConnect(1,Origin+Y*(TThick+voidLength/2.0),Y);
-  outerFC.setConnect(2,Origin-X*(TThick+voidWidth/2.0),-X);
-  outerFC.setConnect(3,Origin+X*(TThick+voidWidth/2.0),X);
-  outerFC.setConnect(4,Origin-Z*(TThick+voidDepth),-Z);
-  outerFC.setConnect(5,Origin+Z*(TThick+voidHeight),Z);  
-
-  outerFC.setLinkSurf(0,-SMap.realSurf(buildIndex+201));
-  outerFC.setLinkSurf(1,SMap.realSurf(buildIndex+202));
-  outerFC.setLinkSurf(2,-SMap.realSurf(buildIndex+203));
-  outerFC.setLinkSurf(3,SMap.realSurf(buildIndex+204));
-  outerFC.setLinkSurf(4,-SMap.realSurf(buildIndex+205));
-  outerFC.setLinkSurf(5,SMap.realSurf(buildIndex+206));
-
+      setConnect(index,Origin-Y*(T+voidLength/2.0),-Y);
+      setConnect(index+1,Origin+Y*(T+voidLength/2.0),Y);
+      setConnect(index+2,Origin-X*(T+voidWidth/2.0),-X);
+      setConnect(index+3,Origin+X*(T+voidWidth/2.0),X);
+      setConnect(index+4,Origin-Z*(T+voidDepth),-Z);
+      setConnect(index+5,Origin+Z*(T+voidHeight),Z);  
+      
+      setLinkSurf(index,-SMap.realSurf(buildIndex+1));
+      setLinkSurf(index+1,SMap.realSurf(buildIndex+2));
+      setLinkSurf(index+2,-SMap.realSurf(buildIndex+3));
+      setLinkSurf(index+3,SMap.realSurf(buildIndex+4));
+      setLinkSurf(index+4,-SMap.realSurf(buildIndex+5));
+      setLinkSurf(index+5,SMap.realSurf(buildIndex+6));
+      BI+=100;
+      index+=6;
+    }
+  FixedComp::nameSideIndex(0,"innerFront");
+  FixedComp::nameSideIndex(6,"midFront");
+  FixedComp::nameSideIndex(12,"outerFront");
+  FixedComp::nameSideIndex(1,"innerBack");
+  FixedComp::nameSideIndex(7,"midBack");
+  FixedComp::nameSideIndex(13,"outerBack");
   
   return;
 }
@@ -325,7 +275,7 @@ DHut::createAll(Simulation& System,
   ELog::RegMethod RegA("DHut","createAll(FC)");
 
   populate(System.getDataBase());
-  createUnitVector(FC,FIndex);
+  createCentredUnitVector(FC,FIndex,voidLength/2.0+concThick+feThick);
   
   createSurfaces();    
   createObjects(System);

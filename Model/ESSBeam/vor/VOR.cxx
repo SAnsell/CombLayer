@@ -421,7 +421,7 @@ VOR::build(Simulation& System,
   ShieldB->addInsertCell(OutPitB->getCells("MidLayer"));
   ShieldB->addInsertCell(Cave->getCells("Concrete"));
   ShieldB->setFront(*OutPitB,"midBack");
-  ShieldB->setBack(Cave->getKey("Mid"),1);
+  ShieldB->setBack(*Cave,"midFront");
   ShieldB->createAll(System,*OutPitB,0);
 
   VPipeOutC->addAllInsertCell(ShieldB->getCell("Void"));
@@ -432,8 +432,8 @@ VOR::build(Simulation& System,
 
   CavePort->addInsertCell(Cave->getCells("Steel"));
   CavePort->setCutFaceFlag(1);
-  CavePort->setCutSurf("front",Cave->getKey("Inner"),1);
-  CavePort->setCutSurf("back",Cave->getKey("Mid"),-1);  
+  CavePort->setCutSurf("front",*Cave,"innerFront");
+  CavePort->setCutSurf("back",*Cave,"#midFront");  
   CavePort->createAll(System,*FocusOutC,2);
 
   Tank->addInsertCell(Cave->getCells("Void"));
