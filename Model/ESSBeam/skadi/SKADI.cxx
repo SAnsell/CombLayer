@@ -504,10 +504,10 @@ SKADI::build(Simulation& System,
   Cave->createAll(System,*ShieldD,2);
   
   CaveFrontCut->addInsertCell(Cave->getCells("FrontWall"));
-  CaveFrontCut->setCutSurf("front",Cave->getKey("Outer"),-1);
-  CaveFrontCut->setCutSurf("back",Cave->getKey("Inner"),1);
+  CaveFrontCut->setCutSurf("front",*Cave,"#Layer3Front");
+  CaveFrontCut->setCutSurf("back",*Cave,"innerFront");
   CaveFrontCut->createAll(System,*ShieldD,2);
-  
+  ELog::EM<<"Cave == "<<CaveFrontCut->getKeyName()<<ELog::endDiag;
   GuideOutE->addInsertCell(voidCell);
   GuideOutE->addInsertCell(CaveFrontCut->getCells("Void"));
   GuideOutE->addInsertCell(Cave->getCell("Void"));

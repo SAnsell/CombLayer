@@ -54,8 +54,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedGroup.h"
-#include "FixedRotateGroup.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -65,8 +64,9 @@
 namespace essSystem
 {
 SkadiHut::SkadiHut(const std::string& Key) :
-  attachSystem::FixedRotateGroup(Key,"Inner",6,"Mid",6,"Outer",6),
-  attachSystem::ContainedComp(),attachSystem::CellMap()
+  attachSystem::FixedRotate(Key,18),
+  attachSystem::ContainedComp(),
+  attachSystem::CellMap()
   /*!
     Constructor
     \param Key :: keynName
@@ -83,34 +83,27 @@ void SkadiHut::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("SkadiHut","populate");
 
-  FixedRotateGroup::populate(Control);
+  FixedRotate::populate(Control);
 
   voidHeight=Control.EvalVar<double>(keyName+"VoidHeight");
   voidWidth=Control.EvalVar<double>(keyName+"VoidWidth");
   voidDepth=Control.EvalVar<double>(keyName+"VoidDepth");
   voidLength=Control.EvalVar<double>(keyName+"VoidLength");
 
-  L1Front=Control.EvalVar<double>(keyName+"L1Front");
-  L1LeftWall=Control.EvalVar<double>(keyName+"L1LeftWall");
-  L1RightWall=Control.EvalVar<double>(keyName+"L1RightWall");
-  L1Roof=Control.EvalVar<double>(keyName+"L1Roof");
-  L1Back=Control.EvalVar<double>(keyName+"L1Back");
-  
-  L2Front=Control.EvalVar<double>(keyName+"L2Front");
-  L2LeftWall=Control.EvalVar<double>(keyName+"L2LeftWall");
-  L2RightWall=Control.EvalVar<double>(keyName+"L2RightWall");
-  L2Roof=Control.EvalVar<double>(keyName+"L2Roof");
-  L2Back=Control.EvalVar<double>(keyName+"L2Back");
-
-  L3Front=Control.EvalVar<double>(keyName+"L3Front");
-  L3LeftWall=Control.EvalVar<double>(keyName+"L3LeftWall");
-  L3RightWall=Control.EvalVar<double>(keyName+"L3RightWall");
-  L3Roof=Control.EvalVar<double>(keyName+"L3Roof");
-  L3Back=Control.EvalVar<double>(keyName+"L3Back");
-
-  L1Mat=ModelSupport::EvalMat<int>(Control,keyName+"L1Mat");
-  L2Mat=ModelSupport::EvalMat<int>(Control,keyName+"L2Mat");
-  L3Mat=ModelSupport::EvalMat<int>(Control,keyName+"L3Mat");
+  const size_t nLayer=Control.EvalVar<size_t>(keyName+"NLayer");
+  for(size_t i=0;i<nLayer;i++)
+    {
+      layerOffset LO;
+      const std::string LStr=keyName+"L"+std::to_string(i+1);
+      LO.front=Control.EvalVar<double>(LStr+"Front");
+      LO.leftWall=Control.EvalVar<double>(LStr+"LeftWall");
+      LO.rightWall=Control.EvalVar<double>(LStr+"RightWall");
+      LO.roof=Control.EvalVar<double>(LStr+"Roof");
+      LO.back=Control.EvalVar<double>(LStr+"Back");
+      LO.floor=Control.EvalVar<double>(LStr+"Floor");
+      LO.mat=ModelSupport::EvalMat<int>(Control,LStr+"Mat");
+      layerV.push_back(LO);
+    }
 
   // Variable for the detector pipe
   pipeRadius=Control.EvalVar<double>(keyName+"pipeRadius");
@@ -125,31 +118,10 @@ void SkadiHut::populate(const FuncDataBase& Control)
   return;
 }
 
-void 
-SkadiHut::createUnitVector(const attachSystem::FixedComp& FC,
-			   const long int sideIndex)
-  /*!
-    Create unit vector 
-    \param FC :: FixedComp
-    \param sideInde :: Link index
-  */
-{
-  ELog::RegMethod RegA("SkadiHut","createUnitVector");
-  
-  yStep+=voidLength/2.0;
-  attachSystem::FixedComp& Outer=getKey("Outer");
-  attachSystem::FixedComp& Mid=getKey("Mid");
-  attachSystem::FixedComp& Inner=getKey("Inner");
-  
-  Outer.createUnitVector(FC,sideIndex);
-  Mid.createUnitVector(FC,sideIndex);
-  Inner.createUnitVector(FC,sideIndex);
-  applyOffset();
-  setDefault("Inner");
-  return;
-}
-
 void SkadiHut::createSurfaces()
+  /*!
+    Construct all the surfaces
+  */
 {
   ELog::RegMethod RegA("SkadiHut","createSurfaces");
 
@@ -160,168 +132,137 @@ void SkadiHut::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*voidDepth,Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*voidHeight,Z); 
 
+  int BI(buildIndex+10);
+  for(const layerOffset& LO : layerV)
+    {
+      // L1 WALLS:
+      ModelSupport::buildPlane
+	(SMap,BI+1,Origin-Y*(LO.front+voidLength/2.0),Y);
+      ModelSupport::buildPlane
+	(SMap,BI+2,Origin+Y*(LO.back+voidLength/2.0),Y);
+      ModelSupport::buildPlane
+	(SMap,BI+3,Origin-X*(LO.leftWall+voidWidth/2.0),X);
+      ModelSupport::buildPlane
+	(SMap,BI+4,Origin+X*(LO.rightWall+voidWidth/2.0),X);
+      ModelSupport::buildPlane
+	(SMap,BI+5,Origin-Z*(LO.floor+voidDepth),Z);  
+      ModelSupport::buildPlane
+	(SMap,BI+6,Origin+Z*(LO.roof+voidHeight),Z);
+      BI+=10;
+    }
 
-  // L1 WALLS:
-  ModelSupport::buildPlane(SMap,buildIndex+11,
-			   Origin-Y*(L1Front+voidLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+12,
-			   Origin+Y*(L1Back+voidLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+13,
-			   Origin-X*(L1LeftWall+voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+14,
-			   Origin+X*(L1RightWall+voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+15,
-			   Origin-Z*(L1Floor+voidDepth),Z);  
-  ModelSupport::buildPlane(SMap,buildIndex+16,
-			   Origin+Z*(L1Roof+voidHeight),Z);
-
-  // L2 WALLS:
-  ModelSupport::buildPlane(SMap,buildIndex+21,
-			   Origin-Y*(L2Front+voidLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+22,
-			   Origin+Y*(L2Back+voidLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+23,
-			   Origin-X*(L2LeftWall+voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+24,
-			   Origin+X*(L2RightWall+voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+25,
-			   Origin-Z*(L2Floor+voidDepth),Z);  
-  ModelSupport::buildPlane(SMap,buildIndex+26,
-			   Origin+Z*(L2Roof+voidHeight),Z);
-
-  // L3 WALLS:
-   ModelSupport::buildPlane(SMap,buildIndex+31,
-			    Origin-Y*(L3Front+voidLength/2.0),Y);
-   ModelSupport::buildPlane(SMap,buildIndex+32,
-			    Origin+Y*(L3Back+voidLength/2.0),Y);
-   ModelSupport::buildPlane(SMap,buildIndex+33,
-			    Origin-X*(L3LeftWall+voidWidth/2.0),X);
-   ModelSupport::buildPlane(SMap,buildIndex+34,
-			    Origin+X*(L3RightWall+voidWidth/2.0),X);
-   ModelSupport::buildPlane(SMap,buildIndex+35,
-			    Origin-Z*(L3Floor+voidDepth),Z);  
-   ModelSupport::buildPlane(SMap,buildIndex+36,
-			    Origin+Z*(L3Roof+voidHeight),Z);
-
-   // Cylinder Pipe
-   ModelSupport::buildCylinder(SMap,buildIndex+41,Origin,Y,pipeRadius);
-   ModelSupport::buildCylinder(SMap,buildIndex+42,Origin,Y,
+  /*
+  // Cylinder Pipe
+   ModelSupport::buildCylinder(SMap,buildIndex+147,Origin,Y,pipeRadius);
+   ModelSupport::buildCylinder(SMap,buildIndex+148,Origin,Y,
 			       pipeRadius+pipeL1Thickness);
-   ModelSupport::buildCylinder(SMap,buildIndex+43,Origin,Y,
+   ModelSupport::buildCylinder(SMap,buildIndex+143,Origin,Y,
 			       pipeRadius+pipeL1Thickness+pipeL2Thickness);
-   ModelSupport::buildPlane(SMap,buildIndex+51,Origin+Y*pipeLength,Y);
-
+   ModelSupport::buildPlane(SMap,buildIndex+151,Origin+Y*pipeLength,Y);
+  */
   return;
 }
 
 void SkadiHut::createObjects(Simulation& System)
+  /*!
+    Construct all the objects
+    \param System :: Simulation
+   */
 {
   ELog::RegMethod RegA("SkadiHut","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "(1 -2 3 -4 5 -6) : (2 -41 -51) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  setCell("Void",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"2 -42 41 -51 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,pipeL1Mat,0.0,Out));
-  setCell("L1Pipe",cellIndex-1);
+  int index(0);
+  int BI(buildIndex);
+  for(const layerOffset& LO : layerV)
+    {
+      index++;
+      const std::string LayerStr="L"+std::to_string(index);
+      HR=ModelSupport::getHeadRule
+	(SMap,BI,"1 -12 13 -14 15 -16 (2:-3:4:-5:6) ");
+      makeCell(LayerStr,System,cellIndex++,LO.mat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"2 -43 42 -51 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,pipeL2Mat,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,BI,"-1 11 13 -14 15 -16");
+      makeCell(LayerStr+"Front",System,cellIndex++,LO.mat,0.0,HR);
+      addCell("FrontWall",cellIndex-1);
+      BI+=10;
+    }
+
+  /*  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -42 41 -51 ");
+  makeCell("L1Pipe",SsytemcellIndex++,pipeL1Mat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -43 42 -51 ");
+  makeCell(,SsytemcellIndex++,pipeL2Mat,0.0,HR);
   setCell("L2Pipe",cellIndex-1);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "1 -12 13 -14 15 -16 43 (2:-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,L1Mat,0.0,Out));
-  setCell("L1",cellIndex-1);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1 11 13 -14 15 -16 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,L1Mat,0.0,Out));
-  setCell("FrontWall",cellIndex-1);
-  setCell("L1Front",cellIndex-1);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-		 "11 -22 23 -24 25 -26 43 (12:-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,L2Mat,0.0,Out));
-  setCell("L2",cellIndex-1);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-11 21 23 -24 25 -26 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,L2Mat,0.0,Out));
-  addCell("FrontWall",cellIndex-1);
-  setCell("L2Front",cellIndex-1);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-		 "21 -32 33 -34 35 -36 43 (22:-23:24:-25:26) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,L3Mat,0.0,Out));
-  setCell("L3",cellIndex-1);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-21 31 33 -34 35 -36 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,L3Mat,0.0,Out));
-  addCell("FrontWall",cellIndex-1);
-  setCell("L3Front",cellIndex-1); 
+  */
 
   // Exclude:
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-			 "( 31 -32 33 -34  35 -36 ) : (32 -43 -51) ");
-  addOuterSurf(Out);      
+  HR=ModelSupport::getHeadRule(SMap,BI,"1 -2 3 -4 5 -6 ");
+  addOuterSurf(HR);      
 
   return;
 }
 
 void
 SkadiHut::createLinks()
+  /*!
+    Construct and name all the links
+  */
 {
   ELog::RegMethod RegA("SkadiHut","createLinks");
 
-  attachSystem::FixedComp& innerFC=FixedGroup::getKey("Inner");
-  attachSystem::FixedComp& midFC=FixedGroup::getKey("Mid");
-  attachSystem::FixedComp& outerFC=FixedGroup::getKey("Outer");
+  FixedComp::setNConnect(6*(layerV.size()+1));
+  double D[6]=
+    {voidLength/2.0,voidLength/2.0,
+     voidWidth/2.0,voidWidth/2.0,
+     voidDepth,voidHeight};
 
-  innerFC.setConnect(0,Origin-Y*(voidLength/2.0),-Y);
-  innerFC.setConnect(1,Origin+Y*(voidLength/2.0),Y);
-  innerFC.setConnect(2,Origin-X*(voidWidth/2.0),-X);
-  innerFC.setConnect(3,Origin+X*(voidWidth/2.0),X);
-  innerFC.setConnect(4,Origin-Z*voidDepth,-Z);
-  innerFC.setConnect(5,Origin+Z*voidHeight,Z);  
+  FixedComp::setConnect(0,Origin-Y*D[0],-Y);
+  FixedComp::setConnect(1,Origin+Y*D[1],Y);
+  FixedComp::setConnect(2,Origin-X*D[2],-X);
+  FixedComp::setConnect(3,Origin+X*D[3],X);
+  FixedComp::setConnect(4,Origin-Y*D[4],-Z);
+  FixedComp::setConnect(5,Origin-Y*D[5],Z);
 
-  innerFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  innerFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));
-  innerFC.setLinkSurf(2,-SMap.realSurf(buildIndex+3));
-  innerFC.setLinkSurf(3,SMap.realSurf(buildIndex+4));
-  innerFC.setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-  innerFC.setLinkSurf(5,SMap.realSurf(buildIndex+6));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
-  
-  midFC.setConnect(0,Origin-Y*(L1Front+voidLength/2.0),-Y);
-  midFC.setConnect(1,Origin+Y*(L1Back+voidLength/2.0),Y);
-  midFC.setConnect(2,Origin-X*(L1LeftWall+voidWidth/2.0),-X);
-  midFC.setConnect(3,Origin+X*(L1RightWall+voidWidth/2.0),X);
-  midFC.setConnect(4,Origin-Z*(L1Floor+voidDepth),-Z);
-  midFC.setConnect(5,Origin+Z*(L1Roof+voidHeight),Z);  
+  FixedComp::nameSideIndex(0,"innerFront");
+  FixedComp::nameSideIndex(1,"innerBack");
+  int BI(buildIndex+10);
+  size_t index=6;
+  for(const layerOffset& LO : layerV)
+    {
+      setConnect(index,Origin-Y*(D[0]+LO.front),-Y);
+      setConnect(index+1,Origin+Y*(D[1]+LO.back),Y);
+      setConnect(index+2,Origin-X*(D[2]+LO.leftWall),-X);
+      setConnect(index+3,Origin+X*(D[3]+LO.rightWall),X);
+      setConnect(index+4,Origin-Z*(D[4]+LO.roof),-Z);
+      setConnect(index+5,Origin+Z*(D[5]+LO.floor),Z);
 
-  midFC.setLinkSurf(0,-SMap.realSurf(buildIndex+11));
-  midFC.setLinkSurf(1,SMap.realSurf(buildIndex+12));
-  midFC.setLinkSurf(2,-SMap.realSurf(buildIndex+13));
-  midFC.setLinkSurf(3,SMap.realSurf(buildIndex+14));
-  midFC.setLinkSurf(4,-SMap.realSurf(buildIndex+15));
-  midFC.setLinkSurf(5,SMap.realSurf(buildIndex+16));
+      setLinkSurf(index+0,-SMap.realSurf(BI+1));
+      setLinkSurf(index+1,SMap.realSurf(BI+2));
+      setLinkSurf(index+2,-SMap.realSurf(BI+3));
+      setLinkSurf(index+3,SMap.realSurf(BI+4));
+      setLinkSurf(index+4,-SMap.realSurf(BI+5));
+      setLinkSurf(index+5,SMap.realSurf(BI+6));
 
-  outerFC.setConnect(0,Origin-Y*(L1Front+L2Front+L3Front+voidLength/2.0),-Y);
-  outerFC.setConnect(1,Origin+Y*(L1Back+L2Back+L3Back+voidLength/2.0),Y);
-  outerFC.setConnect(2,Origin-X*(L1LeftWall+L2LeftWall+L3LeftWall+voidWidth/2.0),-X);
-  outerFC.setConnect(3,Origin+X*(L1RightWall+L2RightWall+L3RightWall+voidWidth/2.0),X);
-  outerFC.setConnect(4,Origin-Z*(L1Floor+L2Floor+L3Floor+voidDepth),-Z);
-  outerFC.setConnect(5,Origin+Z*(L1Roof+L2Roof+L3Floor+voidHeight),Z);  
+      const std::string lStr="Layer"+std::to_string(index/6);
+      FixedComp::nameSideIndex(index,lStr+"Front");
+      FixedComp::nameSideIndex(index+1,lStr+"Back");
 
-  outerFC.setLinkSurf(0,-SMap.realSurf(buildIndex+31));
-  outerFC.setLinkSurf(1,SMap.realSurf(buildIndex+32));
-  outerFC.setLinkSurf(2,-SMap.realSurf(buildIndex+33));
-  outerFC.setLinkSurf(3,SMap.realSurf(buildIndex+34));
-  outerFC.setLinkSurf(4,-SMap.realSurf(buildIndex+35));
-  outerFC.setLinkSurf(5,SMap.realSurf(buildIndex+36));
+      index+=6;
+      BI+=10;
+    }
 
   return;
 }
@@ -340,7 +281,7 @@ SkadiHut::createAll(Simulation& System,
   ELog::RegMethod RegA("SkadiHut","createAll(FC)");
 
   populate(System.getDataBase());
-  createUnitVector(FC,FIndex);
+  createCentredUnitVector(FC,FIndex,voidLength/2.0);
   
   createSurfaces();    
   createObjects(System);

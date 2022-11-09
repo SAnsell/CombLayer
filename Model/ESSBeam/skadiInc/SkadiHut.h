@@ -26,6 +26,19 @@ class Simulation;
 
 namespace essSystem
 {
+
+  struct layerOffset
+  {
+    double front;               ///< Front extension
+    double back;                ///< Back steel extension
+    double leftWall;            ///< Left wall
+    double rightWall;           ///< Right wall
+    double roof;                ///< Roof
+    double floor;               ///< Token floor depth
+
+    int mat;
+  };
+
 /*!
   \class SkadiHut
   \version 1.0
@@ -34,41 +47,19 @@ namespace essSystem
   \brief SkadiHut unit  
 */
 class SkadiHut:
-  public attachSystem::FixedRotateGroup,
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap
 {
  private:
 
+  double voidLength;            ///< void length [total]
   double voidHeight;            ///< void height [top only]
   double voidWidth;             ///< void width [total]
   double voidDepth;             ///< void depth [low only]
-  double voidLength;            ///< void length [total]
 
-  double L1Front;               ///< Front extension
-  double L1LeftWall;            ///< Left wall
-  double L1RightWall;           ///< Right wall
-  double L1Roof;                ///< Roof
-  double L1Floor;               ///< Token floor depth
-  double L1Back;                ///< Back steel extension
 
-  double L2Front;               ///< Front extension
-  double L2LeftWall;            ///< Left wall
-  double L2RightWall;           ///< Right wall
-  double L2Roof;                ///< Roof
-  double L2Floor;               ///< Token floor depth
-  double L2Back;                ///< Back length
-
-  double L3Front;               ///< Front extension
-  double L3LeftWall;            ///< Left wall
-  double L3RightWall;           ///< Right wall
-  double L3Roof;                ///< Roof
-  double L3Floor;               ///< Token floor depth
-  double L3Back;                ///< Back length
-  
-  int L1Mat;                  ///< First layer material 
-  int L2Mat;                  ///< Second layer material
-  int L3Mat;                  ///< Third layer material
+  std::vector<layerOffset> layerV;  ///< layer values
   
   double pipeRadius;
   double pipeLength;
@@ -79,7 +70,6 @@ class SkadiHut:
   int pipeL2Mat;  
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();

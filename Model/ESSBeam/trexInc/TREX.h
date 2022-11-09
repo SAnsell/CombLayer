@@ -184,14 +184,12 @@ class TREX : public attachSystem::CopiedComp
 
   std::shared_ptr<beamlineSystem::PlateUnit> GuideOutI;
  
-
   void buildBunkerUnits(Simulation&,const attachSystem::FixedComp&,
                         const long int,const int);
   void buildBunkerWallUnits(Simulation&,const Bunker&,
 			    const attachSystem::FixedComp&,
 			    const long int,const int);
   
-
   
  public:
   

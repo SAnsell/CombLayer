@@ -259,6 +259,7 @@ void SKADIvariables(FuncDataBase& Control)
   Control.addVariable("skadiCaveVoidWidth",250.0);
   Control.addVariable("skadiCaveVoidLength",250.0);
 
+  Control.addVariable("skadiCaveNLayer",3);
   Control.addVariable("skadiCaveL1Front",0.5);
   Control.addVariable("skadiCaveL1LeftWall",0.5);
   Control.addVariable("skadiCaveL1RightWall",0.5);
