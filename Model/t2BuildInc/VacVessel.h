@@ -95,7 +95,7 @@ class VacVessel :
 		      const attachSystem::FixedComp&);
   void createSurfaces();
   void createLinks();
-  void createObjects(Simulation&,const std::string&);
+  void createObjects(Simulation&);
 
   Geometry::Vec3D getDirection(const size_t) const;
 
@@ -111,8 +111,8 @@ class VacVessel :
   int getDivideSurf() const { return divideSurf; }
 
   void buildPair(Simulation&,const Groove&,const Hydrogen&);
-  void buildSingle(Simulation&, const attachSystem::FixedComp&,
-		 const std::string&);
+  void buildSingle(Simulation&, const attachSystem::FixedComp&);
+
 
 
 

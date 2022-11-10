@@ -295,7 +295,8 @@ GeneralShutter::applyRotations()
 
   attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
-  
+
+  ELog::EM<<"P = "<<keyName<<"  == "<<ZOffset<<ELog::endDiag;  
   // Now do rotation:
 
   mainFC.setCentre(Y*voidXoffset);
@@ -315,6 +316,7 @@ GeneralShutter::applyRotations()
   //              [close == 3: close imp =-1]
 
   targetPt=Origin+XYAxis*outerRadius;
+
   frontPt=Origin+XYAxis*innerRadius+Z*openZShift;
   endPt=frontPt+XYAxis*(outerRadius-innerRadius);
   
@@ -366,10 +368,10 @@ GeneralShutter::createSurfaces()
   */
 {
   ELog::RegMethod RegA("GeneralShutter","createSurfaces");
+  ELog::EM<<"START = "<<keyName<<ELog::endDiag;
 
   // Divide:
   //  ModelSupport::buildPlane(SMap,buildIndex+10,Origin,Y);
-  
   // Fixed Steel  
   ModelSupport::buildPlane(SMap,buildIndex+5,
 			   Origin+Z*(totalHeight-upperSteel),Z);
@@ -377,7 +379,6 @@ GeneralShutter::createSurfaces()
   // Top blade [NOTE : BeamAxis]
   ModelSupport::buildPlane(SMap,buildIndex+15,
 			   frontPt+Z*shutterHeight,Z);
-
   // Inner cut [on flightline]
   ModelSupport::buildPlane(SMap,buildIndex+25,
    frontPt+Z*(voidZOffset+voidHeight/2.0+centZOffset),zSlope);
@@ -404,7 +405,6 @@ GeneralShutter::createSurfaces()
   // Outer cut [on flightline]
   ModelSupport::buildPlane(SMap,buildIndex+225,
 	      frontPt+Z*(voidZOffset+voidHeightOuter/2.0+centZOffset),zSlope);
-  
   // Outer cut [on flightline]
   ModelSupport::buildPlane(SMap,buildIndex+226,
 	   frontPt-Z*(-voidZOffset+voidHeightOuter/2.0-centZOffset),zSlope);

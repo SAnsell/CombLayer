@@ -232,7 +232,8 @@ ReflectorAssembly::createObjects(Simulation& System)
     (DMod->getKeyName(),"DMod to CC failed");
 
   DVacObj->addInsertCell(refCell);
-  DVacObj->buildSingle(System,*DMod,CMod->getExclude());
+  DVacObj->setCutSurf("Internal",CMod->getOuterSurf());
+  DVacObj->buildSingle(System,*DMod);
   RefObj->insertComponent(System,"FLNarrow",DVacObj->getMainRule("front"));
   RefObj->insertComponent(System,"FLWish",DVacObj->getMainRule("back"));
 

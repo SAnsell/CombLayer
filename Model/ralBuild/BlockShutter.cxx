@@ -115,7 +115,6 @@ BlockShutter::populate(const FuncDataBase& Control)
   colletFGap=Control.EvalVar<double>(blockKey+"ColletFGap");
   colletMat=ModelSupport::EvalMat<int>(Control,blockKey+"ColletMat");
 
-
   return;
 }
 

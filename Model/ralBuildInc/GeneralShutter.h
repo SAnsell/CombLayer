@@ -108,7 +108,7 @@ class GeneralShutter :
   int lowerCell;                ///< Block that stops the beam
   int innerVoidCell;            ///< inner void cell
 
-  double ZOffset;
+  double ZOffset;               ///< Working ZOffset
   //--------------
   // FUNCTIONS:
   //--------------
@@ -123,7 +123,6 @@ class GeneralShutter :
   void createBlocks(Simulation&);
   void createLinks();
   void applyRotations();
-
   
  public:
 
@@ -164,7 +163,7 @@ class GeneralShutter :
   virtual int exitWindow(const double,std::vector<int>&,
 			 Geometry::Vec3D&) const;
 
-  void setZOffset(const double D) { ZOffset=D; }
+  void setZOffset(const double D) { ZOffset=D; ELog::EM<<"ERROR "<<keyName<<ELog::endErr;}
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int sideIndex);
 

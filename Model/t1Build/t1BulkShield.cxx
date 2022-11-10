@@ -257,9 +257,9 @@ t1BulkShield::createShutters(Simulation& System)
       else if (i==merlinShutter)
 	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new BlockShutter(i,"shutter","merlinShutter")));
-//      else if (i==s5Shutter)
-//	GData.push_back(std::shared_ptr<GeneralShutter>
-//			(new BlockShutter(i,"shutter","s5Shutter")));
+      else if (i==s5Shutter)
+	GData.push_back(std::shared_ptr<GeneralShutter>
+			(new BlockShutter(i,"shutter","s5Shutter")));
       else if (i==mariShutter)
 	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new BlockShutter(i,"shutter","mariShutter")));

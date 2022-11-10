@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   moderator/makeTS2.cxx
+ * File:   t2Build/makeTS2.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
  *

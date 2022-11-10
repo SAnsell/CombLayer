@@ -335,7 +335,7 @@ VacVessel::createSurfaces()
 }
 
 void
-VacVessel::createObjects(Simulation& System,const std::string& Exclude)
+VacVessel::createObjects(Simulation& System)
   /*!
     Adds the Chip guide components
     \param System :: Simulation to create objects in
@@ -343,35 +343,37 @@ VacVessel::createObjects(Simulation& System,const std::string& Exclude)
   */
 {
   ELog::RegMethod RegA("VacVessel","createObjects");
+
+  HeadRule HR;
+
+  const HeadRule excludeHR=getRule("Internal");
   
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-41 -42 43 -44 45 -46");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-41 -42 43 -44 45 -46");
+  addOuterSurf(HR);
 
   // Inner 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-1 -2 3 -4 5 -6");
-  Out+=" "+Exclude;
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 -2 3 -4 5 -6");
+  System.addCell(cellIndex++,0,0.0,HR*excludeHR);
 
   // First Al layer
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-11 -12 13 -14 15 -16 "
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -12 13 -14 15 -16 "
 				 " (1:2:-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
+  System.addCell(cellIndex++,alMat,0.0,HR);
 
   // Tertiay layer
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-21 -22 23 -24 25 -26 "
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-21 -22 23 -24 25 -26 "
 				 " (11:12:-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  System.addCell(cellIndex++,0,0.0,HR);
 
   // Tertiay layer
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-31 -32 33 -34 35 -36 "
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-31 -32 33 -34 35 -36 "
 				 " (21:22:-23:24:-25:26) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,outMat,0.0,Out));
+  System.addCell(cellIndex++,outMat,0.0,HR);
 
   // Outer clearance
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-41 -42 43 -44 45 -46 "
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-41 -42 43 -44 45 -46 "
 				 " (31:32:-33:34:-35:36) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  System.addCell(cellIndex++,0,0.0,HR);
 
   return;
 }
@@ -502,7 +504,7 @@ VacVessel::buildPair(Simulation& System,const Groove& GMod,
   createUnitVector(GMod,0);
   createBoundary(GMod,HMod);
   createSurfaces();
-  createObjects(System,GMod.getExclude()+" "+HMod.getExclude());
+  createObjects(System); //GMod.getExclude()+" "+HMod.getExclude());
   createLinks();
   insertObjects(System);       
 
@@ -526,13 +528,12 @@ VacVessel::buildPair(Simulation& System,const Groove& GMod,
 
 void
 VacVessel::buildSingle(Simulation& System,
-		     const attachSystem::FixedComp& AFC,
-		     const std::string& exclude)
+		       const attachSystem::FixedComp& AFC)
 
   /*!
     Global creation of the vac-vessel
     \param System :: Simulation to add vessel to
-    \param FC :: Previously build  moderator
+    \param AFC :: Previously build  moderator
     \param CC :: Container to wrap
   */
 {
@@ -542,7 +543,7 @@ VacVessel::buildSingle(Simulation& System,
   createUnitVector(AFC,0);                       // fixed 
   createBoundary(AFC);
   createSurfaces();
-  createObjects(System,exclude);  // CC.getExclude()
+  createObjects(System); 
   createLinks();
   insertObjects(System);       
 

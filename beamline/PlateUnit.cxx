@@ -122,7 +122,10 @@ PlateUnit::~PlateUnit()
   /*!
     Destructor
    */
-{}
+{
+  delete frontCV;
+  delete backCV;
+}
 
 PlateUnit*
 PlateUnit::clone() const 

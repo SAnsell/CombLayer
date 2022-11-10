@@ -136,7 +136,7 @@ foreach my $mainProg (@masterProg)
     
     elsif ($mainProg eq "fullBuild")
       {
-	my @fullBuild = qw( t2Build ralBuild );
+	my @fullBuild = qw( t2Build ralBuild ralVar);
 	push(@fullBuild,@mainLib);
 	$gM->addDepUnit("fullBuild", [@fullBuild]),
       }

@@ -40,6 +40,7 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "BlockShutterGenerator.h"
 
 namespace setVariable
 {
@@ -769,6 +770,32 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("shutterBlock1Mat1","Aluminium"); 
   Control.addVariable("shutterBlock1Mat2","Aluminium");
   Control.addVariable("shutterBlock1Mat3","B-Poly");
+
+    // SHUTTERS COLLIMATION:
+
+  BlockShutterGenerator BSGen;
+ 
+  // x/z step : x/zAngle : beamSize : beam change angle (+ve is focused)
+  //  BSGen.generateCyl(Control,"sandals",-1.6,0.0,   -1.6,0.0,  7.3309,0.3595   );
+  BSGen.generateBox(Control,"chipIR",-1.6,0.0,   -1.6, 0.0,  6.17,8.61, 0.35,0.47);  // USE ABOVE
+  BSGen.generateBox(Control,"T2", -1.7,0.0,    0.0,0.0,   6.17,8.61, 0.35,0.47);
+  BSGen.generateBox(Control,"T3",    2.2,0.0,    2.0,-1.5,  6.74,4.8,  0.05,0.44); 
+  BSGen.generateBox(Control,"T4",   2.2,0.0,    2.2,-1.5,  7.91,4.57, 0.22,0.275); 
+  BSGen.generateBox(Control,"T5",     2.2,0.0,    0.0,0.0,   7.9, 7.9,  0.395,0.395); 
+  BSGen.generateBox(Control,"T6",    2.0,0.0,    0.0,0.0,   6.79,6.79, 0.0,0.0); 
+  BSGen.generateBox(Control,"nimrod",-1.7,0.0,    0.0,0.0,   8.22,7.93, 0.35,0.22); 
+  BSGen.generateBox(Control,"T8",  -1.5,0.0,    0.0,0.0,   8.4,8.0,   0.16,0.088); 
+  BSGen.generateBox(Control,"T9",    -1.3,0.0,   -0.6,0.0,   7.90,7.90, 0.63,0.63);    
+  BSGen.generateBox(Control,"zoom",    1.3,0.0,    0.0,0.0,   7.34,7.34, 0.22,0.22); 
+  BSGen.generateBox(Control,"sans2d", 1.7,0.0,    0.0,0.0,   7.38,7.38, 0.58,0.58);
+  BSGen.generateBox(Control,"T12",     2.0,0.0,    2.0,0.0,   8.88,8.88, 0.58,0.58); 
+  BSGen.generateBox(Control,"polref", -2.2,0.0,   -1.0,0.0,   9.4,9.4,   0.0,0.0);
+  BSGen.generateBox(Control,"offspec",      0.0,0.0,    0.0,0.0,   7.0,7.0,   0.0,0.0); // CLOSED
+  BSGen.generateBox(Control,"T15",    2.0,0.0,    0.7,0.0,   7.74,7.74, 0.48,0.48); 
+  BSGen.generateBox(Control,"T16",     1.4,0.0,    0.0,0.0,   7.4,8.6,   0.115,0.172);
+  BSGen.generateBox(Control,"T17",     1.4,0.0,    0.0,0.0,   7.4,8.6,   0.115,0.172);  
+  BSGen.generateBox(Control,"wish",    1.5,0.0,    1.5,0.0,   8.0,6.0,   0.143,0.0);
+
 
   // BULK INSERT
   Control.addVariable("bulkInsertIHeight",56.25);

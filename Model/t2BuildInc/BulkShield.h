@@ -43,10 +43,11 @@ namespace shutterSystem
   \brief Specialized for for the BulkShield
 */
 
-class BulkShield : public attachSystem::FixedComp,
-  public attachSystem::ContainedComp,
-  public attachSystem::CellMap,
-  public attachSystem::ExternalCut
+class BulkShield :
+    public attachSystem::FixedComp,
+    public attachSystem::ContainedComp,
+    public attachSystem::CellMap,
+    public attachSystem::ExternalCut
 {
  private:
   
