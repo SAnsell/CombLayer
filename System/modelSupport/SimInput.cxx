@@ -178,7 +178,7 @@ processExitChecks(Simulation& System,
 		  ELog::EM<<"FC["<<FC.getKeyName()<<"] ";
 		  if (!SValidCheck.runPoint(System,CP,NPts))
 		    {
-		      ELog::EM<<"ERROR "<<ELog::endErr;
+		      ELog::EM<<"ERROR (runPoint) "<<ELog::endErr;
 		      errFlag += -1;
 		    }
 		  usedPoints.emplace(CP);

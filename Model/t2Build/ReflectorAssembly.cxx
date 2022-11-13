@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   moderator/makeReflector.cxx
+ * File:   t2Build/makeReflector.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
  *
@@ -174,15 +174,14 @@ ReflectorAssembly::createObjects(Simulation& System)
       OrthoInsert OI("ortho");
       OI.build(System,*HydObj,*GrooveObj);
     }
-  
+
+  VacObj->setCutSurf("Internal",GrooveObj->getExcludeSurf()*
+		     HydObj->getExcludeSurf());
   VacObj->addInsertCell(refCell);
   VacObj->buildPair(System,*GrooveObj,*HydObj);
 
   RefObj->insertComponent(System,"FLGroove",VacObj->getMainRule("front"));
   RefObj->insertComponent(System,"FLHydro",VacObj->getMainRule("back"));
-
-
-
 
   PMgroove->addInsertCell(refCell);
   PMgroove->setTargetSurf(TarObj->getLinkSurf(1));
@@ -232,7 +231,7 @@ ReflectorAssembly::createObjects(Simulation& System)
     (DMod->getKeyName(),"DMod to CC failed");
 
   DVacObj->addInsertCell(refCell);
-  DVacObj->setCutSurf("Internal",CMod->getOuterSurf());
+  DVacObj->setCutSurf("Internal",CMod->getExcludeSurf());
   DVacObj->buildSingle(System,*DMod);
   RefObj->insertComponent(System,"FLNarrow",DVacObj->getMainRule("front"));
   RefObj->insertComponent(System,"FLWish",DVacObj->getMainRule("back"));

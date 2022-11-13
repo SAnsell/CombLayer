@@ -651,6 +651,36 @@ TS2layout(FuncDataBase& Control)
   // SHUTTER VESSEL:
   Control.addVariable("voidXoffset",4.475);       // Shutter offset to target centre
 
+  
+  /*
+    Control.addVariable("shutterTotalDepth",270.5);     // outer shutter rad
+	  
+  Control.addVariable("shutterUpperSteel",190.5);     // top thickness
+  Control.addVariable("shutterLowerSteel",265.90);    // base thickness
+  Control.addVariable("shutterHeight",131.4);         // Total shutter height
+  Control.addVariable("shutterDepth",131.4);          // Total shutter height
+  Control.addVariable("shutterWidth",28.00);          // Full width
+
+  Control.addVariable("shutterVoidZOffset",0.0);        // centre of steel hole
+ 
+  Control.addVariable("shutterVoidHeight",28.0);             // Void height
+  Control.addVariable("shutterVoidHeightInner",18.00);     // Gap height
+  Control.addVariable("shutterVoidHeightOuter",22.30);     // Gap height
+  Control.addVariable("shutterVoidWidthInner",18.00);      // Gap width
+  Control.addVariable("shutterVoidWidthOuter",24.00);      // Gap width
+  Control.addVariable("shutterVoidDivide",66.00);             // Smaller gap len
+  // 
+  Control.addVariable("shutterSteelMat","CastIron");         // Cast iron
+
+  Control.addVariable("shutterClearGap",0.6);      // Gap out step
+  Control.addVariable("shutterClearBoxStep",2.0);      // Gap out step
+  Control.addVariable("shutterClearBoxLen",25.0);      // Gap length of block
+  Control.addVariable("shutterClearNStep",2);      // Gap length of block
+  Control.addVariable("shutterClearCent0",50.0);      
+  Control.addVariable("shutterClearCent1",150.0);     
+  Control.addVariable("shutterGapSize",22.30);      // Gap size
+  Control.addVariable("shutterClosedZOffset",28.0);    // Closed distance
+  */
   Control.addParse<double>("shutterInnerRadius","bulkTorpedoRadius");
   Control.addParse<double>("shutterOuterRadius","bulkShutterRadius");
   Control.addParse<double>("shutterTotalHeight","bulkRoof");
@@ -673,22 +703,14 @@ TS2layout(FuncDataBase& Control)
   // 
   Control.addVariable("shutterSteelMat","CastIron");         // Cast iron
 
+  /*
   Control.addVariable("shutter1Height",120.0);         // New drawing 8711-300
   Control.addVariable("shutter1Depth",120.0);         // New drawing 8711-300
   Control.addVariable("shutter1VoidHeightInner",25.0);       // ChipIR size
   Control.addVariable("shutter1VoidHeightOuter",25.0);       // ChipIR size
   Control.addVariable("shutter1VoidDivide",-1.0);          // ChipIR no divide
   Control.addVariable("shutter1VoidWidthInner",21.00);      // Gap width
-
-  Control.addVariable("shutterClearGap",0.6);      // Gap out step
-  Control.addVariable("shutterClearBoxStep",2.0);      // Gap out step
-  Control.addVariable("shutterClearBoxLen",25.0);      // Gap length of block
-  Control.addVariable("shutterClearNStep",2);      // Gap length of block
-  Control.addVariable("shutterClearCent0",50.0);      
-  Control.addVariable("shutterClearCent1",150.0);     
-  
   Control.addVariable("shutter1VoidZOffset",-30.0);
-  Control.addVariable("shutter2VoidZOffset",0.0);
 
   Control.addVariable("shutter1GapSize",25);        // ChipIR size
   Control.addVariable("shutterGapSize",22.30);      // Gap size
@@ -698,9 +720,21 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("shutter2Closed",1);          // closed shutter (true)
   Control.addVariable("shutterClosed",0);           // Open shutter [imp:0]
   Control.addVariable("shutter1ClosedZOffset",42.0);   // Closed distance
-  Control.addVariable("shutter2ClosedZOffset",28.0);   // Closed distance
-  Control.addVariable("shutterClosedZOffset",28.0);    // Closed distance
+
+  */
+  Control.addVariable("shutterClearGap",0.6);      // Gap out step
+  Control.addVariable("shutterClearBoxStep",2.0);      // Gap out step
+  Control.addVariable("shutterClearBoxLen",25.0);      // Gap length of block
+  Control.addVariable("shutterClearNStep",2);      // Gap length of block
+  Control.addVariable("shutterClearCent0",50.0);      
+  Control.addVariable("shutterClearCent1",150.0);     
   
+  Control.addVariable("shutterClosedZOffset",28.0);    // Closed distance
+
+  //  Control.addVariable("shutter2Closed",1);          // closed shutter (true)
+  //  Control.addVariable("shutter2VoidZOffset",0.0);
+
+    
   // ALL SHUTTERS HAVE DIFFERENT POSITIONS:
   Control.addVariable("shutter1OpenZShift",48.86);    // ChipIR
   Control.addVariable("shutter2OpenZShift",11.86);    // W2 : 

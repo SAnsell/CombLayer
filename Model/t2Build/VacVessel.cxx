@@ -347,6 +347,7 @@ VacVessel::createObjects(Simulation& System)
   HeadRule HR;
 
   const HeadRule excludeHR=getRule("Internal");
+  ELog::EM<<"Internal = ="<< excludeHR<<ELog::endDiag;
   
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-41 -42 43 -44 45 -46");
   addOuterSurf(HR);

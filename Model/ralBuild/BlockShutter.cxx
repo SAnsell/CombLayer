@@ -245,7 +245,9 @@ BlockShutter::createAll(Simulation& System,
   ELog::RegMethod RegA("BlockShutter","createAll");
 
   const FuncDataBase& Control=System.getDataBase();
+
   populate(Control);
+
   collPtr->populate(Control);
 
   this->GeneralShutter::setZOffset(collPtr->calcDrop(innerRadius));

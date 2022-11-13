@@ -296,7 +296,6 @@ GeneralShutter::applyRotations()
   attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
-  ELog::EM<<"P = "<<keyName<<"  == "<<ZOffset<<ELog::endDiag;  
   // Now do rotation:
 
   mainFC.setCentre(Y*voidXoffset);
@@ -306,7 +305,7 @@ GeneralShutter::applyRotations()
 			
   BeamAxis=mainFC.getY();
   XYAxis=BeamAxis;
-  if (XYAxis.abs()<0.999) ELog::EM<<"ERROR "<<BeamAxis<<ELog::endErr;
+  if (XYAxis.abs()<0.999) ELog::EM<<"Beam ERROR "<<BeamAxis<<ELog::endErr;
   
   zSlope=Z;
   Geometry::Quaternion::calcQRotDeg(zAngle,X).rotate(BeamAxis);
@@ -368,7 +367,6 @@ GeneralShutter::createSurfaces()
   */
 {
   ELog::RegMethod RegA("GeneralShutter","createSurfaces");
-  ELog::EM<<"START = "<<keyName<<ELog::endDiag;
 
   // Divide:
   //  ModelSupport::buildPlane(SMap,buildIndex+10,Origin,Y);

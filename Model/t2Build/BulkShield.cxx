@@ -263,8 +263,8 @@ BulkShield::createShutters(Simulation& System)
 
   const std::vector<std::string> shutterName=
     {
-      "chipIR", "T2", "T3", "T4", "T5",   "T6", "T7",  "T8", "T9",
-      "Wish",  "T11", "T12",  "T13","T14", "T15", "T16", "T17", "T18"};
+      "chipIR", "T2", "T3", "T4", "T5",   "T6", "nimrod",  "T8", "T9",
+      "zoom",  "sans2d", "T12",  "polref","offspec", "T15", "T16", "T17", "wish"};
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
@@ -287,10 +287,9 @@ BulkShield::createShutters(Simulation& System)
       // 			(new BlockShutter(i+1,"shutter","letShutter")));
       //      else
       GData.push_back(std::shared_ptr<GeneralShutter>
-		      (new BlockShutter(i+1,"shutter",shutterName[i])));
+		      (new BlockShutter(i+1,"shutter",shutterName[i]+"Shutter")));
       OR.addObject(GData.back());
     }
-  ELog::EM<<"HED == "<<ELog::endDiag;
   // const int shutterCell=getCell("Shutter");
   // MonteCarlo::Object* shutterObj=System.findObject(shutterCell);
   // if (!shutterObj)

@@ -163,7 +163,7 @@ class GeneralShutter :
   virtual int exitWindow(const double,std::vector<int>&,
 			 Geometry::Vec3D&) const;
 
-  void setZOffset(const double D) { ZOffset=D; ELog::EM<<"ERROR "<<keyName<<ELog::endErr;}
+  void setZOffset(const double D) { ZOffset=D; }
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int sideIndex);
 
