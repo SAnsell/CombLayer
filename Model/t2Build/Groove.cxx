@@ -255,7 +255,7 @@ void
 Groove::createLinks()
   /*!
     Create links
-   */
+  */
 {
   ELog::RegMethod RegA("Groove","createLinks");
 
