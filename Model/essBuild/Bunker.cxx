@@ -373,39 +373,34 @@ Bunker::createObjects(Simulation& System,
   */
 {
   ELog::RegMethod RegA("Bunker","createObjects");
-  
-  std::string Out;
-  const std::string Inner=FC.getLinkString(sideIndex);
+
+  HeadRule HR;
+
+  const HeadRule InnerHR=FC.getFullRule(sideIndex);
   const int InnerSurf=FC.getLinkSurf(sideIndex);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -7 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,voidMat,0.0,Out+Inner));
-  setCell("MainVoid",cellIndex-1);
-  // process left wall:
-  //  std::string leftWallStr=procLeftWall(System);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -7 3 -4 5 -6 ");
+  makeCell("MainVoid",System,cellIndex++,voidMat,0.0,HR*InnerHR);
 
   // left:right:floor:roof:Outer
   int lwIndex(buildIndex);  // indexs for wall 
   int rwIndex(buildIndex);
   if (leftWallFlag)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1 -7 -3 13 5 -106 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+Inner));
-      setCell("leftWall",cellIndex-1);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -7 -3 13 5 -106");
+      makeCell("leftWall",System,cellIndex++,wallMat,0.0,HR*InnerHR);
       lwIndex+=10;
     }
   if (rightWallFlag)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1 -7 4 -14 5 -106 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+Inner));
-      setCell("rightWall",cellIndex-1);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -7 4 -14 5 -106 ");
+      makeCell("rightWall",System,cellIndex++,wallMat,0.0,HR*InnerHR);
       rwIndex+=10;
     }
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,lwIndex,rwIndex,
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,lwIndex,rwIndex,
 				 " 1 -17 3M -4N -5 15 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+Inner));
-  setCell("floor",cellIndex-1);
+  makeCell("floor",System,cellIndex++,wallMat,0.0,HR*InnerHR);
 
   // Main wall not divided
   int divIndex(buildIndex+1000);
@@ -413,27 +408,27 @@ Bunker::createObjects(Simulation& System,
   for(size_t i=0;i<nSectors;i++)
     {
       // Divide the roof into sector as well
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1 -17 6 (106 : -7) -16 ");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -17 6 (106 : -7) -16 ");
       if (i)
-	Out+=ModelSupport::getComposite(SMap,divIndex," 1 ");
+	HR*=HeadRule(SMap,divIndex,1);
       else if (leftWallFlag)
-	Out+=ModelSupport::getComposite(SMap,buildIndex," 13  (106 : 3) ");
+	HR*=ModelSupport::getHeadRule(SMap,buildIndex,"13 (106 : 3)");
       else
-	Out+=ModelSupport::getComposite(SMap,buildIndex," 13 ");
+	HR*=HeadRule(SMap,buildIndex,13);
 
       if (i+1!=nSectors)
-	Out+=ModelSupport::getComposite(SMap,divIndex," -2 ");
+	HR*=HeadRule(SMap,divIndex,-2);
       else if (rightWallFlag)
-	  Out+=ModelSupport::getComposite(SMap,buildIndex," -14  (106 : -4) ");
+	HR*=ModelSupport::getHeadRule(SMap,buildIndex,"-14  (106 : -4)");
       else
-	Out+=ModelSupport::getComposite(SMap,buildIndex," -14 ");
+	HR*=HeadRule(SMap,buildIndex,-14);
       
-      System.addCell(MonteCarlo::Object(cellIndex++,roofMat,0.0,Out+Inner));
+      makeCell("roof",System,cellIndex++,roofMat,0.0,HR*InnerHR);
       addCell("roof"+std::to_string(i),cellIndex-1);
-      Out=ModelSupport::getComposite(SMap,buildIndex,divIndex,
-				     " 1 7 -17 1M -2M 5 -106 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
-      addCell("frontWall",cellIndex-1);
+
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,divIndex,
+				     "1 7 -17 1M -2M 5 -106");
+      makeCell("frontWall",System,cellIndex++,wallMat,0.0,HR);
       addCell("frontWall"+std::to_string(i),cellIndex-1);
       divIndex++;
     }
@@ -442,9 +437,9 @@ Bunker::createObjects(Simulation& System,
   createMainRoof(System,InnerSurf);
 
   // External
-  Out=ModelSupport::getComposite(SMap,buildIndex,lwIndex,rwIndex,
-				 " 1 -17 3M -4N 15 -16 ");
-  addOuterSurf(Out+Inner);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,lwIndex,rwIndex,
+				 "1 -17 3M -4N 15 -16");
+  addOuterSurf(HR*InnerHR);
         
   return;
 }
