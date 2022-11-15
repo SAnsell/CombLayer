@@ -50,6 +50,7 @@
 #include "MaterialSupport.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedRotate.h"
 #include "FixedUnit.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"

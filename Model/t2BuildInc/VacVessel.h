@@ -27,10 +27,6 @@ class Simulation;
 namespace moderatorSystem
 {
 
-  class Groove;
-  class Hydrogen;
-  class Decoupled;
-
 /*!
   \class VacVessel
   \version 1.0
@@ -40,17 +36,15 @@ namespace moderatorSystem
 */
 
 class VacVessel : 
-    public attachSystem::FixedUnit,
+    public attachSystem::FixedRotate,
     public attachSystem::ContainedComp,
     public attachSystem::ExternalCut
 {
  private:
   
-  const std::string grooveKeyName;  ///< KeyName [Groove]
-  const std::string hydKeyName;     ///< KeyName [Hydrogen]
-  
   std::array<Geometry::Vec3D,6> BVec;     ///< Boundary Points
-  int divideSurf;                           ///< Divide surface
+  std::vector<Geometry::Vec3D> AltVec;     ///< Alternate Boundary Points
+  int divideSurf;                         ///< Divide surface
 
   double vacPosGap;         ///< Positive side length [Origin: MaxR]
   double vacNegGap;         ///< Negative side length [Origin: MaxR]
@@ -90,13 +84,11 @@ class VacVessel :
 
   void populate(const FuncDataBase&);
 
-  void createBoundary(const attachSystem::FixedComp&);
-  void createBoundary(const attachSystem::FixedComp&,
-		      const attachSystem::FixedComp&);
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&);
 
+  void doubleBoundaryCheck();
   Geometry::Vec3D getDirection(const size_t) const;
 
  public:
@@ -106,12 +98,17 @@ class VacVessel :
   VacVessel& operator=(const VacVessel&);
   virtual ~VacVessel();
 
+  void createBoundary(const attachSystem::FixedComp&);
+  void createBoundary(const attachSystem::FixedComp&,
+		      const attachSystem::FixedComp&);
+  
   Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
   /// Accessor to divide surf:
   int getDivideSurf() const { return divideSurf; }
 
-  void buildPair(Simulation&,const Groove&,const Hydrogen&);
-  void buildSingle(Simulation&, const attachSystem::FixedComp&);
+  using FixedComp::createAll;
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		const long int);
 
 
 

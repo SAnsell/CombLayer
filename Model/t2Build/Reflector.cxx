@@ -343,14 +343,14 @@ Reflector::createObjects(Simulation& System)
   HeadRule FLhr;
 
   FLhr=ModelSupport::getHeadRule
-    (SMap,buildIndex,FIndex,"3 1 13 1M 3M -4M 5M -6M");
+    (SMap,buildIndex,FIndex,"1 11 1M 3M -4M 5M -6M");
   makeCell("FLGroove",System,cellIndex++,0,0.0,FLhr);
   FLhr=ModelSupport::getHeadRule(SMap,FIndex,"1 3 -4 5 -6");
   HR.addIntersection(FLhr.complement());
 
   FIndex+=100;
   FLhr=ModelSupport::getHeadRule
-    (SMap,buildIndex,FIndex,"-4 -14 1M 3M -4M 5M -6M");
+    (SMap,buildIndex,FIndex,"-2 -14 -4 1M 3M -4M 5M -6M");
   makeCell("FLHydro",System,cellIndex++,0,0.0,FLhr);
   FLhr=ModelSupport::getHeadRule(SMap,FIndex,"1 3 -4 5 -6");
   HR.addIntersection(FLhr.complement());

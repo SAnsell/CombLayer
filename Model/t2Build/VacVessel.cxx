@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   moderator/VacVessel.cxx
+ * File:   t2Build/VacVessel.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
  *
@@ -55,7 +55,6 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedUnit.h"
 #include "FixedRotate.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -70,7 +69,7 @@ namespace moderatorSystem
 {
 
 VacVessel::VacVessel(const std::string& Key)  :
-  attachSystem::FixedUnit(8,Key),
+  attachSystem::FixedRotate(Key,8),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut()
   /*!
@@ -80,10 +79,11 @@ VacVessel::VacVessel(const std::string& Key)  :
 {}
 
 VacVessel::VacVessel(const VacVessel& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedUnit(A),
-  grooveKeyName(A.grooveKeyName),
-  hydKeyName(A.hydKeyName),
-  BVec(A.BVec),vacPosGap(A.vacPosGap),vacNegGap(A.vacNegGap),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::ExternalCut(A),
+  BVec(A.BVec),AltVec(A.AltVec),
+  vacPosGap(A.vacPosGap),vacNegGap(A.vacNegGap),
   vacPosRadius(A.vacPosRadius),vacNegRadius(A.vacNegRadius),
   vacLSide(A.vacLSide),vacRSide(A.vacRSide),vacTop(A.vacTop),vacBase(A.vacBase),
   alPos(A.alPos),alNeg(A.alNeg),alSide(A.alSide),alTop(A.alTop),
@@ -107,9 +107,11 @@ VacVessel::operator=(const VacVessel& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       BVec=A.BVec;
+      AltVec=A.AltVec;
       vacPosGap=A.vacPosGap;
       vacNegGap=A.vacNegGap;
       vacPosRadius=A.vacPosRadius;
@@ -222,6 +224,41 @@ VacVessel::createBoundary(const attachSystem::FixedComp& FUnit)
 }
 
 void
+VacVessel::doubleBoundaryCheck()
+  /*!
+    Boundary check -- this uses the alternat numbers (as needed)
+    if we need to orientate relative to X/Z
+  */
+{
+  ELog::RegMethod RegA("VacVessel","doubleBoundaryCheck");
+
+  if (AltVec.size()>=4)
+    {
+      Geometry::Vec3D A,B;
+      
+      A=BVec[2]-Origin;
+      B=AltVec[0]-Origin;
+      BVec[2]= (A.dotProd(X) < B.dotProd(X)) ? A : B;
+
+      A=BVec[3]-Origin;
+      B=AltVec[1]-Origin;
+      BVec[3]= (A.dotProd(X) > B.dotProd(X)) ? A : B;
+
+      A=BVec[4]-Origin;
+      B=AltVec[2]-Origin;
+      BVec[4]= (A.dotProd(Z) < B.dotProd(Z)) ? A : B;
+
+      A=BVec[5]-Origin;
+      B=AltVec[3]-Origin;
+      BVec[5]= (A.dotProd(Z) > B.dotProd(Z)) ? A : B;
+
+      for(size_t i=2;i<6;i++)
+	BVec[i]+=Origin;
+    }
+  return;
+}
+  
+void
 VacVessel::createBoundary(const attachSystem::FixedComp& FUnit,
 			  const attachSystem::FixedComp& GUnit)
   /*!
@@ -232,25 +269,20 @@ VacVessel::createBoundary(const attachSystem::FixedComp& FUnit,
 {
   ELog::RegMethod RegA("VacVessel","createBoundary");
   // Sides/Top/Base:
-  Geometry::Vec3D A,B;
 
-  A=FUnit[2].getConnectPt()-Origin;
-  B=GUnit[2].getConnectPt()-Origin;
-  BVec[2]= (A.dotProd(X) < B.dotProd(X)) ? A : B;
+  AltVec.resize(4);
+  
+  BVec[2]=FUnit[2].getConnectPt();
+  AltVec[0]=GUnit[2].getConnectPt();
 
-  A=FUnit[3].getConnectPt()-Origin;
-  B=GUnit[3].getConnectPt()-Origin;
-  BVec[3]= (A.dotProd(X) > B.dotProd(X)) ? A : B;
+  BVec[3]=FUnit[3].getConnectPt();
+  AltVec[1]=GUnit[3].getConnectPt();
 
-  A=FUnit[4].getConnectPt()-Origin;
-  B=GUnit[4].getConnectPt()-Origin;
-  BVec[4]= (A.dotProd(Z) < B.dotProd(Z)) ? A : B;
+  BVec[4]=FUnit[4].getConnectPt();
+  AltVec[2]=GUnit[4].getConnectPt();
 
-  A=FUnit[5].getConnectPt()-Origin;
-  B=GUnit[5].getConnectPt()-Origin;
-  BVec[5]= (A.dotProd(Z) > B.dotProd(Z)) ? A : B;
-  for(size_t i=2;i<6;i++)
-    BVec[i]+=Origin;
+  BVec[5]=FUnit[5].getConnectPt();
+  AltVec[3]=GUnit[5].getConnectPt();
 
   // Centres: 
   BVec[0]=FUnit.getLinkPt(2);
@@ -347,7 +379,6 @@ VacVessel::createObjects(Simulation& System)
   HeadRule HR;
 
   const HeadRule excludeHR=getRule("Internal");
-  ELog::EM<<"Internal = ="<< excludeHR<<ELog::endDiag;
   
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-41 -42 43 -44 45 -46");
   addOuterSurf(HR);
@@ -357,18 +388,18 @@ VacVessel::createObjects(Simulation& System)
   System.addCell(cellIndex++,0,0.0,HR*excludeHR);
 
   // First Al layer
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -12 13 -14 15 -16 "
-				 " (1:2:-3:4:-5:6) ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -12 13 -14 15 -16"
+				 "(1:2:-3:4:-5:6)");
   System.addCell(cellIndex++,alMat,0.0,HR);
 
   // Tertiay layer
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-21 -22 23 -24 25 -26 "
-				 " (11:12:-13:14:-15:16) ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-21 -22 23 -24 25 -26"
+				 "(11:12:-13:14:-15:16)");
   System.addCell(cellIndex++,0,0.0,HR);
 
   // Tertiay layer
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-31 -32 33 -34 35 -36 "
-				 " (21:22:-23:24:-25:26) ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-31 -32 33 -34 35 -36"
+				 "(21:22:-23:24:-25:26)");
   System.addCell(cellIndex++,outMat,0.0,HR);
 
   // Outer clearance
@@ -421,6 +452,22 @@ VacVessel::createLinks()
   FixedComp::setLinkSurf(6,SMap.realSurf(divideSurf));
 
 
+
+
+  /* OLD buildPair
+  FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+41));
+  FixedComp::setBridgeSurf(6,SMap.realSurf(divideSurf));
+
+  Geometry::Vec3D AimPt=GMod.getLinkPt(7);
+  Geometry::Vec3D LP=this->getLinkPt(1);
+  LP-= Z * Z.dotProd(LP);
+  LP+= Z * Z.dotProd(AimPt);
+  FixedComp::setConnect(6,LP,Y);
+
+  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+42));
+  FixedComp::setBridgeSurf(7,SMap.realSurf(divideSurf));
+  FixedComp::setConnect(7,HMod.getLinkPt(2),Y);  
+  */
   return;
 }
 
@@ -489,60 +536,24 @@ VacVessel::getSurfacePoint(const size_t layer,
   return BVec[SI]+XYZ*sumVec;
 }
 
-void
-VacVessel::buildPair(Simulation& System,const Groove& GMod,
-			 const Hydrogen& HMod)
-  /*!
-    Global creation of the vac-vessel
-    \param System :: Simulation to add vessel to
-    \param GMod :: Previously build Groove component
-    \param HMod :: Previously Hydrogen component
-  */
-{
-  ELog::RegMethod RegA("VacVessel","createAll");
-  populate(System.getDataBase());
-
-  createUnitVector(GMod,0);
-  createBoundary(GMod,HMod);
-  createSurfaces();
-  createObjects(System); //GMod.getExclude()+" "+HMod.getExclude());
-  createLinks();
-  insertObjects(System);       
-
-  
-  // Mid of groove
-  
-  FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+41));
-  FixedComp::setBridgeSurf(6,SMap.realSurf(divideSurf));
-
-  Geometry::Vec3D AimPt=GMod.getLinkPt(7);
-  Geometry::Vec3D LP=this->getLinkPt(1);
-  LP-= Z * Z.dotProd(LP);
-  LP+= Z * Z.dotProd(AimPt);
-  FixedComp::setConnect(6,LP,Y);
-
-  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+42));
-  FixedComp::setBridgeSurf(7,SMap.realSurf(divideSurf));
-  FixedComp::setConnect(7,HMod.getLinkPt(2),Y);  
-  return;
-}
 
 void
-VacVessel::buildSingle(Simulation& System,
-		       const attachSystem::FixedComp& AFC)
+VacVessel::createAll(Simulation& System,
+		     const attachSystem::FixedComp& FC,
+		     const long int sideIndex)
 
   /*!
     Global creation of the vac-vessel
     \param System :: Simulation to add vessel to
-    \param AFC :: Previously build  moderator
-    \param CC :: Container to wrap
+    \param FC :: Previously build  moderator
+    \param sideIndex :: 
   */
 {
   ELog::RegMethod RegA("VacVessel","createAll");
   populate(System.getDataBase());
  
-  createUnitVector(AFC,0);                       // fixed 
-  createBoundary(AFC);
+  createUnitVector(FC,sideIndex);
+  doubleBoundaryCheck();
   createSurfaces();
   createObjects(System); 
   createLinks();

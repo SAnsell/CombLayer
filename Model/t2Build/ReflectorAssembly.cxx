@@ -168,7 +168,6 @@ ReflectorAssembly::createObjects(Simulation& System)
   GrooveObj->createAll(System,*RefObj,0);
   HydObj->setCutSurf("innerWall",GrooveObj->getLinkSurf(1));
   HydObj->createAll(System,*GrooveObj,1);
-
   if (orthoHFlag)
     {
       OrthoInsert OI("ortho");
@@ -178,8 +177,10 @@ ReflectorAssembly::createObjects(Simulation& System)
   VacObj->setCutSurf("Internal",GrooveObj->getExcludeSurf()*
 		     HydObj->getExcludeSurf());
   VacObj->addInsertCell(refCell);
-  VacObj->buildPair(System,*GrooveObj,*HydObj);
+  VacObj->createBoundary(*GrooveObj,*HydObj);
+  VacObj->createAll(System,*GrooveObj,0);
 
+  
   RefObj->insertComponent(System,"FLGroove",VacObj->getMainRule("front"));
   RefObj->insertComponent(System,"FLHydro",VacObj->getMainRule("back"));
 
@@ -232,7 +233,9 @@ ReflectorAssembly::createObjects(Simulation& System)
 
   DVacObj->addInsertCell(refCell);
   DVacObj->setCutSurf("Internal",CMod->getExcludeSurf());
-  DVacObj->buildSingle(System,*DMod);
+  DVacObj->createBoundary(*DMod);
+  DVacObj->createAll(System,*DMod,0);
+
   RefObj->insertComponent(System,"FLNarrow",DVacObj->getMainRule("front"));
   RefObj->insertComponent(System,"FLWish",DVacObj->getMainRule("back"));
 
@@ -260,7 +263,6 @@ ReflectorAssembly::processDecoupled(Simulation& System)
   /*!
     Create the decoupled item and build it
     \param System :: Simulation 
-
    */
 {
   ELog::RegMethod RegA("ReflectorAssembly","processDecoupled");
@@ -334,8 +336,6 @@ ReflectorAssembly::insertPipeObjects(Simulation& System)
   return;
 }
   
-
-
 void
 ReflectorAssembly::createAll(Simulation& System,
 			     const attachSystem::FixedComp& FC,

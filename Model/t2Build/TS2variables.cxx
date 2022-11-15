@@ -94,29 +94,34 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("ReflectorCutSize",30.0*sqrt(2.0));     // End cut
   Control.addVariable("ReflectorMat","Be300K");     // End cut
 
+  Geometry::Vec3D GAxis
+    (std::sin(54.0*M_PI/180.0),std::cos(54.0*M_PI/180.0),0.0);
+
   // Internal Reflector flight line:
   Control.addVariable("ReflectorFL0Org",
-		      Geometry::Vec3D(-6.9450,-2.36,-9.8));
-  Control.addVariable("ReflectorFL0Axis",
-		      Geometry::Vec3D(-0.951057,0.309017,0.0));
+		      Geometry::Vec3D(0,4.8-10.0,-9.8));
+  Control.addVariable("ReflectorFL0Axis",-GAxis);
+
   Control.addVariable("ReflectorFL0NegAngle",26.5);  // Angle out
   Control.addVariable("ReflectorFL0PlusAngle",26.5);  // Angle out
   Control.addVariable("ReflectorFL0DownAngle",2.5); //;2.5);  // Step down angle
   Control.addVariable("ReflectorFL0UpAngle",0.0); // Step up angle
   Control.addVariable("ReflectorFL0Height",3.3);     // Full height
-  Control.addVariable("ReflectorFL0Width",18.3);     // Full width
+  Control.addVariable("ReflectorFL0Width",5.3);     // Full width
   
   Control.addVariable("ReflectorFL1Org",
-		      Geometry::Vec3D(-6.9450+13.8*0.9513,
-				      -2.36-13.8*0.30,-12.5));
-  Control.addVariable("ReflectorFL1Axis",
-		      Geometry::Vec3D(0.951057,-0.309017,0.0));
+		      Geometry::Vec3D(0,4.8-10.0,-12.5)+
+		      GAxis*3.0);
+    
+  Control.addVariable("ReflectorFL1Axis",GAxis);
+
+
   Control.addVariable("ReflectorFL1NegAngle",53.2);  // Angle out
   Control.addVariable("ReflectorFL1PlusAngle",9.0);  // Angle out
-  Control.addVariable("ReflectorFL1DownAngle",0.0); //;2.5);  // Step down angle
-  Control.addVariable("ReflectorFL1UpAngle",0.0); // Step up angle
-  Control.addVariable("ReflectorFL1Height",11.5);     // Full height
-  Control.addVariable("ReflectorFL1Width",14.3);     // Full width
+  Control.addVariable("ReflectorFL1DownAngle",0.0);  // Step down angle
+  Control.addVariable("ReflectorFL1UpAngle",0.0);    // Step up angle
+  Control.addVariable("ReflectorFL1Height",11.5);    // Full height
+  Control.addVariable("ReflectorFL1Width",13.3);     // Full width
 
   // Internal Reflector decoupled flight line
   const Geometry::Vec3D decAxis(-sin(M_PI*57.0/180.0),
@@ -155,7 +160,7 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("grooveXStep",0.0);        //  Groove shift
   Control.addVariable("grooveYStep",-5.2);        //  Groove shift
   Control.addVariable("grooveZStep",-12.9);      //  Groove shift
-  Control.addVariable("grooveZAngle",72.0);     // Angle of the groove [relative to Y]
+  Control.addVariable("grooveZAngle",126.0);     // Angle of the groove [relative to Y]
   Control.addVariable("grooveRadius",7.25);      // Radius of groove curve
   Control.addVariable("grooveInnerCut",4.15);    // Cut to the groove line
   Control.addVariable("grooveInnerWidth",8.3);   // Half width of groove 

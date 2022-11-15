@@ -125,12 +125,6 @@ makeTS2::build(Simulation* SimPtr,
 
   
   /*
-  moderatorSystem::makeTS2Bulk bulkObj;
-  moderatorSystem::makeReflector refObj;
-  
-
-  bulkObj.build(SimPtr,IParam,excludeCell);
-  refObj.build(*SimPtr,IParam,excludeCell);
   
 
   // this needs to be SELECTED
