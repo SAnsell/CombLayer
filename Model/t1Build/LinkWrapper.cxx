@@ -255,17 +255,6 @@ LinkWrapper::sectorFlag(const size_t LN,const size_t SN) const
   return (! (flag[SN] & (1UL << LN)) );
 }
 
-std::string
-LinkWrapper::getComposite(const std::string& surfList) const
-  /*!
-    Exposes local version of getComposite
-    \param surfList :: surface list
-    \return Composite string
-  */
-{
-  ELog::EM<<"ERROR CALL"<<ELog::endErr;
-  return ModelSupport::getComposite(SMap,buildIndex,surfList);
-}
 
 void
 LinkWrapper::processMask()

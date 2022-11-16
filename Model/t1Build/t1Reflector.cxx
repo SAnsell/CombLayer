@@ -66,8 +66,8 @@ namespace ts1System
 {
 
 t1Reflector::t1Reflector(const std::string& Key)  :
-  attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,11),
+  attachSystem::ContainedComp(),
   attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -76,8 +76,8 @@ t1Reflector::t1Reflector(const std::string& Key)  :
 {}
 
 t1Reflector::t1Reflector(const t1Reflector& A) : 
-  attachSystem::ContainedComp(A),
   attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
   xSize(A.xSize),ySize(A.ySize),
   ySizeColdCut(A.ySizeColdCut),zSize(A.zSize),cutLen(A.cutLen),
@@ -99,8 +99,8 @@ t1Reflector::operator=(const t1Reflector& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedRotate::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       xSize=A.xSize;
       ySize=A.ySize;
@@ -237,15 +237,15 @@ t1Reflector::createLinks()
   return;
 }
 
-std::string
-t1Reflector::getComposite(const std::string& surfList) const
+HeadRule
+t1Reflector::getHeadRule(const std::string& surfList) const
   /*!
     Exposes local version of getComposite
     \param surfList :: surface list
-    \return Composite string
+    \return HEadRule 
   */
 {
-  return ModelSupport::getComposite(SMap,buildIndex,surfList);
+  return ModelSupport::getHeadRule(SMap,buildIndex,surfList);
 }
 
 void

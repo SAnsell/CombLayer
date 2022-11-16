@@ -92,7 +92,6 @@ class LinkWrapper :
   
   /// Get Central cell [last built]
   int centralCell() const { return cellIndex-1; }
-  std::string getComposite(const std::string&) const;
 
   void maskSection(const size_t);
   void maskSection(std::string);

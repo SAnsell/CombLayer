@@ -221,32 +221,31 @@ makeT1Real::flightLines(Simulation& System)
 {
   ELog::RegMethod RegA("makeT1Real","flightLines");
 
-  std::string Out;
-  std::string Out1;
 
-  Out=RefObj->getComposite(" 3 ");
-  H2FL->setCutSurf("BeOuter",Out);
+  HeadRule HR;
+  
+  HR=RefObj->getHeadRule("3");
+  H2FL->setCutSurf("BeOuter",HR);
   H2FL->createAll(System,*Lh2ModObj,1);
   
-  Out=RefObj->getComposite("3 -12");
-  HeadRule HR(Out);
+  HR=RefObj->getHeadRule("3 -12");
   CH4NorthFL->setCutSurf("BeOuter",HR*Lh2ModObj->getRule("EdgeCut"));
   CH4NorthFL->createAll(System,*CH4ModObj,1);
 
-  Out=RefObj->getComposite(" 1 -4 -13 ");
-  CH4SouthFL->setCutSurf("BeOuter",Out);
+  HR=RefObj->getHeadRule("1 -4 -13");
+  CH4SouthFL->setCutSurf("BeOuter",HR);
   CH4SouthFL->createAll(System,*CH4ModObj,2); 
 
-  Out=RefObj->getComposite(" -4 ");
-  MerlinFL->setCutSurf("BeOuter",Out);
+  HR=RefObj->getHeadRule("-4");
+  MerlinFL->setCutSurf("BeOuter",HR);
   MerlinFL->createAll(System,*MerlinMod,1);
   
-  Out=RefObj->getComposite(" 1 3 -11 ");
-  WaterNorthFL->setCutSurf("BeOuter",Out);
+  HR=RefObj->getHeadRule("1 3 -11");
+  WaterNorthFL->setCutSurf("BeOuter",HR);
   WaterNorthFL->createAll(System,*WaterModObj,1);
 
-  Out=RefObj->getComposite(" -14 -4 ");
-  WaterSouthFL->setCutSurf("BeOuter",Out);
+  HR=RefObj->getHeadRule("-14 -4");
+  WaterSouthFL->setCutSurf("BeOuter",HR);
   WaterSouthFL->createAll(System,*WaterModObj,2); 
 
   // Flight line intersects:
