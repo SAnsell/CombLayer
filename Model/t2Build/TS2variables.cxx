@@ -111,7 +111,7 @@ TS2layout(FuncDataBase& Control)
   
   Control.addVariable("ReflectorFL1Org",
 		      Geometry::Vec3D(0,4.8-10.0,-12.5)+
-		      GAxis*3.0);
+		      GAxis*6.5);
     
   Control.addVariable("ReflectorFL1Axis",GAxis);
 

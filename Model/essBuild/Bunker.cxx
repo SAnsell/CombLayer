@@ -74,8 +74,8 @@ namespace essSystem
 {
 
 Bunker::Bunker(const std::string& Key)  :
-  attachSystem::ContainedComp(),
   attachSystem::FixedComp(Key,12),
+  attachSystem::ContainedComp(),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   leftWallFlag(1),rightWallFlag(1),
   roofObj(new BunkerRoof(Key)),
@@ -423,9 +423,9 @@ Bunker::createObjects(Simulation& System,
       else
 	HR*=HeadRule(SMap,buildIndex,-14);
       
-      makeCell("roof",System,cellIndex++,roofMat,0.0,HR*InnerHR);
-      addCell("roof"+std::to_string(i),cellIndex-1);
-
+      makeCell("roof"+std::to_string(i),
+	       System,cellIndex++,roofMat,0.0,HR*InnerHR);
+      
       HR=ModelSupport::getHeadRule(SMap,buildIndex,divIndex,
 				     "1 7 -17 1M -2M 5 -106");
       makeCell("frontWall",System,cellIndex++,wallMat,0.0,HR);
@@ -481,6 +481,9 @@ Bunker::createMainRoof(Simulation& System,const int innerSurf)
 			    SMap.realSurf(LW),SMap.realSurf(RW));
       
       removeCell("roof"+SectNum);
+
+      //      ELog::EM<<"ROOF Cell = "<<cellN<<" "<<getCell("roof"+SectNum)<<ELog::endDiag;
+	    
       const std::vector<int> newCells=roofObj->getCells("Sector"+SectNum);
       addCells("roof",newCells);
 

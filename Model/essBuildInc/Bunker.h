@@ -52,7 +52,6 @@ class Bunker :
   bool rightWallFlag;           ///< Build right wall
   
   Geometry::Vec3D rotCentre;    ///< Rotation centre
-
   
   double leftPhase;              ///< Sector phase left
   double rightPhase;             ///< Sector phase right

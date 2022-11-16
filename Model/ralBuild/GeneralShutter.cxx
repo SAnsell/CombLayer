@@ -84,8 +84,10 @@ GeneralShutter::GeneralShutter(const size_t ID,const std::string& Key) :
 {}
 
 GeneralShutter::GeneralShutter(const GeneralShutter& A) : 
-  attachSystem::FixedGroup(A),attachSystem::ContainedComp(A),
-  attachSystem::CellMap(A),attachSystem::ExternalCut(A),
+  attachSystem::FixedGroup(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
+  attachSystem::ExternalCut(A),
   shutterNumber(A.shutterNumber),baseName(A.baseName),
   voidXoffset(A.voidXoffset),
   innerRadius(A.innerRadius),outerRadius(A.outerRadius),
