@@ -56,6 +56,8 @@
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "Decoupled.h"
 #include "DecLayer.h"
 
@@ -228,7 +230,7 @@ DecLayer::createAll(Simulation& System,
   populate(System.getDataBase());
   createSurfaces();
   createObjects(System);
-  System.removeCell(methCell);
+  deleteCell(System,"Methane");
   
   System.validateObjSurfMap();
   return;

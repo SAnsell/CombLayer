@@ -72,9 +72,10 @@ namespace essSystem
 {
 
 Curtain::Curtain(const std::string& Key)  :
-  attachSystem::ContainedGroup("Top","Mid","Lower","RoofCut"),
   attachSystem::FixedGroup(Key,"Top",6,"Mid",14,"Lower",16),
-  attachSystem::CellMap()
+  attachSystem::ContainedGroup("Top","Mid","Lower","RoofCut"),
+  attachSystem::CellMap(),
+  attachSystem::SurfMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -82,8 +83,10 @@ Curtain::Curtain(const std::string& Key)  :
 {}
 
 Curtain::Curtain(const Curtain& A) : 
-  attachSystem::ContainedGroup(A),attachSystem::FixedGroup(A),
-  attachSystem::CellMap(A),attachSystem::SurfMap(A),
+  attachSystem::FixedGroup(A),
+  attachSystem::ContainedGroup(A),
+  attachSystem::CellMap(A),
+  attachSystem::SurfMap(A),
   wallRadius(A.wallRadius),leftPhase(A.leftPhase),
   rightPhase(A.rightPhase),innerStep(A.innerStep),
   wallThick(A.wallThick),baseGap(A.baseGap),
@@ -109,8 +112,8 @@ Curtain::operator=(const Curtain& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedGroup::operator=(A);
+      attachSystem::ContainedGroup::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       wallRadius=A.wallRadius;
@@ -451,7 +454,7 @@ Curtain::createLinks()
   
   
 
-  
+
 void
 Curtain::createAll(Simulation& System,
 		   const attachSystem::FixedComp& FC,

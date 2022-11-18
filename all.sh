@@ -1,7 +1,7 @@
 
 nValid=1000
-#./fullBuild -validAll --validCheck ${nValid} AA || exit
-#exit
+./t1Real -validAll --validCheck ${nValid} AA || exit
+exit
 #segments=$(for i in {40..49}; do echo -n "Segment$i "; done)
 
 ./ess -validAll --validCheck ${nValid} AA || exit 

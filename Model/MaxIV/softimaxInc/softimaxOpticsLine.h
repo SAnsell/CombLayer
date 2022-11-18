@@ -51,8 +51,8 @@ namespace xraySystem
 
 class softimaxOpticsLine :
   public attachSystem::CopiedComp,
-  public attachSystem::ContainedComp,
   public attachSystem::FixedRotate,
+  public attachSystem::ContainedComp,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
@@ -212,8 +212,6 @@ class softimaxOpticsLine :
   softimaxOpticsLine(const softimaxOpticsLine&);
   softimaxOpticsLine& operator=(const softimaxOpticsLine&);
   ~softimaxOpticsLine();
-
-
   
   /// Assignment to inner void
   void setInnerMat(const int M) {  innerMat=M; }

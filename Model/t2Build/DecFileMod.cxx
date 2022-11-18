@@ -62,6 +62,8 @@
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "Decoupled.h"
 #include "DecFileMod.h"
 
@@ -239,7 +241,7 @@ DecFileMod::createAllFromFile(Simulation& System,
   readFile(System,FName);
 
   insertObjects(System);
-  System.removeCell(methCell);
+  CellMap::deleteCell(System,"Methane");
   System.validateObjSurfMap();
   return;
 }

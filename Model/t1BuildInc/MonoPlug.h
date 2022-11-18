@@ -3,7 +3,7 @@
  
  * File:   t1BuildInc/MonoPlug.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,9 +35,10 @@ namespace shutterSystem
   \brief Specialized for for the ts1 mono [top plug]
 */
 
-class MonoPlug : public attachSystem::FixedRotate,
-  public attachSystem::ContainedComp,
-  public attachSystem::ExternalCut
+class MonoPlug :
+    public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
+    public attachSystem::ExternalCut
 {
  private:
   
@@ -64,6 +65,7 @@ class MonoPlug : public attachSystem::FixedRotate,
   MonoPlug& operator=(const MonoPlug&);
   virtual ~MonoPlug();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
   

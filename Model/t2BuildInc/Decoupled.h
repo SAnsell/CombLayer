@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   moderatorInc/Decoupled.h
+ * File:   t2BuildInc/Decoupled.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,8 +37,9 @@ namespace moderatorSystem
 */
 
 class Decoupled :
+    public attachSystem::FixedRotate,
     public attachSystem::ContainedComp,
-    public attachSystem::FixedRotate
+    public attachSystem::CellMap
 {
  protected:
   
@@ -63,8 +64,6 @@ class Decoupled :
   int modMat;               ///< Moderator material
   int alMat;                ///< Al material
 
-  int methCell;             ///< Methane cell
-
   Geometry::Vec3D getDirection(const size_t) const;
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
@@ -88,6 +87,8 @@ class Decoupled :
   int viewSurf(const int) const;
   /// Need internal pipe
   virtual int needsHePipe() const { return 1; }
+
+  using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 			 const long int);
 

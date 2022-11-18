@@ -3,7 +3,7 @@
  
  * File:   t1Build/MonoPlug.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -75,7 +73,8 @@ MonoPlug::MonoPlug(const std::string& Key)  :
 {}
 
 MonoPlug::MonoPlug(const MonoPlug& A) : 
-  attachSystem::FixedRotate(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
   attachSystem::ExternalCut(A),
   nPlugs(A.nPlugs),plugRadii(A.plugRadii),
   plugZLen(A.plugZLen),plugClearance(A.plugClearance),
@@ -197,81 +196,70 @@ MonoPlug::createObjects(Simulation& System)
   // No work to do!
   if (!nPlugs) return; 
   
-  std::string Out;
+  HeadRule HR;
 
   // The outside stuff
-  //  const std::string voidSurf=VoidFC.getLinkString(vLCIndex);
-  //  const std::string outSurf=VoidFC.getLinkString(-1);
 
-  //  const std::string bulkSurf=
-  //    BulkFC.getLinkString(-vLCIndex);
-
-  const std::string voidSurf=ExternalCut::getRuleStr("voidSurf");
-  const std::string outSurf=ExternalCut::getRuleStr("outSurf");
-  const std::string bulkSurf=ExternalCut::getRuleStr("bulkSurf");
+  const HeadRule voidHR=ExternalCut::getRule("voidSurf");
+  const HeadRule outHR=ExternalCut::getRule("outSurf");
+  const HeadRule bulkHR=ExternalCut::getRule("bulkSurf");
   
   // SPECIAL FOR ONE SINGLE ITEM:
   if (nPlugs==1)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," -7 ")+
-	voidSurf+" "+bulkSurf;
-      System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
+      HR=HeadRule(SMap,buildIndex,-7);
+      System.addCell(cellIndex++,steelMat,0.0,HR*voidHR*bulkHR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,"7 -17 ")+
-	voidSurf+" "+bulkSurf;
-      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"7 -17");
+      System.addCell(cellIndex++,0,0.0,HR*voidHR*bulkHR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," 17 ")+
-	voidSurf+" "+bulkSurf+" "+outSurf;
-      System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
+      HR=HeadRule(SMap,buildIndex,17);
+      System.addCell(cellIndex++,steelMat,0.0,HR*voidHR*bulkHR*outHR);
       return;
     }
 
   // First Layer
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-6 -7 ")+
-    voidSurf;
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-6 -7");
+  System.addCell(cellIndex++,steelMat,0.0,HR*voidHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-6 7 -17 ")+
-    voidSurf;
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-6 7 -17");
+  System.addCell(cellIndex++,0,0.0,HR*voidHR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-6 16 17 -117 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-6 16 17 -117");
+  System.addCell(cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-16 17 ")+
-    voidSurf+outSurf;
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-16 17");
+  System.addCell(cellIndex++,steelMat,0.0,HR*voidHR*outHR);
   
   // MAIN LOOP
   int pI=buildIndex;
   for(size_t i=1;i<nPlugs-1;i++)
     {
       // Steel inner:
-      Out=ModelSupport::getComposite(SMap,pI, "6 -106 -107");      
-      System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,pI,"6 -106 -107");      
+      System.addCell(cellIndex++,steelMat,0.0,HR);
       
-      Out=ModelSupport::getComposite(SMap,pI, "6 -106 -117 107 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,pI,"6 -106 -117 107");
+      System.addCell(cellIndex++,0,0.0,HR);
      
-      Out=ModelSupport::getComposite(SMap,pI+100, "-6 16 17 -117 ");      
-      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,pI+100,"-6 16 17 -117");      
+      System.addCell(cellIndex++,0,0.0,HR);
       
-      Out=ModelSupport::getComposite(SMap,pI,"16 -116 117 ")+outSurf;
-      System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,pI,"16 -116 117");
+      System.addCell(cellIndex++,steelMat,0.0,HR*outHR);
       // Next loop index
       pI+=100;
     }
   
   // TOP Layer
-  Out=ModelSupport::getComposite(SMap,pI, "6 -107")+bulkSurf;
-  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,pI,"6 -107");
+  System.addCell(cellIndex++,concMat,0.0,HR*bulkHR);
   
-  Out=ModelSupport::getComposite(SMap,pI, "6 -117 107 ")+bulkSurf;
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,pI,"6 -117 107");
+  System.addCell(cellIndex++,0,0.0,HR*bulkHR);
   
-  Out=ModelSupport::getComposite(SMap,pI, "16 117 ")+bulkSurf+outSurf;
-  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,pI,"16 117");
+  System.addCell(cellIndex++,concMat,0.0,HR*bulkHR*outHR);
   
   return;
 }
@@ -291,13 +279,11 @@ void
 MonoPlug::createAll(Simulation& System,
 		    const attachSystem::FixedComp& VoidFC,
 		    const long int sideIndex)
-  
-		    //		    const attachSystem::FixedRotate& BulkFC)
   /*!
     Create the shutter
     \param System :: Simulation to process
     \param VoidFC :: Main outer void
-    \param BulkFC :: Bulk steel object
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("MonoPlug","createAll");

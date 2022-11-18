@@ -3,7 +3,7 @@
  
  * File:   delftInc/Rabbit.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,8 +36,9 @@ namespace delftSystem
   \brief Rabbit for reactor  
 */
 
-class Rabbit : public attachSystem::ContainedComp,
+class Rabbit : 
   public attachSystem::FixedOffset,
+  public attachSystem::ContainedComp,
   public attachSystem::CellMap
 {
  private:

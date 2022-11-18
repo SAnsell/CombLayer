@@ -71,7 +71,7 @@ class BeamPair :
   // Functions:
 
   void populate(const FuncDataBase&);
-  using FixedComp::createUnitVector;
+  using FixedGroup::createUnitVector;
   void createUnitVector(const attachSystem::FixedComp&,const long int,
 			const attachSystem::FixedComp&,const long int);
 
@@ -86,7 +86,6 @@ class BeamPair :
   BeamPair(const BeamPair&);
   BeamPair& operator=(const BeamPair&);
   virtual ~BeamPair();
-
 
   using FixedComp::createAll;
   void createAll(Simulation&,

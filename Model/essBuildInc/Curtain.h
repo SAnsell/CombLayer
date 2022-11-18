@@ -35,8 +35,9 @@ namespace essSystem
   \brief Bulk around Reflector
 */
 
-class Curtain : public attachSystem::ContainedGroup,
+class Curtain : 
   public attachSystem::FixedGroup,
+  public attachSystem::ContainedGroup,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {

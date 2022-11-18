@@ -118,7 +118,7 @@ class FixedRotateGroup  : public FixedGroup
 			std::vector<std::string>>&);
   virtual void populate(const std::string&,const FuncDataBase&);
 
-  using FixedComp::createUnitVector;
+  using FixedGroup::createUnitVector;
   virtual void createUnitVector(const std::string&,
 				const attachSystem::FixedComp&,
 				const long int);

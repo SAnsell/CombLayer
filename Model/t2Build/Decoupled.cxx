@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   moderator/Decoupled.cxx
+ * File:   t2Build/Decoupled.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
  *
@@ -58,6 +58,8 @@
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "Decoupled.h"
 #include "VanePoison.h"
 
@@ -65,8 +67,9 @@ namespace moderatorSystem
 {
 
 Decoupled::Decoupled(const std::string& Key)  :
-  attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,12),
+  attachSystem::ContainedComp(),
+  attachSystem::CellMap(),
   VP(new VanePoison("decPoison"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -80,13 +83,15 @@ Decoupled::Decoupled(const std::string& Key)  :
 }
   
 Decoupled::Decoupled(const Decoupled& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedRotate(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
   VP(new VanePoison("decPoison")),width(A.width),
   height(A.height),westCentre(A.westCentre),eastCentre(A.eastCentre),
   westRadius(A.westRadius),eastRadius(A.eastRadius),westDepth(A.westDepth),
   eastDepth(A.eastDepth),alCurve(A.alCurve),alSides(A.alSides),
   alUpDown(A.alUpDown),modTemp(A.modTemp),modMat(A.modMat),
-  alMat(A.alMat),methCell(A.methCell)
+  alMat(A.alMat)
   /*!
     Copy constructor
     \param A :: Decoupled to copy
@@ -108,8 +113,9 @@ Decoupled::operator=(const Decoupled& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
 
       *VP = *A.VP;
       width=A.width;
@@ -126,7 +132,6 @@ Decoupled::operator=(const Decoupled& A)
       modTemp=A.modTemp;
       modMat=A.modMat;
       alMat=A.alMat;
-      methCell=A.methCell;
     }
   return *this;
 }
@@ -286,19 +291,20 @@ Decoupled::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Decoupled","createObjects");
   
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex,"13 -14 15 -16 -17 -18 ");
-  addOuterSurf(Out);
+  HeadRule HR;
 
   // Methane
-  Out=ModelSupport::getComposite(SMap,buildIndex,"3 -4 5 -6 -7 -8");
-  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
-  methCell=cellIndex-1;
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6 -7 -8");
+  makeCell("Methane",System,cellIndex++,modMat,modTemp,HR);
+
 
   // Inner Al layer
-  Out=ModelSupport::getComposite(SMap,buildIndex,"13 -14 15 -16 -17 -18 "
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 15 -16 -17 -18 "
 				 "(-3:4:-5:6:7:8) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
+  System.addCell(cellIndex++,alMat,modTemp,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 15 -16 -17 -18 ");
+  addOuterSurf(HR);
 
   return;
 }
@@ -414,7 +420,7 @@ Decoupled::createAll(Simulation& System,
   createLinks();
   insertObjects(System);       
 
-  VP->addInsertCell(methCell);
+  VP->addInsertCell(getCell("Methane"));
   VP->createAll(System,*this,8);
 
   return;
