@@ -90,7 +90,6 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("ReflectorZStep",0);        // z shift of Reflectoror
   Control.addVariable("ReflectorXYSize",35.0);    // half width (xy direction)
   Control.addVariable("ReflectorZSize",35.0);     // half height
-  Control.addVariable("ReflectorCornerAngle",45.0);     // End cut
   Control.addVariable("ReflectorCutSize",30.0*sqrt(2.0));     // End cut
   Control.addVariable("ReflectorMat","Be300K");     // End cut
 

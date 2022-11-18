@@ -322,7 +322,7 @@ ReflectorAssembly::insertPipeObjects(Simulation& System)
   
   CouplePipe CP("cplPipe");
   System.createObjSurfMap();
-  CP.build(System,*HydObj,4,*VacObj);
+  CP.build(System,*HydObj,5,*VacObj);
 
   DecouplePipe DP("decPipe");
   DP.build(System,*DMod,0,*DVacObj,1);

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   moderatorInc/CoolPad.h
+ * File:   t2BuildInc/CoolPad.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,16 +37,17 @@ namespace moderatorSystem
   \brief Cooling pads on the reflector
 */
 
-class CoolPad :  public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+class CoolPad :  
+    public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
+    public attachSystem::ExternalCut
+    
 {
  private:
 
   const size_t ID;                     ///< ID number
   const std::string baseName;          ///< Base name
   
-  double xStep;                     ///< Step accross surface
-  double zStep;                     ///< Step down/up
   double thick;                     ///< Thickness of system
   double height;                    ///< Height 
   double width;                     ///< Width
@@ -75,6 +76,7 @@ class CoolPad :  public attachSystem::ContainedComp,
   CoolPad& operator=(const CoolPad&);
   virtual ~CoolPad();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

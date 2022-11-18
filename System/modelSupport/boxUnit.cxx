@@ -433,10 +433,11 @@ boxUnit::createObjects(Simulation& System)
   const HeadRule FBSurf=ASurf*BSurf;
 
   int SI(buildIndex);
+
   size_t bitIndex(1);
   // Sides string
   std::ostringstream outerCX;
-  for(size_t j=0;j<nSides;j++)
+  for(long int j=0;j<static_cast<long int>(nSides);j++)
     outerCX<<-(j+3)<<" ";
 
   HeadRule outerHR,innerHR;

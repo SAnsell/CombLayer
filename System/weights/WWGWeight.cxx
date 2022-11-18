@@ -495,7 +495,7 @@ WWGWeight::scaleRange(const size_t eIndex,
   if (eIndex>0)
     {
       if (static_cast<long int>(eIndex)>WE)
-	throw ColErr::IndexError<size_t>
+	throw ColErr::IndexError<long int>
 	       (static_cast<long int>(eIndex),WE,"Energy out of range");
       NData/=static_cast<size_t>(WE);
       TData+= NData*(eIndex-1);
@@ -692,7 +692,7 @@ WWGWeight::CADISnorm(const Simulation& System,
   
   double sumR=minLOG;
   double sumRA=minLOG;
-  const double EVal=(EBin[mIndex]+EBin[mIndex])/2.0;  
+  const double EVal=(EBin[mIndex]+EBin[mIndex+1])/2.0;  
   // STILL in log space
   for(long int i=0;i<WX;i++)
     for(long int j=0;j<WY;j++)

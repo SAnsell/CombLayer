@@ -82,9 +82,8 @@ class CouplePipe :
   CouplePipe& operator=(const CouplePipe&);
   ~CouplePipe();
 
-
   void build(Simulation&,const attachSystem::FixedComp&,
-		 const size_t,const VacVessel&);
+	     const long int,const VacVessel&);
 
 };
 

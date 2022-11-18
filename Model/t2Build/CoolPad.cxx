@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   moderator/CoolPad.cxx
+ * File:   t2Build/CoolPad.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,8 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -56,9 +54,11 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedUnit.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "ExternalCut.h"
 #include "boxValues.h"
 #include "boxUnit.h"
 #include "BoxLine.h"
@@ -68,8 +68,9 @@ namespace moderatorSystem
 {
 
 CoolPad::CoolPad(const std::string& key,const size_t Index) :
+  attachSystem::FixedRotate(key+std::to_string(Index),1),
   attachSystem::ContainedComp(),
-  attachSystem::FixedComp(key+std::to_string(Index),1),
+  attachSystem::ExternalCut(),
   ID(Index),baseName(key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -78,10 +79,12 @@ CoolPad::CoolPad(const std::string& key,const size_t Index) :
   */
 {}
 
-CoolPad::CoolPad(const CoolPad& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+CoolPad::CoolPad(const CoolPad& A) :
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::ExternalCut(A),
   ID(A.ID),baseName(A.baseName),
-  xStep(A.xStep),zStep(A.zStep),thick(A.thick),height(A.height),
+  thick(A.thick),height(A.height),
   width(A.width),Mat(A.Mat)
   /*!
     Copy constructor
@@ -99,10 +102,9 @@ CoolPad::operator=(const CoolPad& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
-      xStep=A.xStep;
-      zStep=A.zStep;
+      attachSystem::ExternalCut::operator=(A);
       thick=A.thick;
       height=A.height;
       width=A.width;
@@ -127,10 +129,12 @@ CoolPad::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("CoolPad","populate");
 
+  FixedRotate::populate(Control);
   // Two keys : one with a number and the default
-  //  fixIndex=Control.EvalTail<size_t>(keyName,keyName,"FixIndex");
+
   xStep=Control.EvalTail<double>(keyName,baseName,"XStep");
   zStep=Control.EvalTail<double>(keyName,baseName,"ZStep");
+  
   thick=Control.EvalTail<double>(keyName,baseName,"Thick");
   width=Control.EvalTail<double>(keyName,baseName,"Width");
   height=Control.EvalTail<double>(keyName,baseName,"Height");
@@ -166,8 +170,8 @@ CoolPad::createUnitVector(const attachSystem::FixedComp& CUnit,
   */
 {
   ELog::RegMethod RegA("CoolPad","createUnitVector");
-  FixedComp::createUnitVector(CUnit,sideIndex);
-  applyShift(xStep,0.0,zStep);
+
+  FixedRotate::createUnitVector(CUnit,sideIndex);
 
   // Ugly loop to put relative coordinates into absolute
   for(size_t i=0;i<CPts.size();i++)
@@ -204,12 +208,14 @@ CoolPad::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("CoolPad","createObjects");
 
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex," -2 3 -4 5 -6 ");
-  Out+=hotSurf.display();
+  const HeadRule hotSurf=ExternalCut::getRule("HotSurf");
+
+  HeadRule HR;
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 3 -4 5 -6");
+  HR*=hotSurf;
   
-  System.addCell(MonteCarlo::Object(cellIndex++,Mat,0.0,Out));
-  addOuterSurf(Out);
+  System.addCell(cellIndex++,Mat,0.0,HR);
+  addOuterSurf(HR);
 
   return;
 }
@@ -223,8 +229,12 @@ CoolPad::createWaterTrack(Simulation& System)
 {  
   ELog::RegMethod RegA("CoolPad","createWaterTrack");
   ModelSupport::BoxLine WaterTrack("PadWater"+std::to_string(ID));
-
+  return;
   WaterTrack.setPoints(CPts);
+  const HeadRule hotSurf=ExternalCut::getRule("HotSurf");
+  ELog::EM<<"hot == "<<hotSurf<<ELog::endDiag;
+  for(const Geometry::Vec3D& Pt : CPts)
+    ELog::EM<<"CPts == "<<Pt<<ELog::endDiag;
   WaterTrack.addSection(IWidth,IDepth,IMat,0.0);
 
   WaterTrack.setInitZAxis(Y);
@@ -250,7 +260,6 @@ CoolPad::createAll(Simulation& System,
   
   createUnitVector(FUnit,sideIndex);
   createSurfaces();
-  hotSurf=FUnit.getFullRule(sideIndex);
   createObjects(System);
   insertObjects(System);       
   createWaterTrack(System);

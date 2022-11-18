@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   moderator/CouplePipe.cxx
+ * File:   t2Build/CouplePipe.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
  *
@@ -245,9 +245,9 @@ CouplePipe::insertPipes(Simulation& System,const VacVessel& VC)
   
 void
 CouplePipe::build(Simulation& System,
-		      const attachSystem::FixedComp& FUnit,
-		      const size_t sideIndex,
-		      const VacVessel& VCell)
+		  const attachSystem::FixedComp& FUnit,
+		  const long int sideIndex,
+		  const VacVessel& VCell)
   /*!
     Generic function to create everything
     \param System :: Simulation to create objects in

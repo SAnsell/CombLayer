@@ -56,6 +56,7 @@
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -134,7 +135,6 @@ Reflector::populate(const FuncDataBase& Control)
   xySize=Control.EvalVar<double>(keyName+"XYSize");
   zSize=Control.EvalVar<double>(keyName+"ZSize");
   cutSize=Control.EvalVar<double>(keyName+"CutSize");
-  cornerAngle=Control.EvalVar<double>(keyName+"CornerAngle");
   
   defMat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
@@ -250,7 +250,7 @@ Reflector::createSurfaces()
 
   // rotation of axis:
   const Geometry::Quaternion Qxy=
-    Geometry::Quaternion::calcQRotDeg(cornerAngle,Z);
+    Geometry::Quaternion::calcQRotDeg(45,Z);
   Geometry::Vec3D XR(XX);
   Geometry::Vec3D YR(YY);
   Qxy.rotate(XR);
@@ -274,43 +274,43 @@ Reflector::createSurfaces()
   SurfMap::addSurf("Top",-SMap.realSurf(buildIndex+6));
  
   // Corner cuts:
-  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-YR*cutSize,YR);
-  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+YR*cutSize,YR);
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*cutSize,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*cutSize,Y);
   SurfMap::addSurf("CornerA",SMap.realSurf(buildIndex+11));
   SurfMap::addSurf("CornerB",-SMap.realSurf(buildIndex+12));
     
-  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-XR*cutSize,XR);
-  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+XR*cutSize,XR);
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*cutSize,X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*cutSize,X);
   SurfMap::addSurf("CornerC",SMap.realSurf(buildIndex+13));
   SurfMap::addSurf("CornerD",-SMap.realSurf(buildIndex+14));
-  createLinks(XR,YR);
+  createLinks(XX,YY);
 
   return;
 }
 
 void
-Reflector::createLinks(const Geometry::Vec3D& XR,
-		       const Geometry::Vec3D& YR)
+Reflector::createLinks(const Geometry::Vec3D& XX,
+		       const Geometry::Vec3D& YY)
   /*!
     Build the links to the primary surfaces
-    \param XR :: Size rotation direction
-    \param YR :: Size rotation direction
+    \param XR :: Side rotation direction
+    \param YR :: Side rotation direction
   */
 {
   ELog::RegMethod RegA("Reflector","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*xySize,-Y);  // chipIR OPPOSITE
-  FixedComp::setConnect(1,Origin+Y*xySize,Y);   // chipIR
-  FixedComp::setConnect(2,Origin-X*xySize,-X);
-  FixedComp::setConnect(3,Origin+X*xySize,X);
+  FixedComp::setConnect(0,Origin-YY*xySize,-YY);  // chipIR OPPOSITE
+  FixedComp::setConnect(1,Origin+YY*xySize,YY);   // chipIR
+  FixedComp::setConnect(2,Origin-XX*xySize,-XX);
+  FixedComp::setConnect(3,Origin+XX*xySize,XX);
   FixedComp::setConnect(4,Origin-Z*zSize,-Z);
   FixedComp::setConnect(5,Origin+Z*zSize,Z);
 
-  FixedComp::setConnect(6,Origin-YR*cutSize,-YR);
-  FixedComp::setConnect(7,Origin+YR*cutSize,YR);
-  FixedComp::setConnect(8,Origin-XR*cutSize,-XR);
-
-  FixedComp::setConnect(10,Origin,YR);   // corner centre
+  FixedComp::setConnect(6,Origin-Y*cutSize,-Y);
+  FixedComp::setConnect(7,Origin+Y*cutSize,Y);
+  FixedComp::setConnect(8,Origin-X*cutSize,-X);
+  FixedComp::setConnect(9,Origin+X*cutSize,-X);
+  FixedComp::setConnect(10,Origin,Y);   // corner centre
 
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
@@ -371,12 +371,15 @@ Reflector::createObjects(Simulation& System)
 
   
   makeCell("Reflector",System,cellIndex++,defMat,0.0,HR);
-  
+  for(const auto& A : this->getInsertCells())
+    ELog::EM<<"InsertCell s== "<<A<<ELog::endDiag;;
+
   for(CoolPad& PD : Pads)
-    PD.addInsertCell(this->getInsertCells());
- 
-  //  for(CoolPad& PD : Pads)
-  //    PD.createAll(System,*this,3);
+    {
+      PD.addInsertCell(this->getInsertCells());      
+      PD.setCutSurf("HotSurf",getFullRule(3));
+      PD.createAll(System,*this,3);
+    }
       
   return;
 }

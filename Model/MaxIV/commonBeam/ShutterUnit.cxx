@@ -3,7 +3,7 @@
  
  * File:   commonBeam/ShutterUnit.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,7 +55,6 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
 #include "FixedRotateGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -225,49 +224,51 @@ ShutterUnit::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("ShutterUnit","createObjects");
 
-  const std::string mountSurf
-    (ExternalCut::getRuleStr("mountSurf"));
 
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6  " );
-  makeCell("Dump",System,cellIndex++,blockMat,0.0,Out);
+  const HeadRule mountHR=
+    ExternalCut::getRule("mountSurf");
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 " );
-  addOuterSurf("Inner",Out);
+  HeadRule HR;
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  makeCell("Dump",System,cellIndex++,blockMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  addOuterSurf("Inner",HR);
   
   // create Flange:
-  Out=ModelSupport::getComposite(SMap,buildIndex," -102 -117 107 " );
-  makeCell("MountFlange",System,cellIndex++,flangeMat,0.0,Out+mountSurf);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-102 -117 107");
+  makeCell("MountFlange",System,cellIndex++,flangeMat,0.0,HR*mountHR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," 102 -127 107 -201");
-  makeCell("Bellow",System,cellIndex++,bellowMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -127 107 -201");
+  makeCell("Bellow",System,cellIndex++,bellowMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-207 201 -202 7 ");
-  makeCell("Topflange",System,cellIndex++,flangeMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-207 201 -202 7");
+  makeCell("Topflange",System,cellIndex++,flangeMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-107 7 -201");
-  makeCell("LiftVoid",System,cellIndex++,0,0.0,Out+mountSurf);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-107 7 -201");
+  makeCell("LiftVoid",System,cellIndex++,0,0.0,HR*mountHR);
 
   // Add outer voids
-  Out=ModelSupport::getComposite(SMap,buildIndex,"127 102 -201 -117");
-  makeCell("BellowVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"127 102 -201 -117");
+  makeCell("BellowVoid",System,cellIndex++,0,0.0,HR);
 
   if (topFlangeRadius+Geometry::zeroTol<outRadius)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,"201 -202 -117 207");
-      makeCell("TopVoid",System,cellIndex++,0,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -202 -117 207");
+      makeCell("TopVoid",System,cellIndex++,0,0.0,HR);
     }
 
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -16 6 -7");
-  makeCell("Thread",System,cellIndex++,threadMat,0.0,Out);
-  addOuterSurf("Outer",Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 6");
-  addOuterUnionSurf("Inner",Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-16 6 -7");
+  makeCell("Thread",System,cellIndex++,threadMat,0.0,HR);
+  addOuterSurf("Outer",HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 6");
+  addOuterUnionSurf("Inner",HR);
   
   // final exclude:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-117 -202");
-  addOuterUnionSurf("Outer",mountSurf+Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-117 -202");
+  addOuterUnionSurf("Outer",mountHR*HR);
   
   
   return; 
