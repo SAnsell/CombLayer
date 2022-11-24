@@ -220,9 +220,7 @@ LocalShielding::createObjects(Simulation& System)
     (cornerWidth>Geometry::zeroTol) &&
     (cornerHeight>Geometry::zeroTol);
 
-  const HeadRule topHR=
-    ModelSupport::getHeadRule(SMap,buildIndex,
-						   isCorners ?"-26":"-6");
+  const HeadRule topHR(SMap,buildIndex,(isCorners) ? 26 : -6);
 
   if ((!isMidHole) && (!isCorners))
     {

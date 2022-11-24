@@ -3,7 +3,7 @@
 
  * File:   attachComp/WrapperCell.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +58,8 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
+#include "support.h"
+#include "generateSurf.h"
 
 #include "WrapperCell.h"
 
@@ -65,13 +67,14 @@ namespace attachSystem
 {
 
 WrapperCell::WrapperCell(const std::string& baseKey,
-					 const std::string& Key) :
-  attachSystem::ContainedComp(),
+			 const std::string& Key) :
   attachSystem::FixedRotate(Key,6),
+  attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::ExternalCut(),
-  baseName(baseKey)
+  baseName(baseKey),
+  nextSurfIndex(cellIndex)
  /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -126,6 +129,45 @@ WrapperCell::setConnections(mapTYPE&& conMap)
   connections=conMap;  
   return;
 }
+
+HeadRule
+WrapperCell::processSurfLink(const Simulation& System,
+			     const std::string& linkUnit,
+			     const std::string& linkSide)
+/*!
+  process the surface linke to all "linkSide + value"
+  
+*/
+{
+  ELog::RegMethod RegA("WrapperCell","processSurfLink");
+
+  const attachSystem::SurfMap* SMptr=
+    System.getObjectThrow<attachSystem::SurfMap>
+	(baseName+linkUnit,"SurfMap item:");
+
+  const std::string::size_type pos=linkSide.find_first_of("+-");
+  double shiftV;
+  if (pos!=std::string::npos &&
+      StrFunc::convert(linkSide.substr(pos+1),shiftV))
+    {
+      const std::string linkPart=linkSide.substr(0,pos);
+
+      const int surfN=SMptr->getSignedSurf(linkPart);
+      const int surfSignN=(surfN>0) ? 1 : -1;
+      ELog::EM<<"Surf == "<<surfN<<" "<<surfSignN<<ELog::endDiag;
+      ModelSupport::buildShiftedSurf
+	(SMap,nextSurfIndex,std::abs(surfN),Y,shiftV);
+      nextSurfIndex++;
+      return HeadRule(SMap,surfSignN*(nextSurfIndex-1));
+    }
+
+  return SMptr->getSurfRule(linkSide);
+    
+}
+
+
+      
+
   
 void
 WrapperCell::createObjects(Simulation& System)
@@ -140,11 +182,14 @@ WrapperCell::createObjects(Simulation& System)
   
   mapTYPE::const_iterator mc;
 
+  // This is the construction of all the parts of the wrapper
+  // cell.
   for(std::shared_ptr<attachSystem::FixedComp>& uPtr : Units)
     {      
       const std::string unitName=uPtr->getKeyName();
       mc=connections.find(unitName);
 
+      
       if (mc!=connections.end())
 	{
 	  const std::string& linkUnit=mc->second.first;
@@ -169,11 +214,9 @@ WrapperCell::createObjects(Simulation& System)
     {
       const std::string& linkUnit=sUnit.first;
       const std::string& linkSide=sUnit.second;
-      const attachSystem::SurfMap* SMptr=
-	    System.getObjectThrow<attachSystem::SurfMap>
-	    (baseName+linkUnit,"SurfMap item:");
-
-      const HeadRule SurfHR = SMptr->getSurfRule(linkSide);
+      const HeadRule SurfHR=processSurfLink(System,sUnit.first,sUnit.second);
+      ELog::EM<<"Surface["<<linkUnit<<"] == "
+	      <<" "<<linkSide<<" :"<<SurfHR<<ELog::endDiag;
       HR *= SurfHR;
     }
 

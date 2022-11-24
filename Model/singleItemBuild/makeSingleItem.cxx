@@ -633,12 +633,12 @@ makeSingleItem::build(Simulation& System,
       ls->addUnit(se);
 
       ls->setSurfaces({
-    	    {"front",{"ShieldE","#back"}},      // -1050002
-	    {"back",{"ShieldB","#back"}},       // -1020002
+    	    {"front",{"ShieldE","#back"}},      // -1010002
+	    {"back",{"ShieldB","#back"}},       // -1040005
 	    {"left",{"ShieldC","left"}},        // 1030003
-	    {"right",{"ShieldB","#right"}},     // -102004
-	    {"base",{"ShieldE","base"}},        // 1050005
-	    {"top",{"ShieldB","#top"}}          // -1020006
+	    {"right",{"ShieldB","#right+1.0"}},     // -102003
+	    {"base",{"ShieldE","base"}},        // 1010004
+	    {"top",{"ShieldB","#top"}}          // -1010006
 	});
 
       ls->setConnections
