@@ -3,7 +3,7 @@
  
  * File:   R1CommmoInc/R1Ring.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -109,6 +109,7 @@ class R1Ring :
 
   /// accessor to size of concave points
   size_t nConcave() const { return concaveNPoints; }
+
   using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,

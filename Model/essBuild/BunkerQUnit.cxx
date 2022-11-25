@@ -61,8 +61,10 @@ namespace essSystem
 {
 
 BunkerQUnit::BunkerQUnit(const std::string& key) :
+  attachSystem::FixedOffset(key,6),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(key,6)
+  attachSystem::CellMap(),
+  attachSystem::SurfMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name of the bunker object that is building this roof
@@ -70,8 +72,10 @@ BunkerQUnit::BunkerQUnit(const std::string& key) :
 {}
 
 BunkerQUnit::BunkerQUnit(const BunkerQUnit& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  attachSystem::CellMap(A),attachSystem::SurfMap(A),
+  attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
+  attachSystem::SurfMap(A),
   xGap(A.xGap),zGap(A.zGap),
   PFlag(A.PFlag),cPts(A.cPts),Radii(A.Radii),yFlag(A.yFlag)
   /*!
@@ -90,8 +94,8 @@ BunkerQUnit::operator=(const BunkerQUnit& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       xGap=A.xGap;

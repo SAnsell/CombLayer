@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/Curtain.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,7 +92,7 @@ class Curtain :
   Curtain& operator=(const Curtain&);
   virtual ~Curtain();
 
-  
+
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int,const long int);
 

@@ -38,8 +38,9 @@ namespace essSystem
   \brief Single connected unit for the bunker quake line
 */
 
-class BunkerQUnit : public attachSystem::ContainedComp,
+class BunkerQUnit : 
   public attachSystem::FixedOffset,
+  public attachSystem::ContainedComp,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {
@@ -65,7 +66,8 @@ class BunkerQUnit : public attachSystem::ContainedComp,
   BunkerQUnit(const BunkerQUnit&);
   BunkerQUnit& operator=(const BunkerQUnit&);
   virtual ~BunkerQUnit();
-  
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
   void createAll(Simulation&,const attachSystem::FixedComp&,

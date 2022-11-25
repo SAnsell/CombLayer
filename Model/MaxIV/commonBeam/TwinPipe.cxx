@@ -3,7 +3,7 @@
  
  * File:   commonBeam/TwinPipe.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -203,48 +203,48 @@ TwinPipe::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("TwinPipe","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   
-  const std::string frontStr=getRuleStr("front");
+  const HeadRule frontHR=getRule("front");
 
   // front flange
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 -11 107 207 ");
-  makeCell("FrontFlange",System,cellIndex++,feMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 -11 107 207");
+  makeCell("FrontFlange",System,cellIndex++,feMat,0.0,HR*frontHR);
   
   // pipeA 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -101 -107 ");
-  makeCell("PipeAVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 -107");
+  makeCell("PipeAVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -101 107 -117 ");
-  makeCell("PipeAWall",System,cellIndex++,feMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -101 107 -117");
+  makeCell("PipeAWall",System,cellIndex++,feMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 111 -101 117 -127 ");
-  makeCell("PipeAFlange",System,cellIndex++,feMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"111 -101 117 -127");
+  makeCell("PipeAFlange",System,cellIndex++,feMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -111 -127 117 ");
-  makeCell("PipeAOutVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -111 -127 117");
+  makeCell("PipeAOutVoid",System,cellIndex++,voidMat,0.0,HR);
 
   // pipe B
-  Out=ModelSupport::getComposite(SMap,buildIndex," -201 -207 ");
-  makeCell("PipeBVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-201 -207");
+  makeCell("PipeBVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
     
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -201 207 -217 ");
-  makeCell("PipeBWall",System,cellIndex++,feMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -201 207 -217");
+  makeCell("PipeBWall",System,cellIndex++,feMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 211 -201 217 -227 127 ");
-  makeCell("PipeBFlange",System,cellIndex++,feMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"211 -201 217 -227 127");
+  makeCell("PipeBFlange",System,cellIndex++,feMat,0.0,HR);
 
   // insert pipe A void:
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -211 217 -227 127 ");
-  makeCell("PipeBOutVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -211 217 -227 127");
+  makeCell("PipeBOutVoid",System,cellIndex++,voidMat,0.0,HR);
 
   // outer boundary [flange front]
-  Out=ModelSupport::getComposite(SMap,buildIndex," -11 -7 ");
-  addOuterSurf("Flange",Out+frontStr);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -101 -127 ");
-  addOuterSurf("PipeA",Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -201 -227 ");
-  addOuterUnionSurf("PipeB",Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -7");
+  addOuterSurf("Flange",HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -101 -127");
+  addOuterSurf("PipeA",HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -201 -227");
+  addOuterUnionSurf("PipeB",HR);
 
   return;
 }

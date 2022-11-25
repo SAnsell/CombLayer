@@ -36,9 +36,10 @@ namespace essSystem
   \brief Specialized for a cylinder pre-mod under moderator
 */
 
-class DiskPreMod : public attachSystem::ContainedComp,
-  public attachSystem::LayerComp,
+class DiskPreMod :
   public attachSystem::FixedOffsetUnit,
+  public attachSystem::ContainedComp,
+  public attachSystem::LayerComp,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {
@@ -57,10 +58,12 @@ class DiskPreMod : public attachSystem::ContainedComp,
 
   size_t NWidth;                      ///< Number of widths active
   int engActive;                  ///< Engineering active flag
+
   /// Flow guide pattern inside DiskPreMod (engineering detail)
   std::shared_ptr<CylFlowGuide> InnerComp;
   std::shared_ptr<OnionCooling> onion;
-  std::string sideRule; ///< side rule
+
+  HeadRule sideRuleHR;
 
   using FixedOffset::populate;
   void populate(const FuncDataBase&,const double&);
@@ -83,7 +86,7 @@ class DiskPreMod : public attachSystem::ContainedComp,
   virtual int getLayerSurf(const size_t,const long int) const;
   virtual std::string getLayerString(const size_t,const long int) const;
 
-  std::string getSideRule() const { return sideRule; }
+  HeadRule getSideRule() const { return sideRuleHR; }
 
   /// total height of object
   double getZOffset() const { return zStep; }

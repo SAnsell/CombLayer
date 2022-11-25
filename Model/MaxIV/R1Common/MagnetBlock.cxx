@@ -206,54 +206,51 @@ MagnetBlock::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("MagnetBlock","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
-  const HeadRule& aSegment=quadUnit->getFullRule(2);
-  const HeadRule& bSegment=dipoleChamber->getFullRule(4);
-  const HeadRule& cSegment=dipoleExtract->getFullRule(2);
-  const HeadRule& dSegment=dipoleSndBend->getFullRule(2);
-  const HeadRule& exitSeg=dipoleOut->getFullRule(-2);
+  const HeadRule aSegment=quadUnit->getFullRule(2);
+  const HeadRule bSegment=dipoleChamber->getFullRule(4);
+  const HeadRule cSegment=dipoleExtract->getFullRule(2);
+  const HeadRule dSegment=dipoleSndBend->getFullRule(2);
+  const HeadRule exitSeg=dipoleOut->getFullRule(-2);
 
   // Construct the outer sectoin [divide later]
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1 -11 3 -4 5 -6 ");
-  makeCell("Front",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1 -11 3 -4 5 -6");
+  makeCell("Front",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 3 13 -4 5 -6 ");
-  Out+=aSegment.complement().display();
-  makeCell("OuterA",System,cellIndex++,outerMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 3 13 -4 5 -6");
+  makeCell("OuterA",System,cellIndex++,outerMat,0.0,HR*aSegment.complement());
 
   if (stopPoint=="Quadrupole")
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1 3 13 -4 5 -6 ");
-      Out+=aSegment.complement().display();
-      addOuterSurf("Magnet",Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 3 13 -4 5 -6");
+      addOuterSurf("Magnet",HR*aSegment.complement());
       return;
     }
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 13 23  -4 5 -6 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 23  -4 5 -6");
   makeCell("OuterB",System,cellIndex++,outerMat,0.0,
-	   Out+aSegment.display()+bSegment.complement().display());
+	   HR*aSegment*bSegment.complement());
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -12 23 33 -4 5 -6 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 23 33 -4 5 -6");
   makeCell("OuterC",System,cellIndex++,outerMat,0.0,
-	   Out+bSegment.display()+cSegment.complement().display());
+	   HR*bSegment*cSegment.complement());
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -12 33 43 -4 5 -6 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 33 43 -4 5 -6");
   makeCell("OuterD",System,cellIndex++,outerMat,0.0,
-	   Out+cSegment.display()+dSegment.complement().display());
+	   HR*cSegment*dSegment.complement());
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -12 33 43 -4 5 -6 ");
-  makeCell("OuterE",System,cellIndex++,outerMat,0.0,
-	   Out+dSegment.display());
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 33 43 -4 5 -6");
+  makeCell("OuterE",System,cellIndex++,outerMat,0.0,HR*dSegment);
 
   // Construct the outer sectoin [divide later]
-  Out=ModelSupport::getComposite(SMap,buildIndex," 12 43 -4 5 -6 ");
-  makeCell("Back",System,cellIndex++,0,0.0,Out+exitSeg.display());
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 43 -4 5 -6");
+  makeCell("Back",System,cellIndex++,0,0.0,HR*exitSeg);
   
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1 3 13 23 33 43 -4 5 -6 ");
-  addOuterSurf("Magnet",Out+exitSeg.display());
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1 3 13 23 33 43 -4 5 -6");
+  addOuterSurf("Magnet",HR*exitSeg);
 
   return;
 }

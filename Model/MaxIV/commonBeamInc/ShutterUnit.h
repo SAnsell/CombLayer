@@ -36,8 +36,8 @@ namespace xraySystem
 */
 
 class ShutterUnit :
-  public attachSystem::ContainedGroup,
   public attachSystem::FixedRotateGroup,
+  public attachSystem::ContainedGroup,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap
 {

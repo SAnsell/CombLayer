@@ -67,8 +67,8 @@ namespace xraySystem
 {
 
 ShutterUnit::ShutterUnit(const std::string& Key) :
-  attachSystem::ContainedGroup("Inner","Outer"),
   attachSystem::FixedRotateGroup(Key,"Main",6,"Beam",2),
+  attachSystem::ContainedGroup("Inner","Outer"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap()
   /*!

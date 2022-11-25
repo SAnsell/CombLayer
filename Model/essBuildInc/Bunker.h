@@ -155,6 +155,8 @@ class Bunker :
   void setReversed() { revFlag=1; }
   
   void cutInsert(Simulation&,const BunkerInsert&) const;
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

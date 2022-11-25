@@ -36,7 +36,7 @@ namespace xraySystem
 */
 
 class R3ChokeInsert :
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
   public attachSystem::SurfMap,

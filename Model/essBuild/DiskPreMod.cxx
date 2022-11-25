@@ -72,14 +72,13 @@ namespace essSystem
 {
 
 DiskPreMod::DiskPreMod(const std::string& Key) :
+  attachSystem::FixedOffsetUnit(Key,9),
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0),
-  attachSystem::FixedOffsetUnit(Key,9),
   attachSystem::CellMap(),attachSystem::SurfMap(),  
   NWidth(0),
   InnerComp(new CylFlowGuide(Key+"FlowGuide")),
-  onion(new OnionCooling(Key+"OnionCooling")),
-  sideRule("")
+  onion(new OnionCooling(Key+"OnionCooling"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -91,16 +90,18 @@ DiskPreMod::DiskPreMod(const std::string& Key) :
 }
 
 DiskPreMod::DiskPreMod(const DiskPreMod& A) : 
+  attachSystem::FixedOffsetUnit(A),
   attachSystem::ContainedComp(A),
-  attachSystem::LayerComp(A),attachSystem::FixedOffsetUnit(A),
-  attachSystem::CellMap(A),attachSystem::SurfMap(A),
+  attachSystem::LayerComp(A),
+  attachSystem::CellMap(A),
+  attachSystem::SurfMap(A),
   radius(A.radius),
   height(A.height),depth(A.depth),width(A.width),
   mat(A.mat),temp(A.temp),
   flowGuideType(A.flowGuideType),
   InnerComp(A.InnerComp->clone()),
   onion(A.onion->clone()),
-  sideRule(A.sideRule)
+  sideRuleHR(A.sideRuleHR)
   /*!
     Copy constructor
     \param A :: DiskPreMod to copy
@@ -117,9 +118,9 @@ DiskPreMod::operator=(const DiskPreMod& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       radius=A.radius;
@@ -131,7 +132,7 @@ DiskPreMod::operator=(const DiskPreMod& A)
       flowGuideType=A.flowGuideType;
       *InnerComp=*A.InnerComp;
       *onion=*A.onion;
-      sideRule=A.sideRule;
+      sideRuleHR=A.sideRuleHR;
    }
   return *this;
 }
@@ -290,34 +291,32 @@ DiskPreMod::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("DiskPreMod","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
   int SI(buildIndex);
   // Process even number of surfaces:
   HeadRule Inner;
   HeadRule Width;
-  std::string widthUnit;
+  HeadRule widthUnit;
   for(size_t i=0;i<nLayers;i++)
     {
       if (i<NWidth)
 	{
 	  // previous width:
-	  Width.procString(widthUnit);
-	  Width.makeComplement();
-	  widthUnit=ModelSupport::getComposite(SMap,SI," -3 4 ");
+	  Width=widthUnit.complement();
+
+	  widthUnit=ModelSupport::getHeadRule(SMap,SI,"-3 4");
 	}
-      Out=ModelSupport::getComposite(SMap,SI," -7 5 -6 ");
+      HR=ModelSupport::getHeadRule(SMap,SI,"-7 5 -6");
 
 	
-      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],
-				       Out+widthUnit+
-				       Inner.display()+Width.display()));
+      System.addCell(cellIndex++,mat[i],temp[i],
+		     HR*widthUnit*Inner*Width);
       if (!i)
 	CellMap::setCell("Inner", cellIndex-1);
 
       SI+=10;
-      Inner.procString(Out);
-      Inner.makeComplement();
+      Inner=HR.complement();
     }
 
   SI-=10;
@@ -325,15 +324,15 @@ DiskPreMod::createObjects(Simulation& System)
   // Outer extra void
   if (radius.empty() || radius.back()<outerRadius-Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,SI," -17 5 -6 7");
-      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,SI,"-17 5 -6 7");
+      System.addCell(cellIndex++,0,0.0,HR);
       // For exit surface
-      Out=ModelSupport::getComposite(SMap,SI," -17 5 -6 ");
+      HR=ModelSupport::getHeadRule(SMap,SI," -17 5 -6");
     }
 
-  addOuterSurf(Out);
+  addOuterSurf(HR);
 
-  sideRule=ModelSupport::getComposite(SMap,SI," -7 ");
+  sideRuleHR=HeadRule(SMap,SI,-7);
 
   return; 
 }
