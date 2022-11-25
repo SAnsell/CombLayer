@@ -1,4 +1,6 @@
 
+
+
 nValid=1000
 
 parallel --halt now,fail=1 "./singleItem --singleItem {} --validAll --validCheck $nValid AA" ::: \

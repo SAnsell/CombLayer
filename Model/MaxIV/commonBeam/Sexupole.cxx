@@ -200,7 +200,12 @@ Sexupole::createSurfaces()
       
       angle+=2.0*M_PI/static_cast<double>(NPole);
       CN+=10;
-    }  
+    }
+
+  // Inner
+  if (!isActive("Inner"))
+    ModelSupport::buildCylinder(SMap,buildIndex+5007,Origin,Y,poleGap/10.0);
+    
   return;
 }
 
@@ -226,9 +231,17 @@ Sexupole::createObjects(Simulation& System)
   HR*=ModelSupport::getHeadRule(SMap,buildIndex+1000,unitStr);
   makeCell("Frame",System,cellIndex++,frameMat,0.0,HR);
 
+  const HeadRule fbHR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2");
+  if (!isActive("Inner"))
+    {
+      setCutSurf("Inner",SMap.realSurf(buildIndex+5007));
+      HR=HeadRule(SMap,buildIndex,-5007);
+      makeCell("Inner",System,cellIndex++,0,0.0,HR*fbHR);
+    }
+      
   const HeadRule ICellHR=getRule("Inner");
   /// create triangles
-  const HeadRule fbHR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2");
+
 
 
   std::vector<HeadRule> CoilExclude;
