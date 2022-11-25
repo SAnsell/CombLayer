@@ -242,7 +242,6 @@ portItem::populate(const FuncDataBase& Control)
     Control.EvalTail<Geometry::Vec3D>(keyName,portBase,"Axis");
 
   length=Control.EvalTail<double>(keyName,portBase,"Length");
-  ELog::EM<<"Lengh["<<keyName<<"] == "<<length<<ELog::endDiag;
   radius=Control.EvalTail<double>(keyName,portBase,"Radius");
   wall=Control.EvalTail<double>(keyName,portBase,"Wall");
 
