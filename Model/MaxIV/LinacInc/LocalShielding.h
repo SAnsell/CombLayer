@@ -36,8 +36,8 @@ namespace tdcSystem
 */
 
 class LocalShielding :
-    public attachSystem::ContainedComp,
     public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
     public attachSystem::CellMap,
     public attachSystem::SurfMap,
     public attachSystem::ExternalCut

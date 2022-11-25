@@ -3,23 +3,6 @@
 
 nValid=1000
 
-parallel --halt now,fail=1 "./singleItem --singleItem {} --validAll --validCheck $nValid AA" ::: \
- BeamDivider BeamScrapper Bellow BlankTube BoxJaws         \
- BremBlock BremTube  ButtonBPM CRLTube  CeramicGap CleaningMagnet  \
- CollTube ConnectorTube CooledScreen CooledUnit CorrectorMag CrossBlank   \
- CrossWay CylGateValve DiffPumpXIADP03 DipoleDIBMag DipoleExtract       \
- DipoleSndBend EArrivalMon EBeamStop EPSeparator ExperimentalHutch         \
- FMask FlangeDome FlatPipe FourPort GateValveCube GateValveCylinder GaugeTube \
- HPCombine HPJaws HalfElectronPipe IonGauge IonPTube Jaws LQuadF LQuadH   \
- LSexupole LocalShield MagTube MagnetBlock MagnetM1 MagnetU1 MonoShutter  \
- MultiPipe NBeamStop Octupole PipeTube PortTube PrismaChamber Quadrupole  \
- R3ChokeChamber RoundMonoShutter Scrapper Sexupole SixPort StriplineBPM \
- TWCavity TargetShield TriGroup TriPipe TriggerTube UndVac UndulatorVacuum \
- VacuumPipe ViewTube YAG YagScreen YagUnit default uVac 
-exit
-
-#./t1Real -validAll --validCheck ${nValid} AA || exit
-
 #segments=$(for i in {40..49}; do echo -n "Segment$i "; done)
 segments=All
 

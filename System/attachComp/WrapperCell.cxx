@@ -154,7 +154,6 @@ WrapperCell::processSurfLink(const Simulation& System,
 
       const int surfN=SMptr->getSignedSurf(linkPart);
       const int surfSignN=(surfN>0) ? 1 : -1;
-      ELog::EM<<"Surf == "<<surfN<<" "<<surfSignN<<ELog::endDiag;
       ModelSupport::buildShiftedSurf
 	(SMap,nextSurfIndex,std::abs(surfN),Y,shiftV);
       nextSurfIndex++;
@@ -164,10 +163,6 @@ WrapperCell::processSurfLink(const Simulation& System,
   return SMptr->getSurfRule(linkSide);
     
 }
-
-
-      
-
   
 void
 WrapperCell::createObjects(Simulation& System)

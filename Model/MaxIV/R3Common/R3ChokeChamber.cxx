@@ -266,12 +266,15 @@ R3ChokeChamber::createUnitVector(const attachSystem::FixedComp& FC,
     {
       // this must be done here because we didnt
       // know the value of X / electronXStep at setEPOriginPair()
-      elecOrg+=X*electronXStep;   
+      elecOrg+=X*electronXStep;
       elecXAxis=elecYAxis*Z;
       Origin=(elecOrg+photOrg)/2.0+Y*inletLength;
     }
   else 
     {
+      
+      elecXAxis=elecYAxis*Z;	    
+	    
       // this must be done here because we didnt
       // know the value of X / electronXStep at setEPOriginPair()
       Origin+=Y*inletLength;
@@ -323,6 +326,8 @@ R3ChokeChamber::createSurfaces()
   ModelSupport::buildCylinder
     (SMap,buildIndex+127,flangeOrg,Y,flangeInletRadius);
   ModelSupport::buildPlane(SMap,buildIndex+103,IOrigin-X*(inletWidth/2.0),X);
+  ELog::EM<<"IOrin == "<<IOrigin << " : : " <<elecXAxis
+	  <<" == "<<inletWidth<<ELog::endDiag;
   ModelSupport::buildPlane
     (SMap,buildIndex+104,IOrigin+X*(inletWidth/2.0),elecXAxis);
   ModelSupport::buildPlane(SMap,buildIndex+105,IOrigin-Z*(inletHeight/2.0),Z);
@@ -396,121 +401,119 @@ R3ChokeChamber::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("R3ChokeChamber","createObjects");
 
-  const std::string frontSurf(ExternalCut::getRuleStr("front"));  
+  const HeadRule frontHR(ExternalCut::getRule("front"));  
     
-  std::string Out;
+  HeadRule HR;
 
   // Main Chamber
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 5 -6 -7  ");
-  makeCell("MainVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -7");
+  makeCell("MainVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 5 -6 7 -17 (-113:114:-115:116:1) "
-     "(217:-1) (317:-1) (417:3)");
-  makeCell("MainWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"5 -6 7 -17 (-113:114:-115:116:1)"
+   "(217:-1) (317:-1) (417:3)");
+  makeCell("MainWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 5 -15 17 -27  ");
-  makeCell("MainFlangeA",System,cellIndex++,flangeMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -15 17 -27");
+  makeCell("MainFlangeA",System,cellIndex++,flangeMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -6 16 17 -27  ");
-  makeCell("MainFlangeB",System,cellIndex++,flangeMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-6 16 17 -27");
+  makeCell("MainFlangeB",System,cellIndex++,flangeMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 15 -16 17 -27 (-113:114:-115:116:1) (217:-1)"
-     "(317:-1) (417:3)");
-  makeCell("MainOuter",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+   "15 -16 17 -27 (-113:114:-115:116:1) (217:-1) (317:-1) (417:3)");
+  makeCell("MainOuter",System,cellIndex++,0,0.0,HR);
 
   //  Inlet pipe
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," 103 -104 105 -106 7 -1 ");
-  makeCell("InletVoid",System,cellIndex++,voidMat,0.0,Out+frontSurf);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"103 -104 105 -106 7 -1");
+  makeCell("InletVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 113 -114 115 -116 (-103:104:-105:106) 7 -1 ");
-  makeCell("InletWall",System,cellIndex++,wallMat,0.0,Out+frontSurf);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"113 -114 115 -116 (-103:104:-105:106) 7 -1");
+  makeCell("InletWall",System,cellIndex++,wallMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," (-113:114:-115:116) -127 -112 ");
-  makeCell("InletFlange",System,cellIndex++,flangeMat,0.0,Out+frontSurf);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"(-113:114:-115:116) -127 -112");
+  makeCell("InletFlange",System,cellIndex++,flangeMat,0.0,HR*frontHR);
 
   // remove side pipe cylinder
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," (-113:114:-115:116) -127 112 27 -1 427");
-  makeCell("InletOuterVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"(-113:114:-115:116) -127 112 27 -1 (427:3)");
+  makeCell("InletOuterVoid",System,cellIndex++,0,0.0,HR);
 
 
   //  photon pipe
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," -207 7 1 -202");
-  makeCell("PhotonVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-207 7 1 -202");
+  makeCell("PhotonVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -217 207 7 1 -202 ");
-  makeCell("PhotonWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-217 207 7 1 -202");
+  makeCell("PhotonWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 217 -227 212 -202 ");
-  makeCell("PhotonFlange",System,cellIndex++,flangeMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"217 -227 212 -202");
+  makeCell("PhotonFlange",System,cellIndex++,flangeMat,0.0,HR);
 
   // cut by electron flange
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 217 -227 -212 27 1 (302:(-312 317):  327) 427 ");
-  makeCell("PhotonOuterVoid",System,cellIndex++,0,0.0,Out);
-
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"217 -227 -212 27 1 (302:(-312 317):  327) 427");
+  makeCell("PhotonOuterVoid",System,cellIndex++,0,0.0,HR);
 
   //  electron pipe
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," -307 7 1 -302");
-  makeCell("ElectronVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-307 7 1 -302");
+  makeCell("ElectronVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 307 -317 7 1 -302 ");
-  makeCell("ElectronWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"307 -317 7 1 -302");
+  makeCell("ElectronWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 317 -327 312 -302 ");
-  makeCell("ElectronFlange",System,cellIndex++,flangeMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"317 -327 312 -302");
+  makeCell("ElectronFlange",System,cellIndex++,flangeMat,0.0,HR);
 
   // cut by photon pipe
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 317 -327 -312 27 1 227 ");
-  makeCell("ElectronOuterVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"317 -327 -312 27 1 227");
+  makeCell("ElectronOuterVoid",System,cellIndex++,0,0.0,HR);
 
   //  Side Pipe  
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-407 7 -3 402");
-  makeCell("SideVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-407 7 -3 402");
+  makeCell("SideVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 407 -417 7 -3 402 ");
-  makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"407 -417 7 -3 402");
+  makeCell("SideWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 417 -427 -412 402 ");
-  makeCell("SideFlange",System,cellIndex++,flangeMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"417 -427 -412 402");
+  makeCell("SideFlange",System,cellIndex++,flangeMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -427 -402 452 ");
-  makeCell("SideCap",System,cellIndex++,capMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-427 -402 452");
+  makeCell("SideCap",System,cellIndex++,capMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -427 417 412 27 -3 ");
-  makeCell("SideOuterVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-427 417 412 27 -3");
+  makeCell("SideOuterVoid",System,cellIndex++,0,0.0,HR);
 
   // External
-  Out=ModelSupport::getComposite(SMap,buildIndex," 5 -6 -27  ");  
-  addOuterSurf("Main",Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -27");  
+  addOuterSurf("Main",HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -127 -1  ");  
-  addOuterSurf("Inlet",Out+frontSurf);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-127 -1");  
+  addOuterSurf("Inlet",HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -227 1 -202 ");  
-  addOuterSurf("Photon",Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-227 1 -202");  
+  addOuterSurf("Photon",HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -327 1 -302 ");  
-  addOuterSurf("Electron",Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-327 1 -302");  
+  addOuterSurf("Electron",HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -427 -3 452 ");  
-  addOuterSurf("Side",Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-427 -3 452");  
+  addOuterSurf("Side",HR);
   return;
 }
 

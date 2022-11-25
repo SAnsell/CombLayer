@@ -821,7 +821,7 @@ makeSingleItem::build(Simulation& System,
     {
       const double angle(1.5*M_PI/180.0);
       const Geometry::Vec3D photOrg(0,0,0);
-      const Geometry::Vec3D elecOrg(1.84502,0,0);
+      const Geometry::Vec3D elecOrg(3.84502,0,0);
       const Geometry::Vec3D elecAxis(sin(angle),cos(angle),0);
       
       std::shared_ptr<xraySystem::R3ChokeChamber>
