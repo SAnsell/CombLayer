@@ -34,8 +34,9 @@ namespace xraySystem
     \brief Simple chicane with no inner plate
   */
   
-class SimpleChicane : public attachSystem::ContainedGroup,
-  public attachSystem::FixedOffset,
+class SimpleChicane : 
+  public attachSystem::FixedRotate,
+  public attachSystem::ContainedGroup,
   public attachSystem::CellMap,
   public attachSystem::SurfMap,
   public attachSystem::ExternalCut
@@ -55,8 +56,6 @@ class SimpleChicane : public attachSystem::ContainedGroup,
   int plateMat;                   ///< plate material
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -70,6 +69,7 @@ class SimpleChicane : public attachSystem::ContainedGroup,
   virtual ~SimpleChicane() {}  ///< Destructor
 
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 };

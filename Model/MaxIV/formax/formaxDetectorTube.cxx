@@ -79,8 +79,8 @@ namespace xraySystem
 {
 
 formaxDetectorTube::formaxDetectorTube(const std::string& Key)  :
-  attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,6),
+  attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::ExternalCut(),
@@ -164,8 +164,7 @@ formaxDetectorTube::createSurfaces()
 
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outerRadius);
 
-  const std::string Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
-  const HeadRule HR(Out);
+  const HeadRule HR=HeadRule(SMap,buildIndex,-7);
 
   buildZone.setSurround(HR);
   buildZone.setFront(getRule("front"));

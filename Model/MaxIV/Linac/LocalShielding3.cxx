@@ -220,17 +220,16 @@ LocalShielding3::createObjects(Simulation& System)
 	  HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -13 15 -16");
 	  makeCell("Wall",System,cellIndex++,mainMat,0.0,HR*sideHR);
 
-	  int mat;
+
 	  int SI(buildIndex+100);
 	  for (size_t i=0;i<7;++i)
 	    {
+	      const int mat =(i%2) ? mainMat : 0;
 	      HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
 					   "13 -14 5M -15M");
 	      if (i%2)
-		{
-		  HR*=ICellHR[i/2];
-		  mat=mainMat;
-		}
+		HR*=ICellHR[i/2];
+
 	      makeCell("HoleWall",System,cellIndex++,mat,0.0,HR*sideHR);
 	      SI += 10;
 	    }

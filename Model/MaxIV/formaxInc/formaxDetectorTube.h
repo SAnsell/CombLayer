@@ -33,7 +33,6 @@ namespace constructSystem
 
 namespace xraySystem
 {
-
   class AreaDetector;
   class MonoBeamStop;
 
@@ -46,8 +45,8 @@ namespace xraySystem
 */
 
 class formaxDetectorTube :
-    public attachSystem::ContainedComp,
     public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
     public attachSystem::CellMap,
     public attachSystem::SurfMap,
     public attachSystem::ExternalCut
@@ -72,7 +71,6 @@ class formaxDetectorTube :
 
   std::shared_ptr<xraySystem::MonoBeamStop> monoBeamStop;
   std::shared_ptr<xraySystem::AreaDetector> waxs;
-
   
   void populate(const FuncDataBase&);
   void createSurfaces();

@@ -242,8 +242,6 @@ Sexupole::createObjects(Simulation& System)
   const HeadRule ICellHR=getRule("Inner");
   /// create triangles
 
-
-
   std::vector<HeadRule> CoilExclude;
   std::vector<HeadRule> PoleExclude; 
   int BN(buildIndex); // base

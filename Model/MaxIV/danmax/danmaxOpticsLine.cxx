@@ -256,15 +256,15 @@ danmaxOpticsLine::createSurfaces()
 
   if (outerLeft>Geometry::zeroTol &&  isActive("floor"))
     {
-      std::string Out;
+      HeadRule HR;
       ModelSupport::buildPlane
 	(SMap,buildIndex+3,Origin-X*outerLeft,X);
       ModelSupport::buildPlane
 	(SMap,buildIndex+4,Origin+X*outerRight,X);
       ModelSupport::buildPlane
 	(SMap,buildIndex+6,Origin+Z*outerTop,Z);
-      Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -6");
-      const HeadRule HR(Out+getRuleStr("floor"));
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 -6");
+      HR*=getRule("floor");
       buildZone.setSurround(HR);
 
       buildZone.setFront(getRule("front"));

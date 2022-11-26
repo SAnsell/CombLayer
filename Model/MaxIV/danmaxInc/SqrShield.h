@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/danmaxInc/SqrShield.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
+ *5
  ****************************************************************************/
 #ifndef xraySystem_SqrShield_h
 #define xraySystem_SqrShield_h
@@ -26,7 +26,7 @@ class Simulation;
 
 namespace constructSystem
 {
-    class PipeTube;
+  class PipeTube;
 }
 
 namespace xraySystem
@@ -41,8 +41,8 @@ namespace xraySystem
 */
 
 class SqrShield :
+    public attachSystem::FixedRotate,
     public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset,
     public attachSystem::CellMap,
     public attachSystem::SurfMap,
     public attachSystem::FrontBackCut
