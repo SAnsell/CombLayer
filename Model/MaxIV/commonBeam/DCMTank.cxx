@@ -3,7 +3,7 @@
  
  * File:   commonBeam/DCMTank.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -282,92 +281,92 @@ DCMTank::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("DCMTank","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
-  const std::string FPortStr(ExternalCut::getRuleStr("front"));
-  const std::string BPortStr(ExternalCut::getRuleStr("back"));
+  const HeadRule FPortHR(ExternalCut::getRule("front"));
+  const HeadRule BPortHR(ExternalCut::getRule("back"));
   
   // Main Void 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"  5 (-6:-108) -7 ");
-  CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 5 (-6:-108) -7");
+  CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -17 6 -118 108 (507:1000) (607:-1000) ");
-  CellMap::makeCell("TopPlate",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-17 6 -118 108 (507:1000) (607:-1000)");
+  CellMap::makeCell("TopPlate",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "  5 (-6:-108) 7 -17 (507:1000) (607:-1000)");
-  CellMap::makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				" 5 (-6:-108) 7 -17 (507:1000) (607:-1000)");
+  CellMap::makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -14  -5 15 ");
-  CellMap::makeCell("BasePlate",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14  -5 15");
+  CellMap::makeCell("BasePlate",System,cellIndex++,wallMat,0.0,HR);
 
   // Front/Back port
 
   // PORTS:
   // front port
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1000 (7:108) -507 ");
-  CellMap::makeCell("PortAVoid",System,cellIndex++,voidMat,0.0,Out+FPortStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1000 (7:108) -507");
+  CellMap::makeCell("PortAVoid",System,cellIndex++,voidMat,0.0,HR*FPortHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1000 (17:118) 507 -517 ");
-  CellMap::makeCell("PortAWall",System,cellIndex++,wallMat,0.0,Out+FPortStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1000 (17:118) 507 -517");
+  CellMap::makeCell("PortAWall",System,cellIndex++,wallMat,0.0,HR*FPortHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -511 517 -527 ");
-  CellMap::makeCell("PortAFlange",System,cellIndex++,wallMat,0.0,Out+FPortStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-511 517 -527");
+  CellMap::makeCell("PortAFlange",System,cellIndex++,wallMat,0.0,HR*FPortHR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -1000 (17:118) 511 517 -527 ");
-  CellMap::makeCell("PortAScreen",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-1000 (17:118) 511 517 -527");
+  CellMap::makeCell("PortAScreen",System,cellIndex++,voidMat,0.0,HR);
 
   // back port
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1000 (7:108) -607 ");
-  CellMap::makeCell("PortBVoid",System,cellIndex++,voidMat,0.0,Out+BPortStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1000 (7:108) -607");
+  CellMap::makeCell("PortBVoid",System,cellIndex++,voidMat,0.0,HR*BPortHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1000 (17:118) 607 -617 ");
-  CellMap::makeCell("PortBWall",System,cellIndex++,wallMat,0.0,Out+BPortStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1000 (17:118) 607 -617");
+  CellMap::makeCell("PortBWall",System,cellIndex++,wallMat,0.0,HR*BPortHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 611 617 -627 ");
-  CellMap::makeCell("PortBFlange",System,cellIndex++,wallMat,0.0,Out+BPortStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"611 617 -627");
+  CellMap::makeCell("PortBFlange",System,cellIndex++,wallMat,0.0,HR*BPortHR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1000 (17:118) -611 617 -627 ");
-  CellMap::makeCell("PortBScreen",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1000 (17:118) -611 617 -627");
+  CellMap::makeCell("PortBScreen",System,cellIndex++,voidMat,0.0,HR);
 
   // OUTER VOID SPACE
-  const std::string fbCut=FPortStr+BPortStr;
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 527 1013 -1014 5 -1015 (17:118) -1000 ");
-  CellMap::makeCell("OuterFrontVoid",System,cellIndex++,0,0.0,Out+FPortStr);
+  const HeadRule fbCut=FPortHR*BPortHR;
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"527 1013 -1014 5 -1015 (17:118) -1000");
+  CellMap::makeCell("OuterFrontVoid",System,cellIndex++,0,0.0,HR*FPortHR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 627 1013 -1014 5 -1015 (17:118) 1000");
-  CellMap::makeCell("OuterBackVoid",System,cellIndex++,0,0.0,Out+BPortStr);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"627 1013 -1014 5 -1015 (17:118) 1000");
+  CellMap::makeCell("OuterBackVoid",System,cellIndex++,0,0.0,HR*BPortHR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1003 -1013 5 -1015 (17:118) ");
-  CellMap::makeCell("OuterLeftVoid",System,cellIndex++,0,0.0,Out+fbCut);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1003 -1013 5 -1015 (17:118)");
+  CellMap::makeCell("OuterLeftVoid",System,cellIndex++,0,0.0,HR*fbCut);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -1004 1014 5 -1015 (17:118) ");
-  CellMap::makeCell("OuterRightVoid",System,cellIndex++,0,0.0,Out+fbCut);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-1004 1014 5 -1015 (17:118)");
+  CellMap::makeCell("OuterRightVoid",System,cellIndex++,0,0.0,HR*fbCut);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 1003 -1004 118 1015 -1006 ");
-  CellMap::makeCell("OuterTopVoid",System,cellIndex++,0,0.0,Out+fbCut);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				"1003 -1004 118 1015 -1006");
+  CellMap::makeCell("OuterTopVoid",System,cellIndex++,0,0.0,HR*fbCut);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1003 -1004 -5 15 (-11:12:-13:14) ");
-  CellMap::makeCell("OuterBasePlateVoid",System,cellIndex++,0,0.0,Out+fbCut);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1003 -1004 -5 15 (-11:12:-13:14)");
+  CellMap::makeCell("OuterBasePlateVoid",System,cellIndex++,0,0.0,HR*fbCut);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1003 -1004 -15  1005 ");
-  CellMap::makeCell("OuterBaseVoid",System,cellIndex++,0,0.0,Out+fbCut);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1003 -1004 -15  1005");
+  CellMap::makeCell("OuterBaseVoid",System,cellIndex++,0,0.0,HR*fbCut);
 
   
   
   // Main exclusion box
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1003 -1004 1005 -1006 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1003 -1004 1005 -1006");
 
-  addOuterSurf(Out+fbCut);
+  addOuterSurf(HR*fbCut);
 
   return;
 }

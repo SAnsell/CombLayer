@@ -37,7 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -247,8 +246,8 @@ CorrectorMag::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("CorrectorMag","createObjects");
   
-  std::string Out;
-  const std::string ICell=isActive("Inner") ? getRuleStr("Inner") : "";
+  HeadRule HR;
+  const HeadRule ICellHR=getRule("Inner");
 
   const double extraValue
     (magLength-(magInnerLength+2.0*pipeClampThick+2.0*pipeClampYStep));
@@ -256,125 +255,125 @@ CorrectorMag::createObjects(Simulation& System)
   const int extraFlag((extraValue<Geometry::zeroTol) ? 1 :
 		      ((extraValue>-Geometry::zeroTol) ? -1 : 0));
   
-  const std::string fullSurf = (extraFlag>0) ?
-    ModelSupport::getComposite(SMap,buildIndex," 3001 -3102" ) :
-    ModelSupport::getComposite(SMap,buildIndex," 1 -2" );
+  const HeadRule fullHR = (extraFlag>0) ?
+    ModelSupport::getHeadRule(SMap,buildIndex,"3001 -3102") :
+    ModelSupport::getHeadRule(SMap,buildIndex,"1 -2");
   
   // Frame
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 1013 -1014 5 -6" );
-  makeCell("FrameInnerLeft",System,cellIndex++,frameMat,0.0,Out);  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 1013 -1014 5 -6");
+  makeCell("FrameInnerLeft",System,cellIndex++,frameMat,0.0,HR);  
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 2013 -2014 5 -6" );
-  makeCell("FrameInnerRight",System,cellIndex++,frameMat,0.0,Out);  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 2013 -2014 5 -6");
+  makeCell("FrameInnerRight",System,cellIndex++,frameMat,0.0,HR);  
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 1013 -2014 -5 15" );
-  makeCell("FrameBase",System,cellIndex++,frameMat,0.0,Out);  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 1013 -2014 -5 15");
+  makeCell("FrameBase",System,cellIndex++,frameMat,0.0,HR);  
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 1013 -2014 6 -16" );
-  makeCell("FrameTop",System,cellIndex++,frameMat,0.0,Out);  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 1013 -2014 6 -16");
+  makeCell("FrameTop",System,cellIndex++,frameMat,0.0,HR);  
 
   // Magnets
   int BI(buildIndex);
   for(const std::string partName : {"Left","Right"} )
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,BI,
-		 " 1 -2 1003M -1013M 5 -6 (-1007M:11) (-1027M:-12)");
-      makeCell(partName+"Mag",System,cellIndex++,coilMat,0.0,Out);  
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,BI,
+		"1 -2 1003M -1013M 5 -6 (-1007M:11) (-1027M:-12)");
+      makeCell(partName+"Mag",System,cellIndex++,coilMat,0.0,HR);  
 
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex,BI," 1 -2 -1004M 1014M 5 -6 (-1017M:11) (-1037M:-12)");
-      makeCell(partName+"Mag",System,cellIndex++,coilMat,0.0,Out);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,BI,"1 -2 -1004M 1014M 5 -6 (-1017M:11) (-1037M:-12)");
+      makeCell(partName+"Mag",System,cellIndex++,coilMat,0.0,HR);
   
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex,BI," 1 -2 1013M -1014M 5 -6 (-11:12) ");
-      makeCell(partName+"Mag",System,cellIndex++,coilMat,0.0,Out);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,BI,"1 -2 1013M -1014M 5 -6 (-11:12)");
+      makeCell(partName+"Mag",System,cellIndex++,coilMat,0.0,HR);
   
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex,BI," 1003M -1013M 1 -11  5 -6 1007M ");
-      makeCell(partName+"CornerVoid",System,cellIndex++,voidMat,0.0,Out);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,BI,"1003M -1013M 1 -11  5 -6 1007M");
+      makeCell(partName+"CornerVoid",System,cellIndex++,voidMat,0.0,HR);
       
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex,BI," -1004M 1014M 1 -11 5 -6 1017M ");
-      makeCell(partName+"CornerVoid",System,cellIndex++,voidMat,0.0,Out);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,BI,"-1004M 1014M 1 -11 5 -6 1017M");
+      makeCell(partName+"CornerVoid",System,cellIndex++,voidMat,0.0,HR);
       
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex,BI," 1003M -1013M -2 12 5 -6 1027M ");
-      makeCell(partName+"CornerVoid",System,cellIndex++,voidMat,0.0,Out);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,BI,"1003M -1013M -2 12 5 -6 1027M");
+      makeCell(partName+"CornerVoid",System,cellIndex++,voidMat,0.0,HR);
       
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex,BI," -1004M 1014M -2 12 5 -6 1037M ");
-      makeCell(partName+"CornerVoid",System,cellIndex++,voidMat,0.0,Out);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,BI,"-1004M 1014M -2 12 5 -6 1037M");
+      makeCell(partName+"CornerVoid",System,cellIndex++,voidMat,0.0,HR);
 
       BI+=1000;
     }
 
   // clamp:
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 3001 -3002 3003 -3004 -3005 3015 " );
-  makeCell("BaseClampA",System,cellIndex++,clampMat,0.0,Out+ICell);  
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"3001 -3002 3003 -3004 -3005 3015");
+  makeCell("BaseClampA",System,cellIndex++,clampMat,0.0,HR*ICellHR);  
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 3001 -3002 3003 -3004 3006 -3016 " );
-  makeCell("TopClampA",System,cellIndex++,clampMat,0.0,Out+ICell);  
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"3001 -3002 3003 -3004 3006 -3016");
+  makeCell("TopClampA",System,cellIndex++,clampMat,0.0,HR*ICellHR);  
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 3101 -3102 3003 -3004 -3005 3015 " );
-  makeCell("BaseClampB",System,cellIndex++,clampMat,0.0,Out+ICell);  
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"3101 -3102 3003 -3004 -3005 3015");
+  makeCell("BaseClampB",System,cellIndex++,clampMat,0.0,HR*ICellHR);  
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 3101 -3102 3003 -3004 3006 -3016 " );
-  makeCell("TopClampB",System,cellIndex++,clampMat,0.0,Out+ICell);  
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"3101 -3102 3003 -3004 3006 -3016");
+  makeCell("TopClampB",System,cellIndex++,clampMat,0.0,HR*ICellHR);  
 
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 3001 -3002 3003 -3004 3005 -3006 " );
-  makeCell("ClampVoid",System,cellIndex++,voidMat,0.0,Out+ICell);  
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"3001 -3002 3003 -3004 3005 -3006");
+  makeCell("ClampVoid",System,cellIndex++,voidMat,0.0,HR*ICellHR);  
   
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 3101 -3102 3003 -3004 3005 -3006 " );
-  makeCell("ClampVoid",System,cellIndex++,voidMat,0.0,Out+ICell);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"3101 -3102 3003 -3004 3005 -3006");
+  makeCell("ClampVoid",System,cellIndex++,voidMat,0.0,HR*ICellHR);
   
   if (extraFlag>0)
     {    
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex," 3001 -1 1003 -1004 5 -6 " );
-      makeCell("MagAVoid",System,cellIndex++,voidMat,0.0,Out+ICell);
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex," 3001 -1 2003 -2004 5 -6 " );
-      makeCell("MagRightVoid",System,cellIndex++,voidMat,0.0,Out+ICell);
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex," -3102 2 1003 -1004 5 -6 " );
-      makeCell("MagRightVoid",System,cellIndex++,voidMat,0.0,Out+ICell);
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex," -3102 2 2003 -2004 5 -6 " );
-      makeCell("MagRightVoid",System,cellIndex++,voidMat,0.0,Out+ICell);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"3001 -1 1003 -1004 5 -6");
+      makeCell("MagAVoid",System,cellIndex++,voidMat,0.0,HR*ICellHR);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"3001 -1 2003 -2004 5 -6");
+      makeCell("MagRightVoid",System,cellIndex++,voidMat,0.0,HR*ICellHR);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"-3102 2 1003 -1004 5 -6");
+      makeCell("MagRightVoid",System,cellIndex++,voidMat,0.0,HR*ICellHR);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"-3102 2 2003 -2004 5 -6");
+      makeCell("MagRightVoid",System,cellIndex++,voidMat,0.0,HR*ICellHR);
     }
   
   // Voids
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex,
-     " 1003 -2004 6 -16 (-11:12:-1013:2014) "
-      " ( -3001 : 3002 : -3003 : 3004 : -3006 : 3016 ) "
-      " ( -3101 : 3102 : -3003 : 3004 : -3006 : 3016 ) ");
-  makeCell("TopVoid",System,cellIndex++,voidMat,0.0,Out+fullSurf);  
+    "1003 -2004 6 -16 (-11:12:-1013:2014)"
+     " ( -3001 : 3002 : -3003 : 3004 : -3006 : 3016 )"
+     " ( -3101 : 3102 : -3003 : 3004 : -3006 : 3016 )");
+  makeCell("TopVoid",System,cellIndex++,voidMat,0.0,HR*fullHR);  
 
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex,
-     " 1003 -2004 -5 15 (-11:12:-1013:2014) "
-     " ( -3001 : 3002 : -3003 : 3004 : 3005 : -3015 ) "
-     " ( -3101 : 3102 : -3003 : 3004 : 3005 : -3015 ) ");
-  makeCell("BaseVoid",System,cellIndex++,voidMat,0.0,Out+fullSurf);  
+    " 1003 -2004 -5 15 (-11:12:-1013:2014)"
+    " ( -3001 : 3002 : -3003 : 3004 : 3005 : -3015 )"
+    " ( -3101 : 3102 : -3003 : 3004 : 3005 : -3015 )");
+  makeCell("BaseVoid",System,cellIndex++,voidMat,0.0,HR*fullHR);  
   
   // MAIN VOID
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1004 -2003 5 -6 "
-     " ( -3001 : 3002 : -3003 : 3004 ) "
-     " ( -3101 : 3102 : -3003 : 3004 ) " );
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+ICell+fullSurf);  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1004 -2003 5 -6"
+    " ( -3001 : 3002 : -3003 : 3004 )"
+    " ( -3101 : 3102 : -3003 : 3004 )" );
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*ICellHR*fullHR);  
 
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"  1003 -2004 15 -16 " );
-  addOuterSurf(Out+fullSurf);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1003 -2004 15 -16");
+  addOuterSurf(HR*fullHR);
 
   createLinks(extraFlag);
 

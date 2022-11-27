@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxpeem/LCollimator.cxx
+ * File:   commonBeam/LCollimator.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
  *
@@ -63,8 +63,8 @@ namespace xraySystem
 {
 
 LCollimator::LCollimator(const std::string& Key) :
-  attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,6),
+  attachSystem::ContainedComp(),
   attachSystem::CellMap(),attachSystem::SurfMap()
   /*!
     Default constructor
@@ -140,18 +140,18 @@ LCollimator::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("LCollimator","createObjects");
-  std::string Out;
+  HeadRule HR;
 
   // L metal
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 (-13:-15)");
-  CellMap::makeCell("LShape",System,cellIndex++,mat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6 (-13:-15)");
+  CellMap::makeCell("LShape",System,cellIndex++,mat,0.0,HR);
 
   // Void  metal
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 13 -4 15 -6");
-  CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -4 15 -6");
+  CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  addOuterSurf(HR);
   return;
 }
 
