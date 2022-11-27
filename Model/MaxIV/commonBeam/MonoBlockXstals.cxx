@@ -3,7 +3,7 @@
  
  * File:   commonBeam/MonoBlockXstals.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "surfRegister.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "varList.h"
@@ -66,8 +65,8 @@ namespace xraySystem
 {
 
 MonoBlockXstals::MonoBlockXstals(const std::string& Key) :
-  attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,8),
+  attachSystem::ContainedComp(),
   attachSystem::CellMap(),attachSystem::SurfMap()
   /*!
     Constructor
@@ -129,23 +128,6 @@ MonoBlockXstals::populate(const FuncDataBase& Control)
   xtalMat=ModelSupport::EvalMat<int>(Control,keyName+"XtalMat");
   baseMat=ModelSupport::EvalMat<int>(Control,keyName+"BaseMat");
 
-  return;
-}
-
-void
-MonoBlockXstals::createUnitVector(const attachSystem::FixedComp& FC,
-                               const long int sideIndex)
-  /*!
-    Create the unit vectors.
-    Note that it also set the view point that neutrons come from
-    \param FC :: FixedComp for origin
-    \param sideIndex :: direction for link
-  */
-{
-  ELog::RegMethod RegA("MonoBlockXstals","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  
   return;
 }
 
@@ -253,51 +235,63 @@ MonoBlockXstals::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("MonoBlockXstals","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   // xstal A
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 103 -104 105 -106 ");
-  makeCell("XtalA",System,cellIndex++,xtalMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3001 -3002 103 -3004 105 -106 (-101:102:104)");
-  makeCell("XtalAVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 103 -104 105 -106");
+  makeCell("XtalA",System,cellIndex++,xtalMat,0.0,HR);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"3001 -3002 103 -3004 105 -106 (-101:102:104)");
+  makeCell("XtalAVoid",System,cellIndex++,0,0.0,HR);
   System.minimizeObject(cellIndex-1);
 
   // base block
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1001 -1002 103 -1004 1005 -105 ");
-  makeCell("BaseA",System,cellIndex++,baseMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3001 -3002 103 -3004 1005 -105 (-1001:1002:1004)");
-  makeCell("BaseAVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1001 -1002 103 -1004 1005 -105");
+  makeCell("BaseA",System,cellIndex++,baseMat,0.0,HR);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"3001 -3002 103 -3004 1005 -105 (-1001:1002:1004)");
+  makeCell("BaseAVoid",System,cellIndex++,0,0.0,HR);
   System.minimizeObject(cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1101 -1102 103 -1104 -1106 106 ");
-  makeCell("TopA",System,cellIndex++,baseMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3001 -3002 103 -3004 -1106 106 (-1101:1102:1104)");
-  makeCell("TopAVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1101 -1102 103 -1104 -1106 106");
+  makeCell("TopA",System,cellIndex++,baseMat,0.0,HR);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"3001 -3002 103 -3004 -1106 106 (-1101:1102:1104)");
+  makeCell("TopAVoid",System,cellIndex++,0,0.0,HR);
   System.minimizeObject(cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3001 -3002 103 -3004 -1106 1005 ");
-  addOuterUnionSurf(Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"3001 -3002 103 -3004 -1106 1005");
+  addOuterUnionSurf(HR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -202 203 -204 205 -206 ");
-  makeCell("XtalB",System,cellIndex++,xtalMat,0.0,Out);  
-  Out=ModelSupport::getComposite(SMap,buildIndex," 4001 -4002 -204 4003 205 -206 (-201:202:-203)");
-  makeCell("XtalBVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"201 -202 203 -204 205 -206");
+  makeCell("XtalB",System,cellIndex++,xtalMat,0.0,HR);  
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"4001 -4002 -204 4003 205 -206 (-201:202:-203)");
+  makeCell("XtalBVoid",System,cellIndex++,0,0.0,HR);
   System.minimizeObject(cellIndex-1);
   
   // base block
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2001 -2002 -204 2003 2005 -205 ");
-  makeCell("BaseB",System,cellIndex++,baseMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 4001 -4002 -204 4003 2005 -205 (-2001:2002:-2003)");
-  makeCell("BaseBVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"2001 -2002 -204 2003 2005 -205");
+  makeCell("BaseB",System,cellIndex++,baseMat,0.0,HR);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"4001 -4002 -204 4003 2005 -205 (-2001:2002:-2003)");
+  makeCell("BaseBVoid",System,cellIndex++,0,0.0,HR);
   System.minimizeObject(cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2101 -2102 -204 2103 -2106 206 ");
-  makeCell("TopB",System,cellIndex++,baseMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 4001 -4002 -204 4003 -2106 206 (-2101:2102:-2103)");
-  makeCell("TopBVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"2101 -2102 -204 2103 -2106 206");
+  makeCell("TopB",System,cellIndex++,baseMat,0.0,HR);
+  
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"4001 -4002 -204 4003 -2106 206 (-2101:2102:-2103)");
+  makeCell("TopBVoid",System,cellIndex++,0,0.0,HR);
   System.minimizeObject(cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 4001 -4002 -204 4003 -2106 2005 ");
-  addOuterUnionSurf(Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"4001 -4002 -204 4003 -2106 2005");
+  addOuterUnionSurf(HR);
 
   return; 
 }

@@ -3,7 +3,7 @@
  
  * File:   commonBeamInc/GrateHolder.h
 *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,8 +36,8 @@ namespace xraySystem
 */
 
 class GrateHolder :
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {
@@ -67,7 +67,6 @@ class GrateHolder :
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -81,6 +80,8 @@ class GrateHolder :
 
   /// Index Position
   void setIndexPosition(const int I) { indexPoint=I; }
+
+  using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);

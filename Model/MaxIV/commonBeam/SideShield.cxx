@@ -3,7 +3,7 @@
  
  * File:   commonBeam/SideShield.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,9 +37,9 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
+#include "Vec3D.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "Vec3D.h"
 #include "Surface.h"
 #include "surfRegister.h"
 #include "Quadratic.h"
@@ -69,8 +69,8 @@ namespace xraySystem
 {
 
 SideShield::SideShield(const std::string& mainKey) :
-  attachSystem::ContainedComp(),
   attachSystem::FixedRotate(mainKey,6),
+  attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::ExternalCut(),
   baseName(mainKey)
@@ -82,8 +82,8 @@ SideShield::SideShield(const std::string& mainKey) :
 
 SideShield::SideShield(const std::string& baseKey,
 		       const std::string& mainKey) :
-  attachSystem::ContainedComp(),
   attachSystem::FixedRotate(mainKey,6),
+  attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::ExternalCut(),
   baseName(baseKey)
@@ -165,7 +165,6 @@ SideShield::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(length/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
-
     
   return;
 }
@@ -179,14 +178,14 @@ SideShield::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("SideShield","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
-  const std::string wallStr=ExternalCut::getRuleStr("Wall");
-  const std::string clipStr=ExternalCut::getRuleStr("Clip");
-  Out=ModelSupport::getComposite(SMap,buildIndex," -2 3 -4 5 -6");
-  makeCell("Slab",System,cellIndex++,mat,0.0,Out+wallStr+clipStr);
+  const HeadRule wallHR=ExternalCut::getRule("Wall");
+  const HeadRule clipHR=ExternalCut::getRule("Clip");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 3 -4 5 -6");
+  makeCell("Slab",System,cellIndex++,mat,0.0,HR*wallHR*clipHR);
 
-  addOuterSurf(Out);
+  addOuterSurf(HR);
   return;
 }
 
@@ -197,7 +196,6 @@ SideShield::createLinks()
     Note that Y points OUT of the ring
   */
 {
-  
   ELog::RegMethod RegA("SideShield","createLinks");
 
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));

@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/cosaxsInc/cosaxsTubeStartPlate.h
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,8 +36,8 @@ namespace xraySystem
 */
 
 class cosaxsTubeStartPlate :
+    public attachSystem::FixedRotate,
     public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset,
     public attachSystem::CellMap,
     public attachSystem::SurfMap,
     public attachSystem::FrontBackCut
@@ -51,9 +51,6 @@ class cosaxsTubeStartPlate :
   int mat;                  ///< Plate material
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -66,7 +63,10 @@ class cosaxsTubeStartPlate :
   virtual cosaxsTubeStartPlate* clone() const;
   virtual ~cosaxsTubeStartPlate();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+  using FixedComp::createAll;
+  void createAll(Simulation&,
+		 const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

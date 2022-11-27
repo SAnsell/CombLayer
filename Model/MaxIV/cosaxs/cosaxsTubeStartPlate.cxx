@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/cosaxs/cosaxsTubeStartPlate.cxx
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -52,7 +51,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -66,8 +65,8 @@ namespace xraySystem
 {
 
 cosaxsTubeStartPlate::cosaxsTubeStartPlate(const std::string& Key)  :
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::FrontBackCut()
@@ -78,8 +77,8 @@ cosaxsTubeStartPlate::cosaxsTubeStartPlate(const std::string& Key)  :
 {}
 
 cosaxsTubeStartPlate::cosaxsTubeStartPlate(const cosaxsTubeStartPlate& A) :
+  attachSystem::FixedRotate(A),
   attachSystem::ContainedComp(A),
-  attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
@@ -101,8 +100,8 @@ cosaxsTubeStartPlate::operator=(const cosaxsTubeStartPlate& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
@@ -139,30 +138,13 @@ cosaxsTubeStartPlate::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("cosaxsTubeStartPlate","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   thick=Control.EvalVar<double>(keyName+"Thick");
   radius=Control.EvalVar<double>(keyName+"Radius");
   portRadius=Control.EvalVar<double>(keyName+"PortRadius");
 
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
-
-  return;
-}
-
-void
-cosaxsTubeStartPlate::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: object for origin
-    \param sideIndex :: link point for origin
-  */
-{
-  ELog::RegMethod RegA("cosaxsTubeStartPlate","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
 
   return;
 }
@@ -202,18 +184,18 @@ cosaxsTubeStartPlate::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("cosaxsTubeStartPlate","createObjects");
 
-  std::string Out;
-  const std::string front(frontRule());
-  const std::string back(backRule());
+  HeadRule HR;
+  const HeadRule frontHR(getFrontRule());
+  const HeadRule backHR(getBackRule());
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 17 -7 ")+front+back;
-  makeCell("MainCell",System,cellIndex++,mat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"17 -7");
+  makeCell("MainCell",System,cellIndex++,mat,0.0,HR*frontHR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -17 ")+front+back;
-  makeCell("Port",System,cellIndex++,0,0.0,Out);
+  HR=HeadRule(SMap,buildIndex,-17);
+  makeCell("Port",System,cellIndex++,0,0.0,HR*frontHR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ")+front+back;
-  addOuterSurf(Out);
+  HR=HeadRule(SMap,buildIndex,-7);
+  addOuterSurf(HR*frontHR*backHR);
 
   return;
 }

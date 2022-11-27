@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/cosaxsInc/cosaxsTubeCable.h
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,8 +36,8 @@ namespace xraySystem
 */
 
 class cosaxsTubeCable :
+    public attachSystem::FixedRotate,
     public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset,
     public attachSystem::CellMap,
     public attachSystem::SurfMap,
     public attachSystem::FrontBackCut
@@ -53,9 +53,6 @@ class cosaxsTubeCable :
   int    mat;                   ///< Material
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -68,6 +65,7 @@ class cosaxsTubeCable :
   virtual cosaxsTubeCable* clone() const;
   virtual ~cosaxsTubeCable();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
 };

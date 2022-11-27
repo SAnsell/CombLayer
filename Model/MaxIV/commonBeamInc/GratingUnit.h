@@ -3,7 +3,7 @@
  
  * File:   commonBeamInc/GratingUnit.h
 *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,8 +37,8 @@ namespace xraySystem
 */
 
 class GratingUnit :
-  public attachSystem::ContainedComp,
   public attachSystem::FixedRotate,
+  public attachSystem::ContainedComp,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
@@ -71,11 +71,9 @@ class GratingUnit :
   double slidePlateWidth;      ///< slide bar extra width 
   double slidePlateLength;     ///< slide bar extra length
 
-
   int mirrorMat;          ///< Mirror xstal
   int mainMat;            ///< Main metal
   int slideMat;           ///< slide material
-  
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
@@ -92,6 +90,7 @@ class GratingUnit :
   GratingUnit& operator=(const GratingUnit&);
   virtual ~GratingUnit();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);
