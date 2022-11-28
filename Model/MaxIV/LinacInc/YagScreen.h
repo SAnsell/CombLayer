@@ -41,8 +41,8 @@ namespace tdcSystem
 */
 
 class YagScreen :
-    public attachSystem::ContainedGroup,
     public attachSystem::FixedRotate,
+    public attachSystem::ContainedGroup,
     public attachSystem::ExternalCut,
     public attachSystem::CellMap
 {

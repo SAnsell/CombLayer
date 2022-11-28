@@ -37,7 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "surfRegister.h"
@@ -54,7 +53,6 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -78,7 +76,7 @@ namespace xraySystem
 {
 
 MagnetBlock::MagnetBlock(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,8),
+  attachSystem::FixedRotate(Key,8),
   attachSystem::ContainedGroup("Magnet","Dipole","Photon"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -128,7 +126,7 @@ MagnetBlock::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("MagnetBlock","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   blockXStep=Control.EvalVar<double>(keyName+"BlockXStep");
   blockYStep=Control.EvalVar<double>(keyName+"BlockYStep");
@@ -347,34 +345,6 @@ MagnetBlock::createLinks()
   return;
 }
 
-
-void
-MagnetBlock::buildElectronCut(Simulation& System)
-  /*!
-    Adds electron cuts to the model (if required)
-    \param System :: Simualtion
-  */
-{
-  ELog::RegMethod RegA("MagnetBlock","buildElectronCut");
-  /*
-  eCutMagDisk->setNoInsert();
-  eCutMagDisk->addInsertCell(dipoleChamber->getCell("MagVoid"));
-  eCutMagDisk->createAll(System,*dipoleChamber,
-			 -dipoleChamber->getSideIndex("dipoleExit"));
-
-  /*  
-  eCutWallDisk->setNoInsert();
-  eCutWallDisk->addInsertCell(outerCell);
-  eCutWallDisk->createAll(System,*dipoleChamber,
-			 dipoleChamber->getSideIndex("dipoleExit"));
-
-  eCutDisk->setNoInsert();
-  eCutDisk->addInsertCell(dipoleChamber->getCell("NonMagVoid"));
-  eCutDisk->createAll(System,*dipoleChamber,-2);
-  */
-  return;
-}
-
 void
 MagnetBlock::createAll(Simulation& System,
 		    const attachSystem::FixedComp& FC,
@@ -400,9 +370,6 @@ MagnetBlock::createAll(Simulation& System,
 
   insertInner(System);  
   insertObjects(System);
-  buildElectronCut(System);
-
-
   
   return;
 }

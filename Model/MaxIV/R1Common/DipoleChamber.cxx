@@ -3,7 +3,7 @@
  
  * File:   R1Common/DipoleChamber.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h" 
@@ -72,7 +72,7 @@ namespace xraySystem
 {
 
 DipoleChamber::DipoleChamber(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,8),
+  attachSystem::FixedRotate(Key,8),
   attachSystem::ContainedGroup("Main","Exit"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -99,7 +99,7 @@ DipoleChamber::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("DipoleChamber","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
   outWidth=Control.EvalVar<double>(keyName+"OutWidth");
@@ -129,22 +129,6 @@ DipoleChamber::populate(const FuncDataBase& Control)
   flangeMat=ModelSupport::EvalMat<int>(Control,keyName+"FlangeMat");
 
 
-  return;
-}
-
-void
-DipoleChamber::createUnitVector(const attachSystem::FixedComp& FC,
-    	                     const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: FixedComp to attach to
-    \param sideIndex :: Link point
-  */
-{
-  ELog::RegMethod RegA("DipoleChamber","createUnitVector");
-  
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
   return;
 }
 
@@ -245,60 +229,60 @@ DipoleChamber::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("DipoleChamber","createObjects");
 
-  const std::string frontStr=getRuleStr("front");
+  const HeadRule frontHR=getRule("front");
   //
-  std::string Out;
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"  204 -2 7 5 -6 -317 ");
-  makeCell("MagVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
+  HeadRule HR;
+  
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"204 -2 7 5 -6 -317");
+  makeCell("MagVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"  3 -2 5 -6 (207 : 204) (-304:307) 317 ");
-  makeCell("NonMagVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"3 -2 5 -6 (207 : 204) (-304:307) 317");
+  makeCell("NonMagVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"  13 -2 17 15 -16 (-3:-7:-5:6)");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"13 -2 17 15 -16 (-3:-7:-5:6)");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -12 2 13 317 15 -16 (-113:114:-115:116) -1000");
-  makeCell("BackPlate",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-12 2 13 317 15 -16 (-113:114:-115:116) -1000");
+  makeCell("BackPlate",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 15 -16 -12 2 -317 17 -1000");
-  makeCell("ElectronPlate",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 -12 2 -317 17 -1000");
+  makeCell("ElectronPlate",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -102 103 -104 105 -106 ");
-  makeCell("ExitVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -102 103 -104 105 -106");
+  makeCell("ExitVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 2 -102 113 -114 115 -116 (-103:104:-105:106) ");
-  makeCell("ExitWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"2 -102 113 -114 115 -116 (-103:104:-105:106)");
+  makeCell("ExitWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -107 101 -102 (-113:114:-115:116) ");
-  makeCell("Flange",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-107 101 -102 (-113:114:-115:116)");
+  makeCell("Flange",System,cellIndex++,wallMat,0.0,HR);
 
   // Inner components
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -207 -204 5 -6");
-  makeCell("InnerCut",System,cellIndex++,innerMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-207 -204 5 -6");
+  makeCell("InnerCut",System,cellIndex++,innerMat,0.0,HR*frontHR);
 
   // electorn inner componnents
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -2 304 -307 317 5 -6");
-  makeCell("ElectCut",System,cellIndex++,innerMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-2 304 -307 317 5 -6");
+  makeCell("ElectCut",System,cellIndex++,innerMat,0.0,HR*frontHR);
   
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"  13 -12 17 15 -16 ");
-  addOuterSurf("Main",Out+frontStr);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"13 -12 17 15 -16");
+  addOuterSurf("Main",HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -101 113 -114 115 -116 ");
-  addOuterSurf("Exit",Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -101 113 -114 115 -116");
+  addOuterSurf("Exit",HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"  101 -102 -107 ");
-  addOuterUnionSurf("Exit",Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 -107");
+  addOuterUnionSurf("Exit",HR);
 
 
   return;

@@ -68,8 +68,8 @@ namespace tdcSystem
 {
 
 YagScreen::YagScreen(const std::string& Key)  :
-  attachSystem::ContainedGroup("Payload","Connect","Outer"),
   attachSystem::FixedRotate(Key,6),
+  attachSystem::ContainedGroup("Payload","Connect","Outer"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   inBeam(false),
@@ -300,30 +300,30 @@ YagScreen::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("YagScreen","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
   // linear pneumatics feedthrough
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 207 -7 ");
-  makeCell("FTInner",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 207 -7");
+  makeCell("FTInner",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 7 -17 ");
-  makeCell("FTWall",System,cellIndex++,feedWallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 7 -17");
+  makeCell("FTWall",System,cellIndex++,feedWallMat,0.0,HR);
 
   // flange
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -11 17 -27 ");
-  makeCell("FTFlange",System,cellIndex++,feedWallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -11 17 -27");
+  makeCell("FTFlange",System,cellIndex++,feedWallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -2 17 -27 ");
-  makeCell("FTFlangeAir",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -2 17 -27");
+  makeCell("FTFlangeAir",System,cellIndex++,0,0.0,HR);
 
   // electronics junction box
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 101 -102 103 -104 105 -106 ");
-  makeCell("JBVoid",System,cellIndex++,juncBoxMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"101 -102 103 -104 105 -106");
+  makeCell("JBVoid",System,cellIndex++,juncBoxMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"111 -112 113 -114 115 -116 (-101:102:-103:104:-105:106)");
-  makeCell("JBWall",System,cellIndex++,juncBoxWallMat,0.0,Out);
+  makeCell("JBWall",System,cellIndex++,juncBoxWallMat,0.0,HR);
 
   // Outer surfaces:
   // if junction box is larger than the feedthrough flange then
@@ -331,70 +331,69 @@ YagScreen::createObjects(Simulation& System)
   if (std::min(juncBoxWidth/2.0+juncBoxWallThick,
 	       juncBoxHeight/2.0+juncBoxWallThick) > feedFlangeRadius)
     {
-      Out=ModelSupport::getComposite
+      HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,"1 -2 113 -114 115 -116 27");
-      makeCell("JBVoidFT",System,cellIndex++,0,0.0,Out);
+      makeCell("JBVoidFT",System,cellIndex++,0,0.0,HR);
 
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex,"1 -112 113 -114 115 -116 ");
-      addOuterSurf("Outer",Out);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"1 -112 113 -114 115 -116");
+      addOuterSurf("Outer",HR);
     }
   else
     {
       // THIS NEEDS TO BE CHANGED to HAVE the void cylinder from the flange
       // encompass the junction box
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -27 ");
-      addOuterSurf("Outer",Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -27");
+      addOuterSurf("Outer",HR);
 
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex," 111 -112 113 -114 115 -116 ");
-      addOuterUnionSurf("Outer",Out);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"111 -112 113 -114 115 -116");
+      addOuterUnionSurf("Outer",HR);
     }
 
-
   // mirror/screen thread
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -207 ");
-  makeCell("Thread",System,cellIndex++,threadMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -207");
+  makeCell("Thread",System,cellIndex++,threadMat,0.0,HR);
   if (inBeam)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 201 -1 -207 ");
-      makeCell("ThreadInsidePipe",System,cellIndex++,threadMat,0.0,Out);
-      addOuterSurf("Connect",Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -1 -207");
+      makeCell("ThreadInsidePipe",System,cellIndex++,threadMat,0.0,HR);
+      addOuterSurf("Connect",HR);
 
       // build Mirror holder:
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex,"1002 -201 1003 -1004 1005 -1006 1009 1007 ");
-      makeCell("Holder",System,cellIndex++,holderMat,0.0,Out);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"1002 -201 1003 -1004 1005 -1006 1009 1007");
+      makeCell("Holder",System,cellIndex++,holderMat,0.0,HR);
 
-      Out=ModelSupport::getComposite
+      HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,"1009 -1007 -1019");
-      makeCell("Mirror",System,cellIndex++,mirrorMat,0.0,Out);
+      makeCell("Mirror",System,cellIndex++,mirrorMat,0.0,HR);
 
-      Out=ModelSupport::getComposite
+      HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,"1019 -1007 -1004 -201");
-      makeCell("MirrorVoid",System,cellIndex++,voidMat,0.0,Out);
+      makeCell("MirrorVoid",System,cellIndex++,voidMat,0.0,HR);
 
       // yag screen
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,"2001 -2002 -2007");
-      makeCell("YagScreen",System,cellIndex++,screenMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"2001 -2002 -2007");
+      makeCell("YagScreen",System,cellIndex++,screenMat,0.0,HR);
 
-      Out=ModelSupport::getComposite
+      HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,"1005 -1006 2001 -2002 2007 (-2000:-2017) (-1003:-1009)");
-      makeCell("YagHolder",System,cellIndex++,screenHolderMat,0.0,Out);
+      makeCell("YagHolder",System,cellIndex++,screenHolderMat,0.0,HR);
 
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex,"1005 -1006 -1009 2002 (1003:2002) -1004 1002 ");
-      makeCell("YagVoid",System,cellIndex++,voidMat,0.0,Out);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"1005 -1006 -1009 2002 (1003:2002) -1004 1002");
+      makeCell("YagVoid",System,cellIndex++,voidMat,0.0,HR);
 
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex,"1005 -1006 1002 2001 -2002 2017 2000 ");
-       makeCell("YagVoid",System,cellIndex++,voidMat,0.0,Out);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"1005 -1006 1002 2001 -2002 2017 2000");
+       makeCell("YagVoid",System,cellIndex++,voidMat,0.0,HR);
 
       
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex,"1002 (2001:1003) -1004 1005 -1006 -201 ");
-      addOuterSurf("Payload",Out);      
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"1002 (2001:1003) -1004 1005 -1006 -201");
+      addOuterSurf("Payload",HR);      
       
     }
       

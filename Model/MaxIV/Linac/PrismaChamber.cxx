@@ -3,7 +3,7 @@
  
  * File:   Linac/PrismaChamber.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -128,7 +127,6 @@ PrismaChamber::populate(const FuncDataBase& Control)
   return;
 }
 
-
 void
 PrismaChamber::createSurfaces()
   /*!
@@ -205,101 +203,101 @@ PrismaChamber::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("PrismaChamber","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   
-  const std::string frontStr=getRuleStr("front");
-  const std::string backStr=getRuleStr("back");
+  const HeadRule frontHR=getRule("front");
+  const HeadRule backHR=getRule("back");
 
   // inner void
-  Out=ModelSupport::getComposite(SMap,buildIndex," 5 -6 -7 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -7");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -17 5 -6 107 307");
-  makeCell("MainTube",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7 -17 5 -6 107 307");
+  makeCell("MainTube",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -17 15 -5 ");
-  makeCell("Base",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 15 -5");
+  makeCell("Base",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-27 17 -6 26");
-  makeCell("TopFlange",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 17 -6 26");
+  makeCell("TopFlange",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-27 6 -16");
-  makeCell("TopPlate",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 6 -16");
+  makeCell("TopPlate",System,cellIndex++,wallMat,0.0,HR);
 
   // outer need exclude:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-27 17 15 -26 127 327 ");
-  makeCell("OutVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 17 15 -26 127 327");
+  makeCell("OutVoid",System,cellIndex++,0,0.0,HR);
 
 
   // front / back
-  Out=ModelSupport::getComposite(SMap,buildIndex," -107 -200 7 ");
-  makeCell("FrontPort",System,cellIndex++,voidMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-107 -200 7");
+  makeCell("FrontPort",System,cellIndex++,voidMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -117 107 -200 17 ");
-  makeCell("FrontWall",System,cellIndex++,wallMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-117 107 -200 17");
+  makeCell("FrontWall",System,cellIndex++,wallMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -127 117 -11 ");
-  makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-127 117 -11");
+  makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -200 17 117 -127 11");
-  makeCell("FrontOuter",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-200 17 117 -127 11");
+  makeCell("FrontOuter",System,cellIndex++,0,0.0,HR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," -107 200 7 ");
-  makeCell("BackPort",System,cellIndex++,voidMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-107 200 7");
+  makeCell("BackPort",System,cellIndex++,voidMat,0.0,HR*backHR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," -117 107 200 17 ");
-  makeCell("BackWall",System,cellIndex++,wallMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-117 107 200 17");
+  makeCell("BackWall",System,cellIndex++,wallMat,0.0,HR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -127 117 12 ");
-  makeCell("BackFlange",System,cellIndex++,wallMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-127 117 12");
+  makeCell("BackFlange",System,cellIndex++,wallMat,0.0,HR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 200 17 117 -127 -12");
-  makeCell("BackOuter",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"200 17 117 -127 -12");
+  makeCell("BackOuter",System,cellIndex++,0,0.0,HR);
 
 
   // left/right
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," -100 -307 303 7  ");
-  makeCell("LeftVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 -307 303 7 ");
+  makeCell("LeftVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -100 -317 307 303 17 ");
-  makeCell("LeftWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 -317 307 303 17");
+  makeCell("LeftWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 317 -327 303 -313 ");
-  makeCell("LeftFlange",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"317 -327 303 -313");
+  makeCell("LeftFlange",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -327 -303 323 ");
-  makeCell("LeftPlate",System,cellIndex++,plateMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-327 -303 323");
+  makeCell("LeftPlate",System,cellIndex++,plateMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 313 -100 17 317 -327 ");
-  makeCell("LeftOuter",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"313 -100 17 317 -327");
+  makeCell("LeftOuter",System,cellIndex++,0,0.0,HR);
 
   
   // Right  
-  Out=ModelSupport::getComposite(SMap,buildIndex," 100 -307 -304 7  ");
-  makeCell("RightVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 -307 -304 7 ");
+  makeCell("RightVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 100 -317 307 -304 17  ");
-  makeCell("RightWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 -317 307 -304 17 ");
+  makeCell("RightWall",System,cellIndex++,wallMat,0.0,HR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," 317 -327 -304 314 ");
-  makeCell("RightFlange",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"317 -327 -304 314");
+  makeCell("RightFlange",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -327 304 -324");
-  makeCell("RightPlate",System,cellIndex++,plateMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-327 304 -324");
+  makeCell("RightPlate",System,cellIndex++,plateMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -314 100 17 317 -327 ");
-  makeCell("RightOuter",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-314 100 17 317 -327");
+  makeCell("RightOuter",System,cellIndex++,0,0.0,HR);
 
   // outer void box:
-  Out=ModelSupport::getComposite(SMap,buildIndex," -27 15 -16  ");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 15 -16 ");
+  addOuterSurf(HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -327 323 -324  ");
-  addOuterUnionSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-327 323 -324 ");
+  addOuterUnionSurf(HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -127 ");
-  addOuterUnionSurf(Out+frontStr+backStr);
+  HR=HeadRule(SMap,buildIndex,-127);
+  addOuterUnionSurf(HR*frontHR*backHR);
 
   return;
 }

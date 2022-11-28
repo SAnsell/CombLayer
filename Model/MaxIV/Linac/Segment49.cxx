@@ -3,7 +3,7 @@
 
  * File: Linac/Segment49.cxx
  *
- * Copyright (c) 2004-2021 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -153,29 +153,28 @@ Segment49::constructHole(Simulation& System)
 
   if (IHall)
     {
-      std::string Out;
       const HeadRule fbHR=IHall->combine("BackWallFront #BackWallBack");
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," -7 " );
-      makeCell("WallVoid",System,cellIndex++,0,0.0,Out+fbHR.display());
+      HeadRule HR(SMap,buildIndex,-7);
+      makeCell("WallVoid",System,cellIndex++,0,0.0,HR*fbHR);
 
       pipeB->addInsertCell("Main",this->getCell("WallVoid"));
       pipeB->addInsertCell("Main",IHall->getCell("C080016"));
       pipeB->addInsertCell("FlangeB",IHall->getCell("C080016"));
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," 7 " );
+      HR=HeadRule(SMap,buildIndex,7);
       const size_t nLayers = IHall->getBackWallNLayers();
       if (nLayers<=1)
 	{
-	  IHall->insertComponent(System,"BackWallConcrete",Out);
-	  IHall->insertComponent(System,"BackWallIron",Out);
+	  IHall->insertComponent(System,"BackWallConcrete",HR);
+	  IHall->insertComponent(System,"BackWallIron",HR);
 	}
       else
 	{
 	  for (size_t i=0; i<nLayers; ++i) {
 	    const std::string istr = std::to_string(i);
-	    IHall->insertComponent(System,"BackWallConcrete"+istr,Out);
-	    IHall->insertComponent(System,"BackWallIron"+istr,Out);
+	    IHall->insertComponent(System,"BackWallConcrete"+istr,HR);
+	    IHall->insertComponent(System,"BackWallIron"+istr,HR);
 	  }
 	}
     }
