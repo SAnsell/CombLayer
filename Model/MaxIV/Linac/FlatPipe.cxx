@@ -3,7 +3,7 @@
 
  * File:   Linac/FlatPipe.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -261,65 +260,64 @@ FlatPipe::createObjects(Simulation& System)
   /*!
     Adds the vacuum system
     \param System :: Simulation to create objects in
-   */
+  */
 {
   ELog::RegMethod RegA("FlatPipe","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
-  const std::string frontStr=frontRule();
-  const std::string backStr=backRule();
+  const HeadRule frontHR=getFrontRule();
+  const HeadRule backHR=getBackRule();
 
   // InnerVoid
-  Out=ModelSupport::getComposite(SMap,buildIndex," -3 -7 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-3 -7");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 4 -8 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"4 -8");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 3 -4 6 -16");
-  makeCell("TopPipe",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 3 -4 6 -16");
+  makeCell("TopPipe",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 3 -4 -5 15");
-  makeCell("BasePipe",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 3 -4 -5 15");
+  makeCell("BasePipe",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 -3 7 -17 15 -16");
-  makeCell("LeftPipe",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 -3 7 -17 15 -16");
+  makeCell("LeftPipe",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 4 8 -18 15 -16 ");
-  makeCell("RightPipe",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 4 8 -18 15 -16");
+  makeCell("RightPipe",System,cellIndex++,wallMat,0.0,HR);
 
   // FLANGE Front:
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " -11 -107 ((7 -3) : (8 4) : -5 : 6) ");
-  makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				"-11 -107 ((7 -3) : (8 4) : -5 : 6)");
+  makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,HR*frontHR);
 
   // FLANGE Back:
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 12 -207 ((7 -3) : (8 4) : -5 : 6) ");
-  makeCell("BackFlange",System,cellIndex++,wallMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"12 -207 ((7 -3) : (8 4) : -5 : 6)");
+  makeCell("BackFlange",System,cellIndex++,wallMat,0.0,HR*backHR);
 
   // outer boundary [flange front/back]
-  Out=ModelSupport::getSetComposite(SMap,buildIndex," -11 -107 ");
-  addOuterSurf("FlangeA",Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -107");
+  addOuterSurf("FlangeA",HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -207 ");
-  addOuterSurf("FlangeB",Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -207");
+  addOuterSurf("FlangeB",HR*backHR);
 
-  // aux. outer side void cells (to simplify the "Pipe" outer void cell)
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 103 -3 17 15 -16 ");
-  makeCell("AuxVoid",System,cellIndex++,voidMat,0.0,Out);
+  // aux. outer side void cells (to simplify the"Pipe"outer void cell)
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 103 -3 17 15 -16");
+  makeCell("AuxVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 4 -104 18 15 -16 ");
-  makeCell("AuxVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 4 -104 18 15 -16");
+  makeCell("AuxVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "11 -12 15 -16 103 -104 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 15 -16 103 -104");
 
-  addOuterSurf("Pipe",Out);
+  addOuterSurf("Pipe",HR);
   return;
 }
 
@@ -348,13 +346,13 @@ FlatPipe::createLinks()
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
 
   // top lift point : Out is an complemnt of the volume
-  std::string Out;
+  HeadRule HR;
   FixedComp::setConnect(7,Origin+Z*(wallThick+H),Z);
-  // Out=ModelSupport::getComposite
+  // HR=ModelSupport::getHeadRule
   //   (SMap,buildIndex," (-15 : 16 : (-3 17) : (4 18))");
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex," -11:12:-15:16:-103:104 ");
-  FixedComp::setLinkSurf(7,Out);
+  FixedComp::setLinkSurf(7,HR);
 
   FixedComp::nameSideIndex(7,"outerPipe");
 
@@ -364,8 +362,8 @@ FlatPipe::createLinks()
 
 void
 FlatPipe::createAll(Simulation& System,
-		      const attachSystem::FixedComp& FC,
-		      const long int FIndex)
+		    const attachSystem::FixedComp& FC,
+		    const long int FIndex)
  /*!
     Generic function to create everything
     \param System :: Simulation item

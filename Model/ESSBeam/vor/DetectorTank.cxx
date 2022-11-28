@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/vor/DetectorTank.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -56,7 +54,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -66,16 +64,18 @@ namespace essSystem
 {
 
 DetectorTank::DetectorTank(const std::string& Key)  :
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6),attachSystem::CellMap()
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
 {}
 
-DetectorTank::DetectorTank(const DetectorTank& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+DetectorTank::DetectorTank(const DetectorTank& A) :
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
   innerRadius(A.innerRadius),outerRadius(A.outerRadius),
   midAngle(A.midAngle),height(A.height),innerThick(A.innerThick),
@@ -97,8 +97,8 @@ DetectorTank::operator=(const DetectorTank& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       innerRadius=A.innerRadius;
       outerRadius=A.outerRadius;
@@ -129,7 +129,7 @@ DetectorTank::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("DetectorTank","populate");
   
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
@@ -146,24 +146,6 @@ DetectorTank::populate(const FuncDataBase& Control)
   // Material
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
-  return;
-}
-  
-void
-DetectorTank::createUnitVector(const attachSystem::FixedComp& FC,
-			       const long int sideIndex)
-  /*!
-    Create the unit vectors
-    - Y Down the beamline
-    \param FC :: Linked object
-    \param sideIndex :: sinde track
-  */
-{
-  ELog::RegMethod RegA("DetectorTank","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-
-  applyOffset();
   return;
 }
   
@@ -212,49 +194,45 @@ DetectorTank::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("DetectorTank","createObjects");
-  
-  std::string Out;
+
+  HeadRule HR;
 
   // Main voids
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-7 5 -6");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  addCell("SampleVoid",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 5 -6");
+  makeCell("SampleVoid",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 5 -6 7 -8");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  addCell("DetVoid",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 5 -6 7 -8");
+  makeCell("DetVoid",System,cellIndex++,0,0.0,HR);
 
   // WALLS:
   // sample
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-17 7 5 -6 -1");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
-  addCell("Steel",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 7 5 -6 -1");
+  makeCell("Steel",System,cellIndex++,wallMat,0.0,HR);
+
   // front wall
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-8 17 5 -6 -1 11");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
-  addCell("Steel",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-8 17 5 -6 -1 11");
+  makeCell("Steel",System,cellIndex++,wallMat,0.0,HR);
   // Detector wall
-  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 11 8 -18");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
-  addCell("Steel",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 11 8 -18");
+  makeCell("Steel",System,cellIndex++,wallMat,0.0,HR);
 
   // Roof wall
-  Out=ModelSupport::getComposite(SMap,buildIndex,"6 -16 11 -18 17");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat+1,0.0,Out));
-  addCell("RoofSteel",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"6 -16 11 -18 17");
+  makeCell("RoofSteel",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"6 -16 -17");
-  //  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"6 -16 -17");
+  //  System.addCell(cellIndex++,wallMat,0.0,HR);
   //  addCell("RoofSteel",cellIndex-1);
 
     // Detector wall
-  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 11 8 -18");
-  //  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 11 8 -18");
+  //  System.addCell(cellIndex++,wallMat,0.0,HR);
   //  addCell("Steel",cellIndex-1);
   
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -16 ((11 -18) : -17)");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -16 ((11 -18) : -17)");
+  addOuterSurf(HR);
   
   return;
 }
@@ -272,8 +250,8 @@ DetectorTank::createLinks()
 
 void
 DetectorTank::createAll(Simulation& System,
-		   const attachSystem::FixedComp& FC,
-		   const long int sideIndex)
+			const attachSystem::FixedComp& FC,
+			const long int sideIndex)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to

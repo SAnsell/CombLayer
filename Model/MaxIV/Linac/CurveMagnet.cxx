@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/Linac/CurveMagnet.cxx
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "surfRegister.h"
@@ -216,106 +215,101 @@ CurveMagnet::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("CurveMagnet","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 151 -152 105 -106 203 -204" );
-  makeCell("Void",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"151 -152 105 -106 203 -204");
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -107 -151 203 -204" );
-  makeCell("VoidFront",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-107 -151 203 -204");
+  makeCell("VoidFront",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -108 152 203 -204" );
-  makeCell("VoidBack",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-108 152 203 -204");
+  makeCell("VoidBack",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -117 -151 113 -103 ");
-  makeCell("PoleFront",System,cellIndex++,poleMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-117 -151 113 -103");
+  makeCell("PoleFront",System,cellIndex++,poleMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"115 -116 151 -152 113 -103 ");
-  makeCell("Pole",System,cellIndex++,poleMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"115 -116 151 -152 113 -103");
+  makeCell("Pole",System,cellIndex++,poleMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -118 152 113 -103 ");
-  makeCell("PoleBack",System,cellIndex++,poleMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-118 152 113 -103");
+  makeCell("PoleBack",System,cellIndex++,poleMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -117 -151 104 -114 ");
-  makeCell("PoleFront",System,cellIndex++,poleMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-117 -151 104 -114");
+  makeCell("PoleFront",System,cellIndex++,poleMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 115 -116 151 -152 104 -114 ");
-  makeCell("Pole",System,cellIndex++,poleMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"115 -116 151 -152 104 -114");
+  makeCell("Pole",System,cellIndex++,poleMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -118 152 104 -114 ");
-  makeCell("PoleBack",System,cellIndex++,poleMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-118 152 104 -114");
+  makeCell("PoleBack",System,cellIndex++,poleMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-     "-107 117 -151 113 -103 " );
-  makeCell("CoilFront",System,cellIndex++,coilMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+    "-107 117 -151 113 -103");
+  makeCell("CoilFront",System,cellIndex++,coilMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-     "113 -103 105 -106 151 -152 (-115:116)" );
-  makeCell("Coil",System,cellIndex++,coilMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+    "113 -103 105 -106 151 -152 (-115:116)");
+  makeCell("Coil",System,cellIndex++,coilMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-     "-108 118 152 113 -103 " );
-  makeCell("CoilBack",System,cellIndex++,coilMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+    "-108 118 152 113 -103");
+  makeCell("CoilBack",System,cellIndex++,coilMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"-107 117 -151 104 -114" );
-  makeCell("CoilFront",System,cellIndex++,coilMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-107 117 -151 104 -114");
+  makeCell("CoilFront",System,cellIndex++,coilMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"104 -114 105 -106 151 -152 (-115:116)" );
-  makeCell("Coil",System,cellIndex++,coilMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"104 -114 105 -106 151 -152 (-115:116)");
+  makeCell("Coil",System,cellIndex++,coilMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"-108 118 152 104 -114" );
-  makeCell("CoilBack",System,cellIndex++,coilMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-108 118 152 104 -114");
+  makeCell("CoilBack",System,cellIndex++,coilMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"103 -203 115 -116 151 -152 207 -208" );
-  makeCell("LeftPole",System,cellIndex++,poleMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"103 -203 115 -116 151 -152 207 -208");
+  makeCell("LeftPole",System,cellIndex++,poleMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"103 -203 208 -106 151 -152");
-  makeCell("LeftPoleVoid",System,cellIndex++,0,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"103 -203 -207 105 151 -152");
-  makeCell("LeftPoleVoid",System,cellIndex++,0,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-107 -151 -203 103");
-  makeCell("LeftExtraVoid",System,cellIndex++,0,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-108 152 -203 103 105 -106");
-  makeCell("LeftExtraVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"103 -203 208 -106 151 -152");
+  makeCell("LeftPoleVoid",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"103 -203 -207 105 151 -152");
+  makeCell("LeftPoleVoid",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-107 -151 -203 103");
+  makeCell("LeftExtraVoid",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-108 152 -203 103 105 -106");
+  makeCell("LeftExtraVoid",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"217 -218 -104 204 115 -116 151 -152");
-  makeCell("RightPole",System,cellIndex++,poleMat,0.0,Out);
+  makeCell("RightPole",System,cellIndex++,poleMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-217 -104 204 105 151 -152");
-  makeCell("RightPoleVoid",System,cellIndex++,0,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"218 -104 204 -106 151 -152");
-  makeCell("RightPoleVoid",System,cellIndex++,0,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-107 -151 204 -104");
-  makeCell("RightExtraVoid",System,cellIndex++,0,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-108 152 204 -104 105 -106");
-  makeCell("RightExtraVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-217 -104 204 105 151 -152");
+  makeCell("RightPoleVoid",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"218 -104 204 -106 151 -152");
+  makeCell("RightPoleVoid",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-107 -151 204 -104");
+  makeCell("RightExtraVoid",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-108 152 204 -104 105 -106");
+  makeCell("RightExtraVoid",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"113 -114 105 -106 (-107:151) (-108:-152)");
-  addOuterSurf("Main",Out);
+  addOuterSurf("Main",HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," (113 -114 -107 -151) : (113 -114 105 -106 151) ");
-  addOuterSurf("Front",Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(113 -114 -107 -151) : (113 -114 105 -106 151)");
+  addOuterSurf("Front",HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 113 -114 105 -106 ");
-  addOuterSurf("Mid",Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"113 -114 105 -106");
+  addOuterSurf("Mid",HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," (113 -114 -108 152) :  (113 -114 105 -106 -152) ");
-  addOuterSurf("Back",Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"(113 -114 -108 152) : (113 -114 105 -106 -152)");
+  addOuterSurf("Back",HR);
 
   return;
 }

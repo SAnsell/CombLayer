@@ -37,7 +37,7 @@ namespace tdcSystem
 */
 
 class EBeamStop :
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedGroup,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap,

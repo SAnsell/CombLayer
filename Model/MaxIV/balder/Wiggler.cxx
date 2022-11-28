@@ -38,7 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -178,53 +177,52 @@ Wiggler::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Wiggler","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
   // four blocks
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -13 5 -15 -103 ");
-  makeCell("BlockDL",System,cellIndex++,blockMat,0.0,Out);
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"1 -2 3 -13 5 -15 -103");
+  makeCell("BlockDL",System,cellIndex++,blockMat,0.0,HR);
 
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 14 -4 5 -15 -104 ");
-  makeCell("BlockDR",System,cellIndex++,blockMat,0.0,Out);
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"1 -2 14 -4 5 -15 -104");
+  makeCell("BlockDR",System,cellIndex++,blockMat,0.0,HR);
 
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -13 16 -6 -113 ");
-  makeCell("BlockUL",System,cellIndex++,blockMat,0.0,Out);
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"1 -2 3 -13 16 -6 -113");
+  makeCell("BlockUL",System,cellIndex++,blockMat,0.0,HR);
 
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 14 -4 16 -6 -114 ");
-  makeCell("BlockUR",System,cellIndex++,blockMat,0.0,Out);
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"1 -2 14 -4 16 -6 -114");
+  makeCell("BlockUR",System,cellIndex++,blockMat,0.0,HR);
 
   // care here because undefined behavour if either VCorner / HCorner
   // equal zero.
   if (blockVCorner>Geometry::zeroTol &&
       blockHCorner>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 103 -13 -15 ");
-      makeCell("CornerDL",System,cellIndex++,voidMat,0.0,Out);
-      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 104 14 -15 ");
-      makeCell("CornerDR",System,cellIndex++,voidMat,0.0,Out);
-      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 113 -13 16 ");
-      makeCell("CornerUL",System,cellIndex++,voidMat,0.0,Out);
-      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 114 14 16 ");
-      makeCell("CornerUR",System,cellIndex++,voidMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 103 -13 -15");
+      makeCell("CornerDL",System,cellIndex++,voidMat,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 104 14 -15");
+      makeCell("CornerDR",System,cellIndex++,voidMat,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 113 -13 16");
+      makeCell("CornerUL",System,cellIndex++,voidMat,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 114 14 16");
+      makeCell("CornerUR",System,cellIndex++,voidMat,0.0,HR);
     }
   
   if (blockHGap>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 13 -14 5 -15 ");
-      makeCell("HGap",System,cellIndex++,voidMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -14 5 -15");
+      makeCell("HGap",System,cellIndex++,voidMat,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 13 -14 16 -6 ");
-      makeCell("HGap",System,cellIndex++,voidMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -14 16 -6");
+      makeCell("HGap",System,cellIndex++,voidMat,0.0,HR);
     }
   if (blockVGap>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 15 -16 ");
-      makeCell("VGap",System,cellIndex++,voidMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 15 -16");
+      makeCell("VGap",System,cellIndex++,voidMat,0.0,HR);
     }
 
-  
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
-  addOuterSurf(Out);      
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  addOuterSurf(HR);      
 
   return;
 }

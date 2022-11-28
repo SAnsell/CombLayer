@@ -292,4 +292,4 @@ SkadiHut::createAll(Simulation& System,
   return;
 }
 
-}//Emd namespace
+} // NAMESPACE essSystem

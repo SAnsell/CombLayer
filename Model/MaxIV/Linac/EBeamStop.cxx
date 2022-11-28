@@ -3,7 +3,7 @@
 
  * File:   Linac/EBeamStop.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2022 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -53,7 +52,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
@@ -67,7 +66,7 @@ namespace tdcSystem
 {
 
 EBeamStop::EBeamStop(const std::string& Key) :
-  attachSystem::FixedOffset(Key,7),
+  attachSystem::FixedRotate(Key,7),
   attachSystem::ContainedGroup("Main","FlangeA","FlangeB"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -94,7 +93,7 @@ EBeamStop::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("EBeamStop","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   closedFlag=static_cast<bool>(Control.EvalVar<size_t>(keyName+"Closed"));
 
@@ -675,25 +674,6 @@ EBeamStop::createLinks()
 
   nameSideIndex(2,"BoxFront");
   nameSideIndex(3,"BoxBack");
-
-  //  if (shieldActive)
-  //    {
-  // FixedComp::setConnect(4,Origin-Y*(shieldLength/2.0),-Y);
-  // FixedComp::setConnect(5,Origin+Y*(shieldLength/2.0),Y);
-  // FixedComp::setConnect(6,Origin+Z*(shieldHeight),Z);
-
-  // FixedComp::setLinkSurf(4,ModelSupport::getComposite(SMap,buildIndex,
-  // 			  " 1001 1003 -1004 405 -1006 (-1103:1104:-1105:1106) "));
-  // FixedComp::setLinkSurf(5,ModelSupport::getComposite(SMap,buildIndex,
-  // 							  " 1003 -1004 405 -1006 "));
-  // FixedComp::setLinkSurf(6,ModelSupport::getComposite(SMap,buildIndex,
-  // 			 " -1002 1003 -1004 405 -1006 (-1103:1104:-1105:1106) "));
-
-  // nameSideIndex(4,"ShieldFront");
-  // nameSideIndex(5,"ShieldMid");
-  // nameSideIndex(6,"ShieldBack");
-  //    }
-
 
   return;
 }

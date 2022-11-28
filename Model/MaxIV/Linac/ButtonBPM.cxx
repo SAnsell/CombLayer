@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/Linac/ButtonBPM.cxx
  *
- * Copyright (c) 2004-2021 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -52,7 +51,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -68,8 +67,8 @@ namespace tdcSystem
 {
 
 ButtonBPM::ButtonBPM(const std::string& Key)  :
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::FrontBackCut()
@@ -80,8 +79,8 @@ ButtonBPM::ButtonBPM(const std::string& Key)  :
 {}
 
 ButtonBPM::ButtonBPM(const ButtonBPM& A) :
+  attachSystem::FixedRotate(A),
   attachSystem::ContainedComp(A),
-  attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
@@ -131,8 +130,8 @@ ButtonBPM::operator=(const ButtonBPM& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
@@ -196,7 +195,7 @@ ButtonBPM::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("ButtonBPM","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
@@ -235,23 +234,6 @@ ButtonBPM::populate(const FuncDataBase& Control)
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   flangeMat=ModelSupport::EvalMat<int>(Control,keyName+"FlangeMat");
-
-  return;
-}
-
-void
-ButtonBPM::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: object for origin
-    \param sideIndex :: link point for origin
-  */
-{
-  ELog::RegMethod RegA("ButtonBPM","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
 
   return;
 }
@@ -363,138 +345,143 @@ ButtonBPM::createObjects(Simulation& System)
 
   int SI(buildIndex);
 
-  std::string Out;
-  const std::string frontStr(frontRule());
-  const std::string backStr(backRule());
+  HeadRule HR;
+  const HeadRule frontHR(getFrontRule());
+  const HeadRule backHR(getBackRule());
 
   // pipe and flanges
-  Out=ModelSupport::getComposite(SMap,buildIndex," -131 -7 ")+frontStr;
-  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 132 -7 ")+backStr;
-  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-131 -7");
+  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"132 -7");
+  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,HR*backHR);
 
   if (nButtons==4)
-    Out=ModelSupport::getComposite(SMap,buildIndex,SI+2000," 7 -27 121 -222 407 407M ");
+    HR=ModelSupport::getHeadRule
+      (SMap,buildIndex,SI+2000,"7 -27 121 -222 407 407M");
   else
-    Out=ModelSupport::getComposite(SMap,buildIndex," 7 -27 121 -222 407 ");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -17 111 -121 ");
-  makeCell("WallA",System,cellIndex++,wallMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -17 222 -212 ");
-  makeCell("WallB",System,cellIndex++,wallMat,0.0,Out);
+    HR=ModelSupport::getHeadRule(SMap,buildIndex,"7 -27 121 -222 407");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7 -17 111 -121");
+  makeCell("WallA",System,cellIndex++,wallMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7 -17 222 -212");
+  makeCell("WallB",System,cellIndex++,wallMat,0.0,HR);
 
   if (flangeGap>0)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 17 -27 101 -121 ");
-      makeCell("GapA",System,cellIndex++,voidMat,0.0,Out);
-      Out=ModelSupport::getComposite(SMap,buildIndex," 17 -27 222 -202 ");
-      makeCell("GapB",System,cellIndex++,voidMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"17 -27 101 -121");
+      makeCell("GapA",System,cellIndex++,voidMat,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"17 -27 222 -202");
+      makeCell("GapB",System,cellIndex++,voidMat,0.0,HR);
     }
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 27 -107 -101 ")+frontStr;
-  makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 17 -27 111 -101 ");
-  makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -27 -111 ")+frontStr;
-  makeCell("FlangeAVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"27 -107 -101");
+  makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"17 -27 111 -101");
+  makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7 -27 -111");
+  makeCell("FlangeAVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 27 -207 202 ")+backStr;
-  makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 17 -27 202 -212 ");
-  makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -27 212 ")+backStr;
-  makeCell("FlangeBVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"27 -207 202");
+  makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,HR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"17 -27 202 -212");
+  makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7 -27 212");
+  makeCell("FlangeBVoid",System,cellIndex++,voidMat,0.0,HR*backHR);
 
   if (nButtons==4)
-    Out=ModelSupport::getComposite(SMap,buildIndex,SI+2000," 27 -307 101 -202 407 407M ");
+    HR=ModelSupport::getHeadRule
+      (SMap,buildIndex,SI+2000,"27 -307 101 -202 407 407M");
   else
-    Out=ModelSupport::getComposite(SMap,buildIndex," 27 -307 101 -202 407 ");
-  makeCell("VoidBWFlanges",System,cellIndex++,voidMat,0.0,Out);
+    HR=ModelSupport::getHeadRule(SMap,buildIndex,"27 -307 101 -202 407");
+  makeCell("VoidBWFlanges",System,cellIndex++,voidMat,0.0,HR);
 
   if (flangeBRadius+Geometry::zeroTol<flangeARadius)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 207 -307 202 ") + backStr;
-      makeCell("FlangeBVoid",System,cellIndex++,voidMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"207 -307 202");
+      makeCell("FlangeBVoid",System,cellIndex++,voidMat,0.0,HR*backHR);
     }
   else if (flangeARadius+Geometry::zeroTol<flangeBRadius)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 107 -307 -101 ") + frontStr;
-      makeCell("FlangeAVoid",System,cellIndex++,voidMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"107 -307 -101");
+      makeCell("FlangeAVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
     }
 
   // buttons
   if (nButtons==4)
-    Out=ModelSupport::getComposite(SMap,SI,SI+1000,SI+2000,
-				   " 131 -132 -7 (407:-405 -405M) (407N:-405N -3405) ");
+    HR=ModelSupport::getHeadRule
+      (SMap,SI,SI+1000,SI+2000,
+       "131 -132 -7 (407:-405 -405M) (407N:-405N -3405)");
   else
-    Out=ModelSupport::getComposite(SMap,SI,SI+1000,SI+2000,
-				   " 131 -132 -7 (407:-405 -405M) ");
-  makeCell("ButtonHolderCenter",System,cellIndex++,voidMat,0.0,Out);
+    HR=ModelSupport::getHeadRule
+      (SMap,SI,SI+1000,SI+2000,"131 -132 -7 (407:-405 -405M)");
+  makeCell("ButtonHolderCenter",System,cellIndex++,voidMat,0.0,HR);
 
   // corners
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,SI+1000," 7 -407M -405M -405N ");
-  makeCell("Corner",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,SI,SI+1000,"7 -407M -405M -405N");
+  makeCell("Corner",System,cellIndex++,voidMat,0.0,HR);
   if (nButtons==4)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,SI+2000,SI+3000," 7 -407M -405M -405N ");
-      makeCell("Corner",System,cellIndex++,voidMat,0.0,Out);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,SI+2000,SI+3000,"7 -407M -405M -405N");
+      makeCell("Corner",System,cellIndex++,voidMat,0.0,HR);
     }
 
   for (size_t i=0; i<nButtons; ++i)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,SI," -107 -407M 426M ");
-      makeCell("ButtonHolder",System,cellIndex++,voidMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,"-107 -407M 426M");
+      makeCell("ButtonHolder",System,cellIndex++,voidMat,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,SI," 409 -407 406 -426 ");
-      makeCell("ButtonHandle",System,cellIndex++,voidMat,0.0,Out);
-      Out=ModelSupport::getComposite(SMap,SI," 627 -409 406 -426 ");
-      makeCell("ButtonHandle",System,cellIndex++,buttonCaseMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,SI,"409 -407 406 -426");
+      makeCell("ButtonHandle",System,cellIndex++,voidMat,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,SI,"627 -409 406 -426");
+      makeCell("ButtonHandle",System,cellIndex++,buttonCaseMat,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,SI," 416 -406 627 -407 ");
-      makeCell("ButtonFlange",System,cellIndex++,buttonCaseMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,SI,"416 -406 627 -407");
+      makeCell("ButtonFlange",System,cellIndex++,buttonCaseMat,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,SI," 536 -416 627 -408 ");
-      makeCell("ButtonCase",System,cellIndex++,buttonCaseMat,0.0,Out);
-      Out=ModelSupport::getComposite(SMap,SI," 526 -536 517 -408 ");
-      makeCell("ButtonCase",System,cellIndex++,buttonCaseMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,SI,"536 -416 627 -408");
+      makeCell("ButtonCase",System,cellIndex++,buttonCaseMat,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,SI,"526 -536 517 -408");
+      makeCell("ButtonCase",System,cellIndex++,buttonCaseMat,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,SI," 525 -416 408 -407 ");
-      makeCell("ButtonCaseOut",System,cellIndex++,voidMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,SI,"525 -416 408 -407");
+      makeCell("ButtonCaseOut",System,cellIndex++,voidMat,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,SI," 516 -525 509 -407 ");
-      makeCell("ButtonCaseOut",System,cellIndex++,voidMat,0.0,Out);
-      Out=ModelSupport::getComposite(SMap,SI," 516 -525 408 -509 ");
-      makeCell("ButtonCaseOut",System,cellIndex++,buttonCaseMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,SI,"516 -525 509 -407");
+      makeCell("ButtonCaseOut",System,cellIndex++,voidMat,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,SI,"516 -525 408 -509");
+      makeCell("ButtonCaseOut",System,cellIndex++,buttonCaseMat,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,SI," 405 -506 607 -507 ");
-      makeCell("Electrode",System,cellIndex++,elMat,0.0,Out);
-      Out=ModelSupport::getComposite(SMap,SI," 405 -506 507 -508 ");
-      makeCell("ElectrodeGap",System,cellIndex++,voidMat,0.0,Out);
-      Out=ModelSupport::getComposite(SMap,SI," 506 -516 607 -508 ");
-      makeCell("ElectrodeGap",System,cellIndex++,voidMat,0.0,Out);
-      Out=ModelSupport::getComposite(SMap,SI," 405 -516 508 -509 ");
-      makeCell("ElectrodeCase",System,cellIndex++,buttonCaseMat,0.0,Out);
-      Out=ModelSupport::getComposite(SMap,SI," 405 -516 509 -407 ");
-      makeCell("ElectrodeOut",System,cellIndex++,voidMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,SI,"405 -506 607 -507");
+      makeCell("Electrode",System,cellIndex++,elMat,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,SI,"405 -506 507 -508");
+      makeCell("ElectrodeGap",System,cellIndex++,voidMat,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,SI,"506 -516 607 -508");
+      makeCell("ElectrodeGap",System,cellIndex++,voidMat,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,SI,"405 -516 508 -509");
+      makeCell("ElectrodeCase",System,cellIndex++,buttonCaseMat,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,SI,"405 -516 509 -407");
+      makeCell("ElectrodeOut",System,cellIndex++,voidMat,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,SI," 516 -526 607 -517 ");
-      makeCell("Ceramic",System,cellIndex++,ceramicMat,0.0,Out);
-      Out=ModelSupport::getComposite(SMap,SI," 516 -526 517 -408 ");
-      makeCell("CeramicCase",System,cellIndex++,buttonCaseMat,0.0,Out);
-      Out=ModelSupport::getComposite(SMap,SI," 526 -536 617 -517 ");
-      makeCell("CeramicGap",System,cellIndex++,voidMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,SI,"516 -526 607 -517");
+      makeCell("Ceramic",System,cellIndex++,ceramicMat,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,SI,"516 -526 517 -408");
+      makeCell("CeramicCase",System,cellIndex++,buttonCaseMat,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,SI,"526 -536 617 -517");
+      makeCell("CeramicGap",System,cellIndex++,voidMat,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,SI," -607 405 -526 ");
-      makeCell("Pin",System,cellIndex++,pinMat,0.0,Out);
-      Out=ModelSupport::getComposite(SMap,SI," -617 526 -426");
-      makeCell("Pin",System,cellIndex++,pinMat,0.0,Out);
-      Out=ModelSupport::getComposite(SMap,SI," -627 617 536 -426");
-      makeCell("PinGap",System,cellIndex++,voidMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,SI,"-607 405 -526");
+      makeCell("Pin",System,cellIndex++,pinMat,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,SI,"-617 526 -426");
+      makeCell("Pin",System,cellIndex++,pinMat,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,SI,"-627 617 536 -426");
+      makeCell("PinGap",System,cellIndex++,voidMat,0.0,HR);
 
       SI += 1000;
     }
-  Out=ModelSupport::getComposite(SMap,buildIndex," -307 ")+frontStr+backStr;
-  addOuterSurf(Out);
+  HR=HeadRule(SMap,buildIndex,-307);
+  addOuterSurf(HR*frontHR*backHR);
 
   return;
 }

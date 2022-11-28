@@ -193,30 +193,25 @@ DHut::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("DHut","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 -11 -12 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  setCell("Void",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6 -11 -12");
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "101 -102 103 -104 105 -106  -111 -112 "
-  				 "(-1:2:-3:4:-5: 6 :11 : 12)");
-  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				"101 -102 103 -104 105 -106  -111 -112"
+  				"(-1:2:-3:4:-5: 6 :11 : 12)");
+  makeCell("Steel",System,cellIndex++,feMat,0.0,HR);
 
-  setCell("Steel",cellIndex-1);
-    
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				   "201 -202 203 -204 205 -206 -211 -212 "
-				 "(-101:102:-103:104:-105: 106 :111 :112)");
-  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
-  setCell("Concrete",cellIndex-1);
-  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				  "201 -202 203 -204 205 -206 -211 -212"
+				"(-101:102:-103:104:-105: 106 :111 :112)");
+  makeCell("Concrete",System,cellIndex++,concMat,0.0,HR);
   
   // Exclude:
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "201 -202 203 -204 205 -206 -211 -212 ");
-  addOuterSurf(Out);      
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"201 -202 203 -204 205 -206 -211 -212");
+  addOuterSurf(HR);      
 
   return;
 }

@@ -3,7 +3,7 @@
  
  * File:   balder/MonoVessel.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -53,7 +52,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -66,7 +65,7 @@ namespace xraySystem
 {
 
 MonoVessel::MonoVessel(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap()
   /*!
@@ -76,7 +75,7 @@ MonoVessel::MonoVessel(const std::string& Key) :
 {}
 
 MonoVessel::MonoVessel(const MonoVessel& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedRotate(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   radius(A.radius),ringWidth(A.ringWidth),outWidth(A.outWidth),
   wallThick(A.wallThick),doorThick(A.doorThick),
@@ -106,7 +105,7 @@ MonoVessel::operator=(const MonoVessel& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
@@ -156,7 +155,7 @@ MonoVessel::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("MonoVessel","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   // Void + Fe special:
   radius=Control.EvalVar<double>(keyName+"Radius");
@@ -276,69 +275,69 @@ MonoVessel::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("MonoVessel","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
   // main void
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 3 -4 ");
-  CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 3 -4");
+  CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
   // in-port void
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7 101 -1 -107");
-  CellMap::makeCell("InPortVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7 101 -1 -107");
+  CellMap::makeCell("InPortVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1 7 101 107 -117");
-  CellMap::makeCell("InPortWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 7 101 107 -117");
+  CellMap::makeCell("InPortWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -111 117 -127");
-  CellMap::makeCell("InPortFlange",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -111 117 -127");
+  CellMap::makeCell("InPortFlange",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1 17 111 117 -127");
-  CellMap::makeCell("InPortFVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 17 111 117 -127");
+  CellMap::makeCell("InPortFVoid",System,cellIndex++,0,0.0,HR);
 
   // out-port: void
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 7 -201 -207");
-  CellMap::makeCell("OutPortVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 7 -201 -207");
+  CellMap::makeCell("OutPortVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 7 -201 207 -217");
-  CellMap::makeCell("OutPortWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 7 -201 207 -217");
+  CellMap::makeCell("OutPortWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -201 211 217 -227");
-  CellMap::makeCell("OutPortFlange",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-201 211 217 -227");
+  CellMap::makeCell("OutPortFlange",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 17 -211 217 -227");
-  CellMap::makeCell("OutPortFVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 17 -211 217 -227");
+  CellMap::makeCell("OutPortFVoid",System,cellIndex++,0,0.0,HR);
 
   // MAIN WALL:
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 7 -17 3 -4 (-1:217) (1:117)");
-  CellMap::makeCell("MainWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				"7 -17 3 -4 (-1:217) (1:117)");
+  CellMap::makeCell("MainWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -27 13 -3 ");
-  CellMap::makeCell("Door",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 13 -3");
+  CellMap::makeCell("Door",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 17 -27 3 -23 ");
-  CellMap::makeCell("DoorFlange",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"17 -27 3 -23");
+  CellMap::makeCell("DoorFlange",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 4 -14 -28");
-  CellMap::makeCell("Back",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"4 -14 -28");
+  CellMap::makeCell("Back",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 17 -28 -4 24 ");
-  CellMap::makeCell("BackFlange",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"17 -28 -4 24");
+  CellMap::makeCell("BackFlange",System,cellIndex++,wallMat,0.0,HR);
 
   // Exclude Main/port/port:
-  Out=ModelSupport::getComposite(SMap,buildIndex," 23 -24 -17 ");
-  addOuterSurf(Out);      
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"23 -24 -17");
+  addOuterSurf(HR);      
 
   // flanges:
-  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -23 -27 ");
-  addOuterUnionSurf(Out);      
-  Out=ModelSupport::getComposite(SMap,buildIndex," 24 -14 -28 ");
-  addOuterUnionSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -23 -27");
+  addOuterUnionSurf(HR);      
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"24 -14 -28");
+  addOuterUnionSurf(HR);
   // ports:
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -201 -227");
-  addOuterUnionSurf(Out);      
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1 101 -127");
-  addOuterUnionSurf(Out);      
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -201 -227");
+  addOuterUnionSurf(HR);      
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 101 -127");
+  addOuterUnionSurf(HR);      
 
   return;
 }

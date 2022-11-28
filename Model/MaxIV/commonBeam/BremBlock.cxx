@@ -3,7 +3,7 @@
  
  * File:   commonBeam/BremBlock.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -233,40 +232,40 @@ BremBlock::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("BremBlock","createObjects");
 
-  const std::string frontSurf(frontRule());
-  const std::string backSurf(backRule());
+  const HeadRule frontSurf(getFrontRule());
+  const HeadRule backSurf(getBackRule());
 
-  std::string Out;
+  HeadRule HR;
 
   if (holeMidDist>Geometry::zeroTol &&
       length-holeMidDist>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex," -1001 1003 -1004 1005 -1006 ");
-      makeCell("Void",System,cellIndex++,voidMat,0.0,frontSurf+Out);
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex," 1001 2003 -2004 2005 -2006 ");
-      makeCell("Void",System,cellIndex++,voidMat,0.0,backSurf+Out);
-      Out=ModelSupport::getSetComposite
-	(SMap,buildIndex," -1001 3 -4 5 -6 -7 (-1003: 1004 : -1005: 1006)");
-      makeCell("Shield",System,cellIndex++,mainMat,0.0,Out+frontSurf);
-      Out=ModelSupport::getSetComposite
-	(SMap,buildIndex," 1001 3 -4 5 -6 -7 (-2003: 2004 : -2005: 2006)");
-      makeCell("Shield",System,cellIndex++,mainMat,0.0,Out+backSurf);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"-1001 1003 -1004 1005 -1006");
+      makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontSurf);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"1001 2003 -2004 2005 -2006");
+      makeCell("Void",System,cellIndex++,voidMat,0.0,HR*backSurf);
+      HR=ModelSupport::getSetHeadRule
+	(SMap,buildIndex,"-1001 3 -4 5 -6 -7 (-1003: 1004 : -1005: 1006)");
+      makeCell("Shield",System,cellIndex++,mainMat,0.0,HR*frontSurf);
+      HR=ModelSupport::getSetHeadRule
+	(SMap,buildIndex,"1001 3 -4 5 -6 -7 (-2003: 2004 : -2005: 2006)");
+      makeCell("Shield",System,cellIndex++,mainMat,0.0,HR*backSurf);
     }
   else
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1003 -1004 1005 -1006 ");
-      makeCell("Void",System,cellIndex++,voidMat,0.0,frontSurf+backSurf+Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1003 -1004 1005 -1006");
+      makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontSurf*backSurf);
       
-      Out=ModelSupport::getSetComposite
-	(SMap,buildIndex," 3 -4 5 -6 -7 (-1003: 1004 : -1005: 1006)");
-      makeCell("Shield",System,cellIndex++,mainMat,0.0,Out+frontSurf+backSurf);
+      HR=ModelSupport::getSetHeadRule
+	(SMap,buildIndex,"3 -4 5 -6 -7 (-1003: 1004 : -1005: 1006)");
+      makeCell("Shield",System,cellIndex++,mainMat,0.0,HR*frontSurf*backSurf);
     }
   // If front back set then don't add to exclude --
   // thus buildIndex+1 or buildIndex+2 will not exist.
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 -7 3 -4 5 -6 ");
-  addOuterSurf(Out);
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"1 -2 -7 3 -4 5 -6");
+  addOuterSurf(HR);
 
   return;
 }

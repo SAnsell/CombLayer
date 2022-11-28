@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/Linac/CleaningMagnet.cxx
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -65,8 +64,8 @@ namespace tdcSystem
 {
 
 CleaningMagnet::CleaningMagnet(const std::string& Key)  :
-  attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,6),
+  attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::ExternalCut()
@@ -77,8 +76,8 @@ CleaningMagnet::CleaningMagnet(const std::string& Key)  :
 {}
 
 CleaningMagnet::CleaningMagnet(const CleaningMagnet& A) :
-  attachSystem::ContainedComp(A),
   attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::ExternalCut(A),
@@ -105,8 +104,8 @@ CleaningMagnet::operator=(const CleaningMagnet& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedRotate::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       attachSystem::ExternalCut::operator=(A);
@@ -207,45 +206,45 @@ CleaningMagnet::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("CleaningMagnet","createObjects");
 
-  std::string Out;
-  const std::string ICell=isActive("Inner") ? getRuleStr("Inner") : "";
+  HeadRule HR;
+  const HeadRule ICellHR=getRule("Inner");
 
   // Core
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  makeCell("Core",System,cellIndex++,mat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  makeCell("Core",System,cellIndex++,mat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 4 -13 5 -6 ");
-  makeCell("Gap",System,cellIndex++,voidMat,0.0,Out+ICell);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 4 -13 5 -6");
+  makeCell("Gap",System,cellIndex++,voidMat,0.0,HR*ICellHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 13 -14 5 -6 ");
-  makeCell("Core",System,cellIndex++,mat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -14 5 -6");
+  makeCell("Core",System,cellIndex++,mat,0.0,HR);
 
   // Yoke
-  Out=ModelSupport::getComposite(SMap,buildIndex," 103 -3 105 -6 101 -102 ");
-  makeCell("Yoke",System,cellIndex++,yokeMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 14 -104 105 -6 101 -102 ");
-  makeCell("Yoke",System,cellIndex++,yokeMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -14 105 -106 101 -102 ");
-  makeCell("Yoke",System,cellIndex++,yokeMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -14 106 -5 ");
-  makeCell("YokeVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"103 -3 105 -6 101 -102");
+  makeCell("Yoke",System,cellIndex++,yokeMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"14 -104 105 -6 101 -102");
+  makeCell("Yoke",System,cellIndex++,yokeMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -14 105 -106 101 -102");
+  makeCell("Yoke",System,cellIndex++,yokeMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -14 106 -5");
+  makeCell("YokeVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 103 -3 105 -6 1 -101 ");
-  makeCell("YokeVoid",System,cellIndex++,voidMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 14 -104 105 -6 1 -101 ");
-  makeCell("YokeVoid",System,cellIndex++,voidMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -14 105 -106 1 -101 ");
-  makeCell("YokeVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"103 -3 105 -6 1 -101");
+  makeCell("YokeVoid",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"14 -104 105 -6 1 -101");
+  makeCell("YokeVoid",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -14 105 -106 1 -101");
+  makeCell("YokeVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 103 -3 105 -6 102 -2 ");
-  makeCell("YokeVoid",System,cellIndex++,voidMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 14 -104 105 -6 102 -2 ");
-  makeCell("YokeVoid",System,cellIndex++,voidMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -14 105 -106 102 -2 ");
-  makeCell("YokeVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"103 -3 105 -6 102 -2");
+  makeCell("YokeVoid",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"14 -104 105 -6 102 -2");
+  makeCell("YokeVoid",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -14 105 -106 102 -2");
+  makeCell("YokeVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 103 -104 105 -6 1 -2 ");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"103 -104 105 -6 1 -2");
+  addOuterSurf(HR);
 
   return;
 }
