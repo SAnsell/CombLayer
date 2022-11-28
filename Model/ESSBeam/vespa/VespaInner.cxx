@@ -1,9 +1,9 @@
 /********************************************************************** 
   CombLayer : MCNP(X) Input builder
  
- * File:   essModel/VespaInner.cxx
+ * File:   vespa/VespaInner.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -57,7 +55,7 @@
 #include "LinkUnit.h"  
 #include "FixedComp.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
@@ -71,7 +69,7 @@ namespace essSystem
 {
 
 VespaInner::VespaInner(const std::string& Key) : 
-  attachSystem::FixedOffsetGroup(Key,"Inner",6,"Mid",6,"Outer",6),
+  attachSystem::FixedRotateGroup(Key,"Inner",6,"Mid",6,"Outer",6),
   attachSystem::ContainedComp(),attachSystem::FrontBackCut(),
   attachSystem::CellMap(),attachSystem::SurfMap()
   /*!
@@ -95,7 +93,7 @@ VespaInner::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("VespaInner","populate");
   
-  FixedOffsetGroup::populate(Control);
+  FixedRotateGroup::populate(Control);
 
   backAngle=Control.EvalVar<double>(keyName+"BackAngle");
   backCutStep=Control.EvalVar<double>(keyName+"BackCutStep");
@@ -225,28 +223,25 @@ VespaInner::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("VespaInner","createObjects");
 
-  const std::string frontStr=FrontBackCut::frontRule();
-  std::string Out;
+  const HeadRule frontHR=FrontBackCut::getFrontRule();
+  HeadRule HR;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -2 3 -4 5 -6 -7 -8 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+frontStr));
-  setCell("Void",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 3 -4 5 -6 -7 -8");
+  makeCell("Void",System,cellIndex++,0,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " -12 13 -14 15 -16 -17 -18 "
-				 " ( 2 : -3 : 4 : -5 : 6 : 7 : 8 ) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out+frontStr));
-  setCell("FeLayer",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				"-12 13 -14 15 -16 -17 -18"
+				"( 2 : -3 : 4 : -5 : 6 : 7 : 8 )");
+  makeCell("FeLayer",System,cellIndex++,feMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " -22 23 -24 25 -26 -27 -28 "
-				 " ( 12 : -13 : 14 : -15 : 16 : 17 : 18 ) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out+frontStr));
-  setCell("ConcLayer",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				"-22 23 -24 25 -26 -27 -28"
+				"( 12 : -13 : 14 : -15 : 16 : 17 : 18 )");
+  makeCell("ConcLayer",System,cellIndex++,concMat,0.0,HR*frontHR);
 
   // Exclude:
-  Out=ModelSupport::getComposite(SMap,buildIndex," -22 23 -24 25 -26 -27 -28 ");
-  addOuterSurf(Out);      
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-22 23 -24 25 -26 -27 -28");
+  addOuterSurf(HR);      
 
   return;
 }

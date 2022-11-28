@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essModel/VespaHut.cxx
+ * File:   vespa/VespaHut.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -57,7 +55,7 @@
 #include "LinkUnit.h"  
 #include "FixedComp.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -68,7 +66,7 @@ namespace essSystem
 {
 
 VespaHut::VespaHut(const std::string& Key) : 
-  attachSystem::FixedOffsetGroup(Key,"Inner",6,"Mid",6,"Outer",6),
+  attachSystem::FixedRotateGroup(Key,"Inner",6,"Mid",6,"Outer",6),
   attachSystem::ContainedComp(),attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -91,7 +89,7 @@ VespaHut::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("VespaHut","populate");
   
-  FixedOffsetGroup::populate(Control);
+  FixedRotateGroup::populate(Control);
 
   // Void + Fe special:
   voidHeight=Control.EvalVar<double>(keyName+"VoidHeight");
@@ -199,43 +197,37 @@ VespaHut::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("VespaHut","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  setCell("Void",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "1 -12 13 -14 15 -16 (-1:2:-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
-  setCell("Iron",cellIndex-1);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1 -12 13 -14 15 -16 (-1:2:-3:4:-5:6)");
+  makeCell("Iron",System,cellIndex++,feMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-		 "1 -22 23 -24 25 -26 (12:-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
-  setCell("Conc",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+		"1 -22 23 -24 25 -26 (12:-13:14:-15:16)");
+  makeCell("Conc",System,cellIndex++,concMat,0.0,HR);
 
   // Front wall:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -1 13 -14 15 -16 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
-  setCell("FrontWall",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -1 13 -14 15 -16");
+  makeCell("FrontWall",System,cellIndex++,feMat,0.0,HR);
   setCell("IronFront",cellIndex-1);
 
   // Ring of concrete
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "11 -1 23 -24 25 -26 (-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"11 -1 23 -24 25 -26 (-13:14:-15:16)");
+  makeCell("Concrete",System,cellIndex++,concMat,0.0,HR);
 
   // Front concrete face
-  Out=ModelSupport::getComposite(SMap,buildIndex,"21 -11 23 -24 25 -26 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
-  addCell("FrontWall",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -11 23 -24 25 -26");
+  makeCell("FrontWall",System,cellIndex++,concMat,0.0,HR);
   setCell("ConcFront",cellIndex-1);
   
   // Exclude:
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 21 -22 23 -24  25 -26 ");
-  addOuterSurf(Out);      
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -22 23 -24  25 -26");
+  addOuterSurf(HR);      
 
   return;
 }

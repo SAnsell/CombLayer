@@ -38,7 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "stringCombine.h"
 #include "Vec3D.h"
 #include "Code.h"
 #include "varList.h"
@@ -413,8 +412,8 @@ VESPAvariables(FuncDataBase& Control)
       const double aZStep= 45.0;
       for(size_t j=0;j<8;j++)
         {
-          const std::string xKey="vespaXStal"+StrFunc::makeString(detCnt);
-          const std::string dKey="vespaDBox"+StrFunc::makeString(detCnt);
+          const std::string xKey="vespaXStal"+std::to_string(detCnt);
+          const std::string dKey="vespaDBox"+std::to_string(detCnt);
           Control.addVariable(xKey+"YStep",braggStep[i]*posScale);
           Control.addVariable(xKey+"PreXYAngle",braggAngle[i]);
           Control.addVariable(xKey+"PreZAngle",0.0);
