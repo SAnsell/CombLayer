@@ -38,7 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -77,6 +76,8 @@ CylGateValve::CylGateValve(const std::string& Key) :
     \param Key :: KeyName
   */
 {}
+
+
 
 CylGateValve::~CylGateValve() 
   /*!
@@ -211,12 +212,13 @@ CylGateValve::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("CylGateValve","createObjects");
 
+  std::string Out;
   HeadRule HR;
 
+  const std::string frontStr=getRuleStr("front"); // 1
+  const std::string backStr=getRuleStr("back");    // -2
   const HeadRule frontHR=getRule("front"); // 1
   const HeadRule backHR=getRule("back");    // -2
-  ELog::EM<<"Front == "<<frontHR<<" "<<backHR<<ELog::endDiag;
-
   // Main Void [exclude flange cylinder/ blade and blade tube]
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -7 117 (507 : -405)");
   if (!closed)
@@ -262,7 +264,7 @@ CylGateValve::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"6 -106 -207 217");
   makeCell("TopFlange",System,cellIndex++,wallMat,0.0,HR*frontHR*backHR);
 
-  // top clearance
+    // top clearance
   if (topRadius-driveRadius>Geometry::zeroTol)
     {
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"6 -106 -217 507");
@@ -279,7 +281,7 @@ CylGateValve::createObjects(Simulation& System)
   makeCell("TopCap",System,cellIndex++,wallMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"106 -216 -207 317");
-  makeCell("TopSpace",System,cellIndex++,0,0.0,HR+frontHR*backHR);
+  makeCell("TopSpace",System,cellIndex++,0,0.0,HR*frontHR*backHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"117 17 -6 -207 15");
   makeCell("LowSpace",System,cellIndex++,0,0.0,HR*frontHR*backHR);

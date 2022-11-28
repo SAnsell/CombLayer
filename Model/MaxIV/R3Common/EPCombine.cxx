@@ -3,7 +3,7 @@
  
  * File:   R3Common/EPCombine.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,26 +35,17 @@
 
 #include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "support.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
-#include "Line.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -274,71 +265,71 @@ EPCombine::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("EPCombine","createObjects");
 
-  const std::string frontSurf(ExternalCut::getRuleStr("front"));
+  const HeadRule frontSurf(ExternalCut::getRule("front"));
   
-  std::string Out;
+  HeadRule HR;
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -2 (-107 : -207 : (-103 205 -206 203) )");
-  makeCell("void",System,cellIndex++,voidMat,0.0,Out+frontSurf);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-2 (-107 : -207 : (-103 205 -206 203) )");
+  makeCell("void",System,cellIndex++,voidMat,0.0,HR*frontSurf);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1001 -2 3 -4 5 -6 107  207 (-205 : 206 : 103 : -203)");
-  makeCell("Outer",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1001 -2 3 -4 5 -6 107  207 (-205 : 206 : 103 : -203)");
+  makeCell("Outer",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -1001  111 112 113 114 115 116 107 (-205:206:103)");
-  makeCell("ElectronWall",System,cellIndex++,wallMat,0.0,Out+frontSurf);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-1001  111 112 113 114 115 116 107 (-205:206:103)");
+  makeCell("ElectronWall",System,cellIndex++,wallMat,0.0,HR*frontSurf);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"11 -1001 -4 5 -6 112 116 (-111:-113:-115:-114) ");
-  makeCell("ElectronOuter",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"11 -1001 -4 5 -6 112 116 (-111:-113:-115:-114)");
+  makeCell("ElectronOuter",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -1001  (-112:-116) 207 (-205:206:-203) "
-                  " 215 -216 (-217 : 203)");
-  makeCell("PhotonWall",System,cellIndex++,wallMat,0.0,Out+frontSurf);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-1001  (-112:-116) 207 (-205:206:-203)"
+                 "215 -216 (-217 : 203)");
+  makeCell("PhotonWall",System,cellIndex++,wallMat,0.0,HR*frontSurf);
 
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"11 -1001 3  5 -6 (-112:-116) (-215:216) ");
-  makeCell("PhotonOuter",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"11 -1001 3  5 -6 (-112:-116) (-215:216)");
+  makeCell("PhotonOuter",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"11 -1001 3 215 -216 217 -203 ");
-  makeCell("PhotonOuter",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"11 -1001 3 215 -216 217 -203");
+  makeCell("PhotonOuter",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -7 -11  (-3:4:-5:6) ");
-  makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,Out+frontSurf);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-7 -11  (-3:4:-5:6)");
+  makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,HR*frontSurf);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"-7 -11 -4 5 -6 112 116 (-111:-113:-115:-114) ");
-  makeCell("ElectronOutFA",System,cellIndex++,flangeMat,0.0,Out+frontSurf);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-7 -11 -4 5 -6 112 116 (-111:-113:-115:-114)");
+  makeCell("ElectronOutFA",System,cellIndex++,flangeMat,0.0,HR*frontSurf);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"-11 3 215 -216 217 -203 ");
-  makeCell("PhotonOutFA",System,cellIndex++,flangeMat,0.0,Out+frontSurf);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-11 3 215 -216 217 -203");
+  makeCell("PhotonOutFA",System,cellIndex++,flangeMat,0.0,HR*frontSurf);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"-11 3  5 -6 (-112:-116) (-215:216) ");
-  makeCell("PhotonOutFA",System,cellIndex++,flangeMat,0.0,Out+frontSurf);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-11 3  5 -6 (-112:-116) (-215:216)");
+  makeCell("PhotonOutFA",System,cellIndex++,flangeMat,0.0,HR*frontSurf);
 
   
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -17 7 -11 ");
-  makeCell("FlangeAOuter",System,cellIndex++,0,0.0,Out+frontSurf);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-17 7 -11");
+  makeCell("FlangeAOuter",System,cellIndex++,0,0.0,HR*frontSurf);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -17 (-3:4:-5:6) 12 -2 ");
-  makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-17 (-3:4:-5:6) 12 -2");
+  makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,HR);
   
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -17 (-3:4:-5:6) 11 -12 ");
-  makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-17 (-3:4:-5:6) 11 -12");
+  makeCell("OuterVoid",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -2 -17 ");
-  addOuterSurf(Out+frontSurf);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 -17");
+  addOuterSurf(HR*frontSurf);
 
   return;
 }
