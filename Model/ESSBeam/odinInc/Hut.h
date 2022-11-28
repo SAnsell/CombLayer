@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/Hut.h
+ * File:   odinInc/Hut.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ namespace essSystem
 */
 
 class Hut :
-  public attachSystem::FixedOffsetGroup,
+  public attachSystem::FixedRotateGroup,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
@@ -88,6 +88,7 @@ class Hut :
   Hut& operator=(const Hut&);
   virtual ~Hut();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
