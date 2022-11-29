@@ -2,8 +2,8 @@
   CombLayer : MCNP(X) Input builder
  
  * File:   t1BuildInc/channel.h
-*
- * Copyright (c) 2004-2018 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,8 +37,9 @@ namespace ts1System
   Holds the edge/centre 
 */
 
-class channel  : public attachSystem::ContainedComp,
-  public attachSystem::FixedComp
+class channel  : 
+    public attachSystem::FixedComp,
+    public attachSystem::ContainedComp
 {
  private:
 
@@ -73,6 +74,7 @@ class channel  : public attachSystem::ContainedComp,
   ~channel() {}   ///< Destructor
 
   void setDefaultValues(const FuncDataBase&,const channel*);
+  using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);

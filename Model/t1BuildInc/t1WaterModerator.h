@@ -3,7 +3,7 @@
  
  * File:   t1BuildInc/t1WaterModerator.h
 *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,8 +36,9 @@ namespace ts1System
   \brief TS1 t1WaterModerator [insert object]
 */
 
-class t1WaterModerator : public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset
+class t1WaterModerator : 
+    public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp
 {
  private:
   
@@ -61,6 +62,7 @@ class t1WaterModerator : public attachSystem::ContainedComp,
   t1WaterModerator& operator=(const t1WaterModerator&);
   virtual ~t1WaterModerator();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
 };

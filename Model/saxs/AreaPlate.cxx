@@ -3,7 +3,7 @@
  
  * File:   saxsModel/AreaPlate.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "surfRegister.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
@@ -62,8 +61,9 @@ namespace saxsSystem
 {
 
 AreaPlate::AreaPlate(const std::string& Key) :
+  attachSystem::FixedRotate(Key,3),
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(Key,3),attachSystem::CellMap(),
+  attachSystem::CellMap(),
   NWBin(1),NHBin(1)
   /*!
     Constructor
@@ -147,7 +147,7 @@ AreaPlate::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("AreaPlate","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   // First make inner/outer void/wall and top/base
 
   int BWI(buildIndex+100);
@@ -160,7 +160,7 @@ AreaPlate::createObjects(Simulation& System)
       for(size_t j=0;j<NHBin;j++)
 	{
 	  const std::string JStr(std::to_string(j));
-	  Out=ModelSupport::getComposite
+	  HR=ModelSupport::getHeadRule
 	    (SMap,buildIndex,BWI,BHI,"1 -2 3M -13M 5N -15N ");
 	  makeCell("DetCell"+IStr+"x"+JStr,
 		   System,cellIndex++,mainMat,0.0,Out);
@@ -169,9 +169,9 @@ AreaPlate::createObjects(Simulation& System)
       BWI+=10;
     }
 
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex,BWI,BHI,"1 -2 103 105 -3M -5N ");
-  addOuterSurf(Out);
+  addOuterSurf(HR);
 
 
   return; 

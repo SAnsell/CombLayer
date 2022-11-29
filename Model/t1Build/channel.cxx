@@ -29,7 +29,7 @@
 #include <list>
 #include <vector>
 #include <string>
-#include <boost/format.hpp>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -286,16 +286,17 @@ channel::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("channel","createObjects");
 
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-1 3 -4 5 -6 ");
-  addOuterSurf(Out);
+  HeadRule HR;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-1 11 3 -4 -5 15 ");
-  addOuterUnionSurf(Out);
-  System.addCell(MonteCarlo::Object(cellIndex++,matN,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 3 -4 5 -6");
+  addOuterSurf(HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,cIndex,"-1 -2M 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,matN,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 11 3 -4 -5 15");
+  addOuterUnionSurf(HR);
+  System.addCell(cellIndex++,matN,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,cIndex,"-1 -2M 3 -4 5 -6");
+  System.addCell(cellIndex++,matN,0.0,HR);
   
   return;
 }

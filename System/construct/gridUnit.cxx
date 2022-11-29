@@ -93,7 +93,7 @@ gridUnit::gridUnit(const gridUnit& A) :
   empty(A.empty),cut(A.cut),iA(A.iA),iB(A.iB),
   Centre(A.Centre),gridLink(A.gridLink),cylSurf(A.cylSurf),
   surfKey(A.surfKey),cellNumber(A.cellNumber),
-  boundaryClosed(A.boundaryClosed),cutStr(A.cutStr)
+  boundaryClosed(A.boundaryClosed),cutHR(A.cutHR)
   /*!
     Copy constructor
     \param A :: gridUnit to copy
@@ -119,7 +119,7 @@ gridUnit::operator=(const gridUnit& A)
       surfKey=A.surfKey;
       cellNumber=A.cellNumber;
       boundaryClosed=A.boundaryClosed;
-      cutStr=A.cutStr;
+      cutHR=A.cutHR;
     }
   return *this;
 }

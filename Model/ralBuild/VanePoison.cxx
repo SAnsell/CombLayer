@@ -210,6 +210,7 @@ VanePoison::createObjects(Simulation& System,
   */
 {
   ELog::RegMethod RegA("VanePoison","createObjects");
+
   std::string yFront,yBack,zBase,zTop;
 
   yFront= (std::abs(yStep)>Geometry::zeroTol) ?

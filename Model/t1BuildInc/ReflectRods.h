@@ -40,8 +40,8 @@ namespace ts1System
 */
 
 class ReflectRods :
-    public attachSystem::ContainedComp,
-    public attachSystem::FixedRotate
+    public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp
 {
  private:
 
@@ -82,9 +82,9 @@ class ReflectRods :
   int checkCorners(const int,const Geometry::Vec3D&,
 		   Geometry::Vec3D&,
 		   std::vector<Geometry::Vec3D>&) const;
-  std::string calcCornerCut(const Geometry::Vec3D&,
+  HeadRule calcCornerCut(const Geometry::Vec3D&,
 			    const std::vector<Geometry::Vec3D>&) const;
-  std::string plateString() const;
+  HeadRule plateRule() const;
   void splitRefObj();
 
   void populate(const FuncDataBase&);
@@ -115,6 +115,7 @@ class ReflectRods :
 		 const Geometry::Vec3D& BC) 
   { topCentre=TC; baseCentre=BC; }
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

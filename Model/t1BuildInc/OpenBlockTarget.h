@@ -85,6 +85,7 @@ class OpenBlockTarget :
 
   virtual void addProtonLine(Simulation&);
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 };

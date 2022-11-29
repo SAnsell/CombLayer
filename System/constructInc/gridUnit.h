@@ -53,7 +53,7 @@ class gridUnit
 
   /// surfaces that close boundary
   std::pair<size_t,size_t> boundaryClosed;
-  std::string cutStr;               ///< External cutting surf
+  HeadRule cutHR;               ///< External cutting surf
   
  public:
 
@@ -76,7 +76,7 @@ class gridUnit
   /// access cutter flag
   bool isCut() const { return cut; }
   /// access cutter string
-  const std::string& getCut() const { return cutStr; }
+  const HeadRule& getCut() const { return cutHR; }
   /// Access centre
   const Geometry::Vec3D& getCentre() const { return Centre; }
 
@@ -90,7 +90,7 @@ class gridUnit
   { return surfKey[index % surfKey.size()]; }
   
   /// Simple setter
-  void setCutString(const std::string& S) { cutStr=S; }
+  void setCutSurf(const HeadRule& HR) { cutHR=HR; }
   void setLink(const size_t,gridUnit*);
   void setSurf(const size_t,const int); 
   void clearLinks();

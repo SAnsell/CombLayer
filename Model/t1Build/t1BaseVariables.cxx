@@ -830,6 +830,7 @@ TS1base(FuncDataBase& Control)
   Control.addVariable("flightradius",3.6);     // Radius the beam in the flightline
   // REAL VOID VESSEL
   Control.addVariable("voidYoffset",9.2);            // Dave Bellenger      
+  Control.addVariable("t1CylVesselYStep",9.2);        // Dave Bellenger 
   Control.addVariable("t1CylVesselRadius",161.0);     // Radius from G4Model
   Control.addVariable("t1CylVesselClearance",2.0);     // H.J. drawing
   Control.addVariable("t1CylVesselTopRadius",350.0);  

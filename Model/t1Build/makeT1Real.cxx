@@ -228,6 +228,7 @@ makeT1Real::flightLines(Simulation& System)
   H2FL->setCutSurf("BeOuter",HR);
   H2FL->createAll(System,*Lh2ModObj,1);
   
+  
   HR=RefObj->getHeadRule("3 -12");
   CH4NorthFL->setCutSurf("BeOuter",HR*Lh2ModObj->getRule("EdgeCut"));
   CH4NorthFL->createAll(System,*CH4ModObj,1);
@@ -408,7 +409,7 @@ makeT1Real::build(Simulation& System,
       MonoTopObj->createAll(System,*VoidObj,3);
       MonoBaseObj->createAll(System,*VoidObj,2);
       
-      voidCell=VoidObj->getVoidCell();
+      voidCell=VoidObj->getCell("Void");
     }
   else
     {

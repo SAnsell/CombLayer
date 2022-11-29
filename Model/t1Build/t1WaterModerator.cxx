@@ -3,7 +3,7 @@
  
  * File:   t1Build/t1WaterModerator.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -56,7 +54,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "t1WaterModerator.h"
 
@@ -64,7 +62,8 @@ namespace ts1System
 {
 
 t1WaterModerator::t1WaterModerator(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,0)
+  attachSystem::FixedRotate(Key,0),
+  attachSystem::ContainedComp()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -72,7 +71,8 @@ t1WaterModerator::t1WaterModerator(const std::string& Key)  :
 {}
 
 t1WaterModerator::t1WaterModerator(const t1WaterModerator& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
   xOutSize(A.xOutSize),yOutSize(A.yOutSize),
   zOutSize(A.zOutSize),alThickOut(A.alThickOut),
   alMat(A.alMat),waterMat(A.waterMat)
@@ -92,8 +92,8 @@ t1WaterModerator::operator=(const t1WaterModerator& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
       xOutSize=A.xOutSize;
       yOutSize=A.yOutSize;
       zOutSize=A.zOutSize;
@@ -119,7 +119,7 @@ t1WaterModerator::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("t1WaterModerator","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   xOutSize=Control.EvalVar<double>(keyName+"XOutSize");
   yOutSize=Control.EvalVar<double>(keyName+"YOutSize");
@@ -177,19 +177,18 @@ t1WaterModerator::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("t1WaterModerator","createObjects");
   
-  std::string Out;
+  HeadRule HR;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  addOuterSurf(HR);
 
   // Al 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
 	"1 -2 3 -4 5 -6 (-11:12:-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
+  System.addCell(cellIndex++,alMat,0.0,HR);
   // water 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-	"11 -12 13 -14 15 -16 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14 15 -16");
+  System.addCell(cellIndex++,waterMat,0.0,HR);
 
 
   return;

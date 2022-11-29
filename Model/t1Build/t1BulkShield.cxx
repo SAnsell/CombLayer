@@ -335,20 +335,20 @@ t1BulkShield::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("t1BulkShield","createObjects");
 
-  const std::string innerComp=ExternalCut::getComplementStr("FullInner");
-  std::string Out;
+  const HeadRule innerComp=ExternalCut::getComplementRule("FullInner");
+  HeadRule HR;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -17 7 ");
-  makeCell("shutterCell",System,cellIndex++,ironMat,0.0,Out+innerComp);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -17 7");
+  makeCell("shutterCell",System,cellIndex++,ironMat,0.0,HR*innerComp);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -27 17");
-  makeCell("innerCell",System,cellIndex++,ironMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -27 17");
+  makeCell("innerCell",System,cellIndex++,ironMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -37 27");
-  makeCell("outerCell",System,cellIndex++,ironMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -37 27");
+  makeCell("outerCell",System,cellIndex++,ironMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -37");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -37");
+  addOuterSurf(HR);
 
   return;
 }

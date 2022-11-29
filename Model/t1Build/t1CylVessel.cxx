@@ -56,10 +56,11 @@
 #include "ContainedComp.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "Window.h"
 #include "t1CylVessel.h"
 
@@ -67,8 +68,9 @@ namespace shutterSystem
 {
 
 t1CylVessel::t1CylVessel(const std::string& Key)  : 
-  attachSystem::FixedOffset(Key,3),attachSystem::ContainedComp(),
-  steelCell(0),voidCell(0)
+  attachSystem::FixedRotate(Key,3),
+  attachSystem::ContainedComp(),
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Key to use
@@ -76,12 +78,12 @@ t1CylVessel::t1CylVessel(const std::string& Key)  :
 {}
 
 t1CylVessel::t1CylVessel(const t1CylVessel& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
-  voidYoffset(A.voidYoffset),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
   radius(A.radius),clearance(A.clearance),baseRadius(A.baseRadius),
   topRadius(A.topRadius),wallThick(A.wallThick),
-  height(A.height),wallMat(A.wallMat),ports(A.ports),
-  steelCell(A.steelCell),voidCell(A.voidCell)
+  height(A.height),wallMat(A.wallMat),ports(A.ports)
   /*!
     Copy constructor
     \param A :: t1CylVessel to copy
@@ -98,9 +100,9 @@ t1CylVessel::operator=(const t1CylVessel& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      voidYoffset=A.voidYoffset;
+      attachSystem::CellMap::operator=(A);
       radius=A.radius;
       clearance=A.clearance;
       baseRadius=A.baseRadius;
@@ -109,8 +111,6 @@ t1CylVessel::operator=(const t1CylVessel& A)
       height=A.height;
       wallMat=A.wallMat;
       ports=A.ports;
-      steelCell=A.steelCell;
-      voidCell=A.voidCell;
     }
   return *this;
 }
@@ -130,9 +130,7 @@ t1CylVessel::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("t1CylVessel","populate");
 
-  FixedOffset::populate(Control);
-  voidYoffset=Control.EvalVar<double>("voidYoffset");
-  yStep=voidYoffset;
+  FixedRotate::populate(Control);
   radius=Control.EvalVar<double>(keyName+"Radius");   
   clearance=Control.EvalVar<double>(keyName+"Clearance");   
   height=Control.EvalVar<double>(keyName+"Height");   
@@ -192,32 +190,31 @@ t1CylVessel::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("t1CylVessel","createObjects");
   
-  std::string Out;
+  HeadRule HR;
   // Inner voids
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "-7 ((-8 -5) : (-9 6) : (5 -6)) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  voidCell=cellIndex-1;
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-7 ((-8 -5) : (-9 6) : (5 -6))");
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
   
   // Steel layers [in components]
-  Out=ModelSupport::getComposite(SMap,buildIndex, "5 -6 -17 7 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
-  steelCell=cellIndex-1;
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -17 7");
+  makeCell("Steel",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex, " -19 9 6 -17 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,buildIndex, " -18 8 -5 -17 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-19 9 6 -17");
+  System.addCell(cellIndex++,wallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-18 8 -5 -17");
+  System.addCell(cellIndex++,wallMat,0.0,HR);
 
   // clearance layer
-  Out=ModelSupport::getComposite(SMap,buildIndex, "(5:-18) (-6:-19) -27 17 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(5:-18) (-6:-19) -27 17");
+  System.addCell(cellIndex++,0,0.0,HR);
   
   // Outer Boundary : 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "-27 ((-18 -5) : (-19 6) : (5 -6)) ");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule
+       (SMap,buildIndex,"-27 ((-18 -5) : (-19 6) : (5 -6))");
+  addOuterSurf(HR);
   
   return;
 }
@@ -270,8 +267,8 @@ t1CylVessel::createWindows(Simulation& System)
   // CREATE OBJECTS
   for(constructSystem::Window& wItem : ports)
     {
-      wItem.setBaseCell(steelCell);
-      wItem.addInsertCell(steelCell);
+      wItem.setBaseCell(getCell("Steel"));
+      wItem.addInsertCell(getCell("Steel"));
       wItem.createAll(System,*this,0);
     }
   return;

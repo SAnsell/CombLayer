@@ -240,7 +240,7 @@ t1Reflector::createLinks()
 HeadRule
 t1Reflector::getHeadRule(const std::string& surfList) const
   /*!
-    Exposes local version of getComposite
+    Exposes local version of getHeadRule
     \param surfList :: surface list
     \return HEadRule 
   */
