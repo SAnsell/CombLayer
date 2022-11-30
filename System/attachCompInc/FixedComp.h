@@ -244,7 +244,7 @@ class FixedComp
   HeadRule getCommonRule(const std::string&) const;
   HeadRule getCommonRule(const long int) const;
   
-  size_t findLinkAxis(const Geometry::Vec3D&) const;
+  long int findLinkAxis(const Geometry::Vec3D&) const;
 
   /// access next cell if need
   int nextCell() { return cellIndex++; }

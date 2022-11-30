@@ -161,16 +161,16 @@ AreaPlate::createObjects(Simulation& System)
 	{
 	  const std::string JStr(std::to_string(j));
 	  HR=ModelSupport::getHeadRule
-	    (SMap,buildIndex,BWI,BHI,"1 -2 3M -13M 5N -15N ");
+	    (SMap,buildIndex,BWI,BHI,"1 -2 3M -13M 5N -15N");
 	  makeCell("DetCell"+IStr+"x"+JStr,
-		   System,cellIndex++,mainMat,0.0,Out);
+		   System,cellIndex++,mainMat,0.0,HR);
 	  BHI+=10;
 	}
       BWI+=10;
     }
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,BWI,BHI,"1 -2 103 105 -3M -5N ");
+    (SMap,buildIndex,BWI,BHI,"1 -2 103 105 -3M -5N");
   addOuterSurf(HR);
 
 

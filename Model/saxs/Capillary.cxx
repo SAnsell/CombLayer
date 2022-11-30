@@ -65,7 +65,7 @@ namespace saxsSystem
 {
 
 Capillary::Capillary(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap()
@@ -90,7 +90,7 @@ Capillary::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("Capillary","populate");
   
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   // Void + Fe special:
   radius=Control.EvalVar<double>(keyName+"Radius");

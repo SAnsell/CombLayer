@@ -6,10 +6,13 @@ nValid=1000
 #segments=$(for i in {40..49}; do echo -n "Segment$i "; done)
 segments=All
 
-./maxiv --noLengthCheck --defaultConfig Linac ${segments} --validAll --validCheck $nValid AA || exit 
 
 parallel --halt now,fail=1 "./maxiv --defaultConfig Single {} --validAll --validCheck $nValid AA" ::: \
    BALDER COSAXS DANMAX FORMAX FLEXPES MICROMAX SOFTIMAX SPECIES MAXPEEM || exit
+
+
+./maxiv --noLengthCheck --defaultConfig Linac ${segments} --validAll --validCheck $nValid AA || exit 
+
 
 ./maxiv --noLengthCheck --defaultConfig Linac ${segments} -validAll --validCheck ${nValid} AA || exit
 
@@ -17,7 +20,7 @@ parallel --halt now,fail=1 "./maxiv --defaultConfig Single {} --validAll --valid
 
 ./t1Real -validAll --validCheck ${nValid} AA || exit
 ./reactor -validAll --validCheck 100 AA || exit
-
+./saxs -validAll --validCheck ${nValid} AA || exit
 ./ess -validAll --validCheck ${nValid} AA || exit 
 
 parallel --halt now,fail=1 "./ess --defaultConfig Single {} --validAll --validCheck $nValid AA" ::: \

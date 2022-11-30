@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/DetectorChamber.h
+ * File:   nnbarInc/DetectorChamber.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,14 +36,13 @@ namespace essSystem
 */
 
 class DetectorChamber :
-  public attachSystem::FixedRotateGroup,
-  public attachSystem::ContainedComp,
-  public attachSystem::CellMap
+    public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
+    public attachSystem::CellMap
   
 {
  private:
   
-
   double voidHeight;            ///< void height [top only]
   double voidWidth;             ///< void width [total]
   double voidDepth;             ///< void depth [low only]
@@ -67,7 +66,6 @@ class DetectorChamber :
   int concMat;                ///< Second layer material
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();

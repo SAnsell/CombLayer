@@ -500,7 +500,7 @@ opticsVariables(FuncDataBase& Control,
   Control.addVariable(opticsName+"BeamStopWidth",4.0);
   Control.addVariable(opticsName+"BeamStopHeight",3.2);
   Control.addVariable(opticsName+"BeamStopDepth",6.0);
-  Control.addVariable(opticsName+"BeamStopDefMat","Tungsten");
+  Control.addVariable(opticsName+"BeamStopMat","Tungsten");
 
   
   // SLITS

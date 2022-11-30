@@ -52,7 +52,7 @@
 #include "Simulation.h"
 #include "SimInput.h"
 #include "Volumes.h"
-#include "variableSetup.h"
+#include "delftVariableSetup.h"
 
 #include "makeDelft.h"
 

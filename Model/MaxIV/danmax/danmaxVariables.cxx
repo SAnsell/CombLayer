@@ -45,7 +45,6 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
-#include "variableSetup.h"
 #include "maxivVariables.h"
 
 #include "CFFlanges.h"

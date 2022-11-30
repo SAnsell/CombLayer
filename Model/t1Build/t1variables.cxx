@@ -40,7 +40,7 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
-#include "variableSetup.h"
+#include "ralVariableSetup.h"
 
 namespace setVariable
 {

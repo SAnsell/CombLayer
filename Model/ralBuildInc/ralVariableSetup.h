@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   buildInc/variableSetup.h
+ * File:   ralBuildInc/ralVariableSetup.h
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef variableSetup_h
-#define variableSetup_h
+#ifndef ralVariableSetup_h
+#define ralVariableSetup_h
 
 
 namespace mainSystem
@@ -30,29 +30,6 @@ namespace mainSystem
 
 namespace setVariable
 {
-
-  void BilbauVariables(FuncDataBase&);
-  void BNCTVariables(FuncDataBase&);
-  void ChipVariables(FuncDataBase&);
-  void CuVariables(FuncDataBase&);
-  void D4CModel(FuncDataBase&);
-  void DelftModel(FuncDataBase&);
-  void EssVariables(FuncDataBase&,const std::set<std::string>&);
-  void EssLinacVariables(FuncDataBase&);
-  void EssPipeVariables(FuncDataBase&);
-  void EPBVariables(FuncDataBase&);
-  void ExampleVariables(FuncDataBase&,const std::string&);
-  void FilterVariables(FuncDataBase&);
-  void gammaVariables(FuncDataBase&);
-  void LensModel(FuncDataBase&);
-  void MuonVariables(FuncDataBase&);
-  void PipeVariables(FuncDataBase&);
-  void PhotonVariables(FuncDataBase&);
-  void SAXSModel(FuncDataBase&);
-  void SinbadVariables(FuncDataBase&);
-  void SingleItemVariables(FuncDataBase&);
-  void SNSVariables(FuncDataBase&);
-
   void RefBolts(FuncDataBase&);
 
 
@@ -77,11 +54,6 @@ namespace setVariable
   void TS2model(FuncDataBase&);
   void TS3model(FuncDataBase&);
   void ZoomVariables(const mainSystem::inputParam&,FuncDataBase&);
-
-  void DelftCoreType(mainSystem::inputParam&,FuncDataBase&);
-
-  void siSimulation(FuncDataBase&);
-
 }
 
 #endif

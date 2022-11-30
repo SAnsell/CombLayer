@@ -44,7 +44,7 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-#include "variableSetup.h"
+#include "ralVariableSetup.h"
 #include "MainProcess.h"
 
 namespace mainSystem

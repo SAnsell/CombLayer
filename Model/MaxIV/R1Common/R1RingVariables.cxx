@@ -197,19 +197,19 @@ electronCutVariables(FuncDataBase& Control,
   Control.addVariable(frontKey+"ECutDiskYStep",2.0);
   Control.addVariable(frontKey+"ECutDiskLength",0.1);
   Control.addVariable(frontKey+"ECutDiskRadius",0.11);
-  Control.addVariable(frontKey+"ECutDiskDefMat","H2Gas#0.1");
+  Control.addVariable(frontKey+"ECutDiskMat","H2Gas#0.1");
 
   Control.addVariable(frontKey+"ECutMagDiskYStep",2.0);
   Control.addVariable(frontKey+"ECutMagDiskDepth",0.1);
   Control.addVariable(frontKey+"ECutMagDiskWidth",4.6);
   Control.addVariable(frontKey+"ECutMagDiskHeight",1.8);
-  Control.addVariable(frontKey+"ECutMagDiskDefMat","H2Gas#0.1");
+  Control.addVariable(frontKey+"ECutMagDiskMat","H2Gas#0.1");
 
   Control.addVariable(frontKey+"ECutWallDiskYStep",20.0);
   Control.addVariable(frontKey+"ECutWallDiskDepth",0.1);
   Control.addVariable(frontKey+"ECutWallDiskWidth",20.0);
   Control.addVariable(frontKey+"ECutWallDiskHeight",20.0);
-  Control.addVariable(frontKey+"ECutWallDiskDefMat","H2Gas#0.1");
+  Control.addVariable(frontKey+"ECutWallDiskMat","H2Gas#0.1");
 
   return;
 }
@@ -540,7 +540,7 @@ createR1Shielding(FuncDataBase& Control,
   Control.addVariable(outBaseKey+"Width",340.0);
   Control.addVariable(outBaseKey+"Depth",5.0);
   Control.addVariable(outBaseKey+"Height",50.0);
-  Control.addVariable(outBaseKey+"DefMat","Stainless304");
+  Control.addVariable(outBaseKey+"Mat","Stainless304");
   
   // Free standing Shield block:
   Control.addVariable(preName+"NFreeShield",wallUnits.size());
@@ -563,7 +563,7 @@ createR1Shielding(FuncDataBase& Control,
   Control.addVariable(baseKey+"Width",14.0);
   Control.addVariable(baseKey+"Depth",340.0);
   Control.addVariable(baseKey+"Height",24.0);
-  Control.addVariable(baseKey+"DefMat","Stainless304");
+  Control.addVariable(baseKey+"Mat","Stainless304");
 
   // Beam-beamline version
 

@@ -457,14 +457,14 @@ R3FrontEndVariables(FuncDataBase& Control,
   Control.addVariable(frontKey+"ECutDiskYStep",5.0);
   Control.addVariable(frontKey+"ECutDiskLength",0.1);
   Control.addVariable(frontKey+"ECutDiskRadius",1.0);
-  Control.addVariable(frontKey+"ECutDiskDefMat","H2Gas#0.1");
+  Control.addVariable(frontKey+"ECutDiskMat","H2Gas#0.1");
   
   Control.addVariable(frontKey+"ECutMagDiskYStep",2.0);
   Control.addVariable(frontKey+"ECutMagDiskLength",0.1);
   // note: CF40::innerRadius is some complex template type 
   Control.addVariable
     (frontKey+"ECutMagDiskRadius",static_cast<double>(CF25::innerRadius));
-  Control.addVariable(frontKey+"ECutMagDiskDefMat","H2Gas#0.1");
+  Control.addVariable(frontKey+"ECutMagDiskMat","H2Gas#0.1");
 
   // note : reversed becaues using fixed FM
   BellowGen.setCF<setVariable::CF40>();

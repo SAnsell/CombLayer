@@ -63,9 +63,10 @@ namespace insertSystem
 {
 
 insertObject::insertObject(const std::string& Key)  :
-  attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,6),
-  attachSystem::CellMap(),attachSystem::SurfMap(),
+  attachSystem::ContainedComp(),
+  attachSystem::CellMap(),
+  attachSystem::SurfMap(),
   attachSystem::FrontBackCut(),
   populated(0),defMat(0),delayInsert(0)
   /*!
@@ -140,7 +141,7 @@ insertObject::populate(const FuncDataBase& Control)
     {
       FixedRotate::populate(baseName,Control);      
       defMat=ModelSupport::EvalMat<int>
-	(Control,keyName+"DefMat",baseName+"DefMat");
+	(Control,keyName+"Mat",baseName+"Mat");
       populated=1;
     }
   return;

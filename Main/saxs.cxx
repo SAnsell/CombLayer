@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   Main/pipe.cxx
+ * File:   Main/saxs.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
  *
@@ -32,6 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <memory>
+#include <array>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -52,27 +53,32 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "Volumes.h"
-#include "pipeVariableSetup.h"
-#include "makePipe.h"
+#include "saxsVariableSetup.h"
+#include "World.h"
+#include "DefUnitsSAXS.h"
 
-///\cond STATIC
+#include "makeSAXS.h"
+
+class SimMonte;
 namespace ELog 
 {
-  ELog::OutputLog<EReport> EM;
-  ELog::OutputLog<FileReport> FM("Spectrum.log");
+  ELog::OutputLog<EReport> EM;      
   ELog::OutputLog<FileReport> RN("Renumber.txt");   ///< Renumber
   ELog::OutputLog<StreamReport> CellM;
 }
-///\endcond STATIC
 
 int 
 main(int argc,char* argv[])
 {
   int exitFlag(0);                // Value on exit
-  ELog::RegMethod RControl("","main");
+  // For output stream
+  ELog::RegMethod RControl("saxs","main");
   mainSystem::activateLogging(RControl);
-  std::string Oname;
+  
+  // For output stream
   std::vector<std::string> Names;  
+  std::map<std::string,std::string> Values;  
+  std::string Oname;
 
   Simulation* SimPtr(0);
   try
@@ -84,18 +90,20 @@ main(int argc,char* argv[])
 
       SimPtr=createSimulation(IParam,Names,Oname);
       if (!SimPtr) return -1;
-      
-      setVariable::PipeVariables(SimPtr->getDataBase());
+
+      // The big variable setting
+      mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
+      setVariable::SAXSModel(SimPtr->getDataBase()); 
 
       InputModifications(SimPtr,IParam,Names);
       mainSystem::setMaterialsDataBase(IParam);
-      
-      pipeSystem::makePipe pipeObj;
-      pipeObj.build(SimPtr,IParam);
-      
-      mainSystem::buildFullSimulation(SimPtr,IParam,Oname);      
+
+      saxsSystem::makeSAXS dObj; 
+      dObj.build(*SimPtr,IParam);
+
+      mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
-      
+
       ModelSupport::calcVolumes(SimPtr,IParam);
       SimPtr->objectGroups::write("ObjectRegister.txt");
     }
@@ -107,18 +115,20 @@ main(int argc,char* argv[])
     }
   catch (ColErr::ExBase& A)
     {
-      ELog::EM<<"EXCEPTION FAILURE :: "
+      ELog::EM<<"\nEXCEPTION FAILURE :: "
 	      <<A.what()<<ELog::endCrit;
       exitFlag= -1;
     }
-  catch (...)
-    {
-      ELog::EM<<"GENERAL EXCEPTION"<<ELog::endCrit;
-      exitFlag= -3;
-    }
 
-  delete SimPtr;
+  // EXIT
+  
+  delete SimPtr; 
   ModelSupport::surfIndex::Instance().reset();
-
   return exitFlag;
+  
+  return 0;
 }
+
+
+
+

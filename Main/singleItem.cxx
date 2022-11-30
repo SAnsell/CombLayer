@@ -52,7 +52,7 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "Volumes.h"
-#include "variableSetup.h"
+#include "singleVariableSetup.h"
 #include "DefUnitsESS.h"
 #include "makeSingleItem.h"
 

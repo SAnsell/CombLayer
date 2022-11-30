@@ -1983,7 +1983,7 @@ FixedComp::setExit(const Geometry::Vec3D& C,
   return;
 }
 
-size_t
+long int
 FixedComp::findLinkAxis(const Geometry::Vec3D& AX) const
   /*!
     Determine the closest direciton to the given axis
@@ -1993,14 +1993,14 @@ FixedComp::findLinkAxis(const Geometry::Vec3D& AX) const
 {
   ELog::RegMethod RegA("FixedComp","findLinkAxis");
 
-  size_t outIndex(0);
+  long int outIndex(0);
   double maxValue(-1.0);  
   for(size_t i=0;i<LU.size();i++)
     {
       const double MX=AX.dotProd(LU[i].getAxis());
       if (MX>maxValue)
 	{
-	  outIndex=i;
+	  outIndex=static_cast<long int>(i+1);
 	  maxValue=MX;
 	}
     }
