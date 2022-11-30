@@ -97,6 +97,8 @@ class SurfMap : public BaseMap
     getSurfPtr(const std::string&,const size_t =0) const;
   template<typename T>
     T* realPtr(const std::string&,const size_t =0) const;
+  template<typename T>
+  T* realPtrThrow(const std::string&,const std::string&,const size_t =0) const;
   
   HeadRule getSurfRules(const std::string&) const;
   HeadRule getSurfRule(const std::string&,const size_t =0) const;

@@ -175,7 +175,6 @@ makeSingleItem::makeSingleItem()
  */
 {}
 
-
 makeSingleItem::~makeSingleItem()
   /*!
     Destructor

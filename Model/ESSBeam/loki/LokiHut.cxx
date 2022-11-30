@@ -3,7 +3,7 @@
  
  * File:   loki/LokiHut.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -56,8 +54,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -68,8 +65,9 @@ namespace essSystem
 {
 
 LokiHut::LokiHut(const std::string& Key) : 
-  attachSystem::FixedOffsetGroup(Key,"Inner",6,"Outer",6),
-  attachSystem::ContainedComp(),attachSystem::CellMap()
+  attachSystem::FixedRotate(Key,12),
+  attachSystem::ContainedComp(),
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -77,7 +75,7 @@ LokiHut::LokiHut(const std::string& Key) :
 {}
 
 LokiHut::LokiHut(const LokiHut& A) : 
-  attachSystem::FixedOffsetGroup(A),
+  attachSystem::FixedRotate(A),
   attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),  
   voidHeight(A.voidHeight),
@@ -104,7 +102,7 @@ LokiHut::operator=(const LokiHut& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffsetGroup::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       voidHeight=A.voidHeight;
@@ -145,7 +143,7 @@ LokiHut::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("LokiHut","populate");
   
-  FixedOffsetGroup::populate(Control);
+  FixedRotate::populate(Control);
 
   // Void + Fe special:
   voidHeight=Control.EvalVar<double>(keyName+"VoidHeight");
@@ -171,28 +169,6 @@ LokiHut::populate(const FuncDataBase& Control)
   return;
 }
 
-void
-LokiHut::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("LokiHut","createUnitVector");
-
-  // add nosecone + half centre
-  yStep+=voidLength/2.0;
-  attachSystem::FixedComp& Outer=getKey("Outer");
-  attachSystem::FixedComp& Inner=getKey("Inner");
-
-  Outer.createUnitVector(FC,sideIndex);
-  Inner.createUnitVector(FC,sideIndex);
-  applyOffset();
-  setDefault("Inner");
-  return;
-}
 
 void
 LokiHut::createSurfaces()
@@ -253,41 +229,36 @@ LokiHut::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("LokiHut","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  setCell("Void",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "1 -12 13 -14 15 -16 (-1:2:-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
-  setCell("Iron",cellIndex-1);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1 -12 13 -14 15 -16 (-1:2:-3:4:-5:6)");
+  makeCell("Iron",System,cellIndex++,feMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-		 "1 -22 23 -24 25 -26 (12:-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
-  setCell("Conc",cellIndex-1);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1 -22 23 -24 25 -26 (12:-13:14:-15:16)");
+  makeCell("Conc",System,cellIndex++,concMat,0.0,HR);
 
   // Front wall:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -1 13 -14 15 -16 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
-  setCell("FrontWall",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -1 13 -14 15 -16 ");
+  makeCell("FrontWall",System,cellIndex++,feMat,0.0,HR);
 
   // Ring of concrete
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "11 -1 23 -24 25 -26 (-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"11 -1 23 -24 25 -26 (-13:14:-15:16)");
+  makeCell("WallConc",System,cellIndex++,concMat,0.0,HR);
 
   // Front concrete face
-  Out=ModelSupport::getComposite(SMap,buildIndex,"21 -11 23 -24 25 -26 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
-  addCell("FrontWall",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -11 23 -24 25 -26");
+  makeCell("FrontWall",System,cellIndex++,concMat,0.0,HR);
   
   // Exclude:
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 21 -22 23 -24  25 -26 ");
-  addOuterSurf(Out);      
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"21 -22 23 -24  25 -26");
+  addOuterSurf(HR);      
 
   return;
 }
@@ -301,41 +272,37 @@ LokiHut::createLinks()
 {
   ELog::RegMethod RegA("LokiHut","createLinks");
 
-  attachSystem::FixedComp& innerFC=FixedGroup::getKey("Inner");
-  attachSystem::FixedComp& outerFC=FixedGroup::getKey("Outer");
-
   // INNER VOID
-  innerFC.setConnect(0,Origin-Y*(voidLength/2.0),-Y);
-  innerFC.setConnect(1,Origin+Y*(voidLength/2.0),Y);
-  innerFC.setConnect(2,Origin-X*(voidWidth/2.0),-X);
-  innerFC.setConnect(3,Origin+X*(voidWidth/2.0),X);
-  innerFC.setConnect(4,Origin-Z*voidDepth,-Z);
-  innerFC.setConnect(5,Origin+Z*voidHeight,Z);  
+  setConnect(0,Origin-Y*(voidLength/2.0),-Y);
+  setConnect(1,Origin+Y*(voidLength/2.0),Y);
+  setConnect(2,Origin-X*(voidWidth/2.0),-X);
+  setConnect(3,Origin+X*(voidWidth/2.0),X);
+  setConnect(4,Origin-Z*voidDepth,-Z);
+  setConnect(5,Origin+Z*voidHeight,Z);  
 
-  innerFC.setLinkSurf(0,-SMap.realSurf(buildIndex+11));
-  innerFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));
-  innerFC.setLinkSurf(2,-SMap.realSurf(buildIndex+3));
-  innerFC.setLinkSurf(3,SMap.realSurf(buildIndex+4));
-  innerFC.setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-  innerFC.setLinkSurf(5,SMap.realSurf(buildIndex+6));
+  setLinkSurf(0,-SMap.realSurf(buildIndex+11));
+  setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+  setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   
     // OUTER VOID
-  outerFC.setConnect(0,Origin-Y*(feFront+concFront+voidLength/2.0),-Y);
-  outerFC.setConnect(1,Origin+Y*(concBack+feBack+voidLength/2.0),Y);
-  outerFC.setConnect(2,Origin-X*(concLeftWall+feLeftWall+voidWidth/2.0),-X);
-  outerFC.setConnect(3,Origin+X*(concRightWall+feRightWall+voidWidth/2.0),X);
-  outerFC.setConnect(4,Origin-Z*(concFloor+feFloor+voidDepth),-Z);
-  outerFC.setConnect(5,Origin+Z*(concRoof+feRoof+voidHeight),Z);  
+  setConnect(6,Origin-Y*(feFront+concFront+voidLength/2.0),-Y);
+  setConnect(7,Origin+Y*(concBack+feBack+voidLength/2.0),Y);
+  setConnect(8,Origin-X*(concLeftWall+feLeftWall+voidWidth/2.0),-X);
+  setConnect(9,Origin+X*(concRightWall+feRightWall+voidWidth/2.0),X);
+  setConnect(10,Origin-Z*(concFloor+feFloor+voidDepth),-Z);
+  setConnect(11,Origin+Z*(concRoof+feRoof+voidHeight),Z);  
 
-  outerFC.setLinkSurf(0,-SMap.realSurf(buildIndex+21));
-  outerFC.setLinkSurf(1,SMap.realSurf(buildIndex+22));
-  outerFC.setLinkSurf(2,-SMap.realSurf(buildIndex+23));
-  outerFC.setLinkSurf(3,SMap.realSurf(buildIndex+24));
-  outerFC.setLinkSurf(4,-SMap.realSurf(buildIndex+25));
-  outerFC.setLinkSurf(5,SMap.realSurf(buildIndex+26));
+  setLinkSurf(6,-SMap.realSurf(buildIndex+21));
+  setLinkSurf(7,SMap.realSurf(buildIndex+22));
+  setLinkSurf(8,-SMap.realSurf(buildIndex+23));
+  setLinkSurf(9,SMap.realSurf(buildIndex+24));
+  setLinkSurf(10,-SMap.realSurf(buildIndex+25));
+  setLinkSurf(11,SMap.realSurf(buildIndex+26));
 
-  
   return;
 }
 
@@ -353,7 +320,7 @@ LokiHut::createAll(Simulation& System,
   ELog::RegMethod RegA("LokiHut","createAll(FC)");
 
   populate(System.getDataBase());
-  createUnitVector(FC,FIndex);
+  createCentredUnitVector(FC,FIndex,voidLength/2.0);
   
   createSurfaces();    
   createObjects(System);

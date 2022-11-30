@@ -451,9 +451,6 @@ Curtain::createLinks()
 
   return;
 }
-  
-  
-
 
 void
 Curtain::createAll(Simulation& System,

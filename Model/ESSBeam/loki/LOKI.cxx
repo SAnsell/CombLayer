@@ -482,11 +482,11 @@ LOKI::build(Simulation& System,
   FocusWall->setBack(*BInsert,-2);
   FocusWall->createAll(System,*BInsert,7); 
 
-  ELog::EM<<"Bend Directoin == "<<BendB->getLinkPt(1)
+  ELog::EM<<"Bend Direction == "<<BendB->getLinkPt(1)
 	  <<" :: "<<BendB->getLinkAxis(-1)
 	  <<" :: "<<BendB->getLinkAxis(2)
 	  <<ELog::endDiag;
-  ELog::EM<<"Bend Directoin == "<<FocusWall->getLinkPt(1)
+  ELog::EM<<"Bend Direction == "<<FocusWall->getLinkPt(1)
 	  <<" :: "<<FocusWall->getLinkAxis(-1)
 	  <<" :: "<<FocusWall->getLinkAxis(2)
 	  <<ELog::endDiag;

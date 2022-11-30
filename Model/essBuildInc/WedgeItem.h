@@ -36,8 +36,9 @@ namespace essSystem
 */
 
 class WedgeItem :
+    public attachSystem::FixedRotateUnit,
     public attachSystem::ContainedComp,
-    public attachSystem::FixedRotateUnit
+    public attachSystem::ExternalCut
 {
  private:
 
@@ -58,8 +59,6 @@ class WedgeItem :
   double getFixedXYAngle(const double) const;
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
-
   void createSurfaces(const attachSystem::FixedComp&,const long int);
   void createObjects(Simulation&,const attachSystem::FixedComp&,
 		     const long int,const attachSystem::FixedComp&,
@@ -74,6 +73,7 @@ class WedgeItem :
   virtual ~WedgeItem();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int,
+		 const long int,
 		 const attachSystem::FixedComp&,const long int,
 		 const long int);
   

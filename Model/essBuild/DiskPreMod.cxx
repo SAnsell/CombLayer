@@ -58,11 +58,13 @@
 #include "FixedUnit.h"
 #include "FixedOffset.h"
 #include "FixedOffsetUnit.h"
+#include "FixedRotate.h"
 #include "LayerComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "CylFlowGuide.h"
 #include "OnionCooling.h"
 #include "DiskPreMod.h"
@@ -75,7 +77,8 @@ DiskPreMod::DiskPreMod(const std::string& Key) :
   attachSystem::FixedOffsetUnit(Key,9),
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0),
-  attachSystem::CellMap(),attachSystem::SurfMap(),  
+  attachSystem::CellMap(),
+  attachSystem::SurfMap(),  
   NWidth(0),
   InnerComp(new CylFlowGuide(Key+"FlowGuide")),
   onion(new OnionCooling(Key+"OnionCooling"))
@@ -327,7 +330,7 @@ DiskPreMod::createObjects(Simulation& System)
       HR=ModelSupport::getHeadRule(SMap,SI,"-17 5 -6 7");
       System.addCell(cellIndex++,0,0.0,HR);
       // For exit surface
-      HR=ModelSupport::getHeadRule(SMap,SI," -17 5 -6");
+      HR=ModelSupport::getHeadRule(SMap,SI,"-17 5 -6");
     }
 
   addOuterSurf(HR);
@@ -528,7 +531,6 @@ DiskPreMod::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("DiskPreMod","createAll");
 
-  ELog::EM<<"ASDFSADFSADF"<<ELog::endDiag;
   populate(System.getDataBase(),ORad);
   createUnitVector(FC,sideIndex,zRotate);
 
@@ -543,7 +545,14 @@ DiskPreMod::createAll(Simulation& System,
       if (flowGuideType.find("Onion")!=std::string::npos)
 	onion->createAll(System,*this,0);
       else
-        InnerComp->createAll(System,*this,7);
+	{
+	  InnerComp->copyCells(*this,"Inner");
+	  InnerComp->setSurf("InnerCyl",SMap.realSurf(buildIndex+7));
+	  InnerComp->setCutSurf
+	    ("TopBase",ModelSupport::getHeadRule(SMap,buildIndex,"5 -6"));
+	  InnerComp->setCutSurf("InnerCyl",HeadRule(SMap,buildIndex,-7));
+	  InnerComp->createAll(System,*this,0);
+	}
     }
 
   return;

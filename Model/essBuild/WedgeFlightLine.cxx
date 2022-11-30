@@ -61,6 +61,7 @@
 #include "FixedRotateUnit.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "BasicFlightLine.h"
@@ -152,7 +153,7 @@ WedgeFlightLine::buildWedges(Simulation& System,
     {
       std::shared_ptr<WedgeItem> wedgeObj(new WedgeItem(keyName+"Wedge",i+1));
       OR.addObject(wedgeObj);
-      wedgeObj->createAll(System,outerFC,outerIndex,*this,-11,-12);
+      wedgeObj->createAll(System,outerFC,0,outerIndex,*this,-11,-12);
       wedges.push_back(wedgeObj);
     }
 
