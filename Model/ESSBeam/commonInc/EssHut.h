@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   lokiInc/LokiHut.h
+ * File:   commonInc/EssHut.h
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef essSystem_LokiHut_h
-#define essSystem_LokiHut_h
+#ifndef essSystem_EssHut_h
+#define essSystem_EssHut_h
 
 class Simulation;
 
@@ -28,21 +28,20 @@ namespace essSystem
 {
   
 /*!
-  \class LokiHut
+  \class EssHut
   \version 1.0
   \author S. Ansell
   \date January 2015
-  \brief LokiHut unit  
+  \brief EssHut unit  
 */
 
-class LokiHut :
-  public attachSystem::FixedRotate,
-  public attachSystem::ContainedComp,
-  public attachSystem::CellMap
+class EssHut :
+    public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
+    public attachSystem::CellMap
   
 {
  private:
-  
 
   double voidHeight;            ///< void height [top only]
   double voidWidth;             ///< void width [total]
@@ -73,10 +72,10 @@ class LokiHut :
 
  public:
 
-  LokiHut(const std::string&);
-  LokiHut(const LokiHut&);
-  LokiHut& operator=(const LokiHut&);
-  virtual ~LokiHut();
+  EssHut(const std::string&);
+  EssHut(const EssHut&);
+  EssHut& operator=(const EssHut&);
+  virtual ~EssHut();
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

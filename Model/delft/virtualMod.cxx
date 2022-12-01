@@ -41,6 +41,8 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "ContainedComp.h"
 #include "virtualMod.h"
 
@@ -48,7 +50,9 @@ namespace delftSystem
 {
 
 virtualMod::virtualMod(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6)
+  attachSystem::FixedOffset(Key,6),
+  attachSystem::ContainedComp(),
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -56,7 +60,9 @@ virtualMod::virtualMod(const std::string& Key)  :
 {}
 
 virtualMod::virtualMod(const virtualMod& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A)
+  attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A)
   /*!
     Copy constructor
     \param A :: virtualMod to copy
@@ -73,8 +79,9 @@ virtualMod::operator=(const virtualMod& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
     }
   return *this;
 }

@@ -88,7 +88,7 @@
 #include "PipeCollimator.h"
 
 #include "CompBInsert.h"
-#include "LokiHut.h"
+#include "EssHut.h"
 #include "VacTank.h"
 
 #include "LOKI.h"
@@ -136,7 +136,7 @@ LOKI::LOKI(const std::string& keyN) :
   CollB(new constructSystem::PipeCollimator(newName+"CollB")),
   AppB(new constructSystem::Aperture(newName+"AppB")),
 
-  Cave(new LokiHut(newName+"Cave")),
+  Cave(new EssHut(newName+"Cave")),
   VPipeOutC(new constructSystem::VacuumPipe(newName+"PipeOutC")),
   FocusOutC(new beamlineSystem::PlateUnit(newName+"FOutC")),
   VTank(new VacTank(newName+"VTank"))

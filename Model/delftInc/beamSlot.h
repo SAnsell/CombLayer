@@ -35,8 +35,8 @@ namespace delftSystem
   */
   
 class beamSlot :
-    public attachSystem::ContainedComp,
     public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
     public attachSystem::ExternalCut  
 {
  private:

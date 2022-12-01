@@ -54,7 +54,7 @@ namespace essSystem
 {  
   class CompBInsert;
   class GuideItem;
-  class DreamHut;
+  class EssHut;
   class DetectorTank;
 
   /*!
@@ -146,7 +146,7 @@ class DREAM : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::PlateUnit> FocusOutC;  
 
   /// Cave 
-  std::shared_ptr<DreamHut> Cave;
+  std::shared_ptr<EssHut> Cave;
 
   /// Pipe entering cave
   std::shared_ptr<constructSystem::VacuumPipe> VPipeCaveA;

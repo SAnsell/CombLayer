@@ -3,7 +3,7 @@
  
  * File:   delft/PressureVessel.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -56,7 +54,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
@@ -66,7 +64,8 @@ namespace delftSystem
 {
 
 PressureVessel::PressureVessel(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,3),
+  attachSystem::FixedRotate(Key,3),
+  attachSystem::ContainedComp(),
   attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -75,7 +74,8 @@ PressureVessel::PressureVessel(const std::string& Key)  :
 {}
 
 PressureVessel::PressureVessel(const PressureVessel& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
   frontLength(A.frontLength),frontRadius(A.frontRadius),
   frontWall(A.frontWall),backLength(A.backLength),
@@ -98,8 +98,8 @@ PressureVessel::operator=(const PressureVessel& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       frontLength=A.frontLength;
       frontRadius=A.frontRadius;
@@ -130,8 +130,7 @@ PressureVessel::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("PressureVessel","populate");
 
-  attachSystem::FixedOffset::populate(Control);
-
+  attachSystem::FixedRotate::populate(Control);
 
   reshiftOrigin=Control.EvalDefVar<int>(keyName+"ReshiftOrigin",0);
   frontLength=Control.EvalVar<double>(keyName+"FrontLength");
@@ -147,28 +146,6 @@ PressureVessel::populate(const FuncDataBase& Control)
   
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-
-  return;
-}
-  
-
-void
-PressureVessel::createUnitVector(const attachSystem::FixedComp& FC,
-			   const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: FixedComp to use as basis set
-    \param sideIndex :: link point
-  */
-{
-  ELog::RegMethod RegA("PressureVessel","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  if (reshiftOrigin>0)  // back:
-    yStep-=backLength+backRadius+backWall;
-  else if (reshiftOrigin<0)  // front:
-    yStep+=frontLength+frontRadius+frontWall;
-  applyOffset();
 
   return;
 }
@@ -209,20 +186,20 @@ PressureVessel::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("PressureVessel","createObjects");
   
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex," (-18:1) (-118:-2) -17 ");
-  addOuterSurf(Out);
+  HeadRule HR;
 
   // Main void
-  Out=ModelSupport::getComposite(SMap,buildIndex," (-8:1) (-108:-2) -7 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  addCell("Void",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(-8:1) (-108:-2) -7");
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
   
   // Main Wall
-  Out=ModelSupport::getComposite(SMap,buildIndex," (-18:1) (-118:-2) -17 "
-				 " (7 : (-1 8) : (2 108)) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
- 
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"(-18:1) (-118:-2) -17 (7 : (-1 8) : (2 108))");
+  System.addCell(cellIndex++,wallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(-18:1) (-118:-2) -17");
+  addOuterSurf(HR);
+  
   return;
 }
 
@@ -255,7 +232,7 @@ PressureVessel::createLinks()
 void
 PressureVessel::createAll(Simulation& System,
 			  const attachSystem::FixedComp& FC,
-		    const long int sideIndex)
+			  const long int sideIndex)
   /*!
     Global creation of the vac-vessel
     \param System :: Simulation to add vessel to
@@ -264,9 +241,14 @@ PressureVessel::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("PressureVessel","createAll");
-  populate(System.getDataBase());
 
-  createUnitVector(FC,sideIndex);
+  
+  populate(System.getDataBase());
+  const double yUnit=(reshiftOrigin>0) ? 
+    -backLength+backRadius+backWall : 
+    frontLength+frontRadius+frontWall;
+  
+  createCentredUnitVector(FC,sideIndex,yUnit);
   createSurfaces();
   createObjects(System);
   createLinks();

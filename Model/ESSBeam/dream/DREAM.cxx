@@ -78,7 +78,7 @@
 #include "Bunker.h"
 #include "CompBInsert.h"
 #include "SingleChopper.h"
-#include "DreamHut.h"
+#include "EssHut.h"
 #include "LineShield.h"
 #include "PipeCollimator.h"
 
@@ -147,7 +147,7 @@ DREAM::DREAM(const std::string& keyName) :
   VPipeOutC(new constructSystem::VacuumPipe(newName+"PipeOutC")),
   FocusOutC(new beamlineSystem::PlateUnit(newName+"FOutC")),
 
-  Cave(new DreamHut(newName+"Cave")),
+  Cave(new EssHut(newName+"Cave")),
 
   VPipeCaveA(new constructSystem::VacuumPipe(newName+"PipeCaveA")),
   FocusCaveA(new beamlineSystem::PlateUnit(newName+"FCaveA")),

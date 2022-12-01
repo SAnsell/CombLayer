@@ -3,7 +3,7 @@
  
  * File:   test/testFunction.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -500,17 +500,25 @@ testFunction::testList()
   Control.addVariable<int>("fred2alpha",1);
   //
   const int outA=Control.EvalVar<int>("fred2alpha");
+
   Control.pushVariable<int>("fred2alpha",2);
 
   std::vector<std::string> keys = Control.getKeys();
 
-  const int out=Control.EvalVar<int>("fred2alpha");
+  const int outB=Control.EvalVar<int>("fred2alpha");
 
-  std::vector<int> OutVec=Control.EvalVector<int>("fred2alpha");
-  for(const int CN : OutVec)
-    ELog::EM<<"V == "<<CN<<ELog::endDiag;
+  
+  const std::vector<int> OutVec=Control.EvalVector<int>("fred2alpha");
+  const std::string OutStr=Control.EvalVarString("fred2alpha");
 
-  std::string OutStr=Control.EvalVarString("fred2alpha");
-  ELog::EM<<"String == "<<OutStr<<ELog::endDiag;
+  if (OutStr!="1 2 " || OutVec.size()!=2 ||
+      OutVec[0]!=1 || OutVec[1]!=2 ||
+      outA!=outB || outA!=1)
+    {
+      ELog::EM<<"Str = "<<OutStr<<" = "<<ELog::endDiag;
+      for(const int CN : OutVec)
+	ELog::EM<<"V == "<<CN<<ELog::endDiag;
+      return -1;
+    }
   return 0;
 }

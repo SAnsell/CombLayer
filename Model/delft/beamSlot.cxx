@@ -63,8 +63,8 @@ namespace delftSystem
 {
 
 beamSlot::beamSlot(const std::string& Key,const int SN)  :
-  attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key+std::to_string(SN),6),
+  attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   baseName(Key)
   /*!

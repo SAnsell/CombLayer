@@ -3,7 +3,7 @@
 
  * File:   essBuild/FaradayCup.cxx
  *
- * Copyright (c) 2004-2019 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,8 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -56,7 +54,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 
 #include "FaradayCup.h"
 
@@ -64,8 +62,8 @@ namespace essSystem
 {
 
 FaradayCup::FaradayCup(const std::string& Key)  :
-  attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6)
+  attachSystem::FixedRotate(Key,6),
+  attachSystem::ContainedComp()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -73,8 +71,8 @@ FaradayCup::FaradayCup(const std::string& Key)  :
 {}
 
 FaradayCup::FaradayCup(const FaradayCup& A) :
+  attachSystem::FixedRotate(A),
   attachSystem::ContainedComp(A),
-  attachSystem::FixedOffset(A),
   active(A.active),
   engActive(A.engActive),
   length(A.length),outerRadius(A.outerRadius),innerRadius(A.innerRadius),
@@ -108,7 +106,7 @@ FaradayCup::operator=(const FaradayCup& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       active=A.active;
       engActive=A.engActive;
       length=A.length;
@@ -157,7 +155,7 @@ FaradayCup::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("FaradayCup","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   active=Control.EvalDefVar<int>(keyName+"Active", 1);
   engActive=Control.EvalTail<int>(keyName,"","EngineeringActive");
 
@@ -180,23 +178,6 @@ FaradayCup::populate(const FuncDataBase& Control)
   shieldLength=Control.EvalVar<double>(keyName+"ShieldLength");
   shieldInnerLength=Control.EvalVar<double>(keyName+"ShieldInnerLength");
   shieldMat=ModelSupport::EvalMat<int>(Control,keyName+"ShieldMat");
-
-  return;
-}
-
-void
-FaradayCup::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: object for origin
-    \param sideIndex :: link point for origin
-  */
-{
-  ELog::RegMethod RegA("FaradayCup","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
 
   return;
 }
@@ -245,43 +226,42 @@ FaradayCup::createObjects(Simulation& System)
 
   if (active)
     {
-
-      std::string Out;
+      HeadRule HR;
       // collimator
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1 -11 -27 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -11 -27");
+      System.addCell(cellIndex++,airMat,0.0,HR);
       
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1 -11 27 -17 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -11 27 -17");
+      System.addCell(cellIndex++,wallMat,0.0,HR);
       
       // absorber
-      Out=ModelSupport::getComposite(SMap,buildIndex," 11 -21 -17 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,absMat,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -21 -17");
+      System.addCell(cellIndex++,absMat,0.0,HR);
       
       // base
-      Out=ModelSupport::getComposite(SMap,buildIndex," 21 -31 -7 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -31 -7");
+      System.addCell(cellIndex++,0,0.0,HR);
       
-      Out=ModelSupport::getComposite(SMap,buildIndex," 21 -41 7 -17 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -41 7 -17");
+      System.addCell(cellIndex++,wallMat,0.0,HR);
       
       // collector
-      Out=ModelSupport::getComposite(SMap,buildIndex," 31 -41 -7 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,colMat,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"31 -41 -7");
+      System.addCell(cellIndex++,colMat,0.0,HR);
       
       // back plane
-      Out=ModelSupport::getComposite(SMap,buildIndex," 41 -2 -17 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"41 -2 -17");
+      System.addCell(cellIndex++,wallMat,0.0,HR);
       
       // shielding
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1 -102 -107 (-1:2:17) ");
-      System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -102 -107 (-1:2:17)");
+      System.addCell(cellIndex++,airMat,0.0,HR);
       
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1 -112 -117 (-1:102:107) ");
-      System.addCell(MonteCarlo::Object(cellIndex++,shieldMat,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -112 -117 (-1:102:107)");
+      System.addCell(cellIndex++,shieldMat,0.0,HR);
       
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1 -112 -117 ");
-      addOuterSurf(Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -112 -117");
+      addOuterSurf(HR);
     }
   return;
 }

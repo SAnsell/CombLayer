@@ -54,7 +54,10 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "virtualMod.h"
 #include "delftH2Moderator.h"
 
@@ -319,67 +322,62 @@ delftH2Moderator::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("delftH2Moderator","createObjects");
 
-  std::string Out;  
-
-  std::string BOuter;
-  std::string FOuter;
-  std::string BInner;
-  std::string FInner;
-
   HeadRule HR;
+
+  HeadRule BOuterHR;
+  HeadRule FOuterHR;
+  HeadRule BInnerHR;
+  HeadRule FInnerHR;
+
   if (backDir>0)
     {
-      BOuter=ModelSupport::getComposite(SMap,buildIndex," -21 ");
-      BInner=ModelSupport::getComposite(SMap,buildIndex," -11 ");
+      BOuterHR=HeadRule(SMap,buildIndex,-21);
+      BInnerHR=HeadRule(SMap,buildIndex,-11);
     }
   else if (backDir<0)
     {
-      BOuter=ModelSupport::getComposite(SMap,buildIndex," 1 21 ");
-      BInner=ModelSupport::getComposite(SMap,buildIndex," 1 11 ");
+      BOuterHR=ModelSupport::getHeadRule(SMap,buildIndex,"1 21");
+      BInnerHR=ModelSupport::getHeadRule(SMap,buildIndex,"1 11");
     }
   else
     {
-      BOuter=ModelSupport::getComposite(SMap,buildIndex," 21 ");
-      BInner=ModelSupport::getComposite(SMap,buildIndex," 11 ");
+      BOuterHR=HeadRule(SMap,buildIndex,21);
+      BInnerHR=HeadRule(SMap,buildIndex,11);
     }
-  ELog::EM<<"Bouter == "<<BOuter<<ELog::endTrace;
+  ELog::EM<<"Bouter == "<<BOuterHR<<ELog::endTrace;
 
   if (frontDir>0)
     {
-      FOuter=ModelSupport::getComposite(SMap,buildIndex," -22 ");
-      FInner=ModelSupport::getComposite(SMap,buildIndex," -12 ");
+      FOuterHR=HeadRule(SMap,buildIndex,-22);
+      FInnerHR=HeadRule(SMap,buildIndex,-12);
     }
   else if (frontDir<0)
     {
-      FOuter=ModelSupport::getComposite(SMap,buildIndex," -2 22 ");
-      FInner=ModelSupport::getComposite(SMap,buildIndex," -2 12 ");
+      FOuterHR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 22");
+      FInnerHR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 12");
     }
   else
     {
-      FOuter=ModelSupport::getComposite(SMap,buildIndex," -22 ");
-      FInner=ModelSupport::getComposite(SMap,buildIndex," -12 ");
+      FOuterHR=HeadRule(SMap,buildIndex,-22);
+      FInnerHR=HeadRule(SMap,buildIndex,-12);
     }
       // PLANE:
-  Out=ModelSupport::getComposite(SMap,buildIndex," -13 ");
-  addOuterSurf(Out+FOuter+BOuter);
+  HR=HeadRule(SMap,buildIndex,-13);
+  addOuterSurf(HR*FOuterHR*BOuterHR);
 
   // Hydrogen:
-  Out=ModelSupport::getComposite(SMap,buildIndex," -3 ");
-  Out+=FInner+BInner;
-  
-  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
+  HR=HeadRule(SMap,buildIndex,-3);
+  makeCell("HCell",System,cellIndex++,modMat,modTemp,HR*FInnerHR*BInnerHR);
   HCell=cellIndex-1;
 
   // AL Layers:
   // exclude part first:
-  Out=" ( 3 :";
-  Out+=(frontDir>=0) ? " 12 : " : " -12 : ";
-  Out+=(backDir>=0) ? " 11 )" : " -11 )";
-  Out=ModelSupport::getComposite(SMap,buildIndex,Out);
-
-  Out+=ModelSupport::getComposite(SMap,buildIndex," -13 ");
-  Out+=FOuter+BOuter;
-  System.addCell(cellIndex++,alMat,modTemp,Out);
+  HR=HeadRule(SMap,buildIndex,3);
+  HR+=HeadRule(SMap,buildIndex,(frontDir>=0 ? 12 : -12));
+  HR+=HeadRule(SMap,buildIndex,(backDir>=0 ? 11 : -11));
+	       
+  HR*=HeadRule(SMap,buildIndex,-13);
+  System.addCell(cellIndex++,alMat,modTemp,HR*FOuterHR*BOuterHR);
   return;
 }
 

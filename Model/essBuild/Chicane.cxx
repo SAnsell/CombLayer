@@ -37,8 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -55,11 +53,11 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "SurfMap.h"
 #include "CellMap.h"
-#include "FixedOffset.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "Bunker.h"
@@ -69,7 +67,7 @@ namespace essSystem
 {
 
 Chicane::Chicane(const std::string& Key)  :
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::FrontBackCut()
   /*!
@@ -79,7 +77,7 @@ Chicane::Chicane(const std::string& Key)  :
 {}
 
 Chicane::Chicane(const Chicane& A) : 
-  attachSystem::FixedOffset(A),
+  attachSystem::FixedRotate(A),
   attachSystem::ContainedComp(A),
   attachSystem::FrontBackCut(A)
   /*!
@@ -98,7 +96,7 @@ Chicane::operator=(const Chicane& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
       nBlock=A.nBlock;
@@ -123,7 +121,7 @@ Chicane::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("Chicane","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   
   nBlock=Control.EvalVar<size_t>(keyName+"NBlocks");
   for (size_t i=0;i<nBlock;i++)
@@ -201,13 +199,13 @@ Chicane::createObjects(Simulation& System)
   ELog::RegMethod RegA("Chicane","createObjects");
 
 
-  std::string Out;
+  HeadRule HR;
   int CIndex(buildIndex);
   for(const chicaneUnit& CU : CUnits)
     {
-      Out=ModelSupport::getComposite(SMap,CIndex," 1 -2 3 -4 5 -6 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,CU.mat,0.0,Out));
-      addOuterUnionSurf(Out);
+      HR=ModelSupport::getHeadRule(SMap,CIndex,"1 -2 3 -4 5 -6");
+      System.addCell(cellIndex++,CU.mat,0.0,HR);
+      addOuterUnionSurf(HR);
       CIndex+=100;
     }
   return;
@@ -216,7 +214,6 @@ Chicane::createObjects(Simulation& System)
   
 void
 Chicane::createLinks()
-
   /*!
     Create all the links
   */
@@ -297,7 +294,7 @@ Chicane::createAll(Simulation& System,
   ELog::RegMethod RegA("Chicane","createAll");
 
   populate(System.getDataBase());
-  FixedOffset::createUnitVector(FC,sideIndex);
+  FixedRotate::createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

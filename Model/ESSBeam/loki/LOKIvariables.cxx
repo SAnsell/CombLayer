@@ -99,7 +99,7 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiBlockShutterWidth",38.8);
   Control.addVariable("lokiBlockShutterDepth",40.3);  // cant extend out of shutter region
   Control.addParse<double>("lokiBlockShutterYStep","lokiBlockShutterDepth/2.0");
-  Control.addVariable("lokiBlockShutterDefMat","Stainless304");
+  Control.addVariable("lokiBlockShutterMat","Stainless304");
 
   // Pipe in gamma shield
   PipeGen.generatePipe(Control,"lokiPipeB",43.0);

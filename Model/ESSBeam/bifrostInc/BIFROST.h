@@ -54,7 +54,7 @@ namespace essSystem
   class CompBInsert;
   class GuideItem;
   class DetectorTank;
-  class BifrostHut;
+  class EssHut;
 
   /*!
     \class BIFROST
@@ -181,7 +181,7 @@ class BIFROST : public attachSystem::CopiedComp
   std::array<std::shared_ptr<beamlineSystem::PlateUnit>,4> EllFocus;
 
   /// single disk chopper
-  std::shared_ptr<BifrostHut> Cave;
+  std::shared_ptr<EssHut> Cave;
   /// Enterance hole to cave
   std::shared_ptr<constructSystem::HoleShape> CaveCut;
 

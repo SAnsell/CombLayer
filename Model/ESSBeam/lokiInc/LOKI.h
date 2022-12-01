@@ -55,7 +55,7 @@ namespace constructSystem
 namespace essSystem
 {  
   class GuideItem;
-  class LokiHut;
+  class EssHut;
   class VacTank;
 
   /*!
@@ -143,7 +143,7 @@ class LOKI : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::Aperture> AppB;
 
   /// Cave
-  std::shared_ptr<LokiHut> Cave;
+  std::shared_ptr<EssHut> Cave;
   /// cave entrace vacuum pipe
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutC;
   /// Guide into cave

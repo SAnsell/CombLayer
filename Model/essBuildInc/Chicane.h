@@ -87,7 +87,7 @@ public:
 */
 
 class Chicane :
-    public attachSystem::FixedOffset,
+    public attachSystem::FixedRotate,
     public attachSystem::ContainedComp,
     public attachSystem::FrontBackCut
 {
@@ -97,7 +97,7 @@ class Chicane :
   std::vector<chicaneUnit> CUnits; ///< Chicane units.
 
   void populate(const FuncDataBase&);
-  using FixedOffset::createUnitVector;
+  using FixedRotate::createUnitVector;
   void createUnitVector(const Bunker&,const size_t);
   
   void createSurfaces();

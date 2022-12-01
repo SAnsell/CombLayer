@@ -46,7 +46,6 @@
 #include "SurInter.h"
 #include "Quadratic.h"
 #include "Plane.h"
-#include "Line.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -337,15 +336,7 @@ ReflectRods::calcCentre()
       return;
     }
   topCentre/=cntA;
-  // Note reuse of OutA vector:
-  OutA.clear();
-  Geometry::Line LN(topCentre,Z);
-  if (!LN.intersect(OutA,*baseSurf))
-    {
-      ELog::EM<<"Failed to set base surface"<<ELog::endErr;
-      return;
-    }
-  baseCentre=OutA.front();
+  baseCentre=SurInter::getLinePoint(topCentre,Z,baseSurf);
   
   ELog::EM<<"Centre[T/B] == "<<topCentre<<" : " 
 	  <<baseCentre<<ELog::endDiag;

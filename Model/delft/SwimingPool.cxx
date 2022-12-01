@@ -3,7 +3,7 @@
  
  * File:   delft/SwimingPool.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -56,7 +54,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -66,7 +64,8 @@ namespace delftSystem
 {
 
 SwimingPool::SwimingPool(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,1),
+  attachSystem::FixedRotate(Key,1),
+  attachSystem::ContainedComp(),
   attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -74,8 +73,9 @@ SwimingPool::SwimingPool(const std::string& Key)  :
   */
 {}
 
-SwimingPool::SwimingPool(const SwimingPool& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+SwimingPool::SwimingPool(const SwimingPool& A) :
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
   base(A.base),surface(A.surface),
   waterMat(A.waterMat)
@@ -95,8 +95,8 @@ SwimingPool::operator=(const SwimingPool& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       base=A.base;
       surface=A.surface;
@@ -121,7 +121,7 @@ SwimingPool::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("SwimingPool","populate");
   
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   // First get inner widths:
 
   base=Control.EvalVar<double>(keyName+"Base");
@@ -140,26 +140,6 @@ SwimingPool::populate(const FuncDataBase& Control)
 
   waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
 
-  return;
-}
-  
-void
-SwimingPool::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
-  /*!
-    Create the unit vectors
-    - Y Points towards the beamline
-    - X Across the Face
-    - Z up (towards the target)
-    \param FC :: A Contained FixedComp to use as basis set
-    \param sideIndex :: link point [signed]
-  */
-{
-  ELog::RegMethod RegA("SwimingPool","createUnitVector");
-
-  
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
   return;
 }
 
@@ -233,15 +213,15 @@ SwimingPool::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("SwimingPool","createObjects");
   
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 1 (-2 : (23 -24 -12)) 7 -8 13 -14 "
-				 " (17:3) (-18:-4) 5 -6 ");
+  HeadRule HR;
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				" 1 (-2 : (23 -24 -12)) 7 -8 13 -14 "
+				" (17:3) (-18:-4) 5 -6 ");
 
   //  Out+=RG.getExclude();
-  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
-  addCell("Water",cellIndex-1);
-  addOuterSurf(Out);
+  makeCell("Water",System,cellIndex++,waterMat,0.0,HR);
+
+  addOuterSurf(HR);
   
   return;
 }

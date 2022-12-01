@@ -3,7 +3,7 @@
 
  * File:   essBuildInc/FaradayCup.h
  *
- * Copyright (c) 2004-2017 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,11 +35,11 @@ namespace essSystem
   \brief Faraday Cup - based on SNS design
 */
 
-class FaradayCup : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset
+class FaradayCup : 
+    public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp
 {
  private:
-
 
   int active; ///< On/Off switch
   int engActive;                ///< Engineering active flag
@@ -68,9 +68,6 @@ class FaradayCup : public attachSystem::ContainedComp,
   int shieldMat;                ///< shielding material
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -83,6 +80,7 @@ class FaradayCup : public attachSystem::ContainedComp,
   virtual FaradayCup* clone() const;
   virtual ~FaradayCup();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
 };

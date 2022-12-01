@@ -82,7 +82,7 @@
 #include "ChopperPit.h"
 #include "LineShield.h"
 #include "HoleShape.h"
-#include "BifrostHut.h"
+#include "EssHut.h"
 
 #include "BIFROST.h"
 
@@ -146,7 +146,7 @@ BIFROST::BIFROST(const std::string& keyName) :
 
   ShieldB(new constructSystem::LineShield(newName+"ShieldB")),
 
-  Cave(new BifrostHut(newName+"Cave")),
+  Cave(new EssHut(newName+"Cave")),
   CaveCut(new constructSystem::HoleShape(newName+"CaveCut")),
 
   VPipeCave(new constructSystem::VacuumPipe(newName+"PipeCave"))
@@ -479,8 +479,8 @@ BIFROST::build(Simulation& System,
   ShieldB->insertObjects(System);
 
   CaveCut->addInsertCell(Cave->getCells("IronFront"));
-  CaveCut->setCutSurf("front",Cave->getKey("Mid"),-1);
-  CaveCut->setCutSurf("back",Cave->getKey("Inner"),1);
+  CaveCut->setCutSurf("front",*Cave,"#MidFront");
+  CaveCut->setCutSurf("back",*Cave,"InnerFront");
   CaveCut->createAll(System,*ShieldB,2);
 
   // Elliptic 6m section

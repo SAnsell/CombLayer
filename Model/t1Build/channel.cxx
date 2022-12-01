@@ -66,10 +66,9 @@ namespace ts1System
 {
 
 channel::channel(const std::string& Key,const int ID,
-		 const int baseSurfN) : 
-		
-  attachSystem::ContainedComp(),
+		 const int baseSurfN) : 		
   attachSystem::FixedComp(Key+std::to_string(ID),0),
+  attachSystem::ContainedComp(),
   blockIndex(ID),cIndex(baseSurfN)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -79,8 +78,9 @@ channel::channel(const std::string& Key,const int ID,
   */
 {}
 
-channel::channel(const channel& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+channel::channel(const channel& A) :
+  attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),
   blockIndex(A.blockIndex),cIndex(A.cIndex),
   centX(A.centX),centZ(A.centZ),
   width(A.width),height(A.height),midGap(A.midGap),
@@ -101,8 +101,8 @@ channel::operator=(const channel& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
 
       centX=A.centX;
       centZ=A.centZ;

@@ -120,11 +120,11 @@ foreach my $mainProg (@masterProg)
 				  R3Common R1Common species)]);
       }
     
-    elsif ($mainProg eq "filter")
-      { 
-	my @filter = qw( filter photon );
-	push(@filter,@mainLib);
-	$gM->addDepUnit("filter", [@filter]),
+    elsif ($mainProg eq "essLinac")
+      {
+	my @essBeam = qw( essLinac );
+	push(@essBeam,@mainLib);
+	$gM->addDepUnit("essLinac", [@essBeam]),
       }
 
     elsif ($mainProg eq "bilbau")

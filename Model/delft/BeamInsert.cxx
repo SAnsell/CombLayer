@@ -3,7 +3,7 @@
  
  * File:   delft/BeamInsert.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -57,7 +55,6 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ExternalCut.h"
 #include "ContainedComp.h"
@@ -68,15 +65,17 @@ namespace delftSystem
 {
 
 BeamInsert::BeamInsert(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,3)
+  attachSystem::FixedRotate(Key,3),
+  attachSystem::ContainedComp()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
 {}
 
-BeamInsert::BeamInsert(const BeamInsert& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+BeamInsert::BeamInsert(const BeamInsert& A) :
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
   length(A.length),radius(A.radius),
   nSlots(A.nSlots),Holes(A.Holes),
   mat(A.mat)
@@ -96,8 +95,8 @@ BeamInsert::operator=(const BeamInsert& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
       length=A.length;
       radius=A.radius;
       nSlots=A.nSlots;
@@ -123,7 +122,7 @@ BeamInsert::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BeamInsert","populate");
   
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
   radius=Control.EvalVar<double>(keyName+"Radius");
@@ -173,11 +172,13 @@ BeamInsert::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("BeamInsert","createObjects");
   
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -7 ");
-  addOuterSurf(Out);
-  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
-  
+  HeadRule HR;
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -7");
+  System.addCell(cellIndex++,mat,0.0,HR);
+
+  addOuterSurf(HR);
+    
   return;
 }
 

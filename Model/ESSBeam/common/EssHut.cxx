@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   loki/LokiHut.cxx
+ * File:   common/EssHut.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
  *
@@ -59,13 +59,13 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 
-#include "LokiHut.h"
+#include "EssHut.h"
 
 namespace essSystem
 {
 
-LokiHut::LokiHut(const std::string& Key) : 
-  attachSystem::FixedRotate(Key,12),
+EssHut::EssHut(const std::string& Key) : 
+  attachSystem::FixedRotate(Key,18),
   attachSystem::ContainedComp(),
   attachSystem::CellMap()
   /*!
@@ -74,29 +74,28 @@ LokiHut::LokiHut(const std::string& Key) :
   */
 {}
 
-LokiHut::LokiHut(const LokiHut& A) : 
-  attachSystem::FixedRotate(A),
-  attachSystem::ContainedComp(A),
-  attachSystem::CellMap(A),  
-  voidHeight(A.voidHeight),
-  voidWidth(A.voidWidth),voidDepth(A.voidDepth),
-  voidLength(A.voidLength),feFront(A.feFront),feLeftWall(A.feLeftWall),
-  feRightWall(A.feRightWall),feRoof(A.feRoof),feFloor(A.feFloor),
-  feBack(A.feBack),concFront(A.concFront),concLeftWall(A.concLeftWall),
-  concRightWall(A.concRightWall),concRoof(A.concRoof),
-  concFloor(A.concFloor),concBack(A.concBack),feMat(A.feMat),
-  concMat(A.concMat)
+EssHut::EssHut(const EssHut& A) : 
+  attachSystem::FixedRotate(A),attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
+  voidHeight(A.voidHeight),voidWidth(A.voidWidth),
+  voidDepth(A.voidDepth),voidLength(A.voidLength),
+  feFront(A.feFront),feLeftWall(A.feLeftWall),
+  feRightWall(A.feRightWall),feRoof(A.feRoof),
+  feFloor(A.feFloor),feBack(A.feBack),concFront(A.concFront),
+  concLeftWall(A.concLeftWall),concRightWall(A.concRightWall),
+  concRoof(A.concRoof),concFloor(A.concFloor),
+  concBack(A.concBack),feMat(A.feMat),concMat(A.concMat)
   /*!
     Copy constructor
-    \param A :: LokiHut to copy
+    \param A :: EssHut to copy
   */
 {}
 
-LokiHut&
-LokiHut::operator=(const LokiHut& A)
+EssHut&
+EssHut::operator=(const EssHut& A)
   /*!
     Assignment operator
-    \param A :: LokiHut to copy
+    \param A :: EssHut to copy
     \return *this
   */
 {
@@ -127,21 +126,20 @@ LokiHut::operator=(const LokiHut& A)
   return *this;
 }
 
-  
-LokiHut::~LokiHut() 
+EssHut::~EssHut() 
   /*!
     Destructor
   */
 {}
 
 void
-LokiHut::populate(const FuncDataBase& Control)
+EssHut::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase of variables
   */
 {
-  ELog::RegMethod RegA("LokiHut","populate");
+  ELog::RegMethod RegA("EssHut","populate");
   
   FixedRotate::populate(Control);
 
@@ -170,13 +168,14 @@ LokiHut::populate(const FuncDataBase& Control)
 }
 
 
+
 void
-LokiHut::createSurfaces()
+EssHut::createSurfaces()
   /*!
     Create the surfaces
   */
 {
-  ELog::RegMethod RegA("LokiHut","createSurfaces");
+  ELog::RegMethod RegA("EssHut","createSurfaces");
 
   // Inner void
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(voidLength/2.0),Y);
@@ -221,13 +220,13 @@ LokiHut::createSurfaces()
 }
 
 void
-LokiHut::createObjects(Simulation& System)
+EssHut::createObjects(Simulation& System)
   /*!
     Adds the main objects
     \param System :: Simulation to create objects in
    */
 {
-  ELog::RegMethod RegA("LokiHut","createObjects");
+  ELog::RegMethod RegA("EssHut","createObjects");
 
   HeadRule HR;
 
@@ -238,40 +237,40 @@ LokiHut::createObjects(Simulation& System)
     (SMap,buildIndex,"1 -12 13 -14 15 -16 (-1:2:-3:4:-5:6)");
   makeCell("Iron",System,cellIndex++,feMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"1 -22 23 -24 25 -26 (12:-13:14:-15:16)");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+		"1 -22 23 -24 25 -26 (12:-13:14:-15:16)");
   makeCell("Conc",System,cellIndex++,concMat,0.0,HR);
 
   // Front wall:
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -1 13 -14 15 -16 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -1 13 -14 15 -16");
   makeCell("FrontWall",System,cellIndex++,feMat,0.0,HR);
-
+  setCell("IronFront",cellIndex-1);
+  
   // Ring of concrete
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"11 -1 23 -24 25 -26 (-13:14:-15:16)");
-  makeCell("WallConc",System,cellIndex++,concMat,0.0,HR);
+  makeCell("ConcWall",System,cellIndex++,concMat,0.0,HR);
 
   // Front concrete face
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -11 23 -24 25 -26");
   makeCell("FrontWall",System,cellIndex++,concMat,0.0,HR);
   
   // Exclude:
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"21 -22 23 -24  25 -26");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -22 23 -24  25 -26");
   addOuterSurf(HR);      
 
   return;
 }
 
 void
-LokiHut::createLinks()
+EssHut::createLinks()
   /*!
     Determines the link point on the outgoing plane.
     It must follow the beamline, but exit at the plane
   */
 {
-  ELog::RegMethod RegA("LokiHut","createLinks");
-
+  ELog::RegMethod RegA("EssHut","createLinks");
+    
   // INNER VOID
   setConnect(0,Origin-Y*(voidLength/2.0),-Y);
   setConnect(1,Origin+Y*(voidLength/2.0),Y);
@@ -280,34 +279,52 @@ LokiHut::createLinks()
   setConnect(4,Origin-Z*voidDepth,-Z);
   setConnect(5,Origin+Z*voidHeight,Z);  
 
-  setLinkSurf(0,-SMap.realSurf(buildIndex+11));
+  setLinkSurf(0,-SMap.realSurf(buildIndex+1));
   setLinkSurf(1,SMap.realSurf(buildIndex+2));
   setLinkSurf(2,-SMap.realSurf(buildIndex+3));
   setLinkSurf(3,SMap.realSurf(buildIndex+4));
   setLinkSurf(4,-SMap.realSurf(buildIndex+5));
   setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
-  
+  // MID VOID
+  setConnect(6,Origin-Y*(feFront+voidLength/2.0),-Y);
+  setConnect(7,Origin+Y*(feBack+voidLength/2.0),Y);
+  setConnect(8,Origin-X*(feLeftWall+voidWidth/2.0),-X);
+  setConnect(9,Origin+X*(feRightWall+voidWidth/2.0),X);
+  setConnect(10,Origin-Z*(feFloor+voidDepth),-Z);
+  setConnect(11,Origin+Z*(feRoof+voidHeight),Z);  
+
+  setLinkSurf(6,-SMap.realSurf(buildIndex+11));
+  setLinkSurf(7,SMap.realSurf(buildIndex+12));
+  setLinkSurf(8,-SMap.realSurf(buildIndex+13));
+  setLinkSurf(9,SMap.realSurf(buildIndex+14));
+  setLinkSurf(10,-SMap.realSurf(buildIndex+15));
+  setLinkSurf(11,SMap.realSurf(buildIndex+16));
+
+
     // OUTER VOID
-  setConnect(6,Origin-Y*(feFront+concFront+voidLength/2.0),-Y);
-  setConnect(7,Origin+Y*(concBack+feBack+voidLength/2.0),Y);
-  setConnect(8,Origin-X*(concLeftWall+feLeftWall+voidWidth/2.0),-X);
-  setConnect(9,Origin+X*(concRightWall+feRightWall+voidWidth/2.0),X);
-  setConnect(10,Origin-Z*(concFloor+feFloor+voidDepth),-Z);
-  setConnect(11,Origin+Z*(concRoof+feRoof+voidHeight),Z);  
+  setConnect(12,Origin-Y*(feFront+concFront+voidLength/2.0),-Y);
+  setConnect(13,Origin+Y*(concBack+feBack+voidLength/2.0),Y);
+  setConnect(14,Origin-X*(concLeftWall+feLeftWall+voidWidth/2.0),-X);
+  setConnect(15,Origin+X*(concRightWall+feRightWall+voidWidth/2.0),X);
+  setConnect(16,Origin-Z*(concFloor+feFloor+voidDepth),-Z);
+  setConnect(17,Origin+Z*(concRoof+feRoof+voidHeight),Z);  
 
-  setLinkSurf(6,-SMap.realSurf(buildIndex+21));
-  setLinkSurf(7,SMap.realSurf(buildIndex+22));
-  setLinkSurf(8,-SMap.realSurf(buildIndex+23));
-  setLinkSurf(9,SMap.realSurf(buildIndex+24));
-  setLinkSurf(10,-SMap.realSurf(buildIndex+25));
-  setLinkSurf(11,SMap.realSurf(buildIndex+26));
+  setLinkSurf(12,-SMap.realSurf(buildIndex+21));
+  setLinkSurf(13,SMap.realSurf(buildIndex+22));
+  setLinkSurf(14,-SMap.realSurf(buildIndex+23));
+  setLinkSurf(15,SMap.realSurf(buildIndex+24));
+  setLinkSurf(16,-SMap.realSurf(buildIndex+25));
+  setLinkSurf(17,SMap.realSurf(buildIndex+26));
 
+  nameSideIndex(0,"InnerFront");
+  nameSideIndex(6,"MidFront");
+  nameSideIndex(12,"OuterFront");
   return;
 }
 
 void
-LokiHut::createAll(Simulation& System,
+EssHut::createAll(Simulation& System,
 		   const attachSystem::FixedComp& FC,
 		   const long int FIndex)
   /*!
@@ -317,10 +334,10 @@ LokiHut::createAll(Simulation& System,
     \param FIndex :: Fixed Index
   */
 {
-  ELog::RegMethod RegA("LokiHut","createAll(FC)");
+  ELog::RegMethod RegA("EssHut","createAll(FC)");
 
   populate(System.getDataBase());
-  createCentredUnitVector(FC,FIndex,voidLength/2.0);
+  createCentredUnitVector(FC,FIndex,voidLength/2.0+feFront);
   
   createSurfaces();    
   createObjects(System);
