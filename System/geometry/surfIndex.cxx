@@ -865,6 +865,12 @@ surfIndex::realSurf(const int) const;
 template const Geometry::Plane*
 surfIndex::realSurf(const int) const;
 
+template Geometry::Cylinder*
+surfIndex::realSurf(const int) const;
+
+template const Geometry::Cylinder*
+surfIndex::realSurf(const int) const;
+
 ///\endcond TEMPLATE
 
 } // NAMESPACE ModelSupport

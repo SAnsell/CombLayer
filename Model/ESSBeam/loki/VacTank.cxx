@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/loki/VacTank.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -56,7 +54,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -66,8 +64,9 @@ namespace essSystem
 {
 
 VacTank::VacTank(const std::string& Key)  :
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6),attachSystem::CellMap()
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -75,7 +74,8 @@ VacTank::VacTank(const std::string& Key)  :
 {}
 
 VacTank::VacTank(const VacTank& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
   radius(A.radius),length(A.length),frontThick(A.frontThick),
   sideThick(A.sideThick),backThick(A.backThick),
@@ -99,8 +99,8 @@ VacTank::operator=(const VacTank& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       radius=A.radius;
       length=A.length;
@@ -132,7 +132,7 @@ VacTank::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("VacTank","populate");
   
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   radius=Control.EvalVar<double>(keyName+"Radius");
   length=Control.EvalVar<double>(keyName+"Length");
@@ -149,24 +149,6 @@ VacTank::populate(const FuncDataBase& Control)
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   windowMat=ModelSupport::EvalMat<int>(Control,keyName+"WindowMat");
 
-  return;
-}
-  
-void
-VacTank::createUnitVector(const attachSystem::FixedComp& FC,
-			  const long int sideIndex)
-  /*!
-    Create the unit vectors
-    - Y Down the beamline
-    \param FC :: Linked object
-    \param sideIndex :: sinde track
-  */
-{
-  ELog::RegMethod RegA("VacTank","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-
-  applyOffset();
   return;
 }
   
@@ -218,35 +200,31 @@ VacTank::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("VacTank","createObjects");
   
-  std::string Out;
+
+  HeadRule HR;
 
   // Main voids
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  addCell("Void",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -7");
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
 
   // Steel layer
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -12 -17 -118 (2:7)");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
-  addCell("Steel",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -12 -17 -118 (2:7)");
+  makeCell("Steel",System,cellIndex++,wallMat,0.0,HR);
 
   // Nose cone
-  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -1 -108");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  addCell("Void",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -1 -108");
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
 
   // Nose Steel
-  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -1 -118 108");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
-  addCell("Steel",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -1 -118 108");
+  makeCell("Steel",System,cellIndex++,wallMat,0.0,HR);
 
   // window
-  Out=ModelSupport::getComposite(SMap,buildIndex,"102 -101 -118");
-  System.addCell(MonteCarlo::Object(cellIndex++,windowMat,0.0,Out));
-  addCell("Window",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -101 -118");
+  makeCell("Window",System,cellIndex++,windowMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"102 -118 -12 -17");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -118 -12 -17");
+  addOuterSurf(HR);
   
   return;
 }
@@ -279,8 +257,8 @@ VacTank::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("VacTank","createAll");
-  populate(System.getDataBase());
 
+  populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
