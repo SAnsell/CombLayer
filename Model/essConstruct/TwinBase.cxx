@@ -296,7 +296,7 @@ TwinBase::createOuterBolts(Simulation& System,const int surfOffset,
   else
     {
       // If here need fron / back angles
-      makeCell("OuterWall",System,cellIndex++,wallMat,0.0,FBStr+EdgeStr));
+      makeCell("OuterWall",System,cellIndex++,wallMat,0.0,FBStr+EdgeStr);
     }
 
   return;

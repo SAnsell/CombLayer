@@ -76,7 +76,7 @@ beamSlot::beamSlot(const std::string& Key,const int SN)  :
 
 beamSlot::beamSlot(const beamSlot& A) : 
   attachSystem::FixedRotate(A),
-  attachSystem::ContainedComp(A)
+  attachSystem::ContainedComp(A),
   attachSystem::ExternalCut(A),
   baseName(A.baseName),xSize(A.xSize),
   zSize(A.zSize)

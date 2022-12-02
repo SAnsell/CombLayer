@@ -36,9 +36,9 @@ namespace essSystem
 */
 
 class BlockAddition :
-    public attachSystem::FixedOffsetUnit
+    public attachSystem::FixedOffsetUnit,
     public attachSystem::ContainedComp,
-    public attachSystem::LayerComp,
+    public attachSystem::LayerComp
 {
  private:
   
