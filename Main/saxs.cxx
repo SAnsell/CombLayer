@@ -57,6 +57,7 @@
 #include "World.h"
 #include "DefUnitsSAXS.h"
 
+#include "SimMonte.h"
 #include "makeSAXS.h"
 
 class SimMonte;
@@ -106,6 +107,12 @@ main(int argc,char* argv[])
 
       ModelSupport::calcVolumes(SimPtr,IParam);
       SimPtr->objectGroups::write("ObjectRegister.txt");
+
+      SimMonte* MSim=dynamic_cast<SimMonte*>(SimPtr);
+      if (MSim)
+	{
+	}
+
     }
   catch (ColErr::ExitAbort& EA)
     {

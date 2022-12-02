@@ -296,8 +296,7 @@ TwinBase::createOuterBolts(Simulation& System,const int surfOffset,
   else
     {
       // If here need fron / back angles
-      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,FBStr+EdgeStr));
-      addCell("OuterWall",cellIndex-1);
+      makeCell("OuterWall",System,cellIndex++,wallMat,0.0,FBStr+EdgeStr));
     }
 
   return;
@@ -326,7 +325,11 @@ TwinBase::createLineBolts(Simulation& System,const int surfOffset,
 {
   ELog::RegMethod RegA("TwinBase","createLineBolts");
 
-  std::string Out;
+  HeadRule HR;
+
+  const HeadRule fbHR(FBStr);
+  const HeadRule leftEdgeHR(leftEdgeStr);
+  const HeadRule rightEdgeHR(rightEdgeStr);
 
   if (NBolts>=1)
     {
@@ -362,21 +365,20 @@ TwinBase::createLineBolts(Simulation& System,const int surfOffset,
       boltIndex=surfOffset;
       for(size_t i=0;i<NBolts;i++)
         {
-          Out=ModelSupport::getComposite(SMap,boltIndex," -7 ");
-          System.addCell(MonteCarlo::Object(cellIndex++,boltMat,0.0,Out+FBStr));
-          addCell("OuterBolts",cellIndex-1);
+          HR=HeadRule(SMap,boltIndex,-7);
+          makeCell("OuterBolts",System,cellIndex++,boltMat,0.0,HR*fbHR);
+	  
+          HR=HeadRule(SMap,boltIndex,-8);
+          makeCell("OuterBolts",System,cellIndex++,boltMat,0.0,HR*fbHR);
+          
+          HR=ModelSupport::getHeadRule(SMap,boltIndex,"5 -15 7");
+          makeCell("OuterWall",System,cellIndex++,wallMat,0.0,
+		   HR*fbHR*leftEdgeHR);
+          
+          HR=ModelSupport::getHeadRule(SMap,boltIndex,"5 -15 8");
+          makeCell("OuterWall",System,cellIndex++,wallMat,0.0,
+		   HR*fbHR*rightEdgeHR);
 
-          Out=ModelSupport::getComposite(SMap,boltIndex," -8 ");
-          System.addCell(MonteCarlo::Object(cellIndex++,boltMat,0.0,Out+FBStr));
-          addCell("OuterBolts",cellIndex-1);
-          
-          Out=ModelSupport::getComposite(SMap,boltIndex," 5 -15  7 ");
-          System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+FBStr+leftEdgeStr));
-	  addCell("OuterWall",cellIndex-1);
-          
-          Out=ModelSupport::getComposite(SMap,boltIndex," 5 -15 8 ");
-          System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+FBStr+rightEdgeStr));
-	  addCell("OuterWall",cellIndex-1);
           boltIndex+=10;
        }
     }

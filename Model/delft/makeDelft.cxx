@@ -336,7 +336,8 @@ makeDelft::buildModerator(Simulation& System,
   // Joins onto the pressure vessel
   FlightA->addInsertCell(Pool->getCells("Water"));
   FlightA->addInsertCell(74123);
-  FlightA->createAll(System,*ColdPress,2);
+  FlightA->setCutSurf("front",*ColdPress,"back");
+  FlightA->createAll(System,*ColdPress,"back");
 
   R2Insert->addInsertCell(FlightA->getCells("Void"));
   R2Insert->createAll(System,*FlightA,0);

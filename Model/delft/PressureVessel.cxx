@@ -244,10 +244,14 @@ PressureVessel::createAll(Simulation& System,
 
   
   populate(System.getDataBase());
-  const double yUnit=(reshiftOrigin>0) ? 
-    -backLength+backRadius+backWall : 
-    frontLength+frontRadius+frontWall;
-  
+  double yUnit(0.0);
+  if (reshiftOrigin)
+    {
+      yUnit=(reshiftOrigin>0) ? 
+	-backLength+backRadius+backWall : 
+	frontLength+frontRadius+frontWall;
+    }
+  ELog::EM<<"yUnit == "<<yUnit<<ELog::endDiag;
   createCentredUnitVector(FC,sideIndex,yUnit);
   createSurfaces();
   createObjects(System);

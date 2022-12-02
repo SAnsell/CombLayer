@@ -3,7 +3,7 @@
  
  * File:   delft/BeamTubeJoiner.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -56,18 +54,20 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "BeamTubeJoiner.h"
 
 namespace delftSystem
 {
 
 BeamTubeJoiner::BeamTubeJoiner(const std::string& Key)  :
+  attachSystem::FixedRotate(Key,3),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,3),
+  attachSystem::ExternalCut(),
   attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -76,7 +76,9 @@ BeamTubeJoiner::BeamTubeJoiner(const std::string& Key)  :
 {}
 
 BeamTubeJoiner::BeamTubeJoiner(const BeamTubeJoiner& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::ExternalCut(A),
   attachSystem::CellMap(A),
   innerStep(A.innerStep),
   length(A.length),innerRadius(A.innerRadius),innerWall(A.innerWall),
@@ -100,8 +102,9 @@ BeamTubeJoiner::operator=(const BeamTubeJoiner& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       attachSystem::CellMap::operator=(A);
       innerStep=A.innerStep;
       length=A.length;
@@ -136,7 +139,7 @@ BeamTubeJoiner::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BeamTubeJoiner","populate");
 
-  attachSystem::FixedOffset::populate(Control);
+  attachSystem::FixedRotate::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
@@ -156,23 +159,6 @@ BeamTubeJoiner::populate(const FuncDataBase& Control)
   return;
 }
   
-
-void
-BeamTubeJoiner::createUnitVector(const attachSystem::FixedComp& FC,
-			   const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: A Contained FixedComp to use as basis set
-    \param sideIndex :: link point
-  */
-{
-  ELog::RegMethod RegA("BeamTubeJoiner","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  return;
-}
-
 void
 BeamTubeJoiner::createSurfaces()
   /*!
@@ -217,9 +203,7 @@ BeamTubeJoiner::createSurfaces()
 
 
 void
-BeamTubeJoiner::createObjects(Simulation& System,
-			      const FixedComp& FC,
-			      const long int sideIndex)
+BeamTubeJoiner::createObjects(Simulation& System)
   /*!
     Adds the BeamLne components
     \param System :: Simulation to add beamline to
@@ -229,34 +213,35 @@ BeamTubeJoiner::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("BeamTubeJoiner","createObjects");
 
-  const std::string frontLayer=FC.getLinkString(sideIndex);
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex," -2 -7 ");
-  addOuterSurf(Out+frontLayer);
+  const HeadRule frontHR=getRule("front");
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -2 -7 17");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+frontLayer));
+  HeadRule HR;
+  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 -7 17");
+  System.addCell(cellIndex++,wallMat,0.0,HR*frontHR);
 
   // Void (exclude inter wall)
-  Out=ModelSupport::getComposite(SMap,buildIndex," -2 -17 27 (-41:-67)");
-  System.addCell(MonteCarlo::Object(cellIndex++,gapMat,0.0,Out+frontLayer));
-  addCell("FrontVoid",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 -17 27 (-41:-67)");
+  makeCell("FrontVoid",System,cellIndex++,gapMat,0.0,HR*frontHR);
   
   // Inner wall
-  Out=ModelSupport::getComposite(SMap,buildIndex," -2 -27 37");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+frontLayer));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 -27 37");
+  System.addCell(cellIndex++,wallMat,0.0,HR*frontHR);
   
   // Inner Void
-  Out=ModelSupport::getComposite(SMap,buildIndex," -2 -37 ");  
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+frontLayer));
-  addCell("Void",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 -37");  
+  makeCell("Void",System,cellIndex++,0,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -47 57 51 -2 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,interMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-47 57 51 -2");
+  System.addCell(cellIndex++,interMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "41 -17 67 (47:-57:-51) -2 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				"41 -17 67 (47:-57:-51) -2");
+  System.addCell(cellIndex++,wallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 -7");
+  addOuterSurf(HR*frontHR);
   
   return;
 }
@@ -290,15 +275,14 @@ BeamTubeJoiner::createAll(Simulation& System,
     \param System :: Simulation to add vessel to
     \param FC :: Front face object
     \param sideIndex :: Link point
-    \param PAxis :: directional axis
   */
 {
   ELog::RegMethod RegA("BeamTubeJoiner","createAll");
-  populate(System.getDataBase());
 
+  populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();
-  createObjects(System,FC,sideIndex);
+  createObjects(System);
   createLinks(FC,sideIndex);
   insertObjects(System);       
 

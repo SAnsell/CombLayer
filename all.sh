@@ -19,7 +19,7 @@ parallel --halt now,fail=1 "./maxiv --defaultConfig Single {} --validAll --valid
 ./fullBuild -validAll --validCheck ${nValid} AA || exit
 
 ./t1Real -validAll --validCheck ${nValid} AA || exit
-./reactor -validAll --validCheck 100 AA || exit
+./reactor -validAll --validCheck ${nValid} AA || exit
 ./saxs -validAll --validCheck ${nValid} AA || exit
 ./ess -validAll --validCheck ${nValid} AA || exit 
 

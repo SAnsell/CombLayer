@@ -65,7 +65,8 @@ namespace xraySystem
 LCollimator::LCollimator(const std::string& Key) :
   attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
-  attachSystem::CellMap(),attachSystem::SurfMap()
+  attachSystem::CellMap(),
+  attachSystem::SurfMap()
   /*!
     Default constructor
     \param Key :: Key name for variables

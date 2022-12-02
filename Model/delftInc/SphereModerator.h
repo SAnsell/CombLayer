@@ -3,7 +3,7 @@
  
  * File:   delftInc/SphereModerator.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,6 @@ class SphereModerator : public virtualMod
 {
  private:
   
-
   double innerRadius;       ///< Inner Radius
   double innerAl;           ///< Inner Al
   double outerRadius;       ///< Outer Radius
@@ -58,8 +57,6 @@ class SphereModerator : public virtualMod
   int modMat;               ///< Moderator material
   int alMat;                ///< Al material
 
-  int HCell;                ///< Main H2 cell
-
   ModelSupport::PipeLine InnerA;       ///< In-going H2
   ModelSupport::PipeLine InnerB;       ///< In-going H2
 
@@ -75,11 +72,6 @@ class SphereModerator : public virtualMod
   SphereModerator& operator=(const SphereModerator&);
   virtual SphereModerator* clone() const;
   virtual ~SphereModerator();
-
-  int getDividePlane() const;
-  int viewSurf() const;
-  /// Main body for H2 item
-  virtual int getMainBody() const { return HCell; }
 
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,

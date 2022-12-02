@@ -577,8 +577,8 @@ DelftModel(FuncDataBase& Control)
 
   // CONTAINER : Outer Pressure container
 
-  Control.addVariable("delftPressXYAngle",0.0);
-  Control.addVariable("delftPressYStep",1.85);   // distnce from fron reactor
+  Control.addVariable("delftPressZAngle",0.0);
+  Control.addVariable("delftPressYStep",1.85);   // distance from fron reactor
   Control.addVariable("delftPressReshiftOrigin",-1);
   Control.addVariable("delftPressSideRadius",23.5/2.0);   
   Control.addVariable("delftPressSideWall",0.65);
@@ -592,7 +592,6 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftPressBackLength",19.45);
   
   Control.addVariable("delftPressWallMat","Aluminium");   
-
 
   Control.addParse<double>("R2InsertYStep","41.85-delftPressYStep");
   Control.addVariable("R2InsertRadius",10.05);

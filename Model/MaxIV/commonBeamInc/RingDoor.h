@@ -37,8 +37,9 @@ namespace xraySystem
 class RingDoor :
   public attachSystem::FixedRotate,
   public attachSystem::ContainedGroup,
-  public attachSystem::CellMap,
-  public attachSystem::ExternalCut
+  public attachSystem::ExternalCut,
+  public attachSystem::CellMap
+
 {
  private:
 

@@ -42,9 +42,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "BaseVisit.h"
 #include "Random.h"
 #include "Vec3D.h"
 #include "varList.h"
@@ -73,7 +70,8 @@
 #include "SimMonte.h"
 
 SimMonte::SimMonte() :
-  Simulation(),TCount(0),MSActive(0),B(0),DUnit()
+  Simulation(),TCount(0),MSActive(0),B(0),
+  DUnit(new Transport::DetGroup())
   /*!
     Start of simulation Object
     Initialise currentSample to Sample 
@@ -84,7 +82,7 @@ SimMonte::SimMonte(const SimMonte& A)  :
   Simulation(A),
   TCount(A.TCount),MSActive(A.MSActive),
   B((A.B) ? A.B->clone() : 0),
-  DUnit(A.DUnit)
+  DUnit(new Transport::DetGroup(*A.DUnit))
   /*!
     Copy constructor:: makes a deep copy of the SurMap 
     object including calling the virtual clone on the 
@@ -108,7 +106,7 @@ SimMonte::operator=(const SimMonte& A)
     {
       delete B;
       B=(A.B) ? A.B->clone() : 0;
-      DUnit=A.DUnit;
+      *DUnit= *A.DUnit;
     }
   return *this;
 }
@@ -129,7 +127,7 @@ SimMonte::clearAll()
  */
 {
   TCount=0;
-  DUnit.clear();
+  DUnit->clear();
   return;
 }
 
@@ -155,7 +153,7 @@ SimMonte::setDetector(const Transport::Detector& DObj)
   */
 {
   ELog::RegMethod RegA("SimMonte","setDetector");
-  DUnit.addDetector(DObj);
+  DUnit->addDetector(DObj);
   return;
 }
 
@@ -243,9 +241,9 @@ SimMonte::runMonteNeutron(const size_t Npts)
 		  if (!MSActive || (MSActive<0 && n.nCollision==0)
 		      || (MSActive>0 && n.nCollision!=0))
 		    {
-		      for(size_t i=0;i<DUnit.NDet();i++)
+		      for(size_t i=0;i<DUnit->NDet();i++)
 			{
-			  Transport::Detector* DPtr=DUnit.getDet(i);
+			  Transport::Detector* DPtr=DUnit->getDet(i);
 			  // To sample you need : 
 			  // Direction / solid angle / dsigma/domega
 			  const double RDist=
@@ -279,7 +277,7 @@ SimMonte::normalizeDetectors()
     Normalize the detctors relative to the incident count
    */
 {
-  DUnit.normalizeDetectors(TCount);
+  DUnit->normalizeDetectors(TCount);
   return;
 }
 
@@ -295,7 +293,7 @@ SimMonte::writeDetectors(const std::string& outName,
   const std::string DetectorFile=outName+".det";
   std::ofstream OX;
   OX.open(DetectorFile.c_str());
-  DUnit.write(OX);
+  DUnit->write(OX);
   OX.close();
   return;
 }

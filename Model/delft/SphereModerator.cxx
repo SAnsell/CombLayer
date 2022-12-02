@@ -37,8 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -56,7 +54,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedUnit.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -70,7 +68,6 @@ namespace delftSystem
 
 SphereModerator::SphereModerator(const std::string& Key)  :
   virtualMod(Key),
-  HCell(0),
   InnerA("SphereA"),InnerB("SphereB")
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -84,7 +81,7 @@ SphereModerator::SphereModerator(const SphereModerator& A) :
   innerAl(A.innerAl),outerRadius(A.outerRadius),
   outerAl(A.outerAl),outYShift(A.outYShift),fYShift(A.fYShift),
   modTemp(A.modTemp),modMat(A.modMat),alMat(A.alMat),
-  HCell(A.HCell),InnerA(A.InnerA),InnerB(A.InnerB)
+  InnerA(A.InnerA),InnerB(A.InnerB)
   /*!
     Copy constructor
     \param A :: SphereModerator to copy
@@ -111,7 +108,6 @@ SphereModerator::operator=(const SphereModerator& A)
       modTemp=A.modTemp;
       modMat=A.modMat;
       alMat=A.alMat;
-      HCell=A.HCell;
       InnerA=A.InnerA;
       InnerB=A.InnerB;
     }
@@ -143,7 +139,7 @@ SphereModerator::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("SphereModerator","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
   innerAl=Control.EvalVar<double>(keyName+"InnerAl");
@@ -236,72 +232,53 @@ SphereModerator::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("SphereModerator","createObjects");
 
-  std::string Out;  
+  HeadRule HR;
 
   // ARRANGEMENT FOR POSITIVE Radius:
-  Out=ModelSupport::getComposite(SMap,buildIndex," -37 -1 ");
-  addOuterSurf(Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -111 -137 ");
-  addOuterUnionSurf(Out);
 
   // void
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-1 -7 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 -7");
+  System.addCell(cellIndex++,0,0.0,HR);
 
   // al
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-1 7 -17");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 7 -17");
+  System.addCell(cellIndex++,alMat,modTemp,HR);
 
   // Hydrogen
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-1 17 -27");
-  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 17 -27");
+  System.addCell(cellIndex++,modMat,modTemp,HR);
 
   // Outer Al
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-1 27 -37");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 27 -37");
+  System.addCell(cellIndex++,alMat,0.0,HR);
   
   // CYCLINDERS
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -111 -107 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -111 -107 ");
+  System.addCell(cellIndex++,0,0.0,HR);
 
   // al
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -101 107 -117");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -101 107 -117");
+  System.addCell(cellIndex++,alMat,modTemp,HR);
 
   // Hydrogen
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -101 117 -127");
-  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -101 117 -127");
+  System.addCell(cellIndex++,modMat,modTemp,HR);
 
   // Outer Al
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -101 127 -137");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -101 127 -137");
+  System.addCell(cellIndex++,alMat,0.0,HR);
 
   // Outer Al
-  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -111 107 -137");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -111 107 -137");
+  System.addCell(cellIndex++,alMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-37 -1");
+  addOuterSurf(HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -111 -137");
+  addOuterUnionSurf(HR);
 
   return;
-}
-
-int
-SphereModerator::getDividePlane() const
-  /*!
-    Get the dividing plane
-    \return Dividing plane [pointing out]
-  */
-{
-  return SMap.realSurf(buildIndex+1);
-}
-
-int
-SphereModerator::viewSurf() const
-  /*!
-    View surface 
-    \return view surface [pointing out]
-   */
-{
-  return SMap.realSurf(buildIndex+2);
 }
 
 void 

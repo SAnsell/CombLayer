@@ -3,7 +3,7 @@
  
  * File:   delftInc/FlatModerator.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@ namespace delftSystem
 class FlatModerator : public virtualMod
 {
  private:
-  
 
   double frontRadius;       ///< inner(front) radius
   double backRadius;        ///< Back(outer) radius
@@ -51,7 +50,6 @@ class FlatModerator : public virtualMod
   double wingAngle;         ///< Angle of cone
   double viewExtent;        ///< Distance across join
 
-  
   double depth;             ///< Sphere mid dist offset
   double length;            ///< inner apex - cut plane 
   double radius;            ///< Radius of minus wall
@@ -64,12 +62,7 @@ class FlatModerator : public virtualMod
   int gasMat;               ///< Moderator material
   int alMat;                ///< Al material
 
-  int HCell;                ///< Main H2 cell
-  
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -82,9 +75,7 @@ class FlatModerator : public virtualMod
   virtual FlatModerator* clone() const;
   virtual ~FlatModerator();
 
-  /// Access to hydrogen region
-  virtual int getMainBody() const { return HCell; }
-
+  using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 			 const long int);
   virtual void postCreateWork(Simulation&);

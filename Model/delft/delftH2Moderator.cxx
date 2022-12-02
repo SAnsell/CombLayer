@@ -53,7 +53,6 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
@@ -159,7 +158,7 @@ delftH2Moderator::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("delftH2Moderator","populate");
   
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   
   depth=Control.EvalVar<double>(keyName+"Depth");
 
@@ -379,26 +378,6 @@ delftH2Moderator::createObjects(Simulation& System)
   HR*=HeadRule(SMap,buildIndex,-13);
   System.addCell(cellIndex++,alMat,modTemp,HR*FOuterHR*BOuterHR);
   return;
-}
-
-int
-delftH2Moderator::getDividePlane() const
-  /*!
-    Get the dividing plane
-    \return Dividing plane [pointing out]
-  */
-{
-  return SMap.realSurf(buildIndex+1);
-}
-
-int
-delftH2Moderator::viewSurf() const
-  /*!
-    View surface 
-    \return view surface [pointing out]
-   */
-{
-  return SMap.realSurf(buildIndex+12);
 }
 
 void

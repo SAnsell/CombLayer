@@ -41,7 +41,7 @@ namespace delftSystem
 */
 
 class virtualMod : 
-    public attachSystem::FixedOffset,
+    public attachSystem::FixedRotate,
     public attachSystem::ContainedComp,
     public attachSystem::CellMap
 {
@@ -54,7 +54,6 @@ class virtualMod :
 
   ///\cond ABSTRACT 
   virtual virtualMod* clone() const =0;
-  virtual int getMainBody() const =0;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 			 const long int) =0;
   virtual void postCreateWork(Simulation&) =0;

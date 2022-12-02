@@ -3,7 +3,7 @@
  
  * File:   include/SimMonte.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@ class SimMonte : public Simulation
 
   int MSActive;                       ///< Multi-scattering [0-all,-1=>single]
   Transport::Beam* B;                 ///< Main Beam (init partiles)
-  Transport::DetGroup DUnit;          ///< Detector Units
+  Transport::DetGroup* DUnit;          ///< Detector Units
   
  public:
   
@@ -78,7 +78,7 @@ class SimMonte : public Simulation
   Transport::Beam* getBeam() const { return B; }
 
   /// access detector unit
-  Transport::DetGroup& getDU() { return DUnit; }
+  Transport::DetGroup& getDU() { return *DUnit; }
 
   void normalizeDetectors();
   void writeDetectors(const std::string&,const double) const;

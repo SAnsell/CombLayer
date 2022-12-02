@@ -40,7 +40,7 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
@@ -50,7 +50,7 @@ namespace delftSystem
 {
 
 virtualMod::virtualMod(const std::string& Key)  :
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::CellMap()
   /*!
@@ -60,7 +60,7 @@ virtualMod::virtualMod(const std::string& Key)  :
 {}
 
 virtualMod::virtualMod(const virtualMod& A) : 
-  attachSystem::FixedOffset(A),
+  attachSystem::FixedRotate(A),
   attachSystem::ContainedComp(A),
   attachSystem::CellMap(A)
   /*!
@@ -79,7 +79,7 @@ virtualMod::operator=(const virtualMod& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
     }

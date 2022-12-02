@@ -43,7 +43,6 @@ class beamSlot :
 
   const std::string baseName;  ///< Base name
   
-  double axisAngle;      ///< Angle round the centre line  
   double xSize;          ///< Size of the slot [long]    
   double zSize;          ///< Size of the slot [short]
 

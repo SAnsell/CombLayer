@@ -56,6 +56,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -67,8 +68,8 @@ namespace delftSystem
 {
 
 Rabbit::Rabbit(const std::string& Key,const int index)  :
+  attachSystem::FixedRotate(Key+std::to_string(index),3),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key+std::to_string(index),3),
   attachSystem::CellMap(),
   baseName(Key)
   /*!
@@ -79,7 +80,8 @@ Rabbit::Rabbit(const std::string& Key,const int index)  :
 {}
 
 Rabbit::Rabbit(const Rabbit& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
   baseName(A.baseName),
   nLayer(A.nLayer),
@@ -101,8 +103,8 @@ Rabbit::operator=(const Rabbit& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
+      attachSystem::ContainedComp::operator=(A);	    
       attachSystem::CellMap::operator=(A);
       nLayer=A.nLayer;
       Radii=A.Radii;
@@ -132,7 +134,7 @@ Rabbit::populate(const FuncDataBase& Control)
 
   if (Control.hasVariable(keyName+"GridKey"))
     {
-      FixedOffset::populate(Control);
+      FixedRotate::populate(Control);
   
       objName=Control.EvalVar<std::string>(keyName+"GridKey");
       // First get inner widths:
@@ -186,7 +188,7 @@ Rabbit::createUnitVector(const ReactorGrid& RG)
 
   const std::pair<size_t,size_t> GPt=RG.getElementNumber(objName);
   Origin=RG.getCellOrigin(GPt.first,GPt.second);
-  FixedOffset::applyOffset();
+  FixedRotate::applyOffset();
 
   return;
 }
@@ -351,8 +353,9 @@ Rabbit::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("Rabbit","createAll");
+
   populate(System.getDataBase());
-  FixedOffset::createUnitVector(FC,sideIndex);
+  FixedRotate::createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

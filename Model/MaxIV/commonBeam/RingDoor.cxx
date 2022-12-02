@@ -70,10 +70,10 @@ namespace xraySystem
 {
 
 RingDoor::RingDoor(const std::string& Key) :
-  attachSystem::ContainedGroup("Door","Tubes"),
   attachSystem::FixedRotate(Key,6),
-  attachSystem::CellMap(),
-  attachSystem::ExternalCut()
+  attachSystem::ContainedGroup("Door","Tubes"),
+  attachSystem::ExternalCut(),
+  attachSystem::CellMap()
   /*!
     Default constructor
     \param Key :: Key name for variables

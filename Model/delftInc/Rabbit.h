@@ -37,7 +37,7 @@ namespace delftSystem
 */
 
 class Rabbit : 
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap
 {

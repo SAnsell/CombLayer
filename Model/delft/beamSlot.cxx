@@ -75,7 +75,8 @@ beamSlot::beamSlot(const std::string& Key,const int SN)  :
 {}
 
 beamSlot::beamSlot(const beamSlot& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedRotate(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A)
   attachSystem::ExternalCut(A),
   baseName(A.baseName),xSize(A.xSize),
   zSize(A.zSize)
@@ -95,8 +96,8 @@ beamSlot::operator=(const beamSlot& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedRotate::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
       attachSystem::ExternalCut::operator=(A);
       xSize=A.xSize;
       zSize=A.zSize;
@@ -119,6 +120,7 @@ beamSlot::populate(const FuncDataBase& Control)
  */
 {
   ELog::RegMethod RegA("beamSlot","populate");
+
   FixedRotate::populate(Control);
   
   // First get inner widths:
@@ -259,8 +261,8 @@ beamSlot::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("beamSlot","createAll");
-  populate(System.getDataBase());
 
+  populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces(FC);
   createObjects(System);
