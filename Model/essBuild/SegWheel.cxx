@@ -38,8 +38,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "surfRegister.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "varList.h"
@@ -57,7 +55,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -189,7 +187,7 @@ SegWheel::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("SegWheel","populate");
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");   
 

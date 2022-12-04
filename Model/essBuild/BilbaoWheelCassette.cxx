@@ -38,13 +38,8 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
-#include "Surface.h"
 #include "surfRegister.h"
-#include "Quadratic.h"
-#include "Cylinder.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -59,7 +54,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
 #include "SurInter.h"
@@ -72,7 +67,7 @@ namespace essSystem
 BilbaoWheelCassette::BilbaoWheelCassette(const std::string& baseKey,
 					 const std::string& extraKey,
 					 const size_t& Index)  :
-  attachSystem::FixedOffset(baseKey+extraKey+std::to_string(Index),40),
+  attachSystem::FixedRotate(baseKey+extraKey+std::to_string(Index),40),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   baseName(baseKey),
@@ -91,7 +86,7 @@ BilbaoWheelCassette::BilbaoWheelCassette(const std::string& baseKey,
 }
 
 BilbaoWheelCassette::BilbaoWheelCassette(const BilbaoWheelCassette& A) :
-  attachSystem::FixedOffset(A),
+  attachSystem::FixedRotate(A),
   attachSystem::ContainedComp(A),
   attachSystem::ExternalCut(A),
   baseName(A.baseName),
@@ -135,7 +130,7 @@ BilbaoWheelCassette::operator=(const BilbaoWheelCassette& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ExternalCut::operator=(A);
       wallThick=A.wallThick;
       delta=A.delta;
@@ -270,9 +265,9 @@ BilbaoWheelCassette::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BilbaoWheelCassette","populate");
 
-  FixedOffset::populate(Control);
-
-
+  FixedRotate::populate(Control);
+  zAngle+=rotAngle;
+  
   bricksActive=Control.EvalDefTail<int>(keyName,commonName,"BricksActive",0);
   const double nSectors = Control.EvalVar<double>(baseName+"NSectors");
   delta = 360.0/nSectors;
@@ -634,7 +629,6 @@ BilbaoWheelCassette::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
-
   
   if (!bricksActive)
     {

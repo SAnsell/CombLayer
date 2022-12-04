@@ -61,7 +61,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
@@ -249,8 +249,8 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("BilbaoWheel","populate");
 
   // Master values
-  FixedOffset::populate(Control);
-
+  FixedRotate::populate(Control);
+  
   nSectors=Control.EvalDefVar<size_t>(keyName+"NSectors",3);
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
   double R;
@@ -1377,7 +1377,7 @@ BilbaoWheel::buildSectors(Simulation& System) const
       std::shared_ptr<BilbaoWheelCassette>
 	cassetteUnit(new BilbaoWheelCassette(keyName,"Sec",i));
       OR.addObject(cassetteUnit);
-      cassetteUnit->setAngle(static_cast<double>(i)*360.0/
+      cassetteUnit->setRotAngle(static_cast<double>(i)*360.0/
 			     static_cast<double>(nSectors));
       cassetteUnit->setLinkCopy("Inner",*this,9);
       cassetteUnit->setLinkCopy("Outer",*this,12);

@@ -36,7 +36,7 @@ namespace essSystem
 */
 
 class BilbaoWheelCassette :
-    public attachSystem::FixedOffset,
+    public attachSystem::FixedRotate,
     public attachSystem::ContainedComp,
     public attachSystem::ExternalCut
 {
@@ -47,6 +47,7 @@ class BilbaoWheelCassette :
 
   int bricksActive;            ///< True if bricks are active
 
+  double rotAngle;              ///< Rotation angle
   double wallThick;             ///< Side wall thickness
   double delta;                 ///< Angular width [deg]
   double temp;                  ///< Temperature
@@ -103,7 +104,8 @@ class BilbaoWheelCassette :
   virtual BilbaoWheelCassette* clone() const;
   virtual ~BilbaoWheelCassette();
 
-  void setAngle(const double XY) { xyAngle=XY; }
+  void setRotAngle(const double XY) { rotAngle=XY; }
+
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

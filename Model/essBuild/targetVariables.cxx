@@ -139,7 +139,7 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelXStep",0.0);
   Control.addVariable("BilbaoWheelYStep",112.2);
   Control.addVariable("BilbaoWheelZStep",0.0);
-  Control.addVariable("BilbaoWheelXYAngle",0.0);
+  Control.addVariable("BilbaoWheelXAngle",0.0);
   Control.addVariable("BilbaoWheelZAngle",0.0);
   Control.addVariable("BilbaoWheelTargetHeight",8.0); // TSM141108V3000
   Control.addVariable("BilbaoWheelTargetInnerHeight",6.6); // TSM141108V3000
@@ -246,7 +246,7 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("WheelXStep",0.0);  
   Control.addVariable("WheelYStep",113.0);  
   Control.addVariable("WheelZStep",0.0);
-  Control.addVariable("WheelXYAngle",0.0); 
+  Control.addVariable("WheelXAngle",0.0); 
   Control.addVariable("WheelZAngle",0.0);
   Control.addVariable("WheelTargetHeight",8.0);
   Control.addVariable("WheelTemp",600.0);

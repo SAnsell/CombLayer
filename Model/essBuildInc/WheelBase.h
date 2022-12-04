@@ -36,8 +36,8 @@ namespace essSystem
 */
 
 class WheelBase :
+    public attachSystem::FixedRotate,
     public attachSystem::ContainedGroup,
-    public attachSystem::FixedOffset,
     public attachSystem::CellMap
 {
  protected:
@@ -49,7 +49,6 @@ class WheelBase :
   WheelBase(const std::string&);
   WheelBase(const WheelBase&);
   WheelBase& operator=(const WheelBase&);
-  
   virtual ~WheelBase();
 
   void setEngActive() { engActive=1; }

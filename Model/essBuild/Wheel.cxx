@@ -3,7 +3,7 @@
  
  * File:   essBuild/Wheel.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "surfRegister.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
@@ -56,7 +54,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -144,8 +142,7 @@ Wheel::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("Wheel","populate");
-  FixedOffset::populate(Control);
-
+  FixedRotate::populate(Control);
 
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");   
   double R;
@@ -325,10 +322,13 @@ Wheel::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Wheel","createObjects");
 
-  // Inner Radius is 7
+
+  HeadRule HR;
   
+
+  // Inner Radius is 7
   const int matNum[4]={0,steelMat,heMat,wMat};
-  std::string Out;
+
   // 
   // Loop through each item and build inner section
   // 
@@ -337,18 +337,17 @@ Wheel::createObjects(Simulation& System)
   for(size_t i=0;i<nLayers;i++)
     {
       if (matTYPE[i]!=1)
-	Out=ModelSupport::getComposite(SMap,buildIndex,SI," 7M -17M 5 -6 ");
+	HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,"7M -17M 5 -6");
       else
-	Out=ModelSupport::getComposite(SMap,buildIndex,SI," 7M -17M 15 -16 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,
-				       matNum[matTYPE[i]],mainTemp,Out));  
+	HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,"7M -17M 15 -16");
+      System.addCell(cellIndex++,matNum[matTYPE[i]],mainTemp,HR);  
       SI+=10;
     }
   // Now make sections for the coolant
   int frontIndex(buildIndex);
   int backIndex(buildIndex);
-  const std::string TopBase=
-    ModelSupport::getComposite(SMap,buildIndex," 15 -16 (-5:6) ");
+  const HeadRule TopBase=
+    ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 (-5:6)");
   
   for(size_t i=0;i<nLayers;i++)
     {
@@ -356,70 +355,66 @@ Wheel::createObjects(Simulation& System)
 	{
 	  if (i)  // otherwize this space has zero size
 	    {
-	      Out=ModelSupport::getComposite(SMap,frontIndex,backIndex,
-					     " 7 -7M ");
-	      System.addCell(MonteCarlo::Object(cellIndex++,heMat,
-					       mainTemp,Out+TopBase));
+	      HR=ModelSupport::getHeadRule
+		(SMap,frontIndex,backIndex,"7 -7M");
+	      System.addCell(cellIndex++,heMat,mainTemp,HR*TopBase);
 	    }
-	  ELog::EM<<"++ Index = "<<buildIndex<<ELog::endDiag;
 	  frontIndex=backIndex+10;
 	}
       backIndex+=10;
     }
   // Final coolant section [ UNACCEPTABLE JUNK CELL]
-  Out=ModelSupport::getComposite(SMap,buildIndex," 6 -116 -517 1017 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,heMat,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"6 -116 -517 1017");
+  System.addCell(cellIndex++,heMat,mainTemp,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -5 115 -517 1017 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,heMat,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-5 115 -517 1017");
+  System.addCell(cellIndex++,heMat,mainTemp,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,frontIndex,
-				 "-16 6 -1017 7M ");
-  System.addCell(MonteCarlo::Object(cellIndex++,heMat,mainTemp,Out));
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,frontIndex,"-16 6 -1017 7M");
+  System.addCell(cellIndex++,heMat,mainTemp,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,frontIndex,
-				 "15 -5 -1017 7M ");
-  System.addCell(MonteCarlo::Object(cellIndex++,heMat,mainTemp,Out));
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,frontIndex,"15 -5 -1017 7M");
+  System.addCell(cellIndex++,heMat,mainTemp,HR);
 
 
-  
   // Back coolant:
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI," 7M -517 5 -6");	
-  System.addCell(MonteCarlo::Object(cellIndex++,heMat,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,"7M -517 5 -6");	
+  System.addCell(cellIndex++,heMat,mainTemp,HR);
 
-  // Metal surround [ UNACCEPTABLE JUNK CELL]
   // Metal front:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-527 517 115 -116");	
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-527 517 115 -116");	
+  System.addCell(cellIndex++,steelMat,mainTemp,HR);
 
   // forward Main sections:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-527 1027 -16 116");	
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-527 1027 -16 116");	
+  System.addCell(cellIndex++,steelMat,mainTemp,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-527 1027 15 -115");	
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-527 1027 15 -115");	
+  System.addCell(cellIndex++,steelMat,mainTemp,HR);
 
   // Join Main sections:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-1027 1017 -26 116");	
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1027 1017 -26 116");	
+  System.addCell(cellIndex++,steelMat,mainTemp,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-1027 1017 25 -115");	
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1027 1017 25 -115");	
+  System.addCell(cellIndex++,steelMat,mainTemp,HR);
 
   // Inner Main sections:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-1017 7 -26 16");	
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1017 7 -26 16");	
+  System.addCell(cellIndex++,steelMat,mainTemp,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-1017 7 25 -15");	
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1017 7 25 -15");	
+  System.addCell(cellIndex++,steelMat,mainTemp,HR);
 
   // Void surround
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "7 35 -36 -537 (-25:26:1027) (-125:126:527)");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"7 35 -36 -537 (-25:26:1027) (-125:126:527)");
+  System.addCell(cellIndex++,0,0.0,HR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-537 35 -36");	
-  addOuterSurf("Wheel",Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-537 35 -36");	
+  addOuterSurf("Wheel",HR);
 
   return; 
 }
@@ -473,12 +468,11 @@ Wheel::createAll(Simulation& System,
    */
 {
   ELog::RegMethod RegA("Wheel","createAll");
-  populate(System.getDataBase());
 
-  WheelBase::createUnitVector(FC,sideIndex);
+  populate(System.getDataBase());
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
-
   makeShaftSurfaces();
   makeShaftObjects(System);
   createLinks();
