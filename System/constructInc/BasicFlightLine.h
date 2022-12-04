@@ -36,8 +36,9 @@ namespace moderatorSystem
 */
 
 class BasicFlightLine :
-    public attachSystem::ContainedGroup,
     public attachSystem::FixedRotateUnit,
+    public attachSystem::ContainedGroup,
+    public attachSystem::ExternalCut,
     public attachSystem::CellMap
 {
  private:

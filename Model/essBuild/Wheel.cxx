@@ -216,38 +216,38 @@ Wheel::makeShaftObjects(Simulation& System)
    */
 {
   ELog::RegMethod RegA("Wheel","makeShaftObjects");
-  std::string Out;
+  HeadRule HR;
 
   // Main body [disk]
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-7 5 -6");	  
-  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 5 -6");	  
+  System.addCell(cellIndex++,innerMat,mainTemp,HR);
   // Coolant
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 15 -16 (-5 : 6 2007)" );	
-  System.addCell(MonteCarlo::Object(cellIndex++,heMat,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 15 -16 (-5 : 6 2007)");	
+  System.addCell(cellIndex++,heMat,mainTemp,HR);
 
   // steel
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 25 -26 (-15 : 16 2017)" );	
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 25 -26 (-15 : 16 2017)");	
+  System.addCell(cellIndex++,steelMat,mainTemp,HR);
 
   // void
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 35 -36 (-25 : 26 2027)" );	
-  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 35 -36 (-25 : 26 2027)");	
+  System.addCell(cellIndex++,0,mainTemp,HR);
 
   // shaft
-  Out=ModelSupport::getComposite(SMap,buildIndex," -2007 6 -2006 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,mainShaftMat,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2007 6 -2006");
+  System.addCell(cellIndex++,mainShaftMat,mainTemp,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -2017 2007 16 -2006 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,heMat,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2017 2007 16 -2006");
+  System.addCell(cellIndex++,heMat,mainTemp,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -2027 2017 26 -2006 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,cladShaftMat,mainTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2027 2017 26 -2006");
+  System.addCell(cellIndex++,cladShaftMat,mainTemp,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -2037 2027 36 -2006 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2037 2027 36 -2006");
+  System.addCell(cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -2037 36 -2006 ");
-  addOuterSurf("Shaft",Out);  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2037 36 -2006");
+  addOuterSurf("Shaft",HR);  
   return;
 }
 

@@ -147,12 +147,15 @@ WedgeFlightLine::buildWedges(Simulation& System,
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
+  ELog::EM<<"N Wedge == "<<nWedges<<ELog::endDiag;
   if (nWedges<1) return;
 
   for(size_t i=0;i<nWedges;i++)
     {
       std::shared_ptr<WedgeItem> wedgeObj(new WedgeItem(keyName+"Wedge",i+1));
       OR.addObject(wedgeObj);
+      wedgeObj->setCutSurf("OuterCyl",outerFC,outerIndex);
+      wedgeObj->setCutSurf("OuterCyl",outerFC,outerIndex);
       wedgeObj->createAll(System,outerFC,0,outerIndex,*this,-11,-12);
       wedges.push_back(wedgeObj);
     }

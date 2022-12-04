@@ -52,7 +52,7 @@ class WedgeItem :
   int mat;                       ///< material
 
   // aux variables, non-populated
-  Geometry::Cylinder *outerCyl;  ///< outer cylinder (base surface)
+  const Geometry::Cylinder *outerCyl;  ///< outer cylinder (base surface)
 
   // Functions:
 

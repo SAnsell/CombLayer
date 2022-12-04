@@ -66,14 +66,17 @@
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "ExternalCut.h"
 #include "BasicFlightLine.h"
 
 namespace moderatorSystem
 {
 
 BasicFlightLine::BasicFlightLine(const std::string& Key)  :
-  attachSystem::ContainedGroup("inner","outer"),
   attachSystem::FixedRotateUnit(Key,12),
+  attachSystem::ContainedGroup("inner","outer"),
+  attachSystem::ExternalCut(),
+  attachSystem::CellMap(),
   nLayer(0),tapFlag(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -82,8 +85,9 @@ BasicFlightLine::BasicFlightLine(const std::string& Key)  :
 {}
 
 BasicFlightLine::BasicFlightLine(const BasicFlightLine& A) : 
-  attachSystem::ContainedGroup(A),
   attachSystem::FixedRotateUnit(A),
+  attachSystem::ContainedGroup(A),
+  attachSystem::ExternalCut(A),
   attachSystem::CellMap(A),
   height(A.height),width(A.width),
   innerMat(A.innerMat),nLayer(A.nLayer),lThick(A.lThick),
@@ -110,8 +114,9 @@ BasicFlightLine::operator=(const BasicFlightLine& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedRotate::operator=(A);
+      attachSystem::ContainedGroup::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       attachSystem::CellMap::operator=(A);
       anglesXY[0]=A.anglesXY[0];
       anglesXY[1]=A.anglesXY[1];
@@ -311,7 +316,10 @@ BasicFlightLine::createObjects(Simulation& System,
   */
 {
   ELog::RegMethod RegA("BasicFlightLine","createObjects");
-    
+
+  const HeadRule innerHR=getRule("Inner");
+  const HeadRule outerHR=getRule("Outer");
+  
   const std::string innerCut=innerFC.getLinkString(innerIndex);
   const std::string outerCut=outerFC.getLinkString(outerIndex);
 
@@ -349,7 +357,6 @@ BasicFlightLine::createObjects(Simulation& System,
   return;
 }
 
-  
 void
 BasicFlightLine::createAll(Simulation& System,
 			   const attachSystem::FixedComp& originFC,

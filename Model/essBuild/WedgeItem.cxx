@@ -40,6 +40,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Vec3D.h"
+#include "Exception.h"
 #include "Surface.h"
 #include "surfRegister.h"
 #include "Quadratic.h"
@@ -173,8 +174,16 @@ WedgeItem::createSurfaces(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("WedgeItem","createSurface");
 
+  ELog::EM<<"CREATEA"<<ELog::endDiag;
+  const HeadRule cylHR=getNonDivideRule("OuterCyl");
+  outerCyl=dynamic_cast<const Geometry::Cylinder*>(cylHR.primarySurface());
+  if (!outerCyl)
+    throw ColErr::InContainerError<std::string>
+      ("OuterCyl","OuterCyl not found");
+  
   // we assume that baseSurf is cylinder
-  outerCyl = SMap.realPtr<Geometry::Cylinder>(FC.getLinkSurf(baseLinkPt));
+  //  outerCyl = SMap.realPtr<Geometry::Cylinder>
+  //    (FC.getLinkSurf(baseLinkPt));
 
   // divider:
   const Geometry::Plane *pZ =
