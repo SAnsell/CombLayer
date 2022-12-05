@@ -113,6 +113,31 @@ getLinePoint(const Geometry::Vec3D& Origin,
   
 Geometry::Vec3D
 getLinePoint(const Geometry::Vec3D& Origin,const Geometry::Vec3D& N,
+	     const HeadRule& mainHR,const Geometry::Vec3D& closePt)
+/*!
+    Given a line (origin:N) find the intersects wiht MainHR that
+    satisfy sndHR
+    \param Origin :: Origin of line
+    \param N :: Normal of line
+    \param mainHR :: Main headRule    
+    \param sndHR :: Secondary/ Bridge rule
+   */
+{
+  ELog::RegMethod RegA("SurInter[F]","getLinePoint(HR,closePt)");
+  
+  std::vector<Geometry::Vec3D> Pts;
+  std::vector<int> SNum;
+  mainHR.calcSurfIntersection(Origin,N,Pts,SNum);
+
+  if (Pts.empty())
+    throw ColErr::InContainerError<std::string>
+	(mainHR.display(),"HeadRule / Line does not intersect");
+
+  return nearPoint(Pts,closePt);
+}
+
+Geometry::Vec3D
+getLinePoint(const Geometry::Vec3D& Origin,const Geometry::Vec3D& N,
 	     const HeadRule& mainHR,const HeadRule& sndHR)
 /*!
     Given a line (origin:N) find the intersects wiht MainHR that

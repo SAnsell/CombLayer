@@ -43,7 +43,6 @@
 #include "OutputLog.h"
 #include "Vec3D.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "inputParam.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -1149,14 +1148,22 @@ makeESS::build(Simulation& System,
 
   // Build flightlines after bulk
   Reflector->deleteCell(System,"topVoid");
-  TopAFL->createAll(System,*TopMod,0,*Reflector,4,*Bulk,-3);
-  TopBFL->createAll(System,*TopMod,0,*Reflector,3,*Bulk,-3);
+  TopAFL->setCutSurf("Inner",*Reflector,4);
+  TopAFL->setCutSurf("Outer",*Bulk,-3);
+  TopBFL->setCutSurf("Inner",*Reflector,3);
+  TopBFL->setCutSurf("Outer",*Bulk,-3);
+  TopAFL->createAll(System,*TopMod,0);
+  TopBFL->createAll(System,*TopMod,0);
 
   if (lowModType != "None")
     {
       Reflector->deleteCell(System,"lowVoid");
-      LowAFL->createAll(System,*LowMod,0,*Reflector,4,*Bulk,-3);
-      LowBFL->createAll(System,*LowMod,0,*Reflector,3,*Bulk,-3);
+      LowAFL->setCutSurf("Inner",*Reflector,4);
+      LowAFL->setCutSurf("Outer",*Bulk,-3);
+      LowBFL->setCutSurf("Inner",*Reflector,3);
+      LowBFL->setCutSurf("Outer",*Bulk,-3);
+      LowAFL->createAll(System,*LowMod,0);
+      LowBFL->createAll(System,*LowMod,0);
     }
   
   // THESE calls correct the MAIN volume so pipe work MUST be after here:

@@ -460,9 +460,13 @@ ExternalCut::createLink(const std::string& extName,
   const std::string keyN=FC.getKeyName();
   FC.setLinkSurf(linkIndex,CU->main.complement());
   FC.setBridgeSurf(linkIndex,CU->divider);
-  FC.setConnect(linkIndex,
-	 SurInter::getLinePoint(Org+YAxis,-YAxis,CU->main,CU->divider),
-		YAxis);
+
+  const Geometry::Vec3D LPoint=
+    (!CU->divider.isEmpty()) ?
+    SurInter::getLinePoint(Org+YAxis,-YAxis,CU->main,CU->divider) : 
+    SurInter::getLinePoint(Org+YAxis,-YAxis,CU->main,Org);
+
+  FC.setConnect(linkIndex,LPoint,YAxis);
   return;
 }
   

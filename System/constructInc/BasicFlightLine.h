@@ -19,12 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef moderatorSystem_BasicFlightLine_h
-#define moderatorSystem_BasicFlightLine_h
+#ifndef constructSystem_BasicFlightLine_h
+#define constructSystem_BasicFlightLine_h
 
 class Simulation;
 
-namespace moderatorSystem
+namespace constructSystem
 {
 
 /*!
@@ -36,7 +36,7 @@ namespace moderatorSystem
 */
 
 class BasicFlightLine :
-    public attachSystem::FixedRotateUnit,
+    public attachSystem::FixedRotate,
     public attachSystem::ContainedGroup,
     public attachSystem::ExternalCut,
     public attachSystem::CellMap
@@ -60,10 +60,8 @@ class BasicFlightLine :
   
   void populate(const FuncDataBase&);
   void createSurfaces();
-  void createObjects(Simulation&,const attachSystem::FixedComp&,
-		     const long int,const attachSystem::FixedComp&,
-		     const long int);
-
+  void createObjects(Simulation&);
+  void createLinks();
   void removeObjects(Simulation&);
 
  public:
@@ -73,10 +71,10 @@ class BasicFlightLine :
   BasicFlightLine& operator=(const BasicFlightLine&);
   ~BasicFlightLine();
 
-  void createAll(Simulation&,
-		 const attachSystem::FixedComp&,const long int,
-		 const attachSystem::FixedComp&,const long int,
-		 const attachSystem::FixedComp&,const long int);
+  using FixedComp::createAll;
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
+
 
   
 };

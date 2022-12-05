@@ -72,7 +72,7 @@ namespace essSystem
 {
 
 WedgeFlightLine::WedgeFlightLine(const std::string& TKey) :
-  moderatorSystem::BasicFlightLine(TKey)
+  constructSystem::BasicFlightLine(TKey)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param TKey :: Name for item in search
@@ -80,7 +80,7 @@ WedgeFlightLine::WedgeFlightLine(const std::string& TKey) :
 {}
 
 WedgeFlightLine::WedgeFlightLine(const WedgeFlightLine& A) : 
-  moderatorSystem::BasicFlightLine(A),
+  constructSystem::BasicFlightLine(A),
   nWedges(A.nWedges),wedges(A.wedges)
   /*!
     Copy constructor
@@ -98,7 +98,7 @@ WedgeFlightLine::operator=(const WedgeFlightLine& A)
 {
   if (this!=&A)
     {
-      moderatorSystem::BasicFlightLine::operator=(A);
+      constructSystem::BasicFlightLine::operator=(A);
       nWedges=A.nWedges;
       wedges=A.wedges;
     }
@@ -126,51 +126,38 @@ WedgeFlightLine::populate(const FuncDataBase& Control)
 }
 
 void
-WedgeFlightLine::buildWedges(Simulation& System,
-			   const attachSystem::FixedComp& innerFC,
-			   const long int innerIndex,
-			   const attachSystem::FixedComp& outerFC,
-			   const long int outerIndex)
+WedgeFlightLine::buildWedges(Simulation& System)
   /*!
     Builds the flight line wedges.
     Arguments are the same as in createAll.
     \param System :: Simulation to add vessel to
-    \param originFC :: Origin
-    \param originIndex :: Use side index from Origin
-    \param innerFC :: Moderator Object
-    \param innerIndex :: Use side index from moderator
-    \param outerFC :: Edge of bulk shield 
-    \param outerIndex :: Side index of bulk shield
   */
 {
   ELog::RegMethod RegA("WedgeFlightLine","buildWedges");
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  ELog::EM<<"N Wedge == "<<nWedges<<ELog::endDiag;
   if (nWedges<1) return;
 
   for(size_t i=0;i<nWedges;i++)
     {
       std::shared_ptr<WedgeItem> wedgeObj(new WedgeItem(keyName+"Wedge",i+1));
       OR.addObject(wedgeObj);
-      wedgeObj->setCutSurf("OuterCyl",outerFC,outerIndex);
-      wedgeObj->setCutSurf("OuterCyl",outerFC,outerIndex);
-      wedgeObj->createAll(System,outerFC,0,outerIndex,*this,-11,-12);
+      wedgeObj->copyCutSurf("OuterCyl",*this,"Outer");
+      //      wedgeObj->createAll(System,outerFC,0,outerIndex,*this,-11,-12);
       wedges.push_back(wedgeObj);
     }
 
   // rebuild the Inner cell
   const std::pair<int,double> MatInfo=deleteCellWithData(System,"innerVoid");
 
-  std::string Out;
+  HeadRule HR;
 
-  const std::string baseOut=
-    innerFC.getLinkString(innerIndex)+
-    outerFC.getLinkString(outerIndex)+
-    this->getLinkString(-11)+
-    this->getLinkString(-12);
-  ELog::EM<<"Out["<<keyName<<"] == "<<baseOut<<ELog::endDiag;
+  const HeadRule innerHR=getRule("Inner");
+  const HeadRule outerHR=getRule("Outer");
+  const HeadRule udHR=getFullRule(-11)*getFullRule(-12);
+  const HeadRule backHR=getFullRule(2);
+  const HeadRule baseHR=udHR*innerHR*outerHR;
 
   // Create the radial surfaces that divide the wedges 
   int index(buildIndex+1001);
@@ -182,27 +169,28 @@ WedgeFlightLine::buildWedges(Simulation& System,
   // Create the void radial objects
   index=buildIndex+1000;
   int prevIndex(-(buildIndex+2));  // trick to get buildIndex+3 surface
-  std::string prevWedge;
+
+  HeadRule prevWedge;
   for (size_t i=0;i<nWedges;i++)
     {
-      Out= ModelSupport::getComposite(SMap,index,prevIndex," 1 -1M ")+
-        "("+wedges[i]->getLinkString(2)+":"+
-        wedges[i]->getLinkString(4)+")"+prevWedge;
+      HR= ModelSupport::getHeadRule(SMap,index,prevIndex,"1 -1M");
+      HR*=prevWedge*baseHR;
+      HR*=wedges[i]->getFullRule(2)+
+	wedges[i]->getFullRule(4);
       
-      System.addCell(MonteCarlo::Object(cellIndex++,
-                                       MatInfo.first,MatInfo.second,
-                                       Out+baseOut));
-      prevWedge=" ("+wedges[i]->getLinkString(2)+":"+
-        wedges[i]->getLinkString(3)+") ";
+      System.addCell(cellIndex++,MatInfo.first,
+		     MatInfo.second,HR);
+	
+      prevWedge=wedges[i]->getFullRule(2)+
+	wedges[i]->getFullRule(3);
       
       prevIndex=index++;
     }
-  Out=ModelSupport::getComposite(SMap,index-1,buildIndex," -1 -4M ")
-    +prevWedge;
+  HR=ModelSupport::getHeadRule(SMap,index-1,buildIndex,"-1 -4M")
+    *prevWedge;
 
-  System.addCell(MonteCarlo::Object(cellIndex++,
-                                   MatInfo.first,MatInfo.second,
-                                   Out+baseOut));
+  System.addCell(cellIndex++,MatInfo.first,
+		 MatInfo.second,HR*baseHR);
   
   return;
 }
@@ -211,33 +199,22 @@ WedgeFlightLine::buildWedges(Simulation& System,
 void
 WedgeFlightLine::createAll(Simulation& System,
 			   const attachSystem::FixedComp& originFC,
-			   const long int originIndex,
-			   const attachSystem::FixedComp& innerFC,
-			   const long int innerIndex,
-			   const attachSystem::FixedComp& outerFC,
-			   const long int outerIndex)
+			   const long int originIndex)
   /*!
     Global creation of the basic flight line connecting two
     objects
     \param System :: Simulation to add vessel to
     \param originFC :: Origin
     \param originIndex :: Use side index from Origin
-    \param innerFC :: Moderator Object
-    \param innerIndex :: Use side index from moderator
-    \param outerFC :: Edge of bulk shield 
-    \param outerIndex :: Side index of bulk shield
-
   */
 {
   ELog::RegMethod RegA("WedgeFlightLine","createAll");
 
-  moderatorSystem::BasicFlightLine::createAll(System,
-                                              originFC, originIndex,
-                                              innerFC, innerIndex,
-                                              outerFC, outerIndex);
+  constructSystem::BasicFlightLine::createAll
+    (System,originFC,originIndex);
+
   populate(System.getDataBase());
-  buildWedges(System,innerFC,innerIndex,
-	      outerFC,outerIndex);
+  buildWedges(System);
     
   return;
 }

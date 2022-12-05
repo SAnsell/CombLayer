@@ -40,9 +40,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "stringCombine.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "surfRegister.h"
@@ -61,7 +58,6 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
-#include "FixedRotateUnit.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -69,11 +65,11 @@
 #include "ExternalCut.h"
 #include "BasicFlightLine.h"
 
-namespace moderatorSystem
+namespace constructSystem
 {
 
 BasicFlightLine::BasicFlightLine(const std::string& Key)  :
-  attachSystem::FixedRotateUnit(Key,12),
+  attachSystem::FixedRotate(Key,12),
   attachSystem::ContainedGroup("inner","outer"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -85,7 +81,7 @@ BasicFlightLine::BasicFlightLine(const std::string& Key)  :
 {}
 
 BasicFlightLine::BasicFlightLine(const BasicFlightLine& A) : 
-  attachSystem::FixedRotateUnit(A),
+  attachSystem::FixedRotate(A),
   attachSystem::ContainedGroup(A),
   attachSystem::ExternalCut(A),
   attachSystem::CellMap(A),
@@ -166,7 +162,7 @@ BasicFlightLine::populate(const FuncDataBase& Control)
   lMat.clear();
   for(size_t i=0;i<nLayer;i++)
     {
-      const std::string idxStr=StrFunc::makeString(i+1);
+      const std::string idxStr=std::to_string(i+1);
       lThick.push_back(Control.EvalVar<double>(keyName+"LinerThick"+idxStr));
       lMat.push_back(ModelSupport::EvalMat<int>
 		     (Control,keyName+"LinerMat"+idxStr));
@@ -183,7 +179,6 @@ BasicFlightLine::populate(const FuncDataBase& Control)
 
   return;
 }
-  
 
 void
 BasicFlightLine::createSurfaces()
@@ -241,9 +236,11 @@ BasicFlightLine::createSurfaces()
 
       if (tapFlag & 1)
 	{
-	  ModelSupport::buildCone(SMap,buildIndex+II*10+15,
-				  Origin-Z*(height/2.0+layT),Z,90.0-anglesZ[0]);
-          ModelSupport::buildPlane(SMap,buildIndex+II*10+515,Origin-Z*(height/2.0+layT),Z);
+	  ModelSupport::buildCone
+	    (SMap,buildIndex+II*10+15,
+	     Origin-Z*(height/2.0+layT),Z,90.0-anglesZ[0]);
+          ModelSupport::buildPlane
+	    (SMap,buildIndex+II*10+515,Origin-Z*(height/2.0+layT),Z);
          }
       else
         ModelSupport::buildPlane(SMap,buildIndex+II*10+15,
@@ -251,9 +248,11 @@ BasicFlightLine::createSurfaces()
 
       if (tapFlag & 2)
         {
-          ModelSupport::buildCone(SMap,buildIndex+II*10+16,
-                                  Origin+Z*(height/2.0+layT),Z,90.0-anglesZ[1]);
-          ModelSupport::buildPlane(SMap,buildIndex+II*10+516,Origin+Z*(height/2.0+layT),Z);
+          ModelSupport::buildCone
+	    (SMap,buildIndex+II*10+16,
+	     Origin+Z*(height/2.0+layT),Z,90.0-anglesZ[1]);
+          ModelSupport::buildPlane
+	    (SMap,buildIndex+II*10+516,Origin+Z*(height/2.0+layT),Z);
         }
       else
         ModelSupport::buildPlane(SMap,buildIndex+II*10+16,
@@ -261,8 +260,75 @@ BasicFlightLine::createSurfaces()
     }
 
   // CREATE LINKS
+  return;
+}
+
+void
+BasicFlightLine::createObjects(Simulation& System)
+  /*!
+    Creates the objects for the flightline
+    \param System :: Simulation to create objects in
+  */
+{
+  ELog::RegMethod RegA("BasicFlightLine","createObjects");
+
+  HeadRule HR;
+  const HeadRule innerHR=getRule("Inner");
+  const HeadRule outerHR=getRule("Outer");
+    
+  const int layerIndex=buildIndex+static_cast<int>(nLayer)*10;  
+
+  HR=ModelSupport::getSetHeadRule(SMap,layerIndex,"3 -4 (5:505) (6:-506)");
+  addOuterSurf("outer",HR);
+
+  // Inner Void :
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"3 -4 (5:505) (6:-506)");
+ 
+  addOuterSurf("inner",HR);
+  makeCell("innerVoid",System,cellIndex++,innerMat,0.0,HR*innerHR*outerHR);
+  
+  //Flight layers:
+
+  for(size_t i=0;i<nLayer;i++)
+    {
+      const int II(static_cast<int>(i));
+      HR=ModelSupport::getSetHeadRule
+	(SMap,buildIndex+10*II,"13 -14 (15:505) (16:-506) "
+	 "(4 : -3 : (-5 -505) : (-6 506))");
+
+      makeCell("Layer"+std::to_string(i+1),
+	       System,cellIndex++,lMat[i],0.0,HR*innerHR*outerHR);
+    }      
+  
+  return;
+}
+
+void
+BasicFlightLine::createLinks()
+  /*!
+    Construction of links
+   */
+{
+  ELog::RegMethod RegA("BasicFlightLine","createLinks");
+
+  ExternalCut::createLink("Inner",*this,0,Origin,-Y);
+  ExternalCut::createLink("Outer",*this,1,Origin,Y);
+  
+  Geometry::Vec3D xDircA(X); 
+  Geometry::Vec3D xDircB(X);
+  Geometry::Vec3D zDircA(Z);   
+  Geometry::Vec3D zDircB(Z);
+
+  Geometry::Quaternion::calcQRotDeg(anglesXY[0],Z).rotate(xDircA);
+  Geometry::Quaternion::calcQRotDeg(-anglesXY[1],Z).rotate(xDircB);
+  Geometry::Quaternion::calcQRotDeg(-anglesZ[0],X).rotate(zDircA);
+  Geometry::Quaternion::calcQRotDeg(anglesZ[1],X).rotate(zDircB);
 
   const int sNum(buildIndex+static_cast<int>(10*nLayer));
+
+  double layT(0.0);
+  for(size_t i=0;i<nLayer;i++)
+    layT+=lThick[i];
 
   FixedComp::setLinkSurf(2,-SMap.realSurf(sNum+3));
   FixedComp::setLinkSurf(3,SMap.realSurf(sNum+4));
@@ -297,92 +363,31 @@ BasicFlightLine::createSurfaces()
       FixedComp::addLinkSurf(11,SMap.realSurf(buildIndex+506));
     }
   
-  return;
-}
 
-void
-BasicFlightLine::createObjects(Simulation& System,
-			       const attachSystem::FixedComp& innerFC,
-			       const long int innerIndex,
-			       const attachSystem::FixedComp& outerFC,
-			       const long int outerIndex)
-  /*!
-    Creates the objects for the flightline
-    \param System :: Simulation to create objects in
-    \param innerFC :: Inner Object
-    \param innerIndex :: Link point [if zero none]
-    \param outerFC :: Outer Object
-    \param outerIndex :: Link point [if zero none] 
-  */
-{
-  ELog::RegMethod RegA("BasicFlightLine","createObjects");
-
-  const HeadRule innerHR=getRule("Inner");
-  const HeadRule outerHR=getRule("Outer");
-  
-  const std::string innerCut=innerFC.getLinkString(innerIndex);
-  const std::string outerCut=outerFC.getLinkString(outerIndex);
-
-  setLinkCopy(0,innerFC,innerIndex);
-  setLinkCopy(1,outerFC,outerIndex);
-  
-  const int layerIndex=buildIndex+static_cast<int>(nLayer)*10;  
-  std::string Out;
-  Out=ModelSupport::getSetComposite(SMap,layerIndex," 3 -4 (5:505) (6:-506) ");
-  addOuterSurf("outer",Out);
-
-  // Inner Void :
-  Out=ModelSupport::getSetComposite(SMap,buildIndex," 3 -4 (5:505) (6:-506) ");
- 
-  addOuterSurf("inner",Out);
-  Out+=innerCut+outerCut; 
-
-  makeCell("innerVoid",System,cellIndex++,innerMat,0.0,Out);
-  //Flight layers:
-
-  for(size_t i=0;i<nLayer;i++)
-    {
-      const int II(static_cast<int>(i));
-      HeadRule Exclude(ModelSupport::getSetComposite
-		       (SMap,buildIndex+10*II," 3 -4 (5:505) (6:-506) "));
-      Exclude.makeComplement();
-
-      Out=ModelSupport::getSetComposite
-	(SMap,buildIndex+10*II," 13 -14 (15:505) (16:-506) ");
-      Out+=innerCut+outerCut+Exclude.display();
-      CellMap::makeCell("Layer"+std::to_string(i+1),
-			System,cellIndex++,lMat[i],0.0,Out);
-    }      
-  
   return;
 }
 
 void
 BasicFlightLine::createAll(Simulation& System,
-			   const attachSystem::FixedComp& originFC,
-			   const long int originIndex,
-			   const attachSystem::FixedComp& innerFC,
-			   const long int innerIndex,
-			   const attachSystem::FixedComp& outerFC,
-			   const long int outerIndex)
+			   const attachSystem::FixedComp& FC,
+			   const long int sideIndex)
   /*!
     Global creation of the basic flight line connecting two
     objects
     \param System :: Simulation to add vessel to
-    \param innerFC :: Moderator Object
-    \param innerIndex :: Use side index from moderator
-    \param outerFC :: Edge of bulk shield 
-    \param outerIndex :: Use side index from moderator
+    \param FC :: Moderator Object
+    \param sideIndex :: Use side index from moderator
 
   */
 {
   ELog::RegMethod RegA("BasicFlightLine","createAll");
   BasicFlightLine::populate(System.getDataBase());
 
-  createUnitVector(originFC,originIndex);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
 
-  createObjects(System,innerFC,innerIndex,outerFC,outerIndex);
+  createObjects(System);
+  createLinks();
   insertObjects(System);       
 
 
@@ -392,4 +397,4 @@ BasicFlightLine::createAll(Simulation& System,
 
 
   
-}  // NAMESPACE moderatorSystem
+}  // NAMESPACE constructSystem

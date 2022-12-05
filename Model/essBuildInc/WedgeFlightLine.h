@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/WedgeFlightLine.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2022 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ class WedgeItem;
 
   
 class WedgeFlightLine :
-    public moderatorSystem::BasicFlightLine
+    public constructSystem::BasicFlightLine
 {
  private:
   
@@ -53,9 +53,7 @@ class WedgeFlightLine :
   std::vector<std::shared_ptr<WedgeItem> > wedges; ///< array of wedges
 
   void populate(const FuncDataBase&);
-  void buildWedges(Simulation&,
-		   const attachSystem::FixedComp&,const long int,
-		   const attachSystem::FixedComp&,const long int);
+  void buildWedges(Simulation&);
   
  public:
 
@@ -64,10 +62,10 @@ class WedgeFlightLine :
   WedgeFlightLine& operator=(const WedgeFlightLine&);
   ~WedgeFlightLine();
 
-  void createAll(Simulation&,
-		 const attachSystem::FixedComp&,const long int,
-		 const attachSystem::FixedComp&,const long int,
-		 const attachSystem::FixedComp&,const long int);
+  using FixedComp::createAll;
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
+
 
 };
 
