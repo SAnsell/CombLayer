@@ -37,9 +37,9 @@ namespace ts1System
 */
 
 class CH4Moderator :
+    public attachSystem::FixedRotate,
     public attachSystem::ContainedComp,
     public attachSystem::LayerComp,
-    public attachSystem::FixedRotate,
     public attachSystem::CellMap
 {
  private:
@@ -74,7 +74,6 @@ class CH4Moderator :
 
   void populate(const FuncDataBase&);
   void createSurfaces();
-//  void createObjects(Simulation&);
   void createObjects(Simulation&);
   void createLinks();
 
@@ -89,8 +88,7 @@ class CH4Moderator :
 
 
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
-  virtual int getLayerSurf(const size_t,const long int) const;
-  virtual std::string getLayerString(const size_t,const long int) const;
+  virtual HeadRule getLayerHR(const size_t,const long int) const;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

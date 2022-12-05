@@ -67,9 +67,9 @@ namespace ts1System
 {
 
 H2Moderator::H2Moderator(const std::string& Key)  :
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(6),
-  attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap(),
   attachSystem::ExternalCut()
 
@@ -81,9 +81,9 @@ H2Moderator::H2Moderator(const std::string& Key)  :
 
 
 H2Moderator::H2Moderator(const H2Moderator& A) : 
+  attachSystem::FixedRotate(A),
   attachSystem::ContainedComp(A),
   attachSystem::LayerComp(A),
-  attachSystem::FixedRotate(A),
   attachSystem::CellMap(A),
   attachSystem::ExternalCut(A),
   width(A.width),height(A.height),depth(A.depth),
@@ -109,9 +109,9 @@ H2Moderator::operator=(const H2Moderator& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
-      attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::ExternalCut::operator=(A);
 
@@ -386,9 +386,9 @@ H2Moderator::getSurfacePoint(const size_t layerIndex,
   throw ColErr::IndexError<long int>(sideIndex,5,"sideIndex ");
 }
 
-std::string
-H2Moderator::getLayerString(const size_t layerIndex,
-			    const long int sideIndex) const
+HeadRule
+H2Moderator::getLayerHR(const size_t layerIndex,
+			const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param sideIndex :: Side [0-5]
@@ -418,39 +418,8 @@ H2Moderator::getLayerString(const size_t layerIndex,
     }
   if (sideIndex<0)
     HR.makeComplement();
-  return HR.display();
+  return HR;
 }
-
-int
-H2Moderator::getLayerSurf(const size_t layerIndex,
-			 const long int sideIndex) const
-  /*!
-    Given a side and a layer calculate the link surf
-    \param sideIndex :: Side [1-6]
-    \param layerIndex :: layer, 0 is inner moderator [0-4]
-    \return Surface string
-  */
-{
-  ELog::RegMethod RegA("H2Moderator","getLayerSurf");
-
-  if (sideIndex>6 || sideIndex<-6 || !sideIndex) 
-    throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
-  if (layerIndex>5) 
-    throw ColErr::IndexError<size_t>(layerIndex,5,"layer");
-
-  const int signValue=(sideIndex % 2) ? -1 : 1;
-  const int uSIndex(static_cast<int>(std::abs(sideIndex)));
-  if (uSIndex>3 || layerIndex>2)
-    {
-      const int surfN(buildIndex+
-		      static_cast<int>(10*layerIndex)+uSIndex);
-      return signValue*SMap.realSurf(surfN);
-    }
-  const int surfN(buildIndex+
-		  static_cast<int>(10*layerIndex)+uSIndex+6);
-  return (sideIndex<0) ? -SMap.realSurf(surfN) : SMap.realSurf(surfN);
-}
-
 
 void
 H2Moderator::createAll(Simulation& System,

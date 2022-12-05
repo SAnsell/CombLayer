@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -86,7 +84,7 @@ Box::Box(const Box& A) :
   attachSystem::ExternalCut(A),
   attachSystem::LayerComp(A),
   attachSystem::CellMap(A),
-  nLayers(A.nLayers),
+
   length(A.length),width(A.width),height(A.height),
   depth(A.depth),
   mat(A.mat),
@@ -113,7 +111,7 @@ Box::operator=(const Box& A)
       attachSystem::ExternalCut::operator=(A);
       attachSystem::LayerComp::operator=(A);
       attachSystem::CellMap::operator=(A);
-      nLayers=A.nLayers;
+
       length=A.length;
       width=A.width;
       height=A.height;
@@ -282,36 +280,9 @@ Box::createLinks()
   return;
 }
 
-int
-Box::getLayerSurf(const size_t layerIndex,
-		  const long int sideIndex) const
-  /*!
-    Given a side and a layer calculate the link surf
-    \param layerIndex :: layer, 0 is inner moderator [0-4]
-    \param sideIndex :: Side [1-4]
-    \return Surface string
-  */
-{
-  ELog::RegMethod RegA("Box","getLayerSurf");
-
-  if (layerIndex>=nLayers)
-    throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layerIndex");
-
-  const int uSIndex(std::abs(static_cast<int>(sideIndex)));
-  const int signValue((sideIndex>0) ? 1 : -1);  
-  const int SI(10*static_cast<int>(layerIndex)+buildIndex);
-  
-
-  if (uSIndex<1 || uSIndex>6)
-    throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
-  
-  return signValue*SMap.realSurf(SI+uSIndex);
-}
-
-
-std::string
-Box::getLayerString(const size_t layerIndex,
-		    const long int sideIndex) const
+HeadRule
+Box::getLayerHR(const size_t layerIndex,
+		const long int sideIndex) const
   /*!
     Given a side and a layer calculate the layer string
     \param layerIndex :: layer, 0 is inner moderator [0-4]
@@ -331,22 +302,22 @@ Box::getLayerString(const size_t layerIndex,
   switch(uSIndex)
     {
     case 1:
-      HR=ModelSupport::getHeadRule(SMap,SI,"-1");
+      HR=HeadRule(SMap,SI,-1);
       break;
     case 2:
-      HR=ModelSupport::getHeadRule(SMap,SI,"2");
+      HR=HeadRule(SMap,SI,2);
       break;
     case 3:
-      HR=ModelSupport::getHeadRule(SMap,SI,"-3");
+      HR=HeadRule(SMap,SI,-3);
       break;
     case 4:
-      HR=ModelSupport::getHeadRule(SMap,SI,"4");
+      HR=HeadRule(SMap,SI,4);
       break;
     case 5:
-      HR=ModelSupport::getHeadRule(SMap,SI,"-5");
+      HR=HeadRule(SMap,SI,-5);
       break;
     case 6:
-      HR=ModelSupport::getHeadRule(SMap,SI,"6");
+      HR=HeadRule(SMap,SI,6);
       break;
     default:
       throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
@@ -354,7 +325,7 @@ Box::getLayerString(const size_t layerIndex,
   if (sideIndex<0)
     HR.makeComplement();
 
-  return HR.display();
+  return HR;
 }
 
 Geometry::Vec3D

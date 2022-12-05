@@ -3,7 +3,7 @@
  
  * File:   essBuild/H2Wing.cxx 
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "stringCombine.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -74,9 +73,9 @@ namespace essSystem
 H2Wing::H2Wing(const std::string& baseKey,
 	       const std::string& extraKey,
 	       const double XYAngle) :
+  attachSystem::FixedComp(baseKey+extraKey,16),
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0,0),
-  attachSystem::FixedComp(baseKey+extraKey,16),
   attachSystem::CellMap(),
   baseName(baseKey),
   InnerComp(new H2FlowGuide(baseKey,extraKey,"FlowGuide")),
@@ -606,14 +605,14 @@ H2Wing::getLayerSurf(const size_t layerIndex,
   throw ColErr::IndexError<long int>(sideIndex,10,"sideIndex");
 }
 
-std::string
-H2Wing::getLayerString(const size_t layerIndex,
-		       const long int sideIndex) const
+HeadRule 
+H2Wing::getLayerHR(const size_t layerIndex,
+		   const long int sideIndex) const
   /*!
     Given a side and a layer calculate the surface bounding
     \param layerIndex :: layer, 0 is inner moderator [0-6]
     \param sideIndex :: Side [0-3]+mid sides   
-    \return Surface point
+    \return Surface HeadRule
   */
 {
   ELog::RegMethod RegA("H2Wing","getLayerString");
@@ -622,42 +621,42 @@ H2Wing::getLayerString(const size_t layerIndex,
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layerIndex");
 
   const int triOffset(buildIndex+static_cast<int>((layerIndex+1)*100));
-  std::string Out;
+  HeadRule HR;
   const long int uSIndex(std::abs(sideIndex));
   switch(uSIndex)
     {
     case 1:
-      Out=ModelSupport::getComposite(SMap,triOffset," 1 ");
+      HR=HeadRule(SMap,triOffset,1);
       break;
     case 2:
-      Out=ModelSupport::getComposite(SMap,triOffset," 2 ");
+      HR=HeadRule(SMap,triOffset,2);
       break;
     case 3:
-      Out=ModelSupport::getComposite(SMap,triOffset," 3 ");
+      HR=HeadRule(SMap,triOffset,3);
       break;
     case 5:
-      Out=ModelSupport::getComposite(SMap,triOffset," -5 ");
+      HR=HeadRule(SMap,triOffset,-5);
       break;
     case 6:
-      Out=ModelSupport::getComposite(SMap,triOffset," 6 ");
+      HR=HeadRule(SMap,triOffset,6);
       break;
     case 7:
-      Out=ModelSupport::getComposite(SMap,triOffset,"-1 -3 (21:-7) ");
+      HR=ModelSupport::getHeadRule(SMap,triOffset,"-1 -3 (21:-7)");
       break;
     case 8:
-      Out=ModelSupport::getComposite(SMap,triOffset,"-1 -2 (22:-8) ");
+      HR=ModelSupport::getHeadRule(SMap,triOffset,"-1 -2 (22:-8)");
       break;
     case 9:
-      Out=ModelSupport::getComposite(SMap,triOffset,"-2 -3 (23:-9) ");
+      HR=ModelSupport::getHeadRule(SMap,triOffset,"-2 -3 (23:-9)");
       break;
     case 10:
-      Out=ModelSupport::getComposite(SMap,triOffset," (21:-7) ");
+      HR=ModelSupport::getHeadRule(SMap,triOffset,"(21:-7)");
       break;
     case 11:
-      Out=ModelSupport::getComposite(SMap,triOffset," (22:-8) ");
+      HR=ModelSupport::getHeadRule(SMap,triOffset,"(22:-8)");
       break;
     case 12:
-      Out=ModelSupport::getComposite(SMap,triOffset," (23:-9) ");
+      HR=ModelSupport::getHeadRule(SMap,triOffset,"(23:-9)");
       break;
     default:
       throw ColErr::IndexError<long int>(sideIndex,12,
@@ -665,12 +664,9 @@ H2Wing::getLayerString(const size_t layerIndex,
     }
   
   if (sideIndex<0)
-    {
-      HeadRule HR(Out);
-      HR.makeComplement();
-      return HR.display();
-    }
-  return Out;
+    HR.makeComplement();
+
+  return HR;
 }
 
 

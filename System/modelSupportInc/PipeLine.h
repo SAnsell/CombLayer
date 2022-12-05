@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   processInc/PipeLine.h
+ * File:   modelSupportInc/PipeLine.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,9 +77,9 @@ class PipeLine
   
   void setPoints(const std::vector<Geometry::Vec3D>&);  
   void addPoint(const Geometry::Vec3D&);
-  void addSurfPoint(const Geometry::Vec3D&,const std::string&);
-  void addSurfPoint(const Geometry::Vec3D&,const std::string&,
-		    const std::string&);
+  void addSurfPoint(const Geometry::Vec3D&,const HeadRule&);
+  void addSurfPoint(const Geometry::Vec3D&,const HeadRule&,
+		    const HeadRule&);
   void addRadius(const double,const int,const double);
   void setActive(const size_t,const size_t);
   void setNAngle(const size_t);

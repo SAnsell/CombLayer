@@ -175,7 +175,7 @@ PipeLine::addPoint(const Geometry::Vec3D& newPt)
 }
 
 void 
-PipeLine::addSurfPoint(const Geometry::Vec3D& Pt,const std::string& surfStr)
+PipeLine::addSurfPoint(const Geometry::Vec3D& Pt,const HeadRule& surfStr)
   /*!
     Add an additional point
     \param Pt :: Point to add
@@ -183,14 +183,14 @@ PipeLine::addSurfPoint(const Geometry::Vec3D& Pt,const std::string& surfStr)
   */
 { 
   ELog::RegMethod RegA("PipeLine","addSurfPoint");
-  addSurfPoint(Pt,surfStr,std::string());
+  addSurfPoint(Pt,surfStr,HeadRule());
   return;
 }
 
 void 
 PipeLine::addSurfPoint(const Geometry::Vec3D& Pt,
-		       const std::string& surfStr,
-		       const std::string& commonStr)
+		       const HeadRule& surfHR,
+		       const HeadRule& commonHR)
   /*!
     Add an additional point
     \param Pt :: Point to add
@@ -200,19 +200,12 @@ PipeLine::addSurfPoint(const Geometry::Vec3D& Pt,
 { 
   ELog::RegMethod RegA("PipeLine","addSurfPoint");
 
-  HeadRule LSurf,CSurf;
+  if (surfHR.isEmpty())
+    throw ColErr::EmptyContainer("SurfHR");
 
-  if (LSurf.procString(surfStr)!=1)
-    throw ColErr::InvalidLine("surfStr",surfStr,0);
-
-  layerSurf.insert(std::map<size_t,HeadRule>::value_type(Pts.size(),LSurf));
-  if (!commonStr.empty())
-    {
-      if (CSurf.procString(commonStr)!=1)
-	throw ColErr::InvalidLine("commonStr",commonStr,0);
-    }
+  layerSurf.insert(std::map<size_t,HeadRule>::value_type(Pts.size(),surfHR));
   // insert empty rule if needed
-  commonSurf.insert(std::map<size_t,HeadRule>::value_type(Pts.size(),CSurf));
+  commonSurf.insert(std::map<size_t,HeadRule>::value_type(Pts.size(),commonHR));
 
   Pts.push_back(Pt);
   if (Pts.size()>1)

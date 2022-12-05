@@ -383,105 +383,97 @@ MidWaterDivider::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("MidWaterDivider","createObjects");
 
-  const std::string Base=AWingPtr->getLinkString(-5);
-  const std::string Top=AWingPtr->getLinkString(-6);
+  const HeadRule BaseHR=AWingPtr->getRule(-5);
+  const HeadRule TopHR=AWingPtr->getRule(-6);
   
-  HeadRule LCut(AWingPtr->getLayerString(cutLayer,7));
-  HeadRule RCut(BWingPtr->getLayerString(cutLayer,7));
+  const HeadRule LCut(AWingPtr->getLayerHR(cutLayer,-7));
+  const HeadRule RCut(BWingPtr->getLayerHR(cutLayer,-7));
 
-  LCut.makeComplement();
-  RCut.makeComplement();
-  std::string Out;
+  HeadRule HR;
 
   if (topThick>Geometry::zeroTol)
     {
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"300 100 4 -11 -5 (-7:8)");
-      Out+=LCut.display()+Base;
-      System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
+      HR=ModelSupport::getSetHeadRule
+	(SMap,buildIndex,"300 100 4 -11 -5 (-7:8)");
+      System.addCell(cellIndex++,modMat,modTemp,HR*LCut*BaseHR);
 
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"-300 100 -3 -12 -5 (-17:18)");
+      HR=ModelSupport::getSetHeadRule
+	(SMap,buildIndex,"-300 100 -3 -12 -5 (-17:18)");
       Out+=RCut.display()+Base;
-      System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
+      System.addCell(cellIndex++,modMat,modTemp,HR*RCut*BaseHR);
 
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"300 100 4 -11  5 (-7:8)");
-      Out+=LCut.display()+Top;
-      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,Out));
+      HR=ModelSupport::getSetHeadRule
+	(SMap,buildIndex,"300 100 4 -11  5 (-7:8)");
+      System.addCell(cellIndex++,wallMat,modTemp,HR*LCut*TopHR);
 
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"-300 100 -3 -12 5 (-17:18)");
-      Out+=RCut.display()+Top;
-      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,Out));
+      HR=ModelSupport::getSetHeadRule
+	(SMap,buildIndex,"-300 100 -3 -12 5 (-17:18)");
+      System.addCell(cellIndex++,wallMat,modTemp,HR*RCut*TopHR);
 
       // Reverse side
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,
-                                     "300 -100 -23  -31  -5 (-37:38) ");
-      Out+=LCut.display()+Base;
-      System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
+      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,
+                                    "300 -100 -23  -31  -5 (-37:38)");
+      System.addCell(cellIndex++,modMat,modTemp,HR*LCut*BaseHR);
       
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,
-                                     "-300 -100 24 -32 -5 (-27:28)");
-      Out+=RCut.display()+Base;
-      System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
+      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,
+                                    "-300 -100 24 -32 -5 (-27:28)");
+      System.addCell(cellIndex++,modMat,modTemp,HR*RCut*BaseHR);
 
       
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,
-                                     "300 -100 -23 -31 5 (-37:38) ");
-      Out+=LCut.display()+Top;
-      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,Out));
+      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,
+                                    "300 -100 -23 -31 5 (-37:38)");
+      System.addCell(cellIndex++,wallMat,modTemp,HR*LCut*TopHR);
 
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,
-                                     "-300 -100 24 -32 5 (-27:28)");
-      Out+=RCut.display()+Top;
-      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,Out));
+      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,
+                                    "-300 -100 24 -32 5 (-27:28)");
+      System.addCell(cellIndex++,wallMat,modTemp,HR*RCut*TopHR);
     }
   else 
     {
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"300 100 4 -11 (-7:8)");
-      Out+=LCut.display()+Base+Top;
-      System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
+      HR=ModelSupport::getSetHeadRule
+	(SMap,buildIndex,"300 100 4 -11 (-7:8)");
+      System.addCell(cellIndex++,modMat,modTemp,HR*LCut*BaseHR*TopHR);
       
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"-300 100 -3 -12 (-17:18)");
-      Out+=RCut.display()+Base+Top;
-      System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
+      HR=ModelSupport::getSetHeadRule
+	(SMap,buildIndex,"-300 100 -3 -12 (-17:18)");
+      System.addCell(cellIndex++,modMat,modTemp,HR*RCut*BaseHR*TopHR);
 
       // Reverse layers
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"300 -100 -23 -31 (-37:38)");
-      Out+=LCut.display()+Base+Top;
-      System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
+      HR=ModelSupport::getSetHeadRule
+	(SMap,buildIndex,"300 -100 -23 -31 (-37:38)");
+      System.addCell(cellIndex++,modMat,modTemp,HR*LCut*BaseHR*TopHR);
 
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"-300 -100 24 -32 (-27:28)");
-      Out+=RCut.display()+Base+Top;
-      System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
+      HR=ModelSupport::getSetHeadRule
+	(SMap,buildIndex,"-300 -100 24 -32 (-27:28)");
+      System.addCell(cellIndex++,modMat,modTemp,HR*RCut*BaseHR*TopHR);
       
     }
   
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,
-				 "300 100 104 -111 (-107:108) (-4 : 11 : (7 -8) ) ");				 
-  Out+=LCut.display()+Base+Top;
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,Out));
+  HR=ModelSupport::getSetHeadRule
+    (SMap,buildIndex,"300 100 104 -111 (-107:108) (-4 : 11 : (7 -8) )");
+  System.addCell(cellIndex++,wallMat,modTemp,HR*BaseHR*TopHR*LCut);
 
 
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,
-				 "-300 100 -103 -112 (-117:118) (3 : 12 : (17 -18)) ");				 
+  HR=ModelSupport::getSetHeadRule
+    (SMap,buildIndex,"-300 100 -103 -112 (-117:118) (3 : 12 : (17 -18))");				 
   Out+=RCut.display()+Base+Top;
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,Out));
+  System.addCell(cellIndex++,wallMat,modTemp,HR);
 
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,
-				 "100 ( (-103 (-117:118)) : (104  (-107:108)) )  -111 -112 ");
-  addOuterSurf(Out);
+  HR=ModelSupport::getSetHeadRule
+    (SMap,buildIndex,"100 ( (-103 (-117:118)) : (104  (-107:108)) ) -111 -112");
+  addOuterSurf(HR);
 
   // Reverse side
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,
-				 "300 -100 -123 -131 (-137:138) (23 : 31 : (37 -38))");
-  Out+=LCut.display()+Base+Top;
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,Out));
+  HR=ModelSupport::getSetHeadRule
+    (SMap,buildIndex,"300 -100 -123 -131 (-137:138) (23 : 31 : (37 -38))");
+  System.addCell(cellIndex++,wallMat,modTemp,HR*RCut*BaseHR*TopHR);
 
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,
-				 "-300 -100 124 -132 (-127:128) (-24 : 32 : (27 -28))");
-  Out+=RCut.display()+Base+Top;
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,Out));
+  HR=ModelSupport::getSetHeadRule
+    (SMap,buildIndex,"-300 -100 124 -132 (-127:128) (-24 : 32 : (27 -28))");
+  System.addCell(cellIndex++,wallMat,modTemp,HR*RCut*BaseHR*TopHR);
 
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,
-				 "-100 ( (-123 (-137:138)) : (124 (-127:128)) ) -131 -132 ");
+  HR=ModelSupport::getSetHeadRule
+    (SMap,buildIndex,"-100 ( (-123 (-137:138)) : (124 (-127:128)) ) -131 -132");
   addOuterUnionSurf(Out);
   
    
@@ -501,13 +493,13 @@ MidWaterDivider::cutOuterWing(Simulation& System) const
   const size_t lWing=AWingPtr->getNLayers();
   const size_t rWing=BWingPtr->getNLayers();
 
-  const std::string LBase=
-    AWingPtr->getLinkString(-5)+AWingPtr->getLinkString(-6);
-  const std::string RBase=
-    BWingPtr->getLinkString(-5)+BWingPtr->getLinkString(-6);
+  const HeadRule LBase=
+    AWingPtr->getFullRule(-5)*AWingPtr->getFullRule(-6);
+  const HeadRule RBase=
+    BWingPtr->getFullRule(-5)*BWingPtr->getFullRule(-6);
 
   HeadRule cutRule;
-  std::string Out;
+  HeadRule HR;
   if (cutLayer+1<lWing)
     {
       const int cellA=AWingPtr->getCell("Outer");
@@ -515,9 +507,8 @@ MidWaterDivider::cutOuterWing(Simulation& System) const
       MonteCarlo::Object* OPtr=System.findObject(cellA);
       if (!OPtr)
 	throw ColErr::InContainerError<int>(cellA,"leftWing Cell: Outer");
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     " (100: -11) (-100:-31) ");
-      cutRule.procString(Out);
+      cutRule=ModelSupport::getHeadRule
+	(SMap,buildIndex,"(100: -11) (-100:-31)");
       cutRule.makeComplement();
       OPtr->addSurfString(cutRule.display());
     }
@@ -527,7 +518,7 @@ MidWaterDivider::cutOuterWing(Simulation& System) const
       MonteCarlo::Object* OPtr=System.findObject(cellB);
       if (!OPtr)
 	throw ColErr::InContainerError<int>(cellB,"rightWing Cell: Outer");
-      Out=ModelSupport::getComposite(SMap,buildIndex,
+      Out=ModelSupport::getHeadRule(SMap,buildIndex,
 				     " (100:-12) : (-100:-32) ");
       cutRule.procString(Out);
       cutRule.makeComplement();

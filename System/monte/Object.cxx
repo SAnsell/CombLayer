@@ -230,6 +230,20 @@ Object::clone() const
   return new Object(*this);
 }
 
+void
+Object::clearValid()
+  /*!
+    Function to remove all items that depended
+    on an old valid HRule.
+   */
+{
+  populated=0;
+  surNameSet.clear();
+  surfSet.clear();
+  objSurfValid=0;
+  return;
+}
+  
 int
 Object::getMatID() const
   /*!
@@ -449,16 +463,13 @@ Object::setObject(std::string Ln)
   // note that this invalidates the read density:
 
     
-  surfSet.clear();
-  surNameSet.clear();
-  objSurfValid=0;
 
   setMaterial(matN);
   Tmp=lineTemp;
   imp.setImp(static_cast<double>(lineIMP));
   trcl=lineTRCL;
 
-  populated=0;
+  clearValid();
   
   return 1;   // SUCCESS
 }
@@ -468,12 +479,15 @@ Object::procString(const std::string& cellStr)
   /*!
     Process a cell string
     \param cellStr :: Object string
-    \return -ve on error
+    \return O on failure / 1 on success
    */
 {
-  populated=0;
-  objSurfValid=0;
-  return HRule.procString(cellStr);
+  if (HRule.procString(cellStr))
+    {
+      clearValid();
+      return 1;
+    }
+  return 0;
 }
 
 int
@@ -481,10 +495,10 @@ Object::procHeadRule(const HeadRule& cellRule)
   /*!
     Process a cell string
     \param cellStr :: Object string
-    \return -ve on error
-   */
+    \return O on failure / 1 on success
+  */
 {
-  populated=0;
+  clearValid();
   HRule=cellRule;
   return 1;
 }
@@ -514,10 +528,7 @@ Object::setObject(const int N,const int matNum,
   if (!HRule.procString(cx.str()))
     throw ColErr::InvalidLine("Token string",cx.str());
 
-  surfSet.clear();
-  surNameSet.clear();
-  objSurfValid=0;
-  populated=0;
+  clearValid();
   return 1;
 }
 
@@ -565,9 +576,7 @@ Object::addIntersection(const HeadRule& HR)
   ELog::RegMethod RegA("Object","addIntersection");
   
   HRule.addIntersection(HR);
-  
-  populated=0;
-  objSurfValid=0;
+  clearValid();
   return;
 }
 
@@ -581,9 +590,7 @@ Object::addUnion(const HeadRule& HR)
   ELog::RegMethod RegA("Object","addIntersection");
   
   HRule.addUnion(HR);
-  
-  populated=0;
-  objSurfValid=0;
+  clearValid();
   return;
 }
 
@@ -597,18 +604,16 @@ Object::addSurfString(const std::string& XE)
   */
 {
   ELog::RegMethod RegA("Object","addSurfString");
-  const double Temp=Tmp;                   // need to set later
-  std::string Line;
-  if (HRule.isUnion())
-    Line = headStr()+" ("+cellCompStr()+")"+XE;
-  else
-    Line = str()+XE;
 
-  const int flag=setObject(Line);
-  Tmp=Temp;      
-  populated=0;
-  objSurfValid=0;
-  return flag;
+  if (!XE.empty())
+    {
+      HeadRule HR;
+      if (!HR.procString(XE)) return 0;
+      HRule*=HR;
+      clearValid();
+    }
+ 
+  return 1;
 }
 
 int
@@ -1092,7 +1097,8 @@ Object::removeSurface(const int SurfN)
 }
 
 int
-Object::substituteSurf(const int SurfN,const int NsurfN,
+Object::substituteSurf(const int SurfN,
+		       const int NsurfN,
 		       Geometry::Surface* SPtr)
   /*! 
     Removes a surface and then re-builds the 
@@ -1109,10 +1115,9 @@ Object::substituteSurf(const int SurfN,const int NsurfN,
     SPtr=ModelSupport::surfIndex::Instance().getSurf(abs(NsurfN));
   
   const int out=HRule.substituteSurf(SurfN,NsurfN,SPtr);
-  if ( out )
+  if (out)
     {
       populated=0;
-      populate();
       createSurfaceList();
     }
   return out;

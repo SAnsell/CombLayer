@@ -210,48 +210,21 @@ ButterflyModerator::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("ButterflyModerator","createObjects");
   
-  const std::string Exclude=ContainedComp::getExclude();
+  HeadRule excludeHR=ExternalCut::getRule("Outer");
 
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 5 -6 ");  
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+Exclude));
-  addCell("MainVoid",cellIndex-1);
-  
-  clearRules();
-  addOuterSurf(Out);
+    //ContainedComp::getExclude();
+
+  HeadRule HR;
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 5 -6");  
+  makeCell("MainVoid",System,cellIndex++,0,0.0,HR*excludeHR);  
+  //  clearRules();
+  addOuterSurf(HR);
   
   return;
 }
   
-
-int
-ButterflyModerator::getCommonSurf(const long int) const
-  /*!
-    Only components have reference values
-    \param  :: sideIndex
-    \return surface number
-  */
-  
-{
-  ELog::RegMethod RegA("ButterflyModerator","getCommonSurf");
-  throw ColErr::AbsObjMethod("Not implemented yet");
-}
-
-int
-ButterflyModerator::getLayerSurf(const size_t,const long int) const
-/*!
-  [PLACEHOLDER] Only components have reference values
-    \param  :: layer, 0 is inner moderator [0-6]
-    \param  :: Side [0-3] // mid sides   
-  \return layer surface
-  */
-{
-  ELog::RegMethod RegA("ButterflyModerator","getLayerSurf");
-  throw ColErr::AbsObjMethod("Not implemented yet");
-}
-
-std::string
-ButterflyModerator::getLayerString(const size_t,const long int) const
+HeadRule
+ButterflyModerator::getLayerHR(const size_t,const long int) const
   /*!
     Only components have reference values [PLACEHOLDER]
     \param  :: layer, 0 is inner moderator [0-6]

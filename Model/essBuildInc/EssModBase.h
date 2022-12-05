@@ -39,6 +39,7 @@ class EssModBase :
     public attachSystem::FixedRotate,
     public attachSystem::ContainedComp,
     public attachSystem::LayerComp,
+    public attachSystem::ExternalCut,
     public attachSystem::CellMap
 {
  protected:

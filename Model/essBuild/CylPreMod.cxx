@@ -685,10 +685,11 @@ CylPreMod::updateLayers(Simulation& System,
   MonteCarlo::Object* OPtr=System.findObject(layerCells[layerN]);
   if (!OPtr)
     throw ColErr::InContainerError<int>(layerCells[layerN],"layerCells");
+
   if (flag=='A')
-    OPtr->addSurfString(ExtAObj->createCut(levelN));
+    OPtr->addIntersection(ExtAObj->createCut(levelN));
   else
-    OPtr->addSurfString(ExtBObj->createCut(levelN));
+    OPtr->addIntersection(ExtBObj->createCut(levelN));
 
   return;  
 }

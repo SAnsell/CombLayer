@@ -66,9 +66,9 @@ namespace ts1System
 {
 
 CH4Moderator::CH4Moderator(const std::string& Key)  :
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(4),
-  attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap()
   
   /*!
@@ -78,8 +78,10 @@ CH4Moderator::CH4Moderator(const std::string& Key)  :
 {}
 
 CH4Moderator::CH4Moderator(const CH4Moderator& A) : 
-  attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
-  attachSystem::FixedRotate(A),attachSystem::CellMap(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::LayerComp(A),
+  attachSystem::CellMap(A),
   width(A.width),height(A.height),depth(A.depth),
   viewSphere(A.viewSphere),innerThick(A.innerThick),
   vacThick(A.vacThick),outerThick(A.outerThick),
@@ -106,9 +108,9 @@ CH4Moderator::operator=(const CH4Moderator& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
-      attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
       width=A.width;
       height=A.height;
@@ -328,8 +330,6 @@ CH4Moderator::createObjects(Simulation& System)
   HR*=ModelSupport::getHeadRule(SMap,buildIndex,"(-33:34:37:38:-35:36)");  
   makeCell("OuterVoid",System,cellIndex++,0,0.0,HR);
 
-
-
   return;
 }
 
@@ -416,42 +416,10 @@ CH4Moderator::getSurfacePoint(const size_t layerIndex,
   throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex ");
 }
 
-int
-CH4Moderator::getLayerSurf(const size_t layerIndex,
-			   const long int sideIndex) const
-  /*!
-    Given a side and a layer calculate the link surf
-    \param layerIndex :: layer, 0 is inner moderator [0-4]
-    \param sideIndex :: Side [1-6]
-    \return Surface number
-  */
-{
-  ELog::RegMethod RegA("CH4Moderator","getLayerSurf");
-  ELog::EM<<"CHECK OF LAYER/SIDE ORDER"<<ELog::endErr;
-  if (!sideIndex || std::abs(sideIndex)>6) 
-    throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex ");
-  if (layerIndex>4) 
-    throw ColErr::IndexError<size_t>(layerIndex,4,"layer");
 
-  int signValue=(sideIndex % 2 ) ? -1 : 1;
-  const int dirValue=(sideIndex<0) ? -1 : 1;
-  const int uSIndex(static_cast<int>(std::abs(sideIndex)));
-  
-  if (uSIndex>3 || layerIndex>2)
-    {
-      const int surfN(buildIndex+
-		      static_cast<int>(10*layerIndex)+uSIndex);
-      return dirValue*signValue*SMap.realSurf(surfN);
-    }
-  
-  const int surfN(buildIndex+
-		  static_cast<int>(10*layerIndex)+uSIndex+6);
-  return dirValue*SMap.realSurf(surfN);
-}
-
-std::string
-CH4Moderator::getLayerString(const size_t layerIndex,
-			     const long int sideIndex) const
+HeadRule
+CH4Moderator::getLayerHR(const size_t layerIndex,
+			 const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param layerIndex :: layer, 0 is inner moderator [0-4]
@@ -483,9 +451,8 @@ CH4Moderator::getLayerString(const size_t layerIndex,
     }
   if (sideIndex<0)
     HR.makeComplement();
-  return HR.display();
+  return HR;
 }
-
 
 void
 CH4Moderator::createAll(Simulation& System,

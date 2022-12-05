@@ -80,8 +80,6 @@
 #include "MonoPlug.h"
 #include "World.h"
 
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "HeadRule.h"
 #include "Importance.h"
 #include "Object.h"

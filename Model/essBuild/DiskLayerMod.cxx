@@ -344,18 +344,19 @@ DiskLayerMod::getSurfacePoint(const size_t layerIndex,
   throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
 }
 
-int
-DiskLayerMod::getLayerSurf(const size_t layerIndex,
-			   const long int sideIndex) const
+HeadRule 
+DiskLayerMod::getLayerHR(const size_t layerIndex,
+			 const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param layerIndex :: layer, 0 is inner moderator [0-4]
-    \param sideIndex :: Side [1-4]
-    \return Surface string
+    \param sideIndex :: Side [0-3]
+    \return Surface HeadRule
   */
 {
-  ELog::RegMethod RegA("H2Moderator","getLayerSurf");
+  ELog::RegMethod RegA("DiskLayerMod","getLayerHR");
 
+  HeadRule HR;
   const size_t SI(static_cast<size_t>(std::abs(sideIndex)));
   const int signValue((sideIndex>0) ? 1 : -1);
 
@@ -367,46 +368,30 @@ DiskLayerMod::getLayerSurf(const size_t layerIndex,
 					 "layerIndex in Z");
       const int LI((SI==5) ? static_cast<int>(midIndex-layerIndex)
                    : static_cast<int>(midIndex+layerIndex+1));
+
       
-      return (SI==5) ? -signValue*SMap.realSurf(buildIndex+LI*200+5) :
-	signValue*SMap.realSurf(buildIndex+LI*200+5);
+      HR= (SI==5) ?
+	HeadRule(SMap,buildIndex+LI*200,-signValue*5) :
+	HeadRule(SMap,buildIndex+LI*200,signValue*5);
     }
-  // HORRIZONTAL CUT
-
-
-  const size_t NSideLayer(radius[midIndex].size());
-  if (layerIndex>NSideLayer) 
+  else
+    {
+      // HORRIZONTAL CUT
+      const size_t NSideLayer(radius[midIndex].size());
+      if (layerIndex>NSideLayer) 
 	throw ColErr::IndexError<size_t>(layerIndex,NSideLayer,
 					 "layerIndex in XY");
-  const int LI(static_cast<int>(layerIndex+1));
-  if (SI<=4)
-    return signValue*SMap.realSurf(buildIndex+LI*200+7);
+      const int LI(static_cast<int>(layerIndex+1));
+      if (SI<=4)
+	HR=HeadRule(SMap,buildIndex+LI*200,signValue*7);
+      
+      throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
+    }      
   
-  throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
-
-}
-
-std::string
-DiskLayerMod::getLayerString(const size_t layerIndex,
-			   const long int sideIndex) const
-  /*!
-    Given a side and a layer calculate the link surf
-    \param layerIndex :: layer, 0 is inner moderator [0-4]
-    \param sideIndex :: Side [0-3]
-    \return Surface string
-  */
-{
-  ELog::RegMethod RegA("DiskLayerMod","getLayerString");
-
-  std::string Out;
-  Out=" "+std::to_string(getLayerSurf(layerIndex,sideIndex))+" ";
   if (sideIndex<0)
-    {
-      HeadRule HR(Out);
-      HR.makeComplement();
-      return HR.display();
-    }
-  return Out;
+    HR.makeComplement();
+
+  return HR;
 }
 
 

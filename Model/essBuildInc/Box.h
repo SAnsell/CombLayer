@@ -3,7 +3,7 @@
 
  * File:   essBuildInc/Box.h
  *
- * Copyright (c) 2017 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,6 @@ class Box :
 {
  private:
 
-  size_t nLayers;                ///< Number of layers
   std::vector<double> length;    ///< Lengths [additive]
   std::vector<double> width;     ///< Widths  [additive]
   std::vector<double> height;    ///< Heights [additive]
@@ -67,9 +66,9 @@ class Box :
   virtual Box* clone() const;
   virtual ~Box();
 
-  virtual int getLayerSurf(const size_t,const long int) const;
-  virtual std::string getLayerString(const size_t,const long int) const;
+  virtual HeadRule getLayerHR(const size_t,const long int) const;
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
+
   const HeadRule& getSideRule() const { return sideRuleHR; }
 
   /// total height of object

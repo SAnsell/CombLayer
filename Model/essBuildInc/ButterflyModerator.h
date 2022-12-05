@@ -76,9 +76,8 @@ class ButterflyModerator :
   virtual ~ButterflyModerator();
 
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
-  virtual int getLayerSurf(const size_t,const long int) const;
-  virtual std::string getLayerString(const size_t,const long int) const;
-  virtual int getCommonSurf(const long int) const;
+  virtual HeadRule getLayerHR(const size_t,const long int) const;
+  virtual HeadRule getCommonSurf(const long int) const;
 
   /// Accessor to radius
   void setRadiusX(const double R) { outerRadius=R; }

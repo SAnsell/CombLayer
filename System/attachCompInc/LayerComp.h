@@ -52,12 +52,11 @@ class LayerComp
 
   ///\cond ABSTRACT
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const =0;
-  virtual int getLayerSurf(const size_t,const long int) const =0;
-  virtual std::string getLayerString(const size_t,const long int) const =0;
+  virtual HeadRule getLayerHR(const size_t,const long int) const =0;
   ///\endcond ABSTRACT
 
   /// Access to common divider surface
-  virtual int getCommonSurf(const long int) const { return 0; }
+  virtual HeadRule getCommonSurf(const long int) const { return HeadRule(); }
 
   /// Access to number of layers:
   virtual size_t getNLayers(const long int =0) const 

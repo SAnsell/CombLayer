@@ -240,36 +240,9 @@ BoxModerator::createObjects(Simulation& System)
   
   return;
 }
-  
 
-int
-BoxModerator::getCommonSurf(const long int) const
-  /*!
-    Only components have reference values
-    \param  :: sideIndex
-    \return surface number
-  */
-  
-{
-  ELog::RegMethod RegA("BoxModerator","getCommonSurf");
-  throw ColErr::AbsObjMethod("Not implemented yet");
-}
-
-int
-BoxModerator::getLayerSurf(const size_t,const long int) const
-/*!
-  [PLACEHOLDER] Only components have reference values
-    \param  :: layer, 0 is inner moderator [0-6]
-    \param  :: Side [0-3] // mid sides   
-  \return layer surface
-  */
-{
-  ELog::RegMethod RegA("BoxModerator","getLayerSurf");
-  throw ColErr::AbsObjMethod("Not implemented yet");
-}
-
-std::string
-BoxModerator::getLayerString(const size_t,const long int) const
+HeadRule 
+BoxModerator::getLayerHR(const size_t,const long int) const
   /*!
     Only components have reference values [PLACEHOLDER]
     \param  :: layer, 0 is inner moderator [0-6]

@@ -78,9 +78,10 @@ class MidWaterDivider :
   virtual ~MidWaterDivider();
 
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
-  virtual std::string getLayerString(const size_t,const long int) const;
-  virtual int getLayerSurf(const size_t,const long int) const;
+  virtual HeadRule getLayerHR(const size_t,const long int) const;
 
+
+  /// What is this rubbish
   void setH2Wing(const H2Wing& A,const H2Wing& B)
   {
     AWingPtr=&A;
