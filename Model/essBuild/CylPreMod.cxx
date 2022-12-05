@@ -40,8 +40,6 @@
 #include "OutputLog.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "varList.h"
@@ -57,7 +55,6 @@
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "SurInter.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -165,22 +162,6 @@ CylPreMod::getBox(const char F) const
   return (F=='A') ? ExtAObj : ExtBObj;
 }
 
-std::string
-CylPreMod::getBoxCut(const char F) const
-  /*!
-    Simple accessor 
-    \param F :: Flag (A/B)
-    \return Object
-   */
-{
-  if (F=='A' && blockActiveA)
-    return ExtAObj->getLinkString(-4); 
-  if (F=='B' && blockActiveB)
-    return ExtBObj->getLinkString(-4); 
-  return "";
-}
-
-
 void
 CylPreMod::checkItems(const attachSystem::FixedComp& Mod)
   /*!
@@ -271,15 +252,12 @@ CylPreMod::populate(const FuncDataBase& Control)
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");   
   for(size_t i=0;i<nLayers;i++)
     {
-      H+=Control.EvalVar<double>
-	(StrFunc::makeString(keyName+"Height",i+1));   
-      D+=Control.EvalVar<double>
-	(StrFunc::makeString(keyName+"Depth",i+1));   
-      R+=Control.EvalVar<double>
-	(StrFunc::makeString(keyName+"Thick",i+1));   
-      M=ModelSupport::EvalMat<int>(Control,
-	StrFunc::makeString(keyName+"Material",i+1));   
-      const std::string TStr=StrFunc::makeString(keyName+"Temp",i+1);
+      const std::string nStr=std::to_string(i+1);
+      H+=Control.EvalVar<double>(keyName+"Height"+nStr);   
+      D+=Control.EvalVar<double>(keyName+"Depth"+nStr);   
+      R+=Control.EvalVar<double>(keyName+"Thick"+nStr);   
+      M=ModelSupport::EvalMat<int>(Control,keyName+"Material"+nStr);   
+      const std::string TStr=keyName+"Temp"+nStr;
       T=(!M || !Control.hasVariable(TStr)) ?
 	0.0 : Control.EvalVar<double>(TStr); 
       
@@ -295,14 +273,11 @@ CylPreMod::populate(const FuncDataBase& Control)
   double vH,vW,vA,vO;
   for(size_t i=0;i<nView;i++)
     {
-      vH=Control.EvalVar<double>
-	(StrFunc::makeString(keyName+"ViewHeight",i+1));   
-      vA=Control.EvalVar<double>
-	(StrFunc::makeString(keyName+"ViewAngle",i+1));   
-      vW=Control.EvalVar<double>
-	(StrFunc::makeString(keyName+"ViewWidth",i+1));   
-      vO=Control.EvalVar<double>
-	(StrFunc::makeString(keyName+"ViewOpenAngle",i+1));   
+      const std::string nStr=std::to_string(i+1);
+      vH=Control.EvalVar<double>(keyName+"ViewHeight"+nStr);   
+      vA=Control.EvalVar<double>(keyName+"ViewAngle"+nStr);   
+      vW=Control.EvalVar<double>(keyName+"ViewWidth"+nStr);   
+      vO=Control.EvalVar<double>(keyName+"ViewOpenAngle"+nStr);   
       viewAngle.push_back(vA);
       viewWidth.push_back(vW);
       viewOpenAngle.push_back(vO);
@@ -359,11 +334,17 @@ CylPreMod::createSurfaces()
 				       FLunit[j]);  
 	      SI++;
 	      if (jIndex<2)
-		step[jIndex]+=(i) ? radius[i]-radius[i-1] : radius[i]-innerRadius;
+		step[jIndex]+=(i) ?
+		  radius[i]-radius[i-1] :
+		  radius[i]-innerRadius;
 	      else if (jIndex==2)
-		step[jIndex]+=(i) ? depth[i]-depth[i-1] : depth[i]-innerDepth;
+		step[jIndex]+=(i) ?
+		  depth[i]-depth[i-1] :
+		  depth[i]-innerDepth;
 	      else if (jIndex==3)
-		step[jIndex]+=(i) ? height[i]-height[i-1] : height[i]-innerHeight;
+		step[jIndex]+=(i) ?
+		  height[i]-height[i-1] :
+		  height[i]-innerHeight;
 	    }
 	}
     }
@@ -382,7 +363,7 @@ CylPreMod::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("CylPreMod","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   layerCells.clear();
 
   int SI(buildIndex);
@@ -392,20 +373,21 @@ CylPreMod::createObjects(Simulation& System,
   const size_t even(!(nLayers % 2 ) ? nLayers-2 : nLayers);
   for(size_t i=0;i<nLayers;i++)
     {
-      Out=ModelSupport::getComposite(SMap,SI," -7 5 -6 ");
+      HR=ModelSupport::getHeadRule(SMap,SI,"-7 5 -6");
       if (i==nLayers-1)
-	{
-	  addOuterSurf("Main",Out);
-	}
+	addOuterSurf("Main",HR);
+
       for(size_t viewIndex=0;viewIndex<viewAngle.size();viewIndex++)
-	Out+=ModelSupport::getComposite(SMap,CI+100*static_cast<int>(viewIndex),
-					buildIndex+100*static_cast<int>(viewIndex),
-					" (-101M:103:104:105:106) ");
+	HR*=ModelSupport::getHeadRule
+	  (SMap,
+	   CI+100*static_cast<int>(viewIndex),
+	   buildIndex+100*static_cast<int>(viewIndex),
+	   "-101M:103:104:105:106");
       if (i)
-	Out+=ModelSupport::getComposite(SMap,SI-10," (7:-5:6) ");
+	HR*=ModelSupport::getHeadRule(SMap,SI-10,"7:-5:6");
       else if (CMod)
-	Out+=CMod->getExclude();
-      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
+	HR*=CMod->getOuterSurf();
+      System.addCell(cellIndex++,mat[i],temp[i],HR);
       layerCells.push_back(cellIndex-1);
       SI+=10;
       if (i!=even)
@@ -422,25 +404,26 @@ CylPreMod::createObjects(Simulation& System,
       for(size_t viewIndex=0;viewIndex<viewAngle.size();viewIndex++)
 	{	  
 	  const int divideN(buildIndex+100*static_cast<int>(viewIndex));
-	  Out=ModelSupport::getComposite(SMap,SI,CI," 7 -7M ");
-	  Out+=ModelSupport::getComposite
+	  HR=ModelSupport::getHeadRule(SMap,SI,CI,"7 -7M");
+	  HR*=ModelSupport::getHeadRule
 	    (SMap,SI+100*static_cast<int>(viewIndex),
-	     divideN," 101M (103:104:105:106) -113 -114 -115 -116");
-	  System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
+	     divideN,"101M (103:104:105:106) -113 -114 -115 -116");
+	  System.addCell(cellIndex++,mat[i],temp[i],HR);
 	  layerCells.push_back(cellIndex-1);
 	}
     }
   
   // Finally the void cell:
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 buildIndex+10*static_cast<int>(nLayers-1),"9 -7M ");
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,
+     buildIndex+10*static_cast<int>(nLayers-1),"9 -7M");
 
   for(size_t viewIndex=0;viewIndex<viewAngle.size();viewIndex++)
     {	  
-      std::string OComp(Out);
-      OComp+=ModelSupport::getComposite(SMap,buildIndex+100*static_cast<int>(viewIndex),
-				 "101 -103 -104 -105 -106 " );
-      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,OComp));
+      const HeadRule OComp=ModelSupport::getHeadRule
+	(SMap,buildIndex+100*static_cast<int>(viewIndex),
+	 "101 -103 -104 -105 -106");
+      System.addCell(cellIndex++,0,0.0,HR*OComp);
     }
   return; 
 }
