@@ -418,7 +418,7 @@ PancakeModerator::createAll(Simulation& System,
   createUnitVector(orgFC,orgIndex,axisFC,axisIndex);
   createSurfaces();
 
-  MidH2->createAll(System,*this,0,false,0.0);
+  MidH2->createAll(System,*this,0);
 
   const HeadRule ExcludeHR=
     ModelSupport::getHeadRule(SMap,buildIndex,"-7 5 -6");

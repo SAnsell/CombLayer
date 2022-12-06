@@ -205,7 +205,7 @@ EdgeWater::createObjects(Simulation& System)
   
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 103 -104");
   makeCell("Water",System,cellIndex++,modMat,modTemp,
-	   HR*containerHR+divHR);
+	   HR*containerHR*divHR);
   
   // Two walls : otherwise divider container
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -1 103");

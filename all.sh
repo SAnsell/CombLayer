@@ -2,8 +2,10 @@
 
 
 nValid=1000
-./ess -validAll --validCheck ${nValid} AA || exit 
+parallel --halt now,fail=1 "./ess --topModType {} --validAll --validCheck $nValid AA" ::: \
+     Butterfly Pancake 
 exit
+
 
 #segments=$(for i in {40..49}; do echo -n "Segment$i "; done)
 segments=All
@@ -23,7 +25,8 @@ parallel --halt now,fail=1 "./maxiv --defaultConfig Single {} --validAll --valid
 ./t1Real -validAll --validCheck ${nValid} AA || exit
 ./reactor -validAll --validCheck ${nValid} AA || exit
 ./saxs -validAll --validCheck ${nValid} AA || exit
-./ess -validAll --validCheck ${nValid} AA || exit 
+parallel --halt now,fail=1 "./ess --topModType {} --validAll --validCheck $nValid AA" ::: \
+     Butterfly Pancake 
 
 parallel --halt now,fail=1 "./ess --defaultConfig Single {} --validAll --validCheck $nValid AA" ::: \
  ESTIA CSPEC  ODIN MAGIC BIFROST  HEIMDAL  LOKI  NMX  NNBAR  DREAM  BEER   \

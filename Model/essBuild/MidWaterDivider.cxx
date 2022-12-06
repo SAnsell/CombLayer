@@ -459,7 +459,7 @@ MidWaterDivider::createObjects(Simulation& System)
   // Reverse side
   HR=ModelSupport::getSetHeadRule
     (SMap,buildIndex,"300 -100 -123 -131 (-137:138) (23 : 31 : (37 -38))");
-  System.addCell(cellIndex++,wallMat,modTemp,HR*RCut*BaseHR*TopHR);
+  System.addCell(cellIndex++,wallMat,modTemp,HR*LCut*BaseHR*TopHR);
 
   HR=ModelSupport::getSetHeadRule
     (SMap,buildIndex,"-300 -100 124 -132 (-127:128) (-24 : 32 : (27 -28))");

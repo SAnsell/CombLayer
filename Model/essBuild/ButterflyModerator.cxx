@@ -210,9 +210,10 @@ ButterflyModerator::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("ButterflyModerator","createObjects");
   
-  HeadRule excludeHR=ExternalCut::getRule("Outer");
+  HeadRule excludeHR=
+    ExternalCut::getRule("Outer");
 
-    //ContainedComp::getExclude();
+  excludeHR=getOuterSurf().complement();
 
   HeadRule HR;
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 5 -6");  
@@ -343,7 +344,7 @@ ButterflyModerator::getLeftFarExclude() const
   return HR;
 }
 
-std::string
+HeadRule
 ButterflyModerator::getRightFarExclude() const
   /*!
     Get the outer exclude surface without top/base

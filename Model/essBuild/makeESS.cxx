@@ -490,7 +490,6 @@ makeESS::buildTopButterfly(Simulation& System)
   std::shared_ptr<ButterflyModerator> BM
     (new essSystem::ButterflyModerator("TopFly"));
   BM->setRadiusX(Reflector->getRadius());
-
   TopMod=std::shared_ptr<EssModBase>(BM);
   TopMod->createAll(System,*TopPreMod,6,*Reflector,0);
   return;
@@ -977,7 +976,7 @@ makeESS::buildPreWings(Simulation& System)
   ELog::RegMethod RegA("makeESS","buildPreWings");
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  enum Side {bottom, top};
+  //  enum Side {bottom, top};
 
   const ButterflyModerator* TMod=
     dynamic_cast<const ButterflyModerator*>(TopMod.get());
@@ -987,13 +986,14 @@ makeESS::buildPreWings(Simulation& System)
         (new PreModWing("TopLeftPreWing"));
       
       OR.addObject(TopPreWingA);
-      TopPreWingA->setDivider(TMod->getMainRule(-7));
-      TopPreWingA->setInnerExclude(TMod->getLeftExclude());
-      TopPreWingA->setMidExclude(TMod->getLeftFarExclude());
+      TopPreWingA->setCutSurf("Divider",TMod->getMainRule(-7));
+      TopPreWingA->setCutSurf("Inner",TMod->getLeftExclude());
+      TopPreWingA->setCutSurf("Mid",TMod->getLeftFarExclude());
 
-      TopPreWingA->setBaseCut(TopPreMod->getSurfRules("Layer2"));
-      TopPreWingA->setTopCut(TopCapMod->getFullRule(5));
-      TopPreWingA->setOuter(TopPreMod->getSurfRule("-OuterRad"));
+      TopPreWingA->setCutSurf("Base",TopPreMod->getSurfRules("Layer2"));
+      TopPreWingA->setCutSurf("Top",*TopCapMod,5);
+      TopPreWingA->setCutSurf("Outer",TopPreMod->getSurfRule("-OuterRad"));
+
       TopPreWingA->addInsertCell(TMod->getCells("MainVoid"));
       TopPreWingA->createAll(System,*TMod,0);
 
@@ -1001,12 +1001,13 @@ makeESS::buildPreWings(Simulation& System)
         std::shared_ptr<PreModWing>(new PreModWing("TopRightPreWing"));
       
       OR.addObject(TopPreWingB);
-      TopPreWingB->setDivider(TMod->getMainRule(7));
-      TopPreWingB->setInnerExclude(TMod->getRightExclude());
-      TopPreWingB->setMidExclude(TMod->getRightFarExclude());
-      TopPreWingB->setBaseCut(TopPreMod->getFullRule(6));
-      TopPreWingB->setTopCut(TopCapMod->getFullRule(5));
-      TopPreWingB->setOuter(TopPreMod->getSurfRule("-OuterRad"));
+      TopPreWingB->setCutSurf("Divider",TMod->getMainRule(7));
+      TopPreWingB->setCutSurf("Inner",TMod->getRightExclude());
+      TopPreWingB->setCutSurf("Mid",TMod->getRightFarExclude());
+
+      TopPreWingB->setCutSurf("Base",*TopPreMod,6);
+      TopPreWingB->setCutSurf("Top",*TopCapMod,5);
+      TopPreWingB->setCutSurf("Outer",TopPreMod->getSurfRule("-OuterRad"));
       
       TopPreWingB->addInsertCell(TMod->getCells("MainVoid"));
       TopPreWingB->createAll(System,*TMod,0);

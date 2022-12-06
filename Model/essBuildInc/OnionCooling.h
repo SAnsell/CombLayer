@@ -13,8 +13,10 @@ namespace essSystem
 */
 
 class OnionCooling :
-  public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset
+    public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
+    public attachSystem::ExternalCut,
+    public attachSystem::CellMap
 {
  private:
 
@@ -30,11 +32,11 @@ class OnionCooling :
   // Functions:
 
   void populate(const FuncDataBase&);
-
   void createSurfaces();
   void createObjects(Simulation&, const attachSystem::FixedComp&);
   void createLinks();
 
+  void addToInsertChain(attachSystem::ContainedComp&) const;
  public:
 
   OnionCooling(const std::string&);
@@ -47,9 +49,11 @@ class OnionCooling :
   void setUpperSurface(const attachSystem::FixedComp& FC, const long int link);
 
   int getMainCell() const { return buildIndex+1; }
-  virtual void addToInsertChain(attachSystem::ContainedComp&) const;
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int); 
+
+  using FixedComp::createAll;
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int); 
   
 };
 

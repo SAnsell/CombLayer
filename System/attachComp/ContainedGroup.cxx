@@ -405,11 +405,11 @@ ContainedGroup::getAllExclude() const
   */
 {
   ELog::RegMethod RegA("ContainedGroup","getExclude");
-  HeadRule Out;
+  HeadRule HR;
   for(const auto& [key,CC] : CMap)
-    Out.addUnion(CC.getOuterSurf());
+    HR.addUnion(CC.getOuterSurf());
 		 
-  return Out.complement();
+  return HR.complement();
 }
 
 std::string

@@ -37,7 +37,7 @@ namespace essSystem
 */
 
 class DiskPreMod :
-  public attachSystem::FixedOffsetUnit,
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::LayerComp,
   public attachSystem::CellMap,
@@ -65,10 +65,8 @@ class DiskPreMod :
 
   HeadRule sideRuleHR;
 
-  using FixedOffset::populate;
-  void populate(const FuncDataBase&,const double&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int,
-			const bool);
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -85,6 +83,7 @@ class DiskPreMod :
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
   virtual HeadRule getLayerHR(const size_t,const long int) const;
 
+  // 
   HeadRule getSideRule() const { return sideRuleHR; }
 
   /// total height of object
@@ -92,8 +91,9 @@ class DiskPreMod :
   double getHeight() const
     { return (depth.empty()) ? 0.0 : depth.back()+height.back(); }
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int,const bool,const double&);
+		 const long int);
 
 };
 

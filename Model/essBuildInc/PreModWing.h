@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/PreModWing.h
  *
- * Copyright (c) 2015-2017 by Konstantin Batkov/Stuart Ansell
+ * Copyright (c) 2015-2022 by Konstantin Batkov/Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,8 +35,10 @@ namespace essSystem
   \brief Premoderator wing :fills space below pre-mod and H2 start.
 */
 
-class PreModWing : public attachSystem::ContainedComp,
+class PreModWing : 
   public attachSystem::FixedOffset,
+  public attachSystem::ContainedComp,
+  public attachSystem::ExternalCut,
   public attachSystem::CellMap
 {
  private:
@@ -59,19 +61,11 @@ class PreModWing : public attachSystem::ContainedComp,
   std::vector<int> innerMat;      ///< Inner materials [water]
   std::vector<int> surfMat;       ///< Surface material [al]
   
-  HeadRule topSurf;              ///< Top cut surface
-  HeadRule baseSurf;             ///< Base cut surface
-  HeadRule innerSurf;            ///< Inner surface(s)
-  HeadRule midSurf;              ///< Extended Inner surface(s)
   HeadRule outerSurf;            ///< Outer surface(s)
-  HeadRule mainDivider;          ///< Seperatue unit for divider [to simpify boundary]
-
-  std::string getLayerZone(const size_t) const;
+  
+  HeadRule getLayerZone(const size_t) const;
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -84,21 +78,7 @@ class PreModWing : public attachSystem::ContainedComp,
   virtual PreModWing* clone() const;
   virtual ~PreModWing();
 
-  /// assignment of main string
-  void setInnerExclude(const std::string& HRStr)
-  { innerSurf.procString(HRStr); }
-  /// assignment of oute radial divider
-  void setMidExclude(const std::string& HRStr)
-  { midSurf.procString(HRStr); }
-  /// assignment of base rule
-  void setBaseCut(const HeadRule& HR) { baseSurf=HR; }
-  /// assignement of top rule
-  void setTopCut(const HeadRule& HR) { topSurf=HR; }
-  /// assignment of divider rule
-  void setDivider(const HeadRule& HR) { mainDivider=HR; }
-  /// assignment of outer surf
-  void setOuter(const HeadRule& HR) { outerSurf=HR; }
-
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

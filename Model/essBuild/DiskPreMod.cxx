@@ -52,12 +52,8 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedUnit.h"
-#include "FixedOffset.h"
-#include "FixedOffsetUnit.h"
 #include "FixedRotate.h"
 #include "LayerComp.h"
 #include "BaseMap.h"
@@ -74,7 +70,7 @@ namespace essSystem
 {
 
 DiskPreMod::DiskPreMod(const std::string& Key) :
-  attachSystem::FixedOffsetUnit(Key,9),
+  attachSystem::FixedRotate(Key,9),
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0),
   attachSystem::CellMap(),
@@ -93,7 +89,7 @@ DiskPreMod::DiskPreMod(const std::string& Key) :
 }
 
 DiskPreMod::DiskPreMod(const DiskPreMod& A) : 
-  attachSystem::FixedOffsetUnit(A),
+  attachSystem::FixedRotate(A),
   attachSystem::ContainedComp(A),
   attachSystem::LayerComp(A),
   attachSystem::CellMap(A),
@@ -121,7 +117,7 @@ DiskPreMod::operator=(const DiskPreMod& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
       attachSystem::CellMap::operator=(A);
@@ -158,22 +154,19 @@ DiskPreMod::~DiskPreMod()
   
 
 void
-DiskPreMod::populate(const FuncDataBase& Control,
-		     const double& outRadius)
+DiskPreMod::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: Variable table to use
-    \param outRadius :: Outer radius of reflector [for void fill]
   */
 {
   ELog::RegMethod RegA("DiskPreMod","populate");
 
-  FixedOffset::populate(Control);
-
+  FixedRotate::populate(Control);
   engActive=Control.EvalTail<int>(keyName,"","EngineeringActive");
   flowGuideType=Control.EvalVar<std::string>(keyName+"FlowGuideType");
 
-  outerRadius=outRadius;
+  outerRadius=Control.EvalDefVar<double>(keyName+"OuterRadius",0.0);
 
   // clear stuff 
   double R(0.0);
@@ -223,24 +216,18 @@ DiskPreMod::populate(const FuncDataBase& Control,
 
 void
 DiskPreMod::createUnitVector(const attachSystem::FixedComp& refCentre,
-			     const long int sideIndex,const bool zRotate)
+			     const long int sideIndex)
   /*!
     Create the unit vectors
     \param refCentre :: Centre for object
     \param sideIndex :: index for link
-    \param zRotate :: rotate Zaxis
   */
 {
   ELog::RegMethod RegA("DiskPreMod","createUnitVector");
   attachSystem::FixedComp::createUnitVector(refCentre);
   Origin=refCentre.getLinkPt(sideIndex);
-  if (zRotate)
-    {
-      X*=-1;
-      Z*=-1;
-    }
-  const double D=(depth.empty()) ? 0.0 : depth.back();
 
+  const double D=(depth.empty()) ? 0.0 : depth.back();
   zStep += D;
   applyOffset();
 
@@ -481,23 +468,18 @@ DiskPreMod::getLayerHR(const size_t layerIndex,
 void
 DiskPreMod::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
-		      const long int sideIndex,
-		      const bool zRotate,
-		      const double& ORad)
+		      const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation
     \param FC :: Attachment point	       
     \param sideIndex :: side of object
-    \param zRotate :: Rotate to -ve Z
-    \param ORad :: Outer radius of zone
    */
 {
   ELog::RegMethod RegA("DiskPreMod","createAll");
 
-  populate(System.getDataBase(),ORad);
-  createUnitVector(FC,sideIndex,zRotate);
-
+  populate(System.getDataBase());
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();
@@ -507,7 +489,12 @@ DiskPreMod::createAll(Simulation& System,
   if (engActive)
     {
       if (flowGuideType.find("Onion")!=std::string::npos)
-	onion->createAll(System,*this,0);
+	{
+	  onion->setCell("Inner",getCell("Inner"));
+	  onion->setCutSurf("Base",*this,8);
+	  onion->setCutSurf("Top",*this,9);
+	  onion->createAll(System,*this,0);
+	}
       else
 	{
 	  InnerComp->copyCells(*this,"Inner");
