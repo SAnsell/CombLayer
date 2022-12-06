@@ -327,7 +327,7 @@ ButterflyModerator::getComponent(const std::string& compName) const
 
   
 
-std::string
+HeadRule
 ButterflyModerator::getLeftFarExclude() const
   /*!
     Get the outer exclude surface without top/base
