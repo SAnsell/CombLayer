@@ -73,7 +73,6 @@ MidWaterDivider::MidWaterDivider(const std::string& baseKey,
 				 const std::string& extraKey) :
   attachSystem::FixedComp(baseKey+extraKey,14),
   attachSystem::ContainedComp(),
-  attachSystem::LayerComp(0,0),
   baseName(baseKey),AWingPtr(nullptr),BWingPtr(nullptr)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -85,7 +84,6 @@ MidWaterDivider::MidWaterDivider(const std::string& baseKey,
 MidWaterDivider::MidWaterDivider(const MidWaterDivider& A) : 
   attachSystem::FixedComp(A),
   attachSystem::ContainedComp(A),
-  attachSystem::LayerComp(A),
   baseName(A.baseName),
   midYStep(A.midYStep),
   midAngle(A.midAngle),length(A.length),height(A.height),
@@ -109,7 +107,6 @@ MidWaterDivider::operator=(const MidWaterDivider& A)
     {
       attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::LayerComp::operator=(A);
       midYStep=A.midYStep;
       midAngle=A.midAngle;
       length=A.length;
@@ -332,11 +329,10 @@ MidWaterDivider::createSurfaces()
       int CI(buildIndex);
       for(size_t i=0;i<4;i++)
         {
-          const std::string Out=ModelSupport::getComposite(SMap,buildIndex,
+          HeadRule CCorner=ModelSupport::getHeadRule(SMap,buildIndex,
                                          std::to_string(sideSurf[i])+" "+
                                          std::to_string(frontSurf[i]));
 
-          HeadRule CCorner(Out);
           CCorner.populateSurf();
 	  const std::tuple<Geometry::Vec3D,Geometry::Vec3D,Geometry::Vec3D>
 	    RCircle=Geometry::findCornerCircle
@@ -383,8 +379,8 @@ MidWaterDivider::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("MidWaterDivider","createObjects");
 
-  const HeadRule BaseHR=AWingPtr->getRule(-5);
-  const HeadRule TopHR=AWingPtr->getRule(-6);
+  const HeadRule BaseHR=AWingPtr->getFullRule(-5);
+  const HeadRule TopHR=AWingPtr->getFullRule(-6);
   
   const HeadRule LCut(AWingPtr->getLayerHR(cutLayer,-7));
   const HeadRule RCut(BWingPtr->getLayerHR(cutLayer,-7));
@@ -399,7 +395,6 @@ MidWaterDivider::createObjects(Simulation& System)
 
       HR=ModelSupport::getSetHeadRule
 	(SMap,buildIndex,"-300 100 -3 -12 -5 (-17:18)");
-      Out+=RCut.display()+Base;
       System.addCell(cellIndex++,modMat,modTemp,HR*RCut*BaseHR);
 
       HR=ModelSupport::getSetHeadRule
@@ -446,8 +441,7 @@ MidWaterDivider::createObjects(Simulation& System)
       HR=ModelSupport::getSetHeadRule
 	(SMap,buildIndex,"-300 -100 24 -32 (-27:28)");
       System.addCell(cellIndex++,modMat,modTemp,HR*RCut*BaseHR*TopHR);
-      
-    }
+      }
   
   HR=ModelSupport::getSetHeadRule
     (SMap,buildIndex,"300 100 104 -111 (-107:108) (-4 : 11 : (7 -8) )");
@@ -455,9 +449,8 @@ MidWaterDivider::createObjects(Simulation& System)
 
 
   HR=ModelSupport::getSetHeadRule
-    (SMap,buildIndex,"-300 100 -103 -112 (-117:118) (3 : 12 : (17 -18))");				 
-  Out+=RCut.display()+Base+Top;
-  System.addCell(cellIndex++,wallMat,modTemp,HR);
+    (SMap,buildIndex,"-300 100 -103 -112 (-117:118) (3 : 12 : (17 -18))");
+  System.addCell(cellIndex++,wallMat,modTemp,HR*RCut*BaseHR*TopHR);
 
   HR=ModelSupport::getSetHeadRule
     (SMap,buildIndex,"100 ( (-103 (-117:118)) : (104  (-107:108)) ) -111 -112");
@@ -474,7 +467,7 @@ MidWaterDivider::createObjects(Simulation& System)
 
   HR=ModelSupport::getSetHeadRule
     (SMap,buildIndex,"-100 ( (-123 (-137:138)) : (124 (-127:128)) ) -131 -132");
-  addOuterUnionSurf(Out);
+  addOuterUnionSurf(HR);
   
    
   return;
@@ -490,6 +483,7 @@ MidWaterDivider::cutOuterWing(Simulation& System) const
 {
   ELog::RegMethod RegA("MidWaterDivider","cutOuterWing");
 
+
   const size_t lWing=AWingPtr->getNLayers();
   const size_t rWing=BWingPtr->getNLayers();
 
@@ -498,8 +492,8 @@ MidWaterDivider::cutOuterWing(Simulation& System) const
   const HeadRule RBase=
     BWingPtr->getFullRule(-5)*BWingPtr->getFullRule(-6);
 
-  HeadRule cutRule;
-  HeadRule HR;
+  HeadRule cutRuleHR;
+
   if (cutLayer+1<lWing)
     {
       const int cellA=AWingPtr->getCell("Outer");
@@ -507,10 +501,9 @@ MidWaterDivider::cutOuterWing(Simulation& System) const
       MonteCarlo::Object* OPtr=System.findObject(cellA);
       if (!OPtr)
 	throw ColErr::InContainerError<int>(cellA,"leftWing Cell: Outer");
-      cutRule=ModelSupport::getHeadRule
-	(SMap,buildIndex,"(100: -11) (-100:-31)");
-      cutRule.makeComplement();
-      OPtr->addSurfString(cutRule.display());
+      cutRuleHR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"(-100  11) : (100 31)");
+      OPtr->addIntersection(cutRuleHR);
     }
   if (cutLayer+1<rWing)
     {
@@ -518,58 +511,12 @@ MidWaterDivider::cutOuterWing(Simulation& System) const
       MonteCarlo::Object* OPtr=System.findObject(cellB);
       if (!OPtr)
 	throw ColErr::InContainerError<int>(cellB,"rightWing Cell: Outer");
-      Out=ModelSupport::getHeadRule(SMap,buildIndex,
-				     " (100:-12) : (-100:-32) ");
-      cutRule.procString(Out);
-      cutRule.makeComplement();
-      OPtr->addSurfString(cutRule.display());
+      cutRuleHR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"(-100  12) : (100 32)");
+      OPtr->addIntersection(cutRuleHR);
     }
   return;
 }
-
-  
-Geometry::Vec3D
-MidWaterDivider::getSurfacePoint(const size_t,
-			const long int) const
-  /*!
-    Given a side and a layer calculate the link point
-    \param :: layer, 0 is inner moderator [0-6]
-    \param :: Side [0-3] // mid sides   
-    \return Surface point
-  */
-{
-  ELog::RegMethod RegA("MidWaterDivider","getSurfacePoint");
-  throw ColErr::AbsObjMethod("Not implemented yet");
-}
-
-int
-MidWaterDivider::getLayerSurf(const size_t,
-                              const long int) const
-  /*!
-    Given a side and a layer calculate the link point
-    \param :: layer, 0 is inner moderator [0-3]
-    \param :: Side [0-3] // mid sides   
-    \return Surface point
-  */
-{
-  ELog::RegMethod RegA("MidWaterDivider","getLayerSurf");
-  throw ColErr::AbsObjMethod("Not implemented yet");
-}
-
-std::string
-MidWaterDivider::getLayerString(const size_t,
-                                const long int) const
-  /*!
-    Given a side and a layer calculate the link point
-    \param :: layer, 0 is inner moderator [0-6]
-    \param :: Side [0-3] // mid sides   
-    \return Surface point
-  */
-{
-  ELog::RegMethod RegA("MidWaterDivider","getLayerString");
-  throw ColErr::AbsObjMethod("Not implemented yet");
-}
-
 
 void
 MidWaterDivider::createAll(Simulation& System,

@@ -428,43 +428,10 @@ DiskPreMod::getSurfacePoint(const size_t layerIndex,
 }
 
 
-int
-DiskPreMod::getLayerSurf(const size_t layerIndex,
-			const long int sideIndex) const
-  /*!
-    Given a side and a layer calculate the link surf
-    \param layerIndex :: layer, 0 is inner moderator [0-4]
-    \param sideIndex :: Side [1-4]
-    \return Surface string
-  */
-{
-  ELog::RegMethod RegA("DiskPreMod","getLayerSurf");
 
-  if (layerIndex>nLayers) 
-    throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
-
-  const int SI(10*static_cast<int>(layerIndex)+buildIndex);
-  const long int uSIndex(std::abs(sideIndex));
-  const int signValue((sideIndex>0) ? 1 : -1);
-	       
-  switch(uSIndex)
-    {
-    case 1:
-    case 2:    
-    case 3:
-    case 4:
-      return signValue*SMap.realSurf(SI+7);
-    case 5:
-      return -signValue*SMap.realSurf(SI+5);
-    case 6:
-      return signValue*SMap.realSurf(SI+6);
-    }
-  throw ColErr::IndexError<long int>(sideIndex,7,"sideIndex");
-}
-
-std::string
-DiskPreMod::getLayerString(const size_t layerIndex,
-			   const long int sideIndex) const
+HeadRule
+DiskPreMod::getLayerHR(const size_t layerIndex,
+		       const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param layerIndex :: layer, 0 is inner moderator [0-4]
@@ -479,38 +446,35 @@ DiskPreMod::getLayerString(const size_t layerIndex,
 
   const int SI(10*static_cast<int>(layerIndex)+buildIndex);
 
-  std::string Out;
+  HeadRule HR;
   const long int uSIndex(std::abs(sideIndex));
   switch(uSIndex)
     {
     case 1:
-      Out=ModelSupport::getComposite(SMap,SI,buildIndex," 7 -2M ");
+      HR=ModelSupport::getHeadRule(SMap,SI,buildIndex,"7 -2M");
       break;
     case 2:
-      Out=ModelSupport::getComposite(SMap,SI,buildIndex," 7 2M ");
+      HR=ModelSupport::getHeadRule(SMap,SI,buildIndex,"7 2M");
       break;
     case 3:
-      Out=ModelSupport::getComposite(SMap,SI,buildIndex," 7 -1M ");
+      HR=ModelSupport::getHeadRule(SMap,SI,buildIndex,"7 -1M");
       break;
     case 4:
-      Out=ModelSupport::getComposite(SMap,SI,buildIndex," 7 1M ");
+      HR=ModelSupport::getHeadRule(SMap,SI,buildIndex,"7 1M");
       break;
     case 5:
-      Out=ModelSupport::getComposite(SMap,SI," -5 ");
+      HR=HeadRule(SMap,SI,-5);
       break;
     case 6:
-      Out=ModelSupport::getComposite(SMap,SI," 6 ");
+      HR=HeadRule(SMap,SI,6);
       break;
     default:
       throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
     }
   if (sideIndex<0)
-    {
-      HeadRule HR(Out);
-      HR.makeComplement();
-      return HR.display();
-    }
-  return Out;
+    HR.makeComplement();
+
+  return HR;
 }
 
 

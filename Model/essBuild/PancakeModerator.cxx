@@ -40,8 +40,6 @@
 #include "OutputLog.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
@@ -214,35 +212,8 @@ PancakeModerator::createObjects(Simulation& System)
   return;
 }
 
-
-int
-PancakeModerator::getCommonSurf(const long int) const
-  /*!
-    Only components have reference values
-    \param  :: sideIndex
-    \return surface number
-  */
-
-{
-  ELog::RegMethod RegA("PancakeModerator","getCommonSurf");
-  throw ColErr::AbsObjMethod("Not implemented yet");
-}
-
-int
-PancakeModerator::getLayerSurf(const size_t,const long int) const
-/*!
-  [PLACEHOLDER] Only components have reference values
-    \param  :: layer, 0 is inner moderator [0-6]
-    \param  :: Side [0-3] // mid sides
-  \return layer surface
-  */
-{
-  ELog::RegMethod RegA("PancakeModerator","getLayerSurf");
-  throw ColErr::AbsObjMethod("Not implemented yet");
-}
-
-std::string
-PancakeModerator::getLayerString(const size_t,const long int) const
+HeadRule
+PancakeModerator::getLayerHR(const size_t,const long int) const
   /*!
     Only components have reference values [PLACEHOLDER]
     \param  :: layer, 0 is inner moderator [0-6]

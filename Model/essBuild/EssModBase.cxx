@@ -45,10 +45,11 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
+#include "ContainedComp.h"
 #include "LayerComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
-#include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "EssModBase.h"
 
 namespace essSystem

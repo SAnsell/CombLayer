@@ -40,8 +40,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -94,8 +92,10 @@ H2Wing::H2Wing(const std::string& baseKey,
 }
 
 H2Wing::H2Wing(const H2Wing& A) : 
-  attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
-  attachSystem::FixedComp(A),attachSystem::CellMap(A),
+  attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::LayerComp(A),
+  attachSystem::CellMap(A),
   baseName(A.baseName),
   InnerComp(A.InnerComp->clone()),
   Pts(A.Pts),radius(A.radius),height(A.height),
@@ -116,9 +116,9 @@ H2Wing::operator=(const H2Wing& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       *InnerComp=*A.InnerComp;
       Pts=A.Pts;
@@ -206,9 +206,9 @@ H2Wing::populate(const FuncDataBase& Control)
   if (height<Geometry::zeroTol)
     throw ColErr::NumericalAbort("Unable to calculate a negative height.\n"
 				 "Thickness   == "+
-				 StrFunc::makeString(height)+
+				 std::to_string(height)+
 				 "totalheight == "+
-				 StrFunc::makeString(totalHeight));
+				 std::to_string(totalHeight));
   
   return;
 }
@@ -278,9 +278,9 @@ H2Wing::createLinks()
   FixedComp::setLinkSurf(5,SMap.realSurf(triOffset+6));
 
   // OuterCorners and linkage
-  FixedComp::setLinkSurf(6,getLayerString(nLayers-1,-7));
-  FixedComp::setLinkSurf(7,getLayerString(nLayers-1,-8));
-  FixedComp::setLinkSurf(8,getLayerString(nLayers-1,-9));
+  FixedComp::setLinkSurf(6,getLayerHR(nLayers-1,-7));
+  FixedComp::setLinkSurf(7,getLayerHR(nLayers-1,-8));
+  FixedComp::setLinkSurf(8,getLayerHR(nLayers-1,-9));
   
   // INNER LINKS
   
@@ -565,45 +565,6 @@ H2Wing::getSurfacePoint(const size_t layerIndex,
   throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
 }
 
-int
-H2Wing::getLayerSurf(const size_t layerIndex,
-		     const long int sideIndex) const
-  /*!
-    Given a side and a layer calculate the link point
-    \param layerIndex :: layer, 0 is inner moderator [0-3]
-    \param sideIndex :: Side [0-3] // mid sides   
-    \return Surface point
-  */
-{
-  ELog::RegMethod RegA("H2Wing","getLayerSurf");
-
-  if (layerIndex>=nLayers) 
-    throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layerIndex");
-
-  const int triIndex(buildIndex+static_cast<int>((layerIndex+1)*100));
-  const long int uSIndex(std::abs(sideIndex));
-  const int signValue((sideIndex>0) ? 1 : -1);
-  switch(uSIndex)
-    {
-    case 1:
-      return signValue*SMap.realSurf(triIndex+1);
-    case 2:
-      return signValue*SMap.realSurf(triIndex+2);
-    case 3:
-      return signValue*SMap.realSurf(triIndex+3);
-    case 6:
-      return -signValue*SMap.realSurf(triIndex+5);
-    case 7:
-      return signValue*SMap.realSurf(triIndex+6);
-    case 8:
-      return signValue*SMap.realSurf(triIndex+7);
-    case 9:
-      return signValue*SMap.realSurf(triIndex+8);
-    case 10:
-      return signValue*SMap.realSurf(triIndex+9);
-    }
-  throw ColErr::IndexError<long int>(sideIndex,10,"sideIndex");
-}
 
 HeadRule 
 H2Wing::getLayerHR(const size_t layerIndex,

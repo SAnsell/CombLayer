@@ -3,7 +3,7 @@
  
  * File:   essBuild/EdgeWater.cxx 
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -209,10 +209,10 @@ EdgeWater::createObjects(Simulation& System)
   
   // Two walls : otherwise divider container
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -1 103");
-  makeCell("Wall",System,cellIndex++,wallMat,modTemp,HR*containterHR);
+  makeCell("Wall",System,cellIndex++,wallMat,modTemp,HR*containerHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 -104");
-  makeCell("Wall",System,cellIndex++,wallMat,modTemp,HR*containterHR);
+  makeCell("Wall",System,cellIndex++,wallMat,modTemp,HR*containerHR);
 
   // front walls
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -103 203");
@@ -221,7 +221,7 @@ EdgeWater::createObjects(Simulation& System)
     
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 104 -204");
   makeCell("Wall",System,cellIndex++,wallMat,modTemp,
-				   HR*containerHR*divHR));
+				   HR*containerHR*divHR);
   
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 203 -204");
   addOuterSurf(HR*divHR);
@@ -277,7 +277,6 @@ EdgeWater::getLayerHR(const size_t,
   ELog::RegMethod RegA("EdgeWater","getLayerString");
 
   throw ColErr::AbsObjMethod("Not implemented yet");
-
 }
 
 
@@ -300,7 +299,7 @@ EdgeWater::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   createSurfaces();
 
-  createObjects(System,divider);
+  createObjects(System);
 
   createLinks();
   insertObjects(System);       

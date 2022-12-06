@@ -2,6 +2,8 @@
 
 
 nValid=1000
+./ess -validAll --validCheck ${nValid} AA || exit 
+exit
 
 #segments=$(for i in {40..49}; do echo -n "Segment$i "; done)
 segments=All

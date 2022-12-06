@@ -337,10 +337,10 @@ ButterflyModerator::getLeftFarExclude() const
 {
   ELog::RegMethod RegA("ButterflyModerator","getLeftFarExclude");
 
-  std::string Out;
-  Out=LeftWater->getLinkString(4);   
-  Out+=RightWater->getLinkString(3);
-  return Out;
+  HeadRule HR;
+  HR=LeftWater->getFullRule(4);   
+  HR*=RightWater->getFullRule(3);
+  return HR;
 }
 
 std::string
@@ -353,14 +353,14 @@ ButterflyModerator::getRightFarExclude() const
 {
   ELog::RegMethod RegA("ButterflyModerator","getRightFarExclude");
 
-  std::string Out;
-  Out+=LeftWater->getLinkString(3);   
-  Out+=RightWater->getLinkString(4);
+  HeadRule HR;
+  HR=LeftWater->getFullRule(3);   
+  HR*=RightWater->getFullRule(4);
 
-  return Out;
+  return HR;
 }
 
-std::string
+HeadRule 
 ButterflyModerator::getLeftExclude() const
   /*!
     Get the complete exclude surface without top/base
@@ -369,17 +369,17 @@ ButterflyModerator::getLeftExclude() const
   */
 {
   ELog::RegMethod RegA("ButterflyModerator","getLeftExclude");
-  std::string Out;
+  HeadRule HR;
 
-  Out+=LeftUnit->getLinkString(8);
-  Out+=RightUnit->getLinkString(9);
-  Out+=MidWater->getLinkString(11);
-  Out+= getLeftFarExclude();
+  HR*=LeftUnit->getFullRule(8);
+  HR*=RightUnit->getFullRule(9);
+  HR*=MidWater->getFullRule(11);
+  HR*= getLeftFarExclude();
   
-  return Out;
+  return HR;
 }
 
-std::string
+HeadRule
 ButterflyModerator::getRightExclude() const
   /*!
     Get the complete exclude surface without top/base
@@ -388,16 +388,15 @@ ButterflyModerator::getRightExclude() const
   */
 {
   ELog::RegMethod RegA("ButterflyModerator","getRightExclude");
-  std::string Out;
+  HeadRule HR;
 
-  Out+=LeftUnit->getLinkString(9);
-  Out+=RightUnit->getLinkString(8);
-  Out+=MidWater->getLinkString(12);
+  HR=LeftUnit->getFullRule(9);
+  HR*=RightUnit->getFullRule(8);
+  HR*=MidWater->getFullRule(12);
 
-  Out+=getRightFarExclude();
+  HR*=getRightFarExclude();
   
-  return Out;
-  
+  return HR;
 }
 
 void
@@ -443,10 +442,10 @@ ButterflyModerator::createAll(Simulation& System,
   MidWater->setH2Wing(*LeftUnit,*RightUnit);
   MidWater->createAll(System,*this,0);
     
-  const std::string Exclude=
-    ModelSupport::getComposite(SMap,buildIndex," -7 5 -6 ");
-  LeftWater->setCutSurf("Container",Exclude);
-  RightWater->setCutSurf("Container",Exclude);
+  const HeadRule ExcludeHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"-7 5 -6");
+  LeftWater->setCutSurf("Container",ExcludeHR);
+  RightWater->setCutSurf("Container",ExcludeHR);
   LeftWater->createAll(System,*LeftUnit,2);
   RightWater->createAll(System,*RightUnit,2);
 

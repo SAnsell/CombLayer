@@ -38,8 +38,7 @@ namespace essSystem
 
 class MidWaterDivider : 
     public attachSystem::FixedComp,
-    public attachSystem::ContainedComp,
-    public attachSystem::LayerComp
+    public attachSystem::ContainedComp
 {
  private:
 
@@ -76,10 +75,6 @@ class MidWaterDivider :
   MidWaterDivider& operator=(const MidWaterDivider&);
   virtual MidWaterDivider* clone() const;
   virtual ~MidWaterDivider();
-
-  virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
-  virtual HeadRule getLayerHR(const size_t,const long int) const;
-
 
   /// What is this rubbish
   void setH2Wing(const H2Wing& A,const H2Wing& B)

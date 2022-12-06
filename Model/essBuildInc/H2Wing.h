@@ -38,9 +38,9 @@ namespace essSystem
 */
 
 class H2Wing : 
+  public attachSystem::FixedComp,
   public attachSystem::ContainedComp,
   public attachSystem::LayerComp,
-  public attachSystem::FixedComp,
   public attachSystem::CellMap
 {
  private:
