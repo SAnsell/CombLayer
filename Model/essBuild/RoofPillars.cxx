@@ -769,7 +769,7 @@ RoofPillars::createBeamObjects(Simulation& System,
   InnerHR.makeComplement();
 
   HR=ModelSupport::getHeadRule(SMap,RI,"13 -14");
-  System.addCell(cellIndex++,mat,0.0,HR*fbHR+OuterHR*InnerHR);
+  System.addCell(cellIndex++,mat,0.0,HR*fbHR*OuterHR*InnerHR);
 
   return;
 }

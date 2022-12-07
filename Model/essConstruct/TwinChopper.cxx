@@ -54,9 +54,7 @@
 #include "LinkUnit.h"  
 #include "FixedComp.h"
 #include "FixedGroup.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
-#include "FixedOffsetGroup.h"
 #include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
@@ -109,7 +107,7 @@ TwinChopper::buildPorts(Simulation& System)
     // Front ring seal
   ELog::RegMethod RegA("TwinChopper","buildPort");
 
-  std::string Out;
+  HeadRule HR;
   
   const attachSystem::FixedComp& Main=getKey("Main");
   const attachSystem::FixedComp& Beam=getKey("Beam");
@@ -129,25 +127,22 @@ TwinChopper::buildPorts(Simulation& System)
 
   // Ports in front/back seal void
   // -----------------------------
-  const std::string innerFSurf=
-    std::to_string(-frontFlange->getSurf("innerRing"));
-  const std::string innerBSurf=
-    std::to_string(-backFlange->getSurf("innerRing"));
+  const HeadRule innerFSurf=frontFlange->getSurfRule("#innerRing");
+  const HeadRule innerBSurf=backFlange->getSurfRule("#innerRing");
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -11 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+innerFSurf));
-  addCell("PortVoid",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -11");
+  makeCell("PortVoid",System,cellIndex++,0,0.0,HR*innerFSurf);
+
   IPA->addInnerCell(getCell("PortVoid",0));
-  IPA->setCutSurf("Boundary",Out+innerFSurf);
+  IPA->setCutSurf("Boundary",HR*innerFSurf);
   IPA->createAll(System,Beam,0);
 
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"12 -2 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+innerBSurf));
-  addCell("PortVoid",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -2");
+  makeCell("PortVoid",System,cellIndex++,0,0.0,HR*innerBSurf);
 
   IPB->addInnerCell(getCell("PortVoid",1));
-  IPB->setCutSurf("Boundary",Out+innerBSurf);
+  IPB->setCutSurf("Boundary",HR*innerBSurf);
   IPB->createAll(System,Beam,0);
   return;
 }
