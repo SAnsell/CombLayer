@@ -3,7 +3,7 @@
  
  * File:   essBuild/RoofPillars.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -101,7 +101,7 @@ RoofPillars::insertBeamCells(Simulation& System,
 			     const double halfWidth,
 			     const Geometry::Vec3D& XAxis,
 			     const std::array<Geometry::Vec3D,2>& EPts,
-			     const std::string& innerCut)
+			     const HeadRule& innerCutHR)
   /*!
     Insert beam cell
     \param System :: Simulation system
@@ -120,7 +120,7 @@ RoofPillars::insertBeamCells(Simulation& System,
 	EPts[1]-XAxis*halfWidth,
         EPts[1]+XAxis*halfWidth
       }};  
-  insertRoofCells(System,CPts,0.1,innerCut);
+  insertRoofCells(System,CPts,0.1,innerCutHR);
 
   return;
 }			      
@@ -128,7 +128,7 @@ RoofPillars::insertBeamCells(Simulation& System,
 void
 RoofPillars::insertPillarCells(Simulation& System,
 			       const pillarInfo& pillarItem,
-			       const std::string& innerCut)
+			       const HeadRule& innerCutHR)
   /*!
     Insert roof cell
     \param System :: Simulation system
@@ -151,7 +151,7 @@ RoofPillars::insertPillarCells(Simulation& System,
         CP-XAxis*WT+YAxis*DT,
         CP+XAxis*WT+YAxis*DT }};
   
-  insertRoofCells(System,CPts,0.1,innerCut);
+  insertRoofCells(System,CPts,0.1,innerCutHR);
   return;
 }
 
@@ -159,7 +159,7 @@ void
 RoofPillars::insertRoofCells(Simulation& System,
 			     const std::array<Geometry::Vec3D,4>& CPts,
 			     const double innerStep,
-			     const std::string& innerCut)
+			     const HeadRule& innerCutHR)
   /*!
     Insert roof cells
     \param System :: Simulation system
@@ -246,10 +246,9 @@ RoofPillars::insertRoofCells(Simulation& System,
     }
 
   // make intersection:
-  HeadRule IC(innerCut);
-  IC.makeComplement();
+  const HeadRule IC=innerCutHR.complement();
   for(const OTYPE::value_type Vunit : OMap)
-    Vunit.second->addSurfString(IC.display());
+    Vunit.second->addIntersection(IC);
 
   cnt++;
   return;  
@@ -512,55 +511,49 @@ RoofPillars::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("RoofPillars","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
-  const std::string Base=frontRule()+backRule();
-  const std::string footLevel=topFoot.complement().display();
-  const std::string plateLevelComp=topFootPlate.complement().display();
-  const std::string plateLevel=topFootPlate.display();
-  const std::string roofLevel=getBackRule().complement().display();
+  const HeadRule baseHR=getFrontRule()*getBackRule();
+  const HeadRule footLevelHR=topFoot.complement();
+  const HeadRule plateLevelHR=topFootPlate;
+  const HeadRule plateLevelCompHR=topFootPlate.complement();
+  const HeadRule roofLevelHR=getBackRule().complement();
     
   for(const std::map<std::string,pillarInfo>::value_type& PItem : PInfo)
     {
       const int RI(buildIndex+50*PItem.second.RI);
+      const std::string pName="Pillar"+PItem.first;
       if (PItem.second.active)
 	{
-	  Out=ModelSupport::getComposite(SMap,RI," 1 -2 3 -4 ");
-	  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+Base));
-	  addCell("Pillar"+PItem.first,cellIndex-1);
-	  Out=ModelSupport::getComposite(SMap,RI," 11 -12 13 -14 (-1:2:-3:4) ");
-	  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out+Base));
-	  addCell("Pillar"+PItem.first,cellIndex-1);
+	  HR=ModelSupport::getHeadRule(SMap,RI,"1 -2 3 -4");
+	  makeCell(pName,System,cellIndex++,0,0.0,HR*baseHR);
+	  HR=ModelSupport::getHeadRule(SMap,RI,"11 -12 13 -14 (-1:2:-3:4)");
+	  makeCell(pName,System,cellIndex++,mat,0.0,HR*baseHR);
 	}
       // Object must be added afterward otherwise we add to self
       // innser pillar part
-      Out=ModelSupport::getComposite(SMap,RI," 31 -32 33 -34  ");
-      insertPillarCells(System,PItem.second,Out+footLevel+roofLevel);
+      HR=ModelSupport::getHeadRule(SMap,RI,"31 -32 33 -34 ");
+      insertPillarCells(System,PItem.second,HR*footLevelHR*roofLevelHR);
       
-      Out=ModelSupport::getComposite(SMap,RI," 1 -2 3 -4 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,
-				       Out+roofLevel+plateLevelComp));
-      addCell("Pillar"+PItem.first,cellIndex-1);
-      Out=ModelSupport::getComposite(SMap,RI," 11 -12 13 -14 (-1:2:-3:4) ");
-      System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,
-				       Out+roofLevel+plateLevelComp));
-      addCell("Pillar"+PItem.first,cellIndex-1);
+      HR=ModelSupport::getHeadRule(SMap,RI,"1 -2 3 -4");
+      makeCell(pName,System,cellIndex++,0,0.0,
+	       HR*roofLevelHR*plateLevelCompHR);
+      HR=ModelSupport::getHeadRule(SMap,RI,"11 -12 13 -14 (-1:2:-3:4)");
+      makeCell(pName,System,cellIndex++,mat,0.0,
+	       HR*roofLevelHR*plateLevelCompHR);
       
       // pillar in roof
-      Out=ModelSupport::getComposite(SMap,RI,
-				     " 31 -32 33 -34  (-11:12:-13:14) ");
-      System.addCell(MonteCarlo::Object
-		     (cellIndex++,0,0.0,Out+roofLevel+plateLevelComp));
+      HR=ModelSupport::getHeadRule
+	(SMap,RI,"31 -32 33 -34  (-11:12:-13:14)");
+      System.addCell(cellIndex++,0,0.0,HR*roofLevelHR*plateLevelCompHR);
       
-      Out=ModelSupport::getComposite(SMap,RI," 21 -22 23 -24  ");
-      System.addCell(MonteCarlo::Object
-		     (cellIndex++,mat,0.0,Out+plateLevel+footLevel));
+      HR=ModelSupport::getHeadRule(SMap,RI,"21 -22 23 -24");
+      System.addCell(cellIndex++,mat,0.0,HR*plateLevelHR*footLevelHR);
       
-      Out=ModelSupport::getComposite(SMap,RI,
-				     " 31 -32 33 -34  (-21:22:-23:24) ");
-      System.addCell(MonteCarlo::Object
-		     (cellIndex++,0,0.0,Out+plateLevel+footLevel));
-      addCell("Foot"+PItem.first,cellIndex-1);
+      HR=ModelSupport::getHeadRule
+	(SMap,RI,"31 -32 33 -34  (-21:22:-23:24)");
+      makeCell("Foot"+PItem.first,System,
+	       cellIndex++,0,0.0,HR*plateLevelHR*footLevelHR);
     }
         
   return;
@@ -730,7 +723,7 @@ RoofPillars::createBeamSurfaces(const int RI,
 
 void
 RoofPillars::createBeamObjects(Simulation& System,
-			       const int RI,const std::string& fbBStr,
+			       const int RI,const HeadRule& fbHR,
 			       const HeadRule& topBUnit,
 			       const HeadRule& baseBUnit,
 			       const double halfWidth,
@@ -739,7 +732,7 @@ RoofPillars::createBeamObjects(Simulation& System,
   /*!
     Create the objects for a beam
     \param RI :: Index offset
-    \param fbBStr :: front/back cut string
+    \param fbHR :: front/back cut 
     \param topBUnit :: HeadRule for top cut
     \param baseBUnit :: HeadRule for base cut
     \param halfWidth :: Half beam width
@@ -749,41 +742,34 @@ RoofPillars::createBeamObjects(Simulation& System,
 {
   ELog::RegMethod RegA("RoofPillars","createBeamObjects");
 
-  std::string Out;
+  HeadRule HR;
      
-  HeadRule Outer(topFoot.complement());
-  Outer.addIntersection(getBackRule().complement());
+  HeadRule OuterHR=topFoot.complement();
+  OuterHR.addIntersection(getBackRule().complement());
   
-  HeadRule Inner(topBUnit.complement());
-  Inner.addIntersection(baseBUnit);
+  HeadRule InnerHR(topBUnit.complement());
+  InnerHR.addIntersection(baseBUnit);
   
-  Out=ModelSupport::getComposite(SMap,RI," 23 -24 ");
-  Out+=fbBStr+Outer.display();
-  insertBeamCells(System,halfWidth,XVec,EPts,Out);
+  HR=ModelSupport::getHeadRule(SMap,RI,"23 -24");
+  insertBeamCells(System,halfWidth,XVec,EPts,HR*fbHR*OuterHR);
   
   // gap
-  Out=ModelSupport::getComposite(SMap,RI," 23 -13  ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,
-				   Out+Outer.display()+fbBStr));
-  Out=ModelSupport::getComposite(SMap,RI," 14 -24  ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,
-				   Out+Outer.display()+fbBStr));
+  HR=ModelSupport::getHeadRule(SMap,RI,"23 -13");
+  System.addCell(cellIndex++,0,0.0,HR*OuterHR*fbHR);
+  HR=ModelSupport::getHeadRule(SMap,RI,"14 -24");
+  System.addCell(cellIndex++,0,0.0,HR*OuterHR*fbHR);
   
-  Out=ModelSupport::getComposite(SMap,RI," 3 -4 ");
-  Out+=fbBStr+Inner.display();
-  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,RI,"3 -4");
+  System.addCell(cellIndex++,innerMat,0.0,HR*InnerHR*fbHR);
   
   
   // steel box [NOTE CARE for INCLUSION]:
-  Out=ModelSupport::getComposite(SMap,RI," 3 -4 ");
-  Inner.addIntersection(Out);
+  HR=ModelSupport::getHeadRule(SMap,RI,"3 -4");
+  InnerHR.addIntersection(HR);
+  InnerHR.makeComplement();
 
-
-  Out=ModelSupport::getComposite(SMap,RI," 13 -14 ");
-  Out+=fbBStr+Outer.display();
-  Inner.makeComplement();
-  Out+=Inner.display();
-  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,RI,"13 -14");
+  System.addCell(cellIndex++,mat,0.0,HR*fbHR+OuterHR*InnerHR);
 
   return;
 }
@@ -821,8 +807,7 @@ RoofPillars::createCrossBeams(Simulation& System)
       
       // OBJECTS:
       const double halfWidth=beamWidth/2.0+beamWallThick+beamWallGap;
-      createBeamObjects(System,
-			RI,fbBoundary.display(),topBeam,baseBeam,
+      createBeamObjects(System,RI,fbBoundary,topBeam,baseBeam,
 			halfWidth,XVec,EPts);
 
       RI+=100;
@@ -863,7 +848,7 @@ RoofPillars::createLongBeams(Simulation& System)
       
       // OBJECTS:
       const double halfWidth=longWidth/2.0+longWallThick+longWallGap;
-      createBeamObjects(System,RI,fbBoundary.display(),topLong,baseLong,
+      createBeamObjects(System,RI,fbBoundary,topLong,baseLong,
 			halfWidth,XVec,EPts);
 
       RI+=100;
@@ -882,17 +867,14 @@ RoofPillars::insertPillars(Simulation& System,
 {
   ELog::RegMethod RegA("RoofPillars","insertPillars");
 
-  const std::string Base=frontRule()+backRule();    
-  std::string Out;
+  HeadRule HR;
   
   for(const std::map<std::string,pillarInfo>::value_type& PItem : PInfo)
     {
       if (PItem.second.active)
 	{
 	  const int RI(buildIndex+50*PItem.second.RI);
-	  Out=ModelSupport::getComposite(SMap,RI," 11 -12 13 -14 ");
-	  HeadRule HR(Out);
-	  HR.makeComplement();
+	  HR=ModelSupport::getHeadRule(SMap,RI,"-11:12:-13:14");
 	  bObj.insertComponent(System,"MainVoid",HR);
 	}
     }

@@ -2,10 +2,6 @@
 
 
 nValid=1000
-parallel --halt now,fail=1 "./ess --topModType {} --validAll --validCheck $nValid AA" ::: \
-     Butterfly Pancake 
-exit
-
 
 #segments=$(for i in {40..49}; do echo -n "Segment$i "; done)
 segments=All

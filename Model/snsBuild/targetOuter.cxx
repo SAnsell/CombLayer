@@ -37,8 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "surfRegister.h"
@@ -96,8 +94,7 @@ targetOuter::targetOuter(const targetOuter& A) :
   pressCutAngle(A.pressCutAngle),waterCutAngle(A.waterCutAngle),
   outerCutAngle(A.outerCutAngle),mercuryMat(A.mercuryMat),
   innerWallMat(A.innerWallMat),heMat(A.heMat),pressMat(A.pressMat),
-  waterMat(A.waterMat),outerMat(A.outerMat),mercuryTemp(A.mercuryTemp),
-  mainCell(A.mainCell)
+  waterMat(A.waterMat),outerMat(A.outerMat),mercuryTemp(A.mercuryTemp)
   /*!
     Copy constructor
     \param A :: targetOuter to copy
@@ -155,7 +152,6 @@ targetOuter::operator=(const targetOuter& A)
       waterMat=A.waterMat;
       outerMat=A.outerMat;
       mercuryTemp=A.mercuryTemp;
-      mainCell=A.mainCell;
     }
   return *this;
 }
@@ -377,96 +373,96 @@ targetOuter::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("targetOuter","createObjects");
 
-  std::string Out;
-  mainCell=cellIndex;
-  // Main cylinder:
+  HeadRule HR;
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " (1 : (-27:13) (-28:-14) -7) (-18:-14) (13:-17) -2 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,mercuryMat,mercuryTemp,Out));
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"(1 : (-27:13) (-28:-14) -7) (-18:-14) (13:-17) -2 5 -6");
+  makeCell("Main",System,cellIndex++,mercuryMat,mercuryTemp,HR);
 
   const double temp[]={mercuryTemp,mercuryTemp,0,0,0};
   const int mat[]={innerWallMat,heMat,pressMat,waterMat,outerMat};
   int offset(buildIndex);
   for(size_t i=0;i<5;i++)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,offset,"13 -14 1 -102M 105M -106M (-5M : 6M) ");
-      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
-      Out=ModelSupport::getComposite(SMap,buildIndex,offset,"-117M 17M -13 1 -102M ");
-      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
-      Out=ModelSupport::getComposite(SMap,buildIndex,offset,"-118M 18M 14 1 -102M ");
-      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
-      Out=ModelSupport::getComposite(SMap,buildIndex,offset,"-107M 7M 13 -14 -1 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out)); 
-      Out=ModelSupport::getComposite(SMap,buildIndex,offset,"-127M 27M -13  -1 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
-      Out=ModelSupport::getComposite(SMap,buildIndex,offset,"-128M 28M 14 -1 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,offset,"13 -14 1 -102M 105M -106M (-5M : 6M)");
+      System.addCell(cellIndex++,mat[i],temp[i],HR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,offset,"-117M 17M -13 1 -102M");
+      System.addCell(cellIndex++,mat[i],temp[i],HR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,offset,"-118M 18M 14 1 -102M");
+      System.addCell(cellIndex++,mat[i],temp[i],HR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,offset,"-107M 7M 13 -14 -1");
+      System.addCell(cellIndex++,mat[i],temp[i],HR); 
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,offset,"-127M 27M -13  -1");
+      System.addCell(cellIndex++,mat[i],temp[i],HR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,offset,"-128M 28M 14 -1");
+      System.addCell(cellIndex++,mat[i],temp[i],HR);
       offset+=100;
     }
 
   // Cone sections
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -1002 1005 -1006 ((13 -14) : -1018 : -1017) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,mercuryMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -1002 1005 -1006 ((13 -14) : -1018 : -1017)");
+  System.addCell(cellIndex++,mercuryMat,0.0,HR);
   // joining straight
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1002 -52 2005 -2006 ((2013 -2014) : -2018 : -2017) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,mercuryMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1002 -52 2005 -2006 ((2013 -2014) : -2018 : -2017)");
+  System.addCell(cellIndex++,mercuryMat,0.0,HR);
 
   offset=buildIndex;
   for(size_t i=0;i<5;i++)
     {
       if (i)
 	{
-	  Out=ModelSupport::getComposite(SMap,buildIndex,offset,"13 -14 102M -1102M 1105M -1106M (-1005M : 1006M) (-5M:6M)");
-	  System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
+	  HR=ModelSupport::getHeadRule
+	    (SMap,buildIndex,offset,"13 -14 102M -1102M 1105M -1106M (-1005M : 1006M) (-5M:6M)");
+	  System.addCell(cellIndex++,mat[i],temp[i],HR);
 	}
       else
 	{
-	  Out=ModelSupport::getComposite(SMap,buildIndex,offset,"13 -14 102M -1102M 1105M -1106M (-1005M : 1006M) ");
-	  System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
+	  HR=ModelSupport::getHeadRule
+	    (SMap,buildIndex,offset,"13 -14 102M -1102M 1105M -1106M (-1005M : 1006M)");
+	  System.addCell(cellIndex++,mat[i],temp[i],HR);
 	}
-      Out=ModelSupport::getComposite(SMap,buildIndex,offset,"-13 102M -1102M -1117M 1017M 17M");
-      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
-      Out=ModelSupport::getComposite(SMap,buildIndex,offset,"14 102M -1102M -1118M 1018M 18M");
-      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,offset,"-13 102M -1102M -1117M 1017M 17M");
+      System.addCell(cellIndex++,mat[i],temp[i],HR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,offset,"14 102M -1102M -1118M 1018M 18M");
+      System.addCell(cellIndex++,mat[i],temp[i],HR);
       
       // Straight section
-      Out=ModelSupport::getComposite(SMap,buildIndex,offset,"1102M -52 2105M -2106M -2014 2013 (-2005M:2006M) ");
-      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,offset,"1102M -52 2105M -2106M -2014 2013 (-2005M:2006M)");
+      System.addCell(cellIndex++,mat[i],temp[i],HR);
       if (i)
 	{
-	  Out=ModelSupport::getComposite(SMap,buildIndex,offset,"1102M -52 2014 -2118M (2018M:1018M) ");
-	  System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
-	  Out=ModelSupport::getComposite(SMap,buildIndex,offset,"1102M -52 -2013 -2117M (2017M:1017M) ");
-	  System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,offset,"1102M -52 2014 -2118M (2018M:1018M)");
+	  System.addCell(cellIndex++,mat[i],temp[i],HR);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,offset,"1102M -52 -2013 -2117M (2017M:1017M)");
+	  System.addCell(cellIndex++,mat[i],temp[i],HR);
 	}
       else
 	{
-	  Out=ModelSupport::getComposite(SMap,buildIndex,offset,"1102M -52 2014 -2118M 2018M ");
-	  System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
-	  Out=ModelSupport::getComposite(SMap,buildIndex,offset,"1102M -52 -2013 -2117M 2017M ");
-	  System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,offset,"1102M -52 2014 -2118M 2018M");
+	  System.addCell(cellIndex++,mat[i],temp[i],HR);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,offset,"1102M -52 -2013 -2117M 2017M");
+	  System.addCell(cellIndex++,mat[i],temp[i],HR);
 	}
       offset+=100;
     }
 
   // SPECIAL SECTION FOR INNER PRESSURE
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1302 (1206:-1205) 2205 -2206 2013 -2014 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,pressMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1302 (1206:-1205) 2205 -2206 2013 -2014");
+  System.addCell(cellIndex++,pressMat,0.0,HR);
 
   // SPECIAL CELL FOR HE
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1202 (1106:-1105) 2105 -2106 2013 -2014 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,heMat,mercuryTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1202 (1106:-1105) 2105 -2106 2013 -2014");
+  System.addCell(cellIndex++,heMat,mercuryTemp,HR);
   
-  // Out=ModelSupport::getComposite(SMap,buildIndex," 2 -1302 1305 -1306 ((13 -14) : -1318 : -1317) ");
-  // addOuterUnionSurf(Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " ( 1 : (-527:13) (-528:-14) -507) (-518:-14) (13:-517) -502 505 -506 ");
-  addOuterUnionSurf(Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 502 -1302 1505 -1506 ((13 -14) : -1518 : -1517) ");
-  addOuterUnionSurf(Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1302 2505 -2506 -52 ((2013 -2014) : -2518 : -2517)");
-  addOuterUnionSurf(Out);
+  // HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -1302 1305 -1306 ((13 -14) : -1318 : -1317)");
+  // addOuterUnionSurf(HR);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"( 1 : (-527:13) (-528:-14) -507) (-518:-14) (13:-517) -502 505 -506");
+  addOuterUnionSurf(HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"502 -1302 1505 -1506 ((13 -14) : -1518 : -1517)");
+  addOuterUnionSurf(HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1302 2505 -2506 -52 ((2013 -2014) : -2518 : -2517)");
+  addOuterUnionSurf(HR);
   return;
 }
 
