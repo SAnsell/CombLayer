@@ -3,7 +3,7 @@
 
  * File:   essBuildInc/PBW.h
  *
- * Copyright (c) 2017-2019 by Konstantin Batkov
+ * Copyright (c) 2017-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,8 +37,10 @@ namespace essSystem
 */
 
 
-class PBW : public attachSystem::ContainedComp,
-  public attachSystem::FixedRotateUnit
+class PBW :
+    public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
+    public attachSystem::ExternalCut
 {
  private:
 
@@ -100,9 +102,10 @@ class PBW : public attachSystem::ContainedComp,
   virtual PBW* clone() const;
   virtual ~PBW();
 
-  void createAll(Simulation&,
-		 const attachSystem::FixedComp&,const long int&,
-		 const attachSystem::FixedComp&,const long int&);
+  using FixedComp::createAll;
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
+    
 
 };
 

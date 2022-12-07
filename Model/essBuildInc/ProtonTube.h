@@ -38,8 +38,8 @@ namespace essSystem
 */
 
 class ProtonTube :  public attachSystem::CopiedComp,
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedGroup,
-  public attachSystem::FixedRotateUnit,
   public attachSystem::FrontBackCut
 {
  private:
@@ -57,9 +57,9 @@ class ProtonTube :  public attachSystem::CopiedComp,
   ProtonTube& operator=(const ProtonTube&);
   virtual ~ProtonTube();
 
-  void createAll(Simulation&,
-		 const attachSystem::FixedComp&,const long int,
-		 const attachSystem::FixedComp&,const long int);
+  using FixedComp::createAll;
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
  

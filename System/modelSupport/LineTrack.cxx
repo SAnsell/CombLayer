@@ -164,10 +164,8 @@ LineTrack::calculate(const Simulation& ASim)
       (InitPt,"Initial point not in model");
 
   int SN(0);
-
+  
   const std::set<int> SSet=OPtr->isOnSide(InitPt);
-
-
   if (!SSet.empty())
     {
       int TD(0);

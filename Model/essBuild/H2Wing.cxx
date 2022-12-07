@@ -463,17 +463,17 @@ H2Wing::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("H2Wing","createObjects");
 
-  std::string Out,OutA,OutB,OutC;
+  HeadRule HR,HRa,HRb,HRc;
 
   int triOffset(buildIndex+100);
   HeadRule InnerA,InnerB,InnerC;
   
-  const std::string CutA=
-    ModelSupport::getComposite(SMap,buildIndex," -1001 1003 ");
-  const std::string CutB=
-    ModelSupport::getComposite(SMap,buildIndex," 1001 -1002 ");
-  const std::string CutC=
-    ModelSupport::getComposite(SMap,buildIndex," 1002 -1003 ");
+  const HeadRule CutA=
+    ModelSupport::getHeadRule(SMap,buildIndex," -1001 1003 ");
+  const HeadRule CutB=
+    ModelSupport::getHeadRule(SMap,buildIndex," 1001 -1002 ");
+  const HeadRule CutC=
+    ModelSupport::getHeadRule(SMap,buildIndex," 1002 -1003 ");
   
   for(size_t i=0;i<nLayers;i++)
     {
@@ -481,39 +481,35 @@ H2Wing::createObjects(Simulation& System)
       InnerB.makeComplement();
       InnerC.makeComplement();
 
-      OutA=ModelSupport::getComposite(SMap,triOffset,"-1 -3 5 -6 (21:-7)");
-      OutB=ModelSupport::getComposite(SMap,triOffset,"-1 -2 5 -6 (22:-8)");
-      OutC=ModelSupport::getComposite(SMap,triOffset,"-2 -3 5 -6 (23:-9) ");
+      HRa=ModelSupport::getHeadRule(SMap,triOffset,"-1 -3 5 -6 (21:-7)");
+      HRb=ModelSupport::getHeadRule(SMap,triOffset,"-1 -2 5 -6 (22:-8)");
+      HRc=ModelSupport::getHeadRule(SMap,triOffset,"-2 -3 5 -6 (23:-9)");
 
       if (!i && engActive)
 	{
-	  Out=ModelSupport::getComposite
+	  HR=ModelSupport::getHeadRule
 	    (SMap,triOffset,"-1 -2 -3 5 -6 (21:-7) (22:-8) (23:-9)");
-	  System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
-	  CellMap::setCell("Inner",cellIndex-1);
+	  makeCell("Inner",System,cellIndex++,mat[i],temp[i],HR);
 	}
       else
 	{
-	  System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],
-				       OutA+InnerA.display()+CutA));
-	  System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],
-					   OutB+InnerB.display()+CutB));
-	  System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],
-					   OutC+InnerC.display()+CutC));
+	  System.addCell(cellIndex++,mat[i],temp[i],HRa*InnerA*CutA);
+	  System.addCell(cellIndex++,mat[i],temp[i],HRb*InnerB*CutB);
+	  System.addCell(cellIndex++,mat[i],temp[i],HRc*InnerC*CutC);
 	}
       
-      InnerA.procString(OutA);
-      InnerB.procString(OutB);
-      InnerC.procString(OutC);
+      InnerA=HRa;
+      InnerB=HRb;
+      InnerC=HRc;
       triOffset+=100;
     }
   // Add last cell to cell map
   CellMap::setCell("Outer",cellIndex-1);
 
   triOffset-=100;
-  OutA=ModelSupport::getComposite(SMap,triOffset,
-				     "-1 -2 -3 5 -6 (21:-7) (22:-8) (23:-9)");
-  addOuterSurf(OutA);
+  HR=ModelSupport::getHeadRule
+    (SMap,triOffset,"-1 -2 -3 5 -6 (21:-7) (22:-8) (23:-9)");
+  addOuterSurf(HR);
   return;
 }
 

@@ -3,7 +3,7 @@
 
  * File:   essBuild/PBW.cxx
  *
- * Copyright (c) 2004-2019 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,8 +36,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -56,7 +54,6 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
-#include "FixedRotateUnit.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -72,8 +69,9 @@ namespace essSystem
 {
 
 PBW::PBW(const std::string& Key)  :
+  attachSystem::FixedRotate(Key,8),
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotateUnit(Key,8),
+  attachSystem::ExternalCut(),
   shield(new TelescopicPipe(Key+"Shield"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -82,16 +80,18 @@ PBW::PBW(const std::string& Key)  :
 {
   ELog::RegMethod RegA("PBW","PBW");
 
-  ModelSupport::objectRegister& OR = ModelSupport::objectRegister::Instance();
+  ModelSupport::objectRegister& OR =
+    ModelSupport::objectRegister::Instance();
   OR.addObject(shield);
 
   return;
 }
 
 PBW::PBW(const PBW& A) :
+  attachSystem::FixedRotate(A),
   attachSystem::ContainedComp(A),
-  attachSystem::FixedRotateUnit(A),
-
+  attachSystem::ExternalCut(A),
+  
   engActive(A.engActive),
   plugLength1(A.plugLength1),
   plugLength2(A.plugLength2),
@@ -145,8 +145,9 @@ PBW::operator=(const PBW& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedRotate::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       cellIndex=A.cellIndex;
       engActive=A.engActive;
       plugLength1=A.plugLength1;
@@ -388,126 +389,126 @@ PBW::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("PBW","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
   // plug
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 11 -12 13 -14 15 -16 28 (-71:72:-73:74:-75:76) "); // outer void
-  System.addCell(MonteCarlo::Object(cellIndex++,pipeMatAfter,0.0,Out));
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"11 -12 13 -14 15 -16 28 (-71:72:-73:74:-75:76)"); // outer void
+  System.addCell(cellIndex++,pipeMatAfter,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 1 -2 3 -4 5 -6 7 (-11:12:-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,plugMat,0.0,Out));
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1 -2 3 -4 5 -6 7 (-11:12:-13:14:-15:16)");
+  System.addCell(cellIndex++,plugMat,0.0,HR);
 
   // proton tube void
-  Out=ModelSupport::getComposite(SMap,buildIndex, " -7 12 -2");
-  System.addCell(MonteCarlo::Object(cellIndex++,pipeMatAfter,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex, " -7 1 -11");
-  System.addCell(MonteCarlo::Object(cellIndex++,pipeMatBefore,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 12 -2");
+  System.addCell(cellIndex++,pipeMatAfter,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 1 -11");
+  System.addCell(cellIndex++,pipeMatBefore,0.0,HR);
 
   // flange cylinder
   // inner steel
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -71 27 -29 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,plugMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex," 72 -12 27 -29 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,plugMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -71 27 -29");
+  System.addCell(cellIndex++,plugMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"72 -12 27 -29");
+  System.addCell(cellIndex++,plugMat,0.0,HR);
 
   // flange cylinder - inner layer
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -21 29 -30 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,plugMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -22 29 -30 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,coolingMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -21 29 -30");
+  System.addCell(cellIndex++,plugMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -22 29 -30");
+  System.addCell(cellIndex++,coolingMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 22 -41 29 -30 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,plugMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex," 41 -42 29 -47 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,plugMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"22 -41 29 -30");
+  System.addCell(cellIndex++,plugMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"41 -42 29 -47");
+  System.addCell(cellIndex++,plugMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 42 -71 29 -28 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,plugMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex," 72 -62 29 -28 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,plugMat,0.0,Out));
-
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 62 -61 29 -47 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,plugMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex," 61 -32 29 -30 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,plugMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"42 -71 29 -28");
+  System.addCell(cellIndex++,plugMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"72 -62 29 -28");
+  System.addCell(cellIndex++,plugMat,0.0,HR);
 
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 32 -31 29 -30 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,coolingMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex," 31 -12 29 -30 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,plugMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"62 -61 29 -47");
+  System.addCell(cellIndex++,plugMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"61 -32 29 -30");
+  System.addCell(cellIndex++,plugMat,0.0,HR);
+
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"32 -31 29 -30");
+  System.addCell(cellIndex++,coolingMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"31 -12 29 -30");
+  System.addCell(cellIndex++,plugMat,0.0,HR);
 
   // flange - outer steel
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -41 30 -28 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,plugMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex," 41 -42 47 -28 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,pipeMatAfter,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -41 30 -28");
+  System.addCell(cellIndex++,plugMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"41 -42 47 -28");
+  System.addCell(cellIndex++,pipeMatAfter,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 62 -61 47 -28 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,pipeMatAfter,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex," 61 -12 30 -28 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,plugMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"62 -61 47 -28");
+  System.addCell(cellIndex++,pipeMatAfter,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"61 -12 30 -28");
+  System.addCell(cellIndex++,plugMat,0.0,HR);
 
   // void inside PBW main cell
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -81 -27 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,pipeMatBefore,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex," 82 -12 -27 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,pipeMatAfter,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -81 -27");
+  System.addCell(cellIndex++,pipeMatBefore,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"82 -12 -27");
+  System.addCell(cellIndex++,pipeMatAfter,0.0,HR);
 
   // PBW Al plate
-  Out=ModelSupport::getComposite(SMap,buildIndex," 71 -81 27 -87 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,plugMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex," 71 -81 87 73 -74 75 -76 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"71 -81 27 -87");
+  System.addCell(cellIndex++,plugMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"71 -81 87 73 -74 75 -76");
+  System.addCell(cellIndex++,mat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 81 -82 73 -74 75 -76 (-93:94:-95:96)");
-  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				"81 -82 73 -74 75 -76 (-93:94:-95:96)");
+  System.addCell(cellIndex++,mat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 82 -72 27 -87 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,plugMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex," 82 -72 87 73 -74 75 -76 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"82 -72 27 -87");
+  System.addCell(cellIndex++,plugMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"82 -72 87 73 -74 75 -76");
+  System.addCell(cellIndex++,mat,0.0,HR);
 
   // PBW foil
-  Out=ModelSupport::getComposite(SMap,buildIndex, " 81 -101 108 93 -94 95 -96 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,pipeMatBefore,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"81 -101 108 93 -94 95 -96");
+  System.addCell(cellIndex++,pipeMatBefore,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex, " -107 -102 93 -94 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,pipeMatAfter,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-107 -102 93 -94");
+  System.addCell(cellIndex++,pipeMatAfter,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex, " 101 -102 93 -94 95 -96 107");
-  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex, " 102 -82 93 -94 95 -96 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,pipeMatAfter,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 93 -94 95 -96 107");
+  System.addCell(cellIndex++,mat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -82 93 -94 95 -96");
+  System.addCell(cellIndex++,pipeMatAfter,0.0,HR);
 
   // cylindrical segment:
   //                      sides
-  Out=ModelSupport::getComposite(SMap,buildIndex, " 107 -108 -101 116 93 -94 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex, " 107 -108 -101 -115 93 -94 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"107 -108 -101 116 93 -94");
+  System.addCell(cellIndex++,mat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"107 -108 -101 -115 93 -94");
+  System.addCell(cellIndex++,mat,0.0,HR);
   // central cylindrical segment with water:
   if (std::abs(foilThick-foilWaterThick)>Geometry::zeroTol)
     {
-    Out=ModelSupport::getComposite(SMap,buildIndex, " 107 -117 -101 115 -116 93 -94 ");
-    System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
-    Out=ModelSupport::getComposite(SMap,buildIndex, " 117 -118 -101 115 -116 93 -94 ");
-    System.addCell(MonteCarlo::Object(cellIndex++,coolingMat,0.0,Out));
-    Out=ModelSupport::getComposite(SMap,buildIndex, " 118 -108 -101 115 -116 93 -94 ");
-    System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"107 -117 -101 115 -116 93 -94");
+      System.addCell(cellIndex++,mat,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"117 -118 -101 115 -116 93 -94");
+      System.addCell(cellIndex++,coolingMat,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"118 -108 -101 115 -116 93 -94");
+      System.addCell(cellIndex++,mat,0.0,HR);
     }
   else // no side Al layers
     {
-    Out=ModelSupport::getComposite(SMap,buildIndex, " 107 -108 -101 115 -116 93 -94 ");
-    System.addCell(MonteCarlo::Object(cellIndex++,coolingMat,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"107 -108 -101 115 -116 93 -94");
+      System.addCell(cellIndex++,coolingMat,0.0,HR);
     }
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  addOuterSurf(HR);
 
   return;
 }
@@ -550,8 +551,8 @@ PBW::createLinks()
 
 void
 PBW::createAll(Simulation& System,
-	       const attachSystem::FixedComp& FC,const long int& lp,
-	       const attachSystem::FixedComp& SB,const long int& sblp)
+	       const attachSystem::FixedComp& FC,
+	       const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -564,7 +565,7 @@ PBW::createAll(Simulation& System,
   ELog::RegMethod RegA("PBW","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC,lp);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createLinks();
   createObjects(System);
@@ -573,9 +574,9 @@ PBW::createAll(Simulation& System,
   if (engActive)
     {
       shield->setFront(*this,8);
-      shield->setBack(SB,sblp);
+      shield->copyCutSurf("back",*this,"shieldPlate");
       shield->createAll(System,*this,8);
-      attachSystem::addToInsertSurfCtrl(System,SB,shield->getCC("Full"));
+      //      attachSystem::addToInsertSurfCtrl(System,SB,shield->getCC("Full"));
     }
 
   return;
