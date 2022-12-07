@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   src/SimMonte.cxx
+ * File:   simMC/SimMonte.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
  *

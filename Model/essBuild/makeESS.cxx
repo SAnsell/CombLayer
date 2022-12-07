@@ -399,7 +399,7 @@ makeESS::buildIradComponent(Simulation& System,
                             const mainSystem::inputParam& IParam)
   /*!
     Build the Iradiation component. It is an object
-    within a moderator (typically). Currently not saves in 
+    within a moderator (typically). Currently not saved in 
     the class set.
     \param System :: Simulation
     \param IParam :: Name of Irad component + location
@@ -1215,14 +1215,17 @@ makeESS::build(Simulation& System,
   
   // PROTON BEAMLINE
 
-  //  pbip->createAll(System,World::masterOrigin(),0,*Bulk,3,*Target,1);
+  pbip->setCutSurf("front",*Bulk,3);
+  pbip->setCutSurf("back",*Target,1);
+  //  pbip->createAll(System,World::masterOrigin(),0);
   //  attachSystem::addToInsertSurfCtrl(System,*Bulk,pbip->getCC("before"));
   //  attachSystem::addToInsertSurfCtrl(System,*Bulk,pbip->getCC("main"));
   //  Reflector->insertComponent(System, "targetVoid", pbip->getCC("after"));
 
   PBeam->setFront(*Bulk,4);
   PBeam->setBack(*TSMainBuildingObj,-1);
-  PBeam->createAll(System,*Bulk,4,*ShutterBayObj,-6);
+  PBeam->setCutSurf("shieldPlate",*ShutterBayObj,-6);
+  PBeam->createAll(System,*Bulk,4);
 
   attachSystem::addToInsertSurfCtrl(System,*ShutterBayObj,
 				    PBeam->getCC("Full"));

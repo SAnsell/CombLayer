@@ -50,7 +50,6 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
-#include "FixedRotateUnit.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "AttachSupport.h"
@@ -70,8 +69,8 @@ namespace essSystem
 
 ProtonTube::ProtonTube(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
+  attachSystem::FixedRotate(newName,2),
   attachSystem::ContainedGroup(),
-  attachSystem::FixedRotateUnit(newName,2),
   attachSystem::FrontBackCut(),
   tube(new TelescopicPipe(newName+"Pipe")),
   pbw(new PBW(newName+"PBW"))
@@ -90,8 +89,8 @@ ProtonTube::ProtonTube(const std::string& Key) :
 
 ProtonTube::ProtonTube(const ProtonTube& A) :
   attachSystem::CopiedComp(A),
+  attachSystem::FixedRotate(A),
   attachSystem::ContainedGroup(A),
-  attachSystem::FixedRotateUnit(A),
   attachSystem::FrontBackCut(A),
   engActive(A.engActive),
   tube(A.tube->clone()),
@@ -113,6 +112,10 @@ ProtonTube::operator=(const ProtonTube& A)
   if (this!=&A)
     {
       engActive=A.engActive;
+      attachSystem::CopiedComp::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
+      attachSystem::ContainedGroup::operator=(A);
+      attachSystem::FrontBackCut::operator=(A);
       *tube=*A.tube;
       *pbw=*A.pbw;
     }
@@ -141,9 +144,7 @@ ProtonTube::populate(const FuncDataBase& Control)
 void
 ProtonTube::createAll(Simulation& System,
 		      const attachSystem::FixedComp& originFC,
-		      const long int originIndex,
-		      const attachSystem::FixedComp& SB,
-		      const long int sbIndex)
+		      const long int originIndex)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
@@ -165,9 +166,12 @@ ProtonTube::createAll(Simulation& System,
   
   if (engActive)
     {
-      pbw->createAll(System, World::masterOrigin(), 0, SB,sbIndex);
-      attachSystem::addToInsertSurfCtrl(System,SB,*pbw);
+      // SB,sbIndex called:
+      pbw->setCutSurf("shieldPlate",*this,"shieldPlate");
+      pbw->createAll(System,World::masterOrigin(),0);
+      //      attachSystem::addToInsertSurfCtrl(System,SB,*pbw);
       attachSystem::addToInsertLineCtrl(System,*tube, *pbw);
+
     }
 
   return;

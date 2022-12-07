@@ -3,7 +3,7 @@
 
  * File:   essBuild/PBIP.cxx
  *
- * Copyright (c) 2017-2019 by Konstantin Batkov
+ * Copyright (c) 2017-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,8 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "surfRegister.h"
@@ -57,9 +55,9 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
-#include "FixedRotateUnit.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "ExternalCut.h"
 
 #include "PBIP.h"
 
@@ -67,8 +65,9 @@ namespace essSystem
 {
 
 PBIP::PBIP(const std::string& Key)  :
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedGroup("before","main","after"),
-  attachSystem::FixedRotateUnit(Key,6)
+  attachSystem::ExternalCut()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -76,8 +75,9 @@ PBIP::PBIP(const std::string& Key)  :
 {}
 
 PBIP::PBIP(const PBIP& A) :
+  attachSystem::FixedRotate(A),
   attachSystem::ContainedGroup(A),
-  attachSystem::FixedRotateUnit(A),
+  attachSystem::ExternalCut(A),
   engActive(A.engActive),
   length(A.length),width(A.width),height(A.height),
   wallThick(A.wallThick),
@@ -109,9 +109,9 @@ PBIP::operator=(const PBIP& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedRotate::operator=(A);
-      cellIndex=A.cellIndex;
+      attachSystem::ContainedGroup::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       engActive=A.engActive;
       length=A.length;
       width=A.width;
@@ -141,7 +141,7 @@ PBIP::clone() const
   \return new (this)
  */
 {
-    return new PBIP(*this);
+  return new PBIP(*this);
 }
 
 PBIP::~PBIP()
@@ -251,11 +251,7 @@ PBIP::createSurfaces()
 }
 
 void
-PBIP::createObjects(Simulation& System,
-		    const attachSystem::FixedComp& FCstart,
-		    const long int lpStart,
-		    const attachSystem::FixedComp& FCend,
-		    const long int lpEnd)
+PBIP::createObjects(Simulation& System)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
@@ -267,52 +263,48 @@ PBIP::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("PBIP","createObjects");
 
-  const std::string start =
-    std::to_string(FCstart.getLinkSurf(lpStart));
+  const HeadRule frontHR=getRule("front");
+  const HeadRule backHR=getRule("back");
 
-  const size_t lIndex(static_cast<size_t>(std::abs(lpEnd)-1));
+  //  FixedComp::setLinkCopy(0,FCend,-lpEnd);
 
-  const std::string BSurf=(lpEnd>0) ?
-    FCend.getLinkString(lpEnd) : FCend.getCommonRule(lIndex+1).display() ;
-  FixedComp::setLinkCopy(0,FCend,-lpEnd);
-
-  std::string Out;
+  HeadRule HR;
   // main
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -21 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,mainMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -22 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,foilMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex," 22 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,mainMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 11 -12 13 -14 15 -16 "
-				 "(-1:2:-3:4:-5:6) (1:-103:104:-105:106) "
-				 " (-2:-203:204:-205:206) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -21 3 -4 5 -6");
+  System.addCell(cellIndex++,mainMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -22 3 -4 5 -6");
+  System.addCell(cellIndex++,foilMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"22 -2 3 -4 5 -6");
+  System.addCell(cellIndex++,mainMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				"11 -12 13 -14 15 -16"
+				"(-1:2:-3:4:-5:6) (1:-103:104:-105:106)"
+				"(-2:-203:204:-205:206)");
+  System.addCell(cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -14 15 -16 ");
-  addOuterSurf("main", Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14 15 -16");
+  addOuterSurf("main", HR);
 
   // before
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1 103 -104 105 -106 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,mainMat,0.0,start+Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-		  " -11 113 -114 115 -116 (-103:104:-105:106) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,start+Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 103 -104 105 -106");
+  System.addCell(cellIndex++,mainMat,0.0,HR*frontHR);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-11 113 -114 115 -116 (-103:104:-105:106)");
+  System.addCell(cellIndex++,wallMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1 113 -114 115 -116 ");
-  addOuterSurf("before",start+Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 113 -114 115 -116");
+  addOuterSurf("before",HR*frontHR);
 
   // after
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 203 -204 205 -206 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,mainMat,0.0,Out+BSurf));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 203 -204 205 -206");
+  System.addCell(cellIndex++,mainMat,0.0,HR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-		       " 12 213 -214 215 -216 (-2:-203:204:-205:206) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+BSurf));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+		      "12 213 -214 215 -216 (-2:-203:204:-205:206)");
+  System.addCell(cellIndex++,wallMat,0.0,HR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 213 -214 215 -216 ");
-  addOuterUnionSurf("after", Out+BSurf);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 213 -214 215 -216");
+  addOuterUnionSurf("after",HR*backHR);
 
   return;
 }
@@ -352,9 +344,9 @@ PBIP::createLinks()
 
 void
 PBIP::createAll(Simulation& System,
-		const attachSystem::FixedComp& FC,const long int linkIndex,
-		const attachSystem::FixedComp& FCstart,const long int lpStart,
-		const attachSystem::FixedComp& FCend,const long int lpEnd)
+		const attachSystem::FixedComp& FC,const long int linkIndex)
+//		const attachSystem::FixedComp& FCstart,const long int lpStart,
+//		const attachSystem::FixedComp& FCend,const long int lpEnd)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -372,7 +364,7 @@ PBIP::createAll(Simulation& System,
   createUnitVector(FC,linkIndex);
   createSurfaces();
   createLinks();
-  createObjects(System,FCstart,lpStart,FCend,lpEnd);
+  createObjects(System);
   insertObjects(System);
 
   return;

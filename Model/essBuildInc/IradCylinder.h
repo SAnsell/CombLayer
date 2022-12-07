@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/IradCylinder.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,9 +34,10 @@ namespace essSystem
   \brief Iradiation object within the Pre-mod
 */
 
-class IradCylinder : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
-  public attachSystem::CellMap
+class IradCylinder :
+    public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
+    public attachSystem::CellMap
 {
  private:
   
@@ -50,15 +51,11 @@ class IradCylinder : public attachSystem::ContainedComp,
   int mat;                        ///< Main material
   std::vector<int> wallMat;       ///< Wall material
 
-
   double sampleX;                 ///< Sample X step     
   double sampleY;                 ///< Sample Z step     
   double sampleZ;                 ///< Sample Z step
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-  
   void createSurfaces();
   void createObjects(Simulation&);
   void createInnerObjects(Simulation&);
@@ -72,6 +69,7 @@ class IradCylinder : public attachSystem::ContainedComp,
   virtual IradCylinder* clone() const;
   virtual ~IradCylinder();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

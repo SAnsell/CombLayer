@@ -3,7 +3,7 @@
 
  * File:   essBuildInc/PBIP.h
  *
- * Copyright (c) 2012-2019 by Konstantin Batkov
+ * Copyright (c) 2012-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,8 +36,9 @@ namespace essSystem
 */
 
 class PBIP :
+    public attachSystem::FixedRotate,
     public attachSystem::ContainedGroup,
-    public attachSystem::FixedRotateUnit
+    public attachSystem::ExternalCut
 {
  private:
 
@@ -67,10 +68,7 @@ class PBIP :
   void populate(const FuncDataBase&);
   void createSurfaces();
   void createLinks();
-  void createObjects(Simulation&,
-		     const attachSystem::FixedComp&,const long int,
-		     const attachSystem::FixedComp&,const long int);
-
+  void createObjects(Simulation&);
 
  public:
 
@@ -80,11 +78,9 @@ class PBIP :
   virtual PBIP* clone() const;
   virtual ~PBIP();
 
-  void createAll(Simulation&,
-		 const attachSystem::FixedComp&,const long int,
-		 const attachSystem::FixedComp&,const long int,
-		 const attachSystem::FixedComp&,const long int);
-
+  using FixedComp::createAll;
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 };
 
 }
