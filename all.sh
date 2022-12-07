@@ -6,9 +6,6 @@ nValid=1000
 #segments=$(for i in {40..49}; do echo -n "Segment$i "; done)
 segments=All
 
-./ess --bunkerPillars ABunker --validAll --validCheck $nValid AA  || exit
-exit
-
 
 parallel --halt now,fail=1 "./maxiv --defaultConfig Single {} --validAll --validCheck $nValid AA" ::: \
    BALDER COSAXS DANMAX FORMAX FLEXPES MICROMAX SOFTIMAX SPECIES MAXPEEM || exit
@@ -26,7 +23,7 @@ parallel --halt now,fail=1 "./maxiv --defaultConfig Single {} --validAll --valid
 ./saxs -validAll --validCheck ${nValid} AA || exit
 parallel --halt now,fail=1 "./ess --topModType {} --validAll --validCheck $nValid AA" ::: \
      Butterfly Pancake 
-
+./ess --bunkerPillars ABunker --validAll --validCheck $nValid AA  || exit
 parallel --halt now,fail=1 "./ess --defaultConfig Single {} --validAll --validCheck $nValid AA" ::: \
  ESTIA CSPEC  ODIN MAGIC BIFROST  HEIMDAL  LOKI  NMX  NNBAR  DREAM  BEER   \
  FREIA SKADI MIRACLES TESTBEAM TREX VESPA VOR     
