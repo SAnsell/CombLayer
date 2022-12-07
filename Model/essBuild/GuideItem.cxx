@@ -337,8 +337,8 @@ GuideItem::getPlane(const int SN) const
 }
 
 
-std::string
-GuideItem::getEdgeStr(const GuideItem* GPtr) const
+HeadRule
+GuideItem::getEdge(const GuideItem* GPtr) const
   /*!
     Given another GuideItem determine the end point collision string
     \param GPtr :: Other object Ptr [0 for none]
@@ -346,7 +346,9 @@ GuideItem::getEdgeStr(const GuideItem* GPtr) const
    */
 {
   ELog::RegMethod RegA("GuideItem","getEdgeStr");
-  if (!GPtr) return "";
+
+  HeadRule HR;
+  if (!GPtr) return HR;
   const attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
   const Geometry::Vec3D beamOrigin=beamFC.getCentre();
 
@@ -365,7 +367,7 @@ GuideItem::getEdgeStr(const GuideItem* GPtr) const
     return GPtr->sideExclude(1);
   else if (CPtr->side(RptB))
     return GPtr->sideExclude(0);
-  return "";
+  return HR;
 }
 
 void
@@ -378,8 +380,8 @@ GuideItem::createObjects(Simulation& System)
   ELog::RegMethod RegA("GuideItem","createObjects");
   if (!active) return;
 
-  const std::string edgeStr=getEdgeStr(GPtr);
-  std::string Out;  
+  const HeadRule edgeHR=getEdge(GPtr);
+  HeadRule HR;
 
   int GI(buildIndex);
   for(size_t i=0;i<nSegment;i++)
@@ -387,60 +389,57 @@ GuideItem::createObjects(Simulation& System)
       // Outer layer
       if (i==0)
 	{
-	  Out=ModelSupport::getComposite(SMap,buildIndex,"1 7 3 -4 5 -6 -57");
-	  Out+=edgeStr;
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 7 3 -4 5 -6 -57");
+	  HR*=edgeHR;
 	}
       else 
-	Out=ModelSupport::getComposite(SMap,GI,buildIndex,"1M 7 3 -4 5 -6 -57");
+	HR=ModelSupport::getHeadRule(SMap,GI,buildIndex,"1M 7 3 -4 5 -6 -57");
 
       if (!i)
-	addOuterSurf("Inner",Out);
+	addOuterSurf("Inner",HR);
       else 
-	addOuterUnionSurf("Outer",Out);
+	addOuterUnionSurf("Outer",HR);
 
 
 
       // Add inner boundary
-      Out+=ModelSupport::getComposite(SMap,GI," (-13:14:-15:16) ");
-      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-      addCell("Body",cellIndex-1);
+      HR*=ModelSupport::getHeadRule(SMap,GI,"(-13:14:-15:16)");
+      makeCell("Body",System,cellIndex++,0,0.0,HR);
 
       if (i==0)
 	{
-	  Out=ModelSupport::getComposite
+	  HR=ModelSupport::getHeadRule
 	    (SMap,buildIndex,"1 7 13 -14 15 -16 -57");
-	  Out+=edgeStr;
+	  HR*=edgeHR;
 	}
       else 
-	Out=ModelSupport::getComposite
+	HR=ModelSupport::getHeadRule
 	  (SMap,GI,buildIndex,"1M 7 13 -14 15 -16 -57");
 
       // Inner metal:
       if (!filled)
-	Out+=ModelSupport::getComposite
-	  (SMap,buildIndex,"(-1103:1104:-1105:1106) ");
-      System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
-      
-      if (filled) addCell("Void",cellIndex-1);
+	HR*=ModelSupport::getHeadRule
+	  (SMap,buildIndex,"(-1103:1104:-1105:1106)");
+      makeCell("Body",System,cellIndex++,mat,0.0,HR);
+
       addCell("Body",cellIndex-1);
-      addCell("BodyMetal",cellIndex-1);
+      if (filled) addCell("Void",cellIndex-1);
+
       
       GI+=50;
     }      
   // Inner void
   if (!filled)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,GI,
-				     "1 7 -7M 1103 -1104 1105 -1106 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-      
-      setCell("Void",cellIndex-1);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,GI,"1 7 -7M 1103 -1104 1105 -1106 ");
+      makeCell("Void",System,cellIndex++,0,0.0,HR);
     }
 
   return;
 }
 
-std::string
+HeadRule
 GuideItem::sideExclude(const size_t sideIndex) const
   /*!
     Determine the string to exclude on a front point touch
@@ -448,10 +447,9 @@ GuideItem::sideExclude(const size_t sideIndex) const
     \return string
   */
 {
-  if (sideIndex==0)
-    return ModelSupport::getComposite(SMap,buildIndex,"(-3 : -5 : 6)");
-  
-  return ModelSupport::getComposite(SMap,buildIndex,"(4 : -5 : 6)");
+  return (!sideIndex) ?
+    ModelSupport::getHeadRule(SMap,buildIndex,"(-3 : -5 : 6)") :
+    ModelSupport::getHeadRule(SMap,buildIndex,"(4 : -5 : 6)");
 }
 
 void

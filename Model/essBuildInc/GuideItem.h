@@ -79,8 +79,8 @@ private:
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&);
-  std::string sideExclude(const size_t) const;
-  std::string getEdgeStr(const GuideItem*) const;
+  HeadRule sideExclude(const size_t) const;
+  HeadRule getEdge(const GuideItem*) const;
   const Geometry::Plane* getPlane(const int) const;
   
  public:
