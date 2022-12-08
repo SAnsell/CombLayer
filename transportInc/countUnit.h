@@ -62,9 +62,9 @@ class countUnit
   
   explicit countUnit(const size_t,const size_t);
   countUnit(const countUnit&);
-  countUnit(const countUnit&&);
+  countUnit(countUnit&&);
   countUnit& operator=(const countUnit&);
-  countUnit& operator=(const countUnit&&);
+  countUnit& operator=(countUnit&&);
   ~countUnit();
 
   /// accessor function

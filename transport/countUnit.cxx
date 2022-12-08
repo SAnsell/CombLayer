@@ -25,26 +25,29 @@
 #include <string>
 #include <sstream>
 #include <cmath>
+#include <vector>
 
-#include "Tensor.h"
+#include "MatrixBase.h"
+#include "Matrix.h"
+#include "Vec3D.h"
+#include "Exception.h"
+#include "countUnit.h"
 
-template<typename T>
-countUnit::Tensor() :
-  nx(0),ny(0),nz(0),U(0)
-  /*!
-    Default constructor
-  */
-{}
+namespace Transport
+{
 
-countUnit::countUnit(const size_t NI,const size_T NE) :
+countUnit::countUnit(const size_t NI,const size_t NE) :
   nIndex(NI),nEBin(NE)
+  /*!
+    Constructor 
+    */
 {
   if (nIndex*nEBin<1)
     {
       if (!nIndex)
-	throw ColErr::EmptyValue("countUnit::nIndex");
+	throw ColErr::EmptyValue<size_t>("countUnit::nIndex");
       else
-	throw ColErr::EmptyValue("countUnit::nEBin");
+	throw ColErr::EmptyValue<size_t>("countUnit::nEBin");
     }
 
   setMem();
@@ -62,18 +65,8 @@ countUnit::countUnit(const countUnit& A) :
   copyMem(A);
 }
 
-countUnit::countUnit(const countUnit& A) :
-  nIndex(A.nIndex),nEBin(A.nIndex)
-  /*!
-    Copy Constructor
-    \param A :: Tensor to copy
-  */
-{
-  setMem();
-  copyMem(A);
-}
 
-countUnit::countUnit(const countUnit&& A) :
+countUnit::countUnit(countUnit&& A) :
   nIndex(A.nIndex),nEBin(A.nIndex)
   /*!
     Copy Constructor
@@ -109,7 +102,7 @@ countUnit::operator=(const countUnit& A)
 }
 
 countUnit&
-countUnit::operator=(const countUnit&& A) 
+countUnit::operator=(countUnit&& A) 
   /*!
     Move Assignment operator
     \param A :: data to copy
@@ -195,3 +188,4 @@ countUnit::setMem()
 
 
 
+} // NAMESPACE Transport

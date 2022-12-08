@@ -45,27 +45,29 @@ class ChannelDet
 {
  protected:
 
-  /// main unit name
-  const std::map<std::string,long int> unit;
-  const std::map<std::string,long int> ;
-  
   const size_t index;         ///< Index number
+  
+  /// main unit name
+  const std::map<std::string,size_t> unitMap;
+  std::vector<constUnit> units;
+  
+
   size_t nps;                 ///< Number of points
 
  public:
   
-  explicit ChannelDet(const size_t);
+  explicit ChannelDet(const size_t,size_t,size_t);
   ChannelDet(const ChannelDet&);
   ChannelDet& operator=(const ChannelDet&);
-  virtual ChannelDet* clone() const =0;
   virtual ~ChannelDet();
   
-  virtual double project(const MonteCarlo::particle&,
-		       MonteCarlo::particle&) const =0;
-  virtual void addEvent(const MonteCarlo::particle&) =0;
+  virtual double project(const size_t,
+			 MonteCarlo::particle&) const =0;
+  virtual void addEvent(const std::string&,
+			const MonteCarlo::particle&) =0;
+  virtual void addEvent(const size_t,
+			const MonteCarlo::particle&) =0;
 
-  virtual void clear() =0;
-  virtual void normalize(const size_t) {}
   virtual void writeHeader(std::ostream&) const {}
   virtual void write(std::ostream&) const =0;
 };
