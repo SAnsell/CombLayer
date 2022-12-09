@@ -57,9 +57,10 @@
 #include "Material.h"
 #include "neutMaterial.h"
 
-#include "Beam.h"
 #include "particle.h"
 #include "neutron.h"
+#include "photon.h"
+#include "Beam.h"
 #include "ParticleInObj.h"
 #include "Detector.h"
 #include "DetGroup.h"

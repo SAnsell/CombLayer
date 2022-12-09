@@ -41,26 +41,24 @@ namespace Transport
   and a fixed set of energy bins
 */
 
-class ChannelDet
+class ChannelDet :
+    public attachSystem::FixedRotate
 {
- protected:
+ private:
 
-  const size_t index;         ///< Index number
-  
-  /// main unit name
-  const std::map<std::string,size_t> unitMap;
-  std::vector<constUnit> units;
-  
-
-  size_t nps;                 ///< Number of points
+  const size_t index;         ///< Index number 
+  std::vector<countUnit> units;
 
  public:
   
-  explicit ChannelDet(const size_t,size_t,size_t);
+  explicit ChannelDet(const size_t,size_t,size_t,
+		      const std::string&);  
   ChannelDet(const ChannelDet&);
+  virtual ChannelDet* clone() const;
   ChannelDet& operator=(const ChannelDet&);
   virtual ~ChannelDet();
-  
+
+  virtual void clear();
   virtual double project(const size_t,
 			 MonteCarlo::particle&) const =0;
   virtual void addEvent(const std::string&,
