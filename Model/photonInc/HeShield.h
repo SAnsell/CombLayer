@@ -3,7 +3,7 @@
  
  * File:   photonInc/HeShield.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,12 +41,12 @@ namespace photonSystem
   \brief Specialized for shield with vertical He3 tubes
 */
 
-class HeShield : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
+class HeShield : 
+  public attachSystem::FixedRotate,
+  public attachSystem::ContainedComp,
   public attachSystem::CellMap
 {
  private:
-
 
   double length;            ///< length of poly 
   double width;             ///< width of poly 
@@ -65,9 +65,6 @@ class HeShield : public attachSystem::ContainedComp,
   int cdMat;                ///< main decoupler material
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -80,7 +77,8 @@ class HeShield : public attachSystem::ContainedComp,
   HeShield& operator=(const HeShield&);
   virtual ~HeShield();
   virtual HeShield* clone() const;
-  
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 };

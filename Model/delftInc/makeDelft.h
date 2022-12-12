@@ -25,7 +25,7 @@
 namespace attachSystem
 {
   class FixedComp;
-  class FixedOffset;
+  class FixedRotate;
 }
 /*!
   \namespace delftSystem
@@ -86,7 +86,7 @@ class makeDelft
   std::shared_ptr<BeamInsert> R2Insert;      ///< FlightA/R2 inset
 
   /// Reflector additional on tube
-  std::shared_ptr<attachSystem::FixedOffset> R2Be; 
+  std::shared_ptr<attachSystem::FixedRotate> R2Be; 
 
   /// Boxed units
   std::vector<std::shared_ptr<SpaceBlock> > SBox;  

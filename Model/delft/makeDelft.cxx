@@ -359,7 +359,7 @@ makeDelft::buildModerator(Simulation& System,
 
       BePtr->createAll(System,FC,sideIndex);
       
-      R2Be=std::shared_ptr<attachSystem::FixedOffset>(BePtr);
+      R2Be=std::shared_ptr<attachSystem::FixedRotate>(BePtr);
       OR.addObject(R2Be);
     }
 
