@@ -33,6 +33,7 @@
 #include "Random.h"
 #include "particle.h"
 #include "neutron.h"
+#include "photon.h"
 #include "Beam.h"
 #include "AreaBeam.h"
 
@@ -102,6 +103,21 @@ AreaBeam::generateNeutron() const
     HVec*(Random::rand()-0.5)*Height*2.0+
     Axis*startY;
   return MonteCarlo::neutron(wavelength,CP,Axis);
+}
+
+MonteCarlo::photon
+AreaBeam::generatePhoton() const
+  /*!
+    Return the Point of the neutron.
+    Note that beam travels in the x direction
+    \return Randomize point
+  */
+{
+  const Geometry::Vec3D CP=Cent+
+    WVec*(Random::rand()-0.5)*Width*2.0+
+    HVec*(Random::rand()-0.5)*Height*2.0+
+    Axis*startY;
+  return MonteCarlo::photon(wavelength,CP,Axis);
 }
 
 void 

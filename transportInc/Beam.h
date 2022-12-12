@@ -45,9 +45,6 @@ class Beam
   virtual Beam* clone() const =0; ///< Clone object
   virtual ~Beam() {}              ///< Destructor
 
-  /// Effective typeid
-  virtual std::string className() const { return "Beam"; }
-
   /// set the aim zone
   virtual void setAimZone(const OutZone*) { }
 
