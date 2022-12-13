@@ -44,7 +44,7 @@ class DBMaterial
   /// String to id-number
   typedef std::map<std::string,int> SCTYPE;
   /// Storage type for Materials (based on id number)
-  typedef std::map<int,MonteCarlo::Material> MTYPE;
+  typedef std::map<int,MonteCarlo::Material*> MTYPE;
 
   /// Storage type for Neutron Materials 
   typedef std::map<int,scatterSystem::neutMaterial*> NTYPE;

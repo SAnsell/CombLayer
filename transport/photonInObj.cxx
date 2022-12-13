@@ -37,7 +37,6 @@
 #include "OutputLog.h"
 #include "mathSupport.h"
 #include "Vec3D.h"
-#include "Surface.h"
 #include "particle.h"
 #include "photon.h"
 #include "HeadRule.h"
@@ -86,7 +85,7 @@ photonInObj::hasIntercept(const MonteCarlo::particle& N) const
   
 void
 photonInObj::attenuate(const double D,
-				MonteCarlo::particle& N) const
+		       MonteCarlo::particle& N) const
   /*!
     Attenuate the Neutron in the material over the 
     distance					
