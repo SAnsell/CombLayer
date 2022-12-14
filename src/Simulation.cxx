@@ -1769,9 +1769,6 @@ Simulation::minimizeObject(MonteCarlo::Object* OPtr)
   
   const std::set<int> SPair=
     OPtr->getHeadRule().getPairedSurf();
-
-  if (OPtr->getName()==1040002)
-    ELog::EM<<"CellXCN == "<<*OPtr<<ELog::endDiag;
   
   bool activeFlag(0);
   MonteCarlo::Algebra AX;
