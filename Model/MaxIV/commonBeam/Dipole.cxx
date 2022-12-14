@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonBeam/Dipole.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -70,15 +70,15 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "LinkUnit.h"  
+#include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
-#include "ExternalCut.h" 
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "SurfMap.h"
-#include "CellMap.h" 
+#include "CellMap.h"
 
 #include "Dipole.h"
 
@@ -101,7 +101,7 @@ Dipole::Dipole(const std::string& Key) :
 }
 
 Dipole::Dipole(const std::string& Base,
-	       const std::string& Key) : 
+	       const std::string& Key) :
   attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
@@ -116,7 +116,7 @@ Dipole::Dipole(const std::string& Base,
 {}
 
 
-Dipole::~Dipole() 
+Dipole::~Dipole()
   /*!
     Destructor
   */
@@ -135,7 +135,7 @@ Dipole::populate(const FuncDataBase& Control)
 
   length=Control.EvalVar<double>(keyName+"Length");
   height=Control.EvalVar<double>(keyName+"Height");
- 
+
   poleAngle=Control.EvalVar<double>(keyName+"PoleAngle");
   poleGap=Control.EvalVar<double>(keyName+"PoleGap");
   poleWidth=Control.EvalVar<double>(keyName+"PoleWidth");
@@ -147,7 +147,7 @@ Dipole::populate(const FuncDataBase& Control)
 
   poleMat=ModelSupport::EvalMat<int>(Control,keyName+"PoleMat");
   coilMat=ModelSupport::EvalMat<int>(Control,keyName+"CoilMat");
-  
+
   poleRadius=length/(M_PI*poleAngle/180.0);
   return;
 }
@@ -160,13 +160,13 @@ Dipole::createSurfaces()
 {
   ELog::RegMethod RegA("Dipole","createSurfaces");
 
-  // pole pieces  
+  // pole pieces
   const Geometry::Quaternion QR=
     Geometry::Quaternion::calcQRotDeg(-poleAngle,Z);
 
   const Geometry::Vec3D XPole=QR.makeRotate(X);
   const Geometry::Vec3D YPole=QR.makeRotate(Y);
-  
+
   const Geometry::Vec3D cylCentre=Origin+X*poleRadius;
 
   // END plane
@@ -189,7 +189,7 @@ Dipole::createSurfaces()
   ModelSupport::buildCylinder
     (SMap,buildIndex+27,cylCentre+X*(poleWidth/2.0),Z,poleRadius);
 
-  
+
   // COILS:
   //coil angle is currently half of radius angle:
   const Geometry::Quaternion QCR=
@@ -197,14 +197,14 @@ Dipole::createSurfaces()
 
   const Geometry::Vec3D XCoil=QCR.makeRotate(X);
   const Geometry::Vec3D YCoil=QCR.makeRotate(Y);
-  
+
   const Geometry::Vec3D coilOrg=Origin+YCoil*(length/2.0);
   ModelSupport::buildPlane
     (SMap,buildIndex+101,coilOrg-YCoil*(1.0+coilLength/2.0),YCoil);
   ModelSupport::buildPlane
     (SMap,buildIndex+102,coilOrg+YCoil*(1.0+coilLength/2.0),YCoil);
 
-  
+
   ModelSupport::buildPlane(SMap,buildIndex+113,coilOrg-XCoil*coilWidth,XCoil);
   ModelSupport::buildPlane(SMap,buildIndex+114,coilOrg+XCoil*coilWidth,XCoil);
 
@@ -217,7 +217,7 @@ Dipole::createSurfaces()
     (SMap,buildIndex+105,coilOrg-Z*(coilGap/2.0),Z);
   ModelSupport::buildPlane
     (SMap,buildIndex+106,coilOrg+Z*(coilGap/2.0),Z);
-  
+
   // Coil end cylinders
   const Geometry::Vec3D coilMinus=coilOrg-YCoil*(coilLength/2.0);
   const Geometry::Vec3D coilPlus=coilOrg+YCoil*(coilLength/2.0);
@@ -252,9 +252,9 @@ Dipole::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Dipole","createObjects");
 
-  
+
   HeadRule HR;
-  
+
   if (isActive("MidSplit"))
     {
       const HeadRule& MSplit=getRule("MidSplit");
@@ -289,16 +289,16 @@ Dipole::createObjects(Simulation& System)
   // Pole pieces
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 -15 5 -17 27 ");
   makeCell("Pole",System,cellIndex++,poleMat,0.0,HR);
-  
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 16 -6 -17 27 ");
   makeCell("Pole",System,cellIndex++,poleMat,0.0,HR);
-  
+
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex," 101 -102 -105 5 113 -114 (-1:2:17:-27) ");
   makeCell("CoilA",System,cellIndex++,coilMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex," (-107:101) (-117:-102) -105 5 -113 103");
+    (SMap,buildIndex," (-107:101) (-117:-102) -105 5 -113 103 201");
   makeCell("CoilA",System,cellIndex++,coilMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
@@ -317,7 +317,7 @@ Dipole::createObjects(Simulation& System)
   makeCell("CoilB",System,cellIndex++,coilMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex," (-107:101) (-117:-102) 106 -6 103 -113");
+    (SMap,buildIndex," (-107:101) (-117:-102) 106 -6 103 -113 201");
   makeCell("CoilB",System,cellIndex++,coilMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
@@ -339,15 +339,15 @@ Dipole::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex," -202 118 117 102 5 -6 103 -104 (-113:114) (-105 : 106)");
   makeCell("BackVoid",System,cellIndex++,0,0.0,HR);
-  
+
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex," 5 -6 103 -104 201 -202 ");
   addOuterSurf(HR);
-  
+
   return;
 }
 
-void 
+void
 Dipole::createLinks()
   /*!
     Create the linked units
@@ -357,7 +357,7 @@ Dipole::createLinks()
 
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+201));
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+202));
-  
+
   return;
 }
 
@@ -368,21 +368,20 @@ Dipole::createAll(Simulation& System,
   /*!
     Generic function to create everything
     \param System :: Simulation item
-    \param FC :: Fixed point track 
+    \param FC :: Fixed point track
     \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("Dipole","createAll");
-  
+
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();
-  insertObjects(System);   
-  
+  insertObjects(System);
+
   return;
 }
-  
-}  // NAMESPACE xraySystem
 
+}  // NAMESPACE xraySystem
