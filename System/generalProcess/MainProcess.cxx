@@ -713,7 +713,6 @@ buildFullSimulation(Simulation* SimPtr,
   reportSelection(*SimPtr,IParam);
   SimPtr->createObjSurfMap();
 
-  ELog::EM<<"ASDFAFSAF"<<ELog::endDiag;
   SimPtr->minimizeObject("All");
   SimPtr->removeDeadSurfaces();
   

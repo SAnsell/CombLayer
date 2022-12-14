@@ -43,7 +43,6 @@ namespace Transport
     of the component to the positioning and geometry tree.
   */
 
-template<typename PTYPE>
 class photonInObj 
 {  
  private: 
@@ -57,22 +56,13 @@ class photonInObj
   photonInObj& operator=(const photonInObj&);
   ~photonInObj();
 
-  double totalXSection(const MonteCarlo::particle&) const;
-
-  int trackCell(const MonteCarlo::particle&,double&,double&) const;
-  
-  int trackWeight(MonteCarlo::neutron&,double&,
-		  const Geometry::Surface*&) const;
-  int trackAttn(MonteCarlo::neutron&,const Geometry::Surface*&) const;
-
+  int hasIntercept(const MonteCarlo::particle&) const;
   void attenuate(const double,MonteCarlo::particle&) const;
-  double getRefractive(const MonteCarlo::particle&) const;
-  double getRefractive(const double) const;
+  void scatterParticle(MonteCarlo::particle&) const;
   double scatTotalRatio(const MonteCarlo::particle&,
 			const MonteCarlo::particle&) const;
+  double totalXSection(const MonteCarlo::particle&) const;
 
-  virtual void write(std::ostream&) const;
-  
 };
 
 } // Namespace MonteCarlo

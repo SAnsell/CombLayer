@@ -59,7 +59,7 @@ class photonMaterial
   
  public:
   
-  photonMaterial(const Material&);
+  photonMaterial();
   photonMaterial(const photonMaterial&);
   photonMaterial& operator=(const photonMaterial&);
   virtual ~photonMaterial();
