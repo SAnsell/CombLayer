@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   photon/PhotonVariables.cxx
+ * File:   photon/FilterVariables.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,8 +72,8 @@ FilterVariables(FuncDataBase& Control)
   Control.addVariable("SiPrimaryXStep",0.0);
   Control.addVariable("SiPrimaryYStep",0.0);
   Control.addVariable("SiPrimaryZStep",0.0);
-  Control.addVariable("SiPrimaryXYAngle",0.0);
   Control.addVariable("SiPrimaryZAngle",0.0);
+  Control.addVariable("SiPrimaryXAngle",0.0);
   Control.addVariable("SiPrimaryNLayers",1);
   Control.addVariable("SiPrimaryOuterRadius",5.0);
   Control.addVariable("SiPrimaryNUnits",1);
@@ -85,8 +85,8 @@ FilterVariables(FuncDataBase& Control)
   Control.addVariable("SiSecondXStep",0.0);
   Control.addVariable("SiSecondYStep",400.0);
   Control.addVariable("SiSecondZStep",0.0);
-  Control.addVariable("SiSecondXYAngle",0.0);
   Control.addVariable("SiSecondZAngle",0.0);
+  Control.addVariable("SiSecondXAngle",0.0);
   Control.addVariable("SiSecondNLayers",1);
   Control.addVariable("SiSecondOuterRadius",5.0);
   Control.addVariable("SiSecondNUnits",1);
@@ -97,8 +97,8 @@ FilterVariables(FuncDataBase& Control)
   Control.addVariable("LeadXStep",0.0);
   Control.addVariable("LeadYStep",100.0);
   Control.addVariable("LeadZStep",0.0);
-  Control.addVariable("LeadXYAngle",0.0);
   Control.addVariable("LeadZAngle",0.0);
+  Control.addVariable("LeadXAngle",0.0);
   Control.addVariable("LeadNLayers",1);
   Control.addVariable("LeadOuterRadius",5.0);
   Control.addVariable("LeadNUnits",1);
@@ -109,8 +109,8 @@ FilterVariables(FuncDataBase& Control)
   Control.addVariable("SiThirdXStep",0.0);
   Control.addVariable("SiThirdYStep",400.0);
   Control.addVariable("SiThirdZStep",0.0);
-  Control.addVariable("SiThirdXYAngle",0.0);
   Control.addVariable("SiThirdZAngle",0.0);
+  Control.addVariable("SiThirdXAngle",0.0);
   Control.addVariable("SiThirdNLayers",1);
   Control.addVariable("SiThirdOuterRadius",5.0);
   Control.addVariable("SiThirdNUnits",1);

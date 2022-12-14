@@ -48,9 +48,9 @@
 #include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
-#include "BoundOuter.h"
 #include "World.h"
 #include "ModContainer.h"
 #include "VacuumVessel.h"
@@ -119,7 +119,7 @@ makePhoton3::build(Simulation& System,
   ModContObj->createAll(System,*Chamber,0);
 
   ModObj->addInsertCell(ModContObj->getCell("Void"));
-  ModObj->setOuter(ModContObj->getFullRule(9));    
+  ModObj->setCutSurf("Outer",*ModContObj,9);    
   ModObj->createAll(System,ModContObj->getBackFlange(),7);
 
   BaseSupport->addInsertCell(Chamber->getCell("Void"));

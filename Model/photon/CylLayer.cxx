@@ -3,7 +3,7 @@
  
  * File:   photon/CylLayer.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,8 +39,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "surfRegister.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
@@ -56,14 +54,15 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
-#include "BoundOuter.h"
+#include "ExternalCut.h"
 #include "CylLayer.h"
 
 namespace photonSystem
 {
-  //LINFO Stuff:
+
+// Layer INFO Stuff:
 void
 LInfo::resize(const size_t N)
   /*!
@@ -81,8 +80,9 @@ LInfo::resize(const size_t N)
 }
       
 CylLayer::CylLayer(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
-  attachSystem::BoundOuter()
+  attachSystem::FixedRotate(Key,6),
+  attachSystem::ContainedComp(),
+  attachSystem::ExternalCut()
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -96,8 +96,9 @@ CylLayer::~CylLayer()
 {}
 
 CylLayer::CylLayer(const CylLayer& A) :
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  attachSystem::BoundOuter(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::ExternalCut(A),
   outerRadius(A.outerRadius),
   nLayers(A.nLayers),LVec(A.LVec)
   /*!
@@ -117,8 +118,8 @@ CylLayer::operator=(const CylLayer& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
-      attachSystem::BoundOuter::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       outerRadius=A.outerRadius;
       nLayers=A.nLayers;
       LVec=A.LVec;
@@ -145,7 +146,7 @@ CylLayer::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("CylLayer","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   // Master values
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
@@ -187,35 +188,19 @@ CylLayer::populate(const FuncDataBase& Control)
 }
 
 void
-CylLayer::createUnitVector(const attachSystem::FixedComp& FC,
-			   const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed Component
-    \param sideIndex :: 
-  */
-{
-  ELog::RegMethod RegA("CylLayer","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
-  return;
-}
-
-void
 CylLayer::createSurfaces()
   /*!
-    Create planes for the silicon and Polyethene layers
+    Create multi-layer system of cylinders
   */
 {
   ELog::RegMethod RegA("CylLayer","createSurfaces");
 
   // Outer surface:
-  if (!(BoundOuter::setFlag & 2))
+  if (!ExternalCut::isActive("Outer"))
     {
-      ModelSupport::buildCylinder(SMap,buildIndex+8,
-				  Origin,Y,outerRadius);
-      outerStruct.procSurfNum(-SMap.realSurf(buildIndex+8));
+      ModelSupport::buildCylinder
+	(SMap,buildIndex+8,Origin,Y,outerRadius);
+      setCutSurf("Outer",-SMap.realSurf(buildIndex+8));
     }
 	  
   // Divide plane
@@ -248,44 +233,41 @@ CylLayer::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("CylLayer","createObjects");
 
-  std::string Out;
+  const HeadRule outerHR=getRule("Outer");
+  HeadRule HR;
   int index(buildIndex);
   for(const LInfo& LI : LVec)
     {
       int subIndex(index);
-      const std::string layOut=
-	ModelSupport::getComposite(SMap,index," 1 -101 ");
+      const HeadRule layHR=
+	ModelSupport::getHeadRule(SMap,index,"1 -101");
 
       // Inner cell:
       if (LI.nDisk==1)
-	Out=outerStruct.display();
-      //	Out=ModelSupport::getComposite(SMap,buildIndex," -8 ");
+	HR=outerHR;
+      //	HR=ModelSupport::getHeadRule(SMap,buildIndex," -8 ");
       else 
-	Out=ModelSupport::getComposite(SMap,subIndex," -7 ");
+	HR=HeadRule(SMap,subIndex,-7);
 	    
-      System.addCell(MonteCarlo::Object(cellIndex++,LI.Mat[0],LI.Temp[0],
-				       Out+layOut));
+      System.addCell(cellIndex++,LI.Mat[0],LI.Temp[0],HR*layHR);
       // Inner bound cells:
       for(size_t i=1;i<LI.nDisk-1;i++)
 	{
-	  Out=ModelSupport::getComposite(SMap,subIndex," 7 -17 ");
-	  System.addCell(MonteCarlo::Object
-			 (cellIndex++,LI.Mat[i],LI.Temp[i],Out+layOut));
+	  HR=ModelSupport::getHeadRule(SMap,subIndex,"7 -17");
+	  System.addCell(cellIndex++,LI.Mat[i],LI.Temp[i],HR*layHR);
 	  subIndex+=10;
 	}
       // Outer cell [if required]:
       if (LI.nDisk>1)
 	{
-	  Out=ModelSupport::getComposite(SMap,subIndex," 7 ");
-	  Out+=outerStruct.display();
-	  System.addCell(MonteCarlo::Object
-			 (cellIndex++,LI.Mat.back(),LI.Temp.back(),
-			  Out+layOut));
+	  HR=HeadRule(SMap,subIndex,7);
+	  System.addCell(cellIndex++,LI.Mat.back(),LI.Temp.back(),
+			 HR*layHR*outerHR);
 	}
       index+=100;
     }
-  Out=ModelSupport::getComposite(SMap,buildIndex,index," 1 -1M");
-  addOuterSurf(Out+outerStruct.display());
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,index,"1 -1M");
+  addOuterSurf(HR*outerHR);
   return; 
 }
 
