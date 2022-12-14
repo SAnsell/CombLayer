@@ -3,7 +3,7 @@
  
  * File:   maxivBuild/maxivVariables.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -149,6 +149,8 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
       if (!r3Flag && (R3Beam.find(beam)!=R3Beam.end()))
 	{
 	  R3RingVariables(Control);
+	  if (magField!="None" && magField!="NONE" && magField!="none")
+	    R3RingMagnetVariables(Control,beam);
 	  r3Flag=1;
 	}
 

@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   linac/linacMagnetVariables.cxx
+ * File:   R3Common/R3RingMagnetVariables.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,163 +42,27 @@
 #include "FuncDataBase.h"
 #include "MagnetGenerator.h"
 
+#include "maxivVariables.h"
+
 
 namespace setVariable
 {
 
 void
-LINACmagnetVariables(FuncDataBase& Control,
-		     const stdgrep ::string& magField)
+R3RingMagnetVariables(FuncDataBase& Control,
+		      const std::string& beam)
   /*!
     Function to set the control variables and constants
     \param Control :: Function data base to add constants too
     \param magField :: Field for the magnet
   */
 {
-  ELog::RegMethod RegA("linacMangnetVariables[F]","LINACmagnetVariables");
+  ELog::RegMethod RegA("R3MagnetVariables[F]","R3MagnetVariables");
 
-  if (magField=="NONE" || magField=="None")
-    return;
-
-  // active units : Void space for field
-  const std::vector<std::string> MUname
-    ({
-	"Seg1CMagHA L2SPF1PipeB:Void",
-	"Seg1CMagVA L2SPF1PipeB:Void",
-	"Seg1CMagHB L2SPF1PipeD:Void",
-	"Seg1CMagVB L2SPF1PipeD:Void",
-	"Seg1QuadA  L2SPF1PipeD:Void",
-	"Seg1CMagHC L2SPF1PipeE:Void",
-	"Seg1CMagVC L2SPF1PipeE:Void",
-
-	"Seg2QuadA L2SPF2PipeA:Void",
-	"Seg2QuadB L2SPF1PipeB:Void",
-	"Seg2QuadC L2SPF1PipeE:Void",
-	"Seg2QuadD L2SPF1PipeE:Void",
-	"Seg2QuadE L2SPF1PipeE:Void",
-
-        "Seg3DipoleA L2SPF3FlatA:Void",
-	"Seg3CMagHA  L2SPF3PipeA:Void",
-	"Seg3CMagVA  L2SPF3PipeA:Void",
-	"Seg3DipoleB L2SPF3FlatB:Void",
-
-	"Seg4QuadA   L2SPF4PipeB:Void",
-	"Seg4SexuA   L2SPF4PipeB:Void",
-	"Seg4QuadB   L2SPF4PipeB:Void",
-	"Seg4CMagHA  L2SPF4PipeC:Void",
-	"Seg4CMagVA  L2SPF4PipeC:Void",
-
-        "Seg5DipoleA L2SPF5FlatA:Void",
-	"Seg5DipoleB L2SPF5FlatB:Void",
-
-	"Seg7CMagHA L2SPF7PipeA:Void",
-	"Seg7QuadA L2SPF7PipeA:Void",
-	"Seg7CMagVA L2SPF7PipeB:Void",
-
-	"Seg9CMagVA L2SPF9PipeA:Void",
-	"Seg9CMagHA L2SPF9PipeA:Void",
-	"Seg9QuadA L2SPF9PipeB:Void",
-
-	"Seg10QuadA L2SPF10PipeC:Void",
-	"Seg10CMagVA L2SPF10PipeC:Void",
-
-	"Seg11QuadA L2SPF11PipeA:Void",
-	"Seg11CMagHA L2SPF11PipeB:Void",
-
-	"Seg12DipoleA L2SPF12FlatA:Void",
-	"Seg12DipoleB L2SPF12PipeLA:Void L2SPF12FlatB:Void L2SPF12BeamA:MainVoid",
-    });
-
-  for(const std::string& Item : MUname)
-    Control.pushVariable<std::string>("MagUnitList",Item);
-
-
-  if (magField=="TDCline" ||
-      magField=="TDClineA" ||
-      magField=="TDClineB" ||
-      magField=="TDClineC")
-    {
-      const std::vector<std::string> TDCname
-	({
-	  "Seg13CMagHA L2SPF13PipeA:Void",
-	  "Seg13QuadA  L2SPF13PipeB:Void",
-	  "Seg13SexuA  L2SPF13PipeB:Void",
-	  "Seg13QuadB  L2SPF13PipeB:Void",
-	  "Seg13CMagVA L2SPF13PipeC:Void",
-
-	  "Seg14DipoleA TDC14FlatA:Void",
-	  "Seg14DipoleB TDC14FlatB:Void",
-
-	  "Seg16Quad TDC16PipeA:Void",
-	  "Seg16CMagHA TDC16PipeB:Void",
-	  "Seg16CMagVA TDC16PipeB:Void",
-
-	  "Seg18Quad TDC18PipeA:Void",
-	  "Seg18CMagHA TDC18PipeB:Void",
-	  "Seg18CMagVA TDC18PipeB:Void",
-
-	  "Seg21Quad TDC21PipeA:Void",
-	  "Seg21CMagHA TDC21PipeB:Void",
-	  "Seg21CMagVA TDC21PipeB:Void",
-
-	  "Seg23Quad TDC23PipeA:Void",
-	  "Seg23CMagHA TDC23PipeB:Void",
-	  "Seg23CMagVA TDC23PipeB:Void",
-
-	  "Seg24CMagHA TDC24PipeB:Void",
-	  "Seg24CMagVA TDC24PipeB:Void",
-	  "Seg24Quad TDC24PipeC:Void",
-
-	  "Seg25DipoleA TDC25TriPipeA:Void",
-	});
-      for(const std::string& Item : TDCname)
-	Control.pushVariable<std::string>("MagUnitList",Item);
-    }
-
-  // SPF LINE
-  if (magField=="SPFline")
-    {
-      const std::vector<std::string> SPFname
-	({
-	  "Seg30CMagVA SPF30PipeB:Void",
-
-	  "Seg31Quad SPF31PipeA:Void",
-	  "Seg31CMagHA SPF31PipeB:Void",
-
-	  "Seg32DipoleA SPF32FlatA:Void",
-	  "Seg32DipoleB SPF32FlatB:Void",
-
-	  "Seg33CMagHA SPF33PipeA:Void",
-	  "Seg33QuadA SPF33PipeB:Void",
-	  "Seg33SexuA SPF33PipeB:Void",
-	  "Seg33QuadB SPF33PipeB:Void",
-	  "Seg33CMagVA SPF33PipeC:Void",
-
-	  "Seg34DipoleA SPF34FlatA:Void",
-	  "Seg34DipoleB SPF34FlatB:Void",
-
-	  "Seg35QuadA SPF35PipeA:Void",
-	  "Seg35QuadB SPF35PipeB:Void",
-	  "Seg35CMagHA SPF35PipeB:Void",
-	  "Seg35CMagVA SPF35PipeB:Void",
-
-	  "Seg36QuadA SPF36PipeA:Void",
-	  "Seg36CMagHA SPF36PipeA:Void",
-	  "Seg36CMagVA SPF35PipeA:Void",
-	  "Seg36QuadB SPF36PipeA:Void",
-
-	  "Seg43CMagHA SPF43Pipe:Void",
-	  // Artificial magnet to kick the beam towards the main beam
-	  // dump
-	  "Seg43BellowB SPF43BellowB:Void SPF44TriBend:Void",
-
-	  "Seg44CMag SPF44TriBend:BendVoid"
-	});
-      for(const std::string& Item : SPFname)
-	Control.pushVariable<std::string>("MagUnitList",Item);
-    }
   MagnetGenerator MUdipole;
 
+  const std::string blockName=beam+"FrontBeamM1Block";
+  MUdipole.generatorR3Dipole(Control,blockName+"DIPm",
   // SEGMENT 1
   MUdipole.generateCorMag(Control,1,"CMagHA",90.0);
   MUdipole.generateCorMag(Control,1,"CMagVA",0.0);

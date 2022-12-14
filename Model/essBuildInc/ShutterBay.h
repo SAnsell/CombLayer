@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/ShutterBay.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,8 +35,9 @@ namespace essSystem
   \brief GuideUnit volume
 */
 
-class ShutterBay : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
+class ShutterBay : 
+  public attachSystem::FixedRotate,
+  public attachSystem::ContainedComp,
   public attachSystem::CellMap,
   public attachSystem::ExternalCut
 {
@@ -71,6 +72,7 @@ class ShutterBay : public attachSystem::ContainedComp,
   ShutterBay& operator=(const ShutterBay&);
   virtual ~ShutterBay();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

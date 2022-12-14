@@ -54,7 +54,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
 #include "BaseMap.h"
@@ -65,8 +65,10 @@ namespace essSystem
 {
 
 ShutterBay::ShutterBay(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,8),
-  attachSystem::CellMap(),attachSystem::ExternalCut()
+  attachSystem::FixedRotate(Key,8),
+  attachSystem::ContainedComp(),
+  attachSystem::CellMap(),
+  attachSystem::ExternalCut()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -74,8 +76,10 @@ ShutterBay::ShutterBay(const std::string& Key)  :
 {}
 
 ShutterBay::ShutterBay(const ShutterBay& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  attachSystem::CellMap(A),attachSystem::ExternalCut(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
+  attachSystem::ExternalCut(A),
   radius(A.radius),height(A.height),depth(A.depth),
   skin(A.skin),topSkin(A.topSkin),
   mat(A.mat),skinMat(A.skinMat)
@@ -95,8 +99,8 @@ ShutterBay::operator=(const ShutterBay& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A),
       radius=A.radius;
       height=A.height;
@@ -124,7 +128,7 @@ ShutterBay::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("ShutterBay","populate");
   
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   radius=Control.EvalVar<double>(keyName+"Radius");
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
@@ -206,50 +210,40 @@ ShutterBay::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("ShutterBay","createObjects");
 
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -106 -7 ");
-  Out+=ExternalCut::getRuleStr("Bulk");
-  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
-  addCell("MainCell",cellIndex-1);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 106 -107 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
-  addCell("TopCell",cellIndex-1);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -106 7 -17 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,skinMat,0.0,Out));
-  addCell("Skin",cellIndex-1);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 106 -206 107 -17 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,skinMat,0.0,Out));
-  addCell("Skin",cellIndex-1);
+  HeadRule HR;
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"206 -6 107 -117 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,skinMat,0.0,Out));
-  addCell("Skin",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -106 -7");
+  HR*=ExternalCut::getRule("Bulk");
+  makeCell("MainCell",System,cellIndex++,mat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 6 -16 -117 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,skinMat,0.0,Out));
-  addCell("Skin",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"106 -107 -6");
+  makeCell("TopCell",System,cellIndex++,mat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -106 7 -17");
+  makeCell("Skin",System,cellIndex++,skinMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"106 -206 107 -17");
+  makeCell("Skin",System,cellIndex++,skinMat,0.0,HR);
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"206 -6 107 -117");
+  makeCell("Skin",System,cellIndex++,skinMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"6 -16 -117");
+  makeCell("Skin",System,cellIndex++,skinMat,0.0,HR);
 
   int CL(buildIndex+200);
   for(size_t i=1;i<NCurtain;i++)
     {
-      Out=ModelSupport::getComposite
-        (SMap,buildIndex,CL," 117 -17 6M -16M ");
-      System.addCell(MonteCarlo::Object(cellIndex++,curMat[i-1],0.0,Out));
-      addCell("Curtain",cellIndex-1);
+      HR=ModelSupport::getHeadRule
+        (SMap,buildIndex,CL,"117 -17 6M -16M");
+      makeCell("Curtain",System,cellIndex++,curMat[i-1],0.0,HR);
       CL+=10;
     }
-  Out=ModelSupport::getComposite(SMap,buildIndex,CL," 117 -17 6M -16 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,curMat.back(),0.0,Out));
-  addCell("Curtain",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,CL,"117 -17 6M -16");
+  makeCell("Curtain",System,cellIndex++,curMat.back(),0.0,HR);
 
-  
-
-  
-  Out=ModelSupport::getComposite(SMap,buildIndex," 5 -16 -17 ");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -16 -17");
+  addOuterSurf(HR);
 
   return;
 }
@@ -299,7 +293,7 @@ ShutterBay::createAll(Simulation& System,
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: Central origin
-    \param CC :: Central origin
+    \param sideIndex :: Link pt
   */
 {
   ELog::RegMethod RegA("ShutterBay","createAll");

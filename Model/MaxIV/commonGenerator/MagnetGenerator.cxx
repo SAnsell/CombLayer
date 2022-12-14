@@ -136,6 +136,7 @@ MagnetGenerator::generateCorMag(FuncDataBase& Control,
     \param keyName :: Head name for variable
     \param fcUnit :: Part name of FC magnet
     \param yAngle :: Angle
+    \param QField :: Main dipole corrector field [default 0.0]
   */
 {
   ELog::RegMethod RegA("MagnetGenerator","generateCorMag");
@@ -252,6 +253,32 @@ MagnetGenerator::generate(FuncDataBase& Control,
   
   return;
 }
+
+void
+MagnetGenerator::generateR3Dipole(FuncDataBase& Control,
+				  const std::string& fcUnit,
+				  const double QField) 
+  /*!
+    Primary funciton for setting the variables
+    \param Control :: Database to add variables
+    \param keyName :: Head name for variable
+    \param fcUnit :: Part name of FC magnet (link point origin)
+    \param QField :: K0 field
+  */
+{
+  ELog::RegMethod RegA("MagnetGenerator","generateDipole");
+
+  setSize(65.0,3.0,15.0);
+  setField(QField,0.0,0.0,0.0);
+  generate(Control,
+	   "Seg"+std::to_string(segNumber)+fcUnit,
+	   preName+std::to_string(segNumber)+fcUnit,
+	   "Origin",yAngle);
+  
+  return;
+}
+
+
   
 void
 MagnetGenerator::generate(FuncDataBase& Control,
