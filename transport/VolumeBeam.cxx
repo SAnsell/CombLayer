@@ -37,10 +37,9 @@
 #include "OutputLog.h"
 #include "Random.h"
 #include "Vec3D.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "particle.h"
 #include "neutron.h"
+#include "photon.h"
 #include "Beam.h"
 #include "VolumeBeam.h"
 
@@ -138,7 +137,7 @@ VolumeBeam::setCorners(const Geometry::Vec3D& LC,
 }
 
 MonteCarlo::neutron
-VolumeBeam::generateNeutron() const
+VolumeBeam::generateNeutron() const  
   /*!
     Return the neutron : 
     Note that beam travels in the x direction
@@ -172,8 +171,44 @@ VolumeBeam::generateNeutron() const
     }
   Out.Pos=NLocal;
   
-  
+  return Out;
+}
 
+MonteCarlo::photon
+VolumeBeam::generatePhoton() const  
+  /*!
+    Return the neutron : 
+    Note that beam travels in the x direction
+    \return Randomize point
+  */
+{
+  ELog::RegMethod RegA("VolumeBeam","generateNeutron");
+
+  const double theta=2.0*M_PI*Random::rand();
+  const double phi=M_PI*Random::rand();
+  Geometry::Vec3D uV(cos(theta)*sin(phi),sin(theta)*sin(phi),
+		     cos(phi));
+  MonteCarlo::photon Out(wavelength,Corner,uV);
+  // Weighting based on the cos() factors of the centroid probability:
+  Geometry::Vec3D NLocal(Corner);   // local position of the neutron
+  
+  double xfrac=Random::rand();
+  Out.weight*=cos( (xfrac-0.5)*M_PI );
+  NLocal+=X*xfrac;
+  xfrac=Random::rand();
+  Out.weight*=cos( (xfrac-0.5)*M_PI );
+  NLocal+=Z*xfrac;
+  // Y is special
+  xfrac=Random::rand();
+  Out.weight*=cos( (xfrac-0.5)*M_PI );
+  NLocal+=Y*xfrac;
+  if (yBias>0.0)
+    {
+      const double cpower=(1.0-yBias)+yBias*cos( 0.5*xfrac*M_PI );
+      Out.weight*=pow(cpower,yBias);
+    }
+  Out.Pos=NLocal;
+  
   return Out;
 }
 

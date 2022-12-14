@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   photonInc/HeShield.h
+ * File:   essBuildInc/LightShutter.h
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
  *
@@ -19,71 +19,61 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef photonSystem_HeShield_h
-#define photonSystem_HeShield_h
+#ifndef essSystem_LightShutter_h
+#define essSystem_LightShutter_h
 
 class Simulation;
 
-namespace constructSystem
+namespace essSystem
 {
-  class RingSeal;
-  class RingFlange;
-}
 
-namespace photonSystem
-{
-  
 /*!
-  \class HeShield
-  \author S. Ansell
+  \class LightShutter
   \version 1.0
-  \date October 2016
-  \brief Specialized for shield with vertical He3 tubes
+  \author S. Ansell
+  \date April 2015
+  \brief Bulk around Reflector
 */
 
-class HeShield : 
+class LightShutter : 
   public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap
 {
  private:
+   
+  double length;                ///< Total length including void
+  double width;                 ///< Width
+  double height;                ///< height
 
-  double length;            ///< length of poly 
-  double width;             ///< width of poly 
-  double height;            ///< height of poly shield
+  double wallThick;             ///< Thickness of wall
 
-  double frontPolyThick;    ///< Back CD thick
-
-  double collLen;           ///< Cd length of viewport 
-  double collWidth;         ///< Cd width [view port]
-  double collHeight;        ///< Cd height [view port]
-  double collThick;         ///< Cd thickness 
-
-  double cdThick;           ///< Back CD thick
-
-  int polyMat;              ///< outer wall material
-  int cdMat;                ///< main decoupler material
+  int mainMat;                   ///< main material
+  int wallMat;                   ///< wall material  
   
   void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
+  
   void createSurfaces();
-  void createObjects(Simulation&);
   void createLinks();
+  void createObjects(Simulation&);
 
   
  public:
 
-  HeShield(const std::string&);
-  HeShield(const HeShield&);
-  HeShield& operator=(const HeShield&);
-  virtual ~HeShield();
-  virtual HeShield* clone() const;
-
-  using FixedComp::createAll;
+  LightShutter(const std::string&);
+  LightShutter(const LightShutter&);
+  LightShutter& operator=(const LightShutter&);
+  virtual ~LightShutter();
+  
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
+
 };
 
 }
 
 #endif
  
+

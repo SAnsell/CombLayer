@@ -691,6 +691,11 @@ R3FrontEnd::createAll(Simulation& System,
   createSurfaces();
   buildObjects(System);
   createLinks();
+
+  ELog::EM<<"Cell == "<<buildZone.getCell("Unit",1)<<ELog::endDiag;
+  //  buildZone.deleteCell(System,"Unit",1);
+
+  //  System.removeCell(buildZone.getCell("Unit",1));
   
   return;
 }

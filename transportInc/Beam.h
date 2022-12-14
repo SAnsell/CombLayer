@@ -3,7 +3,7 @@
  
  * File:   transportInc/Beam.h
 *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,9 +45,6 @@ class Beam
   virtual Beam* clone() const =0; ///< Clone object
   virtual ~Beam() {}              ///< Destructor
 
-  /// Effective typeid
-  virtual std::string className() const { return "Beam"; }
-
   /// set the aim zone
   virtual void setAimZone(const OutZone*) { }
 
@@ -55,6 +52,7 @@ class Beam
   virtual void setBias(const double) =0;
   virtual void setWavelength(const double) =0;
   virtual MonteCarlo::neutron generateNeutron() const =0;
+  virtual MonteCarlo::photon generatePhoton() const =0;
   ///\endcond VIRTUAL 
 
   /// Output stuff

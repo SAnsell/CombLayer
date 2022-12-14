@@ -59,6 +59,7 @@
 #include "makeMaxIV.h"
 
 ///\cond STATIC
+
 namespace ELog 
 {
   ELog::OutputLog<EReport> EM;

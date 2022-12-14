@@ -3,7 +3,7 @@
  
  * File:   essBuild/TelescopicPipe.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -70,8 +68,10 @@ namespace essSystem
 {
   
 TelescopicPipe::TelescopicPipe(const std::string& Key) :
-  attachSystem::ContainedGroup(),attachSystem::FixedRotate(Key,3),
-  attachSystem::FrontBackCut(),attachSystem::CellMap()
+  attachSystem::FixedRotate(Key,3),
+  attachSystem::ContainedGroup(),
+  attachSystem::FrontBackCut(),
+  attachSystem::CellMap()
   /*!
     Constructor
     \param Key :: Keyname
@@ -79,8 +79,10 @@ TelescopicPipe::TelescopicPipe(const std::string& Key) :
 {}
 
 TelescopicPipe::TelescopicPipe(const TelescopicPipe& A) : 
-  attachSystem::ContainedGroup(A),attachSystem::FixedRotate(A),
-  attachSystem::FrontBackCut(A),attachSystem::CellMap(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedGroup(A),
+  attachSystem::FrontBackCut(A),
+  attachSystem::CellMap(A),
   nSec(A.nSec),radius(A.radius),length(A.length),zCut(A.zCut),
   thick(A.thick),inMat(A.inMat),wallMat(A.wallMat)
   /*!
@@ -100,8 +102,8 @@ TelescopicPipe::operator=(const TelescopicPipe& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedRotate::operator=(A);
+      attachSystem::ContainedGroup::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
       attachSystem::CellMap::operator=(A);
       nSec=A.nSec;
@@ -165,7 +167,6 @@ TelescopicPipe::populate(const FuncDataBase& Control)
   return;
 }
 
-
 void
 TelescopicPipe::createSurfaces()
   /*!
@@ -201,34 +202,32 @@ TelescopicPipe::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("TelescopicPipe","createObjects");
 
-  std::string Out,EndCap,FrontCap;
+  HeadRule HR,EndCap,FrontCap;
 
   int PT(buildIndex);
   attachSystem::ContainedGroup::addCC("Full");
+  
   for(size_t i=0;i<nSec;i++)
     {
       const std::string SName="Sector"+std::to_string(i);
 
-      FrontCap=(!i) ? frontRule() :
-	ModelSupport::getComposite(SMap,PT-100, " 2 ");
+      FrontCap=(!i) ? getFrontRule() : HeadRule(SMap,PT-100,2);      
+      EndCap=(i+1 == nSec) ? getBackRule() : HeadRule(SMap,PT,-2);
+      FrontCap*=EndCap;
       
-      EndCap=(i+1 == nSec) ? backRule() : 
-	ModelSupport::getComposite(SMap,PT, " -2 ");
-      
-      Out=ModelSupport::getSetComposite(SMap,PT, " -7 5 -6 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,inMat[i],0.0,
-				       Out+FrontCap+EndCap));
       if (thick[i]>Geometry::zeroTol)
 	{
-	  Out=ModelSupport::getSetComposite(SMap,PT, " 7 -17 5 -6");
-	  System.addCell(MonteCarlo::Object(cellIndex++,wallMat[i],0.0,
-					   Out+FrontCap+EndCap));
+	  HR=ModelSupport::getSetHeadRule(SMap,PT,"7 -17 5 -6");
+	  System.addCell(cellIndex++,wallMat[i],0.0,HR*FrontCap);
 	}
 
-      Out=ModelSupport::getSetComposite(SMap,PT, " -17 5 -6 ");
+      HR=ModelSupport::getSetHeadRule(SMap,PT,"-7 5 -6");
+      System.addCell(cellIndex++,inMat[i],0.0,HR*FrontCap);
+
+      HR=ModelSupport::getSetHeadRule(SMap,PT,"-17 5 -6");
       attachSystem::ContainedGroup::addCC(SName);
-      addOuterSurf(SName,Out+EndCap+FrontCap);
-      addOuterUnionSurf("Full",Out+EndCap+FrontCap);
+      addOuterSurf(SName,HR*FrontCap);
+      addOuterUnionSurf("Full",HR*FrontCap);
 
       PT+=100;
     }

@@ -50,6 +50,9 @@
 namespace ModelSupport
 {
 
+  
+MatType DBMaterial::matType(MatType::mcnp);
+  
 DBMaterial::DBMaterial() :
   nextID(1)
   /*!
@@ -57,7 +60,10 @@ DBMaterial::DBMaterial() :
   */
 {
   initMaterial();
-  initMXUnits();
+  if (matType==MatType::mcnp)
+    initMXUnits();
+  else if (matType==MatType::photon)
+    ELog::EM<<"Photon type"<<ELog::endDiag;
 }
 
 DBMaterial&
@@ -224,12 +230,12 @@ DBMaterial::createMaterial(const std::string& matName,
       (matName,"Material name already used");
   
   const int matID=getNextID();
-  MonteCarlo::Material MObj;
-  MObj.setMaterial(matID,matName,MLine,MTLine,LibLine);
+  MonteCarlo::Material* MObj=new MonteCarlo::Material;
+  MObj->setMaterial(matID,matName,MLine,MTLine,LibLine);
   IndexMap.emplace(matName,matID);
   const auto& mPair=MStore.emplace(matID,MObj);
 
-  return mPair.first->second;
+  return *(mPair.first->second);
 } 
 
 int
@@ -259,7 +265,7 @@ DBMaterial::setMaterial(const MonteCarlo::Material& MO)
   const std::string& MName=MO.getName();
   const int MIndex=MO.getID();
   checkNameIndex(MIndex,MName);
-  MStore.emplace(MIndex,MO);
+  MStore.emplace(MIndex,MO.clone());
   IndexMap.emplace(MName,MIndex);
   return;
 }
@@ -460,7 +466,7 @@ DBMaterial::removeAllThermal()
 
   // we don't change the index card:
   for(MTYPE::value_type& mc : MStore)
-    mc.second.removeSQW();
+    mc.second->removeSQW();
   return;
 }
 
@@ -481,7 +487,7 @@ DBMaterial::removeThermal(const std::string& matName)
       (matName,"No material available");
 
   MTYPE::iterator mc=MStore.find(mIc->second);
-  mc->second.removeSQW();
+  mc->second->removeSQW();
   return;
 }
 
@@ -503,7 +509,7 @@ DBMaterial::resetMaterial(const MonteCarlo::Material& MO)
   SCTYPE::iterator sc=IndexMap.find(MName);
   if (sc!=IndexMap.end()) IndexMap.erase(sc);
 
-  MStore.emplace(MIndex,MO);
+  MStore.emplace(MIndex,MO.clone());
   IndexMap.emplace(MName,MIndex);
   return;
 }
@@ -544,7 +550,7 @@ DBMaterial::initMXUnits()
     {
       MTYPE::iterator mc;  
       for(mc=MStore.begin();mc!=MStore.end();mc++)
-	mc->second.setMXitem(std::get<0>(vc),std::get<1>(vc),
+	mc->second->setMXitem(std::get<0>(vc),std::get<1>(vc),
 			     std::get<2>(vc),std::get<3>(vc),
 			     std::get<4>(vc));
     }
@@ -564,7 +570,7 @@ DBMaterial::getMaterialPtr(const int MIndex) const
   MTYPE::const_iterator mc=MStore.find(MIndex);
   if (mc==MStore.end())
     throw ColErr::InContainerError<int>(MIndex,"MIndex in MStore");
-  return &mc->second;
+  return mc->second;
 }
 
 const MonteCarlo::Material*
@@ -607,7 +613,7 @@ DBMaterial::getMaterial(const int MIndex) const
   MTYPE::const_iterator mc=MStore.find(MIndex);
   if (mc==MStore.end())
     throw ColErr::InContainerError<int>(MIndex,"MIndex in MStore");
-  return mc->second;
+  return *(mc->second);
 }
 
 const MonteCarlo::Material&
@@ -668,7 +674,7 @@ DBMaterial::getKey(const int KeyNum) const
   if (mc==MStore.end())
     throw ColErr::InContainerError<int>(KeyNum,"KeyNum");
   
-  const std::string& OutStr=mc->second.getName();
+  const std::string& OutStr=mc->second->getName();
   SCTYPE::const_iterator sc=IndexMap.find(OutStr);
   if (sc==IndexMap.end())
     throw ColErr::InContainerError<std::string>(OutStr,"IndexMap");
@@ -728,9 +734,8 @@ DBMaterial::setENDF7()
 {
   ELog::RegMethod RegA("DBMaterial","setENDF7");
 
-  MTYPE::iterator mc;
-  for(mc=MStore.begin();mc!=MStore.end();mc++)
-    mc->second.setENDF7();
+  for(auto& [index,MPtr] : MStore)
+    MPtr->setENDF7();
   return;
 }
 
@@ -749,8 +754,8 @@ DBMaterial::deactivateParticle(const std::string& P)
     {
       for(MTYPE::value_type& MT : MStore)
         {
-          MT.second.removeMX(P);
-          MT.second.removeLib(P);
+          MT.second->removeMX(P);
+          MT.second->removeLib(P);
         }
     }
 

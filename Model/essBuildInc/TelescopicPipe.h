@@ -14,8 +14,9 @@ namespace essSystem
   \brief Multi-component pipe
 */
 
-class TelescopicPipe : public attachSystem::ContainedGroup,
+class TelescopicPipe : 
   public attachSystem::FixedRotate,
+  public attachSystem::ContainedGroup,
   public attachSystem::FrontBackCut,
   public attachSystem::CellMap
 {

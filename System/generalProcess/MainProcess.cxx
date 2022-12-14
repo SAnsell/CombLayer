@@ -707,7 +707,6 @@ buildFullSimulation(Simulation* SimPtr,
   SimPtr->removeComplements();
   SimPtr->removeDeadSurfaces();
 
-  
   ModelSupport::setDefRotation(*SimPtr,IParam);
   SimPtr->masterRotation();
 
