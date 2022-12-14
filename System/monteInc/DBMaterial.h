@@ -30,6 +30,9 @@ namespace scatterSystem
 namespace ModelSupport
 {
 
+  /// Enumeration type for construction
+  enum  class MatType { mcnp, photon, neutron };
+  
 /*!
   \class DBMaterial 
   \version 1.0
@@ -49,6 +52,8 @@ class DBMaterial
   /// Storage type for Neutron Materials 
   typedef std::map<int,scatterSystem::neutMaterial*> NTYPE;
 
+  static MatType matType;
+  
   int nextID;        ///< Next id number
   
   SCTYPE IndexMap;   ///< Map of indexes
@@ -76,7 +81,8 @@ class DBMaterial
   int getNextID();
   
  public:
-  
+
+  static void setMatType(const MatType M) { matType=M; }
   static DBMaterial& Instance();
   
   ~DBMaterial() {}  ///< Destructor
@@ -121,6 +127,8 @@ class DBMaterial
   void setENDF7();
 
   void readFile(const std::string&);
+
+  void createPhotonMaterial();
 };
 
 }

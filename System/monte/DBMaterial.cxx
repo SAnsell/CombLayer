@@ -50,6 +50,9 @@
 namespace ModelSupport
 {
 
+  
+MatType DBMaterial::matType(MatType::mcnp);
+  
 DBMaterial::DBMaterial() :
   nextID(1)
   /*!
@@ -57,7 +60,10 @@ DBMaterial::DBMaterial() :
   */
 {
   initMaterial();
-  initMXUnits();
+  if (matType==MatType::mcnp)
+    initMXUnits();
+  else if (matType==MatType::photon)
+    ELog::EM<<"Photon type"<<ELog::endDiag;
 }
 
 DBMaterial&
@@ -259,7 +265,7 @@ DBMaterial::setMaterial(const MonteCarlo::Material& MO)
   const std::string& MName=MO.getName();
   const int MIndex=MO.getID();
   checkNameIndex(MIndex,MName);
-  MStore.emplace(MIndex,MO);
+  MStore.emplace(MIndex,MO.clone());
   IndexMap.emplace(MName,MIndex);
   return;
 }
@@ -748,8 +754,8 @@ DBMaterial::deactivateParticle(const std::string& P)
     {
       for(MTYPE::value_type& MT : MStore)
         {
-          MT.second.removeMX(P);
-          MT.second.removeLib(P);
+          MT.second->removeMX(P);
+          MT.second->removeLib(P);
         }
     }
 

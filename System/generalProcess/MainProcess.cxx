@@ -707,13 +707,13 @@ buildFullSimulation(Simulation* SimPtr,
   SimPtr->removeComplements();
   SimPtr->removeDeadSurfaces();
 
-  
   ModelSupport::setDefRotation(*SimPtr,IParam);
   SimPtr->masterRotation();
 
   reportSelection(*SimPtr,IParam);
   SimPtr->createObjSurfMap();
 
+  ELog::EM<<"ASDFAFSAF"<<ELog::endDiag;
   SimPtr->minimizeObject("All");
   SimPtr->removeDeadSurfaces();
   

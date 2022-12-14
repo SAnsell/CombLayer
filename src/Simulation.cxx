@@ -1739,7 +1739,6 @@ Simulation::minimizeObject(const std::string& keyName)
 
   int retFlag(0);
   const std::set<int> cVec=objectGroups::getObjectRange(keyName);
-
   for(const int CN : cVec)
     {
       if (minimizeObject(CN))
@@ -1771,6 +1770,9 @@ Simulation::minimizeObject(MonteCarlo::Object* OPtr)
   const std::set<int> SPair=
     OPtr->getHeadRule().getPairedSurf();
 
+  if (OPtr->getName()==1040002)
+    ELog::EM<<"CellXCN == "<<*OPtr<<ELog::endDiag;
+  
   bool activeFlag(0);
   MonteCarlo::Algebra AX;
   AX.setFunctionObjStr(OPtr->cellCompStr());
@@ -1780,7 +1782,6 @@ Simulation::minimizeObject(MonteCarlo::Object* OPtr)
     activeFlag |= AX.constructShannonDivision(SN);
 
   activeFlag |= AX.constructShannonExpansion();
-
 
   if (activeFlag)
     {
@@ -1814,10 +1815,11 @@ Simulation::minimizeObject(const int CN)
   */
 {
   ELog::RegMethod RegA("Simualation","minimizeObject(cell)");
-  return 0;
+
   MonteCarlo::Object* CPtr = findObject(CN);
   if (!CPtr)
     throw ColErr::InContainerError<int>(CN,"Cell not found");
+
   const int flag=minimizeObject(CPtr);
   if (flag<0)
     Simulation::removeCell(CN);
