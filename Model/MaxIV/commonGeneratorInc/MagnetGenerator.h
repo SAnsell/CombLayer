@@ -83,9 +83,9 @@ class MagnetGenerator
 			const std::string&,
 			const double,const double);
 
-  void generateR3Dipole(FuncDataBase&,const size_t,
+  void generateR3Dipole(FuncDataBase&,const std::string&,
 			const std::string&,
-			const double,const double =0.0);
+			const double =0.0,const double =0.0);
 
   void generate(FuncDataBase&,const size_t,
 		const std::string&,const double);

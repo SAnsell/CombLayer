@@ -256,7 +256,9 @@ MagnetGenerator::generate(FuncDataBase& Control,
 
 void
 MagnetGenerator::generateR3Dipole(FuncDataBase& Control,
+				  const std::string& magName,
 				  const std::string& fcUnit,
+				  const double yAngle,
 				  const double QField) 
   /*!
     Primary funciton for setting the variables
@@ -268,12 +270,9 @@ MagnetGenerator::generateR3Dipole(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("MagnetGenerator","generateDipole");
 
-  setSize(65.0,3.0,15.0);
+
   setField(QField,0.0,0.0,0.0);
-  generate(Control,
-	   "Seg"+std::to_string(segNumber)+fcUnit,
-	   preName+std::to_string(segNumber)+fcUnit,
-	   "Origin",yAngle);
+  generate(Control,magName,fcUnit,"Centre",yAngle);
   
   return;
 }
@@ -289,15 +288,15 @@ MagnetGenerator::generate(FuncDataBase& Control,
 /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables
-    \param keyName :: Head name for variable
-    \param Unit :: FixedComp for active units / origin
+    \param unitName :: Head name for variable
+    \param fcUnit :: FixedComp for active units / origin
     \param yAngle :: Rotation of magnetic field
   */
 {
   ELog::RegMethod RegA("MagnetGenerator","generate");
 
   const std::string keyName="MagUnit"+unitName;
-
+  //  ELog::EM<<"GENERATE "<<keyName<<ELog::endDiag;
   if (!xyzStep.nullVector())
     {
       Control.addVariable(keyName+"Offset",xyzStep);
@@ -311,9 +310,6 @@ MagnetGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"Height",height);
-
-  Control.addVariable(keyName+"FixedComp",fcUnit);
-  Control.addVariable(keyName+"LinkPt",linkPt);
 
   for(size_t i=0;i<4;i++)
     Control.addVariable(keyName+"KFactor"+std::to_string(i),KFactor[i]);
