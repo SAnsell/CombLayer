@@ -298,11 +298,11 @@ Dipole::createObjects(Simulation& System)
   makeCell("CoilA",System,cellIndex++,coilMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex," (-107:101) (-117:-102) -105 5 -113 103 201");
+    (SMap,buildIndex," (-107:101) (-117:-102) -105 5 -113 103 201 -202");
   makeCell("CoilA",System,cellIndex++,coilMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex," (-108:101) (-118:-102) -105 5 114 -104");
+    (SMap,buildIndex," (-108:101) (-118:-102) -105 5 114 -104 201 -202");
   makeCell("CoilA",System,cellIndex++,coilMat,0.0,HR);
 
   // end pieces x2
@@ -317,11 +317,11 @@ Dipole::createObjects(Simulation& System)
   makeCell("CoilB",System,cellIndex++,coilMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex," (-107:101) (-117:-102) 106 -6 103 -113 201");
+    (SMap,buildIndex," (-107:101) (-117:-102) 106 -6 103 -113 201 -202");
   makeCell("CoilB",System,cellIndex++,coilMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex," (-108:101) (-118:-102) 106 -6 -104 114");
+    (SMap,buildIndex," (-108:101) (-118:-102) 106 -6 -104 114 201 -202");
   makeCell("CoilB",System,cellIndex++,coilMat,0.0,HR);
 
   // end pieces x2
