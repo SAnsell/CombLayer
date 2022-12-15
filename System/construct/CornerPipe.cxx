@@ -69,7 +69,7 @@ namespace constructSystem
 {
 
 CornerPipe::CornerPipe(const std::string& Key) :
-  attachSystem::FixedRotate(Key,11), 
+  attachSystem::FixedRotate(Key,11),
   attachSystem::ContainedGroup("Main","FlangeA","FlangeB","Tube"),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut()
@@ -192,7 +192,7 @@ CornerPipe::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+217,midB,Y,WT);
   ModelSupport::buildCylinder(SMap,buildIndex+227,midC,Y,WT);
   ModelSupport::buildCylinder(SMap,buildIndex+237,midD,Y,WT);
-  
+
   // FLANGE SURFACES FRONT:
   ModelSupport::buildCylinder(SMap,buildIndex+1007,Origin,Y,flangeARadius);
   ModelSupport::buildCylinder(SMap,buildIndex+2007,Origin,Y,flangeBRadius);
@@ -226,7 +226,7 @@ CornerPipe::createObjects(Simulation& System)
 
 
   // Walls:
-  
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"23 -13 5 -6 101 -102");
   makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-24 14 5 -6 101 -102");
@@ -236,16 +236,16 @@ CornerPipe::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-26 16 3 -4 101 -102");
   makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-3 -5 107 -207 101 -102");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-3 -5 107 -207 101 -102 23 25");
   makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-3 6 117 -217 101 -102");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-3 6 117 -217 101 -102 23 -26");
   makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"4 6 127 -227 101 -102");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"4 6 127 -227 101 -102 -24 -26");
   makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"4 -5 137 -237 101 -102");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"4 -5 137 -237 101 -102 -24 25");
   makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
-  
-  
+
+
   // FLANGE
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"-1007 -101 (-15:-3:4) 107 137 -5");
@@ -282,7 +282,7 @@ CornerPipe::createObjects(Simulation& System)
   makeCell("OutCorner",System,cellIndex++,voidMat,0.0,HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"4 -5 -24 25 237 101 -102");
   makeCell("OutCorner",System,cellIndex++,voidMat,0.0,HR);
-  
+
   // currently as
   if (outerVoid)
     {
@@ -303,7 +303,7 @@ CornerPipe::createObjects(Simulation& System)
     }
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"23 -24 25 -26");
   addOuterSurf("Tube",HR);
-  
+
   return;
 }
 
@@ -327,7 +327,7 @@ CornerPipe::createLinks()
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+24));
   FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+25));
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+26));
-  
+
   FixedComp::nameSideIndex(4,"outerPipe");
   FixedComp::nameSideIndex(4,"pipeOuterBase");
   FixedComp::nameSideIndex(5,"pipeOuterTop");
@@ -353,7 +353,7 @@ CornerPipe::createLinks()
   FixedComp::nameSideIndex(7,"cornerB");
   FixedComp::nameSideIndex(8,"cornerC");
   FixedComp::nameSideIndex(9,"cornerD");
-  
+
   return;
 }
 
