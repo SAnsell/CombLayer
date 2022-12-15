@@ -185,13 +185,18 @@ processExitChecks(Simulation& System,
 		}
 	    }
 	}
-      else 
+      if (IParam.flag("validRandom"))
 	{
-	  if (!SValidCheck.runPoint(System,Geometry::Vec3D(0,0,0),
-				    IParam.getValue<size_t>("validCheck")))
-	    errFlag += -1;
+	  // set of used points within the bounding box of the
+	  // object.
+	  const size_t NPts=IParam.getValue<size_t>("validCheck");
+	  const std::string FCObject=
+	    IParam.getValueError<std::string>("validRandom",0,0,"No FC-object");
+	  const attachSystem::FixedComp* FC=
+	    System.getObjectThrow<attachSystem::FixedComp>
+	    (FCObject,"FixedComp");
+	  //	  const double FC->generateBoundingCube();
 	}
-
     }
 
   const size_t NLine = IParam.setCnt("validLine");

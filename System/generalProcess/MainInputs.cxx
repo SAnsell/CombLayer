@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/MainInputs.cxx
+ * File:   generalProcess/MainInputs.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
  *
@@ -168,6 +168,7 @@ createInputs(inputParam& IParam)
   IParam.regItem("validFC","validFC",1);
   IParam.regItem("validCell","validCell",1);
   IParam.regMulti("validLine","validLine",1000);
+  IParam.regMulti("validRandom","validRandom",1000);
   IParam.regItem("validPoint","validPoint",1);
   IParam.regFlag("um","voidUnMask");
   IParam.regMulti("volume","volume",4,1);
