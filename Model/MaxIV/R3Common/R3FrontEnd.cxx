@@ -592,6 +592,7 @@ R3FrontEnd::buildObjects(Simulation& System)
     magBlockU1->getEntryPipe();
   eCutMagDisk->setNoInsert();
   eCutMagDisk->addInsertCell(entryPipe.getCell("Void"));
+  eCutMagDisk->addInsertCell(entryPipe.getCell("Wall"));
   eCutMagDisk->createAll(System,entryPipe,"-back");
 
   eTransPipe->setFront(*chokeChamber,"electron");

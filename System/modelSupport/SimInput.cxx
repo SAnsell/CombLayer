@@ -58,6 +58,7 @@
 #include "surfRegister.h"
 #include "FixedComp.h"
 #include "FixedGroup.h"
+#include "PositionSupport.h"
 #include "Zaid.h"
 #include "MXcards.h"
 #include "Material.h"
@@ -195,7 +196,8 @@ processExitChecks(Simulation& System,
 	  const attachSystem::FixedComp* FC=
 	    System.getObjectThrow<attachSystem::FixedComp>
 	    (FCObject,"FixedComp");
-	  //	  const double FC->generateBoundingCube();
+	  const attachSystem::BoundBox BBox=
+	    calcBoundingBox(*FC);
 	}
     }
 

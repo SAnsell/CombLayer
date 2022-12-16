@@ -3,7 +3,7 @@
 
  * File:   attachComp/PositionSupport.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,11 +50,57 @@
 #include "inputParam.h"
 #include "groupRange.h"
 #include "objectGroups.h"
+#include "PositionSupport.h"
 
 
 namespace attachSystem
 {
 
+BoundBox
+calcBoundingBox(const FixedComp& FC)
+  /*!
+    Determine the largest bounding box that is aligned
+    along the axis XYZ
+   */
+{
+  ELog::RegMethod RegA("PositionSupport","getBoundingBox");
+
+  BoundBox Box;
+  Box.X=FC.getX();
+  Box.Y=FC.getY();
+  Box.Z=FC.getZ();
+
+  Box.APt=FC.getCentre();
+  Box.BPt=FC.getCentre();
+  std::set<Geometry::Vec3D> LPts;
+  const long int LN(static_cast<long int>(FC.NConnect()));
+  for(long int i=0;i<=LN;i++)
+    if (FC.hasLinkPt(i))
+      LPts.emplace(FC.getLinkPt(i));
+
+  double x,y,z;
+  for(const Geometry::Vec3D& LPtr : LPts)
+    {
+      x=LPtr.dotProd(Box.X);
+      y=LPtr.dotProd(Box.Y);
+      z=LPtr.dotProd(Box.Z);
+      if (x<Box.APt[0])
+	Box.APt[0]=x;
+      if (x>Box.BPt[0])
+	Box.BPt[0]=x;
+      if (y<Box.APt[1])
+	Box.APt[1]=y;
+      if (y>Box.BPt[1])
+	Box.BPt[1]=y;
+      if (z<Box.APt[2])
+	Box.APt[2]=z;
+      if (z>Box.BPt[2])
+	Box.BPt[2]=z;
+    }
+
+  return Box;
+}
+  
 void
 applyZAxisRotate(const FixedComp& FC,const double xyAngle,
 		 Geometry::Vec3D& V)
