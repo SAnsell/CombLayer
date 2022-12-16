@@ -336,8 +336,6 @@ FixedRotate::createUnitVector(const attachSystem::FixedComp& FC,
       
   FixedComp::createUnitVector(FC,sideIndex);  
   applyOffset();
-  if (keyName=="cspecBD")
-    ELog::EM<<"ZAngle = "<<zAngle<<" "<<xAngle<<ELog::endDiag;
   return;
 }
 

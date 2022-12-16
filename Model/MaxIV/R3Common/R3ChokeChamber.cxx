@@ -326,8 +326,6 @@ R3ChokeChamber::createSurfaces()
   ModelSupport::buildCylinder
     (SMap,buildIndex+127,flangeOrg,Y,flangeInletRadius);
   ModelSupport::buildPlane(SMap,buildIndex+103,IOrigin-X*(inletWidth/2.0),X);
-  ELog::EM<<"IOrin == "<<IOrigin << " : : " <<elecXAxis
-	  <<" == "<<inletWidth<<ELog::endDiag;
   ModelSupport::buildPlane
     (SMap,buildIndex+104,IOrigin+X*(inletWidth/2.0),elecXAxis);
   ModelSupport::buildPlane(SMap,buildIndex+105,IOrigin-Z*(inletHeight/2.0),Z);

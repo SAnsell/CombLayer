@@ -210,7 +210,7 @@ SimValid::runPoint(const Simulation& System,
   for(size_t i=0;i<nAngle;i++)
     {
       if (nAngle>10000 && i*10==nAngle)
-	ELog::EM<<"ValidPoint == "<<i<<ELog::endDiag;
+	ELog::EM<<"ValidPoint Angle[ == "<<i<<"]"<<ELog::endDiag;
       std::vector<simPoint> Pts;
       // Get random starting point on edge of volume
       phi=Random::rand()*M_PI;
@@ -232,6 +232,7 @@ SimValid::runPoint(const Simulation& System,
 	  // boundary e.g. circles in contact
 	  if (!SN)
 	    {
+	      ELog::EM<<"Multi Point ="<<TNeut.Pos<<ELog::endDiag;
 	      TNeut.moveForward(Geometry::zeroTol*5.0);
 	      OPtr=System.findCell(TNeut.Pos,0);
 	      if (OPtr)

@@ -118,6 +118,11 @@ class MagnetU1 :
   MagnetU1& operator=(const MagnetU1&);
   virtual ~MagnetU1();
 
+  const xraySystem::EntryPipe& getEntryPipe() const
+  { return *entryPipe; }
+  const xraySystem::EntryPipe& getExitPipe() const
+  { return *exitPipe; }
+  
   void insertDipolePipe(Simulation&,const constructSystem::CornerPipe&);
 
   using FixedComp::createAll;

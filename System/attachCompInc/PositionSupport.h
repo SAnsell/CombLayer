@@ -29,9 +29,29 @@ class Simulation;
 namespace attachSystem
 {
 
+  /*!
+    \struct BoundBox
+    \author S. Ansell
+    \version 1.0
+    \date December 2022
+    \brief Simple bounding box with axis
+  */
+  
+struct BoundBox
+{
+  Geometry::Vec3D X;
+  Geometry::Vec3D Y;
+  Geometry::Vec3D Z;
+  Geometry::Vec3D APt;   ///< lower point
+  Geometry::Vec3D BPt;   ///< upper point
+};
+
+  
 class FixedComp;
 
-void applyZAxisRotate(const FixedComp& FC,const double,Geometry::Vec3D&);
+BoundBox calcBoundingBox(const FixedComp&);
+  
+void applyZAxisRotate(const FixedComp&,const double,Geometry::Vec3D&);
  
 Geometry::Vec3D
 getCntVec3D(const objectGroups&,

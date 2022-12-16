@@ -58,6 +58,7 @@
 #include "surfRegister.h"
 #include "FixedComp.h"
 #include "FixedGroup.h"
+#include "PositionSupport.h"
 #include "Zaid.h"
 #include "MXcards.h"
 #include "Material.h"
@@ -185,13 +186,19 @@ processExitChecks(Simulation& System,
 		}
 	    }
 	}
-      else 
+      if (IParam.flag("validRandom"))
 	{
-	  if (!SValidCheck.runPoint(System,Geometry::Vec3D(0,0,0),
-				    IParam.getValue<size_t>("validCheck")))
-	    errFlag += -1;
+	  // set of used points within the bounding box of the
+	  // object.
+	  const size_t NPts=IParam.getValue<size_t>("validCheck");
+	  const std::string FCObject=
+	    IParam.getValueError<std::string>("validRandom",0,0,"No FC-object");
+	  const attachSystem::FixedComp* FC=
+	    System.getObjectThrow<attachSystem::FixedComp>
+	    (FCObject,"FixedComp");
+	  const attachSystem::BoundBox BBox=
+	    calcBoundingBox(*FC);
 	}
-
     }
 
   const size_t NLine = IParam.setCnt("validLine");

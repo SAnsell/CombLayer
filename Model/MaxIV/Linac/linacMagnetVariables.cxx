@@ -42,11 +42,8 @@
 #include "FuncDataBase.h"
 #include "MagnetGenerator.h"
 
-
 namespace setVariable
 {
-
-
 
 void
 LINACmagnetVariables(FuncDataBase& Control,
@@ -201,6 +198,10 @@ LINACmagnetVariables(FuncDataBase& Control,
     }
   MagnetGenerator MUdipole;
 
+  // Note that the preName is generated in MUdipole.generateXXX() with
+  // Seg+Number. Hence we add CMag/Quad etc to the key to
+  // agree with stuff above.
+  
   // SEGMENT 1
   MUdipole.generateCorMag(Control,1,"CMagHA",90.0);
   MUdipole.generateCorMag(Control,1,"CMagVA",0.0);

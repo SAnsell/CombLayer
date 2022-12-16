@@ -56,6 +56,7 @@ namespace setVariable
   void MICROMAXvariables(FuncDataBase&);
 
   void R3FrontEndVariables(FuncDataBase&,const std::string&);
+  void R3MagnetVariables(FuncDataBase&,const std::string&);
   void R1FrontEndVariables(FuncDataBase&,const std::string&,
 			   const double);
 

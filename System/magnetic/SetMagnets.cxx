@@ -116,6 +116,7 @@ setMagneticExternal(SimTYPE& System,
 
 	  const Geometry::Vec3D Extent=
 	    IParam.getCntVec3D("MagUnit",setIndex,index,"Extent");
+
 	  // Additional angle flag:
 	  double magYAngle(0.0); 
 	  std::string angleFlag= IParam.getValueError<std::string>
@@ -146,8 +147,7 @@ setMagneticExternal(SimTYPE& System,
   
 template<typename SimTYPE>
 void
-setDefMagnets(SimTYPE& System,
-	      const bool syncFlag)
+setDefMagnets(SimTYPE& System,const bool syncFlag)
   /*!
     This sets the magnets from the main Control variables
     assuming that a magnet region has been built.
@@ -164,7 +164,6 @@ setDefMagnets(SimTYPE& System,
 
   std::vector<std::string> magNames=
     Control.EvalDefVector<std::string>("MagUnitList");
-  
   // cells with magnetic fields
   std::set<MonteCarlo::Object*> magnetCells;
   
@@ -185,6 +184,7 @@ setDefMagnets(SimTYPE& System,
 	  // has object in model
 	  if (System.hasActiveObject(FCname))
 	    {
+	      ELog::EM<<"MAg found "<<FCname<<ELog::endDiag;
 	      std::vector<double> kFactor;
 	      for(size_t i=0;i<4;i++)
 		{

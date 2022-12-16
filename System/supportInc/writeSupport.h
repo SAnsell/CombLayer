@@ -28,7 +28,7 @@ namespace StrFunc
 {
 
 std::string flukaNum(const int);
-std::string flukaNum(const double,const double= 1e-40);
+std::string flukaNum(const double,const double= 1e-40,const double= 1e5);
 
 std::vector<std::string> splitComandLine(std::string);
  
@@ -37,7 +37,8 @@ void writeControl(const std::string&,std::ostream&,
 		  const size_t,const int);
 
 /// Write file in standard FLUKA input form 
-void writeFLUKA(const std::string&,std::ostream&,const double = 1e-40);
+void writeFLUKA(const std::string&,std::ostream&,
+		const double = 1e-40,const double = 1e3);
 
 
 

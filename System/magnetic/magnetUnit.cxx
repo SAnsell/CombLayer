@@ -3,7 +3,7 @@
  
  * File:   magnetic/magnetUnit.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,6 @@
 #include "OutputLog.h"
 #include "surfRegister.h"
 #include "Vec3D.h"
-#include "stringCombine.h"
 #include "writeSupport.h"
 #include "phitsWriteSupport.h"
 #include "varList.h"
@@ -223,8 +222,8 @@ magnetUnit::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("magnetUnit","createAll");
   
-  populate(System.getDataBase());
-  magnetUnit::createUnitVector(FC,sideIndex);
+  populate(System.getDataBase());  
+  createUnitVector(FC,sideIndex);
 
   return;
 }
@@ -250,7 +249,8 @@ magnetUnit::createAll(Simulation& System,
   ELog::RegMethod RegA("magnetUnit","createAll");
 
   this->populate(System.getDataBase());
-  magnetUnit::createUnitVector(OG,AY,AZ);
+  createUnitVector(OG,AY,AZ);
+  
   setExtent(extent[0],extent[1],extent[2]); 
   
   double sum(0.0);
@@ -331,20 +331,20 @@ magnetUnit::writeFLUKA(std::ostream& OX) const
     }
 
   OX<<"* Magnet: "<<keyName<<std::endl;
-  cx<<"USRICALL 0 "<<StrFunc::makeString(Origin)<<" - - "<<magKey;
+  cx<<"USRICALL 0 "<<Origin<<" - - "<<magKey;
 
   StrFunc::writeFLUKA(cx.str(),OX);
 
   cx.str("");
-  cx<<"USRICALL 1 "<<StrFunc::makeString(X)<<" - - "<<magKey;
+  cx<<"USRICALL 1 "<<X<<" - - "<<magKey;
+  StrFunc::writeFLUKA(cx.str(),OX,1e-6,1e2);
+  
+  cx.str("");
+  cx<<"USRICALL 2 "<<Y<<" - - "<<magKey;
   StrFunc::writeFLUKA(cx.str(),OX);
 
   cx.str("");
-  cx<<"USRICALL 2 "<<StrFunc::makeString(Y)<<" - - "<<magKey;
-  StrFunc::writeFLUKA(cx.str(),OX);
-
-  cx.str("");
-  cx<<"USRICALL 3 "<<StrFunc::makeString(Z)<<" - - "<<magKey;
+  cx<<"USRICALL 3 "<<Z<<" - - "<<magKey;
   StrFunc::writeFLUKA(cx.str(),OX);
 
   
@@ -353,7 +353,7 @@ magnetUnit::writeFLUKA(std::ostream& OX) const
       magExtent[2]>Geometry::zeroTol)
     {
       cx.str("");
-      cx<<"USRICALL 4 "<<StrFunc::makeString(magExtent)<<" - - "<<magKey;
+      cx<<"USRICALL 4 "<<magExtent<<" - - "<<magKey;
       StrFunc::writeFLUKA(cx.str(),OX);
     }
   else
@@ -362,11 +362,11 @@ magnetUnit::writeFLUKA(std::ostream& OX) const
   cx<<"USRICALL 5 ";
 
   for(size_t i=0;i<4;i++)
-    cx<<StrFunc::makeString(KFactor[i])<<" ";
+    cx<<KFactor[i]<<" ";
   cx<<" - "<<magKey;
 
-  StrFunc::writeFLUKA(cx.str(),OX,1e-5);  
-      
+  StrFunc::writeFLUKA(cx.str(),OX,1e-6);  
+
  
   return;
 }

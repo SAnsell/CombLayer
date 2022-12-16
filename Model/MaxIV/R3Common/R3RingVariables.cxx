@@ -63,6 +63,8 @@
 #include "MagnetM1Generator.h"
 #include "MagnetU1Generator.h"
 
+#include "maxivVariables.h"
+
 namespace setVariable
 {  
 
