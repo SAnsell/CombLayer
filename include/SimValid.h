@@ -3,7 +3,7 @@
  
  * File:   include/SimValid.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -96,6 +96,9 @@ class SimValid
   void setCentre(const Geometry::Vec3D& C) { Centre=C;} 
 
   static int checkPoint(const Simulation&,const Geometry::Vec3D&);
+
+  void calcTouch(const Simulation&) const;
+
   // MAIN RUN:
   int runPoint(const Simulation&,const Geometry::Vec3D&,const size_t) const;
   

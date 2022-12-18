@@ -54,12 +54,17 @@
 #include "particle.h"
 #include "eTrack.h"
 #include "surfRegister.h"
+#include "Surface.h"
+#include "Quadratic.h"
+#include "Plane.h"
+#include "Cylinder.h"
 #include "LineTrack.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
+
 #include "SimValid.h"
 
 #include "debugMethod.h"
@@ -97,6 +102,53 @@ SimValid::operator=(const SimValid& A)
   return *this;
 }
 
+void
+SimValid::calcTouch(const Simulation& System) const
+  /*!
+    Calculate touches
+  */
+{
+  ELog::RegMethod RegA("SimValid","calcTouch");
+  const double touchTol(1e-4);
+  const Simulation::OTYPE OMap=System.getCells();
+  for(const auto [cn,OPtr] : OMap)
+    {
+      std::set<const Geometry::Cylinder*> CylSet;
+      std::set<const Geometry::Plane*> PlaneSet;
+      const std::set<const Geometry::Surface*>& SSet=
+	OPtr->getSurList();
+      for(const Geometry::Surface* SPtr : SSet)
+	{
+	  const Geometry::Cylinder* CPtr=
+	    dynamic_cast<const Geometry::Cylinder*>(SPtr);
+	  if (CPtr)CylSet.emplace(CPtr);
+	  const Geometry::Plane* PPtr=
+	    dynamic_cast<const Geometry::Plane*>(SPtr);
+	  if (PPtr) PlaneSet.emplace(PPtr);
+	}
+      for(const Geometry::Cylinder* CPtr : CylSet)
+	{
+	  const Geometry::Vec3D& COrg=CPtr->getCentre();
+	  const Geometry::Vec3D& CAxis=CPtr->getNormal();
+	  const double R=CPtr->getRadius();
+	  for(const Geometry::Plane* PPtr : PlaneSet)
+	    {
+	      const Geometry::Vec3D& PAxis=PPtr->getNormal();
+	      const double dProd=CAxis.dotProd(PAxis);
+	      if ((dProd>1.0-touchTol) || (-dProd>1.0-touchTol))
+		{
+		  const double dist=PPtr->distance(COrg);
+		  if (std::abs(dist-R)<touchTol)
+		    ELog::EM<<"Object - > "<<OPtr->getName()<<" "<<
+		      CPtr->getName()<<" "<<PPtr->getName()<<ELog::endDiag;
+		}
+	    }
+	}
+    }
+  
+  return;
+}
+  
 void
 SimValid::diagnostics(const Simulation& System,
 		     const std::vector<simPoint>& Pts) const

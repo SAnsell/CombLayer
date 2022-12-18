@@ -190,6 +190,8 @@ processExitChecks(Simulation& System,
 	{
 	  // set of used points within the bounding box of the
 	  // object.
+	  SValidCheck.calcTouch(System);
+	  ELog::EM<<"ADFAFDS"<<ELog::endDiag;
 	  const size_t NPts=IParam.getValue<size_t>("validCheck");
 	  const std::string FCObject=
 	    IParam.getValueError<std::string>("validRandom",0,0,"No FC-object");
