@@ -22,6 +22,11 @@
 #ifndef ModelSupport_SimValid_h
 #define ModelSupport_SimValid_h
 
+namespace Geometry
+{
+  class Cylinder;
+  class Plane;
+}
 
 namespace ModelSupport
 {
@@ -64,10 +69,15 @@ struct simPoint
 	}
       return *this;
     }
-
-
 };
 
+struct touchUnit
+{
+  const Geometry::Cylinder* CPtr;
+  const Geometry::Plane* PPtr;
+  std::vector<Geometry::Vec3D> bPoints;
+};
+  
 /*!
   \class SimValid
   \brief Applies simple test to a simulation to check validity
@@ -84,7 +94,15 @@ class SimValid
 
   void diagnostics(const Simulation&,
 		   const std::vector<simPoint>&) const;
+
+  static bool checkLinePts(const MonteCarlo::Object*,
+			   const std::vector<Geometry::Vec3D>&,
+			   const int,const int);
   
+  static bool findTouch(const MonteCarlo::Object*,
+			const Geometry::Cylinder*,
+			const Geometry::Plane*,
+			std::vector<Geometry::Vec3D>&);
  public:
   
   SimValid();

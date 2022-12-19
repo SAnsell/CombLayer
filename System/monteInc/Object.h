@@ -204,7 +204,7 @@ class Object
 
   std::vector<int> getSurfaceIndex() const;
   /// Access the surface list [of pointers]
-  const std::set<const Geometry::Surface*>& getSurList() const
+  const std::set<const Geometry::Surface*>& getSurfPtrSet() const
     { return surfSet; }
 
   std::vector<std::pair<int,int>> getImplicatePairs(const int) const;

@@ -297,7 +297,7 @@ ReflectRods::calcCentre()
 
   // Extract Container items  
   const std::set<const Geometry::Surface*>& SL=
-    RefObj->getSurList();
+    RefObj->getSurfPtrSet();
 
   std::set<const Geometry::Plane*> PSet;  
   for(const Geometry::Surface* const& sPtr : SL)

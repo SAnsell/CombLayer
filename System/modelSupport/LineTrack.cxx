@@ -301,7 +301,7 @@ LineTrack::calculateError(const Simulation& ASim)
 		  nOut.moveForward(-1e-5);
 		  ELog::EM<<"Object = "<<*OPtr<<ELog::endDiag;
 		  const std::set<const Geometry::Surface*>& SV=
-		    OPtr->getSurList();
+		    OPtr->getSurfPtrSet();
 		  for(const Geometry::Surface* SPtr : SV)
 		    if (SPtr->onSurface(nOut.Pos))
 		      ELog::EM<<"Surf == "<<*SPtr<<ELog::endDiag;

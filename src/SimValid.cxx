@@ -102,10 +102,82 @@ SimValid::operator=(const SimValid& A)
   return *this;
 }
 
+bool
+SimValid::checkLinePts(const MonteCarlo::Object* OPtr,
+		       const std::vector<Geometry::Vec3D>& TPts,
+		       const int CN,const int PN)
+  /*!
+    \param OPtr :: Object Pointer to test
+    \param TPts :: Points on the line
+    \param CN :: Cylinder number
+    \param PN :: Plane number
+    \return true if points are in the object
+   */
+{
+  ELog::RegMethod RegA("SimValid","checkLinePts");
+
+  const HeadRule mainHR=OPtr->getHeadRule();
+  const size_t midSlice(3);
+  for(size_t i=0;i<TPts.size();i++)
+    for(size_t j=i+1;j<TPts.size();j++) 
+      {
+	const Geometry::Vec3D diffV((TPts[i]-TPts[j])/
+				   static_cast<double>(midSlice));
+	Geometry::Vec3D TP((TPts[i]+(diffV/2.0));
+	for(size_t i=0;i<midNumber;i++)
+	  {
+	    if (mainHR->isValid(TPts[i]))
+	      return 1;
+	    TP+=diff;
+	  }
+      }
+
+  
+  return 0;
+}
+  
+bool
+SimValid::findTouch(const MonteCarlo::Object* OPtr,
+		    const Geometry::Cylinder* CPtr,
+		    const Geometry::Plane* PPtr,		    
+		    std::vector<Geometry::Vec3D>& TPts)
+  /*! 
+    Check if an object has a touch
+    \param OPtr :: Object Ptr
+    \param CPtr :: Cylinder to check
+    \param PPtr :: Plane to check
+    \param TPts :: Points found [OUTPUT]
+   */
+{
+  ELog::RegMethod RegA("SimValid","findTouch");
+
+  const double touchTol(1e-4);
+  const Geometry::Vec3D& COrg=CPtr->getCentre();
+  const Geometry::Vec3D& CAxis=CPtr->getNormal();
+  const double R=CPtr->getRadius();
+  const Geometry::Vec3D& PAxis=PPtr->getNormal();
+  const double dProd=CAxis.dotProd(PAxis);
+  if ((dProd>1.0-touchTol) || (-dProd>1.0-touchTol))
+    {
+      const double dist=PPtr->distance(COrg);
+      if (std::abs(dist-R)<touchTol)
+	{
+	  // Line of intersection
+	  const HeadRule mainHR=OPtr->getHeadRule();
+	  std::vector<int> SNum;
+	  mainHR.calcSurfIntersection(COrg,CAxis,TPts,SNum);
+	  if (TPts.size()>1) return 1;
+	}
+    }
+  return 0;
+}
+  
 void
 SimValid::calcTouch(const Simulation& System) const
   /*!
-    Calculate touches
+    Calculate touches between curved and non-curved
+    surfaces
+    \parma System :: Simulation to use
   */
 {
   ELog::RegMethod RegA("SimValid","calcTouch");
@@ -116,7 +188,8 @@ SimValid::calcTouch(const Simulation& System) const
       std::set<const Geometry::Cylinder*> CylSet;
       std::set<const Geometry::Plane*> PlaneSet;
       const std::set<const Geometry::Surface*>& SSet=
-	OPtr->getSurList();
+	OPtr->getSurfPtrSet();
+      // Construct set of cylinder / plane
       for(const Geometry::Surface* SPtr : SSet)
 	{
 	  const Geometry::Cylinder* CPtr=
@@ -126,26 +199,45 @@ SimValid::calcTouch(const Simulation& System) const
 	    dynamic_cast<const Geometry::Plane*>(SPtr);
 	  if (PPtr) PlaneSet.emplace(PPtr);
 	}
+      // Check each plane/surface pair for touch
+      // if so add to a list of line points for each
+      // and check all other objects:
       for(const Geometry::Cylinder* CPtr : CylSet)
-	{
-	  const Geometry::Vec3D& COrg=CPtr->getCentre();
-	  const Geometry::Vec3D& CAxis=CPtr->getNormal();
-	  const double R=CPtr->getRadius();
-	  for(const Geometry::Plane* PPtr : PlaneSet)
-	    {
-	      const Geometry::Vec3D& PAxis=PPtr->getNormal();
-	      const double dProd=CAxis.dotProd(PAxis);
-	      if ((dProd>1.0-touchTol) || (-dProd>1.0-touchTol))
-		{
-		  const double dist=PPtr->distance(COrg);
-		  if (std::abs(dist-R)<touchTol)
-		    ELog::EM<<"Object - > "<<OPtr->getName()<<" "<<
-		      CPtr->getName()<<" "<<PPtr->getName()<<ELog::endDiag;
-		}
-	    }
-	}
+	for(const Geometry::Plane* PPtr : PlaneSet)
+	  {
+	    std::vector<Geometry::Vec3D> TPts;
+	    if (findTouch(OPtr,CPtr,PPtr,TPts))
+	      {
+		// This is a possible objects:
+		// Now find ANY other object which is valid
+		// at any point on the line that has either
+		// the cyl OR the plane (not both) [valid with +/-
+		// or cyl/plane.
+		for(const auto [cnB,BOPtr] : OMap)
+		  {
+		    const std::set<int>& BSet=
+		      BOPtr->getSurfSet();
+		    if (cnB!=cn)
+		      {
+			const int CylN=CPtr->getName();
+			const int PlnN=PPtr->getName();
+			const bool flagA=BSet.find(CylN)==BSet.end();
+			const bool flagB=BSet.find(PlnN)==BSet.end();
+			if (flagA ^ flagB)
+			  {
+			    if (checkLinePoints(BOPtr,TPts,CylN,PlnN))
+			      {
+				ELog::EM<<"Object - > "<<OPtr->getName()<<" "<<
+				  CPtr->getName()<<" "<<PPtr->getName()
+					<<" "<<flagA<<" "<<flagB<<" : "
+					<<cnB<<ELog::endDiag;
+			      }
+			  }
+		      }
+		  }
+	      }
+	  }
     }
-  
   return;
 }
   
