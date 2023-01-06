@@ -95,7 +95,7 @@ class SimValid
   void diagnostics(const Simulation&,
 		   const std::vector<simPoint>&) const;
 
-  static bool checkLinePts(const MonteCarlo::Object*,
+  static bool checkLinePoints(const MonteCarlo::Object*,
 			   const std::vector<Geometry::Vec3D>&,
 			   const int,const int);
   

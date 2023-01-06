@@ -103,10 +103,13 @@ SimValid::operator=(const SimValid& A)
 }
 
 bool
-SimValid::checkLinePts(const MonteCarlo::Object* OPtr,
+SimValid::checkLinePoints(const MonteCarlo::Object* OPtr,
 		       const std::vector<Geometry::Vec3D>& TPts,
 		       const int CN,const int PN)
   /*!
+    This checks is a given obect that has point at surface intersections
+    (TPts) along surfaces CN and PN (cyl/plane). that the object
+    is isValid for any combination of CN / PN.
     \param OPtr :: Object Pointer to test
     \param TPts :: Points on the line
     \param CN :: Cylinder number
@@ -114,21 +117,21 @@ SimValid::checkLinePts(const MonteCarlo::Object* OPtr,
     \return true if points are in the object
    */
 {
-  ELog::RegMethod RegA("SimValid","checkLinePts");
+  ELog::RegMethod RegA("SimValid","checkLinePoint");
 
   const HeadRule mainHR=OPtr->getHeadRule();
   const size_t midSlice(3);
   for(size_t i=0;i<TPts.size();i++)
     for(size_t j=i+1;j<TPts.size();j++) 
       {
-	const Geometry::Vec3D diffV((TPts[i]-TPts[j])/
-				   static_cast<double>(midSlice));
-	Geometry::Vec3D TP((TPts[i]+(diffV/2.0));
-	for(size_t i=0;i<midNumber;i++)
+	const Geometry::Vec3D diffV=
+	  (TPts[i]-TPts[j])/static_cast<double>(midSlice);
+	Geometry::Vec3D TP=TPts[i]+(diffV/2.0);
+	for(size_t i=0;i<midSlice;i++)
 	  {
-	    if (mainHR->isValid(TPts[i]))
+	    if (mainHR.isValid(TPts[i]))
 	      return 1;
-	    TP+=diff;
+	    TP+=diffV;
 	  }
       }
 
