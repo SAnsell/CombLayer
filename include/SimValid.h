@@ -3,7 +3,7 @@
  
  * File:   include/SimValid.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -95,9 +95,13 @@ class SimValid
   void diagnostics(const Simulation&,
 		   const std::vector<simPoint>&) const;
 
-  static bool checkLinePoints(const MonteCarlo::Object*,
-			   const std::vector<Geometry::Vec3D>&,
-			   const int,const int);
+  static bool nextPoint(const std::vector<Geometry::Vec3D>&,
+			size_t&,size_t&,size_t&,
+			Geometry::Vec3D&);
+
+  static bool checkPoint(const Geometry::Vec3D&,
+			  const std::set<const MonteCarlo::Object*>&,
+			  const int,const int);
   
   static bool findTouch(const MonteCarlo::Object*,
 			const Geometry::Cylinder*,

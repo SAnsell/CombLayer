@@ -3,7 +3,7 @@
  
  * File:   src/SimValid.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -102,10 +102,48 @@ SimValid::operator=(const SimValid& A)
   return *this;
 }
 
+
 bool
-SimValid::checkLinePoints(const MonteCarlo::Object* OPtr,
-		       const std::vector<Geometry::Vec3D>& TPts,
-		       const int CN,const int PN)
+SimValid::nextPoint(const std::vector<Geometry::Vec3D>& TPts,
+		    size_t& indexA,size_t& indexB,size_t& indexC,
+		    Geometry::Vec3D& outPt)
+/*!
+  Ugly function to return the point in the double index loop
+  \param outPt :: new Point [if set]
+  \return 1 if valid (within loop)
+*/
+{
+  const size_t midSlice(3);
+
+  if (indexC<1) indexC=0;
+  if (indexA>=indexB)
+    indexB=indexA+1;
+
+  indexC++;
+  if (indexC>=midSlice)
+    {
+      indexC=1;
+      indexB++;
+    }
+
+  if(indexB>=TPts.size())
+    {
+      indexA++;
+      indexB=indexA+1;
+      if (indexB>=TPts.size())
+	return 0;
+    }
+  const Geometry::Vec3D diffV=(TPts[indexB]-TPts[indexA])
+    /static_cast<double>(midSlice);
+  outPt=TPts[indexA]+diffV*static_cast<double>(indexC);
+
+  return 1;
+}
+  
+bool
+SimValid::checkPoint(const Geometry::Vec3D& TP, 
+		     const std::set<const MonteCarlo::Object*>& checkObj,
+		     const int CylN,const int PlnN)
   /*!
     This checks is a given obect that has point at surface intersections
     (TPts) along surfaces CN and PN (cyl/plane). that the object
@@ -115,28 +153,32 @@ SimValid::checkLinePoints(const MonteCarlo::Object* OPtr,
     \param CN :: Cylinder number
     \param PN :: Plane number
     \return true if points are in the object
-   */
+  */
 {
-  ELog::RegMethod RegA("SimValid","checkLinePoint");
+  ELog::RegMethod RegA("SimValid","checkPoint");
 
-  const HeadRule mainHR=OPtr->getHeadRule();
-  const size_t midSlice(3);
-  for(size_t i=0;i<TPts.size();i++)
-    for(size_t j=i+1;j<TPts.size();j++) 
-      {
-	const Geometry::Vec3D diffV=
-	  (TPts[i]-TPts[j])/static_cast<double>(midSlice);
-	Geometry::Vec3D TP=TPts[i]+(diffV/2.0);
-	for(size_t i=0;i<midSlice;i++)
-	  {
-	    if (mainHR.isValid(TPts[i]))
-	      return 1;
-	    TP+=diffV;
-	  }
-      }
+  // For all combinations of  CylN/PlnN true/false we must get
+  // one and only cell which is true
 
-  
-  return 0;
+  std::map<int,int> surfState({{CylN,-1},{PlnN,-1}});
+  do
+    {
+      std::set<const MonteCarlo::Object*> foundSet;
+      for(const MonteCarlo::Object* TOPtr : checkObj)
+	{
+	  if (TOPtr->isValid(TP,surfState))
+	    foundSet.emplace(TOPtr);
+	}
+      
+      if (foundSet.size()!=1)
+	{
+	  for(const MonteCarlo::Object* fObj : foundSet)
+	    ELog::EM<<" ---> Active["<<fObj->getName()<<"] \n";
+	  return 0;
+	}
+    } while (!MapSupport::iterateBinMap<int>(surfState,-1,1));
+
+  return 1;
 }
   
 bool
@@ -154,21 +196,24 @@ SimValid::findTouch(const MonteCarlo::Object* OPtr,
 {
   ELog::RegMethod RegA("SimValid","findTouch");
 
-  const double touchTol(1e-4);
+  const double touchTol(1e-6);
   const Geometry::Vec3D& COrg=CPtr->getCentre();
   const Geometry::Vec3D& CAxis=CPtr->getNormal();
   const double R=CPtr->getRadius();
   const Geometry::Vec3D& PAxis=PPtr->getNormal();
   const double dProd=CAxis.dotProd(PAxis);
-  if ((dProd>1.0-touchTol) || (-dProd>1.0-touchTol))
+
+  if (std::abs(dProd)<touchTol)
     {
-      const double dist=PPtr->distance(COrg);
+      // signed value:
+      const double dist=std::abs(PPtr->distance(COrg));
       if (std::abs(dist-R)<touchTol)
 	{
+	  Geometry::Vec3D tPoint=COrg+PAxis*dist;
 	  // Line of intersection
 	  const HeadRule mainHR=OPtr->getHeadRule();
 	  std::vector<int> SNum;
-	  mainHR.calcSurfIntersection(COrg,CAxis,TPts,SNum);
+	  mainHR.calcSurfIntersection(tPoint,CAxis,TPts,SNum);	  
 	  if (TPts.size()>1) return 1;
 	}
     }
@@ -184,7 +229,6 @@ SimValid::calcTouch(const Simulation& System) const
   */
 {
   ELog::RegMethod RegA("SimValid","calcTouch");
-  const double touchTol(1e-4);
   const Simulation::OTYPE OMap=System.getCells();
   for(const auto [cn,OPtr] : OMap)
     {
@@ -211,31 +255,39 @@ SimValid::calcTouch(const Simulation& System) const
 	    std::vector<Geometry::Vec3D> TPts;
 	    if (findTouch(OPtr,CPtr,PPtr,TPts))
 	      {
-		// This is a possible objects:
-		// Now find ANY other object which is valid
-		// at any point on the line that has either
-		// the cyl OR the plane (not both) [valid with +/-
-		// or cyl/plane.
+		const int CylN=CPtr->getName();
+		const int PlnN=PPtr->getName();
+		// Now find set of flags which OPtr is NOT valid for all the points
+		// as at this point both can be true / false.
+		// we assume that only objects that have both surfaces can be involved:
+			    
+		std::set<const MonteCarlo::Object*> checkObj;   
 		for(const auto [cnB,BOPtr] : OMap)
 		  {
 		    const std::set<int>& BSet=
 		      BOPtr->getSurfSet();
-		    if (cnB!=cn)
+		    const bool flagA=BSet.find(CylN)!=BSet.end();
+		    const bool flagB=BSet.find(PlnN)!=BSet.end();
+		    if (flagA | flagB)
+		      checkObj.emplace(BOPtr);  // note this INCLUDES OPtr
+		  }
+		Geometry::Vec3D testPt;
+		bool outFlag(0);   
+		size_t indexA(0),indexB(0),indexC(0);
+		ELog::EM<<"Index == "<<cn<<ELog::endDiag;
+		while(!outFlag && nextPoint(TPts,indexA,indexB,indexC,testPt))
+		  {
+
+
+		    if (!checkPoint(testPt,checkObj,CylN,PlnN))
 		      {
-			const int CylN=CPtr->getName();
-			const int PlnN=PPtr->getName();
-			const bool flagA=BSet.find(CylN)==BSet.end();
-			const bool flagB=BSet.find(PlnN)==BSet.end();
-			if (flagA ^ flagB)
-			  {
-			    if (checkLinePoints(BOPtr,TPts,CylN,PlnN))
-			      {
-				ELog::EM<<"Object - > "<<OPtr->getName()<<" "<<
-				  CPtr->getName()<<" "<<PPtr->getName()
-					<<" "<<flagA<<" "<<flagB<<" : "
-					<<cnB<<ELog::endDiag;
-			      }
-			  }
+			ELog::EM<<"TN == "<<TPts.size()<<" "<<testPt<<ELog::endDiag;
+			ELog::EM<<"Objects -> Primary["<<OPtr->getName()<<"] \n"<<ELog::endCrit;
+			ELog::EM<<"        -> Primary "<<*OPtr;
+			ELog::EM<<"        -> Cyl "<<*CPtr;
+			ELog::EM<<"        -> Pln "<<*PPtr;
+			ELog::EM<<"        ---------- "<<ELog::endDiag;
+			outFlag=1;
 		      }
 		  }
 	      }

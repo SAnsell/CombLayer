@@ -3,7 +3,7 @@
  
  * File:   R3CommonInc/MagnetU1.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,12 +61,12 @@ class MagnetU1 :
   double blockYStep;            ///< Step forward
   double length;                ///< frame length
 
-  double frontVoid;             ///< Size of outer void gap
-  double backVoid;              ///< Size of outer void gap
+  double frontVoid;             ///< Size of front void gap
+  double backVoid;              ///< Size of back void gap
   double outerVoid;             ///< Size of outer void gap
-  double ringVoid;              ///< Size of outer void gap
-  double topVoid;               ///< Size of outer void gap
-  double baseVoid;              ///< Size of outer void gap
+  double ringVoid;              ///< Size of ringside void gap
+  double topVoid;               ///< Size of top void gap
+  double baseVoid;              ///< Size of base void gap
 
   double baseThick;             ///< base thickness
   double wallThick;             ///< side wall thickness
