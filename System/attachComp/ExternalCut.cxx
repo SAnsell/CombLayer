@@ -3,7 +3,7 @@
  
  * File:   attachComp/ExtractCut.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -490,8 +490,8 @@ ExternalCut::makeShiftedSurf(ModelSupport::surfRegister& SMap,
   */
 {
   ELog::RegMethod RegA("ExternalCut","makeShiftedSurf(HR)");
-  
-  std::set<int> FS=HR.getSurfSet();
+
+  const std::set<int> FS=HR.getSignedSurfaceNumbers();
   for(const int& refSN : FS)
     {
       const Geometry::Surface* SPtr=
@@ -521,7 +521,7 @@ ExternalCut::makeExpandedSurf(ModelSupport::surfRegister& SMap,
 {
   ELog::RegMethod RegA("ExternalCut","makeExpandedSurf(HR)");
   
-  std::set<int> FS=HR.getSurfSet();
+  const std::set<int> FS=HR.getSignedSurfaceNumbers();
   for(const int& SN : FS)
     {
       const Geometry::Surface* SPtr=

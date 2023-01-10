@@ -3,7 +3,7 @@
  
  * File:   test/testConvex2D.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -271,7 +271,9 @@ testConvex2D::testRandomPlane()
 int
 testConvex2D::testMaxElement()
   /*!
-    Calculate the max element in a list
+    Calculate the max element in a list. That is
+    the element that is furthis from the centre.
+    
     \return 0 on succes -ve on failure
   */
 {
@@ -282,8 +284,6 @@ testConvex2D::testMaxElement()
   const Geometry::Vec3D Orig(0,0,0);
   // calculate 
   initConvexPlane(A,Orig,Normal,50,10.0,0.0);
-  A.calcNormal();
-  
   A.constructHull();
 
   const Geometry::Vec3D& CP=A.getCentroid();

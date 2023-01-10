@@ -3,7 +3,7 @@
  
  * File:   essBuild/WedgeItem.cxx
  *
- * Copyright (c) 2004-2022 by Konstantin Batkov
+ * Copyright (c) 2004-2023 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,8 +82,9 @@ WedgeItem::WedgeItem(const std::string& Key,const size_t Index)  :
 {}
 
 WedgeItem::WedgeItem(const WedgeItem& A) : 
-  attachSystem::ContainedComp(A),
   attachSystem::FixedRotateUnit(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::ExternalCut(A),
   length(A.length),baseWidth(A.baseWidth),
   mat(A.mat)
   /*!
@@ -102,8 +103,9 @@ WedgeItem::operator=(const WedgeItem& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
+
       attachSystem::FixedRotate::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
       attachSystem::ExternalCut::operator=(A);
       length=A.length;
       baseWidth=A.baseWidth;

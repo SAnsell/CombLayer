@@ -3,7 +3,7 @@
  
  * File:   attachComp/SpaceCut.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -476,7 +476,7 @@ SpaceCut::calcBoundary(const HeadRule& objHR,
 
   
   // NOW eliminate all surfaces NOT in surfN
-  const std::set<int> fullSurfN=objHR.getSurfSet();
+  const std::set<int> fullSurfN=objHR.getSignedSurfaceNumbers();
   HeadRule outBox=objHR;
   for(const int SN : fullSurfN)
     {

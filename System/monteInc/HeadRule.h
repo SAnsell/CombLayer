@@ -62,7 +62,7 @@ class HeadRule
 
   void createAddition(const int,const Rule*);
   const SurfPoint* findSurf(const int) const;
-  
+
  public:
 
   HeadRule();
@@ -161,7 +161,6 @@ class HeadRule
   bool subMatched(const HeadRule&,const HeadRule&);  
   bool partMatched(const HeadRule&) const;
 
-  std::set<int> getSurfSet() const;
   int getSingleSurf() const;
   
   int removeItems(const int);

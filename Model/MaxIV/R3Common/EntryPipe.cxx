@@ -3,7 +3,7 @@
 
  * File:   R3Common/EntryPipe.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -171,7 +171,7 @@ EntryPipe::createObjects(Simulation& System)
 
   HeadRule HR;
   // Void
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7");
+  HR=HeadRule(SMap,buildIndex,-7);
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
 

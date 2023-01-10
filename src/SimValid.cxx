@@ -172,9 +172,9 @@ SimValid::checkPoint(const Geometry::Vec3D& TP,
       
       if (foundSet.size()!=1)
 	{
-	  ELog::EM<<"Flag -- :"<<surfState[CylN]<<" "<<surfState[PlnN]<<ELog::endDiag;
+	  ELog::EM<<"Flag["<<CylN<<" "<<PlnN<<"] -- :"<<surfState[CylN]<<" "<<surfState[PlnN]<<ELog::endDiag;
 	  for(const MonteCarlo::Object* fObj : foundSet)
-	    ELog::EM<<" ---> Active["<<fObj->getName()<<"] \n";
+	    ELog::EM<<"Valid["<<fObj->getName()<<"] "<<fObj->getHeadRule().display(TP)<<"\n";
 	  return 0;
 	}
     } while (!MapSupport::iterateBinMap<int>(surfState,-1,1));
@@ -207,14 +207,15 @@ SimValid::findTouch(const MonteCarlo::Object* OPtr,
   if (std::abs(dProd)<touchTol)
     {
       // signed value:
-      const double dist=std::abs(PPtr->distance(COrg));
-      if (std::abs(dist-R)<touchTol)
+      const double dist=PPtr->distance(COrg);
+      const double distA=std::abs(dist);
+      if (std::abs(distA-R) < touchTol)
 	{
-	  Geometry::Vec3D tPoint=COrg+PAxis*dist;
+	  Geometry::Vec3D tPoint=COrg-PAxis*dist;
 	  // Line of intersection
 	  const HeadRule mainHR=OPtr->getHeadRule();
 	  std::vector<int> SNum;
-	  mainHR.calcSurfIntersection(tPoint,CAxis,TPts,SNum);	  
+	  mainHR.calcSurfIntersection(tPoint,CAxis,TPts,SNum);
 	  if (TPts.size()>1) return 1;
 	}
     }
@@ -266,10 +267,7 @@ SimValid::calcTouch(const Simulation& System) const
 		for(const auto [cnB,BOPtr] : OMap)
 		  {
 		    const std::set<int>& BSet=
-		      BOPtr->getSurfSet();
-		    for(const int SN : BSet)
-		      ELog::EM<<" "<<SN;
-		    ELog::EM<<ELog::endDiag;
+		      BOPtr->getHeadRule().getSurfaceNumbers();
 		    const bool flagA=BSet.find(CylN)!=BSet.end();
 		    const bool flagB=BSet.find(PlnN)!=BSet.end();
 		    if (flagA | flagB)
@@ -278,10 +276,6 @@ SimValid::calcTouch(const Simulation& System) const
 		Geometry::Vec3D testPt;
 		bool outFlag(0);   
 		size_t indexA(0),indexB(0),indexC(0);
-		ELog::EM<<"Index == "<<cn<<ELog::endDiag;
-		if (cn==2000001)
-		  for(const auto* BPtr : checkObj)
-		    ELog::EM<<"BPtr- "<<BPtr->getName()<<ELog::endDiag;
 		while(!outFlag && nextPoint(TPts,indexA,indexB,indexC,testPt))
 		  {
 		    if (!checkPoint(testPt,checkObj,CylN,PlnN))
@@ -289,9 +283,6 @@ SimValid::calcTouch(const Simulation& System) const
 			ELog::EM<<"TN == "<<TPts.size()<<" :: "<<testPt<<ELog::endDiag;
 			ELog::EM<<"Objects -> Primary["<<OPtr->getName()<<"] \n"<<ELog::endCrit;
 			ELog::EM<<"        -> Primary "<<*OPtr;
-			ELog::EM<<"        -> Valid "<<OPtr->getHeadRule().display(testPt)<<ELog::endDiag;
-			ELog::EM<<"        -> Cyl "<<*CPtr;
-			ELog::EM<<"        -> Pln "<<*PPtr;
 			ELog::EM<<"        ---------- "<<ELog::endDiag;
 			outFlag=1;
 		      }

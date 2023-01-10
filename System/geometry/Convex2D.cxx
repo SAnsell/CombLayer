@@ -3,7 +3,7 @@
  
  * File:   geometry/Convex2D.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -270,7 +270,7 @@ Convex2D::createVertex()
 	    );
 
   VTYPE::const_iterator vc=VList.begin();
-  
+
   std::list<Vert2D> cList;
   std::list<Vert2D>::const_iterator lc;
 
@@ -328,10 +328,10 @@ void
 Convex2D::rotateVList()
   /*!
     Rotate the VList so that the first point is the first point
-    in  Pts that is on the List
+    in Pts that is on the List
   */
 {
-  ELog::RegMethod RegA("Convex2D","roateVList");
+  ELog::RegMethod RegA("Convex2D","rotateVList");
   
   VTYPE::iterator vc;
   for(const Geometry::Vec3D& P : Pts)
@@ -339,10 +339,8 @@ Convex2D::rotateVList()
       vc=std::find_if(VList.begin(),VList.end(),
 		      [&P](const Vert2D& V)
 		      { return (V.getV()==P); });
-      if (vc==VList.end())
-	throw ColErr::InContainerError<Geometry::Vec3D>(P,"Not point");
 
-      if (vc->isOnHull())
+      if (vc!=VList.end() && vc->isOnHull())
 	{
 	  std::rotate(VList.begin(),vc,VList.end());
 	  return;
@@ -412,6 +410,7 @@ Convex2D::constructHull()
   calcNormal();
   calcMaxIndex();
   createVertex();
+    
   return;
 }
 

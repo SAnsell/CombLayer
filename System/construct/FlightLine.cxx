@@ -3,7 +3,7 @@
  
  * File:   construct/FlightLine.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -278,7 +278,8 @@ FlightLine::getRotatedDivider(const attachSystem::FixedComp& FC,
     return attachRuleHR;
 
   HeadRule rotHead(FC.getCommonRule(sideIndex));
-  const std::set<int> commonSN(rotHead.getSurfSet());
+  const std::set<int> commonSN=
+    rotHead.getSignedSurfaceNumbers();
 
   for(const int SN : commonSN)
     {
@@ -318,7 +319,7 @@ FlightLine::createCapSurfaces(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("FlightLine","createCapSurfaces");
 
   const HeadRule& MainUnit=FC.getMainRule(sideIndex);
-  const std::vector<int> SurNum(MainUnit.getSurfaceNumbers());
+  const std::set<int> SurNum(MainUnit.getSignedSurfaceNumbers());
   
   int surfN(501+buildIndex);
   int newSurfN;

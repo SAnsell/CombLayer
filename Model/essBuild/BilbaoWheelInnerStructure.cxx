@@ -3,7 +3,7 @@
  
   * File:   essBuild/BilbaoWheelInnerStructure.cxx
   *
-  * Copyright (c) 2004-2019 by Stuart Ansell/Konstain Batkov
+  * Copyright (c) 2004-2023 by Stuart Ansell/Konstain Batkov
   *
   * This program is free software: you can redistribute it and/or modify
   * it under the terms of the GNU General Public License as published by
@@ -263,41 +263,40 @@ BilbaoWheelInnerStructure::createObjects(Simulation& System,
   const int innerMat = MatInfo.first;
   temp = MatInfo.second;
   
-  const std::string vertStr =
-    Wheel.getLinkString(7)+
-    Wheel.getLinkString(8); // top+bottom
-  const std::string cylStr =
-    Wheel.getLinkString(9)+
-    Wheel.getLinkString(10); // min+max radii
+  const HeadRule vertHR =
+    Wheel.getFullRule(7)*
+    Wheel.getFullRule(8); // top+bottom
+  const HeadRule cylHR =
+    Wheel.getFullRule(9)*
+    Wheel.getFullRule(10); // min+max radii
 
 
   int SIsec(buildIndex+0), SI1;
-  std::string Out;
+  HeadRule HR;
   if (nSectors==1)
-    System.addCell(MonteCarlo::Object(cellIndex++,innerMat,temp,vertStr+cylStr)); // same as "Inner" cell from BilbaoWheel
+    System.addCell(cellIndex++,innerMat,temp,vertHR*cylHR); // same as "Inner" cell from BilbaoWheel
   else 
     {
       for (size_t j=0;j<nSectors;j++)
 	{
 	  // Tungsten
 	  SI1 = (j!=nSectors-1) ? SIsec+10 : buildIndex+0;
-	  Out = ModelSupport::getComposite(SMap, SIsec, SI1, " 4 -3M ");
+	  HR=ModelSupport::getHeadRule(SMap,SIsec,SI1,"4 -3M");
 	  if (j>=nBrickSectors)
-	    System.addCell(MonteCarlo::Object(cellIndex++,innerMat,temp,
-					     Out+vertStr+cylStr));
+	    System.addCell(cellIndex++,innerMat,temp,
+			   HR*vertHR*cylHR);
 	  else
 	    {
 	      createBricks(System, Wheel, 
-			   ModelSupport::getComposite(SMap, SIsec," 4 "), 
-			   ModelSupport::getComposite(SMap, SI1, " -3 "), j); // another side plane
+			   HeadRule(SMap,SIsec,4), 
+			   HeadRule(SMap,SI1,-3), j); // another side plane
 	    }
 	    
 	    // Pieces of steel between Tungsten sectors
 	    // -1 is needed since planes 3 and -4 cross Tunsten in two places,
 	    //     so we need to select only one
-	    Out = ModelSupport::getComposite(SMap, SIsec, " 3 -4 -1 ");
-	    System.addCell(MonteCarlo::Object(cellIndex++,secSepMat,
-					     temp,Out+vertStr+cylStr));
+	    HR = ModelSupport::getHeadRule(SMap,SIsec,"3 -4 -1");
+	    System.addCell(cellIndex++,secSepMat,temp,HR*vertHR*cylHR);
 
 	    SIsec+=10;
 	}
@@ -411,7 +410,7 @@ BilbaoWheelInnerStructure::createBrickSurfaces
 }
   
 double
-BilbaoWheelInnerStructure::sideIntersect(const std::string& surf,
+BilbaoWheelInnerStructure::sideIntersect(HeadRule&& HR,
 					 const Geometry::Plane *plSide)
  /*!
    Calculates intersect of a brick (void between bricks) 
@@ -426,7 +425,6 @@ BilbaoWheelInnerStructure::sideIntersect(const std::string& surf,
   std::vector<int> SNum;
   const Geometry::Plane *pz = SMap.realPtr<Geometry::Plane>(buildIndex+5);
   
-  HeadRule HR(surf);
   HR.populateSurf();
   
   Geometry::Vec3D Org = Origin-plSide->getNormal()*plSide->distance(Origin);
@@ -446,8 +444,8 @@ BilbaoWheelInnerStructure::sideIntersect(const std::string& surf,
 void
 BilbaoWheelInnerStructure::createBricks(Simulation& System,
 					const attachSystem::FixedComp& Wheel,
-					const std::string& side1,
-					const std::string& side2,
+					const HeadRule& sideHRA,
+					const HeadRule& sideHRB,
 					const size_t sector)
   /*
     Create cells for bricks in the given sector
@@ -457,26 +455,25 @@ BilbaoWheelInnerStructure::createBricks(Simulation& System,
 {
   ELog::RegMethod RegA("BilbaoWheelInnerStructure","createBricks");
   
+  const Geometry::Plane* plSide1 =
+    SMap.realPtr<Geometry::Plane>(sideHRA.getPrimarySurface());
+  const Geometry::Plane* plSide2 =
+    SMap.realPtr<Geometry::Plane>(sideHRB.getPrimarySurface());
+  // //    const Geometry::Plane *pz =
+  // SMap.realPtr<Geometry::Plane>(buildIndex+5);
+  
+  HeadRule sideHR(sideHRA*sideHRB);
+  const HeadRule vertHR = Wheel.getFullRule(7)*
+    Wheel.getFullRule(8); // top+bottom
+  
+  const HeadRule innerCyl = Wheel.getFullRule(9);
+  const HeadRule outerCyl = Wheel.getFullRule(10);
+  
   HeadRule HR;
-  HR.procString(side1);
-  const Geometry::Plane* plSide1 = SMap.realPtr<Geometry::Plane>(HR.getSurfaceNumbers().front());
-  HR.procString(side2);
-  const Geometry::Plane* plSide2 = SMap.realPtr<Geometry::Plane>(HR.getSurfaceNumbers().front());
-  //    const Geometry::Plane *pz =
-  SMap.realPtr<Geometry::Plane>(buildIndex+5);
-  
-  std::string sideStr = side1 + side2;
-  const std::string vertStr = Wheel.getLinkString(7) +
-    Wheel.getLinkString(8); // top+bottom
-  
-  const std::string innerCyl = Wheel.getLinkString(9);
-  const std::string outerCyl = Wheel.getLinkString(10);
-  
-  std::string Out,Out1;
   int SI(buildIndex+1000*(static_cast<int>(sector+1)));
   // He layer in front of the bricks
-  Out = ModelSupport::getComposite(SMap, SI, " 5 ");
-  System.addCell(MonteCarlo::Object(cellIndex++, brickGapMat, temp, Out+vertStr+outerCyl));
+  HR = HeadRule(SMap,SI,5);
+  System.addCell(cellIndex++,brickGapMat,temp,HR*vertHR*outerCyl);
   
   
   ELog::EM << "TODO: simplification of these multiple IFs needed" << ELog::endCrit;
@@ -487,10 +484,10 @@ BilbaoWheelInnerStructure::createBricks(Simulation& System,
   double dist; // distance b/w two intersection points
 
   // bricks
-  std::string layerStr;
+  HeadRule layerHR;
   for (size_t i=0; i<nBrickLayers; i++)
     {
-      layerStr = ModelSupport::getComposite(SMap, SI, " -5  6 ");
+      layerHR=ModelSupport::getHeadRule(SMap, SI,"-5  6");
       int SJ(buildIndex+1000*(static_cast<int>(sector)+1));
       firstBrick = false;
       lastBrick = false;
@@ -501,67 +498,65 @@ BilbaoWheelInnerStructure::createBricks(Simulation& System,
 	  mat = (i<nBrickLayers-nSteelLayers) ? brickMat : brickSteelMat;
 	  
 	  // brick
-	  Out1 = ModelSupport::getComposite(SMap, bOffset, " 1 -2 ");
-	  dist = sideIntersect(Out1+layerStr, plSide1);
+	  HR = ModelSupport::getHeadRule(SMap, bOffset,"1 -2");
+	  dist = sideIntersect(HR*layerHR,plSide1);
 	  if (dist>Geometry::zeroTol)
 	    {
 	      firstBrick = true;
 	      if (dist>=brickLen) // side plane of the brick is not intersected
-		Out1 = ModelSupport::getComposite(SMap, bOffset, " -2 ");
-	      sideStr = side1;
+		HR= HeadRule(SMap,bOffset,-2);
+	      sideHR = sideHRA;
 	      mat = brickSteelMat;
 	    }
 	  else 
 	    {
-	      dist = sideIntersect(Out1+layerStr, plSide2);
+	      dist = sideIntersect(HR*layerHR,plSide2);
 	      if (dist>Geometry::zeroTol)
 		{
 		  lastBrick = true;
-		  Out1 = ModelSupport::getComposite(SMap, bOffset, " 1 ");
-		  sideStr = side2;
+		  HR = HeadRule(SMap,bOffset,1);
+		  sideHR = sideHRB;
 		  mat = brickSteelMat;
 		}
 	      else
 		{
-		  sideStr = "";
+		  sideHR.reset();
 		}
 	    }
 	  
 	  if (firstBrick)
-	    System.addCell(MonteCarlo::Object(cellIndex++,
-					     mat, temp,
-					     Out1+layerStr+vertStr+sideStr));  // !!! sideStr is tmp
+	    System.addCell(cellIndex++,mat, temp,
+			   HR*layerHR*vertHR*sideHR);  // !!! sideStr is tmp
 	  if (lastBrick) break;
 	  
 	  // gap
-	  mat = brickGapMat;
-	  Out1 = ModelSupport::getComposite(SMap, bOffset, bOffset+20, " 2 -1M ");
-	  dist = sideIntersect(Out1+layerStr, plSide1);
+	  mat=brickGapMat;
+	  HR=ModelSupport::getHeadRule(SMap,bOffset,bOffset+20,"2 -1M");
+	  dist = sideIntersect(HR*layerHR,plSide1);
 	  if (dist>Geometry::zeroTol) 
 	    {
 	      firstBrick = true;
 	      if (dist>=brickLen) // side plane of the brick is not intersected
-		Out1 = ModelSupport::getComposite(SMap, bOffset+20, " -1M ");
-	      sideStr = side1;
-	      mat = brickSteelMat;
+		HR = HeadRule(SMap,bOffset+20,-1);
+	      sideHR = sideHRA;
+	      mat=brickSteelMat;
 	    }
           else
 	    {
-	      dist = sideIntersect(Out1+layerStr, plSide2);
+	      dist = sideIntersect(HR*layerHR,plSide2);
 	      if (dist>Geometry::zeroTol)
 		{
 		  lastBrick = true;
-		  Out1 = ModelSupport::getComposite(SMap, bOffset, " 2 ");
-		  sideStr = side2;
-		  mat = brickSteelMat;
+		  HR=HeadRule(SMap,bOffset,2);
+		  sideHR = sideHRB;
+		  mat=brickSteelMat;
 		}
               else
-                sideStr = "";
+                sideHR.reset();
 	    }
 	  
 	  if (firstBrick)
-	    System.addCell(MonteCarlo::Object(cellIndex++, mat, temp,
-					     Out1+layerStr+vertStr+sideStr));
+	    System.addCell(cellIndex++,mat,temp,HR*layerHR*vertHR+sideHR);
 	  
 	  if (lastBrick) break;
 	  
@@ -569,11 +564,10 @@ BilbaoWheelInnerStructure::createBricks(Simulation& System,
 	}
       
       if (i==nBrickLayers-1) 
-	Out = ModelSupport::getComposite(SMap, SI, SI+10, " -6  ") + innerCyl;
+	HR=HeadRule(SMap,SI,-6)*innerCyl;
       else
-	Out = ModelSupport::getComposite(SMap, SI, SI+10, " -6 5M ");
-      System.addCell(MonteCarlo::Object(cellIndex++, brickGapMat, temp, Out+vertStr+side1+side2));
-      
+	HR=ModelSupport::getHeadRule(SMap,SI,SI+10,"-6 5M");
+      System.addCell(cellIndex++,brickGapMat,temp,HR*vertHR*sideHRA*sideHRB);
       SI += 10;
     }
   return;

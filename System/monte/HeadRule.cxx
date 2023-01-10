@@ -1046,17 +1046,6 @@ HeadRule::isolateSurfNum(const std::set<int>& SN)
   return;
 }
 
-std::set<int>
-HeadRule::getSurfSet() const
-  /*!
-    Get the set of surfaces  [signed]
-    \return surf set
-  */
-{
-  ELog::RegMethod RegA("HeadRule","getSurfSet");
-  return (HeadNode) ? HeadNode->getSurfSet() : std::set<int>();
-}
-
 std::set<const Geometry::Surface*>
 HeadRule::getOppositeSurfaces() const
   /*!
@@ -1225,14 +1214,16 @@ std::set<int>
 HeadRule::getSurfaceNumbers() const
   /*!
     Calculate the surfaces that are within the object
-    \return Set of surface
+    
+    \return Set of surface [unsigned]
   */
 {
   ELog::RegMethod RegA("HeadRule","getSurfaceNumbers");
+
   std::set<int> Out;
-  const SurfPoint* SP;
   if (!HeadNode) return Out;
 
+  const SurfPoint* SP;
   const Rule *headPtr,*leafA,*leafB;       
   // Parent : left/right : Child
 
@@ -1433,7 +1424,7 @@ HeadRule::removeOuterPlane(const Geometry::Vec3D& LOrig,
 
   const Geometry::Line ATrack(LOrig,LAxis);
 
-  const std::set<int> allSurf=getSurfSet();
+  const std::set<int> allSurf=getSignedSurfaceNumbers();
   double maxDist(Geometry::zeroTol);
   int SN(0);
   for(const int SNum : allSurf)
@@ -1568,7 +1559,7 @@ HeadRule::findAxisPlanes(const Geometry::Vec3D& Axis,
   if (!HeadNode) return activePlane;
 
   populateSurf();
-  const std::set<int> allSurf=getSurfSet();
+  const std::set<int> allSurf=getSignedSurfaceNumbers();
 
 
   for(const int SNum : allSurf)

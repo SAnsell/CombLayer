@@ -3,7 +3,7 @@
  
  * File:   test/testHeadRule.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1041,10 +1041,10 @@ testHeadRule::testSurfSet()
   int cnt(1);
   for(const TTYPE& tc : Tests)
     {
-      A.procString(std::get<0>(tc));
-      B.procString(std::get<1>(tc));
-      C.procString(std::get<2>(tc));
-      std::set<int> SN=B.getSurfSet();
+      HeadRule A(std::get<0>(tc));
+      HeadRule B(std::get<1>(tc));
+      HeadRule C(std::get<2>(tc));
+      std::set<int> SN=B.getSignedSurfaceNumbers();
       // remove all items in SN that are in A
       A.isolateSurfNum(SN);
       

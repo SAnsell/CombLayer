@@ -3,7 +3,7 @@
 
  * File:   commonBeam/UTubePipe.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "surfRegister.h"
@@ -215,13 +214,13 @@ UTubePipe::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -107 -3 7 ");
   makeCell("FrontFlange",System,cellIndex++,feMat,0.0,HR*frontHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -107 4 8 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -107 4 8");
   makeCell("FrontFlange",System,cellIndex++,feMat,0.0,HR*frontHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -107 3 -4 -5 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -107 3 -4 -5");
   makeCell("FrontFlange",System,cellIndex++,feMat,0.0,HR*frontHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -107 3 -4 6 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -107 3 -4 6");
   makeCell("FrontFlange",System,cellIndex++,feMat,0.0,HR*frontHR);
 
   // FLANGE Back:
@@ -229,23 +228,17 @@ UTubePipe::createObjects(Simulation& System)
   //   (SMap,buildIndex,"12 -207 ((7 -3) : (8 4) : -5 : 6)");
   // makeCell("BackFlange",System,cellIndex++,feMat,0.0,HR*backHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -207 -3 7 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -207 -3 7");
   makeCell("BackFlange",System,cellIndex++,feMat,0.0,HR*backHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -207 4 8 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -207 4 8");
   makeCell("BackFlange",System,cellIndex++,feMat,0.0,HR*backHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -207 3 -4 -5 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -207 3 -4 -5");
   makeCell("BackFlange",System,cellIndex++,feMat,0.0,HR*backHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -207 3 -4 6 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -207 3 -4 6");
   makeCell("BackFlange",System,cellIndex++,feMat,0.0,HR*backHR);
-
-
-
-
-
-
 
   // outer boundary [flange front/back]
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -11 -107 ");

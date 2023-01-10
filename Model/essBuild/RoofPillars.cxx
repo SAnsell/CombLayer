@@ -3,7 +3,7 @@
  
  * File:   essBuild/RoofPillars.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -422,7 +422,8 @@ RoofPillars::createSurfaces()
   if (topFootHeight>Geometry::zeroTol)
     {
       int RI(buildIndex);
-      const std::set<int> FS= FrontBackCut::getBackRule().getSurfSet();
+      const std::set<int> FS= FrontBackCut::getBackRule().
+	getSignedSurfaceNumbers();
       int footIndex(RI);  // in case multiple surfaces
       for(const int& SNum : FS)
         {
