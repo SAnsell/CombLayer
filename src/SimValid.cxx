@@ -172,6 +172,7 @@ SimValid::checkPoint(const Geometry::Vec3D& TP,
       
       if (foundSet.size()!=1)
 	{
+	  ELog::EM<<"Flag -- :"<<surfState[CylN]<<" "<<surfState[PlnN]<<ELog::endDiag;
 	  for(const MonteCarlo::Object* fObj : foundSet)
 	    ELog::EM<<" ---> Active["<<fObj->getName()<<"] \n";
 	  return 0;
@@ -266,6 +267,9 @@ SimValid::calcTouch(const Simulation& System) const
 		  {
 		    const std::set<int>& BSet=
 		      BOPtr->getSurfSet();
+		    for(const int SN : BSet)
+		      ELog::EM<<" "<<SN;
+		    ELog::EM<<ELog::endDiag;
 		    const bool flagA=BSet.find(CylN)!=BSet.end();
 		    const bool flagB=BSet.find(PlnN)!=BSet.end();
 		    if (flagA | flagB)
@@ -275,15 +279,17 @@ SimValid::calcTouch(const Simulation& System) const
 		bool outFlag(0);   
 		size_t indexA(0),indexB(0),indexC(0);
 		ELog::EM<<"Index == "<<cn<<ELog::endDiag;
+		if (cn==2000001)
+		  for(const auto* BPtr : checkObj)
+		    ELog::EM<<"BPtr- "<<BPtr->getName()<<ELog::endDiag;
 		while(!outFlag && nextPoint(TPts,indexA,indexB,indexC,testPt))
 		  {
-
-
 		    if (!checkPoint(testPt,checkObj,CylN,PlnN))
 		      {
-			ELog::EM<<"TN == "<<TPts.size()<<" "<<testPt<<ELog::endDiag;
+			ELog::EM<<"TN == "<<TPts.size()<<" :: "<<testPt<<ELog::endDiag;
 			ELog::EM<<"Objects -> Primary["<<OPtr->getName()<<"] \n"<<ELog::endCrit;
 			ELog::EM<<"        -> Primary "<<*OPtr;
+			ELog::EM<<"        -> Valid "<<OPtr->getHeadRule().display(testPt)<<ELog::endDiag;
 			ELog::EM<<"        -> Cyl "<<*CPtr;
 			ELog::EM<<"        -> Pln "<<*PPtr;
 			ELog::EM<<"        ---------- "<<ELog::endDiag;

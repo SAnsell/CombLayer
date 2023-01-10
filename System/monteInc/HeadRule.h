@@ -148,7 +148,7 @@ class HeadRule
   const Geometry::Surface* primarySurface() const;
   std::set<const Geometry::Surface*> getSurfaces() const;
   std::set<int> getSignedSurfaceNumbers() const;
-  std::vector<int> getSurfaceNumbers() const;
+  std::set<int> getSurfaceNumbers() const;
   std::vector<int> getTopSurfaces() const;
   int getPrimarySurface() const;
 

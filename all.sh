@@ -4,8 +4,8 @@
 nValid=1000
 
 #./maxiv --defaultConfig Single SOFTIMAX AA 
-#./maxiv --defaultConfig Single SOFTIMAX --validRandom 190  --validCheck $nValid AA || exit
-#exit
+./maxiv --defaultConfig Single SOFTIMAX --validRandom 190  --validCheck $nValid AA || exit
+exit
 #segments=$(for i in {40..49}; do echo -n "Segment$i "; done)
 segments=All
 

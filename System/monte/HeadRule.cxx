@@ -1221,7 +1221,7 @@ HeadRule::getSignedSurfaceNumbers() const
   return surfSet;
 }
 
-std::vector<int>
+std::set<int>
 HeadRule::getSurfaceNumbers() const
   /*!
     Calculate the surfaces that are within the object
@@ -1229,7 +1229,7 @@ HeadRule::getSurfaceNumbers() const
   */
 {
   ELog::RegMethod RegA("HeadRule","getSurfaceNumbers");
-  std::vector<int> Out;
+  std::set<int> Out;
   const SurfPoint* SP;
   if (!HeadNode) return Out;
 
@@ -1256,7 +1256,7 @@ HeadRule::getSurfaceNumbers() const
 	{
 	  SP=dynamic_cast<const SurfPoint*>(headPtr);
 	  if (SP)
-	    Out.push_back(SP->getKeyN());
+	    Out.emplace(SP->getKeyN());
 	}
     }
   return Out;
