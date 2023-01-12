@@ -3,7 +3,7 @@
  
  * File:   scatMatInc/photonMaterial.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,8 @@ namespace scatterSystem
     \todo This class needs to have a base class.
   */
   
-class photonMaterial
+class photonMaterial :
+    public MonteCarlo::Material
 {
  private:
 
@@ -60,10 +61,10 @@ class photonMaterial
  public:
   
   photonMaterial();
+  photonMaterial(const double,MonteCarlo::Material*);
   photonMaterial(const photonMaterial&);
   photonMaterial& operator=(const photonMaterial&);
   virtual ~photonMaterial();
-
   
   virtual void write(std::ostream&) const;
 
