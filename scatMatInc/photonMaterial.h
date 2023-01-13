@@ -63,6 +63,7 @@ class photonMaterial :
   photonMaterial();
   photonMaterial(const double,MonteCarlo::Material*);
   photonMaterial(const photonMaterial&);
+  virtual photonMaterial* clone() const;
   photonMaterial& operator=(const photonMaterial&);
   virtual ~photonMaterial();
   
