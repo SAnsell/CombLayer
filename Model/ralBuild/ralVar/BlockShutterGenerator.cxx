@@ -3,7 +3,7 @@
 
  * File:   ralVar/BlockShutterGenerator.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,23 +53,14 @@ BlockShutterGenerator::BlockShutterGenerator() :
   shutterFStep(3.8/2.0),
   shutterLen(196.2),
   colletHGap(0.6),colletVGap(0.6),colletFGap(0.6),
+  steelOffset(0.5),steelAWidth(1.0),steelBWidth(3.0),
   b4cThick(0.635),b4cSpace(0.2),
-  steelOffset(0.5),steelAWidth(1.0),
-  steelBWidth(3.0),
   colletMat("CastIron"),b4cMat("B4C"),
   steelMat("Stainless304")
-
   /*!
     Constructor and defaults
   */
 {}
-
-BlockShutterGenerator::~BlockShutterGenerator()
- /*!
-   Destructor
- */
-{}
-
 
 void
 BlockShutterGenerator::generateBox
@@ -96,7 +87,6 @@ BlockShutterGenerator::generateBox
   ELog::RegMethod RegA("BlockShutterGenerator","generatorBox");
 
   const std::string fullName(keyName+"Shutter");
-  
   
   Control.addVariable(fullName+"ColletHGap",colletHGap);
   Control.addVariable(fullName+"ColletVGap",colletVGap);

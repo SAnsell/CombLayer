@@ -3,7 +3,7 @@
  
  * File:   test/testSurfExpand.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -148,7 +148,6 @@ testSurfExpand::testPlane()
   Tests.push_back(TTYPE("pz 12.0","pz 22.0",10.0));
   Tests.push_back(TTYPE("p -1 0 0 1","p -1 0 0 11",10.0));
   
-  std::vector<TTYPE>::const_iterator tc;
   int flag(0);
 
   for(const TTYPE& tc : Tests)

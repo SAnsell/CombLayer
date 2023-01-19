@@ -3,7 +3,7 @@
  
  * File:   test/testSurfExpand.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -135,8 +135,6 @@ testGenerateSurf::testExpandedSurf()
       TTYPE("p -1 0 0 1","p -1 0 0 11",Geometry::Vec3D(0,0,0),10.0)
     };
   
-  std::vector<TTYPE>::const_iterator tc;
-
   surfRegister SMap;
   int surfN=2;
   for(const TTYPE& tc : Tests)
@@ -202,8 +200,6 @@ testGenerateSurf::testPlane()
       TTYPE("p -1 0 0 1","p -1 0 0 11",10.0)
     };
   
-  std::vector<TTYPE>::const_iterator tc;
-
   surfRegister SMap;
   int surfN=2;
   for(const TTYPE& tc : Tests)

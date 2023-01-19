@@ -3,7 +3,7 @@
  
  * File:   geometry/General.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ General::General() : Quadratic()
     Standard Constructor
   */
 {
-  setBaseEqn();
+  General::setBaseEqn();
 }
 
 General::General(const int N,const int T) : 
@@ -75,7 +75,7 @@ General::General(const int N,const int T) :
   */
 {
   // Called after it has been sized by Quadratic
-  setBaseEqn();
+  General::setBaseEqn();
 }
 
 

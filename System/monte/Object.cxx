@@ -3,7 +3,7 @@
  
  * File:   monte/Object.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -356,7 +356,7 @@ Object::complementaryObject(const int Cnum,std::string& Ln)
     throw ColErr::InvalidLine(Ln,"Bracket find",posA);
 
   brackCnt=(Ln[posB] == '(') ? 1 : 0;
-  while (posB!=std::string::npos && brackCnt)
+  while (brackCnt)
     {
       posB=Ln.find_first_of("()",posB);
       if (posB==std::string::npos)
@@ -369,7 +369,7 @@ Object::complementaryObject(const int Cnum,std::string& Ln)
 
   ObjName=Cnum;
   if (!HRule.procString(Part))
-    throw ColErr::InvalidLine(0,Part);
+    throw ColErr::InvalidLine(Part,"HRule::procString");
 
   surfSet.clear();
   surNameSet.clear();

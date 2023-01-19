@@ -3,7 +3,7 @@
  
  * File: balder/balderOpticsLine.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -388,7 +388,7 @@ balderOpticsLine::buildObjects(Simulation& System)
   beamStop->addInsertCell(driftC->getCell("Void"));
   beamStop->createAll(System,*driftC,0);
 
-  outerCell=constructSystem::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,*driftC,"back",*slitsA);
   
   //  shieldPipe->addAllInsertCell(masterCell->getName());

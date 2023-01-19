@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/defaultConfig.cxx
+ * File:   modelSupport/defaultConfig.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -186,10 +186,10 @@ defaultConfig::process(FuncDataBase& Control,
     Control.addVariable(vc->first,vc->second);
 
   // Option flags
-  for(const std::pair<std::string,std::string>& FItem : flagName)
+  for(const auto& [aStr, bStr] : flagName)
     {
-      if(!IParam.flag(FItem.first))
-	IParam.setValue(FItem.first,FItem.second);
+      if(!IParam.flag(aStr))
+	IParam.setValue(aStr,bStr);
     }
 
 
@@ -203,8 +203,8 @@ defaultConfig::process(FuncDataBase& Control,
 	}
     }
   // Set active flags:
-  for(const std::pair<std::string,std::string>& FItem : flagName)
-    IParam.setFlag(FItem.first);
+  for(const auto& [aStr, bStr] : flagName)
+    IParam.setFlag(aStr);
   for(const TTYPE& TI : multiSet)
     IParam.setFlag(std::get<0>(TI));
   return;

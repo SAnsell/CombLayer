@@ -3,7 +3,7 @@
  
  * File:   xml/XMLnamespace.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,8 +29,6 @@
 #include <set>
 #include <map>
 #include <stack>
-#include <sys/stat.h>
-#include <time.h>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -125,7 +123,6 @@ procKey(const std::string& Line)
   
   std::vector<std::string> Out=getUnits(Line);
 
-  std::vector<std::string>::const_iterator vc;
   if (Out.empty())
     return retType(0,"");
   if (Out.size()==1)
@@ -315,11 +312,9 @@ matchSubGrp(XMLload& IFile,const std::string& subGrp,const std::string& Value)
 	  std::string Group;
 	  while(IFile.get(c) && isspace(c)) ;
 	  Group+=c;
-	  int cnt(0);
 	  while(IFile.get(c) && !isspace(c) && c!='>')
 	    {
 	      Group+=c;
-	      cnt++;
 	    }
 	  // Explore group :
 	  if (!Group.empty() && Group[0]!='/' && Group[Group.size()-1]!='/')
@@ -461,6 +456,7 @@ splitObjGroup(XMLobject* AR,
   */
 {
   ELog::RegMethod RegA("XMLnamespace","splitObjGroup");
+
   XML::XMLgroup* AG;
   if ( (AG=dynamic_cast<XML::XMLgroup*>(AR)) )
     {
@@ -471,7 +467,7 @@ splitObjGroup(XMLobject* AR,
 	  Body.push_back((*SK)->getComponent());
 	} while(SK++);
     }
-  else
+  else if (AR)
     {
       Keys.push_back("");
       Body.push_back(AR->getItem<std::string>());

@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   constructVarInc/BlockShutterGenerator.h
+ * File:   ralVarInc/BlockShutterGenerator.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,7 @@ class BlockShutterGenerator
   BlockShutterGenerator();
   BlockShutterGenerator(const BlockShutterGenerator&);
   BlockShutterGenerator& operator=(const BlockShutterGenerator&);
-  ~BlockShutterGenerator();
+  ~BlockShutterGenerator() =default;
 
   void generateBox(FuncDataBase&,const std::string&,
 		   const double,const double,

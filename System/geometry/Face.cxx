@@ -3,7 +3,7 @@
  
  * File:   geometry/Face.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -556,7 +556,7 @@ Face::intersect(const Face& A) const
       return colinearIntersect(A); 
     }
   
-  if (A.calcTriGrpCase(*this,GB)<0) return 0;
+  if (A.calcTriGrpCase(*this,GB)<=0) return 0;
 
   const int OA=orientation(*GA.sMin,*GA.tMin,*GB.sMin,*GB.tMin);
   const int OB=orientation(*GA.sMax,*GA.tMax,*GB.tMax,*GB.sMax);

@@ -3,7 +3,7 @@
  
  * File:   ralBuild/collInsert.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -234,7 +234,7 @@ collInsert::createObjects(Simulation& System)
     ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 15 -16");
   // mid divider
   const HeadRule midHR=
-    HeadRule(SMap,buildIndex+100*(1+nB4C/2),1);
+    HeadRule(SMap,buildIndex+100*(1+static_cast<int>(nB4C)/2),1);
 
   HeadRule HR;
   // front space

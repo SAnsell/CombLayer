@@ -3,7 +3,7 @@
 
  * File: Linac/Segment12.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -170,7 +170,7 @@ Segment12::buildObjects(Simulation& System)
 
   pipeTerminateGroup(System,*buildZone,beamA,"exit",
    		     {"Box","Main","Exit","FlangeE"});
-  outerCell = buildZone->createUnit(System,*beamA,"exit");
+  buildZone->createUnit(System,*beamA,"exit");
   /////////////
 
   bellowLA->setCutSurf("front",*beamA,"exit");

@@ -3,7 +3,7 @@
  
  * File:   source/RectangleSource.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -322,7 +322,7 @@ RectangleSource::writeFLUKA(std::ostream& OX) const
 
   // can be two for an energy range not more
   const size_t NE=Energy.size();
-  if (NE!=1 || NE!=2)
+  if (NE!=1 && NE!=2)
     throw ColErr::SizeError<size_t>
       (NE,2,"Energy only single point or range [2 points]");
 

@@ -3,7 +3,7 @@
  
  * File:   essBuild/EssModBase.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,6 +59,7 @@ EssModBase::EssModBase(const std::string& Key,const size_t nLinks)  :
   attachSystem::FixedRotate(Key,nLinks),
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0,0),
+  attachSystem::ExternalCut(),
   attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -71,6 +72,7 @@ EssModBase::EssModBase(const EssModBase& A) :
   attachSystem::FixedRotate(A),
   attachSystem::ContainedComp(A),
   attachSystem::LayerComp(A),
+  attachSystem::ExternalCut(A),
   attachSystem::CellMap(A)
   /*!
     Copy constructor
@@ -91,6 +93,7 @@ EssModBase::operator=(const EssModBase& A)
       attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       attachSystem::CellMap::operator=(A);
     }
   return *this;

@@ -3,7 +3,7 @@
  
  * File:   work/WorkData.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -764,8 +764,8 @@ WorkData::rebin(const double xMin,const double xMax)
       if (i>1)
 	{
 	  i--;
-	  Yvec.erase(Yvec.begin(),Yvec.begin()+i);
-	  XCoord.erase(XCoord.begin(),XCoord.begin()+i);
+	  Yvec.erase(Yvec.begin(),Yvec.begin()+static_cast<long int>(i));
+	  XCoord.erase(XCoord.begin(),XCoord.begin()+static_cast<long int>(i));
 	}
       const double frac=(XCoord[1]-xMin)/(XCoord[1]-XCoord[0]);
       XCoord[0]=xMin;
@@ -780,8 +780,8 @@ WorkData::rebin(const double xMin,const double xMax)
       i++;
       if (i<XSize)
 	{
-	  Yvec.erase(Yvec.begin()+i+1,Yvec.end());
-	  XCoord.erase(XCoord.begin()+i+1,XCoord.end());
+	  Yvec.erase(Yvec.begin()+static_cast<long int>(i+1),Yvec.end());
+	  XCoord.erase(XCoord.begin()+static_cast<long int>(i+1),XCoord.end());
 	}
 
       const double frac=(xMax-XCoord[i-1])/(XCoord[i]-XCoord[i-1]);

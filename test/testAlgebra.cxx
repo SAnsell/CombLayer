@@ -3,7 +3,7 @@
  
  * File:   test/testAlgebra.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -176,7 +176,7 @@ testAlgebra::testCountLiterals()
 
   Algebra A;
   A.setFunction("a'bcd+a(cd+ff(x+y+z))");
-  int NLiteral=A.countLiterals();
+  const size_t NLiteral=A.countLiterals();
   if (NLiteral!=9)
     {
       ELog::EM<<"Error with number of literals(9):"

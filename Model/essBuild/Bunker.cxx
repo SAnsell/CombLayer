@@ -3,7 +3,7 @@
  
  * File:   essBuild/Bunker.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -303,14 +303,12 @@ Bunker::createSurfaces()
 
   int divIndex(buildIndex+1001);
 
-  double phase(leftPhase);
   const double phaseStep((rightPhase-leftPhase)/static_cast<double>(nSectors));
 
   SMap.addMatch(divIndex,SMap.realSurf(buildIndex+3));
   for(size_t i=1;i<nSectors;i++)
     {
       divIndex++;
-      phase+=phaseStep;  //Y
       const double F= (sectPhase[i]-leftPhase)/phaseDiff;
       const double angle= leftAngle+F*angleDiff;
             

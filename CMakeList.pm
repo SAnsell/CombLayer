@@ -291,7 +291,7 @@ sub setParameters
 	  $self->{optimise}.=" -pg " if ($Ostr eq "-p"); ## Gprof
 	  $self->{gcov}=1 if ($Ostr eq "-C");
 	  $self->{gtk}=1 if ($Ostr eq "-gtk");
-	  $self->{debug}="" if ($Ostr eq "-g");
+	  $self->{debug}="-g" if ($Ostr eq "-g");
 	  $self->{bcomp}=$1 if ($Ostr=~/-gcc=(.*)/);
 	  $self->{ccomp}=$1 if ($Ostr=~/-g\+\+=(.*)/);
 	  $self->{cxx11}="" if ($Ostr=~/-std/);

@@ -3,7 +3,7 @@
  
  * File:   construct/Window.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,8 +59,7 @@
 #include "ContainedComp.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "pairBase.h"
-#include "pairFactory.h"
+#include "surfDBase.h"
 #include "particle.h"
 #include "eTrack.h"
 #include "Window.h"
@@ -209,17 +208,14 @@ Window::createSurfaces()
   
   if (nLayers>1)
     {
-      ModelSupport::pairBase* pBase=
-	ModelSupport::pairFactory::createPair(FSurf,BSurf);
-      
       int divSurf(buildIndex+11);
       for(size_t i=0;i<nLayers-1;i++)
 	{
-	  const int sNum=pBase->
-	    createSurface(layerThick[i],divSurf++);
-	  layerSurf.push_back(sNum);
+	  ModelSupport::surfDBase::generalSurf
+	    (FSurf,BSurf,layerThick[i],divSurf);
+	  
+	  layerSurf.push_back(SMap.realSurf(divSurf));
 	}
-      delete pBase;
     }
   return;
 }

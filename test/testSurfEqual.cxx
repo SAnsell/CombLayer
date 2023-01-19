@@ -3,7 +3,7 @@
  
  * File:   test/testSurfEqual.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -188,7 +188,6 @@ testSurfEqual::testEqualSurfNum()
   Tests.push_back(TTYPE(1,1));
   Tests.push_back(TTYPE(11,11));
 
-  std::vector<TTYPE>::const_iterator tc;
   for(const TTYPE& tc : Tests)
     {
       const Geometry::Surface* SA=SurI.getSurf(std::get<0>(tc));
