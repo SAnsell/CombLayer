@@ -3,7 +3,7 @@
  
  * File:   vor/DHut.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -237,12 +237,12 @@ DHut::createLinks()
       setConnect(index+4,Origin-Z*(T+voidDepth),-Z);
       setConnect(index+5,Origin+Z*(T+voidHeight),Z);  
       
-      setLinkSurf(index,-SMap.realSurf(buildIndex+1));
-      setLinkSurf(index+1,SMap.realSurf(buildIndex+2));
-      setLinkSurf(index+2,-SMap.realSurf(buildIndex+3));
-      setLinkSurf(index+3,SMap.realSurf(buildIndex+4));
-      setLinkSurf(index+4,-SMap.realSurf(buildIndex+5));
-      setLinkSurf(index+5,SMap.realSurf(buildIndex+6));
+      setLinkSurf(index,-SMap.realSurf(BI+1));
+      setLinkSurf(index+1,SMap.realSurf(BI+2));
+      setLinkSurf(index+2,-SMap.realSurf(BI+3));
+      setLinkSurf(index+3,SMap.realSurf(BI+4));
+      setLinkSurf(index+4,-SMap.realSurf(BI+5));
+      setLinkSurf(index+5,SMap.realSurf(BI+6));
       BI+=100;
       index+=6;
     }

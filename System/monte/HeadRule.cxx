@@ -3,7 +3,7 @@
  
  * File:   monte/HeadRule.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -2330,7 +2330,7 @@ HeadRule::createAddition(const int InterFlag,const Rule* NRptr)
 
   // This is an intersection and we want to add our rule at the base
   // Find first item that is not an intersection
-  Rule* RPtr(HeadNode);
+  Rule* RPtr;
   std::deque<Rule*> curLevel;
   curLevel.push_back(HeadNode);
   while(!curLevel.empty())
@@ -2756,13 +2756,12 @@ HeadRule::trackSurf(const Geometry::Vec3D& Org,
   ELog::RegMethod RegA("HeadRule","trackSurf(O,u,{set}");
   
   Geometry::Vec3D Pt(Org);
-  double D(0.0);
+
   auto [SN,DD]=trackSurfDistance(Pt,Unit);
   while (SN && activeSurf.find(SN)!=activeSurf.end())
     {
       Pt+=Unit*DD;
       std::tie(SN,DD)=trackSurfDistance(Pt,Unit);
-      D+=DD;
     }
   return SN;
 }

@@ -3,7 +3,7 @@
 
  * File: Linac/Segment35.cxx
  *
- * Copyright (c) 2004-2022 by Konstantin Batkov
+ * Copyright (c) 2004-2023 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -176,8 +176,9 @@ Segment35::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*buildZone,*mirrorChamber,"back",*pipeC);
 
-  outerCell=constructSystem::constructUnit
+  constructSystem::constructUnit
     (System,*buildZone,*pipeC,"back",*bellow);
+  
   return;
 }
 

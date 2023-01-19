@@ -3,7 +3,7 @@
  
  * File:   t2Build/Decoupled.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -376,7 +376,7 @@ Decoupled::getSurfacePoint(const size_t layerIndex,
 
   if (SI>5) 
     throw ColErr::IndexError<long int>(sideIndex,5,"sideIndex");
-  if (layerIndex>2) 
+  if (layerIndex>=2) 
     throw ColErr::IndexError<size_t>(layerIndex,2,"layer");
 
   

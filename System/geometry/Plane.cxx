@@ -257,7 +257,7 @@ Plane::setSurface(const std::string& Pstr)
   else
     return -3;       // WRONG NAME
 
-  setBaseEqn();
+  Plane::setBaseEqn();
   return 0;
 }
 
@@ -272,7 +272,7 @@ Plane::setPlane(const Geometry::Vec3D& P,const Geometry::Vec3D& N)
 {
   NormV=N.unit();
   Dist=P.dotProd(NormV);
-  setBaseEqn();
+  Plane::setBaseEqn();
   return 0;
 }
 
@@ -293,7 +293,7 @@ Plane::setPlane(const Geometry::Vec3D& PA,const Geometry::Vec3D& PB,
   NormV=LA*LB;
   NormV.makeUnit();
   Dist=PA.dotProd(NormV);
-  setBaseEqn();
+  Plane::setBaseEqn();
   return 0;
 }
 

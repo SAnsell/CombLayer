@@ -3,7 +3,7 @@
  
  * File:   moderator/PreMod.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Vec3D.h"
+#include "Exception.h"
 #include "Surface.h"
 #include "surfRegister.h"
 #include "Quadratic.h"
@@ -210,7 +211,7 @@ PreMod::createSurfaces(const attachSystem::FixedComp& FC,
 
   if (SMap.realSurf(buildIndex+5)<0)
     {
-      SX=ModelSupport::surfaceCreateExpand
+      ModelSupport::surfaceCreateExpand
 	(SMap.realSurfPtr(buildIndex+5),-alThickness);
       PX=dynamic_cast<Geometry::Plane*>(SX);
       if (PX)
@@ -219,6 +220,10 @@ PreMod::createSurfaces(const attachSystem::FixedComp& FC,
   else
     SX=ModelSupport::surfaceCreateExpand
       (SMap.realSurfPtr(buildIndex+5),alThickness);
+
+  if (!SX)
+    throw ColErr::CommandError
+      ("Expand Surface:5",FC.getLinkString(baseIndex));
 
   SX->setName(buildIndex+15);
   SMap.registerSurf(buildIndex+15,SX);
@@ -236,6 +241,10 @@ PreMod::createSurfaces(const attachSystem::FixedComp& FC,
     SX=ModelSupport::surfaceCreateExpand
       (SMap.realSurfPtr(buildIndex+1),alThickness);
 
+  if (!SX)
+    throw ColErr::CommandError
+      ("Expand Surface:1",std::to_string(divideSurf));
+  
   SX->setName(buildIndex+11);
   SMap.registerSurf(buildIndex+11,SX);
 
