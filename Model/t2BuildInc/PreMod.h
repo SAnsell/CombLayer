@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   moderatorInc/PreMod.h
+ * File:   t2BuildInc/PreMod.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,8 +36,9 @@ namespace moderatorSystem
 */
 
 class PreMod :
+    public attachSystem::FixedRotate,
     public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::ExternalCut
 {
  private:
 
@@ -58,12 +59,7 @@ class PreMod :
   bool rFlag;               ///< Rotation needed
   
   void populate(const FuncDataBase&);
-
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int,const long int);
-
-
-  void createSurfaces(const attachSystem::FixedComp&,const long int);
+  void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
   
@@ -77,11 +73,13 @@ class PreMod :
   void setEdge() { centOrgFlag=0; }  ///< Set Edge Origin
   void setCent() { centOrgFlag=1; }  ///< Set Centre Origin
   /// Setter 
-  void setTargetSurf(const int SN) { targetSurf=SN; }  
+  //  void setTargetSurf(const int SN) { targetSurf=SN; }  
   /// Setter 
-  void setDivideSurf(const int SN) { divideSurf=SN; }
+  //  void setDivideSurf(const int SN) { divideSurf=SN; }
 
   void setRotate() { rFlag=1; }
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

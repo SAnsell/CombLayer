@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   moderator/PreMod.cxx
+ * File:   t2Build/PreMod.cxx
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
  *
@@ -60,16 +60,21 @@
 #include "surfExpand.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "PreMod.h"
 
 namespace moderatorSystem
 {
 
 PreMod::PreMod(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
+  attachSystem::FixedRotate(Key,6),
+  attachSystem::ContainedComp(),
+  attachSystem::ExternalCut(),
   centOrgFlag(1),
-  divideSurf(0),targetSurf(0),rFlag(0)
+  divideSurf(0),targetSurf(0),
+  rFlag(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -77,7 +82,9 @@ PreMod::PreMod(const std::string& Key)  :
 {}
 
 PreMod::PreMod(const PreMod& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::ExternalCut(A),
   centOrgFlag(A.centOrgFlag),width(A.width),height(A.height),
   depth(A.depth),alThickness(A.alThickness),modTemp(A.modTemp),
   modMat(A.modMat),alMat(A.alMat),divideSurf(A.divideSurf),
@@ -98,8 +105,9 @@ PreMod::operator=(const PreMod& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       centOrgFlag=A.centOrgFlag;
       width=A.width;
       height=A.height;
@@ -129,6 +137,8 @@ PreMod::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("PreMod","populate");
+
+  FixedRotate::populate(Control);
   
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
@@ -142,27 +152,9 @@ PreMod::populate(const FuncDataBase& Control)
   
   return;
 }
-  
+    
 void
-PreMod::createUnitVector(const attachSystem::FixedComp& FC,
-                         const long int orgIndex,
-			 const long int basisIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Component to connect to
-    \param orgIndex :: side to connect 
-    \param basisIndex :: basis index
-  */
-{
-  ELog::RegMethod RegA("PreMod","createUnitVector");
-
-  FixedComp::createUnitVector(FC,orgIndex,basisIndex);
-  return;
-}
-  
-void
-PreMod::createSurfaces(const attachSystem::FixedComp& FC,
-		       const long int baseIndex)
+PreMod::createSurfaces()
   /*!
     Create All the surfaces
     \param FC :: Fixed unit that connects to this moderator
@@ -171,83 +163,42 @@ PreMod::createSurfaces(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("PreMod","createSurface");
 
-  const Geometry::Vec3D& cAxis=FC.getLinkAxis(baseIndex);
-  const int cFlag=(cAxis.dotProd(Z)<-0.8) ? -1 : 1;
-
-  if (centOrgFlag)
-    Origin-=Y*(depth/2.0);
-
   // Outer DIVIDE PLANE/Cylinder
-  if (divideSurf)
-    SMap.addMatch(buildIndex+1,divideSurf);
-  else
-    ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
-
-  SMap.addMatch(buildIndex+5,cFlag*FC.getLinkSurf(baseIndex));
-  if (targetSurf)
-    SMap.addMatch(buildIndex+7,targetSurf);  // This is a cylinder [hopefully]
+  if (!isActive("divide"))
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+      setCutSurf("divide",SMap.realSurf(buildIndex+1));
+    }
+  
+  //  SMap.addMatch(buildIndex+5,cFlag*FC.getLinkSurf(baseIndex));
+  //if (targetSurf)
+  //SMap.addMatch(buildIndex+7,targetSurf);  // This is a cylinder [hopefully]
 
   // Outer surfaces:
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*depth,Y);
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width/2.0,X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+cAxis*height,cAxis);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
 
   // Inner surfaces:
   ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(depth-alThickness),Y);
   ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(width/2.0-alThickness),X);
   ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(width/2.0-alThickness),X);
-  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+cAxis*(height-alThickness),cAxis);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height-alThickness),Z);
 
-  Geometry::Surface* SX;
-  Geometry::Plane* PX;  
-  if (targetSurf)
+  ELog::EM<<"Surface target == "<<getRule("divide")<<ELog::endDiag;
+  if (isActive("target"))
+    makeExpandedSurf(SMap,"target",buildIndex+17,Origin,alThickness);
+
+  makeExpandedSurf(SMap,"base",buildIndex+15,Origin,-alThickness); 
+  ELog::EM<<"Surface 15 == "<<Z<< ":: "<<*SMap.realSurfPtr(buildIndex+15)<<ELog::endDiag;
+  if (isActive("divider"))
     {
-      SX=ModelSupport::surfaceCreateExpand
-	(SMap.realSurfPtr(buildIndex+7),alThickness);
-      SX->setName(buildIndex+17);
-      SMap.registerSurf(buildIndex+17,SX);
+      ELog::EM<<"Divider "<<keyName<<ELog::endDiag;
+      makeExpandedSurf(SMap,"divide",buildIndex+11,
+		       Origin,alThickness);
+      setCutSurf("divEdge",-SMap.realSurf(buildIndex+11));
     }
-
-  if (SMap.realSurf(buildIndex+5)<0)
-    {
-      ModelSupport::surfaceCreateExpand
-	(SMap.realSurfPtr(buildIndex+5),-alThickness);
-      PX=dynamic_cast<Geometry::Plane*>(SX);
-      if (PX)
-	PX->mirrorSelf();
-    }
-  else
-    SX=ModelSupport::surfaceCreateExpand
-      (SMap.realSurfPtr(buildIndex+5),alThickness);
-
-  if (!SX)
-    throw ColErr::CommandError
-      ("Expand Surface:5",FC.getLinkString(baseIndex));
-
-  SX->setName(buildIndex+15);
-  SMap.registerSurf(buildIndex+15,SX);
-      
-  // divider:
-  if (SMap.realSurf(buildIndex+1)<0)
-    {
-      SX=ModelSupport::surfaceCreateExpand
-	(SMap.realSurfPtr(buildIndex+1),-alThickness);
-      PX=dynamic_cast<Geometry::Plane*>(SX);
-      if (PX)
-	PX->mirrorSelf();
-    }
-  else
-    SX=ModelSupport::surfaceCreateExpand
-      (SMap.realSurfPtr(buildIndex+1),alThickness);
-
-  if (!SX)
-    throw ColErr::CommandError
-      ("Expand Surface:1",std::to_string(divideSurf));
-  
-  SX->setName(buildIndex+11);
-  SMap.registerSurf(buildIndex+11,SX);
-
   return;
 }
 
@@ -259,17 +210,26 @@ PreMod::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("PreMod","createObjects");
-  
-  std::string Out;
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 7");
-  addOuterSurf(Out);
 
-  Out+=ModelSupport::getSetComposite(SMap,buildIndex,
-				    "(-11:12:-13:14:-15:16:-17)");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
+  if (keyName=="decPM") return;
+  ELog::EM<<"Keyt == "<<keyName<<ELog::endDiag;
+  const HeadRule targetHR=getRule("target");
+  const HeadRule divideHR=getRule("divide");
+  const HeadRule divEdgeHR=getRule("divEdge");
+  const HeadRule baseHR=getRule("base");
 
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"11 -12 13 -14 15 -16 17");
-  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
+  ELog::EM<<"Target == "<<targetHR<<ELog::endDiag;
+  ELog::EM<<"Base == "<<baseHR<<ELog::endDiag;
+  HeadRule HR;
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 3 -4 -6");
+  addOuterSurf(HR*targetHR*divideHR*baseHR);
+
+  HR*=ModelSupport::getHeadRule(SMap,buildIndex,
+				    "(12:-13:14:-15:16:-17)");
+  System.addCell(cellIndex++,alMat,modTemp,HR*divEdgeHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 13 -14 15 -16 17");
+  System.addCell(cellIndex++,modMat,modTemp,HR*divEdgeHR);
   return;
 }
 
@@ -294,7 +254,7 @@ PreMod::createLinks()
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
         
   FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(4,getRule("base"));
 
   FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
@@ -306,22 +266,25 @@ PreMod::createLinks()
 }
   
 void
-PreMod::createAll(Simulation& System,const attachSystem::FixedComp& FC,
+PreMod::createAll(Simulation& System,
+		  const attachSystem::FixedComp& FC,
 		  const long int baseIndex)
-/*!
+  /*!
     Generic function to create everything
     \param System :: Simulation item
-    \param baseIndex :: base number
     \param FC :: Fixed unit that connects to this moderator
-    \param rFlag :: Decide if to rotate 180 about Z axis
+    \param baseIndex :: base number
   */
 {
   ELog::RegMethod RegA("PreMod","createAll");
+
   populate(System.getDataBase());  
-  createUnitVector(FC,baseIndex,0);
-  
-  if (rFlag) FixedComp::applyRotation(Z,180.0);
-  createSurfaces(FC,baseIndex);
+  FixedRotate::createUnitVector(FC,baseIndex,0);
+  setCutSurf("base",FC,baseIndex);
+
+  if (centOrgFlag) Origin-=Y*(depth/2.0);
+
+  createSurfaces();
   createObjects(System);
   createLinks();
   insertObjects(System);       

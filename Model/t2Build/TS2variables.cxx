@@ -3,7 +3,7 @@
  
  * File:   t2Build/TS2variables.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -186,6 +186,7 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("grooveAlMat","Aluminium");   // Aluminium mat
   Control.addVariable("grooveModTemp",26.0);        // Moderator temperature
 
+  Control.addVariable("groovePMYAngle",180.0);     // Full width
   Control.addVariable("groovePMWidth",25.8);     // Full width
   Control.addVariable("groovePMDepth",10.2);     // Full Depth 
   Control.addVariable("groovePMHeight",1.95);    // Full Height
@@ -253,6 +254,7 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("hydroFlightHeight",11.5);    // Full height
   Control.addVariable("hydroFlightWidth",14.3);     // Full width
 
+  Control.addVariable("hydroPMYAngle",180.0);     // Full width
   Control.addVariable("hydroPMWidth",25.8);     // Full width
   Control.addVariable("hydroPMDepth",10.2);     // Full Depth 
   Control.addVariable("hydroPMHeight",1.95);    // Full Height

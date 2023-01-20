@@ -1,9 +1,9 @@
-/********************************************************************* 
+s/********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
  * File:   t2Build/makeReflector.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -185,16 +185,17 @@ ReflectorAssembly::createObjects(Simulation& System)
   RefObj->insertComponent(System,"FLHydro",VacObj->getMainRule("back"));
 
   PMgroove->addInsertCell(refCell);
-  PMgroove->setTargetSurf(TarObj->getLinkSurf(1));
-  PMgroove->setDivideSurf(VacObj->getDivideSurf());
+  PMgroove->setCutSurf("target",*TarObj,1);
+  PMgroove->setCutSurf("divide",VacObj->getDivideSurf());
+  PMgroove->setCutSurf("base",*VacObj,6);  
   PMgroove->setEdge();
   PMgroove->createAll(System,*VacObj,6); 
 
   PMhydro->addInsertCell(refCell);
-  PMhydro->setTargetSurf(TarObj->getLinkSurf(1));
-  PMhydro->setDivideSurf(-VacObj->getDivideSurf());
+  PMhydro->setCutSurf("target",*TarObj,1);
+  PMhydro->setCutSurf("divide",-VacObj->getDivideSurf());
+  PMgroove->setCutSurf("base",*VacObj,6);  
   PMhydro->setEdge();
-  PMhydro->setRotate();
   PMhydro->createAll(System,*VacObj,6);  
 
   Horn->addInsertCell(refCell);
@@ -240,8 +241,7 @@ ReflectorAssembly::createObjects(Simulation& System)
   RefObj->insertComponent(System,"FLWish",DVacObj->getMainRule("back"));
 
   PMdec->addInsertCell(refCell);
-  PMdec->setTargetSurf(TarObj->getLinkSurf(1));
-  PMdec->setRotate();
+  PMdec->setCutSurf("target",*TarObj,1);
   PMdec->createAll(System,*DVacObj,5); 
 
   IRcut->addInsertCell(refCell);
