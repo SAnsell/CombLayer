@@ -175,6 +175,7 @@ PreMod::createSurfaces()
   //SMap.addMatch(buildIndex+7,targetSurf);  // This is a cylinder [hopefully]
 
   // Outer surfaces:
+  ELog::EM<<"KEY["<<keyName<<"] "<<Z<<ELog::endDiag;
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*depth,Y);
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width/2.0,X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width/2.0,X);
@@ -223,6 +224,16 @@ PreMod::createObjects(Simulation& System)
   HeadRule HR;
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 3 -4 -6");
   addOuterSurf(HR*targetHR*divideHR*baseHR);
+
+  ELog::EM<<"Surf["<<keyName<<"]"<<
+    *(SMap.realSurfPtr(buildIndex+2));
+  ELog::EM<<"Surf["<<keyName<<"]"<<
+    *(SMap.realSurfPtr(buildIndex+3));
+  ELog::EM<<"Surf["<<keyName<<"]"<<
+    *(SMap.realSurfPtr(buildIndex+4));
+  ELog::EM<<"Surf["<<keyName<<"]"<<
+    *(SMap.realSurfPtr(buildIndex+6));
+  ELog::EM<<ELog::endDiag;
 
   HR*=ModelSupport::getHeadRule(SMap,buildIndex,
 				    "(12:-13:14:-15:16:-17)");
