@@ -175,24 +175,25 @@ PreMod::createSurfaces()
   //SMap.addMatch(buildIndex+7,targetSurf);  // This is a cylinder [hopefully]
 
   // Outer surfaces:
-  ELog::EM<<"KEY["<<keyName<<"] "<<Z<<ELog::endDiag;
+  ELog::EM<<"KEY["<<keyName<<"] "<<Z<<" : "<<Origin<<ELog::endDiag;
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*depth,Y);
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width/2.0,X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height,Z);
 
   // Inner surfaces:
   ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(depth-alThickness),Y);
   ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(width/2.0-alThickness),X);
   ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(width/2.0-alThickness),X);
-  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height-alThickness),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(height-alThickness),Z);
 
   ELog::EM<<"Surface target == "<<getRule("divide")<<ELog::endDiag;
   if (isActive("target"))
     makeExpandedSurf(SMap,"target",buildIndex+17,Origin,alThickness);
 
-  makeExpandedSurf(SMap,"base",buildIndex+15,Origin,-alThickness); 
-  ELog::EM<<"Surface 15 == "<<Z<< ":: "<<*SMap.realSurfPtr(buildIndex+15)<<ELog::endDiag;
+  makeExpandedSurf(SMap,"base",buildIndex+16,Origin,-alThickness); 
+  ELog::EM<<"Surface 15 == "<<Z<< ":: "<<
+    *SMap.realSurfPtr(buildIndex+16)<<ELog::endDiag;
   if (isActive("divider"))
     {
       ELog::EM<<"Divider "<<keyName<<ELog::endDiag;
@@ -212,7 +213,13 @@ PreMod::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("PreMod","createObjects");
 
-  if (keyName=="decPM") return;
+
+  if (keyName=="decPM")
+    {
+      ELog::EM<<"EARLY RETRUN"<<ELog::endDiag;
+      return;
+    }
+  
   ELog::EM<<"Keyt == "<<keyName<<ELog::endDiag;
   const HeadRule targetHR=getRule("target");
   const HeadRule divideHR=getRule("divide");
@@ -221,8 +228,9 @@ PreMod::createObjects(Simulation& System)
 
   ELog::EM<<"Target == "<<targetHR<<ELog::endDiag;
   ELog::EM<<"Base == "<<baseHR<<ELog::endDiag;
+  ELog::EM<<"Base == "<<divideHR<<ELog::endDiag;
   HeadRule HR;
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 3 -4 -6");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 3 -4 5");
   addOuterSurf(HR*targetHR*divideHR*baseHR);
 
   ELog::EM<<"Surf["<<keyName<<"]"<<
@@ -232,9 +240,18 @@ PreMod::createObjects(Simulation& System)
   ELog::EM<<"Surf["<<keyName<<"]"<<
     *(SMap.realSurfPtr(buildIndex+4));
   ELog::EM<<"Surf["<<keyName<<"]"<<
-    *(SMap.realSurfPtr(buildIndex+6));
+    *(SMap.realSurfPtr(buildIndex+5));
+  ELog::EM<<"Surf["<<keyName<<"]"<<
+    *(SMap.realSurfPtr(buildIndex+15));
+  ELog::EM<<"Surf["<<keyName<<"]"<<
+    *(SMap.realSurfPtr(buildIndex+16));
+  ELog::EM<<ELog::endDiag;
+  ELog::EM<<"BASE["<<keyName<<"]"<<baseHR<<ELog::endDiag;
+  ELog::EM<<"BASE["<<keyName<<"]"<<*(baseHR.primarySurface())<<ELog::endDiag;
+  ELog::EM<<"BASE["<<keyName<<"]"<<*(divideHR.primarySurface())<<ELog::endDiag;
   ELog::EM<<ELog::endDiag;
 
+  return;
   HR*=ModelSupport::getHeadRule(SMap,buildIndex,
 				    "(12:-13:14:-15:16:-17)");
   System.addCell(cellIndex++,alMat,modTemp,HR*divEdgeHR);
