@@ -194,13 +194,10 @@ PreMod::createSurfaces()
   makeExpandedSurf(SMap,"base",buildIndex+16,Origin,-alThickness); 
   ELog::EM<<"Surface 15 == "<<Z<< ":: "<<
     *SMap.realSurfPtr(buildIndex+16)<<ELog::endDiag;
-  if (isActive("divider"))
-    {
-      ELog::EM<<"Divider "<<keyName<<ELog::endDiag;
-      makeExpandedSurf(SMap,"divide",buildIndex+11,
-		       Origin,alThickness);
-      setCutSurf("divEdge",-SMap.realSurf(buildIndex+11));
-    }
+  ELog::EM<<"Divider "<<keyName<<ELog::endDiag;
+  makeExpandedSurf(SMap,"divide",buildIndex+11,
+		   Origin,alThickness);
+  setCutSurf("divEdge",-SMap.realSurf(buildIndex+11));
   return;
 }
 
@@ -222,17 +219,19 @@ PreMod::createObjects(Simulation& System)
   
   ELog::EM<<"Keyt == "<<keyName<<ELog::endDiag;
   const HeadRule targetHR=getRule("target");
-  const HeadRule divideHR=getRule("divide");
+  const HeadRule divideHR=getRule("#divide");
   const HeadRule divEdgeHR=getRule("divEdge");
   const HeadRule baseHR=getRule("base");
 
   ELog::EM<<"Target == "<<targetHR<<ELog::endDiag;
   ELog::EM<<"Base == "<<baseHR<<ELog::endDiag;
-  ELog::EM<<"Base == "<<divideHR<<ELog::endDiag;
+  ELog::EM<<"divi == "<<divideHR<<ELog::endDiag;
+  ELog::EM<<"edge == "<<divEdgeHR<<ELog::endDiag;
   HeadRule HR;
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 3 -4 5");
   addOuterSurf(HR*targetHR*divideHR*baseHR);
-
+  ELog::EM<<"Out == "<<HR*targetHR*divideHR*baseHR<<ELog::endDiag;
+  return;
   ELog::EM<<"Surf["<<keyName<<"]"<<
     *(SMap.realSurfPtr(buildIndex+2));
   ELog::EM<<"Surf["<<keyName<<"]"<<
@@ -245,10 +244,13 @@ PreMod::createObjects(Simulation& System)
     *(SMap.realSurfPtr(buildIndex+15));
   ELog::EM<<"Surf["<<keyName<<"]"<<
     *(SMap.realSurfPtr(buildIndex+16));
+  ELog::EM<<"Surf["<<keyName<<"]"<<
+    *(SMap.realSurfPtr(buildIndex+17));
   ELog::EM<<ELog::endDiag;
   ELog::EM<<"BASE["<<keyName<<"]"<<baseHR<<ELog::endDiag;
   ELog::EM<<"BASE["<<keyName<<"]"<<*(baseHR.primarySurface())<<ELog::endDiag;
-  ELog::EM<<"BASE["<<keyName<<"]"<<*(divideHR.primarySurface())<<ELog::endDiag;
+
+  ELog::EM<<"DIVIDE["<<keyName<<"]"<<*(divideHR.primarySurface())<<ELog::endDiag;
   ELog::EM<<ELog::endDiag;
 
   return;
