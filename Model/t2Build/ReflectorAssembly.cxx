@@ -194,7 +194,7 @@ ReflectorAssembly::createObjects(Simulation& System)
   PMhydro->addInsertCell(refCell);
   PMhydro->setCutSurf("target",*TarObj,1);
   PMhydro->setCutSurf("divide",-VacObj->getDivideSurf());
-  PMgroove->setCutSurf("base",*VacObj,6);  
+  PMhydro->setCutSurf("base",*VacObj,6);  
   PMhydro->setEdge();
   PMhydro->createAll(System,*VacObj,6);  
 
@@ -205,7 +205,6 @@ ReflectorAssembly::createObjects(Simulation& System)
     attachSystem::intersectionLink(*VacObj,{-2,3,-4,5,-6});
 
   Horn->setCutSurf("VacCan",VUnit);
-
   Horn->setLinkCopy("FLhydro",*RefObj,"FLhydro");
   Horn->setLinkCopy("FLhydroNeg",*RefObj,"FLhydroNeg");
   Horn->setLinkCopy("FLhydroPlus",*RefObj,"FLhydroPlus");
@@ -224,6 +223,9 @@ ReflectorAssembly::createObjects(Simulation& System)
   Horn->setCutSurf("BaseCut",*PMhydro,"minusZ");
   Horn->setCutSurf("BaseFullCut",PMhydro->getOuterSurf());
   Horn->setCutSurf("BaseFrontCut",*PMhydro,"back");
+  ELog::EM<<"Horn -- "<<Horn->getRule("BaseFullCut")<<ELog::endDiag;
+  ELog::EM<<"Horn -- "<<Horn->getRule("BaseFrontCut")<<ELog::endDiag;
+  ELog::EM<<"Horn -- "<<Horn->getRule("BaseCut")<<ELog::endDiag;
   Horn->createAll(System,*HydObj,0);
 
   processDecoupled(System);

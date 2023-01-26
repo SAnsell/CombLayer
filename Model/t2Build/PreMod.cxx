@@ -187,7 +187,7 @@ PreMod::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(width/2.0-alThickness),X);
   ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(height-alThickness),Z);
 
-  ELog::EM<<"Surface target == "<<getRule("divide")<<ELog::endDiag;
+  ELog::EM<<"Surface divide == "<<getRule("divide")<<ELog::endDiag;
   if (isActive("target"))
     makeExpandedSurf(SMap,"target",buildIndex+17,Origin,alThickness);
 
@@ -219,18 +219,20 @@ PreMod::createObjects(Simulation& System)
   
   ELog::EM<<"Keyt == "<<keyName<<ELog::endDiag;
   const HeadRule targetHR=getRule("target");
-  const HeadRule divideHR=getRule("#divide");
+  const HeadRule divideHR=getRule("divide");
   const HeadRule divEdgeHR=getRule("divEdge");
   const HeadRule baseHR=getRule("base");
-
+  
   ELog::EM<<"Target == "<<targetHR<<ELog::endDiag;
   ELog::EM<<"Base == "<<baseHR<<ELog::endDiag;
+  ELog::EM<<"BasePR == "<<*(baseHR.primarySurface())<<ELog::endDiag;
   ELog::EM<<"divi == "<<divideHR<<ELog::endDiag;
+  ELog::EM<<"Divid Surf ="<<*(divideHR.primarySurface())<<ELog::endDiag;
   ELog::EM<<"edge == "<<divEdgeHR<<ELog::endDiag;
   HeadRule HR;
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 3 -4 5");
   addOuterSurf(HR*targetHR*divideHR*baseHR);
-  ELog::EM<<"Out == "<<HR*targetHR*divideHR*baseHR<<ELog::endDiag;
+  ELog::EM<<"Out["<<keyName<<"] == "<<HR*targetHR*divideHR*baseHR<<ELog::endDiag;
   return;
   ELog::EM<<"Surf["<<keyName<<"]"<<
     *(SMap.realSurfPtr(buildIndex+2));
@@ -271,8 +273,7 @@ PreMod::createLinks()
 {  
   ELog::RegMethod RegA("PreMod","createLinks");
 
-  FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+1));
+  createLink("divide",*this,0,Origin,-Y);
   
   FixedComp::setConnect(1,Origin+Y*depth,Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
@@ -283,8 +284,8 @@ PreMod::createLinks()
   FixedComp::setConnect(3,Origin+X*(width/2.0),X);
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
         
-  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
-  FixedComp::setLinkSurf(4,getRule("base"));
+  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);  
+  FixedComp::setLinkSurf(4,getComplementRule("base"));
 
   FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
