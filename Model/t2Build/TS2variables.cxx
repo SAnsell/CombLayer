@@ -254,7 +254,7 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("hydroFlightHeight",11.5);    // Full height
   Control.addVariable("hydroFlightWidth",14.3);     // Full width
 
-  Control.addVariable("hydroPMYAngle",180.0);     // Full width
+  Control.addVariable("hydroPMZAngle",180.0);     // Full width
   Control.addVariable("hydroPMWidth",25.8);     // Full width
   Control.addVariable("hydroPMDepth",10.2);     // Full Depth 
   Control.addVariable("hydroPMHeight",1.95);    // Full Height

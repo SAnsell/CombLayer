@@ -187,20 +187,24 @@ ReflectorAssembly::createObjects(Simulation& System)
   PMgroove->addInsertCell(refCell);
   PMgroove->setCutSurf("target",*TarObj,1);
   PMgroove->setCutSurf("divide",VacObj->getDivideSurf());
-  PMgroove->setCutSurf("base",*VacObj,6);  
+  PMgroove->setCutSurf("base",*VacObj,6);
+  PMgroove->setTargetSurf(TarObj->getLinkSurf(1));
+  PMgroove->setDivideSurf(VacObj->getDivideSurf());
   PMgroove->setEdge();
   PMgroove->createAll(System,*VacObj,6); 
 
   PMhydro->addInsertCell(refCell);
   PMhydro->setCutSurf("target",*TarObj,1);
   PMhydro->setCutSurf("divide",-VacObj->getDivideSurf());
-  PMhydro->setCutSurf("base",*VacObj,6);  
+  PMhydro->setCutSurf("base",*VacObj,6);
+  PMhydro->setTargetSurf(TarObj->getLinkSurf(1));
+  PMhydro->setDivideSurf(-VacObj->getDivideSurf());
   PMhydro->setEdge();
   PMhydro->createAll(System,*VacObj,6);  
 
   Horn->addInsertCell(refCell);
   Horn->setCutSurf("DivideSurf",-VacObj->getDivideSurf());
-
+  ELog::EM<<"Horn div == "<<-VacObj->getDivideSurf()<<ELog::endDiag;
   const HeadRule VUnit=
     attachSystem::intersectionLink(*VacObj,{-2,3,-4,5,-6});
 
@@ -223,9 +227,11 @@ ReflectorAssembly::createObjects(Simulation& System)
   Horn->setCutSurf("BaseCut",*PMhydro,"minusZ");
   Horn->setCutSurf("BaseFullCut",PMhydro->getOuterSurf());
   Horn->setCutSurf("BaseFrontCut",*PMhydro,"back");
+
   ELog::EM<<"Horn -- "<<Horn->getRule("BaseFullCut")<<ELog::endDiag;
   ELog::EM<<"Horn -- "<<Horn->getRule("BaseFrontCut")<<ELog::endDiag;
   ELog::EM<<"Horn -- "<<Horn->getRule("BaseCut")<<ELog::endDiag;
+
   Horn->createAll(System,*HydObj,0);
 
   processDecoupled(System);
@@ -244,6 +250,7 @@ ReflectorAssembly::createObjects(Simulation& System)
 
   PMdec->addInsertCell(refCell);
   PMdec->setCutSurf("target",*TarObj,1);
+  PMdec->setTargetSurf(TarObj->getLinkSurf(1));
   PMdec->createAll(System,*DVacObj,5); 
 
   IRcut->addInsertCell(refCell);

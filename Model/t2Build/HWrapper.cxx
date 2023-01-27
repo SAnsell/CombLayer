@@ -299,7 +299,7 @@ HWrapper::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"-132 122 26 -36");
   makeCell("AlWall",System,cellIndex++,alMat,0.0,HR*baseFrontCutHR);  
-    
+  ELog::EM<<" CELL "<<HR*baseFrontCutHR<<ELog::endDiag;
   return;
 }
 
