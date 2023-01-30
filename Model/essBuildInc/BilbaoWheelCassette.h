@@ -3,7 +3,7 @@
 
  * File:   essBuildInc/BilbaoWheelCassette.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2022 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,17 +35,19 @@ namespace essSystem
   \brief Bilbao wheel sector cassette
 */
 
-class BilbaoWheelCassette : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset
+class BilbaoWheelCassette :
+    public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
+    public attachSystem::ExternalCut
 {
  private:
 
   const std::string baseName;   ///< Base Name
   const std::string commonName; ///< Template (part between wheel name and sector number)
 
-  int engActive;                ///< Engineering active flag
   int bricksActive;            ///< True if bricks are active
 
+  double rotAngle;              ///< Rotation angle
   double wallThick;             ///< Side wall thickness
   double delta;                 ///< Angular width [deg]
   double temp;                  ///< Temperature
@@ -87,17 +89,11 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
   void   buildBricks();
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
-  void createSurfaces(const attachSystem::FixedComp&);
-  void createSurfacesBricks(const attachSystem::FixedComp&);
-  void createObjects(Simulation&,const attachSystem::FixedComp&);
-  void createObjectsBricks(Simulation&,const attachSystem::FixedComp&);
+  void createSurfaces();
+  void createSurfacesBricks();
+  void createObjects(Simulation&);
+  void createObjectsBricks(Simulation&);
   void createLinks();
-
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int) {}
   
 
  public:
@@ -108,13 +104,11 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
   virtual BilbaoWheelCassette* clone() const;
   virtual ~BilbaoWheelCassette();
 
+  void setRotAngle(const double XY) { rotAngle=XY; }
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int,
-		 const long int,
-		 const long int,
-		 const long int,
-		 const long int,
-		 const double&);
+		 const long int);
 
 };
 

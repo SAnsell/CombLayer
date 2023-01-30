@@ -707,13 +707,11 @@ buildFullSimulation(Simulation* SimPtr,
   SimPtr->removeComplements();
   SimPtr->removeDeadSurfaces();
 
-  
   ModelSupport::setDefRotation(*SimPtr,IParam);
   SimPtr->masterRotation();
 
   reportSelection(*SimPtr,IParam);
   SimPtr->createObjSurfMap();
-
 
   SimPtr->minimizeObject("All");
   SimPtr->removeDeadSurfaces();

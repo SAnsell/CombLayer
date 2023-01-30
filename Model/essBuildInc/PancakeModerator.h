@@ -3,7 +3,7 @@
 
  * File:   essBuildInc/PancakeModerator.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2022 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,9 +69,7 @@ class PancakeModerator :
   virtual ~PancakeModerator();
 
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
-  virtual int getLayerSurf(const size_t,const long int) const;
-  virtual std::string getLayerString(const size_t,const long int) const;
-  virtual int getCommonSurf(const long int) const;
+  virtual HeadRule getLayerHR(const size_t,const long int) const;
 
   /// Accessor to radius
   void setRadiusX(const double R) { outerRadius=R; }
@@ -79,13 +77,15 @@ class PancakeModerator :
   virtual const attachSystem::FixedComp&
     getComponent(const std::string&) const;
 
-  std::string getLeftExclude() const;
-  std::string getRightExclude() const;
-  std::string getLeftFarExclude() const;
-  std::string getRightFarExclude() const;
+  HeadRule getLeftExclude() const;
+  HeadRule getRightExclude() const;
+  HeadRule getLeftFarExclude() const;
+  HeadRule getRightFarExclude() const;
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
+  
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int,
 		 const attachSystem::FixedComp&,

@@ -37,9 +37,9 @@ namespace ts1System
 */
 
 class H2Moderator :
+    public attachSystem::FixedRotate,
     public attachSystem::ContainedComp,
     public attachSystem::LayerComp,
-    public attachSystem::FixedRotate,
     public attachSystem::CellMap,
     public attachSystem::ExternalCut
 {
@@ -86,8 +86,7 @@ class H2Moderator :
 //
 //  void createAll(Simulation&,const attachSystem::FixedComp&);
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
-  virtual std::string getLayerString(const size_t,const long int) const;
-  virtual int getLayerSurf(const size_t,const long int) const;
+  virtual HeadRule getLayerHR(const size_t,const long int) const;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

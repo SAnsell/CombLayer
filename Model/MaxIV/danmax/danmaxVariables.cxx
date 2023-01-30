@@ -45,7 +45,6 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
-#include "variableSetup.h"
 #include "maxivVariables.h"
 
 #include "CFFlanges.h"
@@ -251,7 +250,6 @@ connectVariables(FuncDataBase& Control,
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   
-
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setNoWindow();
@@ -321,10 +319,8 @@ exptHutVariables(FuncDataBase& Control,
   EGen.setRoofLead(0.6);
   EGen.setWallLead(0.4);
 
-
   EGen.generateHut(Control,hutName,1845.0,858.4);
   Control.addVariable(hutName+"RingWidth",248.6);
-
 
   // lead shield on pipe
   Control.addVariable(beamName+"PShieldXStep",beamMirrorShift);

@@ -3,7 +3,7 @@
  
  * File:   construct/Maze.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -53,7 +52,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
 #include "ContainedGroup.h"
@@ -67,8 +66,8 @@ namespace xraySystem
 {
 
 Maze::Maze(const std::string& Key) :
+  attachSystem::FixedRotate(Key,12),
   attachSystem::ContainedGroup("Main","Inner"),
-  attachSystem::FixedOffset(Key,12),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   attachSystem::ExternalCut()
   /*!
@@ -87,7 +86,7 @@ Maze::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("Maze","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   
   height=Control.EvalVar<double>(keyName+"Height");
   width=Control.EvalVar<double>(keyName+"Width");
@@ -101,23 +100,6 @@ Maze::populate(const FuncDataBase& Control)
   catchXGap=Control.EvalVar<double>(keyName+"CatchXGap");
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-  
-  return;
-}
-
-void
-Maze::createUnitVector(const attachSystem::FixedComp& FC,
-				 const long int sideIndex)
-  /*!
-    Create the unit vectors: Note only to construct front/back surf
-    \param FC :: Centre point
-    \param sideIndex :: Side index
-  */
-{
-  ELog::RegMethod RegA("Maze","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
   
   return;
 }
@@ -175,48 +157,50 @@ Maze::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Maze","createObjects");
 
-  std::string Out;
-  const std::string innerStr=ExternalCut::getRuleStr("innerWall");
-  const std::string outerStr=ExternalCut::getRuleStr("outerWall");
-  const std::string outerComp=ExternalCut::getComplementStr("outerWall");
+  HeadRule HR;
+
+  const HeadRule innerHR=ExternalCut::getRule("innerWall");
+  const HeadRule outerHR=ExternalCut::getRule("outerWall");
+  // this is needed to avoid problem with divider:
+  const HeadRule outerComp=ExternalCut::getComplementRule("outerWall");
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
-  makeCell("Void",System,cellIndex++,0,0.0,Out+innerStr+outerStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
+  makeCell("Void",System,cellIndex++,0,0.0,HR*innerHR*outerHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -12 3 -24 5 -6 ");
-  makeCell("MainVoid",System,cellIndex++,0,0.0,Out+outerComp);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 3 -24 5 -6");
+  makeCell("MainVoid",System,cellIndex++,0,0.0,HR*outerComp);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -22 23 -3 -24 5 -6 ");
-  makeCell("MainLeftWall",System,cellIndex++,wallMat,0.0,Out+outerComp);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-22 23 -3 -24 5 -6");
+  makeCell("MainLeftWall",System,cellIndex++,wallMat,0.0,HR*outerComp);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -22 3 -24 5 -6 ");
-  makeCell("MainWall",System,cellIndex++,wallMat,0.0,Out+outerComp);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -22 3 -24 5 -6");
+  makeCell("MainWall",System,cellIndex++,wallMat,0.0,HR*outerComp);
 
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," -42 33 -34 5 -6 ");
-  makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out+outerComp);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-42 33 -34 5 -6");
+  makeCell("SideWall",System,cellIndex++,wallMat,0.0,HR*outerComp);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 32 -42 -33 23 5 -6 ");
-  makeCell("BackWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"32 -42 -33 23 5 -6");
+  makeCell("BackWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -22 3 -24 5 -6 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -22 3 -24 5 -6");
   //  makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out+outerComp);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -22 24 -33 5 -6 ");
-  makeCell("SideVoid",System,cellIndex++,0,0.0,Out+outerComp);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-22 24 -33 5 -6");
+  makeCell("SideVoid",System,cellIndex++,0,0.0,HR*outerComp);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 22 -32 23 -33 5 -6 ");
-  makeCell("BackVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"22 -32 23 -33 5 -6");
+  makeCell("BackVoid",System,cellIndex++,0,0.0,HR);
 
   
   // needs to be group
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
-  addOuterSurf("Inner",Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
+  addOuterSurf("Inner",HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -42 23 -34 5 -6 ");
-  addOuterSurf("Main",Out);
-  //  Out=ModelSupport::getComposite(SMap,buildIndex,"13 -14 15 -106 ");
-  //  addOuterSurf("Inner",Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-42 23 -34 5 -6");
+  addOuterSurf("Main",HR);
+  //  HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 15 -106");
+  //  addOuterSurf("Inner",HR);
   return;
 }
 
@@ -235,8 +219,8 @@ Maze::createLinks()
 
 void
 Maze::createAll(Simulation& System,
-                     const attachSystem::FixedComp& FC,
-                     const long int sideIndex)
+		const attachSystem::FixedComp& FC,
+		const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation 

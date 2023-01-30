@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/EssModBase.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell/K. Batkov
+ * Copyright (c) 2004-2023 by Stuart Ansell/K. Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,14 +35,15 @@ namespace essSystem
   \brief General EssModBase unit
 */
 
-class EssModBase : public attachSystem::ContainedComp,
-  public attachSystem::LayerComp,
-  public attachSystem::FixedOffset,
-  public attachSystem::CellMap
+class EssModBase :
+    public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
+    public attachSystem::LayerComp,
+    public attachSystem::ExternalCut,
+    public attachSystem::CellMap
 {
  protected:
   
-  void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int,
 			const attachSystem::FixedComp&,
@@ -59,12 +60,6 @@ class EssModBase : public attachSystem::ContainedComp,
   virtual const attachSystem::FixedComp&
     getComponent(const std::string&) const;
   
-  virtual void createAll(Simulation&,
-			 const attachSystem::FixedComp&,
-			 const long int,
-			 const attachSystem::FixedComp&,
-			 const long int) =0;
-
 };
 
 }

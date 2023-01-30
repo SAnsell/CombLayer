@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/loki/LOKIvariables.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "CFFlanges.h"
 #include "FocusGenerator.h"
 #include "ShieldGenerator.h"
 #include "ChopperGenerator.h"
@@ -79,9 +80,9 @@ LOKIvariables(FuncDataBase& Control)
   SGen.addRoofMat(5,"Concrete");
   SGen.addWallMat(5,"Concrete");
 
-  PipeGen.setPipe(4.5,0.5);
-  PipeGen.setWindow(-2.0,0.3);
-  PipeGen.setFlange(-4.0,1.0);
+  PipeGen.setCF<CF100>();
+  PipeGen.setNoWindow();
+    //  PipeGen.setFlange(-4.0,1.0);
 
   Control.addVariable("lokiStopPoint",0);  
   Control.addVariable("lokiStartPoint",0);  
@@ -98,20 +99,20 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiBlockShutterWidth",38.8);
   Control.addVariable("lokiBlockShutterDepth",40.3);  // cant extend out of shutter region
   Control.addParse<double>("lokiBlockShutterYStep","lokiBlockShutterDepth/2.0");
-  Control.addVariable("lokiBlockShutterDefMat","Stainless304");
+  Control.addVariable("lokiBlockShutterMat","Stainless304");
 
   // Pipe in gamma shield
   PipeGen.generatePipe(Control,"lokiPipeB",43.0);
   Control.addVariable("lokiPipeBYStep",7.0);
   FGen.setLayer(1,0.5,"Aluminium");
   FGen.clearYOffset();
-  FGen.generateBender(Control,"lokiBB",41.0, 3.0,3.0,3.0,3.0,5700.0,0.0);
+  FGen.generateBender(Control,"lokiBB",41.0, 3.0,3.0,3.0,3.0,5700.0,-90.0);
 
   // Pipe in gamma shield
   PipeGen.generatePipe(Control,"lokiPipeBLink",44.0);
   Control.addVariable("lokiPipeBLinkYStep",2.0);
   FGen.clearYOffset();
-  FGen.generateBender(Control,"lokiBBLink",42.0, 3.0,3.0,3.0,3.0,5700.0,0.0);
+  FGen.generateBender(Control,"lokiBBLink",42.0, 3.0,3.0,3.0,3.0,5700.0,-90.0);
   
   CGen.setMainRadius(35.5);   // diameter 70.0 emali
   CGen.setFrame(80.0,80.0);
@@ -131,9 +132,9 @@ LOKIvariables(FuncDataBase& Control)
   PipeGen.setPipe(5.0,0.8);  // Rad / thick
   PipeGen.setWindow(-2.0,0.8);  // window offset/ thick
   PipeGen.setFlange(-4.0,1.0);
-  PipeGen.generatePipe(Control,"lokiPipeC",488.0);
+  PipeGen.generatePipe(Control,"lokiPipeC",487.0);
   Control.addVariable("lokiPipeCYStep",1.0);
-  FGen.generateRectangle(Control,"lokiFC",485.0,2.5,3.0);
+  FGen.generateRectangle(Control,"lokiFC",484.0,2.5,3.0);
 
 
 // NEW BEAM INSERT:
@@ -173,7 +174,8 @@ LOKIvariables(FuncDataBase& Control)
 
   CGen.setMainRadius(40.5);   // diameter 70.0 emali
   CGen.setFrame(90.0,90.0);
-  CGen.generateChopper(Control,"lokiChopperOutA",9.3,15.7,5.3);  
+  CGen.setReverseMotor(1);
+  CGen.generateChopper(Control,"lokiChopperOutA",11.0,15.7,5.3);  
 
   // Double Blade chopper
   BGen.setMaterials("Aluminium","Aluminium");
@@ -187,7 +189,9 @@ LOKIvariables(FuncDataBase& Control)
   SGen.generateShield(Control,"lokiShieldA",270.0,100.0,100.0,150.0,8,8);
 
  // straight after fifth chopper inside the collimator drum
+  PipeGen.setOuterVoid();
   PipeGen.generatePipe(Control,"lokiPipeOutA",270.0);
+  
   Control.addVariable("lokiPipeOutAYStep",0.5);
   
   //  FGen.setYOffset(-134.0);

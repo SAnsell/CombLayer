@@ -3,7 +3,7 @@
  
  * File:   construct/CrossPipe.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -172,25 +172,6 @@ CrossPipe::populate(const FuncDataBase& Control)
 }
 
 void
-CrossPipe::createUnitVector(const attachSystem::FixedComp& FC,
-                             const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("CrossPipe","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  yStep+=(frontLength+backLength)/2.0;
-  applyOffset();
-
-  return;
-}
-
-
-void
 CrossPipe::createSurfaces()
   /*!
     Create the surfaces
@@ -258,57 +239,49 @@ CrossPipe::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("CrossPipe","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   
-  const std::string frontStr=frontRule();
-  const std::string backStr=backRule();
+  const HeadRule frontHR=getFrontRule();
+  const HeadRule backHR=getBackRule();
   
   // Void [want a single void]
-  Out=ModelSupport::getComposite(SMap,buildIndex," (-7 : -207) 205 -206  ");
-  System.addCell(MonteCarlo::Object(cellIndex++,voidMat,0.0,Out+frontStr+backStr));
-  addCell("Void",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(-7 : -207) 205 -206");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
   // Main steel pipe
-  Out=ModelSupport::getComposite(SMap,buildIndex," -17 7 207 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out+frontStr+backStr));
-  addCell("Pipe",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 7 207");
+  makeCell("Pipe",System,cellIndex++,feMat,0.0,HR*frontHR*backHR);
 
   // Vert steel pipe
-  Out=ModelSupport::getComposite(SMap,buildIndex," 17 -217 207 205 -206 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
-  addCell("Pipe",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"17 -217 207 205 -206");
+  makeCell("Pipe",System,cellIndex++,feMat,0.0,HR);
 
   // BasePlate
-  Out=ModelSupport::getComposite(SMap,buildIndex," -217 215 -205 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
-  addCell("BasePlate",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-217 215 -205");
+  makeCell("BasePlate",System,cellIndex++,feMat,0.0,HR);
 
   // BasePlate
-  Out=ModelSupport::getComposite(SMap,buildIndex," -217 206 -216 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
-  addCell("TopPlate",cellIndex-1);
-  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-217 206 -216");
+  makeCell("TopPlate",System,cellIndex++,feMat,0.0,HR);
 
   if (flangeRadius>Geometry::zeroTol && flangeLength>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 17 -107 -101 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out+frontStr));
-      addCell("Flange",cellIndex-1);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"17 -107 -101");
+      makeCell("Flange",System,cellIndex++,feMat,0.0,HR*frontHR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," 17 -107 102 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out+backStr));
-      addCell("Flange",cellIndex-1);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"17 -107 102");
+      makeCell("Flange",System,cellIndex++,feMat,0.0,HR*backHR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," 17 -107 101 -102 217 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-      addCell("FlangeVoid",cellIndex-1);
-      Out=ModelSupport::getComposite(SMap,buildIndex," (-107 : -217) 215 -216  ");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"17 -107 101 -102 217");
+      makeCell("FlangeVoid",System,cellIndex++,0,0.0,HR);
+
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"(-107 : -217) 215 -216");
     }
   else
-    Out=ModelSupport::getComposite(SMap,buildIndex," (-17 : -217) 215 -216  ");
+    HR=ModelSupport::getHeadRule(SMap,buildIndex,"(-17 : -217) 215 -216");
 
 
-  addOuterSurf(Out+frontStr+backStr);
+  addOuterSurf(HR*frontHR*backHR);
 
   return;
 }
@@ -355,7 +328,8 @@ CrossPipe::createAll(Simulation& System,
   ELog::RegMethod RegA("CrossPipe","createAll(FC)");
 
   populate(System.getDataBase());
-  createUnitVector(FC,FIndex);
+  createCentredUnitVector
+    (FC,FIndex,(frontLength+backLength)/2.0);
   createSurfaces();    
   createObjects(System);
   createLinks();

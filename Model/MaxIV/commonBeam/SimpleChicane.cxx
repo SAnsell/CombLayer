@@ -3,7 +3,7 @@
  
  * File:   commonBeam/SimpleChicane.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -52,7 +51,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
 #include "ContainedGroup.h"
@@ -67,8 +66,8 @@ namespace xraySystem
 {
 
 SimpleChicane::SimpleChicane(const std::string& Key) :
+  attachSystem::FixedRotate(Key,12),
   attachSystem::ContainedGroup("Outer","Inner","Middle"),
-  attachSystem::FixedOffset(Key,12),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   attachSystem::ExternalCut()
   /*!
@@ -92,7 +91,7 @@ SimpleChicane::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("SimpleChicane","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   
   height=Control.EvalVar<double>(keyName+"Height");
   width=Control.EvalVar<double>(keyName+"Width");
@@ -105,23 +104,6 @@ SimpleChicane::populate(const FuncDataBase& Control)
   innerXDepth=Control.EvalVar<double>(keyName+"InnerXDepth");
 
   plateMat=ModelSupport::EvalMat<int>(Control,keyName+"PlateMat");
-  
-  return;
-}
-
-void
-SimpleChicane::createUnitVector(const attachSystem::FixedComp& FC,
-				 const long int sideIndex)
-  /*!
-    Create the unit vectors: Note only to construct front/back surf
-    \param FC :: Centre point
-    \param sideIndex :: Side index
-  */
-{
-  ELog::RegMethod RegA("SimpleChicane","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
   
   return;
 }
@@ -178,56 +160,57 @@ SimpleChicane::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("SimpleChicane","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
-  const std::string innerWall=getComplementStr("innerWall");
-  const std::string outerWall=getComplementStr("outerWall");
+  // need both as want bridging surface the same
+  const HeadRule innerWall=getComplementRule("innerWall");
+  const HeadRule outerWall=getComplementRule("outerWall");
 
-  const std::string innerOut=getRuleStr("innerWall");
-  const std::string outerOut=getRuleStr("outerWall");
+  const HeadRule innerHR=getRule("innerWall");
+  const HeadRule outerHR=getRule("outerWall");
 
   // inner clearance gap
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-101 12 3 -4 5 -6 ");
-  makeCell("Void",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 12 3 -4 5 -6");
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 12 3 -4 6 -16 ");
-  makeCell("TopVoid",System,cellIndex++,0,0.0,Out+outerOut);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 3 -4 6 -16");
+  makeCell("TopVoid",System,cellIndex++,0,0.0,HR*outerHR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-12 22 3 -4 5 -16 ");
-  makeCell("Plate",System,cellIndex++,plateMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 22 3 -4 5 -16");
+  makeCell("Plate",System,cellIndex++,plateMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 22 3 -4 -5 15 ");
-  makeCell("BasePlate",System,cellIndex++,plateMat,0.0,Out+outerOut);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"22 3 -4 -5 15");
+  makeCell("BasePlate",System,cellIndex++,plateMat,0.0,HR*outerHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 22 13 -3 15 -16 ");
-  makeCell("LeftPlate",System,cellIndex++,plateMat,0.0,Out+outerOut);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"22 13 -3 15 -16");
+  makeCell("LeftPlate",System,cellIndex++,plateMat,0.0,HR*outerHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 22 -14 4 15 -16 ");
-  makeCell("RightPlate",System,cellIndex++,plateMat,0.0,Out+outerOut);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"22 -14 4 15 -16");
+  makeCell("RightPlate",System,cellIndex++,plateMat,0.0,HR*outerHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 15 -6 (-3:4:-5) ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 15 -6 (-3:4:-5)");
   makeCell("innerPlate",System,cellIndex++,
-	   plateMat,0.0,Out+outerWall+innerWall);
+	   plateMat,0.0,HR*outerWall*innerWall);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -101 -5 105 103 -104 ");
-  makeCell("LowXBeam",System,cellIndex++,plateMat,0.0,Out+innerOut);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -101 -5 105 103 -104");
+  makeCell("LowXBeam",System,cellIndex++,plateMat,0.0,HR*innerHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -101 6 -106 103 -104 ");
-  makeCell("TopXBeam",System,cellIndex++,plateMat,0.0,Out+innerOut);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -101 6 -106 103 -104");
+  makeCell("TopXBeam",System,cellIndex++,plateMat,0.0,HR*innerHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -101 5 -6 103 -3 ");
-  makeCell("LeftXBeam",System,cellIndex++,plateMat,0.0,Out+innerOut);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -101 5 -6 103 -3");
+  makeCell("LeftXBeam",System,cellIndex++,plateMat,0.0,HR*innerHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -101 5 -6 4 -104 ");
-  makeCell("RightXBeam",System,cellIndex++,plateMat,0.0,Out+innerOut);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -101 5 -6 4 -104");
+  makeCell("RightXBeam",System,cellIndex++,plateMat,0.0,HR*innerHR);
 
   // needs to be group
-  Out=ModelSupport::getComposite(SMap,buildIndex," -101 103 -104 105 -106 ");
-  addOuterSurf("Inner",Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 15 -6 ");
-  addOuterSurf("Middle",Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 15 -16 22 ");
-  addOuterSurf("Outer",Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 103 -104 105 -106");
+  addOuterSurf("Inner",HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 15 -6");
+  addOuterSurf("Middle",HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 15 -16 22");
+  addOuterSurf("Outer",HR);
   return;
 }
 

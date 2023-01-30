@@ -45,7 +45,6 @@ class ReactorGrid :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap
-      
 {
  private:
   
@@ -103,14 +102,10 @@ class ReactorGrid :
 				    const size_t,const size_t);
   static std::pair<size_t,size_t> getElementNumber(const std::string&);
 
-  /// Access water material for inner objects
-  int getWaterMat() const { return waterMat; }
-
   std::vector<Geometry::Vec3D> fuelCentres() const;
   std::vector<int> getAllCells(const Simulation&) const;
   std::vector<int> getFuelCells(const Simulation&,const size_t) const;
   
-
   void loadFuelXML(const std::string&);
   void writeFuelXML(const std::string&);
 

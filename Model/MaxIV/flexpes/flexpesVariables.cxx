@@ -531,7 +531,7 @@ opticsBeamVariables(FuncDataBase& Control,
   // will be rotated vertical
   const Geometry::Vec3D ZVec(0,0,1);
   const std::string florName=opticKey+"FlorTubeA";
-  SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.setCF<CF100>();
   SimpleTubeGen.setCap();
   SimpleTubeGen.generateTube(Control,florName,27.0);  // centre 13.5cm
 

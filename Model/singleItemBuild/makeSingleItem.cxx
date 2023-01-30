@@ -3,7 +3,7 @@
 
  * File:   singleItemBuild/makeSingleItem.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -110,6 +110,7 @@
 #include "FourPortTube.h"
 #include "CrossWayTube.h"
 #include "CrossWayBlank.h"
+#include "TubeDetBox.h"
 #include "GaugeTube.h"
 #include "BremBlock.h"
 #include "Scrapper.h"
@@ -159,6 +160,9 @@
 #include "FlangeDome.h"
 #include "MonoShutter.h"
 #include "RoundMonoShutter.h"
+#include "GuideUnit.h"
+#include "PlateUnit.h"
+#include "BenderUnit.h"
 
 #include "makeSingleItem.h"
 
@@ -170,7 +174,6 @@ makeSingleItem::makeSingleItem()
     Constructor
  */
 {}
-
 
 makeSingleItem::~makeSingleItem()
   /*!
@@ -215,7 +218,8 @@ makeSingleItem::build(Simulation& System,
 	"BremTube","HPJaws","BoxJaws","HPCombine","ViewTube",
 	"DiffPumpXIADP03","CRLTube","ExperimentalHutch",
 	"ConnectorTube","LocalShield","FlangeDome",
-	"MonoShutter","RoundMonoShutter",
+	"MonoShutter","RoundMonoShutter","TubeDetBox",
+	"GuideUnit","PlateUnit","BenderUnit",
 	"Help","help"
     });
 
@@ -628,12 +632,12 @@ makeSingleItem::build(Simulation& System,
       ls->addUnit(se);
 
       ls->setSurfaces({
-    	    {"front",{"ShieldE","#back"}},      // -1050002
-	    {"back",{"ShieldB","#back"}},       // -1020002
+    	    {"front",{"ShieldE","#back"}},      // -1010002
+	    {"back",{"ShieldB","#back"}},       // -1040005
 	    {"left",{"ShieldC","left"}},        // 1030003
-	    {"right",{"ShieldB","#right"}},     // -102004
-	    {"base",{"ShieldE","base"}},        // 1050005
-	    {"top",{"ShieldB","#top"}}          // -1020006
+	    {"right",{"ShieldB","#right+1.0"}},     // -102003
+	    {"base",{"ShieldE","base"}},        // 1010004
+	    {"top",{"ShieldB","#top"}}          // -1010006
 	});
 
       ls->setConnections
@@ -816,7 +820,7 @@ makeSingleItem::build(Simulation& System,
     {
       const double angle(1.5*M_PI/180.0);
       const Geometry::Vec3D photOrg(0,0,0);
-      const Geometry::Vec3D elecOrg(1.84502,0,0);
+      const Geometry::Vec3D elecOrg(3.84502,0,0);
       const Geometry::Vec3D elecAxis(sin(angle),cos(angle),0);
       
       std::shared_ptr<xraySystem::R3ChokeChamber>
@@ -1471,6 +1475,36 @@ makeSingleItem::build(Simulation& System,
 	eh->addInsertCell(voidCell);
 	eh->createAll(System,World::masterOrigin(),0);
 
+	return;
+      }
+
+    if (item == "TubeDetBox")
+      {
+	std::shared_ptr<constructSystem::TubeDetBox>
+	  Box(new constructSystem::TubeDetBox("TDetBox",0));
+	OR.addObject(Box);
+	
+	Box->addInsertCell(voidCell);
+	Box->createAll(System,World::masterOrigin(),0);
+	return;
+      }
+    if (item == "GuideUnit" || item=="PlateUnit")
+      {
+	std::shared_ptr<beamlineSystem::PlateUnit>
+	  FA(new beamlineSystem::PlateUnit("FA"));
+	OR.addObject(FA);
+	
+	FA->addInsertCell(voidCell);
+	FA->createAll(System,World::masterOrigin(),0);
+	return;
+      }
+    if (item == "BenderUnit")
+      {
+	std::shared_ptr<beamlineSystem::BenderUnit>
+	  BA(new beamlineSystem::BenderUnit("BA"));
+	OR.addObject(BA);
+	BA->addInsertCell(voidCell);
+	BA->createAll(System,World::masterOrigin(),0);
 	return;
       }
 

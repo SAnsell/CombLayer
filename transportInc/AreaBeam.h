@@ -3,7 +3,7 @@
  
  * File:   transportInc/AreaBeam.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,12 +63,6 @@ class AreaBeam : public Beam
 
   /// Effective typeid
   virtual std::string className() const { return "AreaBeam"; }
-  /// Visitor Acceptance
-  virtual void acceptVisitor(Global::BaseVisit& A) const
-    {  A.Accept(*this); }
-  /// Accept visitor for input
-  virtual void acceptVisitor(Global::BaseModVisit& A)
-    { A.Accept(*this); }
 
   /// Set Wavelength
   virtual void setWavelength(const double W) { wavelength=W; }
@@ -86,7 +80,8 @@ class AreaBeam : public Beam
 
 
   virtual MonteCarlo::neutron generateNeutron() const;
-
+  virtual MonteCarlo::photon generatePhoton() const;
+  
   // Output stuff
   void write(std::ostream&) const;
 

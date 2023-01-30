@@ -38,10 +38,7 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
-#include "Line.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Code.h"
@@ -244,11 +241,11 @@ Segment45::constructHole(Simulation& System)
 
   if (IHall)
     {
-      std::string Out;
+      HeadRule HR;
       const HeadRule fbHR=IHall->combine("#Floor BDRoomRoof");
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," -7 " );
-      makeCell("FloorVoid",System,cellIndex++,0,0.0,Out+fbHR.display());
+      HR=HeadRule(SMap,buildIndex,-7);
+      makeCell("FloorVoid",System,cellIndex++,0,0.0,HR*fbHR);
       pipeB->insertAllInCell(System,this->getCell("FloorVoid"));
       // tip of pipeB enters the main beam dump room
       pipeB->insertInCell("Main",System,IHall->getCell("BDSPF"));
@@ -262,9 +259,9 @@ Segment45::constructHole(Simulation& System)
       pipeC->insertAllInCell(System,IHall->getCell("BDSPF"));
       beamStop->insertAllInCell(System,IHall->getCell("BDSPF"));
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," 7 " );
-      IHall->insertComponent(System,"HatchSPF",Out); // concrete roof
-      IHall->insertComponent(System,"BDRoofSPF",Out); // steel roof
+      HR=HeadRule(SMap,buildIndex,7);
+      IHall->insertComponent(System,"HatchSPF",HR); // concrete roof
+      IHall->insertComponent(System,"BDRoofSPF",HR); // steel roof
     }
   return;
 }

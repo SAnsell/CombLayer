@@ -3,7 +3,7 @@
  
  * File:   essBuild/IradCylinder.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,8 +39,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "surfRegister.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
@@ -57,7 +55,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
@@ -68,8 +66,8 @@ namespace essSystem
 {
 
 IradCylinder::IradCylinder(const std::string& Key) :
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6),
   attachSystem::CellMap()
   /*!
     Constructor
@@ -78,7 +76,8 @@ IradCylinder::IradCylinder(const std::string& Key) :
 {}
 
 IradCylinder::IradCylinder(const IradCylinder& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
   sampleActive(A.sampleActive),radius(A.radius),
   length(A.length),wallThick(A.wallThick),temp(A.temp),
@@ -100,8 +99,8 @@ IradCylinder::operator=(const IradCylinder& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       sampleActive=A.sampleActive;
       radius=A.radius;
@@ -143,7 +142,7 @@ IradCylinder::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("IradCylinder","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   
   radius=Control.EvalVar<double>(keyName+"Radius");
   length=Control.EvalVar<double>(keyName+"Length");
@@ -177,21 +176,6 @@ IradCylinder::populate(const FuncDataBase& Control)
 }
 
 void
-IradCylinder::createUnitVector(const attachSystem::FixedComp& FC,
-				      const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Centre for object
-    \param sideIndex :: Inner link point
-  */
-{
-  ELog::RegMethod RegA("IradCylinder","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  return;
-}
-
-void
 IradCylinder::createInnerObjects(Simulation& System)
   /*!
     Create the inner material units
@@ -203,10 +187,9 @@ IradCylinder::createInnerObjects(Simulation& System)
   // CREATE Simple cell if samples are not active:
   if (!sampleActive)
     {
-      std::string Out=ModelSupport::getComposite(SMap,buildIndex," -7 1 -2 ");
+      HeadRule HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 1 -2");
 
-      System.addCell(MonteCarlo::Object(cellIndex++,mat,temp,Out));
-      addCell("Samples",cellIndex-1);
+      makeCell("Samples",System,cellIndex++,mat,temp,HR);
       return;
     }
 
@@ -242,50 +225,47 @@ IradCylinder::createInnerObjects(Simulation& System)
       DI+=10;
     }
 
-  std::string XSurfA,XSurfB;
-  std::string YSurfA,YSurfB;
-  std::string ZSurfA,ZSurfB;
+  HeadRule XSurfA,XSurfB;
+  HeadRule YSurfA,YSurfB;
+  HeadRule ZSurfA,ZSurfB;
 
   DI=buildIndex+1000;
   for(size_t i=0;i<NX;i++)
     {
       XSurfA=(i) ?
-        ModelSupport::getComposite(SMap,DI," 3 ") :
-        ModelSupport::getComposite(SMap,buildIndex," -7 ");
+        HeadRule(SMap,DI,3) :
+        HeadRule(SMap,buildIndex,-7);
       XSurfB=(i!=NX-1) ?
-        ModelSupport::getComposite(SMap,DI+10," -3 ") :
-        ModelSupport::getComposite(SMap,buildIndex," -7 ");
+        HeadRule(SMap,DI+10,-3) :
+        HeadRule(SMap,buildIndex,-7);
       DI+=10;
 
       int DJ(buildIndex+1000);
       for(size_t j=0;j<NY;j++)
         {
 	  YSurfA=(j) ?
-	    ModelSupport::getComposite(SMap,DJ," 1 ") :
-	    ModelSupport::getComposite(SMap,buildIndex," 1 ");
+	    HeadRule(SMap,DJ,1) :
+	    HeadRule(SMap,buildIndex,1);
 	  YSurfB=(j!=NY-1) ?
-	    ModelSupport::getComposite(SMap,DJ+10," -1 ") :
-	    ModelSupport::getComposite(SMap,buildIndex," -2 ");
+	    HeadRule(SMap,DJ+10,-1) :
+	    HeadRule(SMap,buildIndex,-2);
 	  DJ+=10;
           
           int DK(buildIndex+1000);
           for(size_t k=0;k<NZ;k++)
             {
 	      ZSurfA=(k) ?
-		ModelSupport::getComposite(SMap,DK," 5 ") :
-		ModelSupport::getComposite(SMap,buildIndex," -7 ");
+		HeadRule(SMap,DK,5) :
+		HeadRule(SMap,buildIndex,-7);
 	      ZSurfB=(k!=NZ-1) ?
-		ModelSupport::getComposite(SMap,DK+10," -5 ") :
-		ModelSupport::getComposite(SMap,buildIndex," -7 ");
+		HeadRule(SMap,DK+10,-5) :
+		HeadRule(SMap,buildIndex,-7);
 	      DK+=10;
 
-              std::string Out=XSurfB+YSurfB+ZSurfB+
-		XSurfA+YSurfA+ZSurfA;
-	      HeadRule unit(Out);
-	      unit.removeCommon();
-              System.addCell(MonteCarlo::Object(cellIndex++,mat,temp,
-					       unit.display()));
-              addCell("Samples",cellIndex-1);
+              HeadRule HR=XSurfB*YSurfB*ZSurfB*
+		XSurfA*YSurfA*ZSurfA;
+	      HR.removeCommon();
+              makeCell("Samples",System,cellIndex++,mat,temp,HR);
             }
         }
     }
@@ -335,41 +315,36 @@ IradCylinder::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("IradCylinder","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   // Centre
-  // Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -7 ");
-  // System.addCell(MonteCarlo::Object(cellIndex++,mat,temp,Out));
+  // HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -7");
+  // makeCell(,System,cellIndex++,mat,temp,HR);
   // addCell("Centre",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1 -8 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,mat,temp,Out));
-  addCell("End",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 -8");
+  makeCell("End",System,cellIndex++,mat,temp,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -9 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,mat,temp,Out));
-  addCell("End",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -9");
+  makeCell("End",System,cellIndex++,mat,temp,HR);
 
 
   int IR(buildIndex);
   for(size_t index=0;index<wallThick.size();index++)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,IR," 1 -2 -17M 7M ");
-      System.addCell(MonteCarlo::Object(cellIndex++,wallMat[index],temp,Out));
-      addCell("Wall",cellIndex-1);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,IR,"1 -2 -17M 7M");
+      makeCell("Wall",System,cellIndex++,wallMat[index],temp,HR);
       
-      Out=ModelSupport::getComposite(SMap,buildIndex,IR," -1 -18M 8M ");
-      System.addCell(MonteCarlo::Object(cellIndex++,wallMat[index],temp,Out));
-      addCell("Wall",cellIndex-1);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,IR,"-1 -18M 8M");
+      makeCell("Wall",System,cellIndex++,wallMat[index],temp,HR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,IR," 2 -19M 9M ");
-      System.addCell(MonteCarlo::Object(cellIndex++,wallMat[index],temp,Out));
-      addCell("Wall",cellIndex-1);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,IR,"2 -19M 9M");
+      makeCell("Wall",System,cellIndex++,wallMat[index],temp,HR);
       IR+=10;
     }
 
   IR-=10;
-  Out=ModelSupport::getComposite(SMap,buildIndex,IR," (1:-18M) (-2:-19M) -17M ");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,IR,"(1:-18M) (-2:-19M) -17M");
+  addOuterSurf(HR);
   
   return; 
 }

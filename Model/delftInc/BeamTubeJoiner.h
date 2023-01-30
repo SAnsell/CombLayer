@@ -3,7 +3,7 @@
  
  * File:   delftInc/BeamTubeJoiner.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,12 +38,13 @@ namespace delftSystem
   and Beamline to take acount of the track (inner build)
 */
 
-class BeamTubeJoiner : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
+class BeamTubeJoiner : 
+  public attachSystem::FixedRotate,
+  public attachSystem::ContainedComp,
+  public attachSystem::ExternalCut,
   public attachSystem::CellMap
 {
  private:
-  
   
   double waterStep;             ///< Forward water step
   double innerStep;             ///< Forward inner linder
@@ -65,11 +66,8 @@ class BeamTubeJoiner : public attachSystem::ContainedComp,
 
   void populate(const FuncDataBase&);
   void populatePortals(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
-  void createObjects(Simulation&,const attachSystem::FixedComp&,const long int);
+  void createObjects(Simulation&);
   void createLinks(const attachSystem::FixedComp&,const long int);
 
  public:
@@ -82,6 +80,7 @@ class BeamTubeJoiner : public attachSystem::ContainedComp,
   // Accessor to inner void cell
   //  int getInnerVoid() const { return innerVoid; }
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

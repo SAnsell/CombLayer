@@ -3,7 +3,7 @@
  
  * File:   attachComp/SurfMap.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -192,6 +192,29 @@ SurfMap::realPtr(const std::string& Key,
 
   const int sn=getSignedSurf(Key,Index);
   return SurI.realSurf<T>(std::abs(sn));
+}
+
+template<typename T>
+T*
+SurfMap::realPtrThrow(const std::string& Key,
+		 const std::string& errStr,
+		 const size_t Index) const
+  /*!
+    Get the rule based on a surface
+    \tparam T :: Surf type						
+    \param Key :: Keyname
+    \param errStr :: Errorstring
+    \param Index :: Index number
+    \return surface pointer as type T
+   */
+{
+  ELog::RegMethod RegA("SurfMap","realPtrThrow");
+  // care hear this should not be singleton
+  T* surfPtr=SurfMap::realPtr<T>(Key,Index);
+  if (!surfPtr)
+    throw ColErr::InContainerError<std::string>
+      (Key+":"+std::to_string(Index),errStr);
+  return surfPtr;
 }
 
 HeadRule
@@ -502,6 +525,27 @@ SurfMap::realPtr(const std::string&,const size_t) const;
 
 template const Geometry::Plane*
 SurfMap::realPtr(const std::string&,const size_t) const;
+
+template Geometry::Cylinder*
+SurfMap::realPtr(const std::string&,const size_t) const;
+
+template const Geometry::Cylinder*
+SurfMap::realPtr(const std::string&,const size_t) const;
+
+template Geometry::Plane*
+SurfMap::realPtrThrow(const std::string&,const std::string&,
+		      const size_t) const;
+template const Geometry::Plane*
+SurfMap::realPtrThrow(const std::string&,const std::string&,
+		      const size_t) const;
+
+template Geometry::Cylinder*
+SurfMap::realPtrThrow(const std::string&,const std::string&,
+		      const size_t) const;
+
+template const Geometry::Cylinder*
+SurfMap::realPtrThrow(const std::string&,const std::string&,
+		      const size_t) const;
 
 ///\endcond template
   

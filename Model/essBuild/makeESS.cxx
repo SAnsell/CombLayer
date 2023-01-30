@@ -43,7 +43,6 @@
 #include "OutputLog.h"
 #include "Vec3D.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "inputParam.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -241,7 +240,7 @@ makeESS::hasEngineering(const std::string& Item) const
   
 void
 makeESS::makeTarget(Simulation& System,
-		    const std::string& targetType)
+		    const mainSystem::inputParam& IParam)
   /*!
     Build the different ESS targets
     \param System :: Simulation
@@ -253,9 +252,11 @@ makeESS::makeTarget(Simulation& System,
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   const int voidCell(74123);  
-  
+  const std::string targetType=
+    IParam.getValue<std::string>("targetType");
+
   // Best place to put this to allow simple call
-  if (targetType=="help")
+    if (targetType=="help")
     {
       ELog::EM<<"Target Type [Target]:"<<ELog::endBasic;
       ELog::EM<<"  -- Wheel     : Simple wheel form"<<ELog::endBasic;
@@ -273,6 +274,9 @@ makeESS::makeTarget(Simulation& System,
       (targetType,"Unknown target type");
   
   Target->addInsertCell("Shaft",voidCell);
+  Target->addInsertCell("Wheel",voidCell);
+  if (IParam.flag("engActive"))
+    Target->setEngActive();
   Target->addInsertCell("Wheel",voidCell);
   Target->createAll(System,World::masterOrigin(),0);
 
@@ -395,7 +399,7 @@ makeESS::buildIradComponent(Simulation& System,
                             const mainSystem::inputParam& IParam)
   /*!
     Build the Iradiation component. It is an object
-    within a moderator (typically). Currently not saves in 
+    within a moderator (typically). Currently not saved in 
     the class set.
     \param System :: Simulation
     \param IParam :: Name of Irad component + location
@@ -471,7 +475,6 @@ makeESS::buildLowButterfly(Simulation& System)
   
   LowMod=std::shared_ptr<EssModBase>(BM);
   LowMod->createAll(System,*LowPreMod,6,*Reflector,0);
-  
   return;
 }
 
@@ -484,11 +487,9 @@ makeESS::buildTopButterfly(Simulation& System)
 {
   ELog::RegMethod RegA("makeESS","buildTopButteflyMod");
 
-
   std::shared_ptr<ButterflyModerator> BM
     (new essSystem::ButterflyModerator("TopFly"));
   BM->setRadiusX(Reflector->getRadius());
-
   TopMod=std::shared_ptr<EssModBase>(BM);
   TopMod->createAll(System,*TopPreMod,6,*Reflector,0);
   return;
@@ -560,7 +561,6 @@ makeESS::buildTopBox(Simulation& System)
   */
 {
   ELog::RegMethod RegA("makeESS","buildTopBox");
-
 
   std::shared_ptr<BoxModerator> BM
     (new essSystem::BoxModerator("TopBox"));
@@ -640,8 +640,7 @@ makeESS::buildBunkerFeedThrough(Simulation& System,
           BF->buildAll(System,*BPtr,segNumber,feedName);  
           
           bFeedArray.push_back(BF);
-          //  attachSystem::addToInsertForced(System,*GB, Target->getCC("Wheel"));
-          
+          //  attachSystem::addToInsertForced(System,*GB, Target->getCC("Wheel"));          
         }
     }
   return;
@@ -668,7 +667,7 @@ makeESS::buildBunkerChicane(Simulation& System,
       const std::string bunkerName=
         IParam.getValueError<std::string>
         ("bunkerChicane",j,0,"BunkerName "+errMess);
-
+      ELog::EM<<"Bunker Name == "<<bunkerName<<ELog::endDiag;
       // bunkerA/etc should be a map
       std::shared_ptr<Bunker> BPtr;
       if (bunkerName=="BunkerA" || bunkerName=="ABunker")
@@ -706,7 +705,7 @@ makeESS::buildBunkerChicane(Simulation& System,
 	}
       else
 	{
-          CF->createAll(System,*BPtr,segNumber);
+          CF->buildAll(System,*BPtr,segNumber);
 	}
 
       attachSystem::addToInsertLineCtrl(System,*BPtr,"MainVoid",*CF,*CF);
@@ -788,21 +787,6 @@ makeESS::buildPillars(Simulation& System,
 }
   
 void
-makeESS::optionSummary(Simulation& System)
-  /*!
-    Write summary of options
-    \param System :: Dummy call variable 						
-   */
-{
-  ELog::RegMethod RegA("makeESS","optionSummary");
-  
-  makeTarget(System,"help");
-  
-  return;
-}
-
-  
-void
 makeESS::makeBeamLine(Simulation& System,
 		      const mainSystem::inputParam& IParam)
   /*!
@@ -853,9 +837,9 @@ makeESS::makeBeamLine(Simulation& System,
 	  std::pair<int,int> BLNum=makeESSBL::getBeamNum(BL);
           ELog::EM<<"BLNum == "<<BLNum.first<<" "<<BLNum.second<<ELog::endDiag;
 	  
-	  if (BLNum.first==1 && BLNum.second<=11)
+	  if (BLNum.first==1 && BLNum.second<=10)
 	    BLfactory.build(System,*ABunker);
-	  else if (BLNum.first==1 && BLNum.second>11)
+	  else if (BLNum.first==1 && BLNum.second>10)
 	    BLfactory.build(System,*BBunker);
 	  else if (BLNum.first==2 && BLNum.second<=11)
 	    BLfactory.build(System,*DBunker);
@@ -910,7 +894,6 @@ makeESS::makeBunker(Simulation& System,
 
   if (bunkerType.find("noCurtain")==std::string::npos)
     {
-
       TopCurtain->addInsertCell("Top",voidCell);
       TopCurtain->addInsertCell("Lower",voidCell);
       TopCurtain->addInsertCell("Mid",voidCell);
@@ -919,7 +902,7 @@ makeESS::makeBunker(Simulation& System,
       TopCurtain->addInsertCell("RoofCut",ABunker->getCells("roof"));
       TopCurtain->addInsertCell("RoofCut",BBunker->getCells("roof"));
       TopCurtain->createAll(System,*ShutterBayObj,6,4);
-
+      /*
       ABHighBay->setCurtainCut
 	(TopCurtain->combine("-OuterRadius -OuterZStep"));
       ABHighBay->addInsertCell(voidCell);
@@ -929,6 +912,46 @@ makeESS::makeBunker(Simulation& System,
       //	(TopCurtain->combine({"-OuterRadius","-OuterZStep"}));
       CDHighBay->addInsertCell(voidCell);
       CDHighBay->buildAll(System,*CBunker,*DBunker);
+      */
+      
+      // minimize cells as curtain will be in MANY unnecessary roof objects:
+      // and we will need to use them later:
+
+      ABHighBay->setCutSurf("frontCut",*ABunker,3);
+      ABHighBay->setCutSurf("curtainCut",
+			    TopCurtain->combine("-OuterRadius -OuterZStep"));
+
+      ABHighBay->setCutSurf
+	("leftWallInner",ABunker->getSurfRules("leftWallInner"));
+      ABHighBay->setCutSurf
+	("leftWallOuter",ABunker->getSurfRules("leftWallOuter"));
+      ABHighBay->setCutSurf
+	("rightWallInner",BBunker->getSurfRules("-rightWallInner"));
+      ABHighBay->setCutSurf
+	("rightWallOuter",BBunker->getSurfRules("-rightWallOuter"));
+      ABHighBay->setCutSurf
+	("roofOuter",ABunker->getSurfRules("roofOuter"));
+      
+      ABHighBay->addInsertCell(voidCell);
+      ABHighBay->createAll(System,*ABunker,0);
+
+      CDHighBay->setCutSurf("frontCut",*CBunker,3);
+      //      CDHighBay->setCurtainCut
+      //	(TopCurtain->combine({"-OuterRadius","-OuterZStep"}));
+      CDHighBay->setCutSurf
+	("leftWallInner",CBunker->getSurfRules("leftWallInner"));
+      CDHighBay->setCutSurf
+	("leftWallOuter",CBunker->getSurfRules("leftWallOuter"));
+      CDHighBay->setCutSurf
+	("rightWallInner",DBunker->getSurfRules("-rightWallInner"));
+      CDHighBay->setCutSurf
+	("rightWallOuter",DBunker->getSurfRules("-rightWallOuter"));
+      CDHighBay->setCutSurf
+	("roofOuter",CBunker->getSurfRules("roofOuter"));
+      
+      CDHighBay->addInsertCell(voidCell);
+      CDHighBay->createAll(System,*CBunker,0);
+
     }
   if (bunkerType.find("help")!=std::string::npos)
     {
@@ -953,7 +976,7 @@ makeESS::buildPreWings(Simulation& System)
   ELog::RegMethod RegA("makeESS","buildPreWings");
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  enum Side {bottom, top};
+  //  enum Side {bottom, top};
 
   const ButterflyModerator* TMod=
     dynamic_cast<const ButterflyModerator*>(TopMod.get());
@@ -963,13 +986,14 @@ makeESS::buildPreWings(Simulation& System)
         (new PreModWing("TopLeftPreWing"));
       
       OR.addObject(TopPreWingA);
-      TopPreWingA->setDivider(TMod->getMainRule(-7));
-      TopPreWingA->setInnerExclude(TMod->getLeftExclude());
-      TopPreWingA->setMidExclude(TMod->getLeftFarExclude());
+      TopPreWingA->setCutSurf("Divider",TMod->getMainRule(-7));
+      TopPreWingA->setCutSurf("Inner",TMod->getLeftExclude());
+      TopPreWingA->setCutSurf("Mid",TMod->getLeftFarExclude());
 
-      TopPreWingA->setBaseCut(TopPreMod->getSurfRules("Layer2"));
-      TopPreWingA->setTopCut(TopCapMod->getFullRule(5));
-      TopPreWingA->setOuter(TopPreMod->getSurfRule("-OuterRad"));
+      TopPreWingA->setCutSurf("Base",TopPreMod->getSurfRules("Layer2"));
+      TopPreWingA->setCutSurf("Top",*TopCapMod,5);
+      TopPreWingA->setCutSurf("Outer",TopPreMod->getSurfRule("-OuterRad"));
+
       TopPreWingA->addInsertCell(TMod->getCells("MainVoid"));
       TopPreWingA->createAll(System,*TMod,0);
 
@@ -977,12 +1001,13 @@ makeESS::buildPreWings(Simulation& System)
         std::shared_ptr<PreModWing>(new PreModWing("TopRightPreWing"));
       
       OR.addObject(TopPreWingB);
-      TopPreWingB->setDivider(TMod->getMainRule(7));
-      TopPreWingB->setInnerExclude(TMod->getRightExclude());
-      TopPreWingB->setMidExclude(TMod->getRightFarExclude());
-      TopPreWingB->setBaseCut(TopPreMod->getFullRule(6));
-      TopPreWingB->setTopCut(TopCapMod->getFullRule(5));
-      TopPreWingB->setOuter(TopPreMod->getSurfRule("-OuterRad"));
+      TopPreWingB->setCutSurf("Divider",TMod->getMainRule(7));
+      TopPreWingB->setCutSurf("Inner",TMod->getRightExclude());
+      TopPreWingB->setCutSurf("Mid",TMod->getRightFarExclude());
+
+      TopPreWingB->setCutSurf("Base",*TopPreMod,6);
+      TopPreWingB->setCutSurf("Top",*TopCapMod,5);
+      TopPreWingB->setCutSurf("Outer",TopPreMod->getSurfRule("-OuterRad"));
       
       TopPreWingB->addInsertCell(TMod->getCells("MainVoid"));
       TopPreWingB->createAll(System,*TMod,0);
@@ -1055,21 +1080,12 @@ makeESS::build(Simulation& System,
   const std::string topModType=IParam.getValue<std::string>("topMod");
 
   
-  const std::string targetType=IParam.getValue<std::string>("targetType");
   const std::string iradLine=IParam.getValue<std::string>("iradLineType");
 
   //  const size_t nF5=IParam.getValue<size_t>("nF5");
-
-  
-  if (StrFunc::checkKey("help",lowPipeType,lowModType,targetType) ||
-      StrFunc::checkKey("help",iradLine,topModType,""))
-    {
-      optionSummary(System);
-      throw ColErr::ExitAbort("Help system exit");
-    }
   
   buildFocusPoints(System);
-  makeTarget(System,targetType);
+  makeTarget(System,IParam);
   Reflector->globalPopulate(Control);
 
   // lower moderator
@@ -1133,14 +1149,22 @@ makeESS::build(Simulation& System,
 
   // Build flightlines after bulk
   Reflector->deleteCell(System,"topVoid");
-  TopAFL->createAll(System,*TopMod,0,*Reflector,4,*Bulk,-3);
-  TopBFL->createAll(System,*TopMod,0,*Reflector,3,*Bulk,-3);
+  TopAFL->setCutSurf("Inner",*Reflector,4);
+  TopAFL->setCutSurf("Outer",*Bulk,-3);
+  TopBFL->setCutSurf("Inner",*Reflector,3);
+  TopBFL->setCutSurf("Outer",*Bulk,-3);
+  TopAFL->createAll(System,*TopMod,0);
+  TopBFL->createAll(System,*TopMod,0);
 
   if (lowModType != "None")
     {
       Reflector->deleteCell(System,"lowVoid");
-      LowAFL->createAll(System,*LowMod,0,*Reflector,4,*Bulk,-3);
-      LowBFL->createAll(System,*LowMod,0,*Reflector,3,*Bulk,-3);
+      LowAFL->setCutSurf("Inner",*Reflector,4);
+      LowAFL->setCutSurf("Outer",*Bulk,-3);
+      LowBFL->setCutSurf("Inner",*Reflector,3);
+      LowBFL->setCutSurf("Outer",*Bulk,-3);
+      LowAFL->createAll(System,*LowMod,0);
+      LowBFL->createAll(System,*LowMod,0);
     }
   
   // THESE calls correct the MAIN volume so pipe work MUST be after here:
@@ -1191,14 +1215,17 @@ makeESS::build(Simulation& System,
   
   // PROTON BEAMLINE
 
-  //  pbip->createAll(System,World::masterOrigin(),0,*Bulk,3,*Target,1);
+  pbip->setCutSurf("front",*Bulk,3);
+  pbip->setCutSurf("back",*Target,1);
+  //  pbip->createAll(System,World::masterOrigin(),0);
   //  attachSystem::addToInsertSurfCtrl(System,*Bulk,pbip->getCC("before"));
   //  attachSystem::addToInsertSurfCtrl(System,*Bulk,pbip->getCC("main"));
   //  Reflector->insertComponent(System, "targetVoid", pbip->getCC("after"));
 
   PBeam->setFront(*Bulk,4);
   PBeam->setBack(*TSMainBuildingObj,-1);
-  PBeam->createAll(System,*Bulk,4,*ShutterBayObj,-6);
+  PBeam->setCutSurf("shieldPlate",*ShutterBayObj,-6);
+  PBeam->createAll(System,*Bulk,4);
 
   attachSystem::addToInsertSurfCtrl(System,*ShutterBayObj,
 				    PBeam->getCC("Full"));

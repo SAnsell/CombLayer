@@ -3,7 +3,7 @@
  
  * File:   modelSupport/boxUnit.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,8 +41,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "surfRegister.h"
@@ -387,18 +385,6 @@ boxUnit::createSurfaces()
   return;
 }
 
-std::string
-boxUnit::createCaps() const
-  /*!
-    Creates the caps with the appropiate surfaces
-    \return caps string [inward pointing]
-  */
-{
-  ELog::RegMethod RegA("pipeUnit","createCap");
-
-  return ASurf.display()+" "+BSurf.display(); 
-}
-
 const HeadRule&
 boxUnit::getCap(const int side) const
   /*!
@@ -422,15 +408,15 @@ boxUnit::createOuterObjects()
   const size_t outerIndex=getOuterIndex();
   const int SI(buildIndex+static_cast<int>(outerIndex)*10);
 
-  const std::string FBSurf=createCaps();
-
+  const HeadRule FBSurf=ASurf*BSurf;
+  
   // top / bottom plane
   std::ostringstream outerCX;
   for(int j=0;j<static_cast<int>(nSides);j++)
     outerCX<<-(j+3)<<" ";
-  const std::string Out=
-    ModelSupport::getComposite(SMap,SI,outerCX.str());
-  addOuterSurf(Out+FBSurf);
+  const HeadRule HR=
+    ModelSupport::getHeadRule(SMap,SI,outerCX.str());
+  addOuterSurf(HR*FBSurf);
   return;
 }
 
@@ -444,44 +430,32 @@ boxUnit::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("boxUnit","createObjects");
 
-  const std::string FBSurf=createCaps();  
+  const HeadRule FBSurf=ASurf*BSurf;
 
-  std::string Out;
   int SI(buildIndex);
-  int SIprev(0);
+
   size_t bitIndex(1);
   // Sides string
   std::ostringstream outerCX;
-  std::ostringstream innerCX;
-  outerCX<<" ";
-  innerCX<<" ( ";
-  for(int j=0;j<static_cast<int>(nSides);j++)
-    { 
-      outerCX<<-(j+3)<<" ";
-      if (j)
-	innerCX<<":"<<(j+3);
-      else
-	innerCX<<(j+3);
-    }
-  innerCX<<") ";
+  for(long int j=0;j<static_cast<long int>(nSides);j++)
+    outerCX<<-(j+3)<<" ";
+
+  HeadRule outerHR,innerHR;
   for(size_t i=0;i<boxVar.size();i++)
     {
       if (!activeFlag || (activeFlag & bitIndex))
 	{
-	  Out=ModelSupport::getComposite(SMap,SI,outerCX.str());
-	  if (SIprev)
-	    Out+=ModelSupport::getComposite(SMap,SIprev,innerCX.str());
-	  Out+=FBSurf;
-	  System.addCell(MonteCarlo::Object(cellIndex++,
-					   boxVar[i].getMat(),
-					   boxVar[i].getTemp(),Out));
-	  SIprev=SI;
+	    outerHR=getHeadRule(SMap,SI,outerCX.str());
+	    System.addCell(cellIndex++,
+			   boxVar[i].getMat(),
+			   boxVar[i].getTemp(),outerHR*innerHR*FBSurf);
+	    innerHR=outerHR.complement();
 	}
+      SI+=10;
     }
-  // Final outer layer is controlled by SIprev
-  Out=ModelSupport::getComposite(SMap,SIprev,outerCX.str());
-  Out+=FBSurf;
-  addOuterSurf(Out);
+  
+  // Final outer layer is controlled by outer
+  addOuterSurf(outerHR*FBSurf);
   return;
 }
 

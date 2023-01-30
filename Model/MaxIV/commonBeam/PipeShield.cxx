@@ -39,19 +39,13 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "support.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "Surface.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -81,8 +75,8 @@ namespace xraySystem
 {
 
 PipeShield::PipeShield(const std::string& Key) :
-  attachSystem::ContainedGroup("Main","Wings"),
   attachSystem::FixedRotate(Key,2),
+  attachSystem::ContainedGroup("Main","Wings"),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   attachSystem::ExternalCut()
   /*!
@@ -92,9 +86,11 @@ PipeShield::PipeShield(const std::string& Key) :
 {}
 
 PipeShield::PipeShield(const PipeShield& A) : 
+  attachSystem::FixedRotate(A),
   attachSystem::ContainedGroup(A),
-  attachSystem::FixedRotate(A),attachSystem::CellMap(A),
-  attachSystem::SurfMap(A),attachSystem::ExternalCut(A),
+  attachSystem::CellMap(A),
+  attachSystem::SurfMap(A),
+  attachSystem::ExternalCut(A),
   height(A.height),width(A.width),length(A.length),
   clearGap(A.clearGap),wallThick(A.wallThick),mat(A.mat),
   wallMat(A.wallMat)
@@ -114,8 +110,8 @@ PipeShield::operator=(const PipeShield& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedRotate::operator=(A);
+      attachSystem::ContainedGroup::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       attachSystem::ExternalCut::operator=(A);
@@ -221,56 +217,50 @@ PipeShield::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("PipeShield","createObjects");
 
-  std::string Out;
-  const std::string fStr(getRuleStr("front"));
-  const std::string bStr(getRuleStr("back"));
-  const std::string rAStr(getRuleStr("inner"));
-  const std::string rBStr(getRuleStr("innerTwo"));
+  HeadRule HR;
+  const HeadRule fHR(getRule("front"));
+  const HeadRule bHR(getRule("back"));
+  const HeadRule rAHR(getRule("inner"));
+  const HeadRule rBHR(getRule("innerTwo"));
 
   // inner clearance gap
-  if (!rAStr.empty())
+  if (!rAHR.isEmpty())
     {
-      Out=ModelSupport::getSetComposite(SMap,buildIndex," -7 ");
-      Out+=fStr+bStr+rAStr;
-      makeCell("clearGap",System,cellIndex++,0,0.0,Out);
+      HR=HeadRule(SMap,buildIndex,-7);
+      makeCell("clearGap",System,cellIndex++,0,0.0,HR*fHR*bHR*rAHR);
     }
 
-  if (!rBStr.empty())
+  if (!rBHR.isEmpty())
     {
-      Out=ModelSupport::getSetComposite(SMap,buildIndex," -17 ");
-      Out+=fStr+bStr+rBStr;
-      makeCell("clearGap",System,cellIndex++,0,0.0,Out);
+      HR=HeadRule(SMap,buildIndex,-17);
+      makeCell("clearGap",System,cellIndex++,0,0.0,HR*fHR*bHR*rBHR);
     }
 
-  Out=ModelSupport::getSetComposite(SMap,buildIndex," 3 -4 5 -6 7 17 ");
-  Out+=fStr+bStr;
-  makeCell("Main",System,cellIndex++,mat,0.0,Out);
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"3 -4 5 -6 7 17");
+  makeCell("Main",System,cellIndex++,mat,0.0,HR*fHR*bHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 13 -14 15 -16 (-3:4:-5:6) ");
-  Out+=fStr+bStr;
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"13 -14 15 -16 (-3:4:-5:6)");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR*fHR*bHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 15 -16 ");
-  Out+=fStr+bStr;
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 15 -16");
 
-  addOuterSurf("Main",Out);
+  addOuterSurf("Main",HR*fHR*bHR);
 
 
   if (wingMat>=0)
     {
-      const std::string fComp(getComplementStr("front"));
-      Out=ModelSupport::getComposite(SMap,buildIndex," 101 13 -103  15 -16 ");
-      Out+=fComp;
-      makeCell("WingA",System,cellIndex++,wingMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 13 -103  15 -16");
+      HR*=fHR.complement();
+      makeCell("WingA",System,cellIndex++,wingMat,0.0,HR);
 	    
-      addOuterSurf("Wings",Out);
+      addOuterSurf("Wings",HR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," 101 104 -14  15 -16 ");
-      Out+=fComp;
-      makeCell("WingB",System,cellIndex++,wingMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 104 -14  15 -16");
+      HR*=fHR.complement();
+      makeCell("WingB",System,cellIndex++,wingMat,0.0,HR);
 
-      addOuterUnionSurf("Wings",Out);
+      addOuterUnionSurf("Wings",HR);
     }
   
   return;

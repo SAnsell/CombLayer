@@ -3,7 +3,7 @@
  
  * File:   construct/CrystalMount.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "surfRegister.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
@@ -53,10 +51,9 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -69,8 +66,8 @@ namespace constructSystem
 
 CrystalMount::CrystalMount(const std::string& Key,
                            const size_t Index) :
+  attachSystem::FixedRotate(Key+std::to_string(Index),8),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key+StrFunc::makeString(Index),8),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   baseName(Key),ID(Index)
   /*!
@@ -81,8 +78,10 @@ CrystalMount::CrystalMount(const std::string& Key,
 {}
 
 CrystalMount::CrystalMount(const CrystalMount& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  attachSystem::CellMap(A),attachSystem::SurfMap(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
+  attachSystem::SurfMap(A),
   baseName(A.baseName),ID(A.ID),
   active(A.active),width(A.width),
   thick(A.thick),length(A.length),gap(A.gap),wallThick(A.wallThick),
@@ -105,8 +104,8 @@ CrystalMount::operator=(const CrystalMount& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       active=A.active;
@@ -141,7 +140,7 @@ CrystalMount::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("CrystalMount","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   active=Control.EvalDefTail<int>(keyName,baseName,"Active",1);
   width=Control.EvalTail<double>(keyName,baseName,"Width");
@@ -230,25 +229,23 @@ CrystalMount::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("CrystalMount","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   if (active)
     {
       // xstal
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,xtalMat,0.0,Out));
-      addCell("Xtal",cellIndex-1);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+      makeCell("Xtal",System,cellIndex++,xtalMat,0.0,HR);
       
+      HR=ModelSupport::getHeadRule
+        (SMap,buildIndex,"1 -12 13 -14 15 -16 (2:-3:4:-5:6)");
+      System.addCell(cellIndex++,0,0.0,HR);
       
-      Out=ModelSupport::getComposite
-        (SMap,buildIndex," 1 -12 13 -14 15 -16 (2:-3:4:-5:6) ");
-      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-      
-      Out=ModelSupport::getComposite
+      HR=ModelSupport::getHeadRule
         (SMap,buildIndex," 1 -22 23 -24 25 -26 (12:-13:14:-15:16) ");
-      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+      System.addCell(cellIndex++,wallMat,0.0,HR);
       
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1 -22 23 -24 25 -26 ");
-      addOuterSurf(Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -22 23 -24 25 -26 ");
+      addOuterSurf(HR);
     }
   return; 
 }

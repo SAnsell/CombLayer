@@ -39,7 +39,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "surfRegister.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
@@ -235,27 +234,26 @@ BeamMount::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("BeamMount","createObjects");
 
-  const std::string mountSurf(ExternalCut::getRuleStr("mountSurf"));
+  const HeadRule mountSurf(ExternalCut::getRule("mountSurf"));
 
-  std::string Out;
+  HeadRule HR;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 -5 " );
-  makeCell("Support",System,cellIndex++,supportMat,0.0,Out+mountSurf);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 -5");
+  makeCell("Support",System,cellIndex++,supportMat,0.0,HR*mountSurf);
 
   if (blockFlag)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 " );
-      makeCell("Block",System,cellIndex++,blockMat,0.0,Out);
-      addOuterSurf("Block",Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+      makeCell("Block",System,cellIndex++,blockMat,0.0,HR);
+      addOuterSurf("Block",HR);
     }
-    
   
   // final exclude:
-  //  Out=ModelSupport::getComposite(SMap,buildIndex,"-117 -6");
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 -5 " );
-  addOuterSurf("Support",Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 " );  
-  addOuterSurf("Block",Out);
+  //  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-117 -6");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 -5");
+  addOuterSurf("Support",HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");  
+  addOuterSurf("Block",HR);
   
   return; 
 }

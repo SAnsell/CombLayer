@@ -84,7 +84,6 @@ MagnetM1::MagnetM1(const std::string& Key) :
   entryPipe(new xraySystem::EntryPipe(keyName+"EntryPipe")),
   halfPipe(new xraySystem::HalfElectronPipe(keyName+"HalfElectron")),
   epCombine(new xraySystem::EPCombine(keyName+"EPCombine")),
-  
   Oxx(new xraySystem::Octupole(keyName+"OXX")),
   QFend(new xraySystem::Quadrupole(keyName+"QFend")),
   Oxy(new xraySystem::Octupole(keyName+"OXY")),

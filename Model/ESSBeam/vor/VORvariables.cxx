@@ -3,7 +3,7 @@
  
  * File:    ESSBeam/vor/VORvariables.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "CFFlanges.h"
 #include "FocusGenerator.h"
 #include "ShieldGenerator.h"
 #include "ChopperGenerator.h"
@@ -70,7 +71,7 @@ VORvariables(FuncDataBase& Control)
 
   Control.addVariable("vorStopPoint",0);
   Control.addVariable("vorStartPoint",0);
-  Control.addVariable("vorAxisXYAngle",0.0);   // rotation
+  Control.addVariable("vorAxisXAngle",0.0);   // rotation
   Control.addVariable("vorAxisZAngle",0.0);   // rotation 
 
   
@@ -85,14 +86,11 @@ VORvariables(FuncDataBase& Control)
   FGen.setLayer(2,0.5,"Void");
   FGen.setYOffset(2.0);
 
-  PipeGen.setPipe(12.0,0.5);
-  PipeGen.setWindow(-2.0,0.3);
-  PipeGen.setFlange(-4.0,1.0);
+  PipeGen.setCF<CF100>();
+  PipeGen.setNoWindow();
 
-    
-  
   //  Control.addVariable("vorGABeamXYAngle",1.0);
-  FGen.setYOffset(.20);
+  FGen.setYOffset(0.20);
   FGen.generateTaper(Control,"vorFA",350.0,2.114,3.2417,3.16,3.9228);
 
   // VACUUM PIPE in Gamma shield
@@ -110,7 +108,7 @@ VORvariables(FuncDataBase& Control)
   CGen.setMainRadius(26.0);
   CGen.setFrame(60.0,60.0);
   CGen.generateChopper(Control,"vorChopperA",8.0,10.0,4.55);    
-
+		      
   // Double Blade chopper
   BGen.setMaterials("Inconnel","Aluminium");
   BGen.setThick({0.3,0.3});
@@ -136,7 +134,7 @@ VORvariables(FuncDataBase& Control)
 
   // VACUUM PIPE: in bunker wall
   PipeGen.setPipe(6.0,0.5);
-  PipeGen.setWindow(-2.0,0.5);
+  PipeGen.setNoWindow();
   PipeGen.setFlange(-4.0,1.0);
   PipeGen.generatePipe(Control,"vorPipeWall",348.0);
   Control.addVariable("vorPipeWallYStep",1.0);
@@ -183,7 +181,7 @@ VORvariables(FuncDataBase& Control)
 
   CGen.setMainRadius(26.0);
   CGen.setFrame(60.0,60.0);
-  CGen.generateChopper(Control,"vorChopperOutB",22.0,10.0,4.55);    
+  CGen.generateChopper(Control,"vorChopperOutB",24.0,10.0,4.55);    
 
   // FOCB single disk chopper
   BGen.setThick({0.2});
@@ -193,6 +191,7 @@ VORvariables(FuncDataBase& Control)
   SGen.setRFLayers(3,8);
   SGen.generateShield(Control,"vorShieldB",900.0,40.0,40.0,40.0,3,8);
 
+  PipeGen.setPipe(11,0.5);
   PipeGen.generatePipe(Control,"vorPipeOutC",814.0);
   Control.addVariable("vorPipeOutCYStep",2.0);
   FGen.generateTaper(Control,"vorFOutC",808.0,4.0,4.0,20.0,16.0);

@@ -67,7 +67,9 @@
 #include "World.h"
 #include "beamlineSupport.h"
 #include "GuideItem.h"
-#include "GuideLine.h"
+#include "GuideUnit.h"
+#include "PlateUnit.h"
+#include "BenderUnit.h"
 #include "DiskChopper.h"
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
@@ -84,39 +86,39 @@ HEIMDAL::HEIMDAL(const std::string& keyName) :
   startPoint(0),stopPoint(0),
   heimdalAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
 
-  FocusTA(new beamlineSystem::GuideLine(newName+"FTA")),
-  FocusCA(new beamlineSystem::GuideLine(newName+"FCA")),
+  FocusTA(new beamlineSystem::PlateUnit(newName+"FTA")),
+  FocusCA(new beamlineSystem::PlateUnit(newName+"FCA")),
 
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
-  FocusTB(new beamlineSystem::GuideLine(newName+"FTB")),
-  FocusCB(new beamlineSystem::GuideLine(newName+"FCB")),
+  FocusTB(new beamlineSystem::PlateUnit(newName+"FTB")),
+  FocusCB(new beamlineSystem::PlateUnit(newName+"FCB")),
 
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
-  FocusTC(new beamlineSystem::GuideLine(newName+"FTC")),
-  FocusCC(new beamlineSystem::GuideLine(newName+"FCC")),
+  FocusTC(new beamlineSystem::PlateUnit(newName+"FTC")),
+  FocusCC(new beamlineSystem::PlateUnit(newName+"FCC")),
 
   TChopA(new essConstruct::SingleChopper(newName+"TChopA")),
   ADiskOne(new essConstruct::DiskChopper(newName+"ADiskOne")),
   ADiskTwo(new essConstruct::DiskChopper(newName+"ADiskTwo")),
 
   VPipeTD(new constructSystem::VacuumPipe(newName+"PipeTD")),
-  FocusTD(new beamlineSystem::GuideLine(newName+"FTD")),
+  FocusTD(new beamlineSystem::PlateUnit(newName+"FTD")),
   
   VPipeCD(new constructSystem::VacuumPipe(newName+"PipeCD")),
-  FocusCD(new beamlineSystem::GuideLine(newName+"FCD")),
-  BendCD(new beamlineSystem::GuideLine(newName+"BCD")),
+  FocusCD(new beamlineSystem::PlateUnit(newName+"FCD")),
+  BendCD(new beamlineSystem::BenderUnit(newName+"BCD")),
 
   TChopB(new essConstruct::SingleChopper(newName+"TChopB")),
   BDisk(new essConstruct::DiskChopper(newName+"BDisk")),
 
   VPipeTE(new constructSystem::VacuumPipe(newName+"PipeTE")),
-  FocusTE(new beamlineSystem::GuideLine(newName+"FTE")),
+  FocusTE(new beamlineSystem::PlateUnit(newName+"FTE")),
 
   ChopperT0(new essConstruct::SingleChopper(newName+"ChopperT0")), 
   T0Disk(new essConstruct::DiskChopper(newName+"T0Disk")),
 
   VPipeTF(new constructSystem::VacuumPipe(newName+"PipeTF")),
-  FocusTF(new beamlineSystem::GuideLine(newName+"FTF"))
+  FocusTF(new beamlineSystem::PlateUnit(newName+"FTF"))
   
  /*!
     Constructor
@@ -193,30 +195,29 @@ HEIMDAL::buildBunkerUnits(Simulation& System,
 
   // Offset from VPipeB center
   FocusTB->addInsertCell(VPipeB->getCells("Void"));
-  FocusTB->createAll(System,FTA,thermalIndex,FTA,thermalIndex);
+  FocusTB->createAll(System,FTA,thermalIndex);
   
   FocusCB->addInsertCell(VPipeB->getCells("Void"));
-  FocusCB->createAll(System,FCA,coldIndex,FCA,coldIndex);
+  FocusCB->createAll(System,FCA,coldIndex);
+  
+  ELog::EM<<"Cold = "<<FocusCB->getLinkAxis(2)
+	  <<ELog::endDiag;
+  ELog::EM<<"Thermal = "<<FocusTB->getLinkAxis(2)
+	  <<ELog::endDiag;
 
-  ELog::EM<<"Cold = "<<FocusCB->getKey("Guide0").getLinkAxis(2)
-	  <<ELog::endDiag;
-  ELog::EM<<"Thermal = "<<FocusTB->getKey("Guide0").getLinkAxis(2)
-	  <<ELog::endDiag;
   VPipeC->addAllInsertCell(bunkerVoid);
   VPipeC->createAll(System,*VPipeB,2);
 
   FocusTC->addInsertCell(VPipeC->getCells("Void"));
-  FocusTC->createAll(System,FocusTB->getKey("Guide0"),2,
-		     FocusTB->getKey("Guide0"),2);
+  FocusTC->createAll(System,*FocusTB,2);
 
   FocusCC->addInsertCell(VPipeC->getCells("Void"));
-  FocusCC->createAll(System,FocusCB->getKey("Guide0"),2,
-		     FocusCB->getKey("Guide0"),2);
+  FocusCC->createAll(System,*FocusCB,2);
 
   TChopA->addInsertCell(bunkerVoid);
   TChopA->getKey("Main").setAxisControl(3,ZVert);
-  TChopA->createAll(System,FocusTC->getKey("Guide0"),2);
-  
+  TChopA->createAll(System,*FocusTC,2);
+
   // Double disk chopper
   ADiskOne->addInsertCell(TChopA->getCell("Void"));
   ADiskOne->createAll(System,TChopA->getKey("Main"),0);
@@ -231,20 +232,19 @@ HEIMDAL::buildBunkerUnits(Simulation& System,
   VPipeTD->createAll(System,TChopA->getKey("Beam"),2);
 
   FocusTD->addInsertCell(VPipeTD->getCells("Void"));
-  FocusTD->createAll(System,*VPipeTD,0,*VPipeTD,0);
+  FocusTD->createAll(System,*VPipeTD,0);
 
   VPipeCD->addAllInsertCell(bunkerVoid);
-  VPipeCD->createAll(System,FocusCC->getKey("Guide0"),2);
+  VPipeCD->createAll(System,*FocusCC,2);
 
   // First part of cold guide
   FocusCD->addInsertCell(VPipeCD->getCells("Void"));
-  FocusCD->createAll(System,FocusCC->getKey("Guide0"),2,
-                     FocusCC->getKey("Guide0"),2);
+  FocusCD->createAll(System,*FocusCC,2);
 
   
   TChopB->addInsertCell(bunkerVoid);
   TChopB->getKey("Main").setAxisControl(3,ZVert);
-  TChopB->createAll(System,FocusTD->getKey("Guide0"),2);
+  TChopB->createAll(System,*FocusTD,2);
   
   // Double disk chopper
   BDisk->addInsertCell(TChopB->getCell("Void"));
@@ -255,7 +255,7 @@ HEIMDAL::buildBunkerUnits(Simulation& System,
   VPipeTE->createAll(System,TChopB->getKey("Beam"),2);
 
   FocusTE->addInsertCell(VPipeTE->getCells("Void"));
-  FocusTE->createAll(System,*VPipeTE,0,*VPipeTE,0);
+  FocusTE->createAll(System,*VPipeTE,0);
 
   ChopperT0->addInsertCell(bunkerVoid);
   ChopperT0->createAll(System,*VPipeTE,2);
@@ -269,7 +269,7 @@ HEIMDAL::buildBunkerUnits(Simulation& System,
   VPipeTF->createAll(System,ChopperT0->getKey("Beam"),2);
 
   FocusTF->addInsertCell(VPipeTF->getCells("Void"));
-  FocusTF->createAll(System,*VPipeTF,0,*VPipeTF,0);
+  FocusTF->createAll(System,*VPipeTF,0);
 
   return;
 }
@@ -358,17 +358,16 @@ HEIMDAL::build(Simulation& System,
   FocusTA->addInsertCell(GItem.getCells("Void"));
   FocusTA->setFront(GItem.getKey("Beam"),-1);
   FocusTA->setBack(GItem.getKey("Beam"),-2);
-  FocusTA->createAll(System,*heimdalAxis,-3,*heimdalAxis,-3);
+  FocusTA->createAll(System,*heimdalAxis,-3);
 
   FocusCA->addInsertCell(GItem.getCells("Void"));
   FocusCA->setFront(GItem.getKey("Beam"),-1);
   FocusCA->setBack(GItem.getKey("Beam"),-2);
-  FocusCA->createAll(System,*heimdalAxis,-3,*heimdalAxis,-3);
+  FocusCA->createAll(System,*heimdalAxis,-3);
 
   if (stopPoint==1) return;                      // STOP At monolith
                                                  // edge  
-  buildBunkerUnits(System,FocusTA->getKey("Guide0"),2,
-                   FocusCA->getKey("Guide0"),2,
+  buildBunkerUnits(System,*FocusTA,2,*FocusCA,2,
                    bunkerObj.getCell("MainVoid"));
 
   if (stopPoint==2) return;                      // STOP At bunker edge

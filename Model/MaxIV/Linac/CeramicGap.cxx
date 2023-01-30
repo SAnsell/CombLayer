@@ -3,7 +3,7 @@
 
  * File:   Linac/CeramicGap.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -52,7 +51,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
@@ -66,7 +65,7 @@ namespace tdcSystem
 {
 
 CeramicGap::CeramicGap(const std::string& Key) :
-  attachSystem::FixedOffset(Key,3),
+  attachSystem::FixedRotate(Key,3),
   attachSystem::ContainedComp(),
   attachSystem::FrontBackCut(),
   attachSystem::CellMap(),
@@ -93,7 +92,7 @@ CeramicGap::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("CeramicGap","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   radius=Control.EvalVar<double>(keyName+"Radius");
   length=Control.EvalVar<double>(keyName+"Length");
@@ -215,90 +214,85 @@ CeramicGap::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("CeramicGap","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
-  const std::string frontStr=getRuleStr("front");
-  const std::string backStr=getRuleStr("back");
+  const HeadRule frontHR=getRule("front");
+  const HeadRule backHR=getRule("back");
 
   // inner void
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr+backStr);
+  HR=HeadRule(SMap,buildIndex,-7);
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
   // front flange
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -101 -107 ");
-  makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7 -101 -107");
+  makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 7 -307 101 -301 ");
-  makeCell("CeramicA",System,cellIndex++,pipeMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7 -307 101 -301");
+  makeCell("CeramicA",System,cellIndex++,pipeMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 7 -317 301 -601 ");
-  makeCell("CeramicWide",System,cellIndex++,pipeMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7 -317 301 -601");
+  makeCell("CeramicWide",System,cellIndex++,pipeMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 7 -317 601 -602 ");
-  makeCell("CeramicGap",System,cellIndex++,ceramicMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7 -317 601 -602");
+  makeCell("CeramicGap",System,cellIndex++,ceramicMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 7 -317 602 -311 ");
-  makeCell("CeramicWide",System,cellIndex++,pipeMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7 -317 602 -311");
+  makeCell("CeramicWide",System,cellIndex++,pipeMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 7 -307 311 -321 ");
-  makeCell("CeramicB",System,cellIndex++,pipeMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7 -307 311 -321");
+  makeCell("CeramicB",System,cellIndex++,pipeMat,0.0,HR);
 
   // pipe
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7 321 -501 -407 ");
-  makeCell("Pipe",System,cellIndex++,pipeMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7 321 -501 -407");
+  makeCell("Pipe",System,cellIndex++,pipeMat,0.0,HR);
 
   // bellow
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7 501 -502 -507 ");
-  makeCell("Bellow",System,cellIndex++,bellowMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7 501 -502 -507");
+  makeCell("Bellow",System,cellIndex++,bellowMat,0.0,HR);
 
   // final pipe
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7 502 -201 -407 ");
-  makeCell("OutPipe",System,cellIndex++,pipeMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7 502 -201 -407");
+  makeCell("OutPipe",System,cellIndex++,pipeMat,0.0,HR);
 
   // back flange
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7 201 -207 ");
-  makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7 201 -207");
+  makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,HR*backHR);
 
   // OUTER voids
   const int FIndex((flangeARadius>=flangeBRadius) ?
 		   buildIndex : buildIndex+100);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,FIndex," 101 -301 307 -107M ");
-  makeCell("CeramicVoid",System,cellIndex++,outerMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,FIndex,"101 -301 307 -107M ");
+  makeCell("CeramicVoid",System,cellIndex++,outerMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,FIndex," 301 -311 317 -107M ");
-  makeCell("CeramicVoid",System,cellIndex++,outerMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,FIndex,"301 -311 317 -107M ");
+  makeCell("CeramicVoid",System,cellIndex++,outerMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,FIndex," 311 -321 307 -107M ");
-  makeCell("CeramicVoid",System,cellIndex++,outerMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,FIndex,"311 -321 307 -107M ");
+  makeCell("CeramicVoid",System,cellIndex++,outerMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,FIndex," -501 321 -107M 407");
-  makeCell("PipeVoid",System,cellIndex++,outerMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,FIndex,"-501 321 -107M 407");
+  makeCell("PipeVoid",System,cellIndex++,outerMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,FIndex," 501 -502 -107M 507");
-  makeCell("BellowVoid",System,cellIndex++,outerMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,FIndex,"501 -502 -107M 507");
+  makeCell("BellowVoid",System,cellIndex++,outerMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,FIndex," 502 -201 -107M 407");
-  makeCell("BellowVoid",System,cellIndex++,outerMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,FIndex,"502 -201 -107M 407");
+  makeCell("BellowVoid",System,cellIndex++,outerMat,0.0,HR);
 
   if (flangeARadius<flangeBRadius)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," -101 107 -207")+frontStr;
-      makeCell("FlangeAVoid",System,cellIndex++,outerMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 107 -207");
+      makeCell("FlangeAVoid",System,cellIndex++,outerMat,0.0,HR*frontHR);
     }
   else if (flangeBRadius<flangeARadius)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 201 207 -107")+backStr;
-      makeCell("FlangeBVoid",System,cellIndex++,outerMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 207 -107");
+      makeCell("FlangeBVoid",System,cellIndex++,outerMat,0.0,HR*backHR);
     }
 
-  Out=ModelSupport::getComposite(SMap,FIndex," -107 ");
-  addOuterSurf(Out+frontStr+backStr);
+  HR=HeadRule(SMap,FIndex,-107);
+  addOuterSurf(HR*frontHR*backHR);
 
   return;
 }
@@ -322,8 +316,8 @@ CeramicGap::createLinks()
 
 void
 CeramicGap::createAll(Simulation& System,
-	       const attachSystem::FixedComp& FC,
-	       const long int sideIndex)
+		      const attachSystem::FixedComp& FC,
+		      const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -335,8 +329,6 @@ CeramicGap::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createCentredUnitVector(FC,sideIndex,length/2.0);
-  const std::string frontStr=getRuleStr("front");
-
   createSurfaces();
   createObjects(System);
   createLinks();

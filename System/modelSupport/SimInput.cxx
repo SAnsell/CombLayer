@@ -58,6 +58,7 @@
 #include "surfRegister.h"
 #include "FixedComp.h"
 #include "FixedGroup.h"
+#include "PositionSupport.h"
 #include "Zaid.h"
 #include "MXcards.h"
 #include "Material.h"
@@ -156,14 +157,16 @@ processExitChecks(Simulation& System,
 		}
 	      for(const Geometry::Vec3D& CP : Pts)
 		{
+		  
 		  if (ModelSupport::SimValid::checkPoint(System,CP))
 		    errFlag += -1;
 		}
 	    }
 	}
-      else if (IParam.flag("validAll"))
+      if (IParam.flag("validAll"))
 	{
-	  // This should work BUT never does
+	  // set of used points ==>  this could be hashed
+	  std::set<Geometry::Vec3D> usedPoints;
 	  const size_t NPts=IParam.getValue<size_t>("validCheck");
 	  typedef objectGroups::cMapTYPE CM;
 	  const CM& mapFC=System.getComponents();
@@ -171,24 +174,34 @@ processExitChecks(Simulation& System,
 	    {
 	      const attachSystem::FixedComp& FC = *(mc.second);
 	      const Geometry::Vec3D& CP=FC.getCentre();
-	      if (CP!=Geometry::Vec3D(0,0,0))
+	      if (usedPoints.find(CP)==usedPoints.end())
 		{
 		  ELog::EM<<"FC["<<FC.getKeyName()<<"] ";
 		  if (!SValidCheck.runPoint(System,CP,NPts))
 		    {
-		      ELog::EM<<"ERROR "<<ELog::endErr;
+		      ELog::EM<<"ERROR (runPoint) "<<ELog::endErr;
 		      errFlag += -1;
 		    }
+		  usedPoints.emplace(CP);
 		}
 	    }
 	}
-      else 
+      if (IParam.flag("validRandom"))
 	{
-	  if (!SValidCheck.runPoint(System,Geometry::Vec3D(0,0,0),
-				    IParam.getValue<size_t>("validCheck")))
-	    errFlag += -1;
+	  // set of used points within the bounding box of the
+	  // object.
+	  SValidCheck.calcTouch(System);
+	  return errFlag;
+	  ELog::EM<<"ADFAFDS"<<ELog::endDiag;
+	  const size_t NPts=IParam.getValue<size_t>("validCheck");
+	  const std::string FCObject=
+	    IParam.getValueError<std::string>("validRandom",0,0,"No FC-object");
+	  const attachSystem::FixedComp* FC=
+	    System.getObjectThrow<attachSystem::FixedComp>
+	    (FCObject,"FixedComp");
+	  const attachSystem::BoundBox BBox=
+	    calcBoundingBox(*FC);
 	}
-
     }
 
   const size_t NLine = IParam.setCnt("validLine");

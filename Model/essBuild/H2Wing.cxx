@@ -3,7 +3,7 @@
  
  * File:   essBuild/H2Wing.cxx 
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,9 +40,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "stringCombine.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -74,9 +71,9 @@ namespace essSystem
 H2Wing::H2Wing(const std::string& baseKey,
 	       const std::string& extraKey,
 	       const double XYAngle) :
+  attachSystem::FixedComp(baseKey+extraKey,16),
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0,0),
-  attachSystem::FixedComp(baseKey+extraKey,16),
   attachSystem::CellMap(),
   baseName(baseKey),
   InnerComp(new H2FlowGuide(baseKey,extraKey,"FlowGuide")),
@@ -95,8 +92,10 @@ H2Wing::H2Wing(const std::string& baseKey,
 }
 
 H2Wing::H2Wing(const H2Wing& A) : 
-  attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
-  attachSystem::FixedComp(A),attachSystem::CellMap(A),
+  attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::LayerComp(A),
+  attachSystem::CellMap(A),
   baseName(A.baseName),
   InnerComp(A.InnerComp->clone()),
   Pts(A.Pts),radius(A.radius),height(A.height),
@@ -117,9 +116,9 @@ H2Wing::operator=(const H2Wing& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       *InnerComp=*A.InnerComp;
       Pts=A.Pts;
@@ -207,9 +206,9 @@ H2Wing::populate(const FuncDataBase& Control)
   if (height<Geometry::zeroTol)
     throw ColErr::NumericalAbort("Unable to calculate a negative height.\n"
 				 "Thickness   == "+
-				 StrFunc::makeString(height)+
+				 std::to_string(height)+
 				 "totalheight == "+
-				 StrFunc::makeString(totalHeight));
+				 std::to_string(totalHeight));
   
   return;
 }
@@ -279,9 +278,9 @@ H2Wing::createLinks()
   FixedComp::setLinkSurf(5,SMap.realSurf(triOffset+6));
 
   // OuterCorners and linkage
-  FixedComp::setLinkSurf(6,getLayerString(nLayers-1,-7));
-  FixedComp::setLinkSurf(7,getLayerString(nLayers-1,-8));
-  FixedComp::setLinkSurf(8,getLayerString(nLayers-1,-9));
+  FixedComp::setLinkSurf(6,getLayerHR(nLayers-1,-7));
+  FixedComp::setLinkSurf(7,getLayerHR(nLayers-1,-8));
+  FixedComp::setLinkSurf(8,getLayerHR(nLayers-1,-9));
   
   // INNER LINKS
   
@@ -464,17 +463,17 @@ H2Wing::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("H2Wing","createObjects");
 
-  std::string Out,OutA,OutB,OutC;
+  HeadRule HR,HRa,HRb,HRc;
 
   int triOffset(buildIndex+100);
   HeadRule InnerA,InnerB,InnerC;
   
-  const std::string CutA=
-    ModelSupport::getComposite(SMap,buildIndex," -1001 1003 ");
-  const std::string CutB=
-    ModelSupport::getComposite(SMap,buildIndex," 1001 -1002 ");
-  const std::string CutC=
-    ModelSupport::getComposite(SMap,buildIndex," 1002 -1003 ");
+  const HeadRule CutA=
+    ModelSupport::getHeadRule(SMap,buildIndex," -1001 1003 ");
+  const HeadRule CutB=
+    ModelSupport::getHeadRule(SMap,buildIndex," 1001 -1002 ");
+  const HeadRule CutC=
+    ModelSupport::getHeadRule(SMap,buildIndex," 1002 -1003 ");
   
   for(size_t i=0;i<nLayers;i++)
     {
@@ -482,39 +481,35 @@ H2Wing::createObjects(Simulation& System)
       InnerB.makeComplement();
       InnerC.makeComplement();
 
-      OutA=ModelSupport::getComposite(SMap,triOffset,"-1 -3 5 -6 (21:-7)");
-      OutB=ModelSupport::getComposite(SMap,triOffset,"-1 -2 5 -6 (22:-8)");
-      OutC=ModelSupport::getComposite(SMap,triOffset,"-2 -3 5 -6 (23:-9) ");
+      HRa=ModelSupport::getHeadRule(SMap,triOffset,"-1 -3 5 -6 (21:-7)");
+      HRb=ModelSupport::getHeadRule(SMap,triOffset,"-1 -2 5 -6 (22:-8)");
+      HRc=ModelSupport::getHeadRule(SMap,triOffset,"-2 -3 5 -6 (23:-9)");
 
       if (!i && engActive)
 	{
-	  Out=ModelSupport::getComposite
+	  HR=ModelSupport::getHeadRule
 	    (SMap,triOffset,"-1 -2 -3 5 -6 (21:-7) (22:-8) (23:-9)");
-	  System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
-	  CellMap::setCell("Inner",cellIndex-1);
+	  makeCell("Inner",System,cellIndex++,mat[i],temp[i],HR);
 	}
       else
 	{
-	  System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],
-				       OutA+InnerA.display()+CutA));
-	  System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],
-					   OutB+InnerB.display()+CutB));
-	  System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],
-					   OutC+InnerC.display()+CutC));
+	  System.addCell(cellIndex++,mat[i],temp[i],HRa*InnerA*CutA);
+	  System.addCell(cellIndex++,mat[i],temp[i],HRb*InnerB*CutB);
+	  System.addCell(cellIndex++,mat[i],temp[i],HRc*InnerC*CutC);
 	}
       
-      InnerA.procString(OutA);
-      InnerB.procString(OutB);
-      InnerC.procString(OutC);
+      InnerA=HRa;
+      InnerB=HRb;
+      InnerC=HRc;
       triOffset+=100;
     }
   // Add last cell to cell map
   CellMap::setCell("Outer",cellIndex-1);
 
   triOffset-=100;
-  OutA=ModelSupport::getComposite(SMap,triOffset,
-				     "-1 -2 -3 5 -6 (21:-7) (22:-8) (23:-9)");
-  addOuterSurf(OutA);
+  HR=ModelSupport::getHeadRule
+    (SMap,triOffset,"-1 -2 -3 5 -6 (21:-7) (22:-8) (23:-9)");
+  addOuterSurf(HR);
   return;
 }
 
@@ -566,54 +561,15 @@ H2Wing::getSurfacePoint(const size_t layerIndex,
   throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
 }
 
-int
-H2Wing::getLayerSurf(const size_t layerIndex,
-		     const long int sideIndex) const
-  /*!
-    Given a side and a layer calculate the link point
-    \param layerIndex :: layer, 0 is inner moderator [0-3]
-    \param sideIndex :: Side [0-3] // mid sides   
-    \return Surface point
-  */
-{
-  ELog::RegMethod RegA("H2Wing","getLayerSurf");
 
-  if (layerIndex>=nLayers) 
-    throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layerIndex");
-
-  const int triIndex(buildIndex+static_cast<int>((layerIndex+1)*100));
-  const long int uSIndex(std::abs(sideIndex));
-  const int signValue((sideIndex>0) ? 1 : -1);
-  switch(uSIndex)
-    {
-    case 1:
-      return signValue*SMap.realSurf(triIndex+1);
-    case 2:
-      return signValue*SMap.realSurf(triIndex+2);
-    case 3:
-      return signValue*SMap.realSurf(triIndex+3);
-    case 6:
-      return -signValue*SMap.realSurf(triIndex+5);
-    case 7:
-      return signValue*SMap.realSurf(triIndex+6);
-    case 8:
-      return signValue*SMap.realSurf(triIndex+7);
-    case 9:
-      return signValue*SMap.realSurf(triIndex+8);
-    case 10:
-      return signValue*SMap.realSurf(triIndex+9);
-    }
-  throw ColErr::IndexError<long int>(sideIndex,10,"sideIndex");
-}
-
-std::string
-H2Wing::getLayerString(const size_t layerIndex,
-		       const long int sideIndex) const
+HeadRule 
+H2Wing::getLayerHR(const size_t layerIndex,
+		   const long int sideIndex) const
   /*!
     Given a side and a layer calculate the surface bounding
     \param layerIndex :: layer, 0 is inner moderator [0-6]
     \param sideIndex :: Side [0-3]+mid sides   
-    \return Surface point
+    \return Surface HeadRule
   */
 {
   ELog::RegMethod RegA("H2Wing","getLayerString");
@@ -622,42 +578,42 @@ H2Wing::getLayerString(const size_t layerIndex,
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layerIndex");
 
   const int triOffset(buildIndex+static_cast<int>((layerIndex+1)*100));
-  std::string Out;
+  HeadRule HR;
   const long int uSIndex(std::abs(sideIndex));
   switch(uSIndex)
     {
     case 1:
-      Out=ModelSupport::getComposite(SMap,triOffset," 1 ");
+      HR=HeadRule(SMap,triOffset,1);
       break;
     case 2:
-      Out=ModelSupport::getComposite(SMap,triOffset," 2 ");
+      HR=HeadRule(SMap,triOffset,2);
       break;
     case 3:
-      Out=ModelSupport::getComposite(SMap,triOffset," 3 ");
+      HR=HeadRule(SMap,triOffset,3);
       break;
     case 5:
-      Out=ModelSupport::getComposite(SMap,triOffset," -5 ");
+      HR=HeadRule(SMap,triOffset,-5);
       break;
     case 6:
-      Out=ModelSupport::getComposite(SMap,triOffset," 6 ");
+      HR=HeadRule(SMap,triOffset,6);
       break;
     case 7:
-      Out=ModelSupport::getComposite(SMap,triOffset,"-1 -3 (21:-7) ");
+      HR=ModelSupport::getHeadRule(SMap,triOffset,"-1 -3 (21:-7)");
       break;
     case 8:
-      Out=ModelSupport::getComposite(SMap,triOffset,"-1 -2 (22:-8) ");
+      HR=ModelSupport::getHeadRule(SMap,triOffset,"-1 -2 (22:-8)");
       break;
     case 9:
-      Out=ModelSupport::getComposite(SMap,triOffset,"-2 -3 (23:-9) ");
+      HR=ModelSupport::getHeadRule(SMap,triOffset,"-2 -3 (23:-9)");
       break;
     case 10:
-      Out=ModelSupport::getComposite(SMap,triOffset," (21:-7) ");
+      HR=ModelSupport::getHeadRule(SMap,triOffset,"(21:-7)");
       break;
     case 11:
-      Out=ModelSupport::getComposite(SMap,triOffset," (22:-8) ");
+      HR=ModelSupport::getHeadRule(SMap,triOffset,"(22:-8)");
       break;
     case 12:
-      Out=ModelSupport::getComposite(SMap,triOffset," (23:-9) ");
+      HR=ModelSupport::getHeadRule(SMap,triOffset,"(23:-9)");
       break;
     default:
       throw ColErr::IndexError<long int>(sideIndex,12,
@@ -665,12 +621,9 @@ H2Wing::getLayerString(const size_t layerIndex,
     }
   
   if (sideIndex<0)
-    {
-      HeadRule HR(Out);
-      HR.makeComplement();
-      return HR.display();
-    }
-  return Out;
+    HR.makeComplement();
+
+  return HR;
 }
 
 

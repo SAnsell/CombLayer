@@ -56,8 +56,8 @@ namespace attachSystem
 */
 
 class WrapperCell :
-    public attachSystem::ContainedComp,
     public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
     public attachSystem::CellMap,
     public attachSystem::SurfMap,
     public attachSystem::ExternalCut
@@ -69,8 +69,9 @@ class WrapperCell :
 
  private:
   
+  /// base nae
   const std::string baseName;
-
+  int nextSurfIndex;
   
   /// Unit for the shielding
   std::vector<std::shared_ptr<attachSystem::FixedComp>> Units;
@@ -79,7 +80,9 @@ class WrapperCell :
     connections;
   std::map<std::string,std::pair<std::string,std::string>>
     surfaces;
-  
+
+  HeadRule processSurfLink(const Simulation&,
+			   const std::string&,const std::string&);
   void createObjects(Simulation&);
   void createLinks();
 

@@ -3,7 +3,7 @@
  
  * File:   constructInc/voidCylVolume.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,8 +27,6 @@ class Simulation;
 namespace constructSystem
 {
 
-  class WedgeInsert;
-
 /*!
   \class voidCylVolume
   \author S. Ansell
@@ -37,11 +35,12 @@ namespace constructSystem
   \brief Specialized for a cylinder moderator
 */
 
-class voidCylVolume : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset
+class voidCylVolume :
+    public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp
+
 {
  private:
-
 
   size_t nSegment;                ///< Number of layers
 
@@ -52,9 +51,6 @@ class voidCylVolume : public attachSystem::ContainedComp,
   // Functions:
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -67,6 +63,7 @@ class voidCylVolume : public attachSystem::ContainedComp,
   voidCylVolume& operator=(const voidCylVolume&);
   virtual ~voidCylVolume();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
   

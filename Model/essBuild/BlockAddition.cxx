@@ -3,7 +3,7 @@
  
  * File:   essBuild/BlockAddition.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,9 +71,10 @@ namespace essSystem
 {
 
 BlockAddition::BlockAddition(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::LayerComp(0),
   attachSystem::FixedOffsetUnit(Key,6),
-  active(0),nLayers(0),edgeSurf(0)
+  attachSystem::ContainedComp(),
+  attachSystem::LayerComp(0),
+  active(0),edgeSurf(0)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -81,10 +82,11 @@ BlockAddition::BlockAddition(const std::string& Key) :
 {}
 
 BlockAddition::BlockAddition(const BlockAddition& A) : 
-  attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
   attachSystem::FixedOffsetUnit(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::LayerComp(A),
   active(A.active),length(A.length),
-  height(A.height),width(A.width),nLayers(A.nLayers),
+  height(A.height),width(A.width),
   wallThick(A.wallThick),waterMat(A.waterMat),
   edgeSurf(A.edgeSurf)
   /*!
@@ -110,7 +112,6 @@ BlockAddition::operator=(const BlockAddition& A)
       length=A.length;
       height=A.height;
       width=A.width;
-      nLayers=A.nLayers;
       wallThick=A.wallThick;
       waterMat=A.waterMat;
       edgeSurf=A.edgeSurf;
@@ -233,8 +234,8 @@ BlockAddition::createSurfaces()
   return; 
 }
 
-std::string
-BlockAddition::rotateItem(std::string LString)
+HeadRule
+BlockAddition::rotateItem(HeadRule LHR)
   /*!
     Given a string convert to an angle rotate form
     \param LString :: Link string
@@ -243,40 +244,34 @@ BlockAddition::rotateItem(std::string LString)
 {
   ELog::RegMethod RegA("BlockAddtion","rotateItem");
 
-  if (fabs(xyAngle)<Geometry::zeroTol)
-    return LString;
-
-  std::ostringstream cx;
-  std::string S;
+  if (std::abs<double>(xyAngle)<Geometry::zeroTol)
+    return LHR;
 
   const Geometry::Quaternion QrotXY=
     Geometry::Quaternion::calcQRotDeg(xyAngle,Z);
 
   int BI(buildIndex+1000);
-  while(StrFunc::section(LString,S))
+  std::set<const Geometry::Surface*> hSurf=
+    LHR.getSurfaces();
+  
+  for(const Geometry::Surface* SPtr : hSurf)
     {
-      int N;
-      if (StrFunc::convert(S,N))
-	{
-	  const Geometry::Plane* PN=
-	    dynamic_cast<const Geometry::Plane*>
-	    (SMap.realSurfPtr(abs(N)));
-	  if (PN)
-	    {
-	      BI++;
-	      ModelSupport::buildRotatedPlane(SMap,BI,PN,
-					      xyAngle,Z,rotCent);
-	      cx<<" "<<((N>0) ? BI : -BI);
-	    }
-	  else
-	    cx<<" "<<S;
-	}
-      else
-	cx<<" "<<S;
-    }
-  return cx.str();
-}
+      const Geometry::Plane* PPtr=
+	dynamic_cast<const Geometry::Plane*>(SPtr);
 
+      if (PPtr)
+	{
+	  const int PN=PPtr->getName();
+	  BI++;
+	  const Geometry::Plane* PNewPtr=
+	    ModelSupport::buildRotatedPlane
+	    (SMap,BI,PPtr,xyAngle,Z,rotCent);
+	  
+	  LHR.substituteSurf(PN,BI,PNewPtr);
+	}
+    }
+  return LHR;
+}
 
 void
 BlockAddition::createObjects(Simulation& System,
@@ -293,60 +288,59 @@ BlockAddition::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("BlockAddition","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
   if (active)
     {
-      Out=PMod.getLayerString(layerIndex,sideIndex);
-      preModInner=rotateItem(Out);
-      Out=PMod.getLayerString(layerIndex+2,sideIndex);
-      preModOuter=rotateItem(Out);
+      HR=PMod.getLayerHR(layerIndex,sideIndex);
+      preModInner=rotateItem(HR);
+      HR=PMod.getLayerHR(layerIndex+2,sideIndex);
+      preModOuter=rotateItem(HR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
-      Out+=preModInner;
-      System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
+      System.addCell(cellIndex++,waterMat,0.0,HR*preModInner);
   
 
       int SI(buildIndex);
       for(size_t i=1;i<nLayers;i++)
 	{ 
-	  Out=ModelSupport::getComposite(SMap,SI,buildIndex,
-					 "1M -12 13 -14 15 -16 (2:-3:4:-5:6)");
+	  HR=ModelSupport::getHeadRule
+	    (SMap,SI,buildIndex,"1M -12 13 -14 15 -16 (2:-3:4:-5:6)");
 	  if(i==1)
-	    Out+=preModInner;
+	    HR*=preModInner;
 	  else
-	    Out+=preModOuter;
-	  System.addCell(MonteCarlo::Object(cellIndex++,wallMat[i],0.0,Out));
+	    HR*=preModOuter;
+	  System.addCell(cellIndex++,wallMat[i],0.0,HR);
 	  SI+=10;
 	}
 
-      Out=ModelSupport::getComposite(SMap,SI,buildIndex,"1M -2 3 -4 5 -6 ");
-      addOuterSurf(Out);
+      HR=ModelSupport::getHeadRule(SMap,SI,buildIndex,"1M -2 3 -4 5 -6");
+      addOuterSurf(HR);
     }
 
   return; 
 }
 
-std::string 
+HeadRule
 BlockAddition::createCut(const size_t layerIndex) const
   /*!
     Ugly function to create the cuts for the pre-moderator
     \param layerIndex :: layer for string
-    \return string at layer
+    \return HeadRule at layer
    */
 {
   ELog::RegMethod RegA("BlockAddition","createCut");
   if (layerIndex>=nLayers)
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,keyName+":layerIndex");
   
-  std::string Out;
+  HeadRule HR;
   if (active)
     {
       const int SI(10*static_cast<int>(layerIndex)+buildIndex);
-      Out=ModelSupport::getComposite(SMap,SI,buildIndex,
-				   " (-1M:-3:4:-5:6) ");
+      HR=ModelSupport::getHeadRule
+	(SMap,SI,buildIndex,"(-1M:-3:4:-5:6)");
     }
-  return Out;
+  return HR;
 }
 
 void
@@ -424,46 +418,17 @@ BlockAddition::getSurfacePoint(const size_t layerIndex,
   throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
 }
 
-int
-BlockAddition::getLayerSurf(const size_t layerIndex,
-			    const long int sideIndex) const
-  /*!
-    Given a side and a layer calculate the layerSurface
-    \param sideIndex :: Side [0-5]
-    \param layerIndex :: layer, 0 is inner
-    \return Surface number [signed]
-  */
-{
-  ELog::RegMethod RegA("BlockAddition","getLayerSurf");
-
-  if (layerIndex>=nLayers) 
-    throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer/layerIndex");
-
-  if (sideIndex>6 || sideIndex<-6 || !sideIndex)
-    throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
-
-  const int SI(buildIndex+10*static_cast<int>(layerIndex));
-  const int dirValue=(sideIndex<0) ? -1 : 1;
-  const int uSIndex(static_cast<int>(std::abs(sideIndex)));
-
-  if (sideIndex>1)
-    return (sideIndex % 2) ? -dirValue*SMap.realSurf(SI+uSIndex) :
-      dirValue*SMap.realSurf(SI+uSIndex);
-  
-  return -dirValue*SMap.realSurf(buildIndex+1);
-}
-
-std::string
-BlockAddition::getLayerString(const size_t layerIndex,
-			      const long int sideIndex) const
+HeadRule
+BlockAddition::getLayerHR(const size_t layerIndex,
+			  const long int sideIndex) const
   /*!
     Given a side and a layer calculate the layerSurface
     \param sideIndex :: Side [0-5]
     \param layerIndex :: layer, 0 is inner moderator [0-4]
-    \return Surface string
+    \return Surface HeadRule
   */
 {
-  ELog::RegMethod RegA("BlockAddition","getLayerString");
+  ELog::RegMethod RegA("BlockAddition","getLayerHeadRule");
 
   if (layerIndex>=nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
@@ -479,18 +444,13 @@ BlockAddition::getLayerString(const size_t layerIndex,
     {
       int signValue((sideIndex<0) ? -1 : 1);
       signValue*=((sideIndex % 2) ? -1 : 1);
-      const int SurfN= signValue*SMap.realSurf(SI+uSIndex);
-      return " "+std::to_string(SurfN)+" ";
+      return HeadRule(SMap,SI,signValue*uSIndex);
     }
-  const std::string Out=preModInner+" "+
-	    std::to_string(-SMap.realSurf(buildIndex+1));
+  HeadRule HR=preModInner*HeadRule(SMap,buildIndex,-1);
   if (sideIndex<0)
-    {
-      HeadRule HR(Out);
-      HR.makeComplement();
-      return HR.display();
-    }
-  return Out;
+    HR.makeComplement();
+
+  return HR;
 }
 
 void
@@ -528,4 +488,4 @@ BlockAddition::createAll(Simulation& System,
   return;
 }
 
-}  // NAMESPACE instrumentSystem
+}  // NAMESPACE essSystem

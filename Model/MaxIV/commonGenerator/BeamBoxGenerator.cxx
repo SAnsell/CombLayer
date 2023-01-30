@@ -50,7 +50,7 @@ namespace setVariable
 {
 
 BeamBoxGenerator::BeamBoxGenerator() :
-  width(180.0),height(80.0),length(130.0),
+  width(180.0),height(92.0),length(130.0),
   fullCut(40.0),innerCut(80.0),
   backThick(8.0),b4cThick(0.5),
   backExtension(80.0),wallThick(11.0),

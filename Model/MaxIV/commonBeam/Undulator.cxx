@@ -3,7 +3,7 @@
  
  * File:   commonBeam/Undulator.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -204,150 +204,150 @@ Undulator::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Undulator","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
   // Main inner void
-  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -102 103 -104 5 -6");
-  makeCell("Void",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 103 -104 5 -6");
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
 
-  std::string FStr=ModelSupport::getComposite(SMap,buildIndex," 101 ");
-  std::string BStr=ModelSupport::getComposite(SMap,buildIndex," -102 ");
+  HeadRule fHR(SMap,buildIndex,101);
+  HeadRule bHR(SMap,buildIndex,-102);
   // Front/Back voids for pipe
   if (ExternalCut::isActive("front"))
     {
-      FStr=ExternalCut::getRuleStr("front");
-      Out=ModelSupport::getComposite
+      fHR=ExternalCut::getRule("front");
+      HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,"-101 103 -104 205 -206");
-      makeCell("FrontVoid",System,cellIndex++,0,0.0,Out+FStr);
+      makeCell("FrontVoid",System,cellIndex++,0,0.0,HR*fHR);
     }
 
   if (ExternalCut::isActive("back"))
     {
-      BStr=ExternalCut::getRuleStr("back");
-      Out=ModelSupport::getComposite
+      bHR=ExternalCut::getRule("back");
+      HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,"102 103 -104 205 -206");
-      makeCell("BackVoid",System,cellIndex++,0,0.0,Out+BStr);
+      makeCell("BackVoid",System,cellIndex++,0,0.0,HR*bHR);
     }
 
   // corner voids
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -3 103 -5 105");
-  makeCell("VoidCut",System,cellIndex++,0,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 4 -104 -5 105");
-  makeCell("VoidCut",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -3 103 -5 105");
+  makeCell("VoidCut",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 4 -104 -5 105");
+  makeCell("VoidCut",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -3 103 6 -106");
-  makeCell("VoidCut",System,cellIndex++,0,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 4 -104 6 -106");
-  makeCell("VoidCut",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -3 103 6 -106");
+  makeCell("VoidCut",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 4 -104 6 -106");
+  makeCell("VoidCut",System,cellIndex++,0,0.0,HR);
 
   // front /back void
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"101 -1  103 -104 -106 6 ");
-  makeCell("FVoidCut",System,cellIndex++,0,0.0,Out);
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"101 -1  103 -104 -5 105 ");
-  makeCell("FVoidCut",System,cellIndex++,0,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"2 -102 103 -104 -106 6 ");
-  makeCell("BVoidCut",System,cellIndex++,0,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"2 -102 103 -104 -5 105 ");
-  makeCell("BVoidCut",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -1  103 -104 -106 6");
+  makeCell("FVoidCut",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -1  103 -104 -5 105");
+  makeCell("FVoidCut",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -102 103 -104 -106 6");
+  makeCell("BVoidCut",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -102 103 -104 -5 105");
+  makeCell("BVoidCut",System,cellIndex++,0,0.0,HR);
 
   // MAGNET 
   
-  Out=ModelSupport::getAltComposite
+  HR=ModelSupport::getAltHeadRule
     (SMap,buildIndex,"11A 1B -2 3 -10 -5 15 (33:-25) (-23:35)");
-  makeCell("BLeftMagnet",System,cellIndex++,magnetMat,0.0,Out);
-  Out=ModelSupport::getAltComposite
+  makeCell("BLeftMagnet",System,cellIndex++,magnetMat,0.0,HR);
+  HR=ModelSupport::getAltHeadRule
     (SMap,buildIndex,"11A 1B -2 3 -10 6 -16 (33:26) (-23:-36)");
-  makeCell("TLeftMagnet",System,cellIndex++,magnetMat,0.0,Out);
-  Out=ModelSupport::getAltComposite
+  makeCell("TLeftMagnet",System,cellIndex++,magnetMat,0.0,HR);
+  HR=ModelSupport::getAltHeadRule
     (SMap,buildIndex,"11A 1B -2 10 -4 -5 15 (-34:-25) (24:35)");
-  makeCell("BRightMagnet",System,cellIndex++,magnetMat,0.0,Out);
-  Out=ModelSupport::getAltComposite
+  makeCell("BRightMagnet",System,cellIndex++,magnetMat,0.0,HR);
+  HR=ModelSupport::getAltHeadRule
     (SMap,buildIndex,"11A 1B -2 10 -4 6 -16 (-34:26) (24:-36)");
-  makeCell("TRightMagnet",System,cellIndex++,magnetMat,0.0,Out);
+  makeCell("TRightMagnet",System,cellIndex++,magnetMat,0.0,HR);
 
   if (magnetCorner>Geometry::zeroTol)
     {
-      Out=ModelSupport::getAltComposite
+      HR=ModelSupport::getAltHeadRule
 	(SMap,buildIndex,"11A 1B -2 23 -24 36 -16");
-      makeCell("TopSlot",System,cellIndex++,0,0.0,Out);
+      makeCell("TopSlot",System,cellIndex++,0,0.0,HR);
 
-      Out=ModelSupport::getAltComposite
+      HR=ModelSupport::getAltHeadRule
 	(SMap,buildIndex,"11A 1B -2 23 -24 -35 15");
-      makeCell("BaseSlot",System,cellIndex++,0,0.0,Out);
+      makeCell("BaseSlot",System,cellIndex++,0,0.0,HR);
 
-      Out=ModelSupport::getAltComposite
+      HR=ModelSupport::getAltHeadRule
 	(SMap,buildIndex,"11A 1B -2 -33 3 25 -5");
-      makeCell("BLSlot",System,cellIndex++,0,0.0,Out);
+      makeCell("BLSlot",System,cellIndex++,0,0.0,HR);
 
-      Out=ModelSupport::getAltComposite
+      HR=ModelSupport::getAltHeadRule
 	(SMap,buildIndex,"11A 1B -2 34 -4 25 -5");
-      makeCell("BRSlot",System,cellIndex++,0,0.0,Out);
+      makeCell("BRSlot",System,cellIndex++,0,0.0,HR);
       
-      Out=ModelSupport::getAltComposite
+      HR=ModelSupport::getAltHeadRule
 	(SMap,buildIndex,"11A 1B -2 -33 3 -26 6");
-      makeCell("TLSlot",System,cellIndex++,0,0.0,Out);
+      makeCell("TLSlot",System,cellIndex++,0,0.0,HR);
       
-      Out=ModelSupport::getAltComposite
+      HR=ModelSupport::getAltHeadRule
 	(SMap,buildIndex,"11A 1B -2 -4 34 -26 6");
-      makeCell("TRSlot",System,cellIndex++,0,0.0,Out);
+      makeCell("TRSlot",System,cellIndex++,0,0.0,HR);
     }
 
   // BUILD 4 front surface cutting cells to allow
   // fluka surf-surf tally
   if (magnetCutSurf>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite
+      HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,"1 -11 -2 3 -10 -5 15 ");
-      makeCell("BLeftPlate",System,cellIndex++,0,0.0,Out);
-      Out=ModelSupport::getComposite
+      makeCell("BLeftPlate",System,cellIndex++,0,0.0,HR);
+      HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,"1 -11 -2 3 -10 6 -16 ");
-      makeCell("TLeftPlate",System,cellIndex++,0,0.0,Out);
-      Out=ModelSupport::getComposite
+      makeCell("TLeftPlate",System,cellIndex++,0,0.0,HR);
+      HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,"1 -11 -2 10 -4 -5 15 ");
-      makeCell("BRightPlate",System,cellIndex++,0,0.0,Out);
-      Out=ModelSupport::getComposite
+      makeCell("BRightPlate",System,cellIndex++,0,0.0,HR);
+      HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,"1 -11 -2 10 -4 6 -16 ");
-      makeCell("TRightPlate",System,cellIndex++,0,0.0,Out);
+      makeCell("TRightPlate",System,cellIndex++,0,0.0,HR);
       
     }
 
   // Support
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"101 -102 103 -104 -105 115 (-1:2:-3:4:-15) ");
-  makeCell("BaseSupport",System,cellIndex++,supportMat,0.0,Out);
+  makeCell("BaseSupport",System,cellIndex++,supportMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"101 -102 103 -104 106 -116 (-1:2:-3:4:16) ");
-  makeCell("TopSupport",System,cellIndex++,supportMat,0.0,Out);
+  makeCell("TopSupport",System,cellIndex++,supportMat,0.0,HR);
 
   // Stand
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"101 -102 203 -204 -115 205 ");
-  makeCell("BaseStand",System,cellIndex++,standMat,0.0,Out);
+  makeCell("BaseStand",System,cellIndex++,standMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"101 -102 203 -204 116 -206 ");
-  makeCell("TopStand",System,cellIndex++,standMat,0.0,Out);
+  makeCell("TopStand",System,cellIndex++,standMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"101 -102 103 -203 116 -206 ");
-  makeCell("TopStandVoid",System,cellIndex++,0,0.0,Out);
+  makeCell("TopStandVoid",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"101 -102 204 -104 116 -206 ");
-  makeCell("TopStandVoid",System,cellIndex++,0,0.0,Out);
+  makeCell("TopStandVoid",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"101 -102 103 -203 -115 205 ");
-  makeCell("BaseStandVoid",System,cellIndex++,0,0.0,Out);
+  makeCell("BaseStandVoid",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"101 -102 204 -104 -115 205 ");
-  makeCell("BaseStandVoid",System,cellIndex++,0,0.0,Out);
+  makeCell("BaseStandVoid",System,cellIndex++,0,0.0,HR);
 
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 103 -104 205 -206 ");
-  addOuterSurf(Out+FStr+BStr);      
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"103 -104 205 -206");
+  addOuterSurf(HR*fHR*bHR);      
 
   return;
 }

@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/odin/Hut.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -57,7 +55,7 @@
 #include "LinkUnit.h"  
 #include "FixedComp.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -69,7 +67,7 @@ namespace essSystem
 {
 
 Hut::Hut(const std::string& Key) : 
-  attachSystem::FixedOffsetGroup(Key,"Inner",6,"Outer",6),
+  attachSystem::FixedRotateGroup(Key,"Inner",6,"Outer",6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap()
   /*!
@@ -79,7 +77,7 @@ Hut::Hut(const std::string& Key) :
 {}
 
 Hut::Hut(const Hut& A) : 
-  attachSystem::FixedOffsetGroup(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedRotateGroup(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   voidHeight(A.voidHeight),voidWidth(A.voidWidth),
   voidDepth(A.voidDepth),voidLength(A.voidLength),
@@ -109,7 +107,7 @@ Hut::operator=(const Hut& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffsetGroup::operator=(A);
+      attachSystem::FixedRotateGroup::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
@@ -157,7 +155,7 @@ Hut::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("Hut","populate");
   
-  FixedOffsetGroup::populate(Control);
+  FixedRotateGroup::populate(Control);
 
   // Void + Fe special:
   voidHeight=Control.EvalVar<double>(keyName+"VoidHeight");
@@ -340,88 +338,78 @@ Hut::createObjects(Simulation& System)
 
   const int frontWallCut((wallYStep<0) ? 1 : 0);
   const int backWallCut((wallYStep+wallThick>0) ? 1 : 0);
-  std::string Out;
+  HeadRule HR;
 
   // Void [main]
   if (backWallCut)
-    Out=ModelSupport::getComposite(SMap,buildIndex,"1002 -2 3 -4 5 -6");
+    HR=ModelSupport::getHeadRule(SMap,buildIndex,"1002 -2 3 -4 5 -6");
   else
-    Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  setCell("VoidMain",cellIndex-1);
+    HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  makeCell("VoidMain",System,cellIndex++,0,0.0,HR);
 
   // Void [front]
   if (frontWallCut)
-    Out=ModelSupport::getComposite(SMap,buildIndex,"11 -1001 13 -14 5 -6");
+    HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -1001 13 -14 5 -6");
   else
-    Out=ModelSupport::getComposite(SMap,buildIndex,"11 -1 13 -14 5 -6");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  setCell("VoidNose",cellIndex-1);
+    HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -1 13 -14 5 -6");
+  makeCell("VoidNose",System,cellIndex++,0,0.0,HR);
   // EXTRA If required:
 
   if (!frontWallCut && backWallCut) // completely within nose cone
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -1001 3 -4 5 -6");
-      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -1001 3 -4 5 -6");
+      System.addCell(cellIndex++,0,0.0,HR);
     }
   else if (frontWallCut && !backWallCut) // completely within nose cone
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,"1002 -1 13 -14 5 -6");
-      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1002 -1 13 -14 5 -6");
+      System.addCell(cellIndex++,0,0.0,HR);
     }
   
   // Make Wall
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"1001 -1002 5 -6 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1001 -1002 5 -6");
 
   if (frontWallCut)
-    Out+=ModelSupport::getComposite(SMap,buildIndex," 13 -14 ");
+    HR*=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14");
   if (backWallCut)
-    Out+=ModelSupport::getComposite(SMap,buildIndex," 3 -4 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
-  setCell("InnerWall",cellIndex-1);
+    HR*=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4");
+  makeCell("InnerWall",System,cellIndex++,wallMat,0.0,HR);
 
 
   
   // Fe [main]
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "1 -102 103 -104 105 -106 "
-				 " (2:-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
-  setCell("FeMain",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				"1 -102 103 -104 105 -106"
+				"(2:-3:4:-5:6)");
+  makeCell("FeMain",System,cellIndex++,feMat,0.0,HR);
 
   // Fe [nose]
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "111 -1 113 -114 103 -104 105 -106 "
-				 " (-11:-13:14:-5:6) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
-  setCell("FeNose",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				"111 -1 113 -114 103 -104 105 -106"
+				"(-11:-13:14:-5:6)");
+  makeCell("FeNose",System,cellIndex++,feMat,0.0,HR);
 
 
   // Conc [main]
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "1 213 -214 -202 203 -204 205 -206 "
-				 " (102:-103:104:-105:106) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
-  setCell("ConcMain",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				"1 213 -214 -202 203 -204 205 -206"
+				"(102:-103:104:-105:106)");
+  makeCell("ConcMain",System,cellIndex++,concMat,0.0,HR);
 
   // Conc [nose]
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "111 -1 213 -214 203 -204 205 -206 "
-				 " (-103:-113:104:114:-105:106) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
-  setCell("ConcNose",cellIndex-1);
-
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				"111 -1 213 -214 203 -204 205 -206"
+				"(-103:-113:104:114:-105:106)");
+  makeCell("ConcNose",System,cellIndex++,concMat,0.0,HR);
 
   // FRONT CONC SECTION:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-111 211 213 -214 205 -206 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
-  setCell("ConcNoseFront",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-111 211 213 -214 205 -206");
+  makeCell("ConcNoseFront",System,cellIndex++,concMat,0.0,HR);
   
   // Exclude:
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 211 213 203 -204 -214 -202 203 -204 205 -206 ");
-  addOuterSurf(Out);      
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"211 213 203 -204 -214 -202 203 -204 205 -206");
+  addOuterSurf(HR);      
 
   return;
 }

@@ -3,7 +3,7 @@
  
  * File:   essBuild/EdgeWater.cxx 
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,8 +39,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -68,9 +66,9 @@ namespace essSystem
 {
 
 EdgeWater::EdgeWater(const std::string& key) :
+  attachSystem::FixedComp(key,6),
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0,0),
-  attachSystem::FixedComp(key,6),
   attachSystem::CellMap(),
   attachSystem::ExternalCut()
   /*!
@@ -80,8 +78,10 @@ EdgeWater::EdgeWater(const std::string& key) :
 {}
 
 EdgeWater::EdgeWater(const EdgeWater& A) : 
-  attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
-  attachSystem::FixedComp(A),attachSystem::CellMap(A),
+  attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::LayerComp(A),
+  attachSystem::CellMap(A),
   attachSystem::ExternalCut(A),
   width(A.width),wallThick(A.wallThick),modMat(A.modMat),
   wallMat(A.wallMat),modTemp(A.modTemp)
@@ -101,9 +101,9 @@ EdgeWater::operator=(const EdgeWater& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::ExternalCut::operator=(A);
       cellIndex=A.cellIndex;
@@ -189,48 +189,42 @@ EdgeWater::createSurfaces()
 }
  
 void
-EdgeWater::createObjects(Simulation& System,
-			 const std::string& divider)
+EdgeWater::createObjects(Simulation& System)
   /*!
     Adds the main components
     \param System :: Simulation to create objects in
-    \param divider :: surface on lobe
     \param container string :: wing surface edge of reflector
   */
 {
   ELog::RegMethod RegA("EdgeWater","createObjects");
 
-  std::string Out;
-  const std::string container=ExternalCut::getRuleStr("Container");
+  HeadRule HR;
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 103 -104");
-  System.addCell(MonteCarlo::Object(cellIndex++,modMat,
-				   modTemp,Out+container+divider));
-  CellMap::setCell("Water",  cellIndex-1);
+  const HeadRule containerHR=ExternalCut::getRule("Container");
+  const HeadRule divHR=ExternalCut::getRule("Divider");
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 103 -104");
+  makeCell("Water",System,cellIndex++,modMat,modTemp,
+	   HR*containerHR*divHR);
   
   // Two walls : otherwise divider container
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -1 103 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,Out+container));
-  CellMap::addCell("Wall",  cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -1 103");
+  makeCell("Wall",System,cellIndex++,wallMat,modTemp,HR*containerHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 -104 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,Out+container));
-  CellMap::addCell("Wall",  cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 -104");
+  makeCell("Wall",System,cellIndex++,wallMat,modTemp,HR*containerHR);
 
   // front walls
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -103 203 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,
-				   Out+container+divider));
-  CellMap::addCell("Wall",  cellIndex-1);
-  CellMap::setCell("InnerAlSupply",  cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -103 203");
+  makeCell("Wall",System,cellIndex++,wallMat,modTemp,HR*containerHR*divHR);
+  CellMap::setCell("InnerAlSupply",cellIndex-1);
     
-  Out=ModelSupport::getComposite(SMap,buildIndex," -12 104 -204");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,
-				   Out+container+divider));
-  CellMap::addCell("Wall",  cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 104 -204");
+  makeCell("Wall",System,cellIndex++,wallMat,modTemp,
+				   HR*containerHR*divHR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 203 -204");
-  addOuterSurf(Out+divider);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 203 -204");
+  addOuterSurf(HR*divHR);
   return;
 }
 
@@ -243,20 +237,15 @@ EdgeWater::createLinks()
 {
   ELog::RegMethod RegA("EdgeWater","createLinks");
 
-  std::string Out;
   HeadRule HR;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 203 ");
-  HR.procString(Out);
-  HR.makeComplement();
-  FixedComp::setLinkSurf(2,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 203");
+  FixedComp::setLinkSurf(2,HR.complement());
   FixedComp::setConnect(2,Origin-X*(wallThick+cutWidth/2.0),-X);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," -12 -204 ");
-  HR.procString(Out);
-  HR.makeComplement();
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 -204");
+  FixedComp::setLinkSurf(3,HR.complement());
   FixedComp::setConnect(3,Origin+X*(wallThick+cutWidth/2.0),X);
-  FixedComp::setLinkSurf(3,HR);
   
   return;
 }
@@ -275,34 +264,19 @@ EdgeWater::getSurfacePoint(const size_t,
   throw ColErr::AbsObjMethod("Not implemented yet");
 }
 
-int
-EdgeWater::getLayerSurf(const size_t ,
-			const long int ) const
-  /*!
-    Given a side and a layer calculate the link point
-    \param  :: layer, 0 is inner moderator [0-3]
-    \param  :: Side [0-3] // mid sides   
-    \return Surface point
-  */
-{
-  ELog::RegMethod RegA("EdgeWater","getLayerSurf");
-  throw ColErr::AbsObjMethod("Not implemented yet");
-}
-
-std::string
-EdgeWater::getLayerString(const size_t,
-			  const long int) const
+HeadRule
+EdgeWater::getLayerHR(const size_t,
+		      const long int) const
   /*!
     Given a side and a layer calculate the link point
     \param  :: layer, 0 is inner moderator [0-6]
     \param  :: Side [0-3] // mid sides   
-    \return Surface point
+    \return Surface Rule
   */
 {
   ELog::RegMethod RegA("EdgeWater","getLayerString");
 
   throw ColErr::AbsObjMethod("Not implemented yet");
-
 }
 
 
@@ -319,11 +293,13 @@ EdgeWater::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("EdgeWater","createAll");
 
+  if (!isActive("Divider"))
+    setCutSurf("Divider",FC,sideIndex);
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();
-  const std::string divider=FC.getLinkString(sideIndex);
-  createObjects(System,divider);
+
+  createObjects(System);
 
   createLinks();
   insertObjects(System);       

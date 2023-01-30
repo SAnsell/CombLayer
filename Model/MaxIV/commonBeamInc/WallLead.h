@@ -39,7 +39,7 @@ namespace xraySystem
 */
 
 class WallLead :
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
   public attachSystem::FrontBackCut

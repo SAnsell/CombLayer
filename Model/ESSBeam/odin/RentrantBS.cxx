@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/odin/RentrantBS.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -56,7 +54,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -67,7 +65,7 @@ namespace essSystem
 {
 
 RentrantBS::RentrantBS(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -76,7 +74,7 @@ RentrantBS::RentrantBS(const std::string& Key) :
 {}
 
 RentrantBS::RentrantBS(const RentrantBS& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedRotate(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
   width(A.width),height(A.height),depth(A.depth),
   length(A.length),b4cThick(A.b4cThick),feRadius(A.feRadius),
@@ -102,7 +100,7 @@ RentrantBS::operator=(const RentrantBS& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       width=A.width;
@@ -142,7 +140,7 @@ RentrantBS::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("RentrantBS","populate");
   
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   
   feRadius=Control.EvalVar<double>(keyName+"FeRadius");
   feLength=Control.EvalVar<double>(keyName+"FeLength");
@@ -166,23 +164,6 @@ RentrantBS::populate(const FuncDataBase& Control)
 
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
   concMat=ModelSupport::EvalMat<int>(Control,keyName+"ConcMat");
-
-  return;
-}
-
-void
-RentrantBS::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("RentrantBS","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
 
   return;
 }
@@ -238,52 +219,52 @@ RentrantBS::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("RentrantBS","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   
   // Inner cylinder :
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -101 -107");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -101 -107");
+  System.addCell(cellIndex++,0,0.0,HR);  
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -101 -117 107 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -101 -117 107");
+  System.addCell(cellIndex++,feMat,0.0,HR);  
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -101 3 -4 5 -6 117 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -101 3 -4 5 -6 117");
+  System.addCell(cellIndex++,concMat,0.0,HR);  
 
   // innter void + next
-  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -201 -207");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -201 -207");
+  System.addCell(cellIndex++,0,0.0,HR);  
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -111 -117 207 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -111 -117 207");
+  System.addCell(cellIndex++,feMat,0.0,HR);  
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -111  117 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -111  117 3 -4 5 -6");
+  System.addCell(cellIndex++,concMat,0.0,HR);  
 
   // inner void surround
-  Out=ModelSupport::getComposite(SMap,buildIndex,"111 -211 -217 207 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"111 -211 -217 207");
+  System.addCell(cellIndex++,feMat,0.0,HR);  
 
   // extra concrete
-  Out=ModelSupport::getComposite(SMap,buildIndex,"111 -211  217 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"111 -211  217 3 -4 5 -6");
+  System.addCell(cellIndex++,concMat,0.0,HR);  
 
   // === MAin
   // Steel section
-  Out=ModelSupport::getComposite(SMap,buildIndex,"201 -301 -207");
-  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -301 -207");
+  System.addCell(cellIndex++,feMat,0.0,HR);  
 
 
   // extra concrete
-  Out=ModelSupport::getComposite(SMap,buildIndex,"211 -301 3 -4 5 -6 207 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"211 -301 3 -4 5 -6 207");
+  System.addCell(cellIndex++,concMat,0.0,HR);  
 
   // extra concrete
-  Out=ModelSupport::getComposite(SMap,buildIndex,"301 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -2 3 -4 5 -6");
+  System.addCell(cellIndex++,concMat,0.0,HR);  
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  addOuterSurf(HR);
 
   return;
 }

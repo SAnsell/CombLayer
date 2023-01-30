@@ -3,7 +3,7 @@
  
  * File:   commonBeamInc/Sexupole.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,11 +36,12 @@ namespace xraySystem
   \brief Sexupole for Max-IV
 */
 
-class Sexupole : public attachSystem::FixedRotate,
-  public attachSystem::ContainedComp,
-  public attachSystem::ExternalCut,
-  public attachSystem::CellMap,
-  public attachSystem::SurfMap
+class Sexupole :
+    public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
+    public attachSystem::ExternalCut,
+    public attachSystem::CellMap,
+    public attachSystem::SurfMap
 {
  private:
 
@@ -78,6 +79,7 @@ class Sexupole : public attachSystem::FixedRotate,
   Sexupole& operator=(const Sexupole&);
   virtual ~Sexupole();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

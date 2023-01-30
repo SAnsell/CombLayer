@@ -63,6 +63,7 @@ class simpleObj :
 
   int defMat;                   ///< Default material  
 
+  using FixedComp::createUnitVector;
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createUnitVector(const attachSystem::FixedComp&,const double,
 			const double,const double);

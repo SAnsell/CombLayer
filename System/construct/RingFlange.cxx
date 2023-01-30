@@ -57,6 +57,7 @@
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "RingSeal.h"
@@ -220,7 +221,7 @@ RingFlange::addWindow(Simulation& System)
 			       Origin+Y*(windowStep+windowThick/2.0),Y);
 
       // Create window
-      const HeadRule radSurf=innerStruct.complement();
+      const HeadRule radSurf=getComplementRule("Inner");
       HR=ModelSupport::getHeadRule(SMap,windowIndex,"1 -2");
       makeCell("window",System,cellIndex++,windowMat,0.0,HR*radSurf);
       

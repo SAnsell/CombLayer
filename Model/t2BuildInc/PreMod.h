@@ -36,8 +36,10 @@ namespace moderatorSystem
 */
 
 class PreMod :
+    public attachSystem::FixedRotate,
     public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::ExternalCut,
+    public attachSystem::SurfMap
 {
  private:
 

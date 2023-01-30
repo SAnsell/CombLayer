@@ -3,7 +3,7 @@
  
  * File:   R3CommonInc/MagnetU1.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@ namespace constructSystem
 
 namespace xraySystem
 {
+  class EntryPipe;
   class Quadrupole;
   class Sexupole;
   class Dipole;
@@ -60,17 +61,22 @@ class MagnetU1 :
   double blockYStep;            ///< Step forward
   double length;                ///< frame length
 
+  double frontVoid;             ///< Size of front void gap
+  double backVoid;              ///< Size of back void gap
   double outerVoid;             ///< Size of outer void gap
-  double ringVoid;              ///< Size of outer void gap
-  double topVoid;               ///< Size of outer void gap
-  double baseVoid;              ///< Size of outer void gap
+  double ringVoid;              ///< Size of ringside void gap
+  double topVoid;               ///< Size of top void gap
+  double baseVoid;              ///< Size of base void gap
 
   double baseThick;             ///< base thickness
   double wallThick;             ///< side wall thickness
   
   int voidMat;                  ///< void material
   int wallMat;                  ///< wall material
-  
+
+  /// Pipe that travels in pre-bend straight
+  std::shared_ptr<xraySystem::EntryPipe> entryPipe;
+
   /// Quad [first]
   std::shared_ptr<xraySystem::Quadrupole> QFm1;
   /// Sextupole [first]
@@ -91,6 +97,9 @@ class MagnetU1 :
   /// Sextupole [small]
   std::shared_ptr<xraySystem::Sexupole> SD2;
 
+  /// Pipe that travels in post-bend straight
+  std::shared_ptr<xraySystem::EntryPipe> exitPipe;
+
   void createUnit(Simulation&,size_t&,
 		  const attachSystem::FixedComp&,
 		  const attachSystem::FixedComp&);
@@ -109,6 +118,11 @@ class MagnetU1 :
   MagnetU1& operator=(const MagnetU1&);
   virtual ~MagnetU1();
 
+  const xraySystem::EntryPipe& getEntryPipe() const
+  { return *entryPipe; }
+  const xraySystem::EntryPipe& getExitPipe() const
+  { return *exitPipe; }
+  
   void insertDipolePipe(Simulation&,const constructSystem::CornerPipe&);
 
   using FixedComp::createAll;

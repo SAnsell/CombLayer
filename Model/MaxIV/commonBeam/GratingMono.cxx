@@ -3,7 +3,7 @@
  
  * File:   commonBeam/GratingMono.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "surfRegister.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "varList.h"
@@ -53,7 +52,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -65,8 +64,8 @@ namespace xraySystem
 {
 
 GratingMono::GratingMono(const std::string& Key) :
+  attachSystem::FixedRotate(Key,8),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,8),
   attachSystem::CellMap(),attachSystem::SurfMap()
   /*!
     Constructor
@@ -94,7 +93,7 @@ GratingMono::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("GratingMono","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   grateTheta=Control.EvalVar<double>(keyName+"GrateTheta");
   mirrorTheta=Control.EvalVar<double>(keyName+"MirrorTheta");
@@ -208,16 +207,16 @@ GratingMono::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("GratingMono","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   // xstal A
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 101 -102 103 -104 105 -106 ");
-  makeCell("XtalA",System,cellIndex++,xtalMat,0.0,Out);
-  addOuterSurf(Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 201 -202 203 -204 205 -206 ");
-  makeCell("XtalB",System,cellIndex++,xtalMat,0.0,Out);
-  addOuterUnionSurf(Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"101 -102 103 -104 105 -106");
+  makeCell("XtalA",System,cellIndex++,xtalMat,0.0,HR);
+  addOuterSurf(HR);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"201 -202 203 -204 205 -206");
+  makeCell("XtalB",System,cellIndex++,xtalMat,0.0,HR);
+  addOuterUnionSurf(HR);
   
   return; 
 }

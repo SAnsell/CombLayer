@@ -3,7 +3,7 @@
 
  * File:   commonBeam/GrateMonoBox.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -54,7 +53,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -68,7 +67,7 @@ namespace xraySystem
 {
 
 GrateMonoBox::GrateMonoBox(const std::string& Key) :
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::FrontBackCut(),centreOrigin(0)
   /*!
@@ -93,7 +92,7 @@ GrateMonoBox::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("GrateMonoBox","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   // Void + Fe special:
   voidHeight=Control.EvalVar<double>(keyName+"VoidHeight");
@@ -173,23 +172,6 @@ GrateMonoBox::populate(const FuncDataBase& Control)
   voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
-  return;
-}
-
-void
-GrateMonoBox::createUnitVector(const attachSystem::FixedComp& FC,
-			    const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("GrateMonoBox","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  Origin+=Y*(portATubeLength+wallThick+voidLength/2.0);
   return;
 }
 
@@ -286,97 +268,95 @@ GrateMonoBox::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("GrateMonoBox","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
-  const std::string FPortStr(frontRule());
-  const std::string BPortStr(backRule());
+  const HeadRule FPortHR(getFrontRule());
+  const HeadRule BPortHR(getBackRule());
 
   // Main Void
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
-  CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
   // Base Void
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7 -5");
-  CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -7 -5");
+  CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
   // main tank skins
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 13 -3 5 -6");
-  CellMap::makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -3 5 -6");
+  CellMap::makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 4 -14 5 -6");
-  CellMap::makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 4 -14 5 -6");
+  CellMap::makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"11 -1 13 -14 (-17 : 5) -6 107 ");
-  CellMap::makeCell("FrontWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"11 -1 13 -14 (-17 : 5) -6 107");
+  CellMap::makeCell("FrontWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"-12 2 13 -14 (-17 : 5) -6 207 ");
-  CellMap::makeCell("BackWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-12 2 13 -14 (-17 : 5) -6 207");
+  CellMap::makeCell("BackWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 7 -17 -5");
-  CellMap::makeCell("RoundWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 7 -17 -5");
+  CellMap::makeCell("RoundWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1001 -1002 1003 -1004 6 -16");
-  CellMap::makeCell("Top",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1001 -1002 1003 -1004 6 -16");
+  CellMap::makeCell("Top",System,cellIndex++,wallMat,0.0,HR);
 
   // Screen voids
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 1003 -13 5 -6 ");
-  CellMap::makeCell("Screen",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 1003 -13 5 -6");
+  CellMap::makeCell("Screen",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 14 -1004  5 -6");
-  CellMap::makeCell("Screen",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 14 -1004  5 -6");
+  CellMap::makeCell("Screen",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"1001 -11  1003 -1004 (-1007:5) -6 127 ");
-  CellMap::makeCell("FrontScreen",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1001 -11  1003 -1004 (-1007:5) -6 127");
+  CellMap::makeCell("FrontScreen",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"12 -1002  1003 -1004 (-1007:5) -6 227 ");
-  CellMap::makeCell("BackScreen",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"12 -1002  1003 -1004 (-1007:5) -6 227");
+  CellMap::makeCell("BackScreen",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 17 -1007 -5");
-  CellMap::makeCell("RoundScreen",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 17 -1007 -5");
+  CellMap::makeCell("RoundScreen",System,cellIndex++,voidMat,0.0,HR);
 
 
   // PortVoids
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1 -107 ");
-  CellMap::makeCell("PortAVoid",System,cellIndex++,voidMat,0.0,Out+FPortStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 -107");
+  CellMap::makeCell("PortAVoid",System,cellIndex++,voidMat,0.0,HR*FPortHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -11 107 -117 ");
-  CellMap::makeCell("PortAWall",System,cellIndex++,wallMat,0.0,Out+FPortStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 107 -117");
+  CellMap::makeCell("PortAWall",System,cellIndex++,wallMat,0.0,HR*FPortHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -111 117 -127 ");
-  CellMap::makeCell("PortAFlange",System,cellIndex++,wallMat,0.0,Out+FPortStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-111 117 -127");
+  CellMap::makeCell("PortAFlange",System,cellIndex++,wallMat,0.0,HR*FPortHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -11 111 117 -127 ");
-  CellMap::makeCell("PortAScreen",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 111 117 -127");
+  CellMap::makeCell("PortAScreen",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -207 ");
-  CellMap::makeCell("PortBVoid",System,cellIndex++,voidMat,0.0,Out+BPortStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -207");
+  CellMap::makeCell("PortBVoid",System,cellIndex++,voidMat,0.0,HR*BPortHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 12 207 -217 ");
-  CellMap::makeCell("PortBWall",System,cellIndex++,wallMat,0.0,Out+BPortStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 207 -217");
+  CellMap::makeCell("PortBWall",System,cellIndex++,wallMat,0.0,HR*BPortHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 211 217 -227 ");
-  CellMap::makeCell("PortBFlange",System,cellIndex++,wallMat,0.0,Out+BPortStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"211 217 -227");
+  CellMap::makeCell("PortBFlange",System,cellIndex++,wallMat,0.0,HR*BPortHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -211 217 -227 ");
-  CellMap::makeCell("PortBScreen",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -211 217 -227");
+  CellMap::makeCell("PortBScreen",System,cellIndex++,voidMat,0.0,HR);
 
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1001 -1002 1003 -1004 5 -16");
+  addOuterSurf(HR);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1001 -1002 -1007 -5");
+  addOuterUnionSurf(HR);
 
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"1001 -1002 1003 -1004 5 -16 ");
-  addOuterSurf(Out);
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"1001 -1002 -1007 -5 ");
-  addOuterUnionSurf(Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -227 ");
-  addOuterUnionSurf(Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," -11 -127 ");
-  addOuterUnionSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -227");
+  addOuterUnionSurf(HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -127");
+  addOuterUnionSurf(HR);
 
   return;
 }
@@ -424,7 +404,8 @@ GrateMonoBox::createAll(Simulation& System,
   ELog::RegMethod RegA("GrateMonoBox","createAll(FC)");
 
   populate(System.getDataBase());
-  createUnitVector(FC,FIndex);
+  createCentredUnitVector
+    (FC,FIndex,portATubeLength+wallThick+voidLength/2.0);
   createSurfaces();
   createObjects(System);
 

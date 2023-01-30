@@ -38,8 +38,8 @@ namespace essSystem
 
 
 class GuideBay :
-    public attachSystem::ContainedGroup,
     public attachSystem::FixedRotate,
+    public attachSystem::ContainedGroup,
     public attachSystem::CellMap
 {
  private:

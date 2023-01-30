@@ -36,6 +36,12 @@ namespace essConstruct
   class TwinChopperFlat;
 }
 
+namespace beamlineSystem
+{
+  class BenderUnit;
+  class PlateUnit;
+}
+
 namespace instrumentSystem
 {
   class CylSample;
@@ -77,6 +83,8 @@ class VESPA : public attachSystem::CopiedComp
 {
  private:
 
+  bool cryoFlag;           ///< Insert cryo
+  
   /// Start at [0:Complete / 1:Cave]
   int startPoint;  
   /// Stop at [0:Complete / 1:Mono Wall / 2:Inner Bunker / 3:Outer Bunker ]
@@ -86,17 +94,17 @@ class VESPA : public attachSystem::CopiedComp
   std::shared_ptr<attachSystem::FixedRotateUnit> vespaAxis;
 
   /// Elliptic focus in bulkshield [m5]
-  std::shared_ptr<beamlineSystem::GuideLine> FocusA;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusA;
 
   /// Vac pipe  
   std::shared_ptr<constructSystem::VacuumPipe> VPipeA;
   /// Tapered guide from 5.5 to 6metre
-  std::shared_ptr<beamlineSystem::GuideLine> FocusB;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusB;
 
   /// Vac pipe  
   std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
   /// Tapered guide from 5.5 to 6metre
-  std::shared_ptr<beamlineSystem::GuideLine> FocusC;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusC;
 
   /// PulseShapingChopper-A 
   std::shared_ptr<essConstruct::TwinChopperFlat> TwinChopperA;
@@ -108,7 +116,7 @@ class VESPA : public attachSystem::CopiedComp
   /// Joining pipe between Choppers: A-B
   std::shared_ptr<constructSystem::VacuumPipe> JPipeAB;
   /// Guide in Join AB
-  std::shared_ptr<beamlineSystem::GuideLine> FocusD;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusD;
   
   /// PulseShapingChopper-B 
   std::shared_ptr<essConstruct::TwinChopperFlat> TwinChopperB;
@@ -120,7 +128,7 @@ class VESPA : public attachSystem::CopiedComp
   /// Joining pipe between Choppers: B-C
   std::shared_ptr<constructSystem::VacuumPipe> JPipeBC;
   /// Guide in Join AB
-  std::shared_ptr<beamlineSystem::GuideLine> FocusE;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusE;
 
   /// PulseShapingChopper-C 
   std::shared_ptr<essConstruct::TwinChopperFlat> TwinChopperC;
@@ -132,12 +140,12 @@ class VESPA : public attachSystem::CopiedComp
   /// Joining pipe between Choppers: C to Out
   std::shared_ptr<constructSystem::VacuumPipe> JPipeCOut;
   /// Guide in Join AB
-  std::shared_ptr<beamlineSystem::GuideLine> FocusF;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusF;
 
   /// General Pipe between PSC-C and FO-chopper
   std::shared_ptr<constructSystem::VacuumPipe> VPipeG;
   /// Guide for VPipeG
-  std::shared_ptr<beamlineSystem::GuideLine> FocusG;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusG;
 
   /// FO-Chopper
   std::shared_ptr<essConstruct::SingleChopper> ChopperFOC;
@@ -147,7 +155,7 @@ class VESPA : public attachSystem::CopiedComp
   /// General Pipe between FOC and Bunker wall
   std::shared_ptr<constructSystem::VacuumPipe> VPipeH;
   /// Guide for VPipeH
-  std::shared_ptr<beamlineSystem::GuideLine> FocusH;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusH;
 
 
   /// Bunker insert
@@ -155,7 +163,7 @@ class VESPA : public attachSystem::CopiedComp
   /// Vac pipe in wall (if used)
   std::shared_ptr<constructSystem::VacuumPipe> VPipeWall;
   /// Guide running to bunker wall
-  std::shared_ptr<beamlineSystem::GuideLine> FocusWall;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusWall;
 
 
   /// Shield for Chopper Out-A
@@ -174,7 +182,7 @@ class VESPA : public attachSystem::CopiedComp
   /// First Vac pipe out of bunker
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutA;
   /// Tapered guide out of bunker
-  std::shared_ptr<beamlineSystem::GuideLine> FocusOutA;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusOutA;
 
   /// Vac box for First Out-of-bunker chopper
   std::shared_ptr<essConstruct::SingleChopper> ChopperOutA;
@@ -194,14 +202,14 @@ class VESPA : public attachSystem::CopiedComp
   /// Vac pipe out of PitA
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutB;
   /// Tapered guide out of PitA
-  std::shared_ptr<beamlineSystem::GuideLine> FocusOutB;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusOutB;
 
   /// Shield from PitA to PitC
   std::vector<std::shared_ptr<constructSystem::TriangleShield>> ShieldArray;
   /// Vac pipe out of PitB to PitC
   std::vector<std::shared_ptr<constructSystem::VacuumPipe>> VPipeArray;
   /// Segment from PitB to Pit C
-  std::vector<std::shared_ptr<beamlineSystem::GuideLine>> FocusArray;
+  std::vector<std::shared_ptr<beamlineSystem::PlateUnit>> FocusArray;
   
   /// Vac box for first chopper
   std::shared_ptr<essConstruct::SingleChopper> ChopperOutB;
@@ -213,7 +221,7 @@ class VESPA : public attachSystem::CopiedComp
   /// Vac pipe to hutch
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutC;
   /// Tapered guide to hutch
-  std::shared_ptr<beamlineSystem::GuideLine> FocusOutC;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusOutC;
 
   /// Vespa hut
   std::shared_ptr<VespaHut> Cave;

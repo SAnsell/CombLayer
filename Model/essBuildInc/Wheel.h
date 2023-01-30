@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/Wheel.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,7 +74,6 @@ class Wheel : public WheelBase
   // Functions:
 
   void populate(const FuncDataBase&);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -94,7 +93,7 @@ class Wheel : public WheelBase
   { return targetHeight+
       2.0*(coolantThickIn+caseThick+voidThick); }
 
-  //  virtual int getCell() const { return mainShaftCell; }
+  using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 			 const long int);
   

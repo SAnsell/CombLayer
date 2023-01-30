@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BunkerWall.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ class BunkerWall : public attachSystem::ContainedComp,
   std::string loadFile;            ///< BunkerWall input file
   std::string outFile;             ///< BunkerWall output file
   
-  std::string divider;              ///< Divider if needed
+  HeadRule dividerHR;               ///< Divider if needed
   int frontSurf;                    ///< Real base surf
   int backSurf;                     ///< Real top surf
   int topSurf;                      ///< Real inner surf
@@ -86,11 +86,12 @@ class BunkerWall : public attachSystem::ContainedComp,
 
   void setVertSurf(const int,const int);
   void setRadialSurf(const int,const int);
-  void setDivider(const std::string& Str) { divider=Str; }
+  void setDivider(const HeadRule& HR) { dividerHR=HR; }
   
   void createSector(Simulation&,const size_t,const int,
 		    const int,const int);
-  
+
+  using FixedComp::createAll;
   virtual void createAll(Simulation&,
 			 const attachSystem::FixedComp&,
 			 const long int);

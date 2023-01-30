@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/Linac/DipoleDIBMag.cxx
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -250,130 +249,135 @@ DipoleDIBMag::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("DipoleDIBMag","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   // insert cell [e.g. pipe]
-  const std::string ICell=isActive("Inner") ? getRuleStr("Inner") : "";
+  const HeadRule ICellHR=getRule("Inner");
 
   // // Frame
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -14 26 -16" );
-  makeCell("FrameTop",System,cellIndex++,frameMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14 26 -16");
+  makeCell("FrameTop",System,cellIndex++,frameMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 23 -33 2006 -26 " );
-  makeCell("FrameTopGap",System,cellIndex++,voidMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 34 -24 2006 -26 " );
-  makeCell("FrameTopGap",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 23 -33 2006 -26");
+  makeCell("FrameTopGap",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 34 -24 2006 -26");
+  makeCell("FrameTopGap",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -14 15 -25 " );
-  makeCell("FrameBottom",System,cellIndex++,frameMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14 15 -25");
+  makeCell("FrameBottom",System,cellIndex++,frameMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 23 -33 25 -1005 " );
-  makeCell("FrameBottomGap",System,cellIndex++,voidMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 34 -24 25 -1005 " );
-  makeCell("FrameBottomGap",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 23 -33 25 -1005");
+  makeCell("FrameBottomGap",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 34 -24 25 -1005");
+  makeCell("FrameBottomGap",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -23 25 -26 " );
-  makeCell("FrameLeft",System,cellIndex++,frameMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -23 25 -26");
+  makeCell("FrameLeft",System,cellIndex++,frameMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 23 -1003 1005 -2006 " );
-  makeCell("FrameLeftGap",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 23 -1003 1005 -2006");
+  makeCell("FrameLeftGap",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 24 -14 25 -26 " );
-  makeCell("FrameRight",System,cellIndex++,frameMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 24 -14 25 -26");
+  makeCell("FrameRight",System,cellIndex++,frameMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 1004 -24 1005 -2006 " );
-  makeCell("FrameRightGap",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 1004 -24 1005 -2006");
+  makeCell("FrameRightGap",System,cellIndex++,voidMat,0.0,HR);
 
-  for (const std::string side : {" 12 -2 ", " 1 -11 "}) // front/back ends
+  for (const std::string side : {"12 -2","1 -11"}) // front/back ends
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,side+" 13 -1003 15 -16 " );
-      makeCell("FrameLeftVoidCorner",System,cellIndex++,voidMat,0.0,Out);
+      const HeadRule SHR=ModelSupport::getHeadRule(SMap,buildIndex,side);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -1003 15 -16");
+      makeCell("FrameLeftVoidCorner",System,cellIndex++,voidMat,0.0,HR*SHR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,side+" 1004 -14 15 -16 " );
-      makeCell("FrameRightVoidCorner",System,cellIndex++,voidMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1004 -14 15 -16");
+      makeCell("FrameRightVoidCorner",System,cellIndex++,voidMat,0.0,HR*SHR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,side+" 1003 -1004 2006 -16 " );
-      makeCell("FrameTopVoidMiddle",System,cellIndex++,voidMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1003 -1004 2006 -16");
+      makeCell("FrameTopVoidMiddle",System,cellIndex++,voidMat,0.0,HR*SHR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,side+" 1003 -1004 15 -1005 " );
-      makeCell("FrameBottomVoidMiddle",System,cellIndex++,voidMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1003 -1004 15 -1005");
+      makeCell("FrameBottomVoidMiddle",System,cellIndex++,voidMat,0.0,HR*SHR);
     }
 
   size_t tier(0);
-  const std::vector<std::string> tbInner = {" 25 -1006 ", " 2005 -26 "};
-  const std::vector<std::string> tbGap = {" 25 -1005 ", " 2006 -26 "};
+  const std::vector<HeadRule> tbInner
+    {
+      ModelSupport::getHeadRule(SMap,buildIndex,"25 -1006"),
+      ModelSupport::getHeadRule(SMap,buildIndex,"2005 -26")
+    };
+  const std::vector<HeadRule> tbGap
+    {
+      ModelSupport::getHeadRule(SMap,buildIndex,"25 -1005"),
+      ModelSupport::getHeadRule(SMap,buildIndex,"2006 -26")
+    };
 
   // Magnets
   int BI(buildIndex);
-  for(const std::string partName : {"Bottom", "Top"} )
+  for(const std::string partName : {"Bottom","Top"} )
     {
-      const std::string tb(ModelSupport::getComposite(SMap,BI," 1005 -1006 "));
+      const HeadRule tb=ModelSupport::getHeadRule(SMap,BI,"1005 -1006");
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-		 " 1003 -1013 1001 -1002 ");
-      makeCell(partName+"MagLeftRec",System,cellIndex++,coilMat,0.0,Out+tb);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,
+		"1003 -1013 1001 -1002");
+      makeCell(partName+"MagLeftRec",System,cellIndex++,coilMat,0.0,HR*tb);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-      		 " 1014 -1004 1001 -1002 ");
-      makeCell(partName+"MagRightRec",System,cellIndex++,coilMat,0.0,Out+tb);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,
+      		"1014 -1004 1001 -1002");
+      makeCell(partName+"MagRightRec",System,cellIndex++,coilMat,0.0,HR*tb);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-      		 "-2 1002 1003 -1004 -1008 1018 ");
-      makeCell(partName+"MagCyl",System,cellIndex++,coilMat,0.0,Out+tb);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,
+      		"-2 1002 1003 -1004 -1008 1018");
+      makeCell(partName+"MagCyl",System,cellIndex++,coilMat,0.0,HR*tb);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-      		 " 1 -1001 1003 -1004 -1007 1017 ");
-      makeCell(partName+"MagCyl",System,cellIndex++,coilMat,0.0,Out+tb);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,
+      		"1 -1001 1003 -1004 -1007 1017");
+      makeCell(partName+"MagCyl",System,cellIndex++,coilMat,0.0,HR*tb);
 
       // Frame inside the magnet
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     " 33 -34 1001 -1002 " + tbInner[tier]);
-      makeCell(partName+"FrameInner",System,cellIndex++,frameMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"33 -34 1001 -1002");
+      makeCell(partName+"FrameInner",System,cellIndex++,frameMat,0.0,
+	       HR*tbInner[tier]);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-      				     " 1013 -33 1001 -1002 ");
-      makeCell(partName+"FrameInnerGap1",System,cellIndex++,voidMat,0.0,Out+tb);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,
+      				    "1013 -33 1001 -1002");
+      makeCell(partName+"FrameInnerGap1",System,cellIndex++,voidMat,0.0,HR*tb);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-      				     " 34 -1014 1001 -1002 ");
-      makeCell(partName+"FrameInnerGap1",System,cellIndex++,voidMat,0.0,Out+tb);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,
+      				    "34 -1014 1001 -1002");
+      makeCell(partName+"FrameInnerGap1",System,cellIndex++,voidMat,0.0,HR*tb);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-      				     " 33 -34 1002 -12 " + tbGap[tier]);
-      makeCell(partName+"FrameInnerGap2",System,cellIndex++,voidMat,0.0,Out);
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-      				     " 33 -34 11 -1001 " + tbGap[tier]);
-      makeCell(partName+"FrameInnerGap2",System,cellIndex++,voidMat,0.0,Out);
-
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"33 -34 1002 -12");
+      makeCell(partName+"FrameInnerGap2",System,cellIndex++,voidMat,0.0,
+	       HR*tbGap[tier]);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"33 -34 11 -1001");
+      makeCell(partName+"FrameInnerGap2",System,cellIndex++,voidMat,0.0,
+	       HR*tbGap[tier]);
 
       // void inside inner cylinders
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-      				     " 1002 -1018 ");
-      makeCell(partName+"MagVoidCylIn",System,cellIndex++,voidMat,0.0,Out+tb);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1002 -1018");
+      makeCell(partName+"MagVoidCylIn",System,cellIndex++,voidMat,0.0,HR*tb);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-      				     " -1001 -1017 ");
-      makeCell(partName+"MagVoidCylIn",System,cellIndex++,voidMat,0.0,Out+tb);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1001 -1017");
+      makeCell(partName+"MagVoidCylIn",System,cellIndex++,voidMat,0.0,HR*tb);
 
       // void outside outer cylinders
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-      				     " 1003 -1004 1002 1008 -2 ");
-      makeCell(partName+"MagVoidCylOut",System,cellIndex++,voidMat,0.0,Out+tb);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1003 -1004 1002 1008 -2");
+      makeCell(partName+"MagVoidCylOut",System,cellIndex++,voidMat,0.0,HR*tb);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-      				     " 1 1003 -1004 -1001 1007 ");
-      makeCell(partName+"MagVoidCylOut",System,cellIndex++,voidMat,0.0,Out+tb);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,
+      				    "1 1003 -1004 -1001 1007");
+      makeCell(partName+"MagVoidCylOut",System,cellIndex++,voidMat,0.0,HR*tb);
 
       BI+=1000;
       tier++;
     }
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 1 -2 1003 -1004 1006 -2005 ");
-  makeCell("VoidMiddle",System,cellIndex++,voidMat,0.0,Out+ICell);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				"1 -2 1003 -1004 1006 -2005");
+  makeCell("VoidMiddle",System,cellIndex++,voidMat,0.0,HR*ICellHR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1 -2 13 -14 15 -16 " );
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1 -2 13 -14 15 -16");
+  addOuterSurf(HR);
 
   return;
 }

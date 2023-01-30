@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   moderatorInc/DecLayer.h
+ * File:   ts2BuildInc/DecLayer.h
 *
  * Copyright (c) 2004-2022 by Stuart Ansell
  *
@@ -63,6 +63,8 @@ class DecLayer : public Decoupled
 
   /// Doesnt internal pipe
   virtual int needsHePipe() const { return 0; }
+
+  using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 			 const long int);
 

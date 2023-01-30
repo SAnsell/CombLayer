@@ -52,17 +52,15 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedUnit.h"
-#include "FixedOffset.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotate.h"
 #include "LayerComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "CylFlowGuide.h"
 #include "OnionCooling.h"
 #include "DiskPreMod.h"
@@ -72,14 +70,14 @@ namespace essSystem
 {
 
 DiskPreMod::DiskPreMod(const std::string& Key) :
+  attachSystem::FixedRotate(Key,9),
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0),
-  attachSystem::FixedOffsetUnit(Key,9),
-  attachSystem::CellMap(),attachSystem::SurfMap(),  
+  attachSystem::CellMap(),
+  attachSystem::SurfMap(),  
   NWidth(0),
   InnerComp(new CylFlowGuide(Key+"FlowGuide")),
-  onion(new OnionCooling(Key+"OnionCooling")),
-  sideRule("")
+  onion(new OnionCooling(Key+"OnionCooling"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -91,16 +89,18 @@ DiskPreMod::DiskPreMod(const std::string& Key) :
 }
 
 DiskPreMod::DiskPreMod(const DiskPreMod& A) : 
+  attachSystem::FixedRotate(A),
   attachSystem::ContainedComp(A),
-  attachSystem::LayerComp(A),attachSystem::FixedOffsetUnit(A),
-  attachSystem::CellMap(A),attachSystem::SurfMap(A),
+  attachSystem::LayerComp(A),
+  attachSystem::CellMap(A),
+  attachSystem::SurfMap(A),
   radius(A.radius),
   height(A.height),depth(A.depth),width(A.width),
   mat(A.mat),temp(A.temp),
   flowGuideType(A.flowGuideType),
   InnerComp(A.InnerComp->clone()),
   onion(A.onion->clone()),
-  sideRule(A.sideRule)
+  sideRuleHR(A.sideRuleHR)
   /*!
     Copy constructor
     \param A :: DiskPreMod to copy
@@ -117,9 +117,9 @@ DiskPreMod::operator=(const DiskPreMod& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       radius=A.radius;
@@ -131,7 +131,7 @@ DiskPreMod::operator=(const DiskPreMod& A)
       flowGuideType=A.flowGuideType;
       *InnerComp=*A.InnerComp;
       *onion=*A.onion;
-      sideRule=A.sideRule;
+      sideRuleHR=A.sideRuleHR;
    }
   return *this;
 }
@@ -154,22 +154,19 @@ DiskPreMod::~DiskPreMod()
   
 
 void
-DiskPreMod::populate(const FuncDataBase& Control,
-		     const double& outRadius)
+DiskPreMod::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: Variable table to use
-    \param outRadius :: Outer radius of reflector [for void fill]
   */
 {
   ELog::RegMethod RegA("DiskPreMod","populate");
 
-  FixedOffset::populate(Control);
-
+  FixedRotate::populate(Control);
   engActive=Control.EvalTail<int>(keyName,"","EngineeringActive");
   flowGuideType=Control.EvalVar<std::string>(keyName+"FlowGuideType");
 
-  outerRadius=outRadius;
+  outerRadius=Control.EvalDefVar<double>(keyName+"OuterRadius",0.0);
 
   // clear stuff 
   double R(0.0);
@@ -219,24 +216,18 @@ DiskPreMod::populate(const FuncDataBase& Control,
 
 void
 DiskPreMod::createUnitVector(const attachSystem::FixedComp& refCentre,
-			     const long int sideIndex,const bool zRotate)
+			     const long int sideIndex)
   /*!
     Create the unit vectors
     \param refCentre :: Centre for object
     \param sideIndex :: index for link
-    \param zRotate :: rotate Zaxis
   */
 {
   ELog::RegMethod RegA("DiskPreMod","createUnitVector");
   attachSystem::FixedComp::createUnitVector(refCentre);
   Origin=refCentre.getLinkPt(sideIndex);
-  if (zRotate)
-    {
-      X*=-1;
-      Z*=-1;
-    }
-  const double D=(depth.empty()) ? 0.0 : depth.back();
 
+  const double D=(depth.empty()) ? 0.0 : depth.back();
   zStep += D;
   applyOffset();
 
@@ -290,34 +281,32 @@ DiskPreMod::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("DiskPreMod","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
   int SI(buildIndex);
   // Process even number of surfaces:
   HeadRule Inner;
   HeadRule Width;
-  std::string widthUnit;
+  HeadRule widthUnit;
   for(size_t i=0;i<nLayers;i++)
     {
       if (i<NWidth)
 	{
 	  // previous width:
-	  Width.procString(widthUnit);
-	  Width.makeComplement();
-	  widthUnit=ModelSupport::getComposite(SMap,SI," -3 4 ");
+	  Width=widthUnit.complement();
+
+	  widthUnit=ModelSupport::getHeadRule(SMap,SI,"-3 4");
 	}
-      Out=ModelSupport::getComposite(SMap,SI," -7 5 -6 ");
+      HR=ModelSupport::getHeadRule(SMap,SI,"-7 5 -6");
 
 	
-      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],
-				       Out+widthUnit+
-				       Inner.display()+Width.display()));
+      System.addCell(cellIndex++,mat[i],temp[i],
+		     HR*widthUnit*Inner*Width);
       if (!i)
 	CellMap::setCell("Inner", cellIndex-1);
 
       SI+=10;
-      Inner.procString(Out);
-      Inner.makeComplement();
+      Inner=HR.complement();
     }
 
   SI-=10;
@@ -325,15 +314,15 @@ DiskPreMod::createObjects(Simulation& System)
   // Outer extra void
   if (radius.empty() || radius.back()<outerRadius-Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,SI," -17 5 -6 7");
-      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,SI,"-17 5 -6 7");
+      System.addCell(cellIndex++,0,0.0,HR);
       // For exit surface
-      Out=ModelSupport::getComposite(SMap,SI," -17 5 -6 ");
+      HR=ModelSupport::getHeadRule(SMap,SI,"-17 5 -6");
     }
 
-  addOuterSurf(Out);
+  addOuterSurf(HR);
 
-  sideRule=ModelSupport::getComposite(SMap,SI," -7 ");
+  sideRuleHR=HeadRule(SMap,SI,-7);
 
   return; 
 }
@@ -426,43 +415,10 @@ DiskPreMod::getSurfacePoint(const size_t layerIndex,
 }
 
 
-int
-DiskPreMod::getLayerSurf(const size_t layerIndex,
-			const long int sideIndex) const
-  /*!
-    Given a side and a layer calculate the link surf
-    \param layerIndex :: layer, 0 is inner moderator [0-4]
-    \param sideIndex :: Side [1-4]
-    \return Surface string
-  */
-{
-  ELog::RegMethod RegA("DiskPreMod","getLayerSurf");
 
-  if (layerIndex>nLayers) 
-    throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
-
-  const int SI(10*static_cast<int>(layerIndex)+buildIndex);
-  const long int uSIndex(std::abs(sideIndex));
-  const int signValue((sideIndex>0) ? 1 : -1);
-	       
-  switch(uSIndex)
-    {
-    case 1:
-    case 2:    
-    case 3:
-    case 4:
-      return signValue*SMap.realSurf(SI+7);
-    case 5:
-      return -signValue*SMap.realSurf(SI+5);
-    case 6:
-      return signValue*SMap.realSurf(SI+6);
-    }
-  throw ColErr::IndexError<long int>(sideIndex,7,"sideIndex");
-}
-
-std::string
-DiskPreMod::getLayerString(const size_t layerIndex,
-			   const long int sideIndex) const
+HeadRule
+DiskPreMod::getLayerHR(const size_t layerIndex,
+		       const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param layerIndex :: layer, 0 is inner moderator [0-4]
@@ -477,62 +433,53 @@ DiskPreMod::getLayerString(const size_t layerIndex,
 
   const int SI(10*static_cast<int>(layerIndex)+buildIndex);
 
-  std::string Out;
+  HeadRule HR;
   const long int uSIndex(std::abs(sideIndex));
   switch(uSIndex)
     {
     case 1:
-      Out=ModelSupport::getComposite(SMap,SI,buildIndex," 7 -2M ");
+      HR=ModelSupport::getHeadRule(SMap,SI,buildIndex,"7 -2M");
       break;
     case 2:
-      Out=ModelSupport::getComposite(SMap,SI,buildIndex," 7 2M ");
+      HR=ModelSupport::getHeadRule(SMap,SI,buildIndex,"7 2M");
       break;
     case 3:
-      Out=ModelSupport::getComposite(SMap,SI,buildIndex," 7 -1M ");
+      HR=ModelSupport::getHeadRule(SMap,SI,buildIndex,"7 -1M");
       break;
     case 4:
-      Out=ModelSupport::getComposite(SMap,SI,buildIndex," 7 1M ");
+      HR=ModelSupport::getHeadRule(SMap,SI,buildIndex,"7 1M");
       break;
     case 5:
-      Out=ModelSupport::getComposite(SMap,SI," -5 ");
+      HR=HeadRule(SMap,SI,-5);
       break;
     case 6:
-      Out=ModelSupport::getComposite(SMap,SI," 6 ");
+      HR=HeadRule(SMap,SI,6);
       break;
     default:
       throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
     }
   if (sideIndex<0)
-    {
-      HeadRule HR(Out);
-      HR.makeComplement();
-      return HR.display();
-    }
-  return Out;
+    HR.makeComplement();
+
+  return HR;
 }
 
 
 void
 DiskPreMod::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
-		      const long int sideIndex,
-		      const bool zRotate,
-		      const double& ORad)
+		      const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation
     \param FC :: Attachment point	       
     \param sideIndex :: side of object
-    \param zRotate :: Rotate to -ve Z
-    \param ORad :: Outer radius of zone
    */
 {
   ELog::RegMethod RegA("DiskPreMod","createAll");
 
-  ELog::EM<<"ASDFSADFSADF"<<ELog::endDiag;
-  populate(System.getDataBase(),ORad);
-  createUnitVector(FC,sideIndex,zRotate);
-
+  populate(System.getDataBase());
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();
@@ -542,9 +489,21 @@ DiskPreMod::createAll(Simulation& System,
   if (engActive)
     {
       if (flowGuideType.find("Onion")!=std::string::npos)
-	onion->createAll(System,*this,0);
+	{
+	  onion->setCell("Inner",getCell("Inner"));
+	  onion->setCutSurf("Base",*this,8);
+	  onion->setCutSurf("Top",*this,9);
+	  onion->createAll(System,*this,0);
+	}
       else
-        InnerComp->createAll(System,*this,7);
+	{
+	  InnerComp->copyCells(*this,"Inner");
+	  InnerComp->setSurf("InnerCyl",SMap.realSurf(buildIndex+7));
+	  InnerComp->setCutSurf
+	    ("TopBase",ModelSupport::getHeadRule(SMap,buildIndex,"5 -6"));
+	  InnerComp->setCutSurf("InnerCyl",HeadRule(SMap,buildIndex,-7));
+	  InnerComp->createAll(System,*this,0);
+	}
     }
 
   return;

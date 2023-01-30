@@ -89,6 +89,7 @@
 #include "EPSeparator.h"
 #include "R3ChokeChamber.h"
 #include "R3ChokeInsert.h"
+#include "EntryPipe.h"
 #include "MagnetM1.h"
 #include "MagnetU1.h"
 
@@ -571,12 +572,6 @@ R3FrontEnd::buildObjects(Simulation& System)
   eCutDisk->addInsertCell(chokeChamber->getCell("PhotonVoid"));
   eCutDisk->createAll(System,*chokeChamber,
 		      chokeChamber->getSideIndex("-photon"));
-
-  eCutMagDisk->setNoInsert();
-  eCutMagDisk->addInsertCell(chokeChamber->getCell("ElectronVoid"));
-  eCutMagDisk->createAll(System,*chokeChamber,
-		      chokeChamber->getSideIndex("-electron"));
-
   
   // FM1 Built relateive to MASTER coordinate
   collA->createAll(System,*this,0);
@@ -593,8 +588,15 @@ R3FrontEnd::buildObjects(Simulation& System)
   magBlockU1->insertAllInCell(System,buildZone.getCell("dipoleUnit"));
   magBlockU1->insertDipolePipe(System,*dipolePipe);
 
+  const xraySystem::EntryPipe& entryPipe=
+    magBlockU1->getEntryPipe();
+  eCutMagDisk->setNoInsert();
+  eCutMagDisk->addInsertCell(entryPipe.getCell("Void"));
+  eCutMagDisk->addInsertCell(entryPipe.getCell("Wall"));
+  eCutMagDisk->createAll(System,entryPipe,"-back");
+
   eTransPipe->setFront(*chokeChamber,"electron");
-  eTransPipe->setBack(*magBlockU1,"front");
+  eTransPipe->setBack(*magBlockU1,"voidFront");
   eTransPipe->createAll(System,*chokeChamber,"electron");
   eTransPipe->insertInCell("FlangeA",System,
 			   chokeChamber->getCell("PhotonOuterVoid"));
@@ -640,7 +642,6 @@ R3FrontEnd::buildObjects(Simulation& System)
   collB->insertInCell(System,outerCell);
 
   std::shared_ptr<attachSystem::FixedComp> linkFC(collB);
-  ELog::EM<<"ACTIVE == "<<collFM3Active<<ELog::endDiag;
   if (collFM3Active)
     {
       constructSystem::constructUnit
@@ -692,7 +693,7 @@ R3FrontEnd::createAll(Simulation& System,
   createSurfaces();
   buildObjects(System);
   createLinks();
-  
+
   return;
 }
 

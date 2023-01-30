@@ -184,7 +184,7 @@ class makeESS
   void buildTopButterfly(Simulation&);
   void buildToperPipe(Simulation&,const std::string&);
 
-  void makeTarget(Simulation&,const std::string&);
+  void makeTarget(Simulation&,const mainSystem::inputParam&);
   void makeTargetClearance(Simulation&,const bool);
   
   void makeBunker(Simulation&,const mainSystem::inputParam&);
@@ -204,8 +204,6 @@ class makeESS
   void buildTwister(Simulation&);
 
   void buildF5Collimator(Simulation&,const size_t);
-
-  void optionSummary(Simulation&);
 
  public:
   

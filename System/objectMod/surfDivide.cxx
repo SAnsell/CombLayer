@@ -34,16 +34,12 @@
 #include <algorithm>
 #include <memory>
 #include <functional>
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "stringCombine.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -441,7 +437,7 @@ surfDivide::procSurfDivide(Simulation& System,
 {
   ELog::RegMethod RegA("surfDivide","procSurfDivide");
 
-  std::string OutA,OutB;
+  HeadRule HRA,HRB;
   // Cell Specific:
   init();
   setCellN(cellNumber);
@@ -456,10 +452,10 @@ surfDivide::procSurfDivide(Simulation& System,
 			       SMap.realSurf(moduleIndex+VItem.second));
     }
 
-  OutA=ModelSupport::getComposite(SMap,moduleIndex,Inner);
-  OutB=ModelSupport::getComposite(SMap,moduleIndex,Outer);
-  surroundRule.setInnerRule(OutA);
-  surroundRule.setOuterRule(OutB);
+  HRA=ModelSupport::getHeadRule(SMap,moduleIndex,Inner);
+  HRB=ModelSupport::getHeadRule(SMap,moduleIndex,Outer);
+  surroundRule.setInnerRule(HRA);
+  surroundRule.setOuterRule(HRB);
 
 
   addRule(&surroundRule);
@@ -490,7 +486,6 @@ surfDivide::procSimpleDivide(Simulation& System,
 {
   ELog::RegMethod Rega("surfDivide","procSimpleDivide");
 
-  std::string OutA,OutB;
   // Cell Specific:
   init();
   setCellN(cellNumber);
@@ -505,11 +500,12 @@ surfDivide::procSimpleDivide(Simulation& System,
       const int RB=SMap.realSurf(moduleIndex+abs(VItem.second));
       const int ASign=(VItem.first>0) ? 1 : -1;
       const int BSign=(VItem.second>0) ? 1 : -1;
+
       surroundRule.setSurfPair(RA,RB);
-      OutA=StrFunc::makeString(RA*ASign);
-      OutB=StrFunc::makeString(RB*BSign);
-      surroundRule.setInnerRule(OutA);
-      surroundRule.setOuterRule(OutB);
+      const HeadRule HRA(RA*ASign);
+      const HeadRule HRB(RB*BSign);
+      surroundRule.setInnerRule(HRA);
+      surroundRule.setOuterRule(HRB);
       addRule(&surroundRule);
     }
 

@@ -3,7 +3,7 @@
  
  * File:   geometry/Sphere.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@ Sphere::Sphere() : Quadratic(),
     make sphere at the origin radius zero 
   */
 {
-  setBaseEqn();
+  Sphere::setBaseEqn();
 }
  
 Sphere::Sphere(const int N,const int T) : 
@@ -68,7 +68,7 @@ Sphere::Sphere(const int N,const int T) :
     \param T :: Transform number
   */
 {
-  setBaseEqn();
+  Sphere::setBaseEqn();
 }
  
 Sphere::Sphere(const Sphere &A) : 

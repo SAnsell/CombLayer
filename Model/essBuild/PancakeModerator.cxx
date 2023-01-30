@@ -3,7 +3,7 @@
 
  * File:   essBuild/PancakeModerator.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2022 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,8 +40,6 @@
 #include "OutputLog.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
@@ -57,6 +55,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "FixedOffsetUnit.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
@@ -201,48 +200,20 @@ PancakeModerator::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("PancakeModerator","createObjects");
 
-  const std::string Exclude=ContainedComp::getExclude();
+  const HeadRule excludeHR=ContainedComp::getExcludeSurf();
+  HeadRule HR; 
 
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+Exclude));
-  addCell("MainVoid",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 5 -6");
+  makeCell("MainVoid",System,cellIndex++,0,0.0,HR*excludeHR);
 
   clearRules();
-  addOuterSurf(Out);
+  addOuterSurf(HR);
 
   return;
 }
 
-
-int
-PancakeModerator::getCommonSurf(const long int) const
-  /*!
-    Only components have reference values
-    \param  :: sideIndex
-    \return surface number
-  */
-
-{
-  ELog::RegMethod RegA("PancakeModerator","getCommonSurf");
-  throw ColErr::AbsObjMethod("Not implemented yet");
-}
-
-int
-PancakeModerator::getLayerSurf(const size_t,const long int) const
-/*!
-  [PLACEHOLDER] Only components have reference values
-    \param  :: layer, 0 is inner moderator [0-6]
-    \param  :: Side [0-3] // mid sides
-  \return layer surface
-  */
-{
-  ELog::RegMethod RegA("PancakeModerator","getLayerSurf");
-  throw ColErr::AbsObjMethod("Not implemented yet");
-}
-
-std::string
-PancakeModerator::getLayerString(const size_t,const long int) const
+HeadRule
+PancakeModerator::getLayerHR(const size_t,const long int) const
   /*!
     Only components have reference values [PLACEHOLDER]
     \param  :: layer, 0 is inner moderator [0-6]
@@ -337,9 +308,7 @@ PancakeModerator::getComponent(const std::string& compName) const
   throw ColErr::InContainerError<std::string>(compName,keyName+" component");
 }
 
-
-
-std::string
+HeadRule
 PancakeModerator::getLeftFarExclude() const
   /*!
     Get the outer exclude surface without top/base
@@ -349,13 +318,14 @@ PancakeModerator::getLeftFarExclude() const
 {
   ELog::RegMethod RegA("PancakeModerator","getLeftFarExclude");
 
-  std::string Out;
-  Out=LeftWater->getLinkString(4);
-  Out+=RightWater->getLinkString(3);
-  return Out;
+  HeadRule HR;
+  HR=LeftWater->getFullRule(4);
+  HR*=RightWater->getFullRule(3);
+
+  return HR;
 }
 
-std::string
+HeadRule
 PancakeModerator::getRightFarExclude() const
   /*!
     Get the outer exclude surface without top/base
@@ -365,14 +335,14 @@ PancakeModerator::getRightFarExclude() const
 {
   ELog::RegMethod RegA("PancakeModerator","getRightFarExclude");
 
-  std::string Out;
-  Out+=LeftWater->getLinkString(3);
-  Out+=RightWater->getLinkString(4);
+  HeadRule HR;
+  HR=LeftWater->getFullRule(3);
+  HR*=RightWater->getFullRule(4);
 
-  return Out;
+  return HR;
 }
 
-std::string
+HeadRule
 PancakeModerator::getLeftExclude() const
   /*!
     Get the complete exclude surface without top/base
@@ -381,15 +351,16 @@ PancakeModerator::getLeftExclude() const
   */
 {
   ELog::RegMethod RegA("PancakeModerator","getLeftExclude");
-  std::string Out;
 
-  Out+=MidH2->getLinkString(1);
-  Out+= getLeftFarExclude();
+  HeadRule HR;
 
-  return Out;
+  HR=MidH2->getFullRule(1);
+  HR*= getLeftFarExclude();
+
+  return HR;
 }
 
-std::string
+HeadRule
 PancakeModerator::getRightExclude() const
   /*!
     Get the complete exclude surface without top/base
@@ -398,12 +369,12 @@ PancakeModerator::getRightExclude() const
   */
 {
   ELog::RegMethod RegA("PancakeModerator","getRightExclude");
-  std::string Out;
+  HeadRule HR;
 
-  Out+=MidH2->getLinkString(2);
-  Out+= getRightFarExclude();
+  HR=MidH2->getFullRule(2);
+  HR*= getRightFarExclude();
 
-  return Out;
+  return HR;
 
 }
 
@@ -447,13 +418,13 @@ PancakeModerator::createAll(Simulation& System,
   createUnitVector(orgFC,orgIndex,axisFC,axisIndex);
   createSurfaces();
 
-  ELog::EM<<"Call Mit"<<ELog::endDiag;
-  MidH2->createAll(System,*this,0,false,0.0);
+  MidH2->createAll(System,*this,0);
 
-  const std::string Exclude=
-    ModelSupport::getComposite(SMap,buildIndex," -7 5 -6 ");
-  LeftWater->setCutSurf("Container",Exclude);
-  RightWater->setCutSurf("Container",Exclude);
+  const HeadRule ExcludeHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"-7 5 -6");
+  LeftWater->setCutSurf("Container",ExcludeHR);
+  RightWater->setCutSurf("Container",ExcludeHR);
+  
   LeftWater->createAll(System,*MidH2,4);
   RightWater->createAll(System,*MidH2,3);
 

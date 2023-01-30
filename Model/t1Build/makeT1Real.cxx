@@ -54,6 +54,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ExternalCut.h"
+#include "FrontBackCut.h"
 #include "ContainedGroup.h"
 #include "t1Reflector.h"
 #include "H2Moderator.h"
@@ -79,8 +80,6 @@
 #include "MonoPlug.h"
 #include "World.h"
 
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "HeadRule.h"
 #include "Importance.h"
 #include "Object.h"
@@ -220,32 +219,32 @@ makeT1Real::flightLines(Simulation& System)
 {
   ELog::RegMethod RegA("makeT1Real","flightLines");
 
-  std::string Out;
-  std::string Out1;
 
-  Out=RefObj->getComposite(" 3 ");
-  H2FL->setCutSurf("BeOuter",Out);
+  HeadRule HR;
+  
+  HR=RefObj->getHeadRule("3");
+  H2FL->setCutSurf("BeOuter",HR);
   H2FL->createAll(System,*Lh2ModObj,1);
   
-  Out=RefObj->getComposite("3 -12");
-  HeadRule HR(Out);
+  
+  HR=RefObj->getHeadRule("3 -12");
   CH4NorthFL->setCutSurf("BeOuter",HR*Lh2ModObj->getRule("EdgeCut"));
   CH4NorthFL->createAll(System,*CH4ModObj,1);
 
-  Out=RefObj->getComposite(" 1 -4 -13 ");
-  CH4SouthFL->setCutSurf("BeOuter",Out);
+  HR=RefObj->getHeadRule("1 -4 -13");
+  CH4SouthFL->setCutSurf("BeOuter",HR);
   CH4SouthFL->createAll(System,*CH4ModObj,2); 
 
-  Out=RefObj->getComposite(" -4 ");
-  MerlinFL->setCutSurf("BeOuter",Out);
+  HR=RefObj->getHeadRule("-4");
+  MerlinFL->setCutSurf("BeOuter",HR);
   MerlinFL->createAll(System,*MerlinMod,1);
   
-  Out=RefObj->getComposite(" 1 3 -11 ");
-  WaterNorthFL->setCutSurf("BeOuter",Out);
+  HR=RefObj->getHeadRule("1 3 -11");
+  WaterNorthFL->setCutSurf("BeOuter",HR);
   WaterNorthFL->createAll(System,*WaterModObj,1);
 
-  Out=RefObj->getComposite(" -14 -4 ");
-  WaterSouthFL->setCutSurf("BeOuter",Out);
+  HR=RefObj->getHeadRule("-14 -4");
+  WaterSouthFL->setCutSurf("BeOuter",HR);
   WaterSouthFL->createAll(System,*WaterModObj,2); 
 
   // Flight line intersects:
@@ -408,7 +407,7 @@ makeT1Real::build(Simulation& System,
       MonoTopObj->createAll(System,*VoidObj,3);
       MonoBaseObj->createAll(System,*VoidObj,2);
       
-      voidCell=VoidObj->getVoidCell();
+      voidCell=VoidObj->getCell("Void");
     }
   else
     {
@@ -438,9 +437,9 @@ makeT1Real::build(Simulation& System,
   flightLines(System);
 
   RefObj->createBoxes(System,TarExcludeName);
-
+  
   H2PipeObj->createAll(System,*Lh2ModObj,5);   // long int sideIndex
-
+  
   WaterPipeObj->createAll(System,*WaterModObj,12);
 
   MPipeObj->createAll(System,*MerlinMod,12);

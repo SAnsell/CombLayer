@@ -3,7 +3,7 @@
 
  * File:   essBuildInc/DiskPreMod.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,9 +36,10 @@ namespace essSystem
   \brief Specialized for a cylinder pre-mod under moderator
 */
 
-class DiskPreMod : public attachSystem::ContainedComp,
+class DiskPreMod :
+  public attachSystem::FixedRotate,
+  public attachSystem::ContainedComp,
   public attachSystem::LayerComp,
-  public attachSystem::FixedOffsetUnit,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {
@@ -57,15 +58,15 @@ class DiskPreMod : public attachSystem::ContainedComp,
 
   size_t NWidth;                      ///< Number of widths active
   int engActive;                  ///< Engineering active flag
+
   /// Flow guide pattern inside DiskPreMod (engineering detail)
   std::shared_ptr<CylFlowGuide> InnerComp;
   std::shared_ptr<OnionCooling> onion;
-  std::string sideRule; ///< side rule
 
-  using FixedOffset::populate;
-  void populate(const FuncDataBase&,const double&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int,
-			const bool);
+  HeadRule sideRuleHR;
+
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -80,18 +81,19 @@ class DiskPreMod : public attachSystem::ContainedComp,
   virtual ~DiskPreMod();
 
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
-  virtual int getLayerSurf(const size_t,const long int) const;
-  virtual std::string getLayerString(const size_t,const long int) const;
+  virtual HeadRule getLayerHR(const size_t,const long int) const;
 
-  std::string getSideRule() const { return sideRule; }
+  // 
+  HeadRule getSideRule() const { return sideRuleHR; }
 
   /// total height of object
   double getZOffset() const { return zStep; }
   double getHeight() const
     { return (depth.empty()) ? 0.0 : depth.back()+height.back(); }
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int,const bool,const double&);
+		 const long int);
 
 };
 

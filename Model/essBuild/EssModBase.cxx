@@ -3,7 +3,7 @@
  
  * File:   essBuild/EssModBase.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,19 +44,23 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
+#include "ContainedComp.h"
 #include "LayerComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
-#include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "EssModBase.h"
 
 namespace essSystem
 {
 
 EssModBase::EssModBase(const std::string& Key,const size_t nLinks)  :
-  attachSystem::ContainedComp(),attachSystem::LayerComp(0,0),
-  attachSystem::FixedOffset(Key,nLinks),attachSystem::CellMap()
+  attachSystem::FixedRotate(Key,nLinks),
+  attachSystem::ContainedComp(),
+  attachSystem::LayerComp(0,0),
+  attachSystem::ExternalCut(),
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -64,9 +68,11 @@ EssModBase::EssModBase(const std::string& Key,const size_t nLinks)  :
   */
 {}
 
-EssModBase::EssModBase(const EssModBase& A) : 
+EssModBase::EssModBase(const EssModBase& A) :
+  attachSystem::FixedRotate(A),
   attachSystem::ContainedComp(A),
-  attachSystem::LayerComp(A),attachSystem::FixedOffset(A),
+  attachSystem::LayerComp(A),
+  attachSystem::ExternalCut(A),
   attachSystem::CellMap(A)
   /*!
     Copy constructor
@@ -84,9 +90,10 @@ EssModBase::operator=(const EssModBase& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       attachSystem::CellMap::operator=(A);
     }
   return *this;
@@ -99,19 +106,6 @@ EssModBase::~EssModBase()
  */
 {}
 
-
-void
-EssModBase::populate(const FuncDataBase& Control)
-  /*!
-    Local populations
-    \param Control :: FuncDatabase to use
-   */
-{
-  ELog::RegMethod RegA("EssModBase","populate");
-
-  FixedOffset::populate(Control);
-  return;
-}
 
 void
 EssModBase::createUnitVector(const attachSystem::FixedComp& orgFC,

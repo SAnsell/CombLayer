@@ -36,8 +36,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -56,6 +54,7 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 
@@ -176,7 +175,7 @@ HfElement::populate(const FuncDataBase& Control)
 }
 
 void
-HfElement::createSurfaces(const attachSystem::FixedComp& RG)
+HfElement::createSurfaces()
   /*!
     Creates/duplicates the surfaces for this block
     \param RG :: Reactor grid (surf 5)
@@ -184,11 +183,10 @@ HfElement::createSurfaces(const attachSystem::FixedComp& RG)
 {  
   ELog::RegMethod RegA("HfElement","createSurface");
 
-  FuelElement::createSurfaces(RG);
+  FuelElement::createSurfaces();
   if (!cutSize) return;
   
   int cIndex(controlIndex);
-
   //
   // Work away from cut element:
   //
@@ -242,7 +240,7 @@ HfElement::createObjects(Simulation& System)
 
   if (!cutSize) return;
 
-  std::string Out;
+  HeadRule HR;
   int cIndex(controlIndex);
   const Geometry::Vec3D cutPos[]=
     { plateCentre((cutSize+1)/2),
@@ -250,21 +248,21 @@ HfElement::createObjects(Simulation& System)
 
   for(size_t i=0;i<2;i++)  // front / back
     {
-      Out=ModelSupport::getComposite(SMap,cIndex,buildIndex,
-				     " 1 -2 23M -24M 25M -26M ");
-      System.addCell(MonteCarlo::Object(cellIndex++,bladeMat,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,cIndex,buildIndex,
+				   "1 -2 23M -24M 25M -26M");
+      System.addCell(cellIndex++,bladeMat,0.0,HR);
       
-      Out=ModelSupport::getComposite(SMap,cIndex,controlIndex,
-				     " 11 -12 3M -4M 5M -6M ");
-      ContainedGroup::addOuterUnionSurf("Rod",Out);      
-      System.addCell(MonteCarlo::Object(cellIndex++,absMat,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,cIndex,controlIndex,
+				     " 11 -12 3M -4M 5M -6M");
+      ContainedGroup::addOuterUnionSurf("Rod",HR);      
+      System.addCell(cellIndex++,absMat,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,cIndex,buildIndex,
-				     " 21 -22 23M -24M 25M -26M ");
-      System.addCell(MonteCarlo::Object(cellIndex++,bladeMat,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,cIndex,buildIndex,
+				     "21 -22 23M -24M 25M -26M");
+      System.addCell(cellIndex++,bladeMat,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,cIndex,"(-1:2) (-21:22)");
-      addWaterExclude(System,cutPos[i],Out);
+      HR=ModelSupport::getHeadRule(SMap,cIndex,"(-1:2) (-21:22)");
+      addWaterExclude(System,cutPos[i],HR);
 
       cIndex+=50;
     }	  
@@ -289,41 +287,38 @@ HfElement::createLinks()
 void
 HfElement::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FC,
-		     const Geometry::Vec3D& OG,
-		     const FuelLoad& FuelSystem)
+		     const long int sideIndex)
   /*!
     Global creation of element
     \param System :: Simulation to add vessel to
     \param FC :: Fixed Unit
     \param OG :: Origin
-    \param FuelSystem :: Fuelfor main elements
   */
 {
   ELog::RegMethod RegA("HfElement","createAll(HfElement)");
 
   populate(System.getDataBase());
-  createUnitVector(FC,OG);
-  createSurfaces(FC);
+  FixedComp::createUnitVector(FC,sideIndex);
+  createSurfaces();
   createObjects(System);
   createLinks();
 
-  FuelElement::layerProcess(System,FuelSystem);
+  if (FuelPtr)
+    FuelElement::layerProcess(System,*FuelPtr);
 
   const std::vector<int>& IC=getInsertCells();
   if (!IC.empty())
     addAllInsertCell(IC.front());
-  std::vector<int>::const_iterator vc;
-  for(vc=midCell.begin();vc!=midCell.end();vc++)
+
+  ContainedGroup::addInsertCell("Rod",getCells("MidCell"));
+  ContainedGroup::addInsertCell("Track",getCells("MidCell"));
+  
+  if (hasCell("TopCell"))
     {
-      ContainedGroup::addInsertCell("Rod",*vc);
-      ContainedGroup::addInsertCell("Track",*vc);
+      ContainedGroup::addInsertCell("Rod",getCell("TopCell"));
+      ContainedGroup::addInsertCell("Track",getCell("TopCell"));
     }
   
-  if (topCell)
-    {
-      ContainedGroup::addInsertCell("Rod",topCell);
-      ContainedGroup::addInsertCell("Track",topCell);
-    }
   FuelElement::insertObjects(System);       
   ContainedGroup::insertObjects(System);
 

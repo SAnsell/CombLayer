@@ -3,7 +3,7 @@
 
  * File:   essBuildInc/Linac.h
  *
- * Copyright (c) 2004-2017 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,9 @@ namespace essSystem
     \brief Linac building and container for the linac-related components
   */
 
-class Linac : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
+class Linac : 
+  public attachSystem::FixedRotate,
+  public attachSystem::ContainedComp,
   public attachSystem::CellMap
 {
  private:
@@ -78,9 +79,6 @@ class Linac : public attachSystem::ContainedComp,
 		    const size_t, const int);
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
   void createObjects(Simulation&);
 
@@ -93,6 +91,7 @@ class Linac : public attachSystem::ContainedComp,
   Linac& operator=(const Linac&);
   virtual ~Linac();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

@@ -3,7 +3,7 @@
  
  * File:   t1Build/t1BaseVariables.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,12 +36,11 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "stringCombine.h"
 #include "Vec3D.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
-#include "shutterVar.h"
+#include "BlockShutterGenerator.h"
 
 namespace setVariable
 {
@@ -715,7 +714,7 @@ TS1BlockTarget(FuncDataBase& Control)
   Control.addVariable("t1BlockTargetThick11",4.6);         
   for(size_t i=0;i<12;i++)
     {
-      const std::string Num=StrFunc::makeString(i);
+      const std::string Num=std::to_string(i);
       Control.Parse("0.75*t1BlockTargetThick"+Num);
       Control.addVariable("t1BlockTargetVoid"+Num);
     }         
@@ -831,6 +830,7 @@ TS1base(FuncDataBase& Control)
   Control.addVariable("flightradius",3.6);     // Radius the beam in the flightline
   // REAL VOID VESSEL
   Control.addVariable("voidYoffset",9.2);            // Dave Bellenger      
+  Control.addVariable("t1CylVesselYStep",9.2);        // Dave Bellenger 
   Control.addVariable("t1CylVesselRadius",161.0);     // Radius from G4Model
   Control.addVariable("t1CylVesselClearance",2.0);     // H.J. drawing
   Control.addVariable("t1CylVesselTopRadius",350.0);  
@@ -1029,6 +1029,33 @@ TS1base(FuncDataBase& Control)
 
   // SHUTTERS COLLIMATION:
 
+  BlockShutterGenerator BSGen;
+ 
+  // x/z step : x/zAngle : beamSize : beam change angle (+ve is focused)
+  //  BSGen.generateCyl(Control,"sandals",-1.6,0.0,   -1.6,0.0,  7.3309,0.3595   );
+  BSGen.generateBox(Control,"sandals",-1.6,0.0,   -1.6, 0.0,  6.17,8.61, 0.35,0.47);  // USE ABOVE
+  BSGen.generateBox(Control,"prisma", -1.7,0.0,    0.0,0.0,   6.17,8.61, 0.35,0.47);
+  BSGen.generateBox(Control,"surf",    2.2,0.0,    2.0,-1.5,  6.74,4.8,  0.05,0.44); 
+  BSGen.generateBox(Control,"crisp",   2.2,0.0,    2.2,-1.5,  7.91,4.57, 0.22,0.275); 
+  BSGen.generateBox(Control,"loq",     2.2,0.0,    0.0,0.0,   7.9, 7.9,  0.395,0.395); 
+  BSGen.generateBox(Control,"iris",    2.0,0.0,    0.0,0.0,   6.79,6.79, 0.0,0.0); 
+  BSGen.generateBox(Control,"polaris",-1.7,0.0,    0.0,0.0,   8.22,7.93, 0.35,0.22); 
+  BSGen.generateBox(Control,"tosca",  -1.5,0.0,    0.0,0.0,   8.4,8.0,   0.16,0.088); 
+  BSGen.generateBox(Control,"het",    -1.3,0.0,   -0.6,0.0,   7.90,7.90, 0.63,0.63);    
+  BSGen.generateBox(Control,"maps",    1.3,0.0,    0.0,0.0,   7.34,7.34, 0.22,0.22); 
+  BSGen.generateBox(Control,"vesuvio", 1.7,0.0,    0.0,0.0,   7.38,7.38, 0.58,0.58);
+  BSGen.generateBox(Control,"sxd",     2.0,0.0,    2.0,0.0,   8.88,8.88, 0.58,0.58); 
+  BSGen.generateBox(Control,"merlin", -2.2,0.0,   -1.0,0.0,   9.4,9.4,   0.0,0.0);
+  BSGen.generateBox(Control,"s5",      0.0,0.0,    0.0,0.0,   7.0,7.0,   0.0,0.0); // CLOSED
+  BSGen.generateBox(Control,"mari",    2.0,0.0,    0.7,0.0,   7.74,7.74, 0.48,0.48); 
+  BSGen.generateBox(Control,"gem",     1.4,0.0,    0.0,0.0,   7.4,8.6,   0.115,0.172);  
+  BSGen.generateBox(Control,"hrpd",    1.5,0.0,    1.5,0.0,   8.0,6.0,   0.143,0.0);
+  BSGen.generateBox(Control,"pearl",   1.3,0.0,    0.0,0.0,   8.23,8.23, 0.215,0.215);  
+
+
+  Control.addVariable("merlinShutterSteelBWidth",1.5);
+  /*
+
   ts1System::shutterVar Sandals("sandals"); // SANDALS shutter number [north 1]; former SYM
   ts1System::shutterVar Prisma("prisma"); // PRISMA shutter number [north 2]; former SANDALS
   ts1System::shutterVar Surf("surf"); // SURF shutter number [north 3]
@@ -1077,7 +1104,7 @@ TS1base(FuncDataBase& Control)
   Gem.buildVar(Control,0.0,1.4,0.0,7.4,8.6,0.115,0.172);  // xstep; from new incomplete drawings
   Hrpd.buildVar(Control,0.0,1.5,0.0,8.0,6.0,0.143,0.0);  // xstep; from new incomplete drawings
   Pearl.buildVar(Control,0.0,1.3,0.0,8.23,8.23,0.215,0.215);  // xstep; from new incomplete drawings
-    
+  */
   return;
 }  
 

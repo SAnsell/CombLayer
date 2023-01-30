@@ -3,7 +3,7 @@
  
  * File:   construct/Cryostat.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -66,8 +66,9 @@ namespace constructSystem
 {
 
 Cryostat::Cryostat(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,6),
-  attachSystem::ContainedComp(),attachSystem::CellMap(),
+  attachSystem::FixedRotate(Key,6),
+  attachSystem::ContainedComp(),
+  attachSystem::CellMap(),
   active(1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -76,7 +77,7 @@ Cryostat::Cryostat(const std::string& Key) :
 {}
 
 Cryostat::Cryostat(const Cryostat& A) : 
-  attachSystem::FixedOffset(A),
+  attachSystem::FixedRotate(A),
   attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
   active(A.active),sampleZOffset(A.sampleZOffset),
@@ -121,7 +122,7 @@ Cryostat::operator=(const Cryostat& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       active=A.active;
@@ -186,13 +187,12 @@ Cryostat::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("Cryostat","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   
   //  Activation
   active=Control.EvalDefVar<int>(keyName+"Active",1);
   
   sampleZOffset=Control.EvalDefVar<double>(keyName+"SampleZOffset",0.0);
-  ELog::EM<<"Sample Z Off "<<sampleZOffset<<ELog::endDiag;
   sampleRadius=Control.EvalVar<double>(keyName+"SampleRadius");
   sampleHeight=Control.EvalVar<double>(keyName+"SampleHeight");
 
@@ -245,25 +245,6 @@ Cryostat::populate(const FuncDataBase& Control)
   liqHeMat=ModelSupport::EvalMat<int>(Control,keyName+"LiqHeMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   stickMat=ModelSupport::EvalMat<int>(Control,keyName+"StickMat");
-
-  return;
-}
-
-void
-Cryostat::createUnitVector(const attachSystem::FixedComp& FC,
-			   const long int sideIndex)
-  /*!
-    Create the unit vectors.
-    - Main is considered the actual build with Z in gravity direction
-    - Beam as the beam direction (can be sloped)
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("Cryostat","createUnitVector");
-
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();  
 
   return;
 }
@@ -419,109 +400,112 @@ Cryostat::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Cryostat","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
 
   // Sample
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,sampleMat,0.0,Out));
-  addCell("SampleHolder",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -7 5 -6");
+  makeCell("SampleHolder",System,cellIndex++,sampleMat,0.0,HR);
 
   // stick
-  Out=ModelSupport::getComposite(SMap,buildIndex," -107  6 -106 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,stickMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-107  6 -106");
+  System.addCell(cellIndex++,stickMat,0.0,HR);
 
   // sample void
-  Out=ModelSupport::getComposite(SMap,buildIndex," -17 15 -16 (-6:107) (-5:6:7) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  addCell("SampleVoid",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 15 -16 (-6:107) (-5:6:7)");
+  makeCell("SampleVoid",System,cellIndex++,0,0.0,HR);
+
   // sample void skin
-  Out=ModelSupport::getComposite(SMap,buildIndex," -27 25 -26 (17:-15:16) (-15:117) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+			       "-27 25 -26 (17:-15:16) (-15:117)");
+  System.addCell(cellIndex++,wallMat,0.0,HR);
   
 
   // stick bore
-  Out=ModelSupport::getComposite(SMap,buildIndex," -117 16 -116 107  ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-117 16 -116 107 ");
+  System.addCell(cellIndex++,0,0.0,HR);
 
   // stick bore walls
-  Out=ModelSupport::getComposite(SMap,buildIndex," -127 -126 26 107  (117:116) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-127 -126 26 107  (117:116)");
+  System.addCell(cellIndex++,wallMat,0.0,HR);
 
   // heat shield
-  Out=ModelSupport::getComposite(SMap,buildIndex," -207 205 -206  (127:-26) (27:26:-25) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+			       "-207 205 -206  (127:-26) (27:26:-25)");
+  System.addCell(cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -217 215 -206 (207:-205) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-217 215 -206 (207:-205)");
+  System.addCell(cellIndex++,wallMat,0.0,HR);
 
   // Heat shield to N2 tanks (on top of heat shield)
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 405 -406 417 -427 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,liqN2Mat,0.0,Out));  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"405 -406 417 -427");
+  System.addCell(cellIndex++,liqN2Mat,0.0,HR);  
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 226 -416 407 -437 (-405:406:-417:427) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+			       "226 -416 407 -437 (-405:406:-417:427)");
+  System.addCell(cellIndex++,wallMat,0.0,HR);  
 
   // He tanks (inside N2 tanks)
-  Out=ModelSupport::getComposite(SMap,buildIndex," 505 -506 517 -527 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,liqHeMat,0.0,Out));  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"505 -506 517 -527");
+  System.addCell(cellIndex++,liqHeMat,0.0,HR);  
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 515 -516 507 -537 (-505:506:-517:527) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+			       "515 -516 507 -537 (-505:506:-517:527)");
+  System.addCell(cellIndex++,wallMat,0.0,HR);  
   
   // piece in cone
-  Out=ModelSupport::getComposite(SMap,buildIndex," 206 -226 127 -218");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"206 -226 127 -218");
+  System.addCell(cellIndex++,0,0.0,HR);  
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 206 -226 218 -228 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"206 -226 218 -228");
+  System.addCell(cellIndex++,wallMat,0.0,HR);  
 
   
   // tail
-  Out=ModelSupport::getComposite(SMap,buildIndex," -307 305 -306 (217:-215:206) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-307 305 -306 (217:-215:206)");
+  System.addCell(cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -317 315 -306  (307:-305) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));  
-
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-317 315 -306  (307:-305)");
+  System.addCell(cellIndex++,wallMat,0.0,HR);  
 
   // piece in cone
-  Out=ModelSupport::getComposite(SMap,buildIndex," 306 -226 -318 217 228 -327 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"306 -226 -318 217 228 -327");
+  System.addCell(cellIndex++,0,0.0,HR);  
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 206 -318 127 -325");
-  //  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"206 -318 127 -325");
+  //  System.addCell(cellIndex++,0,0.0,HR);  
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 306 -325 318 -328 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"306 -325 318 -328");
+  System.addCell(cellIndex++,wallMat,0.0,HR);  
 
   // Outer wall (veritcal)
-  Out=ModelSupport::getComposite(SMap,buildIndex," 226 -326 -327 127 "
-                                                " (437:-407:416) (537:-507:516:-515) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));  
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"226 -326 -327 127 (437:-407:416)"
+     "(537:-507:516:-515)");
+  System.addCell(cellIndex++,0,0.0,HR);  
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 325 -326 -337 327 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"325 -326 -337 327");
+  System.addCell(cellIndex++,wallMat,0.0,HR);  
 
   // roof
-  Out=ModelSupport::getComposite(SMap,buildIndex," 326 -336 -337 127 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"326 -336 -337 127");
+  System.addCell(cellIndex++,wallMat,0.0,HR);  
 
   // Heat protection layer
   
   // OUTER
-  Out=ModelSupport::getComposite(SMap,buildIndex," 306 -325 -328  ");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"306 -325 -328");
+  addOuterSurf(HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -317 315 -206 ");
-  addOuterUnionSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-317 315 -206");
+  addOuterUnionSurf(HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 325 -336 -337 ");
-  addOuterUnionSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"325 -336 -337");
+  addOuterUnionSurf(HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -106 (-107:-126) -127 336 ");
-  addOuterUnionSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-106 (-107:-126) -127 336");
+  addOuterUnionSurf(HR);
   return;
 }
 
@@ -560,6 +544,7 @@ Cryostat::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();
+
   if (active)
     createObjects(System);
   else

@@ -3,7 +3,7 @@
  
  * File:   delftInc/SwimingPool.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,12 +37,12 @@ namespace delftSystem
   Door side is the back / widths are in the beam direction (Y)
 */
 
-class SwimingPool : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
+class SwimingPool : 
+  public attachSystem::FixedRotate,
+  public attachSystem::ContainedComp,
   public attachSystem::CellMap
 {
  private:
-  
   
   double base;                  ///< Base distance 
   double surface;               ///< Surface distance
@@ -61,9 +61,6 @@ class SwimingPool : public attachSystem::ContainedComp,
   int waterMat;                  ///< Material number
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
   void createObjects(Simulation&);
 	
@@ -78,6 +75,7 @@ class SwimingPool : public attachSystem::ContainedComp,
   // Accessor to the cell
   //  int getPoolCell() const { return poolIndex+1; }
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

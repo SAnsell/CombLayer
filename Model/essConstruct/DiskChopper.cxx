@@ -285,7 +285,7 @@ DiskChopper::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("DiskChopper","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   int CI(buildIndex);
   for(const DiskBlades& DRef : DInfo)
     {
@@ -293,26 +293,22 @@ DiskChopper::createObjects(Simulation& System)
       if (CI!=buildIndex)
 	{
           // Inner :
-	  Out=ModelSupport::getComposite(SMap,buildIndex,CI-500,"12M -511M -7");
-	  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-	  addCell("Inner",cellIndex-1);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,CI-500,"12M -511M -7");
+	  makeCell("Inner",System,cellIndex++,0,0.0,HR);
 	  
           // Outer
-	  Out=ModelSupport::getComposite(SMap,buildIndex,CI-500,"2M -501M 7 -17");
-	  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-	  addCell("Outer",cellIndex-1);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,CI-500,"2M -501M 7 -17");
+	  makeCell("Outer",System,cellIndex++,0,0.0,HR);
 	}
       
       // inner layer
-      Out=ModelSupport::getComposite(SMap,buildIndex,CI,"11M -12M -7");
-      System.addCell(MonteCarlo::Object(cellIndex++,DRef.getInnerMat(),
-                                       0.0,Out));
-      addCell("Inner",cellIndex-1);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,CI,"11M -12M -7");
+      makeCell("Inner",System,cellIndex++,DRef.getInnerMat(),0.0,HR);
 
       // Chopper opening
       const size_t NPhase=DRef.getNPhase();
-      const std::string Main=
-	ModelSupport::getComposite(SMap,buildIndex,CI,"1M -2M  7 -17");
+      const HeadRule MainHR=
+	ModelSupport::getHeadRule(SMap,buildIndex,CI,"1M -2M  7 -17");
       
       int PI(CI);       // current 
       int PN(CI+10);    // next
@@ -324,42 +320,39 @@ DiskChopper::createObjects(Simulation& System)
 	  double oA=DRef.getOpenAngle(index/2);
 	  double cA=DRef.getCloseAngle(index/2);
 	  if (cA-oA<180.0)
-	    Out=ModelSupport::getComposite(SMap,PI," 3 -4 ");
+	    HR=ModelSupport::getHeadRule(SMap,PI,"3 -4");
 	  else
-	    Out=ModelSupport::getComposite(SMap,PI," (3 : -4) ");
-	  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+Main));
-	  addCell("Outer",cellIndex-1);
+	    HR=ModelSupport::getHeadRule(SMap,PI,"(3 : -4)");
+	  makeCell("Outer",System,cellIndex++,0,0.0,HR*MainHR);
 		  
 	  // CLOSING
 	  oA=DRef.getCloseAngle(index/2);
 	  cA=DRef.getOpenAngle(1+(index/2));
 	  if (cA-oA<180.0)
-	    Out=ModelSupport::getComposite(SMap,PI,PN," 4 -3M ");
+	    HR=ModelSupport::getHeadRule(SMap,PI,PN,"4 -3M");
 	  else
-	    Out=ModelSupport::getComposite(SMap,PI,PN," (4 : -3M) ");
-	  System.addCell(MonteCarlo::Object
-			 (cellIndex++,DRef.getOuterMat(),0.0,Out+Main));
-	  addCell("Outer",cellIndex-1);
+	    HR=ModelSupport::getHeadRule(SMap,PI,PN,"(4 : -3M)");
+	  makeCell("Outer",System,cellIndex++,
+		   DRef.getOuterMat(),0.0,HR*MainHR);
 	  PI+=10;
 	  PN+=10;
 	}
 
       if (DRef.innerThick-DRef.thick>Geometry::zeroTol)
         {
-          Out=ModelSupport::getComposite(SMap,buildIndex,"11 -1 7 -17");
-          System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-	  addCell("Outer",cellIndex-1);
-          Out=ModelSupport::getComposite(SMap,buildIndex,"2 -12 7 -17");
-          System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-	  addCell("Outer",cellIndex-1);
+          HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -1 7 -17");
+          makeCell("Outer",System,cellIndex++,0,0.0,HR);
+
+          HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 7 -17");
+	  makeCell("Outer",System,cellIndex++,0,0.0,HR);
         }
 
       CI+=500;
     }
 
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,CI-500,"11 -17 -12M");
-  addOuterSurf(Out);      
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,CI-500,"11 -17 -12M");
+  addOuterSurf(HR);      
 
   return;
 }

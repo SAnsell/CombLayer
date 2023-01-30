@@ -3,7 +3,7 @@
  
  * File:   R1Common/R1RingVariables.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -197,19 +197,19 @@ electronCutVariables(FuncDataBase& Control,
   Control.addVariable(frontKey+"ECutDiskYStep",2.0);
   Control.addVariable(frontKey+"ECutDiskLength",0.1);
   Control.addVariable(frontKey+"ECutDiskRadius",0.11);
-  Control.addVariable(frontKey+"ECutDiskDefMat","H2Gas#0.1");
+  Control.addVariable(frontKey+"ECutDiskMat","H2Gas#0.1");
 
   Control.addVariable(frontKey+"ECutMagDiskYStep",2.0);
   Control.addVariable(frontKey+"ECutMagDiskDepth",0.1);
   Control.addVariable(frontKey+"ECutMagDiskWidth",4.6);
   Control.addVariable(frontKey+"ECutMagDiskHeight",1.8);
-  Control.addVariable(frontKey+"ECutMagDiskDefMat","H2Gas#0.1");
+  Control.addVariable(frontKey+"ECutMagDiskMat","H2Gas#0.1");
 
   Control.addVariable(frontKey+"ECutWallDiskYStep",20.0);
   Control.addVariable(frontKey+"ECutWallDiskDepth",0.1);
   Control.addVariable(frontKey+"ECutWallDiskWidth",20.0);
   Control.addVariable(frontKey+"ECutWallDiskHeight",20.0);
-  Control.addVariable(frontKey+"ECutWallDiskDefMat","H2Gas#0.1");
+  Control.addVariable(frontKey+"ECutWallDiskMat","H2Gas#0.1");
 
   return;
 }
@@ -240,7 +240,7 @@ heatDumpTable(FuncDataBase& Control,
   BellowGen.generateBellow(Control,frontKey+"BellowC",10.0);
   
   PipeGen.setCF<CF40>();
-  PipeGen.generatePipe(Control,frontKey+"HeatPipe",113.0);
+  PipeGen.generatePipe(Control,frontKey+"HeatPipe",112.5);
 
   heatDumpVariables(Control,frontKey);
 
@@ -336,7 +336,7 @@ shutterTable(FuncDataBase& Control,
   const Geometry::Vec3D XVec(1,0,0);
   const Geometry::Vec3D ZVec(0,0,1);
 
-  PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+2.1);
+  PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+2.25);
   PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,florName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
   PItemGen.generatePort(Control,florName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
@@ -540,7 +540,7 @@ createR1Shielding(FuncDataBase& Control,
   Control.addVariable(outBaseKey+"Width",340.0);
   Control.addVariable(outBaseKey+"Depth",5.0);
   Control.addVariable(outBaseKey+"Height",50.0);
-  Control.addVariable(outBaseKey+"DefMat","Stainless304");
+  Control.addVariable(outBaseKey+"Mat","Stainless304");
   
   // Free standing Shield block:
   Control.addVariable(preName+"NFreeShield",wallUnits.size());
@@ -563,7 +563,7 @@ createR1Shielding(FuncDataBase& Control,
   Control.addVariable(baseKey+"Width",14.0);
   Control.addVariable(baseKey+"Depth",340.0);
   Control.addVariable(baseKey+"Height",24.0);
-  Control.addVariable(baseKey+"DefMat","Stainless304");
+  Control.addVariable(baseKey+"Mat","Stainless304");
 
   // Beam-beamline version
 

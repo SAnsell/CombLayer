@@ -2,8 +2,8 @@
   CombLayer : MCNP(X) Input builder
  
  * File:   t1BuildInc/t1CylVessel.h
-*
- * Copyright (c) 2004-2019 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,12 +35,13 @@ namespace shutterSystem
   \brief Specialized for for the ts1 void vessel
 */
 
-class t1CylVessel : public attachSystem::FixedOffset,
-    public attachSystem::ContainedComp
+class t1CylVessel :
+    public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
+    public attachSystem::CellMap
 {
  private:
   
-  double voidYoffset;             ///< Central offset
   double radius;                  ///< Main cylinder radius
   double clearance;               ///< Void clearance
   double baseRadius;              ///< Base cap radius
@@ -52,10 +53,6 @@ class t1CylVessel : public attachSystem::FixedOffset,
 
   /// View port
   std::vector<constructSystem::Window> ports;
-
-  // Created values:
-  int steelCell;                  ///< Cell for the windows
-  int voidCell;                   ///< Inner void cell
 
   // Functions:
 
@@ -73,13 +70,16 @@ class t1CylVessel : public attachSystem::FixedOffset,
   virtual ~t1CylVessel();
 
   /// Access void cell
-  int getVoidCell() const { return voidCell; }
+  //  int getVoidCell() const { return voidCell; }
+  
   /// Outer radius
   double getOuterRadius() const 
     { return radius+wallThick+clearance; }
   void createStatus(const Simulation&,
 		    const attachSystem::FixedComp&,
 		    const long int);
+
+  using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);

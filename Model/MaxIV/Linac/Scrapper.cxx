@@ -3,7 +3,7 @@
 
  * File:   Linac/Scrapper.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -52,7 +51,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
@@ -66,7 +65,7 @@ namespace tdcSystem
 {
 
 Scrapper::Scrapper(const std::string& Key) :
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::FrontBackCut(),
   attachSystem::CellMap(),
@@ -93,7 +92,7 @@ Scrapper::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("Scrapper","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   radius=Control.EvalVar<double>(keyName+"Radius");
   length=Control.EvalVar<double>(keyName+"Length");
@@ -269,123 +268,123 @@ Scrapper::createObjects(Simulation& System)
   ELog::RegMethod RegA("Scrapper","createObjects");
 
 
-  std::string Out;
+  HeadRule HR;
 
-  const std::string frontStr=getRuleStr("front");
-  const std::string backStr=getRuleStr("back");
+  const HeadRule frontHR=getRule("front");
+  const HeadRule backHR=getRule("back");
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
+  HR=HeadRule(SMap,buildIndex,-7);
   /// does scrapper exist in main void
+
   if (scrapperZLift<radius-Geometry::zeroTol)
-    Out+=ModelSupport::getComposite(SMap,buildIndex," (407:405) (1407:-1405) ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr+backStr);
+    HR*=ModelSupport::getHeadRule(SMap,buildIndex,"(407:405) (1407:-1405)");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 7 -17 (10 : 307) (-10: 1307) ");
-  makeCell("Wall",System,cellIndex++,tubeMat,0.0,Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"7 -17 (10 : 307) (-10: 1307)");
+  makeCell("Wall",System,cellIndex++,tubeMat,0.0,HR*frontHR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 17 -107 -101 ");
-  makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"17 -107 -101");
+  makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 17 -107 102 ");
-  makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"17 -107 102");
+  makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,HR*backHR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"101 -102 -107 17 (10:327) (-10:1327) ");
-  makeCell("Outer",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"101 -102 -107 17 (10:327) (-10:1327)");
+  makeCell("Outer",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -10 7 -307 305 (-415:407) 507 ");
-  makeCell("TubeA",System,cellIndex++,voidMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-10 7 -307 305 (-415:407) 507");
+  makeCell("TubeA",System,cellIndex++,voidMat,0.0,HR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -10 17 307 -317 305 ");
-  makeCell("TubeAWall",System,cellIndex++,tubeMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-10 17 307 -317 305");
+  makeCell("TubeAWall",System,cellIndex++,tubeMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 317 -305 315 -327 ");
-  makeCell("TubeFlangeA",System,cellIndex++,flangeMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"317 -305 315 -327");
+  makeCell("TubeFlangeA",System,cellIndex++,flangeMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-327 -305 325 507 ");
-  makeCell("TubeTopA",System,cellIndex++,flangeMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-327 -305 325 507");
+  makeCell("TubeTopA",System,cellIndex++,flangeMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -10 17 -327 317 305 ");
-  makeCell("TubeAOuter",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-10 17 -327 317 305");
+  makeCell("TubeAOuter",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 10 7 -1307 -1305 (1415:1407) 1507 ) ");
-  makeCell("TubeB",System,cellIndex++,voidMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"10 7 -1307 -1305 (1415:1407) 1507");
+  makeCell("TubeB",System,cellIndex++,voidMat,0.0,HR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 10 17 1307 -1317 -1305 ");
-  makeCell("TubeBWall",System,cellIndex++,tubeMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"10 17 1307 -1317 -1305");
+  makeCell("TubeBWall",System,cellIndex++,tubeMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1317 -1305 1315 -1327 ");
-  makeCell("TubeFlangeB",System,cellIndex++,flangeMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1317 -1305 1315 -1327");
+  makeCell("TubeFlangeB",System,cellIndex++,flangeMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1327 1305 -1325 1507 ");
-  makeCell("TubeTopB",System,cellIndex++,flangeMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1327 1305 -1325 1507");
+  makeCell("TubeTopB",System,cellIndex++,flangeMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 10 17 -1327 1317 -1315 ");
-  makeCell("TubeBOuter",System,cellIndex++,0,0.0,Out);
-
-  // scrappers thenmselves
-  Out=ModelSupport::getComposite(SMap,buildIndex," -407 -405 415 ");
-  makeCell("ScrapperA",System,cellIndex++,scrapperMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"10 17 -1327 1317 -1315");
+  makeCell("TubeBOuter",System,cellIndex++,0,0.0,HR);
 
   // scrappers thenmselves
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1407 1405 -1415 ");
-  makeCell("ScrapperB",System,cellIndex++,scrapperMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-407 -405 415");
+  makeCell("ScrapperA",System,cellIndex++,scrapperMat,0.0,HR);
 
+  // scrappers thenmselves
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1407 1405 -1415");
+  makeCell("ScrapperB",System,cellIndex++,scrapperMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -415 -507 515 ");
-  makeCell("DriveA",System,cellIndex++,driveMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-415 -507 515");
+  makeCell("DriveA",System,cellIndex++,driveMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -325 505 -537 507 ");
-  makeCell("DriveFlangeA",System,cellIndex++,flangeMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-325 505 -537 507");
+  makeCell("DriveFlangeA",System,cellIndex++,flangeMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -505 -517 515 507");
-  makeCell("SupportA",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-505 -517 515 507");
+  makeCell("SupportA",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -505 517 -527 515");
-  makeCell("SupportATube",System,cellIndex++,tubeMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-505 517 -527 515");
+  makeCell("SupportATube",System,cellIndex++,tubeMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," (-505:537) -325 -327 527 515");
-  makeCell("SupportAOut",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"(-505:537) -325 -327 527 515");
+  makeCell("SupportAOut",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 601 -602 603 -604 605 -515 ");
-  makeCell("PlateA",System,cellIndex++,topMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"601 -602 603 -604 605 -515");
+  makeCell("PlateA",System,cellIndex++,topMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -327 (-601 : 602 : -603 : 604) 605 -515 ");
-  makeCell("PlateAOut",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-327 (-601 : 602 : -603 : 604) 605 -515");
+  makeCell("PlateAOut",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1415 -1507 -1515 ");
-  makeCell("DriveB",System,cellIndex++,driveMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1415 -1507 -1515");
+  makeCell("DriveB",System,cellIndex++,driveMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1325 -1505 -1537 1507 ");
-  makeCell("DriveFlangeB",System,cellIndex++,flangeMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1325 -1505 -1537 1507");
+  makeCell("DriveFlangeB",System,cellIndex++,flangeMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1505 -1517 -1515 1507");
-  makeCell("SupportB",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1505 -1517 -1515 1507");
+  makeCell("SupportB",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1505 1517 -1527 -1515");
-  makeCell("SupportBTube",System,cellIndex++,tubeMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1505 1517 -1527 -1515");
+  makeCell("SupportBTube",System,cellIndex++,tubeMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," (1505:1537) 1325 -1327 1527 -1515");
-  makeCell("SupportBOut",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"(1505:1537) 1325 -1327 1527 -1515");
+  makeCell("SupportBOut",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1601 -1602 1603 -1604 -1605 1515 ");
-  makeCell("PlateB",System,cellIndex++,topMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1601 -1602 1603 -1604 -1605 1515");
+  makeCell("PlateB",System,cellIndex++,topMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -1327 (-1601 : 1602 : -1603 : 1604) -1605 1515 ");
-  makeCell("PlateBOut",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-1327 (-1601 : 1602 : -1603 : 1604) -1605 1515");
+  makeCell("PlateBOut",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," (-107 : (-10 -327 605) : (10 -1327 -1605)) ");
-  addOuterSurf(Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"(-107 : (-10 -327 605) : (10 -1327 -1605))");
+  addOuterSurf(HR*frontHR*backHR);
 
   return;
 }
@@ -404,10 +403,12 @@ Scrapper::createLinks()
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+107));
   FixedComp::nameSideIndex(3,"Outer");
 
-  FixedComp::setLinkSurf(4,ModelSupport::getComposite(SMap,buildIndex,0," 1327 : -60000M "));
+  FixedComp::setLinkSurf
+    (4,ModelSupport::getHeadRule(SMap,buildIndex,0,"1327 : -60000M"));
   FixedComp::nameSideIndex(4,"OuterTop");
 
-  FixedComp::setLinkSurf(5,ModelSupport::getComposite(SMap,buildIndex,0," 327 : 60000M "));
+  FixedComp::setLinkSurf
+    (5,ModelSupport::getHeadRule(SMap,buildIndex,0,"327 : 60000M"));
   FixedComp::nameSideIndex(5,"OuterBottom");
 
 

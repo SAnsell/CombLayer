@@ -3,7 +3,7 @@
  
  * File:   geometry/Plane.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ Plane::Plane() : Quadratic(),
     Constructor: sets plane in y-z plane and throught origin
   */
 {
-  setBaseEqn();
+  Plane::setBaseEqn();
 }
 
 Plane::Plane(const int N,const int T) : Quadratic(N,T),
@@ -80,7 +80,7 @@ Plane::Plane(const int N,const int T) : Quadratic(N,T),
     \param T :: Transform number
   */
 {
-  setBaseEqn();
+  Plane::setBaseEqn();
 }
 
 Plane::Plane(const int N,const int T,
@@ -257,7 +257,7 @@ Plane::setSurface(const std::string& Pstr)
   else
     return -3;       // WRONG NAME
 
-  setBaseEqn();
+  Plane::setBaseEqn();
   return 0;
 }
 
@@ -272,7 +272,7 @@ Plane::setPlane(const Geometry::Vec3D& P,const Geometry::Vec3D& N)
 {
   NormV=N.unit();
   Dist=P.dotProd(NormV);
-  setBaseEqn();
+  Plane::setBaseEqn();
   return 0;
 }
 
@@ -293,7 +293,7 @@ Plane::setPlane(const Geometry::Vec3D& PA,const Geometry::Vec3D& PB,
   NormV=LA*LB;
   NormV.makeUnit();
   Dist=PA.dotProd(NormV);
-  setBaseEqn();
+  Plane::setBaseEqn();
   return 0;
 }
 

@@ -3,7 +3,7 @@
  
  * File:   delft/ConeModerator.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,8 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -55,8 +53,10 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "virtualMod.h"
 #include "ConeModerator.h"
 
@@ -76,8 +76,7 @@ ConeModerator::ConeModerator(const ConeModerator& A) :
   depth(A.depth),length(A.length),innerAngle(A.innerAngle),
   outerAngle(A.outerAngle),fCut(A.fCut),fDepth(A.fDepth),
   alView(A.alView),alBack(A.alBack),faceThick(A.faceThick),
-  modTemp(A.modTemp),modMat(A.modMat),alMat(A.alMat),
-  HCell(A.HCell)
+  modTemp(A.modTemp),modMat(A.modMat),alMat(A.alMat)
   /*!
     Copy constructor
     \param A :: ConeModerator to copy
@@ -107,7 +106,6 @@ ConeModerator::operator=(const ConeModerator& A)
       modTemp=A.modTemp;
       modMat=A.modMat;
       alMat=A.alMat;
-      HCell=A.HCell;
     }
   return *this;
 }
@@ -137,8 +135,7 @@ ConeModerator::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("ConeModerator","populate");
 
-
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   
   depth=Control.EvalVar<double>(keyName+"Depth");
   length=Control.EvalVar<double>(keyName+"Length");
@@ -158,26 +155,7 @@ ConeModerator::populate(const FuncDataBase& Control)
 
   return;
 }
-  
-
-void
-ConeModerator::createUnitVector(const attachSystem::FixedComp& CUnit,
-				const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param CUnit :: Fixed unit that it is connected to 
-    \param sideIndex :: Link point
-  */
-{
-  ELog::RegMethod RegA("ConeModerator","createUnitVector");
-  
-  FixedComp::createUnitVector(CUnit,sideIndex);
-  yStep-=fCut;
-  applyOffset();
-  return;
-}
-
-  
+    
 void
 ConeModerator::createSurfaces()
   /*!
@@ -228,30 +206,30 @@ ConeModerator::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("ConeModerator","createObjects");
 
-  std::string Out;  
+  HeadRule HR;
 
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 1 -2 (17:-11) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 1 -2 (17:-11)");
+  System.addCell(cellIndex++,alMat,modTemp,HR);
   
   // Hydrogne
-  Out=ModelSupport::getComposite(SMap,buildIndex," -17 11 -2 (27:-21) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 11 -2 (27:-21)");
+  System.addCell(cellIndex++,modMat,modTemp,HR);
 
   // AL layer 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -27 21 -2 (37:-31) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 21 -2 (37:-31)");
+  System.addCell(cellIndex++,alMat,modTemp,HR);
 
   // Mid Void
-  Out=ModelSupport::getComposite(SMap,buildIndex," -37 31 -12 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-37 31 -12");
+  System.addCell(cellIndex++,0,0.0,HR);
 
   // Cap :
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 2 -12 37");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 2 -12 37");
+  System.addCell(cellIndex++,alMat,modTemp,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 1 -12 ");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 1 -12");
+  addOuterSurf(HR);
 
   return;
 }
@@ -279,7 +257,7 @@ ConeModerator::createAll(Simulation& System,
   ELog::RegMethod RegA("ConeModerator","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(FUnit,sideIndex);
+  createCentredUnitVector(FUnit,sideIndex,-fCut);
   createSurfaces();
   createObjects(System);
   createLinks();

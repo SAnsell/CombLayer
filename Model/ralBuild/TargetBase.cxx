@@ -58,8 +58,8 @@ namespace TMRSystem
 {
   
 TargetBase::TargetBase(const std::string& Key,const size_t NLink)  : 
-  attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,NLink),
+  attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   PLine(new ts1System::ProtonVoid("ProtonVoid"))
@@ -76,11 +76,11 @@ TargetBase::TargetBase(const std::string& Key,const size_t NLink)  :
 }
 
 TargetBase::TargetBase(const TargetBase& A) : 
-  attachSystem::ContainedComp(A),
   attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
   attachSystem::ExternalCut(A),
   attachSystem::CellMap(A),
-  BWPtr((A.BWPtr) ? new ts1System::BeamWindow(*A.BWPtr) : 0),
+  BWPtr((A.BWPtr) ? new ts1System::BeamWindow(*A.BWPtr) : nullptr),
   PLine(new ts1System::ProtonVoid(*A.PLine))
   /*!
     Copy constructor
@@ -104,7 +104,7 @@ TargetBase::operator=(const TargetBase& A)
       attachSystem::ExternalCut::operator=(A);
       attachSystem::CellMap::operator=(A);
       
-      if (A.BWPtr)
+      if (A.BWPtr) 
 	*BWPtr = *A.BWPtr;
       else
 	BWPtr=A.BWPtr;

@@ -3,7 +3,7 @@
  
  * File:   commonBeam/TriPipe.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -53,9 +52,8 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
-#include "FixedOffsetUnit.h"
 #include "FixedRotate.h"
+#include "FixedRotateUnit.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -159,9 +157,9 @@ TriPipe::createSurfaces()
     }
   FrontBackCut::getShiftedBack(SMap,buildIndex+12,Y,-flangeBLength);
 
-  attachSystem::FixedOffsetUnit PipeFC("Axis",Origin-Y*(length/2.0),Y,Z);
+  attachSystem::FixedRotateUnit PipeFC("Axis",Origin-Y*(length/2.0),Y,Z);
 
-  PipeFC.setRotation(axisXYAngle,axisZAngle);
+  PipeFC.setRotation(axisZAngle,0.0,axisXYAngle);
   PipeFC.applyOffset();
 
   const Geometry::Vec3D& Org=PipeFC.getCentre();
@@ -228,40 +226,40 @@ TriPipe::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("TriPipe","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
-  const std::string frontStr=frontRule();
-  const std::string backStr=backRule();
+  const HeadRule frontHR=getFrontRule();
+  const HeadRule backHR=getBackRule();
 
   // Void
-  Out=ModelSupport::getComposite(SMap,buildIndex,"3 -4  5 -6 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4  5 -6");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"13 -14  15 -16 (-3:4:-5:6)");
-  makeCell("Walls",System,cellIndex++,wallMat,0.0,Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14  15 -16 (-3:4:-5:6)");
+  makeCell("Walls",System,cellIndex++,wallMat,0.0,HR*frontHR*backHR);
 
   
   // FLANGE Front: 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " -11 -107 (-13 : 14 : -15 : 16) ");
-  makeCell("FrontFlange",System,cellIndex++,flangeMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule
+       (SMap,buildIndex,"-11 -107 (-13 : 14 : -15 : 16)");
+  makeCell("FrontFlange",System,cellIndex++,flangeMat,0.0,HR*frontHR);
 
 
   // FLANGE Back:
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 12 -207 (-13 : 14 : -15 : 16) ");
-  makeCell("BackFlange",System,cellIndex++,flangeMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"12 -207 (-13 : 14 : -15 : 16)");
+  makeCell("BackFlange",System,cellIndex++,flangeMat,0.0,HR*backHR);
 
 
   // outer boundary [flange front/back]
-  Out=ModelSupport::getSetComposite(SMap,buildIndex," -11 -107 ");
-  addOuterSurf("FlangeA",Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -107");
+  addOuterSurf("FlangeA",HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -207 ");
-  addOuterSurf("FlangeB",Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -207");
+  addOuterSurf("FlangeB",HR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -14 15 -16 ");
-  addOuterSurf("Pipe",Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14 15 -16");
+  addOuterSurf("Pipe",HR);
   return;
 }
   
@@ -291,10 +289,10 @@ TriPipe::createLinks()
 
 
   // top lift point : Out is an complemnt of the volume
-  std::string Out;
+  HeadRule HR;
   FixedComp::setConnect(7,Origin+Z*(wallThick+H),Z);
-  Out=ModelSupport::getComposite(SMap,buildIndex," (-13 : 14 : -15 : 16) ");
-  FixedComp::setLinkSurf(7,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(-13 : 14 : -15 : 16)");
+  FixedComp::setLinkSurf(7,HR);
 
   FixedComp::nameSideIndex(7,"outerPipe");
   
@@ -326,4 +324,4 @@ TriPipe::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE xraySystem
+}  // NAMESPACE tdcSystem

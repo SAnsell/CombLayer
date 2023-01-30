@@ -3,7 +3,7 @@
  
  * File:   commonBeam/CylGateValve.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell 
+ * Copyright (c) 2004-2022 by Stuart Ansell 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -214,82 +213,81 @@ CylGateValve::createObjects(Simulation& System)
   ELog::RegMethod RegA("CylGateValve","createObjects");
 
   std::string Out;
-
+  HeadRule HR;
 
   const std::string frontStr=getRuleStr("front"); // 1
   const std::string backStr=getRuleStr("back");    // -2
-
-
+  const HeadRule frontHR=getRule("front"); // 1
+  const HeadRule backHR=getRule("back");    // -2
   // Main Void [exclude flange cylinder/ blade and blade tube]
-  Out=ModelSupport::getComposite(SMap,buildIndex," 5 -6 -7 117 (507 : -405)");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -7 117 (507 : -405)");
   if (!closed)
-    Out+=ModelSupport::getComposite(SMap,buildIndex," (407:-401:402)");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
+    HR*=ModelSupport::getHeadRule(SMap,buildIndex,"(407:-401:402)");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
   // blade:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-407 401 -402 ");
-  makeCell("Blade",System,cellIndex++,bladeMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-407 401 -402");
+  makeCell("Blade",System,cellIndex++,bladeMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 5 -6 7 -17 117 ");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 7 -17 117");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 15 -5 -17 ");
-  makeCell("Base",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"15 -5 -17");
+  makeCell("Base",System,cellIndex++,wallMat,0.0,HR);
 
   // Front/Back flanges:
-  Out=ModelSupport::getComposite(SMap,buildIndex," -101 107 -117 ");
-  makeCell("FlangeA",System,cellIndex++,wallMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 107 -117");
+  makeCell("FlangeA",System,cellIndex++,wallMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 102 107 -117 ");
-  makeCell("FlangeB",System,cellIndex++,wallMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 107 -117");
+  makeCell("FlangeB",System,cellIndex++,wallMat,0.0,HR*backHR);
 
   if (closed)
-    Out=ModelSupport::getComposite
+    HR=ModelSupport::getHeadRule
       (SMap,buildIndex,"101 -102 -117 (407 : -401 : 402) (507:-405)");
   else
-    Out=ModelSupport::getComposite(SMap,buildIndex,"101 -102 -117 ");
-  makeCell("MidVoid",System,cellIndex++,voidMat,0.0,Out);
+    HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 -117");
+  makeCell("MidVoid",System,cellIndex++,voidMat,0.0,HR);
   // end caps
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-101 -107 ");
-  makeCell("MidVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 -107");
+  makeCell("MidVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"102 -107 ");
-  makeCell("MidVoid",System,cellIndex++,voidMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -107");
+  makeCell("MidVoid",System,cellIndex++,voidMat,0.0,HR*backHR);
 
   // blade support
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"(-401:402:407) 405 -206 -507 ");
-  makeCell("BladeSupport",System,cellIndex++,bladeMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"(-401:402:407) 405 -206 -507");
+  makeCell("BladeSupport",System,cellIndex++,bladeMat,0.0,HR);
 
   // top flange [artifical cut on port flanges for FLUKA convinence]
-  Out=ModelSupport::getComposite(SMap,buildIndex,"6 -106 -207 217");
-  makeCell("TopFlange",System,cellIndex++,wallMat,0.0,Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"6 -106 -207 217");
+  makeCell("TopFlange",System,cellIndex++,wallMat,0.0,HR*frontHR*backHR);
 
-  // top clearance
+    // top clearance
   if (topRadius-driveRadius>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,"6 -106 -217 507");
-      makeCell("TopGap",System,cellIndex++,voidMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"6 -106 -217 507");
+      makeCell("TopGap",System,cellIndex++,voidMat,0.0,HR);
     }
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"106 -206 507 -307");
-  makeCell("TopVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"106 -206 507 -307");
+  makeCell("TopVoid",System,cellIndex++,voidMat,0.0,HR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"106 -206 -317 307 ");
-  makeCell("TopWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"106 -206 -317 307");
+  makeCell("TopWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-216 206 -317 ");
-  makeCell("TopCap",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-216 206 -317");
+  makeCell("TopCap",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"106 -216 -207 317");
-  makeCell("TopSpace",System,cellIndex++,0,0.0,Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"106 -216 -207 317");
+  makeCell("TopSpace",System,cellIndex++,0,0.0,HR*frontHR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"117 17 -6 -207 15 ");
-  makeCell("LowSpace",System,cellIndex++,0,0.0,Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"117 17 -6 -207 15");
+  makeCell("LowSpace",System,cellIndex++,0,0.0,HR*frontHR*backHR);
 
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 15 -216 -207 ");
-  addOuterSurf(Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"15 -216 -207");
+  addOuterSurf(HR*frontHR*backHR);
 
   return;
 }

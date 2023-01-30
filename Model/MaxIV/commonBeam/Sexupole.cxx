@@ -3,7 +3,7 @@
  
  * File:   commonBeam/Sexupole.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -201,7 +200,12 @@ Sexupole::createSurfaces()
       
       angle+=2.0*M_PI/static_cast<double>(NPole);
       CN+=10;
-    }  
+    }
+
+  // Inner
+  if (!isActive("Inner"))
+    ModelSupport::buildCylinder(SMap,buildIndex+5007,Origin,Y,poleGap/10.0);
+    
   return;
 }
 
@@ -214,23 +218,29 @@ Sexupole::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Sexupole","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   
-  std::string unitStr=" 1M -2M ";
+  std::string unitStr="1M -2M ";
   unitStr+=ModelSupport::getSeqIntersection
     (-51,  -(50+2*static_cast<int>(NPole)),1);
-  Out=ModelSupport::getComposite(SMap,buildIndex+1000,buildIndex,unitStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex+1000,buildIndex,unitStr);
 
-  addOuterSurf(Out);
+  addOuterSurf(HR);
 
   unitStr=ModelSupport::getSeqUnion(1,static_cast<int>(2*NPole),1);
-  Out+=ModelSupport::getComposite(SMap,buildIndex+1000,unitStr);
-  makeCell("Frame",System,cellIndex++,frameMat,0.0,Out);
+  HR*=ModelSupport::getHeadRule(SMap,buildIndex+1000,unitStr);
+  makeCell("Frame",System,cellIndex++,frameMat,0.0,HR);
 
-  const std::string ICell=isActive("Inner") ? getRuleStr("Inner") : "";
+  const HeadRule fbHR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2");
+  if (!isActive("Inner"))
+    {
+      setCutSurf("Inner",SMap.realSurf(buildIndex+5007));
+      HR=HeadRule(SMap,buildIndex,-5007);
+      makeCell("Inner",System,cellIndex++,0,0.0,HR*fbHR);
+    }
+      
+  const HeadRule ICellHR=getRule("Inner");
   /// create triangles
-  const std::string FB=ModelSupport::getComposite(SMap,buildIndex,"1 -2");
-
 
   std::vector<HeadRule> CoilExclude;
   std::vector<HeadRule> PoleExclude; 
@@ -238,44 +248,42 @@ Sexupole::createObjects(Simulation& System)
   int PN(buildIndex);
   for(size_t i=0; i<NPole;i++)
     {
-      const std::string outerCut=
-	ModelSupport::getComposite(SMap,BN," -1001 ");
+      const HeadRule outerCutHR(SMap,BN,-1001);
 
       // Note a : is needed if poleRadius small (-2107 : 2101)");
-      Out=ModelSupport::getComposite(SMap,PN,"2103 -2104 -2107 ");
-      makeCell("Pole",System,cellIndex++,poleMat,0.0,Out+outerCut+FB);
-      PoleExclude.push_back(HeadRule(Out));
+      HR=ModelSupport::getHeadRule(SMap,PN,"2103 -2104 -2107");
+      makeCell("Pole",System,cellIndex++,poleMat,0.0,HR*outerCutHR*fbHR);
+      PoleExclude.push_back(HR);
 
 
-      Out=ModelSupport::getComposite
+      HR=ModelSupport::getHeadRule
 	(SMap,PN," 2003 -2004 2001 (-2103:2104) ");
-      makeCell("Coil",System,cellIndex++,coilMat,0.0,Out+outerCut+FB);
-      Out=ModelSupport::getComposite(SMap,PN," 2003 -2004 2001 ");
-      CoilExclude.push_back(HeadRule(Out));
+      makeCell("Coil",System,cellIndex++,coilMat,0.0,HR*outerCutHR*fbHR);
+      HR=ModelSupport::getHeadRule(SMap,PN,"2003 -2004 2001");
+      CoilExclude.push_back(HR);
       BN+=2;
       PN+=10;
     }
 
 
-  std::string OutA,OutB;
+  HeadRule HRA,HRB;
   PN=buildIndex;
   int aOffset(-1);
   int bOffset(0);
   for(size_t i=0;i<NPole;i++)
     {
-      const HeadRule triCut=ModelSupport::getHeadRule(SMap,PN,"2001");
+      const HeadRule triCutHR=ModelSupport::getHeadRule(SMap,PN,"2001");
 
-      OutA=ModelSupport::getRangeComposite
-	(SMap,501,506,bOffset,buildIndex,"501R -502R ");
-      OutB=ModelSupport::getRangeComposite
-	(SMap,1001,1012,aOffset,buildIndex,"-1001R -1002R -1003R ");
+      HRA=ModelSupport::getRangeHeadRule
+	(SMap,501,506,bOffset,buildIndex,"501R -502R");
+      HRB=ModelSupport::getRangeHeadRule
+	(SMap,1001,1012,aOffset,buildIndex,"-1001R -1002R -1003R");
 
-      makeCell("Triangle",System,cellIndex++,0,0.0,OutA+OutB+FB+
-	       triCut.display()+
-	   CoilExclude[i].complement().display());
-      makeCell("InnerTri",System,cellIndex++,0,0.0,OutA+FB+
-      	       triCut.complement().display()+
-	       PoleExclude[i].complement().display()+ICell);
+      makeCell("Triangle",System,cellIndex++,0,0.0,HRA*HRB*fbHR*
+	       triCutHR*CoilExclude[i].complement());
+      makeCell("InnerTri",System,cellIndex++,0,0.0,
+	       HRA*fbHR*triCutHR.complement()*
+	       PoleExclude[i].complement()*ICellHR);
 
       aOffset+=2;
       bOffset+=1;

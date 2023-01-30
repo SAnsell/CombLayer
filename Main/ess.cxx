@@ -52,7 +52,7 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "Volumes.h"
-#include "variableSetup.h"
+#include "essVariables.h"
 #include "DefUnitsESS.h"
 #include "makeESS.h"
 
@@ -102,9 +102,10 @@ main(int argc,char* argv[])
       
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
 
+
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
-      
+
       SimPtr->objectGroups::write("ObjectRegister.txt");
     }
   catch (ColErr::ExitAbort& EA)

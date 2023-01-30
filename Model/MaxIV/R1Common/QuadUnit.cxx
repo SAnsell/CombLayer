@@ -3,7 +3,7 @@
  
  * File:   commonBeam/QuadUnit.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -53,7 +52,6 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -69,7 +67,7 @@ namespace xraySystem
 {
 
 QuadUnit::QuadUnit(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedGroup("Main","FlangeA","FlangeB"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -106,7 +104,7 @@ QuadUnit::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("QuadUnit","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
   inWidth=Control.EvalVar<double>(keyName+"InWidth");
@@ -205,39 +203,39 @@ QuadUnit::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("QuadUnit","createObjects");
 
-  const std::string frontStr=getRuleStr("front");
-  const std::string backStr=getRuleStr("back");
-  const std::string fbStr=frontStr+backStr;
+  const HeadRule frontHR=getRule("front");
+  const HeadRule backHR=getRule("back");
+  const HeadRule fbHR=frontHR*backHR;
 
-  std::string Out;
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"  11 12 13 14 15 16 17 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+fbStr);
+  HeadRule HR;
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"11 12 13 14 15 16 17");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*fbHR);
 
   // not cutting at 14.
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 21 22 23 24 25 26 27 (-11:-12:-13:-14:-15:-16:-17) ");
-  makeCell("Outer",System,cellIndex++,wallMat,0.0,Out+fbStr);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"21 22 23 24 25 26 27 (-11:-12:-13:-14:-15:-16:-17)");
+  makeCell("Outer",System,cellIndex++,wallMat,0.0,HR*fbHR);
 
   // Flanges
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " -101 -107 (-21:-22:-23:-24:-25:-26:-27) ");
-  makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,Out+frontStr);
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 102 -207 (-21:-22:-23:-24:-25:-26:-27) ");
-  makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				"-101 -107 (-21:-22:-23:-24:-25:-26:-27)");
+  makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				"102 -207 (-21:-22:-23:-24:-25:-26:-27)");
+  makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,HR*backHR);
 
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"101 -102  21 22 23 24 25 26 27 ");
-  addOuterSurf("Main",Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"101 -102  21 22 23 24 25 26 27");
+  addOuterSurf("Main",HR);
 
 
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," -101 -107 ");
-  addOuterSurf("FlangeA",Out+frontStr);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 102 -207 ");
-  addOuterSurf("FlangeB",Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 -107");
+  addOuterSurf("FlangeA",HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -207");
+  addOuterSurf("FlangeB",HR*backHR);
 
 
   return;
@@ -272,7 +270,7 @@ QuadUnit::createQuads(Simulation& System,const int cellN)
    */
 {
   ELog::RegMethod RegA("QuadUnit","createAll");
-  std::string Out;
+  HeadRule HR;
   
   for(const std::shared_ptr<Quadrupole>& QItem : {quadX,quadZ})
     {
@@ -281,52 +279,51 @@ QuadUnit::createQuads(Simulation& System,const int cellN)
 
       // Insert Quad Cut into void space
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," (-26:-25:-24) "); 
-      QItem->insertComponent(System,"VoidPoleA",Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," (-26:-25:-24)"); 
+      QItem->insertComponent(System,"VoidPoleA",HR);
       
-      Out=ModelSupport::getComposite(SMap,buildIndex," (-21:-26:-27) "); 
-      QItem->insertComponent(System,"VoidPoleB",Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," (-21:-26:-27)"); 
+      QItem->insertComponent(System,"VoidPoleB",HR);
       
-      Out=ModelSupport::getComposite(SMap,buildIndex," (-22:-23:-24) "); 
-      QItem->insertComponent(System,"VoidPoleC",Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," (-22:-23:-24)"); 
+      QItem->insertComponent(System,"VoidPoleC",HR);
       
-      Out=ModelSupport::getComposite(SMap,buildIndex," (-21:-22:-27) "); 
-      QItem->insertComponent(System,"VoidPoleD",Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," (-21:-22:-27)"); 
+      QItem->insertComponent(System,"VoidPoleD",HR);
 
       
       if (QItem->CellMap::hasItem("ExtraPoleVoidA"))
 	{
-	  Out=ModelSupport::getComposite(SMap,buildIndex,
-					 "(-21:-22:-23:-24:-25:-26:-27)");
-	  QItem->insertComponent(System,"ExtraPoleVoidA",Out);
-	  QItem->insertComponent(System,"ExtraPoleVoidB",Out);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+					"(-21:-22:-23:-24:-25:-26:-27)");
+	  QItem->insertComponent(System,"ExtraPoleVoidA",HR);
+	  QItem->insertComponent(System,"ExtraPoleVoidB",HR);
 	}
     }
 
   //
   // Split void to give vacuum cell for magnetic field
   //
-  std::string frontStr=getRuleStr("front");
-  std::string backStr=getRuleStr("back");
+  HeadRule frontHR=getRule("front");
+  HeadRule backHR=getRule("back");
   // Delete old cell and reconstruct front/back [note make a split cell]
   CellMap::deleteCell(System,"Void");
 
-  Out=ModelSupport::getComposite
-	(SMap,buildIndex,"  11 12 13 14 15 16 17 ");
+  HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"11 12 13 14 15 16 17");
   
   for(const std::shared_ptr<Quadrupole>& QItem : {quadX,quadZ})
     {
       const HeadRule fHR=QItem->getSurfRule("FrontQuadPole");
       const HeadRule bHR=QItem->getSurfRule("BackQuadPole");
-      makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr+
-	       fHR.complement().display());
-      makeCell("QuadVoid",System,cellIndex++,voidMat,0.0,Out+
-	       fHR.display()+bHR.display());
-      frontStr=bHR.complement().display();
+      makeCell("Void",System,cellIndex++,voidMat,0.0,
+	       HR*frontHR*fHR.complement());
+      makeCell("QuadVoid",System,cellIndex++,voidMat,0.0,
+	       HR*fHR*bHR);
+      frontHR=bHR.complement();
     }
   // make exit cell
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr+
-	   backStr);
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
   return;
 }

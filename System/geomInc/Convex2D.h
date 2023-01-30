@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geomInc/Convex2D.h
  *
@@ -40,15 +40,16 @@ class Convex2D
 {
  private:
   
-  typedef std::vector<Vert2D> VTYPE;     ///< Vertex Type
+  typedef std::vector<Vert2D> VTYPE;          ///< Vertex Type
 
   std::vector<Geometry::Vec3D> Pts;           ///< Points
-  VTYPE VList;                      ///< 
+  VTYPE VList;                                ///< Points (in rotaton order)
 
   Geometry::Vec3D centroid;    ///< Centroid to points
   Geometry::Vec3D normal;      ///< Normal to points
   size_t distIndex;            ///< Most distant from centre
 
+  void rotateVList();
   void createVertex();
 
  public:
@@ -63,6 +64,7 @@ class Convex2D
 
   void setPoints(const std::vector<Vec3D>&);
   void addPoint(const Vec3D&);
+
   double calcNormal();
   double calcArea() const;
   size_t calcMaxIndex();
@@ -80,6 +82,8 @@ class Convex2D
   size_t getDistPoint() const { return distIndex; }
   std::vector<Geometry::Vec3D> getSequence() const;
 
+  std::vector<Geometry::Vec3D> scalePoints(const double) const;
+  
   //  int isConvex() const;
   void write(std::ostream&) const;
 };

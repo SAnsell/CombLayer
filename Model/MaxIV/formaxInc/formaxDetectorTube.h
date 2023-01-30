@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Model/MaxIV/formaxInc/formaxDetectorTube.h
+ * File:   formaxInc/formaxDetectorTube.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@ namespace constructSystem
 
 namespace xraySystem
 {
-
   class AreaDetector;
   class MonoBeamStop;
 
@@ -46,8 +45,8 @@ namespace xraySystem
 */
 
 class formaxDetectorTube :
-    public attachSystem::ContainedComp,
     public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
     public attachSystem::CellMap,
     public attachSystem::SurfMap,
     public attachSystem::ExternalCut
@@ -72,7 +71,6 @@ class formaxDetectorTube :
 
   std::shared_ptr<xraySystem::MonoBeamStop> monoBeamStop;
   std::shared_ptr<xraySystem::AreaDetector> waxs;
-
   
   void populate(const FuncDataBase&);
   void createSurfaces();

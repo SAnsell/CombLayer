@@ -136,6 +136,7 @@ MagnetGenerator::generateCorMag(FuncDataBase& Control,
     \param keyName :: Head name for variable
     \param fcUnit :: Part name of FC magnet
     \param yAngle :: Angle
+    \param QField :: Main dipole corrector field [default 0.0]
   */
 {
   ELog::RegMethod RegA("MagnetGenerator","generateCorMag");
@@ -252,6 +253,31 @@ MagnetGenerator::generate(FuncDataBase& Control,
   
   return;
 }
+
+void
+MagnetGenerator::generateR3Dipole(FuncDataBase& Control,
+				  const std::string& magName,
+				  const std::string& fcUnit,
+				  const double yAngle,
+				  const double QField) 
+  /*!
+    Primary funciton for setting the variables
+    \param Control :: Database to add variables
+    \param keyName :: Head name for variable
+    \param fcUnit :: Part name of FC magnet (link point origin)
+    \param QField :: K0 field
+  */
+{
+  ELog::RegMethod RegA("MagnetGenerator","generateDipole");
+
+
+  setField(QField,0.0,0.0,0.0);
+  generate(Control,magName,fcUnit,"Centre",yAngle);
+  
+  return;
+}
+
+
   
 void
 MagnetGenerator::generate(FuncDataBase& Control,
@@ -262,15 +288,15 @@ MagnetGenerator::generate(FuncDataBase& Control,
 /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables
-    \param keyName :: Head name for variable
-    \param Unit :: FixedComp for active units / origin
+    \param unitName :: Head name for variable
+    \param fcUnit :: FixedComp for active units / origin
     \param yAngle :: Rotation of magnetic field
   */
 {
   ELog::RegMethod RegA("MagnetGenerator","generate");
 
   const std::string keyName="MagUnit"+unitName;
-
+  //  ELog::EM<<"GENERATE "<<keyName<<ELog::endDiag;
   if (!xyzStep.nullVector())
     {
       Control.addVariable(keyName+"Offset",xyzStep);
@@ -284,9 +310,6 @@ MagnetGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"Height",height);
-
-  Control.addVariable(keyName+"FixedComp",fcUnit);
-  Control.addVariable(keyName+"LinkPt",linkPt);
 
   for(size_t i=0;i<4;i++)
     Control.addVariable(keyName+"KFactor"+std::to_string(i),KFactor[i]);

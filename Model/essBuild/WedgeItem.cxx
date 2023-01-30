@@ -3,7 +3,7 @@
  
  * File:   essBuild/WedgeItem.cxx
  *
- * Copyright (c) 2004-2022 by Konstantin Batkov
+ * Copyright (c) 2004-2023 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Vec3D.h"
+#include "Exception.h"
 #include "Surface.h"
 #include "surfRegister.h"
 #include "Quadratic.h"
@@ -62,17 +63,17 @@
 #include "FixedRotate.h"
 #include "FixedRotateUnit.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "SurInter.h"
 #include "WedgeItem.h"
-
 
 namespace essSystem
 {
 
 WedgeItem::WedgeItem(const std::string& Key,const size_t Index)  :
+  attachSystem::FixedRotateUnit(Key+std::to_string(Index),6),
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotateUnit(Key+std::to_string(Index),6)
-
+  attachSystem::ExternalCut()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -81,8 +82,9 @@ WedgeItem::WedgeItem(const std::string& Key,const size_t Index)  :
 {}
 
 WedgeItem::WedgeItem(const WedgeItem& A) : 
-  attachSystem::ContainedComp(A),
   attachSystem::FixedRotateUnit(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::ExternalCut(A),
   length(A.length),baseWidth(A.baseWidth),
   mat(A.mat)
   /*!
@@ -101,8 +103,10 @@ WedgeItem::operator=(const WedgeItem& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
+
       attachSystem::FixedRotate::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       length=A.length;
       baseWidth=A.baseWidth;
       mat=A.mat;
@@ -160,20 +164,6 @@ WedgeItem::populate(const FuncDataBase& Control)
   return;
 }
   
-void
-WedgeItem::createUnitVector(const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    \param FC :: Linked object
-  */
-{
-  ELog::RegMethod RegA("WedgeItem","createUnitVector");
-
-  FixedComp::createUnitVector(FC);
-  FixedRotate::applyOffset();
-
-  return;
-}
   
 void
 WedgeItem::createSurfaces(const attachSystem::FixedComp& FC,
@@ -186,8 +176,16 @@ WedgeItem::createSurfaces(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("WedgeItem","createSurface");
 
+  ELog::EM<<"CREATEA"<<ELog::endDiag;
+  const HeadRule cylHR=getNonDivideRule("OuterCyl");
+  outerCyl=dynamic_cast<const Geometry::Cylinder*>(cylHR.primarySurface());
+  if (!outerCyl)
+    throw ColErr::InContainerError<std::string>
+      ("OuterCyl","OuterCyl not found");
+  
   // we assume that baseSurf is cylinder
-  outerCyl = SMap.realPtr<Geometry::Cylinder>(FC.getLinkSurf(baseLinkPt));
+  //  outerCyl = SMap.realPtr<Geometry::Cylinder>
+  //    (FC.getLinkSurf(baseLinkPt));
 
   // divider:
   const Geometry::Plane *pZ =
@@ -295,7 +293,8 @@ WedgeItem::createLinks()
 void
 WedgeItem::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FC,
-                     const long int baseLinkPt,
+                     const long int sideIndex,
+		     const long int baseLinkPt,
 		     const attachSystem::FixedComp& FL,
 		     const long int topLinkPt,
                      const long int bottomLinkPt)
@@ -311,9 +310,9 @@ WedgeItem::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("WedgeItem","createAll");
-  ELog::EM<<"Building "<<keyName<<ELog::endErr;
+
   populate(System.getDataBase());
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces(FC,baseLinkPt);
   createLinks();
   createObjects(System,FC,baseLinkPt,FL,topLinkPt,bottomLinkPt);

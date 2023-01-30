@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/CylFlowGuide.h
  *
- * Copyright (c) 2004-2019 by Konstatin Batkov/Stuart Ansell
+ * Copyright (c) 2004-2022 by Konstatin Batkov/Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,9 +34,12 @@ namespace essSystem
   \brief Inner structure of flow guide (engineering details)
 */
 
-class CylFlowGuide : public attachSystem::ContainedComp,
-  public attachSystem::FixedUnit,
-  public attachSystem::CellMap
+class CylFlowGuide :
+  public attachSystem::FixedRotate,
+  public attachSystem::ContainedComp,
+  public attachSystem::ExternalCut,
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
  private:
   
@@ -48,11 +51,8 @@ class CylFlowGuide : public attachSystem::ContainedComp,
   size_t nBaffles;                ///< Number of baffles
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
-
   void createSurfaces();
-  void createObjects(Simulation&,attachSystem::FixedComp&,
-		     const long int);
+  void createObjects(Simulation&);
   void createLinks();
 
  public:
@@ -63,6 +63,7 @@ class CylFlowGuide : public attachSystem::ContainedComp,
   virtual CylFlowGuide* clone() const;
   virtual ~CylFlowGuide();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,attachSystem::FixedComp&,
 		 const long int);
 

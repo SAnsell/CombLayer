@@ -236,7 +236,7 @@ FixedComp::createUnitVector(const FixedComp& FC,
   */
 {
   ELog::RegMethod RegA("FixedComp","createUnitVector(FixedComp,side)");
-  FixedComp::createUnitVector(FC,sideIndex,sideIndex);
+  FixedComp::createUnitVector(FC,sideIndex,FC,sideIndex);
   return;
 }
 
@@ -254,43 +254,58 @@ FixedComp::createUnitVector(const FixedComp& FC,
 {
   ELog::RegMethod RegA("FixedComp","createUnitVector(FixedComp,org,basis)");
 
+  FixedComp::createUnitVector(FC,orgIndex,FC,basisIndex);
+  return;
+}
+
+void
+FixedComp::createUnitVector(const FixedComp& orgFC,
+			    const long int orgIndex,
+			    const FixedComp& axisFC,
+			    const long int basisIndex)
+  /*!
+    Create the unit vectors
+    \param FC :: Fixed unit for link points
+    \param orgIndex :: SIGNED +1 side index for origin
+    \param basisIndex :: SIGNED +1 side index for direction
+  */
+{
+  ELog::RegMethod RegA("FixedComp","createUnitVector(FC,org,FC,basis)");
+
   if (basisIndex==0)
     {
-      FixedComp::createUnitVector(FC);   // may have derived case
-      Origin=FC.getLinkPt(orgIndex);
+      FixedComp::createUnitVector(axisFC);   // may have derived case
+      Origin=orgFC.getLinkPt(orgIndex);
       return;
     }
-	  
-  const size_t linkIndex=
-    (basisIndex>0) ? static_cast<size_t>(basisIndex-1) :
-    static_cast<size_t>(-basisIndex-1) ;
-  if (linkIndex>=FC.LU.size())
-    throw ColErr::IndexError<size_t>
-      (linkIndex,FC.LU.size(),
-       "LU.size()/linkIndex in object:"+FC.getKeyName()+" to object "+
-       keyName);
-     
-  const LinkUnit& LU=FC.getLU(linkIndex);
-  const double signV((basisIndex>0) ? 1.0 : -1.0);
+  if (!orgFC.hasLinkPt(orgIndex))
+    throw ColErr::InContainerError<long int>
+      (basisIndex,"orgIndex in object:"+
+       axisFC.getKeyName()+" to object "+keyName);
 
-  const Geometry::Vec3D yTest=LU.getAxis()*signV;
-      
-  Geometry::Vec3D zTest=FC.getZ();
-  Geometry::Vec3D xTest=FC.getX();
+  if (!axisFC.hasLinkPt(basisIndex))
+    throw ColErr::InContainerError<long int>
+      (basisIndex,"basisIndex in object:"+
+       axisFC.getKeyName()+" to object "+keyName);
+
+  const Geometry::Vec3D yTest=axisFC.getLinkAxis(basisIndex);
+  Geometry::Vec3D zTest=axisFC.getZ();
+  Geometry::Vec3D xTest=axisFC.getX();
   if (std::abs(zTest.dotProd(yTest))>1.0-Geometry::zeroTol)
-    zTest=FC.getY();
+    zTest=axisFC.getY();
   else if (std::abs(xTest.dotProd(yTest))>1.0-Geometry::zeroTol)
-    xTest=FC.getY();
+    xTest=axisFC.getY();
 
   Geometry::Vec3D YY=yTest;
 
   computeZOffPlane(xTest,yTest,zTest);
-  FixedComp::createUnitVector(FC.getLinkPt(orgIndex),
-		   yTest*zTest,yTest,zTest);
+  FixedComp::createUnitVector(orgFC.getLinkPt(orgIndex),
+			      yTest*zTest,yTest,zTest);
 
   return;
 }
 
+  
 void
 FixedComp::createUnitVector(const Geometry::Vec3D& OG,
 			    const Geometry::Vec3D& Axis)
@@ -404,7 +419,7 @@ FixedComp::createPairVector(const FixedComp& FCA,
 			    const long int sideIndexB)
   /*!
     Creates a merged pair between two link points
-    It shared shared the mid point and the axises
+    It shared shared the mid point and the axes
     \param FCA :: Fixed unit for link points
     \param sideIndexA :: SIGNED +1 side index
     \param FCB :: Fixed unit for link points
@@ -471,7 +486,7 @@ FixedComp::reOrientate(const size_t index,
 
   const double cosTheta=axisDir.dotProd( *AVec[index] );
   // Both checks with tolerance:
-  if (cosTheta-Geometry::zeroTol>1.0) return;
+  if (cosTheta+Geometry::zeroTol>1.0) return;
   if (cosTheta+1.0<Geometry::zeroTol)
     {
       for(Geometry::Vec3D* A : AVec)
@@ -794,9 +809,6 @@ FixedComp::copyLinkObjects(const FixedComp& A)
   ELog::RegMethod RegA("FixedComp","copyLinkObjects");
   if (this!=&A)
     {
-      if(LU.size()!=A.LU.size())
-	ELog::EM<<"Changing link size from "<<LU.size()
-		<<" to "<<A.LU.size()<<ELog::endCrit;
       LU=A.LU;
     }
   return;
@@ -1299,13 +1311,13 @@ FixedComp::setLinkCopy(const std::string& indexName,
     \param sideIndex :: signed link unit of other object
   */
 {
-  ELog::RegMethod RegA("FixedComp","setLinkCopy("+std::to_string(sideIndex)+")");
+  ELog::RegMethod RegA("FixedComp",
+		       "setLinkCopy(S="+std::to_string(sideIndex)+")");
 
-  if (!hasSideIndex(indexName))
-    throw ColErr::InContainerError<std::string>(indexName,"indexName");
   const long int LI=getSideIndex(indexName);
   if (!LI)
-    throw ColErr::InContainerError<std::string>(indexName,"indexName zero");
+    throw ColErr::InContainerError<std::string>
+        (indexName,"FC["+keyName+"]::indexName zero");
   
   const size_t Index=static_cast<size_t>(std::abs(LI-1));
   setLinkCopy(Index,FC,sideIndex);
@@ -1472,10 +1484,31 @@ FixedComp::nameSideIndex(const size_t lP,
 {
   ELog::RegMethod RegA("FixedComp","nameSideIndex"+keyName);
 
-  if (keyMap.find(linkName)!=keyMap.end())
-    ColErr::InContainerError<std::string>(linkName,"linkName exists");
-      
-  keyMap.emplace(linkName,lP);
+  const std::map<std::string,size_t>::const_iterator
+    mc=keyMap.find(linkName);
+  if (mc!=keyMap.end())
+    {
+      if (mc->second!=lP)
+	ColErr::InContainerError<std::string>(linkName,"linkName exists");
+    }
+  else
+    keyMap.emplace(linkName,lP);
+  
+  return;
+}
+
+void
+FixedComp::nameSideIndex(const std::map<std::string,size_t>& linkMap)
+  /*!
+    Create a set of linkMaps
+    \param linkMap :: link item to use
+   */
+{
+  ELog::RegMethod RegA("FixedComp","nameSideIndex(map)"+keyName);
+
+  for(const auto& [ lItem, lP ] : linkMap)
+    nameSideIndex(lP,lItem);
+
   return;
 }
   
@@ -1549,7 +1582,7 @@ FixedComp::getSideIndex(const std::string& sideName) const
 bool
 FixedComp::hasSideIndex(const std::string& sideName) const
   /*!
-    Find the object has a side ined
+    Find the object has a side index AND is complete 
     \param sideName :: Name with +/- at front if require to change 
     \return true if possible
   */
@@ -1571,13 +1604,12 @@ FixedComp::hasSideIndex(const std::string& sideName) const
       const std::string partName=
         (sideName[0]=='+' || sideName[0]=='-' || sideName[0]=='#') ?
            sideName.substr(1) : sideName;
+      if (partName=="Origin" || partName=="origin")
+        return 1;
 
       std::map<std::string,size_t>::const_iterator mc=
         keyMap.find(partName);
-      
       lp= (mc!=keyMap.end()) ?  mc->second : LU.size();      
-      if (partName=="Origin" || partName=="origin")
-        return 1;
     }
   return (lp<LU.size()) ? LU[lp].isComplete() : 0;
 }
@@ -1951,7 +1983,7 @@ FixedComp::setExit(const Geometry::Vec3D& C,
   return;
 }
 
-size_t
+long int
 FixedComp::findLinkAxis(const Geometry::Vec3D& AX) const
   /*!
     Determine the closest direciton to the given axis
@@ -1961,14 +1993,14 @@ FixedComp::findLinkAxis(const Geometry::Vec3D& AX) const
 {
   ELog::RegMethod RegA("FixedComp","findLinkAxis");
 
-  size_t outIndex(0);
+  long int outIndex(0);
   double maxValue(-1.0);  
   for(size_t i=0;i<LU.size();i++)
     {
       const double MX=AX.dotProd(LU[i].getAxis());
       if (MX>maxValue)
 	{
-	  outIndex=i;
+	  outIndex=static_cast<long int>(i+1);
 	  maxValue=MX;
 	}
     }

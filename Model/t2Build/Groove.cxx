@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   moderator/Groove.cxx
+ * File:   t2Build/Groove.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
  *
@@ -67,8 +67,8 @@ namespace moderatorSystem
 {
 
 Groove::Groove(const std::string& Key)  :
-  attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,7),
+  attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap()
   /*!
@@ -92,7 +92,6 @@ Groove::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("Groove","populate");
-  
 
   FixedRotate::populate(Control);
 
@@ -223,36 +222,40 @@ Groove::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Groove","createObjects");
-  
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -22 23 -24 25 -26");
-  addOuterSurf(Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 "
+  HeadRule HR;
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6 "
 				 "(13 : -14 : -11 : -15 : 16)");
-  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
+  System.addCell(cellIndex++,modMat,modTemp,HR);
 
   // void in groove
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -22 -33 34 31 35 -36");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -22 -33 34 31 35 -36");
+  System.addCell(cellIndex++,0,0.0,HR);
 
   // Al layers :
   // - Outer skin
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -22 23 -24 25 -26 "
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -22 23 -24 25 -26 "
 				 " (2 : -3 : 4 : -5 : 6 ) "
                                  " (33 : -34 : -35 : 36 )");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
+  System.addCell(cellIndex++,alMat,modTemp,HR);
   
   // - Inner skin
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -13 14 11 15 -16 "
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -13 14 11 15 -16 "
 				 "( 33 : -34 : -31 : -35 : 36 )");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
+  System.addCell(cellIndex++,alMat,modTemp,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -22 23 -24 25 -26");
+  addOuterSurf(HR);
 
   return;
 }
 
 void
 Groove::createLinks()
+  /*!
+    Create links
+  */
 {
   ELog::RegMethod RegA("Groove","createLinks");
 

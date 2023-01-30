@@ -111,6 +111,8 @@ class FixedComp
   virtual void createUnitVector(const FixedComp&,const Geometry::Vec3D&);
   virtual void createUnitVector(const FixedComp&,const long int);
   virtual void createUnitVector(const FixedComp&,const long int,const long int);
+  virtual void createUnitVector(const FixedComp&,const long int,
+				const FixedComp&,const long int);
   virtual void createUnitVector(const Geometry::Vec3D&,
 				const Geometry::Vec3D&);
 
@@ -195,6 +197,7 @@ class FixedComp
   virtual const Geometry::Vec3D& getExit() const;
   
   void nameSideIndex(const size_t,const std::string&);
+  void nameSideIndex(const std::map<std::string,size_t>&);
   void copyLinkObjects(const FixedComp&);
   /// How many connections
   size_t NConnect() const { return LU.size(); }
@@ -241,7 +244,7 @@ class FixedComp
   HeadRule getCommonRule(const std::string&) const;
   HeadRule getCommonRule(const long int) const;
   
-  size_t findLinkAxis(const Geometry::Vec3D&) const;
+  long int findLinkAxis(const Geometry::Vec3D&) const;
 
   /// access next cell if need
   int nextCell() { return cellIndex++; }

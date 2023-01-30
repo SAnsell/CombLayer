@@ -3,7 +3,7 @@
  
  * File:   constructInc/HoleShape.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,13 +34,14 @@ namespace constructSystem
     \brief Variable detemine hole type
   */
   
-class HoleShape : public attachSystem::ContainedComp,
-  public attachSystem::FixedComp,
+class HoleShape : 
+  public attachSystem::FixedRotate,
+  public attachSystem::ContainedComp,
+  public attachSystem::ExternalCut,
   public attachSystem::CellMap
 {
  private:
 
-  
   size_t shapeType;             ///< Shape index
 
   double angleCentre;           ///< Mid point for alignment [for interigation]
@@ -54,8 +55,6 @@ class HoleShape : public attachSystem::ContainedComp,
   double rotAngle;                 ///< Angle of whole system [true pos]
 
   size_t cutFlag;                    ///< Add faces to boundary cut [1/2]
-  HeadRule frontFace;                ///< Front face
-  HeadRule backFace;                 ///< Back face
   
   void setShape(const size_t);
   void setShape(const std::string&);
@@ -66,15 +65,13 @@ class HoleShape : public attachSystem::ContainedComp,
   void createOctagonSurfaces();
   void createRectangleSurfaces();
 
-  std::string createCircleObj();
-  std::string createSquareObj();
-  std::string createHexagonObj();
-  std::string createOctagonObj();
-  std::string createRectangleObj();
+  HeadRule createCircleObj() const;
+  HeadRule createSquareObj() const;
+  HeadRule createHexagonObj() const;
+  HeadRule createOctagonObj() const;
+  HeadRule createRectangleObj() const;
 
 
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -87,20 +84,14 @@ class HoleShape : public attachSystem::ContainedComp,
   virtual ~HoleShape() {}
 
   static size_t shapeIndex(const std::string&);
-  
-  void populate(const FuncDataBase&);
 
   void setCutFaceFlag(const size_t);
-  void setFaces(const int,const int);
-  void setFaces(const HeadRule&,const HeadRule&);
-  void setMasterAngle(const double);
-  /// accessor to central angle
-  double getCentreAngle() const { return angleCentre; }
   /// accessor to shape
   size_t getShape() const { return shapeType; }
-  void createAllNoPopulate(Simulation&,
-			   const attachSystem::FixedComp&,
-			   const long int);
+
+  void populate(const FuncDataBase&);
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
   

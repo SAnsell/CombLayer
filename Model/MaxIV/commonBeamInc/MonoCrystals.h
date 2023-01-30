@@ -3,7 +3,7 @@
  
  * File:   commonBeamInc/MonoCrystals.h
 *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,8 +36,8 @@ namespace xraySystem
 */
 
 class MonoCrystals :
-  public attachSystem::ContainedComp,
   public attachSystem::FixedRotate,
+  public attachSystem::ContainedComp,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {
@@ -73,9 +73,6 @@ class MonoCrystals :
   // Functions:
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -87,6 +84,7 @@ class MonoCrystals :
   MonoCrystals& operator=(const MonoCrystals&);
   virtual ~MonoCrystals();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);

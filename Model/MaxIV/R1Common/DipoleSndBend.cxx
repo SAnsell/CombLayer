@@ -3,7 +3,7 @@
  
  * File:   R1Common/DipoleSndBend.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "surfRegister.h"
@@ -231,54 +230,54 @@ DipoleSndBend::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("DipoleSndBend","createObjects");
 
-  std::string Out;
-  const std::string fStr=getRuleStr("front");
-  const std::string side=getRuleStr("side");
+  HeadRule HR;
+  const HeadRule frontHR=getRule("front");
+  const HeadRule sideHR=getRule("side");
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"85 86  -27 7  5 -6 -2 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+fStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"85 86  -27 7  5 -6 -2");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 815 816  27 4 15 -16 -2 ");
-  makeCell("OuterVoid",System,cellIndex++,wallMat,0.0,Out+fStr+side);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"815 816  27 4 15 -16 -2");
+  makeCell("OuterVoid",System,cellIndex++,wallMat,0.0,HR*frontHR*sideHR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 105 -106 186 185 -27 107 (-85:-86:-7:-5:6) -2");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+fStr);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"105 -106 186 185 -27 107 (-85:-86:-7:-5:6) -2");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR*frontHR);
 
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1815 1816 115 -116 (-815 : -816 :-15 :16) 4 27 -2 ");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+fStr+side);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1815 1816 115 -116 (-815 : -816 :-15 :16) 4 27 -2");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR*frontHR*sideHR);
 
 
   // Outer Volumes
   // note extra divider that is need for cone
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 107 -185 105 -106 -2");
-  makeCell("Outer",System,cellIndex++,outerMat,0.0,Out+fStr);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"107 -185 105 -106 -2");
+  makeCell("Outer",System,cellIndex++,outerMat,0.0,HR*frontHR);
 
   // Outer Volumes
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 107 -186 105 -106 -2");
-  makeCell("Outer",System,cellIndex++,outerMat,0.0,Out+fStr);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"107 -186 105 -106 -2");
+  makeCell("Outer",System,cellIndex++,outerMat,0.0,HR*frontHR);
 
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 27 115 -116 -1816  -2");
-  makeCell("Outer",System,cellIndex++,outerMat,0.0,Out+fStr);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"27 115 -116 -1816  -2");
+  makeCell("Outer",System,cellIndex++,outerMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 27 115 -116 -1815  -2");
-  makeCell("Outer",System,cellIndex++,outerMat,0.0,Out+fStr);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"27 115 -116 -1815  -2");
+  makeCell("Outer",System,cellIndex++,outerMat,0.0,HR*frontHR);
 
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -27 107 105 -106 -2");
-  addOuterSurf("Beam",Out+fStr);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-27 107 105 -106 -2");
+  addOuterSurf("Beam",HR*frontHR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 115 -116 4 27 -2 ");
-  addOuterSurf("Extra",Out+fStr);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"115 -116 4 27 -2");
+  addOuterSurf("Extra",HR*frontHR);
 
   return;
 }

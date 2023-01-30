@@ -56,11 +56,13 @@ $gM->findSubIncDir("System");
 $gM->findSubIncDir("Model");
 $gM->findSubIncDir("Model/ESSBeam");
 $gM->findSubIncDir("Model/MaxIV");
+$gM->findSubIncDir("Model/ralBuild");
 
 $gM->findSubSrcDir("Model");
 $gM->findSubSrcDir("System");
 $gM->findSubSrcDir("Model/ESSBeam");
 $gM->findSubSrcDir("Model/MaxIV");
+$gM->findSubSrcDir("Model/ralBuild");
 
 $gM->findSubSrcDir("","Aunit");  ## Aunit to be excluded
 
@@ -118,11 +120,11 @@ foreach my $mainProg (@masterProg)
 				  R3Common R1Common species)]);
       }
     
-    elsif ($mainProg eq "filter")
-      { 
-	my @filter = qw( filter photon );
-	push(@filter,@mainLib);
-	$gM->addDepUnit("filter", [@filter]),
+    elsif ($mainProg eq "essLinac")
+      {
+	my @essBeam = qw( essLinac );
+	push(@essBeam,@mainLib);
+	$gM->addDepUnit("essLinac", [@essBeam]),
       }
 
     elsif ($mainProg eq "bilbau")
@@ -134,7 +136,7 @@ foreach my $mainProg (@masterProg)
     
     elsif ($mainProg eq "fullBuild")
       {
-	my @fullBuild = qw( t2Build ralBuild );
+	my @fullBuild = qw( t2Build ralBuild ralVar);
 	push(@fullBuild,@mainLib);
 	$gM->addDepUnit("fullBuild", [@fullBuild]),
       }
@@ -193,13 +195,14 @@ foreach my $mainProg (@masterProg)
 	$gM->addDepUnit("singleItem",
 			[@singleItem,
 			 qw( essConstruct commonVar commonGenerator
-			     R1Common R3Common commonBeam Linac )]);
+			     R1Common R3Common commonBeam Linac
+			     beamline )]);
       }
     
     
     elsif ($mainProg eq "t1Real")
       { 
-	my @t1Real = qw( t1Build ralBuild  ) ;
+	my @t1Real = qw( t1Build ralBuild ralVar ) ;
 	push(@t1Real,@mainLib);
 	$gM->addDepUnit("t1Real", [@t1Real]);
       }

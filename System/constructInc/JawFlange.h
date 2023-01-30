@@ -56,7 +56,6 @@ class JawFlange :
   int voidMat;                  ///< Void material
   int jawMat;                   ///< Jaw material
 
-  HeadRule cylRule;             ///< Cylinder/Surround rule
   int cutCell;                  ///< Cell to cut
 
   void calcBeamCentre();

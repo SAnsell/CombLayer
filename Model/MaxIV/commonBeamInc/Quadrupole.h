@@ -3,7 +3,7 @@
  
  * File:   commonBeamInc/Quadrupole.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,11 +36,12 @@ namespace xraySystem
   \brief Quadrupole for Max-IV
 */
 
-class Quadrupole : public attachSystem::FixedRotate,
-  public attachSystem::ContainedComp,
-  public attachSystem::ExternalCut,
-  public attachSystem::CellMap,
-  public attachSystem::SurfMap
+class Quadrupole :
+    public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
+    public attachSystem::ExternalCut,
+    public attachSystem::CellMap,
+    public attachSystem::SurfMap
 {
  private:
   
@@ -70,11 +71,7 @@ class Quadrupole : public attachSystem::FixedRotate,
   int coilMat;                     ///< coil material
   int frameMat;                    ///< Iron material
 
-  HeadRule innerTube;              ///< Inner tube 
-  
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
-  
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -87,8 +84,8 @@ class Quadrupole : public attachSystem::FixedRotate,
   Quadrupole& operator=(const Quadrupole&);
   virtual ~Quadrupole();
 
-  /// set innner tube
-  void setInnerTube(const HeadRule& HR) { innerTube=HR;  }
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

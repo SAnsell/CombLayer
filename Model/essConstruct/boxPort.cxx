@@ -208,25 +208,6 @@ boxPort::populate(const FuncDataBase& Control)
   return;
 }
 
-  
-void
-boxPort::createUnitVector(const attachSystem::FixedComp& FC,
-                              const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("boxPort","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
-  return;
-}
-
-
 void
 boxPort::createSurfaces()
   /*!
@@ -278,26 +259,24 @@ boxPort::createObjects(Simulation& System)
 
   std::string Out;
 
-  const std::string FBStr=frontRule()+backRule();
-  const std::string EdgeStr=ModelSupport::getComposite
-    (SMap,buildIndex," 13 -14 15 -16 (-3:4:-5:6) ");
+  const HeadRule fbHR=getFrontRule()*getBackRule();
+
+  HeadRule HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"13 -14 15 -16 (-3:4:-5:6)");
 
 
-  System.addCell(MonteCarlo::Object(cellIndex++,mainMat,0.0,FBStr+EdgeStr));
-  addCell("Box",cellIndex-1);
-
+  makeCell("Box",System,cellIndex++,mainMat,0.0,HR*fbHR);
 
   if (innerExclude)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,voidMat,0.0,Out+FBStr));
-      addCell("InnerVoid",cellIndex-1);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
+      makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,HR*fbHR);
       
-      Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 15 -16 ");      
-      addOuterSurf(Out+FBStr);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 15 -16");      
+      addOuterSurf(HR*fbHR);
     }
   else
-    addOuterSurf(EdgeStr+FBStr);
+    addOuterSurf(HR*fbHR);
   
   return;
 }

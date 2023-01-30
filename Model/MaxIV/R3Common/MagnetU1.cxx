@@ -70,6 +70,7 @@
 #include "Sexupole.h"
 #include "CorrectorMag.h"
 #include "CornerPipe.h"
+#include "EntryPipe.h"
 #include "MagnetU1.h"
 
 
@@ -81,6 +82,7 @@ MagnetU1::MagnetU1(const std::string& Key) :
   attachSystem::ContainedGroup("Main"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
+  entryPipe(new xraySystem::EntryPipe(keyName+"EntryPipe",-1)),
   QFm1(new xraySystem::Quadrupole(keyName+"QFm1")),
   SFm(new xraySystem::Sexupole(keyName+"SFm")),
   QFm2(new xraySystem::Quadrupole(keyName+"QFm2")),
@@ -88,7 +90,8 @@ MagnetU1::MagnetU1(const std::string& Key) :
   cMagHA(new xraySystem::CorrectorMag(keyName+"cMagHA")),
   SD1(new xraySystem::Sexupole(keyName+"SD1")),
   DIPm(new xraySystem::Dipole(keyName+"DIPm")),
-  SD2(new xraySystem::Sexupole(keyName+"SD2"))
+  SD2(new xraySystem::Sexupole(keyName+"SD2")),
+  exitPipe(new xraySystem::EntryPipe(keyName+"ExitPipe",1))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -100,7 +103,8 @@ MagnetU1::MagnetU1(const std::string& Key) :
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  
+
+  OR.addObject(entryPipe);
   OR.addObject(QFm1);
   OR.addObject(SFm);
   OR.addObject(QFm2);
@@ -109,6 +113,7 @@ MagnetU1::MagnetU1(const std::string& Key) :
   OR.addObject(SD1);
   OR.addObject(DIPm);
   OR.addObject(SD2);
+  OR.addObject(exitPipe);
 }
 
 
@@ -132,6 +137,8 @@ MagnetU1::populate(const FuncDataBase& Control)
   blockYStep=Control.EvalVar<double>(keyName+"BlockYStep");
   length=Control.EvalVar<double>(keyName+"Length");
 
+  frontVoid=Control.EvalVar<double>(keyName+"FrontVoid");
+  backVoid=Control.EvalVar<double>(keyName+"BackVoid");
   outerVoid=Control.EvalVar<double>(keyName+"OuterVoid");
   ringVoid=Control.EvalVar<double>(keyName+"RingVoid");
   topVoid=Control.EvalVar<double>(keyName+"TopVoid");
@@ -163,11 +170,16 @@ MagnetU1::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*baseVoid,Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*topVoid,Z);
 
+  ModelSupport::buildPlane(SMap,buildIndex+11,
+			   Origin+Y*(blockYStep-frontVoid),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,
+			   Origin+Y*(length+blockYStep+backVoid),Y);
   ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(outerVoid+wallThick),X);
   ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(ringVoid+wallThick),X);
   ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(baseVoid+baseThick),Z);
   ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(topVoid+baseThick),Z);
 
+  
   return;
 }
 
@@ -219,54 +231,98 @@ MagnetU1::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex," 1 -2 13 -14 15 -16 (-3:4:-5:6) ");
   makeCell("Outer",System,cellIndex++,wallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"11 -1 13 -14 15 -16 ");
+  makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"2 -12 13 -14 15 -16 ");
+  makeCell("BackVoid",System,cellIndex++,voidMat,0.0,HR);
+
+  // this is same as electron incoming
+
+  DIPm->createAll(System,*this,0);
   
+  entryPipe->setFront(SMap.realSurf(buildIndex+11));
+  entryPipe->setBack(*DIPm,"front");
+  entryPipe->createAll(System,*this,0);  
+  entryPipe->insertInCell("Flange",System,getCell("FrontVoid"));
+  entryPipe->insertInCell("Pipe",System,getCell("FrontVoid"));
   
+  exitPipe->setFront(*DIPm,"back");
+  exitPipe->setBack(-SMap.realSurf(buildIndex+12));  
+  exitPipe->createAll(System,*DIPm,"back");
+  exitPipe->insertInCell("Flange",System,getCell("BackVoid"));
+  exitPipe->insertInCell("Pipe",System,getCell("BackVoid"));
+
+  QFm1->setCutSurf("Inner",entryPipe->getSurfRule("OuterRadius"));
   QFm1->createAll(System,*this,0);
+
+  SFm->setCutSurf("Inner",entryPipe->getSurfRule("OuterRadius"));
   SFm->createAll(System,*this,0);
+  QFm2->setCutSurf("Inner",entryPipe->getSurfRule("OuterRadius"));
   QFm2->createAll(System,*this,0);
+
+  cMagVA->setCutSurf("Inner",entryPipe->getSurfRule("OuterRadius"));
+  cMagHA->setCutSurf("Inner",entryPipe->getSurfRule("OuterRadius"));
   cMagVA->createAll(System,*this,0);
   cMagHA->createAll(System,*this,0);
+
+  SD1->setCutSurf("Inner",entryPipe->getSurfRule("OuterRadius"));
   SD1->createAll(System,*this,0);
-  DIPm->createAll(System,*this,0);
-  SD2->createAll(System,*this,0);
+
+  SD2->setCutSurf("Inner",exitPipe->getSurfRule("OuterRadius"));
+  SD2->createAll(System,*DIPm,"back");
+
   
   backHR=QFm1->getFullRule(1);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1  3 -4 5 -6");
   makeCell("Seg1",System,cellIndex++,wallMat,0.0,HR*backHR);  
+  entryPipe->insertInCell("Pipe",System,getCell("Seg1"));
 
   frontHR=backHR.complement();
   backHR=QFm1->getFullRule(-2);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
-  makeCell("Seg2",System,cellIndex++,wallMat,0.0,HR*frontHR*backHR);
-  QFm1->insertInCell(System,getCell("Seg2"));
-
+  /*
+    HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
+    makeCell("Seg2",System,cellIndex++,wallMat,0.0,HR*frontHR*backHR);
+    QFm1->insertInCell(System,getCell("Seg2"));
+  */
   size_t segIndex(3);
   createUnit(System,segIndex,*QFm1,*SFm);
   SFm->insertInCell(System,getCell("Seg4"));
-
+  entryPipe->insertInCell("Pipe",System,getCell("Seg3"));
+  
   createUnit(System,segIndex,*SFm,*QFm2);
   QFm2->insertInCell(System,getCell("Seg6"));
+  entryPipe->insertInCell("Pipe",System,getCell("Seg5"));  
 
   createUnit(System,segIndex,*QFm2,*cMagVA);
   cMagVA->insertInCell(System,getCell("Seg8"));
+  entryPipe->insertInCell("Pipe",System,getCell("Seg7"));
 
   createUnit(System,segIndex,*cMagVA,*cMagHA);
   cMagHA->insertInCell(System,getCell("Seg10"));
+  entryPipe->insertInCell("Pipe",System,getCell("Seg9"));
 
   createUnit(System,segIndex,*cMagHA,*SD1);
   SD1->insertInCell(System,getCell("Seg12"));
+  entryPipe->insertInCell("Pipe",System,getCell("Seg11"));
 
   createUnit(System,segIndex,*SD1,*DIPm);
   DIPm->insertInCell(System,getCell("Seg14"));
-
+  entryPipe->insertInCell("Pipe",System,getCell("Seg13"));
+  
   createUnit(System,segIndex,*DIPm,*SD2);
   SD2->insertInCell(System,getCell("Seg16"));
-
+  exitPipe->insertInCell("Pipe",System,getCell("Seg15"));
+  
   backHR=SD2->getFullRule(2);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 3 -4 5 -6");
   makeCell("Seg17",System,cellIndex++,wallMat,0.0,HR*backHR);  
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -14 15 -16 ");
+  exitPipe->insertInCell("Pipe",System,getCell("Seg17"));
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14 15 -16 ");
   addOuterSurf("Main",HR);
   
   return;
@@ -285,6 +341,16 @@ MagnetU1::createLinks()
   setConnect(0,Origin+Y*blockYStep,-Y);
   setLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
+  setConnect(1,Origin+Y*(length+blockYStep),Y);
+  setLinkSurf(1,-SMap.realSurf(buildIndex+2));
+
+  setConnect(2,Origin+Y*(blockYStep-frontVoid),-Y);
+  setLinkSurf(2,-SMap.realSurf(buildIndex+11));
+  nameSideIndex(2,"voidFront");
+
+  setConnect(3,Origin+Y*(blockYStep+length+backVoid),Y);
+  setLinkSurf(3,SMap.realSurf(buildIndex+12));
+  nameSideIndex(3,"voidBack");
 
   return;
 }
@@ -297,7 +363,6 @@ MagnetU1::insertDipolePipe(Simulation& System,
 
   const HeadRule pipeHR=
     dipolePipe.getCC("Tube").getOuterSurf().complement();
-  ELog::EM<<"PI == "<<pipeHR<<ELog::endDiag;
   
   // get corners
   std::vector<Geometry::Vec3D> Pts;
@@ -329,18 +394,18 @@ MagnetU1::insertDipolePipe(Simulation& System,
       MonteCarlo::Object* OPtr=
 	System.findObjectThrow(CN,"CN from CSet");
       size_t index=0;
-      size_t flag(0);
+      int flag(0);
       do
 	{
 	  flag=OPtr->hasIntercept(Pts[index],Y);
-
 	  index++;
 	} while(index<4 && !flag);
       
       if (flag)
 	OPtr->addIntersection(pipeHR);
     }
-  
+  dipolePipe.insertInCell("Tube",System,getCell("FrontVoid"));
+  dipolePipe.insertInCell("Tube",System,getCell("BackVoid"));
   return;
 }
 
@@ -357,13 +422,17 @@ MagnetU1::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("MagnetU1","createAll");
 
+
   populate(System.getDataBase());
 
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   insertObjects(System);
-  // creation of links 
+
+
+  // creation of links
+  
   createLinks();
   return;
 }

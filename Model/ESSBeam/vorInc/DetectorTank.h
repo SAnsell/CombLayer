@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuildInc/DetectorTank.h
+ * File:   vorInc/DetectorTank.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,13 +35,13 @@ namespace essSystem
   \brief DetectorTank [insert object]
 */
 
-class DetectorTank : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
-  public attachSystem::CellMap
+class DetectorTank :
+    public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
+    public attachSystem::CellMap
 {
  private:
   
-
   double innerRadius;           ///< Radius of sample area
   double outerRadius;           ///< outer detector radius
   double midAngle;              ///< dividing angle
@@ -55,9 +55,6 @@ class DetectorTank : public attachSystem::ContainedComp,
   int wallMat;                  ///< Material for walls
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&);
@@ -69,6 +66,7 @@ class DetectorTank : public attachSystem::ContainedComp,
   DetectorTank& operator=(const DetectorTank&);
   ~DetectorTank();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

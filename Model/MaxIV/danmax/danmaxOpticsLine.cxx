@@ -256,15 +256,15 @@ danmaxOpticsLine::createSurfaces()
 
   if (outerLeft>Geometry::zeroTol &&  isActive("floor"))
     {
-      std::string Out;
+      HeadRule HR;
       ModelSupport::buildPlane
 	(SMap,buildIndex+3,Origin-X*outerLeft,X);
       ModelSupport::buildPlane
 	(SMap,buildIndex+4,Origin+X*outerRight,X);
       ModelSupport::buildPlane
 	(SMap,buildIndex+6,Origin+Z*outerTop,Z);
-      Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -6");
-      const HeadRule HR(Out+getRuleStr("floor"));
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 -6");
+      HR*=getRule("floor");
       buildZone.setSurround(HR);
 
       buildZone.setFront(getRule("front"));
@@ -603,10 +603,13 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   // This is a mess but want to preserve insert items already
   // in the hut beam port
   pipeInit->createAll(System,*this,0);
-  outerCell=buildZone.createUnit(System,*pipeInit,-1);
+  outerCell=buildZone.createUnit(System,*pipeInit,"#front");
+
+
   if (preInsert)
     preInsert->insertAllInCell(System,outerCell);
-  outerCell=buildZone.createUnit(System,*pipeInit,2);
+  outerCell=buildZone.createUnit(System,*pipeInit,"back");
+  pipeInit->insertInCell(System,outerCell);
 
   constructSystem::constructUnit
     (System,buildZone,*pipeInit,"back",*triggerPipe);

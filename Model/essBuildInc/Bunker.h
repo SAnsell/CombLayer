@@ -40,8 +40,9 @@ namespace essSystem
   \brief Bulk around Reflector
 */
 
-class Bunker : public attachSystem::ContainedComp,
+class Bunker : 
   public attachSystem::FixedComp,
+  public attachSystem::ContainedComp,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {
@@ -51,14 +52,12 @@ class Bunker : public attachSystem::ContainedComp,
   bool rightWallFlag;           ///< Build right wall
   
   Geometry::Vec3D rotCentre;    ///< Rotation centre
-
   
   double leftPhase;              ///< Sector phase left
   double rightPhase;             ///< Sector phase right
   
   double leftAngle;              ///< Extent of left angle
   double rightAngle;             ///< Extent of right ange
-
 
   // MAIN WALL
   size_t nSectors;               ///< Number of sector divisions
@@ -156,6 +155,8 @@ class Bunker : public attachSystem::ContainedComp,
   void setReversed() { revFlag=1; }
   
   void cutInsert(Simulation&,const BunkerInsert&) const;
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

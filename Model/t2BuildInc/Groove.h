@@ -36,8 +36,8 @@ namespace moderatorSystem
 */
 
 class Groove :
-    public attachSystem::ContainedComp,
     public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
     public attachSystem::CellMap,
     public attachSystem::SurfMap
 {

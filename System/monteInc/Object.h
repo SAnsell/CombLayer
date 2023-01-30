@@ -75,11 +75,11 @@ class Object
   int checkSurfaceValid(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
   /// Calc in/out 
   int calcInOut(const int,const int) const;
-
+  void clearValid();
+  
  protected:
   
   int objSurfValid;                 ///< Object surface valid
-
   /// Full surfaces 
   std::set<const Geometry::Surface*> surfSet;  
   std::set<int> surNameSet;              ///< set of surfaces in cell [signed]
@@ -204,7 +204,7 @@ class Object
 
   std::vector<int> getSurfaceIndex() const;
   /// Access the surface list [of pointers]
-  const std::set<const Geometry::Surface*>& getSurList() const
+  const std::set<const Geometry::Surface*>& getSurfPtrSet() const
     { return surfSet; }
 
   std::vector<std::pair<int,int>> getImplicatePairs(const int) const;

@@ -3,7 +3,7 @@
  
  * File:   monteInc/HeadRule.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,7 @@ class HeadRule
 
   void createAddition(const int,const Rule*);
   const SurfPoint* findSurf(const int) const;
-  
+
  public:
 
   HeadRule();
@@ -145,12 +145,14 @@ class HeadRule
 
   std::set<const Geometry::Surface*> getOppositeSurfaces() const;
   const Geometry::Surface* getSurface(const int) const;
+  const Geometry::Surface* primarySurface() const;
   std::set<const Geometry::Surface*> getSurfaces() const;
   std::set<int> getSignedSurfaceNumbers() const;
-  std::vector<int> getSurfaceNumbers() const;
+  std::set<int> getSurfaceNumbers() const;
   std::vector<int> getTopSurfaces() const;
   int getPrimarySurface() const;
 
+  
   const Rule* findNode(const size_t,const size_t) const;
 
   std::vector<const Rule*> findTopNodes() const;
@@ -159,7 +161,6 @@ class HeadRule
   bool subMatched(const HeadRule&,const HeadRule&);  
   bool partMatched(const HeadRule&) const;
 
-  std::set<int> getSurfSet() const;
   int getSingleSurf() const;
   
   int removeItems(const int);

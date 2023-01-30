@@ -66,6 +66,7 @@
 #include "FixedRotate.h" 
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 
@@ -538,8 +539,8 @@ ReactorGrid::createElements(Simulation& System)
 	      RTYPE(new BeOElement(i,j,"delftBeO"));
 
 	else if (GType[li][lj]=="Air")
-	    Grid[li][lj]=
-	      RTYPE(new AirBoxElement(i,j,"delftAirBox"));
+	  Grid[li][lj]=
+	    RTYPE(new AirBoxElement(i,j,"delftAirBox",waterMat));
 
 	else
 	  {
@@ -547,8 +548,10 @@ ReactorGrid::createElements(Simulation& System)
 	  }
 
 	Grid[li][lj]->addInsertCell(getCellNumber(li,lj));
-	Grid[li][lj]->createAll(System,*this,getCellOrigin(i,j),
-				FuelSystem);
+	Grid[li][lj]->setFuelLoad(FuelSystem);
+	//	Grid[li][lj]->createAll(System,*this,getCellOrigin(i,j));
+	Grid[li][lj]->setCutSurf("BasePlate",SMap.realSurf(buildIndex+5));
+	Grid[li][lj]->createAll(System,*this,getElementName("Grid",i,j));
       }
   return;
 }
@@ -568,10 +571,28 @@ ReactorGrid::createLinks()
   FixedComp::setConnect(4,Origin-Z*Base,-Z);     
   FixedComp::setConnect(5,Origin+Z*Top,Z);     
   FixedComp::setConnect(6,Origin+Y*Depth/2.0,Y);     
+  
 
-  for(size_t i=0;i<7;i++)
-    FixedComp::setLinkSurf
-      (i,SMap.realSurf(buildIndex+static_cast<int>(i)+1));
+  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+7));
+
+
+  const size_t NGrid(NX*NY);
+
+  FixedComp::setNConnect(NGrid+8);
+  size_t FCIndex(6);
+  for(size_t i=0;i<NX;i++)
+    for(size_t j=0;j<NY;j++)
+      {
+	FixedComp::nameSideIndex(FCIndex,getElementName("Grid",i,j));
+	FixedComp::setConnect(FCIndex,getCellOrigin(i,j),Y);
+	FCIndex++;
+      }
   
   return;
 }

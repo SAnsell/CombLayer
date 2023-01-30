@@ -3,7 +3,7 @@
  
  * File:   R1Common/DipoleExtract.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -228,43 +227,42 @@ DipoleExtract::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("DipoleExtract","createObjects");
 
-  std::string Out;
-  const std::string fbStr=getRuleStr("front")+
-    getRuleStr("back");
+  HeadRule HR;
+  const HeadRule fbHR=getRule("front")*getRule("back");
 
   //
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"13 -14 5 35 45 -36 -46 -6  ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+fbStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 5 35 45 -36 -46 -6 ");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*fbHR);
 
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"13 -14 -136 -146 -106 (36:6:46)");
-  makeCell("TopWall",System,cellIndex++,wallMat,0.0,Out+fbStr);
+  makeCell("TopWall",System,cellIndex++,wallMat,0.0,HR*fbHR);
 
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"13 -14 135 145 105 (-35:-5:-45)");
-  makeCell("LowWall",System,cellIndex++,wallMat,0.0,Out+fbStr);
+  makeCell("LowWall",System,cellIndex++,wallMat,0.0,HR*fbHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 63 -135 -115 105 ");
-  makeCell("LowGap",System,cellIndex++,outerMat,0.0,Out+fbStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 63 -135 -115 105");
+  makeCell("LowGap",System,cellIndex++,outerMat,0.0,HR*fbHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-64 -145 -115 105");
-  makeCell("LowGap",System,cellIndex++,outerMat,0.0,Out+fbStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-64 -145 -115 105");
+  makeCell("LowGap",System,cellIndex++,outerMat,0.0,HR*fbHR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"63 136 116 -106 ");
-  makeCell("TopGap",System,cellIndex++,outerMat,0.0,Out+fbStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"63 136 116 -106");
+  makeCell("TopGap",System,cellIndex++,outerMat,0.0,HR*fbHR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-64 146 116 -106 ");
-  makeCell("TopGap",System,cellIndex++,outerMat,0.0,Out+fbStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-64 146 116 -106");
+  makeCell("TopGap",System,cellIndex++,outerMat,0.0,HR*fbHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"63 115 -116 (-13:136:-135) ");
-  makeCell("End",System,cellIndex++,wallMat,0.0,Out+fbStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"63 115 -116 (-13:136:-135)");
+  makeCell("End",System,cellIndex++,wallMat,0.0,HR*fbHR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"(14:146:-145) -64 115 -116 ");
-  makeCell("End",System,cellIndex++,wallMat,0.0,Out+fbStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(14:146:-145) -64 115 -116");
+  makeCell("End",System,cellIndex++,wallMat,0.0,HR*fbHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"63 -64 105 -106");
-  addOuterUnionSurf(Out+fbStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"63 -64 105 -106");
+  addOuterUnionSurf(HR*fbHR);
 
 
   return;

@@ -3,7 +3,7 @@
  
  * File:   attachComp/LayerComp.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -97,12 +97,12 @@ LayerComp::intersectDist(const size_t layerIndex,
 {
   ELog::RegMethod RegA("LayerComp","intersectDist");
   
-  HeadRule A;
-  if (!A.procString(this->getLayerString(layerIndex,sideIndex)))
+  HeadRule HR=getLayerHR(layerIndex,sideIndex);
+  if (HR.isEmpty())
     return -std::numeric_limits<double>::max();
 
-  A.populateSurf();
-  const auto [SN,D] =A.trackSurfDistance(Origin,Unit);
+  HR.populateSurf();
+  const auto [SN,D] =HR.trackSurfDistance(Origin,Unit);
   
   return (SN) ? D : -std::numeric_limits<double>::max();
 }

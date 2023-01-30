@@ -57,7 +57,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
@@ -70,10 +70,10 @@ namespace xraySystem
 {
 
 RingDoor::RingDoor(const std::string& Key) :
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedGroup("Door","Tubes"),
-  attachSystem::FixedOffset(Key,6),
-  attachSystem::CellMap(),
-  attachSystem::ExternalCut()
+  attachSystem::ExternalCut(),
+  attachSystem::CellMap()
   /*!
     Default constructor
     \param Key :: Key name for variables
@@ -89,7 +89,7 @@ RingDoor::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("RingDoor","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   
   innerHeight=Control.EvalVar<double>(keyName+"InnerHeight");
   innerWidth=Control.EvalVar<double>(keyName+"InnerWidth");
@@ -209,8 +209,7 @@ RingDoor::createSurfaces()
     (SMap,buildIndex+1013,Origin+X*(underStepXSep/2.0),X);
   ModelSupport::buildPlane
     (SMap,buildIndex+1014,Origin+X*(underStepWidth+underStepXSep/2.0),X);
-  
-  
+
   // Tubes:
   ModelSupport::buildCylinder
     (SMap,buildIndex+507,Origin-X*tubeXStep+Z*tubeZStep,Y,tubeRadius);
@@ -241,19 +240,19 @@ RingDoor::createObjects(Simulation& System)
   makeCell("InnerDoor",System,cellIndex++,doorMat,0.0,HR*innerHR*floorHR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"-200 (-3:4:6) 13 -14 -16 ");
+    (SMap,buildIndex,"-200 (-3:4:6) 13 -14 -16");
   makeCell("InnerGap",System,cellIndex++,0,0.0,HR*innerHR*floorHR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"-200 (-13:14:16) 33 -34 -36 ");
+    (SMap,buildIndex,"-200 (-13:14:16) 33 -34 -36");
   makeCell("InnerExtra",System,cellIndex++,doorMat,0.0,HR*innerHR*floorHR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"200 -201 3 -4 -6 (-1003:1004:1005) (-1013:1014:1005) ");
+    (SMap,buildIndex,"200 -201 3 -4 -6 (-1003:1004:1005) (-1013:1014:1005)");
   makeCell("OuterStrip",System,cellIndex++,doorMat,0.0,HR*floorHR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"200 -201 23 -24 -26 (-3:4:6) ");
+    (SMap,buildIndex,"200 -201 23 -24 -26 (-3:4:6)");
   makeCell("MidGap",System,cellIndex++,0,0.0,HR*floorHR);
 
   HR=ModelSupport::getHeadRule
@@ -261,34 +260,34 @@ RingDoor::createObjects(Simulation& System)
   makeCell("OuterDoor",System,cellIndex++,doorMat,0.0,HR*outerHR*floorHR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"200 (-23:24:26) 33 -34 -36 ");
+    (SMap,buildIndex,"200 (-23:24:26) 33 -34 -36");
   makeCell("OuterGap",System,cellIndex++,0,0.0,HR*outerHR*floorHR);
 
   // Tubes
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -507 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-507");
   makeCell("OuterGap",System,cellIndex++,tubeMat,0.0,HR*outerHR*innerHR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -517 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-517");
   makeCell("OuterGap",System,cellIndex++,tubeMat,0.0,HR*outerHR*innerHR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -527 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-527");
   makeCell("OuterGap",System,cellIndex++,tubeMat,0.0,HR*outerHR*innerHR);
 
   // Lift points
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1003 -1004 -1005 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1003 -1004 -1005");
   makeCell("LiftA",System,cellIndex++,underAMat,
 	   0.0,HR*outerHR*innerHR*floorHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1013 -1014 -1005 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1013 -1014 -1005");
   makeCell("LiftB",System,cellIndex++,underBMat,
 	   0.0,HR*outerHR*innerHR*floorHR);
 
 
   
   // main door
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 33 -34 -36 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"33 -34 -36");
   addOuterSurf("Door",HR);
 
   // extra tubes
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," (-507 : -517 : -527) ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(-507 : -517 : -527)");
   addOuterSurf("Tubes",HR);
   return;
 }
@@ -310,8 +309,8 @@ RingDoor::createLinks()
 
 void
 RingDoor::createAll(Simulation& System,
-                     const attachSystem::FixedComp& FC,
-                     const long int sideIndex)
+		    const attachSystem::FixedComp& FC,
+		    const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation 

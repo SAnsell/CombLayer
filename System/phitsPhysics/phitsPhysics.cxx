@@ -3,7 +3,7 @@
  
  * File:   phitsPhysics/phitsPhysics.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -180,7 +180,6 @@ phitsPhysics::writePHITS(std::ostream& OX) const
       const int n=PC.phitsITYP(particle);
       StrFunc::writePHITSIndex(OX,1,"emin",n,value,particle);
       ELog::EM<<"Particle == "<<particle<<" "<<n<<"=="<<value<<ELog::endDiag;
-	    
     }
 
   for(const auto& [ flag , IVal ] :   flags)

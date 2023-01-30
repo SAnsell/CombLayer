@@ -3,7 +3,7 @@
  
  * File:   delftInc/makeDelft.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 namespace attachSystem
 {
   class FixedComp;
-  class FixedOffset;
+  class FixedRotate;
 }
 /*!
   \namespace delftSystem
@@ -86,7 +86,7 @@ class makeDelft
   std::shared_ptr<BeamInsert> R2Insert;      ///< FlightA/R2 inset
 
   /// Reflector additional on tube
-  std::shared_ptr<attachSystem::FixedOffset> R2Be; 
+  std::shared_ptr<attachSystem::FixedRotate> R2Be; 
 
   /// Boxed units
   std::vector<std::shared_ptr<SpaceBlock> > SBox;  

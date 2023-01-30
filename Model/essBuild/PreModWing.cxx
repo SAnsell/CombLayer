@@ -3,7 +3,7 @@
  
  * File:   essBuild/PreModWing.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2022 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,8 +39,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "surfRegister.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
@@ -60,6 +58,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "PreModWing.h"
 
 
@@ -67,8 +66,9 @@ namespace essSystem
 {
 
 PreModWing::PreModWing(const std::string& Key) :
-  attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key,3),
+  attachSystem::ContainedComp(),
+  attachSystem::ExternalCut(),
   attachSystem::CellMap()
   /*!
     Constructor
@@ -77,15 +77,15 @@ PreModWing::PreModWing(const std::string& Key) :
 {}
 
 PreModWing::PreModWing(const PreModWing& A) : 
-  attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::ExternalCut(A),
   attachSystem::CellMap(A),
   innerHeight(A.innerHeight),outerHeight(A.outerHeight),
   innerDepth(A.innerDepth),outerDepth(A.outerDepth),
   wallThick(A.wallThick),innerRadius(A.innerRadius),
   outerRadius(A.outerRadius),innerYCut(A.innerYCut),
-  mat(A.mat),wallMat(A.wallMat),topSurf(A.topSurf),
-  baseSurf(A.baseSurf),innerSurf(A.innerSurf)
+  mat(A.mat),wallMat(A.wallMat)
   /*!
     Copy constructor
     \param A :: PreModWing to copy
@@ -102,8 +102,9 @@ PreModWing::operator=(const PreModWing& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       attachSystem::CellMap::operator=(A);
       innerHeight=A.innerHeight;
       outerHeight=A.outerHeight;
@@ -115,9 +116,6 @@ PreModWing::operator=(const PreModWing& A)
       innerYCut=A.innerYCut;
       mat=A.mat;
       wallMat=A.wallMat;
-      topSurf=A.topSurf;
-      baseSurf=A.baseSurf;
-      innerSurf=A.innerSurf;
     }
   return *this;
 }
@@ -189,22 +187,6 @@ PreModWing::populate(const FuncDataBase& Control)
 }
 
 void
-PreModWing::createUnitVector(const attachSystem::FixedComp& FC,
-                             const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Centre for object
-    \param sideIndex :: index for link
-  */
-{
-  ELog::RegMethod RegA("PreModWing","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  return;
-}
-
-
-void
 PreModWing::createSurfaces()
   /*!
     Create Plane and surfaces 
@@ -214,10 +196,10 @@ PreModWing::createSurfaces()
 
 
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,innerRadius);
-  if (!outerSurf.hasRule())
+  if (!isActive("Outer"))
     {
       ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Z,outerRadius);
-      outerSurf.procSurfNum(-SMap.realSurf(buildIndex+17));
+      setCutSurf("Outer",-SMap.realSurf(buildIndex+17));
     }
 
   // make height cone if given:
@@ -272,31 +254,32 @@ PreModWing::createSurfaces()
   return; 
 }
 
-std::string
+HeadRule
 PreModWing::getLayerZone(const size_t layerIndex) const
   /*!
     Generate the inner zone for a given index
     \param layerIndex :: zone index
-    \return string for surfaces in zone
+    \return HeadRule for surfaces in zone
   */
 {
   ELog::RegMethod RegA("PreModWing","getLayerZone");
 
-  std::string Out;
+  HeadRule HR;
+  
   const int CL(buildIndex+static_cast<int>(layerIndex)*100);
   if (!layerIndex)
-    Out=innerSurf.display();
+    HR=getRule("Inner");
   else
-    Out=mainDivider.display();
+    HR=getRule("Divider");
 
-  Out+=ModelSupport::getComposite(SMap,CL," 7 ");
+  HR*=HeadRule(SMap,CL,7);
   
   if (layerIndex+1==nLayers)
-    Out+=outerSurf.display();
+    HR*=getRule("Outer");
   else
-    Out+=ModelSupport::getComposite(SMap,CL," -107 ");
+    HR*=HeadRule(SMap,CL,-107);
 
-  return Out;
+  return HR;
 }
 
   
@@ -310,68 +293,52 @@ PreModWing::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("PreModWing","createObjects");
 
-  std::string Out;
+  const HeadRule innerSurf=getRule("Inner");
+  const HeadRule mainDivider=getRule("Divider");
+  const HeadRule midSurf=getRule("Mid");
+  const HeadRule baseSurf=getRule("Base");
+  const HeadRule topSurf=getRule("Top");
+  const HeadRule outerSurf=getRule("Outer");
+  HeadRule HR;
 
   // BASE
   // inner first
-  Out=ModelSupport::getComposite(SMap,buildIndex," -5 -7 ");
-  Out+=innerSurf.display();
-  Out+=baseSurf.display();
-  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-5 -7");
+  System.addCell(cellIndex++,mat,0.0,HR*baseSurf*innerSurf);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -15 5 -7 ");
-  Out+=innerSurf.display();
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-15 5 -7");
+  System.addCell(cellIndex++,wallMat,0.0,HR*innerSurf);
 
   // cone section
   for(size_t i=0;i<nLayers;i++)
     {
-      const std::string Zone=getLayerZone(i);
+      const HeadRule Zone=getLayerZone(i);
       // base layer
-      Out=ModelSupport::getComposite(SMap,buildIndex," -8 -1005 ");
-      Out+=baseSurf.display();
-      Out+=midSurf.display();
-      Out+=Zone;
-      System.addCell(MonteCarlo::Object(cellIndex++,innerMat[i],0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-8 -1005");
+      System.addCell(cellIndex++,innerMat[i],0.0,HR*baseSurf*midSurf*Zone);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," -18 -1015 (8:1005) ");
-      Out+=midSurf.display();
-      Out+=Zone;
-      Out+=baseSurf.display();
-      System.addCell(MonteCarlo::Object(cellIndex++,surfMat[i],0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-18 -1015 (8:1005)");
+      System.addCell(cellIndex++,surfMat[i],0.0,HR*baseSurf*midSurf*Zone);
       
       // Top layer
-      Out=ModelSupport::getComposite(SMap,buildIndex," -9 1006 ");
-      Out+=midSurf.display();
-      Out+=Zone;
-	    
-      Out+=topSurf.display();
-	    
-      Out+=getLayerZone(i);
-      System.addCell(MonteCarlo::Object(cellIndex++,innerMat[i],0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-9 1006");
+      System.addCell(cellIndex++,innerMat[i],0.0,
+		     HR*midSurf*Zone*topSurf*getLayerZone(i));
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," -19 1016 (9:-1006) ");
-      Out+=midSurf.display();
-      Out+=topSurf.display();
-      Out+=Zone;
-      System.addCell(MonteCarlo::Object(cellIndex++,surfMat[i],0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-19 1016 (9:-1006)");
+      System.addCell(cellIndex++,surfMat[i],0.0,HR*Zone*topSurf*midSurf);
     }
   
   // TOP
   // inner first
-  Out=ModelSupport::getComposite(SMap,buildIndex," 6 -7 ");
-  Out+=innerSurf.display();
-  Out+=topSurf.display();
-  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"6 -7");
+  System.addCell(cellIndex++,mat,0.0,HR*topSurf*innerSurf);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 16 -6 -7 ");
-  Out+=innerSurf.display();
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"16 -6 -7");
+  System.addCell(cellIndex++,wallMat,0.0,HR*innerSurf);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," ((-19 16 ) : (-18 -15)) ");
-  Out+=outerSurf.display();
-  Out+=mainDivider.display();
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"((-19 16 ) : (-18 -15))");
+  addOuterSurf(HR*outerSurf*mainDivider);
 
   return; 
 }

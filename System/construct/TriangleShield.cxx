@@ -55,7 +55,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
@@ -69,8 +69,9 @@ namespace constructSystem
 {
 
 TriangleShield::TriangleShield(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,6),
-  attachSystem::ContainedComp(),attachSystem::CellMap(),
+  attachSystem::FixedRotate(Key,6),
+  attachSystem::ContainedComp(),
+  attachSystem::CellMap(),
   attachSystem::FrontBackCut()
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -129,7 +130,7 @@ TriangleShield::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("TriangleShield","populate");
   
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   // Void + Fe special:
   length=Control.EvalVar<double>(keyName+"Length");
@@ -178,25 +179,6 @@ TriangleShield::populate(const FuncDataBase& Control)
 				  depth,floorFrac);
   floorFrac.push_back(1.0);
   
-  return;
-}
-
-void
-TriangleShield::createUnitVector(const attachSystem::FixedComp& FC,
-				 const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("TriangleShield","createUnitVector");
-
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  // after rotation
-  Origin+=Y*(length/2.0);
   return;
 }
 
@@ -292,32 +274,30 @@ TriangleShield::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("TriangleShield","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   
-  const std::string frontStr=frontRule();
-  const std::string backStr=backRule();
-  const std::string backEndStr=(endWall>Geometry::zeroTol) ?
-    ModelSupport::getComposite(SMap,buildIndex," -1002 " ) :
-    backStr;
+  const HeadRule& frontHR=getFrontRule();
+  const HeadRule& backHR=getBackRule();
+  const HeadRule backEndHR=(endWall>Geometry::zeroTol) ?
+    HeadRule(SMap,buildIndex,-1002) : backHR;
   
   // Inner void is a single segment
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+
-				   frontStr+backEndStr));
-  addCell("Void",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
+  makeCell("Void",System,cellIndex++,0,0.0,
+	   HR*frontHR*backEndHR);
 
   // Loop over all segments:
-  std::string FBStr;
+  HeadRule fbHR;
   int SI(buildIndex);
   int WI(buildIndex),RI(buildIndex),FI(buildIndex);    
   for(size_t index=0;index<nSeg;index++)
     {
-      FBStr=((index) ?
-	     ModelSupport::getComposite(SMap,SI," 2 ") :
-	     frontStr);
-      FBStr+= ((index+1!=nSeg) ?
-	       ModelSupport::getComposite(SMap,SI," -12 ") :
-	       backEndStr);
+      fbHR=(index) ?
+	     ModelSupport::getHeadRule(SMap,SI,"2") :
+	     frontHR;
+      fbHR*= (index+1!=nSeg) ?
+	       ModelSupport::getHeadRule(SMap,SI,"-12") :
+	       backEndHR;
       SI+=10; 
 
       // Inner is a single component
@@ -325,13 +305,11 @@ TriangleShield::createObjects(Simulation& System)
       WI=buildIndex;
       for(size_t i=1;i<nWallLayers;i++)
 	{
-	  Out=ModelSupport::getComposite(SMap,WI,buildIndex," 13 -3 5M -6M ");
-	  System.addCell(MonteCarlo::Object
-			 (cellIndex++,wallMat[i],0.0,Out+FBStr));
+	  HR=ModelSupport::getHeadRule(SMap,WI,buildIndex,"13 -3 5M -6M");
+	  System.addCell(cellIndex++,wallMat[i],0.0,HR*fbHR);
 		 
-	  Out=ModelSupport::getComposite(SMap,WI,buildIndex," 4 -14 5M -6M ");
-	  System.addCell(MonteCarlo::Object
-			 (cellIndex++,wallMat[i],0.0,Out+FBStr));
+	  HR=ModelSupport::getHeadRule(SMap,WI,buildIndex,"4 -14 5M -6M");
+	  System.addCell(cellIndex++,wallMat[i],0.0,HR*fbHR);
 	  WI+=10;
 	}
 
@@ -339,9 +317,8 @@ TriangleShield::createObjects(Simulation& System)
       RI=buildIndex;
       for(size_t i=1;i<nRoofLayers;i++)
 	{
-	  Out=ModelSupport::getComposite(SMap,RI,buildIndex," 3M -4M -16 6 ");
-	  System.addCell(MonteCarlo::Object
-			 (cellIndex++,roofMat[i],0.0,Out+FBStr));
+	  HR=ModelSupport::getHeadRule(SMap,RI,buildIndex,"3M -4M -16 6");
+	  System.addCell(cellIndex++,roofMat[i],0.0,HR*fbHR);
 	  RI+=10;
 	}
     
@@ -349,9 +326,8 @@ TriangleShield::createObjects(Simulation& System)
       FI=buildIndex;
       for(size_t i=1;i<nFloorLayers;i++)
 	{
-	  Out=ModelSupport::getComposite(SMap,FI,WI," 3M -4M -5 15 ");
-	  System.addCell(MonteCarlo::Object
-			 (cellIndex++,floorMat[i],0.0,Out+FBStr));
+	  HR=ModelSupport::getHeadRule(SMap,FI,WI,"3M -4M -5 15");
+	  System.addCell(cellIndex++,floorMat[i],0.0,HR*fbHR);
 	  FI+=10;
 	}
       
@@ -364,11 +340,11 @@ TriangleShield::createObjects(Simulation& System)
 	    {
 	      const int mat((i>j) ? roofMat[i] : wallMat[j]);
 
-	      Out=ModelSupport::getComposite(SMap,WI,RI," -3 13 6M -16M ");
-	      System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out+FBStr));
+	      HR=ModelSupport::getHeadRule(SMap,WI,RI,"-3 13 6M -16M");
+	      System.addCell(cellIndex++,mat,0.0,HR*fbHR);
 	      
-	      Out=ModelSupport::getComposite(SMap,WI,RI," 4 -14 6M -16M ");
-	      System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out+FBStr));
+	      HR=ModelSupport::getHeadRule(SMap,WI,RI,"4 -14 6M -16M");
+	      System.addCell(cellIndex++,mat,0.0,HR*fbHR);
 	      WI+=10;
 	    }
 	  RI+=10;
@@ -377,22 +353,20 @@ TriangleShield::createObjects(Simulation& System)
 
   if (endWall>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,WI,FI,RI," 3 -4 5M -6N ");
-      Out+=ModelSupport::getSetComposite(SMap,buildIndex," 1002 1007 " );
-      Out+=backStr;
-      System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,WI,FI,RI,"3 -4 5M -6N");
+      HR*=ModelSupport::getSetHeadRule(SMap,buildIndex,"1002 1007");
+      System.addCell(cellIndex++,defMat,0.0,HR*backHR);
       if (endVoid>Geometry::zeroTol)
 	{
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 1002 -1007 " );
-	  Out+=backStr;
-	  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-	  addCell("Void",cellIndex-1);	  
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1002 -1007");
+	  makeCell("Void",System,cellIndex++,0,0.0,HR*backHR);
 	}
     }
   
   // Outer
-  Out=ModelSupport::getComposite(SMap,WI,FI,RI," 3 -4 5M -6N ");
-  addOuterSurf(Out+frontStr+backStr);
+
+  HR=ModelSupport::getHeadRule(SMap,WI,FI,RI,"3 -4 5M -6N");
+  addOuterSurf(HR*frontHR*backHR);
 
   return;
 }
@@ -423,27 +397,10 @@ TriangleShield::createLinks()
   FixedComp::setLinkSurf(3,SMap.realSurf(WI+4));
   FixedComp::setLinkSurf(4,-SMap.realSurf(FI+5));
   FixedComp::setLinkSurf(5,SMap.realSurf(RI+6));
-
-
-
+  
   return;
 }
   
-
-HeadRule
-TriangleShield::getXSectionIn() const
-  /*!
-    Get the line shield inner void section
-    \return HeadRule of cross-section
-   */
-{
-  ELog::RegMethod RegA("TriangleShield","getXSectionIn");
-  const std::string Out=
-    ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
-  HeadRule HR(Out);
-  HR.populateSurf();
-  return HR;
-}
   
     
 void
@@ -459,17 +416,14 @@ TriangleShield::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("TriangleShield","createAll(FC)");
 
-  ELog::EM<<"Top == "<<keyName<<ELog::endDiag;
   populate(System.getDataBase());
-  ELog::EM<<"POP == "<<keyName<<ELog::endDiag;
-  createUnitVector(FC,FIndex);
+  createCentredUnitVector(FC,FIndex,length/2.0);
   createSurfaces();
-  ELog::EM<<"MID == "<<keyName<<ELog::endDiag;
   createObjects(System);
   createLinks();
-  ELog::EM<<"BADE == "<<keyName<<ELog::endDiag;
+
   insertObjects(System);   
-  ELog::EM<<"NOKEY == "<<keyName<<ELog::endDiag;
+
   return;
 }
   

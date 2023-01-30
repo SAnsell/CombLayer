@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/CylPreMod.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -91,12 +91,11 @@ class CylPreMod : public attachSystem::ContainedGroup,
 
 
   const std::shared_ptr<BlockAddition>& getBox(const char) const;
-  std::string getBoxCut(const char) const;
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
   virtual int getLayerSurf(const size_t,const long int) const;
   virtual std::string getLayerString(const size_t,const long int) const;
 
-
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
     
 };

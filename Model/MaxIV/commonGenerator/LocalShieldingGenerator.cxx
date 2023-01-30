@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonBeam/LocalShieldingGenerator.cxx
+ * File:   commonGenerator/LocalShieldingGenerator.cxx
  *
- * Copyright (c) 2004-2021 by Konstantin Batkov
+ * Copyright (c) 2004-2023 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,10 +50,10 @@ namespace setVariable
 {
 
 LocalShieldingGenerator::LocalShieldingGenerator() :
-  length(10.0),width(60.0),height(40.0),
+  length(10.0),width(60.0),height(40.0),zStep(0.0),
   midHoleWidth(0.0),midHoleHeight(0.0),
   cornerWidth(0.0),cornerHeight(0.0),
-  zStep(0.0),mainMat("Lead"),
+  mainMat("Lead"),
   cType("both"),
   opt("")
   /*!

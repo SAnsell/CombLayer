@@ -3,7 +3,7 @@
  
  * File:   geometry/Cone.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@ Cone::Cone() : Quadratic(),
     and centre on origin
   */
 {
-  setBaseEqn();
+  Cone::setBaseEqn();
 }
 
 Cone::Cone(const int N,const int T) : Quadratic(N,T),
@@ -69,7 +69,7 @@ Cone::Cone(const int N,const int T) : Quadratic(N,T),
     \param T :: Transform number 
   */
 {
-  setBaseEqn();
+  Cone::setBaseEqn();
 }
 
 Cone::Cone(const Cone& A) :Quadratic(A),

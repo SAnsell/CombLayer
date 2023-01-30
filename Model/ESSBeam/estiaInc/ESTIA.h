@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/estia/ESTIA.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,13 @@ namespace attachSystem
   class FixedComp;
   class FixedOffset;
   class CellMap;
+}
+
+namespace beamlineSystem
+{
+  class GuideUnit;
+  class BenderUnit;
+  class PlateUnit;
 }
 
 namespace instrumentSystem
@@ -68,19 +75,19 @@ class ESTIA : public attachSystem::CopiedComp
   std::shared_ptr<attachSystem::FixedRotateUnit> estiaAxis;
 
   /// mirror to end of monolith
-  std::shared_ptr<beamlineSystem::GuideLine> FocusMono;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusMono;
 
   /// Pipe between bunker and the wall
   std::shared_ptr<constructSystem::VacuumPipe> VPipeA;
   /// mirror to end of monolith
-  std::shared_ptr<beamlineSystem::GuideLine> FocusA;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusA;
 
   /// Pipe between bunker and the wall
   std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
   /// Vac box for 
   std::shared_ptr<constructSystem::VacuumBox> VacBoxA;
   /// Elliptic guide from 5.5 to 6metre
-  std::shared_ptr<beamlineSystem::GuideLine> FocusB;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusB;
 
 
   static void
@@ -88,7 +95,7 @@ class ESTIA : public attachSystem::CopiedComp
 		      const attachSystem::FixedComp&,
 		      const constructSystem::VacuumBox&,
 		      constructSystem::VacuumBox&,
-		      beamlineSystem::GuideLine&,
+		      beamlineSystem::GuideUnit&,
 		      essConstruct::DiskChopper&,
 		      constructSystem::ChopperHousing&,
 		      constructSystem::VacuumPipe&);

@@ -25,6 +25,8 @@
 namespace Geometry
 {
 
+  class Quaternion;
+  
 /*!
   \class Plane
   \brief Holds a simple Plane

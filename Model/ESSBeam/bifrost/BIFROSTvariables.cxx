@@ -3,7 +3,7 @@
  
  * File:    ESSBeam/bifrost/BIFROSTvariables.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,7 +82,7 @@ BIFROSTvariables(FuncDataBase& Control)
 
   // extent of beamline
   Control.addVariable("bifrostStopPoint",0);
-  Control.addVariable("bifrostAxisXYAngle",0.0);   // rotation
+  Control.addVariable("bifrostAxisXAngle",0.0);   // rotation
   Control.addVariable("bifrostAxisZAngle",0.0);   // rotation
   Control.addVariable("bifrostAxisZStep",2.0);   // +/- height
 
@@ -234,6 +234,7 @@ BIFROSTvariables(FuncDataBase& Control)
   
   // Shield: leaving bunker
   SGen.generateShield(Control,"bifrostShieldA",6500.0,40.0,40.0,40.0,4,8);
+  Control.addVariable("bifrostShieldAYStep",-4.0);
   // VACUUM PIPE: leaving bunker
   PipeGen.setPipe(6.0,0.5);
   PipeGen.setWindow(-2.0,0.5);

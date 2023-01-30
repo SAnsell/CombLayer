@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/danmax/SqrShield.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -66,8 +66,8 @@ namespace xraySystem
 {
 
 SqrShield::SqrShield(const std::string& Key)  :
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::FrontBackCut(),
@@ -94,7 +94,7 @@ SqrShield::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("SqrShield","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
@@ -152,9 +152,7 @@ SqrShield::getInnerVoid() const
     \return HeadRule of inner void [minus front/back]
    */
 {
-  const std::string Out=ModelSupport::getComposite
-    (SMap,buildIndex," 3 -4 5 -6");  
-  return HeadRule(Out);
+  return ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");  
 }  
 
 
@@ -167,28 +165,25 @@ SqrShield::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("SqrShield","createObjects");
 
-  std::string Out;
-  const std::string frontStr(frontRule());
-  const std::string backStr(backRule());
+  HeadRule HR;
+  const HeadRule frontHR(getFrontRule());
+  const HeadRule backHR(getBackRule());
 
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 13 -14 15 -16 (-3:4:-5:6)");
-  CellMap::makeCell("Inner",System,cellIndex++,skinMat,0.0,
-		    Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"13 -14 15 -16 (-3:4:-5:6)");
+  makeCell("Inner",System,cellIndex++,skinMat,0.0,HR*frontHR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 23 -24 25 -26 (-13:14:-15:16)");
-  CellMap::makeCell("Wall",System,cellIndex++,mat,0.0,
-		    Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"23 -24 25 -26 (-13:14:-15:16)");
+  makeCell("Wall",System,cellIndex++,mat,0.0,HR*frontHR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 33 -34 35 -36 (-23:24:-25:26)");
-  CellMap::makeCell("Outer",System,cellIndex++,skinMat,0.0,
-		    Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				 "33 -34 35 -36 (-23:24:-25:26)");
+  makeCell("Outer",System,cellIndex++,skinMat,0.0,HR*frontHR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 33 -34 35 -36 ");
-  addOuterSurf(Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"33 -34 35 -36");
+  addOuterSurf(HR*frontHR*backHR);
 
   return;
 }

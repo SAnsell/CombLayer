@@ -37,7 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -65,8 +64,8 @@ namespace tdcSystem
 {
 
 SPFCameraShield::SPFCameraShield(const std::string& Key)  :
-  attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,6),
+  attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap()
  /*!
@@ -76,8 +75,8 @@ SPFCameraShield::SPFCameraShield(const std::string& Key)  :
 {}
 
 SPFCameraShield::SPFCameraShield(const SPFCameraShield& A) :
-  attachSystem::ContainedComp(A),
   attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   length(A.length),width(A.width),height(A.height),
@@ -226,75 +225,76 @@ SPFCameraShield::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("SPFCameraShield","createObjects");
 
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  makeCell("Floor",System,cellIndex++,mat,0.0,Out);
+  HeadRule HR;
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  makeCell("Floor",System,cellIndex++,mat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -11 3 -4 6 -16 ");
-  makeCell("SideWallShort",System,cellIndex++,mat,0.0,Out); // lower tier
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -11 3 -4 6 -16");
+  makeCell("SideWallShort",System,cellIndex++,mat,0.0,HR); // lower tier
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -11 13 -14 16 -26 ");
-  makeCell("SideWallShort",System,cellIndex++,mat,0.0,Out); // upper tier
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -11 13 -14 16 -26");
+  makeCell("SideWallShort",System,cellIndex++,mat,0.0,HR); // upper tier
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 14 -4 6 -16 ");
-  makeCell("SideWallLong",System,cellIndex++,mat,0.0,Out); // lower tier, beam line side
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 14 -4 6 -16");
+  makeCell("SideWallLong",System,cellIndex++,mat,0.0,HR); // lower tier, beam line side
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 14 -4 16 -26 ");
-  makeCell("SideWallLong",System,cellIndex++,mat,0.0,Out); // upper tier, beam line side
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 14 -4 16 -26");
+  makeCell("SideWallLong",System,cellIndex++,mat,0.0,HR); // upper tier, beam line side
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 14 -4 16 -26 ");
-  makeCell("OuterVoidLong",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 14 -4 16 -26");
+  makeCell("OuterVoidLong",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -12 13 -3 5 -16 ");
-  makeCell("OuterVoidLong",System,cellIndex++,0,0.0,Out); // lower tier, other side
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -12 13 -3 5 -16");
+  makeCell("OuterVoidLong",System,cellIndex++,0,0.0,HR); // lower tier, other side
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -3 16 -26 ");
-  makeCell("OuterVoidLong",System,cellIndex++,0,0.0,Out); // upper tier, other side
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -3 16 -26");
+  makeCell("OuterVoidLong",System,cellIndex++,0,0.0,HR); // upper tier, other side
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 3 -14 6 -26 ");
-  makeCell("InnerVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 3 -14 6 -26");
+  makeCell("InnerVoid",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 3 -4 5 -6 ");
-  makeCell("OuterVoidFloor",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 3 -4 5 -6");
+  makeCell("OuterVoidFloor",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 103 -104 26 -36 ");
-  makeCell("Roof",System,cellIndex++,mat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 103 -104 26 -36");
+  makeCell("Roof",System,cellIndex++,mat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -12 13 -4 (-101:102:-103:104) 26 -36 ");
-  makeCell("RoofVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -12 13 -4 (-101:102:-103:104) 26 -36");
+  makeCell("RoofVoid",System,cellIndex++,0,0.0,HR);
 
   // legs
-  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -4 201 -1 5 -36 ");
-  makeCell("OuterVoidShort",System,cellIndex++,0,0.0,Out); // above the first leg
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -4 201 -1 5 -36");
+  makeCell("OuterVoidShort",System,cellIndex++,0,0.0,HR); // above the first leg
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -203 201 -12 205 -5 ");
-  makeCell("OuterVoidLegsSide",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -203 201 -12 205 -5");
+  makeCell("OuterVoidLegsSide",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 204 -4 201 -12 205 -5 ");
-  makeCell("OuterVoidLegsSide",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"204 -4 201 -12 205 -5");
+  makeCell("OuterVoidLegsSide",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -211 203 -14 205 -5 ");
-  makeCell("Leg",System,cellIndex++,mat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 211 -221 203 -14 205 -5 ");
-  makeCell("LegVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -211 203 -14 205 -5");
+  makeCell("Leg",System,cellIndex++,mat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"211 -221 203 -14 205 -5");
+  makeCell("LegVoid",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 221 -231 203 -14 205 -5 ");
-  makeCell("Leg",System,cellIndex++,mat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 231 -241 203 -14 205 -5 ");
-  makeCell("LegVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"221 -231 203 -14 205 -5");
+  makeCell("Leg",System,cellIndex++,mat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"231 -241 203 -14 205 -5");
+  makeCell("LegVoid",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 241 -251 203 -14 205 -5 ");
-  makeCell("Leg",System,cellIndex++,mat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 251 -261 203 -14 205 -5 ");
-  makeCell("LegVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"241 -251 203 -14 205 -5");
+  makeCell("Leg",System,cellIndex++,mat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"251 -261 203 -14 205 -5");
+  makeCell("LegVoid",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 261 -271 203 -14 205 -5 ");
-  makeCell("Leg",System,cellIndex++,mat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 271 -12 203 -14 205 -5 ");
-  makeCell("LegVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"261 -271 203 -14 205 -5");
+  makeCell("Leg",System,cellIndex++,mat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"271 -12 203 -14 205 -5");
+  makeCell("LegVoid",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -12 13 -4 5 -36 ");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -12 13 -4 5 -36");
+  addOuterSurf(HR);
 
   return;
 }

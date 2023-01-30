@@ -3,7 +3,7 @@
  
  * File:   commonBeam/BremColl.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -53,7 +52,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -66,7 +65,7 @@ namespace xraySystem
 {
 
 BremColl::BremColl(const std::string& Key) :
-  attachSystem::FixedOffset(Key,2),
+  attachSystem::FixedRotate(Key,2),
   attachSystem::ContainedGroup("Main","Extension"),
   attachSystem::CellMap(),
   attachSystem::ExternalCut()
@@ -77,8 +76,10 @@ BremColl::BremColl(const std::string& Key) :
 {}
 
 BremColl::BremColl(const BremColl& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedGroup(A),
-  attachSystem::CellMap(A),attachSystem::ExternalCut(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedGroup(A),
+  attachSystem::CellMap(A),
+  attachSystem::ExternalCut(A),
   height(A.height),width(A.width),length(A.length),
   wallThick(A.wallThick),innerRadius(A.innerRadius),
   flangeARadius(A.flangeARadius),flangeALength(A.flangeALength),
@@ -103,7 +104,7 @@ BremColl::operator=(const BremColl& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedGroup::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::ExternalCut::operator=(A);
@@ -145,7 +146,7 @@ BremColl::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BremColl","populate");
   
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   // Void + Fe special:
   height=Control.EvalVar<double>(keyName+"Height");
@@ -196,25 +197,6 @@ BremColl::populate(const FuncDataBase& Control)
 
   return;
 }
-
-void
-BremColl::createUnitVector(const attachSystem::FixedComp& FC,
-			   const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("BremColl","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  Origin+=Y*(flangeALength+length/2.0);
-  applyOffset();
-
-  return;
-}
-
 
 void
 BremColl::createSurfaces()
@@ -361,97 +343,97 @@ BremColl::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("BremColl","createObjects");
 
-  const std::string frontSurf(getRuleStr("front"));
-  const std::string backSurf(getRuleStr("back"));
+  const HeadRule frontSurf(getRule("front"));
+  const HeadRule backSurf(getRule("back"));
 
-  std::string Out;
+  HeadRule HR;
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "101 -1001 1003 -1004 1005 -1006 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"101 -1001 1003 -1004 1005 -1006");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "1001 -102 2003 -2004 2005 -2006 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1001 -102 2003 -2004 2005 -2006");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
   // Pre Water:
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 101 -4001 3 -4 5 -6 (-1003: 1004 : -1005: 1006) ");
-  makeCell("Inner",System,cellIndex++,innerMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"101 -4001 3 -4 5 -6 (-1003: 1004 : -1005: 1006)");
+  makeCell("Inner",System,cellIndex++,innerMat,0.0,HR);
 
   // Post Water
-  Out=ModelSupport::getComposite
-      (SMap,buildIndex," 4002 -1001  3 -4 5 -6 (-1003: 1004 : -1005: 1006) ");
-  makeCell("Inner",System,cellIndex++,innerMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+      (SMap,buildIndex,"4002 -1001  3 -4 5 -6 (-1003: 1004 : -1005: 1006)");
+  makeCell("Inner",System,cellIndex++,innerMat,0.0,HR);
 
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1001 -102 3 -4 5 -6 (-2003: 2004 : -2005: 2006)");
-  makeCell("Inner",System,cellIndex++,innerMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1001 -102 3 -4 5 -6 (-2003: 2004 : -2005: 2006)");
+  makeCell("Inner",System,cellIndex++,innerMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"101 -102 13 -14 15 -16 (-3:4:-5:6)");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
 
   // flanges
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 -101 ");
-  makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,Out+frontSurf);
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7  102 3007");
-  makeCell("BackVoid",System,cellIndex++,voidMat,0.0,Out+backSurf);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 -101");
+  makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,HR*frontSurf);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7  102 3007");
+  makeCell("BackVoid",System,cellIndex++,voidMat,0.0,HR*backSurf);
 
   // water cooling
 
   // Part with water
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 4001 -4002 4103 -4104 4006 -4505 "
-     "(-1003: 1004 : -1005: 1006)");
-  makeCell("Inner",System,cellIndex++,innerMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"4001 -4002 4103 -4104 4006 -4505"
+    "(-1003: 1004 : -1005: 1006)");
+  makeCell("Inner",System,cellIndex++,innerMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 4001 -4002 4003 -4004 4005 -4006 ");
-  makeCell("BaseWater",System,cellIndex++,waterMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"4001 -4002 4003 -4004 4005 -4006");
+  makeCell("BaseWater",System,cellIndex++,waterMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 4001 -4002 4003 -4103 4006 -4505 ");
-  makeCell("LeftWater",System,cellIndex++,waterMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"4001 -4002 4003 -4103 4006 -4505");
+  makeCell("LeftWater",System,cellIndex++,waterMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 4001 -4002  4104 -4004 4006 -4505 ");
-  makeCell("RightWater",System,cellIndex++,waterMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"4001 -4002  4104 -4004 4006 -4505");
+  makeCell("RightWater",System,cellIndex++,waterMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 4001 -4002 4003 -4803 4505 -4506 ");
-  makeCell("TopWaterA",System,cellIndex++,waterMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"4001 -4002 4003 -4803 4505 -4506");
+  makeCell("TopWaterA",System,cellIndex++,waterMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 4001 -4002  4804 -4004 4505 -4506 ");
-  makeCell("TopWaterB",System,cellIndex++,waterMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"4001 -4002  4804 -4004 4505 -4506");
+  makeCell("TopWaterB",System,cellIndex++,waterMat,0.0,HR);
 
   // Outer layer on water
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 4001 -4002 3 -4 5 -6 (-4003:4004:-4005:4506) ");
-  makeCell("Inner",System,cellIndex++,innerMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"4001 -4002 3 -4 5 -6 (-4003:4004:-4005:4506)");
+  makeCell("Inner",System,cellIndex++,innerMat,0.0,HR);
 
   // Mid Gap
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 4001 -4002 4803 -4804 4505  -4506 ");
-  makeCell("Inner",System,cellIndex++,innerMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"4001 -4002 4803 -4804 4505  -4506");
+  makeCell("Inner",System,cellIndex++,innerMat,0.0,HR);
   
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," -17 7 -101 ");
-  makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,Out+frontSurf);
-  Out=ModelSupport::getComposite(SMap,buildIndex," -27 7 102 ");
-  makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,Out+backSurf);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 7 -101");
+  makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,HR*frontSurf);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 7 102");
+  makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,HR*backSurf);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 13 -14 15 -16");
-  addOuterSurf("Main",Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," -17 -101 ");
-  addOuterUnionSurf("Main",Out+frontSurf);
-  Out=ModelSupport::getComposite(SMap,buildIndex," -27 102 ");
-  addOuterUnionSurf("Main",Out+backSurf);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 13 -14 15 -16");
+  addOuterSurf("Main",HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 -101");
+  addOuterUnionSurf("Main",HR*frontSurf);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 102");
+  addOuterUnionSurf("Main",HR*backSurf);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -3002 -3007  ");
-  addOuterSurf("Extension",Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-3002 -3007");
+  addOuterSurf("Extension",HR);
 
   return;
 }
@@ -488,15 +470,15 @@ BremColl::createExtension(Simulation& System,
 {
   ELog::RegMethod RegA("BremColl","createEntension");
   
-  std::string Out;
+  HeadRule HR;
   // Extension
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -3007 102 -3002 (-3003 : 3004 : -3005 : 3006)");
-  makeCell("Extension",System,cellIndex++,innerMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-3007 102 -3002 (-3003 : 3004 : -3005 : 3006)");
+  makeCell("Extension",System,cellIndex++,innerMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -3007 102 -3002 3003 -3004 3005 -3006 ");
-  makeCell("ExtVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-3007 102 -3002 3003 -3004 3005 -3006");
+  makeCell("ExtVoid",System,cellIndex++,voidMat,0.0,HR);
 
   this->insertInCell("Extension",System,insertCell);
   return;
@@ -518,7 +500,7 @@ BremColl::createAll(Simulation& System,
   ELog::RegMethod RegA("BremColl","createAll(FC)");
 
   populate(System.getDataBase());
-  createUnitVector(FC,FIndex);
+  createCentredUnitVector(FC,FIndex,flangeALength+length/2.0);
   createSurfaces();    
   createObjects(System);
   

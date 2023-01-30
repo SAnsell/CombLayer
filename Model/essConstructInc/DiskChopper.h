@@ -75,7 +75,7 @@ class DiskChopper :
 
   /// Access centre flag
   void setCentreFlag(const int C) { centreFlag=C; }
-  /// Access centre flag
+  /// Access offset flag
   void setOffsetFlag(const int O) { offsetFlag=O; }
 
   using attachSystem::FixedComp::createAll;

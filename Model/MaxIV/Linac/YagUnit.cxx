@@ -3,7 +3,7 @@
  
  * File:   Linac/YagUnit.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -223,83 +222,83 @@ YagUnit::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("YagUnit","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   
-  const std::string frontStr=getRuleStr("front");
-  const std::string backStr=getRuleStr("back");
+  const HeadRule frontHR=getRule("front");
+  const HeadRule backHR=getRule("back");
 
   // inner void
-  Out=ModelSupport::getComposite(SMap,buildIndex," 105 -106 -7 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"105 -106 -7");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 105 -106 7 -17 307 (200:207) ");
-  makeCell("Tube",System,cellIndex++,mainMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"105 -106 7 -17 307 (200:207)");
+  makeCell("Tube",System,cellIndex++,mainMat,0.0,HR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," 105 -115 17 -107 ");
-  makeCell("FlangeA",System,cellIndex++,mainMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"105 -115 17 -107");
+  makeCell("FlangeA",System,cellIndex++,mainMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 155 -105 -107 ");
-  makeCell("PlateA",System,cellIndex++,mainMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"155 -105 -107");
+  makeCell("PlateA",System,cellIndex++,mainMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -106 116 17 -107 ");
-  makeCell("FlangeB",System,cellIndex++,mainMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-106 116 17 -107");
+  makeCell("FlangeB",System,cellIndex++,mainMat,0.0,HR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," -156 106 -107 ");
-  makeCell("PlateB",System,cellIndex++,mainMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-156 106 -107");
+  makeCell("PlateB",System,cellIndex++,mainMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 115 -116 327 17 -107 (200:227)");
-  makeCell("OutTube",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"115 -116 327 17 -107 (200:227)");
+  makeCell("OutTube",System,cellIndex++,0,0.0,HR);
 
   // view
-  Out=ModelSupport::getComposite(SMap,buildIndex," 307 7 -200 -207 203");
-  makeCell("viewVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"307 7 -200 -207 203");
+  makeCell("viewVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 317 17 -200 -217 207 203");
-  makeCell("viewTube",System,cellIndex++,mainMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"317 17 -200 -217 207 203");
+  makeCell("viewTube",System,cellIndex++,mainMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -227 217 203 -213");
-  makeCell("viewFlange",System,cellIndex++,mainMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-227 217 203 -213");
+  makeCell("viewFlange",System,cellIndex++,mainMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -227 -203 253 ");
-  makeCell("viewPlate",System,cellIndex++,mainMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-227 -203 253");
+  makeCell("viewPlate",System,cellIndex++,mainMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 217 -227 -200 17 213 327");
-  makeCell("viewOut",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"217 -227 -200 17 213 327");
+  makeCell("viewOut",System,cellIndex++,0,0.0,HR);
 
 
   // view 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -100 7 -307 ");
-  makeCell("frontPort",System,cellIndex++,voidMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 7 -307");
+  makeCell("frontPort",System,cellIndex++,voidMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," (207:200) -100 17 307 -317 ");
-  makeCell("frontWall",System,cellIndex++,mainMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(207:200) -100 17 307 -317");
+  makeCell("frontWall",System,cellIndex++,mainMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -411 -327 317 ");
-  makeCell("frontFlange",System,cellIndex++,mainMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-411 -327 317");
+  makeCell("frontFlange",System,cellIndex++,mainMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," (217:200) 411 -100 17 -327 317 ");
-  makeCell("frontOut",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"(217:200) 411 -100 17 -327 317");
+  makeCell("frontOut",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 100 7 -307 ");
-  makeCell("backPort",System,cellIndex++,voidMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 7 -307");
+  makeCell("backPort",System,cellIndex++,voidMat,0.0,HR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," (207:200) 100 17 307 -317 ");
-  makeCell("backWall",System,cellIndex++,mainMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(207:200) 100 17 307 -317");
+  makeCell("backWall",System,cellIndex++,mainMat,0.0,HR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 512 -327 317 ");
-  makeCell("backFlange",System,cellIndex++,mainMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"512 -327 317");
+  makeCell("backFlange",System,cellIndex++,mainMat,0.0,HR*backHR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," (217:200) -512 100 17 -327 317 ");
-  makeCell("backOut",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"(217:200) -512 100 17 -327 317");
+  makeCell("backOut",System,cellIndex++,0,0.0,HR);
 
   // outer void box:
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 155 -156 253 (-327 : -107 : (-227 -200)) ");
-  addOuterSurf(Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"155 -156 253 (-327 : -107 : (-227 -200))");
+  addOuterSurf(HR*frontHR*backHR);
   
   return;
 }

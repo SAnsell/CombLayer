@@ -77,8 +77,8 @@ namespace essSystem
 {
 
 GuideBay::GuideBay(const std::string& Key,const size_t BN)  :
-  attachSystem::ContainedGroup("Inner","Outer"),
   attachSystem::FixedRotate(Key+std::to_string(BN),6),
+  attachSystem::ContainedGroup("Inner","Outer"),
   attachSystem::CellMap(),
   baseKey(Key),bayNumber(BN),
   nItems(0)
@@ -89,7 +89,8 @@ GuideBay::GuideBay(const std::string& Key,const size_t BN)  :
 {}
 
 GuideBay::GuideBay(const GuideBay& A) : 
-  attachSystem::ContainedGroup(A),attachSystem::FixedRotate(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedGroup(A),
   attachSystem::CellMap(A),
   baseKey(A.baseKey),bayNumber(A.bayNumber),
   viewAngle(A.viewAngle),innerHeight(A.innerHeight),
@@ -112,8 +113,8 @@ GuideBay::operator=(const GuideBay& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedRotate::operator=(A);
+      attachSystem::ContainedGroup::operator=(A);
       attachSystem::CellMap::operator=(A);
       viewAngle=A.viewAngle;
       innerHeight=A.innerHeight;
@@ -248,16 +249,14 @@ GuideBay::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("GuideBay","createObjects");
 
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 7 -17 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
-  CellMap::addCell("Inner",cellIndex-1);
-  addOuterSurf("Inner",Out);
+  HeadRule HR;
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 7 -17 3 -4 5 -6");
+  makeCell("Inner",System,cellIndex++,mat,0.0,HR);
+  addOuterSurf("Inner",HR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 17 -27 3 -4 15 -16 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
-  CellMap::addCell("Outer",cellIndex-1);
-  addOuterSurf("Outer",Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 17 -27 3 -4 15 -16");
+  makeCell("Outer",System,cellIndex++,mat,0.0,HR);
+  addOuterSurf("Outer",HR);
 
   return;
 }
@@ -327,10 +326,8 @@ GuideBay::outerMerge(Simulation& System,
   const double temp=AB->getTemp();
   System.removeCell(AB->getName());
   System.removeCell(BB->getName());
-  System.addCell(MonteCarlo::Object(cellIndex++,mat,temp,
-				   ARule.display()));
+  makeCell("Outer",System,cellIndex++,mat,temp,ARule);
   // NOW RESET names in cellMap:
-  setCell("Outer",cellIndex-1);
   otherBay.setCell("Outer",cellIndex-1);
   return;
 }

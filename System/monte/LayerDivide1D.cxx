@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/LayerDivide1D.cxx
+ * File:   monte/LayerDivide1D.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,6 @@
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "stringCombine.h"
 #include "Vec3D.h"
 #include "Surface.h"
 #include "surfRegister.h"
@@ -225,13 +224,13 @@ LayerDivide1D::setIndexNames(const std::string& A)
 }
   
 void
-LayerDivide1D::setDivider(const std::string& SurfStr)
+LayerDivide1D::setDivider(const HeadRule& SurfHR)
   /*!
     Set the divider string
-    \param SurfStr :: Divider String
+    \param SurfHR :: Divider rule
   */
 {
-  divider=SurfStr;
+  dividerHR=SurfHR;
   return;
 }
   
@@ -300,7 +299,7 @@ int
 LayerDivide1D::setMaterialXML(const std::string& LFile,
 			      const std::string& ObjName,
 			      const std::string& OutName,
-			      const std::string& DefMat)
+			      const std::string&)
   /*!
     Processes the material setting 
     \param LFile :: Load file name
@@ -340,17 +339,16 @@ LayerDivide1D::divideCell(Simulation& System,const int cellN)
 
   ALen=processSurface(AWall,AFrac);
 
-  std::string Out;
   int aIndex(buildIndex);
   for(size_t i=0;i<ALen;i++,aIndex++)
     {
-      const std::string layerNum(StrFunc::makeString(i));
-      const std::string ACut=
-        ModelSupport::getComposite(SMap,aIndex,"1 -2");
+      const std::string layerNum(std::to_string(i));
+      const HeadRule ACutHR=
+        ModelSupport::getHeadRule(SMap,aIndex,"1 -2");
       
       const int Mat(AMat[i]);
-      CellMap::makeCell("LD1:"+layerNum,System,cellIndex++,Mat,0.0,
-			ACut+divider);
+      makeCell("LD1:"+layerNum,System,cellIndex++,Mat,0.0,
+	       ACutHR*dividerHR);
     }
   System.removeCell(cellN);
 

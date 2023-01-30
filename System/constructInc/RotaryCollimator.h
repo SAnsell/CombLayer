@@ -3,7 +3,7 @@
  
  * File:   constructInc/RotaryCollimator.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@ class Simulation;
 namespace constructSystem
 {
   class HoleShape;
+  class CentredHoleShape;
 /*!
   \class RotaryCollimator
   \version 1.0
@@ -35,11 +36,12 @@ namespace constructSystem
   \brief RotaryCollimator [insert object]
 */
 
-class RotaryCollimator : public attachSystem::ContainedComp,
-  public attachSystem::FixedGroup,public attachSystem::CellMap
+class RotaryCollimator :
+    public attachSystem::FixedGroup,
+    public attachSystem::ContainedComp,
+    public attachSystem::CellMap
 {
  private:
-  
   
   double xyAngle;           ///< Angle relative to LC 
   double zAngle;            ///< Angle relative LC 
@@ -63,7 +65,7 @@ class RotaryCollimator : public attachSystem::ContainedComp,
   
   size_t nHole;           ///< number of holes
   size_t nLayers;         ///< number of layers
-  std::vector<std::shared_ptr<HoleShape>> Holes;  ///< Holes
+  std::vector<std::shared_ptr<CentredHoleShape>> Holes;  ///< Holes
 
   std::vector<double> cFrac;    ///< coll Layer thicknesss (fractions)
   std::vector<int> cMat;        ///< coll Layer materials

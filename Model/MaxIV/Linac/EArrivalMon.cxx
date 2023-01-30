@@ -3,7 +3,7 @@
 
  * File:   Linac/EArrivalMon.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -52,7 +51,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
@@ -66,7 +65,7 @@ namespace tdcSystem
 {
 
 EArrivalMon::EArrivalMon(const std::string& Key) :
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::FrontBackCut(),
   attachSystem::CellMap(),
@@ -93,7 +92,7 @@ EArrivalMon::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("EArrivalMon","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   radius=Control.EvalVar<double>(keyName+"Radius");
   length=Control.EvalVar<double>(keyName+"Length");
@@ -215,72 +214,71 @@ EArrivalMon::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("EArrivalMon","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
-  const std::string frontStr=getRuleStr("front");
-  const std::string backStr=getRuleStr("back");
+  const HeadRule frontHR=getRule("front");
+  const HeadRule backHR=getRule("back");
   // inner void
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 11 -12 -7 (117:151) (217:-152) ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				"11 -12 -7 (117:151) (217:-152)");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 7 -17 (507:-500)");
-  makeCell("Wall",System,cellIndex++,mainMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 7 -17 (507:-500)");
+  makeCell("Wall",System,cellIndex++,mainMat,0.0,HR);
 
   // front plate
-  Out=ModelSupport::getComposite(SMap,buildIndex," -11 21 117 -17 ");
-  makeCell("FPlate",System,cellIndex++,mainMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 21 117 -17");
+  makeCell("FPlate",System,cellIndex++,mainMat,0.0,HR);
 
   // back plate
-  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -22 217 -17 ");
-  makeCell("BPlate",System,cellIndex++,mainMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -22 217 -17");
+  makeCell("BPlate",System,cellIndex++,mainMat,0.0,HR);
 
   // front Main pipe
-  Out=ModelSupport::getComposite(SMap,buildIndex," -151  -107 ");
-  makeCell("FPipeVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-151  -107");
+  makeCell("FPipeVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -151 107 -117");
-  makeCell("FPipe",System,cellIndex++,mainMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-151 107 -117");
+  makeCell("FPipe",System,cellIndex++,mainMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -101 117 -307 ");
-  makeCell("FFlange",System,cellIndex++,flangeMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 117 -307");
+  makeCell("FFlange",System,cellIndex++,flangeMat,0.0,HR*frontHR);
 
 
   // back Main pipe
-  Out=ModelSupport::getComposite(SMap,buildIndex," 152 -207 ");
-  makeCell("BPipeVoid",System,cellIndex++,voidMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"152 -207");
+  makeCell("BPipeVoid",System,cellIndex++,voidMat,0.0,HR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 152 207 -217");
-  makeCell("BPipe",System,cellIndex++,mainMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"152 207 -217");
+  makeCell("BPipe",System,cellIndex++,mainMat,0.0,HR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 102 217 -307 ");
-  makeCell("BFlange",System,cellIndex++,flangeMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 217 -307");
+  makeCell("BFlange",System,cellIndex++,flangeMat,0.0,HR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -21 101 -307 117 ");
-  makeCell("AFlangeOut",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-21 101 -307 117");
+  makeCell("AFlangeOut",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 22 -102 -307 117 ");
-  makeCell("BFlangeOut",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"22 -102 -307 117");
+  makeCell("BFlangeOut",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -21 -17 307  ");
-  makeCell("AOut",System,cellIndex++,0,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-21 -17 307 ");
+  makeCell("AOut",System,cellIndex++,0,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 22 -17 307  ");
-  makeCell("BOut",System,cellIndex++,0,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"22 -17 307 ");
+  makeCell("BOut",System,cellIndex++,0,0.0,HR*backHR);
 
   // window
-  Out=ModelSupport::getComposite(SMap,buildIndex,"501 -502 -507 ");
-  makeCell("Window",System,cellIndex++,windowMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"501 -502 -507");
+  makeCell("Window",System,cellIndex++,windowMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 500 -501 7 -507 ");
-  makeCell("WindowVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"500 -501 7 -507");
+  makeCell("WindowVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 502 -17 -507 ");
-  makeCell("WindowOut",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"502 -17 -507");
+  makeCell("WindowOut",System,cellIndex++,0,0.0,HR);
 
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," -17  ");
-  addOuterSurf(Out+frontStr+backStr);
+  HR=HeadRule(SMap,buildIndex,-17);
+  addOuterSurf(HR*frontHR*backHR);
 
   return;
 }

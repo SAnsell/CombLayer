@@ -343,10 +343,10 @@ R1Ring::createFloor(Simulation& System)
    */
 {
   ELog::RegMethod RegA("R1Ring","createFloor");
-  std::string Out;
+  HeadRule HR;
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-9007 -5 15 ");
-  makeCell("Floor",System,cellIndex++,floorMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-9007 -5 15");
+  makeCell("Floor",System,cellIndex++,floorMat,0.0,HR);
   return;
 }
 
@@ -360,13 +360,13 @@ R1Ring::createRoof(Simulation& System)
 {
   ELog::RegMethod RegA("R1Ring","createRoof");
 
-  std::string Out;
+  HeadRule HR;
   
 
-  const std::string TBase=
-    ModelSupport::getComposite(SMap,buildIndex," 6 -16 ");
-  const std::string EBase=
-    ModelSupport::getComposite(SMap,buildIndex," 16 -26 ");
+  const HeadRule TBase=
+    ModelSupport::getHeadRule(SMap,buildIndex,"6 -16");
+  const HeadRule EBase=
+    ModelSupport::getHeadRule(SMap,buildIndex,"16 -26");
 
     // Create inner voids
   std::ostringstream unitCX;
@@ -377,11 +377,11 @@ R1Ring::createRoof(Simulation& System)
       surfN+=10;
     }
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,unitCX.str());
-  Out+=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,unitCX.str());
+  HR*=ModelSupport::getHeadRule
     (SMap,buildIndex,"(103:113:123:133:143:153)");
-  makeCell("InnerRoof",System,cellIndex++,roofMat,0.0,Out+TBase);
-  makeCell("InnerExtra",System,cellIndex++,0,0.0,Out+EBase);  
+  makeCell("InnerRoof",System,cellIndex++,roofMat,0.0,HR*TBase);
+  makeCell("InnerExtra",System,cellIndex++,0,0.0,HR*EBase);  
   
   return;
 }
@@ -633,7 +633,8 @@ R1Ring::createDoor(Simulation& System)
 	("floor",SurfMap::getSurf("Floor"));
 
       doorPtr->addAllInsertCell(getCell("Wall",doorActive % 10));
-      const std::string linkName="OpticCentre"+std::to_string(doorActive+2);
+      const std::string linkName="OpticCentre"+
+	std::to_string((doorActive+2) % 10);
       doorPtr->createAll(System,*this,linkName);
     }
   return;

@@ -62,7 +62,6 @@ class JawValveBase :
   int wallMat;                  ///< Pipe material
   
   virtual void populate(const FuncDataBase&);
-  virtual void createUnitVector(const attachSystem::FixedComp&,const long int);
   virtual void createSurfaces();
   virtual void createObjects(Simulation&) =0;
   void createOuterObjects(Simulation&);

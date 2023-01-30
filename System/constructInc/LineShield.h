@@ -3,7 +3,7 @@
  
  * File:   constructInc/LineShield.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,18 +38,10 @@ namespace constructSystem
 class LineShield :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
+  public attachSystem::FrontBackCut,
   public attachSystem::CellMap
 {
- private:
-  
-
-  bool activeFront;             ///< Flag for front active
-  bool activeBack;              ///< Flag for back active
-
-  HeadRule frontSurf;           ///< Front surfaces [if used]
-  HeadRule frontCut;            ///< front divider surfaces [if used]
-  HeadRule backSurf;            ///< Back surfaces [if used]
-  HeadRule backCut;             ///< Back surfaces [if used]
+ private:  
   
   double length;                ///< void length [total]
   double left;                  ///< total left width
@@ -73,11 +65,9 @@ class LineShield :
   std::vector<double> floorFrac;      ///< Layer thicknesss 
   std::vector<int> floorMat;          ///< Layer materials
 
-
   void removeFrontOverLap();
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -89,11 +79,9 @@ class LineShield :
   LineShield& operator=(const LineShield&);
   virtual ~LineShield();
 
-
   HeadRule getXSectionIn() const;
-  void setFront(const attachSystem::FixedComp&,const long int);
-  void setBack(const attachSystem::FixedComp&,const long int);
-  
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

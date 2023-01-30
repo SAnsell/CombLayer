@@ -56,6 +56,7 @@
 #include "FixedUnit.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -138,27 +139,9 @@ BeElement::populate(const FuncDataBase& Control)
 }
 
 void
-BeElement::createUnitVector(const attachSystem::FixedComp& FC,
-                            const Geometry::Vec3D& OG)
-  /*!
-    Create the unit vectors
-    - Y from FC
-    \param FC :: Reactor Grid Unit
-    \param OG :: Origin
-  */
-{
-  ELog::RegMethod RegA("BeElement","createUnitVector");
-
-  attachSystem::FixedComp::createUnitVector(FC);
-  Origin=OG;
-  return;
-}
-
-void
-BeElement::createSurfaces(const attachSystem::FixedComp& RG)
+BeElement::createSurfaces()
   /*!
     Creates/duplicates the surfaces for this block
-    \param RG :: Reactor grid
   */
 {  
   ELog::RegMethod RegA("BeElement","createSurface");
@@ -170,8 +153,6 @@ BeElement::createSurfaces(const attachSystem::FixedComp& RG)
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*Width/2.0,X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*Width/2.0,X);
   ModelSupport::buildPlane(SMap,buildIndex+6,Z*TopHeight,Z);
-
-  SMap.addMatch(buildIndex+5,RG.getLinkSurf(5));
 
   return;
 }
@@ -185,10 +166,11 @@ BeElement::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("BeElement","createObjects");
 
+  const HeadRule& baseHR=getRule("BasePlate");
   HeadRule HR;
   // Outer Layers
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
-  makeCell("Main",System,cellIndex++,beMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 -6");
+  makeCell("Main",System,cellIndex++,beMat,0.0,HR*baseHR);
 
   addOuterSurf(HR);      
   return;
@@ -257,25 +239,24 @@ BeElement::layerProcess(Simulation& System,
 void
 BeElement::createAll(Simulation& System,
                      const attachSystem::FixedComp& RG,
-		     const Geometry::Vec3D& OG,
-		     const FuelLoad& FuelSystem)
+		     const long int sideIndex)
   /*!
     Creation of the Be-Reflector unit
     \param System :: Simulation to add component to
     \param RG :: Fixed Unit
-    \param OG :: Origin
-    \param FuelSystem :: XML input form for material burnup
+    \param sideIndex :: Link index
   */
 {
   ELog::RegMethod RegA("BeElement","createAll");
 
   populate(System.getDataBase());
 
-  createUnitVector(RG,OG);
-  createSurfaces(RG);
+  createUnitVector(RG,sideIndex);
+  createSurfaces();
   createObjects(System);
   createLinks();
-  layerProcess(System,FuelSystem);
+  if (FuelPtr)
+    layerProcess(System,*FuelPtr);
   insertObjects(System);       
 
   return;

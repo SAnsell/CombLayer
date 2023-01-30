@@ -36,8 +36,8 @@ namespace moderatorSystem
 */
 
 class VanePoison :
-    public attachSystem::ContainedComp,
-    public attachSystem::FixedRotate
+    public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp
 {
   private:
 

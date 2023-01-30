@@ -3,7 +3,7 @@
  
  * File:   insertUnit/insertObject.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,9 +63,10 @@ namespace insertSystem
 {
 
 insertObject::insertObject(const std::string& Key)  :
-  attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,6),
-  attachSystem::CellMap(),attachSystem::SurfMap(),
+  attachSystem::ContainedComp(),
+  attachSystem::CellMap(),
+  attachSystem::SurfMap(),
   attachSystem::FrontBackCut(),
   populated(0),defMat(0),delayInsert(0)
   /*!
@@ -76,9 +77,10 @@ insertObject::insertObject(const std::string& Key)  :
 
 insertObject::insertObject(const std::string& baseKey,
 			   const std::string& Key)  :
-  attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,6),
-  attachSystem::CellMap(),attachSystem::SurfMap(),
+  attachSystem::ContainedComp(),
+  attachSystem::CellMap(),
+  attachSystem::SurfMap(),
   attachSystem::FrontBackCut(),
   baseName(baseKey),populated(0),defMat(0),delayInsert(0)
   /*!
@@ -87,9 +89,11 @@ insertObject::insertObject(const std::string& baseKey,
   */
 {}
 
-insertObject::insertObject(const insertObject& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedRotate(A),
-  attachSystem::CellMap(A),attachSystem::SurfMap(A),
+insertObject::insertObject(const insertObject& A) :  
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
+  attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
   baseName(A.baseName),populated(A.populated),
   defMat(A.defMat),delayInsert(A.delayInsert)
@@ -109,11 +113,11 @@ insertObject::operator=(const insertObject& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedRotate::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
-      cellIndex=A.cellIndex;
+      attachSystem::FrontBackCut::operator=(A);
       populated=A.populated;
       defMat=A.defMat;
       delayInsert=A.delayInsert;
@@ -140,7 +144,7 @@ insertObject::populate(const FuncDataBase& Control)
     {
       FixedRotate::populate(baseName,Control);      
       defMat=ModelSupport::EvalMat<int>
-	(Control,keyName+"DefMat",baseName+"DefMat");
+	(Control,keyName+"Mat",baseName+"Mat");
       populated=1;
     }
   return;

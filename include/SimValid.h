@@ -3,7 +3,7 @@
  
  * File:   include/SimValid.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,11 @@
 #ifndef ModelSupport_SimValid_h
 #define ModelSupport_SimValid_h
 
+namespace Geometry
+{
+  class Cylinder;
+  class Plane;
+}
 
 namespace ModelSupport
 {
@@ -64,10 +69,15 @@ struct simPoint
 	}
       return *this;
     }
-
-
 };
 
+struct touchUnit
+{
+  const Geometry::Cylinder* CPtr;
+  const Geometry::Plane* PPtr;
+  std::vector<Geometry::Vec3D> bPoints;
+};
+  
 /*!
   \class SimValid
   \brief Applies simple test to a simulation to check validity
@@ -84,7 +94,19 @@ class SimValid
 
   void diagnostics(const Simulation&,
 		   const std::vector<simPoint>&) const;
+
+  static bool nextPoint(const std::vector<Geometry::Vec3D>&,
+			size_t&,size_t&,size_t&,
+			Geometry::Vec3D&);
+
+  static bool checkPoint(const Geometry::Vec3D&,
+			  const std::set<const MonteCarlo::Object*>&,
+			  const int,const int);
   
+  static bool findTouch(const MonteCarlo::Object*,
+			const Geometry::Cylinder*,
+			const Geometry::Plane*,
+			std::vector<Geometry::Vec3D>&);
  public:
   
   SimValid();
@@ -96,6 +118,9 @@ class SimValid
   void setCentre(const Geometry::Vec3D& C) { Centre=C;} 
 
   static int checkPoint(const Simulation&,const Geometry::Vec3D&);
+
+  void calcTouch(const Simulation&) const;
+
   // MAIN RUN:
   int runPoint(const Simulation&,const Geometry::Vec3D&,const size_t) const;
   

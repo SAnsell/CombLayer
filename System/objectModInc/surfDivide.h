@@ -30,6 +30,12 @@ namespace attachSystem
   class CellMap;
 }
 
+namespace Geometry
+{
+  class Plane;
+  class Cylinder;
+}
+
 namespace MonteCarlo
 {
   class Object;

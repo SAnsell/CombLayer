@@ -61,7 +61,8 @@ namespace moderatorSystem
 {
 
 VanePoison::VanePoison(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedRotate(Key,6)
+  attachSystem::FixedRotate(Key,6),
+  attachSystem::ContainedComp()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -69,8 +70,8 @@ VanePoison::VanePoison(const std::string& Key)  :
 {}
   
 VanePoison::VanePoison(const VanePoison& A) : 
-  attachSystem::ContainedComp(A),
   attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
   nBlades(A.nBlades),bWidth(A.bWidth),absThick(A.absThick),
   bGap(A.bGap),yLength(A.yLength),zLength(A.zLength),
   modTemp(A.modTemp),modMat(A.modMat),bladeMat(A.bladeMat),
@@ -91,8 +92,8 @@ VanePoison::operator=(const VanePoison& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedRotate::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
       nBlades=A.nBlades;
       bWidth=A.bWidth;
       absThick=A.absThick;
@@ -210,54 +211,49 @@ VanePoison::createObjects(Simulation& System,
   */
 {
   ELog::RegMethod RegA("VanePoison","createObjects");
-  std::string yFront,yBack,zBase,zTop;
 
+  HeadRule yFront,yBack,zBase,zTop;
+
+  HeadRule HR;
   yFront= (std::abs(yStep)>Geometry::zeroTol) ?
-    ModelSupport::getComposite(SMap,buildIndex," 11 ") :
-    FC.getLinkString(linkPt);
-  yBack=ModelSupport::getComposite(SMap,buildIndex," -12 ");
+    HeadRule(SMap,buildIndex,11) :  FC.getFullRule(linkPt);
+  yBack=HeadRule(SMap,buildIndex,-12);
 
   if (zLength>Geometry::zeroTol)
     {
-      zBase=ModelSupport::getComposite(SMap,buildIndex," 15 ");
-      zTop=ModelSupport::getComposite(SMap,buildIndex," -16 ");
+      zBase=HeadRule(SMap,buildIndex,15);
+      zTop=HeadRule(SMap,buildIndex,-16);
     }
   else
     {
-      long int zUp(static_cast<long int>(FC.findLinkAxis(Z)));
-      long int zDown(static_cast<long int>(FC.findLinkAxis(-Z)));
+      long int zUp=FC.findLinkAxis(Z);
+      long int zDown=FC.findLinkAxis(-Z);
       if (zUp<6) zUp+=6;
       if (zDown<6) zDown+=6;
-      if (zUp>5)                 // Inner points are reversed
-	std::swap(zUp,zDown);      
 
-      zBase=FC.getLinkString(zDown+1);
-      zTop=FC.getLinkString(zUp+1);
+      // INNER Points are REVERSED!!!
+      zBase=FC.getFullRule(zUp);
+      zTop=FC.getFullRule(zDown);
     }
-
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 ");
-  Out+=zBase+zTop+yBack+yFront;
-  addOuterSurf(Out);
+  const HeadRule combineHR=zTop*yBack*yFront*zBase;
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14");
+  addOuterSurf(HR*combineHR);
 
   int surfN(buildIndex+100);
   for(size_t i=0;i<nBlades;i++)
     {
       // inner abs:
-      Out=ModelSupport::getComposite(SMap,surfN," 11 -12 ");
-      Out+=zBase+zTop+yBack+yFront;
-      System.addCell(MonteCarlo::Object(cellIndex++,absMat,modTemp,Out));      
+      HR=ModelSupport::getHeadRule(SMap,surfN,"11 -12");
+      System.addCell(cellIndex++,absMat,modTemp,HR*combineHR);      
       // Blade
-      Out=ModelSupport::getComposite(SMap,surfN," 1 -2 (-11:12) ");
-      Out+=zBase+zTop+yBack+yFront;
-      System.addCell(MonteCarlo::Object(cellIndex++,bladeMat,modTemp,Out));      
+      HR=ModelSupport::getHeadRule(SMap,surfN,"1 -2 (-11:12)");
+      System.addCell(cellIndex++,bladeMat,modTemp,HR*combineHR);      
       
       // Inner moderator material
       if (i)
 	{
-	  Out=ModelSupport::getComposite(SMap,surfN-100," 2 -101 ");
-	  Out+=zBase+zTop+yBack+yFront;
-	  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
+	  HR=ModelSupport::getHeadRule(SMap,surfN-100,"2 -101");
+	  System.addCell(cellIndex++,modMat,modTemp,HR*combineHR);
 	}
       surfN+=100;
     }

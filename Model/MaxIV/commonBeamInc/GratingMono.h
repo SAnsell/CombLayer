@@ -36,8 +36,8 @@ namespace xraySystem
 */
 
 class GratingMono :
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {

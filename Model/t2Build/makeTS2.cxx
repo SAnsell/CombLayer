@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   moderator/makeTS2.cxx
+ * File:   t2Build/makeTS2.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
  *
@@ -125,12 +125,6 @@ makeTS2::build(Simulation* SimPtr,
 
   
   /*
-  moderatorSystem::makeTS2Bulk bulkObj;
-  moderatorSystem::makeReflector refObj;
-  
-
-  bulkObj.build(SimPtr,IParam,excludeCell);
-  refObj.build(*SimPtr,IParam,excludeCell);
   
 
   // this needs to be SELECTED

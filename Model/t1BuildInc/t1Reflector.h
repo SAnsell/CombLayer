@@ -46,8 +46,8 @@ namespace ts1System
 */
 
 class t1Reflector :
-    public attachSystem::ContainedComp,
     public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
     public attachSystem::CellMap
 {
  private:
@@ -81,12 +81,13 @@ class t1Reflector :
   t1Reflector& operator=(const t1Reflector&);
   virtual ~t1Reflector();
 
-  std::string getComposite(const std::string&) const;
+  HeadRule getHeadRule(const std::string&) const;
 
   void createBoxes(Simulation&,const std::string&);
   void createRods(Simulation&);
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,
+  void createAll(Simulation&,
+		 const attachSystem::FixedComp&,
 		 const long int);
 
 };

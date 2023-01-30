@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/Chicane.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2022 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,9 +86,10 @@ public:
   \brief Chicane
 */
 
-class Chicane : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
-  public attachSystem::FrontBackCut
+class Chicane :
+    public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
+    public attachSystem::FrontBackCut
 {
  private:
 
@@ -96,8 +97,7 @@ class Chicane : public attachSystem::ContainedComp,
   std::vector<chicaneUnit> CUnits; ///< Chicane units.
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
+  using FixedRotate::createUnitVector;
   void createUnitVector(const Bunker&,const size_t);
   
   void createSurfaces();
@@ -110,10 +110,13 @@ class Chicane : public attachSystem::ContainedComp,
   Chicane(const Chicane&);
   Chicane& operator=(const Chicane&);
   virtual ~Chicane();
-  
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
-  void createAll(Simulation&,const Bunker&,const size_t);
+
+
+  void buildAll(Simulation&,const Bunker&,const size_t);
+
+  using FixedComp::createAll;
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int);
 
 };
 

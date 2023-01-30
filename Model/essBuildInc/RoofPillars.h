@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/RoofPillars.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,9 +37,10 @@ namespace essSystem
   \brief Roof pillar to hold up bunker roof
 */
 
-class RoofPillars : public attachSystem::FixedUnit,
-  public attachSystem::CellMap,
-  public attachSystem::FrontBackCut
+class RoofPillars :
+    public attachSystem::FixedUnit,
+    public attachSystem::CellMap,
+    public attachSystem::FrontBackCut
 {
  private:
 
@@ -106,14 +107,14 @@ class RoofPillars : public attachSystem::FixedUnit,
 		       const double,
 		       const Geometry::Vec3D&,
 		       const std::array<Geometry::Vec3D,2>&,
-		       const std::string&);
+		       const HeadRule&);
   
-  void insertPillarCells(Simulation&,const pillarInfo&,const std::string&);
+  void insertPillarCells(Simulation&,const pillarInfo&,const HeadRule&);
 
   void insertRoofCells(Simulation&,
 		       const std::array<Geometry::Vec3D,4>&,
 		       const double,
-		       const std::string&);
+		       const HeadRule&);
 
   
   void getPillarPair(const std::string&,const std::string&,
@@ -123,7 +124,7 @@ class RoofPillars : public attachSystem::FixedUnit,
 			  const Geometry::Vec3D&,const double,
 			  const double,const double);
   void createBeamObjects(Simulation&,
-			 const int,const std::string&,
+			 const int,const HeadRule&,
 			 const HeadRule&,const HeadRule&,
 			 const double,const Geometry::Vec3D&,
 			 const std::array<Geometry::Vec3D,2>&);

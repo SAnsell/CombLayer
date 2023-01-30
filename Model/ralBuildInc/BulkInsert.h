@@ -3,7 +3,7 @@
  
  * File:   buildInc/BulkInsert.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -96,6 +96,7 @@ class BulkInsert :
   /// Accessor to include
   const std::string& getOuterInc() const { return outerInclude; }
 
+  using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 			 const long int);
 

@@ -897,7 +897,7 @@ shieldVariables(FuncDataBase& Control,
   Control.addVariable(shieldKey+"InnerScreenWidth",125.0);
   Control.addVariable(shieldKey+"InnerScreenHeight",50.0);
   Control.addVariable(shieldKey+"InnerScreenDepth",6.0);
-  Control.addVariable(shieldKey+"InnerScreenDefMat","HighDensPoly");
+  Control.addVariable(shieldKey+"InnerScreenMat","HighDensPoly");
 
   return;
 }

@@ -71,6 +71,7 @@ class CorrectorMagGenerator
   CorrectorMagGenerator& operator=(const CorrectorMagGenerator&);
   virtual ~CorrectorMagGenerator();
 
+  void setMagHeight(const double H) { magHeight=H; } 
   void setMagLength(const double);
   
   /// Angle in deg for main axis rotation

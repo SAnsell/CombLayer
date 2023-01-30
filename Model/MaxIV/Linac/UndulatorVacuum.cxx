@@ -3,7 +3,7 @@
  
  * File:   Linac/UndulatorVacuum.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -293,25 +292,25 @@ UndulatorVacuum::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("UndulatorVacuum","createObjects");
 
-  std::string Out;
-  const std::string frontStr=getRuleStr("front");
-  const std::string backStr=getRuleStr("back");
+  HeadRule HR;
+  const HeadRule frontHR=getRule("front");
+  const HeadRule backHR=getRule("back");
   
   // front/back pre object:
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 11 -12 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 11 -12");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," -11 -17 37 ");
-  makeCell("frontFace",System,cellIndex++,wallMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -17 37");
+  makeCell("frontFace",System,cellIndex++,wallMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -11 -37 ");
-  makeCell("frontPort",System,cellIndex++,voidMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -37");
+  makeCell("frontPort",System,cellIndex++,voidMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 7 -17 -2001");
-  makeCell("frontUnit",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 7 -17 -2001");
+  makeCell("frontUnit",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -2001 3 -4 5 -6 17 ");
-  makeCell("frontOuter",System,cellIndex++,0,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2001 3 -4 5 -6 17");
+  makeCell("frontOuter",System,cellIndex++,0,0.0,HR*frontHR);
 
   int BI(buildIndex);
 	
@@ -321,49 +320,49 @@ UndulatorVacuum::createObjects(Simulation& System)
       const std::string sNum(std::to_string(i));
       
       // MAIN TUBE AND FLANGES:
-      Out=ModelSupport::getComposite(SMap,BI,buildIndex," 1 -2 7M -17M 107 207 307 407 507");
-      makeCell("Unit"+sNum,System,cellIndex++,wallMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,BI,buildIndex,"1 -2 7M -17M 107 207 307 407 507");
+      makeCell("Unit"+sNum,System,cellIndex++,wallMat,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,BI,buildIndex," 1 -11 17M -27M ");
-      makeCell("FFlange"+sNum,System,cellIndex++,wallMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,BI,buildIndex,"1 -11 17M -27M");
+      makeCell("FFlange"+sNum,System,cellIndex++,wallMat,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,BI,buildIndex," -2 12 17M -27M ");
-      makeCell("BFlange"+sNum,System,cellIndex++,wallMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,BI,buildIndex,"-2 12 17M -27M");
+      makeCell("BFlange"+sNum,System,cellIndex++,wallMat,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,BI,buildIndex,
-				     " 11 -12 17M -27M 127 227 327 427 527");
-      makeCell("OuterVoid"+sNum,System,cellIndex++,0,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,BI,buildIndex,
+				    "11 -12 17M -27M 127 227 327 427 527");
+      makeCell("OuterVoid"+sNum,System,cellIndex++,0,0.0,HR);
 
       HeadRule outerAcc;
       int PI(BI+100);
       for(size_t j=0;j<3;j++)
 	{
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 53M -54M -7 7M");
-	  makeCell("A"+sNum+"Void",System,cellIndex++,voidMat,0.0,Out);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"53M -54M -7 7M");
+	  makeCell("A"+sNum+"Void",System,cellIndex++,voidMat,0.0,HR);
 
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -10M 53M 7 -17 17M");
-	  makeCell("AL"+sNum+"Wall",System,cellIndex++,wallMat,0.0,Out);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"-10M 53M 7 -17 17M");
+	  makeCell("AL"+sNum+"Wall",System,cellIndex++,wallMat,0.0,HR);
 
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -63M 53M -27 17 ");
-	  makeCell("AL"+sNum+"Flange",System,cellIndex++,wallMat,0.0,Out);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"-63M 53M -27 17");
+	  makeCell("AL"+sNum+"Flange",System,cellIndex++,wallMat,0.0,HR);
 	  
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 3M -27 -53M ");
-	  makeCell("AL"+sNum+"Plate",System,cellIndex++,wallMat,0.0,Out);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"3M -27 -53M");
+	  makeCell("AL"+sNum+"Plate",System,cellIndex++,wallMat,0.0,HR);
 
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 63M 17 -27 -10M 17M");
-	  makeCell("AL"+sNum+"Outer",System,cellIndex++,0,0.0,Out);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"63M 17 -27 -10M 17M");
+	  makeCell("AL"+sNum+"Outer",System,cellIndex++,0,0.0,HR);
 
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 10M -54M 7 -17 17M");
-	  makeCell("AR"+sNum+"Wall",System,cellIndex++,wallMat,0.0,Out);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"10M -54M 7 -17 17M");
+	  makeCell("AR"+sNum+"Wall",System,cellIndex++,wallMat,0.0,HR);
 
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 64M -54M -27 17 ");
-	  makeCell("AR"+sNum+"Flange",System,cellIndex++,wallMat,0.0,Out);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"64M -54M -27 17");
+	  makeCell("AR"+sNum+"Flange",System,cellIndex++,wallMat,0.0,HR);
 	  
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -4M -27 54M ");
-	  makeCell("AR"+sNum+"Plate",System,cellIndex++,wallMat,0.0,Out);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"-4M -27 54M");
+	  makeCell("AR"+sNum+"Plate",System,cellIndex++,wallMat,0.0,HR);
 
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -64M 17 -27 10M 17M");
-	  makeCell("AR"+sNum+"Outer",System,cellIndex++,0,0.0,Out);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"-64M 17 -27 10M 17M");
+	  makeCell("AR"+sNum+"Outer",System,cellIndex++,0,0.0,HR);
 
 	  outerAcc.addIntersection(SMap.realSurf(PI+27));
 	  PI+=100;
@@ -372,32 +371,32 @@ UndulatorVacuum::createObjects(Simulation& System)
       // SMALL pipes:
       for(size_t j=0;j<2;j++)
 	{
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 153M -154M -7 7M");
-	  makeCell("S"+sNum+"Void",System,cellIndex++,voidMat,0.0,Out);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"153M -154M -7 7M");
+	  makeCell("S"+sNum+"Void",System,cellIndex++,voidMat,0.0,HR);
 
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -10M 153M 7 -17 17M");
-	  makeCell("SL"+sNum+"Wall",System,cellIndex++,wallMat,0.0,Out);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"-10M 153M 7 -17 17M");
+	  makeCell("SL"+sNum+"Wall",System,cellIndex++,wallMat,0.0,HR);
 
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -163M 153M -27 17 ");
-	  makeCell("SL"+sNum+"Flange",System,cellIndex++,wallMat,0.0,Out);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"-163M 153M -27 17");
+	  makeCell("SL"+sNum+"Flange",System,cellIndex++,wallMat,0.0,HR);
 	  
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 3M -27 -153M ");
-	  makeCell("SL"+sNum+"Plate",System,cellIndex++,wallMat,0.0,Out);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"3M -27 -153M");
+	  makeCell("SL"+sNum+"Plate",System,cellIndex++,wallMat,0.0,HR);
 
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 163M 17 -27 -10M 17M");
-	  makeCell("SL"+sNum+"Outer",System,cellIndex++,0,0.0,Out);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"163M 17 -27 -10M 17M");
+	  makeCell("SL"+sNum+"Outer",System,cellIndex++,0,0.0,HR);
 
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 10M -154M 7 -17 17M");
-	  makeCell("SR"+sNum+"Wall",System,cellIndex++,wallMat,0.0,Out);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"10M -154M 7 -17 17M");
+	  makeCell("SR"+sNum+"Wall",System,cellIndex++,wallMat,0.0,HR);
 
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 164M -154M -27 17 ");
-	  makeCell("SR"+sNum+"Flange",System,cellIndex++,wallMat,0.0,Out);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"164M -154M -27 17");
+	  makeCell("SR"+sNum+"Flange",System,cellIndex++,wallMat,0.0,HR);
 	  
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -4M -27 154M ");
-	  makeCell("SR"+sNum+"Plate",System,cellIndex++,wallMat,0.0,Out);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"-4M -27 154M");
+	  makeCell("SR"+sNum+"Plate",System,cellIndex++,wallMat,0.0,HR);
 	  
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -164M 17 -27 10M 17M");
-	  makeCell("SR"+sNum+"Outer",System,cellIndex++,0,0.0,Out);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"-164M 17 -27 10M 17M");
+	  makeCell("SR"+sNum+"Outer",System,cellIndex++,0,0.0,HR);
 
 
 	  outerAcc.addIntersection(SMap.realSurf(PI+27));
@@ -407,55 +406,55 @@ UndulatorVacuum::createObjects(Simulation& System)
       HeadRule outerMagVoid;
       for(size_t j=0;j<6;j++)
 	{
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 5M -20M  -7 7M");
-	  makeCell("LowLM"+sNum+"Void",System,cellIndex++,voidMat,0.0,Out);
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 5M -20M  -8 7M");
-	  makeCell("LowRM"+sNum+"Void",System,cellIndex++,voidMat,0.0,Out);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"5M -20M  -7 7M");
+	  makeCell("LowLM"+sNum+"Void",System,cellIndex++,voidMat,0.0,HR);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"5M -20M  -8 7M");
+	  makeCell("LowRM"+sNum+"Void",System,cellIndex++,voidMat,0.0,HR);
 
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 5M -20M  -17 7 17M");
-	  makeCell("LowLM"+sNum+"Wall",System,cellIndex++,wallMat,0.0,Out);
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 5M -20M  -18 8 17M");
-	  makeCell("LowRM"+sNum+"Wall",System,cellIndex++,wallMat,0.0,Out);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"5M -20M  -17 7 17M");
+	  makeCell("LowLM"+sNum+"Wall",System,cellIndex++,wallMat,0.0,HR);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"5M -20M  -18 8 17M");
+	  makeCell("LowRM"+sNum+"Wall",System,cellIndex++,wallMat,0.0,HR);
 
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 225M -215M  -27 17 ");
-	  makeCell("LowLM"+sNum+"Flange",System,cellIndex++,wallMat,0.0,Out);
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 225M -215M  -28 18 ");
-	  makeCell("LowRM"+sNum+"Flange",System,cellIndex++,wallMat,0.0,Out);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"225M -215M  -27 17");
+	  makeCell("LowLM"+sNum+"Flange",System,cellIndex++,wallMat,0.0,HR);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"225M -215M  -28 18");
+	  makeCell("LowRM"+sNum+"Flange",System,cellIndex++,wallMat,0.0,HR);
 
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 215M  -27 17 -20M 17M");
-	  makeCell("LowLM"+sNum+"Outer",System,cellIndex++,0,0.0,Out);
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 215M  -28 18 -20M 17M");
-	  makeCell("LowRM"+sNum+"Outer",System,cellIndex++,0,0.0,Out);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"215M  -27 17 -20M 17M");
+	  makeCell("LowLM"+sNum+"Outer",System,cellIndex++,0,0.0,HR);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"215M  -28 18 -20M 17M");
+	  makeCell("LowRM"+sNum+"Outer",System,cellIndex++,0,0.0,HR);
 
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -225M  -27 17 5M");
-	  makeCell("LowLM"+sNum+"Outer",System,cellIndex++,0,0.0,Out);
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -225M  -28 18 5M");
-	  makeCell("LowRM"+sNum+"Outer",System,cellIndex++,0,0.0,Out);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"-225M  -27 17 5M");
+	  makeCell("LowLM"+sNum+"Outer",System,cellIndex++,0,0.0,HR);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"-225M  -28 18 5M");
+	  makeCell("LowRM"+sNum+"Outer",System,cellIndex++,0,0.0,HR);
 	  
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -6M 20M  -7 7M");
-	  makeCell("TopLM"+sNum+"Void",System,cellIndex++,voidMat,0.0,Out);
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -6M 20M  -8 7M");
-	  makeCell("TopRM"+sNum+"Void",System,cellIndex++,voidMat,0.0,Out);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"-6M 20M  -7 7M");
+	  makeCell("TopLM"+sNum+"Void",System,cellIndex++,voidMat,0.0,HR);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"-6M 20M  -8 7M");
+	  makeCell("TopRM"+sNum+"Void",System,cellIndex++,voidMat,0.0,HR);
 
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -6M 20M  -17 7 17M");
-	  makeCell("TopLM"+sNum+"Wall",System,cellIndex++,wallMat,0.0,Out);
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -6M 20M  -18 8 17M");
-	  makeCell("TopRM"+sNum+"Wall",System,cellIndex++,wallMat,0.0,Out);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"-6M 20M  -17 7 17M");
+	  makeCell("TopLM"+sNum+"Wall",System,cellIndex++,wallMat,0.0,HR);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"-6M 20M  -18 8 17M");
+	  makeCell("TopRM"+sNum+"Wall",System,cellIndex++,wallMat,0.0,HR);
 
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -226M 216M  -27 17 ");
-	  makeCell("TopLM"+sNum+"Flange",System,cellIndex++,wallMat,0.0,Out);
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -226M 216M  -28 18 ");
-	  makeCell("TopRM"+sNum+"Flange",System,cellIndex++,wallMat,0.0,Out);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"-226M 216M  -27 17");
+	  makeCell("TopLM"+sNum+"Flange",System,cellIndex++,wallMat,0.0,HR);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"-226M 216M  -28 18");
+	  makeCell("TopRM"+sNum+"Flange",System,cellIndex++,wallMat,0.0,HR);
 
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -216M  -27 17 20M 17M");
-	  makeCell("TopLM"+sNum+"Outer",System,cellIndex++,0,0.0,Out);
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -216M  -28 18 20M 17M");
-	  makeCell("TopRM"+sNum+"Outer",System,cellIndex++,0,0.0,Out);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"-216M  -27 17 20M 17M");
+	  makeCell("TopLM"+sNum+"Outer",System,cellIndex++,0,0.0,HR);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"-216M  -28 18 20M 17M");
+	  makeCell("TopRM"+sNum+"Outer",System,cellIndex++,0,0.0,HR);
 
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 226M  -27 17 -6M");
-	  makeCell("TopLM"+sNum+"Outer",System,cellIndex++,0,0.0,Out);
-	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 226M  -28 18 -6M");
-	  makeCell("TopRM"+sNum+"Outer",System,cellIndex++,0,0.0,Out);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"226M  -27 17 -6M");
+	  makeCell("TopLM"+sNum+"Outer",System,cellIndex++,0,0.0,HR);
+	  HR=ModelSupport::getHeadRule(SMap,PI,buildIndex,"226M  -28 18 -6M");
+	  makeCell("TopRM"+sNum+"Outer",System,cellIndex++,0,0.0,HR);
 
 
 	  outerMag.addIntersection(SMap.realSurf(PI+27));
@@ -472,34 +471,33 @@ UndulatorVacuum::createObjects(Simulation& System)
       CellMap::insertComponent(System,"Unit"+sNum,outerMagVoid);
       
       // OUTER:
-      Out=ModelSupport::getComposite
-	(SMap,BI,buildIndex," 1 -2 3M -4M 5M -6M 27M (-13M:14M)");
-      makeCell("BoxVoid"+sNum,System,cellIndex++,0,0.0,Out+outerAcc.display());
+      HR=ModelSupport::getHeadRule
+	(SMap,BI,buildIndex,"1 -2 3M -4M 5M -6M 27M (-13M:14M)");
+      makeCell("BoxVoid"+sNum,System,cellIndex++,0,0.0,HR*outerAcc);
 
-      Out=ModelSupport::getComposite
-	(SMap,BI,buildIndex," 1 -2 13M -14M 5M -20M 27M ");
-      makeCell("BoxVoid"+sNum,System,cellIndex++,0,0.0,Out+outerMag.display());
+      HR=ModelSupport::getHeadRule
+	(SMap,BI,buildIndex,"1 -2 13M -14M 5M -20M 27M");
+      makeCell("BoxVoid"+sNum,System,cellIndex++,0,0.0,HR*outerMag);
 
-      Out=ModelSupport::getComposite
-	(SMap,BI,buildIndex," 1 -2 13M -14M -6M 20M 27M ");
-      makeCell("BoxVoid"+sNum,System,cellIndex++,0,0.0,Out+outerMag.display());
-
+      HR=ModelSupport::getHeadRule
+	(SMap,BI,buildIndex,"1 -2 13M -14M -6M 20M 27M");
+      makeCell("BoxVoid"+sNum,System,cellIndex++,0,0.0,HR*outerMag);
     }  
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -17 37 ");
-  makeCell("backFace",System,cellIndex++,wallMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -17 37");
+  makeCell("backFace",System,cellIndex++,wallMat,0.0,HR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -37 ");
-  makeCell("backPort",System,cellIndex++,voidMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -37");
+  makeCell("backPort",System,cellIndex++,voidMat,0.0,HR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,BI," 2M 7 -17 -12");
-  makeCell("backUnit",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,BI,"2M 7 -17 -12");
+  makeCell("backUnit",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,BI," 2M 3 -4 5 -6 17 ");
-  makeCell("backOuter",System,cellIndex++,0,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,BI,"2M 3 -4 5 -6 17");
+  makeCell("backOuter",System,cellIndex++,0,0.0,HR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,BI," 3 -4 5 -6");
-  addOuterSurf(Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,BI,"3 -4 5 -6");
+  addOuterSurf(HR*frontHR*backHR);
   
   return;
 }
@@ -513,7 +511,7 @@ UndulatorVacuum::createSupport(Simulation& System)
 {
   ELog::RegMethod RegA("UndulatorVacuum","createSupport");
 
-  std::string Out;
+  HeadRule HR;
   const HeadRule topHR=undulator->getFullRule("top");
   const HeadRule baseHR=undulator->getFullRule("base");
 
@@ -523,25 +521,25 @@ UndulatorVacuum::createSupport(Simulation& System)
       int PI(buildIndex+600+(static_cast<int>(i)+1)*2000);
       for(size_t j=0;j<6;j++)
 	{
-	  Out=ModelSupport::getComposite(SMap,buildIndex,PI," 5 -57M ");
-	  makeCell("BTube",System,cellIndex++,supportMat,0.0,Out+baseHR.display());
-	  Out=ModelSupport::getComposite(SMap,buildIndex,PI," -6 -57M ");
-	  makeCell("TTube",System,cellIndex++,supportMat,0.0,Out+topHR.display());
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,PI,"5 -57M");
+	  makeCell("BTube",System,cellIndex++,supportMat,0.0,HR*baseHR);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,PI,"-6 -57M");
+	  makeCell("TTube",System,cellIndex++,supportMat,0.0,HR*topHR);
 
-	  Out=ModelSupport::getComposite(SMap,buildIndex,PI," 5 -58M ");
-	  makeCell("BTube",System,cellIndex++,supportMat,0.0,Out+baseHR.display());
-	  Out=ModelSupport::getComposite(SMap,buildIndex,PI," -6 -58M ");
-	  makeCell("TTube",System,cellIndex++,supportMat,0.0,Out+topHR.display());
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,PI,"5 -58M");
+	  makeCell("BTube",System,cellIndex++,supportMat,0.0,HR*baseHR);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,PI,"-6 -58M");
+	  makeCell("TTube",System,cellIndex++,supportMat,0.0,HR*topHR);
 
-	  Out=ModelSupport::getComposite(SMap,PI," 57 ");
-	  CellMap::insertComponent(System,"LowLM"+sNum+"Void",j,Out);
-	  CellMap::insertComponent(System,"TopLM"+sNum+"Void",j,Out);
-	  CellMap::insertComponent(System,"Void",Out);
+	  HR=ModelSupport::getHeadRule(SMap,PI," 57 ");
+	  CellMap::insertComponent(System,"LowLM"+sNum+"Void",j,HR);
+	  CellMap::insertComponent(System,"TopLM"+sNum+"Void",j,HR);
+	  CellMap::insertComponent(System,"Void",HR);
 	  
-	  Out=ModelSupport::getComposite(SMap,PI," 58 ");
-	  CellMap::insertComponent(System,"LowRM"+sNum+"Void",j,Out);
-	  CellMap::insertComponent(System,"TopRM"+sNum+"Void",j,Out);
-	  CellMap::insertComponent(System,"Void",Out);
+	  HR=ModelSupport::getHeadRule(SMap,PI," 58 ");
+	  CellMap::insertComponent(System,"LowRM"+sNum+"Void",j,HR);
+	  CellMap::insertComponent(System,"TopRM"+sNum+"Void",j,HR);
+	  CellMap::insertComponent(System,"Void",HR);
 	  PI+=100;
 	}
     }

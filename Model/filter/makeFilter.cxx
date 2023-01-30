@@ -3,7 +3,7 @@
  
  * File:   filter/makeFilter.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,9 +45,9 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
-#include "BoundOuter.h"
+#include "ExternalCut.h"
 #include "World.h"
 #include "CylLayer.h"
 #include "makeFilter.h"
@@ -73,7 +73,6 @@ makeFilter::makeFilter() :
   OR.addObject(SiSecond);
   OR.addObject(Lead);
   OR.addObject(SiThird);
-
 }
 
 
@@ -82,7 +81,6 @@ makeFilter::~makeFilter()
     Destructor
    */
 {}
-
 
 void 
 makeFilter::build(Simulation& System,

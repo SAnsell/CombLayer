@@ -18,8 +18,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "surfRegister.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
@@ -35,9 +33,9 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
-
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 
@@ -48,8 +46,10 @@ namespace essSystem
 {
 
 OnionCooling::OnionCooling(const std::string& Key) :
+  attachSystem::FixedRotate(Key,3),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,3)
+  attachSystem::ExternalCut(),
+  attachSystem::CellMap()
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -57,8 +57,10 @@ OnionCooling::OnionCooling(const std::string& Key) :
 {}
 
 OnionCooling::OnionCooling(const OnionCooling& A) :
+  attachSystem::FixedRotate(A),
   attachSystem::ContainedComp(A),
-  attachSystem::FixedOffset(A),
+  attachSystem::ExternalCut(A),
+  attachSystem::CellMap(A),
   wallThick(A.wallThick),
   wallMat(A.wallMat),wallTemp(A.wallTemp),
   nRings(A.nRings),
@@ -82,7 +84,9 @@ OnionCooling::operator=(const OnionCooling& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
+      attachSystem::CellMap::operator=(A);
       wallThick=A.wallThick;
       wallMat=A.wallMat;
       wallTemp=A.wallTemp;
@@ -121,7 +125,7 @@ OnionCooling::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("OnionCooling","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   //  height=Control.EvalVar<double>(keyName+"Height");   
   wallThick=Control.EvalVar<double>(keyName+"WallThick");   
@@ -172,15 +176,13 @@ OnionCooling::createSurfaces()
 			       Origin+X*(radius[i]+gateLength[i]), X);
 
     // upper door
-    ModelSupport::buildPlane(SMap, SI+9,
-			     Origin-Y*(gateWidth[i]/2.0+wallThick), Y); 
-    ModelSupport::buildPlane(SMap, SI+10,
-			     Origin-Y*(gateWidth[i]/2.0), Y);
+      ModelSupport::buildPlane(SMap, SI+9,
+			       Origin-Y*(gateWidth[i]/2.0+wallThick), Y); 
+      ModelSupport::buildPlane(SMap, SI+10,
+			       Origin-Y*(gateWidth[i]/2.0), Y);
 
-    SI += 10;
-  }
-
-
+      SI += 10;
+    }
   return; 
 }
 
@@ -196,62 +198,41 @@ OnionCooling::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("OnionCooling","createObjects");
 
- const attachSystem::CellMap* CM=
-    dynamic_cast<const attachSystem::CellMap*>(&FC);
-  MonteCarlo::Object* InnerObj(0);
-  int innerCell(0);
-  if (CM)
-    {
-      innerCell=CM->getCell("Inner");
-      InnerObj=System.findObject(innerCell);
-    }
+  const int innerCell=getCell("Inner");
+  MonteCarlo::Object* InnerObj=System.findObject(innerCell);
   if (!InnerObj)
     throw ColErr::InContainerError<int>
       (innerCell,"Inner Cell not found");
 
-  std::string Out;
-  const std::string topBottomStr=FC.getLinkString(7+1)+FC.getLinkString(8+1);
+  HeadRule HR;
+  const HeadRule tbHR=getRule("Top")*getRule("Base");
   HeadRule wallExclude;
   
-  // [2:1381] There are 2 types of cells: object cells (Monte Carlo objects = MC qhulls)
-
   int SI(buildIndex);
-  for (size_t i=1; i<=nRings; i++) {
-    // upper half-ring
-    //Out=ModelSupport::getComposite(SMap, SI, buildIndex, " (1M -2M -4) (-1M:2M:3) "); // same: (1M -2M -4 3)
-    Out=ModelSupport::getComposite(SMap, SI, buildIndex, " (7 -8 5 -6 3: 6 3 -4) ");
-    System.addCell(MonteCarlo::Object(cellIndex++, wallMat, wallTemp, Out+topBottomStr));
-    addOuterUnionSurf(Out);
-    wallExclude.addUnion(Out);
-
-    // bottom half-ring
-    Out=ModelSupport::getComposite(SMap, SI, buildIndex, " (7 -8 -10 9 3: -9 3 -4) ");
-    System.addCell(MonteCarlo::Object(cellIndex++, wallMat, wallTemp, Out+topBottomStr));
-    addOuterUnionSurf(Out);
-    wallExclude.addUnion(Out);
-
-    SI += 10;
-  }
+  for (size_t i=1; i<=nRings; i++)
+    {
+      // upper half-ring
+      HR=ModelSupport::getHeadRule
+	(SMap, SI, buildIndex,"7 -8 5 -6 (3 : 6) 3 -4");
+      System.addCell(cellIndex++,wallMat,wallTemp,HR*tbHR);
+      addOuterUnionSurf(HR);
+      wallExclude.addUnion(HR);
+      
+      // bottom half-ring
+      HR=ModelSupport::getHeadRule
+	(SMap, SI, buildIndex,"7 -8 -10 9 (3: -9) 3 -4");
+      System.addCell(cellIndex++, wallMat, wallTemp, HR*tbHR);
+      addOuterUnionSurf(HR);
+      wallExclude.addUnion(HR);
+      SI += 10;
+    }
 
   wallExclude.makeComplement();
-  InnerObj->addSurfString(wallExclude.display());
+  InnerObj->addIntersection(wallExclude);
 
   return; 
 
 }
-
-void OnionCooling::addToInsertChain(attachSystem::ContainedComp& CC) const
-  /*!
-    Adds this object to the containedComp to be inserted.
-    \param CC :: ContainedComp object to add to this
-  */
-{
-  for(int i=buildIndex+1; i<cellIndex; i++)
-    CC.addInsertCell(i);
-    
-  return;
-}
-
 
 void
 OnionCooling::createLinks()
@@ -295,4 +276,4 @@ void OnionCooling::createAll(Simulation& System,
   return;
 }
 
-}  // NAMESPACE instrumentSystem
+}  // NAMESPACE ess<System

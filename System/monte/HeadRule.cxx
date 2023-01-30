@@ -3,7 +3,7 @@
  
  * File:   monte/HeadRule.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -960,13 +960,6 @@ HeadRule::surfValid(const Geometry::Vec3D& Pt) const
     \return set of surfaces that the point is on AND are external
    */
 {
-  /*
-    Note the problem here is that at a corner, if one surface
-    is tested then is possible that it is unimportant because
-    of another surface.
-  */
-    
-
   std::set<int> sideSurf;
   if (!isValid(Pt)) return sideSurf;
 
@@ -977,10 +970,7 @@ HeadRule::surfValid(const Geometry::Vec3D& Pt) const
       if (!SPtr->side(Pt))
 	{
 	  const int S = SPtr->getName();
-	  if (isValid(Pt,-S) !=  isValid(Pt,S))
-	    sideSurf.emplace(SPtr->getName());
-	  else
-	    STest.emplace(S,-1);
+	  STest.emplace(S,-1);
 	}
     }
   if (STest.empty()) return sideSurf;
@@ -1054,17 +1044,6 @@ HeadRule::isolateSurfNum(const std::set<int>& SN)
     }
   
   return;
-}
-
-std::set<int>
-HeadRule::getSurfSet() const
-  /*!
-    Get the set of surfaces  [signed]
-    \return surf set
-  */
-{
-  ELog::RegMethod RegA("HeadRule","getSurfSet");
-  return (HeadNode) ? HeadNode->getSurfSet() : std::set<int>();
 }
 
 std::set<const Geometry::Surface*>
@@ -1231,18 +1210,20 @@ HeadRule::getSignedSurfaceNumbers() const
   return surfSet;
 }
 
-std::vector<int>
+std::set<int>
 HeadRule::getSurfaceNumbers() const
   /*!
     Calculate the surfaces that are within the object
-    \return Set of surface
+    
+    \return Set of surface [unsigned]
   */
 {
   ELog::RegMethod RegA("HeadRule","getSurfaceNumbers");
-  std::vector<int> Out;
-  const SurfPoint* SP;
+
+  std::set<int> Out;
   if (!HeadNode) return Out;
 
+  const SurfPoint* SP;
   const Rule *headPtr,*leafA,*leafB;       
   // Parent : left/right : Child
 
@@ -1266,7 +1247,7 @@ HeadRule::getSurfaceNumbers() const
 	{
 	  SP=dynamic_cast<const SurfPoint*>(headPtr);
 	  if (SP)
-	    Out.push_back(SP->getKeyN());
+	    Out.emplace(SP->getKeyN());
 	}
     }
   return Out;
@@ -1288,6 +1269,21 @@ HeadRule::getPrimarySurface() const
     throw ColErr::SizeError<size_t>(TSet.size(),1,
                                     "HeadRule has wrong surface count");
   return TSet.front();
+}
+
+const Geometry::Surface*
+HeadRule::primarySurface() const
+  /*!
+    Calculate the surfaces that are within the top level
+    and return the surface if it is a  master surface.
+    The master surface is when the surface is the ONLY surface
+    at the master level. Throw if that is not the case
+
+    \return single surface ptr / 0 if not a single primary [signed]
+  */
+{
+  const int SN=getPrimarySurface();
+  return getSurface(SN);
 }
 
 std::vector<int>
@@ -1428,7 +1424,7 @@ HeadRule::removeOuterPlane(const Geometry::Vec3D& LOrig,
 
   const Geometry::Line ATrack(LOrig,LAxis);
 
-  const std::set<int> allSurf=getSurfSet();
+  const std::set<int> allSurf=getSignedSurfaceNumbers();
   double maxDist(Geometry::zeroTol);
   int SN(0);
   for(const int SNum : allSurf)
@@ -1563,7 +1559,7 @@ HeadRule::findAxisPlanes(const Geometry::Vec3D& Axis,
   if (!HeadNode) return activePlane;
 
   populateSurf();
-  const std::set<int> allSurf=getSurfSet();
+  const std::set<int> allSurf=getSignedSurfaceNumbers();
 
 
   for(const int SNum : allSurf)
@@ -2334,7 +2330,7 @@ HeadRule::createAddition(const int InterFlag,const Rule* NRptr)
 
   // This is an intersection and we want to add our rule at the base
   // Find first item that is not an intersection
-  Rule* RPtr(HeadNode);
+  Rule* RPtr;
   std::deque<Rule*> curLevel;
   curLevel.push_back(HeadNode);
   while(!curLevel.empty())
@@ -2760,13 +2756,12 @@ HeadRule::trackSurf(const Geometry::Vec3D& Org,
   ELog::RegMethod RegA("HeadRule","trackSurf(O,u,{set}");
   
   Geometry::Vec3D Pt(Org);
-  double D(0.0);
+
   auto [SN,DD]=trackSurfDistance(Pt,Unit);
   while (SN && activeSurf.find(SN)!=activeSurf.end())
     {
       Pt+=Unit*DD;
       std::tie(SN,DD)=trackSurfDistance(Pt,Unit);
-      D+=DD;
     }
   return SN;
 }

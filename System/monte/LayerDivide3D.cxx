@@ -84,7 +84,7 @@ LayerDivide3D::LayerDivide3D(const LayerDivide3D& A) :
   Centre(A.Centre),
   AFrac(A.AFrac),BFrac(A.BFrac),CFrac(A.CFrac),
   ALen(A.ALen),BLen(A.BLen),CLen(A.CLen),WallID(A.WallID),
-  AWall(A.AWall),BWall(A.BWall),CWall(A.CWall),divider(A.divider),
+  AWall(A.AWall),BWall(A.BWall),CWall(A.CWall),dividerHR(A.dividerHR),
   DGPtr((A.DGPtr) ? new DivideGrid(*A.DGPtr) : 0),
   objName(A.objName),
   loadFile(A.loadFile),outputFile(A.outputFile)
@@ -118,7 +118,7 @@ LayerDivide3D::operator=(const LayerDivide3D& A)
       AWall=A.AWall;
       BWall=A.BWall;
       CWall=A.CWall;
-      divider=A.divider;
+      dividerHR=A.dividerHR;
       delete DGPtr;
       DGPtr=(A.DGPtr) ? new DivideGrid(*A.DGPtr) : 0;
       objName=A.objName;
@@ -352,13 +352,13 @@ LayerDivide3D::setIndexNames(const std::string& A,
 }
   
 void
-LayerDivide3D::setDivider(const std::string& SurfStr)
+LayerDivide3D::setDivider(const HeadRule& DSurf)
   /*!
-    Set the divider string
-    \param SurfStr :: Divider String
+    Set the divider 
+    \param DSurf :: Divider 
   */
 {
-  divider=SurfStr;
+  dividerHR=DSurf;
   return;
 }
   
@@ -468,16 +468,15 @@ LayerDivide3D::setDividerByExclude(const Simulation& System,const int cellN)
   const MonteCarlo::Object* CPtr=
     System.findObjectThrow(cellN,"CellN");
 
-  HeadRule CellRule= CPtr->getHeadRule();
+  dividerHR= CPtr->getHeadRule();
 
-  CellRule.removeItems(AWall.first);
-  CellRule.removeItems(AWall.second);
-  CellRule.removeItems(BWall.first);
-  CellRule.removeItems(BWall.second);
-  CellRule.removeItems(CWall.first);
-  CellRule.removeItems(CWall.second);
+  dividerHR.removeItems(AWall.first);
+  dividerHR.removeItems(AWall.second);
+  dividerHR.removeItems(BWall.first);
+  dividerHR.removeItems(BWall.second);
+  dividerHR.removeItems(CWall.first);
+  dividerHR.removeItems(CWall.second);
 
-  divider=CellRule.display();
   return;
 }
 
@@ -500,37 +499,48 @@ LayerDivide3D::divideCell(Simulation& System,const int cellN)
   CLen=processSurface(2,CWall,CFrac);
 
 
-  std::string Out;
+  HeadRule HR;
   int aIndex(buildIndex);
   for(size_t i=0;i<ALen;i++,aIndex++)
     {
       const std::string layerNum(std::to_string(i));
-      const std::string ACut=
-        ModelSupport::getComposite(SMap,aIndex,"1 -2");
+      const HeadRule ACutHR=
+        ModelSupport::getHeadRule(SMap,aIndex,"1 -2");
       
       int bIndex(buildIndex+1000);
       
       for(size_t j=0;j<BLen;j++,bIndex++)
 	{
-	  const std::string BCut=
-	    ModelSupport::getComposite(SMap,bIndex," 1 -2 ")+ACut;
+	  const HeadRule BCutHR=
+	    ModelSupport::getHeadRule(SMap,bIndex,"1 -2");
 	  int cIndex(buildIndex+2000);
 	  
 	  for(size_t k=0;k<CLen;k++,cIndex++)
 	    {
-	      const std::string CCut=
-		ModelSupport::getComposite(SMap,cIndex," 1 -2 ")+BCut;
+	      const HeadRule CCutHR=
+		ModelSupport::getHeadRule(SMap,cIndex,"1 -2");
 	      const int Mat=DGPtr->getMaterial(i+1,j+1,k+1);
 
 	      CellMap::makeCell("LD3:"+layerNum,System,
-				cellIndex++,Mat,0.0,CCut+divider);
+				cellIndex++,Mat,0.0,ACutHR*BCutHR*CCutHR*dividerHR);
       	    }
 	}
     }
+
   System.removeCell(cellN);
+
+  for(const int CN : getCells())
+    {
+      const int flag=System.minimizeObject(CN);
+      if (flag==-1)
+	CellMap::removeCellNumber(CN);
+    }
+
   if (DGPtr && !outputFile.empty())
     DGPtr->writeXML(outputFile,objName,ALen,BLen,CLen);
 
+
+  
   return;
 }
 

@@ -36,7 +36,7 @@ namespace constructSystem
 */
 
 class TriangleShield :
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
   public attachSystem::FrontBackCut
@@ -78,7 +78,6 @@ class TriangleShield :
   void removeFrontOverLap();
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -91,7 +90,7 @@ class TriangleShield :
   virtual ~TriangleShield();
 
 
-  HeadRule getXSectionIn() const;  
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

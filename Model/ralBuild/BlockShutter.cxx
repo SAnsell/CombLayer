@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   build/BlockShutter.cxx
+ * File:   ralBuild/BlockShutter.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,10 +40,9 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
+#include "objectRegister.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -59,30 +58,38 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedGroup.h"
+#include "FixedRotate.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ExternalCut.h"
 #include "ContainedComp.h"
 #include "GeneralShutter.h"
 #include "BlockShutter.h"
+#include "collInsert.h"
 
 namespace shutterSystem
 {
 
-BlockShutter::BlockShutter(const size_t ID,const std::string& K,
+BlockShutter::BlockShutter(const size_t ID,
+			   const std::string& K,
 			   const std::string& ZK) :
   GeneralShutter(ID,K),
   b4cMat(47),
-  blockKey(ZK)
+  blockKey(ZK),
+  collPtr(new collInsert(blockKey+"Insert"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param ID :: Index number of shutter
     \param K :: Key name
     \param ZK :: zoom Key name
   */
-{}
-
+{
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  OR.addObject(collPtr);
+}
 
 BlockShutter::~BlockShutter() 
   /*!
@@ -102,14 +109,7 @@ BlockShutter::populate(const FuncDataBase& Control)
   GeneralShutter::populate(Control);
 
   // Modification to the general shutter populated variables:
-  
-  nBlock=Control.EvalVar<int>(blockKey+"NBlocks");
-  zStart=Control.EvalVar<double>(blockKey+"ZStart");
-  // Note this is in mRadian
-  xAngle=Control.EvalVar<double>(blockKey+"GuideXAngle")*M_PI/180.0;
-  zAngle=Control.EvalVar<double>(blockKey+"GuideZAngle")*M_PI/180.0;
-  xStep=Control.EvalVar<double>(blockKey+"GuideXStep");
-  
+
   colletHGap=Control.EvalVar<double>(blockKey+"ColletHGap");
   colletVGap=Control.EvalVar<double>(blockKey+"ColletVGap");
   colletFGap=Control.EvalVar<double>(blockKey+"ColletFGap");
@@ -163,8 +163,6 @@ BlockShutter::createSurfaces()
   return;
 }  
 
-
-
 void
 BlockShutter::createObjects(Simulation& System)
   /*!
@@ -174,12 +172,12 @@ BlockShutter::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("BlockShutter","constructObjects");
 
-  const HeadRule RInnerComp=ExternalCut::getComplementRule("RInner");
-  const HeadRule ROuterHR=ExternalCut::getRule("ROuter");
-
+  const HeadRule& RInnerComp=ExternalCut::getComplementRule("RInner");
+  const HeadRule& ROuterHR=ExternalCut::getRule("ROuter");
 
   // Flightline
   HeadRule HR;
+
   if (voidDivide>0.0)
     {
       // exclude from flight line
@@ -195,7 +193,7 @@ BlockShutter::createObjects(Simulation& System)
 
       HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,"200 313 -314 -325 326 -401");
-      makeCell("InnerCollet",System,cellIndex++,colletMat,0.0,HR*RInnerComp);
+      makeCell("InnerCollet",System,cellIndex++,0,0.0,HR*RInnerComp);
       // OuterCollet
 
       HR=ModelSupport::getHeadRule
@@ -205,49 +203,59 @@ BlockShutter::createObjects(Simulation& System)
       HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,"413 -414 -425 426 100 -401 (-313:314:325:-326)");
       makeCell("Spacer",System,cellIndex++,0,0.0,HR);
-      
     }
   return;
 }
 
 
-double
-BlockShutter::processShutterDrop() const
+void
+BlockShutter::createInsert(Simulation& System)
   /*!
-    Calculate the drop on the shutter, given that the 
-    fall has to be such that the shutter takes neutrons with
-    the correct angle for the shutter.
-    \return drop value
-  */
+    Create the insert
+   */
 {
-  ELog::RegMethod RegA("BlockShutter","processShutterDrop");
-  // Calculate the distance between the moderator/shutter enterance.
-  // currently it is to the target centre
+  ELog::RegMethod RegA("BlockShutter","createInsert");
 
-  const double drop=innerRadius*tan(zAngle);
-  return drop-zStart;
-} 
+  const HeadRule& RInnerComp=ExternalCut::getComplementRule("RInner");
+  const HeadRule& ROuterHR=ExternalCut::getRule("ROuter");
 
-  
+  collPtr->copyCutSurf("RInner",*this,"RInner");
+  collPtr->copyCutSurf("ROuter",*this,"ROuter");
+  collPtr->copyCutSurf("Divider",*this,"Divider");
+
+  collPtr->createAll(System,this->getSecondary(),0);
+  collPtr->insertInCell(System,getCell("InnerCollet"));
+  collPtr->insertInCell(System,getCell("OuterCollet"));
+
+  return;
+}
+
 void
 BlockShutter::createAll(Simulation& System,
 			const attachSystem::FixedComp& FC,
 			const long int sideIndex)
   /*!
-    Create the shutter
+    Create the shutter (only creates the volume (with clearance gaps)
+    the actual beam path is added later. 
     \param System :: Simulation to process
-    \param FCPtr :: Fixed pointer for shutter origin [void centre]
+    \param FC :: Fixed pointer for shutter origin [void centre]
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("BlockShutter","createAll");
-  
-  populate(System.getDataBase());
-  this->GeneralShutter::setZOffset(processShutterDrop());
+
+  const FuncDataBase& Control=System.getDataBase();
+
+  populate(Control);
+
+  collPtr->populate(Control);
+
+  this->GeneralShutter::setZOffset(collPtr->calcDrop(innerRadius));
   GeneralShutter::createAll(System,FC,sideIndex);
 
   createSurfaces();
   createObjects(System);  
-  
+  createInsert(System);
   return;
 }
   

@@ -3,7 +3,7 @@
 
  * File:   commonBeam/DiffPumpXIADP03.cxx
  *
- * Copyright (c) 2019-2021 by Konstantin Batkov
+ * Copyright (c) 2019-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -66,8 +65,8 @@ namespace xraySystem
 {
 
 DiffPumpXIADP03::DiffPumpXIADP03(const std::string& Key)  :
-  attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,8),
+  attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::ExternalCut()
@@ -208,86 +207,86 @@ DiffPumpXIADP03::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("DiffPumpXIADP03","createObjects");
 
-  std::string Out,side;
-  const std::string frontStr(getRuleStr("front"));
-  const std::string backStr(getRuleStr("back"));
+  HeadRule HR,sideHR;
+  const HeadRule frontHR(getRule("front"));
+  const HeadRule backHR(getRule("back"));
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1 -27 (-33:34:-35:36) ");
-  makeCell("FlangeBack",System,cellIndex++,flangeMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -1 -27 (-33:34:-35:36) ");
+  makeCell("FlangeBack",System,cellIndex++,flangeMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -27 (-33:34:-35:36) ");
-  makeCell("FlangeFront",System,cellIndex++,flangeMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 2 -27 (-33:34:-35:36) ");
+  makeCell("FlangeFront",System,cellIndex++,flangeMat,0.0,HR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -31 33 -34 35 -36 ");
-  makeCell("FlangeBackVoid",System,cellIndex++,0,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -31 33 -34 35 -36");
+  makeCell("FlangeBackVoid",System,cellIndex++,0,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 1 -31 3 -4 5 -6 (-33:34:-35:36) ");
-  System.addCell(cellIndex++,flangeMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1 -31 3 -4 5 -6 (-33:34:-35:36) ");
+  System.addCell(cellIndex++,flangeMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 32 33 -34 35 -36 ");
-  makeCell("FlangeFrontVoid",System,cellIndex++,0,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 32 33 -34 35 -36 ");
+  makeCell("FlangeFrontVoid",System,cellIndex++,0,0.0,HR*backHR);
 
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex," 32 -2 3 -4 5 -6 (-33:34:-35:36) ");
-  System.addCell(cellIndex++,flangeMat,0.0,Out);
+  System.addCell(cellIndex++,flangeMat,0.0,HR);
 
-  side=ModelSupport::getComposite(SMap,buildIndex," 31 -32 ");
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 (-13:14:-15:16) ");
-  makeCell("Body",System,cellIndex++,mat,0.0,Out+side);
+  sideHR=ModelSupport::getHeadRule(SMap,buildIndex,"31 -32");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6 (-13:14:-15:16)");
+  makeCell("Body",System,cellIndex++,mat,0.0,HR*sideHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 15 -16 ");
-  makeCell("Aperture",System,cellIndex++,0,0.0,Out+side);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 13 -14 15 -16 ");
+  makeCell("Aperture",System,cellIndex++,0,0.0,HR*sideHR);
 
-  side=ModelSupport::getComposite(SMap,buildIndex,"41 -42 43 ");
+  
+  sideHR=ModelSupport::getHeadRule(SMap,buildIndex,"41 -42 43");
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -44 46 -5 ");
-  makeCell("MagnetLowVoid",System,cellIndex++,0,0.0,Out+side);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -44 46 -5 ");
+  makeCell("MagnetLowVoid",System,cellIndex++,0,0.0,HR*sideHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -44 45 -46 ");
-  makeCell("MagnetLow",System,cellIndex++,magnetMat,0.0,Out+side);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -44 45 -46 ");
+  makeCell("MagnetLow",System,cellIndex++,magnetMat,0.0,HR*sideHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -44 6 -55 ");
-  makeCell("MagnetUpVoid",System,cellIndex++,0,0.0,Out+side);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -44 6 -55 ");
+  makeCell("MagnetUpVoid",System,cellIndex++,0,0.0,HR*sideHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -44 55 -56 ");
-  makeCell("MagnetUp",System,cellIndex++,magnetMat,0.0,Out+side);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-44 55 -56");
+  makeCell("MagnetUp",System,cellIndex++,magnetMat,0.0,HR*sideHR);
 
   // void around base and magnets
-  side=ModelSupport::getComposite(SMap,buildIndex,"41 -42 -27");
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"6 44 41 -42 -27");
-  makeCell("ExternalVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"6 44 41 -42 -27");
+  makeCell("ExternalVoid",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"43 -44 56 41 -42 -27");
-  makeCell("ExternalVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"43 -44 56 41 -42 -27");
+  makeCell("ExternalVoid",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-43 6 41 -42 -27");
-  makeCell("ExternalVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-43 6 41 -42 -27");
+  makeCell("ExternalVoid",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 4 5 -6 41 -42 -27");
-  makeCell("ExternalVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 4 5 -6 41 -42 -27");
+  makeCell("ExternalVoid",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -43 -5 41 -42 -27");
-  makeCell("ExternalVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -43 -5 41 -42 -27");
+  makeCell("ExternalVoid",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 44 -5 41 -42 -27");
-  makeCell("ExternalVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 44 -5 41 -42 -27");
+  makeCell("ExternalVoid",System,cellIndex++,0,0.0,HR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," 43 -44 -45 41 -42 -27");
-  makeCell("ExternalVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 43 -44 -45 41 -42 -27");
+  makeCell("ExternalVoid",System,cellIndex++,0,0.0,HR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," -3 5 -6 41 -42 -27");
-  makeCell("ExternalVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -3 5 -6 41 -42 -27");
+  makeCell("ExternalVoid",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -41 -27 (-3:4:-5:6)");
-  System.addCell(cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -41 -27 (-3:4:-5:6)");
+  System.addCell(cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 42 -2 -27 (-3:4:-5:6)");
-  System.addCell(cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 42 -2 -27 (-3:4:-5:6)");
+  System.addCell(cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -27 ");
-  addOuterSurf(Out+frontStr+backStr);
+  HR=HeadRule(SMap,buildIndex,-27);
+  addOuterSurf(HR*frontHR*backHR);
 
   return;
 }

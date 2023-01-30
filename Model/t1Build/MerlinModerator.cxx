@@ -67,8 +67,8 @@ namespace ts1System
 {
 
 MerlinModerator::MerlinModerator(const std::string& Key)  :
-  attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,12),
+  attachSystem::ContainedComp(),
   attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -77,8 +77,8 @@ MerlinModerator::MerlinModerator(const std::string& Key)  :
 {}
 
 MerlinModerator::MerlinModerator(const MerlinModerator& A) : 
-  attachSystem::ContainedComp(A),
   attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
   width(A.width),depth(A.depth),
   height(A.height),innerThick(A.innerThick),vacThick(A.vacThick),
@@ -101,8 +101,8 @@ MerlinModerator::operator=(const MerlinModerator& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedRotate::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       width=A.width;
       depth=A.depth;

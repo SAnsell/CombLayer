@@ -478,7 +478,7 @@ Cylinder::distance(const Geometry::Vec3D& A) const
   double lambda=Amov.dotProd(Normal);
   const Geometry::Vec3D Ccut= Normal*lambda;
   // The distance is from the centre line to the 
-  return  fabs(Ccut.Distance(Amov)-Radius);
+  return  std::abs(Ccut.Distance(Amov)-Radius);
 }
 
 void

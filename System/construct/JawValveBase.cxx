@@ -167,28 +167,6 @@ JawValveBase::populate(const FuncDataBase& Control)
 }
 
 void
-JawValveBase::createUnitVector(const attachSystem::FixedComp& FC,
-			       const long int sideIndex)
-  /*!
-    Create the unit vectors
-    We set the origin external to the front face of the sealing ring.
-    and adjust the origin to the middle.
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("JawValveBase","createUnitVector");
-
-  FixedRotate::createUnitVector(FC,sideIndex);
-
-  // moved to centre
-  Origin+=Y*(length/2.0+portALen);
-  
-  return;
-}
-
-
-void
 JawValveBase::createSurfaces()
   /*!
     Create the surfaces
@@ -262,56 +240,54 @@ JawValveBase::createOuterObjects(Simulation& System)
 {
   ELog::RegMethod RegA("JawValveCylinder","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
   const bool portAExtends(wallThick<=portALen);  // port extends
   const bool portBExtends(wallThick<=portBLen);  // port extends
 
-  const std::string frontStr=frontRule();  // 101
-  const std::string backStr=backRule();    // -102
-  const std::string frontComp=frontComplement();  // -101
-  const std::string backComp=backComplement();    // 102
+  const HeadRule& frontHR=getFrontRule();  // 101
+  const HeadRule& backHR=getBackRule();    // -102
+  const HeadRule frontComp=frontHR.complement();
+  const HeadRule backComp=backHR.complement();    // 102
 
 
   // seal ring
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1 107 -117 ");
-  makeCell("FrontSeal",System,cellIndex++,wallMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 107 -117");
+  makeCell("FrontSeal",System,cellIndex++,wallMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1 -107 ");
-  makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 -107");
+  makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
   
   if (!portAExtends)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 11 -117 ");
-      makeCell("FrontVoidExtra",System,cellIndex++,voidMat,0.0,Out+frontComp);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -117");
+      makeCell("FrontVoidExtra",System,cellIndex++,voidMat,0.0,HR*frontComp);
     }
        
   // seal ring
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 207 -217 ");
-  makeCell("BackSeal",System,cellIndex++,wallMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 207 -217");
+  makeCell("BackSeal",System,cellIndex++,wallMat,0.0,HR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -207 ");
-  makeCell("BackVoid",System,cellIndex++,voidMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -207");
+  makeCell("BackVoid",System,cellIndex++,voidMat,0.0,HR*backHR);
   
   if (!portBExtends)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," -12 -217 ");
-      makeCell("BackVoidExtra",System,cellIndex++,voidMat,0.0,Out+backComp);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 -217");
+      makeCell("BackVoidExtra",System,cellIndex++,voidMat,0.0,HR*backComp);
     }
   
   if (portAExtends || portBExtends)
     {
-      Out="";
       if (!portAExtends)
-	Out=ModelSupport::getComposite(SMap,buildIndex," 2 -217 ");
+	HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -217");
       else if (!portBExtends)
-	Out=ModelSupport::getComposite(SMap,buildIndex," -1 -117 ");
+	HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 -117");
       else 
-	Out=ModelSupport::getComposite(SMap,buildIndex," (-1 -117): (2 -217) ");
-      
-      addOuterUnionSurf(Out+frontStr+backStr);
+	HR=ModelSupport::getHeadRule(SMap,buildIndex,"(-1 -117): (2 -217)");
+      addOuterUnionSurf(HR*frontHR*backHR);
     }
-
+  return;
 }
 
   
@@ -343,7 +319,8 @@ JawValveBase::createAll(Simulation& System,
   ELog::RegMethod RegA("JawValveTube","createAll(FC)");
 
   populate(System.getDataBase());
-  createUnitVector(FC,FIndex);
+  createCentredUnitVector(FC,FIndex,length/2.0+portALen);
+
   createSurfaces();    
   createObjects(System);
   createLinks();

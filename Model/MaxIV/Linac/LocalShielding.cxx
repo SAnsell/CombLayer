@@ -65,8 +65,8 @@ namespace tdcSystem
 {
 
 LocalShielding::LocalShielding(const std::string& Key)  :
-  attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,6),
+  attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::ExternalCut()
@@ -77,8 +77,8 @@ LocalShielding::LocalShielding(const std::string& Key)  :
 {}
 
 LocalShielding::LocalShielding(const LocalShielding& A) :
-  attachSystem::ContainedComp(A),
   attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::ExternalCut(A),
@@ -106,8 +106,8 @@ LocalShielding::operator=(const LocalShielding& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedRotate::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       attachSystem::ExternalCut::operator=(A);
@@ -220,9 +220,7 @@ LocalShielding::createObjects(Simulation& System)
     (cornerWidth>Geometry::zeroTol) &&
     (cornerHeight>Geometry::zeroTol);
 
-  const HeadRule topHR=
-    ModelSupport::getHeadRule(SMap,buildIndex,
-						   isCorners ?"-26":"-6");
+  const HeadRule topHR(SMap,buildIndex,(isCorners) ? -26 : -6);
 
   if ((!isMidHole) && (!isCorners))
     {

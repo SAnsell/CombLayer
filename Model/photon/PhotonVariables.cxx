@@ -40,6 +40,7 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "TubeDetBoxGenerator.h"
 
 namespace setVariable
 {
@@ -440,20 +441,9 @@ PhotonVariables(FuncDataBase& Control)
   
 
   // DETECTORS
-  Control.addVariable("CentralDBox1YStep",2.85+0.25);
-  Control.addVariable("CentralDBoxNDetectors",8);
-  Control.addVariable("CentralDBoxCentRadius",2.85);
-  Control.addVariable("CentralDBoxGap",0.25);
-  Control.addVariable("CentralDBoxTubeRadius",2.5);
-  Control.addVariable("CentralDBoxWallThick",0.3);
-  Control.addVariable("CentralDBoxHeight",60.0);
-  Control.addVariable("CentralDBoxWallMat","Aluminium");
-  Control.addVariable("CentralDBoxFilterMat","Hafnium");
-  Control.addVariable("CentralDBoxDetMat","He3_10Bar");
-
-  Control.addVariable("CentralDBoxOuterMat","B4C");
-  
-  
+  TubeDetBoxGenerator TDBGen;
+  TDBGen.generateBox(Control,"CentralDBox",Geometry::Vec3D(0,3.15,0),8);
+    
   
   return;
 }

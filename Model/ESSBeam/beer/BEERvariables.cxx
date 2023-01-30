@@ -62,68 +62,68 @@ generatePinHole(FuncDataBase& Control)
 {
     // PIN COLLIMATOR SYSTEM
   Control.addVariable("beerCaveJawLength",25.0);
-  Control.addVariable("beerCaveJawRadius",30.0);
+  Control.addVariable("beerCaveJawRadius",29.0);
 
   //
   // JAWS
   //
   // Jaw X
-  Control.addVariable("beerCaveJawJawVertXStep",0.0);
-  Control.addVariable("beerCaveJawJawVertYStep",-5.0);
-  Control.addVariable("beerCaveJawJawVertZStep",0.0);
-  Control.addVariable("beerCaveJawJawVertXYangle",180.0);
-  Control.addVariable("beerCaveJawJawVertZangle",0.0);
+  Control.addVariable("beerCaveJawVertXStep",0.0);
+  Control.addVariable("beerCaveJawVertYStep",-5.0);
+  Control.addVariable("beerCaveJawVertZStep",0.0);
+  Control.addVariable("beerCaveJawVertXYangle",180.0);
+  Control.addVariable("beerCaveJawVertZangle",0.0);
 
-  Control.addVariable("beerCaveJawJawVertZOpen",5.5);
-  Control.addVariable("beerCaveJawJawVertZThick",2.0);
-  Control.addVariable("beerCaveJawJawVertZCross",15.0);
-  Control.addVariable("beerCaveJawJawVertZLen",8.0);
+  Control.addVariable("beerCaveJawVertZOpen",5.5);
+  Control.addVariable("beerCaveJawVertZThick",2.0);
+  Control.addVariable("beerCaveJawVertZCross",15.0);
+  Control.addVariable("beerCaveJawVertZLen",8.0);
 
-  Control.addVariable("beerCaveJawJawVertGap",0.5);  
+  Control.addVariable("beerCaveJawVertGap",0.5);  
   
-  Control.addVariable("beerCaveJawJawVertXOpen",5.5);
-  Control.addVariable("beerCaveJawJawVertXThick",2.0);
-  Control.addVariable("beerCaveJawJawVertXCross",15.0);
-  Control.addVariable("beerCaveJawJawVertXLen",8.0);  
+  Control.addVariable("beerCaveJawVertXOpen",5.5);
+  Control.addVariable("beerCaveJawVertXThick",2.0);
+  Control.addVariable("beerCaveJawVertXCross",15.0);
+  Control.addVariable("beerCaveJawVertXLen",8.0);  
 
-  Control.addVariable("beerCaveJawJawVertXHeight",28.0);
-  Control.addVariable("beerCaveJawJawVertYHeight",9.0);
-  Control.addVariable("beerCaveJawJawVertZHeight",28.0);
-  Control.addVariable("beerCaveJawJawVertWallThick",2.0);
+  Control.addVariable("beerCaveJawVertXHeight",28.0);
+  Control.addVariable("beerCaveJawVertYHeight",9.0);
+  Control.addVariable("beerCaveJawVertZHeight",28.0);
+  Control.addVariable("beerCaveJawVertWallThick",2.0);
 
-  Control.addVariable("beerCaveJawJawVertxJawMat","Tungsten");
-  Control.addVariable("beerCaveJawJawVertzJawMat","Tungsten");
-  Control.addVariable("beerCaveJawJawVertWallMat","Aluminium");
+  Control.addVariable("beerCaveJawVertxJawMat","Tungsten");
+  Control.addVariable("beerCaveJawVertzJawMat","Tungsten");
+  Control.addVariable("beerCaveJawVertWallMat","Aluminium");
 
   // Jaw XZ
-  Control.addVariable("beerCaveJawJawDiagXStep",0.0);
-  Control.addVariable("beerCaveJawJawDiagYStep",5.0);
-  Control.addVariable("beerCaveJawJawDiagZStep",0.0);
-  Control.addVariable("beerCaveJawJawDiagXAngle",0.0);
-  Control.addVariable("beerCaveJawJawDiagYAngle",45.0);
-  Control.addVariable("beerCaveJawJawDiagZAngle",0.0);
+  Control.addVariable("beerCaveJawDiagXStep",0.0);
+  Control.addVariable("beerCaveJawDiagYStep",5.0);
+  Control.addVariable("beerCaveJawDiagZStep",0.0);
+  Control.addVariable("beerCaveJawDiagXAngle",0.0);
+  Control.addVariable("beerCaveJawDiagYAngle",45.0);
+  Control.addVariable("beerCaveJawDiagZAngle",0.0);
 
-  Control.addVariable("beerCaveJawJawDiagZOpen",5.5);
-  Control.addVariable("beerCaveJawJawDiagZThick",2.0);
-  Control.addVariable("beerCaveJawJawDiagZCross",15.0);
-  Control.addVariable("beerCaveJawJawDiagZLen",8.0);
+  Control.addVariable("beerCaveJawDiagZOpen",5.5);
+  Control.addVariable("beerCaveJawDiagZThick",2.0);
+  Control.addVariable("beerCaveJawDiagZCross",15.0);
+  Control.addVariable("beerCaveJawDiagZLen",8.0);
 
-  Control.addVariable("beerCaveJawJawDiagGap",0.5);  
+  Control.addVariable("beerCaveJawDiagGap",0.5);  
   
-  Control.addVariable("beerCaveJawJawDiagXOpen",5.5);
-  Control.addVariable("beerCaveJawJawDiagXThick",2.0);
-  Control.addVariable("beerCaveJawJawDiagXCross",15.0);
-  Control.addVariable("beerCaveJawJawDiagXLen",8.0);  
+  Control.addVariable("beerCaveJawDiagXOpen",5.5);
+  Control.addVariable("beerCaveJawDiagXThick",2.0);
+  Control.addVariable("beerCaveJawDiagXCross",15.0);
+  Control.addVariable("beerCaveJawDiagXLen",8.0);  
 
-  Control.addVariable("beerCaveJawJawDiagXHeight",28.0);
-  Control.addVariable("beerCaveJawJawDiagYHeight",9.0);
-  Control.addVariable("beerCaveJawJawDiagZHeight",28.0);
-  Control.addVariable("beerCaveJawJawDiagWallThick",2.0);
+  Control.addVariable("beerCaveJawDiagXHeight",28.0);
+  Control.addVariable("beerCaveJawDiagYHeight",9.0);
+  Control.addVariable("beerCaveJawDiagZHeight",28.0);
+  Control.addVariable("beerCaveJawDiagWallThick",2.0);
 
 
-  Control.addVariable("beerCaveJawJawDiagxJawMat","Tungsten");
-  Control.addVariable("beerCaveJawJawDiagzJawMat","Tungsten");
-  Control.addVariable("beerCaveJawJawDiagWallMat","Aluminium");
+  Control.addVariable("beerCaveJawDiagxJawMat","Tungsten");
+  Control.addVariable("beerCaveJawDiagzJawMat","Tungsten");
+  Control.addVariable("beerCaveJawDiagWallMat","Aluminium");
   return;
 }
   
@@ -255,7 +255,7 @@ BEERvariables(FuncDataBase& Control)
   Control.addVariable("beerBInsertWallMat","Stainless304");       
 
   // Guide in wall
-  FGen.generateTaper(Control,"beerFWall",308.0,6.0,6.0,6.0,6.0);
+  FGen.generateTaper(Control,"beerFWall",355.0,6.0,6.0,6.0,6.0);
   // Optional pipe in wall
   PipeGen.generatePipe(Control,"beerPipeWall",348.0);
   Control.addVariable("beerPipeWallYStep",4.0);
@@ -271,8 +271,8 @@ BEERvariables(FuncDataBase& Control)
   BGen.addPhase({95,275},{30.0,30.0});
   BGen.generateBlades(Control,"beerWBC3Blade",0.0,25.0,50.0);
 
-  CGen.setMainRadius(81.0);
-  CGen.setFrame(175.0,175.0);
+  CGen.setMainRadius(75.0);
+  CGen.setFrame(165.0,165.0);
   CGen.generateChopper(Control,"beerChopperOutB",12.0,12.0,8.0);
 
   // FOC chopper

@@ -206,30 +206,31 @@ JawUnit::createObjects(Simulation& System)
    */
 {
   ELog::RegMethod RegA("JawUnit","createObjects");
-  std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 103 -104 105 -106 ");
-  makeCell("xJaw",System,cellIndex++,xJawMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 153 -154 105 -106 ");
-  makeCell("xJaw",System,cellIndex++,xJawMat,0.0,Out);
-  // gap
-  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -102 104 -153 105 -106");
-  makeCell("xGap",System,cellIndex++,0,0.0,Out);
+  HeadRule HR;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -202 203 -204 205 -206 ");
-  makeCell("zJaw",System,cellIndex++,zJawMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -202 203 -204 255 -256 ");
-  makeCell("zJaw",System,cellIndex++,zJawMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 103 -104 105 -106");
+  makeCell("xJaw",System,cellIndex++,xJawMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 153 -154 105 -106");
+  makeCell("xJaw",System,cellIndex++,xJawMat,0.0,HR);
   // gap
-  Out=ModelSupport::getComposite(SMap,buildIndex,"201 -202 203 -204 206 -255 ");
-  makeCell("zGap",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 104 -153 105 -106");
+  makeCell("xGap",System,cellIndex++,0,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -202 203 -204 205 -206");
+  makeCell("zJaw",System,cellIndex++,zJawMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -202 203 -204 255 -256");
+  makeCell("zJaw",System,cellIndex++,zJawMat,0.0,HR);
+  // gap
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -202 203 -204 206 -255");
+  makeCell("zGap",System,cellIndex++,0,0.0,HR);
 
    
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 103 -154 105 -106 ");
-  addOuterSurf(Out);      
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 103 -154 105 -106");
+  addOuterSurf(HR);      
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -202 203 -204 205 -256 ");
-  addOuterUnionSurf(Out);      
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -202 203 -204 205 -256");
+  addOuterUnionSurf(HR);      
 
   return;
 }

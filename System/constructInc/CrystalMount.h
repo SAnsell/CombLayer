@@ -3,7 +3,7 @@
  
  * File:   constructInc/CrystalMount.h
 *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,8 +35,9 @@ namespace constructSystem
   \brief Crystal in holder with linkpoint on reflection axis
 */
 
-class CrystalMount : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
+class CrystalMount : 
+  public attachSystem::FixedRotate,
+  public attachSystem::ContainedComp,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {
@@ -45,7 +46,6 @@ class CrystalMount : public attachSystem::ContainedComp,
   const std::string baseName;  ///< Base name
   const size_t ID;             ///< ID Number
   
-
   int active;              ///< Active flag (built but no object)
   double width;            ///< Radius of from centre
   double thick;            ///< Radius of detector
@@ -79,7 +79,7 @@ class CrystalMount : public attachSystem::ContainedComp,
   CrystalMount& operator=(const CrystalMount&);
   virtual ~CrystalMount();
 
-  void createTally(Simulation&) const;
+  using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);

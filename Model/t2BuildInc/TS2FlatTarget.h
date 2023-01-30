@@ -45,8 +45,6 @@ namespace TMRSystem
 class TS2FlatTarget : public TMRSystem::TargetBase
 {
  private:
-  
-
 
   int frontPlate;               ///< Front Reflector surf
   int backPlate;                ///< Back Reflector surf
@@ -113,6 +111,8 @@ class TS2FlatTarget : public TMRSystem::TargetBase
 
   void addProtonLine(Simulation&);
   void layerProcess(Simulation&);
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
   
 

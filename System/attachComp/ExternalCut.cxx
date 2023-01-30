@@ -3,7 +3,7 @@
  
  * File:   attachComp/ExtractCut.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -279,6 +279,7 @@ ExternalCut::setCutSurf(const std::string& extName,
 
   if (WFC.hasLinkPt(sideIndex))
     A.setPoint(WFC.getLinkPt(sideIndex));
+
   return;
 }
 
@@ -350,21 +351,24 @@ ExternalCut::getComplementStr(const std::string& extName) const
 }
 
 
-std::string
-ExternalCut::getBridgeStr(const std::string& extName) const
+
+HeadRule
+ExternalCut::getRule(const std::string& extName) const
   /*!
-    Accessor to bridge rule
-    \param extName :: CutUnit name						
-    \return Divider rule
+    Accessor to the rule
+    \param extName :: external-cut name
+    \return frontRule without divider
   */
 {
+  ELog::RegMethod RegA("ExternalCut","getRule");
+  static HeadRule nullOut;
+  
   const cutUnit* CU=findUnit(extName);
-  return (CU) ?
-    CU->divider.display() : "" ;    
+  return (CU) ? CU->main*CU->divider :  nullOut;    
 }
 
 const HeadRule&
-ExternalCut::getRule(const std::string& extName) const
+ExternalCut::getNonDivideRule(const std::string& extName) const
   /*!
     Accessor to main rule
     \param extName :: external-cut name
@@ -387,7 +391,10 @@ ExternalCut::getComplementRule(const std::string& extName) const
   */
 {
   ELog::RegMethod RegA("ExternalCut","getComplementRule");
-  return getRule(extName).complement();
+  static HeadRule nullOut;
+  
+  const cutUnit* CU=findUnit(extName);
+  return (CU) ? CU->main.complement()*CU->divider :  nullOut;    
 }
 
 const HeadRule&
@@ -442,18 +449,24 @@ ExternalCut::createLink(const std::string& extName,
   ELog::RegMethod RegA("ExternalCut","createLink");
 
   const cutUnit* CU=findUnit(extName);
-  if (CU)  
-    {
-      if (CU->main.isEmpty())
-	throw ColErr::InContainerError<std::string>
-	  (extName,"FC:"+FC.getKeyName()+" has no surface rule");
+  if (!CU)
+    throw ColErr::InContainerError<std::string>
+      (extName,"FC:"+FC.getKeyName()+" is not active");
+  
+  if (CU->main.isEmpty())
+    throw ColErr::InContainerError<std::string>
+      (extName,"FC:"+FC.getKeyName()+" has no surface rule");
+  
+  const std::string keyN=FC.getKeyName();
+  FC.setLinkSurf(linkIndex,CU->main.complement());
+  FC.setBridgeSurf(linkIndex,CU->divider);
 
-      const std::string keyN=FC.getKeyName();
-      FC.setLinkSurf(linkIndex,CU->main.complement());
-      FC.setBridgeSurf(linkIndex,CU->divider);
-      FC.setConnect(linkIndex,
-	 SurInter::getLinePoint(Org+YAxis,-YAxis,CU->main,CU->divider),YAxis);
-    }
+  const Geometry::Vec3D LPoint=
+    (!CU->divider.isEmpty()) ?
+    SurInter::getLinePoint(Org+YAxis,-YAxis,CU->main,CU->divider) : 
+    SurInter::getLinePoint(Org+YAxis,-YAxis,CU->main,Org);
+
+  FC.setConnect(linkIndex,LPoint,YAxis);
   return;
 }
   
@@ -477,8 +490,8 @@ ExternalCut::makeShiftedSurf(ModelSupport::surfRegister& SMap,
   */
 {
   ELog::RegMethod RegA("ExternalCut","makeShiftedSurf(HR)");
-  
-  std::set<int> FS=HR.getSurfSet();
+
+  const std::set<int> FS=HR.getSignedSurfaceNumbers();
   for(const int& refSN : FS)
     {
       const Geometry::Surface* SPtr=
@@ -508,7 +521,7 @@ ExternalCut::makeExpandedSurf(ModelSupport::surfRegister& SMap,
 {
   ELog::RegMethod RegA("ExternalCut","makeExpandedSurf(HR)");
   
-  std::set<int> FS=HR.getSurfSet();
+  const std::set<int> FS=HR.getSignedSurfaceNumbers();
   for(const int& SN : FS)
     {
       const Geometry::Surface* SPtr=

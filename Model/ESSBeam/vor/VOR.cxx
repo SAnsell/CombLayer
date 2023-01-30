@@ -69,7 +69,8 @@
 #include "AttachSupport.h"
 #include "beamlineSupport.h"
 #include "GuideItem.h"
-#include "GuideLine.h"
+#include "GuideUnit.h"
+#include "PlateUnit.h"
 #include "DiskChopper.h"
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
@@ -92,23 +93,23 @@ VOR::VOR(const std::string& keyName) :
   attachSystem::CopiedComp("vor",keyName),
   vorAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
 
-  FocusA(new beamlineSystem::GuideLine(newName+"FA")),
+  FocusA(new beamlineSystem::PlateUnit(newName+"FA")),
 
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
-  FocusB(new beamlineSystem::GuideLine(newName+"FB")),
+  FocusB(new beamlineSystem::PlateUnit(newName+"FB")),
 
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
-  FocusC(new beamlineSystem::GuideLine(newName+"FC")),
+  FocusC(new beamlineSystem::PlateUnit(newName+"FC")),
 
   ChopperA(new essConstruct::SingleChopper(newName+"ChopperA")),
   DDisk(new essConstruct::DiskChopper(newName+"DBlade")),
 
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
-  FocusD(new beamlineSystem::GuideLine(newName+"FD")),
+  FocusD(new beamlineSystem::PlateUnit(newName+"FD")),
   
   BInsert(new BunkerInsert(newName+"BInsert")),
   VPipeWall(new constructSystem::VacuumPipe(newName+"PipeWall")),
-  FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
+  FocusWall(new beamlineSystem::PlateUnit(newName+"FWall")),
 
   OutPitA(new constructSystem::ChopperPit(newName+"OutPitA")),
   ChopperOutA(new essConstruct::SingleChopper(newName+"ChopperOutA")),
@@ -117,7 +118,7 @@ VOR::VOR(const std::string& keyName) :
 
   ShieldA(new constructSystem::LineShield(newName+"ShieldA")),
   VPipeOutA(new constructSystem::VacuumPipe(newName+"PipeOutA")),
-  FocusOutA(new beamlineSystem::GuideLine(newName+"FOutA")),
+  FocusOutA(new beamlineSystem::PlateUnit(newName+"FOutA")),
 
   OutPitB(new constructSystem::ChopperPit(newName+"OutPitB")),
   ChopperOutB(new essConstruct::SingleChopper(newName+"ChopperOutB")),
@@ -127,7 +128,7 @@ VOR::VOR(const std::string& keyName) :
 
   ShieldB(new constructSystem::LineShield(newName+"ShieldB")),
   VPipeOutC(new constructSystem::VacuumPipe(newName+"PipeOutC")),
-  FocusOutC(new beamlineSystem::GuideLine(newName+"FOutC")),
+  FocusOutC(new beamlineSystem::PlateUnit(newName+"FOutC")),
   
   Cave(new DHut(newName+"Cave")),
   CavePort(new constructSystem::HoleShape(newName+"CavePort")),
@@ -204,18 +205,18 @@ VOR::buildBunkerUnits(Simulation& System,
   VPipeB->createAll(System,FA,startIndex);
 
   FocusB->addInsertCell(VPipeB->getCells("Void"));
-  FocusB->createAll(System,*VPipeB,0,*VPipeB,0);
+  FocusB->createAll(System,*VPipeB,0);
 
   VPipeC->addAllInsertCell(bunkerVoid);
-  VPipeC->createAll(System,FocusB->getKey("Guide0"),2);
+  VPipeC->createAll(System,*FocusB,2);
 
   FocusC->addInsertCell(VPipeC->getCells("Void"));
-  FocusC->createAll(System,*VPipeC,0,*VPipeC,0);
+  FocusC->createAll(System,*VPipeC,0);
 
 
   // First (green chopper)
   ChopperA->addInsertCell(bunkerVoid);
-  ChopperA->createAll(System,FocusC->getKey("Guide0"),2);
+  ChopperA->createAll(System,*FocusC,2);
 
   // Double disk chopper
   DDisk->addInsertCell(ChopperA->getCell("Void"));
@@ -227,7 +228,7 @@ VOR::buildBunkerUnits(Simulation& System,
   VPipeD->createAll(System,ChopperA->getKey("Beam"),2);
 
   FocusD->addInsertCell(VPipeD->getCells("Void"));
-  FocusD->createAll(System,*VPipeD,0,*VPipeD,0);
+  FocusD->createAll(System,*VPipeD,0);
 
   return;
 }
@@ -256,7 +257,7 @@ VOR::buildIsolated(Simulation& System,const int voidCell)
     {
       buildBunkerUnits(System,*FStart,startIndex,voidCell);
       // Set the start point fo rb
-      FStart= &(FocusD->getKey("Guide0"));
+      FStart= FocusD.get();
       startIndex= 2;
     }
   if (stopPoint==2 || stopPoint==1) return;
@@ -267,8 +268,8 @@ VOR::buildIsolated(Simulation& System,const int voidCell)
       VPipeWall->createAll(System,*FStart,startIndex);
       
       FocusWall->addInsertCell(VPipeWall->getCell("Void"));
-      FocusWall->createAll(System,*VPipeWall,0,*VPipeWall,0);
-      FStart= &(FocusWall->getKey("Guide0"));
+      FocusWall->createAll(System,*VPipeWall,0);
+      FStart= FocusWall.get();
       startIndex=2;
       OutPitT0->addFrontWall(*VPipeWall,2);
 
@@ -327,37 +328,39 @@ VOR::build(Simulation& System,
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);
   FocusA->setBack(GItem.getKey("Beam"),-2);
-  FocusA->createAll(System,*vorAxis,-3,*vorAxis,-3);
+  FocusA->createAll(System,*vorAxis,-3);
   if (stopPoint==1) return;
 
-  buildBunkerUnits(System,FocusA->getKey("Guide0"),2,
+  buildBunkerUnits(System,*FocusA,2,
                    bunkerObj.getCell("MainVoid"));
 
   if (stopPoint==2) return;
 
   // Make bunker insert
-  BInsert->setBunkerObject(bunkerObj);
-  BInsert->createAll(System,FocusD->getKey("Guide0"),-1);
+  BInsert->setCutSurf("front",bunkerObj,-1);
+  BInsert->setCutSurf("back",bunkerObj,-2);
+  BInsert->createAll(System,*FocusD,2);
   attachSystem::addToInsertLineCtrl(System,bunkerObj,"frontWall",
 				    *BInsert,*BInsert);
+
 
   VPipeWall->addAllInsertCell(BInsert->getCell("Void"));
   VPipeWall->createAll(System,*BInsert,-1);
 
     // using 7 : mid point
   FocusWall->addInsertCell(VPipeWall->getCells("Void"));
-  FocusWall->createAll(System,*VPipeWall,0,*VPipeWall,0);
+  FocusWall->createAll(System,*VPipeWall,0);
 
   
   if (stopPoint==3) return;
 
   OutPitA->addInsertCell(voidCell);
   OutPitA->addFrontWall(bunkerObj,2);
-  OutPitA->createAll(System,FocusWall->getKey("Guide0"),2);
+  OutPitA->createAll(System,*FocusWall,2);
 
   // First Chopper
   ChopperOutA->addInsertCell(OutPitA->getCells("Void"));
-  ChopperOutA->createAll(System,FocusWall->getKey("Guide0"),2);
+  ChopperOutA->createAll(System,*FocusWall,2);
 
   // Double disk chopper
   FOCDisk->addInsertCell(ChopperOutA->getCell("Void"));
@@ -367,49 +370,49 @@ VOR::build(Simulation& System,
   
   FOCExitPort->addInsertCell(OutPitA->getCells("MidLayerBack"));
   FOCExitPort->addInsertCell(OutPitA->getCells("Collet"));
-  FOCExitPort->setFaces(OutPitA->getKey("Inner").getFullRule(2),
-                       OutPitA->getKey("Mid").getFullRule(-2));
-  FOCExitPort->createAll(System,OutPitA->getKey("Inner"),2);
+  FOCExitPort->setCutSurf("front",*OutPitA,"innerBack");
+  FOCExitPort->setCutSurf("back",*OutPitA,"#midBack");  
+  FOCExitPort->createAll(System,*OutPitA,"innerBack");
 
 
     // First put pit into the main void
   OutPitB->addInsertCell(voidCell);
-  OutPitB->createAll(System,OutPitA->getKey("Inner"),0);
+  OutPitB->createAll(System,*OutPitA,0);
 
   FOCEntryPortB->addInsertCell(OutPitB->getCells("MidLayerFront"));
-  FOCEntryPortB->setFaces(OutPitB->getKey("Inner").getFullRule(1),
-			  OutPitB->getKey("Mid").getFullRule(-1));
-  FOCEntryPortB->createAll(System,OutPitB->getKey("Inner"),1);
+  FOCEntryPortB->setCutSurf("front",*OutPitB,"innerFront");
+  FOCEntryPortB->setCutSurf("back",*OutPitB,"#midFront");  
+  FOCEntryPortB->createAll(System,*OutPitB,"innerFront");
 
   
   FOCExitPortB->addInsertCell(OutPitB->getCells("MidLayerBack"));
   FOCExitPortB->addInsertCell(OutPitB->getCells("Collet"));
-  FOCExitPortB->setFaces(OutPitB->getKey("Inner").getFullRule(2),
-                       OutPitB->getKey("Mid").getFullRule(-2));
-  FOCExitPortB->createAll(System,OutPitB->getKey("Inner"),2);
+  FOCExitPortB->setCutSurf("front",*OutPitB,"innerBack");
+  FOCExitPortB->setCutSurf("back",*OutPitB,"#midBack");  
+  FOCExitPortB->createAll(System,*OutPitB,"innerBack");
 
   // shielding between PitA and P it B
   ShieldA->addInsertCell(voidCell);
   ShieldA->addInsertCell(OutPitA->getCells("Outer"));
   ShieldA->addInsertCell(OutPitA->getCells("MidLayer"));
-  ShieldA->setFront(OutPitA->getKey("Mid"),2);
+  ShieldA->setFront(*OutPitA,"midBack");
   ShieldA->addInsertCell(OutPitB->getCells("Outer"));
   ShieldA->addInsertCell(OutPitB->getCells("MidLayer"));
-  ShieldA->setBack(OutPitB->getKey("Mid"),1);
-  ShieldA->createAll(System,FocusWall->getKey("Shield"),2);
+  ShieldA->setBack(*OutPitB,"midFront");
+  ShieldA->createAll(System,*FocusWall,2);
 
   VPipeOutA->addAllInsertCell(ShieldA->getCell("Void"));
   VPipeOutA->createAll(System,*ShieldA,-1);
 
   FocusOutA->addInsertCell(VPipeOutA->getCells("Void"));
-  FocusOutA->createAll(System,*VPipeOutA,0,*VPipeOutA,0);
+  FocusOutA->createAll(System,*VPipeOutA,0);
 
     // First Chopper
   ChopperOutB->addInsertCell(OutPitB->getCells("Void"));
-  ChopperOutB->createAll(System,FocusOutA->getKey("Guide0"),2);
+  ChopperOutB->createAll(System,*FocusOutA,2);
   
   Cave->addInsertCell(voidCell);
-  Cave->createAll(System,OutPitB->getKey("Inner"),0);
+  Cave->createAll(System,*OutPitB,0);
 
 
 
@@ -417,24 +420,24 @@ VOR::build(Simulation& System,
   ShieldB->addInsertCell(OutPitB->getCells("Outer"));
   ShieldB->addInsertCell(OutPitB->getCells("MidLayer"));
   ShieldB->addInsertCell(Cave->getCells("Concrete"));
-  ShieldB->setFront(OutPitB->getKey("Mid"),2);
-  ShieldB->setBack(Cave->getKey("Mid"),1);
-  ShieldB->createAll(System,OutPitB->getKey("Inner"),0);
+  ShieldB->setFront(*OutPitB,"midBack");
+  ShieldB->setBack(*Cave,"midFront");
+  ShieldB->createAll(System,*OutPitB,0);
 
   VPipeOutC->addAllInsertCell(ShieldB->getCell("Void"));
   VPipeOutC->createAll(System,*ShieldB,-1);
 
   FocusOutC->addInsertCell(VPipeOutC->getCells("Void"));
-  FocusOutC->createAll(System,*VPipeOutC,0,*VPipeOutC,0);
+  FocusOutC->createAll(System,*VPipeOutC,0);
 
   CavePort->addInsertCell(Cave->getCells("Steel"));
   CavePort->setCutFaceFlag(1);
-  CavePort->setFaces(Cave->getKey("Inner").getFullRule(1),
-		     Cave->getKey("Mid").getFullRule(-1));
-  CavePort->createAll(System,FocusOutC->getKey("Guide0"),2);
+  CavePort->setCutSurf("front",*Cave,"innerFront");
+  CavePort->setCutSurf("back",*Cave,"#midFront");  
+  CavePort->createAll(System,*FocusOutC,2);
 
   Tank->addInsertCell(Cave->getCells("Void"));
-  Tank->createAll(System,FocusOutC->getKey("Guide0"),2);
+  Tank->createAll(System,*FocusOutC,2);
   return;
 }
 

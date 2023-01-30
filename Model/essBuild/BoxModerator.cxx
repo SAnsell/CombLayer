@@ -3,7 +3,7 @@
  
  * File:   essBuild/BoxModerator.cxx
  *
- * Copyright (c) 2004-2019 by Konstantin Batkov / Stuart Ansell
+ * Copyright (c) 2004-2022 by Konstantin Batkov / Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,8 +41,6 @@
 #include "OutputLog.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
@@ -59,6 +57,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
 #include "BaseMap.h"
@@ -216,77 +215,34 @@ BoxModerator::createObjects(Simulation& System)
   ELog::RegMethod RegA("BoxModerator","createObjects");
 
   // getSideRule contains only side surfaces, while getExclude - also top/bottom
-  const std::string sideRule=getSideRule(); // ContainedComp::getExclude();
+  const HeadRule sideHR(getSideRule().complement());
 
-  HeadRule HR(sideRule);
-  HR.makeComplement();
 
-  std::string Out;
+  HeadRule HR;
 
-  if (wallDepth>Geometry::zeroTol) // \todo SA: why CL can't take care about it?
+  if (wallDepth>Geometry::zeroTol) 
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," -7 5 -15 ");  
-      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+HR.display()));
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 5 -15");  
+      System.addCell(cellIndex++,wallMat,0.0,HR*sideHR);
     }
 
-  if (wallHeight>Geometry::zeroTol) // \todo SA: why CL can't take care about it?
+  if (wallHeight>Geometry::zeroTol) 
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," -7 16 -6 ");  
-      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+HR.display()));
-      // otherwise split complicated cell by parts:
-      /*      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+LeftWater->getSideRule()));
-      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+RightWater->getSideRule()));
-      HeadRule bfHR;
-      bfHR.procString(LeftUnit->getSideRule());
-      bfHR.addUnion(RightUnit->getSideRule());
-      bfHR.addUnion(MidH2->getSideRule());
-      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+bfHR.display()));*/
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 16 -6");  
+      System.addCell(cellIndex++,wallMat,0.0,HR*sideHR);
     }
 
-  
-  
-  // getSideRule contains only side surfaces, while getExclude - also top/bottom
-  const std::string Exclude=sideRule;//ContainedComp::getExclude();
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 15 -16 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+Exclude));
-  setCell("ambientVoid", cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 15 -16");
+  makeCell("ambientVoid",System,cellIndex++,0,0.0,HR*sideHR);
 
   clearRules();
-  addOuterSurf(Out);
+  addOuterSurf(HR);
   
   return;
 }
-  
 
-int
-BoxModerator::getCommonSurf(const long int) const
-  /*!
-    Only components have reference values
-    \param  :: sideIndex
-    \return surface number
-  */
-  
-{
-  ELog::RegMethod RegA("BoxModerator","getCommonSurf");
-  throw ColErr::AbsObjMethod("Not implemented yet");
-}
-
-int
-BoxModerator::getLayerSurf(const size_t,const long int) const
-/*!
-  [PLACEHOLDER] Only components have reference values
-    \param  :: layer, 0 is inner moderator [0-6]
-    \param  :: Side [0-3] // mid sides   
-  \return layer surface
-  */
-{
-  ELog::RegMethod RegA("BoxModerator","getLayerSurf");
-  throw ColErr::AbsObjMethod("Not implemented yet");
-}
-
-std::string
-BoxModerator::getLayerString(const size_t,const long int) const
+HeadRule 
+BoxModerator::getLayerHR(const size_t,const long int) const
   /*!
     Only components have reference values [PLACEHOLDER]
     \param  :: layer, 0 is inner moderator [0-6]
@@ -380,7 +336,7 @@ BoxModerator::getComponent(const std::string& compName) const
 }
 
 
-std::string
+HeadRule
 BoxModerator::getSideRule() const
 /*
   Return side rule
@@ -395,7 +351,7 @@ BoxModerator::getSideRule() const
   //  HR.addUnion(RightWater->getSideRule());
   HR.makeComplement();
 
-  return HR.display();
+  return HR;
 }
 
 std::string

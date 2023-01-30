@@ -73,9 +73,9 @@ namespace xraySystem
 {
 
 MonoShutter::MonoShutter(const std::string& Key) :
+  attachSystem::FixedRotate(Key,3),
   attachSystem::ContainedGroup("Main","FlangeA","FlangeB",
 			       "ShutterA","ShutterB"),
-  attachSystem::FixedRotate(Key,3),
   attachSystem::ExternalCut(),
   attachSystem::SurfMap(),
   attachSystem::CellMap(),
@@ -158,36 +158,36 @@ MonoShutter::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("MonoShutter","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -7 ");
-  makeCell("DivideAVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -7");
+  makeCell("DivideAVoid",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 7 ");
-  makeCell("DivideA",System,cellIndex++,dMat,0.0,Out+
-	   shutterPipe->getSurfString("VoidCyl"));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 7");
+  makeCell("DivideA",System,cellIndex++,dMat,0.0,HR*
+	   shutterPipe->getSurfRules("VoidCyl"));
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 -7 ");
-  makeCell("DivideBVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 -7");
+  makeCell("DivideBVoid",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 7 ");
-  makeCell("DivideB",System,cellIndex++,dMat,0.0,Out+
-	   shutterPipe->getSurfString("VoidCyl"));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 7");
+  makeCell("DivideB",System,cellIndex++,dMat,0.0,HR*
+	   shutterPipe->getSurfRules("VoidCyl"));
 
   // Special cells for replacing splitPipe->getCell("Void")
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1  ");
-  makeCell("FrontVoid",System,cellIndex++,0,0.0,Out+
-	   shutterPipe->getSurfString("VoidFront")+
-	   shutterPipe->getSurfString("VoidCyl"));
+  HR=HeadRule(SMap,buildIndex,-1);
+  makeCell("FrontVoid",System,cellIndex++,0,0.0,HR*
+	   shutterPipe->getSurfRules("VoidFront")*
+	   shutterPipe->getSurfRules("VoidCyl"));
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -11");
+  makeCell("MidVoid",System,cellIndex++,0,0.0,HR*
+	   shutterPipe->getSurfRules("VoidCyl"));
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -11  ");
-  makeCell("MidVoid",System,cellIndex++,0,0.0,Out+
-	   shutterPipe->getSurfString("VoidCyl"));
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 12  ");
-  makeCell("BackVoid",System,cellIndex++,0,0.0,Out+
-	   shutterPipe->getSurfString("VoidBack")+
-	   shutterPipe->getSurfString("VoidCyl"));
+  HR=HeadRule(SMap,buildIndex,12);
+  makeCell("BackVoid",System,cellIndex++,0,0.0,HR*
+	   shutterPipe->getSurfRules("VoidBack")*
+	   shutterPipe->getSurfRules("VoidCyl"));
 
 
   const int CN=shutterPipe->getCell("Void");

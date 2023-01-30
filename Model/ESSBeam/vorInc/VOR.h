@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuildInc/VOR.h
+ * File:   vorInc/VOR.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,12 @@ namespace attachSystem
 namespace instrumentSystem
 {
   class CylSample;
+}
+
+namespace beamlineSystem
+{
+  class BenderUnit;
+  class PlateUnit;
 }
 
 namespace constructSystem
@@ -73,17 +79,17 @@ class VOR : public attachSystem::CopiedComp
   std::shared_ptr<attachSystem::FixedRotate> vorAxis;
 
   /// Elliptic forcus in bulkshield [m5]
-  std::shared_ptr<beamlineSystem::GuideLine> FocusA;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusA;
 
    /// Pipe between in gamma sheild
   std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
   /// Elliptic guide from 5.5 to 6 metre
-  std::shared_ptr<beamlineSystem::GuideLine> FocusB;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusB;
 
   /// Pipe from gamma shield to first chopper [at 9.5m]
   std::shared_ptr<constructSystem::VacuumPipe> VPipeC;
   /// Elliptic guide from 6m to 9.5m
-  std::shared_ptr<beamlineSystem::GuideLine> FocusC;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusC;
 
   /// Vac box for first chopper
   std::shared_ptr<essConstruct::SingleChopper> ChopperA;
@@ -94,13 +100,13 @@ class VOR : public attachSystem::CopiedComp
   /// Pipe to bunker Insert
   std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
   /// Elliptic guide to bunker inset
-  std::shared_ptr<beamlineSystem::GuideLine> FocusD;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusD;
   /// Bunker insert
   std::shared_ptr<essSystem::BunkerInsert> BInsert;
   /// Pipe in bunker Insert
   std::shared_ptr<constructSystem::VacuumPipe> VPipeWall;
   /// Elliptic forcus in bulkshield [m2.5] 
-  std::shared_ptr<beamlineSystem::GuideLine> FocusWall;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusWall;
 
 
   /// Shield for Chopper Out-A
@@ -118,7 +124,7 @@ class VOR : public attachSystem::CopiedComp
   /// Pipe leaving bunker
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutA;
   /// Guide leaving the bunker wall
-  std::shared_ptr<beamlineSystem::GuideLine> FocusOutA;  
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusOutA;  
 
   /// Shield for Chopper Out-A
   std::shared_ptr<constructSystem::ChopperPit> OutPitB;
@@ -136,7 +142,7 @@ class VOR : public attachSystem::CopiedComp
   /// Pipe leaving bunker
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutC;
   /// Guide leaving the bunker wall
-  std::shared_ptr<beamlineSystem::GuideLine> FocusOutC;  
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusOutC;  
   
   /// Cave
   std::shared_ptr<DHut> Cave;

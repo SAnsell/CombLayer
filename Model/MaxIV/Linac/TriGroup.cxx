@@ -3,7 +3,7 @@
 
  * File:   Linac/TriGroup.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -324,99 +324,99 @@ TriGroup::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("TriGroup","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
-  const std::string frontStr=ExternalCut::getRuleStr("front");
+  const HeadRule frontHR=ExternalCut::getRule("front");
 
   // Void
-  Out=ModelSupport::getComposite(SMap,buildIndex,"3 -4  5 -6 -2 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4  5 -6 -2");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"13 -14  15 -16 -2 (-3:4:-5:6) ");
-  makeCell("Walls",System,cellIndex++,wallMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"13 -14  15 -16 -2 (-3:4:-5:6)");
+  makeCell("Walls",System,cellIndex++,wallMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-	"2 13 -14  15 -16 -12 107 (-203:204:-205:206) (-303:304:-305:306)" );
-  makeCell("EndWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+	"2 13 -14  15 -16 -12 107 (-203:204:-205:206) (-303:304:-305:306)");
+  makeCell("EndWall",System,cellIndex++,wallMat,0.0,HR);
 
   // FLANGE Front:
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " -11 -7 (-13 : 14 : -15 : 16) ");
-  makeCell("FrontFlange",System,cellIndex++,flangeMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				" -11 -7 (-13 : 14 : -15 : 16)");
+  makeCell("FrontFlange",System,cellIndex++,flangeMat,0.0,HR*frontHR);
 
   // TOP Pipe
-  Out=ModelSupport::getComposite(SMap,buildIndex,"2 -102 -107 ");
-  makeCell("TopVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -102 -107");
+  makeCell("TopVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"12 -102 -117 107");
-  makeCell("TopPipe",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -102 -117 107");
+  makeCell("TopPipe",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"112 -102 -127 117");
-  makeCell("TopFlange",System,cellIndex++,flangeMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"112 -102 -127 117");
+  makeCell("TopFlange",System,cellIndex++,flangeMat,0.0,HR);
 
 
   // Mid Pipe
-  Out=ModelSupport::getComposite(SMap,buildIndex,"2 203 -204 205 -206 -202 ");
-  makeCell("MidVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 203 -204 205 -206 -202");
+  makeCell("MidVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"12 -202 213 -214 215 -216 (-203:204:-205:206)");
-  makeCell("MidPipe",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("MidPipe",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"-202 222 -227 (-213:214:-215:216)");
-  makeCell("MidFlange",System,cellIndex++,flangeMat,0.0,Out); // CF viewport
+  makeCell("MidFlange",System,cellIndex++,flangeMat,0.0,HR); // CF viewport
 
    // Bend Pipe
-  Out=ModelSupport::getComposite(SMap,buildIndex,"2 303 -304 305 -306 -302 ");
-  makeCell("BendVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 303 -304 305 -306 -302");
+  makeCell("BendVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"302 303 -304 405 -406 -402 ");
-  makeCell("BendVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"302 303 -304 405 -406 -402");
+  makeCell("BendVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"12 -302 313 -314 315 -316 (-303:304:-305:306)");
-  makeCell("BendPipe",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("BendPipe",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"302 -402 313 -314 415 -416 (-303:304:-405:406)");
-  makeCell("BendStr",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("BendStr",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"-402 422 -427 (-313:314:-415:416)");
-  makeCell("BendFlange",System,cellIndex++,flangeMat,0.0,Out);
+  makeCell("BendFlange",System,cellIndex++,flangeMat,0.0,HR);
 
 
   // outer boundary [flange front/back]
-  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 15 -16 -12");
-  addOuterSurf("Main",Out+frontStr);
-  Out=ModelSupport::getComposite(SMap,buildIndex," -11 -7");
-  addOuterSurf("FFlange",Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 13 -14 15 -16 -12");
+  addOuterSurf("Main",HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -11 -7");
+  addOuterSurf("FFlange",HR*frontHR);
 
 
   // outer boundary [flange front/back]
-  Out=ModelSupport::getComposite(SMap,buildIndex,"12 -112 -117");
-  addOuterSurf("Top",Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -112 -117");
+  addOuterSurf("Top",HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 112 -102 -127");
-  addOuterSurf("TFlange",Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 112 -102 -127");
+  addOuterSurf("TFlange",HR);
 
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"12 213 -214 215 -216 -202");
-  addOuterSurf("Mid",Out);
+  addOuterSurf("Mid",HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"222 -227 -202");
-  addOuterSurf("MFlange",Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"222 -227 -202");
+  addOuterSurf("MFlange",HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"12 313 -314 315 -316 -302");
-  addOuterSurf("Bend",Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 313 -314 315 -316 -302");
+  addOuterSurf("Bend",HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"302 313 -314 415 -416 -402");
-  addOuterSurf("BendStr",Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"302 313 -314 415 -416 -402");
+  addOuterSurf("BendStr",HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"422 -427 -402");
-  addOuterSurf("BFlange",Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"422 -427 -402");
+  addOuterSurf("BFlange",HR);
 
 
   return;
@@ -447,10 +447,10 @@ TriGroup::createLinks()
   FixedComp::nameSideIndex(3,"magnetExit");
 
   // top lift point : Out is an complemnt of the volume
-  std::string Out;
+  HeadRule HR;
   FixedComp::setConnect(7,Origin+Z*(wallThick+mainHeight/2.0),Z);
-  Out=ModelSupport::getComposite(SMap,buildIndex," (-13 : 14 : -15 : 16) ");
-  FixedComp::setLinkSurf(7,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(-13 : 14 : -15 : 16)");
+  FixedComp::setLinkSurf(7,HR);
 
   FixedComp::nameSideIndex(7,"outerPipe");
 

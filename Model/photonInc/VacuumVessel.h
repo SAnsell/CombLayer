@@ -44,8 +44,8 @@ namespace photonSystem
 */
 
 class VacuumVessel :
-    public attachSystem::ContainedComp,
     public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
     public attachSystem::CellMap
 {
  private:
@@ -71,9 +71,6 @@ class VacuumVessel :
   std::shared_ptr<constructSystem::RingFlange> CentPort;
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -85,7 +82,8 @@ class VacuumVessel :
   VacuumVessel(const VacuumVessel&);
   VacuumVessel& operator=(const VacuumVessel&);
   virtual ~VacuumVessel();
-  
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 };

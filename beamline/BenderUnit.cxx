@@ -3,7 +3,7 @@
  
  * File:   beamline/BenderUnit.cxx 
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -38,45 +39,51 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "Vert2D.h"
-#include "Convex2D.h"
 #include "polySupport.h"
 #include "surfRegister.h"
-#include "Surface.h"
 #include "generateSurf.h"
 #include "ModelSupport.h"
+#include "varList.h"
+#include "Code.h"
+#include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "ShapeUnit.h"
+#include "FixedRotate.h"
+#include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
+#include "ExternalCut.h"
+#include "FrontBackCut.h"
+#include "groupRange.h"
+#include "objectGroups.h"
+#include "Simulation.h"
+#include "GuideUnit.h"
+
 #include "BenderUnit.h"
 
 namespace beamlineSystem
 {
 
-
-BenderUnit::BenderUnit(const int ON,const int LS)  :
-  ShapeUnit(ON,LS)
+BenderUnit::BenderUnit(const std::string& key)  :
+  GuideUnit(key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
-    \param ON :: offset number
-    \param LS :: Layer separation
+    \param key :: keyName
   */
-{}
+{
+  resetYRotation=1;
+}
 
 BenderUnit::BenderUnit(const BenderUnit& A) : 
-  ShapeUnit(A),RCent(A.RCent),RAxis(A.RAxis),RPlane(A.RPlane),
-  Qxy(A.Qxy),Qz(A.Qz),Radius(A.Radius),
+  GuideUnit(A),
   aHeight(A.aHeight),bHeight(A.bHeight),aWidth(A.aWidth),
-  bWidth(A.bWidth),Length(A.Length),rotAng(A.rotAng),
-  AXVec(A.AXVec),AYVec(A.AYVec),AZVec(A.AZVec),BXVec(A.BXVec),
-  BYVec(A.BYVec),BZVec(A.BZVec)
+  bWidth(A.bWidth),radius(A.radius),rotAng(A.rotAng),
+  rCent(A.rCent),bX(A.bX),bY(A.bY)
   /*!
     Copy constructor
     \param A :: BenderUnit to copy
@@ -93,29 +100,20 @@ BenderUnit::operator=(const BenderUnit& A)
 {
   if (this!=&A)
     {
-      ShapeUnit::operator=(A);
-      RCent=A.RCent;
-      RAxis=A.RAxis;
-      RPlane=A.RPlane;
-      Qxy=A.Qxy;
-      Qz=A.Qz;
-      Radius=A.Radius;
+      GuideUnit::operator=(A);
       aHeight=A.aHeight;
       bHeight=A.bHeight;
       aWidth=A.aWidth;
       bWidth=A.bWidth;
-      Length=A.Length;
+      radius=A.radius;
       rotAng=A.rotAng;
-      AXVec=A.AXVec;
-      AYVec=A.AYVec;
-      AZVec=A.AZVec;
-      BXVec=A.BXVec;
-      BYVec=A.BYVec;
-      BZVec=A.BZVec;
+      rCent=A.rCent;
+      bX=A.bX;
+      bY=A.bY;
     }
   return *this;
 }
-
+  
 BenderUnit::~BenderUnit() 
   /*!
     Destructor
@@ -133,251 +131,223 @@ BenderUnit::clone() const
 }
 
 void
-BenderUnit::setValues(const double H,const double W,
-		      const double L,const double Rad,
-		      const double BA)
+BenderUnit::calcConstValues()
   /*!
-    Quick setting of values
-    \param H :: Height
-    \param W :: Width
-    \param L :: Length
-    \param Rad :: Rad
-    \param BA :: Bend angle relative to Z axis [deg]
+    Basic value constant values
    */
 {
-  ELog::RegMethod RegA("BenderUnit","setValues");
+  ELog::RegMethod RegA("BenderUnit","calcConstValues");
   
-  Radius=Rad;
-  aHeight=H;
-  bHeight=H;
-  aWidth=W;
-  bWidth=W;
-  Length=L;
-  rotAng=BA;
+  const Geometry::Quaternion Qxy=
+    Geometry::Quaternion::calcQRot(rotAng,-Z);  
+
+  rCent=Origin+X*radius;
+  endPt=rCent-X*(radius*cos(rotAng))+Y*(radius*sin(rotAng));
+  bY=Qxy.makeRotate(Y);
+  bX=Qxy.makeRotate(X);
   return;
 }
-
-void
-BenderUnit::setValues(const double HA,const double HB,
-		      const double WA,const double WB,
-		      const double L,const double Rad,
-		      const double BA)
-  /*!
-    Quick setting of values
-    \param HA :: Height [start]
-    \param HB :: Height [End]
-    \param WA :: Width [start]
-    \param WB :: Width [end]
-    \param L :: Length [centre line of bend]
-    \param Rad :: Radius of bend [centre line]
-    \param BA :: Bend angle relative to Z axis [deg]
-   */
-{
-  ELog::RegMethod RegA("BenderUnit","setValues");
   
-  Radius=Rad;
-  aHeight=HA;
-  bHeight=HB;
-  aWidth=WA;
-  bWidth=WB;
-  Length=L;
-  rotAng=BA;
-  return;
-}
-
-void
-BenderUnit::setOriginAxis(const Geometry::Vec3D& O,
-			  const Geometry::Vec3D& XAxis,
-			  const Geometry::Vec3D& YAxis,
-			  const Geometry::Vec3D& ZAxis)
-   /*!
-     Set axis and endpoints using a rotation 
-     \param O :: Origin
-     \param XAxis :: Input X Axis
-     \param YAxis :: Input Y Axis
-     \param ZAxis :: Input Z Axis
-    */
-{
-  ELog::RegMethod RegA("BenderUnit","setOriginAxis");
-
-  begPt=O;
-  endPt=O;
-  AXVec=XAxis;
-  AYVec=YAxis;
-  AZVec=ZAxis;
-
-  BXVec=XAxis;
-  BYVec=YAxis;
-  BZVec=ZAxis;
-
-  // Now calculate rotation axis of main bend:
-  RAxis=ZAxis;
-  Qz=Geometry::Quaternion::calcQRotDeg(rotAng,YAxis);
-  Qz.rotate(RAxis);
-
-
-  
-  RPlane=YAxis*RAxis;
-  RCent=begPt+RPlane*Radius;
-
-  // calc angle and rotation:
-  const double theta = Length/Radius;
-  endPt+=RPlane*(2.0*Radius*pow(sin(theta/2.0),2.0))+AYVec*(Radius*sin(theta));
-  Qxy=Geometry::Quaternion::calcQRot(-theta,RAxis);
-
-  Qxy.rotate(BXVec);
-  Qxy.rotate(BYVec);
-  Qxy.rotate(BZVec);
-
-  return;
-}
-
 Geometry::Vec3D
-BenderUnit::calcWidthCent(const bool plusSide) const
+BenderUnit::calcCentre(const double aLen,const double bLen) const
   /*!
     Calculate the shifted centre based on the difference in
     widths. Keeps the original width point correct (symmetric round
     origin point) -- then track the exit track + / - round the centre line
     bend.
-    \param plusSide :: to use the positive / negative side
+    The method constructs the mid point of the line A-B
+    and then determine the distance to the centre. It also
+    constructs the normal to the line 
     \return new centre
   */
 {
-  ELog::RegMethod RegA("BenderUnit","calcWidthCent");
+  ELog::RegMethod RegA("BenderUnit","calcMidTrack");
 
-  const double DW=(bWidth-aWidth)/2.0;
-  const double pSign=(plusSide) ? -1.0 : 1.0;
-
-  const Geometry::Vec3D nEndPt=endPt+BXVec*(pSign*DW);
-  const Geometry::Vec3D midPt=(nEndPt+begPt)/2.0;
-  const Geometry::Vec3D LDir=((nEndPt-begPt)*RAxis).unit();
-    
-  const Geometry::Vec3D AMid=(nEndPt-begPt)/2.0;
-  std::pair<std::complex<double>,
-	    std::complex<double> > OutValues;
-  const size_t NAns=solveQuadratic(1.0,2.0*AMid.dotProd(LDir),
-				   AMid.dotProd(AMid)-Radius*Radius,
-				   OutValues);
-  if (!NAns) 
-    {
-      ELog::EM<<"Failed to find quadratic solution for bender"<<ELog::endErr;
-      return RCent;
-    }
-
-  if (std::abs(OutValues.first.imag())<Geometry::zeroTol &&
-      OutValues.first.real()>0.0)
-    return midPt+LDir*OutValues.first.real();
-  if (std::abs(OutValues.second.imag())<Geometry::zeroTol &&
-      OutValues.second.real()>0.0)
-    return midPt+LDir*OutValues.second.real();
-  
-  return RCent;
+  return calcMidTrack(aLen,bLen).first;
 }
 
+std::pair<Geometry::Vec3D,Geometry::Vec3D>
+BenderUnit::calcMidTrack(const double aLen,const double bLen) const
+  /*!
+    Calculate the shifted centre based on the difference in
+    widths. Keeps the original width point correct (symmetric round
+    origin point) -- then track the exit track + / - round the centre line
+    bend.
+    The method constructs the mid point of the line A-B
+    and then determine the distance to the centre. It also
+    constructs the normal to the line 
+    \return new centre / normal pointing from centre
+  */
+{
+  ELog::RegMethod RegA("BenderUnit","calcMidTrack");
+
+  const Geometry::Vec3D APt=Origin+X*aLen;
+  const Geometry::Vec3D BPt=endPt+bX*bLen;
+  const Geometry::Vec3D midPt((APt+BPt)/2.0);
+  const double L=APt.Distance(BPt)/2.0;  // lenght of half line
+  const double b=sqrt(radius*radius-L*L);
+  Geometry::Vec3D norm=Z*(BPt-APt).unit();
+
+  if (X.dotProd(norm)<0.0)
+    norm*=-1.0;
+  return std::pair<Geometry::Vec3D,Geometry::Vec3D>
+    (midPt+norm*b,-norm);
+}
 
 void
-BenderUnit::createSurfaces(ModelSupport::surfRegister& SMap,
-                           const std::vector<double>& Thick)
+BenderUnit::populate(const FuncDataBase& Control)
+  /*!
+    Sets the appropiate APts/BPtrs based on the type of
+    guide needed
+    \param Control :: DataBase of varaibels
+   */
+{
+  ELog::RegMethod RegA("PlateUnit","populate");
+
+  GuideUnit::populate(Control);
+
+  aHeight=Control.EvalHead<double>(keyName,"AHeight","Height");
+  aWidth=Control.EvalHead<double>(keyName,"AWidth","Width");
+  bHeight=Control.EvalHead<double>(keyName,"BHeight","Height");
+  bWidth=Control.EvalHead<double>(keyName,"BWidth","Width");
+
+  radius=Control.EvalDefVar<double>(keyName+"Radius",-1.0);
+  rotAng=Control.EvalDefVar<double>(keyName+"RotAngle",-1.0);
+
+  if (radius>Geometry::zeroTol && rotAng>Geometry::zeroTol)
+    length=rotAng*radius;
+  else if (radius>Geometry::zeroTol)
+    rotAng=length/radius;
+  else if (rotAng>Geometry::zeroTol)
+    radius=length/rotAng;
+
+  return;
+}
+
+void
+BenderUnit::createSurfaces()
   /*!
     Build the surfaces for the track
-    \param SMap :: SMap to use
-    \param Thick :: Thickness for each layer
    */
 {
   ELog::RegMethod RegA("BenderUnit","createSurfaces");
 
-  Geometry::Vec3D PCentre= calcWidthCent(1);
-  Geometry::Vec3D MCentre= calcWidthCent(0);
-  // Make divider plane +ve required
-  const double maxThick=Thick.back()+(aWidth+bWidth);
+  calcConstValues();
 
-
-  ModelSupport::buildPlane(SMap,shapeIndex+1,
-			   begPt+RPlane*maxThick,
-			   endPt+RPlane*maxThick,
-			   endPt+RPlane*maxThick+RAxis,
-			   -RPlane);
-  for(size_t j=0;j<Thick.size();j++)
+  if (!isActive("front"))
     {
-      const int SN(shapeIndex+static_cast<int>(j)*layerSep);
-      ModelSupport::buildPlane(SMap,SN+5,
-			       begPt-RAxis*(aHeight/2.0+Thick[j]),
-			       begPt-RAxis*(aHeight/2.0+Thick[j])+RPlane,
-			       endPt-RAxis*(bHeight/2.0+Thick[j]),
-			       RAxis);
-      ModelSupport::buildPlane(SMap,SN+6,
-			       begPt+RAxis*(aHeight/2.0+Thick[j]),
-			       begPt+RAxis*(aHeight/2.0+Thick[j])+RPlane,
-			       endPt+RAxis*(bHeight/2.0+Thick[j]),
-			       RAxis);
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+      setFront(SMap.realSurf(buildIndex+1));
+    }
+  if (!isActive("back"))
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+2,endPt,bY);
+      setBack(-SMap.realSurf(buildIndex+2));
+    }
+  
 
-      ModelSupport::buildCylinder(SMap,SN+7,MCentre,
-				  RAxis,Radius-(Thick[j]+aWidth/2.0));
-      ModelSupport::buildCylinder(SMap,SN+8,PCentre,
-				  RAxis,Radius+(Thick[j]+aWidth/2.0));
+  const double maxThick=layerThick.back()+(aWidth+bWidth);
+
+  Geometry::Vec3D C,norm;
+  std::tie(C,norm)=calcMidTrack(maxThick,maxThick);
+      
+  ModelSupport::buildPlane(SMap,buildIndex+100,C,norm);
+  
+  int SN(buildIndex);
+
+  double T(0.0);
+  for(size_t i=0;i<layerThick.size();i++)
+    {
+      ModelSupport::buildPlane(SMap,SN+5,Origin-Z*(aHeight/2.0+T),Z);
+      ModelSupport::buildPlane(SMap,SN+6,Origin+Z*(aHeight/2.0+T),Z);
+
+      C=calcCentre(T+aWidth/2.0,T+bWidth/2.0);
+      ModelSupport::buildCylinder(SMap,SN+7,C,Z,radius);
+      C=calcCentre(-T-aWidth/2.0,-T-bWidth/2.0);
+      ModelSupport::buildCylinder(SMap,SN+8,C,Z,radius);
+
+      T+=layerThick[i];
+      SN+=20;
     }
   return;
 }
 
-std::string
-BenderUnit::getString(const ModelSupport::surfRegister& SMap,
-		      const size_t layerN) const
-  /*!
+void
+BenderUnit::createObjects(Simulation& System)
+  /*
     Write string for layer number
-    \param SMap :: Surface register
-    \param layerN :: Layer number
+    \param System :: Simulation
     \return inward string
   */
 {
-  ELog::RegMethod RegA("BenderUnit","getString");
+  ELog::RegMethod RegA("BenderUnit","ceateObjects");
+  
+  const HeadRule fbHR=HeadRule(SMap,buildIndex,100)*
+    getFrontRule()*getBackRule();
 
-  const int SN(static_cast<int>(layerN)*layerSep);
-  return ModelSupport::getComposite
-    (SMap,shapeIndex+SN,shapeIndex," 1M 5 -6 7 -8 ");
+  HeadRule HR;
+
+  HeadRule innerHR;
+  int SN(buildIndex);
+  for(size_t i=0;i<layerThick.size();i++)
+    {
+      HR=ModelSupport::getHeadRule(SMap,SN,"5 -6 7 -8");
+      makeCell("Layer"+std::to_string(i),System,cellIndex++,layerMat[i],0.0,
+	       HR*innerHR*fbHR);
+      innerHR=HR.complement();
+      SN+=20;
+    }
+
+  addOuterSurf(HR*fbHR);
+  return ;
 }
 
 void
-BenderUnit::addSideLinks(const ModelSupport::surfRegister& SMap,
-                         attachSystem::FixedComp& FC) const
+BenderUnit::createLinks()
   /*!
     Add link points to the guide unit
     \param SMap :: Surface Map 
     \param FC :: FixedComp to use
    */
 {
-  ELog::RegMethod RegA("BenderUnit","addSideLinks");
+  ELog::RegMethod RegA("BenderUnit","createLinks");
 
-  FC.setLinkSurf(2,SMap.realSurf(shapeIndex+5));
-  FC.setLinkSurf(3,SMap.realSurf(shapeIndex+6));
-  FC.setLinkSurf(4,SMap.realSurf(shapeIndex+7));
-  FC.setLinkSurf(5,SMap.realSurf(shapeIndex+8));
+  if (resetYRotation)
+    applyAngleRotate(0,-yAngle,0);
 
-  const Geometry::Vec3D MCentre= calcWidthCent(0);
-  FC.setConnect(2,MCentre+RCent*Radius+RAxis*((aHeight+bHeight)/4.0),-RAxis);
-  FC.setConnect(3,MCentre+RCent*Radius+RAxis*((aHeight+bHeight)/4.0),RAxis);
-  FC.setConnect(4,MCentre+RCent*(Radius-aWidth/2.0),-RPlane);
-  FC.setConnect(5,MCentre+RCent*(Radius+aWidth/2.0),RPlane);
+  ExternalCut::createLink("front",*this,0,Origin,-Y);
+  ExternalCut::createLink("back",*this,1,endPt,bY);
+
+  setLinkSurf(2,SMap.realSurf(buildIndex+5));
+  setLinkSurf(3,SMap.realSurf(buildIndex+6));
+  setLinkSurf(4,SMap.realSurf(buildIndex+7));
+  setLinkSurf(5,SMap.realSurf(buildIndex+8));
 
   return;
 }
 
-std::string
-BenderUnit::getExclude(const ModelSupport::surfRegister& SMap,
-		       const size_t layerN) const
-  /*!
-    Write string for layer number
-    \param SMap :: Surface register
-    \param layerN :: Layer number
-    \return outward string
-  */
+void
+BenderUnit::createAll(Simulation& System,
+		      const attachSystem::FixedComp& FC,
+		      const long int sideIndex)
+/*!
+    Construct a Bender unit
+    \param System :: Simulation to use
+    \param FC :: FixedComp to use for basis set
+    \param sideIndex :: side link point
+   */
 {
-  ELog::RegMethod RegA("BenderUnit","getExclude");
+  ELog::RegMethod RegA("BenderUnit","createAll");
+
+  populate(System.getDataBase());
+  createUnitVector(FC,sideIndex);
+
+  createSurfaces();
+  createObjects(System);
+  createLinks();
+  insertObjects(System);
   
-  std::ostringstream cx;
-
-  const int SN(static_cast<int>(layerN)*layerSep);
-  return ModelSupport::getComposite(SMap,shapeIndex+SN," (-5:6:-7:8) ");
+  return;
 }
-
   
 }  // NAMESPACE beamlineSystem

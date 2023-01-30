@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/cosaxs/cosaxsTubeAirBox.cxx
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -52,7 +51,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -66,8 +65,8 @@ namespace xraySystem
 {
 
 cosaxsTubeAirBox::cosaxsTubeAirBox(const std::string& Key)  :
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::FrontBackCut()
@@ -78,8 +77,8 @@ cosaxsTubeAirBox::cosaxsTubeAirBox(const std::string& Key)  :
 {}
 
 cosaxsTubeAirBox::cosaxsTubeAirBox(const cosaxsTubeAirBox& A) :
+  attachSystem::FixedRotate(A),
   attachSystem::ContainedComp(A),
-  attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
@@ -102,8 +101,8 @@ cosaxsTubeAirBox::operator=(const cosaxsTubeAirBox& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
@@ -142,7 +141,7 @@ cosaxsTubeAirBox::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("cosaxsTubeAirBox","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
   width=Control.EvalVar<double>(keyName+"Width");
@@ -151,23 +150,6 @@ cosaxsTubeAirBox::populate(const FuncDataBase& Control)
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-
-  return;
-}
-
-void
-cosaxsTubeAirBox::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: object for origin
-    \param sideIndex :: link point for origin
-  */
-{
-  ELog::RegMethod RegA("cosaxsTubeAirBox","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
 
   return;
 }
@@ -186,7 +168,8 @@ cosaxsTubeAirBox::createSurfaces()
       ExternalCut::setCutSurf("front",SMap.realSurf(buildIndex+1));
 
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*(wallThick),Y);
-    } else
+    }
+  else
     {
       ModelSupport::buildShiftedPlane(SMap, buildIndex+1,
 	      SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
@@ -199,7 +182,8 @@ cosaxsTubeAirBox::createSurfaces()
       ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+12));
 
       ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length),Y);
-    } else
+    }
+  else
     {
       ModelSupport::buildShiftedPlane(SMap, buildIndex+2,
 	      SMap.realPtr<Geometry::Plane>(getBackRule().getPrimarySurface()),
@@ -230,19 +214,19 @@ cosaxsTubeAirBox::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("cosaxsTubeAirBox","createObjects");
 
-  std::string Out;
-  const std::string frontStr(frontRule());
-  const std::string backStr(backRule());
+  HeadRule HR;
+  const HeadRule frontHR(getFrontRule());
+  const HeadRule backHR(getBackRule());
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  makeCell("MainCell",System,cellIndex++,mainMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  makeCell("MainCell",System,cellIndex++,mainMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 13 -14 15 -16 (-1:2:-3:4:-5:6) ");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"13 -14 15 -16 (-1:2:-3:4:-5:6)");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR*frontHR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 15 -16");
-  addOuterSurf(Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 15 -16");
+  addOuterSurf(HR*frontHR*backHR);
 
   return;
 }

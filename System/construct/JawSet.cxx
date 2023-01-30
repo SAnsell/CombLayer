@@ -3,7 +3,7 @@
  
  * File:   construct/JawSet.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,8 +65,8 @@ namespace constructSystem
 {
 
 JawSet::JawSet(const std::string& Key) :
-  attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,2),
+  attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   JawX(new constructSystem::Jaws(Key+"Vert")),
   JawXZ(new constructSystem::Jaws(Key+"Diag"))
@@ -83,8 +83,8 @@ JawSet::JawSet(const std::string& Key) :
  }
 
 JawSet::JawSet(const JawSet& A) : 
-  attachSystem::ContainedComp(A),
   attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
   JawX(A.JawX),JawXZ(A.JawXZ),radius(A.radius),
   length(A.length)
@@ -164,11 +164,11 @@ JawSet::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("JawSet","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7");
-  makeCell("Void",System,cellIndex++,0,0.0,Out);
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -7");
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
+  addOuterSurf(HR);
 
   return;
 }

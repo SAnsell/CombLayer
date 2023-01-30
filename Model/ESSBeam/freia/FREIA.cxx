@@ -69,7 +69,9 @@
 #include "AttachSupport.h"
 #include "beamlineSupport.h"
 #include "GuideItem.h"
-#include "GuideLine.h"
+#include "GuideUnit.h"
+#include "PlateUnit.h"
+#include "BenderUnit.h"
 #include "DiskChopper.h"
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
@@ -91,13 +93,13 @@ FREIA::FREIA(const std::string& keyName) :
   startPoint(0),stopPoint(0),
   freiaAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
 
-  BendA(new beamlineSystem::GuideLine(newName+"BA")),
+  BendA(new beamlineSystem::BenderUnit(newName+"BA")),
 
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
-  BendB(new beamlineSystem::GuideLine(newName+"BB")),
+  BendB(new beamlineSystem::BenderUnit(newName+"BB")),
 
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
-  BendC(new beamlineSystem::GuideLine(newName+"BC")),
+  BendC(new beamlineSystem::BenderUnit(newName+"BC")),
 
   ChopperA(new essConstruct::SingleChopper(newName+"ChopperA")),
   DDisk(new essConstruct::DiskChopper(newName+"DBlade")),
@@ -106,26 +108,26 @@ FREIA::FREIA(const std::string& keyName) :
   WFMDisk(new essConstruct::DiskChopper(newName+"WFMBlade")),
 
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
-  BendD(new beamlineSystem::GuideLine(newName+"BD")),
+  BendD(new beamlineSystem::BenderUnit(newName+"BD")),
 
   ChopperC(new essConstruct::SingleChopper(newName+"ChopperC")),
   FOCDiskC(new essConstruct::DiskChopper(newName+"FOC1Blade")),
 
   VPipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
-  BendE(new beamlineSystem::GuideLine(newName+"BE")),
+  BendE(new beamlineSystem::BenderUnit(newName+"BE")),
   
   ChopperD(new essConstruct::SingleChopper(newName+"ChopperD")),
   WBC2Disk(new essConstruct::DiskChopper(newName+"WBC2Blade")),
 
   VPipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
-  BendF(new beamlineSystem::GuideLine(newName+"BF")),
+  BendF(new beamlineSystem::BenderUnit(newName+"BF")),
 
   ChopperE(new essConstruct::SingleChopper(newName+"ChopperE")),
   FOC2Disk(new essConstruct::DiskChopper(newName+"FOC2Blade")),
 
   BInsert(new BunkerInsert(newName+"BInsert")),
   VPipeWall(new constructSystem::VacuumPipe(newName+"PipeWall")),  
-  FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
+  FocusWall(new beamlineSystem::PlateUnit(newName+"FWall")),
 
   OutPitA(new constructSystem::ChopperPit(newName+"OutPitA")),
   OutACut(new constructSystem::HoleShape(newName+"OutACut")),
@@ -138,7 +140,7 @@ FREIA::FREIA(const std::string& keyName) :
   JawPit(new constructSystem::ChopperPit(newName+"JawPit")),
   ShieldA(new constructSystem::LineShield(newName+"ShieldA")),
   VPipeOutA(new constructSystem::VacuumPipe(newName+"PipeOutA")),
-  FocusOutA(new beamlineSystem::GuideLine(newName+"OutFA")),
+  FocusOutA(new beamlineSystem::PlateUnit(newName+"OutFA")),
 
   CaveJaw(new constructSystem::JawSet(newName+"CaveJaws")),
   OutBCutFront(new constructSystem::HoleShape(newName+"OutBCutFront")),
@@ -236,19 +238,19 @@ FREIA::buildBunkerUnits(Simulation& System,
   VPipeB->createAll(System,FA,startIndex);
 
   BendB->addInsertCell(VPipeB->getCells("Void"));
-  BendB->createAll(System,*VPipeB,0,*VPipeB,0);
+  BendB->createAll(System,*VPipeB,0);
   
   VPipeC->addAllInsertCell(bunkerVoid);
-  VPipeC->createAll(System,BendB->getKey("Guide0"),2);
+  VPipeC->createAll(System,*BendB,2);
 
   BendC->addInsertCell(VPipeC->getCells("Void"));
-  BendC->createAll(System,*VPipeC,0,*VPipeC,0);
+  BendC->createAll(System,*VPipeC,0);
   
   // First (green chopper)
   ChopperA->addInsertCell(bunkerVoid);
   ChopperA->getKey("Main").setAxisControl(3,ZVert);
   ChopperA->getKey("BuildBeam").setAxisControl(3,ZVert);
-  ChopperA->createAll(System,BendC->getKey("Guide0"),2);
+  ChopperA->createAll(System,*BendC,2);
 
   // Double disk chopper
   DDisk->addInsertCell(ChopperA->getCell("Void"));
@@ -271,13 +273,13 @@ FREIA::buildBunkerUnits(Simulation& System,
   VPipeD->createAll(System,ChopperB->getKey("Beam"),2);
 
   BendD->addInsertCell(VPipeD->getCells("Void"));
-  BendD->createAll(System,*VPipeD,0,*VPipeD,0);
+  BendD->createAll(System,*VPipeD,0);
 
   // 8.5m FOC chopper
   ChopperC->addInsertCell(bunkerVoid);
   ChopperC->getKey("Main").setAxisControl(3,ZVert);
   ChopperC->getKey("BuildBeam").setAxisControl(3,ZVert);
-  ChopperC->createAll(System,BendD->getKey("Guide0"),2);
+  ChopperC->createAll(System,*BendD,2);
   // Double disk chopper
   FOCDiskC->addInsertCell(ChopperC->getCell("Void"));
   FOCDiskC->createAll(System,ChopperC->getKey("Main"),0);
@@ -287,13 +289,13 @@ FREIA::buildBunkerUnits(Simulation& System,
   VPipeE->createAll(System,ChopperC->getKey("Beam"),2);
 
   BendE->addInsertCell(VPipeE->getCells("Void"));
-  BendE->createAll(System,*VPipeE,0,*VPipeE,0);
+  BendE->createAll(System,*VPipeE,0);
 
     // 8.5m FOC chopper
   ChopperD->addInsertCell(bunkerVoid);
   ChopperD->getKey("Main").setAxisControl(3,ZVert);
   ChopperD->getKey("BuildBeam").setAxisControl(3,ZVert);
-  ChopperD->createAll(System,BendE->getKey("Guide0"),2);
+  ChopperD->createAll(System,*BendE,2);
   // Double disk chopper
   WBC2Disk->addInsertCell(ChopperD->getCell("Void"));
   WBC2Disk->createAll(System,ChopperD->getKey("Main"),0);
@@ -303,13 +305,13 @@ FREIA::buildBunkerUnits(Simulation& System,
   VPipeF->createAll(System,ChopperD->getKey("Beam"),2);
 
   BendF->addInsertCell(VPipeF->getCells("Void"));
-  BendF->createAll(System,*VPipeF,0,*VPipeF,0);
+  BendF->createAll(System,*VPipeF,0);
 
   // 11.1m FOC chopper
   ChopperE->addInsertCell(bunkerVoid);
   ChopperE->getKey("Main").setAxisControl(3,ZVert);
   ChopperE->getKey("BuildBeam").setAxisControl(3,ZVert);
-  ChopperE->createAll(System,BendF->getKey("Guide0"),2);
+  ChopperE->createAll(System,*BendF,2);
 
   // Double disk chopper
   FOC2Disk->addInsertCell(ChopperE->getCell("Void"));
@@ -343,19 +345,19 @@ FREIA::buildOutGuide(Simulation& System,
 
   OutPitA->addInsertCell(voidCell);
   OutPitA->setAxisControl(3,ZVert);
-  OutPitA->createAll(System,FocusWall->getKey("Guide0"),2);
+  OutPitA->createAll(System,*FocusWall,2);
 
   OutACut->addInsertCell(OutPitA->getCells("MidLayerBack"));
   OutACut->addInsertCell(OutPitA->getCells("Collet"));
-  OutACut->setFaces(OutPitA->getKey("Inner").getFullRule(2),
-                    OutPitA->getKey("Mid").getFullRule(-2));
-  OutACut->createAll(System,FocusWall->getKey("Guide0"),2);
+  OutACut->setCutSurf("front",*OutPitA,"innerBack");
+  OutACut->setCutSurf("back",*OutPitA,"#midBack");
+  OutACut->createAll(System,*FocusWall,2);
 
   // 15m WBC chopper
   ChopperOutA->addInsertCell(OutPitA->getCell("Void"));
   ChopperOutA->getKey("Main").setAxisControl(3,ZVert);
   ChopperOutA->getKey("BuildBeam").setAxisControl(3,ZVert);
-  ChopperOutA->createAll(System,FocusWall->getKey("Guide0"),2);
+  ChopperOutA->createAll(System,*FocusWall,2);
   // Double disk chopper
   WBC3Disk->addInsertCell(ChopperOutA->getCell("Void"));
   WBC3Disk->setOffsetFlag(1);  // Centre disk
@@ -382,48 +384,43 @@ FREIA::buildOutGuide(Simulation& System,
   ShieldA->addInsertCell(OutPitA->getCells("MidLayer"));
   ShieldA->addInsertCell(JawPit->getCells("Outer"));
   ShieldA->addInsertCell(JawPit->getCells("MidLayer"));
-  ShieldA->setFront(OutPitA->getKey("Mid"),2);
-  ShieldA->setBack(JawPit->getKey("Mid"),1);
-  ShieldA->createAll(System,OutPitA->getKey("Inner"),0);
+  ShieldA->setFront(*OutPitA,"midBack");
+  ShieldA->setBack(*JawPit,"midFront");
+  ShieldA->createAll(System,*OutPitA,0);
   //  ShieldA->insertComponent(System,"Void",*VPipeOutA)
 
   VPipeOutA->addAllInsertCell(ShieldA->getCell("Void"));
   VPipeOutA->createAll(System,ChopperOutA->getKey("Beam"),2);
 
   FocusOutA->addInsertCell(VPipeOutA->getCells("Void"));
-  FocusOutA->createAll(System,*VPipeOutA,0,*VPipeOutA,0);
+  FocusOutA->createAll(System,*VPipeOutA,0);
 
   return;
 }
 
 void
-FREIA::buildHut(Simulation& System,
-		const attachSystem::FixedComp&,
-		const long int,
-                const int)
+FREIA::buildHut(Simulation& System)
+
   /*!
     Builds the hut connected to the FixedPoint given
     \param System :: Simulation to build with
-    \param connectFC :: Connection point
-    \param connectIndex :: Connection index
-    \param voidCell :: Main void cell for this model
    */
 {
   ELog::RegMethod RegA("FREIA","buildHut");
 
   CaveJaw->setInsertCell(JawPit->getCell("Void"));
-  CaveJaw->createAll(System,JawPit->getKey("Inner"),0);
+  CaveJaw->createAll(System,*JawPit,0);
 
   OutBCutBack->addInsertCell(JawPit->getCells("MidLayerBack"));
+  OutBCutBack->setCutSurf("front",*JawPit,"innerBack");
+  OutBCutBack->setCutSurf("back",*JawPit,"#midBack");
   OutBCutBack->addInsertCell(JawPit->getCells("Collet"));
-  OutBCutBack->setFaces(JawPit->getKey("Inner").getFullRule(2),
-                        JawPit->getKey("Mid").getFullRule(-2));
-  OutBCutBack->createAll(System,JawPit->getKey("Inner"),2);
+  OutBCutBack->createAll(System,*JawPit,"innerBack");
 
   OutBCutFront->addInsertCell(JawPit->getCells("MidLayerFront"));
-  OutBCutFront->setFaces(JawPit->getKey("Mid").getFullRule(-1),
-                         JawPit->getKey("Inner").getFullRule(1));
-  OutBCutFront->createAll(System,JawPit->getKey("Inner"),-1);
+  OutBCutFront->setCutSurf("front",*JawPit,"#midFront");
+  OutBCutFront->setCutSurf("back",*JawPit,"innerFront");
+  OutBCutFront->createAll(System,*JawPit,"#innerFront");
 
   return;
 }
@@ -463,8 +460,8 @@ FREIA::buildIsolated(Simulation& System,const int voidCell)
       VPipeWall->createAll(System,*FStart,startIndex);
       
       FocusWall->addInsertCell(VPipeWall->getCell("Void"));
-      FocusWall->createAll(System,*VPipeWall,0,*VPipeWall,0);
-      FStart= &(FocusWall->getKey("Guide0"));
+      FocusWall->createAll(System,*VPipeWall,0);
+      FStart= FocusWall.get();
       OutPitA->addFrontWall(*VPipeWall,2);
       startIndex=2;
     }
@@ -481,7 +478,7 @@ FREIA::buildIsolated(Simulation& System,const int voidCell)
 
   if (startPoint<4)
     {
-      buildHut(System,*FStart,startIndex,voidCell);
+      buildHut(System);
       //      buildDetectorArray(System,*Sample,0,Cave->getCell("Void"));
     }
   
@@ -516,43 +513,34 @@ FREIA::build(Simulation& System,
   BendA->addInsertCell(GItem.getCells("Void"));
   BendA->setFront(GItem.getKey("Beam"),-1);
   BendA->setBack(GItem.getKey("Beam"),-2);
-  BendA->createAll(System,*freiaAxis,-3,*freiaAxis,-3);
+  BendA->createAll(System,*freiaAxis,-3);
 
   if (stopPoint==1) return;                 // STOP At monolith edge
-  buildBunkerUnits(System,BendA->getKey("Guide0"),2,
+  buildBunkerUnits(System,*BendA,2,
                    bunkerObj.getCell("MainVoid"));
   
   if (stopPoint==2) return;                      // STOP At bunker edge
   // IN WALL
   // Make bunker insert
-  BInsert->setBunkerObject(bunkerObj);
+  BInsert->setCutSurf("front",bunkerObj,-1);
+  BInsert->setCutSurf("back",bunkerObj,-2);
   BInsert->createAll(System,ChopperE->getKey("Beam"),2);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
 
     // using 7 : mid point 
   FocusWall->addInsertCell(BInsert->getCell("Void"));
-  FocusWall->createAll(System,*BInsert,7,*BInsert,7);
+  FocusWall->createAll(System,*BInsert,7);
 
   if (stopPoint==3) return;                      // STOP Out of bunker
 
   OutPitA->addFrontWall(bunkerObj,2);
-  buildOutGuide(System,FocusWall->getKey("Guide0"),2,voidCell);      
+  buildOutGuide(System,*FocusWall,2,voidCell);      
 
   if (stopPoint==4) return;                      // STOP Out of bunker
 
-  CaveJaw->setInsertCell(JawPit->getCell("Void"));
-  CaveJaw->createAll(System,JawPit->getKey("Inner"),0);
 
-  OutBCutBack->addInsertCell(JawPit->getCells("MidLayerBack"));
-  OutBCutBack->addInsertCell(JawPit->getCells("Collet"));
-  OutBCutBack->setFaces(JawPit->getKey("Inner").getFullRule(2),
-                        JawPit->getKey("Mid").getFullRule(-2));
-  OutBCutBack->createAll(System,JawPit->getKey("Inner"),2);
-
-  OutBCutFront->addInsertCell(JawPit->getCells("MidLayerFront"));
-  OutBCutFront->setFaces(JawPit->getKey("Mid").getFullRule(-1),
-                         JawPit->getKey("Inner").getFullRule(1));
-  OutBCutFront->createAll(System,JawPit->getKey("Inner"),-1);
+  buildHut(System);
+  
   
   return;
 }

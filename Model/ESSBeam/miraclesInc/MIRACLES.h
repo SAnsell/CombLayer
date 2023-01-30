@@ -50,6 +50,12 @@ namespace constructSystem
 
 }
 
+namespace beamlineSystem
+{
+  class PlateUnit;
+  class BenderUnit;
+}
+
 namespace essSystem
 {
   class BInsert;
@@ -79,16 +85,16 @@ class MIRACLES : public attachSystem::CopiedComp
   std::shared_ptr<attachSystem::FixedRotateUnit> miraclesAxis;
 
   /// Elliptic focus in bulkshield [m3]
-  std::shared_ptr<beamlineSystem::GuideLine> FocusA;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusA;
 
   /// Pipe in the gamma shield [5.5m to 6m]
   std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
   /// Guide from 5.5 to 6 metre
-  std::shared_ptr<beamlineSystem::GuideLine> FocusB;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusB;
   /// Pipe in the gamma shield [5.5m to 6m]
   std::shared_ptr<constructSystem::VacuumPipe> VPipeC;
   /// Guide from 6m to 7m
-  std::shared_ptr<beamlineSystem::GuideLine> FocusC;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusC;
   /// Tungsten apperature after gamma focus
   std::shared_ptr<constructSystem::Aperture> AppA;
 
@@ -102,7 +108,7 @@ class MIRACLES : public attachSystem::CopiedComp
   /// Pipe from Chopper A  to B
   std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
   /// Elliptic guide from 5.5 to 6 metre
-  std::shared_ptr<beamlineSystem::GuideLine> FocusD;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusD;
 
   /// Twin second chopper pair
   std::shared_ptr<essConstruct::TwinChopper> TwinC;
@@ -114,7 +120,7 @@ class MIRACLES : public attachSystem::CopiedComp
   /// Pipe from Chopper C to D
   std::shared_ptr<constructSystem::VacuumPipe> VPipeE;
   /// Guide from 7.5 to 11.25 m
-  std::shared_ptr<beamlineSystem::GuideLine> FocusE;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusE;
 
   /// First single chopper pair
   std::shared_ptr<essConstruct::SingleChopper> ChopE;
@@ -127,12 +133,12 @@ class MIRACLES : public attachSystem::CopiedComp
   /// Pipe from second single chopper 
   std::shared_ptr<constructSystem::VacuumPipe> VPipeF;
   /// Guide between single choppers
-  std::shared_ptr<beamlineSystem::GuideLine> FocusF;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusF;
 
   /// Pipe around bender [rectangular?]
   std::shared_ptr<constructSystem::VacuumPipe> VPipeG;
   /// Bender in bunker
-  std::shared_ptr<beamlineSystem::GuideLine> BendG;
+  std::shared_ptr<beamlineSystem::BenderUnit> BendG;
 
   
   /// Bunker insert
@@ -140,7 +146,7 @@ class MIRACLES : public attachSystem::CopiedComp
   /// Pipe in bunker wall
   std::shared_ptr<constructSystem::VacuumPipe> VPipeWall;
   /// Guide running to bunker wall
-  std::shared_ptr<beamlineSystem::GuideLine> FocusWall;
+  std::shared_ptr<beamlineSystem::BenderUnit> FocusWall;
   /// Vacuum pipe in the bunker wall if not provided by BInsert
   std::shared_ptr<constructSystem::VacuumPipe> VPipeCave;
 
@@ -149,12 +155,12 @@ class MIRACLES : public attachSystem::CopiedComp
   /// Pipe around bender [rectangular?]
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutA;
   /// Bender in first shielding
-  std::shared_ptr<beamlineSystem::GuideLine> BendOutA;
+  std::shared_ptr<beamlineSystem::BenderUnit> BendOutA;
 
   /// Pipe around bender [rectangular?]
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutB;
   /// Bender in first shielding
-  std::shared_ptr<beamlineSystem::GuideLine> BendOutB;
+  std::shared_ptr<beamlineSystem::BenderUnit> BendOutB;
 
   void buildBunkerUnits(Simulation&,const attachSystem::FixedComp&,
 			const long int,const int);

@@ -3,7 +3,7 @@
  
  * File:   delft/BeamTube.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -57,7 +55,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
@@ -67,8 +65,8 @@ namespace delftSystem
 {
 
 BeamTube::BeamTube(const std::string& Key)  :
+  attachSystem::FixedRotateGroup(Key,"Main",3,"Beam",3),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffsetGroup(Key,"Main",3,"Beam",3),
   attachSystem::CellMap(),
   innerVoid(0)
   /*!
@@ -78,7 +76,8 @@ BeamTube::BeamTube(const std::string& Key)  :
 {}
 
 BeamTube::BeamTube(const BeamTube& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffsetGroup(A),
+  attachSystem::FixedRotateGroup(A),
+  attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
   length(A.length),
   innerRadius(A.innerRadius),innerWall(A.innerWall),
@@ -104,8 +103,8 @@ BeamTube::operator=(const BeamTube& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotateGroup::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffsetGroup::operator=(A);
       attachSystem::CellMap::operator=(A);
       length=A.length;
       innerRadius=A.innerRadius;
@@ -143,7 +142,7 @@ BeamTube::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BeamTube","populate");
 
-  attachSystem::FixedOffsetGroup::populate(Control);
+  attachSystem::FixedRotateGroup::populate(Control);
   waterStep=Control.EvalVar<double>(keyName+"WaterStep");
   innerStep=Control.EvalDefVar<double>(keyName+"InnerStep",0.0);
 
@@ -341,53 +340,53 @@ BeamTube::createCapEndObjects(Simulation& System)
 {
   ELog::RegMethod RegA("BeamTube","createCapEndObjects");
 
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex," (-8:1) -2 -7 ");
-  addOuterSurf(Out);
+  HeadRule HR;
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," (-8:1) -2 -7");
+  addOuterSurf(HR);
 
-  Out+=ModelSupport::getComposite(SMap,buildIndex," ((18 -1) : 17)");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+  HR*=ModelSupport::getHeadRule(SMap,buildIndex,"((18 -1) : 17)");
+  System.addCell(cellIndex++,wallMat,0.0,HR);
 
   // Void (exclude inter wall)
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " (-18:1) -2 -17  ((28 -1) : 27) (-41:-67)");
-  System.addCell(MonteCarlo::Object(cellIndex++,gapMat,0.0,Out));
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"(-18:1) -2 -17  ((28 -1) : 27) (-41:-67)");
+  System.addCell(cellIndex++,gapMat,0.0,HR);
   // Inner wall
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " (-28:1) ((38 -1) : 37) -2 -27 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"(-28:1) ((38 -1) : 37) -2 -27");
+  System.addCell(cellIndex++,wallMat,0.0,HR);
   
   // Inner Void
-  Out=ModelSupport::getComposite(SMap,buildIndex," (-38:1)  -2 -37 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(-38:1) -2 -37");
 
   // Second portal:
   // Remaining portals in inner vioid
-  std::string OutComposite;
+  HeadRule OutComposite;
   int PN(buildIndex);
   for(size_t i=0;i<portalMat.size();i++)
     {
       PN+=100;
       if (portalOffset[i]>Geometry::zeroTol)
 	{
-	  const std::string OutP=
-	    ModelSupport::getComposite(SMap,PN," -17 11 -12");
-	  System.addCell(MonteCarlo::Object(cellIndex++,portalMat[i],0.0,OutP));
-	  OutComposite +=ModelSupport::getComposite(SMap,PN," (17:-11:12)");
-	  addCell("Portal"+std::to_string(i),cellIndex-1);
+	  const HeadRule portHR=
+	    ModelSupport::getHeadRule(SMap,PN,"-17 11 -12");
+	  makeCell("Portal"+std::to_string(i),
+		   System,cellIndex++,portalMat[i],0.0,portHR);
+	  OutComposite *=ModelSupport::getHeadRule(SMap,PN,"(17:-11:12)");
 	}
     }
-  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,0.0,Out+OutComposite));
-  addCell("innerVoid",cellIndex-1);
+  makeCell("innerVoid",System,cellIndex++,innerMat,0.0,HR*OutComposite);
   innerVoid=cellIndex-1;
 
   // Inter wall
-  Out=ModelSupport::getComposite(SMap,buildIndex," -47 57 51 -2 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,interMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-47 57 51 -2");
+  System.addCell(cellIndex++,interMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "41 -17 67 (47:-57:-51) -2 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"41 -17 67 (47:-57:-51) -2");
+  System.addCell(cellIndex++,wallMat,0.0,HR);
 
   return;
 }
@@ -400,63 +399,62 @@ BeamTube::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("BeamTube","createObjects");
-  
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -7 ");
-  addOuterSurf(Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -7 (-11:17)");
+  HeadRule HR;
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -7");
+  addOuterSurf(HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -7 (-11:17)");
   // PORTALTS RELATIVE TO FRONT WALL CENTRE:
   // First one can be in the wall that makes things difficult
   if (!portalMat.empty() && portalOffset[0]<Geometry::zeroTol)
     {
-      const std::string OutP=
-	ModelSupport::getComposite(SMap,buildIndex," -117 111 -112");
-      System.addCell(MonteCarlo::Object(cellIndex++,portalMat[0],0.0,OutP));
-      Out+=ModelSupport::getComposite(SMap,buildIndex," (117:-111:112)"); 
+      const HeadRule portHR=
+	ModelSupport::getHeadRule(SMap,buildIndex,"-117 111 -112");
+      System.addCell(cellIndex++,portalMat[0],0.0,portHR);
+      HR*=ModelSupport::getHeadRule(SMap,buildIndex,"(117:-111:112)"); 
     }
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+  System.addCell(cellIndex++,wallMat,0.0,HR);
 
   // Void (exclude inter wall)
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "11 -2 -17 (-21:27) (-41:-67)");
-  System.addCell(MonteCarlo::Object(cellIndex++,gapMat,0.0,Out));
-  addCell("FrontVoid",cellIndex-1);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"11 -2 -17 (-21:27) (-41:-67)");
+  makeCell("FrontVoid",System,cellIndex++,gapMat,0.0,HR);
   
   // Inner wall
-  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -2 -27 (-31:37)");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -2 -27 (-31:37)");
+  System.addCell(cellIndex++,wallMat,0.0,HR);
   
   // Inner Void
-  Out=ModelSupport::getComposite(SMap,buildIndex," 31 -2 -37 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"31 -2 -37");
   
   // Second portal:
-  // Remaining portals in inner vioid
-  std::string OutComposite;
+  // Remaining portals in inner void
+  HeadRule OutComposite;
   int PN(buildIndex);
   for(size_t i=0;i<portalMat.size();i++)
     {
       PN+=100;
       if (portalOffset[i]>Geometry::zeroTol)
 	{
-	  const std::string OutP=
-	    ModelSupport::getComposite(SMap,PN," -17 11 -12");
-	  System.addCell(MonteCarlo::Object(cellIndex++,portalMat[i],0.0,OutP));
-	  addCell("Portal"+std::to_string(i),cellIndex-1);
-	  OutComposite +=ModelSupport::getComposite(SMap,PN," (17:-11:12)"); 
+	  const HeadRule portHR=
+	    ModelSupport::getHeadRule(SMap,PN,"-17 11 -12");
+	  makeCell("Portal"+std::to_string(i),
+		   System,cellIndex++,portalMat[i],0.0,portHR);
+	  OutComposite *=ModelSupport::getHeadRule(SMap,PN,"(17:-11:12)"); 
 	}
     }
 
-  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,0.0,Out+OutComposite));
-  addCell("innerVoid",cellIndex-1);
+  makeCell("innerVoid",System,cellIndex++,innerMat,0.0,HR*OutComposite);
   innerVoid=cellIndex-1;
   // Inter wall
-  Out=ModelSupport::getComposite(SMap,buildIndex," -47 57 51 -2 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,interMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-47 57 51 -2");
+  System.addCell(cellIndex++,interMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "41 -17 67 (47:-57:-51) -2 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"41 -17 67 (47:-57:-51) -2");
+  System.addCell(cellIndex++,wallMat,0.0,HR);
   
   return;
 }

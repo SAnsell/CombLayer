@@ -3,7 +3,7 @@
  
  * File:   Linac/MultiPipe.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -53,9 +52,8 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotateUnit.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
@@ -139,9 +137,9 @@ MultiPipe::createSurfaces()
   size_t index(1);
   for(const subPipeUnit& PU : pipes)
     {
-      attachSystem::FixedOffsetUnit pipeFC(PU.keyName,Origin,Y,Z);
+      attachSystem::FixedRotateUnit pipeFC(PU.keyName,Origin,Y,Z);
       pipeFC.setOffset(PU.xStep,0,PU.zStep);
-      pipeFC.setRotation(PU.xyAngle,PU.zAngle);
+      pipeFC.setRotation(PU.zAngle,0.0,PU.xyAngle);
       pipeFC.applyOffset();
       
       const Geometry::Vec3D pOrg=pipeFC.getCentre();
@@ -175,8 +173,8 @@ MultiPipe::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("MultiPipe","createObjects");
 
-  std::string Out;
-  const std::string frontStr=getRuleStr("front");
+  HeadRule HR;
+  const HeadRule frontHR=getRule("front");
   
 
   HeadRule pipeExclude;
@@ -190,41 +188,41 @@ MultiPipe::createObjects(Simulation& System)
       
       const int BPrev((i) ? BI-100 : BImax);
       const int BNext((BImax==BI) ? buildIndex+100 : BI+100);
-      const std::string cutOuter=
-	ModelSupport::getComposite(SMap,BPrev,BNext," 17 17M ");
+      const HeadRule cutOuter=
+	ModelSupport::getHeadRule(SMap,BPrev,BNext,"17 17M");
       
-      Out=ModelSupport::getComposite(SMap,BI," -7 -1 ");
-      makeCell("PipeVoid",System,cellIndex++,pUnit.voidMat,0.0,Out+frontStr);
+      HR=ModelSupport::getHeadRule(SMap,BI,"-7 -1");
+      makeCell("PipeVoid",System,cellIndex++,pUnit.voidMat,0.0,HR*frontHR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,BI," 11 -17M 7M -1M ");
-      makeCell("PipeWall",System,cellIndex++,pUnit.wallMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,BI,"11 -17M 7M -1M");
+      makeCell("PipeWall",System,cellIndex++,pUnit.wallMat,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,BI," -27M 17M -1M 11M ");
-      makeCell("PipeFlange",System,cellIndex++,pUnit.flangeMat,0.0,Out);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,BI,"-27M 17M -1M 11M");
+      makeCell("PipeFlange",System,cellIndex++,pUnit.flangeMat,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,BI," -27M 17M -11M 11 ");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,BI,"-27M 17M -11M 11");
       if (i)
-	Out+=ModelSupport::getComposite(SMap,BI-100," 27  ");
-      makeCell("PipeOuter",System,cellIndex++,0,0.0,Out+cutOuter);
+	HR*=HeadRule(SMap,BI-100,27);
+      makeCell("PipeOuter",System,cellIndex++,0,0.0,HR*cutOuter);
       
       pipeExclude.addIntersection(SMap.realSurf(BI+7));
-      Out=ModelSupport::getComposite(SMap,BI," -27 -1 ");
-      pipeTotal.addUnion(Out);
+      HR=ModelSupport::getHeadRule(SMap,BI,"-27 -1");
+      pipeTotal.addUnion(HR);
 
       BI+=100;
     }
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -11 -7 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -7");
   makeCell("Flange",System,cellIndex++,flangeMat,0.0,
-	   Out+frontStr+pipeExclude.display());
+	   HR*frontHR*pipeExclude);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -11 -7 ");
-  addOuterSurf("Flange",Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -7");
+  addOuterSurf("Flange",HR*frontHR);
 
   if (!pipes.empty())
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,"11 ");
-      pipeTotal.addIntersection(Out);
+      HR=HeadRule(SMap,buildIndex,11);
+      pipeTotal.addIntersection(HR);
       addOuterSurf("Pipes",pipeTotal);
     }
   

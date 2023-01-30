@@ -38,12 +38,10 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "stringCombine.h"
 #include "Vec3D.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
-#include "variableSetup.h"
 #include "essVariables.h"
 
 namespace setVariable
@@ -348,7 +346,7 @@ EssBeamLinesVariables(FuncDataBase& Control)
   for(size_t i=0;i<4;i++)
     {
       const std::string baseKey=
-        StrFunc::makeString("G",i/2+1)+"BLine"+TB[i%2];
+	"G"+std::to_string(i/2+1)+"BLine"+TB[i%2];
       
       // BeamLine in guide bay
       Control.addVariable(baseKey+"XStep",0.0);  
@@ -479,8 +477,8 @@ EssFlightLineVariables(FuncDataBase& Control)
   
   for (size_t i=1;i<=TopAFlightNWedges;i++)
     {
-      const std::string baseKey =
-        StrFunc::makeString("TopAFlightWedge", i);
+      const std::string baseKey ="TopAFlightWedge"+
+        std::to_string(i);
       
       if (i==5) // central, the thick one
 	{
@@ -533,7 +531,7 @@ EssFlightLineVariables(FuncDataBase& Control)
   
   for (size_t i=1; i<=TopBFlightNWedges; i++)
     {
-      const std::string baseKey = StrFunc::makeString("TopBFlightWedge", i);
+      const std::string baseKey = "TopBFlightWedge"+std::to_string(i);
 
       Control.addVariable(baseKey+"BaseWidth",4.446+0.5*2); // Naja
       Control.addVariable(baseKey+"TipWidth", 1.407+0.5*2); // Naja

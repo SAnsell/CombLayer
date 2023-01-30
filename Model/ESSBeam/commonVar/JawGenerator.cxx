@@ -84,7 +84,8 @@ JawGenerator::~JawGenerator()
 {}
 
 void
-JawGenerator::generateJaws(FuncDataBase& Control,const std::string& keyName,
+JawGenerator::generateJaws(FuncDataBase& Control,
+			   const std::string& keyName,
                             const double yStep) const
 /*!
     Primary funciton for setting the variables
@@ -97,7 +98,7 @@ JawGenerator::generateJaws(FuncDataBase& Control,const std::string& keyName,
 
   Control.addVariable(keyName+"YStep",yStep);
   Control.addVariable(keyName+"Length",25.0);
-  Control.addVariable(keyName+"Radius",30.0);
+  Control.addVariable(keyName+"Radius",28.0);
   //
   // JAWS
   //

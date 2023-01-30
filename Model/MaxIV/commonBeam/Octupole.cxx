@@ -3,7 +3,7 @@
  
  * File:   commonBeam/Octupole.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -134,22 +134,6 @@ Octupole::populate(const FuncDataBase& Control)
 }
 
 void
-Octupole::createUnitVector(const attachSystem::FixedComp& FC,
-    	                     const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: FixedComp to attach to
-    \param sideIndex :: Link point
-  */
-{
-  ELog::RegMethod RegA("Octupole","createUnitVector");
-  
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  return;
-}
-
-void
 Octupole::createSurfaces()
   /*!
     Create All the surfaces
@@ -216,7 +200,10 @@ Octupole::createSurfaces()
       
       angle+=M_PI/4.0;
       CN+=10;
-    }  
+    }
+  if (!isActive("Inner"))
+    ModelSupport::buildCylinder(SMap,buildIndex+5007,Origin,Y,poleGap/10.0);
+
   return;
 }
 
@@ -229,68 +216,72 @@ Octupole::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Octupole","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   
   // Outer steel
-  Out=ModelSupport::getComposite(SMap,buildIndex+1000,buildIndex,
-     "1M -2M -51 -52 -53 -54 -55 -56 -57 -58 -59 -60 -61 -62 -63 -64 -65 -66 ");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex+1000,buildIndex,
+     "1M -2M -51 -52 -53 -54 -55 -56 -57 -58 -59 -60 -61 -62 -63 -64 -65 -66");
+  addOuterSurf(HR);
   
-  Out+=ModelSupport::getComposite(SMap,buildIndex+1000,
-			" (1:2:3:4:5:6:7:8:9:10:11:12:13:14:15:16) ");
+  HR*=ModelSupport::getHeadRule(SMap,buildIndex+1000,
+			"(1:2:3:4:5:6:7:8:9:10:11:12:13:14:15:16)");
 
-  makeCell("Frame",System,cellIndex++,frameMat,0.0,Out);
+  makeCell("Frame",System,cellIndex++,frameMat,0.0,HR);
 
-  const std::string ICell=      
-    (isActive("Inner")) ? getRuleStr("Inner") : "";
+  const HeadRule fbHR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2");
+  if (!isActive("Inner"))
+    {
+      setCutSurf("Inner",SMap.realSurf(buildIndex+5007));
+      HR=HeadRule(SMap,buildIndex,-5007);
+      makeCell("Inner",System,cellIndex++,0,0.0,HR*fbHR);
+    }
+
+  const HeadRule ICellHR=getRule("Inner");
   /// create triangles
-  const std::string FB=ModelSupport::getComposite(SMap,buildIndex,"1 -2");
-
 
   std::vector<HeadRule> PoleExclude; 
   int BN(buildIndex); // base
   int PN(buildIndex);
   for(size_t i=0;i<8;i++)
     {
-      const std::string outerCut=
-	ModelSupport::getComposite(SMap,BN," -1001 ");
+      const HeadRule outerCutHR(SMap,BN,-1001);
 
       // Note a : is needed if poleRadius small (-2107 : 2101)");
-      Out=ModelSupport::getComposite(SMap,PN,"2103 -2104 -2107 ");
-      makeCell("Pole",System,cellIndex++,poleMat,0.0,Out+outerCut+FB);
-      PoleExclude.push_back(HeadRule(Out));
+      HR=ModelSupport::getHeadRule(SMap,PN,"2103 -2104 -2107");
+      makeCell("Pole",System,cellIndex++,poleMat,0.0,HR*outerCutHR*fbHR);
+      PoleExclude.push_back(HR);
 
 
-      Out=ModelSupport::getComposite
-	(SMap,PN," 2003 -2004 2001 (-2103:2104) ");
-      makeCell("Coil",System,cellIndex++,coilMat,0.0,Out+outerCut+FB);
-      Out=ModelSupport::getComposite(SMap,PN," 2003 -2004 2001 ");
-      PoleExclude.back().addUnion(Out);
+      HR=ModelSupport::getHeadRule
+	(SMap,PN,"2003 -2004 2001 (-2103:2104)");
+      makeCell("Coil",System,cellIndex++,coilMat,0.0,HR*outerCutHR*fbHR);
+      HR=ModelSupport::getHeadRule(SMap,PN," 2003 -2004 2001");
+      PoleExclude.back().addUnion(HR);
       BN+=2;
       PN+=10;
     }
 
-  Out=ModelSupport::getComposite
-	  (SMap,buildIndex,"501 -502 -1016 -1001 -1002 ");
-  makeCell("Triangle",System,cellIndex++,0,0.0,Out+FB+
-	   PoleExclude[0].complement().display()+ICell);
+  HR=ModelSupport::getHeadRule
+	  (SMap,buildIndex,"501 -502 -1016 -1001 -1002");
+  makeCell("Triangle",System,cellIndex++,0,0.0,
+	   HR*fbHR*PoleExclude[0].complement()*ICellHR);
   int CN(buildIndex+1);
   int TN(buildIndex+1);
   for(size_t i=1;i<7;i++)
     {
       // three index points
-      Out=ModelSupport::getComposite
+      HR=ModelSupport::getHeadRule
 	  (SMap,TN,CN," 501 -502 -1001M -1002M -1003M ");
 	
-      makeCell("Triangle",System,cellIndex++,0,0.0,Out+FB+
-	       PoleExclude[i].complement().display()+ICell);
+      makeCell("Triangle",System,cellIndex++,0,0.0,
+	       HR*fbHR*PoleExclude[i].complement()*ICellHR);
       CN+=2;
       TN++;
     }
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
 	  (SMap,buildIndex,"508 -501 -1014 -1015 -1016 ");
-  makeCell("Triangle",System,cellIndex++,0,0.0,Out+FB+
-	   PoleExclude[7].complement().display()+ICell);	
+  makeCell("Triangle",System,cellIndex++,0,0.0,HR*fbHR*
+	   PoleExclude[7].complement()*ICellHR);	
 
   
   return;

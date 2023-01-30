@@ -29,6 +29,12 @@ namespace attachSystem
   class CellMap;
 }
 
+namespace beamlineSystem
+{
+  class BenderUnit;
+  class PlateUnit;
+}
+
 namespace instrumentSystem
 {
   class CylSample;
@@ -78,17 +84,17 @@ class CSPEC : public attachSystem::CopiedComp
   std::shared_ptr<attachSystem::FixedRotateUnit> cspecAxis;
 
   /// Elliptic focus in bulkshield [m5]
-  std::shared_ptr<beamlineSystem::GuideLine> FocusA;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusA;
 
   // Vac pipe in gamma shield
   std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
   /// Elliptic guide from 5.5 to 6metre
-  std::shared_ptr<beamlineSystem::GuideLine> FocusB;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusB;
 
   /// Vac pipe to 18m
   std::shared_ptr<constructSystem::VacuumPipe> VPipeC;
   /// Direct beamguide to 18m
-  std::shared_ptr<beamlineSystem::GuideLine> FocusC;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusC;
 
   /// First Chopper unit [BW1]
   std::shared_ptr<essConstruct::SingleChopper> ChopperA;
@@ -98,7 +104,7 @@ class CSPEC : public attachSystem::CopiedComp
   /// Vac pipe to bunker wall
   std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
   /// S-Bender first section [in bunker]
-  std::shared_ptr<beamlineSystem::GuideLine> BendD;
+  std::shared_ptr<beamlineSystem::BenderUnit> BendD;
   
  public:
   

@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonBeam/R3ChokeInsert.cxx
+ * File:   R3Common/R3ChokeInsert.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -53,7 +52,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -66,7 +65,7 @@ namespace xraySystem
 {
 
 R3ChokeInsert::R3ChokeInsert(const std::string& Key) :
-  attachSystem::FixedOffset(Key,3),
+  attachSystem::FixedRotate(Key,3),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -93,7 +92,7 @@ R3ChokeInsert::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("R3ChokeInsert","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   // Void + Fe special:
   plateThick=Control.EvalVar<double>(keyName+"PlateThick");
@@ -102,7 +101,6 @@ R3ChokeInsert::populate(const FuncDataBase& Control)
   plateLength=Control.EvalVar<double>(keyName+"PlateLength");
 
   plateMat=ModelSupport::EvalMat<int>(Control,keyName+"PlateMat");
-
 
   return;
 }
@@ -149,22 +147,22 @@ R3ChokeInsert::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("R3ChokeInsert","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
-  const std::string frontStr=ExternalCut::getRuleStr("front");
+  const HeadRule frontHR=ExternalCut::getRule("front");
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -2 3 -4 5 -6 ");
-  makeCell("Gap",System,cellIndex++,0,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 3 -4 5 -6");
+  makeCell("Gap",System,cellIndex++,0,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -2 3 -4 -5 15 ");
-  makeCell("TopPlate",System,cellIndex++,plateMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 3 -4 -5 15");
+  makeCell("TopPlate",System,cellIndex++,plateMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -2 3 -4 6 -16 ");
-  makeCell("BasePlate",System,cellIndex++,plateMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 3 -4 6 -16");
+  makeCell("BasePlate",System,cellIndex++,plateMat,0.0,HR*frontHR);
   
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -2 3 -4 15 -16 ");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 3 -4 15 -16");
+  addOuterSurf(HR);
 
 
   return;

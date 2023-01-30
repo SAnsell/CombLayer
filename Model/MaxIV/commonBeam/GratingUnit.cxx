@@ -3,7 +3,7 @@
 
  * File:   commonBeam/GratingUnit.cxx
  *
- * Copyright (c) 2004-2021by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "surfRegister.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "varList.h"
@@ -53,7 +52,6 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -68,8 +66,8 @@ namespace xraySystem
 {
 
 GratingUnit::GratingUnit(const std::string& Key) :
-  attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,8),
+  attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -260,80 +258,76 @@ GratingUnit::createObjects(Simulation& System)
   innerHR.addIntersection(getRule("innerLeft"));
   innerHR.addIntersection(getRule("innerRight"));
 
-  std::string Out;
+  HeadRule HR;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1003 -1004 ");
-  makeCell("InnerVoid",System,cellIndex++,0,0.0,Out+
-	   baseHR.display() + innerHR.display()+ topHR.display());
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1003 -1004");
+  makeCell("InnerVoid",System,cellIndex++,0,0.0,
+	   HR*baseHR*innerHR*topHR);
   innerHR.makeComplement();
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -201 3 -4 5 -6 ");
-  makeCell("FBar",System,cellIndex++,mainMat,0.0,Out + innerHR.display());
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -201 3 -4 5 -6");
+  makeCell("FBar",System,cellIndex++,mainMat,0.0,HR*innerHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -201 3 -4 6 ");
-  makeCell("OuterVoid",System,cellIndex++,0,0.0,
-	   Out+innerHR.display()+topHR.display());
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -201 3 -4 6");
+  makeCell("OuterVoid",System,cellIndex++,0,0.0,HR*innerHR*topHR);
 
   // outer void on edges
   HeadRule cutHR(getRule("innerLeft"));
   cutHR.addIntersection(getRule("innerRight"));
   cutHR.makeComplement();
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -5 ");
-  Out+=cutHR.display()+frontHR.display()+backHR.display()+baseHR.display();
-
-  makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 -5 ");
+  makeCell("OuterVoid",System,cellIndex++,0,0.0,
+	   HR*cutHR*frontHR*backHR*baseHR);
 
   // support bars
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1001  1003 -1013 1005 -5");
-  makeCell("OuterFBar",System,cellIndex++,mainMat,0.0,Out+frontOutHR.display());
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1001  1013 -1014 1005 -5");
-  makeCell("OuterFBarVoid",System,cellIndex++,0,0.0,Out+frontOutHR.display());
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1001  1014 -1004 1005 -5");
-  makeCell("OuterFBar",System,cellIndex++,mainMat,0.0,Out+frontOutHR.display());
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1001  1003 -1013 1005 -5");
+  makeCell("OuterFBar",System,cellIndex++,mainMat,0.0,HR*frontOutHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1001  1013 -1014 1005 -5");
+  makeCell("OuterFBarVoid",System,cellIndex++,0,0.0,HR*frontOutHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1001  1014 -1004 1005 -5");
+  makeCell("OuterFBar",System,cellIndex++,mainMat,0.0,HR*frontOutHR);
 
-  Out=frontHR.display()+backHR.display()+baseOutHR.display()+
-    ModelSupport::getComposite(SMap,buildIndex," 1003 -1004 1005 ");
-  makeCell("OuterBarVoid1",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1003 -1004 1005");
+  makeCell("OuterBarVoid1",System,cellIndex++,0,0.0,
+	   HR*frontHR*backHR*baseOutHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1003 -3 -5 ");
-  Out += frontHR.display() + backHR.display() + baseHR.display();
-  makeCell("OuterBarVoid2",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1003 -3 -5");
+  makeCell("OuterBarVoid2",System,cellIndex++,0,0.0,HR*frontHR*backHR*baseHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1004 4 -5 ");
-  Out += frontHR.display() + backHR.display() + baseHR.display();
-  makeCell("OuterBarVoid3",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1004 4 -5");
+  makeCell("OuterBarVoid3",System,cellIndex++,0,0.0,HR*frontHR*backHR*baseHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1001 -1002 1003 -1004 1005 -5");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1001 -1002 1003 -1004 1005 -5");
+  addOuterSurf(HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1002 1003 -1013 1005 -5");
-  makeCell("OuterBBar",System,cellIndex++,mainMat,0.0,Out+
-	   cylinderHR.display()+backOutHR.display());
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1002 1013 -1014 1005 -5");
-  makeCell("OuterBBarVoid",System,cellIndex++,0,0.0,Out+backOutHR.display());
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1002 1014 -1004 1005 -5");
-  makeCell("OuterBBar",System,cellIndex++,mainMat,0.0,Out+
-  	   cylinderHR.display()+backOutHR.display());
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1002 1003 -1013 1005 -5");
+  makeCell("OuterBBar",System,cellIndex++,mainMat,0.0,
+	   HR*cylinderHR*backOutHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1002 1013 -1014 1005 -5");
+  makeCell("OuterBBarVoid",System,cellIndex++,0,0.0,HR*backOutHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1002 1014 -1004 1005 -5");
+  makeCell("OuterBBar",System,cellIndex++,mainMat,0.0,
+	   HR*cylinderHR*backOutHR);
 
   // inner
-  Out=ModelSupport::getComposite(SMap,buildIndex,"  101 -201 3 -4 ");
-  addOuterUnionSurf(Out+baseHR.display()+topHR.display());
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -201 3 -4");
+  addOuterUnionSurf(HR*baseHR*topHR);
 
 
   // Mirror:
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 301 -302 303 -304 305 -306 ");
-  makeCell("Mirror",System,cellIndex++,mirrorMat,0.0,Out);
-  addOuterUnionSurf(Out);
-  //  Out=ModelSupport::getComposite(SMap,buildIndex," 102 -201 3 -4 5 -6 ");
-  //  makeCell("MidVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"301 -302 303 -304 305 -306");
+  makeCell("Mirror",System,cellIndex++,mirrorMat,0.0,HR);
+  addOuterUnionSurf(HR);
+  //  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -201 3 -4 5 -6");
+  //  makeCell("MidVoid",System,cellIndex++,0,0.0,HR);
 
   // support:
 
-  // Out=ModelSupport::getComposite(SMap,buildIndex,"101 -202 3 -4 5 -6");
-  // addOuterSurf(Out);
+  // HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -202 3 -4 5 -6");
+  // addOuterSurf(HR);
 
   return;
 }
@@ -378,7 +372,7 @@ GratingUnit::createAll(Simulation& System,
   for(size_t i=0;i<3;i++)
     {
       grateArray[i]->setIndexPosition(static_cast<int>(i)-grateIndex);
-      grateArray[i]->setRotation(0.0,grateTheta);
+      grateArray[i]->setRotation(grateTheta,0.0,0.0);
       grateArray[i]->createAll(System,*this,0);
     }
 

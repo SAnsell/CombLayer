@@ -3,7 +3,7 @@
  
  * File:   commonBeam/BremMonoColl.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -53,7 +52,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -66,7 +65,7 @@ namespace xraySystem
 {
 
 BremMonoColl::BremMonoColl(const std::string& Key) :
-  attachSystem::FixedOffset(Key,2),
+  attachSystem::FixedRotate(Key,2),
   attachSystem::ContainedGroup("Main","Flange"),
   attachSystem::CellMap(),
   attachSystem::ExternalCut(),
@@ -92,7 +91,7 @@ BremMonoColl::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BremMonoColl","populate");
   
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   radius=Control.EvalVar<double>(keyName+"Radius");
   length=Control.EvalVar<double>(keyName+"Length");
@@ -124,32 +123,15 @@ BremMonoColl::populate(const FuncDataBase& Control)
 }
 
 void
-BremMonoColl::createUnitVector(const attachSystem::FixedComp& FC,
-			       const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("BremMonoColl","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
-  if (!inFlag)
-    inOrg=Origin+X*inXStep+Z*inZStep;
-
-  return;
-}
-
-void
 BremMonoColl::createSurfaces()
   /*!
     Create the surfaces
   */
 {
   ELog::RegMethod RegA("BremMonoColl","createSurfaces");
+
+  if (!inFlag)
+    inOrg=Origin+X*inXStep+Z*inZStep;
 
   // main tube:
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
@@ -196,40 +178,40 @@ BremMonoColl::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("BremMonoColl","createObjects");
 
-  const std::string frontSurf(getRuleStr("front"));
-  const std::string wallSurf(getRuleStr("wallRadius"));
+  const HeadRule frontSurf(getRule("front"));
+  const HeadRule wallSurf(getRule("wallRadius"));
 
-  std::string Out;
+  HeadRule HR;
 
   // main hole
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 1 -2 1003 -1004 1005 -1006 ");
-  makeCell("Hole",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1 -2 1003 -1004 1005 -1006");
+  makeCell("Hole",System,cellIndex++,voidMat,0.0,HR);
   // front void volume
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1 -7 111 ");
-  makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 -7 111");
+  makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,HR);
 
   // main body:
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1 -2 -7 (-1003:1004:-1005:1006) ");
-  makeCell("Main",System,cellIndex++,innerMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1 -2 -7 (-1003:1004:-1005:1006)");
+  makeCell("Main",System,cellIndex++,innerMat,0.0,HR);
 
   // main tube:
-  Out=ModelSupport::getComposite(SMap,buildIndex," 111 -2 7 -17 ");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"111 -2 7 -17");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -111 2007 ");
-  makeCell("Flange",System,cellIndex++,wallMat,0.0,Out+frontSurf+wallSurf);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-111 2007");
+  makeCell("Flange",System,cellIndex++,wallMat,0.0,HR*frontSurf*wallSurf);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -111 -2007 ");
-  makeCell("FlangeHole",System,cellIndex++,voidMat,0.0,Out+frontSurf);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-111 -2007");
+  makeCell("FlangeHole",System,cellIndex++,voidMat,0.0,HR*frontSurf);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 111 -2 -17");
-  addOuterSurf("Main",Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"111 -2 -17");
+  addOuterSurf("Main",HR);
 
   // simple as contained by front/wall radius
-  Out=ModelSupport::getComposite(SMap,buildIndex," -111 ");
-  addOuterSurf("Flange",Out);
+  HR=HeadRule(SMap,buildIndex,-111);
+  addOuterSurf("Flange",HR);
 
   return;
 }

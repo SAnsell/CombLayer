@@ -3,7 +3,7 @@
  
  * File:   essBuild/CylFlowGuide.cxx
  *
- * Copyright (c) 2004-2019 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,9 +38,9 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "surfRegister.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
+#include "surfRegister.h"
 #include "Vec3D.h"
 #include "Surface.h"
 #include "Quadratic.h"
@@ -59,10 +59,13 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedUnit.h"
+#include "FixedRotate.h"
+#include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
-#include "ContainedComp.h"
+#include "SurfMap.h"
+
 
 #include "CylFlowGuide.h"
 
@@ -70,9 +73,11 @@ namespace essSystem
 {
 
 CylFlowGuide::CylFlowGuide(const std::string& Key) :
+  attachSystem::FixedRotate(Key,0),
   attachSystem::ContainedComp(),
-  attachSystem::FixedUnit(Key,0),
-  attachSystem::CellMap()
+  attachSystem::ExternalCut(),
+  attachSystem::CellMap(),
+  attachSystem::SurfMap()
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -80,9 +85,11 @@ CylFlowGuide::CylFlowGuide(const std::string& Key) :
 {}
 
 CylFlowGuide::CylFlowGuide(const CylFlowGuide& A) : 
+  attachSystem::FixedRotate(A),
   attachSystem::ContainedComp(A),
-  attachSystem::FixedUnit(A),
+  attachSystem::ExternalCut(A),
   attachSystem::CellMap(A),
+  attachSystem::SurfMap(A),
   wallThick(A.wallThick),
   wallMat(A.wallMat),
   gapWidth(A.gapWidth),
@@ -103,9 +110,11 @@ CylFlowGuide::operator=(const CylFlowGuide& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       attachSystem::CellMap::operator=(A);
+      attachSystem::SurfMap::operator=(A);
       wallThick=A.wallThick;
       wallMat=A.wallMat;
       gapWidth=A.gapWidth;
@@ -144,35 +153,14 @@ CylFlowGuide::populate(const FuncDataBase& Control)
   gapWidth=Control.EvalVar<double>(keyName+"GapWidth");
 
   nBaffles=Control.EvalVar<size_t>(keyName+"NBaffles");
+
+  const Geometry::Cylinder* CPtr=
+    SurfMap::realPtrThrow<Geometry::Cylinder>
+    ("InnerCyl","Unable to convert to cylinder");
+  radius=CPtr->getRadius();
   
   return;
 }
-
-void
-CylFlowGuide::createUnitVector(const attachSystem::FixedComp& FC,
-			       const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Centre for object
-    \param sideIndex :: Inner link point
-  */
-{
-  ELog::RegMethod RegA("CylFlowGuide","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-
-  // Take data from containing object
-  const int CN=std::abs(FC.getLinkSurf(sideIndex));
-
-  const Geometry::Cylinder* CPtr=SMap.realPtr<Geometry::Cylinder>(CN);
-  if (!CPtr)
-    throw ColErr::InContainerError<int>(CN,"Unable to convert to cylinder");
-
-  radius=CPtr->getRadius();
-  Origin=CPtr->getCentre(); 
-
-  return;
-}
-
 
 void
 CylFlowGuide::createSurfaces()
@@ -208,39 +196,27 @@ CylFlowGuide::createSurfaces()
 }
 
 void
-CylFlowGuide::createObjects(Simulation& System,
-                            attachSystem::FixedComp& FC,
-                            const long int sideIndex)
+CylFlowGuide::createObjects(Simulation& System)
 /*!
     Create the objects
     \param System :: Simulation to add results
-    \param FC :: FC object where the inner structure is to be added
-    \param sideIndex :: link point for inner volume 
   */
 {
   ELog::RegMethod RegA("CylFlowGuide","createObjects");
   
-  attachSystem::CellMap* CM = dynamic_cast<attachSystem::CellMap*>(&FC);
-  if (!CM)
-    throw ColErr::DynamicConv("FixedComp","CellMap",FC.getKeyName());
-  
-  const std::pair<int,double> MatInfo=CM->deleteCellWithData(System,"Inner");
+  HeadRule HR;
+  const std::pair<int,double> MatInfo=
+    CellMap::deleteCellWithData(System,"Inner");
   const int innerMat=MatInfo.first;
   const double innerTemp=MatInfo.second;
-  std::string Out;
 
-  // This is AWFUL:
-  const std::string vertStr =
-    FC.getLinkString(sideIndex+3)+
-    FC.getLinkString(sideIndex+2);
-  const std::string sideStr =
-    FC.getLinkString(sideIndex);
+  const HeadRule vertHR=getRule("TopBase");
+  const HeadRule cylHR=getRule("InnerCyl");
 
   const int initCellIndex(cellIndex);
   // central plate
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,innerTemp,
-				   Out+vertStr+sideStr));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4");
+  System.addCell(cellIndex++,wallMat,innerTemp,HR*vertHR*cylHR);
 
   // side plates
   int SI(buildIndex);
@@ -250,70 +226,67 @@ CylFlowGuide::createObjects(Simulation& System,
       // Baffles
       if (i%2)
 	{
-	  Out = ModelSupport::getComposite(SMap,SI,buildIndex," 1 -2 -14M ");
-	  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,innerTemp,
-					   Out+vertStr+sideStr));
+	  HR=ModelSupport::getHeadRule(SMap,SI,buildIndex,"1 -2 -14M");
+	  System.addCell(cellIndex++,wallMat,innerTemp,
+			 HR*vertHR*cylHR);
           
-	  Out = ModelSupport::getComposite(SMap,SI,buildIndex," 1 -2 14M -3M ");
-	  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,innerTemp,
-                                           Out+vertStr));
+	  HR=ModelSupport::getHeadRule(SMap,SI,buildIndex,"1 -2 14M -3M");
+	  System.addCell(cellIndex++,innerMat,innerTemp,HR*vertHR);
           
-	  Out = ModelSupport::getComposite(SMap,SI,buildIndex," 1 -2 24M ");
-	  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,innerTemp,
-					   Out+vertStr+sideStr));
-
+	  HR=ModelSupport::getHeadRule(SMap,SI,buildIndex,"1 -2 24M");
+	  System.addCell(cellIndex++,wallMat,innerTemp,
+			 HR*vertHR*cylHR);
                     
-	  Out = ModelSupport::getComposite(SMap,SI,buildIndex," 1 -2 -24M 4M ");
-	  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,innerTemp,
-					   Out+vertStr+sideStr));
+	  HR=ModelSupport::getHeadRule(SMap,SI,buildIndex,"1 -2 -24M 4M");
+	  System.addCell(cellIndex++,innerMat,innerTemp,
+			 HR*vertHR*cylHR);
 
 	}
       else 
 	{
-	  Out = ModelSupport::getComposite(SMap,SI,buildIndex, " 1 -2 -3M -7M ");
-	  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,innerMat,Out+vertStr));
+	  HR=ModelSupport::getHeadRule(SMap,SI,buildIndex,"1 -2 -3M -7M");
+	  System.addCell(cellIndex++,wallMat,innerMat,HR*vertHR);
 	  
 	  // x<0
-	  Out = ModelSupport::getComposite(SMap,SI,buildIndex, " 1 -2 7M -3M ");
-	  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,innerTemp,
-					   Out+vertStr+sideStr));
+	  HR=ModelSupport::getHeadRule(SMap,SI,buildIndex,"1 -2 7M -3M");
+	  System.addCell(cellIndex++,innerMat,innerTemp,
+			 HR*vertHR*cylHR);
 	  // same but x>0 - divided by surf 3M to gain speed
-	  Out = ModelSupport::getComposite(SMap,SI,buildIndex, " 1 -2 7M 3M ");
-	  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,innerTemp,
-					   Out+vertStr+sideStr));
+	  HR=ModelSupport::getHeadRule(SMap,SI,buildIndex,"1 -2 7M 3M");
+	  System.addCell(cellIndex++,innerMat,innerTemp,
+			 HR*vertHR*cylHR);
 	  
-	  Out = ModelSupport::getComposite(SMap,SI,buildIndex, " 1 -2 4M -7M ");
-	  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,innerTemp,
-					   Out+vertStr));
-	  
+	  HR=ModelSupport::getHeadRule(SMap,SI,buildIndex,"1 -2 4M -7M");
+	  System.addCell(cellIndex++,wallMat,innerTemp,HR*vertHR);
 	}
       
       // Splitting of innerCell (to gain speed)
       if (i==0)
 	{
-	  Out = ModelSupport::getComposite(SMap,SI,buildIndex," -1 -3M ");
-	  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,innerTemp,
-					   Out+vertStr+sideStr));
-	  Out = ModelSupport::getComposite(SMap,SI,buildIndex," -1 4M ");
-	  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,
-					   innerTemp,Out+vertStr+sideStr));
+	  HR=ModelSupport::getHeadRule(SMap,SI,buildIndex,"-1 -3M");
+	  System.addCell(cellIndex++,innerMat,innerTemp,
+			 HR*vertHR*cylHR);
+
+	  HR=ModelSupport::getHeadRule(SMap,SI,buildIndex,"-1 4M");
+	  System.addCell(cellIndex++,innerMat,
+			 innerTemp,HR*vertHR*cylHR);
 	}
       else
 	{
-	  Out = ModelSupport::getSetComposite(SMap,SI-10,buildIndex," -11 2 -3M");
-	  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,innerTemp,Out+vertStr+sideStr));
+	  HR=ModelSupport::getSetHeadRule(SMap,SI-10,buildIndex,"-11 2 -3M");
+	  System.addCell(cellIndex++,innerMat,innerTemp,HR*vertHR*cylHR);
 	  
-	  Out = ModelSupport::getSetComposite(SMap,SI-10,buildIndex," -11 2 4M");
-	  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,innerTemp,Out+vertStr+sideStr));
+	  HR=ModelSupport::getSetHeadRule(SMap,SI-10,buildIndex,"-11 2 4M");
+	  System.addCell(cellIndex++,innerMat,innerTemp,HR*vertHR*cylHR);
 
 	}
       SI += 10;
     }
   // Tail end:
-  Out = ModelSupport::getComposite(SMap,SI-10,buildIndex," 2 -3M ");
-  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,innerTemp,Out+vertStr+sideStr));
-  Out = ModelSupport::getComposite(SMap,SI-10,buildIndex," 2 4M ");
-  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,innerTemp,Out+vertStr+sideStr));
+  HR=ModelSupport::getHeadRule(SMap,SI-10,buildIndex,"2 -3M");
+  System.addCell(cellIndex++,innerMat,innerTemp,HR*vertHR*cylHR);
+  HR=ModelSupport::getHeadRule(SMap,SI-10,buildIndex,"2 4M");
+  System.addCell(cellIndex++,innerMat,innerTemp,HR*vertHR*cylHR);
 
   // Add cell map info:
   CellMap::setCells("InnerGuide",initCellIndex,cellIndex-1);
@@ -347,7 +320,7 @@ CylFlowGuide::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);  
   createSurfaces();
-  createObjects(System,FC,sideIndex);
+  createObjects(System);
   createLinks();
   
   insertObjects(System);       

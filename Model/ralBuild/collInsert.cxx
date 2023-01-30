@@ -3,7 +3,7 @@
  
  * File:   ralBuild/collInsert.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,6 +36,7 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
+#include "Exception.h"
 #include "surfRegister.h"
 #include "varList.h"
 #include "Code.h"
@@ -46,52 +47,269 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
-#include "FixedRotateGroup.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
+#include "ModelSupport.h"
+#include "MaterialSupport.h"
+#include "generateSurf.h"
 #include "collInsert.h"
 
 namespace shutterSystem
 {
 
-collInsert::collInsert(const std::string& Key,const int ID) :
+collInsert::collInsert(const std::string& key) :
+  attachSystem::FixedRotate(key,2),
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotateGroup(Key+std::to_string(ID),"Main",2,"Beam",2),
-  baseName(Key),blockID(ID)
+  attachSystem::ExternalCut()
   /*!
     Constructor BUT ALL variable are left unpopulated.
-    \param N :: Index value of block
-    \param SN :: surface Index value
     \param Key :: Name for item in search
   */
 {}
 
-
-void
-collInsert::createUnitVector(const attachSystem::FixedComp& FC,
-			     const long int sideIndex)
+double
+collInsert::calcDrop(const double R) const
   /*!
-    Create the unit vectors
-    \param FC :: A Contained FixedComp to use as basis set
-    \param sideIndex :: link point
+    Calculate the effective drop of the beam
+    so the shutter fall in the correct place
+    \param R :: Radial distance to calculate
   */
 {
-  ELog::RegMethod RegA("BeamTube","createUnitVector");
-
-  attachSystem::FixedComp& mainFC=getKey("Main");
-  attachSystem::FixedComp& beamFC=getKey("Beam");
-
-  beamFC.createUnitVector(FC,sideIndex);
-  mainFC.createUnitVector(FC,sideIndex);
+  const double drop=R*tan(M_PI*xAngle/180.0);
+  return drop-zStep;
+}
   
-  FixedRotateGroup::applyOffset();
-   
-  setDefault("Main");
+void
+collInsert::populate(const FuncDataBase& Control)
+  /*!
+    Populate main variabe
+    \param Control :: DataBase to use
+   */
+{
+  ELog::RegMethod RegA("collInsert","populate");
+
+  FixedRotate::populate(Control);
+
+  nB4C=Control.EvalVar<size_t>(keyName+"NB4C");
+  nSteel=Control.EvalVar<size_t>(keyName+"NSteel");
+  fStep=Control.EvalVar<double>(keyName+"FStep");
+  length=Control.EvalVar<double>(keyName+"Length");
+  hGap=Control.EvalVar<double>(keyName+"HGap");
+  vGap=Control.EvalVar<double>(keyName+"VGap");
+  hGapRAngle=Control.EvalVar<double>(keyName+"HGapRAngle");
+  vGapRAngle=Control.EvalVar<double>(keyName+"VGapRAngle");
+
+  b4cThick=Control.EvalVar<double>(keyName+"B4CThick");
+  b4cSpace=Control.EvalVar<double>(keyName+"B4CSpace");
+
+  steelOffset=Control.EvalVar<double>(keyName+"SteelOffset");
+  steelAWidth=Control.EvalVar<double>(keyName+"SteelAWidth");
+  steelBWidth=Control.EvalVar<double>(keyName+"SteelBWidth");
+
+  b4cMat=ModelSupport::EvalMat<int>(Control,keyName+"B4CMat");
+  steelMat=ModelSupport::EvalMat<int>(Control,keyName+"SteelMat");
+  if (nB4C<3)
+    throw ColErr::IndexError<size_t>(nB4C,3,"nB4C too small");
+
+  if (nSteel<1)
+    throw ColErr::IndexError<size_t>(nB4C,3,"nB4C too small");
+
+
+  return;
+}
+
+
+  
+void
+collInsert::createSurfaces()
+  /*!
+    Constrcut inner surfaces
+   */
+{
+  ELog::RegMethod RegA("collInsert","createSurfaces");
+
+  
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+3,Origin-X*(hGap/2.0),X,
+				  Z,-hGapRAngle);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+4,Origin+X*(hGap/2.0),X,
+				  Z,hGapRAngle);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+5,Origin-Z*(vGap/2.0),Z,
+				  X,vGapRAngle);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+6,Origin+Z*(vGap/2.0),Z,
+				  X,-vGapRAngle);
+
+  // Steel layer
+  ModelSupport::buildPlaneRotAxis
+    (SMap,buildIndex+13,Origin-X*(steelOffset+hGap/2.0),X,Z,-hGapRAngle);
+  ModelSupport::buildPlaneRotAxis
+    (SMap,buildIndex+14,Origin+X*(steelOffset+hGap/2.0),X,Z,hGapRAngle);
+  ModelSupport::buildPlaneRotAxis
+    (SMap,buildIndex+15,Origin-Z*(steelOffset+vGap/2.0),Z,X,vGapRAngle);
+  ModelSupport::buildPlaneRotAxis
+    (SMap,buildIndex+16,Origin+Z*(steelOffset+vGap/2.0),Z,X,-vGapRAngle);
+
+    // Steel layer
+  ModelSupport::buildPlaneRotAxis
+    (SMap,buildIndex+23,Origin-X*(steelAWidth+hGap/2.0),X,Z,-hGapRAngle);
+  ModelSupport::buildPlaneRotAxis
+    (SMap,buildIndex+24,Origin+X*(steelAWidth+hGap/2.0),X,Z,hGapRAngle);
+  ModelSupport::buildPlaneRotAxis
+    (SMap,buildIndex+25,Origin-Z*(steelAWidth+vGap/2.0),Z,X,vGapRAngle);
+  ModelSupport::buildPlaneRotAxis
+    (SMap,buildIndex+26,Origin+Z*(steelAWidth+vGap/2.0),Z,X,-vGapRAngle);
+
+    // Steel layer
+  ModelSupport::buildPlaneRotAxis
+    (SMap,buildIndex+33,Origin-X*(steelBWidth+hGap/2.0),X,Z,-hGapRAngle);
+  ModelSupport::buildPlaneRotAxis
+    (SMap,buildIndex+34,Origin+X*(steelBWidth+hGap/2.0),X,Z,hGapRAngle);
+  ModelSupport::buildPlaneRotAxis
+    (SMap,buildIndex+35,Origin-Z*(steelBWidth+vGap/2.0),Z,X,vGapRAngle);
+  ModelSupport::buildPlaneRotAxis
+    (SMap,buildIndex+36,Origin+Z*(steelBWidth+vGap/2.0),Z,X,-vGapRAngle);
+
+
+  // calculate two length : gap for a B4C pair  and a steel block
+  const double b4cUnit=b4cSpace*3.0+b4cThick*2.0;
+  const double steelUnit=(length-b4cUnit*static_cast<double>(nB4C))/
+    static_cast<double>((nB4C-1)*nSteel);
+
+  int BI(buildIndex+100);
+  Geometry::Vec3D Org(Origin+Y*fStep);
+  for(size_t i=0;i<nB4C;i++)
+    {
+      // B4C block
+      ModelSupport::buildPlane(SMap,BI+1,Org,Y);
+      Org+=Y*b4cSpace;
+      ModelSupport::buildPlane(SMap,BI+11,Org,Y);
+      Org+=Y*b4cThick;
+      ModelSupport::buildPlane(SMap,BI+12,Org,Y);
+      Org+=Y*b4cSpace;
+      ModelSupport::buildPlane(SMap,BI+21,Org,Y);
+      Org+=Y*b4cThick;
+      ModelSupport::buildPlane(SMap,BI+22,Org,Y);
+      Org+=Y*b4cSpace;
+
+      if (i!=nB4C-1)
+	{
+	  int SI(BI);
+	  for(size_t j=0;j<nSteel;j++)
+	    {
+	      ModelSupport::buildPlane(SMap,SI+31,Org,Y);
+	      Org+=Y*steelUnit;
+	      SI++;
+	    }
+	  BI+=100;
+	}
+    }
+      // last surface
+  ModelSupport::buildPlane(SMap,BI+31,Org,Y);
+  return;
+}
+
+  
+void
+collInsert::createObjects(Simulation& System)
+  /*!
+    Construc int
+   */
+{
+  ELog::RegMethod RegA("collInsert","createObject");
+
+  const HeadRule& RInnerComp=ExternalCut::getComplementRule("RInner");
+  const HeadRule& ROuterHR=ExternalCut::getRule("ROuter");
+  const HeadRule& RDivider=ExternalCut::getRule("Divider");
+
+  // inner void
+  
+  // inner steel layer
+  const HeadRule innerHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"23 -24 25 -26");
+  // outer steel layer
+  const HeadRule outerHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"33 -34 35 -36");
+
+  const HeadRule steelHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 15 -16");
+  // mid divider
+  const HeadRule midHR=
+    HeadRule(SMap,buildIndex+100*(1+static_cast<int>(nB4C)/2),1);
+
+  HeadRule HR;
+  // front space
+  HR=HeadRule(SMap,buildIndex+100,-1);
+  System.addCell(cellIndex++,0,0.0,HR*RInnerComp*innerHR*RDivider);
+
+  const HeadRule voidHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"-3:4:-5:6");
+
+  
+  int BI(buildIndex+100);
+  int b4cI(buildIndex);
+  HeadRule limitHR(innerHR);
+  for(size_t i=0;i<nB4C;i++)
+    {
+      if (i==nB4C/2)
+	{
+	  limitHR=outerHR;
+	  b4cI+=10;
+	}
+
+      HR=ModelSupport::getHeadRule(SMap,BI,"1 -11");
+      System.addCell(cellIndex++,0,0.0,HR*limitHR*voidHR);
+
+      HR=ModelSupport::getHeadRule(SMap,BI,buildIndex,"11 -12 (-3M:4M)");
+      System.addCell(cellIndex++,b4cMat,0.0,HR*limitHR);
+      HR=ModelSupport::getHeadRule
+	(SMap,BI,buildIndex,b4cI,"11 -12 3M -4M -5M 25N");
+      System.addCell(cellIndex++,0,0.0,HR*limitHR);
+      HR=ModelSupport::getHeadRule
+	(SMap,BI,buildIndex,b4cI,"11 -12 3M -4M 6M -26N");
+      System.addCell(cellIndex++,0,0.0,HR*limitHR);
+
+      HR=ModelSupport::getHeadRule(SMap,BI,"12 -21");
+      System.addCell(cellIndex++,0,0.0,HR*limitHR*voidHR);
+
+      HR=ModelSupport::getHeadRule(SMap,BI,buildIndex,"21 -22 (-5M:6M)");
+      System.addCell(cellIndex++,b4cMat,0.0,HR*limitHR);
+      HR=ModelSupport::getHeadRule
+	(SMap,BI,buildIndex,b4cI,"21 -22 5M -6M -3M 23N");
+      System.addCell(cellIndex++,0,0.0,HR);
+      HR=ModelSupport::getHeadRule
+	(SMap,BI,buildIndex,b4cI,"21 -22 5M -6M 4M -24N");
+      System.addCell(cellIndex++,0,0.0,HR);
+      
+      HR=ModelSupport::getHeadRule(SMap,BI,"22 -31");
+      System.addCell(cellIndex++,0,0.0,HR*limitHR*voidHR);
+      
+      if (i!=nB4C-1)
+	{
+	  int SI(BI);
+	  for(size_t j=0;j<nSteel;j++)
+	    {
+	      HR=ModelSupport::getAltHeadRule(SMap,SI,BI,"31 -32A -101MB");
+	      
+	      System.addCell(cellIndex++,0,0.0,HR*steelHR*voidHR);
+	      System.addCell(cellIndex++,steelMat,0.0,
+			     HR*steelHR.complement()*limitHR);
+	      SI++;
+	    }
+	  BI+=100;
+	}
+    }
+  // last surface
+  HR=HeadRule(SMap,BI,31);
+  System.addCell(cellIndex++,0,0.0,HR*ROuterHR*outerHR*RDivider);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,BI,"101 3 -4 5 -6 -31M");
+  System.addCell(cellIndex++,0,0.0,HR);
+
+  addOuterSurf(innerHR*midHR.complement());
+  addOuterUnionSurf(outerHR*midHR);
   return;
 }
   
-
 void
 collInsert::createLinks()
   /*!
@@ -101,7 +319,7 @@ collInsert::createLinks()
   */
 {
   ELog::RegMethod RegA("collInsert","createLinks");
-  
+  /*
   attachSystem::FixedComp& mainFC=getKey("Main");
   attachSystem::FixedComp& beamFC=getKey("Beam");
   
@@ -119,7 +337,7 @@ collInsert::createLinks()
  
   beamFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
   beamFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));
-
+  */
   return;
 }
 
@@ -132,25 +350,12 @@ collInsert::getWindowCentre() const
   */
 {
   ELog::RegMethod RegA("collInsert","getWindowCentre");
-  
+
+  /*
   const attachSystem::FixedComp& beamFC=getKey("Beam");
   const Geometry::Vec3D beamOrigin(beamFC.getCentre());
-  
-  return beamOrigin;
-}
-
-void
-collInsert::createSurfaces()
-{
-  ELog::RegMethod RegA("collInsert","createSurfaces");
-  return;
-}
-
-void
-collInsert::createObjects(Simulation&)
-{
-  ELog::RegMethod RegA("collInsert","createObject");
-  return;
+  */
+  return Origin;
 }
   
   
@@ -167,7 +372,7 @@ collInsert::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("collInsert","createAll");
 
-
+  populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);

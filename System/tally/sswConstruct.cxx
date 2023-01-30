@@ -106,7 +106,7 @@ sswConstruct::processSSW(SimMCNP& System,
       
       const long int sideIndex(FCPtr->getSideIndex(linkPt));
       const std::set<int> OutSurf=
-        FCPtr->getMainRule(sideIndex).getSurfSet();
+        FCPtr->getMainRule(sideIndex).getSurfaceNumbers();
       for(const int CN : OutSurf)
         SList.push_back(CN);
     }

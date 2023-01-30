@@ -1118,7 +1118,7 @@ exptVariables(FuncDataBase& Control,
 
   Control.addVariable(preName+"SampleYStep", 25.0); // [2]
   Control.addVariable(preName+"SampleRadius", 5.0); // [2]
-  Control.addVariable(preName+"SampleDefMat", "Stainless304");
+  Control.addVariable(preName+"SampleMat", "Stainless304");
 
   
   return;

@@ -3,7 +3,7 @@
  
  * File:   test/testWriteSupport.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -123,11 +123,17 @@ testWriteSupport::testDouble()
 
   const std::vector<TTYPE> Tests=
     {
-      //         1234567890
-      TTYPE(2.0,         "   2.00000"),
-      TTYPE(2.1,         "   2.10000"),
+      //                  1234567890
+      TTYPE(2.0,         "  2.000000"),
+      TTYPE(2.1,         "  2.100000"),
+      TTYPE(102.0,       "102.000000"),
+      TTYPE(102.1,       "102.100000"),
+      TTYPE(-102.0,      "-102.00000"),
+      TTYPE(-102.1,      "-102.10000"),
+      TTYPE(11102.0,     "11102.0000"),
+      TTYPE(-11102.1,    "-11102.100"),
       TTYPE(2.0000000001,"         2"),
-      TTYPE(-2.1,        "  -2.10000"),
+      TTYPE(-2.1,        " -2.100000"),
       TTYPE(-2.1e12,     "  -2.1e+12")
     };
 

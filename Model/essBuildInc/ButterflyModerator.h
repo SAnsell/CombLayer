@@ -76,9 +76,7 @@ class ButterflyModerator :
   virtual ~ButterflyModerator();
 
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
-  virtual int getLayerSurf(const size_t,const long int) const;
-  virtual std::string getLayerString(const size_t,const long int) const;
-  virtual int getCommonSurf(const long int) const;
+  virtual HeadRule getLayerHR(const size_t,const long int) const;
 
   /// Accessor to radius
   void setRadiusX(const double R) { outerRadius=R; }
@@ -86,14 +84,14 @@ class ButterflyModerator :
   virtual const attachSystem::FixedComp&
     getComponent(const std::string&) const;
 
-  std::string getLeftExclude() const;
-  std::string getRightExclude() const;
-  std::string getLeftFarExclude() const;
-  std::string getRightFarExclude() const;
+  HeadRule getLeftExclude() const;
+  HeadRule getRightExclude() const;
+  HeadRule getLeftFarExclude() const;
+  HeadRule getRightFarExclude() const;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+		 const long int);
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int,

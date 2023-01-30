@@ -3,7 +3,7 @@
  
  * File:   support/writeSupport.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,55 +64,60 @@ flukaNum(const long int I)
 }
 
 std::string
-flukaNum(const double D,const double zeroTol)
+flukaNum(const double D,const double zeroTol,
+	 const double exponentTol)
   /*!
     Process a number into a fluka style string
     \param D :: Number to use
   */
 {
-  static boost::format FMTnum("%1$10.5f");
+  static boost::format FMTnum("%1$10.6f");
   static boost::format FMTlnum("%1$10.5g");
   //  static boost::format FMTnegLnum("%1$10.4g");
-  static boost::format FMTnegNum("%1$10.5f");
-  static boost::format FMTcutNum("%1$10.4f");
-  static boost::format FMTnegLNum("%1$10.5g");  // allow for sign
-  static boost::format FMTcutLNum("%1$10.4g");  // allow for sign
+  static boost::format FMTnegNum("%1$10.6f");
+  static boost::format FMTcutNum("%1$10.5f");
+  static boost::format FMTnegLNum("%1$10.6g");  // allow for sign
+  static boost::format FMTcutLNum("%1$10.5g");  // allow for sign
+  static boost::format FMTcutLBNum("%1$10.4g");  // allow for sign
 
-  if (D>-zeroTol && D<zeroTol)  // float point limits
-    return (FMTnum % 0.0).str();
-  
-  if (D < 1e5 && D > 1e-5)      // +ve low range
-    {
-      // test if 1 dp sufficiently accurate
-      if (std::abs(std::round(D*10000.0)-D*10000.0)
-	  <Geometry::zeroTol)
-	return (FMTnum % D).str();
-    }
-  if (D> -1e5 && D< -1e-5)        // -ve low range
-    {
-      // test if 1 dp sufficiently accurate
+  const double lowExpTol(1.0/exponentTol);
 
-      if (std::abs(std::round(D*10000.0)-D*10000.0)
-	  <Geometry::zeroTol)
-	{
-	  std::string out= (FMTnegNum % D).str();
-	  if (out.size()>10)
-	    out= (FMTcutNum % D).str();
-	  return out;
-	}
-    }
+  // default : 
   std::string out=(FMTnegLNum % D).str();
-  if (out.size()>10)
-    out=(FMTcutLNum % D).str();
+  // specials::
+  if (D>-zeroTol && D<zeroTol)  // float point limits
+    out=(FMTnum % 0.0).str();
+
+  else if (D <exponentTol && D >lowExpTol)      // +ve low range
+    {
+      // test if 1 dp sufficiently accurate
+      if (std::abs(std::round(D*exponentTol)-D*exponentTol)
+	  <Geometry::zeroTol)
+	out=(FMTnum % D).str();
+    }
+  
+  else if (D> -exponentTol && D< -lowExpTol)        // -ve low range
+    {
+      // test if 1 dp sufficiently accurate
+
+      if (std::abs(std::round(D*exponentTol)-D*exponentTol)
+	  <Geometry::zeroTol)
+	out= (FMTnegNum % D).str();
+    }
+  else
+    
+    out=(FMTnegLNum % D).str();    
+
 
   if (out.size()>10)
-    std::cerr<<"ERROR With number"<<out<<std::endl;
+    out.erase(10);
+
   return out;
 }
 
 void
 writeFLUKA(const std::string& Line,std::ostream& OX,
-	   const double zeroTol)
+	   const double zeroTol,const double expTol)
   /*!
     Write out the line in the fixed FLUKA format WHAT(1-6).
     Replace " - " by space to write empty WHAT cards.
@@ -139,7 +144,7 @@ writeFLUKA(const std::string& Line,std::ostream& OX,
 	  if (StrFunc::convert(w,I))
 	    OX<<flukaNum(I);
 	  else if (StrFunc::convert(w,D))
-	    OX<<flukaNum(D,zeroTol);
+	    OX<<flukaNum(D,zeroTol,expTol);
 	  else
 	    {
 	      if (w.size()>2 && w.size()<12 && w[0]=='%')

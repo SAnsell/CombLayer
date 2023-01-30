@@ -3,7 +3,7 @@
  
  * File:   commonBeam/WallLead.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -54,15 +53,12 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "Surface.h"
 
 #include "WallLead.h"
 
@@ -70,7 +66,7 @@ namespace xraySystem
 {
 
 WallLead::WallLead(const std::string& Key) :
-  attachSystem::FixedOffset(Key,2),
+  attachSystem::FixedRotate(Key,2),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::FrontBackCut()
@@ -95,7 +91,7 @@ WallLead::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("WallLead","populate");
   
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   frontLength=Control.EvalVar<double>(keyName+"FrontLength");
   frontWidth=Control.EvalVar<double>(keyName+"FrontWidth");
@@ -195,64 +191,64 @@ WallLead::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("WallLead","createObjects");
 
-  const std::string frontSurf(frontRule());
-  const std::string backSurf(backRule());
+  const HeadRule frontSurf=getFrontRule();
+  const HeadRule backSurf=getBackRule();
 
-  std::string Out;
+  HeadRule HR;
 
   // extra Lead
-  Out=ModelSupport::getComposite(SMap,buildIndex," -11 13 -14 5 -6 7");
-  makeCell("ExtraVoid",System,cellIndex++,0,0.0,frontSurf+Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 13 -14 5 -6 7");
+  makeCell("ExtraVoid",System,cellIndex++,0,0.0,HR*frontSurf);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -11 3 -4 (-13 : 14) 5 -6");
-  makeCell("ExtraWall",System,cellIndex++,wallMat,0.0,frontSurf+Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 3 -4 (-13 : 14) 5 -6");
+  makeCell("ExtraWall",System,cellIndex++,wallMat,0.0,HR*frontSurf);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " -11 103 -104 105 -106 (-3:4:-5:6)");
-  makeCell("ExtraOut",System,cellIndex++,0,0.0,frontSurf+Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				 "-11 103 -104 105 -106 (-3:4:-5:6)");
+  makeCell("ExtraOut",System,cellIndex++,0,0.0,HR*frontSurf);
   
   // steel wall
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -21 113 -114 115 -116 7");
-  makeCell("SteelVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -21 113 -114 115 -116 7");
+  makeCell("SteelVoid",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-	 " 11 -21 103 -104 105 -106 (-113 : 114 : -115 : 116)");
-  makeCell("SteelWall",System,cellIndex++,steelMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+	 "11 -21 103 -104 105 -106 (-113 : 114 : -115 : 116)");
+  makeCell("SteelWall",System,cellIndex++,steelMat,0.0,HR);
 
   // front wall
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 21 -31 203 -204 205 -206 7 ");
-  makeCell("FrontWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"21 -31 203 -204 205 -206 7");
+  makeCell("FrontWall",System,cellIndex++,wallMat,0.0,HR);
 
   
   if (backLength>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex," 31 -12 1003 -1004 1005 -1006 7 ");
-      makeCell("MidWall",System,cellIndex++,midMat,0.0,Out);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"31 -12 1003 -1004 1005 -1006 7");
+      makeCell("MidWall",System,cellIndex++,midMat,0.0,HR);
       
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex," 12 1003 -1004 1005 -1006 7 ");
-      makeCell("BackWall",System,cellIndex++,wallMat,0.0,backSurf+Out);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"12 1003 -1004 1005 -1006 7");
+      makeCell("BackWall",System,cellIndex++,wallMat,0.0,HR*backSurf);
     }
   else
     {
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex," 31 1003 -1004 1005 -1006 7 ");
-      makeCell("BackWall",System,cellIndex++,wallMat,0.0,backSurf+Out);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"31 1003 -1004 1005 -1006 7");
+      makeCell("BackWall",System,cellIndex++,wallMat,0.0,HR*backSurf);
     }
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,frontSurf+backSurf+Out);
+  HR=HeadRule(SMap,buildIndex,-7);
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontSurf*backSurf);
 
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -21 103 -104  105 -106");
-  addOuterUnionSurf(Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -31 203 -204  205 -206");
-  addOuterUnionSurf(Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 31 1003 -1004 1005 -1006 ");
-  addOuterUnionSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-21 103 -104  105 -106");
+  addOuterUnionSurf(HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -31 203 -204  205 -206");
+  addOuterUnionSurf(HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"31 1003 -1004 1005 -1006 ");
+  addOuterUnionSurf(HR);
 
   return;
 }

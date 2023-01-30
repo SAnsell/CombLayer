@@ -605,6 +605,7 @@ opticsVariables(FuncDataBase& Control,
 
   
   SimpleTubeGen.setCF<CF63>();
+  SimpleTubeGen.setPipeRadius(CF63::innerRadius+0.1,CF63::wallThick);
   SimpleTubeGen.generateTube(Control,preName+"ScreenPipeB",14.0);
   Control.addVariable(preName+"ScreenPipeBNPorts",2);
   PItemGen.setCF<setVariable::CF63>(CF63::outerRadius+4.0);

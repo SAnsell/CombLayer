@@ -356,19 +356,19 @@ BeRef::createLinks()
   
   FixedComp::setConnect(0,Origin+Y*radius,-Y);
   FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+17));
-  FixedComp::addLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::addBridgeSurf(0,-SMap.realSurf(buildIndex+1));
 
   FixedComp::setConnect(1,Origin+Y*radius,Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+17));
-  FixedComp::addLinkSurf(1,SMap.realSurf(buildIndex+1));
+  FixedComp::addBridgeSurf(1,SMap.realSurf(buildIndex+1));
 
   FixedComp::setConnect(2,Origin+Y*radius,-X);
   FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+17));
-  FixedComp::addLinkSurf(2,-SMap.realSurf(buildIndex+2));
+  FixedComp::addBridgeSurf(2,-SMap.realSurf(buildIndex+2));
   
   FixedComp::setConnect(3,Origin+Y*radius,-X);
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+17));
-  FixedComp::addLinkSurf(3,SMap.realSurf(buildIndex+2));
+  FixedComp::addBridgeSurf(3,SMap.realSurf(buildIndex+2));
   
   FixedComp::setConnect(4,Origin-Z*(depth+wallThick),-Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));

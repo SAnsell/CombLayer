@@ -52,7 +52,7 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "Volumes.h"
-#include "variableSetup.h"
+#include "pipeVariableSetup.h"
 #include "makePipe.h"
 
 ///\cond STATIC

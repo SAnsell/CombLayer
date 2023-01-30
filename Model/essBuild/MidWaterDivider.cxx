@@ -3,7 +3,7 @@
  
  * File:   essBuild/MidWaterDivider.cxx 
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,14 +39,9 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "Surface.h"
 #include "surfRegister.h"
-#include "Quadratic.h"
-#include "Plane.h"
 #include "geomSupport.h"
 #include "varList.h"
 #include "Code.h"
@@ -76,9 +71,8 @@ namespace essSystem
 
 MidWaterDivider::MidWaterDivider(const std::string& baseKey,
 				 const std::string& extraKey) :
-  attachSystem::ContainedComp(),
-  attachSystem::LayerComp(0,0),
   attachSystem::FixedComp(baseKey+extraKey,14),
+  attachSystem::ContainedComp(),
   baseName(baseKey),AWingPtr(nullptr),BWingPtr(nullptr)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -88,8 +82,9 @@ MidWaterDivider::MidWaterDivider(const std::string& baseKey,
 {}
 
 MidWaterDivider::MidWaterDivider(const MidWaterDivider& A) : 
-  attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
-  attachSystem::FixedComp(A), baseName(A.baseName),
+  attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),
+  baseName(A.baseName),
   midYStep(A.midYStep),
   midAngle(A.midAngle),length(A.length),height(A.height),
   wallThick(A.wallThick),modMat(A.modMat),wallMat(A.wallMat),
@@ -110,9 +105,8 @@ MidWaterDivider::operator=(const MidWaterDivider& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
-      attachSystem::LayerComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
       midYStep=A.midYStep;
       midAngle=A.midAngle;
       length=A.length;
@@ -204,8 +198,8 @@ MidWaterDivider::createLinks()
   surfN.push_back(BWingPtr->getLinkSurf(3));
 
   // Now deterermine point which are divider points
-  const Geometry::Plane* midPlane=
-    SMap.realPtr<Geometry::Plane>(buildIndex+200);
+  const Geometry::Surface* midPlane=
+    SMap.realSurfPtr(buildIndex+200);
 
   const std::vector<std::pair<int,int>> InterVec =
     {
@@ -224,26 +218,25 @@ MidWaterDivider::createLinks()
       const int SA(buildIndex+Item.first);
       const int SB(Item.second>0 ? buildIndex+Item.second :
 		   surfN[static_cast<size_t>(-Item.second-1)]);
-      const Geometry::Plane* PA=SMap.realPtr<Geometry::Plane>(SA);
-      const Geometry::Plane* PB=SMap.realPtr<Geometry::Plane>(SB);
+      const Geometry::Surface* PA=SMap.realSurfPtr(SA);
+      const Geometry::Surface* PB=SMap.realSurfPtr(SB);
       FixedComp::setConnect
       	(index,SurInter::getPoint(PA,PB,midPlane),Axis[index]);
     }
 
   // full cut out
-  std::string Out;
+
   HeadRule HR;
 
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," ( (-123 (-137:138)) : (124 (-127:128)) ) -131 -132 ");
-  HR.procString(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+      "((-123 (-137:138)) : (124 (-127:128))) -131 -132");
   HR.makeComplement();
   FixedComp::setLinkSurf(10,HR);
   FixedComp::setBridgeSurf(10,-SMap.realSurf(buildIndex+100));
 
   // +ve Y
-  Out=ModelSupport::getComposite(SMap,buildIndex," ( (-103 (-117:118)) : (104  (-107:108)) )  -111 -112 ");
-  HR.procString(Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex, "( (-103 (-117:118)) : (104  (-107:108)) ) -111 -112");
   HR.makeComplement();  
   FixedComp::setLinkSurf(11,HR);
   FixedComp::setBridgeSurf(11,SMap.realSurf(buildIndex+100));
@@ -336,11 +329,10 @@ MidWaterDivider::createSurfaces()
       int CI(buildIndex);
       for(size_t i=0;i<4;i++)
         {
-          const std::string Out=ModelSupport::getComposite(SMap,buildIndex,
+          HeadRule CCorner=ModelSupport::getHeadRule(SMap,buildIndex,
                                          std::to_string(sideSurf[i])+" "+
                                          std::to_string(frontSurf[i]));
 
-          HeadRule CCorner(Out);
           CCorner.populateSurf();
 	  const std::tuple<Geometry::Vec3D,Geometry::Vec3D,Geometry::Vec3D>
 	    RCircle=Geometry::findCornerCircle
@@ -387,106 +379,95 @@ MidWaterDivider::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("MidWaterDivider","createObjects");
 
-  const std::string Base=AWingPtr->getLinkString(-5);
-  const std::string Top=AWingPtr->getLinkString(-6);
+  const HeadRule BaseHR=AWingPtr->getFullRule(-5);
+  const HeadRule TopHR=AWingPtr->getFullRule(-6);
   
-  HeadRule LCut(AWingPtr->getLayerString(cutLayer,7));
-  HeadRule RCut(BWingPtr->getLayerString(cutLayer,7));
+  const HeadRule LCut(AWingPtr->getLayerHR(cutLayer,-7));
+  const HeadRule RCut(BWingPtr->getLayerHR(cutLayer,-7));
 
-  LCut.makeComplement();
-  RCut.makeComplement();
-  std::string Out;
+  HeadRule HR;
 
   if (topThick>Geometry::zeroTol)
     {
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"300 100 4 -11 -5 (-7:8)");
-      Out+=LCut.display()+Base;
-      System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
+      HR=ModelSupport::getSetHeadRule
+	(SMap,buildIndex,"300 100 4 -11 -5 (-7:8)");
+      System.addCell(cellIndex++,modMat,modTemp,HR*LCut*BaseHR);
 
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"-300 100 -3 -12 -5 (-17:18)");
-      Out+=RCut.display()+Base;
-      System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
+      HR=ModelSupport::getSetHeadRule
+	(SMap,buildIndex,"-300 100 -3 -12 -5 (-17:18)");
+      System.addCell(cellIndex++,modMat,modTemp,HR*RCut*BaseHR);
 
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"300 100 4 -11  5 (-7:8)");
-      Out+=LCut.display()+Top;
-      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,Out));
+      HR=ModelSupport::getSetHeadRule
+	(SMap,buildIndex,"300 100 4 -11  5 (-7:8)");
+      System.addCell(cellIndex++,wallMat,modTemp,HR*LCut*TopHR);
 
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"-300 100 -3 -12 5 (-17:18)");
-      Out+=RCut.display()+Top;
-      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,Out));
+      HR=ModelSupport::getSetHeadRule
+	(SMap,buildIndex,"-300 100 -3 -12 5 (-17:18)");
+      System.addCell(cellIndex++,wallMat,modTemp,HR*RCut*TopHR);
 
       // Reverse side
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,
-                                     "300 -100 -23  -31  -5 (-37:38) ");
-      Out+=LCut.display()+Base;
-      System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
+      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,
+                                    "300 -100 -23  -31  -5 (-37:38)");
+      System.addCell(cellIndex++,modMat,modTemp,HR*LCut*BaseHR);
       
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,
-                                     "-300 -100 24 -32 -5 (-27:28)");
-      Out+=RCut.display()+Base;
-      System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
+      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,
+                                    "-300 -100 24 -32 -5 (-27:28)");
+      System.addCell(cellIndex++,modMat,modTemp,HR*RCut*BaseHR);
 
       
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,
-                                     "300 -100 -23 -31 5 (-37:38) ");
-      Out+=LCut.display()+Top;
-      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,Out));
+      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,
+                                    "300 -100 -23 -31 5 (-37:38)");
+      System.addCell(cellIndex++,wallMat,modTemp,HR*LCut*TopHR);
 
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,
-                                     "-300 -100 24 -32 5 (-27:28)");
-      Out+=RCut.display()+Top;
-      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,Out));
+      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,
+                                    "-300 -100 24 -32 5 (-27:28)");
+      System.addCell(cellIndex++,wallMat,modTemp,HR*RCut*TopHR);
     }
   else 
     {
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"300 100 4 -11 (-7:8)");
-      Out+=LCut.display()+Base+Top;
-      System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
+      HR=ModelSupport::getSetHeadRule
+	(SMap,buildIndex,"300 100 4 -11 (-7:8)");
+      System.addCell(cellIndex++,modMat,modTemp,HR*LCut*BaseHR*TopHR);
       
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"-300 100 -3 -12 (-17:18)");
-      Out+=RCut.display()+Base+Top;
-      System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
+      HR=ModelSupport::getSetHeadRule
+	(SMap,buildIndex,"-300 100 -3 -12 (-17:18)");
+      System.addCell(cellIndex++,modMat,modTemp,HR*RCut*BaseHR*TopHR);
 
       // Reverse layers
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"300 -100 -23 -31 (-37:38)");
-      Out+=LCut.display()+Base+Top;
-      System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
+      HR=ModelSupport::getSetHeadRule
+	(SMap,buildIndex,"300 -100 -23 -31 (-37:38)");
+      System.addCell(cellIndex++,modMat,modTemp,HR*LCut*BaseHR*TopHR);
 
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"-300 -100 24 -32 (-27:28)");
-      Out+=RCut.display()+Base+Top;
-      System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
-      
-    }
+      HR=ModelSupport::getSetHeadRule
+	(SMap,buildIndex,"-300 -100 24 -32 (-27:28)");
+      System.addCell(cellIndex++,modMat,modTemp,HR*RCut*BaseHR*TopHR);
+      }
   
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,
-				 "300 100 104 -111 (-107:108) (-4 : 11 : (7 -8) ) ");				 
-  Out+=LCut.display()+Base+Top;
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,Out));
+  HR=ModelSupport::getSetHeadRule
+    (SMap,buildIndex,"300 100 104 -111 (-107:108) (-4 : 11 : (7 -8) )");
+  System.addCell(cellIndex++,wallMat,modTemp,HR*BaseHR*TopHR*LCut);
 
 
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,
-				 "-300 100 -103 -112 (-117:118) (3 : 12 : (17 -18)) ");				 
-  Out+=RCut.display()+Base+Top;
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,Out));
+  HR=ModelSupport::getSetHeadRule
+    (SMap,buildIndex,"-300 100 -103 -112 (-117:118) (3 : 12 : (17 -18))");
+  System.addCell(cellIndex++,wallMat,modTemp,HR*RCut*BaseHR*TopHR);
 
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,
-				 "100 ( (-103 (-117:118)) : (104  (-107:108)) )  -111 -112 ");
-  addOuterSurf(Out);
+  HR=ModelSupport::getSetHeadRule
+    (SMap,buildIndex,"100 ( (-103 (-117:118)) : (104  (-107:108)) ) -111 -112");
+  addOuterSurf(HR);
 
   // Reverse side
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,
-				 "300 -100 -123 -131 (-137:138) (23 : 31 : (37 -38))");
-  Out+=LCut.display()+Base+Top;
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,Out));
+  HR=ModelSupport::getSetHeadRule
+    (SMap,buildIndex,"300 -100 -123 -131 (-137:138) (23 : 31 : (37 -38))");
+  System.addCell(cellIndex++,wallMat,modTemp,HR*LCut*BaseHR*TopHR);
 
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,
-				 "-300 -100 124 -132 (-127:128) (-24 : 32 : (27 -28))");
-  Out+=RCut.display()+Base+Top;
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,Out));
+  HR=ModelSupport::getSetHeadRule
+    (SMap,buildIndex,"-300 -100 124 -132 (-127:128) (-24 : 32 : (27 -28))");
+  System.addCell(cellIndex++,wallMat,modTemp,HR*RCut*BaseHR*TopHR);
 
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,
-				 "-100 ( (-123 (-137:138)) : (124 (-127:128)) ) -131 -132 ");
-  addOuterUnionSurf(Out);
+  HR=ModelSupport::getSetHeadRule
+    (SMap,buildIndex,"-100 ( (-123 (-137:138)) : (124 (-127:128)) ) -131 -132");
+  addOuterUnionSurf(HR);
   
    
   return;
@@ -502,16 +483,17 @@ MidWaterDivider::cutOuterWing(Simulation& System) const
 {
   ELog::RegMethod RegA("MidWaterDivider","cutOuterWing");
 
+
   const size_t lWing=AWingPtr->getNLayers();
   const size_t rWing=BWingPtr->getNLayers();
 
-  const std::string LBase=
-    AWingPtr->getLinkString(-5)+AWingPtr->getLinkString(-6);
-  const std::string RBase=
-    BWingPtr->getLinkString(-5)+BWingPtr->getLinkString(-6);
+  const HeadRule LBase=
+    AWingPtr->getFullRule(-5)*AWingPtr->getFullRule(-6);
+  const HeadRule RBase=
+    BWingPtr->getFullRule(-5)*BWingPtr->getFullRule(-6);
 
-  HeadRule cutRule;
-  std::string Out;
+  HeadRule cutRuleHR;
+
   if (cutLayer+1<lWing)
     {
       const int cellA=AWingPtr->getCell("Outer");
@@ -519,11 +501,9 @@ MidWaterDivider::cutOuterWing(Simulation& System) const
       MonteCarlo::Object* OPtr=System.findObject(cellA);
       if (!OPtr)
 	throw ColErr::InContainerError<int>(cellA,"leftWing Cell: Outer");
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     " (100: -11) (-100:-31) ");
-      cutRule.procString(Out);
-      cutRule.makeComplement();
-      OPtr->addSurfString(cutRule.display());
+      cutRuleHR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"(-100  11) : (100 31)");
+      OPtr->addIntersection(cutRuleHR);
     }
   if (cutLayer+1<rWing)
     {
@@ -531,58 +511,12 @@ MidWaterDivider::cutOuterWing(Simulation& System) const
       MonteCarlo::Object* OPtr=System.findObject(cellB);
       if (!OPtr)
 	throw ColErr::InContainerError<int>(cellB,"rightWing Cell: Outer");
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     " (100:-12) : (-100:-32) ");
-      cutRule.procString(Out);
-      cutRule.makeComplement();
-      OPtr->addSurfString(cutRule.display());
+      cutRuleHR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"(-100  12) : (100 32)");
+      OPtr->addIntersection(cutRuleHR);
     }
   return;
 }
-
-  
-Geometry::Vec3D
-MidWaterDivider::getSurfacePoint(const size_t,
-			const long int) const
-  /*!
-    Given a side and a layer calculate the link point
-    \param :: layer, 0 is inner moderator [0-6]
-    \param :: Side [0-3] // mid sides   
-    \return Surface point
-  */
-{
-  ELog::RegMethod RegA("MidWaterDivider","getSurfacePoint");
-  throw ColErr::AbsObjMethod("Not implemented yet");
-}
-
-int
-MidWaterDivider::getLayerSurf(const size_t,
-                              const long int) const
-  /*!
-    Given a side and a layer calculate the link point
-    \param :: layer, 0 is inner moderator [0-3]
-    \param :: Side [0-3] // mid sides   
-    \return Surface point
-  */
-{
-  ELog::RegMethod RegA("MidWaterDivider","getLayerSurf");
-  throw ColErr::AbsObjMethod("Not implemented yet");
-}
-
-std::string
-MidWaterDivider::getLayerString(const size_t,
-                                const long int) const
-  /*!
-    Given a side and a layer calculate the link point
-    \param :: layer, 0 is inner moderator [0-6]
-    \param :: Side [0-3] // mid sides   
-    \return Surface point
-  */
-{
-  ELog::RegMethod RegA("MidWaterDivider","getLayerString");
-  throw ColErr::AbsObjMethod("Not implemented yet");
-}
-
 
 void
 MidWaterDivider::createAll(Simulation& System,

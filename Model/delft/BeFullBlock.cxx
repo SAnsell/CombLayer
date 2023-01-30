@@ -3,7 +3,7 @@
  
  * File:   delft/BeFullBlock.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BeFullBlock.h"
 
@@ -64,7 +64,8 @@ namespace delftSystem
 {
 
 BeFullBlock::BeFullBlock(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,3)
+  attachSystem::FixedRotate(Key,3),
+  attachSystem::ContainedComp()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -72,7 +73,8 @@ BeFullBlock::BeFullBlock(const std::string& Key)  :
 {}
 
 BeFullBlock::BeFullBlock(const BeFullBlock& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
   width(A.width),height(A.height),length(A.length),mat(A.mat)
   /*!
     Copy constructor
@@ -90,8 +92,8 @@ BeFullBlock::operator=(const BeFullBlock& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
       width=A.width;
       height=A.height;
       length=A.length;
@@ -115,32 +117,12 @@ BeFullBlock::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BeFullBlock","populate");
 
-  attachSystem::FixedOffset::populate(Control);
+  attachSystem::FixedRotate::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
-
-  return;
-}
-  
-void
-BeFullBlock::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
-  /*!
-    Create the unit vectors
-    - Y Points towards the beamline
-    - X Across the Face
-    - Z up (towards the target)
-    \param FC :: A Contained FixedComp to use as basis set
-    \param sideIndex :: Side Direction for link point
-  */
-{
-  ELog::RegMethod RegA("BeFullBlock","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
 
   return;
 }
@@ -175,11 +157,13 @@ BeFullBlock::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("BeFullBlock","createObjects");
   
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  addOuterSurf(Out);
-  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
-  
+
+  HeadRule HR;
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  System.addCell(cellIndex++,mat,0.0,HR);
+
+  addOuterSurf(HR);
+
   return;
 }
 

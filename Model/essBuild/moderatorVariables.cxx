@@ -3,7 +3,7 @@
  
  * File:   essBuild/moderatorVariables.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2022 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,8 +58,8 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowFlyXStep",0.0);  
   Control.addVariable("LowFlyYStep",0.0);  
   Control.addVariable("LowFlyZStep",0.0);
-  Control.addVariable("LowFlyXYAngle",90.0);
-  Control.addVariable("LowFlyZAngle",180.0);
+  Control.addVariable("LowFlyZAngle",-90.0);
+  Control.addVariable("LowFlyXAngle",180.0);
   Control.addVariable("LowFlyTotalHeight",7.6);
   
   Control.addVariable("LowFlyLeftLobeXStep",1.0);  

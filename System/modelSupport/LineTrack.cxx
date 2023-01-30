@@ -164,18 +164,25 @@ LineTrack::calculate(const Simulation& ASim)
       (InitPt,"Initial point not in model");
 
   int SN(0);
+  
   const std::set<int> SSet=OPtr->isOnSide(InitPt);
   if (!SSet.empty())
     {
       int TD(0);
       std::set<int>::const_iterator sc;
       for(sc=SSet.begin();!TD && sc!=SSet.end();sc++)
-	TD=OPtr->trackDirection(*sc,nOut.Pos,nOut.uVec);
-      SN=*sc;
-      OPtr=OSMPtr->findNextObject(TD*SN,nOut.Pos,OPtr->getName());
-
+	{
+	  SN=*sc;
+	  TD=OPtr->trackDirection(SN,nOut.Pos,nOut.uVec);
+	  SN*=TD;
+	  if (TD<0)
+	    {
+	      OPtr=OSMPtr->findNextObject(-SN,nOut.Pos,OPtr->getName());
+	      SN=0;
+	    }
+	}
     }
-  
+
   // problem is that SN will be on TWO objects
   // so which one is it? [it doesn't matter much]
   while(OPtr)
@@ -294,7 +301,7 @@ LineTrack::calculateError(const Simulation& ASim)
 		  nOut.moveForward(-1e-5);
 		  ELog::EM<<"Object = "<<*OPtr<<ELog::endDiag;
 		  const std::set<const Geometry::Surface*>& SV=
-		    OPtr->getSurList();
+		    OPtr->getSurfPtrSet();
 		  for(const Geometry::Surface* SPtr : SV)
 		    if (SPtr->onSurface(nOut.Pos))
 		      ELog::EM<<"Surf == "<<*SPtr<<ELog::endDiag;

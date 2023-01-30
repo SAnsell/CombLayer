@@ -85,21 +85,19 @@ class FrontBackCut :
   std::string frontRule() const;
   std::string backRule() const;
 
-  std::string frontComplement() const;
-  std::string backComplement() const;
-
-  std::string frontBridgeRule() const;
-  std::string backBridgeRule() const;
-
   void getShiftedFront(ModelSupport::surfRegister&,const int,
 		       const Geometry::Vec3D&,const double) const;
   void getShiftedBack(ModelSupport::surfRegister&,const int,
 		      const Geometry::Vec3D&,const double) const;
   
   /// accessor
-  const HeadRule& getFrontRule() const { return getRule("front"); }
+  HeadRule getFrontRule() const { return getRule("front"); }
   /// accessor
-  const HeadRule& getBackRule() const { return getRule("back"); }
+  HeadRule getBackRule() const { return getRule("back"); }
+  /// access
+  HeadRule getFrontComplement() const { return getComplementRule("front"); }
+  /// accessor
+  HeadRule getBackComplement() const { return getComplementRule("back"); }
   /// accessor
   const HeadRule& getFrontBridgeRule() const { return getDivider("front"); }
   /// accessor

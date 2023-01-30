@@ -3,7 +3,7 @@
 
  * File:   essBuild/Linac.cxx
  *
- * Copyright (c) 2004-2019 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,8 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -58,7 +56,7 @@
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "surfDBase.h"
 #include "surfDivide.h"
 #include "mergeTemplate.h"
@@ -74,8 +72,9 @@ namespace essSystem
 {
 
 Linac::Linac(const std::string& Key)  :
+  attachSystem::FixedRotate(Key,12),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,12), attachSystem::CellMap(),
+  attachSystem::CellMap(),
   beamDump(new BeamDump(Key,"BeamDump")),
   faradayCup(new FaradayCup(Key+"FaradayCup"))
   /*!
@@ -93,8 +92,8 @@ Linac::Linac(const std::string& Key)  :
 }
 
 Linac::Linac(const Linac& A) :
+  attachSystem::FixedRotate(A),
   attachSystem::ContainedComp(A),
-  attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),
   engActive(A.engActive),
   length(A.length),widthLeft(A.widthLeft),
@@ -131,8 +130,8 @@ Linac::operator=(const Linac& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       engActive=A.engActive;
       length=A.length;
@@ -174,7 +173,7 @@ Linac::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("Linac","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   // This is to be replaces with -tEng IParam
   engActive=Control.EvalTail<int>(keyName,"","EngineeringActive");
@@ -199,23 +198,6 @@ Linac::populate(const FuncDataBase& Control)
   tswGap=Control.EvalVar<double>(keyName+"TSWGap");
   tswOffsetY=Control.EvalVar<double>(keyName+"TSWOffsetY");
   tswNLayers=Control.EvalDefVar<size_t>(keyName+"TSWNLayers", 1);
-
-  return;
-}
-
-void
-Linac::createUnitVector(const attachSystem::FixedComp& FC,
-			const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: object for origin
-    \param sideIndex :: sideIndex
-  */
-{
-  ELog::RegMethod RegA("Linac","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
 
   return;
 }
@@ -329,53 +311,54 @@ Linac::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Linac","createObjects");
 
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -101 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
-  setCell("airBefore", cellIndex-1);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 102 -111 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex," 112 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
-  setCell("airAfter", cellIndex-1);
+  HeadRule HR;
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -101 3 -4 5 -6");
+  makeCell("airBefore",System,cellIndex++,airMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -111 3 -4 5 -6");
+  makeCell("midAir",System,cellIndex++,airMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"112 -2 3 -4 5 -6");
+  makeCell("airAfter",System,cellIndex++,airMat,0.0,HR);
+
 
   // side walls and roof
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 11 -12 13 -14 5 -16 (-1:2:-3:4:6) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				"11 -12 13 -14 5 -16 (-1:2:-3:4:6)");
+  makeCell("Walls",System,cellIndex++,wallMat,0.0,HR);
   // wall bottom slab
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 23 -24 15 -5 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 23 -13 5 -16 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 14 -24 5 -16 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 23 -24 15 -5");
+  makeCell("Base",System,cellIndex++,wallMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 23 -13 5 -16");
+  makeCell("Roof",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 14 -24 5 -16");
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
 
   // temporary shielding walls
   // 1st wall
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 3 -103 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
-  setCell("tsw1", cellIndex-1);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 103 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 3 -103 5 -6");
+  makeCell("tsw1",System,cellIndex++,wallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 103 -4 5 -6");
+  makeCell("tsw1Gap",System,cellIndex++,airMat,0.0,HR);
 
   // 2nd wall
-  Out=ModelSupport::getComposite(SMap,buildIndex," 111 -112 3 -104 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex," 111 -112 104 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
-  setCell("tsw2", cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"111 -112 3 -104 5 -6");
+  makeCell("tsw2Gap",System,cellIndex++,airMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"111 -112 104 -4 5 -6");
+  makeCell("tsw2",System,cellIndex++,wallMat,0.0,HR);
+
 
   // divide TSW walls
-  layerProcess(System, "tsw1", 7, 8, tswNLayers, wallMat);
-  layerProcess(System, "tsw2", 9, 10, tswNLayers, wallMat);
+  layerProcess(System,"tsw1", 7, 8, tswNLayers, wallMat);
+  layerProcess(System,"tsw2", 9, 10, tswNLayers, wallMat);
 
   // divide air before TSW
-  layerProcess(System, "airBefore", 11, 7, nAirLayers, airMat);
-  layerProcess(System, "airAfter", 10, 12, nAirLayers, airMat);
+  layerProcess(System,"airBefore", 11, 7, nAirLayers, airMat);
+  layerProcess(System,"airAfter", 10, 12, nAirLayers, airMat);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 23 -24 15 -16 ");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 23 -24 15 -16");
+  addOuterSurf(HR);
 
   return; 
 }

@@ -69,14 +69,16 @@
 #include "AttachSupport.h"
 #include "beamlineSupport.h"
 #include "GuideItem.h"
-#include "GuideLine.h"
+#include "GuideUnit.h"
+#include "PlateUnit.h"
+#include "BenderUnit.h"
 #include "DiskChopper.h"
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "Bunker.h"
 #include "CompBInsert.h"
 #include "SingleChopper.h"
-#include "DreamHut.h"
+#include "EssHut.h"
 #include "LineShield.h"
 #include "PipeCollimator.h"
 
@@ -90,10 +92,10 @@ DREAM::DREAM(const std::string& keyName) :
   stopPoint(0),
   dreamAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
 
-  FocusA(new beamlineSystem::GuideLine(newName+"FA")),
+  FocusA(new beamlineSystem::PlateUnit(newName+"FA")),
  
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
-  FocusB(new beamlineSystem::GuideLine(newName+"FB")),
+  FocusB(new beamlineSystem::PlateUnit(newName+"FB")),
 
   ChopperA(new essConstruct::SingleChopper(newName+"ChopperA")),
   DDisk(new essConstruct::DiskChopper(newName+"DBlade")),
@@ -106,51 +108,51 @@ DREAM::DREAM(const std::string& keyName) :
   VPipeC0(new constructSystem::VacuumPipe(newName+"PipeC0")),
 
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
-  FocusC(new beamlineSystem::GuideLine(newName+"FC")),
+  FocusC(new beamlineSystem::PlateUnit(newName+"FC")),
   
   ChopperB(new essConstruct::SingleChopper(newName+"ChopperB")),
   BandADisk(new essConstruct::DiskChopper(newName+"BandADisk")),  
 
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
-  FocusD(new beamlineSystem::GuideLine(newName+"FD")),
+  FocusD(new beamlineSystem::PlateUnit(newName+"FD")),
   
   ChopperC(new essConstruct::SingleChopper(newName+"ChopperC")), 
   T0DiskA(new essConstruct::DiskChopper(newName+"T0DiskA")),
 
   VPipeE1(new constructSystem::VacuumPipe(newName+"PipeE1")),
-  FocusE1(new beamlineSystem::GuideLine(newName+"FE1")),
+  FocusE1(new beamlineSystem::PlateUnit(newName+"FE1")),
 
   VPipeE2(new constructSystem::VacuumPipe(newName+"PipeE2")),
-  FocusE2(new beamlineSystem::GuideLine(newName+"FE2")),
+  FocusE2(new beamlineSystem::PlateUnit(newName+"FE2")),
 
   VPipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
-  FocusF(new beamlineSystem::GuideLine(newName+"FF")),
+  FocusF(new beamlineSystem::PlateUnit(newName+"FF")),
   VPipeG(new constructSystem::VacuumPipe(newName+"PipeG")),
-  FocusG(new beamlineSystem::GuideLine(newName+"FG")),
+  FocusG(new beamlineSystem::PlateUnit(newName+"FG")),
   
   BInsertA(new CompBInsert(newName+"BInsertA")),
   BInsertB(new CompBInsert(newName+"BInsertB")),
-  FocusWallA(new beamlineSystem::GuideLine(newName+"FWallA")),
+  FocusWallA(new beamlineSystem::PlateUnit(newName+"FWallA")),
 
 
   ShieldA(new constructSystem::LineShield(newName+"ShieldA")),
   VPipeOutA(new constructSystem::VacuumPipe(newName+"PipeOutA")),
-  FocusOutA(new beamlineSystem::GuideLine(newName+"FOutA")),
+  FocusOutA(new beamlineSystem::PlateUnit(newName+"FOutA")),
 
   ShieldB(new constructSystem::LineShield(newName+"ShieldB")),
   VPipeOutB(new constructSystem::VacuumPipe(newName+"PipeOutB")),
-  FocusOutB(new beamlineSystem::GuideLine(newName+"FOutB")),
+  FocusOutB(new beamlineSystem::PlateUnit(newName+"FOutB")),
 
   ShieldC(new constructSystem::LineShield(newName+"ShieldC")),
   VPipeOutC(new constructSystem::VacuumPipe(newName+"PipeOutC")),
-  FocusOutC(new beamlineSystem::GuideLine(newName+"FOutC")),
+  FocusOutC(new beamlineSystem::PlateUnit(newName+"FOutC")),
 
-  Cave(new DreamHut(newName+"Cave")),
+  Cave(new EssHut(newName+"Cave")),
 
   VPipeCaveA(new constructSystem::VacuumPipe(newName+"PipeCaveA")),
-  FocusCaveA(new beamlineSystem::GuideLine(newName+"FCaveA")),
+  FocusCaveA(new beamlineSystem::PlateUnit(newName+"FCaveA")),
 
-  FocusCaveB(new beamlineSystem::GuideLine(newName+"FCaveB"))
+  FocusCaveB(new beamlineSystem::PlateUnit(newName+"FCaveB"))
 
  /*!
     Constructor
@@ -251,7 +253,7 @@ DREAM::build(Simulation& System,
   const FuncDataBase& Control=System.getDataBase();
   CopiedComp::process(System.getDataBase());  // CONTROL modified
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
-  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getLinkPt(-1)
+  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getLinkPt("front")
 	  <<" in bunker: "<<bunkerObj.getKeyName()<<ELog::endDiag;
   
   essBeamSystem::setBeamAxis(*dreamAxis,Control,GItem,1);
@@ -259,26 +261,25 @@ DREAM::build(Simulation& System,
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);
   FocusA->setBack(GItem.getKey("Beam"),-2);
-  FocusA->createAll(System,GItem.getKey("Beam"),-1,
-		    GItem.getKey("Beam"),-1);
+  FocusA->createAll(System,GItem.getKey("Beam"),-1);
 
   if (stopPoint==1) return;                      // STOP At monolith edge
 
   VPipeB->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeB->createAll(System,GItem.getKey("Beam"),2);
   FocusB->addInsertCell(VPipeB->getCells("Void"));
-  FocusB->createAll(System,*VPipeB,0,*VPipeB,0);
+  FocusB->createAll(System,*VPipeB,0);
   
   // NEW TEST SECTION:
   ChopperA->addInsertCell(bunkerObj.getCell("MainVoid"));
-  ChopperA->createAll(System,FocusB->getKey("Guide0"),2);
+  ChopperA->createAll(System,*FocusB,2);
   
   // Double disk chopper
   DDisk->addInsertCell(ChopperA->getCell("Void"));
   DDisk->setOffsetFlag(1);  // centre flag
   DDisk->createAll(System,ChopperA->getKey("Main"),0);
   ChopperA->insertAxle(System,*DDisk);
- 
+
   // Double disk chopper
   SDisk->addInsertCell(ChopperA->getCell("Void"));
   SDisk->setOffsetFlag(1);  // Centre offset control
@@ -291,10 +292,13 @@ DREAM::build(Simulation& System,
   VPipeC->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeC->createAll(System,*VPipeC0,2);
   FocusC->addInsertCell(VPipeC->getCells("Void"));
-  FocusC->createAll(System,*VPipeC,0,*VPipeC,0);
+  FocusC->createAll(System,*VPipeC,0);
   
-  CollimA->setOuter(VPipeC->getFullRule(-6));
-  CollimA->setInner(FocusC->getXSection(0,0)); 
+
+  //  CollimA->setOuter(VPipeC->getFullRule(-6));
+  //  CollimA->setInner(FocusC->getXSection(0,0));
+  CollimA->setCutSurf("Outer",*VPipeC,-6);
+  CollimA->setCutSurf("Inner",FocusC->getOuterSurf());
   CollimA->addInsertCell(VPipeC->getCells("Void"));
   CollimA->createAll(System,*VPipeC,-1);
 
@@ -310,7 +314,7 @@ DREAM::build(Simulation& System,
   VPipeD->createAll(System,ChopperB->getKey("Beam"),2);
 
   FocusD->addInsertCell(VPipeD->getCells("Void"));
-  FocusD->createAll(System,*VPipeD,0,*VPipeD,0);
+  FocusD->createAll(System,*VPipeD,0);
 
   // NEW TEST SECTION:
   ChopperC->addInsertCell(bunkerObj.getCell("MainVoid"));
@@ -324,34 +328,38 @@ DREAM::build(Simulation& System,
   VPipeE1->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeE1->createAll(System,ChopperC->getKey("Beam"),2);
   FocusE1->addInsertCell(VPipeE1->getCells("Void"));
-  FocusE1->createAll(System,*VPipeE1,0,*VPipeE1,0);
+  FocusE1->createAll(System,*VPipeE1,0);
 
-  CollimB->setOuter(VPipeE1->getFullRule(-6));
-  CollimB->setInner(FocusE1->getXSection(0,0)); 
+  //  CollimB->setOuter(VPipeE1->getFullRule(-6));
+  //CollimB->setInner(FocusE1->getXSection(0,0))
+  CollimB->setCutSurf("Outer",*VPipeE1,-6);
+  CollimB->setCutSurf("Inner",FocusE1->getOuterSurf());
   CollimB->addInsertCell(VPipeE1->getCells("Void"));
   CollimB->createAll(System,*VPipeE1,-1);
 
   VPipeE2->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeE2->createAll(System,*VPipeE1,2);
   FocusE2->addInsertCell(VPipeE2->getCells("Void"));
-  FocusE2->createAll(System,*VPipeE2,0,*VPipeE2,0);
+  FocusE2->createAll(System,*VPipeE2,0);
   
-  CollimC->setOuter(VPipeE2->getFullRule(-6));
-  CollimC->setInner(FocusE2->getXSection(0,0)); 
+  //  CollimC->setOuter(VPipeE2->getFullRule(-6));
+  //  CollimC->setInner(FocusE2->getXSection(0,0));
+  CollimC->setCutSurf("Outer",*VPipeE2,-6);
+  CollimC->setCutSurf("Inner",FocusE2->getOuterSurf());
   CollimC->addInsertCell(VPipeE2->getCells("Void"));
   CollimC->createAll(System,*VPipeE2,-2);
-  
+
   // move guide
   VPipeF->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeF->createAll(System,*VPipeE2,2);
   FocusF->addInsertCell(VPipeF->getCells("Void"));
-  FocusF->createAll(System,*VPipeF,0,*VPipeF,0);
+  FocusF->createAll(System,*VPipeF,0);
 
   VPipeG->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeG->createAll(System,*VPipeF,2);
   FocusG->addInsertCell(VPipeG->getCells("Void"));
-  FocusG->createAll(System,*VPipeG,0,*VPipeG,0);
-  
+  FocusG->createAll(System,*VPipeG,0);
+
   if (stopPoint==2) return;      
 
   // STOP At bunker edge
@@ -364,8 +372,8 @@ DREAM::build(Simulation& System,
   BInsertA->createAll(System,*VPipeG,2);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsertA);
   
-  FocusWallA->addInsertCell(BInsertA->getCell("Item"));
-  FocusWallA->createAll(System,*BInsertA,-1,*BInsertA,-1);
+
+  FocusWallA->createAll(System,*BInsertA,-1);
 
   ShieldA->addInsertCell(voidCell);
   ShieldA->setFront(bunkerObj,2);
@@ -378,17 +386,22 @@ DREAM::build(Simulation& System,
   BInsertB->addInsertCell(voidCell);
   BInsertB->createAll(System,*BInsertA,2);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsertB);
-  
+
+  FocusWallA->insertInCell(System,BInsertA->getCell("Item"));
+  FocusWallA->insertInCell(System,BInsertB->getCell("Item"));
+  FocusWallA->insertInCell(System,ShieldA->getCell("Void"));
+
+
   if (stopPoint==3) return;                      // STOP At bunker edge
   
   // Section up to 41.35 m 
   VPipeOutA->addAllInsertCell(ShieldA->getCell("Void"));
   VPipeOutA->setBack(*ShieldA,-2);
-  VPipeOutA->createAll(System,FocusWallA->getKey("Guide0"),2);
+  VPipeOutA->createAll(System,*FocusWallA,2);
       
   FocusOutA->addInsertCell(VPipeOutA->getCell("Void"));
-  FocusOutA->createAll(System,*VPipeOutA,0,*VPipeOutA,0);
-  
+  FocusOutA->createAll(System,*VPipeOutA,0);
+
   // Section to 58.95m
   ShieldB->addInsertCell(voidCell);
   ShieldB->createAll(System,*ShieldA,2);
@@ -398,9 +411,11 @@ DREAM::build(Simulation& System,
   VPipeOutB->setBack(*ShieldB,-2);
   VPipeOutB->createAll(System,*ShieldB,-1);
 
+  FocusOutA->insertInCell(System,VPipeOutB->getCell("Void"));
+  FocusOutB->setFront(*FocusOutA,"back");
   FocusOutB->addInsertCell(VPipeOutB->getCell("Void"));
-  FocusOutB->createAll(System,*VPipeOutB,0,*VPipeOutB,0);
-  
+  FocusOutB->createAll(System,*VPipeOutB,0);
+
   // Section to 70.8m
   ShieldC->addInsertCell(voidCell);
   ShieldC->createAll(System,*ShieldB,2);
@@ -411,8 +426,8 @@ DREAM::build(Simulation& System,
   VPipeOutC->createAll(System,*ShieldC,-1);
 
   FocusOutC->addInsertCell(VPipeOutC->getCell("Void"));
-  FocusOutC->createAll(System,*VPipeOutC,0,*VPipeOutC,0);
-  
+  FocusOutC->createAll(System,*VPipeOutC,0);
+
   Cave->addInsertCell(voidCell);
   Cave->createAll(System,*ShieldC,2);
   Cave->insertComponent(System,"FrontWall",*ShieldC);
@@ -422,11 +437,10 @@ DREAM::build(Simulation& System,
   VPipeCaveA->setFront(*VPipeOutC,2);
   VPipeCaveA->createAll(System,*VPipeOutC,2);
   FocusCaveA->addInsertCell(VPipeCaveA->getCell("Void"));
-  FocusCaveA->createAll(System,*VPipeCaveA,7,*VPipeCaveA,7);
+  FocusCaveA->createAll(System,*VPipeCaveA,7);
     
   FocusCaveB->addInsertCell(Cave->getCell("Void"));
-  FocusCaveB->createAll(System,FocusCaveA->getKey("Guide0"),2,
-			FocusCaveA->getKey("Guide0"),2);         
+  FocusCaveB->createAll(System,*FocusCaveA,2);         
   
   return;
 }

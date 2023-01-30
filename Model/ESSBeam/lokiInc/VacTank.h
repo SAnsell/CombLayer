@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuildInc/VacTank.h
+ * File:   lokiInc/VacTank.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,8 +35,9 @@ namespace essSystem
   \brief VacTank [insert object]
 */
 
-class VacTank : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
+class VacTank :
+  public attachSystem::FixedRotate,
+  public attachSystem::ContainedComp,
   public attachSystem::CellMap
 {
  private:
@@ -57,9 +58,6 @@ class VacTank : public attachSystem::ContainedComp,
   int windowMat;                ///< Material for window
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&);
@@ -71,6 +69,7 @@ class VacTank : public attachSystem::ContainedComp,
   VacTank& operator=(const VacTank&);
   ~VacTank();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

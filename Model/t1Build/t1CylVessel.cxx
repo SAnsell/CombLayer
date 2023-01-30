@@ -3,7 +3,7 @@
  
  * File:   t1Build/t1CylVessel.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "surfRegister.h"
@@ -58,7 +56,11 @@
 #include "ContainedComp.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
+#include "ExternalCut.h"
+#include "FrontBackCut.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "Window.h"
 #include "t1CylVessel.h"
 
@@ -66,8 +68,9 @@ namespace shutterSystem
 {
 
 t1CylVessel::t1CylVessel(const std::string& Key)  : 
-  attachSystem::FixedOffset(Key,3),attachSystem::ContainedComp(),
-  steelCell(0),voidCell(0)
+  attachSystem::FixedRotate(Key,3),
+  attachSystem::ContainedComp(),
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Key to use
@@ -75,12 +78,12 @@ t1CylVessel::t1CylVessel(const std::string& Key)  :
 {}
 
 t1CylVessel::t1CylVessel(const t1CylVessel& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
-  voidYoffset(A.voidYoffset),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
   radius(A.radius),clearance(A.clearance),baseRadius(A.baseRadius),
   topRadius(A.topRadius),wallThick(A.wallThick),
-  height(A.height),wallMat(A.wallMat),ports(A.ports),
-  steelCell(A.steelCell),voidCell(A.voidCell)
+  height(A.height),wallMat(A.wallMat),ports(A.ports)
   /*!
     Copy constructor
     \param A :: t1CylVessel to copy
@@ -97,9 +100,9 @@ t1CylVessel::operator=(const t1CylVessel& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      voidYoffset=A.voidYoffset;
+      attachSystem::CellMap::operator=(A);
       radius=A.radius;
       clearance=A.clearance;
       baseRadius=A.baseRadius;
@@ -108,8 +111,6 @@ t1CylVessel::operator=(const t1CylVessel& A)
       height=A.height;
       wallMat=A.wallMat;
       ports=A.ports;
-      steelCell=A.steelCell;
-      voidCell=A.voidCell;
     }
   return *this;
 }
@@ -129,9 +130,7 @@ t1CylVessel::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("t1CylVessel","populate");
 
-  FixedOffset::populate(Control);
-  voidYoffset=Control.EvalVar<double>("voidYoffset");
-  yStep=voidYoffset;
+  FixedRotate::populate(Control);
   radius=Control.EvalVar<double>(keyName+"Radius");   
   clearance=Control.EvalVar<double>(keyName+"Clearance");   
   height=Control.EvalVar<double>(keyName+"Height");   
@@ -191,32 +190,31 @@ t1CylVessel::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("t1CylVessel","createObjects");
   
-  std::string Out;
+  HeadRule HR;
   // Inner voids
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "-7 ((-8 -5) : (-9 6) : (5 -6)) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  voidCell=cellIndex-1;
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-7 ((-8 -5) : (-9 6) : (5 -6))");
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
   
   // Steel layers [in components]
-  Out=ModelSupport::getComposite(SMap,buildIndex, "5 -6 -17 7 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
-  steelCell=cellIndex-1;
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -17 7");
+  makeCell("Steel",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex, " -19 9 6 -17 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,buildIndex, " -18 8 -5 -17 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-19 9 6 -17");
+  System.addCell(cellIndex++,wallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-18 8 -5 -17");
+  System.addCell(cellIndex++,wallMat,0.0,HR);
 
   // clearance layer
-  Out=ModelSupport::getComposite(SMap,buildIndex, "(5:-18) (-6:-19) -27 17 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(5:-18) (-6:-19) -27 17");
+  System.addCell(cellIndex++,0,0.0,HR);
   
   // Outer Boundary : 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "-27 ((-18 -5) : (-19 6) : (5 -6)) ");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule
+       (SMap,buildIndex,"-27 ((-18 -5) : (-19 6) : (5 -6))");
+  addOuterSurf(HR);
   
   return;
 }
@@ -230,7 +228,6 @@ t1CylVessel::createWindows(Simulation& System)
 {
   ELog::RegMethod RegA("t1CylVessel","createWindows");
 
-
   const FuncDataBase& Control=System.getDataBase();
   const size_t nWin=Control.EvalVar<size_t>(keyName+"NPorts");
 
@@ -243,37 +240,36 @@ t1CylVessel::createWindows(Simulation& System)
 
   for(size_t i=0;i<nWin;i++)
     {
-      const std::string IndexStr(std::to_string(i+1));
+      const std::string indexStr(std::to_string(i+1));
       ports.push_back
-	(constructSystem::Window("t1Port"+std::to_string(i+1)));
+	(constructSystem::Window("t1Port"+indexStr));
       
       Geometry::Vec3D PCent;
       Geometry::Vec3D PAxis;
       // Centres:
-      PCent=Control.EvalTail<Geometry::Vec3D>(CKey,CHgh,IndexStr);
+      PCent=Control.EvalTail<Geometry::Vec3D>(CKey,CHgh,indexStr);
       // Angles:
-      if (Control.hasVariable(AKey+IndexStr))
-	PAxis=Control.EvalVar<Geometry::Vec3D>(AKey+IndexStr);
+      if (Control.hasVariable(AKey+indexStr))
+	PAxis=Control.EvalVar<Geometry::Vec3D>(AKey+indexStr);
       else
 	{
-	  const double angle=Control.EvalVar<double>(AAng+IndexStr);
+	  const double angle=Control.EvalVar<double>(AAng+indexStr);
 	  PAxis=Y;
 	  Geometry::Quaternion::calcQRotDeg(angle,Z).rotate(PAxis);
 	}
       // Height / Width
 
-      const double PHeight=Control.EvalPair<double>(HKey+IndexStr,HKey);
-      const double PWidth=Control.EvalPair<double>(WKey+IndexStr,WKey);
+      const double PHeight=Control.EvalPair<double>(HKey+indexStr,HKey);
+      const double PWidth=Control.EvalPair<double>(WKey+indexStr,WKey);
       ports.back().setCentre(PCent+Origin,PAxis);
       ports.back().setSize(PHeight,PWidth);
     }
   // CREATE OBJECTS
-  std::vector<constructSystem::Window>::iterator vc;
-  for(vc=ports.begin();vc!=ports.end();vc++)
+  for(constructSystem::Window& wItem : ports)
     {
-      vc->setBaseCell(steelCell);
-      vc->addInsertCell(steelCell);
-      vc->createAll(System,*this,0);
+      wItem.setBaseCell(getCell("Steel"));
+      wItem.addInsertCell(getCell("Steel"));
+      wItem.createAll(System,*this,0);
     }
   return;
 }

@@ -3,7 +3,7 @@
  
  * File:   compWeights/Mesh.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -121,7 +121,7 @@ Mesh::setCylinder(const Geometry::Vec3D& Base,
   Axis=(Top-Base).unit();
   Vec=uRVec.unit();
 
-  if (!(NR*NZ*NT))
+  if (NR*NZ*NT == 0)
     {
       ELog::EM<<"Incorrect values in Input ranges : "
 	      <<NR<<" "<<NZ<<" "<<NT<<ELog::endErr;
@@ -212,7 +212,7 @@ Mesh::write(std::ostream& OX) const
 
   // imesh :
   char c[3]={'i','j','k'};
-  std::vector<double>::const_iterator vc;
+
   for(int i=0;i<3;i++)
     {
       const std::vector<double>& Vec=

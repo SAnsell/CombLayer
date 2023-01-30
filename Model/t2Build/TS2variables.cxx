@@ -3,7 +3,7 @@
  
  * File:   t2Build/TS2variables.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
-#include "shutterVar.h"
+#include "BlockShutterGenerator.h"
 
 namespace setVariable
 {
@@ -90,33 +90,37 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("ReflectorZStep",0);        // z shift of Reflectoror
   Control.addVariable("ReflectorXYSize",35.0);    // half width (xy direction)
   Control.addVariable("ReflectorZSize",35.0);     // half height
-  Control.addVariable("ReflectorCornerAngle",45.0);     // End cut
   Control.addVariable("ReflectorCutSize",30.0*sqrt(2.0));     // End cut
   Control.addVariable("ReflectorMat","Be300K");     // End cut
 
+  Geometry::Vec3D GAxis
+    (std::sin(54.0*M_PI/180.0),std::cos(54.0*M_PI/180.0),0.0);
+
   // Internal Reflector flight line:
   Control.addVariable("ReflectorFL0Org",
-		      Geometry::Vec3D(-6.9450,-2.36,-9.8));
-  Control.addVariable("ReflectorFL0Axis",
-		      Geometry::Vec3D(-0.951057,0.309017,0.0));
+		      Geometry::Vec3D(0,4.8-10.0,-9.8));
+  Control.addVariable("ReflectorFL0Axis",-GAxis);
+
   Control.addVariable("ReflectorFL0NegAngle",26.5);  // Angle out
   Control.addVariable("ReflectorFL0PlusAngle",26.5);  // Angle out
   Control.addVariable("ReflectorFL0DownAngle",2.5); //;2.5);  // Step down angle
   Control.addVariable("ReflectorFL0UpAngle",0.0); // Step up angle
   Control.addVariable("ReflectorFL0Height",3.3);     // Full height
-  Control.addVariable("ReflectorFL0Width",18.3);     // Full width
+  Control.addVariable("ReflectorFL0Width",5.3);     // Full width
   
   Control.addVariable("ReflectorFL1Org",
-		      Geometry::Vec3D(-6.9450+13.8*0.9513,
-				      -2.36-13.8*0.30,-12.5));
-  Control.addVariable("ReflectorFL1Axis",
-		      Geometry::Vec3D(0.951057,-0.309017,0.0));
+		      Geometry::Vec3D(0,4.8-10.0,-12.5)+
+		      GAxis*6.5);
+    
+  Control.addVariable("ReflectorFL1Axis",GAxis);
+
+
   Control.addVariable("ReflectorFL1NegAngle",53.2);  // Angle out
   Control.addVariable("ReflectorFL1PlusAngle",9.0);  // Angle out
-  Control.addVariable("ReflectorFL1DownAngle",0.0); //;2.5);  // Step down angle
-  Control.addVariable("ReflectorFL1UpAngle",0.0); // Step up angle
-  Control.addVariable("ReflectorFL1Height",11.5);     // Full height
-  Control.addVariable("ReflectorFL1Width",14.3);     // Full width
+  Control.addVariable("ReflectorFL1DownAngle",0.0);  // Step down angle
+  Control.addVariable("ReflectorFL1UpAngle",0.0);    // Step up angle
+  Control.addVariable("ReflectorFL1Height",11.5);    // Full height
+  Control.addVariable("ReflectorFL1Width",13.3);     // Full width
 
   // Internal Reflector decoupled flight line
   const Geometry::Vec3D decAxis(-sin(M_PI*57.0/180.0),
@@ -155,7 +159,7 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("grooveXStep",0.0);        //  Groove shift
   Control.addVariable("grooveYStep",-5.2);        //  Groove shift
   Control.addVariable("grooveZStep",-12.9);      //  Groove shift
-  Control.addVariable("grooveZAngle",72.0);     // Angle of the groove [relative to Y]
+  Control.addVariable("grooveZAngle",126.0);     // Angle of the groove [relative to Y]
   Control.addVariable("grooveRadius",7.25);      // Radius of groove curve
   Control.addVariable("grooveInnerCut",4.15);    // Cut to the groove line
   Control.addVariable("grooveInnerWidth",8.3);   // Half width of groove 
@@ -182,6 +186,7 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("grooveAlMat","Aluminium");   // Aluminium mat
   Control.addVariable("grooveModTemp",26.0);        // Moderator temperature
 
+  Control.addVariable("groovePMYAngle",180.0);     // Full width
   Control.addVariable("groovePMWidth",25.8);     // Full width
   Control.addVariable("groovePMDepth",10.2);     // Full Depth 
   Control.addVariable("groovePMHeight",1.95);    // Full Height
@@ -249,6 +254,7 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("hydroFlightHeight",11.5);    // Full height
   Control.addVariable("hydroFlightWidth",14.3);     // Full width
 
+  Control.addVariable("hydroPMZAngle",180.0);     // Full width
   Control.addVariable("hydroPMWidth",25.8);     // Full width
   Control.addVariable("hydroPMDepth",10.2);     // Full Depth 
   Control.addVariable("hydroPMHeight",1.95);    // Full Height
@@ -257,20 +263,20 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("hydroPMModMat","H2O");        // Water
   Control.addVariable("hydroPMModTemp",333.0);    // 60C
 
-  Control.addVariable("hornPMSideExt",3.2);     // Full width
-  Control.addVariable("hornPMHeightExt",3.2);     // Full Depth 
-  Control.addVariable("hornPMBackExt",0.0);    // Full Height
-  Control.addVariable("hornPMForwardExt",3.2);    // Full Height
+  Control.addVariable("hornPMSideExt",3.2);      
+  Control.addVariable("hornPMHeightExt",3.2);    
+  Control.addVariable("hornPMBackExt",0.0);      
+  Control.addVariable("hornPMForwardExt",3.2);   
 
-  Control.addVariable("hornPMModThick",2.0);     // Full width
+  Control.addVariable("hornPMModThick",2.0);    
 
   Control.addVariable("hornPMVacInner",0.51);    // Vac inner thickness
   Control.addVariable("hornPMVacOuter",0.41);    // Vac outer thickness
   Control.addVariable("hornPMAlInner",0.35);    // Al skin thickness [inner]
   Control.addVariable("hornPMAlOuter",0.41);    // Al skin thickness [outer]
-  Control.addVariable("hornPMWingLen",15.0);    // Al skin thickness [outer]
-  Control.addVariable("hornPMAlMat","Aluminium");        // Aluminium Material
-  Control.addVariable("hornPMModMat","H2O");        // Water
+  Control.addVariable("hornPMWingLen",15.0);    
+  Control.addVariable("hornPMAlMat","Aluminium");  
+  Control.addVariable("hornPMModMat","H2O");       
   Control.addVariable("hornPMModTemp",333.0);    // 60C
 
   // VACUUM LAYER
@@ -278,30 +284,30 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("cvacVacNegRadius",20.0);      // Radius of hydro curve
   Control.addVariable("cvacVacPosGap",3.66666);      // Gap on groove side
   Control.addVariable("cvacVacNegGap",0.6);          // Gap on Hydrogen side
-  Control.addVariable("cvacVacSide",0.5);            // Gap on Hydrogen side
+  Control.addVariable("cvacVacSide",0.5);            
   Control.addVariable("cvacVacTop",0.6);             // Gap on Ref top
   Control.addVariable("cvacVacBase",0.6);            // Gap on Target base
 
   // AL LAYER
-  Control.addVariable("cvacAlPos",0.15);         // Gap on groove side
+  Control.addVariable("cvacAlPos",0.15);          // Gap on groove side
   Control.addVariable("cvacAlNeg",0.15);          // Gap on Hydrogen side
   Control.addVariable("cvacAlSide",0.3);          // Gap on Hydrogen side
   Control.addVariable("cvacAlTop",0.3);           // Gap on Ref top
-  Control.addVariable("cvacAlBase",0.15);          // Gap on Target base
+  Control.addVariable("cvacAlBase",0.15);         // Gap on Target base
 
   // Tertiary LAYER
-  Control.addVariable("cvacTerPos",0.2);         // Gap on groove side
-  Control.addVariable("cvacTerNeg",0.2);          // Gap on Hydrogen side
+  Control.addVariable("cvacTerPos",0.2);           // Gap on groove side
+  Control.addVariable("cvacTerNeg",0.2);           // Gap on Hydrogen side
   Control.addVariable("cvacTerSide",0.2);          // Gap on Hydrogen side
   Control.addVariable("cvacTerTop",0.2);           // Gap on Ref top
   Control.addVariable("cvacTerBase",0.2);          // Gap on Target base
 
   // Outer Al LAYER
-  Control.addVariable("cvacOutPos",0.10);         // Gap on groove sidex
+  Control.addVariable("cvacOutPos",0.10);          // Gap on groove sidex
   Control.addVariable("cvacOutNeg",0.10);          // Gap on Hydrogen side
-  Control.addVariable("cvacOutSide",0.30);          // Gap on Hydrogen side
-  Control.addVariable("cvacOutTop",0.30);           // Gap on Ref top
-  Control.addVariable("cvacOutBase",0.30);          // Gap on Target base
+  Control.addVariable("cvacOutSide",0.30);         // Gap on Hydrogen side
+  Control.addVariable("cvacOutTop",0.30);          // Gap on Ref top
+  Control.addVariable("cvacOutBase",0.30);         // Gap on Target base
 
   // Outer Al LAYER
   Control.addVariable("cvacClearPos",0.30);        // Clear Pos
@@ -319,18 +325,18 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("decPlateZStep",11.862);     //  Z Shift 
   Control.addVariable("decPlateZAngle",0.0);       //  Tilt angle
   Control.addVariable("decPlateXYAngle",57.0);     // Angle  [relative to Y]
-  Control.addVariable("decPlateWidth",14.0);       //  Tilt angle
-  Control.addVariable("decPlateHeight",12.0);       //  Tilt angle
-  Control.addVariable("decPlateDepth",5.0);       //  Tilt angle
-  Control.addVariable("decPlateDefMat","Aluminium");       //  Tilt angle
+  Control.addVariable("decPlateWidth",14.0);     
+  Control.addVariable("decPlateHeight",12.0);    
+  Control.addVariable("decPlateDepth",5.0);      
+  Control.addVariable("decPlateDefMat","Aluminium");  
 
   //  NEW DECOUPLED MODERATOR
-  Control.addVariable("decoupledXStep",0.0);        //  X [across] shift
-  Control.addVariable("decoupledYStep",10-4.6);        //  Y [target] shift
-  Control.addVariable("decoupledZStep",11.862);     //  Z Shift 
+  Control.addVariable("decoupledXStep",0.0);         //  X [across] shift
+  Control.addVariable("decoupledYStep",10-4.6);      //  Y [target] shift
+  Control.addVariable("decoupledZStep",11.862);      //  Z Shift 
   Control.addVariable("decoupledZAngle",57.0);       //  Tilt angle
-  Control.addVariable("decoupledEastRadius",30.2);  // Radius of East curve
-  Control.addVariable("decoupledWestRadius",30.2);  // Radius of West curve
+  Control.addVariable("decoupledEastRadius",30.2);   // Radius of East curve
+  Control.addVariable("decoupledWestRadius",30.2);   // Radius of West curve
 
   Control.addVariable("decoupledWidth",14.4);   // Full width
   Control.addVariable("decoupledHeight",12.0);   // Full height
@@ -361,12 +367,12 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("dvacVacNegRadius",30.2);   // 
   Control.addVariable("dvacVacPosGap",0.3);       // 
   Control.addVariable("dvacVacNegGap",0.3);       // 
-  Control.addVariable("dvacVacLSide",1.3);   //
-  Control.addVariable("dvacVacRSide",0.3);   //
-  Control.addVariable("dvacVacBase",0.3);    // 
-  Control.addVariable("dvacVacTop",0.3);     // 
+  Control.addVariable("dvacVacLSide",1.3);  
+  Control.addVariable("dvacVacRSide",0.3);  
+  Control.addVariable("dvacVacBase",0.3);   
+  Control.addVariable("dvacVacTop",0.3);    
 
-  Control.addVariable("dvacAlPos",0.15);    // First Al layer
+  Control.addVariable("dvacAlPos",0.15);    // First Al layer (groove)
   Control.addVariable("dvacAlNeg",0.15);    // 
   Control.addVariable("dvacAlSide",0.15);    // Sides of view
   Control.addVariable("dvacAlBase",0.15);    // up/down
@@ -379,10 +385,10 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("dvacTerTop",0.2);   // up/down
 
   Control.addVariable("dvacOutPos",0.2);    // Outer Al layer
-  Control.addVariable("dvacOutNeg",0.2);    // Actual curve
-  Control.addVariable("dvacOutSide",0.2);    // Sides of view
-  Control.addVariable("dvacOutBase",0.2);   // up/down
-  Control.addVariable("dvacOutTop",0.2);   // up/down
+  Control.addVariable("dvacOutNeg",0.2);    // 
+  Control.addVariable("dvacOutSide",0.2);   // Sides of view
+  Control.addVariable("dvacOutBase",0.2);   //
+  Control.addVariable("dvacOutTop",0.2);    //
 
   Control.addVariable("dvacClearPos",0.6);    // Actual curve
   Control.addVariable("dvacClearNeg",0.6);    // Actual curve
@@ -460,7 +466,6 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("decPipeHeMat","Void");          // Pipe outer radius
   Control.addVariable("decPipeHeAlMat","Aluminium");          // Pipe outer radius
   
-
   // CD BUCKET:
   Control.addVariable("cdBucketXStep",0.0);      // Offset
   Control.addVariable("cdBucketYStep",-4.8);     // Rotation angle  
@@ -652,6 +657,36 @@ TS2layout(FuncDataBase& Control)
   // SHUTTER VESSEL:
   Control.addVariable("voidXoffset",4.475);       // Shutter offset to target centre
 
+  
+  /*
+    Control.addVariable("shutterTotalDepth",270.5);     // outer shutter rad
+	  
+  Control.addVariable("shutterUpperSteel",190.5);     // top thickness
+  Control.addVariable("shutterLowerSteel",265.90);    // base thickness
+  Control.addVariable("shutterHeight",131.4);         // Total shutter height
+  Control.addVariable("shutterDepth",131.4);          // Total shutter height
+  Control.addVariable("shutterWidth",28.00);          // Full width
+
+  Control.addVariable("shutterVoidZOffset",0.0);        // centre of steel hole
+ 
+  Control.addVariable("shutterVoidHeight",28.0);             // Void height
+  Control.addVariable("shutterVoidHeightInner",18.00);     // Gap height
+  Control.addVariable("shutterVoidHeightOuter",22.30);     // Gap height
+  Control.addVariable("shutterVoidWidthInner",18.00);      // Gap width
+  Control.addVariable("shutterVoidWidthOuter",24.00);      // Gap width
+  Control.addVariable("shutterVoidDivide",66.00);             // Smaller gap len
+  // 
+  Control.addVariable("shutterSteelMat","CastIron");         // Cast iron
+
+  Control.addVariable("shutterClearGap",0.6);      // Gap out step
+  Control.addVariable("shutterClearBoxStep",2.0);      // Gap out step
+  Control.addVariable("shutterClearBoxLen",25.0);      // Gap length of block
+  Control.addVariable("shutterClearNStep",2);      // Gap length of block
+  Control.addVariable("shutterClearCent0",50.0);      
+  Control.addVariable("shutterClearCent1",150.0);     
+  Control.addVariable("shutterGapSize",22.30);      // Gap size
+  Control.addVariable("shutterClosedZOffset",28.0);    // Closed distance
+  */
   Control.addParse<double>("shutterInnerRadius","bulkTorpedoRadius");
   Control.addParse<double>("shutterOuterRadius","bulkShutterRadius");
   Control.addParse<double>("shutterTotalHeight","bulkRoof");
@@ -674,22 +709,14 @@ TS2layout(FuncDataBase& Control)
   // 
   Control.addVariable("shutterSteelMat","CastIron");         // Cast iron
 
+  /*
   Control.addVariable("shutter1Height",120.0);         // New drawing 8711-300
   Control.addVariable("shutter1Depth",120.0);         // New drawing 8711-300
   Control.addVariable("shutter1VoidHeightInner",25.0);       // ChipIR size
   Control.addVariable("shutter1VoidHeightOuter",25.0);       // ChipIR size
   Control.addVariable("shutter1VoidDivide",-1.0);          // ChipIR no divide
   Control.addVariable("shutter1VoidWidthInner",21.00);      // Gap width
-
-  Control.addVariable("shutterClearGap",0.6);      // Gap out step
-  Control.addVariable("shutterClearBoxStep",2.0);      // Gap out step
-  Control.addVariable("shutterClearBoxLen",25.0);      // Gap length of block
-  Control.addVariable("shutterClearNStep",2);      // Gap length of block
-  Control.addVariable("shutterClearCent0",50.0);      
-  Control.addVariable("shutterClearCent1",150.0);     
-  
   Control.addVariable("shutter1VoidZOffset",-30.0);
-  Control.addVariable("shutter2VoidZOffset",0.0);
 
   Control.addVariable("shutter1GapSize",25);        // ChipIR size
   Control.addVariable("shutterGapSize",22.30);      // Gap size
@@ -699,9 +726,21 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("shutter2Closed",1);          // closed shutter (true)
   Control.addVariable("shutterClosed",0);           // Open shutter [imp:0]
   Control.addVariable("shutter1ClosedZOffset",42.0);   // Closed distance
-  Control.addVariable("shutter2ClosedZOffset",28.0);   // Closed distance
-  Control.addVariable("shutterClosedZOffset",28.0);    // Closed distance
+
+  */
+  Control.addVariable("shutterClearGap",0.6);      // Gap out step
+  Control.addVariable("shutterClearBoxStep",2.0);      // Gap out step
+  Control.addVariable("shutterClearBoxLen",25.0);      // Gap length of block
+  Control.addVariable("shutterClearNStep",2);      // Gap length of block
+  Control.addVariable("shutterClearCent0",50.0);      
+  Control.addVariable("shutterClearCent1",150.0);     
   
+  Control.addVariable("shutterClosedZOffset",28.0);    // Closed distance
+
+  //  Control.addVariable("shutter2Closed",1);          // closed shutter (true)
+  //  Control.addVariable("shutter2VoidZOffset",0.0);
+
+    
   // ALL SHUTTERS HAVE DIFFERENT POSITIONS:
   Control.addVariable("shutter1OpenZShift",48.86);    // ChipIR
   Control.addVariable("shutter2OpenZShift",11.86);    // W2 : 
@@ -772,6 +811,32 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("shutterBlock1Mat2","Aluminium");
   Control.addVariable("shutterBlock1Mat3","B-Poly");
 
+    // SHUTTERS COLLIMATION:
+
+  BlockShutterGenerator BSGen;
+ 
+  // x/z step : x/zAngle : beamSize : beam change angle (+ve is focused)
+  //  BSGen.generateCyl(Control,"sandals",-1.6,0.0,   -1.6,0.0,  7.3309,0.3595   );
+  BSGen.generateBox(Control,"chipIR",-1.6,0.0,   -1.6, 0.0,  6.17,8.61, 0.35,0.47);  // USE ABOVE
+  BSGen.generateBox(Control,"T2", -1.7,0.0,    0.0,0.0,   6.17,8.61, 0.35,0.47);
+  BSGen.generateBox(Control,"T3",    2.2,0.0,    2.0,-1.5,  6.74,4.8,  0.05,0.44); 
+  BSGen.generateBox(Control,"T4",   2.2,0.0,    2.2,-1.5,  7.91,4.57, 0.22,0.275); 
+  BSGen.generateBox(Control,"T5",     2.2,0.0,    0.0,0.0,   7.9, 7.9,  0.395,0.395); 
+  BSGen.generateBox(Control,"T6",    2.0,0.0,    0.0,0.0,   6.79,6.79, 0.0,0.0); 
+  BSGen.generateBox(Control,"nimrod",-1.7,0.0,    0.0,0.0,   8.22,7.93, 0.35,0.22); 
+  BSGen.generateBox(Control,"T8",  -1.5,0.0,    0.0,0.0,   8.4,8.0,   0.16,0.088); 
+  BSGen.generateBox(Control,"T9",    -1.3,0.0,   -0.6,0.0,   7.90,7.90, 0.63,0.63);    
+  BSGen.generateBox(Control,"zoom",    1.3,0.0,    0.0,0.0,   7.34,7.34, 0.22,0.22); 
+  BSGen.generateBox(Control,"sans2d", 1.7,0.0,    0.0,0.0,   7.38,7.38, 0.58,0.58);
+  BSGen.generateBox(Control,"T12",     2.0,0.0,    2.0,0.0,   8.88,8.88, 0.58,0.58); 
+  BSGen.generateBox(Control,"polref", -2.2,0.0,   -1.0,0.0,   9.4,9.4,   0.0,0.0);
+  BSGen.generateBox(Control,"offspec",      0.0,0.0,    0.0,0.0,   7.0,7.0,   0.0,0.0); // CLOSED
+  BSGen.generateBox(Control,"T15",    2.0,0.0,    0.7,0.0,   7.74,7.74, 0.48,0.48); 
+  BSGen.generateBox(Control,"T16",     1.4,0.0,    0.0,0.0,   7.4,8.6,   0.115,0.172);
+  BSGen.generateBox(Control,"T17",     1.4,0.0,    0.0,0.0,   7.4,8.6,   0.115,0.172);  
+  BSGen.generateBox(Control,"wish",    1.5,0.0,    1.5,0.0,   8.0,6.0,   0.143,0.0);
+
+
   // BULK INSERT
   Control.addVariable("bulkInsertIHeight",56.25);
   Control.addVariable("bulkInsertIWidth",32.50);
@@ -821,9 +886,8 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("BWindowInconelMat","Inconnel");  // Inconel
   Control.addVariable("BWindowWaterMat","H2O");   // Light water
 
-
-  ts1System::shutterVar let("let"); // LET shutter number [west 7]
-  let.buildVar(Control,0.0,0.0,0.0,9.0,4.0,0.0,0.0); 
+  //  ts1System::shutterVar let("let"); // LET shutter number [west 7]
+  //  let.buildVar(Control,0.0,0.0,0.0,9.0,4.0,0.0,0.0); 
 
 
   return;

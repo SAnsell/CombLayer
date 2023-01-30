@@ -3,7 +3,7 @@
  
  * File:   geomInc/Vec3D.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -105,6 +105,9 @@ class Vec3D
   Geometry::Vec3D unit() const; 
   Geometry::Vec3D component(const Geometry::Vec3D&) const; 
   Geometry::Vec3D cutComponent(const Geometry::Vec3D&) const;
+  void makePosCos(const Geometry::Vec3D&);
+  void makePosPrinciple();
+  
   /// Calculate the volmue of a cube X*Y*Z
   double volume() const { return std::abs(x*y*z); }      
 

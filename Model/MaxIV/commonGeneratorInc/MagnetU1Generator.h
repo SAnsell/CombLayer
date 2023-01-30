@@ -43,6 +43,8 @@ class MagnetU1Generator
   double blockYStep;             ///< Step forward
   double length;                 ///< frame length
 
+  double frontVoid;              ///< Size of outer void gap
+  double backVoid;               ///< Size of outer void gap
   double outerVoid;              ///< Size of outer void gap
   double ringVoid;               ///< Size of outer void gap
   double topVoid;                ///< Size of outer void gap
@@ -51,9 +53,23 @@ class MagnetU1Generator
   double baseThick;              ///< base thickness
   double wallThick;              ///< side wall thickness
 
+  double electronRadius;         ///< Radius of electron beam
+  double electronPipeWall;         ///< Radius of electron beam
+  // entry pipe
+  double entryLength;
+  double entryFlangeRadius;
+  double entryFlangeLength;
+
+  double exitLength;
+  double exitFlangeRadius;
+  double exitFlangeLength;
+
   std::string voidMat;           ///< void material
   std::string wallMat;           ///< wall material
 
+  void generateComponents(FuncDataBase&,const std::string&) const;
+  void generatePipes(FuncDataBase&,const std::string&) const;
+  
  public:
 
   MagnetU1Generator();
@@ -61,9 +77,9 @@ class MagnetU1Generator
   MagnetU1Generator& operator=(const MagnetU1Generator&);
   virtual ~MagnetU1Generator();
   
-  void generateComponents(FuncDataBase&,const std::string&) const;
+
   
-  virtual void generateBlock(FuncDataBase&,const std::string&) const;
+  void generateBlock(FuncDataBase&,const std::string&) const;
 
 };
 

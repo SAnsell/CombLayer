@@ -110,7 +110,7 @@ calcVertex(const MonteCarlo::Object& obj)
 
   std::vector<MonteCarlo::SurfVertex> VList;
   const std::set<const Geometry::Surface*>& surfList=
-    obj.getSurList();
+    obj.getSurfPtrSet();
 
   std::set<const Geometry::Surface*>::const_iterator ac,bc,cc;
   for(ac=surfList.begin();ac!=surfList.end();ac++)

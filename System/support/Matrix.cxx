@@ -3,7 +3,7 @@
  
  * File:   support/Matrix.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -251,7 +251,7 @@ Matrix<T>::operator*(const Vec3D& Vx) const
   Vec3D X;
   for(size_t i=0;i<this->nx;i++)
     for(size_t kk=0;kk<this->ny;kk++)
-      X[i]+=this->V[i][kk]*Vx[kk];
+      X[i]+=static_cast<double>(this->V[i][kk]*Vx[kk]);
   return X;
 }
 
@@ -261,7 +261,7 @@ Matrix<T>::operator/=(const T& Value)
    /*! 
      Matrix division THIS / Value  
      \param Value :: Scalar to multiply matrix by
-     \return *this
+     \return *this 
    */
 {
   for(size_t i=0;i<this->nx;i++)
@@ -312,8 +312,8 @@ Matrix<T>::operator==(const Matrix<T>& A) const
 	    const T diff=this->V[i][j]-A.V[i][j];
 	    if (std::abs<T>(diff)>maxDiff)
 	      maxDiff=std::abs<T>(diff);
-	    if (fabs(this->V[i][j])>maxS)
-	      maxS=fabs(this->V[i][j]);
+	    if (std::abs(this->V[i][j])>maxS)
+	      maxS=std::abs(this->V[i][j]);
 	  }
       if (maxDiff<Tolerance)
 	return 1;
@@ -370,6 +370,7 @@ Matrix<T>::GaussJordan(Matrix<T>& B)
 */
 {
   ELog::RegMethod RegA("Matrix<T>","GaussJordan");
+  
   // check for input errors
   if (this->nx!=this->ny || B.nx!=this->nx || !this->nx)
     return -1;
@@ -418,7 +419,7 @@ Matrix<T>::GaussJordan(Matrix<T>& B)
       indxrow[i]=irow;
       indxcol[i]=icol;
 
-      if (std::abs<double>(this->V[icol][icol])>1e-80)
+      if (std::abs<T>(this->V[icol][icol])>1e-80)
 	{
 	  ELog::EM<<"Singular matrix"<<ELog::endCrit;
 	  return 1;
@@ -623,7 +624,7 @@ Matrix<T>::normVert()
       T sum=0;
       for(size_t j=0;j<this->ny;j++)
 	sum+=this->V[i][j]*this->V[i][j];
-      sum=static_cast<T>(sqrt(sum));
+      sum=std::sqrt(sum);
       for(size_t j=0;j<this->ny;j++)
 	this->V[i][j]/=sum;
     }
@@ -641,7 +642,9 @@ Matrix<T>::lubcmp(size_t* rowperm,int& interchange)
 */
 {
   ELog::RegMethod RegA("Matrix<T>","lubcmp");
+  
   size_t imax(0);
+  const T one(1.0);
   T sum,dum,big;
   
   if (this->nx!=this->ny || this->nx<2)
@@ -667,7 +670,7 @@ Matrix<T>::lubcmp(size_t* rowperm,int& interchange)
 	  delete [] vv;
 	  return;
 	}
-      vv[i]=1.0/big;
+      vv[i]=one/big;
     }
 
   for (size_t j=0;j<this->nx;j++)
@@ -708,10 +711,10 @@ Matrix<T>::lubcmp(size_t* rowperm,int& interchange)
 
       rowperm[j]=imax;
       if (std::abs<T>(this->V[j][j]) < 1e-28) 
-        this->V[j][j]=1e-14;
+        this->V[j][j]=static_cast<T>(1e-14);
       if (j != this->nx-1)
         {
-          dum=1.0/(this->V[j][j]);
+          dum=one / this->V[j][j];
           for(size_t i=j+1;i<this->nx;i++)
             this->V[i][j] *= dum;
         }
@@ -829,6 +832,7 @@ Matrix<T>::Diagonalise(Matrix<T>& EigenVec,Matrix<T>& DiagMatrix) const
 */
 {
   ELog::RegMethod RegA("Matrix<T>","Diagnalise");
+
   T theta,tresh,tanAngle,cosAngle,sinAngle;
   if(this->nx!=this->ny || this->nx<1)
     {
@@ -861,7 +865,6 @@ Matrix<T>::Diagonalise(Matrix<T>& EigenVec,Matrix<T>& DiagMatrix) const
       ZeroComp[i]=0;
     }
 
-  int iteration=0;
   T sm; 
   for(size_t i=0;i<100;i++)        //max 50 iterations 
     {
@@ -903,11 +906,13 @@ Matrix<T>::Diagonalise(Matrix<T>& EigenVec,Matrix<T>& DiagMatrix) const
 		  else
 		    {
 		      theta=0.5*h/A.V[ip][iq];
-		      tanAngle=1.0/(std::abs<T>(theta)+sqrt(1.0+theta*theta));
+		      tanAngle=1.0/(std::abs<T>(theta)+
+				    std::sqrt(1.0+theta*theta));
 		      if (theta<0.0)
 			tanAngle = -tanAngle;
 		    }
-		  cosAngle=1.0/sqrt(1+tanAngle*tanAngle);
+		  
+		  cosAngle=1.0/std::sqrt(1.0+tanAngle*tanAngle);
 		  sinAngle=tanAngle*cosAngle;
 		  T tau=sinAngle/(1.0+cosAngle);
 		  h=tanAngle*A.V[ip][iq];
@@ -925,7 +930,6 @@ Matrix<T>::Diagonalise(Matrix<T>& EigenVec,Matrix<T>& DiagMatrix) const
 		    A.rotate(tau,sinAngle,ip,j,iq,j);
 		  for(size_t j=0;j<this->nx;j++)
 		    EigenVec.rotate(tau,sinAngle,j,ip,j,iq);
-		  iteration++;
 		}
 	    }
 	}   
@@ -944,7 +948,7 @@ Matrix<T>::Diagonalise(Matrix<T>& EigenVec,Matrix<T>& DiagMatrix) const
 /// \cond TEMPLATE
 
 template class Matrix<double>;
-  // template class Matrix<int>;
+// template class Matrix<long double>;
 
 /// \endcond TEMPLATE
 

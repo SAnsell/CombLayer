@@ -51,7 +51,6 @@ namespace xraySystem
   class BremBlock;
   class BeamMount;
   class CylGateValve;
-  class DipoleChamber;
   class FlangeMount;
   class HeatDump;
   class LCollimator;

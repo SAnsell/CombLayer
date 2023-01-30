@@ -3,7 +3,7 @@
 
  * File: Linac/Segment10.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -169,18 +168,18 @@ Segment10::constructHole(Simulation& System)
 
   if (IHall)
     {
-      std::string Out;
+      HeadRule HR;
       const HeadRule fbHR=IHall->combine("#MidAngleWall #TMidBack");
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," -7 " );
-      makeCell("WallVoid",System,cellIndex++,0,0.0,Out+fbHR.display());
+      HR=HeadRule(SMap,buildIndex,-7);
+      makeCell("WallVoid",System,cellIndex++,0,0.0,HR*fbHR);
 
       pipeA->addInsertCell("Main",this->getCell("WallVoid"));
       pipeA->addInsertCell("Main",IHall->getCell("TVoidA"));
       pipeA->addInsertCell("FlangeB",IHall->getCell("TVoidA"));
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," 7 " );
-      IHall->insertComponent(System,"MidTAngle",Out);
+      HR=HeadRule(SMap,buildIndex,7);
+      IHall->insertComponent(System,"MidTAngle",HR);
       //      IHall->insertComponent(System,"FKGMazeFrontWall",Out);
       //      IHall->insertComponent(System,"MidTAuxCyl",Out);
 

@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/cosaxs/cosaxsTubeWAXSDetector.cxx
  *
- * Copyright (c) 2004-2021 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -52,7 +51,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -66,8 +65,8 @@ namespace xraySystem
 {
 
 cosaxsTubeWAXSDetector::cosaxsTubeWAXSDetector(const std::string& Key)  :
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::FrontBackCut()
@@ -77,9 +76,10 @@ cosaxsTubeWAXSDetector::cosaxsTubeWAXSDetector(const std::string& Key)  :
   */
 {}
 
-cosaxsTubeWAXSDetector::cosaxsTubeWAXSDetector(const cosaxsTubeWAXSDetector& A) :
+cosaxsTubeWAXSDetector::cosaxsTubeWAXSDetector
+(const cosaxsTubeWAXSDetector& A) :
+  attachSystem::FixedRotate(A),
   attachSystem::ContainedComp(A),
-  attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
@@ -103,7 +103,7 @@ cosaxsTubeWAXSDetector::operator=(const cosaxsTubeWAXSDetector& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
@@ -132,7 +132,7 @@ cosaxsTubeWAXSDetector::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("cosaxsTubeWAXSDetector","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
   width=Control.EvalVar<double>(keyName+"Width");
@@ -192,19 +192,19 @@ cosaxsTubeWAXSDetector::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("cosaxsTubeWAXSDetector","createObjects");
 
-  std::string Out;
-  const std::string frontStr(frontRule());
-  const std::string backStr(backRule());
+  HeadRule HR;
+  const HeadRule frontHR(getFrontRule());
+  const HeadRule backHR(getBackRule());
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  makeCell("MainCell",System,cellIndex++,mainMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  makeCell("MainCell",System,cellIndex++,mainMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 13 -14 15 -16 (-1:2:-3:4:-5:6) ");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				 "13 -14 15 -16 (-1:2:-3:4:-5:6)");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR*frontHR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 15 -16");
-  addOuterSurf(Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 15 -16");
+  addOuterSurf(HR*frontHR*backHR);
 
   return;
 }

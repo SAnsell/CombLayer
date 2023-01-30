@@ -3,7 +3,7 @@
  
  * File:   modelSupport/generateSurf.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -210,7 +210,7 @@ buildPlane(surfRegister& SMap,const int N,
     \return New Plane Pointer
    */
 {
-  ELog::RegMethod("generateSurf","buildPlane(point)");
+  ELog::RegMethod("generateSurf","buildPlane(points)");
 
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
 
@@ -226,7 +226,8 @@ buildPlane(surfRegister& SMap,const int N,
 
 Geometry::Plane*
 buildPlane(surfRegister& SMap,const int N,
-	   const Geometry::Vec3D& O,const Geometry::Vec3D& D) 
+	   const Geometry::Vec3D& O,
+	   const Geometry::Vec3D& D) 
   /*!
     Simple constructor to build a surface [type plane]
     \param SMap :: Surface Map
@@ -282,7 +283,7 @@ buildPlaneRotAxis(surfRegister& SMap,const int N,
     \param O :: Origin
     \param D :: Direction before rotation
     \param Axis :: Axis to rotate about 
-    \param degAngle :: Angle to rotate about [deg]
+    \param degAngle :: Angle to rotate about [deg] (+ve is clockwize)
     \return New Plane Pointer
    */
 {

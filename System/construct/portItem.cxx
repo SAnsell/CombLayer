@@ -291,6 +291,7 @@ portItem::createUnitVector(const attachSystem::FixedComp& FC,
   FixedComp::createUnitVector(FC,sideIndex);
   refComp=FC.getKeyName();
   statusFlag=1;
+
   return;
 }
 
@@ -420,7 +421,6 @@ portItem::createLinks()
       FixedComp::setConnect(1,Origin+Y*length,Y);
       FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
     }
-
   FixedComp::nameSideIndex(2,"InnerRadius");
   FixedComp::setConnect(2,Origin+Y*(length/2.0)+X*radius,X);
   FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+7));
@@ -561,8 +561,8 @@ portItem::addFlangeCut(MonteCarlo::Object* obj) const
   ELog::RegMethod RegA("portItem","addFlangeCut");
   if (!outerFlag)
     {
-      const HeadRule HR
-	(ModelSupport::getComposite(SMap,buildIndex," ( 27 : -102 )"));
+      const HeadRule HR=
+	ModelSupport::getHeadRule(SMap,buildIndex,"(27 : -102)");
       obj->addIntersection(HR);
     }
   return;

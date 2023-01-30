@@ -3,7 +3,7 @@
 
  * File:   essBuildInc/Box.h
  *
- * Copyright (c) 2017 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,16 +36,14 @@ namespace essSystem
 */
 
 class Box :
+    public attachSystem::FixedRotate,
     public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset,
+    public attachSystem::ExternalCut,
     public attachSystem::LayerComp,
     public attachSystem::CellMap
 {
  private:
 
-  int engActive;                  ///< Engineering active flag
-
-  size_t nLayers;                ///< Number of layers
   std::vector<double> length;    ///< Lengths [additive]
   std::vector<double> width;     ///< Widths  [additive]
   std::vector<double> height;    ///< Heights [additive]
@@ -53,12 +51,9 @@ class Box :
   std::vector<int>    mat;       ///< Materials
   std::vector<double> temp;      ///< Temperatures
   
-  std::string sideRule; ///< Side rule
+  HeadRule sideRuleHR; ///< Side rule
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -71,16 +66,17 @@ class Box :
   virtual Box* clone() const;
   virtual ~Box();
 
-  virtual int getLayerSurf(const size_t,const long int) const;
-  virtual std::string getLayerString(const size_t,const long int) const;
+  virtual HeadRule getLayerHR(const size_t,const long int) const;
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
-  std::string getSideRule() const { return sideRule; }
+
+  const HeadRule& getSideRule() const { return sideRuleHR; }
 
   /// total height of object
   double getZOffset() const { return zStep; }
   double getHeight() const
     { return (depth.empty()) ? 0.0 : depth.back()+height.back(); }
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
 };

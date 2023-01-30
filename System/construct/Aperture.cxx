@@ -3,7 +3,7 @@
  
  * File:   construct/Aperture.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,8 +39,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -57,20 +55,22 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "Aperture.h"
 
 namespace constructSystem
 {
 
 Aperture::Aperture(const std::string& Key)  :
+  attachSystem::FixedRotate(Key,14),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,14),
-  attachSystem::FrontBackCut()
-
+  attachSystem::FrontBackCut(),
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -78,8 +78,10 @@ Aperture::Aperture(const std::string& Key)  :
 {}
 
 Aperture::Aperture(const Aperture& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
   attachSystem::FrontBackCut(A),
+  attachSystem::CellMap(A),
   innerWidth(A.innerWidth),innerHeight(A.innerHeight),
   width(A.width),height(A.height),thick(A.thick),
   nLayers(A.nLayers),voidMat(A.voidMat),defMat(A.defMat)
@@ -100,8 +102,9 @@ Aperture::operator=(const Aperture& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
+      attachSystem::CellMap::operator=(A);
       innerWidth=A.innerWidth;
       innerHeight=A.innerHeight;
       width=A.width;
@@ -129,7 +132,7 @@ Aperture::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("VacuumBox","populate");
    
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   // Void + Fe special:
   innerWidth=Control.EvalVar<double>(keyName+"InnerWidth");
@@ -149,24 +152,7 @@ Aperture::populate(const FuncDataBase& Control)
 
   return;
 }
-  
-void
-Aperture::createUnitVector(const attachSystem::FixedComp& FC,
-                             const long int sideIndex)
-  /*!
-    Create the unit vectors
-    - Y Down the beamline
-    \param FC :: Linked object
-    \param sideIndex :: Link point
-  */
-{
-  ELog::RegMethod RegA("Aperture","createUnitVector");
-  
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  return;
-}
-  
+    
 void
 Aperture::createSurfaces()
   /*!
@@ -203,18 +189,19 @@ Aperture::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Aperture","createObjects");
-  std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 13 -14 15 -16 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,voidMat,0.0,Out));
+  HeadRule HR;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-                                 "1 -2 3 -4 5 -6 (-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -14 15 -16");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+                                 "1 -2 3 -4 5 -6 (-13:14:-15:16)");
+  makeCell("Body",System,cellIndex++,defMat,0.0,HR);
 
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  addOuterSurf(HR);
   return;
 }
 
@@ -288,7 +275,6 @@ Aperture::createAll(Simulation& System,
 
   return;
 }
-
   
 }  // NAMESPACE constructSystem
 

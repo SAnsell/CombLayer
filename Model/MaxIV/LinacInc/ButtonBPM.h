@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/LinacInc/ButtonBPM.h
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,8 +36,8 @@ namespace tdcSystem
 */
 
 class ButtonBPM :
+    public attachSystem::FixedRotate,
     public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset,
     public attachSystem::CellMap,
     public attachSystem::SurfMap,
     public attachSystem::FrontBackCut
@@ -80,9 +80,6 @@ class ButtonBPM :
   int flangeMat;                ///< Flange material
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -95,7 +92,9 @@ class ButtonBPM :
   virtual ButtonBPM* clone() const;
   virtual ~ButtonBPM();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+  using FixedComp::createAll;
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

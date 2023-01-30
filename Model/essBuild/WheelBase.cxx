@@ -3,7 +3,7 @@
  
  * File:   essBuild/WheelBase.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -54,9 +54,10 @@ namespace essSystem
 {
 
 WheelBase::WheelBase(const std::string& Key) :
+  attachSystem::FixedRotate(Key,13),
   attachSystem::ContainedGroup("Wheel","Shaft"),
-  attachSystem::FixedOffset(Key,13),
-  attachSystem::CellMap()
+  attachSystem::CellMap(),
+  engActive(0)
   /*!
     Constructor
     There are 10 links possible -- last for are used if BilbaoWheel used..
@@ -65,9 +66,10 @@ WheelBase::WheelBase(const std::string& Key) :
 {}
 
 WheelBase::WheelBase(const WheelBase& A) : 
+  attachSystem::FixedRotate(A),
   attachSystem::ContainedGroup(A),
-  attachSystem::FixedOffset(A),
-  attachSystem::CellMap(A)
+  attachSystem::CellMap(A),
+  engActive(A.engActive)
   /*!
     Copy constructor
     \param A :: WheelBase to copy
@@ -84,9 +86,10 @@ WheelBase::operator=(const WheelBase& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedGroup::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
+      engActive=A.engActive;
     }
   return *this;
 }

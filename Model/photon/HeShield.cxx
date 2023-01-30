@@ -3,7 +3,7 @@
  
  * File:   photon/HeShield.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "surfRegister.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
@@ -55,7 +53,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
@@ -66,7 +64,8 @@ namespace photonSystem
 {
       
 HeShield::HeShield(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedRotate(Key,6),
+  attachSystem::ContainedComp(),
   attachSystem::CellMap()
   /*!
     Constructor
@@ -76,7 +75,8 @@ HeShield::HeShield(const std::string& Key) :
 }
 
 HeShield::HeShield(const HeShield& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
   length(A.length),
   width(A.width),height(A.height),
@@ -100,8 +100,8 @@ HeShield::operator=(const HeShield& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       length=A.length;
       width=A.width;
@@ -144,7 +144,7 @@ HeShield::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("HeShield","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   
   length=Control.EvalVar<double>(keyName+"Length");
   width=Control.EvalVar<double>(keyName+"Width");
@@ -164,22 +164,6 @@ HeShield::populate(const FuncDataBase& Control)
 }
 
 void
-HeShield::createUnitVector(const attachSystem::FixedComp& FC,
-			   const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed Component
-    \param sideIndex :: Link point surface to use as origin/basis.
-  */
-{
-  ELog::RegMethod RegA("HeShield","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
-  return;
-}
-
-void
 HeShield::createSurfaces()
   /*!
     Create simple structures
@@ -187,7 +171,6 @@ HeShield::createSurfaces()
 {
   ELog::RegMethod RegA("HeShield","createSurfaces");
 
-  
   
   // boundary surfaces
 
@@ -230,36 +213,35 @@ HeShield::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("HeShield","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,buildIndex," 1 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,polyMat,0.0,Out));
-  addCell("Main",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,buildIndex,"1 -2 3 -4 5 -6");
+  makeCell("Main",System,cellIndex++,polyMat,0.0,HR);
 
   // cd void
-  Out=ModelSupport::getComposite(SMap,buildIndex,buildIndex,
-				 " -1 101  103 -104 105 -106 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,buildIndex,
+				"-1 101  103 -104 105 -106");
+  System.addCell(cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,buildIndex," -1 101 113 -114 115 -116 (-103:104:-105:106) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,cdMat,0.0,Out));
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,buildIndex,"-1 101 113 -114 115 -116 (-103:104:-105:106)");
+  System.addCell(cellIndex++,cdMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,buildIndex," -1 111 3 -4 5 -6 (-113:114:-115:116) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,cdMat,0.0,Out));
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,buildIndex,"-1 111 3 -4 5 -6 (-113:114:-115:116)");
+  System.addCell(cellIndex++,cdMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,buildIndex," -111 201 3 -4 5 -6 (-113:114:-115:116) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,polyMat,0.0,Out));
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,buildIndex,"-111 201 3 -4 5 -6 (-113:114:-115:116)");
+  System.addCell(cellIndex++,polyMat,0.0,HR);
 
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -2 3 -4 5 -6 ");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -2 3 -4 5 -6");
+  addOuterSurf(HR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,buildIndex,
-				 " -1 101 113 -114 115 -116 ");
-  addOuterUnionSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,buildIndex,
+				"-1 101 113 -114 115 -116");
+  addOuterUnionSurf(HR);
   
 
   return; 

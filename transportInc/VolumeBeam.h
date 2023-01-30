@@ -3,7 +3,7 @@
  
  * File:   transportInc/VolumeBeam.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,13 +55,6 @@ class VolumeBeam : public Beam
   Beam* clone() const { return new VolumeBeam(*this); }  
   virtual ~VolumeBeam();
 
-  ///\cond GET/SETTER
-  virtual std::string className() const { return "VolumeBeam"; }
-  virtual void acceptVisitor(Global::BaseVisit& A) const
-    {  A.Accept(*this); }
-  virtual void acceptVisitor(Global::BaseModVisit& A)
-    { A.Accept(*this); }
-
   double wave() const { return wavelength; }
   const Geometry::Vec3D& getCorner() const { return Corner; }
 
@@ -74,6 +67,8 @@ class VolumeBeam : public Beam
   void setCorners(const Geometry::Vec3D&,const Geometry::Vec3D&);
   
   virtual MonteCarlo::neutron generateNeutron() const;
+  virtual MonteCarlo::photon generatePhoton() const;
+  
   void write(std::ostream&) const;
 
 };

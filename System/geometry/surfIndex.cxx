@@ -3,7 +3,7 @@
  
  * File:   geometry/surfIndex.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -611,7 +611,6 @@ surfIndex::mapValid() const
   for(mc=SMap.begin();mc!=SMap.end();mc++)
     if (mc->first!=mc->second->getName())
       {
-	out=0;
 	ELog::EM<<"Error with surface "<<mc->first<<" "
 		<<mc->second->getName()<<ELog::endErr;
 	throw ColErr::ExitAbort("Map check");
@@ -863,6 +862,12 @@ template Geometry::Plane*
 surfIndex::realSurf(const int) const;
 
 template const Geometry::Plane*
+surfIndex::realSurf(const int) const;
+
+template Geometry::Cylinder*
+surfIndex::realSurf(const int) const;
+
+template const Geometry::Cylinder*
 surfIndex::realSurf(const int) const;
 
 ///\endcond TEMPLATE

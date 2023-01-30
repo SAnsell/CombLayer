@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "surfRegister.h"
@@ -59,9 +57,7 @@
 #include "LinkUnit.h"  
 #include "FixedComp.h"
 #include "FixedGroup.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
-#include "FixedOffsetGroup.h"
 #include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -217,8 +213,8 @@ TwinBase::createSurfaces()
 void
 TwinBase::createOuterBolts(Simulation& System,const int surfOffset,
 			      const Geometry::Vec3D& Centre,
-			      const std::string& FBStr,
-			      const std::string& EdgeStr,
+			      const HeadRule& fbHR,
+			      const HeadRule& edgeHR,
 			      const double BRadius,const size_t NBolts,
 			      const double radius,const double angOff,
 			      const double arcAngle,const int startSurf,
@@ -227,8 +223,8 @@ TwinBase::createOuterBolts(Simulation& System,const int surfOffset,
     Create the outer bolts
     \param System :: Simualation to use
     \param Centre :: Centre of dist
-    \param FBStr :: Front/Back plates
-    \param EdgeStr :: Edges of ring/area
+    \param fbHR :: Front/Back plates
+    \param edgeHR :: Edges of ring/area
     \param BRadius :: Radius of bolt from Centre
     \param NBolts :: Number of bolts
     \param radius :: radius of bolt
@@ -241,7 +237,7 @@ TwinBase::createOuterBolts(Simulation& System,const int surfOffset,
   ELog::RegMethod RegA("TwinBase","createOuterBolts");
 
 
-  std::string Out;
+  HeadRule HR;
   if (outerRingNBolt>1)
     {
       const double angleR=arcAngle/static_cast<double>(NBolts);
@@ -282,22 +278,19 @@ TwinBase::createOuterBolts(Simulation& System,const int surfOffset,
       boltIndex=surfOffset;
       for(size_t i=0;i<NBolts;i++)
         {
-          Out=ModelSupport::getComposite(SMap,boltIndex," -7 ");
-          System.addCell(MonteCarlo::Object(cellIndex++,boltMat,0.0,Out+FBStr));
-          addCell("OuterBolts",cellIndex-1);
+          HR=HeadRule(SMap,boltIndex,-7);
+          makeCell("OuterBolts",System,cellIndex++,boltMat,0.0,HR*fbHR);
           
-          Out=ModelSupport::getComposite(SMap,boltIndex," 3 -13 7 ");
-          System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,
-                                           Out+FBStr+EdgeStr));
-	  addCell("OuterWall",cellIndex-1);
+          HR=ModelSupport::getHeadRule(SMap,boltIndex,"3 -13 7");
+	  makeCell("OuterWall",System,cellIndex++,wallMat,0.0,
+		   HR*fbHR*edgeHR);
           boltIndex+=10;
        }
     }
   else
     {
       // If here need fron / back angles
-      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,FBStr+EdgeStr));
-      addCell("OuterWall",cellIndex-1);
+      makeCell("OuterWall",System,cellIndex++,wallMat,0.0,fbHR*edgeHR);
     }
 
   return;
@@ -305,18 +298,18 @@ TwinBase::createOuterBolts(Simulation& System,const int surfOffset,
 
 void
 TwinBase::createLineBolts(Simulation& System,const int surfOffset,
-                             const std::string& FBStr,
-                             const std::string& leftEdgeStr,
-                             const std::string& rightEdgeStr,
-                             const double upDownLength,
-                             const size_t NBolts,const double radius,
-                             const int startSurf,const int endSurf)
-  /*!
+			  const HeadRule& fbHR,
+			  const HeadRule& leftEdgeHR,
+			  const HeadRule& rightEdgeHR,
+			  const double upDownLength,
+			  const size_t NBolts,const double radius,
+			  const int startSurf,const int endSurf)
+/*!
     Create the outer bolts
     \param System :: Simualation to use
-    \param FBStr :: Front/Back plates
-    \param leftEdgeStr :: left Edges of ring/area
-    \param rightEdgeStr :: left Edges of ring/area
+    \param fbHR :: Front/Back plates
+    \param leftEdgeHR :: left Edges of ring/area
+    \param rightEdgeHR :: left Edges of ring/area
     \param upDownLength :: lenght of bolts
     \param NBolts :: Number of bolts
     \param radius :: radius of bolt
@@ -326,7 +319,7 @@ TwinBase::createLineBolts(Simulation& System,const int surfOffset,
 {
   ELog::RegMethod RegA("TwinBase","createLineBolts");
 
-  std::string Out;
+  HeadRule HR;
 
   if (NBolts>=1)
     {
@@ -362,28 +355,27 @@ TwinBase::createLineBolts(Simulation& System,const int surfOffset,
       boltIndex=surfOffset;
       for(size_t i=0;i<NBolts;i++)
         {
-          Out=ModelSupport::getComposite(SMap,boltIndex," -7 ");
-          System.addCell(MonteCarlo::Object(cellIndex++,boltMat,0.0,Out+FBStr));
-          addCell("OuterBolts",cellIndex-1);
+          HR=HeadRule(SMap,boltIndex,-7);
+          makeCell("OuterBolts",System,cellIndex++,boltMat,0.0,HR*fbHR);
+	  
+          HR=HeadRule(SMap,boltIndex,-8);
+          makeCell("OuterBolts",System,cellIndex++,boltMat,0.0,HR*fbHR);
+          
+          HR=ModelSupport::getHeadRule(SMap,boltIndex,"5 -15 7");
+          makeCell("OuterWall",System,cellIndex++,wallMat,0.0,
+		   HR*fbHR*leftEdgeHR);
+          
+          HR=ModelSupport::getHeadRule(SMap,boltIndex,"5 -15 8");
+          makeCell("OuterWall",System,cellIndex++,wallMat,0.0,
+		   HR*fbHR*rightEdgeHR);
 
-          Out=ModelSupport::getComposite(SMap,boltIndex," -8 ");
-          System.addCell(MonteCarlo::Object(cellIndex++,boltMat,0.0,Out+FBStr));
-          addCell("OuterBolts",cellIndex-1);
-          
-          Out=ModelSupport::getComposite(SMap,boltIndex," 5 -15  7 ");
-          System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+FBStr+leftEdgeStr));
-	  addCell("OuterWall",cellIndex-1);
-          
-          Out=ModelSupport::getComposite(SMap,boltIndex," 5 -15 8 ");
-          System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+FBStr+rightEdgeStr));
-	  addCell("OuterWall",cellIndex-1);
           boltIndex+=10;
        }
     }
   else
     {
       // If here need fron / back angles
-      //      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,FBStr+EdgeStr));
+      //      System.addCell(cellIndex++,wallMat,0.0,fbHR+edgeHR);
       //      addCell("OuterWall",cellIndex-1);
     }
 
@@ -400,44 +392,40 @@ TwinBase::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("TwinBase","createObjects");
 
-  std::string Out,FBStr,EdgeStr,SealStr;
+  HeadRule HR,fbHR,edgeHR,sealHR;
 
   // Main void
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 (-17:-18)");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  addCell("Void",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 (-17:-18)");
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
   
   // Main casing [inside bolt layer]
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"1 -11 23 -24 (5:-27) (-6:-28) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
-  addCell("FrontCase",cellIndex-1);
+  makeCell("FrontCase",System,cellIndex++,wallMat,0.0,HR);
   addCell("Case",cellIndex-1);
 
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"12 -2 23 -24 (5:-27) (-6:-28)");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
-  addCell("BackCase",cellIndex-1);
+  makeCell("BackCase",System,cellIndex++,wallMat,0.0,HR);
   addCell("Case",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-                                 "11 -12 23 -24 (5:-27) (-6:-28) 17 18 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
-  addCell("EdgeCase",cellIndex-1);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"11 -12 23 -24 (5:-27) (-6:-28) 17 18 ");
+  makeCell("EdgeCase",System,cellIndex++,wallMat,0.0,HR);
 
   // OUTER RING :
   // NECESSARY because segment cut
-  EdgeStr=ModelSupport::getComposite(SMap,buildIndex," -7 27 ");  
-  FBStr=ModelSupport::getComposite(SMap,buildIndex," 1 -2 ");
+  edgeHR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 27");  
+  fbHR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2");
   int divideSurf(SMap.realSurf(buildIndex+5));
-  createOuterBolts(System,buildIndex+5000,lowOutCent,FBStr,EdgeStr,
+  createOuterBolts(System,buildIndex+5000,lowOutCent,fbHR,edgeHR,
                    mainRadius-(outerBoltStep+outerBoltRadius),
                    outerRingNBolt,outerBoltRadius,
                    90.0,180.0,divideSurf,divideSurf);
 
-  EdgeStr=ModelSupport::getComposite(SMap,buildIndex," -8 28 ");
+  edgeHR=ModelSupport::getHeadRule(SMap,buildIndex,"-8 28");
   divideSurf=SMap.realSurf(buildIndex+6);
-  createOuterBolts(System,buildIndex+5500,topOutCent,FBStr,EdgeStr,
+  createOuterBolts(System,buildIndex+5500,topOutCent,fbHR,edgeHR,
                    mainRadius-(outerBoltStep+outerBoltRadius),
                    outerRingNBolt,outerBoltRadius,
                    -90.0,180.0,-divideSurf,-divideSurf);
@@ -445,20 +433,20 @@ TwinBase::createObjects(Simulation& System)
   const int lowCutSurf=SMap.realSurf(buildIndex+5);
   const int topCutSurf=SMap.realSurf(buildIndex+6);
 
-  std::string leftEdgeStr=
-    ModelSupport::getComposite(SMap,buildIndex," 3 -23 ");
-  std::string rightEdgeStr=
-    ModelSupport::getComposite(SMap,buildIndex," 24 -4 ");
+  HeadRule leftEdgeHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"3 -23");
+  HeadRule rightEdgeHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"24 -4");
   createLineBolts(System,buildIndex+6000,
-                  FBStr,leftEdgeStr,rightEdgeStr,
+                  fbHR,leftEdgeHR,rightEdgeHR,
                   stepHeight,outerLineNBolt,
                   outerBoltRadius,
                   lowCutSurf,topCutSurf);
 
   
   // Outer
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 (5:-7) (-6:-8) ");
-  addOuterSurf(Out);  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 (5:-7) (-6:-8)");
+  addOuterSurf(HR);  
    
   return;
 }

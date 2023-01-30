@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   build/GeneralShutter.cxx
+ * File:   ralBuild/GeneralShutter.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,8 +39,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "surfRegister.h"
@@ -86,8 +84,10 @@ GeneralShutter::GeneralShutter(const size_t ID,const std::string& Key) :
 {}
 
 GeneralShutter::GeneralShutter(const GeneralShutter& A) : 
-  attachSystem::FixedGroup(A),attachSystem::ContainedComp(A),
-  attachSystem::CellMap(A),attachSystem::ExternalCut(A),
+  attachSystem::FixedGroup(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
+  attachSystem::ExternalCut(A),
   shutterNumber(A.shutterNumber),baseName(A.baseName),
   voidXoffset(A.voidXoffset),
   innerRadius(A.innerRadius),outerRadius(A.outerRadius),
@@ -270,7 +270,8 @@ GeneralShutter::createUnitVector(const attachSystem::FixedComp& FC,
 				 const long int sideIndex)
   /*!
     Create unit vectors for shutter along shutter direction
-    \param FCPtr :: Previously defined Axis system [if present]
+    \param FC :: Previously defined Axis system [if present]
+    \param sideIndex :: linke point
   */
 {
   ELog::RegMethod RegA("GeneralShutter","createUnitVector");
@@ -296,7 +297,7 @@ GeneralShutter::applyRotations()
 
   attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
-  
+
   // Now do rotation:
 
   mainFC.setCentre(Y*voidXoffset);
@@ -306,7 +307,7 @@ GeneralShutter::applyRotations()
 			
   BeamAxis=mainFC.getY();
   XYAxis=BeamAxis;
-  if (XYAxis.abs()<0.999) ELog::EM<<"ERROR "<<BeamAxis<<ELog::endErr;
+  if (XYAxis.abs()<0.999) ELog::EM<<"Beam ERROR "<<BeamAxis<<ELog::endErr;
   
   zSlope=Z;
   Geometry::Quaternion::calcQRotDeg(zAngle,X).rotate(BeamAxis);
@@ -316,6 +317,7 @@ GeneralShutter::applyRotations()
   //              [close == 3: close imp =-1]
 
   targetPt=Origin+XYAxis*outerRadius;
+
   frontPt=Origin+XYAxis*innerRadius+Z*openZShift;
   endPt=frontPt+XYAxis*(outerRadius-innerRadius);
   
@@ -370,7 +372,6 @@ GeneralShutter::createSurfaces()
 
   // Divide:
   //  ModelSupport::buildPlane(SMap,buildIndex+10,Origin,Y);
-  
   // Fixed Steel  
   ModelSupport::buildPlane(SMap,buildIndex+5,
 			   Origin+Z*(totalHeight-upperSteel),Z);
@@ -378,7 +379,6 @@ GeneralShutter::createSurfaces()
   // Top blade [NOTE : BeamAxis]
   ModelSupport::buildPlane(SMap,buildIndex+15,
 			   frontPt+Z*shutterHeight,Z);
-
   // Inner cut [on flightline]
   ModelSupport::buildPlane(SMap,buildIndex+25,
    frontPt+Z*(voidZOffset+voidHeight/2.0+centZOffset),zSlope);
@@ -405,13 +405,13 @@ GeneralShutter::createSurfaces()
   // Outer cut [on flightline]
   ModelSupport::buildPlane(SMap,buildIndex+225,
 	      frontPt+Z*(voidZOffset+voidHeightOuter/2.0+centZOffset),zSlope);
-  
   // Outer cut [on flightline]
   ModelSupport::buildPlane(SMap,buildIndex+226,
 	   frontPt-Z*(-voidZOffset+voidHeightOuter/2.0-centZOffset),zSlope);
 
   // Forward Plane
   ModelSupport::buildPlane(SMap,buildIndex+200,frontPt-Y*(innerRadius/4.0),Y);
+  setCutSurf("Divider",SMap.realSurf(buildIndex+200));
   // Divide Plane
   ModelSupport::buildPlane(SMap,buildIndex+100,frontPt+Y*voidDivide,Y);
 
@@ -633,7 +633,7 @@ GeneralShutter::createObjects(Simulation& System)
     (SMap,buildIndex,"200 -6 2023 -2024")*RInnerComp*ROuterHR*BPlane;
   makeCell("BaseSteel",System,cellIndex++,shutterMat,0.0,HR);
 
-  // Add exclude
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"200 2023 -2024");
   addOuterSurf(HR);
   return;
@@ -746,6 +746,7 @@ GeneralShutter::createStopBlocks(Simulation& System,const size_t BN)
       System.addCell(cellIndex++,SB.matN,0.0,TCubeHR);
       CellMap::insertComponent(System,"UpperCell",TCubeHR.complement());
     }
+
   System.populateCells();
 
   return;

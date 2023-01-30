@@ -333,7 +333,7 @@ m1MirrorVariables(FuncDataBase& Control,
   Control.addVariable(mirrorKey+"LeadBrickWidth",5.0);
   Control.addVariable(mirrorKey+"LeadBrickHeight",5.0);
   Control.addVariable(mirrorKey+"LeadBrickDepth",8.0);
-  Control.addVariable(mirrorKey+"LeadBrickDefMat","Lead");
+  Control.addVariable(mirrorKey+"LeadBrickMat","Lead");
     
 
   return;

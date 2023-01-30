@@ -3,7 +3,7 @@
  
  * File:   construct/RotaryCollimator.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,9 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "stringCombine.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "generateSurf.h"
@@ -60,19 +57,22 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedGroup.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurInter.h"
 #include "HoleShape.h"
+#include "CentredHoleShape.h"
 #include "RotaryCollimator.h"
 
 namespace constructSystem
 {
 
 RotaryCollimator::RotaryCollimator(const std::string& Key)  :
-  attachSystem::ContainedComp(),
   attachSystem::FixedGroup(Key,"Main",16,"Beam",3,"Hole",0),
+  attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   holeIndex(0),nHole(0),nLayers(0)
   /*!
@@ -82,7 +82,8 @@ RotaryCollimator::RotaryCollimator(const std::string& Key)  :
 {}
 
 RotaryCollimator::RotaryCollimator(const RotaryCollimator& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedGroup(A),
+  attachSystem::FixedGroup(A),
+  attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
   xyAngle(A.xyAngle),
   zAngle(A.zAngle),xStep(A.xStep),yStep(A.yStep),
@@ -179,8 +180,9 @@ RotaryCollimator::populate(const FuncDataBase& Control)
   for(size_t i=0;i<nHole;i++)
     {
       const std::string holeName=keyName+"Hole"+
-	StrFunc::makeString(i);
-      Holes.push_back(std::shared_ptr<HoleShape>(new HoleShape(holeName)));
+	std::to_string(i);
+      Holes.push_back(std::shared_ptr<CentredHoleShape>
+		      (new CentredHoleShape(holeName)));
       Holes.back()->populate(Control);
       OR.addObject(Holes.back());
     }
@@ -189,7 +191,8 @@ RotaryCollimator::populate(const FuncDataBase& Control)
   holeIndex=Control.EvalVar<size_t>(keyName+"HoleIndex");
   holeAngOffset=Control.EvalVar<double>(keyName+"HoleAngOff");
   setHoleIndex();
-  for(std::shared_ptr<HoleShape>& HH : Holes)
+
+  for(std::shared_ptr<CentredHoleShape>& HH : Holes)
     HH->setMasterAngle(holeAngOffset);
   
   return;
@@ -251,9 +254,10 @@ RotaryCollimator::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("RotaryCollimator","createObjects");
 
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7");
-  addOuterSurf(Out);
+  HeadRule HR;
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -7");
+  addOuterSurf(HR);
   //
   // Sectors
   // All via centre / at Angle from normal
@@ -261,16 +265,17 @@ RotaryCollimator::createObjects(Simulation& System)
   HeadRule HoleExclude;
   for(size_t i=0;i<nHole;i++)
     {
-      std::shared_ptr<HoleShape>& HU=Holes[i];
-      HU->setFaces(SMap.realSurf(buildIndex+1),-SMap.realSurf(buildIndex+2));
-      HU->createAllNoPopulate(System,*this,0);  // Use THIS Origin (rot centre)
+      std::shared_ptr<CentredHoleShape>& HU=Holes[i];
+      HU->setCutSurf("front",SMap.realSurf(buildIndex+1));
+      HU->setCutSurf("back",-SMap.realSurf(buildIndex+2));
+      HU->createAll(System,*this,0);  // Use THIS Origin (rot centre)
+      
       if (HU->getShape())
 	HoleExclude.addIntersection(HU->getExclude());
-      addCell("Void"+StrFunc::makeString(i),HU->getCell("Void"));
+      addCell("Void"+std::to_string(i),HU->getCell("Void"));
     }
-  Out+=" "+HoleExclude.display();
-  System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));            
-  addCell("Main",cellIndex-1);
+  HR*=HoleExclude;
+  makeCell("Main",System,cellIndex++,defMat,0.0,HR);            
   return;
 }
 

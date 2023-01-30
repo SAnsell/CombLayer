@@ -36,7 +36,7 @@ namespace essSystem
 */
 
 class DHut :
-  public attachSystem::FixedRotateGroup,
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap
   
@@ -59,7 +59,6 @@ class DHut :
   int concMat;                ///< Second layer material
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();

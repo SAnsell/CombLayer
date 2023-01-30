@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Model/MaxIV/formax/formaxDetectorTube.cxx
+ * File:   formax/formaxDetectorTube.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -80,8 +79,8 @@ namespace xraySystem
 {
 
 formaxDetectorTube::formaxDetectorTube(const std::string& Key)  :
-  attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,6),
+  attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::ExternalCut(),
@@ -165,8 +164,7 @@ formaxDetectorTube::createSurfaces()
 
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outerRadius);
 
-  const std::string Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
-  const HeadRule HR(Out);
+  const HeadRule HR=HeadRule(SMap,buildIndex,-7);
 
   buildZone.setSurround(HR);
   buildZone.setFront(getRule("front"));
@@ -245,8 +243,8 @@ formaxDetectorTube::createLinks()
 
   const constructSystem::portItem& API=frontDome->getPort(0);
   setLinkCopy(0,API,"OuterPlate");
-
-  setLinkCopy(1,*backDome,2);
+  setLinkCopy(1,*backDome,2);  
+ 
   return;
 }
 

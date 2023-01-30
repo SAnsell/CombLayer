@@ -37,8 +37,8 @@ namespace xraySystem
 */
 
 class DiffPumpXIADP03 :
-  public attachSystem::ContainedComp,
   public attachSystem::FixedRotate,
+  public attachSystem::ContainedComp,
   public attachSystem::CellMap,
   public attachSystem::SurfMap,
   public attachSystem::ExternalCut

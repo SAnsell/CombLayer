@@ -3,7 +3,7 @@
  
  * File:   supportInc/support.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,20 +21,39 @@
  ****************************************************************************/
 #ifndef StrFunc_support_h
 #define StrFunc_support_h
+/*!
+  \class reverse
+  Template system to reverse interator.
+  Note that if can be used in range for loops e.g.
+  for(const int I : reverse(vecI))
+ */
+
+template<typename T>
+class reverse
+{
+private:
+  T& container;
+public:
+  explicit reverse(T& C) : container(C) {}
+  auto begin() const { return std::rbegin(container); }
+  auto end() const { return std::rend(container); }
+};
 
 template <typename T> inline constexpr
-T signum(T x, std::false_type is_signed)
+T signum(T x, std::false_type)
 {
   return T(T(0) < x);
 }
 
 template <typename T> inline constexpr
-T signum(T x, std::true_type is_signed) {
+T signum(T x, std::true_type)
+{
   return T((T(0) < x) - (x < T(0)));
 }
 
 template <typename T> inline constexpr
-T signum(T x) {
+T signum(T x)
+{
   return signum(x, std::is_signed<T>());
 }
 

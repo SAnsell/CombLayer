@@ -3,7 +3,7 @@
 
  * File: Linac/Segment43.cxx
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2023 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -140,7 +140,7 @@ Segment43::buildObjects(Simulation& System)
   outerCell=buildZone->createUnit(System,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
 
-  outerCell=constructSystem::constructUnit
+  constructSystem::constructUnit
     (System,*buildZone,*bellowA,"back",*bpmA);
 
   outerCell=constructSystem::constructUnit

@@ -3,7 +3,7 @@
  
  * File:   essBuild/Bunker.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "surfRegister.h"
@@ -59,6 +57,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -75,8 +74,8 @@ namespace essSystem
 {
 
 Bunker::Bunker(const std::string& Key)  :
-  attachSystem::ContainedComp(),
   attachSystem::FixedComp(Key,12),
+  attachSystem::ContainedComp(),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   leftWallFlag(1),rightWallFlag(1),
   roofObj(new BunkerRoof(Key)),
@@ -304,14 +303,12 @@ Bunker::createSurfaces()
 
   int divIndex(buildIndex+1001);
 
-  double phase(leftPhase);
   const double phaseStep((rightPhase-leftPhase)/static_cast<double>(nSectors));
 
   SMap.addMatch(divIndex,SMap.realSurf(buildIndex+3));
   for(size_t i=1;i<nSectors;i++)
     {
       divIndex++;
-      phase+=phaseStep;  //Y
       const double F= (sectPhase[i]-leftPhase)/phaseDiff;
       const double angle= leftAngle+F*angleDiff;
             
@@ -374,39 +371,34 @@ Bunker::createObjects(Simulation& System,
   */
 {
   ELog::RegMethod RegA("Bunker","createObjects");
-  
-  std::string Out;
-  const std::string Inner=FC.getLinkString(sideIndex);
+
+  HeadRule HR;
+
+  const HeadRule InnerHR=FC.getFullRule(sideIndex);
   const int InnerSurf=FC.getLinkSurf(sideIndex);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -7 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,voidMat,0.0,Out+Inner));
-  setCell("MainVoid",cellIndex-1);
-  // process left wall:
-  //  std::string leftWallStr=procLeftWall(System);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -7 3 -4 5 -6 ");
+  makeCell("MainVoid",System,cellIndex++,voidMat,0.0,HR*InnerHR);
 
   // left:right:floor:roof:Outer
   int lwIndex(buildIndex);  // indexs for wall 
   int rwIndex(buildIndex);
   if (leftWallFlag)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1 -7 -3 13 5 -106 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+Inner));
-      setCell("leftWall",cellIndex-1);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -7 -3 13 5 -106");
+      makeCell("leftWall",System,cellIndex++,wallMat,0.0,HR*InnerHR);
       lwIndex+=10;
     }
   if (rightWallFlag)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1 -7 4 -14 5 -106 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+Inner));
-      setCell("rightWall",cellIndex-1);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -7 4 -14 5 -106 ");
+      makeCell("rightWall",System,cellIndex++,wallMat,0.0,HR*InnerHR);
       rwIndex+=10;
     }
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,lwIndex,rwIndex,
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,lwIndex,rwIndex,
 				 " 1 -17 3M -4N -5 15 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+Inner));
-  setCell("floor",cellIndex-1);
+  makeCell("floor",System,cellIndex++,wallMat,0.0,HR*InnerHR);
 
   // Main wall not divided
   int divIndex(buildIndex+1000);
@@ -414,27 +406,27 @@ Bunker::createObjects(Simulation& System,
   for(size_t i=0;i<nSectors;i++)
     {
       // Divide the roof into sector as well
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1 -17 6 (106 : -7) -16 ");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -17 6 (106 : -7) -16 ");
       if (i)
-	Out+=ModelSupport::getComposite(SMap,divIndex," 1 ");
+	HR*=HeadRule(SMap,divIndex,1);
       else if (leftWallFlag)
-	Out+=ModelSupport::getComposite(SMap,buildIndex," 13  (106 : 3) ");
+	HR*=ModelSupport::getHeadRule(SMap,buildIndex,"13 (106 : 3)");
       else
-	Out+=ModelSupport::getComposite(SMap,buildIndex," 13 ");
+	HR*=HeadRule(SMap,buildIndex,13);
 
       if (i+1!=nSectors)
-	Out+=ModelSupport::getComposite(SMap,divIndex," -2 ");
+	HR*=HeadRule(SMap,divIndex,-2);
       else if (rightWallFlag)
-	  Out+=ModelSupport::getComposite(SMap,buildIndex," -14  (106 : -4) ");
+	HR*=ModelSupport::getHeadRule(SMap,buildIndex,"-14  (106 : -4)");
       else
-	Out+=ModelSupport::getComposite(SMap,buildIndex," -14 ");
+	HR*=HeadRule(SMap,buildIndex,-14);
       
-      System.addCell(MonteCarlo::Object(cellIndex++,roofMat,0.0,Out+Inner));
-      addCell("roof"+std::to_string(i),cellIndex-1);
-      Out=ModelSupport::getComposite(SMap,buildIndex,divIndex,
-				     " 1 7 -17 1M -2M 5 -106 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
-      addCell("frontWall",cellIndex-1);
+      makeCell("roof"+std::to_string(i),
+	       System,cellIndex++,roofMat,0.0,HR*InnerHR);
+      
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,divIndex,
+				     "1 7 -17 1M -2M 5 -106");
+      makeCell("frontWall",System,cellIndex++,wallMat,0.0,HR);
       addCell("frontWall"+std::to_string(i),cellIndex-1);
       divIndex++;
     }
@@ -443,9 +435,9 @@ Bunker::createObjects(Simulation& System,
   createMainRoof(System,InnerSurf);
 
   // External
-  Out=ModelSupport::getComposite(SMap,buildIndex,lwIndex,rwIndex,
-				 " 1 -17 3M -4N 15 -16 ");
-  addOuterSurf(Out+Inner);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,lwIndex,rwIndex,
+				 "1 -17 3M -4N 15 -16");
+  addOuterSurf(HR*InnerHR);
         
   return;
 }
@@ -468,12 +460,13 @@ Bunker::createMainRoof(Simulation& System,const int innerSurf)
   const int rwIndex((rightWallFlag) ? buildIndex+10 : buildIndex);
   int divIndex(buildIndex+1000);
 
-  const std::string Out=ModelSupport::getComposite(SMap,buildIndex," 1 ");
+  const HeadRule HR(SMap,buildIndex,1);
   roofObj->initialize(System.getDataBase(),*this,6);
-  roofObj->setVertSurf(SMap.realSurf(buildIndex+6),SMap.realSurf(buildIndex+16));
+  roofObj->setVertSurf(SMap.realSurf(buildIndex+6),
+		       SMap.realSurf(buildIndex+16));
   
   roofObj->setRadialSurf(SMap.realSurf(innerSurf),SMap.realSurf(outerSurf));
-  roofObj->setDivider(Out);
+  roofObj->setDivider(HR);
 
   for(size_t i=0;i<nSectors;i++)
     {
@@ -486,7 +479,16 @@ Bunker::createMainRoof(Simulation& System,const int innerSurf)
 			    SMap.realSurf(LW),SMap.realSurf(RW));
       
       removeCell("roof"+SectNum);
-      addCells("roof",roofObj->getCells("Sector"+SectNum));
+
+      //      ELog::EM<<"ROOF Cell = "<<cellN<<" "<<getCell("roof"+SectNum)<<ELog::endDiag;
+	    
+      const std::vector<int> newCells=roofObj->getCells("Sector"+SectNum);
+      addCells("roof",newCells);
+
+      addCell("roofBase",newCells.front());
+      addCell("roofBase"+SectNum,newCells.front());
+      addCell("roofSector"+SectNum,newCells.front());
+
       if (i+1==nSectors)
         addCells("roofFarEdge",roofObj->getCells("Sector"+SectNum));
 
@@ -514,13 +516,13 @@ Bunker::createMainWall(Simulation& System)
   const int rwIndex((rightWallFlag) ? buildIndex+10 : buildIndex);
   int divIndex(buildIndex+1000);
 
-  const std::string Out=ModelSupport::getComposite(SMap,buildIndex," 1 ");
+  const HeadRule HR(SMap,buildIndex,1);
 
   wallObj->createAll(System,*this,0);
   wallObj->setVertSurf(SMap.realSurf(buildIndex+5),
 		       SMap.realSurf(buildIndex+106));
   wallObj->setRadialSurf(SMap.realSurf(innerSurf),SMap.realSurf(outerSurf));
-  wallObj->setDivider(Out);
+  wallObj->setDivider(HR);
 
   for(size_t i=0;i<nSectors;i++)
     {

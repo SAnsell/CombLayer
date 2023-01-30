@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/WedgeItem.h
  *
- * Copyright (c) 2004-2022 by Konstantin Batkov
+ * Copyright (c) 2004-2023 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,8 +36,9 @@ namespace essSystem
 */
 
 class WedgeItem :
+    public attachSystem::FixedRotateUnit,
     public attachSystem::ContainedComp,
-    public attachSystem::FixedRotateUnit
+    public attachSystem::ExternalCut
 {
  private:
 
@@ -51,15 +52,13 @@ class WedgeItem :
   int mat;                       ///< material
 
   // aux variables, non-populated
-  Geometry::Cylinder *outerCyl;  ///< outer cylinder (base surface)
+  const Geometry::Cylinder *outerCyl;  ///< outer cylinder (base surface)
 
   // Functions:
 
   double getFixedXYAngle(const double) const;
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
-
   void createSurfaces(const attachSystem::FixedComp&,const long int);
   void createObjects(Simulation&,const attachSystem::FixedComp&,
 		     const long int,const attachSystem::FixedComp&,
@@ -74,6 +73,7 @@ class WedgeItem :
   virtual ~WedgeItem();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int,
+		 const long int,
 		 const attachSystem::FixedComp&,const long int,
 		 const long int);
   

@@ -75,14 +75,14 @@ class TwinBase :
   
 
   void createOuterBolts(Simulation&,const int,const Geometry::Vec3D&,
-			const std::string&,const std::string&,
+			const HeadRule&,const HeadRule&,
 			const double,const size_t,
 			const double,const double,
 			const double,const int,const int);
 
   void createLineBolts(Simulation&,const int,
-		       const std::string&,const std::string&,
-		       const std::string&,
+		       const HeadRule&,const HeadRule&,
+		       const HeadRule&,
 		       const double,const size_t,
 		       const double,const int,const int);
 

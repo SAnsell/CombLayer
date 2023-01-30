@@ -3,7 +3,7 @@
  
  * File:   photon/CylContainer.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,8 +39,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "surfRegister.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
@@ -56,7 +54,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
 #include "CylContainer.h"
@@ -65,9 +63,9 @@ namespace photonSystem
 {
 
 CylContainer::CylContainer(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::LayerComp(0,0),
-  attachSystem::FixedOffset(Key,6),
-  mainCell(0)
+  attachSystem::FixedRotate(Key,6),
+  attachSystem::ContainedComp(),
+  attachSystem::LayerComp(0,0)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -75,10 +73,11 @@ CylContainer::CylContainer(const std::string& Key) :
 {}
 
 CylContainer::CylContainer(const CylContainer& A) : 
-  attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
-  attachSystem::FixedOffset(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::LayerComp(A),
   radius(A.radius),height(A.height),
-  mat(A.mat),temp(A.temp),mainCell(A.mainCell)
+  mat(A.mat),temp(A.temp)
   /*!
     Copy constructor
     \param A :: CylContainer to copy
@@ -95,14 +94,13 @@ CylContainer::operator=(const CylContainer& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
       radius=A.radius;
       height=A.height;
       mat=A.mat;
       temp=A.temp;
-      mainCell=A.mainCell;
     }
   return *this;
 }
@@ -133,7 +131,7 @@ CylContainer::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("CylContainer","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   double R,H,T;
   int M;
@@ -155,22 +153,6 @@ CylContainer::populate(const FuncDataBase& Control)
       mat.push_back(M);
       temp.push_back(T);
     }
-  return;
-}
-
-void
-CylContainer::createUnitVector(const attachSystem::FixedComp& FC,
-			       const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed Component
-    \parma sideIndex :: link index
-  */
-{
-  ELog::RegMethod RegA("CylContainer","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
   return;
 }
 
@@ -208,7 +190,6 @@ CylContainer::createObjects(Simulation& System)
   ELog::RegMethod RegA("CylContainer","createObjects");
 
   std::string Out;
-  mainCell=cellIndex;
   int SI(buildIndex);
   for(size_t i=0;i<nLayers;i++)
     {
@@ -301,7 +282,7 @@ CylContainer::getSurfacePoint(const size_t layerIndex,
   throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex ");
 }
 
-int
+HeadRule
 CylContainer::getCommonSurf(const long int sideIndex) const
   /*!
     Given a side calculate the boundary surface
@@ -315,27 +296,27 @@ CylContainer::getCommonSurf(const long int sideIndex) const
     {
     case 1:
     case 2:
-      return 0;
+      return HeadRule();
     case 3:
-      return -SMap.realSurf(buildIndex+103);
+      return HeadRule(SMap,buildIndex,-103);
     case 4:
-      return SMap.realSurf(buildIndex+103);
+      return HeadRule(SMap,buildIndex,103);
     case 5:
-      return -SMap.realSurf(buildIndex+105);
+      return HeadRule(SMap,buildIndex,-105);
     case 6:
-      return SMap.realSurf(buildIndex+105);
+      return HeadRule(SMap,buildIndex,105);
     }
   throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
 }
 
-std::string
-CylContainer::getLayerString(const size_t layerIndex,
-			     const long int sideIndex) const
+HeadRule
+CylContainer::getLayerHR(const size_t layerIndex,
+			 const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param layerIndex :: layer, 0 is inner moderator [0-4]
     \param sideIndex :: Side [0-5]
-    \return Surface string
+    \return Surface 
   */
 {
   ELog::RegMethod RegA("CylContainer","getLayerString");
@@ -347,64 +328,29 @@ CylContainer::getLayerString(const size_t layerIndex,
   const int SI(buildIndex+NL*10);
 
   const long int uSIndex(std::abs(sideIndex));
-  std::string Out;
+  HeadRule HR;
   switch(uSIndex)
     {
     case 1:
-      Out=ModelSupport::getComposite(SMap,SI," -1 ");
+      HR=HeadRule(SMap,SI,-1);
       break;
     case 2:
-      Out=ModelSupport::getComposite(SMap,SI," 2 ");
+      HR=HeadRule(SMap,SI,2);
       break;
     case 3:
     case 4:
     case 5:
     case 6:
-      Out=ModelSupport::getComposite(SMap,SI," 7 ");
+      HR=HeadRule(SMap,SI,7);
       break;
     default:
       throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
     }
-  HeadRule HR(Out);
+
   if (sideIndex<0)
     HR.makeComplement();
-  return HR.display();
+  return HR;
 }
-
-int
-CylContainer::getLayerSurf(const size_t layerIndex,
-			   const long int sideIndex) const
-  /*!
-    Given a side and a layer calculate the link surf. Surf points out
-    \param sideIndex :: Side +/-[1-6] 
-    \param layerIndex :: layer, 0 is inner moderator [0-4]
-    \return Surface number [outgoing]
-  */
-{
-  ELog::RegMethod RegA("CylContainer","getLayerSurf");
-
-  if (layerIndex>=nLayers) 
-    throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layerIndex");
-  
-  const int SI(buildIndex+static_cast<int>(layerIndex)*10);
-  const long int uSIndex(std::abs(sideIndex));
-  const int signValue((sideIndex>0) ? 1 : -1);
-
-  switch(uSIndex)
-    {
-    case 1:
-      return -signValue*SMap.realSurf(SI+1);
-    case 2:
-      return signValue*SMap.realSurf(SI+2);
-    case 3:
-    case 4:
-    case 5:
-    case 6:
-      return signValue*SMap.realSurf(SI+7);
-    }
-  throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
-}
-
 
 void
 CylContainer::createAll(Simulation& System,
@@ -418,8 +364,8 @@ CylContainer::createAll(Simulation& System,
    */
 {
   ELog::RegMethod RegA("CylContainer","createAll");
-  populate(System.getDataBase());
 
+  populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);

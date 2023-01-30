@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/Linac/LBeamStop.cxx
  *
- * Copyright (c) 2004-2021 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -62,7 +61,6 @@
 #include "mergeTemplate.h"
 #include "ExternalCut.h"
 #include "Exception.h"
-#include "BaseModVisit.h"
 #include "Importance.h"
 #include "Object.h"
 
@@ -72,8 +70,8 @@ namespace tdcSystem
 {
 
 LBeamStop::LBeamStop(const std::string& Key)  :
-  attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,7),
+  attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::ExternalCut()
@@ -163,32 +161,31 @@ LBeamStop::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("LBeamStop","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -1 -7 ");
-  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -1 -7");
+  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -7 ");
-  makeCell("CarbonInner",System,cellIndex++,innerMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -7");
+  makeCell("CarbonInner",System,cellIndex++,innerMat,0.0,HR);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -11 -17 7");
+  makeCell("MidVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -11 -17 7");
-  makeCell("MidVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -2 7 -17");
+  makeCell("MidSide",System,cellIndex++,midMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -2 7 -17 ");
-  makeCell("MidSide",System,cellIndex++,midMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 -17");
+  makeCell("MidFront",System,cellIndex++,midMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 -17 ");
-  makeCell("MidFront",System,cellIndex++,midMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -12 17 -27");
+  makeCell("OuterSide",System,cellIndex++,outerMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -12 17 -27 ");
-  makeCell("OuterSide",System,cellIndex++,outerMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -22 -27");
+  makeCell("OuterFront",System,cellIndex++,outerMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -22 -27 ");
-  makeCell("OuterFront",System,cellIndex++,outerMat,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -22 -27 ");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -22 -27");
+  addOuterSurf(HR);
 
   layerProcess(System,"MidFront",
 	       SMap.realSurf(buildIndex+2),
@@ -307,8 +304,8 @@ LBeamStop::layerProcess(Simulation& System,
 
 void
 LBeamStop::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC,
-		       const long int sideIndex)
+		     const attachSystem::FixedComp& FC,
+		     const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item

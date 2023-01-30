@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/cosaxs/cosaxsTubeCable.cxx
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -52,7 +51,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -66,8 +65,8 @@ namespace xraySystem
 {
 
 cosaxsTubeCable::cosaxsTubeCable(const std::string& Key)  :
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::FrontBackCut()
@@ -78,8 +77,8 @@ cosaxsTubeCable::cosaxsTubeCable(const std::string& Key)  :
 {}
 
 cosaxsTubeCable::cosaxsTubeCable(const cosaxsTubeCable& A) :
+  attachSystem::FixedRotate(A),
   attachSystem::ContainedComp(A),
-  attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
@@ -103,8 +102,8 @@ cosaxsTubeCable::operator=(const cosaxsTubeCable& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
@@ -144,7 +143,7 @@ cosaxsTubeCable::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("cosaxsTubeCable","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
   width=Control.EvalVar<double>(keyName+"Width");
@@ -153,23 +152,6 @@ cosaxsTubeCable::populate(const FuncDataBase& Control)
   tailRadius=Control.EvalVar<double>(keyName+"TailRadius");
   detYStep=Control.EvalVar<double>(keyName+"DetYStep");
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
-
-  return;
-}
-
-void
-cosaxsTubeCable::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: object for origin
-    \param sideIndex :: link point for origin
-  */
-{
-  ELog::RegMethod RegA("cosaxsTubeCable","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
 
   return;
 }
@@ -234,38 +216,36 @@ cosaxsTubeCable::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("cosaxsTubeCable","createObjects");
 
-  std::string Out;
-  const std::string frontStr(frontRule());
-  const std::string backStr(backRule());
-
-  std::string side(ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 "));
+  HeadRule HR;
+  const HeadRule frontHR(getFrontRule());
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," -102 107 ")+side;
-  makeCell("Cable1",System,cellIndex++,mat,0.0,frontStr+Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-102 107 3 -4 5 -6");
+  makeCell("Cable1",System,cellIndex++,mat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -107 ");
-  makeCell("CableTailInner",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -107");
+  makeCell("CableTailInner",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -102 6 107 -117 ");
-  makeCell("CableTail1",System,cellIndex++,mat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 -102 6 107 -117");
+  makeCell("CableTail1",System,cellIndex++,mat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 102 107 -117 ");
-  makeCell("CableTail2",System,cellIndex++,mat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 102 107 -117");
+  makeCell("CableTail2",System,cellIndex++,mat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 15 -5 102 -117 ");
-  makeCell("CableTail3",System,cellIndex++,mat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 15 -5 102 -117");
+  makeCell("CableTail3",System,cellIndex++,mat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 15 -5 -111 ");
-  makeCell("CableBotVoid",System,cellIndex++,0,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 15 -5 -111");
+  makeCell("CableBotVoid",System,cellIndex++,0,0.0,HR*frontHR);
 
   if (detYStep>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 15 -5 111 -102 ");
-      makeCell("CableBotCable",System,cellIndex++,mat,0.0,Out+frontStr);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 15 -5 111 -102");
+      makeCell("CableBotCable",System,cellIndex++,mat,0.0,HR*frontHR);
     }
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 (15 -6 (-102 : 102 -117) : 6 -117 ) ");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"3 -4 (15 -6 (-102 : 102 -117) : 6 -117 )");
+  addOuterSurf(HR);
 
   return;
 }

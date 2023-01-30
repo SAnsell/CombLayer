@@ -37,8 +37,8 @@ namespace ts1System
 */
 
 class MerlinModerator :
-    public attachSystem::ContainedComp,
     public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
     public attachSystem::CellMap
 {
  private:

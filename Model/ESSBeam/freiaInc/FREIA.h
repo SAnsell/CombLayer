@@ -34,6 +34,12 @@ namespace instrumentSystem
   class CylSample;
 }
 
+namespace beamlineSystem
+{
+  class BenderUnit;
+  class PlateUnit;
+}
+
 namespace constructSystem
 {  
   class DiskChopper;
@@ -77,17 +83,17 @@ class FREIA : public attachSystem::CopiedComp
   std::shared_ptr<attachSystem::FixedRotateUnit> freiaAxis;
 
   /// Elliptic focus in monolith [m5]
-  std::shared_ptr<beamlineSystem::GuideLine> BendA;
+  std::shared_ptr<beamlineSystem::BenderUnit> BendA;
 
   /// Pipe in gamma shield
   std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
   /// Bender int monolith
-  std::shared_ptr<beamlineSystem::GuideLine> BendB;
+  std::shared_ptr<beamlineSystem::BenderUnit> BendB;
 
   /// Pipe in gamma shield
   std::shared_ptr<constructSystem::VacuumPipe> VPipeC;
   /// Bender int monolith
-  std::shared_ptr<beamlineSystem::GuideLine> BendC;
+  std::shared_ptr<beamlineSystem::BenderUnit> BendC;
 
   /// Vac box for first chopper
   std::shared_ptr<essConstruct::SingleChopper> ChopperA;
@@ -102,7 +108,7 @@ class FREIA : public attachSystem::CopiedComp
   /// Pipe between chopper pairs
   std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
   /// Bender int monolith
-  std::shared_ptr<beamlineSystem::GuideLine> BendD;
+  std::shared_ptr<beamlineSystem::BenderUnit> BendD;
 
   /// 8.5m FOC 
   std::shared_ptr<essConstruct::SingleChopper> ChopperC;
@@ -112,7 +118,7 @@ class FREIA : public attachSystem::CopiedComp
   /// Pipe between chopper pairs
   std::shared_ptr<constructSystem::VacuumPipe> VPipeE;
   /// Bender int monolith
-  std::shared_ptr<beamlineSystem::GuideLine> BendE;
+  std::shared_ptr<beamlineSystem::BenderUnit> BendE;
 
   /// 10m 
   std::shared_ptr<essConstruct::SingleChopper> ChopperD;
@@ -122,7 +128,7 @@ class FREIA : public attachSystem::CopiedComp
   /// Pipe from 10.0 to 11.1m 
   std::shared_ptr<constructSystem::VacuumPipe> VPipeF;
   /// Bender in 10-11m pipe
-  std::shared_ptr<beamlineSystem::GuideLine> BendF;
+  std::shared_ptr<beamlineSystem::BenderUnit> BendF;
 
   /// 11.1m FOC 
   std::shared_ptr<essConstruct::SingleChopper> ChopperE;
@@ -134,7 +140,7 @@ class FREIA : public attachSystem::CopiedComp
   /// Vac pipe in wall (if used)
   std::shared_ptr<constructSystem::VacuumPipe> VPipeWall;
   /// Guide running to bunker wall
-  std::shared_ptr<beamlineSystem::GuideLine> FocusWall;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusWall;
 
   /// Chopper at 15m [double pit]
   std::shared_ptr<constructSystem::ChopperPit> OutPitA;
@@ -158,7 +164,7 @@ class FREIA : public attachSystem::CopiedComp
   /// Pipe from 15.0 to 20m 
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutA;
   /// Beamline from bunker to hutch
-  std::shared_ptr<beamlineSystem::GuideLine> FocusOutA;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusOutA;
 
 
   /// Beamline from bunker to hutch
@@ -172,8 +178,7 @@ class FREIA : public attachSystem::CopiedComp
 			const long int,const int);
   void buildOutGuide(Simulation&,const attachSystem::FixedComp&,
 		     const long int,const int);
-  void buildHut(Simulation&,const attachSystem::FixedComp&,
-		const long int,const int);
+  void buildHut(Simulation&);
 
  public:
   

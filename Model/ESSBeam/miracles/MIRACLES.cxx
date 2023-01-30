@@ -73,7 +73,9 @@
 #include "Aperture.h"
 #include "TwinBase.h"
 #include "TwinChopper.h"
-#include "GuideLine.h"
+#include "GuideUnit.h"
+#include "BenderUnit.h"
+#include "PlateUnit.h"
 #include "DiskChopper.h"
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
@@ -92,13 +94,13 @@ MIRACLES::MIRACLES(const std::string& keyName) :
   attachSystem::CopiedComp("miracles",keyName),
   nGuideSection(8),nSndSection(7),nEllSection(4),stopPoint(0),
   miraclesAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
-  FocusA(new beamlineSystem::GuideLine(newName+"FA")),
+  FocusA(new beamlineSystem::PlateUnit(newName+"FA")),
 
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
-  FocusB(new beamlineSystem::GuideLine(newName+"FB")),
+  FocusB(new beamlineSystem::PlateUnit(newName+"FB")),
 
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
-  FocusC(new beamlineSystem::GuideLine(newName+"FC")),
+  FocusC(new beamlineSystem::PlateUnit(newName+"FC")),
 
   AppA(new constructSystem::Aperture(newName+"AppA")),
   
@@ -107,14 +109,14 @@ MIRACLES::MIRACLES(const std::string& keyName) :
   BDiskLow(new essConstruct::DiskChopper(newName+"BBladeLow")),
 
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
-  FocusD(new beamlineSystem::GuideLine(newName+"FD")),
+  FocusD(new beamlineSystem::PlateUnit(newName+"FD")),
 
   TwinC(new essConstruct::TwinChopper(newName+"TwinC")),
   CDiskTop(new essConstruct::DiskChopper(newName+"CBladeTop")),
   CDiskLow(new essConstruct::DiskChopper(newName+"CBladeLow")),
 
   VPipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
-  FocusE(new beamlineSystem::GuideLine(newName+"FE")),
+  FocusE(new beamlineSystem::PlateUnit(newName+"FE")),
 
   ChopE(new essConstruct::SingleChopper(newName+"ChopE")),
   EDisk(new essConstruct::DiskChopper(newName+"EBlade")),
@@ -122,21 +124,21 @@ MIRACLES::MIRACLES(const std::string& keyName) :
   ShutterA(new constructSystem::BeamShutter(newName+"ShutterA")),
 
   VPipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
-  FocusF(new beamlineSystem::GuideLine(newName+"FF")),
+  FocusF(new beamlineSystem::PlateUnit(newName+"FF")),
 
   VPipeG(new constructSystem::VacuumPipe(newName+"PipeG")),
-  BendG(new beamlineSystem::GuideLine(newName+"BG")),
+  BendG(new beamlineSystem::BenderUnit(newName+"BG")),
 
   BInsert(new BunkerInsert(newName+"BInsert")),
   VPipeWall(new constructSystem::VacuumPipe(newName+"PipeWall")),
-  FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
+  FocusWall(new beamlineSystem::BenderUnit(newName+"FWall")),
 
   ShieldA(new constructSystem::LineShield(newName+"ShieldA")),
   VPipeOutA(new constructSystem::VacuumPipe(newName+"PipeOutA")),
-  BendOutA(new beamlineSystem::GuideLine(newName+"BOutA")),
+  BendOutA(new beamlineSystem::BenderUnit(newName+"BOutA")),
 
   VPipeOutB(new constructSystem::VacuumPipe(newName+"PipeOutB")),
-  BendOutB(new beamlineSystem::GuideLine(newName+"BOutB"))
+  BendOutB(new beamlineSystem::BenderUnit(newName+"BOutB"))
 /*!
     Constructor
  */
@@ -221,16 +223,16 @@ MIRACLES::buildBunkerUnits(Simulation& System,
   VPipeB->createAll(System,FA,startIndex);
 
   FocusB->addInsertCell(VPipeB->getCells("Void"));
-  FocusB->createAll(System,*VPipeB,0,*VPipeB,0);
-
+  FocusB->createAll(System,*VPipeB,0);
+  
   VPipeC->addAllInsertCell(bunkerVoid);
-  VPipeC->createAll(System,FocusB->getKey("Guide0"),2);
+  VPipeC->createAll(System,*FocusB,2);
 
   FocusC->addInsertCell(VPipeC->getCells("Void"));
-  FocusC->createAll(System,*VPipeC,0,*VPipeC,0);
+  FocusC->createAll(System,*VPipeC,0);
 
   AppA->addInsertCell(VPipeC->getCells("Void"));
-  AppA->createAll(System,FocusC->getKey("Guide0"),2);
+  AppA->createAll(System,*FocusC,2);
 
   TwinB->addInsertCell(bunkerVoid);
   TwinB->createAll(System,*AppA,2);
@@ -238,20 +240,21 @@ MIRACLES::buildBunkerUnits(Simulation& System,
   BDiskLow->addInsertCell(TwinB->getCell("Void"));
   BDiskLow->createAll(System,TwinB->getKey("MotorBase"),0,
                       TwinB->getKey("Beam"),-1);
-  
+
   BDiskTop->addInsertCell(TwinB->getCell("Void"));
   BDiskTop->createAll(System,TwinB->getKey("MotorTop"),0,
                       TwinB->getKey("Beam"),-1);
+
   TwinB->insertAxle(System,*BDiskLow,*BDiskTop);
-  
+
   VPipeD->addAllInsertCell(bunkerVoid);
-  VPipeD->createAll(System,TwinB->getKey("BuildBeam"),2);
+  VPipeD->createAll(System,TwinB->getKey("Beam"),2);
 
   FocusD->addInsertCell(VPipeD->getCells("Void"));
-  FocusD->createAll(System,*VPipeD,0,*VPipeD,0);
+  FocusD->createAll(System,*VPipeD,0);
 
   TwinC->addInsertCell(bunkerVoid);
-  TwinC->createAll(System,FocusD->getKey("Guide0"),2);
+  TwinC->createAll(System,*FocusD,2);
 
   CDiskLow->addInsertCell(TwinC->getCell("Void"));
   CDiskLow->createAll(System,TwinC->getKey("MotorBase"),0,
@@ -263,14 +266,14 @@ MIRACLES::buildBunkerUnits(Simulation& System,
   TwinC->insertAxle(System,*CDiskLow,*CDiskTop);
   
   VPipeE->addAllInsertCell(bunkerVoid);
-  VPipeE->createAll(System,TwinC->getKey("BuildBeam"),2);
+  VPipeE->createAll(System,TwinC->getKey("Beam"),2);
 
   FocusE->addInsertCell(VPipeE->getCells("Void"));
-  FocusE->createAll(System,*VPipeE,0,*VPipeE,0);
+  FocusE->createAll(System,*VPipeE,0);
 
   ChopE->addInsertCell(bunkerVoid);
   ChopE->getKey("Main").setAxisControl(3,ZVert);  
-  ChopE->createAll(System,FocusE->getKey("Guide0"),2);
+  ChopE->createAll(System,*FocusE,2);
 
   EDisk->addInsertCell(ChopE->getCell("Void"));
   EDisk->createAll(System,ChopE->getKey("Main"),0);
@@ -283,13 +286,13 @@ MIRACLES::buildBunkerUnits(Simulation& System,
   VPipeF->createAll(System,ShutterA->getKey("Beam"),2);
 
   FocusF->addInsertCell(VPipeF->getCells("Void"));
-  FocusF->createAll(System,*VPipeF,0,*VPipeF,0);
+  FocusF->createAll(System,*VPipeF,0);
 
   VPipeG->addAllInsertCell(bunkerVoid);
-  VPipeG->createAll(System,FocusF->getKey("Guide0"),2);
+  VPipeG->createAll(System,*FocusF,2);
 
   BendG->addInsertCell(VPipeG->getCells("Void"));
-  BendG->createAll(System,*VPipeG,0,*VPipeG,0);
+  BendG->createAll(System,*VPipeG,0);
   
   return;
 }
@@ -317,14 +320,14 @@ MIRACLES::buildOutGuide(Simulation& System,
   VPipeOutA->createAll(System,FA,startIndex);
 
   BendOutA->addInsertCell(VPipeOutA->getCells("Void"));
-  BendOutA->createAll(System,*VPipeOutA,0,*VPipeOutA,0);
+  BendOutA->createAll(System,*VPipeOutA,0);
 
   // Bender 10m
   VPipeOutB->addAllInsertCell(ShieldA->getCell("Void"));
-  VPipeOutB->createAll(System,BendOutA->getKey("Guide0"),2);
+  VPipeOutB->createAll(System,*BendOutA,2);
 
   BendOutB->addInsertCell(VPipeOutB->getCells("Void"));
-  BendOutB->createAll(System,*VPipeOutB,0,*VPipeOutB,0);
+  BendOutB->createAll(System,*VPipeOutB,0);
   
   
   
@@ -366,8 +369,8 @@ MIRACLES::buildIsolated(Simulation& System,const int voidCell)
       VPipeWall->createAll(System,*FStart,startIndex);
       
       FocusWall->addInsertCell(VPipeWall->getCell("Void"));
-      FocusWall->createAll(System,*VPipeWall,0,*VPipeWall,0);
-      FStart= &(FocusWall->getKey("Guide0"));
+      FocusWall->createAll(System,*VPipeWall,0);
+      FStart= FocusWall.get();
     }
 
 
@@ -404,29 +407,30 @@ MIRACLES::build(Simulation& System,
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);
   FocusA->setBack(GItem.getKey("Beam"),-2);
-  FocusA->createAll(System,*miraclesAxis,-3,*miraclesAxis,-3); 
+  FocusA->createAll(System,*miraclesAxis,-3); 
 
   
   if (stopPoint==1) return;                      // STOP At monolith
 
 
-  buildBunkerUnits(System,FocusA->getKey("Guide0"),2,
+  buildBunkerUnits(System,*FocusA,2,
                    bunkerObj.getCell("MainVoid"));
 
   if (stopPoint==2) return;                      // STOP At bunker edge
 
   // IN WALL
   // Make bunker insert
-  BInsert->setBunkerObject(bunkerObj);
-  BInsert->createAll(System,FocusF->getKey("Guide0"),2);
+  BInsert->setCutSurf("front",bunkerObj,-1);
+  BInsert->setCutSurf("back",bunkerObj,-2);
+  BInsert->createAll(System,*FocusF,2);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
 
   // using 7 : mid point
   FocusWall->addInsertCell(BInsert->getCell("Void"));
-  FocusWall->createAll(System,*BInsert,7,*BInsert,7);
+  FocusWall->createAll(System,*BInsert,7);
 
   ShieldA->setFront(bunkerObj,2);
-  buildOutGuide(System,FocusWall->getKey("Guide0"),2,voidCell);
+  buildOutGuide(System,*FocusWall,2,voidCell);
 
   return;
 

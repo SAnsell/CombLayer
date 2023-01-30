@@ -36,14 +36,14 @@ namespace constructSystem
   \brief Aperture system
 */
 
-class Aperture : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
-  public attachSystem::FrontBackCut
-
+class Aperture : 
+  public attachSystem::FixedRotate,
+  public attachSystem::ContainedComp,
+  public attachSystem::FrontBackCut,
+  public attachSystem::CellMap
 {  
  private:
  
-
   double innerWidth;                ///< inner width
   double innerHeight;               ///< inner height
   double width;                     ///< full width x2
@@ -55,9 +55,6 @@ class Aperture : public attachSystem::ContainedComp,
   int defMat;                   ///< Main material
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -69,6 +66,7 @@ class Aperture : public attachSystem::ContainedComp,
   Aperture& operator=(const Aperture&);
   ~Aperture();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);

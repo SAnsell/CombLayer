@@ -146,7 +146,7 @@ main(int argc,char* argv[])
 	      ELog::RN.setActive(0);    
 	    }
 	  SimPtr->resetAll();
-
+	  
 	  d4cSystem::makeD4C dObj; 
 	  dObj.build(SimPtr,IParam);
       

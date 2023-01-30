@@ -73,7 +73,9 @@
 #include "insertObject.h"
 #include "insertPlate.h"
 
-#include "GuideLine.h"
+#include "GuideUnit.h"
+#include "PlateUnit.h"
+#include "BenderUnit.h"
 #include "DiskChopper.h"
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
@@ -86,7 +88,7 @@
 #include "PipeCollimator.h"
 
 #include "CompBInsert.h"
-#include "LokiHut.h"
+#include "EssHut.h"
 #include "VacTank.h"
 
 #include "LOKI.h"
@@ -97,24 +99,24 @@ namespace essSystem
 LOKI::LOKI(const std::string& keyN) :
   attachSystem::CopiedComp("loki",keyN),startPoint(0),stopPoint(0),
   lokiAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
-  BendA(new beamlineSystem::GuideLine(newName+"BA")),
+  BendA(new beamlineSystem::BenderUnit(newName+"BA")),
 
   ShutterA(new insertSystem::insertPlate(newName+"BlockShutter")),  
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
-  BendB(new beamlineSystem::GuideLine(newName+"BB")),
+  BendB(new beamlineSystem::BenderUnit(newName+"BB")),
 
   VPipeBLink(new constructSystem::VacuumPipe(newName+"PipeBLink")),
-  BendBLink(new beamlineSystem::GuideLine(newName+"BBLink")),
+  BendBLink(new beamlineSystem::BenderUnit(newName+"BBLink")),
 
   ChopperA(new essConstruct::SingleChopper(newName+"ChopperA")),
   DDiskA(new essConstruct::DiskChopper(newName+"DBladeA")),
 
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
-  FocusC(new beamlineSystem::GuideLine(newName+"FC")),
+  FocusC(new beamlineSystem::PlateUnit(newName+"FC")),
 
   BInsert(new CompBInsert(newName+"CInsert")),
   VPipeWall(new constructSystem::VacuumPipe(newName+"PipeWall")),  
-  FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
+  FocusWall(new beamlineSystem::BenderUnit(newName+"FWall")),
 
   OutPitA(new constructSystem::ChopperPit(newName+"OutPitA")),
   PitACut(new constructSystem::HoleShape(newName+"PitACut")),
@@ -124,19 +126,19 @@ LOKI::LOKI(const std::string& keyN) :
   ShieldA(new constructSystem::LineShield(newName+"ShieldA")),
   
   VPipeOutA(new constructSystem::VacuumPipe(newName+"PipeOutA")),
-  FocusOutA(new beamlineSystem::GuideLine(newName+"FOutA")),
+  FocusOutA(new beamlineSystem::PlateUnit(newName+"FOutA")),
   AppA(new constructSystem::Aperture(newName+"AppA")),
   CollA(new constructSystem::PipeCollimator(newName+"CollA")),
 
   ShieldB(new constructSystem::LineShield(newName+"ShieldB")),
   VPipeOutB(new constructSystem::VacuumPipe(newName+"PipeOutB")),
-  FocusOutB(new beamlineSystem::GuideLine(newName+"FOutB")),
+  FocusOutB(new beamlineSystem::PlateUnit(newName+"FOutB")),
   CollB(new constructSystem::PipeCollimator(newName+"CollB")),
   AppB(new constructSystem::Aperture(newName+"AppB")),
 
-  Cave(new LokiHut(newName+"Cave")),
+  Cave(new EssHut(newName+"Cave")),
   VPipeOutC(new constructSystem::VacuumPipe(newName+"PipeOutC")),
-  FocusOutC(new beamlineSystem::GuideLine(newName+"FOutC")),
+  FocusOutC(new beamlineSystem::PlateUnit(newName+"FOutC")),
   VTank(new VacTank(newName+"VTank"))
 
 
@@ -193,6 +195,7 @@ LOKI::registerObjects()
   OR.addObject(ChopperOutA);
   OR.addObject(DDiskOutA);
 
+  OR.addObject(ShieldA);
   OR.addObject(VPipeOutA);
   OR.addObject(FocusOutA);
   OR.addObject(AppA);
@@ -231,27 +234,27 @@ LOKI::buildBunkerUnits(Simulation& System,
   VPipeB->addAllInsertCell(bunkerVoid);
   VPipeB->createAll(System,FA,startIndex);
   BendB->addInsertCell(VPipeB->getCells("Void"));
-  BendB->createAll(System,*VPipeB,0,*VPipeB,0);
+  BendB->createAll(System,*VPipeB,0);
 
   // Shield around gamma shield
   ShutterA->setNoInsert();
   ShutterA->addInsertCell(bunkerVoid);
   ShutterA->setAxisControl(3,ZVert);
-  ShutterA->createAll(System,BendB->getKey("Guide0"),-1);
+  ShutterA->createAll(System,*BendB,-1);
   ShutterA->insertComponent(System,"Main",*VPipeB);
 
   // Link as gamma shield must move up and down
   VPipeBLink->addAllInsertCell(bunkerVoid);
-  VPipeBLink->createAll(System,BendB->getKey("Guide0"),2);
+  VPipeBLink->createAll(System,*BendB,2);
 
   BendBLink->addInsertCell(VPipeBLink->getCells("Void"));
-  BendBLink->createAll(System,*VPipeBLink,0,*VPipeBLink,0);
+  BendBLink->createAll(System,*VPipeBLink,0);
 
   // First [6m]
   ChopperA->addInsertCell(bunkerVoid);
   ChopperA->getKey("Main").setAxisControl(3,ZVert);
   ChopperA->getKey("BuildBeam").setAxisControl(3,ZVert);  
-  ChopperA->createAll(System,BendBLink->getKey("Guide0"),2);
+  ChopperA->createAll(System,*BendBLink,2);
 
   // Double disk chopper
   DDiskA->addInsertCell(ChopperA->getCell("Void"));
@@ -263,10 +266,9 @@ LOKI::buildBunkerUnits(Simulation& System,
   VPipeC->createAll(System,ChopperA->getKey("Beam"),2);
 
   FocusC->addInsertCell(VPipeC->getCells("Void"));
-  FocusC->createAll(System,*VPipeC,0,*VPipeC,0);
+  FocusC->createAll(System,*VPipeC,0);
 
   return;
-
 }
 
 void
@@ -291,13 +293,14 @@ LOKI::buildOutGuide(Simulation& System,
   //Cut throught chopper pit for guide and pipe that are following it 
   PitACut->addInsertCell(OutPitA->getCells("MidLayerBack"));
   PitACut->addInsertCell(OutPitA->getCells("Collet"));
-  PitACut->setFaces(OutPitA->getKey("Inner").getFullRule(2),
-                    OutPitA->getKey("Mid").getFullRule(-2));
-  PitACut->createAll(System,OutPitA->getKey("Inner"),2);
-  
+  PitACut->setCutSurf("front",*OutPitA,"innerBack");
+  PitACut->setCutSurf("back",*OutPitA,"#midBack");
+  PitACut->createAll(System,*OutPitA,"innerBack");
+
+
   //Chopper unit
   ChopperOutA->addInsertCell(OutPitA->getCell("Void"));
-  ChopperOutA->createAll(System,FocusWall->getKey("Guide0"),2);
+  ChopperOutA->createAll(System,*FocusWall,2);
 
   // Double disk chopper
   DDiskOutA->addInsertCell(ChopperOutA->getCell("Void"));
@@ -305,33 +308,41 @@ LOKI::buildOutGuide(Simulation& System,
   DDiskOutA->createAll(System,ChopperOutA->getKey("Main"),0);  
   ChopperOutA->insertAxle(System,*DDiskOutA);
 
- //Beamline Shileding
+
+ //Beamline Shielding
   ShieldA->addInsertCell(voidCell);
   ShieldA->addInsertCell(OutPitA->getCells("MidLayer"));
   ShieldA->addInsertCell(OutPitA->getCell("Outer"));
-  ShieldA->setFront(OutPitA->getKey("Mid"),2);
-  ShieldA->createAll(System,OutPitA->getKey("Mid"),2);
+  ShieldA->setFront(*OutPitA,"midBack");
+  ShieldA->createAll(System,*OutPitA,"midBack");
 
-  VPipeOutA->addAllInsertCell(ShieldA->getCell("Void"));
-  VPipeOutA->addAllInsertCell(OutPitA->getCell("Void"));
-  VPipeOutA->addAllInsertCell(PitACut->getCell("Void")); 
+  VPipeOutA->addInsertCell("Main",ShieldA->getCell("Void"));
+  VPipeOutA->addInsertCell("Main",OutPitA->getCell("Void"));
+  VPipeOutA->addInsertCell("Main",PitACut->getCell("Void")); 
   VPipeOutA->createAll(System,ChopperOutA->getKey("Beam"),2);
 
   FocusOutA->addInsertCell(VPipeOutA->getCell("Void"));
-  FocusOutA->createAll(System,*VPipeOutA,0,*VPipeOutA,0);
+  FocusOutA->createAll(System,*VPipeOutA,0);
 
   //Aperture after first collimator drum
   AppA->addInsertCell(ShieldA->getCell("Void"));
-  AppA->createAll(System,FocusOutA->getKey("Guide0"),2);
+  AppA->createAll(System,*FocusOutA,2);
 
   attachSystem::addToInsertLineCtrl(System,*ShieldA,*AppA,*AppA);
-  attachSystem::addToInsertForced(System,*AppA,*VPipeOutA);
+
+  VPipeOutA->insertInCell("Main",System,AppA->getCell("Void"));
+  VPipeOutA->insertInCell("Main",System,AppA->getCell("Body"));
 
   //Collimator block in first shielding
-  CollA->setInnerExclude(VPipeOutA->getFullRule(9));
-  CollA->setOuter(ShieldA->getXSectionIn());
+  // CollA->setInnerExclude(VPipeOutA->getFullRule(9));
+  // CollA->setOuter(ShieldA->getXSectionIn());
+
+
+  CollA->setCutSurf("Inner",*VPipeOutA,-9);
+  CollA->setCutSurf("Outer",ShieldA->getXSectionIn());
+
   CollA->addInsertCell(ShieldA->getCell("Void"));
-  CollA->addInsertCell(VPipeOutA->getCell("OutVoid"));
+  CollA->addInsertCell(VPipeOutA->getCell("outerVoid"));
   //  CollA->createAll(System,*VPipeOutA,-1);
 
 
@@ -344,17 +355,20 @@ LOKI::buildOutGuide(Simulation& System,
   VPipeOutB->addAllInsertCell(ShieldB->getCell("Void"));
   VPipeOutB->createAll(System,*AppA,2);
   FocusOutB->addInsertCell(VPipeOutB->getCell("Void"));
-  FocusOutB->createAll(System,*VPipeOutB,0,*VPipeOutB,0);
+  FocusOutB->createAll(System,*VPipeOutB,0);
 
-  CollB->setInnerExclude(VPipeOutB->getFullRule(9));
-  CollB->setOuter(ShieldB->getXSectionIn());
+
+  //  CollB->setInnerExclude(VPipeOutB->getFullRule(9));
+  //  CollB->setOuter(ShieldB->getXSectionIn());
+  CollB->setCutSurf("Inner",*VPipeOutB,-9);
+  CollB->setCutSurf("Outer",ShieldB->getXSectionIn());  
   CollB->addInsertCell(ShieldB->getCell("Void"));
-  CollB->addInsertCell(VPipeOutB->getCell("OutVoid"));
+  CollB->addInsertCell(VPipeOutB->getCell("outerVoid"));
   CollB->createAll(System,*VPipeOutB,-1);
-  
+
   // Aperture after second collimator drum
   AppB->addInsertCell(ShieldB->getCell("Void"));
-  AppB->createAll(System,FocusOutB->getKey("Guide0"),2);
+  AppB->createAll(System,*FocusOutB,2);
 
   return;
 }
@@ -382,7 +396,7 @@ LOKI::buildIsolated(Simulation& System,const int voidCell)
   if (!startPoint)
     {
       buildBunkerUnits(System,*FStart,startIndex,voidCell);
-      FStart= &FocusC->getKey("Guide0");
+      FStart= FocusC.get();
       startIndex= 2;
     }
   if (stopPoint==2 || stopPoint==1) return;
@@ -393,8 +407,8 @@ LOKI::buildIsolated(Simulation& System,const int voidCell)
       VPipeWall->createAll(System,*FStart,startIndex);
       
       FocusWall->addInsertCell(VPipeWall->getCell("Void"));
-      FocusWall->createAll(System,*VPipeWall,0,*VPipeWall,0);
-      FStart= &(FocusWall->getKey("Guide0"));
+      FocusWall->createAll(System,*VPipeWall,0);
+      FStart= FocusWall.get();
       OutPitA->addFrontWall(*VPipeWall,2);
       startIndex=2;
     }
@@ -445,32 +459,44 @@ LOKI::build(Simulation& System,
   BendA->addInsertCell(GItem.getCells("Void"));
   BendA->setFront(GItem.getKey("Beam"),-1);
   BendA->setBack(GItem.getKey("Beam"),-2);
-  BendA->createAll(System,*lokiAxis,-3,*lokiAxis,-3); // beam front reversed
-
+  BendA->createAll(System,*lokiAxis,-3); // beam front reversed
+  
   if (stopPoint==1) return;                // STOP At monolith edge
 
-  buildBunkerUnits(System,BendA->getKey("Guide0"),2,
+  buildBunkerUnits(System,*BendA,2,
                    bunkerObj.getCell("MainVoid"));
 
+
   if (stopPoint==2) return;                // STOP At Bunker Wall
-  
+
+
   // WALL
   BInsert->addInsertCell(bunkerObj.getCell("MainVoid"));
   BInsert->setFront(bunkerObj,-1);
   BInsert->setBack(bunkerObj,-2);
-  BInsert->createAll(System,FocusC->getKey("Guide0"),2);
+  BInsert->createAll(System,*FocusC,2);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
 
   FocusWall->addInsertCell(BInsert->getCells("Item"));
   FocusWall->setFront(*BInsert,-1);
   FocusWall->setBack(*BInsert,-2);
-  FocusWall->createAll(System,*BInsert,7,*BInsert,7); 
+  FocusWall->createAll(System,*BInsert,7); 
+
+  ELog::EM<<"Bend Direction == "<<BendB->getLinkPt(1)
+	  <<" :: "<<BendB->getLinkAxis(-1)
+	  <<" :: "<<BendB->getLinkAxis(2)
+	  <<ELog::endDiag;
+  ELog::EM<<"Bend Direction == "<<FocusWall->getLinkPt(1)
+	  <<" :: "<<FocusWall->getLinkAxis(-1)
+	  <<" :: "<<FocusWall->getLinkAxis(2)
+	  <<ELog::endDiag;
+
 
   if (stopPoint==3) return;                // STOP At Outer-Bunker Wall
   
   OutPitA->addFrontWall(bunkerObj,2);
-  buildOutGuide(System,FocusWall->getKey("Guide0"),2,voidCell);
-  
+  buildOutGuide(System,*FocusWall,2,voidCell);
+
   Cave->addInsertCell(voidCell);
   Cave->createAll(System,*ShieldB,2);
 
@@ -482,10 +508,10 @@ LOKI::build(Simulation& System,
   VPipeOutC->addAllInsertCell(Cave->getCells("Void"));
   VPipeOutC->createAll(System,*AppB,2);
   FocusOutC->addInsertCell(VPipeOutC->getCell("Void"));
-  FocusOutC->createAll(System,*VPipeOutC,0,*VPipeOutC,0);
+  FocusOutC->createAll(System,*VPipeOutC,0);
 
   VTank->addInsertCell(Cave->getCell("Void"));
-  VTank->createAll(System,FocusOutC->getKey("Guide0"),2);
+  VTank->createAll(System,*FocusOutC,2);
  
   return;
 }

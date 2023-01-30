@@ -3,7 +3,7 @@
  
  * File:   delftInc/BeamInsert.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,9 @@ namespace delftSystem
   and Beamline to take acount of the track (inner build)
 */
 
-class BeamInsert : public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset
+class BeamInsert : 
+    public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp
 {
  private:
   

@@ -71,7 +71,7 @@ class VirtualTube :
 
   virtual void applyPortRotation();
 
-  std::string makeOuterVoid(Simulation&);
+  virtual HeadRule makeOuterVoid(Simulation&) =0;
   
   virtual void populate(const FuncDataBase&);
   virtual void createSurfaces() =0;

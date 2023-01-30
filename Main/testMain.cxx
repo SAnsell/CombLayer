@@ -3,7 +3,7 @@
  
  * File:   Main/testMain.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -126,8 +126,6 @@
 #include "testObjectTrackAct.h"
 #include "testObjSurfMap.h"
 #include "testObjTrackItem.h"
-#include "testPairFactory.h"
-#include "testPairItem.h"
 #include "testPipeLine.h"
 #include "testPipeUnit.h"
 #include "testPlane.h"
@@ -860,18 +858,16 @@ processTest(const int type,const int extra)
       std::cout<<"testObjectTrackAct   (6)"<<std::endl;
       std::cout<<"testObjSurfMap       (7)"<<std::endl;
       std::cout<<"testObjTrackItem     (8)"<<std::endl;
-      std::cout<<"testPairFactory      (9)"<<std::endl;
-      std::cout<<"testPairItem        (10)"<<std::endl;
-      std::cout<<"testPipeLine        (11)"<<std::endl;
-      std::cout<<"testPipeUnit        (12)"<<std::endl;
-      std::cout<<"testSimpleObj       (13)"<<std::endl;
-      std::cout<<"testSurfDIter       (14)"<<std::endl;
-      std::cout<<"testSurfDivide      (15)"<<std::endl;
-      std::cout<<"testSurfEqual       (16)"<<std::endl;
-      std::cout<<"testSurfExpand      (17)"<<std::endl;
-      std::cout<<"testSurfRegister    (18)"<<std::endl;
-      std::cout<<"testVolumes         (19)"<<std::endl;
-      std::cout<<"testWrapper         (20)"<<std::endl;
+      std::cout<<"testPipeLine         (9)"<<std::endl;
+      std::cout<<"testPipeUnit        (10)"<<std::endl;
+      std::cout<<"testSimpleObj       (11)"<<std::endl;
+      std::cout<<"testSurfDIter       (12)"<<std::endl;
+      std::cout<<"testSurfDivide      (13)"<<std::endl;
+      std::cout<<"testSurfEqual       (14)"<<std::endl;
+      std::cout<<"testSurfExpand      (15)"<<std::endl;
+      std::cout<<"testSurfRegister    (16)"<<std::endl;
+      std::cout<<"testVolumes         (17)"<<std::endl;
+      std::cout<<"testWrapper         (18)"<<std::endl;
     }
   int index(1);
   if(type==index || type<0)
@@ -936,23 +932,7 @@ processTest(const int type,const int extra)
       if (X) return X;
     }
   index++;
-  
-  if(type==index || type<0)
-    {
-      testPairFactory A;
-      const int X=A.applyTest(extra);
-      if (X) return X;
-    }
-  index++;
-  
-  if(type==index || type<0)
-    {
-      testPairItem A;
-      const int X=A.applyTest(extra);
-      if (X) return X;
-    }
-  index++;
-  
+      
   if(type==index || type<0)
     {
       testPipeLine A;

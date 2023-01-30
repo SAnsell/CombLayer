@@ -54,6 +54,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 
@@ -108,28 +109,11 @@ BeOElement::populate(const FuncDataBase& Control)
   return;
 }
 
-void
-BeOElement::createUnitVector(const attachSystem::FixedComp& FC,
-			     const Geometry::Vec3D& OG)
-  /*!
-    Create the unit vectors
-    - Y Down the beamline
-    \param FC :: Reactor Grid Unit
-    \param OG :: Origin
-  */
-{
-  ELog::RegMethod RegA("BeOElement","createUnitVector");
-
-  attachSystem::FixedComp::createUnitVector(FC);
-  Origin=OG;
-  return;
-}
 
 void
-BeOElement::createSurfaces(const attachSystem::FixedComp& RG)
+BeOElement::createSurfaces()
   /*!
     Creates/duplicates the surfaces for this block
-    \param RG :: Reactor grid
   */
 {  
   ELog::RegMethod RegA("BeOElement","createSurface");
@@ -148,16 +132,15 @@ BeOElement::createSurfaces(const attachSystem::FixedComp& RG)
   ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(Depth/2.0-T),Y); 
   ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(Width/2.0-T),X);
   ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(Width/2.0-T),X);
-  ModelSupport::buildPlane(SMap,buildIndex+15,RG.getLinkPt(5)+Z*T,Z);
 
+  makeShiftedSurf(SMap,"BasePlate",buildIndex+15,Z,T);
+  
   T+=coolThick;
   ModelSupport::buildPlane(SMap,buildIndex+21,Origin-Y*(Depth/2.0-T),Y);
   ModelSupport::buildPlane(SMap,buildIndex+22,Origin+Y*(Depth/2.0-T),Y); 
   ModelSupport::buildPlane(SMap,buildIndex+23,Origin-X*(Width/2.0-T),X);
   ModelSupport::buildPlane(SMap,buildIndex+24,Origin+X*(Width/2.0-T),X);
-  ModelSupport::buildPlane(SMap,buildIndex+25,RG.getLinkPt(5)+Z*T,Z);
-
-  SMap.addMatch(buildIndex+5,RG.getLinkSurf(5));
+  makeShiftedSurf(SMap,"BasePlate",buildIndex+25,Z,T);
 
   return;
 }
@@ -171,13 +154,14 @@ BeOElement::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("BeOElement","createObjects");
 
+  const HeadRule& baseHR=getRule("BasePlate");
   HeadRule HR;
   // Outer Layers
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  addOuterSurf(HR);      
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 -6");
+  addOuterSurf(HR*baseHR);      
 
   HR*=ModelSupport::getHeadRule(SMap,buildIndex,"(-11:12:-13:14:-15)");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR*baseHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14 15 -6"
 				  "(-21 : 22 : -23 : 24 : -25)");
@@ -205,20 +189,19 @@ BeOElement::createLinks()
 void
 BeOElement::createAll(Simulation& System,
                       const attachSystem::FixedComp& RG,
-                      const Geometry::Vec3D& OG,
-                      const FuelLoad&)
+                      const long int sideIndex)
 /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
     \param RG :: Fixed Unit
-    \param OG :: Orgin
+    \param sideIndex :: Link index
   */
 {
   ELog::RegMethod RegA("BeOElement","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(RG,OG);
-  createSurfaces(RG);
+  createUnitVector(RG,sideIndex);
+  createSurfaces();
   createObjects(System);
   createLinks();
   insertObjects(System);       

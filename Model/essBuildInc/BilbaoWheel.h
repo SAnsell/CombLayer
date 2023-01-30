@@ -39,8 +39,6 @@ class BilbaoWheel : public WheelBase
 {
  private:
 
-  int engActive;                 ///< Engineering active flag
-
   double targetHeight;           ///< Total height of target
   double targetInnerHeight;      ///< Inner height of target wheel (R<Tungsten)
   double targetInnerHeightRadius; ///< Radius of the inner height of target wheel (R<Tungsten)
@@ -154,7 +152,6 @@ class BilbaoWheel : public WheelBase
 	   caseThick+voidThick);
   }
 
-  //  virtual int getCell() const { return mainShaftCell; }
   using FixedComp::createAll;
   virtual void createAll(Simulation&,
 			 const attachSystem::FixedComp&,

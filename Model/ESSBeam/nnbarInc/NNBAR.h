@@ -78,19 +78,19 @@ class NNBAR : public attachSystem::CopiedComp
   std::shared_ptr<attachSystem::FixedRotateUnit> nnbarAxis;
 
   /// Elliptic focus in bulkshield [m5]
-  std::shared_ptr<beamlineSystem::GuideLine> FocusA;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusA;
   /// Vac pipe  [Rectangle]
   std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
   /// Tapered guide from 5.5 to 6metre
-  std::shared_ptr<beamlineSystem::GuideLine> FocusB;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusB;
   /// Vac pipe  
   std::shared_ptr<constructSystem::VacuumPipe> VPipeC;
   /// Tapered guide from 6m to 10m
-  std::shared_ptr<beamlineSystem::GuideLine> FocusC;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusC;
   /// Vac pipe  
   std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
   /// Tapered guide from 19m to 30m
-  std::shared_ptr<beamlineSystem::GuideLine> FocusD;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusD;
   /// Bunker insert
   std::shared_ptr<essSystem::BunkerInsert> BInsert;
 
@@ -99,7 +99,7 @@ class NNBAR : public attachSystem::CopiedComp
   /// Vac pipe (out of bunker)
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutA;
   /// Tapered guide from 30m to 50
-  std::shared_ptr<beamlineSystem::GuideLine> FocusOutA;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusOutA;
 
   /// Drift tube
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutB;

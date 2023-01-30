@@ -3,7 +3,7 @@
  
  * File:   delft/BeSurround.cxx
 *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -56,7 +54,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
 #include "BeSurround.h"
@@ -65,8 +63,8 @@ namespace delftSystem
 {
 
 BeSurround::BeSurround(const std::string& Key)  :
+  attachSystem::FixedRotate(Key,3),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,3),
   attachSystem::ExternalCut(),
   active(1)
   /*!
@@ -76,8 +74,8 @@ BeSurround::BeSurround(const std::string& Key)  :
 {}
 
 BeSurround::BeSurround(const BeSurround& A) : 
+  attachSystem::FixedRotate(A),
   attachSystem::ContainedComp(A),
-  attachSystem::FixedOffset(A),
   attachSystem::ExternalCut(A),
   active(A.active),
   innerRadius(A.innerRadius),outerRadius(A.outerRadius),
@@ -98,8 +96,8 @@ BeSurround::operator=(const BeSurround& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
       attachSystem::ExternalCut::operator=(A);
       active=A.active;
       innerRadius=A.innerRadius;
@@ -128,7 +126,7 @@ BeSurround::populate(const FuncDataBase& Control)
   active=Control.EvalDefVar<int>(keyName+"Active",1);
   if (active)
     {
-      FixedOffset::populate(Control);
+      FixedRotate::populate(Control);
       
       length=Control.EvalVar<double>(keyName+"Length");
       innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
@@ -174,18 +172,19 @@ BeSurround::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("BeSurround","createObjects");
 
-  const std::string ExcludeString=
-    ExternalCut::getRuleStr("FlightCut");
+  const HeadRule ExcludeHR=
+    ExternalCut::getRule("FlightCut");
   
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -2 -17 7 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out+ExcludeString));
+  HeadRule HR;
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -11 -17 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,frontMat,0.0,Out+ExcludeString));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -2 -17 7");
+  System.addCell(cellIndex++,mat,0.0,HR*ExcludeHR);
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -11 -17");
+  System.addCell(cellIndex++,frontMat,0.0,HR*ExcludeHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -17 (7:-11) ");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -17 (7:-11)");
+  addOuterSurf(HR);
     
   return;
 }

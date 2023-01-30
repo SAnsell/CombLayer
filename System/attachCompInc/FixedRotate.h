@@ -75,6 +75,8 @@ class FixedRotate  : public FixedComp
 				const Geometry::Vec3D&);
   virtual void createUnitVector(const attachSystem::FixedComp&,
 				const long int,const long int);
+  virtual void createUnitVector(const attachSystem::FixedComp&,const long int,
+				const attachSystem::FixedComp&,const long int);
 
   virtual void createCentredUnitVector
     (const attachSystem::FixedComp&,const long int,const double);
@@ -86,6 +88,9 @@ class FixedRotate  : public FixedComp
   void setPreRotation(const double,const double,const double);
   void setRotation(const double,const double,const double);
   void applyOffset();
+
+  void applyCopiedOffset(FixedComp&) const;
+  
 
   void linkShift(const size_t);
   void linkAngleRotate(const size_t);

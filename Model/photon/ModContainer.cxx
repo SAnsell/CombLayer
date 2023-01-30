@@ -60,6 +60,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "RingSeal.h"
 #include "RingFlange.h"
 #include "ModContainer.h"
@@ -285,14 +286,14 @@ ModContainer::buildFlanges(Simulation& System)
   FrontFlange->addInsertCell(getCells("Skin"));
   FrontFlange->addInsertCell(getCells("Void"));
   FrontFlange->addInsertCell(getInsertCells());
-  FrontFlange->setInnerExclude(getFullRule(3));
+  FrontFlange->setCutSurf("Inner",getFullRule(-3));
   FrontFlange->createAll(System,*this,2);
 
   
   BackFlange->addInsertCell(getCells("Skin"));
   BackFlange->addInsertCell(getCells("Void"));
   BackFlange->addInsertCell(getInsertCells());
-  BackFlange->setInnerExclude(getFullRule(3));
+  BackFlange->setCutSurf("Inner",getFullRule(-3));
   BackFlange->createAll(System,*this,1);
 
   return;

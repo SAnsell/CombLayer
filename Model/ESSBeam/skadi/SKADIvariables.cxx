@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/skadi/SKADIvariables.cxx
  *
- * Copyright (c) 2004-2020 by Tsitohaina Randriamalala/Stuart Ansell
+ * Copyright (c) 2004-2022 by Tsitohaina Randriamalala/Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -121,7 +121,7 @@ void SKADIvariables(FuncDataBase& Control)
   PipeGen.generatePipe(Control,"skadiPipeF",24.5);
   Control.addVariable("skadiPipeFYStep",1.25);
   FGen.clearYOffset();
-  FGen.generateRectangle(Control,"skadiFF",22.5,guideWidth,guideHeight);
+  FGen.generateRectangle(Control,"skadiFocusF",22.5,guideWidth,guideHeight);
 
   Control.addVariable("skadiCollCYStep",12.25);
   Control.addVariable("skadiCollCLength",22.5);
@@ -129,7 +129,7 @@ void SKADIvariables(FuncDataBase& Control)
 
   //Beam Insert
   Control.addVariable("skadiBInsertNBox",1);
-  Control.addVariable("skadiBInsertLength",200.6);
+  Control.addVariable("skadiBInsertLength",190.6);
   Control.addVariable("skadiBInsertHeight",15.0);
   Control.addVariable("skadiBInsertWidth",15.0);
   Control.addVariable("skadiBInsertMat","Stainless304");
@@ -259,6 +259,7 @@ void SKADIvariables(FuncDataBase& Control)
   Control.addVariable("skadiCaveVoidWidth",250.0);
   Control.addVariable("skadiCaveVoidLength",250.0);
 
+  Control.addVariable("skadiCaveNLayer",3);
   Control.addVariable("skadiCaveL1Front",0.5);
   Control.addVariable("skadiCaveL1LeftWall",0.5);
   Control.addVariable("skadiCaveL1RightWall",0.5);

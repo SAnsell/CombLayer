@@ -130,7 +130,10 @@
 #include "FlangeDomeGenerator.h"
 #include "BeamBoxGenerator.h"
 #include "MonoShutterGenerator.h"
+#include "FocusGenerator.h"
+
 #include "RoundShutterGenerator.h"
+#include "TubeDetBoxGenerator.h"
 
 namespace setVariable
 {
@@ -183,12 +186,12 @@ SingleItemVariables(FuncDataBase& Control)
 
   Control.addVariable("MagTubeRadius",3.0);
   Control.addVariable("MagTubeLength",25.0);
-  Control.addVariable("MagTubeDefMat","Stainless304");
+  Control.addVariable("MagTubeMat","Stainless304");
 
   Control.addVariable("MagTubeBXStep",-300.0);
   Control.addVariable("MagTubeBRadius",3.0);
   Control.addVariable("MagTubeBLength",25.0);
-  Control.addVariable("MagTubeBDefMat","Stainless304");
+  Control.addVariable("MagTubeBMat","Stainless304");
 
 
   Control.addVariable("CryoBOuterRadius",20.0);
@@ -244,10 +247,14 @@ SingleItemVariables(FuncDataBase& Control)
   CPipeGen.generatePipe(Control,"CornerPipe",80.0);
 
   setVariable::ChopperGenerator CGen;
+  CGen.setMainRadius(25.0);
+  CGen.setFrame(65.0,65.0);
+  CGen.generateChopper(Control,"singleChopper",38.0,10.0,4.55);
+  /*
   CGen.setMotorRadius(10.0);
   CGen.generateChopper(Control,"singleChopper",10.0,12.0,5.55);
   Control.addVariable("singleChopperMotorBodyLength",15.0);
-
+  */
 
   setVariable::BladeGenerator BGen;
   // Single Blade chopper
@@ -715,7 +722,26 @@ SingleItemVariables(FuncDataBase& Control)
      Geometry::Vec3D(0.0, -3.0, 0.0),
      Geometry::Vec3D(-1.0, 0.0, 0.0));
 
+
+  TubeDetBoxGenerator TDBGen;
+  TDBGen.generateBox(Control,"TDetBox",Geometry::Vec3D(0,3.15,0),8);
+
+  // guideUnit variables
+  setVariable::FocusGenerator FGen;
+  FGen.setLayer(1,0.5,"Copper");
+  FGen.setLayer(2,2.5,"Stainless304");
+  FGen.setYOffset(2.0);
+  //  FGen.generateRectangle(Control,"FA",100.0,5.0,8.0);
+  //  FGen.generateTaper(Control,"FA",100.0,2,2,2,10);
+  FGen.generateTaper(Control,"FA",26.0,2.63,2.14,3.75,4.76);   
   
+  const double bendAngle(0.0);   // relative to Z bend
+  const double bendRadius(12000.0);    // 120m
+  FGen.generateBender(Control,"BA",100.0,30,30,30,30,
+                      bendRadius,bendAngle);
+  //  FGen.generateBender(Control,"BA",100.0,3.0,3.0,3.0,3.0,
+  //                      bendRadius,bendAngle);
+
   // expt hutch
   exptHutVariables(Control,"",0.0);
   localShieldVariables(Control);

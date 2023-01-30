@@ -52,7 +52,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -64,8 +64,8 @@ namespace xraySystem
 {
 
 GrateHolder::GrateHolder(const std::string& Key) :
+  attachSystem::FixedRotate(Key,8),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,8),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   indexPoint(-100)
@@ -92,7 +92,7 @@ GrateHolder::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("GrateHolder","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   indexPoint=Control.EvalDefVar<int>(keyName+"IndexPoint",indexPoint);  
   gWidth=Control.EvalVar<double>(keyName+"Width");
@@ -191,44 +191,44 @@ GrateHolder::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("GrateHolder","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  makeCell("XStal",System,cellIndex++,xstalMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  makeCell("XStal",System,cellIndex++,xstalMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -3 5 -16 ");
-  makeCell("LeftSide",System,cellIndex++,sideMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -3 5 -16");
+  makeCell("LeftSide",System,cellIndex++,sideMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 4 -14 5 -16 ");
-  makeCell("RightSide",System,cellIndex++,sideMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 4 -14 5 -16");
+  makeCell("RightSide",System,cellIndex++,sideMat,0.0,HR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -1 3 -4 5 -16 ");
-  makeCell("FBar",System,cellIndex++,mainMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -1 3 -4 5 -16");
+  makeCell("FBar",System,cellIndex++,mainMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 3 -4 5 -16 ");
-  makeCell("BBar",System,cellIndex++,mainMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 3 -4 5 -16");
+  makeCell("BBar",System,cellIndex++,mainMat,0.0,HR);
   
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -1 23 -24 16 -26");
-  makeCell("FSupport",System,cellIndex++,mainMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -1 23 -24 16 -26");
+  makeCell("FSupport",System,cellIndex++,mainMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 23 -24 16 -26");
-  makeCell("BSupport",System,cellIndex++,mainMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 23 -24 16 -26");
+  makeCell("BSupport",System,cellIndex++,mainMat,0.0,HR);
 
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 23 -24 16 -26");
-  makeCell("SVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 23 -24 16 -26");
+  makeCell("SVoid",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -23 16 -26");
-  makeCell("LSVoid",System,cellIndex++,0,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 24 -14  16 -26");
-  makeCell("RSVoid",System,cellIndex++,0,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 6 -16 ");
-  makeCell("MidVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -23 16 -26");
+  makeCell("LSVoid",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 24 -14  16 -26");
+  makeCell("RSVoid",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 6 -16");
+  makeCell("MidVoid",System,cellIndex++,0,0.0,HR);
   
   // Main outer void
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 5 -26");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14 5 -26");
+  addOuterSurf(HR);
   
   return; 
 }

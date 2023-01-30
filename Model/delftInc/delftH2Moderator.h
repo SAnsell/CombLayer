@@ -3,7 +3,7 @@
  
  * File:   delftInc/delftH2Moderator.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@ namespace delftSystem
 class delftH2Moderator : public virtualMod
 {
  private:
-  
 
   double depth;             ///< Total depth [Max]
   double sideRadius;        ///< Side (height+width) radius
@@ -82,11 +81,7 @@ class delftH2Moderator : public virtualMod
   virtual delftH2Moderator* clone() const;
   virtual ~delftH2Moderator();
 
-  int getDividePlane() const;
-  int viewSurf() const;
-  /// Access to hydrogen region
-  virtual int getMainBody() const { return HCell; }
-
+  using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 			 const long int);
   virtual void postCreateWork(Simulation&);

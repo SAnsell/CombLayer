@@ -328,57 +328,56 @@ VacuumBox::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("VacuumBox","createObjects");
 
-  std::string Out;
-
-  const std::string FPortStr(frontRule());
-  const std::string BPortStr(backRule());
+  HeadRule HR;
+  const HeadRule& FPortHR(getFrontRule());
+  const HeadRule& BPortHR(getBackRule());
   
   // Main Void 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
-  CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
   // PortVoids
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1 -107 ");
-  CellMap::makeCell("FPortVoid",System,cellIndex++,voidMat,0.0,Out+FPortStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 -107");
+  CellMap::makeCell("FPortVoid",System,cellIndex++,voidMat,0.0,HR*FPortHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -207 ");
-  CellMap::makeCell("BPortVoid",System,cellIndex++,voidMat,0.0,Out+BPortStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -207");
+  CellMap::makeCell("BPortVoid",System,cellIndex++,voidMat,0.0,HR*BPortHR);
 
   // Main metal
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 11 -12 13 -14 15 -16 (-1:2:-3:4:-5:6) (1:107) (-2:207) ");
-  CellMap::makeCell("MainWall",System,cellIndex++,feMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"11 -12 13 -14 15 -16 (-1:2:-3:4:-5:6) (1:107) (-2:207)");
+  CellMap::makeCell("MainWall",System,cellIndex++,feMat,0.0,HR);
 
   // Port metal
-  Out=ModelSupport::getComposite(SMap,buildIndex," -11 107 -117 ");
-  CellMap::makeCell("PortWall",System,cellIndex++,feMat,0.0,Out+FPortStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 107 -117");
+  CellMap::makeCell("PortWall",System,cellIndex++,feMat,0.0,HR*FPortHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 12 207 -217 ");
-  CellMap::makeCell("PortWall",System,cellIndex++,feMat,0.0,Out+BPortStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 207 -217");
+  CellMap::makeCell("PortWall",System,cellIndex++,feMat,0.0,HR*BPortHR);
 
   // Flange
-  Out=ModelSupport::getComposite(SMap,buildIndex," -111 117 -127 ");
-  CellMap::makeCell("Flange",System,cellIndex++,feMat,0.0,Out+FPortStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-111 117 -127");
+  CellMap::makeCell("Flange",System,cellIndex++,feMat,0.0,HR*FPortHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 211 217 -227 ");
-  CellMap::makeCell("Flange",System,cellIndex++,feMat,0.0,Out+BPortStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"211 217 -227");
+  CellMap::makeCell("Flange",System,cellIndex++,feMat,0.0,HR*BPortHR);
 
   // Flange Voids
-  Out=ModelSupport::getComposite(SMap,buildIndex," 111 -11 117 -127 ");
-  CellMap::makeCell("FFlangeVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"111 -11 117 -127");
+  CellMap::makeCell("FFlangeVoid",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -211 217 -227 ");
-  CellMap::makeCell("BFlangeVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -211 217 -227");
+  CellMap::makeCell("BFlangeVoid",System,cellIndex++,0,0.0,HR);
   
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -14 15 -16 ");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14 15 -16");
+  addOuterSurf(HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -11 -127 ");
-  addOuterUnionSurf(Out+FPortStr);      
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -127");
+  addOuterUnionSurf(HR*FPortHR);      
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -227 ");
-  addOuterUnionSurf(Out+BPortStr);      
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -227");
+  addOuterUnionSurf(HR*BPortHR);      
   return;
 }
 

@@ -3,7 +3,7 @@
  
  * File:   maxivBuild/maxivVariables.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -103,9 +103,17 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
   const std::set<std::string> R1Beam
     ({"R1RING","RING1","FLEXPES","MAXPEEM","SPECIES"});
 
-  const std::set<std::string> R3Beam
-    ({"R3RING","RING3","FORMAX","COSAXS", "SOFTIMAX",
-	"DANMAX", "BALDER", "MICROMAX"});
+  const std::map<std::string,std::string> R3Beam
+    ({
+      {"R3RING","R3Ring"},
+      {"RING3","Ring3"},
+      {"FORMAX","Formax"},
+      {"COSAXS","Cosaxs"},
+      {"SOFTIMAX","SoftiMAX"},
+      {"DANMAX", "Danmax"},
+      {"BALDER", "Balder"},
+      {"MICROMAX","MicroMAX"}
+    });
   
   typedef void (*VariableFunction)(FuncDataBase&);
   typedef std::multimap<std::string,VariableFunction> VMap;
@@ -138,8 +146,7 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
   
 	
   for(const std::string& beam : BL)
-    {
-      
+    {      
       if (!r1Flag && (R1Beam.find(beam)!=R1Beam.end()))
 	{
 	  R1RingVariables(Control);
@@ -166,6 +173,14 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
       for(mc=rangePair.first;mc!=rangePair.second;mc++)
 	{
 	  mc->second(Control);
+	}
+
+      if (magField!="None" && magField!="NONE" && magField!="none")
+	{
+	  std::map<std::string,std::string>::const_iterator mc=
+	    R3Beam.find(beam);
+	  if (mc!=R3Beam.end())
+	    R3MagnetVariables(Control,mc->second);
 	}
     }
   return;

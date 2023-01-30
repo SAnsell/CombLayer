@@ -104,8 +104,8 @@ namespace xraySystem
   
 maxpeemOpticsLine::maxpeemOpticsLine(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
-  attachSystem::ContainedComp(),
   attachSystem::FixedRotate(newName,2),
+  attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),

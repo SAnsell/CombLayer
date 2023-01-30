@@ -3,7 +3,7 @@
  
  * File:   essBuild/SegWheel.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "surfRegister.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "varList.h"
@@ -57,7 +55,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -189,7 +187,7 @@ SegWheel::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("SegWheel","populate");
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");   
 
@@ -318,36 +316,32 @@ SegWheel::makeShaftObjects(Simulation& System)
 {
   ELog::RegMethod RegA("SegWheel","makeShaftObjects");
 
-  std::string Out;
-  std::string Out0;
-  std::string Out1;
-  std::string Out2;
-  std::string Out3;
-
+  HeadRule HR,HRa,HRb,HRc,HRd;
+  
   // inner he body
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
 				 "1005 -1006 -1017 ( -1007: -1045 ) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,heMat,0.0,Out));
+  System.addCell(cellIndex++,heMat,0.0,HR);
 
   // inner steel body
-   Out=ModelSupport::getComposite(SMap,buildIndex,"(-1006 1045 1007 -7):(-1047 1017 1045 -45) : "
-				  "(-1006 1017 -1027 -1045 1025):(-1017 -1005 1015) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,cladShaftMat,0.0,Out));
+   HR=ModelSupport::getHeadRule(SMap,buildIndex,"(-1006 1045 1007 -7):(-1047 1017 1045 -45) : "
+				"(-1006 1017 -1027 -1045 1025):(-1017 -1005 1015) ");
+   System.addCell(cellIndex++,cladShaftMat,0.0,HR);
 
   // outer wheel support
-  Out=ModelSupport::getComposite(SMap,buildIndex,"(-1006 -1047 1017 46 ( -1027 : -1046)) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,cladShaftMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(-1006 -1047 1017 46 ( -1027 : -1046)) ");
+  System.addCell(cellIndex++,cladShaftMat,0.0,HR);
 
   // wheel cooling downcomer
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -1017 -1006 1046 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,heMat,0.0,Out));
-
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 7 -1017 -1006 1046 ");
+  System.addCell(cellIndex++,heMat,0.0,HR);
+  
   // shaft cooling plate: Down for downcomer (open top), Up for upstream (open bottom)
   int SI0(buildIndex);
-  const std::string shaftCoolingDown=
-  ModelSupport::getComposite(SMap,buildIndex," 7 -1017 26 -1046 ");	
-  const std::string shaftCoolingUp=
-  ModelSupport::getComposite(SMap,buildIndex," 7 -1017 -25 1045 ");	
+  const HeadRule shaftCoolingDown=
+    ModelSupport::getHeadRule(SMap,buildIndex," 7 -1017 26 -1046 ");	
+  const HeadRule shaftCoolingUp=
+    ModelSupport::getHeadRule(SMap,buildIndex," 7 -1017 -25 1045 ");	
 
   // the loop is very similar to the one for the wheel sectors (see below); surfaces from wheel::createSurfaces
   
@@ -356,70 +350,66 @@ SegWheel::makeShaftObjects(Simulation& System)
 
       if (i<targetSectorNumber/4-1)
 	{
-	  Out0=ModelSupport::getComposite(SMap,buildIndex,SI0," 503 -501  4M -3M ");
-	  Out1=ModelSupport::getComposite(SMap,buildIndex,SI0," 503  1M -2M ");
-	  Out2=ModelSupport::getComposite(SMap,buildIndex,SI0," 503 -501 12M -4M ");
-	  Out3=ModelSupport::getComposite(SMap,buildIndex,SI0," 503  -1M 3M ");  
+	  HRa=ModelSupport::getHeadRule(SMap,buildIndex,SI0," 503 -501  4M -3M ");
+	  HRb=ModelSupport::getHeadRule(SMap,buildIndex,SI0," 503  1M -2M ");
+	  HRc=ModelSupport::getHeadRule(SMap,buildIndex,SI0," 503 -501 12M -4M ");
+	  HRd=ModelSupport::getHeadRule(SMap,buildIndex,SI0," 503  -1M 3M ");  
 	}
       else if (i>=targetSectorNumber/4-1 && i<=targetSectorNumber/2-1)
 	{
-	  Out0=ModelSupport::getComposite(SMap,buildIndex,SI0," -501 -503 4M -3M ");
-	  Out1=ModelSupport::getComposite(SMap,buildIndex,SI0," -501 -1M 2M ");
-	  Out2=ModelSupport::getComposite(SMap,buildIndex,SI0," -501 -503 11M -4M ");
-	  Out3=ModelSupport::getComposite(SMap,buildIndex,SI0," -501  -2M 3M ");   
+	  HRa=ModelSupport::getHeadRule(SMap,buildIndex,SI0,"-501 -503 4M -3M");
+	  HRb=ModelSupport::getHeadRule(SMap,buildIndex,SI0,"-501 -1M 2M");
+	  HRc=ModelSupport::getHeadRule(SMap,buildIndex,SI0,"-501 -503 11M -4M");
+	  HRd=ModelSupport::getHeadRule(SMap,buildIndex,SI0,"-501  -2M 3M");   
 	}
       else if (i>=targetSectorNumber/2-1 && i<=targetSectorNumber*3/4-1)
 	{
-	  Out0=ModelSupport::getComposite(SMap,buildIndex,SI0," -503  4M -3M ");
-	  Out1=ModelSupport::getComposite(SMap,buildIndex,SI0," -503 -1M 2M ");
-	  Out2=ModelSupport::getComposite(SMap,buildIndex,SI0," -503  11M -4M ");
-	  Out3=ModelSupport::getComposite(SMap,buildIndex,SI0," -503  -2M 3M");  
+	  HRa=ModelSupport::getHeadRule(SMap,buildIndex,SI0,"-503  4M -3M");
+	  HRb=ModelSupport::getHeadRule(SMap,buildIndex,SI0,"-503 -1M 2M");
+	  HRc=ModelSupport::getHeadRule(SMap,buildIndex,SI0,"-503  11M -4M");
+	  HRd=ModelSupport::getHeadRule(SMap,buildIndex,SI0,"-503  -2M 3M");  
 	}
       else
 	{
-	  Out0=ModelSupport::getComposite(SMap,buildIndex,SI0," 501  4M -3M ");
-	  Out1=ModelSupport::getComposite(SMap,buildIndex,SI0," 501  1M -2M ");
-	  Out2=ModelSupport::getComposite(SMap,buildIndex,SI0," 501  12M -4M ");
-	  Out3=ModelSupport::getComposite(SMap,buildIndex,SI0," 501  -1M 3M");  
+	  HRa=ModelSupport::getHeadRule(SMap,buildIndex,SI0,"501  4M -3M");
+	  HRb=ModelSupport::getHeadRule(SMap,buildIndex,SI0,"501  1M -2M");
+	  HRc=ModelSupport::getHeadRule(SMap,buildIndex,SI0,"501  12M -4M");
+	  HRd=ModelSupport::getHeadRule(SMap,buildIndex,SI0,"501  -1M 3M");  
 	  if(i==targetSectorNumber-1)
-	    Out2=ModelSupport::getComposite(SMap,buildIndex,SI0,"503 2 -4M");
+	    HRc=ModelSupport::getHeadRule(SMap,buildIndex,SI0,"503 2 -4M");
 	}
     
-    System.addCell(MonteCarlo::Object(cellIndex++,cladShaftMat,
-				     0.0,Out0+shaftCoolingDown));
-    System.addCell(MonteCarlo::Object(cellIndex++,cladShaftMat,
-				     0.0,Out0+shaftCoolingUp));
+    System.addCell(cellIndex++,cladShaftMat,
+				     0.0,HRa*shaftCoolingDown);
+    System.addCell(cellIndex++,cladShaftMat,
+				     0.0,HRa*shaftCoolingUp);
 
-    System.addCell(MonteCarlo::Object(cellIndex++,cladShaftMat,
-				     0.0,Out1+shaftCoolingDown));
-    System.addCell(MonteCarlo::Object(cellIndex++,cladShaftMat,
-				     0.0,Out1+shaftCoolingUp));
+    System.addCell(cellIndex++,cladShaftMat,
+				     0.0,HRb*shaftCoolingDown);
+    System.addCell(cellIndex++,cladShaftMat,
+				     0.0,HRb*shaftCoolingUp);
 
-    System.addCell(MonteCarlo::Object(cellIndex++,cladShaftMat,
-				     0.0,Out2+shaftCoolingDown));
-    System.addCell(MonteCarlo::Object(cellIndex++,heMat,
-				     0.0,Out2+shaftCoolingUp));
+    System.addCell(cellIndex++,cladShaftMat,0.0,HRc*shaftCoolingDown);
+    System.addCell(cellIndex++,heMat,0.0,HRc*shaftCoolingUp);
 
-    System.addCell(MonteCarlo::Object(cellIndex++,heMat,
-				     0.0,Out3+shaftCoolingDown));
-    System.addCell(MonteCarlo::Object(cellIndex++,cladShaftMat,
-				     0.0,Out3+shaftCoolingUp));
+    System.addCell(cellIndex++,heMat,0.0,HRd*shaftCoolingDown);
+    System.addCell(cellIndex++,cladShaftMat,0.0,HRd*shaftCoolingUp);
  
     SI0+=10;
    }
 
   // void in shaft foot
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-1017 -1015 1025");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1017 -1015 1025");
+  System.addCell(cellIndex++,0,0.0,HR);
 
   // void around shaft
-  Out=ModelSupport::getComposite(SMap,buildIndex," (-1037 1056 -1006 1027) : "
-				 "(-1057 -1056 1027 46 (1046:1047)): (-1057 1027 -45 1055 (-1045:1047)): "
-				 "(-1055 -1037 1035 (-1025:1027) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(-1037 1056 -1006 1027) : "
+			       "(-1057 -1056 1027 46 (1046:1047)): (-1057 1027 -45 1055 (-1045:1047)): "
+			       "(-1055 -1037 1035 (-1025:1027)");
+  System.addCell(cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-18 1035 -1006 (-1037:(-1056 1055))");
-  addOuterSurf("Shaft",Out);  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-18 1035 -1006 (-1037:(-1056 1055))");
+  addOuterSurf("Shaft",HR);  
 
   return;
 }
@@ -534,35 +524,27 @@ SegWheel::createObjects(Simulation& System)
   // Inner Radius is 7
   
   const int matNum[4]={0,steelMat,heMat,wMat};
-  std::string Out;
-  std::string Out1;
-  std::string Out2;
+  HeadRule HR,HRa,HRb,HRBodyA;
+
  
   // Loop through each item and build inner section
 
   // target top-base  
-  const std::string TopBaseW=
-    ModelSupport::getComposite(SMap,buildIndex," 5 -6 ");	
+  const HeadRule TopBaseW=
+    ModelSupport::getHeadRule(SMap,buildIndex,"5 -6");	
 
   // 9 is surface dividing front and back target
-  const std::string TopBaseSteelFront=
-    ModelSupport::getComposite(SMap,buildIndex," 15 -16 9 ");	
-  
-  const std::string TopBaseHeFront=
-    ModelSupport::getComposite(SMap,buildIndex," : -5: 6) 15 -16 9");	
+  const HeadRule TopBaseFront=
+    ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 9");	
   
   // 28 divides target from wheel body	
-  const std::string TopBaseSteelBack=
-    ModelSupport::getComposite(SMap,buildIndex," 25 -26 -9 28");
 
-  const std::string TopBaseHeBack=
-    ModelSupport::getComposite(SMap,buildIndex,": -5 :6) 25 -26 -9 28");
+  const HeadRule TopBaseBack=
+    ModelSupport::getHeadRule(SMap,buildIndex,"25 -26 -9 28");
 
-  const std::string TopBaseHeBody=
-  ModelSupport::getComposite(SMap,buildIndex,") 25 -26 -28");
+  const HeadRule TopBaseBody=
+    ModelSupport::getHeadRule(SMap,buildIndex,"25 -26 -28");
   
-  const std::string TopBaseSteelBody=
-    ModelSupport::getComposite(SMap,buildIndex,") 25 -26  -28");
   
   int SI3(buildIndex);
 
@@ -571,86 +553,92 @@ SegWheel::createObjects(Simulation& System)
       int SI4(buildIndex);
       for(size_t i1=0;i1<nLayers;i1++)
 	{    
-	  Out=ModelSupport::getComposite(SMap,SI3,SI4,"  7M -17M 4 -3");
+	  HR=ModelSupport::getHeadRule(SMap,SI3,SI4,"7M -17M 4 -3");
 	  if (matTYPE[i1]!=1)
-	    Out+=TopBaseW;
+	    HR*=TopBaseW;
 	  else
-	    Out+=TopBaseSteelBody;
-	  System.addCell(MonteCarlo::Object(cellIndex++,matNum[matTYPE[i1]],0.0,Out));  
+	    HR*=TopBaseBody;
+	  System.addCell(cellIndex++,matNum[matTYPE[i1]],0.0,HR);  
 	  SI4+=10;
 	}
 
-      std::string wheelQuarter;
+      HeadRule wheelQuarter;
       if(i0<targetSectorNumber/4-1)
 	{ 
-	  wheelQuarter = ModelSupport::getComposite(SMap,buildIndex," 503 7 -8 ");
+	  wheelQuarter = ModelSupport::getHeadRule(SMap,buildIndex,"503 7 -8");
 	  // add steel frame between sectors   
-	  Out=ModelSupport::getComposite(SMap,SI3,"1 -2 ");
+	  HR=ModelSupport::getHeadRule(SMap,SI3,"1 -2");
 	  // coolant around target; 7: external to penultimate layer
-	  Out1=ModelSupport::getComposite(SMap,SI4,SI3," -1M 12M (3M : -4M :  7");
+	  HRa=ModelSupport::getHeadRule(SMap,buildIndex,SI3,SI3,"-1M 12M (3M:-4M:-7N:5:-6)");
+	  HRBodyA=ModelSupport::getHeadRule(SMap,buildIndex,SI3,SI3,"-1M 12M (3M:-4M:-7N)");
 	}
       else if(i0>=targetSectorNumber/4-1 && i0<=targetSectorNumber/2-1)
 	{
-	  wheelQuarter= ModelSupport::getComposite(SMap,buildIndex," -501 7 -8 ");
-	  Out=ModelSupport::getComposite(SMap,SI3," -1 2");
-	  Out1=ModelSupport::getComposite(SMap,SI4,SI3," 11M -2M (3M : -4M : 7 ");
+	  wheelQuarter= ModelSupport::getHeadRule(SMap,buildIndex," -501 7 -8 ");
+	  HR=ModelSupport::getHeadRule(SMap,SI3," -1 2");
+	  HRa=ModelSupport::getHeadRule(SMap,buildIndex,SI3,SI4," 11M -2M (3M:-4M:7N:5:-6)");
+	  HRBodyA=ModelSupport::getHeadRule(SMap,buildIndex,SI3,SI4," 11M -2M (3M:-4M:7N)");
 	}
       else if(i0>=targetSectorNumber/2-1 && i0<=targetSectorNumber*3/4-1)
 	{
-	  wheelQuarter= ModelSupport::getComposite(SMap,buildIndex," -503 7 -8 ");
-	  Out=ModelSupport::getComposite(SMap,SI3," -1 2");
-	  Out1=ModelSupport::getComposite(SMap,SI4,SI3," 11M -2M (3M : -4M : 7 ");
+	  wheelQuarter= ModelSupport::getHeadRule(SMap,buildIndex,"-503 7 -8");
+	  HR=ModelSupport::getHeadRule(SMap,SI3,"-1 2");
+	  HRa=ModelSupport::getHeadRule(SMap,buildIndex,SI4,SI3,"11M -2M (3M:-4M:7N:5:-6)");
+	  HRBodyA=ModelSupport::getHeadRule(SMap,buildIndex,SI4,SI3,"11M -2M (3M:-4M:7N)");
 	}
       else
 	{
-	  wheelQuarter= ModelSupport::getComposite(SMap,buildIndex," 501 7 -8 ");
-	  Out=ModelSupport::getComposite(SMap,SI3," 1 -2");
+	  wheelQuarter= ModelSupport::getHeadRule(SMap,buildIndex,"501 7 -8");
+	  HR=ModelSupport::getHeadRule(SMap,SI3,"1 -2");
 	  
 	  if(i0==targetSectorNumber-1)
-	    Out1=ModelSupport::getComposite(SMap,buildIndex,SI3," -1M 2 (3M : -4M : 58 ");
-	  else	
-	    Out1=ModelSupport::getComposite(SMap,SI4,SI3," -1M 12M (3M : -4M : 7 ");
+	    {
+	      HRa=ModelSupport::getHeadRule(SMap,buildIndex,SI3,"-1M 2 (3M:-4M:58:5:-6)");
+	      HRBodyA=ModelSupport::getHeadRule(SMap,buildIndex,SI3,"-1M 2 (3M:-4M:58)");
+	    }
+	  else
+	    {
+	      HRa=ModelSupport::getHeadRule(SMap,buildIndex,SI3,SI4,"-1M 12M (3M:-4M:7N:5:-6)");
+	      HRBodyA=ModelSupport::getHeadRule(SMap,buildIndex,SI3,SI4,"-1M 12M (3M:-4M:7N)");
+	    }
 	}
       
-      System.addCell(MonteCarlo::Object(cellIndex++, matNum[matTYPE[0]],0.0,
-				       wheelQuarter+Out+TopBaseSteelFront));  
+      System.addCell(cellIndex++,matNum[matTYPE[0]],0.0,
+		     wheelQuarter*HR*TopBaseFront);  
       
-      System.addCell(MonteCarlo::Object(cellIndex++,matNum[matTYPE[0]],0.0,
-				       wheelQuarter+Out+TopBaseSteelBack));  
+      System.addCell(cellIndex++,matNum[matTYPE[0]],0.0,
+		     wheelQuarter*HR*TopBaseBack);  
       
-      System.addCell(MonteCarlo::Object(cellIndex++,matNum[matTYPE[0]],0.0,
-				       wheelQuarter+Out+TopBaseSteelBody));  
+      System.addCell(cellIndex++,matNum[matTYPE[0]],0.0,
+		     wheelQuarter*HR*TopBaseBody);  
+
+      System.addCell(cellIndex++,heMat,0.0,wheelQuarter*HRa*TopBaseFront);
       
-      System.addCell(MonteCarlo::Object(cellIndex++,heMat,0.0,
-				       wheelQuarter+Out1+TopBaseHeFront));
+      System.addCell(cellIndex++,heMat,0.0,wheelQuarter*HRa*TopBaseBack);
       
-      System.addCell(MonteCarlo::Object(cellIndex++,heMat,0.0,
-				       wheelQuarter+Out1+TopBaseHeBack));
-      
-      System.addCell(MonteCarlo::Object(cellIndex++,heMat,0.0,
-				       wheelQuarter+Out1+TopBaseHeBody));
+      System.addCell(cellIndex++,heMat,0.0,wheelQuarter*HRBodyA*TopBaseBody);
       
       SI3+=10;
       
     }
   
   // Metal cover
-  Out=ModelSupport::getComposite(SMap,buildIndex, 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex, 
 				 "(-10 9 35 -36 (-15:16:8)):(-10 28 -38  45 -46 (-25:26)) "
 				 " : (68 -28 45 -25):(68 -28 -46 26)");
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
+  System.addCell(cellIndex++,steelMat,0.0,HR);
 
   // Void surround
-  Out=ModelSupport::getComposite(SMap,buildIndex,"(38 -48 55 -56 (10:-35:36)) " 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(38 -48 55 -56 (10:-35:36)) " 
 				          ":(18 -38 55 -56 (-45:46))");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  System.addCell(cellIndex++,0,0.0,HR);
 
   // outer world 
-  //  Out=ModelSupport::getComposite(SMap,buildIndex," (-48 55 -56 18) : "
+  //  HR=ModelSupport::getHeadRule(SMap,buildIndex," (-48 55 -56 18) : "
   //                                            "(-18 68 45 -46): (7 -68 25 -26)");	
-  Out=ModelSupport::getComposite(SMap,buildIndex,"55 -56 -48");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"55 -56 -48");
 
-  addOuterSurf("Wheel",Out);
+  addOuterSurf("Wheel",HR);
 
   return; 
 }

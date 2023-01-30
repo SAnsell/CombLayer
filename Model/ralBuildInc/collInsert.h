@@ -38,45 +38,58 @@ namespace shutterSystem
 */
 
 class collInsert  :
-  public attachSystem::ContainedComp,
-  public attachSystem::FixedRotateGroup
+    public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
+    public attachSystem::ExternalCut
 {
- protected:
+ private:
 
-  const std::string baseName;   ///< basename
-  const int blockID;            ///< Block number
+  double fStep;          ///< forward step
 
-  double hGap;          ///< B4C horizontal gap 
-  double vGap;          ///< B4C vertical 
-  
   double length;        ///< length of unit 
   double width;         ///< Full width
   double height;        ///< Full height
 
-  int mat;             ///< Material number  
+  double hGap;          ///< B4C horizontal gap 
+  double vGap;          ///< B4C vertical 
 
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-  
-  
-  virtual void createSurfaces();
-  virtual void createObjects(Simulation&);
+  double hGapRAngle;          ///< B4C horizontal gap angle change
+  double vGapRAngle;          ///< B4C vertical gap angle change
+
+  size_t nB4C;                 ///< number of B4C units
+  size_t nSteel;               ///< number of steel blocks
+
+  double steelOffset;          ///< Steel back step distance
+  double steelAWidth;          ///< Steel width front half units
+  double steelBWidth;          ///< Steel width back half units
+  double b4cThick;             ///< b4c thickness
+  double b4cSpace;
+
+  int b4cMat;                  ///< B4C material
+  int steelMat;                ///< Steel material
+
+
+  void createSurfaces();
+  void createObjects(Simulation&);
   void createLinks();
   
  public:
 
-  collInsert(const std::string&,const int);
+  collInsert(const std::string&);
   collInsert(const collInsert&);
   collInsert& operator=(const collInsert&);
   virtual ~collInsert() {}   ///< Destructor
 
+  void populate(const FuncDataBase&);
+  
+  double calcDrop(const double) const;
   Geometry::Vec3D getWindowCentre() const;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const FixedComp&,const long int);
 };
 
-std::ostream& operator<<(std::ostream&,const collInsert&);
+
 }  
 
 #endif

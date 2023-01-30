@@ -59,16 +59,16 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
-#include "General.h"
-#include "Plane.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "General.h"
+#include "Plane.h"
 #include "SurInter.h"
 
 #include "BilbaoWheelCassette.h"
@@ -89,7 +89,6 @@ BilbaoWheel::BilbaoWheel(const std::string& Key) :
 
 BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   WheelBase(A),
-  engActive(A.engActive),
   targetHeight(A.targetHeight),
   targetInnerHeight(A.targetHeight),
   targetInnerHeightRadius(A.targetHeight),
@@ -159,7 +158,6 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
   if (this!=&A)
     {
       WheelBase::operator=(A);
-      engActive=A.engActive;
       targetHeight=A.targetHeight;
       targetInnerHeight=A.targetInnerHeight;
       targetInnerHeightRadius=A.targetInnerHeightRadius;
@@ -251,10 +249,8 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("BilbaoWheel","populate");
 
   // Master values
-  FixedOffset::populate(Control);
-
-  engActive=Control.EvalTail<int>(keyName,"","EngineeringActive");
-
+  FixedRotate::populate(Control);
+  
   nSectors=Control.EvalDefVar<size_t>(keyName+"NSectors",3);
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
   double R;
@@ -387,7 +383,8 @@ BilbaoWheel::createShaftSurfaces()
   ELog::RegMethod RegA("BilbaoWheel","createShaftSurfaces");
 
   // divider
-  const Geometry::Plane *px = ModelSupport::buildPlane(SMap,buildIndex+3,Origin,X);
+  const Geometry::Plane *px =
+    ModelSupport::buildPlane(SMap,buildIndex+3,Origin,X);
 
   ModelSupport::buildPlane(SMap,buildIndex+2006,Origin+Z*shaftHeight,Z);
 
@@ -398,7 +395,9 @@ BilbaoWheel::createShaftSurfaces()
       SI+=10;
     }
 
+
   double H(wheelHeight()/2.0+caseThick);
+
 
   // 2nd void step
   H = shaft2StepHeight;
@@ -562,7 +561,6 @@ BilbaoWheel::createShaftObjects(Simulation& System)
 		   ModelSupport::getHeadRule(SMap,buildIndex,"106 -116"),
 		   ModelSupport::getHeadRule(SMap,buildIndex,"105 -106"),
 		   ModelSupport::getHeadRule(SMap,buildIndex,"115 -116"));
-
   // void below
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,buildIndex+20,"-7 35 -115 2127 ");
@@ -1370,14 +1368,23 @@ BilbaoWheel::buildSectors(Simulation& System) const
 
   ModelSupport::objectRegister& OR=ModelSupport::objectRegister::Instance();
 
+  const HeadRule innerHR=getFullRule(9);
+  const HeadRule vHR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6");
+  const HeadRule fHR=getFullRule(12);
+
   for (size_t i=0; i<nSectors; i++)
     {
       std::shared_ptr<BilbaoWheelCassette>
-	c(new BilbaoWheelCassette(keyName,"Sec",i));
-      OR.addObject(c);
-      c->createAll(System,*this,0,
-		   7,8,9,12,
-		   static_cast<double>(i)*360.0/static_cast<double>(nSectors));
+	cassetteUnit(new BilbaoWheelCassette(keyName,"Sec",i));
+      OR.addObject(cassetteUnit);
+      cassetteUnit->setRotAngle(static_cast<double>(i)*360.0/
+			     static_cast<double>(nSectors));
+      cassetteUnit->setLinkCopy("Inner",*this,9);
+      cassetteUnit->setLinkCopy("Outer",*this,12);
+      cassetteUnit->setCutSurf("InnerCyl",innerHR);
+      cassetteUnit->setCutSurf("VerticalCut",vHR);
+      cassetteUnit->setCutSurf("OuterCyl",fHR);
+      cassetteUnit->createAll(System,*this,0);
     }
 }
 

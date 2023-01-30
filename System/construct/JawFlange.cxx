@@ -129,7 +129,8 @@ JawFlange::setFillRadius(const attachSystem::FixedComp& portFC,
 {
   ELog::RegMethod Rega("JawFlange","setFillRadius");
 
-  cylRule=portFC.getMainRule(radiusSide);
+  // This avoid the mid-cutting surface 
+  setCutSurf("CylSurf",portFC.getMainRule(radiusSide));
   cutCell=cellNumber;
   return;
 }
@@ -223,7 +224,7 @@ JawFlange::createSurfaces()
   if (!cutCell)
     {
       ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
-      cylRule.procSurfNum(-SMap.realSurf(buildIndex+7));
+      setCutSurf("CylSurf",-SMap.realSurf(buildIndex+7));
     }
 
   // calc position
@@ -265,35 +266,38 @@ JawFlange::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("JawFlange","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
-  const std::string frontStr=frontRule();
-  const std::string cylStr=cylRule.display();  
+  const HeadRule frontHR=getFrontRule();
+  const HeadRule cylHR=getRule("CylSurf");
+    //cylRule.display();  
 
   // Jaws
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex," 101 -102 103 -104 -105 115");
-  makeCell("BaseJaw",System,cellIndex++,jawMat,0.0,Out);
+  makeCell("BaseJaw",System,cellIndex++,jawMat,0.0,HR);
   
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex," 101 -102 103 -104 106 -116");
-  makeCell("TopJaw",System,cellIndex++,jawMat,0.0,Out);
+  makeCell("TopJaw",System,cellIndex++,jawMat,0.0,HR);
 
   if (jOpen>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite
+      HR=ModelSupport::getHeadRule
 	(SMap,buildIndex," 101 -102 103 -104 105 -106");
-      makeCell("JawGap",System,cellIndex++,voidMat,0.0,Out);
+      makeCell("JawGap",System,cellIndex++,voidMat,0.0,HR);
     }
 
   // Void
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"-2 (-101 : 102 : -103 : 104 : -115 : 116)");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr+cylStr);
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*cylHR);
 
   // create jaws
-  Out=ModelSupport::getComposite(SMap,buildIndex," -2 ");  
-  addOuterSurf(Out+cylStr);
+  HR=HeadRule(SMap,buildIndex,-2);
+
+  addOuterSurf(HR*cylHR);
+  
   if (cutCell)
     System.removeCell(cutCell);
   return;

@@ -1084,7 +1084,7 @@ exptLineVariables(FuncDataBase& Control,
     
   Control.addVariable(preName+"SampleYStep", 185.0); // [2]
   Control.addVariable(preName+"SampleRadius", 5.0); // [2]
-  Control.addVariable(preName+"SampleDefMat", "Stainless304");
+  Control.addVariable(preName+"SampleMat", "Stainless304");
 
   monoShutterBVariables(Control,preName);
   PipeGen.generatePipe(Control,preName+"ExitPipe",35.0);  
@@ -1147,7 +1147,7 @@ exptLineBVariables(FuncDataBase& Control,
 
   Control.addVariable(exptName+"SampleYStep", 185.0); // [2]
   Control.addVariable(exptName+"SampleRadius", 5.0); // [2]
-  Control.addVariable(exptName+"SampleDefMat", "Stainless304");
+  Control.addVariable(exptName+"SampleMat", "Stainless304");
   
   Control.addVariable(exptName+"BeamStopYStep",475.7-12.5);
   Control.addVariable(exptName+"BeamStopRadius",10.0);

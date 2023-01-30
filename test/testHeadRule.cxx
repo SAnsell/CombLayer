@@ -3,7 +3,7 @@
  
  * File:   test/testHeadRule.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -100,6 +100,7 @@ testHeadRule::createSurfaces()
   SurI.createSurface(25,"pz -11");
   SurI.createSurface(26,"pz 11");
 
+
   // Sphere :
   SurI.createSurface(100,"so 25");
   // Cylinder :
@@ -139,7 +140,8 @@ testHeadRule::applyTest(const int extra)
       &testHeadRule::testPartEqual,
       &testHeadRule::testRemoveSurf,
       &testHeadRule::testReplacePart,
-      &testHeadRule::testSurfSet
+      &testHeadRule::testSurfSet,
+      &testHeadRule::testSurfValid
     };
   const std::string TestName[]=
     {
@@ -158,7 +160,8 @@ testHeadRule::applyTest(const int extra)
       "PartEqual",
       "RemoveSurf",      
       "ReplacePart",      
-      "SurfSet"
+      "SurfSet",
+      "SurfValid"
     };
   
   const int TSize(sizeof(TPtr)/sizeof(testPtr));
@@ -968,6 +971,54 @@ testHeadRule::testRemoveSurf()
 }
 
 int
+testHeadRule::testSurfValid()
+  /*!
+    Check the determination of all surfaces that have
+    a point on a surface 
+    \return 0 :: success / -ve on error
+   */
+{
+  ELog::RegMethod RegA("testHeadRule","testSurfValid");
+  typedef std::tuple<std::string,const Geometry::Vec3D,std::set<int>> TTYPE;
+
+  const std::vector<TTYPE> Tests(
+      {
+	TTYPE("1 -2 3 -4 5 -6",Geometry::Vec3D(1,1,0),{2,4}),
+	TTYPE("1 -22 23 -24 25 -26 (-1:2:-3:4:-5:6)",
+	      Geometry::Vec3D(-1,-1,-1),{1,3,5})
+      });
+  createSurfaces();
+  
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
+    {
+      const Geometry::Vec3D& Pt(std::get<1>(tc));
+      HeadRule A(std::get<0>(tc));
+      A.populateSurf();
+      const std::set<int>& TSurf=std::get<2>(tc);
+      const std::set<int>  ASurf=A.surfValid(Pt);
+      
+      if (TSurf!=ASurf)
+	{
+	  ELog::EM<<"Test "<<cnt<<ELog::endDiag;
+	  ELog::EM<<"Rule "<<A<<ELog::endDiag;
+	  ELog::EM<<"Pt "<<Pt<<ELog::endDiag;
+	  ELog::EM<<"ASurf ==";
+	  for(const int SN : ASurf)
+	    ELog::EM<<" "<<SN;
+	  ELog::EM<<"\nTSurf ==";
+	  for(const int SN : TSurf)
+	    ELog::EM<<" "<<SN;
+	  ELog::EM<<ELog::endDiag;
+	  return -1;
+	}	  
+    }      
+  
+  
+  return 0;
+}
+
+int
 testHeadRule::testSurfSet()
   /*!
     Check the validity of a removal of a by a set
@@ -980,7 +1031,7 @@ testHeadRule::testSurfSet()
 
   typedef std::tuple<std::string,std::string,std::string> TTYPE;
   std::vector<TTYPE> Tests;
-  Tests.push_back(TTYPE("1 -2 ","1 -2",""));
+  Tests.push_back(TTYPE("1 -2 ","1 -2",""));  
   
 
   HeadRule A;
@@ -990,11 +1041,13 @@ testHeadRule::testSurfSet()
   int cnt(1);
   for(const TTYPE& tc : Tests)
     {
-      A.procString(std::get<0>(tc));
-      B.procString(std::get<1>(tc));
-      C.procString(std::get<2>(tc));
-      std::set<int> SN=B.getSurfSet();
+      HeadRule A(std::get<0>(tc));
+      HeadRule B(std::get<1>(tc));
+      HeadRule C(std::get<2>(tc));
+      std::set<int> SN=B.getSignedSurfaceNumbers();
+      // remove all items in SN that are in A
       A.isolateSurfNum(SN);
+      
       if (A!=C)
 	{
 	  ELog::EM<<"Failed on test "<<cnt<<ELog::endDiag;

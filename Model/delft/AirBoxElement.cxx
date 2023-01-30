@@ -3,7 +3,7 @@
  
  * File:   delft/AirBoxElement.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,8 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -56,6 +54,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 
@@ -70,7 +69,19 @@ namespace delftSystem
 
 AirBoxElement::AirBoxElement(const size_t XI,const size_t YI,
 			 const std::string& Key) :
-  RElement(XI,YI,Key)
+  RElement(XI,YI,Key),waterMat(0)
+  /*!
+    Constructor BUT ALL variable are left unpopulated.
+    \param XI :: X coordinate
+    \param YI :: Y coordinate
+    \param Key :: BaseName 
+  */
+{}
+
+AirBoxElement::AirBoxElement(const size_t XI,const size_t YI,
+			     const std::string& Key,
+			     const int waterM) :
+  RElement(XI,YI,Key),waterMat(waterM)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param XI :: X coordinate
@@ -112,22 +123,7 @@ AirBoxElement::operator=(const AirBoxElement& A)
     }
   return *this;
 }
-
-void
-AirBoxElement::populateWaterMat(const attachSystem::FixedComp& RG)
-  /*!
-    Populate the water material from a reactor grid default
-    \param RG :: FixedComp to cast to a ReactorGrid
-  */
-{
-  ELog::RegMethod RegA("AirBoxElement","populate");
-
-  const ReactorGrid* RGPtr=dynamic_cast<const ReactorGrid*>(&RG);
-  waterMat=(RGPtr) ? RGPtr->getWaterMat() : 0;
-  return;
-}
-  
-  
+    
 void
 AirBoxElement::populate(const FuncDataBase& Control)
   /*!
@@ -137,7 +133,6 @@ AirBoxElement::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("AirBoxElement","populate");
-
 
   Width=ReactorGrid::getElement<double>
     (Control,keyName+"Width",XIndex,YIndex);
@@ -160,24 +155,7 @@ AirBoxElement::populate(const FuncDataBase& Control)
 }
 
 void
-AirBoxElement::createUnitVector(const attachSystem::FixedComp& FC,
-				const Geometry::Vec3D& OG)
-  /*!
-    Create the unit vectors
-    - Y Down the beamline
-    \param FC :: Reactor Grid Unit
-    \param OG :: Orgin
-  */
-{
-  ELog::RegMethod RegA("AirBoxElement","createUnitVector");
-
-  attachSystem::FixedComp::createUnitVector(FC);
-  Origin=OG;
-  return;
-}
-
-void
-AirBoxElement::createSurfaces(const attachSystem::FixedComp& RG)
+AirBoxElement::createSurfaces()
   /*!
     Creates/duplicates the surfaces for this block
     \param RG :: Reactor grid
@@ -192,7 +170,6 @@ AirBoxElement::createSurfaces(const attachSystem::FixedComp& RG)
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*Depth/2.0,Y); 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*Width/2.0,X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*Width/2.0,X);
-  SMap.addMatch(buildIndex+5,RG.getLinkSurf(5));
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*Height,Z);
 
 
@@ -214,8 +191,7 @@ AirBoxElement::createSurfaces(const attachSystem::FixedComp& RG)
   ModelSupport::buildPlane(SMap,buildIndex+24,
 			   Origin+X*(Width/2.0-edgeGap-wallThick),X);
 
-  ModelSupport::buildPlane(SMap,buildIndex+25,
-			   RG.getLinkPt(5)+Z*wallThick,Z);
+  makeShiftedSurf(SMap,"BasePlate",buildIndex+25,Z,wallThick);
 
   ModelSupport::buildPlane(SMap,buildIndex+26,
 			   Origin+Z*(Height-wallThick),Z);
@@ -236,23 +212,24 @@ AirBoxElement::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("AirBoxElement","createObjects");
 
-  std::string Out;
+  const HeadRule& baseHR=getRule("BasePlate");
+  HeadRule HR;
+
   // Outer Layers
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  addOuterSurf(Out);      
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 -6 ");
+  addOuterSurf(HR*baseHR);      
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 1 -2 3 -4 5 -6 (-11:12:-13:14)");
-  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				 " 1 -2 3 -4 -6 (-11:12:-13:14)");
+  System.addCell(cellIndex++,waterMat,0.0,HR*baseHR);
 
   // walls
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 11 -12 13 -14 5 -6 (-21:22:-23:24:-25:26)");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				 "11 -12 13 -14 -6 (-21:22:-23:24:-25:26)");
+  System.addCell(cellIndex++,wallMat,0.0,HR*baseHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -22 23 -24 25 -26 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,0.0,Out));
-
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -22 23 -24 25 -26");
+  System.addCell(cellIndex++,innerMat,0.0,HR);
 
   return;
 }
@@ -271,21 +248,19 @@ AirBoxElement::createLinks()
 void
 AirBoxElement::createAll(Simulation& System,
 			 const attachSystem::FixedComp& RG,
-			 const Geometry::Vec3D& OG,
-			 const FuelLoad&)
+			 const long int sideIndex)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
     \param RG :: Fixed Unit
-    \param OG :: Origin
-    \param :: FuelLoad not used
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("AirBoxElement","createAll");
   populate(System.getDataBase());
-  populateWaterMat(RG);
-  createUnitVector(RG,OG);
-  createSurfaces(RG);
+
+  createUnitVector(RG,sideIndex);
+  createSurfaces();
   createObjects(System);
   createLinks();
   insertObjects(System);       

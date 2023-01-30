@@ -3,7 +3,7 @@
  
  * File:   R3Common/R3FrontEndCave.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "surfRegister.h"
@@ -55,7 +54,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
@@ -71,7 +70,7 @@ namespace xraySystem
 {
 
 R3FrontEndCave::R3FrontEndCave(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,12),
+  attachSystem::FixedRotate(Key,12),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -109,7 +108,7 @@ R3FrontEndCave::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("R3FrontEndCave","populate");
   
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   frontWallThick=Control.EvalVar<double>(keyName+"FrontWallThick");
   
@@ -138,22 +137,6 @@ R3FrontEndCave::populate(const FuncDataBase& Control)
   mazeActive=Control.EvalDefVar<int>(keyName+"MazeActive",0);
   doorActive=Control.EvalDefVar<int>(keyName+"RingDoorActive",0);
 
-  return;
-}
-
-void
-R3FrontEndCave::createUnitVector(const attachSystem::FixedComp& FC,
-			       const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("R3FrontEndCave","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
   return;
 }
  
@@ -236,51 +219,51 @@ R3FrontEndCave::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("R3FrontEndCave","createObjects");
 
-  const std::string fStr=getRuleStr("front");
-  std::string Out;
+  const HeadRule fHR=getRule("front");
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -2 3 (-4:-104) 5 -6 ");
-  makeCell("Void",System,cellIndex++,0,0.0,Out+fStr);
+  HeadRule HR;
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 3 (-4:-104) 5 -6");
+  makeCell("Void",System,cellIndex++,0,0.0,HR*fHR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 13 -103 5 -6 ");
-  makeCell("FrontWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 13 -103 5 -6");
+  makeCell("FrontWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 103 -104 5 -6 ");
-  makeCell("FrontWallVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 103 -104 5 -6");
+  makeCell("FrontWallVoid",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 104 -114 5 -6 ");
-  makeCell("FrontWallRing",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 104 -114 5 -6");
+  makeCell("FrontWallRing",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -2 -3 13 5 -6 ");
-  makeCell("OuterWall",System,cellIndex++,wallMat,0.0,Out+fStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 -3 13 5 -6");
+  makeCell("OuterWall",System,cellIndex++,wallMat,0.0,HR*fHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -102 4 -14 5 -6 ");
-  makeCell("RingWallA",System,cellIndex++,wallMat,0.0,Out+fStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-102 4 -14 5 -6");
+  makeCell("RingWallA",System,cellIndex++,wallMat,0.0,HR*fHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," (102:14) -2 104 -114 5 -6 ");
-  makeCell("RingWallB",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(102:14) -2 104 -114 5 -6");
+  makeCell("RingWallB",System,cellIndex++,wallMat,0.0,HR);
 
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " -12 14 114 (-24:-124) 15 -16 ");
-  makeCell("InnerVoid",System,cellIndex++,0,0.0,Out+fStr);
-
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				"-12 14 114 (-24:-124) 15 -16");
+  makeCell("InnerVoid",System,cellIndex++,0,0.0,HR*fHR);
   
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -102 13 -14 -5 15 ");
-  makeCell("FloorA",System,cellIndex++,floorMat,0.0,Out+fStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-102 13 -14 -5 15");
+  makeCell("FloorA",System,cellIndex++,floorMat,0.0,HR*fHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," (102:14) -12 13 -114 -5 15 ");
-  makeCell("FloorB",System,cellIndex++,floorMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(102:14) -12 13 -114 -5 15");
+  makeCell("FloorB",System,cellIndex++,floorMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -102 13 -14 6 -16 ");
-  makeCell("RoofA",System,cellIndex++,floorMat,0.0,Out+fStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-102 13 -14 6 -16");
+  makeCell("RoofA",System,cellIndex++,floorMat,0.0,HR*fHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," (102:14) -12 13 -114 6 -16 ");
-  makeCell("RoofB",System,cellIndex++,floorMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(102:14) -12 13 -114 6 -16");
+  makeCell("RoofB",System,cellIndex++,floorMat,0.0,HR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," -12 13 (-24:-124) 15 -16 ");
-  addOuterSurf(Out+fStr);      
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 13 (-24:-124) 15 -16");
+  addOuterSurf(HR*fHR);      
 
   return;
 }

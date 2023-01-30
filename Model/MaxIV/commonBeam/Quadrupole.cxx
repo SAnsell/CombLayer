@@ -3,7 +3,7 @@
  
  * File:   commonBeam/Quadrupole.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "surfRegister.h"
@@ -198,22 +197,6 @@ Quadrupole::populate(const FuncDataBase& Control)
 }
 
 void
-Quadrupole::createUnitVector(const attachSystem::FixedComp& FC,
-    	                     const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: FixedComp to attach to
-    \param sideIndex :: Link point
-  */
-{
-  ELog::RegMethod RegA("Quadrupole","createUnitVector");
-  
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  return;
-}
-
-void
 Quadrupole::createSurfaces()
   /*!
     Create All the surfaces
@@ -338,123 +321,122 @@ Quadrupole::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Quadrupole","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   // Outer steel
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
 				 "1 -2 13 -14 15 -16 (-3:4:-5:6) ");
-  makeCell("Frame",System,cellIndex++,frameMat,0.0,Out);
+  makeCell("Frame",System,cellIndex++,frameMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "101 -1 13 -14 15 -16 (-3:4:-5:6) ");
-  makeCell("FFrame",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				 "101 -1 13 -14 15 -16 (-3:4:-5:6)");
+  makeCell("FFrame",System,cellIndex++,0,0.0,HR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "-102 2 13 -14 15 -16 (-3:4:-5:6) ");
-  makeCell("BFrame",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				 "-102 2 13 -14 15 -16 (-3:4:-5:6)");
+  makeCell("BFrame",System,cellIndex++,0,0.0,HR);
 
-  std::string TB[2];
-  TB[0]=ModelSupport::getComposite(SMap,buildIndex," -105 5 ");
-  TB[1]=ModelSupport::getComposite(SMap,buildIndex," 106 -6 ");
+  HeadRule TB[2];
+  TB[0]=ModelSupport::getHeadRule(SMap,buildIndex,"-105 5");
+  TB[1]=ModelSupport::getHeadRule(SMap,buildIndex,"106 -6");
   for(size_t i=0;i<2;i++)
     {
       // Left  coil
-      Out=ModelSupport::getComposite(SMap,buildIndex,
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,
 				     "101 -102 103 -1000 "
 				     "(-117 : 111 : 113) "
 				     "(-118 : -112 : 113) "
 				     "(-127 : 111 : -114) "
-				     "(-128 : -112 : -114) ");
-      makeCell("CoilLowerLeft",System,cellIndex++,coilMat,0.0,Out+TB[i]);
+				     "(-128 : -112 : -114)");
+      makeCell("CoilLowerLeft",System,cellIndex++,coilMat,0.0,HR*TB[i]);
       
       // corners for coils
-      Out=ModelSupport::getComposite(SMap,buildIndex,"103 101 117 -111 -113 ");
-      makeCell("CoilLLCorner",System,cellIndex++,0,0.0,Out+TB[i]);
-      Out=ModelSupport::getComposite(SMap,buildIndex,"103 -102 118 112 -113 ");
-      makeCell("CoilLLCorner",System,cellIndex++,0,0.0,Out+TB[i]);
-      Out=ModelSupport::getComposite(SMap,buildIndex,"-1000 101 127 -111 114 ");
-      makeCell("CoilLLCorner",System,cellIndex++,0,0.0,Out+TB[i]);
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     "-1000 -102 128  112 114 ");
-      makeCell("CoilLLCorner",System,cellIndex++,0,0.0,Out+TB[i]);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"103 101 117 -111 -113");
+      makeCell("CoilLLCorner",System,cellIndex++,0,0.0,HR*TB[i]);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"103 -102 118 112 -113");
+      makeCell("CoilLLCorner",System,cellIndex++,0,0.0,HR*TB[i]);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1000 101 127 -111 114");
+      makeCell("CoilLLCorner",System,cellIndex++,0,0.0,HR*TB[i]);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"-1000 -102 128  112 114 ");
+      makeCell("CoilLLCorner",System,cellIndex++,0,0.0,HR*TB[i]);
       
       // Right Lower coil
-      Out=ModelSupport::getComposite(SMap,buildIndex,
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,
 				     "101 -102 -104 1000  "
 				     "(-137 : 111 : -133) "
 				     "(-138 : -112 : -133) "
 				     "(-147 : 111 : 134) "
-				     "(-148 : -112 : 134) ");
-      makeCell("CoilLowerLeft",System,cellIndex++,coilMat,0.0,Out+TB[i]);
+				     "(-148 : -112 : 134)");
+      makeCell("CoilLowerLeft",System,cellIndex++,coilMat,0.0,HR*TB[i]);
   
       // corners for coils
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     "-104 101 137 -111 133 ");
-      makeCell("CoilLRCorner",System,cellIndex++,0,0.0,Out+TB[i]);
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     "-104 -102 138 112 133 ");
-      makeCell("CoilLRCorner",System,cellIndex++,0,0.0,Out+TB[i]);
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     "1000 101 147 -111 -134 ");
-      makeCell("CoilLRCorner",System,cellIndex++,0,0.0,Out+TB[i]);
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     "1000 -102 148  112 -134 ");
-      makeCell("CoilLRCorner",System,cellIndex++,0,0.0,Out+TB[i]);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"-104 101 137 -111 133 ");
+      makeCell("CoilLRCorner",System,cellIndex++,0,0.0,HR*TB[i]);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"-104 -102 138 112 133 ");
+      makeCell("CoilLRCorner",System,cellIndex++,0,0.0,HR*TB[i]);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"1000 101 147 -111 -134 ");
+      makeCell("CoilLRCorner",System,cellIndex++,0,0.0,HR*TB[i]);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"1000 -102 148  112 -134 ");
+      makeCell("CoilLRCorner",System,cellIndex++,0,0.0,HR*TB[i]);
 
     }
   // Now make edge voids:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -102 3 -103 5 -6 ");
-  makeCell("LEdge",System,cellIndex++,0,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -102 104 -4 5 -6 ");
-  makeCell("REdge",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 3 -103 5 -6 ");
+  makeCell("LEdge",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 104 -4 5 -6 ");
+  makeCell("REdge",System,cellIndex++,0,0.0,HR);
 
   // Pole Pieces
-  const std::string ICell=      
-    (isActive("Inner")) ? getRuleStr("Inner") : "";
+  const HeadRule ICellHR=getRule("Inner");
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
 				 "105 201 -202 203 -204 (206:-207) ");
-  makeCell("Pole",System,cellIndex++,poleMat,0.0,Out);
+  makeCell("Pole",System,cellIndex++,poleMat,0.0,HR);
   
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"105 -2000 201 -202 1000 -104  (-203:204:(-206  207) )");
-  makeCell("VoidPoleA",System,cellIndex++,0,0.0,Out+ICell);
+  makeCell("VoidPoleA",System,cellIndex++,0,0.0,HR*ICellHR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
 				 "105 201 -202 303 -304 (306:-307) ");
-  makeCell("Pole",System,cellIndex++,poleMat,0.0,Out);
-  Out=ModelSupport::getComposite
+  makeCell("Pole",System,cellIndex++,poleMat,0.0,HR);
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"105 -2000 201 -202 -1000 103  (-303:304:(-306  307) )");
-  makeCell("VoidPoleB",System,cellIndex++,0,0.0,Out+ICell);
+  makeCell("VoidPoleB",System,cellIndex++,0,0.0,HR*ICellHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "-106 201 -202 403 -404 (406:-407) ");
-  makeCell("Pole",System,cellIndex++,poleMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				 "-106 201 -202 403 -404 (406:-407)");
+  makeCell("Pole",System,cellIndex++,poleMat,0.0,HR);
   
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"-106 2000 201 -202 1000 -104  (-403:404:(-406  407) )");
-  makeCell("VoidPoleC",System,cellIndex++,0,0.0,Out+ICell);
+  makeCell("VoidPoleC",System,cellIndex++,0,0.0,HR*ICellHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "-106 201 -202 503 -504 (506:-507) ");
-  makeCell("Pole",System,cellIndex++,poleMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				 "-106 201 -202 503 -504 (506:-507)");
+  makeCell("Pole",System,cellIndex++,poleMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
+  HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"-106 2000 201 -202 -1000 103  (-503:504:(-506  507) )");
 
-  makeCell("VoidPoleD",System,cellIndex++,0,0.0,Out+ICell);
+  makeCell("VoidPoleD",System,cellIndex++,0,0.0,HR*ICellHR);
     
   if (poleLength<coilLength-Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex,"105 -106 202 -102 103 -104 ");
-      makeCell("ExtraPoleVoidA",System,cellIndex++,0,0.0,Out+ICell);
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex,"105 -106 101 -201 103 -104 ");
-      makeCell("ExtraPoleVoidB",System,cellIndex++,0,0.0,Out+ICell);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"105 -106 202 -102 103 -104");
+      makeCell("ExtraPoleVoidA",System,cellIndex++,0,0.0,HR*ICellHR);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"105 -106 101 -201 103 -104");
+      makeCell("ExtraPoleVoidB",System,cellIndex++,0,0.0,HR*ICellHR);
     }
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -102 13 -14 15 -16");  
-  addOuterSurf(Out);      
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 13 -14 15 -16");  
+  addOuterSurf(HR);      
 
   return;
 }

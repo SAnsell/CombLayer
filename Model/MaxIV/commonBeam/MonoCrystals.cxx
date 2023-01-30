@@ -3,7 +3,7 @@
  
  * File:   commonBeam/MonoCrystals.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "surfRegister.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "varList.h"
@@ -66,8 +65,8 @@ namespace xraySystem
 {
 
 MonoCrystals::MonoCrystals(const std::string& Key) :
-  attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,8),
+  attachSystem::ContainedComp(),
   attachSystem::CellMap(),attachSystem::SurfMap()
   /*!
     Constructor
@@ -123,23 +122,6 @@ MonoCrystals::populate(const FuncDataBase& Control)
   xtalMat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   baseMat=ModelSupport::EvalMat<int>(Control,keyName+"BaseMat");
 
-  return;
-}
-
-void
-MonoCrystals::createUnitVector(const attachSystem::FixedComp& FC,
-                               const long int sideIndex)
-  /*!
-    Create the unit vectors.
-    Note that it also set the view point that neutrons come from
-    \param FC :: FixedComp for origin
-    \param sideIndex :: direction for link
-  */
-{
-  ELog::RegMethod RegA("MonoCrystals","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  
   return;
 }
 
@@ -208,98 +190,96 @@ MonoCrystals::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("MonoCrystals","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   // xstal A
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 103 -104 105 -106 ");
-  makeCell("XtalA",System,cellIndex++,xtalMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 103 -104 105 -106");
+  makeCell("XtalA",System,cellIndex++,xtalMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1001 -1002 1003 -1004 1005 -106 (-1006:-103:104)");
-  makeCell("ABase",System,cellIndex++,baseMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1001 -1002 1003 -1004 1005 -106 (-1006:-103:104)");
+  makeCell("ABase",System,cellIndex++,baseMat,0.0,HR);
 
-  std::string frontBack;
+  HeadRule fbHR;
   if (baseALength-lengthA > Geometry::zeroTol)
     {
       // extra parts of void crystal:
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex," 1001 -101  103 -104 105 -106 ");
-      makeCell("AFrontVoid",System,cellIndex++,0,0.0,Out);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"1001 -101  103 -104 105 -106");
+      makeCell("AFrontVoid",System,cellIndex++,0,0.0,HR);
 
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex," 102 -1002 103 -104 105 -106  ");
-      makeCell("ABackVoid",System,cellIndex++,0,0.0,Out);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"102 -1002 103 -104 105 -106 ");
+      makeCell("ABackVoid",System,cellIndex++,0,0.0,HR);
 
-      frontBack=ModelSupport::getComposite(SMap,buildIndex," 1001 -1002 ");
+      fbHR=ModelSupport::getHeadRule(SMap,buildIndex,"1001 -1002");
     }
   else if (baseALength-lengthA < -Geometry::zeroTol)
     {
       // extra void parts of base crystal:
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex," 101 -1001  1003 -1004 -106 1005 (-1006:-103:104)");
-      makeCell("AFrontVoid",System,cellIndex++,0,0.0,Out);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"101 -1001  1003 -1004 -106 1005 (-1006:-103:104)");
+      makeCell("AFrontVoid",System,cellIndex++,0,0.0,HR);
 
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex," -102 1002  1003 -1004 -106 1005 (-1006:-103:104)");
-      makeCell("ABackVoid",System,cellIndex++,0,0.0,Out);
-      frontBack=ModelSupport::getComposite(SMap,buildIndex," 101 -102 ");
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"-102 1002  1003 -1004 -106 1005 (-1006:-103:104)");
+      makeCell("ABackVoid",System,cellIndex++,0,0.0,HR);
+      fbHR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102");
     }
   
   // air gap:
   
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 103 -104 -105 1006 ");
-  makeCell("ABaseVoid",System,cellIndex++,0,0.0,Out+frontBack);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"103 -104 -105 1006");
+  makeCell("ABaseVoid",System,cellIndex++,0,0.0,HR*fbHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1003 -1004 -106 1005 ");
-  addOuterSurf(Out+frontBack);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1003 -1004 -106 1005");
+  addOuterSurf(HR*fbHR);
 
   // Second crystal
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -202 203 -204 205 -206 ");
-  makeCell("XtalB",System,cellIndex++,xtalMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -202 203 -204 205 -206");
+  makeCell("XtalB",System,cellIndex++,xtalMat,0.0,HR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 2001 -2002 2003 -2004 -2006 205 (2005:-203:204)");
-  makeCell("BBase",System,cellIndex++,baseMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"2001 -2002 2003 -2004 -2006 205 (2005:-203:204)");
+  makeCell("BBase",System,cellIndex++,baseMat,0.0,HR);
 
 
   if (baseBLength-lengthB > Geometry::zeroTol)
     {
       // extra parts of void crystal:
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex," 2001 -201  203 -204 205 -206 ");
-      makeCell("bFrontVoid",System,cellIndex++,0,0.0,Out);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"2001 -201  203 -204 205 -206");
+      makeCell("bFrontVoid",System,cellIndex++,0,0.0,HR);
 
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex," 202 -2002 203 -204 205 -206  ");
-      makeCell("BBackVoid",System,cellIndex++,0,0.0,Out);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"202 -2002 203 -204 205 -206 ");
+      makeCell("BBackVoid",System,cellIndex++,0,0.0,HR);
 
-      frontBack=ModelSupport::getComposite(SMap,buildIndex," 2001 -2002 ");
+      fbHR=ModelSupport::getHeadRule(SMap,buildIndex,"2001 -2002");
     }
   else if (baseBLength-lengthB < -Geometry::zeroTol)
     {
       // extra void parts of base crystal:
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex," 201 -2001  2003 -2004 205 -2006 (2005:-203:204)");
-      makeCell("BFrontVoid",System,cellIndex++,0,0.0,Out);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"201 -2001  2003 -2004 205 -2006 (2005:-203:204)");
+      makeCell("BFrontVoid",System,cellIndex++,0,0.0,HR);
 
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex," -202 2002  2003 -2004 205 -2006 (2005:-203:204)");
-      makeCell("BBackVoid",System,cellIndex++,0,0.0,Out);
-      frontBack=ModelSupport::getComposite(SMap,buildIndex," 201 -202 ");
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"-202 2002  2003 -2004 205 -2006 (2005:-203:204)");
+      makeCell("BBackVoid",System,cellIndex++,0,0.0,HR);
+      fbHR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -202");
     }
   
   // air gap:
   
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 203 -204 206 -2005 ");
-  makeCell("BBaseVoid",System,cellIndex++,0,0.0,Out+frontBack);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"203 -204 206 -2005");
+  makeCell("BBaseVoid",System,cellIndex++,0,0.0,HR*fbHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2003 -2004 205 -2006 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2003 -2004 205 -2006");
 
-
-
-  addOuterUnionSurf(Out+frontBack);
+  addOuterUnionSurf(HR*fbHR);
   
   return; 
 }

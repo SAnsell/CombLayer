@@ -3,7 +3,7 @@
  
  * File:   constructInc/Window.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,19 +36,23 @@ namespace constructSystem
   \brief Window system
 */
 
-class Window : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+class Window : 
+    public attachSystem::FixedComp,
+    public attachSystem::ContainedComp,
+    public attachSystem::FrontBackCut
 {
  private:
 
-  int baseCell;                 ///< Cell that it resides
+  int baseCell;                 ///< Cell that it resides in
 
   Geometry::Vec3D Centre;       ///< Centre point of view
   Geometry::Vec3D WAxis;        ///< Window primary axis
+
   int fSign;                    ///< Front surface sign
   int bSign;                    ///< Back surface sign
   const Geometry::Surface* FSurf;     ///< Front surface
   const Geometry::Surface* BSurf;     ///< Back surface
+
   int divideFlag;               ///< Dividing plane required
 
   double width;                 ///< full width
@@ -74,7 +78,8 @@ class Window : public attachSystem::ContainedComp,
   void setSize(const double,const double);
   void setCentre(const Geometry::Vec3D&,const Geometry::Vec3D&);
   void setBaseCell(const int);
-  
+
+  using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);

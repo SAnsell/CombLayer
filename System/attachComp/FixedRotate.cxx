@@ -244,7 +244,7 @@ FixedRotate::populate(const std::string& baseName,
       preXAngle=Control.EvalDefTail<double>
 	(keyName,baseName,"PreXAngle",preXAngle);
       preYAngle=Control.EvalDefTail<double>
-	(keyName,baseName,"PreYAngle",preXAngle);
+	(keyName,baseName,"PreYAngle",preYAngle);
       preZAngle=Control.EvalDefTail<double>
 	(keyName,baseName,"PreZAngle",preZAngle);
     }
@@ -268,7 +268,7 @@ FixedRotate::populate(const std::string& baseName,
   else
     {
       xAngle=Control.EvalDefTail<double>(keyName,baseName,"XAngle",xAngle);
-      yAngle=Control.EvalDefTail<double>(keyName,baseName,"YAngle",zAngle);
+      yAngle=Control.EvalDefTail<double>(keyName,baseName,"YAngle",yAngle);
       zAngle=Control.EvalDefTail<double>(keyName,baseName,"ZAngle",zAngle);
     }
 
@@ -336,7 +336,6 @@ FixedRotate::createUnitVector(const attachSystem::FixedComp& FC,
       
   FixedComp::createUnitVector(FC,sideIndex);  
   applyOffset();
-    
   return;
 }
 
@@ -354,6 +353,27 @@ FixedRotate::createUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("FixedRotate","createUnitVector(int,int)");
 
   FixedComp::createUnitVector(FC,orgIndex,basisIndex);  
+  applyOffset();
+    
+  return;
+}
+
+void
+FixedRotate::createUnitVector(const attachSystem::FixedComp& orgFC,
+			      const long int orgIndex,
+			      const attachSystem::FixedComp& axisFC,
+			      const long int basisIndex)
+  /*!
+    Create the unit vectors
+    \param orgFC :: Fixed Component for origin
+    \param axisFC :: Fixed Component for axis
+    \param orgIndex :: link point for origin
+    \param basisIndex :: link point for basis (xyz)
+  */
+{
+  ELog::RegMethod RegA("FixedRotate","createUnitVector(int,int)");
+
+  FixedComp::createUnitVector(orgFC,orgIndex,axisFC,basisIndex);  
   applyOffset();
     
   return;
@@ -424,7 +444,7 @@ FixedRotate::createCentredUnitVector(const attachSystem::FixedComp& FC,
     \param length :: full length of object
   */
 {
-  ELog::RegMethod RegA("FixedRotate","createUnitVector(length)");
+  ELog::RegMethod RegA("FixedRotate","createCentredUnitVector(length)");
 
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
@@ -468,6 +488,24 @@ FixedRotate::applyOffset()
   FixedComp::reOrientate();      // this might still be active
 
   if (flipX) FixedComp::reverseX();
+  return;
+}
+
+void
+FixedRotate::applyCopiedOffset(FixedComp& FC) const
+  /*!
+    Apply the rotation/step offset
+    \param FC :: FixedRotate apply copy rotation / offset to
+  */
+{
+  ELog::RegMethod RegA("FixedRotate","applyOffset");
+
+  FC.applyAngleRotate(preXAngle,preYAngle,preZAngle);
+  FC.applyShift(xStep,yStep,zStep);
+  FC.applyAngleRotate(xAngle,yAngle,zAngle);
+  FC.reOrientate();      // this might still be active
+
+  if (flipX) FC.reverseX();
   return;
 }
 

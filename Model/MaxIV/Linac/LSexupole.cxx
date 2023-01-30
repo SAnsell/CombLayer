@@ -3,7 +3,7 @@
 
  * File:   Linac/LSextupole.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -229,23 +228,24 @@ LSexupole::createObjects(Simulation& System)
   ELog::RegMethod RegA("LSexupole","createObjects");
   const size_t NPole(6);
 
-  std::string Out,unitStr;
+  HeadRule HR;
+  std::string unitStr;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 3 -4 5 -6" );
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 3 -4 5 -6");
+  addOuterSurf(HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6" );
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6" );
   unitStr=ModelSupport::getSeqUnion(1,static_cast<int>(2*NPole),1);
-  Out+=ModelSupport::getComposite(SMap,buildIndex+1000,unitStr);
-  makeCell("Frame",System,cellIndex++,frameMat,0.0,Out);
+  HR*=ModelSupport::getHeadRule(SMap,buildIndex+1000,unitStr);
+  makeCell("Frame",System,cellIndex++,frameMat,0.0,HR);
 
-  const std::string ICell=isActive("Inner") ? getRuleStr("Inner") : "";
+  const HeadRule ICellHR=getRule("Inner");
   /// plane front / back
-  const std::string FB=ModelSupport::getComposite(SMap,buildIndex,"1 -2");
-  const std::string frontSurf=ModelSupport::getComposite(SMap,buildIndex," -1");
-  const std::string backSurf=ModelSupport::getComposite(SMap,buildIndex," 2 ");
-  const std::string frontRegion=ModelSupport::getComposite(SMap,buildIndex,"11 -1");
-  const std::string backRegion=ModelSupport::getComposite(SMap,buildIndex," 2 -12");
+  const HeadRule fbHR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2");
+  const HeadRule frontSurf(SMap,buildIndex,-1);
+  const HeadRule backSurf(SMap,buildIndex,2);
+  const HeadRule frontRegion=ModelSupport::getHeadRule(SMap,buildIndex,"11 -1");
+  const HeadRule backRegion=ModelSupport::getHeadRule(SMap,buildIndex," 2 -12");
 
   std::vector<HeadRule> PoleExclude;
   std::vector<HeadRule> frontExclude;
@@ -256,34 +256,35 @@ LSexupole::createObjects(Simulation& System)
   for(size_t i=0; i<NPole;i++)
     {
       // const std::string outerCut=
-      // 	ModelSupport::getComposite(SMap,BN," -1001 ");
-      const std::string outerCut=ModelSupport::getComposite
+      // 	ModelSupport::getHeadRule(SMap,BN," -1001 ");
+      const HeadRule outerCut=ModelSupport::getHeadRule
 	(SMap,buildIndex,"-1001 -1002 -1003 -1004 -1005 -1006 -1007 "
       "-1008 -1009 -1010 -1011 -1012 ");
 
 
-      Out=ModelSupport::getComposite
-	(SMap,PN,BN,"2203 -2204 (-2207 : 2201) -1001M ");
-      makeCell("Pole",System,cellIndex++,poleMat,0.0,Out+FB);
-      PoleExclude.push_back(HeadRule(Out));
+      HR=ModelSupport::getHeadRule
+	(SMap,PN,BN,"2203 -2204 (-2207 : 2201) -1001M");
+      makeCell("Pole",System,cellIndex++,poleMat,0.0,HR*fbHR);
+      PoleExclude.push_back(HR);
 
-      Out=ModelSupport::getComposite
-	(SMap,PN,BN," 2003 -2004 2001  (-2203:2204) -1001M");
-      makeCell("Coil",System,cellIndex++,coilMat,0.0,Out+FB);
-      Out=ModelSupport::getComposite(SMap,PN," 2003 -2004 2001 ");
-      PoleExclude.back().addUnion(Out);
+      HR=ModelSupport::getHeadRule
+	(SMap,PN,BN,"2003 -2004 2001  (-2203:2204) -1001M");
+      makeCell("Coil",System,cellIndex++,coilMat,0.0,HR*fbHR);
+
+      HR=ModelSupport::getHeadRule(SMap,PN,"2003 -2004 2001");
+      PoleExclude.back().addUnion(HR);
 
       // Front extra pieces
-      Out=ModelSupport::getComposite
-	(SMap,PN,BN," 2003 -2004 2001  -2009 -1001M");
-      makeCell("CoilFront",System,cellIndex++,coilMat,0.0,Out+frontSurf);
-      frontExclude.push_back(HeadRule(Out));
+      HR=ModelSupport::getHeadRule
+	(SMap,PN,BN," 2003 -2004 2001 -2009 -1001M");
+      makeCell("CoilFront",System,cellIndex++,coilMat,0.0,HR*frontSurf);
+      frontExclude.push_back(HR);
 
       // back extra pieces
-      Out=ModelSupport::getComposite
+      HR=ModelSupport::getHeadRule
 	(SMap,PN,BN," 2003 -2004 2001 -2019 -1001M");
-      makeCell("CoilBack",System,cellIndex++,coilMat,0.0,Out+backSurf);
-      backExclude.push_back(HeadRule(Out));
+      makeCell("CoilBack",System,cellIndex++,coilMat,0.0,HR*backSurf);
+      backExclude.push_back(HR);
 
       BN+=2;
       PN+=20;
@@ -291,27 +292,27 @@ LSexupole::createObjects(Simulation& System)
 
   int aOffset(-1);
   int bOffset(0);
-  std::string OutA,OutB;
+  HeadRule hrA,hrB;
   const std::vector<std::string>
     sides({"-4", "-4 -6", "-6 3", "3","3 5", "5 -4"});
 
   for(size_t i=0;i<NPole;i++)
     {
-      OutA=ModelSupport::getRangeComposite
-	(SMap,501,506,bOffset,buildIndex,"501R -502R ");
-      OutB=ModelSupport::getRangeComposite
-      	(SMap,1001,1012,aOffset,buildIndex,"-1001R -1002R -1003R ");
-      makeCell("Triangle",System,cellIndex++,0,0.0,OutA+OutB+FB+
-	   PoleExclude[i].complement().display()+ICell);
+      hrA=ModelSupport::getRangeHeadRule
+	(SMap,501,506,bOffset,buildIndex,"501R -502R");
+      hrB=ModelSupport::getRangeHeadRule
+      	(SMap,1001,1012,aOffset,buildIndex,"-1001R -1002R -1003R");
+      makeCell("Triangle",System,cellIndex++,0,0.0,hrA*hrB*fbHR*
+	   PoleExclude[i].complement()*ICellHR);
 
-      OutB=ModelSupport::getComposite(SMap,buildIndex,sides[i]);
-      Out=ModelSupport::getComposite(SMap,buildIndex," 11 -1 ");
-      makeCell("FrontVoid",System,cellIndex++,0,0.0,OutA+OutB+Out+
-	   frontExclude[i].complement().display()+ICell);
+      hrB=ModelSupport::getHeadRule(SMap,buildIndex,sides[i]);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -1");
+      makeCell("FrontVoid",System,cellIndex++,0,0.0,
+	       hrA*hrB*HR*frontExclude[i].complement()*ICellHR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 ");
-      makeCell("BackVoid",System,cellIndex++,0,0.0,OutA+OutB+Out+
-	       backExclude[i].complement().display()+ICell);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12");
+      makeCell("BackVoid",System,cellIndex++,0,0.0,
+	       hrA*hrB*HR*backExclude[i].complement()*ICellHR);
 
       aOffset+=2;
       bOffset+=1;

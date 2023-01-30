@@ -123,7 +123,8 @@ FLEXPES::build(Simulation& System,
 
   const size_t PIndex=static_cast<size_t>(sideIndex-2);
   const size_t SIndex=(PIndex+1) % r1Ring->nConcave();
-  const size_t OIndex=(sideIndex+1) % r1Ring->getNCells("OuterSegment");
+  const size_t OIndex=static_cast<size_t>(sideIndex+1) %
+    r1Ring->getNCells("OuterSegment");
 
   frontBeam->setStopPoint(stopPoint);
   frontBeam->setCutSurf("Floor",r1Ring->getSurf("Floor"));

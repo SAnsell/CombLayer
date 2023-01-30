@@ -3,7 +3,7 @@
  
  * File:   commonVar/FocusGenerator.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -140,26 +140,17 @@ FocusGenerator::writeLayers(FuncDataBase& Control,
   
   Control.addVariable(keyName+"Length",length);       
   Control.addVariable(keyName+"XStep",0.0);       
+
   if (!yStepActive)
-    Control.addParse<double>(keyName+"YStep","-"+keyName+"Length/2.0");
+    Control.addVariable<double>(keyName+"YStep",-length/2.0);
   else if (yStepActive==1)
-    Control.addVariable<double>(keyName+"YStep",yStep);
+      Control.addVariable<double>(keyName+"YStep",yStep);
   else
     Control.addVariable<double>(keyName+"YStep",yStep-length/2.0);
-  if (!yBeamActive)
-    Control.addParse<double>(keyName+"BeamYStep","-"+keyName+"Length/2.0");
-  else if (yBeamActive==1)
-    Control.addVariable<double>(keyName+"BeamYStep",yBeam);
-  else
-    Control.addVariable<double>(keyName+"BeamYStep",yStep-length/2.0);
+
 
   Control.addVariable(keyName+"ZStep",zStep);       
-  Control.addVariable(keyName+"XYAngle",0.0);       
   Control.addVariable(keyName+"ZAngle",0.0);
-  Control.addVariable(keyName+"BeamXYAngle",0.0);       
-
-  Control.addVariable(keyName+"NShapes",1);
-  Control.addVariable(keyName+"ActiveShield",0);
 
   Control.addVariable(keyName+"LayerMat0",layerMat[0]);
   size_t activeLayer(0);
@@ -178,7 +169,6 @@ FocusGenerator::writeLayers(FuncDataBase& Control,
   return;
   
 }
-  
   
 void
 FocusGenerator::generateTaper(FuncDataBase& Control,
@@ -201,13 +191,13 @@ FocusGenerator::generateTaper(FuncDataBase& Control,
 
     
   writeLayers(Control,keyName,length);
-  
-  Control.addVariable(keyName+"0TypeID","Taper");
-  Control.addVariable(keyName+"0HeightStart",VS);
-  Control.addVariable(keyName+"0HeightEnd",VE);
-  Control.addVariable(keyName+"0WidthStart",HS);
-  Control.addVariable(keyName+"0WidthEnd",HE);
-  Control.copyVar(keyName+"0Length",keyName+"Length");
+
+  Control.addVariable(keyName+"TypeID","Taper");
+  Control.addVariable(keyName+"HeightStart",VS);
+  Control.addVariable(keyName+"HeightEnd",VE);
+  Control.addVariable(keyName+"WidthStart",HS);
+  Control.addVariable(keyName+"WidthEnd",HE);
+  Control.addVariable(keyName+"Length",length);
 
   return;
 }
@@ -229,10 +219,10 @@ FocusGenerator::generateRectangle(FuncDataBase& Control,
   ELog::RegMethod RegA("FocusGenerator","generateRectangle");
   writeLayers(Control,keyName,length);
   
-  Control.addVariable(keyName+"0TypeID","Rectangle");
-  Control.addVariable(keyName+"0Height",V);
-  Control.addVariable(keyName+"0Width",H);
-  Control.copyVar(keyName+"0Length",keyName+"Length");
+  Control.addVariable(keyName+"TypeID","Rectangle");
+  Control.addVariable(keyName+"Height",V);
+  Control.addVariable(keyName+"Width",H);
+  Control.addVariable(keyName+"Length",length);
 
   return;
 }
@@ -243,7 +233,8 @@ FocusGenerator::generateBender(FuncDataBase& Control,
 			       const double length,
 			       const double HS,const double HE,
 			       const double VS,const double VE,
-			       const double radius,const double angleDir) const
+			       const double radius,
+			       const double yRotAngle) const
   /*!
     Create bender variables
     \param Control :: FuncDatabase to populate
@@ -261,14 +252,13 @@ FocusGenerator::generateBender(FuncDataBase& Control,
 
   writeLayers(Control,keyName,length);
 
-  Control.addVariable(keyName+"0TypeID","Bend");
-  Control.addVariable(keyName+"0AHeight",VS);
-  Control.addVariable(keyName+"0BHeight",VE);
-  Control.addVariable(keyName+"0AWidth",HS);
-  Control.addVariable(keyName+"0BWidth",HE);
-  Control.addVariable(keyName+"0Length",length);
-  Control.addVariable(keyName+"0AngDir",angleDir);
-  Control.addVariable(keyName+"0Radius",radius);
+  Control.addVariable(keyName+"YAngle",yRotAngle);
+  Control.addVariable(keyName+"AHeight",VS);
+  Control.addVariable(keyName+"BHeight",VE);
+  Control.addVariable(keyName+"AWidth",HS);
+  Control.addVariable(keyName+"BWidth",HE);
+
+  Control.addVariable(keyName+"Radius",radius);
   return;
 }
   
@@ -276,7 +266,8 @@ void
 FocusGenerator::generateOctagon(FuncDataBase& Control,
 				const std::string& keyName,
 				const double length,
-				const double WS,const double WE)  const
+				const double WS,
+				const double WE)  const
 /*!
     Generate the focus-Octagon and Taper variables
     \param Control :: Functional data base
@@ -288,11 +279,10 @@ FocusGenerator::generateOctagon(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("FocusGenerator","generateOctagon");
   writeLayers(Control,keyName,length);
-  
-  Control.addVariable(keyName+"0TypeID","Octagon");
-  Control.addVariable(keyName+"0WidthStart",WS);
-  Control.addVariable(keyName+"0WidthEnd",WE);
-  Control.copyVar(keyName+"0Length",keyName+"Length");
+
+  Control.addVariable(keyName+"TypeID","Octagon");
+  Control.addVariable(keyName+"WidthStart",WS);
+  Control.addVariable(keyName+"WidthEnd",WE);
 
   return;
 }

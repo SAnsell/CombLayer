@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BlockAddition.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,9 +35,10 @@ namespace essSystem
   \brief Additional waterblock to ESS moderator
 */
 
-class BlockAddition :  public attachSystem::ContainedComp,
-    public attachSystem::LayerComp,
-    public attachSystem::FixedOffsetUnit
+class BlockAddition :
+    public attachSystem::FixedOffsetUnit,
+    public attachSystem::ContainedComp,
+    public attachSystem::LayerComp
 {
  private:
   
@@ -46,7 +47,7 @@ class BlockAddition :  public attachSystem::ContainedComp,
   double length;                 ///< Length
   double height;                 ///< height
   double width;                  ///< width
-  size_t nLayers;                ///< Number of layers
+
   std::vector<double> wallThick; ///< Wall Thick
   std::vector<double> wallTemp;  ///< Wall Temp
   std::vector<int> wallMat;      ///< Wall Mat
@@ -55,8 +56,8 @@ class BlockAddition :  public attachSystem::ContainedComp,
 
   int edgeSurf;                  ///< Surface to join too
   Geometry::Vec3D rotCent;       ///< General rotation centre
-  std::string preModInner;       ///< Inner preMod surface
-  std::string preModOuter;       ///< Outer preMod surface
+  HeadRule preModInner;       ///< Inner preMod surface
+  HeadRule preModOuter;       ///< Outer preMod surface
 
   void populate(const FuncDataBase&);
   void createUnitVector(const Geometry::Vec3D&,
@@ -68,7 +69,7 @@ class BlockAddition :  public attachSystem::ContainedComp,
 		     const size_t,const long int);
   void createLinks();
 
-  std::string rotateItem(std::string);
+  HeadRule rotateItem(HeadRule);
 
  public:
 
@@ -84,11 +85,10 @@ class BlockAddition :  public attachSystem::ContainedComp,
   void setEdgeSurf(const int S) { edgeSurf=S; }
   /// Set centre rotation
   void setCentRotate(const Geometry::Vec3D& C) { rotCent=C; }
-  std::string createCut(const size_t) const;
+  HeadRule createCut(const size_t) const;
 
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
-  virtual int getLayerSurf(const size_t,const long int) const;
-  virtual std::string getLayerString(const size_t,const long int) const;
+  virtual HeadRule getLayerHR(const size_t,const long int) const;
 
   void createAll(Simulation&,const Geometry::Vec3D&,
 		 const attachSystem::LayerComp&,

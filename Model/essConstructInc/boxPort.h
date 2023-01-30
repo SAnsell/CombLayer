@@ -73,7 +73,6 @@ class boxPort :
   int voidMat;                  ///< void material
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -93,7 +92,8 @@ class boxPort :
   void setMaterials(const std::string&,const std::string&);
   /// set Void
   void setInnerExclude() { innerExclude=1; }
-  
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

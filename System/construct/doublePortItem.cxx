@@ -173,7 +173,6 @@ doublePortItem::constructObjectReducing(Simulation& System,
   ELog::RegMethod RegA("doublePortItem","constructObjectReducing");
 
   const bool capFlag(capThick>Geometry::zeroTol);
-  const bool windowFlag(windowThick>Geometry::zeroTol);
   
   // construct inner volume:
   HeadRule HR;

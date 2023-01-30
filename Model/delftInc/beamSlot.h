@@ -35,15 +35,14 @@ namespace delftSystem
   */
   
 class beamSlot :
-    public attachSystem::ContainedComp,
     public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
     public attachSystem::ExternalCut  
 {
  private:
 
   const std::string baseName;  ///< Base name
   
-  double axisAngle;      ///< Angle round the centre line  
   double xSize;          ///< Size of the slot [long]    
   double zSize;          ///< Size of the slot [short]
 

@@ -70,7 +70,8 @@
 #include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "HoleShape.h"
-#include "GuideLine.h"
+#include "GuideUnit.h"
+#include "PlateUnit.h"
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "Bunker.h"
@@ -87,18 +88,18 @@ NNBAR::NNBAR(const std::string& keyName) :
   attachSystem::CopiedComp("nnbar",keyName),
   startPoint(0),stopPoint(0),
   nnbarAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
-  FocusA(new beamlineSystem::GuideLine(newName+"FA")),
+  FocusA(new beamlineSystem::PlateUnit(newName+"FA")),
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
-  FocusB(new beamlineSystem::GuideLine(newName+"FB")),
+  FocusB(new beamlineSystem::PlateUnit(newName+"FB")),
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
-  FocusC(new beamlineSystem::GuideLine(newName+"FC")),
+  FocusC(new beamlineSystem::PlateUnit(newName+"FC")),
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
-  FocusD(new beamlineSystem::GuideLine(newName+"FD")),
+  FocusD(new beamlineSystem::PlateUnit(newName+"FD")),
   BInsert(new BunkerInsert(newName+"BInsert")),
   
   ShieldA(new constructSystem::LineShield(newName+"ShieldA")),
   VPipeOutA(new constructSystem::VacuumPipe(newName+"PipeOutA")),
-  FocusOutA(new beamlineSystem::GuideLine(newName+"FOutA")),
+  FocusOutA(new beamlineSystem::PlateUnit(newName+"FOutA")),
   Cave(new DetectorChamber(newName+"Cave")),
   CaveCut(new constructSystem::HoleShape(newName+"CaveCut"))
  /*!
@@ -162,21 +163,22 @@ NNBAR::buildBunkerUnits(Simulation& System,
   VPipeB->createAll(System,FA,startIndex);
 
   FocusB->addInsertCell(VPipeB->getCells("Void"));
-  FocusB->createAll(System,*VPipeB,0,*VPipeB,0);
+  FocusB->createAll(System,*VPipeB,0);
 
+  
   // pipe from gamma shield to 10m
   VPipeC->addAllInsertCell(bunkerVoid);
-  VPipeC->createAll(System,FocusB->getKey("Guide0"),2);
+  VPipeC->createAll(System,*FocusB,2);
 
   FocusC->addInsertCell(VPipeC->getCells("Void"));
-  FocusC->createAll(System,*VPipeC,0,*VPipeC,0);
+  FocusC->createAll(System,*VPipeC,0);
 
   // pipe to 30m
   VPipeD->addAllInsertCell(bunkerVoid);
-  VPipeD->createAll(System,FocusC->getKey("Guide0"),2);
+  VPipeD->createAll(System,*FocusC,2);
 
   FocusD->addInsertCell(VPipeD->getCells("Void"));
-  FocusD->createAll(System,*VPipeD,0,*VPipeD,0);
+  FocusD->createAll(System,*VPipeD,0);
 
   return;
 }
@@ -207,7 +209,7 @@ NNBAR::buildOutGuide(Simulation& System,
   VPipeOutA->createAll(System,FW,startIndex);
 
   FocusOutA->addInsertCell(VPipeOutA->getCells("Void"));
-  FocusOutA->createAll(System,FW,startIndex,FW,startIndex);
+  FocusOutA->createAll(System,FW,startIndex);
   
   return;
 }
@@ -234,9 +236,9 @@ NNBAR::buildHut(Simulation& System,
   ShieldA->insertObjects(System);
 
   CaveCut->addInsertCell(Cave->getCells("IronFront"));
-  CaveCut->setFaces(Cave->getKey("Mid").getFullRule(-1),
-                    Cave->getKey("Inner").getFullRule(1));
-  CaveCut->createAll(System,Cave->getKey("Inner"),-1);
+  CaveCut->setCutSurf("front",*Cave,"#MidFront");
+  CaveCut->setCutSurf("back",*Cave,"InnerFront");
+  CaveCut->createAll(System,*Cave,"InnerFront");
 
   return;
 }
@@ -300,25 +302,25 @@ NNBAR::build(Simulation& System,
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);
   FocusA->setBack(GItem.getKey("Beam"),-2);
-  FocusA->createAll(System,*nnbarAxis,-3,*nnbarAxis,-3);
+  FocusA->createAll(System,*nnbarAxis,-3);
   
   if (stopPoint==1) return;                      // STOP At monolith
                                                  // edge  
-  buildBunkerUnits(System,FocusA->getKey("Guide0"),2,
+  buildBunkerUnits(System,*FocusA,2,
                    bunkerObj.getCell("MainVoid"));
+  ELog::EM<<"Bunkder == "<<bunkerObj.getCell("MainVoid")<<ELog::endDiag;
 
   // IN WALL
   // Make bunker insert
-  BInsert->setBunkerObject(bunkerObj);
-  BInsert->createAll(System,FocusC->getKey("Guide0"),2);
-  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
+  BInsert->setCutSurf("front",bunkerObj,-1);
+  BInsert->setCutSurf("back",bunkerObj,-2);
+  BInsert->createAll(System,*FocusC,2);
+  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);
 
-
-  VPipeD->addAllInsertCell(BInsert->getCell("Void"));
-  VPipeD->insertObjects(System);   
-
+  VPipeD->insertInCell("Main",System,BInsert->getCell("Void"));   
+  
   ShieldA->setFront(bunkerObj,2);
-  buildOutGuide(System,FocusD->getKey("Guide0"),2,voidCell);
+  buildOutGuide(System,*FocusD,2,voidCell);
 
   buildHut(System,*ShieldA,2,voidCell);
   

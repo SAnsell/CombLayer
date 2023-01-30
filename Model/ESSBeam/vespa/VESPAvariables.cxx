@@ -3,7 +3,7 @@
  
  * File:    ESSBeam/vespa/VESPAvariables.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "stringCombine.h"
 #include "Vec3D.h"
 #include "Code.h"
 #include "varList.h"
@@ -85,10 +84,10 @@ VESPAvariables(FuncDataBase& Control)
 
   Control.addVariable("vespaAxisXStep",1.523);
   Control.addVariable("vespaAxisZStep",0.0);
-  Control.addVariable("vespaAxisXYAngle",-0.9);
+  Control.addVariable("vespaAxisZAngle",-0.9);
   
   PipeGen.setPipe(8.0,0.5);      // 8cm radius / 0.5cm wall
-  PipeGen.setWindow(-2.0,0.5); 
+  PipeGen.setNoWindow();
   PipeGen.setFlange(-4.0,1.0);
   PipeGen.setCladding(0.5,"B4C");
 
@@ -405,6 +404,7 @@ VESPAvariables(FuncDataBase& Control)
   const double braggAngle[]={-50,-30,-50,-30};
   const double braggStep[]={32.63,64.157,32.63,64.157};
   const double detStep[]={24.5,30.0,24.5,30.0};
+  const double posScale(1.3);  // outshift to accommodate cryo (1.0 => min pos)
   int detCnt(0);
   for(size_t i=0;i<4;i++)   // 4 rings
     {
@@ -412,14 +412,14 @@ VESPAvariables(FuncDataBase& Control)
       const double aZStep= 45.0;
       for(size_t j=0;j<8;j++)
         {
-          const std::string xKey="vespaXStal"+StrFunc::makeString(detCnt);
-          const std::string dKey="vespaDBox"+StrFunc::makeString(detCnt);
-          Control.addVariable(xKey+"YStep",braggStep[i]);
+          const std::string xKey="vespaXStal"+std::to_string(detCnt);
+          const std::string dKey="vespaDBox"+std::to_string(detCnt);
+          Control.addVariable(xKey+"YStep",braggStep[i]*posScale);
           Control.addVariable(xKey+"PreXYAngle",braggAngle[i]);
           Control.addVariable(xKey+"PreZAngle",0.0);
           Control.addVariable(xKey+"XYAngle",-braggAngle[i]);
           Control.addVariable(xKey+"ZAngle",0.0);
-          Control.addVariable(dKey+"YStep",detStep[i]);
+          Control.addVariable(dKey+"YStep",detStep[i]*posScale);
           Control.addVariable(dKey+"XYAngle",braggAngle[i]);
           Control.addVariable(xKey+"YRotation",aZ);
           Control.addVariable(xKey+"ZRotation",(i>1 ? 180.0 : 0.0));

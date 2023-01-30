@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   processInc/pairItem.h
+ * File:   modelSupportInc/pairItem.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

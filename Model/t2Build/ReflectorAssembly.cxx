@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   moderator/makeReflector.cxx
+ * File:   t2Build/makeReflector.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -168,43 +168,47 @@ ReflectorAssembly::createObjects(Simulation& System)
   GrooveObj->createAll(System,*RefObj,0);
   HydObj->setCutSurf("innerWall",GrooveObj->getLinkSurf(1));
   HydObj->createAll(System,*GrooveObj,1);
-
   if (orthoHFlag)
     {
       OrthoInsert OI("ortho");
       OI.build(System,*HydObj,*GrooveObj);
     }
-  
-  VacObj->addInsertCell(refCell);
-  VacObj->buildPair(System,*GrooveObj,*HydObj);
 
+  VacObj->setCutSurf("Internal",GrooveObj->getExcludeSurf()*
+		     HydObj->getExcludeSurf());
+  VacObj->addInsertCell(refCell);
+  VacObj->createBoundary(*GrooveObj,*HydObj);
+  VacObj->createAll(System,*GrooveObj,0);
+
+  
   RefObj->insertComponent(System,"FLGroove",VacObj->getMainRule("front"));
   RefObj->insertComponent(System,"FLHydro",VacObj->getMainRule("back"));
 
-
-
-
   PMgroove->addInsertCell(refCell);
+  PMgroove->setCutSurf("target",*TarObj,1);
+  PMgroove->setCutSurf("divide",VacObj->getDivideSurf());
+  PMgroove->setCutSurf("base",*VacObj,6);
   PMgroove->setTargetSurf(TarObj->getLinkSurf(1));
   PMgroove->setDivideSurf(VacObj->getDivideSurf());
   PMgroove->setEdge();
   PMgroove->createAll(System,*VacObj,6); 
 
   PMhydro->addInsertCell(refCell);
+  PMhydro->setCutSurf("target",*TarObj,1);
+  PMhydro->setCutSurf("divide",-VacObj->getDivideSurf());
+  PMhydro->setCutSurf("base",*VacObj,6);
   PMhydro->setTargetSurf(TarObj->getLinkSurf(1));
   PMhydro->setDivideSurf(-VacObj->getDivideSurf());
   PMhydro->setEdge();
-  PMhydro->setRotate();
   PMhydro->createAll(System,*VacObj,6);  
 
   Horn->addInsertCell(refCell);
   Horn->setCutSurf("DivideSurf",-VacObj->getDivideSurf());
-
+  ELog::EM<<"Horn div == "<<-VacObj->getDivideSurf()<<ELog::endDiag;
   const HeadRule VUnit=
     attachSystem::intersectionLink(*VacObj,{-2,3,-4,5,-6});
 
   Horn->setCutSurf("VacCan",VUnit);
-
   Horn->setLinkCopy("FLhydro",*RefObj,"FLhydro");
   Horn->setLinkCopy("FLhydroNeg",*RefObj,"FLhydroNeg");
   Horn->setLinkCopy("FLhydroPlus",*RefObj,"FLhydroPlus");
@@ -223,6 +227,11 @@ ReflectorAssembly::createObjects(Simulation& System)
   Horn->setCutSurf("BaseCut",*PMhydro,"minusZ");
   Horn->setCutSurf("BaseFullCut",PMhydro->getOuterSurf());
   Horn->setCutSurf("BaseFrontCut",*PMhydro,"back");
+
+  ELog::EM<<"Horn -- "<<Horn->getRule("BaseFullCut")<<ELog::endDiag;
+  ELog::EM<<"Horn -- "<<Horn->getRule("BaseFrontCut")<<ELog::endDiag;
+  ELog::EM<<"Horn -- "<<Horn->getRule("BaseCut")<<ELog::endDiag;
+
   Horn->createAll(System,*HydObj,0);
 
   processDecoupled(System);
@@ -232,13 +241,16 @@ ReflectorAssembly::createObjects(Simulation& System)
     (DMod->getKeyName(),"DMod to CC failed");
 
   DVacObj->addInsertCell(refCell);
-  DVacObj->buildSingle(System,*DMod,CMod->getExclude());
+  DVacObj->setCutSurf("Internal",CMod->getExcludeSurf());
+  DVacObj->createBoundary(*DMod);
+  DVacObj->createAll(System,*DMod,0);
+
   RefObj->insertComponent(System,"FLNarrow",DVacObj->getMainRule("front"));
   RefObj->insertComponent(System,"FLWish",DVacObj->getMainRule("back"));
 
   PMdec->addInsertCell(refCell);
+  PMdec->setCutSurf("target",*TarObj,1);
   PMdec->setTargetSurf(TarObj->getLinkSurf(1));
-  PMdec->setRotate();
   PMdec->createAll(System,*DVacObj,5); 
 
   IRcut->addInsertCell(refCell);
@@ -260,7 +272,6 @@ ReflectorAssembly::processDecoupled(Simulation& System)
   /*!
     Create the decoupled item and build it
     \param System :: Simulation 
-
    */
 {
   ELog::RegMethod RegA("ReflectorAssembly","processDecoupled");
@@ -320,7 +331,7 @@ ReflectorAssembly::insertPipeObjects(Simulation& System)
   
   CouplePipe CP("cplPipe");
   System.createObjSurfMap();
-  CP.build(System,*HydObj,4,*VacObj);
+  CP.build(System,*HydObj,5,*VacObj);
 
   DecouplePipe DP("decPipe");
   DP.build(System,*DMod,0,*DVacObj,1);
@@ -334,8 +345,6 @@ ReflectorAssembly::insertPipeObjects(Simulation& System)
   return;
 }
   
-
-
 void
 ReflectorAssembly::createAll(Simulation& System,
 			     const attachSystem::FixedComp& FC,

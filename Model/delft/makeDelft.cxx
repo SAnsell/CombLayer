@@ -49,8 +49,9 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
+#include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
 #include "BaseMap.h"
@@ -222,7 +223,7 @@ makeDelft::makeRabbit(Simulation& System)
   do
     {
       RPType RB(new Rabbit("Rabbit",index));
-	
+
       flag=RB->build(System,*GridPlate);	
       if (flag) 
 	{
@@ -256,6 +257,7 @@ makeDelft::buildCore(Simulation& System,
   if (IParam.flag("FuelXML"))
     GridPlate->writeFuelXML(IParam.getValue<std::string>("FuelXML"));
 
+  return;
 }
 
 void
@@ -268,8 +270,6 @@ makeDelft::buildFlight(Simulation& System,
    */
 {
   ELog::RegMethod RegA("makeDelft","buildFlight");
-
- 
  
   const attachSystem::FixedComp& WC=World::masterOrigin();
 
@@ -336,7 +336,8 @@ makeDelft::buildModerator(Simulation& System,
   // Joins onto the pressure vessel
   FlightA->addInsertCell(Pool->getCells("Water"));
   FlightA->addInsertCell(74123);
-  FlightA->createAll(System,*ColdPress,2);
+  FlightA->setCutSurf("front",*ColdPress,"back");
+  FlightA->createAll(System,*ColdPress,"back");
 
   R2Insert->addInsertCell(FlightA->getCells("Void"));
   R2Insert->createAll(System,*FlightA,0);
@@ -352,12 +353,13 @@ makeDelft::buildModerator(Simulation& System,
       HeadRule CPCut(ColdPress->getFullRule(1));
       CPCut.addUnion(ColdPress->getFullRule(3));
       BePtr->setCutSurf("FlightCut",
-			FlightB->getExclude()+FlightC->getExclude()+
-			CPCut.display());
+			FlightB->getExcludeSurf()*
+			FlightC->getExcludeSurf()*
+			CPCut);
 
       BePtr->createAll(System,FC,sideIndex);
       
-      R2Be=std::shared_ptr<attachSystem::FixedOffset>(BePtr);
+      R2Be=std::shared_ptr<attachSystem::FixedRotate>(BePtr);
       OR.addObject(R2Be);
     }
 
@@ -376,7 +378,6 @@ makeDelft::build(Simulation& System,
   // For output stream
   ELog::RegMethod RControl("makeDelft","build");
 
-
   const attachSystem::FixedComp& WC=World::masterOrigin();
 
   const std::string buildType=IParam.getValue<std::string>("buildType");
@@ -385,6 +386,7 @@ makeDelft::build(Simulation& System,
 
   const attachSystem::FixedComp* FCPtr=&WC;
   long int sideIndex(0);
+
   if (buildType!="Single")
     {
       Pool->addInsertCell(74123);

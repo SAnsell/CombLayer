@@ -3,7 +3,7 @@
  
  * File:    ESSBeam/miracles/MIRACLESvariables.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -109,8 +109,8 @@ MIRACLESvariables(FuncDataBase& Control)
 
   Control.addVariable("miraclesAppAInnerWidth",4.0);
   Control.addVariable("miraclesAppAInnerHeight",4.0);
-  Control.addVariable("miraclesAppAWidth",12.0);
-  Control.addVariable("miraclesAppAHeight",12.0);
+  Control.addVariable("miraclesAppAWidth",10.0);
+  Control.addVariable("miraclesAppAHeight",10.0);
   Control.addVariable("miraclesAppAThick",5.0);
   Control.addVariable("miraclesAppAYStep",7.0);
   Control.addVariable("miraclesAppADefMat","Tungsten");
@@ -147,6 +147,8 @@ MIRACLESvariables(FuncDataBase& Control)
 
   // Pipe after second chopper unit [to 11.5m]
   PipeGen.setRectPipe(16.0,16.0,0.5);
+  PipeGen.setFlange(13,1.0);
+  PipeGen.setAFlange(12,1.0);
   PipeGen.generatePipe(Control,"miraclesPipeE",359.0);
   Control.addVariable("miraclesPipeEYStep",2.0);
   FGen.clearYOffset();
@@ -176,6 +178,7 @@ MIRACLESvariables(FuncDataBase& Control)
   Control.addVariable("miraclesShutterATopVoid",8.1);
 
   PipeGen.setRectPipe(16.0,16.0,0.5);
+  PipeGen.setFlange(13,1.0);
   PipeGen.generatePipe(Control,"miraclesPipeF",520.0);
   Control.addVariable("miraclesPipeFYStep",2.0);
   FGen.generateTaper(Control,"miraclesFF",516.0, 5.0,4.857,  9.5,9.85714);
@@ -205,19 +208,25 @@ MIRACLESvariables(FuncDataBase& Control)
 
   // OUTER shielding
   SGen.generateShield(Control,"miraclesShieldA",3000.0,40.0,40.0,40.0,4,8);  
-
-  PipeGen.setPipe(10.0,0.5);
+  Control.addVariable("miraclesShieldAXYAngle",-0.1);
+  
+  PipeGen.setPipe(11.0,0.5);
+  
   PipeGen.generatePipe(Control,"miraclesPipeOutA",1495.0);
   Control.addVariable("miraclesPipeOutAYStep",4.0);
+  Control.addVariable("miraclesPipeOutAZAngle",-0.08);
   FGen.generateBender(Control,"miraclesBOutA",1491.0,
 		      12.0,12.0,12.0,12.0,
 		      500000.0,0.0);
+  Control.addVariable("miraclesBOutAZAngle",0.08);
 
   PipeGen.generatePipe(Control,"miraclesPipeOutB",1498.0);
-  Control.addVariable("miraclesPipeOutBYStep",1.0);
+  Control.addVariable("miraclesPipeOutBYStep",3.0);
+  Control.addVariable("miraclesPipeOutBZAngle",-0.09);
   FGen.generateBender(Control,"miraclesBOutB",1494.0,
 		      12.0,12.0,12.0,12.0,
 		      500000.0,0.0);
+  Control.addVariable("miraclesBOutBZAngle",0.09);
 
   
 

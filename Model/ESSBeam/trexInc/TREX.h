@@ -38,6 +38,12 @@ namespace essConstruct
   class DiskChopper;
 }
 
+namespace beamlineSystem
+{
+  class BenderUnit;
+  class PlateUnit;
+}
+
 namespace constuctSystem
 {
   class Jaws;
@@ -71,8 +77,8 @@ class TREX : public attachSystem::CopiedComp
 {
  private:
 
-  const size_t nC;
-  const size_t nF;
+  static constexpr size_t nC=7;     // number of C shield units
+  static constexpr size_t nF=8;     // number of focus units
   
   /// Stop at [0:Complete / 1:Mono Wall / 2:Inner Bunker / 3:Outer Bunker ]
   int stopPoint;  
@@ -81,18 +87,18 @@ class TREX : public attachSystem::CopiedComp
   std::shared_ptr<attachSystem::FixedRotateUnit> trexAxis;
   
   /// Monolith guideline
-  std::shared_ptr<beamlineSystem::GuideLine> FocusMono;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusMono;
 
   /// Bridge guide in the light shutter
   std::shared_ptr<constructSystem::VacuumPipe> VPipeBridge;
-  std::shared_ptr<beamlineSystem::GuideLine> FocusBridge;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusBridge;
 
   /// First Bender inside Bunker
   std::shared_ptr<constructSystem::VacuumPipe> VPipeInA;
-  std::shared_ptr<beamlineSystem::GuideLine> BendInA;
+  std::shared_ptr<beamlineSystem::BenderUnit> BendInA;
 
   std::shared_ptr<constructSystem::VacuumPipe> VPipeInB;
-  std::shared_ptr<beamlineSystem::GuideLine> BendInB;
+  std::shared_ptr<beamlineSystem::BenderUnit> BendInB;
 
   std::shared_ptr<constructSystem::PipeCollimator> CollimA;
   std::shared_ptr<constructSystem::PipeCollimator> CollimB;
@@ -100,13 +106,13 @@ class TREX : public attachSystem::CopiedComp
 
   /// !! Heavy Shutter !!
   std::shared_ptr<constructSystem::VacuumPipe> VPipeInC;
-  std::shared_ptr<beamlineSystem::GuideLine> BendInC;
+  std::shared_ptr<beamlineSystem::BenderUnit> BendInC;
   
   /// Bunker Insert
   std::shared_ptr<essSystem::CompBInsert> BInsertA;
-  std::shared_ptr<beamlineSystem::GuideLine> FocusWallA;
+  std::shared_ptr<beamlineSystem::BenderUnit> FocusWallA;
   std::shared_ptr<essSystem::CompBInsert> BInsertB;
-  std::shared_ptr<beamlineSystem::GuideLine> FocusWallB;
+  std::shared_ptr<beamlineSystem::BenderUnit> FocusWallB;
 
   /// Structure Up to the First Chopper Pit
   std::shared_ptr<constructSystem::ChopperPit> PitA;
@@ -116,7 +122,7 @@ class TREX : public attachSystem::CopiedComp
   std::shared_ptr<essConstruct::DiskChopper> DiskA;
   std::shared_ptr<constructSystem::LineShield> ShieldA;
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutA;
-  std::shared_ptr<beamlineSystem::GuideLine> BendOutA;
+  std::shared_ptr<beamlineSystem::BenderUnit> BendOutA;
 
   /// Structure Up to the Second Chopper Pit
   std::shared_ptr<constructSystem::ChopperPit> PitB;
@@ -126,7 +132,7 @@ class TREX : public attachSystem::CopiedComp
   std::shared_ptr<essConstruct::DiskChopper> DiskB;
   std::shared_ptr<constructSystem::LineShield> ShieldB;
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutB;
-  std::shared_ptr<beamlineSystem::GuideLine> BendOutB;
+  std::shared_ptr<beamlineSystem::BenderUnit> BendOutB;
 
   /// Structur up to the T0 chopper position
   std::shared_ptr<constructSystem::LineShield> ShieldC;
@@ -137,14 +143,13 @@ class TREX : public attachSystem::CopiedComp
   std::shared_ptr<essConstruct::DiskChopper> DiskC;
 
 
-  std::array<std::shared_ptr<constructSystem::VacuumPipe>,7>
-  VPipeOutCs;
-  std::array<std::shared_ptr<beamlineSystem::GuideLine>,7> BendOutCs;
+  std::array<std::shared_ptr<constructSystem::VacuumPipe>,nC> VPipeOutCs;
+  std::array<std::shared_ptr<beamlineSystem::BenderUnit>,nC> BendOutCs;
 
   /// Last part of the curve part
   std::shared_ptr<constructSystem::LineShield> ShieldD;
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutD;
-  std::shared_ptr<beamlineSystem::GuideLine> BendOutD;
+  std::shared_ptr<beamlineSystem::BenderUnit> BendOutD;
 
   /// First Straight Beamline up to the next ChopperPit
   std::shared_ptr<constructSystem::ChopperPit> PitE;
@@ -155,38 +160,36 @@ class TREX : public attachSystem::CopiedComp
   std::shared_ptr<essConstruct::DiskChopper> DiskE2;
   std::shared_ptr<constructSystem::LineShield> ShieldE;
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutE;
-  std::shared_ptr<beamlineSystem::GuideLine> GuideOutE;
+  std::shared_ptr<beamlineSystem::PlateUnit> GuideOutE;
 
   std::shared_ptr<constructSystem::LineShield> ShieldF;
   std::array<std::shared_ptr<constructSystem::VacuumPipe>,8> VPipeOutFs;
-  std::array<std::shared_ptr<beamlineSystem::GuideLine>,8> GuideOutFs;
+  std::array<std::shared_ptr<beamlineSystem::PlateUnit>,8> GuideOutFs;
 
   std::shared_ptr<TrexHut> Cave;
   std::shared_ptr<constructSystem::HoleShape> CaveFrontCut;
  
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutG;
-  std::shared_ptr<beamlineSystem::GuideLine> GuideOutG;
+  std::shared_ptr<beamlineSystem::PlateUnit> GuideOutG;
 
   std::shared_ptr<essConstruct::SingleChopper> ChopperG;
   std::shared_ptr<essConstruct::DiskChopper> DiskG;
   
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutH;
-  std::shared_ptr<beamlineSystem::GuideLine> GuideOutH;
+  std::shared_ptr<beamlineSystem::PlateUnit> GuideOutH;
 
   std::shared_ptr<essConstruct::SingleChopper> ChopperH;
   std::shared_ptr<essConstruct::DiskChopper> DiskH1;
   std::shared_ptr<essConstruct::DiskChopper> DiskH2;
 
-  std::shared_ptr<beamlineSystem::GuideLine> GuideOutI;
+  std::shared_ptr<beamlineSystem::PlateUnit> GuideOutI;
  
-
   void buildBunkerUnits(Simulation&,const attachSystem::FixedComp&,
                         const long int,const int);
   void buildBunkerWallUnits(Simulation&,const Bunker&,
 			    const attachSystem::FixedComp&,
 			    const long int,const int);
   
-
   
  public:
   

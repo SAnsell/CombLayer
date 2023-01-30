@@ -3,7 +3,7 @@
  
  * File:   construct/Window.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,8 +57,9 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
-#include "pairBase.h"
-#include "pairFactory.h"
+#include "ExternalCut.h"
+#include "FrontBackCut.h"
+#include "surfDBase.h"
 #include "particle.h"
 #include "eTrack.h"
 #include "Window.h"
@@ -67,8 +68,9 @@ namespace constructSystem
 {
 
 Window::Window(const std::string& Key)  :
-  attachSystem::ContainedComp(),
   attachSystem::FixedComp(Key,2),
+  attachSystem::ContainedComp(),
+  attachSystem::FrontBackCut(),
   baseCell(0),FSurf(0),BSurf(0),
   nLayers(0)
   /*!
@@ -77,8 +79,10 @@ Window::Window(const std::string& Key)  :
   */
 {}
 
-Window::Window(const Window& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+Window::Window(const Window& A) :
+  attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::FrontBackCut(A),
   baseCell(A.baseCell),Centre(A.Centre),WAxis(A.WAxis),
   fSign(A.fSign),bSign(A.bSign),FSurf(A.FSurf),BSurf(A.BSurf),
   divideFlag(A.divideFlag),width(A.width),height(A.height),
@@ -135,33 +139,30 @@ Window::createCentre(Simulation& System)
 {
   ELog::RegMethod RegA("Window","createCentre");
   
-  MonteCarlo::Object* QHptr=System.findObject(baseCell);
-  if (!QHptr)
-    {
-      ELog::EM<<"Unable to find window base cell : "
-	      <<baseCell<<ELog::endErr;
-      return;
-    }
-  // QHptr->populate();
+  MonteCarlo::Object* QHptr=System.findObjectThrow(baseCell,"Window Base Cell");
   QHptr->createSurfaceList();
-
+  
   std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
     result=QHptr->trackSurfIntersect(Centre,WAxis);
-			    
-  if (!std::get<0>(result))
+  const int fName=std::abs(std::get<0>(result));
+  
+  if (!fName)
     {
-      ELog::EM<<"Unable to find intercept track with line:"
-	      <<baseCell<<ELog::endErr;
+      ELog::EM<<"Unable to find first intercept track with line:"
+	      <<baseCell<<ELog::endDiag;
+      ELog::EM<<"Cell = "<<*QHptr<<ELog::endDiag;
+      ELog::EM<<"B = "<<Origin<<":"<<WAxis<<ELog::endDiag;
+      ELog::EM<<ELog::endErr;
       return;
     }
 
   FSurf=std::get<1>(result);
-  fSign=-FSurf->side(Centre);  // could use result(00
-   
+  fSign=-FSurf->side(Centre);  // could use result(??)
+
+  
   Origin=std::get<2>(result);
   Y=WAxis;
   X=Y*Z;
-  
 
   result=QHptr->trackSurfIntersect(Origin,WAxis);
   
@@ -175,8 +176,11 @@ Window::createCentre(Simulation& System)
       return;
     }
   BSurf=std::get<1>(result);
-  bSign=-FSurf->side(Centre);  // could use result(00
+  bSign=-FSurf->side(Centre);  // could use result(??)
+  const int bName=std::abs(std::get<0>(result));
   
+  setFront(fSign*fName);
+  setBack(-bSign*bName);
   return;
 }
   
@@ -204,17 +208,14 @@ Window::createSurfaces()
   
   if (nLayers>1)
     {
-      ModelSupport::pairBase* pBase=
-	ModelSupport::pairFactory::createPair(FSurf,BSurf);
-      
       int divSurf(buildIndex+11);
       for(size_t i=0;i<nLayers-1;i++)
 	{
-	  const int sNum=pBase->
-	    createSurface(layerThick[i],divSurf++);
-	  layerSurf.push_back(sNum);
+	  ModelSupport::surfDBase::generalSurf
+	    (FSurf,BSurf,layerThick[i],divSurf);
+	  
+	  layerSurf.push_back(SMap.realSurf(divSurf));
 	}
-      delete pBase;
     }
   return;
 }
@@ -227,29 +228,25 @@ Window::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Window","createObjects");
-  std::string Out;
+  HeadRule HR;
 
-  std::string WOut=
-    ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
+  //  std::ostringstream cx;
 
-  std::ostringstream cx;
-
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"3 -4 5 -6");
+  
   if (divideFlag)
-    {
-      cx<<SMap.realSurf(buildIndex+1)<<" ";
-      WOut+=cx.str();
-    }
-  cx<<fSign*FSurf->getName()<<" "<<-bSign*BSurf->getName()<<" ";
-  addOuterSurf(WOut+cx.str());
+    HR*=HeadRule(SMap,buildIndex,1);
+
+  HR*=getFrontRule()*getBackRule();
+  addOuterSurf(HR);
 
   if (nLayers>1)
     {
     }
   else
     {
-      Out=WOut+cx.str();
-      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-      addOuterSurf(Out);
+      System.addCell(cellIndex++,0,0.0,HR);
     }
 
   return;

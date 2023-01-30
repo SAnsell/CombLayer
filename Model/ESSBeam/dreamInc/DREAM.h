@@ -54,7 +54,7 @@ namespace essSystem
 {  
   class CompBInsert;
   class GuideItem;
-  class DreamHut;
+  class EssHut;
   class DetectorTank;
 
   /*!
@@ -76,11 +76,11 @@ class DREAM : public attachSystem::CopiedComp
   std::shared_ptr<attachSystem::FixedRotate> dreamAxis;
 
   /// Elliptic focus in bulkshield [m5]
-  std::shared_ptr<beamlineSystem::GuideLine> FocusA;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusA;
 
   /// Pipe between bunker and the wall
   std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
-  std::shared_ptr<beamlineSystem::GuideLine> FocusB;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusB;
   
   /// Vac box for first chopper
   std::shared_ptr<essConstruct::SingleChopper> ChopperA;
@@ -97,7 +97,7 @@ class DREAM : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::VacuumPipe> VPipeC0;
 
   std::shared_ptr<constructSystem::VacuumPipe> VPipeC;
-  std::shared_ptr<beamlineSystem::GuideLine> FocusC;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusC;
 
   /// Vac box for BandPass chopper
   std::shared_ptr<essConstruct::SingleChopper> ChopperB;
@@ -106,7 +106,7 @@ class DREAM : public attachSystem::CopiedComp
 
   /// Pipe between T0 chopper and BandA
   std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
-  std::shared_ptr<beamlineSystem::GuideLine> FocusD;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusD;
   
   /// Vac box for T0 chopper
   std::shared_ptr<essConstruct::SingleChopper> ChopperC;
@@ -115,44 +115,44 @@ class DREAM : public attachSystem::CopiedComp
 
   /// Pipe between  T0 and heavy shutter
   std::shared_ptr<constructSystem::VacuumPipe> VPipeE1;
-  std::shared_ptr<beamlineSystem::GuideLine> FocusE1;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusE1;
   std::shared_ptr<constructSystem::VacuumPipe> VPipeE2;
-  std::shared_ptr<beamlineSystem::GuideLine> FocusE2;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusE2;
 
     /// Heavy SHutter 
   std::shared_ptr<constructSystem::VacuumPipe> VPipeF;
-  std::shared_ptr<beamlineSystem::GuideLine> FocusF;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusF;
   std::shared_ptr<constructSystem::VacuumPipe> VPipeG;
-  std::shared_ptr<beamlineSystem::GuideLine> FocusG;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusG;
 
   /// Bunker insert
   std::shared_ptr<essSystem::CompBInsert> BInsertA;
   std::shared_ptr<essSystem::CompBInsert> BInsertB;
-  std::shared_ptr<beamlineSystem::GuideLine> FocusWallA;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusWallA;
 
   /// First outer shield section
   std::shared_ptr<constructSystem::LineShield> ShieldA;
   /// Pipe leaving bunker
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutA;
   /// Guide leaving the bunker wall
-  std::shared_ptr<beamlineSystem::GuideLine> FocusOutA;  
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusOutA;  
 
   std::shared_ptr<constructSystem::LineShield> ShieldB;
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutB;
-  std::shared_ptr<beamlineSystem::GuideLine> FocusOutB;  
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusOutB;  
 
   std::shared_ptr<constructSystem::LineShield> ShieldC;
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutC;
-  std::shared_ptr<beamlineSystem::GuideLine> FocusOutC;  
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusOutC;  
 
   /// Cave 
-  std::shared_ptr<DreamHut> Cave;
+  std::shared_ptr<EssHut> Cave;
 
   /// Pipe entering cave
   std::shared_ptr<constructSystem::VacuumPipe> VPipeCaveA;
   /// Guide in cave 
-  std::shared_ptr<beamlineSystem::GuideLine> FocusCaveA;  
-  std::shared_ptr<beamlineSystem::GuideLine> FocusCaveB;
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusCaveA;  
+  std::shared_ptr<beamlineSystem::PlateUnit> FocusCaveB;
  
  public:
   

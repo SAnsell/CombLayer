@@ -3,7 +3,7 @@
  
  * File:   commonBeam/GaugeTube.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "surfRegister.h"
@@ -201,56 +200,55 @@ GaugeTube::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("GaugeTube","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   
-  const std::string frontStr=getRuleStr("front");
-  const std::string backStr=getRuleStr("back");
+  const HeadRule frontHR=getRule("front");
+  const HeadRule backHR=getRule("back");
 
   // inner void
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr+backStr);
+  HR=HeadRule(SMap,buildIndex,-7);
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -17 (307:-100)");
-  makeCell("MainTube",System,cellIndex++,wallMat,0.0,Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 7 -17 (307:-100)");
+  makeCell("MainTube",System,cellIndex++,wallMat,0.0,HR*frontHR*backHR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-101 17 -107 ");
-  makeCell("FlangeA",System,cellIndex++,wallMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 17 -107");
+  makeCell("FlangeA",System,cellIndex++,wallMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 202 17 -107 ");
-  makeCell("FlangeB",System,cellIndex++,wallMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"202 17 -107");
+  makeCell("FlangeB",System,cellIndex++,wallMat,0.0,HR*backHR);
 
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 100 -307 -303 7  ");
-  makeCell("SideVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 -307 -303 7");
+  makeCell("SideVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 100 -317 307 -303 17  ");
-  makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 -317 307 -303 17");
+  makeCell("SideWall",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 317 -327 -303 313 ");
-  makeCell("LeftFlange",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"317 -327 -303 313");
+  makeCell("LeftFlange",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -327 303 -323 ");
-  makeCell("LeftPlate",System,cellIndex++,plateMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-327 303 -323");
+  makeCell("LeftPlate",System,cellIndex++,plateMat,0.0,HR);
 
   // cross void
-  Out=ModelSupport::getComposite(SMap,buildIndex," 100 -327 -313 17  317 ");
-  makeCell("HorOuter",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 -327 -313 17  317");
+  makeCell("HorOuter",System,cellIndex++,0,0.0,HR);
   
   // front void
-  Out=ModelSupport::getComposite(SMap,buildIndex,"  17 327 -107 101 -202 100");
-  makeCell("SideOuter",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"17 327 -107 101 -202 100");
+  makeCell("SideOuter",System,cellIndex++,0,0.0,HR);
 
   // back void
-  Out=ModelSupport::getComposite(SMap,buildIndex," -100 17 101 -202 -107");
-  makeCell("FarOuter",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 17 101 -202 -107");
+  makeCell("FarOuter",System,cellIndex++,0,0.0,HR);
 
   // outer void box:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-107 ");
-  addOuterSurf(Out+frontStr+backStr);
+  HR=HeadRule(SMap,buildIndex,-107);
+  addOuterSurf(HR*frontHR*backHR);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"(100 -323 -327 ) :");
-  addOuterUnionSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 -323 -327");
+  addOuterUnionSurf(HR);
 
   return;
 }

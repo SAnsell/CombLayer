@@ -56,6 +56,8 @@
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "Decoupled.h"
 #include "DecLayer.h"
 
@@ -166,41 +168,45 @@ void
 DecLayer::createObjects(Simulation& System)
   /*!
     Create the inner methane object
+    \param Simulation :: Main model
    */
 {
   ELog::RegMethod RegA("DecLayer","createObjects");
   // Outer layer is 7, 8 of old system:
   // WEST SIDE:
-  const std::string WWall=ModelSupport::getComposite(SMap,buildIndex," 1 3 -4 5 -6 ");
-  std::string OutWall=ModelSupport::getComposite(SMap,buildIndex," -7 ");
+  const HeadRule WWallHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"1 3 -4 5 -6");
+  
+  HeadRule OutWallHR(SMap,buildIndex,-7);
+
   int offset(buildIndex);
   for(size_t i=0;i<lThick.size();i++)
     {
-      const std::string Out=ModelSupport::getComposite(SMap,offset," 7 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,lMat[i],lTemp[i],
-				       Out+OutWall+WWall));
-      OutWall=ModelSupport::getComposite(SMap,offset," -7 ");
+      HeadRule HR(SMap,offset,7);
+      System.addCell(cellIndex++,lMat[i],lTemp[i],
+		     HR*OutWallHR*WWallHR);
+      OutWallHR=HeadRule(SMap,offset,-7);
       offset+=10;
     }
   // Inner Half:
-  System.addCell(MonteCarlo::Object(cellIndex++,centMat,centTemp,
-				   OutWall+WWall));      
+  System.addCell(cellIndex++,centMat,centTemp,OutWallHR*WWallHR);      
 
   // EAST SIDE:
-  const std::string EWall=ModelSupport::getComposite(SMap,buildIndex," -1 3 -4 5 -6 ");
-  OutWall=ModelSupport::getComposite(SMap,buildIndex," -8 ");
+  const HeadRule EWallHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"-1 3 -4 5 -6");
+  OutWallHR=HeadRule(SMap,buildIndex,-8);
+
   offset=buildIndex;
   for(size_t i=0;i<lThick.size();i++)
     {
-      const std::string Out=ModelSupport::getComposite(SMap,offset," 8 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,lMat[i],lTemp[i],
-				       Out+OutWall+EWall));
-      OutWall=ModelSupport::getComposite(SMap,offset," -8 ");
+      const HeadRule HR(SMap,offset,8);
+      System.addCell(cellIndex++,lMat[i],lTemp[i],
+				       HR*OutWallHR*EWallHR);
+      OutWallHR=HeadRule(SMap,offset,-8);
       offset+=10;
     }
   // Inner Half:
-  System.addCell(MonteCarlo::Object(cellIndex++,centMat,centTemp,
-				   OutWall+EWall));
+  System.addCell(cellIndex++,centMat,centTemp,OutWallHR*EWallHR);
   return;
 }
 
@@ -220,13 +226,11 @@ DecLayer::createAll(Simulation& System,
 
   // Check that everything from here is called in Decoupled:
 
-  ELog::EM<<"Calling createAll"<<ELog::endTrace;
-
   Decoupled::createAll(System,FC,sideIndex);
   populate(System.getDataBase());
   createSurfaces();
   createObjects(System);
-  System.removeCell(methCell);
+  deleteCell(System,"Methane");
   
   System.validateObjSurfMap();
   return;

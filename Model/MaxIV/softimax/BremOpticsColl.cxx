@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/softimax/BremOpticsColl.cxx
  *
- * Copyright (c) 2004-2021 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -49,7 +48,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -63,8 +62,8 @@ namespace xraySystem
 {
 
 BremOpticsColl::BremOpticsColl(const std::string& Key)  :
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::FrontBackCut()
@@ -75,8 +74,8 @@ BremOpticsColl::BremOpticsColl(const std::string& Key)  :
 {}
 
 BremOpticsColl::BremOpticsColl(const BremOpticsColl& A) :
+  attachSystem::FixedRotate(A),
   attachSystem::ContainedComp(A),
-  attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
@@ -117,8 +116,8 @@ BremOpticsColl::operator=(const BremOpticsColl& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
@@ -175,7 +174,7 @@ BremOpticsColl::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BremOpticsColl","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
   extWidth=Control.EvalVar<double>(keyName+"ExtWidth");
@@ -232,23 +231,6 @@ BremOpticsColl::populate(const FuncDataBase& Control)
 }
 
 void
-BremOpticsColl::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: object for origin
-    \param sideIndex :: link point for origin
-  */
-{
-  ELog::RegMethod RegA("BremOpticsColl","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
-  return;
-}
-
-void
 BremOpticsColl::createSurfaces()
   /*!
     Create All the surfaces
@@ -260,31 +242,18 @@ BremOpticsColl::createSurfaces()
     {
       ModelSupport::buildPlane(SMap,buildIndex+11,Origin,Y);
       FrontBackCut::setFront(SMap.realSurf(buildIndex+11));
-
-      ModelSupport::buildShiftedPlane(SMap, buildIndex+1,
-				      SMap.realPtr<Geometry::Plane>(buildIndex+11),
-				      flangeALength);
-    } else
-    {
-      ModelSupport::buildShiftedPlane(SMap, buildIndex+1,
-	      SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
-				      flangeALength);
     }
+  ExternalCut::makeShiftedSurf
+    (SMap,"front",buildIndex+1,Y,flangeALength);
 
   if (!backActive())
     {
       ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length),Y);
       FrontBackCut::setBack(-SMap.realSurf(buildIndex+12));
-
-      ModelSupport::buildShiftedPlane(SMap, buildIndex+2,
-				      SMap.realPtr<Geometry::Plane>(buildIndex+12),
-				      -flangeBLength);
-    } else
-    {
-      ModelSupport::buildShiftedPlane(SMap, buildIndex+2,
-	      SMap.realPtr<Geometry::Plane>(getBackRule().getPrimarySurface()),
-				      -flangeBLength);
     }
+  ExternalCut::makeShiftedSurf
+    (SMap,"back",buildIndex+2,Y,-flangeBLength);
+
 
   //// pipe
 
@@ -298,21 +267,31 @@ BremOpticsColl::createSurfaces()
 
   // absorber
   /// inner part
-  ModelSupport::buildPlane(SMap,buildIndex+101,Origin+Y*((length-colLength)/2.0+colYStep),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*((length+colLength)/2.0+colYStep),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+101,
+			   Origin+Y*((length-colLength)/2.0+colYStep),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+102,
+			   Origin+Y*((length+colLength)/2.0+colYStep),Y);
 
-  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(holeWidth/2.0-holeXStep),X);
-  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(holeWidth/2.0+holeXStep),X);
+  ModelSupport::buildPlane(SMap,buildIndex+103,
+			   Origin-X*(holeWidth/2.0-holeXStep),X);
+  ModelSupport::buildPlane(SMap,buildIndex+104,
+			   Origin+X*(holeWidth/2.0+holeXStep),X);
 
-  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(holeHeight/2.0-holeZStep),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(holeHeight/2.0+holeZStep),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+105,
+			   Origin-Z*(holeHeight/2.0-holeZStep),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+106,
+			   Origin+Z*(holeHeight/2.0+holeZStep),Z);
 
   // external part
-  ModelSupport::buildPlane(SMap,buildIndex+203,Origin-X*(extWidth/2.0-extXStep),X);
-  ModelSupport::buildPlane(SMap,buildIndex+204,Origin+X*(extWidth/2.0+extXStep),X);
+  ModelSupport::buildPlane(SMap,buildIndex+203,
+			   Origin-X*(extWidth/2.0-extXStep),X);
+  ModelSupport::buildPlane(SMap,buildIndex+204,
+			   Origin+X*(extWidth/2.0+extXStep),X);
 
-  ModelSupport::buildPlane(SMap,buildIndex+205,Origin-Z*(extHeight/2.0-extZStep),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+206,Origin+Z*(extHeight/2.0+extZStep),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+205,
+			   Origin-Z*(extHeight/2.0-extZStep),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+206,
+			   Origin+Z*(extHeight/2.0+extZStep),Z);
 
   return;
 }
@@ -326,67 +305,74 @@ BremOpticsColl::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("BremOpticsColl","createObjects");
 
-  std::string Out;
-  const std::string front(frontRule());
-  const std::string back(backRule());
+  HeadRule HR;
+  
+  const HeadRule frontHR=getFrontRule();
+  const HeadRule backHR=getBackRule();
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -27 47 -1 ");
-  makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,Out+front);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 47 -1");
+  makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -47 -1 ");
-  makeCell("FrontFlangeVoid",System,cellIndex++,voidMat,0.0,Out+front);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-47 -1");
+  makeCell("FrontFlangeVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -37 57 2 ");
-  makeCell("BackFlange",System,cellIndex++,wallMat,0.0,Out+back);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-37 57 2");
+  makeCell("BackFlange",System,cellIndex++,wallMat,0.0,HR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -57 2 ");
-  makeCell("BackFlangeVoid",System,cellIndex++,voidMat,0.0,Out+back);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-57 2");
+  makeCell("BackFlangeVoid",System,cellIndex++,voidMat,0.0,HR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -7 -101 ");
-  makeCell("InnerVoidFront",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -7 -101");
+  makeCell("InnerVoidFront",System,cellIndex++,voidMat,0.0,HR);
 
   if (colRadius<innerRadius)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 -107 (-103:104:-105:106) ");
-      makeCell("Absorber",System,cellIndex++,colMat,0.0,Out);
-      Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 107 -7 (-103:104:-105:106) ");
-      makeCell("OutsideAbsorber",System,cellIndex++,voidMat,0.0,Out);
-    } else
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"101 -102 -107 (-103:104:-105:106)");
+      makeCell("Absorber",System,cellIndex++,colMat,0.0,HR);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"101 -102 107 -7 (-103:104:-105:106)");
+      makeCell("OutsideAbsorber",System,cellIndex++,voidMat,0.0,HR);
+    }
+  else
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 -7 (-103:104:-105:106) ");
-      makeCell("Absorber",System,cellIndex++,colMat,0.0,Out);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"101 -102 -7 (-103:104:-105:106)");
+      makeCell("Absorber",System,cellIndex++,colMat,0.0,HR);
     }
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 103 -104 105 -106 ");
-  makeCell("Hole",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 103 -104 105 -106");
+  makeCell("Hole",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 102 -2 ");
-  makeCell("InnerVoidBack",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 102 -2");
+  makeCell("InnerVoidBack",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 7 -17 ");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 7 -17");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
 
 
   // outer boundary
-  Out=ModelSupport::getSetComposite(SMap,buildIndex," -27 -1 ");
-  addOuterSurf(Out+front);
-  Out=ModelSupport::getSetComposite(SMap,buildIndex," -37 2 ");
-  addOuterUnionSurf(Out+back);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 -1");
+  addOuterSurf(HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-37 2");
+  addOuterUnionSurf(HR*backHR);
 
   if (extActive)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 203 -204 205 -206 17 ");
-      makeCell("External",System,cellIndex++,colMat,0.0,Out);
-      Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 203 -204 205 -206 ");
-      addOuterUnionSurf(Out);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"101 -102 203 -204 205 -206 17");
+      makeCell("External",System,cellIndex++,colMat,0.0,HR);
+
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"101 -102 203 -204 205 -206");
+      addOuterUnionSurf(HR);
     }
 
-  Out=ModelSupport::getSetComposite(SMap,buildIndex," 1 -2 -17");
-  addOuterUnionSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -17");
+  addOuterUnionSurf(HR);
 
   return;
 }
-
 
 void
 BremOpticsColl::createLinks()

@@ -3,7 +3,7 @@
  
  * File:   construct/Jaws.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -372,7 +370,7 @@ Jaws::layerProcess(Simulation& System)
   if (nLayers>1)
     {
       // X LAYER:
-      std::string OutA,OutB;
+      HeadRule HRA,HRB;
       ModelSupport::surfDivide DA;
             
       for(size_t i=1;i<nLayers;i++)
@@ -390,11 +388,11 @@ Jaws::layerProcess(Simulation& System)
       surroundRule.setSurfPair(SMap.realSurf(buildIndex+101),
 			       SMap.realSurf(buildIndex+102));
       
-      OutA=ModelSupport::getComposite(SMap,buildIndex," 101 ");
-      OutB=ModelSupport::getComposite(SMap,buildIndex," -102 ");
+      HRA=HeadRule(SMap,buildIndex,101);
+      HRB=HeadRule(SMap,buildIndex,-102);
       
-      surroundRule.setInnerRule(OutA);
-      surroundRule.setOuterRule(OutB);
+      surroundRule.setInnerRule(HRA);
+      surroundRule.setOuterRule(HRB);
       
       DA.addRule(&surroundRule);
       
@@ -416,8 +414,7 @@ Jaws::layerProcess(Simulation& System)
   // Z LAYER:
   if (nLayers>1)
     {
-
-      std::string OutA,OutB;
+      HeadRule HRA,HRB;
       ModelSupport::surfDivide DA;
             
       for(size_t i=1;i<nLayers;i++)
@@ -434,11 +431,11 @@ Jaws::layerProcess(Simulation& System)
       surroundRule.setSurfPair(SMap.realSurf(buildIndex+201),
 			       SMap.realSurf(buildIndex+202));
       
-      OutA=ModelSupport::getComposite(SMap,buildIndex," 201 ");
-      OutB=ModelSupport::getComposite(SMap,buildIndex," -202 ");
+      HRA=HeadRule(SMap,buildIndex,201);
+      HRB=HeadRule(SMap,buildIndex,-202);
       
-      surroundRule.setInnerRule(OutA);
-      surroundRule.setOuterRule(OutB);
+      surroundRule.setInnerRule(HRA);
+      surroundRule.setOuterRule(HRB);
       
       DA.addRule(&surroundRule);
       

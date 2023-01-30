@@ -66,6 +66,7 @@ class PipeTubeGenerator
   template<typename CF> void setAFlangeCF();
   template<typename CF> void setBFlangeCF();
 
+  void setPipeRadius(const double,const double);
   void setPipe(const double,const double,
 	       const double,const double);
   /// set wall thickness  

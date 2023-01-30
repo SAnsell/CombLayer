@@ -3,7 +3,7 @@
  
  * File:   delft/FlatModerator.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,8 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -55,8 +53,10 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "virtualMod.h"
 #include "FlatModerator.h"
 
@@ -79,8 +79,7 @@ FlatModerator::FlatModerator(const FlatModerator& A) :
   wingAngle(A.wingAngle),viewExtent(A.viewExtent),
   depth(A.depth),length(A.length),radius(A.radius),
   sideThick(A.sideThick),modTemp(A.modTemp),gasTemp(A.gasTemp),
-  modMat(A.modMat),gasMat(A.gasMat),alMat(A.alMat),
-  HCell(A.HCell)
+  modMat(A.modMat),gasMat(A.gasMat),alMat(A.alMat)
   /*!
     Copy constructor
     \param A :: FlatModerator to copy
@@ -115,7 +114,6 @@ FlatModerator::operator=(const FlatModerator& A)
       modMat=A.modMat;
       gasMat=A.gasMat;
       alMat=A.alMat;
-      HCell=A.HCell;
     }
   return *this;
 }
@@ -147,7 +145,7 @@ FlatModerator::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("FlatModerator","populate");
   
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   depth=Control.EvalVar<double>(keyName+"FocusDepth");
   frontRadius=Control.EvalVar<double>(keyName+"FrontRadius");
@@ -170,23 +168,6 @@ FlatModerator::populate(const FuncDataBase& Control)
   gasMat=ModelSupport::EvalMat<int>(Control,keyName+"GasMat");
   alMat=ModelSupport::EvalMat<int>(Control,keyName+"AlMat");
 
-  return;
-}
-  
-
-void
-FlatModerator::createUnitVector(const attachSystem::FixedComp& CUnit,
-				const long int sideIndex)
-  /*!
-    Create the unit vectors
-    Origin is the back point of the moderator
-    \param CUnit :: Fixed unit that it is connected to 
-    \param sideIndex :: link point						
-  */
-{
-  ELog::RegMethod RegA("FlatModerator","createUnitVector");
-  FixedComp::createUnitVector(CUnit,sideIndex);
-  applyOffset();
   return;
 }
 
@@ -277,44 +258,44 @@ FlatModerator::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("FlatModerator","createObjects");
 
-  std::string Out;  
+  HeadRule HR;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-7 -8 -1");
-  addOuterSurf(Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 -8 17 -1");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 -8 17 -1");
+  System.addCell(cellIndex++,alMat,modTemp,HR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," -17 -8 18 -1");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 -8 18 -1");
+  System.addCell(cellIndex++,alMat,modTemp,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -17 -18 27 -1 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 -18 27 -1");
+  System.addCell(cellIndex++,modMat,modTemp,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -27 -18 28 -1 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 -18 28 -1");
+  System.addCell(cellIndex++,modMat,modTemp,HR);
 
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -27 -28 37 -1 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modMat,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 -28 37 -1");
+  System.addCell(cellIndex++,alMat,modMat,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -37 -28 38 -1 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-37 -28 38 -1");
+  System.addCell(cellIndex++,alMat,modTemp,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -37 -38 -1 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-37 -38 -1");
+  System.addCell(cellIndex++,0,0.0,HR);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 -8 -1");
+  addOuterSurf(HR);
+  
   return;
   // build Simple case [cylinder]:
   
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -37 -38 -1");
-  System.addCell(MonteCarlo::Object(cellIndex++,gasMat,gasTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-37 -38 -1");
+  System.addCell(cellIndex++,gasMat,gasTemp,HR);
 
   // Cap :
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -11 -8");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
-
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -11 -8");
+  System.addCell(cellIndex++,alMat,modTemp,HR);
+  
   return;
 }
 

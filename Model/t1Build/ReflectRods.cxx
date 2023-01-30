@@ -46,7 +46,6 @@
 #include "SurInter.h"
 #include "Quadratic.h"
 #include "Plane.h"
-#include "Line.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -72,8 +71,8 @@ namespace ts1System
 {
 
 ReflectRods::ReflectRods(const std::string& Key,const size_t index)  :
-  attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key+std::to_string(index),0),
+  attachSystem::ContainedComp(),
   baseName(Key),
   topSurf(0),baseSurf(0),RefObj(0)  
   /*!
@@ -84,7 +83,8 @@ ReflectRods::ReflectRods(const std::string& Key,const size_t index)  :
 {}
 
 ReflectRods::ReflectRods(const ReflectRods& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedRotate(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
   baseName(A.baseName),populated(A.populated),
   outerMat(A.outerMat),
   innerMat(A.innerMat),linerMat(A.linerMat),HexHA(A.HexHA),
@@ -297,7 +297,7 @@ ReflectRods::calcCentre()
 
   // Extract Container items  
   const std::set<const Geometry::Surface*>& SL=
-    RefObj->getSurList();
+    RefObj->getSurfPtrSet();
 
   std::set<const Geometry::Plane*> PSet;  
   for(const Geometry::Surface* const& sPtr : SL)
@@ -336,15 +336,7 @@ ReflectRods::calcCentre()
       return;
     }
   topCentre/=cntA;
-  // Note reuse of OutA vector:
-  OutA.clear();
-  Geometry::Line LN(topCentre,Z);
-  if (!LN.intersect(OutA,*baseSurf))
-    {
-      ELog::EM<<"Failed to set base surface"<<ELog::endErr;
-      return;
-    }
-  baseCentre=OutA.front();
+  baseCentre=SurInter::getLinePoint(topCentre,Z,baseSurf);
   
   ELog::EM<<"Centre[T/B] == "<<topCentre<<" : " 
 	  <<baseCentre<<ELog::endDiag;
@@ -401,7 +393,7 @@ ReflectRods::createCentres(const Geometry::Plane* PX)
 						   (topC+baseC)/2.0);
 		    if (cutFlag==1)
 		      {
-			HPtr->setCutString(calcCornerCut(InPt,TopPts));
+			HPtr->setCutSurf(calcCornerCut(InPt,TopPts));
 		      }
 		    acceptFlag=1;
 		    cnt++;
@@ -580,12 +572,12 @@ ReflectRods::createSurfaces()
   return;
 }
 
-std::string
-ReflectRods::plateString() const
+HeadRule
+ReflectRods::plateRule() const
   /*!
     Calcuate the string for the +/- top/base surfaces
     - Allows those surfaces to be either direction
-    \return surf string 
+    \return surf rulle
   */
 {
   std::ostringstream cx;
@@ -595,7 +587,7 @@ ReflectRods::plateString() const
 
   cx<<" "<<tSign*topSurf->getName()<<" "
     <<bSign*baseSurf->getName()<<" ";
-  return cx.str();
+  return HeadRule(cx.str());
 }
 
 void
@@ -608,44 +600,39 @@ ReflectRods::createObjects(Simulation& System)
   ELog::RegMethod RegA("ReflectRods","createObjects");
   int cylIndex(buildIndex);
 
-  const std::string plates=plateString();
+  const HeadRule plates=plateRule();
 
   const int iLayer((linerThick>Geometry::zeroTol) ? 1 : 0);
 
+  HeadRule HR;
   for(const MTYPE::value_type& mc : HVec)
     {
       const constructSystem::hexUnit* APtr= mc.second;
 
-      std::string CylA=
-	ModelSupport::getComposite(SMap,cylIndex," -7 ")+plates;
-      std::string CylB=
-	ModelSupport::getComposite(SMap,cylIndex," 7 -8 ")+plates;
+      const HeadRule CylA(SMap,cylIndex,-7);
+      const HeadRule CylB=ModelSupport::getHeadRule(SMap,cylIndex,"7 -8");
 	
-      std::string Out=APtr->getInner().display()+
-      	ModelSupport::getComposite(SMap,cylIndex+iLayer," 7 ");
+      HR=APtr->getInner()*HeadRule(SMap,cylIndex+iLayer,7);
 
       if (!APtr->isCut())
 	{
-	  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,0.0,CylA));
+	  System.addCell(cellIndex++,innerMat,0.0,CylA*plates);
 	  if (iLayer)
-	    System.addCell(MonteCarlo::Object(cellIndex++,linerMat,0.0,CylB));
-	  Out+=plates;
+	    System.addCell(cellIndex++,linerMat,0.0,CylB*plates);
+	  HR*=plates;
 	}
       else 
 	{
-	  const std::string OutX= APtr->getCut();
-	  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,0.0,
-					   CylA+OutX));
+	  const HeadRule HRX= APtr->getCut();
+	  System.addCell(cellIndex++,innerMat,0.0,CylA*plates*HRX);
 	  if (iLayer)
-	    System.addCell(MonteCarlo::Object(cellIndex++,linerMat,0.0,
-					     CylB+OutX));
-	  Out+=OutX+plates;
+	    System.addCell(cellIndex++,linerMat,0.0,CylB*HRX);
+	  HR*=HRX*plates;
 	}
       
-      System.addCell(MonteCarlo::Object(cellIndex++,outerMat,0.0,Out));
+      System.addCell(cellIndex++,outerMat,0.0,HR);
       cylIndex+=10;
     }
-
 
   System.removeCell(RefObj->getName());
   RefObj=0;
@@ -670,7 +657,7 @@ ReflectRods::splitRefObj()
   return;
 }
 
-std::string
+HeadRule
 ReflectRods::calcCornerCut(const Geometry::Vec3D& InPt,
 			   const std::vector<Geometry::Vec3D>& OutPt) const
   /*!
@@ -684,7 +671,6 @@ ReflectRods::calcCornerCut(const Geometry::Vec3D& InPt,
 {
   ELog::RegMethod RegA("ReflectorRods","calcCornerCut");
 
-  std::string OutStr;
   HeadRule HR;
   for(const Rule* RP :  RefItems)
     {
@@ -697,7 +683,7 @@ ReflectRods::calcCornerCut(const Geometry::Vec3D& InPt,
 	    }
 	}
     }
-  return HR.display(); //OutStr;
+  return HR;
 }
 
 

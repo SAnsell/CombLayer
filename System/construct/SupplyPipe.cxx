@@ -181,9 +181,8 @@ SupplyPipe::insertInlet(const attachSystem::FixedComp& FC,
 
   Geometry::Vec3D PtZ=LC->getSurfacePoint(0,lSideIndex);
   PtZ+=layerOffset;
-  const int commonSurf=LC->getCommonSurf(lSideIndex);
-  const std::string commonStr=(commonSurf) ? 		       
-    std::to_string(commonSurf) : "";
+
+  const HeadRule commonHR=LC->getCommonSurf(lSideIndex);
   if (PtZ!=Pt)
     Coaxial.addPoint(Pt);
   
@@ -191,7 +190,7 @@ SupplyPipe::insertInlet(const attachSystem::FixedComp& FC,
 
   // First find start point in layer set: [avoid inner layer]
   Coaxial.addSurfPoint
-    (PtZ,LC->getLayerString(0,lSideIndex),commonStr);
+    (PtZ,LC->getLayerHR(0,lSideIndex),commonHR);
   
   if (layerSeq.empty())
     {
@@ -205,7 +204,7 @@ SupplyPipe::insertInlet(const attachSystem::FixedComp& FC,
       PtZ=LC->getSurfacePoint(lIndex,lSideIndex);
       PtZ+=layerOffset;
       Coaxial.addSurfPoint
-	(PtZ,LC->getLayerString(lIndex,lSideIndex),commonStr);
+	(PtZ,LC->getLayerHR(lIndex,lSideIndex),commonHR);
     }
   return;
 }
@@ -222,17 +221,16 @@ SupplyPipe::addExtraLayer(const attachSystem::LayerComp& LC,
   ELog::RegMethod RegA("SupplyPipe","addExtraLayer");
 
    
-  const int commonSurf=LC.getCommonSurf(lSideIndex);
+  const HeadRule commonHR=LC.getCommonSurf(lSideIndex);
+  
   const size_t NL(LC.getNLayers(lSideIndex));
   if (NL)
     {
-      const std::string commonStr=(commonSurf) ? 		       
-	std::to_string(commonSurf) : "";
       const Geometry::Vec3D PtZ=
 	LC.getSurfacePoint(NL-1,lSideIndex)+
 	layerOffset;
       Coaxial.addSurfPoint
-	(PtZ,LC.getLayerString(NL-1,lSideIndex),commonStr);
+	(PtZ,LC.getLayerHR(NL-1,lSideIndex),commonHR);
     }
   return;
 }

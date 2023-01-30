@@ -3,7 +3,7 @@
  
  * File:   insertUnitInc/insertCurve.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,8 @@ namespace insertSystem
   for fluxes/tallies etc
 */
 
-class insertCurve : public insertSystem::insertObject
+class insertCurve :
+    public insertSystem::insertObject
 {
  private:
 
@@ -50,6 +51,8 @@ class insertCurve : public insertSystem::insertObject
   Geometry::Vec3D Centre;    ///< Rotation centre
   
   virtual void populate(const FuncDataBase&);
+
+  using FixedRotate::createUnitVector;
   void createUnitVector(const Geometry::Vec3D&,
 			const attachSystem::FixedComp&);
 

@@ -35,6 +35,7 @@ namespace xraySystem
   \brief EntryPipe unit
 */
 
+
 class EntryPipe :
   public attachSystem::FixedRotate,
   public attachSystem::ContainedGroup,
@@ -44,10 +45,12 @@ class EntryPipe :
 {
  private:
 
+  int flangeFlag;                 ///< Front/none/back flange [-1/0/1]
+  
   double radius;                ///< void radius [inner]
   double length;                ///< void length [total]
   double wallThick;             ///< pipe thickness
-
+  
   double flangeRadius;          ///< Joining Flange radius [-ve for rect]
   double flangeLength;          ///< Joining Flange length
 
@@ -62,7 +65,7 @@ class EntryPipe :
 
  public:
   
-  EntryPipe(const std::string&);
+  EntryPipe(const std::string&,const int =-1);
   EntryPipe(const EntryPipe&);
   EntryPipe& operator=(const EntryPipe&);
   virtual ~EntryPipe();

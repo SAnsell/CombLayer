@@ -3,7 +3,7 @@
  
  * File:   geometry/Line.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -175,6 +175,21 @@ Line::closestPoints(const Line& A) const
   
   return std::pair<Geometry::Vec3D,Geometry::Vec3D>
     (getPoint(s),A.getPoint(t));
+}
+  
+Geometry::Vec3D
+Line::midPoint(const Line& A) const
+  /*!
+    Get point that has the shortest distance between
+    between two lines.
+    \param A :: line to use
+    \returns Point between lines
+  */
+{
+  
+  const std::pair<Geometry::Vec3D,Geometry::Vec3D>
+    Pts=closestPoints(A);
+  return (Pts.first+Pts.second)/2.0;
 }
 
 double

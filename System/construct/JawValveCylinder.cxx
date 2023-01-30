@@ -118,8 +118,6 @@ JawValveCylinder::populate(const FuncDataBase& Control)
   return;
 }
 
-
-
 void
 JawValveCylinder::createSurfaces()
   /*!
@@ -151,26 +149,26 @@ JawValveCylinder::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("JawValveCylinder","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
   // Void 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -7 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -7");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
   // Main body
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -17 7 ");
-  makeCell("Body",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -17 7");
+  makeCell("Body",System,cellIndex++,wallMat,0.0,HR);
 
   // front plate
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1 11 -17 117 ");
-  makeCell("FrontPlate",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 11 -17 117");
+  makeCell("FrontPlate",System,cellIndex++,wallMat,0.0,HR);
 
   // back plate
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 -17  217 ");
-  makeCell("BackPlate",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 -17  217");
+  makeCell("BackPlate",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 -17 ");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 -17");
+  addOuterSurf(HR);
 
   JawValveBase::createOuterObjects(System);
   

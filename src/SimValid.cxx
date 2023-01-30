@@ -3,7 +3,7 @@
  
  * File:   src/SimValid.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,12 +54,17 @@
 #include "particle.h"
 #include "eTrack.h"
 #include "surfRegister.h"
+#include "Surface.h"
+#include "Quadratic.h"
+#include "Plane.h"
+#include "Cylinder.h"
 #include "LineTrack.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
+
 #include "SimValid.h"
 
 #include "debugMethod.h"
@@ -97,6 +102,197 @@ SimValid::operator=(const SimValid& A)
   return *this;
 }
 
+
+bool
+SimValid::nextPoint(const std::vector<Geometry::Vec3D>& TPts,
+		    size_t& indexA,size_t& indexB,size_t& indexC,
+		    Geometry::Vec3D& outPt)
+/*!
+  Ugly function to return the point in the double index loop
+  \param outPt :: new Point [if set]
+  \return 1 if valid (within loop)
+*/
+{
+  const size_t midSlice(3);
+
+  if (indexC<1) indexC=0;
+  if (indexA>=indexB)
+    indexB=indexA+1;
+
+  indexC++;
+  if (indexC>=midSlice)
+    {
+      indexC=1;
+      indexB++;
+    }
+
+  if(indexB>=TPts.size())
+    {
+      indexA++;
+      indexB=indexA+1;
+      if (indexB>=TPts.size())
+	return 0;
+    }
+  const Geometry::Vec3D diffV=(TPts[indexB]-TPts[indexA])
+    /static_cast<double>(midSlice);
+  outPt=TPts[indexA]+diffV*static_cast<double>(indexC);
+
+  return 1;
+}
+  
+bool
+SimValid::checkPoint(const Geometry::Vec3D& TP, 
+		     const std::set<const MonteCarlo::Object*>& checkObj,
+		     const int CylN,const int PlnN)
+  /*!
+    This checks is a given obect that has point at surface intersections
+    (TPts) along surfaces CN and PN (cyl/plane). that the object
+    is isValid for any combination of CN / PN.
+    \param OPtr :: Object Pointer to test
+    \param TPts :: Points on the line
+    \param CN :: Cylinder number
+    \param PN :: Plane number
+    \return true if points are in the object
+  */
+{
+  ELog::RegMethod RegA("SimValid","checkPoint");
+
+  // For all combinations of  CylN/PlnN true/false we must get
+  // one and only cell which is true
+
+  std::map<int,int> surfState({{CylN,-1},{PlnN,-1}});
+  do
+    {
+      std::set<const MonteCarlo::Object*> foundSet;
+      for(const MonteCarlo::Object* TOPtr : checkObj)
+	{
+	  if (TOPtr->isValid(TP,surfState))
+	    foundSet.emplace(TOPtr);
+	}
+      
+      if (foundSet.size()!=1)
+	{
+	  ELog::EM<<"Flag["<<CylN<<" "<<PlnN<<"] -- :"<<surfState[CylN]<<" "<<surfState[PlnN]<<ELog::endDiag;
+	  for(const MonteCarlo::Object* fObj : foundSet)
+	    ELog::EM<<"Valid["<<fObj->getName()<<"] "<<fObj->getHeadRule().display(TP)<<"\n";
+	  return 0;
+	}
+    } while (!MapSupport::iterateBinMap<int>(surfState,-1,1));
+
+  return 1;
+}
+  
+bool
+SimValid::findTouch(const MonteCarlo::Object* OPtr,
+		    const Geometry::Cylinder* CPtr,
+		    const Geometry::Plane* PPtr,		    
+		    std::vector<Geometry::Vec3D>& TPts)
+  /*! 
+    Check if an object has a touch
+    \param OPtr :: Object Ptr
+    \param CPtr :: Cylinder to check
+    \param PPtr :: Plane to check
+    \param TPts :: Points found [OUTPUT]
+   */
+{
+  ELog::RegMethod RegA("SimValid","findTouch");
+
+  const double touchTol(1e-6);
+  const Geometry::Vec3D& COrg=CPtr->getCentre();
+  const Geometry::Vec3D& CAxis=CPtr->getNormal();
+  const double R=CPtr->getRadius();
+  const Geometry::Vec3D& PAxis=PPtr->getNormal();
+  const double dProd=CAxis.dotProd(PAxis);
+
+  if (std::abs(dProd)<touchTol)
+    {
+      // signed value:
+      const double dist=PPtr->distance(COrg);
+      const double distA=std::abs(dist);
+      if (std::abs(distA-R) < touchTol)
+	{
+	  Geometry::Vec3D tPoint=COrg-PAxis*dist;
+	  // Line of intersection
+	  const HeadRule mainHR=OPtr->getHeadRule();
+	  std::vector<int> SNum;
+	  mainHR.calcSurfIntersection(tPoint,CAxis,TPts,SNum);
+	  if (TPts.size()>1) return 1;
+	}
+    }
+  return 0;
+}
+  
+void
+SimValid::calcTouch(const Simulation& System) const
+  /*!
+    Calculate touches between curved and non-curved
+    surfaces
+    \parma System :: Simulation to use
+  */
+{
+  ELog::RegMethod RegA("SimValid","calcTouch");
+  const Simulation::OTYPE OMap=System.getCells();
+  for(const auto [cn,OPtr] : OMap)
+    {
+      std::set<const Geometry::Cylinder*> CylSet;
+      std::set<const Geometry::Plane*> PlaneSet;
+      const std::set<const Geometry::Surface*>& SSet=
+	OPtr->getSurfPtrSet();
+      // Construct set of cylinder / plane
+      for(const Geometry::Surface* SPtr : SSet)
+	{
+	  const Geometry::Cylinder* CPtr=
+	    dynamic_cast<const Geometry::Cylinder*>(SPtr);
+	  if (CPtr)CylSet.emplace(CPtr);
+	  const Geometry::Plane* PPtr=
+	    dynamic_cast<const Geometry::Plane*>(SPtr);
+	  if (PPtr) PlaneSet.emplace(PPtr);
+	}
+      // Check each plane/surface pair for touch
+      // if so add to a list of line points for each
+      // and check all other objects:
+      for(const Geometry::Cylinder* CPtr : CylSet)
+	for(const Geometry::Plane* PPtr : PlaneSet)
+	  {
+	    std::vector<Geometry::Vec3D> TPts;
+	    if (findTouch(OPtr,CPtr,PPtr,TPts))
+	      {
+		const int CylN=CPtr->getName();
+		const int PlnN=PPtr->getName();
+		// Now find set of flags which OPtr is NOT valid for all the points
+		// as at this point both can be true / false.
+		// we assume that only objects that have both surfaces can be involved:
+			    
+		std::set<const MonteCarlo::Object*> checkObj;   
+		for(const auto [cnB,BOPtr] : OMap)
+		  {
+		    const std::set<int>& BSet=
+		      BOPtr->getHeadRule().getSurfaceNumbers();
+		    const bool flagA=BSet.find(CylN)!=BSet.end();
+		    const bool flagB=BSet.find(PlnN)!=BSet.end();
+		    if (flagA | flagB)
+		      checkObj.emplace(BOPtr);  // note this INCLUDES OPtr
+		  }
+		Geometry::Vec3D testPt;
+		bool outFlag(0);   
+		size_t indexA(0),indexB(0),indexC(0);
+		while(!outFlag && nextPoint(TPts,indexA,indexB,indexC,testPt))
+		  {
+		    if (!checkPoint(testPt,checkObj,CylN,PlnN))
+		      {
+			ELog::EM<<"TN == "<<TPts.size()<<" :: "<<testPt<<ELog::endDiag;
+			ELog::EM<<"Objects -> Primary["<<OPtr->getName()<<"] \n"<<ELog::endCrit;
+			ELog::EM<<"        -> Primary "<<*OPtr;
+			ELog::EM<<"        ---------- "<<ELog::endDiag;
+			outFlag=1;
+		      }
+		  }
+	      }
+	  }
+    }
+  return;
+}
+  
 void
 SimValid::diagnostics(const Simulation& System,
 		     const std::vector<simPoint>& Pts) const
@@ -210,7 +406,7 @@ SimValid::runPoint(const Simulation& System,
   for(size_t i=0;i<nAngle;i++)
     {
       if (nAngle>10000 && i*10==nAngle)
-	ELog::EM<<"ValidPoint == "<<i<<ELog::endDiag;
+	ELog::EM<<"ValidPoint Angle[ == "<<i<<"]"<<ELog::endDiag;
       std::vector<simPoint> Pts;
       // Get random starting point on edge of volume
       phi=Random::rand()*M_PI;
@@ -232,6 +428,7 @@ SimValid::runPoint(const Simulation& System,
 	  // boundary e.g. circles in contact
 	  if (!SN)
 	    {
+	      ELog::EM<<"Multi Point ="<<TNeut.Pos<<ELog::endDiag;
 	      TNeut.moveForward(Geometry::zeroTol*5.0);
 	      OPtr=System.findCell(TNeut.Pos,0);
 	      if (OPtr)
@@ -320,14 +517,15 @@ SimValid::checkPoint(const Simulation& System,
     }
 
   if (activeCell.size()==1) return 0;  // good point
-
+  
   // compare pairs
   for(size_t i=0;i<activeCell.size();i++)
     for(size_t j=i+1;j<activeCell.size();j++)
       {
 	const MonteCarlo::Object* APtr=activeCell[i];
 	const MonteCarlo::Object* BPtr=activeCell[j];
-	
+
+	// unsigned set:
 	const std::set<int> ASurf=APtr->surfValid(Pt);
 	const std::set<int> BSurf=BPtr->surfValid(Pt);
 	
@@ -353,7 +551,9 @@ SimValid::checkPoint(const Simulation& System,
 	      {
 		if ((APtr->isValid(Pt,SNeg) != BPtr->isValid(Pt,SNeg)) ||
 		    (APtr->isValid(Pt,SPlus) != BPtr->isValid(Pt,SPlus)) )
-		  errFlag=0;
+		  {
+		    errFlag=0;
+		  }
 	      }	 while(errFlag &&
 		       !MapSupport::iterateBinMapLocked(SNeg,SN,-1,1) && 
 		       !MapSupport::iterateBinMapLocked(SPlus,SN,-1,1));

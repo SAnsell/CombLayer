@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BoxModerator.h
  *
- * Copyright (c) 2004-2019 by Konstantin Batkov / Stuart Ansell
+ * Copyright (c) 2004-2022 by Konstantin Batkov / Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,20 +72,19 @@ class BoxModerator :
   virtual ~BoxModerator();
   
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
-  virtual int getLayerSurf(const size_t,const long int) const;
-  virtual std::string getLayerString(const size_t,const long int) const;
-  virtual int getCommonSurf(const long int) const;
+  virtual HeadRule getLayerHR(const size_t,const long int) const;
 
   /// Accessor to radius
   void setRadiusX(const double R) { outerRadius=R; }
   virtual const attachSystem::FixedComp&
     getComponent(const std::string&) const;
 
-  std::string getSideRule() const;
+  HeadRule getSideRule() const;
   std::string getLeftRightWaterSideRule() const;
   Geometry::Vec3D getFocalPoint(const long int) const;
   std::vector<Geometry::Vec3D> getFocalPoints() const;
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
   void createAll(Simulation&,const attachSystem::FixedComp&,

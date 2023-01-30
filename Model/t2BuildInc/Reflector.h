@@ -66,7 +66,6 @@ class Reflector :
 {
  private:
   
-  double cornerAngle;           ///< Angle of corners
   double xySize;                ///< Left/Right size
   double zSize;                 ///< Vertical size
   double cutSize;               ///< End cuts

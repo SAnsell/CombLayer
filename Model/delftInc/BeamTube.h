@@ -3,7 +3,7 @@
  
  * File:   delftInc/BeamTube.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,9 @@ namespace delftSystem
   and Beamline to take acount of the track (inner build)
 */
 
-class BeamTube : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffsetGroup,
+class BeamTube :
+  public attachSystem::FixedRotateGroup,
+  public attachSystem::ContainedComp,
   public attachSystem::CellMap
 {
  private:
@@ -96,6 +97,7 @@ class BeamTube : public attachSystem::ContainedComp,
   // Accessor to inner void cell
   int getInnerVoid() const { return innerVoid; }
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

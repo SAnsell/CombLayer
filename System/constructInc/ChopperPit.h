@@ -36,15 +36,12 @@ namespace constructSystem
 */
 
 class ChopperPit :
-  public attachSystem::FixedRotateGroup,
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap
 {
  private:
-
-  bool activeFront;             ///< Pit doesn't have front
-  HeadRule frontCut;            ///< Front cut
 
   double voidHeight;            ///< void height [top only]
   double voidWidth;             ///< void width [total]
@@ -72,7 +69,6 @@ class ChopperPit :
   int colletMat;              ///< Collette material 
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -87,11 +83,13 @@ class ChopperPit :
   ChopperPit(const ChopperPit&);
   ChopperPit& operator=(const ChopperPit&);
   virtual ~ChopperPit();
+  void addFrontWall(const attachSystem::FixedComp&,const long int);
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
-  void addFrontWall(const attachSystem::FixedComp&,const long int);
+
 };
 
 }

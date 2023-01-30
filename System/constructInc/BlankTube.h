@@ -51,7 +51,7 @@ class BlankTube :
   virtual void createObjects(Simulation&);
   virtual void createLinks();
 
-  std::string makeOuterVoid(Simulation&);
+  HeadRule makeOuterVoid(Simulation&);
 
  public:
 

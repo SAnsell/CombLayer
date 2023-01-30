@@ -74,12 +74,12 @@ namespace xraySystem
   */
 
 class maxpeemOpticsLine :
-  public attachSystem::CopiedComp,
-  public attachSystem::ContainedComp,
-  public attachSystem::FixedRotate,
-  public attachSystem::ExternalCut,
-  public attachSystem::CellMap,
-  public attachSystem::SurfMap
+    public attachSystem::CopiedComp,
+    public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
+    public attachSystem::ExternalCut,
+    public attachSystem::CellMap,
+    public attachSystem::SurfMap
 {
  private:
 

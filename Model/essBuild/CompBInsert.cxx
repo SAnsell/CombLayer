@@ -3,7 +3,7 @@
  
  * File:   essBuild/CompBInsert.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -56,7 +54,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -68,7 +66,8 @@ namespace essSystem
 {
 
 CompBInsert::CompBInsert(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,7),
+  attachSystem::FixedRotate(Key,7),
+  attachSystem::ContainedComp(),
   attachSystem::CellMap(),attachSystem::FrontBackCut()
 
   /*!
@@ -78,7 +77,8 @@ CompBInsert::CompBInsert(const std::string& Key)  :
 {}
 
 CompBInsert::CompBInsert(const CompBInsert& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),attachSystem::FrontBackCut(A),
   NBox(A.NBox),width(A.width),height(A.height),
   length(A.length),mat(A.mat),NWall(A.NWall),wallThick(A.wallThick),
@@ -99,8 +99,8 @@ CompBInsert::operator=(const CompBInsert& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
       NBox=A.NBox;
@@ -129,7 +129,8 @@ CompBInsert::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("CompBInsert","populate");
-  FixedOffset::populate(Control);
+
+  FixedRotate::populate(Control);
 
   NBox=Control.EvalVar<size_t>(keyName+"NBox");
 

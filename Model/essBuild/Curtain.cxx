@@ -3,7 +3,7 @@
  
  * File:   essBuild/Curtain.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,8 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "surfRegister.h"
@@ -59,6 +57,7 @@
 #include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -73,9 +72,10 @@ namespace essSystem
 {
 
 Curtain::Curtain(const std::string& Key)  :
-  attachSystem::ContainedGroup("Top","Mid","Lower","RoofCut"),
   attachSystem::FixedGroup(Key,"Top",6,"Mid",14,"Lower",16),
-  attachSystem::CellMap()
+  attachSystem::ContainedGroup("Top","Mid","Lower","RoofCut"),
+  attachSystem::CellMap(),
+  attachSystem::SurfMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -83,8 +83,10 @@ Curtain::Curtain(const std::string& Key)  :
 {}
 
 Curtain::Curtain(const Curtain& A) : 
-  attachSystem::ContainedGroup(A),attachSystem::FixedGroup(A),
-  attachSystem::CellMap(A),attachSystem::SurfMap(A),
+  attachSystem::FixedGroup(A),
+  attachSystem::ContainedGroup(A),
+  attachSystem::CellMap(A),
+  attachSystem::SurfMap(A),
   wallRadius(A.wallRadius),leftPhase(A.leftPhase),
   rightPhase(A.rightPhase),innerStep(A.innerStep),
   wallThick(A.wallThick),baseGap(A.baseGap),
@@ -110,8 +112,8 @@ Curtain::operator=(const Curtain& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedGroup::operator=(A);
+      attachSystem::ContainedGroup::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       wallRadius=A.wallRadius;
@@ -449,10 +451,7 @@ Curtain::createLinks()
 
   return;
 }
-  
-  
 
-  
 void
 Curtain::createAll(Simulation& System,
 		   const attachSystem::FixedComp& FC,

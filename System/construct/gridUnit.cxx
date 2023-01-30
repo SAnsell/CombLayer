@@ -3,7 +3,7 @@
  
  * File:   construct/gridUnit.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -93,7 +93,7 @@ gridUnit::gridUnit(const gridUnit& A) :
   empty(A.empty),cut(A.cut),iA(A.iA),iB(A.iB),
   Centre(A.Centre),gridLink(A.gridLink),cylSurf(A.cylSurf),
   surfKey(A.surfKey),cellNumber(A.cellNumber),
-  boundaryClosed(A.boundaryClosed),cutStr(A.cutStr)
+  boundaryClosed(A.boundaryClosed),cutHR(A.cutHR)
   /*!
     Copy constructor
     \param A :: gridUnit to copy
@@ -119,7 +119,7 @@ gridUnit::operator=(const gridUnit& A)
       surfKey=A.surfKey;
       cellNumber=A.cellNumber;
       boundaryClosed=A.boundaryClosed;
-      cutStr=A.cutStr;
+      cutHR=A.cutHR;
     }
   return *this;
 }

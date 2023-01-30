@@ -3,7 +3,7 @@
 
  * File:   essBuild/BeamDump.cxx
  *
- * Copyright (c) 2004-2019 by Konstantin Batkov
+ * Copyright (c) 2004-2022 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,8 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "surfRegister.h"
@@ -57,7 +55,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 
 #include "BeamDump.h"
 
@@ -66,8 +64,8 @@ namespace essSystem
 
 BeamDump::BeamDump(const std::string& Base,
 		   const std::string& Key)  :
+  attachSystem::FixedRotate(Base+Key,6), 
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Base+Key,6),
   baseName(Base),active(1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -76,8 +74,9 @@ BeamDump::BeamDump(const std::string& Base,
   */
 {}
 
-BeamDump::BeamDump(const BeamDump& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+BeamDump::BeamDump(const BeamDump& A) :
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
   baseName(A.baseName),active(A.active),
   engActive(A.engActive),steelMat(A.steelMat),
   concMat(A.concMat),alMat(A.alMat),waterMat(A.waterMat),
@@ -132,8 +131,8 @@ BeamDump::operator=(const BeamDump& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
       baseName=A.baseName;
       active=A.active;
       engActive=A.engActive;
@@ -202,7 +201,7 @@ BeamDump::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BeamDump","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   active=Control.EvalTail<int>(keyName,baseName,"Active");
   engActive=Control.EvalTriple<int>(keyName,baseName,"","EngineeringActive");
@@ -262,23 +261,6 @@ BeamDump::populate(const FuncDataBase& Control)
   waterPipeOffsetX=Control.EvalVar<double>(keyName+"WaterPipeOffsetX");
   waterPipeOffsetZ=Control.EvalVar<double>(keyName+"WaterPipeOffsetZ");
   waterPipeDist=Control.EvalVar<double>(keyName+"WaterPipeDist");
-
-  return;
-}
-
-void
-BeamDump::createUnitVector(const attachSystem::FixedComp& FC,
-			   const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: object for origin
-    \param sideIndex :: link point for origin
-  */
-{
-  ELog::RegMethod RegA("BeamDump","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
 
   return;
 }
@@ -441,131 +423,132 @@ BeamDump::createObjects(Simulation& System)
   
   if (!active) return;
 
-  std::string Out;
+  HeadRule HR;
   // front wall
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 7");
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6 7");
+  System.addCell(cellIndex++,steelMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -7");
-  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -7");
+  System.addCell(cellIndex++,airMat,0.0,HR);
 
   // floor
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 3 -4 15 -16 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 3 -4 15 -16");
+  System.addCell(cellIndex++,steelMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -21 3 -4 25 -15 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -21 3 -4 25 -15");
+  System.addCell(cellIndex++,steelMat,0.0,HR);
 
   // Floor - small steel plates
-  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -22 3 -4 25 -15 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -22 3 -4 25 -15");
+  System.addCell(cellIndex++,airMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 22 -12 3 -4 25 -15 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"22 -12 3 -4 25 -15");
+  System.addCell(cellIndex++,steelMat,0.0,HR);
 
   //  Floor - Al plate
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -42 3 -4 35 -25 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -42 3 -4 35 -25");
+  System.addCell(cellIndex++,alMat,0.0,HR);
 
   // Floor - void cell below Al plate
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -42 3 -4 5 -35 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -42 3 -4 5 -35");
+  System.addCell(cellIndex++,airMat,0.0,HR);
 
   // back wall
-  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -42 3 -4 25 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -42 3 -4 25 -6");
+  System.addCell(cellIndex++,concMat,0.0,HR);
 
   // Roof
-  Out=ModelSupport::getComposite(SMap,buildIndex," 51 -42 3 -4 6 -56 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"51 -42 3 -4 6 -56");
+  System.addCell(cellIndex++,concMat,0.0,HR);
 
   // Inner roof
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 3 -4 76 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 3 -4 76 -6");
+  System.addCell(cellIndex++,steelMat,0.0,HR);
 
   // void cell under overhead
-  Out=ModelSupport::getComposite(SMap,buildIndex," 51 -1 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"51 -1 3 -4 5 -6");
+  System.addCell(cellIndex++,airMat,0.0,HR);
 
   // side walls
   //            inner
-  Out=ModelSupport::getComposite(SMap,buildIndex, " 2 -12 3 -63 16 -76 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 3 -63 16 -76");
+  System.addCell(cellIndex++,steelMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex, " 2 -12 64 -4 16 -76 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 64 -4 16 -76");
+  System.addCell(cellIndex++,steelMat,0.0,HR);
 
   //            outer
-  Out=ModelSupport::getComposite(SMap,buildIndex, " 51 -42 73 -3 5 -56 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"51 -42 73 -3 5 -56");
+  System.addCell(cellIndex++,concMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex, " 51 -42 4 -74 5 -56 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"51 -42 4 -74 5 -56");
+  System.addCell(cellIndex++,concMat,0.0,HR);
 
   // front inner wall
-  Out=ModelSupport::getComposite(SMap,buildIndex, " 2 -82 63 -64 16 -76 87 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -82 63 -64 16 -76 87");
+  System.addCell(cellIndex++,steelMat,0.0,HR);
 
   // proton hole in plates 22,28,29
-  Out=ModelSupport::getComposite(SMap,buildIndex, " 2 -82 -87 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -82 -87");
+  System.addCell(cellIndex++,airMat,0.0,HR);
 
   // back inner wall and gap
-  Out=ModelSupport::getComposite(SMap,buildIndex, " 91 -92 63 -64 16 -76 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"91 -92 63 -64 16 -76");
+  System.addCell(cellIndex++,steelMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex, " 92 -12 63 -64 16 -76 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"92 -12 63 -64 16 -76");
+  System.addCell(cellIndex++,airMat,0.0,HR);
 
   // vac pipe
-  Out=ModelSupport::getComposite(SMap,buildIndex, " 101 -131 -107 -137 -138 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -131 -107 -137 -138");
+  System.addCell(cellIndex++,0,0.0,HR);
   // cone top
-  Out=ModelSupport::getComposite(SMap,buildIndex, " -131 -137 138 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,graphiteMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex, " 131 -112 -137 ");// : -131 -137 138");
-  System.addCell(MonteCarlo::Object(cellIndex++,graphiteMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-131 -137 138");
+  System.addCell(cellIndex++,graphiteMat,0.0,HR);
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"131 -112 -137");
+  System.addCell(cellIndex++,graphiteMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex, " 101 -112 -107 -127 137 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,graphiteMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -112 -107 -127 137");
+  System.addCell(cellIndex++,graphiteMat,0.0,HR);
   // steel inside vac pipe cone and lid 2
-  Out=ModelSupport::getComposite(SMap,buildIndex," 112 -102 -107 -127 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,cuMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 101 -102 -107 127  122 (147:-141) (148:-141)");
-  System.addCell(MonteCarlo::Object(cellIndex++,cuMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"112 -102 -107 -127");
+  System.addCell(cellIndex++,cuMat,0.0,HR);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"101 -102 -107 127  122 (147:-141) (148:-141)");
+  System.addCell(cellIndex++,cuMat,0.0,HR);
 
   //water pipes
-  Out=ModelSupport::getComposite(SMap,buildIndex," 141 -102 -147");
-  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex," 141 -102 -148");
-  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"141 -102 -147");
+  System.addCell(cellIndex++,waterMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"141 -102 -148");
+  System.addCell(cellIndex++,waterMat,0.0,HR);
 
   // tiny cell
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 101 -102 -107 127 -122 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				"101 -102 -107 127 -122");
+  System.addCell(cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex, " 101 -102 107 -108 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 107 -108");
+  System.addCell(cellIndex++,steelMat,0.0,HR);
 
   // vac pipe lids
-  Out=ModelSupport::getComposite(SMap,buildIndex, " 101 -111 108 -117 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -111 108 -117");
+  System.addCell(cellIndex++,steelMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex, " 111 -112 108 -117 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"111 -112 108 -117");
+  System.addCell(cellIndex++,airMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex, " 112 -102 108 -117 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"112 -102 108 -117");
+  System.addCell(cellIndex++,steelMat,0.0,HR);
 
   //  void cell inside shielding (vac pipe goes there)
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 82 -91 63 -64 16 -76 (-101:102:117) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"82 -91 63 -64 16 -76 (-101:102:117)");
+  System.addCell(cellIndex++,airMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 51 -42 73 -74 5 -56 ");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"51 -42 73 -74 5 -56");
+  addOuterSurf(HR);
 
   return;
 }
@@ -600,9 +583,6 @@ BeamDump::createLinks()
 
   return;
 }
-
-
-
 
 void
 BeamDump::createAll(Simulation& System,

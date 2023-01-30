@@ -3,7 +3,7 @@
  
  * File:   moderator/PreMod.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,14 +59,21 @@
 #include "surfExpand.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
+#include "BaseMap.h"
+#include "SurfMap.h"
 #include "PreMod.h"
 
 namespace moderatorSystem
 {
 
 PreMod::PreMod(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
+  attachSystem::FixedRotate(Key,6),
+  attachSystem::ContainedComp(),
+  attachSystem::ExternalCut(),
+  attachSystem::SurfMap(),
   centOrgFlag(1),
   divideSurf(0),targetSurf(0),rFlag(0)
   /*!
@@ -76,7 +83,10 @@ PreMod::PreMod(const std::string& Key)  :
 {}
 
 PreMod::PreMod(const PreMod& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::ExternalCut(A),
+  attachSystem::SurfMap(A),
   centOrgFlag(A.centOrgFlag),width(A.width),height(A.height),
   depth(A.depth),alThickness(A.alThickness),modTemp(A.modTemp),
   modMat(A.modMat),alMat(A.alMat),divideSurf(A.divideSurf),
@@ -97,8 +107,10 @@ PreMod::operator=(const PreMod& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
+      attachSystem::SurfMap::operator=(A);
       centOrgFlag=A.centOrgFlag;
       width=A.width;
       height=A.height;
@@ -128,6 +140,8 @@ PreMod::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("PreMod","populate");
+
+  FixedRotate::populate(Control);
   
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
@@ -156,6 +170,7 @@ PreMod::createUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("PreMod","createUnitVector");
 
   FixedComp::createUnitVector(FC,orgIndex,basisIndex);
+  applyOffset();
   return;
 }
   
@@ -186,11 +201,17 @@ PreMod::createSurfaces(const attachSystem::FixedComp& FC,
   if (targetSurf)
     SMap.addMatch(buildIndex+7,targetSurf);  // This is a cylinder [hopefully]
 
+  ELog::EM<<"Target HR - "<<targetSurf<<" "<<FC.getLinkSurf(baseIndex)<<ELog::endDiag;
   // Outer surfaces:
+  ELog::EM<<"MAIN["<<keyName<<"] "<<X<<" : "<<Origin<<ELog::endDiag;
+  ELog::EM<<"MAIN["<<keyName<<"] "<<Y<<" : "<<Origin<<ELog::endDiag;
+  ELog::EM<<"MAIN["<<keyName<<"] "<<Z<<" : "<<Origin<<ELog::endDiag;
+  ELog::EM<<"MAIN["<<keyName<<"] "<<cAxis<<" : "<<cFlag<<ELog::endDiag;
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*depth,Y);
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width/2.0,X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+cAxis*height,cAxis);
+
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
 
   // Inner surfaces:
   ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(depth-alThickness),Y);
@@ -198,15 +219,12 @@ PreMod::createSurfaces(const attachSystem::FixedComp& FC,
   ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(width/2.0-alThickness),X);
   ModelSupport::buildPlane(SMap,buildIndex+16,Origin+cAxis*(height-alThickness),cAxis);
 
+
+  if (isActive("target"))
+    makeExpandedSurf(SMap,"target",buildIndex+17,Origin,alThickness);
+
   Geometry::Surface* SX;
   Geometry::Plane* PX;  
-  if (targetSurf)
-    {
-      SX=ModelSupport::surfaceCreateExpand
-	(SMap.realSurfPtr(buildIndex+7),alThickness);
-      SX->setName(buildIndex+17);
-      SMap.registerSurf(buildIndex+17,SX);
-    }
 
   if (SMap.realSurf(buildIndex+5)<0)
     {
@@ -219,10 +237,15 @@ PreMod::createSurfaces(const attachSystem::FixedComp& FC,
   else
     SX=ModelSupport::surfaceCreateExpand
       (SMap.realSurfPtr(buildIndex+5),alThickness);
+  
+
 
   SX->setName(buildIndex+15);
   SMap.registerSurf(buildIndex+15,SX);
-      
+
+
+  ELog::EM<<"Surface 15 == "<<Z<< ":: "<<*SMap.realSurfPtr(buildIndex+15)<<ELog::endDiag;
+
   // divider:
   if (SMap.realSurf(buildIndex+1)<0)
     {
@@ -250,17 +273,21 @@ PreMod::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("PreMod","createObjects");
+
+  const HeadRule targetHR=getRule("target");  // surf 1020101 (c/y)
+
+  HeadRule HR;
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  addOuterSurf(HR*targetHR);
+
   
-  std::string Out;
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 7");
-  addOuterSurf(Out);
-
-  Out+=ModelSupport::getSetComposite(SMap,buildIndex,
+  HR*=ModelSupport::getHeadRule(SMap,buildIndex,
 				    "(-11:12:-13:14:-15:16:-17)");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
+  System.addCell(cellIndex++,alMat,modTemp,HR*targetHR);
 
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"11 -12 13 -14 15 -16 17");
-  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14 15 -16 17");
+  System.addCell(cellIndex++,modMat,modTemp,HR);
   return;
 }
 
@@ -277,7 +304,8 @@ PreMod::createLinks()
   
   FixedComp::setConnect(1,Origin+Y*depth,Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
-
+  ELog::EM<<"Link ["<<keyName<<"] "<<SMap.realSurf(buildIndex+2)<<ELog::endDiag;
+  
   FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
   FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+3));
 
@@ -286,7 +314,9 @@ PreMod::createLinks()
         
   FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-
+  ELog::EM<<"Base[Link]= "<<-SMap.realSurf(buildIndex+5)<<ELog::endCrit;
+  ELog::EM<<"BaseSurf= "<<*(SMap.realSurfPtr(buildIndex+5))<<ELog::endCrit;
+  
   FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
@@ -311,8 +341,8 @@ PreMod::createAll(Simulation& System,const attachSystem::FixedComp& FC,
   populate(System.getDataBase());  
   createUnitVector(FC,baseIndex,0);
   
-  if (rFlag) FixedComp::applyRotation(Z,180.0);
-  createSurfaces(FC,baseIndex);
+  //  if (rFlag) FixedComp::applyRotation(Z,180.0);
+  ELog::EM<<"Axis == "<<X<<" :: "<<Y<<" :: "<<Z<<ELog::endDiag;  createSurfaces(FC,baseIndex);
   createObjects(System);
   createLinks();
   insertObjects(System);       
