@@ -244,7 +244,7 @@ TWCavity::createObjects(Simulation& System)
   const HeadRule backHR=getRule("back");
 
   // front coupler cell
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"17 -101 103 -104 105 -106");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"17 -107 -101 103 -104 105 -106");
   makeCell("FrontCouplerCell",System,cellIndex++,mat,0.0,HR*frontHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7 -17 -11 ");
@@ -269,7 +269,7 @@ TWCavity::createObjects(Simulation& System)
     }
 
   // back coupler cell
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"17 102 103 -104 105 -106");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"17 -107 102 103 -104 105 -106");
   makeCell("BackCouplerCell",System,cellIndex++,mat,0.0,HR*backHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7 -17 12 ");
