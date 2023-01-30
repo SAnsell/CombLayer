@@ -75,6 +75,7 @@
 #include "FlightLine.h"
 #include "World.h"
 #include "PreMod.h"
+#include "HPreMod.h"
 #include "HWrapper.h"
 #include "Decoupled.h"
 #include "DecLayer.h"
@@ -197,9 +198,9 @@ ReflectorAssembly::createObjects(Simulation& System)
   PMhydro->setCutSurf("target",*TarObj,1);
   PMhydro->setCutSurf("divide",-VacObj->getDivideSurf());
   PMhydro->setCutSurf("base",*VacObj,6);
-  PMhydro->setTargetSurf(TarObj->getLinkSurf(1));
-  PMhydro->setDivideSurf(-VacObj->getDivideSurf());
-  PMhydro->setEdge();
+  //  PMhydro->setTargetSurf(TarObj->getLinkSurf(1));
+  //  PMhydro->setDivideSurf(-VacObj->getDivideSurf());
+  //  PMhydro->setEdge();
   PMhydro->createAll(System,*VacObj,6);  
 
   Horn->addInsertCell(refCell);

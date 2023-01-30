@@ -37,6 +37,7 @@ namespace moderatorSystem
   class Hydrogen;
   class VacVessel;
   class PreMod;
+  class HPreMod;
   class FlightLine;
   class HWrapper;
   class Bucket;
@@ -67,7 +68,7 @@ class ReflectorAssembly :
   std::shared_ptr<Hydrogen> HydObj;         ///< Hydrogen moderator
   std::shared_ptr<VacVessel> VacObj;        ///< Vac Vessel round G/H
   std::shared_ptr<PreMod> PMgroove;         ///< Groove Pre mod
-  std::shared_ptr<PreMod> PMhydro;          ///< Hydro Pre mod
+  std::shared_ptr<HPreMod> PMhydro;          ///< Hydro Pre mod
   std::shared_ptr<HWrapper> Horn;           ///< Hydro Horn wrapper
 
   std::shared_ptr<attachSystem::FixedComp> DMod;  ///< Decoupled moderator
