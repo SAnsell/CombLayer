@@ -186,7 +186,7 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("grooveAlMat","Aluminium");   // Aluminium mat
   Control.addVariable("grooveModTemp",26.0);        // Moderator temperature
 
-  Control.addVariable("groovePMYAngle",180.0);     // Full width
+  Control.addVariable("groovePMYAngle",0.0);     // Full width
   Control.addVariable("groovePMWidth",25.8);     // Full width
   Control.addVariable("groovePMDepth",10.2);     // Full Depth 
   Control.addVariable("groovePMHeight",1.95);    // Full Height

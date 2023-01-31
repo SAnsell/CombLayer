@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   moderator/HPreMod.cxx
+ * File:   t2Build/HPreMod.cxx
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
  *
@@ -73,9 +73,7 @@ HPreMod::HPreMod(const std::string& Key)  :
   attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
-  attachSystem::SurfMap(),
-  centOrgFlag(1),
-  divideSurf(0),targetSurf(0),rFlag(0)
+  attachSystem::SurfMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -87,10 +85,9 @@ HPreMod::HPreMod(const HPreMod& A) :
   attachSystem::ContainedComp(A),
   attachSystem::ExternalCut(A),
   attachSystem::SurfMap(A),
-  centOrgFlag(A.centOrgFlag),width(A.width),height(A.height),
+  width(A.width),height(A.height),
   depth(A.depth),alThickness(A.alThickness),modTemp(A.modTemp),
-  modMat(A.modMat),alMat(A.alMat),divideSurf(A.divideSurf),
-  targetSurf(A.targetSurf),rFlag(A.rFlag)
+  modMat(A.modMat),alMat(A.alMat)
   /*!
     Copy constructor
     \param A :: HPreMod to copy
@@ -111,7 +108,6 @@ HPreMod::operator=(const HPreMod& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::ExternalCut::operator=(A);
       attachSystem::SurfMap::operator=(A);
-      centOrgFlag=A.centOrgFlag;
       width=A.width;
       height=A.height;
       depth=A.depth;
@@ -119,9 +115,6 @@ HPreMod::operator=(const HPreMod& A)
       modTemp=A.modTemp;
       modMat=A.modMat;
       alMat=A.alMat;
-      divideSurf=A.divideSurf;
-      targetSurf=A.targetSurf;
-      rFlag=A.rFlag;
     }
   return *this;
 }
@@ -156,47 +149,25 @@ HPreMod::populate(const FuncDataBase& Control)
   return;
 }
   
-void
-HPreMod::createUnitVector(const attachSystem::FixedComp& FC,
-                         const long int orgIndex,
-			 const long int basisIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Component to connect to
-    \param orgIndex :: side to connect 
-    \param basisIndex :: basis index
-  */
-{
-  ELog::RegMethod RegA("HPreMod","createUnitVector");
-
-  FixedComp::createUnitVector(FC,orgIndex,basisIndex);
-  applyOffset();
-  return;
-}
   
 void
-HPreMod::createSurfaces(const attachSystem::FixedComp& FC,
-		       const long int baseIndex)
+HPreMod::createSurfaces()
   /*!
     Create All the surfaces
-    \param FC :: Fixed unit that connects to this moderator
-    \param baseIndex :: base number
   */
 {
   ELog::RegMethod RegA("HPreMod","createSurface");
 
-
-
-  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  if (!isActive("divider"))
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+      setCutSurf("divider",SMap.realSurf(buildIndex+1));
+    }
   
-  //  SMap.addMatch(buildIndex+5,cFlag*FC.getLinkSurf(baseIndex));
-
-
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*depth,Y);
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width/2.0,X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
-
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin+Z*height,Z);
 
   // Inner surfaces:
   ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(depth-alThickness),Y);
@@ -204,58 +175,12 @@ HPreMod::createSurfaces(const attachSystem::FixedComp& FC,
 			   Origin-X*(width/2.0-alThickness),X);
   ModelSupport::buildPlane(SMap,buildIndex+14,
 			   Origin+X*(width/2.0-alThickness),X);
-  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(height-alThickness),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin+Z*(height-alThickness),Z);
 
   if (isActive("target"))
     makeExpandedSurf(SMap,"target",buildIndex+17,Origin,alThickness);
-
-  makeExpandedSurf(SMap,"target",buildIndex+16,Origin,alThickness);
-
-  Geometry::Surface* SX;
-  Geometry::Plane* PX;  
-
-  if (SMap.realSurf(buildIndex+5)<0)
-    {
-      SX=ModelSupport::surfaceCreateExpand
-	(SMap.realSurfPtr(buildIndex+5),-alThickness);
-      PX=dynamic_cast<Geometry::Plane*>(SX);
-      if (PX)
-	PX->mirrorSelf();
-    }
-  else
-    SX=ModelSupport::surfaceCreateExpand
-      (SMap.realSurfPtr(buildIndex+5),alThickness);
-  
-
-
-  SX->setName(buildIndex+15);
-  SMap.registerSurf(buildIndex+15,SX);
-
-  ELog::EM<<"Surface 5 == "<<keyName<< ":: "<<*SMap.realSurfPtr(buildIndex+5);
-  ELog::EM<<"Surface 6 == "<<keyName<< ":: "<<*SMap.realSurfPtr(buildIndex+6);
-  ELog::EM<<"Surface 15 == "<<keyName<< ":: "<<*SMap.realSurfPtr(buildIndex+15);
-  ELog::EM<<"Surface 16 == "<<keyName<< ":: "<<*SMap.realSurfPtr(buildIndex+16);
-  ELog::EM<<ELog::endDiag;
-
-  // divider:
-  if (SMap.realSurf(buildIndex+1)<0)
-    {
-      SX=ModelSupport::surfaceCreateExpand
-	(SMap.realSurfPtr(buildIndex+1),-alThickness);
-      PX=dynamic_cast<Geometry::Plane*>(SX);
-      if (PX)
-	PX->mirrorSelf();
-    }
-  else
-    SX=ModelSupport::surfaceCreateExpand
-      (SMap.realSurfPtr(buildIndex+1),alThickness);
-
-  SX->setName(buildIndex+11);
-  SMap.registerSurf(buildIndex+11,SX);
-
-
-  //  ELog::EM<<"Surface 11 == "<<*SMap.realSurfPtr(buildIndex+11);
-  //  ELog::EM<<"Surface 1 == "<<*SMap.realSurfPtr(buildIndex+1)<<ELog::endDiag;
+  makeExpandedSurf(SMap,"base",buildIndex+16,Origin,-alThickness);
+  makeExpandedSurf(SMap,"divider",buildIndex+11,Origin,alThickness);
 
   return;
 }
@@ -270,17 +195,21 @@ HPreMod::createObjects(Simulation& System)
   ELog::RegMethod RegA("HPreMod","createObjects");
 
   const HeadRule targetHR=getRule("target");  // surf 1020101 (c/y)
-
+  const HeadRule divHR=getRule("divider");  // surf -1040001
+  const HeadRule baseHR=getRule("base");  // surf 1060046
+    
   HeadRule HR;
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
-  addOuterSurf(HR*targetHR);
-  
-  HR*=ModelSupport::getHeadRule(SMap,buildIndex,
-				    "(-11:12:-13:14:-15:16:-17)");
-  System.addCell(cellIndex++,alMat,modTemp,HR*targetHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 3 -4 -5");
+  addOuterSurf(HR*targetHR*baseHR*divHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14 15 -16 17");
+
+  HR*=ModelSupport::getHeadRule(SMap,buildIndex,
+				    "(11:12:-13:14:15:-16:-17)");
+  System.addCell(cellIndex++,alMat,modTemp,HR*targetHR*baseHR*divHR);
+
+  // inner
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -12 13 -14 -15 16 17");
   System.addCell(cellIndex++,modMat,modTemp,HR);
   return;
 }
@@ -292,7 +221,8 @@ HPreMod::createLinks()
   */
 {  
   ELog::RegMethod RegA("HPreMod","createLinks");
-
+  const HeadRule baseHR=getComplementRule("base");  // surf 1060046
+  
   FixedComp::setConnect(0,Origin,-Y);
   FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+1));
   
@@ -306,7 +236,7 @@ HPreMod::createLinks()
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
         
   FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(4,baseHR);
   
   FixedComp::setConnect(5,Origin-Z*(height/2.0),Z);
   FixedComp::setLinkSurf(5,-SMap.realSurf(buildIndex+6));
@@ -333,9 +263,8 @@ HPreMod::createAll(Simulation& System,
   populate(System.getDataBase());  
   FixedComp::createUnitVector(FC,baseIndex,0);
   FixedRotate::applyOffset();
-  if (centOrgFlag)
-    Origin-=Y*(depth/2.0);
-  createSurfaces(FC,baseIndex);
+
+  createSurfaces();
   createObjects(System);
   createLinks();
   insertObjects(System);       

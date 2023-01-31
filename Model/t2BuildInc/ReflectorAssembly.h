@@ -3,7 +3,7 @@
  
  * File:   t2BuildInc/ReflectorAssembly.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,8 @@ namespace moderatorSystem
   class Groove;
   class Hydrogen;
   class VacVessel;
-  class PreMod;
+  class DPreMod;
+  class GPreMod;
   class HPreMod;
   class FlightLine;
   class HWrapper;
@@ -67,13 +68,13 @@ class ReflectorAssembly :
   std::shared_ptr<Groove> GrooveObj;        ///< Groove Moderator
   std::shared_ptr<Hydrogen> HydObj;         ///< Hydrogen moderator
   std::shared_ptr<VacVessel> VacObj;        ///< Vac Vessel round G/H
-  std::shared_ptr<PreMod> PMgroove;         ///< Groove Pre mod
-  std::shared_ptr<HPreMod> PMhydro;          ///< Hydro Pre mod
+  std::shared_ptr<GPreMod> PMgroove;        ///< Groove Pre mod
+  std::shared_ptr<HPreMod> PMhydro;         ///< Hydro Pre mod
   std::shared_ptr<HWrapper> Horn;           ///< Hydro Horn wrapper
 
   std::shared_ptr<attachSystem::FixedComp> DMod;  ///< Decoupled moderator
   std::shared_ptr<VacVessel> DVacObj;       ///< Vac Vessel round 
-  std::shared_ptr<PreMod> PMdec;            ///< Pre-moderator for decoupled
+  std::shared_ptr<DPreMod> PMdec;           ///< Pre-moderator for decoupled
   std::shared_ptr<RefCutOut> IRcut;         ///< ReflectorAssembly cut out for chipIR
   std::shared_ptr<Bucket> CdBucket;         ///< Cd Bucket
   std::shared_ptr<Reflector> RefObj;        ///< Reflector

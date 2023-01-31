@@ -74,7 +74,8 @@
 #include "VacVessel.h"
 #include "FlightLine.h"
 #include "World.h"
-#include "PreMod.h"
+#include "DPreMod.h"
+#include "GPreMod.h"
 #include "HPreMod.h"
 #include "HWrapper.h"
 #include "Decoupled.h"
@@ -107,11 +108,11 @@ ReflectorAssembly::ReflectorAssembly(const std::string& Key)  :
   GrooveObj(new Groove("groove")),
   HydObj(new Hydrogen("hydrogen")),
   VacObj(new VacVessel("cvac")),
-  PMgroove(new PreMod("groovePM")),
-  PMhydro(new PreMod("hydroPM")),
+  PMgroove(new GPreMod("groovePM")),
+  PMhydro(new HPreMod("hydroPM")),
   Horn(new HWrapper("hornPM")),
   DVacObj(new VacVessel("dvac")),
-  PMdec(new PreMod("decPM")),
+  PMdec(new DPreMod("decPM")),
   IRcut(new RefCutOut("chipIRCut")),
   CdBucket(new Bucket("cdBucket")),
   RefObj(new Reflector("Reflector"))
@@ -189,23 +190,17 @@ ReflectorAssembly::createObjects(Simulation& System)
   PMgroove->setCutSurf("target",*TarObj,1);
   PMgroove->setCutSurf("divide",VacObj->getDivideSurf());
   PMgroove->setCutSurf("base",*VacObj,6);
-  PMgroove->setTargetSurf(TarObj->getLinkSurf(1));
-  PMgroove->setDivideSurf(VacObj->getDivideSurf());
-  PMgroove->setEdge();
   PMgroove->createAll(System,*VacObj,6); 
 
   PMhydro->addInsertCell(refCell);
   PMhydro->setCutSurf("target",*TarObj,1);
-  PMhydro->setCutSurf("divide",-VacObj->getDivideSurf());
+  PMhydro->setCutSurf("divider",-VacObj->getDivideSurf());
   PMhydro->setCutSurf("base",*VacObj,6);
-  //  PMhydro->setTargetSurf(TarObj->getLinkSurf(1));
-  //  PMhydro->setDivideSurf(-VacObj->getDivideSurf());
-  //  PMhydro->setEdge();
   PMhydro->createAll(System,*VacObj,6);  
 
   Horn->addInsertCell(refCell);
   Horn->setCutSurf("DivideSurf",-VacObj->getDivideSurf());
-  ELog::EM<<"Horn div == "<<-VacObj->getDivideSurf()<<ELog::endDiag;
+
   const HeadRule VUnit=
     attachSystem::intersectionLink(*VacObj,{-2,3,-4,5,-6});
 
@@ -228,11 +223,6 @@ ReflectorAssembly::createObjects(Simulation& System)
   Horn->setCutSurf("BaseCut",*PMhydro,"minusZ");
   Horn->setCutSurf("BaseFullCut",PMhydro->getOuterSurf());
   Horn->setCutSurf("BaseFrontCut",*PMhydro,"back");
-
-  ELog::EM<<"Horn -- "<<Horn->getRule("BaseFullCut")<<ELog::endDiag;
-  ELog::EM<<"Horn -- "<<Horn->getRule("BaseFrontCut")<<ELog::endDiag;
-  ELog::EM<<"Horn -- "<<Horn->getRule("BaseCut")<<ELog::endDiag;
-
   Horn->createAll(System,*HydObj,0);
 
   processDecoupled(System);
@@ -250,8 +240,10 @@ ReflectorAssembly::createObjects(Simulation& System)
   RefObj->insertComponent(System,"FLWish",DVacObj->getMainRule("back"));
 
   PMdec->addInsertCell(refCell);
+
   PMdec->setCutSurf("target",*TarObj,1);
-  PMdec->setTargetSurf(TarObj->getLinkSurf(1));
+  //  PMdec->setCutSurf("divider",-DVacObj->getDivideSurf());
+  PMdec->setCutSurf("base",*DVacObj,-5);
   PMdec->createAll(System,*DVacObj,5); 
 
   IRcut->addInsertCell(refCell);

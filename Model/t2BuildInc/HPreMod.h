@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   moderatorInc/HPreMod.h
+ * File:   t2BuildInc/HPreMod.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@ class HPreMod :
   int alMat;                ///< Al material
   
   void populate(const FuncDataBase&);
-  void createSurfaces(const attachSystem::FixedComp&,const long int);
+  void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
   
