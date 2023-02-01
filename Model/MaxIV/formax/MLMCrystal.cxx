@@ -121,8 +121,8 @@ MLMCrystal::createSurfaces()
   
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width,X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin,X);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width,X);    
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
@@ -133,13 +133,14 @@ MLMCrystal::createSurfaces()
 			   Origin+X*(topSlotXStep-topSlotWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+14,
 			   Origin+X*(topSlotXStep+topSlotWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+15,
 			   Origin+Z*(height/2.0-topSlotDepth),Z);
 
   ModelSupport::buildCylinder(SMap,buildIndex+17,
-			      Origin-Y*(topSlotLength/2.0),Z,topSlotWidth);
+     Origin+X*topSlotXStep-Y*(topSlotLength/2.0),Z,topSlotWidth/2.0);
   ModelSupport::buildCylinder(SMap,buildIndex+18,
-			      Origin+Y*(topSlotLength/2.0),Z,topSlotWidth);
+     Origin+X*topSlotXStep+Y*(topSlotLength/2.0),Z,topSlotWidth/2.0);
+
   
   return; 
 }
@@ -157,11 +158,12 @@ MLMCrystal::createObjects(Simulation& System)
 
   // slot:
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"(11:-17) (-12:-18) 13 -14 15 -16");  
+    (SMap,buildIndex,"(11:-17) (-12:-18) 13 -14 15 -6");  
   makeCell("TopSlot",System,cellIndex++,0,0.0,HR);
 
   // xstal
-  HR.complement();
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"(-11 17):(12 18):-13:14:-15");  
   HR*=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");  
   makeCell("Xstal",System,cellIndex++,mirrorMat,0.0,HR);
 
