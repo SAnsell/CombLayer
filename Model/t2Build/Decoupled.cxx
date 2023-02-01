@@ -58,6 +58,7 @@
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "Decoupled.h"
@@ -421,6 +422,8 @@ Decoupled::createAll(Simulation& System,
   insertObjects(System);       
 
   VP->addInsertCell(getCell("Methane"));
+  VP->setCutSurf("Base",*this,11);
+  VP->setCutSurf("Top",*this,12);
   VP->createAll(System,*this,8);
 
   return;
