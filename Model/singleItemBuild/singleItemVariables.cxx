@@ -3,7 +3,7 @@
 
  * File:   singleItemBuild/singleItemVariables.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -131,6 +131,7 @@
 #include "BeamBoxGenerator.h"
 #include "MonoShutterGenerator.h"
 #include "FocusGenerator.h"
+#include "MLMDetailGenerator.h"
 
 #include "RoundShutterGenerator.h"
 #include "TubeDetBoxGenerator.h"
@@ -722,6 +723,9 @@ SingleItemVariables(FuncDataBase& Control)
      Geometry::Vec3D(0.0, -3.0, 0.0),
      Geometry::Vec3D(-1.0, 0.0, 0.0));
 
+  MLMDetailGenerator MLGen;
+  MLGen.generateMono(Control,"MLM",0.1,0.1);
+  
 
   TubeDetBoxGenerator TDBGen;
   TDBGen.generateBox(Control,"TDetBox",Geometry::Vec3D(0,3.15,0),8);

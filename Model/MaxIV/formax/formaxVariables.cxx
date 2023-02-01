@@ -3,7 +3,7 @@
  
  * File:   formax/formaxVariables.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -245,7 +245,7 @@ mirrorMonoPackage(FuncDataBase& Control,
   MBoxGen.setBPortOffset(-0.4,0.0);    // note -1mm from crystal offset
   // width / heigh / depth / length
   MBoxGen.generateBox
-    (Control,monoKey+"MLMVessel",57.0,12.5,31.0,94.0);
+    (Control,monoKey+"MLMVessel",54.7,12.5,31.0,92.7);  // 470mm height
 
   Control.addVariable(monoKey+"MLMVesselPortBXStep",0.0);   // from primary
 
