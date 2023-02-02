@@ -54,8 +54,20 @@ class MLMCrystal :
   double topSlotLength;        ///< Slot length
   double topSlotDepth;        ///< Slot length
 
-  int mirrorMat;             ///< XStal material
+  double baseWidth;            ///< full width
+  double baseLength;           ///< full length
+  double baseDepth;            ///< Depth from mirror base surface
+  double baseFrontHeight;      ///< Front height of lip
+  double baseBackHeight;       ///< Back height of lip
+  double baseInnerWidth;       ///< Space for crystal
+  double baseInnerBeamFaceLen; ///< length of step (beam side) in Y
+  double baseInnerOutFaceLen;  ///< length of step (far side) in Y
+  double baseBackSlotLen;      ///< length cut out at back
+  double baseOutSlotLen;       ///< Slot on out face sie
 
+  int mirrorMat;             ///< XStal material
+  int baseMat;               ///< Base material
+  
   // Functions:
 
   void populate(const FuncDataBase&);

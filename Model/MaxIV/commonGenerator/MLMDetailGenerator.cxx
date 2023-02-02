@@ -51,6 +51,14 @@ MLMDetailGenerator::MLMDetailGenerator() :
   width(4.0),height(4.0),length(18.0),
   topSlotXStep(1.2),topSlotWidth(1.0),topSlotLength(16.0),
   topSlotDepth(0.2),
+  baseWidth(7.2),baseLength(20.6),baseDepth(1.3),
+  baseFrontHeight(0.9),baseBackHeight(1.3),
+  baseInnerWidth(4.6),
+  baseInnerBeamFaceLen(0.7),
+  baseInnerOutFaceLen(1.3),
+  baseBackSlotLen(12.1),
+  baseOutSlotLen(2.3),
+  
   mirrorMat("Silicon300K"),baseMat("Copper")
   /*!
     Constructor and defaults
@@ -87,20 +95,33 @@ MLMDetailGenerator::makeCrystal(FuncDataBase& Control,
   ELog::RegMethod RegA("MLMDetailGenerator","makeCrystal");
 
   const double rotAngle(rotFlag ? 180.0 : 0.0);
-  Control.addVariable(cryName+"xStep",xStep);
+
+  Control.addVariable(cryName+"XStep",xStep);
   Control.addVariable(cryName+"YStep",yStep);
   Control.addVariable(cryName+"ZAngle",rotAngle+theta);
-
-  Control.addVariable(cryName+"Width",width);
-  Control.addVariable(cryName+"Height",height);
-  Control.addVariable(cryName+"Length",length);
-
+  
   Control.addVariable(cryName+"TopSlotXStep",topSlotXStep);
   Control.addVariable(cryName+"TopSlotWidth",topSlotWidth);
   Control.addVariable(cryName+"TopSlotDepth",topSlotDepth);
   Control.addVariable(cryName+"TopSlotLength",topSlotLength);
 
+  Control.addVariable(cryName+"BaseWidth",baseWidth);
+  Control.addVariable(cryName+"BaseLength",baseLength);
+  Control.addVariable(cryName+"BaseDepth",baseDepth);
+  Control.addVariable(cryName+"BaseFrontHeight",baseFrontHeight);
+  Control.addVariable(cryName+"BaseBackHeight",baseBackHeight);
+  Control.addVariable(cryName+"BaseInnerWidth",baseInnerWidth);
+  Control.addVariable(cryName+"BaseInnerBeamFaceLen",baseInnerBeamFaceLen);
+  Control.addVariable(cryName+"BaseInnerOutFaceLen",baseInnerOutFaceLen);
+  Control.addVariable(cryName+"BaseBackSlotLen",baseBackSlotLen);
+  Control.addVariable(cryName+"BaseOutSlotLen",baseOutSlotLen);
+  
+  Control.addVariable(cryName+"Width",width);
+  Control.addVariable(cryName+"Height",height);
+  Control.addVariable(cryName+"Length",length);
+
   Control.addVariable(cryName+"MirrorMat",mirrorMat);
+  Control.addVariable(cryName+"BaseMat",baseMat);
   
   return;
 }
