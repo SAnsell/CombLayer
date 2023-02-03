@@ -65,8 +65,10 @@ class MLMCrystal :
   double baseBackSlotLen;      ///< length cut out at back
   double baseOutSlotLen;       ///< Slot on out face sie
 
+  
   int mirrorMat;             ///< XStal material
   int baseMat;               ///< Base material
+  int voidMat;               ///< Void / vacuum material
   
   // Functions:
 

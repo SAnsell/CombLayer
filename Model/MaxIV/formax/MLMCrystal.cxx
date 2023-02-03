@@ -117,6 +117,7 @@ MLMCrystal::populate(const FuncDataBase& Control)
 
   mirrorMat=ModelSupport::EvalMat<int>(Control,keyName+"MirrorMat");
   baseMat=ModelSupport::EvalMat<int>(Control,keyName+"BaseMat");
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat","Void");
 
 
   return;
@@ -130,7 +131,6 @@ MLMCrystal::createSurfaces()
   */
 {
   ELog::RegMethod RegA("MLMCrystal","createSurfaces");
-
   
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
@@ -155,30 +155,40 @@ MLMCrystal::createSurfaces()
      Origin+X*topSlotXStep+Y*(topSlotLength/2.0),Z,topSlotWidth/2.0);
 
   // BASE
-  Geometry::Vec3D midX(Origin+X*(width/2.0));
+  const Geometry::Vec3D midPt(Origin+X*(width/2.0)-Z*(height/2.0));
 
   ModelSupport::buildPlane
-    (SMap,buildIndex+101,Origin-Y*(baseLength/2.0),Y);
+    (SMap,buildIndex+101,midPt-Y*(baseLength/2.0),Y);
   ModelSupport::buildPlane
-    (SMap,buildIndex+102,Origin+Y*(baseLength/2.0),Y);
+    (SMap,buildIndex+102,midPt+Y*(baseLength/2.0),Y);
   ModelSupport::buildPlane
-    (SMap,buildIndex+103,midX-X*(baseWidth/2.0),X);
+    (SMap,buildIndex+103,midPt-X*(baseWidth/2.0),X);
   ModelSupport::buildPlane
-    (SMap,buildIndex+104,midX+X*(baseWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*baseDepth,Z);
+    (SMap,buildIndex+104,midPt+X*(baseWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+105,midPt-Z*baseDepth,Z);
 
-  ModelSupport::buildPlane(SMap,buildIndex+116,Origin+Z*baseFrontHeight,Z);
-  ModelSupport::buildPlane(SMap,buildIndex+126,Origin+Z*baseBackHeight,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+116,midPt+Z*baseFrontHeight,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+126,midPt+Z*baseBackHeight,Z);
 
   ModelSupport::buildPlane
-    (SMap,buildIndex+151,Origin-Y*(baseLength/2.0-baseInnerBeamFaceLen),Y);
+    (SMap,buildIndex+151,midPt-Y*(baseLength/2.0-baseInnerBeamFaceLen),Y);
   ModelSupport::buildPlane
-    (SMap,buildIndex+152,Origin+Y*(baseLength/2.0-baseInnerOutFaceLen),Y);
+    (SMap,buildIndex+152,midPt+Y*(baseLength/2.0-baseInnerOutFaceLen),Y);
   ModelSupport::buildPlane
-    (SMap,buildIndex+153,midX-X*(baseInnerWidth/2.0),X);
+    (SMap,buildIndex+153,midPt-X*(baseInnerWidth/2.0),X);
   ModelSupport::buildPlane
-    (SMap,buildIndex+154,midX+X*(baseInnerWidth/2.0),X);
-  
+    (SMap,buildIndex+154,midPt+X*(baseInnerWidth/2.0),X);
+
+  ModelSupport::buildPlane
+    (SMap,buildIndex+203,midPt-X*(baseOutSlotLen/2.0),X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+204,midPt+X*(baseOutSlotLen/2.0),X);
+
+  ModelSupport::buildPlane
+    (SMap,buildIndex+201,midPt-Y*(baseBackSlotLen/2.0),Y);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+202,midPt+Y*(baseBackSlotLen/2.0),Y);
+
   return; 
 }
 
@@ -200,19 +210,20 @@ MLMCrystal::createObjects(Simulation& System)
 
   // xstal
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"(-11 17):(12 18):-13:14:-15");  
-  HR*=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");  
+    (SMap,buildIndex,"1 -2 3 -4 5 -6 ((-11 17):(12 18):-13:14:-15)");  
   makeCell("Xstal",System,cellIndex++,mirrorMat,0.0,HR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");  
-  addOuterSurf(HR);
 
   // base plate
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 103 -104 -5 105");  
   makeCell("BaseFlat",System,cellIndex++,baseMat,0.0,HR);  
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 154 -104 5 -126");  
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"101 -102 154 -104 5 -126 (-201:202)");  
   makeCell("BaseBack",System,cellIndex++,baseMat,0.0,HR);  
+  
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"154 -104 5 -126 201 -202");  
+  makeCell("BaseBackGap",System,cellIndex++,voidMat,0.0,HR);  
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 -153 103 5 -116");  
   makeCell("BaseFront",System,cellIndex++,baseMat,0.0,HR);  
@@ -220,9 +231,30 @@ MLMCrystal::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -151 -154 153 5 -126");  
   makeCell("BaseBeam",System,cellIndex++,baseMat,0.0,HR);  
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"152 -102 -154 153 5 -126");  
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"152 -102 -154 153 5 -126 (-203:204)");  
   makeCell("BaseOut",System,cellIndex++,baseMat,0.0,HR);  
 
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"2 -102 153 5 -126 203 -204");  
+  makeCell("BaseOutGap",System,cellIndex++,voidMat,0.0,HR);  
+  
+  // base voids:
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"151 -2 -154 153 5 -126 (-1:-3:4)");  
+  makeCell("CrysVoid",System,cellIndex++,voidMat,0.0,HR);  
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"101 -102 -153 103 116 -126");  
+  makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,HR);  
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"101 -102 103 -104 126 -6 (-1:2:-3:4)");  
+  makeCell("TopVoid",System,cellIndex++,voidMat,0.0,HR);  
+
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 103 -104 105 -6");
+  addOuterSurf(HR);  
   return; 
 }
 
