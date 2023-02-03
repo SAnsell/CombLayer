@@ -3,7 +3,7 @@
  
  * File:   essBuild/EmptyCyl.cxx
  *
- * Copyright (c) 2004-2022 by Konstantin Batkov
+ * Copyright (c) 2004-2023 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,8 +63,8 @@ namespace essSystem
 {
 
 EmptyCyl::EmptyCyl(const std::string& Key)  :
-  attachSystem::ContainedComp(),
-  attachSystem::FixedRotateUnit(Key,6)
+  attachSystem::FixedRotateUnit(Key,6),
+  attachSystem::ContainedComp()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -72,8 +72,8 @@ EmptyCyl::EmptyCyl(const std::string& Key)  :
 {}
 
 EmptyCyl::EmptyCyl(const EmptyCyl& A) : 
-  attachSystem::ContainedComp(A),
   attachSystem::FixedRotateUnit(A),
+  attachSystem::ContainedComp(A),
   height(A.height),mat(A.mat)
   /*!
     Copy constructor
@@ -176,37 +176,35 @@ EmptyCyl::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("EmptyCyl","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
   if (Origin[2]>Geometry::zeroTol)
     ELog::EM << "Target inner lp not needed. "
       "Now this cylinder cuts EmptyCyl, but I have to increase the "
       "angle of triangle (adjust GuideBay)" << ELog::endDiag;
 
-  const std::string topBot(ModelSupport::getComposite(SMap,buildIndex," -5 ")+
-			   " "+FC.getLinkString(floor)+" ");
-  const std::string common(topBot+BC.getLinkString(bulk)+" "+
-			   std::to_string(FC.getLinkSurf(inner)));
+  const HeadRule topBotHR(HeadRule(SMap,buildIndex,-5)*FC.getFullRule(floor));
+  const HeadRule commonHR(topBotHR*BC.getFullRule(bulk)*
+			  FC.getMainRule(inner));
 
   // main clearance
-  Out=common+std::to_string(FC.getLinkSurf(-side))+
-    " ("+GB1.getLinkString(gb1lp)+" : "+GB2.getLinkString(gb2lp)+")";
-
-  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
+  HR=GB1.getFullRule(gb1lp)+GB1.getFullRule(gb2lp);
+  HR*=commonHR*FC.getMainRule(-side);  
+  System.addCell(cellIndex++,mat,0.0,HR);
 
   if (Origin[2]<Geometry::zeroTol)
     {
       // triangle cut below target
-      Out=common+ModelSupport::getComposite(SMap,buildIndex," -6 ") +
-	GB1.getLinkString(-gb1lp)+" "+GB2.getLinkString(-gb2lp);
+      HR=commonHR*HeadRule(SMap,buildIndex,-6)*
+	GB1.getFullRule(-gb1lp)*GB2.getFullRule(-gb2lp);
 	
-      System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
-      
-      Out=common+std::to_string(FC.getLinkSurf(-side))+
-	" ("+GB1.getLinkString(gb1lp)+" : "+GB2.getLinkString(gb2lp)+
-	" : "+ModelSupport::getComposite(SMap,buildIndex," -6 ")+")";
+      System.addCell(cellIndex++,mat,0.0,HR);
+
+      HR=GB1.getFullRule(gb1lp)+GB2.getFullRule(gb2lp)+
+	HeadRule(SMap,buildIndex,-6);
+      HR*=commonHR*FC.getMainRule(-side);
     }
-  addOuterSurf(Out);
+  addOuterSurf(HR);
   return;
 }
 
@@ -270,6 +268,7 @@ EmptyCyl::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,floor);
   createSurfaces();
+  ELog::EM<<"EARLY RETURN "<<ELog::endCrit;
   return;
   createObjects(System,FC,floor,side,inner,
 		BC,bulk,

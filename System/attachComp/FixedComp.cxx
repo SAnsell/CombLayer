@@ -1178,7 +1178,7 @@ FixedComp::setLineConnect(const size_t Index,
   LinkUnit& LObj=LU[Index];
   LObj.populateSurf();
   const Geometry::Vec3D Pt=
-    SurInter::getLinePoint(C,A,LObj.getMainRule(),LObj.getCommonRule()); 
+    SurInter::getLinePoint(C,A,LObj.getMain(),LObj.getCommon()); 
   LObj.setConnectPt(Pt);
   LObj.setAxis(A);
 
@@ -1746,7 +1746,7 @@ FixedComp::hasLinkSurf(const long int sideIndex) const
 	(sideIndex>0) ? static_cast<size_t>(sideIndex-1) :
 	static_cast<size_t>(-sideIndex-1) ;
 
-      const HeadRule& HR = LU[linkIndex].getMainRule();
+      const HeadRule& HR = LU[linkIndex].getMain();
       if (HR.hasRule()) return 1;
     }
   return 0;
@@ -1869,60 +1869,60 @@ FixedComp::getLinkZAxis(const long int sideIndex) const
 
 
 
-std::string
-FixedComp::getLinkString(const long int sideIndex) const
-  /*!
-    Accessor to the link string
-    \param sideIndex :: SIGNED +1 side index
-    \return Link string 
-  */
-{
-  ELog::RegMethod RegA("FixedComp","getLinkString:"+keyName);
+// std::string
+// FixedComp::getLinkString(const long int sideIndex) const
+//   /*!
+//     Accessor to the link string
+//     \param sideIndex :: SIGNED +1 side index
+//     \return Link string 
+//   */
+// {
+//   ELog::RegMethod RegA("FixedComp","getLinkString:"+keyName);
 
-  if (!sideIndex) return "";
+//   if (!sideIndex) return "";
   
-  const size_t linkIndex=
-    (sideIndex>0) ? static_cast<size_t>(sideIndex-1) :
-    static_cast<size_t>(-sideIndex-1) ;
+//   const size_t linkIndex=
+//     (sideIndex>0) ? static_cast<size_t>(sideIndex-1) :
+//     static_cast<size_t>(-sideIndex-1) ;
 
-  return (sideIndex>0) ?
-    getUSLinkString(linkIndex) : getUSLinkComplement(linkIndex);
-}
+//   return (sideIndex>0) ?
+//     getUSLinkString(linkIndex) : getUSLinkComplement(linkIndex);
+// }
   
-std::string
-FixedComp::getUSLinkString(const size_t Index) const
-  /*!
-    Accessor to the link surface string
-    \param Index :: Link number
-    \return String of link
-  */
+HeadRule
+FixedComp::getUSLink(const size_t Index) const
+/*!
+  Accessor to the link surface string
+  \param Index :: Link number
+  \return String of link
+   */
 {
-  ELog::RegMethod RegA("FixedComp","getUSLinkString");
+  ELog::RegMethod RegA("FixedComp","getUSLink");
   if (Index>=LU.size())
     throw ColErr::IndexError<size_t>(Index,LU.size(),"Index/LU.size");
   
-  return LU[Index].getLinkString();
+  return LU[Index].getLink();
 }
 
-std::string
-FixedComp::getUSLinkComplement(const size_t Index) const
-  /*!
-    Accessor to the link surface string [negative]
-    \param Index :: Link number
-    \return String of link
-  */
-{
-  ELog::RegMethod RegA("FixedComp","getUSLinkComplement");
-  if (Index>=LU.size())
-    throw ColErr::IndexError<size_t>(Index,LU.size(),"Index/LU.size");
+// std::string
+// FixedComp::getUSLinkComplement(const size_t Index) const
+//   /*!
+//     Accessor to the link surface string [negative]
+//     \param Index :: Link number
+//     \return String of link
+//   */
+// {
+//   ELog::RegMethod RegA("FixedComp","getUSLinkComplement");
+//   if (Index>=LU.size())
+//     throw ColErr::IndexError<size_t>(Index,LU.size(),"Index/LU.size");
 
-  HeadRule RP;
-  RP.procString(LU[Index].getMain());
-  RP.makeComplement();
+//   HeadRule RP;
+//   RP.procString(LU[Index].getMain());
+//   RP.makeComplement();
   
-  RP.addIntersection(LU[Index].getCommon());
-  return RP.display();
-}
+//   RP.addIntersection(LU[Index].getCommon().display());
+//   return RP.display();
+// }
 
 void 
 FixedComp::setCentre(const Geometry::Vec3D& C)
@@ -1931,7 +1931,6 @@ FixedComp::setCentre(const Geometry::Vec3D& C)
     \param C :: Centre point
   */
 {
-  ELog::RegMethod RegA("FixedComp","setCentre");
   Origin=C;
   return;
 }
@@ -1943,7 +1942,7 @@ FixedComp::getExit() const
     \return connect point
   */
 {
-  ELog::RegMethod RegA("FixedComp","setExit(int)");
+  const ELog::RegMethod RegA("FixedComp","setExit(int)");
 
   if (LU.size()<2)
     throw ColErr::IndexError<size_t>(2,LU.size(),"LU.size/index");
@@ -1961,7 +1960,7 @@ FixedComp::setExit(const int surfN,
     \param A :: Axis
   */
 {
-  ELog::RegMethod RegA("FixedComp","setExit(int)");
+  const ELog::RegMethod RegA("FixedComp","setExit(int)");
 
   setLinkSurf(1,surfN);
   setConnect(1,C,A);
@@ -1978,7 +1977,7 @@ FixedComp::setExit(const Geometry::Vec3D& C,
     \param A :: Axis
   */
 {
-  ELog::RegMethod RegA("FixedComp","setExit");
+  const ELog::RegMethod RegA("FixedComp","setExit");
   setConnect(1,C,A);
   return;
 }
@@ -2080,10 +2079,10 @@ FixedComp::getFullRule(const long int sideIndex) const
 
   const LinkUnit& LObj=getSignedRefLU(sideIndex);
   HeadRule Out=(sideIndex>0) ? 
-    LObj.getMainRule() :
-    LObj.getMainRule().complement();
+    LObj.getMain() :
+    LObj.getMain().complement();
 
-  Out.addIntersection(LObj.getCommonRule());
+  Out.addIntersection(LObj.getCommon());
   return Out;
 }
 
@@ -2112,8 +2111,8 @@ FixedComp::getMainRule(const long int sideIndex) const
 
   const LinkUnit& LObj=getSignedRefLU(sideIndex);
   return (sideIndex>0) ? 
-    LObj.getMainRule() :
-    LObj.getMainRule().complement();
+    LObj.getMain() :
+    LObj.getMain().complement();
 }
 
 
@@ -2130,7 +2129,7 @@ FixedComp::getUSMainRule(const size_t Index) const
   if (Index>=LU.size())
     throw ColErr::IndexError<size_t>(Index,LU.size(),"Index/LU.size");
   
-  return LU[Index].getMainRule();
+  return LU[Index].getMain();
 }
 
 HeadRule
@@ -2156,7 +2155,7 @@ FixedComp::getCommonRule(const long int sideIndex) const
   ELog::RegMethod RegA("FixedComp","getCommonRule(long int)"); 
 
   const LinkUnit& LObj=getSignedRefLU(sideIndex);
-  return LObj.getCommonRule();
+  return LObj.getCommon();
 }
 
 const HeadRule&
@@ -2172,7 +2171,7 @@ FixedComp::getUSCommonRule(const size_t Index) const
   if (Index>=LU.size())
     throw ColErr::IndexError<size_t>(Index,LU.size(),"Index/LU.size");
   
-  return LU[Index].getCommonRule();
+  return LU[Index].getCommon();
 }
 
 void
@@ -2299,17 +2298,20 @@ FixedComp::getExitWindow(const long int sideIndex,
   //      ELSE add zero
   //
   window.push_back(0);
-  std::string OutSurf=getUSLinkString(outIndex);
-  int dSurf(0);
-  const int primOutSurf(getUSLinkSurf(outIndex));
+  const HeadRule HR=getUSLink(outIndex);
+  const int primOutSurf(std::abs(HR.getPrimarySurface()));
+  std::set<int> surfSet=HR.getSurfaceNumbers();  // unsigned
 
-  for(size_t i=0;i<2 && StrFunc::section(OutSurf,dSurf) 
-	&& std::abs(dSurf)==std::abs(primOutSurf);i++) ;
-
-  if (dSurf && std::abs(dSurf)!=std::abs(primOutSurf))
-    window.back()=dSurf;
+  for(const int SN : surfSet)
+    {
+      if (SN != primOutSurf)
+	{
+	  window.back()=SN;
+	  break;
+	}
+    }
     
-  return std::abs(SMap.realSurf(getUSLinkSurf(outIndex)));
+  return primOutSurf;
 }
 
 void

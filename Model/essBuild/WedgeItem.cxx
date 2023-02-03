@@ -237,15 +237,15 @@ WedgeItem::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("WedgeItem","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
-  Out=ModelSupport::getComposite(SMap, buildIndex, " 1 3 -4 ")+
-    FC.getLinkString(baseLinkPt)+
-    FL.getLinkString(topLinkPt)+
-    FL.getLinkString(bottomLinkPt);
-  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap, buildIndex,"1 3 -4")*
+    FC.getFullRule(baseLinkPt)*
+    FL.getFullRule(topLinkPt)*
+    FL.getFullRule(bottomLinkPt);
+  System.addCell(cellIndex++,mat,0.0,HR);
   
-  addOuterSurf(Out);
+  addOuterSurf(HR);
   return;
 }
 

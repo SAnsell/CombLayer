@@ -389,53 +389,25 @@ LinkUnit::getLinkSurf() const
 {
   ELog::RegMethod RegA("LinkUnit","getLinkSurf");
   if (!linkSurf)
-    throw ColErr::EmptyValue<int>("Empty linkSurf :: "
-				  "Bridge surf ="+getCommon());
+    throw ColErr::EmptyValue<int>
+      ("Empty linkSurf :: "
+       "Bridge surf ="+getCommon().display());
       
   return linkSurf;
 }
 
-std::string
-LinkUnit::getLinkString() const 
+HeadRule
+LinkUnit::getLink() const 
   /*!
     Get the linked string
     \return linked surface number
   */
 {
-  ELog::RegMethod RegA("LinkUnit","getLinkString");
-  std::string Out;
-  if (bridgeSurf.hasRule())
-    Out=" "+bridgeSurf.display();
-  if (mainSurf.hasRule())
-    Out+=" "+mainSurf.display();
-  return Out;
-}
-
-
-std::string
-LinkUnit::getCommon() const
-  /*!
-    Calculate the write out the dividers (bridge)
-    \return Exclude string [union]
-  */
-{
-  ELog::RegMethod RegA("LinkUnit","getCommon");
-
-  return bridgeSurf.display();
-}
-
-std::string
-LinkUnit::getMain() const
-  /*!
-    Get main string
-    \return Main string
-  */
-{
-  return mainSurf.display();
+  return bridgeSurf*mainSurf;
 }
 
 const HeadRule&
-LinkUnit::getMainRule() const
+LinkUnit::getMain() const
   /*!
     Output main rule
     \return Main rule
@@ -445,7 +417,7 @@ LinkUnit::getMainRule() const
 }
 
 const HeadRule&
-LinkUnit::getCommonRule() const
+LinkUnit::getCommon() const
   /*!
     Output common rule
     \return Common rule

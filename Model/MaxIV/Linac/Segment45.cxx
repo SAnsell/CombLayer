@@ -3,7 +3,7 @@
 
  * File: Linac/Segment45.cxx
  *
- * Copyright (c) 2004-2022 by Konstantin Batkov
+ * Copyright (c) 2004-2023 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -252,7 +252,7 @@ Segment45::constructHole(Simulation& System)
       pipeB->insertInCell("FlangeB",System,IHall->getCell("BDSPF"));
 
       MonteCarlo::Object *obj = System.findObject(IHall->getCell("BD"));
-      obj->addIntersection(HeadRule(pipeB->getLinkString(10)));
+      obj->addIntersection(pipeB->getFullRule(10));
       // same but less efficient (side surfaces also added into BD):
       //  pipeB->insertInCell("Main",System,IHall->getCell("BD"));
 

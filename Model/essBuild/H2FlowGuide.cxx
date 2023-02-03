@@ -3,7 +3,7 @@
  
  * File:   essBuild/H2FlowGuide.cxx 
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -143,6 +143,7 @@ H2FlowGuide::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("H2FlowGuide","populate");
 
   const std::string flowName(baseName+endName);
+
   baseThick=Control.EvalTail<double>(keyName,flowName,"BaseThick");
   baseLen=Control.EvalTail<double>(keyName,flowName,"BaseLen");
   baseArmSep=Control.EvalTail<double>(keyName,flowName,"BaseArmSep");
@@ -222,33 +223,34 @@ H2FlowGuide::createObjects(Simulation& System,
   if (!InnerObj)
     throw ColErr::InContainerError<int>
       (innerCell,"H2Wing inner Cell not found");
+
+  HeadRule HR;
+
+  const HeadRule topBottomHR=
+    HW.getFullRule(13)+HW.getFullRule(14);
   
-  std::string Out;
-  const std::string topBottomStr=HW.getLinkString(13)+
-    HW.getLinkString(14);
   HeadRule wallExclude;
   // base
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 ");
-  wallExclude.procString(Out); 
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4");
+  wallExclude=HR;
+  System.addCell(cellIndex++,wallMat,wallTemp,HR*topBottomHR);
 
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -13 14 ");
-  wallExclude.addUnion(Out); 
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -13 14");
+  wallExclude+=(HR); 
+  System.addCell(cellIndex++,wallMat,wallTemp,HR*topBottomHR);
 
   // arm
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 103 -104 ");
-  wallExclude.addUnion(Out);
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 103 -104");
+  wallExclude+=HR;
+  System.addCell(cellIndex++,wallMat,wallTemp,HR*topBottomHR);
 
   wallExclude.makeComplement();
-  InnerObj->addSurfString(wallExclude.display());
+  InnerObj->addIntersection(wallExclude);
   
   return;
 }
   
-
 void
 H2FlowGuide::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,

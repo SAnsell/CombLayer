@@ -3,7 +3,7 @@
  
  * File:   attachComp/AttachSupport.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,7 +84,7 @@ getLinkNumber(const std::string& Name)
     \return signed link number
   */
 {
-  ELog::RegMethod RegA("AttachSupport[F]","getLinkNumber");
+  const ELog::RegMethod RegA("AttachSupport[F]","getLinkNumber");
   
   long int linkPt(0);
   
@@ -115,7 +115,7 @@ addUnion(const MonteCarlo::Object& Obj,Rule*& outRule)
     \param outRule :: Rule to modify
   */
 {
-  ELog::RegMethod RegA("AttachSupport[F]","addUnion<Obj,Rule>");
+  const ELog::RegMethod RegA("AttachSupport[F]","addUnion<Obj,Rule>");
 
   createAddition(-1,Obj.topRule()->clone(),outRule);
   return;
@@ -131,7 +131,7 @@ addUnion(const int SN,const Geometry::Surface* SPtr,
     \param outRule :: Rule to modify
   */
 {
-  ELog::RegMethod RegA("AttachSupport[F]","addUnion<int,Rule>");
+  const ELog::RegMethod RegA("AttachSupport[F]","addUnion<int,Rule>");
   createAddition(-1,new SurfPoint(SPtr,SN),outRule);  
   return;
 }
@@ -144,7 +144,7 @@ addIntersection(const MonteCarlo::Object& Obj,Rule*& outRule)
     \param outRule :: Rule to modify
   */
 {
-  ELog::RegMethod RegA("AttachSupport[F]","addIntersection<Obj,Rule>");
+  const ELog::RegMethod RegA("AttachSupport[F]","addIntersection<Obj,Rule>");
 
   createAddition(1,Obj.topRule()->clone(),outRule);
   return;
@@ -160,7 +160,7 @@ addIntersection(const int SN,const Geometry::Surface* SPtr,
     \param outRule :: Rule to modify
   */
 {
-  ELog::RegMethod RegA("AttachSupport[F]","addIntersection<int,Rule>");
+  const ELog::RegMethod RegA("AttachSupport[F]","addIntersection<int,Rule>");
 
   createAddition(1,new SurfPoint(SPtr,SN),outRule);  
   return;
@@ -177,7 +177,7 @@ createAddition(const int InterFlag,Rule* NRptr,
     \param outRule :: Rule system to modify
    */
 {
-  ELog::RegMethod RegA("AttachSupport","createAddition");
+  const ELog::RegMethod RegA("AttachSupport","createAddition");
 
   // Null object : Set and return
   if (!outRule || !InterFlag)
@@ -242,7 +242,7 @@ addToInsertControl(Simulation& System,
     \param groupName :: Contained Group to use
   */
 {
-  ELog::RegMethod RegA("AttachSupport","addToInsertControl(FC,FC,string)");
+  const ELog::RegMethod RegA("AttachSupport","addToInsertControl(FC,FC,string)");
   
 
   const std::string outerName=OuterFC.getKeyName();
@@ -272,7 +272,7 @@ addToInsertControl(Simulation& System,
   \param InsertFC :: FixedComp with the points
 */
 {
-  ELog::RegMethod RegA("AttachSupport","addToInsertControl(FC,FC)");
+  const ELog::RegMethod RegA("AttachSupport","addToInsertControl(FC,FC)");
 
   const std::string outerName=OuterFC.getKeyName();
 
@@ -301,7 +301,7 @@ addToInsertControl(Simulation& System,
   \param CC :: ContainedComp object to add to this
 */
 {
-  ELog::RegMethod RegA("AttachSupport","addToInsertControl(string,FC,CC)");
+  const ELog::RegMethod RegA("AttachSupport","addToInsertControl(string,FC,CC)");
 
   const std::set<int> cellVec=System.getObjectRange(OName);
   addToInsertControl(System,cellVec,FC,CC);
@@ -325,8 +325,8 @@ addToInsertControl(Simulation& System,
     \param CC :: ContainedComp 
   */
 {
-  ELog::RegMethod RegA("attachSuport[F]",
-                       "addToInsertControl(CM,string,FC,CC)");
+  const ELog::RegMethod RegA("attachSuport[F]",
+			     "addToInsertControl(CM,string,FC,CC)");
 
   const std::vector<Geometry::Vec3D> linkPts=FC.getAllLinkPts();
 
@@ -368,7 +368,7 @@ addToInsertControl(Simulation& System,
     \param CC :: ContainedComp object to add to this
   */
 {
-  ELog::RegMethod RegA("AttachSupport","addToInsertControl");
+  const ELog::RegMethod RegA("AttachSupport","addToInsertControl");
 
   const std::vector<Geometry::Vec3D> linkPts=FC.getAllLinkPts();
   const HeadRule excludeHR=CC.getOuterSurf().complement();
@@ -407,7 +407,7 @@ addToInsertSurfCtrl(Simulation& System,
     \param CC :: ContainedComp object to add to this
   */
 {
-  ELog::RegMethod RegA("AttachSupport","addToInsertSurfCtrl(FC,CC)");
+  const ELog::RegMethod RegA("AttachSupport","addToInsertSurfCtrl(FC,CC)");
   
   const std::set<int> cellVec=
     System.getObjectRange(BaseFC.getKeyName());
@@ -766,13 +766,13 @@ unionLink(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("AttachSupport[F]","unionLink");
 
-  HeadRule Out;
+  HeadRule HR;
 
   for(const long int LI : LIndex)
-    Out.addUnion(FC.getLinkString(LI));
+    HR.addUnion(FC.getFullRule(LI));
 
 
-  return Out;
+  return HR;
 }
 
 HeadRule
@@ -786,13 +786,14 @@ intersectionLink(const attachSystem::FixedComp& FC,
     \return HeadRule of union join
    */
 {
-  ELog::RegMethod RegA("AttachSupport[F]","intersectionLink");
-  HeadRule Out;
+  const ELog::RegMethod RegA("AttachSupport[F]","intersectionLink");
+
+  HeadRule HR;
 
   for(const long int LI : LIndex)
-    Out.addIntersection(FC.getLinkString(LI));
+    HR.addIntersection(FC.getFullRule(LI));
 
-  return Out;
+  return HR;
 }
 
 

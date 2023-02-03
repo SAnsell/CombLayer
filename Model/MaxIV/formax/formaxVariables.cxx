@@ -1161,7 +1161,7 @@ FORMAXvariables(FuncDataBase& Control)
   formaxVar::opticsVariables(Control,"Formax");
 
   PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,"FormaxJoinPipeB",32.0);
+  PipeGen.generatePipe(Control,"FormaxJoinPipeB",34.0);
 
   formaxVar::shieldVariables(Control,"Formax");
   

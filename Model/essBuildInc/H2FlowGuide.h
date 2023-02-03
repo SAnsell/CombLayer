@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/H2FlowGuide.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,8 +42,8 @@ class H2FlowGuide :
  private:
   
   const std::string baseName; ///< Base name
-  const std::string midName; ///< Mid Name
-  const std::string endName; ///< End Name
+  const std::string midName;  ///< Mid Name
+  const std::string endName;  ///< End Name
 
   double baseThick;            ///< Base thickness
   double baseLen;              ///< Base length
@@ -68,6 +68,7 @@ class H2FlowGuide :
   virtual H2FlowGuide* clone() const;
   virtual ~H2FlowGuide();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 };

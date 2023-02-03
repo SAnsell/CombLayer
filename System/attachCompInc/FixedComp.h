@@ -48,8 +48,8 @@ class FixedComp
 {
  private:
 
-  std::string getUSLinkString(const size_t) const;
-  std::string getUSLinkComplement(const size_t) const;
+  HeadRule getUSLink(const size_t) const;
+  HeadRule getUSLinkComplement(const size_t) const;
   int getUSLinkSurf(const size_t) const;
   
  protected:
@@ -79,6 +79,8 @@ class FixedComp
   void setUSLinkComplement(const size_t,const FixedComp&,const size_t);
   void setUSLinkCopy(const size_t,const FixedComp&,const size_t);
 
+  //  virtual std::string getLinkString(const long int) const;
+  
  public:
 
   static void computeZOffPlane(const Geometry::Vec3D&,
@@ -228,7 +230,7 @@ class FixedComp
   Geometry::Vec3D getLinkAxis(const long int) const;
   Geometry::Vec3D getLinkZAxis(const long int) const;
   
-  virtual std::string getLinkString(const long int) const;
+
   double getLinkDistance(const std::string&,const std::string&) const;
   double getLinkDistance(const long int,const long int) const;
   double getLinkDistance(const long int,const FixedComp&,
