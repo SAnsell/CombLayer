@@ -59,9 +59,22 @@ class MLMDetailGenerator
   double baseBackSlotLen;      ///< length cut out at back
   double baseOutSlotLen;       ///< Slot on out face sie
 
+  // Support wheel
+  double wheelRadius;          ///< main wheel radius
+  double wheelOuterRadius;     ///< full outer reaius
+  double wheelHubRadius;       ///< Hub radius
+  double wheelHeight;          ///< Thickness of wheel
+  size_t nSpokes;              ///< nummber of slots
+  double spokeThick;           ///< spoke thickness
+  double spokeCornerRadius;    ///< nice radius in corner
+  double spokeCornerGap;       ///< gap at thin points
+
   std::string mirrorMat;             ///< XStal material
   std::string baseMat;               ///< Base material
 
+  void makeSupportWheel(FuncDataBase&,const std::string,
+			const double,const double) const;
+  
   void makeCrystal(FuncDataBase&,const std::string&,
 		   const bool,const double,
 		   const double,const double) const;

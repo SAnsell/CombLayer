@@ -225,12 +225,6 @@ DREAM::DREAM(const std::string& keyName) :
   OR.addObject(FocusCaveA);
   OR.addObject(FocusCaveB);
 }
-
-DREAM::~DREAM()
-  /*!
-    Destructor
-  */
-{}
   
 void 
 DREAM::build(Simulation& System,

@@ -58,6 +58,11 @@ MLMDetailGenerator::MLMDetailGenerator() :
   baseInnerOutFaceLen(1.3),
   baseBackSlotLen(12.1),
   baseOutSlotLen(2.3),
+
+  wheelRadius(7.0),wheelOuterRadius(7.8),
+  wheelHubRadius(),wheelHeight(3.0),
+  nSokes(12),spokeThick(0.6),
+  spokeCornerRadius(0.325),spokeCornerGap(0.1),
   
   mirrorMat("Silicon300K"),baseMat("Copper")
   /*!
@@ -74,13 +79,48 @@ MLMDetailGenerator::~MLMDetailGenerator()
 
 
 void
+MLMDetailGenerator::makeSupportWheel(FuncDataBase& Control,
+				     const std::string wheelName,
+				     const double xStep,
+				     const double yStep) const
+  /*!
+    Build the variables for the wheel supporting the second
+    crystal
+    \param Control :: Database
+    \param wheelName :: extra name for wheel
+    \param xStep :: Step in x direction
+    \param yStep :: Step in y direction
+  */
+    
+{
+  ELog::RegMethod RegA("MLMDetailGenerator","makeSupportWheel");
+
+  Control.addVariable(cryName+"XStep",xStep);
+  Control.addVariable(cryName+"YStep",yStep);
+
+  Control.addVariable(keyName+"WheelRadius",wheelRadius);
+  Control.addVariable(keyName+"WheelOuterRadius",wheelOuterRadius);
+  Control.addVariable(keyName+"WheelHubRadius",wheelHubRadius);
+  Control.addVariable(keyName+"WheelHeight",wheelHeight);
+
+  Control.addVariable(keyName+"NSpoke",nSpoke);
+  Control.addVariable(keyName+"SpokeThick",spokeThick);
+  Control.addVariable(keyName+"SpokeCornerRadius",spokeCornerRadius);
+  Control.addVariable(keyName+"SpokeCornerGap",spokeCornerGap);
+  
+  Control.addVariable(cryName+"Mat",baseMat);
+
+  return;
+}
+  
+void
 MLMDetailGenerator::makeCrystal(FuncDataBase& Control,
 				const std::string& cryName,
 				const bool rotFlag,
 				const double xStep,
 				const double yStep,
 				const double theta) const
-/*!
+  /*!
     Build the variables for the general crystal.
     The crystals are built generated in the centre of
     the viewed face.
@@ -146,7 +186,8 @@ MLMDetailGenerator::generateMono(FuncDataBase& Control,
 
   makeCrystal(Control,keyName+"XstalA",1,0.0,-xstalYStep/2.0,thetaA);
   makeCrystal(Control,keyName+"XstalB",0,gap,xstalYStep/2.0,thetaB); 
-  
+
+  makeSupportWheel(Control,keyName+"Wheel",0.0,0.0);
   
   return;
 
