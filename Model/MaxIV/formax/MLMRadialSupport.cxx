@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   formax/MLMSupportWheel.cxx
+ * File:   formax/MLMRadialSupport.cxx
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
  *
@@ -56,13 +56,13 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ContainedComp.h"
-#include "MLMSupportWheel.h"
+#include "MLMRadialSupport.h"
 
 
 namespace xraySystem
 {
 
-MLMSupportWheel::MLMSupportWheel(const std::string& Key) :
+MLMRadialSupport::MLMRadialSupport(const std::string& Key) :
   attachSystem::FixedRotate(Key,8),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
@@ -76,35 +76,44 @@ MLMSupportWheel::MLMSupportWheel(const std::string& Key) :
 
 
 
-MLMSupportWheel::~MLMSupportWheel()
+MLMRadialSupport::~MLMRadialSupport()
   /*!
     Destructor
    */
 {}
 
 void
-MLMSupportWheel::populate(const FuncDataBase& Control)
+MLMRadialSupport::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: Variable table to use
   */
 {
-  ELog::RegMethod RegA("MLMSupportWheel","populate");
+  ELog::RegMethod RegA("MLMRadialSupport","populate");
 
   FixedRotate::populate(Control);
 
-  wheelRadius=Control.EvalVar<double>(keyName+"WheelRadius");
-  wheelOuterRadius=Control.EvalVar<double>(keyName+"WheelOuterRadius");
-  wheelHubRadius=Control.EvalVar<double>(keyName+"WheelHubRadius");
-  wheelHeight=Control.EvalVar<double>(keyName+"WheelHeight");
+  length=Control.EvalVar<double>(keyName+"Length");
 
-  nSpokes=Control.EvalVar<size_t>(keyName+"NSpokes");
-  
-  spokeThick=Control.EvalVar<double>(keyName+"SpokeThick");
-  spokeCornerRadius=Control.EvalVar<double>(keyName+"SpokeCornerRadius");
-  spokeCornerGap=Control.EvalVar<double>(keyName+"SpokeCornerGap");
+  topThick=Control.EvalVar<double>(keyName+"TopThick");
+  topWdith=Control.EvalVar<double>(keyName+"TopWdith");
 
-  mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
+  midPlateThick=Control.EvalVar<double>(keyName+"MidPlateThick");
+  midPlateExtra=Control.EvalVar<double>(keyName+"MidPlateExtra");
+
+  bladeThick=Control.EvalVar<double>(keyName+"BladeThick");
+  bladeHeight=Control.EvalVar<double>(keyName+"BladeHeight");
+  bladeTopGap=Control.EvalVar<double>(keyName+"BladeTopGap");
+  bladeBaseGap=Control.EvalVar<double>(keyName+"BladeBaseGap");
+
+  sideWidth=Control.EvalVar<double>(keyName+"SideWidth");
+  sideLift=Control.EvalVar<double>(keyName+"SideLift");
+  sideOffset=Control.EvalVar<double>(keyName+"SideOffset");
+
+  baseThick=Control.EvalVar<double>(keyName+"BaseThick");
+
+  plateMat=ModelSupport::EvalMat<int>(Control,keyName+"PlateMat");
+  baseMat=ModelSupport::EvalMat<int>(Control,keyName+"BaseMat");
   voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat","Void");
 
   return;
@@ -112,17 +121,43 @@ MLMSupportWheel::populate(const FuncDataBase& Control)
 
 
 void
-MLMSupportWheel::createSurfaces()
+MLMRadialSupport::createSurfaces()
   /*!
     Create planes for mirror block and support
+    +x AWAY from beam
   */
 {
-  ELog::RegMethod RegA("MLMSupportWheel","createSurfaces");
+  ELog::RegMethod RegA("MLMRadialSupport","createSurfaces");
 
-  const double microShift(0.01);
+  // top block [gapped to crystal mount]
+  ModelSupport::buildPlane(SMap,buildIndex+101,Origin-Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*topBeamWidth,X);
+  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*topOutWidth,X);
+  ModelSupport::buildPlane(SMap,buildIndex+106,Origin-Z*topGap,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(topGap+topHeight),Z);
+
+  // Support plate [not gap to stuff]
+  // Split
+  Geometry::Vec3D pOrg(Origin-Z*(topGap+topHeight));
+  // support block
+  ModelSupport::buildPlane
+    (SMap,buildIndex+201,pOrg-Y*(length/2.0-plateLength),Y);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+202,pOrg+Y*(length/2.0-plateLength),Y);
+
+  ModelSupport::buildPlane(SMap,buildIndex+203,pOrg-X*plateBeam,X);
+  ModelSupport::buildPlane(SMap,buildIndex+205,pOrg-Z*plateThick,Z);
+
+
+  // side supports of Radial :
+  // side supports are on plane of 205:
+  pOrg-=Z*plateThick;
+
+  ModelSupport::buildPlane(SMap,buildIndex+303,pOrg-Z*sideLift,X);
+  ModelSupport::buildPlane(SMap,buildIndex+304,pOrg-Z*sideBeam,X);
+  ModelSupport::buildPlane(SMap,buildIndex+305,pOrg-Z*sideLift,Z);  
   
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Y*(wheelHeight/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Y*(wheelHeight/2.0),Y);
 
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,wheelHubRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,wheelRadius);
@@ -168,13 +203,13 @@ MLMSupportWheel::createSurfaces()
 }
 
 void
-MLMSupportWheel::createObjects(Simulation& System)
+MLMRadialSupport::createObjects(Simulation& System)
   /*!
     Create the vaned moderator
     \param System :: Simulation to add results
    */
 {
-  ELog::RegMethod RegA("MLMSupportWheel","createObjects");
+  ELog::RegMethod RegA("MLMRadialSupport","createObjects");
 
   HeadRule HR;
 
@@ -220,12 +255,12 @@ MLMSupportWheel::createObjects(Simulation& System)
 }
 
 void
-MLMSupportWheel::createLinks()
+MLMRadialSupport::createLinks()
   /*!
     Creates a full attachment set
   */
 {
-  ELog::RegMethod RegA("MLMSupportWheel","createLinks");
+  ELog::RegMethod RegA("MLMRadialSupport","createLinks");
 
   HeadRule HR;
 
@@ -233,7 +268,7 @@ MLMSupportWheel::createLinks()
 }
 
 void
-MLMSupportWheel::createAll(Simulation& System,
+MLMRadialSupport::createAll(Simulation& System,
 		  const attachSystem::FixedComp& FC,
 		  const long int sideIndex)
   /*!
@@ -243,7 +278,7 @@ MLMSupportWheel::createAll(Simulation& System,
     \param sideIndex :: Side point
    */
 {
-  ELog::RegMethod RegA("MLMSupportWheel","createAll");
+  ELog::RegMethod RegA("MLMRadialSupport","createAll");
   populate(System.getDataBase());
 
   createCentredUnitVector(FC,sideIndex,wheelHeight/2.0);
