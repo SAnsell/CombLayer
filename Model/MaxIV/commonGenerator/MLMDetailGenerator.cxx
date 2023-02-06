@@ -60,8 +60,8 @@ MLMDetailGenerator::MLMDetailGenerator() :
   baseOutSlotLen(2.3),
 
   wheelRadius(7.0),wheelOuterRadius(7.8),
-  wheelHubRadius(),wheelHeight(3.0),
-  nSokes(12),spokeThick(0.6),
+  wheelHubRadius(2.5),wheelHeight(3.0),
+  nSpokes(12),spokeThick(0.6),
   spokeCornerRadius(0.325),spokeCornerGap(0.1),
   
   mirrorMat("Silicon300K"),baseMat("Copper")
@@ -95,20 +95,20 @@ MLMDetailGenerator::makeSupportWheel(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("MLMDetailGenerator","makeSupportWheel");
 
-  Control.addVariable(cryName+"XStep",xStep);
-  Control.addVariable(cryName+"YStep",yStep);
+  Control.addVariable(wheelName+"XStep",xStep);
+  Control.addVariable(wheelName+"YStep",yStep);
 
-  Control.addVariable(keyName+"WheelRadius",wheelRadius);
-  Control.addVariable(keyName+"WheelOuterRadius",wheelOuterRadius);
-  Control.addVariable(keyName+"WheelHubRadius",wheelHubRadius);
-  Control.addVariable(keyName+"WheelHeight",wheelHeight);
+  Control.addVariable(wheelName+"WheelRadius",wheelRadius);
+  Control.addVariable(wheelName+"WheelOuterRadius",wheelOuterRadius);
+  Control.addVariable(wheelName+"WheelHubRadius",wheelHubRadius);
+  Control.addVariable(wheelName+"WheelHeight",wheelHeight);
 
-  Control.addVariable(keyName+"NSpoke",nSpoke);
-  Control.addVariable(keyName+"SpokeThick",spokeThick);
-  Control.addVariable(keyName+"SpokeCornerRadius",spokeCornerRadius);
-  Control.addVariable(keyName+"SpokeCornerGap",spokeCornerGap);
+  Control.addVariable(wheelName+"NSpokes",nSpokes);
+  Control.addVariable(wheelName+"SpokeThick",spokeThick);
+  Control.addVariable(wheelName+"SpokeCornerRadius",spokeCornerRadius);
+  Control.addVariable(wheelName+"SpokeCornerGap",spokeCornerGap);
   
-  Control.addVariable(cryName+"Mat",baseMat);
+  Control.addVariable(wheelName+"Mat",baseMat);
 
   return;
 }
@@ -183,11 +183,11 @@ MLMDetailGenerator::generateMono(FuncDataBase& Control,
 
   // guess of separation
   const double xstalYStep(gap/tan(2.0*M_PI*thetaA/180.0));
-
+  ELog::EM<<"Theta == "<<thetaA<<" "<<thetaB<<ELog::endDiag;
   makeCrystal(Control,keyName+"XstalA",1,0.0,-xstalYStep/2.0,thetaA);
   makeCrystal(Control,keyName+"XstalB",0,gap,xstalYStep/2.0,thetaB); 
 
-  makeSupportWheel(Control,keyName+"Wheel",0.0,0.0);
+  makeSupportWheel(Control,keyName+"BWheel",0.0,0.0);
   
   return;
 

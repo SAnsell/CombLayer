@@ -62,6 +62,7 @@
 #include "SurfMap.h"
 
 #include "MLMCrystal.h"
+#include "MLMSupportWheel.h"
 #include "MLMonoDetail.h"
 
 
@@ -74,7 +75,8 @@ MLMonoDetail::MLMonoDetail(const std::string& Key) :
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   xstalA(new MLMCrystal(keyName+"XstalA")),
-  xstalB(new MLMCrystal(keyName+"XstalB"))
+  xstalB(new MLMCrystal(keyName+"XstalB")),
+  bWheel(new MLMSupportWheel(keyName+"BWheel"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -85,6 +87,7 @@ MLMonoDetail::MLMonoDetail(const std::string& Key) :
   
   OR.addObject(xstalA);
   OR.addObject(xstalB);
+  OR.addObject(bWheel);
 }
 
 MLMonoDetail::~MLMonoDetail()
@@ -131,9 +134,11 @@ MLMonoDetail::createObjects(Simulation& System)
 
   xstalA->addInsertCell(getInsertCells());
   xstalB->addInsertCell(getInsertCells());
+  bWheel->addInsertCell(getInsertCells());
 
   xstalA->createAll(System,*this,0);
   xstalB->createAll(System,*this,0);
+  bWheel->createAll(System,*xstalB,"BaseRotPt");
 
   return; 
 }

@@ -3,7 +3,7 @@
  
  * File:   commonBeamInc/Table.h
 *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,8 +36,8 @@ namespace xraySystem
 */
 
 class Table :
-    public attachSystem::ContainedGroup,
     public attachSystem::FixedRotate,
+    public attachSystem::ContainedGroup,
     public attachSystem::CellMap,
     public attachSystem::SurfMap
 {
@@ -48,8 +48,7 @@ class Table :
   double thick;           ///< Thickness
 
   double legSize;           ///< Square leg size
-  double clearance;         ///< Hole clearace [%]
-  
+  double clearance;         ///< Hole clearace [%]  
 
   int voidMat;              ///< Void material
   int plateMat;             ///< Top plate material

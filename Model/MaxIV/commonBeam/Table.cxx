@@ -3,7 +3,7 @@
 
  * File:   commonBeam/Table.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,21 +63,12 @@
 #include "pipeSupport.h"
 #include "Table.h"
 
-// DEBUG
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-
-#include "HeadRule.h"
-#include "Importance.h"
-#include "Object.h"
-
-
 namespace xraySystem
 {
 
 Table::Table(const std::string& Key) :
-  attachSystem::ContainedGroup("Main"),
   attachSystem::FixedRotate(Key,8),
+  attachSystem::ContainedGroup("Main"),
   attachSystem::CellMap(),
   attachSystem::SurfMap()
   /*!
@@ -226,7 +217,6 @@ Table::createObjects(Simulation& System)
   if (!ContainedGroup::hasKey("Plate")) addCC("Plate");
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6");
   addOuterSurf("Plate",HR);
-
 
   return;
 } 

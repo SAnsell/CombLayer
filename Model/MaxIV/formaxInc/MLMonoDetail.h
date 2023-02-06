@@ -28,6 +28,7 @@ namespace xraySystem
 {
 
   class MLMCrystal;
+  class MLMSupportWheel;
   
 /*!
   \class MLMonoDetail
@@ -47,6 +48,7 @@ class MLMonoDetail :
 
   std::shared_ptr<MLMCrystal> xstalA;
   std::shared_ptr<MLMCrystal> xstalB;
+  std::shared_ptr<MLMSupportWheel> bWheel;
   
   // Functions:
 

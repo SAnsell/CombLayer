@@ -724,7 +724,7 @@ SingleItemVariables(FuncDataBase& Control)
      Geometry::Vec3D(-1.0, 0.0, 0.0));
 
   MLMDetailGenerator MLGen;
-  MLGen.generateMono(Control,"MLM",0.1,0.1);
+  MLGen.generateMono(Control,"MLM",0.1,-0.1);
   
 
   TubeDetBoxGenerator TDBGen;

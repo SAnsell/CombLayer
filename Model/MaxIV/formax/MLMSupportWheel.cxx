@@ -32,7 +32,6 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
@@ -106,7 +105,7 @@ MLMSupportWheel::populate(const FuncDataBase& Control)
   spokeCornerGap=Control.EvalVar<double>(keyName+"SpokeCornerGap");
 
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat","Void");
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat","Void");
 
   return;
 }
@@ -120,8 +119,8 @@ MLMSupportWheel::createSurfaces()
 {
   ELog::RegMethod RegA("MLMSupportWheel","createSurfaces");
   
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Y*(height/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Y*(height/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Y*(wheelHeight/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Y*(wheelHeight/2.0),Y);
 
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,wheelHubRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,wheelRadius);
@@ -133,10 +132,13 @@ MLMSupportWheel::createSurfaces()
   for(size_t i=0;i<nSpokes;i++)
     {
       const Geometry::Vec3D PX=X*std::cos(angle)+Z*std::sin(angle);
+      const Geometry::Vec3D PY=X*std::sin(-angle)+Z*std::cos(angle); //a+pi/2
       ModelSupport::buildPlane(SMap,BI+1,
 			       Origin-PX*(spokeThick/2.0),PX);
       ModelSupport::buildPlane(SMap,BI+2,
-			       Origin-PX*(spokeThick/2.0),PX);
+			       Origin+PX*(spokeThick/2.0),PX);
+      // divider
+      ModelSupport::buildPlane(SMap,BI+9,Origin,PY);
       angle+=angleStep;
       BI+=10;
     }
@@ -155,58 +157,32 @@ MLMSupportWheel::createObjects(Simulation& System)
 
   HeadRule HR;
 
-  // slot:
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"(11:-17) (-12:-18) 13 -14 15 -6");  
-  makeCell("TopSlot",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -7");
+  makeCell("Hub",System,cellIndex++,mat,0.0,HR);  
 
-  // xstal
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"1 -2 3 -4 5 -6 ((-11 17):(12 18):-13:14:-15)");  
-  makeCell("Xstal",System,cellIndex++,mirrorMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -27 17");
+  makeCell("Rim",System,cellIndex++,mat,0.0,HR);  
 
-  // base plate
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 103 -104 -5 105");  
-  makeCell("BaseFlat",System,cellIndex++,baseMat,0.0,HR);  
+  const HeadRule baseHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 7 -17");
+  int BI(buildIndex+100);
+  // spokes
+  HeadRule prevHR=HeadRule
+    (SMap,BI+10*static_cast<int>(nSpokes-1),2);
+  for(size_t i=0;i<nSpokes;i++)
+    {
+      HR=ModelSupport::getHeadRule(SMap,BI,"1 -2 9");
+      makeCell("Spoke",System,cellIndex++,mat,0.0,HR*baseHR);  
 
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"101 -102 154 -104 5 -126 (-201:202)");  
-  makeCell("BaseBack",System,cellIndex++,baseMat,0.0,HR);  
+      HR=HeadRule(SMap,BI,-1);
+      makeCell("Void",System,cellIndex++,voidMat,0.0,HR*baseHR*prevHR);
+      prevHR=HeadRule(SMap,BI,2);
+      BI+=10;
+    }
   
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"154 -104 5 -126 201 -202");  
-  makeCell("BaseBackGap",System,cellIndex++,voidMat,0.0,HR);  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -27");
+  addOuterSurf(HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 -153 103 5 -116");  
-  makeCell("BaseFront",System,cellIndex++,baseMat,0.0,HR);  
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -151 -154 153 5 -126");  
-  makeCell("BaseBeam",System,cellIndex++,baseMat,0.0,HR);  
-
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"152 -102 -154 153 5 -126 (-203:204)");  
-  makeCell("BaseOut",System,cellIndex++,baseMat,0.0,HR);  
-
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"2 -102 153 5 -126 203 -204");  
-  makeCell("BaseOutGap",System,cellIndex++,voidMat,0.0,HR);  
-  
-  // base voids:
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"151 -2 -154 153 5 -126 (-1:-3:4)");  
-  makeCell("CrysVoid",System,cellIndex++,voidMat,0.0,HR);  
-
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"101 -102 -153 103 116 -126");  
-  makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,HR);  
-
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"101 -102 103 -104 126 -6 (-1:2:-3:4)");  
-  makeCell("TopVoid",System,cellIndex++,voidMat,0.0,HR);  
-
-  
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 103 -104 105 -6");
-  addOuterSurf(HR);  
   return; 
 }
 
@@ -217,7 +193,9 @@ MLMSupportWheel::createLinks()
   */
 {
   ELog::RegMethod RegA("MLMSupportWheel","createLinks");
-  
+
+  HeadRule HR;
+
   return;
 }
 
@@ -235,7 +213,7 @@ MLMSupportWheel::createAll(Simulation& System,
   ELog::RegMethod RegA("MLMSupportWheel","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(FC,sideIndex);
+  createCentredUnitVector(FC,sideIndex,wheelHeight/2.0);
   createSurfaces();
   createObjects(System);
   createLinks();
