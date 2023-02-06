@@ -3,7 +3,7 @@
  
  * File:   attachComp/CellMap.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -246,8 +246,20 @@ CellMap::insertComponent(Simulation& System,
    */
 {
   ELog::RegMethod RegA("CellMap","insertComponent(HR)");
-  if (HR.hasRule())
-    insertComponent(System,Key,HR.display());
+
+  const std::vector<int> CVec=getCells(Key);
+  if (CVec.empty())
+    throw ColErr::InContainerError<std::string>
+      (Key,"Cell["+Key+"] not present");
+
+  for(const int cellNum : CVec)
+    {
+      MonteCarlo::Object* outerObj=System.findObject(cellNum);
+      if (!outerObj)
+	throw ColErr::InContainerError<int>
+	  (cellNum,"Cell["+Key+"] not in simlutation");
+      outerObj->addIntersection(HR);
+    }
   return;
 }
 
@@ -265,8 +277,17 @@ CellMap::insertComponent(Simulation& System,
    */
 {
   ELog::RegMethod RegA("CellMap","insertComponent(index,HR)");
+
   if (HR.hasRule())
-    insertComponent(System,Key,index,HR.display());
+    {
+      const int cellNum=getCell(Key,index);
+
+      MonteCarlo::Object* outerObj=System.findObject(cellNum);
+      if (!outerObj)
+	throw ColErr::InContainerError<int>(cellNum,
+					    "Cell["+Key+"] not present");
+      outerObj->addIntersection(HR);
+    }
   return;
 }
 
@@ -283,19 +304,7 @@ CellMap::insertComponent(Simulation& System,
 {
   ELog::RegMethod RegA("CellMap","insertComponent(string)");
 
-  const std::vector<int> CVec=getCells(Key);
-  if (CVec.empty())
-    throw ColErr::InContainerError<std::string>
-      (Key,"Cell["+Key+"] not present");
-
-  for(const int cellNum : CVec)
-    {
-      MonteCarlo::Object* outerObj=System.findObject(cellNum);
-      if (!outerObj)
-	throw ColErr::InContainerError<int>(cellNum,
-					    "Cell["+Key+"] not in simlutation");
-      outerObj->addIntersection(HeadRule(exclude));
-    }
+  insertComponent(System,Key,HeadRule(exclude));
   return;
 }
 
@@ -313,14 +322,7 @@ CellMap::insertComponent(Simulation& System,
    */
 {
   ELog::RegMethod RegA("CellMap","insertComponent(index,string)");
-
-  const int cellNum=getCell(Key,index);
-
-  MonteCarlo::Object* outerObj=System.findObject(cellNum);
-  if (!outerObj)
-    throw ColErr::InContainerError<int>(cellNum,
-					"Cell["+Key+"] not present");
-  outerObj->addIntersection(HeadRule(exclude));
+  insertComponent(System,Key,index,HeadRule(exclude));
   return;
 }
 
@@ -376,7 +378,7 @@ CellMap::insertComponent(Simulation& System,
     throw ColErr::InContainerError<long int>
       (0,"Zero line surface not defined for : "+FC.getKeyName());
 
-  insertComponent(System,Key,index,FC.getLinkString(sideIndex));
+  insertComponent(System,Key,index,FC.getFullRule(sideIndex));
   return;
 }
 
@@ -399,7 +401,7 @@ CellMap::insertComponent(Simulation& System,
     throw ColErr::InContainerError<long int>
       (0,"Zero line surface not defined for : "+FC.getKeyName());
 
-  insertComponent(System,Key,FC.getLinkString(sideIndex));
+  insertComponent(System,Key,FC.getFullRule(sideIndex));
   return;
 }
 

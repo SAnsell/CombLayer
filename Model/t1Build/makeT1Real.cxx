@@ -3,7 +3,7 @@
  
  * File:   t1Build/makeT1Real.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -277,7 +277,7 @@ makeT1Real::buildTarget(Simulation& System,
     {
       TarObj=std::shared_ptr<TMRSystem::TargetBase>
 	(new t1PlateTarget("T1PlateTarget"));
-      TarObj->setCutSurf("RefBoundary",RefObj->getLinkString(-1));      
+      TarObj->setCutSurf("RefBoundary",RefObj->getFullRule(-1));      
       OR.addObject(TarObj);
       TarObj->addInsertCell(voidCell);
       TarObj->createAll(System,World::masterOrigin(),0);
@@ -298,7 +298,7 @@ makeT1Real::buildTarget(Simulation& System,
       TarObj=std::shared_ptr<TMRSystem::TargetBase>
 	(new ts1System::InnerTarget("t1Inner"));
       OR.addObject(TarObj);
-      TarObj->setCutSurf("FrontPlate",RefObj->getLinkString(-1));      
+      TarObj->setCutSurf("FrontPlate",RefObj->getFullRule(-1));      
       TarObj->setCutSurf("BackPlate",RefObj->getLinkSurf(-5));
       TarObj->createAll(System,World::masterOrigin(),0);
       return "t1Inner";
@@ -397,12 +397,12 @@ makeT1Real::build(Simulation& System,
       BulkObj->setCutSurf("FullInner",VoidObj->getCompExclude());
       BulkObj->createAll(System,*VoidObj,0);
 
-      MonoTopObj->setCutSurf("voidSurf",VoidObj->getLinkString(3));
-      MonoTopObj->setCutSurf("outSurf",VoidObj->getLinkString(-1));
-      MonoTopObj->setCutSurf("bulkSurf",BulkObj->getLinkString(-3));
-      MonoBaseObj->setCutSurf("voidSurf",VoidObj->getLinkString(2));
-      MonoBaseObj->setCutSurf("outSurf",VoidObj->getLinkString(-1));
-      MonoBaseObj->setCutSurf("bulkSurf",BulkObj->getLinkString(-2));
+      MonoTopObj->setCutSurf("voidSurf",VoidObj->getFullRule(3));
+      MonoTopObj->setCutSurf("outSurf",VoidObj->getFullRule(-1));
+      MonoTopObj->setCutSurf("bulkSurf",BulkObj->getFullRule(-3));
+      MonoBaseObj->setCutSurf("voidSurf",VoidObj->getFullRule(2));
+      MonoBaseObj->setCutSurf("outSurf",VoidObj->getFullRule(-1));
+      MonoBaseObj->setCutSurf("bulkSurf",BulkObj->getFullRule(-2));
       
       MonoTopObj->createAll(System,*VoidObj,3);
       MonoBaseObj->createAll(System,*VoidObj,2);

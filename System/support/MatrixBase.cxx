@@ -3,7 +3,7 @@
  
  * File:   support/MatrixBase.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,6 @@
 #include <cmath>
 #include <complex>
 #include <vector>
-#include <boost/multi_array.hpp> 
 
 #include "Exception.h"
 #include "MatrixBase.h"
@@ -810,10 +809,8 @@ MatrixBase<T>::writeGrid(std::ostream& FX) const
   fill(LStr.begin(),LStr.end(),0);
   
   // a matrix of strings:
-  boost::multi_array<std::string,2> 
-    MStr(boost::extents[static_cast<long int>(nx)]
-	 [static_cast<long int>(ny)]);
-  
+  std::vector<std::string> MStr(nx*ny);
+  size_t index(0);
   for(size_t i=0;i<nx;i++)
     for(size_t j=0;j<ny;j++)
       {
@@ -822,22 +819,21 @@ MatrixBase<T>::writeGrid(std::ostream& FX) const
 	const size_t len(cx.str().length());
 	if (LStr[j]<len)
 	  LStr[j]=len;
-	const long int li(static_cast<long int>(i));
-	const long int lj(static_cast<long int>(j));
-	MStr[li][lj]=cx.str();
+	MStr[index]=cx.str();
+	index++;
       }
-  
+
   // WRITE PART:
+  index=0;
   for(size_t i=0;i<nx;i++)
     {
       for(size_t j=0;j<ny;j++)
         {
-	  const long int li(static_cast<long int>(i));
-	  const long int lj(static_cast<long int>(j));
-	  const size_t Fpad(LStr[j]-MStr[li][lj].length());
+	  const size_t Fpad(LStr[j]-MStr[index].length());
 	  const size_t Lpad(2+Fpad/2);
 	  const size_t Rpad(2+Lpad + (Fpad % 2));
-	  FX<<std::string(Lpad,' ')<<MStr[li][lj]<<std::string(Rpad,' ');
+	  FX<<std::string(Lpad,' ')<<MStr[index]<<std::string(Rpad,' ');
+	  index++;
 	}
       FX<<std::endl;
     }

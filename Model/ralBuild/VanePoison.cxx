@@ -3,7 +3,7 @@
  
  * File:   ralBuild/VanePoison.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +38,7 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
+#include "Exception.h"
 #include "surfRegister.h"
 #include "varList.h"
 #include "Code.h"
@@ -55,6 +56,7 @@
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "VanePoison.h"
 
 namespace moderatorSystem
@@ -62,7 +64,8 @@ namespace moderatorSystem
 
 VanePoison::VanePoison(const std::string& Key)  :
   attachSystem::FixedRotate(Key,6),
-  attachSystem::ContainedComp()
+  attachSystem::ContainedComp(),
+  attachSystem::ExternalCut()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -72,6 +75,7 @@ VanePoison::VanePoison(const std::string& Key)  :
 VanePoison::VanePoison(const VanePoison& A) : 
   attachSystem::FixedRotate(A),
   attachSystem::ContainedComp(A),
+  attachSystem::ExternalCut(A),
   nBlades(A.nBlades),bWidth(A.bWidth),absThick(A.absThick),
   bGap(A.bGap),yLength(A.yLength),zLength(A.zLength),
   modTemp(A.modTemp),modMat(A.modMat),bladeMat(A.bladeMat),
@@ -94,6 +98,7 @@ VanePoison::operator=(const VanePoison& A)
     {
       attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       nBlades=A.nBlades;
       bWidth=A.bWidth;
       absThick=A.absThick;
@@ -179,6 +184,8 @@ VanePoison::createSurfaces()
     {
       ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*zLength,Z);
       ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*zLength,Z);
+      setCutSurf("Base",SMap.realSurf(buildIndex+15));
+      setCutSurf("Top",-SMap.realSurf(buildIndex+16));
     }
   
   int surfN(buildIndex+100);
@@ -212,29 +219,19 @@ VanePoison::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("VanePoison","createObjects");
 
-  HeadRule yFront,yBack,zBase,zTop;
+  if (!isActive("Base") || !isActive("Top"))
+    throw ColErr::InContainerError<std::string>
+      ("Base/Top","ExternalCut Base/Top not set");
+
+  const HeadRule zBase=getRule("Base");
+  const HeadRule zTop=getRule("Top");
+  HeadRule yFront,yBack;
 
   HeadRule HR;
   yFront= (std::abs(yStep)>Geometry::zeroTol) ?
     HeadRule(SMap,buildIndex,11) :  FC.getFullRule(linkPt);
   yBack=HeadRule(SMap,buildIndex,-12);
 
-  if (zLength>Geometry::zeroTol)
-    {
-      zBase=HeadRule(SMap,buildIndex,15);
-      zTop=HeadRule(SMap,buildIndex,-16);
-    }
-  else
-    {
-      long int zUp=FC.findLinkAxis(Z);
-      long int zDown=FC.findLinkAxis(-Z);
-      if (zUp<6) zUp+=6;
-      if (zDown<6) zDown+=6;
-
-      // INNER Points are REVERSED!!!
-      zBase=FC.getFullRule(zUp);
-      zTop=FC.getFullRule(zDown);
-    }
   const HeadRule combineHR=zTop*yBack*yFront*zBase;
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14");
   addOuterSurf(HR*combineHR);
@@ -265,7 +262,7 @@ void
 VanePoison::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
 		      const long int linkIndex)
-  /*!
+/*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: link system

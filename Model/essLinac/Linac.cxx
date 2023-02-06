@@ -3,7 +3,7 @@
 
  * File:   essBuild/Linac.cxx
  *
- * Copyright (c) 2004-2022 by Konstantin Batkov
+ * Copyright (c) 2004-2023 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -243,11 +243,11 @@ Linac::layerProcess(Simulation& System, const std::string& cellName,
       surroundRule.setSurfPair(SMap.realSurf(pS),
 			       SMap.realSurf(sS));
       
-      const std::string OutA = getLinkString(linkPrimSurf);
-      const std::string OutB = getLinkString(-linkSndSurf);
+      const HeadRule HRA = getFullRule(linkPrimSurf);
+      const HeadRule HRB = getFullRule(-linkSndSurf);
       
-      surroundRule.setInnerRule(OutA);
-      surroundRule.setOuterRule(OutB);
+      surroundRule.setInnerRule(HRA);
+      surroundRule.setOuterRule(HRB);
       
       DA.addRule(&surroundRule);
       DA.activeDivideTemplate(System);

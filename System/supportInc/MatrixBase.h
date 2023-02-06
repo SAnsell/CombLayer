@@ -3,7 +3,7 @@
  
  * File:   supportInc/MatrixBase.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -145,11 +145,6 @@ operator<<(std::ostream&,
 	   const Geometry::MatrixBase<mathLevel::PolyVar<index> >&);
 
 }  // NAMESPACE  Geometry
-
-
-
-// template<typename X>
-// std::ostream& operator<<(std::ostream&,const Geometry::MatrixBase<X>&);
 
 #endif
 

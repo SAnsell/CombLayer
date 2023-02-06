@@ -16,7 +16,6 @@ parallel --halt now,fail=1 "./maxiv --defaultConfig Single {} --validAll --valid
 
 ./maxiv --noLengthCheck --defaultConfig Linac ${segments} --validAll --validCheck $nValid AA || exit 
 
-
 ./maxiv --noLengthCheck --defaultConfig Linac ${segments} -validAll --validCheck ${nValid} AA || exit
 
 ./fullBuild -validAll --validCheck ${nValid} AA || exit

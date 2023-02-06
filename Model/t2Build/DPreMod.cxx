@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   moderator/PreMod.cxx
+ * File:   t2Build/DPreMod.cxx
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
  *
@@ -64,44 +64,41 @@
 #include "ExternalCut.h"
 #include "BaseMap.h"
 #include "SurfMap.h"
-#include "PreMod.h"
+#include "DPreMod.h"
 
 namespace moderatorSystem
 {
 
-PreMod::PreMod(const std::string& Key)  :
+DPreMod::DPreMod(const std::string& Key)  :
   attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
-  attachSystem::SurfMap(),
-  centOrgFlag(1),
-  divideSurf(0),targetSurf(0),rFlag(0)
+  attachSystem::SurfMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
 {}
 
-PreMod::PreMod(const PreMod& A) : 
+DPreMod::DPreMod(const DPreMod& A) : 
   attachSystem::FixedRotate(A),
   attachSystem::ContainedComp(A),
   attachSystem::ExternalCut(A),
   attachSystem::SurfMap(A),
-  centOrgFlag(A.centOrgFlag),width(A.width),height(A.height),
+  width(A.width),height(A.height),
   depth(A.depth),alThickness(A.alThickness),modTemp(A.modTemp),
-  modMat(A.modMat),alMat(A.alMat),divideSurf(A.divideSurf),
-  targetSurf(A.targetSurf),rFlag(A.rFlag)
+  modMat(A.modMat),alMat(A.alMat)
   /*!
     Copy constructor
-    \param A :: PreMod to copy
+    \param A :: DPreMod to copy
   */
 {}
 
-PreMod&
-PreMod::operator=(const PreMod& A)
+DPreMod&
+DPreMod::operator=(const DPreMod& A)
   /*!
     Assignment operator
-    \param A :: PreMod to copy
+    \param A :: DPreMod to copy
     \return *this
   */
 {
@@ -111,7 +108,6 @@ PreMod::operator=(const PreMod& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::ExternalCut::operator=(A);
       attachSystem::SurfMap::operator=(A);
-      centOrgFlag=A.centOrgFlag;
       width=A.width;
       height=A.height;
       depth=A.depth;
@@ -119,27 +115,24 @@ PreMod::operator=(const PreMod& A)
       modTemp=A.modTemp;
       modMat=A.modMat;
       alMat=A.alMat;
-      divideSurf=A.divideSurf;
-      targetSurf=A.targetSurf;
-      rFlag=A.rFlag;
     }
   return *this;
 }
 
-PreMod::~PreMod() 
+DPreMod::~DPreMod() 
   /*!
     Destructor
   */
 {}
 
 void
-PreMod::populate(const FuncDataBase& Control)
+DPreMod::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: Function dataase
   */
 {
-  ELog::RegMethod RegA("PreMod","populate");
+  ELog::RegMethod RegA("DPreMod","populate");
 
   FixedRotate::populate(Control);
   
@@ -156,155 +149,86 @@ PreMod::populate(const FuncDataBase& Control)
   return;
 }
   
-void
-PreMod::createUnitVector(const attachSystem::FixedComp& FC,
-                         const long int orgIndex,
-			 const long int basisIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Component to connect to
-    \param orgIndex :: side to connect 
-    \param basisIndex :: basis index
-  */
-{
-  ELog::RegMethod RegA("PreMod","createUnitVector");
-
-  FixedComp::createUnitVector(FC,orgIndex,basisIndex);
-  applyOffset();
-  return;
-}
   
 void
-PreMod::createSurfaces(const attachSystem::FixedComp& FC,
-		       const long int baseIndex)
+DPreMod::createSurfaces()
   /*!
     Create All the surfaces
-    \param FC :: Fixed unit that connects to this moderator
-    \param baseIndex :: base number
   */
 {
-  ELog::RegMethod RegA("PreMod","createSurface");
+  ELog::RegMethod RegA("DPreMod","createSurface");
 
-  const Geometry::Vec3D& cAxis=FC.getLinkAxis(baseIndex);
-  const int cFlag=(cAxis.dotProd(Z)<-0.8) ? -1 : 1;
-
-  if (centOrgFlag)
-    Origin-=Y*(depth/2.0);
-
-  // Outer DIVIDE PLANE/Cylinder
-  if (divideSurf)
-    SMap.addMatch(buildIndex+1,divideSurf);
-  else
-    ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
-
-  SMap.addMatch(buildIndex+5,cFlag*FC.getLinkSurf(baseIndex));
-  if (targetSurf)
-    SMap.addMatch(buildIndex+7,targetSurf);  // This is a cylinder [hopefully]
-
-  ELog::EM<<"Target HR - "<<targetSurf<<" "<<FC.getLinkSurf(baseIndex)<<ELog::endDiag;
-  // Outer surfaces:
-  ELog::EM<<"MAIN["<<keyName<<"] "<<X<<" : "<<Origin<<ELog::endDiag;
-  ELog::EM<<"MAIN["<<keyName<<"] "<<Y<<" : "<<Origin<<ELog::endDiag;
-  ELog::EM<<"MAIN["<<keyName<<"] "<<Z<<" : "<<Origin<<ELog::endDiag;
-  ELog::EM<<"MAIN["<<keyName<<"] "<<cAxis<<" : "<<cFlag<<ELog::endDiag;
+  Origin-=Y*(depth/2.0);
+    
+  if (!isActive("divider"))
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+      setCutSurf("divider",SMap.realSurf(buildIndex+1));
+    }  
+  
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*depth,Y);
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width/2.0,X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width/2.0,X);
-
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height,Z);
 
   // Inner surfaces:
   ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(depth-alThickness),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(width/2.0-alThickness),X);
-  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(width/2.0-alThickness),X);
-  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+cAxis*(height-alThickness),cAxis);
-
+  ModelSupport::buildPlane(SMap,buildIndex+13,
+			   Origin-X*(width/2.0-alThickness),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,
+			   Origin+X*(width/2.0-alThickness),X);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(height-alThickness),Z);
 
   if (isActive("target"))
     makeExpandedSurf(SMap,"target",buildIndex+17,Origin,alThickness);
-
-  Geometry::Surface* SX;
-  Geometry::Plane* PX;  
-
-  if (SMap.realSurf(buildIndex+5)<0)
-    {
-      SX=ModelSupport::surfaceCreateExpand
-	(SMap.realSurfPtr(buildIndex+5),-alThickness);
-      PX=dynamic_cast<Geometry::Plane*>(SX);
-      if (PX)
-	PX->mirrorSelf();
-    }
-  else
-    SX=ModelSupport::surfaceCreateExpand
-      (SMap.realSurfPtr(buildIndex+5),alThickness);
-  
-
-
-  SX->setName(buildIndex+15);
-  SMap.registerSurf(buildIndex+15,SX);
-
-
-  ELog::EM<<"Surface 15 == "<<Z<< ":: "<<*SMap.realSurfPtr(buildIndex+15)<<ELog::endDiag;
-
-  // divider:
-  if (SMap.realSurf(buildIndex+1)<0)
-    {
-      SX=ModelSupport::surfaceCreateExpand
-	(SMap.realSurfPtr(buildIndex+1),-alThickness);
-      PX=dynamic_cast<Geometry::Plane*>(SX);
-      if (PX)
-	PX->mirrorSelf();
-    }
-  else
-    SX=ModelSupport::surfaceCreateExpand
-      (SMap.realSurfPtr(buildIndex+1),alThickness);
-
-  SX->setName(buildIndex+11);
-  SMap.registerSurf(buildIndex+11,SX);
+  makeExpandedSurf(SMap,"base",buildIndex+16,Origin,alThickness);
+  makeExpandedSurf(SMap,"divider",buildIndex+11,Origin,-alThickness);
 
   return;
 }
 
 void
-PreMod::createObjects(Simulation& System)
+DPreMod::createObjects(Simulation& System)
   /*!
     Adds the main components
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("PreMod","createObjects");
+  ELog::RegMethod RegA("DPreMod","createObjects");
 
   const HeadRule targetHR=getRule("target");  // surf 1020101 (c/y)
+  const HeadRule divHR=getRule("divider");  // surf 1040001
+  const HeadRule baseHR=getRule("base");  // surf 1060046
 
   HeadRule HR;
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
-  addOuterSurf(HR*targetHR);
-
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 3 -4 5");
+  addOuterSurf(HR*targetHR*baseHR*divHR);
   
   HR*=ModelSupport::getHeadRule(SMap,buildIndex,
 				    "(-11:12:-13:14:-15:16:-17)");
-  System.addCell(cellIndex++,alMat,modTemp,HR*targetHR);
+  System.addCell(cellIndex++,alMat,modTemp,HR*targetHR*baseHR*divHR);
 
+  // inner
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14 15 -16 17");
   System.addCell(cellIndex++,modMat,modTemp,HR);
   return;
 }
 
 void
-PreMod::createLinks()
+DPreMod::createLinks()
   /*!
     Creates a full attachment set
   */
 {  
-  ELog::RegMethod RegA("PreMod","createLinks");
-
+  ELog::RegMethod RegA("DPreMod","createLinks");
+  const HeadRule baseHR=getComplementRule("base");  // surf 1060046
+  
   FixedComp::setConnect(0,Origin,-Y);
   FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+1));
   
   FixedComp::setConnect(1,Origin+Y*depth,Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
-  ELog::EM<<"Link ["<<keyName<<"] "<<SMap.realSurf(buildIndex+2)<<ELog::endDiag;
   
   FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
   FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+3));
@@ -313,12 +237,10 @@ PreMod::createLinks()
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
         
   FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-  ELog::EM<<"Base[Link]= "<<-SMap.realSurf(buildIndex+5)<<ELog::endCrit;
-  ELog::EM<<"BaseSurf= "<<*(SMap.realSurfPtr(buildIndex+5))<<ELog::endCrit;
+  FixedComp::setLinkSurf(4,baseHR);
   
-  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+  FixedComp::setConnect(5,Origin-Z*(height/2.0),Z);
+  FixedComp::setLinkSurf(5,-SMap.realSurf(buildIndex+6));
 
   nameSideIndex(4,"minusZ");
   nameSideIndex(5,"plusZ");
@@ -327,22 +249,23 @@ PreMod::createLinks()
 }
   
 void
-PreMod::createAll(Simulation& System,const attachSystem::FixedComp& FC,
-		  const long int baseIndex)
+DPreMod::createAll(Simulation& System,
+		   const attachSystem::FixedComp& FC,
+		   const long int baseIndex)
 /*!
     Generic function to create everything
     \param System :: Simulation item
-    \param baseIndex :: base number
     \param FC :: Fixed unit that connects to this moderator
-    \param rFlag :: Decide if to rotate 180 about Z axis
+    \param baseIndex :: base number
   */
 {
-  ELog::RegMethod RegA("PreMod","createAll");
+  ELog::RegMethod RegA("DPreMod","createAll");
+
   populate(System.getDataBase());  
-  createUnitVector(FC,baseIndex,0);
-  
-  //  if (rFlag) FixedComp::applyRotation(Z,180.0);
-  ELog::EM<<"Axis == "<<X<<" :: "<<Y<<" :: "<<Z<<ELog::endDiag;  createSurfaces(FC,baseIndex);
+  FixedComp::createUnitVector(FC,baseIndex,0);
+  FixedRotate::applyOffset();
+
+  createSurfaces();
   createObjects(System);
   createLinks();
   insertObjects(System);       

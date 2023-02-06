@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   moderatorInc/PreMod.h
+ * File:   t2BuildInc/GPreMod.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef moderatorSystem_PreMod_h
-#define moderatorSystem_PreMod_h
+#ifndef moderatorSystem_GPreMod_h
+#define moderatorSystem_GPreMod_h
 
 class Simulation;
 
@@ -28,22 +28,20 @@ namespace moderatorSystem
 {
 
 /*!
-  \class PreMod
+  \class GPreMod
   \version 1.0
   \author S. Ansell
   \date January 2011
-  \brief GPreMod [insert object]
+  \brief GGPreMod [insert object]
 */
 
-class PreMod :
+class GPreMod :
     public attachSystem::FixedRotate,
     public attachSystem::ContainedComp,
     public attachSystem::ExternalCut,
     public attachSystem::SurfMap
 {
  private:
-
-  int centOrgFlag;              ///< Origin centred / at a point
 
   double width;             ///< Total Width
   double height;            ///< Total height
@@ -54,36 +52,20 @@ class PreMod :
   double modTemp;           ///< Moderator material
   int modMat;               ///< Moderator material
   int alMat;                ///< Al material
-
-  int divideSurf;           ///< Division surface
-  int targetSurf;           ///< Division surface
-  bool rFlag;               ///< Rotation needed
   
   void populate(const FuncDataBase&);
-
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int,const long int);
-
-
-  void createSurfaces(const attachSystem::FixedComp&,const long int);
+  void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
   
  public:
 
-  PreMod(const std::string&);
-  PreMod(const PreMod&);
-  PreMod& operator=(const PreMod&);
-  virtual ~PreMod();
+  GPreMod(const std::string&);
+  GPreMod(const GPreMod&);
+  GPreMod& operator=(const GPreMod&);
+  virtual ~GPreMod();
 
-  void setEdge() { centOrgFlag=0; }  ///< Set Edge Origin
-  void setCent() { centOrgFlag=1; }  ///< Set Centre Origin
-  /// Setter 
-  void setTargetSurf(const int SN) { targetSurf=SN; }  
-  /// Setter 
-  void setDivideSurf(const int SN) { divideSurf=SN; }
-
-  void setRotate() { rFlag=1; }
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

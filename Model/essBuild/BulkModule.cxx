@@ -277,13 +277,11 @@ BulkModule::addFlightUnit(Simulation& System,
 {
   ELog::RegMethod RegA("BulkModule","addFlightUnit");
 
-  std::string Out;
 
-  std::stringstream cx;
-  cx<<" (";
-  for(long int index=3;index<6;index++)
-    cx<<FC.getLinkString(index)<<" : ";
-  cx<<FC.getLinkString(6)<<" )";
+  HeadRule HR,HRlayer;
+
+  for(long int index=3;index<=6;index++)
+    HRlayer+=FC.getFullRule(index);
 
   // AVOID INNER
   for(int i=1;i<static_cast<int>(nLayer);i++)
@@ -291,18 +289,16 @@ BulkModule::addFlightUnit(Simulation& System,
       MonteCarlo::Object* OPtr=System.findObject(buildIndex+i+1);
       if (!OPtr)
 	throw ColErr::InContainerError<int>(buildIndex+i+1,"layerCells");
-      OPtr->addSurfString(cx.str());
+      OPtr->addIntersection(HRlayer);
     }
-  // Now make internal surface
-  cx.str("");
-  for(long int index=3;index<7;index++)
-    cx<<FC.getLinkString(-index)<<" ";
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 buildIndex+10*static_cast<int>(nLayer-1),
-				 " 7 -7M ");
+  HRlayer.makeComplement();
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+			       buildIndex+10*static_cast<int>(nLayer-1),
+			       "7 -7M");
   // Dividing surface ?
-  System.addCell(cellIndex++,0,0.0,Out+cx.str());
+  System.addCell(cellIndex++,0,0.0,HR*HRlayer);
   return;
 }
 

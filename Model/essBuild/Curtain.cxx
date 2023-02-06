@@ -3,7 +3,7 @@
  
  * File:   essBuild/Curtain.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -284,53 +284,46 @@ Curtain::createObjects(Simulation& System,
     \param sideIndex :: side of link point 
   */
 {
-  ELog::RegMethod RegA("Curtain","createObjects");
+  const ELog::RegMethod RegA("Curtain","createObjects");
 
-  const std::string topSurf=FC.getLinkString(topIndex);
-  const std::string topBase=FC.getLinkString(-topIndex);
-  const std::string sideSurf=FC.getLinkString(sideIndex);
-  std::string Out;
+  HeadRule HR;
+
+  const HeadRule topSurfHR=FC.getFullRule(topIndex);
+  const HeadRule topBaseHR=FC.getFullRule(-topIndex);
+  const HeadRule sideSurfHR=FC.getFullRule(sideIndex);
+
   // Top section
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -17 3 -4 15 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
-  addOuterSurf("Top",Out);
-  setCell("topWall",cellIndex-1);
-  // Top section void
-  //  Out=ModelSupport::getComposite(SMap,buildIndex," 17 -27 3 -4 15 -6 ");
-  //  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  //  addCell("topVoid",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7 -17 3 -4 15 -6");
+  makeCell("topWall",System,cellIndex++,wallMat,0.0,HR);
+  addOuterSurf("Top",HR);
 
   // Mid section
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -27 3 -4 -15 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+topSurf));
-  setCell("midWall",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7 -27 3 -4 -15");
+  makeCell("midWall",System,cellIndex++,wallMat,0.0,HR*topSurfHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 27 -127 3 -4 -15 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+topSurf));
-  setCell("MidGap",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"27 -127 3 -4 -15");
+  makeCell("midGap",System,cellIndex++,0,0.0,HR*topSurfHR);
 
   // Lower section
-  Out=ModelSupport::getComposite(SMap,buildIndex," -27 3 -4 5 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,
-				   Out+topBase+sideSurf));
-  setCell("baseWall",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 3 -4 5");
+  makeCell("baseWall",System,cellIndex++,wallMat,0.0,
+	   HR*topBaseHR*sideSurfHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -27 3 -4 -5 105 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+sideSurf));
-  setCell("BaseGap",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 3 -4 -5 105");
+  makeCell("baseGap",System,cellIndex++,0,0.0,HR*sideSurfHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 27 -127 3 -4 105 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+topBase+sideSurf));
-  setCell("BaseGap",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"27 -127 3 -4 105");
+  makeCell("baseGap",System,cellIndex++,0,0.0,HR*topBaseHR*sideSurfHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-127 3 -4 105 ");
-  addOuterSurf("Lower",Out+topBase);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"7 -127 3 -4 -15 ");
-  addOuterSurf("Mid",Out+topSurf);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-127 3 -4 105");
+  addOuterSurf("Lower",HR*topBaseHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"105 -127 3 -4 ");
-  addOuterSurf("RoofCut",Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7 -127 3 -4 -15");
+  addOuterSurf("Mid",HR*topSurfHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"105 -127 3 -4");
+  addOuterSurf("RoofCut",HR);
   return;
 }
 
@@ -367,12 +360,12 @@ Curtain::layerProcess(Simulation& System,
 				  Geometry::Plane> surroundRule;
       surroundRule.setSurfPair(SMap.realSurf(buildIndex+15),
 			       SMap.realSurf(buildIndex+6));
+
+      const HeadRule HRA(SMap,buildIndex,15);
+      const HeadRule HRB(SMap,buildIndex,-6);
       
-      OutA=ModelSupport::getComposite(SMap,buildIndex," 15 ");
-      OutB=ModelSupport::getComposite(SMap,buildIndex," -6 ");
-      
-      surroundRule.setInnerRule(OutA);
-      surroundRule.setOuterRule(OutB);
+      surroundRule.setInnerRule(HRA);
+      surroundRule.setOuterRule(HRB);
       
       DA.addRule(&surroundRule);
       DA.activeDivideTemplate(System);
@@ -400,11 +393,11 @@ Curtain::layerProcess(Simulation& System,
       surroundRule.setSurfPair(SMap.realSurf(buildIndex+5),
                                SMap.realSurf(topSurf));
 
-      OutA=FC.getLinkString(-topIndex);
-      OutB=ModelSupport::getComposite(SMap,buildIndex," 5 ");
+      const HeadRule HRA=FC.getFullRule(-topIndex);
+      const HeadRule HRB(SMap,buildIndex,5);
       
-      surroundRule.setInnerRule(OutB);
-      surroundRule.setOuterRule(OutA);
+      surroundRule.setInnerRule(HRB);
+      surroundRule.setOuterRule(HRA);
       
       DA.addRule(&surroundRule);
       DA.activeDivideTemplate(System);

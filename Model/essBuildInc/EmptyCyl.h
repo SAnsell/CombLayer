@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/EmptyCyl.h
  *
- * Copyright (c) 2018 by Konstantin Batkov
+ * Copyright (c) 2004-2023 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,8 +35,9 @@ namespace essSystem
   \brief Empty area above Wheel
 */
 
-class EmptyCyl : public attachSystem::ContainedComp,
-  public attachSystem::FixedRotateUnit
+class EmptyCyl : 
+    public attachSystem::FixedRotateUnit,
+    public attachSystem::ContainedComp
 {
  private:
 

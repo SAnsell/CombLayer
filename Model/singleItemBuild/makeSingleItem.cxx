@@ -163,6 +163,7 @@
 #include "GuideUnit.h"
 #include "PlateUnit.h"
 #include "BenderUnit.h"
+#include "MLMonoDetail.h"
 
 #include "makeSingleItem.h"
 
@@ -219,7 +220,7 @@ makeSingleItem::build(Simulation& System,
 	"DiffPumpXIADP03","CRLTube","ExperimentalHutch",
 	"ConnectorTube","LocalShield","FlangeDome",
 	"MonoShutter","RoundMonoShutter","TubeDetBox",
-	"GuideUnit","PlateUnit","BenderUnit",
+	"GuideUnit","PlateUnit","BenderUnit","MLMdetail",
 	"Help","help"
     });
 
@@ -295,6 +296,18 @@ makeSingleItem::build(Simulation& System,
 
       GV->addInsertCell(voidCell);
       GV->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item == "MLMdetail" )
+    {
+      std::shared_ptr<xraySystem::MLMonoDetail>
+	MD(new xraySystem::MLMonoDetail("MLM"));
+
+      OR.addObject(MD);
+
+      MD->addInsertCell(voidCell);
+      MD->createAll(System,World::masterOrigin(),0);
 
       return;
     }

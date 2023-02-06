@@ -1,8 +1,8 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/Table.h
-*
+ * File:   formaxInc/MLMSupportWheel.h
+ *
  * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_Table_h
-#define xraySystem_Table_h
+#ifndef xraySystem_MLMSupportWheel_h
+#define xraySystem_MLMSupportWheel_h
 
 class Simulation;
 
@@ -28,35 +28,33 @@ namespace xraySystem
 {
 
 /*!
-  \class Table
+  \class MLMSupportWheel
   \author S. Ansell
   \version 1.0
-  \date September 2021
-  \brief Table system for placing in a blockZone
+  \date October 2019
+  \brief Double Mirror Mono arrangement
 */
 
-class Table :
-    public attachSystem::FixedRotate,
-    public attachSystem::ContainedGroup,
-    public attachSystem::CellMap,
-    public attachSystem::SurfMap
+class MLMSupportWheel :
+  public attachSystem::FixedRotate,
+  public attachSystem::ContainedComp,
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
  private:
 
-  double width;           ///< Width
-  double length;          ///< Length
-  double thick;           ///< Thickness
+  double wheelRadius;          ///< main wheel radius
+  double wheelOuterRadius;     ///< full outer reaius
+  double wheelHubRadius;       ///< Hub radius
+  double wheelHeight;          ///< Thickness of wheel
 
-  double legSize;           ///< Square leg size
-  double clearance;         ///< Hole clearace [%]  
-
-  int voidMat;              ///< Void material
-  int plateMat;             ///< Top plate material
-  int legMat;               ///< Base material
-
-  std::vector<Geometry::Vec3D> holeCentre;   ///< hole centre
-  std::vector<double> holeRadius;            ///< hole radius
-  std::vector<HeadRule> holeExclude;         ///< hole exclude
+  size_t nSpokes;              ///< nummber of slots
+  double spokeThick;           ///< spoke thickness
+  double spokeCornerRadius;    ///< nice radius in corner
+  double spokeCornerGap;       ///< gap at thin points
+   
+  int mat;                     ///< main material
+  int voidMat;                 ///< Void / vacuum material
   
   // Functions:
 
@@ -67,19 +65,11 @@ class Table :
 
  public:
 
-  Table(const std::string&);
-  Table(const Table&);
-  Table& operator=(const Table&);
-  virtual ~Table();
+  MLMSupportWheel(const std::string&);
+  MLMSupportWheel(const MLMSupportWheel&);
+  MLMSupportWheel& operator=(const MLMSupportWheel&);
+  virtual ~MLMSupportWheel();
 
-  virtual void insertAllInCells(Simulation&,const std::vector<int>&);
-
-  void addHole(const attachSystem::FixedComp&,
-	       const std::string&,const double);
-  void addHole(const attachSystem::FixedComp&,
-	       const std::string&,const std::string&);
-
-  
   using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,

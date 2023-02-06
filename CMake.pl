@@ -196,7 +196,7 @@ foreach my $mainProg (@masterProg)
 			[@singleItem,
 			 qw( essConstruct commonVar commonGenerator
 			     R1Common R3Common commonBeam Linac
-			     beamline )]);
+			     beamline formax)]);
       }
     
     

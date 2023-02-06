@@ -186,7 +186,7 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("grooveAlMat","Aluminium");   // Aluminium mat
   Control.addVariable("grooveModTemp",26.0);        // Moderator temperature
 
-  Control.addVariable("groovePMYAngle",180.0);     // Full width
+  Control.addVariable("groovePMYAngle",0.0);     // Full width
   Control.addVariable("groovePMWidth",25.8);     // Full width
   Control.addVariable("groovePMDepth",10.2);     // Full Depth 
   Control.addVariable("groovePMHeight",1.95);    // Full Height
@@ -254,6 +254,7 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("hydroFlightHeight",11.5);    // Full height
   Control.addVariable("hydroFlightWidth",14.3);     // Full width
 
+  Control.addVariable("hydroPMYAngle",0.0);     // Full width
   Control.addVariable("hydroPMZAngle",180.0);     // Full width
   Control.addVariable("hydroPMWidth",25.8);     // Full width
   Control.addVariable("hydroPMDepth",10.2);     // Full Depth 
@@ -420,6 +421,7 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("decPoisonAbsMat","Gadolinium");   // GD
   
 
+  Control.addVariable("decPMZAngle",180.0);     // Full width
   Control.addVariable("decPMWidth",25.8);     // Full width
   Control.addVariable("decPMDepth",10.2);     // Full Depth 
   Control.addVariable("decPMHeight",0.75);    // Full Height

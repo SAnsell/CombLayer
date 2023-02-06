@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/LinkUnit.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,11 +62,8 @@ class LinkUnit
 
   void complement();
 
-  std::string getMain() const;
-  std::string getCommon() const;
-
-  const HeadRule& getMainRule() const;
-  const HeadRule& getCommonRule() const;
+  const HeadRule& getMain() const;
+  const HeadRule& getCommon() const;
 
   /// Check is complete
   bool isComplete() const { return ((populated & 3) == 3); }
@@ -83,7 +80,7 @@ class LinkUnit
   const Geometry::Vec3D& getAxis() const;
 
   int getLinkSurf() const;
-  std::string getLinkString() const;
+  HeadRule getLink() const;
 
   void setAxis(const Geometry::Vec3D&);
   void setConnectPt(const Geometry::Vec3D&);

@@ -3,7 +3,7 @@
  
  * File:   photon/TubeMod.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,7 +55,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "TubeMod.h"
 
@@ -63,7 +63,7 @@ namespace photonSystem
 {
       
 TubeMod::TubeMod(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6)
+  attachSystem::FixedRotate(Key,6),attachSystem::ContainedComp()
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -71,7 +71,7 @@ TubeMod::TubeMod(const std::string& Key) :
 {}
 
 TubeMod::TubeMod(const TubeMod& A) :
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::FixedRotate(A),attachSystem::ContainedComp(A),
   outerRadius(A.outerRadius),outerHeight(A.outerHeight),
   outerMat(A.outerMat),Tubes(A.Tubes)
   /*!
@@ -90,8 +90,8 @@ TubeMod::operator=(const TubeMod& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
       outerRadius=A.outerRadius;
       outerHeight=A.outerHeight;
       outerMat=A.outerMat;
@@ -125,7 +125,7 @@ TubeMod::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("TubeMod","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
   outerHeight=Control.EvalVar<double>(keyName+"OuterHeight");
