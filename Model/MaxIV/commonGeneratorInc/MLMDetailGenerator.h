@@ -69,10 +69,44 @@ class MLMDetailGenerator
   double spokeCornerRadius;    ///< nice radius in corner
   double spokeCornerGap;       ///< gap at thin points
 
+
+  double radialLength;               ///< Total length
+  double radialSupportLen;           ///< Support length
+
+  double radialTopGap;               ///< Top plate drop down
+  double radialTopThick;             ///< Top plate thickness
+  double radialTopBeamWidth;         ///< Top plate width
+  double radialTopOutWidth;          ///< Top plate width
+
+  double radialPlateThick;           ///< Thickness of plate
+  double radialPlateLength;          ///< Thickness of plate
+  double radialPlateBeam;            ///< Extra extention under beam
+  double radialPlateXStep;           ///< Width of straight block
+  
+  double radialSideWidth;            ///< Width of straight block
+  double radialSideBlock;            ///< Length of outside block
+  double radialSideLift;             ///< extra straight vertical
+  double radialSideFullWidth;        ///< Length between inner blocks
+  double radialSideBaseWidth;        ///< Length between inner blocks
+  double radialSideOutWidth;         ///< Length between outer blocks
+
+  double radialBladeDrop;            ///< Distance blades down 
+  double radialBladeThick;           ///< blade thickness
+  double radialBladeHeight;          ///< blade height from base plate
+  double radialBladeTopGap;          ///< blade separation at top
+  double radialBladeBaseGap;         ///< blade separation at base 
+
+  double radialBaseThick;            ///< Full base thickness
+  
+  std::string plateMat;              ///< Plate material
   std::string mirrorMat;             ///< XStal material
   std::string baseMat;               ///< Base material
+  std::string voidMat;               ///< Void material
 
-  void makeSupportWheel(FuncDataBase&,const std::string,
+  void makeRadialSupport(FuncDataBase&,const std::string&,
+			 const double,const double) const;
+  
+  void makeSupportWheel(FuncDataBase&,const std::string&,
 			const double,const double) const;
   
   void makeCrystal(FuncDataBase&,const std::string&,

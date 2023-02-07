@@ -55,12 +55,16 @@ class MLMRadialSupport :
   double topOutWidth;          ///< Top plate width
 
   double plateThick;           ///< Thickness of plate
-  double plateLength;          ///< Thickness of plate
-  double plateBeam;           ///< Extra extention under beam
+  double plateLength;          ///< Length of plates  (gap is length - 2*pLen)
+  double plateBeam;            ///< Extra extention under beam
+  double plateXStep;           ///< Step +x away from beam of main plate
 
   double sideWidth;            ///< Width of straight block
-  double sideLift;             ///< extra straight vertical 
-  double sideOffset;           ///< Side off set distance
+  double sideBlock;            ///< Length of outside block
+  double sideLift;             ///< extra straight vertical
+  double sideFullWidth;        ///< Total length [for screw steps]
+  double sideBaseWidth;        ///< Length between inner blocks
+  double sideOutWidth;         ///< Length between outer blocks
 
   double bladeDrop;            ///< Distance blades down 
   double bladeThick;           ///< blade thickness
@@ -70,7 +74,7 @@ class MLMRadialSupport :
 
   double baseThick;            ///< Full base thickness
    
-  int plateMat;                ///< main material
+  int plateMat;                ///< top plate material
   int baseMat;                 ///< main material
   int voidMat;                 ///< Void / vacuum material
   

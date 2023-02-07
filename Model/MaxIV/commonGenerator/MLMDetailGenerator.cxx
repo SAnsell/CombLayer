@@ -53,17 +53,27 @@ MLMDetailGenerator::MLMDetailGenerator() :
   topSlotDepth(0.2),
   baseWidth(7.2),baseLength(20.6),baseDepth(1.3),
   baseFrontHeight(0.9),baseBackHeight(1.3),
-  baseInnerWidth(4.6),
-  baseInnerBeamFaceLen(0.7),
-  baseInnerOutFaceLen(1.3),
-  baseBackSlotLen(12.1),
+  baseInnerWidth(4.6),baseInnerBeamFaceLen(0.7),
+  baseInnerOutFaceLen(1.3),baseBackSlotLen(12.1),
   baseOutSlotLen(2.3),
-
   wheelRadius(7.0),wheelOuterRadius(7.8),
   wheelHubRadius(2.5),wheelHeight(3.0),
   nSpokes(12),spokeThick(0.6),
   spokeCornerRadius(0.325),spokeCornerGap(0.1),
-  
+
+  radialLength(11.6),radialSupportLen(4.0),        
+  radialTopGap(0.3),radialTopThick(0.8),      
+  radialTopBeamWidth(1.6),radialTopOutWidth(5.6),   
+  radialPlateThick(0.8),radialPlateLength(),   
+  radialPlateBeam(9.9),radialPlateXStep(1.5),
+  radialSideWidth(9.0),radialSideBlock(2.1),     
+  radialSideLift(1.13),radialSideFullWidth(20.0),
+  radialSideBaseWidth(14.22),radialSideOutWidth(17.50),  
+                     
+  radialBladeDrop(7.53),radialBladeThick(0.6),    
+  radialBladeHeight(),radialBladeTopGap(6.07/4.0),   
+  radialBladeBaseGap(12.67/4.0),radialBaseThick(2.00),     
+
   mirrorMat("Silicon300K"),baseMat("Copper")
   /*!
     Constructor and defaults
@@ -77,10 +87,61 @@ MLMDetailGenerator::~MLMDetailGenerator()
  */
 {}
 
+void
+MLMDetailGenerator::makeRadialSupport(FuncDataBase& Control,
+				      const std::string& rName,
+				      const double xStep,
+				      const double yStep) const
+  /*!
+    Build the variables for the radial supporting the first
+    crystal
+    \param Control :: Database
+    \param rName :: extra name for radial
+    \param xStep :: Step in x direction
+    \param yStep :: Step in y direction
+  */
+    
+{
+  ELog::RegMethod RegA("MLMDetailGenerator","makeRadialSupport");
+
+  Control.addVariable(rName+"Length",radialLength);
+  Control.addVariable(rName+"SupportLen",radialSupportLen);
+  
+  Control.addVariable(rName+"TopGap",radialTopGap);
+  Control.addVariable(rName+"TopThick",radialTopThick);
+  Control.addVariable(rName+"TopBeamWidth",radialTopBeamWidth);
+  Control.addVariable(rName+"TopOutWidth",radialTopOutWidth);
+  
+  Control.addVariable(rName+"PlateThick",radialPlateThick);
+  Control.addVariable(rName+"PlateLength",radialPlateLength);
+  Control.addVariable(rName+"PlateBeam",radialPlateBeam);
+  Control.addVariable(rName+"PlateXStep",radialPlateXStep);
+  
+  Control.addVariable(rName+"SideWidth",radialSideWidth);
+  Control.addVariable(rName+"SideBlock",radialSideBlock);
+  Control.addVariable(rName+"SideLift",radialSideLift);
+  Control.addVariable(rName+"SideFullWidth",radialSideFullWidth);
+  Control.addVariable(rName+"SideBaseWidth",radialSideBaseWidth);
+  Control.addVariable(rName+"SideOutWidth",radialSideOutWidth);
+  
+  Control.addVariable(rName+"BladeDrop",radialBladeDrop);
+  Control.addVariable(rName+"BladeThick",radialBladeThick);
+  Control.addVariable(rName+"BladeHeight",radialBladeHeight);
+  Control.addVariable(rName+"BladeTopGap",radialBladeTopGap);
+  Control.addVariable(rName+"BladeBaseGap",radialBladeBaseGap);
+  Control.addVariable(rName+"BaseThick",radialBaseThick);
+
+  Control.addVariable(rName+"BaseMat",baseMat);
+  Control.addVariable(rName+"PlateMat",plateMat);
+  Control.addVariable(rName+"VoidMat",voidMat);
+
+  
+  return;
+}
 
 void
 MLMDetailGenerator::makeSupportWheel(FuncDataBase& Control,
-				     const std::string wheelName,
+				     const std::string& wheelName,
 				     const double xStep,
 				     const double yStep) const
   /*!
@@ -183,11 +244,12 @@ MLMDetailGenerator::generateMono(FuncDataBase& Control,
 
   // guess of separation
   const double xstalYStep(gap/tan(2.0*M_PI*thetaA/180.0));
-  ELog::EM<<"Theta == "<<thetaA<<" "<<thetaB<<ELog::endDiag;
+
   makeCrystal(Control,keyName+"XstalA",1,0.0,-xstalYStep/2.0,thetaA);
   makeCrystal(Control,keyName+"XstalB",0,gap,xstalYStep/2.0,thetaB); 
 
   makeSupportWheel(Control,keyName+"BWheel",0.0,0.0);
+  makeRadialSupport(Control,keyName+"Radial",0.0,0.0);
   
   return;
 

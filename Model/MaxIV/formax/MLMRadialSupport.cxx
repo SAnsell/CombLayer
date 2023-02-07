@@ -94,27 +94,32 @@ MLMRadialSupport::populate(const FuncDataBase& Control)
   FixedRotate::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
-
+  topGap=Control.EvalVar<double>(keyName+"TopGap");
   topThick=Control.EvalVar<double>(keyName+"TopThick");
-  topWdith=Control.EvalVar<double>(keyName+"TopWdith");
+  topBeamWidth=Control.EvalVar<double>(keyName+"TopBeamWidth");
+  topOutWidth=Control.EvalVar<double>(keyName+"TopOutWidth");
 
-  midPlateThick=Control.EvalVar<double>(keyName+"MidPlateThick");
-  midPlateExtra=Control.EvalVar<double>(keyName+"MidPlateExtra");
+  plateThick=Control.EvalVar<double>(keyName+"PlateThick");
+  plateLength=Control.EvalVar<double>(keyName+"PlateLength");
+  plateBeam=Control.EvalVar<double>(keyName+"PlateBeam");
 
+  sideWidth=Control.EvalVar<double>(keyName+"SideWidth");
+  sideLift=Control.EvalVar<double>(keyName+"SideLift");
+  sideBlock=Control.EvalVar<double>(keyName+"SideBlock");
+  sideBaseWidth=Control.EvalVar<double>(keyName+"SideBaseWidth");
+  sideOutWidth=Control.EvalVar<double>(keyName+"SideOutWidth");
+  
+  bladeDrop=Control.EvalVar<double>(keyName+"BladeDrop");
   bladeThick=Control.EvalVar<double>(keyName+"BladeThick");
   bladeHeight=Control.EvalVar<double>(keyName+"BladeHeight");
   bladeTopGap=Control.EvalVar<double>(keyName+"BladeTopGap");
   bladeBaseGap=Control.EvalVar<double>(keyName+"BladeBaseGap");
-
-  sideWidth=Control.EvalVar<double>(keyName+"SideWidth");
-  sideLift=Control.EvalVar<double>(keyName+"SideLift");
-  sideOffset=Control.EvalVar<double>(keyName+"SideOffset");
-
   baseThick=Control.EvalVar<double>(keyName+"BaseThick");
 
   plateMat=ModelSupport::EvalMat<int>(Control,keyName+"PlateMat");
   baseMat=ModelSupport::EvalMat<int>(Control,keyName+"BaseMat");
   voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat","Void");
+  
 
   return;
 }
@@ -135,7 +140,7 @@ MLMRadialSupport::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*topBeamWidth,X);
   ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*topOutWidth,X);
   ModelSupport::buildPlane(SMap,buildIndex+106,Origin-Z*topGap,Z);
-  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(topGap+topHeight),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(topGap+topThick),Z);
 
   // Support plate [not gap to stuff]
   // Split
@@ -154,50 +159,39 @@ MLMRadialSupport::createSurfaces()
   // side supports are on plane of 205:
   pOrg-=Z*plateThick;
 
-  ModelSupport::buildPlane(SMap,buildIndex+303,pOrg-Z*sideLift,X);
-  ModelSupport::buildPlane(SMap,buildIndex+304,pOrg-Z*sideBeam,X);
+  ModelSupport::buildPlane(SMap,buildIndex+303,
+			   pOrg-X*(sideWidth/2.0+sideBlock),X);
+  ModelSupport::buildPlane(SMap,buildIndex+304,
+			   pOrg-X*(sideWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+313,
+			   pOrg+X*(sideWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+314,
+			   pOrg+X*(sideWidth/2.0+sideBlock),X);
   ModelSupport::buildPlane(SMap,buildIndex+305,pOrg-Z*sideLift,Z);  
+
+  pOrg-=Z*sideLift;
+  ModelSupport::buildPlane(SMap,buildIndex+353,
+			   pOrg-X*(sideWidth/2.0),
+			   pOrg-X*(sideBaseWidth/2.0),
+			   pOrg-X*(sideBaseWidth/2.0)+Y,
+			   X);
+  ModelSupport::buildPlane(SMap,buildIndex+354,
+			   pOrg-X*(sideWidth/2.0+sideBlock),
+			   pOrg-X*(sideOutWidth/2.0),
+			   pOrg-X*(sideOutWidth/2.0)+Y,
+			   X);
+
+  ModelSupport::buildPlane(SMap,buildIndex+363,
+			   pOrg+X*(sideWidth/2.0+sideBlock),
+			   pOrg+X*(sideOutWidth/2.0),
+			   pOrg+X*(sideOutWidth/2.0)+Y,
+			   X);
+  ModelSupport::buildPlane(SMap,buildIndex+364,
+			   pOrg+X*(sideWidth/2.0),
+			   pOrg+X*(sideBaseWidth/2.0),
+			   pOrg+X*(sideBaseWidth/2.0)+Y,
+			   X);
   
-
-  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,wheelHubRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,wheelRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,wheelOuterRadius);
-
-  const double angleStep=(2.0*M_PI)/static_cast<double>(nSpokes);
-  double angle(0.0);
-  int BI(buildIndex+100);
-  for(size_t i=0;i<nSpokes;i++)
-    {
-      const Geometry::Vec3D PX=X*std::cos(angle)+Z*std::sin(angle);
-      const Geometry::Vec3D PY=X*std::sin(-angle)+Z*std::cos(angle);
-      
-      ModelSupport::buildPlane(SMap,BI+1,
-			       Origin-PX*(spokeThick/2.0),PX);
-      ModelSupport::buildPlane(SMap,BI+2,
-			       Origin+PX*(spokeThick/2.0),PX);
-
-      const Geometry::Vec3D innerPt=
-	Origin+PY*(wheelHubRadius+spokeCornerRadius+microShift);
-      const Geometry::Vec3D outerPt=
-	Origin+PY*(wheelRadius-spokeCornerRadius-microShift);
-      ModelSupport::buildCylinder
-	(SMap,BI+7,innerPt-PX*(spokeCornerRadius+spokeCornerGap),
-	 Y,spokeCornerRadius);
-      ModelSupport::buildCylinder
-	(SMap,BI+8,innerPt+PX*(spokeCornerRadius+spokeCornerGap),
-	 Y,spokeCornerRadius);
-      ModelSupport::buildCylinder
-	(SMap,BI+9,outerPt-PX*(spokeCornerRadius+spokeCornerGap),
-	 Y,spokeCornerRadius);
-      ModelSupport::buildCylinder
-	(SMap,BI+10,outerPt+PX*(spokeCornerRadius+spokeCornerGap),
-	 Y,spokeCornerRadius);
-
-      // divider
-      ModelSupport::buildPlane(SMap,BI+3,Origin,PY);
-      angle+=angleStep;
-      BI+=20;
-    }
 
   return; 
 }
@@ -212,42 +206,11 @@ MLMRadialSupport::createObjects(Simulation& System)
   ELog::RegMethod RegA("MLMRadialSupport","createObjects");
 
   HeadRule HR;
+  const HeadRule frontUnit=
+    ModelSupport::getHeadRule(SMap,buildIndex,"101 -201");
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -7");
-  makeCell("Hub",System,cellIndex++,mat,0.0,HR);  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"303 -304 -205 305 ");
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -27 17");
-  makeCell("Rim",System,cellIndex++,mat,0.0,HR);  
-
-  const HeadRule baseHR=
-    ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 7 -17");
-  const HeadRule tbHR=
-    ModelSupport::getHeadRule(SMap,buildIndex,"5 -6");
-  int BI(buildIndex+100);
-  // spokes
-  HeadRule prevHR=HeadRule
-    (SMap,BI+20*static_cast<int>(nSpokes-1),2);
-  for(size_t i=0;i<nSpokes;i++)
-    {
-      HR=ModelSupport::getHeadRule(SMap,BI,"1 -2 3 7 8 9 10");
-      makeCell("Spoke",System,cellIndex++,mat,0.0,HR*baseHR);  
-
-      HR=ModelSupport::getHeadRule(SMap,BI,"1 -7");
-      makeCell("SpokeCut",System,cellIndex++,voidMat,0.0,HR*tbHR);  
-      HR=ModelSupport::getHeadRule(SMap,BI,"1 -9");
-      makeCell("SpokeCut",System,cellIndex++,voidMat,0.0,HR*tbHR);  
-
-      HR=ModelSupport::getHeadRule(SMap,BI,"-2 -8");
-      makeCell("SpokeCut",System,cellIndex++,voidMat,0.0,HR*tbHR);  
-      HR=ModelSupport::getHeadRule(SMap,BI,"-2 -10");
-      makeCell("SpokeCut",System,cellIndex++,voidMat,0.0,HR*tbHR);  
-
-      HR=HeadRule(SMap,BI,-1);
-      makeCell("Void",System,cellIndex++,voidMat,0.0,HR*baseHR*prevHR);
-      prevHR=HeadRule(SMap,BI,2);
-      BI+=20;
-    }
-  
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -27");
   addOuterSurf(HR);
 
