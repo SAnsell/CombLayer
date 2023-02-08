@@ -66,6 +66,10 @@ class MLMRadialSupport :
   double sideBaseWidth;        ///< Length between inner blocks
   double sideOutWidth;         ///< Length between outer blocks
 
+  double supportHeight;        ///< Height from base to edge block
+  double supportOuterHeight;   ///< corner bolt blocks
+  double supportInnerLift;     /// inner curve maximum 
+  
   double bladeDrop;            ///< Distance blades down 
   double bladeThick;           ///< blade thickness
   double bladeHeight;          ///< blade height from base plate

@@ -90,6 +90,10 @@ class MLMDetailGenerator
   double radialSideBaseWidth;        ///< Length between inner blocks
   double radialSideOutWidth;         ///< Length between outer blocks
 
+  double radialSupportHeight;        ///< Height from base to edge block
+  double radialSupportOuterHeight;   ///< corner bolt blocks
+  double radialSupportInnerLift;     /// inner curve maximum 
+  
   double radialBladeDrop;            ///< Distance blades down 
   double radialBladeThick;           ///< blade thickness
   double radialBladeHeight;          ///< blade height from base plate

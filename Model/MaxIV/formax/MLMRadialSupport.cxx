@@ -108,6 +108,11 @@ MLMRadialSupport::populate(const FuncDataBase& Control)
   sideBlock=Control.EvalVar<double>(keyName+"SideBlock");
   sideBaseWidth=Control.EvalVar<double>(keyName+"SideBaseWidth");
   sideOutWidth=Control.EvalVar<double>(keyName+"SideOutWidth");
+  sideFullWidth=Control.EvalVar<double>(keyName+"SideFullWidth");
+
+  supportHeight=Control.EvalVar<double>(keyName+"SupportHeight");
+  supportOuterHeight=Control.EvalVar<double>(keyName+"SupportOuterHeight");
+  supportInnerLift=Control.EvalVar<double>(keyName+"SupportInnerLift");
   
   bladeDrop=Control.EvalVar<double>(keyName+"BladeDrop");
   bladeThick=Control.EvalVar<double>(keyName+"BladeThick");
@@ -120,7 +125,6 @@ MLMRadialSupport::populate(const FuncDataBase& Control)
   baseMat=ModelSupport::EvalMat<int>(Control,keyName+"BaseMat");
   voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat","Void");
   
-
   return;
 }
 
@@ -144,8 +148,11 @@ MLMRadialSupport::createSurfaces()
 
   // Support plate [not gap to stuff]
   // Split
-  Geometry::Vec3D pOrg(Origin-Z*(topGap+topHeight));
+  Geometry::Vec3D pOrg(Origin-Z*(topGap+topThick));
   // support block
+  ELog::EM<<"Plate Length == "<<plateLength<<ELog::endDiag;
+
+  ELog::EM<<"P "<<pOrg-Y*(length/2.0-plateLength)<<":"<<Origin-Y*(length/2.0)<<ELog::endDiag;
   ModelSupport::buildPlane
     (SMap,buildIndex+201,pOrg-Y*(length/2.0-plateLength),Y);
   ModelSupport::buildPlane
@@ -155,10 +162,8 @@ MLMRadialSupport::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+205,pOrg-Z*plateThick,Z);
 
 
-  // side supports of Radial :
-  // side supports are on plane of 205:
-  pOrg-=Z*plateThick;
-
+  // side supports of Radial : supports are on plane of 205:
+  pOrg+=X*(plateBeam/2.0)-Z*plateThick;
   ModelSupport::buildPlane(SMap,buildIndex+303,
 			   pOrg-X*(sideWidth/2.0+sideBlock),X);
   ModelSupport::buildPlane(SMap,buildIndex+304,
@@ -169,30 +174,58 @@ MLMRadialSupport::createSurfaces()
 			   pOrg+X*(sideWidth/2.0+sideBlock),X);
   ModelSupport::buildPlane(SMap,buildIndex+305,pOrg-Z*sideLift,Z);  
 
+  
+  ModelSupport::buildPlane
+    (SMap,buildIndex+403,pOrg-X*(sideFullWidth/2.0),X);  
+  ModelSupport::buildPlane
+    (SMap,buildIndex+404,pOrg+X*(sideFullWidth/2.0),X);  
+
+
+  ModelSupport::buildPlane
+    (SMap,buildIndex+506,pOrg-Z*(supportHeight-supportOuterHeight),Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+505,pOrg-Z*supportHeight,Z);
+
+
+  const double h=supportInnerLift;
+  const double S=sideFullWidth/2.0;
+  const double R=(h*h+S*S)/(2.0*h);
+  const Geometry::Vec3D cylOrg=pOrg-Z*(R+supportHeight-supportOuterHeight);
+  ELog::EM<<"Cente == "<<cylOrg<<":"<<cylOrg+Z*R<<ELog::endDiag;
+      
+  ModelSupport::buildCylinder(SMap,buildIndex+507,cylOrg,Y,R);  
+
   pOrg-=Z*sideLift;
+  const double supZDist(supportHeight-supportInnerLift);
+
   ModelSupport::buildPlane(SMap,buildIndex+353,
-			   pOrg-X*(sideWidth/2.0),
-			   pOrg-X*(sideBaseWidth/2.0),
-			   pOrg-X*(sideBaseWidth/2.0)+Y,
+			   pOrg-X*(sideWidth/2.0+sideBlock),
+			   pOrg-X*(sideWidth/2.0+sideBlock)+Y,
+			   pOrg-X*(sideOutWidth/2.0+sideBlock)-Z*supZDist,
 			   X);
   ModelSupport::buildPlane(SMap,buildIndex+354,
-			   pOrg-X*(sideWidth/2.0+sideBlock),
-			   pOrg-X*(sideOutWidth/2.0),
-			   pOrg-X*(sideOutWidth/2.0)+Y,
+			   pOrg-X*(sideWidth/2.0),
+			   pOrg-X*(sideWidth/2.0)+Y,
+			   pOrg-X*(sideOutWidth/2.0)-Z*supZDist,
 			   X);
-
   ModelSupport::buildPlane(SMap,buildIndex+363,
-			   pOrg+X*(sideWidth/2.0+sideBlock),
-			   pOrg+X*(sideOutWidth/2.0),
-			   pOrg+X*(sideOutWidth/2.0)+Y,
+			   pOrg+X*(sideWidth/2.0),
+			   pOrg+X*(sideWidth/2.0)+Y,
+			   pOrg+X*(sideOutWidth/2.0)-Z*supZDist,
 			   X);
   ModelSupport::buildPlane(SMap,buildIndex+364,
-			   pOrg+X*(sideWidth/2.0),
-			   pOrg+X*(sideBaseWidth/2.0),
-			   pOrg+X*(sideBaseWidth/2.0)+Y,
+			   pOrg+X*(sideWidth/2.0+sideBlock),
+			   pOrg+X*(sideWidth/2.0+sideBlock)+Y,
+			   pOrg+X*(sideOutWidth/2.0+sideBlock)-Z*supZDist,
 			   X);
   
 
+  // BLADES:
+  for(const double xStep : { bladeTopGap})
+    {
+    }
+
+  
+  
   return; 
 }
 
@@ -206,14 +239,72 @@ MLMRadialSupport::createObjects(Simulation& System)
   ELog::RegMethod RegA("MLMRadialSupport","createObjects");
 
   HeadRule HR;
-  const HeadRule frontUnit=
+
+  // Top plate
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 103 -104 105 -106");
+  makeCell("TopPlate",System,cellIndex++,plateMat,0.0,HR);    
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 403 -404  (-103 : 104) 105 -106");
+  makeCell("TopPlateVoid",System,cellIndex++,voidMat,0.0,HR);    
+
+  
+  const HeadRule frontHR=
     ModelSupport::getHeadRule(SMap,buildIndex,"101 -201");
+  const HeadRule backHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"202 -102");
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"303 -304 -205 305 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"203 -104 -105 205");
+  makeCell("FrontPlate",System,cellIndex++,baseMat,0.0,HR*frontHR);  
+  makeCell("BackPlate",System,cellIndex++,baseMat,0.0,HR*backHR);  
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -27");
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"403 -404 (-203 : 104) 205 -105");
+  makeCell("MidPlateVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
+  makeCell("MidPlateVoid",System,cellIndex++,voidMat,0.0,HR*backHR);
+  // mid void
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -202 403 -404 -105 505");
+  makeCell("MidVoid",System,cellIndex++,voidMat,0.0,HR);  
+
+  // side supports:
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"303 -304 -205 305");
+  makeCell("fBlock",System,cellIndex++,baseMat,0.0,HR*frontHR);
+  makeCell("bBlock",System,cellIndex++,baseMat,0.0,HR*backHR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"313 -314 -205 305");
+  makeCell("fBlock",System,cellIndex++,baseMat,0.0,HR*frontHR);  
+  makeCell("bBlock",System,cellIndex++,baseMat,0.0,HR*backHR);
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"353 -354 -305 505");
+  makeCell("fAngle",System,cellIndex++,baseMat,0.0,HR*frontHR);  
+  makeCell("bBlock",System,cellIndex++,baseMat,0.0,HR*backHR);
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"363 -364 -305 505");
+  makeCell("fAngle",System,cellIndex++,baseMat,0.0,HR*frontHR);  
+  makeCell("bAngle",System,cellIndex++,baseMat,0.0,HR*backHR);
+  
+  // base connector:
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-353 403 505 -506");
+  makeCell("fConnector",System,cellIndex++,baseMat,0.0,HR*frontHR);  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"364 -404 505 -506");
+  makeCell("fConnector",System,cellIndex++,baseMat,0.0,HR*frontHR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-363 354 505 -506 -507");
+  makeCell("fConnector",System,cellIndex++,baseMat,0.0,HR*frontHR);  
+
+  
+  // edge void
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"364 314 -404 -205 506");
+  makeCell("fEdgeVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-353 -303 403 -205 506");
+  makeCell("fEdgeVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
+
+
+  
+
+  // VOID VOLUMES : OUTER
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 403 -404 505 -106");  
   addOuterSurf(HR);
-
+  
   return; 
 }
 
@@ -244,7 +335,7 @@ MLMRadialSupport::createAll(Simulation& System,
   ELog::RegMethod RegA("MLMRadialSupport","createAll");
   populate(System.getDataBase());
 
-  createCentredUnitVector(FC,sideIndex,wheelHeight/2.0);
+  createCentredUnitVector(FC,sideIndex,0.0);
   createSurfaces();
   createObjects(System);
   createLinks();

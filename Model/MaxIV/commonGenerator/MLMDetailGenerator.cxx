@@ -64,17 +64,21 @@ MLMDetailGenerator::MLMDetailGenerator() :
   radialLength(11.6),radialSupportLen(4.0),        
   radialTopGap(0.3),radialTopThick(0.8),      
   radialTopBeamWidth(1.6),radialTopOutWidth(5.6),   
-  radialPlateThick(0.8),radialPlateLength(),   
-  radialPlateBeam(9.9),radialPlateXStep(1.5),
+  radialPlateThick(0.8),radialPlateLength(2.0),   
+  radialPlateBeam(3.35),radialPlateXStep(1.5),
   radialSideWidth(9.0),radialSideBlock(2.1),     
   radialSideLift(1.13),radialSideFullWidth(20.0),
-  radialSideBaseWidth(14.22),radialSideOutWidth(17.50),  
-                     
+  radialSideBaseWidth(14.22),radialSideOutWidth(14.50),  
+
+  radialSupportHeight(9.0),radialSupportOuterHeight(2.0),
+  radialSupportInnerLift(1.38),
+  
   radialBladeDrop(7.53),radialBladeThick(0.6),    
   radialBladeHeight(),radialBladeTopGap(6.07/4.0),   
   radialBladeBaseGap(12.67/4.0),radialBaseThick(2.00),     
 
-  mirrorMat("Silicon300K"),baseMat("Copper")
+  plateMat("Stainless304"),mirrorMat("Silicon300K"),
+  baseMat("Copper"),voidMat("Void")
   /*!
     Constructor and defaults
   */
@@ -123,6 +127,10 @@ MLMDetailGenerator::makeRadialSupport(FuncDataBase& Control,
   Control.addVariable(rName+"SideFullWidth",radialSideFullWidth);
   Control.addVariable(rName+"SideBaseWidth",radialSideBaseWidth);
   Control.addVariable(rName+"SideOutWidth",radialSideOutWidth);
+
+  Control.addVariable(rName+"SupportHeight",radialSupportHeight);
+  Control.addVariable(rName+"SupportOuterHeight",radialSupportOuterHeight);
+  Control.addVariable(rName+"SupportInnerLift",radialSupportInnerLift);
   
   Control.addVariable(rName+"BladeDrop",radialBladeDrop);
   Control.addVariable(rName+"BladeThick",radialBladeThick);
