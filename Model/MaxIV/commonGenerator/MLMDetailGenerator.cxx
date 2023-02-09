@@ -73,9 +73,8 @@ MLMDetailGenerator::MLMDetailGenerator() :
   radialSupportHeight(9.0),radialSupportOuterHeight(2.0),
   radialSupportInnerLift(1.38),
   
-  radialBladeDrop(7.53),radialBladeThick(0.6),    
-  radialBladeHeight(),radialBladeTopGap(6.07/4.0),   
-  radialBladeBaseGap(12.67/4.0),radialBaseThick(2.00),     
+  radialBladeThick(0.6),radialBladeTopGap(6.07/4.0),   
+  radialBladeBaseGap(12.67/4.0),
 
   plateMat("Stainless304"),mirrorMat("Silicon300K"),
   baseMat("Copper"),voidMat("Void")
@@ -132,12 +131,9 @@ MLMDetailGenerator::makeRadialSupport(FuncDataBase& Control,
   Control.addVariable(rName+"SupportOuterHeight",radialSupportOuterHeight);
   Control.addVariable(rName+"SupportInnerLift",radialSupportInnerLift);
   
-  Control.addVariable(rName+"BladeDrop",radialBladeDrop);
   Control.addVariable(rName+"BladeThick",radialBladeThick);
-  Control.addVariable(rName+"BladeHeight",radialBladeHeight);
   Control.addVariable(rName+"BladeTopGap",radialBladeTopGap);
   Control.addVariable(rName+"BladeBaseGap",radialBladeBaseGap);
-  Control.addVariable(rName+"BaseThick",radialBaseThick);
 
   Control.addVariable(rName+"BaseMat",baseMat);
   Control.addVariable(rName+"PlateMat",plateMat);

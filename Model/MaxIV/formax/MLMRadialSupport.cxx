@@ -114,12 +114,9 @@ MLMRadialSupport::populate(const FuncDataBase& Control)
   supportOuterHeight=Control.EvalVar<double>(keyName+"SupportOuterHeight");
   supportInnerLift=Control.EvalVar<double>(keyName+"SupportInnerLift");
   
-  bladeDrop=Control.EvalVar<double>(keyName+"BladeDrop");
   bladeThick=Control.EvalVar<double>(keyName+"BladeThick");
-  bladeHeight=Control.EvalVar<double>(keyName+"BladeHeight");
   bladeTopGap=Control.EvalVar<double>(keyName+"BladeTopGap");
   bladeBaseGap=Control.EvalVar<double>(keyName+"BladeBaseGap");
-  baseThick=Control.EvalVar<double>(keyName+"BaseThick");
 
   plateMat=ModelSupport::EvalMat<int>(Control,keyName+"PlateMat");
   baseMat=ModelSupport::EvalMat<int>(Control,keyName+"BaseMat");
@@ -220,11 +217,26 @@ MLMRadialSupport::createSurfaces()
   
 
   // BLADES:
-  for(const double xStep : { bladeTopGap})
+  Geometry::Vec3D topPt(pOrg-X*(2.0*bladeTopGap));
+  Geometry::Vec3D basePt(pOrg-X*(2.0*bladeBaseGap)-Z*supZDist);
+  int BI=buildIndex+1000;
+  for(size_t i=0;i<5;i++)
     {
+      ELog::EM<<"Top == "<<topPt<<":: "<<basePt<<ELog::endDiag;
+      ModelSupport::buildPlane(SMap,BI+3,
+			       topPt-X*(bladeThick/2.0),
+			       basePt-X*(bladeThick/2.0),
+			       basePt-X*(bladeThick/2.0)+Y,
+			       X);
+      ModelSupport::buildPlane(SMap,BI+4,
+			       topPt+X*(bladeThick/2.0),
+			       basePt+X*(bladeThick/2.0),
+			       basePt+X*(bladeThick/2.0)+Y,
+			       X);
+      topPt+=X*bladeTopGap;
+      basePt+=X*bladeBaseGap;
+      BI+=10;
     }
-
-  
   
   return; 
 }
@@ -245,7 +257,6 @@ MLMRadialSupport::createObjects(Simulation& System)
   makeCell("TopPlate",System,cellIndex++,plateMat,0.0,HR);    
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 403 -404  (-103 : 104) 105 -106");
   makeCell("TopPlateVoid",System,cellIndex++,voidMat,0.0,HR);    
-
   
   const HeadRule frontHR=
     ModelSupport::getHeadRule(SMap,buildIndex,"101 -201");
@@ -283,21 +294,45 @@ MLMRadialSupport::createObjects(Simulation& System)
   
   // base connector:
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-353 403 505 -506");
-  makeCell("fConnector",System,cellIndex++,baseMat,0.0,HR*frontHR);  
+  makeCell("fConnector",System,cellIndex++,baseMat,0.0,HR*frontHR);
+  makeCell("bConnector",System,cellIndex++,baseMat,0.0,HR*backHR);  
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"364 -404 505 -506");
-  makeCell("fConnector",System,cellIndex++,baseMat,0.0,HR*frontHR);  
+  makeCell("fConnector",System,cellIndex++,baseMat,0.0,HR*frontHR);
+  makeCell("bConnector",System,cellIndex++,baseMat,0.0,HR*backHR);  
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-363 354 505 -506 -507");
-  makeCell("fConnector",System,cellIndex++,baseMat,0.0,HR*frontHR);  
+  makeCell("fConnector",System,cellIndex++,baseMat,0.0,HR*frontHR);
+  makeCell("bConnector",System,cellIndex++,baseMat,0.0,HR*backHR);  
 
   
   // edge void
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"364 314 -404 -205 506");
   makeCell("fEdgeVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
+  makeCell("bEdgeVoid",System,cellIndex++,voidMat,0.0,HR*backHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-353 -303 403 -205 506");
   makeCell("fEdgeVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
+  makeCell("bEdgeVoid",System,cellIndex++,voidMat,0.0,HR*backHR);
 
+  // BLADES
+  HeadRule sideHR=
+      ModelSupport::getHeadRule(SMap,buildIndex,"354:304");
+  int BI=buildIndex+1000;
+  for(size_t i=0;i<5;i++)
+    {
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,BI,"505 507 -205 -3M");
+      makeCell("fBladeVoid",System,cellIndex++,voidMat,0.0,HR*frontHR*sideHR);
+      makeCell("bBladeVoid",System,cellIndex++,voidMat,0.0,HR*backHR*sideHR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,BI,"505 507 -205 3M -4M ");
+      makeCell("fBlade",System,cellIndex++,plateMat,0.0,HR*frontHR);
+      makeCell("bBlade",System,cellIndex++,plateMat,0.0,HR*backHR);
+      sideHR=HeadRule(SMap,BI,4);
+      BI+=10;
+    }
+  sideHR=ModelSupport::getHeadRule(SMap,buildIndex,"-363:-313");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,BI-10,"505 507 -205 4M");
+  makeCell("fBladeVoid",System,cellIndex++,voidMat,0.0,HR*frontHR*sideHR);
+  makeCell("bBladeVoid",System,cellIndex++,voidMat,0.0,HR*backHR*sideHR);
 
   
 

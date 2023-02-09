@@ -70,9 +70,7 @@ class MLMRadialSupport :
   double supportOuterHeight;   ///< corner bolt blocks
   double supportInnerLift;     /// inner curve maximum 
   
-  double bladeDrop;            ///< Distance blades down 
   double bladeThick;           ///< blade thickness
-  double bladeHeight;          ///< blade height from base plate
   double bladeTopGap;          ///< blade separation at top
   double bladeBaseGap;         ///< blade separation at base 
 

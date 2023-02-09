@@ -94,13 +94,9 @@ class MLMDetailGenerator
   double radialSupportOuterHeight;   ///< corner bolt blocks
   double radialSupportInnerLift;     /// inner curve maximum 
   
-  double radialBladeDrop;            ///< Distance blades down 
   double radialBladeThick;           ///< blade thickness
-  double radialBladeHeight;          ///< blade height from base plate
   double radialBladeTopGap;          ///< blade separation at top
   double radialBladeBaseGap;         ///< blade separation at base 
-
-  double radialBaseThick;            ///< Full base thickness
   
   std::string plateMat;              ///< Plate material
   std::string mirrorMat;             ///< XStal material
