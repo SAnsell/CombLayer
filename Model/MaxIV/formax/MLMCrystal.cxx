@@ -284,10 +284,15 @@ MLMCrystal::createLinks()
   FixedComp::setConnect(6,Origin+Z*(height/2.0),Z);
   FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+6));
 
+  // shifted base point but keeping normal orientation
+  FixedComp::setConnect(7,Origin-Z*(height/2.0+baseDepth),Y);
+  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+105));
+
   // Points on base:
 
   nameSideIndex(2,"BeamCentre");
   nameSideIndex(5,"BaseRotPt");
+  nameSideIndex(7,"BasePt");
   return;
 }
 

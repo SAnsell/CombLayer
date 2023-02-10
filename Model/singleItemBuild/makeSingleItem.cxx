@@ -164,7 +164,6 @@
 #include "PlateUnit.h"
 #include "BenderUnit.h"
 #include "MLMonoDetail.h"
-#include "MLMRadialSupport.h"
 
 #include "makeSingleItem.h"
 
@@ -302,13 +301,8 @@ makeSingleItem::build(Simulation& System,
     }
   if (item == "MLMdetail" )
     {
-      std::shared_ptr<xraySystem::MLMRadialSupport>
-	MD(new xraySystem::MLMRadialSupport("MLMRadial"));
-
-      /*
       std::shared_ptr<xraySystem::MLMonoDetail>
 	MD(new xraySystem::MLMonoDetail("MLM"));
-      */
       OR.addObject(MD);
 
       MD->addInsertCell(voidCell);
