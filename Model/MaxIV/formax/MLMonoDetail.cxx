@@ -141,7 +141,7 @@ MLMonoDetail::createObjects(Simulation& System)
   xstalB->createAll(System,*this,0);
 
   aRadial->addInsertCell(getInsertCells());
-  aRadial->createAll(System,*xstalA,"Origin");
+  aRadial->createAll(System,*xstalA,"BasePt");
 
   bWheel->addInsertCell(getInsertCells());
   bWheel->createAll(System,*xstalB,"BaseRotPt");
