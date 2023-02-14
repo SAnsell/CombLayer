@@ -3,7 +3,7 @@
  
  * File:   essBuild/BoxModerator.cxx
  *
- * Copyright (c) 2004-2022 by Konstantin Batkov / Stuart Ansell
+ * Copyright (c) 2004-2023 by Konstantin Batkov / Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -340,7 +340,6 @@ HeadRule
 BoxModerator::getSideRule() const
 /*
   Return side rule
-  \todo // SA: Use union of link points as it is faster
 */
 {
   ELog::RegMethod RegA("BoxModerator","getSideRule");
@@ -354,20 +353,19 @@ BoxModerator::getSideRule() const
   return HR;
 }
 
-std::string
+HeadRule 
 BoxModerator::getLeftRightWaterSideRule() const
 /*
   Return left+right water side rule
   \todo // SA: Use union of link points as it is faster
 */
 {
-  std::string side("");
   HeadRule HR;
   //  HR.procString(LeftWater->getSideRule());
   //  HR.addUnion(RightWater->getSideRule());
   HR.makeComplement();
 
-  return HR.display();
+  return HR;
 }
 
   
@@ -375,6 +373,12 @@ void
 BoxModerator::createAll(Simulation& System,
                         const attachSystem::FixedComp& FC,
                         const long int sideIndex)
+/*!
+  Construct the butterfly components iwth common point and axis
+  \param System :: Simulation 
+  \param FC :: FixedComp
+  \param sideIndex :: link point
+*/
 {
   ELog::RegMethod RegA("BoxModerator","createAll");
   createAll(System,FC,sideIndex,FC,sideIndex);
@@ -388,7 +392,7 @@ BoxModerator::createAll(Simulation& System,
                         const long int orgIndex,
                         const attachSystem::FixedComp& axisFC,
                         const long int axisIndex)
-/*!
+ /*!
     Construct the butterfly components
     \param System :: Simulation 
     \param axisFC :: FixedComp to get axis [origin if orgFC == 0]
@@ -404,10 +408,10 @@ BoxModerator::createAll(Simulation& System,
   
   MidH2->createAll(System,*this,0);
     
-  const std::string Exclude=
-    ModelSupport::getComposite(SMap,buildIndex," -7 15 -16 ");
-  LeftWater->setCutSurf("Container",Exclude);
-  RightWater->setCutSurf("Container",Exclude);
+  const Headrule ExcludeHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"-7 15 -16");
+  LeftWater->setCutSurf("Container",ExcludeHR);
+  RightWater->setCutSurf("Container",ExcludeHR);
   LeftWater->createAll(System,*MidH2,4); 
   RightWater->createAll(System,*MidH2,3);
 

@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BoxModerator.h
  *
- * Copyright (c) 2004-2022 by Konstantin Batkov / Stuart Ansell
+ * Copyright (c) 2004-2023 by Konstantin Batkov / Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,7 +80,7 @@ class BoxModerator :
     getComponent(const std::string&) const;
 
   HeadRule getSideRule() const;
-  std::string getLeftRightWaterSideRule() const;
+  HeadRule getLeftRightWaterSideRule() const;
   Geometry::Vec3D getFocalPoint(const long int) const;
   std::vector<Geometry::Vec3D> getFocalPoints() const;
 
