@@ -233,9 +233,6 @@ EmptyCyl::createLinks(const attachSystem::FixedComp&FC,
   return;
 }
   
-  
-
-  
 void
 EmptyCyl::createAll(Simulation& System,
 		    const attachSystem::FixedComp& FC,
@@ -270,6 +267,7 @@ EmptyCyl::createAll(Simulation& System,
   createSurfaces();
   ELog::EM<<"EARLY RETURN "<<ELog::endCrit;
   return;
+
   createObjects(System,FC,floor,side,inner,
 		BC,bulk,
 		GB1,gb1lp,GB2,gb2lp);
