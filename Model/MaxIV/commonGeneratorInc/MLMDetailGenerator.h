@@ -97,7 +97,22 @@ class MLMDetailGenerator
   double radialBladeThick;           ///< blade thickness
   double radialBladeTopGap;          ///< blade separation at top
   double radialBladeBaseGap;         ///< blade separation at base 
+
+  // wheel plate:
   
+   double WPlength;               ///< Total length
+   double WPwidth;                ///< Total width
+   double WPthick;                ///< Total thickness (include ridge)
+   double WPridgeThick;           ///< Thickness of just the front/back ridges
+   double WPridgeLen;             ///< length of front/back
+  
+   double WPoutSlotLength;        ///< Out slot length
+   double WPoutSlotWidth;         ///< Slot width 
+
+   double WPmidSlotXStep;         ///< Displacement of slot
+   double WPmidSlotLength;        ///< mid slot length
+   double WPmidSlotWidth;         ///< Mid slot width
+     
   std::string plateMat;              ///< Plate material
   std::string mirrorMat;             ///< XStal material
   std::string baseMat;               ///< Base material
@@ -108,6 +123,9 @@ class MLMDetailGenerator
   
   void makeSupportWheel(FuncDataBase&,const std::string&,
 			const double,const double) const;
+
+  void makeWheelPlate(FuncDataBase&,const std::string&,
+		      const double,const double) const;
   
   void makeCrystal(FuncDataBase&,const std::string&,
 		   const bool,const double,

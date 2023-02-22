@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/DiskLayerMod.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,9 +35,10 @@ namespace essSystem
   \brief Specialized for a cylinder pre-mod under moderator
 */
 
-class DiskLayerMod : public attachSystem::ContainedComp,
-    public attachSystem::LayerComp,
+class DiskLayerMod : 
     public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
+    public attachSystem::LayerComp,
     public attachSystem::CellMap,
     public attachSystem::SurfMap
 {

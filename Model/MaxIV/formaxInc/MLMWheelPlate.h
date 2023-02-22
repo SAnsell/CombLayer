@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   formaxInc/MLMonoDetail.h
+ * File:   formaxInc/MLMWheelPlate.h
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
  *
@@ -19,40 +19,50 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_MLMonoDetail_h
-#define xraySystem_MLMonoDetail_h
+#ifndef xraySystem_MLMWheelPlate_h
+#define xraySystem_MLMWheelPlate_h
 
 class Simulation;
 
 namespace xraySystem
 {
 
-  class MLMCrystal;
-  class MLMRadialSupport;
-  class MLMSupportWheel;
-  class MLMWheelPlate;
-  
 /*!
-  \class MLMonoDetail
+  \class MLMWheelPlate
   \author S. Ansell
-  \version 1.0
+   \version 1.0
   \date October 2019
-  \brief Double Mirror Mono arrangement
+  \brief Radial support component
+
+  This class assumes that the origin is in the vertical face
+  of the front of the mirror. The centre strut is lined up with
+  the mirror for stability.
 */
 
-class MLMonoDetail :
+class MLMWheelPlate :
   public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
+  public attachSystem::ExternalCut,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {
  private:
 
-  std::shared_ptr<MLMCrystal> xstalA;
-  std::shared_ptr<MLMCrystal> xstalB;
-  std::shared_ptr<MLMRadialSupport> aRadial;
-  std::shared_ptr<MLMSupportWheel> bWheel;
-  std::shared_ptr<MLMWheelPlate> wheelPlate;
+  double length;               ///< Total length
+  double width;                ///< Total width
+  double thick;                ///< Total thickness (include ridge)
+  double ridgeThick;           ///< Thickness of just the front/back ridges
+  double ridgeLen;             ///< Length of ridge (beam direction)
+  
+  double outSlotWidth;         ///< Slot width 
+  double outSlotLength;        ///< Out slot length
+
+  double midSlotXStep;         ///< Displacement of slot
+  double midSlotLength;        ///< mid slot length
+  double midSlotWidth;         ///< Mid slot width
+   
+  int plateMat;                ///< top plate material
+  int voidMat;                 ///< Void / vacuum material
   
   // Functions:
 
@@ -63,11 +73,12 @@ class MLMonoDetail :
 
  public:
 
-  MLMonoDetail(const std::string&);
-  MLMonoDetail(const MLMonoDetail&);
-  MLMonoDetail& operator=(const MLMonoDetail&);
-  virtual ~MLMonoDetail();
+  MLMWheelPlate(const std::string&);
+  MLMWheelPlate(const MLMWheelPlate&);
+  MLMWheelPlate& operator=(const MLMWheelPlate&);
+  virtual ~MLMWheelPlate();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);

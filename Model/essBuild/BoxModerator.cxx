@@ -408,10 +408,10 @@ BoxModerator::createAll(Simulation& System,
   
   MidH2->createAll(System,*this,0);
     
-  const Headrule ExcludeHR=
+  const HeadRule excludeHR=
     ModelSupport::getHeadRule(SMap,buildIndex,"-7 15 -16");
-  LeftWater->setCutSurf("Container",ExcludeHR);
-  RightWater->setCutSurf("Container",ExcludeHR);
+  LeftWater->setCutSurf("Container",excludeHR);
+  RightWater->setCutSurf("Container",excludeHR);
   LeftWater->createAll(System,*MidH2,4); 
   RightWater->createAll(System,*MidH2,3);
 

@@ -3,7 +3,7 @@
  
  * File:   essBuild/DiskLayerMod.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,8 +39,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "surfRegister.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
@@ -68,10 +66,11 @@ namespace essSystem
 {
 
 DiskLayerMod::DiskLayerMod(const std::string& Key) :
+  attachSystem::FixedRotate(Key,9),
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0),
-  attachSystem::FixedRotate(Key,9),
-  attachSystem::CellMap(),attachSystem::SurfMap()
+  attachSystem::CellMap(),
+  attachSystem::SurfMap()
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -79,8 +78,10 @@ DiskLayerMod::DiskLayerMod(const std::string& Key) :
 {}
 
 DiskLayerMod::DiskLayerMod(const DiskLayerMod& A) : 
-  attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
-  attachSystem::FixedRotate(A),attachSystem::CellMap(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::LayerComp(A),
+  attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   midIndex(A.midIndex),midZ(A.midZ),
   outerRadius(A.outerRadius),thick(A.thick),radius(A.radius),
@@ -101,9 +102,10 @@ DiskLayerMod::operator=(const DiskLayerMod& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
-      attachSystem::LayerComp::operator=(A);
       attachSystem::FixedRotate::operator=(A);
+      attachSystem::LayerComp::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       

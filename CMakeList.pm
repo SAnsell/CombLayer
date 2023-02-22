@@ -23,6 +23,8 @@ sub new
     depLists => undef,
     optimise => "",
     gtk => 0,
+    root => 0,
+    matplot => 0,
     debug => "",
     noregex => 0,
     
@@ -42,6 +44,40 @@ sub new
   $self->{incLib}=[ ];
   $self->{depLists}={};
   return $self;
+}
+
+sub processRootWindow
+  ##
+  ## Add an array of programs
+  ## Names : Controlflags
+  ##
+{
+  my $self=shift;
+  my $DX=shift;
+  my $exeName=shift;
+
+  my $Dname="rootWindowInc";  ## Directory to scane
+
+  my $cppAll=`ls ./$Dname/*.h 2> /dev/null`;
+
+  $cppAll=~s/\n/ /g;
+  my $rootcmd=
+      " rootcling -f ../rootWindow/winLinkDef.cxx -c ".$cppAll;
+
+#  print $DX "add_custom_command(TARGET ",$exeName," PRE_BUILD \n",
+#      "      COMMAND rootcint -f ./rootWindow/winLinkDef.cxx -c ",$cppAll,"\n",
+#      "      COMMAND sed -i \'s/include \\\"\\\.\\\/rootWindowInc\\\//include /#\' ./rootWindow/winLinkDef.cxx \n",
+#      "      COMMAND echo \"ADSFADF\"",
+#      ")\n";
+#  print $DX "add_custom_command(TARGET ",$exeName," PRE_BUILD \n",
+#      "      WORKING_DIRECTORY rootWindowInc\n",
+#      "      COMMAND rootcint -f ../rootWindow/winLinkDef.cxx -c ",$cppAll,"\n"#,
+#      "      COMMAND echo \"ADSFADF\"",
+#      ")\n";
+  print $DX "\n";
+
+
+  return;
 }
 
 sub addMasterProgs
@@ -295,7 +331,8 @@ sub setParameters
 	  $self->{bcomp}=$1 if ($Ostr=~/-gcc=(.*)/);
 	  $self->{ccomp}=$1 if ($Ostr=~/-g\+\+=(.*)/);
 	  $self->{cxx11}="" if ($Ostr=~/-std/);
-	  
+	  $self->{root}=1 if ($Ostr=~/-root/);
+	  $self->{mapplot}=1 if ($Ostr=~/-matplot/);
 	}
     }
 #  $self->{gsl}*=$nogsl;
@@ -320,8 +357,10 @@ sub writeHeader
   my $DX=shift;   ## FILEGLOB
 
   print $DX "project(CombLayer)\n";
-  print $DX "cmake_minimum_required(VERSION 3.0)\n\n";
+  print $DX "cmake_minimum_required(VERSION 3.1)\n\n";
 
+  print $DX "set(ROOTCFLAGS \$(shell root-config --cflags))\n";
+  print $DX "set(ROOTLIBS \$(shell root-config --glibs))\n";	
 
   print $DX "set(CMAKE_CXX_COMPILER ",$self->{ccomp},")\n";
 # print $DX "set(CMAKE_CXX_CLANG_TIDY clang-tidy; -checks=*)\n";
@@ -346,7 +385,13 @@ sub writeHeader
       print $DX "find_package(PkgConfig REQUIRED)\n";
       print $DX "pkg_check_modules(GTK3 REQUIRED gtk+-3.0)\n";
   }
-  
+
+  if ($self->{root})
+  {
+      print $DX "list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})\n";
+      print $DX "find_package(ROOT REQUIRED)\n";
+  }
+
   foreach my $item (@{$self->{definitions}})
   {
     print $DX "add_definitions(-D",$item,")\n";
@@ -421,6 +466,12 @@ sub writeExcutables
     {
       print $DX "add_executable(",$item," \${PROJECT_SOURCE_DIR}/Main/",
 	  $item,".cxx)\n";
+      if ($self->{root})
+        {
+	  print $DX "set_source_files_properties(",$item,
+	      " PROPERTIES COMPILE_FLAGS ROOTCFLAGS)\n";
+	  $self->processRootWindow($DX,$item);
+	}
 
       ## Special first and last item
       my $lastUnit=undef;
@@ -440,12 +491,20 @@ sub writeExcutables
 		$item," lib",$lastUnit," -Wl,--end-group)\n";
 	    
 	}
-
       if (!$self->{noregex})
         {
-#          print $DX "target_link_libraries(",$item," boost_regex)\n";
           print $DX "target_link_libraries(",$item," boost_filesystem)\n";
 	}
+      if ($self->{root})
+        {
+	  print $DX "include(\${ROOT_USE_FILE})\n";
+	  print $DX "link_directories(\${ROOT_LIBRARY_DIR})\n";
+##	  print $DX "target_link_libraries(",$item," \${ROOT_LIBRARIES})\n";
+	  my $unit=`root-config --glibs`;
+##	  print $DX "target_link_options(",$item," \$(ROOTLIBS))\n";
+	  print $DX "target_link_libraries(",$item," ",$unit,")\n";
+	}
+
       print $DX "target_link_libraries(",$item," stdc++)\n";
       print $DX "target_link_libraries(",$item," gsl)\n";
       print $DX "target_link_libraries(",$item," gslcblas)\n";

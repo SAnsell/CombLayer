@@ -64,6 +64,7 @@
 #include "MLMCrystal.h"
 #include "MLMSupportWheel.h"
 #include "MLMRadialSupport.h"
+#include "MLMWheelPlate.h"
 #include "MLMonoDetail.h"
 
 
@@ -78,7 +79,8 @@ MLMonoDetail::MLMonoDetail(const std::string& Key) :
   xstalA(new MLMCrystal(keyName+"XstalA")),
   xstalB(new MLMCrystal(keyName+"XstalB")),
   aRadial(new MLMRadialSupport(keyName+"Radial")),
-  bWheel(new MLMSupportWheel(keyName+"BWheel"))
+  bWheel(new MLMSupportWheel(keyName+"BWheel")),
+  wheelPlate(new MLMWheelPlate(keyName+"WheelPlate"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -90,6 +92,7 @@ MLMonoDetail::MLMonoDetail(const std::string& Key) :
   OR.addObject(xstalA);
   OR.addObject(xstalB);
   OR.addObject(bWheel);
+  OR.addObject(wheelPlate);
 }
 
 MLMonoDetail::~MLMonoDetail()
@@ -144,8 +147,12 @@ MLMonoDetail::createObjects(Simulation& System)
   aRadial->createAll(System,*xstalA,"BasePt");
 
   bWheel->addInsertCell(getInsertCells());
-  bWheel->createAll(System,*xstalB,"BaseRotPt");
+  bWheel->createAll(System,*xstalB,"BasePt");
 
+  wheelPlate->addInsertCell(getInsertCells());
+  wheelPlate->setCutSurf("TopSurf",*bWheel,"BasePt");
+  wheelPlate->createAll(System,*bWheel,"BasePt");
+  
   return; 
 }
 

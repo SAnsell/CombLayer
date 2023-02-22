@@ -76,6 +76,13 @@ MLMDetailGenerator::MLMDetailGenerator() :
   radialBladeThick(0.6),radialBladeTopGap(6.07/4.0),   
   radialBladeBaseGap(12.67/4.0),
 
+  WPlength(23.4),WPwidth(27.0),WPthick(2.8),
+  WPridgeThick(1.2),WPridgeLen(1.7),
+  WPoutSlotLength(8.0),
+  WPoutSlotWidth(5.0),
+  WPmidSlotXStep(-5.0),WPmidSlotLength(7.0),
+  WPmidSlotWidth(4.5),
+  
   plateMat("Stainless304"),mirrorMat("Silicon300K"),
   baseMat("Copper"),voidMat("Void")
   /*!
@@ -135,6 +142,7 @@ MLMDetailGenerator::makeRadialSupport(FuncDataBase& Control,
   Control.addVariable(rName+"BladeTopGap",radialBladeTopGap);
   Control.addVariable(rName+"BladeBaseGap",radialBladeBaseGap);
 
+  
   Control.addVariable(rName+"BaseMat",baseMat);
   Control.addVariable(rName+"PlateMat",plateMat);
   Control.addVariable(rName+"VoidMat",voidMat);
@@ -174,10 +182,44 @@ MLMDetailGenerator::makeSupportWheel(FuncDataBase& Control,
   Control.addVariable(wheelName+"SpokeCornerGap",spokeCornerGap);
   
   Control.addVariable(wheelName+"Mat",baseMat);
+  
+  return;
+}
+
+void
+MLMDetailGenerator::makeWheelPlate(FuncDataBase& Control,
+				   const std::string& keyName,
+				   const double xStep,
+				   const double yStep) const
+  /*!
+    Build the variables for the wheel plate supporting the
+    wheel.
+    \param Control :: Database
+    \param keyName :: extra name for plate
+  */
+    
+{
+  ELog::RegMethod RegA("MLMDetailGenerator","makeWheelPlate");
+
+  Control.addVariable(keyName+"XStep",xStep);
+  Control.addVariable(keyName+"YStep",yStep);
+  
+  Control.addVariable(keyName+"Length",WPlength);
+  Control.addVariable(keyName+"Width",WPwidth);
+  Control.addVariable(keyName+"Thick",WPthick);
+  Control.addVariable(keyName+"RidgeThick",WPridgeThick);
+  Control.addVariable(keyName+"RidgeLen",WPridgeLen);
+  Control.addVariable(keyName+"OutSlotWidth",WPoutSlotWidth);
+  Control.addVariable(keyName+"OutSlotLength",WPoutSlotLength);
+  Control.addVariable(keyName+"MidSlotXStep",WPmidSlotXStep);
+  Control.addVariable(keyName+"MidSlotLength",WPmidSlotLength);
+  Control.addVariable(keyName+"MidSlotWidth",WPmidSlotWidth);
+  Control.addVariable(keyName+"PlateMat",plateMat);
+  Control.addVariable(keyName+"VoidMat",voidMat);
 
   return;
 }
-  
+
 void
 MLMDetailGenerator::makeCrystal(FuncDataBase& Control,
 				const std::string& cryName,
@@ -230,7 +272,8 @@ MLMDetailGenerator::makeCrystal(FuncDataBase& Control,
   
   return;
 }
-  
+
+
 void
 MLMDetailGenerator::generateMono(FuncDataBase& Control,
 				 const std::string& keyName,
@@ -244,7 +287,7 @@ MLMDetailGenerator::generateMono(FuncDataBase& Control,
     
   */
 {
-  ELog::RegMethod RegA("MLMDetailGenerator","generateBox");
+  ELog::RegMethod RegA("MLMDetailGenerator","generateMono");
 
   // guess of separation
   const double xstalYStep(gap/tan(2.0*M_PI*thetaA/180.0));
@@ -254,6 +297,7 @@ MLMDetailGenerator::generateMono(FuncDataBase& Control,
 
   makeSupportWheel(Control,keyName+"BWheel",0.0,0.0);
   makeRadialSupport(Control,keyName+"Radial",0.0,0.0);
+  makeWheelPlate(Control,keyName+"WheelPlate",0.0,3.0);
   
   return;
 

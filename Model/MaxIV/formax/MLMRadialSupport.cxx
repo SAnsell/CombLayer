@@ -186,8 +186,8 @@ MLMRadialSupport::createSurfaces()
   const double h=supportInnerLift;
   const double S=sideFullWidth/2.0;
   const double R=(h*h+S*S)/(2.0*h);
+
   const Geometry::Vec3D cylOrg=pOrg-Z*(R+supportHeight-supportOuterHeight);
-  ELog::EM<<"Cente == "<<cylOrg<<":"<<cylOrg+Z*R<<ELog::endDiag;
       
   ModelSupport::buildCylinder(SMap,buildIndex+507,cylOrg,Y,R);  
 
@@ -222,7 +222,6 @@ MLMRadialSupport::createSurfaces()
   int BI=buildIndex+1000;
   for(size_t i=0;i<5;i++)
     {
-      ELog::EM<<"Top == "<<topPt<<":: "<<basePt<<ELog::endDiag;
       ModelSupport::buildPlane(SMap,BI+3,
 			       topPt-X*(bladeThick/2.0),
 			       basePt-X*(bladeThick/2.0),
@@ -352,7 +351,9 @@ MLMRadialSupport::createLinks()
   ELog::RegMethod RegA("MLMRadialSupport","createLinks");
 
   HeadRule HR;
+  
 
+  
   return;
 }
 
@@ -370,7 +371,7 @@ MLMRadialSupport::createAll(Simulation& System,
   ELog::RegMethod RegA("MLMRadialSupport","createAll");
   populate(System.getDataBase());
 
-  createCentredUnitVector(FC,sideIndex,0.0);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();
