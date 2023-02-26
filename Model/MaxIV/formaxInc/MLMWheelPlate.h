@@ -48,6 +48,7 @@ class MLMWheelPlate :
 {
  private:
 
+  // top plate
   double length;               ///< Total length
   double width;                ///< Total width
   double thick;                ///< Total thickness (include ridge)
@@ -60,7 +61,34 @@ class MLMWheelPlate :
   double midSlotXStep;         ///< Displacement of slot
   double midSlotLength;        ///< mid slot length
   double midSlotWidth;         ///< Mid slot width
-   
+
+  double driveZClear;          ///< ZClearance
+  double driveThick;           ///< Full thickness
+  double driveWidth;           ///< Full Width
+  double driveLength;          ///< Full Length
+  double driveTopLen;          ///< Len of top section
+  double driveBaseThick;       ///< Thickness at base
+  double driveCutWidth;
+  double driveCutLenth;        ///< Length from +x side
+  double driveCutRadius;       ///< Half radius of cut out
+  double driveCutRadLen;       ///< length of cutou
+  
+  double baseYStep;            ///< Step for main base
+  double baseThick;            ///< Total Thickness of base plae
+  double baseWidth;
+  double baseLength; 
+
+  double baseCutDepth;         ///< Recess cut depth
+  double baseCutFLen;          ///< Recess from front surf
+  double baseCutBLen;          ///< Recess from back suf
+  double baseCutWidth;         ///< Recess cut with
+  double baseMidSlotHeight;    ///< Mid slot Height (from base)
+  double baseMidSlotWidth;     ///< Mid slot cut out
+
+  double baseSideSlotEdge;     ///< Side Slot edge thickness
+  double baseSideSlotHeight;   ///< Side slot height (from base)
+  double baseSideSlotWidth;    ///< Side slot height 
+  
   int plateMat;                ///< top plate material
   int voidMat;                 ///< Void / vacuum material
   

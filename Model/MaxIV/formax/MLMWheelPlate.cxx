@@ -106,6 +106,31 @@ MLMWheelPlate::populate(const FuncDataBase& Control)
   midSlotLength=Control.EvalVar<double>(keyName+"MidSlotLength");
   midSlotWidth=Control.EvalVar<double>(keyName+"MidSlotWidth");
 
+  driveZClear=Control.EvalVar<double>(keyName+"DriveZClear");
+  driveThick=Control.EvalVar<double>(keyName+"DriveThick");
+  driveWidth=Control.EvalVar<double>(keyName+"DriveWidth");
+  driveLength=Control.EvalVar<double>(keyName+"DriveLength");
+  driveTopLen=Control.EvalVar<double>(keyName+"DriveTopLen");
+  driveBaseThick=Control.EvalVar<double>(keyName+"DriveBaseThick");
+  driveCutWidth=Control.EvalVar<double>(keyName+"DriveCutWidth");
+  driveCutLenth=Control.EvalVar<double>(keyName+"DriveCutLenth");
+  driveCutRadius=Control.EvalVar<double>(keyName+"DriveCutRadius");
+  driveCutRadLen=Control.EvalVar<double>(keyName+"DriveCutRadLen");
+
+  baseYStep=Control.EvalVar<double>(keyName+"BaseYStep");
+  baseThick=Control.EvalVar<double>(keyName+"BaseThick");
+  baseWidth=Control.EvalVar<double>(keyName+"BaseWidth");
+  baseLength=Control.EvalVar<double>(keyName+"BaseLength");
+  baseCutDepth=Control.EvalVar<double>(keyName+"BaseCutDepth");
+  baseCutFLen=Control.EvalVar<double>(keyName+"BaseCutFLen");
+  baseCutBLen=Control.EvalVar<double>(keyName+"BaseCutBLen");
+  baseCutWidth=Control.EvalVar<double>(keyName+"BaseCutWidth");
+  baseMidSlotWidth=Control.EvalVar<double>(keyName+"BaseMidSlotWidth");
+  baseMidSlotHeight=Control.EvalVar<double>(keyName+"BaseMidSlotHeight");
+  baseSideSlotEdge=Control.EvalVar<double>(keyName+"BaseSideSlotEdge");
+  baseSideSlotHeight=Control.EvalVar<double>(keyName+"BaseSideSlotHeight");
+  baseSideSlotWidth=Control.EvalVar<double>(keyName+"BaseSideSlotWidth");
+  
   plateMat=ModelSupport::EvalMat<int>(Control,keyName+"PlateMat");
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   
@@ -160,7 +185,44 @@ MLMWheelPlate::createSurfaces()
     (SMap,buildIndex+303,Origin+X*(midSlotXStep-midSlotWidth/2.0),X);
   ModelSupport::buildPlane
     (SMap,buildIndex+304,Origin+X*(midSlotXStep+midSlotWidth/2.0),X);
+
+  // Drive support
+  const Geometry::Vec3D dOrg=Origin-Z*(thick+driveZClear);
+
+  ModelSupport::buildPlane(SMap,buildIndex+501,dOrg-Y*(driveLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+502,dOrg+Y*(driveLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+503,dOrg-X*(driveWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+504,dOrg+X*(driveWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+505,dOrg-Z*(driveThick/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+506,dOrg,Z);
+
+
+  ModelSupport::buildPlane(SMap,buildIndex+511,dOrg-Y*(driveTopLen/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+512,dOrg+Y*(driveTopLen/2.0),Y);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+515,dOrg-Z*(driveThick/2.0-driveBaseThick),Z);
+
+  // drive cutout:
   
+  
+  // cutout
+  const Geometry::Vec3D bOrg(dOrg-Z*driveThick);
+  
+  ModelSupport::buildPlane(SMap,buildIndex+1501,bOrg-Y*(baseLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1502,bOrg+Y*(baseLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1503,bOrg-X*(baseWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+1504,bOrg+X*(baseWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+1505,bOrg-Z*(baseThick/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1506,bOrg+Z*baseCutDepth,Z);
+
+  ModelSupport::buildPlane
+    (SMap,buildIndex+1511,bOrg-Y*(baseLength/2.0-baseCutFLen),Y);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+1512,bOrg+Y*(baseLength/2.0-baseCutBLen),Y);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+1513,bOrg-X*(baseCutWidth/2.0),X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+1514,bOrg+X*(baseCutWidth/2.0),X);
   
   return; 
 }
@@ -199,11 +261,19 @@ MLMWheelPlate::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -302 303 -304 105");
   makeCell("MidVoid",System,cellIndex++,voidMat,0.0,HR*topHR);
 
-  
+  // Drive plate:
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"501 -502 503 -504 5 506");
+  makeCell("DriveVoid",System,cellIndex++,voidMat,0.0,HR);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"501 -502 503 -504 -505 506");
+  makeCell("DrivePlate",System,cellIndex++,plateMat,0.0,HR);
+  
   // VOID VOLUMES : OUTER
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5");  
   addOuterSurf(HR*topHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"501 -502 503 -504 -5 505");  
+  addOuterUnionSurf(HR);
   
   return; 
 }

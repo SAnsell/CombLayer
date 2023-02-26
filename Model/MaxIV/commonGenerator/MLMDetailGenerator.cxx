@@ -82,6 +82,20 @@ MLMDetailGenerator::MLMDetailGenerator() :
   WPoutSlotWidth(5.0),
   WPmidSlotXStep(-5.0),WPmidSlotLength(7.0),
   WPmidSlotWidth(4.5),
+
+  WPdriveZClear(0.3),WPdriveThick(2.0), 
+  WPdriveWidth(26.3),WPdriveLength(17.2),
+  WPdriveTopLen(16.4),WPdriveBaseThick(0.8),
+  WPdriveCutWidth(17.6),WPdriveCutLenth(5.6),        
+  WPdriveCutRadius(2.0),WPdriveCutRadLen(2.0),      
+  
+  WPbaseYStep(0.4),
+  WPbaseThick(3.3),WPbaseWidth(28.4),WPbaseLength(25.2),
+  WPbaseCutDepth(0.3),WPbaseCutFLen(2.5),WPbaseCutBLen(5.3),
+  WPbaseCutWidth(26.4),WPbaseMidSlotWidth(4.7),
+  WPbaseMidSlotHeight(1.65),
+  WPbaseSideSlotEdge(2.0),WPbaseSideSlotHeight(1.3),
+  WPbaseSideSlotWidth(6.1),
   
   plateMat("Stainless304"),mirrorMat("Silicon300K"),
   baseMat("Copper"),voidMat("Void")
@@ -214,6 +228,32 @@ MLMDetailGenerator::makeWheelPlate(FuncDataBase& Control,
   Control.addVariable(keyName+"MidSlotXStep",WPmidSlotXStep);
   Control.addVariable(keyName+"MidSlotLength",WPmidSlotLength);
   Control.addVariable(keyName+"MidSlotWidth",WPmidSlotWidth);
+
+  Control.addVariable(keyName+"DriveZClear",WPdriveZClear);
+  Control.addVariable(keyName+"DriveThick",WPdriveThick);
+  Control.addVariable(keyName+"DriveWidth",WPdriveWidth);
+  Control.addVariable(keyName+"DriveLength",WPdriveLength);
+  Control.addVariable(keyName+"DriveTopLen",WPdriveTopLen);
+  Control.addVariable(keyName+"DriveBaseThick",WPdriveBaseThick);
+  Control.addVariable(keyName+"DriveCutWidth",WPdriveCutWidth);
+  Control.addVariable(keyName+"DriveCutLenth",WPdriveCutLenth);
+  Control.addVariable(keyName+"DriveCutRadius",WPdriveCutRadius);
+  Control.addVariable(keyName+"DriveCutRadLen",WPdriveCutRadLen);
+  
+  Control.addVariable(keyName+"BaseYStep",WPbaseYStep);
+  Control.addVariable(keyName+"BaseThick",WPbaseThick);
+  Control.addVariable(keyName+"BaseWidth",WPbaseWidth);
+  Control.addVariable(keyName+"BaseLength",WPbaseLength);
+  Control.addVariable(keyName+"BaseCutDepth",WPbaseCutDepth);
+  Control.addVariable(keyName+"BaseCutFLen",WPbaseCutFLen);
+  Control.addVariable(keyName+"BaseCutBLen",WPbaseCutBLen);
+  Control.addVariable(keyName+"BaseCutWidth",WPbaseCutWidth);
+  Control.addVariable(keyName+"BaseMidSlotWidth",WPbaseMidSlotWidth);
+  Control.addVariable(keyName+"BaseMidSlotHeight",WPbaseMidSlotHeight);
+  Control.addVariable(keyName+"BaseSideSlotEdge",WPbaseSideSlotEdge);
+  Control.addVariable(keyName+"BaseSideSlotHeight",WPbaseSideSlotHeight);
+  Control.addVariable(keyName+"BaseSideSlotWidth",WPbaseSideSlotWidth);
+
   Control.addVariable(keyName+"PlateMat",plateMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
 

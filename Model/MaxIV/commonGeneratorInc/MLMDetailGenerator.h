@@ -100,19 +100,48 @@ class MLMDetailGenerator
 
   // wheel plate:
   
-   double WPlength;               ///< Total length
-   double WPwidth;                ///< Total width
-   double WPthick;                ///< Total thickness (include ridge)
-   double WPridgeThick;           ///< Thickness of just the front/back ridges
-   double WPridgeLen;             ///< length of front/back
+  double WPlength;               ///< Total length
+  double WPwidth;                ///< Total width
+  double WPthick;                ///< Total thickness (include ridge)
+  double WPridgeThick;           ///< Thickness of just the front/back ridges
+  double WPridgeLen;             ///< length of front/back
   
-   double WPoutSlotLength;        ///< Out slot length
-   double WPoutSlotWidth;         ///< Slot width 
+  double WPoutSlotLength;        ///< Out slot length
+  double WPoutSlotWidth;         ///< Slot width 
+  
+  double WPmidSlotXStep;         ///< Displacement of slot
+  double WPmidSlotLength;        ///< mid slot length
+  double WPmidSlotWidth;         ///< Mid slot width
 
-   double WPmidSlotXStep;         ///< Displacement of slot
-   double WPmidSlotLength;        ///< mid slot length
-   double WPmidSlotWidth;         ///< Mid slot width
-     
+  double WPdriveZClear;          ///< ZClearance
+  double WPdriveThick;           ///< Full thickness
+  double WPdriveWidth;           ///< Full Width
+  double WPdriveLength;          ///< Full Length
+  double WPdriveTopLen;          ///< Len of top section
+  double WPdriveBaseThick;       ///< Thickness at base
+  double WPdriveCutWidth;
+  double WPdriveCutLenth;        ///< Length from +x side
+  double WPdriveCutRadius;       ///< Half radius of cut out
+  double WPdriveCutRadLen;       ///< length of cutou
+  
+  
+  double WPbaseYStep;            ///< Shift relative to wheel
+  double WPbaseThick;            ///< Total Thickness of base plae
+  double WPbaseWidth;
+  double WPbaseLength;
+
+  double WPbaseCutDepth;      ///< Recess cut depth
+  double WPbaseCutFLen;       ///< Recess from front surf
+  double WPbaseCutBLen;       ///< Recess from back suf
+  double WPbaseCutWidth;      ///< Recess cut with
+
+  double WPbaseMidSlotWidth;     ///< Mid slot cut out
+  double WPbaseMidSlotHeight;    ///< Mid slot Height (from base)
+
+  double WPbaseSideSlotEdge;     ///< Side Slot edge thickness
+  double WPbaseSideSlotHeight;   ///< Side slot height (from base)
+  double WPbaseSideSlotWidth;    ///< Side slot height 
+
   std::string plateMat;              ///< Plate material
   std::string mirrorMat;             ///< XStal material
   std::string baseMat;               ///< Base material
