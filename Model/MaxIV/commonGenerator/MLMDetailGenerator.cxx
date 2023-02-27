@@ -86,12 +86,12 @@ MLMDetailGenerator::MLMDetailGenerator() :
   WPdriveZClear(0.3),WPdriveThick(2.0), 
   WPdriveWidth(26.3),WPdriveLength(17.2),
   WPdriveTopLen(16.4),WPdriveBaseThick(0.8),
-  WPdriveCutWidth(17.6),WPdriveCutLenth(5.6),        
+  WPdriveCutWidth(17.6),WPdriveCutLength(5.6),        
   WPdriveCutRadius(2.0),WPdriveCutRadLen(2.0),      
   
-  WPbaseYStep(0.4),
+  WPbaseYStep(0.85),
   WPbaseThick(3.3),WPbaseWidth(28.4),WPbaseLength(25.2),
-  WPbaseCutDepth(0.3),WPbaseCutFLen(2.5),WPbaseCutBLen(5.3),
+  WPbaseCutDepth(0.3),WPbaseCutFLen(2.5),WPbaseCutBLen(4.8),
   WPbaseCutWidth(26.4),WPbaseMidSlotWidth(4.7),
   WPbaseMidSlotHeight(1.65),
   WPbaseSideSlotEdge(2.0),WPbaseSideSlotHeight(1.3),
@@ -236,7 +236,7 @@ MLMDetailGenerator::makeWheelPlate(FuncDataBase& Control,
   Control.addVariable(keyName+"DriveTopLen",WPdriveTopLen);
   Control.addVariable(keyName+"DriveBaseThick",WPdriveBaseThick);
   Control.addVariable(keyName+"DriveCutWidth",WPdriveCutWidth);
-  Control.addVariable(keyName+"DriveCutLenth",WPdriveCutLenth);
+  Control.addVariable(keyName+"DriveCutLength",WPdriveCutLength);
   Control.addVariable(keyName+"DriveCutRadius",WPdriveCutRadius);
   Control.addVariable(keyName+"DriveCutRadLen",WPdriveCutRadLen);
   

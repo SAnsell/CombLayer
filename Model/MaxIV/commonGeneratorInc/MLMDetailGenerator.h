@@ -120,7 +120,7 @@ class MLMDetailGenerator
   double WPdriveTopLen;          ///< Len of top section
   double WPdriveBaseThick;       ///< Thickness at base
   double WPdriveCutWidth;
-  double WPdriveCutLenth;        ///< Length from +x side
+  double WPdriveCutLength;       ///< Length from +x side
   double WPdriveCutRadius;       ///< Half radius of cut out
   double WPdriveCutRadLen;       ///< length of cutou
   

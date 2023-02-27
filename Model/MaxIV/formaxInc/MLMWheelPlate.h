@@ -69,7 +69,7 @@ class MLMWheelPlate :
   double driveTopLen;          ///< Len of top section
   double driveBaseThick;       ///< Thickness at base
   double driveCutWidth;
-  double driveCutLenth;        ///< Length from +x side
+  double driveCutLength;       ///< Length from +x side
   double driveCutRadius;       ///< Half radius of cut out
   double driveCutRadLen;       ///< length of cutou
   
