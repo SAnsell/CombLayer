@@ -3,7 +3,7 @@
  
  * File:   test/testSupport.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -139,7 +139,11 @@ testSupport::applyTest(const int extra)
 int
 testSupport::testConvert()
   /*!
-    Applies a test to convert
+    Applies a test to convert.
+    -Takes the first part of the string (space delimited)
+      and convert that part into a string/number etc.
+    - Must consume everything up to the delimiter.
+      
     \retval -1 :: failed to convert a good double
     \retval -2 :: converted a number with leading stuff
     \retval -3 :: converted a number with trailing stuff
@@ -214,7 +218,11 @@ testSupport::testConvert()
 int
 testSupport::testConvPartNum()
   /*!
-    Applies a test to convPartNum
+    -Takes the first part of the string (space delimited)
+      and convert that part into a string/number etc.
+    - Must consume everything up to the delimiter but can
+    consume part of the string e.g. 3.4a will convert to 3.4
+
     \return -ve on error
   */
 {

@@ -3,13 +3,13 @@
  
  * File:   support/mathSupport.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *s
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -76,7 +76,7 @@ mathFunc::logFromLinear(const double A,const double B,const size_t N,
   */
 {
   const double step(static_cast<double>(index)*
-		    log(fabs((B-A)/A))/static_cast<double>(N));
+		    log(std::abs((B-A)/A))/static_cast<double>(N));
   return (A>B) ? B*exp(step) : A*exp(step);
 }
   
@@ -509,7 +509,7 @@ polFit(const Xtype& Aim,const unsigned int Order,
   for(size_t i=1;i<Order;i++)
     {
       const long int li(static_cast<long int>(i));
-      testDiff=static_cast<Xtype>(fabs(Aim-X[li]));
+      testDiff=static_cast<Xtype>(std::abs(Aim-X[li]));
       if (diff>testDiff)
         {
           ns=i;
