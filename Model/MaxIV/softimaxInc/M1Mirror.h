@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/Mirror.h
+ * File:   commonBeamInc/M1Mirror.h
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_Mirror_h
-#define xraySystem_Mirror_h
+#ifndef xraySystem_M1Mirror_h
+#define xraySystem_M1Mirror_h
 
 class Simulation;
 
@@ -28,14 +28,14 @@ namespace xraySystem
 {
 
 /*!
-  \class Mirror
+  \class M1Mirror
   \author S. Ansell
   \version 1.0
   \date January 2018
   \brief Focusable mirror in mount
 */
 
-class Mirror :
+class M1Mirror :
   public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
@@ -68,10 +68,10 @@ class Mirror :
 
  public:
 
-  Mirror(const std::string&);
-  Mirror(const Mirror&);
-  Mirror& operator=(const Mirror&);
-  virtual ~Mirror();
+  M1Mirror(const std::string&);
+  M1Mirror(const M1Mirror&);
+  M1Mirror& operator=(const M1Mirror&);
+  virtual ~M1Mirror();
 
   using FixedComp::createAll;
   void createAll(Simulation&,

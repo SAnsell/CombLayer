@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonBeam/Mirror.cxx
+ * File:   commonBeam/M1Mirror.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -58,13 +58,13 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ContainedComp.h"
-#include "Mirror.h"
+#include "M1Mirror.h"
 
 
 namespace xraySystem
 {
 
-Mirror::Mirror(const std::string& Key) :
+M1Mirror::M1Mirror(const std::string& Key) :
   attachSystem::FixedRotate(Key,8),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
@@ -76,83 +76,32 @@ Mirror::Mirror(const std::string& Key) :
   */
 {}
 
-Mirror::Mirror(const Mirror& A) :
-  attachSystem::FixedRotate(A),
-  attachSystem::ContainedComp(A),
-  attachSystem::CellMap(A),attachSystem::SurfMap(A),
-  theta(A.theta),phi(A.phi),radius(A.radius),width(A.width),
-  thick(A.thick),length(A.length),baseTop(A.baseTop),
-  baseDepth(A.baseDepth),baseOutWidth(A.baseOutWidth),
-  baseGap(A.baseGap),mirrMat(A.mirrMat),baseMat(A.baseMat)
-  /*!
-    Copy constructor
-    \param A :: Mirror to copy
-  */
-{}
 
-Mirror&
-Mirror::operator=(const Mirror& A)
-  /*!
-    Assignment operator
-    \param A :: Mirror to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      attachSystem::FixedRotate::operator=(A);
-      attachSystem::ContainedComp::operator=(A);
-      attachSystem::CellMap::operator=(A);
-      attachSystem::SurfMap::operator=(A);
-      theta=A.theta;
-      phi=A.phi;
-      radius=A.radius;
-      width=A.width;
-      thick=A.thick;
-      length=A.length;
-      baseTop=A.baseTop;
-      baseDepth=A.baseDepth;
-      baseOutWidth=A.baseOutWidth;
-      baseGap=A.baseGap;
-      mirrMat=A.mirrMat;
-      baseMat=A.baseMat;
-    }
-  return *this;
-}
-
-
-
-Mirror::~Mirror()
+M1Mirror::~M1Mirror()
   /*!
     Destructor
    */
 {}
 
 void
-Mirror::populate(const FuncDataBase& Control)
+M1Mirror::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: Variable table to use
   */
 {
-  ELog::RegMethod RegA("Mirror","populate");
+  ELog::RegMethod RegA("M1Mirror","populate");
 
   FixedRotate::populate(Control);
 
   theta=Control.EvalVar<double>(keyName+"Theta");
   phi=Control.EvalDefVar<double>(keyName+"Phi",0.0);
 
-  radius=Control.EvalDefVar<double>(keyName+"Radius",0.0);
   width=Control.EvalVar<double>(keyName+"Width");
   thick=Control.EvalVar<double>(keyName+"Thick");
   length=Control.EvalVar<double>(keyName+"Length");
 
-  baseTop=Control.EvalVar<double>(keyName+"BaseTop");
-  baseDepth=Control.EvalVar<double>(keyName+"BaseDepth");
-  baseOutWidth=Control.EvalVar<double>(keyName+"BaseOutWidth");
-  baseGap=Control.EvalVar<double>(keyName+"BaseGap");
-
-  mirrMat=ModelSupport::EvalMat<int>(Control,keyName+"MirrorMat");
+  mirrMat=ModelSupport::EvalMat<int>(Control,keyName+"M1MirrorMat");
   baseMat=ModelSupport::EvalMat<int>(Control,keyName+"BaseMat");
 
   return;
@@ -160,12 +109,12 @@ Mirror::populate(const FuncDataBase& Control)
 
 
 void
-Mirror::createSurfaces()
+M1Mirror::createSurfaces()
   /*!
     Create planes for mirror block and support
   */
 {
-  ELog::RegMethod RegA("Mirror","createSurfaces");
+  ELog::RegMethod RegA("M1Mirror","createSurfaces");
 
   // main xstal CENTRE AT ORIGIN
   const Geometry::Quaternion QXA
@@ -234,13 +183,13 @@ Mirror::createSurfaces()
 }
 
 void
-Mirror::createObjects(Simulation& System)
+M1Mirror::createObjects(Simulation& System)
   /*!
     Create the vaned moderator
     \param System :: Simulation to add results
    */
 {
-  ELog::RegMethod RegA("Mirror","createObjects");
+  ELog::RegMethod RegA("M1Mirror","createObjects");
 
   HeadRule HR;
   // xstal
@@ -251,7 +200,7 @@ Mirror::createObjects(Simulation& System)
     HR=ModelSupport::getHeadRule
       (SMap,buildIndex," 103 -104 107 -117 105 ");
 
-  makeCell("Mirror",System,cellIndex++,mirrMat,0.0,HR);
+  makeCell("M1Mirror",System,cellIndex++,mirrMat,0.0,HR);
 
   // Make sides
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 101 -102 -103 203 -205 206 ");
@@ -279,12 +228,12 @@ Mirror::createObjects(Simulation& System)
 }
 
 void
-Mirror::createLinks()
+M1Mirror::createLinks()
   /*!
     Creates a full attachment set
   */
 {
-  ELog::RegMethod RegA("Mirror","createLinks");
+  ELog::RegMethod RegA("M1Mirror","createLinks");
 
   // link points are defined in the end of createSurfaces
 
@@ -292,7 +241,7 @@ Mirror::createLinks()
 }
 
 void
-Mirror::createAll(Simulation& System,
+M1Mirror::createAll(Simulation& System,
 		  const attachSystem::FixedComp& FC,
 		  const long int sideIndex)
   /*!
@@ -302,7 +251,7 @@ Mirror::createAll(Simulation& System,
     \param sideIndex :: Side point
    */
 {
-  ELog::RegMethod RegA("Mirror","createAll");
+  ELog::RegMethod RegA("M1Mirror","createAll");
   populate(System.getDataBase());
 
   createUnitVector(FC,sideIndex);

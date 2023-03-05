@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/Mirror.h
+ * File:   formaxInc/M1Detail.h
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
  *
@@ -19,23 +19,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_Mirror_h
-#define xraySystem_Mirror_h
+#ifndef xraySystem_M1Detail_h
+#define xraySystem_M1Detail_h
 
 class Simulation;
 
 namespace xraySystem
 {
 
+  class MLMCrystal;
+  class MLMRadialSupport;
+  class MLMSupportWheel;
+  class MLMWheelPlate;
+  
 /*!
-  \class Mirror
+  \class M1Detail
   \author S. Ansell
   \version 1.0
-  \date January 2018
-  \brief Focusable mirror in mount
+  \date October 2019
+  \brief Double Mirror Mono arrangement
 */
 
-class Mirror :
+class M1Detail :
   public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
@@ -43,22 +48,8 @@ class Mirror :
 {
  private:
 
-  double theta;            ///< Theta angle
-  double phi;              ///< phi angle
-
-  double radius;           ///< Radius of surface cylinder
-  double width;            ///< width accross beam
-  double thick;            ///< Thickness in normal direction to reflection
-  double length;           ///< length along beam
+  std::shared_ptr<M1Mirror> mirror;
   
-  double baseTop;          ///< Base distance above mirror
-  double baseDepth;        ///< Base distance below mirror 
-  double baseOutWidth;     ///< Extra width of base 
-  double baseGap;          ///< Base under gap below mirror
-
-  int mirrMat;             ///< XStal material
-  int baseMat;             ///< Base material
-
   // Functions:
 
   void populate(const FuncDataBase&);
@@ -68,12 +59,11 @@ class Mirror :
 
  public:
 
-  Mirror(const std::string&);
-  Mirror(const Mirror&);
-  Mirror& operator=(const Mirror&);
-  virtual ~Mirror();
+  M1Detail(const std::string&);
+  M1Detail(const M1Detail&);
+  M1Detail& operator=(const M1Detail&);
+  virtual ~M1Detail();
 
-  using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);
