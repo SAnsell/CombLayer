@@ -132,6 +132,7 @@
 #include "MonoShutterGenerator.h"
 #include "FocusGenerator.h"
 #include "MLMDetailGenerator.h"
+#include "M1DetailGenerator.h"
 
 #include "RoundShutterGenerator.h"
 #include "TubeDetBoxGenerator.h"
@@ -725,7 +726,10 @@ SingleItemVariables(FuncDataBase& Control)
 
   MLMDetailGenerator MLGen;
   MLGen.generateMono(Control,"MLM",0.1,-0.1);
-  
+
+  M1DetailGenerator M1DGen;
+  M1DGen.generateMirror(Control,"M1",2.0,0.0);
+
 
   TubeDetBoxGenerator TDBGen;
   TDBGen.generateBox(Control,"TDetBox",Geometry::Vec3D(0,3.15,0),8);

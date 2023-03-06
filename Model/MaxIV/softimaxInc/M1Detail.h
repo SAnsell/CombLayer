@@ -27,10 +27,7 @@ class Simulation;
 namespace xraySystem
 {
 
-  class MLMCrystal;
-  class MLMRadialSupport;
-  class MLMSupportWheel;
-  class MLMWheelPlate;
+  class M1Mirror;
   
 /*!
   \class M1Detail

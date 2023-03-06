@@ -38,8 +38,8 @@ class M1DetailGenerator
  private:
 
       
-  double mWidth;               ///< Width of mirro
-  double mHeight;              ///< Depth into mirro
+  double mWidth;               ///< Width of mirror
+  double mHeight;              ///< Depth into mirror
   double mLength;              ///< Length along mirror
   double mSlotXStep;           ///< Length along mirror
   double mSlotWidth;           ///< Length along mirror
@@ -57,8 +57,9 @@ class M1DetailGenerator
   double mPipeOuterRadius;     ///< radius of outer pipe vertical
   
   std::string mirrorMat;             ///< XStal material
-  std::string plateMat;              ///< Plate material
-  std::string baseMat;               ///< Base material
+  std::string waterMat;              ///< Plate material
+  std::string pipeMat;               ///< Base material
+  std::string outerMat;               ///< Base material
   std::string voidMat;               ///< Void material
 
   

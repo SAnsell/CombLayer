@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonBeam/M1Mirror.cxx
+ * File:   softimax/M1Mirror.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -95,14 +95,31 @@ M1Mirror::populate(const FuncDataBase& Control)
   FixedRotate::populate(Control);
 
   theta=Control.EvalVar<double>(keyName+"Theta");
-  phi=Control.EvalDefVar<double>(keyName+"Phi",0.0);
-
+  phi=Control.EvalVar<double>(keyName+"Phi");
+  
   width=Control.EvalVar<double>(keyName+"Width");
-  thick=Control.EvalVar<double>(keyName+"Thick");
+  height=Control.EvalVar<double>(keyName+"Height");
   length=Control.EvalVar<double>(keyName+"Length");
 
-  mirrMat=ModelSupport::EvalMat<int>(Control,keyName+"M1MirrorMat");
-  baseMat=ModelSupport::EvalMat<int>(Control,keyName+"BaseMat");
+  slotXStep=Control.EvalVar<double>(keyName+"SlotXStep");
+  slotWidth=Control.EvalVar<double>(keyName+"SlotWidth");
+  slotDepth=Control.EvalVar<double>(keyName+"SlotDepth");
+
+  pipeXStep=Control.EvalVar<double>(keyName+"PipeXStep");
+  pipeYStep=Control.EvalVar<double>(keyName+"PipeYStep");
+  pipeZStep=Control.EvalVar<double>(keyName+"PipeZStep");
+  pipeSideRadius=Control.EvalVar<double>(keyName+"PipeSideRadius");
+  pipeBaseLen=Control.EvalVar<double>(keyName+"PipeBaseLen");
+  pipeBaseRadius=Control.EvalVar<double>(keyName+"PipeBaseRadius");
+  pipeOuterLen=Control.EvalVar<double>(keyName+"PipeOuterLen");
+  pipeOuterRadius=Control.EvalVar<double>(keyName+"PipeOuterRadius");
+
+  mirrorMat=ModelSupport::EvalMat<int>(Control,keyName+"MirrorMat");
+  waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
+  pipeMat=ModelSupport::EvalMat<int>(Control,keyName+"PipeMat");
+  outerMat=ModelSupport::EvalMat<int>(Control,keyName+"OuterMat");
+  voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
+  
 
   return;
 }
@@ -118,66 +135,31 @@ M1Mirror::createSurfaces()
 
   // main xstal CENTRE AT ORIGIN
   const Geometry::Quaternion QXA
-    (Geometry::Quaternion::calcQRotDeg(-theta,X));
+    (Geometry::Quaternion::calcQRotDeg(-theta,Z));
 
   Geometry::Vec3D PX(X);
   Geometry::Vec3D PY(Y);
   Geometry::Vec3D PZ(Z);
 
+  QXA.rotate(PX);
   QXA.rotate(PY);
-  QXA.rotate(PZ);
 
-  const Geometry::Quaternion QYA
-    (Geometry::Quaternion::calcQRotDeg(phi,PY));
-
-  QYA.rotate(PX);
-  QYA.rotate(PZ);
-
-  ModelSupport::buildPlane(SMap,buildIndex+101,Origin-PY*(length/2.0),PY);
-  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+PY*(length/2.0),PY);
-  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-PX*(width/2.0),PX);
-  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+PX*(width/2.0),PX);
-
-  if (std::abs(radius)>Geometry::zeroTol)
-    {
-      // calc edge cut
-      const double tAngle = length/(2.0*radius);  // cos(-a) == cos(a)
-      const double lift = radius*(1.0-cos(tAngle));
-      if (radius<0)
-	ModelSupport::buildPlane(SMap,buildIndex+105,Origin-PZ*lift,-PZ);
-      else
-	ModelSupport::buildPlane(SMap,buildIndex+105,Origin-PZ*lift,PZ);
-      ModelSupport::buildCylinder(SMap,buildIndex+107,
-				  Origin-PZ*radius,PX,std::abs(radius));
-      ModelSupport::buildCylinder(SMap,buildIndex+117,
-				  Origin-PZ*radius,PX,std::abs(radius)+thick);
-    }
-  else
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+105,Origin-PZ*thick,PZ);
-      ModelSupport::buildPlane(SMap,buildIndex+106,Origin,PZ);
-    }
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-PY*(length/2.0),PY);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+PY*(length/2.0),PY);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-PX*width,PX);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin,PX);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-PZ*(height/2.0),PZ);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+PZ*(height/2.0),PZ);
 
 
-  // support
-  ModelSupport::buildPlane(SMap,buildIndex+203,
-			   Origin-PX*(baseOutWidth+width/2.0),PX);
-  ModelSupport::buildPlane(SMap,buildIndex+204,
-			   Origin+PX*(baseOutWidth+width/2.0),PX);
-  ModelSupport::buildPlane(SMap,buildIndex+205,Origin+PZ*baseTop,PZ);
-  ModelSupport::buildPlane(SMap,buildIndex+206,Origin-PZ*baseDepth,PZ);
-
-
-  ModelSupport::buildPlane(SMap,buildIndex+216,Origin-PZ*(thick+baseGap),PZ);
-
-  /// create the link point towards the reflected beam
-  // (do it here to avoid re-definition of variables in createLinks()
-
-  Geometry::Vec3D Yrefl(PY);
-  Geometry::Quaternion::calcQRotDeg(-theta,X).rotate(Yrefl);
-
-  FixedComp::setConnect(1,Origin+PZ*baseTop,Yrefl);
-  FixedComp::setLinkSurf(1,-SMap.realSurf(buildIndex+205));
+  // support cuts:
+  Geometry::Vec3D slotOrg=Origin-X*slotXStep;
+  ModelSupport::buildPlane(SMap,buildIndex+13,slotOrg-PX*(slotWidth/2.0),PX);
+  ModelSupport::buildPlane(SMap,buildIndex+14,slotOrg+PX*(slotWidth/2.0),PX);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+15,slotOrg-PZ*(height/2.0-slotDepth),PZ);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+16,slotOrg+PZ*(height/2.0-slotDepth),PZ);
 
   return;
 }
@@ -193,35 +175,12 @@ M1Mirror::createObjects(Simulation& System)
 
   HeadRule HR;
   // xstal
-  if (std::abs(radius)<Geometry::zeroTol)
-    HR=ModelSupport::getHeadRule(SMap,buildIndex,
-				   " 101 -102 103 -104 105 -106 ");
-  else
-    HR=ModelSupport::getHeadRule
-      (SMap,buildIndex," 103 -104 107 -117 105 ");
-
-  makeCell("M1Mirror",System,cellIndex++,mirrMat,0.0,HR);
-
-  // Make sides
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 101 -102 -103 203 -205 206 ");
-  makeCell("LeftSide",System,cellIndex++,baseMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 101 -102 104 -204 -205 206 ");
-  makeCell("RightSide",System,cellIndex++,baseMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,
-				 " 101 -102 103 -104 -216 206 ");
-  makeCell("Base",System,cellIndex++,baseMat,0.0,HR);
-
-  // vacuum units:
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex," 101 -102 103 -104 -105 216" );
-  makeCell("BaseVac",System,cellIndex++,0,0.0,HR);
+    (SMap,buildIndex,"1 -2 3 -4 5 -6");
+  makeCell("M1Mirror",System,cellIndex++,mirrorMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex," 101 -102 103 -104 -205 106 " );
-  makeCell("TopVac",System,cellIndex++,0,0.0,HR);
 
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex," 101 -102 203 -204 -205 206" );
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
   addOuterSurf(HR);
 
   return;

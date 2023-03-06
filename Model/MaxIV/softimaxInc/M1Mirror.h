@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/M1Mirror.h
+ * File:   softimaxInc/M1Mirror.h
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
  *
@@ -46,18 +46,29 @@ class M1Mirror :
   double theta;            ///< Theta angle
   double phi;              ///< phi angle
 
-  double radius;           ///< Radius of surface cylinder
-  double width;            ///< width accross beam
-  double thick;            ///< Thickness in normal direction to reflection
-  double length;           ///< length along beam
-  
-  double baseTop;          ///< Base distance above mirror
-  double baseDepth;        ///< Base distance below mirror 
-  double baseOutWidth;     ///< Extra width of base 
-  double baseGap;          ///< Base under gap below mirror
+  double width;               ///< Width of mirror
+  double height;              ///< Depth into mirror
+  double length;              ///< Length along mirror
+  double slotXStep;           ///< Length along mirror
+  double slotWidth;           ///< Length along mirror
+  double slotDepth;           ///< Length along mirror
+  double pipeXStep;           ///< step from mirror surface to base join
+  double pipeYStep;           ///< step from mirror end
+  double pipeZStep;           ///< step from lower base up.
 
-  int mirrMat;             ///< XStal material
-  int baseMat;             ///< Base material
+  double pipeSideRadius;      ///< radius at side
+
+  double pipeBaseLen;      ///< radius at base
+  double pipeBaseRadius;      ///< radius at base
+
+  double pipeOuterLen;       ///< Length of outer pipe vertical
+  double pipeOuterRadius;     ///< radius of outer pipe vertical
+
+  int mirrorMat;             ///< XStal material
+  int waterMat;              ///< material in pipe
+  int pipeMat;               ///< Base material
+  int outerMat;              ///< outer pipe material
+  int voidMat;              ///< outer pipe material
 
   // Functions:
 

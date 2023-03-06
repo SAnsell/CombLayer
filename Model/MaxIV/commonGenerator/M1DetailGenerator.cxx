@@ -50,13 +50,14 @@ M1DetailGenerator::M1DetailGenerator() :
   mWidth(6.0),mHeight(6.0),        
   mLength(37.0),mSlotXStep(4.5),     
   mSlotWidth(1.0),mSlotDepth(0.90),     
-  mPipeXStep(2.17), mPipeYStep(2.0),
+  mPipeXStep(2.17),mPipeYStep(2.0),
   mPipeZStep(1.8),mPipeSideRadius(0.225),
   mPipeBaseLen(2.1),mPipeBaseRadius(0.25),
   mPipeOuterLen(1.5),mPipeOuterRadius(0.30),
   
-  mirrorMat("Silicon300K"),plateMat("Stainless304"),
-  baseMat("Copper"),voidMat("Void")
+  mirrorMat("Silicon300K"),waterMat("H2O"),
+  pipeMat("Stainless304"),outerMat("Copper"),
+  voidMat("Void")
   /*!
     Constructor and defaults
   */
@@ -88,17 +89,22 @@ M1DetailGenerator::makeCrystal(FuncDataBase& Control,
   ELog::RegMethod RegA("M1DetailGenerator","makeCrystal");
 
   Control.addVariable(cryName+"ZStep",zStep);
-  Control.addVariable(cryName+"ZAngle",theta);
+
+  Control.addVariable(cryName+"Theta",theta);
+  Control.addVariable(cryName+"Phi",0.0);
   
   Control.addVariable(cryName+"Width",mWidth);
   Control.addVariable(cryName+"Height",mHeight);
   Control.addVariable(cryName+"Length",mLength);
+
   Control.addVariable(cryName+"SlotXStep",mSlotXStep);
   Control.addVariable(cryName+"SlotWidth",mSlotWidth);
   Control.addVariable(cryName+"SlotDepth",mSlotDepth);
+
   Control.addVariable(cryName+"PipeXStep",mPipeXStep);
   Control.addVariable(cryName+"PipeYStep",mPipeYStep);
   Control.addVariable(cryName+"PipeZStep",mPipeZStep);
+  
   Control.addVariable(cryName+"PipeSideRadius",mPipeSideRadius);
   Control.addVariable(cryName+"PipeBaseLen",mPipeBaseLen);
   Control.addVariable(cryName+"PipeBaseRadius",mPipeBaseRadius);
@@ -106,9 +112,10 @@ M1DetailGenerator::makeCrystal(FuncDataBase& Control,
   Control.addVariable(cryName+"PipeOuterRadius",mPipeOuterRadius);
 
   Control.addVariable(cryName+"MirrorMat",mirrorMat);
+  Control.addVariable(cryName+"WaterMat",waterMat);
+  Control.addVariable(cryName+"PipeMat",pipeMat);
+  Control.addVariable(cryName+"OuterMat",outerMat);
   Control.addVariable(cryName+"VoidMat",voidMat);
-  Control.addVariable(cryName+"BaseMat",baseMat);
-  Control.addVariable(cryName+"PipeMat",plateMat);
 
   return;
 }
