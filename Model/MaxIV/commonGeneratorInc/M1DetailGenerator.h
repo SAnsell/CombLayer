@@ -49,6 +49,7 @@ class M1DetailGenerator
   double mPipeZStep;           ///< step from lower base up.
 
   double mPipeSideRadius;      ///< radius at side
+  double mPipeWallThick;       ///< thickness of wall
 
   double mPipeBaseLen;      ///< radius at base
   double mPipeBaseRadius;      ///< radius at base

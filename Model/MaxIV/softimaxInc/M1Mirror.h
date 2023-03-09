@@ -56,9 +56,10 @@ class M1Mirror :
   double pipeYStep;           ///< step from mirror end
   double pipeZStep;           ///< step from lower base up.
 
+  double pipeWallThick;       ///< Pipe thickness
   double pipeSideRadius;      ///< radius at side
 
-  double pipeBaseLen;      ///< radius at base
+  double pipeBaseLen;         ///< radius at base
   double pipeBaseRadius;      ///< radius at base
 
   double pipeOuterLen;       ///< Length of outer pipe vertical

@@ -109,6 +109,7 @@ M1Mirror::populate(const FuncDataBase& Control)
   pipeYStep=Control.EvalVar<double>(keyName+"PipeYStep");
   pipeZStep=Control.EvalVar<double>(keyName+"PipeZStep");
   pipeSideRadius=Control.EvalVar<double>(keyName+"PipeSideRadius");
+  pipeWallThick=Control.EvalVar<double>(keyName+"PipeWallThick");
   pipeBaseLen=Control.EvalVar<double>(keyName+"PipeBaseLen");
   pipeBaseRadius=Control.EvalVar<double>(keyName+"PipeBaseRadius");
   pipeOuterLen=Control.EvalVar<double>(keyName+"PipeOuterLen");
@@ -145,6 +146,7 @@ M1Mirror::createSurfaces()
   QXA.rotate(PY);
 
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-PY*(length/2.0),PY);
+  ModelSupport::buildPlane(SMap,buildIndex+1000,Origin,PY);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+PY*(length/2.0),PY);
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-PX*width,PX);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin,PX);
@@ -161,6 +163,47 @@ M1Mirror::createSurfaces()
   ModelSupport::buildPlane
     (SMap,buildIndex+16,slotOrg+PZ*(height/2.0-slotDepth),PZ);
 
+
+  // pipes:
+  const Geometry::Vec3D pBaseA=Origin-PX*pipeXStep-PY*(length/2.0-pipeYStep);
+  const Geometry::Vec3D pBaseB=Origin-PX*pipeXStep+PY*(length/2.0-pipeYStep);
+
+  const Geometry::Vec3D pMidA=Origin-PZ*(height/2.0-pipeZStep)
+    -PY*(length/2.0-pipeYStep);
+  const Geometry::Vec3D pMidB=Origin-PZ*(height/2.0-pipeZStep)
+    +PY*(length/2.0-pipeYStep);
+
+
+  ModelSupport::buildCylinder(SMap,buildIndex+107,pBaseA,PZ,pipeBaseRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+207,pBaseB,PZ,pipeBaseRadius);
+
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+117,pBaseA,PZ,pipeBaseRadius+pipeWallThick);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+217,pBaseB,PZ,pipeBaseRadius+pipeWallThick);
+
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+127,pBaseA,PZ,pipeOuterRadius);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+227,pBaseB,PZ,pipeOuterRadius);
+
+  ModelSupport::buildCylinder(SMap,buildIndex+157,pMidA,PX,pipeSideRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+257,pMidB,PX,pipeSideRadius);
+
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+167,pMidA,PX,pipeSideRadius+pipeWallThick);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+267,pMidB,PX,pipeSideRadius+pipeWallThick);
+
+
+  // pipe plane separators
+  ModelSupport::buildPlane
+    (SMap,buildIndex+101,Origin-PZ*(height/2.0-pipeBaseLen),PZ);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+111,Origin-PZ*(height/2.0-pipeOuterLen),PZ);
+
+  ModelSupport::buildPlane(SMap,buildIndex+154,pBaseA,PX);
+
   return;
 }
 
@@ -175,11 +218,53 @@ M1Mirror::createObjects(Simulation& System)
 
   HeadRule HR;
   // xstal
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"1 -2 3 -4 5 -6");
-  makeCell("M1Mirror",System,cellIndex++,mirrorMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+     "1 -1000  3 -4 5 -6 (-13:14:(-16 15)) (101:117) (154:167) (111:127)");
+  makeCell("Mirror",System,cellIndex++,mirrorMat,0.0,HR);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+     "1000 -2 3 -4 5 -6 (-13:14:(-16 15)) (101:217) (154:267) (111:227)");
+  makeCell("Mirror",System,cellIndex++,mirrorMat,0.0,HR);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -14 16 -6");
+  makeCell("Slot",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -14 -15 5");
+  makeCell("Slot",System,cellIndex++,voidMat,0.0,HR);
+
+  // pipes
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -101 -107");
+  makeCell("pipe",System,cellIndex++,waterMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -101 -117 107 (154:157)");
+  makeCell("pipe",System,cellIndex++,pipeMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -154 -157 107");
+  makeCell("pipe",System,cellIndex++,waterMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -154 -167 157 117");
+  makeCell("pipe",System,cellIndex++,pipeMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -111 -127 117");
+  makeCell("pipe",System,cellIndex++,outerMat,0.0,HR);
+
+  // opposite side
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -101 -207");
+  makeCell("pipe",System,cellIndex++,waterMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -101 -217 207 (154:257)");
+  makeCell("pipe",System,cellIndex++,pipeMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -154 -257 207");
+  makeCell("pipe",System,cellIndex++,waterMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -154 -267 257 217");
+  makeCell("pipe",System,cellIndex++,pipeMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -111 -227 217");
+  makeCell("pipe",System,cellIndex++,outerMat,0.0,HR);
+  
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
   addOuterSurf(HR);
 

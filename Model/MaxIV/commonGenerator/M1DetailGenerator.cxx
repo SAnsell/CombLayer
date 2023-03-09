@@ -51,7 +51,8 @@ M1DetailGenerator::M1DetailGenerator() :
   mLength(37.0),mSlotXStep(4.5),     
   mSlotWidth(1.0),mSlotDepth(0.90),     
   mPipeXStep(2.17),mPipeYStep(2.0),
-  mPipeZStep(1.8),mPipeSideRadius(0.225),
+  mPipeZStep(1.8),mPipeSideRadius(0.125),
+  mPipeWallThick(0.1),
   mPipeBaseLen(2.1),mPipeBaseRadius(0.25),
   mPipeOuterLen(1.5),mPipeOuterRadius(0.30),
   
@@ -106,6 +107,7 @@ M1DetailGenerator::makeCrystal(FuncDataBase& Control,
   Control.addVariable(cryName+"PipeZStep",mPipeZStep);
   
   Control.addVariable(cryName+"PipeSideRadius",mPipeSideRadius);
+  Control.addVariable(cryName+"PipeWallThick",mPipeWallThick);
   Control.addVariable(cryName+"PipeBaseLen",mPipeBaseLen);
   Control.addVariable(cryName+"PipeBaseRadius",mPipeBaseRadius);
   Control.addVariable(cryName+"PipeOuterLen",mPipeOuterLen);
