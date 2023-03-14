@@ -55,10 +55,18 @@ M1DetailGenerator::M1DetailGenerator() :
   mPipeWallThick(0.1),
   mPipeBaseLen(2.1),mPipeBaseRadius(0.25),
   mPipeOuterLen(1.5),mPipeOuterRadius(0.30),
+
+  bLength(38.9),bClearGap(0.2),
+  bBackThick(0.5),bMainThick(0.3),
+  bExtentThick(0.4),
+  bCupHeight(1.8),bTopExtent(4.2),
+  bBaseExtent(2.1),
   
+  sLength(26.5),sWidth(5.3),sThick(0.1),
+  sEdge(1.1),sRadius(1.0),
   mirrorMat("Silicon300K"),waterMat("H2O"),
-  pipeMat("Stainless304"),outerMat("Copper"),
-  voidMat("Void")
+  supportMat("Copper"),pipeMat("Stainless304"),
+  outerMat("Copper"),voidMat("Void")
   /*!
     Constructor and defaults
   */
@@ -72,6 +80,57 @@ M1DetailGenerator::~M1DetailGenerator()
 {}
 
 
+  
+void
+M1DetailGenerator::makeSupport(FuncDataBase& Control,
+			       const std::string& keyName) const
+  /*!
+    Create the variables for the base support
+   */
+{
+  ELog::RegMethod RegA("M1DetailGenerator","makeSupport");
+
+
+  Control.addVariable(keyName+"Length",sLength);
+  Control.addVariable(keyName+"Width",sWidth);
+  Control.addVariable(keyName+"Thick",sThick);
+  
+  Control.addVariable(keyName+"Edge",sEdge);
+  Control.addVariable(keyName+"HoleRadius",sRadius);
+  
+  Control.addVariable(keyName+"SupportMat",supportMat);
+  Control.addVariable(keyName+"VoidMat",voidMat);
+
+  return;
+}
+
+void
+M1DetailGenerator::makeBackPlate(FuncDataBase& Control,
+				 const std::string& keyName) const
+  /*!
+    Create the variables for the base support
+    \param Control :: Function data base
+   */
+{
+  ELog::RegMethod RegA("M1DetailGenerator","makeBackPlate");
+
+  Control.addVariable(keyName+"Length",bLength);
+  Control.addVariable(keyName+"ClearGap",bClearGap);
+  Control.addVariable(keyName+"BackThick",bBackThick);
+  Control.addVariable(keyName+"MainThick",bMainThick);
+  Control.addVariable(keyName+"CupHeight",bCupHeight);
+  Control.addVariable(keyName+"TopExtent",bTopExtent);
+  Control.addVariable(keyName+"ExtentThick",bExtentThick);
+  Control.addVariable(keyName+"BaseExtent",bBaseExtent);
+
+  Control.addVariable(keyName+"BaseMat",supportMat);
+  Control.addVariable(keyName+"VoidMat",voidMat);
+
+  return;
+}
+
+
+  
 void
 M1DetailGenerator::makeCrystal(FuncDataBase& Control,
 				const std::string& cryName,
@@ -140,6 +199,9 @@ M1DetailGenerator::generateMirror(FuncDataBase& Control,
 
   // guess of separation
   makeCrystal(Control,keyName+"Mirror",theta,zStep);
+  makeSupport(Control,keyName+"SUp");
+  makeSupport(Control,keyName+"SDown");
+  makeBackPlate(Control,keyName+"CClamp");
   
   return;
 

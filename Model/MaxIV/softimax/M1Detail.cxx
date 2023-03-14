@@ -62,6 +62,7 @@
 #include "SurfMap.h"
 
 #include "M1Mirror.h"
+#include "M1BackPlate.h"
 #include "M1Detail.h"
 
 namespace xraySystem
@@ -72,7 +73,8 @@ M1Detail::M1Detail(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
-  mirror(new M1Mirror(keyName+"Mirror"))
+  mirror(new M1Mirror(keyName+"Mirror")),
+  cClamp(new M1BackPlate(keyName+"CClamp"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -82,6 +84,7 @@ M1Detail::M1Detail(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
   
   OR.addObject(mirror);
+  OR.addObject(cClamp);
 }
 
 M1Detail::~M1Detail()
@@ -128,6 +131,12 @@ M1Detail::createObjects(Simulation& System)
 
   mirror->addInsertCell(getInsertCells());
   mirror->createAll(System,*this,0);
+
+  cClamp->addInsertCell(getInsertCells());
+  cClamp->setCutSurf("Back",*mirror,"outSide");
+  cClamp->setCutSurf("Top",*mirror,"top");
+  cClamp->setCutSurf("Base",*mirror,"base");
+  cClamp->createAll(System,*mirror,"backPlateOrg");
   
   return; 
 }

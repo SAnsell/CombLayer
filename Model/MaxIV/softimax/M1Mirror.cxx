@@ -134,75 +134,64 @@ M1Mirror::createSurfaces()
 {
   ELog::RegMethod RegA("M1Mirror","createSurfaces");
 
-  // main xstal CENTRE AT ORIGIN
-  const Geometry::Quaternion QXA
-    (Geometry::Quaternion::calcQRotDeg(-theta,Z));
-
-  Geometry::Vec3D PX(X);
-  Geometry::Vec3D PY(Y);
-  Geometry::Vec3D PZ(Z);
-
-  QXA.rotate(PX);
-  QXA.rotate(PY);
-
-  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-PY*(length/2.0),PY);
-  ModelSupport::buildPlane(SMap,buildIndex+1000,Origin,PY);
-  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+PY*(length/2.0),PY);
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-PX*width,PX);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin,PX);
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-PZ*(height/2.0),PZ);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+PZ*(height/2.0),PZ);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1000,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin,X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
 
   // support cuts:
   Geometry::Vec3D slotOrg=Origin-X*slotXStep;
-  ModelSupport::buildPlane(SMap,buildIndex+13,slotOrg-PX*(slotWidth/2.0),PX);
-  ModelSupport::buildPlane(SMap,buildIndex+14,slotOrg+PX*(slotWidth/2.0),PX);
+  ModelSupport::buildPlane(SMap,buildIndex+13,slotOrg-X*(slotWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,slotOrg+X*(slotWidth/2.0),X);
   ModelSupport::buildPlane
-    (SMap,buildIndex+15,slotOrg-PZ*(height/2.0-slotDepth),PZ);
+    (SMap,buildIndex+15,slotOrg-Z*(height/2.0-slotDepth),Z);
   ModelSupport::buildPlane
-    (SMap,buildIndex+16,slotOrg+PZ*(height/2.0-slotDepth),PZ);
+    (SMap,buildIndex+16,slotOrg+Z*(height/2.0-slotDepth),Z);
 
 
   // pipes:
-  const Geometry::Vec3D pBaseA=Origin-PX*pipeXStep-PY*(length/2.0-pipeYStep);
-  const Geometry::Vec3D pBaseB=Origin-PX*pipeXStep+PY*(length/2.0-pipeYStep);
+  const Geometry::Vec3D pBaseA=Origin-X*pipeXStep-Y*(length/2.0-pipeYStep);
+  const Geometry::Vec3D pBaseB=Origin-X*pipeXStep+Y*(length/2.0-pipeYStep);
 
-  const Geometry::Vec3D pMidA=Origin-PZ*(height/2.0-pipeZStep)
-    -PY*(length/2.0-pipeYStep);
-  const Geometry::Vec3D pMidB=Origin-PZ*(height/2.0-pipeZStep)
-    +PY*(length/2.0-pipeYStep);
+  const Geometry::Vec3D pMidA=Origin-Z*(height/2.0-pipeZStep)
+    -Y*(length/2.0-pipeYStep);
+  const Geometry::Vec3D pMidB=Origin-Z*(height/2.0-pipeZStep)
+    +Y*(length/2.0-pipeYStep);
 
 
-  ModelSupport::buildCylinder(SMap,buildIndex+107,pBaseA,PZ,pipeBaseRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+207,pBaseB,PZ,pipeBaseRadius);
-
-  ModelSupport::buildCylinder
-    (SMap,buildIndex+117,pBaseA,PZ,pipeBaseRadius+pipeWallThick);
-  ModelSupport::buildCylinder
-    (SMap,buildIndex+217,pBaseB,PZ,pipeBaseRadius+pipeWallThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+107,pBaseA,Z,pipeBaseRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+207,pBaseB,Z,pipeBaseRadius);
 
   ModelSupport::buildCylinder
-    (SMap,buildIndex+127,pBaseA,PZ,pipeOuterRadius);
+    (SMap,buildIndex+117,pBaseA,Z,pipeBaseRadius+pipeWallThick);
   ModelSupport::buildCylinder
-    (SMap,buildIndex+227,pBaseB,PZ,pipeOuterRadius);
-
-  ModelSupport::buildCylinder(SMap,buildIndex+157,pMidA,PX,pipeSideRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+257,pMidB,PX,pipeSideRadius);
+    (SMap,buildIndex+217,pBaseB,Z,pipeBaseRadius+pipeWallThick);
 
   ModelSupport::buildCylinder
-    (SMap,buildIndex+167,pMidA,PX,pipeSideRadius+pipeWallThick);
+    (SMap,buildIndex+127,pBaseA,Z,pipeOuterRadius);
   ModelSupport::buildCylinder
-    (SMap,buildIndex+267,pMidB,PX,pipeSideRadius+pipeWallThick);
+    (SMap,buildIndex+227,pBaseB,Z,pipeOuterRadius);
+
+  ModelSupport::buildCylinder(SMap,buildIndex+157,pMidA,X,pipeSideRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+257,pMidB,X,pipeSideRadius);
+
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+167,pMidA,X,pipeSideRadius+pipeWallThick);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+267,pMidB,X,pipeSideRadius+pipeWallThick);
 
 
   // pipe plane separators
   ModelSupport::buildPlane
-    (SMap,buildIndex+101,Origin-PZ*(height/2.0-pipeBaseLen),PZ);
+    (SMap,buildIndex+101,Origin-Z*(height/2.0-pipeBaseLen),Z);
   ModelSupport::buildPlane
-    (SMap,buildIndex+111,Origin-PZ*(height/2.0-pipeOuterLen),PZ);
+    (SMap,buildIndex+111,Origin-Z*(height/2.0-pipeOuterLen),Z);
 
-  ModelSupport::buildPlane(SMap,buildIndex+154,pBaseA,PX);
+  ModelSupport::buildPlane(SMap,buildIndex+154,pBaseA,X);
 
   return;
 }
@@ -281,6 +270,34 @@ M1Mirror::createLinks()
 
   // link points are defined in the end of createSurfaces
 
+  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+
+  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+
+  FixedComp::setConnect(2,Origin-X*width,-X);
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+
+  FixedComp::setConnect(3,Origin,X);
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
+
+  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+
+  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+
+  FixedComp::setConnect(6,Origin-X*width,Y);
+  FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+3));
+
+  nameSideIndex(2,"outSide");
+  nameSideIndex(3,"beamSide");
+  nameSideIndex(4,"base");
+  nameSideIndex(5,"top");
+  nameSideIndex(6,"backPlateOrg");
+
+  
   return;
 }
 

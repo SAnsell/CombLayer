@@ -37,7 +37,6 @@ class M1DetailGenerator
 {
  private:
 
-      
   double mWidth;               ///< Width of mirror
   double mHeight;              ///< Depth into mirror
   double mLength;              ///< Length along mirror
@@ -56,16 +55,35 @@ class M1DetailGenerator
 
   double mPipeOuterLen;       ///< Length of outer pipe vertical
   double mPipeOuterRadius;     ///< radius of outer pipe vertical
+
+  double sLength;              ///< Length of support (26.5)
+  double sWidth;               ///< Length of support (5.3)
+  double sThick;               ///< Length of support (0.1)
+  double sEdge;                ///< drop  of support (1.1)
+  double sRadius;              ///< radius of mid-hole  ()
+
+  double bLength;              ///< Length of support (38.9)
+  double bClearGap;            ///< Clear Gap (0.2)
+  double bBackThick;           ///< Thickness of back (0.5)
+  double bMainThick;           ///< Thickness of C-cups (0.3)
+  double bExtentThick;           ///< Thickness of C-cups (0.4)
+  double bCupHeight;           ///< Height of C-cups (1.8)
+  double bTopExtent;           ///< Length of top step (4.2)
+  double bBaseExtent;          ///< Length of top step (2.1)
   
   std::string mirrorMat;             ///< XStal material
   std::string waterMat;              ///< Plate material
+  std::string supportMat;            ///< Plate (support) material
   std::string pipeMat;               ///< Base material
-  std::string outerMat;               ///< Base material
+  std::string outerMat;              ///< Base material
   std::string voidMat;               ///< Void material
 
   
   void makeCrystal(FuncDataBase&,const std::string&,
 		   const double,const double) const;
+  void makeSupport(FuncDataBase&,const std::string&) const;
+  void makeBackPlate(FuncDataBase&,const std::string&) const;
+
 
  public:
 
@@ -74,6 +92,7 @@ class M1DetailGenerator
   M1DetailGenerator& operator=(const M1DetailGenerator&);
   virtual ~M1DetailGenerator();
 
+  void generateSupport(FuncDataBase&,const std::string&) const;
   void generateMirror(FuncDataBase&,const std::string&,
 		      const double,const double) const;
 

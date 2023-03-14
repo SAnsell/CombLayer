@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   softimaxInc/M1Detail.h
+ * File:   softimaxInc/M1BackPlate.h
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
  *
@@ -19,36 +19,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_M1Detail_h
-#define xraySystem_M1Detail_h
+#ifndef xraySystem_M1BackPlate_h
+#define xraySystem_M1BackPlate_h
 
 class Simulation;
 
 namespace xraySystem
 {
 
-  class M1Mirror;
-  class M1BackPlate;
-  
 /*!
-  \class M1Detail
+  \class M1BackPlate
   \author S. Ansell
   \version 1.0
-  \date October 2019
-  \brief Double Mirror Mono arrangement
+  \date January 2018
+  \brief Focusable mirror in mount
 */
 
-class M1Detail :
+class M1BackPlate :
   public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
+  public attachSystem::ExternalCut,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {
  private:
 
-  std::shared_ptr<M1Mirror> mirror;
-  std::shared_ptr<M1BackPlate> cClamp;
-  
+  double length;              ///< Length of support 
+  double clearGap;            ///< Clearance gap to crystal
+  double backThick;           ///< Thickness of back 
+  double mainThick;           ///< Thickness of C-cups
+  double extentThick;         ///< Thickness of extras
+  double cupHeight;           ///< Height of C-cups 
+  double topExtent;           ///< Length of top step
+  double baseExtent;          ///< Length of top step
+
+  int baseMat;                ///< Base material
+  int voidMat;                ///< void material
+
   // Functions:
 
   void populate(const FuncDataBase&);
@@ -58,11 +65,12 @@ class M1Detail :
 
  public:
 
-  M1Detail(const std::string&);
-  M1Detail(const M1Detail&);
-  M1Detail& operator=(const M1Detail&);
-  virtual ~M1Detail();
+  M1BackPlate(const std::string&);
+  M1BackPlate(const M1BackPlate&);
+  M1BackPlate& operator=(const M1BackPlate&);
+  virtual ~M1BackPlate();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);
