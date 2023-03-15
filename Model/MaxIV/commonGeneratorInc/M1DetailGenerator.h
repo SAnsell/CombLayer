@@ -56,8 +56,9 @@ class M1DetailGenerator
   double mPipeOuterLen;       ///< Length of outer pipe vertical
   double mPipeOuterRadius;     ///< radius of outer pipe vertical
 
+  double sVOffset;             ///< Vertical ofset (6.5)
   double sLength;              ///< Length of support (26.5)
-  double sWidth;               ///< Length of support (5.3)
+  double sXOut;                ///< Support +ve x value (from back plane)
   double sThick;               ///< Length of support (0.1)
   double sEdge;                ///< drop  of support (1.1)
   double sRadius;              ///< radius of mid-hole  ()

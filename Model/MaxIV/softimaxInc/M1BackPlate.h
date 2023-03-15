@@ -53,7 +53,16 @@ class M1BackPlate :
   double topExtent;           ///< Length of top step
   double baseExtent;          ///< Length of top step
 
+  // spring supports 
+  double supVOffset;           ///< offset from Crystal surface 
+  double supLength;            ///< length
+  double supXOut;              ///< xout step distance
+  double supThick;             ///< thickness
+  double supEdge;              ///< edge thickness
+  double supHoleRadius;        ///< central hole radius
+
   int baseMat;                ///< Base material
+  int supportMat;                ///< Base material
   int voidMat;                ///< void material
 
   // Functions:

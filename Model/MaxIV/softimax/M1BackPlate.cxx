@@ -104,7 +104,15 @@ M1BackPlate::populate(const FuncDataBase& Control)
   extentThick=Control.EvalVar<double>(keyName+"ExtentThick");
   baseExtent=Control.EvalVar<double>(keyName+"BaseExtent");
 
+  supVOffset=Control.EvalVar<double>(keyName+"SupVOffset");
+  supLength=Control.EvalVar<double>(keyName+"SupLength");
+  supXOut=Control.EvalVar<double>(keyName+"SupXOut");
+  supThick=Control.EvalVar<double>(keyName+"SupThick");
+  supEdge=Control.EvalVar<double>(keyName+"SupEdge");
+  supHoleRadius=Control.EvalVar<double>(keyName+"SupHoleRadius");
+
   baseMat=ModelSupport::EvalMat<int>(Control,keyName+"BaseMat");
+  supportMat=ModelSupport::EvalMat<int>(Control,keyName+"SupportMat");
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
 
   return;
@@ -151,7 +159,18 @@ M1BackPlate::createSurfaces()
     (SMap,buildIndex+224,Origin+X*(baseExtent-clearGap-extentThick),X);
 
 
-  
+  // STOP SURFACE:
+  // top
+  ModelSupport::buildPlane(SMap,buildIndex+501,Origin+Y*(supLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+502,Origin+Y*(supLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+504,Origin+X*supXOut,X);
+  makeShiftedSurf(SMap,"Top",buildIndex+505,Z,supVOffset);
+  makeShiftedSurf(SMap,"Top",buildIndex+506,Z,supVOffset+supEdge);
+
+  ModelSupport::buildPlane
+    (SMap,buildIndex+513,Origin+X*(supThick+topExtent-clearGap),X);
+  ModelSupport::buildPlane(SMap,buildIndex+514,Origin+X*(supXOut-supThick),X);
+  makeShiftedSurf(SMap,"Top",buildIndex+515,Z,supVOffset+supThick);
   
   return;
 }
@@ -194,10 +213,13 @@ M1BackPlate::createObjects(Simulation& System)
   makeCell("Plate",System,cellIndex++,baseMat,0.0,HR);
   
 
-
+  // support:
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"501 -502 104 -504 505 -506");
+  makeCell("TopSupport",System,cellIndex++,supportMat,0.0,HR);
+  addOuterUnionSurf(HR);
   
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 1 -2 13 -104 -16");
-  addOuterSurf(HR);
+  addOuterUnionSurf(HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 16 -26 124 -104");
   addOuterUnionSurf(HR);
