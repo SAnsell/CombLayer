@@ -67,14 +67,22 @@ class M1DetailGenerator
   double bClearGap;            ///< Clear Gap (0.2)
   double bBackThick;           ///< Thickness of back (0.5)
   double bMainThick;           ///< Thickness of C-cups (0.3)
-  double bExtentThick;           ///< Thickness of C-cups (0.4)
+  double bExtentThick;         ///< Thickness of C-cups (0.4)
   double bCupHeight;           ///< Height of C-cups (1.8)
   double bTopExtent;           ///< Length of top step (4.2)
   double bBaseExtent;          ///< Length of top step (2.1)
+
+  double eXOut;                 ///< Step from the back plane (79.8)
+  double eLength;               ///< Length of electorn shield (38.0)
+  double eThick;                ///< Length of electorn shield (0.1)
+  double eHeight;               ///< Height (internal) of electorn shield (6.8)
+  double eEdge;                 ///< Internal step (10.3)
+  double eHoleRadius;           ///< Hole in centre (2.36/2)
   
   std::string mirrorMat;             ///< XStal material
   std::string waterMat;              ///< Plate material
   std::string supportMat;            ///< Plate (support) material
+  std::string electronMat;           ///< Electron shield material
   std::string pipeMat;               ///< Base material
   std::string outerMat;              ///< Base material
   std::string voidMat;               ///< Void material

@@ -111,10 +111,18 @@ M1BackPlate::populate(const FuncDataBase& Control)
   supEdge=Control.EvalVar<double>(keyName+"SupEdge");
   supHoleRadius=Control.EvalVar<double>(keyName+"SupHoleRadius");
 
+  elecXOut=Control.EvalVar<double>(keyName+"ElecXOut");
+  elecLength=Control.EvalVar<double>(keyName+"ElecLength");
+  elecHeight=Control.EvalVar<double>(keyName+"ElecHeight");
+  elecThick=Control.EvalVar<double>(keyName+"ElecThick");
+  elecEdge=Control.EvalVar<double>(keyName+"ElecEdge");
+  elecHoleRadius=Control.EvalVar<double>(keyName+"ElecHoleRadius");
+
   baseMat=ModelSupport::EvalMat<int>(Control,keyName+"BaseMat");
   supportMat=ModelSupport::EvalMat<int>(Control,keyName+"SupportMat");
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
 
+  electronMat=ModelSupport::EvalMat<int>(Control,keyName+"ElectronMat");
   return;
 }
 
@@ -160,18 +168,48 @@ M1BackPlate::createSurfaces()
 
 
   // STOP SURFACE:
-  // top
-  ModelSupport::buildPlane(SMap,buildIndex+501,Origin+Y*(supLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+501,Origin-Y*(supLength/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+502,Origin+Y*(supLength/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+504,Origin+X*supXOut,X);
+  ModelSupport::buildPlane(SMap,buildIndex+514,Origin+X*(supXOut-supThick),X);
+  // top
+  ModelSupport::buildPlane
+    (SMap,buildIndex+511,Origin-Y*(supLength/2.0-supThick),Y);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+512,Origin+Y*(supLength/2.0-supThick),Y);
   makeShiftedSurf(SMap,"Top",buildIndex+505,Z,supVOffset);
   makeShiftedSurf(SMap,"Top",buildIndex+506,Z,supVOffset+supEdge);
-
   ModelSupport::buildPlane
     (SMap,buildIndex+513,Origin+X*(supThick+topExtent-clearGap),X);
-  ModelSupport::buildPlane(SMap,buildIndex+514,Origin+X*(supXOut-supThick),X);
   makeShiftedSurf(SMap,"Top",buildIndex+515,Z,supVOffset+supThick);
+
+  // base
+  makeShiftedSurf(SMap,"Base",buildIndex+606,Z,-supVOffset);
+  makeShiftedSurf(SMap,"Base",buildIndex+605,Z,-(supVOffset+supEdge));
+  ModelSupport::buildPlane
+    (SMap,buildIndex+613,Origin+X*(supThick+baseExtent-clearGap),X);
+  makeShiftedSurf(SMap,"Base",buildIndex+616,Z,-(supVOffset+supThick));
+
   
+
+  // ELECTRON shield
+  ModelSupport::buildPlane(SMap,buildIndex+1001,Origin-Y*(elecLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1002,Origin+Y*(elecLength/2.0),Y);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+1003,Origin+X*(elecXOut-elecThick),X);
+  ModelSupport::buildPlane(SMap,buildIndex+1004,Origin+X*elecXOut,X);
+
+  ModelSupport::buildPlane(SMap,buildIndex+1005,Origin-Z*(elecHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1006,Origin+Z*(elecHeight/2.0),Z);
+
+
+  ModelSupport::buildPlane
+    (SMap,buildIndex+1013,Origin+X*(elecXOut-elecEdge),X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+1015,Origin-Z*(elecHeight/2.0-elecThick),Z);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+1016,Origin+Z*(elecHeight/2.0-elecThick),Z);
+
   return;
 }
 
@@ -201,7 +239,6 @@ M1BackPlate::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 16 -26 124 -104");
   makeCell("Plate",System,cellIndex++,baseMat,0.0,HR);
   
-
   // lower section:
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 1 -2 3 -204 5");
   makeCell("Plate",System,cellIndex++,voidMat,0.0,HR*bbUnionHR);
@@ -212,10 +249,34 @@ M1BackPlate::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -15 25 224 -204");
   makeCell("Plate",System,cellIndex++,baseMat,0.0,HR);
   
-
-  // support:
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"501 -502 104 -504 505 -506");
+  // support (Top):
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"501 -502 104 -504 505 -506 (-511:512:-513:514:-515)");
   makeCell("TopSupport",System,cellIndex++,supportMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"511 -512 513 -514 515 -506");
+  makeCell("TSupportVoid",System,cellIndex++,voidMat,0.0,HR);
+
+  // support (Base):
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"501 -502 204 -504 605 -606 (-613:514:616)");
+  makeCell("BaseSupport",System,cellIndex++,supportMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"501 -502 613 -514 -616 605");
+  makeCell("BSupportVoid",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1001 -1002 1013 -1004 1005 -1006 (-1015:1016:1003)");
+    makeCell("EPlate",System,cellIndex++,electronMat,0.0,HR);  
+  
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1001 -1002 1013 -1004 1005 -1006");
+  addOuterUnionSurf(HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"501 -502 204 -504 605 -606");
+  addOuterUnionSurf(HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"501 -502 104 -504 505 -506");
   addOuterUnionSurf(HR);
   
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 1 -2 13 -104 -16");

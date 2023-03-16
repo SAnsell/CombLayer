@@ -60,9 +60,18 @@ class M1BackPlate :
   double supThick;             ///< thickness
   double supEdge;              ///< edge thickness
   double supHoleRadius;        ///< central hole radius
+  
+  // electron shield
+  double elecXOut;            ///< xout step distance
+  double elecLength;          ///< length
+  double elecThick;           ///< thickness
+  double elecHeight;          ///< height
+  double elecEdge;            ///< edge thickness
+  double elecHoleRadius;      ///< central hole radius
 
   int baseMat;                ///< Base material
-  int supportMat;                ///< Base material
+  int supportMat;             ///< Base material
+  int electronMat;            ///< Electron shield material
   int voidMat;                ///< void material
 
   // Functions:

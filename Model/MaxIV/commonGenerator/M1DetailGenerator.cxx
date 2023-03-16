@@ -56,17 +56,21 @@ M1DetailGenerator::M1DetailGenerator() :
   mPipeBaseLen(2.1),mPipeBaseRadius(0.25),
   mPipeOuterLen(1.5),mPipeOuterRadius(0.30),
 
+  sVOffset(0.8),sLength(26.5),sXOut(7.5),
+  sThick(0.1),sEdge(1.1),sRadius(1.0),
+
   bLength(38.9),bClearGap(0.2),
   bBackThick(0.5),bMainThick(0.3),
   bExtentThick(0.4),
   bCupHeight(1.8),bTopExtent(4.2),
   bBaseExtent(2.1),
-  
-  sLength(26.5),sXOut(7.5),sThick(0.1),
-  sEdge(1.1),sRadius(1.0),
+
+  eXOut(7.98),eLength(38.0),eThick(0.1),eHeight(6.8),
+  eEdge(1.03),eHoleRadius(1.18),
   
   mirrorMat("Silicon300K"),waterMat("H2O"),
-  supportMat("Copper"),pipeMat("Stainless304"),
+  supportMat("Copper"),electronMat("Gold"),
+  pipeMat("Stainless304"),
   outerMat("Copper"),voidMat("Void")
   /*!
     Constructor and defaults
@@ -90,6 +94,7 @@ M1DetailGenerator::makeSupport(FuncDataBase& Control,
   ELog::RegMethod RegA("M1DetailGenerator","makeSupport");
 
 
+  Control.addVariable(keyName+"SupVOffset",sVOffset);
   Control.addVariable(keyName+"SupLength",sLength);
   Control.addVariable(keyName+"SupXOut",sXOut);
   Control.addVariable(keyName+"SupThick",sThick);
@@ -98,6 +103,15 @@ M1DetailGenerator::makeSupport(FuncDataBase& Control,
   Control.addVariable(keyName+"SupHoleRadius",sRadius);
   
   Control.addVariable(keyName+"SupportMat",supportMat);
+
+  Control.addVariable(keyName+"ElecXOut",eXOut);
+  Control.addVariable(keyName+"ElecLength",eLength);
+  Control.addVariable(keyName+"ElecHeight",eHeight);
+  Control.addVariable(keyName+"ElecEdge",eEdge);
+  Control.addVariable(keyName+"ElecHoleRadius",eHoleRadius);
+  Control.addVariable(keyName+"ElecThick",eThick);
+
+  Control.addVariable(keyName+"ElectronMat",electronMat);
 
   return;
 }
