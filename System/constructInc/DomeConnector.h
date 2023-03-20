@@ -47,7 +47,7 @@ class DomeConnector :
   double curveRadius;           ///< inner Radius of dome (extent)
   double innerRadius;           ///< inner Radius of straight section
   double curveStep;             ///< Step from flat start plane
-  double joinStep;              ///< length of join
+  double joinStep;              ///< length of join dome-flat plane dist
   double flatLen;               ///< direct length
 
   double plateThick;            ///< Thickness of plate
