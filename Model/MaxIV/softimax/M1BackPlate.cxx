@@ -134,7 +134,8 @@ M1BackPlate::createSurfaces()
 {
   ELog::RegMethod RegA("M1BackPlate","createSurfaces");
 
-  if (!isActive("Top") || !isActive("Base") || !isActive("Back"))
+  if (!isActive("Top") || !isActive("Base") ||
+      !isActive("Back") || !isActive("Mirror"))
     throw ColErr::InContainerError<std::string>
       ("Top/Base/Back","Surface not defined");
 
@@ -225,6 +226,15 @@ M1BackPlate::createObjects(Simulation& System)
   const HeadRule topHR=getRule("Top");
   const HeadRule baseHR=getRule("Base");
   const HeadRule backHR=getRule("Back");
+  const HeadRule mirrorHR=getRule("Mirror");
+  const HeadRule nearHR=getRule("NearEnd");
+  const HeadRule farHR=getRule("FarEnd");
+
+  const HeadRule topCompHR=topHR.complement();
+  const HeadRule baseCompHR=baseHR.complement();
+  const HeadRule backCompHR=backHR.complement();
+  const HeadRule mirrorCompHR=mirrorHR.complement();
+  
   const HeadRule tbUnionHR=topHR+backHR;
   const HeadRule bbUnionHR=baseHR+backHR;
   
@@ -267,29 +277,77 @@ M1BackPlate::createObjects(Simulation& System)
 
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"1001 -1002 1013 -1004 1005 -1006 (-1015:1016:1003)");
-    makeCell("EPlate",System,cellIndex++,electronMat,0.0,HR);  
-  
+  makeCell("EPlate",System,cellIndex++,electronMat,0.0,HR);  
+    
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"1001 -1002 1013 -1004 1005 -1006");
-  addOuterUnionSurf(HR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"501 -502 204 -504 605 -606");
-  addOuterUnionSurf(HR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"501 -502 104 -504 505 -506");
-  addOuterUnionSurf(HR);
+    (SMap,buildIndex,"1001 -1002 1013 -1003 1015 -1016");
+  makeCell("EPlate",System,cellIndex++,voidMat,0.0,HR);  
   
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 1 -2 13 -104 -16");
-  addOuterUnionSurf(HR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 16 -26 124 -104");
-  addOuterUnionSurf(HR);
+  // OUTER VOIDS:
+  // main c voids
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -224 25 -15");
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
   
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 1 -2 13 -204 15");
-  addOuterUnionSurf(HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -124 16 -26");
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
+  //  addOuterUnionSurf(HR);
+  // spring voids
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 104 -1004 506 -26");
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 204 -1004 25 -605");
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -15 25 224 -204");
-  addOuterUnionSurf(HR);
+  // top void
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 504 -1004 605 -1005");
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 504 -1004 1006 -506");
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
+
+  // void at electron plate
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -1001 1013 -1004 1005 -1006");
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1002 -2 1013 -1004 1005 -1006");
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -501 104 -504 505 -506");
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"502 -2 104 -504 505 -506");
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
+
+  
+  // crystal ends
+  HR=HeadRule(SMap,buildIndex,-2);
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,
+	   HR*backCompHR*mirrorCompHR*farHR*topCompHR*baseCompHR);  
+
+  HR=HeadRule(SMap,buildIndex,1);
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,
+	   HR*backCompHR*mirrorCompHR*nearHR*topCompHR*baseCompHR);  
+
+  // INNER VOIDS:
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 606 -505 -1013");
+  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,HR*mirrorHR);  
+
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -505 104");
+  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,HR*mirrorCompHR*topHR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 606 204");
+  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,HR*mirrorCompHR*baseHR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -1004 25 -26");
+  addOuterSurf(HR);
+
+  // small gaps between spring centres and electron plate:
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 1006 -505 1013 -504");
+  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,HR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 606 -1005 1013 -504");
+  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,HR);  
 
   return;
 }

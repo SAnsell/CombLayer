@@ -134,7 +134,10 @@ M1Detail::createObjects(Simulation& System)
   mirror->createAll(System,*this,0);
 
   cClamp->addInsertCell(getInsertCells());
+  cClamp->setCutSurf("FarEnd",*mirror,"back");
+  cClamp->setCutSurf("NearEnd",*mirror,"front");
   cClamp->setCutSurf("Back",*mirror,"outSide");
+  cClamp->setCutSurf("Mirror",*mirror,"mirrorSide");
   cClamp->setCutSurf("Top",*mirror,"top");
   cClamp->setCutSurf("Base",*mirror,"base");
   cClamp->createAll(System,*mirror,"backPlateOrg");

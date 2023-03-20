@@ -293,6 +293,7 @@ M1Mirror::createLinks()
 
   nameSideIndex(2,"outSide");
   nameSideIndex(3,"beamSide");
+  nameSideIndex(3,"mirrorSide");
   nameSideIndex(4,"base");
   nameSideIndex(5,"top");
   nameSideIndex(6,"backPlateOrg");
