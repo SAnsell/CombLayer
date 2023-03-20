@@ -8,6 +8,8 @@ nValid=1000
 # exit
 #segments=$(for i in {40..49}; do echo -n "Segment$i "; done)
 segments=All
+./singleItem --singleItem M1detail --validAll --validCheck ${nValid} AA 
+exit
 
 
 parallel --halt now,fail=1 "./maxiv --defaultConfig Single {} --validAll --validCheck $nValid AA" ::: \
@@ -38,8 +40,9 @@ parallel --halt now,fail=1 "./singleItem --singleItem {} --validAll --validCheck
  DipoleSndBend EArrivalMon EBeamStop EPSeparator ExperimentalHutch         \
  FMask FlangeDome FlatPipe FourPort GateValveCube GateValveCylinder GaugeTube \
  HPCombine HPJaws HalfElectronPipe IonGauge IonPTube Jaws LQuadF LQuadH   \
- LSexupole LocalShield MagTube MagnetBlock MagnetM1 MagnetU1 MonoShutter  \
- MultiPipe NBeamStop Octupole PipeTube PortTube PrismaChamber Quadrupole  \
+ LSexupole LocalShield M1detail MagTube MagnetBlock MagnetM1 \
+ MagnetU1 MonoShutter MultiPipe NBeamStop Octupole PipeTube \
+ PortTube PrismaChamber Quadrupole  \
  R3ChokeChamber RoundMonoShutter Scrapper Sexupole SixPort StriplineBPM \
  TWCavity TargetShield TriGroup TriPipe TriggerTube UndVac UndulatorVacuum \
  VacuumPipe ViewTube YAG YagScreen YagUnit default uVac 

@@ -3,7 +3,7 @@
 
  * File:   softimaxInc/softimaxOpticsLine.h
  *
- * Copyright (c) 2004-2021 by Konstantin Batkov
+ * Copyright (c) 2004-2023 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,17 +29,20 @@ namespace constructSystem
 
 namespace xraySystem
 {
+  class BeamPair;
   class BiPortTube;
   class BlockStand;
-  class Mirror;
-  class BeamPair;
-  class TankMonoVessel;
-  class GratingUnit;
-  class FlangeMount;
-  class TwinPipe;
   class BremOpticsColl;
+  class FlangeMount;
+  class GratingUnit;
+  class Mirror;
+  class M1Detail;
+  class M1Mirror;
+  class M1BackPlate;
   class PipeShield;
-  class TriggerTube;
+  class TankMonoVessel;
+  class TriggerTube;  
+  class TwinPipe;
 
   /*!
     \class softimaxOpticsLine
@@ -90,7 +93,8 @@ class softimaxOpticsLine :
   std::shared_ptr<constructSystem::PipeTube> M1Tube;
   std::shared_ptr<constructSystem::OffsetFlangePipe> M1TubeBack;
   /// M1 - Mirror
-  std::shared_ptr<xraySystem::Mirror> M1Mirror;
+  std::shared_ptr<xraySystem::M1Detail> M1Detail;
+  
   std::shared_ptr<xraySystem::BlockStand> M1Stand;
   std::shared_ptr<constructSystem::Bellows> bellowC;
   // Pumping tube for the ion pump

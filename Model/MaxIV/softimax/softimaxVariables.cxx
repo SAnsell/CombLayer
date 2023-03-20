@@ -3,7 +3,7 @@
 
  * File:   softimax/softimaxVariables.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2023 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,6 +67,7 @@
 #include "FlangeMountGenerator.h"
 #include "BeamPairGenerator.h"
 #include "MirrorGenerator.h"
+#include "M1DetailGenerator.h"
 #include "CollGenerator.h"
 #include "SqrFMaskGenerator.h"
 #include "PortChicaneGenerator.h"
@@ -286,14 +287,79 @@ opticsHutVariables(FuncDataBase& Control,
   return;
 }
 
+  
+void
+m1DetailVariables(FuncDataBase& Control,
+		  const std::string& mirrorKey)
+  /*!
+    Builds the variables for the M1 Mirror
+    \param Control :: Database
+    \param mirrorKey :: prename
+  */
+{
+  ELog::RegMethod RegA("softimaxVariables[F]","m1DetailVariables");
+
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::M1DetailGenerator M1DGen;
+  setVariable::PipeGenerator PipeGen;
+
+  const std::string frontName=mirrorKey+"M1TubeFront";
+  PipeGen.setMat("Stainless304");
+  PipeGen.setCF<CF63>();
+  PipeGen.setBFlange(8.05,0.3);
+  PipeGen.generatePipe(Control,frontName,7.6);
+  Control.addVariable(frontName+"WindowActive",0);
+  constexpr double xstep(2.2);
+  Control.addVariable(frontName+"FlangeBackXStep",-xstep);
+
+  ////////////////////////
+  constexpr double theta = -1.0; // incident beam angle
+  constexpr double phi = 0.0;   // rotation angle
+  //  const double normialAngle=0.2;
+  constexpr double vAngle=180.0;
+  constexpr double centreDist(0.0); // along the beam line
+  constexpr double tubeLength=50.0;
+  ////////////////////////
+
+  const std::string mName=mirrorKey+"M1Tube";
+  SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.generateTube(Control,mName,tubeLength);
+  Control.addVariable(mName+"WallMat","Titanium");
+  Control.addVariable(mName+"XStep",-xstep);
+  Control.addVariable(mName+"NPorts",0);   // beam ports
+
+  
+  M1DGen.generateMirror(Control,mirrorKey+"M1",2.0,0.0);
+
+  Control.addVariable(mirrorKey+"M1StandHeight",110.0);
+  Control.addVariable(mirrorKey+"M1StandWidth",30.0);
+  Control.addVariable(mirrorKey+"M1StandLength",30.0);
+  Control.addVariable(mirrorKey+"M1StandMat","SiO2");
+
+  const std::string backName=mirrorKey+"M1TubeBack";
+  PipeGen.setMat("Stainless304");
+  PipeGen.setCF<CF63>();
+  PipeGen.setAFlange(8.05,0.3);
+  PipeGen.generatePipe(Control,backName,4.5); // yStep, length
+  Control.addVariable(backName+"WindowActive",0);
+  Control.addVariable(backName+"XYAngle",2*theta);
+
+  const double TL=0.5*(tubeLength)*sin(2.0*theta*M_PI/180.0);
+  Control.addVariable(backName+"XStep",xstep-TL);
+  Control.addVariable(backName+"FlangeFrontXStep",TL-xstep);
+
+  return;
+}
+
+  
 void
 m1MirrorVariables(FuncDataBase& Control,
 		  const std::string& mirrorKey)
-/*!
-  Builds the variables for the M1 Mirror
-  \param Control :: Database
-  \param mirrorKey :: prename
-*/
+  /*!
+    Builds the variables for the M1 Mirror
+    \param Control :: Database
+    \param mirrorKey :: prename
+  */
 {
   ELog::RegMethod RegA("softimaxVariables[F]","m1MirrorVariables");
 
@@ -716,7 +782,7 @@ opticsVariables(FuncDataBase& Control,
   //  BellowGen.setBFlangeCF<setVariable::CF150>();
   BellowGen.generateBellow(Control,preName+"BellowB",17.6);
 
-  m1MirrorVariables(Control,preName);
+  m1DetailVariables(Control,preName);
 
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowC",19.7);

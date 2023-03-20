@@ -454,19 +454,19 @@ makeSingleItem::build(Simulation& System,
   if (item == "FlangeDome")
     {
       std::shared_ptr<constructSystem::PipeTube>
-	ft(new constructSystem::PipeTube("FlangeTube"));
+	fTube(new constructSystem::PipeTube("FlangeTube"));
       std::shared_ptr<constructSystem::FlangeDome>
-	fd(new constructSystem::FlangeDome("FlangeDome"));
-      OR.addObject(ft);
-      OR.addObject(fd);
+	fDome(new constructSystem::FlangeDome("FlangeDome"));
+      OR.addObject(fTube);
+      OR.addObject(fDome);
 
-      ft->addAllInsertCell(voidCell);
-      ft->setOuterVoid();
-      ft->createAll(System,World::masterOrigin(),0);
+      fTube->addAllInsertCell(voidCell);
+      fTube->setOuterVoid();
+      fTube->createAll(System,World::masterOrigin(),0);
 
-      fd->addInsertCell(voidCell);
-      fd->setCutSurf("plate",*ft,"front");
-      fd->createAll(System,*ft,1);
+      fDome->addInsertCell(voidCell);
+      fDome->setCutSurf("plate",*fTube,"front");
+      fDome->createAll(System,*fTube,1);
 
       return;
     }

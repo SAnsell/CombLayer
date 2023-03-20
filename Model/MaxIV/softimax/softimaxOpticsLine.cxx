@@ -3,7 +3,7 @@
 
  * File: softimax/softimaxOpticsLine.cxx
  *
- * Copyright (c) 2004-2022 by Konstantin Batkov
+ * Copyright (c) 2004-2023 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,6 +92,9 @@
 #include "TankMonoVessel.h"
 #include "GratingUnit.h"
 #include "Mirror.h"
+#include "M1Mirror.h"
+#include "M1BackPlate.h"
+#include "M1Detail.h"
 #include "BeamPair.h"
 #include "TwinPipe.h"
 #include "BiPortTube.h"
@@ -130,7 +133,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   M1TubeFront(new constructSystem::OffsetFlangePipe(newName+"M1TubeFront")),
   M1Tube(new constructSystem::PipeTube(newName+"M1Tube")),
   M1TubeBack(new constructSystem::OffsetFlangePipe(newName+"M1TubeBack")),
-  M1Mirror(new xraySystem::Mirror(newName+"M1Mirror")),
+  M1Detail(new xraySystem::M1Detail(newName+"M1")),
   M1Stand(new xraySystem::BlockStand(newName+"M1Stand")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
   pumpTubeA(new constructSystem::PipeTube(newName+"PumpTubeA")),
@@ -205,7 +208,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(M1TubeFront);
   OR.addObject(M1Tube);
   OR.addObject(M1TubeBack);
-  OR.addObject(M1Mirror);
+  OR.addObject(M1Detail);
   OR.addObject(M1Stand);
   OR.addObject(bellowC);
   OR.addObject(pumpTubeA);
@@ -337,8 +340,8 @@ softimaxOpticsLine::buildM1Mirror(Simulation& System,
   outerCell=buildZone.createUnit(System,*M1Tube,2);
   M1Tube->insertAllInCell(System,outerCell);
 
-  M1Mirror->addInsertCell(M1Tube->getCell("Void"));
-  M1Mirror->createAll(System,*M1Tube,0);
+  M1Detail->addInsertCell(M1Tube->getCell("Void"));
+  M1Detail->createAll(System,*M1Tube,0);
 
   M1Stand->setCutSurf("floor",this->getRule("floor"));
   M1Stand->setCutSurf("front",*M1Tube,-1);

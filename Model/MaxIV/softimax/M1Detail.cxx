@@ -129,7 +129,6 @@ M1Detail::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("M1Detail","createObjects");
 
-  ELog::EM<<"ERE "<<ELog::endDiag;
   mirror->addInsertCell(getInsertCells());
   mirror->createAll(System,*this,0);
 
@@ -153,6 +152,7 @@ M1Detail::createLinks()
 {
   ELog::RegMethod RegA("M1Detail","createLinks");
 
+  
   return;
 }
 

@@ -162,6 +162,7 @@ M1DetailGenerator::makeCrystal(FuncDataBase& Control,
 
   Control.addVariable(cryName+"ZStep",zStep);
 
+  Control.addVariable(cryName+"ZAngle",theta);
   Control.addVariable(cryName+"Theta",theta);
   Control.addVariable(cryName+"Phi",0.0);
   
@@ -210,6 +211,7 @@ M1DetailGenerator::generateMirror(FuncDataBase& Control,
   ELog::RegMethod RegA("M1DetailGenerator","generateMirror");
 
   // guess of separation
+  ELog::EM<<"M1 == "<<keyName<<ELog::endDiag;
   makeCrystal(Control,keyName+"Mirror",theta,zStep);
   makeBackPlate(Control,keyName+"CClamp");
   makeSupport(Control,keyName+"CClamp");

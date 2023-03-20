@@ -267,6 +267,7 @@ M1BackPlate::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"511 -512 513 -514 515 -506");
   makeCell("TSupportVoid",System,cellIndex++,voidMat,0.0,HR);
 
+
   // support (Base):
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"501 -502 204 -504 605 -606 (-613:514:616)");
@@ -329,6 +330,13 @@ M1BackPlate::createObjects(Simulation& System)
 	   HR*backCompHR*mirrorCompHR*nearHR*topCompHR*baseCompHR);  
 
   // INNER VOIDS:
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -501 605 -606 204 -504");
+  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,HR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"502 -2 605 -606 204 -504");
+  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,HR);  
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 606 -505 -1013");
   makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,HR*mirrorHR);  
 
@@ -360,6 +368,22 @@ M1BackPlate::createLinks()
 {
   ELog::RegMethod RegA("M1BackPlate","createLinks");
 
+  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+
+  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+
+  FixedComp::setConnect(2,Origin+X*(elecXOut-elecThick),X);
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+1003));
+  nameSideIndex(2,"elecShieldIn");
+
+  FixedComp::setConnect(3,Origin+X*elecXOut,X);
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+1004));
+  nameSideIndex(3,"elecShieldOut");
+
+
+  
   // link points are defined in the end of createSurfaces
 
   return;
