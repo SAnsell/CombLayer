@@ -46,7 +46,7 @@ class DomeConnectorGenerator
   double flatLen;               ///< length of flat extent
   double plateThick;            ///< Thickness of plate
   double flangeRadius;          ///< Flange radius
-  double flangeLen;             ///< Flange length
+  double flangeLength;             ///< Flange length
 
   std::string voidMat;         ///< inner (Void) material
   std::string mainMat;        ///< Main material

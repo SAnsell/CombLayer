@@ -123,23 +123,32 @@ DomeConnector::createSurfaces()
 {
   ELog::RegMethod RegA("DomeConnector","createSurfaces");
 
-  if (!isActive("flat"))
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
-      ExternalCut::setCutSurf("plate",SMap.realSurf(buildIndex+1));
-    }
-
-  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*plateThick,Y);
-  const double& y=curveStep;
+  /*
+    Create a sphere with radius R and cord at c(curveRadius) from the
+    top and x from the centre so R=c+x, let L be the horrizontal distance
+   */
+  const double& c=curveStep;
   const double& L=curveRadius;
-  const double Radius= (L*L+y*y)/(2.0*y);
+  const double radius= (L*L-c*c)/(2.0*c);
+  const double x=Radius-c;
+  const Geometry::Vec3D rCentre=Origin+Y*x; 
   
-  const Geometry::Vec3D rCentre=Origin-Y*(Radius-y); 
-  
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
   ModelSupport::buildSphere(SMap,buildIndex+8,rCentre,Radius);
   ModelSupport::buildSphere(SMap,buildIndex+18,rCentre+Y*plateThick,Radius);
-  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,curveRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,flangeRadius);
+
+
+  // length of short cone (curveRadius at origin)
+  const double sConeLen=(L*joinLen)/(innerRadius-joinLen);
+  const double tTheta=atan(L/sConeLen)*180/M_PI;
+  const Geometry::Vec3D coneCentre=Origin-Y*sConeLen;
+  ModelSupport::buildCone(SMap,buildIndex+28,coneCentre,Y,tTheta);
+  /*
+    Create a Cone with radius of 2*L at Origin and 2*innerRadius at
+    joinLen lower.
+   */  
+  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,innerRadius);
+
   
   return;
 }
@@ -147,7 +156,7 @@ DomeConnector::createSurfaces()
 void
 DomeConnector::createObjects(Simulation& System)
   /*!
-    Adds the vacuum box
+
     \param System :: Simulation to create objects in
    */
 {

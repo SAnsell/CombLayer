@@ -51,9 +51,11 @@ namespace setVariable
 
 DomeConnectorGenerator::DomeConnectorGenerator() :
   curveRadius(CF350::innerRadius),
-  curveStep(3.0),
-  plateThick(CF350::flangeLength),
+  innerRadius(CF350::innerRadius*1.2),
+  curveStep(3.0),joinStep(4.0),flatLen(5.0),
+  plateThick(CF350::wallThick),
   flangeRadius(CF350::flangeRadius),
+  flangeLength(CF350::flangeLength),
   voidMat("Void"),mainMat("Stainless304L")
   /*!
     Constructor and defaults
@@ -74,6 +76,8 @@ DomeConnectorGenerator::setFlangeCF()
   */
 {
   flangeRadius=CF::flangeRadius;
+  flangeLength=CF::flangeLength;
+  plateThick=CF::wallThick;
   return;
 }
 
@@ -89,9 +93,13 @@ DomeConnectorGenerator::generateDome
   ELog::RegMethod RegA("DomeConnectorGenerator","generatorDomeConnector");
 
   Control.addVariable(keyName+"CurveRadius",curveRadius);
+  Control.addVariable(keyName+"InnerRadius",innerRadius);
   Control.addVariable(keyName+"CurveStep",curveStep);
+  Control.addVariable(keyName+"JoinStep",joinStep);
+  Control.addVariable(keyName+"FlatLen",flatLen);
   Control.addVariable(keyName+"PlateThick",plateThick);
   Control.addVariable(keyName+"FlangeRadius",flangeRadius);
+  Control.addVariable(keyName+"FlangeLength",flangeLength);
 
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"Mat",mainMat);
@@ -101,7 +109,7 @@ DomeConnectorGenerator::generateDome
 
 ///\cond TEMPLATE
 
-  template void DomeConnectorGenerator::setFlangeCF<CF150>();
+template void DomeConnectorGenerator::setFlangeCF<CF150>();
 
 ///\endcond TEMPLATE
 
