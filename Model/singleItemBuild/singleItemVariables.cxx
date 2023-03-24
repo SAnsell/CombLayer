@@ -128,6 +128,7 @@
 #include "ConnectorGenerator.h"
 #include "LocalShieldingGenerator.h"
 #include "FlangeDomeGenerator.h"
+#include "DomeConnectorGenerator.h"
 #include "BeamBoxGenerator.h"
 #include "MonoShutterGenerator.h"
 #include "FocusGenerator.h"
@@ -703,6 +704,15 @@ SingleItemVariables(FuncDataBase& Control)
   PItemGen.generatePort(Control,"FlangeDomePort0",
 			Geometry::Vec3D(0.0, 0.0, 0.0),
 			Geometry::Vec3D(0,1,0));
+
+  // Flange DomeConnector  components:
+  // uses FlangeTube above--
+  DomeConnectorGenerator FDCGen;
+  FDCGen.generateDome(Control,"DomeConnector");
+  Control.addVariable("DomeConnectorNPorts",1);
+  PItemGen.generatePort(Control,"DomeConnectorPort0",
+			Geometry::Vec3D(0.0, 0.0, 0.0),
+			Geometry::Vec3D(0,-1,0));
 
 
 

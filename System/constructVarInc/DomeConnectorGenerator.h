@@ -46,10 +46,10 @@ class DomeConnectorGenerator
   double flatLen;               ///< length of flat extent
   double plateThick;            ///< Thickness of plate
   double flangeRadius;          ///< Flange radius
-  double flangeLength;             ///< Flange length
+  double flangeLen;             ///< Flange length
 
+  std::string wallMat;        ///< Wall material
   std::string voidMat;         ///< inner (Void) material
-  std::string mainMat;        ///< Main material
 
  public:
 
@@ -72,7 +72,7 @@ class DomeConnectorGenerator
 
   /// setter for material name
   void setMat(std::string M, std::string IM="Void")
-  { mainMat= std::move(M); voidMat = std::move(IM);  }
+  { wallMat= std::move(M); voidMat = std::move(IM);  }
 
   void generateDome(FuncDataBase&,const std::string&) const;
 

@@ -3,7 +3,7 @@
  
  * File:   construct/portSet.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,15 +39,9 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
-#include "Surface.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "Quadratic.h"
-#include "Line.h"
-#include "Cylinder.h"
 #include "SurInter.h"
 #include "varList.h"
 #include "Code.h"
@@ -105,9 +99,9 @@ portSet::populate(const FuncDataBase& Control)
 
   const size_t NPorts=Control.EvalVar<size_t>(keyName+"NPorts");
   const std::string portBase=keyName+"Port";
+  ELog::EM<<"Port base name "<<portBase<<ELog::endDiag;
   for(size_t i=0;i<NPorts;i++)
     {
-      
       const std::string portName=portBase+std::to_string(i);
       const Geometry::Vec3D Centre=
 	Control.EvalVar<Geometry::Vec3D>(portName+"Centre");
@@ -460,7 +454,6 @@ portSet::createPorts(Simulation& System,
   populate(System.getDataBase());
   for(size_t i=0;i<Ports.size();i++)
     {
-      
       for(const int CN : portCells)
 	Ports[i]->addOuterCell(CN);
 

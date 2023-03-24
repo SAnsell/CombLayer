@@ -107,10 +107,10 @@ DomeConnector::populate(const FuncDataBase& Control)
   flatLen=Control.EvalVar<double>(keyName+"FlatLen");
   plateThick=Control.EvalVar<double>(keyName+"PlateThick");
   flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
+  flangeLen=Control.EvalVar<double>(keyName+"FlangeLen");
 
+  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
-  mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
-
 
   return;
 }
@@ -123,40 +123,57 @@ DomeConnector::createSurfaces()
 {
   ELog::RegMethod RegA("DomeConnector","createSurfaces");
 
-  /*
-    Create a sphere with radius R and cord at c(curveRadius) from the
-    top and x from the centre so R=c+x, let L be the horrizontal distance
-   */
-  const double& c=curveStep;
-  const double& L=curveRadius;
-  const double radius= (L*L-c*c)/(2.0*c);
-  const double x=Radius-c;
+  const double surfTolStep(1e-3); // step to allow no near plane/sphere touch
+  // sphere on top
+  // x step down from cord, y step up from cord.
+  const double& y=curveStep;
+  const double L=curveRadius;
+  const double Radius= (L*L+y*y)/(2.0*y);
+  const double x= (L*L-y*y)/(2.0*y);
   const Geometry::Vec3D rCentre=Origin+Y*x; 
   
-  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
   ModelSupport::buildSphere(SMap,buildIndex+8,rCentre,Radius);
-  ModelSupport::buildSphere(SMap,buildIndex+18,rCentre+Y*plateThick,Radius);
+  ModelSupport::buildSphere(SMap,buildIndex+18,rCentre,Radius+plateThick);
 
 
-  // length of short cone (curveRadius at origin)
-  const double sConeLen=(L*joinLen)/(innerRadius-joinLen);
-  const double tTheta=atan(L/sConeLen)*180/M_PI;
-  const Geometry::Vec3D coneCentre=Origin-Y*sConeLen;
-  ModelSupport::buildCone(SMap,buildIndex+28,coneCentre,Y,tTheta);
-  /*
-    Create a Cone with radius of 2*L at Origin and 2*innerRadius at
-    joinLen lower.
-   */  
-  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,innerRadius);
+  // Cones sides
+  double zStep=(L*joinStep)/(innerRadius-L);
+  double tAlpha=L/zStep;
+  double alpha=(180.0/M_PI)*std::atan(tAlpha);
+  ModelSupport::buildCone(SMap,buildIndex+208,Origin-Y*zStep,Y,alpha);
 
+  // Top sphere extends more than plateThick
+  //  L+=plateThick;
+
+  const double rPrime=Radius+plateThick;
+  const double sphereWidth=sqrt(rPrime*rPrime-x*x);
+  zStep=(sphereWidth*joinStep)/((innerRadius+plateThick)-sphereWidth);
+  tAlpha=sphereWidth/zStep;
+  alpha=(180.0/M_PI)*std::atan(tAlpha);
+  ModelSupport::buildCone(SMap,buildIndex+218,Origin-Y*zStep,Y,alpha);
+
+  // BASE PLANES
+  // non-touching plane above top dome
+  ModelSupport::buildPlane
+    (SMap,buildIndex+1,Origin-Y*(joinStep+plateThick+surfTolStep),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+101,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+201,Origin+Y*joinStep,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(joinStep+flatLen),Y);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+301,Origin+Y*(joinStep+flatLen-flangeLen),Y);
   
+  ModelSupport::buildCylinder(SMap,buildIndex+307,Origin,Y,innerRadius);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+317,Origin,Y,innerRadius+plateThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+327,Origin,Y,flangeRadius);
+
   return;
 }
 
 void
 DomeConnector::createObjects(Simulation& System)
   /*!
-
+    Adds the vacuum box
     \param System :: Simulation to create objects in
    */
 {
@@ -164,16 +181,37 @@ DomeConnector::createObjects(Simulation& System)
 
   HeadRule HR;
 
-  const HeadRule frontHR=getRule("plate");
-  
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -8 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-8 -101");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(-18:-2) 8 -207 ");
-  makeCell("Dome",System,cellIndex++,mat,0.0,HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-18 8 -101");
+  makeCell("Dome",System,cellIndex++,wallMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(-18:-2) -207");
-  addOuterSurf(HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -201 -208");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -201 -218 208");
+  makeCell("Void",System,cellIndex++,wallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -2 -307");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
+
+  // flange
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -2 -327 317");
+  makeCell("Flange",System,cellIndex++,wallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 201 307 -317");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -301 -327 (218:201) (317:-201)");
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);
+
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -101 18 -327");
+  makeCell("TopOuterVoid",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -327");
+  addOuterSurf(HR);
 
   return;
 }
@@ -188,9 +226,10 @@ DomeConnector::createLinks()
 {
   ELog::RegMethod RegA("DomeConnector","createLinks");
 
-  ExternalCut::createLink("plate",*this,0,Origin,-Y);  //front and back
-  ExternalCut::createLink("plate",*this,1,Origin,Y);  //front and back
-
+  //  ExternalCut::createLink("plate",*this,0,Origin,-Y);  //front and back
+  //  ExternalCut::createLink("plate",*this,1,Origin,Y);  //front and back
+  FixedComp::setConnect(1,Origin-Y*(joinStep+flatLen),Y);
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
   return;
 }
 
@@ -203,20 +242,20 @@ DomeConnector::createPorts(Simulation& System)
 {
   ELog::RegMethod RegA("DomeConnector","createPorts");
 
-  const HeadRule frontHR=getRule("plate");
+  const HeadRule frontHR=HeadRule(SMap,buildIndex,-101);
   
   MonteCarlo::Object* insertObj= 
     this->getCellObject(System,"Dome");
-  const HeadRule innerHR=
-    ModelSupport::getHeadRule(SMap,buildIndex,"8")*frontHR;
-  const HeadRule outerHR=
-    ModelSupport::getHeadRule(SMap,buildIndex,"18")*frontHR;
+  const HeadRule innerHR=HeadRule(SMap,buildIndex,8)*frontHR;
+  const HeadRule outerHR=HeadRule(SMap,buildIndex,18)*frontHR;
 
-  for(const auto CN : insertCells)
+
+  for(const int CN : insertCells)
     PSet.addInsertPortCells(CN);
+  PSet.addInsertPortCells(getCell("TopOuterVoid"));
+
 
   PSet.createPorts(System,insertObj,innerHR,outerHR);
-
   return;
 }
 
@@ -271,8 +310,8 @@ DomeConnector::getPort(const size_t index) const
 
 void
 DomeConnector::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC,
-		       const long int FIndex)
+			 const attachSystem::FixedComp& FC,
+			 const long int FIndex)
  /*!
     Generic function to create everything
     \param System :: Simulation item

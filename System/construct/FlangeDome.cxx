@@ -3,7 +3,7 @@
 
  * File:   construct/FlangeDome.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -108,7 +108,6 @@ FlangeDome::populate(const FuncDataBase& Control)
   voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
-
   return;
 }
 
@@ -195,16 +194,13 @@ FlangeDome::createPorts(Simulation& System)
   
   MonteCarlo::Object* insertObj= 
     this->getCellObject(System,"Dome");
-  const HeadRule innerHR=
-    ModelSupport::getHeadRule(SMap,buildIndex,"8")*frontHR;
-  const HeadRule outerHR=
-    ModelSupport::getHeadRule(SMap,buildIndex,"18")*frontHR;
+  const HeadRule innerHR=HeadRule(SMap,buildIndex,8)*frontHR;
+  const HeadRule outerHR=HeadRule(SMap,buildIndex,18)*frontHR;
 
   for(const auto CN : insertCells)
     PSet.addInsertPortCells(CN);
 
   PSet.createPorts(System,insertObj,innerHR,outerHR);
-
   return;
 }
 

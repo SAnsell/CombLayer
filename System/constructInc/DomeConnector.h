@@ -54,8 +54,9 @@ class DomeConnector :
   double flangeRadius;          ///< Flange radius
   double flangeLen;             ///< Flange Length
 
+  int wallMat;                     ///< Main material  
   int voidMat;                 ///< inner (Void) material
-  int mat;                     ///< Main material  
+
 
   constructSystem::portSet PSet;        ///< Port set
   

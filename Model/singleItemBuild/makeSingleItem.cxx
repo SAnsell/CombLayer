@@ -158,6 +158,7 @@
 #include "LocalShielding.h"
 #include "WrapperCell.h"
 #include "FlangeDome.h"
+#include "DomeConnector.h"
 #include "MonoShutter.h"
 #include "RoundMonoShutter.h"
 #include "GuideUnit.h"
@@ -219,7 +220,7 @@ makeSingleItem::build(Simulation& System,
 	"NBeamStop","MagTube","TriggerTube",
 	"BremTube","HPJaws","BoxJaws","HPCombine","ViewTube",
 	"DiffPumpXIADP03","CRLTube","ExperimentalHutch",
-	"ConnectorTube","LocalShield","FlangeDome",
+	"ConnectorTube","LocalShield","FlangeDome","DomeConnector",
 	"MonoShutter","RoundMonoShutter","TubeDetBox",
 	"GuideUnit","PlateUnit","BenderUnit","MLMdetail",
 	"M1detail",
@@ -470,6 +471,22 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
+
+  if (item == "DomeConnector")
+    {
+      std::shared_ptr<constructSystem::PipeTube>
+	fTube(new constructSystem::PipeTube("FlangeTube"));
+      std::shared_ptr<constructSystem::DomeConnector>
+	fDome(new constructSystem::DomeConnector("DomeConnector"));
+      OR.addObject(fTube);
+      OR.addObject(fDome);
+
+      fDome->addInsertCell(voidCell);
+      fDome->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
   if (item == "StriplineBPM")
     {
       std::shared_ptr<tdcSystem::StriplineBPM>
