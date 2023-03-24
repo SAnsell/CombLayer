@@ -75,7 +75,7 @@ DomeConnector::DomeConnector(const std::string& Key) :
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::ExternalCut(),
-  PSet(*this)
+  PSet(*this),portRotateIndex(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -310,51 +310,49 @@ DomeConnector::getPort(const size_t index) const
 }
 
 void
-DomeConnector::correctPortIntersect(const size_t portIndex)
+DomeConnector::correctPortIntersect()
   /*!
     Calculate the true point of the end of port X
-    \param portIndex :: Index point
    */
 {
   ELog::RegMethod RegA("DomeConnector","calcPortIntersect");
 
-  // port Info
-  const portItem& pI=PSet.getPort(portIndex);
-  auto [ pOrg,pAxis,pLen ]=PSet.getPortInfo(portIndex);
-  Geometry::Vec3D nOrg(pOrg+pAxis*pLen);
-
-  pAxis.reBase(pI.getX(),-pI.getY(),pI.getZ());
-
-  //  Origin-=nOrg;
-  //  this->reOrientate(0,-pAxis);
-  
-  //  ELog::EM<<"New Axis == "<<Y<<" :: "<<Z<<ELog::endDiag;
-  pAxis*=-1.0;
-  Geometry::Vec3D rotAxis(0,1,0);
-  Geometry::Vec3D postZAxis(0,0,1);
-  rotAxis=rotAxis.getInBasis(X,Y,Z);
-  postZAxis=postZAxis.getInBasis(X,Y,Z);
-
-  ELog::EM<<"R axi == "<<rotAxis<<" "<<pAxis<<ELog::endDiag;
-  // retrack y to the port axis
-  const Geometry::Quaternion QV=
-    Geometry::Quaternion::calcQVRot(Geometry::Vec3D(0,1,0),pAxis,rotAxis);
-
-  // Now move QV into the main basis set origin,X,Y,Z:
-  const Geometry::Vec3D& QVvec=QV.getVec();
-  const Geometry::Vec3D QAxis=QVvec.getInBasis(X,Y,Z);
-
-  // Move X,Y,Z to the main rotation direction:
-  ELog::EM<<"QV[0] = "<<QV[0]<<ELog::endDiag;
-  const Geometry::Quaternion QVmain(QV[0],-QAxis);
-  QVmain.rotateBasis(X,Y,Z);
-
-  const Geometry::Vec3D portOriginB=
-    pOrg.getInBasis(X,Y,Z)+Y*pLen;
-
-  Origin+=portOriginB;
-
-
+  if (portRotateIndex)
+    {
+      // port Info
+      const portItem& pI=PSet.getPort(portRotateIndex-1);
+      auto [ pOrg,pAxis,pLen ]=PSet.getPortInfo(portRotateIndex-1);
+      Geometry::Vec3D nOrg(pOrg+pAxis*pLen);
+      
+      pAxis.reBase(pI.getX(),-pI.getY(),pI.getZ());
+      
+      //  Origin-=nOrg;
+      //  this->reOrientate(0,-pAxis);
+      
+      //  ELog::EM<<"New Axis == "<<Y<<" :: "<<Z<<ELog::endDiag;
+      pAxis*=-1.0;
+      Geometry::Vec3D rotAxis(0,1,0);
+      Geometry::Vec3D postZAxis(0,0,1);
+      rotAxis=rotAxis.getInBasis(X,Y,Z);
+      postZAxis=postZAxis.getInBasis(X,Y,Z);
+      
+      // retrack y to the port axis
+      const Geometry::Quaternion QV=
+	Geometry::Quaternion::calcQVRot(Geometry::Vec3D(0,1,0),pAxis,rotAxis);
+      
+      // Now move QV into the main basis set origin,X,Y,Z:
+      const Geometry::Vec3D& QVvec=QV.getVec();
+      const Geometry::Vec3D QAxis=QVvec.getInBasis(X,Y,Z);
+      
+      // Move X,Y,Z to the main rotation direction:
+      const Geometry::Quaternion QVmain(QV[0],-QAxis);
+      QVmain.rotateBasis(X,Y,Z);
+      
+      const Geometry::Vec3D portOriginB=
+	pOrg.getInBasis(X,Y,Z)+Y*pLen;
+      
+      Origin+=portOriginB;
+    }
   return;
 }
   
@@ -373,10 +371,8 @@ DomeConnector::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);
-
   PSet.constructPortAxis(System.getDataBase());
-  correctPortIntersect(0);
-  
+  correctPortIntersect();
   createSurfaces();
   createObjects(System);
   createLinks();

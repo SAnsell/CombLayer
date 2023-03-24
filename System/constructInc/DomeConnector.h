@@ -54,10 +54,11 @@ class DomeConnector :
   double flangeRadius;          ///< Flange radius
   double flangeLen;             ///< Flange Length
 
-  int wallMat;                     ///< Main material  
-  int voidMat;                 ///< inner (Void) material
+  int wallMat;                  ///< Main material  
+  int voidMat;                  ///< inner (Void) material
 
-
+  size_t portRotateIndex;       ///< port to rotate (index+1)
+  
   constructSystem::portSet PSet;        ///< Port set
   
   void populate(const FuncDataBase&);
@@ -66,7 +67,7 @@ class DomeConnector :
   void createLinks();
   void createPorts(Simulation&);
 
-  void correctPortIntersect(const size_t);
+  void correctPortIntersect();
   
  public:
 
@@ -80,6 +81,9 @@ class DomeConnector :
   virtual void insertInCell(MonteCarlo::Object&) const;
   virtual void insertInCell(Simulation&,const int) const;
 
+  /// accessor to port rotate
+  void setPortRotate(const size_t I) { portRotateIndex=I; }
+  
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
