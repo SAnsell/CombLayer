@@ -48,8 +48,8 @@ class DomeConnectorGenerator
   double flangeRadius;          ///< Flange radius
   double flangeLen;             ///< Flange length
 
-  std::string wallMat;        ///< Wall material
-  std::string voidMat;         ///< inner (Void) material
+  std::string wallMat;          ///< Wall material
+  std::string voidMat;          ///< inner (Void) material
 
  public:
 
@@ -62,19 +62,23 @@ class DomeConnectorGenerator
   void setSphere(const double R,const double S)
   { curveRadius=R; curveStep=S; }
   void setSphere(const double R,const double F,const double S)
-  { curveRadius=R; flangeRadius=F,curveStep=S; }
+  { curveRadius=R; flangeRadius=F; curveStep=S; }
   void setConnect(const double R,const double S)
   { innerRadius=R; joinStep=S; }
   void setFlat(const double L)
   { flatLen=L; }
+
+  /// set all the lengths
+  void setLengths(const double LA,const double LB,const double LC)
+  { curveStep=LA;joinStep=LB;flatLen=LC; }
   
-  template<typename CF> void setFlangeCF();
+  template<typename CF> void setFlangeCF(const double);
 
   /// setter for material name
   void setMat(std::string M, std::string IM="Void")
   { wallMat= std::move(M); voidMat = std::move(IM);  }
 
-  void generateDome(FuncDataBase&,const std::string&) const;
+  void generateDome(FuncDataBase&,const std::string&,const size_t) const;
 
 };
 

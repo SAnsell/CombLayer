@@ -99,7 +99,10 @@ portSet::populate(const FuncDataBase& Control)
 
   const size_t NPorts=Control.EvalVar<size_t>(keyName+"NPorts");
   const std::string portBase=keyName+"Port";
-  ELog::EM<<"Port base name "<<portBase<<ELog::endDiag;
+
+  PCentre.resize(NPorts);
+  PAxis.resize(NPorts);
+  PLen.resize(NPorts);
   for(size_t i=0;i<NPorts;i++)
     {
       const std::string portName=portBase+std::to_string(i);
@@ -107,20 +110,30 @@ portSet::populate(const FuncDataBase& Control)
 	Control.EvalVar<Geometry::Vec3D>(portName+"Centre");
       const Geometry::Vec3D Axis=
 	Control.EvalTail<Geometry::Vec3D>(portName,portBase,"Axis");
+      const double pLen=
+	Control.EvalTail<double>(portName,portBase,"Length");
 
       std::shared_ptr<portItem> windowPort;
-      windowPort=std::make_shared<portItem>(portBase,portName);
-      windowPort->populate(Control);
-      
-      PCentre.push_back(Centre);
-      PAxis.push_back(Axis);
-      Ports.push_back(windowPort);
-      OR.addObject(windowPort);
+      if (i>=Ports.size())
+	{
+	  windowPort=std::make_shared<portItem>(portBase,portName);
+	  windowPort->populate(Control);	  
+	  Ports.push_back(windowPort);
+	  OR.addObject(windowPort);
+	}
+      else
+	{
+	  windowPort=Ports[i];
+	  windowPort->populate(Control);
+	  OR.reAddObject(windowPort);
+	}
+      PCentre[i]=Centre;
+      PAxis[i]=Axis;
+      PLen[i]=pLen;
     }					    
   return;
 }
   
-
 const portItem&
 portSet::getPort(const size_t index) const
   /*!
@@ -135,6 +148,21 @@ portSet::getPort(const size_t index) const
     throw ColErr::IndexError<size_t>(index,Ports.size(),"index/Ports size");
      
   return *(Ports[index]);
+}
+
+std::tuple<Geometry::Vec3D,Geometry::Vec3D,double>
+portSet::getPortInfo(const size_t pIndex) const
+  /*!
+    Get a port info tuple of centre/axis/length
+    \para mpIn
+   */
+{
+  ELog::RegMethod RegA("portSet","getPortInfo");
+
+  if (pIndex>=Ports.size())
+    throw ColErr::IndexError<size_t>(pIndex,Ports.size(),"index/Ports size");
+  
+  return {PCentre[pIndex],PAxis[pIndex],PLen[pIndex]};
 }
 
 
@@ -433,6 +461,22 @@ portSet::insertPortInCell(Simulation& System,
       for(const int CN : cellSet)
 	Ports[index]->insertInCell(System,CN);
     }
+  return;
+}
+
+void
+portSet::constructPortAxis(const FuncDataBase& Control)
+  /*
+    Function to construct the port axis to allow movement
+    of base object.
+    \param Control :: DataBase object 
+   */
+{
+  ELog::RegMethod RegA("portSet","createPorts");
+
+  populate(Control);
+  for(size_t i=0;i<Ports.size();i++)
+    Ports[i]->setCentLine(FUnit,PCentre[i],PAxis[i]);
   return;
 }
 

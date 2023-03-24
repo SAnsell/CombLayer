@@ -699,6 +699,7 @@ SingleItemVariables(FuncDataBase& Control)
   SimpleTubeGen.setCF<CF350>();
   SimpleTubeGen.generateTube(Control,"FlangeTube",20.0);
   Control.addVariable("FlangeTubeNPorts",0);
+
   FDGen.generateDome(Control,"FlangeDome");
   Control.addVariable("FlangeDomeNPorts",1);
   PItemGen.generatePort(Control,"FlangeDomePort0",
@@ -708,8 +709,7 @@ SingleItemVariables(FuncDataBase& Control)
   // Flange DomeConnector  components:
   // uses FlangeTube above--
   DomeConnectorGenerator FDCGen;
-  FDCGen.generateDome(Control,"DomeConnector");
-  Control.addVariable("DomeConnectorNPorts",1);
+  FDCGen.generateDome(Control,"DomeConnector",1);
   PItemGen.generatePort(Control,"DomeConnectorPort0",
 			Geometry::Vec3D(0.0, 0.0, 0.0),
 			Geometry::Vec3D(0,-1,0));

@@ -3,7 +3,7 @@
 
  * File:   construct/portItem.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -301,7 +301,7 @@ portItem::setCentLine(const attachSystem::FixedComp& FC,
 		      const Geometry::Vec3D& Centre,
 		      const Geometry::Vec3D& Axis)
   /*!
-    Set position
+    Set position and re-orientate so  that Centre/Axis are correct
     \param FC :: FixedComp to get inital orientation [origin]
     \param Centre :: centre point [in FC basis coordinates]
     \param Axis :: Axis direction
@@ -351,7 +351,8 @@ portItem::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+wall);
   ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,flangeRadius);
 
-  
+  ELog::EM<<"Port = "<<Origin+Y*length<<ELog::endDiag;
+  ELog::EM<<"PortAxis = "<<Y<<ELog::endDiag;
   // Final outer
   ModelSupport::buildPlane(SMap,buildIndex+2,
 			   Origin+Y*length,Y);

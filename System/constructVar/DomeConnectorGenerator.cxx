@@ -70,22 +70,31 @@ DomeConnectorGenerator::~DomeConnectorGenerator()
 
 template<typename CF>
 void
-DomeConnectorGenerator::setFlangeCF()
+DomeConnectorGenerator::setFlangeCF(const double scaleFraction)
   /*!
     Set pipe/flange to CF-X format
+    \param scaleFraction :: size of the curveRadius relative
+    to the inner radius
   */
 {
+
+  innerRadius=CF::innerRadius;
+  curveRadius=CF::innerRadius*scaleFraction;
   flangeRadius=CF::flangeRadius;
+  flangeLen=CF::flangeLength;
+  plateThick=CF::wallThick;
   return;
 }
 
 void
 DomeConnectorGenerator::generateDome
-(FuncDataBase& Control,const std::string& keyName) const
+(FuncDataBase& Control,const std::string& keyName,
+ const size_t nPorts) const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables
     \param keyName :: head name for variable
+    \param nPorts :: number of ports defined (external)
   */
 {
   ELog::RegMethod RegA("DomeConnectorGenerator","generatorDomeConnector");
@@ -101,13 +110,14 @@ DomeConnectorGenerator::generateDome
 
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"WallMat",wallMat);
-
+  Control.addVariable(keyName+"NPorts",nPorts);
+  
   return;
 }
 
 ///\cond TEMPLATE
 
-  template void DomeConnectorGenerator::setFlangeCF<CF150>();
+template void DomeConnectorGenerator::setFlangeCF<CF150>(const double);
 
 ///\endcond TEMPLATE
 

@@ -68,6 +68,7 @@
 #include "BeamPairGenerator.h"
 #include "MirrorGenerator.h"
 #include "M1DetailGenerator.h"
+#include "DomeConnectorGenerator.h"
 #include "CollGenerator.h"
 #include "SqrFMaskGenerator.h"
 #include "PortChicaneGenerator.h"
@@ -302,8 +303,23 @@ m1DetailVariables(FuncDataBase& Control,
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::M1DetailGenerator M1DGen;
   setVariable::PipeGenerator PipeGen;
-
+  setVariable::DomeConnectorGenerator DCGen;
+  setVariable::PortItemGenerator PItemGen;
+  
   const std::string frontName=mirrorKey+"M1TubeFront";
+
+
+  PItemGen.setCF<setVariable::CF40>(5.0);
+  PItemGen.setNoPlate();
+  
+  DCGen.setFlangeCF<CF150>(3.0);
+  DCGen.generateDome(Control,frontName,1);
+  PItemGen.generatePort(Control,frontName+"Port0",
+			Geometry::Vec3D(0.0, 0.0, 0.0),
+			Geometry::Vec3D(0,1,0));
+
+  
+  
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF63>();
   PipeGen.setBFlange(8.05,0.3);

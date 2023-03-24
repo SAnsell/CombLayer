@@ -42,6 +42,7 @@
 #include "surfRegister.h"
 #include "varList.h"
 #include "Code.h"
+#include "Quaternion.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "groupRange.h"
@@ -304,10 +305,59 @@ DomeConnector::getPort(const size_t index) const
   */
 {
   ELog::RegMethod RegA("DomeConnector","getPort");
-
+  
   return PSet.getPort(index);
 }
 
+void
+DomeConnector::correctPortIntersect(const size_t portIndex)
+  /*!
+    Calculate the true point of the end of port X
+    \param portIndex :: Index point
+   */
+{
+  ELog::RegMethod RegA("DomeConnector","calcPortIntersect");
+
+  // port Info
+  const portItem& pI=PSet.getPort(portIndex);
+  auto [ pOrg,pAxis,pLen ]=PSet.getPortInfo(portIndex);
+  Geometry::Vec3D nOrg(pOrg+pAxis*pLen);
+
+  pAxis.reBase(pI.getX(),-pI.getY(),pI.getZ());
+
+  //  Origin-=nOrg;
+  //  this->reOrientate(0,-pAxis);
+  
+  //  ELog::EM<<"New Axis == "<<Y<<" :: "<<Z<<ELog::endDiag;
+  pAxis*=-1.0;
+  Geometry::Vec3D rotAxis(0,1,0);
+  Geometry::Vec3D postZAxis(0,0,1);
+  rotAxis=rotAxis.getInBasis(X,Y,Z);
+  postZAxis=postZAxis.getInBasis(X,Y,Z);
+
+  ELog::EM<<"R axi == "<<rotAxis<<" "<<pAxis<<ELog::endDiag;
+  // retrack y to the port axis
+  const Geometry::Quaternion QV=
+    Geometry::Quaternion::calcQVRot(Geometry::Vec3D(0,1,0),pAxis,rotAxis);
+
+  // Now move QV into the main basis set origin,X,Y,Z:
+  const Geometry::Vec3D& QVvec=QV.getVec();
+  const Geometry::Vec3D QAxis=QVvec.getInBasis(X,Y,Z);
+
+  // Move X,Y,Z to the main rotation direction:
+  ELog::EM<<"QV[0] = "<<QV[0]<<ELog::endDiag;
+  const Geometry::Quaternion QVmain(QV[0],-QAxis);
+  QVmain.rotateBasis(X,Y,Z);
+
+  const Geometry::Vec3D portOriginB=
+    pOrg.getInBasis(X,Y,Z)+Y*pLen;
+
+  Origin+=portOriginB;
+
+
+  return;
+}
+  
 void
 DomeConnector::createAll(Simulation& System,
 			 const attachSystem::FixedComp& FC,
@@ -323,6 +373,10 @@ DomeConnector::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);
+
+  PSet.constructPortAxis(System.getDataBase());
+  correctPortIntersect(0);
+  
   createSurfaces();
   createObjects(System);
   createLinks();

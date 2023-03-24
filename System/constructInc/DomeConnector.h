@@ -65,6 +65,8 @@ class DomeConnector :
   void createObjects(Simulation&);
   void createLinks();
   void createPorts(Simulation&);
+
+  void correctPortIntersect(const size_t);
   
  public:
 

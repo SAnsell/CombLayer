@@ -51,6 +51,7 @@ class portSet
   std::set<int> portCells;               ///< Extra cells for the port
   std::vector<Geometry::Vec3D> PCentre;  ///< Centre points [relative to origin]
   std::vector<Geometry::Vec3D> PAxis;    ///< Port centre Axis
+  std::vector<double> PLen;              ///< Port lengths
   /// Vector of ports FixedComp
   std::vector<std::shared_ptr<portItem>> Ports;     
 
@@ -94,6 +95,12 @@ class portSet
   /// set outer void [expect "outerVoid"  as name]
   void setOuterVoid(const std::string& ON)
     { outerVoid=1; outerVoidName=ON;}
+
+  std::tuple<Geometry::Vec3D,Geometry::Vec3D,double>
+  getPortInfo(const size_t) const ;
+  
+  void constructPortAxis(const FuncDataBase&);
+  
   void createPorts(Simulation&,MonteCarlo::Object*,
 		   const HeadRule&,const HeadRule&);
   void createPorts(Simulation&,const std::string&);

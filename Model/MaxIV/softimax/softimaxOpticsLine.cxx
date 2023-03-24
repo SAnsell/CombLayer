@@ -82,6 +82,8 @@
 #include "VirtualTube.h"
 #include "PipeTube.h"
 #include "PortTube.h"
+#include "portSet.h"
+#include "DomeConnector.h"
 
 #include "BlockStand.h"
 #include "GateValveCube.h"
@@ -130,7 +132,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   pumpM1(new constructSystem::PipeTube(newName+"PumpM1")),
   gateA(new constructSystem::GateValveCube(newName+"GateA")),
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
-  M1TubeFront(new constructSystem::OffsetFlangePipe(newName+"M1TubeFront")),
+  M1TubeFront(new constructSystem::DomeConnector(newName+"M1TubeFront")),
   M1Tube(new constructSystem::PipeTube(newName+"M1Tube")),
   M1TubeBack(new constructSystem::OffsetFlangePipe(newName+"M1TubeBack")),
   M1Detail(new xraySystem::M1Detail(newName+"M1")),
@@ -334,12 +336,14 @@ softimaxOpticsLine::buildM1Mirror(Simulation& System,
   constructSystem::constructUnit
     (System,buildZone,initFC,sideName,*M1TubeFront);
   
-  
-  M1Tube->setFront(*M1TubeFront,11);
-  M1Tube->createAll(System,*M1TubeFront,11);
-  outerCell=buildZone.createUnit(System,*M1Tube,2);
+  ELog::EM<<"ASDFSAFD "<<ELog::endDiag;
+  M1Tube->setFront(*M1TubeFront,2);
+  ELog::EM<<"ASDFSAFD "<<ELog::endDiag;
+  M1Tube->createAll(System,*M1TubeFront,"back");
+  outerCell=buildZone.createUnit(System,*M1Tube,"back");
   M1Tube->insertAllInCell(System,outerCell);
-
+  return;
+  
   M1Detail->addInsertCell(M1Tube->getCell("Void"));
   M1Detail->createAll(System,*M1Tube,0);
 
@@ -697,6 +701,11 @@ softimaxOpticsLine::buildObjects(Simulation& System)
 
   buildM1Mirror(System,*bellowB,"back");
 
+  ELog::EM<<"EARLY RETURN"<<ELog::endCrit;
+  System.removeCell(buildZone.getLastCell("Unit"));
+  lastComp=bellowJ;  
+
+  return;
   
   constructSystem::constructUnit
     (System,buildZone,*M1TubeBack,"back",*bellowC);
