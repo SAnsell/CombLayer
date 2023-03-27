@@ -80,7 +80,8 @@ class ExternalCut
 
   cutUnit& getUnit(const std::string&);
   const cutUnit* findUnit(const std::string&) const;
-  
+
+  void swapCutSurf(const std::string&,const std::string&);
   void copyCutSurf(const std::string&,const ExternalCut&,const std::string&);
 
   void setCutSurf(const std::string&,const int);

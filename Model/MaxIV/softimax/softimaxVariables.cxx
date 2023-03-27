@@ -306,7 +306,9 @@ m1DetailVariables(FuncDataBase& Control,
   setVariable::DomeConnectorGenerator DCGen;
   setVariable::PortItemGenerator PItemGen;
 
-  const double tubeLength(41.0);
+  const double tubeLength(40.5);
+  const double portXStep(2.0);
+  //  const double theta(-19.0*M_PI/180.0);
   
   const std::string frontName=mirrorKey+"M1TubeFront";
   const std::string tubeName=mirrorKey+"M1Tube";
@@ -320,8 +322,9 @@ m1DetailVariables(FuncDataBase& Control,
   DCGen.setLengths(2.5,2.0,3.0);
   DCGen.generateDome(Control,frontName,1);
   PItemGen.generatePort(Control,frontName+"Port0",
-			Geometry::Vec3D(0.0, 0.0, 0.0),
-			Geometry::Vec3D(0,-1,0));
+			Geometry::Vec3D(portXStep, 0.0, 0.0),
+			Geometry::Vec3D(0.0, -1.0, 0.0));
+  Control.addVariable(frontName+"ZAngle",-1.0);
 
 
   const std::string mName=mirrorKey+"M1Tube";
@@ -331,7 +334,8 @@ m1DetailVariables(FuncDataBase& Control,
   Control.addVariable(mName+"NPorts",0);   // beam ports
 
   M1DGen.generateMirror(Control,mirrorKey+"M1",0.0,0.0);
-  
+  Control.addVariable(mirrorKey+"M1XStep",portXStep);
+    
   Control.addVariable(mirrorKey+"M1StandHeight",110.0);
   Control.addVariable(mirrorKey+"M1StandWidth",30.0);
   Control.addVariable(mirrorKey+"M1StandLength",30.0);
@@ -339,89 +343,13 @@ m1DetailVariables(FuncDataBase& Control,
 
   DCGen.generateDome(Control,backName,1);
   PItemGen.generatePort(Control,backName+"Port0",
-			Geometry::Vec3D(0.0, 0.0, 0.0),
+			Geometry::Vec3D(-portXStep, 0.0, 0.0),
 			Geometry::Vec3D(0,-1,0));
+  Control.addVariable(backName+"ZAngle",-1.0);
   return;
 }
 
   
-void
-m1MirrorVariables(FuncDataBase& Control,
-		  const std::string& mirrorKey)
-  /*!
-    Builds the variables for the M1 Mirror
-    \param Control :: Database
-    \param mirrorKey :: prename
-  */
-{
-  ELog::RegMethod RegA("softimaxVariables[F]","m1MirrorVariables");
-
-  setVariable::PipeTubeGenerator SimpleTubeGen;
-  setVariable::MirrorGenerator MirrGen;
-  setVariable::PipeGenerator PipeGen;
-
-  const std::string frontName=mirrorKey+"M1TubeFront";
-  PipeGen.setMat("Stainless304");
-  PipeGen.setCF<CF63>();
-  PipeGen.setBFlange(8.05,0.3);
-  PipeGen.generatePipe(Control,frontName,7.6);
-  Control.addVariable(frontName+"WindowActive",0);
-  constexpr double xstep(2.2);
-  Control.addVariable(frontName+"FlangeBackXStep",-xstep);
-
-  ////////////////////////
-  constexpr double theta = -1.0; // incident beam angle
-  constexpr double phi = 0.0;   // rotation angle
-  //  const double normialAngle=0.2;
-  constexpr double vAngle=180.0;
-  constexpr double centreDist(0.0); // along the beam line
-  constexpr double tubeLength=50.0;
-  ////////////////////////
-
-  const std::string mName=mirrorKey+"M1Tube";
-  SimpleTubeGen.setCF<CF150>();
-  SimpleTubeGen.generateTube(Control,mName,tubeLength);
-  Control.addVariable(mName+"WallMat","Titanium");
-  Control.addVariable(mName+"NPorts",0);   // beam ports
-
-  // mirror in M1Tube
-  constexpr double thick(6.0); // messured in .step
-  MirrGen.setPlate(28.0, thick, 9.0);  //guess: length, thick, width
-  constexpr double top(0.1);
-  constexpr double depth(thick+1.0);
-  constexpr double gap(0.5);
-  constexpr double extra(1.0);
-  MirrGen.setSupport(top, depth, gap, extra);
-  MirrGen.setPrimaryAngle(0,vAngle,0);
-  // x/y/z/theta/phi/radius
-  MirrGen.generateMirror(Control,mirrorKey+"M1Mirror",
-			 -xstep,
-			 centreDist/2.0,
-			 0.0,
-			 theta,
-			 phi,
-			 0.0);
-  Control.addVariable(mirrorKey+"M1MirrorYAngle",270.0); // to reflect horizontally
-
-  Control.addVariable(mirrorKey+"M1StandHeight",110.0);
-  Control.addVariable(mirrorKey+"M1StandWidth",30.0);
-  Control.addVariable(mirrorKey+"M1StandLength",30.0);
-  Control.addVariable(mirrorKey+"M1StandMat","SiO2");
-
-  const std::string backName=mirrorKey+"M1TubeBack";
-  PipeGen.setMat("Stainless304");
-  PipeGen.setCF<CF63>();
-  PipeGen.setAFlange(8.05,0.3);
-  PipeGen.generatePipe(Control,backName,4.5); // yStep, length
-  Control.addVariable(backName+"WindowActive",0);
-  Control.addVariable(backName+"XYAngle",2*theta);
-
-  const double TL=0.5*(tubeLength)*sin(2.0*theta*M_PI/180.0);
-  Control.addVariable(backName+"XStep",xstep-TL);
-  Control.addVariable(backName+"FlangeFrontXStep",TL-xstep);
-
-  return;
-}
 
 void
 splitterVariables(FuncDataBase& Control,

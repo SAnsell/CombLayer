@@ -358,13 +358,12 @@ portItem::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,flangeRadius);
 
   // Final outer
-  if (!isActive("outerSurf"))
+  if (!isActive("portEnd"))
     {
       ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
-      setCutSurf("outerSurf",SMap.realSurf(buildIndex+2));
+      setCutSurf("portEnd",-SMap.realSurf(buildIndex+2));
     }
-  makeShiftedSurf(SMap,"outerSurf",buildIndex+102,
-		  Y,-flangeLength);
+  makeShiftedSurf(SMap,"portEnd",buildIndex+102,Y,-flangeLength);
 
   const bool capFlag(capThick>Geometry::zeroTol);
   const bool windowFlag (capFlag &&
@@ -424,7 +423,7 @@ portItem::createLinks()
   else
     {
       FixedComp::setConnect(1,Origin+Y*length,Y);
-      FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+      FixedComp::setLinkSurf(1,getComplementRule("portEnd"));
     }
   FixedComp::nameSideIndex(2,"InnerRadius");
   FixedComp::setConnect(2,Origin+Y*(length/2.0)+X*radius,X);
@@ -438,7 +437,7 @@ portItem::createLinks()
 
   FixedComp::nameSideIndex(4,"InnerPlate");
   FixedComp::setConnect(4,Origin+Y*length,-Y);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf(4,getRule("portEnd"));
 
   FixedComp::nameSideIndex(5,"VoidRadius");
   FixedComp::setConnect(5,Origin+Y*length,-Y);
@@ -483,26 +482,28 @@ portItem::constructObject(Simulation& System,
 
   const bool capFlag(capThick>Geometry::zeroTol);
   const bool windowFlag(windowThick>Geometry::zeroTol);
+  const HeadRule portHR=getRule("portEnd");
+  const HeadRule portComp=getComplementRule("portEnd");
   
   // construct inner volume:
   HeadRule HR;
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -7 -2");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*innerSurf);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -7");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*innerSurf*portHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -17 7 -2");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR*innerSurf);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -17 7");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR*innerSurf*portHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -27 17 -2");
-  makeCell("Flange",System,cellIndex++,wallMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -27 17");
+  makeCell("Flange",System,cellIndex++,wallMat,0.0,HR*portHR);
 
   if (capFlag)
     {
       // we have window AND flange:
       if (windowFlag)
 	{
-	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-207 -211 2");
-	  makeCell("BelowPlate",System,cellIndex++,voidMat,0.0,HR);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-207 -211");
+	  makeCell("BelowPlate",System,cellIndex++,voidMat,0.0,HR*portComp);
 
 	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-207 212 -202");
 	  makeCell("AbovePlate",System,cellIndex++,outerVoidMat,0.0,HR);
@@ -510,13 +511,14 @@ portItem::constructObject(Simulation& System,
 	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-207 211 -212");
 	  makeCell("Plate",System,cellIndex++,windowMat,0.0,HR);
 
-	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 207 -202 2");
-	  makeCell("PlateSurround",System,cellIndex++,capMat,0.0,HR);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 207 -202");
+	  makeCell("PlateSurround",System,cellIndex++,
+		   capMat,0.0,HR*portComp);
 	}
       else // just a cap
 	{
-	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 2 -202");
-	  makeCell("Plate",System,cellIndex++,capMat,0.0,HR);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 -202");
+	  makeCell("Plate",System,cellIndex++,capMat,0.0,HR*portComp);
 	}
     }
 
@@ -526,7 +528,7 @@ portItem::constructObject(Simulation& System,
       makeCell("OutVoid",System,cellIndex++,outerVoidMat,0.0,HR*outerSurf);
       HR= (capFlag) ?
 	ModelSupport::getHeadRule(SMap,buildIndex,"-202 -27 1") :
-	ModelSupport::getHeadRule(SMap,buildIndex,"-2 -27  1");
+	ModelSupport::getHeadRule(SMap,buildIndex,"-27  1")*portHR;
 
       addOuterSurf(HR*outerSurf);
     }
@@ -534,7 +536,7 @@ portItem::constructObject(Simulation& System,
     {
       HR= (capFlag) ?
 	ModelSupport::getHeadRule(SMap,buildIndex,"-202 -27 102") :
-	ModelSupport::getHeadRule(SMap,buildIndex,"-2 -27 102");
+	ModelSupport::getHeadRule(SMap,buildIndex,"-27 102")*portHR;
       addOuterSurf(HR);
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 -102 1");
       addOuterUnionSurf(HR*outerSurf);
@@ -551,7 +553,7 @@ portItem::addPortCut(MonteCarlo::Object* mainTube) const
 {
   // Mid port exclude
   const HeadRule HR=
-    ModelSupport::getHeadRule(SMap,buildIndex,"( 17 : -1 )");
+    ModelSupport::getHeadRule(SMap,buildIndex,"(17 : -1)");
   mainTube->addIntersection(HR);
   return;
 }

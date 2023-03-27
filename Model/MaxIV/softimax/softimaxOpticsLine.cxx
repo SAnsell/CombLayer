@@ -286,7 +286,6 @@ softimaxOpticsLine::populate(const FuncDataBase& Control)
   return;
 }
 
-
 void
 softimaxOpticsLine::createSurfaces()
   /*!
@@ -307,7 +306,7 @@ softimaxOpticsLine::createSurfaces()
       ModelSupport::buildPlane
 	(SMap,buildIndex+6,Origin+Z*outerTop,Z);      
       const HeadRule HR=
-	ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 -6");
+	ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 -6");
 
       buildZone.setSurround(HR*getRule("floor"));
       buildZone.setFront(getRule("front"));
@@ -333,13 +332,13 @@ softimaxOpticsLine::buildM1Mirror(Simulation& System,
 
   int outerCell;
 
+  M1TubeFront->setCutSurf("portJoin",initFC,sideName);  
   M1TubeFront->setPortRotate(2);   // port 0
   constructSystem::constructUnit
     (System,buildZone,initFC,sideName,*M1TubeFront);
   
   M1Tube->setFront(*M1TubeFront,2);
   M1Tube->createAll(System,*M1TubeFront,"back");
-  ELog::EM<<"Back = "<<M1Tube->getLinkPt("back")<<ELog::endDiag;
 
   outerCell=buildZone.createUnit(System,*M1Tube,"back");
   M1Tube->insertAllInCell(System,outerCell);

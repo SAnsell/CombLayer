@@ -133,12 +133,12 @@ DomeConnector::createSurfaces()
 
   if (!isActive("back"))
     {
-      ModelSupport::buildPlane(SMap,buildIndex+2,
-			       Origin+Y*(joinStep+flatLen),Y);
+      ModelSupport::buildPlane
+	(SMap,buildIndex+2,Origin+Y*(joinStep+flatLen),Y);
       ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
+      ELog::EM<<"Back change == "<<keyName<<ELog::endDiag;	    
     }
-
-  ELog::EM<<curveRadius<<" "<<innerRadius<<" "<<flangeRadius<<ELog::endDiag;
+  
   const double surfTolStep(1e-3); // step to allow no near plane/sphere touch
   // sphere on top
   // x step down from cord, y step up from cord.
@@ -320,8 +320,7 @@ DomeConnector::insertInCell(Simulation& System,
    */
 {
   ELog::RegMethod RegA("DomeConnector","insertInCell");
-  
-  
+    
   MonteCarlo::Object* outerObj=System.findObjectThrow(CN,"CN");
   outerObj->addIntersection(outerSurf.complement());
 
@@ -350,10 +349,11 @@ DomeConnector::correctPortIntersect()
     Calculate the true point of the end of port X
    */
 {
-  ELog::RegMethod RegA("DomeConnector","calcPortIntersect");
+  ELog::RegMethod RegA("DomeConnector","correctPortIntersect");
 
   if (portRotateIndex==1)  // back
     {
+      swapCutSurf("front","back");
       Origin+=Y*(joinStep+flatLen);
       Y*=-1.0;
       X*=-1.0;
@@ -361,7 +361,7 @@ DomeConnector::correctPortIntersect()
   else if (portRotateIndex>1)
     {
       // port Info
-      const portItem& pI=PSet.getPort(portRotateIndex-2);
+      portItem& pI=PSet.getPort(portRotateIndex-2);
       auto [ pOrg,pAxis,pLen ]=PSet.getPortInfo(portRotateIndex-2);
       pAxis.reBase(pI.getX(),-pI.getY(),pI.getZ());
 
@@ -384,9 +384,13 @@ DomeConnector::correctPortIntersect()
       QVmain.rotateBasis(X,Y,Z);
       
       const Geometry::Vec3D portOriginB=
-	pOrg.getInBasis(X,Y,Z)+Y*pLen;
+	-pOrg.getInBasis(X,Y,Z)+Y*pLen;
       
       Origin+=portOriginB;
+      // set front surface if necessary
+      if (isActive("portJoin"))
+	pI.copyCutSurf("portEnd",*this,"portJoin");
+	  
     }
   return;
 }

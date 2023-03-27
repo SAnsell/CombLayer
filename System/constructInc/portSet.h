@@ -84,7 +84,9 @@ class portSet
   void addInsertPortCells(const int);
   void intersectPorts(Simulation&,const size_t,const size_t) const;
   void intersectVoidPorts(Simulation&,const size_t,const size_t) const;
+
   const portItem& getPort(const size_t) const;
+  portItem& getPort(const size_t);
 
   void insertAllInCell(MonteCarlo::Object&) const;
   void insertAllInCell(Simulation&,const int) const;

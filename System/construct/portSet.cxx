@@ -152,11 +152,27 @@ portSet::getPort(const size_t index) const
   return *(Ports[index]);
 }
 
+portItem&
+portSet::getPort(const size_t index) 
+  /*!
+    Accessor to ports [non-constant]
+    \param index :: index point
+    \return port
+  */
+{
+  ELog::RegMethod RegA("portSet","getPort[non-const]");
+
+  if (index>=Ports.size())
+    throw ColErr::IndexError<size_t>(index,Ports.size(),"index/Ports size");
+     
+  return *(Ports[index]);
+}
+
 std::tuple<Geometry::Vec3D,Geometry::Vec3D,double>
 portSet::getPortInfo(const size_t pIndex) const
   /*!
     Get a port info tuple of centre/axis/length
-    \para mpIn
+    \param pIndex :: active port number
    */
 {
   ELog::RegMethod RegA("portSet","getPortInfo");
@@ -474,7 +490,7 @@ portSet::constructPortAxis(const FuncDataBase& Control)
     \param Control :: DataBase object 
    */
 {
-  ELog::RegMethod RegA("portSet","createPorts");
+  ELog::RegMethod RegA("portSet","constructPortAxis");
 
   populate(Control);
   for(size_t i=0;i<Ports.size();i++)
