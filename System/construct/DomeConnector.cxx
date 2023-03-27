@@ -136,7 +136,6 @@ DomeConnector::createSurfaces()
       ModelSupport::buildPlane
 	(SMap,buildIndex+2,Origin+Y*(joinStep+flatLen),Y);
       ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
-      ELog::EM<<"Back change == "<<keyName<<ELog::endDiag;	    
     }
   
   const double surfTolStep(1e-3); // step to allow no near plane/sphere touch
@@ -279,7 +278,6 @@ DomeConnector::createPorts(Simulation& System)
 
   if (!PSet.empty())
     {
-      ELog::EM<<"Creating ports"<<ELog::endDiag;
       const HeadRule frontHR=HeadRule(SMap,buildIndex,-101);
       
       MonteCarlo::Object* insertObj= 

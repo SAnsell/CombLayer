@@ -308,7 +308,9 @@ m1DetailVariables(FuncDataBase& Control,
 
   const double tubeLength(40.5);
   const double portXStep(2.0);
-  //  const double theta(-19.0*M_PI/180.0);
+  const double theta(-1.0*M_PI/180.0);
+  const double mExtra=30.0*sin(theta);
+    
   
   const std::string frontName=mirrorKey+"M1TubeFront";
   const std::string tubeName=mirrorKey+"M1Tube";
@@ -334,7 +336,7 @@ m1DetailVariables(FuncDataBase& Control,
   Control.addVariable(mName+"NPorts",0);   // beam ports
 
   M1DGen.generateMirror(Control,mirrorKey+"M1",0.0,0.0);
-  Control.addVariable(mirrorKey+"M1XStep",portXStep);
+  Control.addVariable(mirrorKey+"M1XStep",portXStep+mExtra);
     
   Control.addVariable(mirrorKey+"M1StandHeight",110.0);
   Control.addVariable(mirrorKey+"M1StandWidth",30.0);
