@@ -134,7 +134,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
   M1TubeFront(new constructSystem::DomeConnector(newName+"M1TubeFront")),
   M1Tube(new constructSystem::PipeTube(newName+"M1Tube")),
-  M1TubeBack(new constructSystem::OffsetFlangePipe(newName+"M1TubeBack")),
+  M1TubeBack(new constructSystem::DomeConnector(newName+"M1TubeBack")),
   M1Detail(new xraySystem::M1Detail(newName+"M1")),
   M1Stand(new xraySystem::BlockStand(newName+"M1Stand")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
@@ -332,18 +332,17 @@ softimaxOpticsLine::buildM1Mirror(Simulation& System,
   ELog::RegMethod RegA("softimaxOpticsBeamline","buildM1Mirror");
 
   int outerCell;
-  
+
+  M1TubeFront->setPortRotate(2);   // port 0
   constructSystem::constructUnit
     (System,buildZone,initFC,sideName,*M1TubeFront);
   
-  ELog::EM<<"ASDFSAFD "<<ELog::endDiag;
   M1Tube->setFront(*M1TubeFront,2);
-  ELog::EM<<"ASDFSAFD "<<ELog::endDiag;
   M1Tube->createAll(System,*M1TubeFront,"back");
+  ELog::EM<<"Back = "<<M1Tube->getLinkPt("back")<<ELog::endDiag;
+
   outerCell=buildZone.createUnit(System,*M1Tube,"back");
   M1Tube->insertAllInCell(System,outerCell);
-  return;
-  
   M1Detail->addInsertCell(M1Tube->getCell("Void"));
   M1Detail->createAll(System,*M1Tube,0);
 
@@ -353,8 +352,9 @@ softimaxOpticsLine::buildM1Mirror(Simulation& System,
   M1Stand->addInsertCell(outerCell);
   M1Stand->createAll(System,*M1Tube,0);
 
+  M1TubeBack->setPortRotate(1);   // Back
   constructSystem::constructUnit
-    (System,buildZone,*M1Tube,"back",*M1TubeBack);
+    (System,buildZone,*M1Tube,"back",*M1TubeBack,"port0");
 
   return;
 }
@@ -647,7 +647,6 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,*bellowA,"back",*pipeA);
 
-
   pumpM1->setPortRotation(3,Geometry::Vec3D(1,0,0));
   pumpM1->setOuterVoid();
   pumpM1->createAll(System,*pipeA,"back");
@@ -701,14 +700,8 @@ softimaxOpticsLine::buildObjects(Simulation& System)
 
   buildM1Mirror(System,*bellowB,"back");
 
-  ELog::EM<<"EARLY RETURN"<<ELog::endCrit;
-  System.removeCell(buildZone.getLastCell("Unit"));
-  lastComp=bellowJ;  
-
-  return;
-  
   constructSystem::constructUnit
-    (System,buildZone,*M1TubeBack,"back",*bellowC);
+    (System,buildZone,*M1TubeBack,"port0",*bellowC);
 
   pumpTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   pumpTubeA->createAll(System,*bellowC,2);
@@ -717,10 +710,9 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   outerCell=buildZone.createUnit
     (System,CPI1,CPI1.getSideIndex("OuterPlate"));
   pumpTubeA->insertAllInCell(System,outerCell);
-  //  pumpTubeA->intersectPorts(System,1,2);
-
   constructSystem::constructUnit
     (System,buildZone,CPI1,"OuterPlate",*bremCollA);
+  
 
   constructSystem::constructUnit
     (System,buildZone,*bremCollA,"back",*gateB);
@@ -817,7 +809,6 @@ softimaxOpticsLine::buildObjects(Simulation& System)
 
   //  buildZone.createUnit(System);
   //  buildZone.rebuildInsertCells(System);
-
   
   System.removeCell(buildZone.getLastCell("Unit"));
   lastComp=bellowJ;  

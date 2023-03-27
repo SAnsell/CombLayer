@@ -3,7 +3,7 @@
  
  * File:   construct/doublePortItem.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,10 +39,7 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
-#include "Surface.h"
 #include "surfRegister.h"
 #include "HeadRule.h"
 #include "Importance.h"
@@ -61,6 +58,7 @@
 #include "LineTrack.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "ExternalCut.h"
 
 #include "portItem.h"
 #include "doublePortItem.h"
@@ -147,8 +145,8 @@ doublePortItem::constructObject(Simulation& System,
 /*!
     Construct a flange from the centre point
     \param System :: Simulation to use
-    \param inner Surface of main cell to cut (into the void typically)
-    \param wall Surface of main cell to cut 
+    \param innerSurf :: Surface of main cell to cut (into the void typically)
+    \param outerSurf :: wall Surface of main cell to cut 
 */
 {
   if (radius>radiusB)
@@ -166,8 +164,8 @@ doublePortItem::constructObjectReducing(Simulation& System,
   /*!
     Construct a flange from the centre point
     \param System :: Simulation to use
-    \param inner Surface of main cell to cut (into the void typically)
-    \param wall Surface of main cell to cut 
+    \param innerSurf :: Surface of main cell to cut (into the void typically)
+    \param outerSurf :: Surface of main cell to cut 
   */
 {
   ELog::RegMethod RegA("doublePortItem","constructObjectReducing");
@@ -331,7 +329,5 @@ doublePortItem::constructObjectIncreasing(Simulation& System,
     }
   return;
 }
-
-  
 
 }  // NAMESPACE constructSystem

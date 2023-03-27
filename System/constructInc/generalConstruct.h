@@ -3,7 +3,7 @@
 
  * File:   constructInc/generalConstruct.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,40 +61,48 @@ namespace constructSystem
 //                BLOCKZONE
 //  --------------------------------------------------------
 
-
 int
 internalUnit(Simulation&,
 	     attachSystem::BlockZone&,
 	     const attachSystem::FixedComp&,
 	     const std::string&,
 	     attachSystem::FixedComp&,
+	     const std::string&,
 	     attachSystem::ExternalCut&,
 	     attachSystem::ContainedComp&);
-int
-internalFreeUnit(Simulation&,
-		 attachSystem::BlockZone&,
-		 const attachSystem::FixedComp&,
-		 const std::string&,
-		 attachSystem::FixedComp&,
-		 attachSystem::ContainedComp&);
+
 int
 internalGroup(Simulation&,
 	      attachSystem::BlockZone&,
 	      const attachSystem::FixedComp&,
 	      const std::string&,
 	      attachSystem::FixedComp&,
+	      const std::string&,
 	      attachSystem::ExternalCut&,
 	      attachSystem::ContainedGroup&,
 	      const std::set<std::string>&);
-int
-internalFreeGroup(Simulation&,
-		  attachSystem::BlockZone&,
-		  const attachSystem::FixedComp&,
-		  const std::string&,
-		  attachSystem::FixedComp&,
-		  attachSystem::ContainedGroup&,
-		  const std::set<std::string>&);
   
+
+template<typename T>
+int constructUnit(Simulation& System,
+		  attachSystem::BlockZone& buildZone,
+		  const attachSystem::FixedComp& linkUnit,
+		  const std::string& sideName,
+		  T& buildUnit,
+		  const std::string& backName)
+{
+  if constexpr (std::is_base_of<attachSystem::ContainedComp,T>::value)
+
+    return internalUnit(System,buildZone,linkUnit,sideName,
+			buildUnit,backName,buildUnit,buildUnit);
+
+  else
+    
+    return internalGroup(System,buildZone,linkUnit,sideName,
+			 buildUnit,backName,buildUnit,buildUnit,{"All"});
+
+}
+
 template<typename T>
 int constructUnit(Simulation& System,
 		  attachSystem::BlockZone& buildZone,
@@ -102,46 +110,33 @@ int constructUnit(Simulation& System,
 		  const std::string& sideName,
 		  T& buildUnit)
 {
-  if constexpr (std::is_base_of<attachSystem::ContainedComp,T>::value)
-
-    return internalUnit(System,buildZone,linkUnit,sideName,
-			buildUnit,buildUnit,buildUnit);
-
-  else
-    
-    return internalGroup(System,buildZone,linkUnit,sideName,
-			 buildUnit,buildUnit,buildUnit,{"All"});
-
+  return constructUnit
+    (System,buildZone,linkUnit,sideName,buildUnit,"back");
 }
 
 template<typename T>
 int constructGroup(Simulation& System,
-		  attachSystem::BlockZone& buildZone,
-		  const attachSystem::FixedComp& linkUnit,
-		  const std::string& sideName,
-    	          T& buildUnit,const std::set<std::string>& CGunits)
+		   attachSystem::BlockZone& buildZone,
+		   const attachSystem::FixedComp& linkUnit,
+		   const std::string& sideName,
+		   T& buildUnit,
+		   const std::string& backName,
+		   const std::set<std::string>& CGunits)
 {
   return internalGroup(System,buildZone,linkUnit,sideName,
-		       buildUnit,buildUnit,buildUnit,CGunits);
+		       buildUnit,backName,buildUnit,buildUnit,CGunits);
 }
-
+  
 template<typename T>
-int constructFreeUnit(Simulation& System,
-		      attachSystem::BlockZone& buildZone,
-		      const attachSystem::FixedComp& linkUnit,
-		      const std::string& sideName,
-		      T& buildUnit)
+int constructGroup(Simulation& System,
+		   attachSystem::BlockZone& buildZone,
+		   const attachSystem::FixedComp& linkUnit,
+		   const std::string& sideName,
+		   T& buildUnit,
+		   const std::set<std::string>& CGunits)
 {
-  if constexpr (std::is_base_of<attachSystem::ContainedComp,T>::value)
-
-    return internalFreeUnit(System,buildZone,linkUnit,sideName,
-			buildUnit,buildUnit);
-
-  else
-    
-    return internalFreeGroup(System,buildZone,linkUnit,sideName,
-			     buildUnit,buildUnit,{"All"});
-
+  return internalGroup(System,buildZone,linkUnit,sideName,
+		       buildUnit,"back",buildUnit,buildUnit,CGunits);
 }
   
 }  // NAMEPSACE constructSystem

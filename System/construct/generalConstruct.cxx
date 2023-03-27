@@ -3,7 +3,7 @@
  
  * File:   construct/generalContruct.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,37 +58,6 @@ namespace constructSystem
 //-----------------------------------------------------
 
 
-int
-internalFreeUnit(Simulation& System,
-		 attachSystem::BlockZone& buildZone,
-		 const attachSystem::FixedComp& linkUnit,
-		 const std::string& sideName,
-		 attachSystem::FixedComp& FC,
-		 attachSystem::ContainedComp& CC)
-  
-  /*!
-    Construct a unit in a simgle component
-    But DONT join the FC to the previous unit
-    \param System :: Simulation to use
-    \param buildZone :: Block for containment
-    \param linkUnit :: Previous link unit to use
-    \param sideName :: Link point to use
-    \param FC :: FixedComponent to build
-    \param ECut :: Object to set the front unit to
-    \param CC :: Contained component to insert object
-  */
-{
-  ELog::RegMethod RegA("generalConstruct[F]","internalFreeUnit");
-
-  //  ECut.setCutSurf("front",linkUnit,sideName);
-  FC.createAll(System,linkUnit,sideName);
-
-  const int outerCell=buildZone.createUnit(System,FC,2);
-
-  CC.insertInCell(System,outerCell);
-  return  outerCell;
-}
-
 
 int
 internalUnit(Simulation& System,
@@ -96,6 +65,7 @@ internalUnit(Simulation& System,
 	     const attachSystem::FixedComp& linkUnit,
 	     const std::string& sideName,
 	     attachSystem::FixedComp& FC,
+	     const std::string& backName,
 	     attachSystem::ExternalCut& ECut,
 	     attachSystem::ContainedComp& CC)
 
@@ -113,18 +83,24 @@ internalUnit(Simulation& System,
   ELog::RegMethod RegA("generalConstruct[F]","internalUnit");
 
   ECut.setCutSurf("front",linkUnit,sideName);
-  return internalFreeUnit(System,buildZone,linkUnit,sideName,FC,CC);
+
+  FC.createAll(System,linkUnit,sideName);
+
+  const int outerCell=buildZone.createUnit(System,FC,backName);
+  CC.insertInCell(System,outerCell);
+  return  outerCell;
 }
   
 int
 internalGroup(Simulation& System,
-	     attachSystem::BlockZone& buildZone,
-	     const attachSystem::FixedComp& linkUnit,
-	     const std::string& sideName,
-	     attachSystem::FixedComp& FC,
-	     attachSystem::ExternalCut& ECut,
-	     attachSystem::ContainedGroup& CG,
-	     const std::set<std::string>& CGunits)
+	      attachSystem::BlockZone& buildZone,
+	      const attachSystem::FixedComp& linkUnit,
+	      const std::string& sideName,
+	      attachSystem::FixedComp& FC,
+	      const std::string& backName,
+	      attachSystem::ExternalCut& ECut,
+	      attachSystem::ContainedGroup& CG,
+	      const std::set<std::string>& CGunits)
 
   /*!
     Construct a unit in a simgle component
@@ -140,7 +116,7 @@ internalGroup(Simulation& System,
   ECut.setCutSurf("front",linkUnit,sideName);
   FC.createAll(System,linkUnit,sideName);
   const int outerCell=
-    buildZone.createUnit(System,FC,2);
+    buildZone.createUnit(System,FC,backName);
 
   if (CGunits.empty() || CGunits.find("All")!=CGunits.end())
     CG.insertAllInCell(System,outerCell);
@@ -152,39 +128,6 @@ internalGroup(Simulation& System,
   return  outerCell;
 }
 
-int
-internalFreeGroup(Simulation& System,
-		  attachSystem::BlockZone& buildZone,
-		  const attachSystem::FixedComp& linkUnit,
-		  const std::string& sideName,
-		  attachSystem::FixedComp& FC,
-		  attachSystem::ContainedGroup& CG,
-		  const std::set<std::string>& CGunits)
-  
-  /*!
-    Construct a unit in a simgle component
-    \param System :: Simulation to use
-    \param masterCell :: main master cell
-    \param linkUnit :: Previous link unit to use
-    \param sideName :: Link point to use
-    \param buildUnit :: New unit to construct
-  */
-{
-  ELog::RegMethod RegA("generalConstruct[F]","internalFreeGroup");
-
-  FC.createAll(System,linkUnit,sideName);
-  const int outerCell=
-    buildZone.createUnit(System,FC,2);
-
-  if (CGunits.empty() || CGunits.find("All")!=CGunits.end())
-    CG.insertAllInCell(System,outerCell);
-  else 
-    {
-      for(const std::string& Item : CGunits)
-	CG.insertInCell(Item,System,outerCell);
-    }
-  return  outerCell;
-}
   
 }   // NAMESPACE constructSystem
 

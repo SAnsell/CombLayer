@@ -63,6 +63,7 @@ class Vec3D
   Vec3D(const double,const double,const double);
   explicit Vec3D(const double*);
   Vec3D(const Vec3D&);
+  Vec3D(Vec3D&&) =default;
   virtual ~Vec3D();
 
   const double& X() const { return x; }   ///< Accessor function (X)
@@ -70,6 +71,7 @@ class Vec3D
   const double& Z() const { return z; }   ///< Accessor function (Z)
 
   Vec3D& operator=(const Vec3D&);
+  Vec3D& operator=(Vec3D&&) =default;
   Vec3D& operator()(const double,const double,const double);
 
   template<typename IT> double& operator[](const IT);

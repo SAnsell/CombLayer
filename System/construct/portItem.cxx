@@ -62,6 +62,7 @@
 #include "LineTrack.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "ExternalCut.h"
 
 #include "portItem.h"
 
@@ -72,6 +73,7 @@ portItem::portItem(const std::string& baseKey,
 		   const std::string& Key) :
   attachSystem::FixedComp(Key,8),
   attachSystem::ContainedComp(),
+  attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   portBase(baseKey),
   statusFlag(0),outerFlag(0),
@@ -87,7 +89,9 @@ portItem::portItem(const std::string& baseKey,
 
 portItem::portItem(const std::string& Key) :
   attachSystem::FixedComp(Key,8),
-  attachSystem::ContainedComp(),attachSystem::CellMap(),
+  attachSystem::ContainedComp(),
+  attachSystem::ExternalCut(),
+  attachSystem::CellMap(),
   portBase(keyName),
   statusFlag(0),outerFlag(0),
   length(0.0),radius(0.0),wall(0.0),
@@ -104,6 +108,7 @@ portItem::portItem(const std::string& Key) :
 portItem::portItem(const portItem& A) : 
   attachSystem::FixedComp(A),
   attachSystem::ContainedComp(A),
+  attachSystem::ExternalCut(A),
   attachSystem::CellMap(A),
   portBase(A.portBase),statusFlag(A.statusFlag),
   outerFlag(A.outerFlag),centreOffset(A.centreOffset),
@@ -132,6 +137,7 @@ portItem::operator=(const portItem& A)
     {
       attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       attachSystem::CellMap::operator=(A);
       statusFlag=A.statusFlag;
       outerFlag=A.outerFlag;
@@ -351,14 +357,14 @@ portItem::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+wall);
   ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,flangeRadius);
 
-  ELog::EM<<"Port = "<<Origin+Y*length<<ELog::endDiag;
-  ELog::EM<<"PortAxis = "<<Y<<ELog::endDiag;
   // Final outer
-  ModelSupport::buildPlane(SMap,buildIndex+2,
-			   Origin+Y*length,Y);
-
-  ModelSupport::buildPlane(SMap,buildIndex+102,
-			   Origin+Y*(length-flangeLength),Y);
+  if (!isActive("outerSurf"))
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
+      setCutSurf("outerSurf",SMap.realSurf(buildIndex+2));
+    }
+  makeShiftedSurf(SMap,"outerSurf",buildIndex+102,
+		  Y,-flangeLength);
 
   const bool capFlag(capThick>Geometry::zeroTol);
   const bool windowFlag (capFlag &&
@@ -387,8 +393,6 @@ portItem::createSurfaces()
 	}
     }
   /// ----  END : Cap/Window
- 
-
   return;
 }
 

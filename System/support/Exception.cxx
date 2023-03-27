@@ -162,6 +162,67 @@ IndexError<T>::setOutLine()
 }
 
 //---------------------------------------
+//           LinearError class
+//---------------------------------------
+
+template<typename T>
+LinearError<T>::LinearError(std::vector<T> V,
+		       const std::string& Place) :
+  ExBase(0,Place),Val(std::move(V))
+  /*!
+    Constructor 
+    \param V :: Valued access
+    \param B :: Max value allowed
+    \param Place :: Description string
+   */
+{
+  setOutLine();
+}
+
+template<typename T> 
+LinearError<T>::LinearError(const LinearError<T>& A) :
+  ExBase(A),Val(A.Val)
+  /*!
+    Copy constructor
+    \param A :: Object to copy
+  */
+{}
+
+template<typename T>
+LinearError<T>&
+LinearError<T>::operator=(const LinearError<T>& A) 
+  /*!
+    Assignment operator
+    \param A :: Object to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      ExBase::operator=(A);
+    }
+  return *this;
+}
+
+
+template<typename T>
+void
+LinearError<T>::setOutLine()
+  /*!
+    Writes out the range and limits
+    to the outline
+  */
+{
+  std::stringstream cx;
+  cx<<"\nEXCEPTION TYPE :: LinearError< "<<typeIDName<T>()<<" > \n";
+  cx<<ExBase::getErr()<<" :: \n";
+  for(const T& item : Val)
+    cx<<item<<" ";
+  OutLine=cx.str();
+  return;
+}
+
+//---------------------------------------
 //           SizeError class
 //---------------------------------------
 
@@ -1528,6 +1589,7 @@ template class ColErr::RangeError<long int>;
 template class ColErr::RangeError<size_t>;
 template class ColErr::TypeConvError<Geometry::Vec3D,double>;
 template class ColErr::TypeConvError<double,Geometry::Vec3D>;
+template class ColErr::LinearError<double>;
 
 ///\endcond TEMPLATE
  

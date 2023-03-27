@@ -3,7 +3,7 @@
 
  * File:   softimaxInc/softimaxOpticsLine.h
  *
- * Copyright (c) 2004-2023 by Konstantin Batkov
+ * Copyright (c) 2004-2023 by Konstantin Batkov/Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -93,7 +93,7 @@ class softimaxOpticsLine :
   /// M1 - Mirror box
   std::shared_ptr<constructSystem::DomeConnector> M1TubeFront;
   std::shared_ptr<constructSystem::PipeTube> M1Tube;
-  std::shared_ptr<constructSystem::OffsetFlangePipe> M1TubeBack;
+  std::shared_ptr<constructSystem::DomeConnector> M1TubeBack;
   /// M1 - Mirror
   std::shared_ptr<xraySystem::M1Detail> M1Detail;
   

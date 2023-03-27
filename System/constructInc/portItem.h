@@ -46,9 +46,9 @@ namespace constructSystem
 class portItem :
   public attachSystem::FixedComp,
   public attachSystem::ContainedComp,
+  public attachSystem::ExternalCut,
   public attachSystem::CellMap
 {
-
  protected:
 
   const std::string portBase;  ///< Base key name

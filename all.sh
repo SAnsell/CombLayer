@@ -8,8 +8,8 @@ nValid=1000
 # exit
 #segments=$(for i in {40..49}; do echo -n "Segment$i "; done)
 segments=All
-./singleItem --singleItem M1detail --validAll --validCheck ${nValid} AA 
-exit
+#./singleItem --singleItem M1detail --validAll --validCheck ${nValid} AA 
+#exit
 
 
 parallel --halt now,fail=1 "./maxiv --defaultConfig Single {} --validAll --validCheck $nValid AA" ::: \

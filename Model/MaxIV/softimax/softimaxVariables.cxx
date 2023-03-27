@@ -305,65 +305,42 @@ m1DetailVariables(FuncDataBase& Control,
   setVariable::PipeGenerator PipeGen;
   setVariable::DomeConnectorGenerator DCGen;
   setVariable::PortItemGenerator PItemGen;
+
+  const double tubeLength(41.0);
   
   const std::string frontName=mirrorKey+"M1TubeFront";
+  const std::string tubeName=mirrorKey+"M1Tube";
+  const std::string backName=mirrorKey+"M1TubeBack";
 
-
-  PItemGen.setCF<setVariable::CF40>(5.0);
+  PItemGen.setCF<setVariable::CF63>(6.0);
   PItemGen.setNoPlate();
   
-  DCGen.setFlangeCF<CF150>(3.0);
+  DCGen.setSphere(7.0,2.5);
+  DCGen.setFlangeCF<CF150>(0.8);
+  DCGen.setLengths(2.5,2.0,3.0);
   DCGen.generateDome(Control,frontName,1);
   PItemGen.generatePort(Control,frontName+"Port0",
 			Geometry::Vec3D(0.0, 0.0, 0.0),
-			Geometry::Vec3D(0,1,0));
+			Geometry::Vec3D(0,-1,0));
 
-  
-  
-  PipeGen.setMat("Stainless304");
-  PipeGen.setCF<CF63>();
-  PipeGen.setBFlange(8.05,0.3);
-  PipeGen.generatePipe(Control,frontName,7.6);
-  Control.addVariable(frontName+"WindowActive",0);
-  constexpr double xstep(2.2);
-  Control.addVariable(frontName+"FlangeBackXStep",-xstep);
-
-  ////////////////////////
-  constexpr double theta = -1.0; // incident beam angle
-  constexpr double phi = 0.0;   // rotation angle
-  //  const double normialAngle=0.2;
-  constexpr double vAngle=180.0;
-  constexpr double centreDist(0.0); // along the beam line
-  constexpr double tubeLength=50.0;
-  ////////////////////////
 
   const std::string mName=mirrorKey+"M1Tube";
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.generateTube(Control,mName,tubeLength);
   Control.addVariable(mName+"WallMat","Titanium");
-  Control.addVariable(mName+"XStep",-xstep);
   Control.addVariable(mName+"NPorts",0);   // beam ports
 
+  M1DGen.generateMirror(Control,mirrorKey+"M1",0.0,0.0);
   
-  M1DGen.generateMirror(Control,mirrorKey+"M1",2.0,0.0);
-
   Control.addVariable(mirrorKey+"M1StandHeight",110.0);
   Control.addVariable(mirrorKey+"M1StandWidth",30.0);
   Control.addVariable(mirrorKey+"M1StandLength",30.0);
   Control.addVariable(mirrorKey+"M1StandMat","SiO2");
 
-  const std::string backName=mirrorKey+"M1TubeBack";
-  PipeGen.setMat("Stainless304");
-  PipeGen.setCF<CF63>();
-  PipeGen.setAFlange(8.05,0.3);
-  PipeGen.generatePipe(Control,backName,4.5); // yStep, length
-  Control.addVariable(backName+"WindowActive",0);
-  Control.addVariable(backName+"XYAngle",2*theta);
-
-  const double TL=0.5*(tubeLength)*sin(2.0*theta*M_PI/180.0);
-  Control.addVariable(backName+"XStep",xstep-TL);
-  Control.addVariable(backName+"FlangeFrontXStep",TL-xstep);
-
+  DCGen.generateDome(Control,backName,1);
+  PItemGen.generatePort(Control,backName+"Port0",
+			Geometry::Vec3D(0.0, 0.0, 0.0),
+			Geometry::Vec3D(0,-1,0));
   return;
 }
 

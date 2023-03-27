@@ -68,6 +68,7 @@ class DomeConnectorGenerator
   void setFlat(const double L)
   { flatLen=L; }
 
+
   /// set all the lengths
   void setLengths(const double LA,const double LB,const double LC)
   { curveStep=LA;joinStep=LB;flatLen=LC; }

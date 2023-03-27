@@ -77,7 +77,9 @@ DomeConnectorGenerator::setFlangeCF(const double scaleFraction)
     to the inner radius
   */
 {
-
+  ELog::RegMethod RegA("DomeConnector","setFlangeCF");
+  if (scaleFraction>=1.0)
+    ELog::EM<<"Warning scaleFration > 1.0"<<scaleFraction<<ELog::endDiag;
   innerRadius=CF::innerRadius;
   curveRadius=CF::innerRadius*scaleFraction;
   flangeRadius=CF::flangeRadius;

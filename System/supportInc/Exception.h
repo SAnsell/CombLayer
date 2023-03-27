@@ -3,7 +3,7 @@
  
  * File:   supportInc/Exception.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -136,6 +136,33 @@ class IndexError : public ExBase
 
   Called when an index falls out of range
 */
+template<typename T>
+class LinearError : public ExBase
+{
+ private:
+
+  std::vector<T> Val;     ///< Actual value called 
+  void setOutLine();
+
+ public:
+
+  LinearError(std::vector<T>,const std::string&);
+  LinearError(const LinearError& A);
+  LinearError& operator=(const LinearError&);
+  virtual ~LinearError() throw() {}   ///< Destructor 
+
+};
+
+/*!
+  \class SizeError
+  \brief Exception for index errors
+  \author Stuart Ansell
+  \date November 2015
+  \version 1.0
+
+  Called when an index falls out of range
+*/
+
 template<typename T>
 class SizeError : public ExBase
 {

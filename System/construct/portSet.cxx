@@ -56,8 +56,10 @@
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "ExternalCut.h"
 #include "Importance.h"
 #include "Object.h"
+
 
 #include "portItem.h"
 #include "doublePortItem.h"
@@ -477,6 +479,24 @@ portSet::constructPortAxis(const FuncDataBase& Control)
   populate(Control);
   for(size_t i=0;i<Ports.size();i++)
     Ports[i]->setCentLine(FUnit,PCentre[i],PAxis[i]);
+  return;
+}
+
+void
+portSet::copyPortLinks
+(size_t offsetIndex,attachSystem::FixedComp& FC) const
+  /*!
+    Copy the end point of all the ports into the links
+    of the FC item
+    \param index :: offset index to start
+  */
+{
+  for(size_t i=0;i<Ports.size();i++)
+    {
+      FC.setLinkCopy(offsetIndex,*Ports[i],"OuterPlate");
+      FC.nameSideIndex(offsetIndex,"port"+std::to_string(i));
+      offsetIndex++;
+    }
   return;
 }
 

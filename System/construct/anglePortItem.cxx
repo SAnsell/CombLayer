@@ -3,7 +3,7 @@
 
  * File:   construct/anglePortItem.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,6 +62,7 @@
 #include "LineTrack.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "ExternalCut.h"
 
 #include "portItem.h"
 #include "anglePortItem.h"
@@ -362,8 +363,10 @@ anglePortItem::createLinks()
 void
 anglePortItem::addFlangeCut(MonteCarlo::Object* obj) const
   /*!
-    Adds the port exclude to the main tube
-    \param mainTube :: object for main tube
+    If a flange intersect another object this support
+    function can add the intersection to it object.
+    E.g the anglePort intersect a an outerVoid of a main vessel
+    \param obj :: object to void to be added.
   */
 {
   ELog::RegMethod RegA("anglePortItem","addFlangeCut");
@@ -380,10 +383,10 @@ anglePortItem::addFlangeCut(MonteCarlo::Object* obj) const
 
 void
 anglePortItem::createAll(Simulation& System,
-		    const attachSystem::FixedComp& FC,
-		    const long int sideIndex)
+			 const attachSystem::FixedComp& FC,
+			 const long int sideIndex)
   /*!
-    Build the system assuming outer cells have been added
+    Builds the angle port item
     \param System :: Simulation to use
     \param FC :: Fixed comp
     \param sideIndex :: Link point
@@ -395,7 +398,5 @@ anglePortItem::createAll(Simulation& System,
   
   return;
 }
-
-
 
 }  // NAMESPACE constructSystem

@@ -3,7 +3,7 @@
  
  * File:   constructInc/DomeConnector.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +58,7 @@ class DomeConnector :
   int voidMat;                  ///< inner (Void) material
 
   size_t portRotateIndex;       ///< port to rotate (index+1)
+  Geometry::Vec3D postZAxis;    ///< Sexondary Z axis if PortRotate
   
   constructSystem::portSet PSet;        ///< Port set
   
@@ -83,6 +84,7 @@ class DomeConnector :
 
   /// accessor to port rotate
   void setPortRotate(const size_t I) { portRotateIndex=I; }
+  void setPostZAxis(Geometry::Vec3D A) { postZAxis=std::move(A); }
   
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

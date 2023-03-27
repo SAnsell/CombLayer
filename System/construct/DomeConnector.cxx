@@ -39,6 +39,7 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
+#include "Exception.h"
 #include "surfRegister.h"
 #include "varList.h"
 #include "Code.h"
@@ -70,12 +71,13 @@ namespace constructSystem
 {
 
 DomeConnector::DomeConnector(const std::string& Key) :
-  attachSystem::FixedRotate(Key,2),
+  attachSystem::FixedRotate(Key,8),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::ExternalCut(),
-  PSet(*this),portRotateIndex(0)
+  portRotateIndex(0),postZAxis(0,0,1),
+  PSet(*this)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -88,7 +90,7 @@ DomeConnector::~DomeConnector()
     Destructor
   */
 {}
-
+  
 void
 DomeConnector::populate(const FuncDataBase& Control)
   /*!
@@ -113,6 +115,11 @@ DomeConnector::populate(const FuncDataBase& Control)
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
 
+  if (curveRadius>=innerRadius || innerRadius>=flangeRadius)
+    {
+      throw ColErr::LinearError<double>
+	({curveRadius,innerRadius,flangeRadius},"C/I/F radii out of order");
+    }
   return;
 }
 
@@ -124,6 +131,14 @@ DomeConnector::createSurfaces()
 {
   ELog::RegMethod RegA("DomeConnector","createSurfaces");
 
+  if (!isActive("back"))
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+2,
+			       Origin+Y*(joinStep+flatLen),Y);
+      ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
+    }
+
+  ELog::EM<<curveRadius<<" "<<innerRadius<<" "<<flangeRadius<<ELog::endDiag;
   const double surfTolStep(1e-3); // step to allow no near plane/sphere touch
   // sphere on top
   // x step down from cord, y step up from cord.
@@ -132,6 +147,7 @@ DomeConnector::createSurfaces()
   const double Radius= (L*L+y*y)/(2.0*y);
   const double x= (L*L-y*y)/(2.0*y);
   const Geometry::Vec3D rCentre=Origin+Y*x; 
+
   
   ModelSupport::buildSphere(SMap,buildIndex+8,rCentre,Radius);
   ModelSupport::buildSphere(SMap,buildIndex+18,rCentre,Radius+plateThick);
@@ -156,10 +172,9 @@ DomeConnector::createSurfaces()
   // BASE PLANES
   // non-touching plane above top dome
   ModelSupport::buildPlane
-    (SMap,buildIndex+1,Origin-Y*(joinStep+plateThick+surfTolStep),Y);
+    (SMap,buildIndex+1,Origin-Y*(curveStep+plateThick+surfTolStep),Y);
   ModelSupport::buildPlane(SMap,buildIndex+101,Origin,Y);
   ModelSupport::buildPlane(SMap,buildIndex+201,Origin+Y*joinStep,Y);
-  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(joinStep+flatLen),Y);
   ModelSupport::buildPlane
     (SMap,buildIndex+301,Origin+Y*(joinStep+flatLen-flangeLen),Y);
   
@@ -180,8 +195,9 @@ DomeConnector::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("DomeConnector","createObjects");
 
+  const HeadRule backHR=getRule("back");
   HeadRule HR;
-
+  
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-8 -101");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
@@ -194,25 +210,25 @@ DomeConnector::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -201 -218 208");
   makeCell("Void",System,cellIndex++,wallMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -2 -307");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -307");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*backHR);
 
   // flange
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -2 -327 317");
-  makeCell("Flange",System,cellIndex++,wallMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -327 317");
+  makeCell("Flange",System,cellIndex++,wallMat,0.0,HR*backHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 201 307 -317");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 307 -317");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR*backHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -301 -327 (218:201) (317:-201)");
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"101 -301 -327 (218:201) (317:-201)");
   makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);
-
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -101 18 -327");
   makeCell("TopOuterVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -327");
-  addOuterSurf(HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -327");
+  addOuterSurf(HR*backHR);
 
   return;
 }
@@ -226,11 +242,29 @@ DomeConnector::createLinks()
   */
 {
   ELog::RegMethod RegA("DomeConnector","createLinks");
+  // Set origin back
+  size_t linkIndex(0);
+  if (portRotateIndex==1)  // back
+    {
+      FixedComp::setConnect(0,Origin+Y*(joinStep+flatLen),Y);
+      FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+2));
+      Origin+=Y*(joinStep+flatLen);
+      Y*=-1.0;
+      X*=-1.0;
+      linkIndex=1;
+    }
+
+  PSet.copyPortLinks(2,*this);
+
+  FixedComp::setLinkSurf(linkIndex,SMap.realSurf(buildIndex+8));
+  FixedComp::setBridgeSurf(linkIndex,-SMap.realSurf(buildIndex+101));
+  FixedComp::setConnect(linkIndex,Origin-Y*curveStep,Y);
+  linkIndex=1-linkIndex;
+  FixedComp::setConnect(linkIndex,Origin+Y*(joinStep+flatLen),Y);
+  FixedComp::setLinkSurf(linkIndex,SMap.realSurf(buildIndex+2));
 
   //  ExternalCut::createLink("plate",*this,0,Origin,-Y);  //front and back
   //  ExternalCut::createLink("plate",*this,1,Origin,Y);  //front and back
-  FixedComp::setConnect(1,Origin-Y*(joinStep+flatLen),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
   return;
 }
 
@@ -243,20 +277,21 @@ DomeConnector::createPorts(Simulation& System)
 {
   ELog::RegMethod RegA("DomeConnector","createPorts");
 
-  const HeadRule frontHR=HeadRule(SMap,buildIndex,-101);
-  
-  MonteCarlo::Object* insertObj= 
-    this->getCellObject(System,"Dome");
-  const HeadRule innerHR=HeadRule(SMap,buildIndex,8)*frontHR;
-  const HeadRule outerHR=HeadRule(SMap,buildIndex,18)*frontHR;
+  if (!PSet.empty())
+    {
+      ELog::EM<<"Creating ports"<<ELog::endDiag;
+      const HeadRule frontHR=HeadRule(SMap,buildIndex,-101);
+      
+      MonteCarlo::Object* insertObj= 
+	this->getCellObject(System,"Dome");
+      const HeadRule innerHR=HeadRule(SMap,buildIndex,8)*frontHR;
+      const HeadRule outerHR=HeadRule(SMap,buildIndex,18)*frontHR;
 
-
-  for(const int CN : insertCells)
-    PSet.addInsertPortCells(CN);
-  PSet.addInsertPortCells(getCell("TopOuterVoid"));
-
-
-  PSet.createPorts(System,insertObj,innerHR,outerHR);
+      for(const int CN : insertCells)
+	PSet.addInsertPortCells(CN);
+      PSet.addInsertPortCells(getCell("TopOuterVoid"));
+      PSet.createPorts(System,insertObj,innerHR,outerHR);
+    }
   return;
 }
 
@@ -317,28 +352,28 @@ DomeConnector::correctPortIntersect()
 {
   ELog::RegMethod RegA("DomeConnector","calcPortIntersect");
 
-  if (portRotateIndex)
+  if (portRotateIndex==1)  // back
+    {
+      Origin+=Y*(joinStep+flatLen);
+      Y*=-1.0;
+      X*=-1.0;
+    }
+  else if (portRotateIndex>1)
     {
       // port Info
-      const portItem& pI=PSet.getPort(portRotateIndex-1);
-      auto [ pOrg,pAxis,pLen ]=PSet.getPortInfo(portRotateIndex-1);
-      Geometry::Vec3D nOrg(pOrg+pAxis*pLen);
-      
+      const portItem& pI=PSet.getPort(portRotateIndex-2);
+      auto [ pOrg,pAxis,pLen ]=PSet.getPortInfo(portRotateIndex-2);
       pAxis.reBase(pI.getX(),-pI.getY(),pI.getZ());
-      
-      //  Origin-=nOrg;
-      //  this->reOrientate(0,-pAxis);
-      
-      //  ELog::EM<<"New Axis == "<<Y<<" :: "<<Z<<ELog::endDiag;
+
       pAxis*=-1.0;
-      Geometry::Vec3D rotAxis(0,1,0);
-      Geometry::Vec3D postZAxis(0,0,1);
+      Geometry::Vec3D rotAxis(pAxis);
+
       rotAxis=rotAxis.getInBasis(X,Y,Z);
       postZAxis=postZAxis.getInBasis(X,Y,Z);
       
       // retrack y to the port axis
       const Geometry::Quaternion QV=
-	Geometry::Quaternion::calcQVRot(Geometry::Vec3D(0,1,0),pAxis,rotAxis);
+	Geometry::Quaternion::calcQVRot(Y,pAxis,postZAxis);
       
       // Now move QV into the main basis set origin,X,Y,Z:
       const Geometry::Vec3D& QVvec=QV.getVec();
@@ -375,8 +410,8 @@ DomeConnector::createAll(Simulation& System,
   correctPortIntersect();
   createSurfaces();
   createObjects(System);
-  createLinks();
   createPorts(System);
+  createLinks();
   insertObjects(System);  
 
   
