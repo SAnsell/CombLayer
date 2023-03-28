@@ -3,7 +3,7 @@
  
  * File:   flukaTally/userTrackConstruct.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,13 +52,13 @@
 #include "userTrack.h"
 #include "userTrackConstruct.h" 
 
-
 namespace flukaSystem
 {
 
 void 
 userTrackConstruct::createTally(SimFLUKA& System,
-				const std::string& PType,const int fortranTape,
+				const std::string& PType,
+				const int fortranTape,
 				const int cellA,
 				const bool eLog,const double Emin,
 				const double Emax,const size_t nE)
@@ -120,15 +120,13 @@ userTrackConstruct::processTrack(SimFLUKA& System,
   const double EB=IParam.getDefValue<double>(1000,"tally",Index,4);
   const size_t NE=IParam.getDefValue<size_t>(200,"tally",Index,5); 
 
-
   // This needs to be more sophisticated
 
   for(const int cellA : cellList)
     {
       const int nextId=System.getNextFTape();
       userTrackConstruct::createTally(System,particleType,-nextId,
-				    cellA,1,EA,EB,NE);
-      
+				      cellA,1,EA,EB,NE);
     }  
   return;      
 }  
@@ -141,11 +139,10 @@ userTrackConstruct::writeHelp(std::ostream& OX)
   */
 {
   OX<<
-    "recordType filename \n"
-    "  --recordType avaiable:\n"
-    "    source : trajectory : local : continuous\n"
-    "    sourceLoss : trajLoss : user";
-
+    "usertrack: \n"
+    "   avaiable (from -T cell):\n"
+    "    energy cellNumber eLow eHigh nPoints\n"
+    "    energy FixedComp::CellMap eLow eHigh nPoints";
   return;
 }
 

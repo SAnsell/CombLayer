@@ -244,15 +244,18 @@ SimFLUKA::addTally(const flukaSystem::flukaTally& TI)
 {
   ELog::RegMethod RegA("SimFluka","addTally");
 
-  // Fluka cannot share output [and fOutput > 25 ]
+  // Fluka cannot share output with different types
+  // [and fOutput > 25 ]
   const int fID=std::abs(TI.getID());
 
   // is id already present
-  if (std::find_if(FTItem.begin(),FTItem.end(),
-		   [&fID](const flukaSystem::flukaTally* FPtr)
-		   {
-		     return FPtr->getID()==fID;
-		   }) != FTItem.end())
+  FTallyTYPE::const_iterator sc=
+    std::find_if(FTItem.begin(),FTItem.end(),
+		 [&fID](const flukaSystem::flukaTally* FPtr)
+		 {
+		   return FPtr->getID()==fID;
+		 });
+  if (sc != FTItem.end() && (*sc)->getType()!=TI.getType())
     {
       throw ColErr::InContainerError<int>(fID,"fID for tally");
     }
