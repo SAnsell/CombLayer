@@ -198,7 +198,7 @@ LocalShielding3::createObjects(Simulation& System)
     (cornerHeight>Geometry::zeroTol);
 
   const HeadRule topHR(SMap,buildIndex,(isCorners) ? -26:-6);
-  
+
   if ((!isMidHole) && (!isCorners))
     {
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
@@ -224,7 +224,7 @@ LocalShielding3::createObjects(Simulation& System)
 	  int SI(buildIndex+100);
 	  for (size_t i=0;i<7;++i)
 	    {
-	      const int mat =(i%2) ? mainMat : 0;
+	      const int mat =(i%2) ? 0 : mainMat;
 	      HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
 					   "13 -14 5M -15M");
 	      if (i%2)
