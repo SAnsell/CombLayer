@@ -328,13 +328,13 @@ TDCBeamDump::createObjects(Simulation& System)
   makeCell("FrontPlate",System,cellIndex++,frontPlateMat,0.0,Out*baseHR);
 
   Out=ModelSupport::getHeadRule(SMap,buildIndex,"41 -2 3 -4 5 -6 7 ");
-  makeCell("Bulk",System,cellIndex++,bulkMat,0.0,Out*baseHR);
+  makeCell("Bulk",System,cellIndex++,bulkMat,0.0,Out*baseHR); // steel infront of the core
 
   Out=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 3 -4 5 -6 17 ");
-  makeCell("Bulk",System,cellIndex++,bulkMat,0.0,Out*baseHR);
+  makeCell("BulkCore",System,cellIndex++,bulkMat,0.0,Out*baseHR); // steel surrounding the core
 
   Out=ModelSupport::getHeadRule(SMap,buildIndex,"12 -22 3 -4 5 -6 ");
-  makeCell("BulkBack",System,cellIndex++,bulkMat,0.0,Out*baseHR);
+  makeCell("BulkBack",System,cellIndex++,bulkMat,0.0,Out*baseHR); // steel behind the core
 
   Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 -1 3 -4 5 -6 7 ");
   makeCell("SkinFront",System,cellIndex++,skinMat,0.0,Out*baseHR*frontHR);
