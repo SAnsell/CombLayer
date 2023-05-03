@@ -1,7 +1,7 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
- * File:   softimax/M1Detail.cxx
+
+ * File:   softimax/M1FrontShield.cxx
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
  *
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -38,6 +38,7 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "surfRegister.h"
+#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "varList.h"
@@ -50,116 +51,103 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "surfRegister.h"
-#include "objectRegister.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
-#include "ContainedComp.h"
-#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "ContainedComp.h"
 
-#include "M1Mirror.h"
-#include "M1BackPlate.h"
 #include "M1FrontShield.h"
-#include "M1Detail.h"
+
 
 namespace xraySystem
 {
 
-M1Detail::M1Detail(const std::string& Key) :
+M1FrontShield::M1FrontShield(const std::string& Key) :
   attachSystem::FixedRotate(Key,8),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
-  attachSystem::SurfMap(),
-  mirror(new M1Mirror(keyName+"Mirror")),
-  cClamp(new M1BackPlate(keyName+"CClamp")),
-  frontShield(new M1FrontShield(keyName+"FShield"))
+  attachSystem::SurfMap()
   /*!
     Constructor
     \param Key :: Name of construction key
+    \param Index :: Index number
   */
-{
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-  
-  OR.addObject(mirror);
-  OR.addObject(cClamp);
-}
+{}
 
-M1Detail::~M1Detail()
+
+M1FrontShield::~M1FrontShield()
   /*!
     Destructor
    */
 {}
 
 void
-M1Detail::populate(const FuncDataBase& Control)
+M1FrontShield::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: Variable table to use
   */
 {
-  ELog::RegMethod RegA("M1Detail","populate");
+  ELog::RegMethod RegA("M1FrontShield","populate");
 
   FixedRotate::populate(Control);
+
+  extent=Control.EvalVar<double>(keyName+"Extent");
+
+  mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
+  voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
+  
 
   return;
 }
 
 
 void
-M1Detail::createSurfaces()
+M1FrontShield::createSurfaces()
   /*!
     Create planes for mirror block and support
   */
 {
-  ELog::RegMethod RegA("M1Detail","createSurfaces");
+  ELog::RegMethod RegA("M1FrontShield","createSurfaces");
 
-  
-  return; 
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(extent/2.0),Y);
+
+  return;
 }
 
 void
-M1Detail::createObjects(Simulation& System)
+M1FrontShield::createObjects(Simulation& System)
   /*!
     Create the vaned moderator
     \param System :: Simulation to add results
    */
 {
-  ELog::RegMethod RegA("M1Detail","createObjects");
+  ELog::RegMethod RegA("M1FrontShield","createObjects");
 
-  mirror->addInsertCell(getInsertCells());
-  mirror->createAll(System,*this,0);
-  ELog::EM<<"mirror -> "<<mirror->getLinkPt(0)<<ELog::endDiag;
-  cClamp->addInsertCell(getInsertCells());
-  cClamp->setCutSurf("FarEnd",*mirror,"back");
-  cClamp->setCutSurf("NearEnd",*mirror,"front");
-  cClamp->setCutSurf("Back",*mirror,"outSide");
-  cClamp->setCutSurf("Mirror",*mirror,"mirrorSide");
-  cClamp->setCutSurf("Top",*mirror,"top");
-  cClamp->setCutSurf("Base",*mirror,"base");
-  cClamp->createAll(System,*mirror,"backPlateOrg");
-  
-  return; 
+  HeadRule HR;
+
+  return;
 }
 
 void
-M1Detail::createLinks()
+M1FrontShield::createLinks()
   /*!
     Creates a full attachment set
   */
 {
-  ELog::RegMethod RegA("M1Detail","createLinks");
+  ELog::RegMethod RegA("M1FrontShield","createLinks");
+
+  // link points are defined in the end of createSurfaces
 
   
   return;
 }
 
 void
-M1Detail::createAll(Simulation& System,
+M1FrontShield::createAll(Simulation& System,
 		  const attachSystem::FixedComp& FC,
 		  const long int sideIndex)
   /*!
@@ -169,13 +157,14 @@ M1Detail::createAll(Simulation& System,
     \param sideIndex :: Side point
    */
 {
-  ELog::RegMethod RegA("M1Detail","createAll");
-
+  ELog::RegMethod RegA("M1FrontShield","createAll");
   populate(System.getDataBase());
+
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();
+  insertObjects(System);
 
   return;
 }

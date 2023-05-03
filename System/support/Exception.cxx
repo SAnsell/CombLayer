@@ -623,9 +623,10 @@ OrderError<T>::setOutLine()
 // DimensionError
 //-------------------------
 
-template<unsigned int ndim,typename T>
-DimensionError<ndim,T>::DimensionError(const T* A,const T* R,
-				       const std::string& Place) :
+template<typename T>
+DimensionError<T>::DimensionError(std::vector<T> A,
+				  std::vector<T> R,
+				  const std::string& Place) :
   ExBase(0,Place)
   /*!
     Set a DimensionError
@@ -634,53 +635,24 @@ DimensionError<ndim,T>::DimensionError(const T* A,const T* R,
     \param Place :: String describing the place
   */
 {
-  for(unsigned int i=0;i<ndim;i++)
-    {
-      indexSize[i]=A[i];
-      reqSize[i]=R[i];
-    }  
-  setOutLine();
-}
-
-template<unsigned int ndim,typename T>
-DimensionError<ndim,T>::DimensionError(const std::vector<T>& A,
-				       const std::vector<T>& R,
-				       const std::string& Place) :
-  ExBase(0,Place)
-  /*!
-    Set a DimensionError
-    \param A :: Array size
-    \param R :: Required size
-    \param Place :: String describing the place
-  */
-{
-  for(size_t i=0;i<ndim;i++)
-    {
-      indexSize[i]=(i<A.size()) ? A[i] : T(0);
-      reqSize[i]=(i<R.size()) ? R[i] : T(0);
-    }
+  indexSize=std::move(A);
+  reqSize=std::move(R);
   setOutLine();
 }
 
 
-template<unsigned int ndim,typename T>
-DimensionError<ndim,T>::DimensionError(const DimensionError<ndim,T>& A) :
-  ExBase(A)
+template<typename T>
+DimensionError<T>::DimensionError(const DimensionError<T>& A) :
+  ExBase(A),indexSize(A.indexSize),reqSize(A.reqSize)
   /*!
     Copy constructor 
     \param A :: Object to copy
   */
-{
-  for(unsigned int i=0;i<ndim;i++)
-    {
-      indexSize[i]=A.indexSize[i];
-      reqSize[i]=A.reqSize[i];
-    }  
-}
+{}
 
-template<unsigned int ndim,typename T>
-DimensionError<ndim,T>&
-DimensionError<ndim,T>::operator=(const DimensionError<ndim,T>& A) 
+template<typename T>
+DimensionError<T>&
+DimensionError<T>::operator=(const DimensionError<T>& A) 
   /*!
     Assignment operator
     \param A :: Object to copy
@@ -690,32 +662,33 @@ DimensionError<ndim,T>::operator=(const DimensionError<ndim,T>& A)
   if (this!=&A)
     {
       ExBase::operator=(A);
-      for(unsigned int i=0;i<ndim;i++)
-        {
-	  indexSize[i]=A.indexSize[i];
-	  reqSize[i]=A.reqSize[i];
-	}
+      indexSize=A.indexSize;
+      reqSize=A.reqSize;
     }
   return *this;
 }
 
-template<unsigned int ndim,typename T>
+template<typename T>
 void
-DimensionError<ndim,T>::setOutLine()
+DimensionError<T>::setOutLine()
   /*!
     Writes out the range and aim point
     to OutLine
   */
 {
   std::stringstream cx;
-  cx<<"\nEXCEPTION TYPE :: DimensionError< "<<ndim<<" , "
+  cx<<"\nEXCEPTION TYPE :: DimensionError< "
     <<typeIDName<T>()<<" >\n";
 
   cx<<getErr()<<":";
 
-  for(unsigned int i=0;i<ndim;i++)
+  for(unsigned int i=0;i<indexSize.size();i++)
     {
-      cx<<indexSize[i]<<" ("<<reqSize[i]<<") ";
+      cx<<indexSize[i]<<" (";
+      if (i>=reqSize.size())
+	cx<<" -- ) ";
+      else
+	cx<<reqSize[i]<<") ";
     }
   OutLine=cx.str();
   return;
@@ -1575,8 +1548,8 @@ template class ColErr::MisMatch<unsigned int>;
 template class ColErr::MisMatch<long int>;
 template class ColErr::MisMatch<unsigned long int>;
 template class ColErr::ArrayError<2>;
-template class ColErr::DimensionError<4,long int>;
-template class ColErr::DimensionError<3,size_t>;
+template class ColErr::DimensionError<long int>;
+template class ColErr::DimensionError<size_t>;
 template class ColErr::CastError<mainSystem::IItemBase>;
 template class ColErr::CastError<TimeData::WorkSpace>;
 template class ColErr::CastError<SDef::SrcBase>;

@@ -3,7 +3,7 @@
  
  * File:   monte/Acomp.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1152,8 +1152,8 @@ Acomp::makePI(std::vector<BnId>& DNFobj) const
       Tmod.clear();                  // erase all at the start
 
       //set PI status to 1
-      for_each( Work.begin(),Work.end(),
-		std::bind2nd(std::mem_fun_ref(&BnId::setPI),1) );
+      for_each(Work.begin(),Work.end(),
+	       [](BnId& item){ item.setPI(1); });
 
       //Collect into pairs which have a difference of +/- one 
       // object

@@ -69,6 +69,9 @@ class M1BackPlate :
   double elecEdge;            ///< edge thickness
   double elecHoleRadius;      ///< central hole radius
 
+  double outerVaneThick;          ///< Thickness of outer vanes
+  double innerVaneThick;          ///< Thickness of inner vanes
+    
   int baseMat;                ///< Base material
   int supportMat;             ///< Base material
   int electronMat;            ///< Electron shield material

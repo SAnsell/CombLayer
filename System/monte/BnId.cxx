@@ -3,7 +3,7 @@
  
  * File:   monte/BnId.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -473,8 +473,8 @@ BnId::reverse()
     Transform 1 -> -1
   */
 {
-  transform(Tval.begin(),Tval.end(),Tval.begin(),
-	    std::bind2nd(std::multiplies<int>(),-1));
+  for(int& v : Tval)
+    v*=-1;
   return;
 }
 

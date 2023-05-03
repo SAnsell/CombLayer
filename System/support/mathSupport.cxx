@@ -143,6 +143,17 @@ countBits(const size_t& u)
 
 }
 
+size_t
+getPowerTwo(const size_t N)
+  /*!
+    Gets the 2^n part of a number .
+    Maybe quicker way with rotate ??
+    \return number
+  */
+{
+  return std::pow(2L,std::floor(std::log2(N)));
+}
+
 long int
 factorial(const int N)
 /*!
@@ -422,6 +433,28 @@ iteratorPos(const std::vector<T>& xArray,const T& Aim)
   typename std::vector<T>::const_iterator xV=
     lower_bound(xArray.begin(),xArray.end(),Aim);
   return xV;
+}
+
+template<typename T>
+size_t
+rangePos(const std::vector<T>& xArray,const T& Aim)
+/*!
+  Detemine the point that matches an array.
+  Such that  \f$ xArray[index] > Aim> xArray[index+1] \f$
+  This also gives -1 and size-1
+  \param xArray :: Array to search
+  \param Aim :: Aim Point
+  \return position in array  [ranged between: -1 and size-1  ] 
+*/
+{
+  if (xArray.empty() || Aim<=xArray.front())
+    return 0;
+  if (Aim>=xArray.back())
+    return xArray.size()-1;
+  
+  typename std::vector<T>::const_iterator 
+    xV=lower_bound(xArray.begin(),xArray.end(),Aim);
+  return static_cast<size_t>(distance(xArray.begin(),xV)-1);
 }
 
 template<typename T>
@@ -894,6 +927,10 @@ derivQuadratic(const std::vector<double>::const_iterator&,
 template class mathSupport::PIndex<double>;
 template class mathSupport::PSep<double>;
 
+template size_t rangePos(const std::vector<float>&,const float&);
+template size_t rangePos(const std::vector<double>&,const double&);
+template size_t rangePos(const std::vector<DError::doubleErr>&,
+                           const DError::doubleErr&);
 template long int indexPos(const std::vector<double>&,const double&);
 template long int indexPos(const std::vector<DError::doubleErr>&,
                            const DError::doubleErr&);

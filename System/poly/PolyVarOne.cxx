@@ -3,7 +3,7 @@
  
  * File:   poly/PolyVarOne.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -556,8 +556,8 @@ PolyVar<1>::operator*=(const double V)
     \return (*this*V);
    */
 {
-  transform(PCoeff.begin(),PCoeff.end(),PCoeff.begin(),
-	    std::bind2nd(std::multiplies<double>(),V));
+  for(double& PV : PCoeff)
+    PV*=V;
   return *this;
 }
 
@@ -569,8 +569,8 @@ PolyVar<1>::operator/=(const double V)
     \return (*this/V);
    */
 {
-  transform(PCoeff.begin(),PCoeff.end(),PCoeff.begin(),
-	    std::bind2nd(std::divides<double>(),V));
+  for(double& PV : PCoeff)
+    PV/=V;
   return *this;
 }
 

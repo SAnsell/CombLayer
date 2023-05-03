@@ -3,7 +3,7 @@
  
  * File:   visit/Visit.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Vec3D.h"
-//#include "objectRegister.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -269,10 +268,13 @@ long int
 Visit::procDist(double& fullLen,const double lStep,
 		double unitLen,double& aFrac)
   /*!
-    \param fullLen :: Length remain
+    Allows unit steps through a length returing
+    the index 
+
+    \param fullLen :: Length remaining
     \param unitLen :: Single unit length
     \param aFrac :: Frac of first unit
-    \param bFrac :: Frac of last unit
+
     \return number to increase
    */
 {

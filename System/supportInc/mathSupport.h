@@ -3,7 +3,7 @@
  
  * File:   supportInc/mathSupport.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ double factorialDB(const int);
 double fibonacci(const int);
 double normalDist(const double); ///< convert a number 0->1 into a normal distribute
 double invErf(const double);    ///< Inverse error function
-
+size_t getPowerTwo(const size_t);
 
 template<typename T>
 size_t
@@ -90,6 +90,10 @@ T sign(T x)
 template<typename T>
 long int
 indexPos(const std::vector<T>&,const T&);
+
+template<typename T>
+size_t
+rangePos(const std::vector<T>&,const T&);
 
 /// Range and initialise polynominal calculation
 template<typename TX,typename TY>
@@ -271,163 +275,8 @@ public:
 
 };
 
-/*!
-  \class PairFstEq
-  \brief Functonal to provide equal for the first object in a pair.
-  \author S. Ansell
-  \date February 2006
-  \version 1.0
-*/
-
-template<typename T,typename U>
- class PairFstEq : public  std::binary_function<std::pair<T,U>,T, bool >     //Note this needs to be non-constant
-  {
-    public:
-
-    /// Check first items
-      bool operator()(const std::pair<T,U>& A,const T& B) const
-	{ 
-	  return (A.first==B);
-	}
-  };
-
-/*!
-  \class PairSndEq
-  \brief Functonal to provide equal for the second object in a pair.
-  \author S. Ansell
-  \date January 2006
-  \version 1.0
-*/
-
-template<typename T,typename U>
- class PairSndEq : public  std::binary_function<std::pair<T,U>,U, bool >     //Note this needs to be non-constant
-  {
-    public:
-
-      /// Check only second items
-      bool operator()(const std::pair<T,U>& A,const U& B) const
-	{ 
-	  return (A.second==B);
-	}
-  };
-
-/*!
-  \class PairFstLess
-  \brief Functonal to provide less than for the first object in a pair.
-  \author S. Ansell
-  \date June 2006
-  \version 1.0
-*/
-
-template<typename T,typename U>
- class PairFstLess : 
- public  std::binary_function<std::pair<T,U>,std::pair<T,U>,bool >     //Note this needs to be non-constant
-  {
-    public:
-    
-    /// Direct comparison operator
-    bool operator()(const std::pair<T,U>& A, const std::pair<T,U>& B) const    
-      { 
-	return (A.first<B.first);
-      }
-    
-    /// Subsequent comparison operator
-    bool operator()(const std::pair<T,U>& A, const T& B) const
-	{ 
-	  return (A.first<B);
-	}
-    };
-
-/*!
-  \class PairSndLess
-  \brief Functonal to provide lessthan for the second object in a pair.
-  \author S. Ansell
-  \date January 2006
-  \version 1.0
-*/
-
-template<typename T,typename U>
- class PairSndLess : 
- public  std::binary_function<std::pair<T,U>,std::pair<T,U>,bool >     //Note this needs to be non-constant
-  {
-    public:
-    
-    /// Direct comparison operator
-    bool operator()(const std::pair<T,U>& A, const std::pair<T,U>& B) const    
-      { 
-	return (A.second<B.second);
-      }
-    
-    /// Subsequent comparison operator
-    bool operator()(const std::pair<T,U>& A, const U& B) const
-	{ 
-	  return (A.second<B);
-	}
-    };
 
 
-
-/*!
-  \class PSortBoth
-  \brief Class to sort on the second object then first obj
-  \author S. Ansell
-  \date April 2005
-  \version 1.0
-
-*/
-template<typename T,typename U>
-class PSortBoth
-{
-public:
-
-  /// Sort functional
-  bool operator()(const std::pair<T,U>& A,const std::pair<T,U>& B) 
-    { 
-      return (A.second==B.second) ?
-	A.first>B.first :  A.second>B.second; 
-    }
-};
-
-/*!
-  \class PSortSecond
-  \brief Class to sort on the second object
-  \author S. Ansell
-  \date January 2006
-  \version 1.0
-
-*/
-template<typename T,typename U>
-class PSortSecond
-{
-public:
-
-  /// Sort functional
-  bool operator()(const std::pair<T,U>& A,const std::pair<T,U>& B) 
-    { 
-      return A.second<B.second;
-    }
-};
-
-/*!
-  \class absComp
-  \brief Class to compare absolute numbers 
-  \author S. Ansell
-  \date September 2005
-  \version 1.0
-*/
-
-template<typename T>
-class absComp
-{
-public:
-
-  /// Does the absolute comparison
-  bool operator()(const T& A,const T& B) const
-    {
-      return (std::abs(A)<std::abs(B));
-    }
-
-};
 
 /*!
   \class tolEqual

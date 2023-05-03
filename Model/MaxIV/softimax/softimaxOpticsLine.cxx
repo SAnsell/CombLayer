@@ -33,6 +33,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <array>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -96,6 +97,7 @@
 #include "Mirror.h"
 #include "M1Mirror.h"
 #include "M1BackPlate.h"
+#include "M1FrontShield.h"
 #include "M1Detail.h"
 #include "BeamPair.h"
 #include "TwinPipe.h"

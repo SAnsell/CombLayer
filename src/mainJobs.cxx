@@ -3,7 +3,7 @@
  
  * File:   src/mainJobs.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,7 +55,10 @@
 #include "Tally.h"
 #include "meshConstruct.h"
 #include "tmeshTally.h"
+#include "dataSlice.h"
+#include "multiData.h"
 #include "Visit.h"
+#include "FEM.h"
 
 
 
@@ -106,9 +109,126 @@ getTallyMesh(const Simulation* SimPtr,
 int
 createVTK(const mainSystem::inputParam& IParam,
 	  const Simulation* SimPtr,
-	  const std::string& Oname)
+	  const std::string& OName)
   /*!
     Run the VTK box
+    \param IParam :: Inpup parameters
+    \param SimPtr :: Simulation
+    \param OName :: Output name
+    \retval +ve : successfull completion 
+    \retval -ve : Error of attempted completion
+    \retval 0 : No action
+  */
+{
+  ELog::RegMethod RegA("mainJobs[F]","createVTK");
+
+  const bool vFlag=IParam.flag("vtk");
+  const bool fFlag=IParam.flag("fem");
+  if (vFlag || fFlag)
+    {
+      const std::string tagName=(fFlag) ? "fem" : "vtk";
+      const std::string meshName=(fFlag) ? "femMesh" : "vtkMesh";
+
+      const std::string vForm=
+	IParam.getDefValue<std::string>("",tagName,0);
+
+      std::array<size_t,3> MPts;
+      Geometry::Vec3D MeshA;
+      Geometry::Vec3D MeshB;
+      
+      if (IParam.flag(meshName))
+	{
+	  size_t itemIndex(0);
+	  MeshA=mainSystem::getNamedPoint
+	    (*SimPtr,IParam,meshName,0,itemIndex,
+	     "MeshA Point");
+	  MeshB=mainSystem::getNamedPoint
+	    (*SimPtr,IParam,meshName,0,itemIndex,
+	     "MeshB Point");
+	  
+	  MPts[0]=IParam.getValueError<size_t>
+	    (meshName,0,itemIndex++,"NXpts");
+	  MPts[1]=IParam.getValueError<size_t>
+	    (meshName,0,itemIndex++,"NYpts");
+	  MPts[2]=IParam.getValueError<size_t>
+	    (meshName,0,itemIndex++,"NZpts");
+	}
+      else if (!getTallyMesh(SimPtr,MeshA,MeshB,MPts))
+	{
+	  ELog::EM<<"No (tally) mesh for vtk/fem"<<ELog::endErr;
+	  return 0;
+	}
+
+      if (fFlag)
+	{
+	  FEM femUnit;
+	  if (vForm=="line")
+	    femUnit.setLineForm(); 
+
+	  femUnit.setBox(MeshA,MeshB);
+	  femUnit.setIndex(MPts[0],MPts[1],MPts[2]);
+	  femUnit.populate(*SimPtr);
+	  femUnit.writeFEM(OName);
+	}
+
+      else
+	{	
+	  ELog::EM<<"Processing VTK:"<<ELog::endBasic;
+	  Visit VTK;
+
+	  const std::string vType=
+	    IParam.getDefValue<std::string>("","vtkType",0);
+	  if (vType=="cell" || vType=="Cell")
+	    VTK.setType(Visit::VISITenum::cellID);
+	  else if (vType=="imp" || vType=="IMP")
+	    VTK.setType(Visit::VISITenum::imp);
+	  else if (vType=="dens" || vType=="density")
+	    VTK.setType(Visit::VISITenum::density);
+	  else if (vType=="weight" || vType=="wwg")
+	    VTK.setType(Visit::VISITenum::weight);
+	  else if (vType.empty())
+	    VTK.setType(Visit::VISITenum::material);
+	  else 
+	    throw ColErr::InContainerError<std::string>
+	      (vType,"vtkType unknown");
+	  
+	  if (vForm=="line")
+	    VTK.setLineForm(); 
+     
+	  std::set<std::string> Active;
+	  for(size_t i=0;i<15;i++)
+	    {
+	      const std::string Item=IParam.getValue<std::string>("vmat",i);
+	      if (Item.empty()) break;
+	      Active.insert(Item);
+	    }
+	  
+	  // PROCESS VTK:
+	  VTK.setBox(MeshA,MeshB);
+	  VTK.setIndex(MPts[0],MPts[1],MPts[2]);
+	  VTK.populate(*SimPtr,Active);
+	  
+	  if (vFlag)
+	    {
+	      ELog::EM<<"VTK Type == "<<vType<<ELog::endDiag;
+	      if (vType=="cell" || vType=="Cell")
+		VTK.writeIntegerVTK(OName);
+	      else
+		VTK.writeVTK(OName);
+	      return 2;
+	    }
+	}
+    }
+
+  return 0;
+}
+
+int
+createFEM(const mainSystem::inputParam& IParam,
+	  const Simulation* SimPtr,
+	  const std::string& Oname)
+/*!
+    Run the FEM box (similar to VTK)
     \param IParam :: Inpup parameters
     \param SimPtr :: Simulation
     \param Oname :: Output name
@@ -119,10 +239,10 @@ createVTK(const mainSystem::inputParam& IParam,
 {
   ELog::RegMethod RegA("mainJobs[F]","createVTK");
 
-  if (IParam.flag("vtk"))
+  if (IParam.flag("fem"))
     {
       const std::string vForm=
-	IParam.getDefValue<std::string>("","vtk",0);
+	IParam.getDefValue<std::string>("","fem",0);
 
       std::array<size_t,3> MPts;
       Geometry::Vec3D MeshA;
@@ -132,26 +252,28 @@ createVTK(const mainSystem::inputParam& IParam,
 	{
 	  size_t itemIndex(0);
 	  MeshA=mainSystem::getNamedPoint
-	    (*SimPtr,IParam,"vtkMesh",0,itemIndex,
+	    (*SimPtr,IParam,"femMesh",0,itemIndex,
 	     "MeshA Point");
 	  MeshB=mainSystem::getNamedPoint
-	    (*SimPtr,IParam,"vtkMesh",0,itemIndex,
+	    (*SimPtr,IParam,"femMesh",0,itemIndex,
 	     "MeshB Point");
 	  
 	  MPts[0]=IParam.getValueError<size_t>
-	    ("vtkMesh",0,itemIndex++,"NXpts");
+	    ("femMesh",0,itemIndex++,"NXpts");
 	  MPts[1]=IParam.getValueError<size_t>
-	    ("vtkMesh",0,itemIndex++,"NYpts");
+	    ("femMesh",0,itemIndex++,"NYpts");
 	  MPts[2]=IParam.getValueError<size_t>
-	    ("vtkMesh",0,itemIndex++,"NZpts");
+	    ("femMesh",0,itemIndex++,"NZpts");
 	}
       else if (!getTallyMesh(SimPtr,MeshA,MeshB,MPts))
 	{
-	  ELog::EM<<"No (tally) mesh for vtk"<<ELog::endErr;
+	  ELog::EM<<"No (tally) mesh for fem"<<ELog::endErr;
 	  return 0;
 	}
 
       ELog::EM<<"Processing VTK:"<<ELog::endBasic;
+      
+
       Visit VTK;
 
       const std::string vType=

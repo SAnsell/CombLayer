@@ -131,10 +131,11 @@ class IndexError : public ExBase
   \class SizeError
   \brief Exception for index errors
   \author Stuart Ansell
-  \date November 2015
+  \date November 2022
   \version 1.0
 
-  Called when an index falls out of range
+  Called when an index is not linearly
+  ordered.
 */
 template<typename T>
 class LinearError : public ExBase
@@ -332,24 +333,21 @@ class OrderError : public ExBase
 
   Records the sizes and accessed values for the array 
 */
-template<unsigned int ndim,typename T>
+template<typename T>
 class DimensionError : public ExBase
 {
  private:
 
-  T indexSize[ndim];         ///< Index search components
-  T reqSize[ndim];           ///< required size
+  std::vector<T> indexSize;         ///< Index search components
+  std::vector<T> reqSize;           ///< required size
 
   void setOutLine();
 
  public:
 
-  DimensionError(const T*,const T*,const std::string&);
-  DimensionError(const std::vector<T>&,const std::vector<T>&,
-		 const std::string&);
-  
-  DimensionError(const DimensionError<ndim,T>&);
-  DimensionError<ndim,T>& operator=(const DimensionError<ndim,T>&);
+  DimensionError(std::vector<T>,std::vector<T>,const std::string&);  
+  DimensionError(const DimensionError<T>&);
+  DimensionError<T>& operator=(const DimensionError<T>&);
   virtual ~DimensionError() throw() {}  ///< Destructor
 
 };

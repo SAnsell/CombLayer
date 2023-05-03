@@ -3,7 +3,7 @@
  
  * File:   monte/RuleBinary.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -493,9 +493,8 @@ RuleBinary::makeEPI(std::vector<BnId>& PIform)
 	}
     }
   // Remove dead items from active list
-  DNFactive.erase(
-		  remove_if(DNFactive.begin(),DNFactive.end(),
-			    std::bind2nd(std::equal_to<size_t>(),0)),
+  DNFactive.erase(remove_if(DNFactive.begin(),DNFactive.end(),
+			    [](const size_t A) { return !A; }),
 		  DNFactive.end());
 
 

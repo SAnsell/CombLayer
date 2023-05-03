@@ -81,6 +81,10 @@ createInputs(inputParam& IParam)
   IParam.regDefItem<double>("cutWeight","cutWeight",2,0.5,0.25);
   IParam.regMulti("cutTime","cutTime",100,1);
   IParam.regFlag("fullOR","fullOR");
+
+  IParam.regMulti("femMesh","femMesh",1);
+  IParam.regMulti("fem","fem",0);
+  
   IParam.regItem("geomPrecision","geomPrecision");
   IParam.regItem("mode","mode");
   IParam.regMulti("MagSyncRadiation","MagSyncRadiation",1000,0);
@@ -248,6 +252,9 @@ createInputs(inputParam& IParam)
   IParam.setDesc("c","Cells to protect");
   IParam.setDesc("cutWeight","Set the cut weights (wc1/wc2)" );
   IParam.setDesc("ECut","Cut energy");
+  IParam.setDesc("fem","Write out FEM mesh (finite element)");
+  IParam.setDesc("femMesh","Define mesh for FEM mesh");
+
   IParam.setDesc("fullOR","Write out full X/Y/Z basis in objectRegister.txt");
   IParam.setDesc("cinder","Outer Cinder files");
   IParam.setDesc("d","debug flag");

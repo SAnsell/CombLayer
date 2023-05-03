@@ -3,7 +3,7 @@
  
  * File:   test/testMathSupport.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,7 +86,6 @@ testMathSupport::applyTest(const int extra)
       &testMathSupport::testNormalDist,
       &testMathSupport::testOrder,
       &testMathSupport::testPairCombine,
-      &testMathSupport::testPairSort,
       &testMathSupport::testPermSort,
       &testMathSupport::testPolInterp
     };
@@ -103,7 +102,6 @@ testMathSupport::applyTest(const int extra)
       "NormalDist",
       "Order",
       "PairCombine",
-      "PairSort",
       "PermSort",
       "PolInterp"
     };
@@ -465,77 +463,6 @@ testMathSupport::testOrder()
   return 0;
 }
 
-int
-testMathSupport::testPairSort()
-  /*!
-    Test of the mathsupport PSep component to do sorted
-    and to do finding.
-    \returns -ve on error 0 on success.
-   */
-{
-  ELog::RegMethod RegA("testMathSupport","testPairSort");
-  std::vector<std::pair<int,int> > GList;
-
-  GList.push_back(std::pair<int,int>(3,4));
-  GList.push_back(std::pair<int,int>(6,2));
-  GList.push_back(std::pair<int,int>(7,8));
-  GList.push_back(std::pair<int,int>(2,6));
-  // using second term
-  sort(GList.begin(),GList.end());  
-  std::vector<std::pair<int,int> >::const_iterator vc;    
-  int a(-10);
-  int flag(0);
-  for(vc=GList.begin();vc!=GList.end();vc++)
-    {
-      if (vc->first<a)
-	flag=-1;
-      a=vc->first;
-    }
-  if (flag)
-    return -1;
-
-  a=-10;
-  sort(GList.begin(),GList.end(),mathSupport::PairSndLess<int,int>());  
-  for(vc=GList.begin();vc!=GList.end();vc++)
-    {
-      if (vc->second<a)
-	flag=-1;
-      a=vc->second;
-    }
-  if (flag)  return -2;
-
-
-  std::vector<std::pair<int,int> >::iterator fc;
-  fc=find_if(GList.begin(),GList.end(),
-	  std::bind2nd(mathSupport::PairSndEq<int,int>(),8));
-
-  if (fc==GList.end())
-    return -3;
-  if (fc->first!=7)
-    return -4;
-
-  // Now check a bound sorting
-  fc=lower_bound(GList.begin(),GList.end(),4,
-		 mathSupport::PairSndLess<int,int>());
-  if (fc->first!=3)
-    return -5;
-
-  // Check inserting
-  fc=lower_bound(GList.begin(),GList.end(),5,
-		 mathSupport::PairSndLess<int,int>());
-  GList.insert(fc,std::pair<int,int>(9,5));
-  a=-10;
-  for(vc=GList.begin();vc!=GList.end();vc++)
-    {
-      if (vc->second<a)
-	flag=-1;
-      a=vc->second;
-    }
-  if (flag)
-    return -6;
-
-  return 0; 
-}
 
 int
 testMathSupport::testPairCombine()

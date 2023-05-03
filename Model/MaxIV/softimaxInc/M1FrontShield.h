@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   softimaxInc/M1Detail.h
+ * File:   softimaxInc/M1FrontShield.h
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
  *
@@ -19,27 +19,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_M1Detail_h
-#define xraySystem_M1Detail_h
+#ifndef xraySystem_M1FrontShield_h
+#define xraySystem_M1FrontShield_h
 
 class Simulation;
 
 namespace xraySystem
 {
 
-  class M1Mirror;
-  class M1BackPlate;
-  class M1FrontShield;
-  
 /*!
-  \class M1Detail
+  \class M1FrontShield
   \author S. Ansell
   \version 1.0
-  \date October 2019
-  \brief Double Mirror Mono arrangement
+  \date January 2018
+  \brief Focusable mirror in mount
 */
 
-class M1Detail :
+class M1FrontShield :
   public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
@@ -47,10 +43,11 @@ class M1Detail :
 {
  private:
 
-  std::shared_ptr<M1Mirror> mirror;
-  std::shared_ptr<M1BackPlate> cClamp;
-  std::shared_ptr<M1FrontShield> frontShield;
-  
+  double extent; 
+
+  int mat;                  ///< Material
+  int voidMat;              ///< outer pipe material
+
   // Functions:
 
   void populate(const FuncDataBase&);
@@ -60,11 +57,12 @@ class M1Detail :
 
  public:
 
-  M1Detail(const std::string&);
-  M1Detail(const M1Detail&);
-  M1Detail& operator=(const M1Detail&);
-  virtual ~M1Detail();
+  M1FrontShield(const std::string&);
+  M1FrontShield(const M1FrontShield&);
+  M1FrontShield& operator=(const M1FrontShield&);
+  virtual ~M1FrontShield();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);

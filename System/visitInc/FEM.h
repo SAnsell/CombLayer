@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   visitInc/Visit.h
+ * File:   visitInc/FEM.h
 *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef Visit_h
-#define Visit_h
+#ifndef FEM_h
+#define FEM_h
 
 class Simulation;
 namespace MonteCarlo
@@ -29,7 +29,7 @@ class Object;
 }
 
 /*!
-  \class Visit
+  \class FEM
   \brief Hold VTK output format 
   \date August 2010
   \author S. Ansell
@@ -40,52 +40,49 @@ class Object;
   Vec3D from a list
 */
 						
-class Visit
+class FEM
 {
- public:
-
-  /// Types of information to plot
-  enum class VISITenum : int
-    { cellID=0,material=1,density=2,weight=3,imp=4};
-
  private:
   
-  VISITenum outType;          ///< Output type
   bool lineAverage;           ///< set line average
   
   Geometry::Vec3D Origin;     ///< Origin
   Geometry::Vec3D XYZ;        ///< XYZ extent
 
-  std::array<long int,3> nPts;        ///< Number x/y/z points
-  boost::multi_array<double,3> mesh;  ///< results mesh
+  std::array<size_t,3> nPts;        ///< Number x/y/z points
+  multiData<int> matMesh;           ///< Matieral
+  multiData<double> rhoCp;          ///< rhoCp
+  multiData<double> K;          ///< rhoCp
+  
 
-  static long int procDist(double&,const double,double,double&);
-  static long int procPoint(double&,const double);
-
-  double getResult(const MonteCarlo::Object*) const;
+  int& getMeshUnit(const size_t,const size_t,const size_t,const size_t);
+  double& getRhoUnit(const size_t,const size_t,const size_t,const size_t);
+  double& getKUnit(const size_t,const size_t,const size_t,const size_t);
+      
   size_t getMaxIndex() const;
+  double getResult(const MonteCarlo::Object*) const;
 
-  double& getMeshUnit(const size_t,const long int,const long in
-		      ,const long int);
+  static size_t procPoint(double&,const double);
+  void populateLine(const Simulation&);
+  void populatePoint(const Simulation&);
+  
  public:
 
-  Visit();
-  Visit(const Visit&);
-  Visit& operator=(const Visit&);
-  ~Visit();
+  FEM();
+  FEM(const FEM&);
+  FEM& operator=(const FEM&);
+  ~FEM();
 
   /// make an average over the line from beginning to end
   void setLineForm() { lineAverage=1; }
-  void setType(const VISITenum&);
   void setBox(const Geometry::Vec3D&,
               const Geometry::Vec3D&);
   void setIndex(const size_t,const size_t,const size_t);
 
-  void populateLine(const Simulation&,const std::set<std::string>&);
-  void populatePoint(const Simulation&,const std::set<std::string>&);
-  void populate(const Simulation&,const std::set<std::string>&);
-  void writeVTK(const std::string&) const;
-  void writeIntegerVTK(const std::string&) const;
+  void populate(const Simulation&);
+  
+  void writeFEM(const std::string&) const;
+
 };
 
 
