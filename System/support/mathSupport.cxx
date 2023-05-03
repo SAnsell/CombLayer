@@ -359,6 +359,8 @@ indexSort(const std::vector<T>& pVec,std::vector<U>& Index)
   transform(pVec.begin(),pVec.end(),PartList.begin(),
 	    mathSupport::PIndex<T>());
   sort(PartList.begin(),PartList.end());
+
+  
   transform(PartList.begin(),PartList.end(),Index.begin(),
 	    mathSupport::PSep<T>());
   
