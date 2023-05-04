@@ -106,10 +106,15 @@ FEMdatabase::initMaterial()
 {
   ELog::RegMethod RegA("FEMdatabase","initMaterial");  
 
+  addMaterial("Void",0,0);      
   addMaterial("Aluminium",0.921096,2.32);  //1.90 for other alloys
   addMaterial("Copper",0.376812,3.83);
-  addMaterial("Silicon",0.711756,0.619);
+  addMaterial("Silicon300K",0.711756,0.619);
   addMaterial("H2O",4.2,0.598);
+  addMaterial("Stainless304",0.500,0.162);
+  addMaterial("Stainless304L",0.500,0.162);
+  addMaterial("Titanium",0.523,0.194);
+  addMaterial("Gold",0.126,3.10);
   
   return;
 
@@ -203,7 +208,7 @@ FEMdatabase::getK(const int index) const
   */
 {
   ELog::RegMethod RegA("FEMdatabase","getK(int)");
-  
+
   MTYPE::const_iterator mc=MStore.find(index);
   if (mc==MStore.end())
     throw ColErr::InContainerError<int>(index,"Index key in MStore");
@@ -240,7 +245,12 @@ FEMdatabase::getRhoCp(const int index) const
 
   MTYPE::const_iterator mc=MStore.find(index);
   if (mc==MStore.end())
-    throw ColErr::InContainerError<int>(index,"Index key in MStore");
+    {
+      ModelSupport::DBMaterial& DB=
+	ModelSupport::DBMaterial::Instance();
+      throw ColErr::InContainerError<std::string>
+	(DB.getKey(index)," Index :"+std::to_string(index)+" in MStore");
+    }
   return mc->second.RhoCp;
 }
 

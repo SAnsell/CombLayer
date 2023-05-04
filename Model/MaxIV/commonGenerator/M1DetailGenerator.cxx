@@ -63,7 +63,9 @@ M1DetailGenerator::M1DetailGenerator() :
   bBackThick(0.5),bMainThick(0.3),
   bExtentThick(0.4),
   bCupHeight(1.8),bTopExtent(4.2),
-  bBaseExtent(2.1),
+  bBaseExtent(2.1),bOuterVaneThick(0.8),
+  bInnerVaneThick(0.4),
+  
 
   eXOut(7.98),eLength(38.0),eThick(0.1),eHeight(6.8),
   eEdge(1.03),eHoleRadius(1.18),
@@ -134,6 +136,9 @@ M1DetailGenerator::makeBackPlate(FuncDataBase& Control,
   Control.addVariable(keyName+"TopExtent",bTopExtent);
   Control.addVariable(keyName+"ExtentThick",bExtentThick);
   Control.addVariable(keyName+"BaseExtent",bBaseExtent);
+
+  Control.addVariable(keyName+"OuterVaneThick",bOuterVaneThick);
+  Control.addVariable(keyName+"InnerVaneThick",bInnerVaneThick);
 
   Control.addVariable(keyName+"BaseMat",supportMat);
   Control.addVariable(keyName+"VoidMat",voidMat);

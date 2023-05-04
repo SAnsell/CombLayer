@@ -3,7 +3,7 @@
  
  * File:   phitsTallyInc/T3DShow.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,10 +41,10 @@ class T3DShow : public phitsTally
  public:
 
   explicit T3DShow(const int);
-  T3DShow(const T3DShow&);
+  T3DShow(const T3DShow&) =default;
   virtual T3DShow* clone() const; 
   T3DShow& operator=(const T3DShow&);
-  virtual ~T3DShow();
+  virtual ~T3DShow() =default;
      
 
   virtual void write(std::ostream&,const std::string&) const;

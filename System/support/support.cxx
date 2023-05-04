@@ -1239,6 +1239,38 @@ removeItem(V<T,Alloc>& A,const T& indexA)
   return 1;
 }
 
+std::pair<std::string,std::string>
+splitPair(const std::string& Line,const char delim)
+  /*!
+    Split a string based on a a delimiter and avoiding quotes
+    but only do the split once
+    \param Line :: Line to split 
+    \param delim :: deliminator
+  */
+{
+  int hardQuote(0);
+  int softQuote(0);
+  for(size_t index=0;index<Line.length();index++)
+    {
+      if (Line[index]=='\'' && index &&
+	  Line[index]!='\\')
+        {
+	  hardQuote=1-hardQuote;
+	}
+      else if (!hardQuote && Line[index]=='\"' &&
+	       index && Line[index]!='\\')
+        {
+	  softQuote=1-softQuote;
+	}
+      if ((!softQuote || !hardQuote) && Line[index]==delim)
+	{
+	  return std::pair<std::string,std::string>
+	    (Line.substr(0,index),Line.substr(index+1));
+	}
+    }
+  return std::pair<std::string,std::string>("","");
+}
+
 std::vector<std::string>
 splitParts(const std::string& Line,const char delim)
   /*!

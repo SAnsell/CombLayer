@@ -83,7 +83,7 @@ createInputs(inputParam& IParam)
   IParam.regFlag("fullOR","fullOR");
 
   IParam.regMulti("femMesh","femMesh",1);
-  IParam.regMulti("fem","fem",0);
+  IParam.regMulti("fem","fem",0,0);
   
   IParam.regItem("geomPrecision","geomPrecision");
   IParam.regItem("mode","mode");

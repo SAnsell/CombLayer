@@ -377,7 +377,7 @@ FEM::writeFEM(const std::string& FName) const
   OX<<"Index : "<<nPts[0]<<" "<<nPts[1]<<" "<<nPts[2]<<std::endl;
   OX<<"Low : "<< Origin<<std::endl;
   OX<<"High : "<< Origin+XYZ<<std::endl;
-  OX<<"#Pts:"<<std::endl;
+  OX<<"END HEADER"<<std::endl;
 
   const sliceUnit<const int> MAT=matMesh.get();
   const sliceUnit<const double> Rho=rhoCp.get();

@@ -103,8 +103,8 @@ M1BackPlate::populate(const FuncDataBase& Control)
   topExtent=Control.EvalVar<double>(keyName+"TopExtent");
   extentThick=Control.EvalVar<double>(keyName+"ExtentThick");
   baseExtent=Control.EvalVar<double>(keyName+"BaseExtent");
-  outerVaneThick=Control.EvalVar<double>(keyName+"outerVaneThick");
-  innerVaneThick=Control.EvalVar<double>(keyName+"innerVaneThick");
+  outerVaneThick=Control.EvalVar<double>(keyName+"OuterVaneThick");
+  innerVaneThick=Control.EvalVar<double>(keyName+"InnerVaneThick");
   
   supVOffset=Control.EvalVar<double>(keyName+"SupVOffset");
   supLength=Control.EvalVar<double>(keyName+"SupLength");
