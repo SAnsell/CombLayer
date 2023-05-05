@@ -1067,11 +1067,11 @@ InjectionHall::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"232 -2 1004 -114 25 -26");
   makeCell("FKGRoof",System,cellIndex++,roofMat,0.0,HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"211 -231 1004 -114 16 -26");
-  makeCell("FKGRoofVoid",System,cellIndex++,0,0.0,HR);
+  makeCell("FKGRoofVoid",System,cellIndex++,voidMat,0.0,HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"231 -232 1004 -114 16 -26");
   makeCell("FKGRoof",System,cellIndex++,roofMat,0.0,HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"232 -12 1004 -104 6 -25");
-  makeCell("FKGRoofVoid",System,cellIndex++,0,0.0,HR);
+  makeCell("FKGRoofVoid",System,cellIndex++,voidMat,0.0,HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"232 -12 104 -114 6 -25");
   makeCell("FKGRoofVoid",System,cellIndex++,wallMat,0.0,HR);
 
@@ -1164,16 +1164,16 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("GateB",System,cellIndex++,wallMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1512 -1201 3 -1503 5 -6");
-  makeCell("GateVoid",System,cellIndex++,0,0.0,HR);
+  makeCell("GateVoid",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1201 -1111 -1503 5 -6");
-  makeCell("GateVoid",System,cellIndex++,0,0.0,HR);
+  makeCell("GateVoid",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1201 -1202 3 -1103 5 -6");
-  makeCell("GateVoid",System,cellIndex++,0,0.0,HR);
+  makeCell("GateVoid",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1202 -1521 3 -1503 1112 5 -6");
-  makeCell("GateVoid",System,cellIndex++,0,0.0,HR);
+  makeCell("GateVoid",System,cellIndex++,voidMat,0.0,HR);
 
   // KLYSTRONG WALLS
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -3001 -3014 3 5 -6");
@@ -1251,28 +1251,26 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("BDRoof",System,cellIndex++,floorMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7564 -7504 -5 7516");
-  makeCell("BDEntrance",System,cellIndex++,0,0.0,HR);
-
-
+  makeCell("BDEntrance",System,cellIndex++,voidMat,0.0,HR);
 
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7521 7503 -7504 7506 -7516");
-  makeCell("BD",System,cellIndex++,0,0.0,HR);
+  makeCell("BD",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7521 -7522 7503 -7534 7506 -7516");
-  makeCell("BDNew",System,cellIndex++,0,0.0,HR);
+  makeCell("BDNew",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7521 -7522 7534 -7524 7506 -7516");
   makeCell("BDInnerWall",System,cellIndex++,wallMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7521 -7522 7524 -7525 7506 -7516");
-  makeCell("BDSPF",System,cellIndex++,0,0.0,HR);
+  makeCell("BDSPF",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7521 -7522 7525 -7535 7506 -7516");
   makeCell("BDInnerWall",System,cellIndex++,wallMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7521 -7522 7535 -7504 7506 -7516");
-  makeCell("BDTDC",System,cellIndex++,0,0.0,HR);
+  makeCell("BDTDC",System,cellIndex++,voidMat,0.0,HR);
 
   // Radioactive waste room
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7601 -7602 1004 -7604 5 -6");
