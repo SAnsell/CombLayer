@@ -56,6 +56,14 @@ class M1DetailGenerator
   double mPipeOuterLen;       ///< Length of outer pipe vertical
   double mPipeOuterRadius;     ///< radius of outer pipe vertical
 
+  size_t mNWater;             ///< water channels
+  double mWaterLength;        ///< water length along silicon
+  double mWaterWidth;         ///< water width
+  double mWaterHeight;        ///< water height
+  double mWaterDrop;          ///< water gap to Si surface
+  double mWaterGap;           ///< water gap between
+
+  
   double sVOffset;             ///< Vertical ofset (6.5)
   double sLength;              ///< Length of support (26.5)
   double sXOut;                ///< Support +ve x value (from back plane)

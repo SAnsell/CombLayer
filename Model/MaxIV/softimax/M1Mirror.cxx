@@ -115,6 +115,13 @@ M1Mirror::populate(const FuncDataBase& Control)
   pipeOuterLen=Control.EvalVar<double>(keyName+"PipeOuterLen");
   pipeOuterRadius=Control.EvalVar<double>(keyName+"PipeOuterRadius");
 
+  nWaterChannel=Control.EvalVar<size_t>(keyName+"NWaterChannel");
+  waterLength=Control.EvalVar<double>(keyName+"WaterLength");
+  waterHeight=Control.EvalVar<double>(keyName+"WaterHeight");
+  waterWidth=Control.EvalVar<double>(keyName+"WaterWidth");
+  waterDrop=Control.EvalVar<double>(keyName+"WaterDrop");
+  waterGap=Control.EvalVar<double>(keyName+"WaterGap");
+
   mirrorMat=ModelSupport::EvalMat<int>(Control,keyName+"MirrorMat");
   waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
   pipeMat=ModelSupport::EvalMat<int>(Control,keyName+"PipeMat");
@@ -193,6 +200,33 @@ M1Mirror::createSurfaces()
 
   ModelSupport::buildPlane(SMap,buildIndex+154,pBaseA,X);
 
+
+  // water channels:
+
+  ModelSupport::buildPlane(SMap,buildIndex+1001,
+			   Origin-Y*(waterLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1002,
+			   Origin+Y*(waterLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1003,
+			   Origin-X*(waterHeight+waterDrop),X);
+  ModelSupport::buildPlane(SMap,buildIndex+1004,
+			   Origin-X*waterDrop,X);
+
+  Geometry::Vec3D WMidPt=Origin-Z*
+    ((waterWidth+waterGap)*static_cast<double>(nWaterChannel)/2.0);
+
+  int BI(buildIndex+1000);
+  for(size_t i=0;i<nWaterChannel;i++)
+    {
+
+      ModelSupport::buildPlane(SMap,BI+5,
+			       WMidPt-Z*(waterWidth/2.0),Z);
+      ModelSupport::buildPlane(SMap,BI+6,
+			       WMidPt+Z*(waterWidth/2.0),Z);
+      WMidPt+=Z*(waterGap+waterWidth);
+      BI+=10;
+    }
+  
   return;
 }
 
@@ -206,14 +240,25 @@ M1Mirror::createObjects(Simulation& System)
   ELog::RegMethod RegA("M1Mirror","createObjects");
 
   HeadRule HR;
+  HeadRule waterCutHR;
+
+  int BI(buildIndex+1000);
+  if (nWaterChannel)
+    {
+      waterCutHR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"1001 -1002 1003 -1004 1005");
+      waterCutHR*=HeadRule(SMap,BI+static_cast<int>(nWaterChannel-1)*10,-6);
+      waterCutHR.makeComplement();
+    }
+
   // xstal
   HR=ModelSupport::getHeadRule(SMap,buildIndex,
      "1 -1000  3 -4 5 -6 (-13:14:(-16 15)) (101:117) (154:167) (111:127)");
-  makeCell("Mirror",System,cellIndex++,mirrorMat,0.0,HR);
+  makeCell("Mirror",System,cellIndex++,mirrorMat,0.0,HR*waterCutHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,
      "1000 -2 3 -4 5 -6 (-13:14:(-16 15)) (101:217) (154:267) (111:227)");
-  makeCell("Mirror",System,cellIndex++,mirrorMat,0.0,HR);
+  makeCell("Mirror",System,cellIndex++,mirrorMat,0.0,HR*waterCutHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -14 16 -6");
   makeCell("Slot",System,cellIndex++,voidMat,0.0,HR);
@@ -253,6 +298,26 @@ M1Mirror::createObjects(Simulation& System)
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -111 -227 217");
   makeCell("pipe",System,cellIndex++,outerMat,0.0,HR);
+
+
+  // skip first gap
+  if (nWaterChannel)
+    {
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,BI,"1001 -1002 1003 -1004 5M -6M");
+      makeCell("SiWater",System,cellIndex++,waterMat,0.0,HR);
+      
+      for(size_t i=1;i<nWaterChannel;i++)
+	{
+	  HR=ModelSupport::getHeadRule
+	    (SMap,buildIndex,BI,"1001 -1002 1003 -1004 6M -15M");
+	  makeCell("SiWaterGap",System,cellIndex++,mirrorMat,0.0,HR);
+	  HR=ModelSupport::getHeadRule
+	    (SMap,buildIndex,BI,"1001 -1002 1003 -1004 15M -16M");
+	  makeCell("SiWater",System,cellIndex++,waterMat,0.0,HR);
+	  BI+=10;
+	}
+    }
   
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
   addOuterSurf(HR);

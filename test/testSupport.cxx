@@ -31,6 +31,7 @@
 #include <string>
 #include <algorithm>
 #include <tuple>
+#include <iterator>
 
 #ifndef NO_REGEX
 #include <regex>

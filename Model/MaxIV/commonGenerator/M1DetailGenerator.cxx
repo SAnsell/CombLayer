@@ -55,6 +55,9 @@ M1DetailGenerator::M1DetailGenerator() :
   mPipeWallThick(0.1),
   mPipeBaseLen(2.1),mPipeBaseRadius(0.25),
   mPipeOuterLen(1.5),mPipeOuterRadius(0.30),
+  mNWater(11),mWaterLength(32.0),
+  mWaterWidth(0.1),mWaterHeight(0.5),
+  mWaterDrop(0.1),mWaterGap(0.1),
 
   sVOffset(0.8),sLength(26.5),sXOut(7.5),
   sThick(0.1),sEdge(1.1),sRadius(1.0),
@@ -190,6 +193,13 @@ M1DetailGenerator::makeCrystal(FuncDataBase& Control,
   Control.addVariable(cryName+"PipeOuterLen",mPipeOuterLen);
   Control.addVariable(cryName+"PipeOuterRadius",mPipeOuterRadius);
 
+  Control.addVariable(cryName+"NWaterChannel",mNWater);
+  Control.addVariable(cryName+"WaterLength",mWaterLength);
+  Control.addVariable(cryName+"WaterWidth",mWaterWidth);
+  Control.addVariable(cryName+"WaterHeight",mWaterHeight);
+  Control.addVariable(cryName+"WaterDrop",mWaterWidth);
+  Control.addVariable(cryName+"WaterGap",mWaterWidth);
+    
   Control.addVariable(cryName+"MirrorMat",mirrorMat);
   Control.addVariable(cryName+"WaterMat",waterMat);
   Control.addVariable(cryName+"PipeMat",pipeMat);

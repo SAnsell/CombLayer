@@ -65,6 +65,13 @@ class M1Mirror :
   double pipeOuterLen;       ///< Length of outer pipe vertical
   double pipeOuterRadius;     ///< radius of outer pipe vertical
 
+  size_t nWaterChannel;      ///< water channels
+  double waterLength;         ///< water width
+  double waterWidth;         ///< water width
+  double waterHeight;        ///< water height
+  double waterDrop;          ///< water gap to Si surface
+  double waterGap;           ///< water gap between
+  
   int mirrorMat;             ///< XStal material
   int waterMat;              ///< material in pipe
   int pipeMat;               ///< Base material
