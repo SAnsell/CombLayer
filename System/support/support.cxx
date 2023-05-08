@@ -1248,6 +1248,7 @@ splitPair(const std::string& Line,const char delim)
     \param delim :: deliminator
   */
 {
+  std::pair<std::string,std::string> Out;
   int hardQuote(0);
   int softQuote(0);
   for(size_t index=0;index<Line.length();index++)
@@ -1264,11 +1265,12 @@ splitPair(const std::string& Line,const char delim)
 	}
       if ((!softQuote || !hardQuote) && Line[index]==delim)
 	{
-	  return std::pair<std::string,std::string>
-	    (Line.substr(0,index),Line.substr(index+1));
+	  Out.first=StrFunc::removeSpace(Line.substr(0,index));
+	  Out.second=StrFunc::removeSpace(Line.substr(index+1));
+	  return Out;
 	}
     }
-  return std::pair<std::string,std::string>("","");
+  return Out;
 }
 
 std::vector<std::string>
