@@ -1265,8 +1265,8 @@ splitPair(const std::string& Line,const char delim)
 	}
       if ((!softQuote || !hardQuote) && Line[index]==delim)
 	{
-	  Out.first=StrFunc::removeSpace(Line.substr(0,index));
-	  Out.second=StrFunc::removeSpace(Line.substr(index+1));
+	  Out.first=StrFunc::removeOuterSpace(Line.substr(0,index));
+	  Out.second=StrFunc::removeOuterSpace(Line.substr(index+1));
 	  return Out;
 	}
     }

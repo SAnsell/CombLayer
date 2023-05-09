@@ -382,11 +382,28 @@ FEM::writeFEM(const std::string& FName) const
   const sliceUnit<const int> MAT=matMesh.get();
   const sliceUnit<const double> Rho=rhoCp.get();
   const sliceUnit<const double> KGet=K.get();
-  for(long int i=0;i<nPts[0];i++)  
-    for(long int j=0;j<nPts[1];j++)
-      for(long int k=0;k<nPts[2];k++)
+
+  const size_t nX(nPts[0]);
+  const size_t nY(nPts[1]);
+  const size_t nZ(nPts[2]);
+  
+  const Geometry::Vec3D aX(XYZ.X()/static_cast<double>(nX),0,0);
+  const Geometry::Vec3D aY(0,XYZ.Y()/static_cast<double>(nY),0);
+  const Geometry::Vec3D aZ(0,0,XYZ.Z()/static_cast<double>(nZ));
+
+  
+  
+  for(size_t i=0;i<nX;i++)  
+    for(size_t j=0;j<nY;j++)
+      for(size_t k=0;k<nZ;k++)
 	{
+	  const Geometry::Vec3D Pt=Origin
+	    +aX*(static_cast<double>(i)+0.5)
+	    +aY*(static_cast<double>(j)+0.5)
+	    +aZ*(static_cast<double>(k)+0.5);
+
 	  OX<<i<<" "<<j<<" "<<k<<" "
+	    <<Pt<<"     "
 	    <<MAT[i][j][k]<<" "<<Rho[i][j][k]
 	    <<" "<<KGet[i][j][k]<<std::endl;
       }

@@ -102,10 +102,14 @@ FEMdatabase::initMaterial()
   /*!
     Default initializer [horrible]
     to populate a few materials mainly for development testing
+    UNITS : 
   */
 {
   ELog::RegMethod RegA("FEMdatabase","initMaterial");  
 
+  // 
+  // Material : HeatCapacity : Conductivity 
+  //             [J/ (g K) ]     :    [W/ (cm K) ]
   addMaterial("Void",0,0);      
   addMaterial("Aluminium",0.921096,2.32);  //1.90 for other alloys
   addMaterial("Copper",0.376812,3.83);
