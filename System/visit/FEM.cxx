@@ -369,7 +369,6 @@ FEM::writeFEM(const std::string& FName) const
   if (FName.empty()) return;
  
   std::ofstream OX(FName.c_str());
-
  
   OX<<"# FEM DataFile Version"<<std::endl;
   OX<<"# Geometry Data"<<std::endl;

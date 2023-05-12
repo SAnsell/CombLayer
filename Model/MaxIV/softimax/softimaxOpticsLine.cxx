@@ -704,6 +704,13 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,*M1TubeBack,"port0",*bellowC);
 
+  ELog::EM<<"Early return"<<ELog::endDiag;
+  //  System.removeCell(buildZone.getLastCell("Unit"));
+  buildZone.createUnit(System);  // build to end
+  buildZone.rebuildInsertCells(System);
+  lastComp=bellowC;  
+  return;
+  
   pumpTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   pumpTubeA->createAll(System,*bellowC,2);
 
