@@ -112,6 +112,7 @@ M1BackPlate::populate(const FuncDataBase& Control)
   supThick=Control.EvalVar<double>(keyName+"SupThick");
   supEdge=Control.EvalVar<double>(keyName+"SupEdge");
   supHoleRadius=Control.EvalVar<double>(keyName+"SupHoleRadius");
+  springConnectLen=Control.EvalVar<double>(keyName+"SpringConnectLen");
 
   elecXOut=Control.EvalVar<double>(keyName+"ElecXOut");
   elecLength=Control.EvalVar<double>(keyName+"ElecLength");
@@ -124,6 +125,7 @@ M1BackPlate::populate(const FuncDataBase& Control)
   
   baseMat=ModelSupport::EvalMat<int>(Control,keyName+"BaseMat");
   supportMat=ModelSupport::EvalMat<int>(Control,keyName+"SupportMat");
+  springMat=ModelSupport::EvalMat<int>(Control,keyName+"SpringMat");
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
 
   electronMat=ModelSupport::EvalMat<int>(Control,keyName+"ElectronMat");
@@ -188,6 +190,14 @@ M1BackPlate::createSurfaces()
     (SMap,buildIndex+513,Origin+X*(supThick+topExtent-clearGap),X);
   makeShiftedSurf(SMap,"Top",buildIndex+515,Z,supVOffset+supThick);
 
+
+  // cross supports
+  ModelSupport::buildPlane(SMap,buildIndex+551,
+			   Origin-Y*(supLength/2.0-springConnectLen),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+571,
+			   Origin+Y*(supLength/2.0-springConnectLen),Y);
+
+  
   // base
   makeShiftedSurf(SMap,"Base",buildIndex+606,Z,-supVOffset);
   makeShiftedSurf(SMap,"Base",buildIndex+605,Z,-(supVOffset+supEdge));
@@ -355,10 +365,37 @@ M1BackPlate::createObjects(Simulation& System)
   addOuterSurf(HR);
 
   // small gaps between spring centres and electron plate:
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 1006 -505 1013 -504");
+  // cross support at 501/502
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -501 1006 -505 1013 -504");
   makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,HR);  
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 606 -1005 1013 -504");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"501 -551 1006 -505 1013 -504");
+  makeCell("InnerVoid",System,cellIndex++,springMat,0.0,HR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"551 -571 1006 -505 1013 -504");
+  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,HR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"571 -502 1006 -505 1013 -504");
+  makeCell("InnerVoid",System,cellIndex++,springMat,0.0,HR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"502 -2 1006 -505 1013 -504");
+  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,HR);  
+
+  // lower cross support
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -501 606 -1005 1013 -504");
+  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,HR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"501 -551 606 -1005 1013 -504");
+  makeCell("InnerVoid",System,cellIndex++,springMat,0.0,HR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"551 -571 606 -1005 1013 -504");
+  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,HR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"571 -502 606 -1005 1013 -504");
+  makeCell("InnerVoid",System,cellIndex++,springMat,0.0,HR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"502 -2 606 -1005 1013 -504");
   makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,HR);  
 
   return;

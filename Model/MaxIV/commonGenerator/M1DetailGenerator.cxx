@@ -61,6 +61,7 @@ M1DetailGenerator::M1DetailGenerator() :
 
   sVOffset(0.8),sLength(26.5),sXOut(7.5),
   sThick(0.1),sEdge(1.1),sRadius(1.0),
+  scLen(3.0),
 
   bLength(38.9),bClearGap(0.2),
   bBackThick(0.5),bMainThick(0.3),
@@ -74,8 +75,8 @@ M1DetailGenerator::M1DetailGenerator() :
   eEdge(1.03),eHoleRadius(1.18),
   
   mirrorMat("Silicon300K"),waterMat("H2O"),
-  supportMat("Copper"),electronMat("Gold"),
-  pipeMat("Stainless304"),
+  supportMat("Copper"),springMat("Aluminium"),
+  electronMat("Gold"),pipeMat("Aluminium"),
   outerMat("Copper"),voidMat("Void")
   /*!
     Constructor and defaults
@@ -106,8 +107,11 @@ M1DetailGenerator::makeSupport(FuncDataBase& Control,
   
   Control.addVariable(keyName+"SupEdge",sEdge);
   Control.addVariable(keyName+"SupHoleRadius",sRadius);
+
+  Control.addVariable(keyName+"SpringConnectLen",scLen);
   
   Control.addVariable(keyName+"SupportMat",supportMat);
+  Control.addVariable(keyName+"SpringMat",springMat);
 
   Control.addVariable(keyName+"ElecXOut",eXOut);
   Control.addVariable(keyName+"ElecLength",eLength);

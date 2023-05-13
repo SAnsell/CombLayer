@@ -60,6 +60,8 @@ class M1BackPlate :
   double supThick;             ///< thickness
   double supEdge;              ///< edge thickness
   double supHoleRadius;        ///< central hole radius
+
+  double springConnectLen;     ///< spring to electronconnect block length
   
   // electron shield
   double elecXOut;            ///< xout step distance
@@ -73,6 +75,7 @@ class M1BackPlate :
   double innerVaneThick;          ///< Thickness of inner vanes
     
   int baseMat;                ///< Base material
+  int springMat;              ///< Spring join material
   int supportMat;             ///< Base material
   int electronMat;            ///< Electron shield material
   int voidMat;                ///< void material

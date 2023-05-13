@@ -71,6 +71,8 @@ class M1DetailGenerator
   double sEdge;                ///< drop  of support (1.1)
   double sRadius;              ///< radius of mid-hole  ()
 
+  double scLen;                ///< Length of cross connectors (3)
+  
   double bLength;              ///< Length of support (38.9)
   double bClearGap;            ///< Clear Gap (0.2)
   double bBackThick;           ///< Thickness of back (0.5)
@@ -93,6 +95,7 @@ class M1DetailGenerator
   std::string mirrorMat;             ///< XStal material
   std::string waterMat;              ///< Plate material
   std::string supportMat;            ///< Plate (support) material
+  std::string springMat;            ///< Separator material
   std::string electronMat;           ///< Electron shield material
   std::string pipeMat;               ///< Base material
   std::string outerMat;              ///< Base material
