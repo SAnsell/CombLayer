@@ -49,10 +49,11 @@ class FEM
   Geometry::Vec3D Origin;     ///< Origin
   Geometry::Vec3D XYZ;        ///< XYZ extent
 
+  std::set<int> matInventory;  ///< Material inventory
   std::array<size_t,3> nPts;        ///< Number x/y/z points
   multiData<int> matMesh;           ///< Matieral
   multiData<double> rhoCp;          ///< rhoCp
-  multiData<double> K;          ///< rhoCp
+  multiData<double> K;              ///< conductivity
   
 
   int& getMeshUnit(const size_t,const size_t,const size_t,const size_t);

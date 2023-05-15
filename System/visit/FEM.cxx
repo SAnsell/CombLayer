@@ -199,12 +199,14 @@ FEM::getRhoUnit(const size_t posIndex,const size_t index,
 }
 
 double&
-FEM::getKUnit(const size_t posIndex,const size_t index,
-		 const size_t i,const size_t j)
+FEM::getKUnit(const size_t posIndex,
+	      const size_t index,
+	      const size_t i,const size_t j)
   /*!
     Get mesh unit based on posIndex being index place [0-2]
     and i,j begin the other two coordinates
     \param posIndex :: Index of Max direction (0-2)
+    \param index :: index of posIndex mesh unit
     \param i :: other index in mesh
     \param j :: other index in mesh
     \return K[i][j] / [index]
@@ -340,6 +342,7 @@ FEM::populate(const Simulation& System)
   else
     populatePoint(System);
 
+  matInventory.clear();
   const ModelSupport::FEMdatabase& FM=
     ModelSupport::FEMdatabase::Instance();
   
@@ -351,6 +354,8 @@ FEM::populate(const Simulation& System)
     {
       rVec[i]=FM.getRhoCp(matV[i]);
       kVec[i]=FM.getK(matV[i]);
+      if (matV[i])
+	matInventory.emplace(matV[i]);
     }
   
   return;
@@ -367,7 +372,11 @@ FEM::writeFEM(const std::string& FName) const
   ELog::RegMethod RegA("FEM","writeFEM");
   
   if (FName.empty()) return;
- 
+
+    
+  const ModelSupport::FEMdatabase& FM=
+    ModelSupport::FEMdatabase::Instance();
+  
   std::ofstream OX(FName.c_str());
  
   OX<<"# FEM DataFile Version"<<std::endl;
@@ -376,6 +385,8 @@ FEM::writeFEM(const std::string& FName) const
   OX<<"Index : "<<nPts[0]<<" "<<nPts[1]<<" "<<nPts[2]<<std::endl;
   OX<<"Low : "<< Origin<<std::endl;
   OX<<"High : "<< Origin+XYZ<<std::endl;
+  for(const int m : matInventory)
+    OX<<"Mat : "<<m<<" : "<<FM.getKey(m)<<std::endl;
   OX<<"END HEADER"<<std::endl;
 
   const sliceUnit<const int> MAT=matMesh.get();
