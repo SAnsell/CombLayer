@@ -75,9 +75,9 @@ M1DetailGenerator::M1DetailGenerator() :
   eEdge(1.03),eHoleRadius(1.18),
   
   mirrorMat("Silicon300K"),waterMat("H2O"),
-  supportMat("Copper"),springMat("Aluminium"),
-  electronMat("Gold"),pipeMat("Aluminium"),
-  outerMat("Copper"),voidMat("Void")
+  supportMat("Aluminium"),springMat("Aluminium"),
+  electronMat("Aluminium"),pipeMat("Aluminium"),
+  outerMat("Aluminium"),voidMat("Void")
   /*!
     Constructor and defaults
   */
