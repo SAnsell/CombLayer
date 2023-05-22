@@ -84,6 +84,11 @@ class M1DetailGenerator
   double bOuterVaneThick;      ///< Thickness of vane supports (outer)
   double bInnerVaneThick;      ///< Thickness of vane supports (inner)
 
+  double clipYStep;         ///< Step from end
+  double clipLen;           ///< Length of clip
+  double clipSiThick;       ///< Clip thickness parallel to Si
+  double clipAlThick;       ///< Clip thickness parallel to Al
+  double clipExtent;        ///< Clip length away from back
 
   double eXOut;                 ///< Step from the back plane (79.8)
   double eLength;               ///< Length of electorn shield (38.0)
@@ -96,6 +101,7 @@ class M1DetailGenerator
   std::string waterMat;              ///< Plate material
   std::string supportMat;            ///< Plate (support) material
   std::string springMat;            ///< Separator material
+  std::string clipMat;            ///< Separator material
   std::string electronMat;           ///< Electron shield material
   std::string pipeMat;               ///< Base material
   std::string outerMat;              ///< Base material
@@ -106,6 +112,7 @@ class M1DetailGenerator
 		   const double,const double) const;
   void makeSupport(FuncDataBase&,const std::string&) const;
   void makeBackPlate(FuncDataBase&,const std::string&) const;
+  void makeConnectors(FuncDataBase&,const std::string&) const;
 
 
  public:

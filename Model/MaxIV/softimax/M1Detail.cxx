@@ -64,6 +64,7 @@
 #include "M1Mirror.h"
 #include "M1BackPlate.h"
 #include "M1FrontShield.h"
+#include "M1Connectors.h"
 #include "M1Detail.h"
 
 namespace xraySystem
@@ -76,6 +77,7 @@ M1Detail::M1Detail(const std::string& Key) :
   attachSystem::SurfMap(),
   mirror(new M1Mirror(keyName+"Mirror")),
   cClamp(new M1BackPlate(keyName+"CClamp")),
+  connectors(new M1Connectors(keyName+"Connect")),
   frontShield(new M1FrontShield(keyName+"FShield"))
   /*!
     Constructor
@@ -143,8 +145,17 @@ M1Detail::createObjects(Simulation& System)
   cClamp->setCutSurf("Top",*mirror,"top");
   cClamp->setCutSurf("Base",*mirror,"base");
   cClamp->createAll(System,*mirror,"backPlateOrg");
+
+  connectors->setCell("slotA",mirror->getCell("Slot",0));
+  connectors->setCell("slotB",mirror->getCell("Slot",1));
+  connectors->setCutSurf("slotBase",*mirror,"slotBase");
+  connectors->setCutSurf("slotAMid",*mirror,"slotAMid");
+  connectors->setCutSurf("slotBMid",*mirror,"slotBMid");
+  connectors->setCutSurf("MTop",*mirror,"top");
+  connectors->setCutSurf("MBase",*mirror,"base");
   
-  return; 
+  connectors->createAll(System,*mirror,"backPlateOrg");
+  return;
 }
 
 void

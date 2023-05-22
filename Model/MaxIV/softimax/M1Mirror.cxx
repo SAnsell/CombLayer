@@ -65,7 +65,7 @@ namespace xraySystem
 {
 
 M1Mirror::M1Mirror(const std::string& Key) :
-  attachSystem::FixedRotate(Key,8),
+  attachSystem::FixedRotate(Key,18),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap()
@@ -149,7 +149,6 @@ M1Mirror::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
-
   // support cuts:
   Geometry::Vec3D slotOrg=Origin-X*slotXStep;
   ModelSupport::buildPlane(SMap,buildIndex+13,slotOrg-X*(slotWidth/2.0),X);
@@ -173,6 +172,9 @@ M1Mirror::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+107,pBaseA,Z,pipeBaseRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+207,pBaseB,Z,pipeBaseRadius);
 
+
+
+  
   ModelSupport::buildCylinder
     (SMap,buildIndex+117,pBaseA,Z,pipeBaseRadius+pipeWallThick);
   ModelSupport::buildCylinder
@@ -226,6 +228,25 @@ M1Mirror::createSurfaces()
       WMidPt+=Z*(waterGap+waterWidth);
       BI+=10;
     }
+
+  // Point for pipework connection
+  FixedComp::setConnect(7,pBaseA,-Z);
+  FixedComp::setConnect(8,pBaseB,-Z);
+  FixedComp::setLinkSurf(7,-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+5));
+
+  FixedComp::setConnect(9,slotOrg-X*(slotWidth/2.0),-X);
+  FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+13));
+
+  FixedComp::setConnect(10,slotOrg+X*(slotWidth/2.0),X);
+  FixedComp::setLinkSurf(10,-SMap.realSurf(buildIndex+14));
+
+  FixedComp::setConnect(11,slotOrg-Z*(height/2.0-slotDepth),Z);
+  FixedComp::setLinkSurf(11,-SMap.realSurf(buildIndex+15));
+
+  FixedComp::setConnect(12,slotOrg-Z*(height/2.0-slotDepth),Z);
+  FixedComp::setLinkSurf(12,SMap.realSurf(buildIndex+16));
+
   
   return;
 }
@@ -362,7 +383,12 @@ M1Mirror::createLinks()
   nameSideIndex(4,"base");
   nameSideIndex(5,"top");
   nameSideIndex(6,"backPlateOrg");
-
+  nameSideIndex(7,"downPipeA");
+  nameSideIndex(8,"downPipeB");
+  nameSideIndex(9,"slotBase");
+  nameSideIndex(10,"slotTop");
+  nameSideIndex(11,"slotAMid");
+  nameSideIndex(12,"slotBMid");
   
   return;
 }

@@ -70,12 +70,16 @@ M1DetailGenerator::M1DetailGenerator() :
   bBaseExtent(2.1),bOuterVaneThick(0.8),
   bInnerVaneThick(0.4),
   
-
+  clipYStep(7.7),clipLen(1.2),
+  clipSiThick(0.2),clipAlThick(0.4),
+  clipExtent(1.9),
+  
   eXOut(7.98),eLength(38.0),eThick(0.1),eHeight(6.8),
   eEdge(1.03),eHoleRadius(1.18),
   
   mirrorMat("Silicon300K"),waterMat("H2O"),
   supportMat("Aluminium"),springMat("Aluminium"),
+  clipMat("Aluminium"),
   electronMat("Aluminium"),pipeMat("Aluminium"),
   outerMat("Aluminium"),voidMat("Void")
   /*!
@@ -153,6 +157,26 @@ M1DetailGenerator::makeBackPlate(FuncDataBase& Control,
   return;
 }
 
+void
+M1DetailGenerator::makeConnectors(FuncDataBase& Control,
+				 const std::string& keyName) const
+  /*!
+    Build the variables for connectors between the clamp and the mirror
+  */
+{
+  ELog::RegMethod RegA("M1DetailGenerator","makeConnnectors");
+
+  Control.addVariable(keyName+"ClipYStep",clipYStep);
+  Control.addVariable(keyName+"ClipLen",clipLen);
+  Control.addVariable(keyName+"ClipSiThick",clipSiThick);
+  Control.addVariable(keyName+"ClipAlThick",clipAlThick);
+  Control.addVariable(keyName+"ClipExtent",clipExtent);
+
+  Control.addVariable(keyName+"ClipMat",clipMat);
+  Control.addVariable(keyName+"VoidMat",voidMat);
+
+  return;
+}
 
   
 void
@@ -234,6 +258,7 @@ M1DetailGenerator::generateMirror(FuncDataBase& Control,
   makeCrystal(Control,keyName+"Mirror",theta,zStep);
   makeBackPlate(Control,keyName+"CClamp");
   makeSupport(Control,keyName+"CClamp");
+  makeConnectors(Control,keyName+"Connect");
   
   return;
 

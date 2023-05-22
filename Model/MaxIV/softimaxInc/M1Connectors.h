@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   softimaxInc/M1Detail.h
+ * File:   softimaxInc/M1Connectors.h
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
  *
@@ -19,40 +19,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_M1Detail_h
-#define xraySystem_M1Detail_h
+#ifndef xraySystem_M1Connectors_h
+#define xraySystem_M1Connectors_h
 
 class Simulation;
 
 namespace xraySystem
 {
 
-  class M1Mirror;
-  class M1BackPlate;
-  class M1FrontShield;
-  class M1Connectors;
-  
 /*!
-  \class M1Detail
+  \class M1Connectors
   \author S. Ansell
   \version 1.0
-  \date October 2019
-  \brief Double Mirror Mono arrangement
+  \date May 2023
+  \brief connectors between mirror and stuff
 */
 
-class M1Detail :
+class M1Connectors :
   public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
+  public attachSystem::ExternalCut,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {
  private:
 
-  std::shared_ptr<M1Mirror> mirror;
-  std::shared_ptr<M1BackPlate> cClamp;
-  std::shared_ptr<M1Connectors> connectors;
-  std::shared_ptr<M1FrontShield> frontShield;
-  
+  double clipYStep;         ///< Step from end
+  double clipLen;           ///< Length of clip
+  double clipSiThick;       ///< Clip thickness parallel to Si
+  double clipAlThick;       ///< Clip thickness parallel to Al
+  double clipExtent;        ///< Clip length away from back
+
+  int clipMat;              ///< Material
+  int voidMat;              ///< outer pipe material
+
   // Functions:
 
   void populate(const FuncDataBase&);
@@ -62,11 +62,12 @@ class M1Detail :
 
  public:
 
-  M1Detail(const std::string&);
-  M1Detail(const M1Detail&);
-  M1Detail& operator=(const M1Detail&);
-  virtual ~M1Detail();
+  M1Connectors(const std::string&);
+  M1Connectors(const M1Connectors&);
+  M1Connectors& operator=(const M1Connectors&);
+  virtual ~M1Connectors();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);
