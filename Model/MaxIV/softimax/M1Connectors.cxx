@@ -62,6 +62,10 @@
 
 #include "M1Connectors.h"
 
+#include "BaseModVisit.h"
+#include "BaseVisit.h"
+#include "Surface.h"
+
 
 namespace xraySystem
 {
@@ -122,13 +126,12 @@ M1Connectors::createSurfaces()
 {
   ELog::RegMethod RegA("M1Connectors","createSurfaces");
 
-  ELog::EM<<"X = "<<X<<ELog::endDiag;
   makeShiftedSurf(SMap,"slotBase",buildIndex+3,X,clipSiThick);
 
   ModelSupport::buildPlane
-    (SMap,buildIndex+101,Origin-Y*(clipYStep-clipLen/2.0),Y);
+    (SMap,buildIndex+101,Origin-Y*(clipYStep+clipLen/2.0),Y);
   ModelSupport::buildPlane
-    (SMap,buildIndex+102,Origin-Y*(clipYStep+clipLen/2.0),Y);
+    (SMap,buildIndex+102,Origin-Y*(clipYStep-clipLen/2.0),Y);
 
   ModelSupport::buildPlane
     (SMap,buildIndex+201,Origin+Y*(clipYStep-clipLen/2.0),Y);
@@ -155,15 +158,16 @@ M1Connectors::createObjects(Simulation& System)
 
   HeadRule HR;
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102");
-  makeCell("pipe",System,cellIndex++,clipMat,0.0,
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 -3");
+  HR.populateSurf();
+  makeCell("Clip",System,cellIndex++,clipMat,0.0,
 	   HR*baseHR*mBaseHR.complement()*midAHR);
   
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -202");
-  makeCell("pipe",System,cellIndex++,clipMat,0.0,
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -202 -3");
+  makeCell("Clip",System,cellIndex++,clipMat,0.0,
 	   HR*baseHR*mBaseHR.complement()*midAHR);
-
-
+  
+  insertComponent(System,"",0,HR);
   
   return;
 }
