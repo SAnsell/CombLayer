@@ -281,11 +281,12 @@ M1Mirror::createObjects(Simulation& System)
      "1000 -2 3 -4 5 -6 (-13:14:(-16 15)) (101:217) (154:267) (111:227)");
   makeCell("Mirror",System,cellIndex++,mirrorMat,0.0,HR*waterCutHR);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -14 -15 5");
+  makeCell("Slot",System,cellIndex++,voidMat,0.0,HR);
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -14 16 -6");
   makeCell("Slot",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -14 -15 5");
-  makeCell("Slot",System,cellIndex++,voidMat,0.0,HR);
 
   // pipes
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -101 -107");

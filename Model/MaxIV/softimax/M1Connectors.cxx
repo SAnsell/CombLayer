@@ -127,6 +127,9 @@ M1Connectors::createSurfaces()
   ELog::RegMethod RegA("M1Connectors","createSurfaces");
 
   makeShiftedSurf(SMap,"slotBase",buildIndex+3,X,clipSiThick);
+  // extenstion in clip direction
+  ELog::EM<<"Slit Extent "<<clipExtent<<ELog::endDiag;
+  makeShiftedSurf(SMap,"slotBase",buildIndex+503,X,-clipExtent);
 
   ModelSupport::buildPlane
     (SMap,buildIndex+101,Origin-Y*(clipYStep+clipLen/2.0),Y);
@@ -138,6 +141,11 @@ M1Connectors::createSurfaces()
   ModelSupport::buildPlane
     (SMap,buildIndex+202,Origin+Y*(clipYStep+clipLen/2.0),Y);
 
+  int BI(buildIndex+500);
+  for(const Geometry::Vec3D& Pt : standoffPos)
+    ModelSupport::buildCylinder
+      (SMap,BI+7,Origin+Y*(clipYStep+clipLen/2.0),Y);
+    
 
   return;
 }
@@ -153,21 +161,61 @@ M1Connectors::createObjects(Simulation& System)
 
   const HeadRule baseHR=getRule("slotBase"); // 13
   const HeadRule midAHR=getRule("slotAMid"); // -15
+  const HeadRule midBHR=getRule("slotBMid"); // 16
   const HeadRule mBaseHR=getRule("MBase");   // -5
   const HeadRule mTopHR=getRule("MTop");     // 6 ( 256001)
 
+  const HeadRule cInnerBase=getRule("CInnerBase"); // +5 (from CClamp)
+  const HeadRule cInnerTop=getRule("CInnerTop");   // -6 (from CClamp)
+  
   HeadRule HR;
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 -3");
-  HR.populateSurf();
   makeCell("Clip",System,cellIndex++,clipMat,0.0,
 	   HR*baseHR*mBaseHR.complement()*midAHR);
+  insertComponent(System,"slotA",HR.complement());
   
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -202 -3");
   makeCell("Clip",System,cellIndex++,clipMat,0.0,
 	   HR*baseHR*mBaseHR.complement()*midAHR);
+
+  insertComponent(System,"slotA",HR.complement());
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 -3");
+  makeCell("Clip",System,cellIndex++,clipMat,0.0,
+	   HR*baseHR*mTopHR.complement()*midBHR);
+  insertComponent(System,"slotB",HR.complement());
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -202 -3");
+  makeCell("Clip",System,cellIndex++,clipMat,0.0,
+	   HR*baseHR*mTopHR.complement()*midBHR);
+  insertComponent(System,"slotB",HR.complement());
+
+  // ohter part of clip
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 -3 503");
+  makeCell("Clip",System,cellIndex++,clipMat,0.0,
+	   HR*mBaseHR*cInnerBase);
+  insertComponent(System,"gapA",HR.complement());
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -202 -3 503");
+  makeCell("Clip",System,cellIndex++,clipMat,0.0,
+	   HR*mBaseHR*cInnerBase);
+  insertComponent(System,"gapA",HR.complement());
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 -3 503");
+  makeCell("Clip",System,cellIndex++,clipMat,0.0,
+	   HR*mTopHR*cInnerTop);
+  insertComponent(System,"gapB",HR.complement());
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -202 -3 503");
+  makeCell("Clip",System,cellIndex++,clipMat,0.0,
+	   HR*mTopHR*cInnerTop);
+  insertComponent(System,"gapA",HR.complement());
+
+  // Create Buttons:
   
-  insertComponent(System,"",0,HR);
+  
+
   
   return;
 }

@@ -255,7 +255,7 @@ M1BackPlate::createObjects(Simulation& System)
   HeadRule HR;
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 1 -2 3 -104 -6");
-  makeCell("Plate",System,cellIndex++,voidMat,0.0,HR*tbUnionHR);
+  makeCell("PlateGap",System,cellIndex++,voidMat,0.0,HR*tbUnionHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 1 -2 13 -104 -16 (6:-3)");
   makeCell("Plate",System,cellIndex++,baseMat,0.0,HR);
@@ -265,7 +265,7 @@ M1BackPlate::createObjects(Simulation& System)
   
   // lower section:
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 1 -2 3 -204 5");
-  makeCell("Plate",System,cellIndex++,voidMat,0.0,HR*bbUnionHR);
+  makeCell("PlateGap",System,cellIndex++,voidMat,0.0,HR*bbUnionHR); 
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 1 -2 13 -204 15 (-5:-3)");
   makeCell("Plate",System,cellIndex++,baseMat,0.0,HR);
@@ -417,11 +417,23 @@ M1BackPlate::createLinks()
 
   FixedComp::setConnect(2,Origin+X*(elecXOut-elecThick),X);
   FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+1003));
-  nameSideIndex(2,"elecShieldIn");
+
 
   FixedComp::setConnect(3,Origin+X*elecXOut,X);
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+1004));
+
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+5));
+  FixedComp::setLineConnect(4,Origin,Z);
+
+  
+  FixedComp::setLinkSurf(5,-SMap.realSurf(buildIndex+6));
+  FixedComp::setLineConnect(5,Origin,-Z);
+
+  nameSideIndex(2,"elecShieldIn");
   nameSideIndex(3,"elecShieldOut");
+  nameSideIndex(4,"innerBase");
+  nameSideIndex(5,"innerTop");
+
 
 
   

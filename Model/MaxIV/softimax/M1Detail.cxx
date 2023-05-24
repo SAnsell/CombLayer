@@ -148,11 +148,18 @@ M1Detail::createObjects(Simulation& System)
 
   connectors->setCell("slotA",mirror->getCell("Slot",0));
   connectors->setCell("slotB",mirror->getCell("Slot",1));
+  
+  connectors->setCell("gapA",cClamp->getCell("PlateGap",1));
+  connectors->setCell("gapB",cClamp->getCell("PlateGap",0));
+  
   connectors->setCutSurf("slotBase",*mirror,"slotBase");
   connectors->setCutSurf("slotAMid",*mirror,"slotAMid");
   connectors->setCutSurf("slotBMid",*mirror,"slotBMid");
   connectors->setCutSurf("MTop",*mirror,"top");
   connectors->setCutSurf("MBase",*mirror,"base");
+
+  connectors->setCutSurf("CInnerTop",*cClamp,"innerTop");
+  connectors->setCutSurf("CInnerBase",*cClamp,"innerBase");
   
   connectors->createAll(System,*mirror,"backPlateOrg");
   return;

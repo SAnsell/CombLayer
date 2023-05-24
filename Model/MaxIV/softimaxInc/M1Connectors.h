@@ -50,6 +50,10 @@ class M1Connectors :
   double clipAlThick;       ///< Clip thickness parallel to Al
   double clipExtent;        ///< Clip length away from back
 
+  double standoffRadius;
+  std::vector<Geometry::Vec3D> standoffPos;
+  
+  int buttonMat;              ///< Material
   int clipMat;              ///< Material
   int voidMat;              ///< outer pipe material
 
