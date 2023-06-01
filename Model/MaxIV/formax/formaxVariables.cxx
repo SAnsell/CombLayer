@@ -31,6 +31,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
+#include <memory>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -75,6 +76,7 @@
 #include "DCMTankGenerator.h"
 #include "MonoBlockXstalsGenerator.h"
 #include "MLMonoGenerator.h"
+#include "MLMDetailGenerator.h"
 #include "ViewScreenGenerator.h"
 #include "ScreenGenerator.h"
 #include "YagScreenGenerator.h"
@@ -236,6 +238,11 @@ mirrorMonoPackage(FuncDataBase& Control,
   setVariable::PortItemGenerator PItemGen;
   setVariable::VacBoxGenerator MBoxGen;
   setVariable::MLMonoGenerator MXtalGen;
+
+  setVariable::MLMDetailGenerator MLGen;
+
+  MLGen.generateMono(Control,monoKey+"MLM",0.4,-0.4);
+
   
   // ystep/width/height/depth/length
   //
@@ -258,9 +265,9 @@ mirrorMonoPackage(FuncDataBase& Control,
 			Geometry::Vec3D(1,0,0));
 
   // crystals gap 10mm
-  MXtalGen.setGap(1.0);
-  MXtalGen.generateMono(Control,monoKey+"MLM",-20.0,0.6,0.6);
-  Control.addVariable(monoKey+"MLMYAngle",0.0);   
+  //  MXtalGen.setGap(1.0);
+  //  MXtalGen.generateMono(Control,monoKey+"MLM",-20.0,0.6,0.6);
+  //  Control.addVariable(monoKey+"MLMYAngle",0.0);   
   return;
 }
 

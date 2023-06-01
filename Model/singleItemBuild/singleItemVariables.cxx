@@ -143,6 +143,7 @@ namespace setVariable
 
 void exptHutVariables(FuncDataBase&,const std::string&,const double);
 void localShieldVariables(FuncDataBase&);
+void m1chamberDetails(FuncDataBase&);
 void targetShieldVariables(FuncDataBase&);
 
 
@@ -737,9 +738,11 @@ SingleItemVariables(FuncDataBase& Control)
   MLMDetailGenerator MLGen;
   MLGen.generateMono(Control,"MLM",0.1,-0.1);
 
+  
   M1DetailGenerator M1DGen;
   M1DGen.generateMirror(Control,"M1",2.0,0.0);
-
+  m1chamberDetails(Control);
+  
 
   TubeDetBoxGenerator TDBGen;
   TDBGen.generateBox(Control,"TDetBox",Geometry::Vec3D(0,3.15,0),8);
@@ -766,6 +769,60 @@ SingleItemVariables(FuncDataBase& Control)
   return;
 }
 
+void
+m1chamberDetails(FuncDataBase& Control)
+  /*!
+    Construct the M1 detail 
+   */
+{
+  ELog::RegMethod RegA("singleItemVariable[F]","m1chamberDetails");
+
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::M1DetailGenerator M1DGen;
+  setVariable::PipeGenerator PipeGen;
+  setVariable::DomeConnectorGenerator DCGen;
+  setVariable::PortItemGenerator PItemGen;
+
+  const double tubeLength(40.5);
+  const double portXStep(2.0);
+  const double theta(-0.0*M_PI/180.0);
+  const double mExtra=30.0*sin(theta);
+    
+  
+  const std::string frontName="M1TubeFront";
+  const std::string tubeName="M1Tube";
+  const std::string backName="M1TubeBack";
+
+  PItemGen.setCF<setVariable::CF63>(6.0);
+  PItemGen.setNoPlate();
+  
+  DCGen.setSphere(7.0,2.5);
+  DCGen.setFlangeCF<CF150>(0.8);
+  DCGen.setLengths(2.5,2.0,3.0);
+  DCGen.generateDome(Control,frontName,1);
+  PItemGen.generatePort(Control,frontName+"Port0",
+			Geometry::Vec3D(portXStep, 0.0, 0.0),
+			Geometry::Vec3D(0.0, -1.0, 0.0));
+  //Control.addVariable(frontName+"ZAngle",-1.0);
+
+
+  const std::string mName="M1Tube";
+  SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.generateTube(Control,mName,tubeLength);
+  Control.addVariable(mName+"WallMat","Titanium");
+  Control.addVariable(mName+"NPorts",0);   // beam ports
+
+  M1DGen.generateMirror(Control,"M1",0.0,0.0);
+  Control.addVariable("M1XStep",portXStep+mExtra);
+    
+  DCGen.generateDome(Control,backName,1);
+  PItemGen.generatePort(Control,backName+"Port0",
+			Geometry::Vec3D(-portXStep, 0.0, 0.0),
+			Geometry::Vec3D(0,-1,0));
+
+}
+
+  
 void
 targetShieldVariables(FuncDataBase& Control)
 {

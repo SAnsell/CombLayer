@@ -1037,6 +1037,12 @@ void WWGWeight::CADISnorm(const Simulation&,const long int,
 			  const WWGWeight&,const long int,
                           const Geometry::Vec3D&,const Geometry::Vec3D&,
 			  const double,const double,const double);
+template 
+void WWGWeight::CADISnorm(const Simulation&,const long int,
+			  const WWGWeight&,const long int,
+			  const WWGWeight&,const long int,
+                          const Geometry::Vec3D&,const Geometry::Plane&,
+			  const double,const double,const double);
 
 template 
 void WWGWeight::CADISnorm(const Simulation&,const long int,

@@ -60,6 +60,7 @@ namespace xraySystem
   class GaugeTube;
   class Mirror;
   class MLMono;
+  class MLMonoDetail;
   class MonoBlockXstals;
   class ShutterUnit;
   class SquareFMask;
@@ -136,7 +137,7 @@ class formaxOpticsLine :
   /// MirrorMonoBox 
   std::shared_ptr<constructSystem::VacuumBox> MLMVessel;
   /// Mirror-Mono system
-  std::shared_ptr<xraySystem::MLMono> MLM;
+  std::shared_ptr<xraySystem::MLMonoDetail> MLM;
 
   // PART 5: [connection pipe]
 

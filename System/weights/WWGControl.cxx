@@ -3,7 +3,7 @@
  
  * File:   weights/WWGControl.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -283,15 +283,20 @@ WWGControl::procPlanePoint(const Simulation& System,
 	}
       else
 	{
+	  ELog::EM<<"P == "<<itemCnt<<ELog::endDiag;
 	  PPoint=
 	    mainSystem::getNamedPoint
 	    (System,IParam,wKey,setIndex,itemCnt,wKey+":Plane Point");
-	  
+
+	  ELog::EM<<"P == "<<itemCnt<<ELog::endDiag;
 	  Norm=
 	    mainSystem::getNamedAxis
 	    (System,IParam,wKey,setIndex,itemCnt,wKey+":Plane:Norm");
+	  ELog::EM<<"P == "<<itemCnt<<" "<<Norm<<ELog::endDiag;
 	}
-      
+
+      ELog::EM<<"Get Point == "<<PPoint<<ELog::endDiag;
+      ELog::EM<<"OFSET == "<<itemCnt<<ELog::endDiag;
       const Geometry::Vec3D offset=
 	IParam.getDefCntVec3D(wKey,setIndex,itemCnt,Geometry::Vec3D(0,0,0));
 
@@ -719,6 +724,15 @@ WWGControl::wwgCADIS(const Simulation& System,
 	{
 	  const Geometry::Vec3D& SVec=getSourcePoint(SPt);
 	  const Geometry::Vec3D& TVec=getSourcePoint(TPt);
+	  MeshGrid.CADISnorm(System,mIndex,
+			     sourceFlux,sIndex,
+			     adjointFlux,aIndex,
+			     SVec,TVec,density,r2Length,r2Power);      
+	}
+      else if (hasSourcePoint(SPt) && hasPlanePoint(TPt))
+	{
+	  const Geometry::Vec3D& SVec=getSourcePoint(SPt);
+	  const Geometry::Plane& TVec=getPlanePoint(TPt);
 	  MeshGrid.CADISnorm(System,mIndex,
 			     sourceFlux,sIndex,
 			     adjointFlux,aIndex,

@@ -111,6 +111,7 @@
 #include "BeamPair.h"
 #include "MonoBlockXstals.h"
 #include "MLMono.h"
+#include "MLMonoDetail.h"
 #include "DCMTank.h"
 #include "BremTube.h"
 #include "HPJaws.h"
@@ -152,7 +153,7 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
   gateTubeB(new xraySystem::CylGateValve(newName+"GateTubeB")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
   MLMVessel(new constructSystem::VacuumBox(newName+"MLMVessel")),
-  MLM(new xraySystem::MLMono(newName+"MLM")),
+  MLM(new xraySystem::MLMonoDetail(newName+"MLM")),
   
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
   pipeC(new constructSystem::VacuumPipe(newName+"PipeC")),

@@ -193,7 +193,8 @@ class softimaxOpticsLine :
   void buildM1Mirror(Simulation&,const attachSystem::FixedComp&,
 		     const std::string&);
   
-  void buildM3Mirror(Simulation&,const attachSystem::FixedComp&,
+  void buildM3Mirror(Simulation&,
+		     const attachSystem::FixedComp&,
 		     const std::string&);
   
   void buildM3STXMMirror(Simulation&,

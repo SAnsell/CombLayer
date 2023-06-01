@@ -72,7 +72,12 @@ M1DetailGenerator::M1DetailGenerator() :
   
   clipYStep(7.7),clipLen(1.2),
   clipSiThick(0.2),clipAlThick(0.4),
-  clipExtent(0.9),
+  clipExtent(0.9),standoffRadius(0.5),
+  standPts({
+    Geometry::Vec3D(0.0,-7.5,-1.0),
+    Geometry::Vec3D(0.0,0.0,0.0),
+    Geometry::Vec3D(0.0,7.5,1.0)
+  }),
   
   eXOut(7.98),eLength(38.0),eThick(0.1),eHeight(6.8),
   eEdge(1.03),eHoleRadius(1.18),
@@ -172,6 +177,14 @@ M1DetailGenerator::makeConnectors(FuncDataBase& Control,
   Control.addVariable(keyName+"ClipAlThick",clipAlThick);
   Control.addVariable(keyName+"ClipExtent",clipExtent);
 
+  Control.addVariable(keyName+"StandoffRadius",standoffRadius);
+  Control.addVariable(keyName+"NStandoff",standPts.size());
+  for(size_t i=0;i<standPts.size();i++)
+    {
+      Control.addVariable(keyName+"StandoffPt"+std::to_string(i),
+			  standPts[i]);
+    }
+  
   Control.addVariable(keyName+"ClipMat",clipMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
 

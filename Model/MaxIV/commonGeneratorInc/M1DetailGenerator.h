@@ -90,6 +90,9 @@ class M1DetailGenerator
   double clipAlThick;       ///< Clip thickness parallel to Al
   double clipExtent;        ///< Clip length away from back
 
+  double standoffRadius;    ///< Standof radius
+  std::vector<Geometry::Vec3D> standPts;
+  
   double eXOut;                 ///< Step from the back plane (79.8)
   double eLength;               ///< Length of electorn shield (38.0)
   double eThick;                ///< Length of electorn shield (0.1)

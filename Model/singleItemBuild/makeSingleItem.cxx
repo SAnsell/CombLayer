@@ -166,6 +166,11 @@
 #include "PlateUnit.h"
 #include "BenderUnit.h"
 #include "MLMonoDetail.h"
+#include "M1Mirror.h"
+#include "M1BackPlate.h"
+#include "M1FrontShield.h"
+#include "BlockStand.h"
+#include "DomeConnector.h"
 #include "M1Detail.h"
 
 #include "makeSingleItem.h"
@@ -224,7 +229,7 @@ makeSingleItem::build(Simulation& System,
 	"ConnectorTube","LocalShield","FlangeDome","DomeConnector",
 	"MonoShutter","RoundMonoShutter","TubeDetBox",
 	"GuideUnit","PlateUnit","BenderUnit","MLMdetail",
-	"M1detail",
+	"M1detail","M1Full",
 	"Help","help"
     });
 
@@ -323,6 +328,34 @@ makeSingleItem::build(Simulation& System,
       MD->addInsertCell(voidCell);
       MD->createAll(System,World::masterOrigin(),0);
 
+      return;
+    }
+  if (item == "M1Full" )
+    {
+      std::shared_ptr<constructSystem::DomeConnector> M1TubeFront
+	(new constructSystem::DomeConnector("M1TubeFront"));
+      std::shared_ptr<constructSystem::DomeConnector> M1TubeBack
+	(new constructSystem::DomeConnector("M1TubeBack"));
+      std::shared_ptr<constructSystem::PipeTube> M1Tube
+	(new constructSystem::PipeTube("M1Tube"));
+
+      std::shared_ptr<xraySystem::M1Detail> M1Detail
+	(new xraySystem::M1Detail("M1"));
+
+      M1TubeFront->addInsertCell(voidCell);
+      M1TubeFront->createAll(System,World::masterOrigin(),0);
+
+      M1Tube->setFront(*M1TubeFront,2);
+      M1Tube->createAll(System,*M1TubeFront,"back");
+      M1Tube->insertAllInCell(System,voidCell);
+  
+      M1TubeBack->addInsertCell(voidCell);
+      M1TubeBack->setPortRotate(1);   // Back
+      M1TubeBack->createAll(System,*M1Tube,"back");
+	
+      M1Detail->addInsertCell(M1Tube->getCell("Void"));
+      M1Detail->createAll(System,*M1Tube,0);
+	
       return;
     }
   if (item == "GateValveCylinder" )

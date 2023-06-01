@@ -111,6 +111,18 @@ M1Connectors::populate(const FuncDataBase& Control)
   clipAlThick=Control.EvalVar<double>(keyName+"ClipAlThick");
   clipExtent=Control.EvalVar<double>(keyName+"ClipExtent");
 
+  standoffRadius=Control.EvalVar<double>(keyName+"StandoffRadius");
+  const size_t nStandoff=Control.EvalVar<size_t>
+    (keyName+"NStandoff");
+
+	
+  for(size_t i=0;i<nStandoff;i++)
+    {
+      const Geometry::Vec3D Pt=Control.EvalVar<Geometry::Vec3D>
+	(keyName+"StandoffPt"+std::to_string(i));
+      standoffPos.push_back(Pt);
+    }
+  
   clipMat=ModelSupport::EvalMat<int>(Control,keyName+"ClipMat");
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   
@@ -143,9 +155,13 @@ M1Connectors::createSurfaces()
 
   int BI(buildIndex+500);
   for(const Geometry::Vec3D& Pt : standoffPos)
-    ModelSupport::buildCylinder
-      (SMap,BI+7,Origin+Y*(clipYStep+clipLen/2.0),Y);
-    
+    {
+      const Geometry::Vec3D offset=
+	Pt.getInBasis(X,Y,Z);
+      ModelSupport::buildCylinder
+	(SMap,BI+7,Origin+Pt,X,standoffRadius);
+      BI+=10;
+    }
 
   return;
 }

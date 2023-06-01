@@ -33,6 +33,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <array>
 
 #include "NameStack.h"
 #include "FileReport.h"
