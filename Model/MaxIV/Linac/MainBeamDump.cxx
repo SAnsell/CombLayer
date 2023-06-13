@@ -60,18 +60,6 @@
 #include "SurfMap.h"
 #include "CellMap.h"
 
-#include "FileReport.h"
-#include "NameStack.h"
-#include "RegMethod.h"
-#include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "Vec3D.h"
-#include "Surface.h"
-#include "Quadratic.h"
-#include "Plane.h"
-
-
 #include "MainBeamDump.h"
 
 namespace tdcSystem
@@ -152,11 +140,7 @@ MainBeamDump::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(wallThick+length/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(wallThick+width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(wallThick+width/2.0),X);
-  const auto p = ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(wallThick+depth),Z);
-
-  ELog::EM << "plane 5: " << acos(p->getNormal().Z())*180/3.1415 << " deg" << ELog::endDiag;
-
-
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(wallThick+depth),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(wallThick+height),Z);
 
   // Main body
