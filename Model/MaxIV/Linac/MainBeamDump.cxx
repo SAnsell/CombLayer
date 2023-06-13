@@ -102,8 +102,13 @@ MainBeamDump::populate(const FuncDataBase& Control)
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   portLength=Control.EvalVar<double>(keyName+"PortLength");
   portRadius=Control.EvalVar<double>(keyName+"PortRadius");
+  targetWidth=Control.EvalVar<double>(keyName+"TargetWidth");
+  targetHeight=Control.EvalVar<double>(keyName+"TargetHeight");
+  targetLength=Control.EvalVar<double>(keyName+"TargetLength");
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
+  voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  targetMat=ModelSupport::EvalMat<int>(Control,keyName+"TargetMat");
 
 
   return;
@@ -131,14 +136,14 @@ MainBeamDump::createSurfaces()
   //     ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
   //   }
 
-  // wall
+  // Wall
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(wallThick+length/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(wallThick+width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(wallThick+width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(wallThick+depth),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(wallThick+height),Z);
 
-  // main body
+  // Main body
   ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(width/2.0),X);
@@ -148,8 +153,15 @@ MainBeamDump::createSurfaces()
 
   // Pipe
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,portRadius);
+  ModelSupport::buildPlane(SMap,buildIndex+21,Origin-Y*(wallThick+length/2.0-portLength+targetLength*2),Y);
   ModelSupport::buildPlane(SMap,buildIndex+22,Origin-Y*(wallThick+length/2.0-portLength),Y);
 
+  ModelSupport::buildPlane(SMap,buildIndex+23,Origin-X*(targetWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+24,Origin+X*(targetWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+25,Origin-Z*(targetHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+26,Origin+Z*(targetHeight/2.0),Z);
+
+  ModelSupport::buildPlane(SMap,buildIndex+31,Origin-Y*(wallThick+length/2.0-portLength+targetLength),Y);
 
   return;
 }
@@ -178,16 +190,40 @@ MainBeamDump::createObjects(Simulation& System)
   // makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"11 -22 13 -14 15 -16 7");
+    (SMap,buildIndex,"11 -21 13 -14 15 -16 7");
   makeCell("MainBody",System,cellIndex++,mat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"-22 -7");
-  makeCell("Pipe",System,cellIndex++,0,0.0,HR*frontHR);
+    (SMap,buildIndex,"-21 -7");
+  makeCell("Pipe",System,cellIndex++,voidMat,0.0,HR*frontHR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"21 -31 23 -24 25 -26");
+  makeCell("TargetBox",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"31 -22 23 -24 25 -26");
+  makeCell("Target",System,cellIndex++,targetMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"21 -22 13 -23 15 -16");
+  makeCell("MainBodyTargetLeft",System,cellIndex++,mat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"21 -22 24 -14 15 -16");
+  makeCell("MainBodyTargetRight",System,cellIndex++,mat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"21 -22 23 -24 15 -25");
+  makeCell("MainBodyTargetBottom",System,cellIndex++,mat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"21 -22 23 -24 26 -16");
+  makeCell("MainBodyTargetTop",System,cellIndex++,mat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"22 -12 13 -14 15 -16");
-  makeCell("MainBody",System,cellIndex++,mat,0.0,HR);
+  makeCell("MainBodyAfterTarget",System,cellIndex++,mat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"-11 3 -4 5 -6 7");

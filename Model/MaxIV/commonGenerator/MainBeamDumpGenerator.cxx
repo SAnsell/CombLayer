@@ -53,10 +53,17 @@ namespace setVariable
     width(50.0),length(100.0),height(25.0),depth(25.0),
     wallThick(10.0),portLength(30.0),
     portRadius(2.0),
+    targetWidth(12.0),
+    targetHeight(12.0),
+    targetLength(2.5),
     mat("Stainless304L"),
-    wallMat("Poly")
+    voidMat("Void"),
+    wallMat("Poly"),
+    targetMat("Graphite")
     /*!
       Constructor and defaults
+      Default values:
+      http://localhost:8080/maxiv/work-log/100-hz/main-beam-dump/dump7.pdf/view
     */
   {}
 
@@ -85,9 +92,14 @@ namespace setVariable
     Control.addVariable(keyName+"Depth",depth);
     Control.addVariable(keyName+"WallThick",wallThick);
     Control.addVariable(keyName+"PortLength",portLength);
-  Control.addVariable(keyName+"PortRadius",portRadius);
-  Control.addVariable(keyName+"Mat",mat);
-  Control.addVariable(keyName+"WallMat",wallMat);
+    Control.addVariable(keyName+"PortRadius",portRadius);
+    Control.addVariable(keyName+"TargetWidth",targetWidth);
+    Control.addVariable(keyName+"TargetHeight",targetHeight);
+    Control.addVariable(keyName+"TargetLength",targetLength);
+    Control.addVariable(keyName+"Mat",mat);
+    Control.addVariable(keyName+"VoidMat",voidMat);
+    Control.addVariable(keyName+"WallMat",wallMat);
+    Control.addVariable(keyName+"TargetMat",targetMat);
 
     return;
 
