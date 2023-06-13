@@ -260,6 +260,8 @@ TriGroup::createSurfaces()
   const Geometry::Quaternion QWB =
     Geometry::Quaternion::calcQRotDeg(-(thetaA+bendZAngle),X);
 
+  ELog::EM << "angle: " << thetaA+bendZAngle << " " << bendZAngle << ELog::endDiag;
+
   const Geometry::Vec3D aY=QWA.makeRotate(Y);
   const Geometry::Vec3D aZ=QWA.makeRotate(Z);
 
