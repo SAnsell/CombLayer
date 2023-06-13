@@ -81,6 +81,7 @@
 #include "ButtonBPMGenerator.h"
 #include "CeramicGapGenerator.h"
 #include "BeamDividerGenerator.h"
+#include "MainBeamDumpGenerator.h"
 #include "EBeamStopGenerator.h"
 #include "ScrapperGenerator.h"
 #include "FlatPipeGenerator.h"
@@ -298,11 +299,11 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::R3ChokeChamberGenerator CCGen;
   CCGen.generateChamber(Control,"R3Chamber");
-  
+
   setVariable::MagnetM1Generator M1Gen;
   M1Gen.generateBlock(Control,"M1Block");
 
-  setVariable::MagnetU1Generator U1Gen;  
+  setVariable::MagnetU1Generator U1Gen;
   U1Gen.generateBlock(Control,"U1Block");
 
 
@@ -531,6 +532,9 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::BeamDividerGenerator BDGen(CF40unit);
   BDGen.generateDivider(Control,"BeamDiv",0.0);
 
+  setVariable::MainBeamDumpGenerator MainBDGen;
+  MainBDGen.generate(Control,"MainBeamDump");
+
   setVariable::EBeamStopGenerator EBGen;
   EBGen.generateEBeamStop(Control,"EBeam",0);
 
@@ -725,7 +729,7 @@ SingleItemVariables(FuncDataBase& Control)
 
   MLMDetailGenerator MLGen;
   MLGen.generateMono(Control,"MLM",0.1,-0.1);
-  
+
 
   TubeDetBoxGenerator TDBGen;
   TDBGen.generateBox(Control,"TDetBox",Geometry::Vec3D(0,3.15,0),8);
@@ -737,8 +741,8 @@ SingleItemVariables(FuncDataBase& Control)
   FGen.setYOffset(2.0);
   //  FGen.generateRectangle(Control,"FA",100.0,5.0,8.0);
   //  FGen.generateTaper(Control,"FA",100.0,2,2,2,10);
-  FGen.generateTaper(Control,"FA",26.0,2.63,2.14,3.75,4.76);   
-  
+  FGen.generateTaper(Control,"FA",26.0,2.63,2.14,3.75,4.76);
+
   const double bendAngle(0.0);   // relative to Z bend
   const double bendRadius(12000.0);    // 120m
   FGen.generateBender(Control,"BA",100.0,30,30,30,30,
@@ -768,10 +772,10 @@ targetShieldVariables(FuncDataBase& Control)
   Control.addVariable("TubeBDefMat","Lead");
 
 
-  
+
   return;
 }
-  
+
 void
 localShieldVariables(FuncDataBase& Control)
   /*!
