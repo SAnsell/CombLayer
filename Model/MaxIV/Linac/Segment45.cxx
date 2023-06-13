@@ -61,6 +61,8 @@
 #include "FrontBackCut.h"
 #include "BlockZone.h"
 #include "generateSurf.h"
+#include "FixedGroup.h"
+#include "FixedRotateGroup.h"
 #include "ModelSupport.h"
 #include "generalConstruct.h"
 
@@ -70,7 +72,7 @@
 #include "YagScreen.h"
 #include "CeramicGap.h"
 #include "FlangePlate.h"
-#include "EBeamStop.h"
+#include "MainBeamDump.h"
 
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
@@ -98,7 +100,7 @@ Segment45::Segment45(const std::string& Key) :
   adaptor(new constructSystem::FlangePlate(keyName+"Adaptor")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
-  beamStop(new tdcSystem::EBeamStop(keyName+"EBeam"))
+  beamStop(new tdcSystem::MainBeamDump(keyName+"EBeam"))
   /*!
     Constructor
     \param Key :: Name of construction key

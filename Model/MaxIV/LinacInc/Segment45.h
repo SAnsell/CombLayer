@@ -32,7 +32,7 @@ namespace tdcSystem
 {
   class CeramicGap;
   class InjectionHall;
-  class EBeamStop;
+  class MainBeamDump;
 
   /*!
     \class Segment45
@@ -60,7 +60,7 @@ class Segment45 :
 
   /// Main beam dump
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;
-  std::shared_ptr<tdcSystem::EBeamStop> beamStop;
+  std::shared_ptr<tdcSystem::MainBeamDump> beamStop;
 
   virtual void setFrontSurfs(const std::vector<HeadRule>&) override;
 

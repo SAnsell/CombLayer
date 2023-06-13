@@ -75,6 +75,7 @@
 #include "CeramicGapGenerator.h"
 #include "EBeamStopGenerator.h"
 #include "TDCBeamDumpGenerator.h"
+#include "MainBeamDumpGenerator.h"
 #include "TWCavityGenerator.h"
 #include "UndVacGenerator.h"
 #include "FMUndulatorGenerator.h"
@@ -3026,8 +3027,8 @@ Segment45(FuncDataBase& Control,
   Control.addVariable(lKey+"PipeCYAngle",-90);
   Control.addVariable(lKey+"PipeCFlangeARadius",3.5); // to avoid cutting EBeam
   Control.addVariable(lKey+"PipeCFlangeBRadius",3.5); // to avoid cutting EBeam
-  setVariable::EBeamStopGenerator EBGen;
-  EBGen.generateEBeamStop(Control,lKey+"EBeam",1);
+  setVariable::MainBeamDumpGenerator EBGen;
+  EBGen.generate(Control,lKey+"EBeam",1);
   Control.addVariable(lKey+"EBeamShieldActive",1);
   Control.addVariable(lKey+"EBeamShieldInnerMat","Stainless304L"); // email from JR, 210120: "Iron"
 

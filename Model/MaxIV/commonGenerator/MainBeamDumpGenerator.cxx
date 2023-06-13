@@ -1,0 +1,207 @@
+/*********************************************************************
+  CombLayer : MCNP(X) Input builder
+
+ * File:   commonGenerator/MainBeamDumpGenerator.cxx
+ *
+ * Copyright (c) 2004-2023 by Konstantin Batkov
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ ****************************************************************************/
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <cmath>
+#include <complex>
+#include <list>
+#include <vector>
+#include <stack>
+#include <set>
+#include <map>
+#include <string>
+#include <algorithm>
+#include <numeric>
+#include <memory>
+
+#include "FileReport.h"
+#include "NameStack.h"
+#include "RegMethod.h"
+#include "OutputLog.h"
+#include "Vec3D.h"
+#include "varList.h"
+#include "Code.h"
+#include "FuncDataBase.h"
+#include "CFFlanges.h"
+
+#include "MainBeamDumpGenerator.h"
+
+namespace setVariable
+{
+
+MainBeamDumpGenerator::MainBeamDumpGenerator() :
+  width(11.4),length(39.2),height(12.6),depth(10.0),
+  wallThick(0.8),baseThick(2.6),baseFlangeExtra(3.0),
+  baseFlangeThick(2.6),portLength(4.4),
+  portRadius(CF40_22::innerRadius),
+  portWallThick(CF40_22::innerRadius),
+  portFlangeRadius(CF40_22::flangeRadius),
+  portFlangeLength(CF40_22::flangeLength),
+  stopRadius(5.4),stopLength(35.7),stopZLift(6.1),
+  stopLen({32.0}),
+  supportConeLen(5.6),supportConeRadius(2.7),
+  supportHoleRadius(0.5),supportRadius(2.0),
+  stopPortYStep(5.7),stopPortRadius(CF63::innerRadius),
+  stopPortLength(31.7),stopPortWallThick(CF63::wallThick),
+  stopPortFlangeRadius(CF63::flangeRadius),
+  stopPortFlangeLength(CF63::flangeLength),
+  stopPortPlateThick(CF63::flangeLength),
+  ionPortYStep(-13.4),ionPortRadius(CF63::innerRadius),
+  ionPortLength(30.0),ionPortWallThick(CF63::wallThick),
+  ionPortFlangeRadius(CF63::flangeRadius),
+  ionPortFlangeLength(CF63::flangeLength),
+  ionPortPlateThick(CF63::flangeLength),
+
+  stopMat({"Stainless304L","Lead"}),
+  voidMat("Void"),wallMat("Stainless304L"),
+  flangeMat("Stainless304L"),
+  supportMat("Stainless304L"),
+  plateMat("Stainless304L"),
+  outerMat("Void"),
+  shieldActive(false),
+  shieldInnerMat("Lead"),
+  shieldOuterMat("Poly"),
+  shieldRoofPlateMat("Stainless316L"),
+  shieldLength(80.0), // floor is 81
+  shieldWidth(50.0),
+  shieldHeight(29.25),
+  shieldDepth(28.25),
+  shieldInnerFloorThick(5.0),
+  shieldInnerRoofThick(10.0),
+  shieldInnerSideThick(10.0),
+  shieldSideHoleWidth(10.0),
+  shieldSideHoleHeight(10.0),
+  shieldOuterFloorThick(1.0),
+  shieldOuterSideThick(5.0),
+  shieldOuterRoofThick(5.0),
+  shieldRoofPlateThick(0.5),
+  shieldBackHoleActive(1)
+  /*!
+    Constructor and defaults
+  */
+{}
+
+MainBeamDumpGenerator::~MainBeamDumpGenerator()
+ /*!
+   Destructor
+ */
+{}
+
+
+void
+MainBeamDumpGenerator::generate(FuncDataBase& Control,
+				      const std::string& keyName,
+				      const bool closedFlag)  const
+/*!
+    Primary funciton for setting the variables
+    \param Control :: Database to add variables
+    \param keyName :: head name for variable
+    \param yStep :: Step along beam centre
+  */
+{
+  ELog::RegMethod RegA("MainBeamDumpGenerator","generateMainBeamDump");
+
+  Control.addVariable(keyName+"Closed",static_cast<size_t>(closedFlag));
+
+  Control.addVariable(keyName+"Width",width);
+  Control.addVariable(keyName+"Length",length);
+  Control.addVariable(keyName+"Height",height);
+  Control.addVariable(keyName+"Depth",depth);
+  Control.addVariable(keyName+"WallThick",wallThick);
+  Control.addVariable(keyName+"BaseThick",baseThick);
+  Control.addVariable(keyName+"BaseFlangeExtra",baseFlangeExtra);
+  Control.addVariable(keyName+"BaseFlangeThick",baseFlangeThick);
+  Control.addVariable(keyName+"PortLength",portLength);
+  Control.addVariable(keyName+"PortRadius",portRadius);
+  Control.addVariable(keyName+"PortWallThick",portWallThick);
+  Control.addVariable(keyName+"PortFlangeRadius",portFlangeRadius);
+  Control.addVariable(keyName+"PortFlangeLength",portFlangeLength);
+  Control.addVariable(keyName+"StopRadius",stopRadius);
+  Control.addVariable(keyName+"StopLength",stopLength);
+  Control.addVariable(keyName+"StopZLift",stopZLift);
+
+  Control.addVariable(keyName+"SupportConeLen",supportConeLen);
+  Control.addVariable(keyName+"SupportConeRadius",supportConeRadius);
+  Control.addVariable(keyName+"SupportHoleRadius",supportHoleRadius);
+  Control.addVariable(keyName+"SupportRadius",supportRadius);
+
+  Control.addVariable(keyName+"StopPortYStep",stopPortYStep);
+  Control.addVariable(keyName+"StopPortRadius",stopPortRadius);
+  Control.addVariable(keyName+"StopPortLength",stopPortLength);
+  Control.addVariable(keyName+"StopPortWallThick",stopPortWallThick);
+  Control.addVariable(keyName+"StopPortDepth",stopPortDepth);
+  Control.addVariable(keyName+"StopPortFlangeRadius",stopPortFlangeRadius);
+  Control.addVariable(keyName+"StopPortFlangeLength",stopPortFlangeLength);
+  Control.addVariable(keyName+"StopPortPlateThick",stopPortPlateThick);
+
+  Control.addVariable(keyName+"IonPortYStep",ionPortYStep);
+  Control.addVariable(keyName+"IonPortRadius",ionPortRadius);
+  Control.addVariable(keyName+"IonPortLength",ionPortLength);
+  Control.addVariable(keyName+"IonPortWallThick",ionPortWallThick);
+  Control.addVariable(keyName+"IonPortFlangeRadius",ionPortFlangeRadius);
+  Control.addVariable(keyName+"IonPortFlangeLength",ionPortFlangeLength);
+  Control.addVariable(keyName+"IonPortPlateThick",ionPortPlateThick);
+
+  Control.addVariable(keyName+"VoidMat",voidMat);
+  Control.addVariable(keyName+"WallMat",wallMat);
+  Control.addVariable(keyName+"SupportMat",supportMat);
+  Control.addVariable(keyName+"FlangeMat",flangeMat);
+  Control.addVariable(keyName+"PlateMat",plateMat);
+  Control.addVariable(keyName+"OuterMat",outerMat);
+
+  Control.addVariable(keyName+"ShieldActive",static_cast<int>(shieldActive));
+  Control.addVariable(keyName+"ShieldInnerMat",shieldInnerMat);
+  Control.addVariable(keyName+"ShieldOuterMat",shieldOuterMat);
+  Control.addVariable(keyName+"ShieldRoofPlateMat",shieldRoofPlateMat);
+  Control.addVariable(keyName+"ShieldLength",shieldLength);
+  Control.addVariable(keyName+"ShieldWidth",shieldWidth);
+  Control.addVariable(keyName+"ShieldHeight",shieldHeight);
+  Control.addVariable(keyName+"ShieldDepth",shieldDepth);
+  Control.addVariable(keyName+"ShieldInnerFloorThick",shieldInnerFloorThick);
+  Control.addVariable(keyName+"ShieldInnerRoofThick",shieldInnerRoofThick);
+  Control.addVariable(keyName+"ShieldInnerSideThick",shieldInnerSideThick);
+  Control.addVariable(keyName+"ShieldSideHoleWidth",shieldSideHoleWidth);
+  Control.addVariable(keyName+"ShieldSideHoleHeight",shieldSideHoleHeight);
+  Control.addVariable(keyName+"ShieldOuterFloorThick",shieldOuterFloorThick);
+  Control.addVariable(keyName+"ShieldOuterSideThick",shieldOuterSideThick);
+  Control.addVariable(keyName+"ShieldOuterRoofThick",shieldOuterRoofThick);
+  Control.addVariable(keyName+"ShieldRoofPlateThick",shieldRoofPlateThick);
+  Control.addVariable(keyName+"ShieldBackHoleActive",shieldBackHoleActive);
+
+ const size_t NS(stopLen.size());
+ Control.addVariable(keyName+"StopNLen",NS);
+ for(size_t i=0;i<NS;i++)
+   {
+     const std::string nStr=std::to_string(i);
+     Control.addVariable(keyName+"StopLen"+nStr,stopLen[i]);
+     Control.addVariable(keyName+"StopMat"+nStr,stopMat[i]);
+   }
+ Control.addVariable(keyName+"StopMat"+std::to_string(NS),stopMat[NS]);
+
+ return;
+
+}
+
+
+}  // NAMESPACE setVariable
