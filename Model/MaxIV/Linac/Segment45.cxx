@@ -222,11 +222,8 @@ Segment45::buildObjects(Simulation& System)
   beamStop->setCutSurf("front",*pipeC,"back");
   beamStop->createAll(System,*pipeC, "back");
 
-  if (beamStop->isShieldActive())
-    {
-      attachSystem::addToInsertControl(System,*beamStop,*pipeC,"FlangeB");
-      attachSystem::addToInsertControl(System,*beamStop,*pipeC,"Main");
-    }
+  attachSystem::addToInsertControl(System,*beamStop,*pipeC,"FlangeB");
+  attachSystem::addToInsertControl(System,*beamStop,*pipeC,"Main");
 
   CellMap::addCells("Unit",buildZone->getCells("Unit"));
   return;

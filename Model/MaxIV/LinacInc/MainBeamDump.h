@@ -51,74 +51,7 @@ class MainBeamDump :
   double depth;                 ///< void depth
 
   double wallThick;             /// main wall thickness
-  double baseThick;             /// Base thickness
-
-  double baseFlangeExtra;       ///< base outstep
-  double baseFlangeThick;       ///< base vertical rise
-
   double portLength;            ///< Port length
-  double portRadius;            ///< Port radius
-  double portWallThick;         ///< Port wall thickness
-  double portFlangeRadius;      ///< Port flange radius
-  double portFlangeLength;      ///< Port flange length
-
-  double stopRadius;            ///< Main stop radius
-  double stopLength;            ///< Main stop length
-  double stopZLift;             ///< Lift of support if open
-
-  std::vector<double> stopLen;   ///< Stop material lengths
-
-  double supportConeLen;        ///< Support close cone
-  double supportConeRadius;     ///< Support radius at base
-  double supportHoleRadius;     ///< Hole in support radius
-  double supportRadius;         ///< Radius of
-
-  double stopPortYStep;          ///< Stop port centre YStep
-  double stopPortRadius;         ///< stop port radius
-  double stopPortLength;         ///< stop port total length
-  double stopPortWallThick;      ///< stop port wall radius
-  double stopPortDepth;         ///< stop port depth
-  double stopPortFlangeRadius;   /// flange radius
-  double stopPortFlangeLength;   /// flange length
-  double stopPortPlateThick;     /// coverplate thick
-
-  double ionPortYStep;          ///< Y ste
-  double ionPortRadius;         ///< ion pump port radius
-  double ionPortLength;         ///< ion pump total length
-  double ionPortWallThick;      ///< ion pump port wall thick
-  double ionPortFlangeRadius;   /// flange radius
-  double ionPortFlangeLength;   /// flange length
-  double ionPortPlateThick;     /// coverplate thick
-
-  bool closedFlag;              ///< is beamstop closed (in beam)
-
-  std::vector<int> stopMat;     ///< Stop materials
-
-  int voidMat;                  ///< void material
-  int wallMat;                ///< flange material
-  int flangeMat;                ///< flange material
-  int supportMat;                ///< support material
-  int plateMat;                 ///< end plate material
-  int outerMat;                 ///< pipe material
-
-  bool shieldActive;            ///< Activates outer shielding
-  int shieldInnerMat;           ///< Inner layer material
-  int shieldOuterMat;           ///< Outer layer material
-  int shieldRoofPlateMat;       ///< Material of the plate above the beam stop
-  double shieldLength;          ///< Total length
-  double shieldWidth;           ///< Total width
-  double shieldHeight;          ///< Total height (above beam line)
-  double shieldDepth;           ///< Total depth (below beam line)
-  double shieldInnerFloorThick; ///< Inner layer floor thickness
-  double shieldInnerRoofThick;  ///< Inner layer roof thickness
-  double shieldInnerSideThick;  ///< Inner layer side thickness
-  double shieldSideHoleWidth;   ///< Side penetration width for the beam pipes
-  double shieldSideHoleHeight;  ///< Side penetration height for the beam pipes
-  double shieldOuterFloorThick; ///< Outer layer floor thickness
-  double shieldOuterSideThick;  ///< Outer layer side thickness
-  double shieldOuterRoofThick;  ///< Outer layer roof thickness
-  double shieldRoofPlateThick;  ///< Thickness of the plate above the beam stop
-  int shieldBackHoleActive;     ///< Flag to build back penetration
 
   void populate(const FuncDataBase&);
   void createSurfaces();
@@ -128,12 +61,9 @@ class MainBeamDump :
  public:
 
   MainBeamDump(const std::string&);
-  MainBeamDump(const std::string&,const std::string&);
   MainBeamDump(const MainBeamDump&);
   MainBeamDump& operator=(const MainBeamDump&);
   virtual ~MainBeamDump();
-
-  bool isShieldActive() const { return shieldActive; }
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

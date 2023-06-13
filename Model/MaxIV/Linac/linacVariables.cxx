@@ -3028,9 +3028,8 @@ Segment45(FuncDataBase& Control,
   Control.addVariable(lKey+"PipeCFlangeARadius",3.5); // to avoid cutting EBeam
   Control.addVariable(lKey+"PipeCFlangeBRadius",3.5); // to avoid cutting EBeam
   setVariable::MainBeamDumpGenerator EBGen;
-  EBGen.generate(Control,lKey+"EBeam",1);
-  Control.addVariable(lKey+"EBeamShieldActive",1);
-  Control.addVariable(lKey+"EBeamShieldInnerMat","Stainless304L"); // email from JR, 210120: "Iron"
+  EBGen.generate(Control,lKey+"EBeam");
+  //  Control.addVariable(lKey+"EBeamShieldInnerMat","Stainless304L"); // email from JR, 210120: "Iron"
 
   return;
 }
