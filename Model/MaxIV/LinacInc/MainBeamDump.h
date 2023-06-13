@@ -52,6 +52,9 @@ class MainBeamDump :
 
   double wallThick;             /// main wall thickness
   double portLength;            ///< Port length
+  double portRadius;            ///< port radius
+  int mat;                      ///< main material
+  int wallMat;                  ///< wall material
 
   void populate(const FuncDataBase&);
   void createSurfaces();

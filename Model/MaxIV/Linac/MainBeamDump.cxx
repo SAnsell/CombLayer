@@ -101,6 +101,9 @@ MainBeamDump::populate(const FuncDataBase& Control)
   depth=Control.EvalVar<double>(keyName+"Depth");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   portLength=Control.EvalVar<double>(keyName+"PortLength");
+  portRadius=Control.EvalVar<double>(keyName+"PortRadius");
+  mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
+  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
 
   return;
@@ -118,22 +121,30 @@ MainBeamDump::createSurfaces()
   if (!isActive("front"))
     {
       ModelSupport::buildPlane
-	(SMap,buildIndex+1,Origin-Y*(portLength+length/2.0),Y);
+	(SMap,buildIndex+1,Origin-Y*(wallThick+length/2.0),Y);
       ExternalCut::setCutSurf("front",SMap.realSurf(buildIndex+1));
     }
-  if (!isActive("back"))
-    {
-      ModelSupport::buildPlane
-	(SMap,buildIndex+2,Origin+Y*(portLength+length/2.0),Y);
-      ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
-    }
+  // if (!isActive("back"))
+  //   {
+  //     ModelSupport::buildPlane
+  // 	(SMap,buildIndex+2,Origin+Y*(portLength+length/2.0),Y);
+  //     ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
+  //   }
 
-  ModelSupport::buildPlane(SMap,buildIndex+101,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*depth,Z);
-  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*height,Z);
+  // wall
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(wallThick+length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(wallThick+width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(wallThick+width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(wallThick+depth),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(wallThick+height),Z);
+
+  // main body
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*depth,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*height,Z);
 
 
   return;
@@ -163,10 +174,38 @@ MainBeamDump::createObjects(Simulation& System)
   // makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex," 101 -102 103 -104 105 -106");
-  makeCell("SideWall",System,cellIndex++,0,0.0,HR);
+    (SMap,buildIndex,"11 -12 13 -14 15 -16");
+  makeCell("MainBody",System,cellIndex++,mat,0.0,HR);
 
-  addOuterSurf("Main",HR);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-11 3 -4 5 -6");
+  makeCell("SideWallFront",System,cellIndex++,wallMat,0.0,HR*frontHR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"12 -2 3 -4 5 -6");
+  makeCell("SideWallBack",System,cellIndex++,wallMat,0.0,HR*frontHR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"11 -12 14 -4 5 -6");
+  makeCell("SideWallLeft",System,cellIndex++,wallMat,0.0,HR*frontHR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"11 -12 3 -13 5 -6");
+  makeCell("SideWallRight",System,cellIndex++,wallMat,0.0,HR*frontHR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"11 -12 13 -14 5 -15");
+  makeCell("SideWallBottom",System,cellIndex++,wallMat,0.0,HR*frontHR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"11 -12 13 -14 16 -6");
+  makeCell("SideWallTop",System,cellIndex++,wallMat,0.0,HR*frontHR);
+
+
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex," -2 3 -4 5 -6");
+  addOuterSurf("Main",HR*frontHR);
 
   // HR=ModelSupport::getHeadRule(SMap,buildIndex,"-121 -227");
   // addOuterSurf("FlangeA",HR*frontHR);
@@ -185,8 +224,8 @@ MainBeamDump::createLinks()
 {
   ELog::RegMethod RegA("MainBeamDump","createLinks");
 
-  ExternalCut::createLink("front",*this,0,Origin,Y);  //front and back
-  ExternalCut::createLink("back",*this,1,Origin,Y);  //front and back
+  ExternalCut::createLink("front",*this,0,Origin,Y);  //front
+  //  ExternalCut::createLink("back",*this,1,Origin,Y);  //front and back
 
   // FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+121));
   // FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+122));
@@ -214,7 +253,7 @@ MainBeamDump::createAll(Simulation& System,
   ELog::RegMethod RegA("MainBeamDump","createAll");
 
   populate(System.getDataBase());
-  createCentredUnitVector(FC,sideIndex,portLength+length/2.0);
+  createCentredUnitVector(FC,sideIndex,wallThick+length/2.0);
   createSurfaces();
   createObjects(System);
   createLinks();
