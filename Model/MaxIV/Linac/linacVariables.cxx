@@ -2989,6 +2989,7 @@ Segment45(FuncDataBase& Control,
 
   // floor gap
   Control.addVariable(lKey+"CutRadius",20.0);
+  Control.addVariable(lKey+"XAngle",-24.97); //  http://localhost:8080/maxiv/work-log/100-hz/main-beam-dump/dump7.pdf/view
 
   setVariable::CeramicGapGenerator CSGen;
   setVariable::YagUnitBigGenerator YagUnitGen;
