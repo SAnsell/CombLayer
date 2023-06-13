@@ -3022,7 +3022,7 @@ Segment45(FuncDataBase& Control,
   // additional stuff for beam dump - not present in the original
   // drawings
   PGen.setCF<setVariable::CF66_TDC>();
-  PGen.generatePipe(Control,lKey+"PipeC",100.0); // approx
+  PGen.generatePipe(Control,lKey+"PipeC",95.8); // adjusted to make distance to the floor 117.6 cm as of dump7.pdf
 
 
   Control.addVariable(lKey+"PipeCYAngle",-90);
