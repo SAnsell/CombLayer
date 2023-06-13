@@ -146,6 +146,10 @@ MainBeamDump::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*depth,Z);
   ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*height,Z);
 
+  // Pipe
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,portRadius);
+  ModelSupport::buildPlane(SMap,buildIndex+22,Origin-Y*(wallThick+length/2.0-portLength),Y);
+
 
   return;
 }
@@ -174,32 +178,40 @@ MainBeamDump::createObjects(Simulation& System)
   // makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"11 -12 13 -14 15 -16");
+    (SMap,buildIndex,"11 -22 13 -14 15 -16 7");
   makeCell("MainBody",System,cellIndex++,mat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"-11 3 -4 5 -6");
+    (SMap,buildIndex,"-22 -7");
+  makeCell("Pipe",System,cellIndex++,0,0.0,HR*frontHR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"22 -12 13 -14 15 -16");
+  makeCell("MainBody",System,cellIndex++,mat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-11 3 -4 5 -6 7");
   makeCell("SideWallFront",System,cellIndex++,wallMat,0.0,HR*frontHR);
 
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"12 -2 3 -4 5 -6");
-  makeCell("SideWallBack",System,cellIndex++,wallMat,0.0,HR*frontHR);
+  makeCell("SideWallBack",System,cellIndex++,wallMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"11 -12 14 -4 5 -6");
-  makeCell("SideWallLeft",System,cellIndex++,wallMat,0.0,HR*frontHR);
+  makeCell("SideWallLeft",System,cellIndex++,wallMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"11 -12 3 -13 5 -6");
-  makeCell("SideWallRight",System,cellIndex++,wallMat,0.0,HR*frontHR);
+  makeCell("SideWallRight",System,cellIndex++,wallMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"11 -12 13 -14 5 -15");
-  makeCell("SideWallBottom",System,cellIndex++,wallMat,0.0,HR*frontHR);
+  makeCell("SideWallBottom",System,cellIndex++,wallMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"11 -12 13 -14 16 -6");
-  makeCell("SideWallTop",System,cellIndex++,wallMat,0.0,HR*frontHR);
+  makeCell("SideWallTop",System,cellIndex++,wallMat,0.0,HR);
 
 
 
