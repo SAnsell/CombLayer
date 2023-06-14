@@ -3,7 +3,7 @@
 
  * File: LinacInc/InjectionHall.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2023 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -154,7 +154,8 @@ class InjectionHall :
   double bdRoomHeight;          ///< Under-the-floor beam dump room void height
   double bdRoomLength;          ///< Beam dump room void length
   double bdRoomFloorThick;      ///< Beam dump room floor thickness
-  double bdRoomRoofThick;       ///< Beam dump room steel roof thickness
+  double bdRoomRoofConcreteThick;  ///< Beam dump room roof concrete thickness
+  double bdRoomRoofSteelThick;  ///< Beam dump room roof steel thickness
   double bdRoomRoofSteelWidth;  ///< Width of roof steel layers
   double bdRoomFrontWallThick;  ///< Beam dump room front wall thickness
   double bdRoomSideWallThick;   ///< Thickness of the beam dump room side walls

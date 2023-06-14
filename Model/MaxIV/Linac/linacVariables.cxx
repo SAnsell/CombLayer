@@ -2989,7 +2989,7 @@ Segment45(FuncDataBase& Control,
 
   // floor gap
   Control.addVariable(lKey+"CutRadius",20.0);
-  Control.addVariable(lKey+"XAngle",-24.97); //  http://localhost:8080/maxiv/work-log/100-hz/main-beam-dump/dump7.pdf/view
+  Control.addVariable(lKey+"XAngle",-24.97); // dump7.pdf
 
   setVariable::CeramicGapGenerator CSGen;
   setVariable::YagUnitBigGenerator YagUnitGen;
@@ -3597,7 +3597,8 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(bdRoom+"Height",200.0); // K_15-6_012 B-B
   Control.addVariable(bdRoom+"Length",540); // K_15-6_011
   Control.addVariable(bdRoom+"FloorThick",200.0); // K_15-6_012 B-B
-  Control.addVariable(bdRoom+"RoofThick",50.0); // K_15-6_011
+  Control.addVariable(bdRoom+"RoofConcreteThick",24.0); // K_24-6_010 and dump7.pdf
+  Control.addVariable(bdRoom+"RoofSteelThick",26.0); // K_24-6_010 and dump7.pdf
   Control.addVariable(bdRoom+"RoofSteelWidth",140.0); // measured with ruler
   Control.addVariable(bdRoom+"FrontWallThick",100.0); // K_15-6_011
   Control.addVariable(bdRoom+"SideWallThick",200.0); // K_15-6_010
@@ -3648,7 +3649,6 @@ LINACvariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("linacVariables[F]","LINACvariables");
 
-  ELog::EM<<"LINAC VARIABLES"<<ELog::endDiag;
   linacVar::wallVariables(Control,"InjectionHall");
 
   // Segment 1-14
@@ -3792,3 +3792,6 @@ LINACvariables(FuncDataBase& Control)
 }
 
 }  // NAMESPACE setVariable
+
+// References
+// dump7.pdf: http://localhost:8080/maxiv/work-log/100-hz/main-beam-dump/dump7.pdf/view
