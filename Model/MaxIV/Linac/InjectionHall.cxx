@@ -1212,7 +1212,14 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("BDBackWall",System,cellIndex++,wallMat,0.0,HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -21 7513 -7514 7505 -7506");
   makeCell("BDFloor",System,cellIndex++,wallMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7522 -21 7503 -7504 7506 -7516");
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7522 -21 7503 -7534 7506 -7516");
+  makeCell("BDBackWallSteel",System,cellIndex++,wallIronMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7522 -21 7524 -7525 7506 -7516");
+  makeCell("BDBackWallSteel",System,cellIndex++,wallIronMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7522 -21 7535 -7504 7506 -7516");
   makeCell("BDBackWallSteel",System,cellIndex++,wallIronMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -21 7504 -7514 7506 -15");
@@ -1260,13 +1267,13 @@ InjectionHall::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7521 -7522 7503 -7534 7506 -7516");
   makeCell("BDNew",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7521 -7522 7534 -7524 7506 -7516");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7521 -21 7534 -7524 7506 -7516");
   makeCell("BDInnerWall",System,cellIndex++,wallMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7521 -7522 7524 -7525 7506 -7516");
   makeCell("BDSPF",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7521 -7522 7525 -7535 7506 -7516");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7521 -21 7525 -7535 7506 -7516");
   makeCell("BDInnerWall",System,cellIndex++,wallMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7521 -7522 7535 -7504 7506 -7516");
