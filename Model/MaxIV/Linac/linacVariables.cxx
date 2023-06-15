@@ -3028,8 +3028,14 @@ Segment45(FuncDataBase& Control,
   Control.addVariable(lKey+"PipeCYAngle",-90);
   Control.addVariable(lKey+"PipeCFlangeARadius",3.5); // to avoid cutting EBeam
   Control.addVariable(lKey+"PipeCFlangeBRadius",3.5); // to avoid cutting EBeam
+
   setVariable::MainBeamDumpGenerator EBGen;
-  EBGen.generate(Control,lKey+"EBeam");
+  EBGen.generate(Control,lKey+"MainBeamDump");
+  const double theta = std::asin((1046-753)/700.0)*180.0/M_PI; // see dump7.pdf
+  Control.addVariable(lKey+"MainBeamDumpXAngle",180+theta);
+  Control.addVariable(lKey+"MainBeamDumpZStep",57-298.0); // 57 - measured by AR; 298 - due to rotation
+  Control.addVariable(lKey+"MainBeamDumpYStep",120-25.8+104.6); // 120=100+2*10 = full length; 25.8 - offset due to rotation; 104.6 - measured by AR
+
 
   return;
 }

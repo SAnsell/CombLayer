@@ -80,7 +80,7 @@ namespace tdcSystem
 {
 
 InjectionHall::InjectionHall(const std::string& Key) :
-  attachSystem::FixedOffset(Key,12),
+  attachSystem::FixedOffset(Key,13),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -1470,6 +1470,12 @@ InjectionHall::createLinks()
 
   FixedComp::setConnect(11,MidPt11-Y*midTThick,Y);
   FixedComp::setNamedLinkSurf(11, "MidWall", SurfMap::getSignedSurf("MidWall"));
+
+  FixedComp::setConnect(12,Origin+Y*(backWallYStep-bdRoomBackSteelThick)-X*(-bdRoomXStep),-Y);
+  FixedComp::setLinkSurf(12,SMap.realSurf(buildIndex+7522));
+  FixedComp::nameSideIndex(12,"BackWallMainBeamDump");
+
+
 
   return;
 }

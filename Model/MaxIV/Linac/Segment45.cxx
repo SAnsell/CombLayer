@@ -100,7 +100,7 @@ Segment45::Segment45(const std::string& Key) :
   adaptor(new constructSystem::FlangePlate(keyName+"Adaptor")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
-  beamStop(new tdcSystem::MainBeamDump(keyName+"EBeam"))
+  beamStop(new tdcSystem::MainBeamDump(keyName+"MainBeamDump"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -219,11 +219,15 @@ Segment45::buildObjects(Simulation& System)
   pipeC->setCutSurf("front",*pipeB,"back");
   pipeC->createAll(System,*pipeB, "back");
 
-  beamStop->setCutSurf("front",*pipeC,"back");
-  beamStop->createAll(System,*pipeC, "back");
+  if (IHall) {
+    beamStop->createAll(System,*IHall, "BackWallMainBeamDump");
+  } else {
+    beamStop->setCutSurf("front",*pipeC,"back");
+    beamStop->createAll(System,*pipeC, "back");
+    // attachSystem::addToInsertControl(System,*beamStop,*pipeC,"FlangeB");
+    // attachSystem::addToInsertControl(System,*beamStop,*pipeC,"Main");
+  };
 
-  attachSystem::addToInsertControl(System,*beamStop,*pipeC,"FlangeB");
-  attachSystem::addToInsertControl(System,*beamStop,*pipeC,"Main");
 
   CellMap::addCells("Unit",buildZone->getCells("Unit"));
   return;
@@ -241,9 +245,9 @@ Segment45::constructHole(Simulation& System)
   if (IHall)
     {
       HeadRule HR;
-      const HeadRule fbHR=IHall->combine("#Floor BDRoomRoof");
+      const HeadRule fbHR=IHall->combine("#Floor BDRoomRoof"); // -5 7516
 
-      HR=HeadRule(SMap,buildIndex,-7);
+      HR=HeadRule(SMap,buildIndex,-7); // Segment45 cut cylinder
       makeCell("FloorVoid",System,cellIndex++,0,0.0,HR*fbHR);
       pipeB->insertAllInCell(System,this->getCell("FloorVoid"));
       // tip of pipeB enters the main beam dump room
