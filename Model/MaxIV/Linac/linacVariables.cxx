@@ -3608,7 +3608,7 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(bdRoom+"TDCWidth",380.0); // K_15-6_010
   Control.addVariable(bdRoom+"SPFWidth",460.0); // K_15-6_010
   Control.addVariable(bdRoom+"NewWidth",280.0); // K_15-6_010
-  Control.addVariable(bdRoom+"RoofGapWidth",20.0); // measured by AR
+  Control.addVariable(bdRoom+"RoofGapWidth",20.0); // measured by AR, see http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/spf/img_5464.jpg/view
 
   Control.addVariable(wallKey+"WasteRoomWidth",200.0); // derived from K_20-1_08G6b1:  2700-300-40
   Control.addVariable(wallKey+"WasteRoomLength",600.0); // derived from K_20-1_08G6b1: 10316-3516-40*2

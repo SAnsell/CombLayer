@@ -1282,7 +1282,11 @@ InjectionHall::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7512 -21 7563 -7564 7515 -5");
   makeCell("BDRoof",System,cellIndex++,bdRoofIronMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7563 -7564 -5 7516");
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7563 -7564 7516 -7515");
+  makeCell("HatchTDC",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7563 -7564 7515 -5");
   makeCell("HatchTDC",System,cellIndex++,floorMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7512 -21 7564 -7504 7515 -5");
