@@ -2989,7 +2989,8 @@ Segment45(FuncDataBase& Control,
 
   // floor gap
   Control.addVariable(lKey+"CutRadius",9.9); // just a bit smaller than InjectionHallBDRoomRoofGapWidth/2
-  Control.addVariable(lKey+"XAngle",-24.97); // dump7.pdf
+  const double theta = std::asin((1046-753)/700.0)*180.0/M_PI; // see dump7.pdf
+  Control.addVariable(lKey+"XAngle",-theta);
 
   setVariable::CeramicGapGenerator CSGen;
   setVariable::YagUnitBigGenerator YagUnitGen;
@@ -3022,17 +3023,16 @@ Segment45(FuncDataBase& Control,
   // additional stuff for beam dump - not present in the original
   // drawings
   PGen.setCF<setVariable::CF66_TDC>();
-  PGen.generatePipe(Control,lKey+"PipeC",95.8); // adjusted to make distance to the floor 117.6 cm as of dump7.pdf
+  PGen.generatePipe(Control,lKey+"PipeC",95.8+4.0);
 
 
   Control.addVariable(lKey+"PipeCYAngle",-90);
-  Control.addVariable(lKey+"PipeCFlangeARadius",3.5); // to avoid cutting EBeam
-  Control.addVariable(lKey+"PipeCFlangeBRadius",3.5); // to avoid cutting EBeam
+  // Control.addVariable(lKey+"PipeCFlangeARadius",3.5); // to avoid cutting EBeam
+  // Control.addVariable(lKey+"PipeCFlangeBRadius",3.5); // to avoid cutting EBeam
 
   setVariable::MainBeamDumpGenerator EBGen;
   EBGen.generate(Control,lKey+"MainBeamDump");
-  const double theta = std::asin((1046-753)/700.0)*180.0/M_PI; // see dump7.pdf
-  Control.addVariable(lKey+"MainBeamDumpXAngle",180+theta);
+  Control.addVariable(lKey+"MainBeamDumpXAngle",180+theta); // same as SPF45XAngle
   Control.addVariable(lKey+"MainBeamDumpZStep",57-298.0); // 57 - measured by AR; 298 - due to rotation
   Control.addVariable(lKey+"MainBeamDumpYStep",120-25.8+104.6); // 120=100+2*10 = full length; 25.8 - offset due to rotation; 104.6 - measured by AR
 
