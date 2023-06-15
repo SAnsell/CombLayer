@@ -259,8 +259,7 @@ Segment45::constructHole(Simulation& System)
       beamStop->insertAllInCell(System,IHall->getCell("BDSPF"));
 
       HR=HeadRule(SMap,buildIndex,7);
-      IHall->insertComponent(System,"HatchSPF",HR); // concrete roof
-      IHall->insertComponent(System,"BDRoofSPF",HR); // steel roof
+      IHall->insertComponent(System,"BDRoofSPFPenetration",HR); // beam dump room roof penetration cell
     }
   return;
 }

@@ -167,6 +167,7 @@ class InjectionHall :
   double bdRoomTDCWidth;        ///< Width of area with the TDC beam dump
   double bdRoomSPFWidth;        ///< Width of area with the SPF beam dump
   double bdRoomNewWidth;        ///< Width of area with the NEW beam line beam dump
+  double bdRoomRoofGapWidth;    ///< Pipe gap width in the beam dump room roof
 
   double wasteRoomLength;       ///< Inner length of the radioactive waste room
   double wasteRoomWidth;        ///< Inner width of the radioactive waste room

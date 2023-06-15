@@ -236,6 +236,7 @@ InjectionHall::populate(const FuncDataBase& Control)
   bdRoomTDCWidth=Control.EvalVar<double>(keyName+"BDRoomTDCWidth");
   bdRoomSPFWidth=Control.EvalVar<double>(keyName+"BDRoomSPFWidth");
   bdRoomNewWidth=Control.EvalVar<double>(keyName+"BDRoomNewWidth");
+  bdRoomRoofGapWidth=Control.EvalVar<double>(keyName+"BDRoomRoofGapWidth");
   wasteRoomLength=Control.EvalVar<double>(keyName+"WasteRoomLength");
   wasteRoomWidth=Control.EvalVar<double>(keyName+"WasteRoomWidth");
   wasteRoomWallThick=Control.EvalVar<double>(keyName+"WasteRoomWallThick");
@@ -599,6 +600,10 @@ InjectionHall::createSurfaces()
   xstep=bdRoomXStep+bdRoomSPFWidth/2.0+bdRoomInnerWallThick+bdRoomTDCWidth/2.0;
   ModelSupport::buildPlane(SMap,buildIndex+7563,Origin+X*(xstep-bdRoomRoofSteelWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+7564,Origin+X*(xstep+bdRoomRoofSteelWidth/2.0),X);
+
+  // penetrations in the floor for the beam lines
+  ModelSupport::buildPlane(SMap,buildIndex+7573,Origin+X*(bdRoomXStep-bdRoomRoofGapWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+7574,Origin+X*(bdRoomXStep+bdRoomRoofGapWidth/2.0),X);
 
   // Radioactive waste room (in Future Klystron Gallery)
   ModelSupport::buildPlane(SMap,buildIndex+7601,Origin+Y*(wasteRoomYStep+wasteRoomWallThick),Y);
@@ -1243,11 +1248,6 @@ InjectionHall::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7543 -7544 7515 -5");
   makeCell("HatchNew",System,cellIndex++,floorMat,0.0,HR);
 
-
-
-
-
-
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -21 7544 -7553 7515 -5");
   makeCell("BDRoof",System,cellIndex++,floorMat,0.0,HR);
 
@@ -1260,10 +1260,17 @@ InjectionHall::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7512 -21 7553 -7554 7515 -5");
   makeCell("BDRoofSPF",System,cellIndex++,bdRoofIronMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7553 -7554 7515 -5"); // this cell is cut by the entrance pipe
-  makeCell("HatchSPF",System,cellIndex++,floorMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7553 -7573 7515 -5");
+  makeCell("BDRoofSPF",System,cellIndex++,floorMat,0.0,HR);
+  // This cell is cut by the entrance pipe:
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7573 -7574 7516 -5");
+  makeCell("BDRoofSPFPenetration",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7574 -7554 7515 -5");
+  makeCell("BDRoofSPF",System,cellIndex++,floorMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7553 -7554 7516 -7515"); // this cell is cut by the entrance pipe
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7553 -7573 7516 -7515");
+  makeCell("HatchSPF",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7574 -7554 7516 -7515");
   makeCell("HatchSPF",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -21 7554 -7563 -5 7515");
@@ -1274,10 +1281,6 @@ InjectionHall::createObjects(Simulation& System)
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7512 -21 7563 -7564 7515 -5");
   makeCell("BDRoof",System,cellIndex++,bdRoofIronMat,0.0,HR);
-
-
-
-
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7563 -7564 -5 7516");
   makeCell("HatchTDC",System,cellIndex++,floorMat,0.0,HR);
