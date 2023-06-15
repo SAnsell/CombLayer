@@ -106,7 +106,7 @@ MainBeamDump::populate(const FuncDataBase& Control)
   targetHeight=Control.EvalVar<double>(keyName+"TargetHeight");
   targetLength=Control.EvalVar<double>(keyName+"TargetLength");
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
-  voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
+  voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat","VoidMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   targetMat=ModelSupport::EvalMat<int>(Control,keyName+"TargetMat");
 
@@ -178,7 +178,7 @@ MainBeamDump::createObjects(Simulation& System)
   HeadRule HR;
 
   const HeadRule& frontHR=getRule("front");
-  const HeadRule& backHR=getRule("back");
+  //  const HeadRule& backHR=getRule("back");
 
   // // inner void : excluding main BS
   // HR=ModelSupport::getHeadRule
