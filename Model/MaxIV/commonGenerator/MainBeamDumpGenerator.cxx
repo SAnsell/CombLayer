@@ -56,7 +56,7 @@ namespace setVariable
     targetWidth(12.0),
     targetHeight(12.0),
     targetLength(2.5),
-    mat("Stainless304L"),
+    mat("S235JR"), // It's steel, but its grade is not known. Just use the same grade as in the TDC beam dumps
     voidMat("Void"),
     wallMat("Poly"),
     targetMat("Graphite")
