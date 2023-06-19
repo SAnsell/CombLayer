@@ -154,7 +154,8 @@ EmptyCyl::createSurfaces()
   
 void
 EmptyCyl::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
-			const long int floor,const long int side,
+			const long int floor,
+			const long int side,
 			const long int inner,
 			const attachSystem::FixedComp& BC,
 			const long int bulk,

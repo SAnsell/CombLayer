@@ -3,7 +3,7 @@
  
  * File:   sourceInc/SurfNormSource.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,8 +39,8 @@ namespace SDef
 */
 
 class SurfNormSource :
-  public attachSystem::FixedOffsetUnit,
-  public SourceBase
+    public attachSystem::FixedRotate,
+    public SourceBase
 {
  private:
     
@@ -62,10 +62,6 @@ class SurfNormSource :
   SurfNormSource* clone() const override;
   ~SurfNormSource() override;
 
-  void createAll(const mainSystem::MITYPE&,
-		 const attachSystem::FixedComp&,
-		 const long int);
-  void createAll(const attachSystem::FixedComp&,const long int);
 
   void rotate(const localRotate&) override;
   void createSource(SDef::Source&) const override;
@@ -73,7 +69,12 @@ class SurfNormSource :
   void writeFLUKA(std::ostream&) const override;
   void write(std::ostream&) const override;
 
-  
+  using FixedComp::createAll;
+  void createAll(const mainSystem::MITYPE&,
+		 const attachSystem::FixedComp&,
+		 const long int);
+  void createAll(const attachSystem::FixedComp&,const long int);
+
 };
 
 }

@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BlockAddition.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,8 @@ namespace essSystem
 class BlockAddition :
     public attachSystem::FixedOffsetUnit,
     public attachSystem::ContainedComp,
-    public attachSystem::LayerComp
+    public attachSystem::LayerComp,
+    public attachSystem::ExternalCut
 {
  private:
   

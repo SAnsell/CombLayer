@@ -62,6 +62,7 @@
 #include "LayerComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "ExternalCut.h"
 #include "BlockAddition.h"
 #include "CylPreMod.h"
 

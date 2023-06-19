@@ -65,6 +65,8 @@
 #include "FixedOffsetUnit.h"
 #include "LayerComp.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
+
 #include "BlockAddition.h"
 
 namespace essSystem
@@ -74,6 +76,7 @@ BlockAddition::BlockAddition(const std::string& Key) :
   attachSystem::FixedOffsetUnit(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0),
+  attachSystem::ExternalCut(),
   active(0),edgeSurf(0)
   /*!
     Constructor
@@ -85,6 +88,7 @@ BlockAddition::BlockAddition(const BlockAddition& A) :
   attachSystem::FixedOffsetUnit(A),
   attachSystem::ContainedComp(A),
   attachSystem::LayerComp(A),
+  attachSystem::ExternalCut(A),
   active(A.active),length(A.length),
   height(A.height),width(A.width),
   wallThick(A.wallThick),waterMat(A.waterMat),
@@ -105,9 +109,10 @@ BlockAddition::operator=(const BlockAddition& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       active=A.active;
       length=A.length;
       height=A.height;
