@@ -3,7 +3,7 @@
  
  * File:   test/testXML.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
 #include <iostream>
@@ -369,7 +369,7 @@ testXML::testNextGrp()
   Tests.push_back(TTYPE(1,"testA",1,"f=\"44\"::"));
   Tests.push_back(TTYPE(2,"testA",0,""));
   Tests.push_back(TTYPE(-1,"testB",0,""));
-  Tests.push_back(TTYPE(-1,"testC",2,"a=\"10\"::b=\"39\"::"));
+  Tests.push_back(TTYPE(-1,"testC",2,R"(a="10"::b="39"::)"));
   Tests.push_back(TTYPE(2,"Out",0,""));
 
 
@@ -627,7 +627,7 @@ testXML::testCutString()
 {
   ELog::RegMethod RegA("testXML","testCutString");
 
-  std::string AList = " file = \"test\" ref =\"Time\"";
+  std::string AList = R"( file = "test" ref ="Time")";
   std::string Key;
   std::string Part;
   int flag=XML::splitAttribute(AList,Key,Part);
@@ -673,7 +673,7 @@ testXML::testLoadSystem()
   CO.loadXML("testXML.xml");
   std::ostringstream cx; 
   CO.writeXML(cx);
-  In="<?xmlversion=\"1.0\"encoding=\"ISO-8859-1\"?>"+In;
+  In=R"(<?xmlversion="1.0"encoding="ISO-8859-1"?>)"+In;
   if (StrFunc::removeAllSpace(cx.str())!=
       StrFunc::removeAllSpace(In))
     {

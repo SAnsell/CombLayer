@@ -932,7 +932,7 @@ XMLcollect::writeXML(std::ostream& OX) const
     \param OX :: output stream 
   */
 {
-  OX<<"<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>"<<std::endl;
+  OX<<R"(<?xml version="1.0" encoding="ISO-8859-1" ?>)"<<std::endl;
   Master.writeXML(OX);
   return;
 }

@@ -37,7 +37,9 @@ namespace essSystem
 
 class EmptyCyl : 
     public attachSystem::FixedRotateUnit,
-    public attachSystem::ContainedComp
+    public attachSystem::ContainedComp,
+    public attachSystem::ExternalCut,
+    public attachSystem::CellMap
 {
  private:
 

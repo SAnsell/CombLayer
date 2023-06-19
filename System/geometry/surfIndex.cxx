@@ -690,8 +690,8 @@ surfIndex::readOutputSurfaces(const std::string& FName)
     }
 
   const std::string startSea("SURFACE CARDS");
-  const std::string surfUnit("^\\s*(\\d+)-\\s+(\\S.*)$");
-  const std::string stopSea("\\+\\+\\s*END\\s*\\+\\+");
+  const std::string surfUnit(R"(^\s*(\d+)-\s+(\S.*)$)");
+  const std::string stopSea(R"(\+\+\s*END\s*\+\+)");
 
   std::string InputLine;
   std::string Line;

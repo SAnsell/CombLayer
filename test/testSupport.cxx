@@ -634,7 +634,7 @@ testSupport::testStrComp()
   ELog::RegMethod RegA("testSupport","testStrComp");
 
   std::string Target ="6log 8.9 90.0";
-  std::string searchString="(^|\\s)(\\d+)log(\\s|$)";
+  std::string searchString=R"((^|\s)(\d+)log(\s|$))";
 #ifndef NO_REGEX
   std::regex Re(searchString);
 
@@ -674,7 +674,7 @@ testSupport::testStrFullCut()
 
   // remove space/> at start then split on 
   Tests.push_back(TTYPE("xxx $var 4.5     6.7 8.9 90.0",
-			"\\s*\\$\\S+\\s+(\\S+)\\s+\\S+",
+			R"(\s*\$\S+\s+(\S+)\s+\S+)",
 			4.5,"",
 			"xxx 8.9 90.0"));
 
@@ -879,7 +879,7 @@ testSupport::testStrSplit()
 
   // Start with a <(name)<spc> !> >       
   Out.clear();
-  searchString="(\\d+)\\.(\\d\\d)(\\S)";
+  searchString=R"((\d+)\.(\d\d)(\S))";
   Target=" 54097.70c 4506.80c";
   std::regex ReY(searchString);
   StrFunc::StrSingleSplit(Target,ReY,Out);

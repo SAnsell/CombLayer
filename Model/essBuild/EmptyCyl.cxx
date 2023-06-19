@@ -56,6 +56,9 @@
 #include "FixedRotate.h"
 #include "FixedRotateUnit.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 
 #include "EmptyCyl.h"
 
