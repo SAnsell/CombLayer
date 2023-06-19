@@ -54,7 +54,7 @@ class DecLayer : public Decoupled
 
  public:
 
-  DecLayer(const std::string&,const std::string&);
+  DecLayer(const std::string&,std::string );
   DecLayer(const DecLayer&);
   DecLayer& operator=(const DecLayer&);
   /// Clone function

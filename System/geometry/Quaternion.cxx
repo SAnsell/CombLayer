@@ -19,15 +19,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <sstream>
 #include <cmath>
 #include <complex>
-#include <string>
-#include <vector>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
 #include <map>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "Exception.h"
 #include "MatrixBase.h"
@@ -204,8 +205,8 @@ Quaternion::Quaternion(const double qx,const double qa,
   */
 {}
 
-Quaternion::Quaternion(const double qx,const Vec3D& AP) :
-  q0(qx),Qvec(AP)
+Quaternion::Quaternion(const double qx,Vec3D  AP) :
+  q0(qx),Qvec(std::move(AP))
   /*!
     Constructor
     \param qx :: q0 component

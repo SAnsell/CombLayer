@@ -73,7 +73,7 @@ class Octupole :
  public:
 
   Octupole(const std::string&);
-  Octupole(const std::string&,const std::string&);
+  Octupole(std::string ,const std::string&);
   Octupole(const Octupole&);
   Octupole& operator=(const Octupole&);
   ~Octupole() override;

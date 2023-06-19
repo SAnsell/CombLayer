@@ -49,7 +49,7 @@ class PSimple : public PhysCard
 
  public:
 
-  PSimple(const std::string&);
+  PSimple(std::string );
   PSimple(const PSimple&);
   PSimple& operator=(const PSimple&);
   PSimple* clone() const override;

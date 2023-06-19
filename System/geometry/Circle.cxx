@@ -19,15 +19,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <iomanip>
-#include <cmath>
-#include <vector>
-#include <map>
-#include <string>
 #include <algorithm>
+#include <cmath>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <map>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "FileReport.h"
 #include "OutputLog.h"
@@ -45,10 +46,10 @@ Circle::Circle() : Intersect(),
   */
 {}  
 
-Circle::Circle(const Geometry::Vec3D& C,
+Circle::Circle(Geometry::Vec3D  C,
 	       const Geometry::Vec3D& NV,
 	       const double R) :  
-  Intersect(),index(0),Cent(C),NormV(NV.unit()),Radius(R)
+  Intersect(),index(0),Cent(std::move(C)),NormV(NV.unit()),Radius(R)
   /*!
     Constructor 
     \param C :: Centre
@@ -58,10 +59,10 @@ Circle::Circle(const Geometry::Vec3D& C,
 {}  
 
 Circle::Circle(const int I,
-	       const Geometry::Vec3D& C,
+	       Geometry::Vec3D  C,
 	       const Geometry::Vec3D& NV,
 	       const double R) : 
-  Intersect(),index(I),Cent(C),NormV(NV.unit()),Radius(R)
+  Intersect(),index(I),Cent(std::move(C)),NormV(NV.unit()),Radius(R)
   /*!
     Constructor 
     \param I :: Index value

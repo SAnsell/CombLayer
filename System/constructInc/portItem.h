@@ -88,7 +88,7 @@ class portItem :
  public:
 
   portItem(const std::string&);
-  portItem(const std::string&,const std::string&);
+  portItem(std::string ,const std::string&);
   portItem(const portItem&);
   portItem& operator=(const portItem&);
   ~portItem() override;

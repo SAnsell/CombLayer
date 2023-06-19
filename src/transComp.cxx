@@ -19,18 +19,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
+#include <algorithm>
+#include <cmath>
+#include <complex>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <sstream>
-#include <cmath>
-#include <complex>
 #include <list>
-#include <vector>
-#include <set>
 #include <map>
+#include <set>
+#include <sstream>
 #include <string>
-#include <algorithm>
+#include <utility>
+#include <vector>
 
 #include "FileReport.h"
 #include "OutputLog.h"
@@ -64,9 +65,9 @@ transRot::transRot() :
 {}
 
 transRot::transRot(const Geometry::Vec3D& A,
-		   const Geometry::Vec3D& O,
+		   Geometry::Vec3D  O,
 		   const double ang) : 
-  transComp(),Axis(A),Offset(O),Angle(ang),
+  transComp(),Axis(A),Offset(std::move(O)),Angle(ang),
   QVec(Geometry::Quaternion::calcQRotDeg(ang,A)),
   MRot(QVec.rMatrix()),
   QRev(Geometry::Quaternion::calcQRotDeg(-ang,A)),
@@ -479,8 +480,8 @@ transDisplace::transDisplace() : transComp()
   */
 {}
 
-transDisplace::transDisplace(const Geometry::Vec3D& A) : 
-  transComp(),Offset(A)						     
+transDisplace::transDisplace(Geometry::Vec3D  A) : 
+  transComp(),Offset(std::move(A))						     
   /*!
     Constructor
     \param A :: OffSet vector

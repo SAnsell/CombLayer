@@ -19,21 +19,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <iostream>
-#include <iomanip>
+#include <algorithm>
+#include <array>
 #include <cmath>
 #include <fstream>
-#include <sstream>
-#include <vector>
-#include <list>
-#include <set>
-#include <map>
-#include <string>
-#include <algorithm>
 #include <functional>
+#include <iomanip>
+#include <iostream>
+#include <list>
+#include <map>
 #include <memory> 
-#include <array>
+#include <set>
+#include <sstream>
+#include <string>
 #include <tuple>
+#include <utility>
+#include <vector>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -49,9 +50,9 @@ namespace flukaSystem
 {
   
 template<size_t N>
-pairValueSet<N>::pairValueSet(const std::string& KN,
-			      const std::string& ON) :
-  keyName(KN),outName(ON)
+pairValueSet<N>::pairValueSet(std::string  KN,
+			      std::string  ON) :
+  keyName(std::move(KN)),outName(std::move(ON))
   /*!
     Constructor
     \param KN :: Indentifier
@@ -62,10 +63,10 @@ pairValueSet<N>::pairValueSet(const std::string& KN,
 }
 
 template<size_t N>
-pairValueSet<N>::pairValueSet(const std::string& KN,
-			      const std::string& ON,
-			      const std::string& TT) :
-  keyName(KN),outName(ON),tag(TT)
+pairValueSet<N>::pairValueSet(std::string  KN,
+			      std::string  ON,
+			      std::string  TT) :
+  keyName(std::move(KN)),outName(std::move(ON)),tag(std::move(TT))
   /*!
     Constructor
     \param KN :: Indentifier
@@ -77,11 +78,11 @@ pairValueSet<N>::pairValueSet(const std::string& KN,
 }
 
 template<size_t N>
-pairValueSet<N>::pairValueSet(const std::string& KN,
-			   const std::string& ON,
-			   const std::string& TT,
+pairValueSet<N>::pairValueSet(std::string  KN,
+			   std::string  ON,
+			   std::string  TT,
 			   const std::array<double,N>& scaleV) :
-  keyName(KN),outName(ON),tag(TT),scaleVec(scaleV)
+  keyName(std::move(KN)),outName(std::move(ON)),tag(std::move(TT)),scaleVec(scaleV)
   /*!
     Constructor
     \param KN :: Indentifier

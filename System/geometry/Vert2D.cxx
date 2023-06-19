@@ -19,15 +19,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <iomanip>
-#include <cmath>
-#include <vector>
-#include <map>
-#include <string>
 #include <algorithm>
+#include <cmath>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <map>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -59,8 +60,8 @@ Vert2D::Vert2D() :
   ELog::RegMethod RegA("Vert2D","Constructor()");
 }
 
-Vert2D::Vert2D(const size_t N,const Geometry::Vec3D& PVec) :
-  done(0),onHull(1),vIndex(N),cAngle(0),V(PVec)
+Vert2D::Vert2D(const size_t N,Geometry::Vec3D  PVec) :
+  done(0),onHull(1),vIndex(N),cAngle(0),V(std::move(PVec))
   /*!
     Constructor 
     \param N :: Index number

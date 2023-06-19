@@ -42,9 +42,9 @@ struct pName
   const double mass;                  ///< mass in MeV/c^2
   const int nucleon;                  ///< number of nucleons
   
-  pName(const std::string&,const int,
-	const std::string&,const int,
-	const std::string&,const int,
+  pName(std::string ,const int,
+	std::string ,const int,
+	std::string ,const int,
 	const int,const double,const int);
 
   pName(const pName&);

@@ -45,8 +45,8 @@ class Circle : public Intersect
  public:
   
   Circle();
-  Circle(const Vec3D&,const Vec3D&,const double);
-  Circle(const int,const Vec3D&,const Vec3D&,const double);
+  Circle(Vec3D ,const Vec3D&,const double);
+  Circle(const int,Vec3D ,const Vec3D&,const double);
   Circle(const Circle&);
   Circle& operator=(const Circle&);
   ~Circle() override {}  ///< Destructor

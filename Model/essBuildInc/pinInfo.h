@@ -48,9 +48,9 @@ struct pinInfo
 
   Geometry::Vec3D basePoint;      ///< Base point [non z]
   
-  pinInfo(const std::string&,const size_t,const size_t,
+  pinInfo(std::string ,const size_t,const size_t,
 	  const size_t,const double,const double,
-	  const double,const Geometry::Vec3D&);
+	  const double,Geometry::Vec3D );
   pinInfo(const pinInfo&);
   pinInfo& operator=(const pinInfo&);
   ~pinInfo() {}                ///< Destructor

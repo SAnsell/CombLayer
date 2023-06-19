@@ -52,7 +52,7 @@ class defaultConfig
 
  public:
 
-  defaultConfig(const std::string&);
+  defaultConfig(std::string );
   defaultConfig(const defaultConfig&);
   defaultConfig& operator=(const defaultConfig&);
   ~defaultConfig();

@@ -19,18 +19,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <sstream>
-#include <vector>
-#include <list>
-#include <set>
-#include <map>
-#include <string>
 #include <algorithm>
-#include <memory>
 #include <array>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <list>
+#include <map>
+#include <memory>
+#include <set>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -44,8 +45,8 @@
 namespace physicsSystem
 {
   
-nameCard::nameCard(const std::string& KN,const int wT) :
-  keyName(KN),writeType(wT),active(0)
+nameCard::nameCard(std::string  KN,const int wT) :
+  keyName(std::move(KN)),writeType(wT),active(0)
   /*!
     Constructor
     \param KN :: Name

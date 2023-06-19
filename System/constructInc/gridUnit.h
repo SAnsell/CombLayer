@@ -58,9 +58,9 @@ class gridUnit
  public:
 
   gridUnit(const size_t,const long int,
-	   const long int,const Geometry::Vec3D&);  
+	   const long int,Geometry::Vec3D );  
   gridUnit(const size_t,const long int,const long int,
-	   const bool,const Geometry::Vec3D&);
+	   const bool,Geometry::Vec3D );
   gridUnit(const gridUnit&);
   gridUnit& operator=(const gridUnit&); 
   virtual ~gridUnit() {}  ///< Destructor

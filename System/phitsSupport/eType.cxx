@@ -19,21 +19,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <iomanip>
-#include <iostream>
+#include <algorithm>
 #include <cmath>
 #include <fstream>
-#include <list>
-#include <vector>
-#include <map>
-#include <set>
-#include <string>
-#include <sstream>
-#include <iterator>
 #include <functional>
-#include <algorithm>
-#include <numeric>
+#include <iomanip>
+#include <iostream>
+#include <iterator>
+#include <list>
+#include <map>
 #include <memory>
+#include <numeric>
+#include <set>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -46,9 +47,9 @@
 namespace phitsSystem
 {
 
-eType::eType(const std::vector<double>& ePts) :
+eType::eType(std::vector<double>  ePts) :
   eIndex(1),
-  eValue(ePts)
+  eValue(std::move(ePts))
   /*!
     Constructor of vector of points
     \param ePts :: Energy points

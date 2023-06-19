@@ -55,7 +55,7 @@ class tubeUnit
 
  public:
 
-  tubeUnit(const int,const int,const Geometry::Vec3D&);
+  tubeUnit(const int,const int,Geometry::Vec3D );
   tubeUnit(const tubeUnit&);
   tubeUnit& operator=(const tubeUnit&); 
   ~tubeUnit() {}  ///< Destructor

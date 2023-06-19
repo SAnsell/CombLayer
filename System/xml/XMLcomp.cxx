@@ -3,7 +3,7 @@
  
  * File:   xml/XMLcomp.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,14 +19,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <iostream>
-#include <fstream>
 #include <cmath>
 #include <cstdlib>
-#include <vector>
+#include <fstream>
+#include <iostream>
 #include <map>
-#include <string>
 #include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "FileReport.h"
 #include "OutputLog.h"
@@ -57,8 +58,9 @@ XMLcomp<T>::XMLcomp(XMLobject* B,const std::string& K) :
 {}
 
 template<typename T>
-XMLcomp<T>::XMLcomp(XMLobject* B,const std::string& K,const T& V) :
-  XMLobject(B,K),Value(V)
+XMLcomp<T>::XMLcomp(XMLobject* B,const std::string& K,
+		    T objValue) :
+  XMLobject(B,K),Value(std::move(objValue))
   /*!
     Constructor with Key and Value
     \param B :: Parent object

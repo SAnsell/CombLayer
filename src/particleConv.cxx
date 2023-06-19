@@ -19,19 +19,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
+#include <algorithm>
+#include <cmath>
+#include <complex>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <sstream>
-#include <cmath>
-#include <complex>
 #include <list>
-#include <vector>
-#include <set>
 #include <map>
-#include <string>
-#include <algorithm>
 #include <memory>
+#include <set>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -42,13 +43,13 @@
 #include "polySupport.h"
 #include "particleConv.h"
 
-pName::pName(const std::string& mcnpN,const int mI,
-	     const std::string& flukaN,const int fI,
-	     const std::string& phitsN,const int pI,
+pName::pName(std::string  mcnpN,const int mI,
+	     std::string  flukaN,const int fI,
+	     std::string  phitsN,const int pI,
 	     const int mcplN,const double M,const int N) :
-  mcnpName(mcnpN),mcnpITYP(mI),
-  flukaName(flukaN),flukaITYP(fI),
-  phitsName(phitsN),phitsITYP(pI),
+  mcnpName(std::move(mcnpN)),mcnpITYP(mI),
+  flukaName(std::move(flukaN)),flukaITYP(fI),
+  phitsName(std::move(phitsN)),phitsITYP(pI),
   mcplNumber(mcplN),mass(M),nucleon(N)
   /*
     Constructor 

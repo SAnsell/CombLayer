@@ -19,22 +19,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
+#include <algorithm>
+#include <boost/format.hpp>
+#include <cmath>
+#include <complex>
+#include <deque>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <cmath>
-#include <complex>
-#include <vector>
 #include <list>
-#include <deque>
-#include <set>
 #include <map>
+#include <memory>
+#include <set>
+#include <sstream>
 #include <stack>
 #include <string>
-#include <sstream>
-#include <algorithm>
-#include <memory>
-#include <boost/format.hpp>
+#include <utility>
+#include <vector>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -114,13 +115,13 @@ Object::Object(const int N,const int M,
 }
 
 Object::Object(const int N,const int M,
-	       const double T,const HeadRule& HR) :
+	       const double T,HeadRule  HR) :
   ObjName(N),listNum(-1),Tmp(T),
   matPtr(ModelSupport::DBMaterial::Instance().getMaterialPtr(M)),
   trcl(0),populated(0),
   activeMag(0),magMinStep(1e-3),magMaxStep(1e-1),
   activeElec(0),elecMinStep(1e-3),elecMaxStep(1e-1),
-  HRule(HR),objSurfValid(0)
+  HRule(std::move(HR)),objSurfValid(0)
  /*!
    Constuctor, set temperature to 300C 
    \param N :: number
@@ -130,9 +131,9 @@ Object::Object(const int N,const int M,
  */
 {}
 
-Object::Object(const std::string& FCName,const int N,const int M,
+Object::Object(std::string  FCName,const int N,const int M,
 	       const double T,const std::string& Line) :
-  FCUnit(FCName),ObjName(N),listNum(-1),Tmp(T),
+  FCUnit(std::move(FCName)),ObjName(N),listNum(-1),Tmp(T),
   matPtr(ModelSupport::DBMaterial::Instance().getMaterialPtr(M)),
   trcl(0),populated(0),
   activeMag(0),magMinStep(1e-3),magMaxStep(1e-1),
@@ -149,14 +150,14 @@ Object::Object(const std::string& FCName,const int N,const int M,
   HRule.procString(Line);
 }
 
-Object::Object(const std::string& FCName,const int N,const int M,
-	       const double T,const HeadRule& HR) :
-  FCUnit(FCName),ObjName(N),listNum(-1),Tmp(T),
+Object::Object(std::string  FCName,const int N,const int M,
+	       const double T,HeadRule  HR) :
+  FCUnit(std::move(FCName)),ObjName(N),listNum(-1),Tmp(T),
   matPtr(ModelSupport::DBMaterial::Instance().getMaterialPtr(M)),
   trcl(0),populated(0),
   activeMag(0),magMinStep(1e-3),magMaxStep(1e-1),
   activeElec(0),elecMinStep(1e-3),elecMaxStep(1e-1),
-  HRule(HR),
+  HRule(std::move(HR)),
   objSurfValid(0)
  /*!
    Constuctor, set temperature to 300C 

@@ -19,15 +19,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <iomanip>
-#include <cmath>
-#include <vector>
-#include <map>
-#include <string>
 #include <algorithm>
+#include <cmath>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <map>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "FileReport.h"
 #include "OutputLog.h"
@@ -39,10 +40,10 @@ namespace Geometry
 {
 
 
-SglLine::SglLine(const Geometry::Vec3D& APoint,
+SglLine::SglLine(Geometry::Vec3D  APoint,
 		 const Geometry::Vec3D& NV) :
   Intersect(),index(0),
-  APt(APoint),NormV(NV.unit())
+  APt(std::move(APoint)),NormV(NV.unit())
   /*!
     Constructor 
     \param APoint :: Line start (1st)
@@ -51,10 +52,10 @@ SglLine::SglLine(const Geometry::Vec3D& APoint,
 {}  
 
 SglLine::SglLine(const int I,
-		 const Geometry::Vec3D& APoint,
+		 Geometry::Vec3D  APoint,
 		 const Geometry::Vec3D& NV) :
   Intersect(),index(I),
-  APt(APoint),NormV(NV.unit())
+  APt(std::move(APoint)),NormV(NV.unit())
   /*!
     Constructor 
     \param I :: Index value

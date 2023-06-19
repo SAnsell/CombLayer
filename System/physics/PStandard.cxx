@@ -19,18 +19,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <iostream>
+#include <algorithm>
+#include <array>
+#include <complex>
 #include <fstream>
 #include <iomanip>
-#include <string>
-#include <vector>
-#include <complex>
-#include <list>
-#include <set>
-#include <map>
-#include <algorithm>
+#include <iostream>
 #include <iterator>
-#include <array>
+#include <list>
+#include <map>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
 
 
 #include "Exception.h"
@@ -59,8 +60,8 @@ operator<<(std::ostream& OX,const PStandard& A)
   return OX;
 }
 
-PStandard::PStandard(const std::string& Key) :
-  PhysCard(),KeyName(Key)
+PStandard::PStandard(std::string  Key) :
+  PhysCard(),KeyName(std::move(Key))
   /*!
     Constructor
     \param Key :: KeyName

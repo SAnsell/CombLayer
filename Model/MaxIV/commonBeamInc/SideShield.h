@@ -64,7 +64,7 @@ class SideShield :
  public:
   
   SideShield(const std::string&);
-  SideShield(const std::string&,const std::string&);
+  SideShield(std::string ,const std::string&);
   SideShield(const SideShield&);
   SideShield& operator=(const SideShield&);
   ~SideShield() override {}  ///< Destructor

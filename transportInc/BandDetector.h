@@ -58,7 +58,7 @@ class BandDetector : public Detector
   
   BandDetector();
   BandDetector(const int,const int,const int,
-	   const Geometry::Vec3D&,const Geometry::Vec3D&,
+	   Geometry::Vec3D ,const Geometry::Vec3D&,
 	   const Geometry::Vec3D&,const double,const double);
   BandDetector(const BandDetector&);
   BandDetector& operator=(const BandDetector&);

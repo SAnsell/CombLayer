@@ -19,10 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <iostream>
-#include <iomanip>
-#include <string>
 #include <cmath>
+#include <iomanip>
+#include <iostream>
+#include <string>
+#include <utility>
 #include <vector>
 
 #include "Exception.h"
@@ -47,7 +48,7 @@ Triple<T>::Triple(const Triple<T>& A) :
 
 template<typename T>
 Triple<T>::Triple(const T& A,const T& B,const T& C) :
-  first(A),second(B),third(C)
+  first(std::move(A)),second(std::move(B)),third(std::move(C))
   /*!
     Constructor from a 3 value input 
     \param A :: first item
@@ -259,7 +260,7 @@ DTriple<F,S,T>::DTriple(const DTriple<F,S,T>& A) :
 
 template<typename F,typename S,typename T>
 DTriple<F,S,T>::DTriple(const F& A,const S& B,const T& C) :
-  first(A),second(B),third(C)
+  first(std::move(A)),second(std::move(B)),third(std::move(C))
   /*!
     Constructor from a 3 value input 
     \param A :: first item

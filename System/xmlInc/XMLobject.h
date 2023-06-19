@@ -66,8 +66,8 @@ class XMLobject
  public:
   
   XMLobject(XMLobject*);
-  XMLobject(XMLobject*,const std::string&);
-  XMLobject(XMLobject*,const std::string&,int const);
+  XMLobject(XMLobject*,std::string );
+  XMLobject(XMLobject*,std::string ,int const);
   XMLobject(const XMLobject&);
   virtual XMLobject* clone() const;      
   XMLobject& operator=(const XMLobject&);

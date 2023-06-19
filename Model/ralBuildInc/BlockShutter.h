@@ -72,7 +72,7 @@ class BlockShutter :
   
  public:
 
-  BlockShutter(const size_t,const std::string&,const std::string&);
+  BlockShutter(const size_t,const std::string&,std::string );
   BlockShutter(const BlockShutter&);
   BlockShutter& operator=(const BlockShutter&);
   

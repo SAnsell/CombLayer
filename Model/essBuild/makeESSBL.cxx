@@ -96,10 +96,10 @@
 namespace essSystem
 {
 
-makeESSBL::makeESSBL(const std::string& SN,
-		     const std::string& BName) : 
+makeESSBL::makeESSBL(std::string  SN,
+		     std::string  BName) : 
   beamlineSystem::beamlineConstructor(),
-  shutterName(SN),beamName(BName)
+  shutterName(std::move(SN)),beamName(std::move(BName))
  /*!
     Constructor
     \param SN :: Shutter name

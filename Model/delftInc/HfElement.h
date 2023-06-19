@@ -65,7 +65,7 @@ class HfElement :
  public:
 
   HfElement(const size_t,const size_t,
-		 const std::string&,const std::string&);
+		 const std::string&,std::string );
   HfElement(const HfElement&);
   HfElement& operator=(const HfElement&);
   ~HfElement() override {}   ///< Destructor

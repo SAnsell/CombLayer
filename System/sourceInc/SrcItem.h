@@ -81,7 +81,7 @@ class SrcItem : public SrcBase
 
  public:
    
-  SrcItem(const std::string&);
+  SrcItem(std::string );
   SrcItem(const SrcItem&);
   SrcItem& operator=(const SrcItem&);
   SrcItem* clone() const override;

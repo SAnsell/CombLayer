@@ -79,7 +79,7 @@ class Quadrupole :
  public:
 
   Quadrupole(const std::string&);
-  Quadrupole(const std::string&,const std::string&);
+  Quadrupole(std::string ,const std::string&);
   Quadrupole(const Quadrupole&);
   Quadrupole& operator=(const Quadrupole&);
   ~Quadrupole() override;

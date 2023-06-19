@@ -19,20 +19,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <fstream>
-#include <iomanip>
-#include <iostream>
-#include <sstream>
+#include <algorithm>
 #include <cmath>
 #include <complex>
-#include <list>
-#include <vector>
-#include <set>
-#include <map>
-#include <string>
-#include <algorithm>
-#include <memory>
+#include <fstream>
 #include <functional>
+#include <iomanip>
+#include <iostream>
+#include <list>
+#include <map>
+#include <memory>
+#include <set>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -59,8 +60,8 @@ operator<<(std::ostream& OX,const gridUnit& A)
 }
 
 gridUnit::gridUnit(const size_t nLink,const long int aI,
-		   const long int bI,const Geometry::Vec3D& C) : 
-  empty(0),cut(0),iA(aI),iB(bI),Centre(C),gridLink(nLink),surfKey(nLink),
+		   const long int bI,Geometry::Vec3D  C) : 
+  empty(0),cut(0),iA(aI),iB(bI),Centre(std::move(C)),gridLink(nLink),surfKey(nLink),
   cellNumber(0),boundaryClosed(std::pair<size_t,size_t>(0,0))
   /*!
     Constructor
@@ -75,8 +76,8 @@ gridUnit::gridUnit(const size_t nLink,const long int aI,
 
 gridUnit::gridUnit(const size_t nLink,const long int aI,
 		   const long int bI,const bool cF,
-		   const Geometry::Vec3D& C) : 
-  empty(0),cut(cF),iA(aI),iB(bI),Centre(C),gridLink(nLink),surfKey(nLink),
+		   Geometry::Vec3D  C) : 
+  empty(0),cut(cF),iA(aI),iB(bI),Centre(std::move(C)),gridLink(nLink),surfKey(nLink),
   cellNumber(0),boundaryClosed(std::pair<size_t,size_t>(0,0))
   /*!
     Constructor

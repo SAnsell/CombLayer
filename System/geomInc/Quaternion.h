@@ -47,7 +47,7 @@ class Quaternion
   
   Quaternion();
   Quaternion(const double,const double,const double,const double);
-  Quaternion(const double,const Geometry::Vec3D&);
+  Quaternion(const double,Geometry::Vec3D );
   
   Quaternion(const Quaternion&);
   Quaternion& operator=(const Quaternion&);

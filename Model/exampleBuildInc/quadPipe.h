@@ -64,7 +64,7 @@ class quadPipe : public attachSystem::FixedRotate,
  public:
 
   quadPipe(const std::string&);
-  quadPipe(const std::string&,const std::string&);
+  quadPipe(std::string ,const std::string&);
   quadPipe(const quadPipe&);
   quadPipe& operator=(const quadPipe&);
   ~quadPipe() override;

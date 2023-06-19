@@ -75,7 +75,7 @@ class ControlElement :
  public:
 
   ControlElement(const size_t,const size_t,
-		 const std::string&,const std::string&);
+		 const std::string&,std::string );
   ControlElement(const ControlElement&);
   ControlElement& operator=(const ControlElement&);
   ~ControlElement() override {}   ///< Destructor

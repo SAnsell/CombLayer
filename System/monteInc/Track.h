@@ -72,8 +72,8 @@ class Track
  public:
 
   Track();
-  Track(const Geometry::Vec3D&);
-  Track(const Geometry::Vec3D&,const Object*);
+  Track(Geometry::Vec3D );
+  Track(Geometry::Vec3D ,const Object*);
   Track(const Track&);
   Track& operator=(const Track&);
   ~Track();

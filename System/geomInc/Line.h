@@ -65,7 +65,7 @@ class Line
  public: 
 
   Line();
-  Line(const Geometry::Vec3D&,const Geometry::Vec3D&);
+  Line(Geometry::Vec3D ,Geometry::Vec3D );
   Line(const Line&);
   Line& operator=(const Line&);
   virtual ~Line();

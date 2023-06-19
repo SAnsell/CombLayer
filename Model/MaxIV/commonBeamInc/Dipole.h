@@ -71,7 +71,7 @@ class Dipole :
  public:
 
   Dipole(const std::string&);
-  Dipole(const std::string&,const std::string&);
+  Dipole(std::string ,const std::string&);
   Dipole(const Dipole&);
   Dipole& operator=(const Dipole&);
   ~Dipole() override;

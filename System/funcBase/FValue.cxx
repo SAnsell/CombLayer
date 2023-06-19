@@ -3,7 +3,7 @@
  
  * File:   funcBase/FValue.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,14 +19,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <iostream>
+#include <climits>
+#include <cmath>
 #include <fstream>
+#include <iostream>
+#include <map>
 #include <sstream>
 #include <string>
-#include <cmath>
-#include <climits>
+#include <utility>
 #include <vector>
-#include <map>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -43,13 +44,14 @@
 //  ---------------------------------------
 
 template<typename T>
-FValue<T>::FValue(varList* VA,const int I,const T& V) : FItem(VA,I),
-  Value(V)
+FValue<T>::FValue(varList* VA,const int I,T initValue) :
+  FItem(VA,I),
+  Value(std::move(initValue))
   /*!
     Constructor 
     \param VA :: VarList pointer
     \param I :: Index value
-    \param V :: Value to set
+    \param initValue :: Value to set
   */
 {}
 

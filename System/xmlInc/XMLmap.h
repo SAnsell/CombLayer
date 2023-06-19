@@ -48,7 +48,7 @@ class XMLmap : public XMLobject
  public:
 
   XMLmap(XMLobject*,const std::string&);
-  XMLmap(XMLobject*,const std::string&,const GType&);
+  XMLmap(XMLobject*,const std::string&,GType );
   XMLmap(const XMLmap<V,K,T,Comp,Alloc>&);
   XMLmap<V,K,T,Comp,Alloc>* clone() const override;
   XMLmap<V,K,T,Comp,Alloc>& operator=(const XMLmap<V,K,T,Comp,Alloc>&);

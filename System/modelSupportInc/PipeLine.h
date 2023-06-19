@@ -64,7 +64,7 @@ class PipeLine
 
  public:
 
-  PipeLine(const std::string&);
+  PipeLine(std::string );
   PipeLine(const PipeLine&);
   PipeLine& operator=(const PipeLine&);
   ~PipeLine();

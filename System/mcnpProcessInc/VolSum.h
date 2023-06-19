@@ -64,7 +64,7 @@ class VolSum
   
  public:
   
-  VolSum(const Geometry::Vec3D&,const Geometry::Vec3D&);
+  VolSum(Geometry::Vec3D ,const Geometry::Vec3D&);
   VolSum(const VolSum&);
   VolSum& operator=(const VolSum&);
   ~VolSum();

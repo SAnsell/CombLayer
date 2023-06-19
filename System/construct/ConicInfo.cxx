@@ -19,20 +19,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
+#include <algorithm>
+#include <cmath>
+#include <complex>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <sstream>
-#include <cmath>
-#include <complex>
 #include <list>
-#include <vector>
-#include <set>
 #include <map>
-#include <string>
-#include <algorithm>
-#include <numeric>
 #include <memory>
+#include <numeric>
+#include <set>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "FileReport.h"
 #include "OutputLog.h"
@@ -43,10 +44,10 @@
 namespace constructSystem
 {
 
-ConicInfo::ConicInfo(const Geometry::Vec3D& C,const Geometry::Vec3D& A,
+ConicInfo::ConicInfo(Geometry::Vec3D  C,Geometry::Vec3D  A,
 		     const double ang,const int M,const double WT,
 		     const int WM) :
-  cylFlag(0),Cent(C),Axis(A),angle(ang),wall(WT),
+  cylFlag(0),Cent(std::move(C)),Axis(std::move(A)),angle(ang),wall(WT),
   mat(M),wallMat(WM)
 /*!
   Ugly constructor for Cent / Axis
@@ -59,11 +60,11 @@ ConicInfo::ConicInfo(const Geometry::Vec3D& C,const Geometry::Vec3D& A,
 */
 {} 
 
-ConicInfo::ConicInfo(const Geometry::Vec3D& C,const Geometry::Vec3D& A,
+ConicInfo::ConicInfo(Geometry::Vec3D  C,Geometry::Vec3D  A,
 		     const double Ang,const int M,
 		     const double WT,const int WM,
 		     const int CF) :
-  cylFlag(CF),Cent(C),Axis(A),angle(Ang),wall(WT),
+  cylFlag(CF),Cent(std::move(C)),Axis(std::move(A)),angle(Ang),wall(WT),
   mat(M),wallMat(WM)
  /*!
    Ugly constructor for Cent / Axis

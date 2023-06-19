@@ -19,16 +19,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <sstream>
 #include <cmath>
-#include <string>
-#include <vector>
-#include <map>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
 #include <list>
+#include <map>
 #include <numeric>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -59,9 +60,9 @@ AtomPos::AtomPos() :
   */
 {}
 
-AtomPos::AtomPos(const std::string& N,const int Znum,const int I,
-		 const Geometry::Vec3D& Pt,const double OVal) :
-  Name(N),Z(Znum),Ion(I),Cent(Pt),occ(OVal)
+AtomPos::AtomPos(std::string  N,const int Znum,const int I,
+		 Geometry::Vec3D  Pt,const double OVal) :
+  Name(std::move(N)),Z(Znum),Ion(I),Cent(std::move(Pt)),occ(OVal)
   /*!
     Assignment constructor
     \param N :: Name

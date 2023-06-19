@@ -88,7 +88,7 @@ class WrapperCell :
 
  public:
 
-  WrapperCell(const std::string&,const std::string&);
+  WrapperCell(std::string ,const std::string&);
   WrapperCell(const WrapperCell&);
   WrapperCell& operator=(const WrapperCell&);
   ~WrapperCell() override;

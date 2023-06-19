@@ -19,19 +19,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
+#include <algorithm>
+#include <cmath>
+#include <complex>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <sstream>
-#include <cmath>
 #include <list>
-#include <vector>
-#include <set>
 #include <map>
+#include <set>
+#include <sstream>
 #include <stack>
 #include <string>
-#include <algorithm>
-#include <complex>
+#include <utility>
+#include <vector>
 
 
 #include "Exception.h"
@@ -78,8 +79,8 @@ operator<<(std::ostream& OX,const Line& Lref)
   */
 {}
 
-Line::Line(const Geometry::Vec3D& O,const Geometry::Vec3D& D) 
-  : Origin(O),Direct(D)
+Line::Line(Geometry::Vec3D  O,Geometry::Vec3D  D) 
+  : Origin(std::move(O)),Direct(std::move(D))
   /*!
     Constructor
     \param O :: Origin Vector		       

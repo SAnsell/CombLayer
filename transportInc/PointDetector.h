@@ -44,7 +44,7 @@ class PointDetector : public Detector
  public:
   
   explicit PointDetector(const size_t);
-  PointDetector(const size_t,const Geometry::Vec3D&);
+  PointDetector(const size_t,Geometry::Vec3D );
   PointDetector(const PointDetector&);
   PointDetector& operator=(const PointDetector&);
   /// Clone constructor

@@ -65,7 +65,7 @@ class dipolePipe : public attachSystem::FixedRotate,
  public:
 
   dipolePipe(const std::string&);
-  dipolePipe(const std::string&,const std::string&);
+  dipolePipe(std::string ,const std::string&);
   dipolePipe(const dipolePipe&);
   dipolePipe& operator=(const dipolePipe&);
   ~dipolePipe() override;

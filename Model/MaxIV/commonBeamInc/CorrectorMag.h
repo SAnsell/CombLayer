@@ -78,7 +78,7 @@ class CorrectorMag :
  public:
 
   CorrectorMag(const std::string&);
-  CorrectorMag(const std::string&,const std::string&);
+  CorrectorMag(std::string ,const std::string&);
   CorrectorMag(const CorrectorMag&);
   CorrectorMag& operator=(const CorrectorMag&);
   ~CorrectorMag() override;

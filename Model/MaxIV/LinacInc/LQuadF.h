@@ -79,7 +79,7 @@ class LQuadF :
  public:
 
   LQuadF(const std::string&);
-  LQuadF(const std::string&,const std::string&);
+  LQuadF(std::string ,const std::string&);
   LQuadF(const LQuadF&);
   LQuadF& operator=(const LQuadF&);
   ~LQuadF() override;

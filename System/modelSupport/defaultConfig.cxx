@@ -19,21 +19,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
+#include <algorithm>
+#include <cmath>
+#include <complex>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <sstream>
-#include <cmath>
-#include <complex>
 #include <list>
-#include <vector>
-#include <set>
 #include <map>
-#include <string>
-#include <algorithm>
-#include <numeric>
 #include <memory>
+#include <numeric>
+#include <set>
+#include <sstream>
+#include <string>
 #include <tuple>
+#include <utility>
+#include <vector>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -49,8 +50,8 @@
 namespace mainSystem
 {
 
-defaultConfig::defaultConfig(const std::string& Key)  :
-  keyName(Key)
+defaultConfig::defaultConfig(std::string  Key)  :
+  keyName(std::move(Key))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search

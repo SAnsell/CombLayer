@@ -19,21 +19,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
+#include <algorithm>
+#include <cmath>
+#include <complex>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <sstream>
-#include <cmath>
-#include <complex>
 #include <list>
-#include <vector>
-#include <stack>
-#include <set>
 #include <map>
-#include <string>
-#include <algorithm>
-#include <numeric>
 #include <memory>
+#include <numeric>
+#include <set>
+#include <sstream>
+#include <stack>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -51,8 +52,8 @@ namespace setVariable
 {
 
 layerItem::layerItem(const double T,const size_t N,
-		     const std::string& M) :
-  thick(T),nDiv(N),mat(M)
+		     std::string  M) :
+  thick(T),nDiv(N),mat(std::move(M))
   /*!
     constructor
     \param T :: thickness

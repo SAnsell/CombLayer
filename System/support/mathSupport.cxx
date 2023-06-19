@@ -151,7 +151,7 @@ getPowerTwo(const size_t N)
     \return number
   */
 {
-  return std::pow(2L,std::floor(std::log2(N)));
+  return static_cast<size_t>(std::pow(2L,std::floor(std::log2(N))));
 }
 
 long int

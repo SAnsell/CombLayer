@@ -19,19 +19,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
+#include <algorithm>
+#include <cmath>
 #include <fstream>
+#include <functional>
 #include <iomanip>
 #include <iostream>
-#include <sstream>
-#include <cmath>
-#include <list>
-#include <vector>
-#include <set>
-#include <map>
-#include <string>
-#include <algorithm>
 #include <iterator>
-#include <functional>
+#include <list>
+#include <map>
+#include <set>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "FileReport.h"
 #include "OutputLog.h"
@@ -120,9 +121,9 @@ Track::Track() :
   */ 
 {}
 
-Track::Track(const Geometry::Vec3D& StartPt,
+Track::Track(Geometry::Vec3D  StartPt,
 	     const Object* initObj) : 
-  iPt(StartPt),iObj(initObj)
+  iPt(std::move(StartPt)),iObj(initObj)
   /*!
     Constructor
     \param StartPt :: Initial Point
@@ -130,8 +131,8 @@ Track::Track(const Geometry::Vec3D& StartPt,
   */ 
 {}
 
-Track::Track(const Geometry::Vec3D& StartPt) :
-  iPt(StartPt),iObj(0)
+Track::Track(Geometry::Vec3D  StartPt) :
+  iPt(std::move(StartPt)),iObj(0)
   /*!
     Constructor
     \param StartPt :: Initial Point

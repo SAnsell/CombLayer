@@ -89,12 +89,12 @@ class Object
  public:
 
   Object();
-  Object(const std::string&,const int,const int,
+  Object(std::string ,const int,const int,
 	 const double,const std::string&);
-  Object(const std::string&,const int,const int,
-	 const double,const HeadRule&);
+  Object(std::string ,const int,const int,
+	 const double,HeadRule );
   Object(const int,const int,const double,const std::string&);
-  Object(const int,const int,const double,const HeadRule&);
+  Object(const int,const int,const double,HeadRule );
 
   Object(const Object&);
   Object& operator=(const Object&);

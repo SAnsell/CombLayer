@@ -47,7 +47,7 @@ class volUnit
  public:
   
   volUnit();
-  volUnit(const int,const std::string&,const std::vector<int>&);
+  volUnit(const int,std::string ,const std::vector<int>&);
   volUnit(const volUnit&);
   volUnit& operator=(const volUnit&);
   ~volUnit();

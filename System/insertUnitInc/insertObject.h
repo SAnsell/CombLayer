@@ -61,7 +61,7 @@ class insertObject :
  public:
 
   insertObject(const std::string&);
-  insertObject(const std::string&,const std::string&);
+  insertObject(std::string ,const std::string&);
   insertObject(const insertObject&);
   insertObject& operator=(const insertObject&);
   ~insertObject() override;

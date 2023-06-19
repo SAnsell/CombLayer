@@ -19,17 +19,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
+#include <cmath>
+#include <complex>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <sstream>
-#include <cmath>
-#include <complex>
 #include <list>
-#include <vector>
-#include <set>
 #include <map>
+#include <set>
+#include <sstream>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -42,15 +43,15 @@
 namespace essSystem
 {
 
-pillarInfo::pillarInfo(const std::string& S,
+pillarInfo::pillarInfo(std::string  S,
 		       const size_t RNum,
 		       const size_t SNum,
 		       const int RIndex,
 		       const int A,
-		       const Geometry::Vec3D& CP,
+		       Geometry::Vec3D  CP,
 		       const Geometry::Vec3D& YA) :
-  Name(S),radN(RNum),sectN(SNum),
-  RI(RIndex),active(A),centPoint(CP),YAxis(YA.unit())
+  Name(std::move(S)),radN(RNum),sectN(SNum),
+  RI(RIndex),active(A),centPoint(std::move(CP)),YAxis(YA.unit())
   /*!
     Constructor
     \param S :: Name

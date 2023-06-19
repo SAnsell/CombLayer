@@ -19,21 +19,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
+#include <algorithm>
+#include <boost/format.hpp>
+#include <cmath>
+#include <complex>
 #include <fstream> 
 #include <iomanip>
 #include <iostream>
-#include <sstream>
-#include <cmath>
-#include <complex>
 #include <list>
-#include <vector>
-#include <set>
 #include <map>
-#include <string>
-#include <algorithm>
 #include <memory>
 #include <random>
-#include <boost/format.hpp>
+#include <set>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "FileReport.h"
 #include "OutputLog.h"
@@ -44,8 +45,8 @@ namespace SDef
 {
 
 activeFluxPt::activeFluxPt(const int CN,
-                           const Geometry::Vec3D& Pt) :
-  cellN(CN),fluxPt(Pt)
+                           Geometry::Vec3D  Pt) :
+  cellN(CN),fluxPt(std::move(Pt))
   /*!
     Constructor 
     \param CN :: cell Number

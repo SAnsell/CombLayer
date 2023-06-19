@@ -50,7 +50,7 @@ class PStandard : public PhysCard
 
  public:
 
-  PStandard(const std::string&);
+  PStandard(std::string );
   PStandard(const PStandard&);
   PStandard& operator=(const PStandard&);
   PStandard* clone() const override;

@@ -64,11 +64,11 @@ class cellValueSet
   
  public:
 
-  cellValueSet(const std::string&,const std::string&);
-  cellValueSet(const std::string&,const std::string&,
-	       const std::string&);
-  cellValueSet(const std::string&,const std::string&,
-	       const std::string&,const std::array<double,N>&);
+  cellValueSet(std::string ,std::string );
+  cellValueSet(std::string ,std::string ,
+	       std::string );
+  cellValueSet(std::string ,std::string ,
+	       std::string ,const std::array<double,N>&);
 
   cellValueSet(const cellValueSet&);
   cellValueSet& operator=(const cellValueSet&);

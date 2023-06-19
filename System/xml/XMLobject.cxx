@@ -19,19 +19,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <iostream>
+#include <algorithm>
+#include <boost/multi_array.hpp>
 #include <cmath>
-#include <vector>
-#include <map>
-#include <string>
-#include <sstream>
 #include <fstream>
 #include <functional>
-#include <algorithm>
+#include <iostream>
 #include <iterator>
-#include <typeinfo>
+#include <map>
+#include <sstream>
+#include <string>
 #include <time.h>
-#include <boost/multi_array.hpp>
+#include <typeinfo>
+#include <utility>
+#include <vector>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -70,8 +71,8 @@ XMLobject::XMLobject(XMLobject* B) :
   */
 {}
 
-XMLobject::XMLobject(XMLobject* B,const std::string& K) :
-  depth(0),empty(1),loaded(0),repNumber(0),Key(K),Base(B)
+XMLobject::XMLobject(XMLobject* B,std::string  K) :
+  depth(0),empty(1),loaded(0),repNumber(0),Key(std::move(K)),Base(B)
   /*!
     Default constructor (with key)
     \param B :: Parent pointer
@@ -79,8 +80,8 @@ XMLobject::XMLobject(XMLobject* B,const std::string& K) :
   */
 {}
 
-XMLobject::XMLobject(XMLobject* B,const std::string& K,const int GN) :
-  depth(0),empty(1),loaded(0),repNumber(GN),Key(K),Base(B)
+XMLobject::XMLobject(XMLobject* B,std::string  K,const int GN) :
+  depth(0),empty(1),loaded(0),repNumber(GN),Key(std::move(K)),Base(B)
   /*!
     Default constructor (with key)
     \param B :: Parent pointer

@@ -19,18 +19,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
+#include <algorithm>
+#include <cmath>
+#include <complex> 
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <cmath>
-#include <complex> 
-#include <vector>
 #include <list>
-#include <set>
 #include <map> 
-#include <string>
-#include <algorithm>
 #include <memory>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "FileReport.h"
 #include "OutputLog.h"
@@ -40,8 +41,8 @@
 namespace WeightSystem
 {
 
-WWGItem::WWGItem(const Geometry::Vec3D& CPt) :
-  Pt(CPt)
+WWGItem::WWGItem(Geometry::Vec3D  CPt) :
+  Pt(std::move(CPt))
   /*!
     Constructor
     \param CPt :: Centre point

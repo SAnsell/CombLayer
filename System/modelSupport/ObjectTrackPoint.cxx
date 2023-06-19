@@ -19,17 +19,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
+#include <algorithm>
+#include <cmath>
+#include <complex> 
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <cmath>
-#include <complex> 
-#include <vector>
-#include <set> 
 #include <map> 
-#include <string>
-#include <algorithm>
 #include <memory>
+#include <set> 
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -49,8 +50,8 @@
 namespace ModelSupport
 {
 
-ObjectTrackPoint::ObjectTrackPoint(const Geometry::Vec3D& PtA) :
-  ObjectTrackAct(),TargetPt(PtA)
+ObjectTrackPoint::ObjectTrackPoint(Geometry::Vec3D  PtA) :
+  ObjectTrackAct(),TargetPt(std::move(PtA))
   /*! 
     Constructor 
     \param PtA :: Target point to track from

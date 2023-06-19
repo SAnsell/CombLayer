@@ -42,7 +42,7 @@ class activeFluxPt
   
  public:
   
-  activeFluxPt(const int,const Geometry::Vec3D&);
+  activeFluxPt(const int,Geometry::Vec3D );
   activeFluxPt(const activeFluxPt&);
   activeFluxPt& operator=(const activeFluxPt&);
   ~activeFluxPt();

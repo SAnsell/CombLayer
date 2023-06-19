@@ -19,20 +19,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <complex>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <sstream>
-#include <cmath>
-#include <complex>
 #include <list>
-#include <vector>
-#include <set>
 #include <map>
-#include <string>
-#include <algorithm>
 #include <memory>
-#include <array>
+#include <set>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -85,9 +86,9 @@ FlukaSource::FlukaSource(const std::string& keyName) :
 }
 
 FlukaSource::FlukaSource(const std::string& keyName,
-			   const std::string& ssName) : 
+			   std::string  ssName) : 
   FixedRotateUnit(keyName,0),SourceBase(),
-  sourceName(ssName)
+  sourceName(std::move(ssName))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param keyName :: main name

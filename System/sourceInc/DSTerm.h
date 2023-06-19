@@ -43,7 +43,7 @@ class DSBase
 public:
   
   DSBase();
-  DSBase(const std::string&,const char);
+  DSBase(std::string ,const char);
   DSBase(const DSBase&);
   virtual DSBase* clone() const =0;   ///< Clone [virtual]
   DSBase& operator=(const DSBase&);

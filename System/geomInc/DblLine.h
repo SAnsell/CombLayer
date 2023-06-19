@@ -45,8 +45,8 @@ class DblLine : public Intersect
  public:
   
   DblLine();
-  DblLine(const Vec3D&,const Vec3D&,const Vec3D&);
-  DblLine(const int,const Vec3D&,const Vec3D&,const Vec3D&);
+  DblLine(Vec3D ,Vec3D ,const Vec3D&);
+  DblLine(const int,Vec3D ,Vec3D ,const Vec3D&);
   DblLine(const DblLine&);
   DblLine& operator=(const DblLine&);
   ~DblLine() override {}  ///< Destructor

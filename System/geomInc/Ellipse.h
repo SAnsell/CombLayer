@@ -46,8 +46,8 @@ class Ellipse : public Intersect
  public:
   
   Ellipse();
-  Ellipse(const Vec3D&,const Vec3D&,const Vec3D&,const Vec3D&);
-  Ellipse(const int,const Vec3D&,const Vec3D&,const Vec3D&,const Vec3D&);
+  Ellipse(Vec3D ,Vec3D ,Vec3D ,const Vec3D&);
+  Ellipse(const int,Vec3D ,Vec3D ,Vec3D ,const Vec3D&);
   Ellipse(const Ellipse&);
   Ellipse& operator=(const Ellipse&);
   ~Ellipse() override {}  ///< Destructor

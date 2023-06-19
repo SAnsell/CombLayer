@@ -19,19 +19,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
+#include <algorithm>
+#include <boost/format.hpp>
+#include <cmath>
+#include <complex>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <sstream>
-#include <cmath>
-#include <complex>
 #include <list>
-#include <vector>
 #include <map>
+#include <sstream>
 #include <stack>
 #include <string>
-#include <algorithm>
-#include <boost/format.hpp>
+#include <utility>
+#include <vector>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -78,10 +79,10 @@ Cylinder::Cylinder(const int N,const int T) :
   Cylinder::setBaseEqn();
 }
 
-Cylinder::Cylinder(const int N,const Geometry::Vec3D& Org,
+Cylinder::Cylinder(const int N,Geometry::Vec3D  Org,
 		   const Geometry::Vec3D& A,const double R) : 
   Quadratic(N,0),
-  Centre(Org),Normal(A.unit()),Nvec(0),Radius(R)
+  Centre(std::move(Org)),Normal(A.unit()),Nvec(0),Radius(R)
   /*!
     Standard Constructor creates a cylinder 
     \param N :: Name

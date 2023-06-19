@@ -43,8 +43,8 @@ class Pnt : public Intersect
  public:
   
   Pnt();
-  Pnt(const Vec3D&);
-  Pnt(const int,const Vec3D&);
+  Pnt(Vec3D );
+  Pnt(const int,Vec3D );
   Pnt(const Pnt&);
   Pnt& operator=(const Pnt&);
   ~Pnt() override {}  ///< Destructor

@@ -19,19 +19,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
+#include <algorithm>
+#include <cmath>
 #include <fstream>
+#include <functional>
 #include <iomanip>
 #include <iostream>
+#include <iterator>
+#include <list>
+#include <map>
+#include <set>
 #include <sstream>
 #include <string>
-#include <cmath>
-#include <list>
+#include <utility>
 #include <vector>
-#include <set>
-#include <map>
-#include <algorithm>
-#include <functional>
-#include <iterator>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -44,8 +45,8 @@
 namespace MonteCarlo
 {
 
-MXcards::MXcards(const std::string& P) :
-  particle(P)
+MXcards::MXcards(std::string  P) :
+  particle(std::move(P))
   /*!
     Constructor
     \param P :: particle string

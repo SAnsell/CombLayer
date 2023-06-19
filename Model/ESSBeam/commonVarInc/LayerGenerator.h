@@ -41,7 +41,7 @@ struct layerItem
   size_t nDiv;        ///< number of divisions
   std::string mat;    ///< Material
 
-  layerItem(const double,const size_t,const std::string&);
+  layerItem(const double,const size_t,std::string );
   layerItem(const layerItem&);
   layerItem& operator=(const layerItem&);
   ~layerItem() {}  ///< destructor

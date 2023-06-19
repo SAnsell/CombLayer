@@ -61,7 +61,7 @@ namespace ModelSupport
   
  public:
 
-  ObjectTrackPoint(const Geometry::Vec3D&);
+  ObjectTrackPoint(Geometry::Vec3D );
   ObjectTrackPoint(const ObjectTrackPoint&);
   ObjectTrackPoint& operator=(const ObjectTrackPoint&);  
   ~ObjectTrackPoint() override {}   ///< Destructor

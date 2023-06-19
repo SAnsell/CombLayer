@@ -1,3 +1,5 @@
+#include <utility>
+
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
@@ -49,9 +51,9 @@ struct simPoint
   MonteCarlo::Object* OPtr;        ///< Object pointer
 
   
-  simPoint(const Geometry::Vec3D& P,const Geometry::Vec3D& D,
+  simPoint(Geometry::Vec3D  P,Geometry::Vec3D  D,
 	   const int ON,const int SN,MonteCarlo::Object* OP) :
-  Pt(P),Dir(D),objN(ON),surfN(SN),OPtr(OP) {}
+  Pt(std::move(P)),Dir(std::move(D)),objN(ON),surfN(SN),OPtr(OP) {}
 
   simPoint(const simPoint& A) :
   Pt(A.Pt),Dir(A.Dir),objN(A.objN),surfN(A.surfN),OPtr(A.OPtr) {}

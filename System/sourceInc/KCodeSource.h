@@ -53,7 +53,7 @@ class KCodeSource :
 
  public:
    
-  KCodeSource(const std::string&);
+  KCodeSource(std::string );
   KCodeSource(const KCodeSource&);
   KCodeSource& operator=(const KCodeSource&);
   KCodeSource* clone() const override;

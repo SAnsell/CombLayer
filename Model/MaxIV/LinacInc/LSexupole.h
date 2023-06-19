@@ -75,7 +75,7 @@ class LSexupole :
  public:
 
   LSexupole(const std::string&);
-  LSexupole(const std::string&,const std::string&);
+  LSexupole(std::string ,const std::string&);
   LSexupole(const LSexupole&);
   LSexupole& operator=(const LSexupole&);
   ~LSexupole() override;

@@ -119,7 +119,7 @@ class IndexError : public ExBase
 
  public:
 
-  IndexError(const T&,const T&,const std::string&);
+  IndexError(T ,T ,const std::string&);
   IndexError(const IndexError& A);
   IndexError& operator=(const IndexError&);
   ~IndexError() throw() override {}   ///< Destructor 
@@ -204,7 +204,7 @@ class FileError : public ExBase
 
  public:
 
-  FileError(const int,const std::string&,const std::string&);
+  FileError(const int,std::string ,const std::string&);
   FileError(const FileError&);
   FileError& operator=(const FileError&);
   ~FileError() throw() override {}   ///< Destructor 
@@ -256,7 +256,7 @@ class InContainerError : public ExBase
 
  public:
 
-  InContainerError(const T&,const std::string&);
+  InContainerError(T ,const std::string&);
   InContainerError(const InContainerError&);
   InContainerError<T>& operator=(const InContainerError<T>&);
   ~InContainerError() throw() override {}   ///< Destructor 
@@ -432,7 +432,7 @@ class TypeMatch : public ExBase
  
  public:
 
-  TypeMatch(const std::string&,const std::string&,
+  TypeMatch(std::string ,std::string ,
 	    const std::string&);
 
 
@@ -464,7 +464,7 @@ class InvalidLine : public ExBase
 
  public:
 
-  InvalidLine(const std::string&,const std::string&,const size_t =0);
+  InvalidLine(const std::string&,std::string ,const size_t =0);
   InvalidLine(const InvalidLine&);
   InvalidLine& operator=(const InvalidLine&);
   ~InvalidLine() throw() override {}   ///< Destructor
@@ -521,7 +521,7 @@ class TypeConvError : public ExBase
 
  public:
 
-  TypeConvError(const T&,const std::string&);
+  TypeConvError(T ,const std::string&);
 
   TypeConvError(const TypeConvError<T,U>&);
   TypeConvError<T,U>& operator=(const TypeConvError<T,U>&);
@@ -549,7 +549,7 @@ class DynamicConv : public ExBase
 
  public:
 
-  DynamicConv(const std::string&,const std::string&,const std::string&);
+  DynamicConv(std::string ,std::string ,const std::string&);
 
   DynamicConv(const DynamicConv&);
   DynamicConv& operator=(const DynamicConv&);
@@ -577,7 +577,7 @@ class CommandError : public ExBase
 
  public:
 
-  CommandError(const std::string&,const std::string&);
+  CommandError(std::string ,const std::string&);
   CommandError(const CommandError&);
   CommandError& operator=(const CommandError&);
   ~CommandError() throw() override {}    ///< Destructor
@@ -607,16 +607,16 @@ class ConstructionError : public ExBase
 
  public:
 
-  ConstructionError(const std::string&,const std::string&);
-  ConstructionError(const std::string&,const std::string&,
+  ConstructionError(std::string ,const std::string&);
+  ConstructionError(std::string ,const std::string&,
+		    std::string );
+  ConstructionError(std::string ,const std::string&,
+		    std::string ,const std::string&);
+  ConstructionError(std::string ,const std::string&,
+		    std::string ,const std::string&,
 		    const std::string&);
-  ConstructionError(const std::string&,const std::string&,
-		    const std::string&,const std::string&);
-  ConstructionError(const std::string&,const std::string&,
-		    const std::string&,const std::string&,
-		    const std::string&);
-  ConstructionError(const std::string&,const std::string&,
-		    const std::string&,const std::string&,
+  ConstructionError(std::string ,const std::string&,
+		    std::string ,const std::string&,
 		    const std::string&,const std::string&);
 
   ConstructionError(const ConstructionError&);
@@ -689,7 +689,7 @@ class ExitAbort : public std::exception
 
  public:
 
-  ExitAbort(const std::string&,const int =0);
+  ExitAbort(std::string ,const int =0);
   ExitAbort(const ExitAbort&);
   ExitAbort& operator=(const ExitAbort&);
   ~ExitAbort() throw() override {}    ///< Destructor

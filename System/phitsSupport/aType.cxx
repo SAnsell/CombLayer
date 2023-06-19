@@ -19,21 +19,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <iomanip>
-#include <iostream>
+#include <algorithm>
 #include <cmath>
 #include <fstream>
-#include <list>
-#include <vector>
-#include <map>
-#include <set>
-#include <string>
-#include <sstream>
-#include <iterator>
 #include <functional>
-#include <algorithm>
-#include <numeric>
+#include <iomanip>
+#include <iostream>
+#include <iterator>
+#include <list>
+#include <map>
 #include <memory>
+#include <numeric>
+#include <set>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -47,9 +48,9 @@ namespace phitsSystem
 {
 
 aType::aType(const std::string& unitName,
-	     const std::vector<double>& aPts) :
+	     std::vector<double>  aPts) :
   aIndex(calcUnit(unitName)),
-  aValue(aPts)
+  aValue(std::move(aPts))
   /*!
     Constructor of vector of points
     \param aPts :: Bin edges in cos or deg.

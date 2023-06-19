@@ -43,8 +43,8 @@ class SglLine : public Intersect
   
  public:
   
-  SglLine(const Geometry::Vec3D&,const Geometry::Vec3D&);
-  SglLine(const int,const Vec3D&,const Vec3D&);
+  SglLine(Geometry::Vec3D ,const Geometry::Vec3D&);
+  SglLine(const int,Vec3D ,const Vec3D&);
   SglLine(const SglLine&);
   SglLine& operator=(const SglLine&);
   ~SglLine() override {}  ///< Destructor

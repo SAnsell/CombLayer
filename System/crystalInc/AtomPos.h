@@ -47,8 +47,8 @@ class AtomPos
  public:
 
   AtomPos();
-  AtomPos(const std::string&,const int,const int,
-	  const Geometry::Vec3D&,const double);
+  AtomPos(std::string ,const int,const int,
+	  Geometry::Vec3D ,const double);
   AtomPos(const AtomPos&);
   AtomPos& operator=(const AtomPos&);
   bool operator<(const AtomPos&) const; 

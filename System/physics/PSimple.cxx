@@ -19,17 +19,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <iostream>
+#include <algorithm>
+#include <array>
+#include <complex>
 #include <fstream>
 #include <iomanip>
-#include <string>
-#include <vector>
-#include <complex>
+#include <iostream>
+#include <iterator>
 #include <list>
 #include <map>
-#include <algorithm>
-#include <iterator>
-#include <array>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -58,8 +59,8 @@ operator<<(std::ostream& OX,const PSimple& A)
   return OX;
 }
 
-PSimple::PSimple(const std::string& Key) :
-  PhysCard(),KeyName(Key)
+PSimple::PSimple(std::string  Key) :
+  PhysCard(),KeyName(std::move(Key))
   /*!
     Constructor
     \param Key :: KeyName

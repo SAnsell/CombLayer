@@ -19,19 +19,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
+#include <algorithm>
+#include <cmath>
+#include <complex>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <sstream>
-#include <cmath>
-#include <complex>
 #include <list>
-#include <vector>
-#include <set>
 #include <map>
-#include <string>
-#include <algorithm>
 #include <memory>
+#include <set>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "FileReport.h"
 #include "OutputLog.h"
@@ -47,8 +48,8 @@ plateInfo::plateInfo() :
   */
 {}
 
-plateInfo::plateInfo(const std::string& N) :
-  name(N),thick(0.0),vHeight(0.0),vWidth(0.0),mat(0),temp(0.0)
+plateInfo::plateInfo(std::string  N) :
+  name(std::move(N)),thick(0.0),vHeight(0.0),vWidth(0.0),mat(0),temp(0.0)
   /*!
     Constructor
     \param N :: name

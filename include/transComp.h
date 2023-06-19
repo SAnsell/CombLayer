@@ -86,7 +86,7 @@ class transRot : public transComp
  public:
 
   transRot();
-  transRot(const Geometry::Vec3D&,const Geometry::Vec3D&,const double);
+  transRot(const Geometry::Vec3D&,Geometry::Vec3D ,const double);
   transRot(const transRot&);
   transRot& operator=(const transRot&);
   transRot* clone() const override;
@@ -163,7 +163,7 @@ class transDisplace : public transComp
  public:
 
   transDisplace();
-  transDisplace(const Geometry::Vec3D&);
+  transDisplace(Geometry::Vec3D );
   transDisplace(const transDisplace&);
   transDisplace& operator=(const transDisplace&);
   transDisplace* clone() const override;
