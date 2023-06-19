@@ -3,7 +3,7 @@
  
  * File:   geometry/SurInter.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -699,7 +699,6 @@ getPoint(const Geometry::Surface* A,
     throw ColErr::MisMatch<size_t>(Out.size(),1,"Out size");
   
   return Out.back();
-
 }
 
 Geometry::Vec3D

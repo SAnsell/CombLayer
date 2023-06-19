@@ -719,6 +719,42 @@ HeadRule::isComplementary() const
   return 0;
 }
 
+bool
+HeadRule::isZeroVolume() const
+  /*!
+    Determine if the object is volume zero. This is
+    an incomplete test as it only looks at plane system
+    \retval 1 :: true [definately zero]
+    \retval 0 :: false [maybe zero but maybe not]
+  */
+{
+  if (!HeadNode || HeadNode->isEmpty()) return 1;
+
+  const std::set<int> allSurf=getSignedSurfaceNumbers();
+  std::vector<const Geometry::Plane*> PSurf;
+  for(const int SNum : allSurf)
+    {
+      const Geometry::Plane* PPtr=
+	dynamic_cast<const Geometry::Plane*>(getSurface(SNum));
+      if (!PPtr) return 0;
+      PSurf.push_back(PPtr);
+    }
+  for(size_t i=0;i<PSurf.size();i++)
+    for(size_t j=i+1;j<PSurf.size();j++)
+      for(size_t k=j+1;k<PSurf.size();k++)
+	{
+	  const std::vector<Geometry::Vec3D> PVec=
+	    SurInter::makePoint(PSurf[i],PSurf[j],PSurf[k]);
+	  if (!PVec.empty())
+	    {
+	      const Geometry::Vec3D& tPt(PVec.front());
+	      if (isValid(tPt)) return 0;
+	    }
+	}
+  // all planes and all points not valid,
+  return 1;
+}
+
 void
 HeadRule::populateSurf()
   /*!

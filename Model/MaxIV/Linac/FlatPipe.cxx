@@ -3,7 +3,7 @@
 
  * File:   Linac/FlatPipe.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -274,6 +274,7 @@ FlatPipe::createObjects(Simulation& System)
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
+  ELog::EM<<"Buliding "<<keyName<<" "<<cellIndex<<ELog::endDiag;
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"4 -8");

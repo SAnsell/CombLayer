@@ -3,7 +3,7 @@
  
  * File:   xml/XMLgroup.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -83,10 +83,15 @@ XMLgroup::XMLgroup(const XMLgroup& A) :
   */
 {
   Grp.resize(A.Grp.size());
-  transform(A.Grp.begin(),A.Grp.end(),
-		Grp.begin(),std::mem_fun(&XMLobject::clone));
-  for(XMLobject* GO : Grp)
-    GO->setParent(this);
+
+  std::transform(A.Grp.begin(),A.Grp.end(),Grp.begin(),
+	    [this](const XMLobject& obj)
+	    {
+	      XMLobject* GO=obj.clone();
+	      GO->setParent(this);
+	      return GO;
+	    }
+	    );
 }
 
 XMLgroup&
@@ -103,10 +108,15 @@ XMLgroup::operator=(const XMLgroup& A)
       XMLobject::operator=(A);
       deleteGrp();
       Grp.resize(A.Grp.size());
-      transform(A.Grp.begin(),A.Grp.end(),
-		Grp.begin(),std::mem_fun(&XMLobject::clone));
-      for(XMLobject* GO : Grp)
-	GO->setParent(this);
+
+      std::transform(A.Grp.begin(),A.Grp.end(),Grp.begin(),
+		     [this](const XMLobject& obj)
+		     {
+		       XMLobject* GO=obj.clone();
+		       GO->setParent(this);
+		       return GO;
+		     }
+	    );
 
       Index=A.Index;
     }

@@ -128,6 +128,9 @@ MLMDetailGenerator::makeRadialSupport(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("MLMDetailGenerator","makeRadialSupport");
 
+  Control.addVariable(rName+"XStep",xStep);
+  Control.addVariable(rName+"YStep",yStep);
+  
   Control.addVariable(rName+"Length",radialLength);
   Control.addVariable(rName+"SupportLen",radialSupportLen);
   
