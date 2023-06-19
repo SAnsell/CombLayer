@@ -3,7 +3,7 @@
  
  * File:   construct/ProtonVoid.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,8 +62,8 @@ namespace ts1System
 {
 
 ProtonVoid::ProtonVoid(const std::string& Key)  :
-  attachSystem::ContainedComp(),
   attachSystem::FixedComp(Key,3),
+  attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap()
   /*!
@@ -73,8 +73,8 @@ ProtonVoid::ProtonVoid(const std::string& Key)  :
 {}
 
 ProtonVoid::ProtonVoid(const ProtonVoid& A) : 
-  attachSystem::ContainedComp(A),
   attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),
   attachSystem::ExternalCut(A),
   attachSystem::CellMap(A),
   viewRadius(A.viewRadius)
@@ -94,8 +94,8 @@ ProtonVoid::operator=(const ProtonVoid& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
       attachSystem::ExternalCut::operator=(A);
       attachSystem::CellMap::operator=(A);
       viewRadius=A.viewRadius;
