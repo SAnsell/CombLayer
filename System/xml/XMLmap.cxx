@@ -19,14 +19,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <cmath>
-#include <fstream>
 #include <iostream>
-#include <map>
 #include <sstream>
+#include <fstream>
+#include <cmath>
+#include <vector>
+#include <map>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "XMLattribute.h"
 #include "XMLobject.h"

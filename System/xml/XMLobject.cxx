@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   xml/XMLobject.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,20 +19,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <algorithm>
-#include <boost/multi_array.hpp>
-#include <cmath>
+#include <iostream>
+#include <string>
+#include <sstream>
 #include <fstream>
 #include <functional>
-#include <iostream>
+#include <algorithm>
 #include <iterator>
-#include <map>
-#include <sstream>
-#include <string>
-#include <time.h>
-#include <typeinfo>
-#include <utility>
+#include <cmath>
 #include <vector>
+#include <map>
+#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"

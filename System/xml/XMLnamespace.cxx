@@ -335,12 +335,9 @@ matchSubGrp(XMLload& IFile,const std::string& subGrp,const std::string& Value)
 	  std::string Group;
 	  while(IFile.get(c) && isspace(c)) ;
 	  Group+=c;
-	  int cnt(0);
 	  while(IFile.get(c) && !isspace(c) && c!='>')
-	    {
-	      Group+=c;
-	      cnt++;
-	    }
+	    Group+=c;
+
 	  if (!Group.empty())
 	    {
 	      if (Group[0]=='/')
