@@ -161,7 +161,7 @@ class InjectionHall :
   double bdRoomSideWallThick;   ///< Thickness of the beam dump room side walls
   double bdRoomBackSteelThick;  ///< Beam dump room back steel layer thickness
   double bdRoomHatchLength;     ///< Length of penetration in the floor to the beam dump room
-  double bdRoomDoorWidth;      ///< Beam dump room hatch (entrance door) width
+  double bdRoomEntranceWidth;   ///< Beam dump room entrance door (floor penetration) width
   double bdRoomXStep;           ///< Beam dump room x-offset
   double bdRoomRoofLedgeWidth;  ///< beam dump roof side ledge width
   double bdRoomInnerWallThick;  ///< Thickness of inner walls

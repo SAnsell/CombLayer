@@ -230,7 +230,7 @@ InjectionHall::populate(const FuncDataBase& Control)
   bdRoomSideWallThick=Control.EvalVar<double>(keyName+"BDRoomSideWallThick");
   bdRoomBackSteelThick=Control.EvalVar<double>(keyName+"BDRoomBackSteelThick");
   bdRoomHatchLength=Control.EvalVar<double>(keyName+"BDRoomHatchLength");
-  bdRoomDoorWidth=Control.EvalVar<double>(keyName+"BDRoomDoorWidth");
+  bdRoomEntranceWidth=Control.EvalVar<double>(keyName+"BDRoomEntranceWidth");
   bdRoomXStep=Control.EvalVar<double>(keyName+"BDRoomXStep");
   bdRoomRoofLedgeWidth=Control.EvalVar<double>(keyName+"BDRoomRoofLedgeWidth");
   bdRoomInnerWallThick=Control.EvalVar<double>(keyName+"BDRoomInnerWallThick");
@@ -622,6 +622,9 @@ InjectionHall::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7612,buildIndex+7602,Y,wasteRoomWallThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7604,buildIndex+1004,Y,wasteRoomWidth);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7614,buildIndex+7604,Y,wasteRoomWallThick);
+
+  // bd room entrance
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7603,buildIndex+7504,Y,-bdRoomEntranceWidth);
 
   // bd room roof ledges
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7623,buildIndex+7503,X,-bdRoomRoofLedgeWidth);
@@ -1337,7 +1340,7 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("BDRoof",System,cellIndex++,bdRoofIronMat,0.0,HR);
 
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7563 -7564 7516 -7515");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7563 -7603 7516 -7515");
   makeCell("HatchTDC",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7563 -7593 7515 -5");
@@ -1346,7 +1349,7 @@ InjectionHall::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7593 -7594 7515 -5");
   makeCell("BDRoofTDCTDCPenetration",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7594 -7564 7515 -5");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7594 -7603 7515 -5");
   makeCell("HatchTDC",System,cellIndex++,floorMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7512 -31 7564 -7624 7515 -5"); // here
@@ -1357,7 +1360,7 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("BDRoof",System,cellIndex++,floorMat,0.0,HR);
 
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7564 -7504 -5 7516");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7603 -7504 -5 7516");
   makeCell("BDEntrance",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7521 7503 -7504 7506 -7516");
