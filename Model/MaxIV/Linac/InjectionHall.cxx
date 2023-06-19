@@ -235,7 +235,7 @@ InjectionHall::populate(const FuncDataBase& Control)
   bdRoomInnerWallLength=Control.EvalVar<double>(keyName+"BDRoomInnerWallLength");
   bdRoomTDCWidth=Control.EvalVar<double>(keyName+"BDRoomTDCWidth");
   bdRoomSPFWidth=Control.EvalVar<double>(keyName+"BDRoomSPFWidth");
-  bdRoomNewWidth=Control.EvalVar<double>(keyName+"BDRoomNewWidth");
+  bdRoomFutureWidth=Control.EvalVar<double>(keyName+"BDRoomFutureWidth");
   bdRoomRoofGapWidth=Control.EvalVar<double>(keyName+"BDRoomRoofGapWidth");
   wasteRoomLength=Control.EvalVar<double>(keyName+"WasteRoomLength");
   wasteRoomWidth=Control.EvalVar<double>(keyName+"WasteRoomWidth");
@@ -583,14 +583,14 @@ InjectionHall::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7534,buildIndex+7524,X,-bdRoomInnerWallThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7535,buildIndex+7525,X,bdRoomInnerWallThick);
 
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+7503,buildIndex+7534,X,-bdRoomNewWidth);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7503,buildIndex+7534,X,-bdRoomFutureWidth);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7504,buildIndex+7535,X,bdRoomTDCWidth);
 
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7513,buildIndex+7503,X,-bdRoomSideWallThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7514,buildIndex+7504,X,bdRoomSideWallThick);
 
   // center of the steel plate above the Future beam line beam dump
-  const double xstepFuture=bdRoomXStep-bdRoomSPFWidth/2.0-bdRoomInnerWallThick-bdRoomNewWidth/2.0;
+  const double xstepFuture=bdRoomXStep-bdRoomSPFWidth/2.0-bdRoomInnerWallThick-bdRoomFutureWidth/2.0;
   ModelSupport::buildPlane(SMap,buildIndex+7543,Origin+X*(xstepFuture-bdRoomRoofSteelWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+7544,Origin+X*(xstepFuture+bdRoomRoofSteelWidth/2.0),X);
 
@@ -1314,7 +1314,7 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("BD",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7521 -7522 7503 -7534 7506 -7516");
-  makeCell("BDNew",System,cellIndex++,voidMat,0.0,HR);
+  makeCell("BDFuture",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7521 -21 7534 -7524 7506 -7516");
   makeCell("BDInnerWall",System,cellIndex++,wallMat,0.0,HR);

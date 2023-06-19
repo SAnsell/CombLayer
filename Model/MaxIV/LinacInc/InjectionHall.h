@@ -164,9 +164,9 @@ class InjectionHall :
   double bdRoomXStep;           ///< Beam dump room x-offset
   double bdRoomInnerWallThick;  ///< Thickness of inner walls
   double bdRoomInnerWallLength; ///< Length of inner walls
-  double bdRoomTDCWidth;        ///< Width of area with the TDC beam dump
-  double bdRoomSPFWidth;        ///< Width of area with the SPF beam dump
-  double bdRoomNewWidth;        ///< Width of area with the NEW beam line beam dump
+  double bdRoomTDCWidth;        ///< Width of the beam dump area under the TDC beam dump
+  double bdRoomSPFWidth;        ///< Width of the area with the SPF beam dump
+  double bdRoomFutureWidth;     ///< Width of the area with the future beam line beam dump
   double bdRoomRoofGapWidth;    ///< Pipe gap width in the beam dump room roof
 
   double wasteRoomLength;       ///< Inner length of the radioactive waste room
