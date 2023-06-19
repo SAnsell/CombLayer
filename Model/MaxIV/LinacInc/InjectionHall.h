@@ -208,7 +208,7 @@ class InjectionHall :
  public:
 
   InjectionHall(const std::string&);
-  InjectionHall(const InjectionHall&);
+  //  InjectionHall(const InjectionHall&);
   InjectionHall& operator=(const InjectionHall&);
   virtual ~InjectionHall();
 
