@@ -74,7 +74,7 @@ class BeRef :
 
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -84,7 +84,7 @@ class BeRef :
   BeRef(const std::string&);
   BeRef(const BeRef&);
   BeRef& operator=(const BeRef&);
-  virtual ~BeRef();
+  ~BeRef() override;
 
   void globalPopulate(const FuncDataBase&);
   
@@ -95,7 +95,7 @@ class BeRef :
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

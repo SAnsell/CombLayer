@@ -51,9 +51,9 @@ class fmeshTally : public Tally
 
   explicit fmeshTally(const int);
   fmeshTally(const fmeshTally&);
-  virtual fmeshTally* clone() const; 
+  fmeshTally* clone() const override; 
   fmeshTally& operator=(const fmeshTally&);
-  virtual ~fmeshTally();
+  ~fmeshTally() override;
   
   void setType(const int);
   void setKeyWords(const std::string&);
@@ -72,10 +72,10 @@ class fmeshTally : public Tally
   /// access min/max point
   const std::array<size_t,3>& getNPt() const { return Pts; }
 
-  virtual void rotateMaster();
-  int addLine(const std::string&);
+  void rotateMaster() override;
+  int addLine(const std::string&) override;
   void writeCoordinates(std::ostream&) const;
-  virtual void write(std::ostream&) const;
+  void write(std::ostream&) const override;
   
 };
 

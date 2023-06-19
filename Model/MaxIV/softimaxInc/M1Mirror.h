@@ -80,7 +80,7 @@ class M1Mirror :
 
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -90,12 +90,12 @@ class M1Mirror :
   M1Mirror(const std::string&);
   M1Mirror(const M1Mirror&);
   M1Mirror& operator=(const M1Mirror&);
-  virtual ~M1Mirror();
+  ~M1Mirror() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

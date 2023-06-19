@@ -49,7 +49,7 @@ class elecUnit :
   /// active cells
   std::set<int> activeCells; 
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
 
   void rotateExtent();
   
@@ -59,7 +59,7 @@ class elecUnit :
   elecUnit(const std::string&,const size_t);
   elecUnit(const elecUnit&);
   elecUnit& operator=(const elecUnit&);
-  virtual ~elecUnit();
+  ~elecUnit() override;
 
   void setIndex(const size_t I) { index=I; }
   void setExtent(const double,const double,const double);
@@ -67,7 +67,7 @@ class elecUnit :
   
   using attachSystem::FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   void createAll(Simulation&,const Geometry::Vec3D&, 
    		 const Geometry::Vec3D&,const Geometry::Vec3D&,
    		 const Geometry::Vec3D&, 

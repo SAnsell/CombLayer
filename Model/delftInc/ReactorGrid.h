@@ -67,7 +67,7 @@ class ReactorGrid :
   boost::multi_array<std::string,2> GType;      ///< Grid type
   boost::multi_array<RTYPE,2> Grid;     ///< Storage of the grid [size 3]
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -79,7 +79,7 @@ class ReactorGrid :
   ReactorGrid(const std::string&);
   ReactorGrid(const ReactorGrid&);
   ReactorGrid& operator=(const ReactorGrid&);
-  virtual ~ReactorGrid();
+  ~ReactorGrid() override;
 
   void createElements(Simulation&);
 
@@ -110,7 +110,7 @@ class ReactorGrid :
   void writeFuelXML(const std::string&);
 
   using FixedComp::createAll;
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int) override;
     
 };
 

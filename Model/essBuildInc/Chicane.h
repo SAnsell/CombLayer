@@ -96,7 +96,7 @@ class Chicane :
   size_t nBlock;                   ///< Number of segments
   std::vector<chicaneUnit> CUnits; ///< Chicane units.
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   using FixedRotate::createUnitVector;
   void createUnitVector(const Bunker&,const size_t);
   
@@ -109,14 +109,14 @@ class Chicane :
   Chicane(const std::string&);
   Chicane(const Chicane&);
   Chicane& operator=(const Chicane&);
-  virtual ~Chicane();
+  ~Chicane() override;
 
 
   void buildAll(Simulation&,const Bunker&,const size_t);
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
 
 };
 

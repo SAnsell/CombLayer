@@ -51,7 +51,7 @@ class GrateMonoBoxGenerator : public VacBoxGenerator
   GrateMonoBoxGenerator();
   GrateMonoBoxGenerator(const GrateMonoBoxGenerator&);
   GrateMonoBoxGenerator& operator=(const GrateMonoBoxGenerator&);
-  virtual ~GrateMonoBoxGenerator();
+  ~GrateMonoBoxGenerator() override;
 
   void setLid(const double,const double,const double);
   

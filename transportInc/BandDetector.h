@@ -63,8 +63,8 @@ class BandDetector : public Detector
   BandDetector(const BandDetector&);
   BandDetector& operator=(const BandDetector&);
   /// Clone constructor
-  virtual BandDetector* clone() const { return new BandDetector(*this); }
-  virtual ~BandDetector();
+  BandDetector* clone() const override { return new BandDetector(*this); }
+  ~BandDetector() override;
 
   /// Access bins
   std::pair<int,int> bins() const { return std::pair<int,int>(nH,nV); }
@@ -73,12 +73,12 @@ class BandDetector : public Detector
   const Geometry::Vec3D& getCentre() const { return Cent; }
 
   Geometry::Vec3D getRandPos() const;
-  virtual double project(const MonteCarlo::particle&,
-	        MonteCarlo::particle&) const;
+  double project(const MonteCarlo::particle&,
+	        MonteCarlo::particle&) const override;
   int calcCell(const MonteCarlo::particle&,int&,int&) const;
-  void addEvent(const MonteCarlo::particle&);
+  void addEvent(const MonteCarlo::particle&) override;
 
-  void clear();
+  void clear() override;
   void setDataSize(const int,const int,const int);
   void setCentre(const Geometry::Vec3D&);
   void setEnergy(const double,const double);
@@ -87,7 +87,7 @@ class BandDetector : public Detector
   long int calcEnergyPoint(const double) const;
 
   // Output stuff
-  virtual void write(std::ostream&) const;
+  void write(std::ostream&) const override;
 };
 
 }  // NAMESPACE Transport

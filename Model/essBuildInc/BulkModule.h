@@ -51,8 +51,8 @@ class BulkModule :
   std::vector<Geometry::Vec3D> COffset;   ///< Centre offset
   std::vector<int> Mat;             ///< Default materials
 
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void populate(const FuncDataBase&) override;
+  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
 
   void createSurfaces();
   void createLinks();
@@ -63,14 +63,14 @@ class BulkModule :
   BulkModule(const std::string&);
   BulkModule(const BulkModule&);
   BulkModule& operator=(const BulkModule&);
-  virtual ~BulkModule();
+  ~BulkModule() override;
 
 
 
   void addFlightUnit(Simulation&,const attachSystem::FixedComp&);
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

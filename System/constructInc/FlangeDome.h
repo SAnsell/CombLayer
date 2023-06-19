@@ -54,7 +54,7 @@ class FlangeDome :
 
   constructSystem::portSet PSet;        ///< Port set
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -66,16 +66,16 @@ class FlangeDome :
   FlangeDome(const std::string&);
   FlangeDome(const FlangeDome&);
   FlangeDome& operator=(const FlangeDome&);
-  virtual ~FlangeDome();
+  ~FlangeDome() override;
 
   const portItem& getPort(const size_t) const;
 
-  virtual void insertInCell(MonteCarlo::Object&) const;
-  virtual void insertInCell(Simulation&,const int) const;
+  void insertInCell(MonteCarlo::Object&) const override;
+  void insertInCell(Simulation&,const int) const override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

@@ -61,7 +61,7 @@ class FlatPipe :
   int voidMat;                   ///< Void material
   int wallMat;                   ///< Pipe material
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -72,11 +72,11 @@ class FlatPipe :
   FlatPipe(const std::string&);
   FlatPipe(const FlatPipe&);
   FlatPipe& operator=(const FlatPipe&);
-  virtual ~FlatPipe();
+  ~FlatPipe() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

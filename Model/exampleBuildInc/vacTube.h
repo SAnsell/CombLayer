@@ -63,7 +63,7 @@ class vacTube :
   
   double boxWidth;    ///< Size of build zone
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   
@@ -72,11 +72,11 @@ class vacTube :
   vacTube(const std::string&);
   vacTube(const vacTube&);
   vacTube& operator=(const vacTube&);
-  virtual ~vacTube();
+  ~vacTube() override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int) override;
 
 };
 

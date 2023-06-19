@@ -65,7 +65,7 @@ class PortChicane :
   int skinMat;                    ///< plate skin material
   int wallMat;                    ///< wall material
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -76,11 +76,11 @@ class PortChicane :
   PortChicane(const std::string&);
   PortChicane(const PortChicane&);
   PortChicane& operator=(const PortChicane&);
-  virtual ~PortChicane() {}  ///< Destructor
+  ~PortChicane() override {}  ///< Destructor
 
   using attachSystem::FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 };
 
 }

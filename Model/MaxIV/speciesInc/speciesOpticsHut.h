@@ -80,7 +80,7 @@ class speciesOpticsHut :
   /// Chicanes 
   std::vector<std::shared_ptr<SimpleChicane>> PChicane;  
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -91,11 +91,11 @@ class speciesOpticsHut :
   speciesOpticsHut(const std::string&);
   speciesOpticsHut(const speciesOpticsHut&);
   speciesOpticsHut& operator=(const speciesOpticsHut&);
-  virtual ~speciesOpticsHut();
+  ~speciesOpticsHut() override;
 
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

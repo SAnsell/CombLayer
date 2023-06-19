@@ -83,7 +83,7 @@ class danmaxConnectLine :
   danmaxConnectLine(const std::string&);
   danmaxConnectLine(const danmaxConnectLine&);
   danmaxConnectLine& operator=(const danmaxConnectLine&);
-  virtual ~danmaxConnectLine();
+  ~danmaxConnectLine() override;
 
   /// Register pipe
   void registerJoinPipe(const std::shared_ptr<constructSystem::VacuumPipe>& JP)
@@ -93,7 +93,7 @@ class danmaxConnectLine :
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

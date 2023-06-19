@@ -63,9 +63,9 @@ class HighBay :
   HighBay(const std::string&);
   HighBay(const HighBay&);
   HighBay& operator=(const HighBay&);
-  virtual ~HighBay();
+  ~HighBay() override;
 
-  void createAll(Simulation&,const FixedComp&,const long int);
+  void createAll(Simulation&,const FixedComp&,const long int) override;
 
 };
 

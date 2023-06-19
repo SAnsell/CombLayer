@@ -62,7 +62,7 @@ class GuideBay :
   /// Guide units
   std::vector<std::shared_ptr<GuideItem> > GUnit;
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&);
@@ -73,7 +73,7 @@ class GuideBay :
   GuideBay(const std::string&,const size_t);
   GuideBay(const GuideBay&);
   GuideBay& operator=(const GuideBay&);
-  virtual ~GuideBay();
+  ~GuideBay() override;
 
   void setCylBoundary(const int,const int);
   /// accessor to guid units
@@ -85,7 +85,7 @@ class GuideBay :
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

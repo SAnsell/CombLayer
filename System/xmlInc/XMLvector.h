@@ -47,12 +47,12 @@ class XMLvector : public XMLobject
   XMLvector(XMLobject*,const std::string&,
 	    const V<T,Alloc>&,const V<T,Alloc>&);
   XMLvector(const XMLvector<V,T,Alloc>&);
-  XMLvector<V,T,Alloc>* clone() const;
+  XMLvector<V,T,Alloc>* clone() const override;
   XMLvector<V,T,Alloc>& operator=(const XMLvector<V,T,Alloc>&);
-  ~XMLvector();
+  ~XMLvector() override;
 
   void setComp(const V<T,Alloc>&,const V<T,Alloc>&);    ///< Assumes copy setting
-  virtual void writeXML(std::ostream&) const;     
+  void writeXML(std::ostream&) const override;     
 
   V<T,Alloc>& getX() { return X; }                  ///< Accessor to X
   V<T,Alloc>& getY() { return Y; }                  ///< Accessor to Y

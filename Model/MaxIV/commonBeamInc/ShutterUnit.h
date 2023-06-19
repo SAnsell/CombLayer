@@ -69,9 +69,9 @@ class ShutterUnit :
   int threadMat;           ///<  water material
   // Functions:
 
-  virtual void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createUnitVector(const attachSystem::FixedComp&,const long int,
-			const attachSystem::FixedComp&,const long int);
+			const attachSystem::FixedComp&,const long int) override;
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -83,12 +83,12 @@ class ShutterUnit :
   ShutterUnit(const std::string&);
   ShutterUnit(const ShutterUnit&);
   ShutterUnit& operator=(const ShutterUnit&);
-  virtual ~ShutterUnit();
+  ~ShutterUnit() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,const long int,
-		 const attachSystem::FixedComp&,const long int);
+		 const attachSystem::FixedComp&,const long int) override;
   
 };
 

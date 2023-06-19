@@ -82,7 +82,7 @@ class M1BackPlate :
 
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -92,12 +92,12 @@ class M1BackPlate :
   M1BackPlate(const std::string&);
   M1BackPlate(const M1BackPlate&);
   M1BackPlate& operator=(const M1BackPlate&);
-  virtual ~M1BackPlate();
+  ~M1BackPlate() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

@@ -82,7 +82,7 @@ class Scrapper :
   int driveMat;                 ///< drive pipe material
   int topMat;                   ///< top control material
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -93,11 +93,11 @@ class Scrapper :
   Scrapper(const std::string&,const std::string&);
   Scrapper(const Scrapper&);
   Scrapper& operator=(const Scrapper&);
-  virtual ~Scrapper();
+  ~Scrapper() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

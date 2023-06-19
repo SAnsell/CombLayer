@@ -70,7 +70,7 @@ class CorrectorMag :
   int clampMat;                    ///< clamp material
   int frameMat;                    ///< Iron material
 
-  void populate(const FuncDataBase&);  
+  void populate(const FuncDataBase&) override;  
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks(const bool);
@@ -81,11 +81,11 @@ class CorrectorMag :
   CorrectorMag(const std::string&,const std::string&);
   CorrectorMag(const CorrectorMag&);
   CorrectorMag& operator=(const CorrectorMag&);
-  virtual ~CorrectorMag();
+  ~CorrectorMag() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

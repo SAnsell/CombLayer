@@ -51,7 +51,7 @@ class insertGrid : public insertSystem::insertObject
   std::vector<int> wallMat;       ///< wall material
 
   
-  virtual void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -64,7 +64,7 @@ class insertGrid : public insertSystem::insertObject
   insertGrid(const std::string&,const std::string&);
   insertGrid(const insertGrid&);
   insertGrid& operator=(const insertGrid&);
-  virtual ~insertGrid();
+  ~insertGrid() override;
 
   void addLayer(const double,const std::string&);
   void setValues(const double,const double,const double,
@@ -78,7 +78,7 @@ class insertGrid : public insertSystem::insertObject
 		 const attachSystem::FixedComp&);
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

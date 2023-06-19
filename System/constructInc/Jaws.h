@@ -74,7 +74,7 @@ class Jaws :
   std::vector<double> jawZFrac;   ///< Layer thicknesss (fractions)
   std::vector<int> jawZMatVec;    ///<  Layer materials
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -85,11 +85,11 @@ class Jaws :
   Jaws(const std::string&);
   Jaws(const Jaws&);
   Jaws& operator=(const Jaws&);
-  virtual ~Jaws();
+  ~Jaws() override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
 
 };
 

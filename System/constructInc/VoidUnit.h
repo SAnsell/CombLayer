@@ -50,7 +50,7 @@ class VoidUnit :
   double width;                   ///< Width of the basic cut
   double length;                  ///< Length of basic cut
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -60,11 +60,11 @@ class VoidUnit :
   VoidUnit(const std::string&);
   VoidUnit(const VoidUnit&);
   VoidUnit& operator=(const VoidUnit&);
-  ~VoidUnit();
+  ~VoidUnit() override;
 
   using attachSystem::FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

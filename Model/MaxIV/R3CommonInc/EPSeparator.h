@@ -72,8 +72,8 @@ class EPSeparator : public attachSystem::FixedOffset,
   Geometry::Vec3D elecXAxis;      ///< Electron X-axis
   Geometry::Vec3D elecYAxis;      ///< Electron beam axis
 
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void populate(const FuncDataBase&) override;
+  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
   
   void createSurfaces();
   void createObjects(Simulation&);
@@ -84,14 +84,14 @@ class EPSeparator : public attachSystem::FixedOffset,
   EPSeparator(const std::string&);
   EPSeparator(const EPSeparator&);
   EPSeparator& operator=(const EPSeparator&);
-  virtual ~EPSeparator();
+  ~EPSeparator() override;
 
   void setEPOriginPair(const attachSystem::FixedComp&,const long int,
 		       const long int);
   void setEPOriginPair(const attachSystem::FixedComp&,const std::string&,
 		       const std::string&);
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

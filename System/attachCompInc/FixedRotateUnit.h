@@ -101,9 +101,9 @@ class FixedRotateUnit : public FixedRotate
 
   FixedRotateUnit(const FixedRotateUnit& A) : FixedRotate(A) {}
   FixedRotateUnit(const FixedRotate& A) : FixedRotate(A) {}
-  virtual ~FixedRotateUnit() {}     ///< Destructor
+  ~FixedRotateUnit() override {}     ///< Destructor
 
-  void createAll(Simulation&,const FixedComp&,const long int) {}
+  void createAll(Simulation&,const FixedComp&,const long int) override {}
 };
 
 }

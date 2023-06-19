@@ -60,9 +60,9 @@ class EQDetector : public attachSystem::ContainedComp,
   int leadMat;                  ///< Lead material
 
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
+			const long int) override;
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -73,11 +73,11 @@ class EQDetector : public attachSystem::ContainedComp,
   EQDetector(const std::string&);
   EQDetector(const EQDetector&);
   EQDetector& operator=(const EQDetector&);
-  virtual ~EQDetector();
+  ~EQDetector() override;
   virtual EQDetector* clone() const;
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 };
 
 }

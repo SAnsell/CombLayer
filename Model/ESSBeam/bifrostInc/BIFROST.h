@@ -193,7 +193,7 @@ class BIFROST : public attachSystem::CopiedComp
   BIFROST(const std::string&);
   BIFROST(const BIFROST&);
   BIFROST& operator=(const BIFROST&);
-  ~BIFROST();
+  ~BIFROST() override;
   
   void build(Simulation&,const GuideItem&,
 	     const Bunker&,const int);

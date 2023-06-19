@@ -49,7 +49,7 @@ class WheelBase :
   WheelBase(const std::string&);
   WheelBase(const WheelBase&);
   WheelBase& operator=(const WheelBase&);
-  virtual ~WheelBase();
+  ~WheelBase() override;
 
   void setEngActive() { engActive=1; }
   ///\cond ABSTRACT
@@ -57,8 +57,8 @@ class WheelBase :
   virtual WheelBase* clone() const =0;
   virtual double wheelHeight() const =0;
 
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int) =0;
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override =0;
   ///\endcond ABSTRACT
 };
 

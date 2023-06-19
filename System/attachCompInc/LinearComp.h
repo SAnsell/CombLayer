@@ -47,7 +47,7 @@ class LinearComp : public FixedComp
   LinearComp(const std::string&);
   LinearComp(const LinearComp&);
   LinearComp& operator=(const LinearComp&);
-  virtual ~LinearComp() {}     ///< Destructor
+  ~LinearComp() override {}     ///< Destructor
   
   
   /// Accessor to NormIn
@@ -59,7 +59,7 @@ class LinearComp : public FixedComp
   //    { return Origin; }  
 
   virtual const Geometry::Vec3D& getExitNorm() const;
-  virtual const Geometry::Vec3D& getExit() const;
+  const Geometry::Vec3D& getExit() const override;
 
   /// Accessor to output point [of actual beam]
   virtual const Geometry::Vec3D& getBeamAxis() const 

@@ -61,7 +61,7 @@ class Mirror :
 
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -71,12 +71,12 @@ class Mirror :
   Mirror(const std::string&);
   Mirror(const Mirror&);
   Mirror& operator=(const Mirror&);
-  virtual ~Mirror();
+  ~Mirror() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

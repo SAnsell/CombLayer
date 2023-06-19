@@ -51,7 +51,7 @@ class R3ChokeInsert :
 
   int plateMat;                 ///< material for plates
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -61,14 +61,14 @@ class R3ChokeInsert :
   R3ChokeInsert(const std::string&);
   R3ChokeInsert(const R3ChokeInsert&);
   R3ChokeInsert& operator=(const R3ChokeInsert&);
-  virtual ~R3ChokeInsert();
+  ~R3ChokeInsert() override;
 
   void setBladeCentre(const attachSystem::FixedComp&,const long int);
   void setBladeCentre(const Geometry::Vec3D&);
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
 
 };
 

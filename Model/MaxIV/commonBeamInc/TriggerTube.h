@@ -74,7 +74,7 @@ class TriggerTube :
   int wallMat;                  ///< main material
   int plateMat;                 ///< plate material
  
-  void populate(const FuncDataBase&);  
+  void populate(const FuncDataBase&) override;  
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -85,11 +85,11 @@ class TriggerTube :
   TriggerTube(const std::string&,const std::string&);
   TriggerTube(const TriggerTube&);
   TriggerTube& operator=(const TriggerTube&);
-  virtual ~TriggerTube();
+  ~TriggerTube() override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int) override;
 
 };
 

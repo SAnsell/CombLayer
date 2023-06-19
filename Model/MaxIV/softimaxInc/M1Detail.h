@@ -55,7 +55,7 @@ class M1Detail :
   
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -65,11 +65,11 @@ class M1Detail :
   M1Detail(const std::string&);
   M1Detail(const M1Detail&);
   M1Detail& operator=(const M1Detail&);
-  virtual ~M1Detail();
+  ~M1Detail() override;
 
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

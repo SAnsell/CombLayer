@@ -47,7 +47,7 @@ class SglLine : public Intersect
   SglLine(const int,const Vec3D&,const Vec3D&);
   SglLine(const SglLine&);
   SglLine& operator=(const SglLine&);
-  virtual ~SglLine() {}  ///< Destructor
+  ~SglLine() override {}  ///< Destructor
   SglLine& operator()(const Geometry::Vec3D&,const Geometry::Vec3D&);
 
   /// Debug function to get index
@@ -58,14 +58,14 @@ class SglLine : public Intersect
   const Geometry::Vec3D& getNorm() const { return NormV; } 
 
   /// Calc area [-ve is undefined 
-  double area() const { return -1.0;}
+  double area() const override { return -1.0;}
 
   /// calculate the centre [ Mid point of lines ]
-  Vec3D centre() const { return APt; }  
+  Vec3D centre() const override { return APt; }  
 
-  Vec3D ParamPt(const double) const;
+  Vec3D ParamPt(const double) const override;
 
-  void write(std::ostream&) const;
+  void write(std::ostream&) const override;
 };
 
 }   // NAMESPACE Geometry

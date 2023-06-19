@@ -91,7 +91,7 @@ class WrapperCell :
   WrapperCell(const std::string&,const std::string&);
   WrapperCell(const WrapperCell&);
   WrapperCell& operator=(const WrapperCell&);
-  virtual ~WrapperCell();
+  ~WrapperCell() override;
 
   void addUnit(std::shared_ptr<attachSystem::FixedComp>);
   
@@ -103,9 +103,9 @@ class WrapperCell :
 
   
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,
+  void createAll(Simulation&,
 			 const attachSystem::FixedComp&,
-			 const long int);
+			 const long int) override;
 
 };
 

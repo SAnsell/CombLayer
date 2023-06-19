@@ -124,7 +124,7 @@ class NNBAR : public attachSystem::CopiedComp
   NNBAR(const std::string&);
   NNBAR(const NNBAR&);
   NNBAR& operator=(const NNBAR&);
-  ~NNBAR();
+  ~NNBAR() override;
   
   void buildIsolated(Simulation&,const int);
   void build(Simulation&,const GuideItem&,

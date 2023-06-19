@@ -100,7 +100,7 @@ class cosaxsExptLine :
 
   void buildFilters(Simulation&);
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();
@@ -110,7 +110,7 @@ class cosaxsExptLine :
   cosaxsExptLine(const std::string&);
   cosaxsExptLine(const cosaxsExptLine&);
   cosaxsExptLine& operator=(const cosaxsExptLine&);
-  ~cosaxsExptLine();
+  ~cosaxsExptLine() override;
 
   /// Assignment to outer void
   void setOuterMat(const int M) { outerMat=M; }
@@ -125,7 +125,7 @@ class cosaxsExptLine :
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

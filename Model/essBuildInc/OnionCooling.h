@@ -31,7 +31,7 @@ class OnionCooling :
 
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&, const attachSystem::FixedComp&);
   void createLinks();
@@ -43,7 +43,7 @@ class OnionCooling :
   OnionCooling(const OnionCooling&);
   OnionCooling& operator=(const OnionCooling&);
   virtual OnionCooling* clone() const;
-  virtual ~OnionCooling();
+  ~OnionCooling() override;
 
   void setBottomSurface(const attachSystem::FixedComp& FC, const long int link);
   void setUpperSurface(const attachSystem::FixedComp& FC, const long int link);
@@ -53,7 +53,7 @@ class OnionCooling :
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int); 
+		 const long int) override; 
   
 };
 

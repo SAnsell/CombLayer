@@ -66,7 +66,7 @@ class TubeDetBox :
 
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -76,12 +76,12 @@ class TubeDetBox :
   TubeDetBox(const std::string&,const size_t);
   TubeDetBox(const TubeDetBox&);
   TubeDetBox& operator=(const TubeDetBox&);
-  virtual ~TubeDetBox();
+  ~TubeDetBox() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

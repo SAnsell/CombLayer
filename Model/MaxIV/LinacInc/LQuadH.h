@@ -42,7 +42,7 @@ class LQuadH :
  private:
   double polePitch;             // pole pitch angle
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -53,11 +53,11 @@ class LQuadH :
   LQuadH(const std::string&,const std::string&);
   LQuadH(const LQuadH&);
   LQuadH& operator=(const LQuadH&);
-  virtual ~LQuadH();
+  ~LQuadH() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

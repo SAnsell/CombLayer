@@ -62,13 +62,13 @@ class F5Collimator : public attachSystem::ContainedComp,
   F5Collimator(const std::string&);
   F5Collimator(const F5Collimator&);    
   F5Collimator& operator=(const F5Collimator&);
-  virtual ~F5Collimator();
+  ~F5Collimator() override;
   
   int getMainCell() const { return buildIndex+1; }
   virtual void addToInsertChain(attachSystem::ContainedComp&) const; 
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

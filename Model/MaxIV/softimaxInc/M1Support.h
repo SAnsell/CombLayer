@@ -55,7 +55,7 @@ class M1Support :
 
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -65,12 +65,12 @@ class M1Support :
   M1Support(const std::string&);
   M1Support(const M1Support&);
   M1Support& operator=(const M1Support&);
-  virtual ~M1Support();
+  ~M1Support() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

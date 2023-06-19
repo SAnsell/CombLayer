@@ -65,7 +65,7 @@ class EssHut :
   int feMat;                  ///< Fe layer material 
   int concMat;                ///< Second layer material
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -75,11 +75,11 @@ class EssHut :
   EssHut(const std::string&);
   EssHut(const EssHut&);
   EssHut& operator=(const EssHut&);
-  virtual ~EssHut();
+  ~EssHut() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

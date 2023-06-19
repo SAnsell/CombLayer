@@ -60,9 +60,9 @@ class Ellipsoid : public Quadratic
   Ellipsoid();
   Ellipsoid(const int,const int);
   Ellipsoid(const Ellipsoid&);
-  Ellipsoid* clone() const;
+  Ellipsoid* clone() const override;
   Ellipsoid& operator=(const Ellipsoid&);
-  virtual ~Ellipsoid();
+  ~Ellipsoid() override;
 
   bool operator==(const Ellipsoid&) const;
   bool operator!=(const Ellipsoid&) const;
@@ -70,19 +70,19 @@ class Ellipsoid : public Quadratic
   /// Effective TYPENAME 
   static std::string classType() { return "Ellipsoid"; }
   /// Public identifer
-  virtual std::string className() const { return "Ellipsoid"; }  
+  std::string className() const override { return "Ellipsoid"; }  
   /// Visitor acceptance
-  virtual void acceptVisitor(Global::BaseVisit& A) const
+  void acceptVisitor(Global::BaseVisit& A) const override
     {  A.Accept(*this); }
   /// Accept visitor for input
-  virtual void acceptVisitor(Global::BaseModVisit& A)
+  void acceptVisitor(Global::BaseModVisit& A) override
     { A.Accept(*this); }
 
-  int side(const Geometry::Vec3D&) const;
-  int onSurface(const Geometry::Vec3D&) const;
-  double distance(const Geometry::Vec3D&) const;
+  int side(const Geometry::Vec3D&) const override;
+  int onSurface(const Geometry::Vec3D&) const override;
+  double distance(const Geometry::Vec3D&) const override;
 
-  int setSurface(const std::string&);
+  int setSurface(const std::string&) override;
   int setEllipsoid(const Geometry::Vec3D&,const Geometry::Vec3D&,
 		   const Geometry::Vec3D&,const double,
 		   const double,const double);
@@ -105,17 +105,17 @@ class Ellipsoid : public Quadratic
   const Geometry::Vec3D& getCAxis() const 
     { return CAxis; }       
 
-  void setBaseEqn();
+  void setBaseEqn() override;
 
-  void mirror(const Geometry::Plane&);
-  void rotate(const Geometry::Matrix<double>&);
-  void rotate(const Geometry::Quaternion&);
-  void displace(const Geometry::Vec3D&);
+  void mirror(const Geometry::Plane&) override;
+  void rotate(const Geometry::Matrix<double>&) override;
+  void rotate(const Geometry::Quaternion&) override;
+  void displace(const Geometry::Vec3D&) override;
 
-  virtual void print() const;
+  void print() const override;
 
-  virtual void writePOVRay(std::ostream&) const;
-  virtual void write(std::ostream&) const;
+  void writePOVRay(std::ostream&) const override;
+  void write(std::ostream&) const override;
 
 
 };

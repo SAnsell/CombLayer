@@ -88,12 +88,12 @@ class SquareFMask :
   SquareFMask(const std::string&);
   SquareFMask(const SquareFMask&);
   SquareFMask& operator=(const SquareFMask&);
-  virtual ~SquareFMask() {}  ///< Destructor
+  ~SquareFMask() override {}  ///< Destructor
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

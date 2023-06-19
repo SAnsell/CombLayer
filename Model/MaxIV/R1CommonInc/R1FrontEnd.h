@@ -191,7 +191,7 @@ class R1FrontEnd :
   void processEnd(Simulation&,
 		  std::shared_ptr<attachSystem::FixedComp>);
   
-  virtual void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   virtual void createSurfaces();
   virtual void buildObjects(Simulation&);
   virtual void createLinks() =0;
@@ -201,13 +201,13 @@ class R1FrontEnd :
   R1FrontEnd(const std::string&);
   R1FrontEnd(const R1FrontEnd&);
   R1FrontEnd& operator=(const R1FrontEnd&);
-  virtual ~R1FrontEnd();
+  ~R1FrontEnd() override;
 
   /// insert a magnet cells
   void addInsertMagnetCell(const int CN) { magnetCells.emplace(CN); }
   void setStopPoint(const std::string& S) { stopPoint=S; }
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

@@ -81,9 +81,9 @@ class InnerTarget :
   size_t nLayers;               ///< number of layers
   std::vector<double> mainFrac; ///< Main fraction
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
+			const long int) override;
   
   void createSurfaces();
   void createObjects(Simulation&);
@@ -94,8 +94,8 @@ class InnerTarget :
   InnerTarget(const std::string&);
   InnerTarget(const InnerTarget&);
   InnerTarget& operator=(const InnerTarget&);
-  virtual InnerTarget* clone() const; 
-  virtual ~InnerTarget();
+  InnerTarget* clone() const override; 
+  ~InnerTarget() override;
 
   /// Main cell body
   int getMainBody() const { return buildIndex+1; }
@@ -104,9 +104,9 @@ class InnerTarget :
   void setRefPlates(const int A,const int B) 
     { frontPlate=A; backPlate=B; }
 
-  void addProtonLine(Simulation&);
+  void addProtonLine(Simulation&) override;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 
 };

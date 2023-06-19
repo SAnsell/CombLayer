@@ -57,7 +57,7 @@ class VacTank :
   int wallMat;                  ///< Material for walls
   int windowMat;                ///< Material for window
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&);
@@ -67,11 +67,11 @@ class VacTank :
   VacTank(const std::string&);
   VacTank(const VacTank&);
   VacTank& operator=(const VacTank&);
-  ~VacTank();
+  ~VacTank() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

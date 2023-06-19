@@ -77,7 +77,7 @@ class BeamDivider :
   int wallMat;                  ///< electrode material
   int flangeMat;                ///< flange material  
 
-  void populate(const FuncDataBase&);  
+  void populate(const FuncDataBase&) override;  
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -88,11 +88,11 @@ class BeamDivider :
   BeamDivider(const std::string&,const std::string&);
   BeamDivider(const BeamDivider&);
   BeamDivider& operator=(const BeamDivider&);
-  virtual ~BeamDivider();
+  ~BeamDivider() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

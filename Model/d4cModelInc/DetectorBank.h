@@ -62,9 +62,9 @@ class DetectorBank : public attachSystem::ContainedComp,
   size_t nDet;                  ///< Nmber of detectors
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
+			const long int) override;
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -75,12 +75,12 @@ class DetectorBank : public attachSystem::ContainedComp,
   DetectorBank(const size_t,const std::string&);
   DetectorBank(const DetectorBank&);
   DetectorBank& operator=(const DetectorBank&);
-  virtual ~DetectorBank();
+  ~DetectorBank() override;
 
   void createTally(Simulation&) const;
   void createTally(Transport::DetGroup&) const;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
   
 };

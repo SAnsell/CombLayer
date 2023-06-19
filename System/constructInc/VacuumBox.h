@@ -78,8 +78,8 @@ class VacuumBox :
   int voidMat;                ///< void material
   int feMat;                  ///< Fe material layer
   
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void populate(const FuncDataBase&) override;
+  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -89,11 +89,11 @@ class VacuumBox :
   VacuumBox(const std::string&,const bool =0);
   VacuumBox(const VacuumBox&);
   VacuumBox& operator=(const VacuumBox&);
-  virtual ~VacuumBox();
+  ~VacuumBox() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

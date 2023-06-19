@@ -95,7 +95,7 @@ class UndulatorVacuum :
 
   std::shared_ptr<xraySystem::FMUndulator> undulator;
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createSupport(Simulation&);
@@ -107,11 +107,11 @@ class UndulatorVacuum :
   UndulatorVacuum(const std::string&,const std::string&);
   UndulatorVacuum(const UndulatorVacuum&);
   UndulatorVacuum& operator=(const UndulatorVacuum&);
-  virtual ~UndulatorVacuum();
+  ~UndulatorVacuum() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

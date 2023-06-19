@@ -65,8 +65,8 @@ class OffsetFlangePipe :
   Geometry::Vec3D flangeAYAxis;        ///< front axis for flange
   Geometry::Vec3D flangeBYAxis;        ///< Back axis for flange
   
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void populate(const FuncDataBase&) override;
+  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -76,11 +76,11 @@ class OffsetFlangePipe :
   OffsetFlangePipe(const std::string&);
   OffsetFlangePipe(const OffsetFlangePipe&);
   OffsetFlangePipe& operator=(const OffsetFlangePipe&);
-  virtual ~OffsetFlangePipe();
+  ~OffsetFlangePipe() override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
 
 };
 

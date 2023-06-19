@@ -58,7 +58,7 @@ class HalfElectronPipe :
   Geometry::Vec3D endPoint;     ///< end point 
   Geometry::Vec3D elecAxis;     ///< axis at end point
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -68,11 +68,11 @@ public:
   HalfElectronPipe(const std::string&);
   HalfElectronPipe(const HalfElectronPipe&);
   HalfElectronPipe& operator=(const HalfElectronPipe&);
-  virtual ~HalfElectronPipe();
+  ~HalfElectronPipe() override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
 
 };
 

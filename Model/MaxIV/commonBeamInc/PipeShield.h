@@ -65,13 +65,13 @@ class PipeShield :
   PipeShield(const std::string&);
   PipeShield(const PipeShield&);
   PipeShield& operator=(const PipeShield&);
-  virtual ~PipeShield() {}  ///< Destructor
+  ~PipeShield() override {}  ///< Destructor
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

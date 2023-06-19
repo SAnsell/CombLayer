@@ -50,51 +50,51 @@ class MBrect : public Surface
 
   MBrect();
   MBrect(const MBrect&);
-  MBrect* clone() const;
+  MBrect* clone() const override;
   MBrect& operator=(const MBrect&);
   bool operator==(const MBrect&) const;
   bool operator!=(const MBrect&) const;
-  virtual ~MBrect();
+  ~MBrect() override;
 
   /// Effective TYPENAME 
   static std::string classType() { return "MBrect"; }
   /// Effective typename 
-  virtual std::string className() const { return "MBrect"; }
+  std::string className() const override { return "MBrect"; }
   /// Visitor acceptance
-  virtual void acceptVisitor(Global::BaseVisit& A) const
+  void acceptVisitor(Global::BaseVisit& A) const override
     {  A.Accept(*this); }
   /// Accept visitor for input
-  virtual void acceptVisitor(Global::BaseModVisit& A)
+  void acceptVisitor(Global::BaseModVisit& A) override
     { A.Accept(*this); }
 
   const Geometry::Vec3D& getCorner() const { return Corner; } ///< Access corner
   const Geometry::Vec3D& getLVec(const size_t) const;
   const Geometry::Plane& getPlane(const size_t) const;
 
-  int setSurface(const std::string&);
+  int setSurface(const std::string&) override;
   
   void setCorner(const Geometry::Vec3D&);
   int setMBrect(const Geometry::Vec3D&,const Geometry::Vec3D&);
   int setMBrect(const Geometry::Vec3D&,const Geometry::Vec3D&,
 		const Geometry::Vec3D&,const Geometry::Vec3D&);
-  virtual int side(const Geometry::Vec3D&) const;
-  int onSurface(const Geometry::Vec3D&) const;
+  int side(const Geometry::Vec3D&) const override;
+  int onSurface(const Geometry::Vec3D&) const override;
 
   Triple<Geometry::Vec3D> calcMainPlane() const;
   
   // stuff for finding intersections etc.
-  double distance(const Geometry::Vec3D&) const;     
-  Geometry::Vec3D surfaceNormal(const Geometry::Vec3D&) const;
+  double distance(const Geometry::Vec3D&) const override;     
+  Geometry::Vec3D surfaceNormal(const Geometry::Vec3D&) const override;
   
-  void rotate(const Geometry::Matrix<double>&);
-  void displace(const Geometry::Vec3D&);
-  void mirror(const Geometry::Plane&);
+  void rotate(const Geometry::Matrix<double>&) override;
+  void displace(const Geometry::Vec3D&) override;
+  void mirror(const Geometry::Plane&) override;
 
-  void print() const;
+  void print() const override;
 
-  virtual void writeFLUKA(std::ostream&) const;
-  virtual void writePOVRay(std::ostream&) const;
-  virtual void write(std::ostream&) const;       
+  void writeFLUKA(std::ostream&) const override;
+  void writePOVRay(std::ostream&) const override;
+  void write(std::ostream&) const override;       
 
 
 };

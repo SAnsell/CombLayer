@@ -94,7 +94,7 @@ class R1Ring :
   void createSideShields(Simulation&);
   void createFreeShields(Simulation&);
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -105,7 +105,7 @@ class R1Ring :
   R1Ring(const std::string&);
   R1Ring(const R1Ring&);
   R1Ring& operator=(const R1Ring&);
-  virtual ~R1Ring();
+  ~R1Ring() override;
 
   /// accessor to size of concave points
   size_t nConcave() const { return concaveNPoints; }
@@ -113,7 +113,7 @@ class R1Ring :
   using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

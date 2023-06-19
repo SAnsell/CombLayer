@@ -80,7 +80,7 @@ class FourPortTube :
   // extra ports to add:
   std::unique_ptr<constructSystem::portSet> PSet;
   
-  void populate(const FuncDataBase&);  
+  void populate(const FuncDataBase&) override;  
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -93,14 +93,14 @@ class FourPortTube :
   FourPortTube(const std::string&,const std::string&);
   FourPortTube(const FourPortTube&);
   FourPortTube& operator=(const FourPortTube&);
-  virtual ~FourPortTube();
+  ~FourPortTube() override;
 
   /// set to have the side void as the main void
   void setSideVoid() { sideVoidFlag=1; }
   
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int) override;
 
 };
 

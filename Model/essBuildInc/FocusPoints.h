@@ -47,9 +47,9 @@ class FocusPoints :
   double leftWidth;           ///< left displacement
   double rightWidth;          ///< right displacement
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
+			const long int) override;
   void createLinks();
   
  public:
@@ -58,10 +58,10 @@ class FocusPoints :
   FocusPoints(const FocusPoints&);
   FocusPoints& operator=(const FocusPoints&);
   virtual FocusPoints* clone() const;
-  virtual ~FocusPoints();
+  ~FocusPoints() override;
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 };
 
 }

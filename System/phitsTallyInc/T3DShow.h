@@ -42,12 +42,12 @@ class T3DShow : public phitsTally
 
   explicit T3DShow(const int);
   T3DShow(const T3DShow&) =default;
-  virtual T3DShow* clone() const; 
+  T3DShow* clone() const override; 
   T3DShow& operator=(const T3DShow&);
-  virtual ~T3DShow() =default;
+  ~T3DShow() override =default;
      
 
-  virtual void write(std::ostream&,const std::string&) const;
+  void write(std::ostream&,const std::string&) const override;
   
 };
 

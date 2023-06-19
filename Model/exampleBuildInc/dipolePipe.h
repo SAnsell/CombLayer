@@ -56,7 +56,7 @@ class dipolePipe : public attachSystem::FixedRotate,
   
   int outerMat;                     ///< coil material
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   
   void createSurfaces();
   void createObjects(Simulation&);
@@ -68,11 +68,11 @@ class dipolePipe : public attachSystem::FixedRotate,
   dipolePipe(const std::string&,const std::string&);
   dipolePipe(const dipolePipe&);
   dipolePipe& operator=(const dipolePipe&);
-  virtual ~dipolePipe();
+  ~dipolePipe() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

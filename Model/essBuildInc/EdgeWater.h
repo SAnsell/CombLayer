@@ -68,14 +68,14 @@ class EdgeWater :
   EdgeWater(const EdgeWater&);
   EdgeWater& operator=(const EdgeWater&);
   virtual EdgeWater* clone() const;
-  virtual ~EdgeWater();
+  ~EdgeWater() override;
   
-  virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
-  virtual HeadRule getLayerHR(const size_t,const long int) const;
+  Geometry::Vec3D getSurfacePoint(const size_t,const long int) const override;
+  HeadRule getLayerHR(const size_t,const long int) const override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 };
 
 }

@@ -74,7 +74,7 @@ class HeatDump :
   int waterMat;            ///<  water material
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   
   void createPairVector(const attachSystem::FixedComp&,const long int,
 			const attachSystem::FixedComp&,const long int);
@@ -90,12 +90,12 @@ class HeatDump :
   HeatDump(const std::string&);
   HeatDump(const HeatDump&);
   HeatDump& operator=(const HeatDump&);
-  virtual ~HeatDump();
+  ~HeatDump() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,const long int,
-		 const attachSystem::FixedComp&,const long int);
+		 const attachSystem::FixedComp&,const long int) override;
   
 };
 

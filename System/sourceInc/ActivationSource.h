@@ -79,8 +79,8 @@ class ActivationSource :
   ActivationSource();
   ActivationSource(const ActivationSource&);
   ActivationSource& operator=(const ActivationSource&);
-  ActivationSource* clone() const;
-  virtual ~ActivationSource();
+  ActivationSource* clone() const override;
+  ~ActivationSource() override;
 
   /// Set number of output points
   void setNPoints(const size_t N) { nPoints=N; }
@@ -98,11 +98,11 @@ class ActivationSource :
   void createAll(const Simulation&,const std::string&,
 		 const std::string&);
   
-  virtual void rotate(const localRotate&);
-  virtual void createSource(SDef::Source&) const;
-  virtual void writePHITS(std::ostream&) const;
-  virtual void writeFLUKA(std::ostream&) const;
-  virtual void write(std::ostream&) const;
+  void rotate(const localRotate&) override;
+  void createSource(SDef::Source&) const override;
+  void writePHITS(std::ostream&) const override;
+  void writeFLUKA(std::ostream&) const override;
+  void write(std::ostream&) const override;
 
 };
 

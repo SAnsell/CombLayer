@@ -71,13 +71,13 @@ class channel  :
   channel(const std::string&,const int,const int);
   channel(const channel&);
   channel& operator=(const channel&);
-  ~channel() {}   ///< Destructor
+  ~channel() override {}   ///< Destructor
 
   void setDefaultValues(const FuncDataBase&,const channel*);
   using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

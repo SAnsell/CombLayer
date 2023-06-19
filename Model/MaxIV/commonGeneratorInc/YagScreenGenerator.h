@@ -70,11 +70,11 @@ class YagScreenGenerator :
   YagScreenGenerator();
   YagScreenGenerator(const YagScreenGenerator&);
   YagScreenGenerator& operator=(const YagScreenGenerator&);
-  virtual ~YagScreenGenerator();
+  ~YagScreenGenerator() override;
 
 
-  virtual void generateScreen(FuncDataBase&,const std::string&,
-			      const bool) const;
+  void generateScreen(FuncDataBase&,const std::string&,
+			      const bool) const override;
   
 };
 

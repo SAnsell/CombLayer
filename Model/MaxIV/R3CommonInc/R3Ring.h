@@ -78,7 +78,7 @@ class R3Ring :
   void createFloor(Simulation&);
   void createDoor(Simulation&);
     
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -88,13 +88,13 @@ class R3Ring :
   R3Ring(const std::string&);
   R3Ring(const R3Ring&);
   R3Ring& operator=(const R3Ring&);
-  virtual ~R3Ring();
+  ~R3Ring() override;
 
   /// Accessor to Number of inner surfaces
   size_t getNInnerSurf() const { return  NInnerSurf; }
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

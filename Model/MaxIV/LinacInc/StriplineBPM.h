@@ -71,7 +71,7 @@ class StriplineBPM :
   int flangeMat;                ///< flange material
   int outerMat;                 ///< pipe material
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -82,11 +82,11 @@ class StriplineBPM :
   StriplineBPM(const std::string&,const std::string&);
   StriplineBPM(const StriplineBPM&);
   StriplineBPM& operator=(const StriplineBPM&);
-  virtual ~StriplineBPM();
+  ~StriplineBPM() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

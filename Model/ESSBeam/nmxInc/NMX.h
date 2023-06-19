@@ -117,7 +117,7 @@ class NMX : public attachSystem::CopiedComp
   NMX(const std::string&);
   NMX(const NMX&);
   NMX& operator=(const NMX&);
-  ~NMX();
+  ~NMX() override;
   
   void build(Simulation&,const GuideItem&,
 	     const Bunker&,const int);

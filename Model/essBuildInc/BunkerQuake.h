@@ -52,7 +52,7 @@ class BunkerQuake : public attachSystem::ContainedComp,
   BunkerQuake(const std::string&);
   BunkerQuake(const BunkerQuake&);
   BunkerQuake& operator=(const BunkerQuake&);
-  virtual ~BunkerQuake();
+  ~BunkerQuake() override;
   
   void buildAll(Simulation&,const attachSystem::FixedComp&,
 		const long int,const long int);

@@ -207,7 +207,7 @@ class softimaxOpticsLine :
 		     const long int);
   void buildExtras(Simulation&);
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();
@@ -218,7 +218,7 @@ class softimaxOpticsLine :
   softimaxOpticsLine(const std::string&);
   softimaxOpticsLine(const softimaxOpticsLine&);
   softimaxOpticsLine& operator=(const softimaxOpticsLine&);
-  ~softimaxOpticsLine();
+  ~softimaxOpticsLine() override;
   
   /// Assignment to inner void
   void setInnerMat(const int M) {  innerMat=M; }
@@ -229,7 +229,7 @@ class softimaxOpticsLine :
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

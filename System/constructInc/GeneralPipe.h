@@ -71,7 +71,7 @@ class GeneralPipe :
   GeneralPipe(const std::string&,const size_t);
   GeneralPipe(const GeneralPipe& A);
   GeneralPipe& operator=(const GeneralPipe& A);
-  virtual ~GeneralPipe() {}
+  ~GeneralPipe() override {}
 };
 
 }

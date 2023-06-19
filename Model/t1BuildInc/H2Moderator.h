@@ -71,7 +71,7 @@ class H2Moderator :
   std::map<size_t,double> modLayer;  ///< Surface modification layer
 
   void applyModification();
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
 //  void createObjects(Simulation&);
   void createObjects(Simulation&);
@@ -82,15 +82,15 @@ class H2Moderator :
   H2Moderator(const std::string&);
   H2Moderator(const H2Moderator&);
   H2Moderator& operator=(const H2Moderator&);
-  virtual ~H2Moderator();
+  ~H2Moderator() override;
 //
 //  void createAll(Simulation&,const attachSystem::FixedComp&);
-  virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
-  virtual HeadRule getLayerHR(const size_t,const long int) const;
+  Geometry::Vec3D getSurfacePoint(const size_t,const long int) const override;
+  HeadRule getLayerHR(const size_t,const long int) const override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

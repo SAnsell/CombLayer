@@ -94,8 +94,8 @@ class R3ChokeChamber :
 
   Geometry::Vec3D flangeOrg;      ///< flange origin
   
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void populate(const FuncDataBase&) override;
+  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -105,7 +105,7 @@ class R3ChokeChamber :
   R3ChokeChamber(const std::string&);
   R3ChokeChamber(const R3ChokeChamber&);
   R3ChokeChamber& operator=(const R3ChokeChamber&);
-  virtual ~R3ChokeChamber();
+  ~R3ChokeChamber() override;
 
   void setEPOriginPair(const Geometry::Vec3D&,
 		       const Geometry::Vec3D&,
@@ -117,7 +117,7 @@ class R3ChokeChamber :
 		       const std::string&,const std::string&);
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

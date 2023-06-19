@@ -63,7 +63,7 @@ class DipoleExtract :
   int wallMat;                  ///< wall material
   int outerMat;                 ///< inner material
   
-  void populate(const FuncDataBase&);  
+  void populate(const FuncDataBase&) override;  
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -73,11 +73,11 @@ class DipoleExtract :
   DipoleExtract(const std::string&);
   DipoleExtract(const DipoleExtract&);
   DipoleExtract& operator=(const DipoleExtract&);
-  virtual ~DipoleExtract();
+  ~DipoleExtract() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

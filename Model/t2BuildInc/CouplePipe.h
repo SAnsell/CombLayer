@@ -80,7 +80,7 @@ class CouplePipe :
   CouplePipe(const std::string&);
   CouplePipe(const CouplePipe&);
   CouplePipe& operator=(const CouplePipe&);
-  ~CouplePipe();
+  ~CouplePipe() override;
 
   void build(Simulation&,const attachSystem::FixedComp&,
 	     const long int,const VacVessel&);

@@ -42,9 +42,9 @@ class JawValveCylinder :
   
   double innerRadius;           ///< Void radius
   
-  virtual void populate(const FuncDataBase&);
-  virtual void createSurfaces();
-  virtual void createObjects(Simulation&);
+  void populate(const FuncDataBase&) override;
+  void createSurfaces() override;
+  void createObjects(Simulation&) override;
 
   
  public:
@@ -52,7 +52,7 @@ class JawValveCylinder :
   JawValveCylinder(const std::string&);
   JawValveCylinder(const JawValveCylinder&);
   JawValveCylinder& operator=(const JawValveCylinder&);
-  virtual ~JawValveCylinder();
+  ~JawValveCylinder() override;
 
 
 };

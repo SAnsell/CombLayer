@@ -94,7 +94,7 @@ class MLMWheelPlate :
   
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -104,12 +104,12 @@ class MLMWheelPlate :
   MLMWheelPlate(const std::string&);
   MLMWheelPlate(const MLMWheelPlate&);
   MLMWheelPlate& operator=(const MLMWheelPlate&);
-  virtual ~MLMWheelPlate();
+  ~MLMWheelPlate() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

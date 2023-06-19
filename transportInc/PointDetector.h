@@ -48,8 +48,8 @@ class PointDetector : public Detector
   PointDetector(const PointDetector&);
   PointDetector& operator=(const PointDetector&);
   /// Clone constructor
-  virtual PointDetector* clone() const { return new PointDetector(*this); }
-  virtual ~PointDetector();
+  PointDetector* clone() const override { return new PointDetector(*this); }
+  ~PointDetector() override;
 
   /// Effective typeid
   virtual std::string className() const { return "PointDetector"; }
@@ -60,20 +60,20 @@ class PointDetector : public Detector
   virtual void acceptVisitor(Global::BaseModVisit& A)
     { A.Accept(*this); }
 
-  virtual double project(const MonteCarlo::particle&,
-			 MonteCarlo::particle&) const;
+  double project(const MonteCarlo::particle&,
+			 MonteCarlo::particle&) const override;
 
-  virtual void addEvent(const MonteCarlo::particle&);
-  virtual void clear();
-  virtual void normalize(const size_t);
+  void addEvent(const MonteCarlo::particle&) override;
+  void clear() override;
+  void normalize(const size_t) override;
 
 
   void setCentre(const Geometry::Vec3D&);
   void setAngle(const double A) { angle=A; }
 
   // Output stuff
-  virtual void writeHeader(std::ostream&) const;
-  virtual void write(std::ostream&) const;
+  void writeHeader(std::ostream&) const override;
+  void write(std::ostream&) const override;
 
 };
 

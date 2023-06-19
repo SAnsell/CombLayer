@@ -44,7 +44,7 @@ class Bellows :
   Bellows(const std::string&);
   Bellows(const Bellows&);
   Bellows& operator=(const Bellows&);
-  virtual ~Bellows();
+  ~Bellows() override;
   
 };
 

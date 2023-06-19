@@ -53,8 +53,8 @@ class FlukaSource :
   std::array<unitTYPE,12> sValues;   ///< Main values
 
   
-  void populate(const ITYPE&);
-  virtual void createAll(Simulation&,const FixedComp&,const long int) {}
+  void populate(const ITYPE&) override;
+  void createAll(Simulation&,const FixedComp&,const long int) override {}
   
  public:
 
@@ -62,8 +62,8 @@ class FlukaSource :
   FlukaSource(const std::string&,const std::string&);
   FlukaSource(const FlukaSource&);
   FlukaSource& operator=(const FlukaSource&);
-  virtual FlukaSource* clone() const;
-  virtual ~FlukaSource();
+  FlukaSource* clone() const override;
+  ~FlukaSource() override;
 
   void createAll(const ITYPE&,const attachSystem::FixedComp&,
 		 const long int);
@@ -71,12 +71,12 @@ class FlukaSource :
 		 const long int);
 
   void setTDC() { sourceName="TDC"; }
-  virtual void rotate(const localRotate&);
-  virtual void createSource(SDef::Source&) const;
+  void rotate(const localRotate&) override;
+  void createSource(SDef::Source&) const override;
 
-  virtual void write(std::ostream&) const;
-  virtual void writePHITS(std::ostream&) const;
-  virtual void writeFLUKA(std::ostream&) const;
+  void write(std::ostream&) const override;
+  void writePHITS(std::ostream&) const override;
+  void writeFLUKA(std::ostream&) const override;
     
 };
 

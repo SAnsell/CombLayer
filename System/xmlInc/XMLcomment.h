@@ -55,9 +55,9 @@ class XMLcomment : public XMLobject
   XMLcomment(XMLobject*,const std::string&,const std::string&);
   XMLcomment(XMLobject*,const std::string&,const std::vector<std::string>&);
   XMLcomment(const XMLcomment&);
-  virtual XMLcomment* clone() const; 
+  XMLcomment* clone() const override; 
   XMLcomment& operator=(const XMLcomment&);     
-  virtual ~XMLcomment();
+  ~XMLcomment() override;
 
   void addLine(const std::string&);          
   void setObject(const std::vector<std::string>&);
@@ -70,7 +70,7 @@ class XMLcomment : public XMLobject
   /// Accessor to Lines (end)
   CStore::const_iterator end() const { return Comp.end(); }
 
-  void writeXML(std::ostream&) const;
+  void writeXML(std::ostream&) const override;
 
 };
 

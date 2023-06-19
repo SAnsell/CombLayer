@@ -53,16 +53,16 @@ class PStandard : public PhysCard
   PStandard(const std::string&);
   PStandard(const PStandard&);
   PStandard& operator=(const PStandard&);
-  PStandard* clone() const;
-  virtual ~PStandard();
+  PStandard* clone() const override;
+  ~PStandard() override;
 
   // NOP function from PhysCard
-  virtual void setEnergyCut(const double);
-  virtual void clear();
+  void setEnergyCut(const double) override;
+  void clear() override;
   /// Access key
-  virtual std::string getKey() const { return KeyName; }   
-  virtual bool hasElm(const std::string&) const;
-  virtual void addElm(const std::string&);  
+  std::string getKey() const override { return KeyName; }   
+  bool hasElm(const std::string&) const override;
+  void addElm(const std::string&) override;  
 
   /// Get particle count
   size_t particleCount() const { return particles.size(); } 
@@ -80,7 +80,7 @@ class PStandard : public PhysCard
 
   void addElmList(const std::string&);
 
-  virtual void write(std::ostream&) const;
+  void write(std::ostream&) const override;
   
 };
 

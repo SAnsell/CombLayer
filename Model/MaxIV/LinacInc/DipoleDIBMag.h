@@ -59,7 +59,7 @@ class DipoleDIBMag :
   int coilMat;                  ///< Coil material
   int frameMat; ///< Frame material
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -70,10 +70,10 @@ class DipoleDIBMag :
   DipoleDIBMag(const DipoleDIBMag&);
   DipoleDIBMag& operator=(const DipoleDIBMag&);
   virtual DipoleDIBMag* clone() const;
-  virtual ~DipoleDIBMag();
+  ~DipoleDIBMag() override;
 
   using FixedComp::createAll;
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int) override;
 
 };
 

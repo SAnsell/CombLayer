@@ -62,7 +62,7 @@ class BremBlock :
   int voidMat;                ///< void material
   int mainMat;                ///< main material
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -72,11 +72,11 @@ class BremBlock :
   BremBlock(const std::string&);
   BremBlock(const BremBlock&);
   BremBlock& operator=(const BremBlock&);
-  virtual ~BremBlock();
+  ~BremBlock() override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int) override;
 
 };
 

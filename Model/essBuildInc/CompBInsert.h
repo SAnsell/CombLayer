@@ -53,7 +53,7 @@ class CompBInsert :
   std::vector<double> wallThick;  ///< wall thickness
   std::vector<int> wallMat;       ///< Wall materials.
     
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&);
@@ -63,11 +63,11 @@ class CompBInsert :
   CompBInsert(const std::string&);
   CompBInsert(const CompBInsert&);
   CompBInsert& operator=(const CompBInsert&);
-  virtual ~CompBInsert();
+  ~CompBInsert() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

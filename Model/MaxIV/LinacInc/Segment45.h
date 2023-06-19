@@ -62,7 +62,7 @@ class Segment45 :
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;
   std::shared_ptr<tdcSystem::EBeamStop> beamStop;
 
-  virtual void setFrontSurfs(const std::vector<HeadRule>&) override;
+  void setFrontSurfs(const std::vector<HeadRule>&) override;
 
   void populate(const FuncDataBase&) override;
   void createSurfaces();
@@ -76,7 +76,7 @@ class Segment45 :
   Segment45(const std::string&);
   Segment45(const Segment45&);
   Segment45& operator=(const Segment45&);
-  virtual ~Segment45();
+  ~Segment45() override;
 
   void writePoints() const override;
   using FixedComp::createAll;

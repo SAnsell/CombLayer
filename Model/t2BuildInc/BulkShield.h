@@ -76,7 +76,7 @@ class BulkShield :
   // Functions:
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -88,7 +88,7 @@ class BulkShield :
   BulkShield(const std::string&);
   BulkShield(const BulkShield&);
   BulkShield& operator=(const BulkShield&);
-  virtual ~BulkShield();
+  ~BulkShield() override;
 
   void createTorpedoes(Simulation&);
   
@@ -104,7 +104,7 @@ class BulkShield :
   void beamlineZeroImp(Simulation&,const int) const;
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 
 

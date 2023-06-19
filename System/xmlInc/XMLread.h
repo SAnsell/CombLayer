@@ -49,9 +49,9 @@ class XMLread : public XMLobject
   XMLread(XMLobject*,const std::string&,
 	  const std::vector<std::string>&);
   XMLread(const XMLread&);
-  virtual XMLread* clone() const;       ///< virtual constructor
+  XMLread* clone() const override;       ///< virtual constructor
   XMLread& operator=(const XMLread&);     
-  virtual ~XMLread();
+  ~XMLread() override;
 
   void addLine(const std::string&);          
   void setObject(const std::vector<std::string>&);  
@@ -76,9 +76,9 @@ class XMLread : public XMLobject
   template<typename T> 
   int convertToObject(T&) const;
   
-  virtual int isEmpty() const { return Comp.empty(); }
+  int isEmpty() const override { return Comp.empty(); }
 
-  void writeXML(std::ostream&) const;
+  void writeXML(std::ostream&) const override;
 
 };
 

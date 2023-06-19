@@ -82,7 +82,7 @@ class VacVessel :
   int alMat;             ///< Al (inner) material
   int outMat;            ///< Al (outer) material
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
 
   void createSurfaces();
   void createLinks();
@@ -96,7 +96,7 @@ class VacVessel :
   VacVessel(const std::string&);
   VacVessel(const VacVessel&);
   VacVessel& operator=(const VacVessel&);
-  virtual ~VacVessel();
+  ~VacVessel() override;
 
   void createBoundary(const attachSystem::FixedComp&);
   void createBoundary(const attachSystem::FixedComp&,
@@ -108,7 +108,7 @@ class VacVessel :
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		const long int);
+		const long int) override;
 
 
 

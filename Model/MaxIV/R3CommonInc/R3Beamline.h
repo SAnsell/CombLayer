@@ -50,7 +50,7 @@ class R3Beamline :
   R3Beamline(const std::string&,const std::string&);
   R3Beamline(const R3Beamline&);
   R3Beamline& operator=(const R3Beamline&);
-  virtual ~R3Beamline();
+  ~R3Beamline() override;
 
   /// set ring
   void setRing(std::shared_ptr<R3Ring>& R)

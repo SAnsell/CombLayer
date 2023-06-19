@@ -54,7 +54,7 @@ class DetectorTank :
 
   int wallMat;                  ///< Material for walls
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&);
@@ -64,11 +64,11 @@ class DetectorTank :
   DetectorTank(const std::string&);
   DetectorTank(const DetectorTank&);
   DetectorTank& operator=(const DetectorTank&);
-  ~DetectorTank();
+  ~DetectorTank() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

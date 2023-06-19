@@ -50,7 +50,7 @@ class Segment44 :
   Segment44(const std::string&);
   Segment44(const Segment44&);
   Segment44& operator=(const Segment44&);
-  ~Segment44();
+  ~Segment44() override;
 
   void writePoints() const override;
   using FixedComp::createAll;

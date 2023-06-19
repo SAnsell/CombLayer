@@ -69,7 +69,7 @@ class FuelElement  : public RElement
 
   std::vector<Geometry::Vec3D> midCentre;    ///< Mid centre
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);;
   void createLinks();
@@ -88,7 +88,7 @@ class FuelElement  : public RElement
   FuelElement(const size_t,const size_t,const std::string&);
   FuelElement(const FuelElement&);
   FuelElement& operator=(const FuelElement&);
-  virtual ~FuelElement() {}   ///< Destructor
+  ~FuelElement() override {}   ///< Destructor
 
   bool isFuel(const size_t) const;
   /// Accessor to fuel material
@@ -106,8 +106,8 @@ class FuelElement  : public RElement
      { return fuelCentre; } 
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
 
 };
 

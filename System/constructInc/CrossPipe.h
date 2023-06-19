@@ -62,7 +62,7 @@ class CrossPipe :
   int feMat;                    ///< Pipe material
   int plateMat;                 ///< Plate material
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -72,11 +72,11 @@ class CrossPipe :
   CrossPipe(const std::string&);
   CrossPipe(const CrossPipe&);
   CrossPipe& operator=(const CrossPipe&);
-  virtual ~CrossPipe();
+  ~CrossPipe() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

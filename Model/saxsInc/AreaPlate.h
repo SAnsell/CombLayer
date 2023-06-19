@@ -53,7 +53,7 @@ class AreaPlate :
 
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -63,11 +63,11 @@ class AreaPlate :
   AreaPlate(const std::string&);
   AreaPlate(const AreaPlate&);
   AreaPlate& operator=(const AreaPlate&);
-  virtual ~AreaPlate();
+  ~AreaPlate() override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int) override;
   
 };
 

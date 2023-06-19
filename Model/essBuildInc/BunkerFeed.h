@@ -67,7 +67,7 @@ class BunkerFeed :
   BunkerFeed(const std::string&,const size_t);
   BunkerFeed(const BunkerFeed&);
   BunkerFeed& operator=(const BunkerFeed&);
-  ~BunkerFeed();
+  ~BunkerFeed() override;
   
   void buildAll(Simulation&,const Bunker&,
 		 const size_t,const std::string&);

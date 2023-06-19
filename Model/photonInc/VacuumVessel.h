@@ -70,7 +70,7 @@ class VacuumVessel :
   /// central port
   std::shared_ptr<constructSystem::RingFlange> CentPort;
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -81,11 +81,11 @@ class VacuumVessel :
   VacuumVessel(const std::string&);
   VacuumVessel(const VacuumVessel&);
   VacuumVessel& operator=(const VacuumVessel&);
-  virtual ~VacuumVessel();
+  ~VacuumVessel() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 };
 
 }

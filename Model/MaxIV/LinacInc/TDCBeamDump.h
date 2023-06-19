@@ -76,7 +76,7 @@ class TDCBeamDump : public attachSystem::ContainedComp,
   int extraTopPlateMat;              ///< Extra plate material (
   int carbonMat;                ///< Carbon plate material
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   using FixedRotateGroup::createUnitVector;
   void createSurfaces();
   void createObjects(Simulation&);
@@ -87,13 +87,13 @@ class TDCBeamDump : public attachSystem::ContainedComp,
   TDCBeamDump(const std::string&);
   TDCBeamDump(const TDCBeamDump&);
   TDCBeamDump& operator=(const TDCBeamDump&);
-  virtual ~TDCBeamDump();
+  ~TDCBeamDump() override;
 
   using attachSystem::FixedComp::createAll;
 
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

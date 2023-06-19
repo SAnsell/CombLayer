@@ -90,11 +90,11 @@ class Segment29 :
   Segment29(const std::string&);
   Segment29(const Segment29&);
   Segment29& operator=(const Segment29&);
-  ~Segment29();
+  ~Segment29() override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int) override;
 
 };
 

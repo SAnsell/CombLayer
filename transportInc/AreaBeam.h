@@ -58,20 +58,20 @@ class AreaBeam : public Beam
   AreaBeam(const AreaBeam&);
   AreaBeam& operator=(const AreaBeam&);
   /// Clone constructor
-  virtual Beam* clone() const { return new AreaBeam(*this); }
-  virtual ~AreaBeam();
+  Beam* clone() const override { return new AreaBeam(*this); }
+  ~AreaBeam() override;
 
   /// Effective typeid
   virtual std::string className() const { return "AreaBeam"; }
 
   /// Set Wavelength
-  virtual void setWavelength(const double W) { wavelength=W; }
+  void setWavelength(const double W) override { wavelength=W; }
 
   void setCent(const Geometry::Vec3D& C) { Cent=C; }  ///< Set Centre
   void setWidth(const double W) { Width=W; }      ///< Set width
   void setHeight(const double H) { Width=H; }     ///< Set height
   void setStart(const double Y) { startY=Y; }     ///< Set initial position 
-  void setBias(const double) {};
+  void setBias(const double) override {};
 
   double height() const { return Height; }        ///< Get height
   double width() const { return Width; }          ///< Get width
@@ -79,11 +79,11 @@ class AreaBeam : public Beam
   double getStart() const { return startY; }      ///< get Initial position
 
 
-  virtual MonteCarlo::neutron generateNeutron() const;
-  virtual MonteCarlo::photon generatePhoton() const;
+  MonteCarlo::neutron generateNeutron() const override;
+  MonteCarlo::photon generatePhoton() const override;
   
   // Output stuff
-  void write(std::ostream&) const;
+  void write(std::ostream&) const override;
 
 };
 

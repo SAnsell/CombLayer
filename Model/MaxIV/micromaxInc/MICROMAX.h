@@ -114,11 +114,11 @@ class MICROMAX : public R3Beamline
   MICROMAX(const std::string&);
   MICROMAX(const MICROMAX&);
   MICROMAX& operator=(const MICROMAX&);
-  virtual ~MICROMAX();
+  ~MICROMAX() override;
 
 
-  virtual void build(Simulation&,const attachSystem::FixedComp&,
-	     const long int);
+  void build(Simulation&,const attachSystem::FixedComp&,
+	     const long int) override;
 
 };
 

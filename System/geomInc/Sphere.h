@@ -44,36 +44,36 @@ class Sphere : public Quadratic
   Geometry::Vec3D Centre;        ///< Point for centre
   double Radius;                 ///< Radius of sphere
   
-  void rotate(const Geometry::Matrix<double>&);
-  void displace(const Geometry::Vec3D&);
-  void mirror(const Geometry::Plane&);
+  void rotate(const Geometry::Matrix<double>&) override;
+  void displace(const Geometry::Vec3D&) override;
+  void mirror(const Geometry::Plane&) override;
 
  public:
 
   Sphere();
   Sphere(const int,const int);
   Sphere(const Sphere&);
-  Sphere* clone() const;
+  Sphere* clone() const override;
   Sphere& operator=(const Sphere&);
   bool operator==(const Sphere&) const;
   bool operator!=(const Sphere&) const;
-  virtual ~Sphere();
+  ~Sphere() override;
   /// Effective TYPENAME 
   static std::string classType() { return "Sphere"; }
   /// Effective typeid
-  virtual std::string className() const 
+  std::string className() const override 
     { return "Sphere"; }
   /// Visitor acceptance
-  virtual void acceptVisitor(Global::BaseVisit& A) const
+  void acceptVisitor(Global::BaseVisit& A) const override
     {  A.Accept(*this); }
   /// Accept visitor for input
-  virtual void acceptVisitor(Global::BaseModVisit& A)
+  void acceptVisitor(Global::BaseModVisit& A) override
     { A.Accept(*this); }
 
-  int setSurface(const std::string&);
-  int side(const Geometry::Vec3D&) const;
-  int onSurface(const Geometry::Vec3D&) const;
-  double distance(const Geometry::Vec3D&) const;
+  int setSurface(const std::string&) override;
+  int side(const Geometry::Vec3D&) const override;
+  int onSurface(const Geometry::Vec3D&) const override;
+  double distance(const Geometry::Vec3D&) const override;
 
   int setSphere(const Geometry::Vec3D&,const double);
   void setCentre(const Geometry::Vec3D&);              
@@ -82,11 +82,11 @@ class Sphere : public Quadratic
   /// Get Centre
   const Geometry::Vec3D& getCentre() const { return Centre; } 
   double getRadius() const { return Radius; }          ///< Get Radius
-  void setBaseEqn();
+  void setBaseEqn() override;
 
-  virtual void writeFLUKA(std::ostream&) const;
-  virtual void writePOVRay(std::ostream&) const;
-  virtual void write(std::ostream&) const; 
+  void writeFLUKA(std::ostream&) const override;
+  void writePOVRay(std::ostream&) const override;
+  void write(std::ostream&) const override; 
 
 };
 

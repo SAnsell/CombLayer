@@ -67,7 +67,7 @@ class Matrix : public MatrixBase<T>
   Matrix(const MatrixBase<T>&);
   Matrix(const Matrix<T>&,const size_t,const size_t);
   Matrix<T>& operator=(const Matrix<T>&); 
-  virtual ~Matrix();
+  ~Matrix() override;
 
   Matrix<T>& operator+=(const MatrixBase<T>&);  
   Matrix<T> operator+(const MatrixBase<T>&) const;    

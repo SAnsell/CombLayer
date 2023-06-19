@@ -75,8 +75,8 @@ class Hut :
   int concMat;                ///< Second layer material
   int wallMat;                ///< Second layer material
   
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void populate(const FuncDataBase&) override;
+  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -86,11 +86,11 @@ class Hut :
   Hut(const std::string&);
   Hut(const Hut&);
   Hut& operator=(const Hut&);
-  virtual ~Hut();
+  ~Hut() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

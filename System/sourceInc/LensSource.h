@@ -47,18 +47,18 @@ class LensSource :
   
   double radialArea;          ///< Radial spread
 
-  void populate(const mainSystem::MITYPE&);
+  void populate(const mainSystem::MITYPE&) override;
   void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-  void rotate(const localRotate&);
+			const long int) override;
+  void rotate(const localRotate&) override;
   
  public:
 
   LensSource(const std::string&);
   LensSource(const LensSource&);
   LensSource& operator=(const LensSource&);
-  virtual LensSource* clone() const;
-  virtual ~LensSource();
+  LensSource* clone() const override;
+  ~LensSource() override;
 
 
 
@@ -66,10 +66,10 @@ class LensSource :
 		 const attachSystem::FixedComp&,
 		 const long int);
 
-  virtual void createSource(SDef::Source&) const;
-  virtual void writePHITS(std::ostream&) const;
-  virtual void writeFLUKA(std::ostream&) const;
-  virtual void write(std::ostream&) const;
+  void createSource(SDef::Source&) const override;
+  void writePHITS(std::ostream&) const override;
+  void writeFLUKA(std::ostream&) const override;
+  void write(std::ostream&) const override;
   
 
   

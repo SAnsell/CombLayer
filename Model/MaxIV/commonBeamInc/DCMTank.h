@@ -93,7 +93,7 @@ class DCMTank :
 
   bool delayPortBuild;        ///< Delay port to manual construct
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -103,15 +103,15 @@ class DCMTank :
   DCMTank(const std::string&);
   DCMTank(const DCMTank&);
   DCMTank& operator=(const DCMTank&);
-  virtual ~DCMTank();
+  ~DCMTank() override;
 
   /// Set a port delay
   void delayPorts() { delayPortBuild=1; }
   void createPorts(Simulation&);
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int) override;
 
 };
 

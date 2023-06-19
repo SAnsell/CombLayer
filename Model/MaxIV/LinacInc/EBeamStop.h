@@ -120,7 +120,7 @@ class EBeamStop :
   double shieldRoofPlateThick;  ///< Thickness of the plate above the beam stop
   int shieldBackHoleActive;     ///< Flag to build back penetration
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -131,13 +131,13 @@ class EBeamStop :
   EBeamStop(const std::string&,const std::string&);
   EBeamStop(const EBeamStop&);
   EBeamStop& operator=(const EBeamStop&);
-  virtual ~EBeamStop();
+  ~EBeamStop() override;
 
   bool isShieldActive() const { return shieldActive; }
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

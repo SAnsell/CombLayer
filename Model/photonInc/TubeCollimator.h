@@ -80,8 +80,8 @@ class TubeCollimator :
   void setBoundary(const FuncDataBase&);
   void setLayout();
   
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void populate(const FuncDataBase&) override;
+  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
   void createLinks();
 
   void createCentres();
@@ -100,11 +100,11 @@ class TubeCollimator :
   TubeCollimator(const std::string&);
   TubeCollimator(const TubeCollimator&);
   TubeCollimator& operator=(const TubeCollimator&);
-  ~TubeCollimator();
+  ~TubeCollimator() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

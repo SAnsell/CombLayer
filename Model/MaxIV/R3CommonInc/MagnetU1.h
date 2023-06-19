@@ -104,7 +104,7 @@ class MagnetU1 :
 		  const attachSystem::FixedComp&,
 		  const attachSystem::FixedComp&);
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
 
@@ -116,7 +116,7 @@ class MagnetU1 :
   MagnetU1(const std::string&);
   MagnetU1(const MagnetU1&);
   MagnetU1& operator=(const MagnetU1&);
-  virtual ~MagnetU1();
+  ~MagnetU1() override;
 
   const xraySystem::EntryPipe& getEntryPipe() const
   { return *entryPipe; }
@@ -127,7 +127,7 @@ class MagnetU1 :
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

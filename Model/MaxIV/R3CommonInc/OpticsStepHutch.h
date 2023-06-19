@@ -45,9 +45,9 @@ class OpticsStepHutch :
   double ringStepLength;          ///< Distance down hutch to step
   double ringStepWidth;           ///< Width of step from centre line
   
-  virtual void populate(const FuncDataBase&);
-  virtual void createSurfaces();
-  virtual void createObjects(Simulation&);
+  void populate(const FuncDataBase&) override;
+  void createSurfaces() override;
+  void createObjects(Simulation&) override;
   virtual void createLinks();
 
  public:
@@ -55,7 +55,7 @@ class OpticsStepHutch :
   OpticsStepHutch(const std::string&);
   OpticsStepHutch(const OpticsStepHutch&);
   OpticsStepHutch& operator=(const OpticsStepHutch&);
-  virtual ~OpticsStepHutch();
+  ~OpticsStepHutch() override;
 
 };
 

@@ -60,13 +60,13 @@ class RingFlange : public RingSeal
   RingFlange(const std::string&);
   RingFlange(const RingFlange&);
   RingFlange& operator=(const RingFlange&);
-  virtual ~RingFlange() {}  ///< Destructor
+  ~RingFlange() override {}  ///< Destructor
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
 
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

@@ -61,7 +61,7 @@ class CH4Pipe : public attachSystem::FixedComp
   double depthLen;             ///< Inner depth into moderator
   
   void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
 
   void insertPipes(Simulation&);
   void insertOuter(Simulation&,const attachSystem::FixedComp&,
@@ -72,11 +72,11 @@ class CH4Pipe : public attachSystem::FixedComp
   CH4Pipe(const std::string&);
   CH4Pipe(const CH4Pipe&);
   CH4Pipe& operator=(const CH4Pipe&);
-  ~CH4Pipe();
+  ~CH4Pipe() override;
 
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

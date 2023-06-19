@@ -77,8 +77,8 @@ class SingleChopper :
   std::shared_ptr<InnerPort> IPA;          ///< inner port
   std::shared_ptr<InnerPort> IPB;          ///< inner port
   
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void populate(const FuncDataBase&) override;
+  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -90,10 +90,10 @@ class SingleChopper :
   SingleChopper(const std::string&);
   SingleChopper(const SingleChopper&);
   SingleChopper& operator=(const SingleChopper&);
-  virtual ~SingleChopper();
+  ~SingleChopper() override;
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
   void insertAxle(Simulation&,const attachSystem::CellMap&) const;
 };

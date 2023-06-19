@@ -43,11 +43,11 @@ class cellFluxTally : public Tally
   
   explicit cellFluxTally(const int);
   cellFluxTally(const cellFluxTally&);
-  virtual cellFluxTally* clone() const; 
+  cellFluxTally* clone() const override; 
   cellFluxTally& operator=(const cellFluxTally&);
-  virtual ~cellFluxTally();
+  ~cellFluxTally() override;
   /// ClassName
-  virtual std::string className() const 
+  std::string className() const override 
       { return "cellFluxTally"; }
 
       
@@ -56,15 +56,15 @@ class cellFluxTally : public Tally
   void addIndividualCells(const std::vector<int>&);   
   std::vector<int> getCells() const;
   void clearCells();
-  virtual int setSDField(const double);
-  virtual int mergeTally(const Tally&);
+  int setSDField(const double) override;
+  int mergeTally(const Tally&) override;
 
   
-  virtual int addLine(const std::string&); 
-  virtual void renumberCell(const int,const int);
-  virtual int makeSingle();
+  int addLine(const std::string&) override; 
+  void renumberCell(const int,const int) override;
+  int makeSingle() override;
   void writeHTape(const std::string&,const std::string&) const;
-  virtual void write(std::ostream&) const;
+  void write(std::ostream&) const override;
 
   
 };

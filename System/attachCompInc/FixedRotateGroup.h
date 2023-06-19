@@ -111,7 +111,7 @@ class FixedRotateGroup  : public FixedGroup
 		   const std::string&,const size_t);
   FixedRotateGroup(const FixedRotateGroup&);
   FixedRotateGroup& operator=(const FixedRotateGroup&);
-  virtual ~FixedRotateGroup() {}     ///< Destructor
+  ~FixedRotateGroup() override {}     ///< Destructor
 
   virtual void populate(const FuncDataBase&);
   virtual void populate(const std::map<std::string,
@@ -119,15 +119,15 @@ class FixedRotateGroup  : public FixedGroup
   virtual void populate(const std::string&,const FuncDataBase&);
 
   using FixedGroup::createUnitVector;
-  virtual void createUnitVector(const std::string&,
+  void createUnitVector(const std::string&,
 				const attachSystem::FixedComp&,
-				const long int);
-  virtual void createUnitVector(const attachSystem::FixedComp&,
-				const long int);
+				const long int) override;
+  void createUnitVector(const attachSystem::FixedComp&,
+				const long int) override;
 
   using FixedGroup::secondaryUnitVector;
-  virtual void secondaryUnitVector(const attachSystem::FixedComp&,
-				   const long int);
+  void secondaryUnitVector(const attachSystem::FixedComp&,
+				   const long int) override;
 
   void applyOffset();
   void applyOffset(const std::string&);

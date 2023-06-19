@@ -49,7 +49,7 @@ protected:
   double lengthA;            ///< length to centre of turn
   double lengthB;            ///< length to cap from centre of turn
  
-  virtual void createSurfaces();
+  void createSurfaces() override;
   virtual void createLinks();
   
  public:
@@ -58,20 +58,20 @@ protected:
   anglePortItem(const std::string&,const std::string&);
   anglePortItem(const anglePortItem&);
   anglePortItem& operator=(const anglePortItem&);
-  ~anglePortItem();
+  ~anglePortItem() override;
 
   // make public as accessor function:
-  virtual void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
       
-  virtual void constructObject(Simulation&,
-		      const HeadRule&,const HeadRule&);
+  void constructObject(Simulation&,
+		      const HeadRule&,const HeadRule&) override;
   
   virtual void addFlangeCut(MonteCarlo::Object*) const;
   
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,
+  void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 				       
 };
   

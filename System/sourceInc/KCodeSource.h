@@ -56,8 +56,8 @@ class KCodeSource :
   KCodeSource(const std::string&);
   KCodeSource(const KCodeSource&);
   KCodeSource& operator=(const KCodeSource&);
-  virtual KCodeSource* clone() const;
-  virtual ~KCodeSource();
+  KCodeSource* clone() const override;
+  ~KCodeSource() override;
 
   /// accessor
   const std::string& getKeyName() {return keyName;}
@@ -65,10 +65,10 @@ class KCodeSource :
   void setKSRC(const std::vector<Geometry::Vec3D>&); 
   void setLine(const std::string&);
 
-  virtual void createSource(SDef::Source&) const { }
-  virtual void writePHITS(std::ostream&) const;
-  virtual void writeFLUKA(std::ostream&) const;
-  virtual void write(std::ostream&) const;  
+  void createSource(SDef::Source&) const override { }
+  void writePHITS(std::ostream&) const override;
+  void writeFLUKA(std::ostream&) const override;
+  void write(std::ostream&) const override;  
 };
 
 }

@@ -185,7 +185,7 @@ class FREIA : public attachSystem::CopiedComp
   FREIA(const std::string&);
   FREIA(const FREIA&);
   FREIA& operator=(const FREIA&);
-  ~FREIA();
+  ~FREIA() override;
 
   void buildIsolated(Simulation&,const int);
   void build(Simulation&,const GuideItem&,

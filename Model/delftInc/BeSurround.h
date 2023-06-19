@@ -55,7 +55,7 @@ class BeSurround :
   int mat;                      ///< Material
   int frontMat;                 ///< Front Material 
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -65,11 +65,11 @@ class BeSurround :
   BeSurround(const std::string&);
   BeSurround(const BeSurround&);
   BeSurround& operator=(const BeSurround&);
-  virtual ~BeSurround();
+  ~BeSurround() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

@@ -52,10 +52,10 @@ class TwinChopperFlat : public TwinBase
   TwinChopperFlat(const std::string&);
   TwinChopperFlat(const TwinChopperFlat&);
   TwinChopperFlat& operator=(const TwinChopperFlat&);
-  virtual ~TwinChopperFlat();
+  ~TwinChopperFlat() override;
 
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
 
 };
 

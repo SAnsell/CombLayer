@@ -59,7 +59,7 @@ class LeadPipe :
   int claddingMat;             ///< Pipe cladding material
   int flangeMat;               ///< Flange material
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -69,11 +69,11 @@ class LeadPipe :
   LeadPipe(const std::string&);
   LeadPipe(const LeadPipe&) =default;
   LeadPipe& operator=(const LeadPipe&) =default;
-  virtual ~LeadPipe();
+  ~LeadPipe() override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
 };
 
 }

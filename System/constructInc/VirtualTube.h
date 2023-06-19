@@ -73,7 +73,7 @@ class VirtualTube :
 
   virtual HeadRule makeOuterVoid(Simulation&) =0;
   
-  virtual void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   virtual void createSurfaces() =0;
   virtual void createObjects(Simulation&) =0;
   virtual void createLinks() =0;
@@ -83,7 +83,7 @@ class VirtualTube :
   VirtualTube(const std::string&);
   VirtualTube(const VirtualTube&);
   VirtualTube& operator=(const VirtualTube&);
-  virtual ~VirtualTube();
+  ~VirtualTube() override;
 
   /// Set the outer covering volume
   void setOuterVoid() { outerVoid=1; }
@@ -110,8 +110,8 @@ class VirtualTube :
 		   const HeadRule&,const HeadRule&);
   virtual void createPorts(Simulation&) =0;
 
-  virtual void insertAllInCell(Simulation&,const int) const;
-  virtual void insertAllInCell(Simulation&,const std::vector<int>&) const;
+  void insertAllInCell(Simulation&,const int) const override;
+  void insertAllInCell(Simulation&,const std::vector<int>&) const override;
   virtual void insertMainInCell(Simulation&,const int) const;
   virtual void insertMainInCell(Simulation&,const std::vector<int>&) const;
   virtual void insertPortInCell(Simulation&,const size_t,const int) const;
@@ -123,9 +123,9 @@ class VirtualTube :
   double getOuterRadius() const { return radius+wallThick; }
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,
+  void createAll(Simulation&,
 			 const attachSystem::FixedComp&,
-			 const long int);
+			 const long int) override;
 
 };
 

@@ -69,7 +69,7 @@ class cosaxsTubeNoseCone :
   int wallMat;                    ///< Wall material
   int windowMat;                  ///< Window material
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -81,10 +81,10 @@ class cosaxsTubeNoseCone :
   cosaxsTubeNoseCone(const cosaxsTubeNoseCone&);
   cosaxsTubeNoseCone& operator=(const cosaxsTubeNoseCone&);
   virtual cosaxsTubeNoseCone* clone() const;
-  virtual ~cosaxsTubeNoseCone();
+  ~cosaxsTubeNoseCone() override;
 
   using FixedComp::createAll;
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int) override;
 
 };
 

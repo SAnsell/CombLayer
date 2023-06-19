@@ -76,7 +76,7 @@ class BlockShutter :
   BlockShutter(const BlockShutter&);
   BlockShutter& operator=(const BlockShutter&);
   
-  virtual ~BlockShutter();
+  ~BlockShutter() override;
 
   Geometry::Vec3D getExitTrack() const;
   Geometry::Vec3D getExitPoint() const;
@@ -85,9 +85,9 @@ class BlockShutter :
   std::vector<Geometry::Vec3D> createBackViewPoints() const;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,
+  void createAll(Simulation&,
 			 const attachSystem::FixedComp&,
-			 const long int);
+			 const long int) override;
 
 };
 

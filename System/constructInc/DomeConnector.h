@@ -62,7 +62,7 @@ class DomeConnector :
   
   constructSystem::portSet PSet;        ///< Port set
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -75,12 +75,12 @@ class DomeConnector :
   DomeConnector(const std::string&);
   DomeConnector(const DomeConnector&);
   DomeConnector& operator=(const DomeConnector&);
-  virtual ~DomeConnector();
+  ~DomeConnector() override;
 
   const portItem& getPort(const size_t) const;
 
-  virtual void insertInCell(MonteCarlo::Object&) const;
-  virtual void insertInCell(Simulation&,const int) const;
+  void insertInCell(MonteCarlo::Object&) const override;
+  void insertInCell(Simulation&,const int) const override;
 
   /// accessor to port rotate
   void setPortRotate(const size_t I) { portRotateIndex=I; }
@@ -88,7 +88,7 @@ class DomeConnector :
   
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

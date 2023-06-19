@@ -59,7 +59,7 @@ class SqrShield :
   int skinMat;            ///< Skin material
   int voidMat;            ///< void material
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -69,15 +69,15 @@ class SqrShield :
   SqrShield(const std::string&);
   SqrShield(const SqrShield&);
   SqrShield& operator=(const SqrShield&);
-  virtual ~SqrShield();
+  ~SqrShield() override;
 
   HeadRule getInnerVoid() const;
   int getInnerMat() const { return voidMat; }
   
   /// set delay
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
 
 };
 

@@ -79,7 +79,7 @@ class MonoVessel :
   Geometry::Vec3D inPortPt;      ///< Intersection point with void cylinder
   Geometry::Vec3D outPortPt;     ///< Intersection point with void cylinder
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -89,13 +89,13 @@ class MonoVessel :
   MonoVessel(const std::string&);
   MonoVessel(const MonoVessel&);
   MonoVessel& operator=(const MonoVessel&);
-  virtual ~MonoVessel();
+  ~MonoVessel() override;
 
   void constructPorts(Simulation&);
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

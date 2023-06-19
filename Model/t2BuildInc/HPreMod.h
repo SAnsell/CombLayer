@@ -53,7 +53,7 @@ class HPreMod :
   int modMat;               ///< Moderator material
   int alMat;                ///< Al material
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -63,11 +63,11 @@ class HPreMod :
   HPreMod(const std::string&);
   HPreMod(const HPreMod&);
   HPreMod& operator=(const HPreMod&);
-  virtual ~HPreMod();
+  ~HPreMod() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

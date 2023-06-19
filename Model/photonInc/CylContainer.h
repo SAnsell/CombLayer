@@ -51,7 +51,7 @@ class CylContainer :
   int mainCell;                      ///< Main cell [centre]
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -61,19 +61,19 @@ class CylContainer :
   CylContainer(const std::string&);
   CylContainer(const CylContainer&);
   CylContainer& operator=(const CylContainer&);
-  virtual ~CylContainer();
+  ~CylContainer() override;
   virtual CylContainer* clone() const;
   
   /// Accessor to the main H2 body
   virtual int getMainBody() const { return buildIndex+1; }
 
-  virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
-  virtual HeadRule getCommonSurf(const long int) const;
-  virtual HeadRule getLayerHR(const size_t,const long int) const;
+  Geometry::Vec3D getSurfacePoint(const size_t,const long int) const override;
+  HeadRule getCommonSurf(const long int) const override;
+  HeadRule getLayerHR(const size_t,const long int) const override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

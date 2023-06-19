@@ -64,7 +64,7 @@ class ObjectTrackPlane : public ObjectTrackAct
   ObjectTrackPlane(const Geometry::Plane&);
   ObjectTrackPlane(const ObjectTrackPlane&);
   ObjectTrackPlane& operator=(const ObjectTrackPlane&);  
-  ~ObjectTrackPlane() {}
+  ~ObjectTrackPlane() override {}
 
   /// Set target point
   void setTarget(const Geometry::Plane& Pt) { TargetPlane=Pt; }
@@ -75,7 +75,7 @@ class ObjectTrackPlane : public ObjectTrackAct
   //  const std::map<int,ObjTrackItem>& getMap() const { return Items; }
 
   void createAttenPath(std::vector<long int>&,std::vector<double>&) const;
-  virtual void write(std::ostream&) const;
+  void write(std::ostream&) const override;
 
 };
 

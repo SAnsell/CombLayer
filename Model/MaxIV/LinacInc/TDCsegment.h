@@ -80,7 +80,7 @@ class TDCsegment :
   TDCsegment(const std::string&,const size_t);
   TDCsegment(const TDCsegment&);
   TDCsegment& operator=(const TDCsegment&);
-  virtual ~TDCsegment();
+  ~TDCsegment() override;
 
 
   /// has object been created:
@@ -118,8 +118,8 @@ class TDCsegment :
     (const std::vector<std::shared_ptr<attachSystem::FixedComp>>&) const;
   /// no-op write out of individual point
   virtual void writePoints() const {}
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int) =0;
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override =0;
 
 };
 

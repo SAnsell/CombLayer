@@ -64,7 +64,7 @@ class SqrFMaskGenerator :
   SqrFMaskGenerator();
   SqrFMaskGenerator(const SqrFMaskGenerator&);
   SqrFMaskGenerator& operator=(const SqrFMaskGenerator&);
-  virtual ~SqrFMaskGenerator();
+  ~SqrFMaskGenerator() override;
   
   template<typename CF> void setCF();
   template<typename CF> void setAFlangeCF();

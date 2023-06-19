@@ -69,11 +69,11 @@ class mergeTemplate : public surfDBase
   mergeTemplate();
   mergeTemplate(const mergeTemplate<T,U>&);
   mergeTemplate<T,U>& operator=(const mergeTemplate<T,U>&);
-  virtual mergeTemplate<T,U>* clone() const;
-  virtual ~mergeTemplate();
+  mergeTemplate<T,U>* clone() const override;
+  ~mergeTemplate() override;
 
   /// set surface number
-  virtual void setOutSurfNumber(const int I) { surfN=I; }
+  void setOutSurfNumber(const int I) override { surfN=I; }
   // SETTING METHODS
   void setSurfPair(const int,const int);
   void setInnerRule(const std::string&);
@@ -85,13 +85,13 @@ class mergeTemplate : public surfDBase
 
   void setDirection(const std::vector<int>&);
 
-  virtual void populate();
-  int createSurf(const double,int&) { return 0; };
+  void populate() override;
+  int createSurf(const double,int&) override { return 0; };
   int createSurfaces(const double);
-  virtual void processInnerOuter(const int,std::vector<Token>&) const;
-  virtual void process(const double,const double,HeadRule&);
+  void processInnerOuter(const int,std::vector<Token>&) const override;
+  void process(const double,const double,HeadRule&) override;
 
-  virtual void write(std::ostream&) const;
+  void write(std::ostream&) const override;
 
 };
 

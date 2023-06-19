@@ -65,7 +65,7 @@ class Rabbit :
   double capThick;              ///< Cap thickness
   int capMat;                   ///< Cap material
  
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createUnitVector(const ReactorGrid&);
 
   void createSurfaces();
@@ -77,12 +77,12 @@ class Rabbit :
   Rabbit(const std::string&,const int);
   Rabbit(const Rabbit&);
   Rabbit& operator=(const Rabbit&);
-  virtual ~Rabbit();
+  ~Rabbit() override;
 
   int build(Simulation&,const ReactorGrid&);
 
   using FixedComp::createAll;
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int) override;
   
 
 };

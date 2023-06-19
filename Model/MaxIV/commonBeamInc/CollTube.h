@@ -84,7 +84,7 @@ class CollTube :
   int wallMat;                  ///< main material
   int plateMat;                 ///< plate material
  
-  void populate(const FuncDataBase&);  
+  void populate(const FuncDataBase&) override;  
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -95,11 +95,11 @@ class CollTube :
   CollTube(const std::string&,const std::string&);
   CollTube(const CollTube&);
   CollTube& operator=(const CollTube&);
-  virtual ~CollTube();
+  ~CollTube() override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int) override;
 
 };
 

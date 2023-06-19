@@ -64,7 +64,7 @@ class simpleObj :
   int defMat;                   ///< Default material  
 
   using FixedComp::createUnitVector;
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
   void createUnitVector(const attachSystem::FixedComp&,const double,
 			const double,const double);
 
@@ -77,7 +77,7 @@ class simpleObj :
   simpleObj(const std::string&);
   simpleObj(const simpleObj&);
   simpleObj& operator=(const simpleObj&);
-  virtual ~simpleObj();
+  ~simpleObj() override;
     
   /// Set Material
   void setMat(const int M) { defMat=M; }
@@ -89,7 +89,7 @@ class simpleObj :
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const double,const double,const double);
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

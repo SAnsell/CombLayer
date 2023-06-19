@@ -81,7 +81,7 @@ class HoleShape :
   HoleShape(const std::string&);
   HoleShape(const HoleShape&);
   HoleShape& operator=(const HoleShape&);
-  virtual ~HoleShape() {}
+  ~HoleShape() override {}
 
   static size_t shapeIndex(const std::string&);
 
@@ -89,11 +89,11 @@ class HoleShape :
   /// accessor to shape
   size_t getShape() const { return shapeType; }
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

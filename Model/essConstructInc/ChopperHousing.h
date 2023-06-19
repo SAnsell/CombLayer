@@ -54,7 +54,7 @@ class ChopperHousing :
   double wallThick;             ///< wall thickness  
   int wallMat;                  ///< Wall material layer
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -64,11 +64,11 @@ class ChopperHousing :
   ChopperHousing(const std::string&);
   ChopperHousing(const ChopperHousing&);
   ChopperHousing& operator=(const ChopperHousing&);
-  virtual ~ChopperHousing();
+  ~ChopperHousing() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

@@ -55,7 +55,7 @@ class ProtonVoid :
   ProtonVoid(const std::string&);
   ProtonVoid(const ProtonVoid&);
   ProtonVoid& operator=(const ProtonVoid&);
-  ~ProtonVoid();
+  ~ProtonVoid() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

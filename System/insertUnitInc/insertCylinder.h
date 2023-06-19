@@ -44,7 +44,7 @@ class insertCylinder : public insertSystem::insertObject
   double radius;             ///< Main radius
   double length;             ///< Main distance				    
   
-  virtual void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -58,7 +58,7 @@ class insertCylinder : public insertSystem::insertObject
   insertCylinder(const std::string&,const std::string&);
   insertCylinder(const insertCylinder&);
   insertCylinder& operator=(const insertCylinder&);
-  virtual ~insertCylinder();
+  ~insertCylinder() override;
 
   void setValues(const double,const double,const int);
   void setValues(const double,const double,const std::string&);
@@ -70,7 +70,7 @@ class insertCylinder : public insertSystem::insertObject
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

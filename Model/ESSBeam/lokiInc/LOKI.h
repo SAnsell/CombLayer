@@ -168,7 +168,7 @@ class LOKI : public attachSystem::CopiedComp
   LOKI(const std::string&);
   LOKI(const LOKI&);
   LOKI& operator=(const LOKI&);
-  ~LOKI();
+  ~LOKI() override;
 
   void buildIsolated(Simulation&,const int);
   void build(Simulation&,const GuideItem&,

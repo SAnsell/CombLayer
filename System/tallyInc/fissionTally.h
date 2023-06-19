@@ -43,11 +43,11 @@ class fissionTally : public Tally
   
   explicit fissionTally(const int);
   fissionTally(const fissionTally&);
-  virtual fissionTally* clone() const; 
+  fissionTally* clone() const override; 
   fissionTally& operator=(const fissionTally&);
-  virtual ~fissionTally();
+  ~fissionTally() override;
   /// ClassName
-  virtual std::string className() const 
+  std::string className() const override 
       { return "fissionTally"; }
       
   void addCells(const std::vector<int>&);   
@@ -55,10 +55,10 @@ class fissionTally : public Tally
   std::vector<int> getCells() const;
   void clearCells();
 
-  virtual int addLine(const std::string&); 
-  virtual void renumberCell(const int,const int);
-  virtual int makeSingle();
-  virtual void write(std::ostream&) const;
+  int addLine(const std::string&) override; 
+  void renumberCell(const int,const int) override;
+  int makeSingle() override;
+  void write(std::ostream&) const override;
   
 };
 

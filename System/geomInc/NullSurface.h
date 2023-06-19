@@ -44,40 +44,40 @@ class NullSurface : public Surface
   NullSurface();
   NullSurface(const int,const int);
   NullSurface(const NullSurface&);
-  NullSurface* clone() const;
+  NullSurface* clone() const override;
   NullSurface& operator=(const NullSurface&);
   int operator==(const NullSurface&) const;
-  ~NullSurface();
+  ~NullSurface() override;
 
   /// Effective TYPENAME 
   static std::string classType() { return "NullSurface"; }
   /// Public identifier
-  virtual std::string className() const { return "NullSurface"; }
+  std::string className() const override { return "NullSurface"; }
   /// Visitor acceptance
-  virtual void acceptVisitor(Global::BaseVisit& A) const
+  void acceptVisitor(Global::BaseVisit& A) const override
     {  A.Accept(*this); }
   /// Accept visitor for input
-  virtual void acceptVisitor(Global::BaseModVisit& A)
+  void acceptVisitor(Global::BaseModVisit& A) override
     { A.Accept(*this); }
 
   /// All surfraces are not-null except nullsurf
-  virtual int isNull() { return 1; } 
-  int setSurface(const std::string&);
-  int side(const Geometry::Vec3D&) const;
-  int onSurface(const Geometry::Vec3D&) const;
-  double distance(const Geometry::Vec3D&) const;
+  int isNull() override { return 1; } 
+  int setSurface(const std::string&) override;
+  int side(const Geometry::Vec3D&) const override;
+  int onSurface(const Geometry::Vec3D&) const override;
+  double distance(const Geometry::Vec3D&) const override;
 
-  void rotate(const Geometry::Matrix<double>&);
-  void displace(const Geometry::Vec3D&);
+  void rotate(const Geometry::Matrix<double>&) override;
+  void displace(const Geometry::Vec3D&) override;
   /// Null op mirror
-  void mirror(const Geometry::Plane&) { }
-  Vec3D surfaceNormal(const Geometry::Vec3D&) const;
+  void mirror(const Geometry::Plane&) override { }
+  Vec3D surfaceNormal(const Geometry::Vec3D&) const override;
   
-  void print() const;
+  void print() const override;
 
-  virtual void writePOVRay(std::ostream&) const;
-  virtual void writeFLUKA(std::ostream&) const;
-  virtual void write(std::ostream&) const;
+  void writePOVRay(std::ostream&) const override;
+  void writeFLUKA(std::ostream&) const override;
+  void write(std::ostream&) const override;
 };
 
 }  // NAMESPACE Geometry

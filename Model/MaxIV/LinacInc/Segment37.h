@@ -51,12 +51,12 @@ class Segment37 :
   Segment37(const std::string&);
   Segment37(const Segment37&);
   Segment37& operator=(const Segment37&);
-  ~Segment37();
+  ~Segment37() override;
 
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int) override;
 
 };
 

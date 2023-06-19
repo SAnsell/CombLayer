@@ -68,7 +68,7 @@ class InnerPort :
   std::set<int> activeCells;   ///< Cells containing port
   bool calcIntersect(const Geometry::Vec3D&) const;
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -80,11 +80,11 @@ class InnerPort :
   InnerPort(const std::string&);
   InnerPort(const InnerPort&);
   InnerPort& operator=(const InnerPort&);
-  virtual ~InnerPort();
+  ~InnerPort() override;
 
   void addInnerCell(const int);
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

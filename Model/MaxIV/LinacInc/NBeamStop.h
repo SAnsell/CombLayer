@@ -65,7 +65,7 @@ class NBeamStop :
   double outerRadius;             ///< Total radius
   std::vector<coreUnit> units;    ///< different length        
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -75,10 +75,10 @@ class NBeamStop :
   NBeamStop(const std::string&);
   NBeamStop(const NBeamStop&);
   NBeamStop& operator=(const NBeamStop&);
-  virtual ~NBeamStop();
+  ~NBeamStop() override;
 
   using attachSystem::FixedComp::createAll;
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int) override;
 
 };
 

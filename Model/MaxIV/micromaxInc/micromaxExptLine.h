@@ -154,7 +154,7 @@ class micromaxExptLine :
   void constructByPassStage(Simulation&);
   
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();
@@ -164,7 +164,7 @@ class micromaxExptLine :
   micromaxExptLine(const std::string&);
   micromaxExptLine(const micromaxExptLine&);
   micromaxExptLine& operator=(const micromaxExptLine&);
-  ~micromaxExptLine();
+  ~micromaxExptLine() override;
 
   /// Assignment to outer void
   void setOuterMat(const int M) { outerMat=M; }
@@ -176,7 +176,7 @@ class micromaxExptLine :
   
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

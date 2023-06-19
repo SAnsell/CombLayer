@@ -50,16 +50,16 @@ class XMLmap : public XMLobject
   XMLmap(XMLobject*,const std::string&);
   XMLmap(XMLobject*,const std::string&,const GType&);
   XMLmap(const XMLmap<V,K,T,Comp,Alloc>&);
-  XMLmap<V,K,T,Comp,Alloc>* clone() const;
+  XMLmap<V,K,T,Comp,Alloc>* clone() const override;
   XMLmap<V,K,T,Comp,Alloc>& operator=(const XMLmap<V,K,T,Comp,Alloc>&);
-  ~XMLmap();
+  ~XMLmap() override;
 
   /// get size
   size_t getSize() const { return (!empty) ? Grid.size() : 0; }  
    
   void setComp(const GType&);    ///< Assumes copy setting
     
-  virtual void writeXML(std::ostream&) const;    
+  void writeXML(std::ostream&) const override;    
   
 };
 

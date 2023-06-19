@@ -52,7 +52,7 @@ class cosaxsTubeAirBox :
   int mainMat;                  ///< Main material
   int wallMat;                  ///< Wall material
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -63,10 +63,10 @@ class cosaxsTubeAirBox :
   cosaxsTubeAirBox(const cosaxsTubeAirBox&);
   cosaxsTubeAirBox& operator=(const cosaxsTubeAirBox&);
   virtual cosaxsTubeAirBox* clone() const;
-  virtual ~cosaxsTubeAirBox();
+  ~cosaxsTubeAirBox() override;
 
   using FixedComp::createAll;
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int) override;
 
 };
 

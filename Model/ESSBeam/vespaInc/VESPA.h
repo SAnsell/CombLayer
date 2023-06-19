@@ -256,7 +256,7 @@ class VESPA : public attachSystem::CopiedComp
   VESPA(const std::string&);
   VESPA(const VESPA&);
   VESPA& operator=(const VESPA&);
-  ~VESPA();
+  ~VESPA() override;
   
   void buildIsolated(Simulation&,const int);
   void build(Simulation&,const GuideItem&,

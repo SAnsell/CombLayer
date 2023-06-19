@@ -54,9 +54,9 @@ class WallCut : public attachSystem::FixedOffset,
   int mat;                        ///< Material  [typcially void]
   double matTemp;                 ///< Material Temp
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
+			const long int) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -66,13 +66,13 @@ class WallCut : public attachSystem::FixedOffset,
   WallCut(const std::string&,const size_t);
   WallCut(const WallCut&);
   WallCut& operator=(const WallCut&);
-  ~WallCut();
+  ~WallCut() override;
 
   void populateKey(const FuncDataBase&);
   /// Access to insert key
   const std::string& getInsertKey() const { return insertKey; }
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

@@ -168,7 +168,7 @@ class HEIMDAL : public attachSystem::CopiedComp
   HEIMDAL(const std::string&);
   HEIMDAL(const HEIMDAL&);
   HEIMDAL& operator=(const HEIMDAL&);
-  ~HEIMDAL();
+  ~HEIMDAL() override;
   
   void buildIsolated(Simulation&,const int);
   void build(Simulation&,const GuideItem&,

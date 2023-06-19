@@ -41,7 +41,7 @@ class DefElement  : public RElement
 {
  private:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -51,10 +51,10 @@ class DefElement  : public RElement
   DefElement(const size_t,const size_t,const std::string&);
   DefElement(const DefElement&);
   DefElement& operator=(const DefElement&);
-  virtual ~DefElement() {}   ///< Destructor
+  ~DefElement() override {}   ///< Destructor
 
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
 
 };
 

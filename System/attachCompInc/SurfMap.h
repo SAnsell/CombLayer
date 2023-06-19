@@ -51,7 +51,7 @@ class SurfMap : public BaseMap
   SurfMap();         
   SurfMap(const SurfMap&);
   SurfMap& operator=(const SurfMap&);
-  virtual ~SurfMap() {}     ///< Destructor
+  ~SurfMap() override {}     ///< Destructor
 
   //@{
   /*!

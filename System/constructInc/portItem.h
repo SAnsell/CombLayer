@@ -91,7 +91,7 @@ class portItem :
   portItem(const std::string&,const std::string&);
   portItem(const portItem&);
   portItem& operator=(const portItem&);
-  ~portItem();
+  ~portItem() override;
 
   // make public as accessor function:
   virtual void populate(const FuncDataBase&);
@@ -100,7 +100,7 @@ class portItem :
   double getCapLength() const
     { return std::max(capThick,0.0); }
   
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
   void setCentLine(const attachSystem::FixedComp&,
 		   const Geometry::Vec3D&,const Geometry::Vec3D&);
   void reNormZ(const Geometry::Vec3D&);
@@ -128,9 +128,9 @@ class portItem :
   void addFlangeCut(MonteCarlo::Object*) const;
   
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,
+  void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 				       
 };
   

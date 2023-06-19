@@ -77,7 +77,7 @@ class TriangleShield :
 
   void removeFrontOverLap();
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -87,12 +87,12 @@ class TriangleShield :
   TriangleShield(const std::string&);
   TriangleShield(const TriangleShield&);
   TriangleShield& operator=(const TriangleShield&);
-  virtual ~TriangleShield();
+  ~TriangleShield() override;
 
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

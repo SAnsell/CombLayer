@@ -55,7 +55,7 @@ class LocalShielding :
   std::string cType;            ///< Corner type [left,right,default="both"]
   std::string opt;              ///< Option [sideOnly,default=""]
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -67,7 +67,7 @@ class LocalShielding :
   LocalShielding(const LocalShielding&);
   LocalShielding& operator=(const LocalShielding&);
   virtual LocalShielding* clone() const;
-  virtual ~LocalShielding();
+  ~LocalShielding() override;
 
   void addUnit(const std::string&);
   void addConnection(const std::string&,const std::string&,const std::string&);
@@ -75,7 +75,7 @@ class LocalShielding :
 
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int) override;
 
 };
 

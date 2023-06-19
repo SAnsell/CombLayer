@@ -59,7 +59,7 @@ class Segment34 :
   Segment34(const std::string&);
   Segment34(const Segment34&);
   Segment34& operator=(const Segment34&);
-  ~Segment34();
+  ~Segment34() override;
 
   void writePoints() const override;
 

@@ -54,9 +54,9 @@ class makeESSBL :
   makeESSBL(const std::string&,const std::string&);
   makeESSBL(const makeESSBL&);
   makeESSBL& operator=(const makeESSBL&);
-  virtual ~makeESSBL();  
+  ~makeESSBL() override;  
 
-  virtual void build(Simulation&,const essSystem::Bunker&);
+  void build(Simulation&,const essSystem::Bunker&) override;
 
 };
 

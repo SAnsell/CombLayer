@@ -75,7 +75,7 @@ class DipoleChamber :
   int innerMat;                 ///< inner material
   int flangeMat;                ///< flange material
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -85,11 +85,11 @@ class DipoleChamber :
   DipoleChamber(const std::string&);
   DipoleChamber(const DipoleChamber&);
   DipoleChamber& operator=(const DipoleChamber&);
-  virtual ~DipoleChamber();
+  ~DipoleChamber() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

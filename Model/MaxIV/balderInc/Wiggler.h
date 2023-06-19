@@ -56,7 +56,7 @@ class Wiggler :
   int blockMat;                   ///< Block material
   
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -66,12 +66,12 @@ class Wiggler :
   Wiggler(const std::string&);
   Wiggler(const Wiggler&);
   Wiggler& operator=(const Wiggler&);
-  virtual ~Wiggler();
+  ~Wiggler() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

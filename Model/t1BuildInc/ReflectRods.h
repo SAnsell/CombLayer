@@ -87,8 +87,8 @@ class ReflectRods :
   HeadRule plateRule() const;
   void splitRefObj();
 
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void populate(const FuncDataBase&) override;
+  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
   void getZSurf();
 
   void createSurfaces();
@@ -105,7 +105,7 @@ class ReflectRods :
   ReflectRods(const std::string&,const size_t);
   ReflectRods(const ReflectRods&);
   ReflectRods& operator=(const ReflectRods&);
-  ~ReflectRods();
+  ~ReflectRods() override;
 
   void setObject(MonteCarlo::Object* QPtr) { RefObj=QPtr; }
 
@@ -117,7 +117,7 @@ class ReflectRods :
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

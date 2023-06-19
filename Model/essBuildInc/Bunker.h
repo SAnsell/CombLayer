@@ -115,7 +115,7 @@ class Bunker :
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
+			const long int) override;
 
   void createSurfaces();
   void createLinks(const attachSystem::FixedComp&,const long int);
@@ -136,7 +136,7 @@ class Bunker :
   Bunker(const std::string&);
   Bunker(const Bunker&);
   Bunker& operator=(const Bunker&);
-  virtual ~Bunker();
+  ~Bunker() override;
 
   /// Roof component
   std::shared_ptr<BunkerRoof> getRoofObj() const { return roofObj; }
@@ -158,7 +158,7 @@ class Bunker :
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 
   

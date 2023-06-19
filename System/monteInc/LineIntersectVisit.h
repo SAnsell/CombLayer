@@ -62,22 +62,22 @@ class LineIntersectVisit : public Global::BaseVisit
     LineIntersectVisit(const MonteCarlo::particle&);
 
     /// Destructor
-    virtual ~LineIntersectVisit() {};
+    ~LineIntersectVisit() override {};
 
-    void Accept(const Geometry::Surface&);
-    void Accept(const Geometry::Quadratic&);
-    void Accept(const Geometry::ArbPoly&);
-    void Accept(const Geometry::Cone&);
-    void Accept(const Geometry::CylCan&);
-    void Accept(const Geometry::Cylinder&);
-    void Accept(const Geometry::EllipticCyl&);
-    void Accept(const Geometry::General&);
-    void Accept(const Geometry::MBrect&);
-    void Accept(const Geometry::Plane&);
-    void Accept(const Geometry::Sphere&);
-    void Accept(const Geometry::Torus&);
+    void Accept(const Geometry::Surface&) override;
+    void Accept(const Geometry::Quadratic&) override;
+    void Accept(const Geometry::ArbPoly&) override;
+    void Accept(const Geometry::Cone&) override;
+    void Accept(const Geometry::CylCan&) override;
+    void Accept(const Geometry::Cylinder&) override;
+    void Accept(const Geometry::EllipticCyl&) override;
+    void Accept(const Geometry::General&) override;
+    void Accept(const Geometry::MBrect&) override;
+    void Accept(const Geometry::Plane&) override;
+    void Accept(const Geometry::Sphere&) override;
+    void Accept(const Geometry::Torus&) override;
 
-    void Accept(const HeadRule&);
+    void Accept(const HeadRule&) override;
 
     /// Clear track
     void clearTrack() 

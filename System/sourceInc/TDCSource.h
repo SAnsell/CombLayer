@@ -49,8 +49,8 @@ class TDCSource :
   double radius;
   double length;
   
-  void populate(const ITYPE&);
-  virtual void createAll(Simulation&,const FixedComp&,const long int) {}
+  void populate(const ITYPE&) override;
+  void createAll(Simulation&,const FixedComp&,const long int) override {}
   
  public:
 
@@ -58,20 +58,20 @@ class TDCSource :
   TDCSource(const std::string&,const std::string&);
   TDCSource(const TDCSource&);
   TDCSource& operator=(const TDCSource&);
-  virtual TDCSource* clone() const;
-  virtual ~TDCSource();
+  TDCSource* clone() const override;
+  ~TDCSource() override;
 
   void createAll(const ITYPE&,const attachSystem::FixedComp&,
 		 const long int);
   void createAll(const attachSystem::FixedComp&,
 		 const long int);
 
-  virtual void rotate(const localRotate&);
-  virtual void createSource(SDef::Source&) const;
+  void rotate(const localRotate&) override;
+  void createSource(SDef::Source&) const override;
 
-  virtual void write(std::ostream&) const;
-  virtual void writePHITS(std::ostream&) const;
-  virtual void writeFLUKA(std::ostream&) const;
+  void write(std::ostream&) const override;
+  void writePHITS(std::ostream&) const override;
+  void writeFLUKA(std::ostream&) const override;
     
 };
 

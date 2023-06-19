@@ -54,7 +54,7 @@ class DiskLayerMod :
   std::vector<std::vector<int>> mat;               ///< Materials 
   std::vector<std::vector<double>> temp;           ///< Temperatures
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -65,10 +65,10 @@ class DiskLayerMod :
   DiskLayerMod(const DiskLayerMod&);
   DiskLayerMod& operator=(const DiskLayerMod&);
   virtual DiskLayerMod* clone() const;
-  virtual ~DiskLayerMod();
+  ~DiskLayerMod() override;
 
-  virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
-  virtual HeadRule getLayerHR(const size_t,const long int) const;
+  Geometry::Vec3D getSurfacePoint(const size_t,const long int) const override;
+  HeadRule getLayerHR(const size_t,const long int) const override;
 
   /// total height of object
   double getHeight() const;
@@ -79,8 +79,8 @@ class DiskLayerMod :
   void setLayout(const bool,const double,const double);
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
 
 };
 

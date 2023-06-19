@@ -49,9 +49,9 @@ class B4CCollimator : public attachSystem::ContainedComp,
   int outerMat;               ///< Outer material
 
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
+			const long int) override;
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -62,11 +62,11 @@ class B4CCollimator : public attachSystem::ContainedComp,
   B4CCollimator(const std::string&);
   B4CCollimator(const B4CCollimator&);
   B4CCollimator& operator=(const B4CCollimator&);
-  virtual ~B4CCollimator();
+  ~B4CCollimator() override;
   virtual B4CCollimator* clone() const;
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 };
 
 }

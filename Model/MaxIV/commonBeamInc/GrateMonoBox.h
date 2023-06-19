@@ -84,7 +84,7 @@ class GrateMonoBox :
   int voidMat;                ///< void material
   int wallMat;                  ///< Fe material layer
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -94,13 +94,13 @@ class GrateMonoBox :
   GrateMonoBox(const std::string&);
   GrateMonoBox(const GrateMonoBox&);
   GrateMonoBox& operator=(const GrateMonoBox&);
-  virtual ~GrateMonoBox();
+  ~GrateMonoBox() override;
 
   void insertAllPorts(Simulation&,const int) const;
   void insertPorts(const size_t,Simulation&,const int) const;
 
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
 
 };
 

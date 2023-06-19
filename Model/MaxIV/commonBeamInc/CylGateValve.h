@@ -77,7 +77,7 @@ class CylGateValve :
   int driveMat;                 ///< blade material
   int wallMat;                  ///< Pipe material
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -87,11 +87,11 @@ class CylGateValve :
   CylGateValve(const std::string&);
   CylGateValve(const CylGateValve&);
   CylGateValve& operator=(const CylGateValve&);
-  virtual ~CylGateValve();
+  ~CylGateValve() override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int) override;
 
 };
 

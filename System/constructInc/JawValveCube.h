@@ -44,16 +44,16 @@ class JawValveCube :
   double height;         ///< height of inner void [full]
   double depth;          ///< Depth of inner void
   
-  virtual void populate(const FuncDataBase&);
-  virtual void createSurfaces();
-  virtual void createObjects(Simulation&);
+  void populate(const FuncDataBase&) override;
+  void createSurfaces() override;
+  void createObjects(Simulation&) override;
   
  public:
 
   JawValveCube(const std::string&);
   JawValveCube(const JawValveCube&);
   JawValveCube& operator=(const JawValveCube&);
-  virtual ~JawValveCube();
+  ~JawValveCube() override;
 
 };
 

@@ -74,9 +74,9 @@ class GratingMono :
   
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
+			const long int) override;
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -87,11 +87,11 @@ class GratingMono :
   GratingMono(const std::string&);
   GratingMono(const GratingMono&);
   GratingMono& operator=(const GratingMono&);
-  virtual ~GratingMono();
+  ~GratingMono() override;
 
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

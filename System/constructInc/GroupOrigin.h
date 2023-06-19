@@ -42,12 +42,12 @@ class GroupOrigin : public attachSystem::FixedOffset
   GroupOrigin(const std::string&);
   GroupOrigin(const GroupOrigin&);
   GroupOrigin& operator=(const GroupOrigin&);
-  virtual ~GroupOrigin();
+  ~GroupOrigin() override;
 //
 
-  virtual void createAll(Simulation&,
+  void createAll(Simulation&,
 			 const attachSystem::FixedComp&,
-			 const long int);
+			 const long int) override;
   
 };
 

@@ -86,9 +86,9 @@ class DSTerm : public DSBase
   DSTerm();
   DSTerm(const std::string&,const char);
   DSTerm(const DSTerm&);
-  DSTerm* clone() const;
+  DSTerm* clone() const override;
   DSTerm& operator=(const DSTerm&);
-  virtual ~DSTerm();
+  ~DSTerm() override;
   
   void setData(const std::vector<T>&);
   void addData(const T&);
@@ -96,7 +96,7 @@ class DSTerm : public DSBase
   std::vector<T>& getData() { return Values; }
 
   /// Specialized versions only
-  void write(const size_t,std::ostream&) const;
+  void write(const size_t,std::ostream&) const override;
 
 };
 
@@ -118,13 +118,13 @@ class DSIndex : public DSBase
   DSIndex();
   DSIndex(const std::string&);
   DSIndex(const DSIndex&);
-  DSIndex* clone() const;
+  DSIndex* clone() const override;
   DSIndex& operator=(const DSIndex&);
-  virtual ~DSIndex();
+  ~DSIndex() override;
   
   void addData(const size_t,const SrcInfo*,const SrcBias*,const SrcProb*);
 
-  void write(const size_t,std::ostream&) const;
+  void write(const size_t,std::ostream&) const override;
 };
 
 }

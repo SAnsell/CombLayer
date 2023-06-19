@@ -162,38 +162,38 @@ class Intersection : public Rule
   Intersection();
   explicit Intersection(Rule*,Rule*);
   explicit Intersection(Rule*,Rule*,Rule*);
-  Intersection* clone() const;    ///< Makes a copy of the whole downward tree
+  Intersection* clone() const override;    ///< Makes a copy of the whole downward tree
 
   Intersection(const Intersection&);
   Intersection& operator=(const Intersection&);
-  virtual ~Intersection();
+  ~Intersection() override;
 
   /// selects leaf component
-  Rule* leaf(const int ipt) const { return ipt ? B : A; }   
-  void setLeaves(Rule*,Rule*);           ///< set leaves
-  void setLeaf(Rule*,const int =0);    ///< set one leaf.
-  int findLeaf(const Rule*) const;
-  Rule* findKey(const int);
-  int isComplementary() const;
+  Rule* leaf(const int ipt) const override { return ipt ? B : A; }   
+  void setLeaves(Rule*,Rule*) override;           ///< set leaves
+  void setLeaf(Rule*,const int =0) override;    ///< set one leaf.
+  int findLeaf(const Rule*) const override;
+  Rule* findKey(const int) override;
+  int isComplementary() const override;
 
-  int type() const { return 1; }   /// effective name
+  int type() const override { return 1; }   /// effective name
 
-  virtual bool isEmpty() const;
+  bool isEmpty() const override;
   
-  virtual bool isValid(const Geometry::Vec3D&) const;
-  virtual bool isValid(const Geometry::Vec3D&,const int) const;
-  virtual bool isValid(const std::map<int,int>&) const;
-  virtual bool isValid(const Geometry::Vec3D&,
-		       const std::map<int,int>&) const;    
+  bool isValid(const Geometry::Vec3D&) const override;
+  bool isValid(const Geometry::Vec3D&,const int) const override;
+  bool isValid(const std::map<int,int>&) const override;
+  bool isValid(const Geometry::Vec3D&,
+		       const std::map<int,int>&) const override;    
 
-  int simplify();      ///< apply general intersection simplification
+  int simplify() override;      ///< apply general intersection simplification
 
-  virtual std::string display() const;
-  virtual std::string display(const Geometry::Vec3D&) const;
-  virtual std::string displayAddress() const;
-  virtual void displayVec(std::vector<Token>&) const;
-  virtual std::string displayFluka() const;
-  virtual std::string displayPOVRay() const;  
+  std::string display() const override;
+  std::string display(const Geometry::Vec3D&) const override;
+  std::string displayAddress() const override;
+  void displayVec(std::vector<Token>&) const override;
+  std::string displayFluka() const override;
+  std::string displayPOVRay() const override;  
 };
 
 
@@ -223,35 +223,35 @@ class Union : public Rule
   explicit Union(Rule*,Rule*,Rule*);
   Union(const Union&);
 
-  Union* clone() const;          
+  Union* clone() const override;          
   Union& operator=(const Union&);
-  virtual ~Union();
+  ~Union() override;
 
-  Rule* leaf(const int ipt=0) const { return ipt ? B : A; }      ///< Select a leaf component
-  void setLeaves(Rule*,Rule*);           ///< set leaves
-  void setLeaf(Rule*,const int =0);     
-  int findLeaf(const Rule*) const;
-  Rule* findKey(const int);
+  Rule* leaf(const int ipt=0) const override { return ipt ? B : A; }      ///< Select a leaf component
+  void setLeaves(Rule*,Rule*) override;           ///< set leaves
+  void setLeaf(Rule*,const int =0) override;     
+  int findLeaf(const Rule*) const override;
+  Rule* findKey(const int) override;
 
-  int isComplementary() const;
-  int type() const { return -1; }   ///< effective name
+  int isComplementary() const override;
+  int type() const override { return -1; }   ///< effective name
 
-  virtual bool isEmpty() const;
+  bool isEmpty() const override;
 
-  virtual bool isValid(const Geometry::Vec3D&) const;
-  virtual bool isValid(const Geometry::Vec3D&,const int) const;
-  virtual bool isValid(const std::map<int,int>&) const;
-  virtual bool isValid(const Geometry::Vec3D&,
-		       const std::map<int,int>&) const;    
+  bool isValid(const Geometry::Vec3D&) const override;
+  bool isValid(const Geometry::Vec3D&,const int) const override;
+  bool isValid(const std::map<int,int>&) const override;
+  bool isValid(const Geometry::Vec3D&,
+		       const std::map<int,int>&) const override;    
 
-  virtual std::string display() const;
-  virtual std::string display(const Geometry::Vec3D&) const;
-  virtual std::string displayAddress() const;
-  virtual void displayVec(std::vector<Token>&) const;
-  virtual std::string displayFluka() const;
-  virtual std::string displayPOVRay() const;
+  std::string display() const override;
+  std::string display(const Geometry::Vec3D&) const override;
+  std::string displayAddress() const override;
+  void displayVec(std::vector<Token>&) const override;
+  std::string displayFluka() const override;
+  std::string displayPOVRay() const override;
     
-  int simplify();      ///< apply general intersection simplification
+  int simplify() override;      ///< apply general intersection simplification
 
 };
 
@@ -280,45 +280,45 @@ class SurfPoint : public Rule
   SurfPoint();
   explicit SurfPoint(const Geometry::Surface*,const int);
   SurfPoint(const SurfPoint&);
-  SurfPoint* clone() const;                        
+  SurfPoint* clone() const override;                        
   SurfPoint& operator=(const SurfPoint&);
-  virtual ~SurfPoint();
+  ~SurfPoint() override;
 
-  Rule* leaf(const int) const { return 0; }   ///< No Leaves
-  void setLeaves(Rule*,Rule*);
-  void setLeaf(Rule*,const int =0);
-  int findLeaf(const Rule*) const;
-  Rule* findKey(const int);
+  Rule* leaf(const int) const override { return 0; }   ///< No Leaves
+  void setLeaves(Rule*,Rule*) override;
+  void setLeaf(Rule*,const int =0) override;
+  int findLeaf(const Rule*) const override;
+  Rule* findKey(const int) override;
 
-  int type() const { return 0; }   ///< Effective name
+  int type() const override { return 0; }   ///< Effective name
 
   void setKeyN(const int);             ///< set keyNumber
   void setKey(const Geometry::Surface*);
 
   /// alway not empty
-  virtual bool isEmpty() const { return 0; }
+  bool isEmpty() const override { return 0; }
 
-  virtual bool isValid(const Geometry::Vec3D&) const;
-  virtual bool isValid(const Geometry::Vec3D&,const int) const;
-  virtual bool isValid(const std::map<int,int>&) const;
-  virtual bool isValid(const Geometry::Vec3D&,
-		       const std::map<int,int>&) const;    
+  bool isValid(const Geometry::Vec3D&) const override;
+  bool isValid(const Geometry::Vec3D&,const int) const override;
+  bool isValid(const std::map<int,int>&) const override;
+  bool isValid(const Geometry::Vec3D&,
+		       const std::map<int,int>&) const override;    
 
   int getSign() const { return sign; }           ///< Get Sign
   int getKeyN() const { return keyN; }           ///< Get Key
   int getSignKeyN() const { return sign*keyN; }  ///< Get Signed Key
-  int simplify();
+  int simplify() override;
 
   /// Get Surface Ptr
   const Geometry::Surface* getKey() const 
     { return key; }
-  virtual std::string display() const;
-  virtual std::string display(const Geometry::Vec3D&) const;
-  virtual std::string displayAddress() const;  
-  virtual void displayVec(std::vector<Token>&) const;
+  std::string display() const override;
+  std::string display(const Geometry::Vec3D&) const override;
+  std::string displayAddress() const override;  
+  void displayVec(std::vector<Token>&) const override;
 
-  virtual std::string displayFluka() const;
-  virtual std::string displayPOVRay() const;
+  std::string displayFluka() const override;
+  std::string displayPOVRay() const override;
 };
 
 /*!
@@ -344,43 +344,43 @@ class CompObj : public Rule
   
   CompObj();
   CompObj(const CompObj&);
-  CompObj* clone() const;                        
+  CompObj* clone() const override;                        
   CompObj& operator=(const CompObj&);
-  virtual ~CompObj();
+  ~CompObj() override;
 
-  void setLeaves(Rule*,Rule*);
-  void setLeaf(Rule*,const int =0);
-  int findLeaf(const Rule*) const;
-  Rule* findKey(const int);
+  void setLeaves(Rule*,Rule*) override;
+  void setLeaf(Rule*,const int =0) override;
+  int findLeaf(const Rule*) const override;
+  Rule* findKey(const int) override;
 
   /// Is it a branched object
-  int type() const { return 0; }   
+  int type() const override { return 0; }   
   /// Complement is true
-  int isComplementary() const { return 1; }
+  int isComplementary() const override { return 1; }
 
   void setObjN(const int);             ///< set object Number
   void setObj(MonteCarlo::Object*);               ///< Set a Object state
 
 
-  virtual bool isEmpty() const;
+  bool isEmpty() const override;
 
-  virtual bool isValid(const Geometry::Vec3D&) const;
-  virtual bool isValid(const Geometry::Vec3D&,const int) const;
-  virtual bool isValid(const std::map<int,int>&) const;
-  virtual bool isValid(const Geometry::Vec3D&,
-		       const std::map<int,int>&) const;    
+  bool isValid(const Geometry::Vec3D&) const override;
+  bool isValid(const Geometry::Vec3D&,const int) const override;
+  bool isValid(const std::map<int,int>&) const override;
+  bool isValid(const Geometry::Vec3D&,
+		       const std::map<int,int>&) const override;    
 
   /// Get object number of component
   int getObjN() const { return objN; } 
-  int simplify();
+  int simplify() override;
 
   MonteCarlo::Object* getObj() const { return key; }   ///< Get Object Ptr
-  virtual std::string display() const;      
-  virtual std::string display(const Geometry::Vec3D&) const;
-  virtual std::string displayAddress() const;  
-  virtual void displayVec(std::vector<Token>&) const;
-  virtual std::string displayFluka() const;
-  virtual std::string displayPOVRay() const;
+  std::string display() const override;      
+  std::string display(const Geometry::Vec3D&) const override;
+  std::string displayAddress() const override;  
+  void displayVec(std::vector<Token>&) const override;
+  std::string displayFluka() const override;
+  std::string displayPOVRay() const override;
 };
 
 /*!
@@ -406,39 +406,39 @@ class CompGrp : public Rule
   CompGrp();
   explicit CompGrp(Rule*,Rule*);  
   CompGrp(const CompGrp&);
-  CompGrp* clone() const;                        
+  CompGrp* clone() const override;                        
   CompGrp& operator=(const CompGrp&);
-  virtual ~CompGrp();
+  ~CompGrp() override;
 
-  Rule* leaf(const int) const { return A; }   ///< selects leaf component
-  void setLeaves(Rule*,Rule*);
-  void setLeaf(Rule*,const int =0);
-  int findLeaf(const Rule*) const;
-  Rule* findKey(const int);
+  Rule* leaf(const int) const override { return A; }   ///< selects leaf component
+  void setLeaves(Rule*,Rule*) override;
+  void setLeaf(Rule*,const int =0) override;
+  int findLeaf(const Rule*) const override;
+  Rule* findKey(const int) override;
 
   /// Is it a branched object
-  int type() const { return 0; }       
+  int type() const override { return 0; }       
   /// Complementary status is true
-  int isComplementary() const { return 1; }  
+  int isComplementary() const override { return 1; }  
 
 
   /// is empty
-  virtual bool isEmpty() const { return (A && !A->isEmpty()) ? 0 : 1; }
+  bool isEmpty() const override { return (A && !A->isEmpty()) ? 0 : 1; }
 
-  virtual bool isValid(const Geometry::Vec3D&) const;
-  virtual bool isValid(const Geometry::Vec3D&,const int) const;
-  virtual bool isValid(const std::map<int,int>&) const;
-  virtual bool isValid(const Geometry::Vec3D&,
-		       const std::map<int,int>&) const;    
+  bool isValid(const Geometry::Vec3D&) const override;
+  bool isValid(const Geometry::Vec3D&,const int) const override;
+  bool isValid(const std::map<int,int>&) const override;
+  bool isValid(const Geometry::Vec3D&,
+		       const std::map<int,int>&) const override;    
 
-  int simplify();
+  int simplify() override;
 
-  virtual std::string display() const;      
-  virtual std::string display(const Geometry::Vec3D&) const;
-  virtual std::string displayAddress() const;  
-  virtual void displayVec(std::vector<Token>&) const;
-  virtual std::string displayFluka() const;
-  virtual std::string displayPOVRay() const;
+  std::string display() const override;      
+  std::string display(const Geometry::Vec3D&) const override;
+  std::string displayAddress() const override;  
+  void displayVec(std::vector<Token>&) const override;
+  std::string displayFluka() const override;
+  std::string displayPOVRay() const override;
     
 };
 
@@ -465,37 +465,37 @@ class BoolValue : public Rule
   
   explicit BoolValue(const int);
   BoolValue(const BoolValue&);
-  BoolValue* clone() const;                        
+  BoolValue* clone() const override;                        
   BoolValue& operator=(const BoolValue&);
-  virtual ~BoolValue();
+  ~BoolValue() override;
 
-  Rule* leaf(const int =0) const { return 0; } ///< No leaves
-  void setLeaves(Rule*,Rule*);
-  void setLeaf(Rule*,const int =0); 
-  int findLeaf(const Rule*) const;
-  Rule* findKey(const int) { return 0; }       ///< No key possible
+  Rule* leaf(const int =0) const override { return 0; } ///< No leaves
+  void setLeaves(Rule*,Rule*) override;
+  void setLeaf(Rule*,const int =0) override; 
+  int findLeaf(const Rule*) const override;
+  Rule* findKey(const int) override { return 0; }       ///< No key possible
 
-  int type() const { return 0; }   ///<  effective type
+  int type() const override { return 0; }   ///<  effective type
 
   /// is empty [alway - no surface]
-  virtual bool isEmpty() const { return 1 ;}
+  bool isEmpty() const override { return 1 ;}
 
-  virtual bool isValid(const Geometry::Vec3D&) const;
-  virtual bool isValid(const Geometry::Vec3D&,const int) const;
-  virtual bool isValid(const std::map<int,int>&) const;
-  virtual bool isValid(const Geometry::Vec3D&,
-		       const std::map<int,int>&) const;    
-
-
-  int simplify();                             
+  bool isValid(const Geometry::Vec3D&) const override;
+  bool isValid(const Geometry::Vec3D&,const int) const override;
+  bool isValid(const std::map<int,int>&) const override;
+  bool isValid(const Geometry::Vec3D&,
+		       const std::map<int,int>&) const override;    
 
 
-  virtual std::string display() const;
-  virtual std::string display(const Geometry::Vec3D&) const;
-  virtual std::string displayAddress() const;  
-  virtual void displayVec(std::vector<Token>&) const;
-  virtual std::string displayFluka() const;
-  virtual std::string displayPOVRay() const;
+  int simplify() override;                             
+
+
+  std::string display() const override;
+  std::string display(const Geometry::Vec3D&) const override;
+  std::string displayAddress() const override;  
+  void displayVec(std::vector<Token>&) const override;
+  std::string displayFluka() const override;
+  std::string displayPOVRay() const override;
     
 };
 

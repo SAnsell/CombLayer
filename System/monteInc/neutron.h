@@ -54,7 +54,7 @@ class neutron : public particle
   neutron(const double,const Geometry::Vec3D&,const Geometry::Vec3D&);
   neutron(const neutron&);
   neutron& operator=(const neutron&);
-  virtual ~neutron() {}  ///< Destructor
+  ~neutron() override {}  ///< Destructor
   
 };
 

@@ -43,11 +43,11 @@ class heatTally : public Tally
   
   explicit heatTally(const int);
   heatTally(const heatTally&);
-  virtual heatTally* clone() const; 
+  heatTally* clone() const override; 
   heatTally& operator=(const heatTally&);
-  virtual ~heatTally();
+  ~heatTally() override;
   /// ClassName
-  virtual std::string className() const 
+  std::string className() const override 
   { return "heatTally"; }
   
   void addCells(const std::vector<int>&);
@@ -55,9 +55,9 @@ class heatTally : public Tally
   void clearCells();
   void setPlus(const int V) { plus=V; } ///< Set the + flag
   
-  virtual void renumberCell(const int,const int);
-  virtual int addLine(const std::string&); 
-  virtual void write(std::ostream&) const;
+  void renumberCell(const int,const int) override;
+  int addLine(const std::string&) override; 
+  void write(std::ostream&) const override;
   
 };
 

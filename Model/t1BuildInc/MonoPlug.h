@@ -53,7 +53,7 @@ class MonoPlug :
 
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -63,11 +63,11 @@ class MonoPlug :
   MonoPlug(const std::string&);
   MonoPlug(const MonoPlug&);
   MonoPlug& operator=(const MonoPlug&);
-  virtual ~MonoPlug();
+  ~MonoPlug() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

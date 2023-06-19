@@ -81,7 +81,7 @@ class cosaxsTube :
 
   void createInnerObjects(Simulation&);
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -91,7 +91,7 @@ class cosaxsTube :
   cosaxsTube(const std::string&);
   cosaxsTube(const cosaxsTube&);
   cosaxsTube& operator=(const cosaxsTube&);
-  virtual ~cosaxsTube();
+  ~cosaxsTube() override;
 
   /// set delay
   void delayPorts() { delayPortFlag=1; }
@@ -101,7 +101,7 @@ class cosaxsTube :
   void setOuterMat(const int M) { outerMat=M; }
 
   using FixedComp::createAll;
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int) override;
 
 };
 

@@ -65,7 +65,7 @@ class DetectorChamber :
   int feMat;                  ///< Fe layer material 
   int concMat;                ///< Second layer material
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -75,11 +75,11 @@ class DetectorChamber :
   DetectorChamber(const std::string&);
   DetectorChamber(const DetectorChamber&);
   DetectorChamber& operator=(const DetectorChamber&);
-  virtual ~DetectorChamber();
+  ~DetectorChamber() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

@@ -46,10 +46,10 @@ class SimPOVRay : public Simulation
   SimPOVRay();
   SimPOVRay(const SimPOVRay&);
   SimPOVRay& operator=(const SimPOVRay&);
-  virtual ~SimPOVRay() {}           ///< Destructor
+  ~SimPOVRay() override {}           ///< Destructor
 
   void addTransmission(const std::string&,const double);
-  virtual void write(const std::string&) const;
+  void write(const std::string&) const override;
 
 };
 

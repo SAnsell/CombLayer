@@ -62,9 +62,9 @@ class He3Tubes : public attachSystem::ContainedComp,
   int mat;                     ///< inner material
 
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
+			const long int) override;
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -76,11 +76,11 @@ class He3Tubes : public attachSystem::ContainedComp,
   He3Tubes(const std::string&);
   He3Tubes(const He3Tubes&);
   He3Tubes& operator=(const He3Tubes&);
-  virtual ~He3Tubes();
+  ~He3Tubes() override;
   virtual He3Tubes* clone() const;
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 };
 
 }

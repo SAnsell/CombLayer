@@ -50,7 +50,7 @@ class CylFlowGuide :
   double gapWidth;                ///< Gap to allow water to flow
   size_t nBaffles;                ///< Number of baffles
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -61,7 +61,7 @@ class CylFlowGuide :
   CylFlowGuide(const CylFlowGuide&);
   CylFlowGuide& operator=(const CylFlowGuide&);
   virtual CylFlowGuide* clone() const;
-  virtual ~CylFlowGuide();
+  ~CylFlowGuide() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,attachSystem::FixedComp&,

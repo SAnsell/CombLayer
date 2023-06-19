@@ -66,7 +66,7 @@ class VacuumPipe :
 
   int outerVoid;                ///< Flag to build the outer void cell between flanges
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -76,14 +76,14 @@ class VacuumPipe :
   VacuumPipe(const std::string&);
   VacuumPipe(const VacuumPipe&);
   VacuumPipe& operator=(const VacuumPipe&);
-  virtual ~VacuumPipe();
+  ~VacuumPipe() override;
 
   void setJoinFront(const attachSystem::FixedComp&,const long int);
   void setJoinBack(const attachSystem::FixedComp&,const long int);
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
 
 };
 

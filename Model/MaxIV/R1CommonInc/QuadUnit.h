@@ -74,7 +74,7 @@ class QuadUnit :
   int wallMat;                  ///< wall material
   int flangeMat;                ///< flange material
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -84,13 +84,13 @@ class QuadUnit :
   QuadUnit(const std::string&);
   QuadUnit(const QuadUnit&);
   QuadUnit& operator=(const QuadUnit&);
-  virtual ~QuadUnit();
+  ~QuadUnit() override;
 
   void createQuads(Simulation&,const int);
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

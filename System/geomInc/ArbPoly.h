@@ -53,21 +53,21 @@ class ArbPoly : public Surface
 
   ArbPoly();
   ArbPoly(const ArbPoly&);
-  ArbPoly* clone() const;
+  ArbPoly* clone() const override;
   ArbPoly& operator=(const ArbPoly&);
   bool operator==(const ArbPoly&) const;
   bool operator!=(const ArbPoly&) const;
-  virtual ~ArbPoly();
+  ~ArbPoly() override;
 
   /// Effective TYPENAME 
   static std::string classType() { return "ArbPoly"; }
   /// Effective typeid
-  virtual std::string className() const { return "ArbPoly"; }
+  std::string className() const override { return "ArbPoly"; }
   /// Visitor acceptance
-  virtual void acceptVisitor(Global::BaseVisit& A) const
+  void acceptVisitor(Global::BaseVisit& A) const override
     {  A.Accept(*this); }
   /// Accept visitor for input
-  virtual void acceptVisitor(Global::BaseModVisit& A)
+  void acceptVisitor(Global::BaseModVisit& A) override
     { A.Accept(*this); }
 
   size_t getNSurf() const { return nSurface; }   ///< Number of surface
@@ -75,24 +75,24 @@ class ArbPoly : public Surface
   const std::vector<size_t>& getCIndex(const size_t) const;
   const Geometry::Plane& getPlane(const size_t) const;
   
-  int setSurface(const std::string&);
+  int setSurface(const std::string&) override;
   
-  virtual int side(const Geometry::Vec3D&) const;
-  int onSurface(const Geometry::Vec3D&) const;
+  int side(const Geometry::Vec3D&) const override;
+  int onSurface(const Geometry::Vec3D&) const override;
 
   // stuff for finding intersections etc.
-  double distance(const Geometry::Vec3D&) const;     
-  Geometry::Vec3D surfaceNormal(const Geometry::Vec3D&) const;
+  double distance(const Geometry::Vec3D&) const override;     
+  Geometry::Vec3D surfaceNormal(const Geometry::Vec3D&) const override;
   
-  void rotate(const Geometry::Matrix<double>&);
-  void displace(const Geometry::Vec3D&);
-  void mirror(const Geometry::Plane&);
+  void rotate(const Geometry::Matrix<double>&) override;
+  void displace(const Geometry::Vec3D&) override;
+  void mirror(const Geometry::Plane&) override;
 
-  void print() const;
+  void print() const override;
 
-  virtual void writeFLUKA(std::ostream&) const;
-  virtual void writePOVRay(std::ostream&) const;        
-  void write(std::ostream&) const;        
+  void writeFLUKA(std::ostream&) const override;
+  void writePOVRay(std::ostream&) const override;        
+  void write(std::ostream&) const override;        
 };
 
 }  // NAMESPACE Geometry

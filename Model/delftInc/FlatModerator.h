@@ -62,7 +62,7 @@ class FlatModerator : public virtualMod
   int gasMat;               ///< Moderator material
   int alMat;                ///< Al material
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -72,13 +72,13 @@ class FlatModerator : public virtualMod
   FlatModerator(const std::string&);
   FlatModerator(const FlatModerator&);
   FlatModerator& operator=(const FlatModerator&);
-  virtual FlatModerator* clone() const;
-  virtual ~FlatModerator();
+  FlatModerator* clone() const override;
+  ~FlatModerator() override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
-  virtual void postCreateWork(Simulation&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
+  void postCreateWork(Simulation&) override;
 };
 
 }

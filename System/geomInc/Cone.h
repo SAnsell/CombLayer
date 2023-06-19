@@ -52,26 +52,26 @@ class Cone : public Quadratic
   Cone();
   Cone(const int,const int);
   Cone(const Cone&);
-  Cone* clone() const;
+  Cone* clone() const override;
   Cone& operator=(const Cone&);
   bool operator==(const Cone&) const;
   bool operator!=(const Cone&) const;
-  ~Cone();
+  ~Cone() override;
 
   /// Effective TYPENAME 
   static std::string classType() { return "Cone"; }
   /// Public identifier
-  virtual std::string className() const { return "Cone"; }
+  std::string className() const override { return "Cone"; }
   /// Visitor acceptance
-  virtual void acceptVisitor(Global::BaseVisit& A) const
+  void acceptVisitor(Global::BaseVisit& A) const override
     {  A.Accept(*this); }
   /// Accept visitor for input
-  virtual void acceptVisitor(Global::BaseModVisit& A)
+  void acceptVisitor(Global::BaseModVisit& A) override
     { A.Accept(*this); }
   
-  int side(const Geometry::Vec3D&) const;
-  int onSurface(const Geometry::Vec3D&) const;
-  Geometry::Vec3D surfaceNormal(const Geometry::Vec3D&) const;    
+  int side(const Geometry::Vec3D&) const override;
+  int onSurface(const Geometry::Vec3D&) const override;
+  Geometry::Vec3D surfaceNormal(const Geometry::Vec3D&) const override;    
 
   /// Return centre point
   Geometry::Vec3D getCentre() const { return Centre; }              
@@ -82,23 +82,23 @@ class Cone : public Quadratic
   /// Edge Angle
   double getAlpha() const { return alpha; } 
 
-  double distance(const Geometry::Vec3D&) const;   
-  void rotate(const Geometry::Matrix<double>&);
-  void rotate(const Geometry::Quaternion&);
-  void displace(const Geometry::Vec3D&);
+  double distance(const Geometry::Vec3D&) const override;   
+  void rotate(const Geometry::Matrix<double>&) override;
+  void rotate(const Geometry::Quaternion&) override;
+  void displace(const Geometry::Vec3D&) override;
 
-  int setSurface(const std::string&);
+  int setSurface(const std::string&) override;
   void setCone(const Geometry::Vec3D&,const Geometry::Vec3D&,const double);
   void setCentre(const Geometry::Vec3D&);              
   void setNormal(const Geometry::Vec3D&);       
   void setAngle(double const);  
   void setTanAngle(double const);
-  void setBaseEqn();
+  void setBaseEqn() override;
   /// Set the flag
   void setCutFlag(const int F) { cutFlag=F; }
   int getCutFlag() const { return cutFlag; }
 
-  void write(std::ostream&) const;  
+  void write(std::ostream&) const override;  
 };
 
 }  // NAMESPACE Geometry

@@ -78,15 +78,15 @@ class collInsert  :
   collInsert(const std::string&);
   collInsert(const collInsert&);
   collInsert& operator=(const collInsert&);
-  virtual ~collInsert() {}   ///< Destructor
+  ~collInsert() override {}   ///< Destructor
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   
   double calcDrop(const double) const;
   Geometry::Vec3D getWindowCentre() const;
 
   using FixedComp::createAll;
-  void createAll(Simulation&,const FixedComp&,const long int);
+  void createAll(Simulation&,const FixedComp&,const long int) override;
 };
 
 

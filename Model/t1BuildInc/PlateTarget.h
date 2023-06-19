@@ -71,7 +71,7 @@ class PlateTarget :
   double feedHeight;
   double feedWidth;
 
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
   void createSurfaces(const attachSystem::FixedComp&);
   void createLinks();
   void createObjects(Simulation&);
@@ -81,7 +81,7 @@ class PlateTarget :
   PlateTarget(const std::string&);
   PlateTarget(const PlateTarget&);
   PlateTarget& operator=(const PlateTarget&);
-  ~PlateTarget();
+  ~PlateTarget() override;
 
   Geometry::Vec3D plateEdge(const size_t,double&,double&) const;
   void buildFeedThrough(Simulation&);
@@ -89,7 +89,7 @@ class PlateTarget :
   double getTargetLength() const;
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

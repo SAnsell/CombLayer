@@ -119,7 +119,7 @@ class TESTBEAM : public attachSystem::CopiedComp
   TESTBEAM(const std::string&);
   TESTBEAM(const TESTBEAM&);
   TESTBEAM& operator=(const TESTBEAM&);
-  ~TESTBEAM();
+  ~TESTBEAM() override;
   
   void buildIsolated(Simulation&,const int);
   void build(Simulation&,const GuideItem&,

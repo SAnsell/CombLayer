@@ -58,25 +58,25 @@ class FixedRotate  : public FixedComp
   FixedRotate(const std::string&,const size_t,const size_t);
   FixedRotate(const FixedRotate&);
   FixedRotate& operator=(const FixedRotate&);
-  virtual ~FixedRotate() {}     ///< Destructor
+  ~FixedRotate() override {}     ///< Destructor
 
   virtual void populate(const FuncDataBase&);
   virtual void populate(const std::map<std::string,
 			std::vector<std::string>>&);
   virtual void populate(const std::string&,const FuncDataBase&);
-  virtual void createUnitVector(const attachSystem::FixedComp&,
-				const long int);
-  virtual void createUnitVector(const attachSystem::FixedComp&,
-				const Geometry::Vec3D&);
-  virtual void createUnitVector(const Geometry::Vec3D&,
-				const Geometry::Vec3D&);
-  virtual void createUnitVector(const Geometry::Vec3D&,
+  void createUnitVector(const attachSystem::FixedComp&,
+				const long int) override;
+  void createUnitVector(const attachSystem::FixedComp&,
+				const Geometry::Vec3D&) override;
+  void createUnitVector(const Geometry::Vec3D&,
+				const Geometry::Vec3D&) override;
+  void createUnitVector(const Geometry::Vec3D&,
 				const Geometry::Vec3D&,
-				const Geometry::Vec3D&);
-  virtual void createUnitVector(const attachSystem::FixedComp&,
-				const long int,const long int);
-  virtual void createUnitVector(const attachSystem::FixedComp&,const long int,
-				const attachSystem::FixedComp&,const long int);
+				const Geometry::Vec3D&) override;
+  void createUnitVector(const attachSystem::FixedComp&,
+				const long int,const long int) override;
+  void createUnitVector(const attachSystem::FixedComp&,const long int,
+				const attachSystem::FixedComp&,const long int) override;
 
   virtual void createCentredUnitVector
     (const attachSystem::FixedComp&,const long int,const double);

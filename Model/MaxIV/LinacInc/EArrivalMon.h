@@ -73,7 +73,7 @@ class EArrivalMon :
   int flangeMat;                ///< flange material  
 
 
-  void populate(const FuncDataBase&);  
+  void populate(const FuncDataBase&) override;  
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -84,11 +84,11 @@ class EArrivalMon :
   EArrivalMon(const std::string&,const std::string&);
   EArrivalMon(const EArrivalMon&);
   EArrivalMon& operator=(const EArrivalMon&);
-  virtual ~EArrivalMon();
+  ~EArrivalMon() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

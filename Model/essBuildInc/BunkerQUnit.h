@@ -54,9 +54,9 @@ class BunkerQUnit :
   std::vector<double> Radii;          ///< Curve radii [-ve for plane]
   std::vector<int> yFlag;             ///< Y flags   [0 for plane]
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createUnitVector(const attachSystem::FixedComp&,
-			const long int,const long int);
+			const long int,const long int) override;
   void modifyPoints();
   void createObjects(Simulation&);
   
@@ -65,11 +65,11 @@ class BunkerQUnit :
   BunkerQUnit(const std::string&);
   BunkerQUnit(const BunkerQUnit&);
   BunkerQUnit& operator=(const BunkerQUnit&);
-  virtual ~BunkerQUnit();
+  ~BunkerQUnit() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int,const long int);
 

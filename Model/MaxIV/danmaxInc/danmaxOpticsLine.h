@@ -224,7 +224,7 @@ class danmaxOpticsLine :
 			    const std::string&);
 
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void buildObjects(Simulation&);
 
@@ -235,7 +235,7 @@ class danmaxOpticsLine :
   danmaxOpticsLine(const std::string&);
   danmaxOpticsLine(const danmaxOpticsLine&);
   danmaxOpticsLine& operator=(const danmaxOpticsLine&);
-  ~danmaxOpticsLine();
+  ~danmaxOpticsLine() override;
 
   /// Assignment to inner void
   void setInnerMat(const int M) { innerMat=M; }
@@ -245,7 +245,7 @@ class danmaxOpticsLine :
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

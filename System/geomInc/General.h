@@ -47,24 +47,24 @@ class General : public Quadratic
   General();
   General(const int,const int);
   General(const General&);
-  General* clone() const;
+  General* clone() const override;
   General& operator=(const General&);
-  virtual ~General();
+  ~General() override;
   
   /// Effective TYPENAME 
   static std::string classType() { return "General"; }
   /// Effective typeid
-  virtual std::string className() const { return "General"; }
+  std::string className() const override { return "General"; }
   /// Visitor acceptance
-  virtual void acceptVisitor(Global::BaseVisit& A) const
+  void acceptVisitor(Global::BaseVisit& A) const override
     {  A.Accept(*this); }
   /// Accept visitor for input
-  virtual void acceptVisitor(Global::BaseModVisit& A)
+  void acceptVisitor(Global::BaseModVisit& A) override
     { A.Accept(*this); }
 
-  int setSurface(const std::string&);
+  int setSurface(const std::string&) override;
 
-  void setBaseEqn();
+  void setBaseEqn() override;
 
 };
 

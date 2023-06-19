@@ -72,7 +72,7 @@ class H2Vac :
   int alMat;             ///< Al (inner) material
   int outMat;            ///< Al (outer) material
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces(const attachSystem::FixedComp&);
   void createLinks();
   void createObjects(Simulation&);
@@ -84,14 +84,14 @@ class H2Vac :
   H2Vac(const std::string&);
   H2Vac(const H2Vac&);
   H2Vac& operator=(const H2Vac&);
-  virtual ~H2Vac();
+  ~H2Vac() override;
 
   virtual Geometry::Vec3D getSurfacePoint(const attachSystem::FixedComp&,
 					  const size_t,const long int) const;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&, const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&, const attachSystem::FixedComp&,
+			 const long int) override;
 
 };
 

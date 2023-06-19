@@ -59,7 +59,7 @@ class MonoShutter :
   std::shared_ptr<xraySystem::ShutterUnit> monoShutterB;
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -72,11 +72,11 @@ class MonoShutter :
   MonoShutter(const std::string&);
   MonoShutter(const MonoShutter&);
   MonoShutter& operator=(const MonoShutter&);
-  virtual ~MonoShutter();
+  ~MonoShutter() override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
   
 };
 

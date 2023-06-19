@@ -73,7 +73,7 @@ class FlangeMount :
 
   void calcThreadLength();
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -83,14 +83,14 @@ class FlangeMount :
   FlangeMount(const std::string&);
   FlangeMount(const FlangeMount&);
   FlangeMount& operator=(const FlangeMount&);
-  virtual ~FlangeMount();
+  ~FlangeMount() override;
 
   void setBladeCentre(const attachSystem::FixedComp&,const long int);
   void setBladeCentre(const Geometry::Vec3D&);
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
 
 };
 

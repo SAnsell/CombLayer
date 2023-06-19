@@ -65,11 +65,11 @@ class Segment48 :
   Segment48(const std::string&);
   Segment48(const Segment48&);
   Segment48& operator=(const Segment48&);
-  ~Segment48();
+  ~Segment48() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

@@ -72,7 +72,7 @@ class LayerDivide1D  : public attachSystem::FixedUnit,
   LayerDivide1D(const std::string&);
   LayerDivide1D(const LayerDivide1D&);
   LayerDivide1D& operator=(const LayerDivide1D&);
-  virtual ~LayerDivide1D();
+  ~LayerDivide1D() override;
 
   void setSurfPair(const int,const int);
   void setFractions(const std::vector<double>&);

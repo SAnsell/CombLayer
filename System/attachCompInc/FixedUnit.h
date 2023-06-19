@@ -76,7 +76,7 @@ class FixedUnit : public FixedComp
       
   FixedUnit(const FixedUnit& A) : FixedComp(A) {}
   FixedUnit(const FixedComp& A) : FixedComp(A) {}
-  virtual ~FixedUnit() {}     ///< Destructor
+  ~FixedUnit() override {}     ///< Destructor
 
 };
 

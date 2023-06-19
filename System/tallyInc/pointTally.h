@@ -57,11 +57,11 @@ class pointTally : public Tally
   
   explicit pointTally(const int);
   pointTally(const pointTally&);
-  virtual pointTally* clone() const; 
+  pointTally* clone() const override; 
   pointTally& operator=(const pointTally&);
-  virtual ~pointTally();
+  ~pointTally() override;
   /// ClassName
-  virtual std::string className() const 
+  std::string className() const override 
       { return "pointTally"; }
 
   /// Set MCNP6 output flag
@@ -75,7 +75,7 @@ class pointTally : public Tally
   void setCentre(const double);
   void setCentreAngle(const Geometry::Vec3D&,const double,const double);
   void setCells(const std::vector<int>&);
-  virtual int addLine(const std::string&); 
+  int addLine(const std::string&) override; 
   /// Reqiure Rdum
   int hasRdum() const { return (Window.size()==4); }
   /// back step distance 
@@ -106,9 +106,9 @@ class pointTally : public Tally
 
   void printWindow() const;  
 
-  void rotateMaster();
+  void rotateMaster() override;
   //  void writeRDUM(std::ostream&) const;
-  virtual void write(std::ostream&) const;
+  void write(std::ostream&) const override;
 };
 
 

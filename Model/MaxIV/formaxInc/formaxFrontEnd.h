@@ -83,19 +83,19 @@ class formaxFrontEnd :
   /// Electrometers
   std::shared_ptr<xraySystem::ElectrometerBox> eBoxB;
 
-  virtual const attachSystem::FixedComp&
+  const attachSystem::FixedComp&
     buildUndulator(Simulation&,
-		   const attachSystem::FixedComp&,const long int);
+		   const attachSystem::FixedComp&,const long int) override;
 
-  virtual void buildExtras(Simulation&);
-  virtual void createLinks();
+  void buildExtras(Simulation&) override;
+  void createLinks() override;
   
  public:
   
   formaxFrontEnd(const std::string&);
   formaxFrontEnd(const formaxFrontEnd&);
   formaxFrontEnd& operator=(const formaxFrontEnd&);
-  virtual ~formaxFrontEnd();
+  ~formaxFrontEnd() override;
 
 };
 

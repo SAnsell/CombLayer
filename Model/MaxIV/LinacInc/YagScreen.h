@@ -111,7 +111,7 @@ class YagScreen :
 
   void calcImpactVector();
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -121,14 +121,14 @@ class YagScreen :
   YagScreen(const std::string&);
   YagScreen(const YagScreen&);
   YagScreen& operator=(const YagScreen&);
-  virtual ~YagScreen();
+  ~YagScreen() override;
 
   void setBeamAxis(const attachSystem::FixedComp&,const long int);
   void setBeamAxis(const Geometry::Vec3D&,const Geometry::Vec3D&);
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
 
 };
 

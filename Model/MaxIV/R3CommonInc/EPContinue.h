@@ -72,7 +72,7 @@ class EPContinue :
   Geometry::Vec3D elecXAxis;      ///< Electron X-axis
   Geometry::Vec3D elecYAxis;      ///< Electron beam axis
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   
   void createSurfaces();
   void createObjects(Simulation&);
@@ -83,7 +83,7 @@ class EPContinue :
   EPContinue(const std::string&);
   EPContinue(const EPContinue&);
   EPContinue& operator=(const EPContinue&);
-  virtual ~EPContinue();
+  ~EPContinue() override;
 
   void setEPOriginPair(const EPCombine&);
   void setEPOriginPair(const attachSystem::FixedComp&,
@@ -93,7 +93,7 @@ class EPContinue :
   
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

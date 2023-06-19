@@ -54,7 +54,7 @@ class xrayHutch :
   int voidMat;              ///< inner void material
   int wallMat;              ///< wall material
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -64,11 +64,11 @@ class xrayHutch :
   xrayHutch(const std::string&);
   xrayHutch(const xrayHutch&);
   xrayHutch& operator=(const xrayHutch&);
-  ~xrayHutch();
+  ~xrayHutch() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
     
 };
 

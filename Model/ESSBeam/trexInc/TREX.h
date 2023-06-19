@@ -196,7 +196,7 @@ class TREX : public attachSystem::CopiedComp
   TREX(const std::string&);
   TREX(const TREX&);
   TREX& operator=(const TREX&);
-  ~TREX();
+  ~TREX() override;
   
   void build(Simulation&,const GuideItem&,const Bunker&,const int);
   

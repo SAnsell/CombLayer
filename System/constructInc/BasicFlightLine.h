@@ -58,7 +58,7 @@ class BasicFlightLine :
   int tapFlag;                  ///< Taper type flag
   std::string attachRule;       ///< Attached rule
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -69,11 +69,11 @@ class BasicFlightLine :
   BasicFlightLine(const std::string&);
   BasicFlightLine(const BasicFlightLine&);
   BasicFlightLine& operator=(const BasicFlightLine&);
-  ~BasicFlightLine();
+  ~BasicFlightLine() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 
   

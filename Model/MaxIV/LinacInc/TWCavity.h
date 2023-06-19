@@ -56,7 +56,7 @@ class TWCavity :
   int wallMat;                  ///< Side wall material
   int mat;                      ///< Iris/cell material
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -67,10 +67,10 @@ class TWCavity :
   TWCavity(const TWCavity&);
   TWCavity& operator=(const TWCavity&);
   virtual TWCavity* clone() const;
-  virtual ~TWCavity();
+  ~TWCavity() override;
 
   using FixedComp::createAll;
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int) override;
 
 };
 

@@ -82,11 +82,11 @@ class Segment47 :
   Segment47(const std::string&);
   Segment47(const Segment47&);
   Segment47& operator=(const Segment47&);
-  ~Segment47();
+  ~Segment47() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

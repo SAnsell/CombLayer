@@ -74,7 +74,7 @@ class CrossWayBlank :
   int wallMat;                  ///< main material
   int plateMat;                 ///< plate material
  
-  void populate(const FuncDataBase&);  
+  void populate(const FuncDataBase&) override;  
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -85,11 +85,11 @@ class CrossWayBlank :
   CrossWayBlank(const std::string&,const std::string&);
   CrossWayBlank(const CrossWayBlank&);
   CrossWayBlank& operator=(const CrossWayBlank&);
-  virtual ~CrossWayBlank();
+  ~CrossWayBlank() override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int) override;
 
 };
 

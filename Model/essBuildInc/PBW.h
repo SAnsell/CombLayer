@@ -88,7 +88,7 @@ class PBW :
   int mat;                   ///< PBW material
   std::shared_ptr<TelescopicPipe> shield; ///< Shielding
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&);
@@ -100,11 +100,11 @@ class PBW :
   PBW(const PBW&);
   PBW& operator=(const PBW&);
   virtual PBW* clone() const;
-  virtual ~PBW();
+  ~PBW() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
     
 
 };

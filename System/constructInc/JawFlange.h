@@ -60,8 +60,8 @@ class JawFlange :
 
   void calcBeamCentre();
 
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void populate(const FuncDataBase&) override;
+  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -71,7 +71,7 @@ class JawFlange :
   JawFlange(const std::string&);
   JawFlange(const JawFlange&);
   JawFlange& operator=(const JawFlange&);
-  virtual ~JawFlange();
+  ~JawFlange() override;
 
   void setFillRadius(const attachSystem::FixedComp&,
 		     const std::string&,const int);
@@ -79,7 +79,7 @@ class JawFlange :
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

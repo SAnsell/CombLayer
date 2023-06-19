@@ -107,15 +107,15 @@ class SimMCNP : public Simulation
   SimMCNP();
   SimMCNP(const SimMCNP&);
   SimMCNP& operator=(const SimMCNP&);
-  virtual ~SimMCNP();
+  ~SimMCNP() override;
   
-  virtual void resetAll();
+  void resetAll() override;
 
   /// is the system MCNP6
   bool isMCNP6() const { return mcnpVersion!=10; }
 
   // processing for Simulation
-  virtual void removeCell(const int);
+  void removeCell(const int) override;
   
   // Tally processing
 
@@ -132,20 +132,20 @@ class SimMCNP : public Simulation
   void setForCinder();
   int nextTallyNum(int) const;
 
-  virtual void setEnergy(const double);
+  void setEnergy(const double) override;
 
   
   void setMCNPversion(const int);
-  virtual void substituteAllSurface(const int,const int);
-  virtual std::map<int,int> renumberCells(const std::vector<int>&,
-					  const std::vector<int>&);
+  void substituteAllSurface(const int,const int) override;
+  std::map<int,int> renumberCells(const std::vector<int>&,
+					  const std::vector<int>&) override;
 
   /// Get PhysicsCards
   physicsSystem::PhysicsCards& getPC() { return *PhysPtr; }
   
-  virtual void writeCinder() const;          
+  void writeCinder() const override;          
 
-  virtual void write(const std::string&) const;  
+  void write(const std::string&) const override;  
     
 };
 

@@ -78,13 +78,13 @@ class Segment30 :
   Segment30(const std::string&);
   Segment30(const Segment30&);
   Segment30& operator=(const Segment30&);
-  ~Segment30();
+  ~Segment30() override;
 
-  virtual void registerPrevSeg(const TDCsegment*,const size_t);
+  void registerPrevSeg(const TDCsegment*,const size_t) override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

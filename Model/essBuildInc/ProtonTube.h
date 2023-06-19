@@ -48,18 +48,18 @@ class ProtonTube :  public attachSystem::CopiedComp,
   std::shared_ptr<TelescopicPipe> tube; ///< proton beam tube
   std::shared_ptr<PBW> pbw; ///< Proton beam window
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
 
  public:
 
   ProtonTube(const std::string&);
   ProtonTube(const ProtonTube&);
   ProtonTube& operator=(const ProtonTube&);
-  virtual ~ProtonTube();
+  ~ProtonTube() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
  

@@ -60,7 +60,7 @@ class SwimingPool :
 
   int waterMat;                  ///< Material number
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
 	
@@ -70,14 +70,14 @@ class SwimingPool :
   SwimingPool(const std::string&);
   SwimingPool(const SwimingPool&);
   SwimingPool& operator=(const SwimingPool&);
-  virtual ~SwimingPool();
+  ~SwimingPool() override;
 
   // Accessor to the cell
   //  int getPoolCell() const { return poolIndex+1; }
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

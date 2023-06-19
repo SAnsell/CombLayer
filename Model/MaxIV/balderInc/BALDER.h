@@ -110,10 +110,10 @@ class BALDER : public R3Beamline
   BALDER(const std::string&);
   BALDER(const BALDER&);
   BALDER& operator=(const BALDER&);
-  virtual ~BALDER();
+  ~BALDER() override;
 
-  virtual  void build(Simulation&,const attachSystem::FixedComp&,
-		      const long int);
+   void build(Simulation&,const attachSystem::FixedComp&,
+		      const long int) override;
 
 };
 

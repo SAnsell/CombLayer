@@ -60,7 +60,7 @@ class Table :
   
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -70,7 +70,7 @@ class Table :
   Table(const std::string&);
   Table(const Table&);
   Table& operator=(const Table&);
-  virtual ~Table();
+  ~Table() override;
 
   virtual void insertAllInCells(Simulation&,const std::vector<int>&);
 
@@ -83,7 +83,7 @@ class Table :
   using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

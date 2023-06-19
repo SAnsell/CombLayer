@@ -63,7 +63,7 @@ class Hydrogen :
   Geometry::Vec3D HCentre;  ///< Centre of Radius  
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -73,7 +73,7 @@ class Hydrogen :
   Hydrogen(const std::string&);
   Hydrogen(const Hydrogen&);
   Hydrogen& operator=(const Hydrogen&);
-  ~Hydrogen();
+  ~Hydrogen() override;
 
   int getDividePlane() const;
   int viewSurf() const;
@@ -85,7 +85,7 @@ class Hydrogen :
   double getAlDivide() const { return alDivide; }
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

@@ -91,10 +91,10 @@ class FixedOffsetGroup  : public FixedGroup
 		   const std::string&,const size_t);
   FixedOffsetGroup(const FixedOffsetGroup&);
   FixedOffsetGroup& operator=(const FixedOffsetGroup&);
-  virtual ~FixedOffsetGroup() {}     ///< Destructor
+  ~FixedOffsetGroup() override {}     ///< Destructor
 
   virtual void populate(const FuncDataBase&);
-  virtual void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
 
   void applyOffset();
 };

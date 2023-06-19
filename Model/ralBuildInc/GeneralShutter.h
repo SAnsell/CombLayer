@@ -114,7 +114,7 @@ class GeneralShutter :
   //--------------
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
   void createSurfaces();
   void createObjects(Simulation&);
   
@@ -129,7 +129,7 @@ class GeneralShutter :
   GeneralShutter(const size_t,const std::string&);
   GeneralShutter(const GeneralShutter&);
   GeneralShutter& operator=(const GeneralShutter&);
-  virtual ~GeneralShutter();
+  ~GeneralShutter() override;
 
   /// Access shutter number
   size_t getShutterNumber() const { return shutterNumber; }
@@ -165,7 +165,7 @@ class GeneralShutter :
 
   void setZOffset(const double D) { ZOffset=D; }
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int sideIndex);
+		 const long int sideIndex) override;
 
 }; 
 

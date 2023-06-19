@@ -65,7 +65,7 @@ class H2Pipe : public attachSystem::FixedComp
   double depthLen;             ///< Inner depth into moderator
   
   void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
 
   void insertPipes(Simulation&);
   void insertOuter(Simulation&,const attachSystem::FixedComp&,const long int);
@@ -75,11 +75,11 @@ class H2Pipe : public attachSystem::FixedComp
   H2Pipe(const std::string&);
   H2Pipe(const H2Pipe&);
   H2Pipe& operator=(const H2Pipe&);
-  ~H2Pipe();
+  ~H2Pipe() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

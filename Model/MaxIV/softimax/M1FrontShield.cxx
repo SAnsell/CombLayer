@@ -121,7 +121,7 @@ M1FrontShield::createSurfaces()
 void
 M1FrontShield::createObjects(Simulation& System)
   /*!
-    Create the vaned moderator
+    Create the front shield of the M1 mirror 
     \param System :: Simulation to add results
    */
 {

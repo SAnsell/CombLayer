@@ -83,7 +83,7 @@ class SimPHITS : public Simulation
   SimPHITS();
   SimPHITS(const SimPHITS&);
   SimPHITS& operator=(const SimPHITS&);
-  virtual ~SimPHITS() {}           ///< Destructor
+  ~SimPHITS() override {}           ///< Destructor
 
   void setICNTL(const std::string&);
   /// set nps [move to physics]
@@ -94,8 +94,8 @@ class SimPHITS : public Simulation
   /// access to physics
   phitsSystem::phitsPhysics* getPhysics() { return PhysPtr; }
 
-  virtual std::map<int,int>
-  renumberCells(const std::vector<int>&,const std::vector<int>&);
+  std::map<int,int>
+  renumberCells(const std::vector<int>&,const std::vector<int>&) override;
   
   // TALLY Processing 
   void addTally(const phitsSystem::phitsTally&);
@@ -111,7 +111,7 @@ class SimPHITS : public Simulation
   /// access generic filename
   const std::string&  getFileName() const { return fileName; }
   
-  virtual void write(const std::string&) const;
+  void write(const std::string&) const override;
 
 };
 

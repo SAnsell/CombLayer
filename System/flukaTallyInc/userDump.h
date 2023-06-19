@@ -44,19 +44,19 @@ class userDump : public flukaTally
   userDump(const int,const int);
   userDump(const std::string&,const int,const int);
   userDump(const userDump&);
-  virtual userDump* clone() const; 
+  userDump* clone() const override; 
   userDump& operator=(const userDump&);
-  virtual ~userDump();
+  ~userDump() override;
 
   /// return fluke name
-  virtual std::string getType() const { return "USRDUMP"; };
+  std::string getType() const override { return "USRDUMP"; };
 
   /// set dump type
   void setDumpType(const int D) { dumpType=D; }
   /// set output tag name
   void setOutName(const std::string& ON) { outName=ON; }
   
-  virtual void write(std::ostream&) const;  
+  void write(std::ostream&) const override;  
 };
 
 }

@@ -49,14 +49,14 @@ class XMLcomp : public XMLobject
   XMLcomp(XMLobject*,const std::string&);
   XMLcomp(XMLobject*,const std::string&,const T&);
   XMLcomp(const XMLcomp<T>&);
-  XMLcomp<T>* clone() const;
+  XMLcomp<T>* clone() const override;
   XMLcomp<T>& operator=(const XMLcomp<T>&);
-  ~XMLcomp();
+  ~XMLcomp() override;
 
   T& getValue() { return Value; }              ///< Access value
   const T& getValue() const { return Value; }  ///< Access value const
 
-  virtual void writeXML(std::ostream&) const;    
+  void writeXML(std::ostream&) const override;    
 
 };
 

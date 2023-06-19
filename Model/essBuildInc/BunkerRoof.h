@@ -84,7 +84,7 @@ class BunkerRoof :
   BunkerRoof(const std::string&);
   BunkerRoof(const BunkerRoof&);
   BunkerRoof& operator=(const BunkerRoof&);
-  virtual ~BunkerRoof();
+  ~BunkerRoof() override;
 
   void setVertSurf(const int,const int);
   void setRadialSurf(const int,const int);
@@ -99,9 +99,9 @@ class BunkerRoof :
 		  const long int);
 
   /// null object for FixedComp
-  virtual void createAll(Simulation&,
+  void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int) {}
+		 const long int) override {}
 
 };
 

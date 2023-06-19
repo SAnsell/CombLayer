@@ -93,7 +93,7 @@ class RoofPillars :
 		       const long int,const long int,BeamTYPE&) const;
 			      
   void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
+			const long int) override;
 
   void createSurfaces();
   void createLinks();
@@ -146,7 +146,7 @@ class RoofPillars :
   RoofPillars(const std::string&);
   RoofPillars(const RoofPillars&);
   RoofPillars& operator=(const RoofPillars&);
-  virtual ~RoofPillars();
+  ~RoofPillars() override;
   
   //  void setSimpleSurf(const int,const int);
   //  void setTopSurf(const attachSystem::FixedComp&,const long int);

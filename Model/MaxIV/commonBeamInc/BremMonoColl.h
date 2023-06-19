@@ -67,7 +67,7 @@ class BremMonoColl :
   bool inFlag;                ///< Inlet origin set
   Geometry::Vec3D inOrg;      ///< In origin
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -77,13 +77,13 @@ class BremMonoColl :
   BremMonoColl(const std::string&);
   BremMonoColl(const BremMonoColl&);
   BremMonoColl& operator=(const BremMonoColl&);
-  virtual ~BremMonoColl();
+  ~BremMonoColl() override;
 
   void setInOrg(const Geometry::Vec3D&);
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

@@ -50,7 +50,7 @@ class magnetUnit :
   std::set<int> activeCells;     /// active cells
 
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
 
   void rotateExtent();
   
@@ -60,7 +60,7 @@ class magnetUnit :
   magnetUnit(const std::string&,const size_t);
   magnetUnit(const magnetUnit&);
   magnetUnit& operator=(const magnetUnit&);
-  virtual ~magnetUnit();
+  ~magnetUnit() override;
 
   void setIndex(const size_t I) { index=I; }
   void setExtent(const double,const double,const double);
@@ -70,7 +70,7 @@ class magnetUnit :
   
   using attachSystem::FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   void createAll(Simulation&,const Geometry::Vec3D&,
 		 const Geometry::Vec3D&,const Geometry::Vec3D&,
 		 const Geometry::Vec3D&,

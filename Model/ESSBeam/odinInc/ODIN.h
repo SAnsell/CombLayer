@@ -231,7 +231,7 @@ class ODIN : public attachSystem::CopiedComp
   ODIN(const std::string&);
   ODIN(const ODIN&);
   ODIN& operator=(const ODIN&);
-  ~ODIN();
+  ~ODIN() override;
   
   void build(Simulation&,const GuideItem&,
 	     const Bunker&,const int);

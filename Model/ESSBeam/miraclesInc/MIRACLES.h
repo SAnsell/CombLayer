@@ -172,7 +172,7 @@ class MIRACLES : public attachSystem::CopiedComp
   MIRACLES(const std::string&);
   MIRACLES(const MIRACLES&);
   MIRACLES& operator=(const MIRACLES&);
-  ~MIRACLES();
+  ~MIRACLES() override;
 
   void buildIsolated(Simulation&,const int);
     

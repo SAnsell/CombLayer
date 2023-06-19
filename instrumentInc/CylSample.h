@@ -48,9 +48,9 @@ class CylSample : public attachSystem::ContainedComp,
 
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
+			const long int) override;
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -61,10 +61,10 @@ class CylSample : public attachSystem::ContainedComp,
   CylSample(const std::string&);
   CylSample(const CylSample&);
   CylSample& operator=(const CylSample&);
-  virtual ~CylSample();
+  ~CylSample() override;
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

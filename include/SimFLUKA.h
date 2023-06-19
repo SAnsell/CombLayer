@@ -109,7 +109,7 @@ class SimFLUKA : public Simulation
   SimFLUKA();
   SimFLUKA(const SimFLUKA&);
   SimFLUKA& operator=(const SimFLUKA&);
-  virtual ~SimFLUKA();
+  ~SimFLUKA() override;
 
   /// get Physics ptr
   flukaSystem::flukaPhysics* getPhysics() { return PhysPtr; }
@@ -132,7 +132,7 @@ class SimFLUKA : public Simulation
   const FTallyTYPE& getTallySet() const { return FTItem; }
   int getNextFTape() const;
 
-  virtual void setExtraSourceName(const std::string&);
+  void setExtraSourceName(const std::string&) override;
   /// get RND seed
   long int getRNDseed() const { return rndSeed; }
 
@@ -146,7 +146,7 @@ class SimFLUKA : public Simulation
   /// set the geomtry precision
   void setGeomPrecision(const double D) { geomPrecision=D; }
 
-  virtual void prepareWrite();
+  void prepareWrite() override;
   /// no write variable
   void setNoVariables() { writeVariable=0; }
   /// no low energy neturon
@@ -157,7 +157,7 @@ class SimFLUKA : public Simulation
   void setDefaultPhysics(const std::string&);
   void setForCinder();
 
-  virtual void write(const std::string&) const;
+  void write(const std::string&) const override;
 
 };
 

@@ -111,10 +111,10 @@ class WCellControl : public WeightControl
   WCellControl();
   WCellControl(const WCellControl&);
   WCellControl& operator=(const WCellControl&);
-  ~WCellControl();
+  ~WCellControl() override;
 
   
-  void processWeights(Simulation&,const mainSystem::inputParam&);
+  void processWeights(Simulation&,const mainSystem::inputParam&) override;
   void normWeights(Simulation&,const mainSystem::inputParam&);
     
 };

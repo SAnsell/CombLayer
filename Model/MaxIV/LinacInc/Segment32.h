@@ -57,9 +57,9 @@ class Segment32 :
   Segment32(const std::string&);
   Segment32(const Segment32&);
   Segment32& operator=(const Segment32&);
-  ~Segment32();
+  ~Segment32() override;
 
-  virtual void writePoints() const override;
+  void writePoints() const override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

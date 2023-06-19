@@ -78,18 +78,18 @@ class micromaxFrontEnd :
   /// Undulator in vacuum box
   std::shared_ptr<xraySystem::Undulator> undulator;
 
-  virtual const attachSystem::FixedComp&
+  const attachSystem::FixedComp&
     buildUndulator(Simulation&,
-		   const attachSystem::FixedComp&,const long int);
+		   const attachSystem::FixedComp&,const long int) override;
 			      
-  virtual void createLinks();
+  void createLinks() override;
   
  public:
   
   micromaxFrontEnd(const std::string&);
   micromaxFrontEnd(const micromaxFrontEnd&);
   micromaxFrontEnd& operator=(const micromaxFrontEnd&);
-  virtual ~micromaxFrontEnd();
+  ~micromaxFrontEnd() override;
 
 };
 

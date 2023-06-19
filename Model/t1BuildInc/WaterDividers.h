@@ -97,7 +97,7 @@ class WaterDividers :
   WaterDividers(const std::string&);
   WaterDividers(const WaterDividers&);
   WaterDividers& operator=(const WaterDividers&);
-  ~WaterDividers();
+  ~WaterDividers() override;
 
 
   void build(Simulation&,const PlateTarget&,
@@ -105,7 +105,7 @@ class WaterDividers :
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 };
 
 }

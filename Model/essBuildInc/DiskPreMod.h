@@ -65,8 +65,8 @@ class DiskPreMod :
 
   HeadRule sideRuleHR;
 
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void populate(const FuncDataBase&) override;
+  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -78,10 +78,10 @@ class DiskPreMod :
   DiskPreMod(const DiskPreMod&);
   DiskPreMod& operator=(const DiskPreMod&);
   virtual DiskPreMod* clone() const;
-  virtual ~DiskPreMod();
+  ~DiskPreMod() override;
 
-  virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
-  virtual HeadRule getLayerHR(const size_t,const long int) const;
+  Geometry::Vec3D getSurfacePoint(const size_t,const long int) const override;
+  HeadRule getLayerHR(const size_t,const long int) const override;
 
   // 
   HeadRule getSideRule() const { return sideRuleHR; }
@@ -93,7 +93,7 @@ class DiskPreMod :
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

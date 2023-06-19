@@ -94,12 +94,12 @@ class VoidVessel :
   VoidVessel(const std::string&);
   VoidVessel(const VoidVessel&);
   VoidVessel& operator=(const VoidVessel&);
-  virtual ~VoidVessel();
+  ~VoidVessel() override;
 
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

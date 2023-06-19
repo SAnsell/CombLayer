@@ -102,7 +102,7 @@ class BeamDump :
   double waterPipeOffsetZ;      ///< Water pipe offset along the z-axis
   double waterPipeDist;         ///< Vertical distance between water pipes
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -113,11 +113,11 @@ class BeamDump :
   BeamDump(const std::string&, const std::string&);
   BeamDump(const BeamDump&);
   BeamDump& operator=(const BeamDump&);
-  ~BeamDump();
+  ~BeamDump() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

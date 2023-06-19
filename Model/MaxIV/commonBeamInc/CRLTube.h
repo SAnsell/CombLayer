@@ -93,7 +93,7 @@ class CRLTube :
   int magnetMat;             ///< Magnet material
   int flangeMat;             ///< Flange material
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -103,11 +103,11 @@ class CRLTube :
   CRLTube(const std::string&);
   CRLTube(const CRLTube&);
   CRLTube& operator=(const CRLTube&);
-  virtual ~CRLTube();
+  ~CRLTube() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

@@ -87,7 +87,7 @@ class DecouplePipe :
   DecouplePipe(const std::string&);
   DecouplePipe(const DecouplePipe&);
   DecouplePipe& operator=(const DecouplePipe&);
-  ~DecouplePipe();
+  ~DecouplePipe() override;
 
   void build(Simulation&,const attachSystem::FixedComp&,
 		 const long int,const VacVessel&,const int);

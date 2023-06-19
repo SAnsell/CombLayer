@@ -82,9 +82,9 @@ class Segment46 :
   Segment46(const std::string&);
   Segment46(const Segment46&);
   Segment46& operator=(const Segment46&);
-  ~Segment46();
+  ~Segment46() override;
 
-  virtual void insertPrevSegment(Simulation&,const TDCsegment*) const override;
+  void insertPrevSegment(Simulation&,const TDCsegment*) const override;
 
   void writePoints() const override;
   using FixedComp::createAll;

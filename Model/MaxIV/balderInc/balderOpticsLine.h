@@ -186,7 +186,7 @@ class balderOpticsLine :
   double outerRight;   /// Right for cut rectangle
   double outerTop;     /// Top for cut rectangle  
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();
@@ -196,7 +196,7 @@ class balderOpticsLine :
   balderOpticsLine(const std::string&);
   balderOpticsLine(const balderOpticsLine&);
   balderOpticsLine& operator=(const balderOpticsLine&);
-  ~balderOpticsLine();
+  ~balderOpticsLine() override;
 
   /// Assignment to inner void
   void setInnerMat(const int M) {  innerMat=M; }
@@ -206,7 +206,7 @@ class balderOpticsLine :
 
   using FixedComp::createAll;  // for (Sim,FixedComp,string)
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

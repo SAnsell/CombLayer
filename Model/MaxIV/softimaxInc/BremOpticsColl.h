@@ -72,7 +72,7 @@ class BremOpticsColl :
   int wallMat;                       ///< Wall material
   int colMat;                        ///< absorber material
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -83,11 +83,11 @@ class BremOpticsColl :
   BremOpticsColl(const BremOpticsColl&);
   BremOpticsColl& operator=(const BremOpticsColl&);
   virtual BremOpticsColl* clone() const;
-  virtual ~BremOpticsColl();
+  ~BremOpticsColl() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

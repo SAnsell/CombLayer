@@ -71,8 +71,8 @@ class SplitFlangePipe :
   int feMat;                    ///< Pipe material
   int bellowMat;                ///< Pipe material (fractional density)
     
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void populate(const FuncDataBase&) override;
+  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -84,14 +84,14 @@ class SplitFlangePipe :
   SplitFlangePipe(const std::string&,const bool);
   SplitFlangePipe(const SplitFlangePipe&);
   SplitFlangePipe& operator=(const SplitFlangePipe&);
-  virtual ~SplitFlangePipe();
+  ~SplitFlangePipe() override;
 
   void setJoinFront(const attachSystem::FixedComp&,const long int);
   void setJoinBack(const attachSystem::FixedComp&,const long int);
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
 
 };
 

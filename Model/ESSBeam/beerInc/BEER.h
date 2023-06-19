@@ -188,7 +188,7 @@ class BEER : public attachSystem::CopiedComp
   BEER(const std::string&);
   BEER(const BEER&);
   BEER& operator=(const BEER&);
-  ~BEER();
+  ~BEER() override;
 
   void buildIsolated(Simulation&,const int);
   void build(Simulation&,const GuideItem&,

@@ -56,10 +56,6 @@ operator<<(std::ostream& OX,const BItems& A)
   return OX;
 }
 
-BItems::BItems()
-  /// Constructor
-{}
-
 BItems::BItems(const BItems& A) :
   FList(A.FList)
   /*!

@@ -75,7 +75,7 @@ class TwinPipe :
   Geometry::Vec3D AYAxis;       ///< AY Axis
   Geometry::Vec3D BYAxis;       ///< BY Axis
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -87,11 +87,11 @@ class TwinPipe :
   TwinPipe(const std::string&);
   TwinPipe(const TwinPipe&);
   TwinPipe& operator=(const TwinPipe&);
-  virtual ~TwinPipe();
+  ~TwinPipe() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

@@ -82,7 +82,7 @@ class MLMRadialSupport :
   
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -92,12 +92,12 @@ class MLMRadialSupport :
   MLMRadialSupport(const std::string&);
   MLMRadialSupport(const MLMRadialSupport&);
   MLMRadialSupport& operator=(const MLMRadialSupport&);
-  virtual ~MLMRadialSupport();
+  ~MLMRadialSupport() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

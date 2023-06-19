@@ -69,8 +69,8 @@ class Groove :
   int modMat;               ///< Moderator material
   int alMat;                ///< Al material
 
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void populate(const FuncDataBase&) override;
+  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -80,7 +80,7 @@ class Groove :
   Groove(const std::string&);
   Groove(const Groove&);
   Groove& operator=(const Groove&);
-  ~Groove();
+  ~Groove() override;
 
   int getDividePlane() const;
   int viewSurf() const;
@@ -89,7 +89,7 @@ class Groove :
 
   using attachSystem::FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

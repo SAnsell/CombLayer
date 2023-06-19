@@ -52,7 +52,7 @@ class SpaceBlock :
   double height;                ///< Total length
   int mat;                ///< Total length
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -62,14 +62,14 @@ class SpaceBlock :
   SpaceBlock(const std::string&,const size_t);
   SpaceBlock(const SpaceBlock&);
   SpaceBlock& operator=(const SpaceBlock&);
-  virtual ~SpaceBlock();
+  ~SpaceBlock() override;
 
   /// accessor to flag
     int getActiveFlag() { return activeFlag; }
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

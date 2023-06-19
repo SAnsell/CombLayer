@@ -78,7 +78,7 @@ class HPJaws :
   int wallMat;               ///< main material
   int jawMat;                ///< jaw material
 
-  void populate(const FuncDataBase&);  
+  void populate(const FuncDataBase&) override;  
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -89,14 +89,14 @@ class HPJaws :
   HPJaws(const std::string&,const std::string&);
   HPJaws(const HPJaws&);
   HPJaws& operator=(const HPJaws&);
-  virtual ~HPJaws();
+  ~HPJaws() override;
 
   /// flag setting 
   void setFlangeJoin() { flangeJoin=1; }
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int) override;
 
 };
 

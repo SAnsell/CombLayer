@@ -80,7 +80,7 @@ class BremColl :
   int waterMat;               ///< water cooling material 
   int pipeMat;                ///< pipe outer material 
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -90,13 +90,13 @@ class BremColl :
   BremColl(const std::string&);
   BremColl(const BremColl&);
   BremColl& operator=(const BremColl&);
-  virtual ~BremColl();
+  ~BremColl() override;
 
   void createExtension(Simulation&,const int);
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

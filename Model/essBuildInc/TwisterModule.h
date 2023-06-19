@@ -61,7 +61,7 @@ class TwisterModule :
 
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -72,11 +72,11 @@ class TwisterModule :
   TwisterModule(const TwisterModule&);
   TwisterModule& operator=(const TwisterModule&);
   virtual TwisterModule* clone() const;
-  virtual ~TwisterModule();
+  ~TwisterModule() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 };
 
 }

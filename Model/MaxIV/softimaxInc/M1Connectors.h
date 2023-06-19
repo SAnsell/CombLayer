@@ -59,7 +59,7 @@ class M1Connectors :
 
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -69,12 +69,12 @@ class M1Connectors :
   M1Connectors(const std::string&);
   M1Connectors(const M1Connectors&);
   M1Connectors& operator=(const M1Connectors&);
-  virtual ~M1Connectors();
+  ~M1Connectors() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

@@ -62,9 +62,9 @@ class ModContainer :
   std::shared_ptr<constructSystem::RingFlange> BackFlange;
 
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
+			const long int) override;
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -77,7 +77,7 @@ class ModContainer :
   ModContainer(const std::string&);
   ModContainer(const ModContainer&);
   ModContainer& operator=(const ModContainer&);
-  virtual ~ModContainer();
+  ~ModContainer() override;
   virtual ModContainer* clone() const;
 
   const attachSystem::FixedComp& getFrontFlange() const;
@@ -85,7 +85,7 @@ class ModContainer :
 
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 };
 
 }

@@ -72,7 +72,7 @@ class MLMCrystal :
   
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -82,12 +82,12 @@ class MLMCrystal :
   MLMCrystal(const std::string&);
   MLMCrystal(const MLMCrystal&);
   MLMCrystal& operator=(const MLMCrystal&);
-  virtual ~MLMCrystal();
+  ~MLMCrystal() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

@@ -54,9 +54,9 @@ class XMLdatablock : public XMLobject
 
   XMLdatablock(XMLobject*,const std::string&);
   XMLdatablock(const XMLdatablock<T,Size>&);
-  XMLdatablock<T,Size>* clone() const;
+  XMLdatablock<T,Size>* clone() const override;
   XMLdatablock<T,Size>& operator=(const XMLdatablock<T,Size>&);
-  ~XMLdatablock();
+  ~XMLdatablock() override;
 
   void setContLine(int const IFlag) { contLine=IFlag; }  ///< Set continue size 
   void setManagedComp(const mapArray*);   
@@ -66,7 +66,7 @@ class XMLdatablock : public XMLobject
   /// Const accessor to data
   const mapArray* getArray() const { return Data; } 
 
-  virtual void writeXML(std::ostream&) const;    
+  void writeXML(std::ostream&) const override;    
   
 };
 

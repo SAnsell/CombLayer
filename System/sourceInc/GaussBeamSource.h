@@ -48,17 +48,17 @@ class GaussBeamSource :
   double zWidth;                ///< Z fwhm
   double angleSpread;           ///< Angle spread
   
-  void populate(const mainSystem::MITYPE&);
+  void populate(const mainSystem::MITYPE&) override;
   void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
+			const long int) override;
   
  public:
 
   GaussBeamSource(const std::string&);
   GaussBeamSource(const GaussBeamSource&);
   GaussBeamSource& operator=(const GaussBeamSource&);
-  virtual GaussBeamSource* clone() const;
-  virtual ~GaussBeamSource();
+  GaussBeamSource* clone() const override;
+  ~GaussBeamSource() override;
 
   void setSize(const double,const double);
   
@@ -66,11 +66,11 @@ class GaussBeamSource :
 		 const attachSystem::FixedComp&,
 		 const long int);
 
-  virtual void rotate(const localRotate&);
-  virtual void createSource(SDef::Source&) const;
-  virtual void write(std::ostream&) const;
-  virtual void writePHITS(std::ostream&) const;
-  virtual void writeFLUKA(std::ostream&) const;
+  void rotate(const localRotate&) override;
+  void createSource(SDef::Source&) const override;
+  void write(std::ostream&) const override;
+  void writePHITS(std::ostream&) const override;
+  void writeFLUKA(std::ostream&) const override;
     
 };
 

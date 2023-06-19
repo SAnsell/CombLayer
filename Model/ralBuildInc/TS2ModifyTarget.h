@@ -148,11 +148,11 @@ class TS2ModifyTarget :
   TS2ModifyTarget(const std::string&);
   TS2ModifyTarget(const TS2ModifyTarget&);
   TS2ModifyTarget& operator=(const TS2ModifyTarget&);
-  ~TS2ModifyTarget();
+  ~TS2ModifyTarget() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 };
 
 }

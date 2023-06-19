@@ -46,7 +46,7 @@ class insertPlate : public insertSystem::insertObject
   double depth;             ///< Full Depth 
   size_t nGrid;             ///< Simple XZ grid division
   
-  virtual void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -61,7 +61,7 @@ class insertPlate : public insertSystem::insertObject
   insertPlate(const std::string&,const std::string&);
   insertPlate(const insertPlate&);
   insertPlate& operator=(const insertPlate&);
-  virtual ~insertPlate();
+  ~insertPlate() override;
 
   void setValues(const double,const double,const double,
 		 const int);
@@ -77,7 +77,7 @@ class insertPlate : public insertSystem::insertObject
 		 const attachSystem::FixedComp&);
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

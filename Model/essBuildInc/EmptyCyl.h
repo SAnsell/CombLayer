@@ -44,7 +44,7 @@ class EmptyCyl :
   double height;                ///< height
   int mat;                     ///< material
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&,const attachSystem::FixedComp&,
 		     const long int,const long int,const long int,
@@ -59,7 +59,7 @@ class EmptyCyl :
   EmptyCyl(const EmptyCyl&);
   EmptyCyl& operator=(const EmptyCyl&);
   virtual EmptyCyl* clone() const;
-  virtual ~EmptyCyl();
+  ~EmptyCyl() override;
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int,const long int,const long int,

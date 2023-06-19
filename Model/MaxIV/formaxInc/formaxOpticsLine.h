@@ -238,7 +238,7 @@ class formaxOpticsLine :
   void constructMonoShutter
   (Simulation&,const attachSystem::FixedComp&,const std::string&);
  
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();
@@ -248,7 +248,7 @@ class formaxOpticsLine :
   formaxOpticsLine(const std::string&);
   formaxOpticsLine(const formaxOpticsLine&);
   formaxOpticsLine& operator=(const formaxOpticsLine&);
-  ~formaxOpticsLine();
+  ~formaxOpticsLine() override;
 
   /// Assignment to inner void
   void setInnerMat(const int M) {  innerMat=M; }
@@ -258,7 +258,7 @@ class formaxOpticsLine :
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

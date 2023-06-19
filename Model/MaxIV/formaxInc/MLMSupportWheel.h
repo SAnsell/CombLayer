@@ -58,7 +58,7 @@ class MLMSupportWheel :
   
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -68,12 +68,12 @@ class MLMSupportWheel :
   MLMSupportWheel(const std::string&);
   MLMSupportWheel(const MLMSupportWheel&);
   MLMSupportWheel& operator=(const MLMSupportWheel&);
-  virtual ~MLMSupportWheel();
+  ~MLMSupportWheel() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

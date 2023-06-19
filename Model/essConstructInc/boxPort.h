@@ -72,7 +72,7 @@ class boxPort :
   int sealMat;                  ///< Seal material
   int voidMat;                  ///< void material
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -82,7 +82,7 @@ class boxPort :
   boxPort(const std::string&,const std::string&);
   boxPort(const boxPort&);
   boxPort& operator=(const boxPort&);
-  virtual ~boxPort();
+  ~boxPort() override;
 
   void setDimensions(const size_t,
 		     const double,const double,
@@ -95,7 +95,7 @@ class boxPort :
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

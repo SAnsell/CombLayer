@@ -206,7 +206,7 @@ class speciesOpticsLine :
   void buildSplitter(Simulation&,
 		     const attachSystem::FixedComp&,const std::string&);
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();
@@ -216,7 +216,7 @@ class speciesOpticsLine :
   speciesOpticsLine(const std::string&);
   speciesOpticsLine(const speciesOpticsLine&);
   speciesOpticsLine& operator=(const speciesOpticsLine&);
-  ~speciesOpticsLine();
+  ~speciesOpticsLine() override;
 
   /// Assignment to inner void
   void setInnerMat(const int M) {  innerMat=M; }
@@ -228,7 +228,7 @@ class speciesOpticsLine :
   
   using attachSystem::FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

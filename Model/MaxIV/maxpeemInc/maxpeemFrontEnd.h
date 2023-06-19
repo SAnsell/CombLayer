@@ -78,19 +78,19 @@ class maxpeemFrontEnd :  public R1FrontEnd
   /// Undulator in vacuum box
   std::shared_ptr<xraySystem::Undulator> undulator;
 
-  virtual const attachSystem::FixedComp&
+  const attachSystem::FixedComp&
     buildUndulator(Simulation&,
 		   const attachSystem::FixedComp&,
-		   const std::string&);
+		   const std::string&) override;
 			      
-  virtual void createLinks();
+  void createLinks() override;
   
  public:
   
   maxpeemFrontEnd(const std::string&);
   maxpeemFrontEnd(const maxpeemFrontEnd&);
   maxpeemFrontEnd& operator=(const maxpeemFrontEnd&);
-  virtual ~maxpeemFrontEnd();
+  ~maxpeemFrontEnd() override;
 
 };
 

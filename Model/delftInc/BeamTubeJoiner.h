@@ -64,7 +64,7 @@ class BeamTubeJoiner :
   int wallMat;                  ///< Wall Material number
   int gapMat;                   ///< Material in the gap
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void populatePortals(const FuncDataBase&);
   void createSurfaces();
   void createObjects(Simulation&);
@@ -75,14 +75,14 @@ class BeamTubeJoiner :
   BeamTubeJoiner(const std::string&);
   BeamTubeJoiner(const BeamTubeJoiner&);
   BeamTubeJoiner& operator=(const BeamTubeJoiner&);
-  virtual ~BeamTubeJoiner();
+  ~BeamTubeJoiner() override;
 
   // Accessor to inner void cell
   //  int getInnerVoid() const { return innerVoid; }
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

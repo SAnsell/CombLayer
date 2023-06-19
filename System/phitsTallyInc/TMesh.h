@@ -48,22 +48,22 @@ class TMesh : public phitsTally
 
   explicit TMesh(const int);
   TMesh(const TMesh&);
-  virtual TMesh* clone() const;  
+  TMesh* clone() const override;  
   TMesh& operator=(const TMesh&);
-  virtual ~TMesh();
+  ~TMesh() override;
 
   /// set units
   void setUnit(const int A) { unit=A; }
   void setUnit(const std::string&);
 
-  virtual void setEnergy(const eType& A) { energy = A; }
+  void setEnergy(const eType& A) override { energy = A; }
 
   void setIndex(const std::array<size_t,3>& IPts)
   {  gridXYZ.setIndex(IPts); }
   void setCoordinates(const Geometry::Vec3D& APt,
 		      const Geometry::Vec3D& BPt)
   { gridXYZ.setCoordinates(APt,BPt); }
-  virtual void write(std::ostream&,const std::string&) const;
+  void write(std::ostream&,const std::string&) const override;
   
 };
 

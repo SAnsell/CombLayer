@@ -54,7 +54,7 @@ class XMLwriteVisitor : public Global::BaseVisit
   XMLwriteVisitor();
   XMLwriteVisitor(XML::XMLcollect&);
   XMLwriteVisitor(const XMLwriteVisitor&);
-  ~XMLwriteVisitor();
+  ~XMLwriteVisitor() override;
 
   /// Access Collection
   XML::XMLcollect& getCollect() const { return XOut; }
@@ -62,29 +62,29 @@ class XMLwriteVisitor : public Global::BaseVisit
   void writeFile(const std::string&) const;
 
   // Geometry stuff:
-  virtual void Accept(const Geometry::Surface&);
-  virtual void Accept(const Geometry::Quadratic&);
-  virtual void Accept(const Geometry::ArbPoly&);
-  virtual void Accept(const Geometry::CylCan&);
-  virtual void Accept(const Geometry::Cone&);
-  virtual void Accept(const Geometry::Cylinder&);
-  virtual void Accept(const Geometry::General&);
-  virtual void Accept(const Geometry::MBrect&);
-  virtual void Accept(const Geometry::NullSurface&);
-  virtual void Accept(const Geometry::Plane&);
-  virtual void Accept(const Geometry::Sphere&);
-  virtual void Accept(const Geometry::Torus&);
-  virtual void Accept(const Geometry::Line&);
+  void Accept(const Geometry::Surface&) override;
+  void Accept(const Geometry::Quadratic&) override;
+  void Accept(const Geometry::ArbPoly&) override;
+  void Accept(const Geometry::CylCan&) override;
+  void Accept(const Geometry::Cone&) override;
+  void Accept(const Geometry::Cylinder&) override;
+  void Accept(const Geometry::General&) override;
+  void Accept(const Geometry::MBrect&) override;
+  void Accept(const Geometry::NullSurface&) override;
+  void Accept(const Geometry::Plane&) override;
+  void Accept(const Geometry::Sphere&) override;
+  void Accept(const Geometry::Torus&) override;
+  void Accept(const Geometry::Line&) override;
 
   // MonteCarlo stuff:
-  virtual void Accept(const MonteCarlo::Material&);
-  virtual void Accept(const MonteCarlo::Object&);
+  void Accept(const MonteCarlo::Material&) override;
+  void Accept(const MonteCarlo::Object&) override;
 
   // ModelSupport stuff:
-  virtual void Accept(const ModelSupport::surfIndex&);
+  void Accept(const ModelSupport::surfIndex&) override;
     
   // Functions:
-  virtual void Accept(const FuncDataBase&);  
+  void Accept(const FuncDataBase&) override;  
 };
 
 }  // NAMESPACE XML

@@ -51,7 +51,7 @@ class CellMap  : public BaseMap
   CellMap();         
   CellMap(const CellMap&);
   CellMap& operator=(const CellMap&);
-  virtual ~CellMap() {}     ///< Destructor
+  ~CellMap() override {}     ///< Destructor
 
   //@{
   /*!

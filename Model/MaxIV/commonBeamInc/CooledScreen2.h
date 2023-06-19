@@ -93,7 +93,7 @@ class CooledScreen2 :
 
   void calcImpactVector();
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -103,14 +103,14 @@ class CooledScreen2 :
   CooledScreen2(const std::string&);
   CooledScreen2(const CooledScreen2&);
   CooledScreen2& operator=(const CooledScreen2&);
-  virtual ~CooledScreen2();
+  ~CooledScreen2() override;
 
   void setBeamAxis(const attachSystem::FixedComp&,const long int);
   void setBeamAxis(const Geometry::Vec3D&,const Geometry::Vec3D&);
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
 
 };
 

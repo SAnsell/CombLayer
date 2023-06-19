@@ -45,7 +45,7 @@ class Plane : public Quadratic
   Geometry::Vec3D NormV;         ///< Normal vector
   double Dist;                   ///< Distance 
 
-  void setBaseEqn();         
+  void setBaseEqn() override;         
 
  public:
 
@@ -53,21 +53,21 @@ class Plane : public Quadratic
   Plane(const int,const int);
   Plane(const int,const int,const Geometry::Vec3D&,const Geometry::Vec3D&);
   Plane(const Plane&);
-  Plane* clone() const;
+  Plane* clone() const override;
   Plane& operator=(const Plane&);
   bool operator==(const Plane&) const;
   bool operator!=(const Plane&) const;
-  virtual ~Plane();
+  ~Plane() override;
 
   /// Effective TYPENAME 
   static std::string classType() { return "Plane"; }
   /// Effective typeid
-  virtual std::string className() const { return "Plane"; }
+  std::string className() const override { return "Plane"; }
   /// Visitor acceptance
-  virtual void acceptVisitor(Global::BaseVisit& A) const 
+  void acceptVisitor(Global::BaseVisit& A) const override 
     {  A.Accept(*this); }
   /// Accept visitor for input
-  virtual void acceptVisitor(Global::BaseModVisit& A)
+  void acceptVisitor(Global::BaseModVisit& A) override
     { A.Accept(*this); }
 
   void setNormal(const Vec3D&);
@@ -78,7 +78,7 @@ class Plane : public Quadratic
   const Geometry::Vec3D& getNormal() const { return NormV; } 
   
 
-  int setSurface(const std::string&);
+  int setSurface(const std::string&) override;
   
   int setPlane(const Plane&);
   int setPlane(const Geometry::Vec3D&,const Geometry::Vec3D&);
@@ -88,13 +88,13 @@ class Plane : public Quadratic
 	       const Geometry::Vec3D&,const Geometry::Vec3D&);
   int setPlane(const Geometry::Vec3D&,const double);
 
-  int side(const Geometry::Vec3D&) const;
-  int onSurface(const Geometry::Vec3D&) const;
+  int side(const Geometry::Vec3D&) const override;
+  int onSurface(const Geometry::Vec3D&) const override;
   // stuff for finding intersections etc.
   double dotProd(const Plane&) const;   
   Geometry::Vec3D crossProd(const Plane&) const;      
-  double distance(const Geometry::Vec3D&) const;
-  Geometry::Vec3D surfaceNormal(const Geometry::Vec3D&) const;
+  double distance(const Geometry::Vec3D&) const override;
+  Geometry::Vec3D surfaceNormal(const Geometry::Vec3D&) const override;
   Geometry::Vec3D closestPt(const Geometry::Vec3D&) const;
   
   int isEqual(const Plane&) const;
@@ -103,20 +103,20 @@ class Plane : public Quadratic
   void mirrorPt(Geometry::Vec3D&) const;
   void mirrorAxis(Geometry::Vec3D&) const;
 
-  void rotate(const Geometry::Matrix<double>&);
-  void rotate(const Geometry::Quaternion&);
-  void mirror(const Geometry::Plane&);
+  void rotate(const Geometry::Matrix<double>&) override;
+  void rotate(const Geometry::Quaternion&) override;
+  void mirror(const Geometry::Plane&) override;
   void mirrorSelf();
 
   int reversedPlane() const; 
   void reversePtValid(const int,const Geometry::Vec3D&);
 
-  void displace(const Geometry::Vec3D&);
+  void displace(const Geometry::Vec3D&) override;
 
-  void print() const;
-  void write(std::ostream&) const;  
-  virtual void writeFLUKA(std::ostream&) const;
-  virtual void writePOVRay(std::ostream&) const;
+  void print() const override;
+  void write(std::ostream&) const override;  
+  void writeFLUKA(std::ostream&) const override;
+  void writePOVRay(std::ostream&) const override;
 };
 
 std::ostream&

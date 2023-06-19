@@ -49,15 +49,15 @@ class GlassMaterial : public neutMaterial
   GlassMaterial(const double,const double,const double,
 		const double,const double,const double);
   GlassMaterial(const GlassMaterial&);
-  virtual GlassMaterial* clone() const;
+  GlassMaterial* clone() const override;
   GlassMaterial& operator=(const GlassMaterial&);
-  virtual ~GlassMaterial();  
+  ~GlassMaterial() override;  
   
 
   void setRefIndex(const double R) { refIndex=R; }
 
   /// Returns the refractive index
-  virtual double calcRefIndex(const double) const { return refIndex; }
+  double calcRefIndex(const double) const override { return refIndex; }
 
 
 };

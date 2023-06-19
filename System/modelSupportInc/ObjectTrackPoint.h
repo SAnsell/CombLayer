@@ -64,7 +64,7 @@ namespace ModelSupport
   ObjectTrackPoint(const Geometry::Vec3D&);
   ObjectTrackPoint(const ObjectTrackPoint&);
   ObjectTrackPoint& operator=(const ObjectTrackPoint&);  
-  ~ObjectTrackPoint() {}   ///< Destructor
+  ~ObjectTrackPoint() override {}   ///< Destructor
 
   /// Set target point
   void setTarget(const Geometry::Vec3D& Pt) { TargetPt=Pt; }
@@ -75,7 +75,7 @@ namespace ModelSupport
   //  const std::map<int,ObjTrackItem>& getMap() const { return Items; }
 
   void createAttenPath(std::vector<long int>&,std::vector<double>&) const;
-  virtual void write(std::ostream&) const;
+  void write(std::ostream&) const override;
 
 };
 

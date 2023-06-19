@@ -61,12 +61,12 @@ class Segment42 :
   Segment42(const std::string&);
   Segment42(const Segment42&);
   Segment42& operator=(const Segment42&);
-  ~Segment42();
+  ~Segment42() override;
 
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int) override;
 
 };
 

@@ -51,7 +51,7 @@ class RefPlug :
 
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -61,17 +61,17 @@ class RefPlug :
   RefPlug(const std::string&);
   RefPlug(const RefPlug&);
   RefPlug& operator=(const RefPlug&);
-  virtual ~RefPlug();
+  ~RefPlug() override;
   virtual RefPlug* clone() const;
   
 
-  virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
-  virtual HeadRule getLayerHR(const size_t,const long int) const;
-  virtual HeadRule getCommonSurf(const long int) const;
+  Geometry::Vec3D getSurfacePoint(const size_t,const long int) const override;
+  HeadRule getLayerHR(const size_t,const long int) const override;
+  HeadRule getCommonSurf(const long int) const override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

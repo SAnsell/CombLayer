@@ -46,22 +46,22 @@ class BlankTube :
   double blankThick;           ///< Thickness of blank cap 
   
   
-  virtual void populate(const FuncDataBase&);
-  virtual void createSurfaces();
-  virtual void createObjects(Simulation&);
-  virtual void createLinks();
+  void populate(const FuncDataBase&) override;
+  void createSurfaces() override;
+  void createObjects(Simulation&) override;
+  void createLinks() override;
 
-  HeadRule makeOuterVoid(Simulation&);
+  HeadRule makeOuterVoid(Simulation&) override;
 
  public:
 
   BlankTube(const std::string&);
   BlankTube(const BlankTube&);
   BlankTube& operator=(const BlankTube&);
-  virtual ~BlankTube();
+  ~BlankTube() override;
 
   using VirtualTube::createPorts;
-  virtual void createPorts(Simulation&);
+  void createPorts(Simulation&) override;
   
       
 };

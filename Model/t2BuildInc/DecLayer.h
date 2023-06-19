@@ -48,7 +48,7 @@ class DecLayer : public Decoupled
   int centMat;                        ///< Central material
   double centTemp;                    ///< Central temperature
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   virtual void createObjects(Simulation&);
 
@@ -58,15 +58,15 @@ class DecLayer : public Decoupled
   DecLayer(const DecLayer&);
   DecLayer& operator=(const DecLayer&);
   /// Clone function
-  virtual DecLayer* clone() const { return new DecLayer(*this); }
-  virtual ~DecLayer();
+  DecLayer* clone() const override { return new DecLayer(*this); }
+  ~DecLayer() override;
 
   /// Doesnt internal pipe
-  virtual int needsHePipe() const { return 0; }
+  int needsHePipe() const override { return 0; }
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
 
 };
 

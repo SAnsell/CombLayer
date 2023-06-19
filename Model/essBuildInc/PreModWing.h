@@ -65,7 +65,7 @@ class PreModWing :
   
   HeadRule getLayerZone(const size_t) const;
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -76,11 +76,11 @@ class PreModWing :
   PreModWing(const PreModWing&);
   PreModWing& operator=(const PreModWing&);
   virtual PreModWing* clone() const;
-  virtual ~PreModWing();
+  ~PreModWing() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

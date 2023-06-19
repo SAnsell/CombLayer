@@ -55,7 +55,7 @@ class pipeTube : public attachSystem::ContainedComp,
   std::vector<double> wallFracList;
   std::vector<int> wallMatList; 
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -66,10 +66,10 @@ class pipeTube : public attachSystem::ContainedComp,
   pipeTube(const std::string&);
   pipeTube(const pipeTube&);
   pipeTube& operator=(const pipeTube&);
-  ~pipeTube();
+  ~pipeTube() override;
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
     
 };
 

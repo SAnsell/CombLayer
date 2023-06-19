@@ -175,7 +175,7 @@ class SKADI : public attachSystem::CopiedComp
   SKADI(const std::string&);
   SKADI(const SKADI&);
   SKADI& operator=(const SKADI&);
-  ~SKADI();
+  ~SKADI() override;
   
   void build(Simulation&,const GuideItem&,const Bunker&,const int);
   

@@ -97,7 +97,7 @@ class PressVessel :
 
   double targetLen;            ///< Target length [if set]
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&);
@@ -109,7 +109,7 @@ class PressVessel :
   PressVessel(const std::string&);
   PressVessel(const PressVessel&);
   PressVessel& operator=(const PressVessel&);
-  ~PressVessel(); 
+  ~PressVessel() override; 
 
   /// set target length
   void setTargetLength(const double T) { targetLen=T; }
@@ -118,7 +118,7 @@ class PressVessel :
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

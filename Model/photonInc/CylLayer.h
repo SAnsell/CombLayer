@@ -66,7 +66,7 @@ class CylLayer :
   size_t nLayers;                    ///< Layer count
   std::vector<LInfo> LVec;           ///< Layer Info
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -76,12 +76,12 @@ class CylLayer :
   CylLayer(const std::string&);
   CylLayer(const CylLayer&);
   CylLayer& operator=(const CylLayer&);
-  virtual ~CylLayer();
+  ~CylLayer() override;
   virtual CylLayer* clone() const;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 };
 
 }

@@ -106,11 +106,11 @@ class FORMAX : public R3Beamline
   FORMAX(const std::string&);
   FORMAX(const FORMAX&);
   FORMAX& operator=(const FORMAX&);
-  virtual ~FORMAX();
+  ~FORMAX() override;
 
 
-  virtual void build(Simulation&,const attachSystem::FixedComp&,
-	     const long int);
+  void build(Simulation&,const attachSystem::FixedComp&,
+	     const long int) override;
 
 };
 

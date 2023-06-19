@@ -49,17 +49,17 @@ class RectangleSource :
   double height;                ///< height
   double angleSpread;           ///< Angle distribution
   
-  void populate(const mainSystem::MITYPE&);
+  void populate(const mainSystem::MITYPE&) override;
   void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
+			const long int) override;
 
  public:
 
   RectangleSource(const std::string&);
   RectangleSource(const RectangleSource&);
   RectangleSource& operator=(const RectangleSource&);
-  virtual RectangleSource* clone() const;
-  virtual ~RectangleSource();
+  RectangleSource* clone() const override;
+  ~RectangleSource() override;
 
   /// accessor to power
   void setRectangle(const double,const double);
@@ -68,11 +68,11 @@ class RectangleSource :
 		 const attachSystem::FixedComp&,
 		 const long int);
 
-  virtual void rotate(const localRotate&);
-  virtual void createSource(SDef::Source&) const;
-  virtual void write(std::ostream&) const;
-  virtual void writePHITS(std::ostream&) const;
-  virtual void writeFLUKA(std::ostream&) const;
+  void rotate(const localRotate&) override;
+  void createSource(SDef::Source&) const override;
+  void write(std::ostream&) const override;
+  void writePHITS(std::ostream&) const override;
+  void writeFLUKA(std::ostream&) const override;
 };
 
 }

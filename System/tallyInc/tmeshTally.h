@@ -58,11 +58,11 @@ class tmeshTally : public Tally
 
   explicit tmeshTally(const int);
   tmeshTally(const tmeshTally&);
-  virtual tmeshTally* clone() const; 
+  tmeshTally* clone() const override; 
   tmeshTally& operator=(const tmeshTally&);
-  virtual ~tmeshTally();
+  ~tmeshTally() override;
 
-  virtual std::string className() const
+  std::string className() const override
     { return "TMeshTally"; }
 
   void setType(const int);
@@ -86,10 +86,10 @@ class tmeshTally : public Tally
   /// accessor to pairRange
   const pairRange& getMSHMF() const { return mshmf; }
   
-  virtual void rotateMaster();
-  int addLine(const std::string&);
+  void rotateMaster() override;
+  int addLine(const std::string&) override;
   void writeCoordinates(std::ostream&) const;
-  virtual void write(std::ostream&) const;
+  void write(std::ostream&) const override;
   
 };
 

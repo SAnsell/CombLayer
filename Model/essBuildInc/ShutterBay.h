@@ -60,7 +60,7 @@ class ShutterBay :
   int mat;              ///< Material
   int skinMat;          ///< Skin Material
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&);
@@ -70,11 +70,11 @@ class ShutterBay :
   ShutterBay(const std::string&);
   ShutterBay(const ShutterBay&);
   ShutterBay& operator=(const ShutterBay&);
-  virtual ~ShutterBay();
+  ~ShutterBay() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

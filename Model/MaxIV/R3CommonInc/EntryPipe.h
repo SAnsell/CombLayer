@@ -58,7 +58,7 @@ class EntryPipe :
   int wallMat;                  ///< Pipe material
   int flangeMat;                ///< Flange material
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -68,11 +68,11 @@ class EntryPipe :
   EntryPipe(const std::string&,const int =-1);
   EntryPipe(const EntryPipe&);
   EntryPipe& operator=(const EntryPipe&);
-  virtual ~EntryPipe();
+  ~EntryPipe() override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
 
 };
 

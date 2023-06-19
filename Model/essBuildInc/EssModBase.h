@@ -47,7 +47,7 @@ class EssModBase :
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int,
 			const attachSystem::FixedComp&,
-			const long int);
+			const long int) override;
   
  public:
 
@@ -55,7 +55,7 @@ class EssModBase :
   EssModBase(const EssModBase&);
   EssModBase& operator=(const EssModBase&);
   virtual EssModBase* clone() const =0;
-  virtual ~EssModBase();
+  ~EssModBase() override;
 
   virtual const attachSystem::FixedComp&
     getComponent(const std::string&) const;

@@ -55,7 +55,7 @@ class BunkerInsert :
   int wallMat;                   ///< wall material
   int voidMat;                   ///< void material
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&);
@@ -65,10 +65,10 @@ class BunkerInsert :
   BunkerInsert(const std::string&);
   BunkerInsert(const BunkerInsert&);
   BunkerInsert& operator=(const BunkerInsert&);
-  virtual ~BunkerInsert();
+  ~BunkerInsert() override;
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

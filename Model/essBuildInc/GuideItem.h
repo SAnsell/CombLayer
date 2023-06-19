@@ -72,9 +72,9 @@ private:
 
   const GuideItem* GPtr;     ///< Neighbour unit
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
+			const long int) override;
 
   void createSurfaces();
   void createLinks();
@@ -88,7 +88,7 @@ private:
   GuideItem(const std::string&,const size_t);
   GuideItem(const GuideItem&);
   GuideItem& operator=(const GuideItem&);
-  virtual ~GuideItem();
+  ~GuideItem() override;
 
   
   /// accessor to active status
@@ -100,7 +100,7 @@ private:
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

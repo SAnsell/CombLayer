@@ -56,7 +56,7 @@ class MLMonoDetail :
   
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -66,11 +66,11 @@ class MLMonoDetail :
   MLMonoDetail(const std::string&);
   MLMonoDetail(const MLMonoDetail&);
   MLMonoDetail& operator=(const MLMonoDetail&);
-  virtual ~MLMonoDetail();
+  ~MLMonoDetail() override;
 
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

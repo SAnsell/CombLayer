@@ -61,7 +61,7 @@ class JawValveBase :
   int voidMat;                  ///< Void material
   int wallMat;                  ///< Pipe material
   
-  virtual void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   virtual void createSurfaces();
   virtual void createObjects(Simulation&) =0;
   void createOuterObjects(Simulation&);
@@ -74,12 +74,12 @@ class JawValveBase :
   JawValveBase(const std::string&);
   JawValveBase(const JawValveBase&);
   JawValveBase& operator=(const JawValveBase&);
-  virtual ~JawValveBase();
+  ~JawValveBase() override;
 
   using FixedComp::createAll;
   void createAll(Simulation& System,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 };
 
 }

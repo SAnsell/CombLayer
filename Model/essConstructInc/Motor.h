@@ -74,7 +74,7 @@ class Motor :
   std::shared_ptr<boltRing> frontPlate;     ///< front flange
   std::shared_ptr<boltRing> backPlate;      ///< back flange
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createPlates(Simulation&);
@@ -85,7 +85,7 @@ class Motor :
   Motor(const std::string&);
   Motor(const Motor&);
   Motor& operator=(const Motor&);
-  virtual ~Motor();
+  ~Motor() override;
 
   /// set inner planes -- REALLY UGLY
   void setInnerPlanes(const int F,const int B)
@@ -97,7 +97,7 @@ class Motor :
 
   using attachSystem::FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 };
 
 }

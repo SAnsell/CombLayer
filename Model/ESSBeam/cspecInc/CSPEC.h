@@ -111,7 +111,7 @@ class CSPEC : public attachSystem::CopiedComp
   CSPEC(const std::string&);
   CSPEC(const CSPEC&);
   CSPEC& operator=(const CSPEC&);
-  ~CSPEC();
+  ~CSPEC() override;
   
   void build(Simulation&,const GuideItem&,
 	     const Bunker&,const int);

@@ -53,15 +53,15 @@ class t1PlateTarget :
   t1PlateTarget(const std::string&);
   t1PlateTarget(const t1PlateTarget&);
   t1PlateTarget& operator=(const t1PlateTarget&);
-  virtual ~t1PlateTarget();
-  virtual t1PlateTarget* clone() const;
+  ~t1PlateTarget() override;
+  t1PlateTarget* clone() const override;
   
 
-  void addProtonLine(Simulation&);
+  void addProtonLine(Simulation&) override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

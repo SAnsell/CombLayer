@@ -99,7 +99,7 @@ class TS2target :
   size_t nLayers;               ///< number of layers
   std::vector<double> mainFrac; ///< Main fraction
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();  
   void createNoseConeSurfaces();
   void createObjects(Simulation&);
@@ -112,15 +112,15 @@ class TS2target :
   TS2target(const std::string&);
   TS2target(const TS2target&);
   TS2target& operator=(const TS2target&);
-  virtual TS2target* clone() const; 
-  virtual ~TS2target();
+  TS2target* clone() const override; 
+  ~TS2target() override;
 
-  void addProtonLine(Simulation&);	 
+  void addProtonLine(Simulation&) override;	 
   void layerProcess(Simulation&);
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 
 };

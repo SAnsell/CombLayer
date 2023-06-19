@@ -53,9 +53,9 @@ class PlateUnit :
   Geometry::Vec3D calcFrontPoint(const Geometry::Vec3D&) const;
   Geometry::Vec3D calcBackPoint(const Geometry::Vec3D&) const;
   
-  virtual void populate(const FuncDataBase&);
-  virtual void createSurfaces();
-  virtual void createObjects(Simulation&);
+  void populate(const FuncDataBase&) override;
+  void createSurfaces() override;
+  void createObjects(Simulation&) override;
   
  public:
 
@@ -63,14 +63,14 @@ class PlateUnit :
   PlateUnit(const PlateUnit&);
   PlateUnit& operator=(const PlateUnit&);
   virtual PlateUnit* clone() const;
-  virtual ~PlateUnit();
+  ~PlateUnit() override;
 
   void setFrontPoints(const std::vector<Geometry::Vec3D>&);
   void setBackPoints(const std::vector<Geometry::Vec3D>&);
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const FixedComp&,
+			 const long int) override;
   
 };
 

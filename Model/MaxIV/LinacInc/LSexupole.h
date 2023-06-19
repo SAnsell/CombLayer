@@ -67,7 +67,7 @@ class LSexupole :
   int coilMat;                     ///< coil material
   int frameMat;                    ///< Iron material
 
-  void populate(const FuncDataBase&);  
+  void populate(const FuncDataBase&) override;  
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -78,11 +78,11 @@ class LSexupole :
   LSexupole(const std::string&,const std::string&);
   LSexupole(const LSexupole&);
   LSexupole& operator=(const LSexupole&);
-  virtual ~LSexupole();
+  ~LSexupole() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

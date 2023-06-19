@@ -103,7 +103,7 @@ class Cryostat :
   int wallMat;           ///< Wall Material
   int stickMat;          ///< stick Material
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createNullObjects();
@@ -114,11 +114,11 @@ class Cryostat :
   Cryostat(const std::string&);
   Cryostat(const Cryostat&);
   Cryostat& operator=(const Cryostat&);
-  virtual ~Cryostat();
+  ~Cryostat() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 
