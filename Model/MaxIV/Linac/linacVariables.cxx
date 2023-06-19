@@ -3609,6 +3609,7 @@ wallVariables(FuncDataBase& Control,
   // Top view: K_15-6_010
   const std::string bdRoom=wallKey+"BDRoom";
   Control.addVariable(bdRoom+"XStep",-735); // SPF line center
+  Control.addVariable(bdRoom+"RoofLedgeWidth",50.0); // K_24-6_010 - upper left and bottom views. Warning: geometry errors if differs from 50.
   Control.addVariable(bdRoom+"Height",200.0); // K_15-6_012 B-B
   Control.addVariable(bdRoom+"Length",540); // K_15-6_011
   Control.addVariable(bdRoom+"FloorThick",200.0); // K_15-6_012 B-B
@@ -3619,11 +3620,14 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(bdRoom+"SideWallThick",200.0); // K_15-6_010
   Control.addVariable(bdRoom+"BackSteelThick",50.0); // K_15-6_011
   Control.addVariable(bdRoom+"HatchLength",190.0); // dump7.pdf + measured email from AR 230613
+  Control.addVariable(bdRoom+"DoorWidth",100.0); // two Concreete blocks - calculated with AR
   Control.addVariable(bdRoom+"InnerWallThick",40.0); // K_15-6_010
   Control.addVariable(bdRoom+"InnerWallLength",365.0); // K_15-6_010
   Control.addVariable(bdRoom+"TDCWidth",380.0); // K_15-6_010
+  Control.addVariable(bdRoom+"TDCCoverOffset",500.0); // K_24-6_010
   Control.addVariable(bdRoom+"SPFWidth",460.0); // K_15-6_010
   Control.addVariable(bdRoom+"FutureWidth",280.0); // K_15-6_010
+  Control.addVariable(bdRoom+"FutureCoverOffset",500.0); // K_24-6_010
   Control.addVariable(bdRoom+"RoofGapWidth",20.0); // measured by AR, see http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/spf/img_5464.jpg/view
 
   Control.addVariable(wallKey+"WasteRoomWidth",200.0); // derived from K_20-1_08G6b1:  2700-300-40
