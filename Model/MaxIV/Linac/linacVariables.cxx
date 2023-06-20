@@ -3041,6 +3041,7 @@ Segment45(FuncDataBase& Control,
   setVariable::MainBeamDumpGenerator EBGen;
   EBGen.generate(Control,lKey+"MainBeamDump");
   Control.addVariable(lKey+"MainBeamDumpXAngle",180+thetaBeamDump);
+  Control.addVariable(lKey+"MainBeamDumpYAngle",180);
   // 57 - measured by AR; 298 - offset from the beam line level and rotation
   Control.addVariable(lKey+"MainBeamDumpZStep",57-298.0);
   // 120=100+2*10 = full length; 25.8 - offset due to rotation;
