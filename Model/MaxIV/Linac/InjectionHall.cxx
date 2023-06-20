@@ -226,10 +226,10 @@ InjectionHall::populate(const FuncDataBase& Control)
   bdRoomRoofConcreteThick=Control.EvalVar<double>(keyName+"BDRoomRoofConcreteThick");
   bdRoomRoofSteelThick=Control.EvalVar<double>(keyName+"BDRoomRoofSteelThick");
   bdRoomRoofSteelWidth=Control.EvalVar<double>(keyName+"BDRoomRoofSteelWidth");
+  bdRoomRoofSteelLength=Control.EvalVar<double>(keyName+"BDRoomRoofSteelLength");
   bdRoomFrontWallThick=Control.EvalVar<double>(keyName+"BDRoomFrontWallThick");
   bdRoomSideWallThick=Control.EvalVar<double>(keyName+"BDRoomSideWallThick");
   bdRoomBackSteelThick=Control.EvalVar<double>(keyName+"BDRoomBackSteelThick");
-  bdRoomHatchLength=Control.EvalVar<double>(keyName+"BDRoomHatchLength");
   bdRoomEntranceWidth=Control.EvalVar<double>(keyName+"BDRoomEntranceWidth");
   bdRoomXStep=Control.EvalVar<double>(keyName+"BDRoomXStep");
   bdRoomRoofLedgeWidth=Control.EvalVar<double>(keyName+"BDRoomRoofLedgeWidth");
@@ -574,7 +574,7 @@ InjectionHall::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7516,buildIndex+7515,Z,
 				  -bdRoomRoofSteelThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7511,buildIndex+7501,Y,bdRoomFrontWallThick);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+7512,buildIndex+7511,Y,bdRoomHatchLength);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7512,buildIndex+31,Y,-bdRoomRoofSteelLength);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7522,buildIndex+7511,Y,
 				  bdRoomLength-bdRoomBackSteelThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7521,buildIndex+21,Y,

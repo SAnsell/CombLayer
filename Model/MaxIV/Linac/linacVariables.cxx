@@ -3616,10 +3616,10 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(bdRoom+"RoofConcreteThick",24.0); // K_24-6_010 and dump7.pdf
   Control.addVariable(bdRoom+"RoofSteelThick",26.0); // K_24-6_010 and dump7.pdf
   Control.addVariable(bdRoom+"RoofSteelWidth",140.0); // measured with ruler
+  Control.addVariable(bdRoom+"RoofSteelLength",330.0); // K_24-6_012
   Control.addVariable(bdRoom+"FrontWallThick",100.0); // K_15-6_011
   Control.addVariable(bdRoom+"SideWallThick",200.0); // K_15-6_010
   Control.addVariable(bdRoom+"BackSteelThick",50.0); // K_15-6_011
-  Control.addVariable(bdRoom+"HatchLength",190.0); // dump7.pdf + measured email from AR 230613
   Control.addVariable(bdRoom+"EntranceWidth",100.0); // two Concreete blocks - calculated with AR
   Control.addVariable(bdRoom+"InnerWallThick",40.0); // K_15-6_010
   Control.addVariable(bdRoom+"InnerWallLength",365.0); // K_15-6_010
