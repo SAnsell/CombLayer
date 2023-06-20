@@ -154,7 +154,8 @@ class InjectionHall :
   double bdRoomHeight;          ///< Under-the-floor beam dump room void height
   double bdRoomLength;          ///< Beam dump room void length
   double bdRoomFloorThick;      ///< Beam dump room floor thickness
-  double bdRoomRoofConcreteThick;  ///< Beam dump room roof concrete thickness
+  double bdRoomRoofUpperConcreteThick;  ///< Beam dump room roof concrete thickness
+  double bdRoomRoofBottomSteelThick; ///< bottom-right steel layer
   double bdRoomRoofSteelThick;  ///< Beam dump room roof steel thickness
   double bdRoomRoofSteelWidth;  ///< Width of roof steel layers (above BD)
   double bdRoomRoofSteelLength;  ///< Length of roof steel layers (above BD)
@@ -172,6 +173,7 @@ class InjectionHall :
   double bdRoomFutureWidth;     ///< Width of the area with the future beam line beam dump
   double bdRoomFutureCoverOffset; ///< x-axis offset of the future line beam dump area roof steel cover
   double bdRoomRoofGapWidth;    ///< Pipe gap width in the beam dump room roof
+  double bdRoomRoofUnderhangLength; ///< difference in length of two BD room roof layers
 
   double wasteRoomLength;       ///< Inner length of the radioactive waste room
   double wasteRoomWidth;        ///< Inner width of the radioactive waste room

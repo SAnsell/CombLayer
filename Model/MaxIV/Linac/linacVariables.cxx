@@ -2988,7 +2988,7 @@ Segment45(FuncDataBase& Control,
      atan((endPt.Z()-startPt.Z())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
   // floor gap
-  Control.addVariable(lKey+"CutRadius",9.5); // just a bit smaller than InjectionHallBDRoomRoofGapWidth/2
+  Control.addVariable(lKey+"CutRadius",6); // just a bit smaller than InjectionHallBDRoomRoofGapWidth/2
   // beam dump inclinatin, see dump7.pdf
   const double thetaBeamDump = std::asin((1046.0-753.0)/700.0)*180.0/M_PI;
   // SPF45 should have the same inclination as the beam dump, but in
@@ -3609,14 +3609,17 @@ wallVariables(FuncDataBase& Control,
   // Top view: K_15-6_010
   const std::string bdRoom=wallKey+"BDRoom";
   Control.addVariable(bdRoom+"XStep",-735); // SPF line center
-  Control.addVariable(bdRoom+"RoofLedgeWidth",50.0); // K_24-6_010 - upper left and bottom views. Warning: geometry errors if differs from 50.
   Control.addVariable(bdRoom+"Height",200.0); // K_15-6_012 B-B
   Control.addVariable(bdRoom+"Length",540); // K_15-6_011
   Control.addVariable(bdRoom+"FloorThick",200.0); // K_15-6_012 B-B
-  Control.addVariable(bdRoom+"RoofConcreteThick",24.0); // K_24-6_010 and dump7.pdf
-  Control.addVariable(bdRoom+"RoofSteelThick",26.0); // K_24-6_010 and dump7.pdf
+  Control.addVariable(bdRoom+"RoofLedgeWidth",50.0); // K_24-6_010 - upper left and bottom views. Warning: geometry errors if differs from 50.
+  Control.addVariable(bdRoom+"RoofUpperConcreteThick",24.0); // K_24-6_010 and dump7.pdf (upper-left layer - not to be mixed with the bottom-right one consisting of underhang)
+  Control.addVariable(bdRoom+"RoofBottomSteelThick",20.0); // K_24-6_012
+  Control.addVariable(bdRoom+"RoofSteelThick",30.0); // K_24-6_012, K_24-6_010 and dump7.pdf, it's seel/concrete depending on whether we are above BD or not
   Control.addVariable(bdRoom+"RoofSteelWidth",140.0); // measured with ruler
-  Control.addVariable(bdRoom+"RoofSteelLength",330.0); // K_24-6_012
+  Control.addVariable(bdRoom+"RoofSteelLength",320.0); // K_24-6_012
+  Control.addVariable(bdRoom+"RoofGapWidth",20.0); // measured by AR, see http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/spf/img_5464.jpg/view
+  Control.addVariable(bdRoom+"RoofUnderhangLength",10.0); // K_24-6_012
   Control.addVariable(bdRoom+"FrontWallThick",100.0); // K_15-6_011
   Control.addVariable(bdRoom+"SideWallThick",200.0); // K_15-6_010
   Control.addVariable(bdRoom+"BackSteelThick",50.0); // K_15-6_011
@@ -3628,7 +3631,6 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(bdRoom+"SPFWidth",460.0); // K_15-6_010
   Control.addVariable(bdRoom+"FutureWidth",280.0); // K_15-6_010
   Control.addVariable(bdRoom+"FutureCoverOffset",500.0); // K_24-6_010
-  Control.addVariable(bdRoom+"RoofGapWidth",20.0); // measured by AR, see http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/spf/img_5464.jpg/view
 
   Control.addVariable(wallKey+"WasteRoomWidth",200.0); // derived from K_20-1_08G6b1:  2700-300-40
   Control.addVariable(wallKey+"WasteRoomLength",600.0); // derived from K_20-1_08G6b1: 10316-3516-40*2

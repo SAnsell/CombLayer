@@ -223,7 +223,8 @@ InjectionHall::populate(const FuncDataBase& Control)
   bdRoomHeight=Control.EvalVar<double>(keyName+"BDRoomHeight");
   bdRoomLength=Control.EvalVar<double>(keyName+"BDRoomLength");
   bdRoomFloorThick=Control.EvalVar<double>(keyName+"BDRoomFloorThick");
-  bdRoomRoofConcreteThick=Control.EvalVar<double>(keyName+"BDRoomRoofConcreteThick");
+  bdRoomRoofUpperConcreteThick=Control.EvalVar<double>(keyName+"BDRoomRoofUpperConcreteThick");
+  bdRoomRoofBottomSteelThick=Control.EvalVar<double>(keyName+"BDRoomRoofBottomSteelThick");
   bdRoomRoofSteelThick=Control.EvalVar<double>(keyName+"BDRoomRoofSteelThick");
   bdRoomRoofSteelWidth=Control.EvalVar<double>(keyName+"BDRoomRoofSteelWidth");
   bdRoomRoofSteelLength=Control.EvalVar<double>(keyName+"BDRoomRoofSteelLength");
@@ -241,6 +242,7 @@ InjectionHall::populate(const FuncDataBase& Control)
   bdRoomFutureWidth=Control.EvalVar<double>(keyName+"BDRoomFutureWidth");
   bdRoomFutureCoverOffset=Control.EvalVar<double>(keyName+"BDRoomFutureCoverOffset");
   bdRoomRoofGapWidth=Control.EvalVar<double>(keyName+"BDRoomRoofGapWidth");
+  bdRoomRoofUnderhangLength=Control.EvalVar<double>(keyName+"BDRoomRoofUnderhangLength");
   wasteRoomLength=Control.EvalVar<double>(keyName+"WasteRoomLength");
   wasteRoomWidth=Control.EvalVar<double>(keyName+"WasteRoomWidth");
   wasteRoomWallThick=Control.EvalVar<double>(keyName+"WasteRoomWallThick");
@@ -567,18 +569,22 @@ InjectionHall::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7501,buildIndex+21,Y,
 				  -(bdRoomLength+bdRoomFrontWallThick));
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7505,buildIndex+5,Z,
-		    -(bdRoomRoofSteelThick+bdRoomRoofConcreteThick+bdRoomHeight+bdRoomFloorThick));
+		    -(bdRoomRoofSteelThick+bdRoomRoofUpperConcreteThick+bdRoomHeight+bdRoomFloorThick));
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7506,buildIndex+7505,Z,bdRoomFloorThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7515,buildIndex+5,Z,
-				  -bdRoomRoofConcreteThick);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+7516,buildIndex+7515,Z,
+				  -bdRoomRoofUpperConcreteThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7525,buildIndex+5,Z,
 				  -bdRoomRoofSteelThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7516,buildIndex+7525,Z,
+				  -bdRoomRoofBottomSteelThick);
+
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7511,buildIndex+7501,Y,bdRoomFrontWallThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7512,buildIndex+31,Y,-bdRoomRoofSteelLength);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+7522,buildIndex+7511,Y,
-				  bdRoomLength-bdRoomBackSteelThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7521,buildIndex+21,Y,
 				  -bdRoomInnerWallLength);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7522,buildIndex+7511,Y,
+				  bdRoomLength-bdRoomBackSteelThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7531,buildIndex+7512,Y,-bdRoomRoofUnderhangLength);
 
   // planes for the inner walls of Main beam dump room
   ModelSupport::buildPlane(SMap,buildIndex+7523,Origin+X*(bdRoomXStep-bdRoomSPFWidth/2.0),X);
@@ -793,7 +799,7 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("BackWallConcrete",System,cellIndex++,backWallMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,
-				"31 -21 7003 -1003 7515 -6");
+				"31 -21 7003 -1003 7525 -6");
   makeCell("BackWallIron",System,cellIndex++,wallIronMat,0.0,HR);
 
   // SPF hallway
@@ -1060,31 +1066,37 @@ InjectionHall::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -21 53 -7023 -5 15");
   makeCell("Soil",System,cellIndex++,soilMat,0.0,HR);
 
-
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -31 7023 -7623 15 -5");
   makeCell("Floor",System,cellIndex++,floorMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7623 -7503 15 -5");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7531 7623 -7503 15 -5");
+  makeCell("Floor",System,cellIndex++,floorMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7531 -7512 7623 -7503 15 -7516");
+  makeCell("Floor",System,cellIndex++,floorMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7531 -7512 7623 -7503 7515 -5");
   makeCell("Floor",System,cellIndex++,floorMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"31 -21 7023 -7003 15 -5");
   makeCell("Floor",System,cellIndex++,floorMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"31 -21 7003 -7623 15 -7515");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"31 -21 7003 -7623 15 -7525");
   makeCell("Floor",System,cellIndex++,floorMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7512 -31 7623 -7543 7515 -5");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7512 -31 7623 -7543 7525 -5");
   makeCell("Floor",System,cellIndex++,floorMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7512 -21 7623 -7503 15 -7516");
   makeCell("Floor",System,cellIndex++,floorMat,0.0,HR);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7531 7504 -7624 15 -5");
+  makeCell("Floor",System,cellIndex++,floorMat,0.0,HR);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7531 -7512 7504 -7624 15 -7516");
+  makeCell("Floor",System,cellIndex++,floorMat,0.0,HR);
 
-
-
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7504 -7624  -5 15");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7531 -7512 7504 -7624  7515 -5");
   makeCell("Floor",System,cellIndex++,floorMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -31 7624 -114 -5 15");
@@ -1092,9 +1104,6 @@ InjectionHall::createObjects(Simulation& System)
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"31 -21 7504 -1003 15 -7516");
   makeCell("Floor",System,cellIndex++,floorMat,0.0,HR);
-
-
-
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"31 -21 1003 -114 -5 15");
   makeCell("Floor",System,cellIndex++,floorMat,0.0,HR);
@@ -1290,10 +1299,10 @@ InjectionHall::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -31 7503 -7543 7515 -5");
   makeCell("BDRoof",System,cellIndex++,floorMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7512 -31 7543 -7544 7515 -5");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7512 -31 7543 -7544 7525 -5");
   makeCell("BDRoof",System,cellIndex++,bdRoofIronMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7503 -7544 7516 -7515");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7531 7503 -7544 7516 -7515");
   makeCell("HatchFuture",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7503 -7573 7515 -5");
@@ -1305,42 +1314,56 @@ InjectionHall::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7574 -7544 7515 -5");
   makeCell("HatchFuture",System,cellIndex++,floorMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -31 7544 -7553 7515 -5");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7544 -7553 7515 -5");
   makeCell("BDRoof",System,cellIndex++,floorMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7512 -21 7623 -7624 7516 -7515"); // here
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7512 -31 7544 -7553 7525 -5");
+  makeCell("BDRoof",System,cellIndex++,floorMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7512 -21 7623 -7624 7516 -7525"); // here
   makeCell("BDRoofSteel",System,cellIndex++,bdRoofIronMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7544 -7553 7516 -7515");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7531 -7512 7623 -7624 7516 -7515"); // underlag
+  makeCell("BDRoofSteel",System,cellIndex++,bdRoofIronMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7531 7544 -7553 7516 -7515");
   makeCell("BDRoof",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7512 -31 7553 -7554 7515 -5");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7512 -31 7553 -7554 7525 -5");
   makeCell("BDRoofSPF",System,cellIndex++,bdRoofIronMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7553 -7583 7515 -5");
   makeCell("BDRoofSPF",System,cellIndex++,floorMat,0.0,HR);
   // This cell is cut by the entrance pipe:
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7583 -7584 7516 -5");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7531 7583 -7584 7516 -5");
   makeCell("BDRoofSPFPenetration",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7531 -7512 7583 -7584 7515 -5");
+  makeCell("BDRoofSPFPenetration1",System,cellIndex++,voidMat,0.0,HR); // material???
+
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7584 -7554 7515 -5");
   makeCell("BDRoofSPF",System,cellIndex++,floorMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7553 -7583 7516 -7515");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7531 7553 -7583 7516 -7515");
   makeCell("HatchSPF",System,cellIndex++,voidMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7584 -7554 7516 -7515");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7531 7584 -7554 7516 -7515");
   makeCell("HatchSPF",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -31 7554 -7563 -5 7515");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7554 -7563 7515 -5");
   makeCell("BDRoof",System,cellIndex++,floorMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7554 -7563 7516 -7515");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7512 -31 7554 -7563 7525 -5");
+  makeCell("BDRoof",System,cellIndex++,floorMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7531 7554 -7563 7516 -7515");
   makeCell("BDRoof",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7512 -31 7563 -7564 7515 -5");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7512 -31 7563 -7564 7525 -5");
   makeCell("BDRoof",System,cellIndex++,bdRoofIronMat,0.0,HR);
 
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7563 -7603 7516 -7515");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7531 7563 -7603 7516 -7515");
   makeCell("HatchTDC",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7563 -7593 7515 -5");
@@ -1352,7 +1375,7 @@ InjectionHall::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7594 -7603 7515 -5");
   makeCell("HatchTDC",System,cellIndex++,floorMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7512 -31 7564 -7624 7515 -5"); // here
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7512 -31 7564 -7624 7525 -5"); // here
   makeCell("BDRoof",System,cellIndex++,floorMat,0.0,HR);
 
 
@@ -1360,8 +1383,12 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("BDRoof",System,cellIndex++,floorMat,0.0,HR);
 
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7512 7603 -7504 -5 7516");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7531 7603 -7504 7516 -5");
+  makeCell("BDEntrance",System,cellIndex++,voidMat,0.0,HR); // void: see http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/20210730_162024.jpg/view
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7531 -7512 7603 -7504 7515 -5");
   makeCell("BDEntrance",System,cellIndex++,voidMat,0.0,HR);
+
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7511 -7521 7503 -7504 7506 -7516");
   makeCell("BD",System,cellIndex++,voidMat,0.0,HR);
