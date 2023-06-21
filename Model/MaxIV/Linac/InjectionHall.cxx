@@ -1111,7 +1111,7 @@ InjectionHall::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -2 53 -7113 -5 15");
   makeCell("Soil",System,cellIndex++,soilMat,0.0,HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -2 7113 -114 -5 15");
-  makeCell("Floor",System,cellIndex++,floorMat,0.0,HR);
+  makeCell("FloorBeyondBackWall",System,cellIndex++,floorMat,0.0,HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -101 114 -54 -5 15");
   makeCell("Soil",System,cellIndex++,soilMat,0.0,HR);
 
@@ -1286,7 +1286,7 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("BDBackWallSteel",System,cellIndex++,wallIronMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7522 -21 7523 -7524 7506 -7516");
-  makeCell("BDBackWallSteel",System,cellIndex++,wallIronMat,0.0,HR);
+  makeCell("BDBackWallSteelSPF",System,cellIndex++,wallIronMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7522 -21 7535 -7504 7506 -7516");
   makeCell("BDBackWallSteel",System,cellIndex++,wallIronMat,0.0,HR);
@@ -1476,13 +1476,29 @@ InjectionHall::createObjects(Simulation& System)
 
   // IH Roof
   layerProcess(System,"RoofPreBeamDump",
-  	       SMap.realSurf(buildIndex+6),
-  	       -SMap.realSurf(buildIndex+26),
-  	       roofNLayers);
+               SMap.realSurf(buildIndex+6),
+               -SMap.realSurf(buildIndex+26),
+               roofNLayers);
   layerProcess(System,"RoofBeamDump",
-  	       SMap.realSurf(buildIndex+6),
-  	       -SMap.realSurf(buildIndex+26),
-  	       roofNLayers);
+               SMap.realSurf(buildIndex+6),
+               -SMap.realSurf(buildIndex+26),
+               roofNLayers);
+
+  // Floor beyond BackWall
+  layerProcess(System,"FloorBeyondBackWall",
+               SMap.realSurf(buildIndex+15),
+               -SMap.realSurf(buildIndex+5),
+               btgNLayers);
+
+  layerProcess(System,"BDBackWallSteelSPF",
+               SMap.realSurf(buildIndex+7522),
+               -SMap.realSurf(buildIndex+21),
+               backWallNLayers);
+
+  layerProcess(System,"BDBackWall",
+               SMap.realSurf(buildIndex+21),
+               -SMap.realSurf(buildIndex+22),
+               backWallNLayers);
 
   return;
 }
