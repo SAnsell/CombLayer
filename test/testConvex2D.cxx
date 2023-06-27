@@ -33,8 +33,6 @@
 #include <tuple>
 #include <random>
 
-#include <boost/format.hpp>
-
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
@@ -141,7 +139,10 @@ testConvex2D::initCircle(Convex2D& A,const Geometry::Vec3D& Cent,
 		    U*Random::randNorm(Radius*sin(angle),sigma)+
 		    V*Random::randNorm(Radius*sin(angle),sigma));
     }
-  random_shuffle(Pts.begin(),Pts.end());
+  std::random_device rd;
+  std::mt19937 g(rd());
+  std::shuffle(Pts.begin(),Pts.end(),g);
+
   A.setPoints(Pts);
   return;
 }
@@ -184,11 +185,10 @@ testConvex2D::applyTest(const int extra)
   const int TSize(sizeof(TPtr)/sizeof(testPtr));
 
   int retValue(0);
-  boost::format FmtStr("test%1$s%|30t|(%2$d)\n");
   if (!extra)
     {
       for(int i=0;i<TSize;i++)
-	std::cout<<FmtStr % TestName[i] % (i+1);
+	std::cout<<std::setw(30)<<TestName[i]<<"("<<i+1<<")"<<std::endl;
       return 0;
     }
 

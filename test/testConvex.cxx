@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testConvex.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,6 @@
 #include <algorithm>
 #include <iterator>
 #include <random>
-#include <boost/format.hpp>
 
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
@@ -98,11 +97,10 @@ testConvex::applyTest(const int extra)
   const int TSize(sizeof(TPtr)/sizeof(testPtr));
 
   int retValue(0);
-  boost::format FmtStr("test%1$s%|30t|(%2$d)\n");
   if (!extra)
     {
       for(int i=0;i<TSize;i++)
-	std::cout<<FmtStr % TestName[i] % (i+1);
+	std::cout<<std::setw(30)<<TestName[i]<<"("<<i+1<<")"<<std::endl;
       return 0;
     }
 
