@@ -3,7 +3,7 @@
 
  * File: LinacInc/InjectionHall.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2023 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -154,18 +154,26 @@ class InjectionHall :
   double bdRoomHeight;          ///< Under-the-floor beam dump room void height
   double bdRoomLength;          ///< Beam dump room void length
   double bdRoomFloorThick;      ///< Beam dump room floor thickness
-  double bdRoomRoofThick;       ///< Beam dump room steel roof thickness
-  double bdRoomRoofSteelWidth;  ///< Width of roof steel layers
+  double bdRoomRoofUpperConcreteThick;  ///< Beam dump room roof concrete thickness
+  double bdRoomRoofBottomSteelThick; ///< bottom-right steel layer
+  double bdRoomRoofSteelThick;  ///< Beam dump room roof steel thickness
+  double bdRoomRoofSteelWidth;  ///< Width of roof steel layers (above BD)
+  double bdRoomRoofSteelLength;  ///< Length of roof steel layers (above BD)
   double bdRoomFrontWallThick;  ///< Beam dump room front wall thickness
   double bdRoomSideWallThick;   ///< Thickness of the beam dump room side walls
   double bdRoomBackSteelThick;  ///< Beam dump room back steel layer thickness
-  double bdRoomHatchLength;     ///< Length of penetration in the floor to the beam dump room
+  double bdRoomEntranceWidth;   ///< Beam dump room entrance door (floor penetration) width
   double bdRoomXStep;           ///< Beam dump room x-offset
+  double bdRoomRoofLedgeWidth;  ///< beam dump roof side ledge width
   double bdRoomInnerWallThick;  ///< Thickness of inner walls
   double bdRoomInnerWallLength; ///< Length of inner walls
-  double bdRoomTDCWidth;        ///< Width of area with the TDC beam dump
-  double bdRoomSPFWidth;        ///< Width of area with the SPF beam dump
-  double bdRoomNewWidth;        ///< Width of area with the NEW beam line beam dump
+  double bdRoomTDCWidth;        ///< Width of the beam dump area under the TDC beam dump
+  double bdRoomTDCCoverOffset;  ///< x-axis offset of the TDC line beam dump area steel cover
+  double bdRoomSPFWidth;        ///< Width of the area with the SPF beam dump
+  double bdRoomFutureWidth;     ///< Width of the area with the future beam line beam dump
+  double bdRoomFutureCoverOffset; ///< x-axis offset of the future line beam dump area roof steel cover
+  double bdRoomRoofGapWidth;    ///< Pipe gap width in the beam dump room roof
+  double bdRoomRoofUnderhangLength; ///< difference in length of two BD room roof layers
 
   double wasteRoomLength;       ///< Inner length of the radioactive waste room
   double wasteRoomWidth;        ///< Inner width of the radioactive waste room
@@ -206,7 +214,7 @@ class InjectionHall :
  public:
 
   InjectionHall(const std::string&);
-  InjectionHall(const InjectionHall&);
+  //  InjectionHall(const InjectionHall&);
   InjectionHall& operator=(const InjectionHall&);
   ~InjectionHall() override;
 

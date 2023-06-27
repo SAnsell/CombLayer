@@ -428,9 +428,11 @@ global_settings {
     #declare projection = 0;
   #break
   #case(strcmp(ITEM,"BTG")) // BTG wall
-    #declare cameraLocation = <630, 10400, 100>;
-    #declare cameraLookAt   = <240, 10000, 80>;
-    #declare cameraAngle = 70;
+    // #declare cameraLocation = <630, 10400, 100>;
+    #declare cameraLocation = <630, 8750, 50>;
+    // #declare cameraLookAt   = <240, 10000, 80>;
+    #declare cameraLookAt   = <100, 9500, 30>;
+    #declare cameraAngle = 50;
     #declare projection = 0;
   #break
   #case(strcmp(ITEM,"BDRoom")) // Main beam dump room (view from SPF hall)
@@ -602,6 +604,12 @@ global_settings {
     #declare projection = 0;
     #declare cameraAngle = 30;
   #break
+    #case(strcmp(ITEM,"TDCend")) // end of the TDC beam line
+    #declare cameraLocation = <-35, 6200, 100>;
+    #declare cameraLookAt   = <-600, 8340, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 30;
+  #break
     #case(strcmp(ITEM,"L2SPF"))
     #declare cameraLocation = <500, 1700, 100>;
     #declare cameraLookAt   = <300, 1700, 0>;
@@ -619,6 +627,12 @@ global_settings {
     #declare projection = 0;
     #declare cameraAngle = 50;
   #break
+    #case(strcmp(ITEM,"MainBeamDump"))
+    #declare cameraLocation = <-547, 9517, -292>;
+    #declare cameraLookAt   = <-741, 9697, -212>;
+    #declare projection = 0;
+    #declare cameraAngle = 90;
+  #break
     #case(strcmp(ITEM,"NoRoof1")) // BC2 area
     #declare cameraLocation = <500, -1100, 1500>;
     #declare cameraLookAt   = <0, 1500,  0>;
@@ -630,6 +644,12 @@ global_settings {
     #declare cameraLookAt   = <-400, 4600, 0>;
     #declare projection = 0;
     #declare cameraAngle = 30;
+  #break
+    #case(strcmp(ITEM,"NoRoof3")) // TDC+SPF after MidWall
+    #declare cameraLocation = <-70, 4000, 1500>;
+    #declare cameraLookAt   = <-400, 6500, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 50;
   #break
   #else // whole beamline view (like All)
     #declare cameraLocation = <-500, 5200, 1000>;

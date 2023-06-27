@@ -344,7 +344,6 @@ Segment29Magnet(FuncDataBase& Control,
   YagScreenGen.generateScreen(Control,lKey+"YagScreenB",1);   // closed
   Control.addVariable(lKey+"YagScreenBYAngle",-90.0);
 
-  TDCBDGen.setInnerCore(1.0,1.0,"Copper");
   TDCBDGen.generate(Control,lKey+"BeamStopA");
 
   Control.addVariable(lKey+"BeamStopAYAngle",-90.0);

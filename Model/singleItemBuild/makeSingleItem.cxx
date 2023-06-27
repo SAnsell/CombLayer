@@ -106,6 +106,7 @@
 #include "DipoleDIBMag.h"
 #include "Dipole.h"
 #include "EArrivalMon.h"
+#include "MainBeamDump.h"
 #include "EBeamStop.h"
 #include "SixPortTube.h"
 #include "FourPortTube.h"
@@ -209,7 +210,7 @@ makeSingleItem::build(Simulation& System,
 	"GateValveCube","GateValveCylinder","CleaningMagnet",
 	"CorrectorMag","Jaws","LQuadF","LQuadH","LSexupole",
 	"MagnetBlock","Sexupole","MagnetM1","MagnetU1",
-	"Octupole","CeramicGap",
+        "Octupole","CeramicGap","MainBeamDump",
 	"EBeamStop","FMask","R3ChokeChamber",
 	"DipoleExtract","DipoleSndBend","Dipole",
 	"EPSeparator","EPCombine","EPContinue",
@@ -532,6 +533,17 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
+  if (item == "MainBeamDump")
+    {
+      std::shared_ptr<tdcSystem::MainBeamDump>
+	eBeam(new tdcSystem::MainBeamDump("MainBeamDump"));
+      OR.addObject(eBeam);
+
+      eBeam->addAllInsertCell(voidCell);
+      eBeam->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
   if (item == "EBeamStop")
     {
       std::shared_ptr<tdcSystem::EBeamStop>
@@ -670,7 +682,7 @@ makeSingleItem::build(Simulation& System,
       dPipe->addAllInsertCell(voidCell);
       dPipe->createAll(System,World::masterOrigin(),0);
     }
-  
+
   if (item == "EArrivalMon" )
     {
       std::shared_ptr<tdcSystem::EArrivalMon>
@@ -898,12 +910,12 @@ makeSingleItem::build(Simulation& System,
       const Geometry::Vec3D photOrg(0,0,0);
       const Geometry::Vec3D elecOrg(3.84502,0,0);
       const Geometry::Vec3D elecAxis(sin(angle),cos(angle),0);
-      
+
       std::shared_ptr<xraySystem::R3ChokeChamber>
 	CChamber(new xraySystem::R3ChokeChamber("R3Chamber"));
       OR.addObject(CChamber);
       CChamber->setEPOriginPair(photOrg,elecOrg,elecAxis);
-	      
+
       CChamber->addAllInsertCell(voidCell);
       CChamber->createAll(System,World::masterOrigin(),0);
 
@@ -1280,7 +1292,7 @@ makeSingleItem::build(Simulation& System,
 
       OR.addObject(VC);
       OR.addObject(DIB);
-      
+
       //VC->addAllInsertCell(voidCell);
       //VC->createAll(System,World::masterOrigin(),0);
 
@@ -1559,7 +1571,7 @@ makeSingleItem::build(Simulation& System,
 	std::shared_ptr<constructSystem::TubeDetBox>
 	  Box(new constructSystem::TubeDetBox("TDetBox",0));
 	OR.addObject(Box);
-	
+
 	Box->addInsertCell(voidCell);
 	Box->createAll(System,World::masterOrigin(),0);
 	return;
@@ -1569,7 +1581,7 @@ makeSingleItem::build(Simulation& System,
 	std::shared_ptr<beamlineSystem::PlateUnit>
 	  FA(new beamlineSystem::PlateUnit("FA"));
 	OR.addObject(FA);
-	
+
 	FA->addInsertCell(voidCell);
 	FA->createAll(System,World::masterOrigin(),0);
 	return;

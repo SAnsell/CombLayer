@@ -76,6 +76,7 @@
 #include "CeramicGapGenerator.h"
 #include "EBeamStopGenerator.h"
 #include "TDCBeamDumpGenerator.h"
+#include "MainBeamDumpGenerator.h"
 #include "TWCavityGenerator.h"
 #include "UndVacGenerator.h"
 #include "FMUndulatorGenerator.h"
@@ -2976,7 +2977,7 @@ Segment45(FuncDataBase& Control,
   const Geometry::Vec3D startPt(-1010.0,8949.717,-60.951);
   const Geometry::Vec3D endPt(-1010.0,9227.315,-190.289);
 
-  Geometry::Vec3D AB=(endPt-startPt).unit();
+  //Geometry::Vec3D AB=(endPt-startPt).unit();
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
@@ -2988,7 +2989,15 @@ Segment45(FuncDataBase& Control,
      atan((endPt.Z()-startPt.Z())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
   // floor gap
-  Control.addVariable(lKey+"CutRadius",20.0);
+  Control.addVariable(lKey+"CutRadius",6); // just a bit smaller than InjectionHallBDRoomRoofGapWidth/2
+  // beam dump inclinatin, see dump7.pdf
+  const double thetaBeamDump = std::asin((1046.0-753.0)/700.0)*180.0/M_PI;
+  // SPF45 should have the same inclination as the beam dump, but in
+  // reality it is not, so we adjust it in order to hit the beam dump
+  // (MainBeamDump is placed to the as-built (and measured) location)
+  // we also increase the SPF45PipeC length for the same reason (see below)
+  const double theta45 = thetaBeamDump+1.5;
+  Control.addVariable(lKey+"XAngle",-theta45);
 
   setVariable::CeramicGapGenerator CSGen;
   setVariable::YagUnitBigGenerator YagUnitGen;
@@ -3002,7 +3011,9 @@ Segment45(FuncDataBase& Control,
   CSGen.generateCeramicGap(Control,lKey+"Ceramic");
 
   PGen.setCF<setVariable::CF34_TDC>();
-  PGen.generatePipe(Control,lKey+"PipeA",110.5);
+  // -5: adjustment due to theta45 so that SPF45YagUnit does not clip
+  // the floor
+  PGen.generatePipe(Control,lKey+"PipeA",110.5-5);
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
   Control.addVariable(lKey+"YagUnitYAngle",90.0);
@@ -3021,16 +3032,22 @@ Segment45(FuncDataBase& Control,
   // additional stuff for beam dump - not present in the original
   // drawings
   PGen.setCF<setVariable::CF66_TDC>();
-  PGen.generatePipe(Control,lKey+"PipeC",100.0); // approx
+  PGen.generatePipe(Control,lKey+"PipeC",95.8+9.3); // 9.3 - adjustment to as-built
 
 
   Control.addVariable(lKey+"PipeCYAngle",-90);
-  Control.addVariable(lKey+"PipeCFlangeARadius",3.5); // to avoid cutting EBeam
-  Control.addVariable(lKey+"PipeCFlangeBRadius",3.5); // to avoid cutting EBeam
-  setVariable::EBeamStopGenerator EBGen;
-  EBGen.generateEBeamStop(Control,lKey+"EBeam",1);
-  Control.addVariable(lKey+"EBeamShieldActive",1);
-  Control.addVariable(lKey+"EBeamShieldInnerMat","Stainless304L"); // email from JR, 210120: "Iron"
+  // Control.addVariable(lKey+"PipeCFlangeARadius",3.5); // to avoid cutting EBeam
+  // Control.addVariable(lKey+"PipeCFlangeBRadius",3.5); // to avoid cutting EBeam
+
+  setVariable::MainBeamDumpGenerator EBGen;
+  EBGen.generate(Control,lKey+"MainBeamDump");
+  Control.addVariable(lKey+"MainBeamDumpXAngle",180+thetaBeamDump);
+  Control.addVariable(lKey+"MainBeamDumpYAngle",180);
+  // 57 - measured by AR; 298 - offset from the beam line level and rotation
+  Control.addVariable(lKey+"MainBeamDumpZStep",57-298.0);
+  // 120=100+2*10 = full length; 25.8 - offset due to rotation;
+  // 104.6 - measured by AR
+  Control.addVariable(lKey+"MainBeamDumpYStep",120-25.8+104.6);
 
   return;
 }
@@ -3597,17 +3614,25 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(bdRoom+"Height",200.0); // K_15-6_012 B-B
   Control.addVariable(bdRoom+"Length",540); // K_15-6_011
   Control.addVariable(bdRoom+"FloorThick",200.0); // K_15-6_012 B-B
-  Control.addVariable(bdRoom+"RoofThick",50.0); // K_15-6_011
+  Control.addVariable(bdRoom+"RoofLedgeWidth",50.0); // K_24-6_010 - upper left and bottom views. Warning: geometry errors if differs from 50.
+  Control.addVariable(bdRoom+"RoofUpperConcreteThick",24.0); // K_24-6_010 and dump7.pdf (upper-left layer - not to be mixed with the bottom-right one consisting of underhang)
+  Control.addVariable(bdRoom+"RoofBottomSteelThick",20.0); // K_24-6_012
+  Control.addVariable(bdRoom+"RoofSteelThick",30.0); // K_24-6_012, K_24-6_010 and dump7.pdf, it's seel/concrete depending on whether we are above BD or not
   Control.addVariable(bdRoom+"RoofSteelWidth",140.0); // measured with ruler
+  Control.addVariable(bdRoom+"RoofSteelLength",320.0); // K_24-6_012
+  Control.addVariable(bdRoom+"RoofGapWidth",20.0); // measured by AR, see http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/spf/img_5464.jpg/view
+  Control.addVariable(bdRoom+"RoofUnderhangLength",10.0); // K_24-6_012
   Control.addVariable(bdRoom+"FrontWallThick",100.0); // K_15-6_011
   Control.addVariable(bdRoom+"SideWallThick",200.0); // K_15-6_010
   Control.addVariable(bdRoom+"BackSteelThick",50.0); // K_15-6_011
-  Control.addVariable(bdRoom+"HatchLength",200.0); // measured on K_15-6_011
+  Control.addVariable(bdRoom+"EntranceWidth",100.0); // two Concreete blocks - calculated with AR
   Control.addVariable(bdRoom+"InnerWallThick",40.0); // K_15-6_010
-  Control.addVariable(bdRoom+"InnerWallLength",365.0+2.0); // K_15-6_010, +2 just to avoid cutting SPF45PipeB
+  Control.addVariable(bdRoom+"InnerWallLength",365.0); // K_15-6_010
   Control.addVariable(bdRoom+"TDCWidth",380.0); // K_15-6_010
+  Control.addVariable(bdRoom+"TDCCoverOffset",500.0); // K_24-6_010
   Control.addVariable(bdRoom+"SPFWidth",460.0); // K_15-6_010
-  Control.addVariable(bdRoom+"NewWidth",280.0); // K_15-6_010
+  Control.addVariable(bdRoom+"FutureWidth",280.0); // K_15-6_010
+  Control.addVariable(bdRoom+"FutureCoverOffset",500.0); // K_24-6_010
 
   Control.addVariable(wallKey+"WasteRoomWidth",200.0); // derived from K_20-1_08G6b1:  2700-300-40
   Control.addVariable(wallKey+"WasteRoomLength",600.0); // derived from K_20-1_08G6b1: 10316-3516-40*2
@@ -3648,7 +3673,6 @@ LINACvariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("linacVariables[F]","LINACvariables");
 
-  ELog::EM<<"LINAC VARIABLES"<<ELog::endDiag;
   linacVar::wallVariables(Control,"InjectionHall");
 
   // Segment 1-14
@@ -3792,3 +3816,6 @@ LINACvariables(FuncDataBase& Control)
 }
 
 }  // NAMESPACE setVariable
+
+// References
+// dump7.pdf: http://localhost:8080/maxiv/work-log/100-hz/main-beam-dump/dump7.pdf/view

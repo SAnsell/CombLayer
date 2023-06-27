@@ -3,7 +3,7 @@
 
  * File:   commonBeam/TDCBeamDumpGenerator.cxx
  *
- * Copyright (c) 2004-2022 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,13 +52,15 @@ namespace setVariable
 TDCBeamDumpGenerator::TDCBeamDumpGenerator() :
   length(115.0),bulkWidthLeft(35.0),bulkWidthRight(65.0),
   bulkHeight(30.0),bulkDepth(30), bulkThickBack(85.0),
-  innerCoreRadius(-1.0),innerCoreLength(-1.0),
   coreRadius(3.0),coreLength(5.0),preCoreLength(25.0),
-  preCoreRadius(3.0),skinThick(5.0),frontPlateThick(5.0),
+  preCoreRadius(3.0),
+  skinThick(5.0),
+  frontPlateThick(5.0),
   carbonThick(0.5),
-  voidMat("Void"),innerCoreMat("Lead"),
-  coreMat("Lead"),bulkMat("S235JR"),
-  skinMat("BoratedPolyTDC"),frontPlateMat("S235JR"),
+  coreMat("Lead"),
+  bulkMat("S235JR"),
+  skinMat("BoratedPolyTDC"),
+  frontPlateMat("S235JR"),
   carbonMat("Graphite")
   /*!
     Constructor and defaults
@@ -71,32 +73,6 @@ TDCBeamDumpGenerator::~TDCBeamDumpGenerator()
  */
 {}
 
-void
-TDCBeamDumpGenerator::setInnerCore(const double IRad,
-				   const double ILength,
-				   const std::string& outerMat)
-  /*!
-    Set the inner core length/radius 
-    \param IRad :: radius of inner core
-    \param ILength :: length of inner radius
-   */
-{
-  ELog::RegMethod RegA("TDCBeamDumpGenerator","setInnerCore");
-  
-  if (IRad>coreRadius)
-    ELog::EM<<"Warning : radius mismatch "<<coreRadius<<" < "
-	    <<IRad<<ELog::endCrit;
-  if (ILength>coreLength)
-    ELog::EM<<"Warning : lenght mismatch "<<coreLength<<" < "
-	    <<ILength<<ELog::endCrit;
-  
-  innerCoreRadius=IRad;
-  innerCoreLength=ILength;
-  innerCoreMat=coreMat;
-  coreMat=outerMat;
-  return;
-}
-  
 void
 TDCBeamDumpGenerator::generate(FuncDataBase& Control,
 			       const std::string& keyName) const
@@ -114,8 +90,6 @@ TDCBeamDumpGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"BulkHeight",bulkHeight);
   Control.addVariable(keyName+"BulkDepth",bulkDepth);
   Control.addVariable(keyName+"BulkThickBack",bulkThickBack);
-  Control.addVariable(keyName+"InnerCoreRadius",innerCoreRadius);
-  Control.addVariable(keyName+"InnerCoreLength",innerCoreLength);
   Control.addVariable(keyName+"CoreRadius",coreRadius);
   Control.addVariable(keyName+"CoreLength",coreLength);
   Control.addVariable(keyName+"PreCoreLength",preCoreLength);
@@ -123,9 +97,6 @@ TDCBeamDumpGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"SkinThick",skinThick);
   Control.addVariable(keyName+"FrontPlateThick",frontPlateThick);
   Control.addVariable(keyName+"CarbonThick",carbonThick);
-
-  Control.addVariable(keyName+"VoidMat",voidMat);
-  Control.addVariable(keyName+"InnerCoreMat",innerCoreMat);
   Control.addVariable(keyName+"CoreMat",coreMat);
   Control.addVariable(keyName+"BulkMat",bulkMat);
   Control.addVariable(keyName+"SkinMat",skinMat);

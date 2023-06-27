@@ -35,11 +35,12 @@ namespace tdcSystem
   \brief TDC beam dump
 */
 
-class TDCBeamDump : public attachSystem::ContainedComp,
-		    public attachSystem::FixedRotateGroup,
-                    public attachSystem::CellMap,
-                    public attachSystem::SurfMap,
-                    public attachSystem::ExternalCut
+class TDCBeamDump :
+    public attachSystem::FixedRotateGroup,
+    public attachSystem::ContainedComp,
+    public attachSystem::CellMap,
+    public attachSystem::SurfMap,
+    public attachSystem::ExternalCut
 {
  private:
 
@@ -49,7 +50,6 @@ class TDCBeamDump : public attachSystem::ContainedComp,
   double bulkHeight;            ///< Bulk height
   double bulkDepth;             ///< Bulk depth
   double bulkThickBack;         ///< Bulk thickness behind the core
-  double innerCoreRadius;       ///< Inner Core radius
   double coreRadius;            ///< Core radius
   double coreLength;            ///< Core length
   double preCoreLength;         ///< Length of void before core
@@ -61,19 +61,14 @@ class TDCBeamDump : public attachSystem::ContainedComp,
   double skinBackThick;         ///< Skin thickness at the back
   double frontPlateThick;       ///< Front plate thickness
   double carbonThick;           ///< Carbon plate thickness (to contain evaporated Lead)
-  double topPlateThick;         ///< Extra plate on top to stop gamma shine
-  double extraTopPlateThick;    ///< Extra plate on top to stop gamma shine
 
-  int voidMat;                  ///< Initial beam path material
-  int innerCoreMat;             ///< Inner Core material
-  int coreMat;                  ///< Core material
+  int coreMat;                   ///< Core material
   int bulkMat;                  ///< Bulk material
   int skinMat;                  ///< Skin material
   int skinLeftMat;              ///< Left side skin material
   int skinRightMat;             ///< Right side skin material
+  int airMat;                   ///< Air material
   int frontPlateMat;            ///< Front plate material (to reduce activation dose rate)
-  int topPlateMat;              ///< Extra plate material (
-  int extraTopPlateMat;              ///< Extra plate material (
   int carbonMat;                ///< Carbon plate material
   
   void populate(const FuncDataBase&) override;
@@ -90,8 +85,6 @@ class TDCBeamDump : public attachSystem::ContainedComp,
   ~TDCBeamDump() override;
 
   using attachSystem::FixedComp::createAll;
-
-
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int) override;
 
