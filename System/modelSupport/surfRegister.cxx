@@ -3,7 +3,7 @@
  
  * File:   modelSupport/surfRegister.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -152,9 +152,8 @@ surfRegister::process(std::vector<int>& VecList) const
     \param VecList :: Surface to change
   */
 {
-  transform(VecList.begin(),VecList.end(),
-	    VecList.begin(),std::bind(&surfRegister::realSurf,
-				      this,std::placeholders::_1));
+  for(int& surfNumber : VecList)
+    surfNumber=realSurf(surfNumber);
   return;
 }
 
@@ -216,7 +215,7 @@ surfRegister::registerSurf(const int origN,Geometry::Surface* SPtr)
     on entry or exit
     \param origN :: Original number
     \param SPtr :: surface object
-    \return Number
+    \return Number of new (or old surface if a repeat)
   */
 {
   ELog::RegMethod RegA("surfRegister","registerSurf");
