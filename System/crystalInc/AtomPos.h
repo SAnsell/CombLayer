@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   crystalInc/AtomPos.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
 #ifndef Crystal_AtomPos_h
@@ -82,8 +82,7 @@ class AtomPos
    \author S. Ansell
    \date March 2007
  */
-class nearCentre : 
- public std::binary_function<AtomPos,AtomPos,bool> 
+class nearCentre 
 {
  public:
   /// Comparitor for positions to centre

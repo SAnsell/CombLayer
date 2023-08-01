@@ -165,11 +165,11 @@ Mesh3D::setMesh(const Geometry::Vec3D& LowPt,
       Y.clear();
       Z.clear();
       for(size_t i=0;i<NX;i++)
-	X.push_back(xStep*i);
+	X.push_back(xStep*static_cast<double>(i));
       for(size_t i=0;i<NY;i++)
-	Y.push_back(yStep*i);
+	Y.push_back(yStep*static_cast<double>(i));
       for(size_t i=0;i<NZ;i++)
-	Z.push_back(zStep*i);
+	Z.push_back(zStep*static_cast<double>(i));
     }  
   return;
 }
