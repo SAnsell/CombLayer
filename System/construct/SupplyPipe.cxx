@@ -3,7 +3,7 @@
  
  * File:   construct/SupplyPipe.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -136,7 +136,7 @@ SupplyPipe::populate(const FuncDataBase& Control)
     }
 
   size_t aN(0);
-  numStr="0";
+  numStr=std::string("0");
   while(Control.hasVariable(keyName+"Active"+numStr))
     {
       ActiveFlag.push_back

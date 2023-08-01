@@ -67,7 +67,9 @@ namespace essSystem
 
 EmptyCyl::EmptyCyl(const std::string& Key)  :
   attachSystem::FixedRotateUnit(Key,6),
-  attachSystem::ContainedComp()
+  attachSystem::ContainedComp(),
+  attachSystem::ExternalCut(),
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -77,6 +79,8 @@ EmptyCyl::EmptyCyl(const std::string& Key)  :
 EmptyCyl::EmptyCyl(const EmptyCyl& A) : 
   attachSystem::FixedRotateUnit(A),
   attachSystem::ContainedComp(A),
+  attachSystem::ExternalCut(A),
+  attachSystem::CellMap(A),
   height(A.height),mat(A.mat)
   /*!
     Copy constructor
@@ -96,6 +100,9 @@ EmptyCyl::operator=(const EmptyCyl& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedRotate::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
+      attachSystem::CellMap::operator=(A);
+	  
       height=A.height;
       mat=A.mat;
     }
