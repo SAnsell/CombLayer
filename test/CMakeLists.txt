@@ -34,14 +34,16 @@ add_library (test SHARED
 target_include_directories (test PUBLIC
    ${SYSTEM_INCLUDE}
    ${GENERAL_INCLUDE}
+   ${CMAKE_SOURCE_DIR}/testInclude
 )
+
 file(RELATIVE_PATH tarDIR 
     "${CMAKE_BINARY_DIR}"
     "${CMAKE_CURRENT_SOURCE_DIR}")
 
 file(RELATIVE_PATH tarINC 
     "${CMAKE_BINARY_DIR}"
-    "${CMAKE_CURRENT_SOURCE_DIR}/../testInc")
+    "${CMAKE_CURRENT_SOURCE_DIR}/../testInclude")
 
 set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/simpleObj.cxx

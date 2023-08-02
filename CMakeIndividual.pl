@@ -96,7 +96,11 @@ sub printTarget
 {
   my $dir=shift;
   my $extra=shift;
-  
+  my @Extra;
+
+  @Extra=split ' ',$extra if (defined($extra));
+
+  my %lookup = (@Extra) ? map {$_ => 1} @Extra : ();
   my $name=$dir;
 
   my $incName=makeInclude($dir);
@@ -106,8 +110,12 @@ sub printTarget
   print "target_include_directories (",$name," PUBLIC\n";
   print "   \${SYSTEM_INCLUDE}\n";
   print "   \${GENERAL_INCLUDE}\n";
-  print "   \${ESS_INCLUDE}\n"  if ($extra eq "ess");
-  print "   \${CMAKE_SOURCE_DIR}/".$incName."\n" if ($extra eq "base");
+  print "   \${ESS_INCLUDE}\n"  if (exists($lookup{"ess"}));
+  print "   \${MAXIV_INCLUDE}\n"  if (exists($lookup{"maxiv"}));
+  print "   \${CMAKE_SOURCE_DIR}/".$incName."\n" if (exists($lookup{"base"}));
+  print "   \${CMAKE_SOURCE_DIR}/Model/ralBuildInc\n" if (exists($lookup{"ral"}));
+  print "   \${CMAKE_SOURCE_DIR}/Model/photonInc\n" if (exists($lookup{"photon"}));
+  print "   \${CMAKE_SOURCE_DIR}/Model/MaxIV/LinacInc\n" if (exists($lookup{"linac"}));
   print ")\n\n";
 
   return;
@@ -117,16 +125,17 @@ sub printFILE
 {
   my $dir=shift;
   my $name=$dir;
-  $name=$1 if ($dir=~/\/([^\/]+)$/);
-      
+
+  my $incName=makeInclude($dir);
+  $incName=$1 if ($incName=~/\/([^\/]+)$/);
+  
   print "file(RELATIVE_PATH tarDIR \n";
   print "    \"\${CMAKE_BINARY_DIR}\"\n";
   print "    \"\${CMAKE_CURRENT_SOURCE_DIR}\")\n\n";
   
   print "file(RELATIVE_PATH tarINC \n";
   print "    \"\${CMAKE_BINARY_DIR}\"\n";
-  print "    \"\${CMAKE_CURRENT_SOURCE_DIR}\/..\/".$name."Inc\")\n\n";
-  
+  print "    \"\${CMAKE_CURRENT_SOURCE_DIR}\/..\/".$incName."\")\n\n";
 
   return;
 }
@@ -160,7 +169,13 @@ sub printTAR
 
 
 my $dir=$ARGV[0];
-my $extra=(@ARGV>1) ? $ARGV[1] : "";
+
+my $extra;
+for(my $i=1;$i<@ARGV;$i++)
+{
+  $extra.=$ARGV[$i]." ";
+}
+
 my $files=getCXXFiles($dir);
 
 my $incDir=makeInclude($dir);

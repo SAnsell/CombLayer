@@ -18,6 +18,7 @@ target_include_directories (t2Build PUBLIC
    ${SYSTEM_INCLUDE}
    ${GENERAL_INCLUDE}
    ${CMAKE_SOURCE_DIR}/Model/t2BuildInc
+   ${CMAKE_SOURCE_DIR}/Model/ralBuildInc
 )
 
 file(RELATIVE_PATH tarDIR 

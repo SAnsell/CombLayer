@@ -10,6 +10,7 @@ target_include_directories (snsBuild PUBLIC
    ${SYSTEM_INCLUDE}
    ${GENERAL_INCLUDE}
    ${CMAKE_SOURCE_DIR}/Model/snsBuildInc
+   ${CMAKE_SOURCE_DIR}/Model/ralBuildInc
 )
 
 file(RELATIVE_PATH tarDIR 
