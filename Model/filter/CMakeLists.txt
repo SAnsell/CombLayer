@@ -9,6 +9,7 @@ target_include_directories (filter PUBLIC
    ${SYSTEM_INCLUDE}
    ${GENERAL_INCLUDE}
    ${CMAKE_SOURCE_DIR}/Model/filterInc
+   ${CMAKE_SOURCE_DIR}/Model/photonInc
 )
 
 file(RELATIVE_PATH tarDIR 

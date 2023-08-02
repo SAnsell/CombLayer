@@ -13,9 +13,9 @@ file(RELATIVE_PATH tarDIR
 
 set(SRC_LIST
   ${SRC_LIST}
-  ${tarDIR}/essBeamline.cxx ${tarDIR}/ess.cxx ${tarDIR}/essLinac.cxx
+  ${tarDIR}/essBeamline.cxx ${tarDIR}/ess.cxx ${tarDIR}/essLinacModel.cxx
   ${tarDIR}/fullBuild.cxx ${tarDIR}/maxiv.cxx ${tarDIR}/pipe.cxx
-  ${tarDIR}/reactor.cxx ${tarDIR}/saxs.cxx ${tarDIR}/singleItem.cxx
+  ${tarDIR}/reactor.cxx ${tarDIR}/saxsSim.cxx ${tarDIR}/singleItem.cxx
   ${tarDIR}/t1Real.cxx ${tarDIR}/testMain.cxx ${tarDIR}/xrayHut.cxx
   PARENT_SCOPE
 )

@@ -8,7 +8,10 @@ add_library (singleItemBuild SHARED
 target_include_directories (singleItemBuild PUBLIC
    ${SYSTEM_INCLUDE}
    ${GENERAL_INCLUDE}
+   ${ESS_INCLUDE}
+   ${MAXIV_INCLUDE}
    ${CMAKE_SOURCE_DIR}/Model/singleItemBuildInc
+   ${CMAKE_SOURCE_DIR}/Model/ralBuildInc
 )
 
 file(RELATIVE_PATH tarDIR 

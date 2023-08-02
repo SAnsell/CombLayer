@@ -8,6 +8,7 @@ add_library (maxivBuild SHARED
 target_include_directories (maxivBuild PUBLIC
    ${SYSTEM_INCLUDE}
    ${GENERAL_INCLUDE}
+   ${MAXIV_INCLUDE}
    ${CMAKE_SOURCE_DIR}/Model/maxivBuildInc
 )
 

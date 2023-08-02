@@ -17,13 +17,14 @@ target_include_directories (src PUBLIC
    ${SYSTEM_INCLUDE}
    ${GENERAL_INCLUDE}
 )
+
 file(RELATIVE_PATH tarDIR 
     "${CMAKE_BINARY_DIR}"
     "${CMAKE_CURRENT_SOURCE_DIR}")
 
 file(RELATIVE_PATH tarINC 
     "${CMAKE_BINARY_DIR}"
-    "${CMAKE_CURRENT_SOURCE_DIR}/../srcInc")
+    "${CMAKE_CURRENT_SOURCE_DIR}/../include")
 
 set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/flukaGenParticle.cxx

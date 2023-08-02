@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   Main/saxs.cxx
+ * File:   Main/saxsSim.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
  *
@@ -73,7 +73,7 @@ main(int argc,char* argv[])
 {
   int exitFlag(0);                // Value on exit
   // For output stream
-  ELog::RegMethod RControl("saxs","main");
+  ELog::RegMethod RControl("saxsSim","main");
   mainSystem::activateLogging(RControl);
   
   // For output stream
