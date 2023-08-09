@@ -1,7 +1,7 @@
 
 
 
-nValid=1000
+nValid=10000
 
 #./maxiv --defaultConfig Single SOFTIMAX AA 
 #./maxiv --defaultConfig Single SOFTIMAX --validRandom 190  --validCheck $nValid AA || exit
@@ -11,6 +11,8 @@ segments=All
 #./singleItem --singleItem M1detail --validAll --validCheck ${nValid} AA 
 #exit
 
+./ess --bunkerPillars ABunker --validAll --validCheck $nValid AA  || exit
+exit
 
 parallel --halt now,fail=1 "./maxiv --defaultConfig Single {} --validAll --validCheck $nValid AA" ::: \
    BALDER COSAXS DANMAX FORMAX FLEXPES MICROMAX SOFTIMAX SPECIES MAXPEEM || exit

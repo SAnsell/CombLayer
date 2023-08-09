@@ -58,6 +58,7 @@ class BunkerFeed :
   std::vector<Geometry::Vec3D> CPts;  ///< Points relative to origin
 
   void populate(const FuncDataBase&);
+  using FixedComp::createAll;
   void createUnitVector(const Bunker&,const size_t);
   void insertColl(Simulation&);
   void moveToLayer(const Bunker&,const std::string&);

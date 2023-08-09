@@ -1771,12 +1771,6 @@ Simulation::minimizeObject(MonteCarlo::Object* OPtr)
   const std::set<int> SPair=
     OPtr->getHeadRule().getPairedSurf();
 
-  if (CN==2620002)
-    {
-      ELog::EM<<"Obj == "<<*OPtr<<std::endl;
-      for(const auto& A : IP)
-	ELog::EM<<"IPair == "<<A.first<<" "<<A.second<<ELog::endDiag;
-    }
   bool activeFlag(0);
   MonteCarlo::Algebra AX;
   AX.setFunctionObjStr(OPtr->cellCompStr());
@@ -1801,11 +1795,6 @@ Simulation::minimizeObject(MonteCarlo::Object* OPtr)
       OSMPtr->updateObject(OPtr);
 
       return 1;
-    }
-  if (CN==2620002 && OPtr->getHeadRule().isZeroVolume())
-    {
-      ELog::EM<<"Zero == "<<OPtr->getName()<<ELog::endCrit;
-      return -1;
     }
   
   return 0;
@@ -1835,6 +1824,7 @@ Simulation::minimizeObject(const int CN)
   if (flag<0)
     Simulation::removeCell(CN);
   if (CN==2620002)
+
     ELog::EM<<"MIN OBJECT FLAG "<<flag<<ELog::endDiag;
   return flag;
 }
