@@ -698,7 +698,8 @@ multiData<T>::offset(const size_t A,const size_t B) const
   */
 {
   const T* ptr=get()[A][B].pointer();
-  return ptr-getPtr(); 
+ 
+  return static_cast<size_t>(ptr-getPtr()); 
 }
 
 
@@ -711,7 +712,7 @@ multiData<T>::offset(const size_t A,const size_t B,const size_t C) const
    */
 {
   const T* ptr=get()[A][B][C].pointer();
-  return ptr-getPtr(); 
+  return static_cast<size_t>(ptr-getPtr());
 }
 
 template<typename T>

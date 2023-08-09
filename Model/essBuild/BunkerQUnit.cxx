@@ -3,7 +3,7 @@
  
  * File:   essBuild/BunkerQUnit.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,7 +55,6 @@
 #include "SurfMap.h"
 #include "addInsertObj.h"
 #include "BunkerQUnit.h"
-
 
 namespace essSystem
 {
@@ -164,6 +163,7 @@ BunkerQUnit::createUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("BunkerQUnit","createUnitVector");
 
   FixedComp::createUnitVector(FC,axisIndex);
+
   Origin=FC.getLinkPt(orgIndex);
   applyOffset();
 

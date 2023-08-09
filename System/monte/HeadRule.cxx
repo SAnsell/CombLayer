@@ -739,6 +739,7 @@ HeadRule::isZeroVolume() const
       if (!PPtr) return 0;
       PSurf.push_back(PPtr);
     }
+  
   for(size_t i=0;i<PSurf.size();i++)
     for(size_t j=i+1;j<PSurf.size();j++)
       for(size_t k=j+1;k<PSurf.size();k++)
@@ -748,6 +749,7 @@ HeadRule::isZeroVolume() const
 	  if (!PVec.empty())
 	    {
 	      const Geometry::Vec3D& tPt(PVec.front());
+	      ELog::EM<<"Pt == "<<tPt<<ELog::endDiag;	      
 	      if (isValid(tPt)) return 0;
 	    }
 	}
