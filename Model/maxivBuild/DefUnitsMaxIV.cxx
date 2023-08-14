@@ -74,8 +74,9 @@ setDefUnits(FuncDataBase& Control,inputParam& IParam)
       else if (Key=="help")
 	{
 	  ELog::EM<<"Options : "<<ELog::endDiag;
-	  ELog::EM<<"  Linac : Everything that works"<<ELog::endDiag;
+	  ELog::EM<<"  Linac : should be: Everything that works, but actually: InjectionHall only if called without arguments;\n          All to build all TDC/SPF segments;\n          TDC Segment?? to build the given segment number;\n          L2SPF to build the segments before the TDC/SPF switching area."<<ELog::endDiag;
 	  ELog::EM<<"  Single  beamLine : Single beamline "<<ELog::endDiag;
+
 	  throw ColErr::ExitAbort("Iparam.defaultConfig");
 	}
       else
@@ -119,7 +120,8 @@ setMaxIVSingle(defaultConfig& A,
       { "RING1", "World 0"},
       { "RING3", "World 0"},
       { "R1RING", "World 0"},
-      { "R3RING", "World 0"}
+      { "R3RING", "World 0"},
+      { "GunTestFacility", "World 0"}
     };
 
   size_t beamLineIndex(0);

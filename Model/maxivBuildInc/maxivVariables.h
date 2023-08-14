@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   maxivBuildInc/maxivVariables.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef setVariable_maxivVariables_h
@@ -39,7 +39,7 @@ namespace setVariable
     (const std::set<std::string>&,
      const std::string&,
      FuncDataBase&);
-    
+
   // MAXIV Beamlines 1.5GeV Ring
   void R1RingVariables(FuncDataBase&);
   void FLEXPESvariables(FuncDataBase&);
@@ -62,6 +62,8 @@ namespace setVariable
 
   void LINACvariables(FuncDataBase&);
   void LINACmagnetVariables(FuncDataBase&,const std::string&);
+
+  void GunTestFacilityVariables(FuncDataBase&);
 }
 
 

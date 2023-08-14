@@ -297,7 +297,7 @@ TDC::buildInnerZone(Simulation& System,
 
   // FrontSurf : BackSurf : Cell : Cell(if not empty)
   typedef std::tuple<std::string,std::string> SurfTYPE;
-  typedef std::map<std::string,SurfTYPE> RegionMAP;      // front/back surfaces 
+  typedef std::map<std::string,SurfTYPE> RegionMAP;      // front/back surfaces
   typedef std::map<std::string,std::set<std::string>> CellMAP;      // object to intersect
   typedef std::map<std::string,std::string> ExtraSurfMAP;   // extra surfaces
 
@@ -530,7 +530,7 @@ TDC::createAll(Simulation& System,
       {"Segment48",{"spfFar","Segment47",1}},
       {"Segment49",{"spfFar","Segment48",1}}
     });
-  const int voidCell(74123);
+  constexpr int voidCell(74123);
 
 
   // build injection hall first:
@@ -580,7 +580,7 @@ TDC::createAll(Simulation& System,
 		buildInnerZone(System,"Segment10B","spfAngle");
 	      segPtr->setNextZone(secondZone.get());
 	    }
-	  
+
 	  if (BL=="Segment30")
 	    sideSegNames={"Segment13","Segment14","Segment15"};
 
@@ -620,7 +620,7 @@ TDC::createAll(Simulation& System,
 	    }
 	  //	  segPtr->setInnerZone(buildZone.get());
 	  segPtr->removeSpaceFillers(System);
-	  
+
 	  segPtr->createAll
 	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
 
@@ -630,7 +630,7 @@ TDC::createAll(Simulation& System,
 	    segPtr->totalPathCheck(System.getDataBase(),0.1);
 	  if (pointCheck)
 	    segPtr->writePoints();
-	  
+
 	  if (BL=="Segment47")   // SPECIAL REMOVAL
 	    {
 	      SegTYPE::const_iterator ci=SegMap.find("Segment45");

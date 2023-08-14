@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   maxivBuild/maxivVariables.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -55,7 +55,7 @@ MaxIVVariables(FuncDataBase& Control,
 	       const std::set<std::string>& beamNames)
   /*!
     Function to set the control variables and constants
-    -- This version is for MAXIV 
+    -- This version is for MAXIV
     \param Control :: Function data base to add constants too
     \param beamName :: Set of beamline names
   */
@@ -70,7 +70,7 @@ MaxIVVariables(FuncDataBase& Control,
   Control.addVariable("one",1.0);      // one
 
   maxivInstrumentVariables(beamNames,magField,Control);
-  
+
   Control.addVariable("sdefEnergy",3000.0);
   // FINAL:
   Control.resetActive();
@@ -88,7 +88,7 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
     \param defMagField :: Default arrangement for magnets
     \param Control :: Database for variables
    */
-  
+
 {
   ELog::RegMethod RegA("maxivVariables[F]",
                        "maxivInstrumentVariables");
@@ -96,7 +96,7 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
   const std::set<std::string> magnetConfigs
     ({"TDCline","SPFline","TDClineA","TDClineB",
       "TDClineC","NONE","None"});
-  
+
   const std::set<std::string> Linac
     ({"LINAC","SPF"});
 
@@ -114,10 +114,10 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
       {"BALDER", "Balder"},
       {"MICROMAX","MicroMAX"}
     });
-  
+
   typedef void (*VariableFunction)(FuncDataBase&);
   typedef std::multimap<std::string,VariableFunction> VMap;
-  
+
   const VMap VarInit({
      {"BALDER",    &BALDERvariables},
      {"COSAXS",    &COSAXSvariables},
@@ -133,6 +133,7 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
   bool r1Flag(0);
   bool r3Flag(0);
   bool linacFlag(0);
+  bool gtfFlag(false);
 
   // Which magnetic configuration:
   if (!defMagField.empty() &&
@@ -143,10 +144,10 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
     }
   const std::string magField
     (defMagField.empty() ? "TDCline" : defMagField);
-  
-	
+
+
   for(const std::string& beam : BL)
-    {      
+    {
       if (!r1Flag && (R1Beam.find(beam)!=R1Beam.end()))
 	{
 	  R1RingVariables(Control);
@@ -165,7 +166,14 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
 	  LINACmagnetVariables(Control,magField);
 	  linacFlag=1;
 	}
-	  
+
+      if (!gtfFlag)
+	{
+	  GunTestFacilityVariables(Control);
+	  gtfFlag=true;
+	}
+
+
       // std::pair<VMap::const_iterator,VMap::const_iterator>
       VMap::const_iterator mc;
       decltype(VarInit.equal_range("")) rangePair
@@ -184,6 +192,6 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
 	}
     }
   return;
-}  
-  
+}
+
 }  // NAMESPACE setVariable

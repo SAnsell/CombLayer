@@ -73,13 +73,14 @@
 #include "SPECIES.h"
 
 #include "TDC.h"
+#include "GunTestFacility.h"
 
 #include "makeMaxIV.h"
 
 namespace xraySystem
 {
 
-makeMaxIV::makeMaxIV() 
+makeMaxIV::makeMaxIV()
  /*!
     Constructor
  */
@@ -257,7 +258,7 @@ makeMaxIV::buildInjection(Simulation& System,
     });
 
   ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance(); 
+    ModelSupport::objectRegister::Instance();
 
   tdc=std::make_shared<tdcSystem::TDC>("TDC");
   OR.addObject(tdc);
@@ -327,8 +328,8 @@ makeMaxIV::buildR1Ring(Simulation& System,
     });
 
   ModelSupport::objectRegister& OR=
-     ModelSupport::objectRegister::Instance(); 
- 
+     ModelSupport::objectRegister::Instance();
+
   r1Ring=std::make_shared<R1Ring>("R1Ring");
   OR.addObject(r1Ring);
 
@@ -411,7 +412,7 @@ makeMaxIV::buildR3Ring(Simulation& System,
 
   r3Ring=std::make_shared<R3Ring>("R3Ring");
   OR.addObject(r3Ring);
-  
+
   static const std::map<std::string,std::string> beamNAMES
     ({ {"BALDER","OpticCentre1"},
        {"COSAXS","OpticCentre1"},
@@ -487,6 +488,33 @@ makeMaxIV::buildR3Ring(Simulation& System,
   return 1;    // R3 Built
 }
 
+
+bool
+makeMaxIV::buildGunTest(Simulation& System,
+			const mainSystem::inputParam& IParam)
+/*!
+  Build the Gun Test Facility
+  \param System :: Simulation
+  \param IParam :: Input paramters
+ */
+{
+  ELog::RegMethod RegA("makeMaxIV","buildGunTest");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  gtf = std::make_shared<GunTestFacility>("GTF");
+  OR.addObject(gtf);
+
+  constexpr int voidCell(74123);
+  // gtf->addInsertCell(voidCell);
+  gtf->createAll(System,World::masterOrigin(),0);
+
+  return 1; // Gun Test Facility built \todo: why 1 but not 0???
+
+}
+
+
 void
 makeMaxIV::build(Simulation& System,
 	       const mainSystem::inputParam& IParam)
@@ -505,10 +533,13 @@ makeMaxIV::build(Simulation& System,
     ELog::EM<<"=Finished 3.0GeV Ring="<<ELog::endDiag;
 
   else if(buildR1Ring(System,IParam))
-    ELog::EM<<"Finished 1.5GeV Ring"<<ELog::endDiag;
+    ELog::EM<<"=Finished 1.5GeV Ring="<<ELog::endDiag;
 
   else if (buildInjection(System,IParam))  // Injection Hall
     ELog::EM<<"=Finished Linac/SPF System="<<ELog::endDiag;
+
+  else if (buildGunTest(System,IParam)) // Gun test facility
+    ELog::EM<<"=Finished Gun TestFacility="<<ELog::endDiag;
 
   else
     ELog::EM<<"NO Linac/ SPF / R1 / R3 Ring built"<<ELog::endCrit;
