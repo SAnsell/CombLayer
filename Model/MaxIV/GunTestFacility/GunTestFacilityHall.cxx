@@ -77,8 +77,8 @@ GunTestFacilityHall::GunTestFacilityHall(const std::string& Key)  :
   attachSystem::FixedRotate(A),
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
-  length(A.length),width(A.width),height(A.height),
-  mainMat(A.mainMat)
+  mainRoomLength(A.mainRoomLength),mainRoomWidth(A.mainRoomWidth),height(A.height),
+  wallMat(A.wallMat)
   /*!
     Copy constructor
     \param A :: GunTestFacilityHall to copy
@@ -98,10 +98,10 @@ GunTestFacilityHall::operator=(const GunTestFacilityHall& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
-      length=A.length;
-      width=A.width;
+      mainRoomLength=A.mainRoomLength;
+      mainRoomWidth=A.mainRoomWidth;
       height=A.height;
-      mainMat=A.mainMat;
+      wallMat=A.wallMat;
     }
   return *this;
 }
@@ -133,11 +133,11 @@ GunTestFacilityHall::populate(const FuncDataBase& Control)
 
   FixedRotate::populate(Control);
 
-  length=Control.EvalVar<double>(keyName+"Length");
-  width=Control.EvalVar<double>(keyName+"Width");
+  mainRoomLength=Control.EvalVar<double>(keyName+"MainRoomLength");
+  mainRoomWidth=Control.EvalVar<double>(keyName+"MainRoomWidth");
   height=Control.EvalVar<double>(keyName+"Height");
 
-  mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
+  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   return;
 }
@@ -150,11 +150,11 @@ GunTestFacilityHall::createSurfaces()
 {
   ELog::RegMethod RegA("GunTestFacilityHall","createSurfaces");
 
-  SurfMap::makePlane("back",SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
-  SurfMap::makePlane("front",SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+  SurfMap::makePlane("back",SMap,buildIndex+1,Origin-Y*(mainRoomLength/2.0),Y);
+  SurfMap::makePlane("front",SMap,buildIndex+2,Origin+Y*(mainRoomLength/2.0),Y);
 
-  SurfMap::makePlane("left",SMap,buildIndex+3,Origin-X*(width/2.0),X);
-  SurfMap::makePlane("right",SMap,buildIndex+4,Origin+X*(width/2.0),X);
+  SurfMap::makePlane("left",SMap,buildIndex+3,Origin-X*(mainRoomWidth/2.0),X);
+  SurfMap::makePlane("right",SMap,buildIndex+4,Origin+X*(mainRoomWidth/2.0),X);
 
   SurfMap::makePlane("bottom",SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   SurfMap::makePlane("top",SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
@@ -173,7 +173,7 @@ GunTestFacilityHall::createObjects(Simulation& System)
 
   HeadRule Out;
   Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  makeCell("MainCell",System,cellIndex++,mainMat,0.0,Out);
+  makeCell("MainCell",System,cellIndex++,wallMat,0.0,Out);
 
   addOuterSurf(Out);
 
@@ -189,18 +189,18 @@ GunTestFacilityHall::createLinks()
 {
   ELog::RegMethod RegA("GunTestFacilityHall","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
+  FixedComp::setConnect(0,Origin-Y*(mainRoomLength/2.0),-Y);
   FixedComp::setNamedLinkSurf(0,"Back",SurfMap::getSignedSurf("#back"));
 
   // TODO: Check and use names for the links below:
 
-  // FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
+  // FixedComp::setConnect(1,Origin+Y*(mainRoomLength/2.0),Y);
   // FixedComp::setNamedLinkSurf(1,"Front",SMap.realSurf(buildIndex+2));
 
-  // FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
+  // FixedComp::setConnect(2,Origin-X*(mainRoomWidth/2.0),-X);
   // FixedComp::setNamedLinkSurf(2,"Left",-SMap.realSurf(buildIndex+3));
 
-  // FixedComp::setConnect(3,Origin+X*(width/2.0),X);
+  // FixedComp::setConnect(3,Origin+X*(mainRoomWidth/2.0),X);
   // FixedComp::setNamedLinkSurf(3,"Right",SMap.realSurf(buildIndex+4));
 
   // FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);

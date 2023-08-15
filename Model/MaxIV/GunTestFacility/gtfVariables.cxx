@@ -49,10 +49,13 @@ namespace setVariable
 {
   void HallVariables(FuncDataBase& Control, const std::string& name)
   {
-    Control.addVariable(name+"HallLength",10.0);
-    Control.addVariable(name+"HallWidth",10.0);
-    Control.addVariable(name+"HallHeight",10.0);
-    Control.addVariable(name+"HallMainMat","Void");
+    // References:
+    // [1] 221413_radiation_caclulation.STEP
+
+    Control.addVariable(name+"MainRoomLength",6500.0); // [1]
+    Control.addVariable(name+"MainRoomWidth",4600.0); // [1]
+    Control.addVariable(name+"Height",3600.0); // [1]
+    Control.addVariable(name+"WallMat","Concrete"); // guess
   }
 
   void GunTestFacilityVariables(FuncDataBase& Control)
@@ -64,7 +67,7 @@ namespace setVariable
   {
     ELog::RegMethod RegA("GunTestFacilityVariables", "gtfVariables");
 
-    const std::string name = "GTF";
+    const std::string name = "GTFHall";
     HallVariables(Control, name);
 
   }

@@ -42,11 +42,11 @@ class GunTestFacilityHall : public attachSystem::ContainedComp,
 {
  private:
 
-  double length;                ///< Total length including void
-  double width;                 ///< Width
-  double height;                ///< Height
+  double mainRoomLength;        ///< inner main room length
+  double mainRoomWidth;         ///< inner main room width
+  double height;                ///< inner ground floor height
 
-  int mainMat;                   ///< Main material
+  int wallMat;                   ///< Wall material
 
   void populate(const FuncDataBase&);
   void createSurfaces();
