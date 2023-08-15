@@ -44,7 +44,8 @@ class GunTestFacilityHall : public attachSystem::ContainedComp,
 
   double mainRoomLength;        ///< inner main room length
   double mainRoomWidth;         ///< inner main room width
-  double height;                ///< inner ground floor height
+  double height;                ///< distance from beam line to inner roof plane
+  double depth;                 ///< beam line height
   double backWallThick;         ///< thickness of back walls
 
   int wallMat;                   ///< Wall material

@@ -67,7 +67,7 @@ GunTestFacilityHall::GunTestFacilityHall(const std::string& Key)  :
   attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
-  mainRoomLength(0.0),mainRoomWidth(0.0),height(0.0),
+  mainRoomLength(0.0),mainRoomWidth(0.0),height(0.0),depth(0.0),
   backWallThick(0.0),
   wallMat(0),voidMat(0)
  /*!
@@ -82,6 +82,7 @@ GunTestFacilityHall::GunTestFacilityHall(const std::string& Key)  :
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   mainRoomLength(A.mainRoomLength),mainRoomWidth(A.mainRoomWidth),height(A.height),
+  depth(A.depth),
   backWallThick(A.backWallThick),
   wallMat(A.wallMat),
   voidMat(A.voidMat)
@@ -107,6 +108,7 @@ GunTestFacilityHall::operator=(const GunTestFacilityHall& A)
       mainRoomLength=A.mainRoomLength;
       mainRoomWidth=A.mainRoomWidth;
       height=A.height;
+      depth=A.depth;
       backWallThick=A.backWallThick;
       wallMat=A.wallMat;
       voidMat=A.voidMat;
@@ -144,6 +146,7 @@ GunTestFacilityHall::populate(const FuncDataBase& Control)
   mainRoomLength=Control.EvalVar<double>(keyName+"MainRoomLength");
   mainRoomWidth=Control.EvalVar<double>(keyName+"MainRoomWidth");
   height=Control.EvalVar<double>(keyName+"Height");
+  depth=Control.EvalVar<double>(keyName+"Depth");
   backWallThick=Control.EvalVar<double>(keyName+"BackWallThick");
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -167,8 +170,8 @@ GunTestFacilityHall::createSurfaces()
   SurfMap::makePlane("left",SMap,buildIndex+3,Origin-X*(mainRoomWidth/2.0),X);
   SurfMap::makePlane("right",SMap,buildIndex+4,Origin+X*(mainRoomWidth/2.0),X);
 
-  SurfMap::makePlane("bottom",SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
-  SurfMap::makePlane("top",SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
+  SurfMap::makePlane("bottom",SMap,buildIndex+5,Origin-Z*(depth),Z);
+  SurfMap::makePlane("top",SMap,buildIndex+6,Origin+Z*(height),Z);
 
   ModelSupport::buildShiftedPlane(SMap,buildIndex+11,buildIndex+1,Y,-backWallThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+14,buildIndex+4,Y,backWallThick);
