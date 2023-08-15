@@ -65,7 +65,9 @@ GunTestFacilityHall::GunTestFacilityHall(const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap(),
-  attachSystem::SurfMap()
+  attachSystem::SurfMap(),
+  mainRoomLength(0.0),mainRoomWidth(0.0),height(0.0),
+  wallMat(0),voidMat(0)
  /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -78,7 +80,8 @@ GunTestFacilityHall::GunTestFacilityHall(const std::string& Key)  :
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   mainRoomLength(A.mainRoomLength),mainRoomWidth(A.mainRoomWidth),height(A.height),
-  wallMat(A.wallMat)
+  wallMat(A.wallMat),
+  voidMat(A.voidMat)
   /*!
     Copy constructor
     \param A :: GunTestFacilityHall to copy
@@ -102,6 +105,7 @@ GunTestFacilityHall::operator=(const GunTestFacilityHall& A)
       mainRoomWidth=A.mainRoomWidth;
       height=A.height;
       wallMat=A.wallMat;
+      voidMat=A.voidMat;
     }
   return *this;
 }
@@ -138,6 +142,7 @@ GunTestFacilityHall::populate(const FuncDataBase& Control)
   height=Control.EvalVar<double>(keyName+"Height");
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat","Void");
 
   return;
 }
@@ -173,7 +178,7 @@ GunTestFacilityHall::createObjects(Simulation& System)
 
   HeadRule Out;
   Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  makeCell("MainCell",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("MainCell",System,cellIndex++,voidMat,0.0,Out);
 
   addOuterSurf(Out);
 

@@ -47,6 +47,7 @@ class GunTestFacilityHall : public attachSystem::ContainedComp,
   double height;                ///< inner ground floor height
 
   int wallMat;                   ///< Wall material
+  int voidMat;                  ///< void material
 
   void populate(const FuncDataBase&);
   void createSurfaces();
