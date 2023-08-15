@@ -34,20 +34,12 @@
 #include <memory>
 
 #include "FileReport.h"
+#include "OutputLog.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "OutputLog.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
-#include "varList.h"
-#include "Code.h"
-#include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "groupRange.h"
-#include "objectGroups.h"
-#include "Simulation.h"
-#include "ModelSupport.h"
-#include "MaterialSupport.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
@@ -55,6 +47,15 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "varList.h"
+#include "Code.h"
+#include "FuncDataBase.h"
+#include "groupRange.h"
+#include "objectGroups.h"
+#include "Simulation.h"
+#include "ModelSupport.h"
+#include "MaterialSupport.h"
+#include "generateSurf.h"
 
 #include "GunTestFacilityHall.h"
 
@@ -67,6 +68,7 @@ GunTestFacilityHall::GunTestFacilityHall(const std::string& Key)  :
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   mainRoomLength(0.0),mainRoomWidth(0.0),height(0.0),
+  backWallThick(0.0),
   wallMat(0),voidMat(0)
  /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -80,6 +82,7 @@ GunTestFacilityHall::GunTestFacilityHall(const std::string& Key)  :
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   mainRoomLength(A.mainRoomLength),mainRoomWidth(A.mainRoomWidth),height(A.height),
+  backWallThick(A.backWallThick),
   wallMat(A.wallMat),
   voidMat(A.voidMat)
   /*!
@@ -104,6 +107,7 @@ GunTestFacilityHall::operator=(const GunTestFacilityHall& A)
       mainRoomLength=A.mainRoomLength;
       mainRoomWidth=A.mainRoomWidth;
       height=A.height;
+      backWallThick=A.backWallThick;
       wallMat=A.wallMat;
       voidMat=A.voidMat;
     }
@@ -140,6 +144,7 @@ GunTestFacilityHall::populate(const FuncDataBase& Control)
   mainRoomLength=Control.EvalVar<double>(keyName+"MainRoomLength");
   mainRoomWidth=Control.EvalVar<double>(keyName+"MainRoomWidth");
   height=Control.EvalVar<double>(keyName+"Height");
+  backWallThick=Control.EvalVar<double>(keyName+"BackWallThick");
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat","Void");
@@ -155,6 +160,7 @@ GunTestFacilityHall::createSurfaces()
 {
   ELog::RegMethod RegA("GunTestFacilityHall","createSurfaces");
 
+
   SurfMap::makePlane("back",SMap,buildIndex+1,Origin-Y*(mainRoomLength/2.0),Y);
   SurfMap::makePlane("front",SMap,buildIndex+2,Origin+Y*(mainRoomLength/2.0),Y);
 
@@ -163,6 +169,9 @@ GunTestFacilityHall::createSurfaces()
 
   SurfMap::makePlane("bottom",SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   SurfMap::makePlane("top",SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
+
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+11,buildIndex+1,Y,-backWallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+14,buildIndex+4,Y,backWallThick);
 
   return;
 }
@@ -178,8 +187,15 @@ GunTestFacilityHall::createObjects(Simulation& System)
 
   HeadRule Out;
   Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  makeCell("MainCell",System,cellIndex++,voidMat,0.0,Out);
+  makeCell("MainRoom",System,cellIndex++,voidMat,0.0,Out);
 
+  Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 4 -14 5 -6 ");
+  makeCell("BackWall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -1 3 -14 5 -6 ");
+  makeCell("BackWall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -2 3 -14 5 -6 ");
   addOuterSurf(Out);
 
   return;
