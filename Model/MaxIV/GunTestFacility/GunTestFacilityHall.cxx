@@ -68,7 +68,7 @@ GunTestFacilityHall::GunTestFacilityHall(const std::string& Key)  :
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   mainRoomLength(0.0),mainRoomWidth(0.0),height(0.0),depth(0.0),
-  backWallThick(0.0),
+  backWallThick(0.0),midWallThick(0.0),
   wallMat(0),voidMat(0)
  /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -84,6 +84,7 @@ GunTestFacilityHall::GunTestFacilityHall(const std::string& Key)  :
   mainRoomLength(A.mainRoomLength),mainRoomWidth(A.mainRoomWidth),height(A.height),
   depth(A.depth),
   backWallThick(A.backWallThick),
+  midWallThick(A.midWallThick),
   wallMat(A.wallMat),
   voidMat(A.voidMat)
   /*!
@@ -110,6 +111,7 @@ GunTestFacilityHall::operator=(const GunTestFacilityHall& A)
       height=A.height;
       depth=A.depth;
       backWallThick=A.backWallThick;
+      midWallThick=A.midWallThick;
       wallMat=A.wallMat;
       voidMat=A.voidMat;
     }
@@ -148,6 +150,7 @@ GunTestFacilityHall::populate(const FuncDataBase& Control)
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
   backWallThick=Control.EvalVar<double>(keyName+"BackWallThick");
+  midWallThick=Control.EvalVar<double>(keyName+"MidWallThick");
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat","Void");
@@ -174,7 +177,7 @@ GunTestFacilityHall::createSurfaces()
   SurfMap::makePlane("top",SMap,buildIndex+6,Origin+Z*(height),Z);
 
   ModelSupport::buildShiftedPlane(SMap,buildIndex+11,buildIndex+1,Y,-backWallThick);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+14,buildIndex+4,Y,backWallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+14,buildIndex+4,Y,midWallThick);
 
   return;
 }
