@@ -47,6 +47,7 @@ namespace MAXIV::GunTestFacility
     double height;                ///< distance from beam line to inner roof plane
     double depth;                 ///< beam line height
     double backWallThick;         ///< thickness of the back wall
+    double backWallLength;        ///< back wall length
     double midWallThick;          ///< thickness of the middle wall
     double outerWallThick;        ///< outer wall thickness
 

@@ -81,6 +81,7 @@ namespace MAXIV::GunTestFacility
     mainRoomLength(A.mainRoomLength),mainRoomWidth(A.mainRoomWidth),height(A.height),
     depth(A.depth),
     backWallThick(A.backWallThick),
+    backWallLength(A.backWallLength),
     midWallThick(A.midWallThick),
     outerWallThick(A.outerWallThick),
     wallMat(A.wallMat),
@@ -105,12 +106,13 @@ namespace MAXIV::GunTestFacility
 	attachSystem::FixedRotate::operator=(A);
 	attachSystem::CellMap::operator=(A);
 	mainRoomLength=A.mainRoomLength;
-	mainRoomWidth=A.mainRoomWidth;
-	height=A.height;
-	depth=A.depth;
-	backWallThick=A.backWallThick;
-	midWallThick=A.midWallThick;
-      outerWallThick=A.outerWallThick;
+        mainRoomWidth=A.mainRoomWidth;
+        height=A.height;
+        depth=A.depth;
+        backWallThick=A.backWallThick;
+        backWallLength=A.backWallLength;
+        midWallThick=A.midWallThick;
+        outerWallThick=A.outerWallThick;
 	wallMat=A.wallMat;
 	voidMat=A.voidMat;
       }
@@ -149,6 +151,7 @@ namespace MAXIV::GunTestFacility
     height=Control.EvalVar<double>(keyName+"Height");
     depth=Control.EvalVar<double>(keyName+"Depth");
     backWallThick=Control.EvalVar<double>(keyName+"BackWallThick");
+    backWallLength=Control.EvalVar<double>(keyName+"BackWallLength");
     midWallThick=Control.EvalVar<double>(keyName+"MidWallThick");
     outerWallThick=Control.EvalVar<double>(keyName+"OuterWallThick");
 
@@ -178,6 +181,7 @@ namespace MAXIV::GunTestFacility
 
     ModelSupport::buildShiftedPlane(SMap,buildIndex+11,buildIndex+1,Y,-backWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+12,buildIndex+2,Y,outerWallThick);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+13,buildIndex+4,Y,-backWallLength);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+14,buildIndex+4,Y,midWallThick);
 
     return;
@@ -199,8 +203,11 @@ namespace MAXIV::GunTestFacility
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 4 -14 5 -6 ");
     makeCell("MidWall",System,cellIndex++,wallMat,0.0,Out);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -1 3 -14 5 -6 ");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -1 13 -14 5 -6 ");
     makeCell("BackWall",System,cellIndex++,wallMat,0.0,Out);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -1 3 -13 5 -6 ");
+    makeCell("BackWallVoid",System,cellIndex++,voidMat,0.0,Out);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 2 -12 3 -14 5 -6 ");
     makeCell("OuterWallRight",System,cellIndex++,wallMat,0.0,Out);
