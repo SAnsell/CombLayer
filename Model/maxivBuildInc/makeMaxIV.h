@@ -27,10 +27,13 @@ namespace tdcSystem
   class TDC;
 }
 
+namespace MAXIV::GunTestFacility
+{
+  class GunTestFacility;
+}
 
 namespace xraySystem
 {
-  class GunTestFacility;
   class InjectionHall;
   class R1Ring;
   class R3Ring;
@@ -53,7 +56,7 @@ class makeMaxIV
   /// Linac/SPF Hall
   std::shared_ptr<tdcSystem::TDC> tdc;
   /// Gun test facility
-  std::shared_ptr<GunTestFacility> gtf;
+  std::shared_ptr<MAXIV::GunTestFacility::GunTestFacility> gtf;
 
 
   void populateStopPoint(const mainSystem::inputParam&,

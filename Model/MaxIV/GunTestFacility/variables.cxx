@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Linac/gtfVariables.cxx
+ * File:   Model/MaxIV/GunTestFacility/variables.cxx
  *
  * Copyright (c) 2004-2023 by Konstantin Batkov
  *
@@ -68,7 +68,7 @@ namespace setVariable
     \param name :: name prefix
   */
   {
-    ELog::RegMethod RegA("GunTestFacilityVariables", "gtfVariables");
+    ELog::RegMethod RegA("", "GunTestFacilityVariables");
 
     const std::string name = "GTFHall";
     HallVariables(Control, name);

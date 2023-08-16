@@ -22,36 +22,39 @@
 #ifndef GunTestFacility_h
 #define GunTestFacility_h
 
-namespace xraySystem
+namespace MAXIV
 {
-  /*!
-    \class GunTestFacility
-    \version 1.0
-    \author K. Batkov
-    \date August 2023
-    \brief Manager of the Gun Test Facility build
-  */
+  namespace GunTestFacility
+  {
+    /*!
+      \class GunTestFacility
+      \version 1.0
+      \author K. Batkov
+      \date August 2023
+      \brief Manager of the Gun Test Facility build
+    */
 
-  class GunTestFacilityHall;
+    class Hall;
 
-class GunTestFacility :
-    public attachSystem::FixedOffset,
-    public attachSystem::CellMap
-{
- private:
+    class GunTestFacility :
+      public attachSystem::FixedOffset,
+      public attachSystem::CellMap
+    {
+    private:
 
-  std::shared_ptr<GunTestFacilityHall> hall;
+      std::shared_ptr<Hall> hall;
 
- public:
+    public:
 
-  GunTestFacility(const std::string&);
-  GunTestFacility(const GunTestFacility&);
-  GunTestFacility& operator=(const GunTestFacility&);
-  virtual ~GunTestFacility();
+      GunTestFacility(const std::string&);
+      GunTestFacility(const GunTestFacility&);
+      GunTestFacility& operator=(const GunTestFacility&);
+      virtual ~GunTestFacility();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
-};
+      void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+    };
 
+  }
 }
 
 #endif

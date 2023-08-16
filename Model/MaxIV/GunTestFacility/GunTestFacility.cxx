@@ -51,56 +51,55 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 
-
-#include "GunTestFacilityHall.h"
+#include "Hall.h"
 #include "GunTestFacility.h"
 
-namespace xraySystem
+namespace MAXIV::GunTestFacility
 {
 
-GunTestFacility::GunTestFacility(const std::string& KN) :
-  attachSystem::FixedOffset(KN,6),
-  attachSystem::CellMap(),
-  hall(new GunTestFacilityHall("GTFHall"))
-  /*!
-    Constructor
-    \param KN :: Keyname
-  */
-{
-  ELog::RegMethod RegA("GunTestFacility","GunTestFacility");
+  GunTestFacility::GunTestFacility(const std::string& KN) :
+    attachSystem::FixedOffset(KN,6),
+    attachSystem::CellMap(),
+    hall(new Hall("GTFHall"))
+    /*!
+      Constructor
+      \param KN :: Keyname
+    */
+  {
+    ELog::RegMethod RegA("GunTestFacility","GunTestFacility");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
+    ModelSupport::objectRegister& OR=
+      ModelSupport::objectRegister::Instance();
 
-  OR.addObject(hall);
-}
+    OR.addObject(hall);
+  }
 
-GunTestFacility::~GunTestFacility()
+  GunTestFacility::~GunTestFacility()
   /*!
     Destructor
-   */
-{}
+  */
+  {}
 
-void
-GunTestFacility::createAll(Simulation& System,
-	       const attachSystem::FixedComp& FCOrigin,
-	       const long int sideIndex)
+  void
+  GunTestFacility::createAll(Simulation& System,
+			     const attachSystem::FixedComp& FCOrigin,
+			     const long int sideIndex)
   /*!
     Carry out the full build
     \param System :: Simulation system
     \param FCOrigin :: Start origin
     \param sideIndex :: link point for origin
-   */
-{
-  // For output stream
-  ELog::RegMethod RControl("GunTestFacility","createAll");
+  */
+  {
+    // For output stream
+    ELog::RegMethod RControl("GunTestFacility","createAll");
 
-  // build injection hall first:
-  constexpr int voidCell(74123);
-  hall->addInsertCell(voidCell);
-  hall->createAll(System,FCOrigin,sideIndex);
+    // build injection hall first:
+    constexpr int voidCell(74123);
+    hall->addInsertCell(voidCell);
+    hall->createAll(System,FCOrigin,sideIndex);
 
-  return;
+    return;
+  }
+
 }
-
-}   // NAMESPACE xraySystem

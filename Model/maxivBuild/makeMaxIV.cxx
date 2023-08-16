@@ -503,7 +503,7 @@ makeMaxIV::buildGunTest(Simulation& System,
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  gtf = std::make_shared<GunTestFacility>("GTF");
+  gtf = std::make_shared<MAXIV::GunTestFacility::GunTestFacility>("GTF");
   OR.addObject(gtf);
 
   constexpr int voidCell(74123);
