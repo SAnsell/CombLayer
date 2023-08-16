@@ -44,6 +44,7 @@ namespace MAXIV::GunTestFacility
 
     double mainRoomLength;        ///< inner main room length
     double mainRoomWidth;         ///< inner main room width
+    double labRoomWidth;          ///< lab room width
     double height;                ///< distance from beam line to inner roof plane
     double depth;                 ///< beam line height
     double backWallThick;         ///< thickness of the back wall

@@ -54,6 +54,7 @@ namespace setVariable
 
     Control.addVariable(name+"MainRoomLength",650.0); // [1]
     Control.addVariable(name+"MainRoomWidth",460.0); // [1]
+    Control.addVariable(name+"LabRoomWidth",460.0); // [1]
     Control.addVariable(name+"Depth",130.0); // [1]
     Control.addVariable(name+"Height",230.0); // [1]
     Control.addVariable(name+"BackWallThick",100.0); // [1]
