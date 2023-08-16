@@ -63,6 +63,7 @@ namespace setVariable
     Control.addVariable(name+"MidWallThick",100.0); // [1]
     Control.addVariable(name+"OuterWallThick",40.0); // [1]
     Control.addVariable(name+"WallMat","Concrete"); // guess
+    Control.addVariable(name+"MazeWidth",100.0); // [1]
   }
 
   void GunTestFacilityVariables(FuncDataBase& Control)
