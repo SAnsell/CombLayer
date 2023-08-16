@@ -48,8 +48,9 @@ namespace MAXIV::GunTestFacility
     double depth;                 ///< beam line height
     double backWallThick;         ///< thickness of the back wall
     double midWallThick;          ///< thickness of the middle wall
+    double outerWallThick;        ///< outer wall thickness
 
-    int wallMat;                   ///< Wall material
+    int wallMat;                  ///< Wall material
     int voidMat;                  ///< void material
 
     void populate(const FuncDataBase&);

@@ -58,6 +58,7 @@ namespace setVariable
     Control.addVariable(name+"Height",230.0); // [1]
     Control.addVariable(name+"BackWallThick",100.0); // [1]
     Control.addVariable(name+"MidWallThick",100.0); // [1]
+    Control.addVariable(name+"OuterWallThick",40.0); // [1]
     Control.addVariable(name+"WallMat","Concrete"); // guess
   }
 

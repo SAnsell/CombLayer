@@ -66,10 +66,7 @@ namespace MAXIV::GunTestFacility
     attachSystem::ContainedComp(),
     attachSystem::FixedRotate(Key,6),
     attachSystem::CellMap(),
-    attachSystem::SurfMap(),
-    mainRoomLength(0.0),mainRoomWidth(0.0),height(0.0),depth(0.0),
-    backWallThick(0.0),midWallThick(0.0),
-    wallMat(0),voidMat(0)
+    attachSystem::SurfMap()
     /*!
       Constructor BUT ALL variable are left unpopulated.
       \param Key :: Name for item in search
@@ -85,6 +82,7 @@ namespace MAXIV::GunTestFacility
     depth(A.depth),
     backWallThick(A.backWallThick),
     midWallThick(A.midWallThick),
+    outerWallThick(A.outerWallThick),
     wallMat(A.wallMat),
     voidMat(A.voidMat)
     /*!
@@ -112,6 +110,7 @@ namespace MAXIV::GunTestFacility
 	depth=A.depth;
 	backWallThick=A.backWallThick;
 	midWallThick=A.midWallThick;
+      outerWallThick=A.outerWallThick;
 	wallMat=A.wallMat;
 	voidMat=A.voidMat;
       }
@@ -151,6 +150,7 @@ namespace MAXIV::GunTestFacility
     depth=Control.EvalVar<double>(keyName+"Depth");
     backWallThick=Control.EvalVar<double>(keyName+"BackWallThick");
     midWallThick=Control.EvalVar<double>(keyName+"MidWallThick");
+    outerWallThick=Control.EvalVar<double>(keyName+"OuterWallThick");
 
     wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
     voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat","Void");
@@ -177,6 +177,7 @@ namespace MAXIV::GunTestFacility
     SurfMap::makePlane("top",SMap,buildIndex+6,Origin+Z*(height),Z);
 
     ModelSupport::buildShiftedPlane(SMap,buildIndex+11,buildIndex+1,Y,-backWallThick);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+12,buildIndex+2,Y,outerWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+14,buildIndex+4,Y,midWallThick);
 
     return;
@@ -196,12 +197,16 @@ namespace MAXIV::GunTestFacility
     makeCell("MainRoom",System,cellIndex++,voidMat,0.0,Out);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 4 -14 5 -6 ");
-    makeCell("BackWall",System,cellIndex++,wallMat,0.0,Out);
+    makeCell("MidWall",System,cellIndex++,wallMat,0.0,Out);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -1 3 -14 5 -6 ");
     makeCell("BackWall",System,cellIndex++,wallMat,0.0,Out);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -2 3 -14 5 -6 ");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 2 -12 3 -14 5 -6 ");
+    makeCell("OuterWallRight",System,cellIndex++,wallMat,0.0,Out);
+
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -12 3 -14 5 -6 ");
     addOuterSurf(Out);
 
     return;
