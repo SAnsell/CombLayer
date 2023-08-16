@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   support/SVD.cxx
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -178,7 +178,7 @@ SVD::linearEQ(const std::vector<double>& B) const
   std::vector<double> Out(nCols);
   for(size_t i=0;i<nCols;i++)
     {
-      if (fabs(S[i][i])>1e-20)
+      if (std::abs(S[i][i])>1e-20)
         {
 	  double dotValue(0.0);
 	  for(size_t ii=0;ii<mRows;ii++)

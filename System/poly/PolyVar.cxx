@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MCNP(X) Input builder
+   CombLayer : MCNP(X) Input builder
  
  * File:   poly/PolyVar.cxx
  *

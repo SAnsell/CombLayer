@@ -166,15 +166,15 @@ class PolyVar<1> : public PolyFunction
  public:
 
   explicit PolyVar<1>(const size_t =0);
-  PolyVar<1>(const size_t,const double);
-  PolyVar<1>(const std::vector<double>&);
+  PolyVar(const size_t,const double);
+  PolyVar(const std::vector<double>&);
   //  PolyVar<1>(const double);
-  PolyVar<1>(const size_t,const double,const double);
-  PolyVar<1>(const size_t,const double,const double,const double);
-  PolyVar<1>(const PolyVar<1>&);
-  PolyVar<1>& operator=(const PolyVar<1>&);
-  PolyVar<1>& operator=(const double&);
-  ~PolyVar<1>() override;
+  PolyVar(const size_t,const double,const double);
+  PolyVar(const size_t,const double,const double,const double);
+  PolyVar(const PolyVar<1>&);
+  PolyVar& operator=(const PolyVar<1>&);
+  PolyVar& operator=(const double&);
+  ~PolyVar() override;
 
     // member access
   void setDegree(const size_t);
