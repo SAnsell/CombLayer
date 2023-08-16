@@ -1818,14 +1818,9 @@ Simulation::minimizeObject(const int CN)
   MonteCarlo::Object* CPtr = findObject(CN);
   if (!CPtr)
     throw ColErr::InContainerError<int>(CN,"Cell not found");
-  if (CN==2620002)
-    ELog::EM<<"MIN OBJECT "<<*CPtr<<ELog::endDiag;
   const int flag=minimizeObject(CPtr);
   if (flag<0)
     Simulation::removeCell(CN);
-  if (CN==2620002)
-
-    ELog::EM<<"MIN OBJECT FLAG "<<flag<<ELog::endDiag;
   return flag;
 }
 
