@@ -85,6 +85,7 @@ namespace MAXIV::GunTestFacility
     backWallLength(A.backWallLength),
     midWallThick(A.midWallThick),
     outerWallThick(A.outerWallThick),
+    labRoomWallThick(A.labRoomWallThick),
     wallMat(A.wallMat),
     voidMat(A.voidMat)
     /*!
@@ -115,6 +116,7 @@ namespace MAXIV::GunTestFacility
         backWallLength=A.backWallLength;
         midWallThick=A.midWallThick;
         outerWallThick=A.outerWallThick;
+        labRoomWallThick=A.labRoomWallThick;
 	wallMat=A.wallMat;
 	voidMat=A.voidMat;
       }
@@ -157,6 +159,7 @@ namespace MAXIV::GunTestFacility
     backWallLength=Control.EvalVar<double>(keyName+"BackWallLength");
     midWallThick=Control.EvalVar<double>(keyName+"MidWallThick");
     outerWallThick=Control.EvalVar<double>(keyName+"OuterWallThick");
+    labRoomWallThick=Control.EvalVar<double>(keyName+"LabRoomWallThick");
 
     wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
     voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat","Void");
@@ -186,7 +189,9 @@ namespace MAXIV::GunTestFacility
     ModelSupport::buildShiftedPlane(SMap,buildIndex+12,buildIndex+2,Y,outerWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+13,buildIndex+4,Y,-backWallLength);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+14,buildIndex+4,Y,midWallThick);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+21,buildIndex+11,Y,labRoomWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+24,buildIndex+14,Y,labRoomWidth);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+34,buildIndex+24,Y,-labRoomWallThick);
 
     return;
   }
@@ -217,9 +222,14 @@ namespace MAXIV::GunTestFacility
     makeCell("OuterWallRight",System,cellIndex++,wallMat,0.0,Out);
 
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -2 14 -24 5 -6 ");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 21 -2 14 -34 5 -6 ");
     makeCell("LabRoom",System,cellIndex++,voidMat,0.0,Out);
 
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -21 14 -24 5 -6 ");
+    makeCell("LabRoomWall",System,cellIndex++,wallMat,0.0,Out);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 21 -2 34 -24 5 -6 ");
+    makeCell("LabRoomWall",System,cellIndex++,wallMat,0.0,Out);
 
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -12 3 -24 5 -6 ");
