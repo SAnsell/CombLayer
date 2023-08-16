@@ -212,51 +212,53 @@ namespace MAXIV::GunTestFacility
   {
     ELog::RegMethod RegA("Hall","createObjects");
 
+    const HeadRule tb = ModelSupport::getHeadRule(SMap,buildIndex," 5 -6 ");
+
     HeadRule Out;
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-    makeCell("MainRoom",System,cellIndex++,voidMat,0.0,Out);
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 ");
+    makeCell("MainRoom",System,cellIndex++,voidMat,0.0,Out*tb);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 4 -14 5 -6 ");
-    makeCell("MidWall",System,cellIndex++,wallMat,0.0,Out);
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 4 -14 ");
+    makeCell("MidWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -1 13 -14 5 -6 ");
-    makeCell("BackWall",System,cellIndex++,wallMat,0.0,Out);
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -1 13 -14 ");
+    makeCell("BackWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -1 3 -13 5 -6 ");
-    makeCell("BackWallVoid",System,cellIndex++,voidMat,0.0,Out);
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -1 3 -13 ");
+    makeCell("BackWallVoid",System,cellIndex++,voidMat,0.0,Out*tb);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 2 -12 3 -24 5 -6 ");
-    makeCell("OuterWallRight",System,cellIndex++,wallMat,0.0,Out);
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 2 -12 3 -24 ");
+    makeCell("OuterWallRight",System,cellIndex++,wallMat,0.0,Out*tb);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 41 -12 23 -3 5 -6 ");
-    makeCell("OuterWallBottom",System,cellIndex++,wallMat,0.0,Out);
-
-
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 21 -2 14 -34 5 -6 ");
-    makeCell("LabRoom",System,cellIndex++,voidMat,0.0,Out);
-
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -21 14 -24 5 -6 ");
-    makeCell("LabRoomWall",System,cellIndex++,wallMat,0.0,Out);
-
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 21 -2 34 -24 5 -6 ");
-    makeCell("LabRoomWall",System,cellIndex++,wallMat,0.0,Out);
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 41 -12 23 -3 ");
+    makeCell("OuterWallBottom",System,cellIndex++,wallMat,0.0,Out*tb);
 
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 31 -11 3 -4 5 -6 ");
-    makeCell("Maze",System,cellIndex++,voidMat,0.0,Out);
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 21 -2 14 -34 ");
+    makeCell("LabRoom",System,cellIndex++,voidMat,0.0,Out*tb);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 41 -31 3 -4 5 -6 ");
-    makeCell("MazeWall",System,cellIndex++,wallMat,0.0,Out);
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -21 14 -24 ");
+    makeCell("LabRoomWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 41 -11 4 -44 5 -6 ");
-    makeCell("MazeWall",System,cellIndex++,wallMat,0.0,Out);
-
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 41 -11 44 -24 5 -6 ");
-    makeCell("BeyondMaze",System,cellIndex++,voidMat,0.0,Out);
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 21 -2 34 -24 ");
+    makeCell("LabRoomWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 41 -12 23 -24 5 -6 ");
-    addOuterSurf(Out);
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 31 -11 3 -4 ");
+    makeCell("Maze",System,cellIndex++,voidMat,0.0,Out*tb);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 41 -31 3 -4 ");
+    makeCell("MazeWall",System,cellIndex++,wallMat,0.0,Out*tb);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 41 -11 4 -44 ");
+    makeCell("MazeWall",System,cellIndex++,wallMat,0.0,Out*tb);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 41 -11 44 -24 ");
+    makeCell("BeyondMaze",System,cellIndex++,voidMat,0.0,Out*tb);
+
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 41 -12 23 -24 ");
+    addOuterSurf(Out*tb);
 
     return;
   }
