@@ -47,7 +47,7 @@
 
 namespace setVariable
 {
-  void HallVariables(FuncDataBase& Control, const std::string& name)
+  void BuildingBVariables(FuncDataBase& Control, const std::string& name)
   {
     // References:
     // [1] 221413_radiation_caclulation.STEP
@@ -79,8 +79,8 @@ namespace setVariable
   {
     ELog::RegMethod RegA("", "GunTestFacilityVariables");
 
-    const std::string name = "GTFHall";
-    HallVariables(Control, name);
+    const std::string name = "BldB";
+    BuildingBVariables(Control, name);
 
   }
 }

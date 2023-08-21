@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef xraySystem_GunTestFacilityHall_h
-#define xraySystem_GunTestFacilityHall_h
+#ifndef xraySystem_GunTestFacilityBuildingB_h
+#define xraySystem_GunTestFacilityBuildingB_h
 
 class Simulation;
 
@@ -28,14 +28,14 @@ namespace MAXIV::GunTestFacility
 {
 
   /*!
-    \class Hall
+    \class BuildingB
     \version 1.0
     \author Konstantin Batkov
     \date August 2023
-    \brief Gun Test Facility building
+    \brief MAX IV building B (housing the gun test facility)
   */
 
-  class Hall : public attachSystem::ContainedComp,
+  class BuildingB : public attachSystem::ContainedComp,
 	       public attachSystem::FixedRotate,
 	       public attachSystem::CellMap,
 	       public attachSystem::SurfMap
@@ -67,11 +67,11 @@ namespace MAXIV::GunTestFacility
 
   public:
 
-    Hall(const std::string&);
-    Hall(const Hall&);
-    Hall& operator=(const Hall&);
-    virtual Hall* clone() const;
-    virtual ~Hall();
+    BuildingB(const std::string&);
+    BuildingB(const BuildingB&);
+    BuildingB& operator=(const BuildingB&);
+    virtual BuildingB* clone() const;
+    virtual ~BuildingB();
 
     using attachSystem::FixedComp::createAll;
     void createAll(Simulation&,const attachSystem::FixedComp&,const long int);

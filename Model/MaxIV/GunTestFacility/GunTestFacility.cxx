@@ -51,7 +51,7 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 
-#include "Hall.h"
+#include "BuildingB.h"
 #include "GunTestFacility.h"
 
 namespace MAXIV::GunTestFacility
@@ -60,7 +60,7 @@ namespace MAXIV::GunTestFacility
   GunTestFacility::GunTestFacility(const std::string& KN) :
     attachSystem::FixedOffset(KN,6),
     attachSystem::CellMap(),
-    hall(new Hall("GTFHall"))
+    buildingB(new BuildingB("BldB"))
     /*!
       Constructor
       \param KN :: Keyname
@@ -71,7 +71,7 @@ namespace MAXIV::GunTestFacility
     ModelSupport::objectRegister& OR=
       ModelSupport::objectRegister::Instance();
 
-    OR.addObject(hall);
+    OR.addObject(buildingB);
   }
 
   GunTestFacility::~GunTestFacility()
@@ -94,10 +94,9 @@ namespace MAXIV::GunTestFacility
     // For output stream
     ELog::RegMethod RControl("GunTestFacility","createAll");
 
-    // build injection hall first:
     constexpr int voidCell(74123);
-    hall->addInsertCell(voidCell);
-    hall->createAll(System,FCOrigin,sideIndex);
+    buildingB->addInsertCell(voidCell);
+    buildingB->createAll(System,FCOrigin,sideIndex);
 
     return;
   }

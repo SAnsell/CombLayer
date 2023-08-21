@@ -34,7 +34,7 @@ namespace MAXIV
       \brief Manager of the Gun Test Facility build
     */
 
-    class Hall;
+    class BuildingB;
 
     class GunTestFacility :
       public attachSystem::FixedOffset,
@@ -42,7 +42,7 @@ namespace MAXIV
     {
     private:
 
-      std::shared_ptr<Hall> hall;
+      std::shared_ptr<BuildingB> buildingB;
 
     public:
 

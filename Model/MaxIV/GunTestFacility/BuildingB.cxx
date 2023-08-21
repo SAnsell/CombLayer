@@ -57,12 +57,12 @@
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 
-#include "Hall.h"
+#include "BuildingB.h"
 
 namespace MAXIV::GunTestFacility
 {
 
-  Hall::Hall(const std::string& Key)  :
+  BuildingB::BuildingB(const std::string& Key)  :
     attachSystem::ContainedComp(),
     attachSystem::FixedRotate(Key,6),
     attachSystem::CellMap(),
@@ -73,7 +73,7 @@ namespace MAXIV::GunTestFacility
     */
   {}
 
-  Hall::Hall(const Hall& A) :
+  BuildingB::BuildingB(const BuildingB& A) :
     attachSystem::ContainedComp(A),
     attachSystem::FixedRotate(A),
     attachSystem::CellMap(A),
@@ -95,15 +95,15 @@ namespace MAXIV::GunTestFacility
     voidMat(A.voidMat)
     /*!
       Copy constructor
-      \param A :: Hall to copy
+      \param A :: BuildingB to copy
     */
   {}
 
-  Hall&
-  Hall::operator=(const Hall& A)
+  BuildingB&
+  BuildingB::operator=(const BuildingB& A)
   /*!
     Assignment operator
-    \param A :: Hall to copy
+    \param A :: BuildingB to copy
     \return *this
   */
   {
@@ -132,30 +132,30 @@ namespace MAXIV::GunTestFacility
     return *this;
   }
 
-  Hall*
-  Hall::clone() const
+  BuildingB*
+  BuildingB::clone() const
   /*!
     Clone self
     \return new (this)
   */
   {
-    return new Hall(*this);
+    return new BuildingB(*this);
   }
 
-  Hall::~Hall()
+  BuildingB::~BuildingB()
   /*!
     Destructor
   */
   {}
 
   void
-  Hall::populate(const FuncDataBase& Control)
+  BuildingB::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: Variable data base
   */
   {
-    ELog::RegMethod RegA("Hall","populate");
+    ELog::RegMethod RegA("BuildingB","populate");
 
     FixedRotate::populate(Control);
 
@@ -181,12 +181,12 @@ namespace MAXIV::GunTestFacility
   }
 
   void
-  Hall::createSurfaces()
+  BuildingB::createSurfaces()
   /*!
     Create All the surfaces
   */
   {
-    ELog::RegMethod RegA("Hall","createSurfaces");
+    ELog::RegMethod RegA("BuildingB","createSurfaces");
 
 
     SurfMap::makePlane("back",SMap,buildIndex+1,Origin-Y*(gunRoomLength/2.0),Y);
@@ -217,13 +217,13 @@ namespace MAXIV::GunTestFacility
   }
 
   void
-  Hall::createObjects(Simulation& System)
+  BuildingB::createObjects(Simulation& System)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
   */
   {
-    ELog::RegMethod RegA("Hall","createObjects");
+    ELog::RegMethod RegA("BuildingB","createObjects");
 
     const HeadRule tb = ModelSupport::getHeadRule(SMap,buildIndex," 5 -6 ");
 
@@ -275,7 +275,7 @@ namespace MAXIV::GunTestFacility
 
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," -51 41 23 -24 ");
-    makeCell("Hall",System,cellIndex++,voidMat,0.0,Out*tb);
+    makeCell("BuildingB",System,cellIndex++,voidMat,0.0,Out*tb);
 
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," -51 11 23 -24 ");
@@ -286,12 +286,12 @@ namespace MAXIV::GunTestFacility
 
 
   void
-  Hall::createLinks()
+  BuildingB::createLinks()
   /*!
     Create all the linkes
   */
   {
-    ELog::RegMethod RegA("Hall","createLinks");
+    ELog::RegMethod RegA("BuildingB","createLinks");
 
     // TODO: Check and use names for the links below:
 
@@ -317,7 +317,7 @@ namespace MAXIV::GunTestFacility
   }
 
   void
-  Hall::createAll(Simulation& System,
+  BuildingB::createAll(Simulation& System,
 		  const attachSystem::FixedComp& FC,
 		  const long int sideIndex)
   /*!
@@ -327,7 +327,7 @@ namespace MAXIV::GunTestFacility
     \param sideIndex :: link point for origin
   */
   {
-    ELog::RegMethod RegA("Hall","createAll");
+    ELog::RegMethod RegA("BuildingB","createAll");
 
     populate(System.getDataBase());
     createUnitVector(FC,sideIndex);
