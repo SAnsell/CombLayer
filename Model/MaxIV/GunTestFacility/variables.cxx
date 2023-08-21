@@ -53,8 +53,8 @@ namespace setVariable
     // [1] 221413_radiation_caclulation.STEP
     // [2] K_20-1_08C6b4
 
-    Control.addVariable(name+"MainRoomLength",650.0); // [1]
-    Control.addVariable(name+"MainRoomWidth",460.0); // [1]
+    Control.addVariable(name+"GunRoomLength",650.0); // [1]
+    Control.addVariable(name+"GunRoomWidth",460.0); // [1]
     Control.addVariable(name+"KlystronRoomWidth",460.0); // [1]
     Control.addVariable(name+"KlystronRoomWallThick",20.0); // [1]
     Control.addVariable(name+"Depth",130.0); // [1]

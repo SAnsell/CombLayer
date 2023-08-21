@@ -42,8 +42,8 @@ namespace MAXIV::GunTestFacility
   {
   private:
 
-    double mainRoomLength;        ///< inner main room length
-    double mainRoomWidth;         ///< inner main room width
+    double gunRoomLength;        ///< inner main room length
+    double gunRoomWidth;         ///< inner main room width
     double klystronRoomWidth;          ///< lab room width
     double height;                ///< distance from beam line to inner roof plane
     double depth;                 ///< beam line height

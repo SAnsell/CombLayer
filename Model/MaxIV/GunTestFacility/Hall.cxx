@@ -78,7 +78,7 @@ namespace MAXIV::GunTestFacility
     attachSystem::FixedRotate(A),
     attachSystem::CellMap(A),
     attachSystem::SurfMap(A),
-    mainRoomLength(A.mainRoomLength),mainRoomWidth(A.mainRoomWidth),
+    gunRoomLength(A.gunRoomLength),gunRoomWidth(A.gunRoomWidth),
     klystronRoomWidth(A.klystronRoomWidth),
     height(A.height),
     depth(A.depth),
@@ -109,8 +109,8 @@ namespace MAXIV::GunTestFacility
 	attachSystem::ContainedComp::operator=(A);
 	attachSystem::FixedRotate::operator=(A);
 	attachSystem::CellMap::operator=(A);
-	mainRoomLength=A.mainRoomLength;
-        mainRoomWidth=A.mainRoomWidth;
+	gunRoomLength=A.gunRoomLength;
+        gunRoomWidth=A.gunRoomWidth;
         klystronRoomWidth=A.klystronRoomWidth;
         height=A.height;
         depth=A.depth;
@@ -153,8 +153,8 @@ namespace MAXIV::GunTestFacility
 
     FixedRotate::populate(Control);
 
-    mainRoomLength=Control.EvalVar<double>(keyName+"MainRoomLength");
-    mainRoomWidth=Control.EvalVar<double>(keyName+"MainRoomWidth");
+    gunRoomLength=Control.EvalVar<double>(keyName+"GunRoomLength");
+    gunRoomWidth=Control.EvalVar<double>(keyName+"GunRoomWidth");
     klystronRoomWidth=Control.EvalVar<double>(keyName+"KlystronRoomWidth");
     height=Control.EvalVar<double>(keyName+"Height");
     depth=Control.EvalVar<double>(keyName+"Depth");
@@ -180,11 +180,11 @@ namespace MAXIV::GunTestFacility
     ELog::RegMethod RegA("Hall","createSurfaces");
 
 
-    SurfMap::makePlane("back",SMap,buildIndex+1,Origin-Y*(mainRoomLength/2.0),Y);
-    SurfMap::makePlane("front",SMap,buildIndex+2,Origin+Y*(mainRoomLength/2.0),Y);
+    SurfMap::makePlane("back",SMap,buildIndex+1,Origin-Y*(gunRoomLength/2.0),Y);
+    SurfMap::makePlane("front",SMap,buildIndex+2,Origin+Y*(gunRoomLength/2.0),Y);
 
-    SurfMap::makePlane("left",SMap,buildIndex+3,Origin-X*(mainRoomWidth/2.0),X);
-    SurfMap::makePlane("right",SMap,buildIndex+4,Origin+X*(mainRoomWidth/2.0),X);
+    SurfMap::makePlane("left",SMap,buildIndex+3,Origin-X*(gunRoomWidth/2.0),X);
+    SurfMap::makePlane("right",SMap,buildIndex+4,Origin+X*(gunRoomWidth/2.0),X);
 
     SurfMap::makePlane("bottom",SMap,buildIndex+5,Origin-Z*(depth),Z);
     SurfMap::makePlane("top",SMap,buildIndex+6,Origin+Z*(height),Z);
@@ -217,7 +217,7 @@ namespace MAXIV::GunTestFacility
 
     HeadRule Out;
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 ");
-    makeCell("MainRoom",System,cellIndex++,voidMat,0.0,Out*tb);
+    makeCell("GunRoom",System,cellIndex++,voidMat,0.0,Out*tb);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 4 -14 ");
     makeCell("MidWall",System,cellIndex++,wallMat,0.0,Out*tb);
@@ -273,18 +273,18 @@ namespace MAXIV::GunTestFacility
   {
     ELog::RegMethod RegA("Hall","createLinks");
 
-    FixedComp::setConnect(0,Origin-Y*(mainRoomLength/2.0),-Y);
+    FixedComp::setConnect(0,Origin-Y*(gunRoomLength/2.0),-Y);
     FixedComp::setNamedLinkSurf(0,"Back",SurfMap::getSignedSurf("#back"));
 
     // TODO: Check and use names for the links below:
 
-    // FixedComp::setConnect(1,Origin+Y*(mainRoomLength/2.0),Y);
+    // FixedComp::setConnect(1,Origin+Y*(gunRoomLength/2.0),Y);
     // FixedComp::setNamedLinkSurf(1,"Front",SMap.realSurf(buildIndex+2));
 
-    // FixedComp::setConnect(2,Origin-X*(mainRoomWidth/2.0),-X);
+    // FixedComp::setConnect(2,Origin-X*(gunRoomWidth/2.0),-X);
     // FixedComp::setNamedLinkSurf(2,"Left",-SMap.realSurf(buildIndex+3));
 
-    // FixedComp::setConnect(3,Origin+X*(mainRoomWidth/2.0),X);
+    // FixedComp::setConnect(3,Origin+X*(gunRoomWidth/2.0),X);
     // FixedComp::setNamedLinkSurf(3,"Right",SMap.realSurf(buildIndex+4));
 
     // FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
