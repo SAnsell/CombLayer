@@ -68,6 +68,7 @@ namespace setVariable
     Control.addVariable(name+"MazeEntranceOffset",5.0); // [2]: 4250-3800-400=5 cm
     Control.addVariable(name+"MazeEntranceWidth",101.0); // [2] ÖK + 78.160? todo
     Control.addVariable(name+"HallLength",500.0); // [2] 10900-5700-200 = 500 cm
+    Control.addVariable(name+"ForwardWallThick",20.0); // [2]
   }
 
   void GunTestFacilityVariables(FuncDataBase& Control)
