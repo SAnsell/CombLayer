@@ -52,7 +52,9 @@ namespace MAXIV::GunTestFacility
     double midWallThick;          ///< thickness of the middle wall
     double outerWallThick;        ///< outer wall thickness
     double klystronRoomWallThick; ///< klystron test room wall thickness
-    double mazeWidth;             ///< maze width
+    double mazeWidth;             ///< maze (sluss) width
+    double mazeEntranceOffset;    ///< offset of the maze entrance door
+    double mazeEntranceWidth;     ///< width of the maze entrance door
 
     int wallMat;                  ///< Wall material
     int voidMat;                  ///< void material
