@@ -83,7 +83,7 @@ namespace MAXIV::GunTestFacility
     height(A.height),
     depth(A.depth),
     backWallThick(A.backWallThick),
-    backWallLength(A.backWallLength),
+    gunRoomEntranceWidth(A.gunRoomEntranceWidth),
     midWallThick(A.midWallThick),
     outerWallThick(A.outerWallThick),
     klystronRoomWallThick(A.klystronRoomWallThick),
@@ -115,7 +115,7 @@ namespace MAXIV::GunTestFacility
         height=A.height;
         depth=A.depth;
         backWallThick=A.backWallThick;
-        backWallLength=A.backWallLength;
+        gunRoomEntranceWidth=A.gunRoomEntranceWidth;
         midWallThick=A.midWallThick;
         outerWallThick=A.outerWallThick;
         klystronRoomWallThick=A.klystronRoomWallThick;
@@ -159,7 +159,7 @@ namespace MAXIV::GunTestFacility
     height=Control.EvalVar<double>(keyName+"Height");
     depth=Control.EvalVar<double>(keyName+"Depth");
     backWallThick=Control.EvalVar<double>(keyName+"BackWallThick");
-    backWallLength=Control.EvalVar<double>(keyName+"BackWallLength");
+    gunRoomEntranceWidth=Control.EvalVar<double>(keyName+"GunRoomEntranceWidth");
     midWallThick=Control.EvalVar<double>(keyName+"MidWallThick");
     outerWallThick=Control.EvalVar<double>(keyName+"OuterWallThick");
     klystronRoomWallThick=Control.EvalVar<double>(keyName+"KlystronRoomWallThick");
@@ -191,7 +191,7 @@ namespace MAXIV::GunTestFacility
 
     ModelSupport::buildShiftedPlane(SMap,buildIndex+11,buildIndex+1,Y,-backWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+12,buildIndex+2,Y,outerWallThick);
-    ModelSupport::buildShiftedPlane(SMap,buildIndex+13,buildIndex+4,Y,-backWallLength);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+13,buildIndex+3,Y,gunRoomEntranceWidth);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+14,buildIndex+4,Y,midWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+21,buildIndex+11,Y,klystronRoomWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+23,buildIndex+3,Y,-outerWallThick);
