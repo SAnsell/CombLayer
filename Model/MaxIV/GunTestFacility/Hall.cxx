@@ -90,6 +90,7 @@ namespace MAXIV::GunTestFacility
     mazeWidth(A.mazeWidth),
     mazeEntranceOffset(A.mazeEntranceOffset),
     mazeEntranceWidth(A.mazeEntranceWidth),
+    hallLength(A.hallLength),
     wallMat(A.wallMat),
     voidMat(A.voidMat)
     /*!
@@ -124,6 +125,7 @@ namespace MAXIV::GunTestFacility
         mazeWidth=A.mazeWidth;
         mazeEntranceOffset=A.mazeEntranceOffset;
         mazeEntranceWidth=A.mazeEntranceWidth;
+        hallLength=A.hallLength;
 	wallMat=A.wallMat;
 	voidMat=A.voidMat;
       }
@@ -170,6 +172,7 @@ namespace MAXIV::GunTestFacility
     mazeWidth=Control.EvalVar<double>(keyName+"MazeWidth");
     mazeEntranceOffset=Control.EvalVar<double>(keyName+"MazeEntranceOffset");
     mazeEntranceWidth=Control.EvalVar<double>(keyName+"MazeEntranceWidth");
+    hallLength=Control.EvalVar<double>(keyName+"HallLength");
 
     wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
     voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat","Void");
@@ -206,6 +209,7 @@ namespace MAXIV::GunTestFacility
     ModelSupport::buildShiftedPlane(SMap,buildIndex+34,buildIndex+24,Y,-klystronRoomWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+41,buildIndex+31,Y,-outerWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+44,buildIndex+4,Y,outerWallThick);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+51,buildIndex+11,Y,-hallLength);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+53,buildIndex+4,Y,
 				    -mazeEntranceOffset-mazeEntranceWidth);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+54,buildIndex+4,Y,-mazeEntranceOffset);
@@ -253,7 +257,6 @@ namespace MAXIV::GunTestFacility
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 21 -2 34 -24 ");
     makeCell("KlystronRoomWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
-
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 31 -11 3 -4 ");
     makeCell("Maze",System,cellIndex++,voidMat,0.0,Out*tb);
 
@@ -273,7 +276,11 @@ namespace MAXIV::GunTestFacility
     makeCell("BeyondMaze",System,cellIndex++,voidMat,0.0,Out*tb);
 
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 41 -12 23 -24 ");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 51 -41 23 -24 ");
+    makeCell("Hall",System,cellIndex++,voidMat,0.0,Out*tb);
+
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 51 -12 23 -24 ");
     addOuterSurf(Out*tb);
 
     return;
