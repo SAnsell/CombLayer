@@ -79,14 +79,14 @@ namespace MAXIV::GunTestFacility
     attachSystem::CellMap(A),
     attachSystem::SurfMap(A),
     mainRoomLength(A.mainRoomLength),mainRoomWidth(A.mainRoomWidth),
-    labRoomWidth(A.labRoomWidth),
+    klystronRoomWidth(A.klystronRoomWidth),
     height(A.height),
     depth(A.depth),
     backWallThick(A.backWallThick),
     backWallLength(A.backWallLength),
     midWallThick(A.midWallThick),
     outerWallThick(A.outerWallThick),
-    labRoomWallThick(A.labRoomWallThick),
+    klystronRoomWallThick(A.klystronRoomWallThick),
     mazeWidth(A.mazeWidth),
     wallMat(A.wallMat),
     voidMat(A.voidMat)
@@ -111,14 +111,14 @@ namespace MAXIV::GunTestFacility
 	attachSystem::CellMap::operator=(A);
 	mainRoomLength=A.mainRoomLength;
         mainRoomWidth=A.mainRoomWidth;
-        labRoomWidth=A.labRoomWidth;
+        klystronRoomWidth=A.klystronRoomWidth;
         height=A.height;
         depth=A.depth;
         backWallThick=A.backWallThick;
         backWallLength=A.backWallLength;
         midWallThick=A.midWallThick;
         outerWallThick=A.outerWallThick;
-        labRoomWallThick=A.labRoomWallThick;
+        klystronRoomWallThick=A.klystronRoomWallThick;
         mazeWidth=A.mazeWidth;
 	wallMat=A.wallMat;
 	voidMat=A.voidMat;
@@ -155,14 +155,14 @@ namespace MAXIV::GunTestFacility
 
     mainRoomLength=Control.EvalVar<double>(keyName+"MainRoomLength");
     mainRoomWidth=Control.EvalVar<double>(keyName+"MainRoomWidth");
-    labRoomWidth=Control.EvalVar<double>(keyName+"LabRoomWidth");
+    klystronRoomWidth=Control.EvalVar<double>(keyName+"KlystronRoomWidth");
     height=Control.EvalVar<double>(keyName+"Height");
     depth=Control.EvalVar<double>(keyName+"Depth");
     backWallThick=Control.EvalVar<double>(keyName+"BackWallThick");
     backWallLength=Control.EvalVar<double>(keyName+"BackWallLength");
     midWallThick=Control.EvalVar<double>(keyName+"MidWallThick");
     outerWallThick=Control.EvalVar<double>(keyName+"OuterWallThick");
-    labRoomWallThick=Control.EvalVar<double>(keyName+"LabRoomWallThick");
+    klystronRoomWallThick=Control.EvalVar<double>(keyName+"KlystronRoomWallThick");
     mazeWidth=Control.EvalVar<double>(keyName+"MazeWidth");
 
     wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -193,11 +193,11 @@ namespace MAXIV::GunTestFacility
     ModelSupport::buildShiftedPlane(SMap,buildIndex+12,buildIndex+2,Y,outerWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+13,buildIndex+4,Y,-backWallLength);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+14,buildIndex+4,Y,midWallThick);
-    ModelSupport::buildShiftedPlane(SMap,buildIndex+21,buildIndex+11,Y,labRoomWallThick);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+21,buildIndex+11,Y,klystronRoomWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+23,buildIndex+3,Y,-outerWallThick);
-    ModelSupport::buildShiftedPlane(SMap,buildIndex+24,buildIndex+14,Y,labRoomWidth);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+24,buildIndex+14,Y,klystronRoomWidth);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+31,buildIndex+11,Y,-mazeWidth);
-    ModelSupport::buildShiftedPlane(SMap,buildIndex+34,buildIndex+24,Y,-labRoomWallThick);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+34,buildIndex+24,Y,-klystronRoomWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+41,buildIndex+31,Y,-outerWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+44,buildIndex+4,Y,outerWallThick);
 
@@ -236,13 +236,13 @@ namespace MAXIV::GunTestFacility
 
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 21 -2 14 -34 ");
-    makeCell("LabRoom",System,cellIndex++,voidMat,0.0,Out*tb);
+    makeCell("KlystronRoom",System,cellIndex++,voidMat,0.0,Out*tb);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -21 14 -24 ");
-    makeCell("LabRoomWall",System,cellIndex++,wallMat,0.0,Out*tb);
+    makeCell("KlystronRoomWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 21 -2 34 -24 ");
-    makeCell("LabRoomWall",System,cellIndex++,wallMat,0.0,Out*tb);
+    makeCell("KlystronRoomWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 31 -11 3 -4 ");

@@ -44,14 +44,14 @@ namespace MAXIV::GunTestFacility
 
     double mainRoomLength;        ///< inner main room length
     double mainRoomWidth;         ///< inner main room width
-    double labRoomWidth;          ///< lab room width
+    double klystronRoomWidth;          ///< lab room width
     double height;                ///< distance from beam line to inner roof plane
     double depth;                 ///< beam line height
     double backWallThick;         ///< thickness of the back wall
     double backWallLength;        ///< back wall length
     double midWallThick;          ///< thickness of the middle wall
     double outerWallThick;        ///< outer wall thickness
-    double labRoomWallThick;      ///< lab room wall thickness
+    double klystronRoomWallThick;      ///< lab room wall thickness
     double mazeWidth;             ///< maze width
 
     int wallMat;                  ///< Wall material

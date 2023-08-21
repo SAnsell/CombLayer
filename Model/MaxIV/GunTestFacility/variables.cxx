@@ -51,19 +51,20 @@ namespace setVariable
   {
     // References:
     // [1] 221413_radiation_caclulation.STEP
+    // [2] K_20-1_08C6b4
 
     Control.addVariable(name+"MainRoomLength",650.0); // [1]
     Control.addVariable(name+"MainRoomWidth",460.0); // [1]
-    Control.addVariable(name+"LabRoomWidth",460.0); // [1]
-    Control.addVariable(name+"LabRoomWallThick",20.0); // [1]
+    Control.addVariable(name+"KlystronRoomWidth",460.0); // [1]
+    Control.addVariable(name+"KlystronRoomWallThick",20.0); // [1]
     Control.addVariable(name+"Depth",130.0); // [1]
     Control.addVariable(name+"Height",230.0); // [1]
     Control.addVariable(name+"BackWallThick",100.0); // [1]
     Control.addVariable(name+"BackWallLength",300.0); // [1]
     Control.addVariable(name+"MidWallThick",100.0); // [1]
-    Control.addVariable(name+"OuterWallThick",40.0); // [1]
+    Control.addVariable(name+"OuterWallThick",40.0); // [1] [2]
     Control.addVariable(name+"WallMat","Concrete"); // guess
-    Control.addVariable(name+"MazeWidth",100.0); // [1]
+    Control.addVariable(name+"MazeWidth",100.0); // [1] [2]
   }
 
   void GunTestFacilityVariables(FuncDataBase& Control)
