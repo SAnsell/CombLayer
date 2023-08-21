@@ -200,19 +200,19 @@ namespace MAXIV::GunTestFacility
 
     ModelSupport::buildShiftedPlane(SMap,buildIndex+11,buildIndex+1,Y,-backWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+12,buildIndex+2,Y,outerWallThick);
-    ModelSupport::buildShiftedPlane(SMap,buildIndex+13,buildIndex+3,Y,gunRoomEntranceWidth);
-    ModelSupport::buildShiftedPlane(SMap,buildIndex+14,buildIndex+4,Y,midWallThick);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+13,buildIndex+3,X,gunRoomEntranceWidth);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+14,buildIndex+4,X,midWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+21,buildIndex+11,Y,klystronRoomWallThick);
-    ModelSupport::buildShiftedPlane(SMap,buildIndex+23,buildIndex+3,Y,-outerWallThick);
-    ModelSupport::buildShiftedPlane(SMap,buildIndex+24,buildIndex+14,Y,klystronRoomWidth);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+23,buildIndex+3,X,-outerWallThick);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+24,buildIndex+14,X,klystronRoomWidth);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+31,buildIndex+11,Y,-mazeWidth);
-    ModelSupport::buildShiftedPlane(SMap,buildIndex+34,buildIndex+24,Y,-klystronRoomWallThick);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+34,buildIndex+24,X,-klystronRoomWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+41,buildIndex+31,Y,-outerWallThick);
-    ModelSupport::buildShiftedPlane(SMap,buildIndex+44,buildIndex+4,Y,outerWallThick);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+44,buildIndex+4,X,outerWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+51,buildIndex+11,Y,-hallLength);
-    ModelSupport::buildShiftedPlane(SMap,buildIndex+53,buildIndex+4,Y,
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+53,buildIndex+4,X,
 				    -mazeEntranceOffset-mazeEntranceWidth);
-    ModelSupport::buildShiftedPlane(SMap,buildIndex+54,buildIndex+4,Y,-mazeEntranceOffset);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+54,buildIndex+4,X,-mazeEntranceOffset);
 
     return;
   }
