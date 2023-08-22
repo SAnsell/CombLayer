@@ -63,6 +63,8 @@ namespace MAXIV::GunTestFacility
     double trspRoomWidth;         ///< TRSP room width
     double miniRoomWidth;         ///< mini room width
     double miniRoomLength;        ///< mini room length
+    double microRoomWidth;        ///< micro room width
+    double microRoomLength;       ///< micro room length
 
     int wallMat;                  ///< Wall material
     int voidMat;                  ///< void material

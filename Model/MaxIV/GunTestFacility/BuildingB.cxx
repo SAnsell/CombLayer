@@ -97,6 +97,8 @@ namespace MAXIV::GunTestFacility
     trspRoomWidth(A.trspRoomWidth),
     miniRoomWidth(A.miniRoomWidth),
     miniRoomLength(A.miniRoomLength),
+    microRoomWidth(A.microRoomWidth),
+    microRoomLength(A.microRoomLength),
     wallMat(A.wallMat),
     voidMat(A.voidMat)
     /*!
@@ -138,6 +140,8 @@ namespace MAXIV::GunTestFacility
         trspRoomWidth=A.trspRoomWidth;
         miniRoomWidth=A.miniRoomWidth;
         miniRoomLength=A.miniRoomLength;
+        microRoomWidth=A.microRoomWidth;
+        microRoomLength=A.microRoomLength;
 	wallMat=A.wallMat;
 	voidMat=A.voidMat;
       }
@@ -191,9 +195,14 @@ namespace MAXIV::GunTestFacility
     trspRoomWidth=Control.EvalVar<double>(keyName+"TRSPRoomWidth");
     miniRoomWidth=Control.EvalVar<double>(keyName+"MiniRoomWidth");
     miniRoomLength=Control.EvalVar<double>(keyName+"MiniRoomLength");
+    microRoomWidth=Control.EvalVar<double>(keyName+"MicroRoomWidth");
+    microRoomLength=Control.EvalVar<double>(keyName+"MicroRoomLength");
 
     wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
     voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat","Void");
+
+    if (std::abs(gunRoomWidth + midWallThick+ klystronRoomWidth + trspRoomWidth + miniRoomWidth + 2.0*internalWallThick-2025.0)>1e-3)
+      ELog::EM << "WARNING: gun test room widths do not sum up to 2025 as of K_20-1_08C6b4" << ELog::endWarn;
 
     return;
   }
@@ -237,9 +246,14 @@ namespace MAXIV::GunTestFacility
     ModelSupport::buildShiftedPlane(SMap,buildIndex+51,buildIndex+1,X,miniRoomLength);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+52,buildIndex+51,X,internalWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+53,buildIndex+33,X,-trspRoomWidth);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+61,buildIndex+51,X,
+				    -microRoomLength-internalWallThick);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+62,buildIndex+51,X,-microRoomLength);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+63,buildIndex+53,X,-internalWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+73,buildIndex+63,X,-miniRoomWidth);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+74,buildIndex+73,X,microRoomWidth);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+83,buildIndex+73,X,-outerWallThick);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+84,buildIndex+74,X,internalWallThick);
 
     return;
   }
@@ -316,7 +330,10 @@ namespace MAXIV::GunTestFacility
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -12 63 -53 ");
     makeCell("RRSPRoomBottomWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -51 73 -63 ");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -61 73 -63 ");
+    makeCell("MiniRoom",System,cellIndex++,voidMat,0.0,Out*tb);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 61 -51 84 -63 ");
     makeCell("MiniRoom",System,cellIndex++,voidMat,0.0,Out*tb);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 51 -52 73 -63 ");
@@ -324,6 +341,16 @@ namespace MAXIV::GunTestFacility
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 52 -12 73 -63 ");
     makeCell("MiniRoomRightWallVoid",System,cellIndex++,voidMat,0.0,Out*tb);
+
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 62 -51 73 -74 ");
+    makeCell("MicroRoom",System,cellIndex++,voidMat,0.0,Out*tb);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 61 -62 73 -74 ");
+    makeCell("MicroRoomLeftWall",System,cellIndex++,wallMat,0.0,Out*tb);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 61 -51 74 -84 ");
+    makeCell("MicroRoomTopWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -41 83 -73 ");
