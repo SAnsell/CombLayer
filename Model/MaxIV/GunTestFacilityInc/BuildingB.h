@@ -51,13 +51,12 @@ namespace MAXIV::GunTestFacility
     double gunRoomEntranceWidth;  ///< gun test room entrance width
     double midWallThick;          ///< thickness of the middle wall
     double outerWallThick;        ///< outer wall thickness
-    double klystronRoomWallThick; ///< klystron test room wall thickness
+    double internalWallThick;     ///< internal wall thickness
     double mazeWidth;             ///< maze (sluss) width
     double mazeEntranceOffset;    ///< offset of the maze entrance door
     double mazeEntranceWidth;     ///< width of the maze entrance door
     double mazeEntranceHeight;    ///< height of the maze entrance door
     double hallLength;            ///< max Förrum length
-    double forwardWallThick;      ///< forward wall thickness
     double floorThick;            ///< floor thickness
     double roof1Thick;            ///< foor 1 roof thickness
 

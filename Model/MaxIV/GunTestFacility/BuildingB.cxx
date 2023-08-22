@@ -86,13 +86,12 @@ namespace MAXIV::GunTestFacility
     gunRoomEntranceWidth(A.gunRoomEntranceWidth),
     midWallThick(A.midWallThick),
     outerWallThick(A.outerWallThick),
-    klystronRoomWallThick(A.klystronRoomWallThick),
+    internalWallThick(A.internalWallThick),
     mazeWidth(A.mazeWidth),
     mazeEntranceOffset(A.mazeEntranceOffset),
     mazeEntranceWidth(A.mazeEntranceWidth),
     mazeEntranceHeight(A.mazeEntranceHeight),
     hallLength(A.hallLength),
-    forwardWallThick(A.forwardWallThick),
     floorThick(A.floorThick),
     roof1Thick(A.roof1Thick),
     trspRoomWidth(A.trspRoomWidth),
@@ -128,13 +127,12 @@ namespace MAXIV::GunTestFacility
         gunRoomEntranceWidth=A.gunRoomEntranceWidth;
         midWallThick=A.midWallThick;
         outerWallThick=A.outerWallThick;
-        klystronRoomWallThick=A.klystronRoomWallThick;
+        internalWallThick=A.internalWallThick;
         mazeWidth=A.mazeWidth;
         mazeEntranceOffset=A.mazeEntranceOffset;
         mazeEntranceWidth=A.mazeEntranceWidth;
         mazeEntranceHeight=A.mazeEntranceHeight;
         hallLength=A.hallLength;
-        forwardWallThick=A.forwardWallThick;
         floorThick=A.floorThick;
         roof1Thick=A.roof1Thick;
         trspRoomWidth=A.trspRoomWidth;
@@ -182,13 +180,12 @@ namespace MAXIV::GunTestFacility
     gunRoomEntranceWidth=Control.EvalVar<double>(keyName+"GunRoomEntranceWidth");
     midWallThick=Control.EvalVar<double>(keyName+"MidWallThick");
     outerWallThick=Control.EvalVar<double>(keyName+"OuterWallThick");
-    klystronRoomWallThick=Control.EvalVar<double>(keyName+"KlystronRoomWallThick");
+    internalWallThick=Control.EvalVar<double>(keyName+"InternalWallThick");
     mazeWidth=Control.EvalVar<double>(keyName+"MazeWidth");
     mazeEntranceOffset=Control.EvalVar<double>(keyName+"MazeEntranceOffset");
     mazeEntranceWidth=Control.EvalVar<double>(keyName+"MazeEntranceWidth");
     mazeEntranceHeight=Control.EvalVar<double>(keyName+"MazeEntranceHeight");
     hallLength=Control.EvalVar<double>(keyName+"HallLength");
-    forwardWallThick=Control.EvalVar<double>(keyName+"ForwardWallThick");
     floorThick=Control.EvalVar<double>(keyName+"FloorThick");
     roof1Thick=Control.EvalVar<double>(keyName+"Roof1Thick");
     trspRoomWidth=Control.EvalVar<double>(keyName+"TRSPRoomWidth");
@@ -225,22 +222,22 @@ namespace MAXIV::GunTestFacility
     ModelSupport::buildShiftedPlane(SMap,buildIndex+14,buildIndex+4,X,-gunRoomEntranceWidth);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+15,buildIndex+5,Y,-floorThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+16,buildIndex+6,Y,roof1Thick);
-    ModelSupport::buildShiftedPlane(SMap,buildIndex+21,buildIndex+12,Y,-klystronRoomWallThick);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+21,buildIndex+12,Y,-internalWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+23,buildIndex+13,X,-klystronRoomWidth);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+24,buildIndex+4,X,outerWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+25,buildIndex+5,Y,mazeEntranceHeight);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+31,buildIndex+12,Y,mazeWidth);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+32,buildIndex+31,Y,outerWallThick);
-    ModelSupport::buildShiftedPlane(SMap,buildIndex+33,buildIndex+23,X,-klystronRoomWallThick);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+33,buildIndex+23,X,-internalWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+34,buildIndex+3,X,-outerWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+41,buildIndex+12,Y,hallLength);
-    ModelSupport::buildShiftedPlane(SMap,buildIndex+42,buildIndex+41,Y,forwardWallThick);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+42,buildIndex+41,Y,internalWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+43,buildIndex+3,X,mazeEntranceOffset);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+44,buildIndex+43,X,mazeEntranceWidth);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+51,buildIndex+1,X,miniRoomLength);
-    ModelSupport::buildShiftedPlane(SMap,buildIndex+52,buildIndex+51,X,klystronRoomWallThick);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+52,buildIndex+51,X,internalWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+53,buildIndex+33,X,-trspRoomWidth);
-    ModelSupport::buildShiftedPlane(SMap,buildIndex+63,buildIndex+53,X,-klystronRoomWallThick);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+63,buildIndex+53,X,-internalWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+73,buildIndex+63,X,-miniRoomWidth);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+83,buildIndex+73,X,-outerWallThick);
 
@@ -313,11 +310,8 @@ namespace MAXIV::GunTestFacility
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 41 -42 83 -4 ");
     makeCell("ForwardWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -21 53 -33 ");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -12 53 -33 ");
     makeCell("RRSPRoom",System,cellIndex++,voidMat,0.0,Out*tb);
-
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 21 -12 53 -33 ");
-    makeCell("RRSPRoomRightWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -12 63 -53 ");
     makeCell("RRSPRoomBottomWall",System,cellIndex++,wallMat,0.0,Out*tb);

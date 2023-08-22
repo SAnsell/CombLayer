@@ -59,7 +59,7 @@ namespace setVariable
     Control.addVariable(name+"GunRoomLength",650.0); // [1]
     Control.addVariable(name+"GunRoomWidth",460.0); // [1]
     Control.addVariable(name+"KlystronRoomWidth",460.0); // [1]
-    Control.addVariable(name+"KlystronRoomWallThick",20.0); // [1]
+    Control.addVariable(name+"InternalWallThick",20.0); // [1]
     Control.addVariable(name+"Depth",130.0); // [1]
     Control.addVariable(name+"Height",230.0); // [1]
     Control.addVariable(name+"BackWallThick",100.0); // [1]
@@ -72,7 +72,6 @@ namespace setVariable
     Control.addVariable(name+"MazeEntranceWidth",100.0); // [0]: 100, but [2]: 101 (outer)
     Control.addVariable(name+"MazeEntranceHeight",210.0); // [0], page 6
     Control.addVariable(name+"HallLength",500.0); // [2] 10900-5700-200 = 500 cm
-    Control.addVariable(name+"ForwardWallThick",20.0); // [2]
     Control.addVariable(name+"FloorThick",40.0); // [0]
     Control.addVariable(name+"Roof1Thick",100.0); // [0]
     Control.addVariable(name+"TRSPRoomWidth",415.0); // [2] and [3]
