@@ -250,7 +250,7 @@ namespace MAXIV::GunTestFacility
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 13 -3 ");
     makeCell("MidWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," -12 2 13 -14 ");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 2 -12 13 -14 ");
     makeCell("BackWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 2 -12 14 -4 ");
@@ -262,34 +262,34 @@ namespace MAXIV::GunTestFacility
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -42 4 -24 ");
     makeCell("OuterWallTop",System,cellIndex++,wallMat,0.0,Out*tb);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," -21 1 -13 33 ");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -21 33 -13 ");
     makeCell("KlystronRoom",System,cellIndex++,voidMat,0.0,Out*tb);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," -12 21 -13 23 ");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 21 -12 23 -13 ");
     makeCell("KlystronRoomWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," -21 1 -33 23 ");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -21 23 -33 ");
     makeCell("KlystronRoomWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," -31 12 3 -4 ");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 12 -31 3 -4 ");
     makeCell("Maze",System,cellIndex++,voidMat,0.0,Out*tb);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," -32 31 -43 3 ");
-    makeCell("MazeWall",System,cellIndex++,wallMat,0.0,Out*tb);
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 31 -32 3 -43 5 -25");
+    makeCell("MazeWall",System,cellIndex++,wallMat,0.0,Out);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," -32 31 -44 43 5 -25");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 31 -32 43 -44 5 -25");
     makeCell("MazeEntrance",System,cellIndex++,voidMat,0.0,Out);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," -32 31 -44 43 25 -6");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 31 -32 3 -44 25 -6");
     makeCell("MazeEntranceLintel",System,cellIndex++,wallMat,0.0,Out);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," -32 31 -4 44 ");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 31 -32 44 -4 ");
     makeCell("MazeWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," -32 12 -3 34 ");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 12 -32 34 -3 ");
     makeCell("MazeWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," -32 12 23 -34 ");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 12 -32 23 -34 ");
     makeCell("BeyondMaze",System,cellIndex++,voidMat,0.0,Out*tb);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 32 -41 23 -4 ");
