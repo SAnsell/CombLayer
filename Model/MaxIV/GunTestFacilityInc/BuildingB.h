@@ -61,6 +61,8 @@ namespace MAXIV::GunTestFacility
     double floorThick;            ///< floor thickness
     double roof1Thick;            ///< foor 1 roof thickness
 
+    double trspRoomWidth;         ///< TRSP room width
+
     int wallMat;                  ///< Wall material
     int voidMat;                  ///< void material
 

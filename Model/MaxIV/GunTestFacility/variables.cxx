@@ -54,6 +54,7 @@ namespace setVariable
     // http://localhost:8080/maxiv/work-log/100hz/gtf/guntestfacility-bjornnilsson.djvu/view
     // [1] 221413_radiation_caclulation.STEP
     // [2] K_20-1_08C6b4
+    // [3] K_20-1_08C6a3
 
     Control.addVariable(name+"GunRoomLength",650.0); // [1]
     Control.addVariable(name+"GunRoomWidth",460.0); // [1]
@@ -74,6 +75,7 @@ namespace setVariable
     Control.addVariable(name+"ForwardWallThick",20.0); // [2]
     Control.addVariable(name+"FloorThick",40.0); // [0]
     Control.addVariable(name+"Roof1Thick",100.0); // [0]
+    Control.addVariable(name+"TRSPRoomWidth",415.0); // [2] and [3]
   }
 
   void GunTestFacilityVariables(FuncDataBase& Control)
