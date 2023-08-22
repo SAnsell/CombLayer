@@ -50,7 +50,7 @@ namespace setVariable
   void BuildingBVariables(FuncDataBase& Control, const std::string& name)
   {
     // References:
-    // [0] Bjorn's drawings
+    // [0] Bjorn's drawings (have higher priority than other refs)
     // http://localhost:8080/maxiv/work-log/100hz/gtf/guntestfacility-bjornnilsson.djvu/view
     // [1] 221413_radiation_caclulation.STEP
     // [2] K_20-1_08C6b4
@@ -67,11 +67,12 @@ namespace setVariable
     Control.addVariable(name+"OuterWallThick",40.0); // [1] [2]
     Control.addVariable(name+"WallMat","Concrete"); // guess
     Control.addVariable(name+"MazeWidth",100.0); // [1] [2]
-    Control.addVariable(name+"MazeEntranceOffset",5.0); // [2]: 4250-3800-400=5 cm
-    Control.addVariable(name+"MazeEntranceWidth",100.0); // [0]: 100; [2]: 101 (outer)
+    Control.addVariable(name+"MazeEntranceOffset",4.5); // [0], page 6, but [2]: 4250-3800-400=5 cm
+    Control.addVariable(name+"MazeEntranceWidth",100.0); // [0]: 100, but [2]: 101 (outer)
     Control.addVariable(name+"HallLength",500.0); // [2] 10900-5700-200 = 500 cm
     Control.addVariable(name+"ForwardWallThick",20.0); // [2]
     Control.addVariable(name+"FloorThick",40.0); // [0]
+    Control.addVariable(name+"Roof1Thick",100.0); // [0]
   }
 
   void GunTestFacilityVariables(FuncDataBase& Control)

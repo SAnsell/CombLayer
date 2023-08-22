@@ -58,6 +58,7 @@ namespace MAXIV::GunTestFacility
     double hallLength;            ///< max Förrum length
     double forwardWallThick;      ///< forward wall thickness
     double floorThick;            ///< floor thickness
+    double roof1Thick;            ///< foor 1 roof thickness
 
     int wallMat;                  ///< Wall material
     int voidMat;                  ///< void material
