@@ -90,6 +90,7 @@ namespace MAXIV::GunTestFacility
     mazeWidth(A.mazeWidth),
     mazeEntranceOffset(A.mazeEntranceOffset),
     mazeEntranceWidth(A.mazeEntranceWidth),
+    mazeEntranceHeight(A.mazeEntranceHeight),
     hallLength(A.hallLength),
     forwardWallThick(A.forwardWallThick),
     floorThick(A.floorThick),
@@ -128,6 +129,7 @@ namespace MAXIV::GunTestFacility
         mazeWidth=A.mazeWidth;
         mazeEntranceOffset=A.mazeEntranceOffset;
         mazeEntranceWidth=A.mazeEntranceWidth;
+        mazeEntranceHeight=A.mazeEntranceHeight;
         hallLength=A.hallLength;
         forwardWallThick=A.forwardWallThick;
         floorThick=A.floorThick;
@@ -178,6 +180,7 @@ namespace MAXIV::GunTestFacility
     mazeWidth=Control.EvalVar<double>(keyName+"MazeWidth");
     mazeEntranceOffset=Control.EvalVar<double>(keyName+"MazeEntranceOffset");
     mazeEntranceWidth=Control.EvalVar<double>(keyName+"MazeEntranceWidth");
+    mazeEntranceHeight=Control.EvalVar<double>(keyName+"MazeEntranceHeight");
     hallLength=Control.EvalVar<double>(keyName+"HallLength");
     forwardWallThick=Control.EvalVar<double>(keyName+"ForwardWallThick");
     floorThick=Control.EvalVar<double>(keyName+"FloorThick");
@@ -216,6 +219,7 @@ namespace MAXIV::GunTestFacility
     ModelSupport::buildShiftedPlane(SMap,buildIndex+21,buildIndex+12,Y,-klystronRoomWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+23,buildIndex+13,X,-klystronRoomWidth);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+24,buildIndex+4,X,outerWallThick);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+25,buildIndex+5,Y,mazeEntranceHeight);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+31,buildIndex+12,Y,mazeWidth);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+32,buildIndex+31,Y,outerWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+33,buildIndex+23,X,klystronRoomWallThick);
@@ -273,8 +277,11 @@ namespace MAXIV::GunTestFacility
     Out=ModelSupport::getHeadRule(SMap,buildIndex," -32 31 -43 3 ");
     makeCell("MazeWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," -32 31 -44 43 ");
-    makeCell("MazeEntrance",System,cellIndex++,voidMat,0.0,Out*tb);
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," -32 31 -44 43 5 -25");
+    makeCell("MazeEntrance",System,cellIndex++,voidMat,0.0,Out);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," -32 31 -44 43 25 -6");
+    makeCell("MazeEntranceLintel",System,cellIndex++,wallMat,0.0,Out);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," -32 31 -4 44 ");
     makeCell("MazeWall",System,cellIndex++,wallMat,0.0,Out*tb);

@@ -69,6 +69,7 @@ namespace setVariable
     Control.addVariable(name+"MazeWidth",100.0); // [1] [2]
     Control.addVariable(name+"MazeEntranceOffset",4.5); // [0], page 6, but [2]: 4250-3800-400=5 cm
     Control.addVariable(name+"MazeEntranceWidth",100.0); // [0]: 100, but [2]: 101 (outer)
+    Control.addVariable(name+"MazeEntranceHeight",210.0); // [0], page 6
     Control.addVariable(name+"HallLength",500.0); // [2] 10900-5700-200 = 500 cm
     Control.addVariable(name+"ForwardWallThick",20.0); // [2]
     Control.addVariable(name+"FloorThick",40.0); // [0]

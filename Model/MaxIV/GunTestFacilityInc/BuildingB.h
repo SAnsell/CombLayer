@@ -55,6 +55,7 @@ namespace MAXIV::GunTestFacility
     double mazeWidth;             ///< maze (sluss) width
     double mazeEntranceOffset;    ///< offset of the maze entrance door
     double mazeEntranceWidth;     ///< width of the maze entrance door
+    double mazeEntranceHeight;    ///< height of the maze entrance door
     double hallLength;            ///< max Förrum length
     double forwardWallThick;      ///< forward wall thickness
     double floorThick;            ///< floor thickness
