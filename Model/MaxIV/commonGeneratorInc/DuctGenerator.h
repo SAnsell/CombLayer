@@ -39,9 +39,10 @@ class DuctGenerator
 {
  private:
 
-  double length;                ///< Total length including void
+  double length;                ///< Duct length
   double width;                 ///< Width
   double height;                ///< Height
+  double radius;                 ///< Radius (if circular)
 
   int voidMat;                  ///< Void material
 

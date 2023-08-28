@@ -33,11 +33,11 @@
 #include <algorithm>
 #include <memory>
 
+#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -84,6 +84,7 @@ Duct::Duct(const Duct& A) :
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
   length(A.length),width(A.width),height(A.height),
+  radius(A.radius),
   voidMat(A.voidMat)
   /*!
     Copy constructor
@@ -109,6 +110,7 @@ Duct::operator=(const Duct& A)
       length=A.length;
       width=A.width;
       height=A.height;
+      radius=A.radius;
       voidMat=A.voidMat;
     }
   return *this;
@@ -144,6 +146,15 @@ Duct::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
+  radius=Control.EvalDefVar<double>(keyName+"Radius",0.0);
+
+  if (radius>Geometry::zeroTol)
+    if (length>0.0 || width>0.0 || height>0.0)
+      throw ColErr::ExitAbort("Length,Width and Height must be zero if Radius>0.0");
+
+  if (radius<Geometry::zeroTol && length<Geometry::zeroTol &&
+      width<Geometry::zeroTol  && height<Geometry::zeroTol)
+    throw  ColErr::ExitAbort("Either Radius or Length/Width/Height must be non-zero");
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
 
@@ -158,23 +169,25 @@ Duct::createSurfaces()
 {
   ELog::RegMethod RegA("Duct","createSurfaces");
 
-  if (!frontActive())
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
-      FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
-    }
+  if (!frontActive()) {
+    ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+    FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
+  }
 
-  if (!backActive())
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length),Y);
-      FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
-    }
+  if (!backActive()) {
+    ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length),Y);
+    FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
+  }
 
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
+  if (radius>Geometry::zeroTol) {
+    ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
+  } else {
+    ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
+    ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
 
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
+    ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
+    ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
+  }
 
   return;
 }
@@ -192,7 +205,7 @@ Duct::createObjects(Simulation& System)
   const HeadRule frontStr(frontRule());
   const HeadRule backStr(backRule());
 
-  Out=ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 5 -6 ")*frontStr*backStr;
+  Out=ModelSupport::getSetHeadRule(SMap,buildIndex," 3 -4 5 -6 -7 ")*frontStr*backStr;
   makeCell("MainCell",System,cellIndex++,voidMat,0.0,Out);
 
   addOuterSurf(Out);

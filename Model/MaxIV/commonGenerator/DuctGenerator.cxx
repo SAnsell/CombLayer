@@ -51,7 +51,7 @@ namespace setVariable
 
 DuctGenerator::DuctGenerator() :
   length(100.0),width(50.0),height(150.0),
-  voidMat(0)
+  radius(0.0),voidMat(0)
   /*!
     Constructor and defaults
   */
@@ -81,6 +81,7 @@ DuctGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"Height",height);
+  Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"ZAngle",zAngle);
   Control.addVariable(keyName+"XStep",xStep);

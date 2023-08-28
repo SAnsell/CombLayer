@@ -47,6 +47,7 @@ class Duct :
   double length;                ///< Total length including void
   double width;                 ///< Width
   double height;                ///< Height
+  double radius;                ///< duct radius (if circular)
 
   int voidMat;                  ///< Void material
 
