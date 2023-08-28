@@ -75,8 +75,8 @@ namespace setVariable
     Control.addVariable(name+"FloorThick",40.0); // [0]
     Control.addVariable(name+"Roof1Thick",100.0); // [0]
     Control.addVariable(name+"TRSPRoomWidth",415.0); // [2] and [3]
-    Control.addVariable(name+"MiniRoomWidth",550.0); // [3]: 1450+4050 = 550 cm
-    Control.addVariable(name+"MiniRoomLength",440.0); // [3]: 1600 + 2800 = 440 cm
+    Control.addVariable(name+"StairRoomWidth",550.0); // [3]: 1450+4050 = 550 cm
+    Control.addVariable(name+"StairRoomLength",440.0); // [3]: 1600 + 2800 = 440 cm
     Control.addVariable(name+"MicroRoomWidth",250.0); // [3]: 1450+1050 = 250 cm
     Control.addVariable(name+"MicroRoomLength",180.0); // [3]: 180 cm
   }

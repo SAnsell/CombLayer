@@ -95,8 +95,8 @@ namespace MAXIV::GunTestFacility
     floorThick(A.floorThick),
     roof1Thick(A.roof1Thick),
     trspRoomWidth(A.trspRoomWidth),
-    miniRoomWidth(A.miniRoomWidth),
-    miniRoomLength(A.miniRoomLength),
+    stairRoomWidth(A.stairRoomWidth),
+    stairRoomLength(A.stairRoomLength),
     microRoomWidth(A.microRoomWidth),
     microRoomLength(A.microRoomLength),
     wallMat(A.wallMat),
@@ -138,8 +138,8 @@ namespace MAXIV::GunTestFacility
         floorThick=A.floorThick;
         roof1Thick=A.roof1Thick;
         trspRoomWidth=A.trspRoomWidth;
-        miniRoomWidth=A.miniRoomWidth;
-        miniRoomLength=A.miniRoomLength;
+        stairRoomWidth=A.stairRoomWidth;
+        stairRoomLength=A.stairRoomLength;
         microRoomWidth=A.microRoomWidth;
         microRoomLength=A.microRoomLength;
 	wallMat=A.wallMat;
@@ -193,15 +193,15 @@ namespace MAXIV::GunTestFacility
     floorThick=Control.EvalVar<double>(keyName+"FloorThick");
     roof1Thick=Control.EvalVar<double>(keyName+"Roof1Thick");
     trspRoomWidth=Control.EvalVar<double>(keyName+"TRSPRoomWidth");
-    miniRoomWidth=Control.EvalVar<double>(keyName+"MiniRoomWidth");
-    miniRoomLength=Control.EvalVar<double>(keyName+"MiniRoomLength");
+    stairRoomWidth=Control.EvalVar<double>(keyName+"StairRoomWidth");
+    stairRoomLength=Control.EvalVar<double>(keyName+"StairRoomLength");
     microRoomWidth=Control.EvalVar<double>(keyName+"MicroRoomWidth");
     microRoomLength=Control.EvalVar<double>(keyName+"MicroRoomLength");
 
     wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
     voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat","Void");
 
-    if (std::abs(gunRoomWidth + midWallThick+ klystronRoomWidth + trspRoomWidth + miniRoomWidth + 2.0*internalWallThick-2025.0)>1e-3)
+    if (std::abs(gunRoomWidth + midWallThick+ klystronRoomWidth + trspRoomWidth + stairRoomWidth + 2.0*internalWallThick-2025.0)>1e-3)
       ELog::EM << "WARNING: gun test room widths do not sum up to 2025 as of K_20-1_08C6b4" << ELog::endWarn;
 
     return;
@@ -243,14 +243,14 @@ namespace MAXIV::GunTestFacility
     ModelSupport::buildShiftedPlane(SMap,buildIndex+42,buildIndex+41,Y,internalWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+43,buildIndex+3,X,mazeEntranceOffset);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+44,buildIndex+43,X,mazeEntranceWidth);
-    ModelSupport::buildShiftedPlane(SMap,buildIndex+51,buildIndex+1,X,miniRoomLength);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+51,buildIndex+1,X,stairRoomLength);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+52,buildIndex+51,X,internalWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+53,buildIndex+33,X,-trspRoomWidth);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+61,buildIndex+51,X,
 				    -microRoomLength-internalWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+62,buildIndex+51,X,-microRoomLength);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+63,buildIndex+53,X,-internalWallThick);
-    ModelSupport::buildShiftedPlane(SMap,buildIndex+73,buildIndex+63,X,-miniRoomWidth);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+73,buildIndex+63,X,-stairRoomWidth);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+74,buildIndex+73,X,microRoomWidth);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+83,buildIndex+73,X,-outerWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+84,buildIndex+74,X,internalWallThick);

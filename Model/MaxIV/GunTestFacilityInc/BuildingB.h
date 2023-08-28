@@ -61,8 +61,8 @@ namespace MAXIV::GunTestFacility
     double roof1Thick;            ///< foor 1 roof thickness
 
     double trspRoomWidth;         ///< TRSP room width
-    double miniRoomWidth;         ///< mini room width
-    double miniRoomLength;        ///< mini room length
+    double stairRoomWidth;        ///< stairway room width
+    double stairRoomLength;       ///< stairway room length
     double microRoomWidth;        ///< micro room width
     double microRoomLength;       ///< micro room length
 
