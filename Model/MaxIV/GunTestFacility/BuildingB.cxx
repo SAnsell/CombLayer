@@ -71,7 +71,7 @@ namespace MAXIV::GunTestFacility
 
   BuildingB::BuildingB(const std::string& Key)  :
     attachSystem::ContainedComp(),
-    attachSystem::FixedRotate(Key,6),
+    attachSystem::FixedRotate(Key,8),
     attachSystem::CellMap(),
     attachSystem::SurfMap(),
     duct(new xraySystem::Duct(keyName+"Duct"))
@@ -415,12 +415,12 @@ namespace MAXIV::GunTestFacility
     FixedComp::setConnect(5,Origin+Z*(height+roof1Thick),Z);
     FixedComp::setNamedLinkSurf(5,"Top",SMap.realSurf(buildIndex+16));
 
-    // ELog::EM << "Back: " << getLinkSurf("Back") << " " << getLinkPt("Back") << ELog::endDiag;
-    // ELog::EM << "Front: " << getLinkSurf("Front") << " " << getLinkPt("Front") << ELog::endDiag;
-    // ELog::EM << "Left: " << getLinkSurf("Left") << " " << getLinkPt("Left") << ELog::endDiag;
-    // ELog::EM << "Right: " << getLinkSurf("Right") << " " << getLinkPt("Right") << ELog::endDiag;
-    // ELog::EM << "Bottom: " << getLinkSurf("Bottom") << " " << getLinkPt("Bottom") << ELog::endDiag;
-    // ELog::EM << "Top: " << getLinkSurf("Top") << " " << getLinkPt("Top") << ELog::endDiag;
+
+    FixedComp::setConnect(6,Origin-X*(gunRoomWidth/2.0+midWallThick),X);
+    FixedComp::setNamedLinkSurf(6,"MidWallBack",SMap.realSurf(buildIndex+13));
+
+    FixedComp::setConnect(7,Origin-X*(gunRoomWidth/2.0),-X);
+    FixedComp::setNamedLinkSurf(7,"MidWallFront",-SMap.realSurf(buildIndex+3));
 
     return;
   }
@@ -444,6 +444,9 @@ namespace MAXIV::GunTestFacility
     createObjects(System);
     createLinks();
 
+    duct->setFront(getFullRule("MidWallFront"));
+    duct->setBack(getFullRule("MidWallBack"));
+    duct->addInsertCell(getCell("MidWall"));
     duct->createAll(System,*this,0);
 
     insertObjects(System);

@@ -52,7 +52,8 @@ class DuctGenerator
   DuctGenerator& operator=(const DuctGenerator&);
   virtual ~DuctGenerator();
 
-  virtual void generate(FuncDataBase&,const std::string&) const;
+  virtual void generate(FuncDataBase&,const std::string&,
+			const double&,const double&,const double&,const double&) const;
 
 };
 

@@ -50,7 +50,7 @@ namespace setVariable
 {
 
 DuctGenerator::DuctGenerator() :
-  length(10.0),width(5.0),height(15.0),
+  length(100.0),width(50.0),height(150.0),
   voidMat(0)
   /*!
     Constructor and defaults
@@ -65,7 +65,11 @@ DuctGenerator::~DuctGenerator()
 
 void
 DuctGenerator::generate(FuncDataBase& Control,
-			       const std::string& keyName) const
+			const std::string& keyName,
+			const double& zAngle,
+			const double& xStep,
+			const double& yStep,
+			const double& zStep) const
 /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables
@@ -78,6 +82,10 @@ DuctGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"VoidMat",voidMat);
+  Control.addVariable(keyName+"ZAngle",zAngle);
+  Control.addVariable(keyName+"XStep",xStep);
+  Control.addVariable(keyName+"YStep",yStep);
+  Control.addVariable(keyName+"ZStep",zStep);
 
   return;
 

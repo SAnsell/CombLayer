@@ -83,7 +83,7 @@ namespace setVariable
     Control.addVariable(name+"ElevatorLength",180.0); // [3]: 180 cm
 
     setVariable::DuctGenerator DuctGen;
-    DuctGen.generate(Control,name+"Duct");
+    DuctGen.generate(Control,name+"Duct",90,0,0,0);
   }
 
   void GunTestFacilityVariables(FuncDataBase& Control)
