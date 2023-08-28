@@ -63,8 +63,8 @@ namespace MAXIV::GunTestFacility
     double trspRoomWidth;         ///< TRSP room width
     double stairRoomWidth;        ///< stairway room width
     double stairRoomLength;       ///< stairway room length
-    double microRoomWidth;        ///< micro room width
-    double microRoomLength;       ///< micro room length
+    double elevatorWidth;        ///< elevator room width
+    double elevatorLength;       ///< elevator room length
 
     int wallMat;                  ///< Wall material
     int voidMat;                  ///< void material

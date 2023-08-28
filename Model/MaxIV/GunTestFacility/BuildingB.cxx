@@ -97,8 +97,8 @@ namespace MAXIV::GunTestFacility
     trspRoomWidth(A.trspRoomWidth),
     stairRoomWidth(A.stairRoomWidth),
     stairRoomLength(A.stairRoomLength),
-    microRoomWidth(A.microRoomWidth),
-    microRoomLength(A.microRoomLength),
+    elevatorWidth(A.elevatorWidth),
+    elevatorLength(A.elevatorLength),
     wallMat(A.wallMat),
     voidMat(A.voidMat)
     /*!
@@ -140,8 +140,8 @@ namespace MAXIV::GunTestFacility
         trspRoomWidth=A.trspRoomWidth;
         stairRoomWidth=A.stairRoomWidth;
         stairRoomLength=A.stairRoomLength;
-        microRoomWidth=A.microRoomWidth;
-        microRoomLength=A.microRoomLength;
+        elevatorWidth=A.elevatorWidth;
+        elevatorLength=A.elevatorLength;
 	wallMat=A.wallMat;
 	voidMat=A.voidMat;
       }
@@ -195,8 +195,8 @@ namespace MAXIV::GunTestFacility
     trspRoomWidth=Control.EvalVar<double>(keyName+"TRSPRoomWidth");
     stairRoomWidth=Control.EvalVar<double>(keyName+"StairRoomWidth");
     stairRoomLength=Control.EvalVar<double>(keyName+"StairRoomLength");
-    microRoomWidth=Control.EvalVar<double>(keyName+"MicroRoomWidth");
-    microRoomLength=Control.EvalVar<double>(keyName+"MicroRoomLength");
+    elevatorWidth=Control.EvalVar<double>(keyName+"ElevatorWidth");
+    elevatorLength=Control.EvalVar<double>(keyName+"ElevatorLength");
 
     wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
     voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat","Void");
@@ -247,11 +247,11 @@ namespace MAXIV::GunTestFacility
     ModelSupport::buildShiftedPlane(SMap,buildIndex+52,buildIndex+51,X,internalWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+53,buildIndex+33,X,-trspRoomWidth);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+61,buildIndex+51,X,
-				    -microRoomLength-internalWallThick);
-    ModelSupport::buildShiftedPlane(SMap,buildIndex+62,buildIndex+51,X,-microRoomLength);
+				    -elevatorLength-internalWallThick);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+62,buildIndex+51,X,-elevatorLength);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+63,buildIndex+53,X,-internalWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+73,buildIndex+63,X,-stairRoomWidth);
-    ModelSupport::buildShiftedPlane(SMap,buildIndex+74,buildIndex+73,X,microRoomWidth);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+74,buildIndex+73,X,elevatorWidth);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+83,buildIndex+73,X,-outerWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+84,buildIndex+74,X,internalWallThick);
 
@@ -344,13 +344,13 @@ namespace MAXIV::GunTestFacility
 
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 62 -51 73 -74 ");
-    makeCell("MicroRoom",System,cellIndex++,voidMat,0.0,Out*tb);
+    makeCell("Elevator",System,cellIndex++,voidMat,0.0,Out*tb);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 61 -62 73 -74 ");
-    makeCell("MicroRoomLeftWall",System,cellIndex++,wallMat,0.0,Out*tb);
+    makeCell("ElevatorLeftWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 61 -51 74 -84 ");
-    makeCell("MicroRoomTopWall",System,cellIndex++,wallMat,0.0,Out*tb);
+    makeCell("ElevatorTopWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -41 83 -73 ");
