@@ -395,23 +395,32 @@ namespace MAXIV::GunTestFacility
 
     // TODO: Check and use names for the links below:
 
-    // FixedComp::setConnect(0,Origin-Y*(gunRoomLength/2.0),-Y);
-    // FixedComp::setNamedLinkSurf(0,"Back",SurfMap::getSignedSurf("#back"));
+    FixedComp::setConnect(0,Origin-Y*(gunRoomLength/2.0+outerWallThick),-Y);
+    FixedComp::setNamedLinkSurf(0,"Back",-SMap.realSurf(buildIndex+11));
 
-    // FixedComp::setConnect(1,Origin+Y*(gunRoomLength/2.0),Y);
-    // FixedComp::setNamedLinkSurf(1,"Front",SMap.realSurf(buildIndex+2));
+    FixedComp::setConnect(1,Origin+Y*(gunRoomLength/2.0+backWallThick+hallLength+internalWallThick),Y);
+    FixedComp::setNamedLinkSurf(1,"Front",SMap.realSurf(buildIndex+42));
 
-    // FixedComp::setConnect(2,Origin-X*(gunRoomWidth/2.0),-X);
-    // FixedComp::setNamedLinkSurf(2,"Left",-SMap.realSurf(buildIndex+3));
+    FixedComp::setConnect(2,Origin-X*(gunRoomWidth/2.0+midWallThick+klystronRoomWidth+
+				      2*internalWallThick+trspRoomWidth+stairRoomWidth+
+				      outerWallThick),-X);
+    FixedComp::setNamedLinkSurf(2,"Left",-SMap.realSurf(buildIndex+83));
 
-    // FixedComp::setConnect(3,Origin+X*(gunRoomWidth/2.0),X);
-    // FixedComp::setNamedLinkSurf(3,"Right",SMap.realSurf(buildIndex+4));
+    FixedComp::setConnect(3,Origin+X*(gunRoomWidth/2.0+outerWallThick),X);
+    FixedComp::setNamedLinkSurf(3,"Right",SMap.realSurf(buildIndex+24));
 
-    // FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
-    // FixedComp::setNamedLinkSurf(4,"Bottom",-SMap.realSurf(buildIndex+5));
+    FixedComp::setConnect(4,Origin-Z*(depth+floorThick),-Z);
+    FixedComp::setNamedLinkSurf(4,"Bottom",-SMap.realSurf(buildIndex+15));
 
-    // FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
-    // FixedComp::setNamedLinkSurf(5,"Top",SMap.realSurf(buildIndex+6));
+    FixedComp::setConnect(5,Origin+Z*(height+roof1Thick),Z);
+    FixedComp::setNamedLinkSurf(5,"Top",SMap.realSurf(buildIndex+16));
+
+    // ELog::EM << "Back: " << getLinkSurf("Back") << " " << getLinkPt("Back") << ELog::endDiag;
+    // ELog::EM << "Front: " << getLinkSurf("Front") << " " << getLinkPt("Front") << ELog::endDiag;
+    // ELog::EM << "Left: " << getLinkSurf("Left") << " " << getLinkPt("Left") << ELog::endDiag;
+    // ELog::EM << "Right: " << getLinkSurf("Right") << " " << getLinkPt("Right") << ELog::endDiag;
+    // ELog::EM << "Bottom: " << getLinkSurf("Bottom") << " " << getLinkPt("Bottom") << ELog::endDiag;
+    // ELog::EM << "Top: " << getLinkSurf("Top") << " " << getLinkPt("Top") << ELog::endDiag;
 
     return;
   }
