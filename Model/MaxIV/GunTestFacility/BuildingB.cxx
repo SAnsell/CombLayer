@@ -39,6 +39,7 @@
 #include "RegMethod.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
+#include "objectRegister.h"
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -57,6 +58,34 @@
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 
+#include "FileReport.h"
+#include "NameStack.h"
+#include "RegMethod.h"
+#include "OutputLog.h"
+#include "BaseVisit.h"
+#include "Vec3D.h"
+#include "surfRegister.h"
+#include "varList.h"
+#include "Code.h"
+#include "FuncDataBase.h"
+#include "HeadRule.h"
+#include "groupRange.h"
+#include "objectGroups.h"
+#include "Simulation.h"
+#include "ModelSupport.h"
+#include "MaterialSupport.h"
+#include "generateSurf.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
+#include "FixedRotate.h"
+#include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
+#include "SurfMap.h"
+#include "ExternalCut.h"
+#include "FrontBackCut.h"
+#include "Duct.h"
+
 #include "BuildingB.h"
 
 namespace MAXIV::GunTestFacility
@@ -66,12 +95,19 @@ namespace MAXIV::GunTestFacility
     attachSystem::ContainedComp(),
     attachSystem::FixedRotate(Key,6),
     attachSystem::CellMap(),
-    attachSystem::SurfMap()
+    attachSystem::SurfMap(),
+    duct(new xraySystem::Duct(keyName+"Duct"))
     /*!
       Constructor BUT ALL variable are left unpopulated.
       \param Key :: Name for item in search
     */
-  {}
+  {
+    ModelSupport::objectRegister& OR=
+      ModelSupport::objectRegister::Instance();
+
+    OR.addObject(duct);
+
+  }
 
   BuildingB::BuildingB(const BuildingB& A) :
     attachSystem::ContainedComp(A),
@@ -420,6 +456,9 @@ namespace MAXIV::GunTestFacility
     createSurfaces();
     createObjects(System);
     createLinks();
+
+    duct->createAll(System,*this,0);
+
     insertObjects(System);
 
     return;

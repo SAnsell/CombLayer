@@ -44,6 +44,8 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 
+#include "DuctGenerator.h"
+
 
 namespace setVariable
 {
@@ -79,6 +81,9 @@ namespace setVariable
     Control.addVariable(name+"StairRoomLength",440.0); // [3]: 1600 + 2800 = 440 cm
     Control.addVariable(name+"ElevatorWidth",250.0); // [3]: 1450+1050 = 250 cm
     Control.addVariable(name+"ElevatorLength",180.0); // [3]: 180 cm
+
+    setVariable::DuctGenerator DuctGen;
+    DuctGen.generate(Control,name+"Duct");
   }
 
   void GunTestFacilityVariables(FuncDataBase& Control)

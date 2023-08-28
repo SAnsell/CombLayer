@@ -24,6 +24,10 @@
 
 class Simulation;
 
+namespace xraySystem {
+  class Duct;
+}
+
 namespace MAXIV::GunTestFacility
 {
 
@@ -68,6 +72,8 @@ namespace MAXIV::GunTestFacility
 
     int wallMat;                  ///< Wall material
     int voidMat;                  ///< void material
+
+    std::shared_ptr<xraySystem::Duct> duct;
 
     void populate(const FuncDataBase&);
     void createSurfaces();
