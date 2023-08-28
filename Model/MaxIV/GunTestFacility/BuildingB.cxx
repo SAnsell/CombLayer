@@ -74,7 +74,11 @@ namespace MAXIV::GunTestFacility
     attachSystem::FixedRotate(Key,8),
     attachSystem::CellMap(),
     attachSystem::SurfMap(),
-    duct(std::make_shared<xraySystem::Duct>(keyName+"Duct1"))
+    duct1(std::make_shared<xraySystem::Duct>(keyName+"Duct1")),
+    duct2(std::make_shared<xraySystem::Duct>(keyName+"Duct2")),
+    duct3(std::make_shared<xraySystem::Duct>(keyName+"Duct3")),
+    duct4(std::make_shared<xraySystem::Duct>(keyName+"Duct4")),
+    duct5(std::make_shared<xraySystem::Duct>(keyName+"Duct5"))
     /*!
       Constructor BUT ALL variable are left unpopulated.
       \param Key :: Name for item in search
@@ -83,7 +87,11 @@ namespace MAXIV::GunTestFacility
     ModelSupport::objectRegister& OR=
       ModelSupport::objectRegister::Instance();
 
-    OR.addObject(duct);
+    OR.addObject(duct1);
+    OR.addObject(duct2);
+    OR.addObject(duct3);
+    OR.addObject(duct4);
+    OR.addObject(duct5);
 
   }
 
@@ -444,10 +452,30 @@ namespace MAXIV::GunTestFacility
     createObjects(System);
     createLinks();
 
-    duct->setFront(getFullRule("MidWallFront"));
-    duct->setBack(getFullRule("MidWallBack"));
-    duct->addInsertCell(getCell("MidWall"));
-    duct->createAll(System,*this,0);
+    duct1->setFront(getFullRule("MidWallFront"));
+    duct1->setBack(getFullRule("MidWallBack"));
+    duct1->addInsertCell(getCell("MidWall"));
+    duct1->createAll(System,*this,0);
+
+    duct2->setFront(getFullRule("MidWallFront"));
+    duct2->setBack(getFullRule("MidWallBack"));
+    duct2->addInsertCell(getCell("MidWall"));
+    duct2->createAll(System,*this,0);
+
+    duct3->setFront(getFullRule("MidWallFront"));
+    duct3->setBack(getFullRule("MidWallBack"));
+    duct3->addInsertCell(getCell("MidWall"));
+    duct3->createAll(System,*this,0);
+
+    duct4->setFront(getFullRule("MidWallFront"));
+    duct4->setBack(getFullRule("MidWallBack"));
+    duct4->addInsertCell(getCell("MidWall"));
+    duct4->createAll(System,*this,0);
+
+    duct5->setFront(getFullRule("MidWallFront"));
+    duct5->setBack(getFullRule("MidWallBack"));
+    duct5->addInsertCell(getCell("MidWall"));
+    duct5->createAll(System,*this,0);
 
     insertObjects(System);
 

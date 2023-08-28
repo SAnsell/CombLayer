@@ -86,8 +86,16 @@ namespace setVariable
     Control.addVariable(name+"ElevatorLength",180.0); // [3]: 180 cm
 
     setVariable::DuctGenerator DuctGen;
-    DuctGen.setSize(20.0);
-    DuctGen.generate(Control,name+"Duct1",90,0,length/2-136.5,260-depth);
+    DuctGen.setSize(10.0); // [0], page 4 (diameter 20.0)
+    DuctGen.generate(Control,name+"Duct1",90,0,length/2-136.5,260-depth); //[0], pages 2, 4
+
+    DuctGen.setSize(5.0); // [0], page 4
+    DuctGen.generate(Control,name+"Duct2",90,0,length/2-161.5,265.5-depth); //[0], pages 2, 4
+    DuctGen.generate(Control,name+"Duct3",90,0,length/2-191.5,265.5-depth); //[0], pages 2, 4
+
+    DuctGen.setSize(7.5); // [0], page 4 (diameter 15.0)
+    DuctGen.generate(Control,name+"Duct4",90,0,length/2-189.0,11.5-depth); //[0], pages 2, 4
+    DuctGen.generate(Control,name+"Duct5",90,0,length/2-219.0,11.5-depth); //[0], pages 2, 4
   }
 
   void GunTestFacilityVariables(FuncDataBase& Control)
