@@ -71,14 +71,15 @@ namespace MAXIV::GunTestFacility
 
   BuildingB::BuildingB(const std::string& Key)  :
     attachSystem::ContainedComp(),
-    attachSystem::FixedRotate(Key,8),
+    attachSystem::FixedRotate(Key,9),
     attachSystem::CellMap(),
     attachSystem::SurfMap(),
     duct1(std::make_shared<xraySystem::Duct>(keyName+"Duct1")),
     duct2(std::make_shared<xraySystem::Duct>(keyName+"Duct2")),
     duct3(std::make_shared<xraySystem::Duct>(keyName+"Duct3")),
     duct4(std::make_shared<xraySystem::Duct>(keyName+"Duct4")),
-    duct5(std::make_shared<xraySystem::Duct>(keyName+"Duct5"))
+    duct5(std::make_shared<xraySystem::Duct>(keyName+"Duct5")),
+    ductVent(std::make_shared<xraySystem::Duct>(keyName+"DuctVentillation"))
     /*!
       Constructor BUT ALL variable are left unpopulated.
       \param Key :: Name for item in search
@@ -92,6 +93,7 @@ namespace MAXIV::GunTestFacility
     OR.addObject(duct3);
     OR.addObject(duct4);
     OR.addObject(duct5);
+    OR.addObject(ductVent);
 
   }
 
@@ -323,7 +325,7 @@ namespace MAXIV::GunTestFacility
     makeCell("Maze",System,cellIndex++,voidMat,0.0,Out*tb);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 31 -32 3 -43 5 -25");
-    makeCell("MazeWall",System,cellIndex++,wallMat,0.0,Out);
+    makeCell("MazeWallJamb",System,cellIndex++,wallMat,0.0,Out);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 31 -32 43 -44 5 -25");
     makeCell("MazeEntrance",System,cellIndex++,voidMat,0.0,Out);
@@ -332,10 +334,10 @@ namespace MAXIV::GunTestFacility
     makeCell("MazeEntranceLintel",System,cellIndex++,wallMat,0.0,Out);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 31 -32 44 -4 ");
-    makeCell("MazeWall",System,cellIndex++,wallMat,0.0,Out*tb);
+    makeCell("MazeWallSide",System,cellIndex++,wallMat,0.0,Out*tb);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 12 -32 34 -3 ");
-    makeCell("MazeWall",System,cellIndex++,wallMat,0.0,Out*tb);
+    makeCell("MazeWallFront",System,cellIndex++,wallMat,0.0,Out*tb);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 12 -41 73 -34 ");
     makeCell("BeyondMaze",System,cellIndex++,voidMat,0.0,Out*tb);
@@ -430,6 +432,9 @@ namespace MAXIV::GunTestFacility
     FixedComp::setConnect(7,Origin-X*(gunRoomWidth/2.0),-X);
     FixedComp::setNamedLinkSurf(7,"MidWallFront",-SMap.realSurf(buildIndex+3));
 
+    FixedComp::setConnect(8,Origin-X*(gunRoomWidth/2.0+outerWallThick),X);
+    FixedComp::setNamedLinkSurf(8,"MazeWallFrontBack",SMap.realSurf(buildIndex+34));
+
     return;
   }
 
@@ -476,6 +481,11 @@ namespace MAXIV::GunTestFacility
     duct5->setBack(getFullRule("MidWallBack"));
     duct5->addInsertCell(getCell("MidWall"));
     duct5->createAll(System,*this,0);
+
+    ductVent->setFront(getFullRule("MidWallFront"));
+    ductVent->setBack(getFullRule("MazeWallFrontBack"));
+    ductVent->addInsertCell(getCell("MazeWallFront"));
+    ductVent->createAll(System,*this,0);
 
     insertObjects(System);
 

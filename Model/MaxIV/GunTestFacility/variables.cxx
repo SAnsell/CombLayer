@@ -59,7 +59,9 @@ namespace setVariable
     // [3] K_20-1_08C6a3
 
     constexpr double length = 650; // [1]
+    constexpr double length2 = length/2.0;
     constexpr double depth  = 130; // [1]
+    constexpr double backWallThick = 100.0;  // [1]
 
     Control.addVariable(name+"GunRoomLength",length);
     Control.addVariable(name+"GunRoomWidth",460.0); // [1]
@@ -67,7 +69,7 @@ namespace setVariable
     Control.addVariable(name+"InternalWallThick",20.0); // [1]
     Control.addVariable(name+"Depth",depth); // [1]
     Control.addVariable(name+"Height",230.0); // [1]
-    Control.addVariable(name+"BackWallThick",100.0); // [1]
+    Control.addVariable(name+"BackWallThick",backWallThick);
     Control.addVariable(name+"GunRoomEntranceWidth",160.0); // [1] [2]
     Control.addVariable(name+"MidWallThick",100.0); // [1]
     Control.addVariable(name+"OuterWallThick",40.0); // [1] [2]
@@ -87,15 +89,19 @@ namespace setVariable
 
     setVariable::DuctGenerator DuctGen;
     DuctGen.setSize(10.0); // [0], page 4 (diameter 20.0)
-    DuctGen.generate(Control,name+"Duct1",90,0,length/2-136.5,260-depth); //[0], pages 2, 4
+    DuctGen.generate(Control,name+"Duct1",90,0,length2-136.5,260-depth); //[0], pages 2, 4
 
     DuctGen.setSize(5.0); // [0], page 4
-    DuctGen.generate(Control,name+"Duct2",90,0,length/2-161.5,265.5-depth); //[0], pages 2, 4
-    DuctGen.generate(Control,name+"Duct3",90,0,length/2-191.5,265.5-depth); //[0], pages 2, 4
+    DuctGen.generate(Control,name+"Duct2",90,0,length2-161.5,265.5-depth); //[0], pages 2, 4
+    DuctGen.generate(Control,name+"Duct3",90,0,length2-191.5,265.5-depth); //[0], pages 2, 4
 
     DuctGen.setSize(7.5); // [0], page 4 (diameter 15.0)
-    DuctGen.generate(Control,name+"Duct4",90,0,length/2-189.0,11.5-depth); //[0], pages 2, 4
-    DuctGen.generate(Control,name+"Duct5",90,0,length/2-219.0,11.5-depth); //[0], pages 2, 4
+    DuctGen.generate(Control,name+"Duct4",90,0,length2-189.0,11.5-depth); //[0], pages 2, 4
+    DuctGen.generate(Control,name+"Duct5",90,0,length2-219.0,11.5-depth); //[0], pages 2, 4
+
+    DuctGen.setSize(10.0); // [0], page 4
+    DuctGen.generate(Control,name+"DuctVentillation",90,0,
+		     length2+backWallThick+77.0,224.5-depth); //[0], pages 2, 4
   }
 
   void GunTestFacilityVariables(FuncDataBase& Control)
