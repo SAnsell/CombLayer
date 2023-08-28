@@ -58,11 +58,14 @@ namespace setVariable
     // [2] K_20-1_08C6b4
     // [3] K_20-1_08C6a3
 
-    Control.addVariable(name+"GunRoomLength",650.0); // [1]
+    constexpr double length = 650; // [1]
+    constexpr double depth  = 130; // [1]
+
+    Control.addVariable(name+"GunRoomLength",length);
     Control.addVariable(name+"GunRoomWidth",460.0); // [1]
     Control.addVariable(name+"KlystronRoomWidth",460.0); // [1]
     Control.addVariable(name+"InternalWallThick",20.0); // [1]
-    Control.addVariable(name+"Depth",130.0); // [1]
+    Control.addVariable(name+"Depth",depth); // [1]
     Control.addVariable(name+"Height",230.0); // [1]
     Control.addVariable(name+"BackWallThick",100.0); // [1]
     Control.addVariable(name+"GunRoomEntranceWidth",160.0); // [1] [2]
@@ -83,7 +86,8 @@ namespace setVariable
     Control.addVariable(name+"ElevatorLength",180.0); // [3]: 180 cm
 
     setVariable::DuctGenerator DuctGen;
-    DuctGen.generate(Control,name+"Duct",90,0,0,0);
+    DuctGen.setSize(20.0);
+    DuctGen.generate(Control,name+"Duct1",90,0,length/2-136.5,260-depth);
   }
 
   void GunTestFacilityVariables(FuncDataBase& Control)

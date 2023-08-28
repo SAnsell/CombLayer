@@ -74,7 +74,7 @@ namespace MAXIV::GunTestFacility
     attachSystem::FixedRotate(Key,8),
     attachSystem::CellMap(),
     attachSystem::SurfMap(),
-    duct(new xraySystem::Duct(keyName+"Duct"))
+    duct(std::make_shared<xraySystem::Duct>(keyName+"Duct1"))
     /*!
       Constructor BUT ALL variable are left unpopulated.
       \param Key :: Name for item in search

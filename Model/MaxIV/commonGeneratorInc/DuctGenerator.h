@@ -54,7 +54,10 @@ class DuctGenerator
   virtual ~DuctGenerator();
 
   virtual void generate(FuncDataBase&,const std::string&,
-			const double&,const double&,const double&,const double&) const;
+			const double&,
+			const double&,const double&,const double&) const;
+  void setSize(const double&); // radius
+  void setSize(const double&, const double&); // width x height
 
 };
 

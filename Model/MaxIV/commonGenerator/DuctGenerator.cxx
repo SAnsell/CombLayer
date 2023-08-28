@@ -50,7 +50,7 @@ namespace setVariable
 {
 
 DuctGenerator::DuctGenerator() :
-  length(100.0),width(50.0),height(150.0),
+  length(0.0),width(50.0),height(150.0),
   radius(0.0),voidMat(0)
   /*!
     Constructor and defaults
@@ -91,6 +91,25 @@ DuctGenerator::generate(FuncDataBase& Control,
   return;
 
 }
+
+void
+DuctGenerator::setSize(const double& r)
+{
+  ELog::RegMethod RegA("DuctGenerator","setSize(radius)");
+  radius = r;
+  width = 0.0;
+  height = 0.0;
+}
+
+void
+DuctGenerator::setSize(const double& w,const double& h)
+{
+  ELog::RegMethod RegA("DuctGenerator","setSize(width,height)");
+  radius = 0.0;
+  width = w;
+  height = h;
+}
+
 
 
 }  // namespace setVariable
