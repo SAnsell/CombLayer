@@ -143,14 +143,18 @@ Duct::populate(const FuncDataBase& Control)
 
   FixedRotate::populate(Control);
 
-  length=Control.EvalVar<double>(keyName+"Length");
+  length=Control.EvalDefVar<double>(keyName+"Length",0.0);
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   radius=Control.EvalDefVar<double>(keyName+"Radius",0.0);
 
   if (radius>Geometry::zeroTol)
-    if (length>0.0 || width>0.0 || height>0.0)
-      throw ColErr::ExitAbort("Length,Width and Height must be zero if Radius>0.0");
+    if (width>0.0 || height>0.0)
+      throw ColErr::ExitAbort("Width and Height must be zero if Radius>0.0");
+
+  if (radius<Geometry::zeroTol)
+    if (width*height<Geometry::zeroTol)
+      throw ColErr::ExitAbort("Both Width and Height must be defined if Radius is zero");
 
   if (radius<Geometry::zeroTol && length<Geometry::zeroTol &&
       width<Geometry::zeroTol  && height<Geometry::zeroTol)
@@ -168,6 +172,10 @@ Duct::createSurfaces()
   */
 {
   ELog::RegMethod RegA("Duct","createSurfaces");
+
+  if (length<Geometry::zeroTol)
+    if (!frontActive() || !backActive())
+      throw  ColErr::ExitAbort("Length must be defined of no front/back rules are set");
 
   if (!frontActive()) {
     ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
