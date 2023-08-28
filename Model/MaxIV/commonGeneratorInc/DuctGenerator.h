@@ -43,7 +43,7 @@ class DuctGenerator
   double width;                 ///< Width
   double height;                ///< Height
 
-  int mainMat;                  ///< Main material
+  int voidMat;                  ///< Void material
 
  public:
 

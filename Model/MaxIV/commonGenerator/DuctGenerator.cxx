@@ -51,7 +51,7 @@ namespace setVariable
 
 DuctGenerator::DuctGenerator() :
   length(10.0),width(5.0),height(15.0),
-  mainMat(0)
+  voidMat(0)
   /*!
     Constructor and defaults
   */
@@ -77,7 +77,7 @@ DuctGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"Height",height);
-  Control.addVariable(keyName+"MainMat",mainMat);
+  Control.addVariable(keyName+"VoidMat",voidMat);
 
   return;
 

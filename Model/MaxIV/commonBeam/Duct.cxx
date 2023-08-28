@@ -84,8 +84,7 @@ Duct::Duct(const Duct& A) :
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
   length(A.length),width(A.width),height(A.height),
-  wallThick(A.wallThick),
-  mainMat(A.mainMat),wallMat(A.wallMat)
+  voidMat(A.voidMat)
   /*!
     Copy constructor
     \param A :: Duct to copy
@@ -110,9 +109,7 @@ Duct::operator=(const Duct& A)
       length=A.length;
       width=A.width;
       height=A.height;
-      wallThick=A.wallThick;
-      mainMat=A.mainMat;
-      wallMat=A.wallMat;
+      voidMat=A.voidMat;
     }
   return *this;
 }
@@ -147,10 +144,8 @@ Duct::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
-  wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
-  mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
-  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
 
   return;
 }
@@ -165,28 +160,14 @@ Duct::createSurfaces()
 
   if (!frontActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+11,Origin,Y);
-      FrontBackCut::setFront(SMap.realSurf(buildIndex+11));
-
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*(wallThick),Y);
-    } else
-    {
-      ModelSupport::buildShiftedPlane(SMap, buildIndex+1,
-	      SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
-				      wallThick);
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+      FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
     }
 
   if (!backActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length+wallThick),Y);
-      FrontBackCut::setBack(-SMap.realSurf(buildIndex+12));
-
       ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length),Y);
-    } else
-    {
-      ModelSupport::buildShiftedPlane(SMap, buildIndex+2,
-	      SMap.realPtr<Geometry::Plane>(getBackRule().getPrimarySurface()),
-				      -wallThick);
+      FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
     }
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
@@ -194,12 +175,6 @@ Duct::createSurfaces()
 
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
-
-  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(width/2.0+wallThick),X);
-  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(width/2.0+wallThick),X);
-
-  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(height/2.0+wallThick),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height/2.0+wallThick),Z);
 
   return;
 }
@@ -217,15 +192,10 @@ Duct::createObjects(Simulation& System)
   const HeadRule frontStr(frontRule());
   const HeadRule backStr(backRule());
 
-  Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  makeCell("MainCell",System,cellIndex++,mainMat,0.0,Out);
+  Out=ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 5 -6 ")*frontStr*backStr;
+  makeCell("MainCell",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getHeadRule(SMap,buildIndex,
-				 " 13 -14 15 -16 (-1:2:-3:4:-5:6) ");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out*frontStr*backStr);
-
-  Out=ModelSupport::getHeadRule(SMap,buildIndex," 13 -14 15 -16");
-  addOuterSurf(Out*frontStr*backStr);
+  addOuterSurf(Out);
 
   return;
 }
@@ -273,6 +243,7 @@ Duct::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
+
   createLinks();
   insertObjects(System);
 
