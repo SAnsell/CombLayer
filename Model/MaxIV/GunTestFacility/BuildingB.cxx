@@ -80,7 +80,8 @@ namespace MAXIV::GunTestFacility
     duct4(std::make_shared<xraySystem::Duct>(keyName+"Duct4")),
     duct5(std::make_shared<xraySystem::Duct>(keyName+"Duct5")),
     ductVent(std::make_shared<xraySystem::Duct>(keyName+"DuctVentillation")),
-    ductLaser(std::make_shared<xraySystem::Duct>(keyName+"DuctLaser"))
+    ductLaser(std::make_shared<xraySystem::Duct>(keyName+"DuctLaser")),
+    duct6(std::make_shared<xraySystem::Duct>(keyName+"Duct6"))
     /*!
       Constructor BUT ALL variable are left unpopulated.
       \param Key :: Name for item in search
@@ -498,6 +499,11 @@ namespace MAXIV::GunTestFacility
     ductLaser->setBack(getFullRule("MazeWallSideBack"));
     ductLaser->addInsertCell(getCell("MazeWallSide"));
     ductLaser->createAll(System,*this,0);
+
+    duct6->setFront(getFullRule("#MazeWallSideFront"));
+    duct6->setBack(getFullRule("MazeWallSideBack"));
+    duct6->addInsertCell(getCell("MazeWallSide"));
+    duct6->createAll(System,*this,0);
 
     insertObjects(System);
 
