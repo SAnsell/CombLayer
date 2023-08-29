@@ -71,7 +71,7 @@ namespace MAXIV::GunTestFacility
 
   BuildingB::BuildingB(const std::string& Key)  :
     attachSystem::ContainedComp(),
-    attachSystem::FixedRotate(Key,9),
+    attachSystem::FixedRotate(Key,11),
     attachSystem::CellMap(),
     attachSystem::SurfMap(),
     duct1(std::make_shared<xraySystem::Duct>(keyName+"Duct1")),
@@ -79,7 +79,8 @@ namespace MAXIV::GunTestFacility
     duct3(std::make_shared<xraySystem::Duct>(keyName+"Duct3")),
     duct4(std::make_shared<xraySystem::Duct>(keyName+"Duct4")),
     duct5(std::make_shared<xraySystem::Duct>(keyName+"Duct5")),
-    ductVent(std::make_shared<xraySystem::Duct>(keyName+"DuctVentillation"))
+    ductVent(std::make_shared<xraySystem::Duct>(keyName+"DuctVentillation")),
+    ductLaser(std::make_shared<xraySystem::Duct>(keyName+"DuctLaser"))
     /*!
       Constructor BUT ALL variable are left unpopulated.
       \param Key :: Name for item in search
@@ -435,6 +436,12 @@ namespace MAXIV::GunTestFacility
     FixedComp::setConnect(8,Origin-X*(gunRoomWidth/2.0+outerWallThick),X);
     FixedComp::setNamedLinkSurf(8,"MazeWallFrontBack",SMap.realSurf(buildIndex+34));
 
+    FixedComp::setConnect(9,Origin+Y*(gunRoomLength/2.0+backWallThick+mazeWidth),X);
+    FixedComp::setNamedLinkSurf(9,"MazeWallSideBack",SMap.realSurf(buildIndex+31));
+
+    FixedComp::setConnect(10,Origin+Y*(gunRoomLength/2.0+backWallThick+mazeWidth+outerWallThick),X);
+    FixedComp::setNamedLinkSurf(10,"MazeWallSideFront",SMap.realSurf(buildIndex+32));
+
     return;
   }
 
@@ -486,6 +493,11 @@ namespace MAXIV::GunTestFacility
     ductVent->setBack(getFullRule("MazeWallFrontBack"));
     ductVent->addInsertCell(getCell("MazeWallFront"));
     ductVent->createAll(System,*this,0);
+
+    ductLaser->setFront(getFullRule("#MazeWallSideFront"));
+    ductLaser->setBack(getFullRule("MazeWallSideBack"));
+    ductLaser->addInsertCell(getCell("MazeWallSide"));
+    ductLaser->createAll(System,*this,0);
 
     insertObjects(System);
 

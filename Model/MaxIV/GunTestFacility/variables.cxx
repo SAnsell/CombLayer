@@ -60,11 +60,13 @@ namespace setVariable
 
     constexpr double length = 650; // [1]
     constexpr double length2 = length/2.0;
+    constexpr double gunRoomWidth = 460.0; // [1]
     constexpr double depth  = 130; // [1]
     constexpr double backWallThick = 100.0;  // [1]
+    constexpr double outerWallThick = 40.0; // [1] [2]
 
     Control.addVariable(name+"GunRoomLength",length);
-    Control.addVariable(name+"GunRoomWidth",460.0); // [1]
+    Control.addVariable(name+"GunRoomWidth",gunRoomWidth);
     Control.addVariable(name+"KlystronRoomWidth",460.0); // [1]
     Control.addVariable(name+"InternalWallThick",20.0); // [1]
     Control.addVariable(name+"Depth",depth); // [1]
@@ -72,7 +74,7 @@ namespace setVariable
     Control.addVariable(name+"BackWallThick",backWallThick);
     Control.addVariable(name+"GunRoomEntranceWidth",160.0); // [1] [2]
     Control.addVariable(name+"MidWallThick",100.0); // [1]
-    Control.addVariable(name+"OuterWallThick",40.0); // [1] [2]
+    Control.addVariable(name+"OuterWallThick",outerWallThick);
     Control.addVariable(name+"WallMat","Concrete"); // guess
     Control.addVariable(name+"MazeWidth",100.0); // [1] [2]
     Control.addVariable(name+"MazeEntranceOffset",4.5); // [0], page 6, but [2]: 4250-3800-400=5 cm
@@ -100,8 +102,12 @@ namespace setVariable
     DuctGen.generate(Control,name+"Duct5",90,0,length2-219.0,11.5-depth); //[0], pages 2, 4
 
     DuctGen.setSize(10.0); // [0], page 4
-    DuctGen.generate(Control,name+"DuctVentillation",90,0,
-		     length2+backWallThick+77.0,224.5-depth); //[0], pages 2, 4
+    DuctGen.generate(Control,name+"DuctVentillation",90,
+		     0.0,length2+backWallThick+77.0,224.5-depth); //[0], pages 2, 4
+
+    DuctGen.setSize(7.5); // [0], page 3
+    DuctGen.generate(Control,name+"DuctLaser",0,
+		     gunRoomWidth/2.0+outerWallThick-55.0,0.0,263-depth); //[0], pages 2, 3
   }
 
   void GunTestFacilityVariables(FuncDataBase& Control)
