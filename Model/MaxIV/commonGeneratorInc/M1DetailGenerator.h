@@ -71,15 +71,21 @@ class M1DetailGenerator
   double fBaseWidth;         ///< Full width
   double fBaseHeight;        ///< Full height
 
-  double fClubPlateThick;    ///< Inner cube plate thickness (full)
+  double fCubePlateThick;    ///< Inner cube plate thickness [across full space)
   double fCubeThick;         ///< Thickness in Y direction
   double fCubeWidth;         ///< Full width [back of xstal]
   double fCubeHeight;        ///< Full height [xstal centre]
   double fCubeSideWall;      ///< Thickness of side wall
   double fCubeBaseWall;      ///< Thickness of base wall
-
+  
+  double fInnerThick;        ///< inner block thickness (Y)
   double fInnerHeight;       ///< inner block height
   double fInnerWidth;        ///< inner block width
+
+  double fPipeYStep;         ///< Symmetic y-staep
+  double fPipeLength;         ///< pipe length
+  double fPipeRadius;        ///< inner radius
+  double fPipeWall;          ///< Wall thickness
 
   //-------------------------------------------------------------
   // Support

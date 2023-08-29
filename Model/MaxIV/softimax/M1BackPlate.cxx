@@ -443,6 +443,7 @@ M1BackPlate::createLinks()
   ELog::RegMethod RegA("M1BackPlate","createLinks");
 
   FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
+  ELog::EM<<"Oring "<<Origin-Y*(length/2.0)<<ELog::endDiag;
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
   FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
@@ -458,14 +459,17 @@ M1BackPlate::createLinks()
   FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+5));
   FixedComp::setLineConnect(4,Origin,Z);
 
-  
   FixedComp::setLinkSurf(5,-SMap.realSurf(buildIndex+6));
   FixedComp::setLineConnect(5,Origin,-Z);
+
+  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+3));
+  FixedComp::setLineConnect(6,Origin,X);
 
   nameSideIndex(2,"elecShieldIn");
   nameSideIndex(3,"elecShieldOut");
   nameSideIndex(4,"innerBase");
   nameSideIndex(5,"innerTop");
+  nameSideIndex(6,"innerSide");
 
 
 

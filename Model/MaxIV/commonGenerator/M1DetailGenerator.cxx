@@ -60,11 +60,13 @@ M1DetailGenerator::M1DetailGenerator() :
   mWaterDrop(0.1),mWaterGap(0.1),
 
   fBaseThick(1.4),fBaseWidth(5.97),  
-  fBaseHeight(6.2),fClubPlateThick(1.4),
+  fBaseHeight(6.2),fCubePlateThick(1.1),
   fCubeThick(3.6),fCubeWidth(5.0),  
   fCubeHeight(4.4),fCubeSideWall(0.9),
-  fCubeBaseWall(1.0),fInnerHeight(2.0),
-  fInnerWidth(2.8), 
+  fCubeBaseWall(1.0),fInnerThick(1.2),
+  fInnerHeight(2.0),fInnerWidth(2.8),
+  fPipeYStep(1.8),fPipeLength(1.6),
+  fPipeRadius(0.4),fPipeWall(0.1),
   
   sVOffset(0.8),sLength(26.5),sXOut(7.5),
   sThick(0.1),sEdge(1.1),sRadius(1.0),
@@ -156,14 +158,21 @@ M1DetailGenerator::makeFrontPlate(FuncDataBase& Control,
   Control.addVariable(keyName+"BaseThick",fBaseThick);
   Control.addVariable(keyName+"BaseWidth",fBaseWidth);
   Control.addVariable(keyName+"BaseHeight",fBaseHeight);
-  Control.addVariable(keyName+"ClubPlateThick",fClubPlateThick);
+  Control.addVariable(keyName+"CubePlateThick",fCubePlateThick); // fro
   Control.addVariable(keyName+"CubeThick",fCubeThick);
   Control.addVariable(keyName+"CubeWidth",fCubeWidth);
   Control.addVariable(keyName+"CubeHeight",fCubeHeight);
   Control.addVariable(keyName+"CubeSideWall",fCubeSideWall);
   Control.addVariable(keyName+"CubeBaseWall",fCubeBaseWall);
+  Control.addVariable(keyName+"InnerThick",fInnerThick);
   Control.addVariable(keyName+"InnerHeight",fInnerHeight);
   Control.addVariable(keyName+"InnerWidth",fInnerWidth);
+  Control.addVariable(keyName+"PipeYStep",fPipeYStep);
+  Control.addVariable(keyName+"PipeLength",fPipeLength);
+  Control.addVariable(keyName+"PipeRadius",fPipeRadius);
+  Control.addVariable(keyName+"PipeWall",fPipeWall);
+
+
   Control.addVariable(keyName+"Mat",frontMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
 

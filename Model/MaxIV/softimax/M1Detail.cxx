@@ -56,6 +56,7 @@
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -137,7 +138,6 @@ M1Detail::createObjects(Simulation& System)
 
   mirror->addInsertCell(getInsertCells());
   mirror->createAll(System,*this,0);
-  ELog::EM<<"mirror -> "<<mirror->getLinkPt(0)<<ELog::endDiag;
 
   cClamp->addInsertCell(getInsertCells());
   cClamp->setCutSurf("FarEnd",*mirror,"back");
@@ -152,7 +152,6 @@ M1Detail::createObjects(Simulation& System)
   connectors->setCell("slotB",mirror->getCell("Slot",1));
   
   connectors->setCell("gapA",cClamp->getCell("PlateGap",1));
-  ELog::EM<<"Connector == "<<cClamp->getCell("PlateGap",0)<<ELog::endDiag;
   connectors->setCell("gapB",cClamp->getCell("PlateGap",0));
   
   connectors->setCutSurf("slotBase",*mirror,"slotBase");
@@ -166,10 +165,11 @@ M1Detail::createObjects(Simulation& System)
   
   connectors->createAll(System,*mirror,"backPlateOrg");
 
-  frontShield->addInsertCell(getInsertCells());
-  frontShield->setCutSurf("Front",*mirror,"front");
-  frontShield->setCutSurf("Base",*mirror,"base");
-  //  frontShield->createAll(System,*mirror,"front");
+  frontShield->addInsertCell("Main",getInsertCells());
+  frontShield->addInsertCell("Extra",getCell("FrontVoid"));
+  frontShield->setCutSurf("Front",*cClamp,"front");
+  frontShield->setCutSurf("Base",*cClamp,"innerSide");
+  frontShield->createAll(System,*cClamp,"front");
 
   return;
 }

@@ -37,18 +37,14 @@ namespace xraySystem
 
 class M1FrontShield :
   public attachSystem::FixedRotate,
-  public attachSystem::ContainedComp,
+  public attachSystem::ContainedGroup,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {
  private:
 
-  double baseThick;         ///< Thickness in Y direction
-  double baseWidth;         ///< Full width
-  double baseHeight;        ///< Full height
-
-  double clubPlateThick;    ///< Inner cube plate thickness (full)
+  double cubePlateThick;    ///< Inner cube plate thickness (full)
   
   double cubeThick;         ///< Thickness in Y direction
   double cubeWidth;         ///< Full width [back of xstal]
@@ -56,8 +52,14 @@ class M1FrontShield :
   double cubeSideWall;      ///< Thickness of side wall
   double cubeBaseWall;      ///< Thickness of base wall
 
+  double innerThick;       ///< inner block thickness
   double innerHeight;       ///< inner block height
   double innerWidth;        ///< inner block width
+
+  double pipeYStep;        ///< Symmetic y-step
+  double pipeLength;        ///< Pipe length
+  double pipeRadius;        ///< inner radius
+  double pipeWall;          ///< Wall thickness
   
   int mat;                  ///< Material
   int voidMat;              ///< outer pipe material
