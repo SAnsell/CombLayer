@@ -73,14 +73,14 @@ namespace MAXIV::GunTestFacility
     int wallMat;                  ///< Wall material
     int voidMat;                  ///< void material
 
-    std::shared_ptr<xraySystem::Duct> duct1;
-    std::shared_ptr<xraySystem::Duct> duct2;
-    std::shared_ptr<xraySystem::Duct> duct3;
+    std::shared_ptr<xraySystem::Duct> ductWave; // wave guide
+    std::shared_ptr<xraySystem::Duct> ductSignal1; // electrical duct
+    std::shared_ptr<xraySystem::Duct> ductSignal2; // electrical duct
     std::shared_ptr<xraySystem::Duct> duct4;
     std::shared_ptr<xraySystem::Duct> duct5;
     std::shared_ptr<xraySystem::Duct> ductVent;
     std::shared_ptr<xraySystem::Duct> ductLaser;
-    std::shared_ptr<xraySystem::Duct> duct6;
+    std::shared_ptr<xraySystem::Duct> ductSignal3; // electrical duct
 
     void populate(const FuncDataBase&);
     void createSurfaces();

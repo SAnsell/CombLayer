@@ -74,14 +74,14 @@ namespace MAXIV::GunTestFacility
     attachSystem::FixedRotate(Key,11),
     attachSystem::CellMap(),
     attachSystem::SurfMap(),
-    duct1(std::make_shared<xraySystem::Duct>(keyName+"Duct1")),
-    duct2(std::make_shared<xraySystem::Duct>(keyName+"Duct2")),
-    duct3(std::make_shared<xraySystem::Duct>(keyName+"Duct3")),
+    ductWave(std::make_shared<xraySystem::Duct>(keyName+"DuctWave")),
+    ductSignal1(std::make_shared<xraySystem::Duct>(keyName+"DuctSignal1")),
+    ductSignal2(std::make_shared<xraySystem::Duct>(keyName+"DuctSignal2")),
     duct4(std::make_shared<xraySystem::Duct>(keyName+"Duct4")),
     duct5(std::make_shared<xraySystem::Duct>(keyName+"Duct5")),
     ductVent(std::make_shared<xraySystem::Duct>(keyName+"DuctVentillation")),
     ductLaser(std::make_shared<xraySystem::Duct>(keyName+"DuctLaser")),
-    duct6(std::make_shared<xraySystem::Duct>(keyName+"Duct6"))
+    ductSignal3(std::make_shared<xraySystem::Duct>(keyName+"DuctSignal3"))
     /*!
       Constructor BUT ALL variable are left unpopulated.
       \param Key :: Name for item in search
@@ -90,9 +90,9 @@ namespace MAXIV::GunTestFacility
     ModelSupport::objectRegister& OR=
       ModelSupport::objectRegister::Instance();
 
-    OR.addObject(duct1);
-    OR.addObject(duct2);
-    OR.addObject(duct3);
+    OR.addObject(ductWave);
+    OR.addObject(ductSignal1);
+    OR.addObject(ductSignal2);
     OR.addObject(duct4);
     OR.addObject(duct5);
     OR.addObject(ductVent);
@@ -465,20 +465,20 @@ namespace MAXIV::GunTestFacility
     createObjects(System);
     createLinks();
 
-    duct1->setFront(getFullRule("MidWallFront"));
-    duct1->setBack(getFullRule("MidWallBack"));
-    duct1->addInsertCell(getCell("MidWall"));
-    duct1->createAll(System,*this,0);
+    ductWave->setFront(getFullRule("MidWallFront"));
+    ductWave->setBack(getFullRule("MidWallBack"));
+    ductWave->addInsertCell(getCell("MidWall"));
+    ductWave->createAll(System,*this,0);
 
-    duct2->setFront(getFullRule("MidWallFront"));
-    duct2->setBack(getFullRule("MidWallBack"));
-    duct2->addInsertCell(getCell("MidWall"));
-    duct2->createAll(System,*this,0);
+    ductSignal1->setFront(getFullRule("MidWallFront"));
+    ductSignal1->setBack(getFullRule("MidWallBack"));
+    ductSignal1->addInsertCell(getCell("MidWall"));
+    ductSignal1->createAll(System,*this,0);
 
-    duct3->setFront(getFullRule("MidWallFront"));
-    duct3->setBack(getFullRule("MidWallBack"));
-    duct3->addInsertCell(getCell("MidWall"));
-    duct3->createAll(System,*this,0);
+    ductSignal2->setFront(getFullRule("MidWallFront"));
+    ductSignal2->setBack(getFullRule("MidWallBack"));
+    ductSignal2->addInsertCell(getCell("MidWall"));
+    ductSignal2->createAll(System,*this,0);
 
     duct4->setFront(getFullRule("MidWallFront"));
     duct4->setBack(getFullRule("MidWallBack"));
@@ -500,10 +500,10 @@ namespace MAXIV::GunTestFacility
     ductLaser->addInsertCell(getCell("MazeWallSide"));
     ductLaser->createAll(System,*this,0);
 
-    duct6->setFront(getFullRule("#MazeWallSideFront"));
-    duct6->setBack(getFullRule("MazeWallSideBack"));
-    duct6->addInsertCell(getCell("MazeWallSide"));
-    duct6->createAll(System,*this,0);
+    ductSignal3->setFront(getFullRule("#MazeWallSideFront"));
+    ductSignal3->setBack(getFullRule("MazeWallSideBack"));
+    ductSignal3->addInsertCell(getCell("MazeWallSide"));
+    ductSignal3->createAll(System,*this,0);
 
     insertObjects(System);
 

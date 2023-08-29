@@ -91,11 +91,11 @@ namespace setVariable
 
     setVariable::DuctGenerator DuctGen;
     DuctGen.setSize(10.0); // [0], page 4 (diameter 20.0)
-    DuctGen.generate(Control,name+"Duct1",90.0, 0.0, length2-136.5, 260-depth); //[0], pages 2, 4
+    DuctGen.generate(Control,name+"DuctWave",90.0, 0.0, length2-136.5, 260-depth); //[0], pages 2, 4
 
     DuctGen.setSize(5.0); // [0], page 4
-    DuctGen.generate(Control,name+"Duct2",90.0, 0.0, length2-161.5, 265.5-depth); //[0], pages 2, 4
-    DuctGen.generate(Control,name+"Duct3",90.0, 0.0, length2-191.5, 265.5-depth); //[0], pages 2, 4
+    DuctGen.generate(Control,name+"DuctSignal1",90.0, 0.0, length2-161.5, 265.5-depth); //[0], pages 2, 4
+    DuctGen.generate(Control,name+"DuctSignal2",90.0, 0.0, length2-191.5, 265.5-depth); //[0], pages 2, 4
 
     DuctGen.setSize(7.5); // [0], page 4 (diameter 15.0)
     DuctGen.generate(Control,name+"Duct4",90.0, 0.0, length2-189.0, 11.5-depth); //[0], pages 2, 4
@@ -112,7 +112,7 @@ namespace setVariable
     constexpr double duct6width = 39.7; // [0], page 3
     constexpr double duct6height = 10.0; // [0], page 3
     DuctGen.setSize(duct6width,duct6height);
-    DuctGen.generate(Control,name+"Duct6",0.0,
+    DuctGen.generate(Control,name+"DuctSignal3",0.0,
 		     185.0-gunRoomWidth/2.0-outerWallThick, 0.0,
 		     257.5-depth+duct6height/2.0); //[0], pages 2, 4
   }
