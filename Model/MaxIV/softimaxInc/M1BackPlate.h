@@ -73,11 +73,15 @@ class M1BackPlate :
 
   double outerVaneThick;          ///< Thickness of outer vanes
   double innerVaneThick;          ///< Thickness of inner vanes
-    
+
+  double frontPlateWidth;         ///< Width from innerBase surface
+  double frontPlateHeight;        ///< Height (centred on crystal)
+  
   int baseMat;                ///< Base material
   int springMat;              ///< Spring join material
   int supportMat;             ///< Base material
   int electronMat;            ///< Electron shield material
+  int frontMat;               ///< Front heat material
   int voidMat;                ///< void material
 
   // Functions:

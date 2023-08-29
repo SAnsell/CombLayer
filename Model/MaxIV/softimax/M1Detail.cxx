@@ -78,7 +78,7 @@ M1Detail::M1Detail(const std::string& Key) :
   mirror(new M1Mirror(keyName+"Mirror")),
   cClamp(new M1BackPlate(keyName+"CClamp")),
   connectors(new M1Connectors(keyName+"Connect")),
-  frontShield(new M1FrontShield(keyName+"FShield"))
+  frontShield(new M1FrontShield(keyName+"FPlate"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -89,6 +89,8 @@ M1Detail::M1Detail(const std::string& Key) :
   
   OR.addObject(mirror);
   OR.addObject(cClamp);
+  OR.addObject(connectors);
+  OR.addObject(frontShield);
 }
 
 M1Detail::~M1Detail()
@@ -150,6 +152,7 @@ M1Detail::createObjects(Simulation& System)
   connectors->setCell("slotB",mirror->getCell("Slot",1));
   
   connectors->setCell("gapA",cClamp->getCell("PlateGap",1));
+  ELog::EM<<"Connector == "<<cClamp->getCell("PlateGap",0)<<ELog::endDiag;
   connectors->setCell("gapB",cClamp->getCell("PlateGap",0));
   
   connectors->setCutSurf("slotBase",*mirror,"slotBase");
@@ -162,6 +165,12 @@ M1Detail::createObjects(Simulation& System)
   connectors->setCutSurf("CInnerBase",*cClamp,"innerBase");
   
   connectors->createAll(System,*mirror,"backPlateOrg");
+
+  frontShield->addInsertCell(getInsertCells());
+  frontShield->setCutSurf("Front",*mirror,"front");
+  frontShield->setCutSurf("Base",*mirror,"base");
+  //  frontShield->createAll(System,*mirror,"front");
+
   return;
 }
 

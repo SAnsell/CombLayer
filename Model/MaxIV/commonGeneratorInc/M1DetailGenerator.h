@@ -63,6 +63,27 @@ class M1DetailGenerator
   double mWaterDrop;          ///< water gap to Si surface
   double mWaterGap;           ///< water gap between
 
+  //-------------------------------------------------------------
+  // Front heat shield
+  // -------------------------------------------------------------
+
+  double fBaseThick;         ///< Thickness in Y direction
+  double fBaseWidth;         ///< Full width
+  double fBaseHeight;        ///< Full height
+
+  double fClubPlateThick;    ///< Inner cube plate thickness (full)
+  double fCubeThick;         ///< Thickness in Y direction
+  double fCubeWidth;         ///< Full width [back of xstal]
+  double fCubeHeight;        ///< Full height [xstal centre]
+  double fCubeSideWall;      ///< Thickness of side wall
+  double fCubeBaseWall;      ///< Thickness of base wall
+
+  double fInnerHeight;       ///< inner block height
+  double fInnerWidth;        ///< inner block width
+
+  //-------------------------------------------------------------
+  // Support
+  // -------------------------------------------------------------
   
   double sVOffset;             ///< Vertical ofset (6.5)
   double sLength;              ///< Length of support (26.5)
@@ -103,17 +124,19 @@ class M1DetailGenerator
   std::string mirrorMat;             ///< XStal material
   std::string waterMat;              ///< Plate material
   std::string supportMat;            ///< Plate (support) material
-  std::string springMat;            ///< Separator material
-  std::string clipMat;            ///< Separator material
+  std::string springMat;             ///< Separator material
+  std::string clipMat;               ///< Separator material
   std::string electronMat;           ///< Electron shield material
   std::string pipeMat;               ///< Base material
   std::string outerMat;              ///< Base material
+  std::string frontMat;              ///< front heat material
   std::string voidMat;               ///< Void material
 
   
   void makeCrystal(FuncDataBase&,const std::string&,
 		   const double,const double) const;
   void makeSupport(FuncDataBase&,const std::string&) const;
+  void makeFrontPlate(FuncDataBase&,const std::string&) const;
   void makeBackPlate(FuncDataBase&,const std::string&) const;
   void makeConnectors(FuncDataBase&,const std::string&) const;
 

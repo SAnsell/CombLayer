@@ -54,6 +54,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -68,6 +69,7 @@ namespace xraySystem
 M1FrontShield::M1FrontShield(const std::string& Key) :
   attachSystem::FixedRotate(Key,8),
   attachSystem::ContainedComp(),
+  attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap()
   /*!
@@ -95,11 +97,22 @@ M1FrontShield::populate(const FuncDataBase& Control)
 
   FixedRotate::populate(Control);
 
-  extent=Control.EvalVar<double>(keyName+"Extent");
+  baseThick=Control.EvalVar<double>(keyName+"BaseThick");
+  baseWidth=Control.EvalVar<double>(keyName+"BaseWidth");
+  baseHeight=Control.EvalVar<double>(keyName+"BaseHeight");
+
+  clubPlateThick=Control.EvalVar<double>(keyName+"ClubPlateThick");
+  cubeThick=Control.EvalVar<double>(keyName+"CubeThick");
+  cubeWidth=Control.EvalVar<double>(keyName+"CubeWidth");
+  cubeHeight=Control.EvalVar<double>(keyName+"CubeHeight");
+  cubeSideWall=Control.EvalVar<double>(keyName+"CubeSideWall");
+  cubeBaseWall=Control.EvalVar<double>(keyName+"CubeBaseWall");
+
+  innerHeight=Control.EvalVar<double>(keyName+"InnerHeight");
+  innerWidth=Control.EvalVar<double>(keyName+"InnerWidth");
 
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
-  
 
   return;
 }
@@ -113,7 +126,11 @@ M1FrontShield::createSurfaces()
 {
   ELog::RegMethod RegA("M1FrontShield","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(extent/2.0),Y);
+  makeShiftedSurf(SMap,"Front",buildIndex+12,Y,baseThick);
+  makeShiftedSurf(SMap,"Base",buildIndex+4,X,baseWidth);
+  
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(baseWidth/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(baseWidth/2.0),Z);
 
   return;
 }
@@ -127,7 +144,16 @@ M1FrontShield::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("M1FrontShield","createObjects");
 
+  const HeadRule frontHR=getRule("Front");
+  const HeadRule baseHR=getRule("Base");
+
   HeadRule HR;
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 -4 5 -6");
+  makeCell("Plate",System,cellIndex++,mat,0.0,HR*frontHR*baseHR);
+
+  addOuterSurf(HR*frontHR*baseHR);
+
 
   return;
 }

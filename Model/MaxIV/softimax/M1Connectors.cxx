@@ -226,7 +226,7 @@ M1Connectors::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -202 -3 503");
   makeCell("Clip",System,cellIndex++,clipMat,0.0,
 	   HR*mTopHR*cInnerTop);
-  insertComponent(System,"gapA",HR.complement());
+  insertComponent(System,"gapB",HR.complement());
 
   // Create Buttons:
   

@@ -59,6 +59,13 @@ M1DetailGenerator::M1DetailGenerator() :
   mWaterWidth(0.1),mWaterHeight(0.5),
   mWaterDrop(0.1),mWaterGap(0.1),
 
+  fBaseThick(1.4),fBaseWidth(5.97),  
+  fBaseHeight(6.2),fClubPlateThick(1.4),
+  fCubeThick(3.6),fCubeWidth(5.0),  
+  fCubeHeight(4.4),fCubeSideWall(0.9),
+  fCubeBaseWall(1.0),fInnerHeight(2.0),
+  fInnerWidth(2.8), 
+  
   sVOffset(0.8),sLength(26.5),sXOut(7.5),
   sThick(0.1),sEdge(1.1),sRadius(1.0),
   scLen(3.0),
@@ -86,7 +93,8 @@ M1DetailGenerator::M1DetailGenerator() :
   supportMat("Aluminium"),springMat("Aluminium"),
   clipMat("Aluminium"),
   electronMat("Aluminium"),pipeMat("Aluminium"),
-  outerMat("Aluminium"),voidMat("Void")
+  outerMat("Aluminium"),frontMat("Copper"),
+  voidMat("Void")
   /*!
     Constructor and defaults
   */
@@ -135,6 +143,34 @@ M1DetailGenerator::makeSupport(FuncDataBase& Control,
 }
 
 void
+M1DetailGenerator::makeFrontPlate(FuncDataBase& Control,
+				  const std::string& keyName) const
+  /*!
+    Create the variables for the base support
+    \param Control :: Function data base
+    \param keyName :: pre-name for mirror+plate
+   */
+{
+  ELog::RegMethod RegA("M1DetailGenerator","makeFrontPlate");
+    
+  Control.addVariable(keyName+"BaseThick",fBaseThick);
+  Control.addVariable(keyName+"BaseWidth",fBaseWidth);
+  Control.addVariable(keyName+"BaseHeight",fBaseHeight);
+  Control.addVariable(keyName+"ClubPlateThick",fClubPlateThick);
+  Control.addVariable(keyName+"CubeThick",fCubeThick);
+  Control.addVariable(keyName+"CubeWidth",fCubeWidth);
+  Control.addVariable(keyName+"CubeHeight",fCubeHeight);
+  Control.addVariable(keyName+"CubeSideWall",fCubeSideWall);
+  Control.addVariable(keyName+"CubeBaseWall",fCubeBaseWall);
+  Control.addVariable(keyName+"InnerHeight",fInnerHeight);
+  Control.addVariable(keyName+"InnerWidth",fInnerWidth);
+  Control.addVariable(keyName+"Mat",frontMat);
+  Control.addVariable(keyName+"VoidMat",voidMat);
+
+  return;
+}
+  
+void
 M1DetailGenerator::makeBackPlate(FuncDataBase& Control,
 				 const std::string& keyName) const
   /*!
@@ -156,7 +192,11 @@ M1DetailGenerator::makeBackPlate(FuncDataBase& Control,
   Control.addVariable(keyName+"OuterVaneThick",bOuterVaneThick);
   Control.addVariable(keyName+"InnerVaneThick",bInnerVaneThick);
 
+  Control.addVariable(keyName+"FrontPlateWidth",fBaseWidth);
+  Control.addVariable(keyName+"FrontPlateHeight",fBaseHeight);
+  
   Control.addVariable(keyName+"BaseMat",supportMat);
+  Control.addVariable(keyName+"FrontMat",frontMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
 
   return;
@@ -269,6 +309,7 @@ M1DetailGenerator::generateMirror(FuncDataBase& Control,
   // guess of separation
   ELog::EM<<"M1 == "<<keyName<<ELog::endDiag;
   makeCrystal(Control,keyName+"Mirror",theta,zStep);
+  makeFrontPlate(Control,keyName+"FPlate");
   makeBackPlate(Control,keyName+"CClamp");
   makeSupport(Control,keyName+"CClamp");
   makeConnectors(Control,keyName+"Connect");

@@ -105,6 +105,9 @@ M1BackPlate::populate(const FuncDataBase& Control)
   baseExtent=Control.EvalVar<double>(keyName+"BaseExtent");
   outerVaneThick=Control.EvalVar<double>(keyName+"OuterVaneThick");
   innerVaneThick=Control.EvalVar<double>(keyName+"InnerVaneThick");
+
+  frontPlateWidth=Control.EvalVar<double>(keyName+"FrontPlateWidth");
+  frontPlateHeight=Control.EvalVar<double>(keyName+"FrontPlateHeight");
   
   supVOffset=Control.EvalVar<double>(keyName+"SupVOffset");
   supLength=Control.EvalVar<double>(keyName+"SupLength");
@@ -121,14 +124,13 @@ M1BackPlate::populate(const FuncDataBase& Control)
   elecEdge=Control.EvalVar<double>(keyName+"ElecEdge");
   elecHoleRadius=Control.EvalVar<double>(keyName+"ElecHoleRadius");
 
-
-  
   baseMat=ModelSupport::EvalMat<int>(Control,keyName+"BaseMat");
   supportMat=ModelSupport::EvalMat<int>(Control,keyName+"SupportMat");
   springMat=ModelSupport::EvalMat<int>(Control,keyName+"SpringMat");
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
 
   electronMat=ModelSupport::EvalMat<int>(Control,keyName+"ElectronMat");
+  frontMat=ModelSupport::EvalMat<int>(Control,keyName+"FrontMat");
   return;
 }
 
@@ -225,6 +227,14 @@ M1BackPlate::createSurfaces()
   ModelSupport::buildPlane
     (SMap,buildIndex+1016,Origin+Z*(elecHeight/2.0-elecThick),Z);
 
+  // front plate
+  ModelSupport::buildPlane
+    (SMap,buildIndex+2004,Origin+X*(frontPlateWidth-clearGap),X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+2005,Origin-Z*(frontPlateHeight/2.0),Z);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+2006,Origin+Z*(frontPlateHeight/2.0),Z);
+
   return;
 }
 
@@ -237,6 +247,7 @@ M1BackPlate::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("M1BackPlate","createObjects");
 
+
   const HeadRule topHR=getRule("Top");
   const HeadRule baseHR=getRule("Base");
   const HeadRule backHR=getRule("Back");
@@ -248,14 +259,16 @@ M1BackPlate::createObjects(Simulation& System)
   const HeadRule baseCompHR=baseHR.complement();
   const HeadRule backCompHR=backHR.complement();
   const HeadRule mirrorCompHR=mirrorHR.complement();
+  const HeadRule nearCompHR=nearHR.complement();
   
   const HeadRule tbUnionHR=topHR+backHR;
   const HeadRule bbUnionHR=baseHR+backHR;
-  
+
   HeadRule HR;
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 1 -2 3 -104 -6");
-  makeCell("PlateGap",System,cellIndex++,voidMat,0.0,HR*tbUnionHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 -2 3 -104 -6");
+  makeCell("PlateGap",System,cellIndex++,voidMat,0.0,
+	   HR*tbUnionHR*nearCompHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 1 -2 13 -104 -16 (6:-3)");
   makeCell("Plate",System,cellIndex++,baseMat,0.0,HR);
@@ -264,8 +277,8 @@ M1BackPlate::createObjects(Simulation& System)
   makeCell("Plate",System,cellIndex++,baseMat,0.0,HR);
   
   // lower section:
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 1 -2 3 -204 5");
-  makeCell("PlateGap",System,cellIndex++,voidMat,0.0,HR*bbUnionHR); 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 -2 3 -204 5");
+  makeCell("PlateGap",System,cellIndex++,voidMat,0.0,HR*bbUnionHR*nearCompHR); 
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 1 -2 13 -204 15 (-5:-3)");
   makeCell("Plate",System,cellIndex++,baseMat,0.0,HR);
@@ -280,7 +293,6 @@ M1BackPlate::createObjects(Simulation& System)
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"511 -512 513 -514 515 -506");
   makeCell("TSupportVoid",System,cellIndex++,voidMat,0.0,HR);
-
 
   // support (Base):
   HR=ModelSupport::getHeadRule
@@ -339,9 +351,9 @@ M1BackPlate::createObjects(Simulation& System)
   makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,
 	   HR*backCompHR*mirrorCompHR*farHR*topCompHR*baseCompHR);  
 
-  HR=HeadRule(SMap,buildIndex,1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 2005 -2006 2004");  
   makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,
-	   HR*backCompHR*mirrorCompHR*nearHR*topCompHR*baseCompHR);  
+	   HR*mirrorCompHR*nearHR);
 
   // INNER VOIDS:
 
@@ -351,18 +363,18 @@ M1BackPlate::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"502 -2 605 -606 204 -504");
   makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,HR);  
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 606 -505 -1013");
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1 -2 606 -505 -1013");
   makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,HR*mirrorHR);  
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 -505 104 ");
+  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,
+	   HR*mirrorCompHR*topHR*nearCompHR);  
+    
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 606 204");
+  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,
+	   HR*mirrorCompHR*baseHR*nearCompHR);  
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -505 104");
-  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,HR*mirrorCompHR*topHR);  
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 606 204");
-  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,HR*mirrorCompHR*baseHR);  
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -1004 25 -26");
-  addOuterSurf(HR);
 
   // small gaps between spring centres and electron plate:
   // cross support at 501/502
@@ -397,6 +409,27 @@ M1BackPlate::createObjects(Simulation& System)
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"502 -2 606 -1005 1013 -504");
   makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,HR);  
+
+  // front heat shield plate
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 3 -2004 2005 -2006");
+  makeCell("HeatShield",System,cellIndex++,frontMat,0.0,HR*nearHR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 3 -104 -6 2006");
+  makeCell("HeatVoid",System,cellIndex++,voidMat,0.0,HR*nearHR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 3 -204 5 -2005");
+  makeCell("HeatVoid",System,cellIndex++,voidMat,0.0,HR*nearHR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 104 -505 2006 ");
+  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,
+	   HR*nearHR*mirrorCompHR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 204 606 -2005 ");
+  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,
+	   HR*nearHR*mirrorCompHR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -1004 25 -26");
+  addOuterSurf(HR);
 
   return;
 }
