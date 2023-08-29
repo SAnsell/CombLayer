@@ -83,6 +83,8 @@ namespace MAXIV::GunTestFacility
     std::shared_ptr<xraySystem::Duct> ductSignal3; // electrical duct
     std::shared_ptr<xraySystem::Duct> duct7;
     std::shared_ptr<xraySystem::Duct> ductVent2; // ventillation
+    std::shared_ptr<xraySystem::Duct> ductVentRoof1; // ventillation @ roof
+    std::shared_ptr<xraySystem::Duct> ductVentRoof2; // ventillation @ roof
 
     void populate(const FuncDataBase&);
     void createSurfaces();

@@ -71,7 +71,7 @@ namespace MAXIV::GunTestFacility
 
   BuildingB::BuildingB(const std::string& Key)  :
     attachSystem::ContainedComp(),
-    attachSystem::FixedRotate(Key,11),
+    attachSystem::FixedRotate(Key,12),
     attachSystem::CellMap(),
     attachSystem::SurfMap(),
     ductWave(std::make_shared<xraySystem::Duct>(keyName+"DuctWave")),
@@ -83,7 +83,9 @@ namespace MAXIV::GunTestFacility
     ductLaser(std::make_shared<xraySystem::Duct>(keyName+"DuctLaser")),
     ductSignal3(std::make_shared<xraySystem::Duct>(keyName+"DuctSignal3")),
     duct7(std::make_shared<xraySystem::Duct>(keyName+"Duct7")),
-    ductVent2(std::make_shared<xraySystem::Duct>(keyName+"DuctVentillation2"))
+    ductVent2(std::make_shared<xraySystem::Duct>(keyName+"DuctVentillation2")),
+    ductVentRoof1(std::make_shared<xraySystem::Duct>(keyName+"DuctVentillationRoof1")),
+    ductVentRoof2(std::make_shared<xraySystem::Duct>(keyName+"DuctVentillationRoof2"))
     /*!
       Constructor BUT ALL variable are left unpopulated.
       \param Key :: Name for item in search
@@ -98,7 +100,12 @@ namespace MAXIV::GunTestFacility
     OR.addObject(duct4);
     OR.addObject(duct5);
     OR.addObject(ductVent1);
-
+    OR.addObject(ductLaser);
+    OR.addObject(ductSignal3);
+    OR.addObject(duct7);
+    OR.addObject(ductVent2);
+    OR.addObject(ductVentRoof1);
+    OR.addObject(ductVentRoof2);
   }
 
   BuildingB::BuildingB(const BuildingB& A) :
@@ -427,7 +434,7 @@ namespace MAXIV::GunTestFacility
     FixedComp::setNamedLinkSurf(4,"Bottom",-SMap.realSurf(buildIndex+15));
 
     FixedComp::setConnect(5,Origin+Z*(height+roof1Thick),Z);
-    FixedComp::setNamedLinkSurf(5,"Top",SMap.realSurf(buildIndex+16));
+    FixedComp::setNamedLinkSurf(5,"Roof1Top",SMap.realSurf(buildIndex+16));
 
 
     FixedComp::setConnect(6,Origin-X*(gunRoomWidth/2.0+midWallThick),X);
@@ -439,11 +446,14 @@ namespace MAXIV::GunTestFacility
     FixedComp::setConnect(8,Origin-X*(gunRoomWidth/2.0+outerWallThick),X);
     FixedComp::setNamedLinkSurf(8,"MazeWallFrontBack",SMap.realSurf(buildIndex+34));
 
-    FixedComp::setConnect(9,Origin+Y*(gunRoomLength/2.0+backWallThick+mazeWidth),X);
+    FixedComp::setConnect(9,Origin+Y*(gunRoomLength/2.0+backWallThick+mazeWidth),Y);
     FixedComp::setNamedLinkSurf(9,"MazeWallSideBack",SMap.realSurf(buildIndex+31));
 
-    FixedComp::setConnect(10,Origin+Y*(gunRoomLength/2.0+backWallThick+mazeWidth+outerWallThick),X);
+    FixedComp::setConnect(10,Origin+Y*(gunRoomLength/2.0+backWallThick+mazeWidth+outerWallThick),Y);
     FixedComp::setNamedLinkSurf(10,"MazeWallSideFront",SMap.realSurf(buildIndex+32));
+
+    FixedComp::setConnect(11,Origin+Z*(height),Z);
+    FixedComp::setNamedLinkSurf(11,"Roof1Bottom",SMap.realSurf(buildIndex+6));
 
     return;
   }
@@ -506,6 +516,15 @@ namespace MAXIV::GunTestFacility
     ductVent2->addInsertCell(getCell("MazeEntranceLintel"));
     ductVent2->createAll(System,*this,0);
 
+    ductVentRoof1->setFront(getFullRule("Roof1Bottom"));
+    ductVentRoof1->setBack(getFullRule("#Roof1Top"));
+    ductVentRoof1->addInsertCell(getCell("Roof1"));
+    ductVentRoof1->createAll(System,*this,"Roof1Bottom");
+
+    ductVentRoof2->setFront(getFullRule("Roof1Bottom"));
+    ductVentRoof2->setBack(getFullRule("#Roof1Top"));
+    ductVentRoof2->addInsertCell(getCell("Roof1"));
+    ductVentRoof2->createAll(System,*this,"Roof1Bottom");
   }
 
   void
