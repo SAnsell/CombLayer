@@ -402,7 +402,7 @@ namespace MAXIV::GunTestFacility
   void
   BuildingB::createLinks()
   /*!
-    Create all the linkes
+    Create all the links
   */
   {
     ELog::RegMethod RegA("BuildingB","createLinks");
@@ -449,23 +449,12 @@ namespace MAXIV::GunTestFacility
   }
 
   void
-  BuildingB::createAll(Simulation& System,
-		  const attachSystem::FixedComp& FC,
-		  const long int sideIndex)
+  BuildingB::createDucts(Simulation& System)
   /*!
-    Generic function to create everything
-    \param System :: Simulation item
-    \param FC :: Central origin
-    \param sideIndex :: link point for origin
+    Create all the ducts
   */
   {
-    ELog::RegMethod RegA("BuildingB","createAll");
-
-    populate(System.getDataBase());
-    createUnitVector(FC,sideIndex);
-    createSurfaces();
-    createObjects(System);
-    createLinks();
+    ELog::RegMethod RegA("BuildingB","createDucts");
 
     ductWave->setFront(getFullRule("MidWallFront"));
     ductWave->setBack(getFullRule("MidWallBack"));
@@ -516,6 +505,29 @@ namespace MAXIV::GunTestFacility
     ductVent2->setBack(getFullRule("MazeWallSideBack"));
     ductVent2->addInsertCell(getCell("MazeEntranceLintel"));
     ductVent2->createAll(System,*this,0);
+
+  }
+
+  void
+  BuildingB::createAll(Simulation& System,
+		  const attachSystem::FixedComp& FC,
+		  const long int sideIndex)
+  /*!
+    Generic function to create everything
+    \param System :: Simulation item
+    \param FC :: Central origin
+    \param sideIndex :: link point for origin
+  */
+  {
+    ELog::RegMethod RegA("BuildingB","createAll");
+
+    populate(System.getDataBase());
+    createUnitVector(FC,sideIndex);
+    createSurfaces();
+    createObjects(System);
+    createLinks();
+
+    createDucts(System);
 
     insertObjects(System);
 

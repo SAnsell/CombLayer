@@ -88,6 +88,7 @@ namespace MAXIV::GunTestFacility
     void createSurfaces();
     void createObjects(Simulation&);
     void createLinks();
+    void createDucts(Simulation&);
 
   public:
 
