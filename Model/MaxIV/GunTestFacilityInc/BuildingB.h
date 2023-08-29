@@ -49,7 +49,8 @@ namespace MAXIV::GunTestFacility
     double gunRoomLength;         ///< gun test room inner length
     double gunRoomWidth;          ///< gun test room inner width
     double klystronRoomWidth;     ///< klystron test room room width
-    double height;                ///< distance from beam line to inner roof plane
+    double height;                ///< distance from beam line to inner roof plane of the gun test room
+    double hallHeight;            ///< hall height (except gun test room)
     double depth;                 ///< beam line height
     double backWallThick;         ///< thickness of the back wall
     double gunRoomEntranceWidth;  ///< gun test room entrance width
@@ -62,7 +63,7 @@ namespace MAXIV::GunTestFacility
     double mazeEntranceHeight;    ///< height of the maze entrance door
     double hallLength;            ///< max Förrum length
     double floorThick;            ///< floor thickness
-    double roof1Thick;            ///< foor 1 roof thickness
+    double roofGunTestThick;      ///< roof thickness above the gun test room
 
     double trspRoomWidth;         ///< TRSP room width
     double stairRoomWidth;        ///< stairway room width

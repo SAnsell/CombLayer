@@ -116,6 +116,7 @@ namespace MAXIV::GunTestFacility
     gunRoomLength(A.gunRoomLength),gunRoomWidth(A.gunRoomWidth),
     klystronRoomWidth(A.klystronRoomWidth),
     height(A.height),
+    hallHeight(A.hallHeight),
     depth(A.depth),
     backWallThick(A.backWallThick),
     gunRoomEntranceWidth(A.gunRoomEntranceWidth),
@@ -128,7 +129,7 @@ namespace MAXIV::GunTestFacility
     mazeEntranceHeight(A.mazeEntranceHeight),
     hallLength(A.hallLength),
     floorThick(A.floorThick),
-    roof1Thick(A.roof1Thick),
+    roofGunTestThick(A.roofGunTestThick),
     trspRoomWidth(A.trspRoomWidth),
     stairRoomWidth(A.stairRoomWidth),
     stairRoomLength(A.stairRoomLength),
@@ -159,6 +160,7 @@ namespace MAXIV::GunTestFacility
         gunRoomWidth=A.gunRoomWidth;
         klystronRoomWidth=A.klystronRoomWidth;
         height=A.height;
+        hallHeight=A.hallHeight;
         depth=A.depth;
         backWallThick=A.backWallThick;
         gunRoomEntranceWidth=A.gunRoomEntranceWidth;
@@ -171,7 +173,7 @@ namespace MAXIV::GunTestFacility
         mazeEntranceHeight=A.mazeEntranceHeight;
         hallLength=A.hallLength;
         floorThick=A.floorThick;
-        roof1Thick=A.roof1Thick;
+        roofGunTestThick=A.roofGunTestThick;
         trspRoomWidth=A.trspRoomWidth;
         stairRoomWidth=A.stairRoomWidth;
         stairRoomLength=A.stairRoomLength;
@@ -214,6 +216,7 @@ namespace MAXIV::GunTestFacility
     gunRoomWidth=Control.EvalVar<double>(keyName+"GunRoomWidth");
     klystronRoomWidth=Control.EvalVar<double>(keyName+"KlystronRoomWidth");
     height=Control.EvalVar<double>(keyName+"Height");
+    hallHeight=Control.EvalVar<double>(keyName+"HallHeight");
     depth=Control.EvalVar<double>(keyName+"Depth");
     backWallThick=Control.EvalVar<double>(keyName+"BackWallThick");
     gunRoomEntranceWidth=Control.EvalVar<double>(keyName+"GunRoomEntranceWidth");
@@ -226,7 +229,7 @@ namespace MAXIV::GunTestFacility
     mazeEntranceHeight=Control.EvalVar<double>(keyName+"MazeEntranceHeight");
     hallLength=Control.EvalVar<double>(keyName+"HallLength");
     floorThick=Control.EvalVar<double>(keyName+"FloorThick");
-    roof1Thick=Control.EvalVar<double>(keyName+"Roof1Thick");
+    roofGunTestThick=Control.EvalVar<double>(keyName+"RoofGunTestThick");
     trspRoomWidth=Control.EvalVar<double>(keyName+"TRSPRoomWidth");
     stairRoomWidth=Control.EvalVar<double>(keyName+"StairRoomWidth");
     stairRoomLength=Control.EvalVar<double>(keyName+"StairRoomLength");
@@ -265,11 +268,12 @@ namespace MAXIV::GunTestFacility
     ModelSupport::buildShiftedPlane(SMap,buildIndex+13,buildIndex+3,X,-midWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+14,buildIndex+4,X,-gunRoomEntranceWidth);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+15,buildIndex+5,Y,-floorThick);
-    ModelSupport::buildShiftedPlane(SMap,buildIndex+16,buildIndex+6,Y,roof1Thick);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+16,buildIndex+6,Y,roofGunTestThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+21,buildIndex+12,Y,-internalWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+23,buildIndex+13,X,-klystronRoomWidth);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+24,buildIndex+4,X,outerWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+25,buildIndex+5,Y,mazeEntranceHeight);
+    ModelSupport::buildPlane(SMap,buildIndex+26,Origin+Z*(hallHeight),Z);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+31,buildIndex+12,Y,mazeWidth);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+32,buildIndex+31,Y,outerWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+33,buildIndex+23,X,-internalWallThick);
@@ -302,10 +306,10 @@ namespace MAXIV::GunTestFacility
   {
     ELog::RegMethod RegA("BuildingB","createObjects");
 
-    const HeadRule tb = ModelSupport::getHeadRule(SMap,buildIndex," 5 -6 ");
+    const HeadRule tb = ModelSupport::getHeadRule(SMap,buildIndex," 5 -26 ");
 
     HeadRule Out;
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 ");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6");
     makeCell("GunRoom",System,cellIndex++,voidMat,0.0,Out*tb);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 13 -3 ");
@@ -314,14 +318,17 @@ namespace MAXIV::GunTestFacility
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 2 -12 13 -14 ");
     makeCell("BackWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 2 -12 14 -4 ");
-    makeCell("BackWallVoid",System,cellIndex++,voidMat,0.0,Out*tb);
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 2 -12 14 -4 5 -6");
+    makeCell("GunRoomEntrance",System,cellIndex++,voidMat,0.0,Out);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -1 83 -4 ");
-    makeCell("OuterWallRight",System,cellIndex++,wallMat,0.0,Out*tb);
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 2 -12 14 -4 6 -26 ");
+    makeCell("GunRoomEntranceLintel",System,cellIndex++,wallMat,0.0,Out);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -42 4 -24 ");
-    makeCell("OuterWallTop",System,cellIndex++,wallMat,0.0,Out*tb);
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -1 83 -4 5 -16");
+    makeCell("OuterWallRight",System,cellIndex++,wallMat,0.0,Out);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -42 4 -24 5 -16");
+    makeCell("OuterWallTop",System,cellIndex++,wallMat,0.0,Out);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -21 23 -13 ");
     makeCell("KlystronRoom",System,cellIndex++,voidMat,0.0,Out*tb);
@@ -341,7 +348,7 @@ namespace MAXIV::GunTestFacility
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 31 -32 43 -44 5 -25");
     makeCell("MazeEntrance",System,cellIndex++,voidMat,0.0,Out);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 31 -32 3 -44 25 -6");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 31 -32 3 -44 25 -26");
     makeCell("MazeEntranceLintel",System,cellIndex++,wallMat,0.0,Out);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 31 -32 44 -4 ");
@@ -395,8 +402,14 @@ namespace MAXIV::GunTestFacility
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -42 83 -24 15 -5");
     makeCell("Floor",System,cellIndex++,wallMat,0.0,Out);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -42 83 -24 6 -16");
-    makeCell("Roof1",System,cellIndex++,wallMat,0.0,Out);
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 6 -16");
+    makeCell("RoofGunTest",System,cellIndex++,wallMat,0.0,Out);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 2 -42 3 -4 26 -16");
+    makeCell("RoofOther",System,cellIndex++,wallMat,0.0,Out);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -42 83 -3 26 -16");
+    makeCell("RoofOther",System,cellIndex++,wallMat,0.0,Out);
 
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -42 83 -24 15 -16");
@@ -433,8 +446,8 @@ namespace MAXIV::GunTestFacility
     FixedComp::setConnect(4,Origin-Z*(depth+floorThick),-Z);
     FixedComp::setNamedLinkSurf(4,"Bottom",-SMap.realSurf(buildIndex+15));
 
-    FixedComp::setConnect(5,Origin+Z*(height+roof1Thick),Z);
-    FixedComp::setNamedLinkSurf(5,"Roof1Top",SMap.realSurf(buildIndex+16));
+    FixedComp::setConnect(5,Origin+Z*(height+roofGunTestThick),Z);
+    FixedComp::setNamedLinkSurf(5,"RoofGunTestTop",SMap.realSurf(buildIndex+16));
 
 
     FixedComp::setConnect(6,Origin-X*(gunRoomWidth/2.0+midWallThick),X);
@@ -453,7 +466,7 @@ namespace MAXIV::GunTestFacility
     FixedComp::setNamedLinkSurf(10,"MazeWallSideFront",SMap.realSurf(buildIndex+32));
 
     FixedComp::setConnect(11,Origin+Z*(height),Z);
-    FixedComp::setNamedLinkSurf(11,"Roof1Bottom",SMap.realSurf(buildIndex+6));
+    FixedComp::setNamedLinkSurf(11,"RoofGunTestBottom",SMap.realSurf(buildIndex+6));
 
     return;
   }
@@ -516,15 +529,15 @@ namespace MAXIV::GunTestFacility
     ductVent2->addInsertCell(getCell("MazeEntranceLintel"));
     ductVent2->createAll(System,*this,0);
 
-    ductVentRoof1->setFront(getFullRule("Roof1Bottom"));
-    ductVentRoof1->setBack(getFullRule("#Roof1Top"));
-    ductVentRoof1->addInsertCell(getCell("Roof1"));
-    ductVentRoof1->createAll(System,*this,"Roof1Bottom");
+    ductVentRoof1->setFront(getFullRule("RoofGunTestBottom"));
+    ductVentRoof1->setBack(getFullRule("#RoofGunTestTop"));
+    ductVentRoof1->addInsertCell(getCell("RoofGunTest"));
+    ductVentRoof1->createAll(System,*this,"RoofGunTestBottom");
 
-    ductVentRoof2->setFront(getFullRule("Roof1Bottom"));
-    ductVentRoof2->setBack(getFullRule("#Roof1Top"));
-    ductVentRoof2->addInsertCell(getCell("Roof1"));
-    ductVentRoof2->createAll(System,*this,"Roof1Bottom");
+    ductVentRoof2->setFront(getFullRule("RoofGunTestBottom"));
+    ductVentRoof2->setBack(getFullRule("#RoofGunTestTop"));
+    ductVentRoof2->addInsertCell(getCell("RoofGunTest"));
+    ductVentRoof2->createAll(System,*this,"RoofGunTestBottom");
   }
 
   void
