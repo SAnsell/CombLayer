@@ -77,13 +77,13 @@ namespace MAXIV::GunTestFacility
     std::shared_ptr<xraySystem::Duct> ductWave; // wave guide
     std::shared_ptr<xraySystem::Duct> ductSignal1; // electrical duct
     std::shared_ptr<xraySystem::Duct> ductSignal2; // electrical duct
-    std::shared_ptr<xraySystem::Duct> duct4;
-    std::shared_ptr<xraySystem::Duct> duct5;
-    std::shared_ptr<xraySystem::Duct> ductVent1; // ventillation
+    std::shared_ptr<xraySystem::Duct> ductSignal3;
+    std::shared_ptr<xraySystem::Duct> ductWater1; // small copper non-insulated water pipes
+    std::shared_ptr<xraySystem::Duct> ductVent; // just a ventillation penetration
     std::shared_ptr<xraySystem::Duct> ductLaser; // laser penetration
-    std::shared_ptr<xraySystem::Duct> ductSignal3; // electrical duct
-    std::shared_ptr<xraySystem::Duct> duct7;
-    std::shared_ptr<xraySystem::Duct> ductVent2; // ventillation
+    std::shared_ptr<xraySystem::Duct> ductSignal4; // electrical duct
+    std::shared_ptr<xraySystem::Duct> ductWater2; // water inlet and outlet, heat insulated
+    std::shared_ptr<xraySystem::Duct> ductSuction; // duct for the soldering iron suction fan
     std::shared_ptr<xraySystem::Duct> ductVentRoof1; // ventillation @ roof
     std::shared_ptr<xraySystem::Duct> ductVentRoof2; // ventillation @ roof
 

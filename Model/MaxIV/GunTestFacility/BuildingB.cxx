@@ -77,13 +77,13 @@ namespace MAXIV::GunTestFacility
     ductWave(std::make_shared<xraySystem::Duct>(keyName+"DuctWave")),
     ductSignal1(std::make_shared<xraySystem::Duct>(keyName+"DuctSignal1")),
     ductSignal2(std::make_shared<xraySystem::Duct>(keyName+"DuctSignal2")),
-    duct4(std::make_shared<xraySystem::Duct>(keyName+"Duct4")),
-    duct5(std::make_shared<xraySystem::Duct>(keyName+"Duct5")),
-    ductVent1(std::make_shared<xraySystem::Duct>(keyName+"DuctVentillation1")),
-    ductLaser(std::make_shared<xraySystem::Duct>(keyName+"DuctLaser")),
     ductSignal3(std::make_shared<xraySystem::Duct>(keyName+"DuctSignal3")),
-    duct7(std::make_shared<xraySystem::Duct>(keyName+"Duct7")),
-    ductVent2(std::make_shared<xraySystem::Duct>(keyName+"DuctVentillation2")),
+    ductWater1(std::make_shared<xraySystem::Duct>(keyName+"DuctWater1")),
+    ductVent(std::make_shared<xraySystem::Duct>(keyName+"DuctVentillationPenetration")),
+    ductLaser(std::make_shared<xraySystem::Duct>(keyName+"DuctLaser")),
+    ductSignal4(std::make_shared<xraySystem::Duct>(keyName+"DuctSignal4")),
+    ductWater2(std::make_shared<xraySystem::Duct>(keyName+"DuctWater2")),
+    ductSuction(std::make_shared<xraySystem::Duct>(keyName+"DuctSuctionFan")),
     ductVentRoof1(std::make_shared<xraySystem::Duct>(keyName+"DuctVentillationRoof1")),
     ductVentRoof2(std::make_shared<xraySystem::Duct>(keyName+"DuctVentillationRoof2"))
     /*!
@@ -97,13 +97,13 @@ namespace MAXIV::GunTestFacility
     OR.addObject(ductWave);
     OR.addObject(ductSignal1);
     OR.addObject(ductSignal2);
-    OR.addObject(duct4);
-    OR.addObject(duct5);
-    OR.addObject(ductVent1);
-    OR.addObject(ductLaser);
     OR.addObject(ductSignal3);
-    OR.addObject(duct7);
-    OR.addObject(ductVent2);
+    OR.addObject(ductWater1);
+    OR.addObject(ductVent);
+    OR.addObject(ductLaser);
+    OR.addObject(ductSignal4);
+    OR.addObject(ductWater2);
+    OR.addObject(ductSuction);
     OR.addObject(ductVentRoof1);
     OR.addObject(ductVentRoof2);
   }
@@ -494,40 +494,40 @@ namespace MAXIV::GunTestFacility
     ductSignal2->addInsertCell(getCell("MidWall"));
     ductSignal2->createAll(System,*this,0);
 
-    duct4->setFront(getFullRule("MidWallFront"));
-    duct4->setBack(getFullRule("MidWallBack"));
-    duct4->addInsertCell(getCell("MidWall"));
-    duct4->createAll(System,*this,0);
+    ductSignal3->setFront(getFullRule("MidWallFront"));
+    ductSignal3->setBack(getFullRule("MidWallBack"));
+    ductSignal3->addInsertCell(getCell("MidWall"));
+    ductSignal3->createAll(System,*this,0);
 
-    duct5->setFront(getFullRule("MidWallFront"));
-    duct5->setBack(getFullRule("MidWallBack"));
-    duct5->addInsertCell(getCell("MidWall"));
-    duct5->createAll(System,*this,0);
+    ductWater1->setFront(getFullRule("MidWallFront"));
+    ductWater1->setBack(getFullRule("MidWallBack"));
+    ductWater1->addInsertCell(getCell("MidWall"));
+    ductWater1->createAll(System,*this,0);
 
-    ductVent1->setFront(getFullRule("MidWallFront"));
-    ductVent1->setBack(getFullRule("MazeWallFrontBack"));
-    ductVent1->addInsertCell(getCell("MazeWallFront"));
-    ductVent1->createAll(System,*this,0);
+    ductVent->setFront(getFullRule("MidWallFront"));
+    ductVent->setBack(getFullRule("MazeWallFrontBack"));
+    ductVent->addInsertCell(getCell("MazeWallFront"));
+    ductVent->createAll(System,*this,0);
 
     ductLaser->setFront(getFullRule("#MazeWallSideFront"));
     ductLaser->setBack(getFullRule("MazeWallSideBack"));
     ductLaser->addInsertCell(getCell("MazeWallSide"));
     ductLaser->createAll(System,*this,0);
 
-    ductSignal3->setFront(getFullRule("#MazeWallSideFront"));
-    ductSignal3->setBack(getFullRule("MazeWallSideBack"));
-    ductSignal3->addInsertCell(getCell("MazeWallSide"));
-    ductSignal3->createAll(System,*this,0);
+    ductSignal4->setFront(getFullRule("#MazeWallSideFront"));
+    ductSignal4->setBack(getFullRule("MazeWallSideBack"));
+    ductSignal4->addInsertCell(getCell("MazeWallSide"));
+    ductSignal4->createAll(System,*this,0);
 
-    duct7->setFront(getFullRule("#MazeWallSideFront"));
-    duct7->setBack(getFullRule("MazeWallSideBack"));
-    duct7->addInsertCell(getCell("MazeEntranceLintel"));
-    duct7->createAll(System,*this,0);
+    ductWater2->setFront(getFullRule("#MazeWallSideFront"));
+    ductWater2->setBack(getFullRule("MazeWallSideBack"));
+    ductWater2->addInsertCell(getCell("MazeEntranceLintel"));
+    ductWater2->createAll(System,*this,0);
 
-    ductVent2->setFront(getFullRule("#MazeWallSideFront"));
-    ductVent2->setBack(getFullRule("MazeWallSideBack"));
-    ductVent2->addInsertCell(getCell("MazeEntranceLintel"));
-    ductVent2->createAll(System,*this,0);
+    ductSuction->setFront(getFullRule("#MazeWallSideFront"));
+    ductSuction->setBack(getFullRule("MazeWallSideBack"));
+    ductSuction->addInsertCell(getCell("MazeEntranceLintel"));
+    ductSuction->createAll(System,*this,0);
 
     ductVentRoof1->setFront(getFullRule("RoofGunTestBottom"));
     ductVentRoof1->setBack(getFullRule("#RoofGunTestTop"));

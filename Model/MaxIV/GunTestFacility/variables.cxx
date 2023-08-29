@@ -101,11 +101,11 @@ namespace setVariable
     DuctGen.generate(Control,name+"DuctSignal2",90.0, 0.0, length2-191.5, 265.5-depth); //[0], pages 2, 4
 
     DuctGen.setSize(7.5); // [0], page 4 (diameter 15.0)
-    DuctGen.generate(Control,name+"Duct4",90.0, 0.0, length2-189.0, 11.5-depth); //[0], pages 2, 4
-    DuctGen.generate(Control,name+"Duct5",90.0, 0.0, length2-219.0, 11.5-depth); //[0], pages 2, 4
+    DuctGen.generate(Control,name+"DuctSignal3",90.0, 0.0, length2-189.0, 11.5-depth); //[0], pages 2, 4
+    DuctGen.generate(Control,name+"DuctWater1",90.0, 0.0, length2-219.0, 11.5-depth); //[0], pages 2, 4
 
     DuctGen.setSize(10.0); // [0], page 4
-    DuctGen.generate(Control,name+"DuctVentillation1",90.0,
+    DuctGen.generate(Control,name+"DuctVentillationPenetration",90.0,
 		     0.0, length2+backWallThick+77.0, 224.5-depth); //[0], pages 2, 4
 
     DuctGen.setSize(7.5); // [0], page 3
@@ -115,19 +115,19 @@ namespace setVariable
     constexpr double duct6width = 39.7; // [0], page 3
     constexpr double duct6height = 10.0; // [0], page 3
     DuctGen.setSize(duct6width,duct6height);
-    DuctGen.generate(Control,name+"DuctSignal3",0.0,
+    DuctGen.generate(Control,name+"DuctSignal4",0.0,
 		     185.0-width2-outerWallThick, 0.0,
 		     257.5-depth+duct6height/2.0); //[0], pages 2, 4
 
     constexpr double duct7width = 56.0; // [0], page 3
     constexpr double duct7height = 19.0; // [0], page 3
     DuctGen.setSize(duct7width,duct7height);
-    DuctGen.generate(Control,name+"Duct7",0.0,
+    DuctGen.generate(Control,name+"DuctWater2",0.0,
 		     114.0-width2-outerWallThick, 0.0,
 		     271.0-depth+duct7height/2.0); //[0], pages 2, 4
 
     DuctGen.setSize(6.0); // [0], page 3
-    DuctGen.generate(Control,name+"DuctVentillation2",0.0,
+    DuctGen.generate(Control,name+"DuctSuctionFan",0.0,
 		     55.0-width2-outerWallThick, 0.0,
 		     280.0-depth); //[0], pages 2 and 3
 
