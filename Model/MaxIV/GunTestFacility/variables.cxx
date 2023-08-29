@@ -102,7 +102,7 @@ namespace setVariable
     DuctGen.generate(Control,name+"Duct5",90.0, 0.0, length2-219.0, 11.5-depth); //[0], pages 2, 4
 
     DuctGen.setSize(10.0); // [0], page 4
-    DuctGen.generate(Control,name+"DuctVentillation",90.0,
+    DuctGen.generate(Control,name+"DuctVentillation1",90.0,
 		     0.0, length2+backWallThick+77.0, 224.5-depth); //[0], pages 2, 4
 
     DuctGen.setSize(7.5); // [0], page 3
@@ -122,6 +122,11 @@ namespace setVariable
     DuctGen.generate(Control,name+"Duct7",0.0,
 		     114.0-gunRoomWidth/2.0-outerWallThick, 0.0,
 		     271.0-depth+duct7height/2.0); //[0], pages 2, 4
+
+    DuctGen.setSize(6.0); // [0], page 3
+    DuctGen.generate(Control,name+"DuctVentillation2",0.0,
+		     55.0-gunRoomWidth/2.0-outerWallThick, 0.0,
+		     280.0-depth); //[0], pages 3
   }
 
   void GunTestFacilityVariables(FuncDataBase& Control)

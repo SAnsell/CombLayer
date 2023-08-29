@@ -79,10 +79,11 @@ namespace MAXIV::GunTestFacility
     ductSignal2(std::make_shared<xraySystem::Duct>(keyName+"DuctSignal2")),
     duct4(std::make_shared<xraySystem::Duct>(keyName+"Duct4")),
     duct5(std::make_shared<xraySystem::Duct>(keyName+"Duct5")),
-    ductVent(std::make_shared<xraySystem::Duct>(keyName+"DuctVentillation")),
+    ductVent1(std::make_shared<xraySystem::Duct>(keyName+"DuctVentillation1")),
     ductLaser(std::make_shared<xraySystem::Duct>(keyName+"DuctLaser")),
     ductSignal3(std::make_shared<xraySystem::Duct>(keyName+"DuctSignal3")),
-    duct7(std::make_shared<xraySystem::Duct>(keyName+"Duct7"))
+    duct7(std::make_shared<xraySystem::Duct>(keyName+"Duct7")),
+    ductVent2(std::make_shared<xraySystem::Duct>(keyName+"DuctVentillation2"))
     /*!
       Constructor BUT ALL variable are left unpopulated.
       \param Key :: Name for item in search
@@ -96,7 +97,7 @@ namespace MAXIV::GunTestFacility
     OR.addObject(ductSignal2);
     OR.addObject(duct4);
     OR.addObject(duct5);
-    OR.addObject(ductVent);
+    OR.addObject(ductVent1);
 
   }
 
@@ -491,10 +492,10 @@ namespace MAXIV::GunTestFacility
     duct5->addInsertCell(getCell("MidWall"));
     duct5->createAll(System,*this,0);
 
-    ductVent->setFront(getFullRule("MidWallFront"));
-    ductVent->setBack(getFullRule("MazeWallFrontBack"));
-    ductVent->addInsertCell(getCell("MazeWallFront"));
-    ductVent->createAll(System,*this,0);
+    ductVent1->setFront(getFullRule("MidWallFront"));
+    ductVent1->setBack(getFullRule("MazeWallFrontBack"));
+    ductVent1->addInsertCell(getCell("MazeWallFront"));
+    ductVent1->createAll(System,*this,0);
 
     ductLaser->setFront(getFullRule("#MazeWallSideFront"));
     ductLaser->setBack(getFullRule("MazeWallSideBack"));
@@ -510,6 +511,11 @@ namespace MAXIV::GunTestFacility
     duct7->setBack(getFullRule("MazeWallSideBack"));
     duct7->addInsertCell(getCell("MazeEntranceLintel"));
     duct7->createAll(System,*this,0);
+
+    ductVent2->setFront(getFullRule("#MazeWallSideFront"));
+    ductVent2->setBack(getFullRule("MazeWallSideBack"));
+    ductVent2->addInsertCell(getCell("MazeEntranceLintel"));
+    ductVent2->createAll(System,*this,0);
 
     insertObjects(System);
 
