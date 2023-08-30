@@ -76,6 +76,8 @@ namespace MAXIV::GunTestFacility
     double controlRoomWidth;      ///< control room width
     double controlRoomLength;     ///< control room length
     double controlRoomWallThick;  ///< control room wall thickness
+    double controlRoomEntranceWidth; ///< control room entrance width
+    double controlRoomEntranceOffset; ///< control room entrance offset along the wall
 
     int wallMat;                  ///< Wall material
     int voidMat;                  ///< void material

@@ -141,6 +141,8 @@ namespace MAXIV::GunTestFacility
     controlRoomWidth(A.controlRoomWidth),
     controlRoomLength(A.controlRoomLength),
     controlRoomWallThick(A.controlRoomWallThick),
+    controlRoomEntranceWidth(A.controlRoomEntranceWidth),
+    controlRoomEntranceOffset(A.controlRoomEntranceOffset),
     wallMat(A.wallMat),
     voidMat(A.voidMat),
     oilRoomWallMat(A.oilRoomWallMat)
@@ -192,6 +194,8 @@ namespace MAXIV::GunTestFacility
         controlRoomWidth=A.controlRoomWidth;
         controlRoomLength=A.controlRoomLength;
         controlRoomWallThick=A.controlRoomWallThick;
+        controlRoomEntranceWidth=A.controlRoomEntranceWidth;
+        controlRoomEntranceOffset=A.controlRoomEntranceOffset;
 	wallMat=A.wallMat;
 	voidMat=A.voidMat;
         oilRoomWallMat=A.oilRoomWallMat;
@@ -255,6 +259,8 @@ namespace MAXIV::GunTestFacility
     controlRoomWidth=Control.EvalVar<double>(keyName+"ControlRoomWidth");
     controlRoomLength=Control.EvalVar<double>(keyName+"ControlRoomLength");
     controlRoomWallThick=Control.EvalVar<double>(keyName+"ControlRoomWallThick");
+    controlRoomEntranceWidth=Control.EvalVar<double>(keyName+"ControlRoomEntranceWidth");
+    controlRoomEntranceOffset=Control.EvalVar<double>(keyName+"ControlRoomEntranceOffset");
 
     wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
     voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat","Void");
@@ -331,6 +337,9 @@ namespace MAXIV::GunTestFacility
     ModelSupport::buildShiftedPlane(SMap,buildIndex+103,buildIndex+73,X,controlRoomWidth);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+104,buildIndex+103,X,internalWallThick); // TODO intentionally wrong thickness. Need to be constructed in a separate class for B1. See [3].
 
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+203,buildIndex+73,X,controlRoomEntranceOffset);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+204,buildIndex+203,X,controlRoomEntranceWidth);
+
     return;
   }
 
@@ -400,8 +409,14 @@ namespace MAXIV::GunTestFacility
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 32 -41 34 -4 ");
     makeCell("Hall",System,cellIndex++,voidMat,0.0,Out*tb);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 41 -42 83 -4 ");
-    makeCell("ForwardWall",System,cellIndex++,wallMat,0.0,Out*tb);
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 41 -42 83 -203 ");
+    makeCell("EastWall",System,cellIndex++,wallMat,0.0,Out*tb);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 41 -82 203 -204 ");
+    makeCell("ControlRoomEntrance",System,cellIndex++,voidMat,0.0,Out*tb);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 41 -42 204 -4 ");
+    makeCell("EastWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -12 53 -33 ");
     makeCell("CraneRoom",System,cellIndex++,voidMat,0.0,Out*tb);
@@ -446,10 +461,16 @@ namespace MAXIV::GunTestFacility
     // but for now let's construct it within Building B making all the cells
     // indeptndent from the "native" Building B cells
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 42 -81 83 -24 ");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 42 -81 83 -203 ");
     makeCell("EastClearance",System,cellIndex++,voidMat,0.0,Out*tb);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 81 -82 73 -24 ");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 42 -81 204 -24 ");
+    makeCell("EastClearance",System,cellIndex++,voidMat,0.0,Out*tb);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 81 -82 73 -203 ");
+    makeCell("B1WestWall",System,cellIndex++,wallMat,0.0,Out*tb);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 81 -82 204 -24 ");
     makeCell("B1WestWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 82 -91 73 -103 ");
@@ -458,13 +479,13 @@ namespace MAXIV::GunTestFacility
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 82 -91 103 -104 ");
     makeCell("ControlRoomNorthWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 82 -91 104 -24 ");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 82 -92 104 -24 ");
     makeCell("B1Void",System,cellIndex++,voidMat,0.0,Out*tb);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 81 -92 83 -73 ");
     makeCell("ControlRoomSouthWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 91 -92 73 -24 ");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 91 -92 73 -104 ");
     makeCell("ControlRoomEastWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 42 -92 4 -24 26 -16");

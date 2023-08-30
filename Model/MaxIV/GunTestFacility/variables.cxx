@@ -99,7 +99,9 @@ namespace setVariable
 
     Control.addVariable(name+"ControlRoomWidth",850.0); // [4]
     Control.addVariable(name+"ControlRoomLength",292.4); // [4]
-    Control.addVariable(name+"ControlRoomWallThick",20.0); // guess
+    Control.addVariable(name+"ControlRoomWallThick",20.0); // TODO wrong. See [3]
+    Control.addVariable(name+"ControlRoomEntranceWidth",211.0); // [3]
+    Control.addVariable(name+"ControlRoomEntranceOffset",20.0); // [3] 1450-(9140+2110-10000) mm
 
     setVariable::DuctGenerator DuctGen;
     DuctGen.setSize(10.0); // [0], page 4 (diameter 20.0)
