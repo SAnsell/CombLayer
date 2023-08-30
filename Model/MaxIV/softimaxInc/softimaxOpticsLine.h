@@ -41,6 +41,7 @@ namespace xraySystem
   class M1Detail;
   class M1Mirror;
   class M1BackPlate;
+  class MonoBox;
   class PipeShield;
   class TankMonoVessel;
   class TriggerTube;  
@@ -94,6 +95,7 @@ class softimaxOpticsLine :
   std::shared_ptr<constructSystem::DomeConnector> M1TubeFront;
   std::shared_ptr<constructSystem::PipeTube> M1Tube;
   std::shared_ptr<constructSystem::DomeConnector> M1TubeBack;
+  std::shared_ptr<xraySystem::MonoBox> M1Box;
   /// M1 - Mirror
   std::shared_ptr<xraySystem::M1Detail> M1Detail;
   

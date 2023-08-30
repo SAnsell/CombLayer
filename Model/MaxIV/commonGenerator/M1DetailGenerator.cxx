@@ -244,9 +244,9 @@ M1DetailGenerator::makeConnectors(FuncDataBase& Control,
   
 void
 M1DetailGenerator::makeCrystal(FuncDataBase& Control,
-				const std::string& cryName,
-				const double zStep,
-				const double theta) const
+			       const std::string& cryName,
+			       const double zStep,
+			       const double theta) const 
   /*!
     Build the variables for the general crystal.
     The crystals are built generated in the centre of
@@ -255,6 +255,7 @@ M1DetailGenerator::makeCrystal(FuncDataBase& Control,
     \param cryName :: extra name for crystal
     \param zStep :: displacement from MLM vessel white beam centre
     \param theta :: Angle to this crystal to the beam
+    \param mirrorCenter :: Distance from 
   */
 {
   ELog::RegMethod RegA("M1DetailGenerator","makeCrystal");

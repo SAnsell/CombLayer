@@ -66,6 +66,8 @@
 #include "TankMonoVesselGenerator.h"
 #include "FlangeMountGenerator.h"
 #include "BeamPairGenerator.h"
+#include "VacBoxGenerator.h"
+#include "MonoBoxGenerator.h"
 #include "MirrorGenerator.h"
 #include "M1DetailGenerator.h"
 #include "DomeConnectorGenerator.h"
@@ -303,39 +305,28 @@ m1DetailVariables(FuncDataBase& Control,
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::M1DetailGenerator M1DGen;
   setVariable::PipeGenerator PipeGen;
-  setVariable::DomeConnectorGenerator DCGen;
   setVariable::PortItemGenerator PItemGen;
+  setVariable::MonoBoxGenerator VBoxGen;
+      
 
-  const double tubeLength(40.5);
-  const double portXStep(2.0);
-  const double theta(-1.0*M_PI/180.0);
-  const double mExtra=30.0*sin(theta);
-    
+  const std::sin(M_PI*theta/180.0));   // Theta angel
   
+  VBoxGen.setMat("Titanium");
+  VBoxGen.setWallThick(1.0);
+  VBoxGen.setCF<CF63>();
+  VBoxGen.setPortLength(5.2,10.15); // La/Lb
+  // note overhang is from inner wall 
+  VBoxGen.setLids(3.0,3.5,3.5); // over/base/roof 
+
+  VBoxGen.setBPortOffset(0.0,0.0);  
+  // width/height/depth/length
+  VBoxGen.generateBox(Control,boxName, 35.0,4.95,14.6,  62.0);
+
   const std::string frontName=mirrorKey+"M1TubeFront";
-  const std::string tubeName=mirrorKey+"M1Tube";
-  const std::string backName=mirrorKey+"M1TubeBack";
-
-  PItemGen.setCF<setVariable::CF63>(6.0);
-  PItemGen.setNoPlate();
+  const std::string backName=mirrorKey+"M1TubeFront";
   
-  DCGen.setSphere(7.0,2.5);
-  DCGen.setFlangeCF<CF150>(0.8);
-  DCGen.setLengths(2.5,2.0,3.0);
-  DCGen.generateDome(Control,frontName,1);
-  PItemGen.generatePort(Control,frontName+"Port0",
-			Geometry::Vec3D(portXStep, 0.0, 0.0),
-			Geometry::Vec3D(0.0, -1.0, 0.0));
-  Control.addVariable(frontName+"ZAngle",-1.0);
+  M1DGen.generateMirror(Control,mirrorKey+"M1",0.0,-1.0);
 
-
-  const std::string mName=mirrorKey+"M1Tube";
-  SimpleTubeGen.setCF<CF150>();
-  SimpleTubeGen.generateTube(Control,mName,tubeLength);
-  Control.addVariable(mName+"WallMat","Titanium");
-  Control.addVariable(mName+"NPorts",0);   // beam ports
-
-  M1DGen.generateMirror(Control,mirrorKey+"M1",0.0,0.0);
   Control.addVariable(mirrorKey+"M1XStep",portXStep+mExtra);
     
   Control.addVariable(mirrorKey+"M1StandHeight",110.0);

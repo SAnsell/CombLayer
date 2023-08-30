@@ -167,7 +167,7 @@ M1Detail::createObjects(Simulation& System)
   connectors->createAll(System,*mirror,"backPlateOrg");
 
   frontShield->addInsertCell("Main",getInsertCells());
-  frontShield->addInsertCell("Extra",getCell("FrontVoid"));
+  frontShield->addInsertCell("Extra",getInsertCells());
   frontShield->setCutSurf("Front",*cClamp,"front");
   frontShield->setCutSurf("Base",*cClamp,"innerSide");
   frontShield->createAll(System,*cClamp,"front");
