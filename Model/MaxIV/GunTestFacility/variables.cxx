@@ -73,6 +73,7 @@ namespace setVariable
     Control.addVariable(name+"KlystronRoomWidth",460.0); // [1]
     Control.addVariable(name+"InternalWallThick",20.0); // [1]
     Control.addVariable(name+"Depth",depth); // [1]
+    Control.addVariable(name+"EastClearance",5.0); // [3]
     Control.addVariable(name+"Height",300.0-depth); // [1]
     Control.addVariable(name+"HallHeight",360.0-depth); // measured
     Control.addVariable(name+"BackWallThick",backWallThick);
@@ -95,6 +96,10 @@ namespace setVariable
     Control.addVariable(name+"OilRoomEntranceWidth",136.0); // [4]
     Control.addVariable(name+"OilRoomWallThick",10.0); // [4]
     Control.addVariable(name+"OilRoomWallMat","Void"); // gips+wood+void
+
+    Control.addVariable(name+"ControlRoomWidth",850.0); // [4]
+    Control.addVariable(name+"ControlRoomLength",292.4); // [4]
+    Control.addVariable(name+"ControlRoomWallThick",20.0); // guess
 
     setVariable::DuctGenerator DuctGen;
     DuctGen.setSize(10.0); // [0], page 4 (diameter 20.0)

@@ -118,6 +118,7 @@ namespace MAXIV::GunTestFacility
     height(A.height),
     hallHeight(A.hallHeight),
     depth(A.depth),
+    eastClearance(A.eastClearance),
     backWallThick(A.backWallThick),
     gunRoomEntranceWidth(A.gunRoomEntranceWidth),
     midWallThick(A.midWallThick),
@@ -137,6 +138,9 @@ namespace MAXIV::GunTestFacility
     elevatorLength(A.elevatorLength),
     oilRoomEntranceWidth(A.oilRoomEntranceWidth),
     oilRoomWallThick(A.oilRoomWallThick),
+    controlRoomWidth(A.controlRoomWidth),
+    controlRoomLength(A.controlRoomLength),
+    controlRoomWallThick(A.controlRoomWallThick),
     wallMat(A.wallMat),
     voidMat(A.voidMat),
     oilRoomWallMat(A.oilRoomWallMat)
@@ -165,6 +169,7 @@ namespace MAXIV::GunTestFacility
         height=A.height;
         hallHeight=A.hallHeight;
         depth=A.depth;
+        eastClearance=A.eastClearance;
         backWallThick=A.backWallThick;
         gunRoomEntranceWidth=A.gunRoomEntranceWidth;
         midWallThick=A.midWallThick;
@@ -184,6 +189,9 @@ namespace MAXIV::GunTestFacility
         elevatorLength=A.elevatorLength;
         oilRoomEntranceWidth=A.oilRoomEntranceWidth;
         oilRoomWallThick=A.oilRoomWallThick;
+        controlRoomWidth=A.controlRoomWidth;
+        controlRoomLength=A.controlRoomLength;
+        controlRoomWallThick=A.controlRoomWallThick;
 	wallMat=A.wallMat;
 	voidMat=A.voidMat;
         oilRoomWallMat=A.oilRoomWallMat;
@@ -224,6 +232,7 @@ namespace MAXIV::GunTestFacility
     height=Control.EvalVar<double>(keyName+"Height");
     hallHeight=Control.EvalVar<double>(keyName+"HallHeight");
     depth=Control.EvalVar<double>(keyName+"Depth");
+    eastClearance=Control.EvalVar<double>(keyName+"EastClearance");
     backWallThick=Control.EvalVar<double>(keyName+"BackWallThick");
     gunRoomEntranceWidth=Control.EvalVar<double>(keyName+"GunRoomEntranceWidth");
     midWallThick=Control.EvalVar<double>(keyName+"MidWallThick");
@@ -243,6 +252,9 @@ namespace MAXIV::GunTestFacility
     elevatorLength=Control.EvalVar<double>(keyName+"ElevatorLength");
     oilRoomEntranceWidth=Control.EvalVar<double>(keyName+"OilRoomEntranceWidth");
     oilRoomWallThick=Control.EvalVar<double>(keyName+"OilRoomWallThick");
+    controlRoomWidth=Control.EvalVar<double>(keyName+"ControlRoomWidth");
+    controlRoomLength=Control.EvalVar<double>(keyName+"ControlRoomLength");
+    controlRoomWallThick=Control.EvalVar<double>(keyName+"ControlRoomWallThick");
 
     wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
     voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat","Void");
@@ -301,11 +313,23 @@ namespace MAXIV::GunTestFacility
     ModelSupport::buildShiftedPlane(SMap,buildIndex+71,buildIndex+12,X,-oilRoomWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+73,buildIndex+63,X,-stairRoomWidth);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+74,buildIndex+73,X,elevatorWidth);
+
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+81,buildIndex+42,Y,eastClearance);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+82,buildIndex+81,Y,outerWallThick);
+
     ModelSupport::buildShiftedPlane(SMap,buildIndex+83,buildIndex+73,X,-outerWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+84,buildIndex+74,X,internalWallThick);
+
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+91,buildIndex+82,Y,controlRoomLength);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+92,buildIndex+91,Y,internalWallThick);
+
     ModelSupport::buildShiftedPlane(SMap,buildIndex+93,buildIndex+63,Y,
 				    -oilRoomEntranceWidth-oilRoomWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+94,buildIndex+93,Y,oilRoomWallThick);
+
+
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+103,buildIndex+73,X,controlRoomWidth);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+104,buildIndex+103,X,internalWallThick); // TODO intentionally wrong thickness. Need to be constructed in a separate class for B1. See [3].
 
     return;
   }
@@ -380,19 +404,19 @@ namespace MAXIV::GunTestFacility
     makeCell("ForwardWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -12 53 -33 ");
-    makeCell("RRSPRoom",System,cellIndex++,voidMat,0.0,Out*tb);
+    makeCell("CraneRoom",System,cellIndex++,voidMat,0.0,Out*tb);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -12 63 -53 ");
-    makeCell("RRSPRoomBottomWall",System,cellIndex++,wallMat,0.0,Out*tb);
+    makeCell("CraneRoomSouthWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -61 73 -63 ");
-    makeCell("MiniRoom",System,cellIndex++,voidMat,0.0,Out*tb);
+    makeCell("StairRoom",System,cellIndex++,voidMat,0.0,Out*tb);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 61 -51 84 -63 ");
-    makeCell("MiniRoom",System,cellIndex++,voidMat,0.0,Out*tb);
+    makeCell("StairRoom",System,cellIndex++,voidMat,0.0,Out*tb);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 51 -52 73 -63 ");
-    makeCell("MiniRoomRightWall",System,cellIndex++,wallMat,0.0,Out*tb);
+    makeCell("StairRoomEastWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 52 -71 73 -93 ");
     makeCell("OilRoom",System,cellIndex++,voidMat,0.0,Out*tb);
@@ -406,7 +430,6 @@ namespace MAXIV::GunTestFacility
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 52 -12 94 -63 ");
     makeCell("OilRoomAnteroom",System,cellIndex++,oilRoomWallMat,0.0,Out*tb);
 
-
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 62 -51 73 -74 ");
     makeCell("Elevator",System,cellIndex++,voidMat,0.0,Out*tb);
 
@@ -416,25 +439,51 @@ namespace MAXIV::GunTestFacility
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 61 -51 74 -84 ");
     makeCell("ElevatorTopWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
-
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -41 83 -73 ");
     makeCell("OuterWallBottom",System,cellIndex++,wallMat,0.0,Out*tb);
 
+    // Actually, control room belongs to Bulding B1, not Building B,
+    // but for now let's construct it within Building B making all the cells
+    // indeptndent from the "native" Building B cells
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -42 83 -24 15 -5");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 42 -81 83 -24 ");
+    makeCell("EastClearance",System,cellIndex++,voidMat,0.0,Out*tb);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 81 -82 73 -24 ");
+    makeCell("B1WestWall",System,cellIndex++,wallMat,0.0,Out*tb);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 82 -91 73 -103 ");
+    makeCell("ControlRoom",System,cellIndex++,voidMat,0.0,Out*tb);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 82 -91 103 -104 ");
+    makeCell("ControlRoomNorthWall",System,cellIndex++,wallMat,0.0,Out*tb);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 82 -91 104 -24 ");
+    makeCell("B1Void",System,cellIndex++,voidMat,0.0,Out*tb);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 81 -92 83 -73 ");
+    makeCell("ControlRoomSouthWall",System,cellIndex++,wallMat,0.0,Out*tb);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 91 -92 73 -24 ");
+    makeCell("ControlRoomEastWall",System,cellIndex++,wallMat,0.0,Out*tb);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 42 -92 4 -24 26 -16");
+    makeCell("ControlRoomWallCell",System,cellIndex++,wallMat,0.0,Out);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -92 83 -24 15 -5");
     makeCell("Floor",System,cellIndex++,wallMat,0.0,Out);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 6 -16");
     makeCell("RoofGunTest",System,cellIndex++,wallMat,0.0,Out);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 2 -42 3 -4 26 -16");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 2 -92 3 -4 26 -16");
     makeCell("RoofOther",System,cellIndex++,wallMat,0.0,Out);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -42 83 -3 26 -16");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -92 83 -3 26 -16");
     makeCell("RoofOther",System,cellIndex++,wallMat,0.0,Out);
 
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -42 83 -24 15 -16");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -92 83 -24 15 -16");
     addOuterSurf(Out);
 
     return;

@@ -52,6 +52,7 @@ namespace MAXIV::GunTestFacility
     double height;                ///< distance from beam line to inner roof plane of the gun test room
     double hallHeight;            ///< hall height (except gun test room)
     double depth;                 ///< beam line height
+    double eastClearance;         ///< gap between building B and B1
     double backWallThick;         ///< thickness of the back wall
     double gunRoomEntranceWidth;  ///< gun test room entrance width
     double midWallThick;          ///< thickness of the middle wall
@@ -72,6 +73,9 @@ namespace MAXIV::GunTestFacility
     double elevatorLength;       ///< elevator room length
     double oilRoomEntranceWidth;  ///< oil room entrance width
     double oilRoomWallThick;      ///< thickness of the oil room walls
+    double controlRoomWidth;      ///< control room width
+    double controlRoomLength;     ///< control room length
+    double controlRoomWallThick;  ///< control room wall thickness
 
     int wallMat;                  ///< Wall material
     int voidMat;                  ///< void material
