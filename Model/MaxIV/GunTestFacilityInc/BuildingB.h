@@ -81,10 +81,16 @@ namespace MAXIV::GunTestFacility
 
     double level9Height;          ///< second floor full height (level 9)
     double level9RoofThick;       ///< second floor (level 9) roof thickness
+    double level9VentDuctShieldLength; ///< ventillation ducts shield length (above gun test room)
+    double level9VentDuctShieldWidth; ///< ventillation ducts shield width
+    double level9VentDuctShieldHeight; ///< ventillation ducts shield height
+    double level9VentDuctShieldThick; ///< ventillation ducts shield thickness
+    double level9VentDuctShieldOffset; ///< ventillation ducts shield offset from the east wall
 
     int wallMat;                  ///< Wall material
     int voidMat;                  ///< void material
     int oilRoomWallMat;           ///< material of the oil room walls
+    int level9VentDuctShieldMat;  ///< ventillation ducts shield material
 
     std::shared_ptr<xraySystem::Duct> ductWave; // wave guide
     std::shared_ptr<xraySystem::Duct> ductSignal1; // electrical duct

@@ -145,9 +145,15 @@ namespace MAXIV::GunTestFacility
     controlRoomEntranceOffset(A.controlRoomEntranceOffset),
     level9Height(A.level9Height),
     level9RoofThick(A.level9RoofThick),
+    level9VentDuctShieldLength(A.level9VentDuctShieldLength),
+    level9VentDuctShieldWidth(A.level9VentDuctShieldWidth),
+    level9VentDuctShieldHeight(A.level9VentDuctShieldHeight),
+    level9VentDuctShieldThick(A.level9VentDuctShieldThick),
+    level9VentDuctShieldOffset(A.level9VentDuctShieldOffset),
     wallMat(A.wallMat),
     voidMat(A.voidMat),
-    oilRoomWallMat(A.oilRoomWallMat)
+    oilRoomWallMat(A.oilRoomWallMat),
+    level9VentDuctShieldMat(A.level9VentDuctShieldMat)
     /*!
       Copy constructor
       \param A :: BuildingB to copy
@@ -200,9 +206,15 @@ namespace MAXIV::GunTestFacility
         controlRoomEntranceOffset=A.controlRoomEntranceOffset;
         level9Height=A.level9Height;
         level9RoofThick=A.level9RoofThick;
+        level9VentDuctShieldLength=A.level9VentDuctShieldLength;
+        level9VentDuctShieldWidth=A.level9VentDuctShieldWidth;
+        level9VentDuctShieldHeight=A.level9VentDuctShieldHeight;
+        level9VentDuctShieldThick=A.level9VentDuctShieldThick;
+        level9VentDuctShieldOffset=A.level9VentDuctShieldOffset;
 	wallMat=A.wallMat;
 	voidMat=A.voidMat;
         oilRoomWallMat=A.oilRoomWallMat;
+        level9VentDuctShieldMat=A.level9VentDuctShieldMat;
       }
     return *this;
   }
@@ -267,10 +279,16 @@ namespace MAXIV::GunTestFacility
     controlRoomEntranceOffset=Control.EvalVar<double>(keyName+"ControlRoomEntranceOffset");
     level9Height=Control.EvalVar<double>(keyName+"Level9Height");
     level9RoofThick=Control.EvalVar<double>(keyName+"Level9RoofThick");
+    level9VentDuctShieldLength=Control.EvalVar<double>(keyName+"Level9VentillationDuctShieldLength");
+    level9VentDuctShieldWidth=Control.EvalVar<double>(keyName+"Level9VentillationDuctShieldWidth");
+    level9VentDuctShieldHeight=Control.EvalVar<double>(keyName+"Level9VentillationDuctShieldHeight");
+    level9VentDuctShieldThick=Control.EvalVar<double>(keyName+"Level9VentillationDuctShieldThick");
+    level9VentDuctShieldOffset=Control.EvalVar<double>(keyName+"Level9VentillationDuctShieldOffset");
 
     wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
     voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat","Void");
     oilRoomWallMat=ModelSupport::EvalMat<int>(Control,keyName+"OilRoomWallMat");
+    level9VentDuctShieldMat=ModelSupport::EvalMat<int>(Control,keyName+"Level9VentillationDuctShieldMat");
 
     if (std::abs(gunRoomWidth + midWallThick+ klystronRoomWidth + trspRoomWidth + stairRoomWidth + 2.0*internalWallThick-2025.0)>1e-3)
       ELog::EM << "WARNING: gun test room widths do not sum up to 2025 as of K_20-1_08C6b4" << ELog::endWarn;
@@ -349,6 +367,15 @@ namespace MAXIV::GunTestFacility
 
     ModelSupport::buildShiftedPlane(SMap,buildIndex+203,buildIndex+73,X,controlRoomEntranceOffset);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+204,buildIndex+203,X,controlRoomEntranceWidth);
+
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+211,buildIndex+1,Y,level9VentDuctShieldOffset);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+212,buildIndex+211,Y,level9VentDuctShieldWidth);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+213,buildIndex+4,X,
+				    -level9VentDuctShieldLength-level9VentDuctShieldThick);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+214,buildIndex+213,X,level9VentDuctShieldThick);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+215,buildIndex+16,Z,level9VentDuctShieldHeight);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+216,buildIndex+215,Z,level9VentDuctShieldThick);
+
 
     return;
   }
@@ -517,7 +544,7 @@ namespace MAXIV::GunTestFacility
     makeCell("Roof8B1",System,cellIndex++,wallMat,0.0,Out);
 
     // Level 9
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -41 73 -4 16 -35");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -41 73 -4 16 -35 (-211:212:-213:216)");
     makeCell("Level9",System,cellIndex++,voidMat,0.0,Out);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -41 73 -4 35 -36");
@@ -526,8 +553,17 @@ namespace MAXIV::GunTestFacility
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 41 -42 83 -4 16 -36");
     makeCell("Level9EastWall",System,cellIndex++,wallMat,0.0,Out);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 42 -92 83 -24 16 -36");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 42 -92 83 -24 16 -36 ");
     makeCell("Level9B1Void",System,cellIndex++,voidMat,0.0,Out);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 211 -212 214 -4 16 -215");
+    makeCell("Level9VentDuctShieldVoid",System,cellIndex++,voidMat,0.0,Out);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 211 -212 213 -214 16 -215");
+    makeCell("Level9VentDuctShieldWallSouth",System,cellIndex++,level9VentDuctShieldMat,0.0,Out);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 211 -212 213 -4 215 -216 ");
+    makeCell("Level9VentDuctShieldWallTop",System,cellIndex++,level9VentDuctShieldMat,0.0,Out);
 
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -92 83 -24 15 -36");

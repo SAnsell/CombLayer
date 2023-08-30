@@ -106,6 +106,12 @@ namespace setVariable
 
     Control.addVariable(name+"Level9Height",300.0); // guess TODO measure
     Control.addVariable(name+"Level9RoofThick",40.0); // guess TODO measure
+    Control.addVariable(name+"Level9VentillationDuctShieldLength",60.0); // [0], page 1
+    Control.addVariable(name+"Level9VentillationDuctShieldWidth",220.0); // [0], page 1
+    Control.addVariable(name+"Level9VentillationDuctShieldHeight",60.0); // [0], page 6
+    Control.addVariable(name+"Level9VentillationDuctShieldThick",5.0); // [4] and [0], page 1
+    Control.addVariable(name+"Level9VentillationDuctShieldMat", "Stainless304"); // guess TODO
+    Control.addVariable(name+"Level9VentillationDuctShieldOffset",308.0); // [0], page 1
 
     setVariable::DuctGenerator DuctGen;
     DuctGen.setSize(10.0); // [0], page 4 (diameter 20.0)
