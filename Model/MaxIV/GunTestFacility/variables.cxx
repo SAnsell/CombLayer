@@ -59,12 +59,14 @@ namespace setVariable
     // [3] K_20-1_08C6a3
     // [4] self-measured
     // [5] K_20-1_09C6b4
+    // [6] K_20-6_015
+    // [7] K_20-2_305
 
     constexpr double length = 650; // [1]
     constexpr double length2 = length/2.0;
     constexpr double width = 460.0; // [1]
     constexpr double width2 = width/2.0;
-    constexpr double depth  = 130; // [1]
+    constexpr double depth  = 132.1; // [4]
     constexpr double backWallThick = 100.0;  // [1]
     constexpr double outerWallThick = 40.0; // [1] [2]
     constexpr double mazeWidth = 100.0;  // [1] [2]
@@ -76,7 +78,7 @@ namespace setVariable
     Control.addVariable(name+"Depth",depth); // [1]
     Control.addVariable(name+"EastClearance",5.0); // [3]
     Control.addVariable(name+"Height",300.0-depth); // [1]
-    Control.addVariable(name+"HallHeight",360.0-depth); // measured
+    Control.addVariable(name+"HallHeight",370.0-depth); // [6]
     Control.addVariable(name+"BackWallThick",backWallThick);
     Control.addVariable(name+"GunRoomEntranceWidth",160.0); // [1] [2]
     Control.addVariable(name+"MidWallThick",100.0); // [1]
@@ -85,9 +87,9 @@ namespace setVariable
     Control.addVariable(name+"MazeWidth",mazeWidth);
     Control.addVariable(name+"MazeEntranceOffset",4.5); // [0], page 6, but [2]: 4250-3800-400=5 cm
     Control.addVariable(name+"MazeEntranceWidth",100.0); // [0]: 100, but [2]: 101 (outer)
-    Control.addVariable(name+"MazeEntranceHeight",210.0); // [0], page 6
+    Control.addVariable(name+"MazeEntranceHeight",210.0); // [0], page 6, but [2,6]: ÖK 7816-7605 = 211 cm
     Control.addVariable(name+"HallLength",500.0); // [2] 10900-5700-200 = 500 cm
-    Control.addVariable(name+"FloorThick",40.0); // [0]
+    Control.addVariable(name+"FloorThick",60.0); // [6]
     Control.addVariable(name+"RoofGunTestThick",100.0); // [0]
     Control.addVariable(name+"TRSPRoomWidth",415.0); // [2] and [3]
     Control.addVariable(name+"StairRoomWidth",550.0); // [3]: 1450+4050 = 550 cm
@@ -104,8 +106,8 @@ namespace setVariable
     Control.addVariable(name+"ControlRoomEntranceWidth",211.0); // [3]
     Control.addVariable(name+"ControlRoomEntranceOffset",20.0); // [3] 1450-(9140+2110-10000) mm
 
-    Control.addVariable(name+"Level9Height",300.0); // guess TODO measure
-    Control.addVariable(name+"Level9RoofThick",40.0); // guess TODO measure
+    Control.addVariable(name+"Level9Height",270.0); // [6]
+    Control.addVariable(name+"Level9RoofThick",30.0); // [6]
     Control.addVariable(name+"Level9VentillationDuctShieldLength",60.0); // [0], page 1
     Control.addVariable(name+"Level9VentillationDuctShieldWidth",220.0); // [0], page 1
     Control.addVariable(name+"Level9VentillationDuctShieldHeight",60.0); // [0], page 6
@@ -115,23 +117,23 @@ namespace setVariable
 
     setVariable::DuctGenerator DuctGen;
     DuctGen.setSize(10.0); // [0], page 4 (diameter 20.0)
-    DuctGen.generate(Control,name+"DuctWave",90.0, 0.0, length2-136.5, 260-depth); //[0], pages 2, 4
+    DuctGen.generate(Control,name+"DuctWave",90.0, 0.0, length2-136.5, 269-depth); //  [4]
 
     DuctGen.setSize(5.0); // [0], page 4
-    DuctGen.generate(Control,name+"DuctSignal1",90.0, 0.0, length2-161.5, 265.5-depth); //[0], pages 2, 4
-    DuctGen.generate(Control,name+"DuctSignal2",90.0, 0.0, length2-191.5, 265.5-depth); //[0], pages 2, 4
+    DuctGen.generate(Control,name+"DuctSignal1",90.0, 0.0, length2-161.5, 279.0-depth); // [4]
+    DuctGen.generate(Control,name+"DuctSignal2",90.0, 0.0, length2-191.5+5, 278.5-depth); // [4]
 
-    DuctGen.setSize(7.5); // [0], page 4 (diameter 15.0)
-    DuctGen.generate(Control,name+"DuctSignal3",90.0, 0.0, length2-189.0, 11.5-depth); //[0], pages 2, 4
-    DuctGen.generate(Control,name+"DuctWater1",90.0, 0.0, length2-219.0, 11.5-depth); //[0], pages 2, 4
+    DuctGen.setSize(8.0); // [4]
+    DuctGen.generate(Control,name+"DuctSignal3",90.0, 0.0, length2-189.0, 11.5-depth); // [0], pages 2, 4
+    DuctGen.generate(Control,name+"DuctWater1",90.0, 0.0, length2-219.0+3, 11.5-depth-2.0); // [4]
 
     DuctGen.setSize(10.0); // [0], page 4
     DuctGen.generate(Control,name+"DuctVentillationPenetration",90.0,
 		     0.0, length2+backWallThick+77.0, 224.5-depth); //[0], pages 2, 4
 
-    DuctGen.setSize(7.5); // [0], page 3
+    DuctGen.setSize(8.0); // [4]
     DuctGen.generate(Control,name+"DuctLaser",0.0,
-		     width2+outerWallThick-55.0,0.0, 263-depth); //[0], pages 2, 3
+		     width2+outerWallThick-55.0,0.0, 263.0-depth+7.0); // [4]
 
     constexpr double duct6width = 39.7; // [0], page 3
     constexpr double duct6height = 10.0; // [0], page 3
@@ -147,7 +149,7 @@ namespace setVariable
 		     114.0-width2-outerWallThick, 0.0,
 		     271.0-depth+duct7height/2.0); //[0], pages 2, 4
 
-    DuctGen.setSize(6.0); // [0], page 3
+    DuctGen.setSize(11.25); // [0], page 3, but [7]: diam = 225 mm => R = 11.25 cm, AR measured: close to 11.25
     DuctGen.generate(Control,name+"DuctSuctionFan",0.0,
 		     55.0-width2-outerWallThick, 0.0,
 		     280.0-depth); //[0], pages 2 and 3
