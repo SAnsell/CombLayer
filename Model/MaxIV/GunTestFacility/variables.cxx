@@ -58,6 +58,7 @@ namespace setVariable
     // [2] K_20-1_08C6b4
     // [3] K_20-1_08C6a3
     // [4] self-measured
+    // [5] K_20-1_09C6b4
 
     constexpr double length = 650; // [1]
     constexpr double length2 = length/2.0;
@@ -102,6 +103,9 @@ namespace setVariable
     Control.addVariable(name+"ControlRoomWallThick",20.0); // TODO wrong. See [3]
     Control.addVariable(name+"ControlRoomEntranceWidth",211.0); // [3]
     Control.addVariable(name+"ControlRoomEntranceOffset",20.0); // [3] 1450-(9140+2110-10000) mm
+
+    Control.addVariable(name+"Level9Height",300.0); // guess TODO measure
+    Control.addVariable(name+"Level9RoofThick",40.0); // guess TODO measure
 
     setVariable::DuctGenerator DuctGen;
     DuctGen.setSize(10.0); // [0], page 4 (diameter 20.0)

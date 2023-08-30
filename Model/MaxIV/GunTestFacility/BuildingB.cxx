@@ -143,6 +143,8 @@ namespace MAXIV::GunTestFacility
     controlRoomWallThick(A.controlRoomWallThick),
     controlRoomEntranceWidth(A.controlRoomEntranceWidth),
     controlRoomEntranceOffset(A.controlRoomEntranceOffset),
+    level9Height(A.level9Height),
+    level9RoofThick(A.level9RoofThick),
     wallMat(A.wallMat),
     voidMat(A.voidMat),
     oilRoomWallMat(A.oilRoomWallMat)
@@ -196,6 +198,8 @@ namespace MAXIV::GunTestFacility
         controlRoomWallThick=A.controlRoomWallThick;
         controlRoomEntranceWidth=A.controlRoomEntranceWidth;
         controlRoomEntranceOffset=A.controlRoomEntranceOffset;
+        level9Height=A.level9Height;
+        level9RoofThick=A.level9RoofThick;
 	wallMat=A.wallMat;
 	voidMat=A.voidMat;
         oilRoomWallMat=A.oilRoomWallMat;
@@ -261,6 +265,8 @@ namespace MAXIV::GunTestFacility
     controlRoomWallThick=Control.EvalVar<double>(keyName+"ControlRoomWallThick");
     controlRoomEntranceWidth=Control.EvalVar<double>(keyName+"ControlRoomEntranceWidth");
     controlRoomEntranceOffset=Control.EvalVar<double>(keyName+"ControlRoomEntranceOffset");
+    level9Height=Control.EvalVar<double>(keyName+"Level9Height");
+    level9RoofThick=Control.EvalVar<double>(keyName+"Level9RoofThick");
 
     wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
     voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat","Void");
@@ -305,6 +311,10 @@ namespace MAXIV::GunTestFacility
     ModelSupport::buildShiftedPlane(SMap,buildIndex+32,buildIndex+31,Y,outerWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+33,buildIndex+23,X,-internalWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+34,buildIndex+3,X,-outerWallThick);
+
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+35,buildIndex+16,Z,level9Height);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+36,buildIndex+35,Z,level9RoofThick);
+
     ModelSupport::buildShiftedPlane(SMap,buildIndex+41,buildIndex+12,Y,hallLength);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+42,buildIndex+41,Y,internalWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+43,buildIndex+3,X,mazeEntranceOffset);
@@ -370,11 +380,11 @@ namespace MAXIV::GunTestFacility
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 2 -12 14 -4 6 -26 ");
     makeCell("GunRoomEntranceLintel",System,cellIndex++,wallMat,0.0,Out);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -1 83 -4 5 -16");
-    makeCell("OuterWallRight",System,cellIndex++,wallMat,0.0,Out);
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -1 83 -4 5 -36");
+    makeCell("OuterWallEast",System,cellIndex++,wallMat,0.0,Out);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -42 4 -24 5 -16");
-    makeCell("OuterWallTop",System,cellIndex++,wallMat,0.0,Out);
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -42 4 -24 5 -36");
+    makeCell("OuterWallNorth",System,cellIndex++,wallMat,0.0,Out);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -21 23 -13 ");
     makeCell("KlystronRoom",System,cellIndex++,voidMat,0.0,Out*tb);
@@ -454,8 +464,8 @@ namespace MAXIV::GunTestFacility
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 61 -51 74 -84 ");
     makeCell("ElevatorTopWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -41 83 -73 ");
-    makeCell("OuterWallBottom",System,cellIndex++,wallMat,0.0,Out*tb);
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -41 83 -73 5 -36");
+    makeCell("OuterWallSouth",System,cellIndex++,wallMat,0.0,Out);
 
     // Actually, control room belongs to Bulding B1, not Building B,
     // but for now let's construct it within Building B making all the cells
@@ -495,16 +505,32 @@ namespace MAXIV::GunTestFacility
     makeCell("Floor",System,cellIndex++,wallMat,0.0,Out);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 6 -16");
-    makeCell("RoofGunTest",System,cellIndex++,wallMat,0.0,Out);
+    makeCell("Roof8GunTest",System,cellIndex++,wallMat,0.0,Out);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 2 -92 3 -4 26 -16");
-    makeCell("RoofOther",System,cellIndex++,wallMat,0.0,Out);
+    makeCell("Roof8Other",System,cellIndex++,wallMat,0.0,Out);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -92 83 -3 26 -16 (12:-53:33) ");
-    makeCell("RoofOther",System,cellIndex++,wallMat,0.0,Out);
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -41 73 -3 26 -16 (12:-53:33) ");
+    makeCell("Roof8Other",System,cellIndex++,wallMat,0.0,Out);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 41 -92 83 -3 26 -16 ");
+    makeCell("Roof8B1",System,cellIndex++,wallMat,0.0,Out);
+
+    // Level 9
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -41 73 -4 16 -35");
+    makeCell("Level9",System,cellIndex++,voidMat,0.0,Out);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -41 73 -4 35 -36");
+    makeCell("Level9Roof",System,cellIndex++,wallMat,0.0,Out);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 41 -42 83 -4 16 -36");
+    makeCell("Level9EastWall",System,cellIndex++,wallMat,0.0,Out);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 42 -92 83 -24 16 -36");
+    makeCell("Level9B1Void",System,cellIndex++,voidMat,0.0,Out);
 
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -92 83 -24 15 -16");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -92 83 -24 15 -36");
     addOuterSurf(Out);
 
     return;
@@ -623,12 +649,12 @@ namespace MAXIV::GunTestFacility
 
     ductVentRoof1->setFront(getFullRule("RoofGunTestBottom"));
     ductVentRoof1->setBack(getFullRule("#RoofGunTestTop"));
-    ductVentRoof1->addInsertCell(getCell("RoofGunTest"));
+    ductVentRoof1->addInsertCell(getCell("Roof8GunTest"));
     ductVentRoof1->createAll(System,*this,"RoofGunTestBottom");
 
     ductVentRoof2->setFront(getFullRule("RoofGunTestBottom"));
     ductVentRoof2->setBack(getFullRule("#RoofGunTestTop"));
-    ductVentRoof2->addInsertCell(getCell("RoofGunTest"));
+    ductVentRoof2->addInsertCell(getCell("Roof8GunTest"));
     ductVentRoof2->createAll(System,*this,"RoofGunTestBottom");
   }
 

@@ -79,6 +79,9 @@ namespace MAXIV::GunTestFacility
     double controlRoomEntranceWidth; ///< control room entrance width
     double controlRoomEntranceOffset; ///< control room entrance offset along the wall
 
+    double level9Height;          ///< second floor full height (level 9)
+    double level9RoofThick;       ///< second floor (level 9) roof thickness
+
     int wallMat;                  ///< Wall material
     int voidMat;                  ///< void material
     int oilRoomWallMat;           ///< material of the oil room walls
