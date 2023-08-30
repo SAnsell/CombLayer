@@ -168,11 +168,20 @@ M1BackPlate::createSurfaces()
 
   // Extent
   makeShiftedSurf(SMap,"Base",buildIndex+25,Z,-(clearGap+cupHeight));
-  makeShiftedSurf(SMap,"Top",buildIndex+26,Z,clearGap+cupHeight);
+  makeShiftedSurf(SMap,"Top",buildIndex+26,Z,1.34+clearGap+cupHeight);
   ModelSupport::buildPlane
     (SMap,buildIndex+124,Origin+X*(topExtent-clearGap-extentThick),X);
   ModelSupport::buildPlane
     (SMap,buildIndex+224,Origin+X*(baseExtent-clearGap-extentThick),X);
+
+  // OutSide EXTERT
+  const double extra(4.0);
+  makeShiftedSurf(SMap,"Base",buildIndex+35,Z,-(extra+clearGap+cupHeight));
+  makeShiftedSurf(SMap,"Top",buildIndex+36,Z,extra+clearGap+cupHeight);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+134,Origin+X*(extra+topExtent-clearGap-extentThick),X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+244,Origin+X*(extra+baseExtent-clearGap-extentThick),X);
 
 
   // STOP SURFACE:

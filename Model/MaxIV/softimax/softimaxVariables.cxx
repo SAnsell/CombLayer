@@ -308,37 +308,41 @@ m1DetailVariables(FuncDataBase& Control,
   setVariable::PortItemGenerator PItemGen;
   setVariable::MonoBoxGenerator VBoxGen;
       
-
-  const std::sin(M_PI*theta/180.0));   // Theta angel
+  const std::string boxName(mirrorKey+"M1Box");
+  const double monoBoxLen(62.0);
+  const double theta(1.0);
+  const double xPortStep=
+    0.5*monoBoxLen*std::sin(M_PI*theta/180.0);   // Theta angel
   
   VBoxGen.setMat("Titanium");
   VBoxGen.setWallThick(1.0);
   VBoxGen.setCF<CF63>();
   VBoxGen.setPortLength(5.2,10.15); // La/Lb
   // note overhang is from inner wall 
-  VBoxGen.setLids(3.0,3.5,3.5); // over/base/roof 
+  VBoxGen.setLids(3.0,3.5/2.0,3.5/2.0); // over/base/roof 
 
-  VBoxGen.setBPortOffset(0.0,0.0);  
+  VBoxGen.setBPortOffset(xPortStep,0.0);
+  VBoxGen.setBPortAngle(2*theta,0.0);  
   // width/height/depth/length
-  VBoxGen.generateBox(Control,boxName, 35.0,4.95,14.6,  62.0);
+  VBoxGen.generateBox(Control,boxName, 35.0,4.95,14.6, 62.0);
 
   const std::string frontName=mirrorKey+"M1TubeFront";
   const std::string backName=mirrorKey+"M1TubeFront";
   
-  M1DGen.generateMirror(Control,mirrorKey+"M1",0.0,-1.0);
+  M1DGen.generateMirror(Control,mirrorKey+"M1",0.0,-theta);
 
-  Control.addVariable(mirrorKey+"M1XStep",portXStep+mExtra);
+  //  Control.addVariable(mirrorKey+"M1XStep",portXStep+mExtra);
     
   Control.addVariable(mirrorKey+"M1StandHeight",110.0);
   Control.addVariable(mirrorKey+"M1StandWidth",30.0);
   Control.addVariable(mirrorKey+"M1StandLength",30.0);
   Control.addVariable(mirrorKey+"M1StandMat","SiO2");
 
-  DCGen.generateDome(Control,backName,1);
-  PItemGen.generatePort(Control,backName+"Port0",
-			Geometry::Vec3D(-portXStep, 0.0, 0.0),
-			Geometry::Vec3D(0,-1,0));
-  Control.addVariable(backName+"ZAngle",-1.0);
+  // DCGen.generateDome(Control,backName,1);
+  // PItemGen.generatePort(Control,backName+"Port0",
+  // 			Geometry::Vec3D(-portXStep, 0.0, 0.0),
+  // 			Geometry::Vec3D(0,-1,0));
+  // Control.addVariable(backName+"ZAngle",-1.0);
   return;
 }
 
