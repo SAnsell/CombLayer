@@ -418,8 +418,8 @@ namespace MAXIV::GunTestFacility
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 41 -42 204 -4 ");
     makeCell("EastWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -12 53 -33 ");
-    makeCell("CraneRoom",System,cellIndex++,voidMat,0.0,Out*tb);
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -12 53 -33 5 -16");
+    makeCell("CraneRoom",System,cellIndex++,voidMat,0.0,Out);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -12 63 -53 ");
     makeCell("CraneRoomSouthWall",System,cellIndex++,wallMat,0.0,Out*tb);
@@ -500,7 +500,7 @@ namespace MAXIV::GunTestFacility
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 2 -92 3 -4 26 -16");
     makeCell("RoofOther",System,cellIndex++,wallMat,0.0,Out);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -92 83 -3 26 -16");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -92 83 -3 26 -16 (12:-53:33) ");
     makeCell("RoofOther",System,cellIndex++,wallMat,0.0,Out);
 
 
