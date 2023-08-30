@@ -135,8 +135,11 @@ namespace MAXIV::GunTestFacility
     stairRoomLength(A.stairRoomLength),
     elevatorWidth(A.elevatorWidth),
     elevatorLength(A.elevatorLength),
+    oilRoomEntranceWidth(A.oilRoomEntranceWidth),
+    oilRoomWallThick(A.oilRoomWallThick),
     wallMat(A.wallMat),
-    voidMat(A.voidMat)
+    voidMat(A.voidMat),
+    oilRoomWallMat(A.oilRoomWallMat)
     /*!
       Copy constructor
       \param A :: BuildingB to copy
@@ -179,8 +182,11 @@ namespace MAXIV::GunTestFacility
         stairRoomLength=A.stairRoomLength;
         elevatorWidth=A.elevatorWidth;
         elevatorLength=A.elevatorLength;
+        oilRoomEntranceWidth=A.oilRoomEntranceWidth;
+        oilRoomWallThick=A.oilRoomWallThick;
 	wallMat=A.wallMat;
 	voidMat=A.voidMat;
+        oilRoomWallMat=A.oilRoomWallMat;
       }
     return *this;
   }
@@ -235,9 +241,12 @@ namespace MAXIV::GunTestFacility
     stairRoomLength=Control.EvalVar<double>(keyName+"StairRoomLength");
     elevatorWidth=Control.EvalVar<double>(keyName+"ElevatorWidth");
     elevatorLength=Control.EvalVar<double>(keyName+"ElevatorLength");
+    oilRoomEntranceWidth=Control.EvalVar<double>(keyName+"OilRoomEntranceWidth");
+    oilRoomWallThick=Control.EvalVar<double>(keyName+"OilRoomWallThick");
 
     wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
     voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat","Void");
+    oilRoomWallMat=ModelSupport::EvalMat<int>(Control,keyName+"OilRoomWallMat");
 
     if (std::abs(gunRoomWidth + midWallThick+ klystronRoomWidth + trspRoomWidth + stairRoomWidth + 2.0*internalWallThick-2025.0)>1e-3)
       ELog::EM << "WARNING: gun test room widths do not sum up to 2025 as of K_20-1_08C6b4" << ELog::endWarn;
@@ -289,10 +298,14 @@ namespace MAXIV::GunTestFacility
 				    -elevatorLength-internalWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+62,buildIndex+51,X,-elevatorLength);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+63,buildIndex+53,X,-internalWallThick);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+71,buildIndex+12,X,-oilRoomWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+73,buildIndex+63,X,-stairRoomWidth);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+74,buildIndex+73,X,elevatorWidth);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+83,buildIndex+73,X,-outerWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+84,buildIndex+74,X,internalWallThick);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+93,buildIndex+63,Y,
+				    -oilRoomEntranceWidth-oilRoomWallThick);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+94,buildIndex+93,Y,oilRoomWallThick);
 
     return;
   }
@@ -381,8 +394,17 @@ namespace MAXIV::GunTestFacility
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 51 -52 73 -63 ");
     makeCell("MiniRoomRightWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 52 -12 73 -63 ");
-    makeCell("MiniRoomRightWallVoid",System,cellIndex++,voidMat,0.0,Out*tb);
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 52 -71 73 -93 ");
+    makeCell("OilRoom",System,cellIndex++,voidMat,0.0,Out*tb);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 71 -12 73 -94 ");
+    makeCell("OilRoomEastWall",System,cellIndex++,oilRoomWallMat,0.0,Out*tb);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 52 -71 93 -94 ");
+    makeCell("OilRoomNorthWall",System,cellIndex++,oilRoomWallMat,0.0,Out*tb);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 52 -12 94 -63 ");
+    makeCell("OilRoomAnteroom",System,cellIndex++,oilRoomWallMat,0.0,Out*tb);
 
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 62 -51 73 -74 ");

@@ -57,6 +57,7 @@ namespace setVariable
     // [1] 221413_radiation_caclulation.STEP
     // [2] K_20-1_08C6b4
     // [3] K_20-1_08C6a3
+    // [4] self-measured
 
     constexpr double length = 650; // [1]
     constexpr double length2 = length/2.0;
@@ -91,6 +92,9 @@ namespace setVariable
     Control.addVariable(name+"StairRoomLength",440.0); // [3]: 1600 + 2800 = 440 cm
     Control.addVariable(name+"ElevatorWidth",250.0); // [3]: 1450+1050 = 250 cm
     Control.addVariable(name+"ElevatorLength",180.0); // [3]: 180 cm
+    Control.addVariable(name+"OilRoomEntranceWidth",136.0); // [4]
+    Control.addVariable(name+"OilRoomWallThick",10.0); // [4]
+    Control.addVariable(name+"OilRoomWallMat","Void"); // gips+wood+void
 
     setVariable::DuctGenerator DuctGen;
     DuctGen.setSize(10.0); // [0], page 4 (diameter 20.0)

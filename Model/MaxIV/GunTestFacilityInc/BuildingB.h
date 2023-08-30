@@ -70,9 +70,12 @@ namespace MAXIV::GunTestFacility
     double stairRoomLength;       ///< stairway room length
     double elevatorWidth;        ///< elevator room width
     double elevatorLength;       ///< elevator room length
+    double oilRoomEntranceWidth;  ///< oil room entrance width
+    double oilRoomWallThick;      ///< thickness of the oil room walls
 
     int wallMat;                  ///< Wall material
     int voidMat;                  ///< void material
+    int oilRoomWallMat;           ///< material of the oil room walls
 
     std::shared_ptr<xraySystem::Duct> ductWave; // wave guide
     std::shared_ptr<xraySystem::Duct> ductSignal1; // electrical duct
