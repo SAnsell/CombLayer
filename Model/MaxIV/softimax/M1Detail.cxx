@@ -66,6 +66,7 @@
 #include "M1BackPlate.h"
 #include "M1FrontShield.h"
 #include "M1Connectors.h"
+#include "M1Support.h"
 #include "M1Detail.h"
 
 namespace xraySystem

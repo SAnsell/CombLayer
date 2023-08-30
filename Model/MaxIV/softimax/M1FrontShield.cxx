@@ -157,9 +157,11 @@ M1FrontShield::createSurfaces()
 
   
   ModelSupport::buildCylinder
-    (SMap,buildIndex+407,Origin-X*(cubeWidth/2.0)+Y*pipeYStep,Z,pipeRadius);
+    (SMap,buildIndex+407,Origin-X*(cubeWidth/2.0)
+     +Y*pipeYStep,Z,pipeRadius);
   ModelSupport::buildCylinder
-    (SMap,buildIndex+417,Origin-X*(cubeWidth/2.0)+Y*pipeYStep,Z,pipeRadius+pipeWall);
+    (SMap,buildIndex+417,Origin-X*(cubeWidth/2.0)
+     +Y*pipeYStep,Z,pipeRadius+pipeWall);
   ModelSupport::buildPlane
     (SMap,buildIndex+405,Origin-Z*(cubeHeight/2.0+pipeLength),Z);
 

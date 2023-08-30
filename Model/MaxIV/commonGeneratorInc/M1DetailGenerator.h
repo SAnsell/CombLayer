@@ -67,6 +67,7 @@ class M1DetailGenerator
   // Front heat shield
   // -------------------------------------------------------------
 
+  double fBaseGap;           ///< Gap from crystal end surf
   double fBaseThick;         ///< Thickness in Y direction
   double fBaseWidth;         ///< Full width
   double fBaseHeight;        ///< Full height

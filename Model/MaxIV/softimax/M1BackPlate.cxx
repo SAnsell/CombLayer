@@ -103,9 +103,8 @@ M1BackPlate::populate(const FuncDataBase& Control)
   topExtent=Control.EvalVar<double>(keyName+"TopExtent");
   extentThick=Control.EvalVar<double>(keyName+"ExtentThick");
   baseExtent=Control.EvalVar<double>(keyName+"BaseExtent");
-  outerVaneThick=Control.EvalVar<double>(keyName+"OuterVaneThick");
-  innerVaneThick=Control.EvalVar<double>(keyName+"InnerVaneThick");
 
+  frontPlateGap=Control.EvalVar<double>(keyName+"FrontPlateGap");
   frontPlateWidth=Control.EvalVar<double>(keyName+"FrontPlateWidth");
   frontPlateHeight=Control.EvalVar<double>(keyName+"FrontPlateHeight");
   
@@ -228,6 +227,7 @@ M1BackPlate::createSurfaces()
     (SMap,buildIndex+1016,Origin+Z*(elecHeight/2.0-elecThick),Z);
 
   // front plate
+  makeShiftedSurf(SMap,"NearEnd",buildIndex+2001,Y,-frontPlateGap);
   ModelSupport::buildPlane
     (SMap,buildIndex+2004,Origin+X*(frontPlateWidth-clearGap),X);
   ModelSupport::buildPlane
@@ -411,8 +411,11 @@ M1BackPlate::createObjects(Simulation& System)
   makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,HR);  
 
   // front heat shield plate
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 3 -2004 2005 -2006");
-  makeCell("HeatShield",System,cellIndex++,frontMat,0.0,HR*nearHR);  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2001 3 -2004 2005 -2006");
+  makeCell("HeatGap",System,cellIndex++,voidMat,0.0,HR*nearHR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2001 3 -2004 2005 -2006");
+  makeCell("HeatShield",System,cellIndex++,frontMat,0.0,HR);  
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 3 -104 -6 2006");
   makeCell("HeatVoid",System,cellIndex++,voidMat,0.0,HR*nearHR);  
@@ -420,11 +423,11 @@ M1BackPlate::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 3 -204 5 -2005");
   makeCell("HeatVoid",System,cellIndex++,voidMat,0.0,HR*nearHR);  
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 104 -505 2006 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 104 -505 2006");
   makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,
 	   HR*nearHR*mirrorCompHR);  
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 204 606 -2005 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 204 606 -2005");
   makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,
 	   HR*nearHR*mirrorCompHR);  
 

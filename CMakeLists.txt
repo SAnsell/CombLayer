@@ -358,12 +358,13 @@ set(tarDIR
 
 
 add_custom_target(tar COMMAND tar -zcvf CombLayer.tgz 
-  ${SRC_LIST}
-)
+  ${SRC_LIST})
 
-add_custom_target(tags COMMAND etags  ${SRC_LIST})
+add_custom_target(tags COMMAND etags ${SRC_LIST})
 
-#  'echo "tar zcvf ${PROJECT_SOURCE_DIR}/PrestoQt.tgz ${SRC_LIST}"')
+add_custom_target(words COMMAND 
+    grep -v -e "^[[:space:][:cntrl:]]*$$" ${SRC_LIST} | wc)
+
   
 
 

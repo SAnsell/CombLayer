@@ -59,7 +59,7 @@ M1DetailGenerator::M1DetailGenerator() :
   mWaterWidth(0.1),mWaterHeight(0.5),
   mWaterDrop(0.1),mWaterGap(0.1),
 
-  fBaseThick(1.4),fBaseWidth(5.97),  
+  fBaseGap(0.1),fBaseThick(1.4),fBaseWidth(5.97),  
   fBaseHeight(6.2),fCubePlateThick(1.1),
   fCubeThick(3.6),fCubeWidth(5.0),  
   fCubeHeight(4.4),fCubeSideWall(0.9),
@@ -201,6 +201,7 @@ M1DetailGenerator::makeBackPlate(FuncDataBase& Control,
   Control.addVariable(keyName+"OuterVaneThick",bOuterVaneThick);
   Control.addVariable(keyName+"InnerVaneThick",bInnerVaneThick);
 
+  Control.addVariable(keyName+"FrontPlateGap",fBaseGap);
   Control.addVariable(keyName+"FrontPlateWidth",fBaseWidth);
   Control.addVariable(keyName+"FrontPlateHeight",fBaseHeight);
   
