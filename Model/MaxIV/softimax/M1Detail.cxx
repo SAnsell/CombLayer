@@ -80,7 +80,8 @@ M1Detail::M1Detail(const std::string& Key) :
   mirror(new M1Mirror(keyName+"Mirror")),
   cClamp(new M1BackPlate(keyName+"CClamp")),
   connectors(new M1Connectors(keyName+"Connect")),
-  frontShield(new M1FrontShield(keyName+"FPlate"))
+  frontShield(new M1FrontShield(keyName+"FPlate")),
+  supports(new M1Support(keyName+"Support"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -172,6 +173,7 @@ M1Detail::createObjects(Simulation& System)
   frontShield->setCutSurf("Base",*cClamp,"innerSide");
   frontShield->createAll(System,*cClamp,"front");
 
+  
   return;
 }
 

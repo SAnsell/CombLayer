@@ -329,6 +329,40 @@ buildCylinder(surfRegister& SMap,const int N,
   return SMap.realPtr<Geometry::Cylinder>(NFound);
 }
 
+Geometry::Cylinder*
+buildCylinder(surfRegister& SMap,const int N,
+	      const Geometry::Vec3D& A,
+	      const Geometry::Vec3D& B,
+	      const Geometry::Vec3D& Axis,
+	      const Geometry::Vec3D& closePt)
+  /*!
+    Simple constructor to build a surface [type Cylinder]
+    \param SMap :: Surface Map
+    \param N :: Surface number
+    \param A :: Point on cylinder
+    \param B :: Point on cylinder
+    \param Axis :: Axis of cylinder
+    \param closePt :: close point to origin to resolve degenerousy.
+   */
+{
+  ELog::RegMethod("generateSurf","buildCylinder(V,V,A,V)");
+
+  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
+
+  Geometry::Cylinder* CX=SurI.createUniqSurf<Geometry::Cylinder>(N);  
+  /*
+  if (CX->setCylinder(O,D,R))
+    throw ColErr::ConstructionError("setCylinder","CX",
+				 "Origin = "+StrFunc::makeString(O),
+				 "Dir    = "+StrFunc::makeString(D),
+				 "Radius = "+StrFunc::makeString(R));
+
+  */
+  const int NFound=SMap.registerSurf(N,CX);
+
+  return SMap.realPtr<Geometry::Cylinder>(NFound);
+}
+
 
 Geometry::Cone*
 buildCone(surfRegister& SMap,const int N,

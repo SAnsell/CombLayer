@@ -111,14 +111,24 @@ class M1DetailGenerator
   double bBaseExtent;          ///< Length of top step (2.1)
   double bVoidExtra;           ///< Extra thickness for support
 
-  double clipYStep;         ///< Step from end
-  double clipLen;           ///< Length of clip
-  double clipSiThick;       ///< Clip thickness parallel to Si
-  double clipAlThick;       ///< Clip thickness parallel to Al
-  double clipExtent;        ///< Clip length away from back
+  double clipYStep;            ///< Step from end
+  double clipLen;              ///< Length of clip
+  double clipSiThick;          ///< Clip thickness parallel to Si
+  double clipAlThick;          ///< Clip thickness parallel to Al
+  double clipExtent;            ///< Clip length away from back
 
-  double standoffRadius;    ///< Standof radius
+  double standoffRadius;    ///< Standoff radius
   std::vector<Geometry::Vec3D> standPts;
+
+  // supports:
+  double bFrontSupportThick;   ///< Thickness of angle support
+  double bFrontSupportCut;     ///< Distance to start of cut from mirror face
+  double bFrontSupportZCut;    ///< Distance up to cut
+
+  double bRingThick;           ///< Thickness of ring plate
+  Geometry::Vec3D bRingBackPt; ///< Offset to point from top/base of back plane
+  Geometry::Vec3D bRingTopPt;  ///< Offset to point from top to cut
+  double bRingGap;             ///< Gap between ring sections
   
   double eXOut;                 ///< Step from the back plane (79.8)
   double eLength;               ///< Length of electorn shield (38.0)
@@ -126,6 +136,8 @@ class M1DetailGenerator
   double eHeight;               ///< Height (internal) of electorn shield (6.8)
   double eEdge;                 ///< Internal step (10.3)
   double eHoleRadius;           ///< Hole in centre (2.36/2)
+
+  // 
   
   std::string mirrorMat;             ///< XStal material
   std::string waterMat;              ///< Plate material
@@ -145,7 +157,7 @@ class M1DetailGenerator
   void makeFrontPlate(FuncDataBase&,const std::string&) const;
   void makeBackPlate(FuncDataBase&,const std::string&) const;
   void makeConnectors(FuncDataBase&,const std::string&) const;
-
+  void makeOuterSupport(FuncDataBase&,const std::string&) const;
 
  public:
 
@@ -154,7 +166,6 @@ class M1DetailGenerator
   M1DetailGenerator& operator=(const M1DetailGenerator&);
   virtual ~M1DetailGenerator();
 
-  void generateSupport(FuncDataBase&,const std::string&) const;
   void generateMirror(FuncDataBase&,const std::string&,
 		      const double,const double) const;
 

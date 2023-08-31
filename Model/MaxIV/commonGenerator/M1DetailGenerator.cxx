@@ -77,7 +77,6 @@ M1DetailGenerator::M1DetailGenerator() :
   bExtentThick(0.4),
   bCupHeight(1.8),bTopExtent(4.2),
   bBaseExtent(2.1),bVoidExtra(1.5),
-
   
   clipYStep(7.7),clipLen(1.2),
   clipSiThick(0.2),clipAlThick(0.4),
@@ -87,6 +86,14 @@ M1DetailGenerator::M1DetailGenerator() :
     Geometry::Vec3D(0.0,0.0,0.0),
     Geometry::Vec3D(0.0,7.5,1.0)
   }),
+
+  bFrontSupportThick(1.0),bFrontSupportCut(2.0),
+  bFrontSupportZCut(0.2),
+
+  bRingThick(1.0),
+  bRingBackPt(-0.6,-16.0,-0.6),
+  bRingTopPt(-2.4,-16.0,0.6),
+  bRingGap(5.0),
   
   eXOut(7.98),eLength(38.0),eThick(0.1),eHeight(6.8),
   eEdge(1.03),eHoleRadius(1.18),
@@ -240,6 +247,26 @@ M1DetailGenerator::makeConnectors(FuncDataBase& Control,
   return;
 }
 
+void
+M1DetailGenerator::makeOuterSupport(FuncDataBase& Control,
+				    const std::string& keyName) const
+  /*!
+    Build the outer supports on the back plate
+  */
+{
+  ELog::RegMethod RegA("M1DetailGenerator","makeOuterSupport");
+
+  Control.addVariable(keyName+"FrontSupportThick",bFrontSupportThick);
+  Control.addVariable(keyName+"FrontSupportCut",bFrontSupportCut);
+  Control.addVariable(keyName+"FrontSupportZCut",bFrontSupportZCut);
+
+  Control.addVariable(keyName+"RingThick",bRingThick);
+  Control.addVariable(keyName+"RingGap",bRingGap);
+  Control.addVariable(keyName+"RingBackPt",bRingBackPt);
+  Control.addVariable(keyName+"RingTopPt",bRingTopPt);
+
+  return;
+}
   
 void
 M1DetailGenerator::makeCrystal(FuncDataBase& Control,
@@ -323,6 +350,7 @@ M1DetailGenerator::generateMirror(FuncDataBase& Control,
   makeBackPlate(Control,keyName+"CClamp");
   makeSupport(Control,keyName+"CClamp");
   makeConnectors(Control,keyName+"Connect");
+  makeOuterSupport(Control,keyName+"CClamp");
   
   return;
 

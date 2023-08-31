@@ -20,7 +20,6 @@
  *
  ****************************************************************************/
 #include <algorithm>
-#include <boost/format.hpp>
 #include <cmath>
 #include <complex>
 #include <fstream>
@@ -33,6 +32,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <boost/format.hpp>
 
 #include "FileReport.h"
 #include "NameStack.h"

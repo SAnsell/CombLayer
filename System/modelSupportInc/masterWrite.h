@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   processInc/masterWrite.h
+ * File:   modelSupportInc/masterWrite.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,9 +36,9 @@ class masterWrite
 
   double zeroTol;         ///< All numbers below this value are zero
   size_t sigFig;             ///< Number of significant figures
-  
-  boost::format FMTdouble;       ///< Format statement for double output
-  boost::format FMTinteger;      ///< Format statement for integer
+
+  boost::format* FMTdouble;       ///< Format statement for double output
+  boost::format* FMTinteger;      ///< Format statement for integer
 
   masterWrite();
 
@@ -48,9 +48,8 @@ class masterWrite
   ///\endcond SINGLETON
 
  public:
-  
-  /// Desctructor
-  ~masterWrite() {} 
+
+  ~masterWrite(); 
   
   static masterWrite& Instance();
 

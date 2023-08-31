@@ -31,6 +31,7 @@ namespace xraySystem
   class M1BackPlate;
   class M1FrontShield;
   class M1Connectors;
+  class M1Support;
   
 /*!
   \class M1Detail
@@ -52,7 +53,7 @@ class M1Detail :
   std::shared_ptr<M1BackPlate> cClamp;
   std::shared_ptr<M1Connectors> connectors;
   std::shared_ptr<M1FrontShield> frontShield;
-  
+  std::shared_ptr<M1Support> supports;  
   // Functions:
 
   void populate(const FuncDataBase&) override;

@@ -52,6 +52,7 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
+#include "SurInter.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
@@ -124,6 +125,16 @@ M1BackPlate::populate(const FuncDataBase& Control)
   elecEdge=Control.EvalVar<double>(keyName+"ElecEdge");
   elecHoleRadius=Control.EvalVar<double>(keyName+"ElecHoleRadius");
 
+  // support extras
+  frontSupportThick=Control.EvalVar<double>(keyName+"FrontSupportThick");
+  frontSupportCut=Control.EvalVar<double>(keyName+"FrontSupportCut");
+  frontSupportZCut=Control.EvalVar<double>(keyName+"FrontSupportZCut");  
+  ringThick=Control.EvalVar<double>(keyName+"RingThick");
+  ringGap=Control.EvalVar<double>(keyName+"RingGap");
+  ringBackPt=Control.EvalVar<Geometry::Vec3D>(keyName+"RingBackPt");
+  ringTopPt=Control.EvalVar<Geometry::Vec3D>(keyName+"RingTopPt");
+
+  
   baseMat=ModelSupport::EvalMat<int>(Control,keyName+"BaseMat");
   supportMat=ModelSupport::EvalMat<int>(Control,keyName+"SupportMat");
   springMat=ModelSupport::EvalMat<int>(Control,keyName+"SpringMat");
@@ -164,6 +175,7 @@ M1BackPlate::createSurfaces()
   // plate layer
   ModelSupport::buildPlane
     (SMap,buildIndex+13,Origin-X*(clearGap+backThick),X);
+  ELog::EM<<"Or == "<<Origin-X*(clearGap+backThick)<<ELog::endDiag;
   makeShiftedSurf(SMap,"Base",buildIndex+15,Z,-(clearGap+mainThick));
   makeShiftedSurf(SMap,"Top",buildIndex+16,Z,clearGap+mainThick);
 
@@ -246,6 +258,63 @@ M1BackPlate::createSurfaces()
   return;
 }
 
+void
+M1BackPlate::createSupportSurfaces()
+{
+  ELog::RegMethod RegA("M1BackPlate","createSupportSurfaces");
+
+  // Calculate some useful points
+  // point in middle of back plane
+  const Geometry::Plane* topBasePtr=
+    SMap.realPtr<Geometry::Plane>(buildIndex+16);
+  const Geometry::Plane* topFlatPtr=
+    SMap.realPtr<Geometry::Plane>(buildIndex+124);
+
+  const Geometry::Vec3D midOutPoint(Origin-X*(clearGap+backThick));
+  const Geometry::Vec3D topBasePoint=
+    SurInter::getLinePoint(midOutPoint,Z,topBasePtr);
+  const Geometry::Vec3D topEdgePoint=
+    SurInter::getLinePoint(topBasePoint,X,topFlatPtr);
+  const Geometry::Vec3D topOutPoint=
+    topEdgePoint+Z*(cupHeight-mainThick);
+
+  ModelSupport::buildPlane
+    (SMap,buildIndex+5001,Origin-Y*(length/2.0-frontSupportThick),Y);
+  // Points for cut:
+  const Geometry::Vec3D DiagPt=topOutPoint-X*frontSupportCut;
+  ModelSupport::buildPlane(SMap,buildIndex+5007,
+			   DiagPt,DiagPt+Y,
+			   topBasePoint+Z*frontSupportZCut,Z);
+
+  // Ring points:
+  const Geometry::Vec3D ringTPt(topOutPoint+ringTopPt.getInBasis(X,Y,Z));
+  const Geometry::Vec3D ringMPt(topBasePoint+ringBackPt.getInBasis(X,Y,Z));
+  ELog::EM<<"Ring == "<<ringTPt<<ELog::endDiag;
+  ELog::EM<<"Ring == "<<ringMPt<<ELog::endDiag;
+
+  
+
+  return;
+}
+
+
+void
+M1BackPlate::createSupportObjects(Simulation& System)
+{
+  ELog::RegMethod RegA("M1BackPlate","createSupportObjects");
+
+  HeadRule HR;
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -5001 -5007 -124 16 -26 13");
+  makeCell("CVoid",System,cellIndex++,supportMat,0.0,HR);  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -5001 (5007:26) -124 -36 13");
+  makeCell("CVoid",System,cellIndex++,voidMat,0.0,HR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -5001 -13 33  16 -36");
+  makeCell("CVoid",System,cellIndex++,voidMat,0.0,HR);  
+  return;
+}
+  
 void
 M1BackPlate::createObjects(Simulation& System)
   /*!
@@ -331,8 +400,8 @@ M1BackPlate::createObjects(Simulation& System)
   // main c voids
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 33 -224 35 -15");
   makeCell("CVoid",System,cellIndex++,voidMat,0.0,HR);  
-  
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 33 -124 16 -36");
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5001 -2 33 -124 16 -36");
   makeCell("CVoid",System,cellIndex++,voidMat,0.0,HR);  
   //  addOuterUnionSurf(HR);
   // spring voids
@@ -491,9 +560,6 @@ M1BackPlate::createLinks()
   nameSideIndex(5,"innerTop");
   nameSideIndex(6,"innerSide");
 
-
-
-  
   // link points are defined in the end of createSurfaces
 
   return;
@@ -515,7 +581,9 @@ M1BackPlate::createAll(Simulation& System,
 
   createUnitVector(FC,sideIndex);
   createSurfaces();
+  createSupportSurfaces();
   createObjects(System);
+  createSupportObjects(System);
   createLinks();
   insertObjects(System);
 

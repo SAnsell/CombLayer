@@ -3,7 +3,7 @@
  
  * File:   modelSupportInc/generateSurf.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,6 +80,11 @@ buildPlane(surfRegister&,const int,const Geometry::Vec3D&,
 Geometry::Cylinder* 
 buildCylinder(surfRegister&,const int,const Geometry::Vec3D&,
 	      const Geometry::Vec3D&,const double);
+  
+Geometry::Cylinder* 
+buildCylinder(surfRegister&,const int,const Geometry::Vec3D&,
+	      const Geometry::Vec3D&,const Geometry::Vec3D&,
+	      const Geometry::Vec3D&);
 
 Geometry::Sphere* 
 buildSphere(surfRegister&,const int,const Geometry::Vec3D&,const double);

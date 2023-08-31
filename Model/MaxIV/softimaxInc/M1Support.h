@@ -27,6 +27,7 @@ class Simulation;
 namespace xraySystem
 {
 
+  
 /*!
   \class M1Support
   \author S. Ansell
@@ -37,18 +38,17 @@ namespace xraySystem
 
 class M1Support :
   public attachSystem::FixedRotate,
-  public attachSystem::ContainedComp,
+  public attachSystem::ContainedGroup,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {
  private:
 
-  double length;            ///< length
-  double width;             ///< length
-  double thick;             ///< thickness
-  double edge;              ///< edge thickness
-  double holeRadius;        ///< central hole radius
+  // top edge supports:
+
+  double topThick;
+  std::vector<double> topOffset;
 
   int supportMat;           ///< Base material
   int voidMat;              ///< outer pipe material

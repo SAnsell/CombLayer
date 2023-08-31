@@ -78,6 +78,15 @@ class M1BackPlate :
   double frontPlateGap;       ///< Gap to crsytal surface
   double frontPlateWidth;     ///< Width from innerBase surface
   double frontPlateHeight;    ///< Height (centred on crystal)
+
+  double frontSupportThick;   ///< Thickness of angle support
+  double frontSupportCut;     ///< Distance to start of cut from mirror face
+  double frontSupportZCut;    ///< Distance up to cut
+
+  double ringThick;
+  double ringGap;             ///< Vertical gap between top/base
+  Geometry::Vec3D ringBackPt; ///< ring offset from back/flat corners
+  Geometry::Vec3D ringTopPt;  ///< ring offset from inner high top
   
   int baseMat;                ///< Base material
   int springMat;              ///< Spring join material
@@ -91,6 +100,8 @@ class M1BackPlate :
   void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
+  void createSupportSurfaces();
+  void createSupportObjects(Simulation&);
   void createLinks();
 
  public:

@@ -58,6 +58,7 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "ExternalCut.h"
 #include "M1Support.h"
 
@@ -66,7 +67,7 @@ namespace xraySystem
 
 M1Support::M1Support(const std::string& Key) :
   attachSystem::FixedRotate(Key,8),
-  attachSystem::ContainedComp(),
+  attachSystem::ContainedGroup("Top"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap()
@@ -93,12 +94,12 @@ M1Support::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("M1Support","populate");
 
   FixedRotate::populate(Control);
-  
-  length=Control.EvalVar<double>(keyName+"Length");
-  width=Control.EvalVar<double>(keyName+"Width");
-  thick=Control.EvalVar<double>(keyName+"Thick");
-  edge=Control.EvalVar<double>(keyName+"Edge");
-  holeRadius=Control.EvalVar<double>(keyName+"HoleRadius");
+
+  const size_t NSupport=Control.EvalVar<size_t>(keyName+"NTop");
+  topThick=Control.EvalVar<double>(keyName+"TopThick");
+  for(size_t i=0;i<NSupport;i++)
+    topOffset.push_back(Control.EvalVar<double>
+			(keyName+"TopOffset"+std::to_string(i)));
 
   supportMat=ModelSupport::EvalMat<int>(Control,keyName+"SupportMat");
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
@@ -111,16 +112,21 @@ void
 M1Support::createSurfaces()
   /*!
     Create planes for mirror block and support
+    Surface : The code needs 8 surfaces defined
+    - Front:Back:Main:TopSide:TopBase:SubBase:SubSide
   */
 {
   ELog::RegMethod RegA("M1Support","createSurfaces");
 
-  if (!isActive("Top"))
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+6,Origin,Z);
-      ExternalCut::setCutSurf("Top",SMap.realSurf(buildIndex+6));
-    }
 
+  int CI(buildIndex+100);
+  for(const double ODist : topOffset)
+    {
+      ModelSupport::buildPlane(SMap,CI+1,Origin+Y*(ODist-topThick/2.0),Y);
+      ModelSupport::buildPlane(SMap,CI+2,Origin+Y*(ODist+topThick/2.0),Y);
+      CI+=10;
+    }
+  /*
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
@@ -132,7 +138,7 @@ M1Support::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(width/2.0-thick),X);
   
   ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*edge,Z);
-  
+  */  
   
   return;
 }
@@ -162,7 +168,7 @@ M1Support::createObjects(Simulation& System)
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 105");
-  addOuterSurf(HR*topHR);
+  addOuterSurf("Top",HR*topHR);
 
   return;
 }
