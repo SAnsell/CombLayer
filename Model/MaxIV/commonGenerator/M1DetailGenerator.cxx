@@ -76,8 +76,8 @@ M1DetailGenerator::M1DetailGenerator() :
   bBackThick(0.5),bMainThick(0.3),
   bExtentThick(0.4),
   bCupHeight(1.8),bTopExtent(4.2),
-  bBaseExtent(2.1),bOuterVaneThick(0.8),
-  bInnerVaneThick(0.4),
+  bBaseExtent(2.1),bVoidExtra(1.5),
+
   
   clipYStep(7.7),clipLen(1.2),
   clipSiThick(0.2),clipAlThick(0.4),
@@ -185,6 +185,7 @@ M1DetailGenerator::makeBackPlate(FuncDataBase& Control,
   /*!
     Create the variables for the base support
     \param Control :: Function data base
+    \param keyName :: Main keyname
    */
 {
   ELog::RegMethod RegA("M1DetailGenerator","makeBackPlate");
@@ -197,9 +198,7 @@ M1DetailGenerator::makeBackPlate(FuncDataBase& Control,
   Control.addVariable(keyName+"TopExtent",bTopExtent);
   Control.addVariable(keyName+"ExtentThick",bExtentThick);
   Control.addVariable(keyName+"BaseExtent",bBaseExtent);
-
-  Control.addVariable(keyName+"OuterVaneThick",bOuterVaneThick);
-  Control.addVariable(keyName+"InnerVaneThick",bInnerVaneThick);
+  Control.addVariable(keyName+"VoidExtra",bVoidExtra);
 
   Control.addVariable(keyName+"FrontPlateGap",fBaseGap);
   Control.addVariable(keyName+"FrontPlateWidth",fBaseWidth);

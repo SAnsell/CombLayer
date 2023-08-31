@@ -52,6 +52,7 @@ class M1BackPlate :
   double cupHeight;           ///< Height of C-cups 
   double topExtent;           ///< Length of top step
   double baseExtent;          ///< Length of top step
+  double voidExtra;           ///< Extra space in voids for supports
 
   // spring supports 
   double supVOffset;           ///< offset from Crystal surface 

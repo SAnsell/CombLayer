@@ -103,6 +103,7 @@ M1BackPlate::populate(const FuncDataBase& Control)
   topExtent=Control.EvalVar<double>(keyName+"TopExtent");
   extentThick=Control.EvalVar<double>(keyName+"ExtentThick");
   baseExtent=Control.EvalVar<double>(keyName+"BaseExtent");
+  voidExtra=Control.EvalVar<double>(keyName+"VoidExtra");
 
   frontPlateGap=Control.EvalVar<double>(keyName+"FrontPlateGap");
   frontPlateWidth=Control.EvalVar<double>(keyName+"FrontPlateWidth");
@@ -168,20 +169,18 @@ M1BackPlate::createSurfaces()
 
   // Extent
   makeShiftedSurf(SMap,"Base",buildIndex+25,Z,-(clearGap+cupHeight));
-  makeShiftedSurf(SMap,"Top",buildIndex+26,Z,1.34+clearGap+cupHeight);
+  makeShiftedSurf(SMap,"Top",buildIndex+26,Z,clearGap+cupHeight);
   ModelSupport::buildPlane
     (SMap,buildIndex+124,Origin+X*(topExtent-clearGap-extentThick),X);
   ModelSupport::buildPlane
     (SMap,buildIndex+224,Origin+X*(baseExtent-clearGap-extentThick),X);
 
   // OutSide EXTERT
-  const double extra(4.0);
-  makeShiftedSurf(SMap,"Base",buildIndex+35,Z,-(extra+clearGap+cupHeight));
-  makeShiftedSurf(SMap,"Top",buildIndex+36,Z,extra+clearGap+cupHeight);
+
   ModelSupport::buildPlane
-    (SMap,buildIndex+134,Origin+X*(extra+topExtent-clearGap-extentThick),X);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+244,Origin+X*(extra+baseExtent-clearGap-extentThick),X);
+    (SMap,buildIndex+33,Origin-X*(voidExtra+clearGap+backThick),X);
+  makeShiftedSurf(SMap,"Base",buildIndex+35,Z,-(voidExtra+clearGap+cupHeight));
+  makeShiftedSurf(SMap,"Top",buildIndex+36,Z,voidExtra+clearGap+cupHeight);
 
 
   // STOP SURFACE:
@@ -282,9 +281,15 @@ M1BackPlate::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 1 -2 13 -104 -16 (6:-3)");
   makeCell("Plate",System,cellIndex++,baseMat,0.0,HR);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -13 33 15 -16 ");
+  makeCell("CVoid",System,cellIndex++,voidMat,0.0,HR);
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 16 -26 124 -104");
   makeCell("Plate",System,cellIndex++,baseMat,0.0,HR);
-  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 26 -36 124 -104");
+  makeCell("PlateExtra",System,cellIndex++,voidMat,0.0,HR);
+
   // lower section:
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 -2 3 -204 5");
   makeCell("PlateGap",System,cellIndex++,voidMat,0.0,HR*bbUnionHR*nearCompHR); 
@@ -294,6 +299,9 @@ M1BackPlate::createObjects(Simulation& System)
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -15 25 224 -204");
   makeCell("Plate",System,cellIndex++,baseMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -25 35 224 -204");
+  makeCell("PlateVoid",System,cellIndex++,voidMat,0.0,HR);
   
   // support (Top):
   HR=ModelSupport::getHeadRule
@@ -321,17 +329,17 @@ M1BackPlate::createObjects(Simulation& System)
   
   // OUTER VOIDS:
   // main c voids
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -224 25 -15");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 33 -224 35 -15");
+  makeCell("CVoid",System,cellIndex++,voidMat,0.0,HR);  
   
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -124 16 -26");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 33 -124 16 -36");
+  makeCell("CVoid",System,cellIndex++,voidMat,0.0,HR);  
   //  addOuterUnionSurf(HR);
   // spring voids
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 104 -1004 506 -26");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 104 -1004 506 -36");
   makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
   
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 204 -1004 25 -605");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 204 -1004 35 -605");
   makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
 
   // top void
@@ -440,7 +448,7 @@ M1BackPlate::createObjects(Simulation& System)
   makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,
 	   HR*nearHR*mirrorCompHR);  
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -1004 25 -26");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 33 -1004 35 -36");
   addOuterSurf(HR);
 
   return;

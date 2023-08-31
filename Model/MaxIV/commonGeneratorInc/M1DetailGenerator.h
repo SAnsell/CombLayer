@@ -109,8 +109,7 @@ class M1DetailGenerator
   double bCupHeight;           ///< Height of C-cups (1.8)
   double bTopExtent;           ///< Length of top step (4.2)
   double bBaseExtent;          ///< Length of top step (2.1)
-  double bOuterVaneThick;      ///< Thickness of vane supports (outer)
-  double bInnerVaneThick;      ///< Thickness of vane supports (inner)
+  double bVoidExtra;           ///< Extra thickness for support
 
   double clipYStep;         ///< Step from end
   double clipLen;           ///< Length of clip
