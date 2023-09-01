@@ -34,6 +34,7 @@
 #include <functional>
 #include <memory>
 #include <tuple>
+#include <random>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -45,7 +46,9 @@
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"
+#include "Cylinder.h"
 #include "surfRegister.h"
+#include "Random.h"
 #include "generateSurf.h"
 
 #include "testFunc.h"
@@ -80,12 +83,14 @@ testGenerateSurf::applyTest(const int extra)
   typedef int (testGenerateSurf::*testPtr)();
   testPtr TPtr[]=
     {
+      &testGenerateSurf::testCylinder,
       &testGenerateSurf::testExpandedSurf,
       &testGenerateSurf::testPlane
     };
 
   const std::string TestName[]=
     {
+      "Cylinder",
       "ExpandedSurf",
       "Plane"
     };
@@ -232,6 +237,69 @@ testGenerateSurf::testPlane()
 	    
       delete PX;
       delete AimX;
+      surfN++;
+    }
+  return 0;
+}
+
+
+int
+testGenerateSurf::testCylinder()
+  /*!
+    Test the cylinder built from three point + axis
+    \returns 0 on succes and -ve on failure
+  */
+{
+  ELog::RegMethod RegA("testGenerateSurf","testPlane");
+
+
+
+  
+  // Centre : Axis : Radius
+  typedef std::tuple<Geometry::Vec3D,Geometry::Vec3D,double> TTYPE;
+
+  const double RDist(20.0);
+  const std::vector<TTYPE> Tests=
+    {
+      TTYPE(Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0),5.0)
+    };
+
+  surfRegister SMap;
+
+  int surfN=2;
+
+
+  for(const TTYPE& tc : Tests)
+    {
+      const Geometry::Vec3D C(std::get<0>(tc));
+      const Geometry::Vec3D A(std::get<1>(tc));
+      const double radius(std::get<2>(tc));
+
+      // Generate three random points on the cylinder
+      const Geometry::Vec3D pX=A.crossNormal();
+      const Geometry::Vec3D pY=pX*A;
+      std::vector<Geometry::Vec3D> Pts;
+      for(size_t i=0;i<3;i++)
+	{
+	  const double RD=RDist*(Random::rand()-0.5);
+	  const double theta=2.0*M_PI*Random::rand();
+	  Pts.push_back(pX*radius*std::cos(theta)+
+			pY*radius*std::sin(theta)+A*RD);
+	  
+	  ELog::EM<<"Points = "<<Pts.back()<<ELog::endDiag;	  
+	}
+      const Geometry::Cylinder* OutX=
+	ModelSupport::buildCylinder(SMap,surfN,Pts[0],Pts[1],Pts[2],A);
+
+      if (!OutX)
+	{
+	  const Geometry::Vec3D outC=OutX->getCentre();
+	  const Geometry::Vec3D outA=OutX->getNormal();
+	  ELog::EM<<"Cylinder== "<<outC<<" "<<outA<<ELog::endDiag;
+	  return -1;
+	}
+	    
+
       surfN++;
     }
   return 0;

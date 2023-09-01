@@ -360,9 +360,9 @@ buildCylinder(surfRegister& SMap,const int N,
   */
   const Geometry::Vec3D u=Axis.unit();
   
-  const Geometry::Vec3D p=u*A.dotProd(u);
-  const Geometry::Vec3D q=u*B.dotProd(u);
-  const Geometry::Vec3D r=u*C.dotProd(u);
+  const Geometry::Vec3D p=A-u*A.dotProd(u);
+  const Geometry::Vec3D q=B-u*B.dotProd(u);
+  const Geometry::Vec3D r=C-u*C.dotProd(u);
 
   const double p2=p.dotProd(p);
   const double q2=q.dotProd(q);
@@ -375,22 +375,23 @@ buildCylinder(surfRegister& SMap,const int N,
   Geometry::Vec3D alpha=p-q;
   Geometry::Vec3D beta=r-p;
   Geometry::Vec3D gamma=r-q;
-  
+  ELog::EM<<"Alga == "<<alpha<<":"<<p<<":"<<q<<ELog::endDiag;
   Geometry::Matrix<double> M(3,3);
   for(size_t i=0;i<3;i++)
     {
-      M[0][0]=alpha[i];
-      M[1][0]=beta[i];
-      M[2][0]=gamma[i];
+      M[0][i]=alpha[i];
+      M[1][i]=beta[i];
+      M[2][i]=gamma[i];
     }
   
   const double d=M.determinant();
-
+  ELog::EM<<"M == "<<M<<ELog::endDiag;
   if (std::abs<double>(d)<Geometry::zeroTol)
-    throw ColErr::ConstructionError("buildCylinder","(Determinate error)",
+    throw ColErr::ConstructionError("generateSurf::buildCylinder",
+				    "(Determinate error) M.determinate()",
 				    "A="+StrFunc::makeString(A),
-				    "B="+StrFunc::makeString(A),
-				    "C="+StrFunc::makeString(A),
+				    "B="+StrFunc::makeString(B),
+				    "C="+StrFunc::makeString(C),
 				    "Dir    = "+StrFunc::makeString(Axis));
 
   M.Invert();
