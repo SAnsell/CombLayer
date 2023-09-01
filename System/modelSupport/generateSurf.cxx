@@ -37,6 +37,8 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Vec3D.h"
+#include "MatrixBase.h"
+#include "Matrix.h"
 #include "Quaternion.h"
 #include "stringCombine.h"
 #include "surfIndex.h"
@@ -333,31 +335,74 @@ Geometry::Cylinder*
 buildCylinder(surfRegister& SMap,const int N,
 	      const Geometry::Vec3D& A,
 	      const Geometry::Vec3D& B,
-	      const Geometry::Vec3D& Axis,
-	      const Geometry::Vec3D& closePt)
+	      const Geometry::Vec3D& C,
+	      const Geometry::Vec3D& Axis)
   /*!
     Simple constructor to build a surface [type Cylinder]
     \param SMap :: Surface Map
     \param N :: Surface number
     \param A :: Point on cylinder
     \param B :: Point on cylinder
+    \param C :: Point on cylinder
     \param Axis :: Axis of cylinder
-    \param closePt :: close point to origin to resolve degenerousy.
+    \return cylinder pointer
    */
 {
-  ELog::RegMethod("generateSurf","buildCylinder(V,V,A,V)");
+  ELog::RegMethod("generateSurf","buildCylinder(V,V,V,A)");
 
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
 
   Geometry::Cylinder* CX=SurI.createUniqSurf<Geometry::Cylinder>(N);  
-  /*
-  if (CX->setCylinder(O,D,R))
-    throw ColErr::ConstructionError("setCylinder","CX",
-				 "Origin = "+StrFunc::makeString(O),
-				 "Dir    = "+StrFunc::makeString(D),
-				 "Radius = "+StrFunc::makeString(R));
 
+  /*!
+    Define centre as c, and points as a,b
+    Project onto the r.axis=D plane for point a->p , b->q
   */
+  const Geometry::Vec3D u=Axis.unit();
+  
+  const Geometry::Vec3D p=u*A.dotProd(u);
+  const Geometry::Vec3D q=u*B.dotProd(u);
+  const Geometry::Vec3D r=u*C.dotProd(u);
+
+  const double p2=p.dotProd(p);
+  const double q2=q.dotProd(q);
+  const double r2=r.dotProd(r);
+  
+  const double V1=0.5*sqrt(p2-q2);
+  const double V2=0.5*sqrt(r2-p2);
+  const double V3=0.5*sqrt(r2-q2);
+
+  Geometry::Vec3D alpha=p-q;
+  Geometry::Vec3D beta=r-p;
+  Geometry::Vec3D gamma=r-q;
+  
+  Geometry::Matrix<double> M(3,3);
+  for(size_t i=0;i<3;i++)
+    {
+      M[0][0]=alpha[i];
+      M[1][0]=beta[i];
+      M[2][0]=gamma[i];
+    }
+  
+  const double d=M.determinant();
+
+  if (std::abs<double>(d)<Geometry::zeroTol)
+    throw ColErr::ConstructionError("buildCylinder","(Determinate error)",
+				    "A="+StrFunc::makeString(A),
+				    "B="+StrFunc::makeString(A),
+				    "C="+StrFunc::makeString(A),
+				    "Dir    = "+StrFunc::makeString(Axis));
+
+  M.Invert();
+  const Geometry::Vec3D V(V1,V2,V3);
+  const Geometry::Vec3D centre=M*V;
+  const double R=centre.Distance(p);
+  
+  if (CX->setCylinder(centre,Axis,R))
+    throw ColErr::ConstructionError("setCylinder","(3V)",
+				 "Origin = "+StrFunc::makeString(centre),
+				 "Dir    = "+StrFunc::makeString(Axis),
+				 "Radius = "+StrFunc::makeString(R));
   const int NFound=SMap.registerSurf(N,CX);
 
   return SMap.realPtr<Geometry::Cylinder>(NFound);
