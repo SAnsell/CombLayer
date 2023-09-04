@@ -42,6 +42,7 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
+#include "Quaternion.h"
 #include "surfRegister.h"
 #include "varList.h"
 #include "Code.h"
@@ -120,6 +121,7 @@ namespace MAXIV::GunTestFacility
     depth(A.depth),
     eastClearance(A.eastClearance),
     backWallThick(A.backWallThick),
+    backWallCornerCut(A.backWallCornerCut),
     gunRoomEntranceWidth(A.gunRoomEntranceWidth),
     midWallThick(A.midWallThick),
     outerWallThick(A.outerWallThick),
@@ -181,6 +183,7 @@ namespace MAXIV::GunTestFacility
         depth=A.depth;
         eastClearance=A.eastClearance;
         backWallThick=A.backWallThick;
+	backWallCornerCut=A.backWallCornerCut;
         gunRoomEntranceWidth=A.gunRoomEntranceWidth;
         midWallThick=A.midWallThick;
         outerWallThick=A.outerWallThick;
@@ -254,6 +257,7 @@ namespace MAXIV::GunTestFacility
     depth=Control.EvalVar<double>(keyName+"Depth");
     eastClearance=Control.EvalVar<double>(keyName+"EastClearance");
     backWallThick=Control.EvalVar<double>(keyName+"BackWallThick");
+    backWallCornerCut=Control.EvalVar<double>(keyName+"BackWallCornerCut");
     gunRoomEntranceWidth=Control.EvalVar<double>(keyName+"GunRoomEntranceWidth");
     midWallThick=Control.EvalVar<double>(keyName+"MidWallThick");
     outerWallThick=Control.EvalVar<double>(keyName+"OuterWallThick");
@@ -361,6 +365,17 @@ namespace MAXIV::GunTestFacility
 				    -oilRoomEntranceWidth-oilRoomWallThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+94,buildIndex+93,Y,oilRoomWallThick);
 
+    const static double sqrt2 = sqrt(2.0);
+    const double leg = backWallCornerCut/sqrt2; // \todo replace to std::numbers::sqrt2_v with c++20
+    const Geometry::Quaternion qCorner = Geometry::Quaternion::calcQRotDeg(45.0, Z);
+    const Geometry::Vec3D v1(qCorner.makeRotate(Y));
+    ModelSupport::buildPlane(SMap,buildIndex+101,
+			     Origin+Y*(gunRoomLength/2.0+leg)+
+			     X*(gunRoomWidth/2.0-gunRoomEntranceWidth),v1);
+    const Geometry::Vec3D v2(qCorner.makeRotate(X));
+    ModelSupport::buildPlane(SMap,buildIndex+102,
+			     Origin+Y*(gunRoomLength/2.0+backWallThick-leg)+
+			     X*(gunRoomWidth/2.0-gunRoomEntranceWidth),v2);
 
     ModelSupport::buildShiftedPlane(SMap,buildIndex+103,buildIndex+73,X,controlRoomWidth);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+104,buildIndex+103,X,internalWallThick); // TODO intentionally wrong thickness. Need to be constructed in a separate class for B1. See [3].
@@ -395,16 +410,22 @@ namespace MAXIV::GunTestFacility
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6");
     makeCell("GunRoom",System,cellIndex++,voidMat,0.0,Out*tb);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 13 -3 ");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -12 13 -3 ");
     makeCell("MidWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 2 -12 13 -14 ");
-    makeCell("BackWall",System,cellIndex++,wallMat,0.0,Out*tb);
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 2 -12 3 -14 101 -102 5 -6 ");
+    makeCell("BackWall",System,cellIndex++,wallMat,0.0,Out);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 2 -101 -14 5 -6 ");
+    makeCell("BackWallCornerWest",System,cellIndex++,voidMat,0.0,Out);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 102 -12 -14 5 -6 ");
+    makeCell("BackWallCornerEast",System,cellIndex++,voidMat,0.0,Out);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 2 -12 14 -4 5 -6");
     makeCell("GunRoomEntrance",System,cellIndex++,voidMat,0.0,Out);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 2 -12 14 -4 6 -26 ");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 2 -12 3 -4 6 -26 ");
     makeCell("GunRoomEntranceLintel",System,cellIndex++,wallMat,0.0,Out);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -1 83 -4 5 -36");

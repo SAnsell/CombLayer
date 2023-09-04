@@ -54,6 +54,7 @@ namespace MAXIV::GunTestFacility
     double depth;                 ///< beam line height
     double eastClearance;         ///< gap between building B and B1
     double backWallThick;         ///< thickness of the back wall
+    double backWallCornerCut;     ///< back wall corner cut length
     double gunRoomEntranceWidth;  ///< gun test room entrance width
     double midWallThick;          ///< thickness of the middle wall
     double outerWallThick;        ///< outer wall thickness

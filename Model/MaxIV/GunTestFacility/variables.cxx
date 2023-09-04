@@ -80,6 +80,7 @@ namespace setVariable
     Control.addVariable(name+"Height",300.0-depth); // [1]
     Control.addVariable(name+"HallHeight",370.0-depth); // [6]
     Control.addVariable(name+"BackWallThick",backWallThick);
+    Control.addVariable(name+"BackWallCornerCut",3.5);
     Control.addVariable(name+"GunRoomEntranceWidth",160.0); // [1] [2]
     Control.addVariable(name+"MidWallThick",100.0); // [1]
     Control.addVariable(name+"OuterWallThick",outerWallThick);
