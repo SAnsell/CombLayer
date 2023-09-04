@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   test/testSurfExpand.cxx
+ * File:   test/testGenerateSurf.cxx
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
  *

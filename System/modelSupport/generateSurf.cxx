@@ -364,24 +364,30 @@ buildCylinder(surfRegister& SMap,const int N,
   const Geometry::Vec3D q=B-u*B.dotProd(u);
   const Geometry::Vec3D r=C-u*C.dotProd(u);
 
-  const double p2=p.dotProd(p);
-  const double q2=q.dotProd(q);
-  const double r2=r.dotProd(r);
-  
-  const double V1=0.5*sqrt(p2-q2);
-  const double V2=0.5*sqrt(r2-p2);
-  const double V3=0.5*sqrt(r2-q2);
+  // Now generate unit vectors across plane
+  const Geometry::Vec3D alpha=u.crossNormal();
+  const Geometry::Vec3D beta=alpha*u;
 
-  Geometry::Vec3D alpha=p-q;
-  Geometry::Vec3D beta=r-p;
-  Geometry::Vec3D gamma=r-q;
-  ELog::EM<<"Alga == "<<alpha<<":"<<p<<":"<<q<<ELog::endDiag;
+  const double x[3]=
+    {
+      alpha.dotProd(p),
+      alpha.dotProd(q),
+      alpha.dotProd(r)
+    };
+  const double y[3]=
+    {
+      beta.dotProd(p),
+      beta.dotProd(q),
+      beta.dotProd(r)
+    };
+
+
   Geometry::Matrix<double> M(3,3);
   for(size_t i=0;i<3;i++)
     {
-      M[0][i]=alpha[i];
-      M[1][i]=beta[i];
-      M[2][i]=gamma[i];
+      M[i][0]=2.0*x[i];
+      M[i][1]=2.0*y[i];
+      M[i][2]=1.0;
     }
   
   const double d=M.determinant();
@@ -395,8 +401,15 @@ buildCylinder(surfRegister& SMap,const int N,
 				    "Dir    = "+StrFunc::makeString(Axis));
 
   M.Invert();
-  const Geometry::Vec3D V(V1,V2,V3);
-  const Geometry::Vec3D centre=M*V;
+  const Geometry::Vec3D V({
+      -(x[0]*x[0]+y[0]*y[0]),
+	-(x[1]*x[1]+y[1]*y[1]),
+	-(x[2]*x[2]+y[2]*y[2])
+    });
+  Geometry::Vec3D Components=M*V;
+  Components*=-1.0;
+  const Geometry::Vec3D centre(alpha*Components[0]+beta*Components[1]);
+  ELog::EM<<"Centre == "<<centre<<ELog::endDiag;
   const double R=centre.Distance(p);
   
   if (CX->setCylinder(centre,Axis,R))
