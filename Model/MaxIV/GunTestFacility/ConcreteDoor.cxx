@@ -103,10 +103,8 @@ ConcreteDoor::populate(const FuncDataBase& Control)
 
   underStepHeight=Control.EvalVar<double>(keyName+"UnderStepHeight");
   underStepWidth=Control.EvalVar<double>(keyName+"UnderStepWidth");
-  underStepXSep=Control.EvalVar<double>(keyName+"UnderStepXSep");
 
-  underAMat=ModelSupport::EvalDefMat(Control,keyName+"UnderAMat",0);
-  underBMat=ModelSupport::EvalDefMat(Control,keyName+"UnderBMat",0);
+  underMat=ModelSupport::EvalDefMat(Control,keyName+"UnderMat",0);
   doorMat=ModelSupport::EvalMat<int>(Control,keyName+"DoorMat");
 
   return;
@@ -196,13 +194,9 @@ ConcreteDoor::createSurfaces()
     (SMap,"floor",buildIndex+1005,Z,underStepHeight);
 
   ModelSupport::buildPlane
-    (SMap,buildIndex+1003,Origin-X*(underStepWidth+underStepXSep/2.0),X);
+    (SMap,buildIndex+1003,Origin-X*(underStepWidth),X);
   ModelSupport::buildPlane
-    (SMap,buildIndex+1004,Origin-X*(underStepXSep/2.0),X);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+1013,Origin+X*(underStepXSep/2.0),X);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+1014,Origin+X*(underStepWidth+underStepXSep/2.0),X);
+    (SMap,buildIndex+1004,Origin+X*(underStepWidth),X);
 
   return;
 }
@@ -222,7 +216,7 @@ ConcreteDoor::createObjects(Simulation& System)
   const HeadRule floorHR=ExternalCut::getRule("floor");
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"-200 3 -4 -6 (-1003:1004:1005) (-1013:1014:1005)");
+    (SMap,buildIndex,"-200 3 -4 -6 (-1003:1004:1005) ");
   makeCell("InnerDoor",System,cellIndex++,doorMat,0.0,HR*innerHR*floorHR);
 
   HR=ModelSupport::getHeadRule
@@ -234,7 +228,7 @@ ConcreteDoor::createObjects(Simulation& System)
   makeCell("InnerExtra",System,cellIndex++,doorMat,0.0,HR*innerHR*floorHR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"200 -201 3 -4 -6 (-1003:1004:1005) (-1013:1014:1005)");
+    (SMap,buildIndex,"200 -201 3 -4 -6 (-1003:1004:1005) ");
   makeCell("OuterStrip",System,cellIndex++,doorMat,0.0,HR*floorHR);
 
   HR=ModelSupport::getHeadRule
@@ -242,7 +236,7 @@ ConcreteDoor::createObjects(Simulation& System)
   makeCell("MidGap",System,cellIndex++,0,0.0,HR*floorHR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"201 23 -24 -26 (-1003:1004:1005) (-1013:1014:1005)");
+    (SMap,buildIndex,"201 23 -24 -26 (-1003:1004:1005) ");
   makeCell("OuterDoor",System,cellIndex++,doorMat,0.0,HR*outerHR*floorHR);
 
   HR=ModelSupport::getHeadRule
@@ -252,11 +246,7 @@ ConcreteDoor::createObjects(Simulation& System)
 
   // Lift points
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1003 -1004 -1005");
-  makeCell("LiftA",System,cellIndex++,underAMat,
-	   0.0,HR*outerHR*innerHR*floorHR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1013 -1014 -1005");
-  makeCell("LiftB",System,cellIndex++,underBMat,
+  makeCell("LiftA",System,cellIndex++,underMat,
 	   0.0,HR*outerHR*innerHR*floorHR);
 
   // main door

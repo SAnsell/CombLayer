@@ -56,10 +56,8 @@ class ConcreteDoor :
 
   double underStepHeight;             ///< height of gap
   double underStepWidth;              ///< Width of under gap
-  double underStepXSep;               ///< X separation of steps
 
-  int underAMat;                      ///< Filling of under material
-  int underBMat;                      ///< Filling of under material
+  int underMat;                       ///< Filling of under material
   int doorMat;                        ///< wall material
 
   void populate(const FuncDataBase&);
