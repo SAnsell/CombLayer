@@ -391,7 +391,7 @@ buildCylinder(surfRegister& SMap,const int N,
     }
   
   const double d=M.determinant();
-  ELog::EM<<"M == "<<M<<ELog::endDiag;
+
   if (std::abs<double>(d)<Geometry::zeroTol)
     throw ColErr::ConstructionError("generateSurf::buildCylinder",
 				    "(Determinate error) M.determinate()",
@@ -409,7 +409,7 @@ buildCylinder(surfRegister& SMap,const int N,
   Geometry::Vec3D Components=M*V;
   Components*=-1.0;
   const Geometry::Vec3D centre(alpha*Components[0]+beta*Components[1]);
-  ELog::EM<<"Centre == "<<centre<<ELog::endDiag;
+
   const double R=centre.Distance(p);
   
   if (CX->setCylinder(centre,Axis,R))
