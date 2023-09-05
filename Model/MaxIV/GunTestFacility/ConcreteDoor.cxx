@@ -62,6 +62,7 @@
 #include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "Quaternion.h"
 #include "ConcreteDoor.h"
 
 
@@ -103,6 +104,7 @@ ConcreteDoor::populate(const FuncDataBase& Control)
 
   underStepHeight=Control.EvalVar<double>(keyName+"UnderStepHeight");
   underStepWidth=Control.EvalVar<double>(keyName+"UnderStepWidth");
+  sideCutAngle=Control.EvalVar<double>(keyName+"SideCutAngle");
 
   underMat=ModelSupport::EvalDefMat(Control,keyName+"UnderMat",0);
   doorMat=ModelSupport::EvalMat<int>(Control,keyName+"DoorMat");
@@ -157,25 +159,29 @@ ConcreteDoor::createSurfaces()
 
   // origin in on outer wall:
 
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(innerWidth/2.0),X);
+
+  const Geometry::Quaternion qSide = Geometry::Quaternion::calcQRotDeg(180-sideCutAngle, Z);
+  const Geometry::Vec3D vSide(qSide.makeRotate(-Y));
+
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(innerWidth/2.0),vSide); //
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(innerWidth/2.0),X);
   ExternalCut::makeShiftedSurf(SMap,"floor",buildIndex+6,Z,innerHeight);
 
   ModelSupport::buildPlane(SMap,buildIndex+13,
-			   Origin-X*(gapSpace+innerWidth/2.0),X);
+			   Origin-X*(gapSpace+innerWidth/2.0),vSide); //
   ModelSupport::buildPlane(SMap,buildIndex+14,
 			   Origin+X*(gapSpace+innerWidth/2.0),X);
   ExternalCut::makeShiftedSurf(SMap,"floor",buildIndex+16,Z,
 			       innerTopGap+innerHeight);
 
 
-  ModelSupport::buildPlane(SMap,buildIndex+23,Origin-X*(outerWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+23,Origin-X*(outerWidth/2.0),vSide); //
   ModelSupport::buildPlane(SMap,buildIndex+24,Origin+X*(outerWidth/2.0),X);
 
   ExternalCut::makeShiftedSurf(SMap,"floor",buildIndex+26,Z,outerHeight);
 
   ModelSupport::buildPlane(SMap,buildIndex+33,
-			   Origin-X*(gapSpace+outerWidth/2.0),X);
+			   Origin-X*(gapSpace+outerWidth/2.0),vSide); //
   ModelSupport::buildPlane(SMap,buildIndex+34,
 			   Origin+X*(gapSpace+outerWidth/2.0),X);
   // ModelSupport::buildPlane(SMap,buildIndex+36,
@@ -185,9 +191,9 @@ ConcreteDoor::createSurfaces()
 
   // Y Points out of ring:
   ExternalCut::makeShiftedSurf
-    (SMap,"innerWall",buildIndex+200,Y,innerThick);
+    (SMap,"innerWall",buildIndex+200,Y,innerThick-gapSpace);
   ExternalCut::makeShiftedSurf
-    (SMap,"innerWall",buildIndex+201,Y,innerThick+gapSpace);
+    (SMap,"innerWall",buildIndex+201,Y,innerThick);
 
   // lift step
   ExternalCut::makeShiftedSurf
