@@ -167,6 +167,10 @@ namespace setVariable
     RingDoorGenerator RDGen(1); // 1: make R1 door
     RDGen.generateDoor(Control,name+"ConcreteDoor",20.0);
     Control.addVariable(name+"ConcreteDoorInnerThick",30.0); // dummy
+    Control.addVariable(name+"ConcreteDoorInnerHeight",200.0); // [0] page 3 and 6
+    Control.addVariable(name+"ConcreteDoorOuterHeight",210.0); // [0] page 3 and 6
+    Control.addVariable(name+"ConcreteDoorUnderStepHeight",7.2); // [0] page 3
+    Control.addVariable(name+"ConcreteDoorUnderStepWidth",111.0); // [0] page 3
 
   }
 

@@ -194,9 +194,9 @@ ConcreteDoor::createSurfaces()
     (SMap,"floor",buildIndex+1005,Z,underStepHeight);
 
   ModelSupport::buildPlane
-    (SMap,buildIndex+1003,Origin-X*(underStepWidth),X);
+    (SMap,buildIndex+1003,Origin-X*(underStepWidth/2.0),X);
   ModelSupport::buildPlane
-    (SMap,buildIndex+1004,Origin+X*(underStepWidth),X);
+    (SMap,buildIndex+1004,Origin+X*(underStepWidth/2.0),X);
 
   return;
 }
@@ -216,7 +216,7 @@ ConcreteDoor::createObjects(Simulation& System)
   const HeadRule floorHR=ExternalCut::getRule("floor");
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"-200 3 -4 -6 (-1003:1004:1005) ");
+    (SMap,buildIndex,"-201 3 -4 -6 (-1003:1004:1005) ");
   makeCell("InnerDoor",System,cellIndex++,doorMat,0.0,HR*innerHR*floorHR);
 
   HR=ModelSupport::getHeadRule
@@ -227,9 +227,9 @@ ConcreteDoor::createObjects(Simulation& System)
     (SMap,buildIndex,"-200 (-13:14:16) 33 -34 -36");
   makeCell("InnerExtra",System,cellIndex++,doorMat,0.0,HR*innerHR*floorHR);
 
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"200 -201 3 -4 -6 (-1003:1004:1005) ");
-  makeCell("OuterStrip",System,cellIndex++,doorMat,0.0,HR*floorHR);
+  // HR=ModelSupport::getHeadRule
+  //   (SMap,buildIndex,"200 -201 3 -4 -6 (-1003:1004:1005) ");
+  // makeCell("OuterStrip",System,cellIndex++,doorMat,0.0,HR*floorHR);
 
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"200 -201 23 -24 -26 (-3:4:6)");
