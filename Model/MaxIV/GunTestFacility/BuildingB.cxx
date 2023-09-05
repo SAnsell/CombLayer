@@ -37,10 +37,8 @@
 #include "OutputLog.h"
 #include "objectRegister.h"
 
-#include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "OutputLog.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "surfRegister.h"
@@ -64,6 +62,8 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "Duct.h"
+#include "ContainedGroup.h"
+#include "ConcreteDoor.h"
 
 #include "BuildingB.h"
 
@@ -86,7 +86,8 @@ namespace MAXIV::GunTestFacility
     ductWater2(std::make_shared<xraySystem::Duct>(keyName+"DuctWater2")),
     ductSuction(std::make_shared<xraySystem::Duct>(keyName+"DuctSuctionFan")),
     ductVentRoof1(std::make_shared<xraySystem::Duct>(keyName+"DuctVentillationRoof1")),
-    ductVentRoof2(std::make_shared<xraySystem::Duct>(keyName+"DuctVentillationRoof2"))
+    ductVentRoof2(std::make_shared<xraySystem::Duct>(keyName+"DuctVentillationRoof2")),
+    door(std::make_shared<ConcreteDoor>(keyName+"ConcreteDoor"))
     /*!
       Constructor BUT ALL variable are left unpopulated.
       \param Key :: Name for item in search
@@ -107,6 +108,7 @@ namespace MAXIV::GunTestFacility
     OR.addObject(ductSuction);
     OR.addObject(ductVentRoof1);
     OR.addObject(ductVentRoof2);
+    OR.addObject(door);
   }
 
   BuildingB::BuildingB(const BuildingB& A) :
@@ -735,6 +737,12 @@ namespace MAXIV::GunTestFacility
     createLinks();
 
     createDucts(System);
+
+    door->setCutSurf("innerWall", *this, "MazeWallSideBack");
+    door->setCutSurf("outerWall", *this, "#MazeWallSideFront");
+    door->setCutSurf("floor", getSurf("bottom"));
+    door->addAllInsertCell(getCell("MazeWallSide"));
+    door->createAll(System,*this,10);
 
     insertObjects(System);
 

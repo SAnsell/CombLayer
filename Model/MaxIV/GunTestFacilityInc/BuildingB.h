@@ -23,6 +23,7 @@
 #define xraySystem_GunTestFacilityBuildingB_h
 
 class Simulation;
+class ConcreteDoor;
 
 namespace xraySystem {
   class Duct;
@@ -105,6 +106,8 @@ namespace MAXIV::GunTestFacility
     std::shared_ptr<xraySystem::Duct> ductSuction; // duct for the soldering iron suction fan
     std::shared_ptr<xraySystem::Duct> ductVentRoof1; // ventillation @ roof
     std::shared_ptr<xraySystem::Duct> ductVentRoof2; // ventillation @ roof
+
+    std::shared_ptr<ConcreteDoor> door; // back wall concrete door
 
     void populate(const FuncDataBase&);
     void createSurfaces();

@@ -1,0 +1,91 @@
+/*********************************************************************
+  CombLayer : MCNP(X) Input builder
+
+ * File:   Model/MaxIV/GunTestFacilityInc/ConcreteDoor.h
+ *
+ * Copyright (c) 2004-2023 by Stuart Ansell / Konstantin Batkov
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ ****************************************************************************/
+#ifndef xraySystem_ConcreteDoor_h
+#define xraySystem_ConcreteDoor_h
+
+class Simulation;
+
+namespace MAXIV::GunTestFacility
+{
+  /*!
+    \class ConcreteDoor
+    \version 1.0
+    \author S. Ansell / K. Batkov
+    \date Sep 2023
+    \brief a copy of RingDoor modified for Gun Test Facility
+  */
+
+class ConcreteDoor :
+  public attachSystem::FixedRotate,
+  public attachSystem::ContainedGroup,
+  public attachSystem::ExternalCut,
+  public attachSystem::CellMap
+
+{
+ private:
+
+  double innerHeight;                 ///< height of inner gap
+  double innerWidth;                  ///< width of inner gap
+  double innerThick;                  ///< thickness of first door
+
+  double innerTopGap;                 ///< top gap inner
+  double outerTopGap;                 ///< top gap outer
+  double gapSpace;                    ///< gap
+
+  double outerHeight;                 ///< height of outer gap
+  double outerWidth;                  ///< width of outer gap
+
+  double tubeRadius;                  ///< Radius of top tubes
+  double tubeXStep;                   ///< X of top tubes
+  double tubeZStep;                   ///< Z of top tubes
+
+  double underStepHeight;             ///< height of gap
+  double underStepWidth;              ///< Width of under gap
+  double underStepXSep;               ///< X separation of steps
+
+  int underAMat;                      ///< Filling of under material
+  int underBMat;                      ///< Filling of under material
+  int tubeMat;                        ///< tube material material
+  int doorMat;                        ///< wall material
+
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
+  void createSurfaces();
+  void createObjects(Simulation&);
+  void createLinks();
+
+ public:
+
+  ConcreteDoor(const std::string&);
+  ConcreteDoor(const ConcreteDoor&);
+  ConcreteDoor& operator=(const ConcreteDoor&);
+  virtual ~ConcreteDoor() {}  ///< Destructor
+
+  using FixedComp::createAll;
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
+};
+
+}
+
+#endif

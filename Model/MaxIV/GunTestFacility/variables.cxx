@@ -45,6 +45,7 @@
 #include "FuncDataBase.h"
 
 #include "DuctGenerator.h"
+#include "RingDoorGenerator.h"
 
 
 namespace setVariable
@@ -162,6 +163,11 @@ namespace setVariable
     DuctGen.generate(Control,name+"DuctVentillationRoof2",0.0,
 		     30.0-width2, 0.0, // [0] page 1
 		     length2+backWallThick+mazeWidth-370.0-120.0); //[0], page 2
+
+    RingDoorGenerator RDGen(1); // 1: make R1 door
+    RDGen.generateDoor(Control,name+"ConcreteDoor",20.0);
+    Control.addVariable(name+"ConcreteDoorInnerThick",30.0); // dummy
+
   }
 
   void GunTestFacilityVariables(FuncDataBase& Control)
