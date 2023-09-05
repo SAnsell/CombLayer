@@ -59,7 +59,6 @@
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
 #include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -70,8 +69,8 @@ namespace MAXIV::GunTestFacility
 {
 
 ConcreteDoor::ConcreteDoor(const std::string& Key) :
+  attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,6),
-  attachSystem::ContainedGroup("Door","Tubes"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap()
   /*!
@@ -102,17 +101,12 @@ ConcreteDoor::populate(const FuncDataBase& Control)
   outerHeight=Control.EvalVar<double>(keyName+"OuterHeight");
   outerWidth=Control.EvalVar<double>(keyName+"OuterWidth");
 
-  tubeRadius=Control.EvalVar<double>(keyName+"TubeRadius");
-  tubeXStep=Control.EvalVar<double>(keyName+"TubeXStep");
-  tubeZStep=Control.EvalVar<double>(keyName+"TubeZStep");
-
   underStepHeight=Control.EvalVar<double>(keyName+"UnderStepHeight");
   underStepWidth=Control.EvalVar<double>(keyName+"UnderStepWidth");
   underStepXSep=Control.EvalVar<double>(keyName+"UnderStepXSep");
 
   underAMat=ModelSupport::EvalDefMat(Control,keyName+"UnderAMat",0);
   underBMat=ModelSupport::EvalDefMat(Control,keyName+"UnderBMat",0);
-  tubeMat=ModelSupport::EvalMat<int>(Control,keyName+"TubeMat");
   doorMat=ModelSupport::EvalMat<int>(Control,keyName+"DoorMat");
 
   return;
@@ -210,14 +204,6 @@ ConcreteDoor::createSurfaces()
   ModelSupport::buildPlane
     (SMap,buildIndex+1014,Origin+X*(underStepWidth+underStepXSep/2.0),X);
 
-  // Tubes:
-  ModelSupport::buildCylinder
-    (SMap,buildIndex+507,Origin-X*tubeXStep+Z*tubeZStep,Y,tubeRadius);
-  ModelSupport::buildCylinder
-    (SMap,buildIndex+517,Origin+Z*tubeZStep,Y,tubeRadius);
-  ModelSupport::buildCylinder
-    (SMap,buildIndex+527,Origin+X*tubeXStep+Z*tubeZStep,Y,tubeRadius);
-
   return;
 }
 
@@ -263,13 +249,6 @@ ConcreteDoor::createObjects(Simulation& System)
     (SMap,buildIndex,"200 (-23:24:26) 33 -34 -36");
   makeCell("OuterGap",System,cellIndex++,0,0.0,HR*outerHR*floorHR);
 
-  // Tubes
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-507");
-  makeCell("OuterGap",System,cellIndex++,tubeMat,0.0,HR*outerHR*innerHR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-517");
-  makeCell("OuterGap",System,cellIndex++,tubeMat,0.0,HR*outerHR*innerHR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-527");
-  makeCell("OuterGap",System,cellIndex++,tubeMat,0.0,HR*outerHR*innerHR);
 
   // Lift points
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1003 -1004 -1005");
@@ -280,15 +259,10 @@ ConcreteDoor::createObjects(Simulation& System)
   makeCell("LiftB",System,cellIndex++,underBMat,
 	   0.0,HR*outerHR*innerHR*floorHR);
 
-
-
   // main door
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"33 -34 -36");
-  addOuterSurf("Door",HR);
+  addOuterSurf(HR);
 
-  // extra tubes
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(-507 : -517 : -527)");
-  addOuterSurf("Tubes",HR);
   return;
 }
 

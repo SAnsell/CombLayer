@@ -62,7 +62,6 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "Duct.h"
-#include "ContainedGroup.h"
 #include "ConcreteDoor.h"
 
 #include "BuildingB.h"
@@ -741,7 +740,7 @@ namespace MAXIV::GunTestFacility
     door->setCutSurf("innerWall", *this, "MazeWallSideBack");
     door->setCutSurf("outerWall", *this, "#MazeWallSideFront");
     door->setCutSurf("floor", getSurf("bottom"));
-    door->addAllInsertCell(getCell("MazeWallSide"));
+    door->addInsertCell(getCell("MazeWallSide"));
     door->createAll(System,*this,10);
 
     insertObjects(System);

@@ -35,8 +35,8 @@ namespace MAXIV::GunTestFacility
   */
 
 class ConcreteDoor :
+  public attachSystem::ContainedComp,
   public attachSystem::FixedRotate,
-  public attachSystem::ContainedGroup,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap
 
@@ -54,17 +54,12 @@ class ConcreteDoor :
   double outerHeight;                 ///< height of outer gap
   double outerWidth;                  ///< width of outer gap
 
-  double tubeRadius;                  ///< Radius of top tubes
-  double tubeXStep;                   ///< X of top tubes
-  double tubeZStep;                   ///< Z of top tubes
-
   double underStepHeight;             ///< height of gap
   double underStepWidth;              ///< Width of under gap
   double underStepXSep;               ///< X separation of steps
 
   int underAMat;                      ///< Filling of under material
   int underBMat;                      ///< Filling of under material
-  int tubeMat;                        ///< tube material material
   int doorMat;                        ///< wall material
 
   void populate(const FuncDataBase&);
@@ -77,8 +72,8 @@ class ConcreteDoor :
  public:
 
   ConcreteDoor(const std::string&);
-  ConcreteDoor(const ConcreteDoor&);
-  ConcreteDoor& operator=(const ConcreteDoor&);
+  ConcreteDoor(const ConcreteDoor&) = delete;
+  ConcreteDoor& operator=(const ConcreteDoor&) = delete;
   virtual ~ConcreteDoor() {}  ///< Destructor
 
   using FixedComp::createAll;
