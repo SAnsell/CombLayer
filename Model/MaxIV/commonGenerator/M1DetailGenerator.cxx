@@ -90,7 +90,7 @@ M1DetailGenerator::M1DetailGenerator() :
   bFrontSupportThick(1.0),bFrontSupportCut(2.0),
   bFrontSupportZCut(0.2),
 
-  bRingThick(1.0),
+  bRingYPos(-17.0),bRingThick(1.0),
   bRingBackPt(-0.6,-16.0,-0.6),
   bRingTopPt(-2.4,-16.0,0.6),
   bRingGap(5.0),
@@ -121,7 +121,7 @@ M1DetailGenerator::makeSupport(FuncDataBase& Control,
 			       const std::string& keyName) const
   /*!
     Create the variables for the base support
-   */
+  */
 {
   ELog::RegMethod RegA("M1DetailGenerator","makeSupport");
 
@@ -260,6 +260,7 @@ M1DetailGenerator::makeOuterSupport(FuncDataBase& Control,
   Control.addVariable(keyName+"FrontSupportCut",bFrontSupportCut);
   Control.addVariable(keyName+"FrontSupportZCut",bFrontSupportZCut);
 
+  Control.addVariable(keyName+"RingYPos",bRingYPos);
   Control.addVariable(keyName+"RingThick",bRingThick);
   Control.addVariable(keyName+"RingGap",bRingGap);
   Control.addVariable(keyName+"RingBackPt",bRingBackPt);

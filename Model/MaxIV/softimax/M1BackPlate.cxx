@@ -294,6 +294,11 @@ M1BackPlate::createSupportSurfaces()
   const Geometry::Vec3D ringMPt(topBasePoint+ringBackPt.getInBasis(X,Y,Z));
   const Geometry::Vec3D ringLPt(ringMPt-Z*ringGap);
 
+  ModelSupport::buildPlane(SMap,buildIndex+5011,
+			   Origin+Y*(ringYPos-ringThick/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+5012,
+			   Origin+Y*(ringYPos+ringThick/2.0),Y);
+
   ModelSupport::buildPlane(SMap,buildIndex+5016,ringTPt,Z);
   ModelSupport::buildPlane(SMap,buildIndex+5013,ringTPt,X); // cut plane
   ModelSupport::buildPlane(SMap,buildIndex+5015,ringMPt,X); // cut plane
@@ -331,6 +336,10 @@ M1BackPlate::createSupportObjects(Simulation& System)
   //ring:
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"5011 -5012 5013 -124 16 -5016");
   makeCell("CVoid",System,cellIndex++,voidMat,0.0,HR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5011 -5012");
+
+
 
 
   return;

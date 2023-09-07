@@ -125,6 +125,7 @@ class M1DetailGenerator
   double bFrontSupportCut;     ///< Distance to start of cut from mirror face
   double bFrontSupportZCut;    ///< Distance up to cut
 
+  double bRingYPos;            ///< Positive displacment of ring section
   double bRingThick;           ///< Thickness of ring plate
   Geometry::Vec3D bRingBackPt; ///< Offset to point from top/base of back plane
   Geometry::Vec3D bRingTopPt;  ///< Offset to point from top to cut
