@@ -83,7 +83,8 @@ class M1BackPlate :
   double frontSupportCut;     ///< Distance to start of cut from mirror face
   double frontSupportZCut;    ///< Distance up to cut
 
-  double ringThick;
+  double ringYPos;            ///< Y Position down support
+  double ringThick;           ///< Metal thickness
   double ringGap;             ///< Vertical gap between top/base
   Geometry::Vec3D ringBackPt; ///< ring offset from back/flat corners
   Geometry::Vec3D ringTopPt;  ///< ring offset from inner high top

@@ -129,6 +129,8 @@ M1BackPlate::populate(const FuncDataBase& Control)
   frontSupportThick=Control.EvalVar<double>(keyName+"FrontSupportThick");
   frontSupportCut=Control.EvalVar<double>(keyName+"FrontSupportCut");
   frontSupportZCut=Control.EvalVar<double>(keyName+"FrontSupportZCut");  
+
+  ringYPos=Control.EvalVar<double>(keyName+"RingYPos");
   ringThick=Control.EvalVar<double>(keyName+"RingThick");
   ringGap=Control.EvalVar<double>(keyName+"RingGap");
   ringBackPt=Control.EvalVar<Geometry::Vec3D>(keyName+"RingBackPt");
@@ -287,10 +289,23 @@ M1BackPlate::createSupportSurfaces()
 			   topBasePoint+Z*frontSupportZCut,Z);
 
   // Ring points:
+  // Note ringTPt higher than 26
   const Geometry::Vec3D ringTPt(topOutPoint+ringTopPt.getInBasis(X,Y,Z));
   const Geometry::Vec3D ringMPt(topBasePoint+ringBackPt.getInBasis(X,Y,Z));
+  const Geometry::Vec3D ringLPt(ringMPt-Z*ringGap);
+
+  ModelSupport::buildPlane(SMap,buildIndex+5016,ringTPt,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5013,ringTPt,X); // cut plane
+  ModelSupport::buildPlane(SMap,buildIndex+5015,ringMPt,X); // cut plane
+
+  ModelSupport::buildCylinder(SMap,buildIndex+5017,
+			      ringTPt,ringMPt,ringLPt,
+			      Y); // axis along Y
+
+  
   ELog::EM<<"Ring == "<<ringTPt<<ELog::endDiag;
   ELog::EM<<"Ring == "<<ringMPt<<ELog::endDiag;
+  ELog::EM<<"Ring == "<<ringLPt<<ELog::endDiag;
 
   
 
@@ -312,6 +327,12 @@ M1BackPlate::createSupportObjects(Simulation& System)
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -5001 -13 33  16 -36");
   makeCell("CVoid",System,cellIndex++,voidMat,0.0,HR);  
+
+  //ring:
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5011 -5012 5013 -124 16 -5016");
+  makeCell("CVoid",System,cellIndex++,voidMat,0.0,HR);  
+
+
   return;
 }
   

@@ -95,8 +95,10 @@ M1Mirror::populate(const FuncDataBase& Control)
   FixedRotate::populate(Control);
 
   theta=Control.EvalVar<double>(keyName+"Theta");
-  phi=Control.EvalVar<double>(keyName+"Phi");
   
+  phi=Control.EvalVar<double>(keyName+"Phi");
+  theta=0.0;
+  ELog::EM<<"Theta == "<<theta<<ELog::endDiag;
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   length=Control.EvalVar<double>(keyName+"Length");
