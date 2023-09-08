@@ -269,8 +269,12 @@ M1BackPlate::createSupportSurfaces()
   // point in middle of back plane
   const Geometry::Plane* topBasePtr=
     SMap.realPtr<Geometry::Plane>(buildIndex+16);
+  const Geometry::Plane* lowerBasePtr=
+    SMap.realPtr<Geometry::Plane>(buildIndex+15);
   const Geometry::Plane* topFlatPtr=
     SMap.realPtr<Geometry::Plane>(buildIndex+124);
+  const Geometry::Plane* lowerFlatPtr=
+    SMap.realPtr<Geometry::Plane>(buildIndex+224);
 
   const Geometry::Vec3D midOutPoint(Origin-X*(clearGap+backThick));
   const Geometry::Vec3D topBasePoint=
@@ -280,6 +284,14 @@ M1BackPlate::createSupportSurfaces()
   const Geometry::Vec3D topOutPoint=
     topEdgePoint+Z*(cupHeight-mainThick);
 
+  const Geometry::Vec3D lowerBasePoint=
+    SurInter::getLinePoint(midOutPoint,Z,lowerBasePtr);
+  const Geometry::Vec3D lowerEdgePoint=
+    SurInter::getLinePoint(lowerBasePoint,X,lowerFlatPtr);
+  const Geometry::Vec3D lowerOutPoint=
+    lowerEdgePoint-Z*(cupHeight-mainThick);
+
+  
   ModelSupport::buildPlane
     (SMap,buildIndex+5001,Origin-Y*(length/2.0-frontSupportThick),Y);
   // Points for cut:
@@ -290,27 +302,41 @@ M1BackPlate::createSupportSurfaces()
 
   // Ring points:
   // Note ringTPt higher than 26
-  const Geometry::Vec3D ringTPt(topOutPoint+ringTopPt.getInBasis(X,Y,Z));
-  const Geometry::Vec3D ringMPt(topBasePoint+ringBackPt.getInBasis(X,Y,Z));
-  const Geometry::Vec3D ringLPt(ringMPt-Z*ringGap);
+  ELog::EM<<"TopOut = "<<topOutPoint<<ELog::endDiag;
+  const Geometry::Vec3D ringTopHPt(topEdgePoint+ringTopPt.getInBasis(X,Y,Z));
+  const Geometry::Vec3D ringTopMidPt(topBasePoint+ringBackPt.getInBasis(X,Y,Z));
+
+  const Geometry::Vec3D ringLowMidPt(ringTopMidPt-Z*ringGap);
+  // note the -Z in the basis
+  const Geometry::Vec3D ringLowHPt(lowerEdgePoint+
+				   ringTopPt.getInBasis(X,Y,-Z));
+
 
   ModelSupport::buildPlane(SMap,buildIndex+5011,
 			   Origin+Y*(ringYPos-ringThick/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+5012,
 			   Origin+Y*(ringYPos+ringThick/2.0),Y);
 
-  ModelSupport::buildPlane(SMap,buildIndex+5016,ringTPt,Z);
-  ModelSupport::buildPlane(SMap,buildIndex+5013,ringTPt,X); // cut plane
-  ModelSupport::buildPlane(SMap,buildIndex+5015,ringMPt,X); // cut plane
+  ModelSupport::buildPlane(SMap,buildIndex+5016,ringTopHPt,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5013,ringTopHPt,X); // cut plane
+  ModelSupport::buildPlane(SMap,buildIndex+5014,ringTopMidPt,X); // cut plane
+  ModelSupport::buildPlane(SMap,buildIndex+5015,ringTopMidPt,Z); // cut plane
+
+  ModelSupport::buildPlane(SMap,buildIndex+5025,ringLowMidPt,Z); // cut plane
+  ModelSupport::buildPlane(SMap,buildIndex+5024,ringLowMidPt,X); // cut plane
+  ModelSupport::buildPlane(SMap,buildIndex+5026,ringLowHPt,Z); // cut plane
+  ModelSupport::buildPlane(SMap,buildIndex+5023,ringLowHPt,X); // cut plane
 
   ModelSupport::buildCylinder(SMap,buildIndex+5017,
-			      ringTPt,ringMPt,ringLPt,
+			      ringTopHPt,ringTopMidPt,ringLowMidPt,
 			      Y); // axis along Y
 
   
-  ELog::EM<<"Ring == "<<ringTPt<<ELog::endDiag;
-  ELog::EM<<"Ring == "<<ringMPt<<ELog::endDiag;
-  ELog::EM<<"Ring == "<<ringLPt<<ELog::endDiag;
+  ELog::EM<<"Ring == "<<ringTopHPt<<ELog::endDiag;
+  ELog::EM<<"Ring == "<<ringTopMidPt<<ELog::endDiag;
+  ELog::EM<<"Ring == "<<ringLowMidPt<<ELog::endDiag;
+  ELog::EM<<"Ring == "<<ringLowHPt<<ELog::endDiag;
+  ELog::EM<<"X == "<<X<<ELog::endDiag;
 
   
 
@@ -326,22 +352,80 @@ M1BackPlate::createSupportObjects(Simulation& System)
   HeadRule HR;
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -5001 -5007 -124 16 -26 13");
-  makeCell("CVoid",System,cellIndex++,supportMat,0.0,HR);  
+  makeCell("XVoid",System,cellIndex++,supportMat,0.0,HR);  
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -5001 (5007:26) -124 -36 13");
-  makeCell("CVoid",System,cellIndex++,voidMat,0.0,HR);  
+  makeCell("XVoid",System,cellIndex++,voidMat,0.0,HR);  
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -5001 -13 33  16 -36");
-  makeCell("CVoid",System,cellIndex++,voidMat,0.0,HR);  
+  makeCell("XVoid",System,cellIndex++,voidMat,0.0,HR);  
 
   //ring:
+  // removal of space:
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-5011:5012");
+  CellMap::insertComponent(System,"CVoid",2,HR);
+  CellMap::insertComponent(System,"CVoid",1,HR);
+  CellMap::insertComponent(System,"CVoid",0,HR);
+
+  // top ring part:
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"5011 -5012 5013 -124 16 -5016");
-  makeCell("CVoid",System,cellIndex++,voidMat,0.0,HR);  
+  makeCell("RingSupport",System,cellIndex++,supportMat,0.0,HR);
+  
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"5011 -5012 -5013 -5017 16 -5016");
+  makeCell("RingSupport",System,cellIndex++,supportMat,0.0,HR);  
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5011 -5012");
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"5011 -5012 -124 5013 -36 5016");
+  makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR);  
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"5011 -5012 33 -5013 -36 16 5017");
+  makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR);  
 
 
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"5011 -5012 5015 -13 -16 -5017");
+  makeCell("RingSupport",System,cellIndex++,supportMat,0.0,HR); 
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"5011 -5012 -5015 5025 -13 33");
+  makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"5011 -5012 5015 -16 5017 -13  33");
+  makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR);
+
+  // lower support // 5023
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5011 -5012 5013 -224 -15 5026");
+  makeCell("RingLSupport",System,cellIndex++,supportMat,0.0,HR);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"5011 -5012 -5013 -5017 -15 5026");
+  makeCell("RingLSupport",System,cellIndex++,supportMat,0.0,HR);  
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"5011 -5012 -224 5013 35 -5026");
+  makeCell("RingLVoid",System,cellIndex++,voidMat,0.0,HR);  
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"5011 -5012 33 -5013 35 -15 5017");
+  makeCell("RingLVoid",System,cellIndex++,voidMat,0.0,HR);  
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"5011 -5012 -5025 -13 15 -5017");
+  makeCell("RingLSupport",System,cellIndex++,supportMat,0.0,HR); 
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"5011 -5012 -5025 15 5017 -13  33");
+  makeCell("RingLVoid",System,cellIndex++,voidMat,0.0,HR);
+
+  /*
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5011 -5012 5013 -124 15 5015");
+  makeCell("RingSupport",System,cellIndex++,supportMat,0.0,HR);
 
 
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"5011 -5012 5015 -224 15 -5017");
+  makeCell("RingSupport",System,cellIndex++,supportMat,0.0,HR); 
+  */
+  
+  
   return;
 }
   
@@ -353,7 +437,6 @@ M1BackPlate::createObjects(Simulation& System)
    */
 {
   ELog::RegMethod RegA("M1BackPlate","createObjects");
-
 
   const HeadRule topHR=getRule("Top");
   const HeadRule baseHR=getRule("Base");

@@ -91,8 +91,8 @@ M1DetailGenerator::M1DetailGenerator() :
   bFrontSupportZCut(0.2),
 
   bRingYPos(-17.0),bRingThick(1.0),
-  bRingBackPt(-0.6,-16.0,-0.6),
-  bRingTopPt(-2.4,-16.0,0.6),
+  bRingBackPt(-0.6,-16.0,-1.0),
+  bRingTopPt(-2.4,-16.0,2.4),
   bRingGap(5.0),
   
   eXOut(7.98),eLength(38.0),eThick(0.1),eHeight(6.8),
