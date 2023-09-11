@@ -138,7 +138,14 @@ class M1DetailGenerator
   double eEdge;                 ///< Internal step (10.3)
   double eHoleRadius;           ///< Hole in centre (2.36/2)
 
-  // 
+  //
+  double fBladeIRadius;           ///< Inner radius
+  double fBladeORadius;           ///< Outer radius
+  double fBladeThick;             ///< Thickness of one fBlade
+  double fBladeTopAngle;          ///< Angle to stop the top part of circle
+  double fBladeBaseAngle;         ///< Angle to stop the base part of cube
+  double fBladeBaseWidth;         ///< Full width of base
+  double fBladeBaseHeight;        ///< Height to down cut
   
   std::string mirrorMat;             ///< XStal material
   std::string waterMat;              ///< Plate material
@@ -154,6 +161,7 @@ class M1DetailGenerator
   
   void makeCrystal(FuncDataBase&,const std::string&,
 		   const double,const double) const;
+  void makeFrame(FuncDataBase&,const std::string&) const;
   void makeSupport(FuncDataBase&,const std::string&) const;
   void makeFrontPlate(FuncDataBase&,const std::string&) const;
   void makeBackPlate(FuncDataBase&,const std::string&) const;

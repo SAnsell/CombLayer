@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   softimaxInc/M1Detail.h
+ * File:   softimaxInc/M1Frame.h
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
  *
@@ -19,41 +19,45 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_M1Detail_h
-#define xraySystem_M1Detail_h
+#ifndef xraySystem_M1Frame_h
+#define xraySystem_M1Frame_h
 
 class Simulation;
 
 namespace xraySystem
 {
-
-  class M1Mirror;
-  class M1BackPlate;
-  class M1FrontShield;
-  class M1Connectors;
-  class M1Frame;
   
 /*!
-  \class M1Detail
+  \class M1Frame
   \author S. Ansell
   \version 1.0
-  \date October 2019
-  \brief Double Mirror Mono arrangement
+  \date September 2023
+  \brief Outer Main support structure for mirror
 */
 
-class M1Detail :
+class M1Frame :
   public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
+  public attachSystem::ExternalCut,
   public attachSystem::CellMap,
-  public attachSystem::SurfMap
+  public attachSystem::SurfMap,
+  public attachSystem::PointMap
 {
  private:
 
-  std::shared_ptr<M1Mirror> mirror;
-  std::shared_ptr<M1BackPlate> cClamp;
-  std::shared_ptr<M1Connectors> connectors;
-  std::shared_ptr<M1FrontShield> frontShield;
-  std::shared_ptr<M1Frame> frame;  
+  // top edge supports:
+
+  double bladeIRadius;              ///< Outer radius
+  double bladeORadius;              ///< Outer radius
+  double bladeThick;               ///< Thickness of one blade
+  double bladeTopAngle;            ///< Angle to stop the top part of circle
+  double bladeBaseAngle;           ///< Angle to stop the base part of cube
+  double bladeBaseWidth;           ///< Full width of base
+  double bladeBaseHeight;          ///< Height to down cut
+  
+  int supportMat;           ///< Base material
+  int voidMat;              ///< outer pipe material
+
   // Functions:
 
   void populate(const FuncDataBase&) override;
@@ -63,11 +67,12 @@ class M1Detail :
 
  public:
 
-  M1Detail(const std::string&);
-  M1Detail(const M1Detail&);
-  M1Detail& operator=(const M1Detail&);
-  ~M1Detail() override;
+  M1Frame(const std::string&);
+  M1Frame(const M1Frame&);
+  M1Frame& operator=(const M1Frame&);
+  ~M1Frame() override;
 
+  using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int) override;

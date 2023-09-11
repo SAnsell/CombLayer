@@ -61,12 +61,13 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "PointMap.h"
 
 #include "M1Mirror.h"
 #include "M1BackPlate.h"
 #include "M1FrontShield.h"
 #include "M1Connectors.h"
-#include "M1Support.h"
+#include "M1Frame.h"
 #include "M1Detail.h"
 
 namespace xraySystem
@@ -81,7 +82,7 @@ M1Detail::M1Detail(const std::string& Key) :
   cClamp(new M1BackPlate(keyName+"CClamp")),
   connectors(new M1Connectors(keyName+"Connect")),
   frontShield(new M1FrontShield(keyName+"FPlate")),
-  supports(new M1Support(keyName+"Support"))
+  frame(new M1Frame(keyName+"Frame"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -94,6 +95,7 @@ M1Detail::M1Detail(const std::string& Key) :
   OR.addObject(cClamp);
   OR.addObject(connectors);
   OR.addObject(frontShield);
+  OR.addObject(frame);
 }
 
 M1Detail::~M1Detail()
@@ -173,6 +175,10 @@ M1Detail::createObjects(Simulation& System)
   frontShield->setCutSurf("Base",*cClamp,"innerSide");
   frontShield->createAll(System,*cClamp,"front");
 
+  frame->setSurf("InnerRadius",*cClamp,"CylRadius");
+  frame->setSurf("FSurf",*cClamp,"FCylInner");
+  frame->setSurf("BSurf",*cClamp,"BCylInner");
+  frame->createAll(System,*mirror,"centreAxis");
   
   return;
 }
@@ -198,7 +204,7 @@ M1Detail::createAll(Simulation& System,
     \param System :: Simulation
     \param FC :: FixedComp to construct from
     \param sideIndex :: Side point
-   */
+  */
 {
   ELog::RegMethod RegA("M1Detail","createAll");
 

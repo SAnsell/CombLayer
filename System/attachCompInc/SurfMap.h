@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/SurfMap.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,6 +62,10 @@ class SurfMap : public BaseMap
   
   bool hasSurf(const std::string& K,const size_t index =0) const
   { return BaseMap::hasItem(K,index); }
+
+  void setSurf(const std::string& K,const SurfMap& SM,
+	       const std::string& AKey,const size_t index =0)
+  { BaseMap::setItem(K,SM.getSurf(AKey,index)); }
 
   void setSurf(const std::string& K,const int CN)
     { BaseMap::setItem(K,CN); }

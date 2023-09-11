@@ -1,6 +1,6 @@
 set (softimaxSources
     BiPortTube.cxx BremOpticsColl.cxx M1BackPlate.cxx 
-    M1Connectors.cxx M1Detail.cxx M1FrontShield.cxx 
+    M1Connectors.cxx M1Detail.cxx M1Frame.cxx M1FrontShield.cxx 
     M1Mirror.cxx M1Support.cxx SOFTIMAX.cxx 
     softimaxFrontEnd.cxx softimaxOpticsLine.cxx softimaxVariables.cxx 
 )
@@ -28,6 +28,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/M1BackPlate.cxx
   ${tarDIR}/M1Connectors.cxx
   ${tarDIR}/M1Detail.cxx
+  ${tarDIR}/M1Frame.cxx
   ${tarDIR}/M1FrontShield.cxx
   ${tarDIR}/M1Mirror.cxx
   ${tarDIR}/M1Support.cxx
@@ -40,6 +41,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/M1BackPlate.h
   ${tarINC}/M1Connectors.h
   ${tarINC}/M1Detail.h
+  ${tarINC}/M1Frame.h
   ${tarINC}/M1FrontShield.h
   ${tarINC}/M1Mirror.h
   ${tarINC}/M1Support.h

@@ -380,6 +380,9 @@ M1Mirror::createLinks()
   FixedComp::setConnect(6,Origin-X*width,Y);
   FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+3));
 
+  // note no origin:
+  FixedComp::setConnect(13,Origin-X*(width,Y),Y);
+
   nameSideIndex(2,"outSide");
   nameSideIndex(3,"beamSide");
   nameSideIndex(3,"mirrorSide");
@@ -392,13 +395,14 @@ M1Mirror::createLinks()
   nameSideIndex(10,"slotTop");
   nameSideIndex(11,"slotAMid");
   nameSideIndex(12,"slotBMid");
+  nameSideIndex(13,"centreAxis");
   
   return;
 }
 
 void
 M1Mirror::createAll(Simulation& System,
-		  const attachSystem::FixedComp& FC,
+		    const attachSystem::FixedComp& FC,
 		  const long int sideIndex)
   /*!
     Extrenal build everything
