@@ -364,6 +364,7 @@ softimaxOpticsLine::buildM1Mirror(Simulation& System,
   M1Detail->addInsertCell(M1Box->getCell("Void"));
   //  M1Detail->setCell("FrontVoid",M1TubeFront->getCell("Void",3));
   M1Detail->createAll(System,*M1Box,0);
+  ELog::EM<<"Y == "<<M1Detail->getY()<<ELog::endDiag;
 
   /*  M1Stand->setCutSurf("floor",this->getRule("floor"));
   M1Stand->setCutSurf("front",*M1Tube,-1);

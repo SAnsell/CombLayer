@@ -167,7 +167,7 @@ M1Frame::createAll(Simulation& System,
   createLinks();
   insertObjects(System);
 
-  ELog::EM<<"Origin == "<<Origin <<" "<<Y<<ELog::endDiag;
+  ELog::EM<<"Origin == "<<Origin <<" :: "<<Y<<ELog::endDiag;
   return;
 }
 

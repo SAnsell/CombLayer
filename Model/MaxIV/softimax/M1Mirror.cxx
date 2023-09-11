@@ -94,11 +94,11 @@ M1Mirror::populate(const FuncDataBase& Control)
 
   FixedRotate::populate(Control);
 
-  theta=Control.EvalVar<double>(keyName+"Theta");
-  
+  theta=Control.EvalVar<double>(keyName+"Theta");  
   phi=Control.EvalVar<double>(keyName+"Phi");
   theta=0.0;
-  ELog::EM<<"Theta == "<<theta<<ELog::endDiag;
+  zAngle=0.0;
+  ELog::EM<<"Warnign theta/zangle set to zero" <<ELog::endDiag;
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   length=Control.EvalVar<double>(keyName+"Length");
@@ -381,7 +381,7 @@ M1Mirror::createLinks()
   FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+3));
 
   // note no origin:
-  FixedComp::setConnect(13,Origin-X*(width,Y),Y);
+  FixedComp::setConnect(13,Origin-X*(width/2.0),Y);
 
   nameSideIndex(2,"outSide");
   nameSideIndex(3,"beamSide");

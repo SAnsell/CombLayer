@@ -142,6 +142,7 @@ M1Detail::createObjects(Simulation& System)
 
   mirror->addInsertCell(getInsertCells());
   mirror->createAll(System,*this,0);
+  ELog::EM<<"Y == "<<mirror->getY()<<ELog::endDiag;
 
   cClamp->addInsertCell(getInsertCells());
   cClamp->setCutSurf("FarEnd",*mirror,"back");
