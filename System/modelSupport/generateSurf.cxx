@@ -692,8 +692,7 @@ buildExpandedCylinder(ModelSupport::surfRegister& SMap,
 
   ModelSupport::buildCylinder
     (SMap,newSN,CPtr->getCentre(),CPtr->getNormal(),CPtr->getRadius()+dExtra);
-  return SMap.realSurfPtr(newSN);
-  return 0;
+  return SMap.realPtr<Geometry::Cylinder>(newSN);
 } 
 
 Geometry::Surface*

@@ -311,13 +311,12 @@ M1BackPlate::createSupportSurfaces()
   const Geometry::Vec3D ringLowHPt(lowerEdgePoint+
 				   ringTopPt.getInBasis(X,Y,-Z));
 
-
+  ELog::EM<<"RP == "<<ringYPos<<ELog::endDiag;
   ModelSupport::buildPlane(SMap,buildIndex+5011,
 			   Origin-Y*(ringYPos+ringThick/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+5012,
 			   Origin-Y*(ringYPos-ringThick/2.0),Y);
 
-  ELog::EM<<"Y == "<<Y<<ELog::endDiag;
   ModelSupport::buildPlane(SMap,buildIndex+6011,
 			   Origin+Y*(ringYPos-ringThick/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+6012,

@@ -417,7 +417,7 @@ SurfMap::makeExpandedCylinder(const std::string& refKey,
 
   const int refSurfNum=SurfMap::getSurf(refKey);
   
-  return ModelSupport::buildExpandCylinder(SMap,newSN,refSurfNum,D);
+  return ModelSupport::buildExpandedCylinder(SMap,refSurfNum,newSN,D);
 }
 
 Geometry::Plane*
