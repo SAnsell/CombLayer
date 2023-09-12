@@ -25,6 +25,12 @@
 class Simulation;
 class HeadRule;
 
+namespace Geometry
+{
+  class Cylinder;
+  class Plane;
+}
+  
 namespace ModelSupport
 {
   class surfRegister;
@@ -115,10 +121,18 @@ class SurfMap : public BaseMap
   std::string getSurfComplement(const std::string&) const;
 
 
-  void makeShiftedPlane(const std::string&,ModelSupport::surfRegister&,
+  Geometry::Cylinder*
+  makeExpandedCylinder(const std::string&,ModelSupport::surfRegister&,
+		       const int,const double);
+  Geometry::Plane*
+  makeShiftedPlane(const std::string&,ModelSupport::surfRegister&,
+		   const int,const Geometry::Vec3D&,const double);
+  Geometry::Plane*
+  makeShiftedPlane(const std::string&,ModelSupport::surfRegister&,
 			const int,const std::string&,
 			const Geometry::Vec3D&,const double);
-  void makeShiftedPlane(const std::string&,ModelSupport::surfRegister&,
+  Geometry::Plane*
+  makeShiftedPlane(const std::string&,ModelSupport::surfRegister&,
 			const int,const int,
 			const Geometry::Vec3D&,const double);
   

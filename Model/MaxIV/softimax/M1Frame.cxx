@@ -95,8 +95,7 @@ M1Frame::populate(const FuncDataBase& Control)
 
   FixedRotate::populate(Control);
 
-  bladeIRadius=Control.EvalVar<double>(keyName+"BladeIRadius");
-  bladeORadius=Control.EvalVar<double>(keyName+"BladeORadius");
+  bladeOutRad=Control.EvalVar<double>(keyName+"BladeOutRad");
   bladeThick=Control.EvalVar<double>(keyName+"BladeThick");
   bladeTopAngle=Control.EvalVar<double>(keyName+"BladeTopAngle");
   bladeBaseAngle=Control.EvalVar<double>(keyName+"BladeBaseAngle");
@@ -117,7 +116,8 @@ M1Frame::createSurfaces()
 {
   ELog::RegMethod RegA("M1Frame","createSurfaces");
 
-
+  SurfMap::makeExpandedCylinder("CylRadius",SMap,buildIndex+7,bladeOutRad);
+  SurfMap::makeShiftedPlane("FSurf",SMap,buildIndex+101,Y,bladeThick);
   
   return;
 }
@@ -131,6 +131,18 @@ M1Frame::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("M1Frame","createObjects");
 
+  const HeadRule flatHR=getSurfRule("FSurf");
+  const HeadRule innerHR=getSurfRule("CylRadius");
+  HeadRule HR;
+  
+
+
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"101 7 -17");
+  makeCell("FRingsupport",System,cellIndex++,supportMat,0.0,HR*flatHR);  
+
+  
   return;
 }
 

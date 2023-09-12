@@ -99,7 +99,7 @@ M1DetailGenerator::M1DetailGenerator() :
   eEdge(1.03),eHoleRadius(1.18),
 
   
-  fBladeIRadius(8.0),fBladeORadius(10.0),
+  fBladeOutRad(2.0),
   fBladeThick(1.0),fBladeTopAngle(30.0),
   fBladeBaseAngle(45.0),fBladeBaseWidth(24.0),
   fBladeBaseHeight(5.0),  
@@ -284,8 +284,7 @@ M1DetailGenerator::makeFrame(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("M1DetailGenerator","makeFrame");
 
-  Control.addVariable(keyName+"BladeIRadius",fBladeIRadius);
-  Control.addVariable(keyName+"BladeORadius",fBladeORadius);
+  Control.addVariable(keyName+"BladeOutRad",fBladeOutRad);
   Control.addVariable(keyName+"BladeThick",fBladeThick);
   Control.addVariable(keyName+"BladeTopAngle",fBladeTopAngle);
   Control.addVariable(keyName+"BladeBaseAngle",fBladeBaseAngle);

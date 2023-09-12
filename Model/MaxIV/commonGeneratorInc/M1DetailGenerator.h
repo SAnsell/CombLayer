@@ -139,8 +139,7 @@ class M1DetailGenerator
   double eHoleRadius;           ///< Hole in centre (2.36/2)
 
   //
-  double fBladeIRadius;           ///< Inner radius
-  double fBladeORadius;           ///< Outer radius
+  double fBladeOutRad;            ///< Increase in radius
   double fBladeThick;             ///< Thickness of one fBlade
   double fBladeTopAngle;          ///< Angle to stop the top part of circle
   double fBladeBaseAngle;         ///< Angle to stop the base part of cube

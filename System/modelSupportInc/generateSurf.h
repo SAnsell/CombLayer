@@ -59,6 +59,10 @@ buildShiftedPlaneReversed(surfRegister&,const int,
 			  const Geometry::Plane*,
 			  const double);
 
+Geometry::Cylinder*
+buildExpandedCylinder(surfRegister&,const int,
+		      const int,const double);
+
 Geometry::Plane*
 buildPlaneRotAxis(surfRegister&,const int,
 		  const Geometry::Vec3D&,const Geometry::Vec3D&,

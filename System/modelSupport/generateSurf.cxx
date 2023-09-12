@@ -671,6 +671,31 @@ buildShiftedSurf(surfRegister& SMap,
 } 
 
 
+Geometry::Cylinder*
+buildExpandedCylinder(ModelSupport::surfRegister& SMap,
+		      const int refSN,
+		      const int newSN,
+		      const double dExtra) 
+  /*!
+    Support function to calculate the expanded cylinder from centre
+    \param SMap :: local surface register
+    \param refSN :: surface to expand
+    \param newSN :: new surface
+    \param dExtra :: displacement extra [cm]
+    \return Surface ptr [nullPtr on failure]
+  */
+{
+  ELog::RegMethod RegA("generateSurf","buildExpandedSurf");
+
+  // throws:
+  const Geometry::Cylinder* CPtr=SMap.realPtr<Geometry::Cylinder>(refSN);
+
+  ModelSupport::buildCylinder
+    (SMap,newSN,CPtr->getCentre(),CPtr->getNormal(),CPtr->getRadius()+dExtra);
+  return SMap.realSurfPtr(newSN);
+  return 0;
+} 
+
 Geometry::Surface*
 buildExpandedSurf(ModelSupport::surfRegister& SMap,
 		 const int refSN,
@@ -708,13 +733,6 @@ buildExpandedSurf(ModelSupport::surfRegister& SMap,
   // Cylinder case:
   if (CPtr)
     {
-      // // this may not alway be what we want:
-      Geometry::Vec3D NVec=(CPtr->getCentre()-expandCentre);
-      const Geometry::Vec3D CAxis=CPtr->getNormal();
-      // now must remove component in axis direction
-      NVec-= CAxis * NVec.dotProd(CAxis);
-      NVec.makeUnit();
-      //	  const Geometry::Vec3D NC=CPtr->getCentre()+NVec*dExtra;
       const Geometry::Vec3D NC=CPtr->getCentre();
       
       ModelSupport::buildCylinder
@@ -723,7 +741,5 @@ buildExpandedSurf(ModelSupport::surfRegister& SMap,
     }
   return 0;
 } 
-
-
 
 } // ModelSupport

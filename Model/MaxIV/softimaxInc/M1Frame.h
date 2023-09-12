@@ -47,8 +47,7 @@ class M1Frame :
 
   // top edge supports:
 
-  double bladeIRadius;              ///< Outer radius
-  double bladeORadius;              ///< Outer radius
+  double bladeOutRad;              ///< Outer radius from support
   double bladeThick;               ///< Thickness of one blade
   double bladeTopAngle;            ///< Angle to stop the top part of circle
   double bladeBaseAngle;           ///< Angle to stop the base part of cube

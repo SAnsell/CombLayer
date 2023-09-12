@@ -317,6 +317,7 @@ M1BackPlate::createSupportSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+5012,
 			   Origin-Y*(ringYPos-ringThick/2.0),Y);
 
+  ELog::EM<<"Y == "<<Y<<ELog::endDiag;
   ModelSupport::buildPlane(SMap,buildIndex+6011,
 			   Origin+Y*(ringYPos-ringThick/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+6012,
@@ -337,7 +338,7 @@ M1BackPlate::createSupportSurfaces()
 			      Y); // axis along Y
   SurfMap::setSurf("CylRadius",SMap.realSurf(buildIndex+5017));
   SurfMap::setSurf("FCylInner",SMap.realSurf(buildIndex+5012));
-  SurfMap::setSurf("BCylInner",SMap.realSurf(buildIndex+6011));
+  SurfMap::setSurf("BCylInner",-SMap.realSurf(buildIndex+6011));
   
   return;
 }
@@ -368,7 +369,7 @@ M1BackPlate::createSupportObjects(Simulation& System)
   int BI(buildIndex);
   for(size_t i=0;i<2;i++)
     {
-      const std::string rN((i) ? "BRing" : "BRing");
+      const std::string rN((i) ? "FRing" : "BRing");
       const HeadRule yCutHR=
 	ModelSupport::getHeadRule(SMap,BI,"5011 -5012");
       

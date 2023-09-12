@@ -324,7 +324,7 @@ m1DetailVariables(FuncDataBase& Control,
   VBoxGen.setBPortOffset(xPortStep,0.0);
   VBoxGen.setBPortAngle(2*theta,0.0);  
   // width/height/depth/length
-  VBoxGen.generateBox(Control,boxName, 35.0,4.95,14.6, 62.0);
+  VBoxGen.generateBox(Control,boxName, 35.0,5.95,14.6, 62.0);
 
   const std::string frontName=mirrorKey+"M1TubeFront";
   const std::string backName=mirrorKey+"M1TubeFront";
