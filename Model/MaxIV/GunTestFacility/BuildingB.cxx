@@ -71,7 +71,7 @@ namespace MAXIV::GunTestFacility
 
   BuildingB::BuildingB(const std::string& Key)  :
     attachSystem::ContainedComp(),
-    attachSystem::FixedRotate(Key,12),
+    attachSystem::FixedRotate(Key,13),
     attachSystem::CellMap(),
     attachSystem::SurfMap(),
     ductWave(std::make_shared<xraySystem::Duct>(keyName+"DuctWave")),
@@ -643,6 +643,9 @@ namespace MAXIV::GunTestFacility
 
     FixedComp::setConnect(11,Origin+Z*(height),Z);
     FixedComp::setNamedLinkSurf(11,"RoofGunTestBottom",SMap.realSurf(buildIndex+6));
+
+    FixedComp::setConnect(12,Origin+Y*(gunRoomLength/2),-Y);
+    FixedComp::setNamedLinkSurf(12,"BackWallEast",SMap.realSurf(buildIndex+2));
 
     return;
   }

@@ -506,7 +506,7 @@ makeMaxIV::buildGunTest(Simulation& System,
   gtf = std::make_shared<MAXIV::GunTestFacility::GunTestFacility>("GTF");
   OR.addObject(gtf);
 
-  constexpr int voidCell(74123);
+  // constexpr int voidCell(74123);
   // gtf->addInsertCell(voidCell);
   gtf->createAll(System,World::masterOrigin(),0);
 

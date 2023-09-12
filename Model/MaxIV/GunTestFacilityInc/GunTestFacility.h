@@ -24,6 +24,8 @@
 
 namespace MAXIV
 {
+  class GTFLine;
+
   namespace GunTestFacility
   {
     /*!
@@ -43,6 +45,7 @@ namespace MAXIV
     private:
 
       std::shared_ptr<BuildingB> buildingB;
+      std::shared_ptr<MAXIV::GTFLine>    beamLine;
 
     public:
 

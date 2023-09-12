@@ -46,11 +46,18 @@
 
 #include "DuctGenerator.h"
 #include "RingDoorGenerator.h"
-
+#include "CFFlanges.h"
+#include "SplitPipeGenerator.h"
+#include "BellowGenerator.h"
 
 namespace setVariable
 {
   void BuildingBVariables(FuncDataBase& Control, const std::string& name)
+    /*!
+      Set Gun Test Facility Building variables
+      \param Control :: Database to use
+      \param name :: name prefix
+    */
   {
     // References:
     // [0] Bjorn's drawings (have higher priority than other refs)
@@ -176,17 +183,31 @@ namespace setVariable
 
   }
 
-  void GunTestFacilityVariables(FuncDataBase& Control)
+  void BeamLineVariables(FuncDataBase& Control, const std::string& name)
   /*!
     Set Gun Test Facility Building variables
     \param Control :: Database to use
     \param name :: name prefix
   */
   {
+    Control.addVariable("GTFLineOuterLeft", 100.0);
+
+    setVariable::BellowGenerator BellowGen;
+    BellowGen.setCF<setVariable::CF40>();
+    BellowGen.generateBellow(Control,name+"DummyBellow",7.50);
+
+  }
+
+  void GunTestFacilityVariables(FuncDataBase& Control)
+  /*!
+    Set Gun Test Facility Building
+    \param Control :: Database to use
+  */
+  {
     ELog::RegMethod RegA("", "GunTestFacilityVariables");
 
-    const std::string name = "BldB";
-    BuildingBVariables(Control, name);
+    BuildingBVariables(Control, "BldB");
+    BeamLineVariables(Control, "GTFLine");
 
   }
 }

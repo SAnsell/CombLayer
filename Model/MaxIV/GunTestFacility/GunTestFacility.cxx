@@ -35,6 +35,22 @@
 #include <memory>
 
 #include "FileReport.h"
+#include "OutputLog.h"
+#include "Vec3D.h"
+#include "surfRegister.h"
+#include "HeadRule.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
+#include "FixedRotate.h"
+#include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
+#include "SurfMap.h"
+
+#include "BuildingB.h"
+
+
+#include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
@@ -50,8 +66,14 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "CopiedComp.h"
+#include "ExternalCut.h"
+#include "BlockZone.h"
 
-#include "BuildingB.h"
+
+
+
+#include "GTFLine.h"
 #include "GunTestFacility.h"
 
 namespace MAXIV::GunTestFacility
@@ -60,7 +82,8 @@ namespace MAXIV::GunTestFacility
   GunTestFacility::GunTestFacility(const std::string& KN) :
     attachSystem::FixedOffset(KN,6),
     attachSystem::CellMap(),
-    buildingB(new BuildingB("BldB"))
+    buildingB(new BuildingB("BldB")),
+    beamLine(new GTFLine("GTFLine"))
     /*!
       Constructor
       \param KN :: Keyname
@@ -72,6 +95,7 @@ namespace MAXIV::GunTestFacility
       ModelSupport::objectRegister::Instance();
 
     OR.addObject(buildingB);
+    OR.addObject(beamLine);
   }
 
   GunTestFacility::~GunTestFacility()
@@ -97,6 +121,17 @@ namespace MAXIV::GunTestFacility
     constexpr int voidCell(74123);
     buildingB->addInsertCell(voidCell);
     buildingB->createAll(System,FCOrigin,sideIndex);
+
+    beamLine->setInnerMat(buildingB->getCellMat(System,"GunRoom"));
+    beamLine->addInsertCell(buildingB->getCell("GunRoom"));
+
+    beamLine->setCutSurf("front",-buildingB->getSurf("front"));
+    beamLine->setCutSurf("back", buildingB->getSurf("back"));
+    beamLine->setCutSurf("floor",buildingB->getSurf("bottom"));
+
+    beamLine->createAll(System,*buildingB,buildingB->getSideIndex("BackWallEast"));
+
+
 
     return;
   }
