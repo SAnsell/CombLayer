@@ -105,6 +105,7 @@ M1BackPlate::populate(const FuncDataBase& Control)
   extentThick=Control.EvalVar<double>(keyName+"ExtentThick");
   baseExtent=Control.EvalVar<double>(keyName+"BaseExtent");
   voidExtra=Control.EvalVar<double>(keyName+"VoidExtra");
+  voidXExtra=Control.EvalVar<double>(keyName+"VoidXExtra");
 
   frontPlateGap=Control.EvalVar<double>(keyName+"FrontPlateGap");
   frontPlateWidth=Control.EvalVar<double>(keyName+"FrontPlateWidth");
@@ -133,6 +134,7 @@ M1BackPlate::populate(const FuncDataBase& Control)
   ringYPos=Control.EvalVar<double>(keyName+"RingYPos");
   ringThick=Control.EvalVar<double>(keyName+"RingThick");
   ringGap=Control.EvalVar<double>(keyName+"RingGap");
+  ringClampThick=Control.EvalVar<double>(keyName+"RingClampThick");
   ringBackPt=Control.EvalVar<Geometry::Vec3D>(keyName+"RingBackPt");
   ringTopPt=Control.EvalVar<Geometry::Vec3D>(keyName+"RingTopPt");
 
@@ -192,7 +194,7 @@ M1BackPlate::createSurfaces()
   // OutSide EXTERT
 
   ModelSupport::buildPlane
-    (SMap,buildIndex+33,Origin-X*(voidExtra+clearGap+backThick),X);
+    (SMap,buildIndex+33,Origin-X*(voidXExtra+clearGap+backThick),X);
   makeShiftedSurf(SMap,"Base",buildIndex+35,Z,-(voidExtra+clearGap+cupHeight));
   makeShiftedSurf(SMap,"Top",buildIndex+36,Z,voidExtra+clearGap+cupHeight);
 
@@ -302,7 +304,7 @@ M1BackPlate::createSupportSurfaces()
 
   // Ring points:
   // Note ringTPt higher than 26
-  ELog::EM<<"TopOut = "<<topOutPoint<<ELog::endDiag;
+
   const Geometry::Vec3D ringTopHPt(topEdgePoint+ringTopPt.getInBasis(X,Y,Z));
   const Geometry::Vec3D ringTopMidPt(topBasePoint+ringBackPt.getInBasis(X,Y,Z));
 
@@ -311,7 +313,6 @@ M1BackPlate::createSupportSurfaces()
   const Geometry::Vec3D ringLowHPt(lowerEdgePoint+
 				   ringTopPt.getInBasis(X,Y,-Z));
 
-  ELog::EM<<"RP == "<<ringYPos<<ELog::endDiag;
   ModelSupport::buildPlane(SMap,buildIndex+5011,
 			   Origin-Y*(ringYPos+ringThick/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+5012,
@@ -360,7 +361,7 @@ M1BackPlate::createSupportObjects(Simulation& System)
 
   //ring:
   // removal of space:
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(-5011:5012) (-6011:6012)");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-6011:6012");
   CellMap::insertComponent(System,"CVoid",2,HR);
   CellMap::insertComponent(System,"CVoid",1,HR);
   CellMap::insertComponent(System,"CVoid",0,HR);
@@ -460,7 +461,10 @@ M1BackPlate::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 1 -2 13 -104 -16 (6:-3)");
   makeCell("Plate",System,cellIndex++,baseMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -13 33 15 -16 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -5011 -13 33 15 -16 ");
+  makeCell("FrontCVoid",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5012 -2 -13 33 15 -16 ");
   makeCell("CVoid",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 16 -26 124 -104");
@@ -508,11 +512,18 @@ M1BackPlate::createObjects(Simulation& System)
   
   // OUTER VOIDS:
   // main c voids
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 33 -224 35 -15");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -5011 33 -224 35 -15");
+  makeCell("FrontCVoid",System,cellIndex++,voidMat,0.0,HR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5012 -2 33 -224 35 -15");
   makeCell("CVoid",System,cellIndex++,voidMat,0.0,HR);  
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5001 -2 33 -124 16 -36");
-  makeCell("CVoid",System,cellIndex++,voidMat,0.0,HR);  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5001 -5011 33 -124 16 -36");
+  makeCell("FrontCVoid",System,cellIndex++,voidMat,0.0,HR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5012 -2 33 -124 16 -36");
+  makeCell("CVoid",System,cellIndex++,voidMat,0.0,HR);
+  
   //  addOuterUnionSurf(HR);
   // spring voids
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 104 -1004 506 -36");
@@ -642,7 +653,6 @@ M1BackPlate::createLinks()
   ELog::RegMethod RegA("M1BackPlate","createLinks");
 
   FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-  ELog::EM<<"Oring "<<Origin-Y*(length/2.0)<<ELog::endDiag;
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
   FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);

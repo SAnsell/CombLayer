@@ -176,6 +176,10 @@ M1Detail::createObjects(Simulation& System)
   frontShield->setCutSurf("Base",*cClamp,"innerSide");
   frontShield->createAll(System,*cClamp,"front");
 
+  frame->setCell("BackCVoid",*cClamp,"CVoid");
+  frame->setCell("LowCVoid",*cClamp,"CVoid",1);
+  frame->setCell("TopCVoid",*cClamp,"CVoid",2);
+    
   frame->setSurf("InnerRadius",*cClamp,"CylRadius");
   frame->setSurf("FSurf",*cClamp,"FCylInner");
   frame->setSurf("BSurf",*cClamp,"BCylInner");

@@ -53,6 +53,7 @@ class M1BackPlate :
   double topExtent;           ///< Length of top step
   double baseExtent;          ///< Length of top step
   double voidExtra;           ///< Extra space in voids for supports
+  double voidXExtra;           ///< Extra space in voids for supports (X)
 
   // spring supports 
   double supVOffset;           ///< offset from Crystal surface 
@@ -86,6 +87,7 @@ class M1BackPlate :
   double ringYPos;            ///< Y Position down support
   double ringThick;           ///< Metal thickness
   double ringGap;             ///< Vertical gap between top/base
+  double ringClampThick;      ///< Outer ring clamp extra radius
   Geometry::Vec3D ringBackPt; ///< ring offset from back/flat corners
   Geometry::Vec3D ringTopPt;  ///< ring offset from inner high top
   

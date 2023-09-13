@@ -60,6 +60,13 @@
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+#include "Surface.h"
+#include "Quadratic.h"
+#include "Cylinder.h"
+#include "Importance.h"
+#include "Object.h"
 #include "M1Frame.h"
 
 namespace xraySystem
@@ -95,6 +102,7 @@ M1Frame::populate(const FuncDataBase& Control)
 
   FixedRotate::populate(Control);
 
+  bladeOutRad=Control.EvalVar<double>(keyName+"BladeInRad");
   bladeOutRad=Control.EvalVar<double>(keyName+"BladeOutRad");
   bladeThick=Control.EvalVar<double>(keyName+"BladeThick");
   bladeTopAngle=Control.EvalVar<double>(keyName+"BladeTopAngle");
@@ -116,8 +124,32 @@ M1Frame::createSurfaces()
 {
   ELog::RegMethod RegA("M1Frame","createSurfaces");
 
-  SurfMap::makeExpandedCylinder("InnerRadius",SMap,buildIndex+7,bladeOutRad);
+
+  const Geometry::Cylinder* innerCyl=
+    SurfMap::realPtrThrow<Geometry::Cylinder>
+    ("InnerRadius","Inner Connect ring not defined");
+  
+  const Geometry::Vec3D Org=innerCyl->getCentre();
+
+  // mid divider
+  ModelSupport::buildPlane(SMap,buildIndex+100,Origin,Z);
+
+  SurfMap::makeExpandedCylinder("InnerRadius",SMap,buildIndex+7,bladeInRad);
+  SurfMap::makeExpandedCylinder("InnerRadius",SMap,buildIndex+17,bladeOutRad);
   SurfMap::makeShiftedPlane("FSurf",SMap,buildIndex+101,Y,bladeThick);
+
+  // Z == up (0 deg)
+  const Geometry::Vec3D Axis=
+    Z*std::sin(M_PI*bladeTopAngle/180.0)+
+    X*std::cos(M_PI*bladeTopAngle/180.0);
+  
+  ModelSupport::buildPlane(SMap,buildIndex+103,Org,Axis);
+
+  ModelSupport::buildPlane(SMap,buildIndex+105,Org-Z*bladeFullHeight,Z);
+    
+
+  
+
   
   return;
 }
@@ -131,18 +163,26 @@ M1Frame::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("M1Frame","createObjects");
 
-  const HeadRule flatHR=getSurfRule("FSurf");
-  const HeadRule innerHR=getSurfRule("InnerRadius");
-  HeadRule HR;
   
+  const HeadRule flatHR=getSurfRule("FSurf");
 
-  ELog::EM<<"Innert == "<<innerHR<<ELog::endDiag;
-  ELog::EM<<"Flat == "<<flatHR<<ELog::endDiag;
+  HeadRule HR;
 
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"101 -7");
-  makeCell("FRingsupport",System,cellIndex++,supportMat,0.0,HR*flatHR*innerHR);  
+  // First we are going to cut the main CVoids into section for the
+  // frame plates
+  MonteCarlo::Object* OPtr=getCellObject(System,"TopCVoid");
+  
+  HeadRule OHR=OPtr->getHeadRule();
+  OHR.subMatched(flatHR,HeadRule(SMap,buildIndex,101));
+  OPtr->procHeadRule(OHR);
 
+
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 7 -17 -103 100");
+  makeCell("FRingsupport",System,cellIndex++,supportMat,0.0,HR*flatHR);
+
+  
+  //  OPtr->addIntersection(HR*flatHR);
   
   return;
 }
@@ -180,7 +220,6 @@ M1Frame::createAll(Simulation& System,
   createLinks();
   insertObjects(System);
 
-  ELog::EM<<"Origin == "<<Origin <<" :: "<<Y<<ELog::endDiag;
   return;
 }
 

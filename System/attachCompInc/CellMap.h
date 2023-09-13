@@ -68,7 +68,11 @@ class CellMap  : public BaseMap
   /// Accessor to has Item (to avoid ambiguity with SurfMap)
   bool hasCell(const std::string& K,const size_t index =0) const
     { return BaseMap::hasItem(K,index); }
-    
+
+  void setCell(const std::string& K,const CellMap& CM,
+	       const std::string& AKey,const size_t index =0)
+  { BaseMap::setItem(K,CM.getCell(AKey,index)); }
+
   /// Create named item
   void setCell(const std::string& K,const int CN)
     { BaseMap::setItem(K,CN); }

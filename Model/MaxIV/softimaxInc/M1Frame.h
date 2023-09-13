@@ -47,12 +47,14 @@ class M1Frame :
 
   // top edge supports:
 
+  double bladeInRad;              ///< Outer radius from support
   double bladeOutRad;              ///< Outer radius from support
   double bladeThick;               ///< Thickness of one blade
   double bladeTopAngle;            ///< Angle to stop the top part of circle
   double bladeBaseAngle;           ///< Angle to stop the base part of cube
   double bladeBaseWidth;           ///< Full width of base
   double bladeBaseHeight;          ///< Height to down cut
+  double bladeFullHeight;          ///< Height midline to base
   
   int supportMat;           ///< Base material
   int voidMat;              ///< outer pipe material

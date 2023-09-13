@@ -110,14 +110,15 @@ class M1DetailGenerator
   double bTopExtent;           ///< Length of top step (4.2)
   double bBaseExtent;          ///< Length of top step (2.1)
   double bVoidExtra;           ///< Extra thickness for support
+  double bVoidXExtra;           ///< Extra thickness for support
 
   double clipYStep;            ///< Step from end
   double clipLen;              ///< Length of clip
   double clipSiThick;          ///< Clip thickness parallel to Si
   double clipAlThick;          ///< Clip thickness parallel to Al
-  double clipExtent;            ///< Clip length away from back
+  double clipExtent;           ///< Clip length away from back
 
-  double standoffRadius;    ///< Standoff radius
+  double standoffRadius;       ///< Standoff radius
   std::vector<Geometry::Vec3D> standPts;
 
   // supports:
@@ -130,6 +131,7 @@ class M1DetailGenerator
   Geometry::Vec3D bRingBackPt; ///< Offset to point from top/base of back plane
   Geometry::Vec3D bRingTopPt;  ///< Offset to point from top to cut
   double bRingGap;             ///< Gap between ring sections
+  double bRingClampThick;      ///< Thickess of outer support ring [only front]
   
   double eXOut;                 ///< Step from the back plane (79.8)
   double eLength;               ///< Length of electorn shield (38.0)
@@ -139,12 +141,14 @@ class M1DetailGenerator
   double eHoleRadius;           ///< Hole in centre (2.36/2)
 
   //
+  double fBladeInRad;            ///< Increase in radius
   double fBladeOutRad;            ///< Increase in radius
   double fBladeThick;             ///< Thickness of one fBlade
   double fBladeTopAngle;          ///< Angle to stop the top part of circle
   double fBladeBaseAngle;         ///< Angle to stop the base part of cube
   double fBladeBaseWidth;         ///< Full width of base
   double fBladeBaseHeight;        ///< Height to down cut
+  double fBladeFullHeight;        ///< Height from midline to base
   
   std::string mirrorMat;             ///< XStal material
   std::string waterMat;              ///< Plate material

@@ -76,7 +76,8 @@ M1DetailGenerator::M1DetailGenerator() :
   bBackThick(0.5),bMainThick(0.3),
   bExtentThick(0.4),
   bCupHeight(1.8),bTopExtent(4.2),
-  bBaseExtent(2.1),bVoidExtra(1.5),
+  bBaseExtent(2.1),bVoidExtra(2.5),
+  bVoidXExtra(3.5),
   
   clipYStep(7.7),clipLen(1.2),
   clipSiThick(0.2),clipAlThick(0.4),
@@ -93,16 +94,16 @@ M1DetailGenerator::M1DetailGenerator() :
   bRingYPos(17.0),bRingThick(1.0),
   bRingBackPt(-0.6,-16.0,-1.0),
   bRingTopPt(-2.4,-16.0,2.4),
-  bRingGap(5.0),
+  bRingGap(5.0),bRingClampThick(1.0),
   
   eXOut(7.98),eLength(38.0),eThick(0.1),eHeight(6.8),
   eEdge(1.03),eHoleRadius(1.18),
 
   
-  fBladeOutRad(2.0),
-  fBladeThick(1.0),fBladeTopAngle(30.0),
+  fBladeInRad(0.0),fBladeOutRad(2.0),
+  fBladeThick(1.0),fBladeTopAngle(40.0),
   fBladeBaseAngle(45.0),fBladeBaseWidth(24.0),
-  fBladeBaseHeight(5.0),  
+  fBladeBaseHeight(5.0),fBladeFullHeight(12.0),  
   
   mirrorMat("Silicon300K"),waterMat("H2O"),
   supportMat("Aluminium"),springMat("Aluminium"),
@@ -212,6 +213,7 @@ M1DetailGenerator::makeBackPlate(FuncDataBase& Control,
   Control.addVariable(keyName+"ExtentThick",bExtentThick);
   Control.addVariable(keyName+"BaseExtent",bBaseExtent);
   Control.addVariable(keyName+"VoidExtra",bVoidExtra);
+  Control.addVariable(keyName+"VoidXExtra",bVoidXExtra);
 
   Control.addVariable(keyName+"FrontPlateGap",fBaseGap);
   Control.addVariable(keyName+"FrontPlateWidth",fBaseWidth);
@@ -269,6 +271,7 @@ M1DetailGenerator::makeOuterSupport(FuncDataBase& Control,
   Control.addVariable(keyName+"RingYPos",bRingYPos);
   Control.addVariable(keyName+"RingThick",bRingThick);
   Control.addVariable(keyName+"RingGap",bRingGap);
+  Control.addVariable(keyName+"RingClampThick",bRingClampThick);
   Control.addVariable(keyName+"RingBackPt",bRingBackPt);
   Control.addVariable(keyName+"RingTopPt",bRingTopPt);
 
@@ -284,12 +287,14 @@ M1DetailGenerator::makeFrame(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("M1DetailGenerator","makeFrame");
 
+  Control.addVariable(keyName+"BladeInRad",fBladeInRad);
   Control.addVariable(keyName+"BladeOutRad",fBladeOutRad);
   Control.addVariable(keyName+"BladeThick",fBladeThick);
   Control.addVariable(keyName+"BladeTopAngle",fBladeTopAngle);
   Control.addVariable(keyName+"BladeBaseAngle",fBladeBaseAngle);
   Control.addVariable(keyName+"BladeBaseWidth",fBladeBaseWidth);
   Control.addVariable(keyName+"BladeBaseHeight",fBladeBaseHeight);
+  Control.addVariable(keyName+"BladeFullHeight",fBladeFullHeight);
   
   Control.addVariable(keyName+"SupportMat",supportMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
