@@ -169,6 +169,10 @@ class HeadRule
 		       const double);
   void isolateSurfNum(const std::set<int>&);
   int removeTopItem(const int);
+  int substituteSurf(const ModelSupport::surfRegister&,
+		     const int,const int,const int);
+  int substituteSurf(const ModelSupport::surfRegister&,
+		     const int,const int);
   int substituteSurf(const int,const int,const Geometry::Surface*);
   void removeCommon();
   void removeComplement();

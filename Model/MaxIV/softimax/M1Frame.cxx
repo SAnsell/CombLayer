@@ -127,15 +127,15 @@ M1Frame::createSurfaces()
 
   const Geometry::Cylinder* innerCyl=
     SurfMap::realPtrThrow<Geometry::Cylinder>
-    ("InnerRadius","Inner Connect ring not defined");
+    ("RingRadius","Inner Connect ring not defined");
   
   const Geometry::Vec3D Org=innerCyl->getCentre();
 
   // mid divider
   ModelSupport::buildPlane(SMap,buildIndex+100,Origin,Z);
 
-  SurfMap::makeExpandedCylinder("InnerRadius",SMap,buildIndex+7,bladeInRad);
-  SurfMap::makeExpandedCylinder("InnerRadius",SMap,buildIndex+17,bladeOutRad);
+  SurfMap::makeExpandedCylinder("RingRadius",SMap,buildIndex+7,bladeInRad);
+  SurfMap::makeExpandedCylinder("RingRadius",SMap,buildIndex+17,bladeOutRad);
   SurfMap::makeShiftedPlane("FSurf",SMap,buildIndex+101,Y,bladeThick);
 
   // Z == up (0 deg)
@@ -171,8 +171,12 @@ M1Frame::createObjects(Simulation& System)
   // First we are going to cut the main CVoids into section for the
   // frame plates
   MonteCarlo::Object* OPtr=getCellObject(System,"TopCVoid");
-  
   HeadRule OHR=OPtr->getHeadRule();
+  OHR.substituteSurf(SMap,buildIndex+2,buildIndex+101);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7:17");
+  makeCell("FRingsupport",System,cellIndex++,supportMat,0.0,HR*flatHR);  
+  
+  OHR=OPtr->getHeadRule();
   OHR.subMatched(flatHR,HeadRule(SMap,buildIndex,101));
   OPtr->procHeadRule(OHR);
 

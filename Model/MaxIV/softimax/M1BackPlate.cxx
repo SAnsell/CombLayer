@@ -336,7 +336,11 @@ M1BackPlate::createSupportSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+5017,
 			      ringTopHPt,ringTopMidPt,ringLowMidPt,
 			      Y); // axis along Y
+  ModelSupport::buildExpandedCylinder
+    (SMap,SMap.realSurf(buildIndex+5017),buildIndex+5027,ringClampThick);
+
   SurfMap::setSurf("CylRadius",SMap.realSurf(buildIndex+5017));
+  SurfMap::setSurf("RingRadius",SMap.realSurf(buildIndex+5027));
   SurfMap::setSurf("FCylInner",SMap.realSurf(buildIndex+5012));
   SurfMap::setSurf("BCylInner",-SMap.realSurf(buildIndex+6011));
   
@@ -346,12 +350,17 @@ M1BackPlate::createSupportSurfaces()
 
 void
 M1BackPlate::createSupportObjects(Simulation& System)
+  /*!
+    Additional scells surrounding the main back plane system
+    \param System :: simulation
+  */
 {
   ELog::RegMethod RegA("M1BackPlate","createSupportObjects");
 
   HeadRule HR;
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -5001 -5007 -124 16 -26 13");
+
   makeCell("XVoid",System,cellIndex++,supportMat,0.0,HR);  
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -5001 (5007:26) -124 -36 13");
   makeCell("XVoid",System,cellIndex++,voidMat,0.0,HR);  
@@ -369,37 +378,38 @@ M1BackPlate::createSupportObjects(Simulation& System)
   int BI(buildIndex);
   for(size_t i=0;i<2;i++)
     {
+      const int BExtra(i ? buildIndex : buildIndex+10);
       const std::string rN((i) ? "FRing" : "BRing");
+      const HeadRule ringCutHR=
+	(!i) ? ModelSupport::getHeadRule(SMap,buildIndex,"-5017:5027") :
+	HeadRule();
       const HeadRule yCutHR=
 	ModelSupport::getHeadRule(SMap,BI,"5011 -5012");
-      
+
       // top ring part:
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"5013 -124 16 -5016");
       makeCell(rN+"Support",System,cellIndex++,supportMat,0.0,HR*yCutHR);
-      
+
       HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,"-5013 -5017 16 -5016");
       makeCell(rN+"Support",System,cellIndex++,supportMat,0.0,HR*yCutHR);  
       
       HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,"-124 5013 -36 5016");
-      makeCell(rN+"Void",System,cellIndex++,voidMat,0.0,HR*yCutHR);  
-      
-      HR=ModelSupport::getHeadRule
-	(SMap,buildIndex,"33 -5013 -36 16 5017");
-      makeCell(rN+"Void",System,cellIndex++,voidMat,0.0,HR*yCutHR);  
+      makeCell(rN+"Void",System,cellIndex++,voidMat,0.0,HR*yCutHR*ringCutHR);  
 
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,BExtra,"33 -5013 -36 16 5017M");
+      makeCell(rN+"Void",System,cellIndex++,voidMat,0.0,HR*yCutHR);  
       
       HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,"5015 -13 -16 -5017");
       makeCell(rN+"Support",System,cellIndex++,supportMat,0.0,HR*yCutHR); 
       
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-5015 5025 -13 33");
+      makeCell(rN+"Void",System,cellIndex++,voidMat,0.0,HR*yCutHR*ringCutHR);
       HR=ModelSupport::getHeadRule
-	(SMap,buildIndex,"-5015 5025 -13 33");
-      makeCell(rN+"Void",System,cellIndex++,voidMat,0.0,HR*yCutHR);
-      
-      HR=ModelSupport::getHeadRule
-	(SMap,buildIndex,"5015 -16 5017 -13  33");
+	(SMap,buildIndex,BExtra,"5015 -16 5017M -13  33");
       makeCell(rN+"Void",System,cellIndex++,voidMat,0.0,HR*yCutHR);
 
       // lower support // 5023
@@ -410,20 +420,26 @@ M1BackPlate::createSupportObjects(Simulation& System)
       makeCell(rN+"LSupport",System,cellIndex++,supportMat,0.0,HR*yCutHR);  
       HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,"-224 5013 35 -5026");
-      makeCell(rN+"LVoid",System,cellIndex++,voidMat,0.0,HR*yCutHR);  
+      makeCell(rN+"LVoid",System,cellIndex++,voidMat,0.0,HR*yCutHR*ringCutHR);
+
       HR=ModelSupport::getHeadRule
-	(SMap,buildIndex,"33 -5013 35 -15 5017");
+	(SMap,buildIndex,BExtra,"33 -5013 35 -15 5017M");
       makeCell(rN+"LVoid",System,cellIndex++,voidMat,0.0,HR*yCutHR);  
       HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,"-5025 -13 15 -5017");
       makeCell(rN+"LSupport",System,cellIndex++,supportMat,0.0,HR*yCutHR); 
       
       HR=ModelSupport::getHeadRule
-	(SMap,buildIndex,"-5025 15 5017 -13  33");
+	(SMap,buildIndex,BExtra,"-5025 15 5017M -13  33");
       makeCell(rN+"LVoid",System,cellIndex++,voidMat,0.0,HR*yCutHR);
+      
       BI+=1000;
     }
-  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5011 -5012 5017 -5027");
+  makeCell("FRingSupport",System,cellIndex++,frontMat,0.0,HR);
+
+  addOuterUnionSurf(HR);
   return;
 }
   
@@ -452,6 +468,9 @@ M1BackPlate::createObjects(Simulation& System)
   const HeadRule tbUnionHR=topHR+backHR;
   const HeadRule bbUnionHR=baseHR+backHR;
 
+  const HeadRule ringCutHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"-5011:5012:-5017:5027");
+
   HeadRule HR;
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 -2 3 -104 -6");
@@ -471,7 +490,7 @@ M1BackPlate::createObjects(Simulation& System)
   makeCell("Plate",System,cellIndex++,baseMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 26 -36 124 -104");
-  makeCell("PlateExtra",System,cellIndex++,voidMat,0.0,HR);
+  makeCell("PlateExtra",System,cellIndex++,voidMat,0.0,HR*ringCutHR);
 
   // lower section:
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 -2 3 -204 5");
@@ -484,7 +503,7 @@ M1BackPlate::createObjects(Simulation& System)
   makeCell("Plate",System,cellIndex++,baseMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -25 35 224 -204");
-  makeCell("PlateVoid",System,cellIndex++,voidMat,0.0,HR);
+  makeCell("PlateVoid",System,cellIndex++,voidMat,0.0,HR*ringCutHR);
   
   // support (Top):
   HR=ModelSupport::getHeadRule
@@ -527,10 +546,10 @@ M1BackPlate::createObjects(Simulation& System)
   //  addOuterUnionSurf(HR);
   // spring voids
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 104 -1004 506 -36");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR*ringCutHR);  
   
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 204 -1004 35 -605");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR*ringCutHR);  
 
   // top void
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 504 -1004 605 -1005");

@@ -66,7 +66,6 @@
 #include "TankMonoVesselGenerator.h"
 #include "FlangeMountGenerator.h"
 #include "BeamPairGenerator.h"
-#include "VacBoxGenerator.h"
 #include "MonoBoxGenerator.h"
 #include "MirrorGenerator.h"
 #include "M1DetailGenerator.h"
@@ -322,9 +321,9 @@ m1DetailVariables(FuncDataBase& Control,
   VBoxGen.setLids(3.0,3.5/2.0,3.5/2.0); // over/base/roof 
 
   VBoxGen.setBPortOffset(xPortStep,0.0);
-  VBoxGen.setBPortAngle(2*theta,0.0);  
+  VBoxGen.setBPortAngle(2.0*theta,0.0);  
   // width/height/depth/length
-  VBoxGen.generateBox(Control,boxName, 35.0,5.95,14.6, 62.0);
+  VBoxGen.generateBox(Control,boxName, 35.0,6.95,14.6, 62.0);
 
   const std::string frontName=mirrorKey+"M1TubeFront";
   const std::string backName=mirrorKey+"M1TubeFront";
@@ -612,7 +611,6 @@ opticsVariables(FuncDataBase& Control,
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::GateValveGenerator GateGen;
-  setVariable::VacBoxGenerator VBoxGen;
   setVariable::FlangeMountGenerator FlangeGen;
   setVariable::BremCollGenerator BremGen;
   setVariable::BremMonoCollGenerator BremMonoGen;

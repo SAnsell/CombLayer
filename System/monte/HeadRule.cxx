@@ -2040,7 +2040,25 @@ HeadRule::removeCommon()
   return;
 }
 
-
+int
+HeadRule::substituteSurf(const ModelSupport::surfRegister& SMap,
+			 const int surfN,const int newSurfN)
+  /*!
+    Substitues a surface item if it within a rule (both signed versions)
+    +surfN is converted to newSurfN, and -surfN is converted to -newSurfN.
+    \param SMap :: surface register for sufraces
+    \param surfN :: Number number to change [+ve]
+    \param newSurfN :: New surface number (if -ve then the key is reversed)
+    \returns number of substitutions
+  */
+{
+  ELog::RegMethod RegA("HeadRule","substitueSurf(SMAP)");
+  // Quick check:
+  if (surfN==newSurfN) return 0;
+  return substituteSurf
+    (SMap.realSurf(surfN),SMap.realSurf(newSurfN),
+     SMap.realSurfPtr(newSurfN));
+}
 
 int
 HeadRule::substituteSurf(const int SurfN,const int newSurfN,
@@ -2051,7 +2069,7 @@ HeadRule::substituteSurf(const int SurfN,const int newSurfN,
 
     \param SurfN :: Number number to change [+ve]
     \param newSurfN :: New surface number (if -ve then the key is reversed)
-    \param SPtr :: New surface Pointer
+    \param SPtr :: New surface Pointer [if given]
     \returns number of substitutions
   */
 {

@@ -235,8 +235,8 @@ FEM::populateLine(const Simulation& System)
   const size_t IA = (IMax) ? 0: 1;
   const size_t IB = (IMax!=2) ? 2 : 1;
   
-  const long int nA = nPts[IA];
-  const long int nB = nPts[IB];
+  const long int nA = static_cast<long int>(nPts[IA]);
+  const long int nB = static_cast<long int>(nPts[IB]);
     
   Geometry::Vec3D aVec;  
 
