@@ -109,6 +109,7 @@ M1Frame::populate(const FuncDataBase& Control)
   bladeBaseAngle=Control.EvalVar<double>(keyName+"BladeBaseAngle");
   bladeBaseWidth=Control.EvalVar<double>(keyName+"BladeBaseWidth");
   bladeBaseHeight=Control.EvalVar<double>(keyName+"BladeBaseHeight");
+  bladeFullHeight=Control.EvalVar<double>(keyName+"BladeFullHeight");
 
   supportMat=ModelSupport::EvalMat<int>(Control,keyName+"SupportMat");
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");  
@@ -144,12 +145,26 @@ M1Frame::createSurfaces()
     X*std::cos(M_PI*bladeTopAngle/180.0);
   
   ModelSupport::buildPlane(SMap,buildIndex+103,Org,Axis);
+  SurfMap::makePlane("baseVoid",SMap,buildIndex+105,Org-Z*bladeFullHeight,Z);
 
-  ModelSupport::buildPlane(SMap,buildIndex+105,Org-Z*bladeFullHeight,Z);
-    
+  // contact points:
+  const double R=innerCyl->getRadius()-bladeInRad;
+  const double zDiff=(Origin-Org).dotProd(Z);
+  const double xDiff=std::sqrt(R*R-zDiff*zDiff);
+  const Geometry::Vec3D cPt=Org-X*xDiff+Z*zDiff;
 
+  ModelSupport::buildPlane(SMap,buildIndex+113,cPt,X);
+  SurfMap::makePlane("outVoid",SMap,buildIndex+114,
+		     cPt-X*(bladeOutRad-bladeInRad),X);
+  SurfMap::makePlane("mirrorVoid",SMap,buildIndex+124,
+		     Org+X*(bladeBaseWidth/2.0),X);
+  // side cut axis
+  const Geometry::Vec3D BAxis=
+    Z*std::sin(M_PI*bladeBaseAngle/180.0)+
+    X*std::cos(M_PI*bladeBaseAngle/180.0);
   
-
+  ModelSupport::buildPlane(SMap,buildIndex+123,Org,BAxis);
+  
   
   return;
 }
@@ -165,29 +180,55 @@ M1Frame::createObjects(Simulation& System)
 
   
   const HeadRule flatHR=getSurfRule("FSurf");
-
-  HeadRule HR;
+  const int ASurf=getSurf("FSurf");
+  const int BSurf=getSurf("BSurf");
 
   // First we are going to cut the main CVoids into section for the
   // frame plates
-  MonteCarlo::Object* OPtr=getCellObject(System,"TopCVoid");
-  HeadRule OHR=OPtr->getHeadRule();
-  OHR.substituteSurf(SMap,buildIndex+2,buildIndex+101);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7:17");
-  makeCell("FRingsupport",System,cellIndex++,supportMat,0.0,HR*flatHR);  
-  
-  OHR=OPtr->getHeadRule();
-  OHR.subMatched(flatHR,HeadRule(SMap,buildIndex,101));
-  OPtr->procHeadRule(OHR);
+  MonteCarlo::Object* OPtr=getCellObject(System,"TopCVoid");  
+  HeadRule HR=OPtr->getHeadRule();
 
+  HR.substituteSurf(SMap,buildIndex,BSurf,101);
+  HR*=ModelSupport::getHeadRule(SMap,buildIndex,"-7:17:103");
+  makeCell("FRingSupport",System,cellIndex++,voidMat,0.0,HR);  
 
+  HR=OPtr->getHeadRule();
+  HR.substituteSurf(SMap,buildIndex,ASurf,101);
+  OPtr->procHeadRule(HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 7 -17 -103 100");
-  makeCell("FRingsupport",System,cellIndex++,supportMat,0.0,HR*flatHR);
+  makeCell("FRingSupport",System,cellIndex++,supportMat,0.0,HR*flatHR);
 
-  
-  //  OPtr->addIntersection(HR*flatHR);
-  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-124 -123 -101 7 114 105 -100");
+  makeCell("FRingSupport",System,cellIndex++,supportMat,0.0,HR*flatHR);
+
+  //  MID Void
+  OPtr=getCellObject(System,"BackCVoid");
+  HR=OPtr->getHeadRule();
+  HR.substituteSurf(SMap,buildIndex,BSurf,101);
+  HR*=ModelSupport::getHeadRule(SMap,buildIndex,"(-7:17:-100) (-7:-114:100)");
+  makeCell("BRingSupport",System,cellIndex++,voidMat,0.0,HR);
+  HR=OPtr->getHeadRule();
+  HR.substituteSurf(SMap,buildIndex,ASurf,101);
+  OPtr->procHeadRule(HR);
+
+  //  LOW Void
+  OPtr=getCellObject(System,"LowCVoid");
+  HR=OPtr->getHeadRule();
+  ELog::EM<<"OPt = "<<*OPtr<<ELog::endDiag;
+  HR.substituteSurf(SMap,buildIndex,BSurf,101);
+  HR*=ModelSupport::getHeadRule(SMap,buildIndex,"(-7:-114)");
+  makeCell("BRingSupport",System,cellIndex++,voidMat,0.0,HR);
+  HR=OPtr->getHeadRule();
+  HR.substituteSurf(SMap,buildIndex,ASurf,101);
+  OPtr->procHeadRule(HR);
+
+  // PlateVoid:
+
+  OPtr=getCellObject(System,"PlateVoid");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101:-7")+
+    flatHR.complement();
+  OPtr->addIntersection(HR);
   return;
 }
 

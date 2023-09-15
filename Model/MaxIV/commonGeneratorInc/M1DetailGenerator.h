@@ -110,7 +110,8 @@ class M1DetailGenerator
   double bTopExtent;           ///< Length of top step (4.2)
   double bBaseExtent;          ///< Length of top step (2.1)
   double bVoidExtra;           ///< Extra thickness for support
-  double bVoidXExtra;           ///< Extra thickness for support
+  double bVoidBaseExtra;        ///< Extra thickness for support at base
+  double bVoidXExtra;           ///< Extra thickness for support at side
 
   double clipYStep;            ///< Step from end
   double clipLen;              ///< Length of clip

@@ -53,7 +53,8 @@ class M1BackPlate :
   double topExtent;           ///< Length of top step
   double baseExtent;          ///< Length of top step
   double voidExtra;           ///< Extra space in voids for supports
-  double voidXExtra;           ///< Extra space in voids for supports (X)
+  double voidBaseExtra;       ///< Extra space at base for supports
+  double voidXExtra;          ///< Extra space in voids for supports (X)
 
   // spring supports 
   double supVOffset;           ///< offset from Crystal surface 
@@ -113,7 +114,8 @@ class M1BackPlate :
   M1BackPlate(const M1BackPlate&);
   M1BackPlate& operator=(const M1BackPlate&);
   ~M1BackPlate() override;
-
+  void adjustExtraVoids(Simulation&,const int,const int,const int);
+  
   using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,

@@ -77,7 +77,7 @@ M1DetailGenerator::M1DetailGenerator() :
   bExtentThick(0.4),
   bCupHeight(1.8),bTopExtent(4.2),
   bBaseExtent(2.1),bVoidExtra(2.5),
-  bVoidXExtra(3.5),
+  bVoidBaseExtra(8.5),bVoidXExtra(4.5),
   
   clipYStep(7.7),clipLen(1.2),
   clipSiThick(0.2),clipAlThick(0.4),
@@ -102,7 +102,7 @@ M1DetailGenerator::M1DetailGenerator() :
   
   fBladeInRad(0.0),fBladeOutRad(2.0),
   fBladeThick(1.0),fBladeTopAngle(40.0),
-  fBladeBaseAngle(45.0),fBladeBaseWidth(24.0),
+  fBladeBaseAngle(60.0),fBladeBaseWidth(22.0),
   fBladeBaseHeight(5.0),fBladeFullHeight(12.0),  
   
   mirrorMat("Silicon300K"),waterMat("H2O"),
@@ -213,6 +213,7 @@ M1DetailGenerator::makeBackPlate(FuncDataBase& Control,
   Control.addVariable(keyName+"ExtentThick",bExtentThick);
   Control.addVariable(keyName+"BaseExtent",bBaseExtent);
   Control.addVariable(keyName+"VoidExtra",bVoidExtra);
+  Control.addVariable(keyName+"VoidBaseExtra",bVoidBaseExtra);
   Control.addVariable(keyName+"VoidXExtra",bVoidXExtra);
 
   Control.addVariable(keyName+"FrontPlateGap",fBaseGap);
