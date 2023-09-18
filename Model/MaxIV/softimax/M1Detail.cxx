@@ -142,8 +142,6 @@ M1Detail::createObjects(Simulation& System)
 
   mirror->addInsertCell(getInsertCells());
   mirror->createAll(System,*this,0);
-  ELog::EM<<"Y == "<<mirror->getY()<<ELog::endDiag;
-
 
   cClamp->setCutSurf("FarEnd",*mirror,"back");
   cClamp->setCutSurf("NearEnd",*mirror,"front");
@@ -177,16 +175,19 @@ M1Detail::createObjects(Simulation& System)
   frontShield->setCutSurf("Base",*cClamp,"innerSide");
   frontShield->createAll(System,*cClamp,"front");
 
-  
   frame->setCell("BackCVoid",*cClamp,"CVoid");
   frame->setCell("LowCVoid",*cClamp,"CVoid",1);
   frame->setCell("TopCVoid",*cClamp,"CVoid",2);
   frame->setCell("PlateVoid",*cClamp,"PlateVoid");
+  frame->setCell("OuterVoid",*cClamp,"OuterVoid",1);
+  frame->setCell("FaceVoid",*cClamp,"FaceVoid");
     
   frame->setSurf("InnerRadius",*cClamp,"CylRadius");
   frame->setSurf("RingRadius",*cClamp,"RingRadius");
   frame->setSurf("FSurf",*cClamp,"FCylInner");
   frame->setSurf("BSurf",*cClamp,"BCylInner");
+  frame->setSurf("BeamEdge",*cClamp,"BeamEdge");
+  frame->setSurf("FarEdge",*cClamp,"FarEdge");
   
   frame->createAll(System,*mirror,"centreAxis");
 

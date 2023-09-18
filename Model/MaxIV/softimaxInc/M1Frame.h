@@ -66,6 +66,10 @@ class M1Frame :
   void createObjects(Simulation&);
   void createLinks();
 
+  MonteCarlo::Object*
+  getBoundaryCell(Simulation&,const std::string&,
+		  HeadRule&) const;
+  
  public:
 
   M1Frame(const std::string&);

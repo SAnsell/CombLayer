@@ -183,7 +183,6 @@ M1BackPlate::createSurfaces()
   // plate layer
   ModelSupport::buildPlane
     (SMap,buildIndex+13,Origin-X*(clearGap+backThick),X);
-  ELog::EM<<"Or == "<<Origin-X*(clearGap+backThick)<<ELog::endDiag;
   makeShiftedSurf(SMap,"Base",buildIndex+15,Z,-(clearGap+mainThick));
   makeShiftedSurf(SMap,"Top",buildIndex+16,Z,clearGap+mainThick);
 
@@ -197,14 +196,18 @@ M1BackPlate::createSurfaces()
 
   // OutSide EXTERT
 
-  ModelSupport::buildPlane
-    (SMap,buildIndex+33,Origin-X*(voidXExtra+clearGap+backThick),X);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+34,Origin+X*(2*voidXExtra+elecXOut),X);
+  SurfMap::makePlane("FarEdge",
+		     SMap,buildIndex+33,
+		     Origin-X*(voidXExtra+clearGap+backThick),X);
+  SurfMap::makePlane("BeamEdge",
+		     SMap,buildIndex+34,
+		     Origin+X*(2*voidXExtra+elecXOut),X);
+  
   makeShiftedSurf(SMap,"Base",buildIndex+35,Z,
 		  -(voidBaseExtra+clearGap+cupHeight));
+  SurfMap::addSurf("BaseEdge",SMap.realSurf(buildIndex+35));
   makeShiftedSurf(SMap,"Top",buildIndex+36,Z,voidExtra+clearGap+cupHeight);
-
+  SurfMap::addSurf("TopEdge",SMap.realSurf(buildIndex+35));
 
   // STOP SURFACE:
   ModelSupport::buildPlane(SMap,buildIndex+501,Origin-Y*(supLength/2.0),Y);
@@ -422,7 +425,7 @@ M1BackPlate::createSupportObjects(Simulation& System)
       makeCell(rN+"LSupport",System,cellIndex++,supportMat,0.0,HR*yCutHR);  
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-224 5013 35 -5026");
       makeCell(rN+"LVoid",System,cellIndex++,voidMat,0.0,HR*yCutHR*ringCutHR);
-
+      
       HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,BExtra,"33 -5013 35 -15 5017M");
       makeCell(rN+"LVoid",System,cellIndex++,voidMat,0.0,HR*yCutHR);  
@@ -433,14 +436,19 @@ M1BackPlate::createSupportObjects(Simulation& System)
       HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,BExtra,"-5025 15 5017M -13  33");
       makeCell(rN+"LVoid",System,cellIndex++,voidMat,0.0,HR*yCutHR);
-      
       BI+=1000;
     }
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"5011 -5012 5017 -5027");
   makeCell("FRingSupport",System,cellIndex++,frontMat,0.0,HR);
 
-  addOuterUnionSurf(HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -15 25 224 -204");
+  HR=ModelSupport::getHeadRule //(204:xxx)
+    (SMap,buildIndex,"5011 -5012 (-5017:5027) -605 35 224 -34 (204:-25)");
+  makeCell("FRingVoid",System,cellIndex++,voidMat,0.0,HR);
+
+      
+  // addOuterUnionSurf(HR);
   return;
 }
   
@@ -505,10 +513,17 @@ M1BackPlate::createObjects(Simulation& System)
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -15 25 224 -204");
   makeCell("Plate",System,cellIndex++,baseMat,0.0,HR);
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -5011 -25 35 224 -204");
+  makeCell("FrontPlateVoid",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5011 -5012 -5017");
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -25 35 224 -204");
-  makeCell("PlateVoid",System,cellIndex++,voidMat,0.0,HR*ringCutHR);
-
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5012 -6011 -25 35 224 -204");
+  makeCell("PlateVoid",System,cellIndex++,voidMat,0.0,HR);
+  // *ringCutHR
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"6012 -2 -25 35 224 -204");
+  makeCell("EndPlateVoid",System,cellIndex++,voidMat,0.0,HR);
+  
   // support (Top):
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"501 -502 104 -504 505 -506 (-511:512:-513:514:-515)");
@@ -538,8 +553,11 @@ M1BackPlate::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -5011 33 -224 35 -15");
   makeCell("FrontCVoid",System,cellIndex++,voidMat,0.0,HR);  
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5012 -2 33 -224 35 -15");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5012 -6011 33 -224 35 -15");
   makeCell("CVoid",System,cellIndex++,voidMat,0.0,HR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"6012 -2 33 -224 35 -15");
+  makeCell("EndVoid",System,cellIndex++,voidMat,0.0,HR);  
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"5001 -5011 33 -124 16 -36");
   makeCell("FrontCVoid",System,cellIndex++,voidMat,0.0,HR);  
@@ -554,10 +572,16 @@ M1BackPlate::createObjects(Simulation& System)
   // spring voids
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 104 -1004 506 -36");
   makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR*ringCutHR);  
-  
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 204 -34 35 -605");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR*ringCutHR);  
-  ELog::EM<<"Void == "<<cellIndex-1<<ELog::endDiag;
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -5011 204 -34 35 -605");
+  makeCell("FrontOuterVoid",System,cellIndex++,voidMat,0.0,HR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5012 -6011 204 -34 35 -605");
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
+  ELog::EM<<"Ini void["<<cellIndex-1<<"] == "<<ringCutHR<<ELog::endDiag;
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"6012 -2 204 -34 35 -605");
+  makeCell("EndVoid",System,cellIndex++,voidMat,0.0,HR);  
   
   // top void
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 504 -1004 605 -1005");
@@ -580,7 +604,12 @@ M1BackPlate::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"502 -2 104 -504 505 -506");
   makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
 
-  
+  // Face void 204
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1 -2 1004 -34 605 -36 (-5017:5027:-5011:5012)");
+  makeCell("FaceVoid",System,cellIndex++,voidMat,0.0,HR);  
+
+  ELog::EM<<"Ringx == "<<cellIndex-1<<ELog::endDiag;  
   // crystal ends
   HR=HeadRule(SMap,buildIndex,-2);
   makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,
@@ -589,6 +618,7 @@ M1BackPlate::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 2005 -2006 2004");  
   makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,
 	   HR*mirrorCompHR*nearHR);
+
 
   // INNER VOIDS:
 
@@ -666,6 +696,7 @@ M1BackPlate::createObjects(Simulation& System)
   makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,
 	   HR*nearHR*mirrorCompHR);  
 
+  
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 33 -34 35 -36");
   addOuterSurf(HR);
 
@@ -719,27 +750,32 @@ M1BackPlate::adjustExtraVoids(Simulation& System,
 			      const int baseSN)
   /*!
     Function to allow the side voids to be adjusted to the correct size
-    \param sideSN :: side number
-    \param baseSN :: low side number
+    \param sideSN :: left side number
+    \param outSN :: right side number
+    \param baseSN :: low surf number
   */
 {
+  ELog::RegMethod RegA("M1BackPlate","adjustExtraVoids");
+  
   Geometry::Surface* OutPtr=SMap.realSurfPtr(outSN);
   Geometry::Surface* SidePtr=SMap.realSurfPtr(sideSN);
   Geometry::Surface* BasePtr=SMap.realSurfPtr(baseSN);
   const int orgOutSN=SMap.realSurf(buildIndex+33);
-  const int orgBaseSN=SMap.realSurf(buildIndex+35);
   const int orgSideSN=SMap.realSurf(buildIndex+34);
+  const int orgBaseSN=SMap.realSurf(buildIndex+35);
+
   
   // check all cells: [simple for me!]
   for(int i=buildIndex+1;i<cellIndex;i++)
     {
       MonteCarlo::Object* OPtr=
 	System.findObjectThrow(i,"Constructed cell not found");
+      OPtr->substituteSurf(orgOutSN,outSN,OutPtr);
       OPtr->substituteSurf(orgSideSN,sideSN,SidePtr);
       OPtr->substituteSurf(orgBaseSN,baseSN,BasePtr);
     }
   // This is low level uglyness:
-  ContainedComp::outerSurf.substituteSurf(orgOutSN,sideSN,SidePtr);
+  ContainedComp::outerSurf.substituteSurf(orgOutSN,outSN,SidePtr);
   ContainedComp::outerSurf.substituteSurf(orgSideSN,sideSN,SidePtr);
   ContainedComp::outerSurf.substituteSurf(orgBaseSN,baseSN,BasePtr);
   return;

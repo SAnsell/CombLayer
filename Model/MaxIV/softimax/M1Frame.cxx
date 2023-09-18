@@ -169,6 +169,26 @@ M1Frame::createSurfaces()
   return;
 }
 
+MonteCarlo::Object*
+M1Frame::getBoundaryCell(Simulation& System,
+			 const std::string& cellName,
+			 HeadRule& HR) const
+  /*!
+    Get the cell and make the appropiate surface substitutions
+    \param System :: simuation
+    \param System :: Simulation
+    \return HeadRule with substitutions
+   */
+{
+  ELog::RegMethod RegA("M1Frame","getBoundaryCell");
+  
+  MonteCarlo::Object* OPtr=getCellObject(System,cellName);
+  HR=OPtr->getHeadRule();
+  HR.substituteSurf
+    (SMap,buildIndex,SurfMap::getSurf("FarEdge"),114);
+  return OPtr;
+}
+  
 void
 M1Frame::createObjects(Simulation& System)
   /*!
@@ -177,22 +197,24 @@ M1Frame::createObjects(Simulation& System)
    */
 {
   ELog::RegMethod RegA("M1Frame","createObjects");
-
   
   const HeadRule flatHR=getSurfRule("FSurf");
   const int ASurf=getSurf("FSurf");
   const int BSurf=getSurf("BSurf");
-
+  const int beamSurf=getSurf("BeamEdge");
+  HeadRule HR;
+  
   // First we are going to cut the main CVoids into section for the
   // frame plates
-  MonteCarlo::Object* OPtr=getCellObject(System,"TopCVoid");  
-  HeadRule HR=OPtr->getHeadRule();
 
+  MonteCarlo::Object* OPtr;
+  
+  OPtr=getBoundaryCell(System,"TopCVoid",HR);
   HR.substituteSurf(SMap,buildIndex,BSurf,101);
   HR*=ModelSupport::getHeadRule(SMap,buildIndex,"-7:17:103");
   makeCell("FRingSupport",System,cellIndex++,voidMat,0.0,HR);  
 
-  HR=OPtr->getHeadRule();
+  OPtr=getBoundaryCell(System,"TopCVoid",HR);
   HR.substituteSurf(SMap,buildIndex,ASurf,101);
   OPtr->procHeadRule(HR);
 
@@ -203,32 +225,52 @@ M1Frame::createObjects(Simulation& System)
   makeCell("FRingSupport",System,cellIndex++,supportMat,0.0,HR*flatHR);
 
   //  MID Void
-  OPtr=getCellObject(System,"BackCVoid");
-  HR=OPtr->getHeadRule();
+  OPtr=getBoundaryCell(System,"BackCVoid",HR);
+
   HR.substituteSurf(SMap,buildIndex,BSurf,101);
+
   HR*=ModelSupport::getHeadRule(SMap,buildIndex,"(-7:17:-100) (-7:-114:100)");
-  makeCell("BRingSupport",System,cellIndex++,voidMat,0.0,HR);
-  HR=OPtr->getHeadRule();
+  makeCell("BRingSupport",System,cellIndex++,voidMat,0.0,HR); 
+  OPtr=getBoundaryCell(System,"BackCVoid",HR);
   HR.substituteSurf(SMap,buildIndex,ASurf,101);
   OPtr->procHeadRule(HR);
 
   //  LOW Void
-  OPtr=getCellObject(System,"LowCVoid");
-  HR=OPtr->getHeadRule();
-  ELog::EM<<"OPt = "<<*OPtr<<ELog::endDiag;
+  OPtr=getBoundaryCell(System,"LowCVoid",HR);
   HR.substituteSurf(SMap,buildIndex,BSurf,101);
   HR*=ModelSupport::getHeadRule(SMap,buildIndex,"(-7:-114)");
   makeCell("BRingSupport",System,cellIndex++,voidMat,0.0,HR);
-  HR=OPtr->getHeadRule();
+  OPtr=getBoundaryCell(System,"LowCVoid",HR);
   HR.substituteSurf(SMap,buildIndex,ASurf,101);
   OPtr->procHeadRule(HR);
+  
+  //  const HeadRule MainHR=removeBoundaryCell(System,"PlateVoid");
+  OPtr=getBoundaryCell(System,"PlateVoid",HR);
+  HR.substituteSurf(SMap,buildIndex,BSurf,101);
+  HR*=HeadRule(SMap,buildIndex,-7);
+  makeCell("BPlateSupport",System,cellIndex++,voidMat,0.0,HR);
 
-  // PlateVoid:
+  OPtr=getBoundaryCell(System,"PlateVoid",HR);
+  HR.substituteSurf(SMap,buildIndex,ASurf,101);    
+  OPtr->procHeadRule(HR);
+  
+  // PlateVoid (thin section in low plane:
+  OPtr=getBoundaryCell(System,"OuterVoid",HR);
+  HR.substituteSurf(SMap,buildIndex,BSurf,101);
+  HR.substituteSurf(SMap,buildIndex,beamSurf,124);
+  HR*=ModelSupport::getHeadRule(SMap,buildIndex,"-7:123");
+  makeCell("BOuterSupport",System,cellIndex++,voidMat,0.0,HR);
+  
+  OPtr=getBoundaryCell(System,"OuterVoid",HR);
+  HR.substituteSurf(SMap,buildIndex,ASurf,101);    
+  OPtr->procHeadRule(HR);
 
-  OPtr=getCellObject(System,"PlateVoid");
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101:-7")+
-    flatHR.complement();
+  // face void
+  OPtr=CellMap::getCellObject(System,"FaceVoid");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5011:-5012:123:-7");  
   OPtr->addIntersection(HR);
+  
+
   return;
 }
 

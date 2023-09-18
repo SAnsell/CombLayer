@@ -76,7 +76,7 @@ M1DetailGenerator::M1DetailGenerator() :
   bBackThick(0.5),bMainThick(0.3),
   bExtentThick(0.4),
   bCupHeight(1.8),bTopExtent(4.2),
-  bBaseExtent(2.1),bVoidExtra(2.5),
+  bBaseExtent(2.1),bVoidExtra(3.5),
   bVoidBaseExtra(8.5),bVoidXExtra(4.5),
   
   clipYStep(7.7),clipLen(1.2),
