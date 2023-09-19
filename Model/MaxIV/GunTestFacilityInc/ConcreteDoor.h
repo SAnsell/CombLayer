@@ -64,6 +64,8 @@ class ConcreteDoor :
   int underMat;                       ///< Filling of under material
   int doorMat;                        ///< wall material
 
+  Geometry::Vec3D getCorner(const int, const int, const int) const;
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);

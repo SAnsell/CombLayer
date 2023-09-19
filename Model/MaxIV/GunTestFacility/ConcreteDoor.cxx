@@ -146,6 +146,22 @@ ConcreteDoor::createUnitVector(const attachSystem::FixedComp& FC,
   return;
 }
 
+Geometry::Vec3D
+ConcreteDoor::getCorner(const int a, const int b, const int c) const
+/*!
+  Return coordinates of the vertical corner formed by 3 planes
+  \param a :: first plane number
+  \param a :: second plane number
+  \param a :: third plane number
+ */
+{
+  const Geometry::Plane* pA = dynamic_cast<const Geometry::Plane*>(SMap.realSurfPtr(a));
+  const Geometry::Plane* pB = dynamic_cast<const Geometry::Plane*>(SMap.realSurfPtr(b));
+  const Geometry::Plane* pC = dynamic_cast<const Geometry::Plane*>(SMap.realSurfPtr(c));
+
+  return SurInter::getPoint(pA, pB, pC);
+}
+
 void
 ConcreteDoor::createSurfaces()
   /*!
@@ -219,13 +235,17 @@ ConcreteDoor::createSurfaces()
   const Geometry::Vec3D v1(qVCorner.makeRotate(Y));
   const Geometry::Vec3D v2(qVCorner.makeRotate(X));
 
-  const Geometry::Plane* pz = dynamic_cast<const Geometry::Plane*>(SMap.realSurfPtr(buildIndex+6));
-  const Geometry::Plane* p201 = dynamic_cast<const Geometry::Plane*>(SMap.realSurfPtr(buildIndex+201));
-  const Geometry::Plane* p24 = dynamic_cast<const Geometry::Plane*>(SMap.realSurfPtr(buildIndex+24));
-  const Geometry::Vec3D p4 = SurInter::getPoint(p201,p24,pz);
-  ELog::EM << p4.X() << " " << p4.Y() << ELog::endDiag;
+  const HeadRule innerHR=ExternalCut::getRule("innerWall");
+  const HeadRule outerHR=ExternalCut::getRule("outerWall");
 
-  ModelSupport::buildPlane(SMap,buildIndex+9, p4+Y*(legDoor), v1);
+  const Geometry::Vec3D c9 = getCorner(buildIndex+4, innerHR.getPrimarySurface(), buildIndex+6);
+  ModelSupport::buildPlane(SMap,buildIndex+9, c9+Y*(legDoor), v1);
+
+  const Geometry::Vec3D c19 = getCorner(buildIndex+201, buildIndex+24, buildIndex+6);
+  ModelSupport::buildPlane(SMap,buildIndex+19, c19+Y*(legDoor), v1);
+
+  const Geometry::Vec3D c29 = getCorner(buildIndex+24, outerHR.getPrimarySurface(), buildIndex+6);
+  ModelSupport::buildPlane(SMap,buildIndex+29, c29-Y*(legDoor), v2);
 
   return;
 }
@@ -244,9 +264,11 @@ ConcreteDoor::createObjects(Simulation& System)
   const HeadRule outerHR=ExternalCut::getRule("outerWall");
   const HeadRule floorHR=ExternalCut::getRule("floor");
 
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"-201 3 -4 -6 (-1003:1004:1005) ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-201 3 -4 -6 (-1003:1004:1005) 9");
   makeCell("InnerDoor",System,cellIndex++,doorMat,0.0,HR*innerHR*floorHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -4 -9 -6 ");
+  makeCell("Corner9",System,cellIndex++,0,0.0,HR*innerHR*floorHR);
 
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"-200 (-3:4:6) 13 -14 -16");
@@ -260,16 +282,19 @@ ConcreteDoor::createObjects(Simulation& System)
     (SMap,buildIndex,"200 -201 23 -24 -26 (-3:4:6)");
   makeCell("MidGap",System,cellIndex++,0,0.0,HR*floorHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 23 -24 9 1005 -26 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 23 -24 19 -29 1005 -26 ");
   makeCell("OuterDoor",System,cellIndex++,doorMat,0.0,HR*outerHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -9 -24 -26");
-  makeCell("OuterDoorCorner",System,cellIndex++,0,0.0,HR*floorHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -19 -24 -26");
+  makeCell("Corner19",System,cellIndex++,0,0.0,HR*floorHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"29 -24 -26");
+  makeCell("Corner29",System,cellIndex++,0,0.0,HR*floorHR*outerHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 23 -1003 -1005 ");
   makeCell("OuterDoorBottom",System,cellIndex++,doorMat,0.0,HR*outerHR*floorHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 1004 -24 9 -1005 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 1004 -24 19 -29 -1005 ");
   makeCell("OuterDoorBottom",System,cellIndex++,doorMat,0.0,HR*outerHR*floorHR);
 
   HR=ModelSupport::getHeadRule
