@@ -234,9 +234,13 @@ ConcreteDoor::createSurfaces()
   const Geometry::Quaternion qHCorner = Geometry::Quaternion::calcQRot(cornerCutAngle, X);
   const Geometry::Vec3D v1(qVCorner.makeRotate(Y));
   const Geometry::Vec3D v2(qVCorner.makeRotate(X));
+  const Geometry::Vec3D h1(qHCorner.makeRotate(Y));
 
   const HeadRule innerHR=ExternalCut::getRule("innerWall");
   const HeadRule outerHR=ExternalCut::getRule("outerWall");
+
+  const Geometry::Vec3D c8 = getCorner(buildIndex+26, outerHR.getPrimarySurface(), buildIndex+24);
+  ModelSupport::buildPlane(SMap,buildIndex+8, c8-Z*(legDoor), h1);
 
   const Geometry::Vec3D c9 = getCorner(buildIndex+4, innerHR.getPrimarySurface(), buildIndex+6);
   ModelSupport::buildPlane(SMap,buildIndex+9, c9+Y*(legDoor), v1);
@@ -270,9 +274,6 @@ ConcreteDoor::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-201 3 -4 -6 (-1003:1004:1005) 9");
   makeCell("InnerDoor",System,cellIndex++,doorMat,0.0,HR*innerHR*floorHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -4 -9 -6 ");
-  makeCell("Corner9",System,cellIndex++,0,0.0,HR*innerHR*floorHR);
-
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"-200 (-3:4:6) 13 -14 -16");
   makeCell("InnerGap",System,cellIndex++,0,0.0,HR*innerHR*floorHR);
@@ -285,8 +286,14 @@ ConcreteDoor::createObjects(Simulation& System)
     (SMap,buildIndex,"200 -201 23 -24 -26 (-3:4:6)");
   makeCell("MidGap",System,cellIndex++,0,0.0,HR*floorHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 23 -24 19 -29 -39 1005 -26 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 23 -24 -8 19 -29 -39 1005 -26 ");
   makeCell("OuterDoor",System,cellIndex++,doorMat,0.0,HR*outerHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"8 -26 -29 -39 23 -24 ");
+  makeCell("Corner8",System,cellIndex++,0,0.0,HR*outerHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -4 -9 -6 ");
+  makeCell("Corner9",System,cellIndex++,0,0.0,HR*innerHR*floorHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -19 -24 -26");
   makeCell("Corner19",System,cellIndex++,0,0.0,HR*floorHR);
