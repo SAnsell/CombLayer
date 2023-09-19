@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/GunTestFacility/ConcreteDoor.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2023 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,6 +63,8 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "Quaternion.h"
+#include "SurInter.h"
+
 #include "ConcreteDoor.h"
 
 
@@ -105,6 +107,8 @@ ConcreteDoor::populate(const FuncDataBase& Control)
   underStepHeight=Control.EvalVar<double>(keyName+"UnderStepHeight");
   underStepWidth=Control.EvalVar<double>(keyName+"UnderStepWidth");
   sideCutAngle=Control.EvalVar<double>(keyName+"SideCutAngle");
+  cornerCut=Control.EvalVar<double>(keyName+"CornerCut");
+  jambCornerCut=Control.EvalVar<double>(keyName+"JambCornerCut");
 
   underMat=ModelSupport::EvalDefMat(Control,keyName+"UnderMat",0);
   doorMat=ModelSupport::EvalMat<int>(Control,keyName+"DoorMat");
@@ -204,6 +208,25 @@ ConcreteDoor::createSurfaces()
   ModelSupport::buildPlane
     (SMap,buildIndex+1004,Origin+X*(underStepWidth/2.0),X);
 
+  // cutting the angles
+  constexpr double cornerCutAngle = 45 * M_PI/180.0;
+  const double c = cos(cornerCutAngle);
+  const double legDoor = cornerCut*c;
+  const double legDoorJamb = jambCornerCut*c;
+
+  const Geometry::Quaternion qVCorner = Geometry::Quaternion::calcQRot(cornerCutAngle, Z);
+  const Geometry::Quaternion qHCorner = Geometry::Quaternion::calcQRot(cornerCutAngle, X);
+  const Geometry::Vec3D v1(qVCorner.makeRotate(Y));
+  const Geometry::Vec3D v2(qVCorner.makeRotate(X));
+
+  const Geometry::Plane* pz = dynamic_cast<const Geometry::Plane*>(SMap.realSurfPtr(buildIndex+6));
+  const Geometry::Plane* p201 = dynamic_cast<const Geometry::Plane*>(SMap.realSurfPtr(buildIndex+201));
+  const Geometry::Plane* p24 = dynamic_cast<const Geometry::Plane*>(SMap.realSurfPtr(buildIndex+24));
+  const Geometry::Vec3D p4 = SurInter::getPoint(p201,p24,pz);
+  ELog::EM << p4.X() << " " << p4.Y() << ELog::endDiag;
+
+  ModelSupport::buildPlane(SMap,buildIndex+9, p4+Y*(legDoor), v1);
+
   return;
 }
 
@@ -233,17 +256,21 @@ ConcreteDoor::createObjects(Simulation& System)
     (SMap,buildIndex,"-200 (-13:14:16) 33 -34 -36");
   makeCell("InnerExtra",System,cellIndex++,doorMat,0.0,HR*innerHR*floorHR);
 
-  // HR=ModelSupport::getHeadRule
-  //   (SMap,buildIndex,"200 -201 3 -4 -6 (-1003:1004:1005) ");
-  // makeCell("OuterStrip",System,cellIndex++,doorMat,0.0,HR*floorHR);
-
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"200 -201 23 -24 -26 (-3:4:6)");
   makeCell("MidGap",System,cellIndex++,0,0.0,HR*floorHR);
 
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"201 23 -24 -26 (-1003:1004:1005) ");
-  makeCell("OuterDoor",System,cellIndex++,doorMat,0.0,HR*outerHR*floorHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 23 -24 9 1005 -26 ");
+  makeCell("OuterDoor",System,cellIndex++,doorMat,0.0,HR*outerHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -9 -24 -26");
+  makeCell("OuterDoorCorner",System,cellIndex++,0,0.0,HR*floorHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 23 -1003 -1005 ");
+  makeCell("OuterDoorBottom",System,cellIndex++,doorMat,0.0,HR*outerHR*floorHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 1004 -24 9 -1005 ");
+  makeCell("OuterDoorBottom",System,cellIndex++,doorMat,0.0,HR*outerHR*floorHR);
 
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"200 (-23:24:26) 33 -34 -36");

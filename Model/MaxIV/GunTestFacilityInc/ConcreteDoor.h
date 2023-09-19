@@ -58,6 +58,9 @@ class ConcreteDoor :
   double underStepWidth;              ///< Width of under gap
   double sideCutAngle;          ///< side wall cut angle
 
+  double cornerCut;             ///< corner cut length
+  double jambCornerCut;         ///< corner cut length on the doorjamb
+
   int underMat;                       ///< Filling of under material
   int doorMat;                        ///< wall material
 

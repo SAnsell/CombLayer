@@ -760,7 +760,9 @@ SingleItemVariables(FuncDataBase& Control)
   LSGen.generate(Control,"Wall");
 
   Control.addVariable("DoorDoorMat","Concrete");
-  Control.addVariable("DoorGapSpace",3.0);
+  Control.addVariable("DoorGapSpace",3.0); // needed???
+  Control.addVariable("DoorCornerCut",3.0);
+  Control.addVariable("DoorJambCornerCut",3.5);
   Control.addVariable("DoorInnerHeight",200.0);
   Control.addVariable("DoorInnerThick",20.0);
   Control.addVariable("DoorInnerTopGap",2.5);
@@ -769,9 +771,8 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable("DoorOuterTopGap",5);
   Control.addVariable("DoorOuterWidth",238);
   Control.addVariable("DoorSideCutAngle",70.0);
-  Control.addVariable("DoorUnderStepHeight",7.2);
-  Control.addVariable("DoorUnderStepWidth",111.0);
-  Control.addVariable("DoorGapSpace", 3);
+  Control.addVariable("DoorUnderStepHeight",7.0); // measured
+  Control.addVariable("DoorUnderStepWidth",110.5); // measured
 
   return;
 }
