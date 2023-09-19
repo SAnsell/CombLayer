@@ -753,6 +753,26 @@ SingleItemVariables(FuncDataBase& Control)
   // expt hutch
   exptHutVariables(Control,"",0.0);
   localShieldVariables(Control);
+
+  // Concrete door
+  setVariable::LocalShieldingGenerator LSGen;
+  LSGen.setSize(100.0,300,250.0);
+  LSGen.generate(Control,"Wall");
+
+  Control.addVariable("DoorDoorMat","Concrete");
+  Control.addVariable("DoorGapSpace",3.0);
+  Control.addVariable("DoorInnerHeight",200.0);
+  Control.addVariable("DoorInnerThick",20.0);
+  Control.addVariable("DoorInnerTopGap",2.5);
+  Control.addVariable("DoorInnerWidth",218);
+  Control.addVariable("DoorOuterHeight",210.0);
+  Control.addVariable("DoorOuterTopGap",5);
+  Control.addVariable("DoorOuterWidth",238);
+  Control.addVariable("DoorSideCutAngle",70.0);
+  Control.addVariable("DoorUnderStepHeight",7.2);
+  Control.addVariable("DoorUnderStepWidth",111.0);
+  Control.addVariable("DoorGapSpace", 3);
+
   return;
 }
 

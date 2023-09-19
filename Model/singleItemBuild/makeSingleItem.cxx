@@ -165,6 +165,7 @@
 #include "PlateUnit.h"
 #include "BenderUnit.h"
 #include "MLMonoDetail.h"
+#include "ConcreteDoor.h"
 
 #include "makeSingleItem.h"
 
@@ -222,6 +223,7 @@ makeSingleItem::build(Simulation& System,
 	"ConnectorTube","LocalShield","FlangeDome",
 	"MonoShutter","RoundMonoShutter","TubeDetBox",
 	"GuideUnit","PlateUnit","BenderUnit","MLMdetail",
+        "ConcreteDoor",
 	"Help","help"
     });
 
@@ -1532,6 +1534,27 @@ makeSingleItem::build(Simulation& System,
 	BA->createAll(System,World::masterOrigin(),0);
 	return;
       }
+
+  if (item == "ConcreteDoor")
+    {
+      const auto wall = std::make_shared<tdcSystem::LocalShielding>("Wall");
+      const auto door = std::make_shared<MAXIV::GunTestFacility::ConcreteDoor>("Door");
+
+      OR.addObject(wall);
+      OR.addObject(door);
+
+      wall->addInsertCell(voidCell);
+      wall->createAll(System,World::masterOrigin(),0);
+
+      door->setCutSurf("innerWall", *wall, "#front");
+      door->setCutSurf("outerWall", *wall, "#back");
+      door->setCutSurf("floor",     *wall, "#bottom");
+      door->addInsertCell(wall->getCell("Wall"));
+      door->createAll(System,*wall,0);
+
+      return;
+    }
+
 
     if (item=="Help" || item=="help")
       {
