@@ -252,6 +252,9 @@ ConcreteDoor::createSurfaces()
   const Geometry::Vec3D c19 = getCorner(buildIndex+201, buildIndex+24, buildIndex+6);
   ModelSupport::buildPlane(SMap,buildIndex+19, c19+Y*(legDoor), v1);
 
+  const Geometry::Vec3D c28 = getCorner(buildIndex+6, innerHR.getPrimarySurface(),buildIndex+24);
+  ModelSupport::buildPlane(SMap,buildIndex+28, c28-Z*(legDoor), h2);
+
   const Geometry::Vec3D c29 = getCorner(buildIndex+24, outerHR.getPrimarySurface(), buildIndex+6);
   ModelSupport::buildPlane(SMap,buildIndex+29, c29-Y*(legDoor), v2);
 
@@ -275,7 +278,7 @@ ConcreteDoor::createObjects(Simulation& System)
   const HeadRule outerHR=ExternalCut::getRule("outerWall");
   const HeadRule floorHR=ExternalCut::getRule("floor");
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-201 3 -4 -6 (-1003:1004:1005) 9");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-201 3 -4 -6 (-1003:1004:1005) 9 -28");
   makeCell("InnerDoor",System,cellIndex++,doorMat,0.0,HR*innerHR*floorHR);
 
   HR=ModelSupport::getHeadRule
@@ -304,6 +307,9 @@ ConcreteDoor::createObjects(Simulation& System)
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -19 -24 -26");
   makeCell("Corner19",System,cellIndex++,0,0.0,HR*floorHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"28 9 3 -4 -6 ");
+  makeCell("Corner28",System,cellIndex++,0,0.0,HR*innerHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"29 -24 -26");
   makeCell("Corner29",System,cellIndex++,0,0.0,HR*floorHR*outerHR);
