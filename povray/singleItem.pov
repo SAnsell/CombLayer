@@ -113,6 +113,11 @@
     #declare cameraLookAt   = <10.0, 15.0, 5.0>;
     #declare cameraAngle = 30;
   #break
+  #case (strcmp(ITEM,"ConcreteDoor"))
+    #declare cameraLocation = <100, -450.0, 50.0>;
+    #declare cameraLookAt   = <0.0, 0.0, 0.0>;
+    #declare cameraAngle = 60;
+  #break
 #else
     #declare cameraLocation = <100, 100, 100>;
     #declare cameraLookAt   = <0, 0, 0>;
