@@ -756,7 +756,7 @@ SingleItemVariables(FuncDataBase& Control)
 
   // Concrete door
   setVariable::LocalShieldingGenerator LSGen;
-  LSGen.setSize(100.0,300,250.0);
+  LSGen.setSize(40.4,300,250.0);
   LSGen.generate(Control,"Wall");
 
   Control.addVariable("DoorDoorMat","Concrete");
@@ -764,13 +764,13 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable("DoorCornerCut",3.0);
   Control.addVariable("DoorJambCornerCut",3.5);
   Control.addVariable("DoorInnerHeight",200.0);
-  Control.addVariable("DoorInnerThick",20.0);
+  Control.addVariable("DoorInnerThick",20.1);
   Control.addVariable("DoorInnerTopGap",2.5);
-  Control.addVariable("DoorInnerWidth",218);
+  Control.addVariable("DoorOuterWidth",153.1); // measured
+  Control.addVariable("DoorInnerWidth",136.5); // set to have GT room inner width 130.5
   Control.addVariable("DoorOuterHeight",210.0);
   Control.addVariable("DoorOuterTopGap",5);
-  Control.addVariable("DoorOuterWidth",238);
-  Control.addVariable("DoorSideCutAngle",70.0);
+  Control.addVariable("DoorSideCutAngle",73.0); // set based on the calculated lengths
   Control.addVariable("DoorUnderStepHeight",7.0); // measured
   Control.addVariable("DoorUnderStepWidth",110.5); // measured
 
