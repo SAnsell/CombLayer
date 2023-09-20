@@ -57,6 +57,7 @@ class ConcreteDoor :
   double underStepHeight;             ///< height of gap
   double underStepWidth;              ///< Width of under gap
   double sideCutAngle;          ///< side wall cut angle
+  double innerXStep;            ///< x-offset of the inner part
 
   double cornerCut;             ///< corner cut length
   double jambCornerCut;         ///< corner cut length on the doorjamb

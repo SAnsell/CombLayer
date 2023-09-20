@@ -107,6 +107,7 @@ ConcreteDoor::populate(const FuncDataBase& Control)
   underStepHeight=Control.EvalVar<double>(keyName+"UnderStepHeight");
   underStepWidth=Control.EvalVar<double>(keyName+"UnderStepWidth");
   sideCutAngle=Control.EvalVar<double>(keyName+"SideCutAngle");
+  innerXStep=Control.EvalVar<double>(keyName+"InnerXStep");
   cornerCut=Control.EvalVar<double>(keyName+"CornerCut");
   jambCornerCut=Control.EvalVar<double>(keyName+"JambCornerCut");
 
@@ -183,8 +184,8 @@ ConcreteDoor::createSurfaces()
   const Geometry::Quaternion qSide = Geometry::Quaternion::calcQRotDeg(180-sideCutAngle, Z);
   const Geometry::Vec3D vSide(qSide.makeRotate(-Y));
 
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(innerWidth/2.0),vSide); //
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(innerWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin+X*(outerWidth/2.0-innerXStep-innerWidth),vSide);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(outerWidth/2.0-innerXStep),X);
   ExternalCut::makeShiftedSurf(SMap,"floor",buildIndex+6,Z,innerHeight);
 
   ModelSupport::buildPlane(SMap,buildIndex+13,
@@ -204,6 +205,7 @@ ConcreteDoor::createSurfaces()
 			   Origin-X*(gapSpace+outerWidth/2.0),vSide); //
   ModelSupport::buildPlane(SMap,buildIndex+34,
 			   Origin+X*(gapSpace+outerWidth/2.0),X);
+
   // ModelSupport::buildPlane(SMap,buildIndex+36,
   // 			   Origin+Z*(outerTopGap+outerHeight/2.0),Z);
   ExternalCut::makeShiftedSurf(SMap,"floor",buildIndex+36,Z,
@@ -263,6 +265,11 @@ ConcreteDoor::createSurfaces()
 
   const Geometry::Vec3D c49 = getCorner(buildIndex+14, innerHR.getPrimarySurface(), buildIndex+6);
   ModelSupport::buildPlane(SMap,buildIndex+49, c49+Y*(legDoorJamb), v2);
+
+  //
+  const Geometry::Vec3D a = getCorner(buildIndex+4, innerHR.getPrimarySurface(), buildIndex+6);
+  const Geometry::Vec3D b = getCorner(buildIndex+3, innerHR.getPrimarySurface(), buildIndex+6);
+  ELog::EM << a.Distance(b) << ELog::endDiag;
 
   return;
 }
