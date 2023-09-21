@@ -60,6 +60,7 @@ class ConcreteDoor :
 
   double underStepHeight;             ///< height of gap
   double underStepWidth;              ///< Width of under gap
+  double underStepXStep;        ///< x-offset of gap
   double innerSideAngle;          ///< inner side wall cut angle
   double outerSideAngle;        ///< outer side wall cut angle
   double innerXStep;            ///< x-offset of the inner part
@@ -71,6 +72,7 @@ class ConcreteDoor :
   int doorMat;                        ///< wall material
 
   Geometry::Vec3D getCorner(const int, const int, const int) const;
+  void testDistances() const;
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

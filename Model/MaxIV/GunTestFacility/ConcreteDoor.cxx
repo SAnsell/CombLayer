@@ -110,6 +110,7 @@ ConcreteDoor::populate(const FuncDataBase& Control)
 
   underStepHeight=Control.EvalVar<double>(keyName+"UnderStepHeight");
   underStepWidth=Control.EvalVar<double>(keyName+"UnderStepWidth");
+  underStepXStep=Control.EvalVar<double>(keyName+"UnderStepXStep");
   innerSideAngle=Control.EvalVar<double>(keyName+"InnerSideAngle");
   outerSideAngle=Control.EvalVar<double>(keyName+"OuterSideAngle");
   innerXStep=Control.EvalVar<double>(keyName+"InnerXStep");
@@ -169,6 +170,74 @@ ConcreteDoor::getCorner(const int a, const int b, const int c) const
 }
 
 void
+ConcreteDoor::testDistances() const
+  /*!
+    Test selected distances and print warnings if they are not maintained
+  */
+{
+  const HeadRule innerHR=ExternalCut::getRule("innerWall");
+  const HeadRule outerHR=ExternalCut::getRule("outerWall");
+  const HeadRule floorHR=ExternalCut::getRule("floor");
+
+    // checking distances
+  const double epsilon = 0.1;
+  const Geometry::Vec3D a1 = getCorner(buildIndex+4, innerHR.getPrimarySurface(), buildIndex+6);
+  const Geometry::Vec3D b1 = getCorner(buildIndex+3, innerHR.getPrimarySurface(), buildIndex+6);
+  const double d1 = a1.Distance(b1);
+  if (std::abs(d1-130.5) > epsilon)
+    ELog::EM << "WARNING: The 130.5 distance is not maintained: " << d1 << ELog::endDiag;
+
+  const Geometry::Vec3D a2 = getCorner(buildIndex+23, buildIndex+201, buildIndex+6);
+  const Geometry::Vec3D b2 = getCorner(buildIndex+3, buildIndex+201, buildIndex+6);
+  const double d2 = a2.Distance(b2);
+  if (std::abs(d2-6.3) > epsilon)
+    ELog::EM << "WARNING: The 6.3 distance is not maintained: " << d2 << ELog::endWarn;
+
+  const Geometry::Vec3D a3 = getCorner(buildIndex+4, buildIndex+201, buildIndex+6);
+  const Geometry::Vec3D b3 = getCorner(buildIndex+24, buildIndex+201, buildIndex+6);
+  const double d3 = a3.Distance(b3);
+  if (std::abs(d3-10.0) > epsilon)
+    ELog::EM << "WARNING: The 10.0 distance is not maintained: " << d3 << ELog::endWarn;
+
+  const Geometry::Vec3D a4 = getCorner(buildIndex+39, outerHR.getPrimarySurface(), buildIndex+6);
+  const Geometry::Vec3D b4 = getCorner(buildIndex+29, outerHR.getPrimarySurface(), buildIndex+6);
+  const double d4 = a4.Distance(b4);
+  if (std::abs(d4-152.9) > epsilon)
+    ELog::EM << "WARNING: The 152.9 distance is not maintained: " << d4 << ELog::endWarn;
+
+  // doorjamb
+  // inner height
+  const Geometry::Vec3D a5 = getCorner(buildIndex+16, innerHR.getPrimarySurface(), buildIndex+24);
+  const Geometry::Vec3D b5 = getCorner(floorHR.getPrimarySurface(), innerHR.getPrimarySurface(), buildIndex+24);
+  const double d5 = a5.Distance(b5);
+  if (std::abs(d5-199.2) > epsilon)
+    ELog::EM << "WARNING: The 199.2 distance is not maintained: " << d5 << ELog::endWarn;
+
+  // outer height
+  const Geometry::Vec3D a6 = getCorner(buildIndex+36, innerHR.getPrimarySurface(), buildIndex+24);
+  const Geometry::Vec3D b6 = b5;
+  const double d6 = a6.Distance(b6);
+  if (std::abs(d6-209.5) > epsilon)
+    ELog::EM << "WARNING: The 209.5 distance is not maintained: " << d6 << ELog::endWarn;
+
+  // inner width
+  const Geometry::Vec3D a7 = getCorner(buildIndex+13, buildIndex+16, buildIndex+200);
+  const Geometry::Vec3D b7 = getCorner(buildIndex+14, buildIndex+16, buildIndex+200);
+  const double d7 = a7.Distance(b7);
+  if (std::abs(d7-141.0) > epsilon)
+    ELog::EM << "WARNING: The 141.0 distance is not maintained: " << d7 << ELog::endWarn;
+
+  // outer width
+  const Geometry::Vec3D a8 = getCorner(buildIndex+33, buildIndex+36, buildIndex+200);
+  const Geometry::Vec3D b8 = getCorner(buildIndex+34, buildIndex+36, buildIndex+200);
+  const double d8 = a8.Distance(b8);
+  if (std::abs(d8-160.1) > epsilon)
+    ELog::EM << "WARNING: The doorjamb outer width of 160.0 cm is not maintained: " << d8 << ELog::endWarn;
+
+  return;
+}
+
+void
 ConcreteDoor::createSurfaces()
   /*!
     Create All the surfaces
@@ -197,7 +266,7 @@ ConcreteDoor::createSurfaces()
 
   ModelSupport::buildShiftedPlane(SMap,buildIndex+13,buildIndex+4,X,-innerWidth-innerSideGapLeft);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+14,buildIndex+4,X,innerSideGapRight);
-  ExternalCut::makeShiftedSurf(SMap,"floor",buildIndex+16,Z,innerTopGap+innerHeight);
+  ExternalCut::makeShiftedSurf(SMap,"floor",buildIndex+16,Z,innerHeight+innerTopGap);
 
   ModelSupport::buildPlane(SMap,buildIndex+23,Origin-X*(outerWidth/2.0),vOuterSide);
   ModelSupport::buildPlane(SMap,buildIndex+24,Origin+X*(outerWidth/2.0),X);
@@ -207,15 +276,15 @@ ConcreteDoor::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+33,Origin-X*(outerWidth/2.0+outerSideGapLeft),X);
   ModelSupport::buildPlane(SMap,buildIndex+34,Origin+X*(outerWidth/2.0+outerSideGapRight),X);
 
-  ExternalCut::makeShiftedSurf(SMap,"floor",buildIndex+36,Z,outerTopGap+outerHeight);
+  ExternalCut::makeShiftedSurf(SMap,"floor",buildIndex+36,Z,outerHeight+outerTopGap);
 
   ExternalCut::makeShiftedSurf(SMap,"innerWall",buildIndex+200,Y,innerThick-innerThickGap);
   ExternalCut::makeShiftedSurf(SMap,"innerWall",buildIndex+201,Y,innerThick);
 
   ExternalCut::makeShiftedSurf(SMap,"floor",buildIndex+1005,Z,underStepHeight);
 
-  ModelSupport::buildPlane(SMap,buildIndex+1003,Origin-X*(underStepWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+1004,Origin+X*(underStepWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+1003,Origin-X*(underStepWidth/2.0+underStepXStep),X);
+  ModelSupport::buildPlane(SMap,buildIndex+1004,Origin+X*(underStepWidth/2.0-underStepXStep),X);
 
   // cutting the wall corners
   constexpr double cornerCutAngle = 45 * M_PI/180.0;
@@ -232,6 +301,7 @@ ConcreteDoor::createSurfaces()
 
   const HeadRule innerHR=ExternalCut::getRule("innerWall");
   const HeadRule outerHR=ExternalCut::getRule("outerWall");
+
 
   const Geometry::Vec3D c8 = getCorner(buildIndex+26, outerHR.getPrimarySurface(), buildIndex+24);
   ModelSupport::buildPlane(SMap,buildIndex+8, c8-Z*(legDoor), h1);
@@ -263,10 +333,7 @@ ConcreteDoor::createSurfaces()
   const Geometry::Vec3D c59 = getCorner(buildIndex+13, innerHR.getPrimarySurface(), buildIndex+6);
   ModelSupport::buildPlane(SMap,buildIndex+59, c59+Y*(legDoorJamb), v1);
 
-  //
-  const Geometry::Vec3D a = getCorner(buildIndex+4, innerHR.getPrimarySurface(), buildIndex+6);
-  const Geometry::Vec3D b = getCorner(buildIndex+3, innerHR.getPrimarySurface(), buildIndex+6);
-  ELog::EM << a.Distance(b) << ELog::endDiag;
+  testDistances();
 
   return;
 }
