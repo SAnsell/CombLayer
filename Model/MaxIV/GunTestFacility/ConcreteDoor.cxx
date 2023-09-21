@@ -98,7 +98,11 @@ ConcreteDoor::populate(const FuncDataBase& Control)
 
   innerTopGap=Control.EvalVar<double>(keyName+"InnerTopGap");
   outerTopGap=Control.EvalVar<double>(keyName+"OuterTopGap");
-  gapSpace=Control.EvalVar<double>(keyName+"GapSpace");
+  innerSideGapLeft=Control.EvalVar<double>(keyName+"InnerSideGapLeft");
+  innerSideGapRight=Control.EvalVar<double>(keyName+"InnerSideGapRight");
+  outerSideGapLeft=Control.EvalVar<double>(keyName+"OuterSideGapLeft");
+  outerSideGapRight=Control.EvalVar<double>(keyName+"OuterSideGapRight");
+  innerThickGap=Control.EvalVar<double>(keyName+"InnerThickGap");
   innerThick=Control.EvalVar<double>(keyName+"InnerThick");
 
   outerHeight=Control.EvalVar<double>(keyName+"OuterHeight");
@@ -106,7 +110,8 @@ ConcreteDoor::populate(const FuncDataBase& Control)
 
   underStepHeight=Control.EvalVar<double>(keyName+"UnderStepHeight");
   underStepWidth=Control.EvalVar<double>(keyName+"UnderStepWidth");
-  sideCutAngle=Control.EvalVar<double>(keyName+"SideCutAngle");
+  innerSideAngle=Control.EvalVar<double>(keyName+"InnerSideAngle");
+  outerSideAngle=Control.EvalVar<double>(keyName+"OuterSideAngle");
   innerXStep=Control.EvalVar<double>(keyName+"InnerXStep");
   cornerCut=Control.EvalVar<double>(keyName+"CornerCut");
   jambCornerCut=Control.EvalVar<double>(keyName+"JambCornerCut");
@@ -181,52 +186,38 @@ ConcreteDoor::createSurfaces()
   // origin in on outer wall:
 
 
-  const Geometry::Quaternion qSide = Geometry::Quaternion::calcQRotDeg(180-sideCutAngle, Z);
-  const Geometry::Vec3D vSide(qSide.makeRotate(-Y));
+  const Geometry::Quaternion qInnerSide = Geometry::Quaternion::calcQRotDeg(180-innerSideAngle, Z);
+  const Geometry::Vec3D vInnerSide(qInnerSide.makeRotate(-Y));
+  const Geometry::Quaternion qOuterSide = Geometry::Quaternion::calcQRotDeg(180-outerSideAngle, Z);
+  const Geometry::Vec3D vOuterSide(qOuterSide.makeRotate(-Y));
 
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin+X*(outerWidth/2.0-innerXStep-innerWidth),vSide);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin+X*(outerWidth/2.0-innerXStep-innerWidth),vInnerSide);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(outerWidth/2.0-innerXStep),X);
   ExternalCut::makeShiftedSurf(SMap,"floor",buildIndex+6,Z,innerHeight);
 
-  ModelSupport::buildPlane(SMap,buildIndex+13,
-			   Origin-X*(gapSpace+innerWidth/2.0),vSide); //
-  ModelSupport::buildPlane(SMap,buildIndex+14,
-			   Origin+X*(gapSpace+innerWidth/2.0),X);
-  ExternalCut::makeShiftedSurf(SMap,"floor",buildIndex+16,Z,
-			       innerTopGap+innerHeight);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+13,buildIndex+4,X,-innerWidth-innerSideGapLeft);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+14,buildIndex+4,X,innerSideGapRight);
+  ExternalCut::makeShiftedSurf(SMap,"floor",buildIndex+16,Z,innerTopGap+innerHeight);
 
-
-  ModelSupport::buildPlane(SMap,buildIndex+23,Origin-X*(outerWidth/2.0),vSide); //
+  ModelSupport::buildPlane(SMap,buildIndex+23,Origin-X*(outerWidth/2.0),vOuterSide);
   ModelSupport::buildPlane(SMap,buildIndex+24,Origin+X*(outerWidth/2.0),X);
 
   ExternalCut::makeShiftedSurf(SMap,"floor",buildIndex+26,Z,outerHeight);
 
-  ModelSupport::buildPlane(SMap,buildIndex+33,
-			   Origin-X*(gapSpace+outerWidth/2.0),vSide); //
-  ModelSupport::buildPlane(SMap,buildIndex+34,
-			   Origin+X*(gapSpace+outerWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+33,Origin-X*(outerWidth/2.0+outerSideGapLeft),X);
+  ModelSupport::buildPlane(SMap,buildIndex+34,Origin+X*(outerWidth/2.0+outerSideGapRight),X);
 
-  // ModelSupport::buildPlane(SMap,buildIndex+36,
-  // 			   Origin+Z*(outerTopGap+outerHeight/2.0),Z);
-  ExternalCut::makeShiftedSurf(SMap,"floor",buildIndex+36,Z,
-			       outerTopGap+outerHeight);
+  ExternalCut::makeShiftedSurf(SMap,"floor",buildIndex+36,Z,outerTopGap+outerHeight);
 
-  // Y Points out of ring:
-  ExternalCut::makeShiftedSurf
-    (SMap,"innerWall",buildIndex+200,Y,innerThick-gapSpace);
-  ExternalCut::makeShiftedSurf
-    (SMap,"innerWall",buildIndex+201,Y,innerThick);
+  ExternalCut::makeShiftedSurf(SMap,"innerWall",buildIndex+200,Y,innerThick-innerThickGap);
+  ExternalCut::makeShiftedSurf(SMap,"innerWall",buildIndex+201,Y,innerThick);
 
-  // lift step
-  ExternalCut::makeShiftedSurf
-    (SMap,"floor",buildIndex+1005,Z,underStepHeight);
+  ExternalCut::makeShiftedSurf(SMap,"floor",buildIndex+1005,Z,underStepHeight);
 
-  ModelSupport::buildPlane
-    (SMap,buildIndex+1003,Origin-X*(underStepWidth/2.0),X);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+1004,Origin+X*(underStepWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+1003,Origin-X*(underStepWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+1004,Origin+X*(underStepWidth/2.0),X);
 
-  // cutting the angles
+  // cutting the wall corners
   constexpr double cornerCutAngle = 45 * M_PI/180.0;
   const double c = cos(cornerCutAngle);
   const double legDoor = cornerCut*c;
@@ -260,11 +251,17 @@ ConcreteDoor::createSurfaces()
   const Geometry::Vec3D c29 = getCorner(buildIndex+24, outerHR.getPrimarySurface(), buildIndex+6);
   ModelSupport::buildPlane(SMap,buildIndex+29, c29-Y*(legDoor), v2);
 
+  const Geometry::Vec3D c38 = getCorner(buildIndex+16, innerHR.getPrimarySurface(),buildIndex+24);
+  ModelSupport::buildPlane(SMap,buildIndex+38, c38+Y*(legDoorJamb), h1);
+
   const Geometry::Vec3D c39 = getCorner(buildIndex+23, outerHR.getPrimarySurface(), buildIndex+6);
   ModelSupport::buildPlane(SMap,buildIndex+39, c39+X*(legDoor), v1);
 
   const Geometry::Vec3D c49 = getCorner(buildIndex+14, innerHR.getPrimarySurface(), buildIndex+6);
   ModelSupport::buildPlane(SMap,buildIndex+49, c49+Y*(legDoorJamb), v2);
+
+  const Geometry::Vec3D c59 = getCorner(buildIndex+13, innerHR.getPrimarySurface(), buildIndex+6);
+  ModelSupport::buildPlane(SMap,buildIndex+59, c59+Y*(legDoorJamb), v1);
 
   //
   const Geometry::Vec3D a = getCorner(buildIndex+4, innerHR.getPrimarySurface(), buildIndex+6);
@@ -298,15 +295,30 @@ ConcreteDoor::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"14 -34 -200 49 -16 ");
   makeCell("JambInnerRight",System,cellIndex++,doorMat,0.0,HR*innerHR*floorHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"33 -34 -200 16 -36");
-  makeCell("JambInnerTop",System,cellIndex++,doorMat,0.0,HR*innerHR*floorHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"33 -34 -200 16 -36 38 ");
+  makeCell("JambInnerTop",System,cellIndex++,doorMat,0.0,HR*innerHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"33 -13 -200 -16 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -59 -49 16 -38");
+  makeCell("Corner38",System,cellIndex++,0,0.0,HR*innerHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 33 59 16 -38");
+  makeCell("Corner38Left",System,cellIndex++,doorMat,0.0,HR*innerHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 49 -34 16 -38");
+  makeCell("Corner38Right",System,cellIndex++,doorMat,0.0,HR*innerHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"33 -13 -200 -16 59 ");
   makeCell("JambInnerLeft",System,cellIndex++,doorMat,0.0,HR*innerHR*floorHR);
 
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"200 -201 23 -24 -26 (-3:4:6)");
-  makeCell("MidGap",System,cellIndex++,0,0.0,HR*floorHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"200 -201 23 -3 -6");
+  makeCell("MidGapLeft",System,cellIndex++,0,0.0,HR*floorHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"200 -201 23 -24 6 -26");
+  makeCell("MidGapTop",System,cellIndex++,0,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"200 -201 4 -24 -6 ");
+  makeCell("MidGapRight",System,cellIndex++,0,0.0,HR*floorHR);
+
+
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 23 -24 -8 -18 19 -29 -39 1005 -26 ");
   makeCell("OuterDoor",System,cellIndex++,doorMat,0.0,HR*outerHR);
@@ -334,6 +346,9 @@ ConcreteDoor::createObjects(Simulation& System)
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"14 -49 -16 ");
   makeCell("Corner49",System,cellIndex++,0,0.0,HR*floorHR*innerHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-13 -59 -16 ");
+  makeCell("Corner59",System,cellIndex++,0,0.0,HR*floorHR*innerHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 23 -39 -1003 -1005 ");
   makeCell("OuterDoorBottom",System,cellIndex++,doorMat,0.0,HR*outerHR*floorHR);

@@ -23,7 +23,7 @@
 #declare projection = 0;
 #declare cameraAngle = 90;
 
-#declare quick=1; // 0=quick but low quality, 1=slow but somewhat better quality
+#declare quick=0; // 0=quick but low quality, 1=slow but somewhat better quality
 // another possibility to affect speed is command argument -q0 ... -q11
 // so one can set quick=0 and play with -q0
 
@@ -115,8 +115,12 @@
   #break
   #case (strcmp(ITEM,"ConcreteDoor"))
     #declare cameraLocation = <100, -450.0, 50.0>;
-    #declare cameraLookAt   = <0.0, 0.0, 0.0>;
-    #declare cameraAngle = 60;
+    // inner top-left
+    #declare cameraLookAt = <-72.18, -19.76, 74.68>;
+    #declare cameraAngle = 5;
+    // inner top-right
+    // #declare cameraLookAt = <69, -19.76, 74.68>;
+    // #declare cameraAngle = 5;
   #break
 #else
     #declare cameraLocation = <100, 100, 100>;

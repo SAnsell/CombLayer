@@ -49,14 +49,19 @@ class ConcreteDoor :
 
   double innerTopGap;                 ///< top gap inner
   double outerTopGap;                 ///< top gap outer
-  double gapSpace;                    ///< gap
+  double innerSideGapLeft;            ///< left-hand inner side gap
+  double innerSideGapRight;           ///< right-hand inner side gap
+  double outerSideGapLeft;            ///< left-hand outer side gap
+  double outerSideGapRight;           ///< right-hand outer side gap
+  double innerThickGap;               ///< inner gap between jamb and outer door layer
 
   double outerHeight;                 ///< height of outer gap
   double outerWidth;                  ///< width of outer gap
 
   double underStepHeight;             ///< height of gap
   double underStepWidth;              ///< Width of under gap
-  double sideCutAngle;          ///< side wall cut angle
+  double innerSideAngle;          ///< inner side wall cut angle
+  double outerSideAngle;        ///< outer side wall cut angle
   double innerXStep;            ///< x-offset of the inner part
 
   double cornerCut;             ///< corner cut length

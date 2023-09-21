@@ -760,20 +760,28 @@ SingleItemVariables(FuncDataBase& Control)
   LSGen.generate(Control,"Wall");
 
   Control.addVariable("DoorDoorMat","Concrete");
-  Control.addVariable("DoorGapSpace",3.0); // needed???
-  Control.addVariable("DoorCornerCut",3.0);
-  Control.addVariable("DoorJambCornerCut",3.5);
+  Control.addVariable("DoorCornerCut",3.0); // measured
+  Control.addVariable("DoorJambCornerCut",3.5); // measured
   Control.addVariable("DoorOuterWidth",153.1); // measured
   Control.addVariable("DoorInnerWidth",136.8); // set to have coorect distance of 6.3 cm to the outside right
-  Control.addVariable("DoorInnerXStep",10.0);
-  Control.addVariable("DoorInnerHeight",200.0);
-  Control.addVariable("DoorInnerThick",20.1);
-  Control.addVariable("DoorInnerTopGap",2.5);
-  Control.addVariable("DoorOuterHeight",210.0);
-  Control.addVariable("DoorOuterTopGap",5);
-  Control.addVariable("DoorSideCutAngle",72.677); // adjusted to get 130.5 cm between corners a and b
+  Control.addVariable("DoorInnerThick",20.0);
+  Control.addVariable("DoorInnerXStep",10.0); // measured
+  Control.addVariable("DoorInnerHeight",194.9); // measured
+  Control.addVariable("DoorOuterHeight",205.0); // measured
+  Control.addVariable("DoorInnerSideAngle",72.677); // adjusted to get 130.5 cm between corners a and b
+  Control.addVariable("DoorOuterSideAngle",72.677);
   Control.addVariable("DoorUnderStepHeight",7.0); // measured
-  Control.addVariable("DoorUnderStepWidth",110.5); // measured
+  Control.addVariable("DoorUnderStepWidth",110.5); // somewhat average of measured: 110.2 and 110.6
+
+  Control.addVariable("DoorInnerSideGapLeft",2.2); // adjusted to have 8.5 cm gap to the jamb
+  Control.addVariable("DoorInnerSideGapRight",2.0); // (141(total)-136.8(innerWidth))/2.0(both sides)
+  Control.addVariable("DoorOuterSideGapLeft",9.8); // adjusted to have 4 cm gap to the jamb
+  Control.addVariable("DoorOuterSideGapRight",2.1);
+
+  Control.addVariable("DoorInnerThickGap",0.5);
+
+  Control.addVariable("DoorInnerTopGap",4.3); // 199.2(total)-194.9(InnerHeight)
+  Control.addVariable("DoorOuterTopGap",5);
 
   return;
 }
