@@ -70,6 +70,9 @@
 #include "M1Frame.h"
 #include "M1Detail.h"
 
+#include "Importance.h"
+#include "Object.h"
+
 namespace xraySystem
 {
 
@@ -140,7 +143,7 @@ M1Detail::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("M1Detail","createObjects");
 
-  mirror->addInsertCell(getInsertCells());
+  MonteCarlo::Object* OPtr=System.findObject(1900001);
   mirror->createAll(System,*this,0);
 
   cClamp->setCutSurf("FarEnd",*mirror,"back");
@@ -168,13 +171,12 @@ M1Detail::createObjects(Simulation& System)
   connectors->setCutSurf("CInnerBase",*cClamp,"innerBase");
   
   connectors->createAll(System,*mirror,"backPlateOrg");
-
-  frontShield->addInsertCell("Main",getInsertCells());
-  frontShield->addInsertCell("Extra",getInsertCells());
+  
+  frontShield->addInsertCell(getInsertCells());
   frontShield->setCutSurf("Front",*cClamp,"front");
   frontShield->setCutSurf("Base",*cClamp,"innerSide");
   frontShield->createAll(System,*cClamp,"front");
-
+  
   frame->setCell("BackCVoid",*cClamp,"CVoid");
   frame->setCell("LowCVoid",*cClamp,"CVoid",1);
   frame->setCell("TopCVoid",*cClamp,"CVoid",2);
@@ -196,6 +198,7 @@ M1Detail::createObjects(Simulation& System)
 			   frame->getSurf("outVoid"),
 			   frame->getSurf("baseVoid"));
   cClamp->insertInCell(System,getInsertCells());
+
   return;
 }
 

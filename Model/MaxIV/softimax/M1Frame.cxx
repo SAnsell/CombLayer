@@ -267,7 +267,8 @@ M1Frame::createObjects(Simulation& System)
 
   // face void
   OPtr=CellMap::getCellObject(System,"FaceVoid");
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5011:-5012:123:-7");  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101:123:-7")+
+    flatHR.complement();
   OPtr->addIntersection(HR);
   
 

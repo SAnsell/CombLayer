@@ -425,7 +425,7 @@ M1BackPlate::createSupportObjects(Simulation& System)
       makeCell(rN+"LSupport",System,cellIndex++,supportMat,0.0,HR*yCutHR);  
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-224 5013 35 -5026");
       makeCell(rN+"LVoid",System,cellIndex++,voidMat,0.0,HR*yCutHR*ringCutHR);
-      
+
       HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,BExtra,"33 -5013 35 -15 5017M");
       makeCell(rN+"LVoid",System,cellIndex++,voidMat,0.0,HR*yCutHR);  
@@ -513,14 +513,17 @@ M1BackPlate::createObjects(Simulation& System)
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -15 25 224 -204");
   makeCell("Plate",System,cellIndex++,baseMat,0.0,HR);
-  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"6011 -6012 35 -25 224 -204");
+  makeCell("PlateSubVoid",System,cellIndex++,voidMat,0.0,HR);
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -5011 -25 35 224 -204");
   makeCell("FrontPlateVoid",System,cellIndex++,voidMat,0.0,HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"5011 -5012 -5017");
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"5012 -6011 -25 35 224 -204");
   makeCell("PlateVoid",System,cellIndex++,voidMat,0.0,HR);
-  // *ringCutHR
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"6012 -2 -25 35 224 -204");
   makeCell("EndPlateVoid",System,cellIndex++,voidMat,0.0,HR);
   
@@ -578,7 +581,9 @@ M1BackPlate::createObjects(Simulation& System)
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"5012 -6011 204 -34 35 -605");
   makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
-  ELog::EM<<"Ini void["<<cellIndex-1<<"] == "<<ringCutHR<<ELog::endDiag;
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"6011 -6012 204 -34 35 -605");
+  makeCell("EndVoid",System,cellIndex++,voidMat,0.0,HR);  
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"6012 -2 204 -34 35 -605");
   makeCell("EndVoid",System,cellIndex++,voidMat,0.0,HR);  
@@ -609,7 +614,6 @@ M1BackPlate::createObjects(Simulation& System)
     (SMap,buildIndex,"1 -2 1004 -34 605 -36 (-5017:5027:-5011:5012)");
   makeCell("FaceVoid",System,cellIndex++,voidMat,0.0,HR);  
 
-  ELog::EM<<"Ringx == "<<cellIndex-1<<ELog::endDiag;  
   // crystal ends
   HR=HeadRule(SMap,buildIndex,-2);
   makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,
