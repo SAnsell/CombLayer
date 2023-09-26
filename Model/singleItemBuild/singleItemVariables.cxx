@@ -779,7 +779,7 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable("DoorOuterSideGapLeft",7.7); // adjusted to have 4 cm gap to the jamb
   Control.addVariable("DoorOuterSideGapRight",2.0); // should be -0.8 to match total width of 1.6 m TODO: check
 
-  Control.addVariable("DoorInnerThickGap",0.5);
+  Control.addVariable("DoorInnerThickGap",0.5); // TODO check
 
   Control.addVariable("DoorInnerTopGap",4.3); // 199.2(total)-194.9(InnerHeight)
   Control.addVariable("DoorOuterTopGap",4.5);

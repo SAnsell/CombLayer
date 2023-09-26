@@ -203,7 +203,7 @@ ConcreteDoor::testDistances() const
   const Geometry::Vec3D b4 = getCorner(buildIndex+29, outerHR.getPrimarySurface(), buildIndex+6);
   const double d4 = a4.Distance(b4);
   if (std::abs(d4-152.9) > epsilon)
-    ELog::EM << "WARNING: The 152.9 distance is not maintained: " << d4 << ELog::endWarn;
+    ELog::EM << "WARNING: The inner-inner outer width of 152.9 cm is not maintained: " << d4 << ELog::endWarn;
 
   // doorjamb
   // inner height
