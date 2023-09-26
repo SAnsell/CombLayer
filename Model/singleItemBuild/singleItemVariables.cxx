@@ -784,6 +784,27 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable("DoorInnerTopGap",4.3); // 199.2(total)-194.9(InnerHeight)
   Control.addVariable("DoorOuterTopGap",4.5);
 
+
+  // Ion Pump produced by Gamma Vacuum
+  Control.addVariable("IonPumpGammaVacuumLength",17.2);
+  Control.addVariable("IonPumpGammaVacuumHeight",13.0);
+  Control.addVariable("IonPumpGammaVacuumWallThick",1.3);
+  Control.addVariable("IonPumpGammaVacuumMainMat","Void");
+  Control.addVariable("IonPumpGammaVacuumWallMat","Stainless304L"); // dummy TODO
+  Control.addVariable("IonPumpGammaVacuumPistonMat","Concrete"); // dummy TODO
+
+  Control.addVariable("IonPumpGammaVacuumPistonWidth",26.3);
+  Control.addVariable("IonPumpGammaVacuumPistonHeight",5.0);
+  Control.addVariable("IonPumpGammaVacuumPistonBaseHeight",12.0);
+  Control.addVariable("IonPumpGammaVacuumPistonBaseThick",4.5);
+  Control.addVariable("IonPumpGammaVacuumPistonLength",15.0);
+  Control.addVariable("IonPumpGammaVacuumFlangeRadius", 7.5);
+  Control.addVariable("IonPumpGammaVacuumFlangeThick", 2.1);
+  Control.addVariable("IonPumpGammaVacuumFlangeTubeRadius", 5.0);
+  Control.addVariable("IonPumpGammaVacuumFlangeTubeThick", 0.2);
+  Control.addVariable("IonPumpGammaVacuumFlangeTubeLength", 6.9);
+
+
   return;
 }
 

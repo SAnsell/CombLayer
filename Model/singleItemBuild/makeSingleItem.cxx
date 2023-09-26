@@ -166,6 +166,7 @@
 #include "BenderUnit.h"
 #include "MLMonoDetail.h"
 #include "ConcreteDoor.h"
+#include "IonPumpGammaVacuum.h"
 
 #include "makeSingleItem.h"
 
@@ -223,7 +224,7 @@ makeSingleItem::build(Simulation& System,
 	"ConnectorTube","LocalShield","FlangeDome",
 	"MonoShutter","RoundMonoShutter","TubeDetBox",
 	"GuideUnit","PlateUnit","BenderUnit","MLMdetail",
-        "ConcreteDoor",
+        "ConcreteDoor", "IonPumpGammaVacuum",
 	"Help","help"
     });
 
@@ -1555,6 +1556,14 @@ makeSingleItem::build(Simulation& System,
       return;
     }
 
+  if (item == "IonPumpGammaVacuum")
+    {
+      const auto pump = std::make_shared<MAXIV::IonPumpGammaVacuum>("IonPumpGammaVacuum");
+      OR.addObject(pump);
+      pump->addInsertCell(voidCell);
+      pump->createAll(System,World::masterOrigin(),0);
+      return;
+    }
 
     if (item=="Help" || item=="help")
       {
