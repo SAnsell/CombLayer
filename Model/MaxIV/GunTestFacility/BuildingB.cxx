@@ -744,8 +744,11 @@ namespace MAXIV::GunTestFacility
     door->setCutSurf("outerWall", *this, "#MazeWallSideFront");
     door->setCutSurf("floor", getSurf("bottom"));
     door->addInsertCell(getCell("MazeWallSide"));
-    door->createAll(System,*this,10);
+    door->createAll(System,*this,getSideIndex("MazeWallSideFront"));
 
+    // ELog::EM << getSideIndex("#MazeWallSideFront") << ELog::endDiag;
+    // ELog::EM << getLinkPt("MazeWallSideFront") << ELog::endDiag;
+    // ELog::EM << getLinkAxis("#MazeWallSideFront") << ELog::endDiag;
     insertObjects(System);
 
     return;

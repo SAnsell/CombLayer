@@ -45,7 +45,6 @@
 #include "FuncDataBase.h"
 
 #include "DuctGenerator.h"
-#include "RingDoorGenerator.h"
 #include "CFFlanges.h"
 #include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
@@ -171,16 +170,31 @@ namespace setVariable
 		     30.0-width2, 0.0, // [0] page 1
 		     length2+backWallThick+mazeWidth-370.0-120.0); //[0], page 2
 
-    RingDoorGenerator RDGen(1); // 1: make R1 door
-    RDGen.generateDoor(Control,name+"ConcreteDoor",20.0);
-    Control.addVariable(name+"ConcreteDoorInnerThick",20.0); // guess: [0] page 3 (TODO check again)
-    Control.addVariable(name+"ConcreteDoorInnerHeight",200.0); // [0] page 3 and 6
-    Control.addVariable(name+"ConcreteDoorOuterHeight",210.0); // [0] page 3 and 6
-    Control.addVariable(name+"ConcreteDoorUnderStepHeight",7.2); // [0] page 3
-    Control.addVariable(name+"ConcreteDoorUnderStepWidth",111.0); // [0] page 3
-    Control.addVariable(name+"ConcreteDoorSideCutAngle",70.0); // guess TODO measure
-    Control.addVariable(name+"ConcreteDoorGapSpace", 3); // dummy TODO
 
+    Control.addVariable("BldBConcreteDoorDoorMat","Concrete");
+    Control.addVariable("BldBConcreteDoorCornerCut",3.0); // measured
+    Control.addVariable("BldBConcreteDoorJambCornerCut",3.5); // measured
+    Control.addVariable("BldBConcreteDoorOuterWidth",153.1); // measured
+    Control.addVariable("BldBConcreteDoorInnerWidth",136.83); // set to have coorect distance of 6.3 cm to the outside right
+    Control.addVariable("BldBConcreteDoorInnerThick",20.0);
+    Control.addVariable("BldBConcreteDoorInnerXStep",10.0); // measured
+    Control.addVariable("BldBConcreteDoorInnerHeight",194.9); // measured
+    Control.addVariable("BldBConcreteDoorOuterHeight",205.0); // measured
+    Control.addVariable("BldBConcreteDoorInnerSideAngle",72.677); // adjusted to get 130.5 cm between corners a and b
+    Control.addVariable("BldBConcreteDoorOuterSideAngle",78.67);
+    Control.addVariable("BldBConcreteDoorUnderStepHeight",7.0); // measured
+    Control.addVariable("BldBConcreteDoorUnderStepWidth",110.5); // somewhat average of measured: 110.2 and 110.6
+    Control.addVariable("BldBConcreteDoorUnderStepXStep",1.4); //
+
+    Control.addVariable("BldBConcreteDoorInnerSideGapLeft",3.0); // adjusted to have 8.5 cm gap to the jamb
+    Control.addVariable("BldBConcreteDoorInnerSideGapRight",1.17); // adjusted to have total inner jamb width of 141 cm
+    Control.addVariable("BldBConcreteDoorOuterSideGapLeft",7.7); // adjusted to have 4 cm gap to the jamb
+    Control.addVariable("BldBConcreteDoorOuterSideGapRight",2.0); // should be -0.8 to match total width of 1.6 m TODO: check
+
+    Control.addVariable("BldBConcreteDoorInnerThickGap",0.5); // TODO check
+
+    Control.addVariable("BldBConcreteDoorInnerTopGap",4.3); // 199.2(total)-194.9(InnerHeight)
+    Control.addVariable("BldBConcreteDoorOuterTopGap",4.5);
   }
 
   void BeamLineVariables(FuncDataBase& Control, const std::string& name)
