@@ -777,12 +777,12 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable("DoorInnerSideGapLeft",3.0-1); // adjusted to have 8.5 cm gap to the jamb
   Control.addVariable("DoorInnerSideGapRight",1.17+0.3); // adjusted to have total inner jamb width of 141 cm
   Control.addVariable("DoorOuterSideGapLeft",7.7-2); // adjusted to have 4 cm gap to the jamb
-  Control.addVariable("DoorOuterSideGapRight",2.2); // should be -0.8 to match total width of 1.6 m TODO: check
+  Control.addVariable("DoorOuterSideGapRight",1.3); // adjusted to match the total width of 161 cm
 
   Control.addVariable("DoorInnerThickGap",0.5); // TODO check
 
-  Control.addVariable("DoorInnerTopGap",4.3); // 199.2(total)-194.9(InnerHeight)
-  Control.addVariable("DoorOuterTopGap",4.5);
+  Control.addVariable("DoorInnerTopGap",4.0); // measured
+  Control.addVariable("DoorOuterTopGap",4.0); // measured
 
 
   // Ion Pump produced by Gamma Vacuum
