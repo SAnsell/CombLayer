@@ -287,21 +287,25 @@ ConcreteDoor::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+1004,Origin+X*(underStepWidth/2.0-underStepXStep),X);
 
   // cutting the wall corners
-  constexpr double cornerCutAngle = 45 * M_PI/180.0;
-  const double c = cos(cornerCutAngle);
+  constexpr double cornerCutAngle = 45.0;
+  constexpr double cornerCutAngleRad = cornerCutAngle * M_PI/180.0;
+  const double c = cos(cornerCutAngleRad);
   const double legDoor = cornerCut*c;
   const double legDoorJamb = jambCornerCut*c;
 
-  const Geometry::Quaternion qVCorner = Geometry::Quaternion::calcQRot(cornerCutAngle, Z);
-  const Geometry::Quaternion qHCorner = Geometry::Quaternion::calcQRot(cornerCutAngle, X);
+  const Geometry::Quaternion qVCorner = Geometry::Quaternion::calcQRotDeg(cornerCutAngle, Z);
+  const Geometry::Quaternion qHCorner = Geometry::Quaternion::calcQRotDeg(cornerCutAngle, X);
   const Geometry::Vec3D v1(qVCorner.makeRotate(Y));
   const Geometry::Vec3D v2(qVCorner.makeRotate(X));
   const Geometry::Vec3D h1(qHCorner.makeRotate(Y));
   const Geometry::Vec3D h2(qHCorner.makeRotate(Z));
 
+  const Geometry::Quaternion qVCorner1 =
+    Geometry::Quaternion::calcQRotDeg(outerSideAngle-cornerCutAngle/2.0, Z);
+  const Geometry::Vec3D v3(qVCorner1.makeRotate(Y));
+
   const HeadRule innerHR=ExternalCut::getRule("innerWall");
   const HeadRule outerHR=ExternalCut::getRule("outerWall");
-
 
   const Geometry::Vec3D c8 = getCorner(buildIndex+26, outerHR.getPrimarySurface(), buildIndex+24);
   ModelSupport::buildPlane(SMap,buildIndex+8, c8-Z*(legDoor), h1);
@@ -325,7 +329,7 @@ ConcreteDoor::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+38, c38+Y*(legDoorJamb), h1);
 
   const Geometry::Vec3D c39 = getCorner(buildIndex+23, outerHR.getPrimarySurface(), buildIndex+6);
-  ModelSupport::buildPlane(SMap,buildIndex+39, c39+X*(legDoor), v1);
+  ModelSupport::buildPlane(SMap,buildIndex+39, c39+X*(legDoor), v3);
 
   const Geometry::Vec3D c49 = getCorner(buildIndex+14, innerHR.getPrimarySurface(), buildIndex+6);
   ModelSupport::buildPlane(SMap,buildIndex+49, c49+Y*(legDoorJamb), v2);

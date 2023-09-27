@@ -756,7 +756,7 @@ SingleItemVariables(FuncDataBase& Control)
 
   // Concrete door
   setVariable::LocalShieldingGenerator LSGen;
-  LSGen.setSize(40.4,300,250.0);
+  LSGen.setSize(40.,300,250.0);
   LSGen.generate(Control,"Wall");
 
   Control.addVariable("DoorDoorMat","Concrete");
@@ -774,10 +774,10 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable("DoorUnderStepWidth",110.5); // somewhat average of measured: 110.2 and 110.6
   Control.addVariable("DoorUnderStepXStep",1.4); //
 
-  Control.addVariable("DoorInnerSideGapLeft",3.0); // adjusted to have 8.5 cm gap to the jamb
-  Control.addVariable("DoorInnerSideGapRight",1.17); // adjusted to have total inner jamb width of 141 cm
-  Control.addVariable("DoorOuterSideGapLeft",7.7); // adjusted to have 4 cm gap to the jamb
-  Control.addVariable("DoorOuterSideGapRight",2.0); // should be -0.8 to match total width of 1.6 m TODO: check
+  Control.addVariable("DoorInnerSideGapLeft",3.0-1); // adjusted to have 8.5 cm gap to the jamb
+  Control.addVariable("DoorInnerSideGapRight",1.17+0.3); // adjusted to have total inner jamb width of 141 cm
+  Control.addVariable("DoorOuterSideGapLeft",7.7-2); // adjusted to have 4 cm gap to the jamb
+  Control.addVariable("DoorOuterSideGapRight",2.2); // should be -0.8 to match total width of 1.6 m TODO: check
 
   Control.addVariable("DoorInnerThickGap",0.5); // TODO check
 
