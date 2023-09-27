@@ -123,36 +123,6 @@ ConcreteDoor::populate(const FuncDataBase& Control)
   return;
 }
 
-void
-ConcreteDoor::createUnitVector(const attachSystem::FixedComp& FC,
-				 const long int sideIndex)
-  /*!
-    Create the unit vectors: Note only to construct front/back surf
-    Note that Y points OUT of the ring
-    \param FC :: Centre point
-    \param sideIndex :: Side index
-  */
-{
-  ELog::RegMethod RegA("ConcreteDoor","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  const HeadRule& HR=ExternalCut::getRule("innerWall");
-
-  const int SN=HR.getPrimarySurface();
-  const Geometry::Plane* PPtr=
-    dynamic_cast<const Geometry::Plane*>(HR.getSurface(SN));
-
-  if (PPtr)
-    {
-      Geometry::Vec3D PAxis=PPtr->getNormal();
-      if (Y.dotProd(PAxis)*SN < -Geometry::zeroTol)
-	PAxis*=-1;
-      FixedComp::reOrientate(1,PAxis);
-    }
-  applyOffset();
-  return;
-}
-
 Geometry::Vec3D
 ConcreteDoor::getCorner(const int a, const int b, const int c) const
 /*!

@@ -75,8 +75,6 @@ class ConcreteDoor :
   void testDistances() const;
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
