@@ -172,6 +172,7 @@
 #include "M1FrontShield.h"
 #include "BlockStand.h"
 #include "DomeConnector.h"
+#include "LegoBrick.h"
 #include "M1Detail.h"
 
 #include "makeSingleItem.h"
@@ -487,6 +488,7 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
+
   if (item == "FlangeDome")
     {
       std::shared_ptr<constructSystem::PipeTube>
@@ -1224,6 +1226,18 @@ makeSingleItem::build(Simulation& System,
 
       uVac->addInsertCell(voidCell);
       uVac->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
+  if (item == "LegoBrick" )
+    {
+      std::shared_ptr<essSystem::LegoBrick>
+	lego(new essSystem::LegoBrick("LegoBrick"));
+      OR.addObject(lego);
+
+      lego->addInsertCell(voidCell);
+      lego->createAll(System,World::masterOrigin(),0);
 
       return;
     }

@@ -1,5 +1,7 @@
 set (heimdalSources
-    HEIMDAL.cxx HEIMDALvariables.cxx 
+  LegoBrick.cxx
+  HEIMDAL.cxx
+  HEIMDALvariables.cxx 
 )
 
 add_library (heimdal SHARED

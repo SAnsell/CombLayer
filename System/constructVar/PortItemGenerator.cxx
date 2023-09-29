@@ -3,7 +3,7 @@
 
  * File:   constructVar/PortItemGenerator.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -332,6 +332,7 @@ template void PortItemGenerator::setCF<CF34_TDC>(const double);
 template void PortItemGenerator::setCF<CF35_TDC>(const double);
 template void PortItemGenerator::setCF<CF37_TDC>(const double);
 template void PortItemGenerator::setCF<CF40>(const double);
+template void PortItemGenerator::setCF<Linac::CF40>(const double);
 template void PortItemGenerator::setCF<CF40_22>(const double);
 template void PortItemGenerator::setCF<CF50>(const double);
 template void PortItemGenerator::setCF<CF63>(const double);
@@ -347,6 +348,7 @@ template void PortItemGenerator::setFlangeCF<CF34_TDC>();
 template void PortItemGenerator::setFlangeCF<CF35_TDC>();
 template void PortItemGenerator::setFlangeCF<CF37_TDC>();
 template void PortItemGenerator::setFlangeCF<CF40>();
+template void PortItemGenerator::setFlangeCF<Linac::CF40>();
 template void PortItemGenerator::setFlangeCF<CF40_22>();
 template void PortItemGenerator::setFlangeCF<CF50>();
 template void PortItemGenerator::setFlangeCF<CF63>();

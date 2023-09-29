@@ -822,7 +822,7 @@ TS2layout(FuncDataBase& Control)
   BSGen.generateBox(Control,"chipIR",-1.6,0.0,   -1.6, 0.0,  6.17,8.61, 0.35,0.47);  // USE ABOVE
   BSGen.generateBox(Control,"T2", -1.7,0.0,    0.0,0.0,   6.17,8.61, 0.35,0.47);
   BSGen.generateBox(Control,"T3",    2.2,0.0,    2.0,-1.5,  6.74,4.8,  0.05,0.44); 
-  BSGen.generateBox(Control,"T4",   2.2,0.0,    2.2,-1.5,  7.91,4.57, 0.22,0.275); 
+  BSGen.generateBox(Control,"T4",   2.4,0.0,    2.2,-1.5,  7.91,4.57, 0.22,0.275); 
   BSGen.generateBox(Control,"T5",     2.2,0.0,    0.0,0.0,   7.9, 7.9,  0.395,0.395); 
   BSGen.generateBox(Control,"T6",    2.0,0.0,    0.0,0.0,   6.79,6.79, 0.0,0.0); 
   BSGen.generateBox(Control,"nimrod",-1.7,0.0,    0.0,0.0,   8.22,7.93, 0.35,0.22); 

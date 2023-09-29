@@ -500,10 +500,10 @@ namespace Linac
 
 struct CF40
 {
-  static constexpr double innerRadius=0.9;
-  static constexpr double wallThick=0.2;
+  static constexpr double innerRadius=1.9;
+  static constexpr double wallThick=0.15;
   static constexpr double outerRadius=wallThick+innerRadius;
-  static constexpr double flangeRadius=3.5;
+  static constexpr double flangeRadius=3.3;
   static constexpr double flangeLength=1.3;
   static constexpr double bellowStep=1.0;
   static constexpr double bellowThick=1.0;

@@ -565,7 +565,7 @@ opticsVariables(FuncDataBase& Control,
   PTubeGen.generateTube(Control,preName+"FilterBoxA",0.0,25.2);
   Control.addVariable(preName+"FilterBoxANPorts",4);
   
-  PItemGen.setCF<setVariable::CF40>(mainRadius+4.0);
+  PItemGen.setCF<setVariable::Linac::CF40>(mainRadius+4.0);
   // 1/4 and 3/4 in main length: [total length 25.0-11.0] 
   Geometry::Vec3D PPos(0,3.55,0);
   const Geometry::Vec3D XVec(-1,0,0);

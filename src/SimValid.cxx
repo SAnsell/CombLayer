@@ -430,10 +430,8 @@ SimValid::runPoint(const Simulation& System,
 	  if (!SN)
 	    {
 	      if (MultiPoint.find(TNeut.Pos)==MultiPoint.end())
-		{
-		  ELog::EM<<"Multi Point ="<<TNeut.Pos<<ELog::endDiag;
-		  MultiPoint.emplace(TNeut.Pos);
-		}
+		MultiPoint.emplace(TNeut.Pos);
+
 	      TNeut.moveForward(Geometry::zeroTol*5.0);
 	      OPtr=System.findCell(TNeut.Pos,0);
 	      if (OPtr)
