@@ -3,7 +3,7 @@
  
  * File:   beamline/PlateUnit.cxx 
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -228,6 +228,30 @@ PlateUnit::populate(const FuncDataBase& Control)
       BPts.push_back(Geometry::Vec3D(WB/2.0,0.0,HB/2.0));
       APts.push_back(Geometry::Vec3D(-WA/2.0,0.0,HA/2.0));
       BPts.push_back(Geometry::Vec3D(-WB/2.0,0.0,HB/2.0));
+    }
+  else if (typeID=="GeneralTaper")   
+    {
+      APts.clear();
+      BPts.clear();
+      
+      const double HAT=Control.EvalVar<double>(keyName+"HeightStartTop");
+      const double HAB=Control.EvalVar<double>(keyName+"HeightStartBottom");
+      const double WAL=Control.EvalVar<double>(keyName+"WidthStartLeft");
+      const double WAR=Control.EvalVar<double>(keyName+"WidthStartRight");
+      const double HBT=Control.EvalVar<double>(keyName+"HeightEndTop");
+      const double HBB=Control.EvalVar<double>(keyName+"HeightEndBottom");   
+      const double WBL=Control.EvalVar<double>(keyName+"WidthEndLeft");
+      const double WBR=Control.EvalVar<double>(keyName+"WidthEndRight");
+
+      
+      APts.push_back(Geometry::Vec3D(-WAL,0.0,-HAB));
+      BPts.push_back(Geometry::Vec3D(-WBL,0.0,-HBB));
+      APts.push_back(Geometry::Vec3D(WAR,0.0,-HAB));
+      BPts.push_back(Geometry::Vec3D(WBR,0.0,-HBB));
+      APts.push_back(Geometry::Vec3D(WAR,0.0,HAT));
+      BPts.push_back(Geometry::Vec3D(WBR,0.0,HBT));
+      APts.push_back(Geometry::Vec3D(-WAL,0.0,HAT));
+      BPts.push_back(Geometry::Vec3D(-WBL,0.0,HBT));
     }
   else if (typeID=="Octagon")   
     {

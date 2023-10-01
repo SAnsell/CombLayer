@@ -450,7 +450,7 @@ setESSSingle(defaultConfig& A,
   A.setOption("lowMod","Butterfly");
   const std::map<std::string,std::string> beamDefNotSet=
     { 
-     {"HEIMDAL","G1BLineTop18"},       // S2
+     {"HEIMDAL2","G1BLineTop18"},       // S2
      {"SLEIPNIR","G1BLineLow13"},      // N9
      {"ANNI","G2BLineTop4"},           // E4
      {"SURFSCATTER","G2BLineTop8"},    // E8

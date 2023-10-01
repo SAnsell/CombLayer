@@ -96,18 +96,28 @@ HEIMDALvariables(FuncDataBase& Control)
   SGen.addRoofMat(5,"Concrete");
   SGen.addWallMat(5,"Concrete");
 
-  FGen.setLayer(1,0.5,"Copper");
-  FGen.setLayer(2,0.5,"Void");
-  FGen.setYOffset(2.0);
-  FGen.generateTaper(Control,"heimdalFTA",350.0, 3.0,3.0, 3.0,3.0);
-  FGen.generateRectangle(Control,"heimdalFCA",350.0,2.0,2.0);
+  // Double guide: increased wedge:
+  Control.addVariable("G1BLineTop8Depth1",16.0);
   
+  FGen.setLayer(1,1.2,"Copper");
+  FGen.setLayer(2,0.2,"Void");
+  FGen.setYOffset(2.0);
+  FGen.generateGeneralTaper(Control,"heimdalFTA",334.819,
+			    7.096,2.584,
+			    3.154,2.584,
+			    1.724,2.507,
+			    1.724,2.507);
+
+  FGen.generateRectangle(Control,"heimdalFCA",350.0,2.0,2.0);
+
+  Control.addVariable("heimdalFTAXStep",2.35);
+  Control.addVariable("heimdalFCABXStep",-2.85);
   Control.addVariable("heimdalFTAZStep",0.0);   
-  Control.addVariable("heimdalFCAZStep",-5.0);   
+  Control.addVariable("heimdalFCAZStep",-4.71);   
   Control.addVariable("heimdalFTAXAngle",0.0);   
-  Control.addVariable("heimdalFCAXAngle",-1.3);   
-  Control.addVariable("heimdalFTAZAngle",0.0);  // 1
-  Control.addVariable("heimdalFCAZAngle",0.0);  // -1.   
+  Control.addVariable("heimdalFCAXAngle",-1.39);   
+  Control.addVariable("heimdalFTAZAngle",1.1);  
+  Control.addVariable("heimdalFCAZAngle",-0.4);  
 
   RPipeGen.generatePipe(Control,"heimdalPipeB",6.5,46.0);
   Control.addVariable("heimdalPipeBZStep",-8.0);

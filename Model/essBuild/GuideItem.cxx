@@ -178,6 +178,7 @@ GuideItem::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("GuideItem","populate");
 
+
   FixedRotateGroup::populate(Control);
   active=Control.EvalTail<int>(keyName,baseName,"Active");
 
@@ -288,7 +289,6 @@ GuideItem::createSurfaces()
   SMap.addMatch(buildIndex+7,innerCyl);
 
   int GI(buildIndex);
-
   for(size_t i=0;i<nSegment;i++)
     {
       if (i!=nSegment-1)
@@ -305,7 +305,9 @@ GuideItem::createSurfaces()
         (SMap,GI+14,beamOrigin+bX*(-sideGap+width[i]/2.0),bX);
       ModelSupport::buildPlane(SMap,GI+15,beamOrigin-bZ*(-baseGap+depth[i]),bZ);
       ModelSupport::buildPlane(SMap,GI+16,beamOrigin+bZ*(-topGap+height[i]),bZ);
-
+      if (active)
+	ELog::EM<<"Key == "<<keyName<<" "<<GI+5<<":"<<beamOrigin
+		<<" :: "<<bZ*depth[i]<<ELog::endDiag;
       GI+=50;
     }
   SMap.addMatch(GI+7,outerCyl);
@@ -382,10 +384,11 @@ GuideItem::createObjects(Simulation& System)
 
   const HeadRule edgeHR=getEdge(GPtr);
   HeadRule HR;
-
+  ELog::EM<<"Key == "<<keyName<<" "<<buildIndex<<ELog::endDiag;
   int GI(buildIndex);
   for(size_t i=0;i<nSegment;i++)
     {
+      
       // Outer layer
       if (i==0)
 	{
@@ -421,11 +424,8 @@ GuideItem::createObjects(Simulation& System)
 	HR*=ModelSupport::getHeadRule
 	  (SMap,buildIndex,"(-1103:1104:-1105:1106)");
       makeCell("Body",System,cellIndex++,mat,0.0,HR);
-
-      addCell("Body",cellIndex-1);
+      ELog::EM<<"Boidy == "<<HR<<ELog::endDiag;
       if (filled) addCell("Void",cellIndex-1);
-
-      
       GI+=50;
     }      
   // Inner void

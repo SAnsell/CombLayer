@@ -38,10 +38,7 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
-#include "Surface.h"
 #include "surfRegister.h"
 #include "varList.h"
 #include "Code.h"
@@ -130,6 +127,7 @@ LegoBrick::populate(const FuncDataBase& Control)
   depth=Control.EvalVar<double>(keyName+"Depth");
   height=Control.EvalVar<double>(keyName+"Height");
   width=Control.EvalVar<double>(keyName+"Width");
+
   return;
 }
   

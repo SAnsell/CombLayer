@@ -386,7 +386,12 @@ HEIMDAL::build(Simulation& System,
 
   if (stopPoint==4) return;                      // STOP At hutch
   //  buildHut(System,ChopperOutB->getKey("Beam"),2,voidCell);
-  
+
+  ELog::EM<<"FocusCA Axis == "<<FocusCA->getLinkPt(0)
+	  <<" : "<<FocusCA->getY()<<ELog::endDiag;;
+  ELog::EM<<"FocusTA Axis == "<<FocusTA->getLinkPt(0)
+	  <<" : "<<FocusTA->getY()<<ELog::endDiag;;
+
   return;
 }
 
