@@ -452,6 +452,14 @@ Wheel::createLinks()
   FixedComp::setConnect(5,Origin+Z*H,Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+36));
 
+  FixedComp::setConnect(6, Origin-Y*voidRadius,Y);
+  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+537));
+
+  ELog::EM<<"ASDFASF"<<ELog::endDiag;
+  nameSideIndex(4,"VoidBase");
+  nameSideIndex(5,"VoidTop");
+  nameSideIndex(6,"VoidRadius");
+
   
   return;
 }

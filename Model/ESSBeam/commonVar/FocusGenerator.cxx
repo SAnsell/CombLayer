@@ -164,7 +164,7 @@ FocusGenerator::writeLayers(FuncDataBase& Control,
 	  Control.addVariable(keyName+"LayerMat"+SNum,layerMat[i]);
 	}
     }
-  Control.addVariable(keyName+"NShapeLayers",activeLayer);
+  Control.addVariable(keyName+"NShapeLayers",activeLayer+1);
 
   return;
   
@@ -248,7 +248,8 @@ void
 FocusGenerator::generateRectangle(FuncDataBase& Control,
 				  const std::string& keyName,
 				  const double length,
-				  const double H,const double V)  const
+				  const double H,
+				  const double V)  const
 /*!
     Generate the focus-taper variables
     \param Control :: Functional data base

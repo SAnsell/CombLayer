@@ -3,7 +3,7 @@
  
  * File:    ESSBeam/heimdal/HEIMDALvariables.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -97,9 +97,9 @@ HEIMDALvariables(FuncDataBase& Control)
   SGen.addWallMat(5,"Concrete");
 
   // Double guide: increased wedge:
-  Control.addVariable("G1BLineTop8Depth1",16.0);
+  Control.addVariable("G1BLineTop8Depth1",14.0);
   
-  FGen.setLayer(1,1.2,"Copper");
+  FGen.setLayer(1,0.8,"Copper");
   FGen.setLayer(2,0.2,"Void");
   FGen.setYOffset(2.0);
   FGen.generateGeneralTaper(Control,"heimdalFTA",334.819,

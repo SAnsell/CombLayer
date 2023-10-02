@@ -3,7 +3,7 @@
  
  * File:   essBuild/BeRef.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ namespace essSystem
 
 BeRef::BeRef(const std::string& Key) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(Key,11),
+  attachSystem::FixedRotate(Key,12),
   attachSystem::CellMap(),
   engActive(0),
   InnerCompTop(new BeRefInnerStructure(Key+"TopInnerStructure")),
@@ -288,7 +288,7 @@ BeRef::createObjects(Simulation& System)
     {
       //  void volume
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-307 305 -105");
-      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,HR));
+      makeCell("lowVoid",System,cellIndex++,0,0.0,HR);
 
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 5 -105 (307:-305)");
       makeCell("lowBe",System,cellIndex++,lowRefMat,0.0,HR);
@@ -354,7 +354,7 @@ BeRef::createLinks()
 {
   ELog::RegMethod RegA("BeRef","createLinks");
   
-  FixedComp::setConnect(0,Origin+Y*radius,-Y);
+  FixedComp::setConnect(0,Origin-Y*radius,-Y);
   FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+17));
   FixedComp::addBridgeSurf(0,-SMap.realSurf(buildIndex+1));
 
@@ -362,11 +362,11 @@ BeRef::createLinks()
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+17));
   FixedComp::addBridgeSurf(1,SMap.realSurf(buildIndex+1));
 
-  FixedComp::setConnect(2,Origin+Y*radius,-X);
+  FixedComp::setConnect(2,Origin-X*radius,-X);
   FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+17));
   FixedComp::addBridgeSurf(2,-SMap.realSurf(buildIndex+2));
   
-  FixedComp::setConnect(3,Origin+Y*radius,-X);
+  FixedComp::setConnect(3,Origin+X*radius,-X);
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+17));
   FixedComp::addBridgeSurf(3,SMap.realSurf(buildIndex+2));
   
@@ -393,6 +393,10 @@ BeRef::createLinks()
 				     wallThickLow),Z);
   FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+106));
 
+  FixedComp::setConnect(11,Origin-Y*radius,-Y);
+  FixedComp::setLinkSurf(11,SMap.realSurf(buildIndex+17));
+  nameSideIndex(11,"OuterRadius");
+  
   return;
 }
 

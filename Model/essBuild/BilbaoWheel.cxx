@@ -3,7 +3,7 @@
 
  * File:   essBuild/BilbaoWheel.cxx
  *
- * Copyright (c) 2004-2022 by Konstantin Batkov
+ * Copyright (c) 2004-2023 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -435,13 +435,13 @@ BilbaoWheel::createShaftSurfaces()
   const double stiffTheta(atan(shaftUpperBigStiffHeight/shaftUpperBigStiffLength)*180.0/M_PI);
   const double stiffL(shaftRadius[nShaftLayers-2]+shaftUpperBigStiffLength);
   const double stiffH(tan(stiffTheta*M_PI/180)*stiffL+shaft2StepHeight);
-  ModelSupport::buildCone(SMap,buildIndex+2148,Origin+Z*(stiffH),Z,90-stiffTheta,-1);
+  ModelSupport::buildCone(SMap,buildIndex+2148,Origin+Z*stiffH,Z,90.0-stiffTheta,-1);
 
   if (engActive) // create surfaces for large upper/lower stiffeners
     createRadialSurfaces(buildIndex+3000, nSectors/2, shaftUpperBigStiffThick);
 
   H = stiffH+voidThick/cos(stiffTheta);
-  ModelSupport::buildCone(SMap,buildIndex+2149,Origin+Z*(H),Z,90-stiffTheta,-1);
+  ModelSupport::buildCone(SMap,buildIndex+2149,Origin+Z*H,Z,90.0-stiffTheta,-1);
 
   H = H1-voidThick;
   H += shaft2StepConnectionDist;
@@ -477,13 +477,13 @@ BilbaoWheel::createShaftSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+2207,Origin,Z,R);
 
   H = shaftBaseDepth-catcherBaseRadius*tan(catcherBaseAngle*M_PI/180);
-  ModelSupport::buildCone(SMap, buildIndex+2208, Origin-Z*(H),
-			  Z, 90-catcherBaseAngle, -1);
+  ModelSupport::buildCone(SMap, buildIndex+2208, Origin-Z*H,
+			  Z, 90.0-catcherBaseAngle, -1);
 
   const double gap(p2215->getDistance()-p2205->getDistance());
   H -= gap/sin(catcherBaseAngle*M_PI/180);
-  ModelSupport::buildCone(SMap, buildIndex+2218, Origin-Z*(H),
-			  Z, 90-catcherBaseAngle, -1);
+  ModelSupport::buildCone(SMap, buildIndex+2218, Origin-Z*H,
+			  Z, 90.0-catcherBaseAngle, -1);
 
   R = catcherNotchRadius;
   ModelSupport::buildCylinder(SMap,buildIndex+2217,Origin,Z,R);
@@ -504,12 +504,12 @@ BilbaoWheel::createShaftSurfaces()
       (shaftLowerBigStiffLongLength-shaftLowerBigStiffShortLength))*180/M_PI);
 
   H = L * tan(lowerBigStiffTheta*M_PI/180)-C.Z();
-  ModelSupport::buildCone(SMap, buildIndex+2238, Origin-Z*(H),
-			  -Z, 90-lowerBigStiffTheta, -1);
+  ModelSupport::buildCone(SMap, buildIndex+2238, Origin-Z*H,
+			  -Z, 90.0-lowerBigStiffTheta, -1);
 
   H+= voidThick/cos(lowerBigStiffTheta*M_PI/180);
-  ModelSupport::buildCone(SMap, buildIndex+2239, Origin-Z*(H),
-			  -Z, 90-lowerBigStiffTheta, -1);
+  ModelSupport::buildCone(SMap, buildIndex+2239, Origin-Z*H,
+			  -Z, 90.0-lowerBigStiffTheta, -1);
 
   R += voidThick;
   ModelSupport::buildCylinder(SMap,buildIndex+2247,Origin,Z,R);
@@ -1316,6 +1316,10 @@ BilbaoWheel::createLinks()
   FixedComp::setConnect(5,Origin+Z*H,Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+46));
 
+
+  nameSideIndex(4,"VoidBase");
+  nameSideIndex(5,"VoidTop");
+  
   // inner links (normally) point towards
   // top/bottom of the spallation material (innet cell)
   const double TH=targetHeight/2.0;
@@ -1330,30 +1334,30 @@ BilbaoWheel::createLinks()
   FixedComp::setBridgeSurf(12,-SMap.realSurf(buildIndex+1));
 
   int SI(buildIndex);
-  for (size_t i=0; i<nLayers; i++)
+  size_t i;
+  for (i=0; i<nLayers && matTYPE[i]!=3; SI+=10,i++) ;
+  if (matTYPE[i]==3) // Tungsten layer
     {
-      if (matTYPE[i]==3) // Tungsten layer
-  	{
-  	  // 8 and 9 - the layer before Tungsten (He)
-  	  FixedComp::setConnect(8, Origin-Y*(targetInnerHeightRadius +
-  					     steelTungstenInnerThick), -Y);
-  	  FixedComp::setLinkSurf(8, SMap.realSurf(buildIndex+117));
-
-  	  FixedComp::setConnect(9, Origin-Y*radius[i-2], Y);
-  	  FixedComp::setLinkSurf(9, -SMap.realSurf(SI-10+7));
-
-  	  // 10 and 11 - Tungsten layer
-  	  FixedComp::setConnect(10, Origin-Y*radius[i-1], -Y);
-  	  FixedComp::setLinkSurf(10, SMap.realSurf(SI+7));
-
-  	  FixedComp::setConnect(11, Origin-Y*radius[i], Y);
-  	  FixedComp::setLinkSurf(11, -SMap.realSurf(SI+17));
-
-  	  return; // !!! we assume that there is only one Tungsten layer
-  	}
-      SI+=10;
+      // 8 and 9 - the layer before Tungsten (He)
+      FixedComp::setConnect(8, Origin-Y*(targetInnerHeightRadius +
+					 steelTungstenInnerThick), -Y);
+      FixedComp::setLinkSurf(8, SMap.realSurf(buildIndex+117));
+      
+      FixedComp::setConnect(9, Origin-Y*radius[i-2], Y);
+      FixedComp::setLinkSurf(9, -SMap.realSurf(SI-10+7));
+      
+      // 10 and 11 - Tungsten layer
+      FixedComp::setConnect(10, Origin-Y*radius[i-1], -Y);
+      FixedComp::setLinkSurf(10, SMap.realSurf(SI+7));
+      
+      FixedComp::setConnect(11, Origin-Y*radius[i], Y);
+      FixedComp::setLinkSurf(11, -SMap.realSurf(SI+17));
     }
 
+  FixedComp::setConnect(13, Origin-Y*voidRadius,Y);
+  FixedComp::setLinkSurf(13,SMap.realSurf(buildIndex+537));
+  nameSideIndex(13,"VoidRadius");
+  
   return;
 }
 

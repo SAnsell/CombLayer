@@ -166,8 +166,8 @@ EssVariables(FuncDataBase& Control,
   Control.addVariable("BulkXStep",0.0);
   Control.addVariable("BulkYStep",0.0);
   Control.addVariable("BulkZStep",0.0);
-  Control.addVariable("BulkXYAngle",0.0);
   Control.addVariable("BulkZAngle",0.0);
+  Control.addVariable("BulkXAngle",0.0);
   Control.addVariable("BulkNLayer",3);
 
   Control.addParse<double>("BulkRadius1","BeRefRadius+BeRefWallThick+0.2");
@@ -176,7 +176,7 @@ EssVariables(FuncDataBase& Control,
   Control.addVariable("BulkDepth1",38.0);
   Control.addVariable("BulkMat1","Void");
 
-  Control.addVariable("BulkRadius2",65.0);
+  Control.addVariable("BulkRadius2",60.0);
   Control.addVariable("BulkHeight2",75.0);
   Control.addVariable("BulkDepth2",75.0);
   Control.addVariable("BulkMat2","Iron10H2O");        // SA: using hand-made mixture because CL can't generate volume fractions

@@ -3,7 +3,7 @@
  
  * File:   essBuild/makeESS.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2023 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -348,7 +348,9 @@ makeESS::makeTargetClearance(Simulation& System,
   OR.addObject(TargetTopClearance);
   OR.addObject(TargetLowClearance);
 
+  
   attachSystem::addToInsertSurfCtrl(System,*Bulk,*TargetTopClearance);
+
   attachSystem::addToInsertSurfCtrl(System,*TopAFL,*TargetTopClearance);
   attachSystem::addToInsertSurfCtrl(System,*TopBFL,*TargetTopClearance);
 
@@ -1145,6 +1147,11 @@ makeESS::build(Simulation& System,
   
   Reflector->insertComponent(System,"targetVoid",*Target,1);
   Bulk->setCutSurf("Reflector",Reflector->getExclude());
+
+  Bulk->setCutSurf("TargetBase",*Target,"VoidBase");
+  Bulk->setCutSurf("TargetTop",*Target,"VoidTop");
+  Bulk->setCutSurf("ReflectorRadius",*Reflector,"OuterRadius");
+  Bulk->setCutSurf("TargetRadius",*Target,"front");
   Bulk->createAll(System,*Reflector,0);
 
   // Build flightlines after bulk
@@ -1168,14 +1175,31 @@ makeESS::build(Simulation& System,
     }
   
   // THESE calls correct the MAIN volume so pipe work MUST be after here:
-  attachSystem::addToInsertSurfCtrl(System,*Bulk,Target->getCC("Wheel"));
+  // ALL OF THES addto insert surf calls are AWFUL!!!!
+  // ----
 
-  attachSystem::addToInsertForced(System,*Bulk,Target->getCC("Shaft"));
+  // two part (top/base)
+  // this can have further specialization
+
+  Bulk->insertComponent(System,"Layer1Base",Target->getCC("Wheel"));
+  Bulk->insertComponent(System,"Layer1Top",Target->getCC("Wheel"));
+  Bulk->insertComponent(System,"Layer2Base",Target->getCC("Wheel"));
+  Bulk->insertComponent(System,"Layer2Top",Target->getCC("Wheel"));
+  Bulk->insertComponent(System,"Layer2Base",Target->getCC("Shaft"));
+  Bulk->insertComponent(System,"Layer2Top",Target->getCC("Shaft"));
+
+  //  ELog::EM<<"Target == "<<Target->getCC("Wheel")<<ELog::endDiag;
+  //  attachSystem::addToInsertSurfCtrl(System,*Bulk,
+
+  //  attachSystem::addToInsertForced(System,*Bulk,Target->getCC("Shaft"));
   if (lowModType != "None")
     {
       attachSystem::addToInsertForced(System,*Bulk,LowAFL->getCC("outer"));
       attachSystem::addToInsertForced(System,*Bulk,LowBFL->getCC("outer"));
     }
+  MonteCarlo::Object* OPtr=System.findObject(1270001);
+  ELog::EM<<"Object == "<<*OPtr<<ELog::endDiag;
+
   attachSystem::addToInsertForced(System,*Bulk,TopAFL->getCC("outer"));
   attachSystem::addToInsertForced(System,*Bulk,TopBFL->getCC("outer"));
 

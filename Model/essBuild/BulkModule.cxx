@@ -54,9 +54,10 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
+#include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "BulkModule.h"
@@ -65,8 +66,9 @@ namespace essSystem
 {
 
 BulkModule::BulkModule(const std::string& Key)  :
+  attachSystem::FixedRotate(Key,9),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,9),
+  attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::ExternalCut()
   /*!
@@ -76,8 +78,8 @@ BulkModule::BulkModule(const std::string& Key)  :
 {}
 
 BulkModule::BulkModule(const BulkModule& A) : 
+  attachSystem::FixedRotate(A),
   attachSystem::ContainedComp(A),
-  attachSystem::FixedOffset(A),
   attachSystem::SurfMap(A),
   attachSystem::ExternalCut(A),
   nLayer(A.nLayer),radius(A.radius),height(A.height),depth(A.depth),
@@ -98,8 +100,8 @@ BulkModule::operator=(const BulkModule& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
       attachSystem::SurfMap::operator=(A);
       attachSystem::ExternalCut::operator=(A);
       nLayer=A.nLayer;
@@ -127,7 +129,7 @@ BulkModule::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BulkModule","populate");
   
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   
   nLayer=Control.EvalVar<size_t>(keyName+"NLayer");
   if (!nLayer) return;
@@ -182,15 +184,16 @@ BulkModule::createSurfaces()
 
   // divider
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+100,Origin,Z);
 
   int RI(buildIndex);    
   for(size_t i=0;i<nLayer;i++)
     {
       ModelSupport::buildPlane(SMap,RI+5,Origin-Z*depth[i],Z);
       ModelSupport::buildPlane(SMap,RI+6,Origin+Z*height[i],Z);
-      ModelSupport::buildCylinder(SMap,RI+7,Origin+COffset[i]
-				  ,Z,radius[i]);
-      addSurf("Radius"+std::to_string(i),SMap.realSurf(RI+7));
+      SurfMap::makeCylinder("Radius"+std::to_string(i),
+			    SMap,RI+7,Origin+COffset[i]
+			    ,Z,radius[i]);
       RI+=10;
     }
 
@@ -211,17 +214,52 @@ BulkModule::createObjects(Simulation& System)
     ExternalCut::getRule("Reflector");
 
   HeadRule HR;
-  HeadRule HRX=boundaryHR;
 
-  std::string Out,OutX;
+  HeadRule HRX=boundaryHR;
   int RI(buildIndex);
-  for(size_t i=0;i<nLayer;i++)
+  size_t completeLayer(0);
+
+  
+  // create a split innner if base/top are active
+  if (isActive("TargetBase") &&
+      isActive("TargetTop") &&
+      isActive("TargetRadius") &&
+      isActive("ReflectorRadius"))
     {
-      HR=ModelSupport::getHeadRule(SMap,RI,"5 -6 -7");
-      System.addCell(cellIndex++,Mat[i],0.0,HR*HRX);
+      const HeadRule topHR=getRule("TargetTop");
+      const HeadRule baseHR=getRule("TargetBase");
+      const HeadRule radiusHR=getRule("TargetRadius");
+      const HeadRule beHR=getRule("ReflectorRadius");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -7");
+      makeCell("Layer0",System,cellIndex++,Mat[0],0.0,HR*HRX*baseHR);
+
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-6 -7");
+      makeCell("Layer0",System,cellIndex++,Mat[0],0.0,HR*HRX*topHR);
+
+      // inner section
+      HR=HeadRule(SMap,buildIndex,-7);
+      HR*=baseHR.complement()*topHR.complement()*radiusHR*beHR;
+      makeCell("Layer0",System,cellIndex++,Mat[0],0.0,HR);
+      
+      
+      HRX=ModelSupport::getHeadRule(SMap,buildIndex,"-5:6:7");
+      completeLayer=1;
       RI+=10;
-      HRX=HR.complement();
     }
+  
+  for(size_t i=completeLayer;i<nLayer;i++)
+    {
+      const std::string lName("Layer"+std::to_string(i));
+      HR=ModelSupport::getHeadRule
+	(SMap,RI,buildIndex,"5 -6 -7 -100M");
+      makeCell(lName+"Base",System,cellIndex++,Mat[i],0.0,HR*HRX);
+      HR=ModelSupport::getHeadRule
+	(SMap,RI,buildIndex,"5 -6 -7 100M");
+      makeCell(lName+"Top",System,cellIndex++,Mat[i],0.0,HR*HRX);
+      HRX=ModelSupport::getHeadRule(SMap,RI,"-5:6:7");
+      RI+=10;
+    }
+  HR=ModelSupport::getHeadRule(SMap,RI-10,"5 -6 -7");
   addOuterSurf(HR);
   return;
 }

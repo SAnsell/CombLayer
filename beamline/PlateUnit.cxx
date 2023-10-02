@@ -312,14 +312,14 @@ PlateUnit::createSurfaces()
       setCutSurf("back",-SMap.realSurf(buildIndex+2));
     }
   
-  double T(0.0);	
+  double T(0.0);
+
   for(size_t i=0;i<layerMat.size();i++)
     {
       int SN(buildIndex+static_cast<int>(i+1)*20+1);  
 
       // Care here because frontPts/backPts are within
       // APts convex
-
       const std::vector<Geometry::Vec3D> frontPts=
 	frontCV->scalePoints(T);
       const std::vector<Geometry::Vec3D> backPts=
