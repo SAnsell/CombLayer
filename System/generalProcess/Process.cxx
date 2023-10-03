@@ -3,7 +3,7 @@
  
  * File:   generalProcess/Process.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -290,7 +290,8 @@ procAngle(const objectGroups& OGrp,
                      Geometry::Vec3D(0,0,0),angleZ);
     }
   else  if (AItem=="objAxis" || AItem=="ObjAxis" ||
-	    AItem=="objYAxis" || AItem=="ObjYAxis")
+	    AItem=="objYAxis" || AItem=="ObjYAxis" ||
+	    AItem=="objZAxis" || AItem=="ObjZAxis")
     {
       const attachSystem::FixedComp* GIPtr=
         OGrp.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
@@ -310,6 +311,18 @@ procAngle(const objectGroups& OGrp,
 	  MR.addRotation(QR.getAxis(),Geometry::Vec3D(0,0,0),
 			 -180.0*QR.getTheta()/M_PI);
 	}
+      else if (AItem=="objZAxis" || AItem=="ObjZAxis")
+	{
+	  const Geometry::Quaternion QR=Geometry::Quaternion::calcQVRot
+	    (Geometry::Vec3D(0,0,1),YRotAxis,ZRotAxis);
+	  ELog::EM<<"Axis == "<<XRotAxis<<ELog::endDiag;
+	  ELog::EM<<"Axis == "<<YRotAxis<<ELog::endDiag;
+	  ELog::EM<<"Axis == "<<ZRotAxis<<ELog::endDiag;
+
+	  ELog::EM<<"Axis == "<<QR.getAxis()<<ELog::endDiag;
+	  MR.addRotation(QR.getAxis(),Geometry::Vec3D(0,0,0),
+			 -180.0*QR.getTheta()/M_PI);
+	}
       else
 	{
 	  const Geometry::Quaternion QR=Geometry::Quaternion::calcQVRot
@@ -319,6 +332,21 @@ procAngle(const objectGroups& OGrp,
 			 -180.0*QR.getTheta()/M_PI);
 	}
 
+    }
+  else  if (AItem=="rotAxis" || AItem=="RotAxis")
+    {
+      // Rotations of X',Y',Z' (FC axis) to X,Y,Z
+      const attachSystem::FixedComp* GIPtr=
+        OGrp.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
+      const std::string CItem=
+        IParam.getDefValue<std::string>("2","angle",index,2);      
+
+      Geometry::Vec3D YAxis=GIPtr->getLinkAxis(CItem);
+      YAxis=YAxis.cutComponent(Geometry::Vec3D(0,0,1)).unit();  // Y' in the plane of Z=0
+      const double rAngle=YAxis.dotProd(Geometry::Vec3D(0,1,0));
+      
+      MR.addRotation(Geometry::Vec3D(0,0,1),Geometry::Vec3D(0,0,0),
+		     -180.0*rAngle/M_PI);
     }
   else if (AItem=="free" || AItem=="FREE")
     {
@@ -345,6 +373,9 @@ procAngle(const objectGroups& OGrp,
               <<"  freeAxis Vec3D rotAngle :: Rotate about Axis \n"
               <<"  objPoint  FC link :: Rotate linkPt to (X,0,0) \n"
               <<"  objAxis  FC link :: Rotate link-axit to X \n"
+	      <<"  objYAxis  FC link :: Rotate link-axit to Y \n"
+	      <<"  rotAxis  FC link :: Rotate link-axis to Y' projected to Z=0"
+	" Plane\n"
               <<"  object  FC link :: Rotate Axis about Z to "
               <<ELog::endDiag;
     }

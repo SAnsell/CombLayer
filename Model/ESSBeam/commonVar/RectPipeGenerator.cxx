@@ -138,8 +138,9 @@ RectPipeGenerator::setFlange(const double W,const double H,
 }
 
 void
-RectPipeGenerator::setWindow(const double W,const double H,
-                           const double T)
+RectPipeGenerator::setWindow(const double W,
+			     const double H,
+			     const double T)
   /*!
     Set all the window values
     \param W :: full width of main window

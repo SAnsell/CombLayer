@@ -90,6 +90,7 @@ HEIMDAL::HEIMDAL(const std::string& keyName) :
   FocusCA(new beamlineSystem::PlateUnit(newName+"FCA")),
 
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
+
   FocusTB(new beamlineSystem::PlateUnit(newName+"FTB")),
   FocusCB(new beamlineSystem::PlateUnit(newName+"FCB")),
 

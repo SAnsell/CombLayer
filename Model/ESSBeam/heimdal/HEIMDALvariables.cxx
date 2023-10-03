@@ -55,7 +55,6 @@
 namespace setVariable
 {
 
- 
   
 void
 HEIMDALvariables(FuncDataBase& Control)
@@ -111,7 +110,7 @@ HEIMDALvariables(FuncDataBase& Control)
   FGen.generateRectangle(Control,"heimdalFCA",350.0,2.0,2.0);
 
   Control.addVariable("heimdalFTAXStep",2.35);
-  Control.addVariable("heimdalFCABXStep",-2.85);
+  Control.addVariable("heimdalFCAXStep",-2.85);
   Control.addVariable("heimdalFTAZStep",0.0);   
   Control.addVariable("heimdalFCAZStep",-4.71);   
   Control.addVariable("heimdalFTAXAngle",0.0);   
@@ -119,7 +118,7 @@ HEIMDALvariables(FuncDataBase& Control)
   Control.addVariable("heimdalFTAZAngle",1.1);  
   Control.addVariable("heimdalFCAZAngle",-0.4);  
 
-  RPipeGen.generatePipe(Control,"heimdalPipeB",6.5,46.0);
+  RPipeGen.generatePipe(Control,"heimdalPipeB",16.5,46.0);
   Control.addVariable("heimdalPipeBZStep",-8.0);
 
   

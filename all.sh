@@ -1,7 +1,7 @@
 
 
 
-nValid=10000
+nValid=1000
 
 #./maxiv --defaultConfig Single SOFTIMAX AA 
 #./maxiv --defaultConfig Single SOFTIMAX --validRandom 190  --validCheck $nValid AA || exit
@@ -11,7 +11,9 @@ segments=All
 #./singleItem --singleItem M1detail --validAll --validCheck ${nValid} AA 
 #exit
 
-./ess --bunkerPillars ABunker --validAll --validCheck $nValid AA  || exit
+
+./ess  --validAll --validCheck $nValid AA  || exit
+./ess --defaultConfig Single HEIMDAL --validAll --validCheck $nValid AA  || exit
 exit
 
 parallel --halt now,fail=1 "./maxiv --defaultConfig Single {} --validAll --validCheck $nValid AA" ::: \
@@ -38,7 +40,8 @@ parallel --halt now,fail=1 "./ess --defaultConfig Single {} --validAll --validCh
 parallel --halt now,fail=1 "./singleItem --singleItem {} --validAll --validCheck $nValid AA" ::: \
  BeamDivider BeamScrapper Bellow BlankTube BoxJaws         \
  BremBlock BremTube  ButtonBPM CRLTube  CeramicGap CleaningMagnet  \
- CollTube ConnectorTube CooledScreen CooledUnit CorrectorMag CrossBlank   \
+ CollTube ConnectorTube CooledScreen CooledUnit CornerPipe \
+ CorrectorMag CrossBlank   \
  CrossWay CylGateValve DiffPumpXIADP03 DipoleDIBMag DipoleExtract       \
  DipoleSndBend EArrivalMon EBeamStop EPSeparator ExperimentalHutch         \
  FMask FlangeDome FlatPipe FourPort GateValveCube GateValveCylinder GaugeTube \
