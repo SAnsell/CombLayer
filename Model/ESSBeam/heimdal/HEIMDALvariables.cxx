@@ -42,6 +42,7 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "CFFlanges.h"
 #include "ShieldGenerator.h"
 #include "FocusGenerator.h"
 #include "ChopperGenerator.h"
@@ -71,7 +72,7 @@ HEIMDALvariables(FuncDataBase& Control)
   setVariable::ShieldGenerator SGen;
   setVariable::PitGenerator PGen;
   setVariable::PipeGenerator PipeGen;
-  setVariable::RectPipeGenerator RPipeGen;
+  setVariable::PipeGenerator RPipeGen;
   setVariable::BladeGenerator BGen;
   setVariable::JawGenerator JawGen;
 
@@ -81,12 +82,13 @@ HEIMDALvariables(FuncDataBase& Control)
   Control.addVariable("heimdalAxisZStep",0.0);
   
   PipeGen.setPipe(14.0,0.5);
-  PipeGen.setWindow(-1.0,0.5);
+  PipeGen.setNoWindow();
   PipeGen.setFlange(-2.0,1.0);
 
-  RPipeGen.setPipe(6.0,22.0,0.5);
-  RPipeGen.setWindow(-2.0,-2.0,0.5);
-  RPipeGen.setFlange(-4.0,-4.0,1.0);
+  RPipeGen.setCF<CF200>();
+  RPipeGen.setRectPipe(16.0,22.0);
+  RPipeGen.setWindow(6.0,0.5);
+  //  RPipeGen.setFlange(-4.0,-4.0,1.0);
 
   SGen.addWall(1,20.0,"CastIron");
   SGen.addRoof(1,20.0,"CastIron");
@@ -118,7 +120,8 @@ HEIMDALvariables(FuncDataBase& Control)
   Control.addVariable("heimdalFTAZAngle",1.1);  
   Control.addVariable("heimdalFCAZAngle",-0.4);  
 
-  RPipeGen.generatePipe(Control,"heimdalPipeB",16.5,46.0);
+  RPipeGen.generatePipe(Control,"heimdalPipeB",46.0);
+  Control.addVariable("heimdalPipeBYStep",6.5);
   Control.addVariable("heimdalPipeBZStep",-8.0);
 
   
@@ -129,8 +132,9 @@ HEIMDALvariables(FuncDataBase& Control)
   FGen.generateTaper(Control,"heimdalFTB",44.0,4.0,4.0,4.0,4.0);
   FGen.generateTaper(Control,"heimdalFCB",44.0,2.0,2.0,2.0,2.0);
 
-  RPipeGen.setPipe(7.0,24.0,0.5);
-  RPipeGen.generatePipe(Control,"heimdalPipeC",3.5,46.0);
+  RPipeGen.setPipe(7.0,24.0);
+  RPipeGen.generatePipe(Control,"heimdalPipeC",46.0);
+  Control.addVariable("heimdalPipeCYStep",3.5);
   
   FGen.setYOffset(5.5);
   FGen.generateTaper(Control,"heimdalFTC",44.0,4.0,4.0,4.0,4.0);

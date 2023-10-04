@@ -3,7 +3,7 @@
  
  * File:   constructInc/LeadPipe.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,26 +40,11 @@ class LeadPipe :
 {
  private:
 
-  bool outerVoid;              ///< Make an outer void
-  
-  double radius;               ///< void radius [inner]
-  double length;               ///< void length [total]
-  double thick;            ///< pipe thickness
-
   double claddingThick;        ///< cladding thickness
   double claddingStep;         ///< distance from front/back to cladding start    
-  double flangeARadius;        ///< Joining FlangeA radius 
-  double flangeBRadius;        ///< Joining FlangeB radius 
-
-  double flangeALength;        ///< Joining Flange length
-  double flangeBLength;        ///< Joining Flange length
-
-  int voidMat;                 ///< Void material
-  int pipeMat;                 ///< Pipe material
   int claddingMat;             ///< Pipe cladding material
-  int flangeMat;               ///< Flange material
   
-  void populate(const FuncDataBase&) override;
+  virtual void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -69,7 +54,7 @@ class LeadPipe :
   LeadPipe(const std::string&);
   LeadPipe(const LeadPipe&) =default;
   LeadPipe& operator=(const LeadPipe&) =default;
-  ~LeadPipe() override;
+  virtual ~LeadPipe() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

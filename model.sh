@@ -45,7 +45,6 @@ done;
 ./CMakeIndividual.pl Model/filter photon base > Model/filter/CMakeLists.txt
 ./CMakeIndividual.pl Model/snsBuild ral base > Model/snsBuild/CMakeLists.txt
 
-exit	    
 
 for item in beer bifrost common commonVar cspec dream \
     estia freia heimdal loki magic miracles nmx nnbar \
@@ -56,7 +55,7 @@ do
 done;
 
 	    
-	    
+exit	    
 for item in ralVar
 do
     echo $item;

@@ -3,7 +3,7 @@
 
  * File:   construct/WindowPipe.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,34 +71,18 @@ namespace constructSystem
 {
 
 WindowPipe::WindowPipe(const std::string& Key) :
-  attachSystem::FixedRotate(Key,11),
-  attachSystem::ContainedGroup("Main","FlangeA","FlangeB"),
-  attachSystem::CellMap(),
-  attachSystem::SurfMap(),
-  attachSystem::FrontBackCut()
+  GeneralPipe(Key),activeWindow(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{
-  FixedComp::nameSideIndex(0,"front");
-  FixedComp::nameSideIndex(1,"back");
-  FixedComp::nameSideIndex(6,"midPoint");
-}
+{}
 
-WindowPipe::WindowPipe(const WindowPipe& A) : 
-  attachSystem::FixedRotate(A),
-  attachSystem::ContainedGroup(A),
-  attachSystem::CellMap(A),
-  attachSystem::SurfMap(A),
-  attachSystem::FrontBackCut(A),  
-  radius(A.radius),length(A.length),feThick(A.feThick),
-  claddingThick(A.claddingThick),flangeARadius(A.flangeARadius),
-  flangeALength(A.flangeALength),flangeBRadius(A.flangeBRadius),
-  flangeBLength(A.flangeBLength),windowA(A.windowA),
-  windowB(A.windowB),voidMat(A.voidMat),feMat(A.feMat),
-  claddingMat(A.claddingMat),flangeMat(A.flangeMat),
-  outerVoid(A.outerVoid)
+WindowPipe::WindowPipe(const WindowPipe& A) :
+  GeneralPipe(A),
+  activeWindow(A.activeWindow),
+  windowA(A.windowA),
+  windowB(A.windowB)
   /*!
     Copy constructor
     \param A :: WindowPipe to copy
@@ -115,26 +99,10 @@ WindowPipe::operator=(const WindowPipe& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedRotate::operator=(A);
-      attachSystem::ContainedGroup::operator=(A);
-      attachSystem::CellMap::operator=(A);
-      attachSystem::SurfMap::operator=(A);
-      attachSystem::FrontBackCut::operator=(A);
-      radius=A.radius;
-      length=A.length;
-      feThick=A.feThick;
-      claddingThick=A.claddingThick;
-      flangeARadius=A.flangeARadius;
-      flangeALength=A.flangeALength;
-      flangeBRadius=A.flangeBRadius;
-      flangeBLength=A.flangeBLength;
+      GeneralPipe::operator=(A);
+      activeWindow=A.activeWindow;
       windowA=A.windowA;
       windowB=A.windowB;
-      voidMat=A.voidMat;
-      feMat=A.feMat;
-      claddingMat=A.claddingMat;
-      flangeMat=A.flangeMat;
-      outerVoid=A.outerVoid;
     }
   return *this;
 }
@@ -154,35 +122,7 @@ WindowPipe::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("WindowPipe","populate");
 
-  FixedRotate::populate(Control);
-
-  // Void + Fe special:
-  radius=Control.EvalVar<double>(keyName+"Radius");
-  length=Control.EvalVar<double>(keyName+"Length");
-  feThick=Control.EvalVar<double>(keyName+"FeThick");
-
-  if (length<Geometry::zeroTol || radius<Geometry::zeroTol ||
-      feThick<Geometry::zeroTol)
-    {
-      throw ColErr::SizeError<double>
-	(radius,length,"Pipe:["+keyName+"] radius/length/feThick");
-    }
-  claddingThick=Control.EvalDefVar<double>(keyName+"CladdingThick",0.0);
-
-  flangeARadius=Control.EvalHead<double>(keyName+"Flange","ARadius","Radius");
-  flangeBRadius=Control.EvalHead<double>(keyName+"Flange","BRadius","Radius");
-
-  flangeALength=Control.EvalHead<double>(keyName+"Flange","ALength","Length");
-  flangeBLength=Control.EvalHead<double>(keyName+"Flange","BLength","Length");
-
-  if (flangeALength<Geometry::zeroTol ||
-      flangeBLength<Geometry::zeroTol ||
-      flangeARadius<radius+claddingThick+feThick ||
-      flangeBRadius<radius+claddingThick+feThick)
-    {
-      throw ColErr::SizeError<double>
-	(flangeARadius,flangeBRadius,"Pipe:["+keyName+"] Flange");
-    }
+  GeneralPipe::populate(Control);
 
   windowA.thick=Control.EvalDefPair<double>
     (keyName+"WindowAThick",keyName+"WindowThick",0.0);
@@ -223,12 +163,14 @@ WindowPipe::populate(const FuncDataBase& Control)
       if (windowA.radius>Geometry::zeroTol &&
 	  windowA.radius+Geometry::zeroTol>flangeARadius)
 	throw ColErr::SizeError<double>
-	  (windowA.radius,flangeARadius,"Pipe:["+keyName+"] windowA.Radius/flangeARadius");
+	  (windowA.radius,flangeARadius,
+	   "Pipe:["+keyName+"] windowA.Radius/flangeARadius");
     }
   if (activeWindow & 2)
     {
       if (windowB.radius<Geometry::zeroTol &&
-	  (windowB.width<Geometry::zeroTol || windowB.height<Geometry::zeroTol))
+	  (windowB.width<Geometry::zeroTol ||
+	   windowB.height<Geometry::zeroTol))
 	throw ColErr::EmptyContainer("Pipe:["+keyName+"] has neither "
 				     "windowB:Radius or Height/Width");
 
@@ -238,51 +180,6 @@ WindowPipe::populate(const FuncDataBase& Control)
 	  (windowB.radius,flangeBRadius,
 	   "Pipe:["+keyName+"] windowB.Radius/flangeBRadius");
     }
-
-
-  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
-  feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
-  claddingMat=ModelSupport::EvalDefMat(Control,keyName+"CladdingMat",0);
-  flangeMat=ModelSupport::EvalDefMat(Control,keyName+"FlangeMat",feMat);
-
-  outerVoid = Control.EvalDefVar<int>(keyName+"OuterVoid",0);
-
-  return;
-}
-
-void
-WindowPipe::applyActiveFrontBack()
-  /*!
-    Apply the active front/back point to re-calcuate Origin
-    It applies the rotation of Y to Y' to both X/Z to preserve
-    orthogonality.
-   */
-{
-  ELog::RegMethod RegA("WindowPipe","applyActiveFrontBack");
-
-  const Geometry::Vec3D curFP= 
-    (frontPointActive()) ? getFrontPoint() : Origin;
-  const Geometry::Vec3D curBP= (backPointActive()) ?
-    getBackPoint() : Origin+Y*length;
-  
-  Origin=(curFP+curBP)/2.0;
-  const Geometry::Vec3D YAxis=(curBP-curFP).unit();
-  Geometry::Vec3D RotAxis=(YAxis*Y).unit();   // need unit for numerical acc.
-  if (!RotAxis.nullVector())
-    {
-      const Geometry::Quaternion QR=
-	Geometry::Quaternion::calcQVRot(Y,YAxis,RotAxis);
-      Y=YAxis;
-      QR.rotate(X);
-      QR.rotate(Z);
-    }
-  else if (Y.dotProd(YAxis) < -0.5) // (reversed
-    {
-      Y=YAxis;
-      X*=-1.0;
-      Z*=-1.0;
-    }
-
   return;
 }
 
@@ -294,20 +191,8 @@ WindowPipe::createSurfaces()
 {
   ELog::RegMethod RegA("WindowPipe","createSurfaces");
 
-  if (!isActive("front"))
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
-      ExternalCut::setCutSurf("front",SMap.realSurf(buildIndex+1));
-    }
-  if (!isActive("back"))
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
-      ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
-    }
+  GeneralPipe::createSurfaces();
   
-
-  // Front Inner void
-  getShiftedFront(SMap,buildIndex+101,Y,flangeALength);
   if (activeWindow & 1)
     {
       getShiftedFront(SMap,buildIndex+1001,Y,
@@ -331,17 +216,6 @@ WindowPipe::createSurfaces()
       addSurf("BackWindow",buildIndex+1101);
       addSurf("BackWindow",buildIndex+1102);
     }
-
-  // MAIN SURFACES:
-  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
-  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+feThick);
-  ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,
-			      Y,radius+feThick+claddingThick);
-  addSurf("OuterRadius",SMap.realSurf(buildIndex+27));
-
-  // FLANGE SURFACES FRONT/BACK:
-  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeARadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,flangeBRadius);
 
   // FRONT WINDOW SURFACES:
   if (activeWindow & 1)
@@ -419,80 +293,30 @@ WindowPipe::createObjects(Simulation& System)
     }
 
   // Void
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7");
+  HR=HeadRule(SMap,buildIndex,-7);
   makeCell("Void",System,cellIndex++,voidMat,0.0,
 	   HR*frontHR*backHR*windowAExclude*windowBExclude);
 
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-17 13 -14 15 -16");
-  const HeadRule WallLayer(HR);
+  //  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-17 13 -14 15 -16");
+  //  const HeadRule WallLayer(HR);
 
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex," -27 23 -24 25 -26");
-  const HeadRule CladdingLayer(HR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 7");
-  makeCell("Steel",System,cellIndex++,feMat,0.0,HR*WallLayer);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 7 -17");
+  makeCell("Steel",System,cellIndex++,feMat,0.0,HR);
   addCell("MainSteel",cellIndex-1);   
-  // cladding
-  if (claddingThick>Geometry::zeroTol)
-    {
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 ");
-      HR*=WallLayer.complement()*CladdingLayer;
-      makeCell("Cladding",System,cellIndex++,claddingMat,0.0,HR);
-    }
 
   // FLANGE A: 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 -107 7");
-  makeCell("Steel",System,cellIndex++,flangeMat,0.0,
+  makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,
 	   HR*frontHR*windowAExclude);
 
   // FLANGE: 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -207 7");
-  makeCell("Steel",System,cellIndex++,flangeMat,0.0,
+  makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,
 	   HR*backHR*windowBExclude);
 
-  if (outerVoid)
-    {
-      if (std::abs(flangeARadius-flangeBRadius)<Geometry::zeroTol)
-	{
-	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 27 -107");
-	  makeCell("outerVoid",System,cellIndex++,0,0.0,HR);
-	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-107");
-	  addOuterSurf("Main",HR*frontHR*backHR);
-	}
-      else if (flangeARadius>flangeBRadius)
-	{
-	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 27 -107");
-	  makeCell("outerVoid",System,cellIndex++,0,0.0,HR);
-	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 207 -107");
-	  makeCell("outerVoid",System,cellIndex++,0,0.0,HR*backHR);
-	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-107");
-	  addOuterSurf("Main",HR*frontHR*backHR);
-	}
-      else if (flangeBRadius>flangeARadius)
-	{
-	  HR=ModelSupport::getHeadRule(SMap,buildIndex," 101 -102 27 -207 ");
-	  makeCell("outerVoid",System,cellIndex++,0,0.0,HR);
-	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 107 -207");
-	  makeCell("outerVoid",System,cellIndex++,0,0.0,HR*frontHR);
-	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-207");
-	  addOuterSurf("Main",HR*frontHR*backHR);
-	}
-    }
-  else
-    {
-      // outer boundary [flange front]
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 -107");
-      addOuterSurf("FlangeA",HR*frontHR);
-
-      // outer boundary [flange back]
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -207");
-      addOuterSurf("FlangeB",HR*backHR);
-
-      // outer boundary mid tube
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102");
-      addOuterSurf("Main",HR*CladdingLayer);
-    }
-
+  HR=HeadRule(SMap,buildIndex,17);
+  GeneralPipe::createOuterVoid(System,HR);
+  
   return;
 }
 

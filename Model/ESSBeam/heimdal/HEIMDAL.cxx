@@ -206,6 +206,9 @@ HEIMDAL::buildBunkerUnits(Simulation& System,
   ELog::EM<<"Thermal = "<<FocusTB->getLinkAxis(2)
 	  <<ELog::endDiag;
 
+  ELog::EM<<"EARLY RETURN"<<ELog::endDiag;
+  return;
+  
   VPipeC->addAllInsertCell(bunkerVoid);
   VPipeC->createAll(System,*VPipeB,2);
 

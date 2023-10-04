@@ -36,15 +36,33 @@ namespace constructSystem
 */
 
 class Bellows :
-  public SplitFlangePipe
+  public GeneralPipe
 {
+ private:
+
+  double bellowThick; ///< Total thickness 
+  double bellowStep;  ///< step from inner flange
+
+  int bellowMat;      ///< Material for bellow (def main)
+  
+  virtual void populate(const FuncDataBase&) override;
+  void createSurfaces();
+  void createObjects(Simulation&);
+  void createLinks();
 
  public:
 
   Bellows(const std::string&);
   Bellows(const Bellows&);
   Bellows& operator=(const Bellows&);
-  ~Bellows() override;
+  virtual ~Bellows() override;
+
+
+  using FixedComp::createAll;
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
+
+
   
 };
 

@@ -3,7 +3,7 @@
 
  * File:   constructVarInc/PipeGenerator.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,10 +45,10 @@ class PipeGenerator
   double pipeWidth;             ///< main width
   double pipeThick;             ///< metal thickness
   double claddingThick;         ///< cladding radius
-  double flangeARadius;          ///< flange Radius (>radius)
-  double flangeALen;             ///< flange Length
-  double flangeBRadius;          ///< flange Radius (>radius)
-  double flangeBLen;             ///< flange Length
+  double flangeARadius;         ///< flange Radius (>radius)
+  double flangeALen;            ///< flange Length
+  double flangeBRadius;         ///< flange Radius (>radius)
+  double flangeBLen;            ///< flange Length
   double windowRadius;          ///< window radius (radius > WR > flangeR)
   double windowThick;           ///< window thickness
 
@@ -69,7 +69,7 @@ class PipeGenerator
   ~PipeGenerator();
 
   void setPipe(const double,const double);
-  void setRectPipe(const double,const double,const double);
+  void setRectPipe(const double,const double,const double =-1.0);
   void setNoWindow();
   void setWindow(const double,const double);
   void setFlange(const double,const double);

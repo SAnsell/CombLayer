@@ -1321,7 +1321,8 @@ makeSingleItem::build(Simulation& System,
     {
       std::shared_ptr<constructSystem::VacuumPipe>
 	pipeA(new constructSystem::VacuumPipe("PipeA"));
-      std::shared_ptr<tdcSystem::TWCavity> cavity(new tdcSystem::TWCavity("TWCavity"));
+      std::shared_ptr<tdcSystem::TWCavity>
+	cavity(new tdcSystem::TWCavity("TWCavity"));
       std::shared_ptr<constructSystem::VacuumPipe>
 	pipeB(new constructSystem::VacuumPipe("PipeB"));
 

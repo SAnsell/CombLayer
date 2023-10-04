@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonVarInc/RectPipeGenerator.h
+ * File:   constructVarInc/RectPipeGenerator.h
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
  *

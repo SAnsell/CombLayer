@@ -3,7 +3,7 @@
 
  * File:   constructInc/GeneralPipe.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@ struct windowInfo
   \date July 2022
   \brief Holds the general stuff for a pipe
 */
-
+\
 class GeneralPipe :
   public attachSystem::FixedRotate,
   public attachSystem::ContainedGroup,
@@ -62,16 +62,41 @@ class GeneralPipe :
 {
  protected:
 
-  int activeFlag;    ///< flag to apply shift
-  void applyActiveFrontBack(const double);
+  double radius;                ///< void radius [inner]
+  double length;                ///< void length [total]
 
+  double feThick;               ///< pipe thickness
+
+  double flangeARadius;          ///< Joining Flange radius [-ve for rect]
+  double flangeALength;          ///< Joining Flange length
+
+  double flangeBRadius;          ///< Joining Flange radius [-ve for rect]
+  double flangeBLength;          ///< Joining Flange length
+
+  int voidMat;                  ///< Void material
+  int feMat;                    ///< Pipe material
+  int flangeMat;                ///< Flange material
+
+  int outerVoid;                ///< Flag to build the outer void cell between f
+  int activeFlag;               ///< flag to apply shift
+  
+  void applyActiveFrontBack(const double);
+  virtual void populate(const FuncDataBase&) override;
+  virtual void createUnitVector(const attachSystem::FixedComp&,
+				const long int) override;
+  void createCommonSurfaces();
+  virtual void createSurfaces();
+  void createRectangleSurfaces(const double,const double);
+
+  void createOuterVoid(Simulation&,const HeadRule&);
+  
  public:
 
   GeneralPipe(const std::string&);
   GeneralPipe(const std::string&,const size_t);
   GeneralPipe(const GeneralPipe& A);
   GeneralPipe& operator=(const GeneralPipe& A);
-  ~GeneralPipe() override {}
+  virtual ~GeneralPipe() override {}
 };
 
 }

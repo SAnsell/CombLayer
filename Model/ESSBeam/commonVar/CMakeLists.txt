@@ -1,9 +1,8 @@
 set (commonVarSources
     BladeGenerator.cxx ChopperGenerator.cxx CryoGenerator.cxx 
     FocusGenerator.cxx JawGenerator.cxx LayerGenerator.cxx 
-    PitGenerator.cxx RectPipeGenerator.cxx RotaryHoleGenerator.cxx 
-    ShieldGenerator.cxx TwinBaseGenerator.cxx TwinFlatGenerator.cxx 
-    TwinGenerator.cxx 
+    PitGenerator.cxx RotaryHoleGenerator.cxx ShieldGenerator.cxx 
+    TwinBaseGenerator.cxx TwinFlatGenerator.cxx TwinGenerator.cxx 
 )
 
 add_library (commonVar SHARED
@@ -31,7 +30,6 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/JawGenerator.cxx
   ${tarDIR}/LayerGenerator.cxx
   ${tarDIR}/PitGenerator.cxx
-  ${tarDIR}/RectPipeGenerator.cxx
   ${tarDIR}/RotaryHoleGenerator.cxx
   ${tarDIR}/ShieldGenerator.cxx
   ${tarDIR}/TwinBaseGenerator.cxx
@@ -44,7 +42,6 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/JawGenerator.h
   ${tarINC}/LayerGenerator.h
   ${tarINC}/PitGenerator.h
-  ${tarINC}/RectPipeGenerator.h
   ${tarINC}/RotaryHoleGenerator.h
   ${tarINC}/ShieldGenerator.h
   ${tarINC}/TwinBaseGenerator.h

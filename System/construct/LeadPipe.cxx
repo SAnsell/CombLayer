@@ -67,8 +67,7 @@ namespace constructSystem
 {
 
 LeadPipe::LeadPipe(const std::string& Key) :
-  constructSystem::GeneralPipe(Key,6),
-  outerVoid(0)
+  constructSystem::GeneralPipe(Key,6)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     Note that groups: FlangeA and FlangeB are only added
@@ -90,24 +89,19 @@ LeadPipe::~LeadPipe()
 
 void
 LeadPipe::populate(const FuncDataBase& Control)
+    /*!
+    Populate all the variables
+    \param Control :: DataBase of variables
+  */
 {
-  FixedRotate::populate(Control);
-
-  radius=Control.EvalVar<double>(keyName+"Radius");
-  length=Control.EvalVar<double>(keyName+"Length");
-  thick=Control.EvalVar<double>(keyName+"Thick");
+  ELog::RegMethod RegA("LeadPipe","populate");
+  
+  GeneralPipe::populate(Control);
   
   claddingThick=Control.EvalVar<double>(keyName+"CladdingThick");
-  flangeARadius=Control.EvalVar<double>(keyName+"FlangeARadius");
-  flangeBRadius=Control.EvalVar<double>(keyName+"FlangeBRadius");
-  flangeALength=Control.EvalVar<double>(keyName+"FlangeALength");
-  flangeBLength=Control.EvalVar<double>(keyName+"FlangeBLength");
   claddingStep=Control.EvalVar<double>(keyName+"CladdingStep");
 
-  voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
-  pipeMat=ModelSupport::EvalMat<int>(Control,keyName+"PipeMat");
   claddingMat=ModelSupport::EvalMat<int>(Control,keyName+"CladdingMat");
-  flangeMat=ModelSupport::EvalMat<int>(Control,keyName+"FlangeMat");
   
   return;
 }
@@ -142,9 +136,9 @@ LeadPipe::createSurfaces()
   SurfMap::makeCylinder("InnerCyl",SMap,buildIndex+7,Origin,Y,radius);
 
   SurfMap::makeCylinder("PipeCyl",SMap,buildIndex+17,
-			Origin,Y,radius+thick);
+			Origin,Y,radius+feThick);
   SurfMap::makeCylinder("CladdingCyl",SMap,buildIndex+27,
-			Origin,Y,radius+thick+claddingThick);
+			Origin,Y,radius+feThick+claddingThick);
 
   // FLANGE SURFACES FRONT/BACK:
   SurfMap::makeCylinder("FlangeARadius",SMap,buildIndex+107,
@@ -182,7 +176,7 @@ LeadPipe::createObjects(Simulation& System)
 
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 7");
-  makeCell("MainPipe",System,cellIndex++,pipeMat,0.0,HR*frontHR*backHR);
+  makeCell("MainPipe",System,cellIndex++,feMat,0.0,HR*frontHR*backHR);
   
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 21 -22 -27 17");
   makeCell("Cladding",System,cellIndex++,claddingMat,0.0,HR);
@@ -234,10 +228,10 @@ LeadPipe::createLinks()
   FixedComp::setConnect(2,Origin+Z*radius,Z);
   FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+7));
 
-  FixedComp::setConnect(3,Origin+Z*(radius+thick),Z);
+  FixedComp::setConnect(3,Origin+Z*(radius+feThick),Z);
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+17));
 
-  FixedComp::setConnect(4,Origin+Z*(radius+thick+claddingThick),Z);
+  FixedComp::setConnect(4,Origin+Z*(radius+feThick+claddingThick),Z);
   FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+27));
   
   FixedComp::nameSideIndex(2,"inner");

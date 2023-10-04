@@ -39,34 +39,8 @@ class VacuumPipe :
   public GeneralPipe
 {
  private:
-
-  double radius;                ///< void radius [inner]
-  double height;                ///< void radius [inner]
-  double width;                 ///< void radius [inner]
-
-  double length;                ///< void length [total]
-
-  double feThick;               ///< pipe thickness
-  double claddingThick;         ///< cladding thickness
-
-  double flangeARadius;          ///< Joining Flange radius [-ve for rect]
-  double flangeAHeight;          ///< Joining Flange height
-  double flangeAWidth;           ///< Joining Flange width
-  double flangeALength;          ///< Joining Flange length
-
-  double flangeBRadius;          ///< Joining Flange radius [-ve for rect]
-  double flangeBHeight;          ///< Joining Flange height
-  double flangeBWidth;           ///< Joining Flange width
-  double flangeBLength;          ///< Joining Flange length
-
-  int voidMat;                  ///< Void material
-  int feMat;                    ///< Pipe material
-  int claddingMat;              ///< Pipe cladding material
-  int flangeMat;                ///< Flange material
-
-  int outerVoid;                ///< Flag to build the outer void cell between flanges
-
-  void populate(const FuncDataBase&) override;
+  
+  virtual void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();

@@ -148,7 +148,8 @@ PipeGenerator::setRectPipe(const double W,const double H,
   pipeType=1;
   pipeWidth=W;
   pipeHeight=H;
-  pipeThick=T;
+  if (T>0.0)
+    pipeThick=T;
   return;
 }
 

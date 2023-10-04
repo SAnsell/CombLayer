@@ -48,7 +48,6 @@
 #include "BladeGenerator.h"
 #include "PipeGenerator.h"
 #include "CornerPipeGenerator.h"
-#include "RectPipeGenerator.h"
 #include "TwinBaseGenerator.h"
 #include "TwinGenerator.h"
 #include "TwinFlatGenerator.h"
@@ -244,9 +243,11 @@ SingleItemVariables(FuncDataBase& Control)
 
   TCGen.generateChopper(Control,"singleTwinD",80.0,16.0,10.0);
 
-  setVariable::RectPipeGenerator RPipeGen;
-  RPipeGen.generatePipe(Control,"singleBoxPipeA",0.0,80.0);
-  RPipeGen.generatePipe(Control,"singleBoxPipeB",0.0,80.0);
+  setVariable::PipeGenerator RPipeGen;
+  RPipeGen.setCF<CF100>(); 
+  RPipeGen.setRectPipe(5.0,6.0);
+  RPipeGen.generatePipe(Control,"singleBoxPipeA",80.0);
+  RPipeGen.generatePipe(Control,"singleBoxPipeB",90.0);
 
   setVariable::CornerPipeGenerator CPipeGen;
   CPipeGen.generatePipe(Control,"CornerPipe",80.0);
@@ -560,13 +561,13 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::TWCavityGenerator TDCGen;
 
   const double flangeLength(3.7);
-  RPipeGen.generatePipe(Control,"PipeA",0.0,flangeLength);
+  RPipeGen.generatePipe(Control,"PipeA",4*flangeLength);
   Control.addVariable("PipeARadius",1.16);
   Control.addVariable("PipeAFeThick",0.2);
 
   TDCGen.generate(Control,"TWCavity");
 
-  RPipeGen.generatePipe(Control,"PipeB",0.0,flangeLength);
+  RPipeGen.generatePipe(Control,"PipeB",4.0*flangeLength);
   Control.addParse<double>("PipeBRadius","PipeARadius");
   Control.addParse<double>("PipeBFeThick","PipeAFeThick");
 

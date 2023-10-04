@@ -70,8 +70,10 @@ namespace constructSystem
 SplitFlangePipe::SplitFlangePipe(const std::string& Key,
 				 const bool IF) :
   attachSystem::FixedRotate(Key,10),
-  attachSystem::ContainedComp(),attachSystem::CellMap(),
-  attachSystem::SurfMap(),attachSystem::FrontBackCut(),
+  attachSystem::ContainedComp(),
+  attachSystem::CellMap(),
+  attachSystem::SurfMap(),
+  attachSystem::FrontBackCut(),
   innerLayer(IF),frontJoin(0),backJoin(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.

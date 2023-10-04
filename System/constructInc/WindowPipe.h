@@ -3,7 +3,7 @@
 
  * File:   constructInc/WindowPipe.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,36 +36,13 @@ namespace constructSystem
 */
 
 class WindowPipe :
-  public attachSystem::FixedRotate,
-  public attachSystem::ContainedGroup,
-  public attachSystem::CellMap,
-  public attachSystem::SurfMap,
-  public attachSystem::FrontBackCut
+  public GeneralPipe
 {
  private:
-
-  double radius;                ///< void radius [inner]
-  double length;                ///< void length [total]
-
-  double feThick;               ///< pipe thickness
-  double claddingThick;         ///< cladding thickness
-
-  double flangeARadius;          ///< Joining Flange radius [-ve for rect]
-  double flangeALength;          ///< Joining Flange length
-
-  double flangeBRadius;          ///< Joining Flange radius [-ve for rect]
-  double flangeBLength;          ///< Joining Flange length
 
   unsigned int activeWindow;     ///< Flag for windows
   windowInfo windowA;           ///< Front window info
   windowInfo windowB;           ///< Back window info
-
-  int voidMat;                  ///< Void material
-  int feMat;                    ///< Pipe material
-  int claddingMat;              ///< Pipe cladding material
-  int flangeMat;                ///< Flange material
-
-  int outerVoid;                ///< Flag to build the outer void cell between flanges
 
   void populate(const FuncDataBase&) override;
   void createSurfaces();
