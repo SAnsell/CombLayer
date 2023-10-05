@@ -1348,7 +1348,7 @@ makeSingleItem::build(Simulation& System,
 	bellow(new constructSystem::Bellows("Bellow"));
       OR.addObject(bellow);
 
-      bellow->addInsertCell(voidCell);
+      bellow->addAllInsertCell(voidCell);
       bellow->createAll(System,World::masterOrigin(),0);
 
       return;
@@ -1391,7 +1391,7 @@ makeSingleItem::build(Simulation& System,
 	OR.addObject(bellowTube);
 	OR.addObject(pipeTube);
 
-	bellowTube->addInsertCell(voidCell);
+	bellowTube->addAllInsertCell(voidCell);
 	bellowTube->createAll(System,World::masterOrigin(),0);
 
 	pipeTube->setPortRotation(3,Geometry::Vec3D(0,0,1));

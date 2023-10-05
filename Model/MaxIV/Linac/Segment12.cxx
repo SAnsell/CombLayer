@@ -144,7 +144,7 @@ Segment12::buildObjects(Simulation& System)
 
   bellowA->createAll(System,*this,0);
   outerCell=buildZone->createUnit(System,*bellowA,2);
-  bellowA->insertInCell(System,outerCell);
+  bellowA->insertAllInCell(System,outerCell);
 
   flatA->setFront(*bellowA,"back");
   flatA->createAll(System,*bellowA,"back");
@@ -223,7 +223,7 @@ Segment12::buildObjects(Simulation& System)
 
   bellowRB->setFront(*flatB,"back");
   bellowRB->createAll(System,*flatB,"back");
-  bellowRB->insertInCell(System,outerCell);
+  bellowRB->insertAllInCell(System,outerCell);
 
   // transfer to segment 13
   CellMap::addCell("LastCell",outerCell);

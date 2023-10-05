@@ -407,9 +407,8 @@ splitterVariables(FuncDataBase& Control,
   PipeGen.setCF<CF40>();
   PipeGen.setBFlangeCF<CF40>();
   PipeGen.generatePipe(Control,splitKey+"JoinPipeAA",90.3);
-  Control.addVariable(splitKey+"JoinPipeAAFlangeBackRadius", 6.7);
-  Control.addVariable(splitKey+"JoinPipeAAFlangeBackLength", 1.0);
-  Control.addVariable(splitKey+"JoinPipeAAWindowActive", 0);
+  Control.addVariable(splitKey+"JoinPipeAAFlangeBRadius", 6.7);
+  Control.addVariable(splitKey+"JoinPipeAAFlangeBLength", 1.0);
 
   setVariable::BremOpticsCollGenerator OpticsCollGen;
   //OpticsCollGen.setCF<setVariable::CF63>();
@@ -432,8 +431,8 @@ splitterVariables(FuncDataBase& Control,
   PipeGen.setCF<CF40>();
   PipeGen.setBFlangeCF<CF40>();
   PipeGen.generatePipe(Control,splitKey+"JoinPipeAB",100.0);
-  Control.addVariable(splitKey+"JoinPipeABFlangeFrontRadius", 6.7);
-  Control.addVariable(splitKey+"JoinPipeABFlangeFrontLength", 1.0);
+  Control.addVariable(splitKey+"JoinPipeABFlangeARadius", 6.7);
+  Control.addVariable(splitKey+"JoinPipeABFlangeALength", 1.0);
   Control.addVariable(splitKey+"JoinPipeABWindowActive", 0);
 
   // RIGHT BRANCH

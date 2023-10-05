@@ -226,7 +226,7 @@ cosaxsExptLine::buildObjects(Simulation& System)
 
   bellowA->createAll(System,*this,0);
   outerCell=buildZone.createUnit(System,*bellowA,2);
-  bellowA->insertInCell(System,outerCell);
+  bellowA->insertAllInCell(System,outerCell);
 
   if (preInsert)
     preInsert->insertAllInCell(System,outerCell);

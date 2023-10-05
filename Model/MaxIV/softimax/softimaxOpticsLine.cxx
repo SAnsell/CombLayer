@@ -46,8 +46,6 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Importance.h"
-#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -74,7 +72,6 @@
 
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
-#include "SplitFlangePipe.h"
 #include "OffsetFlangePipe.h"
 #include "Bellows.h"
 #include "FlangeMount.h"
@@ -578,11 +575,11 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
   
   outerCell=IZLeft.createUnit(System,*bellowAA,"back");
   splitter->insertAllInCell(System,outerCell);
-  bellowAA->insertInCell(System,outerCell);
+  bellowAA->insertAllInCell(System,outerCell);
   outerCell=IZRight.createUnit(System,*bellowBA,"back");
 
   splitter->insertAllInCell(System,outerCell);
-  bellowBA->insertInCell(System,outerCell);
+  bellowBA->insertAllInCell(System,outerCell);
   
   M3Pump->setLeftPort(*bellowAA,"back");
   M3Pump->setRightPort(*bellowBA,"back");
@@ -650,7 +647,7 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   pipeInit->createAll(System,*this,0);
   // dump cell for joinPipe
   outerCell=buildZone.createUnit(System,*pipeInit,2);
-  pipeInit->insertInCell(System,outerCell);
+  pipeInit->insertAllInCell(System,outerCell);
   if (preInsert)
     preInsert->insertAllInCell(System,outerCell);
 

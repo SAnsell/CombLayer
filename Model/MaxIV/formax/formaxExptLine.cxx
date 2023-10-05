@@ -70,7 +70,7 @@
 #include "insertObject.h"
 #include "insertSphere.h"
 
-#include "SplitFlangePipe.h"
+#include "GeneralPipe.h"
 #include "Bellows.h"
 #include "GateValveCylinder.h"
 #include "VirtualTube.h"
@@ -282,7 +282,7 @@ formaxExptLine::buildObjects(Simulation& System)
   // in the hut beam port
   bellowA->createAll(System,*this,0);
   outerCell=buildZone.createUnit(System,*bellowA,2);
-  bellowA->insertInCell(System,outerCell);
+  bellowA->insertAllInCell(System,outerCell);
   
   if (preInsert)
     preInsert->insertAllInCell(System,outerCell);

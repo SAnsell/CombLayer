@@ -50,7 +50,6 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -62,7 +61,7 @@
 #include "BlockZone.h"
 #include "generalConstruct.h"
 
-#include "SplitFlangePipe.h"
+#include "GeneralPipe.h"
 #include "Bellows.h"
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
@@ -124,7 +123,7 @@ Segment41::buildObjects(Simulation& System)
   bellowA->createAll(System,*this,0);
 
   outerCell=buildZone->createUnit(System,*bellowA,2);
-  bellowA->insertInCell(System,outerCell);
+  bellowA->insertAllInCell(System,outerCell);
 
   outerCell=constructSystem::constructUnit
     (System,*buildZone,*bellowA,"back",*bpm);

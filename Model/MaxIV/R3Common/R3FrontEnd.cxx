@@ -55,7 +55,6 @@
 #include "FixedGroup.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
-#include "FixedOffsetGroup.h"
 #include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -334,7 +333,7 @@ R3FrontEnd::buildHeatTable(Simulation& System)
   
   bellowD->createAll(System,PIB,"OuterPlate");
   outerCell=buildZone.createUnit(System,*bellowD,2);
-  bellowD->insertInCell(System,outerCell);
+  bellowD->insertAllInCell(System,outerCell);
 
   gateTubeA->createAll(System,*bellowD,2);  
   outerCell=buildZone.createUnit(System,*gateTubeA,2);
@@ -386,13 +385,13 @@ R3FrontEnd::buildApertureTable(Simulation& System,
 
   // now do insert:
   outerCell=buildZone.createUnit(System,*bellowE,2);
-  bellowE->insertInCell(System,outerCell);
+  bellowE->insertAllInCell(System,outerCell);
     
   outerCell=buildZone.createUnit(System,*aperturePipe,2);
   aperturePipe->insertAllInCell(System,outerCell);
   
   outerCell=buildZone.createUnit(System,*bellowF,2);
-  bellowF->insertInCell(System,outerCell);
+  bellowF->insertAllInCell(System,outerCell);
 
   outerCell=buildZone.createUnit(System,*ionPC,2);
   ionPC->insertInCell(System,outerCell);
@@ -418,13 +417,13 @@ R3FrontEnd::buildApertureTable(Simulation& System,
 
   // now do insert:
   outerCell=buildZone.createUnit(System,*bellowG,2);
-  bellowG->insertInCell(System,outerCell);
+  bellowG->insertAllInCell(System,outerCell);
     
   outerCell=buildZone.createUnit(System,*aperturePipeB,2);
   aperturePipeB->insertAllInCell(System,outerCell);
   
   outerCell=buildZone.createUnit(System,*bellowH,2);
-  bellowH->insertInCell(System,outerCell);
+  bellowH->insertAllInCell(System,outerCell);
 
   outerCell=buildZone.createUnit(System,*pipeC,2);
   pipeC->insertAllInCell(System,outerCell);
@@ -469,7 +468,7 @@ R3FrontEnd::buildShutterTable(Simulation& System,
   // bellows 
   bellowJ->createAll(System,FPI,FPI.getSideIndex("OuterPlate"));
   outerCell=buildZone.createUnit(System,*bellowJ,2);
-  bellowJ->insertInCell(System,outerCell);
+  bellowJ->insertAllInCell(System,outerCell);
 
   insertFlanges(System,*florTubeA,3);
 
@@ -609,7 +608,7 @@ R3FrontEnd::buildObjects(Simulation& System)
   eTransPipe->insertInCell("FlangeB",System,outerCell);
 
   outerCell=buildZone.createUnit(System,*bellowA,1);
-  bellowA->insertInCell(System,outerCell);
+  bellowA->insertAllInCell(System,outerCell);
 
   outerCell=buildZone.createUnit(System,*collA,2);
   collA->insertInCell(System,outerCell);
@@ -637,7 +636,7 @@ R3FrontEnd::buildObjects(Simulation& System)
   collABPipe->insertAllInCell(System,outerCell);
 
   outerCell=buildZone.createUnit(System,*bellowC,1);
-  bellowC->insertInCell(System,outerCell);
+  bellowC->insertAllInCell(System,outerCell);
 
   outerCell=buildZone.createUnit(System,*collB,2);
   collB->insertInCell(System,outerCell);

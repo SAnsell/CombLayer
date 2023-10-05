@@ -97,6 +97,15 @@ class GeneralPipe :
   GeneralPipe(const GeneralPipe& A);
   GeneralPipe& operator=(const GeneralPipe& A);
   virtual ~GeneralPipe() override {}
+
+  /// set merge with front point
+  void setJoinFront() { activeFlag |= 1; }
+  /// set merge with back point
+  void setJoinBack() { activeFlag |= 2; }
+
+  void setJoinFront(const attachSystem::FixedComp&,const long int);
+  void setJoinBack(const attachSystem::FixedComp&,const long int);
+
 };
 
 }

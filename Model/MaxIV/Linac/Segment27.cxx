@@ -3,7 +3,7 @@
 
  * File: Linac/Segment27.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2023 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@
 #include "generalConstruct.h"
 #include "generateSurf.h"
 
-#include "SplitFlangePipe.h"
+#include "GeneralPipe.h"
 #include "Bellows.h"
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
@@ -249,9 +249,9 @@ Segment27::buildObjects(Simulation& System)
   outerCellB=IZFlat->createUnit(System,*bellowBA,2);
   outerCellC=IZLower->createUnit(System,*bellowCA,2);
 
-  bellowAA->insertInCell(System,outerCellA);
-  bellowBA->insertInCell(System,outerCellB);
-  bellowCA->insertInCell(System,outerCellC);
+  bellowAA->insertAllInCell(System,outerCellA);
+  bellowBA->insertAllInCell(System,outerCellB);
+  bellowCA->insertAllInCell(System,outerCellC);
 
   constructSystem::constructUnit
     (System,*IZTop,*bellowAA,"back",*pipeAA);

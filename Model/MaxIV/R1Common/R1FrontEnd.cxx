@@ -54,7 +54,6 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedGroup.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "FixedRotateGroup.h"
 #include "ContainedComp.h"
@@ -329,13 +328,13 @@ R1FrontEnd::buildApertureTable(Simulation& System,
 
   // now do insert:
   outerCell=buildZone.createUnit(System,*bellowE,"back");
-  bellowE->insertInCell(System,outerCell);
+  bellowE->insertAllInCell(System,outerCell);
     
   outerCell=buildZone.createUnit(System,*aperturePipe,"back");
   aperturePipe->insertAllInCell(System,outerCell);
   
   outerCell=buildZone.createUnit(System,*bellowF,"back");
-  bellowF->insertInCell(System,outerCell);
+  bellowF->insertAllInCell(System,outerCell);
 
   outerCell=buildZone.createUnit(System,*ionPC,"back");
   ionPC->insertInCell(System,outerCell);
@@ -360,13 +359,13 @@ R1FrontEnd::buildApertureTable(Simulation& System,
 
   // now do insert:
   outerCell=buildZone.createUnit(System,*bellowG,"back");
-  bellowG->insertInCell(System,outerCell);
+  bellowG->insertAllInCell(System,outerCell);
     
   outerCell=buildZone.createUnit(System,*aperturePipeB,"back");
   aperturePipeB->insertAllInCell(System,outerCell);
   
   outerCell=buildZone.createUnit(System,*bellowH,"back");
-  bellowH->insertInCell(System,outerCell);
+  bellowH->insertAllInCell(System,outerCell);
 
   outerCell=buildZone.createUnit(System,*pipeC,"back");
   pipeC->insertAllInCell(System,outerCell);
@@ -516,7 +515,7 @@ R1FrontEnd::buildObjects(Simulation& System)
 
   // note : bellowA is reversed
   outerCell=buildZone.createUnit(System,*bellowA,1);
-  bellowA->insertInCell(System,outerCell);
+  bellowA->insertAllInCell(System,outerCell);
   magnetBlock->insertInCell("Magnet",System,outerCell);
   
   outerCell=buildZone.createUnit(System,*collA,2);

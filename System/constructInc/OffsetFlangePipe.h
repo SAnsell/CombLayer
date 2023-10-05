@@ -67,7 +67,7 @@ class OffsetFlangePipe :
   
   void populate(const FuncDataBase&) override;
   void createUnitVector(const attachSystem::FixedComp&,const long int) override;
-  void createSurfaces();
+  void createSurfaces() override;
   void createObjects(Simulation&);
   void createLinks();
 

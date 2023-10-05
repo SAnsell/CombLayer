@@ -524,7 +524,7 @@ formaxOpticsLine::buildObjects(Simulation& System)
   // in the hut beam port
   pipeInit->createAll(System,*this,0);
   outerCell=buildZone.createUnit(System,*pipeInit,2);
-  pipeInit->insertInCell(System,outerCell);
+  pipeInit->insertAllInCell(System,outerCell);
   if (preInsert)
     preInsert->insertAllInCell(System,outerCell);
 

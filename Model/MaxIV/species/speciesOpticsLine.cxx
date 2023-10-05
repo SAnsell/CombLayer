@@ -53,7 +53,6 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "FixedGroup.h"
 #include "FixedRotate.h"
 #include "FixedRotateGroup.h"
@@ -75,7 +74,6 @@
 #include "insertPlate.h"
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
-#include "SplitFlangePipe.h"
 #include "OffsetFlangePipe.h"
 #include "Bellows.h"
 #include "portItem.h"
@@ -526,11 +524,11 @@ speciesOpticsLine::buildSplitter(Simulation& System,
 
   outerCell=IZLeft.createUnit(System,*bellowAA,"back");
   splitter->insertAllInCell(System,outerCell);
-  bellowAA->insertInCell(System,outerCell);
+  bellowAA->insertAllInCell(System,outerCell);
   outerCell=IZRight.createUnit(System,*bellowBA,"back");
 
   splitter->insertAllInCell(System,outerCell);
-  bellowBA->insertInCell(System,outerCell);
+  bellowBA->insertAllInCell(System,outerCell);
 
   // LEFT SIDE
   
@@ -636,7 +634,7 @@ speciesOpticsLine::buildObjects(Simulation& System)
 
   bellowA->createAll(System,*this,0);
   outerCell=buildZone.createUnit(System,*bellowA,"back");
-  bellowA->insertInCell(System,outerCell);
+  bellowA->insertAllInCell(System,outerCell);
   if (preInsert)
     preInsert->insertAllInCell(System,outerCell);
 

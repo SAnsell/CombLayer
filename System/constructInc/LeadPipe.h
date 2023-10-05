@@ -45,7 +45,7 @@ class LeadPipe :
   int claddingMat;             ///< Pipe cladding material
   
   virtual void populate(const FuncDataBase&) override;
-  void createSurfaces();
+  void createSurfaces() override;
   void createObjects(Simulation&);
   void createLinks();
   

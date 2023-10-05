@@ -739,7 +739,7 @@ Segment3(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeA",94.253/pipeAcos); // No_3_00.pdf
   Control.addVariable(lKey+"PipeAXYAngle",pipeAXYAngle);
   // Control.addVariable(lKey+"PipeAXStep",-1.2);
-  // Control.addVariable(lKey+"PipeAFlangeFrontXStep",1.2);
+  // Control.addVariable(lKey+"PipeAFlangeAXStep",1.2);
 
   CMGen.generateMag(Control,lKey+"CMagHA",15.176/pipeAcos,0);  // No_3_00.pdf
   CMGen.generateMag(Control,lKey+"CMagVA",31.151/pipeAcos,1); // No_3_00.pdf

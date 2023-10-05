@@ -3,7 +3,7 @@
 
  * File:   constructVar/SplitPipeGenerator.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -188,10 +188,10 @@ SplitPipeGenerator::generatePipe(FuncDataBase& Control,
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"FeThick",pipeThick);
 
-  Control.addVariable(keyName+"FlangeFrontRadius",realFlangeARadius);
-  Control.addVariable(keyName+"FlangeBackRadius",realFlangeBRadius);
-  Control.addVariable(keyName+"FlangeFrontLength",flangeALen);
-  Control.addVariable(keyName+"FlangeBackLength",flangeBLen);
+  Control.addVariable(keyName+"FlangeARadius",realFlangeARadius);
+  Control.addVariable(keyName+"FlangeBRadius",realFlangeBRadius);
+  Control.addVariable(keyName+"FlangeALength",flangeALen);
+  Control.addVariable(keyName+"FlangeBLength",flangeBLen);
 
   Control.addVariable(keyName+"FeMat",pipeMat);
   Control.addVariable(keyName+"VoidMat",voidMat);

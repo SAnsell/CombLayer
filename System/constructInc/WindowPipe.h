@@ -45,11 +45,9 @@ class WindowPipe :
   windowInfo windowB;           ///< Back window info
 
   void populate(const FuncDataBase&) override;
-  void createSurfaces();
+  void createSurfaces() override;
   void createObjects(Simulation&);
   void createLinks();
-
-  void applyActiveFrontBack();
 
  public:
 

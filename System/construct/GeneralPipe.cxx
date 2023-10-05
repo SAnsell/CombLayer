@@ -3,7 +3,7 @@
 
  * File:   construct/GeneralPipe.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -195,6 +195,7 @@ GeneralPipe::populate(const FuncDataBase& Control)
 
   feThick=Control.EvalVar<double>(keyName+"FeThick");
 
+  ELog::EM<<"Key == "<<keyName<<ELog::endDiag;
   const double fR=Control.EvalDefVar<double>(keyName+"FlangeRadius",-1.0);
   flangeARadius=Control.EvalDefVar<double>(keyName+"FlangeARadius",fR);
   flangeBRadius=Control.EvalDefVar<double>(keyName+"FlangeBRadius",fR);
@@ -240,7 +241,7 @@ GeneralPipe::createCommonSurfaces()
     pipes.
   */
 {
-  ELog::RegMethod RegA("VacuumPipe","createCommonSurfaces");
+  ELog::RegMethod RegA("GeneralPipe","createCommonSurfaces");
   
   if (!isActive("front"))
     {
@@ -265,14 +266,19 @@ GeneralPipe::createSurfaces()
     Create the surfaces
   */
 {
-  ELog::RegMethod RegA("VacuumPipe","createSurfaces");
+  ELog::RegMethod RegA("GeneralPipe","createSurfaces");
 
+  createCommonSurfaces();
+  
   // MAIN SURFACES:
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+feThick);
   addSurf("OuterRadius",SMap.realSurf(buildIndex+17));
 
   // FLANGE SURFACES FRONT:
+  ELog::EM<<"Radius == "<<flangeARadius<<ELog::endDiag;
+  ELog::EM<<"Radius == "<<flangeBRadius<<ELog::endDiag;
+  
   ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeARadius);
   // FLANGE SURFACES BACK:
   ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,flangeBRadius);
@@ -374,5 +380,24 @@ GeneralPipe::createOuterVoid(Simulation& System,
   
   return;
 }
+
+void
+GeneralPipe::setJoinFront(const attachSystem::FixedComp& FC,
+			  const long int sideIndex)
+{
+  FrontBackCut::setFront(FC,sideIndex);
+  activeFlag |= 1;
+  return;
+}
+
+void
+GeneralPipe::setJoinBack(const attachSystem::FixedComp& FC,
+			  const long int sideIndex)
+{
+  FrontBackCut::setBack(FC,sideIndex);
+  activeFlag |= 2;
+  return;
+}
+  
   
 }  // NAMESPACE constructSystem

@@ -3,7 +3,7 @@
  
  * File: balder/balderConnectZone.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -223,15 +223,8 @@ balderConnectZone::makeBox(Simulation& System,
   pipeBUnit.insertInCell("Main",System,boxUnit.getCell("Void",1));
   pipeBUnit.insertInCell("FlangeA",System,boxUnit.getCell("Void",1));
 
-  if constexpr (std::is_same<constructSystem::Bellows,MidTYPE>::value)
-    {
-      // Bellow goes immediately in next unit
-      bellowUnit.addInsertCell(boxUnit.getCell("Void",2));
-    }
-  else
-    {
-      bellowUnit.addAllInsertCell(boxUnit.getCell("Void",2));
-    }
+  bellowUnit.addAllInsertCell(boxUnit.getCell("Void",2));
+
   bellowUnit.setFront(pipeAUnit,"back");  
   bellowUnit.setBack(pipeBUnit,"front");
   bellowUnit.createAll(System,pipeAUnit,"back");

@@ -181,10 +181,16 @@ LeadPipe::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 21 -22 -27 17");
   makeCell("Cladding",System,cellIndex++,claddingMat,0.0,HR);
 
+  HR=HeadRule(SMap,buildIndex,27);
+  GeneralPipe::createOuterVoid(System,HR);
+
+  /*
   // choose largest radius
   const int radiusIndex=(flangeARadius>=flangeBRadius) ?
     buildIndex :  buildIndex+100;
 
+ 
+  
   if (outerVoid)
     {
       
@@ -211,6 +217,7 @@ LeadPipe::createObjects(Simulation& System)
       addOuterSurf("FlangeB",HR*backHR);
       
     }
+  */
   return;
 }
 

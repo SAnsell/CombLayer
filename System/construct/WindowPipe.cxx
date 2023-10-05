@@ -381,7 +381,7 @@ WindowPipe::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);
-  applyActiveFrontBack();
+  GeneralPipe::applyActiveFrontBack(length);
   createSurfaces();
   createObjects(System);
   createLinks();

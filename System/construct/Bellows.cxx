@@ -121,10 +121,12 @@ Bellows::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("Bellows","populate");
 
+  GeneralPipe::populate(Control);
   bellowThick=Control.EvalVar<double>(keyName+"BellowThick");
   bellowStep=Control.EvalDefVar<double>(keyName+"BellowStep",0.0);
 
   bellowMat=ModelSupport::EvalDefMat(Control,keyName+"BellowMat",feMat);
+  ELog::EM<<"Bellow Mat == "<<feMat<<" "<<bellowMat<<ELog::endDiag;
   outerVoid=1;  // no options:
   return;
 }
@@ -143,24 +145,14 @@ Bellows::createSurfaces()
 			      Y,radius+feThick+bellowThick);
   
   
-  getShiftedFront(SMap,buildIndex+121,Y,(flangeALength+bellowStep));
-  if (!backActive())
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
-      FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
-    }
+  FrontBackCut::getShiftedFront
+    (SMap,buildIndex+121,Y,(flangeALength+bellowStep));
+  
 
-  FrontBackCut::getShiftedBack(SMap,buildIndex+12,Y,-flangeBLength);
-  FrontBackCut::getShiftedBack(SMap,buildIndex+22,Y,
-			       -(flangeBLength+bellowStep));
+  FrontBackCut::getShiftedBack
+    (SMap,buildIndex+122,Y,-(flangeBLength+bellowStep));
 
-  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
-  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+feThick);
-  ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,radius+feThick+bellowThick);
 
-  // FLANGE SURFACES FRONT/BACK:
-  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeARadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,flangeBRadius);
   
   return;
 }
@@ -180,77 +172,86 @@ Bellows::createObjects(Simulation& System)
   const HeadRule& backHR=getRule("back");
 
   // Void
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7");
+  HR=HeadRule(SMap,buildIndex,-7);
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
   // FLANGE Front:
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -107 7");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 -107 7");
   makeCell("FrontFlange",System,cellIndex++,feMat,0.0,HR*frontHR);
 
   // FLANGE Back:
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -207 7");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -207 7");
   makeCell("BackFlange",System,cellIndex++,feMat,0.0,HR*backHR);
 
   // Inner clip if present
   if (bellowStep>Geometry::zeroTol)
     {
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -21 -17 7");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -121 -17 7");
       makeCell("FrontClip",System,cellIndex++,feMat,0.0,HR);
       
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 22 -17 7");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-102 122 -17 7");
       makeCell("BackClip",System,cellIndex++,feMat,0.0,HR);
       
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -22 -27 7");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"121 -122 -27 7");
       makeCell("Bellow",System,cellIndex++,bellowMat,0.0,HR);
 
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -21 -27 17");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -121 -27 17");
       makeCell("FrontSpaceVoid",System,cellIndex++,0,0.0,HR);
 
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 22 -27 17");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-102 122 -27 17");
       makeCell("BackSpaceVoid",System,cellIndex++,0,0.0,HR);
     }
   else
     {
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -22 -27 7");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -122 -27 7");
       makeCell("Bellow",System,cellIndex++,bellowMat,0.0,HR);
     }
 
   HR=HeadRule(SMap,buildIndex,27);
   GeneralPipe::createOuterVoid(System,HR);
-  // we can simplify outer void if the flanges have the same radii
-  if (std::abs(flangeARadius-flangeBRadius)<Geometry::zeroTol)
-    {
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 27 -107");
-      makeCell("OuterVoid",System,cellIndex++,0,0.0,HR);
-
-      HR=HeadRule(SMap,buildIndex,-107);
-      addOuterSurf("Main",HR*frontHR*backHR);
-    }
-  else if (flangeARadius>flangeBRadius)
-    {
-      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"11 -12 27 -107");
-      makeCell("OuterVoid",System,cellIndex++,0,0.0,HR);
-      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"12 207 -107");
-      makeCell("OuterVoid",System,cellIndex++,0,0.0,HR*backHR);
-      HR=HeadRule(SMap,buildIndex,-107);
-      addOuterSurf("Main",HR*frontHR*backHR);
-    }
-  else 
-    {
-      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"11 -12 27 -207");
-      makeCell("OuterVoid",System,cellIndex++,0,0.0,HR);
-      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"11 107 -207");
-      makeCell("OuterVoid",System,cellIndex++,0,0.0,HR*frontHR);
-      HR=HeadRule(SMap,buildIndex,-207);
-      addOuterSurf("Main",HR*frontHR*backHR);
-    }
   return;
 }
-  
+
+void
+Bellows::createLinks()
+  /*!
+    Determines the link point on the outgoing plane.
+    It must follow the beamline, but exit at the plane
+  */
+{
+  ELog::RegMethod RegA("Bellow","createLinks");
+
+  // stuff for intersection
+
+  FrontBackCut::createLinks(*this,Origin,Y);  //front and back
+  FixedComp::setConnect(2,Origin-X*radius,-X);
+  FixedComp::setConnect(3,Origin+X*radius,X);
+  FixedComp::setConnect(4,Origin-Z*radius,-Z);
+  FixedComp::setConnect(5,Origin+Z*radius,Z);
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+7));
+
+  FixedComp::setConnect(6,Origin-Z*(radius+bellowThick),-Z);
+  FixedComp::setConnect(7,Origin+Z*(radius+bellowThick),Z);
+  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+27));
+  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+27));
+
+  // pipe wall
+  FixedComp::setConnect(8,Origin-Z*(radius+feThick),-Z);
+  FixedComp::setConnect(9,Origin+Z*(radius+feThick),Z);
+  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+17));
+  FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+17));
+
+
+  return;
+}
+
 void
 Bellows::createAll(Simulation& System,
-		      const attachSystem::FixedComp& FC,
-		      const long int FIndex)
+		   const attachSystem::FixedComp& FC,
+		   const long int FIndex)
  /*!
     Generic function to create everything
     \param System :: Simulation item

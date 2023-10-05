@@ -373,7 +373,7 @@ cosaxsOpticsLine::buildObjects(Simulation& System)
   pipeInit->createAll(System,*this,0);
 
   outerCell=buildZone.createUnit(System,*pipeInit,"back");
-  pipeInit->insertInCell(System,outerCell);
+  pipeInit->insertAllInCell(System,outerCell);
   if (preInsert)
     preInsert->insertAllInCell(System,outerCell);
 

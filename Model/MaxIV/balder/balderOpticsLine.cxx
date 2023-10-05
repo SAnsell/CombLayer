@@ -270,7 +270,6 @@ balderOpticsLine::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("balderOpticsLine","buildObjects");
 
-  
   int outerCell;
 
   buildZone.addInsertCells(this->getInsertCells());
@@ -357,7 +356,7 @@ balderOpticsLine::buildObjects(Simulation& System)
   monoBellowA->createAll(System,*driftA,2);
 
   // Note : join flag so can rotate on front/back
-  monoBellowB->setJoinFront(*monoV,2); 
+  monoBellowB->setJoinFront(*monoV,2);
   monoBellowB->setJoinBack(*driftB,1);
   monoBellowB->createAll(System,*driftB,-1);
 
@@ -365,20 +364,19 @@ balderOpticsLine::buildObjects(Simulation& System)
   monoXtal->createAll(System,*monoV,0);
 
   outerCell=buildZone.createUnit(System,*monoBellowA,2);
-  monoBellowA->insertInCell(System,outerCell);
+  monoBellowA->insertAllInCell(System,outerCell);
 
   outerCell=buildZone.createUnit(System,*monoV,2);
   monoV->insertInCell(System,outerCell);
 
   outerCell=buildZone.createUnit(System,*monoBellowB,2);
-  monoBellowB->insertInCell(System,outerCell);
+  monoBellowB->insertAllInCell(System,outerCell);
 
   outerCell=buildZone.createUnit(System,*driftB,2);
   driftB->insertAllInCell(System,outerCell);
   driftB->setCell("OuterVoid",outerCell);
 
   monoV->constructPorts(System);
-
 
   constructSystem::constructUnit
     (System,buildZone,*driftB,"back",*gateC);
