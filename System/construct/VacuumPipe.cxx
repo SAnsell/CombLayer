@@ -203,7 +203,6 @@ VacuumPipe::createObjects(Simulation& System)
       makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,HR*backHR);
     }
 
-
   HR=HeadRule(SMap,buildIndex,17);
   GeneralPipe::createOuterVoid(System,HR);
 

@@ -334,14 +334,14 @@ GeneralPipe::createOuterVoid(Simulation& System,
   const HeadRule& frontHR=getRule("front");
   const HeadRule& backHR=getRule("back");
   HeadRule HR;
-  
+
   if (outerVoid)
     {
       if (std::abs(flangeARadius-flangeBRadius)<Geometry::zeroTol)
 	{
 	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 -107");
 	  makeCell("outerVoid",System,cellIndex++,0,0.0,HR*outerHR);
-	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-107");
+	  HR=HeadRule(SMap,buildIndex,-107);
 	  addOuterSurf("Main",HR*frontHR*backHR);
 	}
       else if (flangeARadius>flangeBRadius)
@@ -365,6 +365,7 @@ GeneralPipe::createOuterVoid(Simulation& System,
     }
   else
     {
+      ELog::EM<<"Outer void == "<<outerHR<<ELog::endDiag;
       // outer boundary [flange front]
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 -107");
       addOuterSurf("FlangeA",HR*frontHR);
@@ -375,7 +376,7 @@ GeneralPipe::createOuterVoid(Simulation& System,
 
       // outer boundary mid tube
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102");
-      addOuterSurf("Main",HR*outerHR);
+      addOuterSurf("Main",HR*outerHR.complement());
     }
   
   return;
