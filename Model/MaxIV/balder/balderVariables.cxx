@@ -726,7 +726,8 @@ BALDERvariables(FuncDataBase& Control)
   balderVar::frontMaskVariables(Control,"BalderFrontBeam");  
   
   PipeGen.setMat("Stainless304");
-  PipeGen.setCF<setVariable::CF40>(); 
+  PipeGen.setCF<setVariable::CF40>();
+  ELog::EM<<"ASDFASF "<<ELog::endDiag;
   PipeGen.generatePipe(Control,"BalderJoinPipe",130.0);
 
   balderVar::opticsHutVariables(Control,"BalderOpticsHut");

@@ -125,44 +125,6 @@ VacuumPipe::populate(const FuncDataBase& Control)
   return;
 }
 
-void
-VacuumPipe::createSurfaces()
-  /*!
-    Create the surfaces
-  */
-{
-  ELog::RegMethod RegA("VacuumPipe","createSurfaces");
-
-  if (!isActive("front"))
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
-      ExternalCut::setCutSurf("front",SMap.realSurf(buildIndex+1));
-    }
-  if (!isActive("back"))
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
-      ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
-    }
-
-  // MAIN SURFACES:
-  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
-  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+feThick);
-  addSurf("OuterRadius",SMap.realSurf(buildIndex+17));
-
-
-  // Front Inner void
-  FrontBackCut::getShiftedFront(SMap,buildIndex+101,Y,flangeALength);
-  FrontBackCut::getShiftedBack(SMap,buildIndex+102,Y,-flangeBLength);
-
-
-
-  // FLANGE SURFACES FRONT:
-  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeARadius);
-  // FLANGE SURFACES BACK:
-  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,flangeBRadius);
-
-  return;
-}
 
 void
 VacuumPipe::createObjects(Simulation& System)
@@ -182,9 +144,6 @@ VacuumPipe::createObjects(Simulation& System)
   
   HR=HeadRule(SMap,buildIndex,-7);
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
-
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-17");
-  HeadRule WallLayer(HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 7 -17");
   makeCell("Steel",System,cellIndex++,feMat,0.0,HR);
@@ -273,11 +232,10 @@ VacuumPipe::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);
-  GeneralPipe::applyActiveFrontBack(length);
   createSurfaces();
   createObjects(System);
   createLinks();
-
+  
   insertObjects(System);
 
   return;

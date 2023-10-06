@@ -126,7 +126,6 @@ Bellows::populate(const FuncDataBase& Control)
   bellowStep=Control.EvalDefVar<double>(keyName+"BellowStep",0.0);
 
   bellowMat=ModelSupport::EvalDefMat(Control,keyName+"BellowMat",feMat);
-  ELog::EM<<"Bellow Mat == "<<feMat<<" "<<bellowMat<<ELog::endDiag;
   outerVoid=1;  // no options:
   return;
 }

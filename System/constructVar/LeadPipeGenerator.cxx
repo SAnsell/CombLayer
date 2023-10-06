@@ -3,7 +3,7 @@
  
  * File:   constructVar/LeadPipeGenerator.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -202,7 +202,7 @@ LeadPipeGenerator::generatePipe(FuncDataBase& Control,
 
   Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"Length",length);
-  Control.addVariable(keyName+"Thick",thick);
+  Control.addVariable(keyName+"FeThick",thick);
   Control.addVariable(keyName+"CladdingThick",claddingThick);
   Control.addVariable(keyName+"CladdingStep",claddingStep);
   Control.addVariable(keyName+"FlangeARadius",flangeARadius);
@@ -212,7 +212,7 @@ LeadPipeGenerator::generatePipe(FuncDataBase& Control,
 
 
   Control.addVariable(keyName+"VoidMat",voidMat);
-  Control.addVariable(keyName+"PipeMat",pipeMat);
+  Control.addVariable(keyName+"FeMat",pipeMat);
   Control.addVariable(keyName+"CladdingMat",claddingMat);
   Control.addVariable(keyName+"FlangeMat",flangeMat);
   

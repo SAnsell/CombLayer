@@ -379,7 +379,6 @@ M1DetailGenerator::generateMirror(FuncDataBase& Control,
   ELog::RegMethod RegA("M1DetailGenerator","generateMirror");
 
   // guess of separation
-  ELog::EM<<"M1 == "<<keyName<<ELog::endDiag;
   makeCrystal(Control,keyName+"Mirror",theta,zStep);
   makeFrontPlate(Control,keyName+"FPlate");
   makeBackPlate(Control,keyName+"CClamp");

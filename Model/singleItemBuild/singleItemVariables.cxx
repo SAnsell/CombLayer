@@ -47,7 +47,9 @@
 #include "CryoGenerator.h"
 #include "BladeGenerator.h"
 #include "PipeGenerator.h"
+#include "SplitPipeGenerator.h"
 #include "CornerPipeGenerator.h"
+#include "LeadPipeGenerator.h"
 #include "TwinBaseGenerator.h"
 #include "TwinGenerator.h"
 #include "TwinFlatGenerator.h"
@@ -105,7 +107,6 @@
 #include "FMUndulatorGenerator.h"
 #include "CollGenerator.h"
 #include "SqrFMaskGenerator.h"
-#include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
 #include "PipeTubeGenerator.h"
 #include "PortTubeGenerator.h"
@@ -575,6 +576,10 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::BellowGenerator BellowGen;
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,"Bellow",7.5);
+  // Lead Clad Pipe
+  setVariable::LeadPipeGenerator LeadGen;
+  LeadGen.setCF<setVariable::CF63>();
+  LeadGen.generatePipe(Control,"LeadPipe",7.5);
 
   // PipeTube
 
@@ -743,8 +748,6 @@ SingleItemVariables(FuncDataBase& Control)
   MLMDetailGenerator MLGen;
   MLGen.generateMono(Control,"MLM",0.1,-0.1);
 
-  M1DetailGenerator M1DGen;
-  M1DGen.generateMirror(Control,"M1",2.0,0.0);
   m1chamberDetails(Control);
 
   TubeDetBoxGenerator TDBGen;

@@ -127,8 +127,8 @@
 #include "YagUnitBig.h"
 #include "BeamScrapper.h"
 #include "TWCavity.h"
-#include "SplitFlangePipe.h"
 #include "Bellows.h"
+#include "LeadPipe.h"
 #include "VirtualTube.h"
 #include "PipeTube.h"
 #include "PortTube.h"
@@ -220,8 +220,8 @@ makeSingleItem::build(Simulation& System,
 	"GaugeTube","BremBlock","DipoleDIBMag","EArrivalMon","YagScreen",
 	"YAG","YagUnit","YagUnitBig","CooledScreen","CooledUnit",
 	"StriplineBPM","BeamDivider","BeamScrapper",
-	"Scrapper","TWCavity","Bellow", "VacuumPipe","WindowPipe",
-	"HalfElectronPipe",
+	"Scrapper","TWCavity","Bellow", "LeadPipe",
+	"VacuumPipe","WindowPipe","HalfElectronPipe",
 	"MultiPipe","PipeTube","PortTube","BlankTube","ButtonBPM",
 	"PrismaChamber","uVac", "UndVac","UndulatorVacuum",
 	"IonPTube","IonGauge","CollTube",
@@ -1350,6 +1350,17 @@ makeSingleItem::build(Simulation& System,
 
       bellow->addAllInsertCell(voidCell);
       bellow->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item=="LeadPipe")
+    {
+      std::shared_ptr<constructSystem::LeadPipe>
+	lead(new constructSystem::LeadPipe("LeadPipe"));
+      OR.addObject(lead);
+
+      lead->addAllInsertCell(voidCell);
+      lead->createAll(System,World::masterOrigin(),0);
 
       return;
     }

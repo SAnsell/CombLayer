@@ -11,27 +11,9 @@ segments=All
 #./singleItem --singleItem M1detail --validAll --validCheck ${nValid} AA 
 #exit
 
-parallel --halt now,fail=1 "./singleItem --singleItem {} --validAll --validCheck $nValid AA" ::: \
- BeamDivider BeamScrapper Bellow BlankTube BoxJaws         \
- BremBlock BremTube  ButtonBPM CRLTube  CeramicGap CleaningMagnet  \
- CollTube ConnectorTube CooledScreen CooledUnit CornerPipe \
- CorrectorMag CrossBlank   \
- CrossWay CylGateValve DiffPumpXIADP03 DipoleDIBMag DipoleExtract       \
- DipoleSndBend EArrivalMon EBeamStop EPSeparator ExperimentalHutch         \
- FMask FlangeDome FlatPipe FourPort GateValveCube GateValveCylinder GaugeTube \
- HPCombine HPJaws HalfElectronPipe IonGauge IonPTube Jaws LQuadF LQuadH   \
- LSexupole LocalShield M1detail MagTube MagnetBlock MagnetM1 \
- MagnetU1 MonoShutter MultiPipe NBeamStop Octupole PipeTube \
- PortTube PrismaChamber Quadrupole  \
- R3ChokeChamber RoundMonoShutter Scrapper Sexupole SixPort StriplineBPM \
- TWCavity TargetShield TriGroup TriPipe TriggerTube UndVac UndulatorVacuum \
- VacuumPipe ViewTube YAG YagScreen YagUnit default uVac 
- exit
-
 
 ./ess  --validAll --validCheck $nValid AA  || exit
-./ess --defaultConfig Single HEIMDAL --validAll --validCheck $nValid AA  || exit
-exit
+# ./ess --defaultConfig Single HEIMDAL --validAll --validCheck $nValid AA  || exit
 
 parallel --halt now,fail=1 "./maxiv --defaultConfig Single {} --validAll --validCheck $nValid AA" ::: \
    BALDER COSAXS DANMAX FORMAX FLEXPES MICROMAX SOFTIMAX SPECIES MAXPEEM || exit

@@ -3,7 +3,7 @@
  
  * File:   construct/LeadPipe.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,15 +70,9 @@ LeadPipe::LeadPipe(const std::string& Key) :
   constructSystem::GeneralPipe(Key,6)
   /*!
     Constructor BUT ALL variable are left unpopulated.
-    Note that groups: FlangeA and FlangeB are only added
-    if outerVoid is NOT set in method createObject.
     \param Key :: KeyName
   */
-{
-  // FixedComp::nameSideIndex(2,"innerPipe");
-  // FixedComp::nameSideIndex(6,"outerPipe");
-  // FixedComp::nameSideIndex(8,"pipeWall");
-}
+{}
 
 
 LeadPipe::~LeadPipe() 
@@ -114,37 +108,16 @@ LeadPipe::createSurfaces()
 {
   ELog::RegMethod RegA("LeadPipe","createSurfaces");
 
-  // Inner void
-  if (!isActive("front"))
-    {
-      SurfMap::makePlane("Front",SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
-      ExternalCut::setCutSurf("front",SMap.realSurf(buildIndex+1));
-    }
-  ExternalCut::makeShiftedSurf(SMap,"front",buildIndex+11,Y,flangeALength);
-  ExternalCut::makeShiftedSurf(SMap,"front",buildIndex+21,
-			       Y,(flangeALength+claddingStep));
+  GeneralPipe::createSurfaces();
 
-  if (!isActive("back"))
-    {
-      SurfMap::makePlane("Back",SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
-      ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
-    }
-  ExternalCut::makeShiftedSurf(SMap,"back",buildIndex+12,Y,-flangeBLength);
-  ExternalCut::makeShiftedSurf(SMap,"back",buildIndex+22,
-			       Y,-(flangeBLength+claddingStep));
+  ExternalCut::makeShiftedSurf
+    (SMap,"front",buildIndex+121,Y,(flangeALength+claddingStep));
 
-  SurfMap::makeCylinder("InnerCyl",SMap,buildIndex+7,Origin,Y,radius);
+  ExternalCut::makeShiftedSurf
+    (SMap,"back",buildIndex+122,Y,-(flangeBLength+claddingStep));
 
-  SurfMap::makeCylinder("PipeCyl",SMap,buildIndex+17,
-			Origin,Y,radius+feThick);
   SurfMap::makeCylinder("CladdingCyl",SMap,buildIndex+27,
 			Origin,Y,radius+feThick+claddingThick);
-
-  // FLANGE SURFACES FRONT/BACK:
-  SurfMap::makeCylinder("FlangeARadius",SMap,buildIndex+107,
-			Origin,Y,flangeARadius);
-  SurfMap::makeCylinder("FlangeBRadius",SMap,buildIndex+207,
-			Origin,Y,flangeBRadius);
 
   return;
 }
@@ -163,26 +136,41 @@ LeadPipe::createObjects(Simulation& System)
 
   HeadRule HR;
   // Void
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -7 ");
+  HR=HeadRule(SMap,buildIndex,-7);
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
-  // FLANGE Front:
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -11 -107 17 ");
-  makeCell("FrontFlange",System,cellIndex++,flangeMat,0.0,HR*frontHR);
+  // A FLANGE:
+  if (flangeARadius>Geometry::zeroTol)
+    {
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 -107 7");
+      makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,HR*frontHR);
+    }
+  // FLANGE B
+  if (flangeBRadius>Geometry::zeroTol)
+    {
+      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"102 -207 7");
+      makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,HR*backHR);
+    }
 
-  // FLANGE Back:
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 12 -207 17 ");
-  makeCell("BackFlange",System,cellIndex++,flangeMat,0.0,HR*backHR);
 
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 7");
-  makeCell("MainPipe",System,cellIndex++,feMat,0.0,HR*frontHR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 7 101 -102");
+  makeCell("MainPipe",System,cellIndex++,feMat,0.0,HR);
   
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 21 -22 -27 17");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 121 -122 -27 17");
   makeCell("Cladding",System,cellIndex++,claddingMat,0.0,HR);
 
+  // create lead gap
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -121 17 -27");
+  makeCell("LeadAGap",System,cellIndex++,voidMat,0.0,HR);
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-102 122 17 -27");
+  makeCell("LeadBGap",System,cellIndex++,voidMat,0.0,HR);
+
+      
   HR=HeadRule(SMap,buildIndex,27);
   GeneralPipe::createOuterVoid(System,HR);
+  
 
   /*
   // choose largest radius

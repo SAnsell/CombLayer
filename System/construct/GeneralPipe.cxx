@@ -144,10 +144,10 @@ GeneralPipe::applyActiveFrontBack(const double length)
     Apply the active front/back point to re-calcuate Origin
     It applies the rotation of Y to Y' to both X/Z to preserve
     orthogonality.
+    \param length :: Full length [can be removed?]
    */
 {
   ELog::RegMethod RegA("GeneralPipe","applyActiveFrontBack");
-  
   const Geometry::Vec3D curFP=((activeFlag & 1) && frontPointActive()) ?
     getFrontPoint() : Origin;
   const Geometry::Vec3D curBP=((activeFlag & 2) && backPointActive()) ?
@@ -195,7 +195,6 @@ GeneralPipe::populate(const FuncDataBase& Control)
 
   feThick=Control.EvalVar<double>(keyName+"FeThick");
 
-  ELog::EM<<"Key == "<<keyName<<ELog::endDiag;
   const double fR=Control.EvalDefVar<double>(keyName+"FlangeRadius",-1.0);
   flangeARadius=Control.EvalDefVar<double>(keyName+"FlangeARadius",fR);
   flangeBRadius=Control.EvalDefVar<double>(keyName+"FlangeBRadius",fR);
@@ -271,16 +270,12 @@ GeneralPipe::createSurfaces()
   createCommonSurfaces();
   
   // MAIN SURFACES:
-  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
+  makeCylinder("InnerCyl",SMap,buildIndex+7,Origin,Y,radius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+feThick);
   addSurf("OuterRadius",SMap.realSurf(buildIndex+17));
 
-  // FLANGE SURFACES FRONT:
-  ELog::EM<<"Radius == "<<flangeARadius<<ELog::endDiag;
-  ELog::EM<<"Radius == "<<flangeBRadius<<ELog::endDiag;
-  
+  // FLANGE SURFACES :
   ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeARadius);
-  // FLANGE SURFACES BACK:
   ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,flangeBRadius);
 
   return;
@@ -291,6 +286,8 @@ GeneralPipe::createRectangleSurfaces(const double width,
 				     const double height)
   /*!
     Create the surfaces for a rectanglular system
+    \param width :: Width of pipe (inner)
+    \param height :: Width of pipe (inner)
   */
 {
   ELog::RegMethod RegA("VacuumPipe","createRectangularSurfaces");
@@ -365,7 +362,6 @@ GeneralPipe::createOuterVoid(Simulation& System,
     }
   else
     {
-      ELog::EM<<"Outer void == "<<outerHR<<ELog::endDiag;
       // outer boundary [flange front]
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 -107");
       addOuterSurf("FlangeA",HR*frontHR);
@@ -385,6 +381,11 @@ GeneralPipe::createOuterVoid(Simulation& System,
 void
 GeneralPipe::setJoinFront(const attachSystem::FixedComp& FC,
 			  const long int sideIndex)
+  /*!
+    Set front and allow half merge for angle and position
+    \param FC :: FixedComponent
+    \param sideIndex :: Link point
+   */
 {
   FrontBackCut::setFront(FC,sideIndex);
   activeFlag |= 1;
@@ -394,6 +395,11 @@ GeneralPipe::setJoinFront(const attachSystem::FixedComp& FC,
 void
 GeneralPipe::setJoinBack(const attachSystem::FixedComp& FC,
 			  const long int sideIndex)
+  /*!
+    Set back and allow half merge for angle and position
+    \param FC :: FixedComponent
+    \param sideIndex :: Link point
+   */
 {
   FrontBackCut::setBack(FC,sideIndex);
   activeFlag |= 2;

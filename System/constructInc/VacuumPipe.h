@@ -41,7 +41,6 @@ class VacuumPipe :
  private:
   
   virtual void populate(const FuncDataBase&) override;
-  void createSurfaces() override;
   void createObjects(Simulation&);
   void createLinks();
 
