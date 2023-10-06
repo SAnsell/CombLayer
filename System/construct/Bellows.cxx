@@ -125,7 +125,7 @@ Bellows::populate(const FuncDataBase& Control)
   bellowThick=Control.EvalVar<double>(keyName+"BellowThick");
   bellowStep=Control.EvalDefVar<double>(keyName+"BellowStep",0.0);
 
-  bellowMat=ModelSupport::EvalDefMat(Control,keyName+"BellowMat",feMat);
+  bellowMat=ModelSupport::EvalDefMat(Control,keyName+"BellowMat",pipeMat);
   outerVoid=1;  // no options:
   return;
 }
@@ -141,7 +141,7 @@ Bellows::createSurfaces()
 
   GeneralPipe::createSurfaces();
   ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,
-			      Y,radius+feThick+bellowThick);
+			      Y,radius+pipeThick+bellowThick);
   
   
   FrontBackCut::getShiftedFront
@@ -176,20 +176,20 @@ Bellows::createObjects(Simulation& System)
 
   // FLANGE Front:
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 -107 7");
-  makeCell("FrontFlange",System,cellIndex++,feMat,0.0,HR*frontHR);
+  makeCell("FrontFlange",System,cellIndex++,pipeMat,0.0,HR*frontHR);
 
   // FLANGE Back:
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -207 7");
-  makeCell("BackFlange",System,cellIndex++,feMat,0.0,HR*backHR);
+  makeCell("BackFlange",System,cellIndex++,pipeMat,0.0,HR*backHR);
 
   // Inner clip if present
   if (bellowStep>Geometry::zeroTol)
     {
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -121 -17 7");
-      makeCell("FrontClip",System,cellIndex++,feMat,0.0,HR);
+      makeCell("FrontClip",System,cellIndex++,pipeMat,0.0,HR);
       
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-102 122 -17 7");
-      makeCell("BackClip",System,cellIndex++,feMat,0.0,HR);
+      makeCell("BackClip",System,cellIndex++,pipeMat,0.0,HR);
       
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"121 -122 -27 7");
       makeCell("Bellow",System,cellIndex++,bellowMat,0.0,HR);
@@ -238,8 +238,8 @@ Bellows::createLinks()
   FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+27));
 
   // pipe wall
-  FixedComp::setConnect(8,Origin-Z*(radius+feThick),-Z);
-  FixedComp::setConnect(9,Origin+Z*(radius+feThick),Z);
+  FixedComp::setConnect(8,Origin-Z*(radius+pipeThick),-Z);
+  FixedComp::setConnect(9,Origin+Z*(radius+pipeThick),Z);
   FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+17));
   FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+17));
 

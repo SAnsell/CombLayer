@@ -40,11 +40,6 @@ class OffsetFlangePipe :
 {
  private:
   
-  double radius;                ///< void radius [inner]
-  double length;                ///< void length [total]
-  
-  double feThick;               ///< pipe thickness
-
   double flangeAXStep;           ///< Joining Flange XStep
   double flangeAZStep;           ///< Joining Flange ZStep
   double flangeAXYAngle;         ///< Joining Flange angle xy
@@ -59,14 +54,10 @@ class OffsetFlangePipe :
   double flangeBRadius;          ///< Joining Flange radius [-ve for rect]
   double flangeBLength;          ///< Joining Flange length
     
-  int voidMat;                  ///< Void material
-  int feMat;                    ///< Pipe material
-
   Geometry::Vec3D flangeAYAxis;        ///< front axis for flange
   Geometry::Vec3D flangeBYAxis;        ///< Back axis for flange
   
   void populate(const FuncDataBase&) override;
-  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
   void createSurfaces() override;
   void createObjects(Simulation&);
   void createLinks();

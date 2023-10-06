@@ -301,7 +301,7 @@ WindowPipe::createObjects(Simulation& System)
   //  const HeadRule WallLayer(HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 7 -17");
-  makeCell("Steel",System,cellIndex++,feMat,0.0,HR);
+  makeCell("Steel",System,cellIndex++,pipeMat,0.0,HR);
   addCell("MainSteel",cellIndex-1);   
 
   // FLANGE A: 
@@ -343,8 +343,8 @@ WindowPipe::createLinks()
   FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+7));
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+7));
   
-  FixedComp::setConnect(7,Origin-Z*(radius+feThick),-Z);
-  FixedComp::setConnect(8,Origin+Z*(radius+feThick),Z);
+  FixedComp::setConnect(7,Origin-Z*(radius+pipeThick),-Z);
+  FixedComp::setConnect(8,Origin+Z*(radius+pipeThick),Z);
   FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+17));
   FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+17));
   

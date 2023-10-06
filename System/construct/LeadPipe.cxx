@@ -117,7 +117,7 @@ LeadPipe::createSurfaces()
     (SMap,"back",buildIndex+122,Y,-(flangeBLength+claddingStep));
 
   SurfMap::makeCylinder("CladdingCyl",SMap,buildIndex+27,
-			Origin,Y,radius+feThick+claddingThick);
+			Origin,Y,radius+pipeThick+claddingThick);
 
   return;
 }
@@ -155,7 +155,7 @@ LeadPipe::createObjects(Simulation& System)
 
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 7 101 -102");
-  makeCell("MainPipe",System,cellIndex++,feMat,0.0,HR);
+  makeCell("MainPipe",System,cellIndex++,pipeMat,0.0,HR);
   
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 121 -122 -27 17");
   makeCell("Cladding",System,cellIndex++,claddingMat,0.0,HR);
@@ -223,10 +223,10 @@ LeadPipe::createLinks()
   FixedComp::setConnect(2,Origin+Z*radius,Z);
   FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+7));
 
-  FixedComp::setConnect(3,Origin+Z*(radius+feThick),Z);
+  FixedComp::setConnect(3,Origin+Z*(radius+pipeThick),Z);
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+17));
 
-  FixedComp::setConnect(4,Origin+Z*(radius+feThick+claddingThick),Z);
+  FixedComp::setConnect(4,Origin+Z*(radius+pipeThick+claddingThick),Z);
   FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+27));
   
   FixedComp::nameSideIndex(2,"inner");

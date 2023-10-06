@@ -74,6 +74,7 @@
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "WindowPipe.h"
+#include "OffsetFlangePipe.h"
 #include "Quadrupole.h"
 #include "Sexupole.h"
 #include "Octupole.h"
@@ -220,7 +221,7 @@ makeSingleItem::build(Simulation& System,
 	"GaugeTube","BremBlock","DipoleDIBMag","EArrivalMon","YagScreen",
 	"YAG","YagUnit","YagUnitBig","CooledScreen","CooledUnit",
 	"StriplineBPM","BeamDivider","BeamScrapper",
-	"Scrapper","TWCavity","Bellow", "LeadPipe",
+	"Scrapper","TWCavity","Bellow", "LeadPipe","OffsetFlangePipe",
 	"VacuumPipe","WindowPipe","HalfElectronPipe",
 	"MultiPipe","PipeTube","PortTube","BlankTube","ButtonBPM",
 	"PrismaChamber","uVac", "UndVac","UndulatorVacuum",
@@ -1361,6 +1362,17 @@ makeSingleItem::build(Simulation& System,
 
       lead->addAllInsertCell(voidCell);
       lead->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item=="OffsetFlangePipe")
+    {
+      std::shared_ptr<constructSystem::OffsetFlangePipe>
+	ofp(new constructSystem::OffsetFlangePipe("OFP"));
+      OR.addObject(ofp);
+
+      ofp->addAllInsertCell(voidCell);
+      ofp->createAll(System,World::masterOrigin(),0);
 
       return;
     }

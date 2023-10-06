@@ -189,11 +189,11 @@ GeneralPipe::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("GeneralPipe","populate");
   
   FixedRotate::populate(Control);
-    // Void + Fe special:
+
   radius=Control.EvalDefVar<double>(keyName+"Radius",-1.0);
   length=Control.EvalVar<double>(keyName+"Length");
 
-  feThick=Control.EvalVar<double>(keyName+"FeThick");
+  pipeThick=Control.EvalVar<double>(keyName+"PipeThick");
 
   const double fR=Control.EvalDefVar<double>(keyName+"FlangeRadius",-1.0);
   flangeARadius=Control.EvalDefVar<double>(keyName+"FlangeARadius",fR);
@@ -204,8 +204,8 @@ GeneralPipe::populate(const FuncDataBase& Control)
   flangeBLength=Control.EvalDefVar<double>(keyName+"FlangeBLength",fL);
 
   voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
-  feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
-  flangeMat=ModelSupport::EvalDefMat(Control,keyName+"FlangeMat",feMat);
+  pipeMat=ModelSupport::EvalMat<int>(Control,keyName+"PipeMat");
+  flangeMat=ModelSupport::EvalDefMat(Control,keyName+"FlangeMat",pipeMat);
 
   outerVoid = Control.EvalDefVar<int>(keyName+"OuterVoid",0);
   return;
@@ -271,7 +271,7 @@ GeneralPipe::createSurfaces()
   
   // MAIN SURFACES:
   makeCylinder("InnerCyl",SMap,buildIndex+7,Origin,Y,radius);
-  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+feThick);
+  makeCylinder("PipeCyl",SMap,buildIndex+17,Origin,Y,radius+pipeThick);
   addSurf("OuterRadius",SMap.realSurf(buildIndex+17));
 
   // FLANGE SURFACES :
@@ -287,7 +287,7 @@ GeneralPipe::createRectangleSurfaces(const double width,
   /*!
     Create the surfaces for a rectanglular system
     \param width :: Width of pipe (inner)
-    \param height :: Width of pipe (inner)
+    \param height :: Heigh of pipe (inner)
   */
 {
   ELog::RegMethod RegA("VacuumPipe","createRectangularSurfaces");
@@ -301,8 +301,8 @@ GeneralPipe::createRectangleSurfaces(const double width,
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*H,Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*H,Z);
   
-  H+=feThick;
-  W+=feThick;
+  H+=pipeThick;
+  W+=pipeThick;
   ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*W,X);
   ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*W,X);
   ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*H,Z);

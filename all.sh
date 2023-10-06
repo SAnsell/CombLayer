@@ -44,13 +44,13 @@ parallel --halt now,fail=1 "./singleItem --singleItem {} --validAll --validCheck
  CrossWay CylGateValve DiffPumpXIADP03 DipoleDIBMag DipoleExtract       \
  DipoleSndBend EArrivalMon EBeamStop EPSeparator ExperimentalHutch         \
  FMask FlangeDome FlatPipe FourPort GateValveCube GateValveCylinder GaugeTube \
- HPCombine HPJaws HalfElectronPipe IonGauge IonPTube Jaws LQuadF LQuadH   \
+ HPCombine HPJaws HalfElectronPipe IonGauge IonPTube Jaws LeadPipe LQuadF LQuadH   \
  LSexupole LocalShield M1detail MagTube MagnetBlock MagnetM1 \
- MagnetU1 MonoShutter MultiPipe NBeamStop Octupole PipeTube \
+ MagnetU1 MonoShutter MultiPipe NBeamStop Octupole OffsetFlangePipe PipeTube \
  PortTube PrismaChamber Quadrupole  \
  R3ChokeChamber RoundMonoShutter Scrapper Sexupole SixPort StriplineBPM \
  TWCavity TargetShield TriGroup TriPipe TriggerTube UndVac UndulatorVacuum \
- VacuumPipe ViewTube YAG YagScreen YagUnit default uVac 
+ UTubePipe VacuumPipe ViewTube YAG YagScreen YagUnit default uVac 
 
 exit
 ## Need to fix the cooling pads on the reflector

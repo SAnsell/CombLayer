@@ -44,17 +44,12 @@ class UTubePipe :
   double height;                ///< void height [inner]
   double length;                ///< void length [total]
   
-  double feThick;               ///< pipe thickness
-
   double flangeARadius;          ///< Joining Flange radius 
   double flangeALength;          ///< Joining Flange length
 
   double flangeBRadius;          ///< Joining Flange radius 
   double flangeBLength;          ///< Joining Flange length
-    
-  int voidMat;                  ///< Void material
-  int feMat;                    ///< Pipe material
-  
+      
   void populate(const FuncDataBase&) override;
   void createSurfaces() override;
   void createObjects(Simulation&);

@@ -369,12 +369,12 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
       Control.addVariable(keyName+"Height",pipeHeight);
     }
   Control.addVariable(keyName+"Length",length);
-  Control.addVariable(keyName+"FeThick",pipeThick);
+  Control.addVariable(keyName+"PipeThick",pipeThick);
   Control.addVariable(keyName+"FlangeARadius",realFlangeARadius);
   Control.addVariable(keyName+"FlangeBRadius",realFlangeBRadius);
   Control.addVariable(keyName+"FlangeALength",flangeALen);
   Control.addVariable(keyName+"FlangeBLength",flangeBLen);
-  Control.addVariable(keyName+"FeMat",pipeMat);
+  Control.addVariable(keyName+"PipeMat",pipeMat);
 
 
   Control.addVariable(keyName+"WindowActive",activeWFlag);

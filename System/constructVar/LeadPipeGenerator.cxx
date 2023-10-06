@@ -202,7 +202,7 @@ LeadPipeGenerator::generatePipe(FuncDataBase& Control,
 
   Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"Length",length);
-  Control.addVariable(keyName+"FeThick",thick);
+  Control.addVariable(keyName+"PipeThick",thick);
   Control.addVariable(keyName+"CladdingThick",claddingThick);
   Control.addVariable(keyName+"CladdingStep",claddingStep);
   Control.addVariable(keyName+"FlangeARadius",flangeARadius);
@@ -212,7 +212,7 @@ LeadPipeGenerator::generatePipe(FuncDataBase& Control,
 
 
   Control.addVariable(keyName+"VoidMat",voidMat);
-  Control.addVariable(keyName+"FeMat",pipeMat);
+  Control.addVariable(keyName+"PipeMat",pipeMat);
   Control.addVariable(keyName+"CladdingMat",claddingMat);
   Control.addVariable(keyName+"FlangeMat",flangeMat);
   

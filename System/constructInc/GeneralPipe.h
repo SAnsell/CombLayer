@@ -65,16 +65,16 @@ class GeneralPipe :
   double radius;                ///< void radius [inner]
   double length;                ///< void length [total]
 
-  double feThick;               ///< pipe thickness
+  double pipeThick;             ///< pipe thickness
 
-  double flangeARadius;          ///< Joining Flange radius [-ve for rect]
-  double flangeALength;          ///< Joining Flange length
+  double flangeARadius;         ///< Joining Flange radius [-ve for rect]
+  double flangeALength;         ///< Joining Flange length
 
-  double flangeBRadius;          ///< Joining Flange radius [-ve for rect]
-  double flangeBLength;          ///< Joining Flange length
+  double flangeBRadius;         ///< Joining Flange radius [-ve for rect]
+  double flangeBLength;         ///< Joining Flange length
 
   int voidMat;                  ///< Void material
-  int feMat;                    ///< Pipe material
+  int pipeMat;                  ///< Pipe material
   int flangeMat;                ///< Flange material
 
   int outerVoid;                ///< Flag to build the outer void cell between f

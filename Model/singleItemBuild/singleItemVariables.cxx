@@ -576,10 +576,27 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::BellowGenerator BellowGen;
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,"Bellow",7.5);
+
   // Lead Clad Pipe
   setVariable::LeadPipeGenerator LeadGen;
   LeadGen.setCF<setVariable::CF63>();
   LeadGen.generatePipe(Control,"LeadPipe",7.5);
+
+
+  // Offset Pipe [use standard pipe and modify]
+  setVariable::PipeGenerator OPipeGen;
+  OPipeGen.setCF<setVariable::CF63>();
+  OPipeGen.generatePipe(Control,"OFP",20.0);
+  Control.addVariable("OFPFlangeAXYAngle",20.0);
+  Control.addVariable("OFPFlangeAXStep",-1.5);
+  Control.addVariable("OFPFlangeAZStep",1.3);  
+  Control.addVariable("OFPFlangeBXStep",1.0);
+  Control.addVariable("OFPFlangeBZStep",2.0);  
+
+  // UTube Pipe
+  setVariable::PipeGenerator UTubeGen;
+  UTubeGen.setCF<setVariable::CF63>();
+  UTubeGen.generatePipe(Control,"LeadPipe",7.5);
 
   // PipeTube
 

@@ -185,7 +185,7 @@ RectPipeGenerator::generatePipe(FuncDataBase& Control,
   Control.addVariable(keyName+"Width",pipeWidth);
   Control.addVariable(keyName+"Height",pipeHeight);
   Control.addVariable(keyName+"Length",length);
-  Control.addVariable(keyName+"FeThick",pipeThick);
+  Control.addVariable(keyName+"PipeThick",pipeThick);
   
   Control.addVariable(keyName+"FlangeWidth",realFlangeWidth);
   Control.addVariable(keyName+"FlangeHeight",realFlangeHeight);
@@ -196,7 +196,7 @@ RectPipeGenerator::generatePipe(FuncDataBase& Control,
   Control.addVariable(keyName+"WindowHeight",realWindowHeight);
   Control.addVariable(keyName+"WindowLength",windowThick);
 
-  Control.addVariable(keyName+"FeMat",pipeMat);
+  Control.addVariable(keyName+"PipeMat",pipeMat);
 
 
   Control.addVariable(keyName+"WindowMat",windowMat);
