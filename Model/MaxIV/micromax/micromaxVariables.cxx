@@ -147,7 +147,7 @@ undulatorVariables(FuncDataBase& Control,
 
   Control.addVariable(undKey+"UPipeWidth",6.0);
   Control.addVariable(undKey+"UPipeHeight",0.6);
-  Control.addVariable(undKey+"UPipeFeThick",0.2);
+  Control.addVariable(undKey+"UPipePipeThick",0.2);
 
   // undulator  
   Control.addVariable(undKey+"UndulatorVGap",1.1);  // mininum 11mm

@@ -244,7 +244,6 @@ UTubePipe::createLinks()
 
   //stuff for intersection
   FrontBackCut::createLinks(*this,Origin,Y);  //front and back
-
   FixedComp::setConnect(2,Origin-X*(pipeThick+height/2.0+width/2.0),-X);
   FixedComp::setConnect(3,Origin-X*(pipeThick+height/2.0+width/2.0),X);
   FixedComp::setConnect(4,Origin-Z*(pipeThick+height/2.0),-Z);
@@ -279,6 +278,7 @@ UTubePipe::createAll(Simulation& System,
   createLinks();
   insertObjects(System);
 
+  ELog::EM<<"MOrigin == "<<Origin<<" "<<length<<ELog::endDiag;
   return;
 }
 

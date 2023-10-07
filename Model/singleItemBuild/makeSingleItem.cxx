@@ -74,6 +74,7 @@
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "WindowPipe.h"
+#include "UTubePipe.h"
 #include "OffsetFlangePipe.h"
 #include "Quadrupole.h"
 #include "Sexupole.h"
@@ -222,7 +223,7 @@ makeSingleItem::build(Simulation& System,
 	"YAG","YagUnit","YagUnitBig","CooledScreen","CooledUnit",
 	"StriplineBPM","BeamDivider","BeamScrapper",
 	"Scrapper","TWCavity","Bellow", "LeadPipe","OffsetFlangePipe",
-	"VacuumPipe","WindowPipe","HalfElectronPipe",
+	"UTubePipe","VacuumPipe","WindowPipe","HalfElectronPipe",
 	"MultiPipe","PipeTube","PortTube","BlankTube","ButtonBPM",
 	"PrismaChamber","uVac", "UndVac","UndulatorVacuum",
 	"IonPTube","IonGauge","CollTube",
@@ -1373,6 +1374,17 @@ makeSingleItem::build(Simulation& System,
 
       ofp->addAllInsertCell(voidCell);
       ofp->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item=="UTubePipe")
+    {
+      std::shared_ptr<xraySystem::UTubePipe>
+	utp(new xraySystem::UTubePipe("UTubePipe"));
+      OR.addObject(utp);
+
+      utp->addAllInsertCell(voidCell);
+      utp->createAll(System,World::masterOrigin(),0);
 
       return;
     }

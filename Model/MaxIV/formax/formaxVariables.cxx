@@ -152,11 +152,11 @@ undulatorVariables(FuncDataBase& Control,
   PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.generatePipe(Control,undKey+"UPipe",undulatorLen);
-  //  Control.addVariable(undKey+"UPipeYStep",-undulatorLen/2.0);
+  Control.addVariable(undKey+"UPipeYStep",-undulatorLen/2.0);
 
   Control.addVariable(undKey+"UPipeWidth",6.0);
   Control.addVariable(undKey+"UPipeHeight",0.6);
-  Control.addVariable(undKey+"UPipeFeThick",0.2);
+  Control.addVariable(undKey+"UPipePipeThick",0.2);
 
   // undulator  
   Control.addVariable(undKey+"UndulatorVGap",1.1);  // mininum 11mm

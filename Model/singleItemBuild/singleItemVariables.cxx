@@ -596,7 +596,10 @@ SingleItemVariables(FuncDataBase& Control)
   // UTube Pipe
   setVariable::PipeGenerator UTubeGen;
   UTubeGen.setCF<setVariable::CF63>();
-  UTubeGen.generatePipe(Control,"LeadPipe",7.5);
+  UTubeGen.generatePipe(Control,"UTubePipe",20.0);
+  Control.addVariable("UTubePipeWidth",6.0);
+  Control.addVariable("UTubePipeHeight",0.6);
+  Control.addVariable("UTubePipePipeThick",0.2);
 
   // PipeTube
 

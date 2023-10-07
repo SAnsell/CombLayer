@@ -274,7 +274,6 @@ FlatPipe::createObjects(Simulation& System)
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
-  ELog::EM<<"Buliding "<<keyName<<" "<<cellIndex<<ELog::endDiag;
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"4 -8");
@@ -384,4 +383,4 @@ FlatPipe::createAll(Simulation& System,
   return;
 }
 
-}  // NAMESPACE xraySystem
+}  // NAMESPACE tdcSystem
