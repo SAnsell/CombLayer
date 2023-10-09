@@ -51,6 +51,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedUnit.h"
+#include "FixedGroup.h"
 
 namespace attachSystem
 {
@@ -2367,6 +2368,8 @@ FixedComp::createAll(Simulation& System,
   return;
 }
 
+
+
 void
 FixedComp::createAll(Simulation& System,
 		     const FixedComp& FCA,
@@ -2388,6 +2391,48 @@ FixedComp::createAll(Simulation& System,
   this->createAll(System,
 		  FCA,FCA.getSideIndex(linkNameA),
 		  FCB,FCB.getSideIndex(linkNameB));
+  return;
+}
+
+
+void
+FixedComp::createAll(Simulation& System,
+		     const FixedGroup& FG,
+		     const std::string& groupName,
+		     const std::string& linkName)
+  /*!
+    Modification accessor to get createAll based on a name
+    \param System :: Simulation to build component in
+    \param FC :: FixedComp to use as origin/basis set
+    \param linkName :: linkPoint
+  */
+{
+  ELog::RegMethod RegA("FixedComp","createAll(FG,group,name)");
+
+  const FixedComp& FC=FG.getKey(groupName);
+  if (FC.hasSideIndex(groupName))
+    this->createAll(System,FC,FC.getSideIndex(linkName));
+  else
+    this->createAll(System,FC,FG.getSideIndex(linkName));
+  return;
+}
+
+void
+FixedComp::createAll(Simulation& System,
+		     const FixedGroup& FG,
+		     const std::string& groupName,
+		     const long int sideIndex)
+  /*!
+    Modification accessor to get createAll based on a name
+    \param System :: Simulation to build component in
+    \param FG :: FixedComp to use as origin/basis set
+    \param groupName :: GroupName
+    \param sideIndex :: linkPoint
+  */
+{
+  ELog::RegMethod RegA("FixedComp","createAll(FG,group,index)");
+  
+  this->createAll(System,FG.getKey(groupName),sideIndex);
   return;
 }
 

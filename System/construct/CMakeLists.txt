@@ -13,7 +13,7 @@ set (constructSources
     JawValveTube.cxx LeadPipe.cxx LineShield.cxx 
     MultiChannel.cxx OffsetFlangePipe.cxx PinHole.cxx 
     PipeCollimator.cxx PipeTube.cxx portBuilder.cxx 
-    portItem.cxx portSet.cxx PortTube.cxx 
+    portItem.cxx portSet.cxx PortTube.cxx RectanglePipe.cxx
     RingFlange.cxx RingSeal.cxx RotaryCollimator.cxx 
     SplitFlangePipe.cxx SupplyPipe.cxx TriangleShield.cxx 
     TubeDetBox.cxx tubeUnit.cxx VacuumBox.cxx 
@@ -85,6 +85,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/portSet.cxx
   ${tarDIR}/PortTube.cxx
   ${tarDIR}/RingFlange.cxx
+  ${tarDIR}/RectanglePipe.cxx
   ${tarDIR}/RingSeal.cxx
   ${tarDIR}/RotaryCollimator.cxx
   ${tarDIR}/SplitFlangePipe.cxx
@@ -145,6 +146,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/portItem.h
   ${tarINC}/portSet.h
   ${tarINC}/PortTube.h
+  ${tarINC}/RectanglePipe.h
   ${tarINC}/RingFlange.h
   ${tarINC}/RingSeal.h
   ${tarINC}/RotaryCollimator.h

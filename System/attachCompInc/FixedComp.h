@@ -36,6 +36,8 @@ class HeadRule;
 
 namespace attachSystem
 {
+  class FixedGroup;
+  
 /*!
   \class FixedComp
   \version 1.0
@@ -296,6 +298,10 @@ class FixedComp
   virtual void createAll(Simulation&,const FixedComp&,const std::string&);
   virtual void createAll(Simulation&,const FixedComp&,const std::string&,
 			 const FixedComp&,const std::string&);
+  virtual void createAll(Simulation&,const FixedGroup&,const std::string&,
+			 const std::string&);
+  virtual void createAll(Simulation&,const FixedGroup&,const std::string&,
+			 const long int);
 
 };
 

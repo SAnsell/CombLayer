@@ -3,7 +3,7 @@
 
  * File:   ESSBeam/vespa/VESPA.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,6 +73,7 @@
 #include "DiskChopper.h"
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
+#include "RectanglePipe.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "ChopperPit.h"
@@ -116,7 +117,7 @@ VESPA::VESPA(const std::string& keyName) :
   PSCDiskBottomA(new essConstruct::DiskChopper(newName+"PSCBottomBladeA")),
 
   // Joining Pipe AB
-  JPipeAB(new constructSystem::VacuumPipe(newName+"JoinPipeAB")),
+  JPipeAB(new constructSystem::RectanglePipe(newName+"JoinPipeAB")),
   FocusD(new beamlineSystem::PlateUnit(newName+"FD")),
 
   TwinChopperB(new essConstruct::TwinChopperFlat(newName+"TwinChopperB")),
@@ -124,7 +125,7 @@ VESPA::VESPA(const std::string& keyName) :
   PSCDiskBottomB(new essConstruct::DiskChopper(newName+"PSCBottomBladeB")),
 
   // Joining Pipe AB
-  JPipeBC(new constructSystem::VacuumPipe(newName+"JoinPipeBC")),
+  JPipeBC(new constructSystem::RectanglePipe(newName+"JoinPipeBC")),
   FocusE(new beamlineSystem::PlateUnit(newName+"FE")),
 
   TwinChopperC(new essConstruct::TwinChopperFlat(newName+"TwinChopperC")),
@@ -340,15 +341,17 @@ VESPA::buildBunkerUnits(Simulation& System,
   PSCDiskBottomC->createAll(System,TwinChopperC->getKey("MotorBase"),0);
   TwinChopperC->insertAxle(System,*PSCDiskBottomC,*PSCDiskTopC);
 
-
+  ELog::EM<<":ASDFASDFSADF"<<ELog::endDiag;
   // JPipeAB
   JPipeAB->addAllInsertCell(bunkerVoid);
   JPipeAB->setFront(TwinChopperA->getKey("Main"),2);
-  JPipeAB->setBack(TwinChopperB->getKey("Main"),1);  
-  JPipeAB->createAll(System, TwinChopperA->getKey("Main"),2);
+  JPipeAB->setBack(TwinChopperB->getKey("Main"),1);
+  JPipeAB->createAll(System,*TwinChopperA,"Main","back");
+
   FocusD->addInsertCell(JPipeAB->getCells("Void"));
   FocusD->createAll(System,*JPipeAB,7);
 
+  
   // JPipeBC
   JPipeBC->addAllInsertCell(bunkerVoid);
   JPipeBC->setFront(TwinChopperB->getKey("Main"),2);

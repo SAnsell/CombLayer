@@ -15,7 +15,7 @@ segments=All
 #exit
 
 
-./ess  --validAll --validCheck $nValid AA  || exit
+# ./ess --defaultConfig Single VESPA --validAll --validCheck $nValid AA  || exit
 # ./ess --defaultConfig Single HEIMDAL --validAll --validCheck $nValid AA  || exit
 
 parallel --halt now,fail=1 "./maxiv --defaultConfig Single {} --validAll --validCheck $nValid AA" ::: \

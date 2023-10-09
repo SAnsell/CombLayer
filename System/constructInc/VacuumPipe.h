@@ -51,9 +51,6 @@ class VacuumPipe :
   VacuumPipe& operator=(const VacuumPipe&);
   ~VacuumPipe() override;
 
-  void setJoinFront(const attachSystem::FixedComp&,const long int);
-  void setJoinBack(const attachSystem::FixedComp&,const long int);
-
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 			 const long int) override;

@@ -738,7 +738,6 @@ BilbaoWheel::createShaftObjects(Simulation& System)
      " (-2118 2125 -2126) : "     // 2nd step
      " (((-2239 6239):-2247) 2205 -2125)"); // base
   addOuterSurf("Shaft",HR);
-  ELog::EM<<"ASDFASDF"<<ELog::endDiag;
   return;
 }
 
