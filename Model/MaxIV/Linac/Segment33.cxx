@@ -38,10 +38,7 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
-#include "Line.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Code.h"
@@ -66,7 +63,6 @@
 
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
-#include "SplitFlangePipe.h"
 #include "LQuadF.h"
 #include "LSexupole.h"
 #include "StriplineBPM.h"

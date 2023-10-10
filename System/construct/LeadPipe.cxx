@@ -131,28 +131,21 @@ LeadPipe::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("LeadPipe","createObjects");
 
+  HeadRule HR;
   const HeadRule frontHR=getRule("front");
   const HeadRule backHR=getRule("back");
 
-  HeadRule HR;
+  HR=HeadRule(SMap,buildIndex,7);
+  GeneralPipe::createFlange(System,HR);
+
+  const HeadRule windowHR=
+    getRule("AWindow").complement()*
+    getRule("BWindow").complement();
+
   // Void
   HR=HeadRule(SMap,buildIndex,-7);
-  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
-
-  // A FLANGE:
-  if (flangeARadius>Geometry::zeroTol)
-    {
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 -107 7");
-      makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,HR*frontHR);
-    }
-  // FLANGE B
-  if (flangeBRadius>Geometry::zeroTol)
-    {
-      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"102 -207 7");
-      makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,HR*backHR);
-    }
-
-
+  makeCell("Void",System,cellIndex++,voidMat,0.0,
+	   HR*frontHR*backHR*windowHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 7 101 -102");
   makeCell("MainPipe",System,cellIndex++,pipeMat,0.0,HR);

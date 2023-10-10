@@ -73,7 +73,6 @@
 
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
-#include "WindowPipe.h"
 #include "UTubePipe.h"
 #include "OffsetFlangePipe.h"
 #include "Quadrupole.h"
@@ -1404,8 +1403,8 @@ makeSingleItem::build(Simulation& System,
 
   if (item == "WindowPipe" )
     {
-      std::shared_ptr<constructSystem::WindowPipe>
-	VC(new constructSystem::WindowPipe("VCWin"));
+      std::shared_ptr<constructSystem::VacuumPipe>
+	VC(new constructSystem::VacuumPipe("VCWin"));
 
       OR.addObject(VC);
 

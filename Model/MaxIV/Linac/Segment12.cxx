@@ -63,7 +63,6 @@
 
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
-#include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "FlatPipe.h"
 #include "BeamDivider.h"

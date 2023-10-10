@@ -72,7 +72,6 @@
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "OffsetFlangePipe.h"
-#include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "GateValveCube.h"
 #include "CylGateValve.h"

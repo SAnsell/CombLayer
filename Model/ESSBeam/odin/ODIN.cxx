@@ -70,7 +70,6 @@
 #include "GuideItem.h"
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
-#include "WindowPipe.h"
 #include "SingleChopper.h"
 #include "LineShield.h"
 #include "GuideUnit.h"

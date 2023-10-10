@@ -73,22 +73,34 @@ class GeneralPipe :
   double flangeBRadius;         ///< Joining Flange radius [-ve for rect]
   double flangeBLength;         ///< Joining Flange length
 
+  // window information
+  unsigned int activeWindow;     ///< Flag for windows
+  windowInfo windowA;           ///< Front window info
+  windowInfo windowB;           ///< Back window info
+
+  
   int voidMat;                  ///< Void material
   int pipeMat;                  ///< Pipe material
   int flangeMat;                ///< Flange material
 
   int outerVoid;                ///< Flag to build the outer void cell between f
   int activeFlag;               ///< flag to apply shift
+
   
   void applyActiveFrontBack(const double);
   virtual void populate(const FuncDataBase&) override;
+  void populateWindows(const FuncDataBase&);
   virtual void createUnitVector(const attachSystem::FixedComp&,
 				const long int) override;
   void createCommonSurfaces();
+  void createWindowSurfaces();
   virtual void createSurfaces();
+
   void createRectangleSurfaces(const double,const double);
 
+  void createFlange(Simulation&,const HeadRule&);
   void createOuterVoid(Simulation&,const HeadRule&);
+
   
  public:
 

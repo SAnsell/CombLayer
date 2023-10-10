@@ -15,11 +15,10 @@ set (constructSources
     PipeCollimator.cxx PipeTube.cxx portBuilder.cxx 
     portItem.cxx portSet.cxx PortTube.cxx RectanglePipe.cxx
     RingFlange.cxx RingSeal.cxx RotaryCollimator.cxx 
-    SplitFlangePipe.cxx SupplyPipe.cxx TriangleShield.cxx 
+    SupplyPipe.cxx TriangleShield.cxx 
     TubeDetBox.cxx tubeUnit.cxx VacuumBox.cxx 
     VacuumPipe.cxx VirtualTube.cxx voidCylVolume.cxx 
     VoidUnit.cxx WallCut.cxx Window.cxx 
-    WindowPipe.cxx 
 )
 
 add_library (construct SHARED
@@ -88,7 +87,6 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/RectanglePipe.cxx
   ${tarDIR}/RingSeal.cxx
   ${tarDIR}/RotaryCollimator.cxx
-  ${tarDIR}/SplitFlangePipe.cxx
   ${tarDIR}/SupplyPipe.cxx
   ${tarDIR}/TriangleShield.cxx
   ${tarDIR}/TubeDetBox.cxx
@@ -100,7 +98,6 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/VoidUnit.cxx
   ${tarDIR}/WallCut.cxx
   ${tarDIR}/Window.cxx
-  ${tarDIR}/WindowPipe.cxx
   ${tarINC}/anglePortItem.h
   ${tarINC}/Aperture.h
   ${tarINC}/BasicFlightLine.h
@@ -150,7 +147,6 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/RingFlange.h
   ${tarINC}/RingSeal.h
   ${tarINC}/RotaryCollimator.h
-  ${tarINC}/SplitFlangePipe.h
   ${tarINC}/SupplyPipe.h
   ${tarINC}/TriangleShield.h
   ${tarINC}/TubeDetBox.h
@@ -162,6 +158,5 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/VoidUnit.h
   ${tarINC}/WallCut.h
   ${tarINC}/Window.h
-  ${tarINC}/WindowPipe.h
   ${tarDIR}/CMakeLists.txt PARENT_SCOPE)
 

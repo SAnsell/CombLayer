@@ -63,7 +63,6 @@
 
 #include "GeneralPipe.h"
 #include "OffsetFlangePipe.h"
-#include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "FlatPipe.h"
 #include "DipoleDIBMag.h"

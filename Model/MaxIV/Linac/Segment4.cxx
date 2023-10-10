@@ -3,7 +3,7 @@
 
  * File: Linac/Segment4.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +50,6 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -64,7 +63,6 @@
 
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
-#include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "StriplineBPM.h"
 #include "LQuadF.h"

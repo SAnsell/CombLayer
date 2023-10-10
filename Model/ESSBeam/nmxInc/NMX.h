@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/NMX.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,6 @@ namespace constructSystem
   class ChopperHousing;
   class PipeCollimator;
   class VacuumPipe;
-  class WindowPipe;
 }
 
 namespace essSystem
@@ -73,27 +72,27 @@ class NMX : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::PlateUnit> FocusA;
   
   /// Pipe between gamma shield / 10m
-  std::shared_ptr<constructSystem::WindowPipe> VPipeA;
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeA;
   /// Bender in first pipe [6-10m]
   std::shared_ptr<beamlineSystem::BenderUnit> BendA;
 
   /// Pipe between 10m-14m
-  std::shared_ptr<constructSystem::WindowPipe> VPipeB;
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
   /// Bender in second pipe [10-14m]
   std::shared_ptr<beamlineSystem::BenderUnit> BendB;
   
   /// Pipe between 14m-18m
-  std::shared_ptr<constructSystem::WindowPipe> VPipeC;
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeC;
   /// Bender in second pipe [14-18m]
   std::shared_ptr<beamlineSystem::BenderUnit> BendC;
 
   /// Pipe between 18m-22m
-  std::shared_ptr<constructSystem::WindowPipe> VPipeD;
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
   /// Bender in second pipe [18m-22m]
   std::shared_ptr<beamlineSystem::BenderUnit> BendD;
 
   /// Pipe between 22m-BunkerWall
-  std::shared_ptr<constructSystem::WindowPipe> VPipeE;
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeE;
   /// Bender in second pipe [22m-Wall]
   std::shared_ptr<beamlineSystem::BenderUnit> BendE;
 

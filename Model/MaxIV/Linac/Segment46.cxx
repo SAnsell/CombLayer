@@ -76,7 +76,6 @@
 #include "PortTube.h"
 #include "JawFlange.h"
 #include "portItem.h"
-#include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "CylGateValve.h"
 #include "CrossWayTube.h"

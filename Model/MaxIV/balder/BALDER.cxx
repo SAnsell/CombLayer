@@ -59,7 +59,6 @@
 
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
-#include "SplitFlangePipe.h"
 #include "LeadPipe.h"
 
 #include "forkHoles.h"

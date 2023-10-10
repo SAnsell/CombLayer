@@ -171,6 +171,11 @@ RectanglePipe::createObjects(Simulation& System)
   const HeadRule backHR=getRule("back");
 
   // Void
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-3:4:-5:6");
+  GeneralPipe::createFlange(System,HR);
+
+  const HeadRule windowAHR=getRule("AWindow").complement();
+  const HeadRule windowBHR=getRule("BWindow").complement();
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
@@ -180,18 +185,6 @@ RectanglePipe::createObjects(Simulation& System)
   makeCell("Steel",System,cellIndex++,pipeMat,0.0,HR);
   addCell("MainSteel",cellIndex-1);
 
-  // A FLANGE:
-  if (flangeARadius>Geometry::zeroTol)
-    {
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 -107 (-3:4:-5:6)");
-      makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,HR*frontHR);
-    }
-  // FLANGE B
-  if (flangeBRadius>Geometry::zeroTol)
-    {
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-102 -207 (-3:4:-5:6)");
-      makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,HR*backHR);
-    }
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-13:14:-15:16");
   GeneralPipe::createOuterVoid(System,HR);

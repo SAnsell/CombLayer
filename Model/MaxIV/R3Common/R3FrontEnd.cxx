@@ -73,7 +73,6 @@
 #include "CornerPipe.h"
 #include "insertObject.h"
 #include "insertCylinder.h"
-#include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "LCollimator.h"
 #include "GateValveCube.h"

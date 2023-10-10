@@ -111,19 +111,6 @@ VacuumPipe::~VacuumPipe()
   */
 {}
 
-void
-VacuumPipe::populate(const FuncDataBase& Control)
-  /*!
-    Populate all the variables
-    \param Control :: DataBase of variables
-  */
-{
-  ELog::RegMethod RegA("VacuumPipe","populate");
-
-  GeneralPipe::populate(Control);
-
-  return;
-}
 
 
 void
@@ -140,30 +127,25 @@ VacuumPipe::createObjects(Simulation& System)
   const HeadRule frontHR=getRule("front");
   const HeadRule backHR=getRule("back");
 
-  // Void
-  
+  // Void exclude:
+  HR=HeadRule(SMap,buildIndex,7);
+  GeneralPipe::createFlange(System,HR);
+
+  const HeadRule windowHR=
+    getRule("AWindow").complement()*
+    getRule("BWindow").complement();
+
   HR=HeadRule(SMap,buildIndex,-7);
-  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
+  makeCell("Void",System,cellIndex++,voidMat,0.0,
+	   HR*frontHR*backHR*windowHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 7 -17");
   makeCell("Steel",System,cellIndex++,pipeMat,0.0,HR);
   addCell("MainSteel",cellIndex-1);
 
-  // A FLANGE:
-  if (flangeARadius>Geometry::zeroTol)
-    {
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 -107 7");
-      makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,HR*frontHR);
-    }
-  // FLANGE B
-  if (flangeBRadius>Geometry::zeroTol)
-    {
-      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"102 -207 7");
-      makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,HR*backHR);
-    }
-
   HR=HeadRule(SMap,buildIndex,17);
   GeneralPipe::createOuterVoid(System,HR);
+
 
   return;
 }

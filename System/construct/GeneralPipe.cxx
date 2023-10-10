@@ -76,7 +76,7 @@ GeneralPipe::GeneralPipe(const std::string& Key) :
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::FrontBackCut(),
-  activeFlag(0)
+  activeWindow(0),activeFlag(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -94,7 +94,7 @@ GeneralPipe::GeneralPipe(const std::string& Key,
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::FrontBackCut(),
-  activeFlag(0)
+  activeWindow(0),activeFlag(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -111,6 +111,12 @@ GeneralPipe::GeneralPipe(const GeneralPipe& A) :
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
+  radius(A.radius),length(A.length),pipeThick(A.pipeThick),
+  flangeARadius(A.flangeARadius),flangeALength(A.flangeALength),
+  flangeBRadius(A.flangeBRadius),flangeBLength(A.flangeBLength),
+  activeWindow(A.activeWindow),windowA(A.windowA),
+  windowB(A.windowB),voidMat(A.voidMat),pipeMat(A.pipeMat),
+  flangeMat(A.flangeMat),outerVoid(A.outerVoid),
   activeFlag(A.activeFlag)
   /*!
     Copy constructor
@@ -133,6 +139,20 @@ GeneralPipe::operator=(const GeneralPipe& A)
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
+      radius=A.radius;
+      length=A.length;
+      pipeThick=A.pipeThick;
+      flangeARadius=A.flangeARadius;
+      flangeALength=A.flangeALength;
+      flangeBRadius=A.flangeBRadius;
+      flangeBLength=A.flangeBLength;
+      activeWindow=A.activeWindow;
+      windowA=A.windowA;
+      windowB=A.windowB;
+      voidMat=A.voidMat;
+      pipeMat=A.pipeMat;
+      flangeMat=A.flangeMat;
+      outerVoid=A.outerVoid;
       activeFlag=A.activeFlag;
     }
   return *this;
@@ -189,7 +209,7 @@ GeneralPipe::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("GeneralPipe","populate");
   
   FixedRotate::populate(Control);
-
+  
   radius=Control.EvalDefVar<double>(keyName+"Radius",-1.0);
   length=Control.EvalVar<double>(keyName+"Length");
 
@@ -208,6 +228,78 @@ GeneralPipe::populate(const FuncDataBase& Control)
   flangeMat=ModelSupport::EvalDefMat(Control,keyName+"FlangeMat",pipeMat);
 
   outerVoid = Control.EvalDefVar<int>(keyName+"OuterVoid",0);
+
+  // if flanges are good:
+  populateWindows(Control);
+    
+  return;
+}
+
+void
+GeneralPipe::populateWindows(const FuncDataBase& Control)
+  /*!
+    Gets the window data if the variables are set
+    \param Control :: Database
+  */
+{
+  ELog::RegMethod RegA("GeneralPipe","populateWindows");
+  
+   windowA.thick=Control.EvalDefPair<double>
+    (keyName+"WindowAThick",keyName+"WindowThick",0.0);
+  windowA.radius=Control.EvalDefPair<double>
+    (keyName+"WindowARadius",keyName+"WindowRadius",-1.0);
+  windowA.height=Control.EvalDefPair<double>
+    (keyName+"WindowAHeight",keyName+"WindowHeight",-1.0);
+  windowA.width=Control.EvalDefPair<double>
+    (keyName+"WindowAWidth",keyName+"WindowWidth",-1.0);
+  windowA.mat=ModelSupport::EvalDefMat
+    (Control,keyName+"WindowAMat",keyName+"WindowMat",0);
+
+  windowB.thick=Control.EvalDefPair<double>
+    (keyName+"WindowBThick",keyName+"WindowThick",0.0);
+  windowB.radius=Control.EvalDefPair<double>
+    (keyName+"WindowBRadius",keyName+"WindowRadius",-1.0);
+  windowB.height=Control.EvalDefPair<double>
+    (keyName+"WindowBHeight",keyName+"WindowHeight",-1.0);
+  windowB.width=Control.EvalDefPair<double>
+    (keyName+"WindowBWidth",keyName+"WindowWidth",-1.0);
+  windowB.mat=ModelSupport::EvalDefMat
+    (Control,keyName+"WindowBMat",keyName+"WindowMat",0);
+
+  activeWindow=0;
+  if (windowA.thick>Geometry::zeroTol)
+    activeWindow ^= 1;
+  if (windowB.thick>Geometry::zeroTol)
+    activeWindow ^= 2;
+
+  if (activeWindow & 1)
+    {
+      if (windowA.radius<Geometry::zeroTol &&
+	  (windowA.width<Geometry::zeroTol ||
+	   windowA.height<Geometry::zeroTol))
+	throw ColErr::EmptyContainer("Pipe:["+keyName+"] has neither "
+				     "windowA:Radius or Height/Width");
+
+      if (windowA.radius>Geometry::zeroTol &&
+	  windowA.radius+Geometry::zeroTol>flangeARadius)
+	throw ColErr::SizeError<double>
+	  (windowA.radius,flangeARadius,
+	   "Pipe:["+keyName+"] windowA.Radius/flangeARadius");
+    }
+  if (activeWindow & 2)
+    {
+      if (windowB.radius<Geometry::zeroTol &&
+	  (windowB.width<Geometry::zeroTol ||
+	   windowB.height<Geometry::zeroTol))
+	throw ColErr::EmptyContainer("Pipe:["+keyName+"] has neither "
+				     "windowB:Radius or Height/Width");
+
+      if (windowB.radius>Geometry::zeroTol &&
+	  windowB.radius+Geometry::zeroTol>flangeBRadius)
+	throw ColErr::SizeError<double>
+	  (windowB.radius,flangeBRadius,
+	   "Pipe:["+keyName+"] windowB.Radius/flangeBRadius");
+    }
   return;
 }
 
@@ -258,7 +350,76 @@ GeneralPipe::createCommonSurfaces()
   FrontBackCut::getShiftedBack(SMap,buildIndex+102,Y,-flangeBLength);
   return;
 }
+
+void
+GeneralPipe::createWindowSurfaces()
+{
+  ELog::RegMethod RegA("GeneralPipe","createWindowSurfaces");
+
+  if (!activeWindow) return;
   
+  if (activeWindow & 1)
+    {
+      getShiftedFront(SMap,buildIndex+1001,Y,
+		      (flangeALength-windowA.thick)/2.0);
+      getShiftedFront(SMap,buildIndex+1002,Y,
+		      (flangeALength+windowA.thick)/2.0);
+      // add data to surface
+      addSurf("FrontWindow",SMap.realSurf(buildIndex+1001));
+      addSurf("FrontWindow",SMap.realSurf(buildIndex+1002));
+    }
+
+  // Back Inner void
+  if (activeWindow & 2)
+    {
+      getShiftedBack(SMap,buildIndex+1101,Y,
+		     -(flangeBLength-windowB.thick)/2.0);
+      getShiftedBack(SMap,buildIndex+1102,Y,
+		     -(flangeBLength+windowB.thick)/2.0);
+      // add data to surface
+      addSurf("BackWindow",buildIndex+1101);
+      addSurf("BackWindow",buildIndex+1102);
+    }
+
+  // FRONT WINDOW SURFACES:
+  if (activeWindow & 1)
+    {
+      if (windowA.radius>Geometry::zeroTol)
+	ModelSupport::buildCylinder(SMap,buildIndex+1007,Origin,Y,
+                                    windowA.radius);
+      else
+	{
+	  ModelSupport::buildPlane(SMap,buildIndex+1003,
+                                   Origin-X*(windowA.width/2.0),X);
+	  ModelSupport::buildPlane(SMap,buildIndex+1004,
+                                   Origin+X*(windowA.width/2.0),X);
+	  ModelSupport::buildPlane(SMap,buildIndex+1005,
+                                   Origin-Z*(windowA.height/2.0),Z);
+	  ModelSupport::buildPlane(SMap,buildIndex+1006,
+                                   Origin+Z*(windowA.height/2.0),Z);
+	}
+    }
+  // BACK WINDOW SURFACES:
+  if (activeWindow & 2)
+    {
+      if (windowB.radius>Geometry::zeroTol)
+	ModelSupport::buildCylinder(SMap,buildIndex+1107,Origin,Y,
+                                    windowB.radius);
+      else
+	{
+	  ModelSupport::buildPlane(SMap,buildIndex+1103,
+                                   Origin-X*(windowB.width/2.0),X);
+	  ModelSupport::buildPlane(SMap,buildIndex+1104,
+                                   Origin+X*(windowB.width/2.0),X);
+	  ModelSupport::buildPlane(SMap,buildIndex+1105,
+                                   Origin-Z*(windowB.height/2.0),Z);
+	  ModelSupport::buildPlane(SMap,buildIndex+1106,
+                                   Origin+Z*(windowB.height/2.0),Z);
+	}
+    }
+  return;
+}
+
 void
 GeneralPipe::createSurfaces()
   /*!
@@ -268,6 +429,7 @@ GeneralPipe::createSurfaces()
   ELog::RegMethod RegA("GeneralPipe","createSurfaces");
 
   createCommonSurfaces();
+  createWindowSurfaces();
   
   // MAIN SURFACES:
   makeCylinder("InnerCyl",SMap,buildIndex+7,Origin,Y,radius);
@@ -293,6 +455,7 @@ GeneralPipe::createRectangleSurfaces(const double width,
   ELog::RegMethod RegA("VacuumPipe","createRectangularSurfaces");
 
   createCommonSurfaces();
+  createWindowSurfaces();
 
   double H(height/2.0);
   double W(width/2.0);
@@ -316,6 +479,59 @@ GeneralPipe::createRectangleSurfaces(const double width,
   return;
 }
 
+void
+GeneralPipe::createFlange(Simulation& System,
+			  const HeadRule& outerHR)
+  /*!
+    Create window in flange (and flange)
+    Requires that front/back have been set in ExternalCut
+    \param System :: simulation
+    \param outerHR :: Pipe void inner
+   */
+{
+  HeadRule HR;
+  const HeadRule& frontHR=getRule("front");
+  const HeadRule& backHR=getRule("back");
+
+  if (flangeARadius>Geometry::zeroTol)
+    {
+      HeadRule windowAExclude;
+      if (activeWindow & 1)      // FRONT
+	{
+	  HR=ModelSupport::getSetHeadRule
+	    (SMap,buildIndex,"-1007 1003 -1004 1005 -1006 1001 -1002");
+	  makeCell("Window",System,cellIndex++,windowA.mat,0.0,
+		   HR*getDivider("front"));
+	  ExternalCut::setCutSurf("AWindow",HR);
+	  windowAExclude=HR.complement();
+	}
+
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 -107");
+      makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,
+	       HR*frontHR*windowAExclude*outerHR);
+    }
+  if (flangeBRadius>Geometry::zeroTol)
+    {
+      HeadRule windowBExclude;
+      if (activeWindow & 2)
+	{
+	  HR=ModelSupport::getSetHeadRule
+	    (SMap,buildIndex,"-1107 1103 -1104 1105 -1106 1102 -1101");
+	  
+	  makeCell("Window",System,cellIndex++,windowB.mat,0.0,
+		   HR*getDivider("back"));
+	  ExternalCut::setCutSurf("BWindow",HR);
+	  windowBExclude=HR.complement();
+	}
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -207");
+      makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,
+	       HR*backHR*windowBExclude*outerHR);
+    }
+
+  
+  
+  return;
+}
 
 void
 GeneralPipe::createOuterVoid(Simulation& System,

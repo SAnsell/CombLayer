@@ -68,7 +68,6 @@
 #include "generateSurf.h"
 
 #include "GeneralPipe.h"
-#include "SplitFlangePipe.h"
 #include "LeadPipe.h"
 #include "Bellows.h"
 #include "VirtualTube.h"

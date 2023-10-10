@@ -3,7 +3,7 @@
 
  * File: Linac/Segment34.cxx
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2023 by Konstantin Batkov
  *
  * This program is free software: you can redstribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,9 +61,9 @@
 #include "BlockZone.h"
 #include "generalConstruct.h"
 #include "LObjectSupport.h"
+
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
-#include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "FlatPipe.h"
 #include "DipoleDIBMag.h"
