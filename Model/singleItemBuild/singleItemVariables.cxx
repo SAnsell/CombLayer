@@ -601,6 +601,13 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable("UTubePipeHeight",0.6);
   Control.addVariable("UTubePipePipeThick",0.2);
 
+  setVariable::PipeGenerator RTubeGen;
+  RTubeGen.setCF<setVariable::CF63>();
+  RTubeGen.generatePipe(Control,"RTubePipe",20.0);
+  Control.addVariable("RTubePipeWidth",6.0);
+  Control.addVariable("RTubePipeHeight",0.6);
+  Control.addVariable("RTubePipePipeThick",0.2);
+
   // PipeTube
 
   BellowGen.setCF<setVariable::CF40>();

@@ -4,7 +4,7 @@ set (constructVarSources
     FlangePlateGenerator.cxx GateValveGenerator.cxx JawFlangeGenerator.cxx 
     JawValveGenerator.cxx LeadPipeGenerator.cxx PipeGenerator.cxx 
     PipeTubeGenerator.cxx PortItemGenerator.cxx PortTubeGenerator.cxx 
-    RectPipeGenerator.cxx SplitPipeGenerator.cxx TubeDetBoxGenerator.cxx 
+    SplitPipeGenerator.cxx TubeDetBoxGenerator.cxx 
     VacBoxGenerator.cxx 
 )
 
@@ -40,7 +40,6 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/PipeTubeGenerator.cxx
   ${tarDIR}/PortItemGenerator.cxx
   ${tarDIR}/PortTubeGenerator.cxx
-  ${tarDIR}/RectPipeGenerator.cxx
   ${tarDIR}/SplitPipeGenerator.cxx
   ${tarDIR}/TubeDetBoxGenerator.cxx
   ${tarDIR}/VacBoxGenerator.cxx
@@ -60,7 +59,6 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/PipeTubeGenerator.h
   ${tarINC}/PortItemGenerator.h
   ${tarINC}/PortTubeGenerator.h
-  ${tarINC}/RectPipeGenerator.h
   ${tarINC}/SplitPipeGenerator.h
   ${tarINC}/TubeDetBoxGenerator.h
   ${tarINC}/VacBoxGenerator.h

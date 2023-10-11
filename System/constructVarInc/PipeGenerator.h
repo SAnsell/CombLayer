@@ -45,11 +45,22 @@ class PipeGenerator
   double pipeWidth;             ///< main width
   double pipeThick;             ///< metal thickness
   double claddingThick;         ///< cladding radius
+
+  int flangeType;               ///< Flange type
   double flangeARadius;         ///< flange Radius (>radius)
+  double flangeAHeight;         ///< flange height
+  double flangeAWidth;          ///< flange width
   double flangeALen;            ///< flange Length
   double flangeBRadius;         ///< flange Radius (>radius)
+  double flangeBHeight;         ///< flange height
+  double flangeBWidth;          ///< flange width
   double flangeBLen;            ///< flange Length
+
+  ///< Front/Back window flag (1,2 Radius 4,8: rectangle) 
+  int windowType; 
   double windowRadius;          ///< window radius (radius > WR > flangeR)
+  double windowHeight;          ///< window height (radis > WH > flangeR)
+  double windowWidth;           ///< window radius (radius > WW > flangeR)
   double windowThick;           ///< window thickness
 
   std::string pipeMat;          ///< Primary default mat
@@ -64,17 +75,21 @@ class PipeGenerator
  public:
 
   PipeGenerator();
-  PipeGenerator(const PipeGenerator&);
-  PipeGenerator& operator=(const PipeGenerator&);
-  ~PipeGenerator();
+  PipeGenerator(const PipeGenerator&) =default;
+  PipeGenerator& operator=(const PipeGenerator&) =default;
+  ~PipeGenerator() =default;
 
   void setPipe(const double,const double);
   void setRectPipe(const double,const double,const double =-1.0);
   void setNoWindow();
   void setWindow(const double,const double);
+  void setRectWindow(const double,const double,const double);
   void setFlange(const double,const double);
+  void setRectFlange(const double,const double,const double);
   void setAFlange(const double,const double);
+  void setARectFlange(const double,const double,const double);
   void setBFlange(const double,const double);
+  void setBRectFlange(const double,const double,const double);
   void setFlangePair(const double,const double,const double,const double);
 
   template<typename CF> void setCF();

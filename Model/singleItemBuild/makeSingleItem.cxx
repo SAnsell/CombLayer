@@ -74,6 +74,7 @@
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "UTubePipe.h"
+#include "RectanglePipe.h"
 #include "OffsetFlangePipe.h"
 #include "Quadrupole.h"
 #include "Sexupole.h"
@@ -1373,6 +1374,17 @@ makeSingleItem::build(Simulation& System,
 
       ofp->addAllInsertCell(voidCell);
       ofp->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item=="RectanglePipe")
+    {
+      std::shared_ptr<constructSystem::RectanglePipe>
+	rcp(new constructSystem::RectanglePipe("RectP"));
+      OR.addObject(rcp);
+
+      rcp->addAllInsertCell(voidCell);
+      rcp->createAll(System,World::masterOrigin(),0);
 
       return;
     }

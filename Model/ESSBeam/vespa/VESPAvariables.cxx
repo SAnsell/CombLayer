@@ -3,7 +3,7 @@
  
  * File:    ESSBeam/vespa/VESPAvariables.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,7 +49,6 @@
 #include "ChopperGenerator.h"
 #include "PitGenerator.h"
 #include "PipeGenerator.h"
-#include "RectPipeGenerator.h"
 #include "JawGenerator.h"
 #include "BladeGenerator.h"
 #include "CryoGenerator.h"
@@ -69,7 +68,7 @@ VESPAvariables(FuncDataBase& Control)
   ELog::RegMethod RegA("VESPAvariables[F]","VESPAvariables");
 
   setVariable::TwinFlatGenerator TFGen;		//JS
-  setVariable::RectPipeGenerator RPGen;		//JS
+  setVariable::PipeGenerator RPGen;		//JS
   setVariable::ChopperGenerator CGen;
   setVariable::CryoGenerator CryGen;
   setVariable::FocusGenerator FGen;
@@ -91,8 +90,8 @@ VESPAvariables(FuncDataBase& Control)
   PipeGen.setFlange(-4.0,1.0);
   PipeGen.setCladding(0.5,"B4C");
 
-  RPGen.setFlange(76.0,24.0,1.0);
-  RPGen.setPipe(70.0,16.0,0.5);
+  RPGen.setRectFlange(76.0,24.0,1.0);
+  RPGen.setRectPipe(70.0,16.0,0.5);
 
   TFGen.setMotorLength(20.0);
   
@@ -130,7 +129,8 @@ VESPAvariables(FuncDataBase& Control)
   BGen.generateBlades(Control, "vespaPSCBottomBladeA",2.0,26.0,35.0);
 
   // Intermediate pipe between A and B
-  RPGen.generatePipe(Control,"vespaJoinPipeAB", 10.0,10.0);
+  RPGen.generatePipe(Control,"vespaJoinPipeAB",10.0);
+  Control.addVariable("vespaJoinPipeABYStep",10.0);
   FGen.generateRectangle(Control,"vespaFD",12.0,4.0,4.0);
 
   // Second chopper
@@ -143,7 +143,8 @@ VESPAvariables(FuncDataBase& Control)
   BGen.generateBlades(Control, "vespaPSCBottomBladeB",2.0,26.0,35.0);
 
   // Intermediate pipe between B and C
-  RPGen.generatePipe(Control,"vespaJoinPipeBC", 10.0,10.0);
+  RPGen.generatePipe(Control,"vespaJoinPipeBC",10.0);
+  Control.addVariable("vespaJoinPipeBCYStep",10.0);
   FGen.generateRectangle(Control,"vespaFE",46.0,4.0,4.0);  // 46 ????? wrong
 
   // Second chopper

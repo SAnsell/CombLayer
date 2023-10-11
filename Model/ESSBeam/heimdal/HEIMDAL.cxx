@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/heimdal/HEIMDAL.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,6 +73,7 @@
 #include "DiskChopper.h"
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
+#include "RectanglePipe.h"
 #include "Bunker.h"
 #include "SingleChopper.h"
 
@@ -89,7 +90,7 @@ HEIMDAL::HEIMDAL(const std::string& keyName) :
   FocusTA(new beamlineSystem::PlateUnit(newName+"FTA")),
   FocusCA(new beamlineSystem::PlateUnit(newName+"FCA")),
 
-  VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
+  VPipeB(new constructSystem::RectanglePipe(newName+"PipeB")),
 
   FocusTB(new beamlineSystem::PlateUnit(newName+"FTB")),
   FocusCB(new beamlineSystem::PlateUnit(newName+"FCB")),
@@ -190,6 +191,7 @@ HEIMDAL::buildBunkerUnits(Simulation& System,
   ELog::RegMethod RegA("HEIMDAL","buildBunkerUnits");
 
   const Geometry::Vec3D& ZVert(World::masterOrigin().getZ());
+
 
   VPipeB->addAllInsertCell(bunkerVoid);
   VPipeB->createAll(System,FTA,thermalIndex);

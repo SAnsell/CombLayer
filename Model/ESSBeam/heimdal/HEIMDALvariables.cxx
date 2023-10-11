@@ -48,7 +48,6 @@
 #include "ChopperGenerator.h"
 #include "PitGenerator.h"
 #include "PipeGenerator.h"
-#include "RectPipeGenerator.h"
 #include "JawGenerator.h"
 #include "BladeGenerator.h"
 #include "CryoGenerator.h"
@@ -87,8 +86,8 @@ HEIMDALvariables(FuncDataBase& Control)
 
   RPipeGen.setCF<CF200>();
   RPipeGen.setRectPipe(16.0,22.0);
-  RPipeGen.setWindow(6.0,0.5);
-  //  RPipeGen.setFlange(-4.0,-4.0,1.0);
+  RPipeGen.setRectWindow(16.0,16.0,0.5); 
+  RPipeGen.setRectFlange(20.0,26.0,1.0);
 
   SGen.addWall(1,20.0,"CastIron");
   SGen.addRoof(1,20.0,"CastIron");

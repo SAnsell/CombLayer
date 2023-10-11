@@ -50,11 +50,14 @@ namespace setVariable
 {
 
 PipeGenerator::PipeGenerator() :
-  pipeType(0),pipeRadius(8.0),
-  pipeHeight(16.0),pipeWidth(16.0),pipeThick(0.5),
-  claddingThick(0.0),flangeARadius(12.0),flangeALen(1.0),
-  flangeBRadius(12.0),flangeBLen(1.0),
-  windowRadius(-2.0),windowThick(0.1),
+  pipeType(0),pipeRadius(8.0),pipeHeight(16.0),
+  pipeWidth(16.0),pipeThick(0.5),claddingThick(0.0),
+  flangeType(5),flangeARadius(12.0),
+  flangeAHeight(24.0),flangeAWidth(24.0),flangeALen(1.0),
+  flangeBRadius(12.0),flangeBHeight(24.0),
+  flangeBWidth(24.0),flangeBLen(1.0),
+  windowType(0),windowRadius(-2.0),windowHeight(-2.0),
+  windowWidth(-2.0),windowThick(0.1),
   pipeMat("Aluminium"),frontWindowMat("Silicon300K"),
   backWindowMat("Silicon300K"),
   voidMat("Void"),claddingMat("B4C"),flangeMat("Aluminium"),
@@ -63,63 +66,6 @@ PipeGenerator::PipeGenerator() :
     Constructor and defaults
   */
 {}
-
-PipeGenerator::PipeGenerator(const PipeGenerator& A) :
-  pipeType(A.pipeType),pipeRadius(A.pipeRadius),
-  pipeHeight(A.pipeHeight),pipeWidth(A.pipeWidth),
-  pipeThick(A.pipeThick),claddingThick(A.claddingThick),
-  flangeARadius(A.flangeARadius),flangeALen(A.flangeALen),
-  flangeBRadius(A.flangeBRadius),flangeBLen(A.flangeBLen),
-  windowRadius(A.windowRadius),windowThick(A.windowThick),
-  pipeMat(A.pipeMat),frontWindowMat(A.frontWindowMat),
-  backWindowMat(A.backWindowMat),voidMat(A.voidMat),
-  claddingMat(A.claddingMat),flangeMat(A.flangeMat),
-  outerVoid(A.outerVoid)
-  /*!
-    Copy constructor
-    \param A :: PipeGenerator to copy
-  */
-{}
-
-PipeGenerator&
-PipeGenerator::operator=(const PipeGenerator& A)
-  /*!
-    Assignment operator
-    \param A :: PipeGenerator to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      pipeType=A.pipeType;
-      pipeRadius=A.pipeRadius;
-      pipeHeight=A.pipeHeight;
-      pipeWidth=A.pipeWidth;
-      pipeThick=A.pipeThick;
-      claddingThick=A.claddingThick;
-      flangeARadius=A.flangeARadius;
-      flangeALen=A.flangeALen;
-      flangeBRadius=A.flangeBRadius;
-      flangeBLen=A.flangeBLen;
-      windowRadius=A.windowRadius;
-      windowThick=A.windowThick;
-      pipeMat=A.pipeMat;
-      frontWindowMat=A.frontWindowMat;
-      backWindowMat=A.backWindowMat;
-      voidMat=A.voidMat;
-      claddingMat=A.claddingMat;
-      flangeMat=A.flangeMat;
-      outerVoid=A.outerVoid;
-    }
-  return *this;
-}
-
-PipeGenerator::~PipeGenerator()
- /*!
-   Destructor
- */
-{}
-
 
 void
 PipeGenerator::setPipe(const double R,const double T)
@@ -161,7 +107,26 @@ PipeGenerator::setWindow(const double R,const double T)
     \param T :: Thickness
    */
 {
+  windowType=1 | 2 ;
   windowRadius=R;
+  windowThick=T;
+  return;
+}
+
+void
+PipeGenerator::setRectWindow(const double W,
+			     const double H,
+			     const double T)
+/*!
+    Set all the window values for rectangle
+    \param W :: full width of main window
+    \param H :: full height of main window
+    \param T :: Thickness
+   */
+{
+  windowType=4 | 8;
+  windowWidth=W;
+  windowHeight=H;
   windowThick=T;
   return;
 }
@@ -172,6 +137,7 @@ PipeGenerator::setNoWindow()
     Remove the window values
    */
 {
+  windowType=0;
   windowRadius=-1.0;
   windowThick=0.0;
   return;
@@ -192,6 +158,22 @@ PipeGenerator::setFlange(const double R,const double L)
 }
 
 void
+PipeGenerator::setRectFlange(const double W,
+			     const double H,
+			     const double L)
+/*!
+    Set all the flange values (rectangle)
+    \param W :: Width of flange
+    \param H :: Height of flange
+    \param L :: length
+   */
+{
+  setARectFlange(W,H,L);
+  setBRectFlange(W,H,L);
+  return;
+}
+
+void
 PipeGenerator::setAFlange(const double R,const double L)
   /*!
     Set all the A-flange values
@@ -199,7 +181,26 @@ PipeGenerator::setAFlange(const double R,const double L)
     \param L :: length
    */
 {
+  flangeType|=1;           // front radial
+  flangeType-= (flangeType & 4);   // not 
   flangeARadius=R;
+  flangeALen=L;
+  return;
+}
+
+void
+PipeGenerator::setARectFlange(const double W,const double H,
+			  const double L)
+  /*!
+    Set all the A-flange values
+    \param W :: width (rectangle flange)
+    \param L :: length
+   */
+{
+  flangeType|=4;           // front rectangle
+  flangeType-= (flangeType & 1);   // not radial
+  flangeAWidth=W;
+  flangeAHeight=H;
   flangeALen=L;
   return;
 }
@@ -212,11 +213,29 @@ PipeGenerator::setBFlange(const double R,const double L)
     \param L :: length
    */
 {
+  flangeType|=2;           // front radial
+  flangeType-= (flangeType & 8);   // not rectangle
   flangeBRadius=R;
   flangeBLen=L;
   return;
 }
 
+void
+PipeGenerator::setBRectFlange(const double W,const double H,
+			  const double L)
+  /*!
+    Set all the A-flange values
+    \param W :: width (rectangle flange)
+    \param L :: length
+   */
+{
+  flangeType|=8;           // back rectangle
+  flangeType-= (flangeType & 2);   // not radial
+  flangeAWidth=W;
+  flangeAHeight=H;
+  flangeALen=L;
+  return;
+}
 void
 PipeGenerator::setFlangePair(const double AR,const double AL,
 			     const double BR,const double BL)
@@ -228,6 +247,7 @@ PipeGenerator::setFlangePair(const double AR,const double AL,
     \param BL :: back flange length
    */
 {
+  flangeType=5;           // front / back radial
   flangeARadius=AR;
   flangeALen=AL;
   flangeBRadius=BR;
@@ -315,6 +335,8 @@ PipeGenerator::setAFlangeCF()
     Setter for flange A
    */
 {
+  flangeType |= 1;
+  flangeType -= (flangeType & 4);
   flangeARadius=CF::flangeRadius;
   flangeALen=CF::flangeLength;
   return;
@@ -327,14 +349,16 @@ PipeGenerator::setBFlangeCF()
     Setter for flange B
    */
 {
+  flangeType |= 2;
+  flangeType -= (flangeType & 8);
   flangeBRadius=CF::flangeRadius;
   flangeBLen=CF::flangeLength;
   return;
 }
-
-
+  
 void
-PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
+PipeGenerator::generatePipe(FuncDataBase& Control,
+			    const std::string& keyName,
                             const double length) const
   /*!
     Primary funciton for setting the variables
@@ -358,7 +382,6 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
 
   realWindowRadius=std::min(realWindowRadius,realFlangeARadius*0.95);
   realWindowRadius=std::min(realWindowRadius,realFlangeBRadius*0.95);
-  const size_t activeWFlag((windowThick<Geometry::zeroTol) ? 0 : 3);
 
     // VACUUM PIPES:
   if (!pipeType)
@@ -370,21 +393,43 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
     }
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"PipeThick",pipeThick);
-  Control.addVariable(keyName+"FlangeARadius",realFlangeARadius);
-  Control.addVariable(keyName+"FlangeBRadius",realFlangeBRadius);
+
+  Control.addVariable(keyName+"FlangeType",flangeType);
+  if (flangeType & 1)
+    Control.addVariable(keyName+"FlangeARadius",realFlangeARadius);
+  else if (flangeType & 4)
+    {
+      Control.addVariable(keyName+"FlangeAWidth",flangeAWidth);
+      Control.addVariable(keyName+"FlangeAHeight",flangeAHeight);
+    }
+  if (flangeType & 2)
+    Control.addVariable(keyName+"FlangeBRadius",realFlangeBRadius);
+  else if (flangeType & 8)
+    {
+      Control.addVariable(keyName+"FlangeBWidth",flangeBWidth);
+      Control.addVariable(keyName+"FlangeBHeight",flangeBHeight);
+    }
+
   Control.addVariable(keyName+"FlangeALength",flangeALen);
   Control.addVariable(keyName+"FlangeBLength",flangeBLen);
-  Control.addVariable(keyName+"PipeMat",pipeMat);
 
+  Control.addVariable(keyName+"WindowType",windowType);
+  if (windowType)
+    {
+      Control.addVariable(keyName+"WindowThick",windowThick);
+      Control.addVariable(keyName+"WindowAMat",frontWindowMat);
+      Control.addVariable(keyName+"WindowBMat",backWindowMat);
+      if (windowType & 5)
+	Control.addVariable(keyName+"WindowRadius",realWindowRadius);
+      else if (windowType & 10)
+	{
+	  Control.addVariable(keyName+"WindowHeight",windowHeight);
+	  Control.addVariable(keyName+"WindowWidth",windowWidth);
+	}
+    }
 
-  Control.addVariable(keyName+"WindowActive",activeWFlag);
-
-  Control.addVariable(keyName+"WindowRadius",realWindowRadius);
-
-  Control.addVariable(keyName+"WindowThick",windowThick);
-  Control.addVariable(keyName+"WindowAMat",frontWindowMat);
-  Control.addVariable(keyName+"WindowBMat",backWindowMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
+  Control.addVariable(keyName+"PipeMat",pipeMat);
 
   Control.addVariable(keyName+"CladdingThick",claddingThick);
   Control.addVariable(keyName+"CladdingMat",claddingMat);

@@ -74,7 +74,7 @@ class GeneralPipe :
   double flangeBLength;         ///< Joining Flange length
 
   // window information
-  unsigned int activeWindow;     ///< Flag for windows
+  int windowType;               ///< Flag for windows
   windowInfo windowA;           ///< Front window info
   windowInfo windowB;           ///< Back window info
 

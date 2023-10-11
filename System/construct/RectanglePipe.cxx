@@ -136,22 +136,7 @@ RectanglePipe::createSurfaces()
    */
 {
   ELog::RegMethod RegA("RectanglePipe","createSurface");  
-  GeneralPipe::createCommonSurfaces();
-
-  
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
-
-  ModelSupport::buildPlane
-    (SMap,buildIndex+13,Origin-X*(width/2.0+pipeThick),X);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+14,Origin+X*(width/2.0+pipeThick),X);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+15,Origin-Z*(height/2.0+pipeThick),Z);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+16,Origin+Z*(height/2.0+pipeThick),Z);
+  GeneralPipe::createRectangleSurfaces(width,height);
 
   return;
 }
@@ -174,11 +159,13 @@ RectanglePipe::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-3:4:-5:6");
   GeneralPipe::createFlange(System,HR);
 
-  const HeadRule windowAHR=getRule("AWindow").complement();
-  const HeadRule windowBHR=getRule("BWindow").complement();
+  const HeadRule windowHR=
+    getRule("AWindow").complement()*
+    getRule("BWindow").complement();
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
+  makeCell("Void",System,cellIndex++,voidMat,0.0,
+	   HR*frontHR*backHR*windowHR);
 
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"101 -102 13 -14 15 -16 (-3:4:-5:6)");

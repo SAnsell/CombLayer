@@ -53,16 +53,17 @@ namespace essConstruct
 namespace constructSystem
 {  
   class Cryostat;   
+  class CrystalMount;
+  class HoleShape;
   class Jaws;
   class JawSet;
   class LineShield;
+  class RectanglePipe;
   class RotaryCollimator;
+  class TubeDetBox;  
   class VacuumBox;
   class VacuumPipe;
   class VacuumWindow;
-  class HoleShape;
-  class CrystalMount;
-  class TubeDetBox;  
 }
 
 namespace essSystem
@@ -97,7 +98,7 @@ class HEIMDAL : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::PlateUnit> FocusCA;
 
   /// Vac pipe in gamma shutter
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
+  std::shared_ptr<constructSystem::RectanglePipe> VPipeB;
   /// Tapered guide from 5.5 to 6metre
   std::shared_ptr<beamlineSystem::PlateUnit> FocusTB;
   /// Tapered guide from 5.5 to 6metre
