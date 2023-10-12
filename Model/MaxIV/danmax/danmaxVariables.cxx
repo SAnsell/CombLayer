@@ -51,7 +51,6 @@
 
 #include "CFFlanges.h"
 #include "PipeGenerator.h"
-#include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
 #include "CrossGenerator.h"
 #include "GateValveGenerator.h"

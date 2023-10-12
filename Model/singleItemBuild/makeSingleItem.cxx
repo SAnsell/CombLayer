@@ -223,7 +223,8 @@ makeSingleItem::build(Simulation& System,
 	"YAG","YagUnit","YagUnitBig","CooledScreen","CooledUnit",
 	"StriplineBPM","BeamDivider","BeamScrapper",
 	"Scrapper","TWCavity","Bellow", "LeadPipe","OffsetFlangePipe",
-	"UTubePipe","VacuumPipe","WindowPipe","HalfElectronPipe",
+	"RectanglePipe","UTubePipe","VacuumPipe","WindowPipe",
+	"HalfElectronPipe",
 	"MultiPipe","PipeTube","PortTube","BlankTube","ButtonBPM",
 	"PrismaChamber","uVac", "UndVac","UndulatorVacuum",
 	"IonPTube","IonGauge","CollTube",
@@ -1380,7 +1381,7 @@ makeSingleItem::build(Simulation& System,
   if (item=="RectanglePipe")
     {
       std::shared_ptr<constructSystem::RectanglePipe>
-	rcp(new constructSystem::RectanglePipe("RectP"));
+	rcp(new constructSystem::RectanglePipe("RPipe"));
       OR.addObject(rcp);
 
       rcp->addAllInsertCell(voidCell);

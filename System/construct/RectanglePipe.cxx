@@ -124,7 +124,6 @@ RectanglePipe::populate(const FuncDataBase& Control)
 
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
-
   
   return;
 }
@@ -168,10 +167,9 @@ RectanglePipe::createObjects(Simulation& System)
 	   HR*frontHR*backHR*windowHR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"101 -102 13 -14 15 -16 (-3:4:-5:6)");
+    (SMap,buildIndex,"101 -201 13 -14 15 -16 (-3:4:-5:6)");
   makeCell("Steel",System,cellIndex++,pipeMat,0.0,HR);
   addCell("MainSteel",cellIndex-1);
-
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-13:14:-15:16");
   GeneralPipe::createOuterVoid(System,HR);
@@ -222,12 +220,22 @@ RectanglePipe::createLinks()
 
   FixedComp::setConnect(6,midPt,Y);
 
-  FixedComp::setConnect(9,Origin-Z*flangeARadius,-Z);
-  FixedComp::setConnect(10,Origin+Z*flangeARadius,Z);
-  
-  FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+107));
-  FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+107));
+  const double depthA=(flangeA.type==1) ?
+    flangeA.radius : flangeA.height/2.0;
+  const double depthB=(flangeB.type==1) ?
+    flangeB.radius : flangeB.height/2.0;
+  FixedComp::setConnect(9,Origin-Z*depthA,-Z);
+  FixedComp::setConnect(10,Origin+Z*depthB,Z);
 
+  if (flangeA.type==1)
+    FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+107));
+  else if (flangeA.type)
+    FixedComp::setLinkSurf(9,-SMap.realSurf(buildIndex+105));
+
+  if (flangeB.type==1)
+    FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+107));
+  else if (flangeB.type)
+    FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+106));
 
   return;
 }

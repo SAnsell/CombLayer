@@ -139,7 +139,7 @@ VacuumPipe::createObjects(Simulation& System)
   makeCell("Void",System,cellIndex++,voidMat,0.0,
 	   HR*frontHR*backHR*windowHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 7 -17");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -201 7 -17");
   makeCell("Steel",System,cellIndex++,pipeMat,0.0,HR);
   addCell("MainSteel",cellIndex-1);
 
@@ -188,11 +188,15 @@ VacuumPipe::createLinks()
     (getLinkPt(1)+getLinkPt(2))/2.0;
   FixedComp::setConnect(6,midPt,Y);
 
-  FixedComp::setConnect(9,Origin-Z*flangeARadius,-Z);
-  FixedComp::setConnect(10,Origin+Z*flangeARadius,Z);
-  
-  FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+107));
-  FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+107));
+  if (flangeA.type==1)
+    FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+107));
+  else
+    FixedComp::setLinkSurf(9,-SMap.realSurf(buildIndex+105));
+
+  if (flangeB.type==1)
+    FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+107));
+  else
+    FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+106));
 
 
   return;

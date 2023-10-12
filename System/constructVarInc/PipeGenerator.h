@@ -27,6 +27,16 @@ class FuncDataBase;
 namespace setVariable
 {
 
+struct segInfo
+{
+  int type;
+  double radius;
+  double height;
+  double width;
+  double thick;
+  std::string mat;
+};
+  
 /*!
   \class PipeGenerator
   \version 1.0
@@ -39,36 +49,17 @@ class PipeGenerator
 {
  private:
 
-  int pipeType;                 ///< type [0 for round / 1 for square]
-  double pipeRadius;            ///< main radius
-  double pipeHeight;            ///< main height
-  double pipeWidth;             ///< main width
-  double pipeThick;             ///< metal thickness
+  segInfo pipe;
+
+  segInfo flangeA;
+  segInfo flangeB;
+  segInfo windowA;
+  segInfo windowB;
+
   double claddingThick;         ///< cladding radius
-
-  int flangeType;               ///< Flange type
-  double flangeARadius;         ///< flange Radius (>radius)
-  double flangeAHeight;         ///< flange height
-  double flangeAWidth;          ///< flange width
-  double flangeALen;            ///< flange Length
-  double flangeBRadius;         ///< flange Radius (>radius)
-  double flangeBHeight;         ///< flange height
-  double flangeBWidth;          ///< flange width
-  double flangeBLen;            ///< flange Length
-
-  ///< Front/Back window flag (1,2 Radius 4,8: rectangle) 
-  int windowType; 
-  double windowRadius;          ///< window radius (radius > WR > flangeR)
-  double windowHeight;          ///< window height (radis > WH > flangeR)
-  double windowWidth;           ///< window radius (radius > WW > flangeR)
-  double windowThick;           ///< window thickness
-
-  std::string pipeMat;          ///< Primary default mat
-  std::string frontWindowMat;   ///< window mat
-  std::string backWindowMat;    ///< window mat
+  
   std::string voidMat;          ///< void mat
   std::string claddingMat;      ///< Primary default mat
-  std::string flangeMat;        ///< Flange material
 
   int outerVoid;                ///< Flag to build the outer void cell between flanges
 
@@ -91,6 +82,7 @@ class PipeGenerator
   void setBFlange(const double,const double);
   void setBRectFlange(const double,const double,const double);
   void setFlangePair(const double,const double,const double,const double);
+  void setFlangeLength(const double,const double);
 
   template<typename CF> void setCF();
   template<typename CF> void setAFlangeCF();
@@ -104,6 +96,10 @@ class PipeGenerator
 
   void setOuterVoid(const int val =1) { outerVoid = val; }
 
+  /// accessor
+  const std::string& getPipeMat() const { return pipe.mat; }
+
+ 
   void generatePipe(FuncDataBase&,const std::string&,
 		    const double) const;
 

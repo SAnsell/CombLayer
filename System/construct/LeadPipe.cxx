@@ -111,10 +111,10 @@ LeadPipe::createSurfaces()
   GeneralPipe::createSurfaces();
 
   ExternalCut::makeShiftedSurf
-    (SMap,"front",buildIndex+121,Y,(flangeALength+claddingStep));
+    (SMap,"front",buildIndex+121,Y,(flangeA.thick+claddingStep));
 
   ExternalCut::makeShiftedSurf
-    (SMap,"back",buildIndex+122,Y,-(flangeBLength+claddingStep));
+    (SMap,"back",buildIndex+122,Y,-(flangeB.thick+claddingStep));
 
   SurfMap::makeCylinder("CladdingCyl",SMap,buildIndex+27,
 			Origin,Y,radius+pipeThick+claddingThick);
@@ -147,7 +147,7 @@ LeadPipe::createObjects(Simulation& System)
   makeCell("Void",System,cellIndex++,voidMat,0.0,
 	   HR*frontHR*backHR*windowHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 7 101 -102");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 7 101 -201");
   makeCell("MainPipe",System,cellIndex++,pipeMat,0.0,HR);
   
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 121 -122 -27 17");
@@ -157,7 +157,7 @@ LeadPipe::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -121 17 -27");
   makeCell("LeadAGap",System,cellIndex++,voidMat,0.0,HR);
   
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-102 122 17 -27");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-201 122 17 -27");
   makeCell("LeadBGap",System,cellIndex++,voidMat,0.0,HR);
 
       
@@ -225,8 +225,6 @@ LeadPipe::createLinks()
   FixedComp::nameSideIndex(2,"inner");
   FixedComp::nameSideIndex(3,"pipe");
   FixedComp::nameSideIndex(4,"outer");
-
-
   
   return;
 }

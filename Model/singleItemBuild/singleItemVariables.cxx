@@ -47,7 +47,6 @@
 #include "CryoGenerator.h"
 #include "BladeGenerator.h"
 #include "PipeGenerator.h"
-#include "SplitPipeGenerator.h"
 #include "CornerPipeGenerator.h"
 #include "LeadPipeGenerator.h"
 #include "TwinBaseGenerator.h"
@@ -562,13 +561,17 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::TWCavityGenerator TDCGen;
 
   const double flangeLength(3.7);
-  RPipeGen.generatePipe(Control,"PipeA",4*flangeLength);
+
+  setVariable::PipeGenerator TWPipeGen;
+  TWPipeGen.setCF<CF100>(); 
+
+  TWPipeGen.generatePipe(Control,"PipeA",4*flangeLength);
   Control.addVariable("PipeARadius",1.16);
   Control.addVariable("PipeAFeThick",0.2);
 
   TDCGen.generate(Control,"TWCavity");
 
-  RPipeGen.generatePipe(Control,"PipeB",4.0*flangeLength);
+  TWPipeGen.generatePipe(Control,"PipeB",4.0*flangeLength);
   Control.addParse<double>("PipeBRadius","PipeARadius");
   Control.addParse<double>("PipeBFeThick","PipeAFeThick");
 
@@ -593,6 +596,7 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable("OFPFlangeBXStep",1.0);
   Control.addVariable("OFPFlangeBZStep",2.0);  
 
+
   // UTube Pipe
   setVariable::PipeGenerator UTubeGen;
   UTubeGen.setCF<setVariable::CF63>();
@@ -601,12 +605,15 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable("UTubePipeHeight",0.6);
   Control.addVariable("UTubePipePipeThick",0.2);
 
+  // Rectangle Pipe with different flanges
   setVariable::PipeGenerator RTubeGen;
-  RTubeGen.setCF<setVariable::CF63>();
-  RTubeGen.generatePipe(Control,"RTubePipe",20.0);
-  Control.addVariable("RTubePipeWidth",6.0);
-  Control.addVariable("RTubePipeHeight",0.6);
-  Control.addVariable("RTubePipePipeThick",0.2);
+
+  RTubeGen.setRectPipe(3.0,4.0,0.5);
+  RTubeGen.setARectFlange(8.0,13.0,2.0);
+  RTubeGen.setBRectFlange(12.0,8.0,3.0);
+  RTubeGen.setRectWindow(6.0,7.0,0.3);
+  RTubeGen.setOuterVoid();
+  RTubeGen.generatePipe(Control,"RPipe",20.0);
 
   // PipeTube
 

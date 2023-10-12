@@ -43,12 +43,6 @@ class UTubePipe :
   double width;                 ///< void width [inner]
   double height;                ///< void height [inner]
   double length;                ///< void length [total]
-  
-  double flangeARadius;          ///< Joining Flange radius 
-  double flangeALength;          ///< Joining Flange length
-
-  double flangeBRadius;          ///< Joining Flange radius 
-  double flangeBLength;          ///< Joining Flange length
       
   void populate(const FuncDataBase&) override;
   void createSurfaces() override;

@@ -36,40 +36,24 @@ namespace setVariable
 */
 
 class LeadPipeGenerator :
-  public SplitPipeGenerator
+  public PipeGenerator
 {
  private:
-
-  double radius;               ///< void radius [inner]
-  double thick;                ///< pipe thickness
   
   double claddingThick;        ///< cladding thickness
   double claddingStep;         ///< distance from front/back to cladding start    
-  double flangeARadius;        ///< Joining FlangeA radius 
-  double flangeBRadius;        ///< Joining FlangeB radius 
-
-  double flangeALength;        ///< Joining Flange length
-  double flangeBLength;        ///< Joining Flange length
-
-  std::string voidMat;                 ///< Void material
-  std::string pipeMat;                 ///< Pipe material
   std::string claddingMat;             ///< Pipe cladding material
-  std::string flangeMat;               ///< Flange material
       
  public:
 
   LeadPipeGenerator();
-  LeadPipeGenerator(const LeadPipeGenerator&);
-  LeadPipeGenerator& operator=(const LeadPipeGenerator&);
-  ~LeadPipeGenerator();
+  LeadPipeGenerator(const LeadPipeGenerator&) =default;
+  LeadPipeGenerator& operator=(const LeadPipeGenerator&) =default;
+  ~LeadPipeGenerator() =default;
 
   template<typename CF> void setCF();
-  template<typename CF> void setFlangeCF();
-  template<typename CF> void setAFlangeCF();
-  template<typename CF> void setBFlangeCF();
   
   void setPipe(const double,const double,const double,const double);
-  void setFlangeLength(const double,const double);
   void setCladding(const double,const double);
   void setCladdingThick(const double T) { claddingThick=T; }
   void setMat(const std::string&,const std::string&);

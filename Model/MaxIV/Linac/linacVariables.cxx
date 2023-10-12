@@ -47,7 +47,6 @@
 
 #include "CFFlanges.h"
 #include "PipeGenerator.h"
-#include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
 #include "FlangePlateGenerator.h"
 

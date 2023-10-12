@@ -45,7 +45,6 @@
 
 #include "CFFlanges.h"
 #include "PipeGenerator.h"
-#include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
 #include "BremCollGenerator.h"
 #include "BremMonoCollGenerator.h"

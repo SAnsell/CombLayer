@@ -32,15 +32,16 @@ namespace constructSystem
     \version 1.0
     \date July 2015
     \author S. Ansell
-    \brief window build data 
+    \brief window or flange build data 
   */
   
 struct windowInfo
 {
+  int type;               ///< type 0:none, 1: round 2 : rectangle
   double thick;           ///< Joining Flange length
-  double radius;          ///< Window radius
-  double height;          ///< Window Height
-  double width;           ///< Window Width
+  double radius;          ///< Window/flange radius
+  double height;          ///< Window/flange Height
+  double width;           ///< Window/flange Width
   int mat;                ///< Material
 };
 
@@ -67,25 +68,22 @@ class GeneralPipe :
 
   double pipeThick;             ///< pipe thickness
 
-  double flangeARadius;         ///< Joining Flange radius [-ve for rect]
-  double flangeALength;         ///< Joining Flange length
-
-  double flangeBRadius;         ///< Joining Flange radius [-ve for rect]
-  double flangeBLength;         ///< Joining Flange length
+  // window information
+  windowInfo flangeA;           ///< Front window info
+  windowInfo flangeB;           ///< Back window info
 
   // window information
-  int windowType;               ///< Flag for windows
   windowInfo windowA;           ///< Front window info
   windowInfo windowB;           ///< Back window info
-
   
   int voidMat;                  ///< Void material
   int pipeMat;                  ///< Pipe material
-  int flangeMat;                ///< Flange material
 
   int outerVoid;                ///< Flag to build the outer void cell between f
   int activeFlag;               ///< flag to apply shift
 
+  void populateUnit(const FuncDataBase&,const std::string&,
+		    const std::string&,windowInfo&) const;
   
   void applyActiveFrontBack(const double);
   virtual void populate(const FuncDataBase&) override;
@@ -94,6 +92,7 @@ class GeneralPipe :
 				const long int) override;
   void createCommonSurfaces();
   void createWindowSurfaces();
+  void createFlangeSurfaces();
   virtual void createSurfaces();
 
   void createRectangleSurfaces(const double,const double);

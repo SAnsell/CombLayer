@@ -62,7 +62,6 @@
 #include "RingDoorGenerator.h"
 #include "PipeShieldGenerator.h"
 #include "SimpleChicaneGenerator.h"
-#include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
 #include "SqrFMaskGenerator.h"
 #include "TwinPipeGenerator.h"

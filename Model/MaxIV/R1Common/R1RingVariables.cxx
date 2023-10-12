@@ -49,7 +49,6 @@
 #include "DipoleSndBendGenerator.h"
 #include "PipeGenerator.h"
 #include "HeatDumpGenerator.h"
-#include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
 #include "CrossGenerator.h"
 #include "BeamMountGenerator.h"

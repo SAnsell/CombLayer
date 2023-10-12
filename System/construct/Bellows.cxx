@@ -145,11 +145,11 @@ Bellows::createSurfaces()
   
   
   FrontBackCut::getShiftedFront
-    (SMap,buildIndex+121,Y,(flangeALength+bellowStep));
+    (SMap,buildIndex+121,Y,(flangeA.thick+bellowStep));
   
 
   FrontBackCut::getShiftedBack
-    (SMap,buildIndex+122,Y,-(flangeBLength+bellowStep));
+    (SMap,buildIndex+221,Y,-(flangeB.thick+bellowStep));
 
 
   
@@ -174,13 +174,7 @@ Bellows::createObjects(Simulation& System)
   HR=HeadRule(SMap,buildIndex,-7);
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
-  // FLANGE Front:
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 -107 7");
-  makeCell("FrontFlange",System,cellIndex++,pipeMat,0.0,HR*frontHR);
-
-  // FLANGE Back:
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -207 7");
-  makeCell("BackFlange",System,cellIndex++,pipeMat,0.0,HR*backHR);
+  GeneralPipe::createFlange(System,HR.complement());
 
   // Inner clip if present
   if (bellowStep>Geometry::zeroTol)
@@ -188,21 +182,21 @@ Bellows::createObjects(Simulation& System)
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -121 -17 7");
       makeCell("FrontClip",System,cellIndex++,pipeMat,0.0,HR);
       
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-102 122 -17 7");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-201 221 -17 7");
       makeCell("BackClip",System,cellIndex++,pipeMat,0.0,HR);
       
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"121 -122 -27 7");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"121 -221 -27 7");
       makeCell("Bellow",System,cellIndex++,bellowMat,0.0,HR);
 
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -121 -27 17");
       makeCell("FrontSpaceVoid",System,cellIndex++,0,0.0,HR);
 
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-102 122 -27 17");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-201 221 -27 17");
       makeCell("BackSpaceVoid",System,cellIndex++,0,0.0,HR);
     }
   else
     {
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -122 -27 7");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -221 -27 7");
       makeCell("Bellow",System,cellIndex++,bellowMat,0.0,HR);
     }
 

@@ -330,22 +330,18 @@ R3FrontEnd::buildHeatTable(Simulation& System)
   heatBox->insertAllInCell(System,outerCell);
   heatDump->insertInCell("Outer",System,outerCell);
   
-  bellowD->createAll(System,PIB,"OuterPlate");
-  outerCell=buildZone.createUnit(System,*bellowD,2);
-  bellowD->insertAllInCell(System,outerCell);
+  constructSystem::constructUnit
+    (System,buildZone,PIB,"OuterPlate",*bellowD);
 
-  gateTubeA->createAll(System,*bellowD,2);  
-  outerCell=buildZone.createUnit(System,*gateTubeA,2);
-  gateTubeA->insertInCell(System,outerCell);
+  constructSystem::constructUnit
+    (System,buildZone,*bellowD,"back",*gateTubeA);
 
-  ionPB->createAll(System,*gateTubeA,"back");
-  outerCell=buildZone.createUnit(System,*ionPB,"back");
-  ionPB->insertInCell(System,outerCell);
-  
-  pipeB->createAll(System,*ionPB,2);
-  outerCell=buildZone.createUnit(System,*pipeB,2);
-  pipeB->insertAllInCell(System,outerCell);
-  
+  constructSystem::constructUnit
+    (System,buildZone,*gateTubeA,"back",*ionPB);
+
+  constructSystem::constructUnit
+    (System,buildZone,*ionPB,"back",*pipeB);
+
   return;
   
 }
