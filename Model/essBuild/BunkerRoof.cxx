@@ -286,6 +286,7 @@ BunkerRoof::initialize(const FuncDataBase& Control,
 {
   ELog::RegMethod RegA("BunkerRoof","initialize");
 
+  
   populate(Control);  
   createUnitVector(FC,linkIndex);
 
