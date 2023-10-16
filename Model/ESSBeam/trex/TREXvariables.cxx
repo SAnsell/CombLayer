@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/trex/TREXvariables.cxx
  *
- * Copyright (c) 2004-2020 by Tsitohaina Randriamalala/Stuart Ansell
+ * Copyright (c) 2004-2023 by Tsitohaina Randriamalala/Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,8 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "CFFlanges.h"
+
 #include "ShieldGenerator.h"
 #include "FocusGenerator.h"
 #include "ChopperGenerator.h"
@@ -69,9 +71,8 @@ void TREXvariables(FuncDataBase& Control)
   setVariable::PipeGenerator PipeGen;
   setVariable::BladeGenerator BGen;
 
-  PipeGen.setPipe(10.0,0.5);
-  PipeGen.setWindow(-2.0,0.5);
-  PipeGen.setFlange(-4.0,1.0);
+  PipeGen.setCF<CF200>();
+  PipeGen.setNoWindow();
 
   // extent of beamline
   Control.addVariable("trexStopPoint",0);

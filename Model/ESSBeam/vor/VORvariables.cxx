@@ -135,7 +135,7 @@ VORvariables(FuncDataBase& Control)
   // VACUUM PIPE: in bunker wall
   PipeGen.setPipe(6.0,0.5);
   PipeGen.setNoWindow();
-  PipeGen.setFlange(-4.0,1.0);
+  PipeGen.setFlange(10.0,1.0);
   PipeGen.generatePipe(Control,"vorPipeWall",348.0);
   Control.addVariable("vorPipeWallYStep",1.0);
 
@@ -191,7 +191,8 @@ VORvariables(FuncDataBase& Control)
   SGen.setRFLayers(3,8);
   SGen.generateShield(Control,"vorShieldB",900.0,40.0,40.0,40.0,3,8);
 
-  PipeGen.setPipe(11,0.5);
+  PipeGen.setCF<CF250>();
+  PipeGen.setFlange(14.5,1.0);
   PipeGen.generatePipe(Control,"vorPipeOutC",814.0);
   Control.addVariable("vorPipeOutCYStep",2.0);
   FGen.generateTaper(Control,"vorFOutC",808.0,4.0,4.0,20.0,16.0);

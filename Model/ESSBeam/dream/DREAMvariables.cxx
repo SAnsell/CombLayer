@@ -216,7 +216,7 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamShieldAYStep",171.5);
 
   // Guide Section 2 (after wall) [+17.6m]  
-  PipeGen.setPipe(6.0,0.5);
+  PipeGen.setCF<CF150>();
   PipeGen.generatePipe(Control,"dreamPipeOutA",1314.5);
   Control.addVariable("dreamPipeOutAYStep",0.5);
   FGen.clearYOffset();

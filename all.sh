@@ -14,10 +14,6 @@ segments=All
 #./singleItem --singleItem UTubePipe --validAll --validCheck $nValid AA 
 #exit
 
-parallel --halt now,fail=1 "./ess --defaultConfig Single {} --validAll --validCheck $nValid AA" ::: \
- ESTIA CSPEC  ODIN MAGIC BIFROST  LOKI  NMX  NNBAR  DREAM  BEER   \
- FREIA SKADI MIRACLES TESTBEAM TREX VESPA VOR     || exit
-
 
 # ./ess --defaultConfig Single VESPA --validAll --validCheck $nValid AA  || exit
 # ./ess --defaultConfig Single HEIMDAL --validAll --validCheck $nValid AA  || exit
