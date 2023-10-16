@@ -3,7 +3,7 @@
  
  * File:   essBuild/ShutterBay.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -280,6 +280,8 @@ ShutterBay::createLinks()
 
   FixedComp::setConnect(6,Origin-Y*radius,-Y);   // materila point
   FixedComp::setConnect(7,Origin+Y*radius,Y);    // material point
+
+  nameSideIndex(6,"InnerCyl");
 
 
   return;

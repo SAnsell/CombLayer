@@ -70,9 +70,9 @@ class Curtain :
   int wallMat;                   ///< wall material  
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int,const long int) override;
-
+  void createLocalUnitVector(const attachSystem::FixedComp&,
+			     const long int,const long int);
+  
 
   void createSurfaces();
   void createLinks();
@@ -93,9 +93,11 @@ class Curtain :
   ~Curtain() override;
 
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int,const long int);
-
+  void buildAll(Simulation&,
+		const attachSystem::FixedComp&,
+		const long int,
+		const long int);
+  
 
 };
 

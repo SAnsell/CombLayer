@@ -298,6 +298,7 @@ BulkModule::createLinks()
 
 	  index+=4;
 	}
+      nameSideIndex(2,"OuterCyl");
     }
   return;
 }

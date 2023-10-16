@@ -3,7 +3,7 @@
  
  * File:   essBuild/ODINvariables.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -95,12 +95,12 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinPipeBYStep",8.0);
   FGen.setLayer(1,0.8,"Aluminium");
   FGen.clearYOffset();
-  FGen.generateTaper(Control,"odinFB",44.0, 1.806,1.60, 5.24,6.78);
+  FGen.generateTaper(Control,"odinFB",42.0, 1.806,1.60, 5.24,6.78);
 
   // Gamma shutter to first Chopper
   PipeGen.generatePipe(Control,"odinPipeC",40.0);
   Control.addVariable("odinPipeCYStep",2.0);
-  FGen.generateTaper(Control,"odinFC",37.0, 1.606,1.5, 6.78,6.91);
+  FGen.generateTaper(Control,"odinFC",35.0, 1.606,1.5, 6.78,6.91);
 
   //CGen.setMainRadius(26.0);
   //  CGen.setFrame(60.0,60.0);
@@ -119,7 +119,7 @@ ODINvariables(FuncDataBase& Control)
   // First Chopper pair to T0
   PipeGen.generatePipe(Control,"odinPipeD",110.0);
   Control.addVariable("odinPipeDYStep",2.0);
-  FGen.generateTaper(Control,"odinFD",107.0, 5.50,3.5, 4.0,4.0);
+  FGen.generateTaper(Control,"odinFD",105.0, 5.50,3.5, 4.0,4.0);
 
   CGen.setMainRadius(33.0);
   CGen.setFrame(80.0,80.0);

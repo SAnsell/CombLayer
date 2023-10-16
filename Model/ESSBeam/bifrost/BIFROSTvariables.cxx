@@ -3,7 +3,7 @@
  
  * File:    ESSBeam/bifrost/BIFROSTvariables.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,8 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "CFFlanges.h"
+
 #include "FocusGenerator.h"
 #include "ShieldGenerator.h"
 #include "ChopperGenerator.h"
@@ -70,8 +72,8 @@ BIFROSTvariables(FuncDataBase& Control)
   setVariable::BladeGenerator BGen;
 
   PipeGen.setPipe(8.0,0.5);
-  PipeGen.setWindow(-2.0,0.5);
-  PipeGen.setFlange(-4.0,1.0);
+  PipeGen.setNoWindow();
+  PipeGen.setFlange(12.0,1.0);
 
   SGen.addWall(1,20.0,"CastIron");
   SGen.addRoof(1,20.0,"CastIron");
@@ -124,9 +126,8 @@ BIFROSTvariables(FuncDataBase& Control)
   BGen.generateBlades(Control,"bifrostDBlade",0.0,20.0,35.0);
 
   // VACUUM PIPE: SDisk to T0 (A)
-  PipeGen.setPipe(12.0,0.5);
-  PipeGen.setWindow(-2.0,0.5);
-  PipeGen.setFlange(-4.0,1.0);
+  PipeGen.setCF<CF250>();
+  PipeGen.setNoWindow();
   PipeGen.generatePipe(Control,"bifrostPipeC",400.0);
   Control.addVariable("bifrostPipeCYStep",2.0);
   Control.addVariable("bifrostPipeCNDivision",1);
@@ -145,9 +146,8 @@ BIFROSTvariables(FuncDataBase& Control)
   BGen.generateBlades(Control,"bifrostFOC1Blade",0.0,20.0,35.0);
 
   // VACUUM PIPE: from ChoperB to 6m holding point
-  PipeGen.setPipe(12.0,0.5);
-  PipeGen.setWindow(-2.0,0.5);
-  PipeGen.setFlange(-4.0,1.0);
+  PipeGen.setCF<CF250>();
+  PipeGen.setNoWindow();
   PipeGen.generatePipe(Control,"bifrostPipeD",500.0);
   Control.addVariable("bifrostPipeDYStep",2.0);
 
@@ -155,9 +155,8 @@ BIFROSTvariables(FuncDataBase& Control)
   FGen.generateRectangle(Control,"bifrostFD",496.0, 13.0,13.0);   
 
   // VACUUM PIPE: from ChoperB to 6m holding point
-  PipeGen.setPipe(12.0,0.5);
-  PipeGen.setWindow(-2.0,0.5);
-  PipeGen.setFlange(-4.0,1.0);
+  PipeGen.setCF<CF250>();
+  PipeGen.setNoWindow();
   PipeGen.generatePipe(Control,"bifrostPipeE",400.0);
   Control.addVariable("bifrostPipeEYStep",2.0);
 
@@ -174,9 +173,8 @@ BIFROSTvariables(FuncDataBase& Control)
   BGen.generateBlades(Control,"bifrostFOC2Blade",0.0,20.0,35.0);
 
   // VACUUM PIPE: from ChoperC with 4m
-  PipeGen.setPipe(12.0,0.5);
-  PipeGen.setWindow(-2.0,0.5);
-  PipeGen.setFlange(-4.0,1.0);
+  PipeGen.setCF<CF250>();
+  PipeGen.setNoWindow();
   PipeGen.generatePipe(Control,"bifrostPipeF",481.5);
   Control.addVariable("bifrostPipeFYStep",2.0);
 
@@ -222,8 +220,8 @@ BIFROSTvariables(FuncDataBase& Control)
 
   // VACUUM PIPE: in bunker wall
   PipeGen.setPipe(6.0,0.5);
-  PipeGen.setWindow(-2.0,0.5);
-  PipeGen.setFlange(-4.0,1.0);
+  PipeGen.setNoWindow();
+  PipeGen.setFlange(10.0,1.0);
   PipeGen.generatePipe(Control,"bifrostPipeWall",348.0);
   Control.addVariable("bifrostPipeWallYStep",1.0);
   // Guide in wall
@@ -236,9 +234,8 @@ BIFROSTvariables(FuncDataBase& Control)
   SGen.generateShield(Control,"bifrostShieldA",6500.0,40.0,40.0,40.0,4,8);
   Control.addVariable("bifrostShieldAYStep",-4.0);
   // VACUUM PIPE: leaving bunker
-  PipeGen.setPipe(6.0,0.5);
-  PipeGen.setWindow(-2.0,0.5);
-  PipeGen.setFlange(-4.0,1.0);
+  PipeGen.setCF<CF150>();
+  PipeGen.setNoWindow();
   PipeGen.generatePipe(Control,"bifrostPipeOutA",600);
   Control.addVariable("bifrostPipeOutAYStep",4.0);
 
@@ -247,9 +244,7 @@ BIFROSTvariables(FuncDataBase& Control)
   FGen.generateTaper(Control,"bifrostFOutA",596.0,5.232,5.84, 5.232,5.84);   
 
   // Second vacuum pipe out of bunker [before chopper pit]
-  PipeGen.setPipe(6.0,0.5);
-  PipeGen.setWindow(-2.0,0.5);
-  PipeGen.setFlange(-4.0,1.0);
+  PipeGen.setCF<CF250>();
   PipeGen.generatePipe(Control,"bifrostPipeOutB",600);
   Control.addVariable("bifrostPipeOutBYStep",4.0);
 
@@ -259,9 +254,8 @@ BIFROSTvariables(FuncDataBase& Control)
   FGen.generateTaper(Control,"bifrostFOutB",596.0,5.84,7.04, 5.84,7.04);   
 
   // Second vacuum pipe out of bunker [before chopper pit]
-  PipeGen.setPipe(7.0,0.5);
-  PipeGen.setWindow(-2.0,0.5);
-  PipeGen.setFlange(-4.0,1.0);
+  PipeGen.setCF<CF250>();
+  PipeGen.setNoWindow();
   PipeGen.generatePipe(Control,"bifrostPipeOutC",480.0);
   Control.addVariable("bifrostPipeOutCYStep",4.0);
 
@@ -357,8 +351,8 @@ BIFROSTvariables(FuncDataBase& Control)
 
   // Second vacuum pipe out of bunker [before chopper pit]
   PipeGen.setPipe(6.0,0.5);
-  PipeGen.setWindow(-2.0,0.5);
-  PipeGen.setFlange(-4.0,1.0);
+  PipeGen.setNoWindow();
+  PipeGen.setFlange(10.0,1.0);
   PipeGen.generatePipe(Control,"bifrostPipeCave",250.0);
   Control.addVariable("bifrostPipeCaveYStep",2.0);
 

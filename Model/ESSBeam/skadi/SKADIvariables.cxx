@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/skadi/SKADIvariables.cxx
  *
- * Copyright (c) 2004-2022 by Tsitohaina Randriamalala/Stuart Ansell
+ * Copyright (c) 2004-2023 by Tsitohaina Randriamalala/Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,8 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "CFFlanges.h"
+
 #include "ShieldGenerator.h"
 #include "FocusGenerator.h"
 #include "ChopperGenerator.h"
@@ -63,9 +65,7 @@ void SKADIvariables(FuncDataBase& Control)
   setVariable::PipeGenerator PipeGen;
   setVariable::BladeGenerator BGen;
 
-  PipeGen.setPipe(7.5,0.5);
-  PipeGen.setWindow(-2.0,0.3);
-  PipeGen.setFlange(-4.0,1.0);
+  PipeGen.setCF<CF150>();
 
   // extent of beamline
   Control.addVariable("skadiStopPoint",0);

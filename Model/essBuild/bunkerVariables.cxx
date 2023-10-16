@@ -3,7 +3,7 @@
  
  * File:   essBuild/bunkerVariables.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2023 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -336,6 +336,19 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
   Control.addVariable(BKey+"BunkerPillarsLBeam14A","R_5S_8");
 
   
+  return;
+}
+
+void
+EssFullBunkderVarialbes(FuncDataBase& Control,
+			const std::string& AKey)
+  /*!
+    Create all the bunker variables
+    \param Control :: DataBase
+    \param key :: left / right key (A/B)
+  */
+{
+
   return;
 }
 

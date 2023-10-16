@@ -396,6 +396,7 @@ PipeGenerator::generatePipe(FuncDataBase& Control,
 
   Control.addVariable(keyName+"FlangeAType",flangeA.type);
   Control.addVariable(keyName+"FlangeBType",flangeB.type);
+
   if (flangeA.type)
     {
       if (flangeA.type==1)
@@ -457,7 +458,6 @@ PipeGenerator::generatePipe(FuncDataBase& Control,
   Control.addVariable(keyName+"OuterVoid",outerVoid);
 
   return;
-
 }
 
 ///\cond TEMPLATE
@@ -479,6 +479,8 @@ PipeGenerator::generatePipe(FuncDataBase& Control,
   template void PipeGenerator::setCF<CF120>();
   template void PipeGenerator::setCF<CF150>();
   template void PipeGenerator::setCF<CF200>();
+  template void PipeGenerator::setCF<CF250>();
+  template void PipeGenerator::setCF<CF300>();
   template void PipeGenerator::setCF<CF350>();
   template void PipeGenerator::setAFlangeCF<CF25>();
   template void PipeGenerator::setAFlangeCF<CF26_TDC>();
@@ -492,6 +494,8 @@ PipeGenerator::generatePipe(FuncDataBase& Control,
   template void PipeGenerator::setAFlangeCF<CF120>();
   template void PipeGenerator::setAFlangeCF<CF150>();
   template void PipeGenerator::setAFlangeCF<CF200>();
+  template void PipeGenerator::setAFlangeCF<CF250>();
+  template void PipeGenerator::setAFlangeCF<CF300>();
   template void PipeGenerator::setAFlangeCF<CF350>();
   template void PipeGenerator::setBFlangeCF<CF25>();
   template void PipeGenerator::setBFlangeCF<CF34_TDC>();
@@ -504,6 +508,8 @@ PipeGenerator::generatePipe(FuncDataBase& Control,
   template void PipeGenerator::setBFlangeCF<CF120>();
   template void PipeGenerator::setBFlangeCF<CF150>();
   template void PipeGenerator::setBFlangeCF<CF200>();
+  template void PipeGenerator::setBFlangeCF<CF250>();
+  template void PipeGenerator::setBFlangeCF<CF300>();
   template void PipeGenerator::setBFlangeCF<CF350>();
 
 ///\endcond TEMPLATE

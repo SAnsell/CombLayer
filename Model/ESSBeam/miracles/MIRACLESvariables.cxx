@@ -3,7 +3,7 @@
  
  * File:    ESSBeam/miracles/MIRACLESvariables.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,6 +41,8 @@
 #include "Vec3D.h"
 #include "Code.h"
 #include "varList.h"
+#include "CFFlanges.h"
+
 #include "FuncDataBase.h"
 #include "FocusGenerator.h"
 #include "ShieldGenerator.h"
@@ -72,10 +74,9 @@ MIRACLESvariables(FuncDataBase& Control)
   setVariable::BladeGenerator BGen;
   setVariable::TwinGenerator TGen;
 
-  PipeGen.setPipe(8.0,0.5);
-  PipeGen.setWindow(-0.5,0.5);
-  PipeGen.setFlange(-1.0,1.0);
-
+  PipeGen.setCF<CF150>();
+  PipeGen.setNoWindow();
+  
   SGen.addWall(1,20.0,"CastIron");
   SGen.addRoof(1,20.0,"CastIron");
   SGen.addFloor(1,20.0,"CastIron");
@@ -102,6 +103,7 @@ MIRACLESvariables(FuncDataBase& Control)
   FGen.generateTaper(Control,"miraclesFB",42.0, 5.0,4.857,  9.5,9.85714);
 
   // Pipe to collimator:
+  PipeGen.setCF<CF200>();
   PipeGen.generatePipe(Control,"miraclesPipeC",96.0);
   Control.addVariable("miraclesPipeCYStep",2.0);
   FGen.setYCentreOffset(-5.0);
@@ -147,8 +149,8 @@ MIRACLESvariables(FuncDataBase& Control)
 
   // Pipe after second chopper unit [to 11.5m]
   PipeGen.setRectPipe(16.0,16.0,0.5);
-  PipeGen.setFlange(13,1.0);
-  PipeGen.setAFlange(12,1.0);
+  PipeGen.setFlange(13.0,1.0);
+  PipeGen.setAFlange(12.0,1.0);
   PipeGen.generatePipe(Control,"miraclesPipeE",359.0);
   Control.addVariable("miraclesPipeEYStep",2.0);
   FGen.clearYOffset();
@@ -178,12 +180,11 @@ MIRACLESvariables(FuncDataBase& Control)
   Control.addVariable("miraclesShutterATopVoid",8.1);
 
   PipeGen.setRectPipe(16.0,16.0,0.5);
-  PipeGen.setFlange(13,1.0);
+  PipeGen.setFlange(14.0,1.0);
   PipeGen.generatePipe(Control,"miraclesPipeF",520.0);
   Control.addVariable("miraclesPipeFYStep",2.0);
   FGen.generateTaper(Control,"miraclesFF",516.0, 5.0,4.857,  9.5,9.85714);
 
-  PipeGen.setRectPipe(16.0,16.0,0.5);
   PipeGen.generatePipe(Control,"miraclesPipeG",730.0);
   Control.addVariable("miraclesPipeGYStep",2.0);
   FGen.generateBender(Control,"miraclesBG",724.0, 12.0,12.0,12.0,12.0,
@@ -209,8 +210,9 @@ MIRACLESvariables(FuncDataBase& Control)
   // OUTER shielding
   SGen.generateShield(Control,"miraclesShieldA",3000.0,40.0,40.0,40.0,4,8);  
   Control.addVariable("miraclesShieldAXYAngle",-0.1);
-  
-  PipeGen.setPipe(11.0,0.5);
+
+  PipeGen.setCF<CF250>();
+  PipeGen.setNoWindow();
   
   PipeGen.generatePipe(Control,"miraclesPipeOutA",1495.0);
   Control.addVariable("miraclesPipeOutAYStep",4.0);

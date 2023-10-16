@@ -14,6 +14,10 @@ segments=All
 #./singleItem --singleItem UTubePipe --validAll --validCheck $nValid AA 
 #exit
 
+parallel --halt now,fail=1 "./ess --defaultConfig Single {} --validAll --validCheck $nValid AA" ::: \
+ ESTIA CSPEC  ODIN MAGIC BIFROST  LOKI  NMX  NNBAR  DREAM  BEER   \
+ FREIA SKADI MIRACLES TESTBEAM TREX VESPA VOR     || exit
+
 
 # ./ess --defaultConfig Single VESPA --validAll --validCheck $nValid AA  || exit
 # ./ess --defaultConfig Single HEIMDAL --validAll --validCheck $nValid AA  || exit
@@ -36,8 +40,9 @@ parallel --halt now,fail=1 "./ess --topModType {} --validAll --validCheck $nVali
 ./ess --bunkerPillars ABunker --validAll --validCheck $nValid AA  || exit
 
 parallel --halt now,fail=1 "./ess --defaultConfig Single {} --validAll --validCheck $nValid AA" ::: \
- ESTIA CSPEC  ODIN MAGIC BIFROST  HEIMDAL  LOKI  NMX  NNBAR  DREAM  BEER   \
- FREIA SKADI MIRACLES TESTBEAM TREX VESPA VOR     
+ ESTIA CSPEC  ODIN MAGIC BIFROST LOKI  NMX  NNBAR  DREAM  BEER   \
+ FREIA SKADI MIRACLES TESTBEAM TREX VESPA VOR      || exit
+# HEIMDAL :: Not currently correct -- update underway
 
 parallel --halt now,fail=1 "./singleItem --singleItem {} --validAll --validCheck $nValid AA" ::: \
  BeamDivider BeamScrapper Bellow BlankTube BoxJaws         \
@@ -53,7 +58,7 @@ parallel --halt now,fail=1 "./singleItem --singleItem {} --validAll --validCheck
  PortTube PrismaChamber Quadrupole  \
  R3ChokeChamber RoundMonoShutter Scrapper Sexupole SixPort StriplineBPM \
  TWCavity TargetShield TriGroup TriPipe TriggerTube UndVac UndulatorVacuum \
- UTubePipe VacuumPipe ViewTube YAG YagScreen YagUnit default uVac 
+ UTubePipe VacuumPipe ViewTube YAG YagScreen YagUnit default uVac  || exit
 
 exit
 ## Need to fix the cooling pads on the reflector

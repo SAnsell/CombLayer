@@ -236,8 +236,8 @@ GeneralPipe::populateUnit(const FuncDataBase& Control,
     \param WI :: windowInfo to populate
   */
 {
-  ELog::RegMethod RegA("GeneralPipe","populateUnit");
-
+  ELog::RegMethod RegA("GeneralPipe","populateUnit");  
+  
   const std::string baseName(keyName+partName);
   const std::string AName(baseName+indexName);
   WI.type=Control.EvalDefTail<int>(AName,baseName,"Type",0);

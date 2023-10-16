@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/miracles/MIRACLES.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,6 +79,7 @@
 #include "DiskChopper.h"
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
+#include "RectanglePipe.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "SingleChopper.h"
@@ -110,12 +111,12 @@ MIRACLES::MIRACLES(const std::string& keyName) :
 
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   FocusD(new beamlineSystem::PlateUnit(newName+"FD")),
-
+  
   TwinC(new essConstruct::TwinChopper(newName+"TwinC")),
   CDiskTop(new essConstruct::DiskChopper(newName+"CBladeTop")),
   CDiskLow(new essConstruct::DiskChopper(newName+"CBladeLow")),
 
-  VPipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
+  VPipeE(new constructSystem::RectanglePipe(newName+"PipeE")),
   FocusE(new beamlineSystem::PlateUnit(newName+"FE")),
 
   ChopE(new essConstruct::SingleChopper(newName+"ChopE")),
@@ -123,10 +124,10 @@ MIRACLES::MIRACLES(const std::string& keyName) :
 
   ShutterA(new constructSystem::BeamShutter(newName+"ShutterA")),
 
-  VPipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
+  VPipeF(new constructSystem::RectanglePipe(newName+"PipeF")),
   FocusF(new beamlineSystem::PlateUnit(newName+"FF")),
 
-  VPipeG(new constructSystem::VacuumPipe(newName+"PipeG")),
+  VPipeG(new constructSystem::RectanglePipe(newName+"PipeG")),
   BendG(new beamlineSystem::BenderUnit(newName+"BG")),
 
   BInsert(new BunkerInsert(newName+"BInsert")),
@@ -264,7 +265,7 @@ MIRACLES::buildBunkerUnits(Simulation& System,
   CDiskTop->createAll(System,TwinC->getKey("MotorTop"),0,
                       TwinC->getKey("Beam"),-1);
   TwinC->insertAxle(System,*CDiskLow,*CDiskTop);
-  
+
   VPipeE->addAllInsertCell(bunkerVoid);
   VPipeE->createAll(System,TwinC->getKey("Beam"),2);
 

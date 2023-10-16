@@ -87,8 +87,8 @@ NNBARvariables(FuncDataBase& Control)
   FGen.generateTaper(Control,"nnbarFA",350.0, 30.0,50.0, 30.0,50.0);
 
   PipeGen.setPipe(35.0,1.0);
-  PipeGen.setWindow(-4.0,1.0);
-  PipeGen.setFlange(-8.0,4.0);
+  PipeGen.setNoWindow();
+  PipeGen.setFlange(39.0,4.0);
   PipeGen.generatePipe(Control,"nnbarPipeB",46.0);
   Control.addVariable("nnbarPipeBYStep",8.0);
 

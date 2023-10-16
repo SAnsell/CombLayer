@@ -3,7 +3,7 @@
  
  * File:    ESSBeam/dream/DREAMvariables.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -237,7 +237,7 @@ DREAMvariables(FuncDataBase& Control)
   FGen.generateOctagon(Control,"dreamFOutC",1183.0,5.86,4.34); 
 
   PipeGen.setWindowMat("Void"); 
-  PipeGen.setWindow(-2.0,0.0);
+  PipeGen.setNoWindow();
   // Part of Guide Section 4 inside Cave
   PipeGen.generatePipe(Control,"dreamPipeCaveA",516.36);
   Control.addVariable("dreamPipeCaveAYStep",0.0);

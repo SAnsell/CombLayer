@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/F5Collimator.h
  *
- * Copyright (c) 2015-2019 Konstantin Batkov
+ * Copyright (c) 2015-2023 Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,8 +35,9 @@ namespace essSystem
   \brief F5 collimator to restrict angular flux direction
 */
 
-class F5Collimator : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
+class F5Collimator : 
+  public attachSystem::FixedRotate,
+  public attachSystem::ContainedComp,
   public tallySystem::F5Calc
 {
  private:
@@ -50,8 +51,7 @@ class F5Collimator : public attachSystem::ContainedComp,
   
   // Functions:
   
-  void populate(FuncDataBase&);
-  
+  void modifyPopulate(FuncDataBase&);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -62,7 +62,7 @@ class F5Collimator : public attachSystem::ContainedComp,
   F5Collimator(const std::string&);
   F5Collimator(const F5Collimator&);    
   F5Collimator& operator=(const F5Collimator&);
-  ~F5Collimator() override;
+  ~F5Collimator()= default;
   
   int getMainCell() const { return buildIndex+1; }
   virtual void addToInsertChain(attachSystem::ContainedComp&) const; 

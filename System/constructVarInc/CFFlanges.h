@@ -453,13 +453,50 @@ struct CF150
   \date October 2019
   \brief CFFlanges for CF200
 */
-
 struct CF200
 {
   static constexpr double innerRadius=10.0;
   static constexpr double wallThick=0.5;
   static constexpr double outerRadius=wallThick+innerRadius;
   static constexpr double flangeRadius=12.65;
+  static constexpr double flangeLength=3.45;
+  static constexpr double bellowStep=2.5;
+  static constexpr double bellowThick=2.5;
+  static constexpr size_t nBolts=24;
+};
+
+/*!
+  \struct CF250
+  \version 1.0
+  \author S. Ansell
+  \date October 2023
+  \brief CFFlanges for CF250
+*/
+struct CF250
+{
+  static constexpr double innerRadius=12.5;
+  static constexpr double wallThick=0.5;
+  static constexpr double outerRadius=wallThick+innerRadius;
+  static constexpr double flangeRadius=15.25;
+  static constexpr double flangeLength=3.45;
+  static constexpr double bellowStep=2.5;
+  static constexpr double bellowThick=2.5;
+  static constexpr size_t nBolts=24;
+};
+
+/*!
+  \struct CF300
+  \version 1.0
+  \author S. Ansell
+  \date October 2023
+  \brief CFFlanges for CF300
+*/
+struct CF300
+{
+  static constexpr double innerRadius=15.0;
+  static constexpr double wallThick=0.8;
+  static constexpr double outerRadius=wallThick+innerRadius;
+  static constexpr double flangeRadius=17.75;
   static constexpr double flangeLength=3.45;
   static constexpr double bellowStep=2.5;
   static constexpr double bellowThick=2.5;

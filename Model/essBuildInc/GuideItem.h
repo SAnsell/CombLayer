@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/GuideItem.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,8 +36,10 @@ namespace essSystem
 */
 
 class GuideItem :
-    public attachSystem::ContainedGroup,
     public attachSystem::FixedRotateGroup,
+    public attachSystem::ContainedGroup,
+    public attachSystem::ExternalCut,
+    public attachSystem::SurfMap,
     public attachSystem::CellMap
 {
 private:
@@ -64,13 +66,17 @@ private:
   int mat;                           ///< Material
   int filled;                        ///< Inner void filled
 
+  void calcRadii();
+  /*
   int dividePlane;     ///< Divide plane
   int innerCyl;        ///< Inner Cylinder
-  int outerCyl;        ///< Outer Cylinder 
+  int outerCyl;        ///< Outer Cylinder
+  */
   double RInner;       ///< Inner cylinder radius 
   double ROuter;       ///< Outer cylinder radius 
-
+  
   const GuideItem* GPtr;     ///< Neighbour unit
+
   
   void populate(const FuncDataBase&) override;
   void createUnitVector(const attachSystem::FixedComp&,
@@ -82,7 +88,9 @@ private:
   HeadRule sideExclude(const size_t) const;
   HeadRule getEdge(const GuideItem*) const;
   const Geometry::Plane* getPlane(const int) const;
-  
+  HeadRule wheelHeadRule() const;
+
+
  public:
 
   GuideItem(const std::string&,const size_t);
@@ -90,13 +98,12 @@ private:
   GuideItem& operator=(const GuideItem&);
   ~GuideItem() override;
 
-  
   /// accessor to active status
-  int isActive() const { return active; }
+  int isBuilt() const { return active; }
   /// set active neighbour
   void setNeighbour(const GuideItem* GP) { GPtr=GP; }
   
-  void setCylBoundary(const int,const int,const int);
+  //  void setCylBoundary(const int,const int,const int);
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

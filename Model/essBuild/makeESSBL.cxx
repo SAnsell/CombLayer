@@ -3,7 +3,7 @@
  
  * File:   essBuild/makeESSBL.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -188,6 +188,12 @@ makeESSBL::build(Simulation& System,const Bunker& bunkerObj)
   if (beamName=="BEER")
     {
       BEER beerBL("beer");
+      // beer cuts (sometimes the main wheel void!!!!
+      if (mainGIPtr->isActive("wheel"))
+	{
+	  beerBL.copyCutSurf("wheel",*mainGIPtr,"wheel");
+	  ELog::EM<<"Bl added"<<ELog::endDiag;
+	}
       beerBL.build(System,*mainGIPtr,bunkerObj,voidCell);      
     }  
   else if (beamName=="BIFROST")
