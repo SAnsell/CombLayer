@@ -65,8 +65,7 @@
 
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
-
-
+#include "IonPumpGammaVacuum.h"
 
 #include "GTFLine.h"
 
@@ -82,7 +81,7 @@ GTFLine::GTFLine(const std::string& Key) :
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   buildZone(Key+"BuildZone"),
-  pipeInit(new constructSystem::Bellows(newName+"DummyBellow"))
+  ionPump(std::make_shared<IonPumpGammaVacuum>("IonPump"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -91,7 +90,7 @@ GTFLine::GTFLine(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(pipeInit);
+  OR.addObject(ionPump);
 }
 
 GTFLine::~GTFLine()
@@ -160,16 +159,16 @@ GTFLine::buildObjects(Simulation& System)
 
   buildZone.addInsertCells(this->getInsertCells());
 
-  pipeInit->createAll(System,*this,0);
-  outerCell=buildZone.createUnit(System,*pipeInit,2);
-  pipeInit->insertInCell(System,outerCell);
+  ionPump->createAll(System,*this,0);
+  outerCell=buildZone.createUnit(System,*ionPump,2);
+  ionPump->insertInCell(System,outerCell);
 
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);
 
   setCells("InnerVoid",buildZone.getCells("Unit"));
   setCell("LastVoid",buildZone.getCells("Unit").back());
-  lastComp=pipeInit;
+  lastComp=ionPump;
 
   return;
 }
@@ -182,7 +181,7 @@ GTFLine::createLinks()
 {
   ELog::RegMethod RControl("GTFLine","createLinks");
 
-  setLinkCopy(0,*pipeInit,1);
+  setLinkCopy(0,*ionPump,1);
   setLinkCopy(1,*lastComp,2);
   return;
 }

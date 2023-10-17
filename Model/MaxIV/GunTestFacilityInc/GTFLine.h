@@ -38,6 +38,8 @@ namespace MAXIV
     \brief Constructor for the Gun Test Facility line components
   */
 
+  class IonPumpGammaVacuum;
+
 class GTFLine :
   public attachSystem::CopiedComp,
   public attachSystem::ContainedComp,
@@ -55,7 +57,7 @@ class GTFLine :
   std::shared_ptr<attachSystem::FixedComp> lastComp;
 
   /// a dummy bellow
-  std::shared_ptr<constructSystem::Bellows> pipeInit;
+  std::shared_ptr<IonPumpGammaVacuum> ionPump;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle

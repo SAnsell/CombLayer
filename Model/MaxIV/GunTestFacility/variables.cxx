@@ -204,11 +204,27 @@ namespace setVariable
     \param name :: name prefix
   */
   {
-    Control.addVariable("GTFLineOuterLeft", 100.0);
+    Control.addVariable(name+"OuterLeft", 100.0);
 
-    setVariable::BellowGenerator BellowGen;
-    BellowGen.setCF<setVariable::CF40>();
-    BellowGen.generateBellow(Control,name+"DummyBellow",7.50);
+
+    // Ion Pump produced by Gamma Vacuum
+    Control.addVariable("IonPumpLength",17.2);
+    Control.addVariable("IonPumpHeight",13.0);
+    Control.addVariable("IonPumpWallThick",1.3);
+    Control.addVariable("IonPumpMainMat","Void");
+    Control.addVariable("IonPumpWallMat","Stainless304L"); // dummy TODO
+    Control.addVariable("IonPumpPistonMat","Stainless304"); // dummy TODO
+
+    Control.addVariable("IonPumpPistonWidth",26.3);
+    Control.addVariable("IonPumpPistonHeight",5.0);
+    Control.addVariable("IonPumpPistonBaseHeight",12.0);
+    Control.addVariable("IonPumpPistonBaseThick",4.5);
+    Control.addVariable("IonPumpPistonLength",15.0);
+    Control.addVariable("IonPumpFlangeRadius", 7.5);
+    Control.addVariable("IonPumpFlangeThick", 2.1);
+    Control.addVariable("IonPumpFlangeTubeRadius", 5.0);
+    Control.addVariable("IonPumpFlangeTubeThick", 0.2);
+    Control.addVariable("IonPumpFlangeTubeLength", 6.9);
 
   }
 
