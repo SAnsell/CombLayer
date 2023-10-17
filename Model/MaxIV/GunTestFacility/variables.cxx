@@ -48,6 +48,7 @@
 #include "CFFlanges.h"
 #include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
+#include "PipeGenerator.h"
 
 namespace setVariable
 {
@@ -222,9 +223,17 @@ namespace setVariable
     Control.addVariable("IonPumpPistonLength",15.0);
     Control.addVariable("IonPumpFlangeRadius", 7.5);
     Control.addVariable("IonPumpFlangeThick", 2.1);
-    Control.addVariable("IonPumpFlangeTubeRadius", 5.0);
+    Control.addVariable("IonPumpFlangeTubeRadius", 5.1); // CF100? TODO: check radius
     Control.addVariable("IonPumpFlangeTubeThick", 0.2);
     Control.addVariable("IonPumpFlangeTubeLength", 6.9);
+
+    setVariable::PipeGenerator PipeGen;
+
+    PipeGen.setNoWindow();   // no window
+    PipeGen.setCF<setVariable::CF100>();
+    PipeGen.generatePipe(Control,"Extension",11.0);
+    Control.addVariable("ExtensionFeThick", 0.2);
+
 
   }
 

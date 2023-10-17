@@ -25,6 +25,7 @@
 namespace constructSystem
 {
   class Bellows;
+  class VacuumPipe;
 }
 
 namespace MAXIV
@@ -58,6 +59,7 @@ class GTFLine :
 
   /// a dummy bellow
   std::shared_ptr<IonPumpGammaVacuum> ionPump;
+  std::shared_ptr<constructSystem::VacuumPipe> extension;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle

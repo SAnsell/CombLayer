@@ -35,37 +35,43 @@
 #include <memory>
 
 #include "FileReport.h"
-#include "NameStack.h"
-#include "RegMethod.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
-#include "Code.h"
-#include "varList.h"
-#include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "groupRange.h"
-#include "objectGroups.h"
-#include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
-#include "BlockZone.h"
 #include "FrontBackCut.h"
+#include "NameStack.h"
+#include "RegMethod.h"
+#include "objectRegister.h"
+#include "Code.h"
+#include "varList.h"
+#include "FuncDataBase.h"
+#include "groupRange.h"
+#include "objectGroups.h"
+#include "Simulation.h"
+#include "FixedOffset.h"
+#include "ContainedGroup.h"
+#include "BlockZone.h"
 #include "CopiedComp.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
+#include "generalConstruct.h"
 
-#include "SplitFlangePipe.h"
-#include "Bellows.h"
 #include "IonPumpGammaVacuum.h"
+#include "GeneralPipe.h"
+#include "VacuumPipe.h"
+
+
+
+
 
 #include "GTFLine.h"
 
@@ -81,7 +87,8 @@ GTFLine::GTFLine(const std::string& Key) :
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   buildZone(Key+"BuildZone"),
-  ionPump(std::make_shared<IonPumpGammaVacuum>("IonPump"))
+  ionPump(std::make_shared<IonPumpGammaVacuum>("IonPump")),
+  extension(std::make_shared<constructSystem::VacuumPipe>("Extension"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -91,6 +98,7 @@ GTFLine::GTFLine(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(ionPump);
+  OR.addObject(extension);
 }
 
 GTFLine::~GTFLine()
@@ -163,12 +171,16 @@ GTFLine::buildObjects(Simulation& System)
   outerCell=buildZone.createUnit(System,*ionPump,2);
   ionPump->insertInCell(System,outerCell);
 
+  constructSystem::constructUnit
+    (System,buildZone,*ionPump,"back",*extension);
+
+
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);
 
   setCells("InnerVoid",buildZone.getCells("Unit"));
   setCell("LastVoid",buildZone.getCells("Unit").back());
-  lastComp=ionPump;
+  lastComp=extension;
 
   return;
 }
