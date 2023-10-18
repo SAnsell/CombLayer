@@ -136,6 +136,7 @@
 
 #include "RoundShutterGenerator.h"
 #include "TubeDetBoxGenerator.h"
+#include "RFGunGenerator.h"
 
 namespace setVariable
 {
@@ -803,6 +804,10 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable("IonPumpGammaVacuumFlangeTubeRadius", 5.0);
   Control.addVariable("IonPumpGammaVacuumFlangeTubeThick", 0.2);
   Control.addVariable("IonPumpGammaVacuumFlangeTubeLength", 6.9);
+
+  setVariable::RFGunGenerator RFGen;
+  RFGen.generate(Control,"RFGun");
+
 
 
   return;

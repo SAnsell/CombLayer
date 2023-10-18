@@ -167,6 +167,7 @@
 #include "MLMonoDetail.h"
 #include "ConcreteDoor.h"
 #include "IonPumpGammaVacuum.h"
+#include "RFGun.h"
 
 #include "makeSingleItem.h"
 
@@ -224,7 +225,7 @@ makeSingleItem::build(Simulation& System,
 	"ConnectorTube","LocalShield","FlangeDome",
 	"MonoShutter","RoundMonoShutter","TubeDetBox",
 	"GuideUnit","PlateUnit","BenderUnit","MLMdetail",
-        "ConcreteDoor", "IonPumpGammaVacuum",
+        "ConcreteDoor", "IonPumpGammaVacuum", "RFGun",
 	"Help","help"
     });
 
@@ -1562,6 +1563,15 @@ makeSingleItem::build(Simulation& System,
       OR.addObject(pump);
       pump->addInsertCell(voidCell);
       pump->createAll(System,World::masterOrigin(),0);
+      return;
+    }
+
+  if (item == "RFGun")
+    {
+      const auto rfgun = std::make_shared<xraySystem::RFGun>("RFGun");
+      OR.addObject(rfgun);
+      rfgun->addInsertCell(voidCell);
+      rfgun->createAll(System,World::masterOrigin(),0);
       return;
     }
 
