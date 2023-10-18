@@ -40,9 +40,12 @@ class RFGunGenerator
  private:
 
   double length;                ///< Total length including void
-  double width;                 ///< Width
-  double height;                ///< Height
+  double cavityRadius;          ///< CavityRadius
+  double cavityLength;          ///< Cavity length
+  double cavitySideWallThick;   ///< Main cavity side wall thickness
+  double cavityOffset;          ///< Main cavity offset
   double wallThick;             ///< Wall thickness
+  double frontFlangeThick;      ///< Front flange thickness
 
   std::string mainMat;          ///< Main material
   std::string wallMat;          ///< Wall material

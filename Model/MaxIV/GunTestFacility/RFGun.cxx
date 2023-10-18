@@ -83,8 +83,11 @@ RFGun::RFGun(const RFGun& A) :
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
-  length(A.length),width(A.width),height(A.height),
+  length(A.length),cavityRadius(A.cavityRadius),cavityLength(A.cavityLength),
+  cavitySideWallThick(A.cavitySideWallThick),
+  cavityOffset(A.cavityOffset),
   wallThick(A.wallThick),
+  frontFlangeThick(A.frontFlangeThick),
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
     Copy constructor
@@ -108,9 +111,12 @@ RFGun::operator=(const RFGun& A)
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
       length=A.length;
-      width=A.width;
-      height=A.height;
+      cavityRadius=A.cavityRadius;
+      cavityLength=A.cavityLength;
+      cavitySideWallThick=A.cavitySideWallThick;
+      cavityOffset=A.cavityOffset;
       wallThick=A.wallThick;
+      frontFlangeThick=A.frontFlangeThick;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
     }
@@ -145,9 +151,12 @@ RFGun::populate(const FuncDataBase& Control)
   FixedRotate::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
-  width=Control.EvalVar<double>(keyName+"Width");
-  height=Control.EvalVar<double>(keyName+"Height");
+  cavityRadius=Control.EvalVar<double>(keyName+"CavityRadius");
+  cavityLength=Control.EvalVar<double>(keyName+"CavityLength");
+  cavitySideWallThick=Control.EvalVar<double>(keyName+"CavitySideWallThick");
+  cavityOffset=Control.EvalVar<double>(keyName+"CavityOffset");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  frontFlangeThick=Control.EvalVar<double>(keyName+"FrontFlangeThick");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -168,7 +177,7 @@ RFGun::createSurfaces()
       ModelSupport::buildPlane(SMap,buildIndex+11,Origin,Y);
       FrontBackCut::setFront(SMap.realSurf(buildIndex+11));
 
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*(wallThick),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*(frontFlangeThick),Y);
     } else
     {
       ModelSupport::buildShiftedPlane(SMap, buildIndex+1,
@@ -189,17 +198,14 @@ RFGun::createSurfaces()
 				      -wallThick);
     }
 
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,cavityRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,cavityRadius+wallThick);
 
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+21,Origin+Y*(cavityOffset+frontFlangeThick),Y);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+22,buildIndex+21,Y,cavityLength);
 
-  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(width/2.0+wallThick),X);
-  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(width/2.0+wallThick),X);
-
-  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(height/2.0+wallThick),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height/2.0+wallThick),Z);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+31,buildIndex+21,Y,-cavitySideWallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+32,buildIndex+22,Y,cavitySideWallThick);
 
   return;
 }
@@ -213,19 +219,37 @@ RFGun::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("RFGun","createObjects");
 
-  HeadRule Out;
+  HeadRule HR;
   const HeadRule frontStr(frontRule());
   const HeadRule backStr(backRule());
 
-  Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  makeCell("MainCell",System,cellIndex++,mainMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -31 -7 ");
+  makeCell("MainCell",System,cellIndex++,mainMat,0.0,HR);
 
-  Out=ModelSupport::getHeadRule(SMap,buildIndex,
-				 " 13 -14 15 -16 (-1:2:-3:4:-5:6) ");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out*frontStr*backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 32 -2 -7 ");
+  makeCell("MainCell",System,cellIndex++,mainMat,0.0,HR);
 
-  Out=ModelSupport::getHeadRule(SMap,buildIndex," 13 -14 15 -16");
-  addOuterSurf(Out*frontStr*backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 7 -17 ");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -1 -17 ");
+  makeCell("WallFront",System,cellIndex++,wallMat,0.0,HR*frontStr);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 2 -17 ");
+  makeCell("WallBack",System,cellIndex++,wallMat,0.0,HR*backStr);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 21 -22 -7 ");
+  makeCell("MainCavity",System,cellIndex++,0,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 31 -21 -7 ");
+  makeCell("MainCavitySideWall",System,cellIndex++,wallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 22 -32 -7 ");
+  makeCell("MainCavitySideWall",System,cellIndex++,wallMat,0.0,HR);
+
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -17");
+  addOuterSurf(HR*frontStr*backStr);
 
   return;
 }
@@ -241,16 +265,16 @@ RFGun::createLinks()
 
   FrontBackCut::createLinks(*this,Origin,Y);
 
-  FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
+  FixedComp::setConnect(2,Origin-X*(cavityRadius/2.0),-X);
   FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
 
-  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
+  FixedComp::setConnect(3,Origin+X*(cavityRadius/2.0),X);
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
 
-  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
+  FixedComp::setConnect(4,Origin-Z*(cavityLength/2.0),-Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
 
-  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
+  FixedComp::setConnect(5,Origin+Z*(cavityLength/2.0),Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   return;

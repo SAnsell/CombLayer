@@ -50,7 +50,12 @@ namespace setVariable
 {
 
 RFGunGenerator::RFGunGenerator() :
-  length(10.0),width(5.0),height(15.0),wallThick(1.0),
+  length(9.7), // +- 2 mm
+  cavityRadius(4.0),cavityLength(1.0),
+  cavitySideWallThick(1.9), // measured
+  cavityOffset(4.0), // measured
+  wallThick(1.0),
+  frontFlangeThick(2.2),
   mainMat("Void"),wallMat("Stainless316L")
   /*!
     Constructor and defaults
@@ -75,9 +80,12 @@ RFGunGenerator::generate(FuncDataBase& Control,
   ELog::RegMethod RegA("RFGunGenerator","generate");
 
   Control.addVariable(keyName+"Length",length);
-  Control.addVariable(keyName+"Width",width);
-  Control.addVariable(keyName+"Height",height);
+  Control.addVariable(keyName+"CavityRadius",cavityRadius);
+  Control.addVariable(keyName+"CavityLength",cavityLength);
+  Control.addVariable(keyName+"CavitySideWallThick",cavitySideWallThick);
+  Control.addVariable(keyName+"CavityOffset",cavityOffset);
   Control.addVariable(keyName+"WallThick",wallThick);
+  Control.addVariable(keyName+"FrontFlangeThick",frontFlangeThick);
   Control.addVariable(keyName+"MainMat",mainMat);
   Control.addVariable(keyName+"WallMat",wallMat);
 

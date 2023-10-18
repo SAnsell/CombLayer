@@ -45,9 +45,12 @@ class RFGun :
  private:
 
   double length;                ///< Total length including void
-  double width;                 ///< Width
-  double height;                ///< Height
+  double cavityRadius;          ///< Cavity inner radius
+  double cavityLength;          ///< Cavity length
+  double cavitySideWallThick;   ///< Main cavity side wall thickness
+  double cavityOffset;          ///< Main cavity offset
   double wallThick;             ///< Wall thickness
+  double frontFlangeThick;      ///< Front flange thickness
 
   int mainMat;                  ///< Main material
   int wallMat;                  ///< Wall material
