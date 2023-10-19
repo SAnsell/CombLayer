@@ -37,7 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -59,6 +58,14 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+#include "Surface.h"
+#include "surfIndex.h"
+#include "Quadratic.h"
+#include "General.h"
+#include "Plane.h"
+
 
 #include "RFGun.h"
 
@@ -201,11 +208,23 @@ RFGun::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,cavityRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,cavityRadius+wallThick);
 
-  ModelSupport::buildPlane(SMap,buildIndex+21,Origin+Y*(cavityOffset+frontFlangeThick),Y);
+  const auto p21 = ModelSupport::buildPlane(SMap,buildIndex+21,Origin+Y*(cavityOffset+frontFlangeThick),Y);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+22,buildIndex+21,Y,cavityLength);
-
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+31,buildIndex+21,Y,-cavitySideWallThick);
+  const auto p31 = ModelSupport::buildShiftedPlane(SMap,buildIndex+31,buildIndex+21,Y,-cavitySideWallThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+32,buildIndex+22,Y,cavitySideWallThick);
+
+  // Iris surface: hyperboloid of revolution of one sheet
+  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
+  Geometry::General *GA;
+
+  const double y = (p31->getDistance() + p21->getDistance())/2.0;
+  const double R = 0.225; // 0.225 -> 3 cm diameter
+  std::ostringstream cx;
+  cx<<"sq 0.1 -1 0.1    0 0 0 " << -R << " 0 " << y << " 0";
+
+  GA = SurI.createUniqSurf<Geometry::General>(buildIndex+517);
+  GA->setSurface(cx.str());
+  SMap.registerSurf(GA);
 
   return;
 }
@@ -241,11 +260,14 @@ RFGun::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 21 -22 -7 ");
   makeCell("MainCavity",System,cellIndex++,0,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 31 -21 -7 ");
-  makeCell("MainCavitySideWall",System,cellIndex++,wallMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 31 -21 -7 517 ");
+  makeCell("MainCavityWallFront",System,cellIndex++,wallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 31 -21  -517 ");
+  makeCell("MainCavityIrisFront",System,cellIndex++,mainMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 22 -32 -7 ");
-  makeCell("MainCavitySideWall",System,cellIndex++,wallMat,0.0,HR);
+  makeCell("MainCavityWallBack",System,cellIndex++,wallMat,0.0,HR);
 
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -17");

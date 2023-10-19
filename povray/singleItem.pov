@@ -127,6 +127,11 @@
     #declare cameraLookAt   = <0.0, 10.0, 0.0>;
     #declare cameraAngle = 30;
   #break
+  #case (strcmp(ITEM,"RFGun"))
+    #declare cameraLocation = <190, 40.0, 190.0>;
+    #declare cameraLookAt   = <0.0, 10.0, 0.0>;
+    #declare cameraAngle = 50;
+  #break
 #else
     #declare cameraLocation = <100, 100, 100>;
     #declare cameraLookAt   = <0, 0, 0>;
