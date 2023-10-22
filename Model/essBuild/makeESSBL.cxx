@@ -150,8 +150,8 @@ makeESSBL::getBeamNum(const std::string& Name)
   ELog::RegMethod RegA("makeESSBL","getBeamNum");
   
   if (Name.length()<11)
-    throw ColErr::InvalidLine(Name,
-			      "Name not in form : GxBLineTopjj/GxBLineLowjj");
+    throw ColErr::InvalidLine
+      (Name,"Name not in form : GxBLineTopjj/GxBLineLowjj");
   
   std::pair<int,int> Out(0,0);
   std::string BN(Name);
@@ -159,10 +159,8 @@ makeESSBL::getBeamNum(const std::string& Name)
   BN.replace(2,8,"     ");
   if (!StrFunc::section(BN,Out.first) ||
       !StrFunc::section(BN,Out.second))
-    {
+    throw ColErr::InvalidLine(Name,"Name processable in from : GxBLineyy");
 
-      throw ColErr::InvalidLine(Name,"Name processable in from : GxBLineyy");
-    }
   return Out;
 }
   

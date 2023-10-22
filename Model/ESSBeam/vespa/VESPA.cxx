@@ -652,7 +652,6 @@ VESPA::buildIsolated(Simulation& System,const int voidCell)
 {
   ELog::RegMethod RegA("VESPA","buildIsolated");
 
-
   const FuncDataBase& Control=System.getDataBase();
   CopiedComp::process(System.getDataBase());
   startPoint=Control.EvalDefVar<int>(newName+"StartPoint",0);

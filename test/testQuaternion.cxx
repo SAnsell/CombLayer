@@ -36,7 +36,10 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
+#include "Exception.h"
 #include "Vec3D.h"
+#include "MatrixBase.h"
+#include "Matrix.h"
 #include "Quaternion.h"
 
 #include "testFunc.h"
@@ -72,6 +75,7 @@ testQuaternion::applyTest(const int extra)
   testPtr TPtr[]=
     { 
       &testQuaternion::testInverse,
+      &testQuaternion::testMatrixRot,
       &testQuaternion::testMultiplication,
       &testQuaternion::testRotation,
       &testQuaternion::testVecRot
@@ -80,6 +84,7 @@ testQuaternion::applyTest(const int extra)
   std::string TestName[] = 
     {
       "Inverse",
+      "MatrixRot",
       "Multiplication",
       "Rotation",
       "VecRot"
@@ -159,6 +164,77 @@ testQuaternion::testMultiplication()
 	  ELog::EM<<"B       == "<<std::get<1>(tc)<<ELog::endTrace;
 	  ELog::EM<<"Answer  == "<<Ans<<ELog::endTrace;
 	  ELog::EM<<"Expect  == "<<std::get<2>(tc)<<ELog::endTrace;
+	  return -1;
+	}
+    }
+  return 0;
+}
+
+int
+testQuaternion::testMatrixRot()
+/*!
+  Tests the construction of a quaternion via the
+  rotation matrix
+  \retval -1 on failure
+  \retval 0 :: success 
+*/
+{
+  ELog::RegMethod RegA("testQuaternion","testMatrixRot");
+
+  typedef std::tuple<double,double,double> TTYPE;
+
+  std::vector<TTYPE> Test({
+      {0,0,0},
+      {45,0,0},
+      {60,0,0},
+      {17,-32,92},     // elm 2
+      {17,-32,92},     // elm 2
+      {-60,94,-54},    // elm 0
+      {81,32,-34}      // elm 1 
+    });
+
+  int cnt(0);
+  for(const TTYPE& tc : Test)
+    {
+      cnt++;
+      // stupid way to make a generalized rotation matrix
+      const double alpha=M_PI*std::get<0>(tc)/180.0;
+      const double beta=M_PI*std::get<1>(tc)/180.0;
+      const double gamma=M_PI*std::get<2>(tc)/180.0;
+      const std::vector<double> angle{alpha,beta,gamma};
+      Matrix<double> M(3,3);
+      M.identityMatrix();
+      Matrix<double> Rot(3,3);
+      for(size_t i=0;i<3;i++)
+	{
+	  Rot.identityMatrix();
+	  const size_t iA=(2-i);
+	  const size_t iAplus=(iA+1) % 3;
+	  Rot[iA][iA]=std::cos(angle[i]);
+	  Rot[iA][iAplus]=-std::sin(angle[i]);
+	  Rot[iAplus][iA]=std::sin(angle[i]);
+	  Rot[iAplus][iAplus]=std::cos(angle[i]);
+	  M*=Rot; // note this is non-standard way round
+	}
+
+      try
+	{
+	  const Quaternion QA=
+	    Quaternion::calcQRotMatrix(M);
+	  const Matrix<double> R=QA.rMatrix();
+	  if (R!=M)
+	    {
+	      ELog::EM<<"Test "<<cnt<<ELog::endDiag;
+	      ELog::EM<<"M "<<M<<ELog::endDiag;
+	      ELog::EM<<"R "<<R<<ELog::endDiag;
+	      ELog::EM<<"quaterion "<<QA<<ELog::endDiag;
+	      return -1;
+	    }
+	}
+      catch(ColErr::ExBase& C)
+	{
+	  ELog::EM<<"Test "<<cnt<<ELog::endDiag;
+	  ELog::EM<<"Exception == "<<C.what()<<ELog::endDiag;
 	  return -1;
 	}
     }
