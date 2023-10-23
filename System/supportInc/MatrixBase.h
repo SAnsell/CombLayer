@@ -70,6 +70,7 @@ class MatrixBase
  public:
 
   MatrixBase(const size_t =0,const size_t =0);
+  MatrixBase(std::vector<std::vector<T>>);
   MatrixBase(const std::vector<T>&,const std::vector<T>&); 
   MatrixBase(const MatrixBase<T>&);
   MatrixBase(const MatrixBase<T>&,const size_t,const size_t);

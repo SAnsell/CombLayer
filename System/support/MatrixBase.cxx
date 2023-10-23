@@ -81,6 +81,38 @@ MatrixBase<T>::MatrixBase(const size_t nrow,const size_t ncol)
   zeroMatrix();
 }
 
+
+template<typename T>
+MatrixBase<T>::MatrixBase(std::vector<std::vector<T>> A)
+  : nx(0),ny(0),V(0)
+  /*!
+    Constructor to take two vectors and multiply them to 
+    construct a matrix. (assuming that we have columns x row
+    vector.)
+    \param A :: Column vector to multiply
+    \param B :: Row vector to multiply
+  */
+{
+  if (!A.empty() && !A[0].empty())
+    {
+      const size_t nXprime=A.size();
+      const size_t nYprime=A[0].size();
+      for(size_t i=1;i<nXprime;i++)
+	if (nYprime!=A[0].size())
+	  {
+	    throw ColErr::MisMatch<size_t>
+	      (nYprime,A[0].size(),
+	       "Vector misMatch at index:"+std::to_string(i)
+	       );
+	  }
+      setMem(nXprime,nYprime);
+      for(size_t i=0;i<nx;i++)
+	for(size_t j=0;j<ny;j++)
+	  V[i][j]=std::move(A[i][j]);  
+    }
+  return;
+}
+
 template<typename T>
 MatrixBase<T>::MatrixBase(const std::vector<T>& A,const std::vector<T>& B)
   : nx(0),ny(0),V(0)
