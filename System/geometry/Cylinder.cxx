@@ -166,7 +166,6 @@ Cylinder::operator==(const Cylinder& A) const
   */
 {
   ELog::RegMethod RegA("Cylinder","operator==");
-
     
   if (&A==this) return 1;
   if (std::abs(Radius-A.Radius)>Geometry::zeroTol)

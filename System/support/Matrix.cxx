@@ -54,6 +54,17 @@ Matrix<T>::Matrix(const size_t nrow,const size_t ncol) :
  
 
 template<typename T>
+Matrix<T>::Matrix(std::vector<std::vector<T>> A) :
+  MatrixBase<T>(std::move(A))
+  /*!
+    Constructor to take two vectors and multiply them to 
+    construct a matrix. (assuming that we have columns x row
+    vector.
+    \param A :: row column vector of matrix elements
+  */
+{}
+
+template<typename T>
 Matrix<T>::Matrix(const std::vector<T>& A,const std::vector<T>& B) :
   MatrixBase<T>(A,B)
   /*!

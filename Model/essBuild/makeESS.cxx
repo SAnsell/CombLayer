@@ -956,6 +956,7 @@ makeESS::buildTwister(Simulation& System)
 
   Twister->createAll(System,*Bulk,0);
 
+
   attachSystem::addToInsertForced(System,*Bulk,Twister->getCC("Shaft"));
   attachSystem::addToInsertForced(System,*Bulk,Twister->getCC("PlugFrame"));
   attachSystem::addToInsertForced(System,*Bulk,Twister->getCC("ShaftBearing"));
@@ -1068,7 +1069,6 @@ makeESS::build(Simulation& System,
   
   Reflector->insertComponent(System,"targetVoid",*Target,1);
   Bulk->setCutSurf("Reflector",Reflector->getExclude());
-
   Bulk->setCutSurf("TargetBase",*Target,"VoidBase");
   Bulk->setCutSurf("TargetTop",*Target,"VoidTop");
   Bulk->setCutSurf("ReflectorRadius",*Reflector,"OuterRadius");
@@ -1111,15 +1111,23 @@ makeESS::build(Simulation& System,
 
   if (lowModType != "None")
     {
-      attachSystem::addToInsertForced(System,*Bulk,LowAFL->getCC("outer"));
-      attachSystem::addToInsertForced(System,*Bulk,LowBFL->getCC("outer"));
+      Bulk->insertComponent(System,"Layer0",0,LowAFL->getCC("outer"));
+      Bulk->insertComponent(System,"Layer0",0,LowBFL->getCC("outer"));
+      Bulk->insertComponent(System,"Layer1Base",LowAFL->getCC("outer"));
+      Bulk->insertComponent(System,"Layer1Base",LowBFL->getCC("outer"));
+      Bulk->insertComponent(System,"Layer2Base",LowAFL->getCC("outer"));
+      Bulk->insertComponent(System,"Layer2Base",LowBFL->getCC("outer"));
     }
 
-  //MonteCarlo::Object* OPtr=System.findObject(1270001);
-  //  ELog::EM<<"Object == "<<*OPtr<<ELog::endDiag;
-
-  attachSystem::addToInsertForced(System,*Bulk,TopAFL->getCC("outer"));
-  attachSystem::addToInsertForced(System,*Bulk,TopBFL->getCC("outer"));
+  Bulk->insertComponent(System,"Layer0",1,TopAFL->getCC("outer"));
+  Bulk->insertComponent(System,"Layer0",1,TopBFL->getCC("outer"));
+  Bulk->insertComponent(System,"Layer1Top",TopAFL->getCC("outer"));
+  Bulk->insertComponent(System,"Layer1Top",TopBFL->getCC("outer"));
+  Bulk->insertComponent(System,"Layer2Top",TopAFL->getCC("outer"));
+  Bulk->insertComponent(System,"Layer2Top",TopBFL->getCC("outer"));
+  //  attachSystem::addToInsertForced(System,*Bulk,
+  //				  TopAFL->getCC("outer"));
+  //  attachSystem::addToInsertForced(System,*Bulk,TopBFL->getCC("outer"));
 
   buildIradComponent(System,IParam);
   // Full surround object

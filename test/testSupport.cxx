@@ -81,6 +81,7 @@ testSupport::applyTest(const int extra)
       &testSupport::testConvPartNum,
       &testSupport::testExtractWord,
       &testSupport::testFullBlock,
+      &testSupport::testGetDelimUnit,
       &testSupport::testItemize,
       &testSupport::testSection,
       &testSupport::testSectionCinder,
@@ -100,6 +101,7 @@ testSupport::applyTest(const int extra)
       "ConvPartNum",
       "ExtractWord",
       "FullBlock",
+      "GetDelimUnit",
       "Itemize",
       "Section",
       "SectionCinder",
@@ -281,6 +283,52 @@ testSupport::testConvPartNum()
   return 0;
 }
 
+
+int
+testSupport::testGetDelimUnit()
+  /*!
+    Test teh getDelimUnit which finds a block
+    of text between two delimiters
+    \retval -1 :: failed find word in string
+    when the pattern exists.
+  */
+{
+  ELog::RegMethod RegA("testSupport","testGetDelimUnit");
+  // main : dA dB : mid : newMain
+  typedef std::tuple<std::string,std::string,std::string,
+		     std::string,std::string> TTYPE;
+  const std::vector<TTYPE> Tests({
+      {"[This]","[","]","This",""},
+      {"[ This ]","[","]"," This ",""},
+      {"[ This] and some","[","]"," This"," and some"},
+      {"key[ This] and some","[","]"," This","key and some"},
+      {"key[ This] and [ other ] some","[","]"," This","key and [ other ] some"}
+    });
+
+  for(const TTYPE& tc : Tests)
+    {
+      std::string line=std::get<0>(tc);
+      const std::string dA=std::get<1>(tc);
+      const std::string dB=std::get<2>(tc);
+      const std::string mid=std::get<3>(tc);
+      const std::string remain=std::get<4>(tc);
+
+      const std::string item=
+	StrFunc::getDelimUnit(dA,dB,line);
+      if (line!=remain || mid!=item)
+	{
+	  ELog::EM<<"Input  =="<<std::get<0>(tc)<<"=="<<ELog::endDiag;
+	  ELog::EM<<"Item   =="<<item<<"=="<<ELog::endDiag;
+	  ELog::EM<<"Expect =="<<mid<<"=="<<ELog::endDiag;
+	  ELog::EM<<"Remain =="<<line<<"=="<<ELog::endDiag;
+	  ELog::EM<<"Expect =="<<remain<<"=="<<ELog::endDiag;
+		  
+	  return -1;
+	}
+    }
+
+  return 0;  
+}
 
 int
 testSupport::testExtractWord()

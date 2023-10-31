@@ -3,7 +3,7 @@
  
  * File:   essBuild/BulkModule.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -246,10 +246,11 @@ BulkModule::createObjects(Simulation& System)
       completeLayer=1;
       RI+=10;
     }
-  
+
   for(size_t i=completeLayer;i<nLayer;i++)
     {
       const std::string lName("Layer"+std::to_string(i));
+
       HR=ModelSupport::getHeadRule
 	(SMap,RI,buildIndex,"5 -6 -7 -100M");
       makeCell(lName+"Base",System,cellIndex++,Mat[i],0.0,HR*HRX);

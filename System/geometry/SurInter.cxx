@@ -71,7 +71,9 @@ getLinePoint(const Geometry::Vec3D& Origin,
 	     const int SNum,
 	     const Geometry::Vec3D& closePt)
   /*!
-    Calculate the intersection object between two planes
+    Calculate the intersection of a line with a surface
+    If there are multiple points of intersection find
+    the point closest to closePT
     \param Origin :: Start of line
     \param LAxis :: Axis of line
     \param SNum :: Surface number
@@ -92,7 +94,8 @@ getLinePoint(const Geometry::Vec3D& Origin,
 	     const Geometry::Vec3D& LAxis,
 	     const int SNum)
   /*!
-    Calculate the intersection object between two planes
+    Calculate the intesection of a line with a plane
+    (found by index number) : Throw if not
     \param Origin :: Start of line
     \param LAxis :: Axis of line
     \param SNum :: Surface number
