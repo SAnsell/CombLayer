@@ -311,7 +311,6 @@ getLine(std::istream& IX,const int spc)
   return Line;
 }
 
-
 void
 lowerString(std::string& LN) 
   /*!
@@ -619,6 +618,24 @@ removeOuterSpace(const std::string& A)
   if (posA==A.size()) return "";
   
   return A.substr(posA,posB-posA);
+}
+
+std::string
+stripNotNumber(std::string Line)
+  /*!
+    Removes the start of a word upto the number
+    \param Line :: Line to process
+    \return String starting with number (or -)
+  */
+{
+  std::string::size_type pos=Line.find_first_of("0123456789");
+  if (pos==std::string::npos) return std::string("");
+
+  if (pos && Line[pos-1]=='-')
+    pos--;
+  if (!pos) return Line;
+  Line.erase(0,pos);
+  return Line;
 }
 
 int

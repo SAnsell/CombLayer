@@ -55,6 +55,7 @@ private:
   int testPermSort();
   int testPolInterp();   
   int testQuadratic();
+  int testRangePos();
 
 public:
 

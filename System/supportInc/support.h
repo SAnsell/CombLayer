@@ -95,6 +95,7 @@ long int hasComment(const std::string&);
 long int hasComment(const std::string&,const std::string&,const std::string&);
 /// strip trialing comments
 int stripComment(std::string&);
+std::string stripNotNumber(std::string);
 
 void upperString(std::string&);
 void lowerString(std::string&);

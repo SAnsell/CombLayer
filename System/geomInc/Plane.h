@@ -63,6 +63,8 @@ class Plane : public Quadratic
   static std::string classType() { return "Plane"; }
   /// Effective typeid
   std::string className() const override { return "Plane"; }
+  /// fast index accessor
+  SurfKey classIndex() const override { return SurfKey::Plane; }
   /// Visitor acceptance
   void acceptVisitor(Global::BaseVisit& A) const override 
     {  A.Accept(*this); }

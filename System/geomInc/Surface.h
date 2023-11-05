@@ -3,7 +3,7 @@
  
  * File:   geomInc/Surface.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,22 @@ namespace Geometry
   class Quaternion;
   class Transform;
 
+  enum class SurfKey
+    {
+      Surface = -1,
+      Quadratic = -2,
+      NullSurface = 0,
+      Plane = 1,        // note these are the same
+      Cone = 2,        
+      Cylinder = 3,        
+      General = 4,
+      Sphere = 5,
+      ArbPoly = 6,
+      CylCan = 7,
+      EllipticCyl = 8,
+      MBrect = 9,
+      Torus= 10,        
+    };
 /*!
   \class  Surface
   \brief Fundermental Surface object
@@ -45,7 +61,6 @@ class Surface
   
   int Name;        ///< Surface number (MCNP identifier)
   int TransN;      ///< Transform number (-ve means applied)
-
 
  protected:
   
@@ -65,6 +80,8 @@ class Surface
   /// Effective typeid
   virtual std::string className() const 
     { return "Surface"; }
+  /// fast index accessor
+  virtual SurfKey classIndex() const { return SurfKey::Surface; } 
   /// Accept visitor for output
   virtual void acceptVisitor(Global::BaseVisit& A) const
     {  A.Accept(*this); }

@@ -87,7 +87,9 @@ testMathSupport::applyTest(const int extra)
       &testMathSupport::testOrder,
       &testMathSupport::testPairCombine,
       &testMathSupport::testPermSort,
-      &testMathSupport::testPolInterp
+      &testMathSupport::testPolInterp,
+      &testMathSupport::testQuadratic,
+      &testMathSupport::testRangePos
     };
   const std::string TestName[]=
     {
@@ -103,7 +105,9 @@ testMathSupport::applyTest(const int extra)
       "Order",
       "PairCombine",
       "PermSort",
-      "PolInterp"
+      "PolInterp",
+      "Quadratic",
+      "RangePos"
     };
   
   const int TSize(sizeof(TPtr)/sizeof(testPtr));
@@ -649,6 +653,48 @@ testMathSupport::testFibinacci()
       const double tmp=FNB;
       FNB+=FNA;
       FNA=tmp;
+    }
+  return 0;  
+}
+
+int
+testMathSupport::testRangePos()
+  /*!
+    Test a fibinacci series [first 50 terms]
+    \return -1 :: failed to find end
+  */
+{
+  ELog::RegMethod RegA ("testMathSupport","testRangePos");
+
+  std::vector<double> V(100);
+  for(size_t i=0;i<100;i++)
+    V[i]=static_cast<double>(i);
+
+  typedef std::tuple<double,size_t> TTYPE;
+  std::vector<TTYPE> Tests({
+      {23.1,23},
+      {-10.0,0},
+      {102.0,99}
+    });
+
+  for(const TTYPE& tc : Tests)
+    {
+      const double testValue(std::get<0>(tc));
+      const size_t outIndex(std::get<1>(tc));
+      
+      const size_t index=rangePos(V,testValue);
+      if (index!=outIndex)
+	{
+	  ELog::EM<<"TV == "<<testValue<<ELog::endDiag;
+	  ELog::EM<<"index == "<<index<<" :: "<<outIndex<<ELog::endDiag;
+	  const size_t a(std::max(1UL,index)-1);
+	  const size_t b((index>=0 && index<=99) ? index : 0);
+	  const size_t c(std::min(98UL,index)+1);
+	  ELog::EM<<"Vector values : V["<<a<<"] ="<<V[a]
+		  <<" V["<<index<<"] ="<<V[b]
+		  <<" V["<<c<<"] ="<<V[c]<<ELog::endDiag;
+	  return -1;
+	}
     }
   return 0;  
 }

@@ -3,7 +3,7 @@
  
  * File:   geomInc/Cone.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
 #ifndef Geometry_Cone_h
@@ -62,6 +62,8 @@ class Cone : public Quadratic
   static std::string classType() { return "Cone"; }
   /// Public identifier
   std::string className() const override { return "Cone"; }
+  /// fast index accessor
+  SurfKey classIndex() const override { return SurfKey::Cone; }
   /// Visitor acceptance
   void acceptVisitor(Global::BaseVisit& A) const override
     {  A.Accept(*this); }

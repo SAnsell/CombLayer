@@ -67,6 +67,8 @@ class Quadratic : public Surface
   /// Effective typeid
   std::string className() const override 
     { return "Quadratic"; }
+  /// fast index accessor
+  SurfKey classIndex() const override { return SurfKey::Quadratic; }
 
   /// Accept visitor for line calculation
   void acceptVisitor(Global::BaseVisit& A) const override

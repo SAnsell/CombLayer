@@ -59,7 +59,10 @@ class MBrect : public Surface
   /// Effective TYPENAME 
   static std::string classType() { return "MBrect"; }
   /// Effective typename 
-  std::string className() const override { return "MBrect"; }
+  std::string className() const override { return "MBrect"; }  
+  /// fast index accessor
+  SurfKey classIndex() const override { return SurfKey::MBrect; }
+
   /// Visitor acceptance
   void acceptVisitor(Global::BaseVisit& A) const override
     {  A.Accept(*this); }

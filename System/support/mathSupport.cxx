@@ -930,6 +930,7 @@ template class mathSupport::PIndex<double>;
 template class mathSupport::PSep<double>;
 
 template size_t rangePos(const std::vector<float>&,const float&);
+template size_t rangePos(const std::vector<int>&,const int&);
 template size_t rangePos(const std::vector<double>&,const double&);
 template size_t rangePos(const std::vector<DError::doubleErr>&,
                            const DError::doubleErr&);

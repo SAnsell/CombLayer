@@ -3,7 +3,7 @@
  
  * File:   geomInc/Torus.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,6 +71,8 @@ class Torus : public Surface
   static std::string classType() { return "Torus"; }
   /// Public identifier
   std::string className() const override { return "Torus"; }
+  /// fast index accessor
+  SurfKey classIndex() const override { return SurfKey::Torus; }
     /// Visitor acceptance
   void acceptVisitor(Global::BaseVisit& A) const override
     {  A.Accept(*this); }
