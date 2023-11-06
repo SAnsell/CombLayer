@@ -54,7 +54,7 @@ parallel --halt now,fail=1 "./singleItem --singleItem {} --validAll --validCheck
  PortTube PrismaChamber Quadrupole  \
  R3ChokeChamber RoundMonoShutter Scrapper Sexupole SixPort StriplineBPM \
  TWCavity TargetShield TriGroup TriPipe TriggerTube UndVac UndulatorVacuum \
- UTubePipe VacuumPipe ViewTube YAG YagScreen YagUnit default uVac  || exit
+ UTubePipe VacuumPipe ViewTube YAG YagScreen YagUnit default uVac LegoBrick || exit
 
 exit
 ## Need to fix the cooling pads on the reflector
