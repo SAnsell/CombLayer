@@ -3,6 +3,10 @@
 
  * File:   singleItemBuild/makeSingleItem.cxx
  *
+ * Modified: Isabel Llamas-Jansa, November 2023
+ * - added LegoBrick to valid Items list (line 243)
+ * - added #include "Jaws.h" * 
+ * 
  * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
@@ -150,6 +154,7 @@
 #include "NBeamStop.h"
 #include "BeamBox.h"
 #include "BremTube.h"
+#include "Jaws.h"
 #include "HPJaws.h"
 #include "BoxJaws.h"
 #include "DiffPumpXIADP03.h"
@@ -213,7 +218,7 @@ makeSingleItem::build(Simulation& System,
 	"GateValveCube","GateValveCylinder","CleaningMagnet",
 	"CorrectorMag","Jaws","LQuadF","LQuadH","LSexupole",
 	"MagnetBlock","Sexupole","MagnetM1","MagnetU1",
-        "Octupole","CeramicGap","MainBeamDump",
+  "Octupole","CeramicGap","MainBeamDump",
 	"EBeamStop","FMask","R3ChokeChamber",
 	"DipoleExtract","DipoleSndBend","Dipole",
 	"EPSeparator","EPCombine","EPContinue",
@@ -234,7 +239,7 @@ makeSingleItem::build(Simulation& System,
 	"ConnectorTube","LocalShield","FlangeDome","DomeConnector",
 	"MonoShutter","RoundMonoShutter","TubeDetBox",
 	"GuideUnit","PlateUnit","BenderUnit","MLMdetail",
-	"M1detail","M1Full",
+	"M1detail","M1Full", "LegoBrick",
 	"Help","help"
     });
 
