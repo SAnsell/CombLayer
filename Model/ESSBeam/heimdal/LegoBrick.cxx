@@ -3,6 +3,9 @@
  
  * File:   heimdal/LegoBrick.cxx
  *
+ * Modified: Isabel Llamas-Jansa, November 2023 
+ * - added comments and separation lines for self
+ * 
  * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
@@ -62,16 +65,20 @@
 namespace essSystem
 {
 
+*********************
 LegoBrick::LegoBrick(const std::string& Key)  :
   attachSystem::FixedRotate(Key,2),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut()
   /*!
-    Constructor BUT ALL variable are left unpopulated.
-    \param Key :: Name for item in search
+    This is a Constructor, with 3 geometry item classes from the attachSystem namespace  
+    Here, ALL variables are left unpopulated.
+    \param Key :: Name for each item constructed; usful for searching 
   */
 {}
+*********************
 
+*********************
 LegoBrick::LegoBrick(const LegoBrick& A) :
   attachSystem::FixedRotate(A),
   attachSystem::ContainedComp(A),
@@ -79,16 +86,20 @@ LegoBrick::LegoBrick(const LegoBrick& A) :
   width(A.width),height(A.height),
   depth(A.depth),mat(A.mat)
   /*!
-    Copy constructor
-    \param A :: LegoBrick to copy
+    This is a copy of the constructor above, with A as key.
+    Added some parameters for the brick: width, height, depth and material.
+    \param A :: LegoBrick to copy; each copy of the brick is identified by parameter A
   */
 {}
+*********************
 
+*********************
 LegoBrick&
+
 LegoBrick::operator=(const LegoBrick& A)
   /*!
-    Assignment operator
-    \param A :: LegoBrick to copy
+    Assignment operator as function of the LegoBrick& variable and the parameter A
+    If the condition: this is not equal to the &A pointer, the operator assigns the values and returns
     \return *this
   */
 {
@@ -104,21 +115,25 @@ LegoBrick::operator=(const LegoBrick& A)
     }
   return *this;
 }
+*********************
 
-
+*********************
 LegoBrick::~LegoBrick() 
   /*!
     Destructor
+    deallocates the memory reserved for this item
   */
 {}
+*********************
 
-
-void
-LegoBrick::populate(const FuncDataBase& Control)
+*********************
+void LegoBrick::populate(const FuncDataBase& Control)
   /*!
-    Populate all the variables
+    Creates some empty variables and Populates them using the parameter Control
     \param Control :: DataBase of variables
+    For the brick box: FixedRotate, depth(y-axis), height(z-axis), width (x-axis)
   */
+
 {
   ELog::RegMethod RegA("LegoBrick","populate");
   
@@ -130,11 +145,14 @@ LegoBrick::populate(const FuncDataBase& Control)
 
   return;
 }
-  
-void
-LegoBrick::createSurfaces()
+*********************
+
+*********************
+void LegoBrick::createSurfaces()
   /*!
-    Create all the surfaces
+    Creates empty surfaces and then makes them based on the parameters below
+    For the brick box, the surfaces are flat planes defined by SMap (pointer to real objects), an index (to identify each surface), 
+    their position with respect to the origin and the axis they are perpendicular to.
   */
 {
   ELog::RegMethod RegA("LegoBrick","createSurfaces");
@@ -150,37 +168,42 @@ LegoBrick::createSurfaces()
   
   return;
 }
+*********************
 
-void 
-LegoBrick::createObjects(Simulation& System)
+*********************
+void LegoBrick::createObjects(Simulation& System)
   /*!
-    Create a window object
-    \param System :: Simulation
+    Creates a brick object/cell that can be used in simulation. The material is included here too.
+    Also, it creates an outer boundary around the box to account for irregularities on the brick's surfaces.
+    \param System :: Simulation    
   */
 {
   ELog::RegMethod RegA("LegoBrick","createObjects");
+
   HeadRule HR;
 
-  //  std::ostringstream cx;
-
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"1 -2 3 -4 5 -6");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  
+  // here, it makes a box/cell out of the planes defined above
 
   System.addCell(cellIndex++,mat,0.0,HR);  
 
-  // here is where we difine the outer box/boundary:
+  // here is where we define the outer box/boundary:
   addOuterSurf(HR);
+
   return;
 }
+*********************
 
-void
-LegoBrick::createAll(Simulation& System,
-		     const attachSystem::FixedComp& FC,
-		     const long int sideIndex)
+*********************
+void LegoBrick::createAll(Simulation& System, 
+            const attachSystem::FixedComp& FC,
+		    const long int sideIndex)
   /*!
-    Global creation of the hutch
-    \param System :: Simulation to add vessel to
-    \param FC :: Fixed Component to place object within
+    This function creates eveything needed for the simulation.
+    \param System :: This is the system that runs the simulation in whihc we are adding the brick
+    \param FC :: This is a fixed Component to place our object within; it is the cntral origin
+    \param sideIdex :: this is a link point to the origin
   */
 {
   ELog::RegMethod RegA("LegoBrick","createAll");
@@ -193,7 +216,6 @@ LegoBrick::createAll(Simulation& System,
 
   return;
 }
+*********************
 
-  
-}  // NAMESPACE ts1System
-
+}  // NAMESPACE essSystem
