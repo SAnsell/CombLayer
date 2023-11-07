@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   heimdalInc/LegoBrack.h
+ * File:   commonVarInc/LegoBrickGenerator.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,28 +19,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef essSystem_LegoBrick_h
-#define essSystem_LegoBrick_h
+#ifndef setVariable_LegoBrickGenerator_h
+#define setVariable_LegoBrickGenerator_h
 
-class Simulation;
+class FuncDataBase;
 
-
-namespace essSystem
+namespace setVariable
 {
 
 /*!
-  \class LegoBrick
+  \class LegoBrickGenerator
   \version 1.0
   \author S. Ansell
-  \date May 2012
-  \brief LegoBrick system
+  \date May 2016
+  \brief LegoBrickGenerator for variables
 */
 
-class LegoBrick : 
-  public attachSystem::FixedRotate,
-  public attachSystem::ContainedComp,
-  public attachSystem::CellMap,
-  public attachSystem::ExternalCut
+class LegoBrickGenerator
 {
  private:
 
@@ -48,23 +43,16 @@ class LegoBrick :
   double height;                ///< full height
   double depth;                 ///< full depth (z)
 
-  int mat;
-
-  void populate(const FuncDataBase&);
-  void createSurfaces();
-  void createObjects(Simulation&);
-
+  std::string mat;              ///< Material
+  
  public:
 
-  LegoBrick(const std::string&);
-  LegoBrick(const LegoBrick&);
-  LegoBrick& operator=(const LegoBrick&);
-  ~LegoBrick();
+  LegoBrickGenerator();
+  LegoBrickGenerator(const LegoBrickGenerator&);
+  LegoBrickGenerator& operator=(const LegoBrickGenerator&);
+  ~LegoBrickGenerator();  
 
-  using FixedComp::createAll;
-  void createAll(Simulation&,
-		 const attachSystem::FixedComp&,
-		 const long int);
+  void generateBrick(FuncDataBase&,const std::string&) const;
 };
 
 }

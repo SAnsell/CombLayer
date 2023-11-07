@@ -66,8 +66,8 @@ class LegoBrick :
   ~LegoBrick();
 
   using FixedComp::createAll;
-  void createAll(Simulation&, System,
-		 const attachSystem::FixedComp&, FC,
+  void createAll(Simulation& System,
+		 const attachSystem::FixedComp& FC,
 		 const long int sideIndex);
 };
 

@@ -58,6 +58,7 @@
 #include "QuadrupoleGenerator.h"
 #include "LinacQuadGenerator.h"
 #include "LinacSexuGenerator.h"
+#include "LegoBrickGenerator.h"
 #include "SexupoleGenerator.h"
 #include "OctupoleGenerator.h"
 #include "EPSeparatorGenerator.h"
@@ -145,8 +146,6 @@ void exptHutVariables(FuncDataBase&,const std::string&,const double);
 void localShieldVariables(FuncDataBase&);
 void m1chamberDetails(FuncDataBase&);
 void targetShieldVariables(FuncDataBase&);
-
-
 
 void
 SingleItemVariables(FuncDataBase& Control)
@@ -784,6 +783,9 @@ SingleItemVariables(FuncDataBase& Control)
 
   m1chamberDetails(Control);
 
+  LegoBrickGenerator LBrickGen;
+  LBrickGen.generateBrick(Control,"LegoBrick");
+  
   TubeDetBoxGenerator TDBGen;
   TDBGen.generateBox(Control,"TDetBox",Geometry::Vec3D(0,3.15,0),8);
 

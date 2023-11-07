@@ -1,6 +1,7 @@
 set (commonVarSources
     BladeGenerator.cxx ChopperGenerator.cxx CryoGenerator.cxx 
-    FocusGenerator.cxx JawGenerator.cxx LayerGenerator.cxx 
+    FocusGenerator.cxx JawGenerator.cxx LayerGenerator.cxx
+    LegoBrickGenerator.cxx
     PitGenerator.cxx RotaryHoleGenerator.cxx ShieldGenerator.cxx 
     TwinBaseGenerator.cxx TwinFlatGenerator.cxx TwinGenerator.cxx 
 )
@@ -29,6 +30,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/FocusGenerator.cxx
   ${tarDIR}/JawGenerator.cxx
   ${tarDIR}/LayerGenerator.cxx
+  ${tarDIR}/LegoBrickGenerator.cxx
   ${tarDIR}/PitGenerator.cxx
   ${tarDIR}/RotaryHoleGenerator.cxx
   ${tarDIR}/ShieldGenerator.cxx
@@ -41,6 +43,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/FocusGenerator.h
   ${tarINC}/JawGenerator.h
   ${tarINC}/LayerGenerator.h
+  ${tarINC}/LegoBrickGenerator.h
   ${tarINC}/PitGenerator.h
   ${tarINC}/RotaryHoleGenerator.h
   ${tarINC}/ShieldGenerator.h

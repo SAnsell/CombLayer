@@ -53,6 +53,7 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -65,20 +66,18 @@
 namespace essSystem
 {
 
-*********************
 LegoBrick::LegoBrick(const std::string& Key)  :
   attachSystem::FixedRotate(Key,2),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut()
   /*!
-    This is a Constructor, with 3 geometry item classes from the attachSystem namespace  
+    This is a Constructor, with 3 geometry item classes from the
+    attachSystem namespace  
     Here, ALL variables are left unpopulated.
     \param Key :: Name for each item constructed; usful for searching 
   */
 {}
-*********************
 
-*********************
 LegoBrick::LegoBrick(const LegoBrick& A) :
   attachSystem::FixedRotate(A),
   attachSystem::ContainedComp(A),
@@ -91,15 +90,14 @@ LegoBrick::LegoBrick(const LegoBrick& A) :
     \param A :: LegoBrick to copy; each copy of the brick is identified by parameter A
   */
 {}
-*********************
 
-*********************
 LegoBrick&
-
 LegoBrick::operator=(const LegoBrick& A)
   /*!
-    Assignment operator as function of the LegoBrick& variable and the parameter A
-    If the condition: this is not equal to the &A pointer, the operator assigns the values and returns
+    Assignment operator as function of the LegoBrick
+    variable and the parameter A
+    If the condition: this is not equal to the A pointer,
+    the operator assigns the values and returns
     \return *this
   */
 {
@@ -115,23 +113,21 @@ LegoBrick::operator=(const LegoBrick& A)
     }
   return *this;
 }
-*********************
 
-*********************
 LegoBrick::~LegoBrick() 
   /*!
     Destructor
     deallocates the memory reserved for this item
   */
 {}
-*********************
 
-*********************
 void LegoBrick::populate(const FuncDataBase& Control)
   /*!
-    Creates some empty variables and Populates them using the parameter Control
+    Creates some empty variables and Populates them using the
+    parameter Control
     \param Control :: DataBase of variables
-    For the brick box: FixedRotate, depth(y-axis), height(z-axis), width (x-axis)
+    For the brick box: FixedRotate, depth(y-axis), height(z-axis),
+    width (x-axis)
   */
 
 {
@@ -143,11 +139,11 @@ void LegoBrick::populate(const FuncDataBase& Control)
   height=Control.EvalVar<double>(keyName+"Height");
   width=Control.EvalVar<double>(keyName+"Width");
 
+  mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
+
   return;
 }
-*********************
 
-*********************
 void LegoBrick::createSurfaces()
   /*!
     Creates empty surfaces and then makes them based on the parameters below
@@ -168,9 +164,7 @@ void LegoBrick::createSurfaces()
   
   return;
 }
-*********************
 
-*********************
 void LegoBrick::createObjects(Simulation& System)
   /*!
     Creates a brick object/cell that can be used in simulation. The material is included here too.
@@ -193,21 +187,21 @@ void LegoBrick::createObjects(Simulation& System)
 
   return;
 }
-*********************
 
-*********************
 void LegoBrick::createAll(Simulation& System, 
-            const attachSystem::FixedComp& FC,
-		    const long int sideIndex)
+			  const attachSystem::FixedComp& FC,
+			  const long int sideIndex)
   /*!
     This function creates eveything needed for the simulation.
-    \param System :: This is the system that runs the simulation in whihc we are adding the brick
-    \param FC :: This is a fixed Component to place our object within; it is the cntral origin
-    \param sideIdex :: this is a link point to the origin
+    \param System :: This is the system that runs the simulation in which
+    we are adding the brick
+    \param FC :: This is a fixed Component to place our object within;
+      it is the central origin
+      \param sideIdex :: this is a link point to the origin
   */
 {
   ELog::RegMethod RegA("LegoBrick","createAll");
-
+  
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();
@@ -216,6 +210,5 @@ void LegoBrick::createAll(Simulation& System,
 
   return;
 }
-*********************
 
 }  // NAMESPACE essSystem
