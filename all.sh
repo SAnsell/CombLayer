@@ -11,7 +11,7 @@ segments=All
 #./singleItem --singleItem M1detail --validAll --validCheck ${nValid} AA 
 #exit
 
-#./singleItem --singleItem UTubePipe --validAll --validCheck $nValid AA 
+./singleItem --singleItem UTubePipe --validAll --validCheck $nValid AA 
 #exit
 
 
@@ -19,7 +19,7 @@ segments=All
 # ./ess --defaultConfig Single HEIMDAL --validAll --validCheck $nValid AA  || exit
 
 parallel --halt now,fail=1 "./maxiv --defaultConfig Single {} --validAll --validCheck $nValid AA" ::: \
-   BALDER COSAXS DANMAX FORMAX FLEXPES MICROMAX SOFTIMAX SPECIES MAXPEEM || exit
+   BALDER COSAXS DANMAX FORMAX MICROMAX SOFTIMAX SPECIES MAXPEEM || exit
 
 
 ./maxiv --noLengthCheck --defaultConfig Linac ${segments} --validAll --validCheck $nValid AA || exit 

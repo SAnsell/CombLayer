@@ -56,9 +56,6 @@ class surfIndex
   surfIndex(const surfIndex&);
   surfIndex& operator=(const surfIndex&);
   ////\endcond SINGLETON
-
-  int processSurfaces(const std::string&);
-
   
  public:
   
@@ -108,7 +105,6 @@ class surfIndex
   void removeOpposite(const int);
   int findOpposite(const Geometry::Surface*) const;
 
-  int readOutputSurfaces(const std::string&);
 };
 
 }

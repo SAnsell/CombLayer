@@ -3,7 +3,7 @@
  
  * File:   process/surfExpand.cxx
  *
- * Copyright (c) 2004-209 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,14 +34,6 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/type_traits.hpp>
-#include <boost/mpl/if.hpp>
-#include <boost/mpl/fold.hpp>
-#include <boost/mpl/range_c.hpp>
-#include <boost/mpl/at.hpp>
-#include <boost/mpl/size.hpp>
-#include <boost/mpl/find.hpp>
-#include <boost/mpl/vector.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -57,30 +49,17 @@
 #include "Cylinder.h"
 #include "Plane.h"
 
-#include "surfaceFactory.h"
-#include "surfVector.h"
-
 typedef ModelSupport::surfIndex::STYPE SMAP;
 
 namespace ModelSupport
 {
 
 template<typename T>
-Geometry::Surface*
-createExpand(const Geometry::Surface*,const double)
-  /*!						
-    This creates a surface which is shifted from the current
-    point in by the appropiate a mount.
-    \param  :: placeholder for Surface Ptr
-    \param  :: placeholder for value
-    \return Point to new surface 
-  */
-{		
-  throw ColErr::AbsObjMethod("createExpand<Surface>");
-}
+T* createExpand(const Geometry::Surface*,const double);
+
 
 template<>
-Geometry::Surface*
+Geometry::Plane*
 createExpand<Geometry::Plane>(const Geometry::Surface* SPtr,
 			      const double Dist)
   /*!						
@@ -105,7 +84,7 @@ createExpand<Geometry::Plane>(const Geometry::Surface* SPtr,
 }
 
 template<>
-Geometry::Surface*
+Geometry::Cylinder*
 createExpand<Geometry::Cylinder>(const Geometry::Surface* SPtr,
 				 const double Dist)
   /*!						
@@ -127,63 +106,6 @@ createExpand<Geometry::Cylinder>(const Geometry::Surface* SPtr,
   return OutPtr;
 }
 
-/*!
-  \struct unknownSurface
-  \author S. Ansell
-  \date December 2009
-  \version 1.0
-  \brief mis-match class
-*/
-
-struct unknownSurface
-{
-  /// Handle Index out of range
-  static Geometry::Surface*
-  dispatch(const int Index,const Geometry::Surface*,const double)
-    {
-      throw ColErr::IndexError<int>(Index,Geometry::ExportSize,
-				    "unknownSurface");
-    }
-};
-
-/*!
-  \struct surfExpand
-  \brief calls pointer directed createExpand
-  \author S. Ansell
-  \version 1.0
-  \date December 2009
-  \tparam State (list of types - this one) 
-  \tparam Index :: Type id number to execute on (runtime)
-*/
-
-template<class State,class Index>
-struct surfExpand
-{
-  static Geometry::Surface*
-  dispatch(const int I,const Geometry::Surface* SPtr,const double Dist)
-    /*!
-      Creates the pointer to the surface
-      Index refers to the positon on the ExportClass list
-      \param I :: Index of runtime value (check with Index)
-      \param SPtr :: Surface pointer      
-      \param Dist :: Distance to move surface by
-      \retval Ptr to new surface  /  next dispatch
-    */
-    {
-      if (I==Index())
-        {
-	  typedef typename 
-	    boost::mpl::at<Geometry::ExportClass,Index>::type ObjectType;
-	  return createExpand<ObjectType>(SPtr,Dist);
-	}
-      else
-        {
-	  // Dispatches next in list
-	  return State::dispatch(I,SPtr,Dist);
-	}
-    }
-};
-
 // ------------------------------------------
 //               OUTSIDE
 // ------------------------------------------
@@ -201,20 +123,18 @@ surfaceCreateExpand(const Geometry::Surface* SPtr,const double Distance)
    */
 {
   ELog::RegMethod RegA("surfExpand","surfaceCreateExpand");
+  
   if (!SPtr)
     throw ColErr::EmptyValue<Geometry::Surface*>("SPtr");
 
-  // Surface type:
-  const int Index=
-    Geometry::surfaceFactory::Instance().getIndex(SPtr->className());
+  const Geometry::SurfKey sIndex=SPtr->classIndex();
   
-  typedef boost::mpl::fold<boost::mpl::range_c<int,0,Geometry::ExportSize>,
-    unknownSurface,
-    surfExpand<boost::mpl::_1 , boost::mpl::_2> >::type FTYPE;
-  
-  return FTYPE::dispatch(Index,SPtr,Distance);
-}
+  if (sIndex == Geometry::SurfKey::Cylinder)
+    return createExpand<Geometry::Cylinder>(SPtr,Distance);
+  if (sIndex == Geometry::SurfKey::Plane)
+    return createExpand<Geometry::Plane>(SPtr,Distance);
 
-  
+  throw ColErr::AbsObjMethod("createExpand<Surface>");  
+}
 
 } // NAMESPACE ModelSupport

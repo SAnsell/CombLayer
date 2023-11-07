@@ -69,7 +69,7 @@ class Cylinder : public Quadratic
   /// Public identifer
   std::string className() const override { return "Cylinder"; }
   /// fast index accessor
-  SurfKey classIndex() const override { return SurfKey::Cone; }
+  SurfKey classIndex() const override { return SurfKey::Cylinder; }
   /// Visitor acceptance
   void acceptVisitor(Global::BaseVisit& A) const override
     {  A.Accept(*this); }

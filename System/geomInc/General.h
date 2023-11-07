@@ -55,6 +55,8 @@ class General : public Quadratic
   static std::string classType() { return "General"; }
   /// Effective typeid
   std::string className() const override { return "General"; }
+  /// fast index accessor
+  SurfKey classIndex() const override { return SurfKey::General; }
   /// Visitor acceptance
   void acceptVisitor(Global::BaseVisit& A) const override
     {  A.Accept(*this); }

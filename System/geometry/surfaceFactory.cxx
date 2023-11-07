@@ -3,7 +3,7 @@
  
  * File:   geometry/surfaceFactory.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,17 +30,6 @@
 #include <stack>
 #include <string>
 #include <algorithm>
-#include <boost/multi_array.hpp>
-#include <boost/any.hpp>
-#include <boost/type_traits.hpp>
-#include <boost/multi_array.hpp>
-#include <boost/mpl/if.hpp>
-#include <boost/mpl/fold.hpp>
-#include <boost/mpl/range_c.hpp>
-#include <boost/mpl/at.hpp>
-#include <boost/mpl/size.hpp>
-#include <boost/mpl/find.hpp>
-#include <boost/mpl/vector.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -66,74 +55,49 @@
 #include "Plane.h"
 #include "Sphere.h"
 #include "Torus.h"
-#include "surfVector.h"
 #include "surfaceFactory.h"
 
 namespace Geometry
 {
 
-/*!
-  \struct surfCreate
-  \brief Executes runtime on Index -- Surf type 
-  \version 1.0
-  \author S. Ansell
-  \date September 2008
-  
-  Templates: 
-   - State (list of types) 
-   - Index :: Type id number to execute on (runtime)
-*/
-template<class State,class Index>
-struct surfCreate
-{
-  static Surface* dispatch(const int I)
-    /*!
-      Creates the pointer to the surface
-      Index refers to the positon on the ExportClass list
-      \param I :: Index of runtime value (check with Index)
-      \retval Ptr :: success
-    */
-    {
-      if (I==Index())
-        {
-	  typedef typename boost::mpl::at<ExportClass,Index>::type ObjectType;
-	  return new ObjectType;
-	}
-      else
-        {
-	  return State::dispatch(I);
-	}
-    }
-};
-
-/*!
-  \struct unknownCreate
-  \brief Executes failed runtime on TypePtr->write
-  \version 1.0
-  \author S. Ansell
-  \date June 2008
-*/
-struct unknownCreate
-{
-  /// Return 0 (no type)
-  static Surface* dispatch(const int)
-    {
-      return 0;
-    }
-};
-
 Surface*
-surfaceFactory::surfaceIndex(const int Index) const
+surfaceFactory::surfaceIndex(const Geometry::SurfKey& Index) const
   /*!
     Get a surface index
     \param Index :: runtime index 
     \return Surface pointer 
    */
 {
-  typedef boost::mpl::fold<boost::mpl::range_c<int,0,ExportSize>,
-    unknownCreate,surfCreate<boost::mpl::_1 , boost::mpl::_2> >::type FTYPE;
+  switch (Index)
+    {
+    case Geometry::SurfKey::ArbPoly:
+      return new ArbPoly;
+    case Geometry::SurfKey::Cone:
+      return new Cone;
+    case Geometry::SurfKey::CylCan:
+      return new CylCan;
+    case Geometry::SurfKey::Cylinder:
+      return new Cylinder;
+    case Geometry::SurfKey::EllipticCyl:
+      return new EllipticCyl;
+    case Geometry::SurfKey::General:
+      return new General;
+    case Geometry::SurfKey::MBrect:
+      return new MBrect;
+    case Geometry::SurfKey::NullSurface:
+      return new NullSurface;
+    case Geometry::SurfKey::Plane:
+      return new Plane;
+    case Geometry::SurfKey::Sphere:
+      return new Sphere;
+    case Geometry::SurfKey::Torus:
+      return new Torus;
+    default:
+      throw ColErr::InContainerError<int>
+	(static_cast<int>(Index),"Unable to generate surface type");
 
-  return FTYPE::dispatch(Index);
+    }
+  return nullptr;
 }
 
 
@@ -148,8 +112,21 @@ surfaceFactory::Instance()
   return SFact;
 }
 
-surfaceFactory::surfaceFactory() 
-  /*!
+surfaceFactory::surfaceFactory() :
+  wordGrid({
+      {"ArbPoly",Geometry::SurfKey::ArbPoly},
+      {"Cone",Geometry::SurfKey::Cone},
+      {"CylCan",Geometry::SurfKey::CylCan},
+      {"Cylinder",Geometry::SurfKey::Cylinder},
+      {"EllipticCyl",Geometry::SurfKey::EllipticCyl},
+      {"General",Geometry::SurfKey::General},
+      {"MBrect",Geometry::SurfKey::MBrect},
+      {"NullSurface",Geometry::SurfKey::NullSurface},
+      {"Plane",Geometry::SurfKey::Plane},
+      {"Sphere",Geometry::SurfKey::Sphere},
+      {"Torus",Geometry::SurfKey::Torus}
+    })
+    /*!
     Constructor
   */
 {
@@ -168,20 +145,45 @@ surfaceFactory::registerSurface()
   /*!
     Sets up the initial maps
   */
-{ 
-  for(int i=0;i<ExportSize;i++)
-    wordGrid.insert(MapTYPE::value_type(ExportNames[i],i));
- 
-  int cnt(0);
-  int index(0);
-  while(cnt<ExportSize)
+{
+  static const std::vector<std::string> shortNames =
     {
-      if (ShortNames[index])
-	keyGrid.insert(MapTYPE::value_type(ShortNames[index],cnt));
-      else
-	cnt++;
+      "arb","",
+      "k/x","k/y","k/z","kx","ky","kz","",
+      "rcc","",
+      "c/x","c/y","c/z","cx","cy","cz","",
+      "e/x","e/y","e/z","ex","ey","ez","",
+      "gq","sq","",
+      "box","rpp","",
+      "null","",
+      "p","px","py","pz","",
+      "so","s","sx","sy"",sz","sph","",
+      "tx","ty","tz",""
+    };
+  static const Geometry::SurfKey surfValue[]=
+    {
+      Geometry::SurfKey::ArbPoly,
+      Geometry::SurfKey::Cone,
+      Geometry::SurfKey::CylCan,
+      Geometry::SurfKey::Cylinder,
+      Geometry::SurfKey::EllipticCyl,
+      Geometry::SurfKey::General,
+      Geometry::SurfKey::MBrect,
+      Geometry::SurfKey::NullSurface,
+      Geometry::SurfKey::Plane,
+      Geometry::SurfKey::Sphere,
+      Geometry::SurfKey::Torus
+    };
 
-      index++;
+  size_t svIndex(0);
+  for(const std::string& SN : shortNames)
+    {
+      if (SN.empty())
+	  svIndex++;
+      else
+	{
+	  keyGrid.emplace(SN,surfValue[svIndex]);
+	}
     }
   return;
 }
@@ -197,16 +199,13 @@ surfaceFactory::createSurfaceID(const std::string& Key) const
     \return new surface object.
   */    
 {
+  ELog::RegMethod RegA("surfaceFactory","createSurfaceID");
+  
   MapTYPE::const_iterator mc;
   mc=keyGrid.find(Key);
   if (mc==keyGrid.end())
-    {
-      ELog::RegMethod RegA("surfaceFactory","createSurfaceID");
-    
-      throw ColErr::InContainerError<std::string>
-	(Key,RegA.getFull());
-    }
-  
+    throw ColErr::InContainerError<std::string>
+      (Key,"Surface key");
   return surfaceIndex(mc->second);
 }
 
@@ -220,15 +219,14 @@ surfaceFactory::getIndex(const std::string& Key) const
     \return new surface object.
   */    
 {
+  ELog::RegMethod RegA("surfaceFactory","getIndex");
   MapTYPE::const_iterator mc;
   mc=wordGrid.find(Key);
   if (mc==wordGrid.end())
-    {
-      ELog::RegMethod RegA("surfaceFactory","getIndex");
-      throw ColErr::InContainerError<std::string>
+    throw ColErr::InContainerError<std::string>
 	(Key,"key in wordGrid");
-    }
-  return mc->second;
+
+  return static_cast<int>(mc->second);
 }
 
 Surface*
@@ -242,14 +240,13 @@ surfaceFactory::createSurface(const std::string& Key) const
   */    
 {
   ELog::RegMethod RegA("surfaceFactory","createSurface");
+
   MapTYPE::const_iterator vc;
   vc=wordGrid.find(Key);
   if (vc==wordGrid.end())
-    {
-
-      throw ColErr::InContainerError<std::string>
-	(Key,ELog::RegMethod::getFull());
-    }
+    throw ColErr::InContainerError<std::string>
+      (Key,"Surface key");
+    
   return surfaceIndex(vc->second);
 }
 
@@ -275,7 +272,7 @@ surfaceFactory::processLine(const std::string& Line) const
   if (!StrFunc::convert(procLine,key))
     throw ColErr::InvalidLine(Line,"surfaceFactory::processLine [no key]" );
   
-  Surface *X = createSurfaceID(key);
+  Surface* X = createSurfaceID(key);
   const int errNum=X->setSurface(procLine);
   if (!errNum)
     {
@@ -287,7 +284,7 @@ surfaceFactory::processLine(const std::string& Line) const
       ELog::EM<<"Error with surface TYPE :: "<<X->className()<<ELog::endCrit;
       ELog::EM<<"Error with surface ["<<X->setSurface(procLine)<<
 	"] "<<procLine<<ELog::endCrit;
-      throw ColErr::InvalidLine(Line,"Line");
+      throw ColErr::InvalidLine(Line,"input procLine");
 
     }
   delete X;  

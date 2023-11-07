@@ -423,7 +423,7 @@ Cylinder::setRadius(const double R)
     \param R :: New radius (forced +ve)
   */
 {
-  Radius=fabs(R);
+  Radius=std::abs(R);
   setBaseEqn();
   return;
 }
@@ -446,6 +446,12 @@ Cylinder::setBaseEqn()
   BaseEqn[7]= 2.0*(Normal[1]*CdotN-Centre[1]);  // H y
   BaseEqn[8]= 2.0*(Normal[2]*CdotN-Centre[2]);  // J z
   BaseEqn[9]= Centre.dotProd(Centre)-CdotN*CdotN -Radius*Radius;  // K const
+  if (getName()==1700017)
+    {
+      ELog::EM<<"Centre == "<<Centre.dotProd(Centre)<<ELog::endDiag;
+      ELog::EM<<"NROM == "<<Centre.cutComponent(Normal)<<ELog::endDiag;
+      ELog::EM<<"Cu == "<<BaseEqn[9]<<ELog::endDiag;
+    }
   return;
 }
 
