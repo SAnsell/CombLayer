@@ -38,7 +38,6 @@
 #include "OutputLog.h"
 #include "Vec3D.h"
 #include "support.h"
-//#include "regexBuild.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Surface.h"

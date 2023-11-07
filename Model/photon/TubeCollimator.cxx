@@ -3,7 +3,7 @@
  
  * File:   photon/TubeCollimator.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -290,11 +290,11 @@ TubeCollimator::setBoundary(const FuncDataBase& Control)
        ModelSupport::buildPlane(SMap,buildIndex+6006,Origin+BZ*((height+centSpc)/2.0),BZ);
 
        
-       Out=ModelSupport::getComposite(SMap,buildIndex," 5003 -5004 5005 -5006 ");
-       boundary.procString(Out);
+       boundary=ModelSupport::getHeadRule
+	 (SMap,buildIndex,"5003 -5004 5005 -5006");
        boundary.populateSurf();
-       Out=ModelSupport::getComposite(SMap,buildIndex," 6003 -6004 6005 -6006 ");
-       voidBoundary.procString(Out);
+       voidBoundary=
+	 ModelSupport::getHeadRule(SMap,buildIndex,"6003 -6004 6005 -6006");
        voidBoundary.populateSurf();
     }
   else if (boundaryType=="Circle" || boundaryType=="circle")
@@ -305,11 +305,9 @@ TubeCollimator::setBoundary(const FuncDataBase& Control)
       // Outer boundary
       ModelSupport::buildCylinder(SMap,buildIndex+5007,Origin,Y,radius+centSpc/2.0);
       
-      Out=ModelSupport::getComposite(SMap,buildIndex," -5007 ");
-      boundary.procString(Out);
+      boundary=HeadRule(SMap,buildIndex,-5007);
       boundary.populateSurf();
-      Out=ModelSupport::getComposite(SMap,buildIndex," -6007 ");
-      voidBoundary.procString(Out);
+      voidBoundary=HeadRule(SMap,buildIndex,-6007);
       voidBoundary.populateSurf();
     }
   else if (boundaryType=="Free" || boundaryType=="free")

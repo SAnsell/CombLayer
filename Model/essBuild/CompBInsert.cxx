@@ -68,7 +68,8 @@ namespace essSystem
 CompBInsert::CompBInsert(const std::string& Key)  :
   attachSystem::FixedRotate(Key,7),
   attachSystem::ContainedComp(),
-  attachSystem::CellMap(),attachSystem::FrontBackCut()
+  attachSystem::CellMap(),
+  attachSystem::FrontBackCut()
 
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -211,39 +212,33 @@ CompBInsert::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("CompBInsert","createObjects");
-  
-  std::string Out;
+
+  HeadRule HR;
+
   int SI(buildIndex);
 
-  std::string frontBack;
+  HeadRule frontBackHR;
   for(size_t index=0;index<NBox;index++)
     {
-      HeadRule Inner;
+      HeadRule innerHR;
       int SWI(SI);
-      frontBack= (index) ?
-	ModelSupport::getComposite(SMap,SI," 1 ") :
-	frontRule();
-      frontBack+= ((index+1)!=NBox) ?
-	ModelSupport::getComposite(SMap,SI," -101 ") :
-	backRule();
+      frontBackHR= (index) ? HeadRule(SMap,SI,1) : getFrontRule();
+      frontBackHR*= ((index+1)!=NBox) ?
+	HeadRule(SMap,SI,-101) : getBackRule();
 
       for(size_t wallIndex=0;wallIndex<=NWall;wallIndex++)
         {
-          Out=ModelSupport::getComposite(SMap,SWI," 3 -4 5 -6 ");
-          const int M=(!wallIndex) ? mat[index] : wallMat[wallIndex-1];
-          System.addCell(MonteCarlo::Object(cellIndex++,M,0.0,
-					   frontBack+Out+Inner.display()));
-
-          if (!wallIndex)
-            addCell("Item",cellIndex-1);
-          else
-            addCell("Wall",cellIndex-1);
-          
-          Inner.procString(Out);
-          Inner.makeComplement();
+          HR=ModelSupport::getHeadRule(SMap,SWI,"3 -4 5 -6");
+	  if (!wallIndex)
+	    makeCell("Item",System,cellIndex++,mat[index],0.0,
+		     HR*innerHR*frontBackHR);
+	  else
+	    makeCell("Wall",System,cellIndex++,wallMat[wallIndex-1],0.0,
+		     HR*innerHR*frontBackHR);
+          innerHR=HR.complement();
           SWI+=10;
         }
-      addOuterUnionSurf(Out+frontBack);
+      addOuterUnionSurf(HR*frontBackHR);
       SI+=100;
     }
   return;
