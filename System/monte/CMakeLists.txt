@@ -7,7 +7,7 @@ set (monteSources
     LayerDivide1D.cxx LayerDivide3D.cxx LineIntersectVisit.cxx 
     mapIterator.cxx Material.cxx MXcards.cxx 
     neutron.cxx Object.cxx objectSupport.cxx 
-    particle.cxx photon.cxx RotCounter.cxx 
+    particle.cxx photon.cxx 
     RuleBinary.cxx RuleCheck.cxx RuleItems.cxx 
     Rules.cxx RuleSupport.cxx SurfPoint.cxx 
     SurfVertex.cxx Token.cxx Track.cxx 

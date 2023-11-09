@@ -40,7 +40,7 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "BnId.h"
-#include "RotCounter.h"
+#include "IndexCounter.h"
 #include "MatrixBase.h"
 #include "Rules.h"
 #include "RuleBinary.h"
@@ -358,7 +358,6 @@ RuleBinary::group()
   std::vector<BnId> Work;       // Working copy
   std::vector<BnId> Comp;       // Store for PI componends
   std::vector<BnId> Tmod;       // store modified components
-  int changeCount(0);           // Number change
   std::vector<BnId>::iterator uend;     // itor to remove unique
   // Need to make an initial copy.
   Work=DNFobj;
@@ -389,7 +388,6 @@ RuleBinary::group()
 		  Tmod.push_back(cVal.second);
 		  oc->setPI(0);         
 		  vc->setPI(0);
-		  changeCount++;       // 1 changed
 		}
 	    }
 	}	
@@ -545,7 +543,7 @@ RuleBinary::makeEPI(std::vector<BnId>& PIform)
       // This counter is a ripple counter, ie 1,2,3 where no numbers 
       // are the same. BUT it is acutally 0->N 0->N 0->N
       // index by A, A+1 ,A+2  etc
-      RotaryCounter<size_t> Index(Icount,Psize);
+      IndexCounter<size_t> Index(Icount,Psize);
       do 
 	{
 	  size_t di;

@@ -250,6 +250,7 @@ M1BackPlate::createSurfaces()
 
   ModelSupport::buildPlane(SMap,buildIndex+1005,Origin-Z*(elecHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+1006,Origin+Z*(elecHeight/2.0),Z);
+  ModelSupport::buildCylinder(SMap,buildIndex+1007,Origin,X,elecHoleRadius);
 
   ModelSupport::buildPlane
     (SMap,buildIndex+1013,Origin+X*(elecXOut-elecEdge),X);
@@ -257,7 +258,9 @@ M1BackPlate::createSurfaces()
     (SMap,buildIndex+1015,Origin-Z*(elecHeight/2.0-elecThick),Z);
   ModelSupport::buildPlane
     (SMap,buildIndex+1016,Origin+Z*(elecHeight/2.0-elecThick),Z);
+  
 
+  
   // front plate
   makeShiftedSurf(SMap,"NearEnd",buildIndex+2001,Y,-frontPlateGap);
   ModelSupport::buildPlane
@@ -543,14 +546,18 @@ M1BackPlate::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"501 -502 613 -514 -616 605");
   makeCell("BSupportVoid",System,cellIndex++,voidMat,0.0,HR);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1003 -1004 1007");
+  makeCell("EPlateHole",System,cellIndex++,voidMat,0.0,HR);  
+
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"1001 -1002 1013 -1004 1005 -1006 (-1015:1016:1003)");
+    (SMap,buildIndex,"1001 -1002 1013 -1004 1005 -1006 (-1015:1016:1003) 1007");
   makeCell("EPlate",System,cellIndex++,electronMat,0.0,HR);  
-    
+
+  
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"1001 -1002 1013 -1003 1015 -1016");
   makeCell("EPlate",System,cellIndex++,voidMat,0.0,HR);  
-  
+
   // OUTER VOIDS:
   // main c voids
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -5011 33 -224 35 -15");

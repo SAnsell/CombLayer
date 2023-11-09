@@ -37,18 +37,50 @@ struct sliceUnit
   /// reference () operator (to get data member)
   operator T&() const { return *dataPtr; }
 
+  sliceUnit&
+  operator=(const sliceUnit& A)
+  {
+    if (this!=&A)
+      {
+	// notice the double inner else :
+	// this gives speed optimization for const / non-const
+	// <T> forms 
+	if constexpr (!std::is_const<T>::value)
+	  {
+	    if (!(*stride) && !(*A.stride))
+	      {
+		*dataPtr=*A.dataPtr;
+	      }
+	    else
+	      {
+		dataPtr=A.dataPtr;
+		stride=A.stride;
+	      }
+	  }
+	else
+	  {
+	    dataPtr=A.dataPtr;
+	    stride=A.stride;
+	  }
+      }
+    return *this;
+  }
+  
   // assignment system for values
   T& operator=(typename std::remove_const<T>::type in) const
     {
       *dataPtr = std::move(in);
       return *dataPtr;
     }
-
+  
   const T* pointer() const
     {
       return dataPtr;
     }
-
+   T* assignPointer() const
+    {
+      return dataPtr;
+    }
 };
 
 #endif
