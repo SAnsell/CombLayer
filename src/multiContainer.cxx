@@ -16,7 +16,7 @@
 #include "Exception.h"
 #include "IndexCounter.h"
 #include "dataSlice.h"
-#include "multiData.h"
+#include "multiContainer.h"
 
 template<typename T>
 std::ostream&
@@ -50,30 +50,25 @@ multiData<T>::multiData(std::vector<size_t> I) :
 	  strides[i-1]=prod;
 	  prod*=index[i-1];
 	}
-      flatData.resize(strides[0]*index[0]);
     }
 }
 
 template<typename T>
-multiData<T>::multiData(std::vector<size_t> I,std::vector<T> D) :
-  index(std::move(I)),strides(index.size()+1),
-  flatData(std::move(D))
+multiData<T>::multiData(std::vector<size_t> I,
+			std::vector<T> D) :
+  multiData(I)
   /*!
-    Constructor with full size
-    with array index and data
+    Constructor with full size with array index and data
+    \param I :: Index size vector
   */
 {
-  strides[index.size()]=0;   // always valid
-  size_t prod=1;
-  for(size_t i=index.size();i>0;i--)
-    {
-      strides[i-1]=prod;
-      prod*=index[i-1];
-    }
 
-  if (flatData.size()!=strides[0]*index[0])
+  if (D.size()!=strides[0]*index[0])
     throw ColErr::SizeError<size_t>
-      (flatData.size(),strides[0]*index[0],"MulitData constructor (ND)");
+      (D.size(),strides[0]*index[0],"MulitData constructor (ND)");
+
+  for(size_t i=0;i<D.size();i++)
+    flatMap.emplace(index,std::move(D[index]));}
 }
 
 template<typename T>
@@ -85,8 +80,7 @@ multiData<T>::multiData()
 
 template<typename T>
 multiData<T>::multiData(const size_t A) :
-  index({A}),strides({1,0}),
-  flatData(A)
+  index({A}),strides({1,0})
   /*!
     Constructor with full size (1D)
     \param A :: size of first item
@@ -95,8 +89,7 @@ multiData<T>::multiData(const size_t A) :
 
 template<typename T>
 multiData<T>::multiData(const size_t A,const size_t B) :
-  index({A,B}),strides({B,1,0}),
-  flatData(A*B)
+  index({A,B}),strides({B,1,0})
   /*!
     Constructor with full size (2D)
     \param A :: size of first item
@@ -107,8 +100,7 @@ multiData<T>::multiData(const size_t A,const size_t B) :
 template<typename T>
 multiData<T>::multiData(const size_t A,const size_t B,
 			const size_t C) :
-  index({A,B,C}),strides({B*C,C,1,0}),
-  flatData(A*B*C)
+  index({A,B,C}),strides({B*C,C,1,0})
   /*!
     Constructor with full size
     \param A :: size of first item
@@ -120,8 +112,7 @@ multiData<T>::multiData(const size_t A,const size_t B,
 template<typename T>
 multiData<T>::multiData(const size_t A,const size_t B,
 			const size_t C,const size_t D) :
-  index({A,B,C,D}),strides({B*C*D,C*D,D,1,0}),
-  flatData(A*B*C*D)
+  index({A,B,C,D}),strides({B*C*D,C*D,D,1,0})
   /*!
     Constructor with full size
     \param A :: size of first item
@@ -133,24 +124,24 @@ multiData<T>::multiData(const size_t A,const size_t B,
 
 template<typename T>
 multiData<T>::multiData(const size_t A,std::vector<T> D) :
-  index({A}),strides({1,0}),
-  flatData(std::move(D))
+  index({A}),strides({1,0})
   /*!
     Constructor with full size
     \param A :: size of first (only) item
   */
 {
-  
-  if (flatData.size()!=strides[0]*index[0])
+  if (D.size()!=strides[0]*index[0])
     throw ColErr::SizeError<size_t>
-      (flatData.size(),strides[0]*index[0],"MulitData constructor (1D)");
+      (D.size(),strides[0]*index[0],"MulitData constructor (1D)");
+  
+  for(size_t i=0;i<D.size();i++)
+    flatMap.emplace(index,std::move(D[index]));}
 }
 
 template<typename T>
 multiData<T>::multiData(const size_t A,const size_t B,
 			std::vector<T> D) :
-  index({A,B}),strides({B,1,0}),
-  flatData(std::move(D))
+  index({A,B}),strides({B,1,0})
   /*!
     Constructor with full size
     \param A :: size of first item
@@ -158,9 +149,13 @@ multiData<T>::multiData(const size_t A,const size_t B,
     \param C :: size of first item
   */
 {
-  if (flatData.size()!=strides[0]*index[0])
+  if (D.size()!=strides[0]*index[0])
     throw ColErr::SizeError<size_t>
-	(flatData.size(),strides[0]*index[0],"MulitData constructor (2D)");
+	(D.size(),strides[0]*index[0],"MulitData constructor (2D)");
+
+  for(size_t i=0;i<D.size();i++)
+    flatMap.emplace(index,std::move(D[index]));}
+
 }
 
 template<typename T>
@@ -175,21 +170,18 @@ multiData<T>::multiData(const size_t A,const size_t B,
     \param C :: size of third item
   */
 {
-  if (flatData.size()!=strides[0]*index[0])
-    {
-      std::cout<<"Index "<<index[0]<<" "<<index[1]<<" "<<index[2]<<
-	std::endl;
-      std::cout<<"Index "<<strides[0]<<" "<<strides[1]<<" "<<strides[2]<<
-	std::endl;
-      throw ColErr::SizeError<size_t>
-	(flatData.size(),strides[0]*index[0],"MulitData constructor (3D)");
-    }
+  if (D.size()!=strides[0]*index[0])
+    throw ColErr::SizeError<size_t>
+	(D.size(),strides[0]*index[0],"MulitData constructor (3D)");
+
+  for(size_t i=0;i<D.size();i++)
+    flatMap.emplace(index,std::move(D[index]));}
 }
 
 
 template<typename T>
 multiData<T>::multiData(const multiData& A) :
-  index(A.index),strides(A.strides),flatData(A.flatData)
+  index(A.index),strides(A.strides),flatMap(A.flatMap)
   /*!
     Copy constructor
     \param A :: multiData object to copy
@@ -201,7 +193,7 @@ template<typename T>
 multiData<T>::multiData(multiData<T>&& A) :
   index(std::move(A.index)),
   strides(std::move(A.strides)),
-  flatData(std::move(A.flatData))
+  flatMap(std::move(A.flatMap))
   /*!
     Copy constructor
     \param A :: multiData object to copy
@@ -221,7 +213,7 @@ multiData<T>::operator=(const multiData<T>& A)
     {
       index=A.index;
       strides=A.strides;
-      flatData=A.flatData;
+      flatMap=A.flatMap;
     }
   return *this;
 }
@@ -239,7 +231,7 @@ multiData<T>::operator=(multiData<T>&& A)
     {
       index=std::move(A.index);
       strides=std::move(A.strides);
-      flatData=std::move(A.flatData);
+      flatMap=std::move(A.flatMap);
     }
   return *this;
 }
@@ -298,175 +290,89 @@ multiData<T>::operator+=(const multiData<T>& A)
 }
 
 template<typename T>
-multiData<T>&
-multiData<T>::operator-=(const multiData<T>& A)
-  /*!
-    Subtraction of other multiData
-    \param A :: Dataset to subtract from this
-  */
-{
-  throwMatchCheck(A,"operator-=");
-  
-  std::transform(flatData.begin(),flatData.end(),
-		 A.flatData.begin(),flatData.begin(),
-		 [](const T& a,const T& b) ->T
-		 { return a-b; }
-		 );
-  
-  return *this;
-}
-
-template<typename T>
-multiData<T>&
-multiData<T>::operator*=(const multiData<T>& A)
-  /*!
-    Subtraction of other multiData
-    \param A :: Dataset to subtract from this
-  */
-{
-  throwMatchCheck(A,"operator*=");
-  
-  std::transform(flatData.begin(),flatData.end(),
-		 A.flatData.begin(),flatData.begin(),
-		 [](const T& a,const T& b) ->T
-		 { return a*b; }
-		 );
-  
-  return *this;
-}
-
-template<typename T>
-multiData<T>&
-multiData<T>::operator/=(const multiData<T>& A)
-  /*!
-    Subtraction of other multiData
-    \param A :: Dataset to subtract from this
-  */
-{
-  throwMatchCheck(A,"operator/=");
-  
-  std::transform(flatData.begin(),flatData.end(),
-		 A.flatData.begin(),flatData.begin(),
-		 [](const T& a,const T& b) ->T
-		 { return (std::abs(b)>1e-38) ? a/b : a; }
-		 );
-  
-  return *this;
-}
-
-template<typename T>
-multiData<T>&
-multiData<T>::operator+=(const T& V)
-  /*!
-    Standard multiply operator
-    \param V :: Value to multiply by
-  */
-{
-  
-  for(T& vItem : flatData)
-    vItem+=V;
-  
-  return *this;
-}
-
-template<typename T>
-multiData<T>&
-multiData<T>::operator-=(const T& V)
-  /*!
-    Standard multiply operator
-    \param V :: Value to multiply by
-  */
-{
-  
-  for(T& vItem : flatData)
-    vItem-=V;
-  
-  return *this;
-}
-
-template<typename T>
-multiData<T>&
-multiData<T>::operator*=(const T& V)
-  /*!
-    Standard multiply operator
-    \param V :: Value to multiply by
-  */
-{  
-  for(T& vItem : flatData)
-    vItem*=V;
-  
-  return *this;
-}
-
-template<typename T>
-multiData<T>&
-multiData<T>::operator/=(const T& V)
-  /*!
-    Standard division operator
-    \param V :: Value to divide
-  */
-{
-
-  if (std::abs(V)<1e-38)
-    throw ColErr::NumericalAbort("multiData: Division value approx zero");
-  
-  for(T& vItem : flatData)
-    vItem/=V;
-  
-  return *this;
-}
-
-
-
-
-template<typename T>
 void
-multiData<T>::getRangeImpl(std::vector<T>& out,
+multiData<T>::getRangeImpl(std::vector<size_t>& mapIndex,
 			   size_t& outIndex,
 			   const std::vector<sRange>& sR,
 			   const size_t dim,
 			   const size_t index) const
    /*!
-     Main worker function 
-    */
+     Main worker function
+     \para mapIndex :: Correctly sizes value for index points
+   */
 {
   const sRange& RR=sR[dim];
   if (dim+1==sR.size())
     {
       for(size_t i=index+RR.begin;i<index+RR.end;i++)
-	out[outIndex++]=flatData[i];
+	mapIndex[outIndex++]=i;
     }
   else
     {
       for(size_t i=RR.begin;i<RR.end;i++)
-	getRangeImpl(out,outIndex,sR,dim+1,index+i*strides[dim]);
+	getRangeImpl(mapIndex,outIndex,sR,dim+1,index+i*strides[dim]);
     }
   return;
 }
 
 template<typename T>
 void
-multiData<T>::getRangeSumImpl(T& out,
-			      const std::vector<sRange>& sR,
-			      const size_t dim,
-			      const size_t index) const
+multiData<T>::getRangeImpl(std::vector<T>& realValues,
+			   const std::vector<sRange>& sR,
+			   const size_t dim,
+			   const size_t index) const
    /*!
-     Main worker function for integratoin
-     \param out :: value to place data
-     \param dim :: current dim to work on
-     \param index :: current index to work on     y
+     Main worker function
+     \param realValue :: EMPTY vector for index points
     */
 {
   const sRange& RR=sR[dim];
   if (dim+1==sR.size())
     {
+      std::map<size_t,T>::const_iterator mc;
       for(size_t i=index+RR.begin;i<index+RR.end;i++)
-	out+=flatData[i];
+	{
+	  mc=flatMap.find(i);
+	  if (mc==flatMap.end())
+	    realValues.push_back(T{});
+	  else
+	    realValues.push_back(mc->second);
+	}
     }
   else
     {
       for(size_t i=RR.begin;i<RR.end;i++)
-	getRangeSumImpl(out,sR,dim+1,index+i*strides[dim]);
+	getRangeImpl(realValues,sR,dim+1,index+i*strides[dim]);
+    }
+  return;
+}
+
+template<typename T>
+void
+multiData<T>::getRangeImpl(std::map<size_t,T>& sparseValues,
+			   const std::vector<sRange>& sR,
+			   const size_t dim,
+			   const size_t index) const
+   /*!
+     Main worker function
+     \param realValue :: EMPTY vector for index points
+    */
+{
+  const sRange& RR=sR[dim];
+  if (dim+1==sR.size())
+    {
+      std::map<size_t,T>::const_iterator mc;
+      for(size_t i=index+RR.begin;i<index+RR.end;i++)
+	{
+	  mc=flatMap.find(i);
+	  if (mc!=flatMap.end())
+	    sparseValues.emplace(mc->first,mc->second);
+	}
+    }
+  else
+    {
+      for(size_t i=RR.begin;i<RR.end;i++)
+	getRangeImpl(sparseValue,sR,dim+1,index+i*strides[dim]);
     }
   return;
 }
@@ -481,24 +387,10 @@ multiData<T>::getFlatRange(std::vector<sRange> sR) const
     \return Ranged vector component
   */
 {
-  std::vector<T> out(getRangeSize(sR));
+  std::vector<T> out;
+  getRangeSize(sR);  // needed to correct sR values
 
-  size_t outIndex(0);
-  getRangeImpl(out,outIndex,sR,0,0);
-  return out;
-}
-
-template<typename T>
-T
-multiData<T>::getFlatIntegration(std::vector<sRange> sR) const
-  /*!
-    Returns a value from the sum of a range
-    \param sR :: vector of ranges
-    \return Ranged vector component
-  */
-{
-  T out(0);
-  getRangeSumImpl(out,sR,0,0);
+  getRangeImpl(out,sR,0,0);
   return out;
 }
 
@@ -529,88 +421,6 @@ multiData<T>::getAxisRange(const size_t axisIndex,const size_t I) const
 
 template<typename T>
 std::vector<T>
-multiData<T>::getAxisIntegral(const size_t axisIndex,
-			      sRange sUnit) const
-  /*!
-    Returns a vector (flat) that can be placed into a multiData
-    of the integral along axisIndex
-    \param axisIndex :: axis (<nDim) to get effective nD-1 set from
-    \return Ranged vector component
-  */
-{
-  const size_t vSize=flatData.size()/index[axisIndex];
-
-  std::vector<sRange> sR;
-  for(size_t i=0;i<index.size();i++)
-    {
-      if (i!=axisIndex)
-	sR.push_back(sRange({0,index[i]-1}));
-      else
-	sR.push_back(sRange({0,0}));
-    }
-
-  if (!sUnit.end)
-    sUnit.end=index[axisIndex];
-
-  
-  std::vector<T> out(vSize);
-  std::vector<T> result(vSize);
-  for(size_t i=sUnit.begin;i<sUnit.end;i++)
-    {
-      sR[axisIndex]=sRange({i,i});
-      size_t outIndex(0);
-      getRangeImpl(out,outIndex,sR,0,0);
-      for(size_t j=0;j<vSize;j++)
-	result[j]+=out[j];
-    }
-  return result;
-}
-
-template<typename T>
-multiData<T>
-multiData<T>::exchange(size_t aIndex,size_t bIndex) const
- /*!
-   Exchange index pattern with offsets aIndex / bIndex
-   E.g. if [A][B][C][D] and a=>1 and b=>3 then
-   result is [A][D][C][B]
-   \param aIndex :: first column to exchange
-   \param bIndex :: second column to exchange
-  */
-{
-  if (aIndex>bIndex) std::swap(aIndex,bIndex);
-  
-  if (bIndex >= index.size() || aIndex==bIndex)
-    throw ColErr::IndexError<size_t>
-      (aIndex,bIndex,"exchange index not correct");
-
-
-  std::vector<size_t> newIndex(index);
-  std::swap(newIndex[aIndex],newIndex[bIndex]);
-
-  multiData<T> Out(newIndex);
-  std::vector<size_t> newStrides=strides;
-  std::swap(newStrides[aIndex],newStrides[bIndex]);
-
-  const size_t nA=size();      // full length
-  const size_t nDim=getDim();  
-  
-  IndexCounter orgCNT(newIndex);
-  
-  std::vector<T>& newData=Out.flatData;
-  for(size_t i=0;i<nA;i++)
-    {
-      size_t newIndex=0;
-      for(size_t j=0;j<nDim;j++)
-	newIndex+=orgCNT[j]*newStrides[j];
-
-      newData[i]=flatData[newIndex];
-      orgCNT++;
-    }
-  return Out;
-}
-
-template<typename T>
-std::vector<T>
 multiData<T>::getAxisProjection(const size_t axisIndex) const
   /*!
     Returns a vector (flat) that can be placed into a multiData
@@ -619,7 +429,8 @@ multiData<T>::getAxisProjection(const size_t axisIndex) const
     \return Ranged vector component
   */
 {
-  const size_t vSize=flatData.size()/index[axisIndex];
+
+  const size_t vSize=(index[0]*strides[0])/index[axisIndex];
   std::vector<sRange> sR;
   for(size_t i=0;i<index.size();i++)
     if (i!=axisIndex)
@@ -647,10 +458,12 @@ multiData<T>::getRange(std::vector<sRange> sR) const
     \return Ranged vector component
   */
 {
-  std::vector<T> out(getRangeSize(sR));
+  getRangeSize(sR);
 
   size_t outIndex(0);
-  getRangeImpl(out,outIndex,sR,0,0);
+  std::map<size_t,T> sparseMap
+  getRangeImpl(sparseMap,sR,0,0);
+
   std::vector<size_t> outArray;
   for(const sRange& sU : sR)
     {
@@ -658,7 +471,7 @@ multiData<T>::getRange(std::vector<sRange> sR) const
       if (nUnits>=1)
 	outArray.push_back(nUnits);
     }
-  return multiData<T>(outArray,out);
+  return multiData<T>(outArray,sparseMap);
 }
 
 
