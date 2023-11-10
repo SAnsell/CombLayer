@@ -12,7 +12,8 @@ set (testSources
     testLineTrack.cxx testLog.cxx testMapRange.cxx testMapSupport.cxx 
     testMasterRotate.cxx testMaterial.cxx testMathSupport.cxx 
     testMatrix.cxx testMD5.cxx testMesh3D.cxx 
-    testModelSupport.cxx testMultiData.cxx testNeutron.cxx testNList.cxx 
+    testModelSupport.cxx testMultiContainer.cxx
+    testMultiData.cxx testNeutron.cxx testNList.cxx 
     testNRange.cxx testObject.cxx testObjectRegister.cxx 
     testObjectTrackAct.cxx testObjSurfMap.cxx testObjTrackItem.cxx 
     testPipeLine.cxx testPipeUnit.cxx testPlane.cxx 

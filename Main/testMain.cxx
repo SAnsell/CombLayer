@@ -119,6 +119,7 @@
 #include "testMD5.h"
 #include "testMesh3D.h"
 #include "testModelSupport.h"
+#include "testMultiContainer.h"
 #include "testMultiData.h"
 #include "testNeutron.h"
 #include "testNList.h"
@@ -379,6 +380,7 @@ globalTest(const int type,const int extra)
       "testMapRange",
       "testMapSupport",
       "testMultiData",
+      "testMultiData(string)",
       "testNList",
       "testNRange",
       "testRules",
@@ -435,6 +437,12 @@ globalTest(const int type,const int extra)
       if(index==cnt)
 	{
 	  testMultiData A;
+	  X=A.applyTest(extra);
+	}
+      cnt++;
+      if(index==cnt)
+	{
+	  testMultiContainer A;
 	  X=A.applyTest(extra);
 	}
       cnt++;

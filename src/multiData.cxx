@@ -12,6 +12,7 @@
 #include <memory>
 #include <ranges>
 #include <functional>
+#include <type_traits>
 
 #include "Exception.h"
 #include "IndexCounter.h"
@@ -305,13 +306,16 @@ multiData<T>::operator-=(const multiData<T>& A)
     \param A :: Dataset to subtract from this
   */
 {
-  throwMatchCheck(A,"operator-=");
+  if constexpr (std::is_arithmetic<T>::value)
+    {
+      throwMatchCheck(A,"operator-=");
   
-  std::transform(flatData.begin(),flatData.end(),
-		 A.flatData.begin(),flatData.begin(),
-		 [](const T& a,const T& b) ->T
-		 { return a-b; }
-		 );
+      std::transform(flatData.begin(),flatData.end(),
+		     A.flatData.begin(),flatData.begin(),
+		     [](const T& a,const T& b) ->T
+		     { return a-b; }
+		     );
+    }
   
   return *this;
 }
@@ -324,13 +328,16 @@ multiData<T>::operator*=(const multiData<T>& A)
     \param A :: Dataset to subtract from this
   */
 {
-  throwMatchCheck(A,"operator*=");
-  
-  std::transform(flatData.begin(),flatData.end(),
-		 A.flatData.begin(),flatData.begin(),
-		 [](const T& a,const T& b) ->T
-		 { return a*b; }
-		 );
+  if constexpr (std::is_arithmetic<T>::value)
+    {
+      throwMatchCheck(A,"operator*=");
+      
+      std::transform(flatData.begin(),flatData.end(),
+		     A.flatData.begin(),flatData.begin(),
+		     [](const T& a,const T& b) ->T
+		     { return a*b; }
+		     );
+    }
   
   return *this;
 }
@@ -343,14 +350,16 @@ multiData<T>::operator/=(const multiData<T>& A)
     \param A :: Dataset to subtract from this
   */
 {
-  throwMatchCheck(A,"operator/=");
-  
-  std::transform(flatData.begin(),flatData.end(),
-		 A.flatData.begin(),flatData.begin(),
-		 [](const T& a,const T& b) ->T
-		 { return (std::abs(b)>1e-38) ? a/b : a; }
-		 );
-  
+  if constexpr (std::is_arithmetic<T>::value)
+    {
+      throwMatchCheck(A,"operator/=");
+      
+      std::transform(flatData.begin(),flatData.end(),
+		     A.flatData.begin(),flatData.begin(),
+		     [](const T& a,const T& b) ->T
+		     { return (std::abs(b)>1e-38) ? a/b : a; }
+		     );
+    }
   return *this;
 }
 
@@ -362,7 +371,6 @@ multiData<T>::operator+=(const T& V)
     \param V :: Value to multiply by
   */
 {
-  
   for(T& vItem : flatData)
     vItem+=V;
   
@@ -371,16 +379,17 @@ multiData<T>::operator+=(const T& V)
 
 template<typename T>
 multiData<T>&
-multiData<T>::operator-=(const T& V)
+multiData<T>::operator-=(const T& V)   
   /*!
     Standard multiply operator
     \param V :: Value to multiply by
   */
 {
-  
-  for(T& vItem : flatData)
-    vItem-=V;
-  
+  if constexpr (std::is_arithmetic<T>::value)
+    {
+      for(T& vItem : flatData)
+	vItem-=V;
+    }
   return *this;
 }
 
@@ -392,9 +401,11 @@ multiData<T>::operator*=(const T& V)
     \param V :: Value to multiply by
   */
 {  
-  for(T& vItem : flatData)
-    vItem*=V;
-  
+  if constexpr (std::is_arithmetic<T>::value)
+    {
+      for(T& vItem : flatData)
+	vItem*=V;
+    }
   return *this;
 }
 
@@ -406,12 +417,14 @@ multiData<T>::operator/=(const T& V)
     \param V :: Value to divide
   */
 {
-
-  if (std::abs(V)<1e-38)
-    throw ColErr::NumericalAbort("multiData: Division value approx zero");
-  
-  for(T& vItem : flatData)
-    vItem/=V;
+  if constexpr (std::is_arithmetic<T>::value)
+    {
+      if (std::abs(V)<1e-38)
+	throw ColErr::NumericalAbort("multiData: Division value approx zero");
+      
+      for(T& vItem : flatData)
+	vItem/=V;
+    }
   
   return *this;
 }
@@ -1024,6 +1037,7 @@ multiData<T>::write(std::ostream& OX) const
 ///\cond TEMPLATE
 template class multiData<double>;
 template class multiData<float>;
+template class multiData<std::string>;
 template class multiData<int>;
 
 template std::ostream& operator<<(std::ostream&,const multiData<int>&);

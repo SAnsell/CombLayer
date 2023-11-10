@@ -6,7 +6,7 @@
    \version 2.0
    \author Stuart Ansell
    \date May 2023
-   \brief multiDAta code
+   \brief multiData code
    
    Note: based on:
    https://stackoverflow.com/questions/74031279/

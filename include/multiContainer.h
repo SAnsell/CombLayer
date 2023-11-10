@@ -24,16 +24,10 @@ class multiContainer
 
   std::vector<size_t> index;     ///< Index sizes of array
   std::vector<size_t> strides;   ///< strides through data [+1 size for zero]
-  /// Data vector so to avoid issues of continuous size 
-  std::map<size_t,T> flatMap;
+  /// Data vector but allows random sizing of data
+  std::vector<T> flatData;
 
-  void getRangeImpl(std::vector<size_t>&,size_t&,
-		    const std::vector<sRange>&,
-		    const size_t,const size_t) const; 
-  void getRangeImpl(std::vector<T>&,
-		    const std::vector<sRange>&,
-		    const size_t,const size_t) const; 
-  void getRangeImpl(std::map<size_t,T>&,
+  void getRangeImpl(std::vector<T>&,size_t&,
 		    const std::vector<sRange>&,
 		    const size_t,const size_t) const; 
 
@@ -72,9 +66,9 @@ class multiContainer
   multiContainer<T>& operator*=(const multiContainer<T>&);
   multiContainer<T>& operator/=(const multiContainer<T>&);
 
-  bool isEmpty() const { return flatData.empty(); } 
+  bool isEmpty() const { return index.empty(); } 
   size_t getDim() const { return index.size(); }
-  size_t size() const { return flatData.size(); }
+  size_t size() const { return (strides[0]) ? index[0]*strides[0] : 0; }
 
   size_t getRangeSize(std::vector<sRange>&) const;
   
@@ -89,37 +83,22 @@ class multiContainer
   void setData(std::vector<T>);
   void setData(const size_t,const size_t,std::vector<T>);
   void setData(const size_t,const size_t,const size_t,std::vector<T>);
-  std::vector<T> getFlatRange(std::vector<sRange>) const;
-  T getFlatIntegration(std::vector<sRange>) const;
-  std::vector<T> getAxisRange(const size_t,const size_t) const;
-  std::vector<T> getAxisIntegral(const size_t,sRange sUnit={}) const;
-  std::vector<T> getAxisProjection(const size_t) const;
-  multiContainer<T> getRange(std::vector<sRange>) const;
-  multiContainer<T> reduceMap(const size_t) const;
-  multiContainer<T> projectMap(const size_t,std::vector<sRange>) const;
-  multiContainer<T> integrateMap(size_t,std::vector<sRange>) const;
-  T integrateValue(std::vector<sRange>) const;
 
-  void fill(const T&);
-  multiContainer<T> exchange(size_t,size_t) const;
+  multiContainer<T> getRange(std::vector<sRange>) const;
+  std::vector<T> getFlatRange(std::vector<sRange>) const;
+  std::vector<T> getAxisRange(const size_t,const size_t) const;
   
-  sliceUnit<T> get() { return sliceUnit<T>(flatData.data(), strides.data()); }
-  sliceUnit<const T> get() const
-    { return sliceUnit<const T>(flatData.data(), strides.data()); }
+  sliceMap get() const
+  { return sliceMap(strides.data()); }
+
 
   T& value(const std::vector<size_t>&);
   const T& value(const std::vector<size_t>&) const;
   
-  /// accessor to pointer
-  T* getPtr() { return flatData.data(); }
-  const T* getPtr() const { return flatData.data(); }
+  // /// accessor to pointer
+  // T& getDAta() { return flatData.data(); }
+  // const T* getPtr() const { return flatData.data(); }
   
-  /// accessor to vector
-  const std::vector<T>& getVector() const
-     { return flatData; }
-  /// accessor to vector
-  std::vector<T>& getVector() { return flatData; }
-
   const std::vector<size_t>& shape() const
     { return index; }
   const std::vector<size_t>& sVec() const
@@ -129,6 +108,7 @@ class multiContainer
   size_t offset(const size_t,const size_t) const;
   size_t offset(const size_t,const size_t,const size_t) const;
   size_t offset(const std::vector<size_t>&) const;
+  void fill(const T&);
   
   using iterator=typename std::vector<T>::iterator;
   using const_iterator=typename std::vector<T>::const_iterator;
