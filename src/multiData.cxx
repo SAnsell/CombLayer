@@ -1042,5 +1042,7 @@ template class multiData<int>;
 
 template std::ostream& operator<<(std::ostream&,const multiData<int>&);
 template std::ostream& operator<<(std::ostream&,const multiData<float>&);
+template std::ostream& operator<<(std::ostream&,const multiData<double>&);
+template std::ostream& operator<<(std::ostream&,const multiData<std::string>&);
 
 ///\endcond TEMPLATE

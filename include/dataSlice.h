@@ -1,6 +1,7 @@
 #ifndef dataSlice_h
 #define dataSlice_h
 
+
 /*!
   \struct sRange
   \author S. Ansell
@@ -35,16 +36,17 @@ struct sliceUnit
     {return{ dataPtr+index * *stride, stride+1 };  }
 
   /// reference () operator (to get data member)
-  operator T&() const { return *dataPtr; }
+  operator const T& () const { return *dataPtr; }
+  operator T& () { return *dataPtr; }
 
+  
   sliceUnit&
   operator=(const sliceUnit& A)
   {
     if (this!=&A)
       {
-	// notice the double inner else :
-	// this gives speed optimization for const / non-const
-	// <T> forms 
+	// if the item is not constant then we can set it by value
+	// only if both strides have hit zero
 	if constexpr (!std::is_const<T>::value)
 	  {
 	    if (!(*stride) && !(*A.stride))
@@ -78,6 +80,67 @@ struct sliceUnit
       return dataPtr;
     }
    T* assignPointer() const
+    {
+      return dataPtr;
+    }
+};
+
+/*!
+  Specialization for string
+  maybe replace with constexpr but difficult
+ */
+
+template<>
+struct sliceUnit<std::string>
+{
+  std::string* dataPtr = 0;
+  const std::size_t* stride = 0;
+
+  /// constructor
+  sliceUnit(std::string* dPtr,const size_t* sPtr) :
+    dataPtr(dPtr),stride(sPtr) {}
+  
+  // accessor to data index
+  sliceUnit operator[](std::size_t index) const
+    {return{ dataPtr+index * *stride, stride+1 };  }
+
+  /// reference () operator (to get data member)
+  operator std::string& () { return static_cast<std::string&>(*dataPtr); }
+
+  std::string operator+=(const std::string& A)
+    { return *dataPtr += A;  }
+  
+  bool operator!=(const std::string& A)
+  { return *dataPtr!=A;  }
+  
+  sliceUnit&
+  operator=(const sliceUnit& A)
+  {
+    if (this!=&A)
+      {
+	if (!(*stride) && !(*A.stride))
+	  *dataPtr = *A.dataPtr;
+	else
+	  {
+	    dataPtr=A.dataPtr;
+	    stride=A.stride;
+	  }
+      }
+    return *this;
+  }
+  
+  // assignment system for values
+  std::string& operator=(std::string in) const
+    {
+      *dataPtr = std::move(in);
+      return *dataPtr;
+    }
+  
+  const std::string* pointer() const
+    {
+      return dataPtr;
+    }
+  std::string* assignPointer() const
     {
       return dataPtr;
     }

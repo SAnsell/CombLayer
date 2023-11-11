@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   testInclude/testMultiContainer.h
+ * File:   testInclude/testMultiString.h
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
  *
@@ -19,32 +19,32 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef testMultiContainer_h
-#define testMultiContainer_h 
+#ifndef testMultiString_h
+#define testMultiString_h 
 
 /*!
-  \class testMultiContainer 
-  \brief Test class for the multiData layout
+  \class testMultiString 
+  \brief Test class for the multiData layout with strings
   \version 1.0
-  \date October 2023
+  \date November 2023
   \author S.Ansell
   
-
 */
 
-class testMultiContainer 
+class testMultiString 
 {
 private:
 
-  //Tests 
+  //Tests
+  int testExchange();
   int testMultiRange();
   int testRange();
   int testSet();
   
 public:
 
-  testMultiContainer();
-  ~testMultiContainer();
+  testMultiString();
+  ~testMultiString();
 
   int applyTest(const int extra);
   

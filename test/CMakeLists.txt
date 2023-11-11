@@ -12,8 +12,8 @@ set (testSources
     testLineTrack.cxx testLog.cxx testMapRange.cxx testMapSupport.cxx 
     testMasterRotate.cxx testMaterial.cxx testMathSupport.cxx 
     testMatrix.cxx testMD5.cxx testMesh3D.cxx 
-    testModelSupport.cxx testMultiContainer.cxx
-    testMultiData.cxx testNeutron.cxx testNList.cxx 
+    testModelSupport.cxx testMultiData.cxx
+    testMultiString.cxx testNeutron.cxx testNList.cxx 
     testNRange.cxx testObject.cxx testObjectRegister.cxx 
     testObjectTrackAct.cxx testObjSurfMap.cxx testObjTrackItem.cxx 
     testPipeLine.cxx testPipeUnit.cxx testPlane.cxx 
@@ -89,6 +89,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/testMesh3D.cxx
   ${tarDIR}/testModelSupport.cxx
   ${tarDIR}/testMultiData.cxx
+  ${tarDIR}/testMultiString.cxx			
   ${tarDIR}/testNeutron.cxx
   ${tarDIR}/testNList.cxx
   ${tarDIR}/testNRange.cxx
@@ -172,6 +173,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/testMesh3D.h
   ${tarINC}/testModelSupport.h
   ${tarINC}/testMultiData.h
+  ${tarINC}/testMultiString.h	
   ${tarINC}/testNeutron.h
   ${tarINC}/testNList.h
   ${tarINC}/testNRange.h

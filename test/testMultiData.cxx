@@ -125,7 +125,7 @@ testMultiData::testExchange()
     \retval 0 :: success 
   */
 {
-
+  ELog::RegMethod RegA("testMultiData","testExchange");
   // nA,nB,nC,nD,aIndex,bIndex
   typedef std::tuple<size_t,size_t,size_t,size_t,size_t,size_t> TTYPE;
 
