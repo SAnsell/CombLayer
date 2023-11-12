@@ -3,7 +3,7 @@
  
  * File:   delft/reactorTallyConstruct.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
-#include <boost/multi_array.hpp>
 #include <boost/format.hpp>
 
 #include "Exception.h"
@@ -42,6 +41,8 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
+#include "dataSlice.h"
+#include "multiData.h"
 #include "Triple.h"
 #include "NRange.h"
 #include "NList.h"

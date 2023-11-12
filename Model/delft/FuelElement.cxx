@@ -38,6 +38,8 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
+#include "dataSlice.h"
+#include "multiData.h"
 #include "surfDivide.h"
 #include "surfRegister.h"
 #include "varList.h"

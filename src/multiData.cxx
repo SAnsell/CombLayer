@@ -279,7 +279,8 @@ multiData<T>::throwMatchCheck(const multiData<T>& A,
 		
 template<typename T>
 multiData<T>&
-multiData<T>::operator+=(const multiData<T>& A)
+multiData<T>::operator+=(const multiData<T>& A) 
+  
   /*!
     Addition of other multiData
   */
@@ -288,13 +289,20 @@ multiData<T>::operator+=(const multiData<T>& A)
     return this->operator=(A);
 
   throwMatchCheck(A,"operator+=");
-
-  std::transform(flatData.begin(),flatData.end(),
-		 A.flatData.begin(),flatData.begin(),
-		 [](const T& a,const T& b) ->T
-		 { return a+b; }
-		 );
   
+  if constexpr (requires (T a,T b) { a+b; })
+    {
+      std::transform(flatData.begin(),flatData.end(),
+		     A.flatData.begin(),flatData.begin(),
+		     [](const T& a,const T& b) ->T
+		     { return a+b; }
+		     );
+    }
+  else
+    {
+      throw ColErr::AbsObjMethod
+	("MultiData with non: operator+ class");
+    }
   return *this;
 }
 
@@ -315,6 +323,11 @@ multiData<T>::operator-=(const multiData<T>& A)
 		     [](const T& a,const T& b) ->T
 		     { return a-b; }
 		     );
+    }
+  else
+    {
+      throw ColErr::AbsObjMethod
+	("MultiData with non: operator-= class");
     }
   
   return *this;
@@ -371,8 +384,17 @@ multiData<T>::operator+=(const T& V)
     \param V :: Value to multiply by
   */
 {
-  for(T& vItem : flatData)
-    vItem+=V;
+  if constexpr (requires (T a,T b) { a+b; })
+    {
+      for(T& vItem : flatData)
+	vItem+=V;
+    }
+  else
+    {
+      throw ColErr::AbsObjMethod
+	("MultiData with non: operator+= class");
+    }
+
   
   return *this;
 }
@@ -470,16 +492,19 @@ multiData<T>::getRangeSumImpl(T& out,
      \param index :: current index to work on     y
     */
 {
-  const sRange& RR=sR[dim];
-  if (dim+1==sR.size())
+  if constexpr (requires (T a,T b) { a+b; })
     {
-      for(size_t i=index+RR.begin;i<index+RR.end;i++)
-	out+=flatData[i];
-    }
-  else
-    {
-      for(size_t i=RR.begin;i<RR.end;i++)
-	getRangeSumImpl(out,sR,dim+1,index+i*strides[dim]);
+      const sRange& RR=sR[dim];
+      if (dim+1==sR.size())
+	{
+	  for(size_t i=index+RR.begin;i<index+RR.end;i++)
+	    out+=flatData[i];
+	}
+      else
+	{
+	  for(size_t i=RR.begin;i<RR.end;i++)
+	    getRangeSumImpl(out,sR,dim+1,index+i*strides[dim]);
+	}
     }
   return;
 }
@@ -510,9 +535,15 @@ multiData<T>::getFlatIntegration(std::vector<sRange> sR) const
     \return Ranged vector component
   */
 {
-  T out(0);
-  getRangeSumImpl(out,sR,0,0);
-  return out;
+  if constexpr (std::is_arithmetic<T>::value)
+    {
+      T outX(0);
+      getRangeSumImpl(outX,sR,0,0);
+      return outX;
+    }
+  throw ColErr::AbsObjMethod
+    ("MultiData::getFlatIntegration with non: operator+ class");
+ 
 }
 
 template<typename T>
@@ -526,7 +557,7 @@ multiData<T>::getAxisRange(const size_t axisIndex,const size_t I) const
   */
 {
   const size_t vSize=flatData.size()/index[axisIndex];
-  
+
   std::vector<T> out(vSize);
   std::vector<sRange> sR;
   for(size_t i=0;i<index.size();i++)
@@ -551,32 +582,38 @@ multiData<T>::getAxisIntegral(const size_t axisIndex,
     \return Ranged vector component
   */
 {
-  const size_t vSize=flatData.size()/index[axisIndex];
-
-  std::vector<sRange> sR;
-  for(size_t i=0;i<index.size();i++)
+  if constexpr (std::is_arithmetic<T>::value)
     {
-      if (i!=axisIndex)
-	sR.push_back(sRange({0,index[i]-1}));
-      else
-	sR.push_back(sRange({0,0}));
+      const size_t vSize=flatData.size()/index[axisIndex];
+      
+      std::vector<sRange> sR;
+      for(size_t i=0;i<index.size();i++)
+	{
+	  if (i!=axisIndex)
+	    sR.push_back(sRange({0,index[i]-1}));
+	  else
+	    sR.push_back(sRange({0,0}));
+	}
+      
+      if (!sUnit.end)
+	sUnit.end=index[axisIndex];
+      
+      
+      std::vector<T> out(vSize);
+      std::vector<T> result(vSize);
+      for(size_t i=sUnit.begin;i<sUnit.end;i++)
+	{
+	  sR[axisIndex]=sRange({i,i});
+	  size_t outIndex(0);
+	  getRangeImpl(out,outIndex,sR,0,0);
+	  for(size_t j=0;j<vSize;j++)
+	    result[j]+=out[j];
+	}
+      return result;
     }
+  throw ColErr::AbsObjMethod
+    ("MultiData::getAxisIntegral with non: operator+ class");
 
-  if (!sUnit.end)
-    sUnit.end=index[axisIndex];
-
-  
-  std::vector<T> out(vSize);
-  std::vector<T> result(vSize);
-  for(size_t i=sUnit.begin;i<sUnit.end;i++)
-    {
-      sR[axisIndex]=sRange({i,i});
-      size_t outIndex(0);
-      getRangeImpl(out,outIndex,sR,0,0);
-      for(size_t j=0;j<vSize;j++)
-	result[j]+=out[j];
-    }
-  return result;
 }
 
 template<typename T>
@@ -860,20 +897,24 @@ multiData<T>::projectMap(const size_t axisIndex,
     \parma axisIndex :: Primary index
   */
 {
-  getRangeSize(sR);
-  // single vector
-  const size_t nR=(!sR[axisIndex].end) ?
-    index[axisIndex] : sR[axisIndex].end-sR[axisIndex].begin;
-
-  std::vector<T> outVec(nR);
-  size_t index(0);
-  for(size_t i=sR[axisIndex].begin;i<nR;i++)
+  if constexpr (std::is_arithmetic<T>::value)
     {
-      sR[axisIndex]=sRange({i,i});
-      outVec[index++]=getFlatIntegration(sR);
+      getRangeSize(sR);
+      // single vector
+      const size_t nR=(!sR[axisIndex].end) ?
+	index[axisIndex] : sR[axisIndex].end-sR[axisIndex].begin;
+      
+      std::vector<T> outVec(nR);
+      size_t index(0);
+      for(size_t i=sR[axisIndex].begin;i<nR;i++)
+	{
+	  sR[axisIndex]=sRange({i,i});
+	  outVec[index++]=getFlatIntegration(sR);
+	}
+      return multiData<T>(nR,outVec);
     }
-
-  return multiData<T>(nR,outVec);
+  throw ColErr::AbsObjMethod
+    ("MultiData::getAxisIntegral with non: operator+ class");
 }
 
 template<typename T>
@@ -886,9 +927,14 @@ multiData<T>::integrateMap(const size_t axisIndex,
     \param axisIndex :: axis to remove
   */
 {
-  multiData<T> outI=getRange(std::move(sR));
-  return multiData<T>(outI.reduceAxis(axisIndex),
-		      outI.getAxisIntegral(axisIndex));
+  if constexpr (std::is_arithmetic<T>::value)
+    {
+      multiData<T> outI=getRange(std::move(sR));
+      return multiData<T>(outI.reduceAxis(axisIndex),
+			  outI.getAxisIntegral(axisIndex));
+    }
+  throw ColErr::AbsObjMethod
+    ("MultiData::getAxisIntegral with non: operator+ class");
 }
 
 template<typename T>
@@ -900,11 +946,17 @@ multiData<T>::integrateValue(std::vector<sRange> sR) const
     \return sum of range
   */
 {
-  std::vector<T> values=getFlatRange(std::move(sR));
-  T Out(0);
-  for(const T& v : values)
-    Out+=v;
-  return Out;
+  if constexpr (std::is_arithmetic<T>::value)  
+    {
+      std::vector<T> values=getFlatRange(std::move(sR));
+      T Out(0);
+      for(const T& v : values)
+	Out+=v;
+      return Out;
+    }
+  throw ColErr::AbsObjMethod
+    ("MultiData::IntegrateValue with non: operator+ class");
+  
 }
 
 template<typename T>
@@ -999,50 +1051,59 @@ multiData<T>::write(std::ostream& OX) const
     \param OX :: Output
   */
 {
-  OX<<"Index =";
-  for(const size_t i : index)
-    OX<<" "<<i;
-  OX<<"\n";
-  const size_t nDim=index.size();
-
-  typename std::vector<T>::const_iterator vc(flatData.begin());
-    
-  if (nDim>1)
+  if constexpr (requires (std::ostream& OX,T A) { OX<<A; })
     {
-      IndexCounter<size_t> primeIndex(index.begin(),index.end()-2);
-      do
-	{
-	  if (nDim>2)
-	    OX<<"Mat"<<primeIndex<<"\n";
-	  for(size_t j=0;j<index[nDim-2];j++)
-	    {
-	      OX<<"   ";
-	      for(size_t k=0;k<index.back();k++)
-		OX<<" "<<*vc++;
-	      OX<<"\n";
-	    }
-	} while(!primeIndex++);
-    }
-  else if (nDim==1)
-    {
-      OX<<"   ";
-      for(size_t j=0;j<strides[0];j++)
-	OX<<" "<<*vc++;
+      OX<<"Index =";
+      for(const size_t i : index)
+	OX<<" "<<i;
       OX<<"\n";
+      const size_t nDim=index.size();
+      
+      typename std::vector<T>::const_iterator vc(flatData.begin());
+      
+      if (nDim>1)
+	{
+	  IndexCounter<size_t> primeIndex(index.begin(),index.end()-2);
+	  do
+	    {
+	      if (nDim>2)
+		OX<<"Mat"<<primeIndex<<"\n";
+	      for(size_t j=0;j<index[nDim-2];j++)
+		{
+		  OX<<"   ";
+		  for(size_t k=0;k<index.back();k++)
+		    OX<<" "<<*vc++;
+		  OX<<"\n";
+		}
+	    } while(!primeIndex++);
+	}
+      else if (nDim==1)
+	{
+	  OX<<"   ";
+	  for(size_t j=0;j<strides[0];j++)
+	    OX<<" "<<*vc++;
+	  OX<<"\n";
 	  
+	}
     }
   return;
 }
 
 ///\cond TEMPLATE
+
+namespace delftSystem
+{
+  class RElement;
+}
+
 template class multiData<double>;
 template class multiData<float>;
 template class multiData<std::string>;
 template class multiData<int>;
+template class multiData<std::shared_ptr<delftSystem::RElement>>;
 
 template std::ostream& operator<<(std::ostream&,const multiData<int>&);
 template std::ostream& operator<<(std::ostream&,const multiData<float>&);
-template std::ostream& operator<<(std::ostream&,const multiData<double>&);
 template std::ostream& operator<<(std::ostream&,const multiData<std::string>&);
 
 ///\endcond TEMPLATE

@@ -414,7 +414,7 @@ FEM::writeFEM(const std::string& FName) const
 
 	  OX<<i<<" "<<j<<" "<<k<<" "
 	    <<Pt<<"     "
-	    <<MAT[i][j][k]<<" "<<Rho[i][j][k]
+	    <<matMesh.get()[i][j][k]<<" "<<Rho[i][j][k]
 	    <<" "<<KGet[i][j][k]<<std::endl;
       }
   OX.close();

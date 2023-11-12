@@ -42,6 +42,8 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
+#include "dataSlice.h"
+#include "multiData.h"
 #include "inputParam.h"
 #include "surfRegister.h"
 #include "objectRegister.h"

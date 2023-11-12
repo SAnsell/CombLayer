@@ -3,7 +3,7 @@
  
  * File:   delftInc/ReactorGrid.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,15 +64,17 @@ class ReactorGrid :
   int waterMat;                 ///< Water material in plate
 
   FuelLoad FuelSystem;          ///< System of fuel layout
-  boost::multi_array<std::string,2> GType;      ///< Grid type
-  boost::multi_array<RTYPE,2> Grid;     ///< Storage of the grid [size 3]
+  multiData<std::string> GType;      ///< Grid type
+  multiData<RTYPE> Grid;             ///< Storage of the grid [size 3]
+  //  boost::multi_array<std::string,2> GType;      ///< Grid type
+  //  boost::multi_array<RTYPE,2> Grid;     ///< Storage of the grid [size 3]
 
   void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
 
-  int getCellNumber(const long int,const long int) const;
+  int getCellNumber(const size_t,const size_t) const;
 
  public:
 

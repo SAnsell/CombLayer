@@ -38,8 +38,11 @@ struct sliceUnit
   /// reference () operator (to get data member)
   operator const T& () const { return *dataPtr; }
   operator T& () { return *dataPtr; }
+  //  operator T () const { return *dataPtr; }
 
-  
+  // point operator
+  T operator->() const { return *dataPtr; }
+
   sliceUnit&
   operator=(const sliceUnit& A)
   {
@@ -74,15 +77,11 @@ struct sliceUnit
       *dataPtr = std::move(in);
       return *dataPtr;
     }
-  
-  const T* pointer() const
-    {
-      return dataPtr;
-    }
-   T* assignPointer() const
-    {
-      return dataPtr;
-    }
+
+  T get() { return *dataPtr; }
+  const T* pointer() const { return dataPtr; }
+  T* assignPointer() const { return dataPtr; }
+
 };
 
 /*!
@@ -109,10 +108,18 @@ struct sliceUnit<std::string>
 
   std::string operator+=(const std::string& A)
     { return *dataPtr += A;  }
-  
+
+  // access operator 
   bool operator!=(const std::string& A)
   { return *dataPtr!=A;  }
-  
+
+  bool operator==(const std::string& A)
+    { return *dataPtr!=A;  }
+
+  bool operator==(const char* APtr)
+  { return *dataPtr == std::string(APtr);  }
+
+  /// equal opertor  for 
   sliceUnit&
   operator=(const sliceUnit& A)
   {
@@ -135,15 +142,13 @@ struct sliceUnit<std::string>
       *dataPtr = std::move(in);
       return *dataPtr;
     }
-  
+
+  /// direct access to underlying type
   const std::string* pointer() const
-    {
-      return dataPtr;
-    }
+    { return dataPtr; }
+  /// direct access to underlying type
   std::string* assignPointer() const
-    {
-      return dataPtr;
-    }
+    {  return dataPtr; }
 };
 
 #endif
