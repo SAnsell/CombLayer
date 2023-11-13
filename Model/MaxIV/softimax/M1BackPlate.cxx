@@ -368,6 +368,8 @@ M1BackPlate::createSupportObjects(Simulation& System)
 {
   ELog::RegMethod RegA("M1BackPlate","createSupportObjects");
 
+  const HeadRule cylVoidHR=getRule("TubeRadius");
+  
   HeadRule HR;
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -5001 -5007 -124 16 -26 13");
@@ -404,21 +406,23 @@ M1BackPlate::createSupportObjects(Simulation& System)
       
       HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,"-124 5013 -36 5016");
-      makeCell(rN+"Void",System,cellIndex++,voidMat,0.0,HR*yCutHR*ringCutHR);  
+      makeCell(rN+"Void",System,cellIndex++,voidMat,0.0,
+	       HR*yCutHR*ringCutHR*cylVoidHR);  
 
       HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,BExtra,"33 -5013 -36 16 5017M");
-      makeCell(rN+"Void",System,cellIndex++,voidMat,0.0,HR*yCutHR);  
+      makeCell(rN+"Void",System,cellIndex++,voidMat,0.0,HR*yCutHR*cylVoidHR);  
       
       HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,"5015 -13 -16 -5017");
       makeCell(rN+"Support",System,cellIndex++,supportMat,0.0,HR*yCutHR); 
       
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-5015 5025 -13 33");
-      makeCell(rN+"Void",System,cellIndex++,voidMat,0.0,HR*yCutHR*ringCutHR);
+      makeCell(rN+"Void",System,cellIndex++,voidMat,0.0,
+	       HR*yCutHR*ringCutHR*cylVoidHR);
       HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,BExtra,"5015 -16 5017M -13  33");
-      makeCell(rN+"Void",System,cellIndex++,voidMat,0.0,HR*yCutHR);
+      makeCell(rN+"Void",System,cellIndex++,voidMat,0.0,HR*yCutHR*cylVoidHR);
 
       // lower support // 5023
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"5013 -224 -15 5026");
@@ -427,18 +431,20 @@ M1BackPlate::createSupportObjects(Simulation& System)
 	(SMap,buildIndex,"-5013 -5017 -15 5026");
       makeCell(rN+"LSupport",System,cellIndex++,supportMat,0.0,HR*yCutHR);  
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-224 5013 35 -5026");
-      makeCell(rN+"LVoid",System,cellIndex++,voidMat,0.0,HR*yCutHR*ringCutHR);
-
+      makeCell(rN+"LVoid",System,cellIndex++,voidMat,0.0,
+	       HR*yCutHR*ringCutHR*cylVoidHR);
+      
       HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,BExtra,"33 -5013 35 -15 5017M");
-      makeCell(rN+"LVoid",System,cellIndex++,voidMat,0.0,HR*yCutHR);  
+      makeCell(rN+"LVoid",System,cellIndex++,voidMat,0.0,HR*yCutHR*cylVoidHR);  
+
       HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,"-5025 -13 15 -5017");
       makeCell(rN+"LSupport",System,cellIndex++,supportMat,0.0,HR*yCutHR); 
-      
+
       HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,BExtra,"-5025 15 5017M -13  33");
-      makeCell(rN+"LVoid",System,cellIndex++,voidMat,0.0,HR*yCutHR);
+      makeCell(rN+"LVoid",System,cellIndex++,voidMat,0.0,HR*yCutHR*cylVoidHR);
       BI+=1000;
     }
 
@@ -464,6 +470,8 @@ M1BackPlate::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("M1BackPlate","createObjects");
 
+  const HeadRule cylVoidHR=getRule("TubeRadius");
+    
   const HeadRule topHR=getRule("Top");
   const HeadRule baseHR=getRule("Base");
   const HeadRule backHR=getRule("Back");
@@ -493,19 +501,19 @@ M1BackPlate::createObjects(Simulation& System)
   makeCell("Plate",System,cellIndex++,baseMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -5011 -13 33 15 -16 ");
-  makeCell("FrontCVoid",System,cellIndex++,voidMat,0.0,HR);
+  makeCell("FrontCVoid",System,cellIndex++,voidMat,0.0,HR*cylVoidHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"5012 -6011 -13 33 15 -16 ");
-  makeCell("CVoid",System,cellIndex++,voidMat,0.0,HR);
+  makeCell("CVoid",System,cellIndex++,voidMat,0.0,HR*cylVoidHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"6012 -2 -13 33 15 -16 ");
-  makeCell("EndCVoid",System,cellIndex++,voidMat,0.0,HR);
+  makeCell("EndCVoid",System,cellIndex++,voidMat,0.0,HR*cylVoidHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 16 -26 124 -104");
   makeCell("Plate",System,cellIndex++,baseMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 26 -36 124 -104");
-  makeCell("PlateExtra",System,cellIndex++,voidMat,0.0,HR*ringCutHR);
+  makeCell("PlateExtra",System,cellIndex++,voidMat,0.0,HR*ringCutHR*cylVoidHR);
 
   // lower section:
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 -2 3 -204 5");
@@ -518,22 +526,25 @@ M1BackPlate::createObjects(Simulation& System)
   makeCell("Plate",System,cellIndex++,baseMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"6011 -6012 35 -25 224 -204");
-  makeCell("PlateSubVoid",System,cellIndex++,voidMat,0.0,HR);
+  makeCell("PlateSubVoid",System,cellIndex++,voidMat,0.0,HR*cylVoidHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -5011 -25 35 224 -204");
   makeCell("FrontPlateVoid",System,cellIndex++,voidMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5011 -5012 -5017");
 
+  //  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5011 -5012 -5017");
+
+  
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"5012 -6011 -25 35 224 -204");
-  makeCell("PlateVoid",System,cellIndex++,voidMat,0.0,HR);
+  makeCell("PlateVoid",System,cellIndex++,voidMat,0.0,HR*cylVoidHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"6012 -2 -25 35 224 -204");
-  makeCell("EndPlateVoid",System,cellIndex++,voidMat,0.0,HR);
+  makeCell("EndPlateVoid",System,cellIndex++,voidMat,0.0,HR*cylVoidHR);
   
   // support (Top):
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"501 -502 104 -504 505 -506 (-511:512:-513:514:-515)");
   makeCell("TopSupport",System,cellIndex++,supportMat,0.0,HR);
+
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"511 -512 513 -514 515 -506");
   makeCell("TSupportVoid",System,cellIndex++,voidMat,0.0,HR);
@@ -546,7 +557,7 @@ M1BackPlate::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"501 -502 613 -514 -616 605");
   makeCell("BSupportVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1003 -1004 1007");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1003 -1004 -1007");
   makeCell("EPlateHole",System,cellIndex++,voidMat,0.0,HR);  
 
   HR=ModelSupport::getHeadRule
@@ -561,46 +572,47 @@ M1BackPlate::createObjects(Simulation& System)
   // OUTER VOIDS:
   // main c voids
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -5011 33 -224 35 -15");
-  makeCell("FrontCVoid",System,cellIndex++,voidMat,0.0,HR);  
+  makeCell("FrontCVoid",System,cellIndex++,voidMat,0.0,HR*cylVoidHR);  
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"5012 -6011 33 -224 35 -15");
-  makeCell("CVoid",System,cellIndex++,voidMat,0.0,HR);  
+  makeCell("CVoid",System,cellIndex++,voidMat,0.0,HR*cylVoidHR);  
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"6012 -2 33 -224 35 -15");
-  makeCell("EndVoid",System,cellIndex++,voidMat,0.0,HR);  
+  makeCell("EndVoid",System,cellIndex++,voidMat,0.0,HR*cylVoidHR);  
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"5001 -5011 33 -124 16 -36");
   makeCell("FrontCVoid",System,cellIndex++,voidMat,0.0,HR);  
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"5012 -6011 33 -124 16 -36");
-  makeCell("CVoid",System,cellIndex++,voidMat,0.0,HR);
+  makeCell("CVoid",System,cellIndex++,voidMat,0.0,HR*cylVoidHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"6012 -2 33 -124 16 -36");
-  makeCell("EndCVoid",System,cellIndex++,voidMat,0.0,HR);
+  makeCell("EndCVoid",System,cellIndex++,voidMat,0.0,HR*cylVoidHR);
   
   //  addOuterUnionSurf(HR);
   // spring voids
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 104 -1004 506 -36");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR*ringCutHR);  
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR*ringCutHR*cylVoidHR);  
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -5011 204 -34 35 -605");
   makeCell("FrontOuterVoid",System,cellIndex++,voidMat,0.0,HR);  
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"5012 -6011 204 -34 35 -605");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR*cylVoidHR);  
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"6011 -6012 204 -34 35 -605");
-  makeCell("EndVoid",System,cellIndex++,voidMat,0.0,HR);  
+  makeCell("EndVoid",System,cellIndex++,voidMat,0.0,HR*cylVoidHR);  
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"6012 -2 204 -34 35 -605");
-  makeCell("EndVoid",System,cellIndex++,voidMat,0.0,HR);  
+  makeCell("EndVoid",System,cellIndex++,voidMat,0.0,HR*cylVoidHR);  
   
   // top void
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 504 -1004 605 -1005");
   makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
 
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 504 -1004 1006 -506");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR*cylVoidHR);  
 
   // void at electron plate
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -1001 1013 -1004 1005 -1006");
@@ -619,7 +631,7 @@ M1BackPlate::createObjects(Simulation& System)
   // Face void 204
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"1 -2 1004 -34 605 -36 (-5017:5027:-5011:5012)");
-  makeCell("FaceVoid",System,cellIndex++,voidMat,0.0,HR);  
+  makeCell("FaceVoid",System,cellIndex++,voidMat,0.0,HR*cylVoidHR);  
 
   // crystal ends
   HR=HeadRule(SMap,buildIndex,-2);
@@ -793,8 +805,8 @@ M1BackPlate::adjustExtraVoids(Simulation& System,
 }
 void
 M1BackPlate::createAll(Simulation& System,
-		  const attachSystem::FixedComp& FC,
-		  const long int sideIndex)
+		       const attachSystem::FixedComp& FC,
+		       const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation

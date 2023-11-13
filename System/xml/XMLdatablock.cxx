@@ -3,7 +3,7 @@
  
  * File:   xml/XMLdatablock.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,8 +28,9 @@
 #include <sstream>
 #include <functional>
 #include <iterator>
-#include <boost/multi_array.hpp>
 
+#include "dataSlice.h"
+#include "multiData.h"
 #include "XMLattribute.h"
 #include "XMLobject.h"
 #include "XMLdatablock.h"
@@ -43,8 +44,8 @@ namespace XML
 //                   XMLdatablock
 // --------------------------------------------------------
 
-template<typename T,int Size>
-XMLdatablock<T,Size>::XMLdatablock(XMLobject* B,const std::string& K) :
+template<typename T>
+XMLdatablock<T>::XMLdatablock(XMLobject* B,const std::string& K) :
   XMLobject(B,K),managed(0),contLine(10),Data(0)
   /*!
     Constructor with junk key (value is NOT set)
@@ -53,8 +54,8 @@ XMLdatablock<T,Size>::XMLdatablock(XMLobject* B,const std::string& K) :
   */
 {}
 
-template<typename T,int Size>
-XMLdatablock<T,Size>::XMLdatablock(const XMLdatablock<T,Size>& A) :
+template<typename T>
+XMLdatablock<T>::XMLdatablock(const XMLdatablock<T>& A) :
   XMLobject(A),managed(A.managed),contLine(A.contLine),
   Data((!A.managed || !A.Data) ? A.Data : new mapArray(*A.Data))
   /*!
@@ -63,9 +64,9 @@ XMLdatablock<T,Size>::XMLdatablock(const XMLdatablock<T,Size>& A) :
   */
 {}
 
-template<typename T,int Size>
-XMLdatablock<T,Size>&
-XMLdatablock<T,Size>::operator=(const XMLdatablock<T,Size>& A) 
+template<typename T>
+XMLdatablock<T>&
+XMLdatablock<T>::operator=(const XMLdatablock<T>& A) 
   /*!
     Standard assignment operator
     \param A :: Object to copy
@@ -88,19 +89,19 @@ XMLdatablock<T,Size>::operator=(const XMLdatablock<T,Size>& A)
   return *this;
 }
 
-template<typename T,int Size>
-XMLdatablock<T,Size>*
-XMLdatablock<T,Size>::clone() const
+template<typename T>
+XMLdatablock<T>*
+XMLdatablock<T>::clone() const
   /*!
     The clone function
     \return new copy of this
   */
 {
-  return new XMLdatablock<T,Size>(*this);
+  return new XMLdatablock<T>(*this);
 }
 
-template<typename T,int Size>
-XMLdatablock<T,Size>::~XMLdatablock()
+template<typename T>
+XMLdatablock<T>::~XMLdatablock()
   /*!
     Standard destructor
   */
@@ -109,9 +110,9 @@ XMLdatablock<T,Size>::~XMLdatablock()
     delete Data;
 }
 
-template<typename T,int Size>
+template<typename T>
 void
-XMLdatablock<T,Size>::setManagedComp(const mapArray* VO)
+XMLdatablock<T>::setManagedComp(const mapArray* VO)
   /*!
     Set Component into XMLdatablock. This function
     manages (deletes the stored memory) and thus
@@ -132,9 +133,9 @@ XMLdatablock<T,Size>::setManagedComp(const mapArray* VO)
   return;
 }
 
-template<typename T,int Size>
+template<typename T>
 void
-XMLdatablock<T,Size>::setUnManagedComp(const mapArray* VO)
+XMLdatablock<T>::setUnManagedComp(const mapArray* VO)
   /*!
     Set Component into XMLdatablock
     \param VO :: container object to add
@@ -152,29 +153,27 @@ XMLdatablock<T,Size>::setUnManagedComp(const mapArray* VO)
   return;
 }
 
-template<typename T,int Size>
+template<typename T>
 void
-XMLdatablock<T,Size>::setSizeAttributes() 
+XMLdatablock<T>::setSizeAttributes() 
   /*!
     Sets the size attributes
   */
 {
-  if (!Data)
-    return;
-  for(int i=0;i<Size;i++)
+  if (!Data) return;
+
+  const std::vector<size_t>& shape=Data->shape();
+  for(size_t i=0;i<shape.size();i++)
     {
-      std::ostringstream cx;
-      std::ostringstream dx;
-      cx<<"Index_"<<i;
-      dx<<Data->shape()[i];
-      Attr.setAttribute(cx.str(),dx.str());
+      Attr.setAttribute("Index_"+std::to_string(i),
+			std::to_string(shape[i]));
     }
   return;
 }
 
-template<typename T,int Size>
+template<typename T>
 void
-XMLdatablock<T,Size>::writeXML(std::ostream& OX) const
+XMLdatablock<T>::writeXML(std::ostream& OX) const
   /*!
     Write out the object
     \param OX :: output stream
@@ -182,31 +181,37 @@ XMLdatablock<T,Size>::writeXML(std::ostream& OX) const
 {
   writeDepth(OX);
   OX<<"<"<<Key<<Attr;
-  for(int i=0;i<Size;i++)
-    OX<<" index_"<<i<<"=\""<<Data->shape()[i]<<"\"";
+  if (Data)
+    {
+      const std::vector<size_t>& shape=Data->shape();  
+      for(int i=0;i<shape.size();i++)
+	OX<<" index_"<<i<<"=\""<<shape[i]<<"\"";
+    }
   if (isEmpty())
     {
       OX<<"\\>"<<std::endl;
       return;
     }
   OX<<">"<<std::endl;
-  
-  writeDepth(OX,2);
-  const T* APtr=Data->origin();
-  int cnt(0);
-  boost::multi_array_types::size_type AimSize=Data->num_elements();
-  for(;cnt<static_cast<int>(AimSize);cnt++)
-    {
-      if (cnt && !(cnt % contLine))
-        {
-	  OX<<std::endl;
-	  writeDepth(OX,2);
-	}
-      OX<<*APtr<<" ";
-      APtr++;
-    }  
-  OX<<std::endl;
 
+  if (Data)
+    {
+      writeDepth(OX,2);
+      const std::vector<T>& dVec=
+	Data->getVector();
+      int cnt(0);
+      for(const T& V : dVec)
+	{
+	  if (cnt && !(cnt % contLine))
+	    {
+	      OX<<std::endl;
+	      writeDepth(OX,2);
+	    }
+	  OX<<V<<" ";
+	  cnt++;
+	}  
+      OX<<std::endl;
+    }
   writeCloseXML(OX);
   return;
 }
@@ -216,7 +221,7 @@ XMLdatablock<T,Size>::writeXML(std::ostream& OX) const
 
 /// \cond TEMPLATE
 
-template class XML::XMLdatablock<double,2>;
-template class XML::XMLdatablock<DError::doubleErr,2>;
+template class XML::XMLdatablock<double>;
+template class XML::XMLdatablock<DError::doubleErr>;
 
 /// \endcond TEMPLATE

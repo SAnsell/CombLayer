@@ -19,7 +19,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <boost/multi_array.hpp>
 #include <complex>
 #include <fstream>
 #include <iomanip>

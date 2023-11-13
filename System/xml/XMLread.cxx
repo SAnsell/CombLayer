@@ -27,12 +27,13 @@
 #include <list>
 #include <map>
 #include <string>
-#include <boost/multi_array.hpp>
 
 #include "FileReport.h"
 #include "OutputLog.h"
 #include "MatrixBase.h"
 #include "support.h"
+#include "dataSlice.h"
+#include "multiData.h"
 #include "XMLattribute.h"
 #include "XMLobject.h"
 #include "XMLread.h"
@@ -193,25 +194,27 @@ XMLread::convertToObject(T& OT) const
   return StrFunc::convert(Comp,OT);
 }
 
-template<typename T,int S> 
+template<typename T> 
 int
-XMLread::convertToArray(boost::multi_array<T,S>& A) const
+XMLread::convertToArray(multiData<T>& A) const
   /*!
-    Convert the XMLread string into an multi_array. 
-    S is the number of dimensions. This needs to be iterative
-    on the template parameter S.
+    Convert the XMLread string into an multiData array
+    Note that the multiData needs to be resized before
+    entry
 
     \param A :: Object to fill.
     \retval 1 :: success
     \retval 0 :: failure
-    \todo THIS SHOULD NOT WORK
   */
 {
   std::string Line=Comp;
-  typename boost::multi_array<T,S>::iterator ac;
-  for(ac=A.begin();ac!=A.end();ac++)
-    if (!StrFunc::section(Line,*ac))
-      return 0;
+  std::vector<T>& dataVec=A.getVector();
+  for(T& V : dataVec)
+    {
+      if (!StrFunc::section(Line,V))
+	return 0;
+    }
+      
   return 1;
 }
 
@@ -222,12 +225,11 @@ XMLread::setObject(const std::vector<std::string>& V)
     \param V :: Lines of string to add
    */
 {
-  std::vector<std::string>::const_iterator vc;
-  for(vc=V.begin();vc!=V.end();vc++)
+  for(const std::string& item : V)
     {
-      if (!vc->empty())
+      if (!item.empty())
         {
-	  Comp+=*vc;
+	  Comp+=item;
 	  Comp+=" ";
 	}
     }
@@ -288,12 +290,13 @@ XMLread::writeXML(std::ostream& OX) const
 
 // template int XMLread::convertToObject(boost::multi_araray<double,2>&) const;
 template int XMLread::convertToObject(Geometry::Vec3D&) const;
+template int XMLread::convertToArray(multiData<double>&) const;
 template int XMLread::convertToContainer(std::vector<int>&) const;
 template int XMLread::convertToContainer(std::vector<double>&) const;
 template int XMLread::convertToContainer(const int,std::vector<double>&,
 					 std::vector<double>&) const;
-
-
+  
+  
 ///\endcond TEMPLATE
   
 };

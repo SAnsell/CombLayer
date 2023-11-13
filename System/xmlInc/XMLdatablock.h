@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   xmlInc/XMLdatablock.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,13 +35,13 @@ namespace XML
     T is the storage type and Size is the number of indexes 
    */
 
-template<typename T,int Size>
+template<typename T>
 class XMLdatablock : public XMLobject
 {
  private:
 
   /// Storage for the datablock
-  typedef boost::multi_array<T,Size> mapArray;
+  typedef multiData<T> mapArray;
     
   int managed;                  ///< Is this data managed
   int contLine;                 ///< Number of components per line
@@ -53,9 +53,9 @@ class XMLdatablock : public XMLobject
  public:
 
   XMLdatablock(XMLobject*,const std::string&);
-  XMLdatablock(const XMLdatablock<T,Size>&);
-  XMLdatablock<T,Size>* clone() const override;
-  XMLdatablock<T,Size>& operator=(const XMLdatablock<T,Size>&);
+  XMLdatablock(const XMLdatablock<T>&);
+  XMLdatablock<T>* clone() const override;
+  XMLdatablock<T>& operator=(const XMLdatablock<T>&);
   ~XMLdatablock() override;
 
   void setContLine(int const IFlag) { contLine=IFlag; }  ///< Set continue size 

@@ -40,6 +40,8 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "support.h"
+#include "dataSlice.h"
+#include "multiData.h"
 #include "XMLload.h"
 #include "XMLattribute.h"
 #include "XMLobject.h"
@@ -1085,15 +1087,15 @@ testXML::testDataBlock()
   XMLcollect CO;
   CO.addGrp("Spectra");
   // SET the multi_array
-  typedef boost::multi_array<double,2> mapArray;
-  mapArray TX(boost::extents[3][4]);
-  
-  for(int i=0;i<3;i++)
-    for(int j=0;j<4;j++)
-      TX[i][j]=1.0+i*j;
+  multiData<double> TX(3,4);
 
-  XMLdatablock<double,2>* DB=
-    new XMLdatablock<double,2>(CO.getCurrent(),"DB");
+  
+  for(size_t i=0;i<3;i++)
+    for(size_t j=0;j<4;j++)
+      TX.get()[i][j]=1.0+static_cast<double>(i*j);
+
+  XMLdatablock<double>* DB=
+    new XMLdatablock<double>(CO.getCurrent(),"DB");
   DB->setUnManagedComp(&TX);
   CO.getCurrent()->addManagedObj(DB);
   CO.closeGrp();
@@ -1104,7 +1106,7 @@ testXML::testDataBlock()
   if (StrFunc::stripMultSpc(cx.str())
       !=StrFunc::stripMultSpc(DBout))
     {
-      std::string Actual=StrFunc::stripMultSpc(cx.str());
+      const std::string Actual=StrFunc::stripMultSpc(cx.str());
       ELog::EM<<"DBOut  == "<<DBout<<ELog::endDiag;
       ELog::EM<<"Actual == "<<Actual<<ELog::endDiag;
       size_t index;

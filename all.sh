@@ -24,8 +24,6 @@ parallel --halt now,fail=1 "./maxiv --defaultConfig Single {} --validAll --valid
 
 ./maxiv --noLengthCheck --defaultConfig Linac ${segments} --validAll --validCheck $nValid AA || exit 
 
-./maxiv --noLengthCheck --defaultConfig Linac ${segments} -validAll --validCheck ${nValid} AA || exit
-
 
 ./t1Real -validAll --validCheck ${nValid} AA || exit
 ./reactor -validAll --validCheck ${nValid} AA || exit
@@ -36,7 +34,7 @@ parallel --halt now,fail=1 "./ess --topModType {} --validAll --validCheck $nVali
 ./ess --bunkerPillars ABunker --validAll --validCheck $nValid AA  || exit
 
 parallel --halt now,fail=1 "./ess --defaultConfig Single {} --validAll --validCheck $nValid AA" ::: \
- ESTIA CSPEC  ODIN MAGIC BIFROST LOKI  NMX  NNBAR  DREAM  BEER   \
+ ESTIA CSPEC  ODIN MAGIC BIFROST LOKI NMX  NNBAR  DREAM  BEER   \
  FREIA SKADI MIRACLES TESTBEAM TREX VESPA VOR      || exit
 # HEIMDAL :: Not currently correct -- update underway
 
@@ -57,6 +55,7 @@ parallel --halt now,fail=1 "./singleItem --singleItem {} --validAll --validCheck
  UTubePipe VacuumPipe ViewTube YAG YagScreen YagUnit default uVac  || exit
 
 exit
+
 ## Need to fix the cooling pads on the reflector
 ./fullBuild -validAll --validCheck ${nValid} AA || exit
 exit

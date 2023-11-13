@@ -44,6 +44,7 @@ namespace xraySystem
 class M1Detail :
   public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
+  public attachSystem::ExternalCut,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {

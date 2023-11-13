@@ -22,6 +22,8 @@
 #ifndef XMLread_h
 #define XMLread_h
 
+template<typename T> class multiData;
+
 namespace XML
 {
 
@@ -69,8 +71,8 @@ class XMLread : public XMLobject
   template<template<typename T,typename A> class V,typename T,typename A> 
   int convertToContainer(const int,V<T,A>&,V<T,A>&) const;
 
-  template<typename T,int Size>
-  int convertToArray(boost::multi_array<T,Size>&) const;
+  template<typename T>
+  int convertToArray(multiData<T>&) const;
 
   template<typename T> 
   int convertToObject(T&) const;

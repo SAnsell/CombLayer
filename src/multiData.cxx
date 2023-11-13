@@ -15,6 +15,7 @@
 #include <type_traits>
 
 #include "Exception.h"
+#include "doubleErr.h"
 #include "IndexCounter.h"
 #include "dataSlice.h"
 #include "multiData.h"
@@ -1097,6 +1098,7 @@ namespace delftSystem
 }
 
 template class multiData<double>;
+template class multiData<DError::doubleErr>;
 template class multiData<float>;
 template class multiData<std::string>;
 template class multiData<int>;

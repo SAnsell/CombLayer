@@ -79,6 +79,7 @@ namespace xraySystem
 M1Detail::M1Detail(const std::string& Key) :
   attachSystem::FixedRotate(Key,8),
   attachSystem::ContainedComp(),
+  attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   mirror(new M1Mirror(keyName+"Mirror")),
@@ -145,6 +146,9 @@ M1Detail::createObjects(Simulation& System)
 
   MonteCarlo::Object* OPtr=System.findObject(1900001);
   mirror->createAll(System,*this,0);
+
+  if (isActive("TubeRadius"))
+    cClamp->copyCutSurf("TubeRadius",*this,"TubeRadius");
 
   cClamp->setCutSurf("FarEnd",*mirror,"back");
   cClamp->setCutSurf("NearEnd",*mirror,"front");

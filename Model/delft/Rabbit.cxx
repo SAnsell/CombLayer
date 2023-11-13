@@ -33,7 +33,6 @@
 #include <algorithm>
 #include <numeric>
 #include <memory>
-#include <boost/multi_array.hpp>
 
 #include "FileReport.h"
 #include "NameStack.h"

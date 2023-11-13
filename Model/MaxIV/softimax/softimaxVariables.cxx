@@ -303,6 +303,7 @@ m1DetailVariables(FuncDataBase& Control,
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::M1DetailGenerator M1DGen;
   setVariable::PipeGenerator PipeGen;
+  setVariable::DomeConnectorGenerator DCGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::MonoBoxGenerator VBoxGen;
       
@@ -310,7 +311,7 @@ m1DetailVariables(FuncDataBase& Control,
   const double monoBoxLen(62.0);
   const double theta(1.0);
   const double xPortStep=
-    0.5*monoBoxLen*std::sin(M_PI*theta/180.0);   // Theta angel
+    0.5*monoBoxLen*std::sin(M_PI*theta/180.0);   // Theta angle
   
   VBoxGen.setMat("Titanium");
   VBoxGen.setWallThick(1.0);
@@ -325,11 +326,46 @@ m1DetailVariables(FuncDataBase& Control,
   VBoxGen.generateBox(Control,boxName, 35.0,6.95,14.6, 62.0);
 
   const std::string frontName=mirrorKey+"M1TubeFront";
-  const std::string backName=mirrorKey+"M1TubeFront";
+  const std::string tubeName=mirrorKey+"M1Tube";
+  const std::string backName=mirrorKey+"M1TubeBack";
+
+  // Parts for tube connection:
+  const double tubeLength(40.5);
+  const double portXStep(2.0);
+  const double mExtra=30.0*sin(M_PI*theta/180.0);
+
+  DCGen.setSphere(7.0,2.5);
+  DCGen.setFlangeCF<CF150>(0.8);
+  DCGen.setLengths(2.5,2.0,3.0);
+  DCGen.generateDome(Control,frontName,1);
+
+  PItemGen.setCF<setVariable::CF63>(6.0);
+  PItemGen.setNoPlate();
+  PItemGen.generatePort(Control,frontName+"Port0",
+			Geometry::Vec3D(portXStep, 0.0, 0.0),
+			Geometry::Vec3D(0.0, -1.0, 0.0));
+  Control.addVariable(frontName+"ZAngle",-theta);
+  const std::string mName=mirrorKey+"M1Tube";
+
+  SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.generateTube(Control,mName,tubeLength);
+  Control.addVariable(mName+"WallMat","Titanium");
+  Control.addVariable(mName+"NPorts",0);   // beam ports
+  
+  DCGen.generateDome(Control,backName,1);
+  PItemGen.generatePort(Control,backName+"Port0",
+			Geometry::Vec3D(-portXStep, 0.0, 0.0),
+			Geometry::Vec3D(0,-1,0));
+  Control.addVariable(backName+"ZAngle",-theta);
+
+  // --------------------------------
+  // Mirror
+  // -------------------------------------
   
   M1DGen.generateMirror(Control,mirrorKey+"M1",0.0,-theta);
 
-  //  Control.addVariable(mirrorKey+"M1XStep",portXStep+mExtra);
+  // ONLY for tube version:
+  Control.addVariable(mirrorKey+"M1XStep",portXStep+mExtra);
     
   Control.addVariable(mirrorKey+"M1StandHeight",110.0);
   Control.addVariable(mirrorKey+"M1StandWidth",30.0);
