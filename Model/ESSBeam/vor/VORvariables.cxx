@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:    ESSBeam/vor/VORvariables.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -72,9 +72,9 @@ VORvariables(FuncDataBase& Control)
   Control.addVariable("vorStopPoint",0);
   Control.addVariable("vorStartPoint",0);
   Control.addVariable("vorAxisXAngle",0.0);   // rotation
-  Control.addVariable("vorAxisZAngle",0.0);   // rotation 
+  Control.addVariable("vorAxisZAngle",0.0);   // rotation
 
-  
+
   SGen.addWall(1,15.0,"CastIron");
   SGen.addRoof(1,15.0,"CastIron");
   SGen.addFloor(1,15.0,"CastIron");
@@ -107,8 +107,8 @@ VORvariables(FuncDataBase& Control)
 
   CGen.setMainRadius(26.0);
   CGen.setFrame(60.0,60.0);
-  CGen.generateChopper(Control,"vorChopperA",8.0,10.0,4.55);    
-		      
+  CGen.generateChopper(Control,"vorChopperA",8.0,10.0,4.55);
+
   // Double Blade chopper
   BGen.setMaterials("Inconnel","Aluminium");
   BGen.setThick({0.3,0.3});
@@ -122,7 +122,7 @@ VORvariables(FuncDataBase& Control)
   Control.addVariable("vorPipeDYStep",2.0);
   FGen.generateTaper(Control,"vorFD",200.0,3.4028,3.87,4.2,5.906);
 
-  
+
   // BEAM INSERT:
   Control.addVariable("vorBInsertHeight",20.0);
   Control.addVariable("vorBInsertWidth",28.0);
@@ -130,7 +130,7 @@ VORvariables(FuncDataBase& Control)
   Control.addVariable("vorBInsertLowWall",1.0);
   Control.addVariable("vorBInsertLeftWall",1.0);
   Control.addVariable("vorBInsertRightWall",1.0);
-  Control.addVariable("vorBInsertWallMat","Stainless304");       
+  Control.addVariable("vorBInsertWallMat","Stainless304");
 
   // VACUUM PIPE: in bunker wall
   PipeGen.setPipe(6.0,0.5);
@@ -181,7 +181,7 @@ VORvariables(FuncDataBase& Control)
 
   CGen.setMainRadius(26.0);
   CGen.setFrame(60.0,60.0);
-  CGen.generateChopper(Control,"vorChopperOutB",24.0,10.0,4.55);    
+  CGen.generateChopper(Control,"vorChopperOutB",24.0,10.0,4.55);
 
   // FOCB single disk chopper
   BGen.setThick({0.2});
@@ -196,7 +196,7 @@ VORvariables(FuncDataBase& Control)
   PipeGen.generatePipe(Control,"vorPipeOutC",814.0);
   Control.addVariable("vorPipeOutCYStep",2.0);
   FGen.generateTaper(Control,"vorFOutC",808.0,4.0,4.0,20.0,16.0);
-  
+
 
       // HUT:
   Control.addVariable("vorCaveXStep",80.0);
@@ -210,7 +210,7 @@ VORvariables(FuncDataBase& Control)
   Control.addVariable("vorCaveVoidFrontStep",60.0);
   Control.addVariable("vorCaveVoidBackStep",60.0);
 
-  Control.addVariable("vorCaveFeThick",25.0);
+  Control.addVariable("vorCavePipeThick",25.0);
   Control.addVariable("vorCaveConcThick",35.0);
 
   Control.addVariable("vorCaveFeMat","Stainless304");
@@ -234,7 +234,7 @@ VORvariables(FuncDataBase& Control)
   Control.addVariable("vorTankBackThick",3.0);
   Control.addVariable("vorTankWallMat","Stainless304");
 
-  
+
   // SAMPLE
   Control.addVariable("vorSampleXStep",0.0);
   Control.addVariable("vorSampleYStep",0.0);
@@ -251,5 +251,5 @@ VORvariables(FuncDataBase& Control)
 
   return;
 }
- 
+
 }  // NAMESPACE setVariable

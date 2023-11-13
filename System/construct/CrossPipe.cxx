@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   construct/CrossPipe.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -54,7 +54,7 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "LinkUnit.h"  
+#include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
@@ -64,12 +64,12 @@
 #include "FrontBackCut.h"
 #include "SurfMap.h"
 
-#include "CrossPipe.h" 
+#include "CrossPipe.h"
 
 namespace constructSystem
 {
 
-CrossPipe::CrossPipe(const std::string& Key) : 
+CrossPipe::CrossPipe(const std::string& Key) :
   attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut()
@@ -82,7 +82,7 @@ CrossPipe::CrossPipe(const std::string& Key) :
   nameSideIndex(5,"topFlange");
 }
 
-CrossPipe::CrossPipe(const CrossPipe& A) : 
+CrossPipe::CrossPipe(const CrossPipe& A) :
   attachSystem::FixedRotate(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
@@ -130,7 +130,7 @@ CrossPipe::operator=(const CrossPipe& A)
   return *this;
 }
 
-CrossPipe::~CrossPipe() 
+CrossPipe::~CrossPipe()
   /*!
     Destructor
   */
@@ -144,7 +144,7 @@ CrossPipe::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("CrossPipe","populate");
-  
+
   FixedRotate::populate(Control);
 
   // Void + Fe special:
@@ -157,13 +157,13 @@ CrossPipe::populate(const FuncDataBase& Control)
   frontLength=Control.EvalDefVar<double>(keyName+"FrontLength",length/2.0);
   backLength=Control.EvalDefVar<double>(keyName+"BackLength",length/2.0);
 
-  feThick=Control.EvalVar<double>(keyName+"FeThick");
+  feThick=Control.EvalVar<double>(keyName+"PipeThick");
   topPlate=Control.EvalVar<double>(keyName+"TopPlate");
   basePlate=Control.EvalVar<double>(keyName+"BasePlate");
-  
+
   flangeRadius=Control.EvalDefVar<double>(keyName+"FlangeRadius",-1.0);
   flangeLength=Control.EvalDefVar<double>(keyName+"FlangeLength",0.0);
-  
+
   voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
   plateMat=ModelSupport::EvalDefMat(Control,keyName+"PlateMat",feMat);
@@ -178,10 +178,10 @@ CrossPipe::createSurfaces()
   */
 {
   ELog::RegMethod RegA("CrossPipe","createSurfaces");
-  
+
   // middle of the flange
   //  const double midFlange((length-flangeLength)/2.0);
-  
+
   // Inner void
   if (frontActive())
     FrontBackCut::getShiftedFront(SMap,buildIndex+101,Y,flangeLength);
@@ -192,7 +192,7 @@ CrossPipe::createSurfaces()
 	(SMap,buildIndex+101,Origin-Y*(frontLength-flangeLength),Y);
       FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
     }
-  
+
   // Inner void
   if (backActive())
     // create surface 102:
@@ -205,7 +205,7 @@ CrossPipe::createSurfaces()
       FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
     }
 
-  
+
   // MAIN SURFACES axial:
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,horrRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,horrRadius+feThick);
@@ -240,10 +240,10 @@ CrossPipe::createObjects(Simulation& System)
   ELog::RegMethod RegA("CrossPipe","createObjects");
 
   HeadRule HR;
-  
+
   const HeadRule frontHR=getFrontRule();
   const HeadRule backHR=getBackRule();
-  
+
   // Void [want a single void]
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"(-7 : -207) 205 -206");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
@@ -285,7 +285,7 @@ CrossPipe::createObjects(Simulation& System)
 
   return;
 }
-  
+
 void
 CrossPipe::createLinks()
   /*!
@@ -304,7 +304,7 @@ CrossPipe::createLinks()
   FixedComp::setConnect(3,Origin+X*horrRadius,X);
   FixedComp::setConnect(4,Origin-Z*depth,-Z);
   FixedComp::setConnect(5,Origin+Z*height,Z);
-  
+
   FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+7));
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+7));
   FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+5));
@@ -312,8 +312,8 @@ CrossPipe::createLinks()
 
   return;
 }
-  
-  
+
+
 void
 CrossPipe::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
@@ -330,12 +330,12 @@ CrossPipe::createAll(Simulation& System,
   populate(System.getDataBase());
   createCentredUnitVector
     (FC,FIndex,(frontLength+backLength)/2.0);
-  createSurfaces();    
+  createSurfaces();
   createObjects(System);
   createLinks();
-  insertObjects(System);   
-  
+  insertObjects(System);
+
   return;
 }
-  
+
 }  // NAMESPACE constructSystem

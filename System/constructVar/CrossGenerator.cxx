@@ -243,7 +243,7 @@ CrossGenerator::generateCross(FuncDataBase& Control,const std::string& keyName,
   Control.addVariable(keyName+"FrontLength",FL);
   Control.addVariable(keyName+"BackLength",BL);
 
-  Control.addVariable(keyName+"FeThick",wallThick);
+  Control.addVariable(keyName+"PipeThick",wallThick);
   Control.addVariable(keyName+"TopPlate",topThick);
   Control.addVariable(keyName+"BasePlate",baseThick);
 
