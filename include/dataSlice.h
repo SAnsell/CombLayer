@@ -1,13 +1,13 @@
 #ifndef dataSlice_h
 #define dataSlice_h
 
-
 /*!
   \struct sRange
   \author S. Ansell
   \version 1.0
   \brief Holds a simple x - y range for an index
  */
+
 struct sRange
 {
   constexpr sRange() = default;
@@ -31,16 +31,15 @@ struct sliceUnit
   sliceUnit(T* dPtr,const size_t* sPtr) :
     dataPtr(dPtr),stride(sPtr) {}
   
-  // accessor to data index
+  /// accessor to data index
   sliceUnit operator[](std::size_t index) const
     {return{ dataPtr+index * *stride, stride+1 };  }
 
   /// reference () operator (to get data member)
   operator const T& () const { return *dataPtr; }
-  operator T& () { return *dataPtr; }
-  //  operator T () const { return *dataPtr; }
+  operator T& () { return *dataPtr; }   ///< data member (non-const)
 
-  // point operator
+  /// point operator
   T operator->() const { return *dataPtr; }
 
   sliceUnit&
@@ -99,23 +98,26 @@ struct sliceUnit<std::string>
   sliceUnit(std::string* dPtr,const size_t* sPtr) :
     dataPtr(dPtr),stride(sPtr) {}
   
-  // accessor to data index
+  /// accessor to data index
   sliceUnit operator[](std::size_t index) const
     {return{ dataPtr+index * *stride, stride+1 };  }
 
   /// reference () operator (to get data member)
   operator std::string& () { return static_cast<std::string&>(*dataPtr); }
 
+  /// concatination operator
   std::string operator+=(const std::string& A)
     { return *dataPtr += A;  }
 
-  // access operator 
+  /// inequalty operator
   bool operator!=(const std::string& A)
   { return *dataPtr!=A;  }
 
+  /// equally operator
   bool operator==(const std::string& A)
     { return *dataPtr!=A;  }
 
+  /// assignement and equally operator
   bool operator==(const char* APtr)
   { return *dataPtr == std::string(APtr);  }
 

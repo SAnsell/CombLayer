@@ -31,7 +31,6 @@
 #include <vector>
 #include <string>
 #include <memory>
-#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
