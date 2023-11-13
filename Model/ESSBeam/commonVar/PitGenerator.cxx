@@ -169,7 +169,7 @@ PitGenerator::generatePit(FuncDataBase& Control,const std::string& keyName,
   Control.addVariable(keyName+"FeWidth",feWidth);
   Control.addVariable(keyName+"FeFront",feFront);
   Control.addVariable(keyName+"FeBack",feBack);
-  Control.addVariable(keyName+"FeMat",feMat);
+  Control.addVariable(keyName+"PipeMat",feMat);
   
   Control.addVariable(keyName+"ConcHeight",concHeight);
   Control.addVariable(keyName+"ConcDepth",concDepth);

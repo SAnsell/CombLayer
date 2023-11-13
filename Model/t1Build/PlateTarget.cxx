@@ -180,7 +180,7 @@ PlateTarget::populate(const FuncDataBase& Control)
       (keyName+"BlockType"+std::to_string(i),1);
   
 
-  feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
+  feMat=ModelSupport::EvalMat<int>(Control,keyName+"PipeMat");
   taMat=ModelSupport::EvalMat<int>(Control,keyName+"TaMat");
   wMat=ModelSupport::EvalMat<int>(Control,keyName+"WMat");
   waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");

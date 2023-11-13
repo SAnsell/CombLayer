@@ -271,7 +271,7 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamCaveConcFloor",50.0);
   Control.addVariable("dreamCaveConcBack",35.0);
 
-  Control.addVariable("dreamCaveFeMat","Stainless304");
+  Control.addVariable("dreamCavePipeMat","Stainless304");
   Control.addVariable("dreamCaveConcMat","Concrete");
 
   

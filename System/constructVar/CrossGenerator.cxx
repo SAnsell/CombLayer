@@ -255,7 +255,7 @@ CrossGenerator::generateCross(FuncDataBase& Control,const std::string& keyName,
     Control.addVariable(keyName+"FlangeLength",(FL-VRad-wallThick)*0.9);
 
   Control.addVariable(keyName+"VoidMat",voidMat);
-  Control.addVariable(keyName+"FeMat",wallMat);
+  Control.addVariable(keyName+"PipeMat",wallMat);
 
   return;
 

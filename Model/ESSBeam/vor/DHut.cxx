@@ -104,7 +104,7 @@ DHut::populate(const FuncDataBase& Control)
   feThick=Control.EvalVar<double>(keyName+"PipeThick");
   concThick=Control.EvalVar<double>(keyName+"ConcThick");
 
-  feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
+  feMat=ModelSupport::EvalMat<int>(Control,keyName+"PipeMat");
   concMat=ModelSupport::EvalMat<int>(Control,keyName+"ConcMat");
 
   return;

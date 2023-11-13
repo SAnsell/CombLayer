@@ -165,7 +165,7 @@ CrossPipe::populate(const FuncDataBase& Control)
   flangeLength=Control.EvalDefVar<double>(keyName+"FlangeLength",0.0);
 
   voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
-  feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
+  feMat=ModelSupport::EvalMat<int>(Control,keyName+"PipeMat");
   plateMat=ModelSupport::EvalDefMat(Control,keyName+"PlateMat",feMat);
 
   return;

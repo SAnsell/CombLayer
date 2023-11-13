@@ -185,7 +185,7 @@ ZoomCollimator::populate(const FuncDataBase& Control)
   stackHeight=Control.EvalVar<double>(keyName+"StackHeight");
   stackWidth=Control.EvalVar<double>(keyName+"StackWidth");
 
-  feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
+  feMat=ModelSupport::EvalMat<int>(Control,keyName+"PipeMat");
   waxMat=ModelSupport::EvalMat<int>(Control,keyName+"WaxMat");
 
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");

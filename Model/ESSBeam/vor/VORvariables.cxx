@@ -213,7 +213,7 @@ VORvariables(FuncDataBase& Control)
   Control.addVariable("vorCavePipeThick",25.0);
   Control.addVariable("vorCaveConcThick",35.0);
 
-  Control.addVariable("vorCaveFeMat","Stainless304");
+  Control.addVariable("vorCavePipeMat","Stainless304");
   Control.addVariable("vorCaveConcMat","Concrete");
 
 
