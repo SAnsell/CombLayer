@@ -85,6 +85,7 @@ Solenoid::Solenoid(const Solenoid& A) :
   attachSystem::FrontBackCut(A),
   length(A.length),frameWidth(A.frameWidth),spacerThick(A.spacerThick),
   frameThick(A.frameThick),
+  coilRadius(A.coilRadius),
   frameMat(A.frameMat),coilMat(A.coilMat),
   nCoils(A.nCoils),
   nFrameFacets(A.nFrameFacets)
@@ -113,6 +114,7 @@ Solenoid::operator=(const Solenoid& A)
       frameWidth=A.frameWidth;
       spacerThick=A.spacerThick;
       frameThick=A.frameThick;
+      coilRadius=A.coilRadius;
       frameMat=A.frameMat;
       coilMat=A.coilMat;
       nCoils=A.nCoils;
@@ -152,6 +154,7 @@ Solenoid::populate(const FuncDataBase& Control)
   frameWidth=Control.EvalVar<double>(keyName+"FrameWidth");
   spacerThick=Control.EvalVar<double>(keyName+"SpacerThick");
   frameThick=Control.EvalVar<double>(keyName+"FrameThick");
+  coilRadius=Control.EvalVar<double>(keyName+"CoilRadius");
 
   frameMat=ModelSupport::EvalMat<int>(Control,keyName+"FrameMat");
   coilMat=ModelSupport::EvalMat<int>(Control,keyName+"CoilMat");
@@ -200,10 +203,12 @@ Solenoid::createSurfaces()
   const double dangle = 2.0*M_PI/static_cast<double>(nFrameFacets);
   for (size_t i=0; i<nFrameFacets; ++i) {
     const Geometry::Vec3D QR=X*cos(angle)+Z*sin(angle);
-    ModelSupport::buildPlane(SMap,CN+51,Origin+QR*(frameWidth),QR);
+    ModelSupport::buildPlane(SMap,CN+51,Origin+QR*(frameWidth/2.0),QR);
     angle+=dangle;
     CN++;
   }
+
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,coilRadius);
 
   return;
 }
@@ -221,13 +226,22 @@ Solenoid::createObjects(Simulation& System)
   const HeadRule frontStr(frontRule());
   const HeadRule backStr(backRule());
 
-  std::string unitStr="11M -12M"; // front-back planes
-  unitStr+=ModelSupport::getSeqIntersection(-51, -(50+static_cast<int>(nFrameFacets)),1);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex+1000,buildIndex,unitStr);
-
-  makeCell("MainCell",System,cellIndex++,frameMat,0.0,HR);
-
+  std::string unitStr=ModelSupport::getSeqIntersection(-51, -(50+static_cast<int>(nFrameFacets)),1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex+1000,unitStr);
   addOuterSurf(HR*frontStr*backStr);
+
+  HR *= ModelSupport::getHeadRule(SMap,buildIndex,"7");
+  makeCell("Frame",System,cellIndex++,frameMat,0.0,HR*frontStr*backStr);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -7");
+  makeCell("Coil",System,cellIndex++,coilMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 -7");
+  makeCell("FrameFront",System,cellIndex++,frameMat,0.0,HR*frontStr);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -7");
+  makeCell("FrameBack",System,cellIndex++,frameMat,0.0,HR*backStr);
+
 
   return;
 }

@@ -43,6 +43,7 @@ class SolenoidGenerator
   double frameWidth;            ///< Frame width
   double spacerThick;           ///< Frame spacer thickness
   double frameThick;            ///< Frame thickness (outer walls)
+  double coilRadius;            ///< Wire coil radius
 
   std::string frameMat;         ///< Frame material
   std::string coilMat;          ///< Coil material

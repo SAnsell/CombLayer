@@ -48,6 +48,7 @@ class Solenoid :
   double frameWidth;            ///< Frame width
   double spacerThick;           ///< Frame spacer thickness
   double frameThick;            ///< Frame thickness (outer walls)
+  double coilRadius;            ///< Wire coil radius
 
   int frameMat;                 ///< Frame material
   int coilMat;                  ///< Coil material
