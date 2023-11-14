@@ -51,8 +51,8 @@ class Solenoid :
 
   int frameMat;                 ///< Frame material
   int coilMat;                  ///< Coil material
-  int nCoils;                   ///< Number of coils
-  int nFrameFacets;             ///< Number of frame facets
+  size_t nCoils;                ///< Number of coils
+  size_t nFrameFacets;          ///< Number of frame facets
 
   void populate(const FuncDataBase&);
 
