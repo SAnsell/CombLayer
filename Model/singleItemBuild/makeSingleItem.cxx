@@ -168,6 +168,7 @@
 #include "ConcreteDoor.h"
 #include "IonPumpGammaVacuum.h"
 #include "RFGun.h"
+#include "Solenoid.h"
 
 #include "makeSingleItem.h"
 
@@ -225,7 +226,7 @@ makeSingleItem::build(Simulation& System,
 	"ConnectorTube","LocalShield","FlangeDome",
 	"MonoShutter","RoundMonoShutter","TubeDetBox",
 	"GuideUnit","PlateUnit","BenderUnit","MLMdetail",
-        "ConcreteDoor", "IonPumpGammaVacuum", "RFGun",
+        "ConcreteDoor", "IonPumpGammaVacuum", "RFGun", "Solenoid",
 	"Help","help"
     });
 
@@ -1572,6 +1573,15 @@ makeSingleItem::build(Simulation& System,
       OR.addObject(rfgun);
       rfgun->addInsertCell(voidCell);
       rfgun->createAll(System,World::masterOrigin(),0);
+      return;
+    }
+
+  if (item == "Solenoid")
+    {
+      const auto solenoid = std::make_shared<xraySystem::Solenoid>("Solenoid");
+      OR.addObject(solenoid);
+      solenoid->addInsertCell(voidCell);
+      solenoid->createAll(System,World::masterOrigin(),0);
       return;
     }
 

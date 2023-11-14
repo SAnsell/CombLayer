@@ -137,6 +137,7 @@
 #include "RoundShutterGenerator.h"
 #include "TubeDetBoxGenerator.h"
 #include "RFGunGenerator.h"
+#include "SolenoidGenerator.h"
 
 namespace setVariable
 {
@@ -808,7 +809,8 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::RFGunGenerator RFGen;
   RFGen.generate(Control,"RFGun");
 
-
+  setVariable::SolenoidGenerator SolGen;
+  SolGen.generate(Control,"Solenoid");
 
   return;
 }
