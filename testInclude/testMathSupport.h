@@ -45,6 +45,7 @@ private:
   int testClebschGordan();
   int testCountBits();
   int testCubic();
+  int testDeriv();
   int testFibinacci();
   int testIndexSort();
   int testLowBitIndex();
