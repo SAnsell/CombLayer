@@ -50,8 +50,8 @@ namespace setVariable
 {
 
 SolenoidGenerator::SolenoidGenerator() :
-  length(20.0),frameWidth(39),spacerThick(15.0),frameThick(1.0),
-  coilRadius(17),
+  length(20.0),frameWidth(39),frameThick(2.5),
+  coilThick(3.0),coilRadius(17),
   frameMat("Iron"),coilMat("Copper"),
   nCoils(4),
   nFrameFacets(8)
@@ -79,8 +79,8 @@ SolenoidGenerator::generate(FuncDataBase& Control,
 
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"FrameWidth",frameWidth);
-  Control.addVariable(keyName+"SpacerThick",spacerThick);
   Control.addVariable(keyName+"FrameThick",frameThick);
+  Control.addVariable(keyName+"CoilThick",coilThick);
   Control.addVariable(keyName+"CoilRadius",coilRadius);
   Control.addVariable(keyName+"FrameMat",frameMat);
   Control.addVariable(keyName+"CoilMat",coilMat);

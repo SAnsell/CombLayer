@@ -33,6 +33,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
@@ -83,8 +84,9 @@ Solenoid::Solenoid(const Solenoid& A) :
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
-  length(A.length),frameWidth(A.frameWidth),spacerThick(A.spacerThick),
-  frameThick(A.frameThick),
+  length(A.length),
+  frameWidth(A.frameWidth),frameThick(A.frameThick),
+  coilThick(A.coilThick),
   coilRadius(A.coilRadius),
   frameMat(A.frameMat),coilMat(A.coilMat),
   nCoils(A.nCoils),
@@ -112,7 +114,7 @@ Solenoid::operator=(const Solenoid& A)
       attachSystem::FrontBackCut::operator=(A);
       length=A.length;
       frameWidth=A.frameWidth;
-      spacerThick=A.spacerThick;
+      coilThick=A.coilThick;
       frameThick=A.frameThick;
       coilRadius=A.coilRadius;
       frameMat=A.frameMat;
@@ -152,8 +154,8 @@ Solenoid::populate(const FuncDataBase& Control)
 
   length=Control.EvalVar<double>(keyName+"Length");
   frameWidth=Control.EvalVar<double>(keyName+"FrameWidth");
-  spacerThick=Control.EvalVar<double>(keyName+"SpacerThick");
   frameThick=Control.EvalVar<double>(keyName+"FrameThick");
+  coilThick=Control.EvalVar<double>(keyName+"CoilThick");
   coilRadius=Control.EvalVar<double>(keyName+"CoilRadius");
 
   frameMat=ModelSupport::EvalMat<int>(Control,keyName+"FrameMat");
@@ -187,10 +189,10 @@ Solenoid::createSurfaces()
 
   if (!backActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length+frameThick),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length),Y);
       FrontBackCut::setBack(-SMap.realSurf(buildIndex+12));
 
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length-frameThick),Y);
     } else
     {
       ModelSupport::buildShiftedPlane(SMap, buildIndex+2,
@@ -209,6 +211,21 @@ Solenoid::createSurfaces()
   }
 
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,coilRadius);
+
+  int SI(buildIndex+20);
+  double dy(frameThick+coilThick);
+  const double spacerThick = (length-2*frameThick - coilThick*static_cast<double>(nCoils))/(static_cast<double>(nCoils-1));
+  if (spacerThick<0.0)
+    throw ColErr::ExitAbort("Total length is less than the sum of coils/spacers");
+
+  // planes for the coil spacers
+  for (size_t i=1; i<nCoils; ++i) {
+    ModelSupport::buildPlane(SMap,SI+1,Origin+Y*dy,Y);
+    dy+=spacerThick;
+    ModelSupport::buildPlane(SMap,SI+2,Origin+Y*dy,Y);
+    dy+=coilThick;
+    SI+=10;
+  }
 
   return;
 }
@@ -233,8 +250,23 @@ Solenoid::createObjects(Simulation& System)
   HR *= ModelSupport::getHeadRule(SMap,buildIndex,"7");
   makeCell("Frame",System,cellIndex++,frameMat,0.0,HR*frontStr*backStr);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -7");
+  // first coil
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,buildIndex,"1 -21 -7");
   makeCell("Coil",System,cellIndex++,coilMat,0.0,HR);
+
+  int SI(buildIndex+20);
+  for (size_t i=1; i<nCoils; ++i) {
+    HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,"1M -2M -7");
+    makeCell("Spacer",System,cellIndex++,frameMat,0.0,HR);
+
+    if (i<nCoils-1)
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,SI+10,"2M -1N  -7");
+    else
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,"2M -2 -7");
+    makeCell("Coil",System,cellIndex++,coilMat,0.0,HR);
+    SI+=10;
+  }
+
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 -7");
   makeCell("FrameFront",System,cellIndex++,frameMat,0.0,HR*frontStr);
@@ -263,10 +295,10 @@ Solenoid::createLinks()
   FixedComp::setConnect(3,Origin+X*(frameWidth/2.0),X);
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
 
-  FixedComp::setConnect(4,Origin-Z*(spacerThick/2.0),-Z);
+  FixedComp::setConnect(4,Origin-Z*(coilThick/2.0),-Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
 
-  FixedComp::setConnect(5,Origin+Z*(spacerThick/2.0),Z);
+  FixedComp::setConnect(5,Origin+Z*(coilThick/2.0),Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   return;
