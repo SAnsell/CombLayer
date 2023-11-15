@@ -88,7 +88,9 @@ Solenoid::Solenoid(const Solenoid& A) :
   frameWidth(A.frameWidth),frameThick(A.frameThick),
   coilThick(A.coilThick),
   coilRadius(A.coilRadius),
+  coilGap(A.coilGap),
   frameMat(A.frameMat),coilMat(A.coilMat),
+  voidMat(A.voidMat),
   nCoils(A.nCoils),
   nFrameFacets(A.nFrameFacets)
   /*!
@@ -117,8 +119,10 @@ Solenoid::operator=(const Solenoid& A)
       coilThick=A.coilThick;
       frameThick=A.frameThick;
       coilRadius=A.coilRadius;
+      coilGap=A.coilGap;
       frameMat=A.frameMat;
       coilMat=A.coilMat;
+      voidMat=A.voidMat;
       nCoils=A.nCoils;
       nFrameFacets=A.nFrameFacets;
     }
@@ -157,9 +161,11 @@ Solenoid::populate(const FuncDataBase& Control)
   frameThick=Control.EvalVar<double>(keyName+"FrameThick");
   coilThick=Control.EvalVar<double>(keyName+"CoilThick");
   coilRadius=Control.EvalVar<double>(keyName+"CoilRadius");
+  coilGap=Control.EvalVar<double>(keyName+"CoilGap");
 
   frameMat=ModelSupport::EvalMat<int>(Control,keyName+"FrameMat");
   coilMat=ModelSupport::EvalMat<int>(Control,keyName+"CoilMat");
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   nCoils=Control.EvalVar<size_t>(keyName+"NCoils");
   nFrameFacets=Control.EvalVar<size_t>(keyName+"NFrameFacets");
 
@@ -211,6 +217,7 @@ Solenoid::createSurfaces()
   }
 
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,coilRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,coilRadius+coilGap);
 
   int SI(buildIndex+20);
   double dy(frameThick+coilThick);
@@ -247,16 +254,19 @@ Solenoid::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex+1000,unitStr);
   addOuterSurf(HR*frontStr*backStr);
 
-  HR *= ModelSupport::getHeadRule(SMap,buildIndex,"7");
+  HR *= ModelSupport::getHeadRule(SMap,buildIndex,"17");
   makeCell("Frame",System,cellIndex++,frameMat,0.0,HR*frontStr*backStr);
 
   // first coil
   HR=ModelSupport::getHeadRule(SMap,buildIndex,buildIndex,"1 -21 -7");
   makeCell("Coil",System,cellIndex++,coilMat,0.0,HR);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,buildIndex,"1 -21 7 -17");
+  makeCell("CoilGap",System,cellIndex++,voidMat,0.0,HR);
+
   int SI(buildIndex+20);
   for (size_t i=1; i<nCoils; ++i) {
-    HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,"1M -2M -7");
+    HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,"1M -2M -17");
     makeCell("Spacer",System,cellIndex++,frameMat,0.0,HR);
 
     if (i<nCoils-1)
@@ -264,14 +274,21 @@ Solenoid::createObjects(Simulation& System)
     else
       HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,"2M -2 -7");
     makeCell("Coil",System,cellIndex++,coilMat,0.0,HR);
+
+    if (i<nCoils-1)
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,SI+10,"2M -1N 7 -17");
+    else
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,"2M -2 7 -17");
+    makeCell("CoilGap",System,cellIndex++,voidMat,0.0,HR);
+
     SI+=10;
   }
 
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 -7");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 -17");
   makeCell("FrameFront",System,cellIndex++,frameMat,0.0,HR*frontStr);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -7");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -17");
   makeCell("FrameBack",System,cellIndex++,frameMat,0.0,HR*backStr);
 
 

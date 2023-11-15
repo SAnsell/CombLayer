@@ -49,9 +49,11 @@ class Solenoid :
   double frameThick;            ///< Frame thickness (outer walls)
   double coilThick;             ///< Single wire coil thickness
   double coilRadius;            ///< Wire coil radius
+  double coilGap;               ///< Radial gap between coil and frame
 
   int frameMat;                 ///< Frame material
   int coilMat;                  ///< Coil material
+  int voidMat;                  ///< Void material
   size_t nCoils;                ///< Number of coils
   size_t nFrameFacets;          ///< Number of frame facets
 
