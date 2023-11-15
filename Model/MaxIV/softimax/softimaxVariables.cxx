@@ -361,8 +361,9 @@ m1DetailVariables(FuncDataBase& Control,
   // --------------------------------
   // Mirror
   // -------------------------------------
-  
-  M1DGen.generateMirror(Control,mirrorKey+"M1",0.0,-theta);
+
+  // Mirror has no angle (?)
+  M1DGen.generateMirror(Control,mirrorKey+"M1",0.0,0.0);
 
   // ONLY for tube version:
   Control.addVariable(mirrorKey+"M1XStep",portXStep+mExtra);

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   softimaxInc/M1DetailB.h
+ * File:   softimaxInc/M1Ring.h
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
  *
@@ -19,29 +19,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_M1DetailB_h
-#define xraySystem_M1DetailB_h
+#ifndef xraySystem_M1Ring_h
+#define xraySystem_M1Ring_h
 
 class Simulation;
 
 namespace xraySystem
 {
 
-  class M1Mirror;
-  class M1BackPlate;
-  class M1FrontShield;
-  class M1Connectors;
-  class M1Frame;
-  
 /*!
-  \class M1DetailB
+  \class M1Ring
   \author S. Ansell
   \version 1.0
-  \date October 2019
-  \brief Double Mirror Mono arrangement
+  \date January 2018
+  \brief Focusable mirror in mount
 */
 
-class M1DetailB :
+class M1Ring :
   public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::ExternalCut,
@@ -49,12 +43,17 @@ class M1DetailB :
   public attachSystem::SurfMap
 {
  private:
+  
 
-  std::shared_ptr<M1Mirror> mirror;
-  std::shared_ptr<M1BackPlate> cClamp;
-  std::shared_ptr<M1Connectors> connectors;
-  std::shared_ptr<M1FrontShield> frontShield;
-  std::shared_ptr<M1Frame> frame;  
+  double outerThick;          ///< thickness from outer surf (<inner)
+  double outerLength;
+  double innerYStep;          ///< front back shift
+  double innerThick;          ///< thickness from outer surf
+  double innerLength;         ///< inner lenfth 
+  
+  int ringMat;            ///< Electron shield material
+  int voidMat;                ///< void material
+
   // Functions:
 
   void populate(const FuncDataBase&) override;
@@ -64,11 +63,13 @@ class M1DetailB :
 
  public:
 
-  M1DetailB(const std::string&);
-  M1DetailB(const M1DetailB&);
-  M1DetailB& operator=(const M1DetailB&);
-  ~M1DetailB() override;
-
+  M1Ring(const std::string&);
+  M1Ring(const M1Ring&);
+  M1Ring& operator=(const M1Ring&);
+  ~M1Ring() override;
+  void adjustExtraVoids(Simulation&,const int,const int,const int);
+  
+  using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int) override;

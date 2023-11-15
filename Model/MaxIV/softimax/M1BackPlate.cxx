@@ -52,7 +52,6 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "SurInter.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
@@ -61,9 +60,6 @@
 #include "SurfMap.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
-#include "Importance.h"
-#include "Object.h"
-
 #include "M1BackPlate.h"
 
 namespace xraySystem
@@ -107,48 +103,14 @@ M1BackPlate::populate(const FuncDataBase& Control)
   topExtent=Control.EvalVar<double>(keyName+"TopExtent");
   extentThick=Control.EvalVar<double>(keyName+"ExtentThick");
   baseExtent=Control.EvalVar<double>(keyName+"BaseExtent");
-  voidExtra=Control.EvalVar<double>(keyName+"VoidExtra");
-  voidBaseExtra=Control.EvalVar<double>(keyName+"VoidBaseExtra");
-  voidXExtra=Control.EvalVar<double>(keyName+"VoidXExtra");
 
   frontPlateGap=Control.EvalVar<double>(keyName+"FrontPlateGap");
   frontPlateWidth=Control.EvalVar<double>(keyName+"FrontPlateWidth");
   frontPlateHeight=Control.EvalVar<double>(keyName+"FrontPlateHeight");
-  
-  supVOffset=Control.EvalVar<double>(keyName+"SupVOffset");
-  supLength=Control.EvalVar<double>(keyName+"SupLength");
-  supXOut=Control.EvalVar<double>(keyName+"SupXOut");
-  supThick=Control.EvalVar<double>(keyName+"SupThick");
-  supEdge=Control.EvalVar<double>(keyName+"SupEdge");
-  supHoleRadius=Control.EvalVar<double>(keyName+"SupHoleRadius");
-  springConnectLen=Control.EvalVar<double>(keyName+"SpringConnectLen");
 
-  elecXOut=Control.EvalVar<double>(keyName+"ElecXOut");
-  elecLength=Control.EvalVar<double>(keyName+"ElecLength");
-  elecHeight=Control.EvalVar<double>(keyName+"ElecHeight");
-  elecThick=Control.EvalVar<double>(keyName+"ElecThick");
-  elecEdge=Control.EvalVar<double>(keyName+"ElecEdge");
-  elecHoleRadius=Control.EvalVar<double>(keyName+"ElecHoleRadius");
-
-  // support extras
-  frontSupportThick=Control.EvalVar<double>(keyName+"FrontSupportThick");
-  frontSupportCut=Control.EvalVar<double>(keyName+"FrontSupportCut");
-  frontSupportZCut=Control.EvalVar<double>(keyName+"FrontSupportZCut");  
-
-  ringYPos=Control.EvalVar<double>(keyName+"RingYPos");
-  ringThick=Control.EvalVar<double>(keyName+"RingThick");
-  ringGap=Control.EvalVar<double>(keyName+"RingGap");
-  ringClampThick=Control.EvalVar<double>(keyName+"RingClampThick");
-  ringBackPt=Control.EvalVar<Geometry::Vec3D>(keyName+"RingBackPt");
-  ringTopPt=Control.EvalVar<Geometry::Vec3D>(keyName+"RingTopPt");
-
-  
   baseMat=ModelSupport::EvalMat<int>(Control,keyName+"BaseMat");
-  supportMat=ModelSupport::EvalMat<int>(Control,keyName+"SupportMat");
-  springMat=ModelSupport::EvalMat<int>(Control,keyName+"SpringMat");
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
 
-  electronMat=ModelSupport::EvalMat<int>(Control,keyName+"ElectronMat");
   frontMat=ModelSupport::EvalMat<int>(Control,keyName+"FrontMat");
   return;
 }
@@ -194,73 +156,9 @@ M1BackPlate::createSurfaces()
   ModelSupport::buildPlane
     (SMap,buildIndex+224,Origin+X*(baseExtent-clearGap-extentThick),X);
 
-  // OutSide EXTERT
-
-  SurfMap::makePlane("FarEdge",
-		     SMap,buildIndex+33,
-		     Origin-X*(voidXExtra+clearGap+backThick),X);
-  SurfMap::makePlane("BeamEdge",
-		     SMap,buildIndex+34,
-		     Origin+X*(2*voidXExtra+elecXOut),X);
-  
-  makeShiftedSurf(SMap,"Base",buildIndex+35,Z,
-		  -(voidBaseExtra+clearGap+cupHeight));
-  SurfMap::addSurf("BaseEdge",SMap.realSurf(buildIndex+35));
-  makeShiftedSurf(SMap,"Top",buildIndex+36,Z,voidExtra+clearGap+cupHeight);
-  SurfMap::addSurf("TopEdge",SMap.realSurf(buildIndex+35));
-
-  // STOP SURFACE:
-  ModelSupport::buildPlane(SMap,buildIndex+501,Origin-Y*(supLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+502,Origin+Y*(supLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+504,Origin+X*supXOut,X);
-  ModelSupport::buildPlane(SMap,buildIndex+514,Origin+X*(supXOut-supThick),X);
-  // top
-  ModelSupport::buildPlane
-    (SMap,buildIndex+511,Origin-Y*(supLength/2.0-supThick),Y);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+512,Origin+Y*(supLength/2.0-supThick),Y);
-  makeShiftedSurf(SMap,"Top",buildIndex+505,Z,supVOffset);
-  makeShiftedSurf(SMap,"Top",buildIndex+506,Z,supVOffset+supEdge);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+513,Origin+X*(supThick+topExtent-clearGap),X);
-  makeShiftedSurf(SMap,"Top",buildIndex+515,Z,supVOffset+supThick);
 
 
-  // cross supports
-  ModelSupport::buildPlane(SMap,buildIndex+551,
-			   Origin-Y*(supLength/2.0-springConnectLen),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+571,
-			   Origin+Y*(supLength/2.0-springConnectLen),Y);
 
-  
-  // base
-  makeShiftedSurf(SMap,"Base",buildIndex+606,Z,-supVOffset);
-  makeShiftedSurf(SMap,"Base",buildIndex+605,Z,-(supVOffset+supEdge));
-  ModelSupport::buildPlane
-    (SMap,buildIndex+613,Origin+X*(supThick+baseExtent-clearGap),X);
-  makeShiftedSurf(SMap,"Base",buildIndex+616,Z,-(supVOffset+supThick));
-
-
-  // ELECTRON shield
-  ModelSupport::buildPlane(SMap,buildIndex+1001,Origin-Y*(elecLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+1002,Origin+Y*(elecLength/2.0),Y);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+1003,Origin+X*(elecXOut-elecThick),X);
-  ModelSupport::buildPlane(SMap,buildIndex+1004,Origin+X*elecXOut,X);
-
-  ModelSupport::buildPlane(SMap,buildIndex+1005,Origin-Z*(elecHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+1006,Origin+Z*(elecHeight/2.0),Z);
-  ModelSupport::buildCylinder(SMap,buildIndex+1007,Origin,X,elecHoleRadius);
-
-  ModelSupport::buildPlane
-    (SMap,buildIndex+1013,Origin+X*(elecXOut-elecEdge),X);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+1015,Origin-Z*(elecHeight/2.0-elecThick),Z);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+1016,Origin+Z*(elecHeight/2.0-elecThick),Z);
-  
-
-  
   // front plate
   makeShiftedSurf(SMap,"NearEnd",buildIndex+2001,Y,-frontPlateGap);
   ModelSupport::buildPlane
@@ -274,194 +172,6 @@ M1BackPlate::createSurfaces()
 }
 
 void
-M1BackPlate::createSupportSurfaces()
-{
-  ELog::RegMethod RegA("M1BackPlate","createSupportSurfaces");
-
-  // Calculate some useful points
-  // point in middle of back plane
-  const Geometry::Plane* topBasePtr=
-    SMap.realPtr<Geometry::Plane>(buildIndex+16);
-  const Geometry::Plane* lowerBasePtr=
-    SMap.realPtr<Geometry::Plane>(buildIndex+15);
-  const Geometry::Plane* topFlatPtr=
-    SMap.realPtr<Geometry::Plane>(buildIndex+124);
-  const Geometry::Plane* lowerFlatPtr=
-    SMap.realPtr<Geometry::Plane>(buildIndex+224);
-
-  const Geometry::Vec3D midOutPoint(Origin-X*(clearGap+backThick));
-  const Geometry::Vec3D topBasePoint=
-    SurInter::getLinePoint(midOutPoint,Z,topBasePtr);
-  const Geometry::Vec3D topEdgePoint=
-    SurInter::getLinePoint(topBasePoint,X,topFlatPtr);
-  const Geometry::Vec3D topOutPoint=
-    topEdgePoint+Z*(cupHeight-mainThick);
-
-  const Geometry::Vec3D lowerBasePoint=
-    SurInter::getLinePoint(midOutPoint,Z,lowerBasePtr);
-  const Geometry::Vec3D lowerEdgePoint=
-    SurInter::getLinePoint(lowerBasePoint,X,lowerFlatPtr);
-  const Geometry::Vec3D lowerOutPoint=
-    lowerEdgePoint-Z*(cupHeight-mainThick);
-
-  
-  ModelSupport::buildPlane
-    (SMap,buildIndex+5001,Origin-Y*(length/2.0-frontSupportThick),Y);
-  // Points for cut:
-  const Geometry::Vec3D DiagPt=topOutPoint-X*frontSupportCut;
-  ModelSupport::buildPlane(SMap,buildIndex+5007,
-			   DiagPt,DiagPt+Y,
-			   topBasePoint+Z*frontSupportZCut,Z);
-
-  // Ring points:
-  // Note ringTPt higher than 26
-
-  const Geometry::Vec3D ringTopHPt(topEdgePoint+ringTopPt.getInBasis(X,Y,Z));
-  const Geometry::Vec3D ringTopMidPt(topBasePoint+ringBackPt.getInBasis(X,Y,Z));
-
-  const Geometry::Vec3D ringLowMidPt(ringTopMidPt-Z*ringGap);
-  // note the -Z in the basis
-  const Geometry::Vec3D ringLowHPt(lowerEdgePoint+
-				   ringTopPt.getInBasis(X,Y,-Z));
-
-  ModelSupport::buildPlane(SMap,buildIndex+5011,
-			   Origin-Y*(ringYPos+ringThick/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+5012,
-			   Origin-Y*(ringYPos-ringThick/2.0),Y);
-
-  ModelSupport::buildPlane(SMap,buildIndex+6011,
-			   Origin+Y*(ringYPos-ringThick/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+6012,
-			   Origin+Y*(ringYPos+ringThick/2.0),Y);
-
-  ModelSupport::buildPlane(SMap,buildIndex+5016,ringTopHPt,Z);
-  ModelSupport::buildPlane(SMap,buildIndex+5013,ringTopHPt,X); // cut plane
-  ModelSupport::buildPlane(SMap,buildIndex+5014,ringTopMidPt,X); // cut plane
-  ModelSupport::buildPlane(SMap,buildIndex+5015,ringTopMidPt,Z); // cut plane
-
-  ModelSupport::buildPlane(SMap,buildIndex+5025,ringLowMidPt,Z); // cut plane
-  ModelSupport::buildPlane(SMap,buildIndex+5024,ringLowMidPt,X); // cut plane
-  ModelSupport::buildPlane(SMap,buildIndex+5026,ringLowHPt,Z); // cut plane
-  ModelSupport::buildPlane(SMap,buildIndex+5023,ringLowHPt,X); // cut plane
-
-  ModelSupport::buildCylinder(SMap,buildIndex+5017,
-			      ringTopHPt,ringTopMidPt,ringLowMidPt,
-			      Y); // axis along Y
-  ModelSupport::buildExpandedCylinder
-    (SMap,SMap.realSurf(buildIndex+5017),buildIndex+5027,ringClampThick);
-
-  SurfMap::setSurf("CylRadius",SMap.realSurf(buildIndex+5017));
-  SurfMap::setSurf("RingRadius",SMap.realSurf(buildIndex+5027));
-  SurfMap::setSurf("FCylInner",SMap.realSurf(buildIndex+5012));
-  SurfMap::setSurf("BCylInner",-SMap.realSurf(buildIndex+6011));
-  
-  return;
-}
-
-
-void
-M1BackPlate::createSupportObjects(Simulation& System)
-  /*!
-    Additional scells surrounding the main back plane system
-    \param System :: simulation
-  */
-{
-  ELog::RegMethod RegA("M1BackPlate","createSupportObjects");
-
-  const HeadRule cylVoidHR=getRule("TubeRadius");
-  
-  HeadRule HR;
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -5001 -5007 -124 16 -26 13");
-
-  makeCell("XVoid",System,cellIndex++,supportMat,0.0,HR);  
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -5001 (5007:26) -124 -36 13");
-  makeCell("XVoid",System,cellIndex++,voidMat,0.0,HR);  
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -5001 -13 33  16 -36");
-  makeCell("XVoid",System,cellIndex++,voidMat,0.0,HR);  
-
-  //ring:
-  // removal of space:
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-6011:6012");
-
-  int BI(buildIndex);
-  for(size_t i=0;i<2;i++)
-    {
-      const int BExtra(i ? buildIndex : buildIndex+10);
-      const std::string rN((i) ? "FRing" : "BRing");
-      const HeadRule ringCutHR=
-	(!i) ? ModelSupport::getHeadRule(SMap,buildIndex,"-5017:5027") :
-	HeadRule();
-      const HeadRule yCutHR=
-	ModelSupport::getHeadRule(SMap,BI,"5011 -5012");
-
-      // top ring part:
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"5013 -124 16 -5016");
-      makeCell(rN+"Support",System,cellIndex++,supportMat,0.0,HR*yCutHR);
-
-      HR=ModelSupport::getHeadRule
-	(SMap,buildIndex,"-5013 -5017 16 -5016");
-      makeCell(rN+"Support",System,cellIndex++,supportMat,0.0,HR*yCutHR);  
-      
-      HR=ModelSupport::getHeadRule
-	(SMap,buildIndex,"-124 5013 -36 5016");
-      makeCell(rN+"Void",System,cellIndex++,voidMat,0.0,
-	       HR*yCutHR*ringCutHR*cylVoidHR);  
-
-      HR=ModelSupport::getHeadRule
-	(SMap,buildIndex,BExtra,"33 -5013 -36 16 5017M");
-      makeCell(rN+"Void",System,cellIndex++,voidMat,0.0,HR*yCutHR*cylVoidHR);  
-      
-      HR=ModelSupport::getHeadRule
-	(SMap,buildIndex,"5015 -13 -16 -5017");
-      makeCell(rN+"Support",System,cellIndex++,supportMat,0.0,HR*yCutHR); 
-      
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-5015 5025 -13 33");
-      makeCell(rN+"Void",System,cellIndex++,voidMat,0.0,
-	       HR*yCutHR*ringCutHR*cylVoidHR);
-      HR=ModelSupport::getHeadRule
-	(SMap,buildIndex,BExtra,"5015 -16 5017M -13  33");
-      makeCell(rN+"Void",System,cellIndex++,voidMat,0.0,HR*yCutHR*cylVoidHR);
-
-      // lower support // 5023
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"5013 -224 -15 5026");
-      makeCell(rN+"LSupport",System,cellIndex++,supportMat,0.0,HR*yCutHR);
-      HR=ModelSupport::getHeadRule
-	(SMap,buildIndex,"-5013 -5017 -15 5026");
-      makeCell(rN+"LSupport",System,cellIndex++,supportMat,0.0,HR*yCutHR);  
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-224 5013 35 -5026");
-      makeCell(rN+"LVoid",System,cellIndex++,voidMat,0.0,
-	       HR*yCutHR*ringCutHR*cylVoidHR);
-      
-      HR=ModelSupport::getHeadRule
-	(SMap,buildIndex,BExtra,"33 -5013 35 -15 5017M");
-      makeCell(rN+"LVoid",System,cellIndex++,voidMat,0.0,HR*yCutHR*cylVoidHR);  
-
-      HR=ModelSupport::getHeadRule
-	(SMap,buildIndex,"-5025 -13 15 -5017");
-      makeCell(rN+"LSupport",System,cellIndex++,supportMat,0.0,HR*yCutHR); 
-
-      HR=ModelSupport::getHeadRule
-	(SMap,buildIndex,BExtra,"-5025 15 5017M -13  33");
-      makeCell(rN+"LVoid",System,cellIndex++,voidMat,0.0,HR*yCutHR*cylVoidHR);
-      BI+=1000;
-    }
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5011 -5012 5017 -5027");
-  makeCell("FRingSupport",System,cellIndex++,frontMat,0.0,HR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -15 25 224 -204");
-  HR=ModelSupport::getHeadRule //(204:xxx)
-    (SMap,buildIndex,"5011 -5012 (-5017:5027) -605 35 224 -34 (204:-25)");
-  makeCell("FRingVoid",System,cellIndex++,voidMat,0.0,HR);
-
-      
-  // addOuterUnionSurf(HR);
-  return;
-}
-  
-void
 M1BackPlate::createObjects(Simulation& System)
   /*!
     Create the vaned moderator
@@ -470,8 +180,7 @@ M1BackPlate::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("M1BackPlate","createObjects");
 
-  const HeadRule cylVoidHR=getRule("TubeRadius");
-    
+
   const HeadRule topHR=getRule("Top");
   const HeadRule baseHR=getRule("Base");
   const HeadRule backHR=getRule("Back");
@@ -488,9 +197,7 @@ M1BackPlate::createObjects(Simulation& System)
   const HeadRule tbUnionHR=topHR+backHR;
   const HeadRule bbUnionHR=baseHR+backHR;
 
-  const HeadRule ringCutHR=
-    ModelSupport::getHeadRule(SMap,buildIndex,"-5011:5012:-5017:5027");
-
+  ELog::EM<<"Mirro == "<<mirrorHR<<ELog::endDiag;
   HeadRule HR;
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 -2 3 -104 -6");
@@ -500,21 +207,9 @@ M1BackPlate::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 1 -2 13 -104 -16 (6:-3)");
   makeCell("Plate",System,cellIndex++,baseMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -5011 -13 33 15 -16 ");
-  makeCell("FrontCVoid",System,cellIndex++,voidMat,0.0,HR*cylVoidHR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5012 -6011 -13 33 15 -16 ");
-  makeCell("CVoid",System,cellIndex++,voidMat,0.0,HR*cylVoidHR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"6012 -2 -13 33 15 -16 ");
-  makeCell("EndCVoid",System,cellIndex++,voidMat,0.0,HR*cylVoidHR);
-
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 16 -26 124 -104");
   makeCell("Plate",System,cellIndex++,baseMat,0.0,HR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 26 -36 124 -104");
-  makeCell("PlateExtra",System,cellIndex++,voidMat,0.0,HR*ringCutHR*cylVoidHR);
-
+  
   // lower section:
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 -2 3 -204 5");
   makeCell("PlateGap",System,cellIndex++,voidMat,0.0,HR*bbUnionHR*nearCompHR); 
@@ -524,115 +219,17 @@ M1BackPlate::createObjects(Simulation& System)
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -15 25 224 -204");
   makeCell("Plate",System,cellIndex++,baseMat,0.0,HR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"6011 -6012 35 -25 224 -204");
-  makeCell("PlateSubVoid",System,cellIndex++,voidMat,0.0,HR*cylVoidHR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -5011 -25 35 224 -204");
-  makeCell("FrontPlateVoid",System,cellIndex++,voidMat,0.0,HR);
-
-  //  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5011 -5012 -5017");
-
   
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5012 -6011 -25 35 224 -204");
-  makeCell("PlateVoid",System,cellIndex++,voidMat,0.0,HR*cylVoidHR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"6012 -2 -25 35 224 -204");
-  makeCell("EndPlateVoid",System,cellIndex++,voidMat,0.0,HR*cylVoidHR);
   
-  // support (Top):
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"501 -502 104 -504 505 -506 (-511:512:-513:514:-515)");
-  makeCell("TopSupport",System,cellIndex++,supportMat,0.0,HR);
-
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"511 -512 513 -514 515 -506");
-  makeCell("TSupportVoid",System,cellIndex++,voidMat,0.0,HR);
-
-  // support (Base):
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"501 -502 204 -504 605 -606 (-613:514:616)");
-  makeCell("BaseSupport",System,cellIndex++,supportMat,0.0,HR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"501 -502 613 -514 -616 605");
-  makeCell("BSupportVoid",System,cellIndex++,voidMat,0.0,HR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1003 -1004 -1007");
-  makeCell("EPlateHole",System,cellIndex++,voidMat,0.0,HR);  
-
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"1001 -1002 1013 -1004 1005 -1006 (-1015:1016:1003) 1007");
-  makeCell("EPlate",System,cellIndex++,electronMat,0.0,HR);  
-
-  
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"1001 -1002 1013 -1003 1015 -1016");
-  makeCell("EPlate",System,cellIndex++,voidMat,0.0,HR);  
-
   // OUTER VOIDS:
   // main c voids
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -5011 33 -224 35 -15");
-  makeCell("FrontCVoid",System,cellIndex++,voidMat,0.0,HR*cylVoidHR);  
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5012 -6011 33 -224 35 -15");
-  makeCell("CVoid",System,cellIndex++,voidMat,0.0,HR*cylVoidHR);  
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"6012 -2 33 -224 35 -15");
-  makeCell("EndVoid",System,cellIndex++,voidMat,0.0,HR*cylVoidHR);  
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5001 -5011 33 -124 16 -36");
-  makeCell("FrontCVoid",System,cellIndex++,voidMat,0.0,HR);  
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5012 -6011 33 -124 16 -36");
-  makeCell("CVoid",System,cellIndex++,voidMat,0.0,HR*cylVoidHR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"6012 -2 33 -124 16 -36");
-  makeCell("EndCVoid",System,cellIndex++,voidMat,0.0,HR*cylVoidHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -224 25 -15");
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
   
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -124 16 -26");
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
   //  addOuterUnionSurf(HR);
-  // spring voids
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 104 -1004 506 -36");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR*ringCutHR*cylVoidHR);  
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -5011 204 -34 35 -605");
-  makeCell("FrontOuterVoid",System,cellIndex++,voidMat,0.0,HR);  
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5012 -6011 204 -34 35 -605");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR*cylVoidHR);  
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"6011 -6012 204 -34 35 -605");
-  makeCell("EndVoid",System,cellIndex++,voidMat,0.0,HR*cylVoidHR);  
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"6012 -2 204 -34 35 -605");
-  makeCell("EndVoid",System,cellIndex++,voidMat,0.0,HR*cylVoidHR);  
   
-  // top void
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 504 -1004 605 -1005");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
-
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 504 -1004 1006 -506");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR*cylVoidHR);  
-
-  // void at electron plate
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -1001 1013 -1004 1005 -1006");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
-
-  
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1002 -2 1013 -1004 1005 -1006");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -501 104 -504 505 -506");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"502 -2 104 -504 505 -506");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
-
-  // Face void 204
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"1 -2 1004 -34 605 -36 (-5017:5027:-5011:5012)");
-  makeCell("FaceVoid",System,cellIndex++,voidMat,0.0,HR*cylVoidHR);  
-
   // crystal ends
   HR=HeadRule(SMap,buildIndex,-2);
   makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,
@@ -642,61 +239,17 @@ M1BackPlate::createObjects(Simulation& System)
   makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,
 	   HR*mirrorCompHR*nearHR);
 
-
   // INNER VOIDS:
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -501 605 -606 204 -504");
-  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,HR);  
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"502 -2 605 -606 204 -504");
-  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,HR);  
-
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"1 -2 606 -505 -1013");
-  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,HR*mirrorHR);  
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 -505 104 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 -26 104 ");
   makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,
 	   HR*mirrorCompHR*topHR*nearCompHR);  
     
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 606 204");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 25 204");
   makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,
-	   HR*mirrorCompHR*baseHR*nearCompHR);  
-
+	   HR*mirrorCompHR*baseHR*nearCompHR);
 
   // small gaps between spring centres and electron plate:
   // cross support at 501/502
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -501 1006 -505 1013 -504");
-  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,HR);  
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"501 -551 1006 -505 1013 -504");
-  makeCell("InnerVoid",System,cellIndex++,springMat,0.0,HR);  
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"551 -571 1006 -505 1013 -504");
-  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,HR);  
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"571 -502 1006 -505 1013 -504");
-  makeCell("InnerVoid",System,cellIndex++,springMat,0.0,HR);  
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"502 -2 1006 -505 1013 -504");
-  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,HR);  
-
-  // lower cross support
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -501 606 -1005 1013 -504");
-  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,HR);  
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"501 -551 606 -1005 1013 -504");
-  makeCell("InnerVoid",System,cellIndex++,springMat,0.0,HR);  
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"551 -571 606 -1005 1013 -504");
-  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,HR);  
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"571 -502 606 -1005 1013 -504");
-  makeCell("InnerVoid",System,cellIndex++,springMat,0.0,HR);  
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"502 -2 606 -1005 1013 -504");
-  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,HR);  
 
   // front heat shield plate
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"2001 3 -2004 2005 -2006");
@@ -711,18 +264,21 @@ M1BackPlate::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 3 -204 5 -2005");
   makeCell("HeatVoid",System,cellIndex++,voidMat,0.0,HR*nearHR);  
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 104 -505 2006");
-  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,
-	   HR*nearHR*mirrorCompHR);  
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 204 606 -2005");
-  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,
-	   HR*nearHR*mirrorCompHR);  
-
+  if (isActive("TubeRadius"))
+    {
+      const HeadRule tubeHR=getRule("TubeRadius");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 25 -26 -13");
+      makeCell("BVoid",System,cellIndex++,voidMat,0.0,
+	       HR*tubeHR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 25 -26");
+      addOuterSurf(HR*mirrorCompHR);
+    }
+  else
+    {
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 25 -26");
+      addOuterSurf(HR*mirrorCompHR);
+    }
   
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 33 -34 35 -36");
-  addOuterSurf(HR);
-
   return;
 }
 
@@ -735,16 +291,18 @@ M1BackPlate::createLinks()
   ELog::RegMethod RegA("M1BackPlate","createLinks");
 
   FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
+  ELog::EM<<"Oring "<<Origin-Y*(length/2.0)<<ELog::endDiag;
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
   FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
-  FixedComp::setConnect(2,Origin+X*(elecXOut-elecThick),X);
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+1003));
+  const HeadRule mirrorHR=getRule("Mirror");
+  FixedComp::setConnect(2,Origin,X);
+  FixedComp::setLinkSurf(2,mirrorHR);
 
-  FixedComp::setConnect(3,Origin+X*elecXOut,X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+1004));
+  FixedComp::setConnect(3,Origin,X);
+  FixedComp::setLinkSurf(3,mirrorHR);
 
   FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+5));
   FixedComp::setLineConnect(4,Origin,Z);
@@ -761,52 +319,18 @@ M1BackPlate::createLinks()
   nameSideIndex(5,"innerTop");
   nameSideIndex(6,"innerSide");
 
+
+
+  
   // link points are defined in the end of createSurfaces
 
   return;
 }
 
 void
-M1BackPlate::adjustExtraVoids(Simulation& System,
-			      const int sideSN,
-			      const int outSN,
-			      const int baseSN)
-  /*!
-    Function to allow the side voids to be adjusted to the correct size
-    \param sideSN :: left side number
-    \param outSN :: right side number
-    \param baseSN :: low surf number
-  */
-{
-  ELog::RegMethod RegA("M1BackPlate","adjustExtraVoids");
-  
-  Geometry::Surface* OutPtr=SMap.realSurfPtr(outSN);
-  Geometry::Surface* SidePtr=SMap.realSurfPtr(sideSN);
-  Geometry::Surface* BasePtr=SMap.realSurfPtr(baseSN);
-  const int orgOutSN=SMap.realSurf(buildIndex+33);
-  const int orgSideSN=SMap.realSurf(buildIndex+34);
-  const int orgBaseSN=SMap.realSurf(buildIndex+35);
-
-  
-  // check all cells: [simple for me!]
-  for(int i=buildIndex+1;i<cellIndex;i++)
-    {
-      MonteCarlo::Object* OPtr=
-	System.findObjectThrow(i,"Constructed cell not found");
-      OPtr->substituteSurf(orgOutSN,outSN,OutPtr);
-      OPtr->substituteSurf(orgSideSN,sideSN,SidePtr);
-      OPtr->substituteSurf(orgBaseSN,baseSN,BasePtr);
-    }
-  // This is low level uglyness:
-  ContainedComp::outerSurf.substituteSurf(orgOutSN,outSN,SidePtr);
-  ContainedComp::outerSurf.substituteSurf(orgSideSN,sideSN,SidePtr);
-  ContainedComp::outerSurf.substituteSurf(orgBaseSN,baseSN,BasePtr);
-  return;
-}
-void
 M1BackPlate::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC,
-		       const long int sideIndex)
+		  const attachSystem::FixedComp& FC,
+		  const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation
@@ -819,9 +343,7 @@ M1BackPlate::createAll(Simulation& System,
 
   createUnitVector(FC,sideIndex);
   createSurfaces();
-  createSupportSurfaces();
   createObjects(System);
-  createSupportObjects(System);
   createLinks();
   insertObjects(System);
 

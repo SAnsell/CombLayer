@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   softimaxInc/M1FrontShield.h
+ * File:   softimaxInc/M1ElectronShield.h
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_M1FrontShield_h
-#define xraySystem_M1FrontShield_h
+#ifndef xraySystem_M1ElectronShield_h
+#define xraySystem_M1ElectronShield_h
 
 class Simulation;
 
@@ -28,41 +28,33 @@ namespace xraySystem
 {
 
 /*!
-  \class M1FrontShield
+  \class M1ElectronShield
   \author S. Ansell
   \version 1.0
   \date January 2018
   \brief Focusable mirror in mount
 */
 
-class M1FrontShield :
+class M1ElectronShield :
   public attachSystem::FixedRotate,
-  public attachSystem::ContainedGroup,
+  public attachSystem::ContainedComp,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {
  private:
-
-  double cubePlateThick;    ///< Inner cube plate thickness (full)
   
-  double cubeThick;         ///< Thickness in Y direction
-  double cubeWidth;         ///< Full width [back of xstal]
-  double cubeHeight;        ///< Full height [xstal centre]
-  double cubeSideWall;      ///< Thickness of side wall
-  double cubeBaseWall;      ///< Thickness of base wall
+  // electron shield
+  double elecXOut;            ///< xout step distance
+  double elecLength;          ///< length
+  double elecThick;           ///< thickness
+  double elecHeight;          ///< height
+  double elecEdge;            ///< edge thickness
+  double elecHoleRadius;      ///< central hole radius
 
-  double innerThick;       ///< inner block thickness
-  double innerHeight;       ///< inner block height
-  double innerWidth;        ///< inner block width
-
-  double pipeYStep;        ///< Symmetic y-step
-  double pipeLength;        ///< Pipe length
-  double pipeRadius;        ///< inner radius
-  double pipeWall;          ///< Wall thickness
   
-  int mat;                  ///< Material
-  int voidMat;              ///< outer pipe material
+  int electronMat;            ///< Electron shield material
+  int voidMat;                ///< void material
 
   // Functions:
 
@@ -73,11 +65,12 @@ class M1FrontShield :
 
  public:
 
-  M1FrontShield(const std::string&);
-  M1FrontShield(const M1FrontShield&);
-  M1FrontShield& operator=(const M1FrontShield&);
-  ~M1FrontShield() override;
-
+  M1ElectronShield(const std::string&);
+  M1ElectronShield(const M1ElectronShield&);
+  M1ElectronShield& operator=(const M1ElectronShield&);
+  ~M1ElectronShield() override;
+  void adjustExtraVoids(Simulation&,const int,const int,const int);
+  
   using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,

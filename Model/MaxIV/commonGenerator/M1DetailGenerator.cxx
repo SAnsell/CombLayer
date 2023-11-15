@@ -91,14 +91,17 @@ M1DetailGenerator::M1DetailGenerator() :
   bFrontSupportThick(1.0),bFrontSupportCut(2.0),
   bFrontSupportZCut(0.2),
 
-  bRingYPos(17.0),bRingThick(1.0),
+  bRingYStep(17.0),
+  bRingOuterThick(0.5),bRingOuterLength(0.2),
+  bRingInnerThick(2.25),bRingInnerLength(0.2),
   bRingBackPt(-0.6,-16.0,-1.0),
   bRingTopPt(-2.4,-16.0,2.4),
   bRingGap(5.0),bRingClampThick(1.0),
   
-  eXOut(7.98),eLength(38.0),eThick(0.1),eHeight(6.8),
+  eXOut(1.98),eLength(38.0),eThick(0.1),eHeight(6.8),
   eEdge(1.03),eHoleRadius(1.18),
 
+  
   
   fBladeInRad(0.0),fBladeOutRad(2.0),
   fBladeThick(1.0),fBladeTopAngle(40.0),
@@ -145,15 +148,6 @@ M1DetailGenerator::makeSupport(FuncDataBase& Control,
   
   Control.addVariable(keyName+"SupportMat",supportMat);
   Control.addVariable(keyName+"SpringMat",springMat);
-
-  Control.addVariable(keyName+"ElecXOut",eXOut);
-  Control.addVariable(keyName+"ElecLength",eLength);
-  Control.addVariable(keyName+"ElecHeight",eHeight);
-  Control.addVariable(keyName+"ElecEdge",eEdge);
-  Control.addVariable(keyName+"ElecHoleRadius",eHoleRadius);
-  Control.addVariable(keyName+"ElecThick",eThick);
-
-  Control.addVariable(keyName+"ElectronMat",electronMat);
 
   return;
 }
@@ -257,6 +251,26 @@ M1DetailGenerator::makeConnectors(FuncDataBase& Control,
 }
 
 void
+M1DetailGenerator::makeRingSupport(FuncDataBase& Control,
+				   const std::string& keyName) const
+  /*!
+    
+   */
+{
+  ELog::RegMethod RegA("M1DetailGenerator","makeRingSupport");
+  
+  Control.addVariable(keyName+"RingYPos",bRingYPos);
+  Control.addVariable(keyName+"RingOuterThick",bRingOuterThick);
+  Control.addVariable(keyName+"RingOuterLength",bRingOuterLength);
+  Control.addVariable(keyName+"RingInnerThick",bRingInnerThick);
+  Control.addVariable(keyName+"RingInnerLength",bRingInnerLength);
+  Control.addVariable(keyName+"RingInnerYStep",bRingInnerYStep);
+
+  return;
+}
+
+
+void
 M1DetailGenerator::makeOuterSupport(FuncDataBase& Control,
 				    const std::string& keyName) const
   /*!
@@ -265,17 +279,20 @@ M1DetailGenerator::makeOuterSupport(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("M1DetailGenerator","makeOuterSupport");
 
+  /*
   Control.addVariable(keyName+"FrontSupportThick",bFrontSupportThick);
   Control.addVariable(keyName+"FrontSupportCut",bFrontSupportCut);
   Control.addVariable(keyName+"FrontSupportZCut",bFrontSupportZCut);
+  */
 
+ /*
   Control.addVariable(keyName+"RingYPos",bRingYPos);
   Control.addVariable(keyName+"RingThick",bRingThick);
   Control.addVariable(keyName+"RingGap",bRingGap);
   Control.addVariable(keyName+"RingClampThick",bRingClampThick);
   Control.addVariable(keyName+"RingBackPt",bRingBackPt);
   Control.addVariable(keyName+"RingTopPt",bRingTopPt);
-
+  */
   return;
 }
 
@@ -297,6 +314,30 @@ M1DetailGenerator::makeFrame(FuncDataBase& Control,
   Control.addVariable(keyName+"BladeBaseHeight",fBladeBaseHeight);
   Control.addVariable(keyName+"BladeFullHeight",fBladeFullHeight);
   
+  Control.addVariable(keyName+"SupportMat",supportMat);
+  Control.addVariable(keyName+"VoidMat",voidMat);
+  
+  return;
+}
+
+void
+M1DetailGenerator::makeElectronShield(FuncDataBase& Control,
+				      const std::string& keyName) const
+  /*!
+    Build the electron shield
+  */
+{
+  ELog::RegMethod RegA("M1DetailGenerator","makeFrame");
+
+  Control.addVariable(keyName+"ElecXOut",eXOut);
+  Control.addVariable(keyName+"ElecLength",eLength);
+  Control.addVariable(keyName+"ElecHeight",eHeight);
+  Control.addVariable(keyName+"ElecEdge",eEdge);
+  Control.addVariable(keyName+"ElecHoleRadius",eHoleRadius);
+  Control.addVariable(keyName+"ElecThick",eThick);
+
+  Control.addVariable(keyName+"ElectronMat",electronMat);
+
   Control.addVariable(keyName+"SupportMat",supportMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
   
@@ -382,6 +423,7 @@ M1DetailGenerator::generateMirror(FuncDataBase& Control,
   makeCrystal(Control,keyName+"Mirror",theta,zStep);
   makeFrontPlate(Control,keyName+"FPlate");
   makeBackPlate(Control,keyName+"CClamp");
+  makeElectronShield(Control,keyName+"ElectronShield");
   makeSupport(Control,keyName+"CClamp");
   makeConnectors(Control,keyName+"Connect");
   makeFrame(Control,keyName+"Frame");
