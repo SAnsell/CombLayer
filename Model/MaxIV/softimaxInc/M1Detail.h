@@ -57,7 +57,8 @@ class M1Detail :
   std::shared_ptr<M1Connectors> connectors;
   std::shared_ptr<M1FrontShield> frontShield;
   std::shared_ptr<M1ElectronShield> elecShield;
-  std::shared_ptr<M1Ring> ring;
+  std::shared_ptr<M1Ring> ringA;
+  std::shared_ptr<M1Ring> ringB;
   // Functions:
 
   void populate(const FuncDataBase&) override;

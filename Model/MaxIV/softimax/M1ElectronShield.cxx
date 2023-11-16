@@ -106,6 +106,17 @@ M1ElectronShield::populate(const FuncDataBase& Control)
   elecEdge=Control.EvalVar<double>(keyName+"ElecEdge");
   elecHoleRadius=Control.EvalVar<double>(keyName+"ElecHoleRadius");
 
+  connectLength=Control.EvalVar<double>(keyName+"ConnectLength");
+  connectGap=Control.EvalVar<double>(keyName+"ConnectGap");
+  connectThick=Control.EvalVar<double>(keyName+"ConnectThick");
+
+  blockOffset=Control.EvalVar<double>(keyName+"BlockOffset");
+  blockWidth=Control.EvalVar<double>(keyName+"BlockWidth");
+
+  plateOffset=Control.EvalVar<double>(keyName+"PlateOffset");
+  plateHeight=Control.EvalVar<double>(keyName+"PlateHeight");
+  plateThick=Control.EvalVar<double>(keyName+"PlateThick");
+
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   electronMat=ModelSupport::EvalMat<int>(Control,keyName+"ElectronMat");
 
@@ -120,7 +131,7 @@ M1ElectronShield::createSurfaces()
 {
   ELog::RegMethod RegA("M1ElectronShield","createSurfaces");
 
-
+  
   // ELECTRON shield
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(elecLength/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(elecLength/2.0),Y);
@@ -138,10 +149,47 @@ M1ElectronShield::createSurfaces()
     (SMap,buildIndex+15,Origin-Z*(elecHeight/2.0-elecThick),Z);
   ModelSupport::buildPlane
     (SMap,buildIndex+16,Origin+Z*(elecHeight/2.0-elecThick),Z);
+
+
+  // low heat join
+  ModelSupport::buildPlane
+    (SMap,buildIndex+105,Origin-Z*(connectGap+connectThick/2.0),Z);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+106,Origin-Z*(connectGap-connectThick/2.0),Z);
+
+  ModelSupport::buildPlane
+    (SMap,buildIndex+205,Origin+Z*(connectGap-connectThick/2.0),Z);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+206,Origin+Z*(connectGap+connectThick/2.0),Z);
+
+  const Geometry::Vec3D pOrg=Origin+X*elecXOut;
+  // mid inner bend layer
+  ModelSupport::buildPlane
+    (SMap,buildIndex+314,pOrg+X*connectLength,X);
+  // layer to end 
+  ModelSupport::buildPlane
+    (SMap,buildIndex+303,pOrg+X*blockOffset,X);
   
+  // plate
+  ModelSupport::buildPlane
+    (SMap,buildIndex+403,pOrg+X*plateOffset,X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+404,pOrg+X*(plateThick+plateOffset),X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+405,pOrg-Z*(plateHeight/2.0),Z);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+406,pOrg+Z*(plateHeight/2.0),Z);
+
+  ModelSupport::buildPlane
+    (SMap,buildIndex+415,pOrg-Z*(plateHeight/2.0-plateThick),Z);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+416,pOrg+Z*(plateHeight/2.0-plateThick),Z);
+
+  ModelSupport::buildPlane
+    (SMap,buildIndex+503,pOrg+X*(blockOffset+blockWidth),X);
+
   return;
 }
-
   
 void
 M1ElectronShield::createObjects(Simulation& System)
@@ -152,9 +200,11 @@ M1ElectronShield::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("M1ElectronShield","createObjects");
 
+  const HeadRule mirrorHR=getRule("Mirror");
+  const HeadRule tubeHR=getRule("TubeRadius");
 
   HeadRule HR;
-
+  
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 -7");
   makeCell("EPlateHole",System,cellIndex++,voidMat,0.0,HR);  
 
@@ -164,15 +214,96 @@ M1ElectronShield::createObjects(Simulation& System)
   
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"1 -2 13 -3 15 -16");
-  makeCell("EPlate",System,cellIndex++,voidMat,0.0,HR);  
+  makeCell("EPlate",System,cellIndex++,voidMat,0.0,HR*mirrorHR);  
 
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1 -2 4 -314 105 -106");
+  makeCell("EHeat",System,cellIndex++,electronMat,0.0,HR);  
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1 -2 314 -403 105 -106");
+  makeCell("EHeatVoid",System,cellIndex++,voidMat,0.0,HR);  
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1 -2 4 -314 205 -206");
+  makeCell("EHeat",System,cellIndex++,electronMat,0.0,HR);  
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1 -2 314 -403 205 -206");
+  makeCell("EHeatVoid",System,cellIndex++,voidMat,0.0,HR);  
   
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -4 5 -6");
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1 -2 403 -404 405 -406");
+  makeCell("Plate",System,cellIndex++,electronMat,0.0,HR);  
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1 -2 303 -403 405 -415");
+  makeCell("PlateEnd",System,cellIndex++,electronMat,0.0,HR);  
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1 -2 303 -403 416 -406");
+  makeCell("PlateEnd",System,cellIndex++,electronMat,0.0,HR);  
+
+  // mid space
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 106 -205 -403 4");
+  makeCell("MidVoid",System,cellIndex++,voidMat,0.0,HR);  
+  
+  // Block + pipe
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 206 -416 303 -503");
+  makeCell("BlockTop",System,cellIndex++,electronMat,0.0,HR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -105 415 303 -503");
+  makeCell("BlockBase",System,cellIndex++,electronMat,0.0,HR);  
+
+  // exterior voids:
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 4 -303 5 -105");
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 4 -303 206 -6");
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 303 406 -6");
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR*tubeHR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 303 5 -405");
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR*tubeHR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 404 405 -406");
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR*tubeHR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 5 -6");
   addOuterSurf(HR);
 
   return;
 }
 
+void
+M1ElectronShield::addExternal(Simulation& System)
+  /*!
+    Inserts the blades into the close crystal voids
+    \parma System :: Simulation to use
+  */
+{
+  ELog::RegMethod Rega("M1ElectronShield","addExternal");
+
+  HeadRule HR;
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 13 -4  5 -15");  
+  insertComponent(System,"BaseEndVoid",HR.complement());
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 13 -4 -6 16");  
+  insertComponent(System,"TopEndVoid",HR.complement());
+
+  ELog::EM<<"Cel == "<<getCell("TopVoid")<<ELog::endDiag;
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -4 5 -15");  
+  insertComponent(System,"BaseVoid",HR.complement());
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -4 -6 16");  
+  insertComponent(System,"TopVoid",HR.complement());
+  
+  return;
+}
+
+  
 void
 M1ElectronShield::createLinks()
   /*!
@@ -207,6 +338,8 @@ M1ElectronShield::createAll(Simulation& System,
   createLinks();
   insertObjects(System);
 
+  addExternal(System);
+  
   return;
 }
 

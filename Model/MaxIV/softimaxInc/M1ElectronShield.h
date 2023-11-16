@@ -52,7 +52,17 @@ class M1ElectronShield :
   double elecEdge;            ///< edge thickness
   double elecHoleRadius;      ///< central hole radius
 
-  
+  double connectLength;       ///< External Length
+  double connectGap;          ///< thickness of gap 
+  double connectThick;        ///< thickness of strips
+
+  double blockOffset;         ///< Offset of block from wall
+  double blockWidth;          ///< Width of block Outward to plate         
+
+  double plateOffset;         ///< Offset of plate
+  double plateThick;          ///< Thickness of plate
+  double plateHeight;          ///< Extent up / down of plate
+
   int electronMat;            ///< Electron shield material
   int voidMat;                ///< void material
 
@@ -63,6 +73,8 @@ class M1ElectronShield :
   void createObjects(Simulation&);
   void createLinks();
 
+  void addExternal(Simulation&);
+  
  public:
 
   M1ElectronShield(const std::string&);

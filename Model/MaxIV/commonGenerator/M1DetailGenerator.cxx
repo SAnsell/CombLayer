@@ -91,14 +91,18 @@ M1DetailGenerator::M1DetailGenerator() :
   bFrontSupportThick(1.0),bFrontSupportCut(2.0),
   bFrontSupportZCut(0.2),
 
-  bRingYStep(17.0),
-  bRingOuterThick(0.5),bRingOuterLength(0.2),
-  bRingInnerYStep(0.7),
-  bRingInnerThick(1.6),bRingInnerLength(1.7),
+  bRingYStep(19.30),
+  bRingOuterThick(0.3),bRingOuterLength(0.2),
+  bRingInnerYStep(0.3),
+  bRingInnerThick(1.2),bRingInnerLength(1.2),
   
   eXOut(1.98),eLength(38.0),eThick(0.1),eHeight(6.8),
-  eEdge(1.03),eHoleRadius(1.18),
-
+  eEdge(2.40),eHoleRadius(1.18),
+  eConnectLength(1.5),eConnectGap(1.3),
+  eConnectThick(0.35),
+  eBlockOffset(0.5),eBlockWidth(1.2),
+  ePlateOffset(2.1),ePlateThick(0.2),
+  ePlateHeight(5.2),
   
   
   fBladeInRad(0.0),fBladeOutRad(2.0),
@@ -258,16 +262,22 @@ M1DetailGenerator::makeRingSupport(FuncDataBase& Control,
    */
 {
   ELog::RegMethod RegA("M1DetailGenerator","makeRingSupport");
-  
-  Control.addVariable(keyName+"YStep",bRingYStep);
-  Control.addVariable(keyName+"OuterThick",bRingOuterThick);
-  Control.addVariable(keyName+"OuterLength",bRingOuterLength);
-  Control.addVariable(keyName+"InnerThick",bRingInnerThick);
-  Control.addVariable(keyName+"InnerLength",bRingInnerLength);
-  Control.addVariable(keyName+"InnerYStep",bRingInnerYStep);
 
-  Control.addVariable(keyName+"Mat",ringMat);
-  Control.addVariable(keyName+"VoidMat",voidMat);
+  for(const std::string& key : {"A","B"})
+    {
+      const std::string kName=keyName+key;
+      Control.addVariable(kName+"YStep",bRingYStep);
+      Control.addVariable(kName+"OuterThick",bRingOuterThick);
+      Control.addVariable(kName+"OuterLength",bRingOuterLength);
+      Control.addVariable(kName+"InnerThick",bRingInnerThick);
+      Control.addVariable(kName+"InnerLength",bRingInnerLength);
+      Control.addVariable(kName+"InnerYStep",bRingInnerYStep);
+      
+      Control.addVariable(kName+"Mat",ringMat);
+      Control.addVariable(kName+"VoidMat",voidMat);
+    }
+  Control.addVariable(keyName+"BPreXAngle",180.0);
+  
   return;
 }
 
@@ -329,7 +339,7 @@ M1DetailGenerator::makeElectronShield(FuncDataBase& Control,
     Build the electron shield
   */
 {
-  ELog::RegMethod RegA("M1DetailGenerator","makeFrame");
+  ELog::RegMethod RegA("M1DetailGenerator","makeElectronShield");
 
   Control.addVariable(keyName+"ElecXOut",eXOut);
   Control.addVariable(keyName+"ElecLength",eLength);
@@ -338,6 +348,17 @@ M1DetailGenerator::makeElectronShield(FuncDataBase& Control,
   Control.addVariable(keyName+"ElecHoleRadius",eHoleRadius);
   Control.addVariable(keyName+"ElecThick",eThick);
 
+  
+  Control.addVariable(keyName+"ConnectLength",eConnectLength);
+  Control.addVariable(keyName+"ConnectGap",eConnectGap);
+  Control.addVariable(keyName+"ConnectThick",eConnectThick);
+
+  Control.addVariable(keyName+"BlockOffset",eBlockOffset);
+  Control.addVariable(keyName+"BlockWidth",eBlockWidth);
+  Control.addVariable(keyName+"PlateThick",ePlateThick);
+  Control.addVariable(keyName+"PlateOffset",ePlateOffset);
+  Control.addVariable(keyName+"PlateHeight",ePlateHeight);
+  
   Control.addVariable(keyName+"ElectronMat",electronMat);
 
   Control.addVariable(keyName+"SupportMat",supportMat);

@@ -179,6 +179,7 @@ M1Ring::createLinks()
 {
   ELog::RegMethod RegA("M1Ring","createLinks");
 
+  
   const Geometry::Vec3D IOrg(Origin+Y*innerYStep);
 
   FixedComp::setConnect(0,IOrg-Y*(innerLength/2.0),-Y);

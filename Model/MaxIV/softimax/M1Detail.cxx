@@ -89,7 +89,8 @@ M1Detail::M1Detail(const std::string& Key) :
   connectors(new M1Connectors(keyName+"Connect")),
   frontShield(new M1FrontShield(keyName+"FPlate")),
   elecShield(new M1ElectronShield(keyName+"ElectronShield")),
-  ring(new M1Ring(keyName+"Ring"))
+  ringA(new M1Ring(keyName+"RingA")),
+  ringB(new M1Ring(keyName+"RingB"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -103,7 +104,8 @@ M1Detail::M1Detail(const std::string& Key) :
   OR.addObject(connectors);
   OR.addObject(frontShield);
   OR.addObject(elecShield);
-  OR.addObject(ring);
+  OR.addObject(ringA);
+  OR.addObject(ringB);
 }
 
 M1Detail::~M1Detail()
@@ -185,17 +187,36 @@ M1Detail::createObjects(Simulation& System)
   frontShield->setCutSurf("Base",*cClamp,"innerSide");
   frontShield->createAll(System,*cClamp,"front");
 
+  
+  ringA->copyCutSurf("TubeRadius",*this,"TubeRadius");
+  ringA->addInsertCell(getInsertCells());
+  ringA->addInsertCell(cClamp->getCell("OuterVoid",0));
+  ringA->addInsertCell(cClamp->getCell("OuterVoid",1));
+  ringA->addInsertCell(cClamp->getCell("BackVoid"));
+  ringA->createAll(System,*mirror,0);
+  cClamp->joinRing(System,ringA->getRule("RingGap"),
+		   ringA->getFullRule("InnerRing"));
+
+  ringB->copyCutSurf("TubeRadius",*this,"TubeRadius");
+  ringB->addInsertCell(getInsertCells());
+  ringB->addInsertCell(cClamp->getCell("OuterVoid",0));
+  ringB->addInsertCell(cClamp->getCell("OuterVoid",1));
+  ringB->addInsertCell(cClamp->getCell("BackVoid"));
+  ringB->createAll(System,*mirror,0);
+  cClamp->joinRing(System,ringB->getRule("RingGap"),
+		   ringB->getFullRule("InnerRing"));
+
+
+  elecShield->setCell("TopVoid",*cClamp,"InnerVoid",0);
+  elecShield->setCell("BaseVoid",*cClamp,"InnerVoid",1);
+  elecShield->setCell("BaseEndVoid",*cClamp,"HeatVoid",2);
+  elecShield->setCell("TopEndVoid",*cClamp,"HeatVoid",3);
+
+  elecShield->copyCutSurf("TubeRadius",*this,"TubeRadius");
+  elecShield->setCutSurf("front",*ringA,"front");  
+  elecShield->setCutSurf("Mirror",*mirror,"mirrorSide");
   elecShield->addInsertCell(getInsertCells());
   elecShield->createAll(System,*mirror,0);
-  
-  ring->copyCutSurf("TubeRadius",*this,"TubeRadius");
-  ring->addInsertCell(getInsertCells());
-  ring->addInsertCell(cClamp->getCell("OuterVoid",0));
-  ring->addInsertCell(cClamp->getCell("OuterVoid",1));
-  ring->addInsertCell(cClamp->getCell("BackVoid"));
-  ring->createAll(System,*mirror,0);
-  cClamp->joinRing(System,ring->getRule("RingGap"),
-		   ring->getFullRule("InnerRing"));
 
 
   // frame->setCell("BackCVoid",*cClamp,"CVoid");
