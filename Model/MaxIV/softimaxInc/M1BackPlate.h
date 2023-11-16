@@ -90,6 +90,8 @@ class M1BackPlate :
   M1BackPlate& operator=(const M1BackPlate&);
   ~M1BackPlate() override;
 
+  void joinRing(Simulation&,const HeadRule&,const HeadRule&);
+  
   using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,

@@ -147,16 +147,16 @@ M1BackPlate::createSurfaces()
     (SMap,buildIndex+13,Origin-X*(clearGap+backThick),X);
   makeShiftedSurf(SMap,"Base",buildIndex+15,Z,-(clearGap+mainThick));
   makeShiftedSurf(SMap,"Top",buildIndex+16,Z,clearGap+mainThick);
-
+  SurfMap::addSurf("LowBaseAttach",SMap.realSurf(buildIndex+15));
+  SurfMap::addSurf("TopBaseAttach",SMap.realSurf(buildIndex+16));
+  
   // Extent
   makeShiftedSurf(SMap,"Base",buildIndex+25,Z,-(clearGap+cupHeight));
   makeShiftedSurf(SMap,"Top",buildIndex+26,Z,clearGap+cupHeight);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+124,Origin+X*(topExtent-clearGap-extentThick),X);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+224,Origin+X*(baseExtent-clearGap-extentThick),X);
-
-
+  makePlane("TopSideAttach",SMap,buildIndex+124,
+	    Origin+X*(topExtent-clearGap-extentThick),X);
+  makePlane("LowSideAttach",SMap,buildIndex+224,
+	    Origin+X*(baseExtent-clearGap-extentThick),X);
 
 
   // front plate
@@ -197,7 +197,7 @@ M1BackPlate::createObjects(Simulation& System)
   const HeadRule tbUnionHR=topHR+backHR;
   const HeadRule bbUnionHR=baseHR+backHR;
 
-  ELog::EM<<"Mirro == "<<mirrorHR<<ELog::endDiag;
+
   HeadRule HR;
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 -2 3 -104 -6");
@@ -224,7 +224,7 @@ M1BackPlate::createObjects(Simulation& System)
   // OUTER VOIDS:
   // main c voids
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -224 25 -15");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);
   
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -124 16 -26");
   makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
@@ -242,12 +242,12 @@ M1BackPlate::createObjects(Simulation& System)
   // INNER VOIDS:
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 -26 104 ");
   makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,
-	   HR*mirrorCompHR*topHR*nearCompHR);  
+	   HR*mirrorCompHR*topHR*nearCompHR);
+  
     
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 25 204");
   makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,
 	   HR*mirrorCompHR*baseHR*nearCompHR);
-
   // small gaps between spring centres and electron plate:
   // cross support at 501/502
 
@@ -264,11 +264,17 @@ M1BackPlate::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 3 -204 5 -2005");
   makeCell("HeatVoid",System,cellIndex++,voidMat,0.0,HR*nearHR);  
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2005 25 204 ");
+  makeCell("HeatVoid",System,cellIndex++,voidMat,0.0,HR*nearHR*mirrorCompHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 2006 -26 104 ");
+  makeCell("HeatVoid",System,cellIndex++,voidMat,0.0,HR*nearHR*mirrorCompHR);
+
   if (isActive("TubeRadius"))
     {
       const HeadRule tubeHR=getRule("TubeRadius");
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 25 -26 -13");
-      makeCell("BVoid",System,cellIndex++,voidMat,0.0,
+      makeCell("BackVoid",System,cellIndex++,voidMat,0.0,
 	       HR*tubeHR);
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 25 -26");
       addOuterSurf(HR*mirrorCompHR);
@@ -283,6 +289,33 @@ M1BackPlate::createObjects(Simulation& System)
 }
 
 void
+M1BackPlate::joinRing(Simulation& System,
+		      const HeadRule& fbHR,
+		      const HeadRule& ringCyl)
+  /*!
+    construct join to ring
+   */
+{
+  ELog::RegMethod RegA("M1BackPlate","joinRing");
+
+  HeadRule HR;
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-224 -15 25 13");
+  makeCell("LowRingJoin",System,cellIndex++,
+	   baseMat,0.0,HR*fbHR*ringCyl);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-124 16 -26 13");
+
+  makeCell("TopRingJoin",System,cellIndex++,
+	   baseMat,0.0,HR*fbHR*ringCyl);
+
+  insertComponent(System,"OuterVoid",0,fbHR.complement());
+  insertComponent(System,"OuterVoid",1,fbHR.complement());
+  
+  return;  
+}
+  
+
+void
 M1BackPlate::createLinks()
   /*!
     Creates a full attachment set
@@ -291,7 +324,6 @@ M1BackPlate::createLinks()
   ELog::RegMethod RegA("M1BackPlate","createLinks");
 
   FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-  ELog::EM<<"Oring "<<Origin-Y*(length/2.0)<<ELog::endDiag;
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
   FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);

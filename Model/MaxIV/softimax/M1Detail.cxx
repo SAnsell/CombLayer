@@ -190,7 +190,14 @@ M1Detail::createObjects(Simulation& System)
   
   ring->copyCutSurf("TubeRadius",*this,"TubeRadius");
   ring->addInsertCell(getInsertCells());
+  ring->addInsertCell(cClamp->getCell("OuterVoid",0));
+  ring->addInsertCell(cClamp->getCell("OuterVoid",1));
+  ring->addInsertCell(cClamp->getCell("BackVoid"));
   ring->createAll(System,*mirror,0);
+  cClamp->joinRing(System,ring->getRule("RingGap"),
+		   ring->getFullRule("InnerRing"));
+
+
   // frame->setCell("BackCVoid",*cClamp,"CVoid");
   // frame->setCell("LowCVoid",*cClamp,"CVoid",1);
   // frame->setCell("TopCVoid",*cClamp,"CVoid",2);

@@ -91,10 +91,10 @@ M1DetailGenerator::M1DetailGenerator() :
   bFrontSupportThick(1.0),bFrontSupportCut(2.0),
   bFrontSupportZCut(0.2),
 
-  bRingYStep(16.0),
+  bRingYStep(17.0),
   bRingOuterThick(0.5),bRingOuterLength(0.2),
-  bRingInnerYStep(0.5),
-  bRingInnerThick(2.25),bRingInnerLength(0.2),
+  bRingInnerYStep(0.7),
+  bRingInnerThick(1.6),bRingInnerLength(1.7),
   
   eXOut(1.98),eLength(38.0),eThick(0.1),eHeight(6.8),
   eEdge(1.03),eHoleRadius(1.18),

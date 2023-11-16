@@ -129,9 +129,9 @@ M1Ring::createSurfaces()
 
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(outerLength/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(outerLength/2.0),Y);
-  Geometry::Vec3D IOrg(Origin+Y*innerYStep);
-  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(innerLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(innerLength/2.0),Y);
+  const Geometry::Vec3D IOrg(Origin+Y*innerYStep);
+  ModelSupport::buildPlane(SMap,buildIndex+11,IOrg-Y*(innerLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,IOrg+Y*(innerLength/2.0),Y);
   
   return;
 }
@@ -152,13 +152,19 @@ M1Ring::createObjects(Simulation& System)
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 7");
   makeCell("Outer",System,cellIndex++,ringMat,0.0,HR*cylHR);
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 17 -7");
   makeCell("Inner",System,cellIndex++,ringMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -1 7");
-  makeCell("Inner",System,cellIndex++,voidMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 17 -7");
-  makeCell("Inner",System,cellIndex++,voidMat,0.0,HR);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -1 7");
+  makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,HR*cylHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 7");
+  makeCell("BackVoid",System,cellIndex++,voidMat,0.0,HR*cylHR);
+
+  // Create inner units:
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17");
+  
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 17");
   addOuterSurf(HR);
   
@@ -173,8 +179,22 @@ M1Ring::createLinks()
 {
   ELog::RegMethod RegA("M1Ring","createLinks");
 
+  const Geometry::Vec3D IOrg(Origin+Y*innerYStep);
 
+  FixedComp::setConnect(0,IOrg-Y*(innerLength/2.0),-Y);
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+11));
+  
+  FixedComp::setConnect(1,IOrg+Y*(innerLength/2.0),Y);
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+12));
   // link points are defined in the end of createSurfaces
+
+  FixedComp::setConnect(2,Origin,Y);
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+17));
+  // link points are defined in the end of createSurfaces
+
+  nameSideIndex(2,"InnerRing");
+  const HeadRule HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12");
+  setCutSurf("RingGap",HR);
 
   return;
 }
