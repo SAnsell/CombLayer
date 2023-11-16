@@ -344,7 +344,7 @@ m1DetailVariables(FuncDataBase& Control,
   PItemGen.generatePort(Control,frontName+"Port0",
 			Geometry::Vec3D(portXStep, 0.0, 0.0),
 			Geometry::Vec3D(0.0, -1.0, 0.0));
-  Control.addVariable(frontName+"ZAngle",-theta);
+  Control.addVariable(frontName+"ZAngle",-theta*0.0);
   const std::string mName=mirrorKey+"M1Tube";
 
   SimpleTubeGen.setCF<CF150>();
@@ -356,7 +356,7 @@ m1DetailVariables(FuncDataBase& Control,
   PItemGen.generatePort(Control,backName+"Port0",
 			Geometry::Vec3D(-portXStep, 0.0, 0.0),
 			Geometry::Vec3D(0,-1,0));
-  Control.addVariable(backName+"ZAngle",-theta);
+  Control.addVariable(backName+"ZAngle",-theta*0.0);
 
   // --------------------------------
   // Mirror

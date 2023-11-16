@@ -40,6 +40,7 @@
 #include "Exception.h"
 #include "surfRegister.h"
 #include "BaseVisit.h"
+#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "varList.h"
@@ -64,6 +65,9 @@
 #include "Importance.h"
 #include "Object.h"
 
+#include "Surface.h"
+#include "Quadratic.h"
+#include "Cylinder.h"
 #include "M1Ring.h"
 
 namespace xraySystem
@@ -99,15 +103,14 @@ M1Ring::populate(const FuncDataBase& Control)
 
   FixedRotate::populate(Control);
 
-  elecXOut=Control.EvalVar<double>(keyName+"ElecXOut");
-  elecLength=Control.EvalVar<double>(keyName+"ElecLength");
-  elecHeight=Control.EvalVar<double>(keyName+"ElecHeight");
-  elecThick=Control.EvalVar<double>(keyName+"ElecThick");
-  elecEdge=Control.EvalVar<double>(keyName+"ElecEdge");
-  elecHoleRadius=Control.EvalVar<double>(keyName+"ElecHoleRadius");
+  outerThick=Control.EvalVar<double>(keyName+"OuterThick");
+  outerLength=Control.EvalVar<double>(keyName+"OuterLength");
+  innerYStep=Control.EvalVar<double>(keyName+"InnerYStep");
+  innerThick=Control.EvalVar<double>(keyName+"InnerThick");
+  innerLength=Control.EvalVar<double>(keyName+"InnerLength");
 
+  ringMat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
-  electronMat=ModelSupport::EvalMat<int>(Control,keyName+"ElectronMat");
 
   return;
 }
@@ -120,24 +123,15 @@ M1Ring::createSurfaces()
 {
   ELog::RegMethod RegA("M1Ring","createSurfaces");
 
+  const HeadRule cylHR=getRule("TubeRadius");
+  makeExpandedSurf(SMap,"TubeRadius",buildIndex+7,Y,-outerThick);
+  makeExpandedSurf(SMap,"TubeRadius",buildIndex+17,Y,-innerThick);
 
-  // ELECTRON shield
-  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(elecLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(elecLength/2.0),Y);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+3,Origin+X*(elecXOut-elecThick),X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*elecXOut,X);
-
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(elecHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(elecHeight/2.0),Z);
-  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,X,elecHoleRadius);
-
-  ModelSupport::buildPlane
-    (SMap,buildIndex+13,Origin+X*(elecXOut-elecEdge),X);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+15,Origin-Z*(elecHeight/2.0-elecThick),Z);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+16,Origin+Z*(elecHeight/2.0-elecThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(outerLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(outerLength/2.0),Y);
+  Geometry::Vec3D IOrg(Origin+Y*innerYStep);
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(innerLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(innerLength/2.0),Y);
   
   return;
 }
@@ -152,24 +146,22 @@ M1Ring::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("M1Ring","createObjects");
 
-
+  const HeadRule cylHR=getRule("TubeRadius");
+  ELog::EM<<"Cyl == "<<cylHR<<ELog::endDiag;
   HeadRule HR;
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 -7");
-  makeCell("EPlateHole",System,cellIndex++,voidMat,0.0,HR);  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 7");
+  makeCell("Outer",System,cellIndex++,ringMat,0.0,HR*cylHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 17 -7");
+  makeCell("Inner",System,cellIndex++,ringMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -1 7");
+  makeCell("Inner",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 17 -7");
+  makeCell("Inner",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"1 -2 13 -4 5 -6 (-15:16:3) 7");
-  makeCell("EPlate",System,cellIndex++,electronMat,0.0,HR);  
-  
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"1 -2 13 -3 15 -16");
-  makeCell("EPlate",System,cellIndex++,voidMat,0.0,HR);  
-
-  
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -4 5 -6");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 17");
   addOuterSurf(HR);
-
+  
   return;
 }
 

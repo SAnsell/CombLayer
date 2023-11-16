@@ -69,6 +69,7 @@
 #include "M1Connectors.h"
 #include "M1ElectronShield.h"
 #include "M1Frame.h"
+#include "M1Ring.h"
 #include "M1Detail.h"
 
 #include "Importance.h"
@@ -87,7 +88,8 @@ M1Detail::M1Detail(const std::string& Key) :
   cClamp(new M1BackPlate(keyName+"CClamp")),
   connectors(new M1Connectors(keyName+"Connect")),
   frontShield(new M1FrontShield(keyName+"FPlate")),
-  elecShield(new M1ElectronShield(keyName+"ElectronShield"))
+  elecShield(new M1ElectronShield(keyName+"ElectronShield")),
+  ring(new M1Ring(keyName+"Ring"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -101,6 +103,7 @@ M1Detail::M1Detail(const std::string& Key) :
   OR.addObject(connectors);
   OR.addObject(frontShield);
   OR.addObject(elecShield);
+  OR.addObject(ring);
 }
 
 M1Detail::~M1Detail()
@@ -185,6 +188,9 @@ M1Detail::createObjects(Simulation& System)
   elecShield->addInsertCell(getInsertCells());
   elecShield->createAll(System,*mirror,0);
   
+  ring->copyCutSurf("TubeRadius",*this,"TubeRadius");
+  ring->addInsertCell(getInsertCells());
+  ring->createAll(System,*mirror,0);
   // frame->setCell("BackCVoid",*cClamp,"CVoid");
   // frame->setCell("LowCVoid",*cClamp,"CVoid",1);
   // frame->setCell("TopCVoid",*cClamp,"CVoid",2);

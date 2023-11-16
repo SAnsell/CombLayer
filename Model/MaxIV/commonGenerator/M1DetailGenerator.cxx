@@ -91,12 +91,10 @@ M1DetailGenerator::M1DetailGenerator() :
   bFrontSupportThick(1.0),bFrontSupportCut(2.0),
   bFrontSupportZCut(0.2),
 
-  bRingYStep(17.0),
+  bRingYStep(16.0),
   bRingOuterThick(0.5),bRingOuterLength(0.2),
+  bRingInnerYStep(0.5),
   bRingInnerThick(2.25),bRingInnerLength(0.2),
-  bRingBackPt(-0.6,-16.0,-1.0),
-  bRingTopPt(-2.4,-16.0,2.4),
-  bRingGap(5.0),bRingClampThick(1.0),
   
   eXOut(1.98),eLength(38.0),eThick(0.1),eHeight(6.8),
   eEdge(1.03),eHoleRadius(1.18),
@@ -111,8 +109,10 @@ M1DetailGenerator::M1DetailGenerator() :
   mirrorMat("Silicon300K"),waterMat("H2O"),
   supportMat("Aluminium"),springMat("Aluminium"),
   clipMat("Aluminium"),
-  electronMat("Aluminium"),pipeMat("Aluminium"),
+  electronMat("Aluminium"),
+  ringMat("Copper"),pipeMat("Aluminium"),
   outerMat("Aluminium"),frontMat("Copper"),
+  
   voidMat("Void")
   /*!
     Constructor and defaults
@@ -259,13 +259,15 @@ M1DetailGenerator::makeRingSupport(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("M1DetailGenerator","makeRingSupport");
   
-  Control.addVariable(keyName+"RingYPos",bRingYPos);
-  Control.addVariable(keyName+"RingOuterThick",bRingOuterThick);
-  Control.addVariable(keyName+"RingOuterLength",bRingOuterLength);
-  Control.addVariable(keyName+"RingInnerThick",bRingInnerThick);
-  Control.addVariable(keyName+"RingInnerLength",bRingInnerLength);
-  Control.addVariable(keyName+"RingInnerYStep",bRingInnerYStep);
+  Control.addVariable(keyName+"YStep",bRingYStep);
+  Control.addVariable(keyName+"OuterThick",bRingOuterThick);
+  Control.addVariable(keyName+"OuterLength",bRingOuterLength);
+  Control.addVariable(keyName+"InnerThick",bRingInnerThick);
+  Control.addVariable(keyName+"InnerLength",bRingInnerLength);
+  Control.addVariable(keyName+"InnerYStep",bRingInnerYStep);
 
+  Control.addVariable(keyName+"Mat",ringMat);
+  Control.addVariable(keyName+"VoidMat",voidMat);
   return;
 }
 
@@ -427,6 +429,7 @@ M1DetailGenerator::generateMirror(FuncDataBase& Control,
   makeSupport(Control,keyName+"CClamp");
   makeConnectors(Control,keyName+"Connect");
   makeFrame(Control,keyName+"Frame");
+  makeRingSupport(Control,keyName+"Ring");
   makeOuterSupport(Control,keyName+"CClamp");
   
   return;
