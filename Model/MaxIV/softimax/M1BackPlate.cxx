@@ -274,8 +274,7 @@ M1BackPlate::createObjects(Simulation& System)
     {
       const HeadRule tubeHR=getRule("TubeRadius");
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 25 -26 -13");
-      makeCell("BackVoid",System,cellIndex++,voidMat,0.0,
-	       HR*tubeHR);
+      makeCell("BackVoid",System,cellIndex++,voidMat,0.0,HR*tubeHR);
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 25 -26");
       addOuterSurf(HR*mirrorCompHR);
     }

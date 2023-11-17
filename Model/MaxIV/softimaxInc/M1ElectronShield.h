@@ -77,6 +77,7 @@ class M1ElectronShield :
   void createObjects(Simulation&);
   void createLinks();
 
+  void createVoidObjects(Simulation&);
   void addExternal(Simulation&);
   
  public:

@@ -852,7 +852,7 @@ m1chamberDetails(FuncDataBase& Control)
   Control.addVariable(mName+"WallMat","Titanium");
   Control.addVariable(mName+"NPorts",0);   // beam ports
 
-  M1DGen.generateMirror(Control,"M1",0.0,0.0);
+  M1DGen.generateMirror(Control,"M1",0.0,0.0,0.0);
   Control.addVariable("M1XStep",portXStep+mExtra);
 
   DCGen.generateDome(Control,backName,1);

@@ -137,7 +137,12 @@ M1Detail::createSurfaces()
 {
   ELog::RegMethod RegA("M1Detail","createSurfaces");
 
-  
+  if (!isActive("TubeRadius"))
+    {
+      ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,20.0);
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*100.0,Y);
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*100.0,Y);
+    }
   return; 
 }
 
@@ -149,11 +154,20 @@ M1Detail::createObjects(Simulation& System)
    */
 {
   ELog::RegMethod RegA("M1Detail","createObjects");
- 
+
+  if (!isActive("TubeRadius"))
+    {
+      HeadRule HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -7");
+      makeCell("MainVoid",System,cellIndex++,0,0.0,HR);
+      setCutSurf("TubeRadius",HeadRule(SMap,buildIndex,-7));
+      addOuterSurf(HR);
+    }
+  else
+    setCells("MainVoid",getInsertCells());
+
   mirror->createAll(System,*this,0);
 
-  if (isActive("TubeRadius"))
-    cClamp->copyCutSurf("TubeRadius",*this,"TubeRadius");
+  cClamp->copyCutSurf("TubeRadius",*this,"TubeRadius");
 
   cClamp->setCutSurf("FarEnd",*mirror,"back");
   cClamp->setCutSurf("NearEnd",*mirror,"front");
@@ -180,32 +194,33 @@ M1Detail::createObjects(Simulation& System)
   connectors->setCutSurf("CInnerBase",*cClamp,"innerBase");
   
   connectors->createAll(System,*mirror,"backPlateOrg");
-  
-  frontShield->addInsertCell("Main",getInsertCells());
-  frontShield->addInsertCell("Extra",getCell("FrontVoid"));
+  frontShield->addInsertCell("Main",getCells("MainVoid"));
+  if (CellMap::hasCell("FrontVoid"))
+    frontShield->addInsertCell("Extra",getCell("FrontVoid"));
+  else
+    frontShield->addInsertCell("Extra",getCell("MainVoid"));
   frontShield->setCutSurf("Front",*cClamp,"front");
   frontShield->setCutSurf("Base",*cClamp,"innerSide");
   frontShield->createAll(System,*cClamp,"front");
 
-  
+
   ringA->copyCutSurf("TubeRadius",*this,"TubeRadius");
-  ringA->addInsertCell(getInsertCells());
+  ringA->addInsertCell(getCells("MainVoid"));
   ringA->addInsertCell(cClamp->getCell("OuterVoid",0));
   ringA->addInsertCell(cClamp->getCell("OuterVoid",1));
   ringA->addInsertCell(cClamp->getCell("BackVoid"));
   ringA->createAll(System,*mirror,0);
   cClamp->joinRing(System,ringA->getRule("RingGap"),
-		   ringA->getFullRule("InnerRing"));
+		   ringA->getFullRule("innerRing"));
 
   ringB->copyCutSurf("TubeRadius",*this,"TubeRadius");
-  ringB->addInsertCell(getInsertCells());
+  ringB->addInsertCell(getCells("MainVoid"));
   ringB->addInsertCell(cClamp->getCell("OuterVoid",0));
   ringB->addInsertCell(cClamp->getCell("OuterVoid",1));
   ringB->addInsertCell(cClamp->getCell("BackVoid"));
   ringB->createAll(System,*mirror,0);
   cClamp->joinRing(System,ringB->getRule("RingGap"),
-		   ringB->getFullRule("InnerRing"));
-
+		   ringB->getFullRule("innerRing"));
 
   elecShield->setCell("TopVoid",*cClamp,"InnerVoid",0);
   elecShield->setCell("BaseVoid",*cClamp,"InnerVoid",1);
@@ -213,10 +228,20 @@ M1Detail::createObjects(Simulation& System)
   elecShield->setCell("TopEndVoid",*cClamp,"HeatVoid",3);
 
   elecShield->copyCutSurf("TubeRadius",*this,"TubeRadius");
-  elecShield->setCutSurf("front",*ringA,"front");  
   elecShield->setCutSurf("Mirror",*mirror,"mirrorSide");
-  elecShield->addInsertCell(getInsertCells());
+
+  elecShield->setCutSurf("ringAFront",*ringA,"front");
+  elecShield->setCutSurf("ringACyl",*ringA,"innerRing");
+  elecShield->setCutSurf("ringABack",*ringA,"back");
+  elecShield->setCutSurf("ringBFront",*ringB,"front");
+  elecShield->setCutSurf("ringBCyl",*ringB,"innerRing");
+  elecShield->setCutSurf("ringBBack",*ringB,"back");
+  
+
+  elecShield->addInsertCell(getCells("MainVoid"));
   elecShield->createAll(System,*mirror,0);
+  //  elecShield->joinRing(System,ringB->getRule("RingGap"),
+  //		       ringB->getFullRule("InnerRing"));
 
 
   // frame->setCell("BackCVoid",*cClamp,"CVoid");
@@ -239,7 +264,7 @@ M1Detail::createObjects(Simulation& System)
   // 			   frame->getSurf("mirrorVoid"),
   // 			   frame->getSurf("outVoid"),
   // 			   frame->getSurf("baseVoid"));
-  cClamp->insertInCell(System,getInsertCells());
+  cClamp->insertInCell(System,getCells("MainVoid"));
 
   return;
 }
@@ -274,7 +299,7 @@ M1Detail::createAll(Simulation& System,
   createSurfaces();
   createObjects(System);
   createLinks();
-
+  insertObjects(System);
   return;
 }
 

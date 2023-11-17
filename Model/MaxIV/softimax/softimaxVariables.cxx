@@ -363,10 +363,10 @@ m1DetailVariables(FuncDataBase& Control,
   // -------------------------------------
 
   // Mirror has no angle (?)
-  M1DGen.generateMirror(Control,mirrorKey+"M1",0.0,0.0);
-
+  M1DGen.generateMirror(Control,mirrorKey+"M1",0.0,(mExtra+portXStep/2.0),0.0);
+  ELog::EM<<"Xstep == "<<mExtra+portXStep/2.0<<ELog::endDiag;
   // ONLY for tube version:
-  Control.addVariable(mirrorKey+"M1XStep",portXStep+mExtra);
+  //  Control.addVariable(mirrorKey+"M1XStep",);
     
   Control.addVariable(mirrorKey+"M1StandHeight",110.0);
   Control.addVariable(mirrorKey+"M1StandWidth",30.0);

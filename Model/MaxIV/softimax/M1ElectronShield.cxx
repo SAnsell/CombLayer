@@ -309,11 +309,37 @@ M1ElectronShield::createObjects(Simulation& System)
   makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR*tubeHR);  
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 404 405 -406");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR*tubeHR);  
+  makeCell("TopVoid",System,cellIndex++,voidMat,0.0,HR*tubeHR);  
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 5 -6");
   addOuterSurf(HR);
 
+  return;
+}
+
+
+
+void
+M1ElectronShield::createVoidObjects(Simulation& System)
+  /*!
+    Create the vaned moderator
+    \param System :: Simulation to add results
+   */
+{
+  ELog::RegMethod RegA("M1ElectronShield","createObjects");
+  const HeadRule ACylHR=getRule("ringACyl");
+  const HeadRule AFrontHR=getRule("ringAFront");
+  const HeadRule ABackHR=getRule("ringABack");
+  const HeadRule BCylHR=getRule("ringBCyl");
+  const HeadRule BFrontHR=getRule("ringBFront");
+  const HeadRule BBackHR=getRule("ringBBack");
+
+  // Can we test stuff??
+  if (!ACylHR.isEmpty() && !BCylHR.isEmpty())
+    {
+      
+      ELog::EM<<"Cy == "<<ACylHR<<" : "<<AFrontHR<<" : "<<ABackHR<<ELog::endDiag;}
+  
   return;
 }
 
@@ -342,7 +368,6 @@ M1ElectronShield::addExternal(Simulation& System)
   
   return;
 }
-
   
 void
 M1ElectronShield::createLinks()
@@ -378,7 +403,9 @@ M1ElectronShield::createAll(Simulation& System,
   createLinks();
   insertObjects(System);
 
+  createVoidObjects(System);
   addExternal(System);
+
   
   return;
 }

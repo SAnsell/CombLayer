@@ -166,7 +166,7 @@ M1Ring::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17");
   
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 17");
-  addOuterSurf(HR);
+  addOuterSurf(HR*cylHR);
   
   return;
 }
@@ -193,7 +193,9 @@ M1Ring::createLinks()
   FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+17));
   // link points are defined in the end of createSurfaces
 
-  nameSideIndex(2,"InnerRing");
+  
+  nameSideIndex(2,"innerRing");
+
   const HeadRule HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12");
   setCutSurf("RingGap",HR);
 

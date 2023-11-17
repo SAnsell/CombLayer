@@ -198,7 +198,8 @@ class M1DetailGenerator
   virtual ~M1DetailGenerator();
 
   void generateMirror(FuncDataBase&,const std::string&,
-		      const double,const double) const;
+		      const double,const double,
+		      const double) const;
 
 };
 

@@ -91,13 +91,13 @@ M1DetailGenerator::M1DetailGenerator() :
   bFrontSupportThick(1.0),bFrontSupportCut(2.0),
   bFrontSupportZCut(0.2),
 
-  bRingYStep(19.30),
+  bRingYStep(17.30),
   bRingOuterThick(0.3),bRingOuterLength(0.2),
   bRingInnerYStep(0.3),
   bRingInnerThick(1.2),bRingInnerLength(1.2),
   
-  eXOut(1.98),eLength(38.0),eThick(0.1),eHeight(6.8),
-  eEdge(2.40),eHoleRadius(1.18),
+  eXOut(1.78),eLength(38.0),eThick(0.1),eHeight(6.8),
+  eEdge(2.20),eHoleRadius(1.18),
   eConnectLength(1.5),eConnectGap(1.3),
   eConnectThick(0.35),
   eBlockOffset(0.5),eBlockWidth(1.2),
@@ -259,7 +259,7 @@ void
 M1DetailGenerator::makeRingSupport(FuncDataBase& Control,
 				   const std::string& keyName) const
   /*!
-    
+    Set the rings arround the beam
    */
 {
   ELog::RegMethod RegA("M1DetailGenerator","makeRingSupport");
@@ -435,6 +435,7 @@ void
 M1DetailGenerator::generateMirror(FuncDataBase& Control,
 				  const std::string& keyName,
 				  const double theta,
+				  const double xStep,
 				  const double zStep) const
 /*!
     Primary funciton for setting the variables
@@ -446,6 +447,8 @@ M1DetailGenerator::generateMirror(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("M1DetailGenerator","generateMirror");
 
+
+  Control.addVariable(keyName+"XStep",xStep);
   // guess of separation
   makeCrystal(Control,keyName+"Mirror",theta,zStep);
   makeFrontPlate(Control,keyName+"FPlate");
