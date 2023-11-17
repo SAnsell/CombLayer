@@ -122,6 +122,7 @@ M1ElectronShield::populate(const FuncDataBase& Control)
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   electronMat=ModelSupport::EvalMat<int>(Control,keyName+"ElectronMat");
+  waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
 
   return;
 }
@@ -267,12 +268,33 @@ M1ElectronShield::createObjects(Simulation& System)
   makeCell("MidVoid",System,cellIndex++,voidMat,0.0,HR);  
   
   // Block + pipe
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 206 -416 303 -503");
-  makeCell("BlockTop",System,cellIndex++,electronMat,0.0,HR);  
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -105 415 303 -503");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -105 415 303 -503 1017");
   makeCell("BlockBase",System,cellIndex++,electronMat,0.0,HR);  
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -1007");
+  makeCell("Pipe",System,cellIndex++,waterMat,0.0,HR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -1017 1007");
+  makeCell("Pipe",System,cellIndex++,electronMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -105 415 -403 503 1017");
+  makeCell("BlockBase",System,cellIndex++,voidMat,0.0,HR);  
+  // top
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 206 -416 303 -503 1117");
+  makeCell("BlockTop",System,cellIndex++,electronMat,0.0,HR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -1107");
+  makeCell("Pipe",System,cellIndex++,waterMat,0.0,HR);
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -1117 1107");
+  makeCell("Pipe",System,cellIndex++,electronMat,0.0,HR);  
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 206 -416 -403 503 1117");
+  makeCell("BlockTop",System,cellIndex++,voidMat,0.0,HR);  
+
+
+  
   // exterior voids:
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 4 -303 5 -105");
   makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  

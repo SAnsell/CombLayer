@@ -67,6 +67,7 @@ class M1ElectronShield :
   double pipeThick;           ///< Wall thickness
   
   int electronMat;            ///< Electron shield material
+  int waterMat;               ///< Water material
   int voidMat;                ///< void material
 
   // Functions:

@@ -102,8 +102,8 @@ M1DetailGenerator::M1DetailGenerator() :
   eConnectThick(0.35),
   eBlockOffset(0.5),eBlockWidth(1.2),
   ePlateOffset(2.1),ePlateThick(0.2),
-  ePlateHeight(5.2),ePipeRadius(0.3),
-  ePipeThick(0.2),
+  ePlateHeight(5.2),ePipeRadius(0.2),
+  ePipeThick(0.15),
   
   
   fBladeInRad(0.0),fBladeOutRad(2.0),
@@ -365,7 +365,7 @@ M1DetailGenerator::makeElectronShield(FuncDataBase& Control,
   
   Control.addVariable(keyName+"ElectronMat",electronMat);
 
-  Control.addVariable(keyName+"SupportMat",supportMat);
+  Control.addVariable(keyName+"WaterMat",waterMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
   
   return;
