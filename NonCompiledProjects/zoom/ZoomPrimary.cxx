@@ -168,7 +168,7 @@ ZoomPrimary::populate(const FuncDataBase& Control)
   cutWidth=Control.EvalVar<double>(keyName+"CutWidth");
   cutHeight=Control.EvalVar<double>(keyName+"CutHeight");
 
-  feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
+  feMat=ModelSupport::EvalMat<int>(Control,keyName+"PipeMat");
 
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
 

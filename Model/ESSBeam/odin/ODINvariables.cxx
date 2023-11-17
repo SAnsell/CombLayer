@@ -266,7 +266,7 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinCaveConcNoseSide",35.0);
   Control.addVariable("odinCaveConcBack",35.0);
 
-  Control.addVariable("odinCaveFeMat","CastIron");
+  Control.addVariable("odinCavePipeMat","CastIron");
   Control.addVariable("odinCaveConcMat","Concrete");
    
   // WALL for Hut
@@ -329,7 +329,7 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinBeamStopInnerFeStep",35.0);
   Control.addVariable("odinBeamStopInnerCut",70.0);
   
-  Control.addVariable("odinBeamStopFeMat","CastIron");
+  Control.addVariable("odinBeamStopPipeMat","CastIron");
   Control.addVariable("odinBeamStopConcMat","Concrete");
 
   return;

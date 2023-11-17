@@ -323,7 +323,7 @@ VESPAvariables(FuncDataBase& Control)
   Control.addVariable("vespaCaveConcFloor",50.0);
   Control.addVariable("vespaCaveConcBack",35.0);
 
-  Control.addVariable("vespaCaveFeMat","Stainless304");
+  Control.addVariable("vespaCavePipeMat","Stainless304");
   Control.addVariable("vespaCaveConcMat","Concrete");
 
   // INNER Comp:  
@@ -346,7 +346,7 @@ VESPAvariables(FuncDataBase& Control)
   Control.addVariable("vespaInnerConcRoof",10.0);
   Control.addVariable("vespaInnerConcFloor",50.0);
 
-  Control.addVariable("vespaInnerFeMat","Stainless304");
+  Control.addVariable("vespaInnerPipeMat","Stainless304");
   Control.addVariable("vespaInnerConcMat","Concrete");
 
   // Beam port through front of inner cave

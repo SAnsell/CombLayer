@@ -218,7 +218,7 @@ TS1PlateTarget(FuncDataBase& Control)
   Control.addVariable("TPlateBPlateIOffset",2.95);    // Backplate thickness
   Control.addVariable("TPlateBPlatePinRadius",0.4);    // Backplate thickness
   
-  Control.addVariable("TPlateFeMat","Stainless304");            // Steel
+  Control.addVariable("TPlatePipeMat","Stainless304");            // Steel
   Control.addVariable("TPlateWMat","Tungsten");            // Tungsten 
   Control.addVariable("TPlateWTemp",600.0);            // Tungsten Temp
   Control.addVariable("TPlateWaterMat","D2O");        // Water [D2O]
@@ -344,7 +344,7 @@ TS1BulletTarget(FuncDataBase& Control)
   Control.addVariable("BPlatesBPlateIOffset",2.95);    // Backplate thickness
   Control.addVariable("BPlatesBPlatePinRadius",0.4);    // Backplate thickness
   
-  Control.addVariable("BPlatesFeMat","Stainless304");            // Steel
+  Control.addVariable("BPlatesPipeMat","Stainless304");            // Steel
   Control.addVariable("BPlatesWMat","Tungsten");            // Tungsten 
   Control.addVariable("BPlatesWTemp",600.0);            // Tungsten Temp
   Control.addVariable("BPlatesWaterMat","D2O");        // Water [D2O]

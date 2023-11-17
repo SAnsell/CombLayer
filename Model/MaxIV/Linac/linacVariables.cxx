@@ -1631,13 +1631,13 @@ Segment20(FuncDataBase& Control,
   const double flangeLength(3.652);  // No_20_00.pdf
   PGen.generatePipe(Control,lKey+"PipeA",flangeLength);
   Control.addVariable(lKey+"PipeARadius",1.16); // inner radius
-  Control.addVariable(lKey+"PipeAFeThick",0.2); // wall thick
+  Control.addVariable(lKey+"PipeAPipeThick",0.2); // wall thick
 
   TDCGen.generate(Control,lKey+"Cavity");
 
   PGen.generatePipe(Control,lKey+"PipeB",flangeLength);
   Control.addParse<double>(lKey+"PipeBRadius",lKey+"PipeARadius");
-  Control.addParse<double>(lKey+"PipeBFeThick",lKey+"PipeAFeThick");
+  Control.addParse<double>(lKey+"PipeBPipeThick",lKey+"PipeAPipeThick");
 
   return;
 }
@@ -1922,7 +1922,7 @@ Segment25(FuncDataBase& Control,
 
   PGen.generatePipe(Control,lKey+"PipeB",23.499); // No_25_00
   Control.addVariable(lKey+"PipeBRadius",5.0); // No_25_00
-  Control.addVariable(lKey+"PipeBFeThick",0.2); // No_25_00
+  Control.addVariable(lKey+"PipeBPipeThick",0.2); // No_25_00
   Control.addVariable(lKey+"PipeBPreYAngle",-90);
   const double pipeBXAngle = multiAngle-2.83059;  // No_25_00
   Control.addVariable(lKey+"PipeBXAngle",pipeBXAngle);
@@ -2543,7 +2543,7 @@ Segment35(FuncDataBase& Control,
   PGen.setCF<setVariable::CF37_TDC>();
   PGen.setOuterVoid();
   PGen.generatePipe(Control,lKey+"PipeC",12.6);
-  Control.addVariable(lKey+"PipeCFeMat", "Stainless304L");
+  Control.addVariable(lKey+"PipeCPipeMat", "Stainless304L");
 
   setBellow26(Control,lKey+"Bellow",7.5);
 
@@ -2682,7 +2682,7 @@ Segment38(FuncDataBase& Control,
   PGen.setNoWindow();
   PGen.setOuterVoid();
   PGen.generatePipe(Control,lKey+"PipeA",285.0); // No_38_00
-  Control.addVariable(lKey+"PipeAFeThick",0.2);
+  Control.addVariable(lKey+"PipeAPipeThick",0.2);
   PGen.setCF<setVariable::CF34_TDC>();
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.generatePipe(Control,lKey+"PipeB",221.0); // No_38_00
@@ -3098,7 +3098,7 @@ Segment46(FuncDataBase& Control,
   PGen.setCF<setVariable::CF16_TDC>();
   PGen.setMat("Aluminium","Aluminium");
   PGen.generatePipe(Control,lKey+"PipeB",pipeBLength);
-  Control.addVariable(lKey+"PipeBFeThick",0.15);
+  Control.addVariable(lKey+"PipeBPipeThick",0.15);
   Control.addVariable(lKey+"PipeBYAngle",-90.0);
 
   // Gate valves

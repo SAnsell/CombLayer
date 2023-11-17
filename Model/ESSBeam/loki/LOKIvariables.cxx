@@ -255,7 +255,7 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiCaveConcFloor",50.0);
   Control.addVariable("lokiCaveConcBack",35.0);
 
-  Control.addVariable("lokiCaveFeMat","Stainless304");
+  Control.addVariable("lokiCavePipeMat","Stainless304");
   Control.addVariable("lokiCaveConcMat","Concrete");
 
   PipeGen.generatePipe(Control,"lokiPipeOutC",150.0);

@@ -379,7 +379,7 @@ VacBoxGenerator::generateBox(FuncDataBase& Control,const std::string& keyName,
   Control.addVariable(keyName+"FlangeBLength",flangeBLen);
 
   Control.addVariable(keyName+"VoidMat",voidMat);
-  Control.addVariable(keyName+"FeMat",wallMat);
+  Control.addVariable(keyName+"PipeMat",wallMat);
   Control.addVariable(keyName+"WallMat",wallMat);
        
   return;

@@ -296,7 +296,7 @@ ZoomVariables(const mainSystem::inputParam& IParam,
   Control.addVariable("zoomCollimatorRightInnerAngle",4.4);
   Control.addVariable("zoomCollimatorLeftWaxSkin",12.0);
   Control.addVariable("zoomCollimatorRightWaxSkin",12.0); 
-  Control.addVariable("zoomCollimatorFeMat","CastIron");         
+  Control.addVariable("zoomCollimatorPipeMat","CastIron");         
   Control.addVariable("zoomCollimatorWaxMat","Poly");         // Cast steel
 
 
@@ -348,7 +348,7 @@ ZoomVariables(const mainSystem::inputParam& IParam,
   Control.addVariable("zoomPrimaryHeight",102.0); 
   Control.addVariable("zoomPrimaryLeftWidth",90.3); 
   Control.addVariable("zoomPrimaryRightWidth",90.3); 
-  Control.addVariable("zoomPrimaryFeMat","CastIron"); 
+  Control.addVariable("zoomPrimaryPipeMat","CastIron"); 
   Control.addVariable("zoomPrimaryCutX",0.0);
   Control.addVariable("zoomPrimaryCutZ",0.0);
   Control.addVariable("zoomPrimaryCutWidth",25.0); 

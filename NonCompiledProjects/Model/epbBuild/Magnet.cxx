@@ -135,8 +135,8 @@ Magnet::populate(const FuncDataBase& Control)
   height=Control.EvalTail<double>(keyName,baseName,"Height");
   width=Control.EvalTail<double>(keyName,baseName,"Width");
 
-  feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat",
-				   baseName+"FeMat");
+  feMat=ModelSupport::EvalMat<int>(Control,keyName+"PipeMat",
+				   baseName+"PipeMat");
 
   return;
 }

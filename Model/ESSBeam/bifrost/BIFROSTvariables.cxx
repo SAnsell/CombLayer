@@ -342,7 +342,7 @@ BIFROSTvariables(FuncDataBase& Control)
   Control.addVariable("bifrostCaveConcFloor",50.0);
   Control.addVariable("bifrostCaveConcBack",35.0);
 
-  Control.addVariable("bifrostCaveFeMat","Stainless304");
+  Control.addVariable("bifrostCavePipeMat","Stainless304");
   Control.addVariable("bifrostCaveConcMat","Concrete");
 
   // Beam port through front of cave

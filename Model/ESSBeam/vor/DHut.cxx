@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   vor/DHut.cxx
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -52,7 +52,7 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "LinkUnit.h"  
+#include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
@@ -64,7 +64,7 @@
 namespace essSystem
 {
 
-DHut::DHut(const std::string& Key) : 
+DHut::DHut(const std::string& Key) :
   attachSystem::FixedRotate(Key,18),
   attachSystem::ContainedComp(),
   attachSystem::CellMap()
@@ -74,7 +74,7 @@ DHut::DHut(const std::string& Key) :
   */
 {}
 
-DHut::~DHut() 
+DHut::~DHut()
   /*!
     Destructor
   */
@@ -88,7 +88,7 @@ DHut::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("DHut","populate");
-  
+
   FixedRotate::populate(Control);
 
   // Void + Fe special:
@@ -101,10 +101,10 @@ DHut::populate(const FuncDataBase& Control)
   voidBackCut=Control.EvalVar<double>(keyName+"VoidBackCut");
   voidBackStep=Control.EvalVar<double>(keyName+"VoidBackStep");
 
-  feThick=Control.EvalVar<double>(keyName+"FeThick");
+  feThick=Control.EvalVar<double>(keyName+"PipeThick");
   concThick=Control.EvalVar<double>(keyName+"ConcThick");
 
-  feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
+  feMat=ModelSupport::EvalMat<int>(Control,keyName+"PipeMat");
   concMat=ModelSupport::EvalMat<int>(Control,keyName+"ConcMat");
 
   return;
@@ -125,9 +125,9 @@ DHut::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(voidWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(voidWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*voidDepth,Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*voidHeight,Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*voidHeight,Z);
 
-  
+
   // DCut:
   Geometry::Vec3D APt(Origin-Y*(voidLength/2.0)+X*voidFrontCut);
   Geometry::Vec3D ASidePt(Origin+X*(voidWidth/2.0)-Y*voidFrontStep);
@@ -150,9 +150,9 @@ DHut::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+105,
 			   Origin-Z*(voidDepth+feThick),Z);
   ModelSupport::buildPlane(SMap,buildIndex+106,
-			   Origin+Z*(voidHeight+feThick),Z);  
+			   Origin+Z*(voidHeight+feThick),Z);
 
-  
+
 
   const Geometry::Plane* PA=
     SMap.realPtr<Geometry::Plane>(buildIndex+11);
@@ -161,7 +161,7 @@ DHut::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+111,PA,feThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+112,PB,feThick);
 
-  
+
   // CONC WALLS
   ModelSupport::buildPlane(SMap,buildIndex+201,
 			   Origin-Y*(voidLength/2.0+feThick+concThick),Y);
@@ -174,13 +174,13 @@ DHut::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+205,
 			   Origin-Z*(voidDepth+feThick+concThick),Z);
   ModelSupport::buildPlane(SMap,buildIndex+206,
-			   Origin+Z*(voidHeight+feThick+concThick),Z);  
+			   Origin+Z*(voidHeight+feThick+concThick),Z);
 
-  
+
 
   ModelSupport::buildShiftedPlane(SMap,buildIndex+211,PA,concThick+feThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+212,PB,concThick+feThick);
-  
+
   return;
 }
 
@@ -194,7 +194,7 @@ DHut::createObjects(Simulation& System)
   ELog::RegMethod RegA("DHut","createObjects");
 
   HeadRule HR;
-  
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6 -11 -12");
   makeCell("Void",System,cellIndex++,0,0.0,HR);
 
@@ -207,11 +207,11 @@ DHut::createObjects(Simulation& System)
 				  "201 -202 203 -204 205 -206 -211 -212"
 				"(-101:102:-103:104:-105: 106 :111 :112)");
   makeCell("Concrete",System,cellIndex++,concMat,0.0,HR);
-  
+
   // Exclude:
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"201 -202 203 -204 205 -206 -211 -212");
-  addOuterSurf(HR);      
+  addOuterSurf(HR);
 
   return;
 }
@@ -235,8 +235,8 @@ DHut::createLinks()
       setConnect(index+2,Origin-X*(T+voidWidth/2.0),-X);
       setConnect(index+3,Origin+X*(T+voidWidth/2.0),X);
       setConnect(index+4,Origin-Z*(T+voidDepth),-Z);
-      setConnect(index+5,Origin+Z*(T+voidHeight),Z);  
-      
+      setConnect(index+5,Origin+Z*(T+voidHeight),Z);
+
       setLinkSurf(index,-SMap.realSurf(BI+1));
       setLinkSurf(index+1,SMap.realSurf(BI+2));
       setLinkSurf(index+2,-SMap.realSurf(BI+3));
@@ -252,7 +252,7 @@ DHut::createLinks()
   FixedComp::nameSideIndex(1,"innerBack");
   FixedComp::nameSideIndex(7,"midBack");
   FixedComp::nameSideIndex(13,"outerBack");
-  
+
   return;
 }
 
@@ -271,14 +271,14 @@ DHut::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createCentredUnitVector(FC,FIndex,voidLength/2.0+concThick+feThick);
-  
-  createSurfaces();    
+
+  createSurfaces();
   createObjects(System);
-  
+
   createLinks();
-  insertObjects(System);   
-  
+  insertObjects(System);
+
   return;
 }
-  
+
 }  // NAMESPACE essSystem
