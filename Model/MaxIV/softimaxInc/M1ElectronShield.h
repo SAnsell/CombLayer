@@ -63,6 +63,9 @@ class M1ElectronShield :
   double plateThick;          ///< Thickness of plate
   double plateHeight;          ///< Extent up / down of plate
 
+  double pipeRadius;          ///< Radius of long pipe
+  double pipeThick;           ///< Wall thickness
+  
   int electronMat;            ///< Electron shield material
   int voidMat;                ///< void material
 

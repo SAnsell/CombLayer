@@ -6,8 +6,7 @@ set (supportSources
     mathSupport.cxx MatrixBase.cxx Matrix.cxx
     mcnpStringSupport.cxx polySupport.cxx regexBuild.cxx
     regexSupport.cxx splineSupport.cxx stringCombine.cxx
-    support.cxx SVD.cxx Tensor.cxx vectorSupport.cxx 
-    writeSupport.cxx 
+    support.cxx SVD.cxx writeSupport.cxx 
 )
 
 add_library (support SHARED

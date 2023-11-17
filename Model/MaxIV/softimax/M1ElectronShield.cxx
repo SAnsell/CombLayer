@@ -117,6 +117,9 @@ M1ElectronShield::populate(const FuncDataBase& Control)
   plateHeight=Control.EvalVar<double>(keyName+"PlateHeight");
   plateThick=Control.EvalVar<double>(keyName+"PlateThick");
 
+  pipeRadius=Control.EvalVar<double>(keyName+"PipeRadius");
+  pipeThick=Control.EvalVar<double>(keyName+"PipeThick");
+
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   electronMat=ModelSupport::EvalMat<int>(Control,keyName+"ElectronMat");
 
@@ -188,6 +191,21 @@ M1ElectronShield::createSurfaces()
   ModelSupport::buildPlane
     (SMap,buildIndex+503,pOrg+X*(blockOffset+blockWidth),X);
 
+  // mid way split
+  const Geometry::Vec3D pipeOrgA
+    (pOrg+X*(blockOffset+blockWidth)-
+     Z*((plateHeight/2.0-plateThick+connectGap+connectThick/2.0)/2.0));
+  const Geometry::Vec3D pipeOrgB
+    (pOrg+X*(blockOffset+blockWidth)+
+     Z*((plateHeight/2.0-plateThick+connectGap+connectThick/2.0)/2.0));
+  
+  ModelSupport::buildCylinder(SMap,buildIndex+1007,pipeOrgA,Y,pipeRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+1017,pipeOrgA,
+			     Y,pipeRadius+pipeThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+1107,pipeOrgB,Y,pipeRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+1117,pipeOrgB,
+			     Y,pipeRadius+pipeThick);
+  
   return;
 }
   

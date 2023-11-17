@@ -152,6 +152,10 @@ class M1DetailGenerator
   double ePlateThick;          ///< Thickness of plate
   double ePlateHeight;         ///< Extent up / down of plate
 
+  double ePipeRadius;         ///< Radius of long pipe
+  double ePipeThick;            ///< Thickenss of pipe
+  
+
   //
   double fBladeInRad;            ///< Increase in radius
   double fBladeOutRad;            ///< Increase in radius

@@ -102,7 +102,8 @@ M1DetailGenerator::M1DetailGenerator() :
   eConnectThick(0.35),
   eBlockOffset(0.5),eBlockWidth(1.2),
   ePlateOffset(2.1),ePlateThick(0.2),
-  ePlateHeight(5.2),
+  ePlateHeight(5.2),ePipeRadius(0.3),
+  ePipeThick(0.2),
   
   
   fBladeInRad(0.0),fBladeOutRad(2.0),
@@ -358,6 +359,9 @@ M1DetailGenerator::makeElectronShield(FuncDataBase& Control,
   Control.addVariable(keyName+"PlateThick",ePlateThick);
   Control.addVariable(keyName+"PlateOffset",ePlateOffset);
   Control.addVariable(keyName+"PlateHeight",ePlateHeight);
+
+  Control.addVariable(keyName+"PipeRadius",ePipeRadius);
+  Control.addVariable(keyName+"PipeThick",ePipeThick);
   
   Control.addVariable(keyName+"ElectronMat",electronMat);
 
