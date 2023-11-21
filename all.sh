@@ -8,8 +8,6 @@ nValid=1000
 # exit
 #segments=$(for i in {40..49}; do echo -n "Segment$i "; done)
 segments=All
-./singleItem --singleItem M1detail --validAll --validCheck ${nValid} AA 
-exit
 
 ./singleItem --singleItem UTubePipe --validAll --validCheck $nValid AA 
 #exit
@@ -20,7 +18,7 @@ exit
 
 ## SOFTIMAX removed because making the new M1 mirror
 parallel --halt now,fail=1 "./maxiv --defaultConfig Single {} --validAll --validCheck $nValid AA" ::: \
-   BALDER COSAXS DANMAX FORMAX MICROMAX SPECIES MAXPEEM || exit
+   BALDER COSAXS DANMAX FORMAX MICROMAX SOFTIMAX SPECIES MAXPEEM || exit
 
 
 

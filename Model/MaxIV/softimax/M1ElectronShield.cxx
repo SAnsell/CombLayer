@@ -393,8 +393,6 @@ M1ElectronShield::addExternal(Simulation& System)
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 13 -4 -6 16");  
   insertComponent(System,"TopVoid",HR.complement());
-  ELog::EM<<"BASE void == "<<getCell("BaseVoid")<<ELog::endDiag;
-  ELog::EM<<"Top void == "<<getCell("TopVoid")<<ELog::endDiag;
   return;
 }
   
