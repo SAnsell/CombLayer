@@ -14,6 +14,12 @@
 
    Has been improved for better performance by allowing map/integration
    and axis reduction.
+
+   It is an effective a replacement for boost::multi_array. But
+   is faster / and with sensible copy semantics e.g. A=B works for
+   ALL sizes and means that A is a copy of B. Also a multiData can be
+   resizes to new number of axis e.g. going from A[][][] to A[][] and
+   allows exchange of axis: e.g. A[i][j][k] -> exchange(0,1) -> A[j][i][k]
 */
 
 template<typename T>
