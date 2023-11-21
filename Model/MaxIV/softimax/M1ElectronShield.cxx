@@ -300,15 +300,6 @@ M1ElectronShield::createObjects(Simulation& System)
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 4 -303 206 -6");
   makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 303 406 -6");
-  makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*tubeHR);  
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 303 5 -405");
-  makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*tubeHR);  
-
-  // HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 404 405 -406");
-  // makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*tubeHR);  
   
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 5 -6");
   addOuterSurf(HR);
@@ -338,28 +329,45 @@ M1ElectronShield::createVoidObjects(Simulation& System)
   const HeadRule BFrontHR=getRule("ringBFront");
   const HeadRule BBackHR=getRule("ringBBack");
 
+  const HeadRule mainBackHR(SMap,buildIndex,-2);
+  const HeadRule mainFrontHR(SMap,buildIndex,1);
+  
+  const HeadRule midUnitHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"404 405 -406");
+  const HeadRule rightUnitHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"303 5 -405");
+  const HeadRule leftUnitHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"303 406 -6");
+
   HeadRule HR;
   // Can we test stuff??
   if (!ACylHR.isEmpty() && !BCylHR.isEmpty())
     {
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 404 405 -406");
-      makeCell("RingVoid",System,cellIndex++,voidMat,0.0,
-	       HR*tubeHR*ABackHR);
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"404 405 -406");
-      makeCell("RingVoid",System,cellIndex++,voidMat,0.0,
-	       HR*ACylHR*ABackHR.complement()*AFrontHR.complement());
+      HR=mainBackHR*tubeHR*ABackHR;
+      makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*midUnitHR);
+      makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*leftUnitHR);
+      makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*rightUnitHR);
 
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"404 405 -406");
-      makeCell("RingVoid",System,cellIndex++,voidMat,0.0,
-	       HR*tubeHR*BFrontHR*AFrontHR);
+      HR=ACylHR*ABackHR.complement()*AFrontHR.complement();
+      makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*midUnitHR);
+      makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*leftUnitHR);
+      makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*rightUnitHR);
 
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"404 405 -406");
-      //      makeCell("RingVoid",System,cellIndex++,voidMat,0.0,
-      //	       HR*tubeHR*ABackHR.complement()*BFrontHR.complement());
-      ELog::EM<<"AFront == "<<AFrontHR<<ELog::endDiag;
-      ELog::EM<<"ABack  == "<<ABackHR<<ELog::endDiag;
-      ELog::EM<<"AFront == "<<BFrontHR<<ELog::endDiag;
 
+      HR=tubeHR*BFrontHR*AFrontHR;
+      makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*midUnitHR);
+      makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*leftUnitHR);
+      makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*rightUnitHR);
+
+      HR=BCylHR*BFrontHR.complement()*BBackHR.complement();
+      makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*midUnitHR);
+      makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*leftUnitHR);
+      makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*rightUnitHR);
+
+      HR=tubeHR*mainFrontHR*BBackHR;
+      makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*midUnitHR);
+      makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*leftUnitHR);
+      makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*rightUnitHR);
     }  
   return;
 }
@@ -380,12 +388,13 @@ M1ElectronShield::addExternal(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 13 -4 -6 16");  
   insertComponent(System,"TopEndVoid",HR.complement());
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -4 5 -15");  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 13 -4 5 -15");  
   insertComponent(System,"BaseVoid",HR.complement());
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -4 -6 16");  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 13 -4 -6 16");  
   insertComponent(System,"TopVoid",HR.complement());
-  
+  ELog::EM<<"BASE void == "<<getCell("BaseVoid")<<ELog::endDiag;
+  ELog::EM<<"Top void == "<<getCell("TopVoid")<<ELog::endDiag;
   return;
 }
   
