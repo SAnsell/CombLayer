@@ -53,7 +53,8 @@ SolenoidGenerator::SolenoidGenerator() :
   length(20.0),frameWidth(39),frameThick(2.5),
   coilThick(3.0),coilRadius(17),
   coilGap(0.3),
-  frameMat("Iron"),coilMat("Copper"),
+  penRadius(3.8),
+  frameMat("Iron"),coilMat("Copper"), // TODO: maybe StbTCABL?
   voidMat("Void"),
   nCoils(4),
   nFrameFacets(8)
@@ -85,6 +86,7 @@ SolenoidGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"CoilThick",coilThick);
   Control.addVariable(keyName+"CoilRadius",coilRadius);
   Control.addVariable(keyName+"CoilGap",coilGap);
+  Control.addVariable(keyName+"PenetraionRadius",penRadius);
   Control.addVariable(keyName+"FrameMat",frameMat);
   Control.addVariable(keyName+"CoilMat",coilMat);
   Control.addVariable(keyName+"VoidMat",voidMat);

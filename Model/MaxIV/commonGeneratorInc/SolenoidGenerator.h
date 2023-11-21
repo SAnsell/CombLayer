@@ -45,6 +45,7 @@ class SolenoidGenerator
   double coilThick;             ///< Single wire coil thickness
   double coilRadius;            ///< Wire coil radius
   double coilGap;               ///< Radial gap between coil and frame
+  double penRadius;             ///< Axial penetration radius
 
   std::string frameMat;         ///< Frame material
   std::string coilMat;          ///< Coil material

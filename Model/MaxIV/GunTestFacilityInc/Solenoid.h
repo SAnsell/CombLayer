@@ -50,6 +50,7 @@ class Solenoid :
   double coilThick;             ///< Single wire coil thickness
   double coilRadius;            ///< Wire coil radius
   double coilGap;               ///< Radial gap between coil and frame
+  double penRadius;             ///< Axial penetration radius
 
   int frameMat;                 ///< Frame material
   int coilMat;                  ///< Coil material
