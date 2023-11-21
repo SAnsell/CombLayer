@@ -20,7 +20,7 @@ set(SYSTEM_INCLUDE
   ${CMAKE_SOURCE_DIR}/globalInc
 )
 
-set(SYSTEM_INCLUDE 
+set(SYSTEM_INCLUDE
   ${CMAKE_SOURCE_DIR}/include
   ${CMAKE_SOURCE_DIR}/System/attachCompInc
   ${CMAKE_SOURCE_DIR}/System/compWeightsInc
@@ -76,7 +76,7 @@ set(MAXIV_DIR ${CMAKE_SOURCE_DIR}/Model/MaxIV)
 
 set(MAXIV_INCLUDE
   ${MODEL_DIR}/maxivBuildInc
-  ${MAXIV_DIR}/balderInc 
+  ${MAXIV_DIR}/balderInc
   ${MAXIV_DIR}/LinacInc
   ${MAXIV_DIR}/commonBeamInc
   ${MAXIV_DIR}/maxpeemInc
@@ -90,13 +90,14 @@ set(MAXIV_INCLUDE
   ${MAXIV_DIR}/softimaxInc
   ${MAXIV_DIR}/formaxInc
   ${MAXIV_DIR}/speciesInc
+  ${MAXIV_DIR}/GunTestFacilityInc
 )
-  
+
 set(ESS_INCLUDE
 
   ${MODEL_DIR}/essBuildInc
   ${MODEL_DIR}/essConstructInc
-  ${MODEL_DIR}/essLinacInc    
+  ${MODEL_DIR}/essLinacInc
   ${ESS_DIR}/beerInc
   ${ESS_DIR}/bifrostInc
   ${ESS_DIR}/commonInc
@@ -110,7 +111,7 @@ set(ESS_INCLUDE
   ${ESS_DIR}/magicInc
   ${ESS_DIR}/miraclesInc
   ${ESS_DIR}/nmxInc
-  ${ESS_DIR}/nnbarInc 
+  ${ESS_DIR}/nnbarInc
   ${ESS_DIR}/odinInc
   ${ESS_DIR}/simpleItemInc
   ${ESS_DIR}/skadiInc
@@ -187,15 +188,15 @@ set(SYSTEM_LIB
 
 set(ESS_LIB
   essBuild essConstruct
-  beer bifrost common commonVar cspec dream 
-  estia freia heimdal loki magic miracles nmx nnbar 
-  odin simpleItem skadi testBeam trex vespa vor  
+  beer bifrost common commonVar cspec dream
+  estia freia heimdal loki magic miracles nmx nnbar
+  odin simpleItem skadi testBeam trex vespa vor
 )
 
 set(MAXIV_LIB
   maxivBuild balder commonBeam commonGenerator cosaxs
   danmax flexpes formax Linac maxpeem micromax
-  R1Common R3Common softimax species
+  R1Common R3Common softimax species GunTestFacility
 )
 
 target_link_libraries(ess
@@ -247,9 +248,9 @@ target_link_libraries (singleItem
   ${MAXIV_LIB}
   singleItemBuild
   instrument essBuild essConstruct
-  beer bifrost common commonVar cspec dream 
-  estia freia heimdal loki magic miracles nmx nnbar 
-  odin simpleItem skadi testBeam trex vespa vor  
+  beer bifrost common commonVar cspec dream
+  estia freia heimdal loki magic miracles nmx nnbar
+  odin simpleItem skadi testBeam trex vespa vor
   GSL::gsl
   Boost::filesystem
 )
@@ -346,26 +347,21 @@ set(SRC_LIST ${SRC_LIST} CMakeLists.txt
 set(tarDIR
    "${CMAKE_BINARY_DIR}")
 
- 
+
 #file(GLOB_RECURSE zlibTarSrc "./zlib/*.cpp"
 #                "zlib/*.c")
-#file(GLOB_RECURSE zlibTarInc 
+#file(GLOB_RECURSE zlibTarInc
 #                "./zlib/*.h")
 
 #set(SRC_LIST ${SRC_LIST}
 #   ${zlibTarSrc}
-#  ${tarDIR}/CMakeLists.txt)	
+#  ${tarDIR}/CMakeLists.txt)
 
 
-add_custom_target(tar COMMAND tar -zcvf CombLayer.tgz 
+add_custom_target(tar COMMAND tar -zcvf CombLayer.tgz
   ${SRC_LIST})
 
 add_custom_target(tags COMMAND etags ${SRC_LIST})
 
-add_custom_target(words COMMAND 
+add_custom_target(words COMMAND
     grep -v -e "^[[:space:][:cntrl:]]*$$" ${SRC_LIST} | wc)
-
-  
-
-
-  
