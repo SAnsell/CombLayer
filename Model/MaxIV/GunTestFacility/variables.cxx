@@ -46,9 +46,8 @@
 
 #include "DuctGenerator.h"
 #include "CFFlanges.h"
-#include "SplitPipeGenerator.h"
-#include "BellowGenerator.h"
 #include "PipeGenerator.h"
+#include "BellowGenerator.h"
 
 namespace setVariable
 {

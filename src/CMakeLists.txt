@@ -1,13 +1,13 @@
 set (srcSources
     flukaGenParticle.cxx LowMat.cxx mainJobs.cxx 
-    masterRotate.cxx multiContainer.cxx multiData.cxx 
-    NGroup.cxx NList.cxx NodePoint.cxx 
-    NRange.cxx NTree.cxx objectGroups.cxx 
-    pairRange.cxx particleConv.cxx ReadFunctions.cxx 
-    SimFLUKA.cxx SimMCNP.cxx SimPHITS.cxx 
-    SimPhoton.cxx SimPOVRay.cxx SimTrack.cxx 
-    Simulation.cxx SimValid.cxx transComp.cxx 
-    Triple.cxx version.cxx xrayFormFactor.cxx 
+    masterRotate.cxx multiData.cxx NGroup.cxx 
+    NList.cxx NodePoint.cxx NRange.cxx 
+    NTree.cxx objectGroups.cxx pairRange.cxx 
+    particleConv.cxx ReadFunctions.cxx SimFLUKA.cxx 
+    SimMCNP.cxx SimPHITS.cxx SimPhoton.cxx 
+    SimPOVRay.cxx SimTrack.cxx Simulation.cxx 
+    SimValid.cxx transComp.cxx Triple.cxx 
+    version.cxx xrayFormFactor.cxx 
 )
 
 add_library (src SHARED
@@ -31,7 +31,6 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/LowMat.cxx
   ${tarDIR}/mainJobs.cxx
   ${tarDIR}/masterRotate.cxx
-  ${tarDIR}/multiContainer.cxx
   ${tarDIR}/multiData.cxx
   ${tarDIR}/NGroup.cxx
   ${tarDIR}/NList.cxx
