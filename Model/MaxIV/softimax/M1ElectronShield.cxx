@@ -293,7 +293,6 @@ M1ElectronShield::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 206 -416 -403 503 1117");
   makeCell("BlockTop",System,cellIndex++,voidMat,0.0,HR);  
 
-
   
   // exterior voids:
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 4 -303 5 -105");
@@ -303,14 +302,14 @@ M1ElectronShield::createObjects(Simulation& System)
   makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 303 406 -6");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR*tubeHR);  
+  makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*tubeHR);  
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 303 5 -405");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR*tubeHR);  
+  makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*tubeHR);  
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 404 405 -406");
-  makeCell("TopVoid",System,cellIndex++,voidMat,0.0,HR*tubeHR);  
-
+  // HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 404 405 -406");
+  // makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*tubeHR);  
+  
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 5 -6");
   addOuterSurf(HR);
 
@@ -327,19 +326,41 @@ M1ElectronShield::createVoidObjects(Simulation& System)
    */
 {
   ELog::RegMethod RegA("M1ElectronShield","createObjects");
+
+  const HeadRule tubeHR=getRule("TubeRadius");
+
+  
   const HeadRule ACylHR=getRule("ringACyl");
   const HeadRule AFrontHR=getRule("ringAFront");
   const HeadRule ABackHR=getRule("ringABack");
+
   const HeadRule BCylHR=getRule("ringBCyl");
   const HeadRule BFrontHR=getRule("ringBFront");
   const HeadRule BBackHR=getRule("ringBBack");
 
+  HeadRule HR;
   // Can we test stuff??
   if (!ACylHR.isEmpty() && !BCylHR.isEmpty())
     {
-      
-      ELog::EM<<"Cy == "<<ACylHR<<" : "<<AFrontHR<<" : "<<ABackHR<<ELog::endDiag;}
-  
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 404 405 -406");
+      makeCell("RingVoid",System,cellIndex++,voidMat,0.0,
+	       HR*tubeHR*ABackHR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"404 405 -406");
+      makeCell("RingVoid",System,cellIndex++,voidMat,0.0,
+	       HR*ACylHR*ABackHR.complement()*AFrontHR.complement());
+
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"404 405 -406");
+      makeCell("RingVoid",System,cellIndex++,voidMat,0.0,
+	       HR*tubeHR*BFrontHR*AFrontHR);
+
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"404 405 -406");
+      //      makeCell("RingVoid",System,cellIndex++,voidMat,0.0,
+      //	       HR*tubeHR*ABackHR.complement()*BFrontHR.complement());
+      ELog::EM<<"AFront == "<<AFrontHR<<ELog::endDiag;
+      ELog::EM<<"ABack  == "<<ABackHR<<ELog::endDiag;
+      ELog::EM<<"AFront == "<<BFrontHR<<ELog::endDiag;
+
+    }  
   return;
 }
 
@@ -359,7 +380,6 @@ M1ElectronShield::addExternal(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 13 -4 -6 16");  
   insertComponent(System,"TopEndVoid",HR.complement());
 
-  ELog::EM<<"Cel == "<<getCell("TopVoid")<<ELog::endDiag;
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -4 5 -15");  
   insertComponent(System,"BaseVoid",HR.complement());
 
