@@ -16,7 +16,6 @@
 #include "Exception.h"
 #include "IndexCounter.h"
 #include "dataSlice.h"
-#include "mapSlice.h"
 #include "multiContainer.h"
 
 template<typename T>
